@@ -100,7 +100,6 @@ class NoAnnotations {
   NoAnnotations(secretDependency) {}
 }
 
-factoryFn(a) {}
 main() {
   var dynamicProviders = [
     provide("provider0", useValue: 1),
@@ -154,18 +153,10 @@ main() {
         expect(car).toBeAnInstanceOf(CarWithInject);
         expect(car.engine).toBeAnInstanceOf(TurboEngine);
       });
-      it("should throw when no type and not @Inject (class case)", () {
+      it("should throw when no type and not @Inject", () {
         expect(() => createInjector([NoAnnotations])).toThrowError(
-            "Cannot resolve all parameters for 'NoAnnotations'(?). " +
-                "Make sure that all the parameters are decorated with Inject or have valid type annotations " +
-                "and that 'NoAnnotations' is decorated with Injectable.");
-      });
-      it("should throw when no type and not @Inject (factory case)", () {
-        expect(() => createInjector([
-              provide("someToken", useFactory: factoryFn)
-            ])).toThrowError("Cannot resolve all parameters for 'factoryFn'(?). " +
-            "Make sure that all the parameters are decorated with Inject or have valid type annotations " +
-            "and that 'factoryFn' is decorated with Injectable.");
+            "Cannot resolve all parameters for NoAnnotations(?). " +
+                "Make sure they all have valid type or annotations.");
       });
       it("should cache instances", () {
         var injector = createInjector([Engine]);
