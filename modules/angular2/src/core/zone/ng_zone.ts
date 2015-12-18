@@ -349,7 +349,7 @@ export class NgZone {
 
     if (enableLongStackTrace) {
       errorHandling = StringMapWrapper.merge(
-          Zone.longStackTraceZone, {onError: function(e) { ngZone._notifyOnError(this, e); }});
+          zone.longStackTraceZone, {onError: function(e) { ngZone._notifyOnError(this, e); }});
     } else {
       errorHandling = {onError: function(e) { ngZone._notifyOnError(this, e); }};
     }
