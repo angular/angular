@@ -28,7 +28,8 @@ import "package:angular2/src/core/change_detection/change_detection.dart"
         KeyValueDiffers,
         defaultKeyValueDiffers,
         ChangeDetectorGenConfig;
-import "package:angular2/src/facade/exceptions.dart" show ExceptionHandler;
+import "package:angular2/src/facade/exceptions.dart"
+    show BaseException, ExceptionHandler;
 import "package:angular2/src/core/linker/pipe_resolver.dart" show PipeResolver;
 import "package:angular2/src/compiler/xhr.dart" show XHR;
 import "package:angular2/src/platform/dom/dom_adapter.dart" show DOM;
@@ -133,6 +134,53 @@ _runtimeCompilerBindings() {
   return [provide(XHR, useClass: DOM.getXHR()), COMPILER_PROVIDERS];
 }
 
+class TestInjector {
+  bool _instantiated = false;
+  Injector _injector = null;
+  List<dynamic /* Type | Provider | List < dynamic > */ > _providers = [];
+  reset() {
+    this._injector = null;
+    this._providers = [];
+    this._instantiated = false;
+  }
+
+  addProviders(
+      List<dynamic /* Type | Provider | List < dynamic > */ > providers) {
+    if (this._instantiated) {
+      throw new BaseException(
+          "Cannot add providers after test injector is instantiated");
+    }
+    this._providers = ListWrapper.concat(this._providers, providers);
+  }
+
+  createInjector() {
+    var rootInjector = Injector.resolveAndCreate(_getRootProviders());
+    this._injector = rootInjector.resolveAndCreateChild(ListWrapper.concat(
+        ListWrapper.concat(_getAppBindings(), _runtimeCompilerBindings()),
+        this._providers));
+    this._instantiated = true;
+    return this._injector;
+  }
+
+  dynamic execute(FunctionWithParamTokens fn) {
+    if (!this._instantiated) {
+      this.createInjector();
+    }
+    return fn.execute(this._injector);
+  }
+}
+
+TestInjector _testInjector = null;
+getTestInjector() {
+  if (_testInjector == null) {
+    _testInjector = new TestInjector();
+  }
+  return _testInjector;
+}
+
+/**
+ * @deprecated Use TestInjector#createInjector() instead.
+ */
 Injector createTestInjector(
     List<dynamic /* Type | Provider | List < dynamic > */ > providers) {
   var rootInjector = Injector.resolveAndCreate(_getRootProviders());
@@ -140,6 +188,9 @@ Injector createTestInjector(
       .resolveAndCreateChild(ListWrapper.concat(_getAppBindings(), providers));
 }
 
+/**
+ * @deprecated Use TestInjector#createInjector() instead.
+ */
 Injector createTestInjectorWithRuntimeCompiler(
     List<dynamic /* Type | Provider | List < dynamic > */ > providers) {
   return createTestInjector(
@@ -164,7 +215,8 @@ Injector createTestInjectorWithRuntimeCompiler(
  * ```
  *
  * Notes:
- * - inject is currently a function because of some Traceur limitation the syntax should eventually
+ * - inject is currently a function because of some Traceur limitation the syntax should
+ * eventually
  *   becomes `it('...', @Inject (object: AClass, async: AsyncTestCompleter) => { ... });`
  *
  * @param {Array} tokens
