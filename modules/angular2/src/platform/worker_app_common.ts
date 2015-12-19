@@ -19,7 +19,6 @@ import {
   ServiceMessageBrokerFactory,
   ServiceMessageBrokerFactory_
 } from 'angular2/src/web_workers/shared/service_message_broker';
-import {COMPILER_PROVIDERS} from 'angular2/src/compiler/compiler';
 import {Serializer} from "angular2/src/web_workers/shared/serializer";
 import {ON_WEB_WORKER} from "angular2/src/web_workers/shared/api";
 import {Provider} from 'angular2/src/core/di';
@@ -37,7 +36,6 @@ export const WORKER_APP_PLATFORM: Array<any /*Type | Provider | any[]*/> =
 
 export const WORKER_APP_APPLICATION_COMMON: Array<any /*Type | Provider | any[]*/> = CONST_EXPR([
   APPLICATION_COMMON_PROVIDERS,
-  COMPILER_PROVIDERS,
   FORM_PROVIDERS,
   Serializer,
   new Provider(PLATFORM_PIPES, {useValue: COMMON_PIPES, multi: true}),
