@@ -7,10 +7,11 @@ import {ListWrapper} from 'angular2/src/facade/collection';
 import {bind} from 'angular2/core';
 
 import {
-  createTestInjectorWithRuntimeCompiler,
   FunctionWithParamTokens,
   inject,
-  injectAsync
+  injectAsync,
+  TestInjector,
+  getTestInjector
 } from './test_injector';
 
 export {inject, injectAsync} from './test_injector';
@@ -92,14 +93,10 @@ var jsmIt = _global.it;
 var jsmIIt = _global.fit;
 var jsmXIt = _global.xit;
 
-var testProviders;
-var injector;
+var testInjector: TestInjector = getTestInjector();
 
 // Reset the test providers before each test.
-jsmBeforeEach(() => {
-  testProviders = [];
-  injector = null;
-});
+jsmBeforeEach(() => { testInjector.reset(); });
 
 /**
  * Allows overriding default providers of the test injector,
@@ -115,8 +112,9 @@ export function beforeEachProviders(fn): void {
   jsmBeforeEach(() => {
     var providers = fn();
     if (!providers) return;
-    testProviders = [...testProviders, ...providers];
-    if (injector !== null) {
+    try {
+      testInjector.addProviders(providers);
+    } catch (e) {
       throw new Error('beforeEachProviders was called after the injector had ' +
                       'been used in a beforeEach or it block. This invalidates the ' +
                       'test injector');
@@ -188,17 +186,13 @@ function _it(jsmFn: Function, name: string, testFn: FunctionWithParamTokens | An
 
   if (testFn instanceof FunctionWithParamTokens) {
     jsmFn(name, (done) => {
-      if (!injector) {
-        injector = createTestInjectorWithRuntimeCompiler(testProviders);
-      }
-
       var finishCallback = () => {
         // Wait one more event loop to make sure we catch unreturned promises and
         // promise rejections.
         setTimeout(done, 0);
       };
       var returnedTestValue =
-          runInTestZone(() => testFn.execute(injector), finishCallback, done.fail);
+          runInTestZone(() => testInjector.execute(testFn), finishCallback, done.fail);
 
       if (testFn.isAsync) {
         if (_isPromiseLike(returnedTestValue)) {
@@ -243,11 +237,9 @@ export function beforeEach(fn: FunctionWithParamTokens | AnyTestFn): void {
         // promise rejections.
         setTimeout(done, 0);
       };
-      if (!injector) {
-        injector = createTestInjectorWithRuntimeCompiler(testProviders);
-      }
 
-      var returnedTestValue = runInTestZone(() => fn.execute(injector), finishCallback, done.fail);
+      var returnedTestValue =
+          runInTestZone(() => testInjector.execute(fn), finishCallback, done.fail);
       if (fn.isAsync) {
         if (_isPromiseLike(returnedTestValue)) {
           (<Promise<any>>returnedTestValue).then(null, (err) => { done.fail(err); });
