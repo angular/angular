@@ -1,5 +1,6 @@
 library angular2.core;
 
+export './src/core/angular_entrypoint.dart' show AngularEntrypoint;
 export './src/core/metadata.dart';
 export './src/core/util.dart';
 export 'package:angular2/src/facade/lang.dart' show enableProdMode;

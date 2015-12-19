@@ -73,11 +73,14 @@ const _VIEWS = const [
 
 const _ENTRYPOINTS = const [
   const ClassDescriptor('AngularEntrypoint', 'package:angular2/angular2.dart'),
+  const ClassDescriptor('AngularEntrypoint', 'package:angular2/core.dart'),
   const ClassDescriptor('AngularEntrypoint', 'package:angular2/bootstrap.dart'),
   const ClassDescriptor(
       'AngularEntrypoint', 'package:angular2/bootstrap_static.dart'),
   const ClassDescriptor(
       'AngularEntrypoint', 'package:angular2/platform/browser.dart'),
+  const ClassDescriptor(
+      'AngularEntrypoint', 'package:angular2/platform/worker_app.dart'),
   const ClassDescriptor(
       'AngularEntrypoint', 'package:angular2/platform/browser_static.dart'),
   const ClassDescriptor(
