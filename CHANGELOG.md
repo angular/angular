@@ -429,7 +429,7 @@ import * as core from 'angular2/core';
 * Operators and Observables from RxJS (e.g. .map(), .toArray(), .toPromise(), etc ) now need to be explicitly imported (once per operator in your app)
   ```
   import {Observable} from 'rxjs/Observable';
-  import 'rxjs/add/operators/map';
+  import 'rxjs/add/operator/map';
   import 'rxjs/add/observable/interval';
 
   Observable.interval(1000).subscribe(...);
