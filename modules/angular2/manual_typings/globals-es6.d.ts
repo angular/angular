@@ -9,10 +9,6 @@
 /// <reference path="../typings/jasmine/jasmine.d.ts"/>
 /// <reference path="../typings/angular-protractor/angular-protractor.d.ts"/>
 
-// TODO: ideally the node.d.ts reference should be scoped only for files that need and not to all
-//       the code including client code
-/// <reference path="../typings/node/node.d.ts" />
-
 declare var assert: any;
 
 
