@@ -460,7 +460,7 @@ export function main() {
         it('should support optional directive properties', () => {
           var dirA = CompileDirectiveMetadata.create({
             selector: 'div',
-            type: new CompileTypeMetadata({moduleUrl: someModuleUrl, name: 'DirA'}),
+            type: new CompileTypeMetadata({moduleUrl: someModuleUrl, name: 'Dir'}),
             inputs: ['a']
           });
           expect(humanizeTplAst(parse('<div></div>', [dirA])))
@@ -1006,6 +1006,18 @@ There is no directive with "exportAs" set to "dirA" ("<div [ERROR ->]#a="dirA"><
                 [EmbeddedTemplateAst],
                 [DirectiveAst, ngIf],
                 [BoundDirectivePropertyAst, 'ngIf', 'null'],
+                [ElementAst, 'div']
+              ]);
+        });
+
+        it('should work with *... and :', () => {
+          var dirA = CompileDirectiveMetadata.create(
+              {selector: '[a]', type: new CompileTypeMetadata({name: 'DirA'}), inputs: ['a', 'b']});
+          expect(humanizeTplAst(parse('<div *a="b: foo">', [dirA])))
+              .toEqual([
+                [EmbeddedTemplateAst],
+                [DirectiveAst, dirA],
+                [BoundDirectivePropertyAst, 'a', 'b'],
                 [ElementAst, 'div']
               ]);
         });
