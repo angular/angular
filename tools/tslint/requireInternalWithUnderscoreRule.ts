@@ -1,7 +1,7 @@
 import {RuleFailure} from 'tslint/lib/lint';
 import {AbstractRule} from 'tslint/lib/rules';
 import {RuleWalker} from 'tslint/lib/language/walker';
-import * as ts from 'tslint/node_modules/typescript';
+import * as ts from 'typescript';
 
 export class Rule extends AbstractRule {
   public apply(sourceFile: ts.SourceFile): RuleFailure[] {
