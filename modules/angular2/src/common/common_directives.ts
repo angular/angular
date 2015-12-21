@@ -39,11 +39,11 @@ import {CORE_DIRECTIVES} from './directives';
  * @Component({
  *   selector: 'my-component',
  *   templateUrl: 'myComponent.html',
- *   directives: [COMMON_DIRECTIVES, OtherDirective]
+ *   directives: [...COMMON_DIRECTIVES, OtherDirective]
  * })
  * export class MyComponent {
  *   ...
  * }
  * ```
  */
-export const COMMON_DIRECTIVES: Type[][] = CONST_EXPR([CORE_DIRECTIVES, FORM_DIRECTIVES]);
+export const COMMON_DIRECTIVES: Type[][] = CONST_EXPR([...CORE_DIRECTIVES, ...FORM_DIRECTIVES]);

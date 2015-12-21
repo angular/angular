@@ -44,7 +44,7 @@ export {ControlValueAccessor} from './directives/control_value_accessor';
  * ```typescript
  * @Component({
  *   selector: 'my-app',
- *   directives: [FORM_DIRECTIVES]
+ *   directives: [...FORM_DIRECTIVES]
  * })
  * class MyApp {}
  * ```

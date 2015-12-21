@@ -44,7 +44,7 @@ function mergeOptions(defaultOpts, providedOpts, method, url): RequestOptions {
  * import {Http, HTTP_PROVIDERS} from 'angular2/http';
  * @Component({
  *   selector: 'http-app',
- *   viewProviders: [HTTP_PROVIDERS],
+ *   viewProviders: [...HTTP_PROVIDERS],
  *   templateUrl: 'people.html'
  * })
  * class PeopleComponent {

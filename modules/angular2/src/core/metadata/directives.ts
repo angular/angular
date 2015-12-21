@@ -601,7 +601,7 @@ export class DirectiveMetadata extends InjectableMetadata {
    * @Component({
    *   selector: 'app',
    *   template: `<input [(ngModel)]="prop">`,
-   *   directives: [FORM_DIRECTIVES, NgModelStatus]
+   *   directives: [...FORM_DIRECTIVES, NgModelStatus]
    * })
    * class App {
    *   prop;
@@ -1078,7 +1078,7 @@ export class OutputMetadata {
  * @Component({
  *   selector: 'app',
  *   template: `<input [(ngModel)]="prop">`,
- *   directives: [FORM_DIRECTIVES, NgModelStatus]
+ *   directives: [...FORM_DIRECTIVES, NgModelStatus]
  * })
  * class App {
  *   prop;

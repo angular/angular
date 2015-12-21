@@ -44,7 +44,7 @@ class MyCmp implements OnDeactivate {
       <p *ngFor="#logItem of logService.logs">{{ logItem }}</p>
     </div>
   `,
-  directives: [ROUTER_DIRECTIVES]
+  directives: [...ROUTER_DIRECTIVES]
 })
 @RouteConfig([
   {path: '/', component: MyCmp, name: 'HomeCmp'},

@@ -8,6 +8,6 @@ var appProviders: any[] = [];
 class MyApp {
 }
 
-var app = platform(BROWSER_PROVIDERS).application([BROWSER_APP_PROVIDERS, appProviders]);
+var app = platform(...BROWSER_PROVIDERS).application([...BROWSER_APP_PROVIDERS, ...appProviders]);
 app.bootstrap(MyApp);
 // #enddocregion

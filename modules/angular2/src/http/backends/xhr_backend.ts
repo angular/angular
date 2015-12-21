@@ -103,7 +103,7 @@ export class XHRConnection implements Connection {
  * import {Http, MyNodeBackend, HTTP_PROVIDERS, BaseRequestOptions} from 'angular2/http';
  * @Component({
  *   viewProviders: [
- *     HTTP_PROVIDERS,
+ *     ...HTTP_PROVIDERS,
  *     provide(Http, {useFactory: (backend, options) => {
  *       return new Http(backend, options);
  *     }, deps: [MyNodeBackend, BaseRequestOptions]})]

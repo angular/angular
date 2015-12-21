@@ -19,7 +19,7 @@ let _postMessage = {
 };
 
 export const WORKER_APP_APPLICATION: Array<any /*Type | Provider | any[]*/> = [
-  WORKER_APP_APPLICATION_COMMON,
+  ...WORKER_APP_APPLICATION_COMMON,
   new Provider(MessageBus, {useFactory: createMessageBus, deps: [NgZone]}),
   new Provider(APP_INITIALIZER, {useValue: setupWebWorker, multi: true})
 ];

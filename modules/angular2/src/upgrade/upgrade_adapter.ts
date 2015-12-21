@@ -295,7 +295,7 @@ export class UpgradeAdapter {
     var ng1Injector: angular.IInjectorService = null;
     var platformRef: PlatformRef = platform(BROWSER_PROVIDERS);
     var applicationRef: ApplicationRef = platformRef.application([
-      BROWSER_APP_PROVIDERS,
+      ...BROWSER_APP_PROVIDERS,
       provide(NG1_INJECTOR, {useFactory: () => ng1Injector}),
       provide(NG1_COMPILE, {useFactory: () => ng1Injector.get(NG1_COMPILE)}),
       this.providers

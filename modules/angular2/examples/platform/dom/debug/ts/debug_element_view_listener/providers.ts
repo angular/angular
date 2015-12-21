@@ -6,5 +6,5 @@ class MyAppComponent {
 }
 
 // #docregion providers
-bootstrap(MyAppComponent, [ELEMENT_PROBE_PROVIDERS]);
+bootstrap(MyAppComponent, [...ELEMENT_PROBE_PROVIDERS]);
 // #enddocregion

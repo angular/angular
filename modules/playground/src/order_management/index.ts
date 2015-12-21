@@ -105,7 +105,7 @@ class DataService {
       <button (click)="select(order)">Select</button>
   	</div>
   `,
-  directives: [FORM_DIRECTIVES, NgFor]
+  directives: [...FORM_DIRECTIVES, NgFor]
 })
 class OrderListComponent {
   orders: Order[];
@@ -139,7 +139,7 @@ class OrderListComponent {
       <button (click)="onDelete()">Delete</button>
     </div>
   `,
-  directives: [FORM_DIRECTIVES]
+  directives: [...FORM_DIRECTIVES]
 })
 class OrderItemComponent {
   @Input() item: OrderItem;
@@ -176,7 +176,7 @@ class OrderItemComponent {
       <order-item-cmp *ngFor="#item of order.items" [item]="item" (delete)="deleteItem(item)"></order-item-cmp>
     </div>
   `,
-  directives: [FORM_DIRECTIVES, OrderItemComponent, NgFor, NgIf]
+  directives: [...FORM_DIRECTIVES, OrderItemComponent, NgFor, NgIf]
 })
 class OrderDetailsComponent {
   constructor(private _service: DataService) {}

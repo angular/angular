@@ -29,7 +29,7 @@ import {Injectable, Inject} from 'angular2/core';
  *   Location
  * } from 'angular2/router';
  *
- * @Component({directives: [ROUTER_DIRECTIVES]})
+ * @Component({directives: [...ROUTER_DIRECTIVES]})
  * @RouteConfig([
  *  {...},
  * ])
@@ -39,7 +39,7 @@ import {Injectable, Inject} from 'angular2/core';
  *   }
  * }
  *
- * bootstrap(AppCmp, [ROUTER_PROVIDERS]);
+ * bootstrap(AppCmp, [...ROUTER_PROVIDERS]);
  * ```
  */
 @Injectable()

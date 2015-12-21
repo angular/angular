@@ -54,7 +54,7 @@ var _resolveToNull = PromiseWrapper.resolve(null);
  *   RouteConfig
  * } from 'angular2/router';
  *
- * @Component({directives: [ROUTER_DIRECTIVES]})
+ * @Component({directives: [...ROUTER_DIRECTIVES]})
  * @RouteConfig([
  *  {...},
  * ])
@@ -62,7 +62,7 @@ var _resolveToNull = PromiseWrapper.resolve(null);
  *   // ...
  * }
  *
- * bootstrap(AppCmp, [ROUTER_PROVIDERS]);
+ * bootstrap(AppCmp, [...ROUTER_PROVIDERS]);
  * ```
  */
 export const ROUTER_PRIMARY_COMPONENT: OpaqueToken =

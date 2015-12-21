@@ -35,7 +35,7 @@ export function userCmpLoader() {
 @Component({
   selector: 'parent-cmp',
   template: `inner { <router-outlet></router-outlet> }`,
-  directives: [ROUTER_DIRECTIVES],
+  directives: ROUTER_DIRECTIVES
 })
 @RouteConfig([new Route({path: '/b', component: HelloCmp, name: 'Child'})])
 export class ParentCmp {
@@ -49,7 +49,7 @@ export function parentCmpLoader() {
 @Component({
   selector: 'parent-cmp',
   template: `inner { <router-outlet></router-outlet> }`,
-  directives: [ROUTER_DIRECTIVES],
+  directives: ROUTER_DIRECTIVES
 })
 @RouteConfig([new AsyncRoute({path: '/b', loader: helloCmpLoader, name: 'Child'})])
 export class AsyncParentCmp {
@@ -62,7 +62,7 @@ export function asyncParentCmpLoader() {
 @Component({
   selector: 'parent-cmp',
   template: `inner { <router-outlet></router-outlet> }`,
-  directives: [ROUTER_DIRECTIVES],
+  directives: ROUTER_DIRECTIVES
 })
 @RouteConfig(
     [new AsyncRoute({path: '/b', loader: helloCmpLoader, name: 'Child', useAsDefault: true})])
@@ -77,7 +77,7 @@ export function asyncDefaultParentCmpLoader() {
 @Component({
   selector: 'parent-cmp',
   template: `inner { <router-outlet></router-outlet> }`,
-  directives: [ROUTER_DIRECTIVES],
+  directives: ROUTER_DIRECTIVES
 })
 @RouteConfig([new Route({path: '/b', component: HelloCmp, name: 'Child', useAsDefault: true})])
 export class ParentWithDefaultCmp {
@@ -91,7 +91,7 @@ export function parentWithDefaultCmpLoader() {
 @Component({
   selector: 'team-cmp',
   template: `team {{id}} | user { <router-outlet></router-outlet> }`,
-  directives: [ROUTER_DIRECTIVES],
+  directives: ROUTER_DIRECTIVES
 })
 @RouteConfig([new Route({path: '/user/:name', component: UserCmp, name: 'User'})])
 export class TeamCmp {
@@ -102,7 +102,7 @@ export class TeamCmp {
 @Component({
   selector: 'team-cmp',
   template: `team {{id}} | user { <router-outlet></router-outlet> }`,
-  directives: [ROUTER_DIRECTIVES],
+  directives: ROUTER_DIRECTIVES
 })
 @RouteConfig([new AsyncRoute({path: '/user/:name', loader: userCmpLoader, name: 'User'})])
 export class AsyncTeamCmp {

@@ -91,7 +91,7 @@ function _getAppBindings() {
   }
 
   return [
-    APPLICATION_COMMON_PROVIDERS,
+    ...APPLICATION_COMMON_PROVIDERS,
     provide(ChangeDetectorGenConfig, {useValue: new ChangeDetectorGenConfig(true, false, true)}),
     provide(DOCUMENT, {useValue: appDoc}),
     provide(DomRenderer, {useClass: DomRenderer_}),
@@ -103,7 +103,7 @@ function _getAppBindings() {
     provide(AppViewManager, {useClass: AppViewManager_}),
     AppViewManagerUtils,
     Serializer,
-    ELEMENT_PROBE_PROVIDERS,
+    ...ELEMENT_PROBE_PROVIDERS,
     provide(APP_VIEW_POOL_CAPACITY, {useValue: 500}),
     ProtoViewFactory,
     provide(DirectiveResolver, {useClass: MockDirectiveResolver}),
@@ -127,7 +127,7 @@ function _getAppBindings() {
 function _runtimeCompilerBindings() {
   return [
     provide(XHR, {useClass: DOM.getXHR()}),
-    COMPILER_PROVIDERS,
+    ...COMPILER_PROVIDERS
   ];
 }
 

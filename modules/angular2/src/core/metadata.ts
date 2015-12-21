@@ -1309,7 +1309,7 @@ export var Output: OutputFactory = makePropDecorator(OutputMetadata);
  * @Component({
  *   selector: 'app',
  *   template: `<input [(ngModel)]="prop">`,
- *   directives: [FORM_DIRECTIVES, NgModelStatus]
+ *   directives: [...FORM_DIRECTIVES, NgModelStatus]
  * })
  * class App {
  *   prop;

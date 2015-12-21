@@ -130,7 +130,7 @@ class ShowError {
       <button type="submit" [disabled]="!f.form.valid">Submit</button>
     </form>
   `,
-  directives: [FORM_DIRECTIVES, NgFor, ShowError]
+  directives: [...FORM_DIRECTIVES, NgFor, ShowError]
 })
 class ModelDrivenForms {
   form;

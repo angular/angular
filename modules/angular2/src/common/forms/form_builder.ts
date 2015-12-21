@@ -24,7 +24,7 @@ import * as modelModule from './model';
  *     <h3>Form value:</h3>
  *     <pre>{{value}}</pre>
  *   `,
- *   directives: [FORM_DIRECTIVES]
+ *   directives: [...FORM_DIRECTIVES]
  * })
  * export class App {
  *   loginForm: ControlGroup;
@@ -113,7 +113,7 @@ export class FormBuilder {
  * ### Example
  *
  * ```typescript
- * bootstrap(MyApp, [FORM_PROVIDERS]);
+ * bootstrap(MyApp, [...FORM_PROVIDERS]);
  * ```
  */
 export const FORM_PROVIDERS: Type[] = CONST_EXPR([FormBuilder]);

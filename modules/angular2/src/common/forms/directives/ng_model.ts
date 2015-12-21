@@ -39,7 +39,7 @@ const formControlBinding =
  *  ```typescript
  * @Component({
  *      selector: "search-comp",
- *      directives: [FORM_DIRECTIVES],
+ *      directives: [...FORM_DIRECTIVES],
  *      template: `<input type='text' [(ngModel)]="searchQuery">`
  *      })
  * class SearchComp {

@@ -43,7 +43,7 @@ export abstract class LocationStrategy {
  * import {Component} from 'angular2/core';
  * import {ROUTER_DIRECTIVES, ROUTER_PROVIDERS, RouteConfig} from 'angular2/router';
  *
- * @Component({directives: [ROUTER_DIRECTIVES]})
+ * @Component({directives: [...ROUTER_DIRECTIVES]})
  * @RouteConfig([
  *  {...},
  * ])
@@ -52,7 +52,7 @@ export abstract class LocationStrategy {
  * }
  *
  * bootstrap(AppCmp, [
- *   ROUTER_PROVIDERS,
+ *   ...ROUTER_PROVIDERS,
  *   PathLocationStrategy,
  *   provide(APP_BASE_HREF, {useValue: '/my/app'})
  * ]);

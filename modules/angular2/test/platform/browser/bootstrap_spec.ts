@@ -194,7 +194,7 @@ export function main() {
 
     it('should unregister change detectors when components are disposed',
        inject([AsyncTestCompleter], (async) => {
-         var app = platform(BROWSER_PROVIDERS).application([BROWSER_APP_PROVIDERS, testProviders]);
+         var app = platform(BROWSER_PROVIDERS).application([...BROWSER_APP_PROVIDERS, testProviders]);
          app.bootstrap(HelloRootCmp)
              .then((ref) => {
                ref.dispose();
@@ -226,14 +226,14 @@ export function main() {
 
     it("should run platform initializers", inject([Log], (log: Log) => {
          let p = platform([
-           BROWSER_PROVIDERS,
+           ...BROWSER_PROVIDERS,
            provide(PLATFORM_INITIALIZER, {useValue: log.fn("platform_init1"), multi: true}),
            provide(PLATFORM_INITIALIZER, {useValue: log.fn("platform_init2"), multi: true})
          ]);
          expect(log.result()).toEqual("platform_init1; platform_init2");
          log.clear();
          p.application([
-           BROWSER_APP_PROVIDERS,
+           ...BROWSER_APP_PROVIDERS,
            provide(APP_INITIALIZER, {useValue: log.fn("app_init1"), multi: true}),
            provide(APP_INITIALIZER, {useValue: log.fn("app_init2"), multi: true})
          ]);

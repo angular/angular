@@ -37,12 +37,12 @@ class PrintLogger {
 }
 
 export const WORKER_APP_PLATFORM: Array<any /*Type | Provider | any[]*/> =
-    CONST_EXPR([PLATFORM_COMMON_PROVIDERS]);
+    CONST_EXPR([...PLATFORM_COMMON_PROVIDERS]);
 
 export const WORKER_APP_APPLICATION_COMMON: Array<any /*Type | Provider | any[]*/> = CONST_EXPR([
-  APPLICATION_COMMON_PROVIDERS,
-  COMPILER_PROVIDERS,
-  FORM_PROVIDERS,
+  ...APPLICATION_COMMON_PROVIDERS,
+  ...COMPILER_PROVIDERS,
+  ...FORM_PROVIDERS,
   Serializer,
   new Provider(PLATFORM_PIPES, {useValue: COMMON_PIPES, multi: true}),
   new Provider(PLATFORM_DIRECTIVES, {useValue: COMMON_DIRECTIVES, multi: true}),

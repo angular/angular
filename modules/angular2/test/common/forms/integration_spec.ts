@@ -1051,7 +1051,7 @@ class UniqLoginValidator implements Validator {
   selector: "my-comp",
   template: '',
   directives: [
-    FORM_DIRECTIVES,
+    ...FORM_DIRECTIVES,
     WrappedValue,
     MyInput,
     NgIf,

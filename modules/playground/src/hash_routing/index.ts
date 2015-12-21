@@ -35,7 +35,7 @@ class GoodByeCmp {
     </nav>
     <router-outlet></router-outlet>
   `,
-  directives: [ROUTER_DIRECTIVES]
+  directives: [...ROUTER_DIRECTIVES]
 })
 @RouteConfig([
   new Route({path: '/', component: HelloCmp, name: 'HelloCmp'}),
@@ -48,5 +48,5 @@ class AppCmp {
 export function main() {
   reflector.reflectionCapabilities = new ReflectionCapabilities();
   bootstrap(AppCmp,
-            [ROUTER_PROVIDERS, provide(LocationStrategy, {useClass: HashLocationStrategy})]);
+            [...ROUTER_PROVIDERS, provide(LocationStrategy, {useClass: HashLocationStrategy})]);
 }

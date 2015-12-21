@@ -38,7 +38,7 @@ import {NgSwitch, NgSwitchWhen, NgSwitchDefault} from './ng_switch';
  * @Component({
  *   selector: 'my-component',
  *   templateUrl: 'myComponent.html',
- *   directives: [CORE_DIRECTIVES, OtherDirective]
+ *   directives: [...CORE_DIRECTIVES, OtherDirective]
  * })
  * export class MyComponent {
  *   ...

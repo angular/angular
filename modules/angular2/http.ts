@@ -51,7 +51,7 @@ export {URLSearchParams} from './src/http/url_search_params';
  *
  * @Component({
  *   selector: 'app',
- *   providers: [HTTP_PROVIDERS],
+ *   providers: [...HTTP_PROVIDERS],
  *   template: `
  *     <div>
  *       <h1>People</h1>
@@ -108,7 +108,7 @@ export {URLSearchParams} from './src/http/url_search_params';
  *   search: string = 'coreTeam=true';
  * }
  *
- * bootstrap(App, [HTTP_PROVIDERS, provide(RequestOptions, {useClass: MyOptions})])
+ * bootstrap(App, [...HTTP_PROVIDERS, provide(RequestOptions, {useClass: MyOptions})])
  *   .catch(err => console.error(err));
  * ```
  *
@@ -126,7 +126,7 @@ export {URLSearchParams} from './src/http/url_search_params';
  * var people = [{name: 'Jeff'}, {name: 'Tobias'}];
  *
  * var injector = Injector.resolveAndCreate([
- *   HTTP_PROVIDERS,
+ *   ...HTTP_PROVIDERS,
  *   MockBackend,
  *   provide(XHRBackend, {useExisting: MockBackend})
  * ]);
@@ -187,7 +187,7 @@ export const HTTP_BINDINGS = HTTP_PROVIDERS;
  *
  * @Component({
  *   selector: 'app',
- *   providers: [JSONP_PROVIDERS],
+ *   providers: [...JSONP_PROVIDERS],
  *   template: `
  *     <div>
  *       <h1>People</h1>
@@ -237,7 +237,7 @@ export const HTTP_BINDINGS = HTTP_PROVIDERS;
  *   search: string = 'coreTeam=true';
  * }
  *
- * bootstrap(App, [JSONP_PROVIDERS, provide(RequestOptions, {useClass: MyOptions})])
+ * bootstrap(App, [...JSONP_PROVIDERS, provide(RequestOptions, {useClass: MyOptions})])
  *   .catch(err => console.error(err));
  * ```
  *
@@ -253,7 +253,7 @@ export const HTTP_BINDINGS = HTTP_PROVIDERS;
  *
  * var people = [{name: 'Jeff'}, {name: 'Tobias'}];
  * var injector = Injector.resolveAndCreate([
- *   JSONP_PROVIDERS,
+ *   ...JSONP_PROVIDERS,
  *   MockBackend,
  *   provide(JSONPBackend, {useExisting: MockBackend})
  * ]);

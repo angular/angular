@@ -53,7 +53,7 @@ export function main() {
       var logger = new _ArrayLogger();
       var exceptionHandler = new ExceptionHandler(logger, !IS_DART);
       testBindings = [
-        ROUTER_PROVIDERS,
+        ...ROUTER_PROVIDERS,
         provide(LocationStrategy, {useClass: MockLocationStrategy}),
         provide(DOCUMENT, {useValue: fakeDoc}),
         provide(ExceptionHandler, {useValue: exceptionHandler}),
