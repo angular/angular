@@ -50,9 +50,9 @@ class HelloRootCmp2 {
 @Component({selector: 'hello-app'})
 @View({template: ''})
 class HelloRootCmp3 {
-  appBinding;
+  appProvider;
 
-  constructor(@Inject("appBinding") appBinding) { this.appBinding = appBinding; }
+  constructor(@Inject("appProvider") appProvider) { this.appProvider = appProvider; }
 }
 
 @Component({selector: 'hello-app'})
@@ -203,13 +203,13 @@ export function main() {
              });
        }));
 
-    it("should make the provided bindings available to the application component",
+    it("should make the provided providers available to the application component",
        inject([AsyncTestCompleter], (async) => {
          var refPromise = bootstrap(
-             HelloRootCmp3, [testProviders, provide("appBinding", {useValue: "BoundValue"})]);
+             HelloRootCmp3, [testProviders, provide("appProvider", {useValue: "BoundValue"})]);
 
          refPromise.then((ref) => {
-           expect(ref.hostComponent.appBinding).toEqual("BoundValue");
+           expect(ref.hostComponent.appProvider).toEqual("BoundValue");
            async.done();
          });
        }));

@@ -12,7 +12,7 @@ import {
 } from 'angular2/testing_internal';
 import {provide} from 'angular2/src/core/di';
 
-import {TEST_PROVIDERS} from './test_bindings';
+import {TEST_PROVIDERS} from './test_providers';
 import {isPresent} from 'angular2/src/facade/lang';
 import {
   TemplateParser,

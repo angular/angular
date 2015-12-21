@@ -97,13 +97,6 @@ export const ROUTER_PROVIDERS: any[] = CONST_EXPR([
       {useFactory: routerPrimaryComponentFactory, deps: CONST_EXPR([ApplicationRef])}))
 ]);
 
-/**
- * Use {@link ROUTER_PROVIDERS} instead.
- *
- * @deprecated
- */
-export const ROUTER_BINDINGS = ROUTER_PROVIDERS;
-
 function routerFactory(registry, location, primaryComponent, appRef) {
   var rootRouter = new RootRouter(registry, location, primaryComponent);
   appRef.registerDisposeListener(() => rootRouter.dispose());

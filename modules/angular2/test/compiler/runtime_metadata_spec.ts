@@ -34,7 +34,7 @@ import {
   provide
 } from 'angular2/core';
 
-import {TEST_PROVIDERS} from './test_bindings';
+import {TEST_PROVIDERS} from './test_providers';
 import {MODULE_SUFFIX} from 'angular2/src/compiler/util';
 import {IS_DART} from 'angular2/src/facade/lang';
 import {PLATFORM_DIRECTIVES} from 'angular2/src/core/platform_directives_and_pipes';

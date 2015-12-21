@@ -52,7 +52,7 @@ import {
   codeGenConstConstructorCall,
   MODULE_SUFFIX
 } from 'angular2/src/compiler/util';
-import {TEST_PROVIDERS} from './test_bindings';
+import {TEST_PROVIDERS} from './test_providers';
 
 const BEGIN_ELEMENT = 'BEGIN_ELEMENT';
 const END_ELEMENT = 'END_ELEMENT';

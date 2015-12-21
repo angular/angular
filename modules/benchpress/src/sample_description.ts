@@ -1,5 +1,5 @@
 import {StringMapWrapper} from 'angular2/src/facade/collection';
-import {bind, provide, Provider, OpaqueToken} from 'angular2/src/core/di';
+import {provide, Provider, OpaqueToken} from 'angular2/src/core/di';
 import {Validator} from './validator';
 import {Metric} from './metric';
 import {Options} from './common_options';
@@ -9,7 +9,7 @@ import {Options} from './common_options';
  */
 export class SampleDescription {
   // TODO(tbosch): use static values when our transpiler supports them
-  static get BINDINGS(): Provider[] { return _PROVIDERS; }
+  static get PROVIDERS(): Provider[] { return _PROVIDERS; }
   description: {[key: string]: any};
 
   constructor(public id: string, descriptions: Array<{[key: string]: any}>,
@@ -24,23 +24,25 @@ export class SampleDescription {
 }
 
 var _PROVIDERS = [
-  bind(SampleDescription)
-      .toFactory((metric, id, forceGc, userAgent, validator, defaultDesc, userDesc) =>
-                     new SampleDescription(id,
-                                           [
-                                             {'forceGc': forceGc, 'userAgent': userAgent},
-                                             validator.describe(),
-                                             defaultDesc,
-                                             userDesc
-                                           ],
-                                           metric.describe()),
-                 [
-                   Metric,
-                   Options.SAMPLE_ID,
-                   Options.FORCE_GC,
-                   Options.USER_AGENT,
-                   Validator,
-                   Options.DEFAULT_DESCRIPTION,
-                   Options.SAMPLE_DESCRIPTION
-                 ])
+  provide(SampleDescription,
+          {
+            useFactory: (metric, id, forceGc, userAgent, validator, defaultDesc, userDesc) =>
+                            new SampleDescription(id,
+                                                  [
+                                                    {'forceGc': forceGc, 'userAgent': userAgent},
+                                                    validator.describe(),
+                                                    defaultDesc,
+                                                    userDesc
+                                                  ],
+                                                  metric.describe()),
+            deps: [
+              Metric,
+              Options.SAMPLE_ID,
+              Options.FORCE_GC,
+              Options.USER_AGENT,
+              Validator,
+              Options.DEFAULT_DESCRIPTION,
+              Options.SAMPLE_DESCRIPTION
+            ]
+          })
 ];

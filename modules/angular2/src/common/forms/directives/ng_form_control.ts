@@ -24,7 +24,7 @@ import {
   selectValueAccessor
 } from './shared';
 
-const formControlBinding =
+const formControlProvider =
     CONST_EXPR(new Provider(NgControl, {useExisting: forwardRef(() => NgFormControl)}));
 
 /**
@@ -76,7 +76,7 @@ const formControlBinding =
  */
 @Directive({
   selector: '[ngFormControl]',
-  bindings: [formControlBinding],
+  providers: [formControlProvider],
   inputs: ['form: ngFormControl', 'model: ngModel'],
   outputs: ['update: ngModelChange'],
   exportAs: 'ngForm'

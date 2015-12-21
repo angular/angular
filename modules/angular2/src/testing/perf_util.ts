@@ -1,7 +1,7 @@
 export {verifyNoBrowserErrors} from './e2e_util';
 
 var benchpress = global['benchpress'];
-var bind = benchpress.bind;
+var provide = benchpress.provide;
 var Options = benchpress.Options;
 
 export function runClickBenchmark(config) {
@@ -31,7 +31,7 @@ export function runBenchmark(config) {
             execute: config.work,
             prepare: config.prepare,
             microMetrics: config.microMetrics,
-            bindings: [bind(Options.SAMPLE_DESCRIPTION).toValue(description)]
+            providers: [provide(Options.SAMPLE_DESCRIPTION, {useValue: description})]
           });
         });
       });

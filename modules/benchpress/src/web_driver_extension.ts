@@ -1,4 +1,4 @@
-import {bind, provide, Provider, Injector, OpaqueToken} from 'angular2/src/core/di';
+import {provide, Provider, Injector, OpaqueToken} from 'angular2/src/core/di';
 
 import {isBlank, isPresent} from 'angular2/src/facade/lang';
 import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
@@ -14,24 +14,27 @@ import {Options} from './common_options';
 export abstract class WebDriverExtension {
   static bindTo(childTokens: any[]): Provider[] {
     var res = [
-      bind(_CHILDREN)
-          .toFactory((injector: Injector) => childTokens.map(token => injector.get(token)),
-                     [Injector]),
-      bind(WebDriverExtension)
-          .toFactory(
-              (children: WebDriverExtension[], capabilities) => {
-                var delegate;
-                children.forEach(extension => {
-                  if (extension.supports(capabilities)) {
-                    delegate = extension;
+      provide(_CHILDREN,
+              {
+                useFactory: (injector: Injector) => childTokens.map(token => injector.get(token)),
+                deps: [Injector]
+              }),
+      provide(WebDriverExtension,
+              {
+                useFactory: ((children: WebDriverExtension[], capabilities) => {
+                  var delegate;
+                  children.forEach(extension => {
+                    if (extension.supports(capabilities)) {
+                      delegate = extension;
+                    }
+                  });
+                  if (isBlank(delegate)) {
+                    throw new BaseException('Could not find a delegate for given capabilities!');
                   }
-                });
-                if (isBlank(delegate)) {
-                  throw new BaseException('Could not find a delegate for given capabilities!');
-                }
-                return delegate;
-              },
-              [_CHILDREN, Options.CAPABILITIES])
+                  return delegate;
+                }),
+                deps: [_CHILDREN, Options.CAPABILITIES]
+              })
     ];
     return res;
   }

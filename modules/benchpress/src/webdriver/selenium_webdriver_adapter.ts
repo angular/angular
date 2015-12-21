@@ -1,5 +1,5 @@
 import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
-import {bind, provide, Provider} from 'angular2/src/core/di';
+import {provide, Provider} from 'angular2/src/core/di';
 import {WebDriverAdapter} from '../web_driver_adapter';
 
 import * as webdriver from 'selenium-webdriver';
@@ -8,7 +8,7 @@ import * as webdriver from 'selenium-webdriver';
  * Adapter for the selenium-webdriver.
  */
 export class SeleniumWebDriverAdapter extends WebDriverAdapter {
-  static get PROTRACTOR_BINDINGS(): Provider[] { return _PROTRACTOR_BINDINGS; }
+  static get PROTRACTOR_PROVIDERS(): Provider[] { return _PROTRACTOR_PROVIDERS; }
 
   constructor(private _driver: any) { super(); }
 
@@ -57,7 +57,7 @@ function convertToLocalProcess(data): Object {
   return JSON.parse(serialized);
 }
 
-var _PROTRACTOR_BINDINGS = [
-  bind(WebDriverAdapter)
-      .toFactory(() => new SeleniumWebDriverAdapter((<any>global).browser), [])
+var _PROTRACTOR_PROVIDERS = [
+  provide(WebDriverAdapter,
+          {useFactory: () => new SeleniumWebDriverAdapter((<any>global).browser), deps: []})
 ];

@@ -1,14 +1,14 @@
 var benchpress = require('../../index.js');
 var runner = new benchpress.Runner([
   // use protractor as Webdriver client
-  benchpress.SeleniumWebDriverAdapter.PROTRACTOR_BINDINGS,
+  benchpress.SeleniumWebDriverAdapter.PROTRACTOR_PROVIDERS,
   // use RegressionSlopeValidator to validate samples
   benchpress.Validator.bindTo(benchpress.RegressionSlopeValidator),
   // use 10 samples to calculate slope regression
-  benchpress.bind(benchpress.RegressionSlopeValidator.SAMPLE_SIZE).toValue(20),
+  benchpress.provide(benchpress.RegressionSlopeValidator.SAMPLE_SIZE, {useValue: 20}),
   // use the script metric to calculate slope regression
-  benchpress.bind(benchpress.RegressionSlopeValidator.METRIC).toValue('scriptTime'),
-  benchpress.bind(benchpress.Options.FORCE_GC).toValue(true)
+  benchpress.provide(benchpress.RegressionSlopeValidator.METRIC, {useValue: 'scriptTime'}),
+  benchpress.provide(benchpress.Options.FORCE_GC, {useValue: true})
 ]);
 
 describe('deep tree baseline', function() {
@@ -25,7 +25,9 @@ describe('deep tree baseline', function() {
             id: 'baseline',
             execute: function() { $('button')
                                       .click(); },
-            bindings: [benchpress.bind(benchpress.Options.SAMPLE_DESCRIPTION).toValue({depth: 9})]
+            providers: [
+              benchpress.provide(benchpress.Options.SAMPLE_DESCRIPTION, {useValue: {depth: 9}})
+            ]
           })
         .then(done, done.fail);
   });

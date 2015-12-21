@@ -22,7 +22,7 @@ import {ViewEncapsulation} from 'angular2/src/core/metadata/view';
 import {TemplateNormalizer} from 'angular2/src/compiler/template_normalizer';
 import {XHR} from 'angular2/src/compiler/xhr';
 import {MockXHR} from 'angular2/src/compiler/xhr_mock';
-import {TEST_PROVIDERS} from './test_bindings';
+import {TEST_PROVIDERS} from './test_providers';
 
 export function main() {
   describe('TemplateNormalizer', () => {

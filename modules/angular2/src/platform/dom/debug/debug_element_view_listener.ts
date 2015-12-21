@@ -83,10 +83,3 @@ export const ELEMENT_PROBE_PROVIDERS: any[] = CONST_EXPR([
   DebugElementViewListener,
   CONST_EXPR(new Provider(AppViewListener, {useExisting: DebugElementViewListener})),
 ]);
-
-/**
- * Use {@link ELEMENT_PROBE_PROVIDERS}.
- *
- * @deprecated
- */
-export const ELEMENT_PROBE_BINDINGS = ELEMENT_PROBE_PROVIDERS;

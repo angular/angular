@@ -1,5 +1,5 @@
 import {bootstrap} from 'angular2/bootstrap';
-import {bind, provide, Component, View, ViewEncapsulation} from 'angular2/core';
+import {provide, Component, View, ViewEncapsulation} from 'angular2/core';
 import {MdInputContainer, MdInput} from 'angular2_material/src/components/input/input';
 import {UrlResolver} from 'angular2/compiler';
 import {commonDemoSetup, DemoUrlResolver} from '../demo_common';

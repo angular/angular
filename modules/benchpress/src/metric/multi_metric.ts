@@ -1,16 +1,18 @@
-import {bind, provide, Binding, Provider, Injector, OpaqueToken} from 'angular2/src/core/di';
+import {provide, Provider, Injector, OpaqueToken} from 'angular2/src/core/di';
 import {StringMapWrapper} from 'angular2/src/facade/collection';
 import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
 
 import {Metric} from '../metric';
 
 export class MultiMetric extends Metric {
-  static createBindings(childTokens: any[]): Provider[] {
+  static createProviders(childTokens: any[]): Provider[] {
     return [
-      bind(_CHILDREN)
-          .toFactory((injector: Injector) => childTokens.map(token => injector.get(token)),
-                     [Injector]),
-      bind(MultiMetric).toFactory(children => new MultiMetric(children), [_CHILDREN])
+      provide(_CHILDREN,
+              {
+                useFactory: (injector: Injector) => childTokens.map(token => injector.get(token)),
+                deps: [Injector]
+              }),
+      provide(MultiMetric, {useFactory: children => new MultiMetric(children), deps: [_CHILDREN]})
     ];
   }
 

@@ -12,7 +12,7 @@ import * as modelModule from './model';
  * ```typescript
  * @Component({
  *   selector: 'my-app',
- *   viewBindings: [FORM_BINDINGS]
+ *   viewProviders: [FORM_PROVIDERS]
  *   template: `
  *     <form [ngFormModel]="loginForm">
  *       <p>Login <input ngControl="login"></p>
@@ -117,10 +117,3 @@ export class FormBuilder {
  * ```
  */
 export const FORM_PROVIDERS: Type[] = CONST_EXPR([FormBuilder]);
-
-/**
- * See {@link FORM_PROVIDERS} instead.
- *
- * @deprecated
- */
-export const FORM_BINDINGS = FORM_PROVIDERS;

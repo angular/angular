@@ -1,4 +1,4 @@
-import {bind, provide, Provider} from 'angular2/src/core/di';
+import {provide, Provider} from 'angular2/src/core/di';
 import {Promise} from 'angular2/src/facade/async';
 import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
 import {Map} from 'angular2/src/facade/collection';
@@ -10,7 +10,7 @@ import {Map} from 'angular2/src/facade/collection';
  */
 export abstract class WebDriverAdapter {
   static bindTo(delegateToken): Provider[] {
-    return [bind(WebDriverAdapter).toFactory((delegate) => delegate, [delegateToken])];
+    return [provide(WebDriverAdapter, {useFactory: delegate => delegate, deps: [delegateToken]})];
   }
 
   waitFor(callback: Function): Promise<any> { throw new BaseException('NYI'); }

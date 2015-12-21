@@ -20,7 +20,6 @@ import {
   Validator,
   Metric,
   Reporter,
-  bind,
   provide,
   Injector,
   Options,
@@ -51,21 +50,21 @@ export function main() {
       if (isBlank(driver)) {
         driver = new MockDriverAdapter([]);
       }
-      var bindings = [
+      var providers = [
         Options.DEFAULT_PROVIDERS,
-        Sampler.BINDINGS,
+        Sampler.PROVIDERS,
         provide(Metric, {useValue: metric}),
         provide(Reporter, {useValue: reporter}),
         provide(WebDriverAdapter, {useValue: driver}),
-        bind(Options.EXECUTE).toValue(execute),
+        provide(Options.EXECUTE, {useValue: execute}),
         provide(Validator, {useValue: validator}),
-        bind(Options.NOW).toValue(() => DateWrapper.fromMillis(time++))
+        provide(Options.NOW, {useValue: () => DateWrapper.fromMillis(time++)})
       ];
       if (isPresent(prepare)) {
-        bindings.push(bind(Options.PREPARE).toValue(prepare));
+        providers.push(provide(Options.PREPARE, {useValue: prepare}));
       }
 
-      sampler = Injector.resolveAndCreate(bindings).get(Sampler);
+      sampler = Injector.resolveAndCreate(providers).get(Sampler);
     }
 
     it('should call the prepare and execute callbacks using WebDriverAdapter.waitFor',

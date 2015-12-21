@@ -1,5 +1,5 @@
 import {ListWrapper} from 'angular2/src/facade/collection';
-import {bind, provide, Provider, OpaqueToken} from 'angular2/src/core/di';
+import {provide, Provider, OpaqueToken} from 'angular2/src/core/di';
 
 import {Validator} from '../validator';
 import {Statistic} from '../statistic';
@@ -15,7 +15,7 @@ export class RegressionSlopeValidator extends Validator {
   // TODO(tbosch): use static values when our transpiler supports them
   static get METRIC(): OpaqueToken { return _METRIC; }
   // TODO(tbosch): use static values when our transpiler supports them
-  static get BINDINGS(): Provider[] { return _PROVIDERS; }
+  static get PROVIDERS(): Provider[] { return _PROVIDERS; }
 
   _sampleSize: number;
   _metric: string;
@@ -54,9 +54,11 @@ export class RegressionSlopeValidator extends Validator {
 var _SAMPLE_SIZE = new OpaqueToken('RegressionSlopeValidator.sampleSize');
 var _METRIC = new OpaqueToken('RegressionSlopeValidator.metric');
 var _PROVIDERS = [
-  bind(RegressionSlopeValidator)
-      .toFactory((sampleSize, metric) => new RegressionSlopeValidator(sampleSize, metric),
-                 [_SAMPLE_SIZE, _METRIC]),
+  provide(RegressionSlopeValidator,
+          {
+            useFactory: (sampleSize, metric) => new RegressionSlopeValidator(sampleSize, metric),
+            deps: [_SAMPLE_SIZE, _METRIC]
+          }),
   provide(_SAMPLE_SIZE, {useValue: 10}),
   provide(_METRIC, {useValue: 'scriptTime'})
 ];

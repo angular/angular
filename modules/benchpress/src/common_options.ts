@@ -1,4 +1,4 @@
-import {bind, provide, Provider, OpaqueToken} from 'angular2/src/core/di';
+import {provide, Provider, OpaqueToken} from 'angular2/src/core/di';
 import {DateWrapper} from 'angular2/src/facade/lang';
 
 export class Options {
@@ -49,8 +49,7 @@ var _REQUEST_COUNT = new OpaqueToken('Options.requestCount');
 var _CAPTURE_FRAMES = new OpaqueToken('Options.frameCapture');
 
 var _DEFAULT_PROVIDERS = [
-  bind(_DEFAULT_DESCRIPTION)
-      .toValue({}),
+  provide(_DEFAULT_DESCRIPTION, {useValue: {}}),
   provide(_SAMPLE_DESCRIPTION, {useValue: {}}),
   provide(_FORCE_GC, {useValue: false}),
   provide(_PREPARE, {useValue: false}),

@@ -14,7 +14,6 @@ import {isBlank, isPresent, Date, DateWrapper} from 'angular2/src/facade/lang';
 import {
   SampleState,
   Reporter,
-  bind,
   provide,
   Injector,
   ConsoleReporter,
@@ -36,16 +35,16 @@ export function main() {
       if (isBlank(sampleId)) {
         sampleId = 'null';
       }
-      var bindings = [
-        ConsoleReporter.BINDINGS,
+      var providers = [
+        ConsoleReporter.PROVIDERS,
         provide(SampleDescription,
                 {useValue: new SampleDescription(sampleId, descriptions, metrics)}),
-        bind(ConsoleReporter.PRINT).toValue((line) => log.push(line))
+        provide(ConsoleReporter.PRINT, {useValue: (line) => log.push(line)})
       ];
       if (isPresent(columnWidth)) {
-        bindings.push(bind(ConsoleReporter.COLUMN_WIDTH).toValue(columnWidth));
+        providers.push(provide(ConsoleReporter.COLUMN_WIDTH, {useValue: columnWidth}));
       }
-      reporter = Injector.resolveAndCreate(bindings).get(ConsoleReporter);
+      reporter = Injector.resolveAndCreate(providers).get(ConsoleReporter);
     }
 
     it('should print the sample id, description and table header', () => {

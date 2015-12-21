@@ -14,13 +14,13 @@ import {
 import {PromiseWrapper, Promise} from 'angular2/src/facade/async';
 import {DateWrapper} from 'angular2/src/facade/lang';
 
-import {Reporter, MultiReporter, bind, provide, Injector, MeasureValues} from 'benchpress/common';
+import {Reporter, MultiReporter, provide, Injector, MeasureValues} from 'benchpress/common';
 
 export function main() {
   function createReporters(ids: any[]) {
     var r = Injector.resolveAndCreate([
                       ids.map(id => provide(id, {useValue: new MockReporter(id)})),
-                      MultiReporter.createBindings(ids)
+                      MultiReporter.createProviders(ids)
                     ])
                 .get(MultiReporter);
     return PromiseWrapper.resolve(r);

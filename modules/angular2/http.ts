@@ -165,12 +165,6 @@ export const HTTP_PROVIDERS: any[] = [
   XHRBackend
 ];
 
-/**
- * See {@link HTTP_PROVIDERS} instead.
- *
- * @deprecated
- */
-export const HTTP_BINDINGS = HTTP_PROVIDERS;
 
 /**
  * Provides a basic set of providers to use the {@link Jsonp} service in any application.
@@ -291,10 +285,3 @@ export const JSONP_PROVIDERS: any[] = [
   provide(ResponseOptions, {useClass: BaseResponseOptions}),
   provide(JSONPBackend, {useClass: JSONPBackend_})
 ];
-
-/**
- * See {@link JSONP_PROVIDERS} instead.
- *
- * @deprecated
- */
-export const JSON_BINDINGS = JSONP_PROVIDERS;

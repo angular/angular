@@ -5,7 +5,6 @@ import {
   Directive,
   View,
   ViewContainerRef,
-  bind,
   provide,
   Provider
 } from 'angular2/core';
@@ -25,7 +24,7 @@ import {
 import {BrowserDomAdapter} from 'angular2/src/platform/browser/browser_adapter';
 import {APP_VIEW_POOL_CAPACITY} from 'angular2/src/core/linker/view_pool';
 
-function createProviders(): Provider[] {
+function _createProviders(): Provider[] {
   var viewCacheCapacity = getStringParameter('viewcache') == 'true' ? 10000 : 1;
   return [provide(APP_VIEW_POOL_CAPACITY, {useValue: viewCacheCapacity})];
 }
@@ -92,7 +91,7 @@ export function main() {
   function noop() {}
 
   function initNg2() {
-    bootstrap(AppComponent, createProviders())
+    bootstrap(AppComponent, _createProviders())
         .then((ref) => {
           var injector = ref.injector;
           appRef = injector.get(ApplicationRef);

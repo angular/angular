@@ -49,7 +49,7 @@ export class RouteParams {
  * ```
  * import {Component, View} from 'angular2/core';
  * import {bootstrap} from 'angular2/platform/browser';
- * import {Router, ROUTER_DIRECTIVES, routerBindings, RouteConfig} from 'angular2/router';
+ * import {Router, ROUTER_DIRECTIVES, ROUTER_PROVIDERS, RouteConfig} from 'angular2/router';
  *
  * @Component({...})
  * @View({directives: [ROUTER_DIRECTIVES]})
@@ -67,7 +67,7 @@ export class RouteParams {
  *   }
  * }
  *
- * bootstrap(AppCmp, routerBindings(AppCmp));
+ * bootstrap(AppCmp, ROUTER_PROVIDERS);
  * ```
  */
 export class RouteData {

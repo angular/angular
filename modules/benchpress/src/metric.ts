@@ -1,4 +1,4 @@
-import {bind, provide, Provider} from 'angular2/src/core/di';
+import {provide, Provider} from 'angular2/src/core/di';
 import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
 import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
 
@@ -7,7 +7,7 @@ import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
  */
 export abstract class Metric {
   static bindTo(delegateToken): Provider[] {
-    return [bind(Metric).toFactory((delegate) => delegate, [delegateToken])];
+    return [provide(Metric, {useFactory: (delegate) => delegate, deps: [delegateToken]})];
   }
 
   /**

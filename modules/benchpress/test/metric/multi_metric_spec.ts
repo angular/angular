@@ -14,13 +14,13 @@ import {
 import {ListWrapper} from 'angular2/src/facade/collection';
 import {PromiseWrapper, Promise} from 'angular2/src/facade/async';
 
-import {Metric, MultiMetric, bind, provide, Injector} from 'benchpress/common';
+import {Metric, MultiMetric, provide, Injector} from 'benchpress/common';
 
 export function main() {
   function createMetric(ids: any[]) {
     var m = Injector.resolveAndCreate([
                       ids.map(id => provide(id, {useValue: new MockMetric(id)})),
-                      MultiMetric.createBindings(ids)
+                      MultiMetric.createProviders(ids)
                     ])
                 .get(MultiMetric);
     return PromiseWrapper.resolve(m);

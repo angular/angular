@@ -28,7 +28,7 @@ import {
 } from 'angular2/src/compiler/directive_metadata';
 import {SourceExpression, SourceModule} from 'angular2/src/compiler/source_module';
 import {ViewEncapsulation} from 'angular2/src/core/metadata/view';
-import {TEST_PROVIDERS} from './test_bindings';
+import {TEST_PROVIDERS} from './test_providers';
 import {codeGenValueFn, codeGenExportVariable, MODULE_SUFFIX} from 'angular2/src/compiler/util';
 
 // Attention: These module names have to correspond to real modules!

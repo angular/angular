@@ -19,7 +19,6 @@ import {
   IOsDriverExtension,
   WebDriverAdapter,
   Injector,
-  bind,
   provide
 } from 'benchpress/common';
 
@@ -39,7 +38,7 @@ export function main() {
       log = [];
       extension =
           Injector.resolveAndCreate([
-                    IOsDriverExtension.BINDINGS,
+                    IOsDriverExtension.PROVIDERS,
                     provide(WebDriverAdapter, {useValue: new MockDriverAdapter(log, perfRecords)})
                   ])
               .get(IOsDriverExtension);

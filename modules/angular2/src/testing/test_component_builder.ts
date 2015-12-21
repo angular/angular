@@ -88,13 +88,13 @@ var _nextRootElementId = 0;
 @Injectable()
 export class TestComponentBuilder {
   /** @internal */
-  _bindingsOverrides = new Map<Type, any[]>();
+  _providersOverrides = new Map<Type, any[]>();
   /** @internal */
   _directiveOverrides = new Map<Type, Map<Type, Type>>();
   /** @internal */
   _templateOverrides = new Map<Type, string>();
   /** @internal */
-  _viewBindingsOverrides = new Map<Type, any[]>();
+  _viewProvidersOverrides = new Map<Type, any[]>();
   /** @internal */
   _viewOverrides = new Map<Type, ViewMetadata>();
 
@@ -176,15 +176,8 @@ export class TestComponentBuilder {
    */
   overrideProviders(type: Type, providers: any[]): TestComponentBuilder {
     var clone = this._clone();
-    clone._bindingsOverrides.set(type, providers);
+    clone._providersOverrides.set(type, providers);
     return clone;
-  }
-
-  /**
-   * @deprecated
-   */
-  overrideBindings(type: Type, providers: any[]): TestComponentBuilder {
-    return this.overrideProviders(type, providers);
   }
 
   /**
@@ -204,15 +197,8 @@ export class TestComponentBuilder {
    */
   overrideViewProviders(type: Type, providers: any[]): TestComponentBuilder {
     var clone = this._clone();
-    clone._viewBindingsOverrides.set(type, providers);
+    clone._viewProvidersOverrides.set(type, providers);
     return clone;
-  }
-
-  /**
-   * @deprecated
-   */
-  overrideViewBindings(type: Type, providers: any[]): TestComponentBuilder {
-    return this.overrideViewProviders(type, providers);
   }
 
   /**
@@ -231,10 +217,10 @@ export class TestComponentBuilder {
           (to, from) => { mockViewResolver.overrideViewDirective(component, from, to); });
     });
 
-    this._bindingsOverrides.forEach((bindings, type) =>
-                                        mockDirectiveResolver.setBindingsOverride(type, bindings));
-    this._viewBindingsOverrides.forEach(
-        (bindings, type) => mockDirectiveResolver.setViewBindingsOverride(type, bindings));
+    this._providersOverrides.forEach(
+        (bindings, type) => mockDirectiveResolver.setProvidersOverride(type, bindings));
+    this._viewProvidersOverrides.forEach(
+        (bindings, type) => mockDirectiveResolver.setViewProvidersOverride(type, bindings));
 
     var rootElId = `root${_nextRootElementId++}`;
     var rootEl = el(`<div id="${rootElId}"></div>`);

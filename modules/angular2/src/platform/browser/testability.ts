@@ -23,12 +23,8 @@ class PublicTestability {
 
   whenStable(callback: Function) { this._testability.whenStable(callback); }
 
-  findBindings(using: any, provider: string, exactMatch: boolean): any[] {
-    return this.findProviders(using, provider, exactMatch);
-  }
-
   findProviders(using: any, provider: string, exactMatch: boolean): any[] {
-    return this._testability.findBindings(using, provider, exactMatch);
+    return this._testability.findProviders(using, provider, exactMatch);
   }
 }
 

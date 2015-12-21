@@ -20,7 +20,6 @@ import {
   PerflogMetric,
   WebDriverExtension,
   PerfLogFeatures,
-  bind,
   provide,
   Injector,
   Options
@@ -48,31 +47,33 @@ export function main() {
     if (isBlank(microMetrics)) {
       microMetrics = StringMapWrapper.create();
     }
-    var bindings = [
+    var providers = [
       Options.DEFAULT_PROVIDERS,
-      PerflogMetric.BINDINGS,
-      bind(Options.MICRO_METRICS).toValue(microMetrics),
-      bind(PerflogMetric.SET_TIMEOUT)
-          .toValue((fn, millis) => {
-            commandLog.push(['setTimeout', millis]);
-            fn();
-          }),
-      bind(WebDriverExtension)
-          .toValue(new MockDriverExtension(perfLogs, commandLog, perfLogFeatures))
+      PerflogMetric.PROVIDERS,
+      provide(Options.MICRO_METRICS, {useValue: microMetrics}),
+      provide(PerflogMetric.SET_TIMEOUT,
+              {
+                useValue: (fn, millis) => {
+                  commandLog.push(['setTimeout', millis]);
+                  fn();
+                }
+              }),
+      provide(WebDriverExtension,
+              {useValue: new MockDriverExtension(perfLogs, commandLog, perfLogFeatures)})
     ];
     if (isPresent(forceGc)) {
-      bindings.push(bind(Options.FORCE_GC).toValue(forceGc));
+      providers.push(provide(Options.FORCE_GC, {useValue: forceGc}));
     }
     if (isPresent(captureFrames)) {
-      bindings.push(bind(Options.CAPTURE_FRAMES).toValue(captureFrames));
+      providers.push(provide(Options.CAPTURE_FRAMES, {useValue: captureFrames}));
     }
     if (isPresent(receivedData)) {
-      bindings.push(bind(Options.RECEIVED_DATA).toValue(receivedData));
+      providers.push(provide(Options.RECEIVED_DATA, {useValue: receivedData}));
     }
     if (isPresent(requestCount)) {
-      bindings.push(bind(Options.REQUEST_COUNT).toValue(requestCount));
+      providers.push(provide(Options.REQUEST_COUNT, {useValue: requestCount}));
     }
-    return Injector.resolveAndCreate(bindings).get(PerflogMetric);
+    return Injector.resolveAndCreate(providers).get(PerflogMetric);
   }
 
   describe('perflog metric', () => {
