@@ -3,7 +3,7 @@
 // THIS CHECK SHOULD BE THE FIRST THING IN THIS FILE
 // This is to ensure that we catch env issues before we error while requiring other dependencies.
 require('./tools/check-environment')(
-    {requiredNpmVersion: '>=2.14.7 <3.0.0', requiredNodeVersion: '>=4.2.1 <5.0.0'});
+    {requiredNpmVersion: '>=3.5.2 <4.0.0', requiredNodeVersion: '>=4.2.1 <5.0.0'});
 
 
 var del = require('del');
@@ -327,7 +327,9 @@ gulp.task('lint', ['build.tools'], function() {
       "requireParameterType": true,
       "requireReturnType": true,
       "semicolon": true,
-      "variable-name": [true, "ban-keywords"]
+
+      // TODO: find a way to just screen for reserved names
+      "variable-name": false
     }
   };
   return gulp.src(['modules/angular2/src/**/*.ts', '!modules/angular2/src/testing/**'])
