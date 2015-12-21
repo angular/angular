@@ -98,15 +98,15 @@ export class MockConnection implements Connection {
  * ### Example
  *
  * ```
- * import {DefaultOptions, Http} from 'angular2/http';
+ * import {BaseRequestOptions, Http} from 'angular2/http';
  * import {MockBackend} from 'angular2/http/testing';
  * it('should get some data', inject([AsyncTestCompleter], (async) => {
  *   var connection;
  *   var injector = Injector.resolveAndCreate([
  *     MockBackend,
- *     provide(Http, {useFactory: (backend, defaultOptions) => {
- *       return new Http(backend, defaultOptions)
- *     }, deps: [MockBackend, DefaultOptions]})]);
+ *     provide(Http, {useFactory: (backend, options) => {
+ *       return new Http(backend, options);
+ *     }, deps: [MockBackend, BaseRequestOptions]})]);
  *   var http = injector.get(Http);
  *   var backend = injector.get(MockBackend);
  *   //Assign any newly-created connection to local variable
