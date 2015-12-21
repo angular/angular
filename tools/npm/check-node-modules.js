@@ -4,7 +4,7 @@ var fs = require('fs');
 var path = require('path');
 
 var NPM_SHRINKWRAP_FILE = 'npm-shrinkwrap.json';
-var NPM_SHRINKWRAP_CACHED_FILE = 'node_modules/npm-shrinkwrap.cached.json';
+var NPM_SHRINKWRAP_CACHED_FILE = 'node_modules/.npm-shrinkwrap.cached.json';
 var FS_OPTS = {encoding: 'utf-8'};
 var PROJECT_ROOT = path.join(__dirname, '../../');
 
