@@ -40,7 +40,7 @@ export declare class RedirectRecognizer implements AbstractRecognizer {
 export declare class RouteRecognizer implements AbstractRecognizer {
     path: string;
     handler: RouteHandler;
-    specificity: string;
+    specificity: number;
     terminal: boolean;
     hash: string;
     private _cache;

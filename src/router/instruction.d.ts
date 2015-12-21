@@ -115,7 +115,7 @@ export declare abstract class Instruction {
     };
     urlPath: string;
     urlParams: string[];
-    specificity: string;
+    specificity: number;
     abstract resolveComponent(): Promise<ComponentInstruction>;
     /**
      * converts the instruction into a URL string
@@ -192,13 +192,13 @@ export declare class ComponentInstruction {
     urlParams: string[];
     componentType: any;
     terminal: boolean;
-    specificity: string;
+    specificity: number;
     params: {
         [key: string]: any;
     };
     reuse: boolean;
     routeData: RouteData;
-    constructor(urlPath: string, urlParams: string[], data: RouteData, componentType: any, terminal: boolean, specificity: string, params?: {
+    constructor(urlPath: string, urlParams: string[], data: RouteData, componentType: any, terminal: boolean, specificity: number, params?: {
         [key: string]: any;
     });
 }

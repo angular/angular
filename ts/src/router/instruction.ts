@@ -115,8 +115,8 @@ export abstract class Instruction {
 
   get urlParams(): string[] { return isPresent(this.component) ? this.component.urlParams : []; }
 
-  get specificity(): string {
-    var total = '';
+  get specificity(): number {
+    var total = 0;
     if (isPresent(this.component)) {
       total += this.component.specificity;
     }
@@ -305,7 +305,7 @@ export class ComponentInstruction {
   public routeData: RouteData;
 
   constructor(public urlPath: string, public urlParams: string[], data: RouteData,
-              public componentType, public terminal: boolean, public specificity: string,
+              public componentType, public terminal: boolean, public specificity: number,
               public params: {[key: string]: any} = null) {
     this.routeData = isPresent(data) ? data : BLANK_ROUTE_DATA;
   }
