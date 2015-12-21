@@ -49,7 +49,7 @@ import {
 
 var _implicitReceiver = new ImplicitReceiver();
 // TODO(tbosch): Cannot make this const/final right now because of the transpiler...
-var INTERPOLATION_REGEXP = /\{\{(.*?)\}\}/g;
+var INTERPOLATION_REGEXP = /\{\{([\s\S]*?)\}\}/g;
 
 class ParseException extends BaseException {
   constructor(message: string, input: string, errLocation: string, ctxLocation?: any) {
