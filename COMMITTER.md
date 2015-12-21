@@ -11,8 +11,11 @@ Someone with committer access will do the rest.
 We have automated the process for merging pull requests into master. Our goal is to minimize the disruption for
 Angular committers and also prevent breakages on master.
 
-When a PR is ready to merge, a project member in the CoreTeamMember list (see below) can add the special label,
-`PR: merge`.
+When a PR has `pr_state: LGTM` and is ready to merge, you should add the `pr_action: merge` label.
+Currently (late 2015), we need to ensure that each PR will cleanly merge into the Google-internal version control,
+so the caretaker reviews the changes manually.
+
+After this review, the caretaker adds `zomg_admin: do_merge` which is restricted to admins only. 
 A robot running as [mary-poppins](https://github.com/mary-poppins)
 is notified that the label was added by an authorized person,
 and will create a new branch in the angular project, using the convention `presubmit-{username}-pr-{number}`.
@@ -26,6 +29,6 @@ Finally, after merge `mary-poppins` removes the presubmit branch.
 
 ## Administration
 
-The list of users who can trigger a merge by adding the label is stored in our appengine app datastore.
+The list of users who can trigger a merge by adding the `zomg_admin: do_merge` label is stored in our appengine app datastore.
 Edit the contents of the [CoreTeamMember Table](
 https://console.developers.google.com/project/angular2-automation/datastore/query?queryType=KindQuery&namespace=&kind=CoreTeamMember)
