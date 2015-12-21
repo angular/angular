@@ -76,29 +76,29 @@ function parsePathString(route) {
     }
     var segments = splitBySlash(route);
     var results = [];
-    var specificity = 0;
-    // The "specificity" of a path is used to determine which route is used when multiple routes match
-    // a URL.
-    // Static segments (like "/foo") are the most specific, followed by dynamic segments (like
-    // "/:id"). Star segments
-    // add no specificity. Segments at the start of the path are more specific than proceeding ones.
-    // The code below uses place values to combine the different types of segments into a single
-    // integer that we can
-    // sort later. Each static segment is worth hundreds of points of specificity (10000, 9900, ...,
-    // 200), and each
-    // dynamic segment is worth single points of specificity (100, 99, ... 2).
-    if (segments.length > 98) {
-        throw new BaseException(`'${route}' has more than the maximum supported number of segments.`);
+    var specificity = '';
+    // a single slash (or "empty segment" is as specific as a static segment
+    if (segments.length == 0) {
+        specificity += '2';
     }
+    // The "specificity" of a path is used to determine which route is used when multiple routes match
+    // a URL. Static segments (like "/foo") are the most specific, followed by dynamic segments (like
+    // "/:id"). Star segments add no specificity. Segments at the start of the path are more specific
+    // than proceeding ones.
+    //
+    // The code below uses place values to combine the different types of segments into a single
+    // string that we can sort later. Each static segment is marked as a specificity of "2," each
+    // dynamic segment is worth "1" specificity, and stars are worth "0" specificity.
     var limit = segments.length - 1;
     for (var i = 0; i <= limit; i++) {
         var segment = segments[i], match;
         if (isPresent(match = RegExpWrapper.firstMatch(paramMatcher, segment))) {
             results.push(new DynamicSegment(match[1]));
-            specificity += (100 - i);
+            specificity += '1';
         }
         else if (isPresent(match = RegExpWrapper.firstMatch(wildcardMatcher, segment))) {
             results.push(new StarSegment(match[1]));
+            specificity += '0';
         }
         else if (segment == '...') {
             if (i < limit) {
@@ -108,13 +108,10 @@ function parsePathString(route) {
         }
         else {
             results.push(new StaticSegment(segment));
-            specificity += 100 * (100 - i);
+            specificity += '2';
         }
     }
-    var result = StringMapWrapper.create();
-    StringMapWrapper.set(result, 'segments', results);
-    StringMapWrapper.set(result, 'specificity', specificity);
-    return result;
+    return { 'segments': results, 'specificity': specificity };
 }
 // this function is used to determine whether a route config path like `/foo/:id` collides with
 // `/foo/:name`

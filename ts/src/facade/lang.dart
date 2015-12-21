@@ -11,6 +11,7 @@ class Math {
   static final _random = new math.Random();
   static int floor(num n) => n.floor();
   static double random() => _random.nextDouble();
+  static num min(num a, num b) => math.min(a, b);
 }
 
 class CONST {

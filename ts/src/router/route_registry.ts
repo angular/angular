@@ -8,6 +8,8 @@ import {
   isString,
   isStringMap,
   Type,
+  StringWrapper,
+  Math,
   getTypeNameForDebugging,
   CONST_EXPR
 } from 'angular2/src/facade/lang';
@@ -492,7 +494,39 @@ function splitAndFlattenLinkParams(linkParams: any[]): any[] {
  * Given a list of instructions, returns the most specific instruction
  */
 function mostSpecific(instructions: Instruction[]): Instruction {
-  return ListWrapper.maximum(instructions, (instruction: Instruction) => instruction.specificity);
+  instructions = instructions.filter((instruction) => isPresent(instruction));
+  if (instructions.length == 0) {
+    return null;
+  }
+  if (instructions.length == 1) {
+    return instructions[0];
+  }
+  var first = instructions[0];
+  var rest = instructions.slice(1);
+  return rest.reduce((instruction: Instruction, contender: Instruction) => {
+    if (compareSpecificityStrings(contender.specificity, instruction.specificity) == -1) {
+      return contender;
+    }
+    return instruction;
+  }, first);
+}
+
+/*
+ * Expects strings to be in the form of "[0-2]+"
+ * Returns -1 if string A should be sorted above string B, 1 if it should be sorted after,
+ * or 0 if they are the same.
+ */
+function compareSpecificityStrings(a: string, b: string): number {
+  var l = Math.min(a.length, b.length);
+  for (var i = 0; i < l; i += 1) {
+    var ai = StringWrapper.charCodeAt(a, i);
+    var bi = StringWrapper.charCodeAt(b, i);
+    var difference = bi - ai;
+    if (difference != 0) {
+      return difference;
+    }
+  }
+  return a.length - b.length;
 }
 
 function assertTerminalComponent(component, path) {
