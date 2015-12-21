@@ -33060,7 +33060,38 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * Given a list of instructions, returns the most specific instruction
 	 */
 	function mostSpecific(instructions) {
-	    return collection_1.ListWrapper.maximum(instructions, function (instruction) { return instruction.specificity; });
+	    instructions = instructions.filter(function (instruction) { return lang_1.isPresent(instruction); });
+	    if (instructions.length == 0) {
+	        return null;
+	    }
+	    if (instructions.length == 1) {
+	        return instructions[0];
+	    }
+	    var first = instructions[0];
+	    var rest = instructions.slice(1);
+	    return rest.reduce(function (instruction, contender) {
+	        if (compareSpecificityStrings(contender.specificity, instruction.specificity) == -1) {
+	            return contender;
+	        }
+	        return instruction;
+	    }, first);
+	}
+	/*
+	 * Expects strings to be in the form of "[0-2]+"
+	 * Returns -1 if string A should be sorted above string B, 1 if it should be sorted after,
+	 * or 0 if they are the same.
+	 */
+	function compareSpecificityStrings(a, b) {
+	    var l = lang_1.Math.min(a.length, b.length);
+	    for (var i = 0; i < l; i += 1) {
+	        var ai = lang_1.StringWrapper.charCodeAt(a, i);
+	        var bi = lang_1.StringWrapper.charCodeAt(b, i);
+	        var difference = bi - ai;
+	        if (difference != 0) {
+	            return difference;
+	        }
+	    }
+	    return a.length - b.length;
 	}
 	function assertTerminalComponent(component, path) {
 	    if (!lang_1.isType(component)) {
@@ -33522,7 +33553,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    });
 	    Object.defineProperty(Instruction.prototype, "specificity", {
 	        get: function () {
-	            var total = 0;
+	            var total = '';
 	            if (lang_1.isPresent(this.component)) {
 	                total += this.component.specificity;
 	            }
@@ -33817,29 +33848,29 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	    var segments = splitBySlash(route);
 	    var results = [];
-	    var specificity = 0;
-	    // The "specificity" of a path is used to determine which route is used when multiple routes match
-	    // a URL.
-	    // Static segments (like "/foo") are the most specific, followed by dynamic segments (like
-	    // "/:id"). Star segments
-	    // add no specificity. Segments at the start of the path are more specific than proceeding ones.
-	    // The code below uses place values to combine the different types of segments into a single
-	    // integer that we can
-	    // sort later. Each static segment is worth hundreds of points of specificity (10000, 9900, ...,
-	    // 200), and each
-	    // dynamic segment is worth single points of specificity (100, 99, ... 2).
-	    if (segments.length > 98) {
-	        throw new exceptions_1.BaseException("'" + route + "' has more than the maximum supported number of segments.");
+	    var specificity = '';
+	    // a single slash (or "empty segment" is as specific as a static segment
+	    if (segments.length == 0) {
+	        specificity += '2';
 	    }
+	    // The "specificity" of a path is used to determine which route is used when multiple routes match
+	    // a URL. Static segments (like "/foo") are the most specific, followed by dynamic segments (like
+	    // "/:id"). Star segments add no specificity. Segments at the start of the path are more specific
+	    // than proceeding ones.
+	    //
+	    // The code below uses place values to combine the different types of segments into a single
+	    // string that we can sort later. Each static segment is marked as a specificity of "2," each
+	    // dynamic segment is worth "1" specificity, and stars are worth "0" specificity.
 	    var limit = segments.length - 1;
 	    for (var i = 0; i <= limit; i++) {
 	        var segment = segments[i], match;
 	        if (lang_1.isPresent(match = lang_1.RegExpWrapper.firstMatch(paramMatcher, segment))) {
 	            results.push(new DynamicSegment(match[1]));
-	            specificity += (100 - i);
+	            specificity += '1';
 	        }
 	        else if (lang_1.isPresent(match = lang_1.RegExpWrapper.firstMatch(wildcardMatcher, segment))) {
 	            results.push(new StarSegment(match[1]));
+	            specificity += '0';
 	        }
 	        else if (segment == '...') {
 	            if (i < limit) {
@@ -33849,13 +33880,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	        else {
 	            results.push(new StaticSegment(segment));
-	            specificity += 100 * (100 - i);
+	            specificity += '2';
 	        }
 	    }
-	    var result = collection_1.StringMapWrapper.create();
-	    collection_1.StringMapWrapper.set(result, 'segments', results);
-	    collection_1.StringMapWrapper.set(result, 'specificity', specificity);
-	    return result;
+	    return { 'segments': results, 'specificity': specificity };
 	}
 	// this function is used to determine whether a route config path like `/foo/:id` collides with
 	// `/foo/:name`

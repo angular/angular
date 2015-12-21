@@ -110,7 +110,7 @@ export class Instruction {
     get urlPath() { return isPresent(this.component) ? this.component.urlPath : ''; }
     get urlParams() { return isPresent(this.component) ? this.component.urlParams : []; }
     get specificity() {
-        var total = 0;
+        var total = '';
         if (isPresent(this.component)) {
             total += this.component.specificity;
         }

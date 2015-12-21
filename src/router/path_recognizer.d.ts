@@ -5,7 +5,7 @@ import { Url } from './url_parser';
 export declare class PathRecognizer {
     path: string;
     private _segments;
-    specificity: number;
+    specificity: string;
     terminal: boolean;
     hash: string;
     constructor(path: string);
