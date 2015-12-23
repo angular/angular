@@ -62,10 +62,10 @@ Creates a local variable `movieplayer` that provides access to the `video` eleme
 
 @cheatsheetItem
 syntax:
-`<p *myUnless="myExpression">...</p>`|`*myUnless`
+`<p *my-unless="myExpression">...</p>`|`*my-unless`
 description:
 The `*` symbol means that the current element will be turned into an embedded template. Equivalent to:
-`<template [myUnless]="myExpression"><p>...</p></template>`
+`<template [myless]="myExpression"><p>...</p></template>`
 
 @cheatsheetItem
 syntax:
