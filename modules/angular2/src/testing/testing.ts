@@ -164,14 +164,14 @@ function runInTestZone(fnToExecute, finishCallback, failCallback): any {
                                fn();
                                ListWrapper.remove(pendingTimeouts, id);
                              };
-                             id = parentSetTimeout(cb, delay, args);
+                             id = parentSetTimeout.call(this, cb, delay, args);
                              pendingTimeouts.push(id);
                              return id;
                            };
                          },
                          '$clearTimeout': function(parentClearTimeout) {
                            return function(id: number) {
-                             parentClearTimeout(id);
+                             parentClearTimeout.call(this, id);
                              ListWrapper.remove(pendingTimeouts, id);
                            };
                          },
