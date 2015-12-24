@@ -181,12 +181,12 @@ class TemplateParseVisitor {
         var hasInlineTemplates = false;
         var attrs = [];
         element.attrs.forEach(attr => {
-            matchableAttrs.push([attr.name, attr.value]);
             var hasBinding = this._parseAttr(attr, matchableAttrs, elementOrDirectiveProps, events, vars);
             var hasTemplateBinding = this._parseInlineTemplateBinding(attr, templateMatchableAttrs, templateElementOrDirectiveProps, templateVars);
             if (!hasBinding && !hasTemplateBinding) {
                 // don't include the bindings as attributes as well in the AST
                 attrs.push(this.visitAttr(attr, null));
+                matchableAttrs.push([attr.name, attr.value]);
             }
             if (hasTemplateBinding) {
                 hasInlineTemplates = true;
