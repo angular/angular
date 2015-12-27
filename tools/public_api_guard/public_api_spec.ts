@@ -777,6 +777,8 @@ const COMMON = [
   'PatternValidator.validate(c:Control):{[key:string]:any}',
   'PercentPipe',
   'PercentPipe.transform(value:any, args:any[]):string',
+  'ReplacePipe',
+  'ReplacePipe.transform(value:any, args:any[]):any',
   'RequiredValidator',
   'SelectControlValueAccessor',
   'SelectControlValueAccessor.constructor(_renderer:Renderer, _elementRef:ElementRef, query:QueryList<NgSelectOption>)',

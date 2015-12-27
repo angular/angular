@@ -431,6 +431,8 @@ var NG_COMMON = [
   'PatternValidator.validate()',
   'PercentPipe',
   'PercentPipe.transform()',
+  'ReplacePipe',
+  'ReplacePipe.transform()',
   'RequiredValidator',
   'SelectControlValueAccessor',
   'SelectControlValueAccessor.onChange',
