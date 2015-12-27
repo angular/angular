@@ -29,6 +29,7 @@ export function main() {
     });
 
     describe("supportedInput", () => {
+
       it("should support strings", () => { expect(pipe.supportedInput(str)).toBe(true); });
       it("should support numbers", () => { expect(pipe.supportedInput(num)).toBe(true); });
 
@@ -39,6 +40,7 @@ export function main() {
     });
 
     describe("supportedPattern", () => {
+
       it("should support strings", () => { expect(pipe.supportedPattern(str)).toBe(true); });
       it("should support regular expressions",
          () => { expect(pipe.supportedPattern(new RegExp(str))).toBe(true); });
@@ -50,6 +52,7 @@ export function main() {
     });
 
     describe("supportedReplacement", () => {
+
       it("should support strings", () => { expect(pipe.supportedReplacement(str)).toBe(true); });
       it("should support functions",
          () => { expect(pipe.supportedReplacement(x => x + '1')).toBe(true); });
