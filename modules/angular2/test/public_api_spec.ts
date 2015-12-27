@@ -424,6 +424,8 @@ var NG_COMMON = [
   'ObservableListDiffFactory:dart',
   'PercentPipe',
   'PercentPipe.transform()',
+  'ReplacePipe',
+  'ReplacePipe.transform()',
   'RequiredValidator',
   'SelectControlValueAccessor',
   'SelectControlValueAccessor.onChange',

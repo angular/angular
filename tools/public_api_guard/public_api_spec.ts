@@ -772,6 +772,8 @@ const COMMON = [
   'NumberPipe',
   'PercentPipe',
   'PercentPipe.transform(value:any, args:any[]):string',
+  'ReplacePipe',
+  'ReplacePipe.transform(value:any, args:any[]):any',
   'RequiredValidator',
   'SelectControlValueAccessor',
   'SelectControlValueAccessor.constructor(_renderer:Renderer, _elementRef:ElementRef, query:QueryList<NgSelectOption>)',
