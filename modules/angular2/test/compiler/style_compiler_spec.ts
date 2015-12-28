@@ -45,7 +45,7 @@ export function main() {
 
     beforeEachProviders(() => {
       xhr = <any>new SpyXHR();
-      return [TEST_PROVIDERS, provide(XHR, {useValue: xhr})];
+      return [...TEST_PROVIDERS, provide(XHR, {useValue: xhr})];
     });
 
     var compiler: StyleCompiler;

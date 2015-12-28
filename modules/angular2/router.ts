@@ -44,7 +44,7 @@ import {BaseException} from 'angular2/src/facade/exceptions';
  * import {Component} from 'angular2/core';
  * import {ROUTER_DIRECTIVES, ROUTER_PROVIDERS, RouteConfig} from 'angular2/router';
  *
- * @Component({directives: [ROUTER_DIRECTIVES]})
+ * @Component({directives: [...ROUTER_DIRECTIVES]})
  * @RouteConfig([
  *  {...},
  * ])
@@ -52,7 +52,7 @@ import {BaseException} from 'angular2/src/facade/exceptions';
  *    // ...
  * }
  *
- * bootstrap(AppCmp, [ROUTER_PROVIDERS]);
+ * bootstrap(AppCmp, [...ROUTER_PROVIDERS]);
  * ```
  */
 export const ROUTER_DIRECTIVES: any[] = CONST_EXPR([RouterOutlet, RouterLink]);
@@ -70,7 +70,7 @@ export const ROUTER_DIRECTIVES: any[] = CONST_EXPR([RouterOutlet, RouterLink]);
  *   RouteConfig
  * } from 'angular2/router';
  *
- * @Component({directives: [ROUTER_DIRECTIVES]})
+ * @Component({directives: [...ROUTER_DIRECTIVES]})
  * @RouteConfig([
  *  {...},
  * ])
@@ -78,7 +78,7 @@ export const ROUTER_DIRECTIVES: any[] = CONST_EXPR([RouterOutlet, RouterLink]);
  *   // ...
  * }
  *
- * bootstrap(AppCmp, [ROUTER_PROVIDERS]);
+ * bootstrap(AppCmp, [...ROUTER_PROVIDERS]);
  * ```
  */
 export const ROUTER_PROVIDERS: any[] = CONST_EXPR([

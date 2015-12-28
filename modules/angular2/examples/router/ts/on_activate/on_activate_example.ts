@@ -31,7 +31,7 @@ class MyCmp implements OnActivate {
     </nav>
     <router-outlet></router-outlet>
   `,
-  directives: [ROUTER_DIRECTIVES]
+  directives: [...ROUTER_DIRECTIVES]
 })
 @RouteConfig([
   {path: '/', component: MyCmp, name: 'HomeCmp'},

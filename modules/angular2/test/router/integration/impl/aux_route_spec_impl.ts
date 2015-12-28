@@ -237,7 +237,7 @@ class ModalCmp {
   selector: 'aux-cmp',
   template: 'main {<router-outlet></router-outlet>} | ' +
                 'aux {<router-outlet name="modal"></router-outlet>}',
-  directives: [ROUTER_DIRECTIVES],
+  directives: ROUTER_DIRECTIVES,
 })
 @RouteConfig([
   new Route({path: '/hello', component: HelloCmp, name: 'Hello'}),

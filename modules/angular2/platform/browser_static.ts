@@ -38,6 +38,6 @@ export function bootstrapStatic(appComponentType: Type,
   }
 
   let appProviders =
-      isPresent(customProviders) ? [BROWSER_APP_PROVIDERS, customProviders] : BROWSER_APP_PROVIDERS;
+      isPresent(customProviders) ? [...BROWSER_APP_PROVIDERS, customProviders] : BROWSER_APP_PROVIDERS;
   return platform(BROWSER_PROVIDERS).application(appProviders).bootstrap(appComponentType);
 }

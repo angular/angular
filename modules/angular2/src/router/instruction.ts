@@ -16,7 +16,7 @@ import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
  * import {bootstrap} from 'angular2/platform/browser';
  * import {Router, ROUTER_DIRECTIVES, ROUTER_PROVIDERS, RouteConfig} from 'angular2/router';
  *
- * @Component({directives: [ROUTER_DIRECTIVES]})
+ * @Component({directives: [...ROUTER_DIRECTIVES]})
  * @RouteConfig([
  *  {path: '/user/:id', component: UserCmp, as: 'UserCmp'},
  * ])
@@ -52,7 +52,7 @@ export class RouteParams {
  * import {Router, ROUTER_DIRECTIVES, routerBindings, RouteConfig} from 'angular2/router';
  *
  * @Component({...})
- * @View({directives: [ROUTER_DIRECTIVES]})
+ * @View({directives: [...ROUTER_DIRECTIVES]})
  * @RouteConfig([
  *  {path: '/user/:id', component: UserCmp, as: 'UserCmp', data: {isAdmin: true}},
  * ])
@@ -92,7 +92,7 @@ export var BLANK_ROUTE_DATA = new RouteData();
  * import {bootstrap} from 'angular2/platform/browser';
  * import {Router, ROUTER_DIRECTIVES, ROUTER_PROVIDERS, RouteConfig} from 'angular2/router';
  *
- * @Component({directives: [ROUTER_DIRECTIVES]})
+ * @Component({directives: [...ROUTER_DIRECTIVES]})
  * @RouteConfig([
  *  {...},
  * ])

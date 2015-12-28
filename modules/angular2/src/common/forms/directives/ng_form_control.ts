@@ -49,7 +49,7 @@ const formControlBinding =
  *       </form>
  *     </div>
  *   `,
- *   directives: [CORE_DIRECTIVES, FORM_DIRECTIVES]
+ *   directives: [...CORE_DIRECTIVES, ...FORM_DIRECTIVES]
  * })
  * export class App {
  *   loginControl: Control = new Control('');
@@ -65,7 +65,7 @@ const formControlBinding =
  *  ```typescript
  * @Component({
  *      selector: "login-comp",
- *      directives: [FORM_DIRECTIVES],
+ *      directives: [...FORM_DIRECTIVES],
  *      template: "<input type='text' [ngFormControl]='loginControl' [(ngModel)]='login'>"
  *      })
  * class LoginComp {

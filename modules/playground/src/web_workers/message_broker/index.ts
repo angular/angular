@@ -12,8 +12,8 @@ import {
 const ECHO_CHANNEL = "ECHO";
 
 let ref =
-    platform([WORKER_RENDER_PLATFORM])
-        .application([WORKER_RENDER_APP, new Provider(WORKER_SCRIPT, {useValue: "loader.js"})]);
+    platform([...WORKER_RENDER_PLATFORM])
+        .application([...WORKER_RENDER_APP, new Provider(WORKER_SCRIPT, {useValue: "loader.js"})]);
 let brokerFactory: ClientMessageBrokerFactory = ref.injector.get(ClientMessageBrokerFactory);
 var broker = brokerFactory.createMessageBroker(ECHO_CHANNEL, false);
 

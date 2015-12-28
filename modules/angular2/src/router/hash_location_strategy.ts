@@ -31,7 +31,7 @@ import {PlatformLocation} from './platform_location';
  *   HashLocationStrategy
  * } from 'angular2/router';
  *
- * @Component({directives: [ROUTER_DIRECTIVES]})
+ * @Component({directives: [...ROUTER_DIRECTIVES]})
  * @RouteConfig([
  *  {...},
  * ])
@@ -42,7 +42,7 @@ import {PlatformLocation} from './platform_location';
  * }
  *
  * bootstrap(AppCmp, [
- *   ROUTER_PROVIDERS,
+ *   ...ROUTER_PROVIDERS,
  *   provide(LocationStrategy, {useClass: HashLocationStrategy})
  * ]);
  * ```

@@ -39,7 +39,7 @@ class NoteCmp implements CanDeactivate {
       Edit <a [routerLink]="['/NoteCmp', {id: 2}]" id="note-2-link">Note 2</a>
     </div>
   `,
-  directives: [ROUTER_DIRECTIVES]
+  directives: [...ROUTER_DIRECTIVES]
 })
 class NoteIndexCmp {
 }
@@ -51,7 +51,7 @@ class NoteIndexCmp {
     <h1>My App</h1>
     <router-outlet></router-outlet>
   `,
-  directives: [ROUTER_DIRECTIVES]
+  directives: [...ROUTER_DIRECTIVES]
 })
 @RouteConfig([
   {path: '/note/:id', component: NoteCmp, name: 'NoteCmp'},

@@ -48,7 +48,7 @@ export {enableDebugTools, disableDebugTools} from 'angular2/src/platform/browser
  * Used automatically by `bootstrap`, or can be passed to {@link platform}.
  */
 export const BROWSER_PROVIDERS: Array<any /*Type | Provider | any[]*/> = CONST_EXPR([
-  PLATFORM_COMMON_PROVIDERS,
+  ...PLATFORM_COMMON_PROVIDERS,
   new Provider(PLATFORM_INITIALIZER, {useValue: initDomAdapter, multi: true}),
 ]);
 
@@ -68,8 +68,8 @@ function _document(): any {
  * Used automatically by `bootstrap`, or can be passed to {@link PlatformRef.application}.
  */
 export const BROWSER_APP_COMMON_PROVIDERS: Array<any /*Type | Provider | any[]*/> = CONST_EXPR([
-  APPLICATION_COMMON_PROVIDERS,
-  FORM_PROVIDERS,
+  ...APPLICATION_COMMON_PROVIDERS,
+  ...FORM_PROVIDERS,
   new Provider(PLATFORM_PIPES, {useValue: COMMON_PIPES, multi: true}),
   new Provider(PLATFORM_DIRECTIVES, {useValue: COMMON_DIRECTIVES, multi: true}),
   new Provider(ExceptionHandler, {useFactory: _exceptionHandler, deps: []}),

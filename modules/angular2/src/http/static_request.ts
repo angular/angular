@@ -40,7 +40,7 @@ import {
  *   }
  * }
  *
- * var injector = Injector.resolveAndCreate([HTTP_PROVIDERS, AutoAuthenticator]);
+ * var injector = Injector.resolveAndCreate([...HTTP_PROVIDERS, AutoAuthenticator]);
  * var authenticator = injector.get(AutoAuthenticator);
  * authenticator.request('people.json').subscribe(res => {
  *   //URL should have included '?password=123'

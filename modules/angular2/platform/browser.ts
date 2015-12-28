@@ -29,8 +29,8 @@ import {Provider} from 'angular2/src/core/di';
  * An array of providers that should be passed into `application()` when bootstrapping a component.
  */
 export const BROWSER_APP_PROVIDERS: Array<any /*Type | Provider | any[]*/> = CONST_EXPR([
-  BROWSER_APP_COMMON_PROVIDERS,
-  COMPILER_PROVIDERS,
+  ...BROWSER_APP_COMMON_PROVIDERS,
+  ...COMPILER_PROVIDERS,
   new Provider(XHR, {useClass: XHRImpl}),
 ]);
 
@@ -107,6 +107,6 @@ export function bootstrap(
     customProviders?: Array<any /*Type | Provider | any[]*/>): Promise<ComponentRef> {
   reflector.reflectionCapabilities = new ReflectionCapabilities();
   let appProviders =
-      isPresent(customProviders) ? [BROWSER_APP_PROVIDERS, customProviders] : BROWSER_APP_PROVIDERS;
+      isPresent(customProviders) ? [...BROWSER_APP_PROVIDERS, customProviders] : BROWSER_APP_PROVIDERS;
   return platform(BROWSER_PROVIDERS).application(appProviders).bootstrap(appComponentType);
 }

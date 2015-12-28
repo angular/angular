@@ -37,7 +37,7 @@ export class WebWorkerInstance {
  * An array of providers that should be passed into `application()` when initializing a new Worker.
  */
 export const WORKER_RENDER_APP: Array<any /*Type | Provider | any[]*/> = CONST_EXPR([
-  WORKER_RENDER_APP_COMMON,
+  ...WORKER_RENDER_APP_COMMON,
   WebWorkerInstance,
   new Provider(APP_INITIALIZER,
                {

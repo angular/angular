@@ -29,7 +29,7 @@ class ControlPanelCmp {
       Edit <a [routerLink]="['/ControlPanelCmp', {id: 2}]" id="user-2-link">User 2</a>
     </div>
   `,
-  directives: [ROUTER_DIRECTIVES]
+  directives: [...ROUTER_DIRECTIVES]
 })
 class HomeCmp {
 }
@@ -41,7 +41,7 @@ class HomeCmp {
     <h1>My App</h1>
     <router-outlet></router-outlet>
   `,
-  directives: [ROUTER_DIRECTIVES]
+  directives: [...ROUTER_DIRECTIVES]
 })
 @RouteConfig([
   {path: '/user-settings/:id', component: ControlPanelCmp, name: 'ControlPanelCmp'},

@@ -64,7 +64,7 @@ const formDirectiveProvider =
  *       <pre>{{data}}</pre>
  *     </div>
  * `,
- *   directives: [CORE_DIRECTIVES, FORM_DIRECTIVES]
+ *   directives: [...CORE_DIRECTIVES, ...FORM_DIRECTIVES]
  * })
  * export class App {
  *   constructor() {}

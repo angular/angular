@@ -35,7 +35,7 @@ export {ComponentFixture} from 'angular2/testing_internal';
 @Component({
   selector: 'root-comp',
   template: `<router-outlet></router-outlet>`,
-  directives: [ROUTER_DIRECTIVES]
+  directives: ROUTER_DIRECTIVES
 })
 export class RootCmp {
   name: string;

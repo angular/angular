@@ -152,7 +152,7 @@ class ShowError {
       <button type="submit" [disabled]="!f.form.valid">Submit</button>
     </form>
   `,
-  directives: [FORM_DIRECTIVES, NgFor, CreditCardValidator, ShowError]
+  directives: [...FORM_DIRECTIVES, NgFor, CreditCardValidator, ShowError]
 })
 class TemplateDrivenForms {
   model = new CheckoutModel();

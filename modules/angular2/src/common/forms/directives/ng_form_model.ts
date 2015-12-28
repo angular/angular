@@ -44,7 +44,7 @@ const formDirectiveProvider =
  *       <pre>{{value}}</pre>
  *     </div>
  *   `,
- *   directives: [FORM_DIRECTIVES]
+ *   directives: [...FORM_DIRECTIVES]
  * })
  * export class App {
  *   loginForm: ControlGroup;
@@ -67,7 +67,7 @@ const formDirectiveProvider =
  *  ```typescript
  * @Component({
  *      selector: "login-comp",
- *      directives: [FORM_DIRECTIVES],
+ *      directives: [...FORM_DIRECTIVES],
  *      template: `
  *        <form [ngFormModel]='loginForm'>
  *          Login <input type='text' ngControl='login' [(ngModel)]='credentials.login'>

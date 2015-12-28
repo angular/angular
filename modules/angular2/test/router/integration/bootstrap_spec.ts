@@ -44,7 +44,7 @@ class DummyConsole implements Console {
 export function main() {
   describe('router bootstrap', () => {
     beforeEachProviders(() => [
-      ROUTER_PROVIDERS,
+      ...ROUTER_PROVIDERS,
       provide(LocationStrategy, {useClass: MockLocationStrategy}),
       provide(ApplicationRef, {useClass: MockApplicationRef})
     ]);
@@ -58,7 +58,7 @@ export function main() {
 
          bootstrap(AppCmp,
                    [
-                     ROUTER_PROVIDERS,
+                     ...ROUTER_PROVIDERS,
                      provide(ROUTER_PRIMARY_COMPONENT, {useValue: AppCmp}),
                      provide(LocationStrategy, {useClass: MockLocationStrategy}),
                      provide(DOCUMENT, {useValue: fakeDoc}),

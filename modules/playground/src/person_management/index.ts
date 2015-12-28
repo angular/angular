@@ -100,7 +100,7 @@ class DataService {
       </form>
     </div>
   `,
-  directives: [FORM_DIRECTIVES]
+  directives: [...FORM_DIRECTIVES]
 })
 class FullNameComponent {
   constructor(private _service: DataService) {}
@@ -148,7 +148,7 @@ class FullNameComponent {
       </form>
     </div>
   `,
-  directives: [FORM_DIRECTIVES, NgIf]
+  directives: [...FORM_DIRECTIVES, NgIf]
 })
 class PersonsDetailComponent {
   constructor(private _service: DataService) {}
@@ -169,7 +169,7 @@ class PersonsDetailComponent {
      <person-detail-cmp></person-detail-cmp>
     </div>
   `,
-  directives: [FORM_DIRECTIVES, PersonsDetailComponent, NgFor]
+  directives: [...FORM_DIRECTIVES, PersonsDetailComponent, NgFor]
 })
 class PersonsComponent {
   persons: Person[];

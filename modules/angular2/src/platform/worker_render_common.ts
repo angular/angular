@@ -58,13 +58,13 @@ export const WORKER_RENDER_MESSAGING_PROVIDERS: Array<any /*Type | Provider | an
     CONST_EXPR([MessageBasedRenderer, MessageBasedXHRImpl]);
 
 export const WORKER_RENDER_PLATFORM: Array<any /*Type | Provider | any[]*/> = CONST_EXPR([
-  PLATFORM_COMMON_PROVIDERS,
+  ...PLATFORM_COMMON_PROVIDERS,
   new Provider(PLATFORM_INITIALIZER, {useValue: initWebWorkerRenderPlatform, multi: true})
 ]);
 
 export const WORKER_RENDER_APP_COMMON: Array<any /*Type | Provider | any[]*/> = CONST_EXPR([
-  APPLICATION_COMMON_PROVIDERS,
-  WORKER_RENDER_MESSAGING_PROVIDERS,
+  ...APPLICATION_COMMON_PROVIDERS,
+  ...WORKER_RENDER_MESSAGING_PROVIDERS,
   new Provider(ExceptionHandler, {useFactory: _exceptionHandler, deps: []}),
   new Provider(DOCUMENT, {useFactory: _document, deps: []}),
   // TODO(jteplitz602): Investigate if we definitely need EVENT_MANAGER on the render thread

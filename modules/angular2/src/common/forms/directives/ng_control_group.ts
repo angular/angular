@@ -31,7 +31,7 @@ const controlGroupProvider =
  * ```typescript
  * @Component({
  *   selector: 'my-app',
- *   directives: [FORM_DIRECTIVES],
+ *   directives: [...FORM_DIRECTIVES],
  * })
  * @View({
  *   template: `
@@ -54,7 +54,7 @@ const controlGroupProvider =
  *       </form>
  *     </div>
  *   `,
- *   directives: [FORM_DIRECTIVES]
+ *   directives: [...FORM_DIRECTIVES]
  * })
  * export class App {
  *   valueOf(cg: NgControlGroup): string {

@@ -39,7 +39,7 @@ import {PlatformLocation} from './platform_location';
  *   Location
  * } from 'angular2/router';
  *
- * @Component({directives: [ROUTER_DIRECTIVES]})
+ * @Component({directives: [...ROUTER_DIRECTIVES]})
  * @RouteConfig([
  *  {...},
  * ])
@@ -50,7 +50,7 @@ import {PlatformLocation} from './platform_location';
  * }
  *
  * bootstrap(AppCmp, [
- *   ROUTER_PROVIDERS, // includes binding to PathLocationStrategy
+ *   ...ROUTER_PROVIDERS, // includes binding to PathLocationStrategy
  *   provide(APP_BASE_HREF, {useValue: '/my/app'})
  * ]);
  * ```
