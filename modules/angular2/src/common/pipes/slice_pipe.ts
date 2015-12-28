@@ -75,5 +75,5 @@ export class SlicePipe implements PipeTransform {
     return ListWrapper.slice(value, start, end);
   }
 
-  private supports(obj: any): boolean { return isString(obj) || isArray(obj); }
+  public supports(obj: any): boolean { return isString(obj) || isArray(obj); }
 }

@@ -284,7 +284,7 @@ class RenderViewBuilder<N> implements RenderCommandVisitor {
 }
 
 class Component<N> {
-  private contentNodesByNgContentIndex: N[][] = [];
+  private _contentNodesByNgContentIndex: N[][] = [];
 
   constructor(public hostElement: N, public shadowRoot: N, public isRoot: boolean,
               public template: RenderComponentTemplate) {}
@@ -294,15 +294,15 @@ class Component<N> {
         context.factory.appendChild(this.hostElement, node);
       }
     } else {
-      while (this.contentNodesByNgContentIndex.length <= ngContentIndex) {
-        this.contentNodesByNgContentIndex.push([]);
+      while (this._contentNodesByNgContentIndex.length <= ngContentIndex) {
+        this._contentNodesByNgContentIndex.push([]);
       }
-      this.contentNodesByNgContentIndex[ngContentIndex].push(node);
+      this._contentNodesByNgContentIndex[ngContentIndex].push(node);
     }
   }
   project(ngContentIndex: number): N[] {
-    return ngContentIndex < this.contentNodesByNgContentIndex.length ?
-               this.contentNodesByNgContentIndex[ngContentIndex] :
+    return ngContentIndex < this._contentNodesByNgContentIndex.length ?
+               this._contentNodesByNgContentIndex[ngContentIndex] :
                [];
   }
 }

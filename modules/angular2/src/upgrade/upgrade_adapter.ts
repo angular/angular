@@ -107,13 +107,13 @@ var upgradeCount: number = 0;
  */
 export class UpgradeAdapter {
   /* @internal */
-  private idPrefix: string = `NG2_UPGRADE_${upgradeCount++}_`;
+  private _idPrefix: string = `NG2_UPGRADE_${upgradeCount++}_`;
   /* @internal */
-  private upgradedComponents: Type[] = [];
+  private _upgradedComponents: Type[] = [];
   /* @internal */
-  private downgradedComponents: {[name: string]: UpgradeNg1ComponentAdapterBuilder} = {};
+  private _downgradedComponents: {[name: string]: UpgradeNg1ComponentAdapterBuilder} = {};
   /* @internal */
-  private providers: Array<Type | Provider | any[]> = [];
+  private _providers: Array<Type | Provider | any[]> = [];
 
   /**
    * Allows Angular v2 Component to be used from AngularJS v1.
@@ -165,9 +165,9 @@ export class UpgradeAdapter {
    * ```
    */
   downgradeNg2Component(type: Type): Function {
-    this.upgradedComponents.push(type);
+    this._upgradedComponents.push(type);
     var info: ComponentInfo = getComponentInfo(type);
-    return ng1ComponentDirective(info, `${this.idPrefix}${info.selector}_c`);
+    return ng1ComponentDirective(info, `${this._idPrefix}${info.selector}_c`);
   }
 
   /**
@@ -243,10 +243,10 @@ export class UpgradeAdapter {
    * ```
    */
   upgradeNg1Component(name: string): Type {
-    if ((<any>this.downgradedComponents).hasOwnProperty(name)) {
-      return this.downgradedComponents[name].type;
+    if ((<any>this._downgradedComponents).hasOwnProperty(name)) {
+      return this._downgradedComponents[name].type;
     } else {
-      return (this.downgradedComponents[name] = new UpgradeNg1ComponentAdapterBuilder(name)).type;
+      return (this._downgradedComponents[name] = new UpgradeNg1ComponentAdapterBuilder(name)).type;
     }
   }
 
@@ -298,7 +298,7 @@ export class UpgradeAdapter {
       BROWSER_APP_PROVIDERS,
       provide(NG1_INJECTOR, {useFactory: () => ng1Injector}),
       provide(NG1_COMPILE, {useFactory: () => ng1Injector.get(NG1_COMPILE)}),
-      this.providers
+      this._providers
     ]);
     var injector: Injector = applicationRef.injector;
     var ngZone: NgZone = injector.get(NgZone);
@@ -308,7 +308,7 @@ export class UpgradeAdapter {
     var rootScopePrototype: any;
     var rootScope: angular.IRootScopeService;
     var protoViewRefMap: ProtoViewRefMap = {};
-    var ng1Module = angular.module(this.idPrefix, modules);
+    var ng1Module = angular.module(this._idPrefix, modules);
     var ng1compilePromise: Promise<any> = null;
     ng1Module.value(NG2_INJECTOR, injector)
         .value(NG2_ZONE, ngZone)
@@ -341,12 +341,12 @@ export class UpgradeAdapter {
             ObservableWrapper.subscribe(ngZone.onTurnDone,
                                         (_) => { ngZone.run(() => rootScope.$apply()); });
             ng1compilePromise =
-                UpgradeNg1ComponentAdapterBuilder.resolve(this.downgradedComponents, injector);
+                UpgradeNg1ComponentAdapterBuilder.resolve(this._downgradedComponents, injector);
           }
         ]);
 
     angular.element(element).data(controllerKey(NG2_INJECTOR), injector);
-    ngZone.run(() => { angular.bootstrap(element, [this.idPrefix], config); });
+    ngZone.run(() => { angular.bootstrap(element, [this._idPrefix], config); });
     Promise.all([this.compileNg2Components(compiler, protoViewRefMap), ng1compilePromise])
         .then(() => {
           ngZone.run(() => {
@@ -399,7 +399,7 @@ export class UpgradeAdapter {
    * adapter.bootstrap(document.body, ['myExample']);
    *```
    */
-  public addProvider(provider: Type | Provider | any[]): void { this.providers.push(provider); }
+  public addProvider(provider: Type | Provider | any[]): void { this._providers.push(provider); }
 
   /**
    * Allows AngularJS v1 service to be accessible from Angular v2.
@@ -435,7 +435,7 @@ export class UpgradeAdapter {
    */
   public upgradeNg1Provider(name: string, options?: {asToken: any}) {
     var token = options && options.asToken || name;
-    this.providers.push(provide(token, {
+    this._providers.push(provide(token, {
       useFactory: (ng1Injector: angular.IInjectorService) => ng1Injector.get(name),
       deps: [NG1_INJECTOR]
     }));
@@ -470,15 +470,15 @@ export class UpgradeAdapter {
   }
 
   /* @internal */
-  private compileNg2Components(compiler: Compiler,
+  public compileNg2Components(compiler: Compiler,
                                protoViewRefMap: ProtoViewRefMap): Promise<ProtoViewRefMap> {
     var promises: Array<Promise<ProtoViewRef>> = [];
-    var types = this.upgradedComponents;
+    var types = this._upgradedComponents;
     for (var i = 0; i < types.length; i++) {
       promises.push(compiler.compileInHost(types[i]));
     }
     return Promise.all(promises).then((protoViews: Array<ProtoViewRef>) => {
-      var types = this.upgradedComponents;
+      var types = this._upgradedComponents;
       for (var i = 0; i < protoViews.length; i++) {
         protoViewRefMap[getComponentInfo(types[i]).selector] = protoViews[i];
       }
