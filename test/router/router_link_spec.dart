@@ -32,7 +32,7 @@ import "package:angular2/src/platform/dom/dom_adapter.dart" show DOM;
 import "package:angular2/src/router/instruction.dart" show ResolvedInstruction;
 
 var dummyInstruction = new ResolvedInstruction(
-    new ComponentInstruction("detail", [], null, null, true, 0), null, {});
+    new ComponentInstruction("detail", [], null, null, true, "0"), null, {});
 main() {
   describe("routerLink directive", () {
     TestComponentBuilder tcb;

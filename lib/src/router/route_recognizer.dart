@@ -65,7 +65,7 @@ class RedirectRecognizer implements AbstractRecognizer {
 class RouteRecognizer implements AbstractRecognizer {
   String path;
   RouteHandler handler;
-  num specificity;
+  String specificity;
   bool terminal = true;
   String hash;
   Map<String, ComponentInstruction> _cache =

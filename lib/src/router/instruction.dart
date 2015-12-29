@@ -124,8 +124,8 @@ abstract class Instruction {
     return isPresent(this.component) ? this.component.urlParams : [];
   }
 
-  num get specificity {
-    var total = 0;
+  String get specificity {
+    var total = "";
     if (isPresent(this.component)) {
       total += this.component.specificity;
     }
@@ -327,7 +327,7 @@ class ComponentInstruction {
   List<String> urlParams;
   var componentType;
   bool terminal;
-  num specificity;
+  String specificity;
   Map<String, dynamic> params;
   bool reuse = false;
   RouteData routeData;

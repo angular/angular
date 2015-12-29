@@ -12,6 +12,8 @@ import "package:angular2/src/facade/lang.dart"
         isString,
         isStringMap,
         Type,
+        StringWrapper,
+        Math,
         getTypeNameForDebugging;
 import "package:angular2/src/facade/exceptions.dart"
     show BaseException, WrappedException;
@@ -469,8 +471,42 @@ List<dynamic> splitAndFlattenLinkParams(List<dynamic> linkParams) {
  * Given a list of instructions, returns the most specific instruction
  */
 Instruction mostSpecific(List<Instruction> instructions) {
-  return ListWrapper.maximum(
-      instructions, (Instruction instruction) => instruction.specificity);
+  instructions =
+      instructions.where((instruction) => isPresent(instruction)).toList();
+  if (instructions.length == 0) {
+    return null;
+  }
+  if (instructions.length == 1) {
+    return instructions[0];
+  }
+  var first = instructions[0];
+  var rest = ListWrapper.slice(instructions, 1);
+  return rest.fold(first, (Instruction instruction, Instruction contender) {
+    if (compareSpecificityStrings(
+            contender.specificity, instruction.specificity) ==
+        -1) {
+      return contender;
+    }
+    return instruction;
+  });
+}
+
+/*
+ * Expects strings to be in the form of "[0-2]+"
+ * Returns -1 if string A should be sorted above string B, 1 if it should be sorted after,
+ * or 0 if they are the same.
+ */
+num compareSpecificityStrings(String a, String b) {
+  var l = Math.min(a.length, b.length);
+  for (var i = 0; i < l; i += 1) {
+    var ai = StringWrapper.charCodeAt(a, i);
+    var bi = StringWrapper.charCodeAt(b, i);
+    var difference = bi - ai;
+    if (difference != 0) {
+      return difference;
+    }
+  }
+  return a.length - b.length;
 }
 
 assertTerminalComponent(component, path) {
