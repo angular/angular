@@ -14,16 +14,18 @@ class Processor implements CodegenModel {
   /// The names of all requested `method`s.
   final Set<ReflectiveAccessor> methodNames = new Set<ReflectiveAccessor>();
 
-  void process(CompileDirectiveMetadata meta) {
-    if (meta.outputs != null) {
-      meta.outputs.keys.forEach((eventName) {
-        getterNames.add(new ReflectiveAccessor(eventName));
-      });
-    }
-    if (meta.inputs != null) {
-      meta.inputs.keys.forEach((inputName) {
-        setterNames.add(new ReflectiveAccessor(inputName));
-      });
+  void process(CompileMetadataWithType meta) {
+    if (meta is CompileDirectiveMetadata) {
+      if (meta.outputs != null) {
+        meta.outputs.keys.forEach((eventName) {
+          getterNames.add(new ReflectiveAccessor(eventName));
+        });
+      }
+      if (meta.inputs != null) {
+        meta.inputs.keys.forEach((inputName) {
+          setterNames.add(new ReflectiveAccessor(inputName));
+        });
+      }
     }
   }
 }

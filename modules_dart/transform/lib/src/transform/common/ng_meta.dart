@@ -34,7 +34,7 @@ class NgMeta {
   static const _VALUE_KEY = 'value';
 
   /// Directive metadata for each type annotated as a directive.
-  final Map<String, CompileDirectiveMetadata> types;
+  final Map<String, dynamic> types;
 
   /// List of other types and names associated with a given name.
   final Map<String, List<String>> aliases;
@@ -43,7 +43,7 @@ class NgMeta {
   final NgDepsModel ngDeps;
 
   NgMeta(
-      {Map<String, CompileDirectiveMetadata> types,
+      {Map<String, dynamic> types,
       Map<String, List<String>> aliases,
       this.ngDeps: null})
       : this.types = types != null ? types : {},
@@ -91,7 +91,7 @@ class NgMeta {
           continue;
         }
         if (entry[_KIND_KEY] == _TYPE_VALUE) {
-          types[key] = CompileDirectiveMetadata.fromJson(entry[_VALUE_KEY]);
+          types[key] = CompileMetadataWithType.fromJson(entry[_VALUE_KEY]);
         } else if (entry[_KIND_KEY] == _ALIAS_VALUE) {
           aliases[key] = entry[_VALUE_KEY];
         }
@@ -123,8 +123,8 @@ class NgMeta {
   }
 
   /// Returns the metadata for every type associated with the given [alias].
-  List<CompileDirectiveMetadata> flatten(String alias) {
-    var result = <CompileDirectiveMetadata>[];
+  List<dynamic> flatten(String alias) {
+    var result = [];
     var seen = new Set();
     helper(name) {
       if (!seen.add(name)) {

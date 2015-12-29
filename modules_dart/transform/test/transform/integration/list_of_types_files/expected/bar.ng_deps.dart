@@ -18,7 +18,7 @@ void initReflector() {
         new _ngRef.ReflectionInfo(const [
           const Component(componentServices: const [MyContext]),
           const View(template: ''),
-          _templates.HostMyComponentTemplate
+          _templates.hostViewFactory_MyComponent
         ], const [
           const [MyContext]
         ], (MyContext c) => new MyComponent(c)));

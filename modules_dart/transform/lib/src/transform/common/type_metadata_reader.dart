@@ -1,4 +1,4 @@
-library angular2.transform.common.directive_metadata_reader;
+library angular2.transform.common.type_metadata_reader;
 
 import 'dart:async';
 
@@ -17,21 +17,24 @@ import 'package:barback/barback.dart' show AssetId;
 
 import 'naive_eval.dart';
 
-class DirectiveMetadataReader {
-  final _DirectiveMetadataVisitor _visitor;
+class TypeMetadataReader {
+  final _DirectiveMetadataVisitor _directiveVisitor;
+  final _PipeMetadataVisitor _pipeVisitor;
   final TemplateCompiler _templateCompiler;
 
-  DirectiveMetadataReader._(this._visitor, this._templateCompiler);
+  TypeMetadataReader._(this._directiveVisitor, this._pipeVisitor, this._templateCompiler);
 
   /// Accepts an [AnnotationMatcher] which tests that an [Annotation]
   /// is a [Directive], [Component], or [View].
-  factory DirectiveMetadataReader(AnnotationMatcher annotationMatcher,
+  factory TypeMetadataReader(AnnotationMatcher annotationMatcher,
       InterfaceMatcher interfaceMatcher, TemplateCompiler templateCompiler) {
     var lifecycleVisitor = new _LifecycleHookVisitor(interfaceMatcher);
-    var visitor =
+    var directiveVisitor =
         new _DirectiveMetadataVisitor(annotationMatcher, lifecycleVisitor);
+    var pipeVisitor =
+        new _PipeMetadataVisitor(annotationMatcher);
 
-    return new DirectiveMetadataReader._(visitor, templateCompiler);
+    return new TypeMetadataReader._(directiveVisitor, pipeVisitor, templateCompiler);
   }
 
   /// Reads *un-normalized* [CompileDirectiveMetadata] from the
@@ -44,15 +47,19 @@ class DirectiveMetadataReader {
   /// `assetId` is the [AssetId] from which `node` was read, unless `node` was
   /// read from a part file, in which case `assetId` should be the [AssetId] of
   /// the parent file.
-  Future<CompileDirectiveMetadata> readDirectiveMetadata(
+  Future<CompileDirectiveMetadata> readTypeMetadata(
       ClassDeclaration node, AssetId assetId) {
-    _visitor.reset(assetId);
-    node.accept(_visitor);
-    if (!_visitor.hasMetadata) {
-      return new Future.value(null);
-    } else {
-      final metadata = _visitor.createMetadata();
+    _directiveVisitor.reset(assetId);
+    _pipeVisitor.reset(assetId);
+    node.accept(_directiveVisitor);
+    node.accept(_pipeVisitor);
+    if (_directiveVisitor.hasMetadata) {
+      final metadata = _directiveVisitor.createMetadata();
       return _templateCompiler.normalizeDirectiveMetadata(metadata);
+    } else if (_pipeVisitor.hasMetadata) {
+      return new Future.value(_pipeVisitor.createMetadata());
+    } else {
+      return new Future.value(null);
     }
   }
 }
@@ -95,6 +102,19 @@ void _populateList(
 String _expressionToString(Expression node, String nodeDescription) {
   var value = naiveEval(node);
   if (value is! String) {
+    throw new FormatException(
+        'Angular 2 could not understand the value '
+        'in $nodeDescription.',
+        '$node' /* source */);
+  }
+  return value;
+}
+
+/// Evaluates `node` and expects that the result will be a bool. If not,
+/// throws a [FormatException].
+bool _expressionToBool(Expression node, String nodeDescription) {
+  var value = naiveEval(node);
+  if (value is! bool) {
     throw new FormatException(
         'Angular 2 could not understand the value '
         'in $nodeDescription.',
@@ -387,7 +407,7 @@ class _DirectiveMetadataVisitor extends Object
   void _checkMeta() {
     if (!_hasMetadata) {
       throw new ArgumentError(
-          'Incorrect value passed to readDirectiveMetadata. '
+          'Incorrect value passed to readTypeMetadata. '
           'Expected type is ClassDeclaration');
     }
   }
@@ -549,4 +569,117 @@ class _CompileTemplateMetadataVisitor
 
   static final _viewEncapsulationMap =
       new Map.fromIterable(ViewEncapsulation.values, key: (v) => v.toString());
+}
+
+/// Visitor responsible for processing a [Pipe] annotated
+/// [ClassDeclaration] and creating a [CompilePipeMetadata] object.
+class _PipeMetadataVisitor extends Object
+    with RecursiveAstVisitor<Object> {
+  /// Tests [Annotation]s to determine if they deifne a [Directive],
+  /// [Component], [View], or none of these.
+  final AnnotationMatcher _annotationMatcher;
+
+  /// The [AssetId] we are currently processing.
+  AssetId _assetId;
+
+  _PipeMetadataVisitor(this._annotationMatcher) {
+    reset(null);
+  }
+
+  /// Whether the visitor has found a [Pipe] annotation
+  /// since the last call to `reset`.
+  bool _hasMetadata = false;
+
+  // Annotation fields
+  CompileTypeMetadata _type;
+  String _name;
+  bool _pure;
+
+  void reset(AssetId assetId) {
+    _assetId = assetId;
+
+    _hasMetadata = false;
+    _type = null;
+    _name = null;
+    _pure = null;
+  }
+
+  bool get hasMetadata => _hasMetadata;
+
+  CompilePipeMetadata createMetadata() {
+    return new CompilePipeMetadata(
+        type: _type,
+        name: _name,
+        pure: _pure);
+  }
+
+  @override
+  Object visitAnnotation(Annotation node) {
+    var isPipe = _annotationMatcher.isPipe(node, _assetId);
+    if (isPipe) {
+      if (_hasMetadata) {
+        throw new FormatException(
+            'Only one Pipe is allowed per class. '
+            'Found unexpected "$node".',
+            '$node' /* source */);
+      }
+      _hasMetadata = true;
+      super.visitAnnotation(node);
+    }
+
+    // Annotation we do not recognize - no need to visit.
+    return null;
+  }
+
+  @override
+  Object visitClassDeclaration(ClassDeclaration node) {
+    node.metadata.accept(this);
+    if (this._hasMetadata) {
+      _type = new CompileTypeMetadata(
+          moduleUrl: 'asset:${_assetId.package}/${_assetId.path}',
+          name: node.name.toString(),
+          runtime: null // Intentionally `null`, cannot be provided here.
+          );
+      node.members.accept(this);
+    }
+    return null;
+  }
+
+  @override
+  Object visitNamedExpression(NamedExpression node) {
+    // TODO(kegluneq): Remove this limitation.
+    if (node.name is! Label || node.name.label is! SimpleIdentifier) {
+      throw new FormatException(
+          'Angular 2 currently only supports simple identifiers in directives.',
+          '$node' /* source */);
+    }
+    var keyString = '${node.name.label}';
+    switch (keyString) {
+      case 'name':
+        _popuplateName(node.expression);
+        break;
+      case 'pure':
+        _populatePure(node.expression);
+        break;
+    }
+    return null;
+  }
+
+  void _checkMeta() {
+    if (!_hasMetadata) {
+      throw new ArgumentError(
+          'Incorrect value passed to readTypeMetadata. '
+          'Expected type is ClassDeclaration');
+    }
+  }
+
+  void _popuplateName(Expression nameValue) {
+    _checkMeta();
+    _name = _expressionToString(nameValue, 'Pipe#name');
+  }
+
+  void _populatePure(Expression pureValue) {
+    _checkMeta();
+    _pure = _expressionToBool(pureValue, 'Pipe#pure');
+  }
 }
