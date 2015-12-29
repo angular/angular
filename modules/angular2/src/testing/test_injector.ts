@@ -80,7 +80,7 @@ function _getRootProviders() {
  *
  * @returns {any[]}
  */
-function _getAppBindings() {
+function _getAppProviders() {
   var appDoc;
 
   // The document is only available in browser environment
@@ -124,7 +124,7 @@ function _getAppBindings() {
   ];
 }
 
-function _runtimeCompilerBindings() {
+function _runtimeCompilerProviders() {
   return [
     provide(XHR, {useClass: DOM.getXHR()}),
     COMPILER_PROVIDERS,
@@ -154,7 +154,7 @@ export class TestInjector {
   createInjector() {
     var rootInjector = Injector.resolveAndCreate(_getRootProviders());
     this._injector = rootInjector.resolveAndCreateChild(ListWrapper.concat(
-        ListWrapper.concat(_getAppBindings(), _runtimeCompilerBindings()), this._providers));
+        ListWrapper.concat(_getAppProviders(), _runtimeCompilerProviders()), this._providers));
     this._instantiated = true;
     return this._injector;
   }
@@ -181,7 +181,7 @@ export function getTestInjector() {
  */
 export function createTestInjector(providers: Array<Type | Provider | any[]>): Injector {
   var rootInjector = Injector.resolveAndCreate(_getRootProviders());
-  return rootInjector.resolveAndCreateChild(ListWrapper.concat(_getAppBindings(), providers));
+  return rootInjector.resolveAndCreateChild(ListWrapper.concat(_getAppProviders(), providers));
 }
 
 /**
@@ -189,7 +189,7 @@ export function createTestInjector(providers: Array<Type | Provider | any[]>): I
  */
 export function createTestInjectorWithRuntimeCompiler(
     providers: Array<Type | Provider | any[]>): Injector {
-  return createTestInjector(ListWrapper.concat(_runtimeCompilerBindings(), providers));
+  return createTestInjector(ListWrapper.concat(_runtimeCompilerProviders(), providers));
 }
 
 /**

@@ -44,7 +44,7 @@ import {
 
 import {Component, View, Directive, provide} from 'angular2/core';
 
-import {TEST_PROVIDERS} from './test_bindings';
+import {TEST_PROVIDERS} from './test_providers';
 import {TestDispatcher, TestPipes} from './change_detector_mocks';
 import {codeGenValueFn, codeGenExportVariable, MODULE_SUFFIX} from 'angular2/src/compiler/util';
 

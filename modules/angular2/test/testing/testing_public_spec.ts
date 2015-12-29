@@ -14,7 +14,7 @@ import {
   TestComponentBuilder
 } from 'angular2/testing';
 
-import {Injectable, bind} from 'angular2/core';
+import {Injectable, provide} from 'angular2/core';
 import {NgIf} from 'angular2/common';
 import {Directive, Component, View, ViewMetadata} from 'angular2/core';
 import {PromiseWrapper} from 'angular2/src/facade/promise';
@@ -149,7 +149,7 @@ export function main() {
        inject([XHR], (xhr) => { expect(xhr).toBeAnInstanceOf(XHRImpl); }));
 
     describe('setting up Providers', () => {
-      beforeEachProviders(() => [bind(FancyService).toValue(new FancyService())]);
+      beforeEachProviders(() => [provide(FancyService, {useValue: new FancyService()})]);
 
       it('should use set up providers',
          inject([FancyService], (service) => { expect(service.value).toEqual('real value'); }));
@@ -305,7 +305,7 @@ export function main() {
     });
 
     describe('using beforeEachProviders', () => {
-      beforeEachProviders(() => [bind(FancyService).toValue(new FancyService())]);
+      beforeEachProviders(() => [provide(FancyService, {useValue: new FancyService()})]);
 
       beforeEach(
           inject([FancyService], (service) => { expect(service.value).toEqual('real value'); }));
@@ -315,7 +315,7 @@ export function main() {
         it('should fail when the injector has already been used', () => {
           patchJasmineBeforeEach();
           expect(() => {
-            beforeEachProviders(() => [bind(FancyService).toValue(new FancyService())]);
+            beforeEachProviders(() => [provide(FancyService, {useValue: new FancyService()})]);
           })
               .toThrowError('beforeEachProviders was called after the injector had been used ' +
                             'in a beforeEach or it block. This invalidates the test injector');
@@ -406,7 +406,7 @@ export function main() {
        injectAsync([TestComponentBuilder], (tcb: TestComponentBuilder) => {
 
          return tcb.overrideProviders(TestProvidersComp,
-                                      [bind(FancyService).toClass(MockFancyService)])
+                                      [provide(FancyService, {useClass: MockFancyService})])
              .createAsync(TestProvidersComp)
              .then((componentFixture) => {
                componentFixture.detectChanges();
@@ -420,7 +420,7 @@ export function main() {
        injectAsync([TestComponentBuilder], (tcb: TestComponentBuilder) => {
 
          return tcb.overrideViewProviders(TestViewProvidersComp,
-                                          [bind(FancyService).toClass(MockFancyService)])
+                                          [provide(FancyService, {useClass: MockFancyService})])
              .createAsync(TestViewProvidersComp)
              .then((componentFixture) => {
                componentFixture.detectChanges();

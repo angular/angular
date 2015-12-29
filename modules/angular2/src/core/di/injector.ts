@@ -3,7 +3,6 @@ import {
   ResolvedProvider,
   Provider,
   Dependency,
-  ProviderBuilder,
   ResolvedFactory,
   provide,
   resolveProviders
@@ -519,13 +518,6 @@ export class Injector {
     var bd = providers.map(b => new ProviderWithVisibility(b, Visibility.Public));
     var proto = new ProtoInjector(bd);
     return new Injector(proto, null, null);
-  }
-
-  /**
-   * @deprecated
-   */
-  static fromResolvedBindings(providers: ResolvedProvider[]): Injector {
-    return Injector.fromResolvedProviders(providers);
   }
 
   /** @internal */

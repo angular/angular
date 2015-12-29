@@ -45,7 +45,6 @@ import {
 
 import {
   Injector,
-  bind,
   provide,
   Injectable,
   Provider,
@@ -1864,9 +1863,9 @@ class DynamicViewport {
     var myService = new MyService();
     myService.greeting = 'dynamic greet';
 
-    var bindings = Injector.resolve([provide(MyService, {useValue: myService})]);
+    var providers = Injector.resolve([provide(MyService, {useValue: myService})]);
     this.done = compiler.compileInHost(ChildCompUsingService)
-                    .then((hostPv) => {vc.createHostView(hostPv, 0, bindings)});
+                    .then((hostPv) => {vc.createHostView(hostPv, 0, providers)});
   }
 }
 

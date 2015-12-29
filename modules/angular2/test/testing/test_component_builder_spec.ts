@@ -78,7 +78,7 @@ class MockFancyService extends FancyService {
   value: string = 'mocked out value';
 }
 
-@Component({selector: 'my-service-comp', bindings: [FancyService]})
+@Component({selector: 'my-service-comp', providers: [FancyService]})
 @View({template: `injected value: {{fancyService.value}}`})
 class TestBindingsComp {
   constructor(private fancyService: FancyService) {}

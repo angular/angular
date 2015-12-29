@@ -66,7 +66,7 @@ describe('ng2 di benchmark', function() {
   });
 
   /**
-   * Same as 'createVariety' benchmark but operates on fully resolved bindings.
+   * Same as 'createVariety' benchmark but operates on fully resolved providers.
    */
   it('should log the stats for createVarietyResolved', function(done) {
     runClickBenchmark({

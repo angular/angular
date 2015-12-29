@@ -1,5 +1,5 @@
 import {ListWrapper} from 'angular2/src/facade/collection';
-import {bind, provide, Provider, OpaqueToken} from 'angular2/src/core/di';
+import {provide, Provider, OpaqueToken} from 'angular2/src/core/di';
 
 import {Validator} from '../validator';
 import {MeasureValues} from '../measure_values';
@@ -9,7 +9,7 @@ import {MeasureValues} from '../measure_values';
  */
 export class SizeValidator extends Validator {
   // TODO(tbosch): use static values when our transpiler supports them
-  static get BINDINGS(): Provider[] { return _PROVIDERS; }
+  static get PROVIDERS(): Provider[] { return _PROVIDERS; }
   // TODO(tbosch): use static values when our transpiler supports them
   static get SAMPLE_SIZE() { return _SAMPLE_SIZE; }
 
@@ -34,7 +34,6 @@ export class SizeValidator extends Validator {
 
 var _SAMPLE_SIZE = new OpaqueToken('SizeValidator.sampleSize');
 var _PROVIDERS = [
-  bind(SizeValidator)
-      .toFactory((size) => new SizeValidator(size), [_SAMPLE_SIZE]),
+  provide(SizeValidator, {useFactory: (size) => new SizeValidator(size), deps: [_SAMPLE_SIZE]}),
   provide(_SAMPLE_SIZE, {useValue: 10})
 ];

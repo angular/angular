@@ -1,5 +1,4 @@
 import {
-  bind,
   provide,
   forwardRef,
   Component,
@@ -55,9 +54,9 @@ export class MdDialog {
     // Create the dialogRef here so that it can be injected into the content component.
     var dialogRef = new MdDialogRef();
 
-    var bindings = Injector.resolve([provide(MdDialogRef, {useValue: dialogRef})]);
+    var providers = Injector.resolve([provide(MdDialogRef, {useValue: dialogRef})]);
 
-    var backdropRefPromise = this._openBackdrop(elementRef, bindings);
+    var backdropRefPromise = this._openBackdrop(elementRef, providers);
 
     // First, load the MdDialogContainer, into which the given component will be loaded.
     return this.componentLoader.loadNextToLocation(MdDialogContainer, elementRef)
@@ -83,7 +82,7 @@ export class MdDialog {
 
           // Now load the given component into the MdDialogContainer.
           return this.componentLoader.loadNextToLocation(type, containerRef.instance.contentRef,
-                                                         bindings)
+                                                         providers)
               .then(contentRef => {
 
                 // Wrap both component refs for the container and the content so that we can return
@@ -102,8 +101,8 @@ export class MdDialog {
   }
 
   /** Loads the dialog backdrop (transparent overlay over the rest of the page). */
-  _openBackdrop(elementRef: ElementRef, bindings: ResolvedProvider[]): Promise<ComponentRef> {
-    return this.componentLoader.loadNextToLocation(MdBackdrop, elementRef, bindings)
+  _openBackdrop(elementRef: ElementRef, providers: ResolvedProvider[]): Promise<ComponentRef> {
+    return this.componentLoader.loadNextToLocation(MdBackdrop, elementRef, providers)
         .then((componentRef) => {
           // TODO(tbosch): clean this up when we have custom renderers
           // (https://github.com/angular/angular/issues/1807)

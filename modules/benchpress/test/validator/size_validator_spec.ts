@@ -11,17 +11,18 @@ import {
 import {Date, DateWrapper} from 'angular2/src/facade/lang';
 import {ListWrapper} from 'angular2/src/facade/collection';
 
-import {Validator, SizeValidator, Injector, bind, provide, MeasureValues} from 'benchpress/common';
+import {Validator, SizeValidator, Injector, provide, MeasureValues} from 'benchpress/common';
 
 export function main() {
   describe('size validator', () => {
     var validator;
 
     function createValidator(size) {
-      validator =
-          Injector.resolveAndCreate(
-                      [SizeValidator.BINDINGS, bind(SizeValidator.SAMPLE_SIZE).toValue(size)])
-              .get(SizeValidator);
+      validator = Injector.resolveAndCreate([
+                            SizeValidator.PROVIDERS,
+                            provide(SizeValidator.SAMPLE_SIZE, {useValue: size})
+                          ])
+                      .get(SizeValidator);
     }
 
     it('should return sampleSize as description', () => {

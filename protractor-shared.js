@@ -209,29 +209,29 @@ exports.createBenchpressRunner = function(options) {
   }
   var resultsFolder = './dist/benchmark_results';
   fs.ensureDirSync(resultsFolder);
-  var bindings = [
-    benchpress.SeleniumWebDriverAdapter.PROTRACTOR_BINDINGS,
-    benchpress.bind(benchpress.Options.FORCE_GC).toValue(argv['force-gc']),
-    benchpress.bind(benchpress.Options.DEFAULT_DESCRIPTION)
-        .toValue({'lang': options.lang, 'runId': runId}),
-    benchpress.JsonFileReporter.BINDINGS,
-    benchpress.bind(benchpress.JsonFileReporter.PATH).toValue(resultsFolder)
+  var providers = [
+    benchpress.SeleniumWebDriverAdapter.PROTRACTOR_PROVIDERS,
+    benchpress.provide(benchpress.Options.FORCE_GC, {useValue:argv['force-gc']}),
+    benchpress.provide(benchpress.Options.DEFAULT_DESCRIPTION,
+        {useValue:{'lang': options.lang, 'runId': runId}}),
+    benchpress.JsonFileReporter.PROVIDERS,
+    benchpress.provide(benchpress.JsonFileReporter.PATH, {useValue:resultsFolder})
   ];
   if (!argv['dryrun']) {
-    bindings.push(benchpress.Validator.bindTo(benchpress.RegressionSlopeValidator));
-    bindings.push(benchpress.bind(benchpress.RegressionSlopeValidator.SAMPLE_SIZE).toValue(argv['sample-size']));
-    bindings.push(benchpress.MultiReporter.createBindings([
+    providers.push(benchpress.Validator.bindTo(benchpress.RegressionSlopeValidator));
+    providers.push(benchpress.provide(benchpress.RegressionSlopeValidator.SAMPLE_SIZE, {useValue:argv['sample-size']}));
+    providers.push(benchpress.MultiReporter.createProviders([
       benchpress.ConsoleReporter,
       benchpress.JsonFileReporter
     ]));
   } else {
-    bindings.push(benchpress.Validator.bindTo(benchpress.SizeValidator));
-    bindings.push(benchpress.bind(benchpress.SizeValidator.SAMPLE_SIZE).toValue(1));
-    bindings.push(benchpress.MultiReporter.createBindings([]));
-    bindings.push(benchpress.MultiMetric.createBindings([]));
+    providers.push(benchpress.Validator.bindTo(benchpress.SizeValidator));
+    providers.push(benchpress.provide(benchpress.SizeValidator.SAMPLE_SIZE, {useValue:1}));
+    providers.push(benchpress.MultiReporter.createProviders([]));
+    providers.push(benchpress.MultiMetric.createProviders([]));
   }
 
-  global.benchpressRunner = new benchpress.Runner(bindings);
+  global.benchpressRunner = new benchpress.Runner(providers);
 }
 
 function mergeInto(src, target) {

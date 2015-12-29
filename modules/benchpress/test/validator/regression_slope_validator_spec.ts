@@ -15,7 +15,6 @@ import {
   Validator,
   RegressionSlopeValidator,
   Injector,
-  bind,
   provide,
   MeasureValues
 } from 'benchpress/common';
@@ -26,9 +25,9 @@ export function main() {
 
     function createValidator({size, metric}) {
       validator = Injector.resolveAndCreate([
-                            RegressionSlopeValidator.BINDINGS,
-                            bind(RegressionSlopeValidator.METRIC).toValue(metric),
-                            bind(RegressionSlopeValidator.SAMPLE_SIZE).toValue(size)
+                            RegressionSlopeValidator.PROVIDERS,
+                            provide(RegressionSlopeValidator.METRIC, {useValue: metric}),
+                            provide(RegressionSlopeValidator.SAMPLE_SIZE, {useValue: size})
                           ])
                       .get(RegressionSlopeValidator);
     }

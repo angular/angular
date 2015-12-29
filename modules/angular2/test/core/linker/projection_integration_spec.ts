@@ -24,7 +24,6 @@ import {DOM} from 'angular2/src/platform/dom/dom_adapter';
 import {AppViewListener} from 'angular2/src/core/linker/view_listener';
 
 import {
-  bind,
   provide,
   forwardRef,
   Component,

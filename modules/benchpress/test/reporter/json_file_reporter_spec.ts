@@ -14,14 +14,7 @@ import {
 import {DateWrapper, Json, RegExpWrapper, isPresent} from 'angular2/src/facade/lang';
 import {PromiseWrapper} from 'angular2/src/facade/async';
 
-import {
-  bind,
-  provide,
-  Injector,
-  SampleDescription,
-  MeasureValues,
-  Options
-} from 'benchpress/common';
+import {provide, Injector, SampleDescription, MeasureValues, Options} from 'benchpress/common';
 
 
 import {JsonFileReporter} from 'benchpress/src/reporter/json_file_reporter';
@@ -31,19 +24,21 @@ export function main() {
     var loggedFile;
 
     function createReporter({sampleId, descriptions, metrics, path}) {
-      var bindings = [
-        JsonFileReporter.BINDINGS,
+      var providers = [
+        JsonFileReporter.PROVIDERS,
         provide(SampleDescription,
                 {useValue: new SampleDescription(sampleId, descriptions, metrics)}),
-        bind(JsonFileReporter.PATH).toValue(path),
-        bind(Options.NOW).toValue(() => DateWrapper.fromMillis(1234)),
-        bind(Options.WRITE_FILE)
-            .toValue((filename, content) => {
-              loggedFile = {'filename': filename, 'content': content};
-              return PromiseWrapper.resolve(null);
-            })
+        provide(JsonFileReporter.PATH, {useValue: path}),
+        provide(Options.NOW, {useValue: () => DateWrapper.fromMillis(1234)}),
+        provide(Options.WRITE_FILE,
+                {
+                  useValue: (filename, content) => {
+                    loggedFile = {'filename': filename, 'content': content};
+                    return PromiseWrapper.resolve(null);
+                  }
+                })
       ];
-      return Injector.resolveAndCreate(bindings).get(JsonFileReporter);
+      return Injector.resolveAndCreate(providers).get(JsonFileReporter);
     }
 
     it('should write all data into a file', inject([AsyncTestCompleter], (async) => {

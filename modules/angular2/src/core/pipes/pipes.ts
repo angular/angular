@@ -6,8 +6,7 @@ import {
   OptionalMetadata,
   SkipSelfMetadata,
   Provider,
-  Injector,
-  bind
+  Injector
 } from 'angular2/src/core/di';
 import {PipeProvider} from './pipe_provider';
 import * as cd from 'angular2/src/core/change_detection/pipes';

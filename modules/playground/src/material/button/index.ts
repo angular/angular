@@ -1,5 +1,5 @@
 import {bootstrap} from 'angular2/bootstrap';
-import {bind, provide, Component, View, ViewEncapsulation} from 'angular2/core';
+import {provide, Component, View, ViewEncapsulation} from 'angular2/core';
 import {NgFor} from 'angular2/common';
 import {UrlResolver} from 'angular2/compiler';
 import {MdButton, MdAnchor} from 'angular2_material/src/components/button/button';

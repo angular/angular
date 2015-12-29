@@ -8,7 +8,7 @@ import {
   windowProfileEnd
 } from 'angular2/src/testing/benchmark_util';
 import {bootstrap} from 'angular2/bootstrap';
-import {Component, Directive, View, bind, provide} from 'angular2/core';
+import {Component, Directive, View, provide} from 'angular2/core';
 import {NgFor, NgSwitch, NgSwitchWhen, NgSwitchDefault} from 'angular2/common';
 import {ApplicationRef} from 'angular2/src/core/application_ref';
 import {BrowserDomAdapter} from 'angular2/src/platform/browser/browser_adapter';
@@ -23,7 +23,7 @@ export const BENCHMARK_TYPE = 'LargetableComponent.benchmarkType';
 export const LARGETABLE_ROWS = 'LargetableComponent.rows';
 export const LARGETABLE_COLS = 'LargetableComponent.cols';
 
-function _createBindings() {
+function _createProviders() {
   var viewCacheCapacity = getStringParameter('viewcache') == 'true' ? 10000 : 1;
   return [
     provide(BENCHMARK_TYPE, {useValue: getStringParameter('benchmarkType')}),
@@ -113,7 +113,7 @@ export function main() {
   function noop() {}
 
   function initNg2() {
-    bootstrap(AppComponent, _createBindings())
+    bootstrap(AppComponent, _createProviders())
         .then((ref) => {
           var injector = ref.injector;
           app = ref.hostComponent;

@@ -121,13 +121,6 @@ export function beforeEachProviders(fn): void {
   });
 }
 
-/**
- * @deprecated
- */
-export function beforeEachBindings(fn): void {
-  beforeEachProviders(fn);
-}
-
 function _it(jsmFn: Function, name: string, testFn: FunctionWithParamTokens | AnyTestFn,
              testTimeOut: number): void {
   var runner = runnerStack[runnerStack.length - 1];

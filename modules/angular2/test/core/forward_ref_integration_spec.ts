@@ -11,7 +11,6 @@ import {
   xit
 } from 'angular2/testing_internal';
 import {
-  bind,
   provide,
   forwardRef,
   resolveForwardRef,

@@ -35,7 +35,7 @@ import {Pipes} from 'angular2/src/core/change_detection/pipes';
 import {createChangeDetectorDefinitions} from 'angular2/src/compiler/change_definition_factory';
 import {TestDirective, TestDispatcher, TestPipes} from './change_detector_mocks';
 
-import {TEST_PROVIDERS} from './test_bindings';
+import {TEST_PROVIDERS} from './test_providers';
 
 export function main() {
   describe('ChangeDefinitionFactory', () => {

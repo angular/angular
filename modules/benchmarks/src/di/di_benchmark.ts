@@ -1,4 +1,4 @@
-import {Injectable, Injector, Key, bind, provide} from "angular2/core";
+import {Injectable, Injector, Key, provide} from "angular2/core";
 import {reflector} from 'angular2/src/core/reflection/reflection';
 import {ReflectionCapabilities} from 'angular2/src/core/reflection/reflection_capabilities';
 import {getIntParameter, bindAction, microBenchmark} from 'angular2/src/testing/benchmark_util';
@@ -16,8 +16,8 @@ export function main() {
 
   // This benchmark does not use bootstrap and needs to create a reflector
   setupReflector();
-  var bindings = [A, B, C, D, E];
-  var injector = Injector.resolveAndCreate(bindings);
+  var providers = [A, B, C, D, E];
+  var injector = Injector.resolveAndCreate(providers);
 
   var D_KEY = Key.get(D);
   var E_KEY = Key.get(E);

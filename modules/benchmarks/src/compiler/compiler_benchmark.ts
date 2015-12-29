@@ -11,7 +11,6 @@ import {
   Directive,
   View,
   ViewContainerRef,
-  bind,
   provide,
   Provider,
   ViewMetadata
@@ -22,7 +21,7 @@ import {ViewResolver} from 'angular2/src/core/linker/view_resolver';
 
 import {getIntParameter, bindAction} from 'angular2/src/testing/benchmark_util';
 
-function _createBindings(): Provider[] {
+function _createProviders(): Provider[] {
   var multiplyTemplatesBy = getIntParameter('elements');
   return [
     provide(ViewResolver,
@@ -40,7 +39,7 @@ function _createBindings(): Provider[] {
 
 export function main() {
   BrowserDomAdapter.makeCurrent();
-  bootstrap(CompilerAppComponent, _createBindings())
+  bootstrap(CompilerAppComponent, _createProviders())
       .then((ref) => {
         var app = ref.hostComponent;
         bindAction('#compileNoBindings',

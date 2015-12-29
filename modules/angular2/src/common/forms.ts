@@ -39,4 +39,4 @@ export {
   MaxLengthValidator,
   Validator
 } from './forms/directives/validators';
-export {FormBuilder, FORM_PROVIDERS, FORM_BINDINGS} from './forms/form_builder';
+export {FormBuilder, FORM_PROVIDERS} from './forms/form_builder';

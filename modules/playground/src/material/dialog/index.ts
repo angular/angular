@@ -1,13 +1,5 @@
 import {bootstrap} from 'angular2/bootstrap';
-import {
-  bind,
-  provide,
-  ElementRef,
-  ComponentRef,
-  Component,
-  View,
-  ViewEncapsulation
-} from 'angular2/core';
+import {provide, ElementRef, ComponentRef, Component, View, ViewEncapsulation} from 'angular2/core';
 import {UrlResolver} from 'angular2/compiler';
 import {
   MdDialog,

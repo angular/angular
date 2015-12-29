@@ -35,7 +35,6 @@ export {Title} from 'angular2/src/platform/browser/title';
 export {
   DebugElementViewListener,
   ELEMENT_PROBE_PROVIDERS,
-  ELEMENT_PROBE_BINDINGS,
   inspectNativeElement,
   By
 } from 'angular2/platform/common_dom';
