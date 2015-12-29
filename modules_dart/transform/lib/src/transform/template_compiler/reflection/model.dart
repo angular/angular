@@ -1,7 +1,6 @@
 library angular2.transform.template_compiler.reflection.model;
 
 import 'package:angular2/src/compiler/util.dart';
-import 'package:angular2/src/core/linker/event_config.dart';
 
 /// Defines the names of getters, setters, and methods which need to be
 /// available to Angular 2 via the `reflector` at runtime.
@@ -42,5 +41,10 @@ class ReflectiveAccessor {
 }
 
 String sanitizePropertyName(String name) {
-  return dashCaseToCamelCase(EventConfig.parse(name).fieldName);
+  var fieldName = name;
+  var separatorIdx = name.indexOf(':');
+  if (separatorIdx > -1) {
+    fieldName = name.substring(0, separatorIdx).trim();
+  }
+  return dashCaseToCamelCase(fieldName);
 }

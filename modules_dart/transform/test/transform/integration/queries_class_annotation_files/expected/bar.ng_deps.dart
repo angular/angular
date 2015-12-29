@@ -19,7 +19,7 @@ void initReflector() {
               queries: const {'queryField': const ContentChild('child')},
               selector: '[soup]'),
           const View(template: ''),
-          _templates.HostMyComponentTemplate
+          _templates.hostViewFactory_MyComponent
         ], const [], () => new MyComponent()))
     ..registerSetters({'queryField': (o, v) => o.queryField = v});
   i0.initReflector();

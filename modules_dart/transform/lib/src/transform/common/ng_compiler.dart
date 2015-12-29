@@ -1,6 +1,6 @@
 library angular2.transform.template_compiler.ng_compiler;
 
-import 'package:angular2/src/compiler/command_compiler.dart';
+import 'package:angular2/src/compiler/view_compiler.dart';
 import 'package:angular2/src/compiler/html_parser.dart';
 import 'package:angular2/src/compiler/style_compiler.dart';
 import 'package:angular2/src/compiler/template_compiler.dart';
@@ -13,6 +13,7 @@ import 'package:angular2/src/transform/common/asset_reader.dart';
 import 'package:angular2/src/core/change_detection/interfaces.dart';
 import 'package:angular2/src/compiler/change_detector_compiler.dart';
 import 'package:angular2/router/router_link_dsl.dart';
+import 'package:angular2/src/compiler/proto_view_compiler.dart';
 
 import 'xhr_impl.dart';
 import 'url_resolver.dart';
@@ -37,6 +38,10 @@ TemplateCompiler createTemplateCompiler(AssetReader reader,
       new TemplateNormalizer(_xhr, _urlResolver, _htmlParser),
       templateParser,
       new StyleCompiler(_xhr, _urlResolver),
-      new CommandCompiler(),
-      cdCompiler);
+      cdCompiler,
+      new ProtoViewCompiler(),
+      new ViewCompiler(),
+      null /* ResolvedMetadataCache */,
+      changeDetectionConfig
+      );
 }

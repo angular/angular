@@ -19,7 +19,7 @@ void initReflector() {
         new _ngRef.ReflectionInfo(const [
           const Component(selector: '[soup]'),
           const View(directives: const [directiveAlias], template: ''),
-          _templates.HostMyComponentTemplate
+          _templates.hostViewFactory_MyComponent
         ], const [], () => new MyComponent()));
   i0.initReflector();
   i1.initReflector();
