@@ -212,7 +212,10 @@ class DiffingTSCompiler implements DiffingBroccoliPlugin {
 
     if (fs.existsSync(absoluteJsFilePath)) {
       fs.unlinkSync(absoluteJsFilePath);
-      fs.unlinkSync(absoluteMapFilePath);
+      if (fs.existsSync(absoluteMapFilePath)) {
+        // source map could be inline or not generated
+        fs.unlinkSync(absoluteMapFilePath);
+      }
       fs.unlinkSync(absoluteDtsFilePath);
     }
   }
