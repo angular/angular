@@ -19,6 +19,12 @@ import 'package:barback/barback.dart';
 ///
 /// The returned value wraps the [NgDepsModel] at `assetId` as well as these
 /// created objects.
+///
+/// `platformDirectives` is an optional [List] containing names of [Directive]s
+/// which should be available to all [View]s in this app.
+///
+/// `platformPipes` is an optional [List] containing names of [Pipe]s which
+/// should be available to all [View]s in this app.
 Future<CompileDataResults> createCompileData(
     AssetReader reader,
     AssetId assetId,
@@ -65,9 +71,17 @@ class _CompileDataCreator {
   NgDepsModel get ngDeps => ngMeta.ngDeps;
 
   Future<CompileDataResults> createCompileData() async {
-    if (ngDeps == null || ngDeps.reflectables == null) {
-      return new CompileDataResults._(ngMeta, const {});
-    }
+    var hasTemplate = ngDeps != null &&
+        ngDeps.reflectables != null &&
+        ngDeps.reflectables.any((reflectable) {
+          if (ngMeta.types.containsKey(reflectable.name)) {
+            final metadata = ngMeta.types[reflectable.name];
+            return metadata is CompileDirectiveMetadata &&
+                metadata.template != null;
+          }
+          return false;
+        });
+    if (!hasTemplate) return new CompileDataResults._(ngMeta, const {});
 
     final compileData =
         <ReflectionInfoModel, NormalizedComponentWithViewDirectives>{};
