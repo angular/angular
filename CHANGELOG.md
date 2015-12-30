@@ -19,10 +19,7 @@
 
 ### BREAKING CHANGES
 
-* Before
-Previously Angular would run in dev prod mode by default, and you could enable the dev mode by calling enableDevMode.
-After
-Now, Angular runs in the dev mode by default, and you can enable the prod mode by calling enableProdMode.
+* Previously, Angular would run in dev prod mode by default, and you could enable the dev mode by calling enableDevMode. Now, Angular runs in the dev mode by default, and you can enable the prod mode by calling enableProdMode.
 
 
 
