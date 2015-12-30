@@ -22,9 +22,17 @@ import 'reflection/processor.dart' as reg;
 import 'reflection/reflection_capabilities.dart';
 import 'compile_data_creator.dart';
 
-/// Reads the `.ng_deps.dart` file represented by `assetId` and parses any
-/// Angular 2 `View` annotations it declares to generate `getter`s,
-/// `setter`s, and `method`s that would otherwise be reflectively accessed.
+/// Generates `.ng_deps.dart` files to initialize the Angular2 system.
+///
+/// Processes the `.ng_summary.json` file represented by `assetId`
+/// `createCompileData`.
+/// Uses the resulting `NgMeta` object to generate
+/// `getter`s, `setter`s, and `method`s that would otherwise need to be
+/// reflectively accessed.
+/// Passes the resulting `NormalizedComponentWithViewDirectives` instances
+/// to the `TemplateCompiler` to generate compiled template(s).
+/// Uses the resulting `NgDeps` object to generate a .ng_deps.dart file which
+/// initializes the Angular2 reflective system.
 ///
 /// This method assumes a {@link DomAdapter} has been registered.
 Future<Outputs> processTemplates(AssetReader reader, AssetId assetId,
