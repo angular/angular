@@ -1,9 +1,10 @@
 import {ReadyState, RequestMethod, ResponseType} from './enums';
 import {Headers} from './headers';
 import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
-import {EventEmitter} from 'angular2/src/facade/async';
 import {Request} from './static_request';
+import {Response} from './static_response';
 import {URLSearchParams} from './url_search_params';
+import {Observable} from 'rxjs/Observable';
 
 /**
  * Abstract class from which real backends are derived.
@@ -11,16 +12,14 @@ import {URLSearchParams} from './url_search_params';
  * The primary purpose of a `ConnectionBackend` is to create new connections to fulfill a given
  * {@link Request}.
  */
-export abstract class ConnectionBackend { abstract createConnection(request: any): Connection; }
+export abstract class ConnectionBackend {
+  abstract createConnection(request: Request): Connection<Response>;
+}
 
 /**
  * Abstract class from which real connections are derived.
  */
-export abstract class Connection {
-  readyState: ReadyState;
-  request: Request;
-  response: any;  // TODO: generic of <Response>;
-}
+export interface Connection<Response> extends Observable<Response> { request: Request; }
 
 /**
  * Interface for options to construct a RequestOptions, based on

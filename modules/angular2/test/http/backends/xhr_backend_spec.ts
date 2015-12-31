@@ -80,7 +80,7 @@ class MockBrowserXHR extends BrowserXhr {
 
 export function main() {
   describe('XHRBackend', () => {
-    var backend;
+    var backend: XHRBackend;
     var sampleRequest;
 
     beforeEach(() => {
@@ -105,7 +105,7 @@ export function main() {
          inject([AsyncTestCompleter], async => {
            var connection = new XHRConnection(sampleRequest, new MockBrowserXHR(),
                                               new ResponseOptions({type: ResponseType.Error}));
-           connection.response.subscribe(res => {
+           connection.subscribe(res => {
              expect(res.type).toBe(ResponseType.Error);
              async.done();
            });
@@ -116,15 +116,15 @@ export function main() {
       it('should complete a request', inject([AsyncTestCompleter], async => {
            var connection = new XHRConnection(sampleRequest, new MockBrowserXHR(),
                                               new ResponseOptions({type: ResponseType.Error}));
-           connection.response.subscribe(res => { expect(res.type).toBe(ResponseType.Error); },
-                                         null, () => { async.done(); });
+           connection.subscribe(res => { expect(res.type).toBe(ResponseType.Error); }, null,
+                                () => { async.done(); });
            existingXHRs[0].setStatusCode(200);
            existingXHRs[0].dispatchEvent('load');
          }));
 
       it('should call abort when disposed', () => {
         var connection = new XHRConnection(sampleRequest, new MockBrowserXHR());
-        var request = connection.response.subscribe();
+        var request = connection.subscribe();
         request.unsubscribe();
         expect(abortSpy).toHaveBeenCalled();
       });
@@ -132,7 +132,7 @@ export function main() {
       it('should create an error Response on error', inject([AsyncTestCompleter], async => {
            var connection = new XHRConnection(sampleRequest, new MockBrowserXHR(),
                                               new ResponseOptions({type: ResponseType.Error}));
-           connection.response.subscribe(null, res => {
+           connection.subscribe(null, res => {
              expect(res.type).toBe(ResponseType.Error);
              async.done();
            });
@@ -142,7 +142,7 @@ export function main() {
       it('should call open with method and url when subscribed to', () => {
         var connection = new XHRConnection(sampleRequest, new MockBrowserXHR());
         expect(openSpy).not.toHaveBeenCalled();
-        connection.response.subscribe();
+        connection.subscribe();
         expect(openSpy).toHaveBeenCalledWith('GET', sampleRequest.url);
       });
 
@@ -153,7 +153,7 @@ export function main() {
         var connection = new XHRConnection(
             new Request(base.merge(new RequestOptions({body: body}))), new MockBrowserXHR());
         expect(sendSpy).not.toHaveBeenCalled();
-        connection.response.subscribe();
+        connection.subscribe();
         expect(sendSpy).toHaveBeenCalledWith(body);
       });
 
@@ -164,7 +164,7 @@ export function main() {
         var base = new BaseRequestOptions();
         var connection = new XHRConnection(
             new Request(base.merge(new RequestOptions({headers: headers}))), new MockBrowserXHR());
-        connection.response.subscribe();
+        connection.subscribe();
         expect(setRequestHeaderSpy).toHaveBeenCalledWith('Content-Type', 'text/xml');
         expect(setRequestHeaderSpy).toHaveBeenCalledWith('Breaking-Bad', '<3');
         expect(setRequestHeaderSpy).toHaveBeenCalledWith('X-Multi', 'a,b');
@@ -175,7 +175,7 @@ export function main() {
            var connection = new XHRConnection(sampleRequest, new MockBrowserXHR(),
                                               new ResponseOptions({status: statusCode}));
 
-           connection.response.subscribe(
+           connection.subscribe(
                res => {
 
                },
@@ -195,7 +195,7 @@ export function main() {
            var connection = new XHRConnection(sampleRequest, new MockBrowserXHR(),
                                               new ResponseOptions({status: statusCode}));
 
-           connection.response.subscribe(
+           connection.subscribe(
                res => {
                  nextCalled = true;
                  expect(res.status).toBe(statusCode);
@@ -217,7 +217,7 @@ export function main() {
            var connection = new XHRConnection(sampleRequest, new MockBrowserXHR(),
                                               new ResponseOptions({status: statusCode}));
 
-           connection.response.subscribe(res => { nextCalled = true; }, errRes => {
+           connection.subscribe(res => { nextCalled = true; }, errRes => {
              expect(errRes.status).toBe(statusCode);
              expect(nextCalled).toBe(false);
              async.done();
@@ -232,7 +232,7 @@ export function main() {
            var connection = new XHRConnection(sampleRequest, new MockBrowserXHR(),
                                               new ResponseOptions({status: statusCode}));
 
-           connection.response.subscribe(res => {
+           connection.subscribe(res => {
              expect(res.status).toBe(normalizedCode);
              async.done();
            });
@@ -250,10 +250,10 @@ export function main() {
            var connection2 =
                new XHRConnection(sampleRequest, new MockBrowserXHR(), new ResponseOptions());
 
-           connection1.response.subscribe(res => {
+           connection1.subscribe(res => {
              expect(res.text()).toBe(responseBody);
 
-             connection2.response.subscribe(ress => {
+             connection2.subscribe(ress => {
                expect(ress.text()).toBe(responseBody);
                async.done();
              });
@@ -278,7 +278,7 @@ export function main() {
                Transfer-Encoding: chunked
                Connection: keep-alive`
 
-               connection.response.subscribe(res => {
+               connection.subscribe(res => {
                  expect(res.headers.get('Date')).toEqual('Fri, 20 Nov 2015 01:45:26 GMT');
                  expect(res.headers.get('Content-Type')).toEqual('application/json; charset=utf-8');
                  expect(res.headers.get('Transfer-Encoding')).toEqual('chunked');
@@ -296,7 +296,7 @@ export function main() {
            var connection = new XHRConnection(sampleRequest, new MockBrowserXHR(),
                                               new ResponseOptions({status: statusCode}));
 
-           connection.response.subscribe(res => {
+           connection.subscribe(res => {
              expect(res.url).toEqual('http://google.com');
              async.done();
            });
@@ -314,7 +314,7 @@ export function main() {
            var responseHeaders = `X-Request-URL: http://somedomain.com
            Foo: Bar`
 
-                                 connection.response.subscribe(res => {
+                                 connection.subscribe(res => {
                                    expect(res.url).toEqual('http://somedomain.com');
                                    async.done();
                                  });

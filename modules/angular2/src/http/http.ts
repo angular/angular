@@ -1,5 +1,4 @@
 import {isString, isPresent, isBlank} from 'angular2/src/facade/lang';
-import {makeTypeError} from 'angular2/src/facade/exceptions';
 import {Injectable} from 'angular2/core';
 import {RequestOptionsArgs, Connection, ConnectionBackend} from './interfaces';
 import {Request} from './static_request';
@@ -8,8 +7,8 @@ import {BaseRequestOptions, RequestOptions} from './base_request_options';
 import {RequestMethod} from './enums';
 import {Observable} from 'rxjs/Observable';
 
-function httpRequest(backend: ConnectionBackend, request: Request): Observable<Response> {
-  return backend.createConnection(request).response;
+function httpRequest(backend: ConnectionBackend, request: Request): Connection<Response> {
+  return backend.createConnection(request);
 }
 
 function mergeOptions(defaultOpts, providedOpts, method, url): RequestOptions {
@@ -99,7 +98,7 @@ export class Http {
    * object can be provided as the 2nd argument. The options object will be merged with the values
    * of {@link BaseRequestOptions} before performing the request.
    */
-  request(url: string | Request, options?: RequestOptionsArgs): Observable<Response> {
+  request(url: string | Request, options?: RequestOptionsArgs): Connection<Response> {
     var responseObservable: any;
     if (isString(url)) {
       responseObservable = httpRequest(
@@ -108,7 +107,7 @@ export class Http {
     } else if (url instanceof Request) {
       responseObservable = httpRequest(this._backend, url);
     } else {
-      throw makeTypeError('First argument must be a url string or Request instance.');
+      throw new TypeError('First argument must be a url string or Request instance.');
     }
     return responseObservable;
   }
@@ -116,7 +115,7 @@ export class Http {
   /**
    * Performs a request with `get` http method.
    */
-  get(url: string, options?: RequestOptionsArgs): Observable<Response> {
+  get(url: string, options?: RequestOptionsArgs): Connection<Response> {
     return httpRequest(this._backend, new Request(mergeOptions(this._defaultOptions, options,
                                                                RequestMethod.Get, url)));
   }
@@ -124,7 +123,7 @@ export class Http {
   /**
    * Performs a request with `post` http method.
    */
-  post(url: string, body: string, options?: RequestOptionsArgs): Observable<Response> {
+  post(url: string, body: string, options?: RequestOptionsArgs): Connection<Response> {
     return httpRequest(
         this._backend,
         new Request(mergeOptions(this._defaultOptions.merge(new RequestOptions({body: body})),
@@ -134,7 +133,7 @@ export class Http {
   /**
    * Performs a request with `put` http method.
    */
-  put(url: string, body: string, options?: RequestOptionsArgs): Observable<Response> {
+  put(url: string, body: string, options?: RequestOptionsArgs): Connection<Response> {
     return httpRequest(
         this._backend,
         new Request(mergeOptions(this._defaultOptions.merge(new RequestOptions({body: body})),
@@ -144,7 +143,7 @@ export class Http {
   /**
    * Performs a request with `delete` http method.
    */
-  delete (url: string, options?: RequestOptionsArgs): Observable<Response> {
+  delete (url: string, options?: RequestOptionsArgs): Connection<Response> {
     return httpRequest(this._backend, new Request(mergeOptions(this._defaultOptions, options,
                                                                RequestMethod.Delete, url)));
   }
@@ -152,7 +151,7 @@ export class Http {
   /**
    * Performs a request with `patch` http method.
    */
-  patch(url: string, body: string, options?: RequestOptionsArgs): Observable<Response> {
+  patch(url: string, body: string, options?: RequestOptionsArgs): Connection<Response> {
     return httpRequest(
         this._backend,
         new Request(mergeOptions(this._defaultOptions.merge(new RequestOptions({body: body})),
@@ -162,7 +161,7 @@ export class Http {
   /**
    * Performs a request with `head` http method.
    */
-  head(url: string, options?: RequestOptionsArgs): Observable<Response> {
+  head(url: string, options?: RequestOptionsArgs): Connection<Response> {
     return httpRequest(this._backend, new Request(mergeOptions(this._defaultOptions, options,
                                                                RequestMethod.Head, url)));
   }
@@ -180,18 +179,18 @@ export class Jsonp extends Http {
    * object can be provided as the 2nd argument. The options object will be merged with the values
    * of {@link BaseRequestOptions} before performing the request.
    */
-  request(url: string | Request, options?: RequestOptionsArgs): Observable<Response> {
+  request(url: string | Request, options?: RequestOptionsArgs): Connection<Response> {
     var responseObservable: any;
     if (isString(url)) {
       url = new Request(mergeOptions(this._defaultOptions, options, RequestMethod.Get, url));
     }
     if (url instanceof Request) {
       if (url.method !== RequestMethod.Get) {
-        makeTypeError('JSONP requests must use GET request method.');
+        throw new TypeError('JSONP requests must use GET request method.');
       }
       responseObservable = httpRequest(this._backend, url);
     } else {
-      throw makeTypeError('First argument must be a url string or Request instance.');
+      throw new TypeError('First argument must be a url string or Request instance.');
     }
     return responseObservable;
   }
