@@ -28,8 +28,11 @@ import {ViewEncapsulation} from 'angular2/src/core/metadata';
 import {DOM} from 'angular2/src/platform/dom/dom_adapter';
 import {camelCaseToDashCase} from './util';
 
-const NAMESPACE_URIS =
-    CONST_EXPR({'xlink': 'http://www.w3.org/1999/xlink', 'svg': 'http://www.w3.org/2000/svg'});
+const NAMESPACE_URIS = CONST_EXPR({
+  'xlink': 'http://www.w3.org/1999/xlink',
+  'svg': 'http://www.w3.org/2000/svg',
+  'xhtml': 'http://www.w3.org/1999/xhtml'
+});
 const TEMPLATE_COMMENT_TEXT = 'template bindings={}';
 var TEMPLATE_BINDINGS_EXP = /^template bindings=(.*)$/g;
 
