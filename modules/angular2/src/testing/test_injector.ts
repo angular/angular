@@ -23,7 +23,7 @@ import {
   defaultKeyValueDiffers,
   ChangeDetectorGenConfig
 } from 'angular2/src/core/change_detection/change_detection';
-import {ExceptionHandler} from 'angular2/src/facade/exceptions';
+import {BaseException, ExceptionHandler} from 'angular2/src/facade/exceptions';
 import {PipeResolver} from 'angular2/src/core/linker/pipe_resolver';
 import {XHR} from 'angular2/src/compiler/xhr';
 
@@ -131,20 +131,69 @@ function _runtimeCompilerBindings() {
   ];
 }
 
+export class TestInjector {
+  private _instantiated: boolean = false;
+
+  private _injector: Injector = null;
+
+  private _providers: Array<Type | Provider | any[]> = [];
+
+  reset() {
+    this._injector = null;
+    this._providers = [];
+    this._instantiated = false;
+  }
+
+  addProviders(providers: Array<Type | Provider | any[]>) {
+    if (this._instantiated) {
+      throw new BaseException('Cannot add providers after test injector is instantiated');
+    }
+    this._providers = ListWrapper.concat(this._providers, providers);
+  }
+
+  createInjector() {
+    var rootInjector = Injector.resolveAndCreate(_getRootProviders());
+    this._injector = rootInjector.resolveAndCreateChild(ListWrapper.concat(
+        ListWrapper.concat(_getAppBindings(), _runtimeCompilerBindings()), this._providers));
+    this._instantiated = true;
+    return this._injector;
+  }
+
+  execute(fn: FunctionWithParamTokens): any {
+    if (!this._instantiated) {
+      this.createInjector();
+    }
+    return fn.execute(this._injector);
+  }
+}
+
+var _testInjector: TestInjector = null;
+
+export function getTestInjector() {
+  if (_testInjector == null) {
+    _testInjector = new TestInjector();
+  }
+  return _testInjector;
+}
+
+/**
+ * @deprecated Use TestInjector#createInjector() instead.
+ */
 export function createTestInjector(providers: Array<Type | Provider | any[]>): Injector {
   var rootInjector = Injector.resolveAndCreate(_getRootProviders());
   return rootInjector.resolveAndCreateChild(ListWrapper.concat(_getAppBindings(), providers));
 }
 
+/**
+ * @deprecated Use TestInjector#createInjector() instead.
+ */
 export function createTestInjectorWithRuntimeCompiler(
     providers: Array<Type | Provider | any[]>): Injector {
   return createTestInjector(ListWrapper.concat(_runtimeCompilerBindings(), providers));
 }
 
 /**
- * Allows injecting dependencies in `beforeEach()` and `it()`. When using with the
- * `angular2/testing` library, the test function will be run within a zone and will
- * automatically complete when all asynchronous tests have finished.
+ * Allows injecting dependencies in `beforeEach()` and `it()`.
  *
  * Example:
  *
@@ -155,14 +204,14 @@ export function createTestInjectorWithRuntimeCompiler(
  * }));
  *
  * it('...', inject([AClass], (object) => {
- *   object.doSomething().then(() => {
- *     expect(...);
- *   });
+ *   object.doSomething();
+ *   expect(...);
  * })
  * ```
  *
  * Notes:
- * - inject is currently a function because of some Traceur limitation the syntax should eventually
+ * - inject is currently a function because of some Traceur limitation the syntax should
+ * eventually
  *   becomes `it('...', @Inject (object: AClass, async: AsyncTestCompleter) => { ... });`
  *
  * @param {Array} tokens
@@ -174,7 +223,22 @@ export function inject(tokens: any[], fn: Function): FunctionWithParamTokens {
 }
 
 /**
- * @deprecated Use inject instead, which now supports both synchronous and asynchronous tests.
+ * Allows injecting dependencies in `beforeEach()` and `it()`. The test must return
+ * a promise which will resolve when all asynchronous activity is complete.
+ *
+ * Example:
+ *
+ * ```
+ * it('...', injectAsync([AClass], (object) => {
+ *   return object.doSomething().then(() => {
+ *     expect(...);
+ *   });
+ * })
+ * ```
+ *
+ * @param {Array} tokens
+ * @param {Function} fn
+ * @return {FunctionWithParamTokens}
  */
 export function injectAsync(tokens: any[], fn: Function): FunctionWithParamTokens {
   return new FunctionWithParamTokens(tokens, fn, true);

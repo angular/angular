@@ -15,6 +15,7 @@ import {
 import {IS_DART, isPresent, stringify} from 'angular2/src/facade/lang';
 import {bootstrap} from 'angular2/platform/browser';
 import {ApplicationRef} from 'angular2/src/core/application_ref';
+import {Console} from 'angular2/src/core/console';
 import {Component, Directive, View, OnDestroy, platform} from 'angular2/core';
 import {BROWSER_PROVIDERS, BROWSER_APP_PROVIDERS} from 'angular2/platform/browser';
 import {DOM} from 'angular2/src/platform/dom/dom_adapter';
@@ -88,6 +89,10 @@ class _ArrayLogger {
 }
 
 
+class DummyConsole implements Console {
+  log(message) {}
+}
+
 export function main() {
   var fakeDoc, el, el2, testProviders, lightDom;
 
@@ -101,7 +106,8 @@ export function main() {
       DOM.appendChild(fakeDoc.body, el2);
       DOM.appendChild(el, lightDom);
       DOM.setText(lightDom, 'loading');
-      testProviders = [provide(DOCUMENT, {useValue: fakeDoc})];
+      testProviders =
+          [provide(DOCUMENT, {useValue: fakeDoc}), provide(Console, {useClass: DummyConsole})];
     });
 
     afterEach(disposePlatform);

@@ -80,7 +80,7 @@ export function main() {
            expect(StringWrapper.stripLeft(input, "#")).toEqual(expectedOutput);
          });
 
-      it('should not alter the provided input if the first charater does not match the provided input',
+      it('should not alter the provided input if the first character does not match the provided input',
          () => {
            var input = "+angular2 is amazing";
            expect(StringWrapper.stripLeft(input, "*")).toEqual(input);
@@ -100,7 +100,7 @@ export function main() {
         expect(StringWrapper.stripRight(input, "!")).toEqual(expectedOutput);
       });
 
-      it('should not alter the provided input if the first charater does not match the provided input',
+      it('should not alter the provided input if the first character does not match the provided input',
          () => {
            var input = "angular2 is amazing+";
 

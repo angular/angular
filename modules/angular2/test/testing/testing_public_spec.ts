@@ -9,6 +9,7 @@ import {
   tick,
   beforeEach,
   inject,
+  injectAsync,
   beforeEachProviders,
   TestComponentBuilder
 } from 'angular2/testing';
@@ -153,8 +154,9 @@ export function main() {
       it('should use set up providers',
          inject([FancyService], (service) => { expect(service.value).toEqual('real value'); }));
 
-      it('should wait until returned promises', inject([FancyService], (service) => {
-           service.getAsyncValue().then((value) => { expect(value).toEqual('async value'); });
+      it('should wait until returned promises', injectAsync([FancyService], (service) => {
+           return service.getAsyncValue().then(
+               (value) => { expect(value).toEqual('async value'); });
          }));
 
       describe('using beforeEach', () => {
@@ -167,8 +169,8 @@ export function main() {
       });
 
       describe('using async beforeEach', () => {
-        beforeEach(inject([FancyService], (service) => {
-          service.getAsyncValue().then((value) => { service.value = value; });
+        beforeEach(injectAsync([FancyService], (service) => {
+          return service.getAsyncValue().then((value) => { service.value = value; });
         }));
 
         it('should use asynchronously modified value',
@@ -196,17 +198,69 @@ export function main() {
     var restoreJasmineIt = () => { jasmine.getEnv().it = originalJasmineIt; };
 
     var patchJasmineBeforeEach = () => {
+      var deferred = PromiseWrapper.completer();
       originalJasmineBeforeEach = jasmine.getEnv().beforeEach;
       jasmine.getEnv().beforeEach = (fn: any) => {
-        var done = () => {};
-        (<any>done).fail = (err) => { throw new Error(err) };
+        var done = () => { deferred.resolve() };
+        (<any>done).fail = (err) => { deferred.reject(err) };
         fn(done);
         return null;
-      }
+      };
+      return deferred.promise;
     };
 
     var restoreJasmineBeforeEach =
         () => { jasmine.getEnv().beforeEach = originalJasmineBeforeEach; }
+
+    it('injectAsync should fail when return was forgotten in it', (done) => {
+      var itPromise = patchJasmineIt();
+      it('forgets to return a proimse', injectAsync([], () => { return true; }));
+
+      itPromise.then(() => { done.fail('Expected function to throw, but it did not'); }, (err) => {
+        expect(err).toEqual(
+            'Error: injectAsync was expected to return a promise, but the  returned value was: true');
+        done();
+      });
+      restoreJasmineIt();
+    });
+
+    it('inject should fail if a value was returned', (done) => {
+      var itPromise = patchJasmineIt();
+      it('returns a value', inject([], () => { return true; }));
+
+      itPromise.then(() => { done.fail('Expected function to throw, but it did not'); }, (err) => {
+        expect(err).toEqual(
+            'Error: inject returned a value. Did you mean to use injectAsync? Returned value was: true');
+        done();
+      });
+      restoreJasmineIt();
+    });
+
+    it('injectAsync should fail when return was forgotten in beforeEach', (done) => {
+      var beforeEachPromise = patchJasmineBeforeEach();
+      beforeEach(injectAsync([], () => { return true; }));
+
+      beforeEachPromise.then(
+          () => { done.fail('Expected function to throw, but it did not'); }, (err) => {
+            expect(err).toEqual(
+                'Error: injectAsync was expected to return a promise, but the  returned value was: true');
+            done();
+          });
+      restoreJasmineBeforeEach();
+    });
+
+    it('inject should fail if a value was returned in beforeEach', (done) => {
+      var beforeEachPromise = patchJasmineBeforeEach();
+      beforeEach(inject([], () => { return true; }));
+
+      beforeEachPromise.then(
+          () => { done.fail('Expected function to throw, but it did not'); }, (err) => {
+            expect(err).toEqual(
+                'Error: inject returned a value. Did you mean to use injectAsync? Returned value was: true');
+            done();
+          });
+      restoreJasmineBeforeEach();
+    });
 
     it('should fail when an error occurs inside inject', (done) => {
       var itPromise = patchJasmineIt();
@@ -235,7 +289,7 @@ export function main() {
     it('should fail when a returned promise is rejected', (done) => {
       var itPromise = patchJasmineIt();
 
-      it('should fail with an error from a promise', inject([], () => {
+      it('should fail with an error from a promise', injectAsync([], () => {
            var deferred = PromiseWrapper.completer();
            var p = deferred.promise.then(() => { expect(1).toEqual(2); });
 
@@ -259,8 +313,8 @@ export function main() {
       describe('nested beforeEachProviders', () => {
 
         it('should fail when the injector has already been used', () => {
+          patchJasmineBeforeEach();
           expect(() => {
-            patchJasmineBeforeEach();
             beforeEachProviders(() => [bind(FancyService).toValue(new FancyService())]);
           })
               .toThrowError('beforeEachProviders was called after the injector had been used ' +
@@ -273,9 +327,9 @@ export function main() {
 
   describe('test component builder', function() {
     it('should instantiate a component with valid DOM',
-       inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
+       injectAsync([TestComponentBuilder], (tcb: TestComponentBuilder) => {
 
-         tcb.createAsync(ChildComp).then((componentFixture) => {
+         return tcb.createAsync(ChildComp).then((componentFixture) => {
            componentFixture.detectChanges();
 
            expect(componentFixture.debugElement.nativeElement).toHaveText('Original Child');
@@ -283,9 +337,9 @@ export function main() {
        }));
 
     it('should allow changing members of the component',
-       inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
+       injectAsync([TestComponentBuilder], (tcb: TestComponentBuilder) => {
 
-         tcb.createAsync(MyIfComp).then((componentFixture) => {
+         return tcb.createAsync(MyIfComp).then((componentFixture) => {
            componentFixture.detectChanges();
            expect(componentFixture.debugElement.nativeElement).toHaveText('MyIf()');
 
@@ -295,9 +349,10 @@ export function main() {
          });
        }));
 
-    it('should override a template', inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
+    it('should override a template',
+       injectAsync([TestComponentBuilder], (tcb: TestComponentBuilder) => {
 
-         tcb.overrideTemplate(MockChildComp, '<span>Mock</span>')
+         return tcb.overrideTemplate(MockChildComp, '<span>Mock</span>')
              .createAsync(MockChildComp)
              .then((componentFixture) => {
                componentFixture.detectChanges();
@@ -306,10 +361,12 @@ export function main() {
              });
        }));
 
-    it('should override a view', inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
+    it('should override a view',
+       injectAsync([TestComponentBuilder], (tcb: TestComponentBuilder) => {
 
-         tcb.overrideView(ChildComp,
-                          new ViewMetadata({template: '<span>Modified {{childBinding}}</span>'}))
+         return tcb.overrideView(
+                       ChildComp,
+                       new ViewMetadata({template: '<span>Modified {{childBinding}}</span>'}))
              .createAsync(ChildComp)
              .then((componentFixture) => {
                componentFixture.detectChanges();
@@ -319,9 +376,9 @@ export function main() {
        }));
 
     it('should override component dependencies',
-       inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
+       injectAsync([TestComponentBuilder], (tcb: TestComponentBuilder) => {
 
-         tcb.overrideDirective(ParentComp, ChildComp, MockChildComp)
+         return tcb.overrideDirective(ParentComp, ChildComp, MockChildComp)
              .createAsync(ParentComp)
              .then((componentFixture) => {
                componentFixture.detectChanges();
@@ -332,9 +389,9 @@ export function main() {
 
 
     it("should override child component's dependencies",
-       inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
+       injectAsync([TestComponentBuilder], (tcb: TestComponentBuilder) => {
 
-         tcb.overrideDirective(ParentComp, ChildComp, ChildWithChildComp)
+         return tcb.overrideDirective(ParentComp, ChildComp, ChildWithChildComp)
              .overrideDirective(ChildWithChildComp, ChildChildComp, MockChildChildComp)
              .createAsync(ParentComp)
              .then((componentFixture) => {
@@ -345,9 +402,11 @@ export function main() {
              });
        }));
 
-    it('should override a provider', inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
+    it('should override a provider',
+       injectAsync([TestComponentBuilder], (tcb: TestComponentBuilder) => {
 
-         tcb.overrideProviders(TestProvidersComp, [bind(FancyService).toClass(MockFancyService)])
+         return tcb.overrideProviders(TestProvidersComp,
+                                      [bind(FancyService).toClass(MockFancyService)])
              .createAsync(TestProvidersComp)
              .then((componentFixture) => {
                componentFixture.detectChanges();
@@ -358,10 +417,10 @@ export function main() {
 
 
     it('should override a viewProvider',
-       inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
+       injectAsync([TestComponentBuilder], (tcb: TestComponentBuilder) => {
 
-         tcb.overrideViewProviders(TestViewProvidersComp,
-                                   [bind(FancyService).toClass(MockFancyService)])
+         return tcb.overrideViewProviders(TestViewProvidersComp,
+                                          [bind(FancyService).toClass(MockFancyService)])
              .createAsync(TestViewProvidersComp)
              .then((componentFixture) => {
                componentFixture.detectChanges();

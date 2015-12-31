@@ -4,6 +4,10 @@ import {Type, isPresent, stringify, isBlank, print} from 'angular2/src/facade/la
 import {DirectiveMetadata, ComponentMetadata} from '../core/metadata';
 import {DirectiveResolver} from 'angular2/src/core/linker/directive_resolver';
 
+/**
+ * An implementation of {@link DirectiveResolver} that allows overriding
+ * various properties of directives.
+ */
 @Injectable()
 export class MockDirectiveResolver extends DirectiveResolver {
   private _providerOverrides = new Map<Type, any[]>();
@@ -47,7 +51,6 @@ export class MockDirectiveResolver extends DirectiveResolver {
       host: dm.host,
       providers: providers,
       exportAs: dm.exportAs,
-      moduleId: dm.moduleId,
       queries: dm.queries
     });
   }

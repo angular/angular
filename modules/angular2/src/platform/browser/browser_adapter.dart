@@ -221,7 +221,7 @@ class BrowserDomAdapter extends GenericBrowserDomAdapter {
       _supportsTemplateElement ? el.content : el;
   Node firstChild(el) => el.firstChild;
   Node nextSibling(Node el) => el.nextNode;
-  Element parentElement(Node el) => el.parent;
+  Element parentElement(Node el) => el.parentNode;
   List<Node> childNodes(Node el) => el.childNodes;
   List childNodesAsList(Node el) => childNodes(el).toList();
   void clearNodes(Node el) {

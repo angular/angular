@@ -51,8 +51,8 @@ import {splitAtColon} from './util';
 // Group 3 = "on-"
 // Group 4 = "bindon-"
 // Group 5 = the identifier after "bind-", "var-/#", or "on-"
-// Group 6 = idenitifer inside [()]
-// Group 7 = idenitifer inside []
+// Group 6 = identifer inside [()]
+// Group 7 = identifer inside []
 // Group 8 = identifier inside ()
 var BIND_NAME_REGEXP =
     /^(?:(?:(?:(bind-)|(var-|#)|(on-)|(bindon-))(.+))|\[\(([^\)]+)\)\]|\[([^\]]+)\]|\(([^\)]+)\))$/g;
@@ -69,6 +69,13 @@ const STYLE_PREFIX = 'style';
 
 var TEXT_CSS_SELECTOR = CssSelector.parse('*')[0];
 
+/**
+ * Provides an array of {@link TemplateAstVisitor}s which will be used to transform
+ * parsed templates before compilation is invoked, allowing custom expression syntax
+ * and other advanced transformations.
+ *
+ * This is currently an internal-only feature and not meant for general use.
+ */
 export const TEMPLATE_TRANSFORMS = CONST_EXPR(new OpaqueToken('TemplateTransforms'));
 
 export class TemplateParseError extends ParseError {
@@ -203,13 +210,13 @@ class TemplateParseVisitor implements HtmlAstVisitor {
     var attrs = [];
 
     element.attrs.forEach(attr => {
-      matchableAttrs.push([attr.name, attr.value]);
       var hasBinding = this._parseAttr(attr, matchableAttrs, elementOrDirectiveProps, events, vars);
       var hasTemplateBinding = this._parseInlineTemplateBinding(
           attr, templateMatchableAttrs, templateElementOrDirectiveProps, templateVars);
       if (!hasBinding && !hasTemplateBinding) {
         // don't include the bindings as attributes as well in the AST
         attrs.push(this.visitAttr(attr, null));
+        matchableAttrs.push([attr.name, attr.value]);
       }
       if (hasTemplateBinding) {
         hasInlineTemplates = true;

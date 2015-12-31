@@ -1,3 +1,67 @@
+<a name="2.0.0-beta.0"></a>
+# 2.0.0-beta.0 somnambulant-inauguration (2015-12-15)
+
+**Enjoy!**
+
+
+<a name="2.0.0-alpha.55"></a>
+# 2.0.0-alpha.55 (2015-12-15)
+
+
+### Bug Fixes
+
+* **router:** export ROUTER_LINK_DSL_PROVIDER and hide MockPopStateEvent ([fc75220](https://github.com/angular/angular/commit/fc75220))
+
+### Features
+
+* **core:** enable dev mode by default ([3dca9d5](https://github.com/angular/angular/commit/3dca9d5))
+
+
+### BREAKING CHANGES
+
+* Before
+Previously Angular would run in dev prod mode by default, and you could enable the dev mode by calling enableDevMode.
+After
+Now, Angular runs in the dev mode by default, and you can enable the prod mode by calling enableProdMode.
+
+
+
+<a name="2.0.0-alpha.54"></a>
+# 2.0.0-alpha.54 (2015-12-15)
+
+
+### Bug Fixes
+
+* **bundles:** don't include RxJS in System.register bundles ([77b7cae](https://github.com/angular/angular/commit/77b7cae))
+* **bundles:** remove ngUpgrade from the angular2.js bundle ([283962f](https://github.com/angular/angular/commit/283962f)), closes [#5739](https://github.com/angular/angular/issues/5739) [#5854](https://github.com/angular/angular/issues/5854)
+* **bundles:** remove polyfills from angular2.js bundle ([2983558](https://github.com/angular/angular/commit/2983558)), closes [#5881](https://github.com/angular/angular/issues/5881)
+* **bundles:** rename the testing.js bundle to testing.dev.js ([d55655f](https://github.com/angular/angular/commit/d55655f)), closes [#5899](https://github.com/angular/angular/issues/5899) [#5776](https://github.com/angular/angular/issues/5776)
+* **bundles:** rename UMD bundles ([61b9468](https://github.com/angular/angular/commit/61b9468)), closes [#5898](https://github.com/angular/angular/issues/5898)
+
+
+### BREAKING CHANGES
+
+* System.register testing bundle was renamed:
+`testing.js` -> `testing.dev.js`
+
+* UMD bundles were renamed:
+  * `angular2.umd.js` -> `angular2-all.umd.js`
+  * `angular2-testing.umd.js` -> `angular2-all-testing.umd.js`
+
+* RxJS used to be bundled with Angular 2 code and this is not the case
+any more. RxJS needs to be loaded explicitly.
+
+* Previously `angular2.js`, `angular2.min.js` and `angular2.dev.js` bundles
+would have zone.js and reflect-metadata pre-appended. New bundles don't
+contain zone.js nor reflect-metadata - those external dependencies can
+be easily loaded into a browser using `angular2-polyfills.js`
+
+* `ngUpgrade` related symbols are no longer part of the `angular2.js`
+bundle. `ngUpgrade` has a dedicated `upgrade.js` bundle now.
+
+
+
+
 <a name="2.0.0-alpha.53"></a>
 # 2.0.0-alpha.53 (2015-12-13)
 
@@ -90,7 +154,7 @@ Use imports from `angular2/compiler` instead.
       <my-cmp (myEvent)="action()">
       <my-cmp [(myProp)]="prop">
       <input #myInput>`,
-      <template ngFor="#myItem" [ngForOf]=items #myIndex="index">
+      <template ngFor "#myItem" [ngForOf]=items #myIndex="index">
   ```
 
   The full migration instruction can be found at [angular2/docs/migration/kebab-case.md](https://github.com/angular/angular/blob/master/modules/angular2/docs/migration/kebab-case.md).
@@ -259,9 +323,9 @@ import * as core from 'angular2/core';
 
 * Operators and Observables from RxJS (e.g. .map(), .toArray(), .toPromise(), etc ) now need to be explicitly imported (once per operator in your app)
   ```
-  import {Observable} from 'angular2/angular2'
-  import 'rxjs/operators/map';
-  import 'rxjs/observable/interval'
+  import {Observable} from 'rxjs/Observable';
+  import 'rxjs/add/operators/map';
+  import 'rxjs/add/observable/interval';
 
   Observable.interval(1000).subscribe(...);
 

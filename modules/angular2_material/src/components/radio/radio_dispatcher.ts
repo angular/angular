@@ -13,7 +13,7 @@ export class MdRadioDispatcher {
     this.listeners_ = [];
   }
 
-  /** Notify other nadio buttons that selection for the given name has been set. */
+  /** Notify other radio buttons that selection for the given name has been set. */
   notify(name: string) {
     this.listeners_.forEach(listener => listener(name));
   }

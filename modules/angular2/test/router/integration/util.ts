@@ -77,7 +77,11 @@ export var specs = {};
 export function describeRouter(description: string, fn: Function, exclusive = false): void {
   var specName = descriptionToSpecName(description);
   specNameBuilder.push(specName);
-  describe(description, fn);
+  if (exclusive) {
+    ddescribe(description, fn);
+  } else {
+    describe(description, fn);
+  }
   specNameBuilder.pop();
 }
 

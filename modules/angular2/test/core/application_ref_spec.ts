@@ -33,7 +33,7 @@ export function main() {
 
   describe("PlatformRef", () => {
     describe("asyncApplication", () => {
-      it("should merge syncronous and asyncronous providers",
+      it("should merge synchronous and asynchronous providers",
          inject([AsyncTestCompleter, Injector], (async, injector) => {
            let ref = new PlatformRef_(injector, null);
            let ASYNC_PROVIDERS = [new Provider(Foo, {useValue: new Foo()})];

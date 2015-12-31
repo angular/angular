@@ -1,6 +1,6 @@
 {
   "name": "angular-srcs",
-  "version": "2.0.0-alpha.52",
+  "version": "2.0.0-alpha.53",
   "dependencies": {
     "angular": {
       "version": "1.4.7",
@@ -20253,9 +20253,9 @@
       }
     },
     "rxjs": {
-      "version": "5.0.0-alpha.14",
-      "from": "https://registry.npmjs.org/rxjs/-/rxjs-5.0.0-alpha.14.tgz",
-      "resolved": "https://registry.npmjs.org/rxjs/-/rxjs-5.0.0-alpha.14.tgz"
+      "version": "5.0.0-beta.0",
+      "from": "rxjs@5.0.0-beta.0",
+      "resolved": "https://registry.npmjs.org/rxjs/-/rxjs-5.0.0-beta.0.tgz"
     },
     "selenium-webdriver": {
       "version": "2.48.2",
@@ -20725,7 +20725,7 @@
     },
     "ts2dart": {
       "version": "0.7.18",
-      "from": "ts2dart@0.7.18",
+      "from": "https://registry.npmjs.org/ts2dart/-/ts2dart-0.7.18.tgz",
       "resolved": "https://registry.npmjs.org/ts2dart/-/ts2dart-0.7.18.tgz",
       "dependencies": {
         "source-map": {
@@ -22645,7 +22645,7 @@
     },
     "zone.js": {
       "version": "0.5.10",
-      "from": "zone.js@0.5.10",
+      "from": "https://registry.npmjs.org/zone.js/-/zone.js-0.5.10.tgz",
       "resolved": "https://registry.npmjs.org/zone.js/-/zone.js-0.5.10.tgz"
     }
   }

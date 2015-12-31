@@ -12,10 +12,29 @@ import {Observable} from 'rxjs/Observable';
 const JSONP_ERR_NO_CALLBACK = 'JSONP injected script did not invoke callback.';
 const JSONP_ERR_WRONG_METHOD = 'JSONP requests must use GET request method.';
 
+/**
+ * Abstract base class for an in-flight JSONP request.
+ */
 export abstract class JSONPConnection implements Connection {
+  /**
+   * The {@link ReadyState} of this request.
+   */
   readyState: ReadyState;
+
+  /**
+   * The outgoing HTTP request.
+   */
   request: Request;
+
+  /**
+   * An observable that completes with the response, when the request is finished.
+   */
   response: Observable<Response>;
+
+  /**
+   * Callback called when the JSONP request completes, to notify the application
+   * of the new data.
+   */
   abstract finished(data?: any): void;
 }
 
@@ -111,6 +130,9 @@ export class JSONPConnection_ extends JSONPConnection {
   }
 }
 
+/**
+ * A {@link ConnectionBackend} that uses the JSONP strategy of making requests.
+ */
 export abstract class JSONPBackend extends ConnectionBackend {}
 
 @Injectable()

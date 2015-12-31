@@ -5,7 +5,7 @@ import {bootstrap} from 'angular2/bootstrap';
 @Component({
   selector: 'lowerupper-example',
   template: `<div>
-    <label>Name: </label><input #name (keyup)="change(name.value)" type="text"></input>
+    <label>Name: </label><input #name (keyup)="change(name.value)" type="text">
     <p>In lowercase: <pre>'{{value | lowercase}}'</pre></p>
     <p>In uppercase: <pre>'{{value | uppercase}}'</pre></p>
   </div>`

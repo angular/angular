@@ -7,10 +7,11 @@ import {ListWrapper} from 'angular2/src/facade/collection';
 import {bind} from 'angular2/core';
 
 import {
-  createTestInjectorWithRuntimeCompiler,
   FunctionWithParamTokens,
   inject,
-  injectAsync
+  injectAsync,
+  TestInjector,
+  getTestInjector
 } from './test_injector';
 
 export {inject, injectAsync} from './test_injector';
@@ -71,8 +72,20 @@ export var fdescribe: Function = _global.fdescribe;
  */
 export var xdescribe: Function = _global.xdescribe;
 
+/**
+ * Signature for a synchronous test function (no arguments).
+ */
 export type SyncTestFn = () => void;
+
+/**
+ * Signature for an asynchronous test function which takes a
+ * `done` callback.
+ */
 export type AsyncTestFn = (done: () => void) => void;
+
+/**
+ * Signature for any simple testing function.
+ */
 export type AnyTestFn = SyncTestFn | AsyncTestFn;
 
 var jsmBeforeEach = _global.beforeEach;
@@ -80,14 +93,10 @@ var jsmIt = _global.it;
 var jsmIIt = _global.fit;
 var jsmXIt = _global.xit;
 
-var testProviders;
-var injector;
+var testInjector: TestInjector = getTestInjector();
 
 // Reset the test providers before each test.
-jsmBeforeEach(() => {
-  testProviders = [];
-  injector = null;
-});
+jsmBeforeEach(() => { testInjector.reset(); });
 
 /**
  * Allows overriding default providers of the test injector,
@@ -103,8 +112,9 @@ export function beforeEachProviders(fn): void {
   jsmBeforeEach(() => {
     var providers = fn();
     if (!providers) return;
-    testProviders = [...testProviders, ...providers];
-    if (injector !== null) {
+    try {
+      testInjector.addProviders(providers);
+    } catch (e) {
       throw new Error('beforeEachProviders was called after the injector had ' +
                       'been used in a beforeEach or it block. This invalidates the ' +
                       'test injector');
@@ -176,13 +186,26 @@ function _it(jsmFn: Function, name: string, testFn: FunctionWithParamTokens | An
 
   if (testFn instanceof FunctionWithParamTokens) {
     jsmFn(name, (done) => {
-      if (!injector) {
-        injector = createTestInjectorWithRuntimeCompiler(testProviders);
-      }
+      var finishCallback = () => {
+        // Wait one more event loop to make sure we catch unreturned promises and
+        // promise rejections.
+        setTimeout(done, 0);
+      };
+      var returnedTestValue =
+          runInTestZone(() => testInjector.execute(testFn), finishCallback, done.fail);
 
-      var returnedTestValue = runInTestZone(() => testFn.execute(injector), done, done.fail);
-      if (_isPromiseLike(returnedTestValue)) {
-        (<Promise<any>>returnedTestValue).then(null, (err) => { done.fail(err); });
+      if (testFn.isAsync) {
+        if (_isPromiseLike(returnedTestValue)) {
+          (<Promise<any>>returnedTestValue).then(null, (err) => { done.fail(err); });
+        } else {
+          done.fail('Error: injectAsync was expected to return a promise, but the ' +
+                    ' returned value was: ' + returnedTestValue);
+        }
+      } else {
+        if (!(returnedTestValue === undefined)) {
+          done.fail('Error: inject returned a value. Did you mean to use injectAsync? Returned ' +
+                    'value was: ' + returnedTestValue);
+        }
       }
     }, timeOut);
   } else {
@@ -208,13 +231,28 @@ export function beforeEach(fn: FunctionWithParamTokens | AnyTestFn): void {
   if (fn instanceof FunctionWithParamTokens) {
     // The test case uses inject(). ie `beforeEach(inject([ClassA], (a) => { ...
     // }));`
-
     jsmBeforeEach((done) => {
-      if (!injector) {
-        injector = createTestInjectorWithRuntimeCompiler(testProviders);
-      }
+      var finishCallback = () => {
+        // Wait one more event loop to make sure we catch unreturned promises and
+        // promise rejections.
+        setTimeout(done, 0);
+      };
 
-      runInTestZone(() => fn.execute(injector), done, done.fail);
+      var returnedTestValue =
+          runInTestZone(() => testInjector.execute(fn), finishCallback, done.fail);
+      if (fn.isAsync) {
+        if (_isPromiseLike(returnedTestValue)) {
+          (<Promise<any>>returnedTestValue).then(null, (err) => { done.fail(err); });
+        } else {
+          done.fail('Error: injectAsync was expected to return a promise, but the ' +
+                    ' returned value was: ' + returnedTestValue);
+        }
+      } else {
+        if (!(returnedTestValue === undefined)) {
+          done.fail('Error: inject returned a value. Did you mean to use injectAsync? Returned ' +
+                    'value was: ' + returnedTestValue);
+        }
+      }
     });
   } else {
     // The test case doesn't use inject(). ie `beforeEach((done) => { ... }));`
@@ -238,7 +276,7 @@ export function beforeEach(fn: FunctionWithParamTokens | AnyTestFn): void {
  *
  * ## Example:
  *
- * {@example testing/ts/testing.ts region='it'}
+ * {@example testing/ts/testing.ts region='describeIt'}
  */
 export function it(name: string, fn: FunctionWithParamTokens | AnyTestFn,
                    timeOut: number = null): void {

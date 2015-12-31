@@ -31,6 +31,10 @@ function _createChangeDetectorGenConfig() {
   return new ChangeDetectorGenConfig(assertionsEnabled(), false, true);
 }
 
+/**
+ * A set of providers that provide `RuntimeCompiler` and its dependencies to use for
+ * template compilation.
+ */
 export const COMPILER_PROVIDERS: Array<Type | Provider | any[]> = CONST_EXPR([
   Lexer,
   Parser,

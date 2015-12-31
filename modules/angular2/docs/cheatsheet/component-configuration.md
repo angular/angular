@@ -2,12 +2,16 @@
 Component configuration
 @cheatsheetIndex 6
 @description
-`@Component` extends `@Directive`,
-so the `@Directive` configuration applies to components as well
+{@target js}`ng.core.Component` extends `ng.core.Directive`,
+so the `ng.core.Directive` configuration applies to components as well{@endtarget}
+{@target ts dart}`@Component` extends `@Directive`,
+so the `@Directive` configuration applies to components as well{@endtarget}
 
 @cheatsheetItem
-syntax:
+syntax(ts dart):
 `viewProviders: [MyService, provide(...)]`|`viewProviders:`
+syntax(js):
+`viewProviders: [MyService, ng.core.provide(...)]`|`viewProviders:`
 description:
 Array of dependency injection providers scoped to this component's view.
 

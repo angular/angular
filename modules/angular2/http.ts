@@ -166,6 +166,8 @@ export const HTTP_PROVIDERS: any[] = [
 ];
 
 /**
+ * See {@link HTTP_PROVIDERS} instead.
+ *
  * @deprecated
  */
 export const HTTP_BINDINGS = HTTP_PROVIDERS;
@@ -291,6 +293,8 @@ export const JSONP_PROVIDERS: any[] = [
 ];
 
 /**
+ * See {@link JSONP_PROVIDERS} instead.
+ *
  * @deprecated
  */
 export const JSON_BINDINGS = JSONP_PROVIDERS;

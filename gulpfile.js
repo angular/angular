@@ -150,14 +150,14 @@ var ANGULAR2_BUNDLE_CONFIG = [
   'angular2/platform/common_dom'
 ];
 
-var NG2_BUNDLE_CONTENT = ANGULAR2_BUNDLE_CONFIG.join(' + ');
-var HTTP_BUNDLE_CONTENT = 'angular2/http - ' + ANGULAR2_BUNDLE_CONFIG.join(' - ');
-var ROUTER_BUNDLE_CONTENT =
-    'angular2/router + angular2/router/router_link_dsl - ' + ANGULAR2_BUNDLE_CONFIG.join(' - ');
+var NG2_BUNDLE_CONTENT = ANGULAR2_BUNDLE_CONFIG.join(' + ') + ' - rxjs/*';
+var HTTP_BUNDLE_CONTENT = 'angular2/http - rxjs/* - ' + ANGULAR2_BUNDLE_CONFIG.join(' - ');
+var ROUTER_BUNDLE_CONTENT = 'angular2/router + angular2/router/router_link_dsl - rxjs/* - ' +
+                            ANGULAR2_BUNDLE_CONFIG.join(' - ');
 var TESTING_BUNDLE_CONTENT =
-    'angular2/testing + angular2/http/testing + angular2/router/testing - ' +
+    'angular2/testing + angular2/http/testing + angular2/router/testing - rxjs/* - ' +
     ANGULAR2_BUNDLE_CONFIG.join(' - ');
-var UPGRADE_BUNDLE_CONTENT = 'angular2/upgrade - ' + ANGULAR2_BUNDLE_CONFIG.join(' - ');
+var UPGRADE_BUNDLE_CONTENT = 'angular2/upgrade - rxjs/* - ' + ANGULAR2_BUNDLE_CONFIG.join(' - ');
 
 var BENCHPRESS_BUNDLE_CONFIG = {
   entries: ['./dist/js/cjs/benchpress/index.js'],
@@ -638,7 +638,7 @@ gulp.task('test.unit.dart', function(done) {
 // This test will fail if the size of our hello_world app goes beyond one of
 // these values when compressed at the specified level.
 // Measure in bytes.
-var _DART_PAYLOAD_SIZE_LIMITS = {'uncompressed': 375 * 1024, 'gzip level=6': 105 * 1024};
+var _DART_PAYLOAD_SIZE_LIMITS = {'uncompressed': 320 * 1024, 'gzip level=6': 90 * 1024};
 gulp.task('test.payload.dart/ci', function(done) {
   runSequence('build/packages.dart', '!pubget.payload.dart', '!pubbuild.payload.dart',
               '!checkAndReport.payload.dart', done);
@@ -1109,8 +1109,12 @@ gulp.task('!bundle.testing', ['build.js.dev'], function() {
   var devBundleConfig = merge(true, bundleConfig);
   devBundleConfig.paths = merge(true, devBundleConfig.paths, {"*": "dist/js/dev/es5/*.js"});
 
-  return bundler.bundle(devBundleConfig, TESTING_BUNDLE_CONTENT, './dist/js/bundle/testing.js',
+  return bundler.bundle(devBundleConfig, TESTING_BUNDLE_CONTENT, './dist/js/bundle/testing.dev.js',
                         {sourceMaps: true});
+});
+
+gulp.task('!bundles.js.docs', function() {
+  gulp.src('modules/angular2/docs/bundles/*').pipe(gulp.dest('dist/js/bundle'));
 });
 
 gulp.task('!bundles.js.umd', ['build.js.dev'], function() {
@@ -1139,15 +1143,45 @@ gulp.task('!bundles.js.umd', ['build.js.dev'], function() {
       resolve: resolveOptions(devOrProd),
       module: {preLoaders: [{test: /\.js$/, loader: 'source-map-loader'}]},
       devtool: devOrProd === 'dev' ? 'inline-source-map' : undefined,
-      output: outputOptions(outFileName, devOrProd)
+      output: outputOptions(outFileName, devOrProd),
+      externals: {
+        'rxjs/Observable': 'umd Rx',
+        'rxjs/Subject': 'umd Rx',
+        'rxjs/subject/ReplaySubject': {
+          commonjs: 'rxjs/subject/ReplaySubject',
+          commonjs2: 'rxjs/subject/ReplaySubject',
+          amd: 'rxjs/subject/ReplaySubject',
+          root: ['Rx']
+        },
+        'rxjs/operator/take': {
+          commonjs: 'rxjs/operator/take',
+          commonjs2: 'rxjs/operator/take',
+          amd: 'rxjs/operator/take',
+          root: ['Rx', 'Observable', 'prototype']
+        },
+        'rxjs/observable/fromPromise': {
+          commonjs: 'rxjs/observable/fromPromise',
+          commonjs2: 'rxjs/observable/fromPromise',
+          amd: 'rxjs/observable/fromPromise',
+          root: ['Rx', 'Observable']
+        },
+        'rxjs/operator/toPromise': {
+          commonjs: 'rxjs/operator/toPromise',
+          commonjs2: 'rxjs/operator/toPromise',
+          amd: 'rxjs/operator/toPromise',
+          root: ['Rx', 'Observable', 'prototype']
+        }
+      }
     };
   }
 
   return q.all([
-    webpack(webPackConf([__dirname + '/tools/build/webpack/angular2.umd.js'], 'angular2', 'dev')),
-    webpack(webPackConf([__dirname + '/tools/build/webpack/angular2.umd.js'], 'angular2', 'prod')),
-    webpack(webPackConf([__dirname + '/tools/build/webpack/angular2-testing.umd.js'],
-                        'angular2-testing', 'dev'))
+    webpack(webPackConf([__dirname + '/tools/build/webpack/angular2-all.umd.js'], 'angular2-all',
+                        'dev')),
+    webpack(webPackConf([__dirname + '/tools/build/webpack/angular2-all.umd.js'], 'angular2-all',
+                        'prod')),
+    webpack(webPackConf([__dirname + '/tools/build/webpack/angular2-all-testing.umd.js'],
+                        'angular2-all-testing', 'dev'))
   ]);
 });
 
@@ -1156,7 +1190,7 @@ gulp.task('bundles.js.umd.min', ['!bundles.js.umd', '!bundle.ng.polyfills'], fun
   var uglify = require('gulp-uglify');
 
   // minify production bundles
-  return gulp.src(['dist/js/bundle/angular2-polyfills.js', 'dist/js/bundle/angular2.umd.js'])
+  return gulp.src(['dist/js/bundle/angular2-polyfills.js', 'dist/js/bundle/angular2-all.umd.js'])
       .pipe(uglify())
       .pipe(rename({extname: '.min.js'}))
       .pipe(gulp.dest('dist/js/bundle'));
@@ -1195,25 +1229,12 @@ var JS_DEV_DEPS = [
   'node_modules/reflect-metadata/Reflect.js'
 ];
 
-// Splice in RX license if rx is in the bundle.
-function insertRXLicense(source) {
-  var n = source.indexOf('System.register("rxjs/Subject"');
-  if (n >= 0) {
-    // TODO: point this to Rx once Rx includes license in dist
-    // https://github.com/angular/angular/issues/5558
-    var rxLicense = licenseWrap('LICENSE');
-    return source.slice(0, n) + rxLicense + source.slice(n);
-  } else {
-    return source;
-  }
-}
 
 function addDevDependencies(outputFile) {
   var bundler = require('./tools/build/bundle');
   var insert = require('gulp-insert');
 
   return bundler.modify(JS_DEV_DEPS.concat(['dist/build/' + outputFile]), outputFile)
-      .pipe(insert.transform(insertRXLicense))
       .pipe(gulp.dest('dist/js/bundle'));
 }
 
@@ -1252,7 +1273,8 @@ gulp.task('bundles.js',
             '!bundle.web_worker.js.dev.deps',
             'bundles.js.umd.min',
             '!bundle.testing',
-            '!bundle.ng.polyfills'
+            '!bundle.ng.polyfills',
+            '!bundles.js.docs'
           ],
           function(done) { runSequence('!bundle.copy', '!bundles.js.checksize', done); });
 

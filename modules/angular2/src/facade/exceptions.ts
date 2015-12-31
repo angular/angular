@@ -12,6 +12,9 @@ export class BaseException extends Error {
   toString(): string { return this.message; }
 }
 
+/**
+ * Wraps an exception and provides additional context or information.
+ */
 export class WrappedException extends Error {
   private _wrapperStack: any;
 

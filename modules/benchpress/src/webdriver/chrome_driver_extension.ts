@@ -103,7 +103,7 @@ export class ChromeDriverExtension extends WebDriverExtension {
         //   2nd choice: BenchmarkInstrumentation::DisplayRenderingStats - available on systems with
         //               new surfaces framework (not broadly enabled yet)
         //   3rd choice: BenchmarkInstrumentation::ImplThreadRenderingStats - fallback event that is
-        //               allways available if something is rendered
+        //               always available if something is rendered
         var frameCount = event['args']['data']['frame_count'];
         if (frameCount > 1) {
           throw new BaseException('multi-frame render stats not supported');

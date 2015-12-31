@@ -146,7 +146,6 @@ export interface DirectiveFactory {
     bindings?: any[],
     providers?: any[],
     exportAs?: string,
-    moduleId?: string,
     queries?: {[key: string]: any}
   }): DirectiveDecorator;
   new (obj: {
@@ -159,7 +158,6 @@ export interface DirectiveFactory {
     bindings?: any[],
     providers?: any[],
     exportAs?: string,
-    moduleId?: string,
     queries?: {[key: string]: any}
   }): DirectiveMetadata;
 }
@@ -398,21 +396,33 @@ export interface QueryFactory {
   new (selector: Type | string, {descendants}?: {descendants?: boolean}): QueryMetadata;
 }
 
+/**
+ * Factory for {@link ContentChildren}.
+ */
 export interface ContentChildrenFactory {
   (selector: Type | string, {descendants}?: {descendants?: boolean}): any;
   new (selector: Type | string, {descendants}?: {descendants?: boolean}): ContentChildrenMetadata;
 }
 
+/**
+ * Factory for {@link ContentChild}.
+ */
 export interface ContentChildFactory {
   (selector: Type | string): any;
   new (selector: Type | string): ContentChildFactory;
 }
 
+/**
+ * Factory for {@link ViewChildren}.
+ */
 export interface ViewChildrenFactory {
   (selector: Type | string): any;
   new (selector: Type | string): ViewChildrenMetadata;
 }
 
+/**
+ * Factory for {@link ViewChild}.
+ */
 export interface ViewChildFactory {
   (selector: Type | string): any;
   new (selector: Type | string): ViewChildFactory;

@@ -98,6 +98,8 @@ export const ROUTER_PROVIDERS: any[] = CONST_EXPR([
 ]);
 
 /**
+ * Use {@link ROUTER_PROVIDERS} instead.
+ *
  * @deprecated
  */
 export const ROUTER_BINDINGS = ROUTER_PROVIDERS;

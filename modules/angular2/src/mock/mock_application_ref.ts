@@ -6,6 +6,9 @@ import {Provider, Injector} from 'angular2/src/core/di';
 import {NgZone} from 'angular2/src/core/zone/ng_zone';
 import {Promise} from 'angular2/src/facade/async';
 
+/**
+ * A no-op implementation of {@link ApplicationRef}, useful for testing.
+ */
 @Injectable()
 export class MockApplicationRef extends ApplicationRef {
   registerBootstrapListener(listener: (ref: ComponentRef) => void): void {}

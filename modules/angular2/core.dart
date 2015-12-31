@@ -2,7 +2,7 @@ library angular2.core;
 
 export './src/core/metadata.dart';
 export './src/core/util.dart';
-export './src/core/dev_mode.dart';
+export 'package:angular2/src/facade/lang.dart' show enableProdMode;
 export './src/core/di.dart' hide ForwardRefFn, resolveForwardRef, forwardRef;
 export './src/facade/facade.dart';
 export './src/core/application_ref.dart' show platform, createNgZone, PlatformRef, ApplicationRef;

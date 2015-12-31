@@ -239,7 +239,7 @@ export function main() {
                      scope.dataB = 'SAVKIN';
                      scope.event('WORKS');
 
-                     // Should not update becaus [model-a] is uni directional
+                     // Should not update because [model-a] is uni directional
                      scope.dataA = 'VICTOR';
                    }
                  })

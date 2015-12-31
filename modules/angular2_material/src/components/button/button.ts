@@ -22,7 +22,7 @@ import {isPresent} from 'angular2/src/facade/lang';
   encapsulation: ViewEncapsulation.None,
 })
 export class MdButton {
-  /** Whether a mousedown has occured on this element in the last 100ms. */
+  /** Whether a mousedown has occurred on this element in the last 100ms. */
   isMouseDown: boolean = false;
 
   /** Whether the button has focus from the keyboard (not the mouse). Used for class binding. */
