@@ -134,6 +134,8 @@ export function main() {
                                               new ResponseOptions({type: ResponseType.Error}));
            connection.subscribe(null, res => {
              expect(res.type).toBe(ResponseType.Error);
+             expect(res.statusText).toBe('');
+             expect(res.status).toBe(-1);
              async.done();
            });
            existingXHRs[0].dispatchEvent('error');

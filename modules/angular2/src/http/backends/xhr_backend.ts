@@ -57,11 +57,11 @@ export class XHRConnection extends Observable<Response> implements Connection<Re
         responseObserver.error(response);
       };
       // error event handler
+      // See https://xhr.spec.whatwg.org/#request-error-steps and
+      // https://fetch.spec.whatwg.org/#concept-network-error
       let onError = (err) => {
-        var responseOptions = new ResponseOptions({body: err, type: ResponseType.Error});
-        if (isPresent(baseResponseOptions)) {
-          responseOptions = baseResponseOptions.merge(responseOptions);
-        }
+        var responseOptions = new ResponseOptions(
+            {body: null, type: ResponseType.Error, status: -1, headers: null, statusText: ''});
         responseObserver.error(new Response(responseOptions));
       };
 
