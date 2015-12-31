@@ -1,6 +1,6 @@
 import {platform, Provider} from 'angular2/core';
 import {
-  WORKER_RENDER_APP,
+  WORKER_RENDER_APPLICATION,
   WORKER_RENDER_PLATFORM,
   WORKER_SCRIPT,
   UiArguments,
@@ -13,7 +13,8 @@ const ECHO_CHANNEL = "ECHO";
 
 let ref =
     platform([WORKER_RENDER_PLATFORM])
-        .application([WORKER_RENDER_APP, new Provider(WORKER_SCRIPT, {useValue: "loader.js"})]);
+        .application(
+            [WORKER_RENDER_APPLICATION, new Provider(WORKER_SCRIPT, {useValue: "loader.js"})]);
 let brokerFactory: ClientMessageBrokerFactory = ref.injector.get(ClientMessageBrokerFactory);
 var broker = brokerFactory.createMessageBroker(ECHO_CHANNEL, false);
 

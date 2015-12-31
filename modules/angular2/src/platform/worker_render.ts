@@ -9,7 +9,7 @@ import {Injector, Injectable, Provider} from 'angular2/src/core/di';
 import {MessageBasedRenderer} from 'angular2/src/web_workers/ui/renderer';
 import {MessageBasedXHRImpl} from 'angular2/src/web_workers/ui/xhr_impl';
 import {
-  WORKER_RENDER_APP_COMMON,
+  WORKER_RENDER_APPLICATION_COMMON,
   WORKER_RENDER_MESSAGING_PROVIDERS,
   WORKER_SCRIPT,
   initializeGenericWorkerRenderer
@@ -36,8 +36,8 @@ export class WebWorkerInstance {
 /**
  * An array of providers that should be passed into `application()` when initializing a new Worker.
  */
-export const WORKER_RENDER_APP: Array<any /*Type | Provider | any[]*/> = CONST_EXPR([
-  WORKER_RENDER_APP_COMMON,
+export const WORKER_RENDER_APPLICATION: Array<any /*Type | Provider | any[]*/> = CONST_EXPR([
+  WORKER_RENDER_APPLICATION_COMMON,
   WebWorkerInstance,
   new Provider(APP_INITIALIZER,
                {
