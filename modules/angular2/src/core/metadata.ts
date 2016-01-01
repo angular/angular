@@ -974,7 +974,7 @@ export var Attribute: AttributeFactory = makeParamDecorator(AttributeMetadata);
  *    <ul>
  *      <li *ngFor="#pane of panes">{{pane.title}}</li>
  *    </ul>
- *    <content></content>
+ *    <ng-content></ng-content>
  *  `
  * })
  * class Tabs {
