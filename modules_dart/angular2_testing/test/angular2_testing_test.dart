@@ -29,7 +29,7 @@ class TestService {
 class MyToken {}
 
 const TEMPLATE =
-    '<div><copy-me template=\'ng-for #item of items\'>{{item.toString()}};</copy-me></div>';
+    '<div><copy-me template=\'ngFor #item of items\'>{{item.toString()}};</copy-me></div>';
 
 void main() {
   initAngularTests();

@@ -30,5 +30,8 @@ fi
 
 ./node_modules/.bin/protractor protractor-js.conf.js $OPTIONS
 ./node_modules/.bin/protractor protractor-js.conf.js $OPTIONS --benchmark --dryrun
-./node_modules/.bin/protractor dist/js/cjs/benchpress/test/firefox_extension/conf.js
+# TODO(tbosch): tests for benchpress on firefox are disabled
+# as they are very flake. Enable once https://github.com/angular/angular/issues/5611
+# is resolved.
+# ./node_modules/.bin/protractor dist/js/cjs/benchpress/test/firefox_extension/conf.js
 

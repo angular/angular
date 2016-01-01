@@ -74,7 +74,7 @@ export function main() {
          inject([DynamicComponentLoader, TestComponentBuilder, AsyncTestCompleter],
                 (loader, tcb: TestComponentBuilder, async) => {
                   tcb.overrideView(MyComp, new ViewMetadata({
-                                     template: '<child-cmp *ng-if="ctxBoolProp"></child-cmp>',
+                                     template: '<child-cmp *ngIf="ctxBoolProp"></child-cmp>',
                                      directives: [NgIf, ChildComp]
                                    }))
                       .overrideView(

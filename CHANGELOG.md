@@ -1,3 +1,278 @@
+<a name="2.0.0-beta.0"></a>
+# 2.0.0-beta.0 somnambulant-inauguration (2015-12-15)
+
+**Enjoy!**
+
+
+<a name="2.0.0-alpha.55"></a>
+# 2.0.0-alpha.55 (2015-12-15)
+
+
+### Bug Fixes
+
+* **router:** export ROUTER_LINK_DSL_PROVIDER and hide MockPopStateEvent ([fc75220](https://github.com/angular/angular/commit/fc75220))
+
+### Features
+
+* **core:** enable dev mode by default ([3dca9d5](https://github.com/angular/angular/commit/3dca9d5))
+
+
+### BREAKING CHANGES
+
+* Before
+Previously Angular would run in dev prod mode by default, and you could enable the dev mode by calling enableDevMode.
+After
+Now, Angular runs in the dev mode by default, and you can enable the prod mode by calling enableProdMode.
+
+
+
+<a name="2.0.0-alpha.54"></a>
+# 2.0.0-alpha.54 (2015-12-15)
+
+
+### Bug Fixes
+
+* **bundles:** don't include RxJS in System.register bundles ([77b7cae](https://github.com/angular/angular/commit/77b7cae))
+* **bundles:** remove ngUpgrade from the angular2.js bundle ([283962f](https://github.com/angular/angular/commit/283962f)), closes [#5739](https://github.com/angular/angular/issues/5739) [#5854](https://github.com/angular/angular/issues/5854)
+* **bundles:** remove polyfills from angular2.js bundle ([2983558](https://github.com/angular/angular/commit/2983558)), closes [#5881](https://github.com/angular/angular/issues/5881)
+* **bundles:** rename the testing.js bundle to testing.dev.js ([d55655f](https://github.com/angular/angular/commit/d55655f)), closes [#5899](https://github.com/angular/angular/issues/5899) [#5776](https://github.com/angular/angular/issues/5776)
+* **bundles:** rename UMD bundles ([61b9468](https://github.com/angular/angular/commit/61b9468)), closes [#5898](https://github.com/angular/angular/issues/5898)
+
+
+### BREAKING CHANGES
+
+* System.register testing bundle was renamed:
+`testing.js` -> `testing.dev.js`
+
+* UMD bundles were renamed:
+  * `angular2.umd.js` -> `angular2-all.umd.js`
+  * `angular2-testing.umd.js` -> `angular2-all-testing.umd.js`
+
+* RxJS used to be bundled with Angular 2 code and this is not the case
+any more. RxJS needs to be loaded explicitly.
+
+* Previously `angular2.js`, `angular2.min.js` and `angular2.dev.js` bundles
+would have zone.js and reflect-metadata pre-appended. New bundles don't
+contain zone.js nor reflect-metadata - those external dependencies can
+be easily loaded into a browser using `angular2-polyfills.js`
+
+* `ngUpgrade` related symbols are no longer part of the `angular2.js`
+bundle. `ngUpgrade` has a dedicated `upgrade.js` bundle now.
+
+
+
+
+<a name="2.0.0-alpha.53"></a>
+# 2.0.0-alpha.53 (2015-12-13)
+
+
+### Bug Fixes
+
+* **angular2:** don't export compiler bits as public API ([20c6eeb](https://github.com/angular/angular/commit/20c6eeb)), closes [#5815](https://github.com/angular/angular/issues/5815) [#5797](https://github.com/angular/angular/issues/5797)
+* **angular2:** remove `angular2.ts` module ([200dc00](https://github.com/angular/angular/commit/200dc00)), closes [#5815](https://github.com/angular/angular/issues/5815) [#5844](https://github.com/angular/angular/issues/5844)
+* **animate:** ensure transition properties are removed once the animation is over ([b8e69a2](https://github.com/angular/angular/commit/b8e69a2))
+* **async:** improve Rx support in ObservableWrapper ([4a17e69](https://github.com/angular/angular/commit/4a17e69))
+* **async:** support BehaviorSubjects in async pipe ([398f024](https://github.com/angular/angular/commit/398f024))
+* **bundles:** don't use angular2/angular2 in config of System.register bundles ([8c69497](https://github.com/angular/angular/commit/8c69497))
+* **changelog:** fix ngFor on template ([3190c59](https://github.com/angular/angular/commit/3190c59)), closes [#5785](https://github.com/angular/angular/issues/5785)
+* **compiler:** remove AppRootUrl ([ed2c25e](https://github.com/angular/angular/commit/ed2c25e))
+* **core:** workaround for typescript@1.7.3 breakage #5784 ([30e25ac](https://github.com/angular/angular/commit/30e25ac)), closes [#5784](https://github.com/angular/angular/issues/5784)
+* **dom_renderer:** moveNodeAfterSiblings should not detach the reference node ([edcb34d](https://github.com/angular/angular/commit/edcb34d)), closes [#5077](https://github.com/angular/angular/issues/5077) [#5759](https://github.com/angular/angular/issues/5759)
+* **HtmlParser:** allow ng-content elements regardless the namespace ([080469f](https://github.com/angular/angular/commit/080469f)), closes [#5745](https://github.com/angular/angular/issues/5745)
+* **parse5:** support comment nodes with getText and setText ([693d9dc](https://github.com/angular/angular/commit/693d9dc)), closes [#5805](https://github.com/angular/angular/issues/5805)
+* **public_spec:** check exports of barrels instead of angular2/angular2 ([979162d](https://github.com/angular/angular/commit/979162d)), closes [#5841](https://github.com/angular/angular/issues/5841)
+* **styles:** Escape \r characters in compiled text ([92ddc62](https://github.com/angular/angular/commit/92ddc62)), closes [#5772](https://github.com/angular/angular/issues/5772) [#5835](https://github.com/angular/angular/issues/5835)
+* **TemplateParser:** match element and attributes regardless the namespace ([7c13372](https://github.com/angular/angular/commit/7c13372))
+* **upgrade:** allow directives with empty template ([2ca5e38](https://github.com/angular/angular/commit/2ca5e38))
+* **web_workers:** remove unnecessary setup module and AppRootUrl ([a885f37](https://github.com/angular/angular/commit/a885f37)), closes [#5820](https://github.com/angular/angular/issues/5820)
+
+### Features
+
+* **benchpress:** add receivedData + requestCount to PerflogMetric ([fe1dd77](https://github.com/angular/angular/commit/fe1dd77)), closes [#5750](https://github.com/angular/angular/issues/5750)
+* **dom_renderer:** add setBindingDebugInfo method ([79399e1](https://github.com/angular/angular/commit/79399e1)), closes [#5227](https://github.com/angular/angular/issues/5227)
+* **facade:** do not reexport Observable from angular2/core ([43f42d9](https://github.com/angular/angular/commit/43f42d9))
+* **Headers:** implement `toJSON` ([0cb32c2](https://github.com/angular/angular/commit/0cb32c2))
+* **renderer:** use a comment instead of an element when stamping out template>` elements ([194dc7d](https://github.com/angular/angular/commit/194dc7d)), closes [#4805](https://github.com/angular/angular/issues/4805)
+
+
+### BREAKING CHANGES
+
+* `Observable` are no more re-exported from `angular2/core`
+
+    Before 
+    ```
+    import {Observable} from 'angular2/core'
+    ```
+    After 
+    ```
+    import {Observable} from 'rxjs/Observable';
+    ```
+
+* The setupWebWorker function exported from
+angular2/platform/worker_app  no longer returns a promise of providers,
+but instead synchronously returns providers.
+Related to #5815
+
+* `angular2/angular2` was removed. Use the correct import from one of the barrels. E.g. `angular2/core`, `angular2/platform/browser`,  `angular2/common`, …
+Note: This only applies to JavaScript, Dart is not changed.
+
+* The following symbols are not exported from angular2/angular2 any more:
+`UrlResolver`, `AppRootUrl`, `getUrlScheme`, `DEFAULT_PACKAGE_URL_PROVIDER`.
+Use imports from `angular2/compiler` instead.
+
+
+
+<a name="2.0.0-alpha.52"></a>
+# 2.0.0-alpha.52 (2015-12-10)
+
+
+### Features
+
+* **core:** case-sensitive camelCase templates (kebab-case removal) ([da9b46a](https://github.com/angular/angular/commit/da9b46a))
+
+
+### BREAKING CHANGES
+
+* Angular templates are now case-sensitive and use camelCase instead of kebab-case (dash-case).
+
+  Before:
+
+  ```
+      <p *ng-if="cond">
+      <my-cmp [my-prop]="exp">
+      <my-cmp (my-event)="action()">
+      <my-cmp [(my-prop)]="prop">
+      <input #my-input>
+      <template ng-for #my-item [ng-for-of]=items #my-index="index">
+  ```
+
+  After:
+
+  ```
+      <p *ngIf="cond">
+      <my-cmp [myProp]="exp">
+      <my-cmp (myEvent)="action()">
+      <my-cmp [(myProp)]="prop">
+      <input #myInput>`,
+      <template ngFor "#myItem" [ngForOf]=items #myIndex="index">
+  ```
+
+  The full migration instruction can be found at [angular2/docs/migration/kebab-case.md](https://github.com/angular/angular/blob/master/modules/angular2/docs/migration/kebab-case.md).
+
+
+
+<a name="2.0.0-alpha.51"></a>
+# 2.0.0-alpha.51 (2015-12-10)
+
+
+### Features
+
+* **bundles:** add angular2-testing UMD bundle ([d6d759d](https://github.com/angular/angular/commit/d6d759d)), closes [#5581](https://github.com/angular/angular/issues/5581) [#5734](https://github.com/angular/angular/issues/5734)
+* **core:** provide support for relative assets for components ([28860d3](https://github.com/angular/angular/commit/28860d3)), closes [#5634](https://github.com/angular/angular/issues/5634)
+* **core:** typescript 1.7.3 compatibility ([#5758](https://github.com/angular/angular/pull/5758))
+
+
+
+<a name="2.0.0-alpha.50"></a>
+# 2.0.0-alpha.50 (2015-12-09)
+
+
+### Bug Fixes
+
+* **http:** fix syntax error in package.json ([869a392](https://github.com/angular/angular/commit/869a3923574de9ed34b953e84e1744cc007ca629)), closes [#5636](https://github.com/angular/angular/issues/5636) [#5726](https://github.com/angular/angular/issues/5726)
+* **http:** use `any` for res.json() return ([cbf7888](https://github.com/angular/angular/commit/cbf7888)), closes [#5636](https://github.com/angular/angular/issues/5636) [#5646](https://github.com/angular/angular/issues/5646)
+* **testing:** remove Symbol dummy shim ([c1ae49d](https://github.com/angular/angular/commit/c1ae49d)), closes [#5067](https://github.com/angular/angular/issues/5067) [#5719](https://github.com/angular/angular/issues/5719)
+* **package:** update RxJS to alpha.14 ([4432cf5](https://github.com/angular/angular/commit/4432cf5438b8c615d297e8965f0ad69f0188169e)), closes [#5722](https://github.com/angular/angular/issues/5722)
+
+### Features
+
+* **testing:** package angular2_testing to prepare it for publishing ([cc8f1f9](https://github.com/angular/angular/commit/cc8f1f9)), closes [#5682](https://github.com/angular/angular/issues/5682)
+
+<a name="2.0.0-alpha.49"></a>
+# 2.0.0-alpha.49 (2015-12-09)
+
+
+### Bug Fixes
+
+* **bootstrap:** fix the configuration of ExceptionHandler ([0d9a1de](https://github.com/angular/angular/commit/0d9a1de))
+* **build:** lock down version of package:code_transformers ([85d89ba](https://github.com/angular/angular/commit/85d89ba))
+* **bundles:** clean-up and re-organize UMD bundles ([fb4f1e8](https://github.com/angular/angular/commit/fb4f1e8)), closes [#5593](https://github.com/angular/angular/issues/5593) [#5697](https://github.com/angular/angular/issues/5697)
+* **bundles:** remove SFX bundle ([a4ba46c](https://github.com/angular/angular/commit/a4ba46c)), closes [#5665](https://github.com/angular/angular/issues/5665) [#5712](https://github.com/angular/angular/issues/5712)
+* **bundles:** rename external-dependencies to angular-polyfills ([b3c91b1](https://github.com/angular/angular/commit/b3c91b1)), closes [#5714](https://github.com/angular/angular/issues/5714) [#5716](https://github.com/angular/angular/issues/5716)
+* **changelog:** add RxJS imports breaking change ([ad48169](https://github.com/angular/angular/commit/ad48169)), closes [#5678](https://github.com/angular/angular/issues/5678)
+* **changelog:** correct import path ([86c74cf](https://github.com/angular/angular/commit/86c74cf)), closes [#5681](https://github.com/angular/angular/issues/5681)
+* **compiler:** support properties on SVG elements ([daaa8ee](https://github.com/angular/angular/commit/daaa8ee)), closes [#5653](https://github.com/angular/angular/issues/5653)
+* **dynamic_component_loader:** leave the view tree in a consistent state when hydration fails ([0df8bc4](https://github.com/angular/angular/commit/0df8bc4)), closes [#5718](https://github.com/angular/angular/issues/5718)
+* **form:** Form directives are exportedAs 'ngForm' (was 'form') ([8657ca4](https://github.com/angular/angular/commit/8657ca4)), closes [#5658](https://github.com/angular/angular/issues/5658) [#5709](https://github.com/angular/angular/issues/5709)
+* **HtmlLexer:** handle CR in input stream per HTML spec ([9850e68](https://github.com/angular/angular/commit/9850e68)), closes [#5618](https://github.com/angular/angular/issues/5618) [#5629](https://github.com/angular/angular/issues/5629)
+* **HtmlLexer:** tag name must follow "<" without space ([47f1d12](https://github.com/angular/angular/commit/47f1d12))
+* **HtmlParser:** Do not add parent element for template children ([3a43861](https://github.com/angular/angular/commit/3a43861)), closes [#5638](https://github.com/angular/angular/issues/5638)
+* **HtmlParser:** ignore LF immediately following pre, textarea & listing ([eb0ea93](https://github.com/angular/angular/commit/eb0ea93)), closes [#5630](https://github.com/angular/angular/issues/5630) [#5688](https://github.com/angular/angular/issues/5688)
+* **HtmlParser:** mark <source> elements as void ([50490b5](https://github.com/angular/angular/commit/50490b5)), closes [#5663](https://github.com/angular/angular/issues/5663) [#5668](https://github.com/angular/angular/issues/5668)
+* **npm:** move es6-shim from devDependencies to dependencies ([21542ed](https://github.com/angular/angular/commit/21542ed))
+* **package:** relock RxJS to alpha.11 ([4b1618c](https://github.com/angular/angular/commit/4b1618c)), closes [#5643](https://github.com/angular/angular/issues/5643) [#5644](https://github.com/angular/angular/issues/5644)
+* **router:** set correct redirect/default URL from hashchange ([aa85856](https://github.com/angular/angular/commit/aa85856)), closes [#5590](https://github.com/angular/angular/issues/5590) [#5683](https://github.com/angular/angular/issues/5683)
+
+### Features
+
+* **HtmlLexer:** allow "<" in text tokens ([aecf681](https://github.com/angular/angular/commit/aecf681)), closes [#5550](https://github.com/angular/angular/issues/5550)
+* **TemplateParser:** allow template elements regardless the namespace  ([1f35048](https://github.com/angular/angular/commit/1f35048)), closes [#5703](https://github.com/angular/angular/issues/5703)
+
+
+### BREAKING CHANGES
+
+* The existing sfx bundle (angular2.sfx.dev.js) is replaced by UMD bundles:
+angular2.umd.js and angular2.umd.dev.js. The new UMD bundles dont have
+polyfills (zone.js, reflect-metadata) pre-appended. Those polyfills
+can be easily loaded by including the angular-polyfills.js bundle.
+
+* The `external-dependencies.js` bundle was removed.
+Use `angular-polyfills.js` instead.
+
+* Number and content of UMD bundles have changed:
+- we only publish one bundle that contains: core, common, platform/browser, http, router, instrumentation and upgrade
+- exported names have changed and now:
+  - core is exported as `ng.core`
+  - common is exported as `ng.common`
+  - platform/browser is exported as `ng.platform.browser`
+  - http is exported as `ng.http`
+  - router is exported as `ng.router`
+  - instrumentation is exported as `ng.instrumentation`
+  - upgrade is exported as `ng.upgrade`
+
+* Form directives are exportedAs 'ngForm' (was 'form')
+
+    Before:
+      ```html
+        <form #f="form">
+      ```
+
+    After:
+      ```html
+        <form #f="ngForm">
+      ```
+* rxjs, reflect-metadata, zone.js and es6-shims now must be specified as
+  explicit dependencies of each angular app that uses npm for package management.
+
+  To migrate, please add the following into the "dependencies" section of your package.json:
+
+  ```
+  "dependencies": {
+      ...
+
+      "es6-promise": "^3.0.2",
+      "es6-shim": "^0.33.3",
+      "reflect-metadata": "0.1.2",
+      "rxjs": "5.0.0-alpha.11",
+      "zone.js": "0.5.8"
+
+      ...
+  }
+  ```
+
+  or [check angular2's package.json](https://github.com/angular/angular/blob/master/package.json#L34) for the latest peer dependencies
+
+
 <a name="2.0.0-alpha.48"></a>
 # 2.0.0-alpha.48 (2015-12-05)
 
@@ -48,15 +323,15 @@ import * as core from 'angular2/core';
 
 * Operators and Observables from RxJS (e.g. .map(), .toArray(), .toPromise(), etc ) now need to be explicitly imported (once per operator in your app)
   ```
-  import {Observable} from 'angular2/angular2'
-  import 'rxjs/operators/map';
-  import 'rxjs/observable/interval'
+  import {Observable} from 'rxjs/Observable';
+  import 'rxjs/add/operators/map';
+  import 'rxjs/add/observable/interval';
 
   Observable.interval(1000).subscribe(...);
 
   http.get('foos.json').map(res => res.json()).subscribe(...);
   ```
-  
+
 <a name="2.0.0-alpha.47"></a>
 # 2.0.0-alpha.47 (2015-12-01)
 

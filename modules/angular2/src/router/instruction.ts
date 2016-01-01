@@ -12,7 +12,8 @@ import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
  * ### Example
  *
  * ```
- * import {bootstrap, Component} from 'angular2/angular2';
+ * import {Component} from 'angular2/core';
+ * import {bootstrap} from 'angular2/platform/browser';
  * import {Router, ROUTER_DIRECTIVES, ROUTER_PROVIDERS, RouteConfig} from 'angular2/router';
  *
  * @Component({directives: [ROUTER_DIRECTIVES]})
@@ -46,7 +47,8 @@ export class RouteParams {
  * ### Example
  *
  * ```
- * import {bootstrap, Component, View} from 'angular2/angular2';
+ * import {Component, View} from 'angular2/core';
+ * import {bootstrap} from 'angular2/platform/browser';
  * import {Router, ROUTER_DIRECTIVES, routerBindings, RouteConfig} from 'angular2/router';
  *
  * @Component({...})
@@ -86,7 +88,8 @@ export var BLANK_ROUTE_DATA = new RouteData();
  * ### Example
  *
  * ```
- * import {bootstrap, Component} from 'angular2/angular2';
+ * import {Component} from 'angular2/core';
+ * import {bootstrap} from 'angular2/platform/browser';
  * import {Router, ROUTER_DIRECTIVES, ROUTER_PROVIDERS, RouteConfig} from 'angular2/router';
  *
  * @Component({directives: [ROUTER_DIRECTIVES]})
@@ -108,12 +111,12 @@ export abstract class Instruction {
   public child: Instruction;
   public auxInstruction: {[key: string]: Instruction} = {};
 
-  get urlPath(): string { return this.component.urlPath; }
+  get urlPath(): string { return isPresent(this.component) ? this.component.urlPath : ''; }
 
-  get urlParams(): string[] { return this.component.urlParams; }
+  get urlParams(): string[] { return isPresent(this.component) ? this.component.urlParams : []; }
 
-  get specificity(): number {
-    var total = 0;
+  get specificity(): string {
+    var total = '';
     if (isPresent(this.component)) {
       total += this.component.specificity;
     }
@@ -178,7 +181,7 @@ export abstract class Instruction {
 
   /** @internal */
   _stringifyMatrixParams(): string {
-    return this.urlParams.length > 0 ? (';' + this.component.urlParams.join(';')) : '';
+    return this.urlParams.length > 0 ? (';' + this.urlParams.join(';')) : '';
   }
 
   /** @internal */
@@ -302,7 +305,7 @@ export class ComponentInstruction {
   public routeData: RouteData;
 
   constructor(public urlPath: string, public urlParams: string[], data: RouteData,
-              public componentType, public terminal: boolean, public specificity: number,
+              public componentType, public terminal: boolean, public specificity: string,
               public params: {[key: string]: any} = null) {
     this.routeData = isPresent(data) ? data : BLANK_ROUTE_DATA;
   }

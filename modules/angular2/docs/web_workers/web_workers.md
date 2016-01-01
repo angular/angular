@@ -55,7 +55,7 @@ System.import("app");
 ```TypeScript
 // app.ts
 import {Component, View, platform} from "angular2/core";
-import {WORKER_APP_PLATFORM, setupWebWorker} from "angular2/platform/worker_app";
+import {WORKER_APP_PLATFORM, WORKER_APP_APPLICATION} from "angular2/platform/worker_app";
 
 @Component({
   selector: "hello-world"
@@ -68,7 +68,7 @@ export class HelloWorld {
 }
 
 platform([WORKER_APP_PLATFORM])
-.asyncApplication(setupWebWorker, optionalProviders?)
+.application([WORKER_APP_APPLICATION])
 .then((ref) => ref.bootstrap(RootComponent));
 ```
 There's a few important things to note here:
@@ -125,26 +125,26 @@ class HelloWorld {
 
 main(List<String> args, SendPort replyTo) {
   reflector.reflectionCapabilities = new ReflectionCapabilities();
-  platform([WORKER_APP_PLATFORM])
-    .asyncApplication(setupIsolate(replyTo))
-      .then((ref) => ref.bootstrap(RootComponent));
+  platform([WORKER_APP_PLATFORM, new Provider(RENDER_SEND_PORT, useValue: replyTo)])
+  .application([WORKER_APP_APPLICATION])
+  .bootstrap(RootComponent);
 }
 
 ```
 This code is nearly the same as the TypeScript version with just a couple key differences:
 * We don't have a `loader.js` file. Dart applications don't need this file because you don't need a module loader.
-* We pass a `SendPort` to `bootstrapWebWorker`. Dart applications use the Isolate API, which communicates via
+* We provide a `SendPort` through DI using the token `RENDER_SEND_PORT`.  Dart applications use the Isolate API, which communicates via
 Dart's Port abstraction. When you call `setupIsolate` from the UI thread, angular starts a new Isolate to run
 your application logic. When Dart starts a new Isolate it passes a `SendPort` to that Isolate so that it
-can communicate with the Isolate that spawned it. You need to pass this `SendPort` to `bootstrapWebWorker`
+can communicate with the Isolate that spawned it. You need to provide this `SendPort` through DI 
 so that Angular can communicate with the UI.
 * You need to set up `ReflectionCapabilities` on both the UI and Worker. Just like writing non-concurrent
 Angular2 Dart applications you need to set up the reflector. You should not use Reflection in production,
 but should use the angular 2 transformer to remove it in your final JS code. Note there's currently a bug
 with running the transformer on your UI code (#3971). You can (and should) pass the file where you call
-`bootstrapWebWorker` as an entry point to the transformer, but you should not pass your UI index file
+`bootstrap` as an entry point to the transformer, but you should not pass your UI index file
 to the transformer until that bug is fixed.
-* In dart we call `asyncApplication` instead of `application` because starting an isolate in Dart is asyncronous
+* In dart we call `asyncApplication` instead of `application` from the render thread because starting an isolate in Dart is asyncronous
  whereas starting a new WebWorker in JavaScript is a synchronous operation.
 
 ## Writing WebWorker Compatible Components
@@ -392,18 +392,22 @@ import {WORKER_APP_PLATFORM, genericWorkerAppProviders} from "angular2/platform/
 import {NgZone, platform, Provider} from "angular/core";
 import {MyApp} from './app';
 
-platform([WORKER_APP_PLATFORM_PROVIDERS])
-.asyncApplication(initAppThread, optionalProviders?)
-.then((ref) => ref.bootstrap(MyApp));
+/**
+ * Do initialization work here to set up the app thread and MessageBus;
+ * Once you have a working MessageBus you should bootstrap your app.
+ */
 
-function initAppThread(zone: NgZone): Promise<Array<Type | Provider | any[]>> {
+platform([WORKER_APP_PLATFORM_PROVIDERS])
+.application([WORKER_APP_APPLICATION_COMMON, new Provider(MessageBus, {useValue: bus}),
+new Provider(APP_INITIALIZER, {useFactory: (zone, bus) => () => initAppThread(zone, bus), multi: true, deps: [NgZone, MessageBus]})])
+.bootstrap(MyApp);
+
+function initAppThread(zone: NgZone, bus: MyAwesomeMessageBus): void{
   /**
-   * Do initializtion work here to set up the app thread and MessageBus
-   * Once you have a working MessageBus that communicates with the render thread you should call genericWorkerAppProviders
-   * to get a list of Providers.
-   */
-  var bus = new MyAwesomeMessageBus();
-  return genericWorkerAppProviders(myBus, zone);
+   * Here you can do any initilization work that requires the app providers to be initialized.
+   * At a minimum, you must attach your bus to the zone and setup a DOM adapter.
+   * Depending on your environment you may choose to do more work here.
+  */
 }
 ```
 In Dart:
@@ -432,27 +436,30 @@ import "package:angular2/core.dart";
 import "./app.dart" show MyApp;
 
 main() {
+  /**
+   * Do initialization work here to set up the app thread and MessageBus;
+   * Once you have a working MessageBus you should bootstrap your app.
+   */
   reflector.reflectionCapabilities = new ReflectionCapabilities();
   platform([WORKER_APP_PLATFORM_PROVIDERS])
-  .asyncApplication(initAppThread, optionalProviders?)
-  .then((ref) => ref.bootstrap(MyApp));
+  .application([WORKER_APP_APPLICATION_COMMON, new Provider(MessageBus, useValue: bus),
+new Provider(APP_INITIALIZER, useFactory: (zone, bus) => () => initAppThread(zone, bus), multi: true, deps: [NgZone, MessageBus])])
+  .bootstrap(MyApp);
 } 
 
 
-Future<dynamic> initAppThread(NgZone zone) {
-  var bus = new MyAwesomeMessageBus();
-  return genericWorkerAppProviders(myBus, zone);
+void initAppThread(NgZone zone) {
+  /**
+   * Here you can do any initilization work that requires the app providers to be initialized.
+   * At a minimum, you must attach your bus to the zone and setup a DOM adapter.
+   * Depending on your environment you may choose to do more work here.
+  */
 }
 ```
 Notice how we use the `WORKER_RENDER_APP_COMMON` providers instead of the `WORKER_RENDER_APP` providers on the render thread.
 This is because the `WORKER_RENDER_APP` providers include an application initializer that starts a new WebWorker/Isolate.
 The `WORKER_RENDER_APP_COMMON` providers make no assumption about where your application code lives.
 However, we now need to provide our own app initializer. At the very least this initializer needs to call `initializeGenericWorkerRenderer`.
-This function performs necessary setup work to bootstrap the application.
-
-Similarly we don&amp;t call `setupWebWorker` or `setupIsolate` from the application thread.
-Instead we have our own initilization method that sets up our MessageBus and calls `genericWorkerAppProviders`
-to finish setting up the application injector.
 
 ## MessageBroker
 The MessageBroker is a higher level messaging abstraction that sits on top of the MessageBus. It is used when you

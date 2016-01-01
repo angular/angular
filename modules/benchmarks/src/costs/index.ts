@@ -63,16 +63,16 @@ class DynamicDummy {
 @View({
   directives: [NgIf, NgFor, DummyComponent, DummyDirective, DynamicDummy],
   template: `
-    <div *ng-if="testingPlainComponents">
-      <dummy *ng-for="#i of list"></dummy>
+    <div *ngIf="testingPlainComponents">
+      <dummy *ngFor="#i of list"></dummy>
     </div>
 
-    <div *ng-if="testingWithDirectives">
-      <dummy dummy-decorator *ng-for="#i of list"></dummy>
+    <div *ngIf="testingWithDirectives">
+      <dummy dummy-decorator *ngFor="#i of list"></dummy>
     </div>
 
-    <div *ng-if="testingDynamicComponents">
-      <dynamic-dummy *ng-for="#i of list"></dynamic-dummy>
+    <div *ngIf="testingDynamicComponents">
+      <dynamic-dummy *ngFor="#i of list"></dynamic-dummy>
     </div>
   `
 })

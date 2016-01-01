@@ -84,7 +84,7 @@ export function main() {
       it('should contain the first content child',
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            var template =
-               '<needs-content-child #q><div *ng-if="shouldShow" text="foo"></div></needs-content-child>';
+               '<needs-content-child #q><div *ngIf="shouldShow" text="foo"></div></needs-content-child>';
 
            tcb.overrideTemplate(MyComp, template)
                .createAsync(MyComp)
@@ -178,7 +178,7 @@ export function main() {
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            var template =
                '<div text="1"></div>' +
-               '<needs-query text="2"><div *ng-if="shouldShow" [text]="\'3\'"></div></needs-query>' +
+               '<needs-query text="2"><div *ngIf="shouldShow" [text]="\'3\'"></div></needs-query>' +
                '<div text="4"></div>';
 
            tcb.overrideTemplate(MyComp, template)
@@ -201,7 +201,7 @@ export function main() {
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            var template =
                '<div text="1"></div>' +
-               '<needs-query text="2"><div *ng-if="shouldShow" [text]="\'3\'"></div></needs-query>' +
+               '<needs-query text="2"><div *ngIf="shouldShow" [text]="\'3\'"></div></needs-query>' +
                '<div text="4"></div>';
 
            tcb.overrideTemplate(MyComp, template)
@@ -219,7 +219,7 @@ export function main() {
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            var template =
                '<div text="1"></div>' +
-               '<needs-query text="2"><div *ng-for="var i of list" [text]="i"></div></needs-query>' +
+               '<needs-query text="2"><div *ngFor="var i of list" [text]="i"></div></needs-query>' +
                '<div text="4"></div>';
 
            tcb.overrideTemplate(MyComp, template)
@@ -264,7 +264,7 @@ export function main() {
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            var template = '<needs-query #q>' +
                           '<div text="1"></div>' +
-                          '<div *ng-if="shouldShow" text="2"></div>' +
+                          '<div *ngIf="shouldShow" text="2"></div>' +
                           '</needs-query>';
 
            tcb.overrideTemplate(MyComp, template)
@@ -312,8 +312,7 @@ export function main() {
 
       it('should correctly clean-up when destroyed together with the directives it is querying',
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-           var template =
-               '<needs-query #q *ng-if="shouldShow"><div text="foo"></div></needs-query>';
+           var template = '<needs-query #q *ngIf="shouldShow"><div text="foo"></div></needs-query>';
 
            tcb.overrideTemplate(MyComp, template)
                .createAsync(MyComp)
@@ -342,10 +341,9 @@ export function main() {
     describe("querying by var binding", () => {
       it('should contain all the child directives in the light dom with the given var binding',
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-           var template =
-               '<needs-query-by-var-binding #q>' +
-               '<div *ng-for="#item of list" [text]="item" #text-label="textDir"></div>' +
-               '</needs-query-by-var-binding>';
+           var template = '<needs-query-by-var-binding #q>' +
+                          '<div *ngFor="#item of list" [text]="item" #textLabel="textDir"></div>' +
+                          '</needs-query-by-var-binding>';
 
            tcb.overrideTemplate(MyComp, template)
                .createAsync(MyComp)
@@ -366,8 +364,8 @@ export function main() {
       it('should support querying by multiple var bindings',
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            var template = '<needs-query-by-var-bindings #q>' +
-                          '<div text="one" #text-label1="textDir"></div>' +
-                          '<div text="two" #text-label2="textDir"></div>' +
+                          '<div text="one" #textLabel1="textDir"></div>' +
+                          '<div text="two" #textLabel2="textDir"></div>' +
                           '</needs-query-by-var-bindings>';
 
            tcb.overrideTemplate(MyComp, template)
@@ -385,10 +383,9 @@ export function main() {
 
       it('should reflect dynamically inserted directives',
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-           var template =
-               '<needs-query-by-var-binding #q>' +
-               '<div *ng-for="#item of list" [text]="item" #text-label="textDir"></div>' +
-               '</needs-query-by-var-binding>';
+           var template = '<needs-query-by-var-binding #q>' +
+                          '<div *ngFor="#item of list" [text]="item" #textLabel="textDir"></div>' +
+                          '</needs-query-by-var-binding>';
 
            tcb.overrideTemplate(MyComp, template)
                .createAsync(MyComp)
@@ -412,8 +409,8 @@ export function main() {
       it('should contain all the elements in the light dom with the given var binding',
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            var template = '<needs-query-by-var-binding #q>' +
-                          '<div template="ng-for: #item of list">' +
-                          '<div #text-label>{{item}}</div>' +
+                          '<div template="ngFor: #item of list">' +
+                          '<div #textLabel>{{item}}</div>' +
                           '</div>' +
                           '</needs-query-by-var-binding>';
 
@@ -622,7 +619,7 @@ export function main() {
                });
          }));
 
-      it('should handle long ng-for cycles',
+      it('should handle long ngFor cycles',
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            var template = '<needs-view-query-order #q></needs-view-query-order>';
 
@@ -716,7 +713,7 @@ class NeedsContentChild implements AfterContentInit, AfterContentChecked {
 @Component({selector: 'needs-view-child'})
 @View({
   template: `
-    <div *ng-if="shouldShow" text="foo"></div>
+    <div *ngIf="shouldShow" text="foo"></div>
   `,
   directives: [NgIf, TextDirective]
 })
@@ -749,7 +746,7 @@ class InertDirective {
 @Component({selector: 'needs-query'})
 @View({
   directives: [NgFor, TextDirective],
-  template: '<div text="ignoreme"></div><b *ng-for="var dir of query">{{dir.text}}|</b>'
+  template: '<div text="ignoreme"></div><b *ngFor="var dir of query">{{dir.text}}|</b>'
 })
 @Injectable()
 class NeedsQuery {
@@ -767,7 +764,7 @@ class NeedsFourQueries {
 }
 
 @Component({selector: 'needs-query-desc'})
-@View({directives: [NgFor], template: '<div *ng-for="var dir of query">{{dir.text}}|</div>'})
+@View({directives: [NgFor], template: '<div *ngFor="var dir of query">{{dir.text}}|</div>'})
 @Injectable()
 class NeedsQueryDesc {
   query: QueryList<TextDirective>;
@@ -787,7 +784,7 @@ class NeedsQueryByLabel {
 }
 
 @Component({selector: 'needs-view-query-by-var-binding'})
-@View({directives: [], template: '<div #text-label>text</div>'})
+@View({directives: [], template: '<div #textLabel>text</div>'})
 @Injectable()
 class NeedsViewQueryByLabel {
   query: QueryList<any>;
@@ -807,7 +804,7 @@ class NeedsQueryByTwoLabels {
 @Component({selector: 'needs-query-and-project'})
 @View({
   directives: [NgFor],
-  template: '<div *ng-for="var dir of query">{{dir.text}}|</div><ng-content></ng-content>'
+  template: '<div *ngFor="var dir of query">{{dir.text}}|</div><ng-content></ng-content>'
 })
 @Injectable()
 class NeedsQueryAndProject {
@@ -828,7 +825,7 @@ class NeedsViewQuery {
 }
 
 @Component({selector: 'needs-view-query-if'})
-@View({directives: [NgIf, TextDirective], template: '<div *ng-if="show" text="1"></div>'})
+@View({directives: [NgIf, TextDirective], template: '<div *ngIf="show" text="1"></div>'})
 @Injectable()
 class NeedsViewQueryIf {
   show: boolean;
@@ -843,7 +840,7 @@ class NeedsViewQueryIf {
 @Component({selector: 'needs-view-query-nested-if'})
 @View({
   directives: [NgIf, InertDirective, TextDirective],
-  template: '<div text="1"><div *ng-if="show"><div dir></div></div></div>'
+  template: '<div text="1"><div *ngIf="show"><div dir></div></div></div>'
 })
 @Injectable()
 class NeedsViewQueryNestedIf {
@@ -859,7 +856,7 @@ class NeedsViewQueryNestedIf {
 @View({
   directives: [NgFor, TextDirective, InertDirective],
   template: '<div text="1"></div>' +
-                '<div *ng-for="var i of list" [text]="i"></div>' +
+                '<div *ngFor="var i of list" [text]="i"></div>' +
                 '<div text="4"></div>'
 })
 @Injectable()
@@ -876,7 +873,7 @@ class NeedsViewQueryOrder {
 @View({
   directives: [NgFor, TextDirective, InertDirective],
   template: '<div dir><div text="1"></div>' +
-                '<div *ng-for="var i of list" [text]="i"></div>' +
+                '<div *ngFor="var i of list" [text]="i"></div>' +
                 '<div text="4"></div></div>'
 })
 @Injectable()

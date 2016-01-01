@@ -53,6 +53,9 @@ var _chromeNumKeyPadMap = {
   '\x90': 'NumLock'
 };
 
+/**
+ * A `DomAdapter` powered by full browser DOM APIs.
+ */
 /* tslint:disable:requireParameterType */
 export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   parse(templateHtml: string) { throw new Error("parse not implemented"); }

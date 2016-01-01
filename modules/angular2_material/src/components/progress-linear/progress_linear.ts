@@ -1,4 +1,4 @@
-import {Component, View, ViewEncapsulation, Attribute, OnChanges} from 'angular2/angular2';
+import {Component, ViewEncapsulation, Attribute, OnChanges} from 'angular2/core';
 import {CONST} from 'angular2/src/facade/lang';
 import {isPresent, isBlank} from 'angular2/src/facade/lang';
 import {Math} from 'angular2/src/facade/math';
@@ -20,9 +20,7 @@ class ProgressMode {
     'aria-valuemin': '0',
     'aria-valuemax': '100',
     '[attr.aria-valuenow]': 'value'
-  }
-})
-@View({
+  },
   templateUrl: 'package:angular2_material/src/components/progress-linear/progress_linear.html',
   directives: [],
   encapsulation: ViewEncapsulation.None

@@ -4,6 +4,10 @@ import {ListWrapper} from 'angular2/src/facade/collection';
 import {ChangeDetectorRef} from '../change_detector_ref';
 import {Provider, SkipSelfMetadata, OptionalMetadata, Injectable} from 'angular2/src/core/di';
 
+/**
+ * A strategy for tracking changes over time to an iterable. Used for {@link NgFor} to
+ * respond to changes in an iterable by effecting equivalent changes in the DOM.
+ */
 export interface IterableDiffer {
   diff(object: Object): any;
   onDestroy();

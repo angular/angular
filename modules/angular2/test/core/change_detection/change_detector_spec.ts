@@ -1332,7 +1332,7 @@ export function main() {
           expect(d.a).toEqual(2);
         });
 
-        // TODO: enable after chaning dart infrastructure for generating tests
+        // TODO: enable after chaining dart infrastructure for generating tests
         // it('should throw when trying to assign to a local', () => {
         //   expect(() => {
         //     _createChangeDetector('(event)="$event=1"', d, null)

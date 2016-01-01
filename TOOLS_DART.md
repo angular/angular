@@ -21,7 +21,7 @@ By default the debugging tools are disabled.
 Enable the debugging tools as follows:
 
 ```dart
-import 'package:angular2/tools.dart';
+import 'package:angular2/platform/browser.dart';
 
 main() async {
   var appRef = await bootstrap(Application);

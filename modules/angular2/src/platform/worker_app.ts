@@ -7,22 +7,31 @@ import {
   PostMessageBusSink,
   PostMessageBusSource
 } from 'angular2/src/web_workers/shared/post_message_bus';
-import {genericWorkerAppProviders} from './worker_app_common';
+import {WORKER_APP_APPLICATION_COMMON} from './worker_app_common';
+import {APP_INITIALIZER} from 'angular2/core';
+import {MessageBus} from 'angular2/src/web_workers/shared/message_bus';
 
 // TODO(jteplitz602) remove this and compile with lib.webworker.d.ts (#3492)
-interface PostMessageInterface {
-  (message: any, transferrables?:[ArrayBuffer]): void;
+let _postMessage = {
+  postMessage: (message: any, transferrables?:[ArrayBuffer]) => {
+    (<any>postMessage)(message, transferrables);
+  }
+};
+
+export const WORKER_APP_APPLICATION: Array<any /*Type | Provider | any[]*/> = [
+  WORKER_APP_APPLICATION_COMMON,
+  new Provider(MessageBus, {useFactory: createMessageBus, deps: [NgZone]}),
+  new Provider(APP_INITIALIZER, {useValue: setupWebWorker, multi: true})
+];
+
+function createMessageBus(zone: NgZone): MessageBus {
+  let sink = new PostMessageBusSink(_postMessage);
+  let source = new PostMessageBusSource();
+  let bus = new PostMessageBus(sink, source);
+  bus.attachToZone(zone);
+  return bus;
 }
-var _postMessage: PostMessageInterface = <any>postMessage;
 
-export function setupWebWorker(zone: NgZone): Promise<Array<Type | Provider | any[]>> {
+function setupWebWorker(): void {
   Parse5DomAdapter.makeCurrent();
-  var sink = new PostMessageBusSink({
-    postMessage:
-        (message: any, transferrables?:[ArrayBuffer]) => { _postMessage(message, transferrables); }
-  });
-  var source = new PostMessageBusSource();
-  var bus = new PostMessageBus(sink, source);
-
-  return genericWorkerAppProviders(bus, zone);
 }

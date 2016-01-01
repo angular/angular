@@ -17,22 +17,13 @@ import {DependencyMetadata} from 'angular2/src/core/di/metadata';
  *
  * A decorator can inject string literal `text` like so:
  *
- * ```javascript
- * @Directive({
- *   selector: `input'
- * })
- * class InputDirective {
- *   constructor(@Attribute('type') type) {
- *     // type would be `text` in this example
- *   }
- * }
- * ```
+ * {@example core/ts/metadata/metadata.ts region='attributeMetadata'}
  */
 @CONST()
 export class AttributeMetadata extends DependencyMetadata {
   constructor(public attributeName: string) { super(); }
 
-  get token() {
+  get token(): AttributeMetadata {
     // Normally one would default a token to a type of an injected value but here
     // the type of a variable is "string" and we can't use primitive type as a return value
     // so we use instance of Attribute instead. This doesn't matter much in practice as arguments
@@ -55,7 +46,7 @@ export class AttributeMetadata extends DependencyMetadata {
  * ```html
  * <tabs>
  *   <pane title="Overview">...</pane>
- *   <pane *ng-for="#o of objects" [title]="o.title">{{o.text}}</pane>
+ *   <pane *ngFor="#o of objects" [title]="o.title">{{o.text}}</pane>
  * </tabs>
  * ```
  *
@@ -74,7 +65,7 @@ export class AttributeMetadata extends DependencyMetadata {
  *  selector: 'tabs',
  *  template: `
  *    <ul>
- *      <li *ng-for="#pane of panes">{{pane.title}}</li>
+ *      <li *ngFor="#pane of panes">{{pane.title}}</li>
  *    </ul>
  *    <content></content>
  *  `

@@ -3,6 +3,10 @@ import {EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
 import {LocationStrategy} from 'angular2/src/router/location_strategy';
 
 
+/**
+ * A mock implementation of {@link LocationStrategy} that allows tests to fire simulated
+ * location events.
+ */
 @Injectable()
 export class MockLocationStrategy extends LocationStrategy {
   internalBaseHref: string = '/';
@@ -15,7 +19,7 @@ export class MockLocationStrategy extends LocationStrategy {
 
   simulatePopState(url: string): void {
     this.internalPath = url;
-    ObservableWrapper.callEmit(this._subject, new MockPopStateEvent(this.path()));
+    ObservableWrapper.callEmit(this._subject, new _MockPopStateEvent(this.path()));
   }
 
   path(): string { return this.internalPath; }
@@ -62,7 +66,7 @@ export class MockLocationStrategy extends LocationStrategy {
   forward(): void { throw 'not implemented'; }
 }
 
-class MockPopStateEvent {
+class _MockPopStateEvent {
   pop: boolean = true;
   type: string = 'popstate';
   constructor(public newUrl: string) {}

@@ -7,8 +7,8 @@ import {
   iit,
   expect,
   beforeEach,
-  createTestInjectorWithRuntimeCompiler,
   beforeEachProviders,
+  TestInjector,
   TestComponentBuilder
 } from "angular2/testing_internal";
 import {DOM} from 'angular2/src/platform/dom/dom_adapter';
@@ -56,6 +56,7 @@ import {
   ServiceMessageBrokerFactory_
 } from 'angular2/src/web_workers/shared/service_message_broker';
 import {WebWorkerEventDispatcher} from 'angular2/src/web_workers/worker/event_dispatcher';
+import {ChangeDetectorGenConfig} from 'angular2/src/core/change_detection/change_detection';
 
 
 export function main() {
@@ -101,17 +102,21 @@ export function main() {
     beforeEachProviders(() => {
       var uiRenderProtoViewStore = new RenderProtoViewRefStore(false);
       uiRenderViewStore = new RenderViewWithFragmentsStore(false);
-      uiInjector = createTestInjectorWithRuntimeCompiler([
+      var testInjector = new TestInjector();
+      testInjector.addProviders([
         provide(RenderProtoViewRefStore, {useValue: uiRenderProtoViewStore}),
         provide(RenderViewWithFragmentsStore, {useValue: uiRenderViewStore}),
         provide(DomRenderer, {useClass: DomRenderer_}),
         provide(Renderer, {useExisting: DomRenderer})
       ]);
+      uiInjector = testInjector.createInjector();
       var uiSerializer = uiInjector.get(Serializer);
       var domRenderer = uiInjector.get(DomRenderer);
       var workerRenderProtoViewStore = new RenderProtoViewRefStore(true);
       var workerRenderViewStore = new RenderViewWithFragmentsStore(true);
       return [
+        provide(ChangeDetectorGenConfig,
+                {useValue: new ChangeDetectorGenConfig(true, true, false)}),
         provide(RenderProtoViewRefStore, {useValue: workerRenderProtoViewStore}),
         provide(RenderViewWithFragmentsStore, {useValue: workerRenderViewStore}),
         provide(Renderer,
@@ -170,8 +175,8 @@ export function main() {
                  renderer.setElementStyle(elr, 'width', null);
                  expect(DOM.getStyle(el, 'width')).toEqual('');
 
-                 renderer.setElementAttribute(elr, 'someAttr', 'someValue');
-                 expect(DOM.getAttribute(el, 'some-attr')).toEqual('someValue');
+                 renderer.setElementAttribute(elr, 'someattr', 'someValue');
+                 expect(DOM.getAttribute(el, 'someattr')).toEqual('someValue');
                };
 
                // root element
@@ -183,10 +188,26 @@ export function main() {
              });
        }));
 
+    it('should update any template comment property/attributes',
+       inject([TestComponentBuilder, Renderer, AsyncTestCompleter],
+              (tcb: TestComponentBuilder, renderer: Renderer, async) => {
+                var tpl = '<template [ngIf]="ctxBoolProp"></template>';
+                tcb.overrideView(MyComp, new ViewMetadata({template: tpl, directives: [NgIf]}))
+
+                    .createAsync(MyComp)
+                    .then((fixture) => {
+                      (<MyComp>fixture.debugElement.componentInstance).ctxBoolProp = true;
+                      fixture.detectChanges();
+                      var el = getRenderElement(fixture.debugElement.elementRef);
+                      expect(DOM.getInnerHTML(el)).toContain('"ng-reflect-ng-if": "true"');
+                      async.done();
+                    });
+              }));
+
     it('should add and remove fragments',
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
          tcb.overrideView(MyComp, new ViewMetadata({
-                            template: '<template [ng-if]="ctxBoolProp">hello</template>',
+                            template: '<template [ngIf]="ctxBoolProp">hello</template>',
                             directives: [NgIf]
                           }))
              .createAsync(MyComp)
@@ -232,7 +253,7 @@ export function main() {
 class MyComp {
   ctxProp: string;
   ctxNumProp;
-  ctxBoolProp;
+  ctxBoolProp: boolean;
   constructor() {
     this.ctxProp = 'initial value';
     this.ctxNumProp = 0;

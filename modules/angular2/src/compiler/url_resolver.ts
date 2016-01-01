@@ -1,22 +1,49 @@
-import {Injectable} from 'angular2/src/core/di';
-import {isPresent, isBlank, RegExpWrapper, normalizeBlank} from 'angular2/src/facade/lang';
+import {Injectable, Inject} from 'angular2/src/core/di';
+import {
+  StringWrapper,
+  isPresent,
+  isBlank,
+  RegExpWrapper,
+  normalizeBlank
+} from 'angular2/src/facade/lang';
 import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
 import {ListWrapper} from 'angular2/src/facade/collection';
+import {PACKAGE_ROOT_URL} from 'angular2/src/core/application_tokens';
+import {Provider} from 'angular2/src/core/di';
 
+/**
+ * Create a {@link UrlResolver} with no package prefix.
+ */
 export function createWithoutPackagePrefix(): UrlResolver {
   return new UrlResolver();
 }
 
+/**
+ * A default provider for {@link PACKAGE_ROOT_URL} that maps to '/'.
+ */
+export var DEFAULT_PACKAGE_URL_PROVIDER = new Provider(PACKAGE_ROOT_URL, {useValue: "/"});
 
 /**
  * Used by the {@link Compiler} when resolving HTML and CSS template URLs.
  *
- * This interface can be overridden by the application developer to create custom behavior.
+ * This class can be overridden by the application developer to create custom behavior.
  *
  * See {@link Compiler}
+ *
+ * ## Example
+ *
+ * {@example compiler/ts/url_resolver/url_resolver.ts region='url_resolver'}
  */
 @Injectable()
 export class UrlResolver {
+  private _packagePrefix: string;
+
+  constructor(@Inject(PACKAGE_ROOT_URL) packagePrefix: string = null) {
+    if (isPresent(packagePrefix)) {
+      this._packagePrefix = StringWrapper.stripRight(packagePrefix, "/") + "/";
+    }
+  }
+
   /**
    * Resolves the `url` given the `baseUrl`:
    * - when the `url` is null, the `baseUrl` is returned,
@@ -29,7 +56,24 @@ export class UrlResolver {
    * @param {string} url
    * @returns {string} the resolved URL
    */
-  resolve(baseUrl: string, url: string): string { return _resolveUrl(baseUrl, url); }
+  resolve(baseUrl: string, url: string): string {
+    var resolvedUrl = url;
+    if (isPresent(baseUrl) && baseUrl.length > 0) {
+      resolvedUrl = _resolveUrl(baseUrl, resolvedUrl);
+    }
+    if (isPresent(this._packagePrefix) && getUrlScheme(resolvedUrl) == "package") {
+      resolvedUrl = resolvedUrl.replace("package:", this._packagePrefix);
+    }
+    return resolvedUrl;
+  }
+}
+
+/**
+ * Extract the scheme of a URL.
+ */
+export function getUrlScheme(url: string): string {
+  var match = _split(url);
+  return (match && match[_ComponentIndex.Scheme]) || "";
 }
 
 // The code below is adapted from Traceur:

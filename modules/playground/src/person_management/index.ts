@@ -84,13 +84,13 @@ class DataService {
       <form>
           <div>
             <label>
-              First: <input [(ng-model)]="person.firstName" type="text" placeholder="First name">
+              First: <input [(ngModel)]="person.firstName" type="text" placeholder="First name">
             </label>
           </div>
 
           <div>
             <label>
-              Last: <input [(ng-model)]="person.lastName" type="text" placeholder="Last name">
+              Last: <input [(ngModel)]="person.lastName" type="text" placeholder="Last name">
             </label>
           </div>
 
@@ -115,33 +115,33 @@ class FullNameComponent {
     <div>
       <form>
         <div>
-					<label>First: <input [(ng-model)]="person.firstName" type="text" placeholder="First name"></label>
+					<label>First: <input [(ngModel)]="person.firstName" type="text" placeholder="First name"></label>
 				</div>
 
         <div>
-					<label>Last: <input [(ng-model)]="person.lastName" type="text" placeholder="Last name"></label>
+					<label>Last: <input [(ngModel)]="person.lastName" type="text" placeholder="Last name"></label>
 				</div>
 
         <div>
-					<label>Year of birth: <input [(ng-model)]="person.yearOfBirth" type="number" placeholder="Year of birth"></label>
+					<label>Year of birth: <input [(ngModel)]="person.yearOfBirth" type="number" placeholder="Year of birth"></label>
           Age: {{person.age}}
 				</div>\
 
-        <div *ng-if="person.mom != null">
+        <div *ngIf="person.mom != null">
 					<label>Mom:</label>
-          <input [(ng-model)]="person.mom.firstName" type="text" placeholder="Mom's first name">
-          <input [(ng-model)]="person.mom.lastName" type="text" placeholder="Mom's last name">
+          <input [(ngModel)]="person.mom.firstName" type="text" placeholder="Mom's first name">
+          <input [(ngModel)]="person.mom.lastName" type="text" placeholder="Mom's last name">
           {{person.mom.fullName}}
 				</div>
 
-        <div *ng-if="person.dad != null">
+        <div *ngIf="person.dad != null">
 					<label>Dad:</label>
-          <input [(ng-model)]="person.dad.firstName" type="text" placeholder="Dad's first name">
-          <input [(ng-model)]="person.dad.lastName" type="text" placeholder="Dad's last name">
+          <input [(ngModel)]="person.dad.firstName" type="text" placeholder="Dad's first name">
+          <input [(ngModel)]="person.dad.lastName" type="text" placeholder="Dad's last name">
           {{person.dad.fullName}}
 				</div>
 
-        <div *ng-if="person.friends.length > 0">
+        <div *ngIf="person.friends.length > 0">
 					<label>Friends:</label>
           {{person.friendNames}}
 				</div>
@@ -161,7 +161,7 @@ class PersonsDetailComponent {
     <h1>FullName Demo</h1>
     <div>
       <ul>
-  		  <li *ng-for="#person of persons">
+  		  <li *ngFor="#person of persons">
   			  <label (click)="select(person)">{{person.fullName}}</label>
   			</li>
   	 </ul>
@@ -186,8 +186,8 @@ class PersonsComponent {
     <button (click)="switchToEditName()">Edit Full Name</button>
     <button (click)="switchToPersonList()">Person Array</button>
 
-    <full-name-cmp *ng-if="mode == 'editName'"></full-name-cmp>
-    <persons-cmp *ng-if="mode == 'personList'"></persons-cmp>
+    <full-name-cmp *ngIf="mode == 'editName'"></full-name-cmp>
+    <persons-cmp *ngIf="mode == 'personList'"></persons-cmp>
   `,
   directives: [FullNameComponent, PersonsComponent, NgIf]
 })

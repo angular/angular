@@ -117,7 +117,7 @@ function asyncRoutesWithoutChildrenWithoutParams() {
      }));
 
   it('should generate a link URL', inject([AsyncTestCompleter], (async) => {
-       compile(tcb, `<a [router-link]="['Hello']">go to hello</a> | <router-outlet></router-outlet>`)
+       compile(tcb, `<a [routerLink]="['Hello']">go to hello</a> | <router-outlet></router-outlet>`)
            .then((rtc) => {fixture = rtc})
            .then((_) => rtr.config(
                      [new AsyncRoute({path: '/test', loader: helloCmpLoader, name: 'Hello'})]))
@@ -130,7 +130,7 @@ function asyncRoutesWithoutChildrenWithoutParams() {
 
   it('should navigate from a link click',
      inject([AsyncTestCompleter, Location], (async, location) => {
-       compile(tcb, `<a [router-link]="['Hello']">go to hello</a> | <router-outlet></router-outlet>`)
+       compile(tcb, `<a [routerLink]="['Hello']">go to hello</a> | <router-outlet></router-outlet>`)
            .then((rtc) => {fixture = rtc})
            .then((_) => rtr.config(
                      [new AsyncRoute({path: '/test', loader: helloCmpLoader, name: 'Hello'})]))
@@ -190,7 +190,7 @@ function asyncRoutesWithoutChildrenWithParams() {
      }));
 
   it('should generate a link URL', inject([AsyncTestCompleter], (async) => {
-       compile(tcb, `<a [router-link]="['User', {name: 'naomi'}]">greet naomi</a> | <router-outlet></router-outlet>`)
+       compile(tcb, `<a [routerLink]="['User', {name: 'naomi'}]">greet naomi</a> | <router-outlet></router-outlet>`)
            .then((rtc) => {fixture = rtc})
            .then((_) => rtr.config(
                      [new AsyncRoute({path: '/user/:name', loader: userCmpLoader, name: 'User'})]))
@@ -203,7 +203,7 @@ function asyncRoutesWithoutChildrenWithParams() {
 
   it('should navigate from a link click',
      inject([AsyncTestCompleter, Location], (async, location) => {
-       compile(tcb, `<a [router-link]="['User', {name: 'naomi'}]">greet naomi</a> | <router-outlet></router-outlet>`)
+       compile(tcb, `<a [routerLink]="['User', {name: 'naomi'}]">greet naomi</a> | <router-outlet></router-outlet>`)
            .then((rtc) => {fixture = rtc})
            .then((_) => rtr.config(
                      [new AsyncRoute({path: '/user/:name', loader: userCmpLoader, name: 'User'})]))
@@ -282,7 +282,7 @@ function asyncRoutesWithSyncChildrenWithoutDefaultRoutes() {
      }));
 
   it('should generate a link URL', inject([AsyncTestCompleter], (async) => {
-       compile(tcb, `<a [router-link]="['Parent']">nav to child</a> | outer { <router-outlet></router-outlet> }`)
+       compile(tcb, `<a [routerLink]="['Parent']">nav to child</a> | outer { <router-outlet></router-outlet> }`)
            .then((rtc) => {fixture = rtc})
            .then((_) => rtr.config(
                      [new AsyncRoute({path: '/a/...', loader: parentCmpLoader, name: 'Parent'})]))
@@ -295,7 +295,7 @@ function asyncRoutesWithSyncChildrenWithoutDefaultRoutes() {
 
   it('should navigate from a link click',
      inject([AsyncTestCompleter, Location], (async, location) => {
-       compile(tcb, `<a [router-link]="['Parent', 'Child']">nav to child</a> | outer { <router-outlet></router-outlet> }`)
+       compile(tcb, `<a [routerLink]="['Parent', 'Child']">nav to child</a> | outer { <router-outlet></router-outlet> }`)
            .then((rtc) => {fixture = rtc})
            .then((_) => rtr.config(
                      [new AsyncRoute({path: '/a/...', loader: parentCmpLoader, name: 'Parent'})]))
@@ -358,7 +358,7 @@ function asyncRoutesWithSyncChildrenWithDefaultRoutes() {
      }));
 
   it('should generate a link URL', inject([AsyncTestCompleter], (async) => {
-       compile(tcb, `<a [router-link]="['/Parent']">link to inner</a> | outer { <router-outlet></router-outlet> }`)
+       compile(tcb, `<a [routerLink]="['/Parent']">link to inner</a> | outer { <router-outlet></router-outlet> }`)
            .then((rtc) => {fixture = rtc})
            .then((_) => rtr.config([
              new AsyncRoute({path: '/a/...', loader: parentWithDefaultCmpLoader, name: 'Parent'})
@@ -372,7 +372,7 @@ function asyncRoutesWithSyncChildrenWithDefaultRoutes() {
 
   it('should navigate from a link click',
      inject([AsyncTestCompleter, Location], (async, location) => {
-       compile(tcb, `<a [router-link]="['/Parent']">link to inner</a> | outer { <router-outlet></router-outlet> }`)
+       compile(tcb, `<a [routerLink]="['/Parent']">link to inner</a> | outer { <router-outlet></router-outlet> }`)
            .then((rtc) => {fixture = rtc})
            .then((_) => rtr.config([
              new AsyncRoute({path: '/a/...', loader: parentWithDefaultCmpLoader, name: 'Parent'})
@@ -436,7 +436,7 @@ function asyncRoutesWithAsyncChildrenWithoutParamsWithoutDefaultRoutes() {
      }));
 
   it('should generate a link URL', inject([AsyncTestCompleter], (async) => {
-       compile(tcb, `<a [router-link]="['Parent', 'Child']">nav to child</a> | outer { <router-outlet></router-outlet> }`)
+       compile(tcb, `<a [routerLink]="['Parent', 'Child']">nav to child</a> | outer { <router-outlet></router-outlet> }`)
            .then((rtc) => {rootTC = rtc})
            .then((_) => rtr.config([
              new AsyncRoute({path: '/a/...', loader: asyncParentCmpLoader, name: 'Parent'})
@@ -450,7 +450,7 @@ function asyncRoutesWithAsyncChildrenWithoutParamsWithoutDefaultRoutes() {
 
   it('should navigate from a link click',
      inject([AsyncTestCompleter, Location], (async, location) => {
-       compile(tcb, `<a [router-link]="['Parent', 'Child']">nav to child</a> | outer { <router-outlet></router-outlet> }`)
+       compile(tcb, `<a [routerLink]="['Parent', 'Child']">nav to child</a> | outer { <router-outlet></router-outlet> }`)
            .then((rtc) => {rootTC = rtc})
            .then((_) => rtr.config([
              new AsyncRoute({path: '/a/...', loader: asyncParentCmpLoader, name: 'Parent'})
@@ -516,7 +516,7 @@ function asyncRoutesWithAsyncChildrenWithoutParamsWithDefaultRoutes() {
      }));
 
   it('should generate a link URL', inject([AsyncTestCompleter], (async) => {
-       compile(tcb, `<a [router-link]="['Parent']">nav to child</a> | outer { <router-outlet></router-outlet> }`)
+       compile(tcb, `<a [routerLink]="['Parent']">nav to child</a> | outer { <router-outlet></router-outlet> }`)
            .then((rtc) => {rootTC = rtc})
            .then((_) => rtr.config([
              new AsyncRoute(
@@ -531,7 +531,7 @@ function asyncRoutesWithAsyncChildrenWithoutParamsWithDefaultRoutes() {
 
   it('should navigate from a link click',
      inject([AsyncTestCompleter, Location], (async, location) => {
-       compile(tcb, `<a [router-link]="['Parent']">nav to child</a> | outer { <router-outlet></router-outlet> }`)
+       compile(tcb, `<a [routerLink]="['Parent']">nav to child</a> | outer { <router-outlet></router-outlet> }`)
            .then((rtc) => {rootTC = rtc})
            .then((_) => rtr.config([
              new AsyncRoute(
@@ -600,7 +600,7 @@ function asyncRoutesWithAsyncChildrenWithParamsWithoutDefaultRoutes() {
   it('should generate a link URL', inject([AsyncTestCompleter], (async) => {
        compile(
            tcb,
-           `<a [router-link]="['/Team', {id: 'angular'}, 'User', {name: 'matias'}]">nav to matias</a> { <router-outlet></router-outlet> }`)
+           `<a [routerLink]="['/Team', {id: 'angular'}, 'User', {name: 'matias'}]">nav to matias</a> { <router-outlet></router-outlet> }`)
            .then((rtc) => {fixture = rtc})
            .then((_) => rtr.config([
              new AsyncRoute({path: '/team/:id/...', loader: asyncTeamLoader, name: 'Team'})
@@ -616,7 +616,7 @@ function asyncRoutesWithAsyncChildrenWithParamsWithoutDefaultRoutes() {
      inject([AsyncTestCompleter, Location], (async, location) => {
        compile(
            tcb,
-           `<a [router-link]="['/Team', {id: 'angular'}, 'User', {name: 'matias'}]">nav to matias</a> { <router-outlet></router-outlet> }`)
+           `<a [routerLink]="['/Team', {id: 'angular'}, 'User', {name: 'matias'}]">nav to matias</a> { <router-outlet></router-outlet> }`)
            .then((rtc) => {fixture = rtc})
            .then((_) => rtr.config([
              new AsyncRoute({path: '/team/:id/...', loader: asyncTeamLoader, name: 'Team'})

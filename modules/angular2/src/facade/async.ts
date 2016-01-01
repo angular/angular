@@ -4,14 +4,15 @@ import {global, isPresent, noop} from 'angular2/src/facade/lang';
 import {Promise} from 'angular2/src/facade/promise';
 export {PromiseWrapper, Promise, PromiseCompleter} from 'angular2/src/facade/promise';
 
+import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
-import {Observable as RxObservable} from 'rxjs/Observable';
 import {Subscription} from 'rxjs/Subscription';
 import {Operator} from 'rxjs/Operator';
 
 import {PromiseObservable} from 'rxjs/observable/fromPromise';
 import {toPromise} from 'rxjs/operator/toPromise';
 
+export {Observable} from 'rxjs/Observable';
 export {Subject} from 'rxjs/Subject';
 
 export namespace NodeJS {
@@ -39,7 +40,7 @@ export class ObservableWrapper {
     return emitter.subscribe({next: onNext, error: onError, complete: onComplete});
   }
 
-  static isObservable(obs: any): boolean { return obs instanceof RxObservable; }
+  static isObservable(obs: any): boolean { return !!obs.subscribe; }
 
   /**
    * Returns whether `obs` has any subscribers listening to events.
@@ -159,15 +160,5 @@ export class EventEmitter<T> extends Subject<T> {
     }
 
     return super.subscribe(schedulerFn, errorFn, completeFn);
-  }
-}
-
-// todo(robwormald): ts2dart should handle this properly
-export class Observable<T> extends RxObservable<T> {
-  lift<T, R>(operator: Operator<T, R>): Observable<T> {
-    const observable = new Observable();
-    observable.source = this;
-    observable.operator = operator;
-    return observable;
   }
 }

@@ -21,7 +21,7 @@ import {Injectable, Inject} from 'angular2/core';
  * ### Example
  *
  * ```
- * import {Component} from 'angular2/angular2';
+ * import {Component} from 'angular2/core';
  * import {
  *   ROUTER_DIRECTIVES,
  *   ROUTER_PROVIDERS,

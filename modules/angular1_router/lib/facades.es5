@@ -195,6 +195,10 @@ var ListWrapper = {
     return array[0];
   },
 
+  last: function(array) {
+    return (array && array.length) > 0 ? array[array.length - 1] : null;
+  },
+
   map: function (l, fn) {
     return l.map(fn);
   },

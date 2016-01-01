@@ -22,12 +22,24 @@ function init {
   else
     IS_SNAPSHOT_BUILD=
   fi
+  RX_BUNDLE_DIR=$(resolveDir ../../node_modules/rxjs/bundles)
+  RX_LICENSE=$(resolveDir ../../node_modules/rxjs)/LICENSE.txt
 }
 
 function prepare {
 
-  echo "-- Cloning code.angularjs.org"
-  git clone git@github.com:angular/code.angularjs.org.git $REPO_DIR --depth=1
+
+
+  if [ -d "$REPO_DIR" ]; then
+    cd $REPO_DIR
+    git fetch --update-shallow origin
+    git checkout master
+    git merge --ff-only origin/master
+    cd -
+  else
+    echo "-- Cloning code.angularjs.org into $REPO_DIR"
+    git clone git@github.com:angular/code.angularjs.org.git $REPO_DIR --depth=1
+  fi
 
   echo "-- Updating code.angularjs.org"
 
@@ -44,6 +56,8 @@ function prepare {
     #
     mkdir $REPO_DIR/$NEW_VERSION
     cp -r $BUILD_DIR/* $REPO_DIR/$NEW_VERSION/
+    cp -r $RX_BUNDLE_DIR/* $REPO_DIR/$NEW_VERSION/
+    node ./add-license-to-rx.js --license-path=$RX_LICENSE --build-path=$REPO_DIR/$NEW_VERSION
   fi
 
   #

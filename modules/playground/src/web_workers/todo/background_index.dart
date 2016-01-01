@@ -9,7 +9,7 @@ import "package:angular2/src/core/reflection/reflection.dart";
 
 main(List<String> args, SendPort replyTo) {
   reflector.reflectionCapabilities = new ReflectionCapabilities();
-  platform([WORKER_APP_PLATFORM])
-      .asyncApplication(setupIsolate(replyTo))
-      .then((ref) => ref.bootstrap(TodoApp));
+  platform([WORKER_APP_PLATFORM, new Provider(RENDER_SEND_PORT, useValue: replyTo)])
+      .application([WORKER_APP_APPLICATION])
+      .bootstrap(TodoApp);
 }

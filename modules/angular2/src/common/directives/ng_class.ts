@@ -31,13 +31,14 @@ import {StringMapWrapper, isListLikeIterable} from 'angular2/src/facade/collecti
  * ### Example ([live demo](http://plnkr.co/edit/a4YdtmWywhJ33uqfpPPn?p=preview)):
  *
  * ```
- * import {Component, NgClass} from 'angular2/angular2';
+ * import {Component} from 'angular2/core';
+ * import {NgClass} from 'angular2/common';
  *
  * @Component({
  *   selector: 'toggle-button',
  *   inputs: ['isDisabled'],
  *   template: `
- *      <div class="button" [ng-class]="{active: isOn, disabled: isDisabled}"
+ *      <div class="button" [ngClass]="{active: isOn, disabled: isDisabled}"
  *          (click)="toggle(!isOn)">
  *          Click me!
  *      </div>`,
@@ -70,7 +71,7 @@ import {StringMapWrapper, isListLikeIterable} from 'angular2/src/facade/collecti
  * }
  * ```
  */
-@Directive({selector: '[ng-class]', inputs: ['rawClass: ng-class', 'initialClasses: class']})
+@Directive({selector: '[ngClass]', inputs: ['rawClass: ngClass', 'initialClasses: class']})
 export class NgClass implements DoCheck, OnDestroy {
   private _differ: any;
   private _mode: string;

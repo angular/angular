@@ -9,7 +9,7 @@ import {Zippy} from './zippy';
       This is some content.
     </zippy>
     <ul>
-      <li *ng-for="var log of logs">{{log}}</li>
+      <li *ngFor="var log of logs">{{log}}</li>
     </ul>
   `,
   directives: [Zippy]

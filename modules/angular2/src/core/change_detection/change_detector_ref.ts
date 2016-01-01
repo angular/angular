@@ -73,7 +73,7 @@ export abstract class ChangeDetectorRef {
    * @Component({
    *   selector: 'giant-list',
    *   template: `
-   *     <li *ng-for="#d of dataProvider.data">Data {{d}}</lig>
+   *     <li *ngFor="#d of dataProvider.data">Data {{d}}</lig>
    *   `,
    *   directives: [NgFor]
    * })
@@ -122,7 +122,7 @@ export abstract class ChangeDetectorRef {
    * check
    * every five seconds.
    *
-   * See {@link detach} for more information.
+   * See {@link ChangeDetectorRef#detach} for more information.
    */
   abstract detectChanges(): void;
 
@@ -179,7 +179,7 @@ export abstract class ChangeDetectorRef {
    *   selector: 'app',
    *   providers: [DataProvider],
    *   template: `
-   *     Live Update: <input type="checkbox" [(ng-model)]="live">
+   *     Live Update: <input type="checkbox" [(ngModel)]="live">
    *     <live-data [live]="live"><live-data>
    *   `,
    *   directives: [LiveData, FORM_DIRECTIVES]

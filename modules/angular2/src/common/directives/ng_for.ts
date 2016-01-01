@@ -50,16 +50,16 @@ import {isPresent, isBlank} from 'angular2/src/facade/lang';
  *
  * # Syntax
  *
- * - `<li *ng-for="#item of items; #i = index">...</li>`
- * - `<li template="ng-for #item of items; #i = index">...</li>`
- * - `<template ng-for #item [ng-for-of]="items" #i="index"><li>...</li></template>`
+ * - `<li *ngFor="#item of items; #i = index">...</li>`
+ * - `<li template="ngFor #item of items; #i = index">...</li>`
+ * - `<template ngFor #item [ngForOf]="items" #i="index"><li>...</li></template>`
  *
  * ### Example
  *
  * See a [live demo](http://plnkr.co/edit/KVuXxDp0qinGDyo307QW?p=preview) for a more detailed
  * example.
  */
-@Directive({selector: '[ng-for][ng-for-of]', inputs: ['ngForOf', 'ngForTemplate']})
+@Directive({selector: '[ngFor][ngForOf]', inputs: ['ngForOf', 'ngForTemplate']})
 export class NgFor implements DoCheck {
   /** @internal */
   _ngForOf: any;

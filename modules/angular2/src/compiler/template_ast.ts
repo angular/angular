@@ -3,17 +3,33 @@ import {isPresent} from 'angular2/src/facade/lang';
 import {CompileDirectiveMetadata} from './directive_metadata';
 import {ParseSourceSpan} from './parse_util';
 
+/**
+ * An Abstract Syntax Tree node representing part of a parsed Angular template.
+ */
 export interface TemplateAst {
+  /**
+   * The source span from which this node was parsed.
+   */
   sourceSpan: ParseSourceSpan;
+
+  /**
+   * Visit this node and possibly transform it.
+   */
   visit(visitor: TemplateAstVisitor, context: any): any;
 }
 
+/**
+ * A segment of text within the template.
+ */
 export class TextAst implements TemplateAst {
   constructor(public value: string, public ngContentIndex: number,
               public sourceSpan: ParseSourceSpan) {}
   visit(visitor: TemplateAstVisitor, context: any): any { return visitor.visitText(this, context); }
 }
 
+/**
+ * A bound expression within the text of a template.
+ */
 export class BoundTextAst implements TemplateAst {
   constructor(public value: AST, public ngContentIndex: number,
               public sourceSpan: ParseSourceSpan) {}
@@ -22,11 +38,17 @@ export class BoundTextAst implements TemplateAst {
   }
 }
 
+/**
+ * A plain attribute on an element.
+ */
 export class AttrAst implements TemplateAst {
   constructor(public name: string, public value: string, public sourceSpan: ParseSourceSpan) {}
   visit(visitor: TemplateAstVisitor, context: any): any { return visitor.visitAttr(this, context); }
 }
 
+/**
+ * A binding for an element property (e.g. `[property]="expression"`).
+ */
 export class BoundElementPropertyAst implements TemplateAst {
   constructor(public name: string, public type: PropertyBindingType, public value: AST,
               public unit: string, public sourceSpan: ParseSourceSpan) {}
@@ -35,6 +57,9 @@ export class BoundElementPropertyAst implements TemplateAst {
   }
 }
 
+/**
+ * A binding for an element event (e.g. `(event)="handler()"`).
+ */
 export class BoundEventAst implements TemplateAst {
   constructor(public name: string, public target: string, public handler: AST,
               public sourceSpan: ParseSourceSpan) {}
@@ -50,6 +75,9 @@ export class BoundEventAst implements TemplateAst {
   }
 }
 
+/**
+ * A variable declaration on an element (e.g. `#var="expression"`).
+ */
 export class VariableAst implements TemplateAst {
   constructor(public name: string, public value: string, public sourceSpan: ParseSourceSpan) {}
   visit(visitor: TemplateAstVisitor, context: any): any {
@@ -57,6 +85,9 @@ export class VariableAst implements TemplateAst {
   }
 }
 
+/**
+ * An element declaration in a template.
+ */
 export class ElementAst implements TemplateAst {
   constructor(public name: string, public attrs: AttrAst[],
               public inputs: BoundElementPropertyAst[], public outputs: BoundEventAst[],
@@ -67,11 +98,17 @@ export class ElementAst implements TemplateAst {
     return visitor.visitElement(this, context);
   }
 
+  /**
+   * Whether the element has any active bindings (inputs, outputs, vars, or directives).
+   */
   isBound(): boolean {
     return (this.inputs.length > 0 || this.outputs.length > 0 || this.exportAsVars.length > 0 ||
             this.directives.length > 0);
   }
 
+  /**
+   * Get the component associated with this element, if any.
+   */
   getComponent(): CompileDirectiveMetadata {
     return this.directives.length > 0 && this.directives[0].directive.isComponent ?
                this.directives[0].directive :
@@ -79,6 +116,9 @@ export class ElementAst implements TemplateAst {
   }
 }
 
+/**
+ * A `<template>` element included in an Angular template.
+ */
 export class EmbeddedTemplateAst implements TemplateAst {
   constructor(public attrs: AttrAst[], public outputs: BoundEventAst[], public vars: VariableAst[],
               public directives: DirectiveAst[], public children: TemplateAst[],
@@ -88,6 +128,9 @@ export class EmbeddedTemplateAst implements TemplateAst {
   }
 }
 
+/**
+ * A directive property with a bound value (e.g. `*ngIf="condition").
+ */
 export class BoundDirectivePropertyAst implements TemplateAst {
   constructor(public directiveName: string, public templateName: string, public value: AST,
               public sourceSpan: ParseSourceSpan) {}
@@ -96,6 +139,9 @@ export class BoundDirectivePropertyAst implements TemplateAst {
   }
 }
 
+/**
+ * A directive declared on an element.
+ */
 export class DirectiveAst implements TemplateAst {
   constructor(public directive: CompileDirectiveMetadata,
               public inputs: BoundDirectivePropertyAst[],
@@ -106,6 +152,9 @@ export class DirectiveAst implements TemplateAst {
   }
 }
 
+/**
+ * Position where content is to be projected (instance of `<ng-content>` in a template).
+ */
 export class NgContentAst implements TemplateAst {
   constructor(public index: number, public ngContentIndex: number,
               public sourceSpan: ParseSourceSpan) {}
@@ -114,13 +163,35 @@ export class NgContentAst implements TemplateAst {
   }
 }
 
+/**
+ * Enumeration of types of property bindings.
+ */
 export enum PropertyBindingType {
+
+  /**
+   * A normal binding to a property (e.g. `[property]="expression"`).
+   */
   Property,
+
+  /**
+   * A binding to an element attribute (e.g. `[attr.name]="expression"`).
+   */
   Attribute,
+
+  /**
+   * A binding to a CSS class (e.g. `[class.name]="condition"`).
+   */
   Class,
+
+  /**
+   * A binding to a style rule (e.g. `[style.rule]="expression"`).
+   */
   Style
 }
 
+/**
+ * A visitor for {@link TemplateAst} trees that will process each node.
+ */
 export interface TemplateAstVisitor {
   visitNgContent(ast: NgContentAst, context: any): any;
   visitEmbeddedTemplate(ast: EmbeddedTemplateAst, context: any): any;
@@ -135,7 +206,9 @@ export interface TemplateAstVisitor {
   visitDirectiveProperty(ast: BoundDirectivePropertyAst, context: any): any;
 }
 
-
+/**
+ * Visit every node in a list of {@link TemplateAst}s with the given {@link TemplateAstVisitor}.
+ */
 export function templateVisitAll(visitor: TemplateAstVisitor, asts: TemplateAst[],
                                  context: any = null): any[] {
   var result = [];

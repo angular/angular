@@ -124,7 +124,7 @@ module.exports = function makeNodeTree(projects, destinationPath) {
   // because of the duplicate definitions.
   // TODO(alexeagle): remove this when typescript releases a fix
   nodeTree = replace(nodeTree, {
-    files: ['angular2/core.d.ts', 'angular2/angular2.d.ts'],
+    files: ['angular2/core.d.ts'],
     patterns: [{match: /$/, replacement: 'import "./manual_typings/globals-es6.d.ts";\r\n'}]
   });
 

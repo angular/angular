@@ -1,5 +1,5 @@
-import {Component, Input, Output, EventEmitter} from 'angular2/angular2';
-import {UpgradeAdapter} from 'angular2/angular2';
+import {Component, Input, Output, EventEmitter} from 'angular2/core';
+import {UpgradeAdapter} from 'angular2/upgrade';
 import * as angular from '../../../angular2/src/upgrade/angular_js';
 
 var styles = [

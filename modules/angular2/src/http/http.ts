@@ -6,7 +6,7 @@ import {Request} from './static_request';
 import {Response} from './static_response';
 import {BaseRequestOptions, RequestOptions} from './base_request_options';
 import {RequestMethod} from './enums';
-import {Observable} from 'angular2/core';
+import {Observable} from 'rxjs/Observable';
 
 function httpRequest(backend: ConnectionBackend, request: Request): Observable<Response> {
   return backend.createConnection(request).response;
@@ -35,7 +35,7 @@ function mergeOptions(defaultOpts, providedOpts, method, url): RequestOptions {
  * Performs http requests using `XMLHttpRequest` as the default backend.
  *
  * `Http` is available as an injectable class, with methods to perform http requests. Calling
- * `request` returns an {@link Observable} which will emit a single {@link Response} when a
+ * `request` returns an `Observable` which will emit a single {@link Response} when a
  * response is received.
  *
  * ### Example

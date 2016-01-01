@@ -1,12 +1,13 @@
-import {Component, provide, Observable} from 'angular2/angular2';
+import {Component, provide} from 'angular2/core';
 import {bootstrap} from 'angular2/bootstrap';
+import {Observable} from 'rxjs/Observable';
 
 // #docregion AsyncPipe
 @Component({
   selector: 'async-example',
   template: `<div>
     <p>Wait for it... {{ greeting | async }}</p>
-    <button (click)="clicked()">{{ arrived ? 'Reset' : 'Resolve' }}</button> 
+    <button (click)="clicked()">{{ arrived ? 'Reset' : 'Resolve' }}</button>
   </div>`
 })
 export class AsyncPipeExample {
@@ -44,7 +45,7 @@ class Task {
 @Component({
   selector: 'example-app',
   directives: [AsyncPipeExample],
-  template: ` 
+  template: `
     <h1>AsyncPipe Example</h1>
     <async-example></async-example>
   `

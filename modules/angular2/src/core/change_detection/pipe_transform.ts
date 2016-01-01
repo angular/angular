@@ -13,7 +13,7 @@
  * The `RepeatPipe` below repeats the value as many times as indicated by the first argument:
  *
  * ```
- * import {Pipe, PipeTransform} from 'angular2/angular2';
+ * import {Pipe, PipeTransform} from 'angular2/core';
  *
  * @Pipe({name: 'repeat'})
  * export class RepeatPipe implements PipeTransform {

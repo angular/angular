@@ -24,15 +24,17 @@ import {Compiler} from 'angular2/src/core/linker/compiler';
 import {RuntimeCompiler} from 'angular2/src/compiler/runtime_compiler';
 import {ElementSchemaRegistry} from 'angular2/src/compiler/schema/element_schema_registry';
 import {DomElementSchemaRegistry} from 'angular2/src/compiler/schema/dom_element_schema_registry';
-import {UrlResolver} from 'angular2/src/compiler/url_resolver';
-import {AppRootUrl} from 'angular2/src/compiler/app_root_url';
-import {AnchorBasedAppRootUrl} from 'angular2/src/compiler/anchor_based_app_root_url';
+import {UrlResolver, DEFAULT_PACKAGE_URL_PROVIDER} from 'angular2/src/compiler/url_resolver';
 import {Parser, Lexer} from 'angular2/src/core/change_detection/change_detection';
 
 function _createChangeDetectorGenConfig() {
   return new ChangeDetectorGenConfig(assertionsEnabled(), false, true);
 }
 
+/**
+ * A set of providers that provide `RuntimeCompiler` and its dependencies to use for
+ * template compilation.
+ */
 export const COMPILER_PROVIDERS: Array<Type | Provider | any[]> = CONST_EXPR([
   Lexer,
   Parser,
@@ -40,6 +42,7 @@ export const COMPILER_PROVIDERS: Array<Type | Provider | any[]> = CONST_EXPR([
   TemplateParser,
   TemplateNormalizer,
   RuntimeMetadataResolver,
+  DEFAULT_PACKAGE_URL_PROVIDER,
   StyleCompiler,
   CommandCompiler,
   ChangeDetectionCompiler,
@@ -49,7 +52,5 @@ export const COMPILER_PROVIDERS: Array<Type | Provider | any[]> = CONST_EXPR([
   new Provider(Compiler, {useExisting: RuntimeCompiler}),
   DomElementSchemaRegistry,
   new Provider(ElementSchemaRegistry, {useExisting: DomElementSchemaRegistry}),
-  AnchorBasedAppRootUrl,
-  new Provider(AppRootUrl, {useExisting: AnchorBasedAppRootUrl}),
   UrlResolver
 ]);

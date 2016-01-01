@@ -91,7 +91,7 @@ export class Response {
   /**
    * Attempts to return body as parsed `JSON` object, or raises an exception.
    */
-  json(): Object {
+  json(): any {
     var jsonResponse;
     if (isJsObject(this._body)) {
       jsonResponse = this._body;

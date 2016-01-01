@@ -44,7 +44,9 @@ export {URLSearchParams} from './src/http/url_search_params';
  * ### Example ([live demo](http://plnkr.co/edit/snj7Nv?p=preview))
  *
  * ```
- * import {bootstrap, Component, NgFor, View} from 'angular2/angular2';
+ * import {Component} from 'angular2/core';
+ * import {bootstrap} from 'angular2/platform/browser';
+ * import {NgFor} from 'angular2/common';
  * import {HTTP_PROVIDERS, Http} from 'angular2/http';
  *
  * @Component({
@@ -54,7 +56,7 @@ export {URLSearchParams} from './src/http/url_search_params';
  *     <div>
  *       <h1>People</h1>
  *       <ul>
- *         <li *ng-for="#person of people">
+ *         <li *ngFor="#person of people">
  *           {{person.name}}
  *         </li>
  *       </ul>
@@ -98,7 +100,8 @@ export {URLSearchParams} from './src/http/url_search_params';
  * ### Example ([live demo](http://plnkr.co/edit/aCMEXi?p=preview))
  *
  * ```
- * import {provide, bootstrap} from 'angular2/angular2';
+ * import {provide} from 'angular2/core';
+ * import {bootstrap} from 'angular2/platform/browser';
  * import {HTTP_PROVIDERS, BaseRequestOptions, RequestOptions} from 'angular2/http';
  *
  * class MyOptions extends BaseRequestOptions {
@@ -115,7 +118,8 @@ export {URLSearchParams} from './src/http/url_search_params';
  * ### Example ([live demo](http://plnkr.co/edit/7LWALD?p=preview))
  *
  * ```
- * import {provide, Injector} from 'angular2/angular2';
+ * import {provide} from 'angular2/core';
+ * import {bootstrap} from 'angular2/platform/browser';
  * import {HTTP_PROVIDERS, Http, Response, XHRBackend} from 'angular2/http';
  * import {MockBackend} from 'angular2/http/testing';
  *
@@ -162,6 +166,8 @@ export const HTTP_PROVIDERS: any[] = [
 ];
 
 /**
+ * See {@link HTTP_PROVIDERS} instead.
+ *
  * @deprecated
  */
 export const HTTP_BINDINGS = HTTP_PROVIDERS;
@@ -175,7 +181,8 @@ export const HTTP_BINDINGS = HTTP_PROVIDERS;
  * ### Example ([live demo](http://plnkr.co/edit/vmeN4F?p=preview))
  *
  * ```
- * import {Component, NgFor, View} from 'angular2/angular2';
+ * import {Component} from 'angular2/core';
+ * import {NgFor} from 'angular2/common';
  * import {JSONP_PROVIDERS, Jsonp} from 'angular2/http';
  *
  * @Component({
@@ -185,7 +192,7 @@ export const HTTP_BINDINGS = HTTP_PROVIDERS;
  *     <div>
  *       <h1>People</h1>
  *       <ul>
- *         <li *ng-for="#person of people">
+ *         <li *ngFor="#person of people">
  *           {{person.name}}
  *         </li>
  *       </ul>
@@ -222,7 +229,8 @@ export const HTTP_BINDINGS = HTTP_PROVIDERS;
  * ### Example ([live demo](http://plnkr.co/edit/TFug7x?p=preview))
  *
  * ```
- * import {provide, bootstrap} from 'angular2/angular2';
+ * import {provide} from 'angular2/core';
+ * import {bootstrap} from 'angular2/platform/browser';
  * import {JSONP_PROVIDERS, BaseRequestOptions, RequestOptions} from 'angular2/http';
  *
  * class MyOptions extends BaseRequestOptions {
@@ -239,7 +247,7 @@ export const HTTP_BINDINGS = HTTP_PROVIDERS;
  * ### Example ([live demo](http://plnkr.co/edit/HDqZWL?p=preview))
  *
  * ```
- * import {provide, Injector} from 'angular2/angular2';
+ * import {provide, Injector} from 'angular2/core';
  * import {JSONP_PROVIDERS, Jsonp, Response, JSONPBackend} from 'angular2/http';
  * import {MockBackend} from 'angular2/http/testing';
  *
@@ -285,6 +293,8 @@ export const JSONP_PROVIDERS: any[] = [
 ];
 
 /**
+ * See {@link JSONP_PROVIDERS} instead.
+ *
  * @deprecated
  */
 export const JSON_BINDINGS = JSONP_PROVIDERS;

@@ -42,7 +42,7 @@ function creditCardValidator(c): {[key: string]: boolean} {
 @Component({selector: 'show-error', inputs: ['controlPath: control', 'errorTypes: errors']})
 @View({
   template: `
-    <span *ng-if="errorMessage !== null">{{errorMessage}}</span>
+    <span *ngIf="errorMessage !== null">{{errorMessage}}</span>
   `,
   directives: [NgIf]
 })
@@ -78,52 +78,52 @@ class ShowError {
   template: `
     <h1>Checkout Form (Model Driven)</h1>
 
-    <form (ng-submit)="onSubmit()" [ng-form-model]="form" #f="ngForm">
+    <form (ngSubmit)="onSubmit()" [ngFormModel]="form" #f="ngForm">
       <p>
         <label for="firstName">First Name</label>
-        <input type="text" id="firstName" ng-control="firstName">
+        <input type="text" id="firstName" ngControl="firstName">
         <show-error control="firstName" [errors]="['required']"></show-error>
       </p>
 
       <p>
         <label for="middleName">Middle Name</label>
-        <input type="text" id="middleName" ng-control="middleName">
+        <input type="text" id="middleName" ngControl="middleName">
       </p>
 
       <p>
         <label for="lastName">Last Name</label>
-        <input type="text" id="lastName" ng-control="lastName">
+        <input type="text" id="lastName" ngControl="lastName">
         <show-error control="lastName" [errors]="['required']"></show-error>
       </p>
 
       <p>
         <label for="country">Country</label>
-        <select id="country" ng-control="country">
-          <option *ng-for="#c of countries" [value]="c">{{c}}</option>
+        <select id="country" ngControl="country">
+          <option *ngFor="#c of countries" [value]="c">{{c}}</option>
         </select>
       </p>
 
       <p>
         <label for="creditCard">Credit Card</label>
-        <input type="text" id="creditCard" ng-control="creditCard">
+        <input type="text" id="creditCard" ngControl="creditCard">
         <show-error control="creditCard" [errors]="['required', 'invalidCreditCard']"></show-error>
       </p>
 
       <p>
         <label for="amount">Amount</label>
-        <input type="number" id="amount" ng-control="amount">
+        <input type="number" id="amount" ngControl="amount">
         <show-error control="amount" [errors]="['required']"></show-error>
       </p>
 
       <p>
         <label for="email">Email</label>
-        <input type="email" id="email" ng-control="email">
+        <input type="email" id="email" ngControl="email">
         <show-error control="email" [errors]="['required']"></show-error>
       </p>
 
       <p>
         <label for="comments">Comments</label>
-        <textarea id="comments" ng-control="comments">
+        <textarea id="comments" ngControl="comments">
         </textarea>
       </p>
 
