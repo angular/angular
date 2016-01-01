@@ -1166,7 +1166,7 @@ export var ViewChild: ViewChildFactory = makePropDecorator(ViewChildMetadata);
  *   shown: boolean;
  *
  *   constructor(private @Query(Item) items:QueryList<Item>) {
- *     items.onChange(() => console.log(items.length));
+ *     items.changes.subscribe(() => console.log(items.length));
  *   }
  * }
  * ```
