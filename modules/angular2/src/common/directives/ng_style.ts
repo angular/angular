@@ -95,3 +95,4 @@ export class NgStyle implements DoCheck {
     this._renderer.setElementStyle(this._ngEl, name, val);
   }
 }
+
