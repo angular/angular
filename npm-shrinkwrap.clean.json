@@ -1786,7 +1786,7 @@
       "version": "1.0.0"
     },
     "core-js": {
-      "version": "2.0.1"
+      "version": "1.2.6"
     },
     "core-object": {
       "version": "0.0.2"
@@ -2941,6 +2941,9 @@
         "minimist": {
           "version": "0.2.0"
         },
+        "noptify": {
+          "version": "0.0.3"
+        },
         "qs": {
           "version": "0.6.6"
         },
@@ -3636,7 +3639,7 @@
       "version": "3.0.0"
     },
     "karma": {
-      "version": "0.13.16",
+      "version": "0.13.15",
       "dependencies": {
         "batch": {
           "version": "0.5.3"
@@ -3651,7 +3654,7 @@
           "version": "1.1.0"
         },
         "glob": {
-          "version": "6.0.3"
+          "version": "5.0.15"
         },
         "graceful-fs": {
           "version": "4.1.2"
