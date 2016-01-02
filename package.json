@@ -97,7 +97,7 @@
     "node-uuid": "1.4.x",
     "on-headers": "^1.0.0",
     "parse5": "1.3.2",
-    "protractor": "^2.5.0",
+    "protractor": "^3.0.0",
     "proxy-middleware": "^0.13.0",
     "q": "^1.0.1",
     "react": "^0.14.0",
