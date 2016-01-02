@@ -2799,9 +2799,9 @@
       "resolved": "https://registry.npmjs.org/copy-dereference/-/copy-dereference-1.0.0.tgz"
     },
     "core-js": {
-      "version": "2.0.1",
-      "from": "core-js@>=2.0.0 <3.0.0",
-      "resolved": "https://registry.npmjs.org/core-js/-/core-js-2.0.1.tgz"
+      "version": "1.2.6",
+      "from": "core-js@>=1.2.2 <2.0.0",
+      "resolved": "https://registry.npmjs.org/core-js/-/core-js-1.2.6.tgz"
     },
     "core-object": {
       "version": "0.0.2",
@@ -4658,6 +4658,11 @@
           "from": "minimist@>=0.2.0 <0.3.0",
           "resolved": "https://registry.npmjs.org/minimist/-/minimist-0.2.0.tgz"
         },
+        "noptify": {
+          "version": "0.0.3",
+          "from": "noptify@latest",
+          "resolved": "https://registry.npmjs.org/noptify/-/noptify-0.0.3.tgz"
+        },
         "qs": {
           "version": "0.6.6",
           "from": "qs@0.6.6",
@@ -4952,7 +4957,8 @@
             },
             "through2": {
               "version": "0.6.5",
-              "from": "through2@>=0.6.0 <0.7.0"
+              "from": "through2@0.6.5",
+              "resolved": "https://registry.npmjs.org/through2/-/through2-0.6.5.tgz"
             }
           }
         },
@@ -5780,9 +5786,9 @@
       "resolved": "https://registry.npmjs.org/jws/-/jws-3.0.0.tgz"
     },
     "karma": {
-      "version": "0.13.16",
-      "from": "karma@>=0.13.10 <0.14.0",
-      "resolved": "https://registry.npmjs.org/karma/-/karma-0.13.16.tgz",
+      "version": "0.13.15",
+      "from": "karma@0.13.15",
+      "resolved": "https://registry.npmjs.org/karma/-/karma-0.13.15.tgz",
       "dependencies": {
         "batch": {
           "version": "0.5.3",
@@ -5805,9 +5811,9 @@
           "resolved": "https://registry.npmjs.org/depd/-/depd-1.1.0.tgz"
         },
         "glob": {
-          "version": "6.0.3",
-          "from": "glob@>=6.0.1 <7.0.0",
-          "resolved": "https://registry.npmjs.org/glob/-/glob-6.0.3.tgz"
+          "version": "5.0.15",
+          "from": "glob@>=5.0.10 <6.0.0",
+          "resolved": "https://registry.npmjs.org/glob/-/glob-5.0.15.tgz"
         },
         "graceful-fs": {
           "version": "4.1.2",
@@ -7757,7 +7763,8 @@
           "dependencies": {
             "mime-types": {
               "version": "2.0.14",
-              "from": "mime-types@>=2.0.3 <2.1.0"
+              "from": "mime-types@2.0.14",
+              "resolved": "https://registry.npmjs.org/mime-types/-/mime-types-2.0.14.tgz"
             }
           }
         },
@@ -9278,7 +9285,8 @@
           "dependencies": {
             "async": {
               "version": "0.2.10",
-              "from": "async@>=0.2.6 <0.3.0"
+              "from": "async@0.2.10",
+              "resolved": "https://registry.npmjs.org/async/-/async-0.2.10.tgz"
             }
           }
         },
