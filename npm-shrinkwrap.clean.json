@@ -3698,12 +3698,7 @@
       "version": "0.3.6"
     },
     "karma-sauce-launcher": {
-      "version": "0.2.14",
-      "dependencies": {
-        "q": {
-          "version": "0.9.7"
-        }
-      }
+      "version": "0.3.0"
     },
     "karma-sourcemap-loader": {
       "version": "0.3.6"
@@ -4942,21 +4937,24 @@
       }
     },
     "sauce-connect-launcher": {
-      "version": "0.11.1",
+      "version": "0.13.0",
       "dependencies": {
         "async": {
-          "version": "0.9.0"
+          "version": "1.4.0"
+        },
+        "glob": {
+          "version": "5.0.15"
         },
         "lodash": {
-          "version": "3.5.0"
+          "version": "3.10.1"
         },
         "rimraf": {
-          "version": "2.2.6"
+          "version": "2.4.3"
         }
       }
     },
     "saucelabs": {
-      "version": "0.1.1"
+      "version": "1.0.1"
     },
     "sax": {
       "version": "1.1.4"
