@@ -1,5 +1,5 @@
 import {RequestMethod} from './enums';
-import {RequestArgs} from './interfaces';
+import {RequestArgs, RequestOptionsArgs} from './interfaces';
 import {Headers} from './headers';
 import {normalizeMethodName} from './http_utils';
 import {
@@ -61,10 +61,21 @@ export class Request {
   url: string;
   // TODO: support URLSearchParams | FormData | Blob | ArrayBuffer
   private _body: string;
-  constructor(requestOptions: RequestArgs) {
+
+  constructor(url: string, requestOptions?: RequestOptionsArgs);
+  constructor(requestOptions: RequestArgs);
+  constructor(urlOrRequestOptions: string | RequestArgs, requestOptions: RequestOptionsArgs = {}) {
     // TODO: assert that url is present
-    let url = requestOptions.url;
-    this.url = requestOptions.url;
+    var url;
+
+    if (typeof urlOrRequestOptions === 'string') {
+      url = urlOrRequestOptions;
+    } else {
+      requestOptions = urlOrRequestOptions;
+      url = requestOptions.url;
+    }
+
+    this.url = url;
     if (isPresent(requestOptions.search)) {
       let search = requestOptions.search.toString();
       if (search.length > 0) {
