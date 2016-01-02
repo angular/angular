@@ -7,11 +7,6 @@
       "from": "abbrev@>=1.0.0 <2.0.0",
       "resolved": "https://registry.npmjs.org/abbrev/-/abbrev-1.0.7.tgz"
     },
-    "accessibility-developer-tools": {
-      "version": "2.6.0",
-      "from": "accessibility-developer-tools@>=2.6.0 <2.7.0",
-      "resolved": "https://registry.npmjs.org/accessibility-developer-tools/-/accessibility-developer-tools-2.6.0.tgz"
-    },
     "acorn": {
       "version": "1.2.2",
       "from": "acorn@>=1.0.3 <2.0.0",
@@ -5244,11 +5239,6 @@
       "from": "hosted-git-info@>=2.1.4 <3.0.0",
       "resolved": "https://registry.npmjs.org/hosted-git-info/-/hosted-git-info-2.1.4.tgz"
     },
-    "html-entities": {
-      "version": "1.1.3",
-      "from": "html-entities@>=1.1.1 <1.2.0",
-      "resolved": "https://registry.npmjs.org/html-entities/-/html-entities-1.1.3.tgz"
-    },
     "htmlescape": {
       "version": "1.1.0",
       "from": "htmlescape@>=1.1.0 <2.0.0",
@@ -5549,11 +5539,6 @@
       "version": "2.3.4",
       "from": "jasmine-core@>=2.3.0 <2.4.0",
       "resolved": "https://registry.npmjs.org/jasmine-core/-/jasmine-core-2.3.4.tgz"
-    },
-    "jasminewd": {
-      "version": "1.1.0",
-      "from": "jasminewd@1.1.0",
-      "resolved": "https://registry.npmjs.org/jasminewd/-/jasminewd-1.1.0.tgz"
     },
     "jasminewd2": {
       "version": "0.0.6",
@@ -6580,11 +6565,6 @@
       "from": "minichain@>=0.0.1 <0.1.0",
       "resolved": "https://registry.npmjs.org/minichain/-/minichain-0.0.1.tgz"
     },
-    "minijasminenode": {
-      "version": "1.1.1",
-      "from": "minijasminenode@1.1.1",
-      "resolved": "https://registry.npmjs.org/minijasminenode/-/minijasminenode-1.1.1.tgz"
-    },
     "minimalistic-assert": {
       "version": "1.0.0",
       "from": "minimalistic-assert@>=1.0.0 <2.0.0",
@@ -7277,9 +7257,9 @@
       "resolved": "https://registry.npmjs.org/proto-list/-/proto-list-1.2.4.tgz"
     },
     "protractor": {
-      "version": "2.5.1",
-      "from": "protractor@>=2.5.0 <3.0.0",
-      "resolved": "https://registry.npmjs.org/protractor/-/protractor-2.5.1.tgz",
+      "version": "3.0.0",
+      "from": "protractor@3.0.0",
+      "resolved": "https://registry.npmjs.org/protractor/-/protractor-3.0.0.tgz",
       "dependencies": {
         "adm-zip": {
           "version": "0.4.4",
@@ -7388,20 +7368,15 @@
           "from": "request@>=2.57.0 <2.58.0",
           "resolved": "https://registry.npmjs.org/request/-/request-2.57.0.tgz"
         },
-        "saucelabs": {
-          "version": "1.0.1",
-          "from": "saucelabs@>=1.0.1 <1.1.0",
-          "resolved": "https://registry.npmjs.org/saucelabs/-/saucelabs-1.0.1.tgz"
+        "source-map": {
+          "version": "0.1.32",
+          "from": "source-map@0.1.32",
+          "resolved": "https://registry.npmjs.org/source-map/-/source-map-0.1.32.tgz"
         },
-        "sax": {
-          "version": "0.6.1",
-          "from": "sax@>=0.6.0 <0.7.0",
-          "resolved": "https://registry.npmjs.org/sax/-/sax-0.6.1.tgz"
-        },
-        "selenium-webdriver": {
-          "version": "2.47.0",
-          "from": "selenium-webdriver@2.47.0",
-          "resolved": "https://registry.npmjs.org/selenium-webdriver/-/selenium-webdriver-2.47.0.tgz"
+        "source-map-support": {
+          "version": "0.3.3",
+          "from": "source-map-support@>=0.3.2 <0.4.0",
+          "resolved": "https://registry.npmjs.org/source-map-support/-/source-map-support-0.3.3.tgz"
         },
         "strip-ansi": {
           "version": "3.0.0",
@@ -7412,16 +7387,6 @@
           "version": "2.0.0",
           "from": "supports-color@>=2.0.0 <3.0.0",
           "resolved": "https://registry.npmjs.org/supports-color/-/supports-color-2.0.0.tgz"
-        },
-        "tmp": {
-          "version": "0.0.24",
-          "from": "tmp@0.0.24",
-          "resolved": "https://registry.npmjs.org/tmp/-/tmp-0.0.24.tgz"
-        },
-        "xml2js": {
-          "version": "0.4.4",
-          "from": "xml2js@0.4.4",
-          "resolved": "https://registry.npmjs.org/xml2js/-/xml2js-0.4.4.tgz"
         }
       }
     },
