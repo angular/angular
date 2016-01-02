@@ -1,4 +1,4 @@
-/** @license Copyright 2014-2015 Google, Inc. http://github.com/angular/angular/LICENSE */
+/** @license Copyright 2014-2016 Google, Inc. http://github.com/angular/angular/LICENSE */
 (function () {
 
   'use strict';
