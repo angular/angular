@@ -104,6 +104,9 @@
     "array-differ": {
       "version": "1.0.0"
     },
+    "array-equal": {
+      "version": "1.0.0"
+    },
     "array-ify": {
       "version": "1.0.0"
     },
@@ -248,6 +251,9 @@
           "version": "1.0.33"
         }
       }
+    },
+    "blank-object": {
+      "version": "1.0.1"
     },
     "blob": {
       "version": "0.0.4"
@@ -1432,8 +1438,12 @@
       }
     },
     "broccoli-funnel": {
-      "version": "0.2.3",
-      "resolved": "git://github.com/igorminar/broccoli-funnel.git#6bfb53c4ca8dd3fa16416b9f85dc923a227e30ee"
+      "version": "1.0.1",
+      "dependencies": {
+        "walk-sync": {
+          "version": "0.2.6"
+        }
+      }
     },
     "broccoli-kitchen-sink-helpers": {
       "version": "0.2.9",
@@ -1448,9 +1458,6 @@
     },
     "broccoli-plugin": {
       "version": "1.2.1"
-    },
-    "broccoli-read-compat": {
-      "version": "0.1.3"
     },
     "broccoli-slow-trees": {
       "version": "1.1.0"
@@ -2174,6 +2181,9 @@
         }
       }
     },
+    "fast-ordered-set": {
+      "version": "1.0.2"
+    },
     "faye-websocket": {
       "version": "0.7.3"
     },
@@ -2267,6 +2277,9 @@
       "version": "0.18.4"
     },
     "fs-promise": {
+      "version": "0.3.1"
+    },
+    "fs-tree-diff": {
       "version": "0.3.1"
     },
     "fsevents": {
@@ -4068,6 +4081,9 @@
         }
       }
     },
+    "matcher-collection": {
+      "version": "1.0.1"
+    },
     "media-typer": {
       "version": "0.3.0"
     },
@@ -4474,6 +4490,9 @@
     },
     "path-platform": {
       "version": "0.11.15"
+    },
+    "path-posix": {
+      "version": "1.0.0"
     },
     "path-type": {
       "version": "1.1.0",
