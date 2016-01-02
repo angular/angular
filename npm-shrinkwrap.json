@@ -5882,16 +5882,9 @@
       "resolved": "https://registry.npmjs.org/karma-jasmine/-/karma-jasmine-0.3.6.tgz"
     },
     "karma-sauce-launcher": {
-      "version": "0.2.14",
-      "from": "karma-sauce-launcher@>=0.2.14 <0.3.0",
-      "resolved": "https://registry.npmjs.org/karma-sauce-launcher/-/karma-sauce-launcher-0.2.14.tgz",
-      "dependencies": {
-        "q": {
-          "version": "0.9.7",
-          "from": "q@>=0.9.6 <0.10.0",
-          "resolved": "https://registry.npmjs.org/q/-/q-0.9.7.tgz"
-        }
-      }
+      "version": "0.3.0",
+      "from": "karma-sauce-launcher@0.3.0",
+      "resolved": "https://registry.npmjs.org/karma-sauce-launcher/-/karma-sauce-launcher-0.3.0.tgz"
     },
     "karma-sourcemap-loader": {
       "version": "0.3.6",
@@ -7885,31 +7878,36 @@
       }
     },
     "sauce-connect-launcher": {
-      "version": "0.11.1",
-      "from": "sauce-connect-launcher@>=0.11.1 <0.12.0",
-      "resolved": "https://registry.npmjs.org/sauce-connect-launcher/-/sauce-connect-launcher-0.11.1.tgz",
+      "version": "0.13.0",
+      "from": "sauce-connect-launcher@>=0.13.0 <0.14.0",
+      "resolved": "https://registry.npmjs.org/sauce-connect-launcher/-/sauce-connect-launcher-0.13.0.tgz",
       "dependencies": {
         "async": {
-          "version": "0.9.0",
-          "from": "async@0.9.0",
-          "resolved": "https://registry.npmjs.org/async/-/async-0.9.0.tgz"
+          "version": "1.4.0",
+          "from": "async@1.4.0",
+          "resolved": "https://registry.npmjs.org/async/-/async-1.4.0.tgz"
+        },
+        "glob": {
+          "version": "5.0.15",
+          "from": "glob@>=5.0.14 <6.0.0",
+          "resolved": "https://registry.npmjs.org/glob/-/glob-5.0.15.tgz"
         },
         "lodash": {
-          "version": "3.5.0",
-          "from": "lodash@3.5.0",
-          "resolved": "https://registry.npmjs.org/lodash/-/lodash-3.5.0.tgz"
+          "version": "3.10.1",
+          "from": "lodash@3.10.1",
+          "resolved": "https://registry.npmjs.org/lodash/-/lodash-3.10.1.tgz"
         },
         "rimraf": {
-          "version": "2.2.6",
-          "from": "rimraf@2.2.6",
-          "resolved": "https://registry.npmjs.org/rimraf/-/rimraf-2.2.6.tgz"
+          "version": "2.4.3",
+          "from": "rimraf@2.4.3",
+          "resolved": "https://registry.npmjs.org/rimraf/-/rimraf-2.4.3.tgz"
         }
       }
     },
     "saucelabs": {
-      "version": "0.1.1",
-      "from": "saucelabs@>=0.1.0 <0.2.0",
-      "resolved": "https://registry.npmjs.org/saucelabs/-/saucelabs-0.1.1.tgz"
+      "version": "1.0.1",
+      "from": "saucelabs@>=1.0.1 <2.0.0",
+      "resolved": "https://registry.npmjs.org/saucelabs/-/saucelabs-1.0.1.tgz"
     },
     "sax": {
       "version": "1.1.4",
