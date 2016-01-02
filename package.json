@@ -45,7 +45,7 @@
     "base64-js": "^0.0.8",
     "bower": "^1.3.12",
     "broccoli": "^0.15.3",
-    "broccoli-funnel": "igorminar/broccoli-funnel#perf-files",
+    "broccoli-funnel": "^1.0.1",
     "broccoli-slow-trees": "^1.1.0",
     "broccoli-stew": "^0.2.1",
     "broccoli-writer": "^0.1.1",

@@ -170,6 +170,11 @@
       "from": "array-differ@>=1.0.0 <2.0.0",
       "resolved": "https://registry.npmjs.org/array-differ/-/array-differ-1.0.0.tgz"
     },
+    "array-equal": {
+      "version": "1.0.0",
+      "from": "array-equal@>=1.0.0 <2.0.0",
+      "resolved": "https://registry.npmjs.org/array-equal/-/array-equal-1.0.0.tgz"
+    },
     "array-ify": {
       "version": "1.0.0",
       "from": "array-ify@>=1.0.0 <2.0.0",
@@ -408,6 +413,11 @@
           "resolved": "https://registry.npmjs.org/readable-stream/-/readable-stream-1.0.33.tgz"
         }
       }
+    },
+    "blank-object": {
+      "version": "1.0.1",
+      "from": "blank-object@>=1.0.1 <2.0.0",
+      "resolved": "https://registry.npmjs.org/blank-object/-/blank-object-1.0.1.tgz"
     },
     "blob": {
       "version": "0.0.4",
@@ -2232,9 +2242,16 @@
       }
     },
     "broccoli-funnel": {
-      "version": "0.2.3",
-      "from": "igorminar/broccoli-funnel#perf-files",
-      "resolved": "git://github.com/igorminar/broccoli-funnel.git#6bfb53c4ca8dd3fa16416b9f85dc923a227e30ee"
+      "version": "1.0.1",
+      "from": "broccoli-funnel@1.0.1",
+      "resolved": "https://registry.npmjs.org/broccoli-funnel/-/broccoli-funnel-1.0.1.tgz",
+      "dependencies": {
+        "walk-sync": {
+          "version": "0.2.6",
+          "from": "walk-sync@>=0.2.6 <0.3.0",
+          "resolved": "https://registry.npmjs.org/walk-sync/-/walk-sync-0.2.6.tgz"
+        }
+      }
     },
     "broccoli-kitchen-sink-helpers": {
       "version": "0.2.9",
@@ -2257,11 +2274,6 @@
       "version": "1.2.1",
       "from": "broccoli-plugin@>=1.0.0 <2.0.0",
       "resolved": "https://registry.npmjs.org/broccoli-plugin/-/broccoli-plugin-1.2.1.tgz"
-    },
-    "broccoli-read-compat": {
-      "version": "0.1.3",
-      "from": "broccoli-read-compat@>=0.1.2 <0.2.0",
-      "resolved": "https://registry.npmjs.org/broccoli-read-compat/-/broccoli-read-compat-0.1.3.tgz"
     },
     "broccoli-slow-trees": {
       "version": "1.1.0",
@@ -3425,6 +3437,11 @@
         }
       }
     },
+    "fast-ordered-set": {
+      "version": "1.0.2",
+      "from": "fast-ordered-set@>=1.0.0 <2.0.0",
+      "resolved": "https://registry.npmjs.org/fast-ordered-set/-/fast-ordered-set-1.0.2.tgz"
+    },
     "faye-websocket": {
       "version": "0.7.3",
       "from": "faye-websocket@>=0.7.2 <0.8.0",
@@ -3577,6 +3594,11 @@
       "version": "0.3.1",
       "from": "fs-promise@0.3.1",
       "resolved": "https://registry.npmjs.org/fs-promise/-/fs-promise-0.3.1.tgz"
+    },
+    "fs-tree-diff": {
+      "version": "0.3.1",
+      "from": "fs-tree-diff@>=0.3.0 <0.4.0",
+      "resolved": "https://registry.npmjs.org/fs-tree-diff/-/fs-tree-diff-0.3.1.tgz"
     },
     "fsevents": {
       "version": "1.0.6",
@@ -6471,6 +6493,11 @@
         }
       }
     },
+    "matcher-collection": {
+      "version": "1.0.1",
+      "from": "matcher-collection@>=1.0.0 <2.0.0",
+      "resolved": "https://registry.npmjs.org/matcher-collection/-/matcher-collection-1.0.1.tgz"
+    },
     "media-typer": {
       "version": "0.3.0",
       "from": "media-typer@0.3.0",
@@ -7131,6 +7158,11 @@
       "version": "0.11.15",
       "from": "path-platform@>=0.11.15 <0.12.0",
       "resolved": "https://registry.npmjs.org/path-platform/-/path-platform-0.11.15.tgz"
+    },
+    "path-posix": {
+      "version": "1.0.0",
+      "from": "path-posix@>=1.0.0 <2.0.0",
+      "resolved": "https://registry.npmjs.org/path-posix/-/path-posix-1.0.0.tgz"
     },
     "path-type": {
       "version": "1.1.0",
