@@ -2489,9 +2489,9 @@
       "resolved": "https://registry.npmjs.org/cipher-base/-/cipher-base-1.0.2.tgz"
     },
     "clang-format": {
-      "version": "1.0.33",
-      "from": "clang-format@>=1.0.32 <2.0.0",
-      "resolved": "https://registry.npmjs.org/clang-format/-/clang-format-1.0.33.tgz"
+      "version": "1.0.32",
+      "from": "clang-format@1.0.32",
+      "resolved": "https://registry.npmjs.org/clang-format/-/clang-format-1.0.32.tgz"
     },
     "cli-color": {
       "version": "1.1.0",
