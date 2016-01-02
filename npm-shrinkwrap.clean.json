@@ -267,20 +267,6 @@
     "bn.js": {
       "version": "4.6.1"
     },
-    "body-parser": {
-      "version": "1.8.4",
-      "dependencies": {
-        "ee-first": {
-          "version": "1.0.5"
-        },
-        "on-finished": {
-          "version": "2.1.0"
-        },
-        "qs": {
-          "version": "2.2.4"
-        }
-      }
-    },
     "boom": {
       "version": "2.10.1"
     },
@@ -1427,7 +1413,44 @@
       "version": "1.8.3"
     },
     "broccoli": {
-      "version": "0.15.4"
+      "version": "0.16.9",
+      "dependencies": {
+        "async": {
+          "version": "1.5.0"
+        },
+        "camelcase": {
+          "version": "1.2.1"
+        },
+        "cliui": {
+          "version": "2.1.0"
+        },
+        "handlebars": {
+          "version": "4.0.5"
+        },
+        "source-map": {
+          "version": "0.4.4"
+        },
+        "uglify-js": {
+          "version": "2.6.1",
+          "dependencies": {
+            "async": {
+              "version": "0.2.10"
+            },
+            "source-map": {
+              "version": "0.5.3"
+            }
+          }
+        },
+        "window-size": {
+          "version": "0.1.0"
+        },
+        "wordwrap": {
+          "version": "0.0.2"
+        },
+        "yargs": {
+          "version": "3.10.0"
+        }
+      }
     },
     "broccoli-filter": {
       "version": "0.1.14",
@@ -1553,9 +1576,6 @@
     },
     "builtins": {
       "version": "0.0.7"
-    },
-    "bytes": {
-      "version": "1.0.0"
     },
     "callsite": {
       "version": "1.0.0"
@@ -1905,9 +1925,6 @@
     "delegates": {
       "version": "0.1.0"
     },
-    "depd": {
-      "version": "0.4.5"
-    },
     "deprecated": {
       "version": "0.0.1"
     },
@@ -2183,9 +2200,6 @@
     },
     "fast-ordered-set": {
       "version": "1.0.2"
-    },
-    "faye-websocket": {
-      "version": "0.7.3"
     },
     "fbjs": {
       "version": "0.6.0",
@@ -3338,9 +3352,6 @@
     "https-proxy-agent": {
       "version": "1.0.0"
     },
-    "iconv-lite": {
-      "version": "0.4.4"
-    },
     "ieee754": {
       "version": "1.1.6"
     },
@@ -3752,9 +3763,6 @@
           "version": "5.0.15"
         }
       }
-    },
-    "livereload-js": {
-      "version": "2.2.2"
     },
     "load-json-file": {
       "version": "1.1.0",
@@ -4692,9 +4700,6 @@
         }
       }
     },
-    "qs": {
-      "version": "2.2.5"
-    },
     "querystring": {
       "version": "0.2.0"
     },
@@ -4717,9 +4722,6 @@
     },
     "range-parser": {
       "version": "1.0.3"
-    },
-    "raw-body": {
-      "version": "1.3.0"
     },
     "rc": {
       "version": "1.1.6",
@@ -5402,17 +5404,6 @@
     "timers-ext": {
       "version": "0.1.0"
     },
-    "tiny-lr": {
-      "version": "0.1.7",
-      "dependencies": {
-        "debug": {
-          "version": "2.0.0"
-        },
-        "ms": {
-          "version": "0.6.2"
-        }
-      }
-    },
     "tmp": {
       "version": "0.0.25"
     },
@@ -5542,9 +5533,6 @@
     },
     "type-detect": {
       "version": "0.1.2"
-    },
-    "type-is": {
-      "version": "1.5.7"
     },
     "typedarray": {
       "version": "0.0.6"
@@ -5833,12 +5821,6 @@
           "version": "0.4.4"
         }
       }
-    },
-    "websocket-driver": {
-      "version": "0.6.3"
-    },
-    "websocket-extensions": {
-      "version": "0.1.1"
     },
     "whatwg-fetch": {
       "version": "0.9.0"
