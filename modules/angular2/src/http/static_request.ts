@@ -49,6 +49,20 @@ import {
  * ```
  */
 export class Request {
+  static create(url: string, requestOptions?: RequestOptionsArgs): Request;
+  static create(requestOptions: RequestArgs): Request;
+  /**
+   * Static factory method
+   */
+  static create(urlOrRequestOptions: string | RequestArgs,
+                requestOptions?: RequestOptionsArgs): Request {
+    if (typeof urlOrRequestOptions === 'string') {
+      return new Request(urlOrRequestOptions, requestOptions);
+    } else {
+      return new Request(urlOrRequestOptions);
+    }
+  }
+
   /**
    * Http method with which to perform the request.
    */

@@ -175,6 +175,37 @@ export function main() {
              http.request(new Request('https://google.com')).subscribe((res) => {});
            }));
 
+        it('should accept a fully-qualified request as its only parameter',
+           inject([AsyncTestCompleter], (async) => {
+             backend.connections.subscribe(c => {
+               expect(c.request.url).toBe('https://google.com');
+               c.mockRespond(new Response(new ResponseOptions({body: 'Thank you'})));
+               async.done();
+             });
+             http.request(Request.create('https://google.com')).subscribe((res) => {});
+           }));
+
+        it('should accept a fully-qualified request as its only parameter',
+           inject([AsyncTestCompleter], (async) => {
+             backend.connections.subscribe(c => {
+               expect(c.request.url).toBe('https://google.com');
+               c.mockRespond(new Response(new ResponseOptions({body: 'Thank you'})));
+               async.done();
+             });
+             http.request(Request.create('https://google.com', {body: 'Thank you'}))
+                 .subscribe((res) => {});
+           }));
+
+        it('should accept a fully-qualified request as its only parameter',
+           inject([AsyncTestCompleter], (async) => {
+             backend.connections.subscribe(c => {
+               expect(c.request.url).toBe('https://google.com');
+               c.mockRespond(new Response(new ResponseOptions({body: 'Thank you'})));
+               async.done();
+             });
+             http.request(Request.create({url: 'https://google.com', body: 'Thank you'}))
+                 .subscribe((res) => {});
+           }));
 
         it('should perform a get request for given url if only passed a string',
            inject([AsyncTestCompleter], (async) => {
