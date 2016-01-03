@@ -3753,7 +3753,7 @@
       "version": "0.2.12"
     },
     "lodash": {
-      "version": "2.4.2"
+      "version": "3.10.1"
     },
     "lodash-node": {
       "version": "2.4.1"
@@ -4605,6 +4605,9 @@
         "jasmine": {
           "version": "2.3.2"
         },
+        "lodash": {
+          "version": "2.4.2"
+        },
         "minimatch": {
           "version": "0.3.0"
         },
@@ -4703,7 +4706,12 @@
       }
     },
     "rcfinder": {
-      "version": "0.1.8"
+      "version": "0.1.8",
+      "dependencies": {
+        "lodash": {
+          "version": "2.4.2"
+        }
+      }
     },
     "rcloader": {
       "version": "0.1.4",
