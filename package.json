@@ -102,7 +102,7 @@
     "rewire": "^2.3.3",
     "run-sequence": "^1.1.0",
     "selenium-webdriver": "^2.47.0",
-    "semver": "^4.3.4",
+    "semver": "^5.1.0",
     "sorted-object": "^1.0.0",
     "source-map": "^0.3.0",
     "source-map-loader": "^0.1.5",
