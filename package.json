@@ -92,7 +92,7 @@
     "merge": "^1.2.0",
     "merge2": "^0.3.5",
     "minimatch": "^2.0.1",
-    "minimist": "1.1.x",
+    "minimist": "^1.2.0",
     "mock-fs": "^2.5.0",
     "node-uuid": "1.4.x",
     "on-headers": "^1.0.0",
