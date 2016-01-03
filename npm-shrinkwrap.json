@@ -6676,14 +6676,14 @@
       "resolved": "https://registry.npmjs.org/mktemp/-/mktemp-0.3.5.tgz"
     },
     "mock-fs": {
-      "version": "2.7.1",
-      "from": "mock-fs@>=2.5.0 <3.0.0",
-      "resolved": "https://registry.npmjs.org/mock-fs/-/mock-fs-2.7.1.tgz",
+      "version": "3.6.0",
+      "from": "mock-fs@3.6.0",
+      "resolved": "https://registry.npmjs.org/mock-fs/-/mock-fs-3.6.0.tgz",
       "dependencies": {
-        "rewire": {
-          "version": "2.0.1",
-          "from": "rewire@>=2.0.0 <2.1.0",
-          "resolved": "https://registry.npmjs.org/rewire/-/rewire-2.0.1.tgz"
+        "semver": {
+          "version": "5.1.0",
+          "from": "semver@>=5.0.3 <6.0.0",
+          "resolved": "https://registry.npmjs.org/semver/-/semver-5.1.0.tgz"
         }
       }
     },
