@@ -9,7 +9,7 @@ JS and Dart versions. It also explains the basic mechanics of using `git`, `node
 * [Installing NPM Modules and Dart Packages](#installing-npm-modules-and-dart-packages)
 * [Build commands](#build-commands)
 * [Running Tests Locally](#running-tests-locally)
-* [Formatting](#clang-format)
+* [Code Style](#code-style)
 * [Project Information](#project-information)
 * [CI using Travis](#ci-using-travis)
 * [Transforming Dart code](#transforming-dart-code)
@@ -227,7 +227,9 @@ Angular specific command line options when running protractor:
 Angular specific command line options when running protractor (e.g. force gc, ...):
 `$(npm bin)/protractor protractor-{js|dart2js}-conf.js --ng-help`
 
-## Formatting with <a name="clang-format">clang-format</a>
+## Code Style
+
+### Formatting with <a name="clang-format">clang-format</a>
 
 We use [clang-format](http://clang.llvm.org/docs/ClangFormat.html) to automatically enforce code
 style for our TypeScript code. This allows us to focus our code reviews more on the content, and
@@ -272,6 +274,14 @@ to some whitespace difference.
     - Working directory: `$ProjectFileDir$`
 * `clang-format` integrations are also available for many popular editors (`vim`, `emacs`,
   `Sublime Text`, etc.).
+
+### Linting
+
+We use [tslint](https://github.com/palantir/tslint) for linting. See linting rules in [gulpfile](gulpfile.js). To lint, run
+
+```shell
+$ gulp lint
+```
 
 ## Generating the API documentation
 
