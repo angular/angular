@@ -58,7 +58,6 @@
     "firefox-profile": "^0.3.4",
     "fs-extra": "^0.26.3",
     "glob": "^4.0.6",
-    "googleapis": "1.0.x",
     "gulp": "^3.8.8",
     "gulp-autoprefixer": "^3.1.0",
     "gulp-clang-format": "^1.0.23",
