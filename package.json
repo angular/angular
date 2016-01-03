@@ -63,7 +63,7 @@
     "gulp-autoprefixer": "^3.1.0",
     "gulp-clang-format": "^1.0.23",
     "gulp-concat": "^2.5.2",
-    "gulp-connect": "^1.0.10",
+    "gulp-connect": "^2.3.1",
     "gulp-gzip": "^1.2.0",
     "gulp-insert": "^0.5.0",
     "gulp-load-plugins": "^1.0.0",
