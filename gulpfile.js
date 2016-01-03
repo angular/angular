@@ -6,7 +6,7 @@ require('./tools/check-environment')(
     {requiredNpmVersion: '>=3.5.2 <4.0.0', requiredNodeVersion: '>=4.2.1 <5.0.0'});
 
 
-var del = require('del');
+var fse = require('fs-extra');
 var gulp = require('gulp');
 var gulpPlugins = require('gulp-load-plugins')();
 var merge = require('merge');
@@ -185,21 +185,20 @@ var PAYLOAD_TESTS_CONFIG = {
 // ------------
 // clean
 
-gulp.task('build/clean.tools', function() { del(path.join('dist', 'tools')); });
+gulp.task('build/clean.tools', (done) => fse.remove(path.join('dist', 'tools'), done));
 
-gulp.task('build/clean.js', function(done) { del(CONFIG.dest.js.all, done); });
+gulp.task('build/clean.js', (done) => fse.remove(CONFIG.dest.js.all, done));
 
-gulp.task('build/clean.dart', function(done) { del(CONFIG.dest.dart, done); });
+gulp.task('build/clean.dart', (done) => fse.remove(CONFIG.dest.dart, done));
 
-gulp.task('build/clean.docs', function(done) { del(CONFIG.dest.docs, done); });
+gulp.task('build/clean.docs', (done) => fse.remove(CONFIG.dest.docs, done));
 
-gulp.task('build/clean.docs_angular_io',
-          function(done) { del(CONFIG.dest.docs_angular_io, done); });
+gulp.task('build/clean.docs_angular_io', (done) => fse.remove(CONFIG.dest.docs_angular_io, done));
 
-gulp.task('build/clean.bundles', function(done) { del(CONFIG.dest.bundles.all, done); });
+gulp.task('build/clean.bundles', (done) => fse.remove(CONFIG.dest.bundles.all, done));
 
 gulp.task('build/clean.bundles.benchpress',
-          function(done) { del(CONFIG.dest.bundles.benchpress, done); });
+          (done) => fse.remove(CONFIG.dest.bundles.benchpress, done));
 
 // ------------
 // transpile
