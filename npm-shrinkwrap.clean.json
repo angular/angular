@@ -2832,6 +2832,9 @@
         "has-ansi": {
           "version": "2.0.0"
         },
+        "semver": {
+          "version": "4.3.6"
+        },
         "strip-ansi": {
           "version": "3.0.0"
         },
@@ -3758,6 +3761,9 @@
         "readable-stream": {
           "version": "1.0.33"
         },
+        "semver": {
+          "version": "4.3.6"
+        },
         "underscore": {
           "version": "1.8.2"
         }
@@ -4212,6 +4218,9 @@
       "dependencies": {
         "nopt": {
           "version": "3.0.6"
+        },
+        "semver": {
+          "version": "4.3.6"
         }
       }
     },
@@ -4854,7 +4863,7 @@
       }
     },
     "semver": {
-      "version": "4.3.6"
+      "version": "5.1.0"
     },
     "semver-diff": {
       "version": "2.1.0",
@@ -5373,6 +5382,9 @@
         },
         "rimraf": {
           "version": "2.2.8"
+        },
+        "semver": {
+          "version": "4.3.6"
         },
         "split": {
           "version": "0.2.10"
