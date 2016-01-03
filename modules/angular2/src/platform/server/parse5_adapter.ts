@@ -372,6 +372,15 @@ export class Parse5DomAdapter extends DomAdapter {
       element.attribs["class"] = element.className = classList.join(" ");
     }
   }
+  toggleClass(element: Element, className: string, force?: boolean) {
+    if (force){
+      this.addClass(element, className);
+    } else if (force === false || this.hasClass(element, className)) {
+      this.removeClass(element, className);
+    } else {
+      this.addClass(element, className);
+    }
+  }
   hasClass(element, className: string): boolean {
     return ListWrapper.contains(this.classList(element), className);
   }

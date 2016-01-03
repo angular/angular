@@ -69,6 +69,50 @@ export function main() {
       expect(() => DOM.remove(d)).not.toThrow();
     });
 
+    describe('toggleClass', () => {
+      it('should be able to remove existing class', () => {
+        var d = DOM.createElement('div');
+        DOM.setAttribute(d, 'class', 'class1');
+        DOM.toggleClass(d, 'class1');
+        expect(d.className).toEqual('');
+      });
+
+      it('should be able to force remove existing class', () => {
+        var d = DOM.createElement('div');
+        DOM.setAttribute(d, 'class', 'class1');
+        DOM.toggleClass(d, 'class1', false);
+        expect(d.className).toEqual('');
+      });
+
+      it('should not add a class when using force remove', () => {
+        var d = DOM.createElement('div');
+        DOM.setAttribute(d, 'class', 'class2');
+        DOM.toggleClass(d, 'class1', false);
+        expect(d.className).toEqual('class2');
+      });
+
+      it('should be able to add class via toggle', () => {
+        var d = DOM.createElement('div');
+        DOM.setAttribute(d, 'class', 'class2');
+        DOM.toggleClass(d, 'class1');
+        expect(d.className).toEqual('class2 class1');
+      });
+
+      it('should be able to add class using force true', () => {
+        var d = DOM.createElement('div');
+        DOM.setAttribute(d, 'class', 'class2');
+        DOM.toggleClass(d, 'class1', true);
+        expect(d.className).toEqual('class2 class1');
+      });
+
+      it('should keep class using force true', () => {
+        var d = DOM.createElement('div');
+        DOM.setAttribute(d, 'class', 'class1');
+        DOM.toggleClass(d, 'class1', true);
+        expect(d.className).toEqual('class1');
+      });
+    });
+
     if (DOM.supportsDOMEvents()) {
       describe('getBaseHref', () => {
         beforeEach(() => DOM.resetBaseElement());

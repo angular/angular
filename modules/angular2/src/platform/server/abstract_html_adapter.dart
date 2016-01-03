@@ -261,6 +261,10 @@ abstract class AbstractHtml5LibAdapter implements DomAdapter {
     throw 'not implemented';
   }
 
+  toggleClass(element, String className, [bool force = null]) {
+    throw 'not implemented';
+  }
+
   hasClass(element, String className) => element.classes.contains(className);
 
   setStyle(element, String styleName, String styleValue) {
