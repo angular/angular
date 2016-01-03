@@ -82,7 +82,12 @@
           "version": "0.9.2"
         },
         "glob": {
-          "version": "4.3.5"
+          "version": "4.3.5",
+          "dependencies": {
+            "minimatch": {
+              "version": "2.0.10"
+            }
+          }
         },
         "lodash": {
           "version": "3.2.0"
@@ -1457,6 +1462,9 @@
     "broccoli-funnel": {
       "version": "1.0.1",
       "dependencies": {
+        "minimatch": {
+          "version": "2.0.10"
+        },
         "walk-sync": {
           "version": "0.2.6"
         }
@@ -1487,6 +1495,9 @@
         },
         "fs-extra": {
           "version": "0.13.0"
+        },
+        "minimatch": {
+          "version": "2.0.10"
         }
       }
     },
@@ -2210,7 +2221,12 @@
       "version": "0.2.1",
       "dependencies": {
         "glob": {
-          "version": "4.3.5"
+          "version": "4.3.5",
+          "dependencies": {
+            "minimatch": {
+              "version": "2.0.10"
+            }
+          }
         }
       }
     },
@@ -2760,7 +2776,12 @@
       }
     },
     "glob": {
-      "version": "4.5.3"
+      "version": "4.5.3",
+      "dependencies": {
+        "minimatch": {
+          "version": "2.0.10"
+        }
+      }
     },
     "glob-base": {
       "version": "0.3.0"
@@ -2769,7 +2790,12 @@
       "version": "2.0.0"
     },
     "glob-stream": {
-      "version": "3.1.18"
+      "version": "3.1.18",
+      "dependencies": {
+        "minimatch": {
+          "version": "2.0.10"
+        }
+      }
     },
     "glob-watcher": {
       "version": "0.0.6"
@@ -3959,7 +3985,12 @@
       }
     },
     "matcher-collection": {
-      "version": "1.0.1"
+      "version": "1.0.1",
+      "dependencies": {
+        "minimatch": {
+          "version": "2.0.10"
+        }
+      }
     },
     "media-typer": {
       "version": "0.3.0"
@@ -4023,7 +4054,7 @@
       "version": "1.0.0"
     },
     "minimatch": {
-      "version": "2.0.10"
+      "version": "3.0.0"
     },
     "minimist": {
       "version": "1.2.0"
@@ -4088,7 +4119,12 @@
       "version": "0.7.1"
     },
     "multimatch": {
-      "version": "2.0.0"
+      "version": "2.0.0",
+      "dependencies": {
+        "minimatch": {
+          "version": "2.0.10"
+        }
+      }
     },
     "multiparty": {
       "version": "3.3.2"
@@ -4662,6 +4698,9 @@
       "dependencies": {
         "graceful-fs": {
           "version": "4.1.2"
+        },
+        "minimatch": {
+          "version": "2.0.10"
         },
         "readable-stream": {
           "version": "2.0.5"
@@ -5312,7 +5351,12 @@
           "version": "2.6.0"
         },
         "glob": {
-          "version": "4.3.5"
+          "version": "4.3.5",
+          "dependencies": {
+            "minimatch": {
+              "version": "2.0.10"
+            }
+          }
         },
         "semver": {
           "version": "2.3.2"
