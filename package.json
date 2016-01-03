@@ -46,7 +46,7 @@
     "bower": "^1.3.12",
     "broccoli": "^0.16.9",
     "broccoli-funnel": "^1.0.1",
-    "broccoli-slow-trees": "^1.1.0",
+    "broccoli-slow-trees": "1.x.x",
     "broccoli-stew": "^0.2.1",
     "broccoli-writer": "^0.1.1",
     "browserify": "^10.2.4",
