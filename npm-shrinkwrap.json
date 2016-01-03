@@ -7191,9 +7191,9 @@
       }
     },
     "proxy-middleware": {
-      "version": "0.13.1",
-      "from": "proxy-middleware@>=0.13.0 <0.14.0",
-      "resolved": "https://registry.npmjs.org/proxy-middleware/-/proxy-middleware-0.13.1.tgz"
+      "version": "0.15.0",
+      "from": "proxy-middleware@>=0.15.0 <0.16.0",
+      "resolved": "https://registry.npmjs.org/proxy-middleware/-/proxy-middleware-0.15.0.tgz"
     },
     "prr": {
       "version": "0.0.0",

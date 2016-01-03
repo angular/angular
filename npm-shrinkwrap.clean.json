@@ -4510,7 +4510,7 @@
       }
     },
     "proxy-middleware": {
-      "version": "0.13.1"
+      "version": "0.15.0"
     },
     "prr": {
       "version": "0.0.0"
