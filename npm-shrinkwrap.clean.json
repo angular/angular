@@ -4196,10 +4196,10 @@
       "version": "0.3.5"
     },
     "mock-fs": {
-      "version": "2.7.1",
+      "version": "3.6.0",
       "dependencies": {
-        "rewire": {
-          "version": "2.0.1"
+        "semver": {
+          "version": "5.1.0"
         }
       }
     },
