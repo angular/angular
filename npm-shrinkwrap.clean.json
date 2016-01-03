@@ -1577,6 +1577,9 @@
     "builtins": {
       "version": "0.0.7"
     },
+    "bytes": {
+      "version": "0.3.0"
+    },
     "callsite": {
       "version": "1.0.0"
     },
@@ -2189,6 +2192,9 @@
     },
     "fast-ordered-set": {
       "version": "1.0.2"
+    },
+    "faye-websocket": {
+      "version": "0.4.4"
     },
     "fbjs": {
       "version": "0.6.0",
@@ -2909,9 +2915,6 @@
     "gulp-connect": {
       "version": "1.1.1",
       "dependencies": {
-        "bytes": {
-          "version": "0.3.0"
-        },
         "connect": {
           "version": "2.14.5"
         },
@@ -2920,9 +2923,6 @@
         },
         "event-stream": {
           "version": "3.1.7"
-        },
-        "faye-websocket": {
-          "version": "0.4.4"
         },
         "gulp-util": {
           "version": "2.2.20"
@@ -2945,12 +2945,6 @@
         "minimist": {
           "version": "0.2.0"
         },
-        "qs": {
-          "version": "0.6.6"
-        },
-        "raw-body": {
-          "version": "1.1.4"
-        },
         "readable-stream": {
           "version": "1.0.33"
         },
@@ -2962,20 +2956,6 @@
         },
         "through2": {
           "version": "0.5.1"
-        },
-        "tiny-lr": {
-          "version": "0.0.5",
-          "dependencies": {
-            "debug": {
-              "version": "0.7.4"
-            },
-            "noptify": {
-              "version": "0.0.3"
-            },
-            "qs": {
-              "version": "0.5.6"
-            }
-          }
         },
         "vinyl": {
           "version": "0.2.3"
@@ -4674,6 +4654,9 @@
         }
       }
     },
+    "qs": {
+      "version": "0.6.6"
+    },
     "querystring": {
       "version": "0.2.0"
     },
@@ -4696,6 +4679,9 @@
     },
     "range-parser": {
       "version": "1.0.3"
+    },
+    "raw-body": {
+      "version": "1.1.4"
     },
     "rc": {
       "version": "1.1.6",
@@ -5379,6 +5365,20 @@
     },
     "timers-ext": {
       "version": "0.1.0"
+    },
+    "tiny-lr": {
+      "version": "0.0.5",
+      "dependencies": {
+        "debug": {
+          "version": "0.7.4"
+        },
+        "noptify": {
+          "version": "0.0.3"
+        },
+        "qs": {
+          "version": "0.5.6"
+        }
+      }
     },
     "tmp": {
       "version": "0.0.25"
