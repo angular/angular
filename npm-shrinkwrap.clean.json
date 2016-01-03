@@ -5776,12 +5776,7 @@
       "version": "3.2.0"
     },
     "yargs": {
-      "version": "2.3.0",
-      "dependencies": {
-        "wordwrap": {
-          "version": "0.0.2"
-        }
-      }
+      "version": "3.31.0"
     },
     "zip-dir": {
       "version": "1.0.0"

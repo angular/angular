@@ -118,6 +118,6 @@
     "universal-analytics": "^0.3.9",
     "webpack": "^1.12.6",
     "which": "~1",
-    "yargs": "2.3.*"
+    "yargs": "^3.31.0"
   }
 }
