@@ -3003,18 +3003,6 @@
       "from": "definition-header@>=0.1.0 <0.2.0",
       "resolved": "https://registry.npmjs.org/definition-header/-/definition-header-0.1.0.tgz"
     },
-    "del": {
-      "version": "1.2.1",
-      "from": "del@>=1.0.0 <2.0.0",
-      "resolved": "https://registry.npmjs.org/del/-/del-1.2.1.tgz",
-      "dependencies": {
-        "object-assign": {
-          "version": "3.0.0",
-          "from": "object-assign@>=3.0.0 <4.0.0",
-          "resolved": "https://registry.npmjs.org/object-assign/-/object-assign-3.0.0.tgz"
-        }
-      }
-    },
     "delayed-stream": {
       "version": "1.0.0",
       "from": "delayed-stream@>=1.0.0 <1.1.0",
@@ -3125,11 +3113,6 @@
           "resolved": "https://registry.npmjs.org/readable-stream/-/readable-stream-2.0.5.tgz"
         }
       }
-    },
-    "each-async": {
-      "version": "1.1.1",
-      "from": "each-async@>=1.0.0 <2.0.0",
-      "resolved": "https://registry.npmjs.org/each-async/-/each-async-1.1.1.tgz"
     },
     "ecc-jsbn": {
       "version": "0.1.1",
@@ -4465,28 +4448,6 @@
       "from": "https://github.com/component/global/archive/v2.0.1.tar.gz",
       "resolved": "https://github.com/component/global/archive/v2.0.1.tar.gz"
     },
-    "globby": {
-      "version": "2.1.0",
-      "from": "globby@>=2.0.0 <3.0.0",
-      "resolved": "https://registry.npmjs.org/globby/-/globby-2.1.0.tgz",
-      "dependencies": {
-        "async": {
-          "version": "1.5.0",
-          "from": "async@>=1.2.1 <2.0.0",
-          "resolved": "https://registry.npmjs.org/async/-/async-1.5.0.tgz"
-        },
-        "glob": {
-          "version": "5.0.15",
-          "from": "glob@>=5.0.3 <6.0.0",
-          "resolved": "https://registry.npmjs.org/glob/-/glob-5.0.15.tgz"
-        },
-        "object-assign": {
-          "version": "3.0.0",
-          "from": "object-assign@>=3.0.0 <4.0.0",
-          "resolved": "https://registry.npmjs.org/object-assign/-/object-assign-3.0.0.tgz"
-        }
-      }
-    },
     "globule": {
       "version": "0.1.0",
       "from": "globule@>=0.1.0 <0.2.0",
@@ -5473,21 +5434,6 @@
       "version": "2.1.0",
       "from": "is-number@>=2.1.0 <3.0.0",
       "resolved": "https://registry.npmjs.org/is-number/-/is-number-2.1.0.tgz"
-    },
-    "is-path-cwd": {
-      "version": "1.0.0",
-      "from": "is-path-cwd@>=1.0.0 <2.0.0",
-      "resolved": "https://registry.npmjs.org/is-path-cwd/-/is-path-cwd-1.0.0.tgz"
-    },
-    "is-path-in-cwd": {
-      "version": "1.0.0",
-      "from": "is-path-in-cwd@>=1.0.0 <2.0.0",
-      "resolved": "https://registry.npmjs.org/is-path-in-cwd/-/is-path-in-cwd-1.0.0.tgz"
-    },
-    "is-path-inside": {
-      "version": "1.0.0",
-      "from": "is-path-inside@>=1.0.0 <2.0.0",
-      "resolved": "https://registry.npmjs.org/is-path-inside/-/is-path-inside-1.0.0.tgz"
     },
     "is-primitive": {
       "version": "2.0.0",
@@ -7019,11 +6965,6 @@
       "from": "once@>=1.3.0 <2.0.0",
       "resolved": "https://registry.npmjs.org/once/-/once-1.3.3.tgz"
     },
-    "onetime": {
-      "version": "1.1.0",
-      "from": "onetime@>=1.0.0 <2.0.0",
-      "resolved": "https://registry.npmjs.org/onetime/-/onetime-1.1.0.tgz"
-    },
     "open": {
       "version": "0.0.4",
       "from": "open@0.0.4",
@@ -7177,11 +7118,6 @@
       "version": "1.0.0",
       "from": "path-is-absolute@>=1.0.0 <2.0.0",
       "resolved": "https://registry.npmjs.org/path-is-absolute/-/path-is-absolute-1.0.0.tgz"
-    },
-    "path-is-inside": {
-      "version": "1.0.1",
-      "from": "path-is-inside@>=1.0.1 <2.0.0",
-      "resolved": "https://registry.npmjs.org/path-is-inside/-/path-is-inside-1.0.1.tgz"
     },
     "path-platform": {
       "version": "0.11.15",
@@ -8041,11 +7977,6 @@
           "resolved": "https://registry.npmjs.org/parseurl/-/parseurl-1.0.1.tgz"
         }
       }
-    },
-    "set-immediate-shim": {
-      "version": "1.0.1",
-      "from": "set-immediate-shim@>=1.0.0 <2.0.0",
-      "resolved": "https://registry.npmjs.org/set-immediate-shim/-/set-immediate-shim-1.0.1.tgz"
     },
     "setimmediate": {
       "version": "1.0.4",
