@@ -9219,16 +9219,9 @@
       "resolved": "https://registry.npmjs.org/y18n/-/y18n-3.2.0.tgz"
     },
     "yargs": {
-      "version": "2.3.0",
-      "from": "yargs@>=2.3.0 <2.4.0",
-      "resolved": "https://registry.npmjs.org/yargs/-/yargs-2.3.0.tgz",
-      "dependencies": {
-        "wordwrap": {
-          "version": "0.0.2",
-          "from": "wordwrap@0.0.2",
-          "resolved": "https://registry.npmjs.org/wordwrap/-/wordwrap-0.0.2.tgz"
-        }
-      }
+      "version": "3.31.0",
+      "from": "yargs@3.31.0",
+      "resolved": "https://registry.npmjs.org/yargs/-/yargs-3.31.0.tgz"
     },
     "zip-dir": {
       "version": "1.0.0",
