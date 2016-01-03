@@ -78,7 +78,7 @@
     "jasmine": "^2.4.1",
     "jpm": "1.0.0",
     "js-yaml": "^3.2.7",
-    "karma": "^0.13.15",
+    "karma": "0.13.15",
     "karma-browserstack-launcher": "^0.1.7",
     "karma-chrome-launcher": "^0.2.0",
     "karma-dart": "^0.3.0",
