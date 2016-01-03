@@ -5558,14 +5558,19 @@
       "resolved": "https://registry.npmjs.org/istextorbinary/-/istextorbinary-1.0.2.tgz"
     },
     "jasmine": {
-      "version": "2.3.1",
-      "from": "jasmine@2.3.1",
-      "resolved": "https://registry.npmjs.org/jasmine/-/jasmine-2.3.1.tgz",
+      "version": "2.4.1",
+      "from": "jasmine@2.4.1",
+      "resolved": "https://registry.npmjs.org/jasmine/-/jasmine-2.4.1.tgz",
       "dependencies": {
         "glob": {
           "version": "3.2.11",
           "from": "glob@>=3.2.11 <4.0.0",
           "resolved": "https://registry.npmjs.org/glob/-/glob-3.2.11.tgz"
+        },
+        "jasmine-core": {
+          "version": "2.4.1",
+          "from": "jasmine-core@>=2.4.0 <2.5.0",
+          "resolved": "https://registry.npmjs.org/jasmine-core/-/jasmine-core-2.4.1.tgz"
         },
         "minimatch": {
           "version": "0.3.0",
