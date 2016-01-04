@@ -103,7 +103,7 @@ export class CodegenLogicUtil {
         break;
 
       case RecordType.Chain:
-        rhs = `${getLocalName(protoRec.args[protoRec.args.length - 1])}`;
+        rhs = 'null';
         break;
 
       default:
