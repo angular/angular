@@ -545,37 +545,13 @@ export function resolveProvider(provider: Provider): ResolvedProvider {
  * Resolve a list of Providers.
  */
 export function resolveProviders(providers: Array<Type | Provider | any[]>): ResolvedProvider[] {
-  var normalized = _createListOfProviders(_normalizeProviders(
-      providers, new Map<number, _NormalizedProvider | _NormalizedProvider[]>()));
-  return normalized.map(b => {
-    if (b instanceof _NormalizedProvider) {
-      return new ResolvedProvider_(b.key, [b.resolvedFactory], false);
+  var normalizedMap = _normalizeProviders(providers, new Map<number, ResolvedProvider_>());
 
-    } else {
-      var arr = <_NormalizedProvider[]>b;
-      return new ResolvedProvider_(arr[0].key, arr.map(_ => _.resolvedFactory), true);
-    }
-  });
-}
-
-/**
- * The algorithm works as follows:
- *
- * [Provider] -> [_NormalizedProvider|[_NormalizedProvider]] -> [ResolvedProvider]
- *
- * _NormalizedProvider is essentially a resolved provider before it was grouped by key.
- */
-class _NormalizedProvider {
-  constructor(public key: Key, public resolvedFactory: ResolvedFactory) {}
-}
-
-function _createListOfProviders(flattenedProviders: Map<number, any>): any[] {
-  return MapWrapper.values(flattenedProviders);
+  return MapWrapper.values(normalizedMap);
 }
 
 function _normalizeProviders(providers: Array<Type | Provider | ProviderBuilder | any[]>,
-                             res: Map<number, _NormalizedProvider | _NormalizedProvider[]>):
-    Map<number, _NormalizedProvider | _NormalizedProvider[]> {
+                             res: Map<number, ResolvedProvider_>): Map<number, ResolvedProvider_> {
   providers.forEach(b => {
     if (b instanceof Type) {
       _normalizeProvider(provide(b, {useClass: b}), res);
@@ -586,44 +562,32 @@ function _normalizeProviders(providers: Array<Type | Provider | ProviderBuilder 
     } else if (b instanceof Array) {
       _normalizeProviders(b, res);
 
-    } else if (b instanceof ProviderBuilder) {
-      throw new InvalidProviderError(b.token);
-
     } else {
-      throw new InvalidProviderError(b);
+      let token = b instanceof ProviderBuilder ? b.token : b;
+      throw new InvalidProviderError(token);
     }
   });
 
   return res;
 }
 
-function _normalizeProvider(b: Provider,
-                            res: Map<number, _NormalizedProvider | _NormalizedProvider[]>): void {
+function _normalizeProvider(b: Provider, res: Map<number, ResolvedProvider_>): void {
   var key = Key.get(b.token);
   var factory = resolveFactory(b);
-  var normalized = new _NormalizedProvider(key, factory);
+  var existingProvider: ResolvedProvider_ = res.get(key.id);
 
-  if (b.multi) {
-    var existingProvider = res.get(key.id);
+  if (isPresent(existingProvider)) {
+    if (existingProvider.multiProvider != b.multi) {
+      throw new MixingMultiProvidersWithRegularProvidersError(existingProvider, b);
+    }
 
-    if (existingProvider instanceof Array) {
-      existingProvider.push(normalized);
-
-    } else if (isBlank(existingProvider)) {
-      res.set(key.id, [normalized]);
-
+    if (b.multi) {
+      existingProvider.resolvedFactories.push(factory);
     } else {
-      throw new MixingMultiProvidersWithRegularProvidersError(existingProvider, b);
+      existingProvider.resolvedFactories[0] = factory;
     }
-
   } else {
-    var existingProvider = res.get(key.id);
-
-    if (existingProvider instanceof Array) {
-      throw new MixingMultiProvidersWithRegularProvidersError(existingProvider, b);
-    }
-
-    res.set(key.id, normalized);
+    res.set(key.id, new ResolvedProvider_(key, [factory], b.multi));
   }
 }
 
