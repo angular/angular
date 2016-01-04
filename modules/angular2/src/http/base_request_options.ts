@@ -53,7 +53,11 @@ export class RequestOptions {
    * Search parameters to be included in a {@link Request}.
    */
   search: URLSearchParams;
-  constructor({method, headers, body, url, search}: RequestOptionsArgs = {}) {
+  /**
+   * withCredentials with which to perform a {@link Request} on CORS.
+   */
+  withCredentials: boolean;
+  constructor({method, headers, body, url, search, withCredentials}: RequestOptionsArgs = {}) {
     this.method = isPresent(method) ? normalizeMethodName(method) : null;
     this.headers = isPresent(headers) ? headers : null;
     this.body = isPresent(body) ? body : null;
@@ -61,6 +65,7 @@ export class RequestOptions {
     this.search = isPresent(search) ? (isString(search) ? new URLSearchParams(<string>(search)) :
                                                           <URLSearchParams>(search)) :
                                       null;
+    this.withCredentials = isPresent(withCredentials) ? withCredentials : null;
   }
 
   /**
@@ -95,9 +100,10 @@ export class RequestOptions {
       body: isPresent(options) && isPresent(options.body) ? options.body : this.body,
       url: isPresent(options) && isPresent(options.url) ? options.url : this.url,
       search: isPresent(options) && isPresent(options.search) ?
-                  (isString(options.search) ? new URLSearchParams(<string>(options.search)) :
+                                              (isString(options.search) ? new URLSearchParams(<string>(options.search)) :
                                               (<URLSearchParams>(options.search)).clone()) :
-                  this.search
+                  this.search,
+      withCredentials: isPresent(options) && isPresent(options.withCredentials) ? options.withCredentials : this.withCredentials
     });
   }
 }
