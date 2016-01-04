@@ -20904,7 +20904,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	    SelectControlValueAccessor = __decorate([
 	        core_1.Directive({
 	            selector: 'select[ngControl],select[ngFormControl],select[ngModel]',
-	            host: { '(input)': 'onChange($event.target.value)', '(blur)': 'onTouched()' },
+	            host: {
+	                '(change)': 'onChange($event.target.value)',
+	                '(input)': 'onChange($event.target.value)',
+	                '(blur)': 'onTouched()'
+	            },
 	            bindings: [SELECT_VALUE_ACCESSOR]
 	        }),
 	        __param(2, core_1.Query(NgSelectOption, { descendants: true })), 
@@ -32810,7 +32814,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }
 	            if (candidate instanceof route_recognizer_1.RedirectMatch) {
 	                var instruction = _this.generate(candidate.redirectTo, ancestorInstructions.concat([null]));
-	                return new instruction_1.RedirectInstruction(instruction.component, instruction.child, instruction.auxInstruction);
+	                return new instruction_1.RedirectInstruction(instruction.component, instruction.child, instruction.auxInstruction, candidate.specificity);
 	            }
 	        }); });
 	        if ((lang_1.isBlank(parsedUrl) || parsedUrl.path == '') && possibleMatches.length == 0) {
@@ -33719,9 +33723,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.UnresolvedInstruction = UnresolvedInstruction;
 	var RedirectInstruction = (function (_super) {
 	    __extends(RedirectInstruction, _super);
-	    function RedirectInstruction(component, child, auxInstruction) {
+	    function RedirectInstruction(component, child, auxInstruction, _specificity) {
 	        _super.call(this, component, child, auxInstruction);
+	        this._specificity = _specificity;
 	    }
+	    Object.defineProperty(RedirectInstruction.prototype, "specificity", {
+	        get: function () { return this._specificity; },
+	        enumerable: true,
+	        configurable: true
+	    });
 	    return RedirectInstruction;
 	})(ResolvedInstruction);
 	exports.RedirectInstruction = RedirectInstruction;

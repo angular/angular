@@ -56,7 +56,11 @@ export let SelectControlValueAccessor = class {
 SelectControlValueAccessor = __decorate([
     Directive({
         selector: 'select[ngControl],select[ngFormControl],select[ngModel]',
-        host: { '(input)': 'onChange($event.target.value)', '(blur)': 'onTouched()' },
+        host: {
+            '(change)': 'onChange($event.target.value)',
+            '(input)': 'onChange($event.target.value)',
+            '(blur)': 'onTouched()'
+        },
         bindings: [SELECT_VALUE_ACCESSOR]
     }),
     __param(2, Query(NgSelectOption, { descendants: true })), 

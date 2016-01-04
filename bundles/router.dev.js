@@ -555,9 +555,17 @@ System.register("angular2/src/router/instruction", ["angular2/src/facade/collect
   exports.UnresolvedInstruction = UnresolvedInstruction;
   var RedirectInstruction = (function(_super) {
     __extends(RedirectInstruction, _super);
-    function RedirectInstruction(component, child, auxInstruction) {
+    function RedirectInstruction(component, child, auxInstruction, _specificity) {
       _super.call(this, component, child, auxInstruction);
+      this._specificity = _specificity;
     }
+    Object.defineProperty(RedirectInstruction.prototype, "specificity", {
+      get: function() {
+        return this._specificity;
+      },
+      enumerable: true,
+      configurable: true
+    });
     return RedirectInstruction;
   })(ResolvedInstruction);
   exports.RedirectInstruction = RedirectInstruction;
@@ -2285,7 +2293,7 @@ System.register("angular2/src/router/route_registry", ["angular2/src/facade/coll
           }
           if (candidate instanceof route_recognizer_1.RedirectMatch) {
             var instruction = _this.generate(candidate.redirectTo, ancestorInstructions.concat([null]));
-            return new instruction_1.RedirectInstruction(instruction.component, instruction.child, instruction.auxInstruction);
+            return new instruction_1.RedirectInstruction(instruction.component, instruction.child, instruction.auxInstruction, candidate.specificity);
           }
         });
       });

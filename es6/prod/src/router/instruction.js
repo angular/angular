@@ -254,9 +254,11 @@ export class UnresolvedInstruction extends Instruction {
     }
 }
 export class RedirectInstruction extends ResolvedInstruction {
-    constructor(component, child, auxInstruction) {
+    constructor(component, child, auxInstruction, _specificity) {
         super(component, child, auxInstruction);
+        this._specificity = _specificity;
     }
+    get specificity() { return this._specificity; }
 }
 /**
  * A `ComponentInstruction` represents the route state for a single component. An `Instruction` is

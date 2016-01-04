@@ -155,7 +155,7 @@ export let RouteRegistry = class {
             }
             if (candidate instanceof RedirectMatch) {
                 var instruction = this.generate(candidate.redirectTo, ancestorInstructions.concat([null]));
-                return new RedirectInstruction(instruction.component, instruction.child, instruction.auxInstruction);
+                return new RedirectInstruction(instruction.component, instruction.child, instruction.auxInstruction, candidate.specificity);
             }
         }));
         if ((isBlank(parsedUrl) || parsedUrl.path == '') && possibleMatches.length == 0) {
