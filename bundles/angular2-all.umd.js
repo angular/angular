@@ -20904,11 +20904,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    SelectControlValueAccessor = __decorate([
 	        core_1.Directive({
 	            selector: 'select[ngControl],select[ngFormControl],select[ngModel]',
-	            host: {
-	                '(change)': 'onChange($event.target.value)',
-	                '(input)': 'onChange($event.target.value)',
-	                '(blur)': 'onTouched()'
-	            },
+	            host: { '(input)': 'onChange($event.target.value)', '(blur)': 'onTouched()' },
 	            bindings: [SELECT_VALUE_ACCESSOR]
 	        }),
 	        __param(2, core_1.Query(NgSelectOption, { descendants: true })), 
