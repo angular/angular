@@ -302,10 +302,14 @@ class UnresolvedInstruction extends Instruction {
 }
 
 class RedirectInstruction extends ResolvedInstruction {
+  String _specificity;
   RedirectInstruction(ComponentInstruction component, Instruction child,
-      Map<String, Instruction> auxInstruction)
+      Map<String, Instruction> auxInstruction, this._specificity)
       : super(component, child, auxInstruction) {
     /* super call moved to initializer */;
+  }
+  String get specificity {
+    return this._specificity;
   }
 }
 

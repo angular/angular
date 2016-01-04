@@ -29,6 +29,7 @@ class NgSelectOption {}
 @Directive(
     selector: "select[ngControl],select[ngFormControl],select[ngModel]",
     host: const {
+      "(change)": "onChange(\$event.target.value)",
       "(input)": "onChange(\$event.target.value)",
       "(blur)": "onTouched()"
     },

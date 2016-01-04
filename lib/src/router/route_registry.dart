@@ -186,8 +186,11 @@ class RouteRegistry {
               if (candidate is RedirectMatch) {
                 var instruction = this.generate(candidate.redirectTo,
                     (new List.from(ancestorInstructions)..addAll([null])));
-                return new RedirectInstruction(instruction.component,
-                    instruction.child, instruction.auxInstruction);
+                return new RedirectInstruction(
+                    instruction.component,
+                    instruction.child,
+                    instruction.auxInstruction,
+                    candidate.specificity);
               }
             }))
         .toList();
