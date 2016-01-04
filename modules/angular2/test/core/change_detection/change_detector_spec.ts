@@ -1341,12 +1341,16 @@ export function main() {
 
         it('should return the prevent default value', () => {
           var val = _createChangeDetector('(event)="false"', d, null);
-          var res = val.changeDetector.handleEvent("event", 0, locals);
-          expect(res).toBe(true);
+          var preventDefault = val.changeDetector.handleEvent("event", 0, locals);
+          expect(preventDefault).toBe(true);
 
           val = _createChangeDetector('(event)="true"', d, null);
-          res = val.changeDetector.handleEvent("event", 0, locals);
-          expect(res).toBe(false);
+          preventDefault = val.changeDetector.handleEvent("event", 0, locals);
+          expect(preventDefault).toBe(false);
+
+          val = _createChangeDetector('(event)="true; false"', d, null);
+          preventDefault = val.changeDetector.handleEvent("event", 0, locals);
+          expect(preventDefault).toEqual(true);
         });
 
         it('should support short-circuiting', () => {
