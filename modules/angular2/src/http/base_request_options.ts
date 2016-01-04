@@ -100,10 +100,12 @@ export class RequestOptions {
       body: isPresent(options) && isPresent(options.body) ? options.body : this.body,
       url: isPresent(options) && isPresent(options.url) ? options.url : this.url,
       search: isPresent(options) && isPresent(options.search) ?
-                                              (isString(options.search) ? new URLSearchParams(<string>(options.search)) :
+                  (isString(options.search) ? new URLSearchParams(<string>(options.search)) :
                                               (<URLSearchParams>(options.search)).clone()) :
                   this.search,
-      withCredentials: isPresent(options) && isPresent(options.withCredentials) ? options.withCredentials : this.withCredentials
+      withCredentials: isPresent(options) && isPresent(options.withCredentials) ?
+                           options.withCredentials :
+                           this.withCredentials
     });
   }
 }
