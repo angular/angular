@@ -111,7 +111,7 @@ export class CssSelector {
     this.attrs.push(value);
   }
 
-  addClassName(name: string) { this.classNames.push(name.toLowerCase()); }
+  addClassName(name: string) { this.classNames.push(name); }
 
   toString(): string {
     var res = '';
