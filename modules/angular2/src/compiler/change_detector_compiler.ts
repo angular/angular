@@ -3,6 +3,9 @@ import {SourceExpressions, moduleRef} from './source_module';
 import {
   ChangeDetectorJITGenerator
 } from 'angular2/src/core/change_detection/change_detection_jit_generator';
+import {AbstractChangeDetector} from 'angular2/src/core/change_detection/abstract_change_detector';
+import {ChangeDetectionUtil} from 'angular2/src/core/change_detection/change_detection_util';
+import {ChangeDetectorState} from 'angular2/src/core/change_detection/constants';
 
 import {createChangeDetectorDefinitions} from './change_definition_factory';
 import {IS_DART, isJsObject, CONST_EXPR} from 'angular2/src/facade/lang';
@@ -22,6 +25,12 @@ import {Injectable} from 'angular2/src/core/di';
 const ABSTRACT_CHANGE_DETECTOR = "AbstractChangeDetector";
 const UTIL = "ChangeDetectionUtil";
 const CHANGE_DETECTOR_STATE = "ChangeDetectorState";
+
+export const CHANGE_DETECTION_JIT_IMPORTS = CONST_EXPR({
+  'AbstractChangeDetector': AbstractChangeDetector,
+  'ChangeDetectionUtil': ChangeDetectionUtil,
+  'ChangeDetectorState': ChangeDetectorState
+});
 
 var ABSTRACT_CHANGE_DETECTOR_MODULE = moduleRef(
     `package:angular2/src/core/change_detection/abstract_change_detector${MODULE_SUFFIX}`);
@@ -45,14 +54,8 @@ export class ChangeDetectionCompiler {
   }
 
   private _createChangeDetectorFactory(definition: ChangeDetectorDefinition): Function {
-    if (IS_DART || !this._genConfig.useJit) {
-      var proto = new DynamicProtoChangeDetector(definition);
-      return (dispatcher) => proto.instantiate(dispatcher);
-    } else {
-      return new ChangeDetectorJITGenerator(definition, UTIL, ABSTRACT_CHANGE_DETECTOR,
-                                            CHANGE_DETECTOR_STATE)
-          .generate();
-    }
+    var proto = new DynamicProtoChangeDetector(definition);
+    return () => proto.instantiate();
   }
 
   compileComponentCodeGen(componentType: CompileTypeMetadata, strategy: ChangeDetectionStrategy,
@@ -81,7 +84,7 @@ export class ChangeDetectionCompiler {
             definition, `${UTIL_MODULE}${UTIL}`,
             `${ABSTRACT_CHANGE_DETECTOR_MODULE}${ABSTRACT_CHANGE_DETECTOR}`,
             `${CONSTANTS_MODULE}${CHANGE_DETECTOR_STATE}`);
-        factories.push(`function(dispatcher) { return new ${codegen.typeName}(dispatcher); }`);
+        factories.push(`function() { return new ${codegen.typeName}(); }`);
         sourcePart = codegen.generateSource();
       }
       index++;

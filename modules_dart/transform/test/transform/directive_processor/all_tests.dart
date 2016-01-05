@@ -460,8 +460,8 @@ void allTests() {
       expect(componentFirst.directives).toBeNotNull();
       expect(componentFirst.directives.length).toEqual(2);
       expect(componentFirst.directives.first)
-          .toEqual(new PrefixedDirective()..name = 'Dep');
-      expect(componentFirst.directives[1]).toEqual(new PrefixedDirective()
+          .toEqual(new PrefixedType()..name = 'Dep');
+      expect(componentFirst.directives[1]).toEqual(new PrefixedType()
         ..name = 'Dep'
         ..prefix = 'dep2');
     });
@@ -474,11 +474,10 @@ void allTests() {
       expect(viewFirst).toBeNotNull();
       expect(viewFirst.directives).toBeNotNull();
       expect(viewFirst.directives.length).toEqual(2);
-      expect(viewFirst.directives.first).toEqual(new PrefixedDirective()
+      expect(viewFirst.directives.first).toEqual(new PrefixedType()
         ..name = 'Dep'
         ..prefix = 'dep2');
-      expect(viewFirst.directives[1])
-          .toEqual(new PrefixedDirective()..name = 'Dep');
+      expect(viewFirst.directives[1]).toEqual(new PrefixedType()..name = 'Dep');
     });
 
     it('should populate `directives` from @Component value with no @View.',
@@ -490,9 +489,51 @@ void allTests() {
       expect(componentOnly.directives).toBeNotNull();
       expect(componentOnly.directives.length).toEqual(2);
       expect(componentOnly.directives.first)
-          .toEqual(new PrefixedDirective()..name = 'Dep');
-      expect(componentOnly.directives[1]).toEqual(new PrefixedDirective()
+          .toEqual(new PrefixedType()..name = 'Dep');
+      expect(componentOnly.directives[1]).toEqual(new PrefixedType()
         ..name = 'Dep'
+        ..prefix = 'dep2');
+    });
+
+    it('should populate `pipes` from @View value specified second.', () async {
+      var model =
+          (await _testCreateModel('directives_files/components.dart')).ngDeps;
+      final componentFirst = reflectableNamed(model, 'ComponentFirst');
+      expect(componentFirst).toBeNotNull();
+      expect(componentFirst.pipes).toBeNotNull();
+      expect(componentFirst.pipes.length).toEqual(2);
+      expect(componentFirst.pipes.first)
+          .toEqual(new PrefixedType()..name = 'PipeDep');
+      expect(componentFirst.pipes[1]).toEqual(new PrefixedType()
+        ..name = 'PipeDep'
+        ..prefix = 'dep2');
+    });
+
+    it('should populate `pipes` from @View value specified first.', () async {
+      var model =
+          (await _testCreateModel('directives_files/components.dart')).ngDeps;
+      final viewFirst = reflectableNamed(model, 'ViewFirst');
+      expect(viewFirst).toBeNotNull();
+      expect(viewFirst.pipes).toBeNotNull();
+      expect(viewFirst.pipes.length).toEqual(2);
+      expect(viewFirst.pipes.first).toEqual(new PrefixedType()
+        ..name = 'PipeDep'
+        ..prefix = 'dep2');
+      expect(viewFirst.pipes[1]).toEqual(new PrefixedType()..name = 'PipeDep');
+    });
+
+    it('should populate `pipes` from @Component value with no @View.',
+        () async {
+      var model =
+          (await _testCreateModel('directives_files/components.dart')).ngDeps;
+      final componentOnly = reflectableNamed(model, 'ComponentOnly');
+      expect(componentOnly).toBeNotNull();
+      expect(componentOnly.pipes).toBeNotNull();
+      expect(componentOnly.pipes.length).toEqual(2);
+      expect(componentOnly.pipes.first)
+          .toEqual(new PrefixedType()..name = 'PipeDep');
+      expect(componentOnly.pipes[1]).toEqual(new PrefixedType()
+        ..name = 'PipeDep'
         ..prefix = 'dep2');
     });
 
@@ -559,6 +600,30 @@ void allTests() {
       expect(warning).toBeNotNull();
       expect(warning.toLowerCase())
           .toContain('cannot specify view parameters on @component');
+    });
+
+    it('should warn if @Component has `pipes` and @View is present.', () async {
+      final logger = new RecordingLogger();
+      final model = await _testCreateModel('bad_directives_files/pipes.dart',
+          logger: logger);
+      var warning =
+          logger.logs.firstWhere((l) => l.contains('WARN'), orElse: () => null);
+      expect(warning).toBeNotNull();
+      expect(warning.toLowerCase())
+          .toContain('cannot specify view parameters on @component');
+    });
+  });
+
+  describe('pipes', () {
+    it('should read the pipe name', () async {
+      var model = await _testCreateModel('pipe_files/pipes.dart');
+      expect(model.types['NameOnlyPipe'].name).toEqual('nameOnly');
+      expect(model.types['NameOnlyPipe'].pure).toBe(false);
+    });
+
+    it('should read the pure flag', () async {
+      var model = await _testCreateModel('pipe_files/pipes.dart');
+      expect(model.types['NameAndPurePipe'].pure).toBe(true);
     });
   });
 }

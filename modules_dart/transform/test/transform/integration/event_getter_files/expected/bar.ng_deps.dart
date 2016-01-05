@@ -19,7 +19,7 @@ void initReflector() {
               outputs: ['eventName1', 'eventName2: propName2'],
               selector: '[soup]'),
           const View(template: ''),
-          _templates.HostMyComponentTemplate
+          _templates.hostViewFactory_MyComponent
         ], const [], () => new MyComponent()))
     ..registerGetters(
         {'eventName1': (o) => o.eventName1, 'eventName2': (o) => o.eventName2});

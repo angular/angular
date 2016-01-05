@@ -369,7 +369,7 @@ function proxyServeDart() {
 
 // ------------------
 // web servers
-gulp.task('serve.js.dev', ['build.js'], function(neverDone) {
+gulp.task('serve.js.dev', ['build.js.dev'], function(neverDone) {
   var watch = require('./tools/build/watch');
 
   watch('modules/**', {ignoreInitial: true}, '!broccoli.js.dev');
@@ -720,12 +720,19 @@ gulp.task('test.unit.js/ci', function(done) {
 });
 
 gulp.task('test.unit.js.sauce/ci', function(done) {
-  launchKarmaWithExternalBrowsers(['dots', 'saucelabs'], browserProvidersConf.sauceAliases.CI,
-                                  done);
+  var browsers = browserProvidersConf.sauceAliases.CI_REQUIRED;
+  if (cliArgs.mode && cliArgs.mode == 'saucelabs_optional') {
+    browsers = browserProvidersConf.sauceAliases.CI_OPTIONAL;
+  }
+  launchKarmaWithExternalBrowsers(['dots', 'saucelabs'], browsers, done);
 });
 
 gulp.task('test.unit.js.browserstack/ci', function(done) {
-  launchKarmaWithExternalBrowsers(['dots'], browserProvidersConf.browserstackAliases.CI, done);
+  var browsers = browserProvidersConf.browserstackAliases.CI_REQUIRED;
+  if (cliArgs.mode && cliArgs.mode == 'browserstack_optional') {
+    browsers = browserProvidersConf.browserstackAliases.CI_OPTIONAL;
+  }
+  launchKarmaWithExternalBrowsers(['dots'], browsers, done);
 });
 
 gulp.task('test.unit.dart/ci', function(done) {
@@ -973,15 +980,19 @@ gulp.task('!build.tools', function() {
 gulp.task('broccoli.js.dev', ['build.tools'],
           function(done) { runSequence('!broccoli.js.dev', sequenceComplete(done)); });
 
-gulp.task(
-    '!broccoli.js.dev',
-    () => angularBuilder.rebuildBrowserDevTree(
-        {generateEs6: generateEs6, projects: cliArgsProjects, noTypeChecks: cliArgs.noTypeChecks}));
+gulp.task('!broccoli.js.dev', () => angularBuilder.rebuildBrowserDevTree({
+  generateEs6: generateEs6,
+  projects: cliArgsProjects,
+  noTypeChecks: cliArgs.noTypeChecks,
+  useBundles: cliArgs.useBundles
+}));
 
-gulp.task(
-    '!broccoli.js.prod',
-    () => angularBuilder.rebuildBrowserProdTree(
-        {generateEs6: generateEs6, projects: cliArgsProjects, noTypeChecks: cliArgs.noTypeChecks}));
+gulp.task('!broccoli.js.prod', () => angularBuilder.rebuildBrowserProdTree({
+  generateEs6: generateEs6,
+  projects: cliArgsProjects,
+  noTypeChecks: cliArgs.noTypeChecks,
+  useBundles: cliArgs.useBundles
+}));
 
 gulp.task('build.js.dev', ['build/clean.js'], function(done) {
   runSequence('broccoli.js.dev', 'build.css.material', sequenceComplete(done));
@@ -1004,9 +1015,12 @@ var firstBuildJsCjs = true;
  * private task
  */
 gulp.task('!build.js.cjs', function() {
-  return angularBuilder
-      .rebuildNodeTree(
-          {generateEs6: generateEs6, projects: cliArgsProjects, noTypeChecks: cliArgs.noTypeChecks})
+  return angularBuilder.rebuildNodeTree({
+                         generateEs6: generateEs6,
+                         projects: cliArgsProjects,
+                         noTypeChecks: cliArgs.noTypeChecks,
+                         useBundles: cliArgs.useBundles
+                       })
       .then(function() {
         if (firstBuildJsCjs) {
           firstBuildJsCjs = false;

@@ -169,10 +169,10 @@ export class NgClass implements DoCheck, OnDestroy {
       if (className.indexOf(' ') > -1) {
         var classes = className.split(/\s+/g);
         for (var i = 0, len = classes.length; i < len; i++) {
-          this._renderer.setElementClass(this._ngEl, classes[i], enabled);
+          this._renderer.setElementClass(this._ngEl.nativeElement, classes[i], enabled);
         }
       } else {
-        this._renderer.setElementClass(this._ngEl, className, enabled);
+        this._renderer.setElementClass(this._ngEl.nativeElement, className, enabled);
       }
     }
   }

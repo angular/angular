@@ -6,17 +6,24 @@ import 'dep1.dart';
 import 'dep2.dart' as dep2;
 
 @Component(selector: 'component-first')
-@View(template: '<dep1></dep1><dep2></dep2>', directives: [Dep, dep2.Dep])
+@View(
+    template: '<dep1></dep1><dep2></dep2>',
+    directives: [Dep, dep2.Dep],
+    pipes: [PipeDep, dep2.PipeDep])
 class ComponentFirst {}
 
-@View(template: '<dep1></dep1><dep2></dep2>', directives: [dep2.Dep, Dep])
+@View(
+    template: '<dep1></dep1><dep2></dep2>',
+    directives: [dep2.Dep, Dep],
+    pipes: [dep2.PipeDep, PipeDep])
 @Component(selector: 'view-first')
 class ViewFirst {}
 
 @Component(
     selector: 'component-only',
     template: '<dep1></dep1><dep2></dep2>',
-    directives: [Dep, dep2.Dep])
+    directives: [Dep, dep2.Dep],
+    pipes: [PipeDep, dep2.PipeDep])
 class ComponentOnly {}
 
 @Component(

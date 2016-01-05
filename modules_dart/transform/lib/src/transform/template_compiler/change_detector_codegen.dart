@@ -145,9 +145,9 @@ class _CodegenState {
       class $_changeDetectorTypeName extends ${_genPrefix}$_BASE_CLASS<$_contextTypeName> {
         ${_genDeclareFields()}
 
-        $_changeDetectorTypeName(dispatcher)
+        $_changeDetectorTypeName()
           : super(${codify(_changeDetectorDefId)},
-              dispatcher, ${_records.length},
+              ${_records.length},
               ${_changeDetectorTypeName}.${_GEN_PROPERTY_BINDING_TARGETS_NAME},
               ${_changeDetectorTypeName}.${_GEN_DIRECTIVE_INDICES_NAME},
               ${_changeDetectionStrategyAsCode}) {
@@ -177,8 +177,8 @@ class _CodegenState {
         ${_genDirectiveIndices()};
 
         static ${_genPrefix}ChangeDetector
-            $CHANGE_DETECTOR_FACTORY_METHOD(a) {
-          return new $_changeDetectorTypeName(a);
+            $CHANGE_DETECTOR_FACTORY_METHOD() {
+          return new $_changeDetectorTypeName();
         }
       }
     ''');
@@ -283,13 +283,19 @@ class _CodegenState {
   String _maybeGenDehydrateDirectives() {
     var destroyPipesParamName = 'destroyPipes';
     var destroyPipesCode = _names.genPipeOnDestroy();
-    if (destroyPipesCode.isNotEmpty) {
-      destroyPipesCode = 'if (${destroyPipesParamName}) {${destroyPipesCode}}';
-    }
     var dehydrateFieldsCode = _names.genDehydrateFields();
-    if (destroyPipesCode.isEmpty && dehydrateFieldsCode.isEmpty) return '';
-    return 'void dehydrateDirectives(${destroyPipesParamName}) '
-        '{ ${destroyPipesCode} ${dehydrateFieldsCode} }';
+    var destroyDirectivesCode =
+        _logic.genDirectivesOnDestroy(this._directiveRecords);
+    if (destroyPipesCode.isEmpty &&
+        dehydrateFieldsCode.isEmpty &&
+        destroyDirectivesCode.isEmpty) return '';
+    return '''void dehydrateDirectives(${destroyPipesParamName}) {
+      if (${destroyPipesParamName}) {
+        ${destroyPipesCode}
+        ${destroyDirectivesCode}
+      }
+      ${dehydrateFieldsCode}
+    }''';
   }
 
   String _maybeGenHydrateDirectives() {
