@@ -532,7 +532,7 @@ ResolvedFactory resolveFactory(Provider provider) {
  */
 ResolvedProvider resolveProvider(Provider provider) {
   return new ResolvedProvider_(
-      Key.get(provider.token), [resolveFactory(provider)], false);
+      Key.get(provider.token), [resolveFactory(provider)], provider.multi);
 }
 
 /**
@@ -540,49 +540,60 @@ ResolvedProvider resolveProvider(Provider provider) {
  */
 List<ResolvedProvider> resolveProviders(
     List<dynamic /* Type | Provider | List < dynamic > */ > providers) {
-  var normalized = _createListOfProviders(_normalizeProviders(
-      providers,
-      new Map<num,
-          dynamic /* _NormalizedProvider | List < _NormalizedProvider > */ >()));
-  return normalized.map((b) {
-    if (b is _NormalizedProvider) {
-      return new ResolvedProvider_(b.key, [b.resolvedFactory], false);
-    } else {
-      var arr = (b as List<_NormalizedProvider>);
-      return new ResolvedProvider_(
-          arr[0].key, arr.map((_) => _.resolvedFactory).toList(), true);
-    }
-  }).toList();
+  var normalized = _normalizeProviders(providers, []);
+  var resolved = normalized.map(resolveProvider).toList();
+  return MapWrapper.values(
+      mergeResolvedProviders(resolved, new Map<num, ResolvedProvider>()));
 }
 
 /**
- * The algorithm works as follows:
- *
- * [Provider] -> [_NormalizedProvider|[_NormalizedProvider]] -> [ResolvedProvider]
- *
- * _NormalizedProvider is essentially a resolved provider before it was grouped by key.
+ * Merges a list of ResolvedProviders into a list where
+ * each key is contained exactly once and multi providers
+ * have been merged.
  */
-class _NormalizedProvider {
-  Key key;
-  ResolvedFactory resolvedFactory;
-  _NormalizedProvider(this.key, this.resolvedFactory) {}
+Map<num, ResolvedProvider> mergeResolvedProviders(
+    List<ResolvedProvider> providers,
+    Map<num, ResolvedProvider> normalizedProvidersMap) {
+  for (var i = 0; i < providers.length; i++) {
+    var provider = providers[i];
+    var existing = normalizedProvidersMap[provider.key.id];
+    if (isPresent(existing)) {
+      if (!identical(provider.multiProvider, existing.multiProvider)) {
+        throw new MixingMultiProvidersWithRegularProvidersError(
+            existing, provider);
+      }
+      if (provider.multiProvider) {
+        for (var j = 0; j < provider.resolvedFactories.length; j++) {
+          existing.resolvedFactories.add(provider.resolvedFactories[j]);
+        }
+      } else {
+        normalizedProvidersMap[provider.key.id] = provider;
+      }
+    } else {
+      var resolvedProvider;
+      if (provider.multiProvider) {
+        resolvedProvider = new ResolvedProvider_(
+            provider.key,
+            ListWrapper.clone(provider.resolvedFactories),
+            provider.multiProvider);
+      } else {
+        resolvedProvider = provider;
+      }
+      normalizedProvidersMap[provider.key.id] = resolvedProvider;
+    }
+  }
+  return normalizedProvidersMap;
 }
 
-List<dynamic> _createListOfProviders(Map<num, dynamic> flattenedProviders) {
-  return MapWrapper.values(flattenedProviders);
-}
-
-Map<num,
-    dynamic /* _NormalizedProvider | List < _NormalizedProvider > */ > _normalizeProviders(
+List<Provider> _normalizeProviders(
     List<
         dynamic /* Type | Provider | ProviderBuilder | List < dynamic > */ > providers,
-    Map<num,
-        dynamic /* _NormalizedProvider | List < _NormalizedProvider > */ > res) {
+    List<Provider> res) {
   providers.forEach((b) {
     if (b is Type) {
-      _normalizeProvider(provide(b, useClass: b), res);
+      res.add(provide(b, useClass: b));
     } else if (b is Provider) {
-      _normalizeProvider(b, res);
+      res.add(b);
     } else if (b is List) {
       _normalizeProviders(b, res);
     } else if (b is ProviderBuilder) {
@@ -592,33 +603,6 @@ Map<num,
     }
   });
   return res;
-}
-
-void _normalizeProvider(
-    Provider b,
-    Map<num,
-        dynamic /* _NormalizedProvider | List < _NormalizedProvider > */ > res) {
-  var key = Key.get(b.token);
-  var factory = resolveFactory(b);
-  var normalized = new _NormalizedProvider(key, factory);
-  if (b.multi) {
-    var existingProvider = res[key.id];
-    if (existingProvider is List) {
-      existingProvider.add(normalized);
-    } else if (isBlank(existingProvider)) {
-      res[key.id] = [normalized];
-    } else {
-      throw new MixingMultiProvidersWithRegularProvidersError(
-          existingProvider, b);
-    }
-  } else {
-    var existingProvider = res[key.id];
-    if (existingProvider is List) {
-      throw new MixingMultiProvidersWithRegularProvidersError(
-          existingProvider, b);
-    }
-    res[key.id] = normalized;
-  }
 }
 
 List<Dependency> _constructDependencies(

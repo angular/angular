@@ -88,8 +88,6 @@ main() {
               var router = fixture.debugElement.componentInstance.router;
               PromiseWrapper.catchError(router.navigateByUrl("/cause-error"),
                   (error) {
-                expect(fixture.debugElement.nativeElement)
-                    .toHaveText("outer { oh no }");
                 expect(error).toContainError("oops!");
                 async.done();
               });

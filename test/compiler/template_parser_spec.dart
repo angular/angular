@@ -18,7 +18,11 @@ import "package:angular2/src/facade/lang.dart" show isPresent;
 import "package:angular2/src/compiler/template_parser.dart"
     show TemplateParser, splitClasses, TEMPLATE_TRANSFORMS;
 import "package:angular2/src/compiler/directive_metadata.dart"
-    show CompileDirectiveMetadata, CompileTypeMetadata, CompileTemplateMetadata;
+    show
+        CompileDirectiveMetadata,
+        CompilePipeMetadata,
+        CompileTypeMetadata,
+        CompileTemplateMetadata;
 import "package:angular2/src/compiler/template_ast.dart"
     show
         templateVisitAll,
@@ -60,8 +64,12 @@ main() {
           inputs: ["ngIf"]);
     }));
     List<TemplateAst> parse(
-        String template, List<CompileDirectiveMetadata> directives) {
-      return parser.parse(template, directives, "TestComp");
+        String template, List<CompileDirectiveMetadata> directives,
+        [List<CompilePipeMetadata> pipes = null]) {
+      if (identical(pipes, null)) {
+        pipes = [];
+      }
+      return parser.parse(template, directives, pipes, "TestComp");
     }
     describe("template transform", () {
       beforeEachProviders(() => [
@@ -1083,16 +1091,24 @@ Property binding a not used by any directive on an embedded template ("[ERROR ->
             type: new CompileTypeMetadata(name: "DirA"),
             inputs: ["aProp"]);
         expect(humanizeTplAstSourceSpans(
-            parse("<div [aProp]=\"foo | bar\"></div>", [dirA]))).toEqual([
-          [ElementAst, "div", "<div [aProp]=\"foo | bar\">"],
-          [DirectiveAst, dirA, "<div [aProp]=\"foo | bar\">"],
-          [
-            BoundDirectivePropertyAst,
-            "aProp",
-            "(foo | bar)",
-            "[aProp]=\"foo | bar\""
-          ]
+            parse("<div [aProp]=\"foo\"></div>", [dirA]))).toEqual([
+          [ElementAst, "div", "<div [aProp]=\"foo\">"],
+          [DirectiveAst, dirA, "<div [aProp]=\"foo\">"],
+          [BoundDirectivePropertyAst, "aProp", "foo", "[aProp]=\"foo\""]
         ]);
+      });
+    });
+    describe("pipes", () {
+      it("should allow pipes that have been defined as dependencies", () {
+        var testPipe = new CompilePipeMetadata(
+            name: "test", type: new CompileTypeMetadata(name: "DirA"));
+        expect(() => parse("{{a | test}}", [], [testPipe])).not.toThrow();
+      });
+      it("should report pipes as error that have not been defined as dependencies",
+          () {
+        expect(() => parse("{{a | test}}", []))
+            .toThrowError('''Template parse errors:
+The pipe \'test\' could not be found ("[ERROR ->]{{a | test}}"): TestComp@0:0''');
       });
     });
   });

@@ -103,3 +103,28 @@ class DehydratedException extends BaseException {
     /* super call moved to initializer */;
   }
 }
+
+/**
+ * Wraps an exception thrown by an event handler.
+ */
+class EventEvaluationError extends WrappedException {
+  EventEvaluationError(String eventName, dynamic originalException,
+      dynamic originalStack, dynamic context)
+      : super('''Error during evaluation of "${ eventName}"''',
+            originalException, originalStack, context) {
+    /* super call moved to initializer */;
+  }
+}
+
+/**
+ * Error context included when an event handler throws an exception.
+ */
+class EventEvaluationErrorContext {
+  dynamic element;
+  dynamic componentElement;
+  dynamic context;
+  dynamic locals;
+  dynamic injector;
+  EventEvaluationErrorContext(this.element, this.componentElement, this.context,
+      this.locals, this.injector) {}
+}

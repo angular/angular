@@ -49,7 +49,7 @@ main() {
       it(
           "should read metadata",
           inject([RuntimeMetadataResolver], (RuntimeMetadataResolver resolver) {
-            var meta = resolver.getMetadata(ComponentWithEverything);
+            var meta = resolver.getDirectiveMetadata(ComponentWithEverything);
             expect(meta.selector).toEqual("someSelector");
             expect(meta.exportAs).toEqual("someExportAs");
             expect(meta.isComponent).toBe(true);
@@ -79,8 +79,10 @@ main() {
       it(
           "should use the moduleUrl from the reflector if none is given",
           inject([RuntimeMetadataResolver], (RuntimeMetadataResolver resolver) {
-            String value =
-                resolver.getMetadata(ComponentWithoutModuleId).type.moduleUrl;
+            String value = resolver
+                .getDirectiveMetadata(ComponentWithoutModuleId)
+                .type
+                .moduleUrl;
             var expectedEndValue = IS_DART
                 ? "base/dist/dart/angular2/test/compiler/runtime_metadata_spec.dart"
                 : "./";
@@ -92,7 +94,7 @@ main() {
           "should return the directive metadatas",
           inject([RuntimeMetadataResolver], (RuntimeMetadataResolver resolver) {
             expect(resolver.getViewDirectivesMetadata(ComponentWithEverything))
-                .toEqual([resolver.getMetadata(SomeDirective)]);
+                .toEqual([resolver.getDirectiveMetadata(SomeDirective)]);
           }));
       describe("platform directives", () {
         beforeEachProviders(() => [
@@ -104,8 +106,8 @@ main() {
                 (RuntimeMetadataResolver resolver) {
               expect(resolver
                   .getViewDirectivesMetadata(ComponentWithEverything)).toEqual([
-                resolver.getMetadata(ADirective),
-                resolver.getMetadata(SomeDirective)
+                resolver.getDirectiveMetadata(ADirective),
+                resolver.getDirectiveMetadata(SomeDirective)
               ]);
             }));
       });

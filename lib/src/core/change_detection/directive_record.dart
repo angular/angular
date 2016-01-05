@@ -23,7 +23,10 @@ class DirectiveRecord {
   bool callOnChanges;
   bool callDoCheck;
   bool callOnInit;
+  bool callOnDestroy;
   ChangeDetectionStrategy changeDetection;
+  // array of [emitter property name, eventName]
+  List<List<String>> outputs;
   DirectiveRecord(
       {directiveIndex,
       callAfterContentInit,
@@ -33,7 +36,9 @@ class DirectiveRecord {
       callOnChanges,
       callDoCheck,
       callOnInit,
-      changeDetection}) {
+      callOnDestroy,
+      changeDetection,
+      outputs}) {
     this.directiveIndex = directiveIndex;
     this.callAfterContentInit = normalizeBool(callAfterContentInit);
     this.callAfterContentChecked = normalizeBool(callAfterContentChecked);
@@ -42,7 +47,9 @@ class DirectiveRecord {
     this.callAfterViewChecked = normalizeBool(callAfterViewChecked);
     this.callDoCheck = normalizeBool(callDoCheck);
     this.callOnInit = normalizeBool(callOnInit);
+    this.callOnDestroy = normalizeBool(callOnDestroy);
     this.changeDetection = changeDetection;
+    this.outputs = outputs;
   }
   bool isDefaultChangeDetection() {
     return isDefaultChangeDetectionStrategy(this.changeDetection);

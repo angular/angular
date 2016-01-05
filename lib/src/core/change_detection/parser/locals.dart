@@ -43,7 +43,7 @@ class Locals {
     }
   }
 
-  void clearValues() {
+  void clearLocalValues() {
     MapWrapper.clearValues(this.current);
   }
 }

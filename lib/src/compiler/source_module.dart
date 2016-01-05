@@ -13,6 +13,11 @@ String moduleRef(moduleUrl) {
 class SourceModule {
   String moduleUrl;
   String sourceWithModuleRefs;
+  static String getSourceWithoutImports(String sourceWithModuleRefs) {
+    return StringWrapper.replaceAllMapped(
+        sourceWithModuleRefs, MODULE_REGEXP, (match) => "");
+  }
+
   SourceModule(this.moduleUrl, this.sourceWithModuleRefs) {}
   SourceWithImports getSourceWithImports() {
     var moduleAliases = {};

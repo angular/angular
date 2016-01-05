@@ -142,3 +142,5 @@ class DirectiveResolver {
     }
   }
 }
+
+var CODEGEN_DIRECTIVE_RESOLVER = new DirectiveResolver();

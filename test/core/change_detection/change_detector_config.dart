@@ -103,8 +103,17 @@ TestDefinition getDefinition(String id) {
   } else if (ListWrapper.indexOf(_availableHostEventDefinitions, id) >= 0) {
     var eventRecords =
         _createHostEventRecords(id, _DirectiveUpdating.basicRecords[0]);
-    var cdDef = new ChangeDetectorDefinition(id, null, [], [], eventRecords,
-        [_DirectiveUpdating.basicRecords[0]], genConfig);
+    var cdDef = new ChangeDetectorDefinition(
+        id,
+        null,
+        [],
+        [],
+        eventRecords,
+        [
+          _DirectiveUpdating.basicRecords[0],
+          _DirectiveUpdating.basicRecords[1]
+        ],
+        genConfig);
     testDef = new TestDefinition(id, cdDef, null);
   } else if (id == "onPushObserveBinding") {
     var records = _createBindingRecords("a");
@@ -345,7 +354,11 @@ class _DirectiveUpdating {
         callAfterContentInit: true,
         callAfterContentChecked: true,
         callAfterViewInit: true,
-        callAfterViewChecked: true),
+        callAfterViewChecked: true,
+        callOnDestroy: true,
+        outputs: [
+          ["eventEmitter", "host-event"]
+        ]),
     new DirectiveRecord(
         directiveIndex: new DirectiveIndex(0, 1),
         callOnChanges: true,
@@ -354,7 +367,11 @@ class _DirectiveUpdating {
         callAfterContentInit: true,
         callAfterContentChecked: true,
         callAfterViewInit: true,
-        callAfterViewChecked: true)
+        callAfterViewChecked: true,
+        callOnDestroy: true,
+        outputs: [
+          ["eventEmitter", "host-event"]
+        ])
   ];
   static var recordNoCallbacks = new DirectiveRecord(
       directiveIndex: new DirectiveIndex(0, 0),

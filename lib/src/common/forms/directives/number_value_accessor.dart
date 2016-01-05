@@ -34,7 +34,9 @@ class NumberValueAccessor implements ControlValueAccessor {
   var onTouched = () {};
   NumberValueAccessor(this._renderer, this._elementRef) {}
   void writeValue(num value) {
-    this._renderer.setElementProperty(this._elementRef, "value", value);
+    this
+        ._renderer
+        .setElementProperty(this._elementRef.nativeElement, "value", value);
   }
 
   void registerOnChange(dynamic /* (_: number) => void */ fn) {

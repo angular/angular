@@ -2,7 +2,7 @@ library angular2.src.core.change_detection.interfaces;
 
 import "parser/locals.dart" show Locals;
 import "binding_record.dart" show BindingTarget, BindingRecord;
-import "directive_record.dart" show DirectiveIndex, DirectiveRecord;
+import "directive_record.dart" show DirectiveRecord, DirectiveIndex;
 import "constants.dart" show ChangeDetectionStrategy;
 import "change_detector_ref.dart" show ChangeDetectorRef;
 
@@ -18,11 +18,15 @@ class DebugContext {
 }
 
 abstract class ChangeDispatcher {
-  DebugContext getDebugContext(num elementIndex, DirectiveIndex directiveIndex);
+  DebugContext getDebugContext(
+      dynamic appElement, num elementIndex, num directiveIndex);
   void notifyOnBinding(BindingTarget bindingTarget, dynamic value);
   void logBindingUpdate(BindingTarget bindingTarget, dynamic value);
   void notifyAfterContentChecked();
   void notifyAfterViewChecked();
+  void notifyOnDestroy();
+  ChangeDetector getDetectorFor(DirectiveIndex directiveIndex);
+  dynamic getDirectiveFor(DirectiveIndex directiveIndex);
 }
 
 abstract class ChangeDetector {
@@ -34,17 +38,19 @@ abstract class ChangeDetector {
   void removeContentChild(ChangeDetector cd);
   void removeViewChild(ChangeDetector cd);
   void remove();
-  void hydrate(
-      dynamic context, Locals locals, dynamic directives, dynamic pipes);
+  void hydrate(dynamic context, Locals locals, ChangeDispatcher dispatcher,
+      dynamic pipes);
   void dehydrate();
   void markPathToRootAsCheckOnce();
-  handleEvent(String eventName, num elIndex, Locals locals);
+  handleEvent(String eventName, num elIndex, dynamic event);
   void detectChanges();
   void checkNoChanges();
+  void destroyRecursive();
+  void markAsCheckOnce();
 }
 
 abstract class ProtoChangeDetector {
-  ChangeDetector instantiate(ChangeDispatcher dispatcher);
+  ChangeDetector instantiate();
 }
 
 class ChangeDetectorGenConfig {

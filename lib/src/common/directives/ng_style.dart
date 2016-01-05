@@ -100,6 +100,6 @@ class NgStyle implements DoCheck {
   }
 
   void _setStyle(String name, String val) {
-    this._renderer.setElementStyle(this._ngEl, name, val);
+    this._renderer.setElementStyle(this._ngEl.nativeElement, name, val);
   }
 }

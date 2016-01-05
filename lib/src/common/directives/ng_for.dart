@@ -9,7 +9,7 @@ import "package:angular2/core.dart"
         IterableDiffers,
         ViewContainerRef,
         TemplateRef,
-        ViewRef;
+        EmbeddedViewRef;
 import "package:angular2/src/facade/lang.dart" show isPresent, isBlank;
 
 /**
@@ -110,7 +110,8 @@ class NgFor implements DoCheck {
       this._perViewChange(insertTuples[i].view, insertTuples[i].record);
     }
     for (var i = 0, ilen = this._viewContainer.length; i < ilen; i++) {
-      this._viewContainer.get(i).setLocal("last", identical(i, ilen - 1));
+      var viewRef = (this._viewContainer.get(i) as EmbeddedViewRef);
+      viewRef.setLocal("last", identical(i, ilen - 1));
     }
   }
 
@@ -154,7 +155,7 @@ class NgFor implements DoCheck {
 }
 
 class RecordViewTuple {
-  ViewRef view;
+  EmbeddedViewRef view;
   dynamic record;
   RecordViewTuple(record, view) {
     this.record = record;

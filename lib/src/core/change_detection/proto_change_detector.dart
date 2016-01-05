@@ -57,10 +57,9 @@ class DynamicProtoChangeDetector implements ProtoChangeDetector {
     this._directiveIndices =
         this._definition.directiveRecords.map((d) => d.directiveIndex).toList();
   }
-  ChangeDetector instantiate(dynamic dispatcher) {
+  ChangeDetector instantiate() {
     return new DynamicChangeDetector(
         this._definition.id,
-        dispatcher,
         this._propertyBindingRecords.length,
         this._propertyBindingTargets,
         this._directiveIndices,

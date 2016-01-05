@@ -18,8 +18,10 @@ import "util.dart"
         codeGenToString,
         MODULE_SUFFIX;
 import "package:angular2/src/core/di.dart" show Injectable;
-import "package:angular2/src/core/render/view_factory.dart"
-    show COMPONENT_VARIABLE, HOST_ATTR, CONTENT_ATTR;
+
+const COMPONENT_VARIABLE = "%COMP%";
+const HOST_ATTR = '''_nghost-${ COMPONENT_VARIABLE}''';
+const CONTENT_ATTR = '''_ngcontent-${ COMPONENT_VARIABLE}''';
 
 @Injectable()
 class StyleCompiler {

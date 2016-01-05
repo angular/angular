@@ -78,16 +78,36 @@ import "package:angular2/src/core/metadata.dart"
 import "package:angular2/src/core/linker/query_list.dart" show QueryList;
 import "package:angular2/src/core/linker/view_container_ref.dart"
     show ViewContainerRef;
-import "package:angular2/src/core/linker/view_ref.dart" show ViewRef, ViewRef_;
+import "package:angular2/src/core/linker/view_ref.dart" show EmbeddedViewRef;
 import "package:angular2/src/core/linker/compiler.dart" show Compiler;
-import "package:angular2/src/core/linker/element_ref.dart"
-    show ElementRef, ElementRef_;
+import "package:angular2/src/core/linker/element_ref.dart" show ElementRef;
 import "package:angular2/src/core/linker/template_ref.dart" show TemplateRef;
-import "package:angular2/src/platform/dom/dom_renderer.dart" show DomRenderer;
+import "package:angular2/src/core/render.dart" show Renderer;
 import "package:angular2/src/facade/lang.dart" show IS_DART;
 
 const ANCHOR_ELEMENT = const OpaqueToken("AnchorElement");
 main() {
+  if (IS_DART) {
+    declareTests();
+  } else {
+    describe("no jit", () {
+      beforeEachProviders(() => [
+            provide(ChangeDetectorGenConfig,
+                useValue: new ChangeDetectorGenConfig(true, false, false))
+          ]);
+      declareTests();
+    });
+    describe("jit", () {
+      beforeEachProviders(() => [
+            provide(ChangeDetectorGenConfig,
+                useValue: new ChangeDetectorGenConfig(true, false, true))
+          ]);
+      declareTests();
+    });
+  }
+}
+
+declareTests() {
   describe("integration tests", () {
     beforeEachProviders(
         () => [provide(ANCHOR_ELEMENT, useValue: el("<div></div>"))]);
@@ -314,12 +334,12 @@ main() {
           "should consume directive watch expression change.",
           inject([TestComponentBuilder, AsyncTestCompleter],
               (TestComponentBuilder tcb, async) {
-            var tpl = "<div>" +
+            var tpl = "<span>" +
                 "<div my-dir [elprop]=\"ctxProp\"></div>" +
                 "<div my-dir elprop=\"Hi there!\"></div>" +
                 "<div my-dir elprop=\"Hi {{'there!'}}\"></div>" +
                 "<div my-dir elprop=\"One more {{ctxProp}}\"></div>" +
-                "</div>";
+                "</span>";
             tcb
                 .overrideView(MyComp,
                     new ViewMetadata(template: tpl, directives: [MyDir]))
@@ -1134,6 +1154,8 @@ main() {
               fixture.detectChanges();
               dispatchEvent(DOM.getGlobalEventTarget("window"), "domEvent");
               expect(globalCounter).toEqual(2);
+              // need to destroy to release all remaining global event listeners
+              fixture.destroy();
               async.done();
             });
           }));
@@ -1961,8 +1983,8 @@ class MyService {
 @Injectable()
 class SimpleImperativeViewComponent {
   var done;
-  SimpleImperativeViewComponent(ElementRef self, DomRenderer renderer) {
-    var hostElement = renderer.getNativeElementSync(self);
+  SimpleImperativeViewComponent(ElementRef self, Renderer renderer) {
+    var hostElement = self.nativeElement;
     DOM.appendChild(hostElement, el("hello imp view"));
   }
 }
@@ -2492,11 +2514,10 @@ class ChildConsumingEventBus {
 class SomeImperativeViewport {
   ViewContainerRef vc;
   TemplateRef templateRef;
-  DomRenderer renderer;
-  ViewRef view;
+  EmbeddedViewRef view;
   var anchor;
-  SomeImperativeViewport(this.vc, this.templateRef, this.renderer,
-      @Inject(ANCHOR_ELEMENT) anchor) {
+  SomeImperativeViewport(
+      this.vc, this.templateRef, @Inject(ANCHOR_ELEMENT) anchor) {
     this.view = null;
     this.anchor = anchor;
   }
@@ -2507,8 +2528,7 @@ class SomeImperativeViewport {
     }
     if (value) {
       this.view = this.vc.createEmbeddedView(this.templateRef);
-      var nodes =
-          this.renderer.getRootNodes(((this.view as ViewRef_)).renderFragment);
+      var nodes = this.view.rootNodes;
       for (var i = 0; i < nodes.length; i++) {
         DOM.appendChild(this.anchor, nodes[i]);
       }

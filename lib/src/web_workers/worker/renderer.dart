@@ -1,288 +1,305 @@
 library angular2.src.web_workers.worker.renderer;
 
 import "package:angular2/src/core/render/api.dart"
-    show
-        Renderer,
-        RenderProtoViewRef,
-        RenderViewRef,
-        RenderElementRef,
-        RenderEventDispatcher,
-        RenderViewWithFragments,
-        RenderFragmentRef,
-        RenderTemplateCmd,
-        RenderComponentTemplate;
+    show Renderer, RootRenderer, RenderComponentType;
 import "package:angular2/src/web_workers/shared/client_message_broker.dart"
     show ClientMessageBroker, ClientMessageBrokerFactory, FnArg, UiArguments;
-import "package:angular2/src/facade/lang.dart" show isPresent, print;
+import "package:angular2/src/facade/lang.dart" show isPresent, isBlank, print;
+import "package:angular2/src/facade/collection.dart" show ListWrapper;
 import "package:angular2/src/core/di.dart" show Injectable;
-import "package:angular2/src/web_workers/shared/render_proto_view_ref_store.dart"
-    show RenderProtoViewRefStore;
-import "package:angular2/src/web_workers/shared/render_view_with_fragments_store.dart"
-    show RenderViewWithFragmentsStore, WebWorkerRenderViewRef;
-import "package:angular2/src/web_workers/shared/api.dart"
-    show WebWorkerElementRef, WebWorkerTemplateCmd;
+import "package:angular2/src/web_workers/shared/render_store.dart"
+    show RenderStore;
 import "package:angular2/src/web_workers/shared/messaging_api.dart"
     show RENDERER_CHANNEL;
-import "package:angular2/src/web_workers/worker/event_dispatcher.dart"
-    show WebWorkerEventDispatcher;
+import "package:angular2/src/web_workers/shared/serializer.dart"
+    show Serializer, RenderStoreObject;
+import "package:angular2/src/web_workers/shared/messaging_api.dart"
+    show EVENT_CHANNEL;
+import "package:angular2/src/web_workers/shared/message_bus.dart"
+    show MessageBus;
+import "package:angular2/src/facade/async.dart"
+    show EventEmitter, ObservableWrapper;
+import "package:angular2/src/core/metadata/view.dart" show ViewEncapsulation;
+import "event_deserializer.dart" show deserializeGenericEvent;
 
 @Injectable()
-class WebWorkerRenderer implements Renderer {
-  RenderProtoViewRefStore _renderProtoViewRefStore;
-  RenderViewWithFragmentsStore _renderViewStore;
-  WebWorkerEventDispatcher _eventDispatcher;
+class WebWorkerRootRenderer implements RootRenderer {
+  Serializer _serializer;
+  RenderStore _renderStore;
   var _messageBroker;
-  WebWorkerRenderer(
-      ClientMessageBrokerFactory messageBrokerFactory,
-      this._renderProtoViewRefStore,
-      this._renderViewStore,
-      this._eventDispatcher) {
+  NamedEventEmitter globalEvents = new NamedEventEmitter();
+  Map<String, WebWorkerRenderer> _componentRenderers =
+      new Map<String, WebWorkerRenderer>();
+  WebWorkerRootRenderer(ClientMessageBrokerFactory messageBrokerFactory,
+      MessageBus bus, this._serializer, this._renderStore) {
     this._messageBroker =
         messageBrokerFactory.createMessageBroker(RENDERER_CHANNEL);
+    bus.initChannel(EVENT_CHANNEL);
+    var source = bus.from(EVENT_CHANNEL);
+    ObservableWrapper.subscribe(
+        source, (message) => this._dispatchEvent(message));
   }
-  registerComponentTemplate(RenderComponentTemplate template) {
-    var fnArgs = [new FnArg(template, RenderComponentTemplate)];
-    var args = new UiArguments("registerComponentTemplate", fnArgs);
-    this._messageBroker.runOnService(args, null);
-  }
-
-  RenderProtoViewRef createProtoView(
-      String componentTemplateId, List<RenderTemplateCmd> cmds) {
-    var renderProtoViewRef = this._renderProtoViewRefStore.allocate();
-    List<FnArg> fnArgs = [
-      new FnArg(componentTemplateId, null),
-      new FnArg(cmds, WebWorkerTemplateCmd),
-      new FnArg(renderProtoViewRef, RenderProtoViewRef)
-    ];
-    UiArguments args = new UiArguments("createProtoView", fnArgs);
-    this._messageBroker.runOnService(args, null);
-    return renderProtoViewRef;
-  }
-
-  /**
-   * Creates a root host view that includes the given element.
-   * Note that the fragmentCount needs to be passed in so that we can create a result
-   * synchronously even when dealing with webworkers!
-   *
-   * @param {RenderProtoViewRef} hostProtoViewRef a RenderProtoViewRef of type
-   * ProtoViewDto.HOST_VIEW_TYPE
-   * @param {any} hostElementSelector css selector for the host element (will be queried against the
-   * main document)
-   * @return {RenderViewRef} the created view
-   */
-  RenderViewWithFragments createRootHostView(
-      RenderProtoViewRef hostProtoViewRef,
-      num fragmentCount,
-      String hostElementSelector) {
-    return this._createViewHelper(
-        hostProtoViewRef, fragmentCount, hostElementSelector);
-  }
-
-  /**
-   * Creates a regular view out of the given ProtoView
-   * Note that the fragmentCount needs to be passed in so that we can create a result
-   * synchronously even when dealing with webworkers!
-   */
-  RenderViewWithFragments createView(
-      RenderProtoViewRef protoViewRef, num fragmentCount) {
-    return this._createViewHelper(protoViewRef, fragmentCount);
-  }
-
-  RenderViewWithFragments _createViewHelper(
-      RenderProtoViewRef protoViewRef, num fragmentCount,
-      [String hostElementSelector]) {
-    var renderViewWithFragments = this._renderViewStore.allocate(fragmentCount);
-    var startIndex = (((renderViewWithFragments.viewRef)
-        as WebWorkerRenderViewRef)).refNumber;
-    List<FnArg> fnArgs = [
-      new FnArg(protoViewRef, RenderProtoViewRef),
-      new FnArg(fragmentCount, null)
-    ];
-    var method = "createView";
-    if (isPresent(hostElementSelector) && hostElementSelector != null) {
-      fnArgs.add(new FnArg(hostElementSelector, null));
-      method = "createRootHostView";
+  void _dispatchEvent(Map<String, dynamic> message) {
+    var eventName = message["eventName"];
+    var target = message["eventTarget"];
+    var event = deserializeGenericEvent(message["event"]);
+    if (isPresent(target)) {
+      this
+          .globalEvents
+          .dispatchEvent(eventNameWithTarget(target, eventName), event);
+    } else {
+      var element = (this._serializer.deserialize(
+          message["element"], RenderStoreObject) as WebWorkerRenderNode);
+      element.events.dispatchEvent(eventName, event);
     }
-    fnArgs.add(new FnArg(startIndex, null));
-    var args = new UiArguments(method, fnArgs);
-    this._messageBroker.runOnService(args, null);
-    return renderViewWithFragments;
   }
 
-  /**
-   * Destroys the given view after it has been dehydrated and detached
-   */
-  destroyView(RenderViewRef viewRef) {
-    var fnArgs = [new FnArg(viewRef, RenderViewRef)];
-    var args = new UiArguments("destroyView", fnArgs);
-    this._messageBroker.runOnService(args, null);
-    this._renderViewStore.remove(viewRef);
+  Renderer renderComponent(RenderComponentType componentType) {
+    var result = this._componentRenderers[componentType.id];
+    if (isBlank(result)) {
+      result = new WebWorkerRenderer(this, componentType);
+      this._componentRenderers[componentType.id] = result;
+      var id = this._renderStore.allocateId();
+      this._renderStore.store(result, id);
+      this.runOnService("renderComponent", [
+        new FnArg(componentType, RenderComponentType),
+        new FnArg(result, RenderStoreObject)
+      ]);
+    }
+    return result;
   }
 
-  /**
-   * Attaches a fragment after another fragment.
-   */
-  attachFragmentAfterFragment(
-      RenderFragmentRef previousFragmentRef, RenderFragmentRef fragmentRef) {
-    var fnArgs = [
-      new FnArg(previousFragmentRef, RenderFragmentRef),
-      new FnArg(fragmentRef, RenderFragmentRef)
-    ];
-    var args = new UiArguments("attachFragmentAfterFragment", fnArgs);
+  runOnService(String fnName, List<FnArg> fnArgs) {
+    var args = new UiArguments(fnName, fnArgs);
     this._messageBroker.runOnService(args, null);
   }
 
-  /**
-   * Attaches a fragment after an element.
-   */
-  attachFragmentAfterElement(
-      RenderElementRef elementRef, RenderFragmentRef fragmentRef) {
-    var fnArgs = [
-      new FnArg(elementRef, WebWorkerElementRef),
-      new FnArg(fragmentRef, RenderFragmentRef)
-    ];
-    var args = new UiArguments("attachFragmentAfterElement", fnArgs);
-    this._messageBroker.runOnService(args, null);
+  WebWorkerRenderNode allocateNode() {
+    var result = new WebWorkerRenderNode();
+    var id = this._renderStore.allocateId();
+    this._renderStore.store(result, id);
+    return result;
   }
 
-  /**
-   * Detaches a fragment.
-   */
-  detachFragment(RenderFragmentRef fragmentRef) {
-    var fnArgs = [new FnArg(fragmentRef, RenderFragmentRef)];
-    var args = new UiArguments("detachFragment", fnArgs);
-    this._messageBroker.runOnService(args, null);
+  num allocateId() {
+    return this._renderStore.allocateId();
   }
 
-  /**
-   * Hydrates a view after it has been attached. Hydration/dehydration is used for reusing views
-   * inside of the view pool.
-   */
-  hydrateView(RenderViewRef viewRef) {
-    var fnArgs = [new FnArg(viewRef, RenderViewRef)];
-    var args = new UiArguments("hydrateView", fnArgs);
-    this._messageBroker.runOnService(args, null);
+  destroyNodes(List<dynamic> nodes) {
+    for (var i = 0; i < nodes.length; i++) {
+      this._renderStore.remove(nodes[i]);
+    }
+  }
+}
+
+class WebWorkerRenderer implements Renderer, RenderStoreObject {
+  WebWorkerRootRenderer _rootRenderer;
+  RenderComponentType _componentType;
+  WebWorkerRenderer(this._rootRenderer, this._componentType) {}
+  Renderer renderComponent(RenderComponentType componentType) {
+    return this._rootRenderer.renderComponent(componentType);
   }
 
-  /**
-   * Dehydrates a view after it has been attached. Hydration/dehydration is used for reusing views
-   * inside of the view pool.
-   */
-  dehydrateView(RenderViewRef viewRef) {
-    var fnArgs = [new FnArg(viewRef, RenderViewRef)];
-    var args = new UiArguments("dehydrateView", fnArgs);
-    this._messageBroker.runOnService(args, null);
+  _runOnService(String fnName, List<FnArg> fnArgs) {
+    var fnArgsWithRenderer =
+        (new List.from([new FnArg(this, RenderStoreObject)])..addAll(fnArgs));
+    this._rootRenderer.runOnService(fnName, fnArgsWithRenderer);
   }
 
-  /**
-   * Returns the native element at the given location.
-   * Attention: In a WebWorker scenario, this should always return null!
-   */
-  dynamic getNativeElementSync(RenderElementRef location) {
-    return null;
+  dynamic selectRootElement(String selector) {
+    var node = this._rootRenderer.allocateNode();
+    this._runOnService("selectRootElement",
+        [new FnArg(selector, null), new FnArg(node, RenderStoreObject)]);
+    return node;
   }
 
-  /**
-   * Sets a property on an element.
-   */
+  dynamic createElement(dynamic parentElement, String name) {
+    var node = this._rootRenderer.allocateNode();
+    this._runOnService("createElement", [
+      new FnArg(parentElement, RenderStoreObject),
+      new FnArg(name, null),
+      new FnArg(node, RenderStoreObject)
+    ]);
+    return node;
+  }
+
+  dynamic createViewRoot(dynamic hostElement) {
+    var viewRoot =
+        identical(this._componentType.encapsulation, ViewEncapsulation.Native)
+            ? this._rootRenderer.allocateNode()
+            : hostElement;
+    this._runOnService("createViewRoot", [
+      new FnArg(hostElement, RenderStoreObject),
+      new FnArg(viewRoot, RenderStoreObject)
+    ]);
+    return viewRoot;
+  }
+
+  dynamic createTemplateAnchor(dynamic parentElement) {
+    var node = this._rootRenderer.allocateNode();
+    this._runOnService("createTemplateAnchor", [
+      new FnArg(parentElement, RenderStoreObject),
+      new FnArg(node, RenderStoreObject)
+    ]);
+    return node;
+  }
+
+  dynamic createText(dynamic parentElement, String value) {
+    var node = this._rootRenderer.allocateNode();
+    this._runOnService("createText", [
+      new FnArg(parentElement, RenderStoreObject),
+      new FnArg(value, null),
+      new FnArg(node, RenderStoreObject)
+    ]);
+    return node;
+  }
+
+  projectNodes(dynamic parentElement, List<dynamic> nodes) {
+    this._runOnService("projectNodes", [
+      new FnArg(parentElement, RenderStoreObject),
+      new FnArg(nodes, RenderStoreObject)
+    ]);
+  }
+
+  attachViewAfter(dynamic node, List<dynamic> viewRootNodes) {
+    this._runOnService("attachViewAfter", [
+      new FnArg(node, RenderStoreObject),
+      new FnArg(viewRootNodes, RenderStoreObject)
+    ]);
+  }
+
+  detachView(List<dynamic> viewRootNodes) {
+    this._runOnService(
+        "detachView", [new FnArg(viewRootNodes, RenderStoreObject)]);
+  }
+
+  destroyView(dynamic hostElement, List<dynamic> viewAllNodes) {
+    this._runOnService("destroyView", [
+      new FnArg(hostElement, RenderStoreObject),
+      new FnArg(viewAllNodes, RenderStoreObject)
+    ]);
+    this._rootRenderer.destroyNodes(viewAllNodes);
+  }
+
   setElementProperty(
-      RenderElementRef location, String propertyName, dynamic propertyValue) {
-    var fnArgs = [
-      new FnArg(location, WebWorkerElementRef),
+      dynamic renderElement, String propertyName, dynamic propertyValue) {
+    this._runOnService("setElementProperty", [
+      new FnArg(renderElement, RenderStoreObject),
       new FnArg(propertyName, null),
       new FnArg(propertyValue, null)
-    ];
-    var args = new UiArguments("setElementProperty", fnArgs);
-    this._messageBroker.runOnService(args, null);
+    ]);
   }
 
-  /**
-   * Sets an attribute on an element.
-   */
   setElementAttribute(
-      RenderElementRef location, String attributeName, String attributeValue) {
-    var fnArgs = [
-      new FnArg(location, WebWorkerElementRef),
+      dynamic renderElement, String attributeName, String attributeValue) {
+    this._runOnService("setElementAttribute", [
+      new FnArg(renderElement, RenderStoreObject),
       new FnArg(attributeName, null),
       new FnArg(attributeValue, null)
-    ];
-    var args = new UiArguments("setElementAttribute", fnArgs);
-    this._messageBroker.runOnService(args, null);
+    ]);
   }
 
-  void setBindingDebugInfo(
-      RenderElementRef location, String propertyName, String propertyValue) {
-    var fnArgs = [
-      new FnArg(location, WebWorkerElementRef),
+  setBindingDebugInfo(
+      dynamic renderElement, String propertyName, String propertyValue) {
+    this._runOnService("setBindingDebugInfo", [
+      new FnArg(renderElement, RenderStoreObject),
       new FnArg(propertyName, null),
       new FnArg(propertyValue, null)
-    ];
-    var args = new UiArguments("setBindingDebugInfo", fnArgs);
-    this._messageBroker.runOnService(args, null);
+    ]);
   }
 
-  /**
-   * Sets a class on an element.
-   */
-  setElementClass(RenderElementRef location, String className, bool isAdd) {
-    var fnArgs = [
-      new FnArg(location, WebWorkerElementRef),
+  setElementClass(dynamic renderElement, String className, bool isAdd) {
+    this._runOnService("setElementClass", [
+      new FnArg(renderElement, RenderStoreObject),
       new FnArg(className, null),
       new FnArg(isAdd, null)
-    ];
-    var args = new UiArguments("setElementClass", fnArgs);
-    this._messageBroker.runOnService(args, null);
+    ]);
   }
 
-  /**
-   * Sets a style on an element.
-   */
-  setElementStyle(
-      RenderElementRef location, String styleName, String styleValue) {
-    var fnArgs = [
-      new FnArg(location, WebWorkerElementRef),
+  setElementStyle(dynamic renderElement, String styleName, String styleValue) {
+    this._runOnService("setElementStyle", [
+      new FnArg(renderElement, RenderStoreObject),
       new FnArg(styleName, null),
       new FnArg(styleValue, null)
-    ];
-    var args = new UiArguments("setElementStyle", fnArgs);
-    this._messageBroker.runOnService(args, null);
+    ]);
   }
 
-  /**
-   * Calls a method on an element.
-   * Note: For now we're assuming that everything in the args list are primitive
-   */
   invokeElementMethod(
-      RenderElementRef location, String methodName, List<dynamic> args) {
-    var fnArgs = [
-      new FnArg(location, WebWorkerElementRef),
+      dynamic renderElement, String methodName, List<dynamic> args) {
+    this._runOnService("invokeElementMethod", [
+      new FnArg(renderElement, RenderStoreObject),
       new FnArg(methodName, null),
       new FnArg(args, null)
-    ];
-    var uiArgs = new UiArguments("invokeElementMethod", fnArgs);
-    this._messageBroker.runOnService(uiArgs, null);
+    ]);
   }
 
-  /**
-   * Sets the value of a text node.
-   */
-  setText(RenderViewRef viewRef, num textNodeIndex, String text) {
-    var fnArgs = [
-      new FnArg(viewRef, RenderViewRef),
-      new FnArg(textNodeIndex, null),
-      new FnArg(text, null)
-    ];
-    var args = new UiArguments("setText", fnArgs);
-    this._messageBroker.runOnService(args, null);
+  setText(dynamic renderNode, String text) {
+    this._runOnService("setText",
+        [new FnArg(renderNode, RenderStoreObject), new FnArg(text, null)]);
   }
 
-  /**
-   * Sets the dispatcher for all events of the given view
-   */
-  setEventDispatcher(RenderViewRef viewRef, RenderEventDispatcher dispatcher) {
-    var fnArgs = [new FnArg(viewRef, RenderViewRef)];
-    var args = new UiArguments("setEventDispatcher", fnArgs);
-    this._eventDispatcher.registerEventDispatcher(viewRef, dispatcher);
-    this._messageBroker.runOnService(args, null);
+  listen(WebWorkerRenderNode renderElement, String name, Function callback) {
+    renderElement.events.listen(name, callback);
+    this._runOnService("listen",
+        [new FnArg(renderElement, RenderStoreObject), new FnArg(name, null)]);
   }
+
+  Function listenGlobal(String target, String name, Function callback) {
+    this
+        ._rootRenderer
+        .globalEvents
+        .listen(eventNameWithTarget(target, name), callback);
+    var unlistenCallbackId = this._rootRenderer.allocateId();
+    this._runOnService("listenGlobal", [
+      new FnArg(target, null),
+      new FnArg(name, null),
+      new FnArg(unlistenCallbackId, null)
+    ]);
+    return () {
+      this
+          ._rootRenderer
+          .globalEvents
+          .unlisten(eventNameWithTarget(target, name), callback);
+      this._runOnService(
+          "listenGlobalDone", [new FnArg(unlistenCallbackId, null)]);
+    };
+  }
+}
+
+class NamedEventEmitter {
+  Map<String, List<Function>> _listeners;
+  List<Function> _getListeners(String eventName) {
+    if (isBlank(this._listeners)) {
+      this._listeners = new Map<String, List<Function>>();
+    }
+    var listeners = this._listeners[eventName];
+    if (isBlank(listeners)) {
+      listeners = [];
+      this._listeners[eventName] = listeners;
+    }
+    return listeners;
+  }
+
+  listen(String eventName, Function callback) {
+    this._getListeners(eventName).add(callback);
+  }
+
+  unlisten(String eventName, Function callback) {
+    ListWrapper.remove(this._getListeners(eventName), callback);
+  }
+
+  dispatchEvent(String eventName, dynamic event) {
+    var listeners = this._getListeners(eventName);
+    for (var i = 0; i < listeners.length; i++) {
+      listeners[i](event);
+    }
+  }
+}
+
+String eventNameWithTarget(String target, String eventName) {
+  return '''${ target}:${ eventName}''';
+}
+
+class WebWorkerRenderNode {
+  NamedEventEmitter events = new NamedEventEmitter();
 }

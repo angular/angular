@@ -1,10 +1,8 @@
-library angular2.src.core.linker.element_injector;
+library angular2.src.core.linker.element;
 
 import "package:angular2/src/facade/lang.dart"
     show isPresent, isBlank, Type, stringify, StringWrapper;
 import "package:angular2/src/facade/exceptions.dart" show BaseException;
-import "package:angular2/src/facade/async.dart"
-    show EventEmitter, ObservableWrapper;
 import "package:angular2/src/facade/collection.dart"
     show ListWrapper, MapWrapper, StringMapWrapper;
 import "package:angular2/src/core/di.dart"
@@ -18,7 +16,9 @@ import "package:angular2/src/core/di.dart"
         NoProviderError,
         AbstractProviderError,
         CyclicDependencyError,
-        resolveForwardRef;
+        resolveForwardRef,
+        Injectable;
+import "package:angular2/src/core/di/provider.dart" show mergeResolvedProviders;
 import "package:angular2/src/core/di/injector.dart"
     show
         UNDEFINED,
@@ -31,65 +31,42 @@ import "package:angular2/src/core/di/injector.dart"
 import "package:angular2/src/core/di/provider.dart"
     show resolveProvider, ResolvedFactory, ResolvedProvider_;
 import "../metadata/di.dart" show AttributeMetadata, QueryMetadata;
-import "view.dart" show AppViewContainer, AppView;
-/* circular */ import "view_manager.dart" as avmModule;
+import "view.dart" show AppView;
+import "view_type.dart" show ViewType;
+import "element_ref.dart" show ElementRef_;
 import "view_container_ref.dart" show ViewContainerRef;
 import "element_ref.dart" show ElementRef;
-import "template_ref.dart" show TemplateRef;
+import "package:angular2/src/core/render/api.dart" show Renderer;
+import "template_ref.dart" show TemplateRef, TemplateRef_;
 import "../metadata/directives.dart" show DirectiveMetadata, ComponentMetadata;
-import "directive_lifecycle_reflector.dart" show hasLifecycleHook;
 import "package:angular2/src/core/change_detection/change_detection.dart"
     show ChangeDetector, ChangeDetectorRef;
 import "query_list.dart" show QueryList;
 import "package:angular2/src/core/reflection/reflection.dart" show reflector;
 import "package:angular2/src/core/reflection/types.dart" show SetterFn;
-import "package:angular2/src/core/linker/event_config.dart" show EventConfig;
 import "package:angular2/src/core/linker/interfaces.dart" show AfterViewChecked;
 import "package:angular2/src/core/pipes/pipe_provider.dart" show PipeProvider;
-import "interfaces.dart" show LifecycleHooks;
 import "view_container_ref.dart" show ViewContainerRef_;
+import "resolved_metadata_cache.dart" show ResolvedMetadataCache;
 
 var _staticKeys;
 
 class StaticKeys {
-  num viewManagerId;
   num templateRefId;
   num viewContainerId;
   num changeDetectorRefId;
   num elementRefId;
+  num rendererId;
   StaticKeys() {
-    this.viewManagerId = Key.get(avmModule.AppViewManager).id;
     this.templateRefId = Key.get(TemplateRef).id;
     this.viewContainerId = Key.get(ViewContainerRef).id;
     this.changeDetectorRefId = Key.get(ChangeDetectorRef).id;
     this.elementRefId = Key.get(ElementRef).id;
+    this.rendererId = Key.get(Renderer).id;
   }
   static StaticKeys instance() {
     if (isBlank(_staticKeys)) _staticKeys = new StaticKeys();
     return _staticKeys;
-  }
-}
-
-class TreeNode<T extends TreeNode<dynamic>> {
-  /** @internal */
-  T _parent;
-  TreeNode(T parent) {
-    if (isPresent(parent)) {
-      parent.addChild(this);
-    } else {
-      this._parent = null;
-    }
-  }
-  void addChild(T child) {
-    child._parent = this;
-  }
-
-  void remove() {
-    this._parent = null;
-  }
-
-  get parent {
-    return this._parent;
   }
 }
 
@@ -118,7 +95,7 @@ class DirectiveDependency extends Dependency {
         "A directive injectable can contain only one of the following @Attribute or @Query.");
   }
 
-  static Dependency createFrom(Dependency d) {
+  static DirectiveDependency createFrom(Dependency d) {
     return new DirectiveDependency(
         d.key,
         d.optional,
@@ -144,68 +121,53 @@ class DirectiveDependency extends Dependency {
 }
 
 class DirectiveProvider extends ResolvedProvider_ {
-  DirectiveMetadata metadata;
-  List<dynamic /* Type | Provider | List < dynamic > */ > providers;
-  List<dynamic /* Type | Provider | List < dynamic > */ > viewProviders;
-  bool callOnDestroy;
+  bool isComponent;
+  List<ResolvedProvider> providers;
+  List<ResolvedProvider> viewProviders;
+  List<QueryMetadataWithSetter> queries;
   DirectiveProvider(Key key, Function factory, List<Dependency> deps,
-      this.metadata, this.providers, this.viewProviders)
+      this.isComponent, this.providers, this.viewProviders, this.queries)
       : super(key, [new ResolvedFactory(factory, deps)], false) {
     /* super call moved to initializer */;
-    this.callOnDestroy = hasLifecycleHook(LifecycleHooks.OnDestroy, key.token);
   }
   String get displayName {
     return this.key.displayName;
   }
 
-  List<QueryMetadataWithSetter> get queries {
-    if (isBlank(this.metadata.queries)) return [];
-    var res = [];
-    StringMapWrapper.forEach(this.metadata.queries, (meta, fieldName) {
-      var setter = reflector.setter(fieldName);
-      res.add(new QueryMetadataWithSetter(setter, meta));
-    });
-    return res;
-  }
-
-  List<String> get eventEmitters {
-    return isPresent(this.metadata) && isPresent(this.metadata.outputs)
-        ? this.metadata.outputs
-        : [];
-  }
-
-  static DirectiveProvider createFromProvider(
-      Provider provider, DirectiveMetadata meta) {
+  static DirectiveProvider createFromType(Type type, DirectiveMetadata meta) {
+    var provider = new Provider(type, useClass: type);
     if (isBlank(meta)) {
       meta = new DirectiveMetadata();
     }
     var rb = resolveProvider(provider);
     var rf = rb.resolvedFactories[0];
-    var deps = rf.dependencies.map(DirectiveDependency.createFrom).toList();
-    var providers = isPresent(meta.providers) ? meta.providers : [];
-    var viewBindigs = meta is ComponentMetadata && isPresent(meta.viewProviders)
-        ? meta.viewProviders
-        : [];
-    return new DirectiveProvider(
-        rb.key, rf.factory, deps, meta, providers, viewBindigs);
-  }
+    List<DirectiveDependency> deps =
+        rf.dependencies.map(DirectiveDependency.createFrom).toList();
+    var isComponent = meta is ComponentMetadata;
+    var resolvedProviders =
+        isPresent(meta.providers) ? Injector.resolve(meta.providers) : null;
+    var resolvedViewProviders = meta is ComponentMetadata &&
+            isPresent(meta.viewProviders)
+        ? Injector.resolve(meta.viewProviders)
+        : null;
+    var queries = [];
+    if (isPresent(meta.queries)) {
+      StringMapWrapper.forEach(meta.queries, (meta, fieldName) {
+        var setter = reflector.setter(fieldName);
+        queries.add(new QueryMetadataWithSetter(setter, meta));
+      });
+    }
+    // queries passed into the constructor.
 
-  static DirectiveProvider createFromType(
-      Type type, DirectiveMetadata annotation) {
-    var provider = new Provider(type, useClass: type);
-    return DirectiveProvider.createFromProvider(provider, annotation);
+    // TODO: remove this after constructor queries are no longer supported
+    deps.forEach((d) {
+      if (isPresent(d.queryDecorator)) {
+        queries.add(new QueryMetadataWithSetter(null, d.queryDecorator));
+      }
+    });
+    return new DirectiveProvider(rb.key, rf.factory, deps, isComponent,
+        resolvedProviders, resolvedViewProviders, queries);
   }
-}
-
-// TODO(rado): benchmark and consider rolling in as ElementInjector fields.
-class PreBuiltObjects {
-  avmModule.AppViewManager viewManager;
-  AppView view;
-  ElementRef elementRef;
-  TemplateRef templateRef;
-  AppView nestedView = null;
-  PreBuiltObjects(
-      this.viewManager, this.view, this.elementRef, this.templateRef) {}
 }
 
 class QueryMetadataWithSetter {
@@ -214,153 +176,92 @@ class QueryMetadataWithSetter {
   QueryMetadataWithSetter(this.setter, this.metadata) {}
 }
 
-class EventEmitterAccessor {
-  String eventName;
-  Function getter;
-  EventEmitterAccessor(this.eventName, this.getter) {}
-  Object subscribe(AppView view, num boundElementIndex, Object directive) {
-    var eventEmitter = this.getter(directive);
-    return ObservableWrapper.subscribe(
-        eventEmitter,
-        (eventObj) => view.triggerEventHandlers(
-            this.eventName, eventObj, boundElementIndex));
+setProvidersVisibility(List<ResolvedProvider> providers, Visibility visibility,
+    Map<num, Visibility> result) {
+  for (var i = 0; i < providers.length; i++) {
+    result[providers[i].key.id] = visibility;
   }
 }
 
-List<EventEmitterAccessor> _createEventEmitterAccessors(
-    ProviderWithVisibility bwv) {
-  var provider = bwv.provider;
-  if (!(provider is DirectiveProvider)) return [];
-  var db = (provider as DirectiveProvider);
-  return db.eventEmitters.map((eventConfig) {
-    var parsedEvent = EventConfig.parse(eventConfig);
-    return new EventEmitterAccessor(
-        parsedEvent.eventName, reflector.getter(parsedEvent.fieldName));
-  }).toList();
-}
-
-List<ProtoQueryRef> _createProtoQueryRefs(
-    List<ProviderWithVisibility> providers) {
-  var res = [];
-  ListWrapper.forEachWithIndex(providers, (b, i) {
-    if (b.provider is DirectiveProvider) {
-      var directiveProvider = (b.provider as DirectiveProvider);
-      // field queries
-      List<QueryMetadataWithSetter> queries = directiveProvider.queries;
-      queries
-          .forEach((q) => res.add(new ProtoQueryRef(i, q.setter, q.metadata)));
-      // queries passed into the constructor.
-
-      // TODO: remove this after constructor queries are no longer supported
-      List<DirectiveDependency> deps = (directiveProvider
-          .resolvedFactory.dependencies as List<DirectiveDependency>);
-      deps.forEach((d) {
-        if (isPresent(d.queryDecorator)) res
-            .add(new ProtoQueryRef(i, null, d.queryDecorator));
-      });
-    }
-  });
-  return res;
-}
-
-class ProtoElementInjector {
-  ProtoElementInjector parent;
+class AppProtoElement {
+  bool firstProviderIsComponent;
   num index;
-  num distanceToParent;
-  Map<String, num> directiveVariableBindings;
-  AppView view;
   Map<String, String> attributes;
-  List<List<EventEmitterAccessor>> eventEmitterAccessors;
   List<ProtoQueryRef> protoQueryRefs;
+  Map<String, num> directiveVariableBindings;
   ProtoInjector protoInjector;
-  static ProtoElementInjector create(
-      ProtoElementInjector parent,
+  static AppProtoElement create(
+      ResolvedMetadataCache metadataCache,
       num index,
-      List<DirectiveProvider> providers,
-      bool firstProviderIsComponent,
-      num distanceToParent,
+      Map<String, String> attributes,
+      List<Type> directiveTypes,
       Map<String, num> directiveVariableBindings) {
-    var bd = [];
-    ProtoElementInjector._createDirectiveProviderWithVisibility(
-        providers, bd, firstProviderIsComponent);
-    if (firstProviderIsComponent) {
-      ProtoElementInjector._createViewProvidersWithVisibility(providers, bd);
+    var componentDirProvider = null;
+    Map<num, ResolvedProvider> mergedProvidersMap =
+        new Map<num, ResolvedProvider>();
+    Map<num, Visibility> providerVisibilityMap = new Map<num, Visibility>();
+    var providers = ListWrapper.createGrowableSize(directiveTypes.length);
+    var protoQueryRefs = [];
+    for (var i = 0; i < directiveTypes.length; i++) {
+      var dirProvider =
+          metadataCache.getResolvedDirectiveMetadata(directiveTypes[i]);
+      providers[i] = new ProviderWithVisibility(
+          dirProvider,
+          dirProvider.isComponent
+              ? Visibility.PublicAndPrivate
+              : Visibility.Public);
+      if (dirProvider.isComponent) {
+        componentDirProvider = dirProvider;
+      } else {
+        if (isPresent(dirProvider.providers)) {
+          mergeResolvedProviders(dirProvider.providers, mergedProvidersMap);
+          setProvidersVisibility(
+              dirProvider.providers, Visibility.Public, providerVisibilityMap);
+        }
+      }
+      if (isPresent(dirProvider.viewProviders)) {
+        mergeResolvedProviders(dirProvider.viewProviders, mergedProvidersMap);
+        setProvidersVisibility(dirProvider.viewProviders, Visibility.Private,
+            providerVisibilityMap);
+      }
+      for (var queryIdx = 0;
+          queryIdx < dirProvider.queries.length;
+          queryIdx++) {
+        var q = dirProvider.queries[queryIdx];
+        protoQueryRefs.add(new ProtoQueryRef(i, q.setter, q.metadata));
+      }
     }
-    ProtoElementInjector._createProvidersWithVisibility(providers, bd);
-    return new ProtoElementInjector(parent, index, bd, distanceToParent,
-        firstProviderIsComponent, directiveVariableBindings);
-  }
-
-  static _createDirectiveProviderWithVisibility(
-      List<DirectiveProvider> dirProviders,
-      List<ProviderWithVisibility> bd,
-      bool firstProviderIsComponent) {
-    dirProviders.forEach((dirProvider) {
-      bd.add(ProtoElementInjector._createProviderWithVisibility(
-          firstProviderIsComponent, dirProvider, dirProviders, dirProvider));
+    if (isPresent(componentDirProvider) &&
+        isPresent(componentDirProvider.providers)) {
+      // directive providers need to be prioritized over component providers
+      mergeResolvedProviders(
+          componentDirProvider.providers, mergedProvidersMap);
+      setProvidersVisibility(componentDirProvider.providers, Visibility.Public,
+          providerVisibilityMap);
+    }
+    mergedProvidersMap.forEach((_, provider) {
+      providers.add(new ProviderWithVisibility(
+          provider, providerVisibilityMap[provider.key.id]));
     });
+    return new AppProtoElement(isPresent(componentDirProvider), index,
+        attributes, providers, protoQueryRefs, directiveVariableBindings);
   }
 
-  static _createProvidersWithVisibility(
-      List<DirectiveProvider> dirProviders, List<ProviderWithVisibility> bd) {
-    var providersFromAllDirectives = [];
-    dirProviders.forEach((dirProvider) {
-      providersFromAllDirectives =
-          ListWrapper.concat(providersFromAllDirectives, dirProvider.providers);
-    });
-    var resolved = Injector.resolve(providersFromAllDirectives);
-    resolved.forEach(
-        (b) => bd.add(new ProviderWithVisibility(b, Visibility.Public)));
-  }
-
-  static _createProviderWithVisibility(
-      bool firstProviderIsComponent,
-      DirectiveProvider dirProvider,
-      List<DirectiveProvider> dirProviders,
-      ResolvedProvider provider) {
-    var isComponent =
-        firstProviderIsComponent && identical(dirProviders[0], dirProvider);
-    return new ProviderWithVisibility(provider,
-        isComponent ? Visibility.PublicAndPrivate : Visibility.Public);
-  }
-
-  static _createViewProvidersWithVisibility(
-      List<DirectiveProvider> dirProviders, List<ProviderWithVisibility> bd) {
-    var resolvedViewProviders = Injector.resolve(dirProviders[0].viewProviders);
-    resolvedViewProviders.forEach(
-        (b) => bd.add(new ProviderWithVisibility(b, Visibility.Private)));
-  }
-
-  /** @internal */
-  bool _firstProviderIsComponent;
-  ProtoElementInjector(
-      this.parent,
+  AppProtoElement(
+      this.firstProviderIsComponent,
       this.index,
-      List<ProviderWithVisibility> bwv,
-      this.distanceToParent,
-      bool _firstProviderIsComponent,
+      this.attributes,
+      List<ProviderWithVisibility> pwvs,
+      this.protoQueryRefs,
       this.directiveVariableBindings) {
-    this._firstProviderIsComponent = _firstProviderIsComponent;
-    var length = bwv.length;
-    this.protoInjector = new ProtoInjector(bwv);
-    this.eventEmitterAccessors = ListWrapper.createFixedSize(length);
-    for (var i = 0; i < length; ++i) {
-      this.eventEmitterAccessors[i] = _createEventEmitterAccessors(bwv[i]);
+    var length = pwvs.length;
+    if (length > 0) {
+      this.protoInjector = new ProtoInjector(pwvs);
+    } else {
+      this.protoInjector = null;
+      this.protoQueryRefs = [];
     }
-    this.protoQueryRefs = _createProtoQueryRefs(bwv);
   }
-  ElementInjector instantiate(ElementInjector parent) {
-    return new ElementInjector(this, parent);
-  }
-
-  ProtoElementInjector directParent() {
-    return this.distanceToParent < 2 ? this.parent : null;
-  }
-
-  bool get hasBindings {
-    return this.eventEmitterAccessors.length > 0;
-  }
-
   dynamic getProviderAtIndex(num index) {
     return this.protoInjector.getProviderAtIndex(index);
   }
@@ -373,110 +274,122 @@ class _Context {
   _Context(this.element, this.componentElement, this.injector) {}
 }
 
-class ElementInjector extends TreeNode<ElementInjector>
-    implements DependencyProvider, AfterViewChecked {
-  ElementInjector _host;
-  PreBuiltObjects _preBuiltObjects = null;
-  _QueryStrategy _queryStrategy;
-  bool hydrated;
-  Injector _injector;
-  _ElementInjectorStrategy _strategy;
-  /** @internal */
-  ProtoElementInjector _proto;
-  ElementInjector(ProtoElementInjector _proto, ElementInjector parent)
-      : super(parent) {
-    /* super call moved to initializer */;
-    this._proto = _proto;
-    this._injector = new Injector(
-        this._proto.protoInjector, null, this, () => this._debugContext());
-    // we couple ourselves to the injector strategy to avoid polymoprhic calls
-    var injectorStrategy = (this._injector.internalStrategy as dynamic);
-    this._strategy = injectorStrategy is InjectorInlineStrategy
-        ? new ElementInjectorInlineStrategy(injectorStrategy, this)
-        : new ElementInjectorDynamicStrategy(injectorStrategy, this);
-    this.hydrated = false;
-    this._queryStrategy = this._buildQueryStrategy();
-  }
-  void dehydrate() {
-    this.hydrated = false;
-    this._host = null;
-    this._preBuiltObjects = null;
-    this._strategy.callOnDestroy();
-    this._strategy.dehydrate();
-    this._queryStrategy.dehydrate();
+class InjectorWithHostBoundary {
+  Injector injector;
+  bool hostInjectorBoundary;
+  InjectorWithHostBoundary(this.injector, this.hostInjectorBoundary) {}
+}
+
+class AppElement implements DependencyProvider, ElementRef, AfterViewChecked {
+  AppProtoElement proto;
+  AppView parentView;
+  AppElement parent;
+  dynamic nativeElement;
+  Function embeddedViewFactory;
+  static InjectorWithHostBoundary getViewParentInjector(
+      ViewType parentViewType,
+      AppElement containerAppElement,
+      List<ResolvedProvider> imperativelyCreatedProviders,
+      Injector rootInjector) {
+    var parentInjector;
+    var hostInjectorBoundary;
+    switch (parentViewType) {
+      case ViewType.COMPONENT:
+        parentInjector = containerAppElement._injector;
+        hostInjectorBoundary = true;
+        break;
+      case ViewType.EMBEDDED:
+        parentInjector = isPresent(containerAppElement.proto.protoInjector)
+            ? containerAppElement._injector.parent
+            : containerAppElement._injector;
+        hostInjectorBoundary = containerAppElement._injector.hostBoundary;
+        break;
+      case ViewType.HOST:
+        if (isPresent(containerAppElement)) {
+          // host view is attached to a container
+          parentInjector = isPresent(containerAppElement.proto.protoInjector)
+              ? containerAppElement._injector.parent
+              : containerAppElement._injector;
+          if (isPresent(imperativelyCreatedProviders)) {
+            var imperativeProvidersWithVisibility = imperativelyCreatedProviders
+                .map((p) => new ProviderWithVisibility(p, Visibility.Public))
+                .toList();
+            // The imperative injector is similar to having an element between
+
+            // the dynamic-loaded component and its parent => no boundary between
+
+            // the component and imperativelyCreatedInjector.
+            parentInjector = new Injector(
+                new ProtoInjector(imperativeProvidersWithVisibility),
+                parentInjector,
+                true,
+                null,
+                null);
+            hostInjectorBoundary = false;
+          } else {
+            hostInjectorBoundary = containerAppElement._injector.hostBoundary;
+          }
+        } else {
+          // bootstrap
+          parentInjector = rootInjector;
+          hostInjectorBoundary = true;
+        }
+        break;
+    }
+    return new InjectorWithHostBoundary(parentInjector, hostInjectorBoundary);
   }
 
-  void hydrate(Injector imperativelyCreatedInjector, ElementInjector host,
-      PreBuiltObjects preBuiltObjects) {
-    this._host = host;
-    this._preBuiltObjects = preBuiltObjects;
-    this._reattachInjectors(imperativelyCreatedInjector);
-    this._queryStrategy.hydrate();
-    this._strategy.hydrate();
-    this.hydrated = true;
+  List<AppView> nestedViews = null;
+  AppView componentView = null;
+  _QueryStrategy _queryStrategy;
+  Injector _injector;
+  _ElementDirectiveStrategy _strategy;
+  ElementRef_ ref;
+  AppElement(this.proto, this.parentView, this.parent, this.nativeElement,
+      this.embeddedViewFactory) {
+    this.ref = new ElementRef_(this);
+    var parentInjector =
+        isPresent(parent) ? parent._injector : parentView.parentInjector;
+    if (isPresent(this.proto.protoInjector)) {
+      var isBoundary;
+      if (isPresent(parent) && isPresent(parent.proto.protoInjector)) {
+        isBoundary = false;
+      } else {
+        isBoundary = parentView.hostInjectorBoundary;
+      }
+      this._queryStrategy = this._buildQueryStrategy();
+      this._injector = new Injector(this.proto.protoInjector, parentInjector,
+          isBoundary, this, () => this._debugContext());
+      // we couple ourselves to the injector strategy to avoid polymorphic calls
+      var injectorStrategy = (this._injector.internalStrategy as dynamic);
+      this._strategy = injectorStrategy is InjectorInlineStrategy
+          ? new ElementDirectiveInlineStrategy(injectorStrategy, this)
+          : new ElementDirectiveDynamicStrategy(injectorStrategy, this);
+      this._strategy.init();
+    } else {
+      this._queryStrategy = null;
+      this._injector = parentInjector;
+      this._strategy = null;
+    }
+  }
+  attachComponentView(AppView componentView) {
+    this.componentView = componentView;
   }
 
   dynamic _debugContext() {
-    var p = this._preBuiltObjects;
-    var index = p.elementRef.boundElementIndex - p.view.elementOffset;
-    var c = this._preBuiltObjects.view.getDebugContext(index, null);
+    var c = this.parentView.getDebugContext(this, null, null);
     return isPresent(c)
         ? new _Context(c.element, c.componentElement, c.injector)
         : null;
   }
 
-  void _reattachInjectors(Injector imperativelyCreatedInjector) {
-    // Dynamically-loaded component in the template. Not a root ElementInjector.
-    if (isPresent(this._parent)) {
-      if (isPresent(imperativelyCreatedInjector)) {
-        // The imperative injector is similar to having an element between
-
-        // the dynamic-loaded component and its parent => no boundaries.
-        this._reattachInjector(
-            this._injector, imperativelyCreatedInjector, false);
-        this._reattachInjector(
-            imperativelyCreatedInjector, this._parent._injector, false);
-      } else {
-        this._reattachInjector(this._injector, this._parent._injector, false);
-      }
-    } else if (isPresent(this._host)) {
-      // The imperative injector is similar to having an element between
-
-      // the dynamic-loaded component and its parent => no boundary between
-
-      // the component and imperativelyCreatedInjector.
-
-      // But since it is a root ElementInjector, we need to create a boundary
-
-      // between imperativelyCreatedInjector and _host.
-      if (isPresent(imperativelyCreatedInjector)) {
-        this._reattachInjector(
-            this._injector, imperativelyCreatedInjector, false);
-        this._reattachInjector(
-            imperativelyCreatedInjector, this._host._injector, true);
-      } else {
-        this._reattachInjector(this._injector, this._host._injector, true);
-      }
-    } else {
-      if (isPresent(imperativelyCreatedInjector)) {
-        this._reattachInjector(
-            this._injector, imperativelyCreatedInjector, true);
-      }
-    }
-  }
-
-  _reattachInjector(
-      Injector injector, Injector parentInjector, bool isBoundary) {
-    injector.internalStrategy.attach(parentInjector, isBoundary);
-  }
-
   bool hasVariableBinding(String name) {
-    var vb = this._proto.directiveVariableBindings;
-    return isPresent(vb) && vb.containsKey(name);
+    var vb = this.proto.directiveVariableBindings;
+    return isPresent(vb) && StringMapWrapper.contains(vb, name);
   }
 
   dynamic getVariableBinding(String name) {
-    var index = this._proto.directiveVariableBindings[name];
+    var index = this.proto.directiveVariableBindings[name];
     return isPresent(index)
         ? this.getDirectiveAtIndex((index as num))
         : this.getElementRef();
@@ -490,16 +403,8 @@ class ElementInjector extends TreeNode<ElementInjector>
     return isPresent(this._injector.getOptional(type));
   }
 
-  List<List<EventEmitterAccessor>> getEventEmitterAccessors() {
-    return this._proto.eventEmitterAccessors;
-  }
-
-  Map<String, num> getDirectiveVariableBindings() {
-    return this._proto.directiveVariableBindings;
-  }
-
   dynamic getComponent() {
-    return this._strategy.getComponent();
+    return isPresent(this._strategy) ? this._strategy.getComponent() : null;
   }
 
   Injector getInjector() {
@@ -507,40 +412,24 @@ class ElementInjector extends TreeNode<ElementInjector>
   }
 
   ElementRef getElementRef() {
-    return this._preBuiltObjects.elementRef;
+    return this.ref;
   }
 
   ViewContainerRef getViewContainerRef() {
-    return new ViewContainerRef_(
-        this._preBuiltObjects.viewManager, this.getElementRef());
+    return new ViewContainerRef_(this);
   }
 
-  AppView getNestedView() {
-    return this._preBuiltObjects.nestedView;
-  }
-
-  AppView getView() {
-    return this._preBuiltObjects.view;
-  }
-
-  ElementInjector directParent() {
-    return this._proto.distanceToParent < 2 ? this.parent : null;
-  }
-
-  bool isComponentKey(Key key) {
-    return this._strategy.isComponentKey(key);
+  TemplateRef getTemplateRef() {
+    if (isPresent(this.embeddedViewFactory)) {
+      return new TemplateRef_(this.ref);
+    }
+    return null;
   }
 
   dynamic getDependency(
       Injector injector, ResolvedProvider provider, Dependency dep) {
-    Key key = dep.key;
     if (provider is DirectiveProvider) {
       var dirDep = (dep as DirectiveDependency);
-      var dirProvider = provider;
-      var staticKeys = StaticKeys.instance();
-      if (identical(key.id, staticKeys.viewManagerId)) return this
-          ._preBuiltObjects
-          .viewManager;
       if (isPresent(dirDep.attributeName)) return this._buildAttribute(dirDep);
       if (isPresent(dirDep.queryDecorator)) return this
           ._queryStrategy
@@ -550,12 +439,13 @@ class ElementInjector extends TreeNode<ElementInjector>
         // We provide the component's view change detector to components and
 
         // the surrounding component's change detector to directives.
-        if (dirProvider.metadata is ComponentMetadata) {
-          var componentView = this._preBuiltObjects.view.getNestedView(
-              this._preBuiltObjects.elementRef.boundElementIndex);
-          return componentView.changeDetector.ref;
+        if (this.proto.firstProviderIsComponent) {
+          // Note: The component view is not yet created when
+
+          // this method is called!
+          return new _ComponentViewChangeDetectorRef(this);
         } else {
-          return this._preBuiltObjects.view.changeDetector.ref;
+          return this.parentView.changeDetector.ref;
         }
       }
       if (identical(dirDep.key.id, StaticKeys.instance().elementRefId)) {
@@ -565,29 +455,37 @@ class ElementInjector extends TreeNode<ElementInjector>
         return this.getViewContainerRef();
       }
       if (identical(dirDep.key.id, StaticKeys.instance().templateRefId)) {
-        if (isBlank(this._preBuiltObjects.templateRef)) {
-          if (dirDep.optional) {
-            return null;
-          }
+        var tr = this.getTemplateRef();
+        if (isBlank(tr) && !dirDep.optional) {
           throw new NoProviderError(null, dirDep.key);
         }
-        return this._preBuiltObjects.templateRef;
+        return tr;
+      }
+      if (identical(dirDep.key.id, StaticKeys.instance().rendererId)) {
+        return this.parentView.renderer;
       }
     } else if (provider is PipeProvider) {
       if (identical(dep.key.id, StaticKeys.instance().changeDetectorRefId)) {
-        var componentView = this
-            ._preBuiltObjects
-            .view
-            .getNestedView(this._preBuiltObjects.elementRef.boundElementIndex);
-        return componentView.changeDetector.ref;
+        // We provide the component's view change detector to components and
+
+        // the surrounding component's change detector to directives.
+        if (this.proto.firstProviderIsComponent) {
+          // Note: The component view is not yet created when
+
+          // this method is called!
+          return new _ComponentViewChangeDetectorRef(this);
+        } else {
+          return this.parentView.changeDetector;
+        }
       }
     }
     return UNDEFINED;
   }
 
   String _buildAttribute(DirectiveDependency dep) {
-    var attributes = this._proto.attributes;
-    if (isPresent(attributes) && attributes.containsKey(dep.attributeName)) {
+    var attributes = this.proto.attributes;
+    if (isPresent(attributes) &&
+        StringMapWrapper.contains(attributes, dep.attributeName)) {
       return attributes[dep.attributeName];
     } else {
       return null;
@@ -595,19 +493,19 @@ class ElementInjector extends TreeNode<ElementInjector>
   }
 
   void addDirectivesMatchingQuery(QueryMetadata query, List<dynamic> list) {
-    var templateRef = isBlank(this._preBuiltObjects)
-        ? null
-        : this._preBuiltObjects.templateRef;
+    var templateRef = this.getTemplateRef();
     if (identical(query.selector, TemplateRef) && isPresent(templateRef)) {
       list.add(templateRef);
     }
-    this._strategy.addDirectivesMatchingQuery(query, list);
+    if (this._strategy != null) {
+      this._strategy.addDirectivesMatchingQuery(query, list);
+    }
   }
 
   _QueryStrategy _buildQueryStrategy() {
-    if (identical(this._proto.protoQueryRefs.length, 0)) {
+    if (identical(this.proto.protoQueryRefs.length, 0)) {
       return _emptyQueryStrategy;
-    } else if (this._proto.protoQueryRefs.length <=
+    } else if (this.proto.protoQueryRefs.length <=
         InlineQueryStrategy.NUMBER_OF_SUPPORTED_QUERIES) {
       return new InlineQueryStrategy(this);
     } else {
@@ -615,48 +513,22 @@ class ElementInjector extends TreeNode<ElementInjector>
     }
   }
 
-  void link(ElementInjector parent) {
-    parent.addChild(this);
-  }
-
-  void unlink() {
-    this.remove();
-  }
-
   dynamic getDirectiveAtIndex(num index) {
     return this._injector.getAt(index);
   }
 
-  bool hasInstances() {
-    return this._proto.hasBindings && this.hydrated;
-  }
-
-  ElementInjector getHost() {
-    return this._host;
-  }
-
-  num getBoundElementIndex() {
-    return this._proto.index;
-  }
-
-  List<ElementInjector> getRootViewInjectors() {
-    if (!this.hydrated) return [];
-    var view = this._preBuiltObjects.view;
-    var nestedView =
-        view.getNestedView(view.elementOffset + this.getBoundElementIndex());
-    return isPresent(nestedView) ? nestedView.rootElementInjectors : [];
-  }
-
   void ngAfterViewChecked() {
-    this._queryStrategy.updateViewQueries();
+    if (isPresent(this._queryStrategy)) this._queryStrategy.updateViewQueries();
   }
 
   void ngAfterContentChecked() {
-    this._queryStrategy.updateContentQueries();
+    if (isPresent(this._queryStrategy)) this
+        ._queryStrategy
+        .updateContentQueries();
   }
 
   void traverseAndSetQueriesAsDirty() {
-    ElementInjector inj = this;
+    AppElement inj = this;
     while (isPresent(inj)) {
       inj._setQueriesAsDirty();
       inj = inj.parent;
@@ -664,19 +536,22 @@ class ElementInjector extends TreeNode<ElementInjector>
   }
 
   void _setQueriesAsDirty() {
-    this._queryStrategy.setContentQueriesAsDirty();
-    if (isPresent(this._host)) this
-        ._host
-        ._queryStrategy
-        .setViewQueriesAsDirty();
+    if (isPresent(this._queryStrategy)) {
+      this._queryStrategy.setContentQueriesAsDirty();
+    }
+    if (identical(this.parentView.proto.type, ViewType.COMPONENT)) {
+      this
+          .parentView
+          .containerAppElement
+          ._queryStrategy
+          .setViewQueriesAsDirty();
+    }
   }
 }
 
 abstract class _QueryStrategy {
   void setContentQueriesAsDirty();
   void setViewQueriesAsDirty();
-  void hydrate();
-  void dehydrate();
   void updateContentQueries();
   void updateViewQueries();
   QueryRef findQuery(QueryMetadata query);
@@ -685,8 +560,6 @@ abstract class _QueryStrategy {
 class _EmptyQueryStrategy implements _QueryStrategy {
   void setContentQueriesAsDirty() {}
   void setViewQueriesAsDirty() {}
-  void hydrate() {}
-  void dehydrate() {}
   void updateContentQueries() {}
   void updateViewQueries() {}
   QueryRef findQuery(QueryMetadata query) {
@@ -701,8 +574,8 @@ class InlineQueryStrategy implements _QueryStrategy {
   QueryRef query0;
   QueryRef query1;
   QueryRef query2;
-  InlineQueryStrategy(ElementInjector ei) {
-    var protoRefs = ei._proto.protoQueryRefs;
+  InlineQueryStrategy(AppElement ei) {
+    var protoRefs = ei.proto.protoQueryRefs;
     if (protoRefs.length > 0) this.query0 = new QueryRef(protoRefs[0], ei);
     if (protoRefs.length > 1) this.query1 = new QueryRef(protoRefs[1], ei);
     if (protoRefs.length > 2) this.query2 = new QueryRef(protoRefs[2], ei);
@@ -723,18 +596,6 @@ class InlineQueryStrategy implements _QueryStrategy {
         true;
     if (isPresent(this.query2) && this.query2.isViewQuery) this.query2.dirty =
         true;
-  }
-
-  void hydrate() {
-    if (isPresent(this.query0)) this.query0.hydrate();
-    if (isPresent(this.query1)) this.query1.hydrate();
-    if (isPresent(this.query2)) this.query2.hydrate();
-  }
-
-  void dehydrate() {
-    if (isPresent(this.query0)) this.query0.dehydrate();
-    if (isPresent(this.query1)) this.query1.dehydrate();
-    if (isPresent(this.query2)) this.query2.dehydrate();
   }
 
   updateContentQueries() {
@@ -780,9 +641,9 @@ class InlineQueryStrategy implements _QueryStrategy {
 
 class DynamicQueryStrategy implements _QueryStrategy {
   List<QueryRef> queries;
-  DynamicQueryStrategy(ElementInjector ei) {
+  DynamicQueryStrategy(AppElement ei) {
     this.queries =
-        ei._proto.protoQueryRefs.map((p) => new QueryRef(p, ei)).toList();
+        ei.proto.protoQueryRefs.map((p) => new QueryRef(p, ei)).toList();
   }
   void setContentQueriesAsDirty() {
     for (var i = 0; i < this.queries.length; ++i) {
@@ -795,20 +656,6 @@ class DynamicQueryStrategy implements _QueryStrategy {
     for (var i = 0; i < this.queries.length; ++i) {
       var q = this.queries[i];
       if (q.isViewQuery) q.dirty = true;
-    }
-  }
-
-  void hydrate() {
-    for (var i = 0; i < this.queries.length; ++i) {
-      var q = this.queries[i];
-      q.hydrate();
-    }
-  }
-
-  void dehydrate() {
-    for (var i = 0; i < this.queries.length; ++i) {
-      var q = this.queries[i];
-      q.dehydrate();
     }
   }
 
@@ -841,24 +688,22 @@ class DynamicQueryStrategy implements _QueryStrategy {
   }
 }
 
-abstract class _ElementInjectorStrategy {
-  void callOnDestroy();
+abstract class _ElementDirectiveStrategy {
   dynamic getComponent();
   bool isComponentKey(Key key);
   void addDirectivesMatchingQuery(QueryMetadata q, List<dynamic> res);
-  void hydrate();
-  void dehydrate();
+  void init();
 }
 
 /**
  * Strategy used by the `ElementInjector` when the number of providers is 10 or less.
  * In such a case, inlining fields is beneficial for performances.
  */
-class ElementInjectorInlineStrategy implements _ElementInjectorStrategy {
+class ElementDirectiveInlineStrategy implements _ElementDirectiveStrategy {
   InjectorInlineStrategy injectorStrategy;
-  ElementInjector _ei;
-  ElementInjectorInlineStrategy(this.injectorStrategy, this._ei) {}
-  void hydrate() {
+  AppElement _ei;
+  ElementDirectiveInlineStrategy(this.injectorStrategy, this._ei) {}
+  void init() {
     var i = this.injectorStrategy;
     var p = i.protoStrategy;
     i.resetConstructionCounter();
@@ -904,71 +749,12 @@ class ElementInjectorInlineStrategy implements _ElementInjectorStrategy {
         i.instantiateProvider(p.provider9, p.visibility9);
   }
 
-  dehydrate() {
-    var i = this.injectorStrategy;
-    i.obj0 = UNDEFINED;
-    i.obj1 = UNDEFINED;
-    i.obj2 = UNDEFINED;
-    i.obj3 = UNDEFINED;
-    i.obj4 = UNDEFINED;
-    i.obj5 = UNDEFINED;
-    i.obj6 = UNDEFINED;
-    i.obj7 = UNDEFINED;
-    i.obj8 = UNDEFINED;
-    i.obj9 = UNDEFINED;
-  }
-
-  void callOnDestroy() {
-    var i = this.injectorStrategy;
-    var p = i.protoStrategy;
-    if (p.provider0 is DirectiveProvider &&
-        ((p.provider0 as DirectiveProvider)).callOnDestroy) {
-      i.obj0.ngOnDestroy();
-    }
-    if (p.provider1 is DirectiveProvider &&
-        ((p.provider1 as DirectiveProvider)).callOnDestroy) {
-      i.obj1.ngOnDestroy();
-    }
-    if (p.provider2 is DirectiveProvider &&
-        ((p.provider2 as DirectiveProvider)).callOnDestroy) {
-      i.obj2.ngOnDestroy();
-    }
-    if (p.provider3 is DirectiveProvider &&
-        ((p.provider3 as DirectiveProvider)).callOnDestroy) {
-      i.obj3.ngOnDestroy();
-    }
-    if (p.provider4 is DirectiveProvider &&
-        ((p.provider4 as DirectiveProvider)).callOnDestroy) {
-      i.obj4.ngOnDestroy();
-    }
-    if (p.provider5 is DirectiveProvider &&
-        ((p.provider5 as DirectiveProvider)).callOnDestroy) {
-      i.obj5.ngOnDestroy();
-    }
-    if (p.provider6 is DirectiveProvider &&
-        ((p.provider6 as DirectiveProvider)).callOnDestroy) {
-      i.obj6.ngOnDestroy();
-    }
-    if (p.provider7 is DirectiveProvider &&
-        ((p.provider7 as DirectiveProvider)).callOnDestroy) {
-      i.obj7.ngOnDestroy();
-    }
-    if (p.provider8 is DirectiveProvider &&
-        ((p.provider8 as DirectiveProvider)).callOnDestroy) {
-      i.obj8.ngOnDestroy();
-    }
-    if (p.provider9 is DirectiveProvider &&
-        ((p.provider9 as DirectiveProvider)).callOnDestroy) {
-      i.obj9.ngOnDestroy();
-    }
-  }
-
   dynamic getComponent() {
     return this.injectorStrategy.obj0;
   }
 
   bool isComponentKey(Key key) {
-    return this._ei._proto._firstProviderIsComponent &&
+    return this._ei.proto.firstProviderIsComponent &&
         isPresent(key) &&
         identical(key.id, this.injectorStrategy.protoStrategy.keyId0);
   }
@@ -1043,11 +829,11 @@ class ElementInjectorInlineStrategy implements _ElementInjectorStrategy {
  * Strategy used by the `ElementInjector` when the number of bindings is 11 or more.
  * In such a case, there are too many fields to inline (see ElementInjectorInlineStrategy).
  */
-class ElementInjectorDynamicStrategy implements _ElementInjectorStrategy {
+class ElementDirectiveDynamicStrategy implements _ElementDirectiveStrategy {
   InjectorDynamicStrategy injectorStrategy;
-  ElementInjector _ei;
-  ElementInjectorDynamicStrategy(this.injectorStrategy, this._ei) {}
-  void hydrate() {
+  AppElement _ei;
+  ElementDirectiveDynamicStrategy(this.injectorStrategy, this._ei) {}
+  void init() {
     var inj = this.injectorStrategy;
     var p = inj.protoStrategy;
     inj.resetConstructionCounter();
@@ -1061,29 +847,13 @@ class ElementInjectorDynamicStrategy implements _ElementInjectorStrategy {
     }
   }
 
-  void dehydrate() {
-    var inj = this.injectorStrategy;
-    ListWrapper.fill(inj.objs, UNDEFINED);
-  }
-
-  void callOnDestroy() {
-    var ist = this.injectorStrategy;
-    var p = ist.protoStrategy;
-    for (var i = 0; i < p.providers.length; i++) {
-      if (p.providers[i] is DirectiveProvider &&
-          ((p.providers[i] as DirectiveProvider)).callOnDestroy) {
-        ist.objs[i].ngOnDestroy();
-      }
-    }
-  }
-
   dynamic getComponent() {
     return this.injectorStrategy.objs[0];
   }
 
   bool isComponentKey(Key key) {
     var p = this.injectorStrategy.protoStrategy;
-    return this._ei._proto._firstProviderIsComponent &&
+    return this._ei.proto.firstProviderIsComponent &&
         isPresent(key) &&
         identical(key.id, p.keyIds[0]);
   }
@@ -1115,10 +885,13 @@ class ProtoQueryRef {
 
 class QueryRef {
   ProtoQueryRef protoQueryRef;
-  ElementInjector originator;
+  AppElement originator;
   QueryList<dynamic> list;
   bool dirty;
-  QueryRef(this.protoQueryRef, this.originator) {}
+  QueryRef(this.protoQueryRef, this.originator) {
+    this.list = new QueryList<dynamic>();
+    this.dirty = true;
+  }
   bool get isViewQuery {
     return this.protoQueryRef.query.isViewQuery;
   }
@@ -1145,10 +918,8 @@ class QueryRef {
   void _update() {
     var aggregator = [];
     if (this.protoQueryRef.query.isViewQuery) {
-      var view = this.originator.getView();
       // intentionally skipping originator for view queries.
-      var nestedView = view.getNestedView(
-          view.elementOffset + this.originator.getBoundElementIndex());
+      var nestedView = this.originator.componentView;
       if (isPresent(nestedView)) this._visitView(nestedView, aggregator);
     } else {
       this._visit(this.originator, aggregator);
@@ -1156,19 +927,16 @@ class QueryRef {
     this.list.reset(aggregator);
   }
 
-  void _visit(ElementInjector inj, List<dynamic> aggregator) {
-    var view = inj.getView();
-    var startIdx = view.elementOffset + inj._proto.index;
-    for (var i = startIdx; i < view.elementOffset + view.ownBindersCount; i++) {
-      var curInj = view.elementInjectors[i];
-      if (isBlank(curInj)) continue;
+  void _visit(AppElement inj, List<dynamic> aggregator) {
+    var view = inj.parentView;
+    var startIdx = inj.proto.index;
+    for (var i = startIdx; i < view.appElements.length; i++) {
+      var curInj = view.appElements[i];
       // The first injector after inj, that is outside the subtree rooted at
 
       // inj has to have a null parent or a parent that is an ancestor of inj.
       if (i > startIdx &&
-          (isBlank(curInj) ||
-              isBlank(curInj.parent) ||
-              view.elementOffset + curInj.parent._proto.index < startIdx)) {
+          (isBlank(curInj.parent) || curInj.parent.proto.index < startIdx)) {
         break;
       }
       if (!this.protoQueryRef.query.descendants &&
@@ -1182,12 +950,11 @@ class QueryRef {
 
       // even be constructed with the current apis.
       this._visitInjector(curInj, aggregator);
-      var vc = view.viewContainers[i];
-      if (isPresent(vc)) this._visitViewContainer(vc, aggregator);
+      this._visitViewContainerViews(curInj.nestedViews, aggregator);
     }
   }
 
-  _visitInjector(ElementInjector inj, List<dynamic> aggregator) {
+  _visitInjector(AppElement inj, List<dynamic> aggregator) {
     if (this.protoQueryRef.query.isVarBindingQuery) {
       this._aggregateVariableBinding(inj, aggregator);
     } else {
@@ -1195,26 +962,23 @@ class QueryRef {
     }
   }
 
-  _visitViewContainer(AppViewContainer vc, List<dynamic> aggregator) {
-    for (var j = 0; j < vc.views.length; j++) {
-      this._visitView(vc.views[j], aggregator);
+  _visitViewContainerViews(List<AppView> views, List<dynamic> aggregator) {
+    if (isPresent(views)) {
+      for (var j = 0; j < views.length; j++) {
+        this._visitView(views[j], aggregator);
+      }
     }
   }
 
   _visitView(AppView view, List<dynamic> aggregator) {
-    for (var i = view.elementOffset;
-        i < view.elementOffset + view.ownBindersCount;
-        i++) {
-      var inj = view.elementInjectors[i];
-      if (isBlank(inj)) continue;
+    for (var i = 0; i < view.appElements.length; i++) {
+      var inj = view.appElements[i];
       this._visitInjector(inj, aggregator);
-      var vc = view.viewContainers[i];
-      if (isPresent(vc)) this._visitViewContainer(vc, aggregator);
+      this._visitViewContainerViews(inj.nestedViews, aggregator);
     }
   }
 
-  void _aggregateVariableBinding(
-      ElementInjector inj, List<dynamic> aggregator) {
+  void _aggregateVariableBinding(AppElement inj, List<dynamic> aggregator) {
     var vb = this.protoQueryRef.query.varBindings;
     for (var i = 0; i < vb.length; ++i) {
       if (inj.hasVariableBinding(vb[i])) {
@@ -1223,16 +987,33 @@ class QueryRef {
     }
   }
 
-  void _aggregateDirective(ElementInjector inj, List<dynamic> aggregator) {
+  void _aggregateDirective(AppElement inj, List<dynamic> aggregator) {
     inj.addDirectivesMatchingQuery(this.protoQueryRef.query, aggregator);
   }
+}
 
-  void dehydrate() {
-    this.list = null;
+class _ComponentViewChangeDetectorRef extends ChangeDetectorRef {
+  AppElement _appElement;
+  _ComponentViewChangeDetectorRef(this._appElement) : super() {
+    /* super call moved to initializer */;
+  }
+  void markForCheck() {
+    this._appElement.componentView.changeDetector.ref.markForCheck();
   }
 
-  void hydrate() {
-    this.list = new QueryList<dynamic>();
-    this.dirty = true;
+  void detach() {
+    this._appElement.componentView.changeDetector.ref.detach();
+  }
+
+  void detectChanges() {
+    this._appElement.componentView.changeDetector.ref.detectChanges();
+  }
+
+  void checkNoChanges() {
+    this._appElement.componentView.changeDetector.ref.checkNoChanges();
+  }
+
+  void reattach() {
+    this._appElement.componentView.changeDetector.ref.reattach();
   }
 }

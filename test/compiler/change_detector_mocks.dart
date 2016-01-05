@@ -2,12 +2,14 @@ library angular2.test.compiler.change_detector_mocks;
 
 import "package:angular2/src/facade/lang.dart" show isBlank;
 import "package:angular2/src/core/change_detection/pipes.dart" show Pipes;
+import "package:angular2/src/facade/async.dart" show EventEmitter;
 import "package:angular2/src/core/change_detection/change_detection.dart"
-    show ProtoChangeDetector, ChangeDispatcher, DirectiveIndex, BindingTarget;
+    show ChangeDetector, ChangeDispatcher, DirectiveIndex, BindingTarget;
 
 class TestDirective {
   List<String> eventLog = [];
   String dirProp;
+  EventEmitter<dynamic> click = new EventEmitter<dynamic>();
   onEvent(String value) {
     this.eventLog.add(value);
   }
@@ -15,7 +17,7 @@ class TestDirective {
 
 class TestDispatcher implements ChangeDispatcher {
   List<dynamic> directives;
-  List<ProtoChangeDetector> detectors;
+  List<ChangeDetector> detectors;
   List<String> log;
   TestDispatcher(this.directives, this.detectors) {
     this.clear();
@@ -40,7 +42,8 @@ class TestDispatcher implements ChangeDispatcher {
   logBindingUpdate(target, value) {}
   notifyAfterContentChecked() {}
   notifyAfterViewChecked() {}
-  getDebugContext(a, b) {
+  notifyOnDestroy() {}
+  getDebugContext(a, b, c) {
     return null;
   }
 

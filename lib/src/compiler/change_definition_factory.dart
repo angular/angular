@@ -1,6 +1,7 @@
 library angular2.src.compiler.change_definition_factory;
 
-import "package:angular2/src/facade/collection.dart" show ListWrapper;
+import "package:angular2/src/facade/collection.dart"
+    show ListWrapper, StringMapWrapper;
 import "package:angular2/src/facade/lang.dart" show isPresent, isBlank;
 import "package:angular2/src/core/reflection/reflection.dart" show reflector;
 import "package:angular2/src/core/change_detection/change_detection.dart"
@@ -49,7 +50,7 @@ class ProtoViewVisitor implements TemplateAstVisitor {
   List<ProtoViewVisitor> allVisitors;
   ChangeDetectionStrategy strategy;
   num viewIndex;
-  num boundTextCount = 0;
+  num nodeCount = 0;
   num boundElementCount = 0;
   List<String> variableNames = [];
   List<BindingRecord> bindingRecords = [];
@@ -60,6 +61,7 @@ class ProtoViewVisitor implements TemplateAstVisitor {
     allVisitors.add(this);
   }
   dynamic visitEmbeddedTemplate(EmbeddedTemplateAst ast, dynamic context) {
+    this.nodeCount++;
     this.boundElementCount++;
     templateVisitAll(this, ast.outputs);
     for (var i = 0; i < ast.directives.length; i++) {
@@ -76,6 +78,7 @@ class ProtoViewVisitor implements TemplateAstVisitor {
   }
 
   dynamic visitElement(ElementAst ast, dynamic context) {
+    this.nodeCount++;
     if (ast.isBound()) {
       this.boundElementCount++;
     }
@@ -145,14 +148,15 @@ class ProtoViewVisitor implements TemplateAstVisitor {
   }
 
   dynamic visitBoundText(BoundTextAst ast, dynamic context) {
-    var boundTextIndex = this.boundTextCount++;
+    var nodeIndex = this.nodeCount++;
     this
         .bindingRecords
-        .add(BindingRecord.createForTextNode(ast.value, boundTextIndex));
+        .add(BindingRecord.createForTextNode(ast.value, nodeIndex));
     return null;
   }
 
   dynamic visitText(TextAst ast, dynamic context) {
+    this.nodeCount++;
     return null;
   }
 
@@ -160,6 +164,9 @@ class ProtoViewVisitor implements TemplateAstVisitor {
     var directiveIndex =
         new DirectiveIndex(this.boundElementCount - 1, directiveIndexAsNumber);
     var directiveMetadata = ast.directive;
+    var outputsArray = [];
+    StringMapWrapper.forEach(ast.directive.outputs,
+        (eventName, dirProperty) => outputsArray.add([dirProperty, eventName]));
     var directiveRecord = new DirectiveRecord(
         directiveIndex: directiveIndex,
         callAfterContentInit: !identical(
@@ -187,7 +194,11 @@ class ProtoViewVisitor implements TemplateAstVisitor {
         callOnInit: !identical(
             directiveMetadata.lifecycleHooks.indexOf(LifecycleHooks.OnInit),
             -1),
-        changeDetection: directiveMetadata.changeDetection);
+        callOnDestroy: !identical(
+            directiveMetadata.lifecycleHooks.indexOf(LifecycleHooks.OnDestroy),
+            -1),
+        changeDetection: directiveMetadata.changeDetection,
+        outputs: outputsArray);
     this.directiveRecords.add(directiveRecord);
     templateVisitAll(this, ast.inputs, directiveRecord);
     var bindingRecords = this.bindingRecords;

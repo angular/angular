@@ -4,27 +4,17 @@ import "package:angular2/src/core/di.dart" show Injectable;
 import "package:angular2/src/web_workers/shared/message_bus.dart"
     show MessageBus;
 import "package:angular2/src/web_workers/shared/serializer.dart"
-    show Serializer, PRIMITIVE;
+    show Serializer, PRIMITIVE, RenderStoreObject;
 import "package:angular2/src/core/render/api.dart"
-    show
-        RenderViewRef,
-        RenderFragmentRef,
-        RenderProtoViewRef,
-        Renderer,
-        RenderTemplateCmd,
-        RenderComponentTemplate;
-import "package:angular2/src/web_workers/shared/api.dart"
-    show WebWorkerElementRef, WebWorkerTemplateCmd;
+    show RootRenderer, Renderer, RenderComponentType;
 import "package:angular2/src/web_workers/shared/messaging_api.dart"
     show EVENT_CHANNEL, RENDERER_CHANNEL;
 import "package:angular2/src/facade/lang.dart" show Type;
 import "bind.dart" show bind;
 import "package:angular2/src/web_workers/ui/event_dispatcher.dart"
     show EventDispatcher;
-import "package:angular2/src/web_workers/shared/render_proto_view_ref_store.dart"
-    show RenderProtoViewRefStore;
-import "package:angular2/src/web_workers/shared/render_view_with_fragments_store.dart"
-    show RenderViewWithFragmentsStore;
+import "package:angular2/src/web_workers/shared/render_store.dart"
+    show RenderStore;
 import "package:angular2/src/web_workers/shared/service_message_broker.dart"
     show ServiceMessageBrokerFactory;
 
@@ -33,112 +23,200 @@ class MessageBasedRenderer {
   ServiceMessageBrokerFactory _brokerFactory;
   MessageBus _bus;
   Serializer _serializer;
-  RenderProtoViewRefStore _renderProtoViewRefStore;
-  RenderViewWithFragmentsStore _renderViewWithFragmentsStore;
-  Renderer _renderer;
-  MessageBasedRenderer(
-      this._brokerFactory,
-      this._bus,
-      this._serializer,
-      this._renderProtoViewRefStore,
-      this._renderViewWithFragmentsStore,
-      this._renderer) {}
+  RenderStore _renderStore;
+  RootRenderer _rootRenderer;
+  EventDispatcher _eventDispatcher;
+  MessageBasedRenderer(this._brokerFactory, this._bus, this._serializer,
+      this._renderStore, this._rootRenderer) {}
   void start() {
     var broker = this._brokerFactory.createMessageBroker(RENDERER_CHANNEL);
     this._bus.initChannel(EVENT_CHANNEL);
+    this._eventDispatcher =
+        new EventDispatcher(this._bus.to(EVENT_CHANNEL), this._serializer);
+    broker.registerMethod("renderComponent", [RenderComponentType, PRIMITIVE],
+        bind(this._renderComponent, this));
     broker.registerMethod(
-        "registerComponentTemplate",
-        [RenderComponentTemplate],
-        bind(this._renderer.registerComponentTemplate, this._renderer));
+        "selectRootElement",
+        [RenderStoreObject, PRIMITIVE, PRIMITIVE],
+        bind(this._selectRootElement, this));
     broker.registerMethod(
-        "createProtoView",
-        [PRIMITIVE, WebWorkerTemplateCmd, PRIMITIVE],
-        bind(this._createProtoView, this));
+        "createElement",
+        [RenderStoreObject, RenderStoreObject, PRIMITIVE, PRIMITIVE],
+        bind(this._createElement, this));
     broker.registerMethod(
-        "createRootHostView",
-        [RenderProtoViewRef, PRIMITIVE, PRIMITIVE, PRIMITIVE],
-        bind(this._createRootHostView, this));
+        "createViewRoot",
+        [RenderStoreObject, RenderStoreObject, PRIMITIVE],
+        bind(this._createViewRoot, this));
     broker.registerMethod(
-        "createView",
-        [RenderProtoViewRef, PRIMITIVE, PRIMITIVE],
-        bind(this._createView, this));
+        "createTemplateAnchor",
+        [RenderStoreObject, RenderStoreObject, PRIMITIVE],
+        bind(this._createTemplateAnchor, this));
     broker.registerMethod(
-        "destroyView", [RenderViewRef], bind(this._destroyView, this));
+        "createText",
+        [RenderStoreObject, RenderStoreObject, PRIMITIVE, PRIMITIVE],
+        bind(this._createText, this));
     broker.registerMethod(
-        "attachFragmentAfterFragment",
-        [RenderFragmentRef, RenderFragmentRef],
-        bind(this._renderer.attachFragmentAfterFragment, this._renderer));
+        "projectNodes",
+        [RenderStoreObject, RenderStoreObject, RenderStoreObject],
+        bind(this._projectNodes, this));
     broker.registerMethod(
-        "attachFragmentAfterElement",
-        [WebWorkerElementRef, RenderFragmentRef],
-        bind(this._renderer.attachFragmentAfterElement, this._renderer));
-    broker.registerMethod("detachFragment", [RenderFragmentRef],
-        bind(this._renderer.detachFragment, this._renderer));
-    broker.registerMethod("hydrateView", [RenderViewRef],
-        bind(this._renderer.hydrateView, this._renderer));
-    broker.registerMethod("dehydrateView", [RenderViewRef],
-        bind(this._renderer.dehydrateView, this._renderer));
-    broker.registerMethod("setText", [RenderViewRef, PRIMITIVE, PRIMITIVE],
-        bind(this._renderer.setText, this._renderer));
+        "attachViewAfter",
+        [RenderStoreObject, RenderStoreObject, RenderStoreObject],
+        bind(this._attachViewAfter, this));
+    broker.registerMethod("detachView", [RenderStoreObject, RenderStoreObject],
+        bind(this._detachView, this));
+    broker.registerMethod(
+        "destroyView",
+        [RenderStoreObject, RenderStoreObject, RenderStoreObject],
+        bind(this._destroyView, this));
     broker.registerMethod(
         "setElementProperty",
-        [WebWorkerElementRef, PRIMITIVE, PRIMITIVE],
-        bind(this._renderer.setElementProperty, this._renderer));
+        [RenderStoreObject, RenderStoreObject, PRIMITIVE, PRIMITIVE],
+        bind(this._setElementProperty, this));
     broker.registerMethod(
         "setElementAttribute",
-        [WebWorkerElementRef, PRIMITIVE, PRIMITIVE],
-        bind(this._renderer.setElementAttribute, this._renderer));
+        [RenderStoreObject, RenderStoreObject, PRIMITIVE, PRIMITIVE],
+        bind(this._setElementAttribute, this));
     broker.registerMethod(
         "setBindingDebugInfo",
-        [WebWorkerElementRef, PRIMITIVE, PRIMITIVE],
-        bind(this._renderer.setBindingDebugInfo, this._renderer));
+        [RenderStoreObject, RenderStoreObject, PRIMITIVE, PRIMITIVE],
+        bind(this._setBindingDebugInfo, this));
     broker.registerMethod(
         "setElementClass",
-        [WebWorkerElementRef, PRIMITIVE, PRIMITIVE],
-        bind(this._renderer.setElementClass, this._renderer));
+        [RenderStoreObject, RenderStoreObject, PRIMITIVE, PRIMITIVE],
+        bind(this._setElementClass, this));
     broker.registerMethod(
         "setElementStyle",
-        [WebWorkerElementRef, PRIMITIVE, PRIMITIVE],
-        bind(this._renderer.setElementStyle, this._renderer));
+        [RenderStoreObject, RenderStoreObject, PRIMITIVE, PRIMITIVE],
+        bind(this._setElementStyle, this));
     broker.registerMethod(
         "invokeElementMethod",
-        [WebWorkerElementRef, PRIMITIVE, PRIMITIVE],
-        bind(this._renderer.invokeElementMethod, this._renderer));
-    broker.registerMethod("setEventDispatcher", [RenderViewRef],
-        bind(this._setEventDispatcher, this));
+        [RenderStoreObject, RenderStoreObject, PRIMITIVE, PRIMITIVE],
+        bind(this._invokeElementMethod, this));
+    broker.registerMethod(
+        "setText",
+        [RenderStoreObject, RenderStoreObject, PRIMITIVE],
+        bind(this._setText, this));
+    broker.registerMethod(
+        "listen",
+        [RenderStoreObject, RenderStoreObject, PRIMITIVE],
+        bind(this._listen, this));
+    broker.registerMethod(
+        "listenGlobal",
+        [RenderStoreObject, PRIMITIVE, PRIMITIVE, PRIMITIVE],
+        bind(this._listenGlobal, this));
+    broker.registerMethod(
+        "listenGlobalDone",
+        [RenderStoreObject, RenderStoreObject],
+        bind(this._listenGlobalDone, this));
   }
 
-  void _destroyView(RenderViewRef viewRef) {
-    this._renderer.destroyView(viewRef);
-    this._renderViewWithFragmentsStore.remove(viewRef);
+  _renderComponent(RenderComponentType renderComponentType, num rendererId) {
+    var renderer = this._rootRenderer.renderComponent(renderComponentType);
+    this._renderStore.store(renderer, rendererId);
   }
 
-  _createProtoView(
-      String componentTemplateId, List<RenderTemplateCmd> cmds, num refIndex) {
-    var protoViewRef =
-        this._renderer.createProtoView(componentTemplateId, cmds);
-    this._renderProtoViewRefStore.store(protoViewRef, refIndex);
+  _selectRootElement(Renderer renderer, String selector, num elId) {
+    this._renderStore.store(renderer.selectRootElement(selector), elId);
   }
 
-  _createRootHostView(RenderProtoViewRef ref, num fragmentCount,
-      String selector, num startIndex) {
-    var renderViewWithFragments =
-        this._renderer.createRootHostView(ref, fragmentCount, selector);
-    this
-        ._renderViewWithFragmentsStore
-        .store(renderViewWithFragments, startIndex);
+  _createElement(
+      Renderer renderer, dynamic parentElement, String name, num elId) {
+    this._renderStore.store(renderer.createElement(parentElement, name), elId);
   }
 
-  _createView(RenderProtoViewRef ref, num fragmentCount, num startIndex) {
-    var renderViewWithFragments = this._renderer.createView(ref, fragmentCount);
-    this
-        ._renderViewWithFragmentsStore
-        .store(renderViewWithFragments, startIndex);
+  _createViewRoot(Renderer renderer, dynamic hostElement, num elId) {
+    var viewRoot = renderer.createViewRoot(hostElement);
+    if (!identical(this._renderStore.serialize(hostElement), elId)) {
+      this._renderStore.store(viewRoot, elId);
+    }
   }
 
-  _setEventDispatcher(RenderViewRef viewRef) {
-    var dispatcher = new EventDispatcher(
-        viewRef, this._bus.to(EVENT_CHANNEL), this._serializer);
-    this._renderer.setEventDispatcher(viewRef, dispatcher);
+  _createTemplateAnchor(Renderer renderer, dynamic parentElement, num elId) {
+    this._renderStore.store(renderer.createTemplateAnchor(parentElement), elId);
+  }
+
+  _createText(
+      Renderer renderer, dynamic parentElement, String value, num elId) {
+    this._renderStore.store(renderer.createText(parentElement, value), elId);
+  }
+
+  _projectNodes(Renderer renderer, dynamic parentElement, List<dynamic> nodes) {
+    renderer.projectNodes(parentElement, nodes);
+  }
+
+  _attachViewAfter(
+      Renderer renderer, dynamic node, List<dynamic> viewRootNodes) {
+    renderer.attachViewAfter(node, viewRootNodes);
+  }
+
+  _detachView(Renderer renderer, List<dynamic> viewRootNodes) {
+    renderer.detachView(viewRootNodes);
+  }
+
+  _destroyView(
+      Renderer renderer, dynamic hostElement, List<dynamic> viewAllNodes) {
+    renderer.destroyView(hostElement, viewAllNodes);
+    for (var i = 0; i < viewAllNodes.length; i++) {
+      this._renderStore.remove(viewAllNodes[i]);
+    }
+  }
+
+  _setElementProperty(Renderer renderer, dynamic renderElement,
+      String propertyName, dynamic propertyValue) {
+    renderer.setElementProperty(renderElement, propertyName, propertyValue);
+  }
+
+  _setElementAttribute(Renderer renderer, dynamic renderElement,
+      String attributeName, String attributeValue) {
+    renderer.setElementAttribute(renderElement, attributeName, attributeValue);
+  }
+
+  _setBindingDebugInfo(Renderer renderer, dynamic renderElement,
+      String propertyName, String propertyValue) {
+    renderer.setBindingDebugInfo(renderElement, propertyName, propertyValue);
+  }
+
+  _setElementClass(
+      Renderer renderer, dynamic renderElement, String className, bool isAdd) {
+    renderer.setElementClass(renderElement, className, isAdd);
+  }
+
+  _setElementStyle(Renderer renderer, dynamic renderElement, String styleName,
+      String styleValue) {
+    renderer.setElementStyle(renderElement, styleName, styleValue);
+  }
+
+  _invokeElementMethod(Renderer renderer, dynamic renderElement,
+      String methodName, List<dynamic> args) {
+    renderer.invokeElementMethod(renderElement, methodName, args);
+  }
+
+  _setText(Renderer renderer, dynamic renderNode, String text) {
+    renderer.setText(renderNode, text);
+  }
+
+  _listen(Renderer renderer, dynamic renderElement, String eventName) {
+    renderer.listen(
+        renderElement,
+        eventName,
+        (event) => this
+            ._eventDispatcher
+            .dispatchRenderEvent(renderElement, null, eventName, event));
+  }
+
+  _listenGlobal(
+      Renderer renderer, String eventTarget, String eventName, num unlistenId) {
+    var unregisterCallback = renderer.listenGlobal(
+        eventTarget,
+        eventName,
+        (event) => this
+            ._eventDispatcher
+            .dispatchRenderEvent(null, eventTarget, eventName, event));
+    this._renderStore.store(unregisterCallback, unlistenId);
+  }
+
+  _listenGlobalDone(Renderer renderer, Function unlistenCallback) {
+    unlistenCallback();
   }
 }

@@ -11,10 +11,13 @@ import "package:angular2/src/core/change_detection/change_detection.dart"
     show Parser, AST, ASTWithSource;
 import "package:angular2/src/core/change_detection/parser/ast.dart"
     show TemplateBinding;
-import "directive_metadata.dart" show CompileDirectiveMetadata;
+import "directive_metadata.dart"
+    show CompileDirectiveMetadata, CompilePipeMetadata;
 import "html_parser.dart" show HtmlParser;
 import "html_tags.dart" show splitNsName;
 import "parse_util.dart" show ParseSourceSpan, ParseError, ParseLocation;
+import "package:angular2/src/core/change_detection/parser/ast.dart"
+    show RecursiveAstVisitor, BindingPipe;
 import "template_ast.dart"
     show
         ElementAst,
@@ -98,10 +101,13 @@ class TemplateParser {
   List<TemplateAstVisitor> transforms;
   TemplateParser(this._exprParser, this._schemaRegistry, this._htmlParser,
       @Optional() @Inject(TEMPLATE_TRANSFORMS) this.transforms) {}
-  List<TemplateAst> parse(String template,
-      List<CompileDirectiveMetadata> directives, String templateUrl) {
+  List<TemplateAst> parse(
+      String template,
+      List<CompileDirectiveMetadata> directives,
+      List<CompilePipeMetadata> pipes,
+      String templateUrl) {
     var parseVisitor = new TemplateParseVisitor(
-        directives, this._exprParser, this._schemaRegistry);
+        directives, pipes, this._exprParser, this._schemaRegistry);
     var htmlAstWithErrors = this._htmlParser.parse(template, templateUrl);
     var result = htmlVisitAll(
         parseVisitor, htmlAstWithErrors.rootNodes, EMPTY_COMPONENT);
@@ -128,8 +134,9 @@ class TemplateParseVisitor implements HtmlAstVisitor {
   List<TemplateParseError> errors = [];
   var directivesIndex = new Map<CompileDirectiveMetadata, num>();
   num ngContentCount = 0;
+  Map<String, CompilePipeMetadata> pipesByName;
   TemplateParseVisitor(List<CompileDirectiveMetadata> directives,
-      this._exprParser, this._schemaRegistry) {
+      List<CompilePipeMetadata> pipes, this._exprParser, this._schemaRegistry) {
     this.selectorMatcher = new SelectorMatcher();
     ListWrapper.forEachWithIndex(directives,
         (CompileDirectiveMetadata directive, num index) {
@@ -137,6 +144,8 @@ class TemplateParseVisitor implements HtmlAstVisitor {
       this.selectorMatcher.addSelectables(selector, directive);
       this.directivesIndex[directive] = index;
     });
+    this.pipesByName = new Map<String, CompilePipeMetadata>();
+    pipes.forEach((pipe) => this.pipesByName[pipe.name] = pipe);
   }
   _reportError(String message, ParseSourceSpan sourceSpan) {
     this.errors.add(new TemplateParseError(message, sourceSpan.start));
@@ -145,7 +154,9 @@ class TemplateParseVisitor implements HtmlAstVisitor {
   ASTWithSource _parseInterpolation(String value, ParseSourceSpan sourceSpan) {
     var sourceInfo = sourceSpan.start.toString();
     try {
-      return this._exprParser.parseInterpolation(value, sourceInfo);
+      var ast = this._exprParser.parseInterpolation(value, sourceInfo);
+      this._checkPipes(ast, sourceSpan);
+      return ast;
     } catch (e, e_stack) {
       this._reportError('''${ e}''', sourceSpan);
       return this._exprParser.wrapLiteralPrimitive("ERROR", sourceInfo);
@@ -155,7 +166,9 @@ class TemplateParseVisitor implements HtmlAstVisitor {
   ASTWithSource _parseAction(String value, ParseSourceSpan sourceSpan) {
     var sourceInfo = sourceSpan.start.toString();
     try {
-      return this._exprParser.parseAction(value, sourceInfo);
+      var ast = this._exprParser.parseAction(value, sourceInfo);
+      this._checkPipes(ast, sourceSpan);
+      return ast;
     } catch (e, e_stack) {
       this._reportError('''${ e}''', sourceSpan);
       return this._exprParser.wrapLiteralPrimitive("ERROR", sourceInfo);
@@ -165,7 +178,9 @@ class TemplateParseVisitor implements HtmlAstVisitor {
   ASTWithSource _parseBinding(String value, ParseSourceSpan sourceSpan) {
     var sourceInfo = sourceSpan.start.toString();
     try {
-      return this._exprParser.parseBinding(value, sourceInfo);
+      var ast = this._exprParser.parseBinding(value, sourceInfo);
+      this._checkPipes(ast, sourceSpan);
+      return ast;
     } catch (e, e_stack) {
       this._reportError('''${ e}''', sourceSpan);
       return this._exprParser.wrapLiteralPrimitive("ERROR", sourceInfo);
@@ -176,10 +191,29 @@ class TemplateParseVisitor implements HtmlAstVisitor {
       String value, ParseSourceSpan sourceSpan) {
     var sourceInfo = sourceSpan.start.toString();
     try {
-      return this._exprParser.parseTemplateBindings(value, sourceInfo);
+      var bindings = this._exprParser.parseTemplateBindings(value, sourceInfo);
+      bindings.forEach((binding) {
+        if (isPresent(binding.expression)) {
+          this._checkPipes(binding.expression, sourceSpan);
+        }
+      });
+      return bindings;
     } catch (e, e_stack) {
       this._reportError('''${ e}''', sourceSpan);
       return [];
+    }
+  }
+
+  _checkPipes(ASTWithSource ast, ParseSourceSpan sourceSpan) {
+    if (isPresent(ast)) {
+      var collector = new PipeCollector();
+      ast.visit(collector);
+      collector.pipes.forEach((pipeName) {
+        if (!this.pipesByName.containsKey(pipeName)) {
+          this._reportError(
+              '''The pipe \'${ pipeName}\' could not be found''', sourceSpan);
+        }
+      });
     }
   }
 
@@ -806,3 +840,13 @@ CssSelector createElementCssSelector(
 
 var EMPTY_COMPONENT = new Component(new SelectorMatcher(), null);
 var NON_BINDABLE_VISITOR = new NonBindableVisitor();
+
+class PipeCollector extends RecursiveAstVisitor {
+  Set<String> pipes = new Set<String>();
+  dynamic visitPipe(BindingPipe ast) {
+    this.pipes.add(ast.name);
+    ast.exp.visit(this);
+    this.visitAll(ast.args);
+    return null;
+  }
+}

@@ -21,8 +21,9 @@ import "package:angular2/src/compiler/runtime_metadata.dart"
 import "package:angular2/src/compiler/change_detector_compiler.dart"
     show ChangeDetectionCompiler;
 import "package:angular2/src/compiler/style_compiler.dart" show StyleCompiler;
-import "package:angular2/src/compiler/command_compiler.dart"
-    show CommandCompiler;
+import "package:angular2/src/compiler/view_compiler.dart" show ViewCompiler;
+import "package:angular2/src/compiler/proto_view_compiler.dart"
+    show ProtoViewCompiler;
 import "package:angular2/src/compiler/template_compiler.dart"
     show TemplateCompiler;
 import "package:angular2/src/core/change_detection/change_detection.dart"
@@ -58,7 +59,8 @@ const List<
   RuntimeMetadataResolver,
   DEFAULT_PACKAGE_URL_PROVIDER,
   StyleCompiler,
-  CommandCompiler,
+  ProtoViewCompiler,
+  ViewCompiler,
   ChangeDetectionCompiler,
   const Provider(ChangeDetectorGenConfig,
       useFactory: _createChangeDetectorGenConfig, deps: const []),

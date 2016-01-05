@@ -7,8 +7,8 @@ import "package:angular2/src/facade/lang.dart"
     show isType, Type, stringify, isPresent;
 import "package:angular2/src/facade/async.dart" show Future;
 import "package:angular2/src/core/linker/view_manager.dart" show AppViewManager;
-import "element_ref.dart" show ElementRef;
-import "view_ref.dart" show ViewRef, HostViewRef;
+import "element_ref.dart" show ElementRef, ElementRef_;
+import "view_ref.dart" show HostViewRef;
 
 /**
  * Represents an instance of a Component created via [DynamicComponentLoader].
@@ -43,7 +43,7 @@ abstract class ComponentRef {
    * The [ViewRef] of the Host View of this Component instance.
    */
   HostViewRef get hostView {
-    return this.location.parentView;
+    return ((this.location as ElementRef_)).internalElement.parentView.ref;
   }
 
   /**
@@ -150,7 +150,8 @@ abstract class DynamicComponentLoader {
    */
   Future<ComponentRef> loadAsRoot(
       Type type, String overrideSelector, Injector injector,
-      [dynamic /* () => void */ onDispose]);
+      [dynamic /* () => void */ onDispose,
+      List<List<dynamic>> projectableNodes]);
   /**
    * Creates an instance of a Component and attaches it to a View Container located inside of the
    * Component View of another Component instance.
@@ -200,7 +201,7 @@ abstract class DynamicComponentLoader {
    */
   Future<ComponentRef> loadIntoLocation(
       Type type, ElementRef hostLocation, String anchorName,
-      [List<ResolvedProvider> providers]);
+      [List<ResolvedProvider> providers, List<List<dynamic>> projectableNodes]);
   /**
    * Creates an instance of a Component and attaches it to the View Container found at the
    * `location` specified as [ElementRef].
@@ -242,7 +243,7 @@ abstract class DynamicComponentLoader {
    * ```
    */
   Future<ComponentRef> loadNextToLocation(Type type, ElementRef location,
-      [List<ResolvedProvider> providers]);
+      [List<ResolvedProvider> providers, List<List<dynamic>> projectableNodes]);
 }
 
 @Injectable()
@@ -254,11 +255,11 @@ class DynamicComponentLoader_ extends DynamicComponentLoader {
   }
   Future<ComponentRef> loadAsRoot(
       Type type, String overrideSelector, Injector injector,
-      [dynamic /* () => void */ onDispose]) {
+      [dynamic /* () => void */ onDispose,
+      List<List<dynamic>> projectableNodes]) {
     return this._compiler.compileInHost(type).then((hostProtoViewRef) {
-      var hostViewRef = this
-          ._viewManager
-          .createRootHostView(hostProtoViewRef, overrideSelector, injector);
+      var hostViewRef = this._viewManager.createRootHostView(
+          hostProtoViewRef, overrideSelector, injector, projectableNodes);
       var newLocation = this._viewManager.getHostElement(hostViewRef);
       var component = this._viewManager.getComponent(newLocation);
       var dispose = () {
@@ -273,26 +274,29 @@ class DynamicComponentLoader_ extends DynamicComponentLoader {
 
   Future<ComponentRef> loadIntoLocation(
       Type type, ElementRef hostLocation, String anchorName,
-      [List<ResolvedProvider> providers = null]) {
+      [List<ResolvedProvider> providers = null,
+      List<List<dynamic>> projectableNodes = null]) {
     return this.loadNextToLocation(
         type,
         this
             ._viewManager
             .getNamedElementInComponentView(hostLocation, anchorName),
-        providers);
+        providers,
+        projectableNodes);
   }
 
   Future<ComponentRef> loadNextToLocation(Type type, ElementRef location,
-      [List<ResolvedProvider> providers = null]) {
+      [List<ResolvedProvider> providers = null,
+      List<List<dynamic>> projectableNodes = null]) {
     return this._compiler.compileInHost(type).then((hostProtoViewRef) {
       var viewContainer = this._viewManager.getViewContainer(location);
       var hostViewRef = viewContainer.createHostView(
-          hostProtoViewRef, viewContainer.length, providers);
+          hostProtoViewRef, viewContainer.length, providers, projectableNodes);
       var newLocation = this._viewManager.getHostElement(hostViewRef);
       var component = this._viewManager.getComponent(newLocation);
       var dispose = () {
-        var index = viewContainer.indexOf((hostViewRef as ViewRef));
-        if (!identical(index, -1)) {
+        var index = viewContainer.indexOf(hostViewRef);
+        if (!hostViewRef.destroyed && !identical(index, -1)) {
           viewContainer.remove(index);
         }
       };

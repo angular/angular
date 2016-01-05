@@ -11,13 +11,12 @@ import "change_detection/change_detection.dart"
         defaultIterableDiffers,
         KeyValueDiffers,
         defaultKeyValueDiffers;
-import "linker/view_pool.dart" show AppViewPool, APP_VIEW_POOL_CAPACITY;
+import "package:angular2/src/core/linker/resolved_metadata_cache.dart"
+    show ResolvedMetadataCache;
 import "linker/view_manager.dart" show AppViewManager;
 import "linker/view_manager.dart" show AppViewManager_;
-import "linker/view_manager_utils.dart" show AppViewManagerUtils;
 import "linker/view_resolver.dart" show ViewResolver;
 import "linker/view_listener.dart" show AppViewListener;
-import "linker/proto_view_factory.dart" show ProtoViewFactory;
 import "linker/directive_resolver.dart" show DirectiveResolver;
 import "linker/pipe_resolver.dart" show PipeResolver;
 import "linker/compiler.dart" show Compiler;
@@ -34,12 +33,9 @@ const List<
     const [
   const Provider(Compiler, useClass: Compiler_),
   APP_ID_RANDOM_PROVIDER,
-  AppViewPool,
-  const Provider(APP_VIEW_POOL_CAPACITY, useValue: 10000),
+  ResolvedMetadataCache,
   const Provider(AppViewManager, useClass: AppViewManager_),
-  AppViewManagerUtils,
   AppViewListener,
-  ProtoViewFactory,
   ViewResolver,
   const Provider(IterableDiffers, useValue: defaultIterableDiffers),
   const Provider(KeyValueDiffers, useValue: defaultKeyValueDiffers),

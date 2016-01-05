@@ -1,22 +1,20 @@
 library angular2.src.core.linker.view_ref;
 
-import "package:angular2/src/facade/lang.dart" show isPresent;
 import "package:angular2/src/facade/exceptions.dart" show unimplemented;
-import "view.dart" as viewModule;
 import "../change_detection/change_detector_ref.dart" show ChangeDetectorRef;
-import "package:angular2/src/core/render/api.dart"
-    show RenderViewRef, RenderFragmentRef;
+import "view.dart" show AppView, HostViewFactory;
 
-// This is a workaround for privacy in Dart as we don't have library parts
-viewModule.AppView internalView(ViewRef viewRef) {
-  return ((viewRef as ViewRef_))._view;
-}
+abstract class ViewRef {
+  /**
+   * @internal
+   */
+  ChangeDetectorRef get changeDetectorRef {
+    return unimplemented();
+  }
 
-// This is a workaround for privacy in Dart as we don't have library parts
-viewModule.AppProtoView internalProtoView(ProtoViewRef protoViewRef) {
-  return isPresent(protoViewRef)
-      ? ((protoViewRef as ProtoViewRef_))._protoView
-      : null;
+  bool get destroyed {
+    return unimplemented();
+  }
 }
 
 /**
@@ -28,11 +26,10 @@ viewModule.AppProtoView internalProtoView(ProtoViewRef protoViewRef) {
  * of the higher-level APIs: [AppViewManager#createRootHostView],
  * [AppViewManager#createHostViewInContainer], [ViewContainerRef#createHostView].
  */
-abstract class HostViewRef {
-  /**
-   * @internal
-   */
-  ChangeDetectorRef changeDetectorRef;
+abstract class HostViewRef extends ViewRef {
+  List<dynamic> get rootNodes {
+    return unimplemented();
+  }
 }
 
 /**
@@ -88,103 +85,59 @@ abstract class HostViewRef {
  * <!-- /ViewRef: outer-0 -->
  * ```
  */
-abstract class ViewRef implements HostViewRef {
+abstract class EmbeddedViewRef extends ViewRef {
   /**
    * Sets `value` of local variable called `variableName` in this View.
    */
   void setLocal(String variableName, dynamic value);
-  ChangeDetectorRef get changeDetectorRef {
+  /**
+   * Checks whether this view has a local variable called `variableName`.
+   */
+  bool hasLocal(String variableName);
+  List<dynamic> get rootNodes {
     return unimplemented();
-  }
-
-  set changeDetectorRef(ChangeDetectorRef value) {
-    unimplemented();
   }
 }
 
-class ViewRef_ extends ViewRef {
-  ChangeDetectorRef _changeDetectorRef = null;
-  /** @internal */
-  viewModule.AppView _view;
-  ViewRef_(viewModule.AppView _view) : super() {
-    /* super call moved to initializer */;
+class ViewRef_ implements EmbeddedViewRef, HostViewRef {
+  AppView _view;
+  ViewRef_(this._view) {
     this._view = _view;
   }
-  /**
-   * Return `RenderViewRef`
-   */
-  RenderViewRef get render {
-    return this._view.render;
-  }
-
-  /**
-   * Return `RenderFragmentRef`
-   */
-  RenderFragmentRef get renderFragment {
-    return this._view.renderFragment;
+  AppView get internalView {
+    return this._view;
   }
 
   /**
    * Return `ChangeDetectorRef`
    */
   ChangeDetectorRef get changeDetectorRef {
-    if (identical(this._changeDetectorRef, null)) {
-      this._changeDetectorRef = this._view.changeDetector.ref;
-    }
-    return this._changeDetectorRef;
+    return this._view.changeDetector.ref;
+  }
+
+  List<dynamic> get rootNodes {
+    return this._view.flatRootNodes;
   }
 
   void setLocal(String variableName, dynamic value) {
     this._view.setLocal(variableName, value);
   }
+
+  bool hasLocal(String variableName) {
+    return this._view.hasLocal(variableName);
+  }
+
+  bool get destroyed {
+    return this._view.destroyed;
+  }
 }
 
-/**
- * Represents an Angular ProtoView.
- *
- * A ProtoView is a prototypical [ViewRef View] that is the result of Template compilation and
- * is used by Angular to efficiently create an instance of this View based on the compiled Template.
- *
- * Most ProtoViews are created and used internally by Angular and you don't need to know about them,
- * except in advanced use-cases where you compile components yourself via the low-level
- * [Compiler#compileInHost] API.
- *
- *
- * ### Example
- *
- * Given this template:
- *
- * ```
- * Count: {{items.length}}
- * <ul>
- *   <li *ngFor="var item of items">{{item}}</li>
- * </ul>
- * ```
- *
- * Angular desugars and compiles the template into two ProtoViews:
- *
- * Outer ProtoView:
- * ```
- * Count: {{items.length}}
- * <ul>
- *   <template ngFor var-item [ngForOf]="items"></template>
- * </ul>
- * ```
- *
- * Inner ProtoView:
- * ```
- *   <li>{{item}}</li>
- * ```
- *
- * Notice that the original template is broken down into two separate ProtoViews.
- */
-abstract class ProtoViewRef {}
+abstract class HostViewFactoryRef {}
 
-class ProtoViewRef_ extends ProtoViewRef {
-  /** @internal */
-  viewModule.AppProtoView _protoView;
-  ProtoViewRef_(viewModule.AppProtoView _protoView) : super() {
-    /* super call moved to initializer */;
-    this._protoView = _protoView;
+class HostViewFactoryRef_ implements HostViewFactoryRef {
+  HostViewFactory _hostViewFactory;
+  HostViewFactoryRef_(this._hostViewFactory) {}
+  HostViewFactory get internalHostViewFactory {
+    return this._hostViewFactory;
   }
 }

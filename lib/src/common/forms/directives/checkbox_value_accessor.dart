@@ -31,7 +31,9 @@ class CheckboxControlValueAccessor implements ControlValueAccessor {
   var onTouched = () {};
   CheckboxControlValueAccessor(this._renderer, this._elementRef) {}
   void writeValue(dynamic value) {
-    this._renderer.setElementProperty(this._elementRef, "checked", value);
+    this
+        ._renderer
+        .setElementProperty(this._elementRef.nativeElement, "checked", value);
   }
 
   void registerOnChange(dynamic /* (_: any) => {} */ fn) {

@@ -4,6 +4,12 @@ import "directive_metadata.dart" show CompileTypeMetadata;
 import "source_module.dart" show SourceExpressions, moduleRef;
 import "package:angular2/src/core/change_detection/change_detection_jit_generator.dart"
     show ChangeDetectorJITGenerator;
+import "package:angular2/src/core/change_detection/abstract_change_detector.dart"
+    show AbstractChangeDetector;
+import "package:angular2/src/core/change_detection/change_detection_util.dart"
+    show ChangeDetectionUtil;
+import "package:angular2/src/core/change_detection/constants.dart"
+    show ChangeDetectorState;
 import "change_definition_factory.dart" show createChangeDetectorDefinitions;
 import "package:angular2/src/facade/lang.dart" show IS_DART, isJsObject;
 import "package:angular2/src/core/change_detection/change_detection.dart"
@@ -21,6 +27,11 @@ import "package:angular2/src/core/di.dart" show Injectable;
 const ABSTRACT_CHANGE_DETECTOR = "AbstractChangeDetector";
 const UTIL = "ChangeDetectionUtil";
 const CHANGE_DETECTOR_STATE = "ChangeDetectorState";
+const CHANGE_DETECTION_JIT_IMPORTS = const {
+  "AbstractChangeDetector": AbstractChangeDetector,
+  "ChangeDetectionUtil": ChangeDetectionUtil,
+  "ChangeDetectorState": ChangeDetectorState
+};
 var ABSTRACT_CHANGE_DETECTOR_MODULE = moduleRef(
     '''package:angular2/src/core/change_detection/abstract_change_detector${ MODULE_SUFFIX}''');
 var UTIL_MODULE = moduleRef(
@@ -44,14 +55,8 @@ class ChangeDetectionCompiler {
   }
 
   Function _createChangeDetectorFactory(ChangeDetectorDefinition definition) {
-    if (IS_DART || !this._genConfig.useJit) {
-      var proto = new DynamicProtoChangeDetector(definition);
-      return (dispatcher) => proto.instantiate(dispatcher);
-    } else {
-      return new ChangeDetectorJITGenerator(
-              definition, UTIL, ABSTRACT_CHANGE_DETECTOR, CHANGE_DETECTOR_STATE)
-          .generate();
-    }
+    var proto = new DynamicProtoChangeDetector(definition);
+    return () => proto.instantiate();
   }
 
   SourceExpressions compileComponentCodeGen(CompileTypeMetadata componentType,
@@ -83,8 +88,8 @@ class ChangeDetectionCompiler {
             '''${ UTIL_MODULE}${ UTIL}''',
             '''${ ABSTRACT_CHANGE_DETECTOR_MODULE}${ ABSTRACT_CHANGE_DETECTOR}''',
             '''${ CONSTANTS_MODULE}${ CHANGE_DETECTOR_STATE}''');
-        factories.add(
-            '''function(dispatcher) { return new ${ codegen . typeName}(dispatcher); }''');
+        factories
+            .add('''function() { return new ${ codegen . typeName}(); }''');
         sourcePart = codegen.generateSource();
       }
       index++;

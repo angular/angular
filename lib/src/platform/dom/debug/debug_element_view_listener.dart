@@ -9,7 +9,6 @@ import "package:angular2/src/core/linker/view_listener.dart"
     show AppViewListener;
 import "package:angular2/src/core/linker/view.dart" show AppView;
 import "package:angular2/src/platform/dom/dom_adapter.dart" show DOM;
-import "package:angular2/src/core/render/api.dart" show Renderer;
 import "package:angular2/src/core/debug/debug_element.dart"
     show DebugElement, DebugElement_;
 
@@ -48,7 +47,7 @@ DebugElement inspectNativeElement(element) {
   if (isPresent(elId)) {
     var view = _allViewsById[elId[0]];
     if (isPresent(view)) {
-      return new DebugElement_(view, elId[1]);
+      return new DebugElement_(view.appElements[elId[1]]);
     }
   }
   return null;
@@ -56,17 +55,16 @@ DebugElement inspectNativeElement(element) {
 
 @Injectable()
 class DebugElementViewListener implements AppViewListener {
-  Renderer _renderer;
-  DebugElementViewListener(this._renderer) {
+  DebugElementViewListener() {
     DOM.setGlobalVar(INSPECT_GLOBAL_NAME, inspectNativeElement);
   }
   onViewCreated(AppView view) {
     var viewId = _nextId++;
     _allViewsById[viewId] = view;
     _allIdsByView[view] = viewId;
-    for (var i = 0; i < view.elementRefs.length; i++) {
-      var el = view.elementRefs[i];
-      _setElementId(this._renderer.getNativeElementSync(el), [viewId, i]);
+    for (var i = 0; i < view.appElements.length; i++) {
+      var el = view.appElements[i];
+      _setElementId(el.nativeElement, [viewId, i]);
     }
   }
 

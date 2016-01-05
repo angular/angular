@@ -188,6 +188,13 @@ class ProtoInjectorDynamicStrategy implements ProtoInjectorStrategy {
 }
 
 class ProtoInjector {
+  static ProtoInjector fromResolvedProviders(List<ResolvedProvider> providers) {
+    var bd = providers
+        .map((b) => new ProviderWithVisibility(b, Visibility.Public))
+        .toList();
+    return new ProtoInjector(bd);
+  }
+
   /** @internal */
   ProtoInjectorStrategy _strategy;
   num numberOfProviders;
@@ -206,7 +213,6 @@ abstract class InjectorStrategy {
   dynamic getObjByKeyId(num keyId, Visibility visibility);
   dynamic getObjAtIndex(num index);
   num getMaxNumberOfObjects();
-  void attach(Injector parent, bool isHost);
   void resetConstructionCounter();
   dynamic instantiateProvider(ResolvedProvider provider, Visibility visibility);
 }
@@ -232,12 +238,6 @@ class InjectorInlineStrategy implements InjectorStrategy {
   dynamic instantiateProvider(
       ResolvedProvider provider, Visibility visibility) {
     return this.injector._new(provider, visibility);
-  }
-
-  void attach(Injector parent, bool isHost) {
-    var inj = this.injector;
-    inj._parent = parent;
-    inj._isHost = isHost;
   }
 
   dynamic getObjByKeyId(num keyId, Visibility visibility) {
@@ -342,12 +342,6 @@ class InjectorDynamicStrategy implements InjectorStrategy {
     return this.injector._new(provider, visibility);
   }
 
-  void attach(Injector parent, bool isHost) {
-    var inj = this.injector;
-    inj._parent = parent;
-    inj._isHost = isHost;
-  }
-
   dynamic getObjByKeyId(num keyId, Visibility visibility) {
     var p = this.protoStrategy;
     for (var i = 0; i < p.keyIds.length; i++) {
@@ -424,6 +418,7 @@ abstract class DependencyProvider {
  * resolve all of the object's dependencies automatically.
  */
 class Injector {
+  bool _isHostBoundary;
   dynamic _depProvider;
   Function _debugContext;
   /**
@@ -519,11 +514,7 @@ class Injector {
    * ```
    */
   static Injector fromResolvedProviders(List<ResolvedProvider> providers) {
-    var bd = providers
-        .map((b) => new ProviderWithVisibility(b, Visibility.Public))
-        .toList();
-    var proto = new ProtoInjector(bd);
-    return new Injector(proto, null, null);
+    return new Injector(ProtoInjector.fromResolvedProviders(providers));
   }
 
   /**
@@ -536,8 +527,6 @@ class Injector {
   /** @internal */
   InjectorStrategy _strategy;
   /** @internal */
-  bool _isHost = false;
-  /** @internal */
   num _constructionCounter = 0;
   /** @internal */
   dynamic _proto;
@@ -548,12 +537,21 @@ class Injector {
    */
   Injector(dynamic _proto,
       [Injector _parent = null,
+      this._isHostBoundary = false,
       this._depProvider = null,
       this._debugContext = null]) {
     this._proto = _proto;
     this._parent = _parent;
     this._strategy = _proto._strategy.createInjectorStrategy(this);
   }
+  /**
+   * Whether this injector is a boundary to a host.
+   * @internal
+   */
+  get hostBoundary {
+    return this._isHostBoundary;
+  }
+
   /**
    * @internal
    */
@@ -710,7 +708,7 @@ class Injector {
         .map((b) => new ProviderWithVisibility(b, Visibility.Public))
         .toList();
     var proto = new ProtoInjector(bd);
-    var inj = new Injector(proto, null, null);
+    var inj = new Injector(proto);
     inj._parent = this;
     return inj;
   }
@@ -1021,7 +1019,7 @@ class Injector {
       Object lowerBoundVisibility) {
     Injector inj = this;
     if (lowerBoundVisibility is SkipSelfMetadata) {
-      if (inj._isHost) {
+      if (inj._isHostBoundary) {
         return this._getPrivateDependency(key, optional, inj);
       } else {
         inj = inj._parent;
@@ -1030,7 +1028,7 @@ class Injector {
     while (inj != null) {
       var obj = inj._strategy.getObjByKeyId(key.id, providerVisibility);
       if (!identical(obj, UNDEFINED)) return obj;
-      if (isPresent(inj._parent) && inj._isHost) {
+      if (isPresent(inj._parent) && inj._isHostBoundary) {
         return this._getPrivateDependency(key, optional, inj);
       } else {
         inj = inj._parent;
@@ -1053,14 +1051,14 @@ class Injector {
     Injector inj = this;
     if (lowerBoundVisibility is SkipSelfMetadata) {
       providerVisibility =
-          inj._isHost ? Visibility.PublicAndPrivate : Visibility.Public;
+          inj._isHostBoundary ? Visibility.PublicAndPrivate : Visibility.Public;
       inj = inj._parent;
     }
     while (inj != null) {
       var obj = inj._strategy.getObjByKeyId(key.id, providerVisibility);
       if (!identical(obj, UNDEFINED)) return obj;
       providerVisibility =
-          inj._isHost ? Visibility.PublicAndPrivate : Visibility.Public;
+          inj._isHostBoundary ? Visibility.PublicAndPrivate : Visibility.Public;
       inj = inj._parent;
     }
     return this._throwOrNull(key, optional);

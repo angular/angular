@@ -17,8 +17,8 @@ import "package:angular2/src/animate/animation_builder.dart"
     show AnimationBuilder;
 import "package:angular2/src/mock/animation_builder_mock.dart"
     show MockAnimationBuilder;
-import "package:angular2/src/core/linker/proto_view_factory.dart"
-    show ProtoViewFactory;
+import "package:angular2/src/core/linker/resolved_metadata_cache.dart"
+    show ResolvedMetadataCache;
 import "package:angular2/src/core/reflection/reflection.dart"
     show Reflector, reflector;
 import "package:angular2/src/core/change_detection/change_detection.dart"
@@ -47,12 +47,10 @@ import "package:angular2/platform/common_dom.dart"
     show EventManager, EVENT_MANAGER_PLUGINS, ELEMENT_PROBE_PROVIDERS;
 import "package:angular2/src/facade/collection.dart" show ListWrapper;
 import "package:angular2/src/facade/lang.dart" show FunctionWrapper, Type;
-import "package:angular2/src/core/linker/view_pool.dart"
-    show AppViewPool, APP_VIEW_POOL_CAPACITY;
-import "package:angular2/src/core/linker/view_manager_utils.dart"
-    show AppViewManagerUtils;
+import "package:angular2/src/core/render/api.dart" show RootRenderer;
 import "package:angular2/src/platform/dom/dom_tokens.dart" show DOCUMENT;
-import "package:angular2/src/platform/dom/dom_renderer.dart" show DomRenderer;
+import "package:angular2/src/platform/dom/dom_renderer.dart"
+    show DomRootRenderer, DomRootRenderer_;
 import "package:angular2/src/platform/dom/shared_styles_host.dart"
     show DomSharedStylesHost;
 import "package:angular2/src/platform/dom/shared_styles_host.dart"
@@ -63,7 +61,6 @@ import "package:angular2/src/web_workers/shared/serializer.dart"
     show Serializer;
 import "utils.dart" show Log;
 import "package:angular2/src/compiler/compiler.dart" show COMPILER_PROVIDERS;
-import "package:angular2/src/platform/dom/dom_renderer.dart" show DomRenderer_;
 import "package:angular2/src/core/linker/dynamic_component_loader.dart"
     show DynamicComponentLoader_;
 import "package:angular2/src/core/linker/view_manager.dart"
@@ -98,20 +95,17 @@ _getAppBindings() {
   return [
     APPLICATION_COMMON_PROVIDERS,
     provide(ChangeDetectorGenConfig,
-        useValue: new ChangeDetectorGenConfig(true, false, true)),
+        useValue: new ChangeDetectorGenConfig(true, false, false)),
     provide(DOCUMENT, useValue: appDoc),
-    provide(DomRenderer, useClass: DomRenderer_),
-    provide(Renderer, useExisting: DomRenderer),
+    provide(DomRootRenderer, useClass: DomRootRenderer_),
+    provide(RootRenderer, useExisting: DomRootRenderer),
     provide(APP_ID, useValue: "a"),
     DomSharedStylesHost,
     provide(SharedStylesHost, useExisting: DomSharedStylesHost),
-    AppViewPool,
     provide(AppViewManager, useClass: AppViewManager_),
-    AppViewManagerUtils,
     Serializer,
     ELEMENT_PROBE_PROVIDERS,
-    provide(APP_VIEW_POOL_CAPACITY, useValue: 500),
-    ProtoViewFactory,
+    ResolvedMetadataCache,
     provide(DirectiveResolver, useClass: MockDirectiveResolver),
     provide(ViewResolver, useClass: MockViewResolver),
     provide(IterableDiffers, useValue: defaultIterableDiffers),

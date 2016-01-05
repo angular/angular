@@ -6,14 +6,9 @@ import 'package:angular2/src/core/change_detection/pregen_proto_change_detector.
 class ChangeDetector0 extends _gen.AbstractChangeDetector<dynamic> {
   var literal0;
 
-  ChangeDetector0(dispatcher)
-      : super(
-            "\"\$\"",
-            dispatcher,
-            1,
-            ChangeDetector0._gen_propertyBindingTargets,
-            ChangeDetector0._gen_directiveIndices,
-            null) {
+  ChangeDetector0()
+      : super("\"\$\"", 1, ChangeDetector0._gen_propertyBindingTargets,
+            ChangeDetector0._gen_directiveIndices, null) {
     dehydrateDirectives(false);
   }
 
@@ -41,6 +36,7 @@ class ChangeDetector0 extends _gen.AbstractChangeDetector<dynamic> {
   }
 
   void dehydrateDirectives(destroyPipes) {
+    if (destroyPipes) {}
     this.literal0 = _gen.ChangeDetectionUtil.uninitialized;
   }
 
@@ -51,16 +47,16 @@ class ChangeDetector0 extends _gen.AbstractChangeDetector<dynamic> {
 
   static final _gen_directiveIndices = [];
 
-  static _gen.ChangeDetector newChangeDetector(a) {
-    return new ChangeDetector0(a);
+  static _gen.ChangeDetector newChangeDetector() {
+    return new ChangeDetector0();
   }
 }
 
 class ChangeDetector1 extends _gen.AbstractChangeDetector<dynamic> {
   var literal0;
 
-  ChangeDetector1(dispatcher)
-      : super("10", dispatcher, 1, ChangeDetector1._gen_propertyBindingTargets,
+  ChangeDetector1()
+      : super("10", 1, ChangeDetector1._gen_propertyBindingTargets,
             ChangeDetector1._gen_directiveIndices, null) {
     dehydrateDirectives(false);
   }
@@ -89,6 +85,7 @@ class ChangeDetector1 extends _gen.AbstractChangeDetector<dynamic> {
   }
 
   void dehydrateDirectives(destroyPipes) {
+    if (destroyPipes) {}
     this.literal0 = _gen.ChangeDetectionUtil.uninitialized;
   }
 
@@ -99,22 +96,17 @@ class ChangeDetector1 extends _gen.AbstractChangeDetector<dynamic> {
 
   static final _gen_directiveIndices = [];
 
-  static _gen.ChangeDetector newChangeDetector(a) {
-    return new ChangeDetector1(a);
+  static _gen.ChangeDetector newChangeDetector() {
+    return new ChangeDetector1();
   }
 }
 
 class ChangeDetector2 extends _gen.AbstractChangeDetector<dynamic> {
   var literal0;
 
-  ChangeDetector2(dispatcher)
-      : super(
-            "\"str\"",
-            dispatcher,
-            1,
-            ChangeDetector2._gen_propertyBindingTargets,
-            ChangeDetector2._gen_directiveIndices,
-            null) {
+  ChangeDetector2()
+      : super("\"str\"", 1, ChangeDetector2._gen_propertyBindingTargets,
+            ChangeDetector2._gen_directiveIndices, null) {
     dehydrateDirectives(false);
   }
 
@@ -142,6 +134,7 @@ class ChangeDetector2 extends _gen.AbstractChangeDetector<dynamic> {
   }
 
   void dehydrateDirectives(destroyPipes) {
+    if (destroyPipes) {}
     this.literal0 = _gen.ChangeDetectionUtil.uninitialized;
   }
 
@@ -152,22 +145,17 @@ class ChangeDetector2 extends _gen.AbstractChangeDetector<dynamic> {
 
   static final _gen_directiveIndices = [];
 
-  static _gen.ChangeDetector newChangeDetector(a) {
-    return new ChangeDetector2(a);
+  static _gen.ChangeDetector newChangeDetector() {
+    return new ChangeDetector2();
   }
 }
 
 class ChangeDetector3 extends _gen.AbstractChangeDetector<dynamic> {
   var literal0;
 
-  ChangeDetector3(dispatcher)
-      : super(
-            "\"a\n\nb\"",
-            dispatcher,
-            1,
-            ChangeDetector3._gen_propertyBindingTargets,
-            ChangeDetector3._gen_directiveIndices,
-            null) {
+  ChangeDetector3()
+      : super("\"a\n\nb\"", 1, ChangeDetector3._gen_propertyBindingTargets,
+            ChangeDetector3._gen_directiveIndices, null) {
     dehydrateDirectives(false);
   }
 
@@ -195,6 +183,7 @@ class ChangeDetector3 extends _gen.AbstractChangeDetector<dynamic> {
   }
 
   void dehydrateDirectives(destroyPipes) {
+    if (destroyPipes) {}
     this.literal0 = _gen.ChangeDetectionUtil.uninitialized;
   }
 
@@ -205,22 +194,17 @@ class ChangeDetector3 extends _gen.AbstractChangeDetector<dynamic> {
 
   static final _gen_directiveIndices = [];
 
-  static _gen.ChangeDetector newChangeDetector(a) {
-    return new ChangeDetector3(a);
+  static _gen.ChangeDetector newChangeDetector() {
+    return new ChangeDetector3();
   }
 }
 
 class ChangeDetector4 extends _gen.AbstractChangeDetector<dynamic> {
   var operation_add2;
 
-  ChangeDetector4(dispatcher)
-      : super(
-            "10 + 2",
-            dispatcher,
-            3,
-            ChangeDetector4._gen_propertyBindingTargets,
-            ChangeDetector4._gen_directiveIndices,
-            null) {
+  ChangeDetector4()
+      : super("10 + 2", 3, ChangeDetector4._gen_propertyBindingTargets,
+            ChangeDetector4._gen_directiveIndices, null) {
     dehydrateDirectives(false);
   }
 
@@ -254,6 +238,7 @@ class ChangeDetector4 extends _gen.AbstractChangeDetector<dynamic> {
   }
 
   void dehydrateDirectives(destroyPipes) {
+    if (destroyPipes) {}
     this.operation_add2 = _gen.ChangeDetectionUtil.uninitialized;
   }
 
@@ -264,22 +249,17 @@ class ChangeDetector4 extends _gen.AbstractChangeDetector<dynamic> {
 
   static final _gen_directiveIndices = [];
 
-  static _gen.ChangeDetector newChangeDetector(a) {
-    return new ChangeDetector4(a);
+  static _gen.ChangeDetector newChangeDetector() {
+    return new ChangeDetector4();
   }
 }
 
 class ChangeDetector5 extends _gen.AbstractChangeDetector<dynamic> {
   var operation_subtract2;
 
-  ChangeDetector5(dispatcher)
-      : super(
-            "10 - 2",
-            dispatcher,
-            3,
-            ChangeDetector5._gen_propertyBindingTargets,
-            ChangeDetector5._gen_directiveIndices,
-            null) {
+  ChangeDetector5()
+      : super("10 - 2", 3, ChangeDetector5._gen_propertyBindingTargets,
+            ChangeDetector5._gen_directiveIndices, null) {
     dehydrateDirectives(false);
   }
 
@@ -314,6 +294,7 @@ class ChangeDetector5 extends _gen.AbstractChangeDetector<dynamic> {
   }
 
   void dehydrateDirectives(destroyPipes) {
+    if (destroyPipes) {}
     this.operation_subtract2 = _gen.ChangeDetectionUtil.uninitialized;
   }
 
@@ -324,22 +305,17 @@ class ChangeDetector5 extends _gen.AbstractChangeDetector<dynamic> {
 
   static final _gen_directiveIndices = [];
 
-  static _gen.ChangeDetector newChangeDetector(a) {
-    return new ChangeDetector5(a);
+  static _gen.ChangeDetector newChangeDetector() {
+    return new ChangeDetector5();
   }
 }
 
 class ChangeDetector6 extends _gen.AbstractChangeDetector<dynamic> {
   var operation_multiply2;
 
-  ChangeDetector6(dispatcher)
-      : super(
-            "10 * 2",
-            dispatcher,
-            3,
-            ChangeDetector6._gen_propertyBindingTargets,
-            ChangeDetector6._gen_directiveIndices,
-            null) {
+  ChangeDetector6()
+      : super("10 * 2", 3, ChangeDetector6._gen_propertyBindingTargets,
+            ChangeDetector6._gen_directiveIndices, null) {
     dehydrateDirectives(false);
   }
 
@@ -374,6 +350,7 @@ class ChangeDetector6 extends _gen.AbstractChangeDetector<dynamic> {
   }
 
   void dehydrateDirectives(destroyPipes) {
+    if (destroyPipes) {}
     this.operation_multiply2 = _gen.ChangeDetectionUtil.uninitialized;
   }
 
@@ -384,22 +361,17 @@ class ChangeDetector6 extends _gen.AbstractChangeDetector<dynamic> {
 
   static final _gen_directiveIndices = [];
 
-  static _gen.ChangeDetector newChangeDetector(a) {
-    return new ChangeDetector6(a);
+  static _gen.ChangeDetector newChangeDetector() {
+    return new ChangeDetector6();
   }
 }
 
 class ChangeDetector7 extends _gen.AbstractChangeDetector<dynamic> {
   var operation_divide2;
 
-  ChangeDetector7(dispatcher)
-      : super(
-            "10 / 2",
-            dispatcher,
-            3,
-            ChangeDetector7._gen_propertyBindingTargets,
-            ChangeDetector7._gen_directiveIndices,
-            null) {
+  ChangeDetector7()
+      : super("10 / 2", 3, ChangeDetector7._gen_propertyBindingTargets,
+            ChangeDetector7._gen_directiveIndices, null) {
     dehydrateDirectives(false);
   }
 
@@ -433,6 +405,7 @@ class ChangeDetector7 extends _gen.AbstractChangeDetector<dynamic> {
   }
 
   void dehydrateDirectives(destroyPipes) {
+    if (destroyPipes) {}
     this.operation_divide2 = _gen.ChangeDetectionUtil.uninitialized;
   }
 
@@ -443,22 +416,17 @@ class ChangeDetector7 extends _gen.AbstractChangeDetector<dynamic> {
 
   static final _gen_directiveIndices = [];
 
-  static _gen.ChangeDetector newChangeDetector(a) {
-    return new ChangeDetector7(a);
+  static _gen.ChangeDetector newChangeDetector() {
+    return new ChangeDetector7();
   }
 }
 
 class ChangeDetector8 extends _gen.AbstractChangeDetector<dynamic> {
   var operation_remainder2;
 
-  ChangeDetector8(dispatcher)
-      : super(
-            "11 % 2",
-            dispatcher,
-            3,
-            ChangeDetector8._gen_propertyBindingTargets,
-            ChangeDetector8._gen_directiveIndices,
-            null) {
+  ChangeDetector8()
+      : super("11 % 2", 3, ChangeDetector8._gen_propertyBindingTargets,
+            ChangeDetector8._gen_directiveIndices, null) {
     dehydrateDirectives(false);
   }
 
@@ -496,6 +464,7 @@ class ChangeDetector8 extends _gen.AbstractChangeDetector<dynamic> {
   }
 
   void dehydrateDirectives(destroyPipes) {
+    if (destroyPipes) {}
     this.operation_remainder2 = _gen.ChangeDetectionUtil.uninitialized;
   }
 
@@ -506,22 +475,17 @@ class ChangeDetector8 extends _gen.AbstractChangeDetector<dynamic> {
 
   static final _gen_directiveIndices = [];
 
-  static _gen.ChangeDetector newChangeDetector(a) {
-    return new ChangeDetector8(a);
+  static _gen.ChangeDetector newChangeDetector() {
+    return new ChangeDetector8();
   }
 }
 
 class ChangeDetector9 extends _gen.AbstractChangeDetector<dynamic> {
   var operation_equals1;
 
-  ChangeDetector9(dispatcher)
-      : super(
-            "1 == 1",
-            dispatcher,
-            2,
-            ChangeDetector9._gen_propertyBindingTargets,
-            ChangeDetector9._gen_directiveIndices,
-            null) {
+  ChangeDetector9()
+      : super("1 == 1", 2, ChangeDetector9._gen_propertyBindingTargets,
+            ChangeDetector9._gen_directiveIndices, null) {
     dehydrateDirectives(false);
   }
 
@@ -553,6 +517,7 @@ class ChangeDetector9 extends _gen.AbstractChangeDetector<dynamic> {
   }
 
   void dehydrateDirectives(destroyPipes) {
+    if (destroyPipes) {}
     this.operation_equals1 = _gen.ChangeDetectionUtil.uninitialized;
   }
 
@@ -563,22 +528,17 @@ class ChangeDetector9 extends _gen.AbstractChangeDetector<dynamic> {
 
   static final _gen_directiveIndices = [];
 
-  static _gen.ChangeDetector newChangeDetector(a) {
-    return new ChangeDetector9(a);
+  static _gen.ChangeDetector newChangeDetector() {
+    return new ChangeDetector9();
   }
 }
 
 class ChangeDetector10 extends _gen.AbstractChangeDetector<dynamic> {
   var operation_not_equals1;
 
-  ChangeDetector10(dispatcher)
-      : super(
-            "1 != 1",
-            dispatcher,
-            2,
-            ChangeDetector10._gen_propertyBindingTargets,
-            ChangeDetector10._gen_directiveIndices,
-            null) {
+  ChangeDetector10()
+      : super("1 != 1", 2, ChangeDetector10._gen_propertyBindingTargets,
+            ChangeDetector10._gen_directiveIndices, null) {
     dehydrateDirectives(false);
   }
 
@@ -611,6 +571,7 @@ class ChangeDetector10 extends _gen.AbstractChangeDetector<dynamic> {
   }
 
   void dehydrateDirectives(destroyPipes) {
+    if (destroyPipes) {}
     this.operation_not_equals1 = _gen.ChangeDetectionUtil.uninitialized;
   }
 
@@ -621,22 +582,17 @@ class ChangeDetector10 extends _gen.AbstractChangeDetector<dynamic> {
 
   static final _gen_directiveIndices = [];
 
-  static _gen.ChangeDetector newChangeDetector(a) {
-    return new ChangeDetector10(a);
+  static _gen.ChangeDetector newChangeDetector() {
+    return new ChangeDetector10();
   }
 }
 
 class ChangeDetector11 extends _gen.AbstractChangeDetector<dynamic> {
   var operation_equals2;
 
-  ChangeDetector11(dispatcher)
-      : super(
-            "1 == true",
-            dispatcher,
-            3,
-            ChangeDetector11._gen_propertyBindingTargets,
-            ChangeDetector11._gen_directiveIndices,
-            null) {
+  ChangeDetector11()
+      : super("1 == true", 3, ChangeDetector11._gen_propertyBindingTargets,
+            ChangeDetector11._gen_directiveIndices, null) {
     dehydrateDirectives(false);
   }
 
@@ -670,6 +626,7 @@ class ChangeDetector11 extends _gen.AbstractChangeDetector<dynamic> {
   }
 
   void dehydrateDirectives(destroyPipes) {
+    if (destroyPipes) {}
     this.operation_equals2 = _gen.ChangeDetectionUtil.uninitialized;
   }
 
@@ -680,22 +637,17 @@ class ChangeDetector11 extends _gen.AbstractChangeDetector<dynamic> {
 
   static final _gen_directiveIndices = [];
 
-  static _gen.ChangeDetector newChangeDetector(a) {
-    return new ChangeDetector11(a);
+  static _gen.ChangeDetector newChangeDetector() {
+    return new ChangeDetector11();
   }
 }
 
 class ChangeDetector12 extends _gen.AbstractChangeDetector<dynamic> {
   var operation_identical1;
 
-  ChangeDetector12(dispatcher)
-      : super(
-            "1 === 1",
-            dispatcher,
-            2,
-            ChangeDetector12._gen_propertyBindingTargets,
-            ChangeDetector12._gen_directiveIndices,
-            null) {
+  ChangeDetector12()
+      : super("1 === 1", 2, ChangeDetector12._gen_propertyBindingTargets,
+            ChangeDetector12._gen_directiveIndices, null) {
     dehydrateDirectives(false);
   }
 
@@ -728,6 +680,7 @@ class ChangeDetector12 extends _gen.AbstractChangeDetector<dynamic> {
   }
 
   void dehydrateDirectives(destroyPipes) {
+    if (destroyPipes) {}
     this.operation_identical1 = _gen.ChangeDetectionUtil.uninitialized;
   }
 
@@ -738,22 +691,17 @@ class ChangeDetector12 extends _gen.AbstractChangeDetector<dynamic> {
 
   static final _gen_directiveIndices = [];
 
-  static _gen.ChangeDetector newChangeDetector(a) {
-    return new ChangeDetector12(a);
+  static _gen.ChangeDetector newChangeDetector() {
+    return new ChangeDetector12();
   }
 }
 
 class ChangeDetector13 extends _gen.AbstractChangeDetector<dynamic> {
   var operation_not_identical1;
 
-  ChangeDetector13(dispatcher)
-      : super(
-            "1 !== 1",
-            dispatcher,
-            2,
-            ChangeDetector13._gen_propertyBindingTargets,
-            ChangeDetector13._gen_directiveIndices,
-            null) {
+  ChangeDetector13()
+      : super("1 !== 1", 2, ChangeDetector13._gen_propertyBindingTargets,
+            ChangeDetector13._gen_directiveIndices, null) {
     dehydrateDirectives(false);
   }
 
@@ -786,6 +734,7 @@ class ChangeDetector13 extends _gen.AbstractChangeDetector<dynamic> {
   }
 
   void dehydrateDirectives(destroyPipes) {
+    if (destroyPipes) {}
     this.operation_not_identical1 = _gen.ChangeDetectionUtil.uninitialized;
   }
 
@@ -796,22 +745,17 @@ class ChangeDetector13 extends _gen.AbstractChangeDetector<dynamic> {
 
   static final _gen_directiveIndices = [];
 
-  static _gen.ChangeDetector newChangeDetector(a) {
-    return new ChangeDetector13(a);
+  static _gen.ChangeDetector newChangeDetector() {
+    return new ChangeDetector13();
   }
 }
 
 class ChangeDetector14 extends _gen.AbstractChangeDetector<dynamic> {
   var operation_identical2;
 
-  ChangeDetector14(dispatcher)
-      : super(
-            "1 === true",
-            dispatcher,
-            3,
-            ChangeDetector14._gen_propertyBindingTargets,
-            ChangeDetector14._gen_directiveIndices,
-            null) {
+  ChangeDetector14()
+      : super("1 === true", 3, ChangeDetector14._gen_propertyBindingTargets,
+            ChangeDetector14._gen_directiveIndices, null) {
     dehydrateDirectives(false);
   }
 
@@ -849,6 +793,7 @@ class ChangeDetector14 extends _gen.AbstractChangeDetector<dynamic> {
   }
 
   void dehydrateDirectives(destroyPipes) {
+    if (destroyPipes) {}
     this.operation_identical2 = _gen.ChangeDetectionUtil.uninitialized;
   }
 
@@ -859,22 +804,17 @@ class ChangeDetector14 extends _gen.AbstractChangeDetector<dynamic> {
 
   static final _gen_directiveIndices = [];
 
-  static _gen.ChangeDetector newChangeDetector(a) {
-    return new ChangeDetector14(a);
+  static _gen.ChangeDetector newChangeDetector() {
+    return new ChangeDetector14();
   }
 }
 
 class ChangeDetector15 extends _gen.AbstractChangeDetector<dynamic> {
   var operation_less_then2;
 
-  ChangeDetector15(dispatcher)
-      : super(
-            "1 < 2",
-            dispatcher,
-            3,
-            ChangeDetector15._gen_propertyBindingTargets,
-            ChangeDetector15._gen_directiveIndices,
-            null) {
+  ChangeDetector15()
+      : super("1 < 2", 3, ChangeDetector15._gen_propertyBindingTargets,
+            ChangeDetector15._gen_directiveIndices, null) {
     dehydrateDirectives(false);
   }
 
@@ -912,6 +852,7 @@ class ChangeDetector15 extends _gen.AbstractChangeDetector<dynamic> {
   }
 
   void dehydrateDirectives(destroyPipes) {
+    if (destroyPipes) {}
     this.operation_less_then2 = _gen.ChangeDetectionUtil.uninitialized;
   }
 
@@ -922,22 +863,17 @@ class ChangeDetector15 extends _gen.AbstractChangeDetector<dynamic> {
 
   static final _gen_directiveIndices = [];
 
-  static _gen.ChangeDetector newChangeDetector(a) {
-    return new ChangeDetector15(a);
+  static _gen.ChangeDetector newChangeDetector() {
+    return new ChangeDetector15();
   }
 }
 
 class ChangeDetector16 extends _gen.AbstractChangeDetector<dynamic> {
   var operation_less_then2;
 
-  ChangeDetector16(dispatcher)
-      : super(
-            "2 < 1",
-            dispatcher,
-            3,
-            ChangeDetector16._gen_propertyBindingTargets,
-            ChangeDetector16._gen_directiveIndices,
-            null) {
+  ChangeDetector16()
+      : super("2 < 1", 3, ChangeDetector16._gen_propertyBindingTargets,
+            ChangeDetector16._gen_directiveIndices, null) {
     dehydrateDirectives(false);
   }
 
@@ -975,6 +911,7 @@ class ChangeDetector16 extends _gen.AbstractChangeDetector<dynamic> {
   }
 
   void dehydrateDirectives(destroyPipes) {
+    if (destroyPipes) {}
     this.operation_less_then2 = _gen.ChangeDetectionUtil.uninitialized;
   }
 
@@ -985,22 +922,17 @@ class ChangeDetector16 extends _gen.AbstractChangeDetector<dynamic> {
 
   static final _gen_directiveIndices = [];
 
-  static _gen.ChangeDetector newChangeDetector(a) {
-    return new ChangeDetector16(a);
+  static _gen.ChangeDetector newChangeDetector() {
+    return new ChangeDetector16();
   }
 }
 
 class ChangeDetector17 extends _gen.AbstractChangeDetector<dynamic> {
   var operation_greater_then2;
 
-  ChangeDetector17(dispatcher)
-      : super(
-            "1 > 2",
-            dispatcher,
-            3,
-            ChangeDetector17._gen_propertyBindingTargets,
-            ChangeDetector17._gen_directiveIndices,
-            null) {
+  ChangeDetector17()
+      : super("1 > 2", 3, ChangeDetector17._gen_propertyBindingTargets,
+            ChangeDetector17._gen_directiveIndices, null) {
     dehydrateDirectives(false);
   }
 
@@ -1038,6 +970,7 @@ class ChangeDetector17 extends _gen.AbstractChangeDetector<dynamic> {
   }
 
   void dehydrateDirectives(destroyPipes) {
+    if (destroyPipes) {}
     this.operation_greater_then2 = _gen.ChangeDetectionUtil.uninitialized;
   }
 
@@ -1048,22 +981,17 @@ class ChangeDetector17 extends _gen.AbstractChangeDetector<dynamic> {
 
   static final _gen_directiveIndices = [];
 
-  static _gen.ChangeDetector newChangeDetector(a) {
-    return new ChangeDetector17(a);
+  static _gen.ChangeDetector newChangeDetector() {
+    return new ChangeDetector17();
   }
 }
 
 class ChangeDetector18 extends _gen.AbstractChangeDetector<dynamic> {
   var operation_greater_then2;
 
-  ChangeDetector18(dispatcher)
-      : super(
-            "2 > 1",
-            dispatcher,
-            3,
-            ChangeDetector18._gen_propertyBindingTargets,
-            ChangeDetector18._gen_directiveIndices,
-            null) {
+  ChangeDetector18()
+      : super("2 > 1", 3, ChangeDetector18._gen_propertyBindingTargets,
+            ChangeDetector18._gen_directiveIndices, null) {
     dehydrateDirectives(false);
   }
 
@@ -1101,6 +1029,7 @@ class ChangeDetector18 extends _gen.AbstractChangeDetector<dynamic> {
   }
 
   void dehydrateDirectives(destroyPipes) {
+    if (destroyPipes) {}
     this.operation_greater_then2 = _gen.ChangeDetectionUtil.uninitialized;
   }
 
@@ -1111,22 +1040,17 @@ class ChangeDetector18 extends _gen.AbstractChangeDetector<dynamic> {
 
   static final _gen_directiveIndices = [];
 
-  static _gen.ChangeDetector newChangeDetector(a) {
-    return new ChangeDetector18(a);
+  static _gen.ChangeDetector newChangeDetector() {
+    return new ChangeDetector18();
   }
 }
 
 class ChangeDetector19 extends _gen.AbstractChangeDetector<dynamic> {
   var operation_less_or_equals_then2;
 
-  ChangeDetector19(dispatcher)
-      : super(
-            "1 <= 2",
-            dispatcher,
-            3,
-            ChangeDetector19._gen_propertyBindingTargets,
-            ChangeDetector19._gen_directiveIndices,
-            null) {
+  ChangeDetector19()
+      : super("1 <= 2", 3, ChangeDetector19._gen_propertyBindingTargets,
+            ChangeDetector19._gen_directiveIndices, null) {
     dehydrateDirectives(false);
   }
 
@@ -1165,6 +1089,7 @@ class ChangeDetector19 extends _gen.AbstractChangeDetector<dynamic> {
   }
 
   void dehydrateDirectives(destroyPipes) {
+    if (destroyPipes) {}
     this.operation_less_or_equals_then2 =
         _gen.ChangeDetectionUtil.uninitialized;
   }
@@ -1176,22 +1101,17 @@ class ChangeDetector19 extends _gen.AbstractChangeDetector<dynamic> {
 
   static final _gen_directiveIndices = [];
 
-  static _gen.ChangeDetector newChangeDetector(a) {
-    return new ChangeDetector19(a);
+  static _gen.ChangeDetector newChangeDetector() {
+    return new ChangeDetector19();
   }
 }
 
 class ChangeDetector20 extends _gen.AbstractChangeDetector<dynamic> {
   var operation_less_or_equals_then1;
 
-  ChangeDetector20(dispatcher)
-      : super(
-            "2 <= 2",
-            dispatcher,
-            2,
-            ChangeDetector20._gen_propertyBindingTargets,
-            ChangeDetector20._gen_directiveIndices,
-            null) {
+  ChangeDetector20()
+      : super("2 <= 2", 2, ChangeDetector20._gen_propertyBindingTargets,
+            ChangeDetector20._gen_directiveIndices, null) {
     dehydrateDirectives(false);
   }
 
@@ -1225,6 +1145,7 @@ class ChangeDetector20 extends _gen.AbstractChangeDetector<dynamic> {
   }
 
   void dehydrateDirectives(destroyPipes) {
+    if (destroyPipes) {}
     this.operation_less_or_equals_then1 =
         _gen.ChangeDetectionUtil.uninitialized;
   }
@@ -1236,22 +1157,17 @@ class ChangeDetector20 extends _gen.AbstractChangeDetector<dynamic> {
 
   static final _gen_directiveIndices = [];
 
-  static _gen.ChangeDetector newChangeDetector(a) {
-    return new ChangeDetector20(a);
+  static _gen.ChangeDetector newChangeDetector() {
+    return new ChangeDetector20();
   }
 }
 
 class ChangeDetector21 extends _gen.AbstractChangeDetector<dynamic> {
   var operation_less_or_equals_then2;
 
-  ChangeDetector21(dispatcher)
-      : super(
-            "2 <= 1",
-            dispatcher,
-            3,
-            ChangeDetector21._gen_propertyBindingTargets,
-            ChangeDetector21._gen_directiveIndices,
-            null) {
+  ChangeDetector21()
+      : super("2 <= 1", 3, ChangeDetector21._gen_propertyBindingTargets,
+            ChangeDetector21._gen_directiveIndices, null) {
     dehydrateDirectives(false);
   }
 
@@ -1290,6 +1206,7 @@ class ChangeDetector21 extends _gen.AbstractChangeDetector<dynamic> {
   }
 
   void dehydrateDirectives(destroyPipes) {
+    if (destroyPipes) {}
     this.operation_less_or_equals_then2 =
         _gen.ChangeDetectionUtil.uninitialized;
   }
@@ -1301,22 +1218,17 @@ class ChangeDetector21 extends _gen.AbstractChangeDetector<dynamic> {
 
   static final _gen_directiveIndices = [];
 
-  static _gen.ChangeDetector newChangeDetector(a) {
-    return new ChangeDetector21(a);
+  static _gen.ChangeDetector newChangeDetector() {
+    return new ChangeDetector21();
   }
 }
 
 class ChangeDetector22 extends _gen.AbstractChangeDetector<dynamic> {
   var operation_greater_or_equals_then2;
 
-  ChangeDetector22(dispatcher)
-      : super(
-            "2 >= 1",
-            dispatcher,
-            3,
-            ChangeDetector22._gen_propertyBindingTargets,
-            ChangeDetector22._gen_directiveIndices,
-            null) {
+  ChangeDetector22()
+      : super("2 >= 1", 3, ChangeDetector22._gen_propertyBindingTargets,
+            ChangeDetector22._gen_directiveIndices, null) {
     dehydrateDirectives(false);
   }
 
@@ -1356,6 +1268,7 @@ class ChangeDetector22 extends _gen.AbstractChangeDetector<dynamic> {
   }
 
   void dehydrateDirectives(destroyPipes) {
+    if (destroyPipes) {}
     this.operation_greater_or_equals_then2 =
         _gen.ChangeDetectionUtil.uninitialized;
   }
@@ -1367,22 +1280,17 @@ class ChangeDetector22 extends _gen.AbstractChangeDetector<dynamic> {
 
   static final _gen_directiveIndices = [];
 
-  static _gen.ChangeDetector newChangeDetector(a) {
-    return new ChangeDetector22(a);
+  static _gen.ChangeDetector newChangeDetector() {
+    return new ChangeDetector22();
   }
 }
 
 class ChangeDetector23 extends _gen.AbstractChangeDetector<dynamic> {
   var operation_greater_or_equals_then1;
 
-  ChangeDetector23(dispatcher)
-      : super(
-            "2 >= 2",
-            dispatcher,
-            2,
-            ChangeDetector23._gen_propertyBindingTargets,
-            ChangeDetector23._gen_directiveIndices,
-            null) {
+  ChangeDetector23()
+      : super("2 >= 2", 2, ChangeDetector23._gen_propertyBindingTargets,
+            ChangeDetector23._gen_directiveIndices, null) {
     dehydrateDirectives(false);
   }
 
@@ -1419,6 +1327,7 @@ class ChangeDetector23 extends _gen.AbstractChangeDetector<dynamic> {
   }
 
   void dehydrateDirectives(destroyPipes) {
+    if (destroyPipes) {}
     this.operation_greater_or_equals_then1 =
         _gen.ChangeDetectionUtil.uninitialized;
   }
@@ -1430,22 +1339,17 @@ class ChangeDetector23 extends _gen.AbstractChangeDetector<dynamic> {
 
   static final _gen_directiveIndices = [];
 
-  static _gen.ChangeDetector newChangeDetector(a) {
-    return new ChangeDetector23(a);
+  static _gen.ChangeDetector newChangeDetector() {
+    return new ChangeDetector23();
   }
 }
 
 class ChangeDetector24 extends _gen.AbstractChangeDetector<dynamic> {
   var operation_greater_or_equals_then2;
 
-  ChangeDetector24(dispatcher)
-      : super(
-            "1 >= 2",
-            dispatcher,
-            3,
-            ChangeDetector24._gen_propertyBindingTargets,
-            ChangeDetector24._gen_directiveIndices,
-            null) {
+  ChangeDetector24()
+      : super("1 >= 2", 3, ChangeDetector24._gen_propertyBindingTargets,
+            ChangeDetector24._gen_directiveIndices, null) {
     dehydrateDirectives(false);
   }
 
@@ -1485,6 +1389,7 @@ class ChangeDetector24 extends _gen.AbstractChangeDetector<dynamic> {
   }
 
   void dehydrateDirectives(destroyPipes) {
+    if (destroyPipes) {}
     this.operation_greater_or_equals_then2 =
         _gen.ChangeDetectionUtil.uninitialized;
   }
@@ -1496,22 +1401,17 @@ class ChangeDetector24 extends _gen.AbstractChangeDetector<dynamic> {
 
   static final _gen_directiveIndices = [];
 
-  static _gen.ChangeDetector newChangeDetector(a) {
-    return new ChangeDetector24(a);
+  static _gen.ChangeDetector newChangeDetector() {
+    return new ChangeDetector24();
   }
 }
 
 class ChangeDetector25 extends _gen.AbstractChangeDetector<dynamic> {
   var cond1;
 
-  ChangeDetector25(dispatcher)
-      : super(
-            "true && true",
-            dispatcher,
-            2,
-            ChangeDetector25._gen_propertyBindingTargets,
-            ChangeDetector25._gen_directiveIndices,
-            null) {
+  ChangeDetector25()
+      : super("true && true", 2, ChangeDetector25._gen_propertyBindingTargets,
+            ChangeDetector25._gen_directiveIndices, null) {
     dehydrateDirectives(false);
   }
 
@@ -1541,6 +1441,7 @@ class ChangeDetector25 extends _gen.AbstractChangeDetector<dynamic> {
   }
 
   void dehydrateDirectives(destroyPipes) {
+    if (destroyPipes) {}
     this.cond1 = _gen.ChangeDetectionUtil.uninitialized;
   }
 
@@ -1551,22 +1452,17 @@ class ChangeDetector25 extends _gen.AbstractChangeDetector<dynamic> {
 
   static final _gen_directiveIndices = [];
 
-  static _gen.ChangeDetector newChangeDetector(a) {
-    return new ChangeDetector25(a);
+  static _gen.ChangeDetector newChangeDetector() {
+    return new ChangeDetector25();
   }
 }
 
 class ChangeDetector26 extends _gen.AbstractChangeDetector<dynamic> {
   var cond3;
 
-  ChangeDetector26(dispatcher)
-      : super(
-            "true && false",
-            dispatcher,
-            4,
-            ChangeDetector26._gen_propertyBindingTargets,
-            ChangeDetector26._gen_directiveIndices,
-            null) {
+  ChangeDetector26()
+      : super("true && false", 4, ChangeDetector26._gen_propertyBindingTargets,
+            ChangeDetector26._gen_directiveIndices, null) {
     dehydrateDirectives(false);
   }
 
@@ -1604,6 +1500,7 @@ class ChangeDetector26 extends _gen.AbstractChangeDetector<dynamic> {
   }
 
   void dehydrateDirectives(destroyPipes) {
+    if (destroyPipes) {}
     this.cond3 = _gen.ChangeDetectionUtil.uninitialized;
   }
 
@@ -1614,22 +1511,17 @@ class ChangeDetector26 extends _gen.AbstractChangeDetector<dynamic> {
 
   static final _gen_directiveIndices = [];
 
-  static _gen.ChangeDetector newChangeDetector(a) {
-    return new ChangeDetector26(a);
+  static _gen.ChangeDetector newChangeDetector() {
+    return new ChangeDetector26();
   }
 }
 
 class ChangeDetector27 extends _gen.AbstractChangeDetector<dynamic> {
   var cond3;
 
-  ChangeDetector27(dispatcher)
-      : super(
-            "true || false",
-            dispatcher,
-            4,
-            ChangeDetector27._gen_propertyBindingTargets,
-            ChangeDetector27._gen_directiveIndices,
-            null) {
+  ChangeDetector27()
+      : super("true || false", 4, ChangeDetector27._gen_propertyBindingTargets,
+            ChangeDetector27._gen_directiveIndices, null) {
     dehydrateDirectives(false);
   }
 
@@ -1667,6 +1559,7 @@ class ChangeDetector27 extends _gen.AbstractChangeDetector<dynamic> {
   }
 
   void dehydrateDirectives(destroyPipes) {
+    if (destroyPipes) {}
     this.cond3 = _gen.ChangeDetectionUtil.uninitialized;
   }
 
@@ -1677,22 +1570,17 @@ class ChangeDetector27 extends _gen.AbstractChangeDetector<dynamic> {
 
   static final _gen_directiveIndices = [];
 
-  static _gen.ChangeDetector newChangeDetector(a) {
-    return new ChangeDetector27(a);
+  static _gen.ChangeDetector newChangeDetector() {
+    return new ChangeDetector27();
   }
 }
 
 class ChangeDetector28 extends _gen.AbstractChangeDetector<dynamic> {
   var cond1;
 
-  ChangeDetector28(dispatcher)
-      : super(
-            "false || false",
-            dispatcher,
-            2,
-            ChangeDetector28._gen_propertyBindingTargets,
-            ChangeDetector28._gen_directiveIndices,
-            null) {
+  ChangeDetector28()
+      : super("false || false", 2, ChangeDetector28._gen_propertyBindingTargets,
+            ChangeDetector28._gen_directiveIndices, null) {
     dehydrateDirectives(false);
   }
 
@@ -1722,6 +1610,7 @@ class ChangeDetector28 extends _gen.AbstractChangeDetector<dynamic> {
   }
 
   void dehydrateDirectives(destroyPipes) {
+    if (destroyPipes) {}
     this.cond1 = _gen.ChangeDetectionUtil.uninitialized;
   }
 
@@ -1732,22 +1621,17 @@ class ChangeDetector28 extends _gen.AbstractChangeDetector<dynamic> {
 
   static final _gen_directiveIndices = [];
 
-  static _gen.ChangeDetector newChangeDetector(a) {
-    return new ChangeDetector28(a);
+  static _gen.ChangeDetector newChangeDetector() {
+    return new ChangeDetector28();
   }
 }
 
 class ChangeDetector29 extends _gen.AbstractChangeDetector<dynamic> {
   var operation_negate1;
 
-  ChangeDetector29(dispatcher)
-      : super(
-            "!true",
-            dispatcher,
-            2,
-            ChangeDetector29._gen_propertyBindingTargets,
-            ChangeDetector29._gen_directiveIndices,
-            null) {
+  ChangeDetector29()
+      : super("!true", 2, ChangeDetector29._gen_propertyBindingTargets,
+            ChangeDetector29._gen_directiveIndices, null) {
     dehydrateDirectives(false);
   }
 
@@ -1778,6 +1662,7 @@ class ChangeDetector29 extends _gen.AbstractChangeDetector<dynamic> {
   }
 
   void dehydrateDirectives(destroyPipes) {
+    if (destroyPipes) {}
     this.operation_negate1 = _gen.ChangeDetectionUtil.uninitialized;
   }
 
@@ -1788,22 +1673,17 @@ class ChangeDetector29 extends _gen.AbstractChangeDetector<dynamic> {
 
   static final _gen_directiveIndices = [];
 
-  static _gen.ChangeDetector newChangeDetector(a) {
-    return new ChangeDetector29(a);
+  static _gen.ChangeDetector newChangeDetector() {
+    return new ChangeDetector29();
   }
 }
 
 class ChangeDetector30 extends _gen.AbstractChangeDetector<dynamic> {
   var operation_negate2;
 
-  ChangeDetector30(dispatcher)
-      : super(
-            "!!true",
-            dispatcher,
-            3,
-            ChangeDetector30._gen_propertyBindingTargets,
-            ChangeDetector30._gen_directiveIndices,
-            null) {
+  ChangeDetector30()
+      : super("!!true", 3, ChangeDetector30._gen_propertyBindingTargets,
+            ChangeDetector30._gen_directiveIndices, null) {
     dehydrateDirectives(false);
   }
 
@@ -1840,6 +1720,7 @@ class ChangeDetector30 extends _gen.AbstractChangeDetector<dynamic> {
   }
 
   void dehydrateDirectives(destroyPipes) {
+    if (destroyPipes) {}
     this.operation_negate2 = _gen.ChangeDetectionUtil.uninitialized;
   }
 
@@ -1850,22 +1731,17 @@ class ChangeDetector30 extends _gen.AbstractChangeDetector<dynamic> {
 
   static final _gen_directiveIndices = [];
 
-  static _gen.ChangeDetector newChangeDetector(a) {
-    return new ChangeDetector30(a);
+  static _gen.ChangeDetector newChangeDetector() {
+    return new ChangeDetector30();
   }
 }
 
 class ChangeDetector31 extends _gen.AbstractChangeDetector<dynamic> {
   var cond3;
 
-  ChangeDetector31(dispatcher)
-      : super(
-            "1 < 2 ? 1 : 2",
-            dispatcher,
-            4,
-            ChangeDetector31._gen_propertyBindingTargets,
-            ChangeDetector31._gen_directiveIndices,
-            null) {
+  ChangeDetector31()
+      : super("1 < 2 ? 1 : 2", 4, ChangeDetector31._gen_propertyBindingTargets,
+            ChangeDetector31._gen_directiveIndices, null) {
     dehydrateDirectives(false);
   }
 
@@ -1905,6 +1781,7 @@ class ChangeDetector31 extends _gen.AbstractChangeDetector<dynamic> {
   }
 
   void dehydrateDirectives(destroyPipes) {
+    if (destroyPipes) {}
     this.cond3 = _gen.ChangeDetectionUtil.uninitialized;
   }
 
@@ -1915,22 +1792,17 @@ class ChangeDetector31 extends _gen.AbstractChangeDetector<dynamic> {
 
   static final _gen_directiveIndices = [];
 
-  static _gen.ChangeDetector newChangeDetector(a) {
-    return new ChangeDetector31(a);
+  static _gen.ChangeDetector newChangeDetector() {
+    return new ChangeDetector31();
   }
 }
 
 class ChangeDetector32 extends _gen.AbstractChangeDetector<dynamic> {
   var cond3;
 
-  ChangeDetector32(dispatcher)
-      : super(
-            "1 > 2 ? 1 : 2",
-            dispatcher,
-            4,
-            ChangeDetector32._gen_propertyBindingTargets,
-            ChangeDetector32._gen_directiveIndices,
-            null) {
+  ChangeDetector32()
+      : super("1 > 2 ? 1 : 2", 4, ChangeDetector32._gen_propertyBindingTargets,
+            ChangeDetector32._gen_directiveIndices, null) {
     dehydrateDirectives(false);
   }
 
@@ -1970,6 +1842,7 @@ class ChangeDetector32 extends _gen.AbstractChangeDetector<dynamic> {
   }
 
   void dehydrateDirectives(destroyPipes) {
+    if (destroyPipes) {}
     this.cond3 = _gen.ChangeDetectionUtil.uninitialized;
   }
 
@@ -1980,18 +1853,17 @@ class ChangeDetector32 extends _gen.AbstractChangeDetector<dynamic> {
 
   static final _gen_directiveIndices = [];
 
-  static _gen.ChangeDetector newChangeDetector(a) {
-    return new ChangeDetector32(a);
+  static _gen.ChangeDetector newChangeDetector() {
+    return new ChangeDetector32();
   }
 }
 
 class ChangeDetector33 extends _gen.AbstractChangeDetector<dynamic> {
   var literal0, literal1, arrayFn22, keyedAccess4;
 
-  ChangeDetector33(dispatcher)
+  ChangeDetector33()
       : super(
             "[\"foo\", \"bar\"][0]",
-            dispatcher,
             5,
             ChangeDetector33._gen_propertyBindingTargets,
             ChangeDetector33._gen_directiveIndices,
@@ -2058,6 +1930,7 @@ class ChangeDetector33 extends _gen.AbstractChangeDetector<dynamic> {
   }
 
   void dehydrateDirectives(destroyPipes) {
+    if (destroyPipes) {}
     this.literal0 = this.literal1 = this.arrayFn22 =
         this.keyedAccess4 = _gen.ChangeDetectionUtil.uninitialized;
   }
@@ -2069,18 +1942,17 @@ class ChangeDetector33 extends _gen.AbstractChangeDetector<dynamic> {
 
   static final _gen_directiveIndices = [];
 
-  static _gen.ChangeDetector newChangeDetector(a) {
-    return new ChangeDetector33(a);
+  static _gen.ChangeDetector newChangeDetector() {
+    return new ChangeDetector33();
   }
 }
 
 class ChangeDetector34 extends _gen.AbstractChangeDetector<dynamic> {
   var literal0, mapFnfoo1, keyedAccess3;
 
-  ChangeDetector34(dispatcher)
+  ChangeDetector34()
       : super(
             "{\"foo\": \"bar\"}[\"foo\"]",
-            dispatcher,
             4,
             ChangeDetector34._gen_propertyBindingTargets,
             ChangeDetector34._gen_directiveIndices,
@@ -2138,6 +2010,7 @@ class ChangeDetector34 extends _gen.AbstractChangeDetector<dynamic> {
   }
 
   void dehydrateDirectives(destroyPipes) {
+    if (destroyPipes) {}
     this.literal0 = this.mapFnfoo1 =
         this.keyedAccess3 = _gen.ChangeDetectionUtil.uninitialized;
   }
@@ -2149,22 +2022,17 @@ class ChangeDetector34 extends _gen.AbstractChangeDetector<dynamic> {
 
   static final _gen_directiveIndices = [];
 
-  static _gen.ChangeDetector newChangeDetector(a) {
-    return new ChangeDetector34(a);
+  static _gen.ChangeDetector newChangeDetector() {
+    return new ChangeDetector34();
   }
 }
 
 class ChangeDetector35 extends _gen.AbstractChangeDetector<dynamic> {
   var name0;
 
-  ChangeDetector35(dispatcher)
-      : super(
-            "name",
-            dispatcher,
-            1,
-            ChangeDetector35._gen_propertyBindingTargets,
-            ChangeDetector35._gen_directiveIndices,
-            null) {
+  ChangeDetector35()
+      : super("name", 1, ChangeDetector35._gen_propertyBindingTargets,
+            ChangeDetector35._gen_directiveIndices, null) {
     dehydrateDirectives(false);
   }
 
@@ -2192,6 +2060,7 @@ class ChangeDetector35 extends _gen.AbstractChangeDetector<dynamic> {
   }
 
   void dehydrateDirectives(destroyPipes) {
+    if (destroyPipes) {}
     this.name0 = _gen.ChangeDetectionUtil.uninitialized;
   }
 
@@ -2202,22 +2071,17 @@ class ChangeDetector35 extends _gen.AbstractChangeDetector<dynamic> {
 
   static final _gen_directiveIndices = [];
 
-  static _gen.ChangeDetector newChangeDetector(a) {
-    return new ChangeDetector35(a);
+  static _gen.ChangeDetector newChangeDetector() {
+    return new ChangeDetector35();
   }
 }
 
 class ChangeDetector36 extends _gen.AbstractChangeDetector<dynamic> {
   var literal0, literal1, arrayFn22;
 
-  ChangeDetector36(dispatcher)
-      : super(
-            "[1, 2]",
-            dispatcher,
-            3,
-            ChangeDetector36._gen_propertyBindingTargets,
-            ChangeDetector36._gen_directiveIndices,
-            null) {
+  ChangeDetector36()
+      : super("[1, 2]", 3, ChangeDetector36._gen_propertyBindingTargets,
+            ChangeDetector36._gen_directiveIndices, null) {
     dehydrateDirectives(false);
   }
 
@@ -2267,6 +2131,7 @@ class ChangeDetector36 extends _gen.AbstractChangeDetector<dynamic> {
   }
 
   void dehydrateDirectives(destroyPipes) {
+    if (destroyPipes) {}
     this.literal0 =
         this.literal1 = this.arrayFn22 = _gen.ChangeDetectionUtil.uninitialized;
   }
@@ -2278,22 +2143,17 @@ class ChangeDetector36 extends _gen.AbstractChangeDetector<dynamic> {
 
   static final _gen_directiveIndices = [];
 
-  static _gen.ChangeDetector newChangeDetector(a) {
-    return new ChangeDetector36(a);
+  static _gen.ChangeDetector newChangeDetector() {
+    return new ChangeDetector36();
   }
 }
 
 class ChangeDetector37 extends _gen.AbstractChangeDetector<dynamic> {
   var literal0, a1, arrayFn22;
 
-  ChangeDetector37(dispatcher)
-      : super(
-            "[1, a]",
-            dispatcher,
-            3,
-            ChangeDetector37._gen_propertyBindingTargets,
-            ChangeDetector37._gen_directiveIndices,
-            null) {
+  ChangeDetector37()
+      : super("[1, a]", 3, ChangeDetector37._gen_propertyBindingTargets,
+            ChangeDetector37._gen_directiveIndices, null) {
     dehydrateDirectives(false);
   }
 
@@ -2343,6 +2203,7 @@ class ChangeDetector37 extends _gen.AbstractChangeDetector<dynamic> {
   }
 
   void dehydrateDirectives(destroyPipes) {
+    if (destroyPipes) {}
     this.literal0 =
         this.a1 = this.arrayFn22 = _gen.ChangeDetectionUtil.uninitialized;
   }
@@ -2354,22 +2215,17 @@ class ChangeDetector37 extends _gen.AbstractChangeDetector<dynamic> {
 
   static final _gen_directiveIndices = [];
 
-  static _gen.ChangeDetector newChangeDetector(a) {
-    return new ChangeDetector37(a);
+  static _gen.ChangeDetector newChangeDetector() {
+    return new ChangeDetector37();
   }
 }
 
 class ChangeDetector38 extends _gen.AbstractChangeDetector<dynamic> {
   var literal0, mapFnz1;
 
-  ChangeDetector38(dispatcher)
-      : super(
-            "{z: 1}",
-            dispatcher,
-            2,
-            ChangeDetector38._gen_propertyBindingTargets,
-            ChangeDetector38._gen_directiveIndices,
-            null) {
+  ChangeDetector38()
+      : super("{z: 1}", 2, ChangeDetector38._gen_propertyBindingTargets,
+            ChangeDetector38._gen_directiveIndices, null) {
     dehydrateDirectives(false);
   }
 
@@ -2406,6 +2262,7 @@ class ChangeDetector38 extends _gen.AbstractChangeDetector<dynamic> {
   }
 
   void dehydrateDirectives(destroyPipes) {
+    if (destroyPipes) {}
     this.literal0 = this.mapFnz1 = _gen.ChangeDetectionUtil.uninitialized;
   }
 
@@ -2416,22 +2273,17 @@ class ChangeDetector38 extends _gen.AbstractChangeDetector<dynamic> {
 
   static final _gen_directiveIndices = [];
 
-  static _gen.ChangeDetector newChangeDetector(a) {
-    return new ChangeDetector38(a);
+  static _gen.ChangeDetector newChangeDetector() {
+    return new ChangeDetector38();
   }
 }
 
 class ChangeDetector39 extends _gen.AbstractChangeDetector<dynamic> {
   var a0, mapFnz1;
 
-  ChangeDetector39(dispatcher)
-      : super(
-            "{z: a}",
-            dispatcher,
-            2,
-            ChangeDetector39._gen_propertyBindingTargets,
-            ChangeDetector39._gen_directiveIndices,
-            null) {
+  ChangeDetector39()
+      : super("{z: a}", 2, ChangeDetector39._gen_propertyBindingTargets,
+            ChangeDetector39._gen_directiveIndices, null) {
     dehydrateDirectives(false);
   }
 
@@ -2468,6 +2320,7 @@ class ChangeDetector39 extends _gen.AbstractChangeDetector<dynamic> {
   }
 
   void dehydrateDirectives(destroyPipes) {
+    if (destroyPipes) {}
     this.a0 = this.mapFnz1 = _gen.ChangeDetectionUtil.uninitialized;
   }
 
@@ -2478,22 +2331,17 @@ class ChangeDetector39 extends _gen.AbstractChangeDetector<dynamic> {
 
   static final _gen_directiveIndices = [];
 
-  static _gen.ChangeDetector newChangeDetector(a) {
-    return new ChangeDetector39(a);
+  static _gen.ChangeDetector newChangeDetector() {
+    return new ChangeDetector39();
   }
 }
 
 class ChangeDetector40 extends _gen.AbstractChangeDetector<dynamic> {
   var name0, pipe1, pipe1_pipe;
 
-  ChangeDetector40(dispatcher)
-      : super(
-            "name | pipe",
-            dispatcher,
-            2,
-            ChangeDetector40._gen_propertyBindingTargets,
-            ChangeDetector40._gen_directiveIndices,
-            null) {
+  ChangeDetector40()
+      : super("name | pipe", 2, ChangeDetector40._gen_propertyBindingTargets,
+            ChangeDetector40._gen_directiveIndices, null) {
     dehydrateDirectives(false);
   }
 
@@ -2549,18 +2397,17 @@ class ChangeDetector40 extends _gen.AbstractChangeDetector<dynamic> {
 
   static final _gen_directiveIndices = [];
 
-  static _gen.ChangeDetector newChangeDetector(a) {
-    return new ChangeDetector40(a);
+  static _gen.ChangeDetector newChangeDetector() {
+    return new ChangeDetector40();
   }
 }
 
 class ChangeDetector41 extends _gen.AbstractChangeDetector<dynamic> {
   var name0, pipe1, length2, pipe1_pipe;
 
-  ChangeDetector41(dispatcher)
+  ChangeDetector41()
       : super(
             "(name | pipe).length",
-            dispatcher,
             3,
             ChangeDetector41._gen_propertyBindingTargets,
             ChangeDetector41._gen_directiveIndices,
@@ -2628,18 +2475,17 @@ class ChangeDetector41 extends _gen.AbstractChangeDetector<dynamic> {
 
   static final _gen_directiveIndices = [];
 
-  static _gen.ChangeDetector newChangeDetector(a) {
-    return new ChangeDetector41(a);
+  static _gen.ChangeDetector newChangeDetector() {
+    return new ChangeDetector41();
   }
 }
 
 class ChangeDetector42 extends _gen.AbstractChangeDetector<dynamic> {
   var name0, literal1, city3, pipe4, pipe4_pipe;
 
-  ChangeDetector42(dispatcher)
+  ChangeDetector42()
       : super(
             "name | pipe:'one':address.city",
-            dispatcher,
             5,
             ChangeDetector42._gen_propertyBindingTargets,
             ChangeDetector42._gen_directiveIndices,
@@ -2723,8 +2569,8 @@ class ChangeDetector42 extends _gen.AbstractChangeDetector<dynamic> {
 
   static final _gen_directiveIndices = [];
 
-  static _gen.ChangeDetector newChangeDetector(a) {
-    return new ChangeDetector42(a);
+  static _gen.ChangeDetector newChangeDetector() {
+    return new ChangeDetector42();
   }
 }
 
@@ -2740,10 +2586,9 @@ class ChangeDetector43 extends _gen.AbstractChangeDetector<dynamic> {
       pipe3_pipe,
       pipe7_pipe;
 
-  ChangeDetector43(dispatcher)
+  ChangeDetector43()
       : super(
             "name | pipe:'a':'b' | pipe:0:1:2",
-            dispatcher,
             8,
             ChangeDetector43._gen_propertyBindingTargets,
             ChangeDetector43._gen_directiveIndices,
@@ -2876,22 +2721,17 @@ class ChangeDetector43 extends _gen.AbstractChangeDetector<dynamic> {
 
   static final _gen_directiveIndices = [];
 
-  static _gen.ChangeDetector newChangeDetector(a) {
-    return new ChangeDetector43(a);
+  static _gen.ChangeDetector newChangeDetector() {
+    return new ChangeDetector43();
   }
 }
 
 class ChangeDetector44 extends _gen.AbstractChangeDetector<dynamic> {
   var value0;
 
-  ChangeDetector44(dispatcher)
-      : super(
-            "value",
-            dispatcher,
-            1,
-            ChangeDetector44._gen_propertyBindingTargets,
-            ChangeDetector44._gen_directiveIndices,
-            null) {
+  ChangeDetector44()
+      : super("value", 1, ChangeDetector44._gen_propertyBindingTargets,
+            ChangeDetector44._gen_directiveIndices, null) {
     dehydrateDirectives(false);
   }
 
@@ -2919,6 +2759,7 @@ class ChangeDetector44 extends _gen.AbstractChangeDetector<dynamic> {
   }
 
   void dehydrateDirectives(destroyPipes) {
+    if (destroyPipes) {}
     this.value0 = _gen.ChangeDetectionUtil.uninitialized;
   }
 
@@ -2929,16 +2770,16 @@ class ChangeDetector44 extends _gen.AbstractChangeDetector<dynamic> {
 
   static final _gen_directiveIndices = [];
 
-  static _gen.ChangeDetector newChangeDetector(a) {
-    return new ChangeDetector44(a);
+  static _gen.ChangeDetector newChangeDetector() {
+    return new ChangeDetector44();
   }
 }
 
 class ChangeDetector45 extends _gen.AbstractChangeDetector<dynamic> {
   var a0;
 
-  ChangeDetector45(dispatcher)
-      : super("a", dispatcher, 1, ChangeDetector45._gen_propertyBindingTargets,
+  ChangeDetector45()
+      : super("a", 1, ChangeDetector45._gen_propertyBindingTargets,
             ChangeDetector45._gen_directiveIndices, null) {
     dehydrateDirectives(false);
   }
@@ -2967,6 +2808,7 @@ class ChangeDetector45 extends _gen.AbstractChangeDetector<dynamic> {
   }
 
   void dehydrateDirectives(destroyPipes) {
+    if (destroyPipes) {}
     this.a0 = _gen.ChangeDetectionUtil.uninitialized;
   }
 
@@ -2977,22 +2819,17 @@ class ChangeDetector45 extends _gen.AbstractChangeDetector<dynamic> {
 
   static final _gen_directiveIndices = [];
 
-  static _gen.ChangeDetector newChangeDetector(a) {
-    return new ChangeDetector45(a);
+  static _gen.ChangeDetector newChangeDetector() {
+    return new ChangeDetector45();
   }
 }
 
 class ChangeDetector46 extends _gen.AbstractChangeDetector<dynamic> {
   var city1;
 
-  ChangeDetector46(dispatcher)
-      : super(
-            "address.city",
-            dispatcher,
-            2,
-            ChangeDetector46._gen_propertyBindingTargets,
-            ChangeDetector46._gen_directiveIndices,
-            null) {
+  ChangeDetector46()
+      : super("address.city", 2, ChangeDetector46._gen_propertyBindingTargets,
+            ChangeDetector46._gen_directiveIndices, null) {
     dehydrateDirectives(false);
   }
 
@@ -3022,6 +2859,7 @@ class ChangeDetector46 extends _gen.AbstractChangeDetector<dynamic> {
   }
 
   void dehydrateDirectives(destroyPipes) {
+    if (destroyPipes) {}
     this.city1 = _gen.ChangeDetectionUtil.uninitialized;
   }
 
@@ -3032,22 +2870,17 @@ class ChangeDetector46 extends _gen.AbstractChangeDetector<dynamic> {
 
   static final _gen_directiveIndices = [];
 
-  static _gen.ChangeDetector newChangeDetector(a) {
-    return new ChangeDetector46(a);
+  static _gen.ChangeDetector newChangeDetector() {
+    return new ChangeDetector46();
   }
 }
 
 class ChangeDetector47 extends _gen.AbstractChangeDetector<dynamic> {
   var city1;
 
-  ChangeDetector47(dispatcher)
-      : super(
-            "address?.city",
-            dispatcher,
-            2,
-            ChangeDetector47._gen_propertyBindingTargets,
-            ChangeDetector47._gen_directiveIndices,
-            null) {
+  ChangeDetector47()
+      : super("address?.city", 2, ChangeDetector47._gen_propertyBindingTargets,
+            ChangeDetector47._gen_directiveIndices, null) {
     dehydrateDirectives(false);
   }
 
@@ -3079,6 +2912,7 @@ class ChangeDetector47 extends _gen.AbstractChangeDetector<dynamic> {
   }
 
   void dehydrateDirectives(destroyPipes) {
+    if (destroyPipes) {}
     this.city1 = _gen.ChangeDetectionUtil.uninitialized;
   }
 
@@ -3089,18 +2923,17 @@ class ChangeDetector47 extends _gen.AbstractChangeDetector<dynamic> {
 
   static final _gen_directiveIndices = [];
 
-  static _gen.ChangeDetector newChangeDetector(a) {
-    return new ChangeDetector47(a);
+  static _gen.ChangeDetector newChangeDetector() {
+    return new ChangeDetector47();
   }
 }
 
 class ChangeDetector48 extends _gen.AbstractChangeDetector<dynamic> {
   var toString1;
 
-  ChangeDetector48(dispatcher)
+  ChangeDetector48()
       : super(
             "address?.toString()",
-            dispatcher,
             2,
             ChangeDetector48._gen_propertyBindingTargets,
             ChangeDetector48._gen_directiveIndices,
@@ -3137,6 +2970,7 @@ class ChangeDetector48 extends _gen.AbstractChangeDetector<dynamic> {
   }
 
   void dehydrateDirectives(destroyPipes) {
+    if (destroyPipes) {}
     this.toString1 = _gen.ChangeDetectionUtil.uninitialized;
   }
 
@@ -3147,22 +2981,17 @@ class ChangeDetector48 extends _gen.AbstractChangeDetector<dynamic> {
 
   static final _gen_directiveIndices = [];
 
-  static _gen.ChangeDetector newChangeDetector(a) {
-    return new ChangeDetector48(a);
+  static _gen.ChangeDetector newChangeDetector() {
+    return new ChangeDetector48();
   }
 }
 
 class ChangeDetector49 extends _gen.AbstractChangeDetector<dynamic> {
   var sayHi1;
 
-  ChangeDetector49(dispatcher)
-      : super(
-            "sayHi(\"Jim\")",
-            dispatcher,
-            2,
-            ChangeDetector49._gen_propertyBindingTargets,
-            ChangeDetector49._gen_directiveIndices,
-            null) {
+  ChangeDetector49()
+      : super("sayHi(\"Jim\")", 2, ChangeDetector49._gen_propertyBindingTargets,
+            ChangeDetector49._gen_directiveIndices, null) {
     dehydrateDirectives(false);
   }
 
@@ -3192,6 +3021,7 @@ class ChangeDetector49 extends _gen.AbstractChangeDetector<dynamic> {
   }
 
   void dehydrateDirectives(destroyPipes) {
+    if (destroyPipes) {}
     this.sayHi1 = _gen.ChangeDetectionUtil.uninitialized;
   }
 
@@ -3202,22 +3032,17 @@ class ChangeDetector49 extends _gen.AbstractChangeDetector<dynamic> {
 
   static final _gen_directiveIndices = [];
 
-  static _gen.ChangeDetector newChangeDetector(a) {
-    return new ChangeDetector49(a);
+  static _gen.ChangeDetector newChangeDetector() {
+    return new ChangeDetector49();
   }
 }
 
 class ChangeDetector50 extends _gen.AbstractChangeDetector<dynamic> {
   var closure2;
 
-  ChangeDetector50(dispatcher)
-      : super(
-            "a()(99)",
-            dispatcher,
-            3,
-            ChangeDetector50._gen_propertyBindingTargets,
-            ChangeDetector50._gen_directiveIndices,
-            null) {
+  ChangeDetector50()
+      : super("a()(99)", 3, ChangeDetector50._gen_propertyBindingTargets,
+            ChangeDetector50._gen_directiveIndices, null) {
     dehydrateDirectives(false);
   }
 
@@ -3249,6 +3074,7 @@ class ChangeDetector50 extends _gen.AbstractChangeDetector<dynamic> {
   }
 
   void dehydrateDirectives(destroyPipes) {
+    if (destroyPipes) {}
     this.closure2 = _gen.ChangeDetectionUtil.uninitialized;
   }
 
@@ -3259,18 +3085,17 @@ class ChangeDetector50 extends _gen.AbstractChangeDetector<dynamic> {
 
   static final _gen_directiveIndices = [];
 
-  static _gen.ChangeDetector newChangeDetector(a) {
-    return new ChangeDetector50(a);
+  static _gen.ChangeDetector newChangeDetector() {
+    return new ChangeDetector50();
   }
 }
 
 class ChangeDetector51 extends _gen.AbstractChangeDetector<dynamic> {
   var sayHi2;
 
-  ChangeDetector51(dispatcher)
+  ChangeDetector51()
       : super(
             "a.sayHi(\"Jim\")",
-            dispatcher,
             3,
             ChangeDetector51._gen_propertyBindingTargets,
             ChangeDetector51._gen_directiveIndices,
@@ -3306,6 +3131,7 @@ class ChangeDetector51 extends _gen.AbstractChangeDetector<dynamic> {
   }
 
   void dehydrateDirectives(destroyPipes) {
+    if (destroyPipes) {}
     this.sayHi2 = _gen.ChangeDetectionUtil.uninitialized;
   }
 
@@ -3316,18 +3142,17 @@ class ChangeDetector51 extends _gen.AbstractChangeDetector<dynamic> {
 
   static final _gen_directiveIndices = [];
 
-  static _gen.ChangeDetector newChangeDetector(a) {
-    return new ChangeDetector51(a);
+  static _gen.ChangeDetector newChangeDetector() {
+    return new ChangeDetector51();
   }
 }
 
 class ChangeDetector52 extends _gen.AbstractChangeDetector<dynamic> {
   var literal0, arrayFn11, passThrough2;
 
-  ChangeDetector52(dispatcher)
+  ChangeDetector52()
       : super(
             "passThrough([12])",
-            dispatcher,
             3,
             ChangeDetector52._gen_propertyBindingTargets,
             ChangeDetector52._gen_directiveIndices,
@@ -3382,6 +3207,7 @@ class ChangeDetector52 extends _gen.AbstractChangeDetector<dynamic> {
   }
 
   void dehydrateDirectives(destroyPipes) {
+    if (destroyPipes) {}
     this.literal0 = this.arrayFn11 =
         this.passThrough2 = _gen.ChangeDetectionUtil.uninitialized;
   }
@@ -3393,22 +3219,17 @@ class ChangeDetector52 extends _gen.AbstractChangeDetector<dynamic> {
 
   static final _gen_directiveIndices = [];
 
-  static _gen.ChangeDetector newChangeDetector(a) {
-    return new ChangeDetector52(a);
+  static _gen.ChangeDetector newChangeDetector() {
+    return new ChangeDetector52();
   }
 }
 
 class ChangeDetector53 extends _gen.AbstractChangeDetector<dynamic> {
   var invalidFn1;
 
-  ChangeDetector53(dispatcher)
-      : super(
-            "invalidFn(1)",
-            dispatcher,
-            2,
-            ChangeDetector53._gen_propertyBindingTargets,
-            ChangeDetector53._gen_directiveIndices,
-            null) {
+  ChangeDetector53()
+      : super("invalidFn(1)", 2, ChangeDetector53._gen_propertyBindingTargets,
+            ChangeDetector53._gen_directiveIndices, null) {
     dehydrateDirectives(false);
   }
 
@@ -3439,6 +3260,7 @@ class ChangeDetector53 extends _gen.AbstractChangeDetector<dynamic> {
   }
 
   void dehydrateDirectives(destroyPipes) {
+    if (destroyPipes) {}
     this.invalidFn1 = _gen.ChangeDetectionUtil.uninitialized;
   }
 
@@ -3449,22 +3271,17 @@ class ChangeDetector53 extends _gen.AbstractChangeDetector<dynamic> {
 
   static final _gen_directiveIndices = [];
 
-  static _gen.ChangeDetector newChangeDetector(a) {
-    return new ChangeDetector53(a);
+  static _gen.ChangeDetector newChangeDetector() {
+    return new ChangeDetector53();
   }
 }
 
 class ChangeDetector54 extends _gen.AbstractChangeDetector<dynamic> {
   var age0;
 
-  ChangeDetector54(dispatcher)
-      : super(
-            "age",
-            dispatcher,
-            1,
-            ChangeDetector54._gen_propertyBindingTargets,
-            ChangeDetector54._gen_directiveIndices,
-            null) {
+  ChangeDetector54()
+      : super("age", 1, ChangeDetector54._gen_propertyBindingTargets,
+            ChangeDetector54._gen_directiveIndices, null) {
     dehydrateDirectives(false);
   }
 
@@ -3492,6 +3309,7 @@ class ChangeDetector54 extends _gen.AbstractChangeDetector<dynamic> {
   }
 
   void dehydrateDirectives(destroyPipes) {
+    if (destroyPipes) {}
     this.age0 = _gen.ChangeDetectionUtil.uninitialized;
   }
 
@@ -3502,18 +3320,17 @@ class ChangeDetector54 extends _gen.AbstractChangeDetector<dynamic> {
 
   static final _gen_directiveIndices = [];
 
-  static _gen.ChangeDetector newChangeDetector(a) {
-    return new ChangeDetector54(a);
+  static _gen.ChangeDetector newChangeDetector() {
+    return new ChangeDetector54();
   }
 }
 
 class ChangeDetector55 extends _gen.AbstractChangeDetector<dynamic> {
   var cond5;
 
-  ChangeDetector55(dispatcher)
+  ChangeDetector55()
       : super(
             "true ? city : zipcode",
-            dispatcher,
             6,
             ChangeDetector55._gen_propertyBindingTargets,
             ChangeDetector55._gen_directiveIndices,
@@ -3559,6 +3376,7 @@ class ChangeDetector55 extends _gen.AbstractChangeDetector<dynamic> {
   }
 
   void dehydrateDirectives(destroyPipes) {
+    if (destroyPipes) {}
     this.cond5 = _gen.ChangeDetectionUtil.uninitialized;
   }
 
@@ -3569,18 +3387,17 @@ class ChangeDetector55 extends _gen.AbstractChangeDetector<dynamic> {
 
   static final _gen_directiveIndices = [];
 
-  static _gen.ChangeDetector newChangeDetector(a) {
-    return new ChangeDetector55(a);
+  static _gen.ChangeDetector newChangeDetector() {
+    return new ChangeDetector55();
   }
 }
 
 class ChangeDetector56 extends _gen.AbstractChangeDetector<dynamic> {
   var cond5;
 
-  ChangeDetector56(dispatcher)
+  ChangeDetector56()
       : super(
             "false ? city : zipcode",
-            dispatcher,
             6,
             ChangeDetector56._gen_propertyBindingTargets,
             ChangeDetector56._gen_directiveIndices,
@@ -3626,6 +3443,7 @@ class ChangeDetector56 extends _gen.AbstractChangeDetector<dynamic> {
   }
 
   void dehydrateDirectives(destroyPipes) {
+    if (destroyPipes) {}
     this.cond5 = _gen.ChangeDetectionUtil.uninitialized;
   }
 
@@ -3636,18 +3454,17 @@ class ChangeDetector56 extends _gen.AbstractChangeDetector<dynamic> {
 
   static final _gen_directiveIndices = [];
 
-  static _gen.ChangeDetector newChangeDetector(a) {
-    return new ChangeDetector56(a);
+  static _gen.ChangeDetector newChangeDetector() {
+    return new ChangeDetector56();
   }
 }
 
 class ChangeDetector57 extends _gen.AbstractChangeDetector<dynamic> {
   var cond3;
 
-  ChangeDetector57(dispatcher)
+  ChangeDetector57()
       : super(
             "getTrue() && getTrue()",
-            dispatcher,
             4,
             ChangeDetector57._gen_propertyBindingTargets,
             ChangeDetector57._gen_directiveIndices,
@@ -3689,6 +3506,7 @@ class ChangeDetector57 extends _gen.AbstractChangeDetector<dynamic> {
   }
 
   void dehydrateDirectives(destroyPipes) {
+    if (destroyPipes) {}
     this.cond3 = _gen.ChangeDetectionUtil.uninitialized;
   }
 
@@ -3699,18 +3517,17 @@ class ChangeDetector57 extends _gen.AbstractChangeDetector<dynamic> {
 
   static final _gen_directiveIndices = [];
 
-  static _gen.ChangeDetector newChangeDetector(a) {
-    return new ChangeDetector57(a);
+  static _gen.ChangeDetector newChangeDetector() {
+    return new ChangeDetector57();
   }
 }
 
 class ChangeDetector58 extends _gen.AbstractChangeDetector<dynamic> {
   var cond3;
 
-  ChangeDetector58(dispatcher)
+  ChangeDetector58()
       : super(
             "getFalse() && getTrue()",
-            dispatcher,
             4,
             ChangeDetector58._gen_propertyBindingTargets,
             ChangeDetector58._gen_directiveIndices,
@@ -3753,6 +3570,7 @@ class ChangeDetector58 extends _gen.AbstractChangeDetector<dynamic> {
   }
 
   void dehydrateDirectives(destroyPipes) {
+    if (destroyPipes) {}
     this.cond3 = _gen.ChangeDetectionUtil.uninitialized;
   }
 
@@ -3763,18 +3581,17 @@ class ChangeDetector58 extends _gen.AbstractChangeDetector<dynamic> {
 
   static final _gen_directiveIndices = [];
 
-  static _gen.ChangeDetector newChangeDetector(a) {
-    return new ChangeDetector58(a);
+  static _gen.ChangeDetector newChangeDetector() {
+    return new ChangeDetector58();
   }
 }
 
 class ChangeDetector59 extends _gen.AbstractChangeDetector<dynamic> {
   var cond3;
 
-  ChangeDetector59(dispatcher)
+  ChangeDetector59()
       : super(
             "getFalse() || getFalse()",
-            dispatcher,
             4,
             ChangeDetector59._gen_propertyBindingTargets,
             ChangeDetector59._gen_directiveIndices,
@@ -3817,6 +3634,7 @@ class ChangeDetector59 extends _gen.AbstractChangeDetector<dynamic> {
   }
 
   void dehydrateDirectives(destroyPipes) {
+    if (destroyPipes) {}
     this.cond3 = _gen.ChangeDetectionUtil.uninitialized;
   }
 
@@ -3827,18 +3645,17 @@ class ChangeDetector59 extends _gen.AbstractChangeDetector<dynamic> {
 
   static final _gen_directiveIndices = [];
 
-  static _gen.ChangeDetector newChangeDetector(a) {
-    return new ChangeDetector59(a);
+  static _gen.ChangeDetector newChangeDetector() {
+    return new ChangeDetector59();
   }
 }
 
 class ChangeDetector60 extends _gen.AbstractChangeDetector<dynamic> {
   var cond3;
 
-  ChangeDetector60(dispatcher)
+  ChangeDetector60()
       : super(
             "getTrue() || getFalse()",
-            dispatcher,
             4,
             ChangeDetector60._gen_propertyBindingTargets,
             ChangeDetector60._gen_directiveIndices,
@@ -3881,6 +3698,7 @@ class ChangeDetector60 extends _gen.AbstractChangeDetector<dynamic> {
   }
 
   void dehydrateDirectives(destroyPipes) {
+    if (destroyPipes) {}
     this.cond3 = _gen.ChangeDetectionUtil.uninitialized;
   }
 
@@ -3891,18 +3709,17 @@ class ChangeDetector60 extends _gen.AbstractChangeDetector<dynamic> {
 
   static final _gen_directiveIndices = [];
 
-  static _gen.ChangeDetector newChangeDetector(a) {
-    return new ChangeDetector60(a);
+  static _gen.ChangeDetector newChangeDetector() {
+    return new ChangeDetector60();
   }
 }
 
 class ChangeDetector61 extends _gen.AbstractChangeDetector<dynamic> {
   var cond15;
 
-  ChangeDetector61(dispatcher)
+  ChangeDetector61()
       : super(
             "name == \"Victor\" ? (true ? address.city : address.zipcode) : address.zipcode",
-            dispatcher,
             16,
             ChangeDetector61._gen_propertyBindingTargets,
             ChangeDetector61._gen_directiveIndices,
@@ -3979,6 +3796,7 @@ class ChangeDetector61 extends _gen.AbstractChangeDetector<dynamic> {
   }
 
   void dehydrateDirectives(destroyPipes) {
+    if (destroyPipes) {}
     this.cond15 = _gen.ChangeDetectionUtil.uninitialized;
   }
 
@@ -3993,18 +3811,17 @@ class ChangeDetector61 extends _gen.AbstractChangeDetector<dynamic> {
 
   static final _gen_directiveIndices = [];
 
-  static _gen.ChangeDetector newChangeDetector(a) {
-    return new ChangeDetector61(a);
+  static _gen.ChangeDetector newChangeDetector() {
+    return new ChangeDetector61();
   }
 }
 
 class ChangeDetector62 extends _gen.AbstractChangeDetector<dynamic> {
   var key0;
 
-  ChangeDetector62(dispatcher)
+  ChangeDetector62()
       : super(
             "valueFromLocals",
-            dispatcher,
             1,
             ChangeDetector62._gen_propertyBindingTargets,
             ChangeDetector62._gen_directiveIndices,
@@ -4036,6 +3853,7 @@ class ChangeDetector62 extends _gen.AbstractChangeDetector<dynamic> {
   }
 
   void dehydrateDirectives(destroyPipes) {
+    if (destroyPipes) {}
     this.key0 = _gen.ChangeDetectionUtil.uninitialized;
   }
 
@@ -4046,18 +3864,17 @@ class ChangeDetector62 extends _gen.AbstractChangeDetector<dynamic> {
 
   static final _gen_directiveIndices = [];
 
-  static _gen.ChangeDetector newChangeDetector(a) {
-    return new ChangeDetector62(a);
+  static _gen.ChangeDetector newChangeDetector() {
+    return new ChangeDetector62();
   }
 }
 
 class ChangeDetector63 extends _gen.AbstractChangeDetector<dynamic> {
   var closure1;
 
-  ChangeDetector63(dispatcher)
+  ChangeDetector63()
       : super(
             "functionFromLocals",
-            dispatcher,
             2,
             ChangeDetector63._gen_propertyBindingTargets,
             ChangeDetector63._gen_directiveIndices,
@@ -4091,6 +3908,7 @@ class ChangeDetector63 extends _gen.AbstractChangeDetector<dynamic> {
   }
 
   void dehydrateDirectives(destroyPipes) {
+    if (destroyPipes) {}
     this.closure1 = _gen.ChangeDetectionUtil.uninitialized;
   }
 
@@ -4101,22 +3919,17 @@ class ChangeDetector63 extends _gen.AbstractChangeDetector<dynamic> {
 
   static final _gen_directiveIndices = [];
 
-  static _gen.ChangeDetector newChangeDetector(a) {
-    return new ChangeDetector63(a);
+  static _gen.ChangeDetector newChangeDetector() {
+    return new ChangeDetector63();
   }
 }
 
 class ChangeDetector64 extends _gen.AbstractChangeDetector<dynamic> {
   var key0;
 
-  ChangeDetector64(dispatcher)
-      : super(
-            "nestedLocals",
-            dispatcher,
-            1,
-            ChangeDetector64._gen_propertyBindingTargets,
-            ChangeDetector64._gen_directiveIndices,
-            null) {
+  ChangeDetector64()
+      : super("nestedLocals", 1, ChangeDetector64._gen_propertyBindingTargets,
+            ChangeDetector64._gen_directiveIndices, null) {
     dehydrateDirectives(false);
   }
 
@@ -4144,6 +3957,7 @@ class ChangeDetector64 extends _gen.AbstractChangeDetector<dynamic> {
   }
 
   void dehydrateDirectives(destroyPipes) {
+    if (destroyPipes) {}
     this.key0 = _gen.ChangeDetectionUtil.uninitialized;
   }
 
@@ -4154,22 +3968,17 @@ class ChangeDetector64 extends _gen.AbstractChangeDetector<dynamic> {
 
   static final _gen_directiveIndices = [];
 
-  static _gen.ChangeDetector newChangeDetector(a) {
-    return new ChangeDetector64(a);
+  static _gen.ChangeDetector newChangeDetector() {
+    return new ChangeDetector64();
   }
 }
 
 class ChangeDetector65 extends _gen.AbstractChangeDetector<dynamic> {
   var name0;
 
-  ChangeDetector65(dispatcher)
-      : super(
-            "fallbackLocals",
-            dispatcher,
-            1,
-            ChangeDetector65._gen_propertyBindingTargets,
-            ChangeDetector65._gen_directiveIndices,
-            null) {
+  ChangeDetector65()
+      : super("fallbackLocals", 1, ChangeDetector65._gen_propertyBindingTargets,
+            ChangeDetector65._gen_directiveIndices, null) {
     dehydrateDirectives(false);
   }
 
@@ -4197,6 +4006,7 @@ class ChangeDetector65 extends _gen.AbstractChangeDetector<dynamic> {
   }
 
   void dehydrateDirectives(destroyPipes) {
+    if (destroyPipes) {}
     this.name0 = _gen.ChangeDetectionUtil.uninitialized;
   }
 
@@ -4207,18 +4017,17 @@ class ChangeDetector65 extends _gen.AbstractChangeDetector<dynamic> {
 
   static final _gen_directiveIndices = [];
 
-  static _gen.ChangeDetector newChangeDetector(a) {
-    return new ChangeDetector65(a);
+  static _gen.ChangeDetector newChangeDetector() {
+    return new ChangeDetector65();
   }
 }
 
 class ChangeDetector66 extends _gen.AbstractChangeDetector<dynamic> {
   var city1;
 
-  ChangeDetector66(dispatcher)
+  ChangeDetector66()
       : super(
             "contextNestedPropertyWithLocals",
-            dispatcher,
             2,
             ChangeDetector66._gen_propertyBindingTargets,
             ChangeDetector66._gen_directiveIndices,
@@ -4252,6 +4061,7 @@ class ChangeDetector66 extends _gen.AbstractChangeDetector<dynamic> {
   }
 
   void dehydrateDirectives(destroyPipes) {
+    if (destroyPipes) {}
     this.city1 = _gen.ChangeDetectionUtil.uninitialized;
   }
 
@@ -4262,18 +4072,17 @@ class ChangeDetector66 extends _gen.AbstractChangeDetector<dynamic> {
 
   static final _gen_directiveIndices = [];
 
-  static _gen.ChangeDetector newChangeDetector(a) {
-    return new ChangeDetector66(a);
+  static _gen.ChangeDetector newChangeDetector() {
+    return new ChangeDetector66();
   }
 }
 
 class ChangeDetector67 extends _gen.AbstractChangeDetector<dynamic> {
   var city0;
 
-  ChangeDetector67(dispatcher)
+  ChangeDetector67()
       : super(
             "localPropertyWithSimilarContext",
-            dispatcher,
             1,
             ChangeDetector67._gen_propertyBindingTargets,
             ChangeDetector67._gen_directiveIndices,
@@ -4305,6 +4114,7 @@ class ChangeDetector67 extends _gen.AbstractChangeDetector<dynamic> {
   }
 
   void dehydrateDirectives(destroyPipes) {
+    if (destroyPipes) {}
     this.city0 = _gen.ChangeDetectionUtil.uninitialized;
   }
 
@@ -4315,16 +4125,15 @@ class ChangeDetector67 extends _gen.AbstractChangeDetector<dynamic> {
 
   static final _gen_directiveIndices = [];
 
-  static _gen.ChangeDetector newChangeDetector(a) {
-    return new ChangeDetector67(a);
+  static _gen.ChangeDetector newChangeDetector() {
+    return new ChangeDetector67();
   }
 }
 
 class ChangeDetector68 extends _gen.AbstractChangeDetector<dynamic> {
-  ChangeDetector68(dispatcher)
+  ChangeDetector68()
       : super(
             "emptyUsingDefaultStrategy",
-            dispatcher,
             0,
             ChangeDetector68._gen_propertyBindingTargets,
             ChangeDetector68._gen_directiveIndices,
@@ -4342,16 +4151,15 @@ class ChangeDetector68 extends _gen.AbstractChangeDetector<dynamic> {
 
   static final _gen_directiveIndices = [];
 
-  static _gen.ChangeDetector newChangeDetector(a) {
-    return new ChangeDetector68(a);
+  static _gen.ChangeDetector newChangeDetector() {
+    return new ChangeDetector68();
   }
 }
 
 class ChangeDetector69 extends _gen.AbstractChangeDetector<dynamic> {
-  ChangeDetector69(dispatcher)
+  ChangeDetector69()
       : super(
             "emptyUsingOnPushStrategy",
-            dispatcher,
             0,
             ChangeDetector69._gen_propertyBindingTargets,
             ChangeDetector69._gen_directiveIndices,
@@ -4369,18 +4177,17 @@ class ChangeDetector69 extends _gen.AbstractChangeDetector<dynamic> {
 
   static final _gen_directiveIndices = [];
 
-  static _gen.ChangeDetector newChangeDetector(a) {
-    return new ChangeDetector69(a);
+  static _gen.ChangeDetector newChangeDetector() {
+    return new ChangeDetector69();
   }
 }
 
 class ChangeDetector70 extends _gen.AbstractChangeDetector<dynamic> {
   var literal0, self1, directive_0_0, directive_0_1, detector_0_1;
 
-  ChangeDetector70(dispatcher)
+  ChangeDetector70()
       : super(
             "onPushRecordsUsingDefaultStrategy",
-            dispatcher,
             2,
             ChangeDetector70._gen_propertyBindingTargets,
             ChangeDetector70._gen_directiveIndices,
@@ -4440,6 +4247,7 @@ class ChangeDetector70 extends _gen.AbstractChangeDetector<dynamic> {
   }
 
   void dehydrateDirectives(destroyPipes) {
+    if (destroyPipes) {}
     this.literal0 = this.self1 = this.directive_0_0 = this.directive_0_1 =
         this.detector_0_1 = _gen.ChangeDetectionUtil.uninitialized;
   }
@@ -4456,18 +4264,17 @@ class ChangeDetector70 extends _gen.AbstractChangeDetector<dynamic> {
     _gen.ChangeDetectionUtil.directiveIndex(0, 1)
   ];
 
-  static _gen.ChangeDetector newChangeDetector(a) {
-    return new ChangeDetector70(a);
+  static _gen.ChangeDetector newChangeDetector() {
+    return new ChangeDetector70();
   }
 }
 
 class ChangeDetector71 extends _gen.AbstractChangeDetector<dynamic> {
   var directive_0_0, directive_0_1, detector_0_1;
 
-  ChangeDetector71(dispatcher)
+  ChangeDetector71()
       : super(
             "onPushWithEvent",
-            dispatcher,
             0,
             ChangeDetector71._gen_propertyBindingTargets,
             ChangeDetector71._gen_directiveIndices,
@@ -4508,6 +4315,7 @@ class ChangeDetector71 extends _gen.AbstractChangeDetector<dynamic> {
   }
 
   void dehydrateDirectives(destroyPipes) {
+    if (destroyPipes) {}
     this.directive_0_0 = this.directive_0_1 =
         this.detector_0_1 = _gen.ChangeDetectionUtil.uninitialized;
   }
@@ -4519,18 +4327,17 @@ class ChangeDetector71 extends _gen.AbstractChangeDetector<dynamic> {
     _gen.ChangeDetectionUtil.directiveIndex(0, 1)
   ];
 
-  static _gen.ChangeDetector newChangeDetector(a) {
-    return new ChangeDetector71(a);
+  static _gen.ChangeDetector newChangeDetector() {
+    return new ChangeDetector71();
   }
 }
 
 class ChangeDetector72 extends _gen.AbstractChangeDetector<dynamic> {
   var directive_0_0, directive_0_1, detector_0_1;
 
-  ChangeDetector72(dispatcher)
+  ChangeDetector72()
       : super(
             "onPushWithHostEvent",
-            dispatcher,
             0,
             ChangeDetector72._gen_propertyBindingTargets,
             ChangeDetector72._gen_directiveIndices,
@@ -4571,6 +4378,7 @@ class ChangeDetector72 extends _gen.AbstractChangeDetector<dynamic> {
   }
 
   void dehydrateDirectives(destroyPipes) {
+    if (destroyPipes) {}
     this.directive_0_0 = this.directive_0_1 =
         this.detector_0_1 = _gen.ChangeDetectionUtil.uninitialized;
   }
@@ -4582,18 +4390,17 @@ class ChangeDetector72 extends _gen.AbstractChangeDetector<dynamic> {
     _gen.ChangeDetectionUtil.directiveIndex(0, 1)
   ];
 
-  static _gen.ChangeDetector newChangeDetector(a) {
-    return new ChangeDetector72(a);
+  static _gen.ChangeDetector newChangeDetector() {
+    return new ChangeDetector72();
   }
 }
 
 class ChangeDetector73 extends _gen.AbstractChangeDetector<dynamic> {
   var literal0, directive_0_0;
 
-  ChangeDetector73(dispatcher)
+  ChangeDetector73()
       : super(
             "directNoDispatcher",
-            dispatcher,
             1,
             ChangeDetector73._gen_propertyBindingTargets,
             ChangeDetector73._gen_directiveIndices,
@@ -4640,9 +4447,16 @@ class ChangeDetector73 extends _gen.AbstractChangeDetector<dynamic> {
 
   void hydrateDirectives(directives) {
     this.directive_0_0 = this.getDirectiveFor(directives, 0);
+    this
+        .directive_0_0
+        .eventEmitter
+        .listen((event) => this.handleEvent('host-event', 0, event));
   }
 
   void dehydrateDirectives(destroyPipes) {
+    if (destroyPipes) {
+      this.directive_0_0.ngOnDestroy();
+    }
     this.literal0 = this.directive_0_0 = _gen.ChangeDetectionUtil.uninitialized;
   }
 
@@ -4655,8 +4469,8 @@ class ChangeDetector73 extends _gen.AbstractChangeDetector<dynamic> {
     _gen.ChangeDetectionUtil.directiveIndex(0, 0)
   ];
 
-  static _gen.ChangeDetector newChangeDetector(a) {
-    return new ChangeDetector73(a);
+  static _gen.ChangeDetector newChangeDetector() {
+    return new ChangeDetector73();
   }
 }
 
@@ -4669,14 +4483,9 @@ class ChangeDetector74 extends _gen.AbstractChangeDetector<dynamic> {
       directive_0_0,
       directive_0_1;
 
-  ChangeDetector74(dispatcher)
-      : super(
-            "groupChanges",
-            dispatcher,
-            5,
-            ChangeDetector74._gen_propertyBindingTargets,
-            ChangeDetector74._gen_directiveIndices,
-            null) {
+  ChangeDetector74()
+      : super("groupChanges", 5, ChangeDetector74._gen_propertyBindingTargets,
+            ChangeDetector74._gen_directiveIndices, null) {
     dehydrateDirectives(false);
   }
 
@@ -4768,10 +4577,22 @@ class ChangeDetector74 extends _gen.AbstractChangeDetector<dynamic> {
 
   void hydrateDirectives(directives) {
     this.directive_0_0 = this.getDirectiveFor(directives, 0);
+    this
+        .directive_0_0
+        .eventEmitter
+        .listen((event) => this.handleEvent('host-event', 0, event));
     this.directive_0_1 = this.getDirectiveFor(directives, 1);
+    this
+        .directive_0_1
+        .eventEmitter
+        .listen((event) => this.handleEvent('host-event', 0, event));
   }
 
   void dehydrateDirectives(destroyPipes) {
+    if (destroyPipes) {
+      this.directive_0_0.ngOnDestroy();
+      this.directive_0_1.ngOnDestroy();
+    }
     this.literal0 = this.literal1 = this.OnChanges2 = this.literal3 =
         this.OnChanges4 = this.directive_0_0 =
             this.directive_0_1 = _gen.ChangeDetectionUtil.uninitialized;
@@ -4793,18 +4614,17 @@ class ChangeDetector74 extends _gen.AbstractChangeDetector<dynamic> {
     _gen.ChangeDetectionUtil.directiveIndex(0, 1)
   ];
 
-  static _gen.ChangeDetector newChangeDetector(a) {
-    return new ChangeDetector74(a);
+  static _gen.ChangeDetector newChangeDetector() {
+    return new ChangeDetector74();
   }
 }
 
 class ChangeDetector75 extends _gen.AbstractChangeDetector<dynamic> {
   var DoCheck0, directive_0_0;
 
-  ChangeDetector75(dispatcher)
+  ChangeDetector75()
       : super(
             "directiveDoCheck",
-            dispatcher,
             1,
             ChangeDetector75._gen_propertyBindingTargets,
             ChangeDetector75._gen_directiveIndices,
@@ -4837,9 +4657,16 @@ class ChangeDetector75 extends _gen.AbstractChangeDetector<dynamic> {
 
   void hydrateDirectives(directives) {
     this.directive_0_0 = this.getDirectiveFor(directives, 0);
+    this
+        .directive_0_0
+        .eventEmitter
+        .listen((event) => this.handleEvent('host-event', 0, event));
   }
 
   void dehydrateDirectives(destroyPipes) {
+    if (destroyPipes) {
+      this.directive_0_0.ngOnDestroy();
+    }
     this.DoCheck0 = this.directive_0_0 = _gen.ChangeDetectionUtil.uninitialized;
   }
 
@@ -4849,18 +4676,17 @@ class ChangeDetector75 extends _gen.AbstractChangeDetector<dynamic> {
     _gen.ChangeDetectionUtil.directiveIndex(0, 0)
   ];
 
-  static _gen.ChangeDetector newChangeDetector(a) {
-    return new ChangeDetector75(a);
+  static _gen.ChangeDetector newChangeDetector() {
+    return new ChangeDetector75();
   }
 }
 
 class ChangeDetector76 extends _gen.AbstractChangeDetector<dynamic> {
   var OnInit0, directive_0_0;
 
-  ChangeDetector76(dispatcher)
+  ChangeDetector76()
       : super(
             "directiveOnInit",
-            dispatcher,
             1,
             ChangeDetector76._gen_propertyBindingTargets,
             ChangeDetector76._gen_directiveIndices,
@@ -4894,9 +4720,16 @@ class ChangeDetector76 extends _gen.AbstractChangeDetector<dynamic> {
 
   void hydrateDirectives(directives) {
     this.directive_0_0 = this.getDirectiveFor(directives, 0);
+    this
+        .directive_0_0
+        .eventEmitter
+        .listen((event) => this.handleEvent('host-event', 0, event));
   }
 
   void dehydrateDirectives(destroyPipes) {
+    if (destroyPipes) {
+      this.directive_0_0.ngOnDestroy();
+    }
     this.OnInit0 = this.directive_0_0 = _gen.ChangeDetectionUtil.uninitialized;
   }
 
@@ -4906,18 +4739,17 @@ class ChangeDetector76 extends _gen.AbstractChangeDetector<dynamic> {
     _gen.ChangeDetectionUtil.directiveIndex(0, 0)
   ];
 
-  static _gen.ChangeDetector newChangeDetector(a) {
-    return new ChangeDetector76(a);
+  static _gen.ChangeDetector newChangeDetector() {
+    return new ChangeDetector76();
   }
 }
 
 class ChangeDetector77 extends _gen.AbstractChangeDetector<dynamic> {
   var directive_0_0, directive_0_1;
 
-  ChangeDetector77(dispatcher)
+  ChangeDetector77()
       : super(
             "emptyWithDirectiveRecords",
-            dispatcher,
             0,
             ChangeDetector77._gen_propertyBindingTargets,
             ChangeDetector77._gen_directiveIndices,
@@ -4951,10 +4783,22 @@ class ChangeDetector77 extends _gen.AbstractChangeDetector<dynamic> {
 
   void hydrateDirectives(directives) {
     this.directive_0_0 = this.getDirectiveFor(directives, 0);
+    this
+        .directive_0_0
+        .eventEmitter
+        .listen((event) => this.handleEvent('host-event', 0, event));
     this.directive_0_1 = this.getDirectiveFor(directives, 1);
+    this
+        .directive_0_1
+        .eventEmitter
+        .listen((event) => this.handleEvent('host-event', 0, event));
   }
 
   void dehydrateDirectives(destroyPipes) {
+    if (destroyPipes) {
+      this.directive_0_0.ngOnDestroy();
+      this.directive_0_1.ngOnDestroy();
+    }
     this.directive_0_0 =
         this.directive_0_1 = _gen.ChangeDetectionUtil.uninitialized;
   }
@@ -4966,22 +4810,17 @@ class ChangeDetector77 extends _gen.AbstractChangeDetector<dynamic> {
     _gen.ChangeDetectionUtil.directiveIndex(0, 1)
   ];
 
-  static _gen.ChangeDetector newChangeDetector(a) {
-    return new ChangeDetector77(a);
+  static _gen.ChangeDetector newChangeDetector() {
+    return new ChangeDetector77();
   }
 }
 
 class ChangeDetector78 extends _gen.AbstractChangeDetector<dynamic> {
   var literal0, directive_0_0;
 
-  ChangeDetector78(dispatcher)
-      : super(
-            "noCallbacks",
-            dispatcher,
-            1,
-            ChangeDetector78._gen_propertyBindingTargets,
-            ChangeDetector78._gen_directiveIndices,
-            null) {
+  ChangeDetector78()
+      : super("noCallbacks", 1, ChangeDetector78._gen_propertyBindingTargets,
+            ChangeDetector78._gen_directiveIndices, null) {
     dehydrateDirectives(false);
   }
 
@@ -5014,6 +4853,7 @@ class ChangeDetector78 extends _gen.AbstractChangeDetector<dynamic> {
   }
 
   void dehydrateDirectives(destroyPipes) {
+    if (destroyPipes) {}
     this.literal0 = this.directive_0_0 = _gen.ChangeDetectionUtil.uninitialized;
   }
 
@@ -5026,18 +4866,17 @@ class ChangeDetector78 extends _gen.AbstractChangeDetector<dynamic> {
     _gen.ChangeDetectionUtil.directiveIndex(0, 0)
   ];
 
-  static _gen.ChangeDetector newChangeDetector(a) {
-    return new ChangeDetector78(a);
+  static _gen.ChangeDetector newChangeDetector() {
+    return new ChangeDetector78();
   }
 }
 
 class ChangeDetector79 extends _gen.AbstractChangeDetector<dynamic> {
   var a0, directive_0_0;
 
-  ChangeDetector79(dispatcher)
+  ChangeDetector79()
       : super(
             "readingDirectives",
-            dispatcher,
             1,
             ChangeDetector79._gen_propertyBindingTargets,
             ChangeDetector79._gen_directiveIndices,
@@ -5082,9 +4921,16 @@ class ChangeDetector79 extends _gen.AbstractChangeDetector<dynamic> {
 
   void hydrateDirectives(directives) {
     this.directive_0_0 = this.getDirectiveFor(directives, 0);
+    this
+        .directive_0_0
+        .eventEmitter
+        .listen((event) => this.handleEvent('host-event', 0, event));
   }
 
   void dehydrateDirectives(destroyPipes) {
+    if (destroyPipes) {
+      this.directive_0_0.ngOnDestroy();
+    }
     this.a0 = this.directive_0_0 = _gen.ChangeDetectionUtil.uninitialized;
   }
 
@@ -5097,22 +4943,17 @@ class ChangeDetector79 extends _gen.AbstractChangeDetector<dynamic> {
     _gen.ChangeDetectionUtil.directiveIndex(0, 0)
   ];
 
-  static _gen.ChangeDetector newChangeDetector(a) {
-    return new ChangeDetector79(a);
+  static _gen.ChangeDetector newChangeDetector() {
+    return new ChangeDetector79();
   }
 }
 
 class ChangeDetector80 extends _gen.AbstractChangeDetector<dynamic> {
   var a0, interpolate1;
 
-  ChangeDetector80(dispatcher)
-      : super(
-            "interpolation",
-            dispatcher,
-            2,
-            ChangeDetector80._gen_propertyBindingTargets,
-            ChangeDetector80._gen_directiveIndices,
-            null) {
+  ChangeDetector80()
+      : super("interpolation", 2, ChangeDetector80._gen_propertyBindingTargets,
+            ChangeDetector80._gen_directiveIndices, null) {
     dehydrateDirectives(false);
   }
 
@@ -5150,6 +4991,7 @@ class ChangeDetector80 extends _gen.AbstractChangeDetector<dynamic> {
   }
 
   void dehydrateDirectives(destroyPipes) {
+    if (destroyPipes) {}
     this.a0 = this.interpolate1 = _gen.ChangeDetectionUtil.uninitialized;
   }
 
@@ -5160,16 +5002,15 @@ class ChangeDetector80 extends _gen.AbstractChangeDetector<dynamic> {
 
   static final _gen_directiveIndices = [];
 
-  static _gen.ChangeDetector newChangeDetector(a) {
-    return new ChangeDetector80(a);
+  static _gen.ChangeDetector newChangeDetector() {
+    return new ChangeDetector80();
   }
 }
 
 class ChangeDetector81 extends _gen.AbstractChangeDetector<dynamic> {
-  ChangeDetector81(dispatcher)
+  ChangeDetector81()
       : super(
             "(event)=\"onEvent(\$event)\"",
-            dispatcher,
             0,
             ChangeDetector81._gen_propertyBindingTargets,
             ChangeDetector81._gen_directiveIndices,
@@ -5201,16 +5042,15 @@ class ChangeDetector81 extends _gen.AbstractChangeDetector<dynamic> {
 
   static final _gen_directiveIndices = [];
 
-  static _gen.ChangeDetector newChangeDetector(a) {
-    return new ChangeDetector81(a);
+  static _gen.ChangeDetector newChangeDetector() {
+    return new ChangeDetector81();
   }
 }
 
 class ChangeDetector82 extends _gen.AbstractChangeDetector<dynamic> {
-  ChangeDetector82(dispatcher)
+  ChangeDetector82()
       : super(
             "(event)=\"b=a=\$event\"",
-            dispatcher,
             0,
             ChangeDetector82._gen_propertyBindingTargets,
             ChangeDetector82._gen_directiveIndices,
@@ -5243,16 +5083,15 @@ class ChangeDetector82 extends _gen.AbstractChangeDetector<dynamic> {
 
   static final _gen_directiveIndices = [];
 
-  static _gen.ChangeDetector newChangeDetector(a) {
-    return new ChangeDetector82(a);
+  static _gen.ChangeDetector newChangeDetector() {
+    return new ChangeDetector82();
   }
 }
 
 class ChangeDetector83 extends _gen.AbstractChangeDetector<dynamic> {
-  ChangeDetector83(dispatcher)
+  ChangeDetector83()
       : super(
             "(event)=\"a[0]=\$event\"",
-            dispatcher,
             0,
             ChangeDetector83._gen_propertyBindingTargets,
             ChangeDetector83._gen_directiveIndices,
@@ -5286,16 +5125,15 @@ class ChangeDetector83 extends _gen.AbstractChangeDetector<dynamic> {
 
   static final _gen_directiveIndices = [];
 
-  static _gen.ChangeDetector newChangeDetector(a) {
-    return new ChangeDetector83(a);
+  static _gen.ChangeDetector newChangeDetector() {
+    return new ChangeDetector83();
   }
 }
 
 class ChangeDetector84 extends _gen.AbstractChangeDetector<dynamic> {
-  ChangeDetector84(dispatcher)
+  ChangeDetector84()
       : super(
             "(event)=\"a=a+1; a=a+1;\"",
-            dispatcher,
             0,
             ChangeDetector84._gen_propertyBindingTargets,
             ChangeDetector84._gen_directiveIndices,
@@ -5345,16 +5183,15 @@ class ChangeDetector84 extends _gen.AbstractChangeDetector<dynamic> {
 
   static final _gen_directiveIndices = [];
 
-  static _gen.ChangeDetector newChangeDetector(a) {
-    return new ChangeDetector84(a);
+  static _gen.ChangeDetector newChangeDetector() {
+    return new ChangeDetector84();
   }
 }
 
 class ChangeDetector85 extends _gen.AbstractChangeDetector<dynamic> {
-  ChangeDetector85(dispatcher)
+  ChangeDetector85()
       : super(
             "(event)=\"false\"",
-            dispatcher,
             0,
             ChangeDetector85._gen_propertyBindingTargets,
             ChangeDetector85._gen_directiveIndices,
@@ -5385,16 +5222,15 @@ class ChangeDetector85 extends _gen.AbstractChangeDetector<dynamic> {
 
   static final _gen_directiveIndices = [];
 
-  static _gen.ChangeDetector newChangeDetector(a) {
-    return new ChangeDetector85(a);
+  static _gen.ChangeDetector newChangeDetector() {
+    return new ChangeDetector85();
   }
 }
 
 class ChangeDetector86 extends _gen.AbstractChangeDetector<dynamic> {
-  ChangeDetector86(dispatcher)
+  ChangeDetector86()
       : super(
             "(event)=\"true\"",
-            dispatcher,
             0,
             ChangeDetector86._gen_propertyBindingTargets,
             ChangeDetector86._gen_directiveIndices,
@@ -5425,16 +5261,15 @@ class ChangeDetector86 extends _gen.AbstractChangeDetector<dynamic> {
 
   static final _gen_directiveIndices = [];
 
-  static _gen.ChangeDetector newChangeDetector(a) {
-    return new ChangeDetector86(a);
+  static _gen.ChangeDetector newChangeDetector() {
+    return new ChangeDetector86();
   }
 }
 
 class ChangeDetector87 extends _gen.AbstractChangeDetector<dynamic> {
-  ChangeDetector87(dispatcher)
+  ChangeDetector87()
       : super(
             "(event)=\"true ? a = a + 1 : a = a + 1\"",
-            dispatcher,
             0,
             ChangeDetector87._gen_propertyBindingTargets,
             ChangeDetector87._gen_directiveIndices,
@@ -5491,18 +5326,17 @@ class ChangeDetector87 extends _gen.AbstractChangeDetector<dynamic> {
 
   static final _gen_directiveIndices = [];
 
-  static _gen.ChangeDetector newChangeDetector(a) {
-    return new ChangeDetector87(a);
+  static _gen.ChangeDetector newChangeDetector() {
+    return new ChangeDetector87();
   }
 }
 
 class ChangeDetector88 extends _gen.AbstractChangeDetector<dynamic> {
-  var directive_0_0;
+  var directive_0_0, directive_0_1;
 
-  ChangeDetector88(dispatcher)
+  ChangeDetector88()
       : super(
             "(host-event)=\"onEvent(\$event)\"",
-            dispatcher,
             0,
             ChangeDetector88._gen_propertyBindingTargets,
             ChangeDetector88._gen_directiveIndices,
@@ -5532,11 +5366,17 @@ class ChangeDetector88 extends _gen.AbstractChangeDetector<dynamic> {
 
   void afterContentLifecycleCallbacksInternal() {
     if (this.state == _gen.ChangeDetectorState.NeverChecked)
+      this.directive_0_1.ngAfterContentInit();
+    this.directive_0_1.ngAfterContentChecked();
+    if (this.state == _gen.ChangeDetectorState.NeverChecked)
       this.directive_0_0.ngAfterContentInit();
     this.directive_0_0.ngAfterContentChecked();
   }
 
   void afterViewLifecycleCallbacksInternal() {
+    if (this.state == _gen.ChangeDetectorState.NeverChecked)
+      this.directive_0_1.ngAfterViewInit();
+    this.directive_0_1.ngAfterViewChecked();
     if (this.state == _gen.ChangeDetectorState.NeverChecked)
       this.directive_0_0.ngAfterViewInit();
     this.directive_0_0.ngAfterViewChecked();
@@ -5544,30 +5384,44 @@ class ChangeDetector88 extends _gen.AbstractChangeDetector<dynamic> {
 
   void hydrateDirectives(directives) {
     this.directive_0_0 = this.getDirectiveFor(directives, 0);
+    this
+        .directive_0_0
+        .eventEmitter
+        .listen((event) => this.handleEvent('host-event', 0, event));
+    this.directive_0_1 = this.getDirectiveFor(directives, 1);
+    this
+        .directive_0_1
+        .eventEmitter
+        .listen((event) => this.handleEvent('host-event', 0, event));
   }
 
   void dehydrateDirectives(destroyPipes) {
-    this.directive_0_0 = _gen.ChangeDetectionUtil.uninitialized;
+    if (destroyPipes) {
+      this.directive_0_0.ngOnDestroy();
+      this.directive_0_1.ngOnDestroy();
+    }
+    this.directive_0_0 =
+        this.directive_0_1 = _gen.ChangeDetectionUtil.uninitialized;
   }
 
   static final _gen_propertyBindingTargets = [];
 
   static final _gen_directiveIndices = [
-    _gen.ChangeDetectionUtil.directiveIndex(0, 0)
+    _gen.ChangeDetectionUtil.directiveIndex(0, 0),
+    _gen.ChangeDetectionUtil.directiveIndex(0, 1)
   ];
 
-  static _gen.ChangeDetector newChangeDetector(a) {
-    return new ChangeDetector88(a);
+  static _gen.ChangeDetector newChangeDetector() {
+    return new ChangeDetector88();
   }
 }
 
 class ChangeDetector89 extends _gen.AbstractChangeDetector<dynamic> {
   var a0;
 
-  ChangeDetector89(dispatcher)
+  ChangeDetector89()
       : super(
             "onPushObserveBinding",
-            dispatcher,
             1,
             ChangeDetector89._gen_propertyBindingTargets,
             ChangeDetector89._gen_directiveIndices,
@@ -5599,6 +5453,7 @@ class ChangeDetector89 extends _gen.AbstractChangeDetector<dynamic> {
   }
 
   void dehydrateDirectives(destroyPipes) {
+    if (destroyPipes) {}
     this.a0 = _gen.ChangeDetectionUtil.uninitialized;
   }
 
@@ -5609,16 +5464,15 @@ class ChangeDetector89 extends _gen.AbstractChangeDetector<dynamic> {
 
   static final _gen_directiveIndices = [];
 
-  static _gen.ChangeDetector newChangeDetector(a) {
-    return new ChangeDetector89(a);
+  static _gen.ChangeDetector newChangeDetector() {
+    return new ChangeDetector89();
   }
 }
 
 class ChangeDetector90 extends _gen.AbstractChangeDetector<dynamic> {
-  ChangeDetector90(dispatcher)
+  ChangeDetector90()
       : super(
             "onPushObserveComponent",
-            dispatcher,
             0,
             ChangeDetector90._gen_propertyBindingTargets,
             ChangeDetector90._gen_directiveIndices,
@@ -5636,18 +5490,17 @@ class ChangeDetector90 extends _gen.AbstractChangeDetector<dynamic> {
 
   static final _gen_directiveIndices = [];
 
-  static _gen.ChangeDetector newChangeDetector(a) {
-    return new ChangeDetector90(a);
+  static _gen.ChangeDetector newChangeDetector() {
+    return new ChangeDetector90();
   }
 }
 
 class ChangeDetector91 extends _gen.AbstractChangeDetector<dynamic> {
   var directive_0_0;
 
-  ChangeDetector91(dispatcher)
+  ChangeDetector91()
       : super(
             "onPushObserveDirective",
-            dispatcher,
             0,
             ChangeDetector91._gen_propertyBindingTargets,
             ChangeDetector91._gen_directiveIndices,
@@ -5667,6 +5520,7 @@ class ChangeDetector91 extends _gen.AbstractChangeDetector<dynamic> {
   }
 
   void dehydrateDirectives(destroyPipes) {
+    if (destroyPipes) {}
     this.directive_0_0 = _gen.ChangeDetectionUtil.uninitialized;
   }
 
@@ -5676,18 +5530,17 @@ class ChangeDetector91 extends _gen.AbstractChangeDetector<dynamic> {
     _gen.ChangeDetectionUtil.directiveIndex(0, 0)
   ];
 
-  static _gen.ChangeDetector newChangeDetector(a) {
-    return new ChangeDetector91(a);
+  static _gen.ChangeDetector newChangeDetector() {
+    return new ChangeDetector91();
   }
 }
 
 class ChangeDetector92 extends _gen.AbstractChangeDetector<dynamic> {
   var name0;
 
-  ChangeDetector92(dispatcher)
+  ChangeDetector92()
       : super(
             "updateElementProduction",
-            dispatcher,
             1,
             ChangeDetector92._gen_propertyBindingTargets,
             ChangeDetector92._gen_directiveIndices,
@@ -5718,6 +5571,7 @@ class ChangeDetector92 extends _gen.AbstractChangeDetector<dynamic> {
   }
 
   void dehydrateDirectives(destroyPipes) {
+    if (destroyPipes) {}
     this.name0 = _gen.ChangeDetectionUtil.uninitialized;
   }
 
@@ -5728,8 +5582,8 @@ class ChangeDetector92 extends _gen.AbstractChangeDetector<dynamic> {
 
   static final _gen_directiveIndices = [];
 
-  static _gen.ChangeDetector newChangeDetector(a) {
-    return new ChangeDetector92(a);
+  static _gen.ChangeDetector newChangeDetector() {
+    return new ChangeDetector92();
   }
 }
 

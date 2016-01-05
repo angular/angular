@@ -4,9 +4,9 @@ import "package:angular2/src/compiler/xhr.dart" show XHR;
 import "package:angular2/src/web_workers/worker/xhr_impl.dart"
     show WebWorkerXHRImpl;
 import "package:angular2/src/web_workers/worker/renderer.dart"
-    show WebWorkerRenderer;
+    show WebWorkerRootRenderer;
 import "package:angular2/src/facade/lang.dart" show print, Type, isPresent;
-import "package:angular2/src/core/render/api.dart" show Renderer;
+import "package:angular2/src/core/render/api.dart" show RootRenderer;
 import "package:angular2/core.dart"
     show
         PLATFORM_DIRECTIVES,
@@ -25,12 +25,8 @@ import "package:angular2/src/web_workers/shared/serializer.dart"
     show Serializer;
 import "package:angular2/src/web_workers/shared/api.dart" show ON_WEB_WORKER;
 import "package:angular2/src/core/di.dart" show Provider;
-import "package:angular2/src/web_workers/shared/render_proto_view_ref_store.dart"
-    show RenderProtoViewRefStore;
-import "package:angular2/src/web_workers/shared/render_view_with_fragments_store.dart"
-    show RenderViewWithFragmentsStore;
-import "package:angular2/src/web_workers/worker/event_dispatcher.dart"
-    show WebWorkerEventDispatcher;
+import "package:angular2/src/web_workers/shared/render_store.dart"
+    show RenderStore;
 
 class PrintLogger {
   var log = print;
@@ -51,16 +47,14 @@ const List<dynamic> WORKER_APP_APPLICATION_COMMON = const [
       useClass: ClientMessageBrokerFactory_),
   const Provider(ServiceMessageBrokerFactory,
       useClass: ServiceMessageBrokerFactory_),
-  WebWorkerRenderer,
-  const Provider(Renderer, useExisting: WebWorkerRenderer),
+  WebWorkerRootRenderer,
+  const Provider(RootRenderer, useExisting: WebWorkerRootRenderer),
   const Provider(ON_WEB_WORKER, useValue: true),
-  RenderViewWithFragmentsStore,
-  RenderProtoViewRefStore,
+  RenderStore,
   const Provider(ExceptionHandler,
       useFactory: _exceptionHandler, deps: const []),
   WebWorkerXHRImpl,
-  const Provider(XHR, useExisting: WebWorkerXHRImpl),
-  WebWorkerEventDispatcher
+  const Provider(XHR, useExisting: WebWorkerXHRImpl)
 ];
 ExceptionHandler _exceptionHandler() {
   return new ExceptionHandler(new PrintLogger());

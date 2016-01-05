@@ -35,7 +35,8 @@ import "package:angular2/core.dart"
         View,
         ViewContainerRef,
         ViewEncapsulation,
-        ViewMetadata;
+        ViewMetadata,
+        Scope;
 import "package:angular2/platform/common_dom.dart" show By;
 
 main() {
@@ -501,6 +502,7 @@ main() {
               var childNodes = DOM.childNodes(main.debugElement.nativeElement);
               expect(childNodes[0]).toHaveText("div {color: red}SIMPLE1(A)");
               expect(childNodes[1]).toHaveText("div {color: blue}SIMPLE2(B)");
+              main.destroy();
               async.done();
             });
           }));
@@ -590,6 +592,52 @@ main() {
             expect(DOM.getInnerHTML(main.debugElement.nativeElement)).toEqual(
                 "<cmp-a1>a1<cmp-b11>b11</cmp-b11><cmp-b12>b12</cmp-b12></cmp-a1>" +
                     "<cmp-a2>a2<cmp-b21>b21</cmp-b21><cmp-b22>b22</cmp-b22></cmp-a2>");
+            async.done();
+          });
+        }));
+    it(
+        "should project filled view containers into a view container",
+        inject([TestComponentBuilder, AsyncTestCompleter],
+            (TestComponentBuilder tcb, async) {
+          tcb
+              .overrideView(
+                  MainComp,
+                  new ViewMetadata(
+                      template: "<conditional-content>" +
+                          "<div class=\"left\">A</div>" +
+                          "<template manual class=\"left\">B</template>" +
+                          "<div class=\"left\">C</div>" +
+                          "<div>D</div>" +
+                          "</conditional-content>",
+                      directives: [
+                        ConditionalContentComponent,
+                        ManualViewportDirective
+                      ]))
+              .createAsync(MainComp)
+              .then((main) {
+            var conditionalComp = main.debugElement
+                .query(By.directive(ConditionalContentComponent));
+            var viewViewportDir = conditionalComp
+                .query(By.directive(ManualViewportDirective), Scope.view)
+                .inject(ManualViewportDirective);
+            var contentViewportDir = conditionalComp
+                .query(By.directive(ManualViewportDirective), Scope.light)
+                .inject(ManualViewportDirective);
+            expect(main.debugElement.nativeElement).toHaveText("(, D)");
+            expect(main.debugElement.nativeElement).toHaveText("(, D)");
+            // first show content viewport, then the view viewport,
+
+            // i.e. projection needs to take create of already
+
+            // created views
+            contentViewportDir.show();
+            viewViewportDir.show();
+            expect(main.debugElement.nativeElement).toHaveText("(ABC, D)");
+            // hide view viewport, and test that it also hides
+
+            // the content viewport's views
+            viewViewportDir.hide();
+            expect(main.debugElement.nativeElement).toHaveText("(, D)");
             async.done();
           });
         }));

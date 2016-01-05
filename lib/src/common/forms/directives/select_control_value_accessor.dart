@@ -48,7 +48,9 @@ class SelectControlValueAccessor implements ControlValueAccessor {
   }
   void writeValue(dynamic value) {
     this.value = value;
-    this._renderer.setElementProperty(this._elementRef, "value", value);
+    this
+        ._renderer
+        .setElementProperty(this._elementRef.nativeElement, "value", value);
   }
 
   void registerOnChange(dynamic /* () => any */ fn) {

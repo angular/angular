@@ -15,7 +15,7 @@ import "package:angular2/core.dart"
         reflector,
         APPLICATION_COMMON_PROVIDERS,
         PLATFORM_COMMON_PROVIDERS,
-        Renderer,
+        RootRenderer,
         PLATFORM_INITIALIZER,
         APP_INITIALIZER;
 import "package:angular2/platform/common_dom.dart"
@@ -32,7 +32,7 @@ import "package:angular2/src/platform/dom/events/hammer_gestures.dart"
     show HammerGesturesPlugin;
 import "package:angular2/src/platform/dom/dom_tokens.dart" show DOCUMENT;
 import "package:angular2/src/platform/dom/dom_renderer.dart"
-    show DomRenderer, DomRenderer_;
+    show DomRootRenderer, DomRootRenderer_;
 import "package:angular2/src/platform/dom/shared_styles_host.dart"
     show DomSharedStylesHost;
 import "package:angular2/src/platform/dom/shared_styles_host.dart"
@@ -59,10 +59,8 @@ import "package:angular2/src/web_workers/shared/client_message_broker.dart"
 import "package:angular2/src/web_workers/shared/serializer.dart"
     show Serializer;
 import "package:angular2/src/web_workers/shared/api.dart" show ON_WEB_WORKER;
-import "package:angular2/src/web_workers/shared/render_proto_view_ref_store.dart"
-    show RenderProtoViewRefStore;
-import "package:angular2/src/web_workers/shared/render_view_with_fragments_store.dart"
-    show RenderViewWithFragmentsStore;
+import "package:angular2/src/web_workers/shared/render_store.dart"
+    show RenderStore;
 
 const OpaqueToken WORKER_SCRIPT = const OpaqueToken("WebWorkerScript");
 // Message based Worker classes that listen on the MessageBus
@@ -83,13 +81,13 @@ const List<dynamic> WORKER_RENDER_APP_COMMON = const [
   // TODO(jteplitz602): Investigate if we definitely need EVENT_MANAGER on the render thread
 
   // #5298
-  const Provider(EVENT_MANAGER_PLUGINS, useClass: DomEventsPlugin, multi: true), const Provider(EVENT_MANAGER_PLUGINS, useClass: KeyEventsPlugin, multi: true),
+  const Provider(EVENT_MANAGER_PLUGINS, useClass: DomEventsPlugin, multi: true),
+  const Provider(EVENT_MANAGER_PLUGINS, useClass: KeyEventsPlugin, multi: true),
   const Provider(EVENT_MANAGER_PLUGINS, useClass: HammerGesturesPlugin, multi: true),
-  const Provider(DomRenderer, useClass: DomRenderer_), const Provider(Renderer, useExisting: DomRenderer),
+  const Provider(DomRootRenderer, useClass: DomRootRenderer_), const Provider(RootRenderer, useExisting: DomRootRenderer),
   const Provider(SharedStylesHost, useExisting: DomSharedStylesHost), const Provider(XHR, useClass: XHRImpl), MessageBasedXHRImpl,
   const Provider(ServiceMessageBrokerFactory, useClass: ServiceMessageBrokerFactory_),
-  const Provider(ClientMessageBrokerFactory, useClass: ClientMessageBrokerFactory_), Serializer,
-  const Provider(ON_WEB_WORKER, useValue: false), RenderViewWithFragmentsStore, RenderProtoViewRefStore,
+  const Provider(ClientMessageBrokerFactory, useClass: ClientMessageBrokerFactory_), Serializer, const Provider(ON_WEB_WORKER, useValue: false), RenderStore,
   DomSharedStylesHost, Testability, BrowserDetails, AnimationBuilder, EventManager
 ];
 initializeGenericWorkerRenderer(Injector injector) {

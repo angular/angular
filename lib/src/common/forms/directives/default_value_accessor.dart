@@ -34,9 +34,8 @@ class DefaultValueAccessor implements ControlValueAccessor {
   DefaultValueAccessor(this._renderer, this._elementRef) {}
   void writeValue(dynamic value) {
     var normalizedValue = isBlank(value) ? "" : value;
-    this
-        ._renderer
-        .setElementProperty(this._elementRef, "value", normalizedValue);
+    this._renderer.setElementProperty(
+        this._elementRef.nativeElement, "value", normalizedValue);
   }
 
   void registerOnChange(dynamic /* (_: any) => void */ fn) {

@@ -12,7 +12,9 @@ import "exceptions.dart"
     show
         ChangeDetectionError,
         ExpressionChangedAfterItHasBeenCheckedException,
-        DehydratedException;
+        DehydratedException,
+        EventEvaluationErrorContext,
+        EventEvaluationError;
 import "binding_record.dart" show BindingTarget;
 import "parser/locals.dart" show Locals;
 import "constants.dart" show ChangeDetectionStrategy, ChangeDetectorState;
@@ -35,7 +37,6 @@ class _Context {
 
 class AbstractChangeDetector<T> implements ChangeDetector {
   String id;
-  ChangeDispatcher dispatcher;
   num numberOfPropertyProtoRecords;
   List<BindingTarget> bindingTargets;
   List<DirectiveIndex> directiveIndices;
@@ -56,13 +57,9 @@ class AbstractChangeDetector<T> implements ChangeDetector {
   // This is an experimental feature. Works only in Dart.
   List<dynamic> subscriptions;
   List<dynamic> streams;
-  AbstractChangeDetector(
-      this.id,
-      this.dispatcher,
-      this.numberOfPropertyProtoRecords,
-      this.bindingTargets,
-      this.directiveIndices,
-      this.strategy) {
+  ChangeDispatcher dispatcher;
+  AbstractChangeDetector(this.id, this.numberOfPropertyProtoRecords,
+      this.bindingTargets, this.directiveIndices, this.strategy) {
     this.ref = new ChangeDetectorRef_(this);
   }
   void addContentChild(ChangeDetector cd) {
@@ -87,10 +84,25 @@ class AbstractChangeDetector<T> implements ChangeDetector {
     this.parent.removeContentChild(this);
   }
 
-  bool handleEvent(String eventName, num elIndex, Locals locals) {
-    var res = this.handleEventInternal(eventName, elIndex, locals);
-    this.markPathToRootAsCheckOnce();
-    return res;
+  bool handleEvent(String eventName, num elIndex, dynamic event) {
+    if (!this.hydrated()) {
+      return true;
+    }
+    try {
+      var locals = new Map<String, dynamic>();
+      locals["\$event"] = event;
+      var res = !this.handleEventInternal(
+          eventName, elIndex, new Locals(this.locals, locals));
+      this.markPathToRootAsCheckOnce();
+      return res;
+    } catch (e, e_stack) {
+      var c = this.dispatcher.getDebugContext(null, elIndex, null);
+      var context = isPresent(c)
+          ? new EventEvaluationErrorContext(
+              c.element, c.componentElement, c.context, c.locals, c.injector)
+          : null;
+      throw new EventEvaluationError(eventName, e, e_stack, context);
+    }
   }
 
   bool handleEventInternal(String eventName, num elIndex, Locals locals) {
@@ -162,7 +174,9 @@ class AbstractChangeDetector<T> implements ChangeDetector {
   // This method is not intended to be overridden. Subclasses should instead provide an
 
   // implementation of `hydrateDirectives`.
-  void hydrate(T context, Locals locals, dynamic directives, Pipes pipes) {
+  void hydrate(
+      T context, Locals locals, ChangeDispatcher dispatcher, Pipes pipes) {
+    this.dispatcher = dispatcher;
     this.mode = ChangeDetectionUtil.changeDetectionMode(this.strategy);
     this.context = context;
     if (identical(this.strategy, ChangeDetectionStrategy.OnPushObserve)) {
@@ -170,12 +184,12 @@ class AbstractChangeDetector<T> implements ChangeDetector {
     }
     this.locals = locals;
     this.pipes = pipes;
-    this.hydrateDirectives(directives);
+    this.hydrateDirectives(dispatcher);
     this.state = ChangeDetectorState.NeverChecked;
   }
 
   // Subclasses should override this method to hydrate any directives.
-  void hydrateDirectives(dynamic directives) {}
+  void hydrateDirectives(ChangeDispatcher dispatcher) {}
   // This method is not intended to be overridden. Subclasses should instead provide an
 
   // implementation of `dehydrateDirectives`.
@@ -185,6 +199,7 @@ class AbstractChangeDetector<T> implements ChangeDetector {
     if (identical(this.strategy, ChangeDetectionStrategy.OnPushObserve)) {
       this._unsubsribeFromObservables();
     }
+    this.dispatcher = null;
     this.context = null;
     this.locals = null;
     this.pipes = null;
@@ -195,6 +210,19 @@ class AbstractChangeDetector<T> implements ChangeDetector {
   void dehydrateDirectives(bool destroyPipes) {}
   bool hydrated() {
     return isPresent(this.context);
+  }
+
+  void destroyRecursive() {
+    this.dispatcher.notifyOnDestroy();
+    this.dehydrate();
+    var children = this.contentChildren;
+    for (var i = 0; i < children.length; i++) {
+      children[i].destroyRecursive();
+    }
+    children = this.viewChildren;
+    for (var i = 0; i < children.length; i++) {
+      children[i].destroyRecursive();
+    }
   }
 
   void afterContentLifecycleCallbacks() {
@@ -334,7 +362,7 @@ class AbstractChangeDetector<T> implements ChangeDetector {
     try {
       var c = this
           .dispatcher
-          .getDebugContext(this._currentBinding().elementIndex, null);
+          .getDebugContext(null, this._currentBinding().elementIndex, null);
       var context = isPresent(c)
           ? new _Context(c.element, c.componentElement, c.context, c.locals,
               c.injector, this._currentBinding().debug)

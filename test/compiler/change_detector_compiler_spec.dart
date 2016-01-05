@@ -46,9 +46,17 @@ var THIS_MODULE_URL = '''package:${ THIS_MODULE_ID}${ MODULE_SUFFIX}''';
 var THIS_MODULE_REF = moduleRef(THIS_MODULE_URL);
 main() {
   describe("ChangeDetectorCompiler", () {
-    beforeEachProviders(() => TEST_PROVIDERS);
+    beforeEachProviders(() => [
+          TEST_PROVIDERS,
+          provide(ChangeDetectorGenConfig,
+              useValue: new ChangeDetectorGenConfig(true, false, false))
+        ]);
     TemplateParser parser;
     ChangeDetectionCompiler compiler;
+    beforeEachProviders(() => [
+          provide(ChangeDetectorGenConfig,
+              useValue: new ChangeDetectorGenConfig(true, false, false))
+        ]);
     beforeEach(
         inject([TemplateParser, ChangeDetectionCompiler], (_parser, _compiler) {
       parser = _parser;
@@ -60,30 +68,14 @@ main() {
           [List<CompileDirectiveMetadata> directives = const []]) {
         var type = new CompileTypeMetadata(
             name: stringify(SomeComponent), moduleUrl: THIS_MODULE_URL);
-        var parsedTemplate = parser.parse(template, directives, "TestComp");
+        var parsedTemplate = parser.parse(template, directives, [], "TestComp");
         var factories = compiler.compileComponentRuntime(
             type, ChangeDetectionStrategy.Default, parsedTemplate);
         return testChangeDetector(factories[0]);
       }
-      describe("no jit", () {
-        beforeEachProviders(() => [
-              provide(ChangeDetectorGenConfig,
-                  useValue: new ChangeDetectorGenConfig(true, false, false))
-            ]);
-        it("should watch element properties", () {
-          expect(detectChanges(compiler, "<div [elProp]=\"someProp\">"))
-              .toEqual(["elementProperty(elProp)=someValue"]);
-        });
-      });
-      describe("jit", () {
-        beforeEachProviders(() => [
-              provide(ChangeDetectorGenConfig,
-                  useValue: new ChangeDetectorGenConfig(true, false, true))
-            ]);
-        it("should watch element properties", () {
-          expect(detectChanges(compiler, "<div [elProp]=\"someProp\">"))
-              .toEqual(["elementProperty(elProp)=someValue"]);
-        });
+      it("should watch element properties", () {
+        expect(detectChanges(compiler, "<div [elProp]=\"someProp\">"))
+            .toEqual(["elementProperty(elProp)=someValue"]);
       });
     });
     describe("compileComponentCodeGen", () {
@@ -92,7 +84,7 @@ main() {
           [List<CompileDirectiveMetadata> directives = const []]) {
         var type = new CompileTypeMetadata(
             name: stringify(SomeComponent), moduleUrl: THIS_MODULE_URL);
-        var parsedTemplate = parser.parse(template, directives, "TestComp");
+        var parsedTemplate = parser.parse(template, directives, [], "TestComp");
         var sourceExpressions = compiler.compileComponentCodeGen(
             type, ChangeDetectionStrategy.Default, parsedTemplate);
         var testableModule =
@@ -124,7 +116,7 @@ SourceModule createTestableModule(
 
 List<String> testChangeDetector(Function changeDetectorFactory) {
   var dispatcher = new TestDispatcher([], []);
-  var cd = changeDetectorFactory(dispatcher);
+  var cd = changeDetectorFactory();
   var ctx = new SomeComponent();
   ctx.someProp = "someValue";
   var locals =

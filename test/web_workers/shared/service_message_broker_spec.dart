@@ -20,10 +20,8 @@ import "package:angular2/src/facade/async.dart"
     show ObservableWrapper, PromiseWrapper;
 import "package:angular2/core.dart" show provide;
 import "package:angular2/src/web_workers/shared/api.dart" show ON_WEB_WORKER;
-import "package:angular2/src/web_workers/shared/render_proto_view_ref_store.dart"
-    show RenderProtoViewRefStore;
-import "package:angular2/src/web_workers/shared/render_view_with_fragments_store.dart"
-    show RenderViewWithFragmentsStore;
+import "package:angular2/src/web_workers/shared/render_store.dart"
+    show RenderStore;
 
 main() {
   const CHANNEL = "UIMessageBroker Test Channel";
@@ -32,11 +30,8 @@ main() {
   const PASSED_ARG_2 = "TEST";
   const RESULT = 20;
   const ID = "methodId";
-  beforeEachProviders(() => [
-        provide(ON_WEB_WORKER, useValue: true),
-        RenderProtoViewRefStore,
-        RenderViewWithFragmentsStore
-      ]);
+  beforeEachProviders(
+      () => [provide(ON_WEB_WORKER, useValue: true), RenderStore]);
   describe("UIMessageBroker", () {
     var messageBuses;
     beforeEach(() {

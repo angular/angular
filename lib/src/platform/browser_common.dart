@@ -12,7 +12,7 @@ import "package:angular2/core.dart"
         platform,
         ExceptionHandler,
         Reflector,
-        Renderer,
+        RootRenderer,
         reflector,
         APPLICATION_COMMON_PROVIDERS,
         PLATFORM_COMMON_PROVIDERS;
@@ -29,7 +29,7 @@ import "package:angular2/src/platform/dom/events/hammer_gestures.dart"
     show HammerGesturesPlugin;
 import "package:angular2/src/platform/dom/dom_tokens.dart" show DOCUMENT;
 import "package:angular2/src/platform/dom/dom_renderer.dart"
-    show DomRenderer, DomRenderer_;
+    show DomRootRenderer, DomRootRenderer_;
 import "package:angular2/src/platform/dom/shared_styles_host.dart"
     show DomSharedStylesHost;
 import "package:angular2/src/platform/dom/shared_styles_host.dart"
@@ -93,8 +93,8 @@ const List<dynamic> BROWSER_APP_COMMON_PROVIDERS = const [
   const Provider(EVENT_MANAGER_PLUGINS, useClass: KeyEventsPlugin, multi: true),
   const Provider(EVENT_MANAGER_PLUGINS,
       useClass: HammerGesturesPlugin, multi: true),
-  const Provider(DomRenderer, useClass: DomRenderer_),
-  const Provider(Renderer, useExisting: DomRenderer),
+  const Provider(DomRootRenderer, useClass: DomRootRenderer_),
+  const Provider(RootRenderer, useExisting: DomRootRenderer),
   const Provider(SharedStylesHost, useExisting: DomSharedStylesHost),
   DomSharedStylesHost,
   Testability,

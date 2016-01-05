@@ -155,19 +155,53 @@ class CodegenLogicUtil {
     var res = [];
     for (var i = 0; i < directiveRecords.length; ++i) {
       var r = directiveRecords[i];
-      res.add(
-          '''${ this . _names . getDirectiveName ( r . directiveIndex )} = ${ this . _genReadDirective ( i )};''');
+      var dirVarName = this._names.getDirectiveName(r.directiveIndex);
+      res.add('''${ dirVarName} = ${ this . _genReadDirective ( i )};''');
+      if (isPresent(r.outputs)) {
+        r.outputs.forEach((output) {
+          var eventHandlerExpr =
+              this._genEventHandler(r.directiveIndex.elementIndex, output[1]);
+          if (IS_DART) {
+            res.add(
+                '''${ dirVarName}.${ output [ 0 ]}.listen(${ eventHandlerExpr});''');
+          } else {
+            res.add(
+                '''${ dirVarName}.${ output [ 0 ]}.subscribe({next: ${ eventHandlerExpr}});''');
+          }
+        });
+      }
     }
     return res.join("\n");
   }
 
+  String genDirectivesOnDestroy(List<DirectiveRecord> directiveRecords) {
+    var res = [];
+    for (var i = 0; i < directiveRecords.length; ++i) {
+      var r = directiveRecords[i];
+      if (r.callOnDestroy) {
+        var dirVarName = this._names.getDirectiveName(r.directiveIndex);
+        res.add('''${ dirVarName}.ngOnDestroy();''');
+      }
+    }
+    return res.join("\n");
+  }
+
+  String _genEventHandler(num boundElementIndex, String eventName) {
+    if (IS_DART) {
+      return '''(event) => this.handleEvent(\'${ eventName}\', ${ boundElementIndex}, event)''';
+    } else {
+      return '''(function(event) { return this.handleEvent(\'${ eventName}\', ${ boundElementIndex}, event); }).bind(this)''';
+    }
+  }
+
   _genReadDirective(num index) {
+    var directiveExpr = '''this.getDirectiveFor(directives, ${ index})''';
     // This is an experimental feature. Works only in Dart.
     if (identical(
         this._changeDetection, ChangeDetectionStrategy.OnPushObserve)) {
-      return '''this.observeDirective(this.getDirectiveFor(directives, ${ index}), ${ index})''';
+      return '''this.observeDirective(${ directiveExpr}, ${ index})''';
     } else {
-      return '''this.getDirectiveFor(directives, ${ index})''';
+      return directiveExpr;
     }
   }
 

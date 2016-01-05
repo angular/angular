@@ -16,8 +16,6 @@ import "package:angular2/testing_internal.dart"
         xit,
         TestComponentBuilder;
 import "package:angular2/src/facade/lang.dart" show global;
-import "package:angular2/src/core/linker/view_pool.dart"
-    show APP_VIEW_POOL_CAPACITY;
 import "package:angular2/core.dart"
     show provide, Component, Directive, Injectable, View;
 import "package:angular2/platform/browser.dart" show inspectNativeElement;
@@ -32,7 +30,6 @@ class MyComp {
 
 main() {
   describe("element probe", () {
-    beforeEachProviders(() => [provide(APP_VIEW_POOL_CAPACITY, useValue: 0)]);
     it(
         "should return a TestElement from a dom element",
         inject([TestComponentBuilder, AsyncTestCompleter],

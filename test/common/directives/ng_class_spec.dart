@@ -21,8 +21,6 @@ import "package:angular2/src/facade/collection.dart"
 import "package:angular2/core.dart" show Component, View, provide;
 import "package:angular2/common.dart" show NgFor;
 import "package:angular2/src/common/directives/ng_class.dart" show NgClass;
-import "package:angular2/src/core/linker/view_pool.dart"
-    show APP_VIEW_POOL_CAPACITY;
 
 detectChangesAndCheck(ComponentFixture fixture, String classes,
     [num elIndex = 0]) {
@@ -35,9 +33,6 @@ detectChangesAndCheck(ComponentFixture fixture, String classes,
 main() {
   describe("binding to CSS class list", () {
     describe("viewpool support", () {
-      beforeEachProviders(() {
-        return [provide(APP_VIEW_POOL_CAPACITY, useValue: 100)];
-      });
       it(
           "should clean up when the directive is destroyed",
           inject([TestComponentBuilder, AsyncTestCompleter],

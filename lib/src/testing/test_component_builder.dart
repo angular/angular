@@ -9,15 +9,15 @@ import "package:angular2/core.dart"
         Injector,
         Injectable,
         ViewMetadata,
-        ViewRef,
+        EmbeddedViewRef,
         ViewResolver,
         provide;
 import "package:angular2/src/facade/lang.dart" show Type, isPresent, isBlank;
 import "package:angular2/src/facade/async.dart" show Future;
 import "package:angular2/src/facade/collection.dart"
     show ListWrapper, MapWrapper;
+import "package:angular2/src/core/linker/view_ref.dart" show ViewRef_;
 import "package:angular2/src/core/linker/view.dart" show AppView;
-import "package:angular2/src/core/linker/view_ref.dart" show internalView;
 import "utils.dart" show el;
 import "package:angular2/src/platform/dom/dom_tokens.dart" show DOCUMENT;
 import "package:angular2/src/platform/dom/dom_adapter.dart" show DOM;
@@ -56,12 +56,12 @@ class ComponentFixture_ extends ComponentFixture {
   AppView _componentParentView;
   ComponentFixture_(ComponentRef componentRef) : super() {
     /* super call moved to initializer */;
+    this._componentParentView =
+        ((componentRef.hostView as ViewRef_)).internalView;
     this.debugElement =
-        new DebugElement_(internalView((componentRef.hostView as ViewRef)), 0);
+        new DebugElement_(this._componentParentView.appElements[0]);
     this.componentInstance = this.debugElement.componentInstance;
     this.nativeElement = this.debugElement.nativeElement;
-    this._componentParentView =
-        internalView((componentRef.hostView as ViewRef));
     this._componentRef = componentRef;
   }
   void detectChanges() {

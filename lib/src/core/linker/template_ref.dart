@@ -1,8 +1,6 @@
 library angular2.src.core.linker.template_ref;
 
-import "view_ref.dart" show internalView, ProtoViewRef;
 import "element_ref.dart" show ElementRef, ElementRef_;
-import "view.dart" as viewModule;
 
 /**
  * Represents an Embedded Template that can be used to instantiate Embedded Views.
@@ -31,33 +29,14 @@ abstract class TemplateRef {
 
   // TODO(i): rename to anchor or location
   ElementRef elementRef;
-  /**
-   * Allows you to check if this Embedded Template defines Local Variable with name matching `name`.
-   */
-  bool hasLocal(String name);
 }
 
 class TemplateRef_ extends TemplateRef {
-  TemplateRef_(ElementRef elementRef) : super() {
+  ElementRef_ _elementRef;
+  TemplateRef_(this._elementRef) : super() {
     /* super call moved to initializer */;
-    this.elementRef = elementRef;
   }
-  viewModule.AppProtoView _getProtoView() {
-    var elementRef = (this.elementRef as ElementRef_);
-    var parentView = internalView(elementRef.parentView);
-    return parentView.proto.elementBinders[elementRef.boundElementIndex -
-        parentView.elementOffset].nestedProtoView;
-  }
-
-  /**
-   * Reference to the ProtoView used for creating Embedded Views that are based on the compiled
-   * Embedded Template.
-   */
-  ProtoViewRef get protoViewRef {
-    return this._getProtoView().ref;
-  }
-
-  bool hasLocal(String name) {
-    return this._getProtoView().templateVariableBindings.containsKey(name);
+  ElementRef_ get elementRef {
+    return this._elementRef;
   }
 }
