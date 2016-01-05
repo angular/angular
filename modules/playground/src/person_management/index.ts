@@ -95,12 +95,13 @@ class DataService {
           </div>
 
           <div>
-            <label>{{person.fullName}}</label>
+            <label>[[person.fullName]]</label>
           </div>
       </form>
     </div>
   `,
-  directives: [FORM_DIRECTIVES]
+  directives: [FORM_DIRECTIVES],
+  interpolationPattern: '\\[\\[(.*)\\]\\]'
 })
 class FullNameComponent {
   constructor(private _service: DataService) {}

@@ -62,13 +62,16 @@ export class CompileTemplateMetadata {
   styles: string[];
   styleUrls: string[];
   ngContentSelectors: string[];
-  constructor({encapsulation, template, templateUrl, styles, styleUrls, ngContentSelectors}: {
+  interpolationPattern: string;
+  constructor({encapsulation, template, templateUrl, styles, styleUrls, ngContentSelectors,
+               interpolationPattern}: {
     encapsulation?: ViewEncapsulation,
     template?: string,
     templateUrl?: string,
     styles?: string[],
     styleUrls?: string[],
-    ngContentSelectors?: string[]
+    ngContentSelectors?: string[],
+    interpolationPattern?: string
   } = {}) {
     this.encapsulation = isPresent(encapsulation) ? encapsulation : ViewEncapsulation.Emulated;
     this.template = template;
@@ -76,6 +79,7 @@ export class CompileTemplateMetadata {
     this.styles = isPresent(styles) ? styles : [];
     this.styleUrls = isPresent(styleUrls) ? styleUrls : [];
     this.ngContentSelectors = isPresent(ngContentSelectors) ? ngContentSelectors : [];
+    this.interpolationPattern = interpolationPattern;
   }
 
   static fromJson(data: {[key: string]: any}): CompileTemplateMetadata {
@@ -87,7 +91,8 @@ export class CompileTemplateMetadata {
       templateUrl: data['templateUrl'],
       styles: data['styles'],
       styleUrls: data['styleUrls'],
-      ngContentSelectors: data['ngContentSelectors']
+      ngContentSelectors: data['ngContentSelectors'],
+      interpolationPattern: data['interpolationPattern']
     });
   }
 
@@ -99,7 +104,8 @@ export class CompileTemplateMetadata {
       'templateUrl': this.templateUrl,
       'styles': this.styles,
       'styleUrls': this.styleUrls,
-      'ngContentSelectors': this.ngContentSelectors
+      'ngContentSelectors': this.ngContentSelectors,
+      'interpolationPattern': this.interpolationPattern
     };
   }
 }

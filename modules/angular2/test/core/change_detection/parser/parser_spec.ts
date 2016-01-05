@@ -21,8 +21,8 @@ export function main() {
     return createParser().parseTemplateBindings(text, location);
   }
 
-  function parseInterpolation(text, location = null): any {
-    return createParser().parseInterpolation(text, location);
+  function parseInterpolation(text, location = null, interpolationPattern = null): any {
+    return createParser().parseInterpolation(text, location, interpolationPattern);
   }
 
   function parseSimpleBinding(text, location = null): any {
@@ -398,6 +398,13 @@ export function main() {
 
       it('should parse no prefix/suffix interpolation', () => {
         var ast = parseInterpolation('{{a}}').ast;
+        expect(ast.strings).toEqual(['', '']);
+        expect(ast.expressions.length).toEqual(1);
+        expect(ast.expressions[0].name).toEqual('a');
+      });
+
+      it('should parse no prefix/suffix interpolation with custom regexp', () => {
+        var ast = parseInterpolation('[[a]]', null, /\[\[(.*?)\]\]/g).ast;
         expect(ast.strings).toEqual(['', '']);
         expect(ast.expressions.length).toEqual(1);
         expect(ast.expressions[0].name).toEqual('a');

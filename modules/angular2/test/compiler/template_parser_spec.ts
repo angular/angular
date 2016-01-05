@@ -69,8 +69,9 @@ export function main() {
           {selector: '[ngIf]', type: new CompileTypeMetadata({name: 'NgIf'}), inputs: ['ngIf']});
     }));
 
-    function parse(template: string, directives: CompileDirectiveMetadata[]): TemplateAst[] {
-      return parser.parse(template, directives, 'TestComp');
+    function parse(template: string, directives: CompileDirectiveMetadata[],
+                   interpolationPattern?: RegExp): TemplateAst[] {
+      return parser.parse(template, directives, 'TestComp', interpolationPattern);
     }
 
     describe('template transform', () => {
@@ -117,6 +118,11 @@ export function main() {
 
       it('should parse bound text nodes', () => {
         expect(humanizeTplAst(parse('{{a}}', []))).toEqual([[BoundTextAst, '{{ a }}']]);
+      });
+
+      it('should parse bound text nodes with custom regexp', () => {
+        expect(humanizeTplAst(parse('[[a]]', [], /\[\[(.*?)\]\]/g)))
+            .toEqual([[BoundTextAst, '{{ a }}']]);
       });
 
       describe('bound properties', () => {

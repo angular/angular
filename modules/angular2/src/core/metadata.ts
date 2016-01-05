@@ -297,6 +297,7 @@ export interface ViewFactory {
     encapsulation?: ViewEncapsulation,
     styles?: string[],
     styleUrls?: string[],
+    interpolationPattern?: string,
   }): ViewDecorator;
   new (obj: {
     templateUrl?: string,
@@ -306,6 +307,7 @@ export interface ViewFactory {
     encapsulation?: ViewEncapsulation,
     styles?: string[],
     styleUrls?: string[],
+    interpolationPattern?: string,
   }): ViewMetadata;
 }
 

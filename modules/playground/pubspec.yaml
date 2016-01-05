@@ -21,6 +21,7 @@ transformers:
     entry_points:
         - web/src/gestures/index.dart
         - web/src/hello_world/index.dart
+        - web/src/hello_world_custom_interpolation/index.dart
         - web/src/key_events/index.dart
         - web/src/sourcemap/index.dart
         - web/src/todo/index.dart
