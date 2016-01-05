@@ -229,3 +229,37 @@ changes to be accepted, the CLA must be signed. It's a quick process, we promise
 [plunker]: http://plnkr.co/edit
 [runnable]: http://runnable.com/
 [stackoverflow]: http://stackoverflow.com/questions/tagged/angular
+<!-- <script type="text/javascript" src="/js/jquery-1.10.2.js"></script> -->
+<div class="row  third_header">
+			<div class="box_container">
+				<div class="top_box1 third_header_text">
+					
+						<h3 class="third_hdr">
+							<a style="font-size:24px;font-weight:500;" target="_blank" href="http://feeds.rapidfeeds.com/80998/">
+							<img src="/images/podcast.png" width="18" height="18">							</a>
+							<a style="font-size:24px;font-weight:500;" href="/feedmanager/feeditems?feedid=80998">
+								last							</a>
+						</h3>
+					
+				</div>
+
+				<div class="diff_side_buttons_box ">
+					<ul class="side_buttons">
+						<li>
+							<a title="Add Item" href="/feedmanager/additem?feedid=80998"><span class="fa fa-plus right_buttons"></span></a>
+						</li>
+						<li>
+							<a title="Configure Feed" href="/feedmanager/configure?feedid=80998"><span class="fa fa-cog right_buttons"></span></a>	
+						</li>
+						<li>
+							<a title="Publish Feed" href="/feedmanager/feed-publish?feedid=80998"><span class="fa fa-code right_buttons"></span></a>
+						</li>
+						<li>
+							<a title="Feed Stats" href="/feedmanager/feed-stats?feedid=80998"><span class="fa fa-bar-chart right_buttons"></span></a>
+						</li>
+					</ul>
+				</div>
+				<div class="clear"></div>
+				
+			</div>
+		</div>
