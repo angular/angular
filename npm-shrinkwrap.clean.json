@@ -1815,7 +1815,7 @@
       "version": "1.0.0"
     },
     "core-js": {
-      "version": "1.2.6"
+      "version": "2.0.2"
     },
     "core-object": {
       "version": "0.0.2"
@@ -3540,52 +3540,19 @@
       "version": "2.5.0"
     },
     "karma": {
-      "version": "0.13.15",
+      "version": "0.13.17",
       "dependencies": {
         "batch": {
           "version": "0.5.3"
         },
-        "body-parser": {
-          "version": "1.14.2"
-        },
-        "bytes": {
-          "version": "2.2.0"
-        },
-        "depd": {
-          "version": "1.1.0"
-        },
         "glob": {
-          "version": "5.0.15"
+          "version": "6.0.3"
         },
         "graceful-fs": {
           "version": "4.1.2"
         },
-        "iconv-lite": {
-          "version": "0.4.13"
-        },
-        "lodash": {
-          "version": "3.10.1"
-        },
-        "mime-db": {
-          "version": "1.20.0"
-        },
-        "mime-types": {
-          "version": "2.1.8"
-        },
-        "minimatch": {
-          "version": "3.0.0"
-        },
-        "qs": {
-          "version": "5.2.0"
-        },
-        "raw-body": {
-          "version": "2.1.5"
-        },
         "source-map": {
           "version": "0.5.3"
-        },
-        "type-is": {
-          "version": "1.6.10"
         }
       }
     },

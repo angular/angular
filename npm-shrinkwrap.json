@@ -14,11 +14,13 @@
       "dependencies": {
         "mime-db": {
           "version": "1.20.0",
-          "from": "mime-db@>=1.20.0 <1.21.0"
+          "from": "mime-db@1.20.0",
+          "resolved": "https://registry.npmjs.org/mime-db/-/mime-db-1.20.0.tgz"
         },
         "mime-types": {
           "version": "2.1.8",
-          "from": "mime-types@>=2.1.6 <2.2.0"
+          "from": "mime-types@2.1.8",
+          "resolved": "https://registry.npmjs.org/mime-types/-/mime-types-2.1.8.tgz"
         }
       }
     },
@@ -2842,9 +2844,9 @@
       "resolved": "https://registry.npmjs.org/copy-dereference/-/copy-dereference-1.0.0.tgz"
     },
     "core-js": {
-      "version": "1.2.6",
-      "from": "core-js@>=1.2.2 <2.0.0",
-      "resolved": "https://registry.npmjs.org/core-js/-/core-js-1.2.6.tgz"
+      "version": "2.0.2",
+      "from": "core-js@>=2.0.2 <3.0.0",
+      "resolved": "https://registry.npmjs.org/core-js/-/core-js-2.0.2.tgz"
     },
     "core-object": {
       "version": "0.0.2",
@@ -5621,84 +5623,29 @@
       "resolved": "https://registry.npmjs.org/jszip/-/jszip-2.5.0.tgz"
     },
     "karma": {
-      "version": "0.13.15",
-      "from": "karma@0.13.15",
-      "resolved": "https://registry.npmjs.org/karma/-/karma-0.13.15.tgz",
+      "version": "0.13.17",
+      "from": "karma@0.13.17",
+      "resolved": "https://registry.npmjs.org/karma/-/karma-0.13.17.tgz",
       "dependencies": {
         "batch": {
           "version": "0.5.3",
           "from": "batch@>=0.5.3 <0.6.0",
           "resolved": "https://registry.npmjs.org/batch/-/batch-0.5.3.tgz"
         },
-        "body-parser": {
-          "version": "1.14.2",
-          "from": "body-parser@>=1.12.4 <2.0.0",
-          "resolved": "https://registry.npmjs.org/body-parser/-/body-parser-1.14.2.tgz"
-        },
-        "bytes": {
-          "version": "2.2.0",
-          "from": "bytes@2.2.0",
-          "resolved": "https://registry.npmjs.org/bytes/-/bytes-2.2.0.tgz"
-        },
-        "depd": {
-          "version": "1.1.0",
-          "from": "depd@>=1.1.0 <1.2.0",
-          "resolved": "https://registry.npmjs.org/depd/-/depd-1.1.0.tgz"
-        },
         "glob": {
-          "version": "5.0.15",
-          "from": "glob@>=5.0.10 <6.0.0",
-          "resolved": "https://registry.npmjs.org/glob/-/glob-5.0.15.tgz"
+          "version": "6.0.3",
+          "from": "glob@>=6.0.1 <7.0.0",
+          "resolved": "https://registry.npmjs.org/glob/-/glob-6.0.3.tgz"
         },
         "graceful-fs": {
           "version": "4.1.2",
           "from": "graceful-fs@>=4.1.2 <5.0.0",
           "resolved": "https://registry.npmjs.org/graceful-fs/-/graceful-fs-4.1.2.tgz"
         },
-        "iconv-lite": {
-          "version": "0.4.13",
-          "from": "iconv-lite@0.4.13",
-          "resolved": "https://registry.npmjs.org/iconv-lite/-/iconv-lite-0.4.13.tgz"
-        },
-        "lodash": {
-          "version": "3.10.1",
-          "from": "lodash@>=3.8.0 <4.0.0",
-          "resolved": "https://registry.npmjs.org/lodash/-/lodash-3.10.1.tgz"
-        },
-        "mime-db": {
-          "version": "1.20.0",
-          "from": "mime-db@>=1.20.0 <1.21.0",
-          "resolved": "https://registry.npmjs.org/mime-db/-/mime-db-1.20.0.tgz"
-        },
-        "mime-types": {
-          "version": "2.1.8",
-          "from": "mime-types@>=2.1.8 <2.2.0",
-          "resolved": "https://registry.npmjs.org/mime-types/-/mime-types-2.1.8.tgz"
-        },
-        "minimatch": {
-          "version": "3.0.0",
-          "from": "minimatch@>=3.0.0 <4.0.0",
-          "resolved": "https://registry.npmjs.org/minimatch/-/minimatch-3.0.0.tgz"
-        },
-        "qs": {
-          "version": "5.2.0",
-          "from": "qs@5.2.0",
-          "resolved": "https://registry.npmjs.org/qs/-/qs-5.2.0.tgz"
-        },
-        "raw-body": {
-          "version": "2.1.5",
-          "from": "raw-body@>=2.1.5 <2.2.0",
-          "resolved": "https://registry.npmjs.org/raw-body/-/raw-body-2.1.5.tgz"
-        },
         "source-map": {
           "version": "0.5.3",
           "from": "source-map@>=0.5.3 <0.6.0",
           "resolved": "https://registry.npmjs.org/source-map/-/source-map-0.5.3.tgz"
-        },
-        "type-is": {
-          "version": "1.6.10",
-          "from": "type-is@>=1.6.10 <1.7.0",
-          "resolved": "https://registry.npmjs.org/type-is/-/type-is-1.6.10.tgz"
         }
       }
     },
