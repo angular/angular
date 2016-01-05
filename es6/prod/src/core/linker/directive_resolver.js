@@ -125,3 +125,4 @@ DirectiveResolver = __decorate([
     Injectable(), 
     __metadata('design:paramtypes', [])
 ], DirectiveResolver);
+export var CODEGEN_DIRECTIVE_RESOLVER = new DirectiveResolver();

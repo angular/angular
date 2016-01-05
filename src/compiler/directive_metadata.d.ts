@@ -2,6 +2,15 @@ import { Type } from 'angular2/src/facade/lang';
 import { ChangeDetectionStrategy } from 'angular2/src/core/change_detection/change_detection';
 import { ViewEncapsulation } from 'angular2/src/core/metadata/view';
 import { LifecycleHooks } from 'angular2/src/core/linker/interfaces';
+export declare abstract class CompileMetadataWithType {
+    static fromJson(data: {
+        [key: string]: any;
+    }): CompileMetadataWithType;
+    abstract toJson(): {
+        [key: string]: any;
+    };
+    type: CompileTypeMetadata;
+}
 /**
  * Metadata regarding compilation of a type.
  */
@@ -51,7 +60,7 @@ export declare class CompileTemplateMetadata {
 /**
  * Metadata regarding compilation of a directive.
  */
-export declare class CompileDirectiveMetadata {
+export declare class CompileDirectiveMetadata implements CompileMetadataWithType {
     static create({type, isComponent, dynamicLoadable, selector, exportAs, changeDetection, inputs, outputs, host, lifecycleHooks, template}?: {
         type?: CompileTypeMetadata;
         isComponent?: boolean;
@@ -126,3 +135,19 @@ export declare class CompileDirectiveMetadata {
  * Construct {@link CompileDirectiveMetadata} from {@link ComponentTypeMetadata} and a selector.
  */
 export declare function createHostComponentMeta(componentType: CompileTypeMetadata, componentSelector: string): CompileDirectiveMetadata;
+export declare class CompilePipeMetadata implements CompileMetadataWithType {
+    type: CompileTypeMetadata;
+    name: string;
+    pure: boolean;
+    constructor({type, name, pure}?: {
+        type?: CompileTypeMetadata;
+        name?: string;
+        pure?: boolean;
+    });
+    static fromJson(data: {
+        [key: string]: any;
+    }): CompilePipeMetadata;
+    toJson(): {
+        [key: string]: any;
+    };
+}

@@ -86,7 +86,7 @@ export let NgStyle = class {
         changes.forEachRemovedItem((record) => { this._setStyle(record.key, null); });
     }
     _setStyle(name, val) {
-        this._renderer.setElementStyle(this._ngEl, name, val);
+        this._renderer.setElementStyle(this._ngEl.nativeElement, name, val);
     }
 };
 NgStyle = __decorate([

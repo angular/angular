@@ -1,6 +1,6 @@
 import { Locals } from './parser/locals';
 import { BindingTarget, BindingRecord } from './binding_record';
-import { DirectiveIndex, DirectiveRecord } from './directive_record';
+import { DirectiveRecord, DirectiveIndex } from './directive_record';
 import { ChangeDetectionStrategy } from './constants';
 import { ChangeDetectorRef } from './change_detector_ref';
 export declare class DebugContext {
@@ -13,11 +13,14 @@ export declare class DebugContext {
     constructor(element: any, componentElement: any, directive: any, context: any, locals: any, injector: any);
 }
 export interface ChangeDispatcher {
-    getDebugContext(elementIndex: number, directiveIndex: DirectiveIndex): DebugContext;
+    getDebugContext(appElement: any, elementIndex: number, directiveIndex: number): DebugContext;
     notifyOnBinding(bindingTarget: BindingTarget, value: any): void;
     logBindingUpdate(bindingTarget: BindingTarget, value: any): void;
     notifyAfterContentChecked(): void;
     notifyAfterViewChecked(): void;
+    notifyOnDestroy(): void;
+    getDetectorFor(directiveIndex: DirectiveIndex): ChangeDetector;
+    getDirectiveFor(directiveIndex: DirectiveIndex): any;
 }
 export interface ChangeDetector {
     parent: ChangeDetector;
@@ -28,15 +31,17 @@ export interface ChangeDetector {
     removeContentChild(cd: ChangeDetector): void;
     removeViewChild(cd: ChangeDetector): void;
     remove(): void;
-    hydrate(context: any, locals: Locals, directives: any, pipes: any): void;
+    hydrate(context: any, locals: Locals, dispatcher: ChangeDispatcher, pipes: any): void;
     dehydrate(): void;
     markPathToRootAsCheckOnce(): void;
-    handleEvent(eventName: string, elIndex: number, locals: Locals): any;
+    handleEvent(eventName: string, elIndex: number, event: any): any;
     detectChanges(): void;
     checkNoChanges(): void;
+    destroyRecursive(): void;
+    markAsCheckOnce(): void;
 }
 export interface ProtoChangeDetector {
-    instantiate(dispatcher: ChangeDispatcher): ChangeDetector;
+    instantiate(): ChangeDetector;
 }
 export declare class ChangeDetectorGenConfig {
     genDebugInfo: boolean;

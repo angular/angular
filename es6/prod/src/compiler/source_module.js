@@ -11,6 +11,9 @@ export class SourceModule {
         this.moduleUrl = moduleUrl;
         this.sourceWithModuleRefs = sourceWithModuleRefs;
     }
+    static getSourceWithoutImports(sourceWithModuleRefs) {
+        return StringWrapper.replaceAllMapped(sourceWithModuleRefs, MODULE_REGEXP, (match) => '');
+    }
     getSourceWithImports() {
         var moduleAliases = {};
         var imports = [];

@@ -5,6 +5,7 @@ export declare function moduleRef(moduleUrl: any): string;
 export declare class SourceModule {
     moduleUrl: string;
     sourceWithModuleRefs: string;
+    static getSourceWithoutImports(sourceWithModuleRefs: string): string;
     constructor(moduleUrl: string, sourceWithModuleRefs: string);
     getSourceWithImports(): SourceWithImports;
 }

@@ -1,4 +1,3 @@
-import { internalView } from './view_ref';
 /**
  * Represents an Embedded Template that can be used to instantiate Embedded Views.
  *
@@ -14,22 +13,9 @@ import { internalView } from './view_ref';
 export class TemplateRef {
 }
 export class TemplateRef_ extends TemplateRef {
-    constructor(elementRef) {
+    constructor(_elementRef) {
         super();
-        this.elementRef = elementRef;
+        this._elementRef = _elementRef;
     }
-    _getProtoView() {
-        let elementRef = this.elementRef;
-        var parentView = internalView(elementRef.parentView);
-        return parentView.proto.elementBinders[elementRef.boundElementIndex - parentView.elementOffset]
-            .nestedProtoView;
-    }
-    /**
-     * Reference to the ProtoView used for creating Embedded Views that are based on the compiled
-     * Embedded Template.
-     */
-    get protoViewRef() { return this._getProtoView().ref; }
-    hasLocal(name) {
-        return this._getProtoView().templateVariableBindings.has(name);
-    }
+    get elementRef() { return this._elementRef; }
 }

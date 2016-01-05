@@ -17,7 +17,9 @@ import { UrlResolver } from 'angular2/src/compiler/url_resolver';
 import { extractStyleUrls } from './style_url_resolver';
 import { escapeSingleQuoteString, codeGenExportVariable, MODULE_SUFFIX } from './util';
 import { Injectable } from 'angular2/src/core/di';
-import { HOST_ATTR, CONTENT_ATTR } from 'angular2/src/core/render/view_factory';
+const COMPONENT_VARIABLE = '%COMP%';
+const HOST_ATTR = `_nghost-${COMPONENT_VARIABLE}`;
+const CONTENT_ATTR = `_ngcontent-${COMPONENT_VARIABLE}`;
 export let StyleCompiler = class {
     constructor(_xhr, _urlResolver) {
         this._xhr = _xhr;

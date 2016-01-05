@@ -1,7 +1,6 @@
 import { ListWrapper } from 'angular2/src/facade/collection';
 import { unimplemented } from 'angular2/src/facade/exceptions';
 import { isPresent } from 'angular2/src/facade/lang';
-import { internalView } from './view_ref';
 /**
  * Represents a container where one or more Views can be attached.
  *
@@ -24,6 +23,11 @@ import { internalView } from './view_ref';
  */
 export class ViewContainerRef {
     /**
+     * Anchor element that specifies the location of this container in the containing View.
+     * <!-- TODO: rename to anchorElement -->
+     */
+    get element() { return unimplemented(); }
+    /**
      * Destroys all Views in this container.
      */
     clear() {
@@ -38,50 +42,53 @@ export class ViewContainerRef {
     ;
 }
 export class ViewContainerRef_ extends ViewContainerRef {
-    constructor(viewManager, element) {
+    constructor(_element) {
         super();
-        this.viewManager = viewManager;
-        this.element = element;
+        this._element = _element;
     }
-    _getViews() {
-        let element = this.element;
-        var vc = internalView(element.parentView).viewContainers[element.boundElementIndex];
-        return isPresent(vc) ? vc.views : [];
+    get(index) { return this._element.nestedViews[index].ref; }
+    get length() {
+        var views = this._element.nestedViews;
+        return isPresent(views) ? views.length : 0;
     }
-    get(index) { return this._getViews()[index].ref; }
-    get length() { return this._getViews().length; }
+    get element() { return this._element.ref; }
     // TODO(rado): profile and decide whether bounds checks should be added
     // to the methods below.
     createEmbeddedView(templateRef, index = -1) {
         if (index == -1)
             index = this.length;
-        return this.viewManager.createEmbeddedViewInContainer(this.element, index, templateRef);
+        var vm = this._element.parentView.viewManager;
+        return vm.createEmbeddedViewInContainer(this._element.ref, index, templateRef);
     }
-    createHostView(protoViewRef = null, index = -1, dynamicallyCreatedProviders = null) {
+    createHostView(hostViewFactoryRef, index = -1, dynamicallyCreatedProviders = null, projectableNodes = null) {
         if (index == -1)
             index = this.length;
-        return this.viewManager.createHostViewInContainer(this.element, index, protoViewRef, dynamicallyCreatedProviders);
+        var vm = this._element.parentView.viewManager;
+        return vm.createHostViewInContainer(this._element.ref, index, hostViewFactoryRef, dynamicallyCreatedProviders, projectableNodes);
     }
     // TODO(i): refactor insert+remove into move
     insert(viewRef, index = -1) {
         if (index == -1)
             index = this.length;
-        return this.viewManager.attachViewInContainer(this.element, index, viewRef);
+        var vm = this._element.parentView.viewManager;
+        return vm.attachViewInContainer(this._element.ref, index, viewRef);
     }
     indexOf(viewRef) {
-        return ListWrapper.indexOf(this._getViews(), internalView(viewRef));
+        return ListWrapper.indexOf(this._element.nestedViews, viewRef.internalView);
     }
     // TODO(i): rename to destroy
     remove(index = -1) {
         if (index == -1)
             index = this.length - 1;
-        this.viewManager.destroyViewInContainer(this.element, index);
+        var vm = this._element.parentView.viewManager;
+        return vm.destroyViewInContainer(this._element.ref, index);
         // view is intentionally not returned to the client.
     }
     // TODO(i): refactor insert+remove into move
     detach(index = -1) {
         if (index == -1)
             index = this.length - 1;
-        return this.viewManager.detachViewInContainer(this.element, index);
+        var vm = this._element.parentView.viewManager;
+        return vm.detachViewInContainer(this._element.ref, index);
     }
 }

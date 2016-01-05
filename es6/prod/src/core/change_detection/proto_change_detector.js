@@ -16,8 +16,8 @@ export class DynamicProtoChangeDetector {
         this._propertyBindingTargets = this._definition.bindingRecords.map(b => b.target);
         this._directiveIndices = this._definition.directiveRecords.map(d => d.directiveIndex);
     }
-    instantiate(dispatcher) {
-        return new DynamicChangeDetector(this._definition.id, dispatcher, this._propertyBindingRecords.length, this._propertyBindingTargets, this._directiveIndices, this._definition.strategy, this._propertyBindingRecords, this._eventBindingRecords, this._definition.directiveRecords, this._definition.genConfig);
+    instantiate() {
+        return new DynamicChangeDetector(this._definition.id, this._propertyBindingRecords.length, this._propertyBindingTargets, this._directiveIndices, this._definition.strategy, this._propertyBindingRecords, this._eventBindingRecords, this._definition.directiveRecords, this._definition.genConfig);
     }
 }
 export function createPropertyRecords(definition) {

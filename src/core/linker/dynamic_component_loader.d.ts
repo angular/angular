@@ -106,7 +106,7 @@ export declare abstract class DynamicComponentLoader {
      * </my-app>
      * ```
      */
-    abstract loadAsRoot(type: Type, overrideSelector: string, injector: Injector, onDispose?: () => void): Promise<ComponentRef>;
+    abstract loadAsRoot(type: Type, overrideSelector: string, injector: Injector, onDispose?: () => void, projectableNodes?: any[][]): Promise<ComponentRef>;
     /**
      * Creates an instance of a Component and attaches it to a View Container located inside of the
      * Component View of another Component instance.
@@ -154,7 +154,7 @@ export declare abstract class DynamicComponentLoader {
      * </my-app>
      * ```
      */
-    abstract loadIntoLocation(type: Type, hostLocation: ElementRef, anchorName: string, providers?: ResolvedProvider[]): Promise<ComponentRef>;
+    abstract loadIntoLocation(type: Type, hostLocation: ElementRef, anchorName: string, providers?: ResolvedProvider[], projectableNodes?: any[][]): Promise<ComponentRef>;
     /**
      * Creates an instance of a Component and attaches it to the View Container found at the
      * `location` specified as {@link ElementRef}.
@@ -195,13 +195,13 @@ export declare abstract class DynamicComponentLoader {
      * <child-component>Child</child-component>
      * ```
      */
-    abstract loadNextToLocation(type: Type, location: ElementRef, providers?: ResolvedProvider[]): Promise<ComponentRef>;
+    abstract loadNextToLocation(type: Type, location: ElementRef, providers?: ResolvedProvider[], projectableNodes?: any[][]): Promise<ComponentRef>;
 }
 export declare class DynamicComponentLoader_ extends DynamicComponentLoader {
     private _compiler;
     private _viewManager;
     constructor(_compiler: Compiler, _viewManager: AppViewManager);
-    loadAsRoot(type: Type, overrideSelector: string, injector: Injector, onDispose?: () => void): Promise<ComponentRef>;
-    loadIntoLocation(type: Type, hostLocation: ElementRef, anchorName: string, providers?: ResolvedProvider[]): Promise<ComponentRef>;
-    loadNextToLocation(type: Type, location: ElementRef, providers?: ResolvedProvider[]): Promise<ComponentRef>;
+    loadAsRoot(type: Type, overrideSelector: string, injector: Injector, onDispose?: () => void, projectableNodes?: any[][]): Promise<ComponentRef>;
+    loadIntoLocation(type: Type, hostLocation: ElementRef, anchorName: string, providers?: ResolvedProvider[], projectableNodes?: any[][]): Promise<ComponentRef>;
+    loadNextToLocation(type: Type, location: ElementRef, providers?: ResolvedProvider[], projectableNodes?: any[][]): Promise<ComponentRef>;
 }

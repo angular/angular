@@ -66,6 +66,7 @@ export declare class ProtoInjectorDynamicStrategy implements ProtoInjectorStrate
     createInjectorStrategy(ei: Injector): InjectorStrategy;
 }
 export declare class ProtoInjector {
+    static fromResolvedProviders(providers: ResolvedProvider[]): ProtoInjector;
     numberOfProviders: number;
     constructor(bwv: ProviderWithVisibility[]);
     getProviderAtIndex(index: number): any;
@@ -74,7 +75,6 @@ export interface InjectorStrategy {
     getObjByKeyId(keyId: number, visibility: Visibility): any;
     getObjAtIndex(index: number): any;
     getMaxNumberOfObjects(): number;
-    attach(parent: Injector, isHost: boolean): void;
     resetConstructionCounter(): void;
     instantiateProvider(provider: ResolvedProvider, visibility: Visibility): any;
 }
@@ -94,7 +94,6 @@ export declare class InjectorInlineStrategy implements InjectorStrategy {
     constructor(injector: Injector, protoStrategy: ProtoInjectorInlineStrategy);
     resetConstructionCounter(): void;
     instantiateProvider(provider: ResolvedProvider, visibility: Visibility): any;
-    attach(parent: Injector, isHost: boolean): void;
     getObjByKeyId(keyId: number, visibility: Visibility): any;
     getObjAtIndex(index: number): any;
     getMaxNumberOfObjects(): number;
@@ -106,7 +105,6 @@ export declare class InjectorDynamicStrategy implements InjectorStrategy {
     constructor(protoStrategy: ProtoInjectorDynamicStrategy, injector: Injector);
     resetConstructionCounter(): void;
     instantiateProvider(provider: ResolvedProvider, visibility: Visibility): any;
-    attach(parent: Injector, isHost: boolean): void;
     getObjByKeyId(keyId: number, visibility: Visibility): any;
     getObjAtIndex(index: number): any;
     getMaxNumberOfObjects(): number;
@@ -156,6 +154,7 @@ export interface DependencyProvider {
  * resolve all of the object's dependencies automatically.
  */
 export declare class Injector {
+    private _isHostBoundary;
     private _depProvider;
     private _debugContext;
     /**
@@ -249,7 +248,7 @@ export declare class Injector {
     /**
      * Private
      */
-    constructor(_proto: any, _parent?: Injector, _depProvider?: any, _debugContext?: Function);
+    constructor(_proto: any, _parent?: Injector, _isHostBoundary?: boolean, _depProvider?: any, _debugContext?: Function);
     /**
      * Retrieves an instance from the injector based on the provided token.
      * Throws {@link NoProviderError} if not found.

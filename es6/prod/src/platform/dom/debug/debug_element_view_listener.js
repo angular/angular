@@ -12,7 +12,6 @@ import { Map } from 'angular2/src/facade/collection';
 import { Injectable, Provider } from 'angular2/src/core/di';
 import { AppViewListener } from 'angular2/src/core/linker/view_listener';
 import { DOM } from 'angular2/src/platform/dom/dom_adapter';
-import { Renderer } from 'angular2/src/core/render/api';
 import { DebugElement_ } from 'angular2/src/core/debug/debug_element';
 const NG_ID_PROPERTY = 'ngid';
 const INSPECT_GLOBAL_NAME = 'ng.probe';
@@ -45,23 +44,22 @@ export function inspectNativeElement(element) {
     if (isPresent(elId)) {
         var view = _allViewsById.get(elId[0]);
         if (isPresent(view)) {
-            return new DebugElement_(view, elId[1]);
+            return new DebugElement_(view.appElements[elId[1]]);
         }
     }
     return null;
 }
 export let DebugElementViewListener = class {
-    constructor(_renderer) {
-        this._renderer = _renderer;
+    constructor() {
         DOM.setGlobalVar(INSPECT_GLOBAL_NAME, inspectNativeElement);
     }
     onViewCreated(view) {
         var viewId = _nextId++;
         _allViewsById.set(viewId, view);
         _allIdsByView.set(view, viewId);
-        for (var i = 0; i < view.elementRefs.length; i++) {
-            var el = view.elementRefs[i];
-            _setElementId(this._renderer.getNativeElementSync(el), [viewId, i]);
+        for (var i = 0; i < view.appElements.length; i++) {
+            var el = view.appElements[i];
+            _setElementId(el.nativeElement, [viewId, i]);
         }
     }
     onViewDestroyed(view) {
@@ -72,7 +70,7 @@ export let DebugElementViewListener = class {
 };
 DebugElementViewListener = __decorate([
     Injectable(), 
-    __metadata('design:paramtypes', [Renderer])
+    __metadata('design:paramtypes', [])
 ], DebugElementViewListener);
 /**
  * Providers which support debugging Angular applications (e.g. via `ng.probe`).

@@ -121,3 +121,6 @@ export declare class DateWrapper {
 }
 export declare function setValueOnPath(global: any, path: string, value: any): void;
 export declare function getSymbolIterator(): string | symbol;
+export declare function evalExpression(sourceUrl: string, expr: string, declarations: string, vars: {
+    [key: string]: any;
+}): any;

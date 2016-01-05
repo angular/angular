@@ -428,3 +428,9 @@ export declare function resolveProvider(provider: Provider): ResolvedProvider;
  * Resolve a list of Providers.
  */
 export declare function resolveProviders(providers: Array<Type | Provider | any[]>): ResolvedProvider[];
+/**
+ * Merges a list of ResolvedProviders into a list where
+ * each key is contained exactly once and multi providers
+ * have been merged.
+ */
+export declare function mergeResolvedProviders(providers: ResolvedProvider[], normalizedProvidersMap: Map<number, ResolvedProvider>): Map<number, ResolvedProvider>;

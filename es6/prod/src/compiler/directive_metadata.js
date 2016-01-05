@@ -1,4 +1,5 @@
 import { isPresent, isBlank, normalizeBool, serializeEnum, RegExpWrapper } from 'angular2/src/facade/lang';
+import { unimplemented } from 'angular2/src/facade/exceptions';
 import { StringMapWrapper } from 'angular2/src/facade/collection';
 import { ChangeDetectionStrategy, CHANGE_DETECTION_STRATEGY_VALUES } from 'angular2/src/core/change_detection/change_detection';
 import { ViewEncapsulation, VIEW_ENCAPSULATION_VALUES } from 'angular2/src/core/metadata/view';
@@ -8,6 +9,12 @@ import { LIFECYCLE_HOOKS_VALUES } from 'angular2/src/core/linker/interfaces';
 // group 1: "property" from "[property]"
 // group 2: "event" from "(event)"
 var HOST_REG_EXP = /^(?:(?:\[([^\]]+)\])|(?:\(([^\)]+)\)))$/g;
+export class CompileMetadataWithType {
+    static fromJson(data) {
+        return _COMPILE_METADATA_FROM_JSON[data['class']](data);
+    }
+    get type() { return unimplemented(); }
+}
 /**
  * Metadata regarding compilation of a type.
  */
@@ -158,6 +165,7 @@ export class CompileDirectiveMetadata {
     }
     toJson() {
         return {
+            'class': 'Directive',
             'isComponent': this.isComponent,
             'dynamicLoadable': this.dynamicLoadable,
             'selector': this.selector,
@@ -198,3 +206,29 @@ export function createHostComponentMeta(componentType, componentSelector) {
         selector: '*'
     });
 }
+export class CompilePipeMetadata {
+    constructor({ type, name, pure } = {}) {
+        this.type = type;
+        this.name = name;
+        this.pure = normalizeBool(pure);
+    }
+    static fromJson(data) {
+        return new CompilePipeMetadata({
+            type: isPresent(data['type']) ? CompileTypeMetadata.fromJson(data['type']) : data['type'],
+            name: data['name'],
+            pure: data['pure']
+        });
+    }
+    toJson() {
+        return {
+            'class': 'Pipe',
+            'type': isPresent(this.type) ? this.type.toJson() : null,
+            'name': this.name,
+            'pure': this.pure
+        };
+    }
+}
+var _COMPILE_METADATA_FROM_JSON = {
+    'Directive': CompileDirectiveMetadata.fromJson,
+    'Pipe': CompilePipeMetadata.fromJson
+};

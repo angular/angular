@@ -33,11 +33,11 @@ import {
   ExceptionHandler,
   unimplemented
 } from 'angular2/src/facade/exceptions';
-import {internalView} from 'angular2/src/core/linker/view_ref';
 import {Console} from 'angular2/src/core/console';
 import {wtfLeave, wtfCreateScope, WtfScopeFn} from './profile/profile';
 import {ChangeDetectorRef} from 'angular2/src/core/change_detection/change_detector_ref';
 import {lockMode} from 'angular2/src/facade/lang';
+import {ElementRef_} from 'angular2/src/core/linker/element_ref';
 
 /**
  * Construct providers specific to an individual root component.
@@ -56,10 +56,10 @@ function _componentProviders(appComponentType: Type): Array<Type | Provider | an
                                                          () => { appRef._unloadComponent(ref); })
                     .then((componentRef) => {
                       ref = componentRef;
-                      if (isPresent(componentRef.location.nativeElement)) {
+                      var testability = injector.getOptional(Testability);
+                      if (isPresent(testability)) {
                         injector.get(TestabilityRegistry)
-                            .registerApplication(componentRef.location.nativeElement,
-                                                 injector.get(Testability));
+                            .registerApplication(componentRef.location.nativeElement, testability);
                       }
                       return componentRef;
                     });
@@ -439,7 +439,7 @@ export class ApplicationRef_ extends ApplicationRef {
 
   /** @internal */
   _loadComponent(ref): void {
-    var appChangeDetector = internalView(ref.hostView).changeDetector;
+    var appChangeDetector = (<ElementRef_>ref.location).internalElement.parentView.changeDetector;
     this._changeDetectorRefs.push(appChangeDetector.ref);
     this.tick();
     this._rootComponents.push(ref);
@@ -451,7 +451,8 @@ export class ApplicationRef_ extends ApplicationRef {
     if (!ListWrapper.contains(this._rootComponents, ref)) {
       return;
     }
-    this.unregisterChangeDetector(internalView(ref.hostView).changeDetector.ref);
+    this.unregisterChangeDetector(
+        (<ElementRef_>ref.location).internalElement.parentView.changeDetector.ref);
     ListWrapper.remove(this._rootComponents, ref);
   }
 

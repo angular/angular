@@ -5,5 +5,5 @@ export declare class Locals {
     contains(name: string): boolean;
     get(name: string): any;
     set(name: string, value: any): void;
-    clearValues(): void;
+    clearLocalValues(): void;
 }

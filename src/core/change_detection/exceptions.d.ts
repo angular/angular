@@ -83,3 +83,20 @@ export declare class ChangeDetectionError extends WrappedException {
 export declare class DehydratedException extends BaseException {
     constructor();
 }
+/**
+ * Wraps an exception thrown by an event handler.
+ */
+export declare class EventEvaluationError extends WrappedException {
+    constructor(eventName: string, originalException: any, originalStack: any, context: any);
+}
+/**
+ * Error context included when an event handler throws an exception.
+ */
+export declare class EventEvaluationErrorContext {
+    element: any;
+    componentElement: any;
+    context: any;
+    locals: any;
+    injector: any;
+    constructor(element: any, componentElement: any, context: any, locals: any, injector: any);
+}

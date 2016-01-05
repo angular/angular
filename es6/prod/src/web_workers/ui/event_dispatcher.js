@@ -1,19 +1,16 @@
-import { RenderViewRef } from 'angular2/src/core/render/api';
+import { RenderStoreObject } from 'angular2/src/web_workers/shared/serializer';
 import { serializeMouseEvent, serializeKeyboardEvent, serializeGenericEvent, serializeEventWithTarget } from 'angular2/src/web_workers/ui/event_serializer';
 import { BaseException } from 'angular2/src/facade/exceptions';
-import { StringMapWrapper } from 'angular2/src/facade/collection';
 import { ObservableWrapper } from 'angular2/src/facade/async';
 export class EventDispatcher {
-    constructor(_viewRef, _sink, _serializer) {
-        this._viewRef = _viewRef;
+    constructor(_sink, _serializer) {
         this._sink = _sink;
         this._serializer = _serializer;
     }
-    dispatchRenderEvent(elementIndex, eventName, locals) {
-        var e = locals.get('$event');
+    dispatchRenderEvent(element, eventTarget, eventName, event) {
         var serializedEvent;
         // TODO (jteplitz602): support custom events #3350
-        switch (e.type) {
+        switch (event.type) {
             case "click":
             case "mouseup":
             case "mousedown":
@@ -25,17 +22,17 @@ export class EventDispatcher {
             case "mouseout":
             case "mouseover":
             case "show":
-                serializedEvent = serializeMouseEvent(e);
+                serializedEvent = serializeMouseEvent(event);
                 break;
             case "keydown":
             case "keypress":
             case "keyup":
-                serializedEvent = serializeKeyboardEvent(e);
+                serializedEvent = serializeKeyboardEvent(event);
                 break;
             case "input":
             case "change":
             case "blur":
-                serializedEvent = serializeEventWithTarget(e);
+                serializedEvent = serializeEventWithTarget(event);
                 break;
             case "abort":
             case "afterprint":
@@ -85,18 +82,16 @@ export class EventDispatcher {
             case "visibilitychange":
             case "volumechange":
             case "waiting":
-                serializedEvent = serializeGenericEvent(e);
+                serializedEvent = serializeGenericEvent(event);
                 break;
             default:
                 throw new BaseException(eventName + " not supported on WebWorkers");
         }
-        var serializedLocals = StringMapWrapper.create();
-        StringMapWrapper.set(serializedLocals, '$event', serializedEvent);
         ObservableWrapper.callEmit(this._sink, {
-            "viewRef": this._serializer.serialize(this._viewRef, RenderViewRef),
-            "elementIndex": elementIndex,
+            "element": this._serializer.serialize(element, RenderStoreObject),
             "eventName": eventName,
-            "locals": serializedLocals
+            "eventTarget": eventTarget,
+            "event": serializedEvent
         });
         // TODO(kegluneq): Eventually, we want the user to indicate from the UI side whether the event
         // should be canceled, but for now just call `preventDefault` on the original DOM event.

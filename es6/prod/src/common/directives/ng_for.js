@@ -96,7 +96,8 @@ export let NgFor = class {
             this._perViewChange(insertTuples[i].view, insertTuples[i].record);
         }
         for (var i = 0, ilen = this._viewContainer.length; i < ilen; i++) {
-            this._viewContainer.get(i).setLocal('last', i === ilen - 1);
+            var viewRef = this._viewContainer.get(i);
+            viewRef.setLocal('last', i === ilen - 1);
         }
     }
     _perViewChange(view, record) {

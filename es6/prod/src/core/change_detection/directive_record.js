@@ -8,7 +8,7 @@ export class DirectiveIndex {
     get name() { return `${this.elementIndex}_${this.directiveIndex}`; }
 }
 export class DirectiveRecord {
-    constructor({ directiveIndex, callAfterContentInit, callAfterContentChecked, callAfterViewInit, callAfterViewChecked, callOnChanges, callDoCheck, callOnInit, changeDetection } = {}) {
+    constructor({ directiveIndex, callAfterContentInit, callAfterContentChecked, callAfterViewInit, callAfterViewChecked, callOnChanges, callDoCheck, callOnInit, callOnDestroy, changeDetection, outputs } = {}) {
         this.directiveIndex = directiveIndex;
         this.callAfterContentInit = normalizeBool(callAfterContentInit);
         this.callAfterContentChecked = normalizeBool(callAfterContentChecked);
@@ -17,7 +17,9 @@ export class DirectiveRecord {
         this.callAfterViewChecked = normalizeBool(callAfterViewChecked);
         this.callDoCheck = normalizeBool(callDoCheck);
         this.callOnInit = normalizeBool(callOnInit);
+        this.callOnDestroy = normalizeBool(callOnDestroy);
         this.changeDetection = changeDetection;
+        this.outputs = outputs;
     }
     isDefaultChangeDetection() {
         return isDefaultChangeDetectionStrategy(this.changeDetection);

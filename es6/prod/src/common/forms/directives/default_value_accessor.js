@@ -29,7 +29,7 @@ export let DefaultValueAccessor = class {
     }
     writeValue(value) {
         var normalizedValue = isBlank(value) ? '' : value;
-        this._renderer.setElementProperty(this._elementRef, 'value', normalizedValue);
+        this._renderer.setElementProperty(this._elementRef.nativeElement, 'value', normalizedValue);
     }
     registerOnChange(fn) { this.onChange = fn; }
     registerOnTouched(fn) { this.onTouched = fn; }

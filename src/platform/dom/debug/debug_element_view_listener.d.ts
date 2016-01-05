@@ -1,6 +1,5 @@
 import { AppViewListener } from 'angular2/src/core/linker/view_listener';
 import { AppView } from 'angular2/src/core/linker/view';
-import { Renderer } from 'angular2/src/core/render/api';
 import { DebugElement } from 'angular2/src/core/debug/debug_element';
 /**
  * Returns a {@link DebugElement} for the given native DOM element, or
@@ -9,8 +8,7 @@ import { DebugElement } from 'angular2/src/core/debug/debug_element';
  */
 export declare function inspectNativeElement(element: any): DebugElement;
 export declare class DebugElementViewListener implements AppViewListener {
-    private _renderer;
-    constructor(_renderer: Renderer);
+    constructor();
     onViewCreated(view: AppView): void;
     onViewDestroyed(view: AppView): void;
 }

@@ -27,7 +27,7 @@ export let CheckboxControlValueAccessor = class {
         this.onTouched = () => { };
     }
     writeValue(value) {
-        this._renderer.setElementProperty(this._elementRef, 'checked', value);
+        this._renderer.setElementProperty(this._elementRef.nativeElement, 'checked', value);
     }
     registerOnChange(fn) { this.onChange = fn; }
     registerOnTouched(fn) { this.onTouched = fn; }

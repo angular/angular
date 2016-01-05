@@ -1,43 +1,32 @@
-import { ChangeDetector, ChangeDispatcher, DirectiveIndex, BindingTarget, Locals } from 'angular2/src/core/change_detection/change_detection';
+import { ChangeDetector, ChangeDispatcher, DirectiveIndex, BindingTarget, Locals, ChangeDetectorRef } from 'angular2/src/core/change_detection/change_detection';
+import { ResolvedProvider, Injector } from 'angular2/src/core/di';
 import { DebugContext } from 'angular2/src/core/change_detection/interfaces';
-import { ElementInjector, PreBuiltObjects } from './element_injector';
-import { ElementBinder } from './element_binder';
-import * as renderApi from 'angular2/src/core/render/api';
-import { RenderEventDispatcher } from 'angular2/src/core/render/api';
-import { ViewRef, ProtoViewRef } from './view_ref';
-import { ElementRef } from './element_ref';
+import { AppElement } from './element';
+import { Type } from 'angular2/src/facade/lang';
+import { Renderer } from 'angular2/src/core/render/api';
+import { ViewRef_ } from './view_ref';
 import { ProtoPipes } from 'angular2/src/core/pipes/pipes';
-import { TemplateCmd } from './template_commands';
 export { DebugContext } from 'angular2/src/core/change_detection/interfaces';
-export declare enum ViewType {
-    HOST = 0,
-    COMPONENT = 1,
-    EMBEDDED = 2,
-}
-export declare class AppViewContainer {
-    views: AppView[];
-}
+import { Pipes } from 'angular2/src/core/pipes/pipes';
+import { AppViewManager_ } from './view_manager';
+import { ResolvedMetadataCache } from './resolved_metadata_cache';
+import { ViewType } from './view_type';
 /**
  * Cost of making objects: http://jsperf.com/instantiate-size-of-object
  *
  */
-export declare class AppView implements ChangeDispatcher, RenderEventDispatcher {
-    renderer: renderApi.Renderer;
+export declare class AppView implements ChangeDispatcher {
     proto: AppProtoView;
-    viewOffset: number;
-    elementOffset: number;
-    textOffset: number;
-    render: renderApi.RenderViewRef;
-    renderFragment: renderApi.RenderFragmentRef;
-    containerElementInjector: ElementInjector;
-    views: AppView[];
-    rootElementInjectors: ElementInjector[];
-    elementInjectors: ElementInjector[];
-    viewContainers: AppViewContainer[];
-    preBuiltObjects: PreBuiltObjects[];
-    elementRefs: ElementRef[];
-    ref: ViewRef;
+    renderer: Renderer;
+    viewManager: AppViewManager_;
+    projectableNodes: Array<any | any[]>;
+    containerAppElement: AppElement;
     changeDetector: ChangeDetector;
+    ref: ViewRef_;
+    rootNodesOrAppElements: any[];
+    allNodes: any[];
+    disposables: Function[];
+    appElements: AppElement[];
     /**
      * The context against which data-binding expressions in this view are evaluated against.
      * This is always a component instance.
@@ -49,10 +38,29 @@ export declare class AppView implements ChangeDispatcher, RenderEventDispatcher 
      * `<li template="for #item of items">`, where "player" and "item" are locals, respectively.
      */
     locals: Locals;
-    constructor(renderer: renderApi.Renderer, proto: AppProtoView, viewOffset: number, elementOffset: number, textOffset: number, protoLocals: Map<string, any>, render: renderApi.RenderViewRef, renderFragment: renderApi.RenderFragmentRef, containerElementInjector: ElementInjector);
-    init(changeDetector: ChangeDetector, elementInjectors: ElementInjector[], rootElementInjectors: ElementInjector[], preBuiltObjects: PreBuiltObjects[], views: AppView[], elementRefs: ElementRef[], viewContainers: AppViewContainer[]): void;
+    pipes: Pipes;
+    parentInjector: Injector;
+    /**
+     * Whether root injectors of this view
+     * have a hostBoundary.
+     */
+    hostInjectorBoundary: boolean;
+    destroyed: boolean;
+    constructor(proto: AppProtoView, renderer: Renderer, viewManager: AppViewManager_, projectableNodes: Array<any | any[]>, containerAppElement: AppElement, imperativelyCreatedProviders: ResolvedProvider[], rootInjector: Injector, changeDetector: ChangeDetector);
+    init(rootNodesOrAppElements: any[], allNodes: any[], disposables: Function[], appElements: AppElement[]): void;
+    destroy(): void;
+    notifyOnDestroy(): void;
+    changeDetectorRef: ChangeDetectorRef;
+    flatRootNodes: any[];
+    hasLocal(contextName: string): boolean;
     setLocal(contextName: string, value: any): void;
-    hydrated(): boolean;
+    notifyOnBinding(b: BindingTarget, currentValue: any): void;
+    logBindingUpdate(b: BindingTarget, value: any): void;
+    notifyAfterContentChecked(): void;
+    notifyAfterViewChecked(): void;
+    getDebugContext(appElement: AppElement, elementIndex: number, directiveIndex: number): DebugContext;
+    getDirectiveFor(directive: DirectiveIndex): any;
+    getDetectorFor(directive: DirectiveIndex): any;
     /**
      * Triggers the event handlers for the element and the directives.
      *
@@ -61,47 +69,30 @@ export declare class AppView implements ChangeDispatcher, RenderEventDispatcher 
      * @param {string} eventName
      * @param {*} eventObj
      * @param {number} boundElementIndex
+     * @return false if preventDefault must be applied to the DOM event
      */
-    triggerEventHandlers(eventName: string, eventObj: Event, boundElementIndex: number): void;
-    notifyOnBinding(b: BindingTarget, currentValue: any): void;
-    logBindingUpdate(b: BindingTarget, value: any): void;
-    notifyAfterContentChecked(): void;
-    notifyAfterViewChecked(): void;
-    getDirectiveFor(directive: DirectiveIndex): any;
-    getNestedView(boundElementIndex: number): AppView;
-    getContainerElement(): ElementRef;
-    getDebugContext(elementIndex: number, directiveIndex: DirectiveIndex): DebugContext;
-    getDetectorFor(directive: DirectiveIndex): any;
-    invokeElementMethod(elementIndex: number, methodName: string, args: any[]): void;
-    dispatchRenderEvent(boundElementIndex: number, eventName: string, locals: Map<string, any>): boolean;
-    dispatchEvent(boundElementIndex: number, eventName: string, locals: Map<string, any>): boolean;
-    ownBindersCount: number;
-}
-export declare class AppProtoViewMergeInfo {
-    embeddedViewCount: number;
-    elementCount: number;
-    viewCount: number;
-    constructor(embeddedViewCount: number, elementCount: number, viewCount: number);
+    triggerEventHandlers(eventName: string, eventObj: Event, boundElementIndex: number): boolean;
 }
 /**
  *
  */
 export declare class AppProtoView {
-    templateId: string;
-    templateCmds: TemplateCmd[];
     type: ViewType;
-    isMergable: boolean;
-    changeDetectorFactory: Function;
-    templateVariableBindings: Map<string, string>;
-    pipes: ProtoPipes;
-    ref: ProtoViewRef;
-    protoLocals: Map<string, any>;
-    elementBinders: ElementBinder[];
-    mergeInfo: AppProtoViewMergeInfo;
-    variableLocations: Map<string, number>;
-    textBindingCount: any;
-    render: renderApi.RenderProtoViewRef;
-    constructor(templateId: string, templateCmds: TemplateCmd[], type: ViewType, isMergable: boolean, changeDetectorFactory: Function, templateVariableBindings: Map<string, string>, pipes: ProtoPipes);
-    init(render: renderApi.RenderProtoViewRef, elementBinders: ElementBinder[], textBindingCount: number, mergeInfo: AppProtoViewMergeInfo, variableLocations: Map<string, number>): void;
-    isInitialized(): boolean;
+    protoPipes: ProtoPipes;
+    templateVariableBindings: {
+        [key: string]: string;
+    };
+    static create(metadataCache: ResolvedMetadataCache, type: ViewType, pipes: Type[], templateVariableBindings: {
+        [key: string]: string;
+    }): AppProtoView;
+    constructor(type: ViewType, protoPipes: ProtoPipes, templateVariableBindings: {
+        [key: string]: string;
+    });
 }
+export declare class HostViewFactory {
+    selector: string;
+    viewFactory: Function;
+    constructor(selector: string, viewFactory: Function);
+}
+export declare function flattenNestedViewRenderNodes(nodes: any[]): any[];
+export declare function checkSlotCount(componentName: string, expectedSlotCount: number, projectableNodes: any[][]): void;

@@ -1,7 +1,7 @@
 export declare const NG2_APP_VIEW_MANAGER: string;
 export declare const NG2_COMPILER: string;
 export declare const NG2_INJECTOR: string;
-export declare const NG2_PROTO_VIEW_REF_MAP: string;
+export declare const NG2_HOST_VIEW_FACTORY_REF_MAP: string;
 export declare const NG2_ZONE: string;
 export declare const NG1_CONTROLLER: string;
 export declare const NG1_SCOPE: string;
