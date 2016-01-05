@@ -368,6 +368,9 @@ class BrowserDomAdapter extends GenericBrowserDomAdapter {
   String getAttribute(Element element, String attribute) =>
       element.getAttribute(attribute);
 
+  String getAttributeNS(Element element, String ns, String attribute) =>
+    element.getAttributeNS(ns, attribute);
+
   void setAttribute(Element element, String name, String value) {
     element.setAttribute(name, value);
   }
@@ -380,6 +383,10 @@ class BrowserDomAdapter extends GenericBrowserDomAdapter {
     //there is no removeAttribute method as of now in Dart:
     //https://code.google.com/p/dart/issues/detail?id=19934
     element.attributes.remove(name);
+  }
+
+  void removeAttributeNS(Element element, String ns, String name) {
+    element.getNamespacedAttributes(ns).remove(name);
   }
 
   Node templateAwareRoot(Element el) => el is TemplateElement ? el.content : el;

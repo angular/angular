@@ -224,13 +224,17 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
     }
     return res;
   }
-  hasAttribute(element, attribute: string): boolean { return element.hasAttribute(attribute); }
-  getAttribute(element, attribute: string): string { return element.getAttribute(attribute); }
+  hasAttribute(element, name: string): boolean { return element.hasAttribute(name); }
+  getAttribute(element, name: string): string { return element.getAttribute(name); }
+  getAttributeNS(element, ns: string, name: string): string {
+    return element.getAttributeNS(ns, name);
+  }
   setAttribute(element, name: string, value: string) { element.setAttribute(name, value); }
   setAttributeNS(element, ns: string, name: string, value: string) {
     element.setAttributeNS(ns, name, value);
   }
-  removeAttribute(element, attribute: string) { element.removeAttribute(attribute); }
+  removeAttribute(element, name: string) { element.removeAttribute(name); }
+  removeAttributeNS(element, ns: string, name: string) { element.removeAttributeNS(ns, name); }
   templateAwareRoot(el): any { return this.isTemplateElement(el) ? this.content(el) : el; }
   createHtmlDocument(): HTMLDocument {
     return document.implementation.createHTMLDocument('fakeTitle');

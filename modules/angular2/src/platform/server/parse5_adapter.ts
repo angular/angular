@@ -426,28 +426,29 @@ export class Parse5DomAdapter extends DomAdapter {
     }
     return res;
   }
-  hasAttribute(element, attribute: string): boolean {
-    return element.attribs && element.attribs.hasOwnProperty(attribute);
+  hasAttribute(element, name: string): boolean {
+    return element.attribs && element.attribs.hasOwnProperty(name);
   }
-  getAttribute(element, attribute: string): string {
-    return element.attribs && element.attribs.hasOwnProperty(attribute) ?
-               element.attribs[attribute] :
-               null;
+  getAttribute(element, name: string): string {
+    return element.attribs && element.attribs.hasOwnProperty(name) ? element.attribs[name] : null;
   }
-  setAttribute(element, attribute: string, value: string) {
-    if (attribute) {
-      element.attribs[attribute] = value;
-      if (attribute === 'class') {
+  getAttributeNS(element, name: string): string { throw 'not implemented'; }
+  setAttribute(element, name: string, value: string) {
+    if (name) {
+      element.attribs[name] = value;
+      if (name === 'class') {
         element.className = value;
       }
     }
   }
-  setAttributeNS(element, ns: string, attribute: string, value: string) { throw 'not implemented'; }
-  removeAttribute(element, attribute: string) {
-    if (attribute) {
-      StringMapWrapper.delete(element.attribs, attribute);
+  setAttributeNS(element, ns: string, name: string, value: string) { throw 'not implemented'; }
+  removeAttribute(element, name: string) {
+    if (name) {
+      StringMapWrapper.delete(element.attribs, name);
     }
   }
+  removeAttributeNS(element, ns: string, name: string) { throw 'not implemented'; }
+
   templateAwareRoot(el): any { return this.isTemplateElement(el) ? this.content(el) : el; }
   createHtmlDocument(): Document {
     var newDoc = treeAdapter.createDocument();
