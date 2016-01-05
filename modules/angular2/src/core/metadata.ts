@@ -344,8 +344,8 @@ export interface ViewFactory {
  * ```
  */
 export interface AttributeFactory {
-  (name: string): TypeDecorator;
-  new (name: string): AttributeMetadata;
+  (name?: string): TypeDecorator;
+  new (name?: string): AttributeMetadata;
 }
 
 /**

@@ -21,7 +21,7 @@ import {DependencyMetadata} from 'angular2/src/core/di/metadata';
  */
 @CONST()
 export class AttributeMetadata extends DependencyMetadata {
-  constructor(public attributeName: string) { super(); }
+  constructor(public attributeName: string = '') { super(); }
 
   get token(): AttributeMetadata {
     // Normally one would default a token to a type of an injected value but here
