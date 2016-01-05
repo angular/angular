@@ -4,7 +4,7 @@ const INITIAL_VALUE = {
     __UNINITIALIZED__: true
 };
 export class DowngradeNg2ComponentAdapter {
-    constructor(id, info, element, attrs, scope, parentInjector, parse, viewManager, hostViewFactory) {
+    constructor(id, info, element, attrs, scope, parentInjector, parse, viewManager, protoView) {
         this.id = id;
         this.info = info;
         this.element = element;
@@ -13,24 +13,26 @@ export class DowngradeNg2ComponentAdapter {
         this.parentInjector = parentInjector;
         this.parse = parse;
         this.viewManager = viewManager;
-        this.hostViewFactory = hostViewFactory;
+        this.protoView = protoView;
         this.component = null;
         this.inputChangeCount = 0;
         this.inputChanges = null;
         this.hostViewRef = null;
         this.changeDetector = null;
-        this.contentInsertionPoint = null;
+        this.contentInserctionPoint = null;
         this.element[0].id = id;
         this.componentScope = scope.$new();
         this.childNodes = element.contents();
     }
     bootstrapNg2() {
         var childInjector = this.parentInjector.resolveAndCreateChild([provide(NG1_SCOPE, { useValue: this.componentScope })]);
-        this.contentInsertionPoint = document.createComment('ng1 insertion point');
-        this.hostViewRef = this.viewManager.createRootHostView(this.hostViewFactory, '#' + this.id, childInjector, [[this.contentInsertionPoint]]);
+        this.hostViewRef =
+            this.viewManager.createRootHostView(this.protoView, '#' + this.id, childInjector);
+        var renderer = this.hostViewRef.render;
         var hostElement = this.viewManager.getHostElement(this.hostViewRef);
         this.changeDetector = this.hostViewRef.changeDetectorRef;
         this.component = this.viewManager.getComponent(hostElement);
+        this.contentInserctionPoint = renderer.rootContentInsertionPoints[0];
     }
     setupInputs() {
         var attrs = this.attrs;
@@ -90,10 +92,10 @@ export class DowngradeNg2ComponentAdapter {
     }
     projectContent() {
         var childNodes = this.childNodes;
-        var parent = this.contentInsertionPoint.parentNode;
-        if (parent) {
+        if (this.contentInserctionPoint) {
+            var parent = this.contentInserctionPoint.parentNode;
             for (var i = 0, ii = childNodes.length; i < ii; i++) {
-                parent.insertBefore(childNodes[i], this.contentInsertionPoint);
+                parent.insertBefore(childNodes[i], this.contentInserctionPoint);
             }
         }
     }

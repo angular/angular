@@ -5,15 +5,14 @@ import { AbstractChangeDetector } from './abstract_change_detector';
 import { ChangeDetectionUtil } from './change_detection_util';
 import { ChangeDetectionStrategy, ChangeDetectorState } from './constants';
 import { RecordType } from './proto_record';
-import { reflector } from 'angular2/src/core/reflection/reflection';
-import { ObservableWrapper } from 'angular2/src/facade/async';
 export class DynamicChangeDetector extends AbstractChangeDetector {
-    constructor(id, numberOfPropertyProtoRecords, propertyBindingTargets, directiveIndices, strategy, _records, _eventBindings, _directiveRecords, _genConfig) {
-        super(id, numberOfPropertyProtoRecords, propertyBindingTargets, directiveIndices, strategy);
+    constructor(id, dispatcher, numberOfPropertyProtoRecords, propertyBindingTargets, directiveIndices, strategy, _records, _eventBindings, _directiveRecords, _genConfig) {
+        super(id, dispatcher, numberOfPropertyProtoRecords, propertyBindingTargets, directiveIndices, strategy);
         this._records = _records;
         this._eventBindings = _eventBindings;
         this._directiveRecords = _directiveRecords;
         this._genConfig = _genConfig;
+        this.directives = null;
         var len = _records.length + 1;
         this.values = ListWrapper.createFixedSize(len);
         this.localPipes = ListWrapper.createFixedSize(len);
@@ -79,36 +78,22 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
     _matchingEventBindings(eventName, elIndex) {
         return this._eventBindings.filter(eb => eb.eventName == eventName && eb.elIndex === elIndex);
     }
-    hydrateDirectives(dispatcher) {
+    hydrateDirectives(directives) {
         this.values[0] = this.context;
-        this.dispatcher = dispatcher;
+        this.directives = directives;
         if (this.strategy === ChangeDetectionStrategy.OnPushObserve) {
             for (var i = 0; i < this.directiveIndices.length; ++i) {
                 var index = this.directiveIndices[i];
-                super.observeDirective(this._getDirectiveFor(index), i);
+                super.observeDirective(directives.getDirectiveFor(index), i);
             }
         }
-        for (var i = 0; i < this._directiveRecords.length; ++i) {
-            var r = this._directiveRecords[i];
-            if (isPresent(r.outputs)) {
-                r.outputs.forEach(output => {
-                    var eventHandler = this._createEventHandler(r.directiveIndex.elementIndex, output[1]);
-                    var directive = this._getDirectiveFor(r.directiveIndex);
-                    var getter = reflector.getter(output[0]);
-                    ObservableWrapper.subscribe(getter(directive), eventHandler);
-                });
-            }
-        }
-    }
-    _createEventHandler(boundElementIndex, eventName) {
-        return (event) => this.handleEvent(eventName, boundElementIndex, event);
     }
     dehydrateDirectives(destroyPipes) {
         if (destroyPipes) {
             this._destroyPipes();
-            this._destroyDirectives();
         }
         this.values[0] = null;
+        this.directives = null;
         ListWrapper.fill(this.values, ChangeDetectionUtil.uninitialized, 1);
         ListWrapper.fill(this.changes, false);
         ListWrapper.fill(this.localPipes, null);
@@ -119,15 +104,6 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
         for (var i = 0; i < this.localPipes.length; ++i) {
             if (isPresent(this.localPipes[i])) {
                 ChangeDetectionUtil.callPipeOnDestroy(this.localPipes[i]);
-            }
-        }
-    }
-    /** @internal */
-    _destroyDirectives() {
-        for (var i = 0; i < this._directiveRecords.length; ++i) {
-            var record = this._directiveRecords[i];
-            if (record.callOnDestroy) {
-                this._getDirectiveFor(record.directiveIndex).ngOnDestroy();
             }
         }
     }
@@ -228,12 +204,10 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
     }
     /** @internal */
     _getDirectiveFor(directiveIndex) {
-        return this.dispatcher.getDirectiveFor(directiveIndex);
+        return this.directives.getDirectiveFor(directiveIndex);
     }
     /** @internal */
-    _getDetectorFor(directiveIndex) {
-        return this.dispatcher.getDetectorFor(directiveIndex);
-    }
+    _getDetectorFor(directiveIndex) { return this.directives.getDetectorFor(directiveIndex); }
     /** @internal */
     _check(proto, throwOnChange, values, locals) {
         if (proto.isPipeRecord()) {

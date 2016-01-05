@@ -30,11 +30,23 @@ export class ElementRef {
      * </div>
      */
     get nativeElement() { return unimplemented(); }
+    ;
+    get renderView() { return unimplemented(); }
 }
-export class ElementRef_ {
-    constructor(_appElement) {
-        this._appElement = _appElement;
+export class ElementRef_ extends ElementRef {
+    constructor(parentView, 
+        /**
+         * Index of the element inside the {@link ViewRef}.
+         *
+         * This is used internally by the Angular framework to locate elements.
+         */
+        boundElementIndex, _renderer) {
+        super();
+        this.parentView = parentView;
+        this.boundElementIndex = boundElementIndex;
+        this._renderer = _renderer;
     }
-    get internalElement() { return this._appElement; }
-    get nativeElement() { return this._appElement.nativeElement; }
+    get renderView() { return this.parentView.render; }
+    set renderView(value) { unimplemented(); }
+    get nativeElement() { return this._renderer.getNativeElementSync(this); }
 }

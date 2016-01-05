@@ -45,7 +45,7 @@ export let SelectControlValueAccessor = class {
     }
     writeValue(value) {
         this.value = value;
-        this._renderer.setElementProperty(this._elementRef.nativeElement, 'value', value);
+        this._renderer.setElementProperty(this._elementRef, 'value', value);
     }
     registerOnChange(fn) { this.onChange = fn; }
     registerOnTouched(fn) { this.onTouched = fn; }

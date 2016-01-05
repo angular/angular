@@ -9,7 +9,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 import { Type, isBlank, isPresent, CONST, CONST_EXPR, stringify, isArray, isType, isFunction, normalizeBool } from 'angular2/src/facade/lang';
 import { BaseException } from 'angular2/src/facade/exceptions';
-import { MapWrapper, ListWrapper } from 'angular2/src/facade/collection';
+import { MapWrapper } from 'angular2/src/facade/collection';
 import { reflector } from 'angular2/src/core/reflection/reflection';
 import { Key } from './key';
 import { InjectMetadata, OptionalMetadata, SelfMetadata, HostMetadata, SkipSelfMetadata, DependencyMetadata } from './metadata';
@@ -333,58 +333,46 @@ export function resolveFactory(provider) {
  * convenience provider syntax.
  */
 export function resolveProvider(provider) {
-    return new ResolvedProvider_(Key.get(provider.token), [resolveFactory(provider)], provider.multi);
+    return new ResolvedProvider_(Key.get(provider.token), [resolveFactory(provider)], false);
 }
 /**
  * Resolve a list of Providers.
  */
 export function resolveProviders(providers) {
-    var normalized = _normalizeProviders(providers, []);
-    var resolved = normalized.map(resolveProvider);
-    return MapWrapper.values(mergeResolvedProviders(resolved, new Map()));
-}
-/**
- * Merges a list of ResolvedProviders into a list where
- * each key is contained exactly once and multi providers
- * have been merged.
- */
-export function mergeResolvedProviders(providers, normalizedProvidersMap) {
-    for (var i = 0; i < providers.length; i++) {
-        var provider = providers[i];
-        var existing = normalizedProvidersMap.get(provider.key.id);
-        if (isPresent(existing)) {
-            if (provider.multiProvider !== existing.multiProvider) {
-                throw new MixingMultiProvidersWithRegularProvidersError(existing, provider);
-            }
-            if (provider.multiProvider) {
-                for (var j = 0; j < provider.resolvedFactories.length; j++) {
-                    existing.resolvedFactories.push(provider.resolvedFactories[j]);
-                }
-            }
-            else {
-                normalizedProvidersMap.set(provider.key.id, provider);
-            }
+    var normalized = _createListOfProviders(_normalizeProviders(providers, new Map()));
+    return normalized.map(b => {
+        if (b instanceof _NormalizedProvider) {
+            return new ResolvedProvider_(b.key, [b.resolvedFactory], false);
         }
         else {
-            var resolvedProvider;
-            if (provider.multiProvider) {
-                resolvedProvider = new ResolvedProvider_(provider.key, ListWrapper.clone(provider.resolvedFactories), provider.multiProvider);
-            }
-            else {
-                resolvedProvider = provider;
-            }
-            normalizedProvidersMap.set(provider.key.id, resolvedProvider);
+            var arr = b;
+            return new ResolvedProvider_(arr[0].key, arr.map(_ => _.resolvedFactory), true);
         }
+    });
+}
+/**
+ * The algorithm works as follows:
+ *
+ * [Provider] -> [_NormalizedProvider|[_NormalizedProvider]] -> [ResolvedProvider]
+ *
+ * _NormalizedProvider is essentially a resolved provider before it was grouped by key.
+ */
+class _NormalizedProvider {
+    constructor(key, resolvedFactory) {
+        this.key = key;
+        this.resolvedFactory = resolvedFactory;
     }
-    return normalizedProvidersMap;
+}
+function _createListOfProviders(flattenedProviders) {
+    return MapWrapper.values(flattenedProviders);
 }
 function _normalizeProviders(providers, res) {
     providers.forEach(b => {
         if (b instanceof Type) {
-            res.push(provide(b, { useClass: b }));
+            _normalizeProvider(provide(b, { useClass: b }), res);
         }
         else if (b instanceof Provider) {
-            res.push(b);
+            _normalizeProvider(b, res);
         }
         else if (b instanceof Array) {
             _normalizeProviders(b, res);
@@ -397,6 +385,30 @@ function _normalizeProviders(providers, res) {
         }
     });
     return res;
+}
+function _normalizeProvider(b, res) {
+    var key = Key.get(b.token);
+    var factory = resolveFactory(b);
+    var normalized = new _NormalizedProvider(key, factory);
+    if (b.multi) {
+        var existingProvider = res.get(key.id);
+        if (existingProvider instanceof Array) {
+            existingProvider.push(normalized);
+        }
+        else if (isBlank(existingProvider)) {
+            res.set(key.id, [normalized]);
+        }
+        else {
+            throw new MixingMultiProvidersWithRegularProvidersError(existingProvider, b);
+        }
+    }
+    else {
+        var existingProvider = res.get(key.id);
+        if (existingProvider instanceof Array) {
+            throw new MixingMultiProvidersWithRegularProvidersError(existingProvider, b);
+        }
+        res.set(key.id, normalized);
+    }
 }
 function _constructDependencies(factoryFunction, dependencies) {
     if (isBlank(dependencies)) {

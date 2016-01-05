@@ -1,8 +1,8 @@
+import * as viewModule from './view';
 import { ChangeDetectorRef } from '../change_detection/change_detector_ref';
-import { AppView, HostViewFactory } from './view';
-export declare abstract class ViewRef {
-    destroyed: boolean;
-}
+import { RenderViewRef, RenderFragmentRef } from 'angular2/src/core/render/api';
+export declare function internalView(viewRef: ViewRef): viewModule.AppView;
+export declare function internalProtoView(protoViewRef: ProtoViewRef): viewModule.AppProtoView;
 /**
  * Represents a View containing a single Element that is the Host Element of a {@link Component}
  * instance.
@@ -12,8 +12,7 @@ export declare abstract class ViewRef {
  * of the higher-level APIs: {@link AppViewManager#createRootHostView},
  * {@link AppViewManager#createHostViewInContainer}, {@link ViewContainerRef#createHostView}.
  */
-export declare abstract class HostViewRef extends ViewRef {
-    rootNodes: any[];
+export interface HostViewRef {
 }
 /**
  * Represents an Angular View.
@@ -68,34 +67,71 @@ export declare abstract class HostViewRef extends ViewRef {
  * <!-- /ViewRef: outer-0 -->
  * ```
  */
-export declare abstract class EmbeddedViewRef extends ViewRef {
+export declare abstract class ViewRef implements HostViewRef {
     /**
      * Sets `value` of local variable called `variableName` in this View.
      */
     abstract setLocal(variableName: string, value: any): void;
-    /**
-     * Checks whether this view has a local variable called `variableName`.
-     */
-    abstract hasLocal(variableName: string): boolean;
-    rootNodes: any[];
+    changeDetectorRef: ChangeDetectorRef;
 }
-export declare class ViewRef_ implements EmbeddedViewRef, HostViewRef {
-    private _view;
-    constructor(_view: AppView);
-    internalView: AppView;
+export declare class ViewRef_ extends ViewRef {
+    private _changeDetectorRef;
+    constructor(_view: viewModule.AppView);
+    /**
+     * Return `RenderViewRef`
+     */
+    render: RenderViewRef;
+    /**
+     * Return `RenderFragmentRef`
+     */
+    renderFragment: RenderFragmentRef;
     /**
      * Return `ChangeDetectorRef`
      */
     changeDetectorRef: ChangeDetectorRef;
-    rootNodes: any[];
     setLocal(variableName: string, value: any): void;
-    hasLocal(variableName: string): boolean;
-    destroyed: boolean;
 }
-export declare abstract class HostViewFactoryRef {
+/**
+ * Represents an Angular ProtoView.
+ *
+ * A ProtoView is a prototypical {@link ViewRef View} that is the result of Template compilation and
+ * is used by Angular to efficiently create an instance of this View based on the compiled Template.
+ *
+ * Most ProtoViews are created and used internally by Angular and you don't need to know about them,
+ * except in advanced use-cases where you compile components yourself via the low-level
+ * {@link Compiler#compileInHost} API.
+ *
+ *
+ * ### Example
+ *
+ * Given this template:
+ *
+ * ```
+ * Count: {{items.length}}
+ * <ul>
+ *   <li *ngFor="var item of items">{{item}}</li>
+ * </ul>
+ * ```
+ *
+ * Angular desugars and compiles the template into two ProtoViews:
+ *
+ * Outer ProtoView:
+ * ```
+ * Count: {{items.length}}
+ * <ul>
+ *   <template ngFor var-item [ngForOf]="items"></template>
+ * </ul>
+ * ```
+ *
+ * Inner ProtoView:
+ * ```
+ *   <li>{{item}}</li>
+ * ```
+ *
+ * Notice that the original template is broken down into two separate ProtoViews.
+ */
+export declare abstract class ProtoViewRef {
 }
-export declare class HostViewFactoryRef_ implements HostViewFactoryRef {
-    private _hostViewFactory;
-    constructor(_hostViewFactory: HostViewFactory);
-    internalHostViewFactory: HostViewFactory;
+export declare class ProtoViewRef_ extends ProtoViewRef {
+    constructor(_protoView: viewModule.AppProtoView);
 }

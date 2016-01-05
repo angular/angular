@@ -31,5 +31,3 @@ export class PipeResolver {
     throw new BaseException(`No Pipe decorator found on ${stringify(type)}`);
   }
 }
-
-export var CODEGEN_PIPE_RESOLVER = new PipeResolver();

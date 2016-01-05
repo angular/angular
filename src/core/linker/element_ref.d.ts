@@ -1,4 +1,5 @@
-import { AppElement } from './element';
+import { ViewRef } from './view_ref';
+import { RenderViewRef, RenderElementRef, Renderer } from 'angular2/src/core/render/api';
 /**
  * Represents a location in a View that has an injection, change-detection and render context
  * associated with it.
@@ -9,7 +10,7 @@ import { AppElement } from './element';
  * An `ElementRef` is backed by a render-specific element. In the browser, this is usually a DOM
  * element.
  */
-export declare abstract class ElementRef {
+export declare abstract class ElementRef implements RenderElementRef {
     /**
      * The underlying native element or `null` if direct access to native elements is not supported
      * (e.g. when the application runs in a web worker).
@@ -30,10 +31,24 @@ export declare abstract class ElementRef {
      * </div>
      */
     nativeElement: any;
+    renderView: RenderViewRef;
 }
-export declare class ElementRef_ implements ElementRef {
-    private _appElement;
-    constructor(_appElement: AppElement);
-    internalElement: AppElement;
+export declare class ElementRef_ extends ElementRef {
+    parentView: ViewRef;
+    /**
+     * Index of the element inside the {@link ViewRef}.
+     *
+     * This is used internally by the Angular framework to locate elements.
+     */
+    boundElementIndex: number;
+    private _renderer;
+    constructor(parentView: ViewRef, 
+        /**
+         * Index of the element inside the {@link ViewRef}.
+         *
+         * This is used internally by the Angular framework to locate elements.
+         */
+        boundElementIndex: number, _renderer: Renderer);
+    renderView: RenderViewRef;
     nativeElement: any;
 }

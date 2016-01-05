@@ -14,7 +14,7 @@ export class JitProtoChangeDetector implements ProtoChangeDetector {
 
   static isSupported(): boolean { return true; }
 
-  instantiate(): ChangeDetector { return this._factory(); }
+  instantiate(dispatcher: any): ChangeDetector { return this._factory(dispatcher); }
 
   /** @internal */
   _createFactory(definition: ChangeDetectorDefinition) {

@@ -1,6 +1,6 @@
 import { Type } from 'angular2/src/facade/lang';
 import { Predicate } from 'angular2/src/facade/collection';
-import { AppElement } from 'angular2/src/core/linker/element';
+import { AppView } from 'angular2/src/core/linker/view';
 import { ElementRef } from 'angular2/src/core/linker/element_ref';
 /**
  * A DebugElement contains information from the Angular compiler about an
@@ -79,8 +79,9 @@ export declare abstract class DebugElement {
     queryAll(predicate: Predicate<DebugElement>, scope?: Function): DebugElement[];
 }
 export declare class DebugElement_ extends DebugElement {
-    private _appElement;
-    constructor(_appElement: AppElement);
+    private _parentView;
+    private _boundElementIndex;
+    constructor(_parentView: AppView, _boundElementIndex: number);
     componentInstance: any;
     nativeElement: any;
     elementRef: ElementRef;

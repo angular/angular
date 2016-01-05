@@ -80,6 +80,7 @@ export function selectValueAccessor(dir: NgControl,
   var defaultAccessor;
   var builtinAccessor;
   var customAccessor;
+
   valueAccessors.forEach(v => {
     if (v instanceof DefaultValueAccessor) {
       defaultAccessor = v;

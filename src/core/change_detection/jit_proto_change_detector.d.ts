@@ -3,5 +3,5 @@ export declare class JitProtoChangeDetector implements ProtoChangeDetector {
     private definition;
     constructor(definition: ChangeDetectorDefinition);
     static isSupported(): boolean;
-    instantiate(): ChangeDetector;
+    instantiate(dispatcher: any): ChangeDetector;
 }

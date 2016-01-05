@@ -41,5 +41,5 @@ export class Locals {
     }
   }
 
-  clearLocalValues(): void { MapWrapper.clearValues(this.current); }
+  clearValues(): void { MapWrapper.clearValues(this.current); }
 }

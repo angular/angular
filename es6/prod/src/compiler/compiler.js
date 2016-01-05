@@ -13,8 +13,7 @@ import { TemplateNormalizer } from 'angular2/src/compiler/template_normalizer';
 import { RuntimeMetadataResolver } from 'angular2/src/compiler/runtime_metadata';
 import { ChangeDetectionCompiler } from 'angular2/src/compiler/change_detector_compiler';
 import { StyleCompiler } from 'angular2/src/compiler/style_compiler';
-import { ViewCompiler } from 'angular2/src/compiler/view_compiler';
-import { ProtoViewCompiler } from 'angular2/src/compiler/proto_view_compiler';
+import { CommandCompiler } from 'angular2/src/compiler/command_compiler';
 import { TemplateCompiler } from 'angular2/src/compiler/template_compiler';
 import { ChangeDetectorGenConfig } from 'angular2/src/core/change_detection/change_detection';
 import { Compiler } from 'angular2/src/core/linker/compiler';
@@ -39,8 +38,7 @@ export const COMPILER_PROVIDERS = CONST_EXPR([
     RuntimeMetadataResolver,
     DEFAULT_PACKAGE_URL_PROVIDER,
     StyleCompiler,
-    ProtoViewCompiler,
-    ViewCompiler,
+    CommandCompiler,
     ChangeDetectionCompiler,
     new Provider(ChangeDetectorGenConfig, { useFactory: _createChangeDetectorGenConfig, deps: [] }),
     TemplateCompiler,

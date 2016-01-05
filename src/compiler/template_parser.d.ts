@@ -1,9 +1,8 @@
 import { OpaqueToken } from 'angular2/core';
 import { Parser } from 'angular2/src/core/change_detection/change_detection';
-import { CompileDirectiveMetadata, CompilePipeMetadata } from './directive_metadata';
+import { CompileDirectiveMetadata } from './directive_metadata';
 import { HtmlParser } from './html_parser';
 import { ParseError, ParseLocation } from './parse_util';
-import { RecursiveAstVisitor, BindingPipe } from 'angular2/src/core/change_detection/parser/ast';
 import { TemplateAst, TemplateAstVisitor } from './template_ast';
 import { ElementSchemaRegistry } from 'angular2/src/compiler/schema/element_schema_registry';
 /**
@@ -23,10 +22,6 @@ export declare class TemplateParser {
     private _htmlParser;
     transforms: TemplateAstVisitor[];
     constructor(_exprParser: Parser, _schemaRegistry: ElementSchemaRegistry, _htmlParser: HtmlParser, transforms: TemplateAstVisitor[]);
-    parse(template: string, directives: CompileDirectiveMetadata[], pipes: CompilePipeMetadata[], templateUrl: string): TemplateAst[];
+    parse(template: string, directives: CompileDirectiveMetadata[], templateUrl: string): TemplateAst[];
 }
 export declare function splitClasses(classAttrValue: string): string[];
-export declare class PipeCollector extends RecursiveAstVisitor {
-    pipes: Set<string>;
-    visitPipe(ast: BindingPipe): any;
-}

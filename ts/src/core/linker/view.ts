@@ -10,53 +10,86 @@ import {
   DirectiveIndex,
   BindingTarget,
   Locals,
-  ProtoChangeDetector,
-  ChangeDetectorRef
+  ProtoChangeDetector
 } from 'angular2/src/core/change_detection/change_detection';
-import {ResolvedProvider, Injectable, Injector} from 'angular2/src/core/di';
 import {DebugContext} from 'angular2/src/core/change_detection/interfaces';
 
-import {AppProtoElement, AppElement, DirectiveProvider} from './element';
 import {
-  isPresent,
-  isBlank,
-  Type,
-  isArray,
-  isNumber,
-  CONST,
-  CONST_EXPR
-} from 'angular2/src/facade/lang';
+  ProtoElementInjector,
+  ElementInjector,
+  PreBuiltObjects,
+  DirectiveProvider
+} from './element_injector';
+import {ElementBinder} from './element_binder';
+import {isPresent} from 'angular2/src/facade/lang';
 import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
-import {Renderer, RootRenderer} from 'angular2/src/core/render/api';
-import {ViewRef_, HostViewFactoryRef} from './view_ref';
+import * as renderApi from 'angular2/src/core/render/api';
+import {RenderEventDispatcher} from 'angular2/src/core/render/api';
+import {ViewRef, ProtoViewRef, internalView} from './view_ref';
+import {ElementRef} from './element_ref';
 import {ProtoPipes} from 'angular2/src/core/pipes/pipes';
 import {camelCaseToDashCase} from 'angular2/src/core/render/util';
+import {TemplateCmd} from './template_commands';
+import {ViewRef_, ProtoViewRef_} from "./view_ref";
 
 export {DebugContext} from 'angular2/src/core/change_detection/interfaces';
-import {Pipes} from 'angular2/src/core/pipes/pipes';
-import {AppViewManager_, AppViewManager} from './view_manager';
-import {ResolvedMetadataCache} from './resolved_metadata_cache';
-import {ViewType} from './view_type';
 
 const REFLECT_PREFIX: string = 'ng-reflect-';
 
-const EMPTY_CONTEXT = CONST_EXPR(new Object());
+export enum ViewType {
+  // A view that contains the host element with bound component directive.
+  // Contains a COMPONENT view
+  HOST,
+  // The view of the component
+  // Can contain 0 to n EMBEDDED views
+  COMPONENT,
+  // A view that is embedded into another View via a <template> element
+  // inside of a COMPONENT view
+  EMBEDDED
+}
+
+export class AppViewContainer {
+  // The order in this list matches the DOM order.
+  views: AppView[] = [];
+}
 
 /**
  * Cost of making objects: http://jsperf.com/instantiate-size-of-object
  *
  */
-export class AppView implements ChangeDispatcher {
-  ref: ViewRef_;
-  rootNodesOrAppElements: any[];
-  allNodes: any[];
-  disposables: Function[];
-  appElements: AppElement[];
+export class AppView implements ChangeDispatcher, RenderEventDispatcher {
+  // AppViews that have been merged in depth first order.
+  // This list is shared between all merged views. Use this.elementOffset to get the local
+  // entries.
+  views: AppView[] = null;
+  // root elementInjectors of this AppView
+  // This list is local to this AppView and not shared with other Views.
+  rootElementInjectors: ElementInjector[];
+  // ElementInjectors of all AppViews in views grouped by view.
+  // This list is shared between all merged views. Use this.elementOffset to get the local
+  // entries.
+  elementInjectors: ElementInjector[] = null;
+  // ViewContainers of all AppViews in views grouped by view.
+  // This list is shared between all merged views. Use this.elementOffset to get the local
+  // entries.
+  viewContainers: AppViewContainer[] = null;
+  // PreBuiltObjects of all AppViews in views grouped by view.
+  // This list is shared between all merged views. Use this.elementOffset to get the local
+  // entries.
+  preBuiltObjects: PreBuiltObjects[] = null;
+  // ElementRef of all AppViews in views grouped by view.
+  // This list is shared between all merged views. Use this.elementOffset to get the local
+  // entries.
+  elementRefs: ElementRef[];
+
+  ref: ViewRef;
+  changeDetector: ChangeDetector = null;
 
   /**
    * The context against which data-binding expressions in this view are evaluated against.
    * This is always a component instance.
    */
+
   context: any = null;
 
   /**
@@ -66,133 +99,70 @@ export class AppView implements ChangeDispatcher {
    */
   locals: Locals;
 
-  pipes: Pipes;
-
-  parentInjector: Injector;
-
-  /**
-   * Whether root injectors of this view
-   * have a hostBoundary.
-   */
-  hostInjectorBoundary: boolean;
-
-  destroyed: boolean = false;
-
-  constructor(public proto: AppProtoView, public renderer: Renderer,
-              public viewManager: AppViewManager_, public projectableNodes: Array<any | any[]>,
-              public containerAppElement: AppElement,
-              imperativelyCreatedProviders: ResolvedProvider[], rootInjector: Injector,
-              public changeDetector: ChangeDetector) {
+  constructor(public renderer: renderApi.Renderer, public proto: AppProtoView,
+              public viewOffset: number, public elementOffset: number, public textOffset: number,
+              protoLocals: Map<string, any>, public render: renderApi.RenderViewRef,
+              public renderFragment: renderApi.RenderFragmentRef,
+              public containerElementInjector: ElementInjector) {
     this.ref = new ViewRef_(this);
-    var injectorWithHostBoundary = AppElement.getViewParentInjector(
-        this.proto.type, containerAppElement, imperativelyCreatedProviders, rootInjector);
-    this.parentInjector = injectorWithHostBoundary.injector;
-    this.hostInjectorBoundary = injectorWithHostBoundary.hostInjectorBoundary;
-    var pipes;
-    var context;
-    switch (proto.type) {
-      case ViewType.COMPONENT:
-        pipes = new Pipes(proto.protoPipes, containerAppElement.getInjector());
-        context = containerAppElement.getComponent();
-        break;
-      case ViewType.EMBEDDED:
-        pipes = containerAppElement.parentView.pipes;
-        context = containerAppElement.parentView.context;
-        break;
-      case ViewType.HOST:
-        pipes = null;
-        context = EMPTY_CONTEXT;
-        break;
-    }
-    this.pipes = pipes;
-    this.context = context;
+
+    this.locals = new Locals(null, MapWrapper.clone(protoLocals));  // TODO optimize this
   }
 
-  init(rootNodesOrAppElements: any[], allNodes: any[], disposables: Function[],
-       appElements: AppElement[]) {
-    this.rootNodesOrAppElements = rootNodesOrAppElements;
-    this.allNodes = allNodes;
-    this.disposables = disposables;
-    this.appElements = appElements;
-    var localsMap = new Map<string, any>();
-    StringMapWrapper.forEach(this.proto.templateVariableBindings,
-                             (templateName, _) => { localsMap.set(templateName, null); });
-    for (var i = 0; i < appElements.length; i++) {
-      var appEl = appElements[i];
-      StringMapWrapper.forEach(appEl.proto.directiveVariableBindings, (directiveIndex, name) => {
-        if (isBlank(directiveIndex)) {
-          localsMap.set(name, appEl.nativeElement);
-        } else {
-          localsMap.set(name, appEl.getDirectiveAtIndex(directiveIndex));
-        }
-      });
-    }
-    var parentLocals = null;
-    if (this.proto.type !== ViewType.COMPONENT) {
-      parentLocals =
-          isPresent(this.containerAppElement) ? this.containerAppElement.parentView.locals : null;
-    }
-    if (this.proto.type === ViewType.COMPONENT) {
-      // Note: the render nodes have been attached to their host element
-      // in the ViewFactory already.
-      this.containerAppElement.attachComponentView(this);
-      this.containerAppElement.parentView.changeDetector.addViewChild(this.changeDetector);
-    }
-    this.locals = new Locals(parentLocals, localsMap);
-    this.changeDetector.hydrate(this.context, this.locals, this, this.pipes);
-    this.viewManager.onViewCreated(this);
-  }
-
-  destroy() {
-    if (this.destroyed) {
-      throw new BaseException('This view has already been destroyed!');
-    }
-    this.changeDetector.destroyRecursive();
-  }
-
-  notifyOnDestroy() {
-    this.destroyed = true;
-    var hostElement =
-        this.proto.type === ViewType.COMPONENT ? this.containerAppElement.nativeElement : null;
-    this.renderer.destroyView(hostElement, this.allNodes);
-    for (var i = 0; i < this.disposables.length; i++) {
-      this.disposables[i]();
-    }
-    this.viewManager.onViewDestroyed(this);
-  }
-
-  get changeDetectorRef(): ChangeDetectorRef { return this.changeDetector.ref; }
-
-  get flatRootNodes(): any[] { return flattenNestedViewRenderNodes(this.rootNodesOrAppElements); }
-
-  hasLocal(contextName: string): boolean {
-    return StringMapWrapper.contains(this.proto.templateVariableBindings, contextName);
+  init(changeDetector: ChangeDetector, elementInjectors: ElementInjector[],
+       rootElementInjectors: ElementInjector[], preBuiltObjects: PreBuiltObjects[],
+       views: AppView[], elementRefs: ElementRef[], viewContainers: AppViewContainer[]) {
+    this.changeDetector = changeDetector;
+    this.elementInjectors = elementInjectors;
+    this.rootElementInjectors = rootElementInjectors;
+    this.preBuiltObjects = preBuiltObjects;
+    this.views = views;
+    this.elementRefs = elementRefs;
+    this.viewContainers = viewContainers;
   }
 
   setLocal(contextName: string, value: any): void {
-    if (!this.hasLocal(contextName)) {
+    if (!this.hydrated()) throw new BaseException('Cannot set locals on dehydrated view.');
+    if (!this.proto.templateVariableBindings.has(contextName)) {
       return;
     }
-    var templateName = this.proto.templateVariableBindings[contextName];
+    var templateName = this.proto.templateVariableBindings.get(contextName);
     this.locals.set(templateName, value);
+  }
+
+  hydrated(): boolean { return isPresent(this.context); }
+
+  /**
+   * Triggers the event handlers for the element and the directives.
+   *
+   * This method is intended to be called from directive EventEmitters.
+   *
+   * @param {string} eventName
+   * @param {*} eventObj
+   * @param {number} boundElementIndex
+   */
+  triggerEventHandlers(eventName: string, eventObj: Event, boundElementIndex: number): void {
+    var locals = new Map<string, any>();
+    locals.set('$event', eventObj);
+    this.dispatchEvent(boundElementIndex, eventName, locals);
   }
 
   // dispatch to element injector or text nodes based on context
   notifyOnBinding(b: BindingTarget, currentValue: any): void {
     if (b.isTextNode()) {
-      this.renderer.setText(this.allNodes[b.elementIndex], currentValue);
+      this.renderer.setText(this.render, b.elementIndex + this.textOffset, currentValue);
     } else {
-      var nativeElement = this.appElements[b.elementIndex].nativeElement;
+      var elementRef = this.elementRefs[this.elementOffset + b.elementIndex];
       if (b.isElementProperty()) {
-        this.renderer.setElementProperty(nativeElement, b.name, currentValue);
+        this.renderer.setElementProperty(elementRef, b.name, currentValue);
       } else if (b.isElementAttribute()) {
-        this.renderer.setElementAttribute(nativeElement, b.name,
+        this.renderer.setElementAttribute(elementRef, b.name,
                                           isPresent(currentValue) ? `${currentValue}` : null);
       } else if (b.isElementClass()) {
-        this.renderer.setElementClass(nativeElement, b.name, currentValue);
+        this.renderer.setElementClass(elementRef, b.name, currentValue);
       } else if (b.isElementStyle()) {
         var unit = isPresent(b.unit) ? b.unit : '';
-        this.renderer.setElementStyle(nativeElement, b.name,
+        this.renderer.setElementStyle(elementRef, b.name,
                                       isPresent(currentValue) ? `${currentValue}${unit}` : null);
       } else {
         throw new BaseException('Unsupported directive record');
@@ -202,39 +172,57 @@ export class AppView implements ChangeDispatcher {
 
   logBindingUpdate(b: BindingTarget, value: any): void {
     if (b.isDirective() || b.isElementProperty()) {
-      var nativeElement = this.appElements[b.elementIndex].nativeElement;
+      var elementRef = this.elementRefs[this.elementOffset + b.elementIndex];
       this.renderer.setBindingDebugInfo(
-          nativeElement, `${REFLECT_PREFIX}${camelCaseToDashCase(b.name)}`, `${value}`);
+          elementRef, `${REFLECT_PREFIX}${camelCaseToDashCase(b.name)}`, `${value}`);
     }
   }
 
   notifyAfterContentChecked(): void {
-    var count = this.appElements.length;
-    for (var i = count - 1; i >= 0; i--) {
-      this.appElements[i].ngAfterContentChecked();
+    var eiCount = this.proto.elementBinders.length;
+    var ei = this.elementInjectors;
+    for (var i = eiCount - 1; i >= 0; i--) {
+      if (isPresent(ei[i + this.elementOffset])) ei[i + this.elementOffset].ngAfterContentChecked();
     }
   }
 
   notifyAfterViewChecked(): void {
-    var count = this.appElements.length;
-    for (var i = count - 1; i >= 0; i--) {
-      this.appElements[i].ngAfterViewChecked();
+    var eiCount = this.proto.elementBinders.length;
+    var ei = this.elementInjectors;
+    for (var i = eiCount - 1; i >= 0; i--) {
+      if (isPresent(ei[i + this.elementOffset])) ei[i + this.elementOffset].ngAfterViewChecked();
     }
   }
 
-  getDebugContext(appElement: AppElement, elementIndex: number,
-                  directiveIndex: number): DebugContext {
-    try {
-      if (isBlank(appElement) && elementIndex < this.appElements.length) {
-        appElement = this.appElements[elementIndex];
-      }
-      var container = this.containerAppElement;
+  getDirectiveFor(directive: DirectiveIndex): any {
+    var elementInjector = this.elementInjectors[this.elementOffset + directive.elementIndex];
+    return elementInjector.getDirectiveAtIndex(directive.directiveIndex);
+  }
 
-      var element = isPresent(appElement) ? appElement.nativeElement : null;
+  getNestedView(boundElementIndex: number): AppView {
+    var eli = this.elementInjectors[boundElementIndex];
+    return isPresent(eli) ? eli.getNestedView() : null;
+  }
+
+  getContainerElement(): ElementRef {
+    return isPresent(this.containerElementInjector) ?
+               this.containerElementInjector.getElementRef() :
+               null;
+  }
+
+  getDebugContext(elementIndex: number, directiveIndex: DirectiveIndex): DebugContext {
+    try {
+      var offsettedIndex = this.elementOffset + elementIndex;
+      var hasRefForIndex = offsettedIndex < this.elementRefs.length;
+
+      var elementRef = hasRefForIndex ? this.elementRefs[this.elementOffset + elementIndex] : null;
+      var container = this.getContainerElement();
+      var ei = hasRefForIndex ? this.elementInjectors[this.elementOffset + elementIndex] : null;
+
+      var element = isPresent(elementRef) ? elementRef.nativeElement : null;
       var componentElement = isPresent(container) ? container.nativeElement : null;
-      var directive =
-          isPresent(directiveIndex) ? appElement.getDirectiveAtIndex(directiveIndex) : null;
-      var injector = isPresent(appElement) ? appElement.getInjector() : null;
+      var directive = isPresent(directiveIndex) ? this.getDirectiveFor(directiveIndex) : null;
+      var injector = isPresent(ei) ? ei.getInjector() : null;
 
       return new DebugContext(element, componentElement, directive, this.context,
                               _localsToStringMap(this.locals), injector);
@@ -246,28 +234,43 @@ export class AppView implements ChangeDispatcher {
     }
   }
 
-  getDirectiveFor(directive: DirectiveIndex): any {
-    return this.appElements[directive.elementIndex].getDirectiveAtIndex(directive.directiveIndex);
-  }
-
   getDetectorFor(directive: DirectiveIndex): any {
-    var componentView = this.appElements[directive.elementIndex].componentView;
-    return isPresent(componentView) ? componentView.changeDetector : null;
+    var childView = this.getNestedView(this.elementOffset + directive.elementIndex);
+    return isPresent(childView) ? childView.changeDetector : null;
   }
 
-  /**
-   * Triggers the event handlers for the element and the directives.
-   *
-   * This method is intended to be called from directive EventEmitters.
-   *
-   * @param {string} eventName
-   * @param {*} eventObj
-   * @param {number} boundElementIndex
-   * @return false if preventDefault must be applied to the DOM event
-   */
-  triggerEventHandlers(eventName: string, eventObj: Event, boundElementIndex: number): boolean {
-    return this.changeDetector.handleEvent(eventName, boundElementIndex, eventObj);
+  invokeElementMethod(elementIndex: number, methodName: string, args: any[]) {
+    this.renderer.invokeElementMethod(this.elementRefs[elementIndex], methodName, args);
   }
+
+  // implementation of RenderEventDispatcher#dispatchRenderEvent
+  dispatchRenderEvent(boundElementIndex: number, eventName: string,
+                      locals: Map<string, any>): boolean {
+    var elementRef = this.elementRefs[boundElementIndex];
+    var view = internalView(elementRef.parentView);
+    return view.dispatchEvent(elementRef.boundElementIndex, eventName, locals);
+  }
+
+
+  // returns false if preventDefault must be applied to the DOM event
+  dispatchEvent(boundElementIndex: number, eventName: string, locals: Map<string, any>): boolean {
+    try {
+      if (this.hydrated()) {
+        return !this.changeDetector.handleEvent(eventName, boundElementIndex - this.elementOffset,
+                                                new Locals(this.locals, locals));
+      } else {
+        return true;
+      }
+    } catch (e) {
+      var c = this.getDebugContext(boundElementIndex - this.elementOffset, null);
+      var context = isPresent(c) ? new _Context(c.element, c.componentElement, c.context, c.locals,
+                                                c.injector) :
+                                   null;
+      throw new EventEvaluationError(eventName, e, e.stack, context);
+    }
+  }
+
+  get ownBindersCount(): number { return this.proto.elementBinders.length; }
 }
 
 function _localsToStringMap(locals: Locals): {[key: string]: any} {
@@ -281,60 +284,68 @@ function _localsToStringMap(locals: Locals): {[key: string]: any} {
 }
 
 /**
+ * Error context included when an event handler throws an exception.
+ */
+class _Context {
+  constructor(public element: any, public componentElement: any, public context: any,
+              public locals: any, public injector: any) {}
+}
+
+/**
+ * Wraps an exception thrown by an event handler.
+ */
+class EventEvaluationError extends WrappedException {
+  constructor(eventName: string, originalException: any, originalStack: any, context: any) {
+    super(`Error during evaluation of "${eventName}"`, originalException, originalStack, context);
+  }
+}
+
+export class AppProtoViewMergeInfo {
+  constructor(public embeddedViewCount: number, public elementCount: number,
+              public viewCount: number) {}
+}
+
+/**
  *
  */
 export class AppProtoView {
-  static create(metadataCache: ResolvedMetadataCache, type: ViewType, pipes: Type[],
-                templateVariableBindings: {[key: string]: string}): AppProtoView {
-    var protoPipes = null;
-    if (isPresent(pipes) && pipes.length > 0) {
-      var boundPipes = ListWrapper.createFixedSize(pipes.length);
-      for (var i = 0; i < pipes.length; i++) {
-        boundPipes[i] = metadataCache.getResolvedPipeMetadata(pipes[i]);
-      }
-      protoPipes = ProtoPipes.fromProviders(boundPipes);
-    }
-    return new AppProtoView(type, protoPipes, templateVariableBindings);
+  ref: ProtoViewRef;
+  protoLocals: Map<string, any>;
+
+  elementBinders: ElementBinder[] = null;
+  mergeInfo: AppProtoViewMergeInfo = null;
+  variableLocations: Map<string, number> = null;
+  textBindingCount = null;
+  render: renderApi.RenderProtoViewRef = null;
+
+  constructor(public templateId: string, public templateCmds: TemplateCmd[], public type: ViewType,
+              public isMergable: boolean, public changeDetectorFactory: Function,
+              public templateVariableBindings: Map<string, string>, public pipes: ProtoPipes) {
+    this.ref = new ProtoViewRef_(this);
   }
 
-  constructor(public type: ViewType, public protoPipes: ProtoPipes,
-              public templateVariableBindings: {[key: string]: string}) {}
-}
-
-
-@CONST()
-export class HostViewFactory {
-  constructor(public selector: string, public viewFactory: Function) {}
-}
-
-export function flattenNestedViewRenderNodes(nodes: any[]): any[] {
-  return _flattenNestedViewRenderNodes(nodes, []);
-}
-
-function _flattenNestedViewRenderNodes(nodes: any[], renderNodes: any[]): any[] {
-  for (var i = 0; i < nodes.length; i++) {
-    var node = nodes[i];
-    if (node instanceof AppElement) {
-      var appEl = <AppElement>node;
-      renderNodes.push(appEl.nativeElement);
-      if (isPresent(appEl.nestedViews)) {
-        for (var k = 0; k < appEl.nestedViews.length; k++) {
-          _flattenNestedViewRenderNodes(appEl.nestedViews[k].rootNodesOrAppElements, renderNodes);
-        }
-      }
-    } else {
-      renderNodes.push(node);
+  init(render: renderApi.RenderProtoViewRef, elementBinders: ElementBinder[],
+       textBindingCount: number, mergeInfo: AppProtoViewMergeInfo,
+       variableLocations: Map<string, number>) {
+    this.render = render;
+    this.elementBinders = elementBinders;
+    this.textBindingCount = textBindingCount;
+    this.mergeInfo = mergeInfo;
+    this.variableLocations = variableLocations;
+    this.protoLocals = new Map<string, any>();
+    if (isPresent(this.templateVariableBindings)) {
+      this.templateVariableBindings.forEach(
+          (templateName, _) => { this.protoLocals.set(templateName, null); });
+    }
+    if (isPresent(variableLocations)) {
+      // The view's locals needs to have a full set of variable names at construction time
+      // in order to prevent new variables from being set later in the lifecycle. Since we don't
+      // want
+      // to actually create variable bindings for the $implicit bindings, add to the
+      // protoLocals manually.
+      variableLocations.forEach((_, templateName) => { this.protoLocals.set(templateName, null); });
     }
   }
-  return renderNodes;
-}
 
-export function checkSlotCount(componentName: string, expectedSlotCount: number,
-                               projectableNodes: any[][]): void {
-  var givenSlotCount = isPresent(projectableNodes) ? projectableNodes.length : 0;
-  if (givenSlotCount < expectedSlotCount) {
-    throw new BaseException(
-        `The component ${componentName} has ${expectedSlotCount} <ng-content> elements,` +
-        ` but only ${givenSlotCount} slots were provided.`);
-  }
+  isInitialized(): boolean { return isPresent(this.elementBinders); }
 }

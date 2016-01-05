@@ -1,7 +1,5 @@
 import {ConcreteType, global, Type, isFunction, stringify} from 'angular2/src/facade/lang';
 
-var _nextClassId = 0;
-
 /**
  * Declares the interface to be used with {@link Class}.
  */
@@ -228,10 +226,6 @@ export function Class(clsDef: ClassDefinition): ConcreteType {
 
   if (this && this.annotations instanceof Array) {
     Reflect.defineMetadata('annotations', this.annotations, constructor);
-  }
-
-  if (!constructor['name']) {
-    constructor['overriddenName'] = `class${_nextClassId++}`;
   }
 
   return <ConcreteType>constructor;

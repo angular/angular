@@ -1,5 +1,4 @@
 import { global, isFunction, stringify } from 'angular2/src/facade/lang';
-var _nextClassId = 0;
 function extractAnnotation(annotation) {
     if (isFunction(annotation) && annotation.hasOwnProperty('annotation')) {
         // it is a decorator, extract annotation
@@ -149,9 +148,6 @@ export function Class(clsDef) {
     }
     if (this && this.annotations instanceof Array) {
         Reflect.defineMetadata('annotations', this.annotations, constructor);
-    }
-    if (!constructor['name']) {
-        constructor['overriddenName'] = `class${_nextClassId++}`;
     }
     return constructor;
 }

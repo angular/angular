@@ -1118,10 +1118,130 @@ System.register("angular2/src/testing/utils", ["angular2/core", "angular2/src/fa
   return module.exports;
 });
 
-System.register("angular2/src/web_workers/shared/render_store", ["angular2/src/core/di"], true, function(require, exports, module) {
+System.register("angular2/src/web_workers/shared/api", ["angular2/src/facade/lang", "angular2/src/core/di"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
+  var lang_1 = require("angular2/src/facade/lang");
+  var di_1 = require("angular2/src/core/di");
+  exports.ON_WEB_WORKER = lang_1.CONST_EXPR(new di_1.OpaqueToken('WebWorker.onWebWorker'));
+  var WebWorkerElementRef = (function() {
+    function WebWorkerElementRef(renderView, boundElementIndex) {
+      this.renderView = renderView;
+      this.boundElementIndex = boundElementIndex;
+    }
+    return WebWorkerElementRef;
+  })();
+  exports.WebWorkerElementRef = WebWorkerElementRef;
+  var WebWorkerTemplateCmd = (function() {
+    function WebWorkerTemplateCmd() {}
+    WebWorkerTemplateCmd.prototype.visit = function(visitor, context) {
+      return null;
+    };
+    return WebWorkerTemplateCmd;
+  })();
+  exports.WebWorkerTemplateCmd = WebWorkerTemplateCmd;
+  var WebWorkerTextCmd = (function() {
+    function WebWorkerTextCmd(isBound, ngContentIndex, value) {
+      this.isBound = isBound;
+      this.ngContentIndex = ngContentIndex;
+      this.value = value;
+    }
+    WebWorkerTextCmd.prototype.visit = function(visitor, context) {
+      return visitor.visitText(this, context);
+    };
+    return WebWorkerTextCmd;
+  })();
+  exports.WebWorkerTextCmd = WebWorkerTextCmd;
+  var WebWorkerNgContentCmd = (function() {
+    function WebWorkerNgContentCmd(index, ngContentIndex) {
+      this.index = index;
+      this.ngContentIndex = ngContentIndex;
+    }
+    WebWorkerNgContentCmd.prototype.visit = function(visitor, context) {
+      return visitor.visitNgContent(this, context);
+    };
+    return WebWorkerNgContentCmd;
+  })();
+  exports.WebWorkerNgContentCmd = WebWorkerNgContentCmd;
+  var WebWorkerBeginElementCmd = (function() {
+    function WebWorkerBeginElementCmd(isBound, ngContentIndex, name, attrNameAndValues, eventTargetAndNames) {
+      this.isBound = isBound;
+      this.ngContentIndex = ngContentIndex;
+      this.name = name;
+      this.attrNameAndValues = attrNameAndValues;
+      this.eventTargetAndNames = eventTargetAndNames;
+    }
+    WebWorkerBeginElementCmd.prototype.visit = function(visitor, context) {
+      return visitor.visitBeginElement(this, context);
+    };
+    return WebWorkerBeginElementCmd;
+  })();
+  exports.WebWorkerBeginElementCmd = WebWorkerBeginElementCmd;
+  var WebWorkerEndElementCmd = (function() {
+    function WebWorkerEndElementCmd() {}
+    WebWorkerEndElementCmd.prototype.visit = function(visitor, context) {
+      return visitor.visitEndElement(context);
+    };
+    return WebWorkerEndElementCmd;
+  })();
+  exports.WebWorkerEndElementCmd = WebWorkerEndElementCmd;
+  var WebWorkerBeginComponentCmd = (function() {
+    function WebWorkerBeginComponentCmd(isBound, ngContentIndex, name, attrNameAndValues, eventTargetAndNames, templateId) {
+      this.isBound = isBound;
+      this.ngContentIndex = ngContentIndex;
+      this.name = name;
+      this.attrNameAndValues = attrNameAndValues;
+      this.eventTargetAndNames = eventTargetAndNames;
+      this.templateId = templateId;
+    }
+    WebWorkerBeginComponentCmd.prototype.visit = function(visitor, context) {
+      return visitor.visitBeginComponent(this, context);
+    };
+    return WebWorkerBeginComponentCmd;
+  })();
+  exports.WebWorkerBeginComponentCmd = WebWorkerBeginComponentCmd;
+  var WebWorkerEndComponentCmd = (function() {
+    function WebWorkerEndComponentCmd() {}
+    WebWorkerEndComponentCmd.prototype.visit = function(visitor, context) {
+      return visitor.visitEndComponent(context);
+    };
+    return WebWorkerEndComponentCmd;
+  })();
+  exports.WebWorkerEndComponentCmd = WebWorkerEndComponentCmd;
+  var WebWorkerEmbeddedTemplateCmd = (function() {
+    function WebWorkerEmbeddedTemplateCmd(isBound, ngContentIndex, name, attrNameAndValues, eventTargetAndNames, isMerged, children) {
+      this.isBound = isBound;
+      this.ngContentIndex = ngContentIndex;
+      this.name = name;
+      this.attrNameAndValues = attrNameAndValues;
+      this.eventTargetAndNames = eventTargetAndNames;
+      this.isMerged = isMerged;
+      this.children = children;
+    }
+    WebWorkerEmbeddedTemplateCmd.prototype.visit = function(visitor, context) {
+      return visitor.visitEmbeddedTemplate(this, context);
+    };
+    return WebWorkerEmbeddedTemplateCmd;
+  })();
+  exports.WebWorkerEmbeddedTemplateCmd = WebWorkerEmbeddedTemplateCmd;
+  global.define = __define;
+  return module.exports;
+});
+
+System.register("angular2/src/web_workers/shared/render_proto_view_ref_store", ["angular2/src/core/di", "angular2/src/core/render/api", "angular2/src/web_workers/shared/api"], true, function(require, exports, module) {
+  var global = System.global,
+      __define = global.define;
+  global.define = undefined;
+  var __extends = (this && this.__extends) || function(d, b) {
+    for (var p in b)
+      if (b.hasOwnProperty(p))
+        d[p] = b[p];
+    function __() {
+      this.constructor = d;
+    }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+  };
   var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
     var c = arguments.length,
         r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
@@ -1138,44 +1258,250 @@ System.register("angular2/src/web_workers/shared/render_store", ["angular2/src/c
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
       return Reflect.metadata(k, v);
   };
+  var __param = (this && this.__param) || function(paramIndex, decorator) {
+    return function(target, key) {
+      decorator(target, key, paramIndex);
+    };
+  };
   var di_1 = require("angular2/src/core/di");
-  var RenderStore = (function() {
-    function RenderStore() {
+  var api_1 = require("angular2/src/core/render/api");
+  var api_2 = require("angular2/src/web_workers/shared/api");
+  var RenderProtoViewRefStore = (function() {
+    function RenderProtoViewRefStore(onWebworker) {
+      this._lookupByIndex = new Map();
+      this._lookupByProtoView = new Map();
       this._nextIndex = 0;
-      this._lookupById = new Map();
-      this._lookupByObject = new Map();
+      this._onWebworker = onWebworker;
     }
-    RenderStore.prototype.allocateId = function() {
-      return this._nextIndex++;
+    RenderProtoViewRefStore.prototype.allocate = function() {
+      var index = this._nextIndex++;
+      var result = new WebWorkerRenderProtoViewRef(index);
+      this.store(result, index);
+      return result;
     };
-    RenderStore.prototype.store = function(obj, id) {
-      this._lookupById.set(id, obj);
-      this._lookupByObject.set(obj, id);
+    RenderProtoViewRefStore.prototype.store = function(ref, index) {
+      this._lookupByProtoView.set(ref, index);
+      this._lookupByIndex.set(index, ref);
     };
-    RenderStore.prototype.remove = function(obj) {
-      var index = this._lookupByObject.get(obj);
-      this._lookupByObject.delete(obj);
-      this._lookupById.delete(index);
-    };
-    RenderStore.prototype.deserialize = function(id) {
-      if (id == null) {
+    RenderProtoViewRefStore.prototype.deserialize = function(index) {
+      if (index == null) {
         return null;
       }
-      if (!this._lookupById.has(id)) {
+      return this._lookupByIndex.get(index);
+    };
+    RenderProtoViewRefStore.prototype.serialize = function(ref) {
+      if (ref == null) {
         return null;
       }
-      return this._lookupById.get(id);
+      if (this._onWebworker) {
+        return ref.refNumber;
+      } else {
+        return this._lookupByProtoView.get(ref);
+      }
     };
-    RenderStore.prototype.serialize = function(obj) {
+    RenderProtoViewRefStore = __decorate([di_1.Injectable(), __param(0, di_1.Inject(api_2.ON_WEB_WORKER)), __metadata('design:paramtypes', [Object])], RenderProtoViewRefStore);
+    return RenderProtoViewRefStore;
+  })();
+  exports.RenderProtoViewRefStore = RenderProtoViewRefStore;
+  var WebWorkerRenderProtoViewRef = (function(_super) {
+    __extends(WebWorkerRenderProtoViewRef, _super);
+    function WebWorkerRenderProtoViewRef(refNumber) {
+      _super.call(this);
+      this.refNumber = refNumber;
+    }
+    return WebWorkerRenderProtoViewRef;
+  })(api_1.RenderProtoViewRef);
+  exports.WebWorkerRenderProtoViewRef = WebWorkerRenderProtoViewRef;
+  global.define = __define;
+  return module.exports;
+});
+
+System.register("angular2/src/web_workers/shared/render_view_with_fragments_store", ["angular2/src/core/di", "angular2/src/core/render/api", "angular2/src/web_workers/shared/api", "angular2/src/facade/collection"], true, function(require, exports, module) {
+  var global = System.global,
+      __define = global.define;
+  global.define = undefined;
+  var __extends = (this && this.__extends) || function(d, b) {
+    for (var p in b)
+      if (b.hasOwnProperty(p))
+        d[p] = b[p];
+    function __() {
+      this.constructor = d;
+    }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+  };
+  var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    var c = arguments.length,
+        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
+        d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
+      r = Reflect.decorate(decorators, target, key, desc);
+    else
+      for (var i = decorators.length - 1; i >= 0; i--)
+        if (d = decorators[i])
+          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+  };
+  var __metadata = (this && this.__metadata) || function(k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
+      return Reflect.metadata(k, v);
+  };
+  var __param = (this && this.__param) || function(paramIndex, decorator) {
+    return function(target, key) {
+      decorator(target, key, paramIndex);
+    };
+  };
+  var di_1 = require("angular2/src/core/di");
+  var api_1 = require("angular2/src/core/render/api");
+  var api_2 = require("angular2/src/web_workers/shared/api");
+  var collection_1 = require("angular2/src/facade/collection");
+  var RenderViewWithFragmentsStore = (function() {
+    function RenderViewWithFragmentsStore(onWebWorker) {
+      this._nextIndex = 0;
+      this._onWebWorker = onWebWorker;
+      this._lookupByIndex = new Map();
+      this._lookupByView = new Map();
+      this._viewFragments = new Map();
+    }
+    RenderViewWithFragmentsStore.prototype.allocate = function(fragmentCount) {
+      var initialIndex = this._nextIndex;
+      var viewRef = new WebWorkerRenderViewRef(this._nextIndex++);
+      var fragmentRefs = collection_1.ListWrapper.createGrowableSize(fragmentCount);
+      for (var i = 0; i < fragmentCount; i++) {
+        fragmentRefs[i] = new WebWorkerRenderFragmentRef(this._nextIndex++);
+      }
+      var renderViewWithFragments = new api_1.RenderViewWithFragments(viewRef, fragmentRefs);
+      this.store(renderViewWithFragments, initialIndex);
+      return renderViewWithFragments;
+    };
+    RenderViewWithFragmentsStore.prototype.store = function(view, startIndex) {
+      var _this = this;
+      this._lookupByIndex.set(startIndex, view.viewRef);
+      this._lookupByView.set(view.viewRef, startIndex);
+      startIndex++;
+      view.fragmentRefs.forEach(function(ref) {
+        _this._lookupByIndex.set(startIndex, ref);
+        _this._lookupByView.set(ref, startIndex);
+        startIndex++;
+      });
+      this._viewFragments.set(view.viewRef, view.fragmentRefs);
+    };
+    RenderViewWithFragmentsStore.prototype.remove = function(view) {
+      var _this = this;
+      this._removeRef(view);
+      var fragments = this._viewFragments.get(view);
+      fragments.forEach(function(fragment) {
+        _this._removeRef(fragment);
+      });
+      this._viewFragments.delete(view);
+    };
+    RenderViewWithFragmentsStore.prototype._removeRef = function(ref) {
+      var index = this._lookupByView.get(ref);
+      this._lookupByView.delete(ref);
+      this._lookupByIndex.delete(index);
+    };
+    RenderViewWithFragmentsStore.prototype.serializeRenderViewRef = function(viewRef) {
+      return this._serializeRenderFragmentOrViewRef(viewRef);
+    };
+    RenderViewWithFragmentsStore.prototype.serializeRenderFragmentRef = function(fragmentRef) {
+      return this._serializeRenderFragmentOrViewRef(fragmentRef);
+    };
+    RenderViewWithFragmentsStore.prototype.deserializeRenderViewRef = function(ref) {
+      if (ref == null) {
+        return null;
+      }
+      return this._retrieve(ref);
+    };
+    RenderViewWithFragmentsStore.prototype.deserializeRenderFragmentRef = function(ref) {
+      if (ref == null) {
+        return null;
+      }
+      return this._retrieve(ref);
+    };
+    RenderViewWithFragmentsStore.prototype._retrieve = function(ref) {
+      if (ref == null) {
+        return null;
+      }
+      if (!this._lookupByIndex.has(ref)) {
+        return null;
+      }
+      return this._lookupByIndex.get(ref);
+    };
+    RenderViewWithFragmentsStore.prototype._serializeRenderFragmentOrViewRef = function(ref) {
+      if (ref == null) {
+        return null;
+      }
+      if (this._onWebWorker) {
+        return ref.serialize();
+      } else {
+        return this._lookupByView.get(ref);
+      }
+    };
+    RenderViewWithFragmentsStore.prototype.serializeViewWithFragments = function(view) {
+      var _this = this;
+      if (view == null) {
+        return null;
+      }
+      if (this._onWebWorker) {
+        return {
+          'viewRef': view.viewRef.serialize(),
+          'fragmentRefs': view.fragmentRefs.map(function(val) {
+            return val.serialize();
+          })
+        };
+      } else {
+        return {
+          'viewRef': this._lookupByView.get(view.viewRef),
+          'fragmentRefs': view.fragmentRefs.map(function(val) {
+            return _this._lookupByView.get(val);
+          })
+        };
+      }
+    };
+    RenderViewWithFragmentsStore.prototype.deserializeViewWithFragments = function(obj) {
+      var _this = this;
       if (obj == null) {
         return null;
       }
-      return this._lookupByObject.get(obj);
+      var viewRef = this.deserializeRenderViewRef(obj['viewRef']);
+      var fragments = obj['fragmentRefs'].map(function(val) {
+        return _this.deserializeRenderFragmentRef(val);
+      });
+      return new api_1.RenderViewWithFragments(viewRef, fragments);
     };
-    RenderStore = __decorate([di_1.Injectable(), __metadata('design:paramtypes', [])], RenderStore);
-    return RenderStore;
+    RenderViewWithFragmentsStore = __decorate([di_1.Injectable(), __param(0, di_1.Inject(api_2.ON_WEB_WORKER)), __metadata('design:paramtypes', [Object])], RenderViewWithFragmentsStore);
+    return RenderViewWithFragmentsStore;
   })();
-  exports.RenderStore = RenderStore;
+  exports.RenderViewWithFragmentsStore = RenderViewWithFragmentsStore;
+  var WebWorkerRenderViewRef = (function(_super) {
+    __extends(WebWorkerRenderViewRef, _super);
+    function WebWorkerRenderViewRef(refNumber) {
+      _super.call(this);
+      this.refNumber = refNumber;
+    }
+    WebWorkerRenderViewRef.prototype.serialize = function() {
+      return this.refNumber;
+    };
+    WebWorkerRenderViewRef.deserialize = function(ref) {
+      return new WebWorkerRenderViewRef(ref);
+    };
+    return WebWorkerRenderViewRef;
+  })(api_1.RenderViewRef);
+  exports.WebWorkerRenderViewRef = WebWorkerRenderViewRef;
+  var WebWorkerRenderFragmentRef = (function(_super) {
+    __extends(WebWorkerRenderFragmentRef, _super);
+    function WebWorkerRenderFragmentRef(refNumber) {
+      _super.call(this);
+      this.refNumber = refNumber;
+    }
+    WebWorkerRenderFragmentRef.prototype.serialize = function() {
+      return this.refNumber;
+    };
+    WebWorkerRenderFragmentRef.deserialize = function(ref) {
+      return new WebWorkerRenderFragmentRef(ref);
+    };
+    return WebWorkerRenderFragmentRef;
+  })(api_1.RenderFragmentRef);
+  exports.WebWorkerRenderFragmentRef = WebWorkerRenderFragmentRef;
   global.define = __define;
   return module.exports;
 });
@@ -1672,7 +1998,7 @@ System.register("angular2/src/mock/mock_application_ref", ["angular2/src/core/ap
   return module.exports;
 });
 
-System.register("angular2/src/testing/test_component_builder", ["angular2/core", "angular2/src/facade/lang", "angular2/src/facade/collection", "angular2/src/testing/utils", "angular2/src/platform/dom/dom_tokens", "angular2/src/platform/dom/dom_adapter", "angular2/src/core/debug/debug_element"], true, function(require, exports, module) {
+System.register("angular2/src/testing/test_component_builder", ["angular2/core", "angular2/src/facade/lang", "angular2/src/facade/collection", "angular2/src/core/linker/view_ref", "angular2/src/testing/utils", "angular2/src/platform/dom/dom_tokens", "angular2/src/platform/dom/dom_adapter", "angular2/src/core/debug/debug_element"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
@@ -1704,6 +2030,7 @@ System.register("angular2/src/testing/test_component_builder", ["angular2/core",
   var core_1 = require("angular2/core");
   var lang_1 = require("angular2/src/facade/lang");
   var collection_1 = require("angular2/src/facade/collection");
+  var view_ref_1 = require("angular2/src/core/linker/view_ref");
   var utils_1 = require("angular2/src/testing/utils");
   var dom_tokens_1 = require("angular2/src/platform/dom/dom_tokens");
   var dom_adapter_1 = require("angular2/src/platform/dom/dom_adapter");
@@ -1717,10 +2044,10 @@ System.register("angular2/src/testing/test_component_builder", ["angular2/core",
     __extends(ComponentFixture_, _super);
     function ComponentFixture_(componentRef) {
       _super.call(this);
-      this._componentParentView = componentRef.hostView.internalView;
-      this.debugElement = new debug_element_1.DebugElement_(this._componentParentView.appElements[0]);
+      this.debugElement = new debug_element_1.DebugElement_(view_ref_1.internalView(componentRef.hostView), 0);
       this.componentInstance = this.debugElement.componentInstance;
       this.nativeElement = this.debugElement.nativeElement;
+      this._componentParentView = view_ref_1.internalView(componentRef.hostView);
       this._componentRef = componentRef;
     }
     ComponentFixture_.prototype.detectChanges = function() {
@@ -1826,7 +2153,7 @@ System.register("angular2/src/testing/test_component_builder", ["angular2/core",
   return module.exports;
 });
 
-System.register("angular2/src/web_workers/shared/serializer", ["angular2/src/facade/lang", "angular2/src/facade/exceptions", "angular2/src/facade/collection", "angular2/src/core/render/api", "angular2/src/core/di", "angular2/src/web_workers/shared/render_store", "angular2/src/core/metadata/view"], true, function(require, exports, module) {
+System.register("angular2/src/web_workers/shared/serializer", ["angular2/src/facade/lang", "angular2/src/facade/exceptions", "angular2/src/facade/collection", "angular2/src/core/render/api", "angular2/src/web_workers/shared/api", "angular2/src/core/di", "angular2/src/web_workers/shared/render_proto_view_ref_store", "angular2/src/web_workers/shared/render_view_with_fragments_store", "angular2/src/core/metadata/view"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
@@ -1850,13 +2177,16 @@ System.register("angular2/src/web_workers/shared/serializer", ["angular2/src/fac
   var exceptions_1 = require("angular2/src/facade/exceptions");
   var collection_1 = require("angular2/src/facade/collection");
   var api_1 = require("angular2/src/core/render/api");
+  var api_2 = require("angular2/src/web_workers/shared/api");
   var di_1 = require("angular2/src/core/di");
-  var render_store_1 = require("angular2/src/web_workers/shared/render_store");
+  var render_proto_view_ref_store_1 = require("angular2/src/web_workers/shared/render_proto_view_ref_store");
+  var render_view_with_fragments_store_1 = require("angular2/src/web_workers/shared/render_view_with_fragments_store");
   var view_1 = require("angular2/src/core/metadata/view");
   exports.PRIMITIVE = String;
   var Serializer = (function() {
-    function Serializer(_renderStore) {
-      this._renderStore = _renderStore;
+    function Serializer(_protoViewStore, _renderViewStore) {
+      this._protoViewStore = _protoViewStore;
+      this._renderViewStore = _renderViewStore;
     }
     Serializer.prototype.serialize = function(obj, type) {
       var _this = this;
@@ -1871,10 +2201,18 @@ System.register("angular2/src/web_workers/shared/serializer", ["angular2/src/fac
       if (type == exports.PRIMITIVE) {
         return obj;
       }
-      if (type == RenderStoreObject) {
-        return this._renderStore.serialize(obj);
-      } else if (type === api_1.RenderComponentType) {
-        return this._serializeRenderComponentType(obj);
+      if (type == api_1.RenderProtoViewRef) {
+        return this._protoViewStore.serialize(obj);
+      } else if (type == api_1.RenderViewRef) {
+        return this._renderViewStore.serializeRenderViewRef(obj);
+      } else if (type == api_1.RenderFragmentRef) {
+        return this._renderViewStore.serializeRenderFragmentRef(obj);
+      } else if (type == api_2.WebWorkerElementRef) {
+        return this._serializeWorkerElementRef(obj);
+      } else if (type == api_2.WebWorkerTemplateCmd) {
+        return serializeTemplateCmd(obj);
+      } else if (type === api_1.RenderComponentTemplate) {
+        return this._serializeRenderTemplate(obj);
       } else if (type === view_1.ViewEncapsulation) {
         return lang_1.serializeEnum(obj);
       } else {
@@ -1896,10 +2234,18 @@ System.register("angular2/src/web_workers/shared/serializer", ["angular2/src/fac
       if (type == exports.PRIMITIVE) {
         return map;
       }
-      if (type == RenderStoreObject) {
-        return this._renderStore.deserialize(map);
-      } else if (type === api_1.RenderComponentType) {
-        return this._deserializeRenderComponentType(map);
+      if (type == api_1.RenderProtoViewRef) {
+        return this._protoViewStore.deserialize(map);
+      } else if (type == api_1.RenderViewRef) {
+        return this._renderViewStore.deserializeRenderViewRef(map);
+      } else if (type == api_1.RenderFragmentRef) {
+        return this._renderViewStore.deserializeRenderFragmentRef(map);
+      } else if (type == api_2.WebWorkerElementRef) {
+        return this._deserializeWorkerElementRef(map);
+      } else if (type == api_2.WebWorkerTemplateCmd) {
+        return deserializeTemplateCmd(map);
+      } else if (type === api_1.RenderComponentTemplate) {
+        return this._deserializeRenderTemplate(map);
       } else if (type === view_1.ViewEncapsulation) {
         return view_1.VIEW_ENCAPSULATION_VALUES[map];
       } else {
@@ -1931,37 +2277,132 @@ System.register("angular2/src/web_workers/shared/serializer", ["angular2/src/fac
         return collection_1.MapWrapper.createFromStringMap(obj);
       }
     };
-    Serializer.prototype._serializeRenderComponentType = function(obj) {
+    Serializer.prototype.allocateRenderViews = function(fragmentCount) {
+      this._renderViewStore.allocate(fragmentCount);
+    };
+    Serializer.prototype._serializeWorkerElementRef = function(elementRef) {
+      return {
+        'renderView': this.serialize(elementRef.renderView, api_1.RenderViewRef),
+        'boundElementIndex': elementRef.boundElementIndex
+      };
+    };
+    Serializer.prototype._deserializeWorkerElementRef = function(map) {
+      return new api_2.WebWorkerElementRef(this.deserialize(map['renderView'], api_1.RenderViewRef), map['boundElementIndex']);
+    };
+    Serializer.prototype._serializeRenderTemplate = function(obj) {
       return {
         'id': obj.id,
+        'shortId': obj.shortId,
         'encapsulation': this.serialize(obj.encapsulation, view_1.ViewEncapsulation),
+        'commands': this.serialize(obj.commands, api_2.WebWorkerTemplateCmd),
         'styles': this.serialize(obj.styles, exports.PRIMITIVE)
       };
     };
-    Serializer.prototype._deserializeRenderComponentType = function(map) {
-      return new api_1.RenderComponentType(map['id'], this.deserialize(map['encapsulation'], view_1.ViewEncapsulation), this.deserialize(map['styles'], exports.PRIMITIVE));
+    Serializer.prototype._deserializeRenderTemplate = function(map) {
+      return new api_1.RenderComponentTemplate(map['id'], map['shortId'], this.deserialize(map['encapsulation'], view_1.ViewEncapsulation), this.deserialize(map['commands'], api_2.WebWorkerTemplateCmd), this.deserialize(map['styles'], exports.PRIMITIVE));
     };
-    Serializer = __decorate([di_1.Injectable(), __metadata('design:paramtypes', [render_store_1.RenderStore])], Serializer);
+    Serializer = __decorate([di_1.Injectable(), __metadata('design:paramtypes', [render_proto_view_ref_store_1.RenderProtoViewRefStore, render_view_with_fragments_store_1.RenderViewWithFragmentsStore])], Serializer);
     return Serializer;
   })();
   exports.Serializer = Serializer;
-  var RenderStoreObject = (function() {
-    function RenderStoreObject() {}
-    return RenderStoreObject;
+  function serializeTemplateCmd(cmd) {
+    return cmd.visit(RENDER_TEMPLATE_CMD_SERIALIZER, null);
+  }
+  function deserializeTemplateCmd(data) {
+    return RENDER_TEMPLATE_CMD_DESERIALIZERS[data['deserializerIndex']](data);
+  }
+  var RenderTemplateCmdSerializer = (function() {
+    function RenderTemplateCmdSerializer() {}
+    RenderTemplateCmdSerializer.prototype.visitText = function(cmd, context) {
+      return {
+        'deserializerIndex': 0,
+        'isBound': cmd.isBound,
+        'ngContentIndex': cmd.ngContentIndex,
+        'value': cmd.value
+      };
+    };
+    RenderTemplateCmdSerializer.prototype.visitNgContent = function(cmd, context) {
+      return {
+        'deserializerIndex': 1,
+        'index': cmd.index,
+        'ngContentIndex': cmd.ngContentIndex
+      };
+    };
+    RenderTemplateCmdSerializer.prototype.visitBeginElement = function(cmd, context) {
+      return {
+        'deserializerIndex': 2,
+        'isBound': cmd.isBound,
+        'ngContentIndex': cmd.ngContentIndex,
+        'name': cmd.name,
+        'attrNameAndValues': cmd.attrNameAndValues,
+        'eventTargetAndNames': cmd.eventTargetAndNames
+      };
+    };
+    RenderTemplateCmdSerializer.prototype.visitEndElement = function(context) {
+      return {'deserializerIndex': 3};
+    };
+    RenderTemplateCmdSerializer.prototype.visitBeginComponent = function(cmd, context) {
+      return {
+        'deserializerIndex': 4,
+        'isBound': cmd.isBound,
+        'ngContentIndex': cmd.ngContentIndex,
+        'name': cmd.name,
+        'attrNameAndValues': cmd.attrNameAndValues,
+        'eventTargetAndNames': cmd.eventTargetAndNames,
+        'templateId': cmd.templateId
+      };
+    };
+    RenderTemplateCmdSerializer.prototype.visitEndComponent = function(context) {
+      return {'deserializerIndex': 5};
+    };
+    RenderTemplateCmdSerializer.prototype.visitEmbeddedTemplate = function(cmd, context) {
+      var _this = this;
+      var children = cmd.children.map(function(child) {
+        return child.visit(_this, null);
+      });
+      return {
+        'deserializerIndex': 6,
+        'isBound': cmd.isBound,
+        'ngContentIndex': cmd.ngContentIndex,
+        'name': cmd.name,
+        'attrNameAndValues': cmd.attrNameAndValues,
+        'eventTargetAndNames': cmd.eventTargetAndNames,
+        'isMerged': cmd.isMerged,
+        'children': children
+      };
+    };
+    return RenderTemplateCmdSerializer;
   })();
-  exports.RenderStoreObject = RenderStoreObject;
+  var RENDER_TEMPLATE_CMD_SERIALIZER = new RenderTemplateCmdSerializer();
+  var RENDER_TEMPLATE_CMD_DESERIALIZERS = [function(data) {
+    return new api_2.WebWorkerTextCmd(data['isBound'], data['ngContentIndex'], data['value']);
+  }, function(data) {
+    return new api_2.WebWorkerNgContentCmd(data['index'], data['ngContentIndex']);
+  }, function(data) {
+    return new api_2.WebWorkerBeginElementCmd(data['isBound'], data['ngContentIndex'], data['name'], data['attrNameAndValues'], data['eventTargetAndNames']);
+  }, function(data) {
+    return new api_2.WebWorkerEndElementCmd();
+  }, function(data) {
+    return new api_2.WebWorkerBeginComponentCmd(data['isBound'], data['ngContentIndex'], data['name'], data['attrNameAndValues'], data['eventTargetAndNames'], data['templateId']);
+  }, function(data) {
+    return new api_2.WebWorkerEndComponentCmd();
+  }, function(data) {
+    return new api_2.WebWorkerEmbeddedTemplateCmd(data['isBound'], data['ngContentIndex'], data['name'], data['attrNameAndValues'], data['eventTargetAndNames'], data['isMerged'], data['children'].map(function(childData) {
+      return deserializeTemplateCmd(childData);
+    }));
+  }];
   global.define = __define;
   return module.exports;
 });
 
-System.register("angular2/src/testing/test_injector", ["angular2/core", "angular2/src/animate/animation_builder", "angular2/src/mock/animation_builder_mock", "angular2/src/core/linker/resolved_metadata_cache", "angular2/src/core/reflection/reflection", "angular2/src/core/change_detection/change_detection", "angular2/src/facade/exceptions", "angular2/src/core/linker/pipe_resolver", "angular2/src/compiler/xhr", "angular2/src/platform/dom/dom_adapter", "angular2/src/mock/directive_resolver_mock", "angular2/src/mock/view_resolver_mock", "angular2/src/mock/mock_location_strategy", "angular2/src/router/location_strategy", "angular2/src/mock/ng_zone_mock", "angular2/src/testing/test_component_builder", "angular2/platform/common_dom", "angular2/src/facade/collection", "angular2/src/facade/lang", "angular2/src/core/render/api", "angular2/src/platform/dom/dom_tokens", "angular2/src/platform/dom/dom_renderer", "angular2/src/platform/dom/shared_styles_host", "angular2/src/platform/dom/shared_styles_host", "angular2/src/platform/dom/events/dom_events", "angular2/src/web_workers/shared/serializer", "angular2/src/testing/utils", "angular2/src/compiler/compiler", "angular2/src/core/linker/dynamic_component_loader", "angular2/src/core/linker/view_manager"], true, function(require, exports, module) {
+System.register("angular2/src/testing/test_injector", ["angular2/core", "angular2/src/animate/animation_builder", "angular2/src/mock/animation_builder_mock", "angular2/src/core/linker/proto_view_factory", "angular2/src/core/reflection/reflection", "angular2/src/core/change_detection/change_detection", "angular2/src/facade/exceptions", "angular2/src/core/linker/pipe_resolver", "angular2/src/compiler/xhr", "angular2/src/platform/dom/dom_adapter", "angular2/src/mock/directive_resolver_mock", "angular2/src/mock/view_resolver_mock", "angular2/src/mock/mock_location_strategy", "angular2/src/router/location_strategy", "angular2/src/mock/ng_zone_mock", "angular2/src/testing/test_component_builder", "angular2/platform/common_dom", "angular2/src/facade/collection", "angular2/src/facade/lang", "angular2/src/core/linker/view_pool", "angular2/src/core/linker/view_manager_utils", "angular2/src/platform/dom/dom_tokens", "angular2/src/platform/dom/dom_renderer", "angular2/src/platform/dom/shared_styles_host", "angular2/src/platform/dom/shared_styles_host", "angular2/src/platform/dom/events/dom_events", "angular2/src/web_workers/shared/serializer", "angular2/src/testing/utils", "angular2/src/compiler/compiler", "angular2/src/platform/dom/dom_renderer", "angular2/src/core/linker/dynamic_component_loader", "angular2/src/core/linker/view_manager"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
   var core_1 = require("angular2/core");
   var animation_builder_1 = require("angular2/src/animate/animation_builder");
   var animation_builder_mock_1 = require("angular2/src/mock/animation_builder_mock");
-  var resolved_metadata_cache_1 = require("angular2/src/core/linker/resolved_metadata_cache");
+  var proto_view_factory_1 = require("angular2/src/core/linker/proto_view_factory");
   var reflection_1 = require("angular2/src/core/reflection/reflection");
   var change_detection_1 = require("angular2/src/core/change_detection/change_detection");
   var exceptions_1 = require("angular2/src/facade/exceptions");
@@ -1977,7 +2418,8 @@ System.register("angular2/src/testing/test_injector", ["angular2/core", "angular
   var common_dom_1 = require("angular2/platform/common_dom");
   var collection_1 = require("angular2/src/facade/collection");
   var lang_1 = require("angular2/src/facade/lang");
-  var api_1 = require("angular2/src/core/render/api");
+  var view_pool_1 = require("angular2/src/core/linker/view_pool");
+  var view_manager_utils_1 = require("angular2/src/core/linker/view_manager_utils");
   var dom_tokens_1 = require("angular2/src/platform/dom/dom_tokens");
   var dom_renderer_1 = require("angular2/src/platform/dom/dom_renderer");
   var shared_styles_host_1 = require("angular2/src/platform/dom/shared_styles_host");
@@ -1986,6 +2428,7 @@ System.register("angular2/src/testing/test_injector", ["angular2/core", "angular
   var serializer_1 = require("angular2/src/web_workers/shared/serializer");
   var utils_1 = require("angular2/src/testing/utils");
   var compiler_1 = require("angular2/src/compiler/compiler");
+  var dom_renderer_2 = require("angular2/src/platform/dom/dom_renderer");
   var dynamic_component_loader_1 = require("angular2/src/core/linker/dynamic_component_loader");
   var view_manager_1 = require("angular2/src/core/linker/view_manager");
   function _getRootProviders() {
@@ -1998,7 +2441,7 @@ System.register("angular2/src/testing/test_injector", ["angular2/core", "angular
     } catch (e) {
       appDoc = null;
     }
-    return [core_1.APPLICATION_COMMON_PROVIDERS, core_1.provide(change_detection_1.ChangeDetectorGenConfig, {useValue: new change_detection_1.ChangeDetectorGenConfig(true, false, false)}), core_1.provide(dom_tokens_1.DOCUMENT, {useValue: appDoc}), core_1.provide(dom_renderer_1.DomRootRenderer, {useClass: dom_renderer_1.DomRootRenderer_}), core_1.provide(api_1.RootRenderer, {useExisting: dom_renderer_1.DomRootRenderer}), core_1.provide(core_1.APP_ID, {useValue: 'a'}), shared_styles_host_1.DomSharedStylesHost, core_1.provide(shared_styles_host_2.SharedStylesHost, {useExisting: shared_styles_host_1.DomSharedStylesHost}), core_1.provide(core_1.AppViewManager, {useClass: view_manager_1.AppViewManager_}), serializer_1.Serializer, common_dom_1.ELEMENT_PROBE_PROVIDERS, resolved_metadata_cache_1.ResolvedMetadataCache, core_1.provide(core_1.DirectiveResolver, {useClass: directive_resolver_mock_1.MockDirectiveResolver}), core_1.provide(core_1.ViewResolver, {useClass: view_resolver_mock_1.MockViewResolver}), core_1.provide(change_detection_1.IterableDiffers, {useValue: change_detection_1.defaultIterableDiffers}), core_1.provide(change_detection_1.KeyValueDiffers, {useValue: change_detection_1.defaultKeyValueDiffers}), utils_1.Log, core_1.provide(core_1.DynamicComponentLoader, {useClass: dynamic_component_loader_1.DynamicComponentLoader_}), pipe_resolver_1.PipeResolver, core_1.provide(exceptions_1.ExceptionHandler, {useValue: new exceptions_1.ExceptionHandler(dom_adapter_1.DOM)}), core_1.provide(location_strategy_1.LocationStrategy, {useClass: mock_location_strategy_1.MockLocationStrategy}), core_1.provide(xhr_1.XHR, {useClass: dom_adapter_1.DOM.getXHR()}), test_component_builder_1.TestComponentBuilder, core_1.provide(core_1.NgZone, {useClass: ng_zone_mock_1.MockNgZone}), core_1.provide(animation_builder_1.AnimationBuilder, {useClass: animation_builder_mock_1.MockAnimationBuilder}), common_dom_1.EventManager, new core_1.Provider(common_dom_1.EVENT_MANAGER_PLUGINS, {
+    return [core_1.APPLICATION_COMMON_PROVIDERS, core_1.provide(change_detection_1.ChangeDetectorGenConfig, {useValue: new change_detection_1.ChangeDetectorGenConfig(true, false, true)}), core_1.provide(dom_tokens_1.DOCUMENT, {useValue: appDoc}), core_1.provide(dom_renderer_1.DomRenderer, {useClass: dom_renderer_2.DomRenderer_}), core_1.provide(core_1.Renderer, {useExisting: dom_renderer_1.DomRenderer}), core_1.provide(core_1.APP_ID, {useValue: 'a'}), shared_styles_host_1.DomSharedStylesHost, core_1.provide(shared_styles_host_2.SharedStylesHost, {useExisting: shared_styles_host_1.DomSharedStylesHost}), view_pool_1.AppViewPool, core_1.provide(core_1.AppViewManager, {useClass: view_manager_1.AppViewManager_}), view_manager_utils_1.AppViewManagerUtils, serializer_1.Serializer, common_dom_1.ELEMENT_PROBE_PROVIDERS, core_1.provide(view_pool_1.APP_VIEW_POOL_CAPACITY, {useValue: 500}), proto_view_factory_1.ProtoViewFactory, core_1.provide(core_1.DirectiveResolver, {useClass: directive_resolver_mock_1.MockDirectiveResolver}), core_1.provide(core_1.ViewResolver, {useClass: view_resolver_mock_1.MockViewResolver}), core_1.provide(change_detection_1.IterableDiffers, {useValue: change_detection_1.defaultIterableDiffers}), core_1.provide(change_detection_1.KeyValueDiffers, {useValue: change_detection_1.defaultKeyValueDiffers}), utils_1.Log, core_1.provide(core_1.DynamicComponentLoader, {useClass: dynamic_component_loader_1.DynamicComponentLoader_}), pipe_resolver_1.PipeResolver, core_1.provide(exceptions_1.ExceptionHandler, {useValue: new exceptions_1.ExceptionHandler(dom_adapter_1.DOM)}), core_1.provide(location_strategy_1.LocationStrategy, {useClass: mock_location_strategy_1.MockLocationStrategy}), core_1.provide(xhr_1.XHR, {useClass: dom_adapter_1.DOM.getXHR()}), test_component_builder_1.TestComponentBuilder, core_1.provide(core_1.NgZone, {useClass: ng_zone_mock_1.MockNgZone}), core_1.provide(animation_builder_1.AnimationBuilder, {useClass: animation_builder_mock_1.MockAnimationBuilder}), common_dom_1.EventManager, new core_1.Provider(common_dom_1.EVENT_MANAGER_PLUGINS, {
       useClass: dom_events_1.DomEventsPlugin,
       multi: true
     })];

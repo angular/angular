@@ -1,2 +1,2 @@
 // Public API for render
-export { RootRenderer, Renderer, RenderComponentType } from './render/api';
+export { Renderer, RenderViewRef, RenderProtoViewRef, RenderFragmentRef, RenderViewWithFragments, RenderTemplateCmd, RenderTextCmd, RenderNgContentCmd, RenderBeginElementCmd, RenderBeginComponentCmd, RenderEmbeddedTemplateCmd, RenderBeginCmd, RenderComponentTemplate } from './render/api';

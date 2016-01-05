@@ -16,14 +16,10 @@ export class DirectiveRecord {
   callOnChanges: boolean;
   callDoCheck: boolean;
   callOnInit: boolean;
-  callOnDestroy: boolean;
   changeDetection: ChangeDetectionStrategy;
-  // array of [emitter property name, eventName]
-  outputs: string[][];
 
   constructor({directiveIndex, callAfterContentInit, callAfterContentChecked, callAfterViewInit,
-               callAfterViewChecked, callOnChanges, callDoCheck, callOnInit, callOnDestroy,
-               changeDetection, outputs}: {
+               callAfterViewChecked, callOnChanges, callDoCheck, callOnInit, changeDetection}: {
     directiveIndex?: DirectiveIndex,
     callAfterContentInit?: boolean,
     callAfterContentChecked?: boolean,
@@ -32,9 +28,7 @@ export class DirectiveRecord {
     callOnChanges?: boolean,
     callDoCheck?: boolean,
     callOnInit?: boolean,
-    callOnDestroy?: boolean,
-    changeDetection?: ChangeDetectionStrategy,
-    outputs?: string[][]
+    changeDetection?: ChangeDetectionStrategy
   } = {}) {
     this.directiveIndex = directiveIndex;
     this.callAfterContentInit = normalizeBool(callAfterContentInit);
@@ -44,9 +38,7 @@ export class DirectiveRecord {
     this.callAfterViewChecked = normalizeBool(callAfterViewChecked);
     this.callDoCheck = normalizeBool(callDoCheck);
     this.callOnInit = normalizeBool(callOnInit);
-    this.callOnDestroy = normalizeBool(callOnDestroy);
     this.changeDetection = changeDetection;
-    this.outputs = outputs;
   }
 
   isDefaultChangeDetection(): boolean {

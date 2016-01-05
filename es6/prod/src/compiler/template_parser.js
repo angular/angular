@@ -19,7 +19,6 @@ import { Parser } from 'angular2/src/core/change_detection/change_detection';
 import { HtmlParser } from './html_parser';
 import { splitNsName } from './html_tags';
 import { ParseError } from './parse_util';
-import { RecursiveAstVisitor } from 'angular2/src/core/change_detection/parser/ast';
 import { ElementAst, BoundElementPropertyAst, BoundEventAst, VariableAst, templateVisitAll, TextAst, BoundTextAst, EmbeddedTemplateAst, AttrAst, NgContentAst, PropertyBindingType, DirectiveAst, BoundDirectivePropertyAst } from './template_ast';
 import { CssSelector, SelectorMatcher } from 'angular2/src/compiler/selector';
 import { ElementSchemaRegistry } from 'angular2/src/compiler/schema/element_schema_registry';
@@ -65,8 +64,8 @@ export let TemplateParser = class {
         this._htmlParser = _htmlParser;
         this.transforms = transforms;
     }
-    parse(template, directives, pipes, templateUrl) {
-        var parseVisitor = new TemplateParseVisitor(directives, pipes, this._exprParser, this._schemaRegistry);
+    parse(template, directives, templateUrl) {
+        var parseVisitor = new TemplateParseVisitor(directives, this._exprParser, this._schemaRegistry);
         var htmlAstWithErrors = this._htmlParser.parse(template, templateUrl);
         var result = htmlVisitAll(parseVisitor, htmlAstWithErrors.rootNodes, EMPTY_COMPONENT);
         var errors = htmlAstWithErrors.errors.concat(parseVisitor.errors);
@@ -87,7 +86,7 @@ TemplateParser = __decorate([
     __metadata('design:paramtypes', [Parser, ElementSchemaRegistry, HtmlParser, Array])
 ], TemplateParser);
 class TemplateParseVisitor {
-    constructor(directives, pipes, _exprParser, _schemaRegistry) {
+    constructor(directives, _exprParser, _schemaRegistry) {
         this._exprParser = _exprParser;
         this._schemaRegistry = _schemaRegistry;
         this.errors = [];
@@ -99,8 +98,6 @@ class TemplateParseVisitor {
             this.selectorMatcher.addSelectables(selector, directive);
             this.directivesIndex.set(directive, index);
         });
-        this.pipesByName = new Map();
-        pipes.forEach(pipe => this.pipesByName.set(pipe.name, pipe));
     }
     _reportError(message, sourceSpan) {
         this.errors.push(new TemplateParseError(message, sourceSpan.start));
@@ -108,9 +105,7 @@ class TemplateParseVisitor {
     _parseInterpolation(value, sourceSpan) {
         var sourceInfo = sourceSpan.start.toString();
         try {
-            var ast = this._exprParser.parseInterpolation(value, sourceInfo);
-            this._checkPipes(ast, sourceSpan);
-            return ast;
+            return this._exprParser.parseInterpolation(value, sourceInfo);
         }
         catch (e) {
             this._reportError(`${e}`, sourceSpan);
@@ -120,9 +115,7 @@ class TemplateParseVisitor {
     _parseAction(value, sourceSpan) {
         var sourceInfo = sourceSpan.start.toString();
         try {
-            var ast = this._exprParser.parseAction(value, sourceInfo);
-            this._checkPipes(ast, sourceSpan);
-            return ast;
+            return this._exprParser.parseAction(value, sourceInfo);
         }
         catch (e) {
             this._reportError(`${e}`, sourceSpan);
@@ -132,9 +125,7 @@ class TemplateParseVisitor {
     _parseBinding(value, sourceSpan) {
         var sourceInfo = sourceSpan.start.toString();
         try {
-            var ast = this._exprParser.parseBinding(value, sourceInfo);
-            this._checkPipes(ast, sourceSpan);
-            return ast;
+            return this._exprParser.parseBinding(value, sourceInfo);
         }
         catch (e) {
             this._reportError(`${e}`, sourceSpan);
@@ -144,28 +135,11 @@ class TemplateParseVisitor {
     _parseTemplateBindings(value, sourceSpan) {
         var sourceInfo = sourceSpan.start.toString();
         try {
-            var bindings = this._exprParser.parseTemplateBindings(value, sourceInfo);
-            bindings.forEach((binding) => {
-                if (isPresent(binding.expression)) {
-                    this._checkPipes(binding.expression, sourceSpan);
-                }
-            });
-            return bindings;
+            return this._exprParser.parseTemplateBindings(value, sourceInfo);
         }
         catch (e) {
             this._reportError(`${e}`, sourceSpan);
             return [];
-        }
-    }
-    _checkPipes(ast, sourceSpan) {
-        if (isPresent(ast)) {
-            var collector = new PipeCollector();
-            ast.visit(collector);
-            collector.pipes.forEach((pipeName) => {
-                if (!this.pipesByName.has(pipeName)) {
-                    this._reportError(`The pipe '${pipeName}' could not be found`, sourceSpan);
-                }
-            });
         }
     }
     visitText(ast, component) {
@@ -614,15 +588,3 @@ function createElementCssSelector(elementName, matchableAttrs) {
 }
 var EMPTY_COMPONENT = new Component(new SelectorMatcher(), null);
 var NON_BINDABLE_VISITOR = new NonBindableVisitor();
-export class PipeCollector extends RecursiveAstVisitor {
-    constructor(...args) {
-        super(...args);
-        this.pipes = new Set();
-    }
-    visitPipe(ast) {
-        this.pipes.add(ast.name);
-        ast.exp.visit(this);
-        this.visitAll(ast.args);
-        return null;
-    }
-}

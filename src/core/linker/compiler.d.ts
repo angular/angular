@@ -1,7 +1,8 @@
-import { HostViewFactoryRef } from 'angular2/src/core/linker/view_ref';
+import { ProtoViewRef } from 'angular2/src/core/linker/view_ref';
+import { ProtoViewFactory } from 'angular2/src/core/linker/proto_view_factory';
 import { Type } from 'angular2/src/facade/lang';
 import { Promise } from 'angular2/src/facade/async';
-import { HostViewFactoryRef_ } from 'angular2/src/core/linker/view_ref';
+import { CompiledHostTemplate } from 'angular2/src/core/linker/template_commands';
 /**
  * Low-level service for compiling {@link Component}s into {@link ProtoViewRef ProtoViews}s, which
  * can later be used to create and render a Component instance.
@@ -10,10 +11,14 @@ import { HostViewFactoryRef_ } from 'angular2/src/core/linker/view_ref';
  * both compiles and instantiates a Component.
  */
 export declare abstract class Compiler {
-    abstract compileInHost(componentType: Type): Promise<HostViewFactoryRef>;
+    abstract compileInHost(componentType: Type): Promise<ProtoViewRef>;
     abstract clearCache(): any;
 }
 export declare class Compiler_ extends Compiler {
-    compileInHost(componentType: Type): Promise<HostViewFactoryRef_>;
+    private _protoViewFactory;
+    constructor(_protoViewFactory: ProtoViewFactory);
+    compileInHost(componentType: Type): Promise<ProtoViewRef>;
+    private _createProtoView(compiledHostTemplate);
     clearCache(): void;
 }
+export declare function internalCreateProtoView(compiler: Compiler, compiledHostTemplate: CompiledHostTemplate): ProtoViewRef;

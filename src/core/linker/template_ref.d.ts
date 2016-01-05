@@ -1,4 +1,5 @@
-import { ElementRef, ElementRef_ } from './element_ref';
+import { ProtoViewRef } from './view_ref';
+import { ElementRef } from './element_ref';
 /**
  * Represents an Embedded Template that can be used to instantiate Embedded Views.
  *
@@ -24,9 +25,18 @@ export declare abstract class TemplateRef {
      *
      */
     elementRef: ElementRef;
+    /**
+     * Allows you to check if this Embedded Template defines Local Variable with name matching `name`.
+     */
+    abstract hasLocal(name: string): boolean;
 }
 export declare class TemplateRef_ extends TemplateRef {
-    private _elementRef;
-    constructor(_elementRef: ElementRef_);
-    elementRef: ElementRef_;
+    constructor(elementRef: ElementRef);
+    private _getProtoView();
+    /**
+     * Reference to the ProtoView used for creating Embedded Views that are based on the compiled
+     * Embedded Template.
+     */
+    protoViewRef: ProtoViewRef;
+    hasLocal(name: string): boolean;
 }

@@ -5,7 +5,7 @@ export class JitProtoChangeDetector {
         this._factory = this._createFactory(definition);
     }
     static isSupported() { return true; }
-    instantiate() { return this._factory(); }
+    instantiate(dispatcher) { return this._factory(dispatcher); }
     /** @internal */
     _createFactory(definition) {
         return new ChangeDetectorJITGenerator(definition, 'util', 'AbstractChangeDetector', 'ChangeDetectorStatus')

@@ -41,4 +41,3 @@ PipeResolver = __decorate([
     Injectable(), 
     __metadata('design:paramtypes', [])
 ], PipeResolver);
-export var CODEGEN_PIPE_RESOLVER = new PipeResolver();
