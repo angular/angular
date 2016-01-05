@@ -36,7 +36,7 @@ var _uniqueIdCounter: number = 0;
   inputs: ['disabled', 'value'],
   host: {
     'role': 'radiogroup',
-    '[attr.aria-disabled]': 'disabled',
+    '[attr.aria-disabled]': 'disabled?.toString()',
     '[attr.aria-activedescendant]': 'activedescendant',
     // TODO(jelbourn): Remove ^ when event retargeting is fixed.
     '(keydown)': 'onKeydown($event)',
@@ -192,8 +192,8 @@ export class MdRadioGroup implements OnChanges {
     'role': 'radio',
     '[id]': 'id',
     '[tabindex]': 'tabindex',
-    '[attr.aria-checked]': 'checked',
-    '[attr.aria-disabled]': 'disabled',
+    '[attr.aria-checked]': 'checked?.toString()',
+    '[attr.aria-disabled]': 'disabled?.toString()',
     '(keydown)': 'onKeydown($event)',
   },
   templateUrl: 'package:angular2_material/src/components/radio/radio_button.html',

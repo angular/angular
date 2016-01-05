@@ -186,7 +186,7 @@ export class WebWorkerRenderer implements Renderer {
   /**
    * Sets an attribute on an element.
    */
-  setElementAttribute(location: RenderElementRef, attributeName: string, attributeValue: string) {
+  setElementAttribute(location: RenderElementRef, attributeName: string, attributeValue: any) {
     var fnArgs = [
       new FnArg(location, WebWorkerElementRef),
       new FnArg(attributeName, null),
