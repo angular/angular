@@ -433,6 +433,7 @@ class _CodegenState {
     var condition = '''!${pipe}.pure || (${contexOrArgCheck.join(" || ")})''';
 
     var check = '''
+      ${_genThrowOnChangeCheck(oldValue, newValue)}
       if (${_genPrefix}$_UTIL.looseNotIdentical($oldValue, $newValue)) {
         $newValue = ${_genPrefix}$_UTIL.unwrapValue($newValue);
         ${_genChangeMarker(r)}
@@ -459,6 +460,7 @@ class _CodegenState {
     ''';
 
     var check = '''
+      ${_genThrowOnChangeCheck(oldValue, newValue)}
       if (${_genPrefix}$_UTIL.looseNotIdentical($newValue, $oldValue)) {
         ${_genChangeMarker(r)}
         ${_genUpdateDirectiveOrElement(r)}
@@ -492,7 +494,6 @@ class _CodegenState {
     if (!r.lastInBinding) return '';
 
     var newValue = _names.getLocalName(r.selfIndex);
-    var oldValue = _names.getFieldName(r.selfIndex);
     var notifyDebug = _genConfig.logBindingUpdate
         ? "this.logBindingUpdate(${newValue});"
         : "";
@@ -502,14 +503,12 @@ class _CodegenState {
       var directiveProperty =
           '${_names.getDirectiveName(br.directiveRecord.directiveIndex)}.${br.target.name}';
       return '''
-      ${_genThrowOnChangeCheck(oldValue, newValue)}
       $directiveProperty = $newValue;
       ${notifyDebug}
       $_IS_CHANGED_LOCAL = true;
     ''';
     } else {
       return '''
-      ${_genThrowOnChangeCheck(oldValue, newValue)}
       this.notifyDispatcher(${newValue});
       ${notifyDebug}
     ''';
@@ -518,7 +517,7 @@ class _CodegenState {
 
   String _genThrowOnChangeCheck(String oldValue, String newValue) {
     return '''
-      if(${_genPrefix}assertionsEnabled() && throwOnChange) {
+      if(${_genPrefix}assertionsEnabled() && throwOnChange && !${_genPrefix}${_UTIL}.devModeEqual(${oldValue}, ${newValue})) {
         this.throwOnChangeError(${oldValue}, ${newValue});
       }
     ''';
