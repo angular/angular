@@ -82,7 +82,8 @@ Before you submit your Pull Request (PR) consider the following guidelines:
 
 * Create your patch, **including appropriate test cases**.
 * Follow our [Coding Rules](#rules).
-* Run the full Angular test suite, as described in the [developer documentation][dev-doc],
+* Test your changes with our supported browsers and screen readers.
+* Run the full Angular Material test suite, as described in the [developer documentation][dev-doc],
   and ensure that all tests pass.
 * Commit your changes using a descriptive commit message that follows our
   [commit message conventions](#commit). Adherence to these conventions
@@ -102,7 +103,7 @@ Before you submit your Pull Request (PR) consider the following guidelines:
 * In GitHub, send a pull request to `material2:master`.
 * If we suggest changes then:
   * Make the required updates.
-  * Re-run the Angular 2 test suites for JS and Dart to ensure tests are still passing.
+  * Re-run the Angular Material test suites for JS and Dart to ensure tests are still passing.
   * Rebase your branch and force push to your GitHub repository (this will update your Pull
     Request):
 
