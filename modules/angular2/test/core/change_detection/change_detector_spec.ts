@@ -887,6 +887,13 @@ export function main() {
                   'Expression [\'"]a in location[\'"] has changed after it was checked'));
         });
 
+        it('should not throw when two arrays are structurally the same', () => {
+          var val = _createChangeDetector('a', new TestDataWithGetter(() => ['value']));
+          val.changeDetector.detectChanges();
+
+          expect(() => { val.changeDetector.checkNoChanges(); }).not.toThrow();
+        });
+
         it('should not break the next run', () => {
           var val = _createChangeDetector('a', new TestData('value'));
           expect(() => val.changeDetector.checkNoChanges())
@@ -1595,6 +1602,12 @@ class Uninitialized {
 
 class TestData {
   constructor(public a: any) {}
+}
+
+class TestDataWithGetter {
+  constructor(private fn: Function) {}
+
+  get a() { return this.fn(); }
 }
 
 class TestDispatcher implements ChangeDispatcher {

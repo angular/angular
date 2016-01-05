@@ -345,6 +345,8 @@ class DateWrapper {
   }
 }
 
+bool isPrimitive(Object obj) => obj is num || obj is bool || obj == null || obj is String;
+
 // needed to match the exports from lang.js
 var global = null;
 

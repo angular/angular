@@ -274,6 +274,19 @@ export function isListLikeIterable(obj: any): boolean {
           getSymbolIterator() in obj);  // JS Iterable have a Symbol.iterator prop
 }
 
+export function areIterablesEqual(a: any, b: any, comparator: Function): boolean {
+  var iterator1 = a[getSymbolIterator()]();
+  var iterator2 = b[getSymbolIterator()]();
+
+  while (true) {
+    let item1 = iterator1.next();
+    let item2 = iterator2.next();
+    if (item1.done && item2.done) return true;
+    if (item1.done || item2.done) return false;
+    if (!comparator(item1.value, item2.value)) return false;
+  }
+}
+
 export function iterateListLike(obj: any, fn: Function) {
   if (isArray(obj)) {
     for (var i = 0; i < obj.length; i++) {
