@@ -1,12 +1,10 @@
 import { Injector, ResolvedProvider } from 'angular2/src/core/di';
-import { ElementRef } from './element_ref';
-import { ProtoViewRef, ViewRef, HostViewRef } from './view_ref';
+import { ElementRef, ElementRef_ } from './element_ref';
+import { HostViewFactoryRef, HostViewFactoryRef_, EmbeddedViewRef, HostViewRef, ViewRef_ } from './view_ref';
 import { ViewContainerRef } from './view_container_ref';
-import { TemplateRef } from './template_ref';
-import { Renderer } from 'angular2/src/core/render/api';
-import { AppViewManagerUtils } from './view_manager_utils';
-import { AppViewPool } from './view_pool';
+import { TemplateRef, TemplateRef_ } from './template_ref';
 import { AppViewListener } from './view_listener';
+import { RootRenderer } from 'angular2/src/core/render/api';
 /**
  * Service exposing low level API for creating, moving and destroying Views.
  *
@@ -21,7 +19,7 @@ export declare abstract class AppViewManager {
     /**
      * Returns the {@link ElementRef} that makes up the specified Host View.
      */
-    getHostElement(hostViewRef: HostViewRef): ElementRef;
+    abstract getHostElement(hostViewRef: HostViewRef): ElementRef;
     /**
      * Searches the Component View of the Component specified via `hostLocation` and returns the
      * {@link ElementRef} for the Element identified via a Variable Name `variableName`.
@@ -41,7 +39,8 @@ export declare abstract class AppViewManager {
      * This as a low-level way to bootstrap an application and upgrade an existing Element to a
      * Host Element. Most applications should use {@link DynamicComponentLoader#loadAsRoot} instead.
      *
-     * The Component and its View are created based on the `hostProtoViewRef` which can be obtained
+     * The Component and its View are created based on the `hostProtoComponentRef` which can be
+     * obtained
      * by compiling the component with {@link Compiler#compileInHost}.
      *
      * Use {@link AppViewManager#destroyRootHostView} to destroy the created Component and it's Host
@@ -72,7 +71,7 @@ export declare abstract class AppViewManager {
      *   viewRef: ng.ViewRef;
      *
      *   constructor(public appViewManager: ng.AppViewManager, compiler: ng.Compiler) {
-     *     compiler.compileInHost(ChildComponent).then((protoView: ng.ProtoViewRef) => {
+     *     compiler.compileInHost(ChildComponent).then((protoView: ng.ProtoComponentRef) => {
      *       this.viewRef = appViewManager.createRootHostView(protoView, 'some-component', null);
      *     })
      *   }
@@ -86,7 +85,7 @@ export declare abstract class AppViewManager {
      * ng.bootstrap(MyApp);
      * ```
      */
-    abstract createRootHostView(hostProtoViewRef: ProtoViewRef, overrideSelector: string, injector: Injector): HostViewRef;
+    abstract createRootHostView(hostViewFactoryRef: HostViewFactoryRef, overrideSelector: string, injector: Injector, projectableNodes?: any[][]): HostViewRef;
     /**
      * Destroys the Host View created via {@link AppViewManager#createRootHostView}.
      *
@@ -105,7 +104,7 @@ export declare abstract class AppViewManager {
      *
      * Use {@link AppViewManager#destroyViewInContainer} to destroy the created Embedded View.
      */
-    abstract createEmbeddedViewInContainer(viewContainerLocation: ElementRef, index: number, templateRef: TemplateRef): ViewRef;
+    abstract createEmbeddedViewInContainer(viewContainerLocation: ElementRef, index: number, templateRef: TemplateRef): EmbeddedViewRef;
     /**
      * Instantiates a single {@link Component} and inserts its Host View into the View Container
      * found at `viewContainerLocation`. Within the container, the view will be inserted at position
@@ -114,14 +113,14 @@ export declare abstract class AppViewManager {
      * The component is instantiated using its {@link ProtoViewRef `protoViewRef`} which can be
      * obtained via {@link Compiler#compileInHost}.
      *
-     * You can optionally specify `imperativelyCreatedInjector`, which configure the {@link Injector}
+     * You can optionally specify `dynamicallyCreatedProviders`, which configure the {@link Injector}
      * that will be created for the Host View.
      *
      * Returns the {@link HostViewRef} of the Host View created for the newly instantiated Component.
      *
      * Use {@link AppViewManager#destroyViewInContainer} to destroy the created Host View.
      */
-    abstract createHostViewInContainer(viewContainerLocation: ElementRef, index: number, protoViewRef: ProtoViewRef, imperativelyCreatedInjector: ResolvedProvider[]): HostViewRef;
+    abstract createHostViewInContainer(viewContainerLocation: ElementRef, index: number, hostViewFactoryRef: HostViewFactoryRef, dynamicallyCreatedProviders: ResolvedProvider[], projectableNodes: any[][]): HostViewRef;
     /**
      * Destroys an Embedded or Host View attached to a View Container at the specified `index`.
      *
@@ -132,27 +131,29 @@ export declare abstract class AppViewManager {
      *
      * See {@link AppViewManager#detachViewInContainer}.
      */
-    abstract attachViewInContainer(viewContainerLocation: ElementRef, index: number, viewRef: ViewRef): ViewRef;
+    abstract attachViewInContainer(viewContainerLocation: ElementRef, index: number, viewRef: EmbeddedViewRef): EmbeddedViewRef;
     /**
      * See {@link AppViewManager#attachViewInContainer}.
      */
-    abstract detachViewInContainer(viewContainerLocation: ElementRef, index: number): ViewRef;
+    abstract detachViewInContainer(viewContainerLocation: ElementRef, index: number): EmbeddedViewRef;
 }
 export declare class AppViewManager_ extends AppViewManager {
-    private _viewPool;
-    private _viewListener;
-    private _utils;
     private _renderer;
-    private _protoViewFactory;
-    constructor(_viewPool: AppViewPool, _viewListener: AppViewListener, _utils: AppViewManagerUtils, _renderer: Renderer, _protoViewFactory: any);
-    getViewContainer(location: ElementRef): ViewContainerRef;
-    getNamedElementInComponentView(hostLocation: ElementRef, variableName: string): ElementRef;
-    getComponent(hostLocation: ElementRef): any;
-    createRootHostView(hostProtoViewRef: ProtoViewRef, overrideSelector: string, injector: Injector): HostViewRef;
-    destroyRootHostView(hostViewRef: HostViewRef): void;
-    createEmbeddedViewInContainer(viewContainerLocation: ElementRef, index: number, templateRef: TemplateRef): ViewRef;
-    createHostViewInContainer(viewContainerLocation: ElementRef, index: number, protoViewRef: ProtoViewRef, imperativelyCreatedInjector: ResolvedProvider[]): HostViewRef;
-    destroyViewInContainer(viewContainerLocation: ElementRef, index: number): void;
-    attachViewInContainer(viewContainerLocation: ElementRef, index: number, viewRef: ViewRef): ViewRef;
-    detachViewInContainer(viewContainerLocation: ElementRef, index: number): ViewRef;
+    private _viewListener;
+    private _appId;
+    private _nextCompTypeId;
+    constructor(_renderer: RootRenderer, _viewListener: AppViewListener, _appId: string);
+    getViewContainer(location: ElementRef_): ViewContainerRef;
+    getHostElement(hostViewRef: ViewRef_): ElementRef;
+    getNamedElementInComponentView(hostLocation: ElementRef_, variableName: string): ElementRef;
+    getComponent(hostLocation: ElementRef_): any;
+    createRootHostView(hostViewFactoryRef: HostViewFactoryRef_, overrideSelector: string, injector: Injector, projectableNodes?: any[][]): HostViewRef;
+    destroyRootHostView(hostViewRef: ViewRef_): void;
+    createEmbeddedViewInContainer(viewContainerLocation: ElementRef_, index: number, templateRef: TemplateRef_): EmbeddedViewRef;
+    createHostViewInContainer(viewContainerLocation: ElementRef_, index: number, hostViewFactoryRef: HostViewFactoryRef_, dynamicallyCreatedProviders: ResolvedProvider[], projectableNodes: any[][]): HostViewRef;
+    destroyViewInContainer(viewContainerLocation: ElementRef_, index: number): void;
+    attachViewInContainer(viewContainerLocation: ElementRef_, index: number, viewRef: ViewRef_): EmbeddedViewRef;
+    detachViewInContainer(viewContainerLocation: ElementRef_, index: number): EmbeddedViewRef;
+    private _attachViewToContainer(view, vcAppElement, viewIndex);
+    private _detachViewInContainer(vcAppElement, viewIndex);
 }

@@ -11,25 +11,29 @@ import {BaseException} from 'angular2/src/facade/exceptions';
 import * as cpl from './directive_metadata';
 import * as md from 'angular2/src/core/metadata/directives';
 import {DirectiveResolver} from 'angular2/src/core/linker/directive_resolver';
+import {PipeResolver} from 'angular2/src/core/linker/pipe_resolver';
 import {ViewResolver} from 'angular2/src/core/linker/view_resolver';
 import {ViewMetadata} from 'angular2/src/core/metadata/view';
 import {hasLifecycleHook} from 'angular2/src/core/linker/directive_lifecycle_reflector';
 import {LifecycleHooks, LIFECYCLE_HOOKS_VALUES} from 'angular2/src/core/linker/interfaces';
 import {reflector} from 'angular2/src/core/reflection/reflection';
 import {Injectable, Inject, Optional} from 'angular2/src/core/di';
-import {PLATFORM_DIRECTIVES} from 'angular2/src/core/platform_directives_and_pipes';
+import {PLATFORM_DIRECTIVES, PLATFORM_PIPES} from 'angular2/src/core/platform_directives_and_pipes';
 import {MODULE_SUFFIX} from './util';
 import {getUrlScheme} from 'angular2/src/compiler/url_resolver';
 
 @Injectable()
 export class RuntimeMetadataResolver {
-  private _cache = new Map<Type, cpl.CompileDirectiveMetadata>();
+  private _directiveCache = new Map<Type, cpl.CompileDirectiveMetadata>();
+  private _pipeCache = new Map<Type, cpl.CompilePipeMetadata>();
 
-  constructor(private _directiveResolver: DirectiveResolver, private _viewResolver: ViewResolver,
-              @Optional() @Inject(PLATFORM_DIRECTIVES) private _platformDirectives: Type[]) {}
+  constructor(private _directiveResolver: DirectiveResolver, private _pipeResolver: PipeResolver,
+              private _viewResolver: ViewResolver,
+              @Optional() @Inject(PLATFORM_DIRECTIVES) private _platformDirectives: Type[],
+              @Optional() @Inject(PLATFORM_PIPES) private _platformPipes: Type[]) {}
 
-  getMetadata(directiveType: Type): cpl.CompileDirectiveMetadata {
-    var meta = this._cache.get(directiveType);
+  getDirectiveMetadata(directiveType: Type): cpl.CompileDirectiveMetadata {
+    var meta = this._directiveCache.get(directiveType);
     if (isBlank(meta)) {
       var dirMeta = this._directiveResolver.resolve(directiveType);
       var moduleUrl = null;
@@ -63,7 +67,23 @@ export class RuntimeMetadataResolver {
         host: dirMeta.host,
         lifecycleHooks: LIFECYCLE_HOOKS_VALUES.filter(hook => hasLifecycleHook(hook, directiveType))
       });
-      this._cache.set(directiveType, meta);
+      this._directiveCache.set(directiveType, meta);
+    }
+    return meta;
+  }
+
+  getPipeMetadata(pipeType: Type): cpl.CompilePipeMetadata {
+    var meta = this._pipeCache.get(pipeType);
+    if (isBlank(meta)) {
+      var pipeMeta = this._pipeResolver.resolve(pipeType);
+      var moduleUrl = reflector.importUri(pipeType);
+      meta = new cpl.CompilePipeMetadata({
+        type: new cpl.CompileTypeMetadata(
+            {name: stringify(pipeType), moduleUrl: moduleUrl, runtime: pipeType}),
+        name: pipeMeta.name,
+        pure: pipeMeta.pure
+      });
+      this._pipeCache.set(pipeType, meta);
     }
     return meta;
   }
@@ -72,13 +92,25 @@ export class RuntimeMetadataResolver {
     var view = this._viewResolver.resolve(component);
     var directives = flattenDirectives(view, this._platformDirectives);
     for (var i = 0; i < directives.length; i++) {
-      if (!isValidDirective(directives[i])) {
+      if (!isValidType(directives[i])) {
         throw new BaseException(
             `Unexpected directive value '${stringify(directives[i])}' on the View of component '${stringify(component)}'`);
       }
     }
 
-    return directives.map(type => this.getMetadata(type));
+    return directives.map(type => this.getDirectiveMetadata(type));
+  }
+
+  getViewPipesMetadata(component: Type): cpl.CompilePipeMetadata[] {
+    var view = this._viewResolver.resolve(component);
+    var pipes = flattenPipes(view, this._platformPipes);
+    for (var i = 0; i < pipes.length; i++) {
+      if (!isValidType(pipes[i])) {
+        throw new BaseException(
+            `Unexpected piped value '${stringify(pipes[i])}' on the View of component '${stringify(component)}'`);
+      }
+    }
+    return pipes.map(type => this.getPipeMetadata(type));
   }
 }
 
@@ -93,6 +125,17 @@ function flattenDirectives(view: ViewMetadata, platformDirectives: any[]): Type[
   return directives;
 }
 
+function flattenPipes(view: ViewMetadata, platformPipes: any[]): Type[] {
+  let pipes = [];
+  if (isPresent(platformPipes)) {
+    flattenArray(platformPipes, pipes);
+  }
+  if (isPresent(view.pipes)) {
+    flattenArray(view.pipes, pipes);
+  }
+  return pipes;
+}
+
 function flattenArray(tree: any[], out: Array<Type | any[]>): void {
   for (var i = 0; i < tree.length; i++) {
     var item = resolveForwardRef(tree[i]);
@@ -104,7 +147,7 @@ function flattenArray(tree: any[], out: Array<Type | any[]>): void {
   }
 }
 
-function isValidDirective(value: Type): boolean {
+function isValidType(value: Type): boolean {
   return isPresent(value) && (value instanceof Type);
 }
 

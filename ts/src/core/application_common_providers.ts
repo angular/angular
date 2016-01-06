@@ -11,13 +11,11 @@ import {
   KeyValueDiffers,
   defaultKeyValueDiffers
 } from './change_detection/change_detection';
-import {AppViewPool, APP_VIEW_POOL_CAPACITY} from './linker/view_pool';
+import {ResolvedMetadataCache} from 'angular2/src/core/linker/resolved_metadata_cache';
 import {AppViewManager} from './linker/view_manager';
 import {AppViewManager_} from "./linker/view_manager";
-import {AppViewManagerUtils} from './linker/view_manager_utils';
 import {ViewResolver} from './linker/view_resolver';
 import {AppViewListener} from './linker/view_listener';
-import {ProtoViewFactory} from './linker/proto_view_factory';
 import {DirectiveResolver} from './linker/directive_resolver';
 import {PipeResolver} from './linker/pipe_resolver';
 import {Compiler} from './linker/compiler';
@@ -32,12 +30,9 @@ import {DynamicComponentLoader_} from "./linker/dynamic_component_loader";
 export const APPLICATION_COMMON_PROVIDERS: Array<Type | Provider | any[]> = CONST_EXPR([
   new Provider(Compiler, {useClass: Compiler_}),
   APP_ID_RANDOM_PROVIDER,
-  AppViewPool,
-  new Provider(APP_VIEW_POOL_CAPACITY, {useValue: 10000}),
+  ResolvedMetadataCache,
   new Provider(AppViewManager, {useClass: AppViewManager_}),
-  AppViewManagerUtils,
   AppViewListener,
-  ProtoViewFactory,
   ViewResolver,
   new Provider(IterableDiffers, {useValue: defaultIterableDiffers}),
   new Provider(KeyValueDiffers, {useValue: defaultKeyValueDiffers}),

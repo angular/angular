@@ -14,8 +14,10 @@ export declare class DirectiveRecord {
     callOnChanges: boolean;
     callDoCheck: boolean;
     callOnInit: boolean;
+    callOnDestroy: boolean;
     changeDetection: ChangeDetectionStrategy;
-    constructor({directiveIndex, callAfterContentInit, callAfterContentChecked, callAfterViewInit, callAfterViewChecked, callOnChanges, callDoCheck, callOnInit, changeDetection}?: {
+    outputs: string[][];
+    constructor({directiveIndex, callAfterContentInit, callAfterContentChecked, callAfterViewInit, callAfterViewChecked, callOnChanges, callDoCheck, callOnInit, callOnDestroy, changeDetection, outputs}?: {
         directiveIndex?: DirectiveIndex;
         callAfterContentInit?: boolean;
         callAfterContentChecked?: boolean;
@@ -24,7 +26,9 @@ export declare class DirectiveRecord {
         callOnChanges?: boolean;
         callDoCheck?: boolean;
         callOnInit?: boolean;
+        callOnDestroy?: boolean;
         changeDetection?: ChangeDetectionStrategy;
+        outputs?: string[][];
     });
     isDefaultChangeDetection(): boolean;
 }

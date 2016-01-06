@@ -22,7 +22,9 @@ export class ComponentRef {
     /**
      * The {@link ViewRef} of the Host View of this Component instance.
      */
-    get hostView() { return this.location.parentView; }
+    get hostView() {
+        return this.location.internalElement.parentView.ref;
+    }
     /**
      * @internal
      *
@@ -65,9 +67,9 @@ export let DynamicComponentLoader_ = class extends DynamicComponentLoader {
         this._compiler = _compiler;
         this._viewManager = _viewManager;
     }
-    loadAsRoot(type, overrideSelector, injector, onDispose) {
+    loadAsRoot(type, overrideSelector, injector, onDispose, projectableNodes) {
         return this._compiler.compileInHost(type).then(hostProtoViewRef => {
-            var hostViewRef = this._viewManager.createRootHostView(hostProtoViewRef, overrideSelector, injector);
+            var hostViewRef = this._viewManager.createRootHostView(hostProtoViewRef, overrideSelector, injector, projectableNodes);
             var newLocation = this._viewManager.getHostElement(hostViewRef);
             var component = this._viewManager.getComponent(newLocation);
             var dispose = () => {
@@ -79,18 +81,18 @@ export let DynamicComponentLoader_ = class extends DynamicComponentLoader {
             return new ComponentRef_(newLocation, component, type, injector, dispose);
         });
     }
-    loadIntoLocation(type, hostLocation, anchorName, providers = null) {
-        return this.loadNextToLocation(type, this._viewManager.getNamedElementInComponentView(hostLocation, anchorName), providers);
+    loadIntoLocation(type, hostLocation, anchorName, providers = null, projectableNodes = null) {
+        return this.loadNextToLocation(type, this._viewManager.getNamedElementInComponentView(hostLocation, anchorName), providers, projectableNodes);
     }
-    loadNextToLocation(type, location, providers = null) {
+    loadNextToLocation(type, location, providers = null, projectableNodes = null) {
         return this._compiler.compileInHost(type).then(hostProtoViewRef => {
             var viewContainer = this._viewManager.getViewContainer(location);
-            var hostViewRef = viewContainer.createHostView(hostProtoViewRef, viewContainer.length, providers);
+            var hostViewRef = viewContainer.createHostView(hostProtoViewRef, viewContainer.length, providers, projectableNodes);
             var newLocation = this._viewManager.getHostElement(hostViewRef);
             var component = this._viewManager.getComponent(newLocation);
             var dispose = () => {
                 var index = viewContainer.indexOf(hostViewRef);
-                if (index !== -1) {
+                if (!hostViewRef.destroyed && index !== -1) {
                     viewContainer.remove(index);
                 }
             };

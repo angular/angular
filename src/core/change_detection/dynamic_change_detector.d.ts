@@ -15,11 +15,11 @@ export declare class DynamicChangeDetector extends AbstractChangeDetector<any> {
     changes: any[];
     localPipes: any[];
     prevContexts: any[];
-    directives: any;
-    constructor(id: string, dispatcher: ChangeDispatcher, numberOfPropertyProtoRecords: number, propertyBindingTargets: BindingTarget[], directiveIndices: DirectiveIndex[], strategy: ChangeDetectionStrategy, _records: ProtoRecord[], _eventBindings: EventBinding[], _directiveRecords: DirectiveRecord[], _genConfig: ChangeDetectorGenConfig);
+    constructor(id: string, numberOfPropertyProtoRecords: number, propertyBindingTargets: BindingTarget[], directiveIndices: DirectiveIndex[], strategy: ChangeDetectionStrategy, _records: ProtoRecord[], _eventBindings: EventBinding[], _directiveRecords: DirectiveRecord[], _genConfig: ChangeDetectorGenConfig);
     handleEventInternal(eventName: string, elIndex: number, locals: Locals): boolean;
     private _computeSkipLength(protoIndex, proto, values);
-    hydrateDirectives(directives: any): void;
+    hydrateDirectives(dispatcher: ChangeDispatcher): void;
+    private _createEventHandler(boundElementIndex, eventName);
     dehydrateDirectives(destroyPipes: boolean): void;
     checkNoChanges(): void;
     detectChangesInRecordsInternal(throwOnChange: boolean): void;

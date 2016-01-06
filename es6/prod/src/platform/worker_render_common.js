@@ -1,7 +1,7 @@
 import { CONST_EXPR, IS_DART } from 'angular2/src/facade/lang';
 import { MessageBus } from 'angular2/src/web_workers/shared/message_bus';
 import { NgZone } from 'angular2/src/core/zone/ng_zone';
-import { ExceptionHandler, APPLICATION_COMMON_PROVIDERS, PLATFORM_COMMON_PROVIDERS, Renderer, PLATFORM_INITIALIZER } from 'angular2/core';
+import { ExceptionHandler, APPLICATION_COMMON_PROVIDERS, PLATFORM_COMMON_PROVIDERS, RootRenderer, PLATFORM_INITIALIZER } from 'angular2/core';
 import { EVENT_MANAGER_PLUGINS, EventManager } from 'angular2/platform/common_dom';
 import { Provider, OpaqueToken } from 'angular2/src/core/di';
 import { DOM } from 'angular2/src/platform/dom/dom_adapter';
@@ -9,7 +9,7 @@ import { DomEventsPlugin } from 'angular2/src/platform/dom/events/dom_events';
 import { KeyEventsPlugin } from 'angular2/src/platform/dom/events/key_events';
 import { HammerGesturesPlugin } from 'angular2/src/platform/dom/events/hammer_gestures';
 import { DOCUMENT } from 'angular2/src/platform/dom/dom_tokens';
-import { DomRenderer, DomRenderer_ } from 'angular2/src/platform/dom/dom_renderer';
+import { DomRootRenderer, DomRootRenderer_ } from 'angular2/src/platform/dom/dom_renderer';
 import { DomSharedStylesHost } from 'angular2/src/platform/dom/shared_styles_host';
 import { SharedStylesHost } from "angular2/src/platform/dom/shared_styles_host";
 import { BrowserDetails } from 'angular2/src/animate/browser_details';
@@ -26,8 +26,7 @@ import { ServiceMessageBrokerFactory, ServiceMessageBrokerFactory_ } from 'angul
 import { ClientMessageBrokerFactory, ClientMessageBrokerFactory_ } from 'angular2/src/web_workers/shared/client_message_broker';
 import { Serializer } from 'angular2/src/web_workers/shared/serializer';
 import { ON_WEB_WORKER } from 'angular2/src/web_workers/shared/api';
-import { RenderProtoViewRefStore } from 'angular2/src/web_workers/shared/render_proto_view_ref_store';
-import { RenderViewWithFragmentsStore } from 'angular2/src/web_workers/shared/render_view_with_fragments_store';
+import { RenderStore } from 'angular2/src/web_workers/shared/render_store';
 export const WORKER_SCRIPT = CONST_EXPR(new OpaqueToken("WebWorkerScript"));
 // Message based Worker classes that listen on the MessageBus
 export const WORKER_RENDER_MESSAGING_PROVIDERS = CONST_EXPR([MessageBasedRenderer, MessageBasedXHRImpl]);
@@ -45,8 +44,8 @@ export const WORKER_RENDER_APP_COMMON = CONST_EXPR([
     new Provider(EVENT_MANAGER_PLUGINS, { useClass: DomEventsPlugin, multi: true }),
     new Provider(EVENT_MANAGER_PLUGINS, { useClass: KeyEventsPlugin, multi: true }),
     new Provider(EVENT_MANAGER_PLUGINS, { useClass: HammerGesturesPlugin, multi: true }),
-    new Provider(DomRenderer, { useClass: DomRenderer_ }),
-    new Provider(Renderer, { useExisting: DomRenderer }),
+    new Provider(DomRootRenderer, { useClass: DomRootRenderer_ }),
+    new Provider(RootRenderer, { useExisting: DomRootRenderer }),
     new Provider(SharedStylesHost, { useExisting: DomSharedStylesHost }),
     new Provider(XHR, { useClass: XHRImpl }),
     MessageBasedXHRImpl,
@@ -54,8 +53,7 @@ export const WORKER_RENDER_APP_COMMON = CONST_EXPR([
     new Provider(ClientMessageBrokerFactory, { useClass: ClientMessageBrokerFactory_ }),
     Serializer,
     new Provider(ON_WEB_WORKER, { useValue: false }),
-    RenderViewWithFragmentsStore,
-    RenderProtoViewRefStore,
+    RenderStore,
     DomSharedStylesHost,
     Testability,
     BrowserDetails,

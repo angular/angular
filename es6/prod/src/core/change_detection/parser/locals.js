@@ -35,5 +35,5 @@ export class Locals {
             throw new BaseException(`Setting of new keys post-construction is not supported. Key: ${name}.`);
         }
     }
-    clearValues() { MapWrapper.clearValues(this.current); }
+    clearLocalValues() { MapWrapper.clearValues(this.current); }
 }

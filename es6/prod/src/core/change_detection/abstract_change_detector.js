@@ -2,7 +2,8 @@ import { assertionsEnabled, isPresent, isBlank } from 'angular2/src/facade/lang'
 import { ListWrapper } from 'angular2/src/facade/collection';
 import { ChangeDetectionUtil } from './change_detection_util';
 import { ChangeDetectorRef_ } from './change_detector_ref';
-import { ChangeDetectionError, ExpressionChangedAfterItHasBeenCheckedException, DehydratedException } from './exceptions';
+import { ChangeDetectionError, ExpressionChangedAfterItHasBeenCheckedException, DehydratedException, EventEvaluationErrorContext, EventEvaluationError } from './exceptions';
+import { Locals } from './parser/locals';
 import { ChangeDetectionStrategy, ChangeDetectorState } from './constants';
 import { wtfCreateScope, wtfLeave } from '../profile/profile';
 import { isObservable } from './observable_facade';
@@ -18,9 +19,8 @@ class _Context {
     }
 }
 export class AbstractChangeDetector {
-    constructor(id, dispatcher, numberOfPropertyProtoRecords, bindingTargets, directiveIndices, strategy) {
+    constructor(id, numberOfPropertyProtoRecords, bindingTargets, directiveIndices, strategy) {
         this.id = id;
-        this.dispatcher = dispatcher;
         this.numberOfPropertyProtoRecords = numberOfPropertyProtoRecords;
         this.bindingTargets = bindingTargets;
         this.directiveIndices = directiveIndices;
@@ -46,10 +46,24 @@ export class AbstractChangeDetector {
     }
     removeViewChild(cd) { ListWrapper.remove(this.viewChildren, cd); }
     remove() { this.parent.removeContentChild(this); }
-    handleEvent(eventName, elIndex, locals) {
-        var res = this.handleEventInternal(eventName, elIndex, locals);
-        this.markPathToRootAsCheckOnce();
-        return res;
+    handleEvent(eventName, elIndex, event) {
+        if (!this.hydrated()) {
+            return true;
+        }
+        try {
+            var locals = new Map();
+            locals.set('$event', event);
+            var res = !this.handleEventInternal(eventName, elIndex, new Locals(this.locals, locals));
+            this.markPathToRootAsCheckOnce();
+            return res;
+        }
+        catch (e) {
+            var c = this.dispatcher.getDebugContext(null, elIndex, null);
+            var context = isPresent(c) ?
+                new EventEvaluationErrorContext(c.element, c.componentElement, c.context, c.locals, c.injector) :
+                null;
+            throw new EventEvaluationError(eventName, e, e.stack, context);
+        }
     }
     handleEventInternal(eventName, elIndex, locals) { return false; }
     detectChanges() { this.runDetectChanges(false); }
@@ -105,7 +119,8 @@ export class AbstractChangeDetector {
     detectChangesInRecordsInternal(throwOnChange) { }
     // This method is not intended to be overridden. Subclasses should instead provide an
     // implementation of `hydrateDirectives`.
-    hydrate(context, locals, directives, pipes) {
+    hydrate(context, locals, dispatcher, pipes) {
+        this.dispatcher = dispatcher;
         this.mode = ChangeDetectionUtil.changeDetectionMode(this.strategy);
         this.context = context;
         if (this.strategy === ChangeDetectionStrategy.OnPushObserve) {
@@ -113,11 +128,11 @@ export class AbstractChangeDetector {
         }
         this.locals = locals;
         this.pipes = pipes;
-        this.hydrateDirectives(directives);
+        this.hydrateDirectives(dispatcher);
         this.state = ChangeDetectorState.NeverChecked;
     }
     // Subclasses should override this method to hydrate any directives.
-    hydrateDirectives(directives) { }
+    hydrateDirectives(dispatcher) { }
     // This method is not intended to be overridden. Subclasses should instead provide an
     // implementation of `dehydrateDirectives`.
     dehydrate() {
@@ -126,6 +141,7 @@ export class AbstractChangeDetector {
         if (this.strategy === ChangeDetectionStrategy.OnPushObserve) {
             this._unsubsribeFromObservables();
         }
+        this.dispatcher = null;
         this.context = null;
         this.locals = null;
         this.pipes = null;
@@ -134,6 +150,18 @@ export class AbstractChangeDetector {
     // any work done in `hydrateDirectives`.
     dehydrateDirectives(destroyPipes) { }
     hydrated() { return isPresent(this.context); }
+    destroyRecursive() {
+        this.dispatcher.notifyOnDestroy();
+        this.dehydrate();
+        var children = this.contentChildren;
+        for (var i = 0; i < children.length; i++) {
+            children[i].destroyRecursive();
+        }
+        children = this.viewChildren;
+        for (var i = 0; i < children.length; i++) {
+            children[i].destroyRecursive();
+        }
+    }
     afterContentLifecycleCallbacks() {
         this.dispatcher.notifyAfterContentChecked();
         this.afterContentLifecycleCallbacksInternal();
@@ -245,7 +273,7 @@ export class AbstractChangeDetector {
     _throwError(exception, stack) {
         var error;
         try {
-            var c = this.dispatcher.getDebugContext(this._currentBinding().elementIndex, null);
+            var c = this.dispatcher.getDebugContext(null, this._currentBinding().elementIndex, null);
             var context = isPresent(c) ? new _Context(c.element, c.componentElement, c.context, c.locals, c.injector, this._currentBinding().debug) :
                 null;
             error = new ChangeDetectionError(this._currentBinding().debug, exception, stack, context);

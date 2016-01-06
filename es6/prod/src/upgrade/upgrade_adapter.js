@@ -3,7 +3,7 @@ import { ObservableWrapper } from 'angular2/src/facade/async';
 import { BROWSER_PROVIDERS, BROWSER_APP_PROVIDERS } from 'angular2/platform/browser';
 import { getComponentInfo } from './metadata';
 import { onError, controllerKey } from './util';
-import { NG1_COMPILE, NG1_INJECTOR, NG1_PARSE, NG1_ROOT_SCOPE, NG2_APP_VIEW_MANAGER, NG2_COMPILER, NG2_INJECTOR, NG2_PROTO_VIEW_REF_MAP, NG2_ZONE, REQUIRE_INJECTOR } from './constants';
+import { NG1_COMPILE, NG1_INJECTOR, NG1_PARSE, NG1_ROOT_SCOPE, NG2_APP_VIEW_MANAGER, NG2_COMPILER, NG2_INJECTOR, NG2_HOST_VIEW_FACTORY_REF_MAP, NG2_ZONE, REQUIRE_INJECTOR } from './constants';
 import { DowngradeNg2ComponentAdapter } from './downgrade_ng2_adapter';
 import { UpgradeNg1ComponentAdapterBuilder } from './upgrade_ng1_adapter';
 import * as angular from './angular_js';
@@ -278,13 +278,13 @@ export class UpgradeAdapter {
         var original$applyFn;
         var rootScopePrototype;
         var rootScope;
-        var protoViewRefMap = {};
+        var hostViewFactoryRefMap = {};
         var ng1Module = angular.module(this.idPrefix, modules);
         var ng1compilePromise = null;
         ng1Module.value(NG2_INJECTOR, injector)
             .value(NG2_ZONE, ngZone)
             .value(NG2_COMPILER, compiler)
-            .value(NG2_PROTO_VIEW_REF_MAP, protoViewRefMap)
+            .value(NG2_HOST_VIEW_FACTORY_REF_MAP, hostViewFactoryRefMap)
             .value(NG2_APP_VIEW_MANAGER, injector.get(AppViewManager))
             .config([
             '$provide',
@@ -317,7 +317,7 @@ export class UpgradeAdapter {
         ]);
         angular.element(element).data(controllerKey(NG2_INJECTOR), injector);
         ngZone.run(() => { angular.bootstrap(element, [this.idPrefix], config); });
-        Promise.all([this.compileNg2Components(compiler, protoViewRefMap), ng1compilePromise])
+        Promise.all([this.compileNg2Components(compiler, hostViewFactoryRefMap), ng1compilePromise])
             .then(() => {
             ngZone.run(() => {
                 if (rootScopePrototype) {
@@ -436,27 +436,28 @@ export class UpgradeAdapter {
         return factory;
     }
     /* @internal */
-    compileNg2Components(compiler, protoViewRefMap) {
+    compileNg2Components(compiler, hostViewFactoryRefMap) {
         var promises = [];
         var types = this.upgradedComponents;
         for (var i = 0; i < types.length; i++) {
             promises.push(compiler.compileInHost(types[i]));
         }
-        return Promise.all(promises).then((protoViews) => {
+        return Promise.all(promises).then((hostViewFactories) => {
             var types = this.upgradedComponents;
-            for (var i = 0; i < protoViews.length; i++) {
-                protoViewRefMap[getComponentInfo(types[i]).selector] = protoViews[i];
+            for (var i = 0; i < hostViewFactories.length; i++) {
+                hostViewFactoryRefMap[getComponentInfo(types[i]).selector] = hostViewFactories[i];
             }
-            return protoViewRefMap;
+            return hostViewFactoryRefMap;
         }, onError);
     }
 }
 function ng1ComponentDirective(info, idPrefix) {
-    directiveFactory.$inject = [NG2_PROTO_VIEW_REF_MAP, NG2_APP_VIEW_MANAGER, NG1_PARSE];
-    function directiveFactory(protoViewRefMap, viewManager, parse) {
-        var protoView = protoViewRefMap[info.selector];
-        if (!protoView)
-            throw new Error('Expecting ProtoViewRef for: ' + info.selector);
+    directiveFactory.$inject =
+        [NG2_HOST_VIEW_FACTORY_REF_MAP, NG2_APP_VIEW_MANAGER, NG1_PARSE];
+    function directiveFactory(hostViewFactoryRefMap, viewManager, parse) {
+        var hostViewFactory = hostViewFactoryRefMap[info.selector];
+        if (!hostViewFactory)
+            throw new Error('Expecting HostViewFactoryRef for: ' + info.selector);
         var idCount = 0;
         return {
             restrict: 'E',
@@ -464,7 +465,7 @@ function ng1ComponentDirective(info, idPrefix) {
             link: {
                 post: (scope, element, attrs, parentInjector, transclude) => {
                     var domElement = element[0];
-                    var facade = new DowngradeNg2ComponentAdapter(idPrefix + (idCount++), info, element, attrs, scope, parentInjector, parse, viewManager, protoView);
+                    var facade = new DowngradeNg2ComponentAdapter(idPrefix + (idCount++), info, element, attrs, scope, parentInjector, parse, viewManager, hostViewFactory);
                     facade.setupInputs();
                     facade.bootstrapNg2();
                     facade.projectContent();

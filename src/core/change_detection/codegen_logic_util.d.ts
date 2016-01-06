@@ -26,6 +26,8 @@ export declare class CodegenLogicUtil {
     genPropertyBindingTargets(propertyBindingTargets: BindingTarget[], genDebugInfo: boolean): string;
     genDirectiveIndices(directiveRecords: DirectiveRecord[]): string;
     genHydrateDirectives(directiveRecords: DirectiveRecord[]): string;
+    genDirectivesOnDestroy(directiveRecords: DirectiveRecord[]): string;
+    private _genEventHandler(boundElementIndex, eventName);
     private _genReadDirective(index);
     genHydrateDetectors(directiveRecords: DirectiveRecord[]): string;
     genContentLifecycleCallbacks(directiveRecords: DirectiveRecord[]): string[];

@@ -331,3 +331,7 @@ class DateWrapper {
 
 // needed to match the exports from lang.js
 var global = null;
+
+dynamic evalExpression(String sourceUrl, String expr, String declarations, Map<String, String> vars) {
+  throw "Dart does not support evaluating expression during runtime!";
+}

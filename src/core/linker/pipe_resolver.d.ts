@@ -13,3 +13,4 @@ export declare class PipeResolver {
      */
     resolve(type: Type): PipeMetadata;
 }
+export declare var CODEGEN_PIPE_RESOLVER: PipeResolver;

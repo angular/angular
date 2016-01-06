@@ -5,7 +5,7 @@ import { ProtoRecord } from './proto_record';
 export declare class DynamicProtoChangeDetector implements ProtoChangeDetector {
     private _definition;
     constructor(_definition: ChangeDetectorDefinition);
-    instantiate(dispatcher: any): ChangeDetector;
+    instantiate(): ChangeDetector;
 }
 export declare function createPropertyRecords(definition: ChangeDetectorDefinition): ProtoRecord[];
 export declare function createEventRecords(definition: ChangeDetectorDefinition): EventBinding[];

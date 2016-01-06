@@ -10,6 +10,10 @@ export function moduleRef(moduleUrl): string {
  * Represents generated source code with module references. Internal to the Angular compiler.
  */
 export class SourceModule {
+  static getSourceWithoutImports(sourceWithModuleRefs: string): string {
+    return StringWrapper.replaceAllMapped(sourceWithModuleRefs, MODULE_REGEXP, (match) => '');
+  }
+
   constructor(public moduleUrl: string, public sourceWithModuleRefs: string) {}
 
   getSourceWithImports(): SourceWithImports {

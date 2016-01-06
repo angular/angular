@@ -93,3 +93,20 @@ export class ChangeDetectionError extends WrappedException {
 export class DehydratedException extends BaseException {
   constructor() { super('Attempt to detect changes on a dehydrated detector.'); }
 }
+
+/**
+ * Wraps an exception thrown by an event handler.
+ */
+export class EventEvaluationError extends WrappedException {
+  constructor(eventName: string, originalException: any, originalStack: any, context: any) {
+    super(`Error during evaluation of "${eventName}"`, originalException, originalStack, context);
+  }
+}
+
+/**
+ * Error context included when an event handler throws an exception.
+ */
+export class EventEvaluationErrorContext {
+  constructor(public element: any, public componentElement: any, public context: any,
+              public locals: any, public injector: any) {}
+}

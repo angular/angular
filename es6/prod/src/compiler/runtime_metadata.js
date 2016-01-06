@@ -16,23 +16,27 @@ import { BaseException } from 'angular2/src/facade/exceptions';
 import * as cpl from './directive_metadata';
 import * as md from 'angular2/src/core/metadata/directives';
 import { DirectiveResolver } from 'angular2/src/core/linker/directive_resolver';
+import { PipeResolver } from 'angular2/src/core/linker/pipe_resolver';
 import { ViewResolver } from 'angular2/src/core/linker/view_resolver';
 import { hasLifecycleHook } from 'angular2/src/core/linker/directive_lifecycle_reflector';
 import { LIFECYCLE_HOOKS_VALUES } from 'angular2/src/core/linker/interfaces';
 import { reflector } from 'angular2/src/core/reflection/reflection';
 import { Injectable, Inject, Optional } from 'angular2/src/core/di';
-import { PLATFORM_DIRECTIVES } from 'angular2/src/core/platform_directives_and_pipes';
+import { PLATFORM_DIRECTIVES, PLATFORM_PIPES } from 'angular2/src/core/platform_directives_and_pipes';
 import { MODULE_SUFFIX } from './util';
 import { getUrlScheme } from 'angular2/src/compiler/url_resolver';
 export let RuntimeMetadataResolver = class {
-    constructor(_directiveResolver, _viewResolver, _platformDirectives) {
+    constructor(_directiveResolver, _pipeResolver, _viewResolver, _platformDirectives, _platformPipes) {
         this._directiveResolver = _directiveResolver;
+        this._pipeResolver = _pipeResolver;
         this._viewResolver = _viewResolver;
         this._platformDirectives = _platformDirectives;
-        this._cache = new Map();
+        this._platformPipes = _platformPipes;
+        this._directiveCache = new Map();
+        this._pipeCache = new Map();
     }
-    getMetadata(directiveType) {
-        var meta = this._cache.get(directiveType);
+    getDirectiveMetadata(directiveType) {
+        var meta = this._directiveCache.get(directiveType);
         if (isBlank(meta)) {
             var dirMeta = this._directiveResolver.resolve(directiveType);
             var moduleUrl = null;
@@ -64,7 +68,21 @@ export let RuntimeMetadataResolver = class {
                 host: dirMeta.host,
                 lifecycleHooks: LIFECYCLE_HOOKS_VALUES.filter(hook => hasLifecycleHook(hook, directiveType))
             });
-            this._cache.set(directiveType, meta);
+            this._directiveCache.set(directiveType, meta);
+        }
+        return meta;
+    }
+    getPipeMetadata(pipeType) {
+        var meta = this._pipeCache.get(pipeType);
+        if (isBlank(meta)) {
+            var pipeMeta = this._pipeResolver.resolve(pipeType);
+            var moduleUrl = reflector.importUri(pipeType);
+            meta = new cpl.CompilePipeMetadata({
+                type: new cpl.CompileTypeMetadata({ name: stringify(pipeType), moduleUrl: moduleUrl, runtime: pipeType }),
+                name: pipeMeta.name,
+                pure: pipeMeta.pure
+            });
+            this._pipeCache.set(pipeType, meta);
         }
         return meta;
     }
@@ -72,18 +90,30 @@ export let RuntimeMetadataResolver = class {
         var view = this._viewResolver.resolve(component);
         var directives = flattenDirectives(view, this._platformDirectives);
         for (var i = 0; i < directives.length; i++) {
-            if (!isValidDirective(directives[i])) {
+            if (!isValidType(directives[i])) {
                 throw new BaseException(`Unexpected directive value '${stringify(directives[i])}' on the View of component '${stringify(component)}'`);
             }
         }
-        return directives.map(type => this.getMetadata(type));
+        return directives.map(type => this.getDirectiveMetadata(type));
+    }
+    getViewPipesMetadata(component) {
+        var view = this._viewResolver.resolve(component);
+        var pipes = flattenPipes(view, this._platformPipes);
+        for (var i = 0; i < pipes.length; i++) {
+            if (!isValidType(pipes[i])) {
+                throw new BaseException(`Unexpected piped value '${stringify(pipes[i])}' on the View of component '${stringify(component)}'`);
+            }
+        }
+        return pipes.map(type => this.getPipeMetadata(type));
     }
 };
 RuntimeMetadataResolver = __decorate([
     Injectable(),
-    __param(2, Optional()),
-    __param(2, Inject(PLATFORM_DIRECTIVES)), 
-    __metadata('design:paramtypes', [DirectiveResolver, ViewResolver, Array])
+    __param(3, Optional()),
+    __param(3, Inject(PLATFORM_DIRECTIVES)),
+    __param(4, Optional()),
+    __param(4, Inject(PLATFORM_PIPES)), 
+    __metadata('design:paramtypes', [DirectiveResolver, PipeResolver, ViewResolver, Array, Array])
 ], RuntimeMetadataResolver);
 function flattenDirectives(view, platformDirectives) {
     let directives = [];
@@ -94,6 +124,16 @@ function flattenDirectives(view, platformDirectives) {
         flattenArray(view.directives, directives);
     }
     return directives;
+}
+function flattenPipes(view, platformPipes) {
+    let pipes = [];
+    if (isPresent(platformPipes)) {
+        flattenArray(platformPipes, pipes);
+    }
+    if (isPresent(view.pipes)) {
+        flattenArray(view.pipes, pipes);
+    }
+    return pipes;
 }
 function flattenArray(tree, out) {
     for (var i = 0; i < tree.length; i++) {
@@ -106,7 +146,7 @@ function flattenArray(tree, out) {
         }
     }
 }
-function isValidDirective(value) {
+function isValidType(value) {
     return isPresent(value) && (value instanceof Type);
 }
 function calcModuleUrl(type, cmpMetadata) {

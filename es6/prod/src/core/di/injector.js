@@ -169,6 +169,10 @@ export class ProtoInjector {
             new ProtoInjectorDynamicStrategy(this, bwv) :
             new ProtoInjectorInlineStrategy(this, bwv);
     }
+    static fromResolvedProviders(providers) {
+        var bd = providers.map(b => new ProviderWithVisibility(b, Visibility.Public));
+        return new ProtoInjector(bd);
+    }
     getProviderAtIndex(index) { return this._strategy.getProviderAtIndex(index); }
 }
 export class InjectorInlineStrategy {
@@ -189,11 +193,6 @@ export class InjectorInlineStrategy {
     resetConstructionCounter() { this.injector._constructionCounter = 0; }
     instantiateProvider(provider, visibility) {
         return this.injector._new(provider, visibility);
-    }
-    attach(parent, isHost) {
-        var inj = this.injector;
-        inj._parent = parent;
-        inj._isHost = isHost;
     }
     getObjByKeyId(keyId, visibility) {
         var p = this.protoStrategy;
@@ -296,11 +295,6 @@ export class InjectorDynamicStrategy {
     instantiateProvider(provider, visibility) {
         return this.injector._new(provider, visibility);
     }
-    attach(parent, isHost) {
-        var inj = this.injector;
-        inj._parent = parent;
-        inj._isHost = isHost;
-    }
     getObjByKeyId(keyId, visibility) {
         var p = this.protoStrategy;
         for (var i = 0; i < p.keyIds.length; i++) {
@@ -365,11 +359,10 @@ export class Injector {
     /**
      * Private
      */
-    constructor(_proto /* ProtoInjector */, _parent = null, _depProvider = null, _debugContext = null) {
+    constructor(_proto /* ProtoInjector */, _parent = null, _isHostBoundary = false, _depProvider = null, _debugContext = null) {
+        this._isHostBoundary = _isHostBoundary;
         this._depProvider = _depProvider;
         this._debugContext = _debugContext;
-        /** @internal */
-        this._isHost = false;
         /** @internal */
         this._constructionCounter = 0;
         this._proto = _proto;
@@ -465,9 +458,7 @@ export class Injector {
      * ```
      */
     static fromResolvedProviders(providers) {
-        var bd = providers.map(b => new ProviderWithVisibility(b, Visibility.Public));
-        var proto = new ProtoInjector(bd);
-        return new Injector(proto, null, null);
+        return new Injector(ProtoInjector.fromResolvedProviders(providers));
     }
     /**
      * @deprecated
@@ -475,6 +466,11 @@ export class Injector {
     static fromResolvedBindings(providers) {
         return Injector.fromResolvedProviders(providers);
     }
+    /**
+     * Whether this injector is a boundary to a host.
+     * @internal
+     */
+    get hostBoundary() { return this._isHostBoundary; }
     /**
      * @internal
      */
@@ -611,7 +607,7 @@ export class Injector {
     createChildFromResolved(providers) {
         var bd = providers.map(b => new ProviderWithVisibility(b, Visibility.Public));
         var proto = new ProtoInjector(bd);
-        var inj = new Injector(proto, null, null);
+        var inj = new Injector(proto);
         inj._parent = this;
         return inj;
     }
@@ -837,7 +833,7 @@ export class Injector {
     _getByKeyHost(key, optional, providerVisibility, lowerBoundVisibility) {
         var inj = this;
         if (lowerBoundVisibility instanceof SkipSelfMetadata) {
-            if (inj._isHost) {
+            if (inj._isHostBoundary) {
                 return this._getPrivateDependency(key, optional, inj);
             }
             else {
@@ -848,7 +844,7 @@ export class Injector {
             var obj = inj._strategy.getObjByKeyId(key.id, providerVisibility);
             if (obj !== UNDEFINED)
                 return obj;
-            if (isPresent(inj._parent) && inj._isHost) {
+            if (isPresent(inj._parent) && inj._isHostBoundary) {
                 return this._getPrivateDependency(key, optional, inj);
             }
             else {
@@ -866,14 +862,14 @@ export class Injector {
     _getByKeyDefault(key, optional, providerVisibility, lowerBoundVisibility) {
         var inj = this;
         if (lowerBoundVisibility instanceof SkipSelfMetadata) {
-            providerVisibility = inj._isHost ? Visibility.PublicAndPrivate : Visibility.Public;
+            providerVisibility = inj._isHostBoundary ? Visibility.PublicAndPrivate : Visibility.Public;
             inj = inj._parent;
         }
         while (inj != null) {
             var obj = inj._strategy.getObjByKeyId(key.id, providerVisibility);
             if (obj !== UNDEFINED)
                 return obj;
-            providerVisibility = inj._isHost ? Visibility.PublicAndPrivate : Visibility.Public;
+            providerVisibility = inj._isHostBoundary ? Visibility.PublicAndPrivate : Visibility.Public;
             inj = inj._parent;
         }
         return this._throwOrNull(key, optional);

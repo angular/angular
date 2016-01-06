@@ -8,3 +8,4 @@ export declare class DirectiveResolver {
     private _mergeWithPropertyMetadata(dm, propertyMetadata);
     private _merge(dm, inputs, outputs, host, queries);
 }
+export declare var CODEGEN_DIRECTIVE_RESOLVER: DirectiveResolver;
