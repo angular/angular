@@ -51,7 +51,7 @@ class TemplateCompiler extends Transformer implements LazyTransformer {
       }
 
       var outputs = await processTemplates(reader, primaryId,
-          genChangeDetectionDebugInfo: options.genChangeDetectionDebugInfo,
+          codegenMode: options.codegenMode,
           reflectPropertiesAsAttributes: options.reflectPropertiesAsAttributes,
           platformDirectives: options.platformDirectives,
           platformPipes: options.platformPipes,

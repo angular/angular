@@ -9,6 +9,15 @@ import './metadata/view.dart';
 export './metadata/di.dart';
 export './metadata/directives.dart';
 export './metadata/view.dart' hide VIEW_ENCAPSULATION_VALUES;
+export './metadata/lifecycle_hooks.dart' show
+  AfterContentInit,
+  AfterContentChecked,
+  AfterViewInit,
+  AfterViewChecked,
+  OnChanges,
+  OnDestroy,
+  OnInit,
+  DoCheck;
 
 /**
  * See: [DirectiveMetadata] for docs.

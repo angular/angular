@@ -2,29 +2,9 @@ library angular2.transform.common.model.source_module;
 
 import 'package:path/path.dart' as path;
 
-import 'package:angular2/src/compiler/source_module.dart';
 import 'package:angular2/src/transform/common/url_resolver.dart';
 
 import 'import_export_model.pb.dart';
-
-/// Generates [ImportModel]s for all imports in `sourceWithImports`.
-///
-/// Imports in `sourceWithImports` are resolved relative to `moduleUrl`.
-List<ImportModel> extractImports(
-    SourceWithImports sourceWithImports, String moduleUrl) {
-  if (sourceWithImports == null) return const <ImportModel>[];
-  return sourceWithImports.imports.map((import) {
-    // Format for importLine := [uri, prefix]
-    if (import.length != 2) {
-      throw new FormatException(
-          'Internal Angular 2 compiler error. '
-          'Angular 2 compiler returned imports in an unexpected format. '
-          'Expected [<import_uri>, <prefix>].',
-          import.join(', '));
-    }
-    return toImportModel(import[0], prefix: import[1], fromAbsolute: moduleUrl);
-  }).toList();
-}
 
 /// Generates an [ImportModel] for the file specified by `importPath`.
 ///
@@ -32,7 +12,7 @@ List<ImportModel> extractImports(
 /// otherwise it is expected to be absolute.
 ImportModel toImportModel(String importPath,
     {String prefix, String fromAbsolute}) {
-  var urlResolver = const TransformerUrlResolver();
+  var urlResolver = createOfflineCompileUrlResolver();
   var codegenImportPath;
 
   var importUri =

@@ -11,16 +11,14 @@ import {
   KeyValueDiffers,
   defaultKeyValueDiffers
 } from './change_detection/change_detection';
-import {ResolvedMetadataCache} from 'angular2/src/core/linker/resolved_metadata_cache';
 import {AppViewManager} from './linker/view_manager';
 import {AppViewManager_} from "./linker/view_manager";
-import {ViewResolver} from './linker/view_resolver';
-import {DirectiveResolver} from './linker/directive_resolver';
-import {PipeResolver} from './linker/pipe_resolver';
 import {Compiler} from './linker/compiler';
 import {Compiler_} from "./linker/compiler";
 import {DynamicComponentLoader} from './linker/dynamic_component_loader';
 import {DynamicComponentLoader_} from "./linker/dynamic_component_loader";
+
+var __unused: Type;  // avoid unused import when Type union types are erased
 
 /**
  * A default set of providers which should be included in any Angular
@@ -29,12 +27,8 @@ import {DynamicComponentLoader_} from "./linker/dynamic_component_loader";
 export const APPLICATION_COMMON_PROVIDERS: Array<Type | Provider | any[]> = CONST_EXPR([
   new Provider(Compiler, {useClass: Compiler_}),
   APP_ID_RANDOM_PROVIDER,
-  ResolvedMetadataCache,
   new Provider(AppViewManager, {useClass: AppViewManager_}),
-  ViewResolver,
   new Provider(IterableDiffers, {useValue: defaultIterableDiffers}),
   new Provider(KeyValueDiffers, {useValue: defaultKeyValueDiffers}),
-  DirectiveResolver,
-  PipeResolver,
   new Provider(DynamicComponentLoader, {useClass: DynamicComponentLoader_})
 ]);

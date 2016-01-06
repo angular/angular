@@ -1,6 +1,6 @@
 library angular2.transform.common.ng_meta;
 
-import 'package:angular2/src/compiler/directive_metadata.dart';
+import 'package:angular2/src/compiler/compile_metadata.dart';
 import 'logging.dart';
 import 'model/ng_deps_model.pb.dart';
 import 'url_resolver.dart' show isDartCoreUri;
@@ -32,7 +32,8 @@ class NgMeta {
   static const _TYPE_VALUE = 'type';
 
   /// Metadata for each identifier
-  /// Type: [CompileDirectiveMetadata]|[CompilePipeMetadata]|[CompileTypeMetadata]|[CompileIdentifierMetadata]
+  /// Type: [CompileDirectiveMetadata]|[CompilePipeMetadata]|[CompileTypeMetadata]|
+  /// [CompileIdentifierMetadata]|[CompileFactoryMetadata]
   final Map<String, dynamic> identifiers;
 
   /// List of other types and names associated with a given name.

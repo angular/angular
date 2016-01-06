@@ -7,9 +7,6 @@
 export {
   ChangeDetectionStrategy,
 
-  ExpressionChangedAfterItHasBeenCheckedException,
-  ChangeDetectionError,
-
   ChangeDetectorRef,
 
   WrappedValue,

@@ -17,7 +17,8 @@ class CheckImports implements DiffingBroccoliPlugin {
     "angular2/src/facade": ["rxjs"],
     "angular2/src/common": ["angular2/core", "angular2/src/facade"],
     "angular2/src/http": ["angular2/core", "angular2/src/facade", "rxjs"],
-    "angular2/src/upgrade": ["angular2/core", "angular2/src/facade", "angular2/platform/browser"]
+    "angular2/src/upgrade":
+        ["angular2/core", "angular2/src/facade", "angular2/platform/browser", "angular2/compiler"]
     //"angular2/src/render": [
     //  "angular2/animate",
     //  "angular2/core",

@@ -5,7 +5,6 @@ import 'package:angular2/src/transform/common/annotation_matcher.dart';
 import 'package:angular2/src/transform/common/logging.dart';
 import 'package:angular2/src/transform/common/model/reflection_info_model.pb.dart';
 import 'package:angular2/src/transform/common/names.dart';
-import 'package:angular2/src/transform/common/property_utils.dart';
 import 'package:barback/barback.dart' show AssetId;
 
 import 'annotation_code.dart';
@@ -23,16 +22,15 @@ class ReflectionInfoVisitor extends RecursiveAstVisitor<ReflectionInfoModel> {
 
   final AnnotationVisitor _annotationVisitor;
   final ParameterVisitor _parameterVisitor = new ParameterVisitor();
-  final _PropertyMetadataVisitor _propMetadataVisitor;
 
   ReflectionInfoVisitor._(this.assetId, this._annotationMatcher,
-      this._annotationVisitor, this._propMetadataVisitor);
+      this._annotationVisitor);
 
   factory ReflectionInfoVisitor(
       AssetId assetId, AnnotationMatcher annotationMatcher) {
-    var annotationVisitor = new AnnotationVisitor(assetId, annotationMatcher);
+    var annotationVisitor = new AnnotationVisitor(assetId);
     return new ReflectionInfoVisitor._(assetId, annotationMatcher,
-        annotationVisitor, new _PropertyMetadataVisitor(annotationVisitor));
+        annotationVisitor);
   }
 
   ConstructorDeclaration _getCtor(ClassDeclaration node) {
@@ -83,14 +81,21 @@ class ReflectionInfoVisitor extends RecursiveAstVisitor<ReflectionInfoModel> {
       var componentPipes = new Iterable.empty();
       var viewDirectives, viewPipes;
       node.metadata.forEach((node) {
+        var keepAnnotation = true;
         if (_annotationMatcher.isComponent(node, assetId)) {
           componentDirectives = _extractReferencedTypes(node, 'directives');
           componentPipes = _extractReferencedTypes(node, 'pipes');
+          keepAnnotation = false;
         } else if (_annotationMatcher.isView(node, assetId)) {
           viewDirectives = _extractReferencedTypes(node, 'directives');
           viewPipes = _extractReferencedTypes(node, 'pipes');
+          keepAnnotation = false;
+        } else if (_annotationMatcher.isDirective(node, assetId)) {
+          keepAnnotation = false;
         }
-        model.annotations.add(_annotationVisitor.visitAnnotation(node));
+        if (keepAnnotation) {
+          model.annotations.add(_annotationVisitor.visitAnnotation(node));
+        }
       });
       if ((componentDirectives.isNotEmpty || componentPipes.isNotEmpty) &&
           (viewDirectives != null || viewPipes != null)) {
@@ -122,41 +127,7 @@ class ReflectionInfoVisitor extends RecursiveAstVisitor<ReflectionInfoModel> {
           .map((interface) => '${interface.name}'));
     }
 
-    // Record annotations attached to properties.
-    for (var member in node.members) {
-      var propMetaList = member.accept(_propMetadataVisitor);
-      if (propMetaList != null) {
-        model.propertyMetadata.addAll(propMetaList);
-      }
-    }
-    _coalesce(model.propertyMetadata);
-
     return model;
-  }
-
-  // If a class has a getter & a setter with the same name and each has
-  // individual metadata, collapse to a single entry.
-  void _coalesce(List<PropertyMetadataModel> propertyMetadata) {
-    if (propertyMetadata.isEmpty) return;
-
-    var firstSeenIdxMap = <String, int>{};
-    firstSeenIdxMap[propertyMetadata[0].name] = 0;
-    var i = 1;
-    while (i < propertyMetadata.length) {
-      var propName = propertyMetadata[i].name;
-      if (firstSeenIdxMap.containsKey(propName)) {
-        var propNameIdx = firstSeenIdxMap[propName];
-        // We have seen this name before, combine the metadata lists.
-        propertyMetadata[propNameIdx]
-            .annotations
-            .addAll(propertyMetadata[i].annotations);
-        // Remove the higher index, okay since we directly check `length` above.
-        propertyMetadata.removeAt(i);
-      } else {
-        firstSeenIdxMap[propName] = i;
-        ++i;
-      }
-    }
   }
 
   /// Returns [PrefixedType] values parsed from the value of the
@@ -230,59 +201,6 @@ class ReflectionInfoVisitor extends RecursiveAstVisitor<ReflectionInfoModel> {
   }
 }
 
-/// Visitor responsible for parsing [ClassMember]s into
-/// [PropertyMetadataModel]s.
-class _PropertyMetadataVisitor
-    extends SimpleAstVisitor<List<PropertyMetadataModel>> {
-  final AnnotationVisitor _annotationVisitor;
-
-  _PropertyMetadataVisitor(this._annotationVisitor);
-
-  @override
-  List<PropertyMetadataModel> visitFieldDeclaration(FieldDeclaration node) {
-    var retVal = null;
-    for (var variable in node.fields.variables) {
-      var propModel = null;
-      for (var meta in node.metadata) {
-        var annotationModel = meta.accept(_annotationVisitor);
-        if (annotationModel != null) {
-          if (propModel == null) {
-            propModel = new PropertyMetadataModel()..name = '${variable.name}';
-          }
-          propModel.annotations.add(annotationModel);
-        }
-      }
-      if (propModel != null && propModel.annotations.isNotEmpty) {
-        if (retVal == null) {
-          retVal = <PropertyMetadataModel>[];
-        }
-        retVal.add(propModel);
-      }
-    }
-    return retVal;
-  }
-
-  @override
-  List<PropertyMetadataModel> visitMethodDeclaration(MethodDeclaration node) {
-    if (node.isGetter || node.isSetter) {
-      var propModel = null;
-      for (var meta in node.metadata) {
-        var annotationModel = meta.accept(_annotationVisitor);
-        if (annotationModel != null) {
-          if (propModel == null) {
-            propModel = new PropertyMetadataModel()..name = '${node.name}';
-          }
-          propModel.annotations.add(annotationModel);
-        }
-      }
-      if (propModel != null && propModel.annotations.isNotEmpty) {
-        return <PropertyMetadataModel>[propModel];
-      }
-    }
-    return null;
-  }
-}
-
 /// Defines the format in which an [ReflectionInfoModel] is expressed as Dart
 /// code when registered with the reflector.
 abstract class ReflectionWriterMixin
@@ -328,25 +246,9 @@ abstract class ReflectionWriterMixin
       _writeListWithSeparator(model.parameters, writeParameterModelForImpl,
           prefix: '(', suffix: ')');
       // Interfaces
-      var hasPropertyMetadata =
-          model.propertyMetadata != null && model.propertyMetadata.isNotEmpty;
       if (model.interfaces != null && model.interfaces.isNotEmpty) {
         _writeListWithSeparator(model.interfaces, buffer.write,
             prefix: ',\nconst [', suffix: ']');
-      } else if (hasPropertyMetadata) {
-        buffer.write(',\nconst []');
-      }
-      // Property Metadata
-      if (hasPropertyMetadata) {
-        buffer.write(',\nconst {');
-        for (var propMeta in model.propertyMetadata) {
-          if (propMeta != model.propertyMetadata.first) {
-            buffer.write(', ');
-          }
-          _writeListWithSeparator(propMeta.annotations, writeAnnotationModel,
-              prefix: "\n'${sanitize(propMeta.name)}': const [", suffix: ']');
-        }
-        buffer.write('}');
       }
     }
     buffer.writeln(')\n)');

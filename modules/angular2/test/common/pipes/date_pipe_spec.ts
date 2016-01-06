@@ -12,7 +12,7 @@ import {
 
 import {DatePipe} from 'angular2/common';
 import {DateWrapper} from 'angular2/src/facade/lang';
-import {PipeResolver} from 'angular2/src/core/linker/pipe_resolver';
+import {PipeResolver} from 'angular2/src/compiler/pipe_resolver';
 
 export function main() {
   describe("DatePipe", () => {

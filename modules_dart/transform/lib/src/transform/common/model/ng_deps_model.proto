@@ -21,19 +21,7 @@ message NgDepsModel {
   // Example: component.dart
   optional string source_file = 6;
 
-  // The names of getters that should be registered in the Angular 2 reflection
-  // framework.
-  repeated string getters = 7;
-
-  // The names of setters that should be registered in the Angular 2 reflection
-  // framework.
-  repeated string setters = 8;
-
-  // The names of methods that should be registered in the Angular 2 reflection
-  // framework.
-  repeated string methods = 9;
-
   // Imports of the generated files associated with the declared `imports`
   // and `exports` of the source file.
-  repeated ImportModel dep_imports = 10;
+  repeated ImportModel dep_imports = 7;
 }

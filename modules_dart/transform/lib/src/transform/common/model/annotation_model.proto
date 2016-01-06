@@ -18,23 +18,8 @@ message AnnotationModel {
   // The named parameters provided to the annotation.
   repeated NamedParameter named_parameters = 3;
 
-  // Whether this is a `View` annotation.
-  optional bool is_view = 4;
-
-  // Whether this is a `Directive` annotation. This takes inheritance into
-  // account, that is, this should be true if `is_component` is true.
-  optional bool is_directive = 5;
-
-  // Whether this is a `Component` annotation.
-  optional bool is_component = 6;
-
-  // Whether this is an `Injectable` annotation. This takes inheritance into
-  // account, that is, this should be true if `is_directive` and/or
-  // `is_component` is true.
-  optional bool is_injectable = 7;
-
   // Whether this annotation is a constant object (for example, `@override`) as
   // opposed to a const instance creation expression
   // (for example, `@Injectable()`).
-  optional bool is_const_object = 8;
+  optional bool is_const_object = 4;
 }

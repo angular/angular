@@ -8,6 +8,7 @@ import mergeTrees from '../broccoli-merge-trees';
 var path = require('path');
 import renderLodashTemplate from '../broccoli-lodash';
 import replace from '../broccoli-replace';
+import generateForTest from '../broccoli-generate-for-test';
 var stew = require('broccoli-stew');
 var writeFile = require('broccoli-file-creator');
 
@@ -120,15 +121,40 @@ module.exports = function makeNodeTree(projects, destinationPath) {
 
   let compiledTree = mergeTrees([compiledSrcTree, compiledTestTree]);
 
+  // Generate test files
+  let generatedJsTestFiles =
+      generateForTest(compiledTree, {files: ['*/test/**/*_codegen_untyped.js']});
+  let generatedTsTestFiles = stew.rename(
+      generateForTest(compiledTree, {files: ['*/test/**/*_codegen_typed.js']}), /.js$/, '.ts');
+
+  // Compile generated test files against the src @internal .d.ts and the test files
+  compiledTree = mergeTrees(
+      [
+        compiledTree,
+        generatedJsTestFiles,
+        compileTree(
+            new Funnel(
+                mergeTrees([
+                  packageTypings,
+                  new Funnel('modules',
+                             {include: ['angular2/manual_typings/**', 'angular2/typings/**']}),
+                  generatedTsTestFiles,
+                  srcPrivateDeclarations,
+                  compiledTestTree
+                ]),
+                {include: ['angular2/**', 'rxjs/**', 'zone.js/**']}),
+            false, [])
+      ],
+      {overwrite: true});
+
   // Down-level .d.ts files to be TS 1.8 compatible
   // TODO(alexeagle): this can be removed once we drop support for using Angular 2 with TS 1.8
   compiledTree = replace(compiledTree, {
     files: ['**/*.d.ts'],
     patterns: [
-      {match: /^(\s*(static\s+)?)readonly\s+/mg, replacement: "$1"},
+      {match: /^(\s*(static\s+|private\s+)*)readonly\s+/mg, replacement: "$1"},
     ]
   });
-
 
   // Now we add the LICENSE file into all the folders that will become npm packages
   outputPackages.forEach(function(destDir) {

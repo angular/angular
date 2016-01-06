@@ -3,7 +3,7 @@ library angular2.transform.directive_metadata_linker.linker;
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:angular2/src/compiler/directive_metadata.dart';
+import 'package:angular2/src/compiler/compile_metadata.dart';
 import 'package:angular2/src/transform/common/asset_reader.dart';
 import 'package:angular2/src/transform/common/logging.dart';
 import 'package:angular2/src/transform/common/names.dart';
@@ -42,7 +42,7 @@ Future<NgMeta> linkDirectiveMetadata(AssetReader reader, AssetId summaryAssetId,
   return ngMeta;
 }
 
-final _urlResolver = const TransformerUrlResolver();
+final _urlResolver = createOfflineCompileUrlResolver();
 
 Future<NgMeta> _readNgMeta(AssetReader reader, AssetId ngMetaAssetId,
     Map<AssetId, NgMeta> ngMetas) async {
@@ -217,7 +217,7 @@ class _NgMetaIdentifierResolver {
       if (resolved == null) return [];
 
       if (resolved is CompileTypeMetadata) {
-        return [new CompileProviderMetadata(token: resolved, useClass: resolved)];
+        return [new CompileProviderMetadata(token: new CompileTokenMetadata(identifier: resolved), useClass: resolved)];
 
       } else if (resolved is CompileIdentifierMetadata && resolved.value is List) {
         return _resolveProviders(ngMetaMap, resolved.value, neededBy);
@@ -259,20 +259,20 @@ class _NgMetaIdentifierResolver {
 
   void _resolveQueries(Map<String, NgMeta> ngMetaMap, List queries, String neededBy) {
     queries.forEach((q) {
-      q.selectors = q.selectors.map((s) => _resolveIdentifier(ngMetaMap, neededBy, s)).toList();
+      q.selectors.forEach((s) => s.identifier = _resolveIdentifier(ngMetaMap, neededBy, s.identifier));
     });
   }
 
   void _resolveProvider(Map<String, NgMeta> ngMetaMap,
       String neededBy, CompileProviderMetadata provider) {
-    provider.token = _resolveIdentifier(ngMetaMap, neededBy, provider.token);
+    provider.token.identifier = _resolveIdentifier(ngMetaMap, neededBy, provider.token.identifier);
     if (provider.useClass != null) {
       provider.useClass =
           _resolveIdentifier(ngMetaMap, neededBy, provider.useClass);
     }
     if (provider.useExisting != null) {
-      provider.useExisting =
-          _resolveIdentifier(ngMetaMap, neededBy, provider.useExisting);
+      provider.useExisting.identifier =
+          _resolveIdentifier(ngMetaMap, neededBy, provider.useExisting.identifier);
     }
     if (provider.useValue != null) {
       provider.useValue =
@@ -290,14 +290,16 @@ class _NgMetaIdentifierResolver {
       String neededBy, List<CompileDiDependencyMetadata> deps) {
     if (deps == null) return;
     for (var dep in deps) {
-      _setModuleUrl(ngMetaMap, neededBy, dep.token);
+      if (dep.token != null) {
+        _setModuleUrl(ngMetaMap, neededBy, dep.token.identifier);
+      }
       if (dep.query != null) {
         dep.query.selectors
-            .forEach((s) => _setModuleUrl(ngMetaMap, neededBy, s));
+            .forEach((s) => _setModuleUrl(ngMetaMap, neededBy, s.identifier));
       }
       if (dep.viewQuery != null) {
         dep.viewQuery.selectors
-            .forEach((s) => _setModuleUrl(ngMetaMap, neededBy, s));
+            .forEach((s) => _setModuleUrl(ngMetaMap, neededBy, s.identifier));
       }
     }
   }
