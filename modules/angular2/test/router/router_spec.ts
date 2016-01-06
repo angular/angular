@@ -220,6 +220,15 @@ export function main() {
         expect(path).toEqual('hi/how/are/you?name=brad');
       });
 
+      it('should preserve the number 1 as a query string value', () => {
+        router.config(
+            [new Route({path: '/hi/how/are/you', component: DummyComponent, name: 'GreetingUrl'})]);
+
+        var instruction = router.generate(['/GreetingUrl', {'name': 1}]);
+        var path = stringifyInstruction(instruction);
+        expect(path).toEqual('hi/how/are/you?name=1');
+      });
+
       it('should serialize parameters that are not part of the route definition as query string params',
          () => {
            router.config([
