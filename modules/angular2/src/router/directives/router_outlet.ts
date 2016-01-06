@@ -1,4 +1,4 @@
-import {PromiseWrapper} from 'angular2/src/facade/async';
+import {PromiseWrapper, EventEmitter} from 'angular2/src/facade/async';
 import {StringMapWrapper} from 'angular2/src/facade/collection';
 import {isBlank, isPresent} from 'angular2/src/facade/lang';
 
@@ -11,7 +11,8 @@ import {
   Injector,
   provide,
   Dependency,
-  OnDestroy
+  OnDestroy,
+  Output
 } from 'angular2/core';
 
 import * as routerMod from '../router';
@@ -36,6 +37,8 @@ export class RouterOutlet implements OnDestroy {
   name: string = null;
   private _componentRef: Promise<ComponentRef> = null;
   private _currentInstruction: ComponentInstruction = null;
+
+  @Output('activate') public activateEvents = new EventEmitter<any>();
 
   constructor(private _elementRef: ElementRef, private _loader: DynamicComponentLoader,
               private _parentRouter: routerMod.Router, @Attribute('name') nameAttr: string) {
@@ -65,6 +68,7 @@ export class RouterOutlet implements OnDestroy {
     this._componentRef =
         this._loader.loadNextToLocation(componentType, this._elementRef, providers);
     return this._componentRef.then((componentRef) => {
+      this.activateEvents.emit(componentRef.instance);
       if (hasLifecycleHook(hookMod.routerOnActivate, componentType)) {
         return this._componentRef.then(
             (ref: ComponentRef) =>

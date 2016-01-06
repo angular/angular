@@ -1,12 +1,11 @@
 import 'package:build/build.dart';
 import 'package:analyzer/src/generated/element.dart';
 import 'src/transform/common/url_resolver.dart';
+
 import 'dart:async';
 import 'package:angular2/i18n.dart';
-import 'package:angular2/src/core/change_detection/parser/parser.dart';
-import 'package:angular2/src/core/change_detection/parser/lexer.dart';
-import 'package:angular2/src/core/reflection/reflector.dart';
-import 'package:angular2/src/core/reflection/reflection_capabilities.dart';
+import 'package:angular2/src/compiler/expression_parser/parser.dart';
+import 'package:angular2/src/compiler/expression_parser/lexer.dart';
 import 'package:angular2/src/compiler/html_parser.dart';
 
 /**
@@ -51,11 +50,11 @@ class I18nMessageExtractorBuilder implements Builder {
 }
 
 class I18nMessageExtractor {
-  final TransformerUrlResolver urlResovler = new TransformerUrlResolver();
+  final urlResovler = createOfflineCompileUrlResolver();
   final List<Message> messages = [];
   final List errors = [];
   final HtmlParser htmlParser = new HtmlParser();
-  final Parser parser = new Parser(new Lexer(), new Reflector(new ReflectionCapabilities()));
+  final Parser parser = new Parser(new Lexer());
 
   final Function readInput;
 

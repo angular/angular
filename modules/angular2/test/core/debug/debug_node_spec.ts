@@ -280,8 +280,8 @@ export function main() {
            fixture.detectChanges();
            var bankElem = fixture.debugElement.children[0];
 
-           expect(bankElem.attributes.get('bank')).toEqual('RBC');
-           expect(bankElem.attributes.get('account')).toEqual('4747');
+           expect(bankElem.attributes['bank']).toEqual('RBC');
+           expect(bankElem.attributes['account']).toEqual('4747');
            async.done();
          });
        }));

@@ -24,6 +24,7 @@ export enum ChangeDetectorState {
   Errored
 }
 
+
 /**
  * Describes within the change detector which strategy will be used the next time change
  * detection is triggered.

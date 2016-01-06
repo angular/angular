@@ -4,11 +4,11 @@ import 'dart:async';
 
 import 'package:analyzer/analyzer.dart';
 
-import 'package:angular2/src/compiler/directive_metadata.dart';
-import 'package:angular2/src/compiler/template_compiler.dart';
+import 'package:angular2/src/compiler/compile_metadata.dart';
+import 'package:angular2/src/compiler/offline_compiler.dart';
 
 import 'package:angular2/src/core/change_detection/change_detection.dart';
-import 'package:angular2/src/core/linker/interfaces.dart' show LifecycleHooks;
+import 'package:angular2/src/core/metadata/lifecycle_hooks.dart' show LifecycleHooks;
 import 'package:angular2/src/core/metadata/view.dart' show ViewEncapsulation;
 import 'package:angular2/src/transform/common/annotation_matcher.dart';
 import 'package:angular2/src/transform/common/interface_matcher.dart';
@@ -23,7 +23,7 @@ class TypeMetadataReader {
   final _PipeMetadataVisitor _pipeVisitor;
   final _CompileTypeMetadataVisitor _typeVisitor;
   final _CompileFactoryMetadataVisitor _factoryVisitor;
-  final TemplateCompiler _templateCompiler;
+  final OfflineCompiler _templateCompiler;
 
   TypeMetadataReader._(this._directiveVisitor, this._pipeVisitor,
       this._templateCompiler, this._typeVisitor, this._factoryVisitor);
@@ -31,13 +31,13 @@ class TypeMetadataReader {
   /// Accepts an [AnnotationMatcher] which tests that an [Annotation]
   /// is a [Directive], [Component], or [View].
   factory TypeMetadataReader(AnnotationMatcher annotationMatcher,
-      InterfaceMatcher interfaceMatcher, TemplateCompiler templateCompiler) {
+      InterfaceMatcher interfaceMatcher, OfflineCompiler templateCompiler) {
     var lifecycleVisitor = new _LifecycleHookVisitor(interfaceMatcher);
     var typeVisitor = new _CompileTypeMetadataVisitor(annotationMatcher);
+    var factoryVisitor = new _CompileFactoryMetadataVisitor(annotationMatcher);
     var directiveVisitor = new _DirectiveMetadataVisitor(
         annotationMatcher, lifecycleVisitor, typeVisitor);
     var pipeVisitor = new _PipeMetadataVisitor(annotationMatcher);
-    var factoryVisitor = new _CompileFactoryMetadataVisitor(annotationMatcher);
 
     return new TypeMetadataReader._(
         directiveVisitor, pipeVisitor, templateCompiler, typeVisitor, factoryVisitor);
@@ -349,7 +349,6 @@ class _DirectiveMetadataVisitor extends Object
     return CompileDirectiveMetadata.create(
         type: _type,
         isComponent: _isComponent,
-        dynamicLoadable: true,
         // NOTE(kegluneq): For future optimization.
         selector: _selector,
         exportAs: _exportAs,

@@ -177,8 +177,8 @@ var PAYLOAD_TESTS_CONFIG = {
       return path.join(__dirname, CONFIG.dest.js.prod.es5, 'payload_tests', caseName,
                        'ts/' + packaging);
     },
-    systemjs: {sizeLimits: {'uncompressed': 870 * 1024, 'gzip level=9': 165 * 1024}},
-    webpack: {sizeLimits: {'uncompressed': 550 * 1024, 'gzip level=9': 120 * 1024}}
+    systemjs: {sizeLimits: {'uncompressed': 880 * 1024, 'gzip level=9': 170 * 1024}},
+    webpack: {sizeLimits: {'uncompressed': 560 * 1024, 'gzip level=9': 130 * 1024}}
   }
 };
 
@@ -640,7 +640,7 @@ gulp.task('buildRouter.dev', function() {
 gulp.task('test.unit.dart', function(done) {
   printModulesWarning();
   runSequence('build/tree.dart', 'build/pure-packages.dart', '!build/pubget.angular2.dart',
-              '!build/change_detect.dart', '!build/remove-pub-symlinks', function(error) {
+              '!build/remove-pub-symlinks', function(error) {
                 var watch = require('./tools/build/watch');
 
                 // if initial build failed (likely due to build or formatting step) then exit
@@ -779,7 +779,7 @@ gulp.task('!checkAndReport.payload.js', function() {
 
 gulp.task('watch.dart.dev', function(done) {
   runSequence('build/tree.dart', 'build/pure-packages.dart', '!build/pubget.angular2.dart',
-              '!build/change_detect.dart', '!build/remove-pub-symlinks', function(error) {
+              '!build/remove-pub-symlinks', function(error) {
                 var watch = require('./tools/build/watch');
 
                 // if initial build failed (likely due to build or formatting step) then exit
@@ -789,7 +789,8 @@ gulp.task('watch.dart.dev', function(done) {
                   return;
                 }
 
-                watch(['modules/angular2/**'], {ignoreInitial: true}, ['!build/tree.dart']);
+                watch(['modules/angular2/**', 'modules_dart/**'], {ignoreInitial: true},
+                      ['!build/tree.dart', 'build/pure-packages.dart']);
               });
 });
 
@@ -911,21 +912,20 @@ gulp.task('test.unit.cjs', ['build/clean.js', 'build.tools'], function(neverDone
 gulp.task('test.unit.dartvm', function(neverDone) {
   var watch = require('./tools/build/watch');
 
-  runSequence(
-      'build/tree.dart', 'build/pure-packages.dart', '!build/pubget.angular2.dart',
-      '!build/change_detect.dart', '!test.unit.dartvm/run', function(error) {
-        // Watch for changes made in the TS and Dart code under "modules" and
-        // run ts2dart and test change detector generator prior to rerunning the
-        // tests.
-        watch('modules/angular2/**', {ignoreInitial: true},
-              ['!build/tree.dart', '!build/change_detect.dart', '!test.unit.dartvm/run']);
+  runSequence('build/tree.dart', 'build/pure-packages.dart', '!build/pubget.angular2.dart',
+              '!test.unit.dartvm/run', function(error) {
+                // Watch for changes made in the TS and Dart code under "modules" and
+                // run ts2dart and test change detector generator prior to rerunning the
+                // tests.
+                watch('modules/angular2/**', {ignoreInitial: true},
+                      ['!build/tree.dart', '!test.unit.dartvm/run']);
 
-        // Watch for changes made in Dart code under "modules_dart", then copy it
-        // to dist and run test change detector generator prior to retunning the
-        // tests.
-        watch('modules_dart/**', {ignoreInitial: true},
-              ['build/pure-packages.dart', '!build/change_detect.dart', '!test.unit.dartvm/run']);
-      });
+                // Watch for changes made in Dart code under "modules_dart", then copy it
+                // to dist and run test change detector generator prior to retunning the
+                // tests.
+                watch('modules_dart/**', {ignoreInitial: true},
+                      ['build/pure-packages.dart', '!test.unit.dartvm/run']);
+              });
 });
 
 gulp.task('!test.unit.dartvm/run',
@@ -1069,9 +1069,9 @@ gulp.task('build/pure-packages.dart/angular2', function() {
 
 // Builds all Dart packages, but does not compile them
 gulp.task('build/packages.dart', function(done) {
-  runSequence('lint_protos.dart', 'build/tree.dart', 'build/pure-packages.dart',
+  runSequence('lint_protos.dart', 'pubget.dart', 'build/tree.dart', 'build/pure-packages.dart',
               // Run after 'build/tree.dart' because broccoli clears the dist/dart folder
-              '!build/pubget.angular2.dart', '!build/change_detect.dart', sequenceComplete(done));
+              '!build/pubget.angular2.dart', sequenceComplete(done));
 });
 
 // Builds and compiles all Dart packages
@@ -1465,34 +1465,6 @@ gulp.task('gen_protos.dart', function(done) {
         plugin: 'tools/build/protoc-gen-dart'
       },
       done);
-});
-
-// change detection codegen
-gulp.task('build.change_detect.dart', function(done) {
-  return runSequence('build/packages.dart', '!build/pubget.angular2.dart',
-                     '!build/change_detect.dart', done);
-});
-
-gulp.task('!build/change_detect.dart', function(done) {
-  var fs = require('fs');
-  var spawn = require('child_process').spawn;
-
-  var changeDetectDir = path.join(CONFIG.dest.dart, 'angular2/test/core/change_detection/');
-  var srcDir = path.join(changeDetectDir, 'generator');
-  var destDir = path.join(changeDetectDir, 'generated');
-
-  var dartStream = fs.createWriteStream(path.join(destDir, 'change_detector_classes.dart'));
-  var genMain = path.join(srcDir, 'gen_change_detectors.dart');
-  var proc = spawn(DART_SDK.VM, [genMain], {stdio: ['ignore', 'pipe', 'inherit']});
-  proc.on('error', function(code) {
-    done(new Error('Failed while generating change detector classes. Please run manually: ' +
-                   DART_SDK.VM + ' ' + dartArgs.join(' ')));
-  });
-  proc.on('close', function() {
-    dartStream.close();
-    done();
-  });
-  proc.stdout.pipe(dartStream);
 });
 
 // ------------

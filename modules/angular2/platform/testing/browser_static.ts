@@ -1,12 +1,11 @@
 import {
   APP_ID,
-  DirectiveResolver,
   NgZone,
   Provider,
-  ViewResolver,
   PLATFORM_COMMON_PROVIDERS,
   PLATFORM_INITIALIZER
 } from 'angular2/core';
+import {DirectiveResolver, ViewResolver} from 'angular2/compiler';
 import {BROWSER_APP_COMMON_PROVIDERS} from 'angular2/src/platform/browser_common';
 import {BrowserDomAdapter} from 'angular2/src/platform/browser/browser_adapter';
 

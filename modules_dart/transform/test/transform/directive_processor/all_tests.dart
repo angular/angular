@@ -6,7 +6,7 @@ import 'package:barback/barback.dart';
 import 'package:dart_style/dart_style.dart';
 import 'package:test/test.dart';
 
-import 'package:angular2/src/compiler/directive_metadata.dart'
+import 'package:angular2/src/compiler/compile_metadata.dart'
     show
         CompileIdentifierMetadata,
         CompileProviderMetadata,
@@ -14,7 +14,7 @@ import 'package:angular2/src/compiler/directive_metadata.dart'
         CompileTokenMetadata;
 import 'package:angular2/src/core/change_detection/change_detection.dart';
 import 'package:angular2/src/platform/server/html_adapter.dart';
-import 'package:angular2/src/core/linker/interfaces.dart' show LifecycleHooks;
+import 'package:angular2/src/core/metadata/lifecycle_hooks.dart' show LifecycleHooks;
 import 'package:angular2/src/transform/common/annotation_matcher.dart';
 import 'package:angular2/src/transform/common/asset_reader.dart';
 import 'package:angular2/src/transform/common/code/ng_deps_code.dart';
@@ -33,17 +33,6 @@ var formatter = new DartFormatter();
 main() {
   Html5LibDomAdapter.makeCurrent();
   allTests();
-}
-
-void _expectSelector(ReflectionInfoModel model, Matcher matcher) {
-  expect(model.annotations.isNotEmpty, isTrue);
-  var componentAnnotation = model.annotations
-      .firstWhere((e) => e.name == 'Component', orElse: () => null);
-  expect(componentAnnotation, isNotNull);
-  var selectorArg = componentAnnotation.namedParameters
-      .firstWhere((e) => e.name == 'selector', orElse: () => null);
-  expect(selectorArg, isNotNull);
-  return expect(selectorArg.value, matcher);
 }
 
 var oldTest = test;
@@ -84,22 +73,17 @@ void allTests() {
     test('should list part contributions first.', () async {
       var model = await modelFuture;
       expect(model.reflectables.first.name, equals('PartComponent'));
-      _expectSelector(model.reflectables.first, equals("'[part]'"));
     });
 
     test('should list main contributions second.', () async {
       var model = await modelFuture;
       expect(model.reflectables[1].name, equals('MainComponent'));
-      _expectSelector(model.reflectables[1], equals("'[main]'"));
     });
 
     test('should handle multiple `part` directives.', () async {
       var model =
           (await _testCreateModel('multiple_part_files/main.dart')).ngDeps;
       expect(model.reflectables.length, equals(3));
-      _expectSelector(model.reflectables.first, equals("'[part1]'"));
-      _expectSelector(model.reflectables[1], equals("'[part2]'"));
-      _expectSelector(model.reflectables[2], equals("'[main]'"));
     });
 
     test('should not generate anything for `part` files.', () async {
@@ -207,94 +191,6 @@ void allTests() {
       expect(
           model.reflectables.first.interfaces
               .firstWhere((i) => i.contains('OnChanges'), orElse: () => null),
-          isNotNull);
-    });
-  });
-
-  group('property metadata', () {
-    test('should be recorded on fields', () async {
-      var model =
-          (await _testCreateModel('prop_metadata_files/fields.dart')).ngDeps;
-
-      expect(model.reflectables.first.propertyMetadata, isNotNull);
-      expect(model.reflectables.first.propertyMetadata.isNotEmpty, isTrue);
-      expect(model.reflectables.first.propertyMetadata.first.name,
-          equals('field'));
-      expect(
-          model.reflectables.first.propertyMetadata.first.annotations
-              .firstWhere((a) => a.name == 'FieldDecorator',
-                  orElse: () => null),
-          isNotNull);
-    });
-
-    test('should be recorded on getters', () async {
-      var model =
-          (await _testCreateModel('prop_metadata_files/getters.dart')).ngDeps;
-
-      expect(model.reflectables.first.propertyMetadata, isNotNull);
-      expect(model.reflectables.first.propertyMetadata.isNotEmpty, isTrue);
-      expect(model.reflectables.first.propertyMetadata.first.name,
-          equals('getVal'));
-
-      var getDecoratorAnnotation = model
-          .reflectables.first.propertyMetadata.first.annotations
-          .firstWhere((a) => a.name == 'GetDecorator', orElse: () => null);
-      expect(getDecoratorAnnotation, isNotNull);
-      expect(getDecoratorAnnotation.isConstObject, isFalse);
-    });
-
-    test('should gracefully handle const instances of annotations', () async {
-      // Regression test for i/4481
-      var model =
-          (await _testCreateModel('prop_metadata_files/override.dart')).ngDeps;
-
-      expect(model.reflectables.first.propertyMetadata, isNotNull);
-      expect(model.reflectables.first.propertyMetadata.isNotEmpty, isTrue);
-      expect(model.reflectables.first.propertyMetadata.first.name,
-          equals('getVal'));
-      var overrideAnnotation = model
-          .reflectables.first.propertyMetadata.first.annotations
-          .firstWhere((a) => a.name == 'override', orElse: () => null);
-
-      expect(overrideAnnotation, isNotNull);
-      expect(overrideAnnotation.isConstObject, isTrue);
-
-      var buf = new StringBuffer();
-      new NgDepsWriter(buf).writeAnnotationModel(overrideAnnotation);
-      expect(buf.toString(), equals('override'));
-    });
-
-    test('should be recorded on setters', () async {
-      var model =
-          (await _testCreateModel('prop_metadata_files/setters.dart')).ngDeps;
-
-      expect(model.reflectables.first.propertyMetadata, isNotNull);
-      expect(model.reflectables.first.propertyMetadata.isNotEmpty, isTrue);
-      expect(model.reflectables.first.propertyMetadata.first.name,
-          equals('setVal'));
-      expect(
-          model.reflectables.first.propertyMetadata.first.annotations
-              .firstWhere((a) => a.name == 'SetDecorator', orElse: () => null),
-          isNotNull);
-    });
-
-    test('should be coalesced when getters and setters have the same name',
-        () async {
-      var model = (await _testCreateModel(
-              'prop_metadata_files/getters_and_setters.dart'))
-          .ngDeps;
-
-      expect(model.reflectables.first.propertyMetadata, isNotNull);
-      expect(model.reflectables.first.propertyMetadata.length, equals(1));
-      expect(model.reflectables.first.propertyMetadata.first.name,
-          equals('myVal'));
-      expect(
-          model.reflectables.first.propertyMetadata.first.annotations
-              .firstWhere((a) => a.name == 'GetDecorator', orElse: () => null),
-          isNotNull);
-      expect(
-          model.reflectables.first.propertyMetadata.first.annotations
-              .firstWhere((a) => a.name == 'SetDecorator', orElse: () => null),
           isNotNull);
     });
   });
@@ -458,24 +354,14 @@ void allTests() {
     });
 
     test('should handle prefixed annotations', () async {
-      var model =
-          (await _testCreateModel('prefixed_annotations_files/soup.dart'))
-              .ngDeps;
-
-      expect(model.reflectables.isEmpty, isFalse);
-      final annotations = model.reflectables.first.annotations;
-      final viewAnnotation =
-          annotations.firstWhere((m) => m.isView, orElse: () => null);
-      final componentAnnotation =
-          annotations.firstWhere((m) => m.isComponent, orElse: () => null);
-      expect(viewAnnotation, isNotNull);
-      expect(viewAnnotation.namedParameters.first.name, equals('template'));
-      expect(viewAnnotation.namedParameters.first.value, contains('SoupView'));
-      expect(componentAnnotation, isNotNull);
+      var ngMeta =
+          (await _testCreateModel('prefixed_annotations_files/soup.dart'));
+      expect(ngMeta.identifiers.isNotEmpty, isTrue);
+      expect(ngMeta.identifiers['SoupComponent'], isNotNull);
       expect(
-          componentAnnotation.namedParameters.first.name, equals('selector'));
+          ngMeta.identifiers['SoupComponent'].selector, equals('[soup]'));
       expect(
-          componentAnnotation.namedParameters.first.value, contains('[soup]'));
+          ngMeta.identifiers['SoupComponent'].template.template, equals('SoupView'));
     });
   });
 

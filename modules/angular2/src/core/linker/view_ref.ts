@@ -1,8 +1,9 @@
 import {unimplemented} from 'angular2/src/facade/exceptions';
 import {ChangeDetectorRef} from '../change_detection/change_detector_ref';
 import {AppView, HostViewFactory} from './view';
+import {ChangeDetectionStrategy} from 'angular2/src/core/change_detection/constants';
 
-export abstract class ViewRef {
+export abstract class ViewRef extends ChangeDetectorRef {
   /**
    * @internal
    */
@@ -92,14 +93,14 @@ export abstract class EmbeddedViewRef extends ViewRef {
 }
 
 export class ViewRef_ implements EmbeddedViewRef, HostViewRef {
-  constructor(private _view: AppView) { this._view = _view; }
+  constructor(private _view: AppView<any>) { this._view = _view; }
 
-  get internalView(): AppView { return this._view; }
+  get internalView(): AppView<any> { return this._view; }
 
   /**
    * Return `ChangeDetectorRef`
    */
-  get changeDetectorRef(): ChangeDetectorRef { return this._view.changeDetector.ref; }
+  get changeDetectorRef(): ChangeDetectorRef { return this; }
 
   get rootNodes(): any[] { return this._view.flatRootNodes; }
 
@@ -108,6 +109,15 @@ export class ViewRef_ implements EmbeddedViewRef, HostViewRef {
   hasLocal(variableName: string): boolean { return this._view.hasLocal(variableName); }
 
   get destroyed(): boolean { return this._view.destroyed; }
+
+  markForCheck(): void { this._view.markPathToRootAsCheckOnce(); }
+  detach(): void { this._view.cdMode = ChangeDetectionStrategy.Detached; }
+  detectChanges(): void { this._view.detectChanges(false); }
+  checkNoChanges(): void { this._view.detectChanges(true); }
+  reattach(): void {
+    this._view.cdMode = ChangeDetectionStrategy.CheckAlways;
+    this.markForCheck();
+  }
 }
 
 export abstract class HostViewFactoryRef {}
