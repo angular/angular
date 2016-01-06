@@ -10,7 +10,7 @@ import {
 } from 'angular2/src/compiler/html_ast';
 import {isPresent, isBlank, StringWrapper} from 'angular2/src/facade/lang';
 import {Message} from './message';
-import {Parser} from 'angular2/src/core/change_detection/parser/parser';
+import {Parser} from 'angular2/src/compiler/expression_parser/parser';
 
 export const I18N_ATTR = "i18n";
 export const I18N_ATTR_PREFIX = "i18n-";

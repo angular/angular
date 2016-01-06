@@ -4,8 +4,14 @@ import 'package:angular2/src/core/di.dart' show Injectable, Inject, Provider;
 import 'package:angular2/src/facade/lang.dart' show isPresent, StringWrapper;
 import 'package:angular2/src/core/application_tokens.dart' show PACKAGE_ROOT_URL;
 
-UrlResolver createWithoutPackagePrefix() {
+const _ASSET_SCHEME = 'asset:';
+
+UrlResolver createUrlResolverWithoutPackagePrefix() {
   return new UrlResolver.withUrlPrefix(null);
+}
+
+UrlResolver createOfflineCompileUrlResolver() {
+  return new UrlResolver.withUrlPrefix(_ASSET_SCHEME);
 }
 
 const DEFAULT_PACKAGE_URL_PROVIDER = const Provider(PACKAGE_ROOT_URL, useValue: "/packages");
@@ -44,9 +50,14 @@ class UrlResolver {
 
     var prefix = this._packagePrefix;
     if (prefix != null && uri.scheme == 'package') {
-      prefix = StringWrapper.stripRight(prefix, '/');
-      var path = StringWrapper.stripLeft(uri.path, '/');
-      return '$prefix/$path';
+      if (prefix == _ASSET_SCHEME) {
+        var pathSegments = uri.pathSegments.toList()..insert(1, 'lib');
+        return new Uri(scheme: 'asset', pathSegments: pathSegments).toString();
+      } else {
+        prefix = StringWrapper.stripRight(prefix, '/');
+        var path = StringWrapper.stripLeft(uri.path, '/');
+        return '$prefix/$path';
+      }
     } else {
       return uri.toString();
     }

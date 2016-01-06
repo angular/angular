@@ -6,7 +6,8 @@ import {
   ViewContainerRef,
   bind,
   provide,
-  Provider
+  Provider,
+  enableProdMode
 } from 'angular2/core';
 import {NgIf} from 'angular2/common';
 
@@ -32,6 +33,7 @@ var BASELINE_IF_TEMPLATE;
 
 export function main() {
   BrowserDomAdapter.makeCurrent();
+  enableProdMode();
   var maxDepth = getIntParameter('depth');
 
   BASELINE_TREE_TEMPLATE = DOM.createTemplate(

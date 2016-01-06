@@ -108,7 +108,7 @@ String _rewriteLibrary(String code, List<ImportDirective> imports,
 /// initialization before use.
 class _FindDeferredLibraries extends Object with SimpleAstVisitor<Object> {
   final _deferredImports = <ImportDirective>[];
-  final _urlResolver = const TransformerUrlResolver();
+  final _urlResolver = createOfflineCompileUrlResolver();
 
   final AssetReader _reader;
   final AssetId _entryPoint;

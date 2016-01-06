@@ -14,10 +14,9 @@ import {
   inject,
   SpyObject
 } from 'angular2/testing_internal';
-import {SpyChangeDetector} from './spies';
+import {SpyChangeDetectorRef} from './spies';
 import {ApplicationRef_, ApplicationRef, PlatformRef_} from "angular2/src/core/application_ref";
 import {Injector, Provider, APP_INITIALIZER} from "angular2/core";
-import {ChangeDetectorRef_} from "angular2/src/core/change_detection/change_detector_ref";
 import {PromiseWrapper, PromiseCompleter, TimerWrapper} from "angular2/src/facade/async";
 import {ListWrapper} from "angular2/src/facade/collection";
 import {ExceptionHandler} from 'angular2/src/facade/exception_handler';
@@ -26,10 +25,10 @@ import {DOM} from 'angular2/src/platform/dom/dom_adapter';
 export function main() {
   describe("ApplicationRef", () => {
     it("should throw when reentering tick", () => {
-      var cd = <any>new SpyChangeDetector();
+      var cdRef = <any>new SpyChangeDetectorRef();
       var ref = new ApplicationRef_(null, null, null);
-      ref.registerChangeDetector(new ChangeDetectorRef_(cd));
-      cd.spy("detectChanges").andCallFake(() => ref.tick());
+      ref.registerChangeDetector(cdRef);
+      cdRef.spy("detectChanges").andCallFake(() => ref.tick());
       expect(() => ref.tick()).toThrowError("ApplicationRef.tick is called recursively");
     });
   });

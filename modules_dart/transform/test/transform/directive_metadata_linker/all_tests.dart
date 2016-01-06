@@ -134,13 +134,13 @@ void allTests() {
       new CompileTypeMetadata(name: 'Service', moduleUrl: 'moduleUrl');
 
       fooComponentMeta.queries = [
-        new CompileQueryMetadata(selectors: [new CompileIdentifierMetadata(name: 'Service')]),
-        new CompileQueryMetadata(selectors: ['one'])
+        new CompileQueryMetadata(selectors: [new CompileTokenMetadata(identifier: new CompileIdentifierMetadata(name: 'Service'))]),
+        new CompileQueryMetadata(selectors: [new CompileTokenMetadata(value: 'one')])
       ];
 
       fooComponentMeta.viewQueries = [
-        new CompileQueryMetadata(selectors: [new CompileIdentifierMetadata(name: 'Service')]),
-        new CompileQueryMetadata(selectors: ['one'])
+        new CompileQueryMetadata(selectors: [new CompileTokenMetadata(identifier: new CompileIdentifierMetadata(name: 'Service'))]),
+        new CompileQueryMetadata(selectors: [new CompileTokenMetadata(value: 'one')])
       ];
 
       fooNgMeta.ngDeps.imports.add(new ImportModel()..uri = 'bar.dart');
@@ -153,13 +153,13 @@ void allTests() {
       expect(cmp.queries.length, equals(2));
       expect(cmp.viewQueries.length, equals(2));
 
-      expect(cmp.queries[0].selectors[0].name, equals("Service"));
-      expect(cmp.queries[0].selectors[0].moduleUrl, equals("moduleUrl"));
-      expect(cmp.queries[1].selectors[0], equals("one"));
+      expect(cmp.queries[0].selectors[0].identifier.name, equals("Service"));
+      expect(cmp.queries[0].selectors[0].identifier.moduleUrl, equals("moduleUrl"));
+      expect(cmp.queries[1].selectors[0].value, equals("one"));
 
-      expect(cmp.viewQueries[0].selectors[0].name, equals("Service"));
-      expect(cmp.viewQueries[0].selectors[0].moduleUrl, equals("moduleUrl"));
-      expect(cmp.viewQueries[1].selectors[0], equals("one"));
+      expect(cmp.viewQueries[0].selectors[0].identifier.name, equals("Service"));
+      expect(cmp.viewQueries[0].selectors[0].identifier.moduleUrl, equals("moduleUrl"));
+      expect(cmp.viewQueries[1].selectors[0].value, equals("one"));
     });
 
     test('should resolve providers from types.', () async {
@@ -171,7 +171,8 @@ void allTests() {
       ];
       fooComponentMeta.type.diDeps = [
         new CompileDiDependencyMetadata(
-            token: new CompileIdentifierMetadata(name: 'Service'))
+            token: new CompileTokenMetadata(identifier:
+                new CompileIdentifierMetadata(name: 'Service')))
       ];
 
       fooNgMeta.ngDeps.imports.add(new ImportModel()..uri = 'bar.dart');
@@ -183,14 +184,14 @@ void allTests() {
 
       expect(cmp.providers.length, equals(1));
 
-      expect(cmp.providers[0].token.name, equals("Service"));
-      expect(cmp.providers[0].token.moduleUrl, equals("moduleUrl"));
-      expect(cmp.providers[0].useClass.name, equals("Service"));
-      expect(cmp.providers[0].useClass.moduleUrl, equals("moduleUrl"));
+      expect(cmp.providers[0].token.identifier.name, equals("Service"));
+      expect(cmp.providers[0].token.identifier.moduleUrl, equals("moduleUrl"));
+      expect(cmp.providers[0].useClass.identifier.name, equals("Service"));
+      expect(cmp.providers[0].useClass.identifier.moduleUrl, equals("moduleUrl"));
 
       expect(cmp.type.diDeps.length, equals(1));
-      expect(cmp.type.diDeps[0].token.name, equals("Service"));
-      expect(cmp.type.diDeps[0].token.moduleUrl, equals("moduleUrl"));
+      expect(cmp.type.diDeps[0].token.identifier.name, equals("Service"));
+      expect(cmp.type.diDeps[0].token.identifier.moduleUrl, equals("moduleUrl"));
     });
 
     test('should resolve providers from functions.', () async {
@@ -200,11 +201,11 @@ void allTests() {
       fooNgMeta.identifiers['factory'] =
       new CompileFactoryMetadata(name: 'factory', moduleUrl: 'moduleUrl', diDeps: [
         new CompileDiDependencyMetadata(
-            token: new CompileIdentifierMetadata(name: 'Service'))
+            token: new CompileTokenMetadata(identifier: new CompileIdentifierMetadata(name: 'Service')))
       ]);
 
       fooComponentMeta.providers = [
-        new CompileProviderMetadata(token: 'someFunc', useFactory:
+        new CompileProviderMetadata(token: new CompileTokenMetadata(value: 'someFunc'), useFactory:
           new CompileFactoryMetadata(name: 'factory'))
       ];
 
@@ -217,12 +218,12 @@ void allTests() {
 
       expect(cmp.providers.length, equals(1));
 
-      expect(cmp.providers[0].token, equals("someFunc"));
+      expect(cmp.providers[0].token.value, equals("someFunc"));
       expect(cmp.providers[0].useFactory.name, equals("factory"));
       expect(cmp.providers[0].useFactory.moduleUrl, equals("moduleUrl"));
 
-      expect(cmp.providers[0].useFactory.diDeps[0].token.name, equals("Service"));
-      expect(cmp.providers[0].useFactory.diDeps[0].token.moduleUrl, equals("moduleUrl"));
+      expect(cmp.providers[0].useFactory.diDeps[0].token.identifier.name, equals("Service"));
+      expect(cmp.providers[0].useFactory.diDeps[0].token.identifier.moduleUrl, equals("moduleUrl"));
     });
 
     test('should resolve viewProviders from types.', () async {
@@ -231,7 +232,7 @@ void allTests() {
 
       fooComponentMeta.viewProviders = [
         new CompileProviderMetadata(
-            token: new CompileIdentifierMetadata(name: 'Service'))
+            token: new CompileTokenMetadata(identifier: new CompileIdentifierMetadata(name: 'Service')))
       ];
       fooNgMeta.ngDeps.imports.add(new ImportModel()..uri = 'bar.dart');
 
@@ -241,8 +242,8 @@ void allTests() {
       final cmp = extracted.identifiers["FooComponent"];
 
       expect(cmp.viewProviders.length, equals(1));
-      expect(cmp.viewProviders[0].token.name, equals("Service"));
-      expect(cmp.viewProviders[0].token.moduleUrl, equals("moduleUrl"));
+      expect(cmp.viewProviders[0].token.identifier.name, equals("Service"));
+      expect(cmp.viewProviders[0].token.identifier.moduleUrl, equals("moduleUrl"));
     });
 
     test('should resolve providers from Provider objects (literals).', () async {
@@ -253,11 +254,11 @@ void allTests() {
       new CompileTemplateMetadata(template: "import 'bar.dart';");
       fooComponentMeta.providers = [
         new CompileProviderMetadata(
-            token: "StrService",
+            token: new CompileTokenMetadata(value: "StrService"),
             useClass: new CompileTypeMetadata(name: 'Service'))
       ];
       fooComponentMeta.type.diDeps = [
-        new CompileDiDependencyMetadata(token: "StrService")
+        new CompileDiDependencyMetadata(token: new CompileTokenMetadata(value: "StrService"))
       ];
 
       fooNgMeta.ngDeps.imports
@@ -270,12 +271,12 @@ void allTests() {
 
       expect(cmp.providers.length, equals(1));
 
-      expect(cmp.providers[0].token, equals("StrService"));
+      expect(cmp.providers[0].token.value, equals("StrService"));
       expect(cmp.providers[0].useClass.name, equals("Service"));
       expect(cmp.providers[0].useClass.moduleUrl, equals("moduleUrl"));
 
       expect(cmp.type.diDeps.length, equals(1));
-      expect(cmp.type.diDeps[0].token, equals("StrService"));
+      expect(cmp.type.diDeps[0].token.value, equals("StrService"));
     });
 
     test('should resolve providers from references', () async {
@@ -285,7 +286,7 @@ void allTests() {
       fooNgMeta.identifiers["PROVIDER"] = new CompileIdentifierMetadata(
           name: 'PROVIDER',
           value: new CompileProviderMetadata(
-              token: new CompileIdentifierMetadata(name: 'Service')));
+              token: new CompileTokenMetadata(identifier: new CompileIdentifierMetadata(name: 'Service'))));
 
       fooComponentMeta.providers = [
         new CompileIdentifierMetadata(name: 'PROVIDER')
@@ -299,8 +300,8 @@ void allTests() {
       final cmp = extracted.identifiers["FooComponent"];
 
       expect(cmp.providers.length, equals(1));
-      expect(cmp.providers[0].token.name, equals("Service"));
-      expect(cmp.providers[0].token.moduleUrl, equals("moduleUrl"));
+      expect(cmp.providers[0].token.identifier.name, equals("Service"));
+      expect(cmp.providers[0].token.identifier.moduleUrl, equals("moduleUrl"));
     });
 
     test('should resolve providers from lists.', () async {
@@ -324,8 +325,8 @@ void allTests() {
       final cmp = extracted.identifiers["FooComponent"];
 
       expect(cmp.providers.length, equals(1));
-      expect(cmp.providers[0].token.name, equals("Service"));
-      expect(cmp.providers[0].token.moduleUrl, equals("moduleUrl"));
+      expect(cmp.providers[0].token.identifier.name, equals("Service"));
+      expect(cmp.providers[0].token.identifier.moduleUrl, equals("moduleUrl"));
     });
 
     test('should resolve providers from lists (two lists in the same file).', () async {
@@ -355,8 +356,8 @@ void allTests() {
       final cmp = extracted.identifiers["FooComponent"];
 
       expect(cmp.providers.length, equals(1));
-      expect(cmp.providers[0].token.name, equals("Service"));
-      expect(cmp.providers[0].token.moduleUrl, equals("moduleUrl"));
+      expect(cmp.providers[0].token.identifier.name, equals("Service"));
+      expect(cmp.providers[0].token.identifier.moduleUrl, equals("moduleUrl"));
     });
 
     test('should resolve providers when there is a level of indirection.', () async {
@@ -388,8 +389,8 @@ void allTests() {
       final cmp = extracted.identifiers["FooComponent"];
 
       expect(cmp.providers.length, equals(1));
-      expect(cmp.providers[0].token.name, equals("Service"));
-      expect(cmp.providers[0].token.moduleUrl, equals("moduleUrl"));
+      expect(cmp.providers[0].token.identifier.name, equals("Service"));
+      expect(cmp.providers[0].token.identifier.moduleUrl, equals("moduleUrl"));
     });
 
     test('should generate generate diDeps of injectable services.', () async {
@@ -401,12 +402,12 @@ void allTests() {
           moduleUrl: 'moduleUrl',
           diDeps: [
             new CompileDiDependencyMetadata(
-                token: new CompileIdentifierMetadata(name: 'Service2'))
+                token: new CompileTokenMetadata(identifier: new CompileIdentifierMetadata(name: 'Service2')))
           ]);
 
       fooComponentMeta.providers = [
         new CompileProviderMetadata(
-            token: new CompileIdentifierMetadata(name: 'Service'),
+            token: new CompileTokenMetadata(identifier: new CompileIdentifierMetadata(name: 'Service')),
             useClass: new CompileTypeMetadata(name: 'Service'))
       ];
 
@@ -419,8 +420,8 @@ void allTests() {
 
       expect(cmp.providers[0].useClass.name, equals("Service"));
       expect(cmp.providers[0].useClass.moduleUrl, equals("moduleUrl"));
-      expect(cmp.providers[0].useClass.diDeps.first.token.name, equals("Service2"));
-      expect(cmp.providers[0].useClass.diDeps.first.token.moduleUrl, equals("moduleUrl"));
+      expect(cmp.providers[0].useClass.diDeps.first.token.identifier.name, equals("Service2"));
+      expect(cmp.providers[0].useClass.diDeps.first.token.identifier.moduleUrl, equals("moduleUrl"));
     });
 
     test('should resolve queries and viewQueries.', () async {
@@ -431,13 +432,13 @@ void allTests() {
       new CompileTemplateMetadata(template: "import 'bar.dart';");
       fooComponentMeta.type.diDeps = [
         new CompileDiDependencyMetadata(
-            token: 'someToken',
+            token: new CompileTokenMetadata(value: 'someToken'),
             query: new CompileQueryMetadata(
-                selectors: [new CompileIdentifierMetadata(name: 'Service')])),
+                selectors: [new CompileTokenMetadata(identifier: new CompileIdentifierMetadata(name: 'Service'))])),
         new CompileDiDependencyMetadata(
-            token: 'someToken',
+            token: new CompileTokenMetadata(value: 'someToken'),
             viewQuery: new CompileQueryMetadata(
-                selectors: [new CompileIdentifierMetadata(name: 'Service')]))
+                selectors: [new CompileTokenMetadata(identifier: new CompileIdentifierMetadata(name: 'Service'))]))
       ];
 
       fooNgMeta.ngDeps.imports
@@ -450,10 +451,10 @@ void allTests() {
 
       expect(cmp.type.diDeps.length, equals(2));
 
-      expect(cmp.type.diDeps[0].query.selectors[0].name, equals("Service"));
-      expect(cmp.type.diDeps[0].query.selectors[0].moduleUrl, equals("moduleUrl"));
-      expect(cmp.type.diDeps[1].viewQuery.selectors[0].name, equals("Service"));
-      expect(cmp.type.diDeps[1].viewQuery.selectors[0].moduleUrl, equals("moduleUrl"));
+      expect(cmp.type.diDeps[0].query.selectors[0].identifier.name, equals("Service"));
+      expect(cmp.type.diDeps[0].query.selectors[0].identifier.moduleUrl, equals("moduleUrl"));
+      expect(cmp.type.diDeps[1].viewQuery.selectors[0].identifier.name, equals("Service"));
+      expect(cmp.type.diDeps[1].viewQuery.selectors[0].identifier.moduleUrl, equals("moduleUrl"));
     });
 
     test('should generate providers from Provider objects (references).',
@@ -465,23 +466,23 @@ void allTests() {
       barNgMeta.identifiers['factory'] =
       new CompileFactoryMetadata(name: 'factory', moduleUrl: 'moduleUrl', diDeps: [
         new CompileDiDependencyMetadata(
-            token: new CompileIdentifierMetadata(name: 'Service2', moduleUrl: 'moduleUrl'))
+            token: new CompileTokenMetadata(identifier: new CompileIdentifierMetadata(name: 'Service2', moduleUrl: 'moduleUrl')))
       ]);
 
       fooComponentMeta.template =
       new CompileTemplateMetadata(template: "import 'bar.dart';");
       fooComponentMeta.providers = [
         new CompileProviderMetadata(
-            token: new CompileIdentifierMetadata(name: 'Service1'),
+            token: new CompileTokenMetadata(identifier: new CompileIdentifierMetadata(name: 'Service1')),
             useClass: new CompileTypeMetadata(name: 'Service2')),
         new CompileProviderMetadata(
-            token: new CompileIdentifierMetadata(name: 'Service1'),
-            useExisting: new CompileIdentifierMetadata(name: 'Service2')),
+            token: new CompileTokenMetadata(identifier: new CompileIdentifierMetadata(name: 'Service1')),
+            useExisting: new CompileTokenMetadata(identifier: new CompileIdentifierMetadata(name: 'Service2'))),
         new CompileProviderMetadata(
-            token: new CompileIdentifierMetadata(name: 'Service1'),
+            token: new CompileTokenMetadata(identifier: new CompileIdentifierMetadata(name: 'Service1')),
             useValue: new CompileIdentifierMetadata(name: 'Service2')),
         new CompileProviderMetadata(
-            token: new CompileIdentifierMetadata(name: 'Service1'),
+            token: new CompileTokenMetadata(identifier: new CompileIdentifierMetadata(name: 'Service1')),
             useFactory: new CompileFactoryMetadata(name: 'factory'))
       ];
 
@@ -495,27 +496,25 @@ void allTests() {
 
       expect(cmp.providers.length, equals(4));
 
-      expect(cmp.providers[0].token.name, equals("Service1"));
-      expect(cmp.providers[0].token.moduleUrl, equals("moduleUrl"));
+      expect(cmp.providers[0].token.identifier.name, equals("Service1"));
+      expect(cmp.providers[0].token.identifier.moduleUrl, equals("moduleUrl"));
       expect(cmp.providers[0].useClass.name, equals("Service2"));
       expect(cmp.providers[0].useClass.moduleUrl, equals("moduleUrl"));
 
-      expect(cmp.providers[1].token.name, equals("Service1"));
-      expect(cmp.providers[1].token.moduleUrl, equals("moduleUrl"));
-      expect(cmp.providers[1].useExisting.name, equals("Service2"));
-      expect(cmp.providers[1].useExisting.moduleUrl, equals("moduleUrl"));
+      expect(cmp.providers[1].token.identifier.name, equals("Service1"));
+      expect(cmp.providers[1].token.identifier.moduleUrl, equals("moduleUrl"));
+      expect(cmp.providers[1].useExisting.identifier.name, equals("Service2"));
+      expect(cmp.providers[1].useExisting.identifier.moduleUrl, equals("moduleUrl"));
 
-      expect(cmp.providers[2].token.name, equals("Service1"));
-      expect(cmp.providers[2].token.moduleUrl, equals("moduleUrl"));
+      expect(cmp.providers[2].token.identifier.name, equals("Service1"));
+      expect(cmp.providers[2].token.identifier.moduleUrl, equals("moduleUrl"));
       expect(cmp.providers[2].useValue.name, equals("Service2"));
       expect(cmp.providers[2].useValue.moduleUrl, equals("moduleUrl"));
 
-      expect(cmp.providers[3].token.name, equals("Service1"));
-      expect(cmp.providers[3].token.moduleUrl, equals("moduleUrl"));
+      expect(cmp.providers[3].token.identifier.name, equals("Service1"));
+      expect(cmp.providers[3].token.identifier.moduleUrl, equals("moduleUrl"));
       expect(cmp.providers[3].useFactory.name, equals("factory"));
       expect(cmp.providers[3].useFactory.moduleUrl, equals("moduleUrl"));
-      expect(cmp.providers[3].useFactory.diDeps[0].token.name, equals("Service2"));
-      expect(cmp.providers[3].useFactory.diDeps[0].token.moduleUrl, equals("moduleUrl"));
     });
 
     test('should fallback to the list of resolved identifiers.', () async {
@@ -524,7 +523,7 @@ void allTests() {
 
       fooComponentMeta.providers = [
         new CompileProviderMetadata(
-            token: new CompileIdentifierMetadata(name: 'Service1'),
+            token: new CompileTokenMetadata(identifier: new CompileIdentifierMetadata(name: 'Service1')),
             useClass: new CompileTypeMetadata(name: 'Service2'))
       ];
 
@@ -536,8 +535,8 @@ void allTests() {
 
       expect(cmp.providers.length, equals(1));
 
-      expect(cmp.providers[0].token.name, equals("Service1"));
-      expect(cmp.providers[0].token.moduleUrl, equals("someModuleUrl"));
+      expect(cmp.providers[0].token.identifier.name, equals("Service1"));
+      expect(cmp.providers[0].token.identifier.moduleUrl, equals("someModuleUrl"));
       expect(cmp.providers[0].useClass.name, equals("Service2"));
       expect(cmp.providers[0].useClass.moduleUrl, equals("moduleUrl"));
     });
@@ -545,12 +544,12 @@ void allTests() {
     test('should resolve circular references.', () async {
       barNgMeta.identifiers['Service1'] =
       new CompileTypeMetadata(name: 'Service1', moduleUrl: 'moduleUrl',
-          diDeps: [new CompileDiDependencyMetadata(token: new CompileIdentifierMetadata(name: "Service2"))]);
+          diDeps: [new CompileDiDependencyMetadata(token: new CompileTokenMetadata(identifier: new CompileIdentifierMetadata(name: "Service2")))]);
       barNgMeta.ngDeps.imports.add(new ImportModel()..uri = 'foo.dart');
 
       fooNgMeta.identifiers['Service2'] =
       new CompileTypeMetadata(name: 'Service2', moduleUrl: 'moduleUrl',
-          diDeps: [new CompileDiDependencyMetadata(token: new CompileIdentifierMetadata(name: "Service1"))]);
+          diDeps: [new CompileDiDependencyMetadata(token: new CompileTokenMetadata(identifier: new CompileIdentifierMetadata(name: "Service1")))]);
       fooNgMeta.ngDeps.imports.add(new ImportModel()..uri = 'bar.dart');
 
       updateReader();
@@ -558,8 +557,8 @@ void allTests() {
       final extracted = await _testLink(reader, fooAssetId, fooMetaAssetId);
       final service2 = extracted.identifiers["Service2"];
 
-      expect(service2.diDeps[0].token.name, equals("Service1"));
-      expect(service2.diDeps[0].token.moduleUrl, equals("moduleUrl"));
+      expect(service2.diDeps[0].token.identifier.name, equals("Service1"));
+      expect(service2.diDeps[0].token.identifier.moduleUrl, equals("moduleUrl"));
     });
 
     test('should link dependencies (imports and exports first).', () async {
@@ -571,13 +570,13 @@ void allTests() {
           moduleUrl: 'moduleUrl',
           diDeps: [
             new CompileDiDependencyMetadata(
-                token: new CompileIdentifierMetadata(name: 'Service2'))
+                token: new CompileTokenMetadata(identifier: new CompileIdentifierMetadata(name: 'Service2')))
           ]);
       barNgMeta.ngDeps..imports.add(new ImportModel()..uri = 'baz.dart');
 
       fooComponentMeta.providers = [
         new CompileProviderMetadata(
-            token: new CompileIdentifierMetadata(name: 'Service1'))
+            token: new CompileTokenMetadata(identifier: new CompileIdentifierMetadata(name: 'Service1')))
       ];
       fooNgMeta.ngDeps..imports.add(new ImportModel()..uri = 'bar.dart');
 
@@ -594,8 +593,8 @@ void allTests() {
       expect(cmp.providers.length, equals(1));
       final firstProvider = cmp.providers[0];
 
-      expect(firstProvider.token.diDeps[0].token.name, equals("Service2"));
-      expect(firstProvider.token.diDeps[0].token.moduleUrl, equals("moduleUrl"));
+      expect(firstProvider.token.identifier.diDeps[0].token.identifier.name, equals("Service2"));
+      expect(firstProvider.token.identifier.diDeps[0].token.identifier.moduleUrl, equals("moduleUrl"));
     });
 
     test('should not resolve when not needed', () async {
