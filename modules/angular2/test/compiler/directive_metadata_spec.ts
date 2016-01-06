@@ -20,7 +20,8 @@ import {
   CompileDiDependencyMetadata,
   CompileQueryMetadata,
   CompileIdentifierMetadata,
-  CompileFactoryMetadata
+  CompileFactoryMetadata,
+  CompileTokenMetadata
 } from 'angular2/src/compiler/directive_metadata';
 import {ViewEncapsulation} from 'angular2/src/core/metadata/view';
 import {ChangeDetectionStrategy} from 'angular2/src/core/change_detection';
@@ -39,11 +40,19 @@ export function main() {
         isHost: true,
         isSkipSelf: true,
         isOptional: true,
-        token: 'someToken',
-        query: new CompileQueryMetadata(
-            {selectors: ['one'], descendants: true, first: true, propertyName: 'one'}),
-        viewQuery: new CompileQueryMetadata(
-            {selectors: ['one'], descendants: true, first: true, propertyName: 'one'})
+        token: new CompileTokenMetadata({value: 'someToken'}),
+        query: new CompileQueryMetadata({
+          selectors: [new CompileTokenMetadata({value: 'one'})],
+          descendants: true,
+          first: true,
+          propertyName: 'one'
+        }),
+        viewQuery: new CompileQueryMetadata({
+          selectors: [new CompileTokenMetadata({value: 'one'})],
+          descendants: true,
+          first: true,
+          propertyName: 'one'
+        })
       });
 
       fullTypeMeta = new CompileTypeMetadata(
@@ -69,29 +78,42 @@ export function main() {
         lifecycleHooks: [LifecycleHooks.OnChanges],
         providers: [
           new CompileProviderMetadata({
-            token: 'token',
+            token: new CompileTokenMetadata({value: 'token'}),
+            multi: true,
             useClass: fullTypeMeta,
-            useExisting: new CompileIdentifierMetadata({name: 'someName'}),
+            useExisting: new CompileTokenMetadata({
+              identifier: new CompileIdentifierMetadata({name: 'someName'}),
+              identifierIsInstance: true
+            }),
             useFactory: new CompileFactoryMetadata({name: 'someName', diDeps: [diDep]}),
             useValue: 'someValue',
           })
         ],
         viewProviders: [
           new CompileProviderMetadata({
-            token: 'token',
+            token: new CompileTokenMetadata({value: 'token'}),
             useClass: fullTypeMeta,
-            useExisting: new CompileIdentifierMetadata({name: 'someName'}),
+            useExisting: new CompileTokenMetadata(
+                {identifier: new CompileIdentifierMetadata({name: 'someName'})}),
             useFactory: new CompileFactoryMetadata({name: 'someName', diDeps: [diDep]}),
-            useValue: 'someValue',
+            useValue: 'someValue'
           })
         ],
         queries: [
-          new CompileQueryMetadata(
-              {selectors: ['selector'], descendants: true, first: false, propertyName: 'prop'})
+          new CompileQueryMetadata({
+            selectors: [new CompileTokenMetadata({value: 'selector'})],
+            descendants: true,
+            first: false,
+            propertyName: 'prop'
+          })
         ],
         viewQueries: [
-          new CompileQueryMetadata(
-              {selectors: ['selector'], descendants: true, first: false, propertyName: 'prop'})
+          new CompileQueryMetadata({
+            selectors: [new CompileTokenMetadata({value: 'selector'})],
+            descendants: true,
+            first: false,
+            propertyName: 'prop'
+          })
         ]
       });
 
@@ -100,7 +122,7 @@ export function main() {
     describe('CompileIdentifierMetadata', () => {
       it('should serialize with full data', () => {
         let full = new CompileIdentifierMetadata(
-            {name: 'name', moduleUrl: 'module', constConstructor: true, value: ['one', ['two']]});
+            {name: 'name', moduleUrl: 'module', value: ['one', ['two']]});
         expect(CompileIdentifierMetadata.fromJson(full.toJson())).toEqual(full);
       });
 

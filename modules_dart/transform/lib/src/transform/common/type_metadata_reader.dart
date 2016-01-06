@@ -929,7 +929,7 @@ List _readProviders(ListLiteral providerValues) {
 CompileProviderMetadata _readProvider(InstanceCreationExpression el) {
   final token = el.argumentList.arguments.first;
 
-  var useClass, useExisting, useValue, useFactory, deps;
+  var useClass, useExisting, useValue, useFactory, deps, multi;
   el.argumentList.arguments.skip(1).forEach((arg) {
     switch (arg.name.toString()) {
       case "useClass:":
@@ -941,16 +941,16 @@ CompileProviderMetadata _readProvider(InstanceCreationExpression el) {
         useClass = new CompileTypeMetadata(prefix: id.prefix, name: id.name);
         break;
       case "useExisting:":
-        useExisting = _readIdentifier(arg.expression);
+        useExisting = _readToken(arg.expression);
         break;
       case "toAlias:":
-        useExisting = _readIdentifier(arg.expression);
+        useExisting = _readToken(arg.expression);
         break;
       case "useValue:":
-        useValue = _readIdentifier(arg.expression);
+        useValue = _readValue(arg.expression);
         break;
       case "toValue:":
-        useValue = _readIdentifier(arg.expression);
+        useValue = _readValue(arg.expression);
         break;
       case "useFactory:":
         final id = _readIdentifier(arg.expression);
@@ -965,14 +965,18 @@ CompileProviderMetadata _readProvider(InstanceCreationExpression el) {
       case "deps:":
         deps = _readDeps(arg.expression);
         break;
+      case "multi:":
+        multi = _readValue(arg.expression);
+        break;
     }
   });
   return new CompileProviderMetadata(
-      token: _readIdentifier(token),
+      token: _readToken(token),
       useClass: useClass,
       useExisting: useExisting,
       useValue: useValue,
       useFactory: useFactory,
+      multi: multi,
       deps: deps);
 }
 
@@ -990,9 +994,9 @@ List<CompileDiDependencyMetadata> _readDeps(ListLiteral deps) {
     if (first is InstanceCreationExpression &&
         (first as InstanceCreationExpression).constructorName.toString() ==
             "Inject") {
-      token = _readIdentifier(first.argumentList.arguments[0]);
+      token = _readToken(first.argumentList.arguments[0]);
     } else {
-      token = _readIdentifier(first);
+      token = _readToken(first);
     }
 
     return new CompileDiDependencyMetadata(
@@ -1005,14 +1009,16 @@ List<CompileDiDependencyMetadata> _readDeps(ListLiteral deps) {
 }
 
 _createQueryMetadata(Annotation a, bool defaultDescendantsValue, bool first, String propertyName) {
-  final selector = _readIdentifier(a.arguments.arguments.first);
+  final selector = _readToken(a.arguments.arguments.first);
   var descendants = defaultDescendantsValue;
   a.arguments.arguments.skip(0).forEach((arg) {
     if (arg is NamedExpression && arg.name.toString() == "descendants:")
       descendants = naiveEval(arg.expression);
   });
 
-  final selectors = selector is String ? selector.split(",") : [selector];
+  final selectors = selector.value is String ?
+      selector.value.split(",").map( (value) => new CompileTokenMetadata(value: value) ).toList() :
+      [selector];
   return new CompileQueryMetadata(
       selectors: selectors, descendants: descendants, first: first, propertyName: propertyName);
 }
@@ -1027,7 +1033,7 @@ List<CompileDiDependencyMetadata> _getCompileDiDependencyMetadata(
     var token;
     final isAttribute = _hasAnnotation(p, "Attribute");
     if (isAttribute) {
-      token = _readIdentifier(_getAnnotation(p, "Attribute").arguments.arguments.first);
+      token = _readToken(_getAnnotation(p, "Attribute").arguments.arguments.first);
     } else {
       var type = null;
       if (p is SimpleFormalParameter) {
@@ -1035,10 +1041,10 @@ List<CompileDiDependencyMetadata> _getCompileDiDependencyMetadata(
       } else if (p is FieldFormalParameter) {
         type = fieldTypes[p.identifier.toString()];
       }
-      final typeToken = type != null ? _readIdentifier(type.name) : null;
+      final typeToken = type != null ? _readToken(type.name) : null;
       final injectTokens = p.metadata
           .where((m) => m.name.toString() == "Inject")
-          .map((m) => _readIdentifier(m.arguments.arguments[0]));
+          .map((m) => _readToken(m.arguments.arguments[0]));
       token = injectTokens.isNotEmpty ? injectTokens.first : typeToken;
     }
 
@@ -1092,17 +1098,27 @@ dynamic _readIdentifier(dynamic el) {
     }
   } else if (el is SimpleIdentifier) {
     return new CompileIdentifierMetadata(name: '$el');
-  } else if (el is DoubleLiteral ||
-      el is IntegerLiteral ||
-      el is SimpleStringLiteral ||
-      el is BooleanLiteral) {
-    return el.value;
-  } else if (el is NullLiteral) {
-    return null;
-  } else if (el is InstanceCreationExpression) {
-    return new CompileIdentifierMetadata(
-        name: '${el.constructorName}', constConstructor: true);
   } else {
     throw new ArgumentError('Incorrect identifier "${el}".');
+  }
+}
+
+dynamic _readValue(dynamic el) {
+  if (el is DoubleLiteral || el is IntegerLiteral || el is SimpleStringLiteral || el is BooleanLiteral){
+    return el.value;
+  } else if (el is NullLiteral){
+    return null;
+  } else {
+    return _readIdentifier(el);
+  }
+}
+
+dynamic _readToken(dynamic el) {
+  if (el is DoubleLiteral || el is IntegerLiteral || el is SimpleStringLiteral || el is BooleanLiteral) {
+    return new CompileTokenMetadata(value: el.value);
+  } else if (el is InstanceCreationExpression) {
+    return new CompileTokenMetadata(identifier: new CompileIdentifierMetadata(name: '${el.constructorName}'), identifierIsInstance: true);
+  } else {
+    return new CompileTokenMetadata(identifier: _readIdentifier(el));
   }
 }
