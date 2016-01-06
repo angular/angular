@@ -13,8 +13,8 @@ import {
 
 import {I18nHtmlParser} from 'angular2/src/i18n/i18n_html_parser';
 import {Message, id} from 'angular2/src/i18n/message';
-import {Parser} from 'angular2/src/core/change_detection/parser/parser';
-import {Lexer} from 'angular2/src/core/change_detection/parser/lexer';
+import {Parser} from 'angular2/src/compiler/expression_parser/parser';
+import {Lexer} from 'angular2/src/compiler/expression_parser/lexer';
 
 import {StringMapWrapper} from 'angular2/src/facade/collection';
 import {HtmlParser, HtmlParseTreeResult} from 'angular2/src/compiler/html_parser';

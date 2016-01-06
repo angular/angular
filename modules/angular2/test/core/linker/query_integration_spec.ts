@@ -97,8 +97,6 @@ export function main() {
                  view.debugElement.componentInstance.shouldShow = false;
                  view.detectChanges();
 
-                 // TODO: this fails right now!
-                 // -> queries are not dirtied!
                  expect(q.log).toEqual([
                    ["setter", "foo"],
                    ["init", "foo"],
@@ -144,7 +142,7 @@ export function main() {
            tcb.overrideTemplate(MyComp, template)
                .overrideTemplate(
                    NeedsViewChild,
-                   '<div *ngIf="true"><div *ngIf="shouldShow" text="foo"></div></div>')
+                   '<div *ngIf="true"><div *ngIf="shouldShow" text="foo"></div></div><div *ngIf="shouldShow2" text="bar"></div>')
                .createAsync(MyComp)
                .then((view) => {
                  view.detectChanges();
@@ -153,15 +151,18 @@ export function main() {
                  expect(q.log).toEqual([["setter", "foo"], ["init", "foo"], ["check", "foo"]]);
 
                  q.shouldShow = false;
+                 q.shouldShow2 = true;
+                 q.log = [];
                  view.detectChanges();
 
-                 expect(q.log).toEqual([
-                   ["setter", "foo"],
-                   ["init", "foo"],
-                   ["check", "foo"],
-                   ["setter", null],
-                   ["check", null]
-                 ]);
+                 expect(q.log).toEqual([["setter", "bar"], ["check", "bar"]]);
+
+                 q.shouldShow = false;
+                 q.shouldShow2 = false;
+                 q.log = [];
+                 view.detectChanges();
+
+                 expect(q.log).toEqual([["setter", null], ["check", null]]);
 
                  async.done();
                });
@@ -408,7 +409,7 @@ export function main() {
                });
          }));
 
-      it('should reflect dynamically inserted directives',
+      it('should support dynamically inserted directives',
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            var template = '<needs-query-by-var-binding #q>' +
                           '<div *ngFor="#item of list" [text]="item" #textLabel="textDir"></div>' +
@@ -739,6 +740,7 @@ class NeedsContentChild implements AfterContentInit, AfterContentChecked {
 class NeedsViewChild implements AfterViewInit,
     AfterViewChecked {
   shouldShow: boolean = true;
+  shouldShow2: boolean = false;
   _child: TextDirective;
 
   @ViewChild(TextDirective)

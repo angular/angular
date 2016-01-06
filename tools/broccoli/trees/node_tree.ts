@@ -8,6 +8,7 @@ import mergeTrees from '../broccoli-merge-trees';
 var path = require('path');
 import renderLodashTemplate from '../broccoli-lodash';
 import replace from '../broccoli-replace';
+import generateForTest from '../broccoli-generate-for-test';
 var stew = require('broccoli-stew');
 var writeFile = require('broccoli-file-creator');
 
@@ -104,6 +105,34 @@ module.exports = function makeNodeTree(projects, destinationPath) {
       new Funnel(compiledSrcTreeWithInternals, {exclude: [`${INTERNAL_TYPINGS_PATH}/**`]});
 
   let compiledTree = mergeTrees([compiledSrcTree, compiledTestTree]);
+
+  // Generate test files
+  let generatedJsTestFiles =
+      generateForTest(compiledTree, {files: ['*/test/**/*_codegen_untyped.js']});
+  let generatedTsTestFiles = stew.rename(
+      generateForTest(compiledTree, {files: ['*/test/**/*_codegen_typed.js']}), /.js$/, '.ts');
+
+  // Compile generated test files against the src @internal .d.ts and the test files
+  compiledTree = mergeTrees(
+      [
+        compiledTree,
+        generatedJsTestFiles,
+        compileTree(mergeTrees([
+                      new Funnel('modules',
+                                 {include: ['angular2/manual_typings/**', 'angular2/typings/**']}),
+                      generatedTsTestFiles,
+                      srcPrivateDeclarations,
+                      compiledTestTree
+                    ]),
+                    false,
+                    [
+                      'node_modules/zone.js/dist/zone.js.d.ts',
+                      'angular2/manual_typings/globals.d.ts',
+                      'angular2/typings/es6-collections/es6-collections.d.ts',
+                      'angular2/typings/es6-promise/es6-promise.d.ts'
+                    ])
+      ],
+      {overwrite: true});
 
   // Now we add the LICENSE file into all the folders that will become npm packages
   outputPackages.forEach(function(destDir) {

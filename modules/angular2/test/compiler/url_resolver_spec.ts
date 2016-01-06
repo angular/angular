@@ -10,7 +10,7 @@ import {
   inject
 } from 'angular2/testing_internal';
 import {IS_DART} from 'angular2/src/facade/lang';
-import {UrlResolver} from 'angular2/src/compiler/url_resolver';
+import {UrlResolver, createOfflineCompileUrlResolver} from 'angular2/src/compiler/url_resolver';
 
 export function main() {
   describe('UrlResolver', () => {
@@ -89,41 +89,51 @@ export function main() {
       });
     });
 
-    describe('packages',
-             () => {
-               it('should resolve a url based on the application package', () => {
-                 resolver = new UrlResolver('my_packages_dir');
-                 expect(resolver.resolve(null, 'package:some/dir/file.txt'))
-                     .toEqual('my_packages_dir/some/dir/file.txt');
-                 expect(resolver.resolve(null, 'some/dir/file.txt')).toEqual('some/dir/file.txt');
-               });
+    describe('packages', () => {
+      it('should resolve a url based on the application package', () => {
+        resolver = new UrlResolver('my_packages_dir');
+        expect(resolver.resolve(null, 'package:some/dir/file.txt'))
+            .toEqual('my_packages_dir/some/dir/file.txt');
+        expect(resolver.resolve(null, 'some/dir/file.txt')).toEqual('some/dir/file.txt');
+      });
 
-               it('should contain a default value of "/packages" when nothing is provided for DART',
-                  inject([UrlResolver], (resolver: UrlResolver) => {
-                    if (IS_DART) {
-                      expect(resolver.resolve(null, 'package:file')).toEqual('/packages/file');
-                    }
-                  }));
+      it('should contain a default value of "/packages" when nothing is provided for DART',
+         inject([UrlResolver], (resolver: UrlResolver) => {
+           if (IS_DART) {
+             expect(resolver.resolve(null, 'package:file')).toEqual('/packages/file');
+           }
+         }));
 
-               it('should contain a default value of "/" when nothing is provided for TS/ESM',
-                  inject([UrlResolver], (resolver: UrlResolver) => {
-                    if (!IS_DART) {
-                      expect(resolver.resolve(null, 'package:file')).toEqual('/file');
-                    }
-                  }));
+      it('should contain a default value of "/" when nothing is provided for TS/ESM',
+         inject([UrlResolver], (resolver: UrlResolver) => {
+           if (!IS_DART) {
+             expect(resolver.resolve(null, 'package:file')).toEqual('/file');
+           }
+         }));
 
-               it('should resolve a package value when present within the baseurl', () => {
-                 resolver = new UrlResolver('/my_special_dir');
-                 expect(resolver.resolve('package:some_dir/', 'matias.html'))
-                     .toEqual('/my_special_dir/some_dir/matias.html');
-               });
-             })
+      it('should resolve a package value when present within the baseurl', () => {
+        resolver = new UrlResolver('/my_special_dir');
+        expect(resolver.resolve('package:some_dir/', 'matias.html'))
+            .toEqual('/my_special_dir/some_dir/matias.html');
+      });
+    });
 
-        describe('corner and error cases', () => {
-          it('should encode URLs before resolving', () => {
-            expect(resolver.resolve('foo/baz', `<p #p>Hello
-        </p>`)).toEqual('foo/%3Cp%20#p%3EHello%0A%20%20%20%20%20%20%20%20%3C/p%3E');
-          });
-        });
+    describe('asset urls', () => {
+      var resolver: UrlResolver;
+      beforeEach(() => { resolver = createOfflineCompileUrlResolver(); });
+
+      it('should resolve package: urls into asset: urls', () => {
+        expect(resolver.resolve(null, 'package:somePkg/somePath'))
+            .toEqual('asset:somePkg/lib/somePath');
+      });
+    });
+
+    describe('corner and error cases', () => {
+      it('should encode URLs before resolving', () => {
+        expect(resolver.resolve('foo/baz', `<p #p>Hello
+        </p>`))
+            .toEqual('foo/%3Cp%20#p%3EHello%0A%20%20%20%20%20%20%20%20%3C/p%3E');
+      });
+    });
   });
 }

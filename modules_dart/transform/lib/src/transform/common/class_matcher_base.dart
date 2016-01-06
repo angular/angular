@@ -88,7 +88,7 @@ ImportDirective _getMatchingImport(
       return false;
     } else {
       final candidateAssetId =
-          fromUri(const TransformerUrlResolver().resolve(assetUri, uriString));
+          fromUri(createOfflineCompileUrlResolver().resolve(assetUri, uriString));
 
       importMatch = descriptor.assetId == candidateAssetId;
     }

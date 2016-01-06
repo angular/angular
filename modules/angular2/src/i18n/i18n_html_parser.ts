@@ -12,7 +12,7 @@ import {
 import {ListWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
 import {RegExpWrapper, NumberWrapper, isPresent} from 'angular2/src/facade/lang';
 import {BaseException} from 'angular2/src/facade/exceptions';
-import {Parser} from 'angular2/src/core/change_detection/parser/parser';
+import {Parser} from 'angular2/src/compiler/expression_parser/parser';
 import {Message, id} from './message';
 import {
   messageFromAttribute,

@@ -27,7 +27,7 @@ const LIB_MAP = const {
 };
 
 // Have this list here to trick dart to force import.
-var libs = [simple_library.A, Component, Form, TemplateCompiler, NgIf, wtfCreateScope, Title];
+var libs = [simple_library.A, Component, Form, COMPILER_PROVIDERS, NgIf, wtfCreateScope, Title];
 
 List<String> getSymbolsFromLibrary(String name) {
   var libraryName = LIB_MAP[name];

@@ -5,14 +5,6 @@ import "parameter_model.proto";
 
 package angular2.src.transform.common.model.proto;
 
-message PropertyMetadataModel {
-  // The name of the property with metadata attached.
-  required string name = 1;
-
-  // The metadata attached to the property.
-  repeated AnnotationModel annotations = 2;
-}
-
 message PrefixedType {
   // The prefix used to reference this Type, if any.
   optional string prefix = 1;
@@ -39,13 +31,10 @@ message ReflectionInfoModel {
 
   repeated string interfaces = 6;
 
-  // Entries for all properties with associated metadata.
-  repeated PropertyMetadataModel propertyMetadata = 7;
-
   // Directive dependencies parsed from the @View or @Component `directives`
   // parameter.
-  repeated PrefixedType directives = 8;
+  repeated PrefixedType directives = 7;
 
   // Pipe dependencies parsed from the @View or @Component `pipes` parameter.
-  repeated PrefixedType pipes = 9;
+  repeated PrefixedType pipes = 8;
 }

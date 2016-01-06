@@ -436,6 +436,43 @@ export function main() {
              });
        }));
 
+    // Note: This does not use a ng-content element, but
+    // is still important as we are merging proto views independent of
+    // the presence of ng-content elements!
+    it('should still allow to implement a recursive trees via multiple components',
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+         tcb.overrideView(MainComp,
+                          new ViewMetadata({template: '<tree></tree>', directives: [Tree]}))
+             .overrideView(Tree, new ViewMetadata({
+                             template: 'TREE({{depth}}:<tree2 *manual [depth]="depth+1"></tree2>)',
+                             directives: [Tree2, ManualViewportDirective]
+                           }))
+             .createAsync(MainComp)
+             .then((main) => {
+
+               main.detectChanges();
+
+               expect(main.debugElement.nativeElement).toHaveText('TREE(0:)');
+
+               var tree = main.debugElement.query(By.directive(Tree));
+               var manualDirective: ManualViewportDirective = tree.queryAllNodes(By.directive(
+                   ManualViewportDirective))[0].inject(ManualViewportDirective);
+               manualDirective.show();
+               main.detectChanges();
+               expect(main.debugElement.nativeElement).toHaveText('TREE(0:TREE2(1:))');
+
+               var tree2 = main.debugElement.query(By.directive(Tree2));
+               manualDirective =
+                   tree2.queryAllNodes(By.directive(ManualViewportDirective))[0].inject(
+                       ManualViewportDirective);
+               manualDirective.show();
+               main.detectChanges();
+               expect(main.debugElement.nativeElement).toHaveText('TREE(0:TREE2(1:TREE(2:)))');
+
+               async.done();
+             });
+       }));
+
     if (DOM.supportsNativeShadowDOM()) {
       it('should support native content projection and isolate styles per component',
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
@@ -456,6 +493,27 @@ export function main() {
     }
 
     if (DOM.supportsDOMEvents()) {
+      it('should support non emulated styles',
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+           tcb.overrideView(MainComp, new ViewMetadata({
+                              template: '<div class="redStyle"></div>',
+                              styles: ['.redStyle { color: red}'],
+                              encapsulation: ViewEncapsulation.None,
+                              directives: [OtherComp]
+                            }))
+               .createAsync(MainComp)
+               .then((main) => {
+                 var mainEl = main.debugElement.nativeElement;
+                 var div1 = DOM.firstChild(mainEl);
+                 var div2 = DOM.createElement('div');
+                 DOM.setAttribute(div2, 'class', 'redStyle');
+                 DOM.appendChild(mainEl, div2);
+                 expect(DOM.getComputedStyle(div1).color).toEqual('rgb(255, 0, 0)');
+                 expect(DOM.getComputedStyle(div2).color).toEqual('rgb(255, 0, 0)');
+                 async.done();
+               });
+         }));
+
       it('should support emulated style encapsulation',
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            tcb.overrideView(MainComp, new ViewMetadata({
@@ -706,10 +764,20 @@ class Tab {
 }
 
 @Component({
+  selector: 'tree2',
+  inputs: ['depth'],
+  template: 'TREE2({{depth}}:<tree *manual [depth]="depth+1"></tree>)',
+  directives: [ManualViewportDirective, forwardRef(() => Tree)]
+})
+class Tree2 {
+  depth = 0;
+}
+
+@Component({
   selector: 'tree',
   inputs: ['depth'],
   template: 'TREE({{depth}}:<tree *manual [depth]="depth+1"></tree>)',
-  directives: [ManualViewportDirective, Tree]
+  directives: [ManualViewportDirective, Tree, forwardRef(() => Tree)]
 })
 class Tree {
   depth = 0;
