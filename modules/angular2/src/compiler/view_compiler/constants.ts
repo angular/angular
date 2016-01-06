@@ -1,0 +1,85 @@
+import {serializeEnum, isBlank, resolveEnumToken} from 'angular2/src/facade/lang';
+import {CompileIdentifierMetadata, CompileTokenMetadata} from '../compile_metadata';
+import {
+  ChangeDetectorState,
+  ChangeDetectionStrategy
+} from 'angular2/src/core/change_detection/change_detection';
+import {RenderComponentType, RenderDebugInfo} from 'angular2/src/core/render/api';
+import {ViewEncapsulation} from 'angular2/src/core/metadata/view';
+import {ViewType} from 'angular2/src/core/linker/view_type';
+import * as o from '../output/output_ast';
+import {Identifiers} from '../identifiers';
+
+function _enumExpression(classIdentifier: CompileIdentifierMetadata, value: any): o.Expression {
+  if (isBlank(value)) return o.NULL_EXPR;
+  var name = resolveEnumToken(classIdentifier.runtime, value);
+  return o.importExpr(new CompileIdentifierMetadata({
+    name: `${classIdentifier.name}.${name}`,
+    moduleUrl: classIdentifier.moduleUrl,
+    runtime: value
+  }));
+}
+
+export class ViewTypeEnum {
+  static fromValue(value: ViewType): o.Expression {
+    return _enumExpression(Identifiers.ViewType, value);
+  }
+  static HOST = ViewTypeEnum.fromValue(ViewType.HOST);
+  static COMPONENT = ViewTypeEnum.fromValue(ViewType.COMPONENT);
+  static EMBEDDED = ViewTypeEnum.fromValue(ViewType.EMBEDDED);
+}
+
+export class ViewEncapsulationEnum {
+  static fromValue(value: ViewEncapsulation): o.Expression {
+    return _enumExpression(Identifiers.ViewEncapsulation, value);
+  }
+  static Emulated = ViewEncapsulationEnum.fromValue(ViewEncapsulation.Emulated);
+  static Native = ViewEncapsulationEnum.fromValue(ViewEncapsulation.Native);
+  static None = ViewEncapsulationEnum.fromValue(ViewEncapsulation.None);
+}
+
+export class ChangeDetectorStateEnum {
+  static fromValue(value: ChangeDetectorState): o.Expression {
+    return _enumExpression(Identifiers.ChangeDetectorState, value);
+  }
+  static NeverChecked = ChangeDetectorStateEnum.fromValue(ChangeDetectorState.NeverChecked);
+  static CheckedBefore = ChangeDetectorStateEnum.fromValue(ChangeDetectorState.CheckedBefore);
+  static Errored = ChangeDetectorStateEnum.fromValue(ChangeDetectorState.Errored);
+}
+
+export class ChangeDetectionStrategyEnum {
+  static fromValue(value: ChangeDetectionStrategy): o.Expression {
+    return _enumExpression(Identifiers.ChangeDetectionStrategy, value);
+  }
+  static CheckOnce = ChangeDetectionStrategyEnum.fromValue(ChangeDetectionStrategy.CheckOnce);
+  static Checked = ChangeDetectionStrategyEnum.fromValue(ChangeDetectionStrategy.Checked);
+  static CheckAlways = ChangeDetectionStrategyEnum.fromValue(ChangeDetectionStrategy.CheckAlways);
+  static Detached = ChangeDetectionStrategyEnum.fromValue(ChangeDetectionStrategy.Detached);
+  static OnPush = ChangeDetectionStrategyEnum.fromValue(ChangeDetectionStrategy.OnPush);
+  static Default = ChangeDetectionStrategyEnum.fromValue(ChangeDetectionStrategy.Default);
+}
+
+export class ViewConstructorVars {
+  static renderer = o.variable('renderer');
+  static viewManager = o.variable('viewManager');
+  static projectableNodes = o.variable(`projectableNodes`);
+  static parentInjector = o.variable('parentInjector');
+  static declarationEl = o.variable('declarationEl');
+  static rootSelector = o.variable('rootSelector');
+  static parentRenderNode = o.variable('parentRenderNode');
+}
+
+export class EventHandlerVars { static event = o.variable('$event'); }
+
+export class AllMethodVars { static debugContext = o.variable('debugContext'); }
+
+export class InjectMethodVars {
+  static token = o.variable('token');
+  static requestNodeIndex = o.variable('requestNodeIndex');
+  static notFoundResult = o.variable('notFoundResult');
+}
+
+export class DetectChangesVars {
+  static changes = o.variable(`changes`);
+  static changed = o.variable(`changed`);
+}

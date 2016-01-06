@@ -25,6 +25,17 @@ export {
 
 export {ViewMetadata, ViewEncapsulation} from './metadata/view';
 
+export {
+  AfterContentInit,
+  AfterContentChecked,
+  AfterViewInit,
+  AfterViewChecked,
+  OnChanges,
+  OnDestroy,
+  OnInit,
+  DoCheck
+} from './metadata/lifecycle_hooks';
+
 import {
   QueryMetadata,
   ContentChildrenMetadata,

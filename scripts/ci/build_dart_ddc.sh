@@ -87,7 +87,7 @@ EXIT_CODE=0
 
 # TODO remove  `grep -v template.dart` after Tobias new compiler lands.
 
-WARNING_COUNT=$(cat $LOG_FILE | grep -E '^warning.*' | grep -v template.dart | wc -l | sed -e 's/^[[:space:]]*//' || true)
+WARNING_COUNT=$(cat $LOG_FILE | grep -E '^warning.*' | wc -l | sed -e 's/^[[:space:]]*//' || true)
 ERROR_COUNT=$(cat $LOG_FILE | grep -E '^severe.*' | wc -l | sed -e 's/^[[:space:]]*//' || true)
 
 

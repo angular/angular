@@ -513,7 +513,7 @@ export class ProviderBuilder {
  */
 export function resolveFactory(provider: Provider): ResolvedFactory {
   var factoryFn: Function;
-  var resolvedDeps: Dependency[];
+  var resolvedDeps;
   if (isPresent(provider.useClass)) {
     var useClass = resolveForwardRef(provider.useClass);
     factoryFn = reflector.factory(useClass);
@@ -523,7 +523,7 @@ export function resolveFactory(provider: Provider): ResolvedFactory {
     resolvedDeps = [Dependency.fromKey(Key.get(provider.useExisting))];
   } else if (isPresent(provider.useFactory)) {
     factoryFn = provider.useFactory;
-    resolvedDeps = _constructDependencies(provider.useFactory, provider.dependencies);
+    resolvedDeps = constructDependencies(provider.useFactory, provider.dependencies);
   } else {
     factoryFn = () => provider.useValue;
     resolvedDeps = _EMPTY_LIST;
@@ -609,17 +609,17 @@ function _normalizeProviders(providers: Array<Type | Provider | ProviderBuilder 
   return res;
 }
 
-function _constructDependencies(factoryFunction: Function, dependencies: any[]): Dependency[] {
+export function constructDependencies(typeOrFunc: any, dependencies: any[]): Dependency[] {
   if (isBlank(dependencies)) {
-    return _dependenciesFor(factoryFunction);
+    return _dependenciesFor(typeOrFunc);
   } else {
     var params: any[][] = dependencies.map(t => [t]);
-    return dependencies.map(t => _extractToken(factoryFunction, t, params));
+    return dependencies.map(t => _extractToken(typeOrFunc, t, params));
   }
 }
 
-function _dependenciesFor(typeOrFunc): Dependency[] {
-  var params: any[][] = reflector.parameters(typeOrFunc);
+function _dependenciesFor(typeOrFunc: any): Dependency[] {
+  var params = reflector.parameters(typeOrFunc);
   if (isBlank(params)) return [];
   if (params.some(isBlank)) {
     throw new NoAnnotationError(typeOrFunc, params);

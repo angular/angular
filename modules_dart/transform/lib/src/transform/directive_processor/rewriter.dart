@@ -5,9 +5,9 @@ import 'dart:async';
 import 'package:analyzer/analyzer.dart';
 import 'package:barback/barback.dart' show AssetId;
 
-import 'package:angular2/src/compiler/directive_metadata.dart'
+import 'package:angular2/src/compiler/compile_metadata.dart'
     show CompileIdentifierMetadata, CompileProviderMetadata;
-import 'package:angular2/src/compiler/template_compiler.dart';
+import 'package:angular2/src/compiler/offline_compiler.dart';
 import 'package:angular2/src/transform/common/annotation_matcher.dart';
 import 'package:angular2/src/transform/common/asset_reader.dart';
 import 'package:angular2/src/transform/common/code/ng_deps_code.dart';
@@ -71,7 +71,7 @@ class _NgMetaVisitor extends Object with SimpleAstVisitor<Object> {
   final _normalizations = <Future>[];
 
   _NgMetaVisitor(this.ngMeta, this.assetId, AnnotationMatcher annotationMatcher,
-      InterfaceMatcher interfaceMatcher, TemplateCompiler templateCompiler)
+      InterfaceMatcher interfaceMatcher, OfflineCompiler templateCompiler)
       : _reader = new TypeMetadataReader(
             annotationMatcher, interfaceMatcher, templateCompiler);
 

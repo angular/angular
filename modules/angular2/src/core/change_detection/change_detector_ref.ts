@@ -1,5 +1,4 @@
-import {ChangeDetector} from './interfaces';
-import {ChangeDetectionStrategy} from './constants';
+import {isPresent} from 'angular2/src/facade/lang';
 
 export abstract class ChangeDetectorRef {
   /**
@@ -194,15 +193,40 @@ export abstract class ChangeDetectorRef {
   abstract reattach(): void;
 }
 
-export class ChangeDetectorRef_ extends ChangeDetectorRef {
-  constructor(private _cd: ChangeDetector) { super(); }
+export class BufferingChangeDetectorRef implements ChangeDetectorRef {
+  private _queue: Function[] = [];
+  private _delegate: ChangeDetectorRef = null;
+  private _markForCheck: Function;
+  private _detach: Function;
+  private _detectChanges: Function;
+  private _checkNoChanges: Function;
+  private _reattach: Function;
 
-  markForCheck(): void { this._cd.markPathToRootAsCheckOnce(); }
-  detach(): void { this._cd.mode = ChangeDetectionStrategy.Detached; }
-  detectChanges(): void { this._cd.detectChanges(); }
-  checkNoChanges(): void { this._cd.checkNoChanges(); }
-  reattach(): void {
-    this._cd.mode = ChangeDetectionStrategy.CheckAlways;
-    this.markForCheck();
+  constructor() {
+    this._markForCheck = () => this._delegate.markForCheck();
+    this._detach = () => this._delegate.detach();
+    this._detectChanges = () => this._delegate.detectChanges();
+    this._checkNoChanges = () => this._delegate.checkNoChanges();
+    this._reattach = () => this._delegate.reattach();
   }
+
+  private _execute(cb: Function): void {
+    if (isPresent(this._delegate)) {
+      cb();
+    } else {
+      this._queue.push(cb);
+    }
+  }
+
+  init(delegate: ChangeDetectorRef) {
+    this._delegate = delegate;
+    this._queue.forEach(cb => cb());
+    this._queue = [];
+  }
+
+  markForCheck() { this._execute(this._markForCheck); }
+  detach() { this._execute(this._detach); }
+  detectChanges() { this._execute(this._detectChanges); }
+  checkNoChanges() { this._execute(this._checkNoChanges); }
+  reattach() { this._execute(this._reattach); }
 }

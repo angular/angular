@@ -13,19 +13,32 @@ import {
 
 import {
   ChangeDetectorRef,
-  ChangeDetectorRef_
+  BufferingChangeDetectorRef
 } from 'angular2/src/core/change_detection/change_detector_ref';
-import {SpyChangeDetector} from '../spies';
+
+import {SpyChangeDetectorRef} from '../spies';
 
 
 export function main() {
-  describe('ChangeDetectorRef', () => {
-    it('should delegate detectChanges()', () => {
-      var changeDetector = new SpyChangeDetector();
-      changeDetector.spy('detectChanges');
-      var changeDetectorRef = new ChangeDetectorRef_(<any>changeDetector);
+  describe('BufferingChangeDetectorRef', () => {
+    it('should buffer and replay on init', () => {
+      var delegate = new SpyChangeDetectorRef();
+      delegate.spy('detectChanges');
+      var changeDetectorRef = new BufferingChangeDetectorRef();
       changeDetectorRef.detectChanges();
-      expect(changeDetector.spy('detectChanges')).toHaveBeenCalled();
+
+      changeDetectorRef.init(<any>delegate);
+      expect(delegate.spy('detectChanges')).toHaveBeenCalled();
+    });
+
+    it('should delegate after init', () => {
+      var delegate = new SpyChangeDetectorRef();
+      delegate.spy('detectChanges');
+      var changeDetectorRef = new BufferingChangeDetectorRef();
+      changeDetectorRef.init(<any>delegate);
+      changeDetectorRef.detectChanges();
+
+      expect(delegate.spy('detectChanges')).toHaveBeenCalled();
     });
   });
 }
