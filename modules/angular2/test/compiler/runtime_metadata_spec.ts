@@ -15,7 +15,7 @@ import {
 
 import {stringify} from 'angular2/src/facade/lang';
 import {RuntimeMetadataResolver} from 'angular2/src/compiler/runtime_metadata';
-import {LifecycleHooks, LIFECYCLE_HOOKS_VALUES} from 'angular2/src/core/linker/interfaces';
+import {LifecycleHooks, LIFECYCLE_HOOKS_VALUES} from 'angular2/src/core/metadata/lifecycle_hooks';
 import {
   Component,
   Directive,
@@ -50,7 +50,6 @@ export function main() {
            expect(meta.selector).toEqual('someSelector');
            expect(meta.exportAs).toEqual('someExportAs');
            expect(meta.isComponent).toBe(true);
-           expect(meta.dynamicLoadable).toBe(true);
            expect(meta.type.runtime).toBe(ComponentWithEverything);
            expect(meta.type.name).toEqual(stringify(ComponentWithEverything));
            expect(meta.type.moduleUrl).toEqual(`package:someModuleId${MODULE_SUFFIX}`);
@@ -72,7 +71,8 @@ export function main() {
          inject([RuntimeMetadataResolver], (resolver: RuntimeMetadataResolver) => {
            var value: string =
                resolver.getDirectiveMetadata(ComponentWithoutModuleId).type.moduleUrl;
-           var expectedEndValue = IS_DART ? 'test/compiler/runtime_metadata_spec.dart' : './';
+           var expectedEndValue =
+               IS_DART ? 'test/compiler/runtime_metadata_spec.dart' : './ComponentWithoutModuleId';
            expect(value.endsWith(expectedEndValue)).toBe(true);
          }));
 

@@ -1,6 +1,3 @@
-import {ChangeDetector} from './interfaces';
-import {ChangeDetectionStrategy} from './constants';
-
 export abstract class ChangeDetectorRef {
   /**
    * Marks all {@link ChangeDetectionStrategy#OnPush} ancestors as to be checked.
@@ -192,17 +189,4 @@ export abstract class ChangeDetectorRef {
    * ```
    */
   abstract reattach(): void;
-}
-
-export class ChangeDetectorRef_ extends ChangeDetectorRef {
-  constructor(private _cd: ChangeDetector) { super(); }
-
-  markForCheck(): void { this._cd.markPathToRootAsCheckOnce(); }
-  detach(): void { this._cd.mode = ChangeDetectionStrategy.Detached; }
-  detectChanges(): void { this._cd.detectChanges(); }
-  checkNoChanges(): void { this._cd.checkNoChanges(); }
-  reattach(): void {
-    this._cd.mode = ChangeDetectionStrategy.CheckAlways;
-    this.markForCheck();
-  }
 }

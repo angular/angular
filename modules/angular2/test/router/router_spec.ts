@@ -27,7 +27,6 @@ import {
   Route,
   Redirect
 } from 'angular2/src/router/route_config/route_config_decorator';
-import {DirectiveResolver} from 'angular2/src/core/linker/directive_resolver';
 
 import {provide} from 'angular2/core';
 import {RouterOutlet} from 'angular2/src/router/directives/router_outlet';
@@ -39,7 +38,6 @@ export function main() {
 
     beforeEachProviders(() => [
       RouteRegistry,
-      DirectiveResolver,
       provide(Location, {useClass: SpyLocation}),
       provide(ROUTER_PRIMARY_COMPONENT, {useValue: AppCmp}),
       provide(Router, {useClass: RootRouter})

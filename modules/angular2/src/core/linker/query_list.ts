@@ -28,6 +28,7 @@ import {Observable, EventEmitter} from 'angular2/src/facade/async';
  * ```
  */
 export class QueryList<T> {
+  private _dirty = true;
   private _results: Array<T> = [];
   private _emitter = new EventEmitter();
 
@@ -68,8 +69,17 @@ export class QueryList<T> {
   /**
    * @internal
    */
-  reset(res: T[]): void { this._results = res; }
+  reset(res: Array<T | any[]>): void {
+    this._results = ListWrapper.flatten(res);
+    this._dirty = false;
+  }
 
   /** @internal */
   notifyOnChanges(): void { this._emitter.emit(this); }
+
+  /** internal */
+  setDirty() { this._dirty = true; }
+
+  /** internal */
+  get dirty() { return this._dirty; }
 }

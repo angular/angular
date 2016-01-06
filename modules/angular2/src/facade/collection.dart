@@ -227,13 +227,30 @@ class ListWrapper {
   }
 
   static List flatten(List l) {
-    final res = [];
-    l.forEach((item) {
-      res.addAll(item);
-    });
-    return res;
+    var target = [];
+    _flattenArray(l, target);
+    return target;
+  }
+
+  static addAll(List l, List source) {
+    l.addAll(source);
   }
 }
+
+List _flattenArray(List source, List target) {
+  if (source != null) {
+    for (var i = 0; i < source.length; i++) {
+      var item = source[i];
+      if (item is List) {
+        _flattenArray(item, target);
+      } else {
+        target.add(item);
+      }
+    }
+  }
+  return target;
+}
+
 
 bool isListLikeIterable(obj) => obj is Iterable;
 

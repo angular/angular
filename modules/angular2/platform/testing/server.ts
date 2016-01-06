@@ -1,14 +1,14 @@
 import {
   APP_ID,
-  DirectiveResolver,
   NgZone,
   Provider,
-  ViewResolver,
   PLATFORM_COMMON_PROVIDERS,
   PLATFORM_INITIALIZER,
   APPLICATION_COMMON_PROVIDERS,
   Renderer
 } from 'angular2/core';
+import {DirectiveResolver, ViewResolver} from 'angular2/compiler';
+
 import {Parse5DomAdapter} from 'angular2/src/platform/server/parse5_adapter';
 
 import {AnimationBuilder} from 'angular2/src/animate/animation_builder';
@@ -28,7 +28,7 @@ import {DOCUMENT} from 'angular2/src/platform/dom/dom_tokens';
 import {DOM} from 'angular2/src/platform/dom/dom_adapter';
 import {RootRenderer} from 'angular2/src/core/render/api';
 import {DomRootRenderer, DomRootRenderer_} from 'angular2/src/platform/dom/dom_renderer';
-import {DomSharedStylesHost} from 'angular2/src/platform/dom/shared_styles_host';
+import {DomSharedStylesHost, SharedStylesHost} from 'angular2/src/platform/dom/shared_styles_host';
 
 import {
   EventManager,
@@ -78,6 +78,7 @@ export const TEST_SERVER_APPLICATION_PROVIDERS: Array<any /*Type | Provider | an
       new Provider(EVENT_MANAGER_PLUGINS, {useClass: DomEventsPlugin, multi: true}),
       new Provider(XHR, {useClass: XHR}),
       new Provider(APP_ID, {useValue: 'a'}),
+      new Provider(SharedStylesHost, {useExisting: DomSharedStylesHost}),
       DomSharedStylesHost,
       ELEMENT_PROBE_PROVIDERS,
       new Provider(DirectiveResolver, {useClass: MockDirectiveResolver}),

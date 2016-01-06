@@ -101,16 +101,8 @@ void allTests() {
       'a|web/bar.template.dart':
           'two_annotations_files/expected/bar.template.dart'
     }),
-    new IntegrationTestConfig('should generate getters for output events defined on a Component.',
-        inputs: {
-          'a|web/index.dart': 'event_getter_files/index.dart',
-          'a|web/bar.dart': 'event_getter_files/bar.dart'
-        },
-        outputs: {
-          'a|web/bar.template.dart':
-              'event_getter_files/expected/bar.template.dart'
-        }),
-    new IntegrationTestConfig('should handle Directive dependencies declared on a View.',
+    new IntegrationTestConfig(
+        'should handle Directive dependencies declared on a View.',
         inputs: {
           'a|web/index.dart': 'directive_dep_files/index.dart',
           'a|web/foo.dart': 'directive_dep_files/foo.dart',
@@ -137,35 +129,11 @@ void allTests() {
           'a|web/bar.dart': 'empty_ng_deps_files/bar.dart'
         },
         outputs: {
-          'a|web/foo.template.dart':
-              'empty_ng_deps_files/expected/foo.template.dart',
-          'a|web/bar.template.dart':
-              'empty_ng_deps_files/expected/bar.template.dart'
-        }),
-    new IntegrationTestConfig('should generate setters for annotated properties.',
-        inputs: {
-          'a|web/bar.dart': 'queries_prop_annotation_files/bar.dart'
-        },
-        outputs: {
-          'a|web/bar.template.dart':
-              'queries_prop_annotation_files/expected/bar.template.dart'
-        }),
-    new IntegrationTestConfig('should generate setters for `queries` values in Directives.',
-        inputs: {
-          'a|web/bar.dart': 'queries_class_annotation_files/bar.dart'
-        },
-        outputs: {
-          'a|web/bar.template.dart':
-              'queries_class_annotation_files/expected/bar.template.dart'
-        }),
-    new IntegrationTestConfig('should handle @override annotations in properties on Directives.',
-        inputs: {
-          'a|web/bar.dart': 'override_annotation_files/bar.dart'
-        },
-        outputs: {
-          'a|web/bar.template.dart':
-              'override_annotation_files/expected/bar.template.dart'
-        })
+      'a|web/foo.template.dart':
+          'empty_ng_deps_files/expected/foo.template.dart',
+      'a|web/bar.template.dart':
+          'empty_ng_deps_files/expected/bar.template.dart'
+    })
   ];
 
   var cache = {};
