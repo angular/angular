@@ -10,7 +10,7 @@ import {
 } from 'angular2/testing_internal';
 
 import {I18nPluralPipe} from 'angular2/common';
-import {PipeResolver} from 'angular2/src/core/linker/pipe_resolver';
+import {PipeResolver} from 'angular2/src/compiler/pipe_resolver';
 
 export function main() {
   describe("I18nPluralPipe", () => {

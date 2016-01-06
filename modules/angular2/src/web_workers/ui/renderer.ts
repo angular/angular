@@ -80,11 +80,11 @@ export class MessageBasedRenderer {
   }
 
   private _selectRootElement(renderer: Renderer, selector: string, elId: number) {
-    this._renderStore.store(renderer.selectRootElement(selector), elId);
+    this._renderStore.store(renderer.selectRootElement(selector, null), elId);
   }
 
   private _createElement(renderer: Renderer, parentElement: any, name: string, elId: number) {
-    this._renderStore.store(renderer.createElement(parentElement, name), elId);
+    this._renderStore.store(renderer.createElement(parentElement, name, null), elId);
   }
 
   private _createViewRoot(renderer: Renderer, hostElement: any, elId: number) {
@@ -95,11 +95,11 @@ export class MessageBasedRenderer {
   }
 
   private _createTemplateAnchor(renderer: Renderer, parentElement: any, elId: number) {
-    this._renderStore.store(renderer.createTemplateAnchor(parentElement), elId);
+    this._renderStore.store(renderer.createTemplateAnchor(parentElement, null), elId);
   }
 
   private _createText(renderer: Renderer, parentElement: any, value: string, elId: number) {
-    this._renderStore.store(renderer.createText(parentElement, value), elId);
+    this._renderStore.store(renderer.createText(parentElement, value, null), elId);
   }
 
   private _projectNodes(renderer: Renderer, parentElement: any, nodes: any[]) {

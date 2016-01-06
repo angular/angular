@@ -27,23 +27,21 @@ function detectChangesAndCheck(fixture: ComponentFixture, classes: string) {
 export function main() {
   describe('binding to CSS class list', () => {
 
-    describe('viewpool support', () => {
-      it('should clean up when the directive is destroyed',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-           var template = '<div *ngFor="var item of items" [ngClass]="item"></div>';
-           tcb.overrideTemplate(TestComponent, template)
-               .createAsync(TestComponent)
-               .then((fixture) => {
-                 fixture.debugElement.componentInstance.items = [['0']];
-                 fixture.detectChanges();
-                 fixture.debugElement.componentInstance.items = [['1']];
+    it('should clean up when the directive is destroyed',
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+         var template = '<div *ngFor="var item of items" [ngClass]="item"></div>';
+         tcb.overrideTemplate(TestComponent, template)
+             .createAsync(TestComponent)
+             .then((fixture) => {
+               fixture.debugElement.componentInstance.items = [['0']];
+               fixture.detectChanges();
+               fixture.debugElement.componentInstance.items = [['1']];
 
-                 detectChangesAndCheck(fixture, '1');
+               detectChangesAndCheck(fixture, '1');
 
-                 async.done();
-               });
-         }));
-    });
+               async.done();
+             });
+       }));
 
 
     describe('expressions evaluating to objects', () => {

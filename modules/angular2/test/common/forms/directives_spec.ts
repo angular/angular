@@ -17,8 +17,6 @@ import {
 
 import {SpyNgControl, SpyValueAccessor} from '../spies';
 
-import {QueryList} from 'angular2/core';
-
 import {
   ControlGroup,
   Control,

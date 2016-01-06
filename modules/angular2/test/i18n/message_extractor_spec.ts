@@ -14,8 +14,8 @@ import {
 import {HtmlParser} from 'angular2/src/compiler/html_parser';
 import {MessageExtractor, removeDuplicates} from 'angular2/src/i18n/message_extractor';
 import {Message} from 'angular2/src/i18n/message';
-import {Parser} from 'angular2/src/core/change_detection/parser/parser';
-import {Lexer} from 'angular2/src/core/change_detection/parser/lexer';
+import {Parser} from 'angular2/src/compiler/expression_parser/parser';
+import {Lexer} from 'angular2/src/compiler/expression_parser/lexer';
 
 export function main() {
   describe('MessageExtractor', () => {

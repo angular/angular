@@ -272,12 +272,33 @@ export class ListWrapper {
     return solution;
   }
 
-  static flatten<T>(array: T[][]): T[] {
-    let res = [];
-    array.forEach((a) => res = res.concat(a));
-    return res;
+  static flatten<T>(list: Array<T | T[]>): T[] {
+    var target = [];
+    _flattenArray(list, target);
+    return target;
+  }
+
+  static addAll<T>(list: Array<T>, source: Array<T>): void {
+    for (var i = 0; i < source.length; i++) {
+      list.push(source[i]);
+    }
   }
 }
+
+function _flattenArray(source: any[], target: any[]): any[] {
+  if (isPresent(source)) {
+    for (var i = 0; i < source.length; i++) {
+      var item = source[i];
+      if (isArray(item)) {
+        _flattenArray(item, target);
+      } else {
+        target.push(item);
+      }
+    }
+  }
+  return target;
+}
+
 
 export function isListLikeIterable(obj: any): boolean {
   if (!isJsObject(obj)) return false;

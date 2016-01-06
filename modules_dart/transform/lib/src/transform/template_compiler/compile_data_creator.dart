@@ -3,8 +3,8 @@ library angular2.transform.template_compiler.compile_data_creator;
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:angular2/src/compiler/directive_metadata.dart';
-import 'package:angular2/src/compiler/template_compiler.dart';
+import 'package:angular2/src/compiler/compile_metadata.dart';
+import 'package:angular2/src/compiler/offline_compiler.dart';
 import 'package:angular2/src/transform/common/asset_reader.dart';
 import 'package:angular2/src/transform/common/logging.dart';
 import 'package:angular2/src/transform/common/model/ng_deps_model.pb.dart';
@@ -76,8 +76,7 @@ class _CompileDataCreator {
         ngDeps.reflectables.any((reflectable) {
           if (ngMeta.identifiers.containsKey(reflectable.name)) {
             final metadata = ngMeta.identifiers[reflectable.name];
-            return metadata is CompileDirectiveMetadata &&
-                metadata.template != null;
+            return metadata is CompileDirectiveMetadata;
           }
           return false;
         });
@@ -197,7 +196,7 @@ class _CompileDataCreator {
     if (ngDeps == null || ngDeps.imports == null || ngDeps.imports.isEmpty) {
       return map;
     }
-    final resolver = const TransformerUrlResolver();
+    final resolver = createOfflineCompileUrlResolver();
     ngMeta.ngDeps.imports
         .where((model) => !isDartCoreUri(model.uri))
         .forEach((model) {

@@ -11,7 +11,7 @@ import {
 } from 'angular2/src/compiler/html_ast';
 import {isPresent, isBlank} from 'angular2/src/facade/lang';
 import {StringMapWrapper} from 'angular2/src/facade/collection';
-import {Parser} from 'angular2/src/core/change_detection/parser/parser';
+import {Parser} from 'angular2/src/compiler/expression_parser/parser';
 import {Message, id} from './message';
 import {
   I18nError,
