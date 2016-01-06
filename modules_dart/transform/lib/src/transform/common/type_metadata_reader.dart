@@ -294,6 +294,15 @@ class _DirectiveMetadataVisitor extends Object
         final params = _getHostListenerParams(meta);
         _host['(${eventName})'] = '${node.name}($params)';
       }
+
+      if (_isAnnotation(meta, 'HostBinding') && node.isGetter) {
+        final renamed = _getRenamedValue(meta);
+        if (renamed != null) {
+          _host['[${renamed}]'] = '${node.name}';
+        } else {
+          _host['[${node.name}]'] = '${node.name}';
+        }
+      }
     }
     return null;
   }
