@@ -19,7 +19,7 @@ import {MockLocationStrategy} from 'angular2/src/mock/mock_location_strategy';
 import {LocationStrategy} from 'angular2/src/router/location_strategy';
 import {MockNgZone} from 'angular2/src/mock/ng_zone_mock';
 
-import {TestComponentBuilder} from 'angular2/src/testing/test_component_builder';
+import {TEST_COMPONENT_BUILDER_PROVIDERS} from 'angular2/src/testing/test_component_builder';
 import {XHR} from 'angular2/src/compiler/xhr';
 import {BrowserDetection} from 'angular2/src/testing/utils';
 
@@ -83,7 +83,7 @@ export const TEST_SERVER_APPLICATION_PROVIDERS: Array<any /*Type | Provider | an
       new Provider(DirectiveResolver, {useClass: MockDirectiveResolver}),
       new Provider(ViewResolver, {useClass: MockViewResolver}),
       Log,
-      TestComponentBuilder,
+      TEST_COMPONENT_BUILDER_PROVIDERS,
       new Provider(NgZone, {useClass: MockNgZone}),
       new Provider(LocationStrategy, {useClass: MockLocationStrategy}),
       new Provider(AnimationBuilder, {useClass: MockAnimationBuilder}),

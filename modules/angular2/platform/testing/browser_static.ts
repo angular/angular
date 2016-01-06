@@ -21,7 +21,7 @@ import {MockNgZone} from 'angular2/src/mock/ng_zone_mock';
 import {XHRImpl} from "angular2/src/platform/browser/xhr_impl";
 import {XHR} from 'angular2/compiler';
 
-import {TestComponentBuilder} from 'angular2/src/testing/test_component_builder';
+import {TEST_COMPONENT_BUILDER_PROVIDERS} from 'angular2/src/testing/test_component_builder';
 
 import {BrowserDetection} from 'angular2/src/testing/utils';
 
@@ -52,7 +52,7 @@ export const ADDITIONAL_TEST_BROWSER_PROVIDERS: Array<any /*Type | Provider | an
       new Provider(DirectiveResolver, {useClass: MockDirectiveResolver}),
       new Provider(ViewResolver, {useClass: MockViewResolver}),
       Log,
-      TestComponentBuilder,
+      TEST_COMPONENT_BUILDER_PROVIDERS,
       new Provider(NgZone, {useClass: MockNgZone}),
       new Provider(LocationStrategy, {useClass: MockLocationStrategy}),
       new Provider(AnimationBuilder, {useClass: MockAnimationBuilder}),

@@ -17,6 +17,9 @@ import {
 import {Injectable, provide} from 'angular2/core';
 import {NgIf} from 'angular2/common';
 import {Directive, Component, View, ViewMetadata} from 'angular2/src/core/metadata';
+import {IS_DART} from 'angular2/src/facade/lang';
+
+import {ChangeDetectorGenConfig} from 'angular2/src/core/change_detection/change_detection';
 
 @Component({selector: 'child-comp'})
 @View({template: `<span>Original {{childBinding}}</span>`, directives: []})
@@ -90,8 +93,29 @@ class TestViewBindingsComp {
   constructor(private fancyService: FancyService) {}
 }
 
-
 export function main() {
+  if (IS_DART) {
+    declareTests();
+  } else {
+    describe('no jit compiler', () => {
+      beforeEachProviders(() => [
+        provide(ChangeDetectorGenConfig,
+                {useValue: new ChangeDetectorGenConfig(true, false, false)})
+      ]);
+      declareTests();
+    });
+
+    describe('jit compiler', () => {
+      beforeEachProviders(() => [
+        provide(ChangeDetectorGenConfig,
+                {useValue: new ChangeDetectorGenConfig(true, false, true)})
+      ]);
+      declareTests();
+    });
+  }
+}
+
+export function declareTests() {
   describe('test component builder', function() {
     it('should instantiate a component with valid DOM',
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
@@ -117,6 +141,19 @@ export function main() {
 
            async.done();
          });
+       }));
+
+    it('should override a component',
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+
+         tcb.overrideComponent(ChildComp, MockChildComp)
+             .createAsync(ParentComp)
+             .then((componentFixture) => {
+               componentFixture.detectChanges();
+               expect(componentFixture.nativeElement).toHaveText('Parent(Mock)');
+
+               async.done();
+             });
        }));
 
     it('should override a template',

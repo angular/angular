@@ -1322,14 +1322,13 @@ function declareTests() {
          }));
 
       it('should report a meaningful error when a component is missing view annotation',
-         inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
-           try {
-             tcb.createAsync(ComponentWithoutView);
-           } catch (e) {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+           PromiseWrapper.catchError(tcb.createAsync(ComponentWithoutView), (e) => {
              expect(e.message)
                  .toContain(`must have either 'template', 'templateUrl', or '@View' set.`);
+             async.done();
              return null;
-           }
+           });
          }));
 
       it('should report a meaningful error when a directive is null',
