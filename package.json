@@ -1,0 +1,23 @@
+{
+  "name": "material2",
+  "version": "2.0.0-alpha.0",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "angular2": "2.0.0-beta.0",
+    "es6-promise": "^3.0.2",
+    "es6-shim": "^0.33.3",
+    "reflect-metadata": "0.1.2",
+    "rxjs": "5.0.0-beta.0",
+    "systemjs": "0.19.4",
+    "zone.js": "0.5.10"
+  },
+  "devDependencies": {
+    "angular-cli": "0.0.*",
+    "angular-cli-github-pages": "^0.2.0",
+    "ember-cli-inject-live-reload": "^1.3.0",
+    "jasmine-core": "^2.3.4",
+    "karma": "^0.13.15",
+    "karma-chrome-launcher": "^0.2.1",
+    "karma-jasmine": "^0.3.6"
+  }
+}
