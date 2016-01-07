@@ -285,13 +285,13 @@ function dashCase(str: string): string {
  * A module for adding new a routing system Angular 1.
  */
 angular.module('ngComponentRouter', [])
-    .directive('ngOutlet', ngOutletDirective)
-    .directive('ngOutlet', ngOutletFillContentDirective)
-    .directive('ngLink', ngLinkDirective);
+    .directive('ngOutlet', ['$animate', '$q', '$router', ngOutletDirective])
+    .directive('ngOutlet', ['$compile', ngOutletFillContentDirective])
+    .directive('ngLink', ['$router', '$parse', ngLinkDirective]);
 
 /*
  * A module for inspecting controller constructors
  */
 angular.module('ng')
     .provider('$$directiveIntrospector', DirectiveIntrospectorProvider)
-    .config(compilerProviderDecorator);
+    .config(['$compileProvider', '$$directiveIntrospectorProvider', compilerProviderDecorator]);
