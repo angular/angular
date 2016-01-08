@@ -1123,8 +1123,8 @@ gulp.task('!bundle.testing', ['build.js.dev'], function() {
                         {sourceMaps: true});
 });
 
-gulp.task('!bundles.js.docs', function() {
-  gulp.src('modules/angular2/docs/bundles/*').pipe(gulp.dest('dist/js/bundle'));
+gulp.task('!bundles.js.docs', ['clean'], function() {
+  return gulp.src('modules/angular2/docs/bundles/*').pipe(gulp.dest('dist/js/bundle'));
 });
 
 gulp.task('!bundles.js.umd', ['build.js.dev'], function() {
