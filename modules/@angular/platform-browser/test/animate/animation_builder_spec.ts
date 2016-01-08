@@ -93,6 +93,15 @@ export function main() {
          }
        }));
 
+    it('should support parsing when commas are used as decimal separator due to regional settings',
+       inject([AnimationBuilder], (animate) => {
+         var animateCss = animate.css();
+         var element = el(`<div></div>`);
+         var runner = animateCss.start(element);
+         expect(runner.parseDurationString('0,5s')).toBe(500);
+         expect(runner.parseDurationString('0.5s')).toBe(500);
+       }));
+
     it('should add classes', inject([AnimationBuilder], (animate) => {
          var animateCss = animate.css().addClass('one').addClass('two');
          var element = el('<div></div>');
