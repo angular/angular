@@ -1859,6 +1859,48 @@ function declareTests() {
            }));
 
       });
+
+      describe('attributes', () => {
+
+        it('should support attributes with namespace',
+           inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder,
+                                                               async) => {
+             tcb.overrideView(SomeCmp, new ViewMetadata({template: '<svg:use xlink:href="#id" />'}))
+                 .createAsync(SomeCmp)
+                 .then((fixture) => {
+                   let useEl = DOM.firstChild(fixture.debugElement.nativeElement);
+                   expect(DOM.getAttributeNS(useEl, 'http://www.w3.org/1999/xlink', 'href'))
+                       .toEqual('#id');
+                   async.done();
+                 });
+           }));
+
+        it('should support binding to attributes with namespace',
+           inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder,
+                                                               async) => {
+             tcb.overrideView(SomeCmp,
+                              new ViewMetadata({template: '<svg:use [attr.xlink:href]="value" />'}))
+                 .createAsync(SomeCmp)
+                 .then((fixture) => {
+                   let cmp = fixture.debugElement.componentInstance;
+                   let useEl = DOM.firstChild(fixture.debugElement.nativeElement);
+
+                   cmp.value = "#id";
+                   fixture.detectChanges();
+
+                   expect(DOM.getAttributeNS(useEl, 'http://www.w3.org/1999/xlink', 'href'))
+                       .toEqual('#id');
+
+                   cmp.value = null;
+                   fixture.detectChanges();
+
+                   expect(DOM.hasAttributeNS(useEl, 'http://www.w3.org/1999/xlink', 'href'))
+                       .toEqual(false);
+
+                   async.done();
+                 });
+           }));
+      });
     }
   });
 }
@@ -2437,4 +2479,9 @@ class DirectiveWithPropDecorators {
   }
 
   fireEvent(msg) { ObservableWrapper.callEmit(this.event, msg); }
+}
+
+@Component({selector: 'some-cmp'})
+class SomeCmp {
+  value: any;
 }

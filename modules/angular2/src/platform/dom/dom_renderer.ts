@@ -185,10 +185,14 @@ export class DomRenderer implements Renderer {
       if (isPresent(attrNs)) {
         DOM.setAttributeNS(renderElement, attrNs, attributeName, attributeValue);
       } else {
-        DOM.setAttribute(renderElement, nsAndName[1], attributeValue);
+        DOM.setAttribute(renderElement, attributeName, attributeValue);
       }
     } else {
-      DOM.removeAttribute(renderElement, attributeName);
+      if (isPresent(attrNs)) {
+        DOM.removeAttributeNS(renderElement, attrNs, nsAndName[1]);
+      } else {
+        DOM.removeAttribute(renderElement, attributeName);
+      }
     }
   }
 
