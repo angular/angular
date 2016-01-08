@@ -43,6 +43,8 @@ following products on your development machine:
   created, pointing to the executable (e.g. `path-to-dartium-folder\chrome.exe).`
 
 
+* [Java Development Kit](http://www.oracle.com/technetwork/es/java/javase/downloads/index.html) which is used
+  to execute the selenium standalone server for e2e testing.
 
 ## Getting the Sources
 
