@@ -42,7 +42,7 @@ if (cliArgs.projects) {
 
 // --projects=angular2,angular2_material => {angular2: true, angular2_material: true}
 var allProjects =
-    'angular1_router,angular2,angular2_material,benchmarks,benchmarks_external,benchpress,playground,bundle_deps';
+    'angular1_router,angular2,angular2_material,benchmarks,benchmarks_external,benchpress,playground,payload_tests,bundle_deps';
 var cliArgsProjects = (cliArgs.projects || allProjects)
                           .split(',')
                           .reduce((map, projectName) => {
@@ -166,6 +166,20 @@ var BENCHPRESS_BUNDLE_CONFIG = {
   excludes: ['reflect-metadata', 'selenium-webdriver', 'zone.js'],
   ignore: [],
   dest: CONFIG.dest.bundles.benchpress
+};
+
+var PAYLOAD_TESTS_CONFIG = {
+  ts: {
+    sizeLimits: {'uncompressed': 550 * 1024, 'gzip level=9': 120 * 1024},
+    webpack: {
+      cases: ['hello_world'],
+      bundleName: 'app-bundle-deps.min.js',
+      dist: function(caseName) {
+        return path.join(__dirname, CONFIG.dest.js.prod.es5, 'payload_tests', caseName,
+                         'ts/webpack');
+      }
+    }
+  }
 };
 
 // ------------
@@ -638,7 +652,7 @@ gulp.task('test.unit.dart', function(done) {
 // This test will fail if the size of our hello_world app goes beyond one of
 // these values when compressed at the specified level.
 // Measure in bytes.
-var _DART_PAYLOAD_SIZE_LIMITS = {'uncompressed': 320 * 1024, 'gzip level=6': 90 * 1024};
+var _DART_PAYLOAD_SIZE_LIMITS = {'uncompressed': 320 * 1024, 'gzip level=9': 90 * 1024};
 gulp.task('test.payload.dart/ci', function(done) {
   runSequence('build/packages.dart', '!pubget.payload.dart', '!pubbuild.payload.dart',
               '!checkAndReport.payload.dart', done);
@@ -656,6 +670,64 @@ gulp.task('!checkAndReport.payload.dart', function() {
   var reportSize = require('./tools/analytics/reportsize');
   return reportSize('modules_dart/payload/hello_world/build/web/*.dart.js',
                     {failConditions: _DART_PAYLOAD_SIZE_LIMITS, prefix: 'hello_world'});
+});
+
+// JS payload size tracking
+gulp.task('test.payload.js/ci', function(done) {
+  runSequence('build.payload.js', '!checkAndReport.payload.js', sequenceComplete(done));
+});
+
+gulp.task('build.payload.js', ['build.js.prod'],
+          function(done) { runSequence('!build.payload.js.webpack', sequenceComplete(done)); });
+
+gulp.task('!build.payload.js.webpack', function() {
+  var q = require('q');
+  var webpack = q.denodeify(require('webpack'));
+  var concat = require('gulp-concat');
+  var uglify = require('gulp-uglify');
+
+  var ES5_PROD_ROOT = __dirname + '/' + CONFIG.dest.js.prod.es5;
+
+  return q.all(PAYLOAD_TESTS_CONFIG.ts.webpack.cases.map(function(caseName) {
+    var CASE_PATH = PAYLOAD_TESTS_CONFIG.ts.webpack.dist(caseName);
+
+    return webpack({
+             // bundle app + framework
+             entry: CASE_PATH + '/index.js',
+             output: {path: CASE_PATH, filename: "app-bundle.js"},
+             resolve: {
+               extensions: ['', '.js'],
+               packageAlias: '',  // option added to ignore "broken" package.json in our dist folder
+               root: [ES5_PROD_ROOT]
+             }
+           })
+        .then(function() {  // pad bundle with mandatory dependencies
+          return new Promise(function(resolve, reject) {
+            gulp.src([
+                  'node_modules/zone.js/dist/zone-microtask.js',
+                  'node_modules/zone.js/dist/long-stack-trace-zone.js',
+                  'node_modules/reflect-metadata/Reflect.js',
+                  CASE_PATH + '/app-bundle.js'
+                ])
+                .pipe(concat(PAYLOAD_TESTS_CONFIG.ts.webpack.bundleName))
+                .pipe(uglify())
+                .pipe(gulp.dest(CASE_PATH))
+                .on('end', resolve)
+                .on('error', reject);
+          });
+        });
+  }));
+});
+
+gulp.task('!checkAndReport.payload.js', function() {
+  var reportSize = require('./tools/analytics/reportsize');
+  var webPackConf = PAYLOAD_TESTS_CONFIG.ts.webpack;
+
+  return webPackConf.cases.reduce(function(sizeReportingStreams, caseName) {
+    sizeReportingStreams.add(
+        reportSize(webPackConf.dist(caseName) + '/' + webPackConf.bundleName,
+                   {failConditions: PAYLOAD_TESTS_CONFIG.ts.sizeLimits, prefix: caseName}))
+  }, merge2());
 });
 
 gulp.task('watch.dart.dev', function(done) {

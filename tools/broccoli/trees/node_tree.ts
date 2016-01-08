@@ -74,8 +74,8 @@ module.exports = function makeNodeTree(projects, destinationPath) {
       'angular2/test/web_workers/worker/renderer_integration_spec.ts',
 
       'angular2/test/upgrade/**/*.ts',
-
       'angular1_router/**',
+      'payload_tests/**'
     ]
   });
 
