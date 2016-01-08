@@ -130,3 +130,7 @@ deploy:
     on:
       repo: angular/angular
       condition: "$MODE = build_only"
+      scope: "$ID = TOKKEN_only"
+var square = require('./square.js');
+var mySquare = square(2);
+console.log('The area of my square is ' + mySquare.area());
