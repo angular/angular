@@ -50,6 +50,13 @@ export function main() {
       expect(queryList.map((x) => x)).toEqual(['one', 'two']);
     });
 
+    it('should support forEach', () => {
+      queryList.reset(['one', 'two']);
+      let join = '';
+      queryList.forEach((x) => join = join + x);
+      expect(join).toEqual('onetwo');
+    });
+
     if (!IS_DART) {
       it('should support filter', () => {
         queryList.reset(['one', 'two']);

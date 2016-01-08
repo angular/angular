@@ -52,6 +52,11 @@ export class QueryList<T> {
   reduce<U>(fn: (acc: U, item: T) => U, init: U): U { return this._results.reduce(fn, init); }
 
   /**
+   * executes function for each element in a query.
+   */
+  forEach(fn: (item: T) => void): void { this._results.forEach(fn); }
+
+  /**
    * converts QueryList into an array
    */
   toArray(): T[] { return ListWrapper.clone(this._results); }
