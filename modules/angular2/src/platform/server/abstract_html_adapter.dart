@@ -295,11 +295,19 @@ abstract class AbstractHtml5LibAdapter implements DomAdapter {
     return element.attributes.keys.any((key) => '$key' == attribute);
   }
 
+  hasAttributeNS(element, String ns, String attribute) {
+    throw 'not implemented';
+  }
+
   getAttribute(element, String attribute) {
     // `attributes` keys can be {@link AttributeName}s.
     var key = element.attributes.keys.firstWhere((key) => '$key' == attribute,
         orElse: () {});
     return element.attributes[key];
+  }
+
+  getAttributeNS(element, String ns, String attribute) {
+    throw 'not implemented';
   }
 
   setAttribute(element, String name, String value) {
@@ -312,6 +320,10 @@ abstract class AbstractHtml5LibAdapter implements DomAdapter {
 
   removeAttribute(element, String attribute) {
     element.attributes.remove(attribute);
+  }
+
+  removeAttributeNS(element, String ns, String attribute) {
+    throw 'not implemented';
   }
 
   templateAwareRoot(el) => el;

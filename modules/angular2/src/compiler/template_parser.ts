@@ -7,10 +7,9 @@ import {Parser, AST, ASTWithSource} from 'angular2/src/core/change_detection/cha
 import {TemplateBinding} from 'angular2/src/core/change_detection/parser/ast';
 import {CompileDirectiveMetadata, CompilePipeMetadata} from './directive_metadata';
 import {HtmlParser} from './html_parser';
-import {splitNsName} from './html_tags';
+import {splitNsName, mergeNsAndName} from './html_tags';
 import {ParseSourceSpan, ParseError, ParseLocation} from './parse_util';
 import {RecursiveAstVisitor, BindingPipe} from 'angular2/src/core/change_detection/parser/ast';
-
 
 import {
   ElementAst,
@@ -584,6 +583,12 @@ class TemplateParseVisitor implements HtmlAstVisitor {
     } else {
       if (parts[0] == ATTRIBUTE_PREFIX) {
         boundPropertyName = parts[1];
+        let nsSeparatorIdx = boundPropertyName.indexOf(':');
+        if (nsSeparatorIdx > -1) {
+          let ns = boundPropertyName.substring(0, nsSeparatorIdx);
+          let name = boundPropertyName.substring(nsSeparatorIdx + 1);
+          boundPropertyName = mergeNsAndName(ns, name);
+        }
         bindingType = PropertyBindingType.Attribute;
       } else if (parts[0] == CLASS_PREFIX) {
         boundPropertyName = parts[1];
