@@ -10,8 +10,7 @@ import {
   beforeEachProviders,
   beforeEach,
 } from 'angular2/testing';
-import {provide, Component} from 'angular2/core';
-import {DebugElement} from 'angular2/core';
+import {provide, Component, DebugElement} from 'angular2/core';
 import {By} from 'angular2/platform/browser';
 
 import {MdButton} from './button';
