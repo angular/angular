@@ -11,10 +11,11 @@ import {
   beforeEach,
 } from 'angular2/testing';
 import {provide, Component} from 'angular2/core';
-import {DebugElement} from "angular2/core";
+import {DebugElement} from 'angular2/core';
+import {By} from 'angular2/platform/browser';
 
 import {MdButton} from './button';
-import {AsyncTestFn} from "angular2/testing";
+import {AsyncTestFn, FunctionWithParamTokens} from "angular2/testing";
 
 
 describe('MdButton', () => {
@@ -26,7 +27,7 @@ describe('MdButton', () => {
     it('should handle a click on the button', (done: () => void) => {
       return builder.createAsync(TestApp).then((fixture) => {
         let testComponent = fixture.debugElement.componentInstance;
-        let buttonDebugElement = getChildDebugElement(fixture.debugElement, 'button');
+        let buttonDebugElement = fixture.debugElement.query(By.css('button'));
 
         buttonDebugElement.nativeElement.click();
         expect(testComponent.clickCount).toBe(1);
@@ -37,9 +38,10 @@ describe('MdButton', () => {
   });
 });
 
-/** Gets a child DebugElement by tag name. */
-function getChildDebugElement(parent: DebugElement, tagName: string): DebugElement {
-  return parent.query(debugEl => debugEl.nativeElement.tagName.toLowerCase() == tagName);
+
+/** Shortcut function to use instead of `injectAsync` for less boilerplate on each `it`. */
+function testAsync(fn: Function): FunctionWithParamTokens {
+  return injectAsync([], fn);
 }
 
 /** Test component that contains an MdButton. */
