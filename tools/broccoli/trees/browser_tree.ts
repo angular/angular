@@ -108,6 +108,12 @@ module.exports = function makeBrowserTree(options, destinationPath) {
         {include: ['**/**'], exclude: ['e2e_test/**'], destDir: '/benchmarks_external/'});
   }
 
+  if (modules.payload_tests) {
+    var payloadTestsTree =
+        new Funnel('modules/payload_tests',
+                   {include: ['**/ts/**'], exclude: ['e2e_test/**'], destDir: '/payload_tests/'});
+  }
+
   if (modules.playground) {
     var playgroundTree =
         new Funnel('modules/playground',
@@ -125,6 +131,7 @@ module.exports = function makeBrowserTree(options, destinationPath) {
     angular2MaterialTree,
     benchmarksTree,
     benchmarksExternalTree,
+    payloadTestsTree,
     playgroundTree,
     benchpressTree
   ]);
@@ -215,8 +222,10 @@ module.exports = function makeBrowserTree(options, destinationPath) {
         modulesTree, {include: ['**/*'], exclude: ['**/*.{html,ts,dart}'], destDir: '/'});
   }
 
-  var htmlTree = new Funnel(
-      modulesTree, {include: ['*/src/**/*.html', '**/playground/**/*.html'], destDir: '/'});
+  var htmlTree = new Funnel(modulesTree, {
+    include: ['*/src/**/*.html', '**/playground/**/*.html', '**/payload_tests/**/ts/**/*.html'],
+    destDir: '/'
+  });
 
   if (modules.benchmarks || modules.benchmarks_external || modules.playground) {
     htmlTree = replace(htmlTree, {
