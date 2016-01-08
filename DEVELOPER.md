@@ -47,6 +47,8 @@ following products on your development machine:
 
 * [Bower](http://bower.io/).
 
+* [Java Development Kit](http://www.oracle.com/technetwork/es/java/javase/downloads/index.html) which is used
+  to execute the selenium standalone server for e2e testing.
 
 ## Getting the Sources
 
