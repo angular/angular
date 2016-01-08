@@ -4,18 +4,28 @@ jasmine.DEFAULT_TIMEOUT_INTERVAL = 1000;
 
 __karma__.loaded = function() {};
 
+
+/**
+ * Gets map of module alias to location or package.
+ * @param dir Directory name under `src/` for create a map for.
+ */
+function getPathsMap(dir) {
+  return Object.keys(window.__karma__.files)
+    .filter(isComponentsFile)
+    .reduce(function(pathsMapping, appPath) {
+      var pathToReplace = new RegExp('^/base/dist/' + dir + '/');
+      var moduleName = appPath.replace(pathToReplace, './').replace(/\.js$/, '');
+      pathsMapping[moduleName] = appPath + '?' + window.__karma__.files[appPath];
+    return pathsMapping;
+  }, {});
+}
+
 System.config({
   packages: {
-    'base/dist/app': {
+    'base/dist/components': {
       defaultExtension: false,
       format: 'register',
-      map: Object.keys(window.__karma__.files)
-        .filter(onlyAppFiles)
-        .reduce(function(pathsMapping, appPath) {
-          var moduleName = appPath.replace(/^\/base\/dist\/app\//, './').replace(/\.js$/, '');
-          pathsMapping[moduleName] = appPath + '?' + window.__karma__.files[appPath]
-        return pathsMapping;
-      }, {})
+      map: getPathsMap('components')
     }
   }
 });
@@ -36,8 +46,8 @@ System.import('angular2/platform/browser').then(function(browser_adapter) {
   __karma__.error(error.stack || error);
 });
 
-function onlyAppFiles(filePath) {
-  return /^\/base\/dist\/app\/(?!spec)([a-z0-9-_\/]+)\.js$/.test(filePath);
+function isComponentsFile(filePath) {
+  return /^\/base\/dist\/components\/(?!spec)([a-z0-9-_\/]+)\.js$/.test(filePath);
 }
 
 function onlySpecFiles(path) {

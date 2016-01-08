@@ -2,10 +2,16 @@ module.exports = function(config) {
   config.set({
     basePath: '',
     frameworks: ['jasmine'],
+    plugins: [
+      require('karma-jasmine'),
+      require('karma-chrome-launcher')
+    ],
     files: [
+      {pattern: 'node_modules/angular2/bundles/angular2-polyfills.js', included: true, watched: true},
       {pattern: 'node_modules/systemjs/dist/system.src.js', included: true, watched: true},
+      {pattern: 'node_modules/rxjs/bundles/Rx.js', included: true, watched: true},
       {pattern: 'node_modules/angular2/bundles/angular2.js', included: true, watched: true},
-      {pattern: 'node_modules/angular2/bundles/testing.js', included: true, watched: true},
+      {pattern: 'node_modules/angular2/bundles/testing.dev.js', included: true, watched: true},
 
       {pattern: 'karma-test-shim.js', included: true, watched: true},
 
@@ -23,7 +29,8 @@ module.exports = function(config) {
     ],
     proxies: {
       // required for component assests fetched by Angular's compiler
-      "/app/": "/base/dist/demo-app/"
+      "/demo-app/": "/base/dist/demo-app/",
+      "/components/": "/base/dist/components/",
     },
     exclude: [],
     preprocessors: {},
