@@ -1,0 +1,7 @@
+@import 'variables';
+
+.hello {
+  display: flex;
+  width: $size;
+  height: $size;
+}

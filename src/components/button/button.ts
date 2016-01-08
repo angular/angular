@@ -12,10 +12,8 @@ import {Component, View, ViewEncapsulation, OnChanges, SimpleChange} from 'angul
     '(blur)': 'onBlur()',
     '[class.md-button-focus]': 'isKeyboardFocused',
   },
-})
-@View({
-  templateUrl: 'package:angular2_material/src/components/button/button.html',
-  styleUrls: ['package:angular2_material/src/components/button/button.css'],
+  templateUrl: './components/button/button.html',
+  styleUrls: ['./components/button/button.css'],
   encapsulation: ViewEncapsulation.None,
 })
 export class MdButton {
@@ -56,9 +54,8 @@ export class MdButton {
     '[class.md-button-focus]': 'isKeyboardFocused',
     '[attr.aria-disabled]': 'isAriaDisabled',
   },
-})
-@View({
-  templateUrl: 'package:angular2_material/src/components/button/button.html',
+  templateUrl: './components/button/button.html',
+  styleUrls: ['./components/button/button.css'],
   encapsulation: ViewEncapsulation.None
 })
 export class MdAnchor extends MdButton implements OnChanges {
