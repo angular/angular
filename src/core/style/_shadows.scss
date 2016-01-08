@@ -1,0 +1,5 @@
+// Elements can have an "elevation" from 1 to 5, signified by shadows.
+// See http://google.com/design/spec/what-is-material/objects-in-3d-space.html
+
+$md-shadow-bottom-z-1: 0 2px 5px 0 rgba(0, 0, 0, 0.26) !default;
+$md-shadow-bottom-z-2: 0 4px 8px 0 rgba(0, 0, 0, 0.4) !default;
