@@ -4,7 +4,8 @@ module.exports = function(config) {
     frameworks: ['jasmine'],
     plugins: [
       require('karma-jasmine'),
-      require('karma-chrome-launcher')
+      require('karma-chrome-launcher'),
+      require('karma-firefox-launcher'),
     ],
     files: [
       {pattern: 'node_modules/angular2/bundles/angular2-polyfills.js', included: true, watched: true},
@@ -39,7 +40,7 @@ module.exports = function(config) {
     colors: true,
     logLevel: config.LOG_INFO,
     autoWatch: true,
-    browsers: ['Chrome'],
+    browsers: ['Firefox'],
     singleRun: false
   });
 };
