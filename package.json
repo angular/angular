@@ -1,7 +1,17 @@
 {
   "name": "material2",
+  "description": "Material Design components for Angular 2",
+  "homepage": "https://github.com/angular/material2",
+  "bugs": "https://github.com/angular/material2/issues",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/angular/material2.git"
+  },
   "version": "2.0.0-alpha.0",
   "license": "Apache-2.0",
+  "engines": {
+    "node": ">= 4.2.1 < 5"
+  },
   "dependencies": {
     "angular2": "2.0.0-beta.0",
     "es6-promise": "^3.0.2",

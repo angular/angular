@@ -9,6 +9,7 @@ addons:
 
 install:
   npm install -g angular-cli
+  npm install
 
 before_script:
   # Necessary to run test on Travis CI that require a graphical interface.
