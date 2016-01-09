@@ -35,7 +35,7 @@ module.exports = function(config) {
     },
     exclude: [],
     preprocessors: {},
-    reporters: ['progress'],
+    reporters: ['dots'],
     port: 9876,
     colors: true,
     logLevel: config.LOG_INFO,
