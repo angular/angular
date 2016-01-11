@@ -214,7 +214,7 @@ export class TemplateCompiler {
   private _compileNestedComponentRuntime(childComponentDir: CompileDirectiveMetadata,
                                          compilingComponentCacheKeys: Set<Type>,
                                          childPromises: Promise<any>[]) {
-    var childCacheKey = childComponentDir.type.runtime;
+    var childCacheKey = childComponentDir.type.name;
     var childViewDirectives: CompileDirectiveMetadata[] =
         this._runtimeMetadataResolver.getViewDirectivesMetadata(childComponentDir.type.runtime);
     var childViewPipes: CompilePipeMetadata[] =
@@ -264,7 +264,7 @@ export class TemplateCompiler {
   }
 
   private _getNestedComponentViewFactory(compMeta: CompileDirectiveMetadata): Function {
-    return this._compiledTemplateCache.get(compMeta.type.runtime).viewFactory;
+    return this._compiledTemplateCache.get(compMeta.type.name).viewFactory;
   }
 
   private _compileComponentCodeGen(compMeta: CompileDirectiveMetadata,
