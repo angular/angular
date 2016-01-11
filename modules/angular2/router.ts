@@ -7,6 +7,7 @@
 export {Router} from './src/router/router';
 export {RouterOutlet} from './src/router/router_outlet';
 export {RouterLink} from './src/router/router_link';
+export {RouterActive} from './src/router/router_active';
 export {RouteParams, RouteData} from './src/router/instruction';
 export {PlatformLocation} from './src/router/platform_location';
 export {RouteRegistry, ROUTER_PRIMARY_COMPONENT} from './src/router/route_registry';
@@ -27,6 +28,7 @@ import {PathLocationStrategy} from './src/router/path_location_strategy';
 import {Router, RootRouter} from './src/router/router';
 import {RouterOutlet} from './src/router/router_outlet';
 import {RouterLink} from './src/router/router_link';
+import {RouterActive} from './src/router/router_active';
 import {RouteRegistry, ROUTER_PRIMARY_COMPONENT} from './src/router/route_registry';
 import {Location} from './src/router/location';
 import {ApplicationRef, provide, OpaqueToken, Provider} from 'angular2/core';
@@ -55,7 +57,7 @@ import {BaseException} from 'angular2/src/facade/exceptions';
  * bootstrap(AppCmp, [ROUTER_PROVIDERS]);
  * ```
  */
-export const ROUTER_DIRECTIVES: any[] = CONST_EXPR([RouterOutlet, RouterLink]);
+export const ROUTER_DIRECTIVES: any[] = CONST_EXPR([RouterOutlet, RouterLink, RouterActive]);
 
 /**
  * A list of {@link Provider}s. To use the router, you must add this to your application.
