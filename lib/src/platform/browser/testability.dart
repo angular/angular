@@ -90,7 +90,8 @@ class PublicTestability implements _JsObjectProxyable {
       'findBindings': (bindingString, [exactMatch, allowNonElementNodes]) =>
           findBindings(bindingString, exactMatch, allowNonElementNodes),
       'isStable': () => isStable(),
-      'whenStable': (callback) => whenStable(() => callback.apply([]))
+      'whenStable': (callback) =>
+          whenStable((didWork) => callback.apply([didWork]))
     })..['_dart_'] = this;
   }
 }
@@ -116,7 +117,7 @@ class BrowserGetTestability implements GetTestability {
         }
         throw 'Could not find testability for element.';
       });
-      js.context['getAllAngularTestabilities'] = _jsify(() {
+      var getAllAngularTestabilities = () {
         var registry = js.context['ngTestabilityRegistries'];
         var result = [];
         for (int i = 0; i < registry.length; i++) {
@@ -125,7 +126,29 @@ class BrowserGetTestability implements GetTestability {
           if (testabilities != null) result.addAll(testabilities);
         }
         return _jsify(result);
+      };
+      js.context['getAllAngularTestabilities'] =
+          _jsify(getAllAngularTestabilities);
+
+      var whenAllStable = _jsify((callback) {
+        var testabilities = getAllAngularTestabilities();
+        var count = testabilities.length;
+        var didWork = false;
+        var decrement = _jsify((bool didWork_) {
+          didWork = didWork || didWork_;
+          count--;
+          if (count == 0) {
+            callback.apply([didWork]);
+          }
+        });
+        testabilities.forEach((testability) {
+          testability.callMethod('whenStable', [decrement]);
+        });
       });
+      if (js.context['frameworkStabilizers'] == null) {
+        js.context['frameworkStabilizers'] = new js.JsArray();
+      }
+      js.context['frameworkStabilizers'].add(whenAllStable);
     }
     jsRegistry.add(this._createRegistry(registry));
   }

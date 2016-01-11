@@ -18,6 +18,13 @@ import "package:angular2/src/facade/async.dart"
 class Testability {
   /** @internal */
   num _pendingCount = 0;
+  /**
+   * Whether any work was done since the last 'whenStable' callback. This is
+   * useful to detect if this could have potentially destabilized another
+   * component while it is stabilizing.
+   * @internal
+   */
+  bool _didWork = false;
   /** @internal */
   List<Function> _callbacks = [];
   /** @internal */
@@ -28,6 +35,7 @@ class Testability {
   /** @internal */
   void _watchAngularEvents(NgZone _ngZone) {
     ObservableWrapper.subscribe(_ngZone.onTurnStart, (_) {
+      this._didWork = true;
       this._isAngularEventPending = true;
     });
     _ngZone.runOutsideAngular(() {
@@ -42,6 +50,7 @@ class Testability {
 
   num increasePendingRequestCount() {
     this._pendingCount += 1;
+    this._didWork = true;
     return this._pendingCount;
   }
 
@@ -61,13 +70,15 @@ class Testability {
   /** @internal */
   void _runCallbacksIfReady() {
     if (!this.isStable()) {
+      this._didWork = true;
       return;
     }
     // Schedules the call backs in a new frame so that it is always async.
     PromiseWrapper.resolve(null).then((_) {
       while (!identical(this._callbacks.length, 0)) {
-        (this._callbacks.removeLast())();
+        (this._callbacks.removeLast())(this._didWork);
       }
+      this._didWork = false;
     });
   }
 
