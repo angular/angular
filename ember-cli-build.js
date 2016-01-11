@@ -9,7 +9,7 @@ var broccoliAutoprefixer = require('broccoli-autoprefixer');
 var autoprefixerOptions = require('./build/autoprefixer-options');
 
 module.exports = function(defaults) {
-  var demoAppCssTree = new BroccoliSass(['src/demo-app'], './demo-app.scss', 'demo-app.css');
+  var demoAppCssTree = new BroccoliSass(['src/demo-app'], './demo-app.scss', 'demo-app/demo-app.css');
   var componentCssTree = getComponentsCssTree();
   var angularAppTree = new Angular2App(defaults);
 
