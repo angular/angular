@@ -13333,6 +13333,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	    function Testability(_ngZone) {
 	        /** @internal */
 	        this._pendingCount = 0;
+	        /**
+	         * Whether any work was done since the last 'whenStable' callback. This is
+	         * useful to detect if this could have potentially destabilized another
+	         * component while it is stabilizing.
+	         * @internal
+	         */
+	        this._didWork = false;
 	        /** @internal */
 	        this._callbacks = [];
 	        /** @internal */
@@ -13342,7 +13349,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	    /** @internal */
 	    Testability.prototype._watchAngularEvents = function (_ngZone) {
 	        var _this = this;
-	        async_1.ObservableWrapper.subscribe(_ngZone.onTurnStart, function (_) { _this._isAngularEventPending = true; });
+	        async_1.ObservableWrapper.subscribe(_ngZone.onTurnStart, function (_) {
+	            _this._didWork = true;
+	            _this._isAngularEventPending = true;
+	        });
 	        _ngZone.runOutsideAngular(function () {
 	            async_1.ObservableWrapper.subscribe(_ngZone.onEventDone, function (_) {
 	                if (!_ngZone.hasPendingTimers) {
@@ -13354,6 +13364,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 	    Testability.prototype.increasePendingRequestCount = function () {
 	        this._pendingCount += 1;
+	        this._didWork = true;
 	        return this._pendingCount;
 	    };
 	    Testability.prototype.decreasePendingRequestCount = function () {
@@ -13369,13 +13380,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	    Testability.prototype._runCallbacksIfReady = function () {
 	        var _this = this;
 	        if (!this.isStable()) {
+	            this._didWork = true;
 	            return; // Not ready
 	        }
 	        // Schedules the call backs in a new frame so that it is always async.
 	        async_1.PromiseWrapper.resolve(null).then(function (_) {
 	            while (_this._callbacks.length !== 0) {
-	                (_this._callbacks.pop())();
+	                (_this._callbacks.pop())(_this._didWork);
 	            }
+	            _this._didWork = false;
 	        });
 	    };
 	    Testability.prototype.whenStable = function (callback) {
@@ -28991,6 +29004,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 195 */
 /***/ function(module, exports, __webpack_require__) {
 
+	var collection_1 = __webpack_require__(12);
 	var lang_1 = __webpack_require__(5);
 	var dom_adapter_1 = __webpack_require__(173);
 	var core_1 = __webpack_require__(2);
@@ -29025,6 +29039,23 @@ return /******/ (function(modules) { // webpackBootstrap
 	            var testabilities = registry.getAllTestabilities();
 	            return testabilities.map(function (testability) { return new PublicTestability(testability); });
 	        };
+	        var whenAllStable = function (callback) {
+	            var testabilities = lang_1.global.getAllAngularTestabilities();
+	            var count = testabilities.length;
+	            var didWork = false;
+	            var decrement = function (didWork_) {
+	                didWork = didWork || didWork_;
+	                count--;
+	                if (count == 0) {
+	                    callback(didWork);
+	                }
+	            };
+	            testabilities.forEach(function (testability) { testability.whenStable(decrement); });
+	        };
+	        if (!lang_1.global.frameworkStabilizers) {
+	            lang_1.global.frameworkStabilizers = collection_1.ListWrapper.createGrowableSize(0);
+	        }
+	        lang_1.global.frameworkStabilizers.push(whenAllStable);
 	    };
 	    BrowserGetTestability.prototype.findTestabilityInTree = function (registry, elem, findInAncestors) {
 	        if (elem == null) {

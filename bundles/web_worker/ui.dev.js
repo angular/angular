@@ -2163,6 +2163,7 @@ System.register("angular2/src/core/testability/testability", ["angular2/src/core
   var Testability = (function() {
     function Testability(_ngZone) {
       this._pendingCount = 0;
+      this._didWork = false;
       this._callbacks = [];
       this._isAngularEventPending = false;
       this._watchAngularEvents(_ngZone);
@@ -2170,6 +2171,7 @@ System.register("angular2/src/core/testability/testability", ["angular2/src/core
     Testability.prototype._watchAngularEvents = function(_ngZone) {
       var _this = this;
       async_1.ObservableWrapper.subscribe(_ngZone.onTurnStart, function(_) {
+        _this._didWork = true;
         _this._isAngularEventPending = true;
       });
       _ngZone.runOutsideAngular(function() {
@@ -2183,6 +2185,7 @@ System.register("angular2/src/core/testability/testability", ["angular2/src/core
     };
     Testability.prototype.increasePendingRequestCount = function() {
       this._pendingCount += 1;
+      this._didWork = true;
       return this._pendingCount;
     };
     Testability.prototype.decreasePendingRequestCount = function() {
@@ -2199,12 +2202,14 @@ System.register("angular2/src/core/testability/testability", ["angular2/src/core
     Testability.prototype._runCallbacksIfReady = function() {
       var _this = this;
       if (!this.isStable()) {
+        this._didWork = true;
         return ;
       }
       async_1.PromiseWrapper.resolve(null).then(function(_) {
         while (_this._callbacks.length !== 0) {
-          (_this._callbacks.pop())();
+          (_this._callbacks.pop())(_this._didWork);
         }
+        _this._didWork = false;
       });
     };
     Testability.prototype.whenStable = function(callback) {
@@ -10394,10 +10399,11 @@ System.register("angular2/src/platform/browser/xhr_impl", ["angular2/src/facade/
   return module.exports;
 });
 
-System.register("angular2/src/platform/browser/testability", ["angular2/src/facade/lang", "angular2/src/platform/dom/dom_adapter", "angular2/core"], true, function(require, exports, module) {
+System.register("angular2/src/platform/browser/testability", ["angular2/src/facade/collection", "angular2/src/facade/lang", "angular2/src/platform/dom/dom_adapter", "angular2/core"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
+  var collection_1 = require("angular2/src/facade/collection");
   var lang_1 = require("angular2/src/facade/lang");
   var dom_adapter_1 = require("angular2/src/platform/dom/dom_adapter");
   var core_1 = require("angular2/core");
@@ -10441,6 +10447,25 @@ System.register("angular2/src/platform/browser/testability", ["angular2/src/faca
           return new PublicTestability(testability);
         });
       };
+      var whenAllStable = function(callback) {
+        var testabilities = lang_1.global.getAllAngularTestabilities();
+        var count = testabilities.length;
+        var didWork = false;
+        var decrement = function(didWork_) {
+          didWork = didWork || didWork_;
+          count--;
+          if (count == 0) {
+            callback(didWork);
+          }
+        };
+        testabilities.forEach(function(testability) {
+          testability.whenStable(decrement);
+        });
+      };
+      if (!lang_1.global.frameworkStabilizers) {
+        lang_1.global.frameworkStabilizers = collection_1.ListWrapper.createGrowableSize(0);
+      }
+      lang_1.global.frameworkStabilizers.push(whenAllStable);
     };
     BrowserGetTestability.prototype.findTestabilityInTree = function(registry, elem, findInAncestors) {
       if (elem == null) {

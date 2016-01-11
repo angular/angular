@@ -1,3 +1,4 @@
+import { ListWrapper } from 'angular2/src/facade/collection';
 import { global, isPresent } from 'angular2/src/facade/lang';
 import { DOM } from 'angular2/src/platform/dom/dom_adapter';
 import { setTestabilityGetter } from 'angular2/core';
@@ -28,6 +29,23 @@ export class BrowserGetTestability {
             var testabilities = registry.getAllTestabilities();
             return testabilities.map((testability) => { return new PublicTestability(testability); });
         };
+        var whenAllStable = (callback) => {
+            var testabilities = global.getAllAngularTestabilities();
+            var count = testabilities.length;
+            var didWork = false;
+            var decrement = function (didWork_) {
+                didWork = didWork || didWork_;
+                count--;
+                if (count == 0) {
+                    callback(didWork);
+                }
+            };
+            testabilities.forEach(function (testability) { testability.whenStable(decrement); });
+        };
+        if (!global.frameworkStabilizers) {
+            global.frameworkStabilizers = ListWrapper.createGrowableSize(0);
+        }
+        global.frameworkStabilizers.push(whenAllStable);
     }
     findTestabilityInTree(registry, elem, findInAncestors) {
         if (elem == null) {

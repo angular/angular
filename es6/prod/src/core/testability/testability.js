@@ -22,6 +22,13 @@ export let Testability = class {
     constructor(_ngZone) {
         /** @internal */
         this._pendingCount = 0;
+        /**
+         * Whether any work was done since the last 'whenStable' callback. This is
+         * useful to detect if this could have potentially destabilized another
+         * component while it is stabilizing.
+         * @internal
+         */
+        this._didWork = false;
         /** @internal */
         this._callbacks = [];
         /** @internal */
@@ -30,7 +37,10 @@ export let Testability = class {
     }
     /** @internal */
     _watchAngularEvents(_ngZone) {
-        ObservableWrapper.subscribe(_ngZone.onTurnStart, (_) => { this._isAngularEventPending = true; });
+        ObservableWrapper.subscribe(_ngZone.onTurnStart, (_) => {
+            this._didWork = true;
+            this._isAngularEventPending = true;
+        });
         _ngZone.runOutsideAngular(() => {
             ObservableWrapper.subscribe(_ngZone.onEventDone, (_) => {
                 if (!_ngZone.hasPendingTimers) {
@@ -42,6 +52,7 @@ export let Testability = class {
     }
     increasePendingRequestCount() {
         this._pendingCount += 1;
+        this._didWork = true;
         return this._pendingCount;
     }
     decreasePendingRequestCount() {
@@ -56,13 +67,15 @@ export let Testability = class {
     /** @internal */
     _runCallbacksIfReady() {
         if (!this.isStable()) {
+            this._didWork = true;
             return; // Not ready
         }
         // Schedules the call backs in a new frame so that it is always async.
         PromiseWrapper.resolve(null).then((_) => {
             while (this._callbacks.length !== 0) {
-                (this._callbacks.pop())();
+                (this._callbacks.pop())(this._didWork);
             }
+            this._didWork = false;
         });
     }
     whenStable(callback) {

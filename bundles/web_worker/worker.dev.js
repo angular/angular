@@ -5940,6 +5940,7 @@ System.register("angular2/src/core/testability/testability", ["angular2/src/core
   var Testability = (function() {
     function Testability(_ngZone) {
       this._pendingCount = 0;
+      this._didWork = false;
       this._callbacks = [];
       this._isAngularEventPending = false;
       this._watchAngularEvents(_ngZone);
@@ -5947,6 +5948,7 @@ System.register("angular2/src/core/testability/testability", ["angular2/src/core
     Testability.prototype._watchAngularEvents = function(_ngZone) {
       var _this = this;
       async_1.ObservableWrapper.subscribe(_ngZone.onTurnStart, function(_) {
+        _this._didWork = true;
         _this._isAngularEventPending = true;
       });
       _ngZone.runOutsideAngular(function() {
@@ -5960,6 +5962,7 @@ System.register("angular2/src/core/testability/testability", ["angular2/src/core
     };
     Testability.prototype.increasePendingRequestCount = function() {
       this._pendingCount += 1;
+      this._didWork = true;
       return this._pendingCount;
     };
     Testability.prototype.decreasePendingRequestCount = function() {
@@ -5976,12 +5979,14 @@ System.register("angular2/src/core/testability/testability", ["angular2/src/core
     Testability.prototype._runCallbacksIfReady = function() {
       var _this = this;
       if (!this.isStable()) {
+        this._didWork = true;
         return ;
       }
       async_1.PromiseWrapper.resolve(null).then(function(_) {
         while (_this._callbacks.length !== 0) {
-          (_this._callbacks.pop())();
+          (_this._callbacks.pop())(_this._didWork);
         }
+        _this._didWork = false;
       });
     };
     Testability.prototype.whenStable = function(callback) {
