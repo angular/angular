@@ -5170,7 +5170,7 @@ class ChangeDetector84 extends _gen.AbstractChangeDetector<dynamic> {
       l_operation_add6_0 =
           _gen.ChangeDetectionUtil.operation_add(l_a4_0, l_literal5_0);
       l_a7_0 = l_context.a = l_operation_add6_0;
-      l_chain8_0 = null;
+      l_chain8_0 = l_a7_0;
 
       if (l_chain8_0 == false) {
         preventDefault = true;
@@ -5191,10 +5191,51 @@ class ChangeDetector84 extends _gen.AbstractChangeDetector<dynamic> {
 class ChangeDetector85 extends _gen.AbstractChangeDetector<dynamic> {
   ChangeDetector85()
       : super(
-            "(event)=\"false\"",
+            "(event)=\"true; false\"",
             0,
             ChangeDetector85._gen_propertyBindingTargets,
             ChangeDetector85._gen_directiveIndices,
+            null) {
+    dehydrateDirectives(false);
+  }
+
+  void detectChangesInRecordsInternal(throwOnChange) {
+    var l_context = this.context;
+    var isChanged = false;
+    var changes = null;
+  }
+
+  handleEventInternal(eventName, elIndex, locals) {
+    var preventDefault = false;
+    var l_context = this.context, l_literal0_0, l_literal1_0, l_chain2_0;
+    if (eventName == "event" && elIndex == 0) {
+      l_literal0_0 = true;
+      l_literal1_0 = false;
+      l_chain2_0 = l_literal1_0;
+
+      if (l_chain2_0 == false) {
+        preventDefault = true;
+      }
+    }
+    return preventDefault;
+  }
+
+  static final _gen_propertyBindingTargets = [];
+
+  static final _gen_directiveIndices = [];
+
+  static _gen.ChangeDetector newChangeDetector() {
+    return new ChangeDetector85();
+  }
+}
+
+class ChangeDetector86 extends _gen.AbstractChangeDetector<dynamic> {
+  ChangeDetector86()
+      : super(
+            "(event)=\"false\"",
+            0,
+            ChangeDetector86._gen_propertyBindingTargets,
+            ChangeDetector86._gen_directiveIndices,
             null) {
     dehydrateDirectives(false);
   }
@@ -5223,17 +5264,17 @@ class ChangeDetector85 extends _gen.AbstractChangeDetector<dynamic> {
   static final _gen_directiveIndices = [];
 
   static _gen.ChangeDetector newChangeDetector() {
-    return new ChangeDetector85();
+    return new ChangeDetector86();
   }
 }
 
-class ChangeDetector86 extends _gen.AbstractChangeDetector<dynamic> {
-  ChangeDetector86()
+class ChangeDetector87 extends _gen.AbstractChangeDetector<dynamic> {
+  ChangeDetector87()
       : super(
             "(event)=\"true\"",
             0,
-            ChangeDetector86._gen_propertyBindingTargets,
-            ChangeDetector86._gen_directiveIndices,
+            ChangeDetector87._gen_propertyBindingTargets,
+            ChangeDetector87._gen_directiveIndices,
             null) {
     dehydrateDirectives(false);
   }
@@ -5262,17 +5303,17 @@ class ChangeDetector86 extends _gen.AbstractChangeDetector<dynamic> {
   static final _gen_directiveIndices = [];
 
   static _gen.ChangeDetector newChangeDetector() {
-    return new ChangeDetector86();
+    return new ChangeDetector87();
   }
 }
 
-class ChangeDetector87 extends _gen.AbstractChangeDetector<dynamic> {
-  ChangeDetector87()
+class ChangeDetector88 extends _gen.AbstractChangeDetector<dynamic> {
+  ChangeDetector88()
       : super(
             "(event)=\"true ? a = a + 1 : a = a + 1\"",
             0,
-            ChangeDetector87._gen_propertyBindingTargets,
-            ChangeDetector87._gen_directiveIndices,
+            ChangeDetector88._gen_propertyBindingTargets,
+            ChangeDetector88._gen_directiveIndices,
             null) {
     dehydrateDirectives(false);
   }
@@ -5327,19 +5368,19 @@ class ChangeDetector87 extends _gen.AbstractChangeDetector<dynamic> {
   static final _gen_directiveIndices = [];
 
   static _gen.ChangeDetector newChangeDetector() {
-    return new ChangeDetector87();
+    return new ChangeDetector88();
   }
 }
 
-class ChangeDetector88 extends _gen.AbstractChangeDetector<dynamic> {
+class ChangeDetector89 extends _gen.AbstractChangeDetector<dynamic> {
   var directive_0_0, directive_0_1;
 
-  ChangeDetector88()
+  ChangeDetector89()
       : super(
             "(host-event)=\"onEvent(\$event)\"",
             0,
-            ChangeDetector88._gen_propertyBindingTargets,
-            ChangeDetector88._gen_directiveIndices,
+            ChangeDetector89._gen_propertyBindingTargets,
+            ChangeDetector89._gen_directiveIndices,
             null) {
     dehydrateDirectives(false);
   }
@@ -5412,19 +5453,19 @@ class ChangeDetector88 extends _gen.AbstractChangeDetector<dynamic> {
   ];
 
   static _gen.ChangeDetector newChangeDetector() {
-    return new ChangeDetector88();
+    return new ChangeDetector89();
   }
 }
 
-class ChangeDetector89 extends _gen.AbstractChangeDetector<dynamic> {
+class ChangeDetector90 extends _gen.AbstractChangeDetector<dynamic> {
   var a0;
 
-  ChangeDetector89()
+  ChangeDetector90()
       : super(
             "onPushObserveBinding",
             1,
-            ChangeDetector89._gen_propertyBindingTargets,
-            ChangeDetector89._gen_directiveIndices,
+            ChangeDetector90._gen_propertyBindingTargets,
+            ChangeDetector90._gen_directiveIndices,
             _gen.ChangeDetectionStrategy.OnPushObserve) {
     dehydrateDirectives(false);
   }
@@ -5465,17 +5506,17 @@ class ChangeDetector89 extends _gen.AbstractChangeDetector<dynamic> {
   static final _gen_directiveIndices = [];
 
   static _gen.ChangeDetector newChangeDetector() {
-    return new ChangeDetector89();
+    return new ChangeDetector90();
   }
 }
 
-class ChangeDetector90 extends _gen.AbstractChangeDetector<dynamic> {
-  ChangeDetector90()
+class ChangeDetector91 extends _gen.AbstractChangeDetector<dynamic> {
+  ChangeDetector91()
       : super(
             "onPushObserveComponent",
             0,
-            ChangeDetector90._gen_propertyBindingTargets,
-            ChangeDetector90._gen_directiveIndices,
+            ChangeDetector91._gen_propertyBindingTargets,
+            ChangeDetector91._gen_directiveIndices,
             _gen.ChangeDetectionStrategy.OnPushObserve) {
     dehydrateDirectives(false);
   }
@@ -5491,19 +5532,19 @@ class ChangeDetector90 extends _gen.AbstractChangeDetector<dynamic> {
   static final _gen_directiveIndices = [];
 
   static _gen.ChangeDetector newChangeDetector() {
-    return new ChangeDetector90();
+    return new ChangeDetector91();
   }
 }
 
-class ChangeDetector91 extends _gen.AbstractChangeDetector<dynamic> {
+class ChangeDetector92 extends _gen.AbstractChangeDetector<dynamic> {
   var directive_0_0;
 
-  ChangeDetector91()
+  ChangeDetector92()
       : super(
             "onPushObserveDirective",
             0,
-            ChangeDetector91._gen_propertyBindingTargets,
-            ChangeDetector91._gen_directiveIndices,
+            ChangeDetector92._gen_propertyBindingTargets,
+            ChangeDetector92._gen_directiveIndices,
             _gen.ChangeDetectionStrategy.OnPushObserve) {
     dehydrateDirectives(false);
   }
@@ -5531,19 +5572,19 @@ class ChangeDetector91 extends _gen.AbstractChangeDetector<dynamic> {
   ];
 
   static _gen.ChangeDetector newChangeDetector() {
-    return new ChangeDetector91();
+    return new ChangeDetector92();
   }
 }
 
-class ChangeDetector92 extends _gen.AbstractChangeDetector<dynamic> {
+class ChangeDetector93 extends _gen.AbstractChangeDetector<dynamic> {
   var name0;
 
-  ChangeDetector92()
+  ChangeDetector93()
       : super(
             "updateElementProduction",
             1,
-            ChangeDetector92._gen_propertyBindingTargets,
-            ChangeDetector92._gen_directiveIndices,
+            ChangeDetector93._gen_propertyBindingTargets,
+            ChangeDetector93._gen_directiveIndices,
             null) {
     dehydrateDirectives(false);
   }
@@ -5583,7 +5624,7 @@ class ChangeDetector92 extends _gen.AbstractChangeDetector<dynamic> {
   static final _gen_directiveIndices = [];
 
   static _gen.ChangeDetector newChangeDetector() {
-    return new ChangeDetector92();
+    return new ChangeDetector93();
   }
 }
 
@@ -5676,15 +5717,16 @@ b"''': ChangeDetector3.newChangeDetector,
   '''(event)="b=a=\$event"''': ChangeDetector82.newChangeDetector,
   '''(event)="a[0]=\$event"''': ChangeDetector83.newChangeDetector,
   '''(event)="a=a+1; a=a+1;"''': ChangeDetector84.newChangeDetector,
-  '''(event)="false"''': ChangeDetector85.newChangeDetector,
-  '''(event)="true"''': ChangeDetector86.newChangeDetector,
+  '''(event)="true; false"''': ChangeDetector85.newChangeDetector,
+  '''(event)="false"''': ChangeDetector86.newChangeDetector,
+  '''(event)="true"''': ChangeDetector87.newChangeDetector,
   '''(event)="true ? a = a + 1 : a = a + 1"''':
-      ChangeDetector87.newChangeDetector,
-  '''(host-event)="onEvent(\$event)"''': ChangeDetector88.newChangeDetector,
-  '''onPushObserveBinding''': ChangeDetector89.newChangeDetector,
-  '''onPushObserveComponent''': ChangeDetector90.newChangeDetector,
-  '''onPushObserveDirective''': ChangeDetector91.newChangeDetector,
-  '''updateElementProduction''': ChangeDetector92.newChangeDetector
+      ChangeDetector88.newChangeDetector,
+  '''(host-event)="onEvent(\$event)"''': ChangeDetector89.newChangeDetector,
+  '''onPushObserveBinding''': ChangeDetector90.newChangeDetector,
+  '''onPushObserveComponent''': ChangeDetector91.newChangeDetector,
+  '''onPushObserveDirective''': ChangeDetector92.newChangeDetector,
+  '''updateElementProduction''': ChangeDetector93.newChangeDetector
 };
 
 getFactoryById(String id) => _idToProtoMap[id];

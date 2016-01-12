@@ -102,7 +102,8 @@ class CodegenLogicUtil {
             '''${ context}[${ getLocalName ( protoRec . args [ 0 ] )}] = ${ getLocalName ( protoRec . args [ 1 ] )}''';
         break;
       case RecordType.Chain:
-        rhs = "null";
+        rhs =
+            '''${ getLocalName ( protoRec . args [ protoRec . args . length - 1 ] )}''';
         break;
       default:
         throw new BaseException('''Unknown operation ${ protoRec . mode}''');
