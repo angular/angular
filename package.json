@@ -17,7 +17,7 @@
     "Yegor Jbanov <yjbanov@google.com>",
     "Jeremy Elbourn <jelbourn@google.com>"
   ],
-  "license": "Apache-2.0",
+  "license": "MIT",
   "engines": {
     "node": ">= 4.2.1 < 5"
   },
