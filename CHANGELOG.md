@@ -201,11 +201,11 @@ bundle. `ngUpgrade` has a dedicated `upgrade.js` bundle now.
 
 * `Observable` are no more re-exported from `angular2/core`
 
-    Before 
+    Before
     ```
     import {Observable} from 'angular2/core'
     ```
-    After 
+    After
     ```
     import {Observable} from 'rxjs/Observable';
     ```
