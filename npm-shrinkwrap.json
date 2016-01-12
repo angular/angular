@@ -5650,9 +5650,9 @@
       }
     },
     "karma-browserstack-launcher": {
-      "version": "0.1.8",
-      "from": "karma-browserstack-launcher@>=0.1.7 <0.2.0",
-      "resolved": "https://registry.npmjs.org/karma-browserstack-launcher/-/karma-browserstack-launcher-0.1.8.tgz"
+      "version": "0.1.9",
+      "from": "karma-browserstack-launcher@0.1.9",
+      "resolved": "https://registry.npmjs.org/karma-browserstack-launcher/-/karma-browserstack-launcher-0.1.9.tgz"
     },
     "karma-chrome-launcher": {
       "version": "0.2.2",
