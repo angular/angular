@@ -43,6 +43,7 @@
   take a native element instead of an ElementRef
 * `Renderer` interface now operates on plain native nodes,
   instead of `RenderElementRef`s or `RenderViewRef`s
+
 <a name="2.0.0-beta.0"></a>
 # 2.0.0-beta.0 somnambulant-inauguration (2015-12-15)
 
@@ -144,11 +145,11 @@ bundle. `ngUpgrade` has a dedicated `upgrade.js` bundle now.
 
 * `Observable` are no more re-exported from `angular2/core`
 
-    Before 
+    Before
     ```
     import {Observable} from 'angular2/core'
     ```
-    After 
+    After
     ```
     import {Observable} from 'rxjs/Observable';
     ```
