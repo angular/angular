@@ -35,7 +35,7 @@
   `platform_pipes`.
 * `Compiler.compileInHost` now returns a `HostViewFactoryRef`
 * Component view is not yet created when component constructor is called.
-  -> use `onInit` lifecycle callback to access the view of a component
+  -> use `ngOnInit` lifecycle callback to access the view of a component
 * `ViewRef#setLocal` has been moved to new type `EmbeddedViewRef`
 * `internalView` is gone, use `EmbeddedViewRef.rootNodes` to access
   the root nodes of an embedded view
