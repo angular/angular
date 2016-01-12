@@ -33,12 +33,12 @@ export let DirectiveResolver = class {
             var metadata = typeMetadata.find(_isDirectiveMetadata);
             if (isPresent(metadata)) {
                 var propertyMetadata = reflector.propMetadata(type);
-                return this._mergeWithPropertyMetadata(metadata, propertyMetadata);
+                return this._mergeWithPropertyMetadata(metadata, propertyMetadata, type);
             }
         }
         throw new BaseException(`No Directive annotation found on ${stringify(type)}`);
     }
-    _mergeWithPropertyMetadata(dm, propertyMetadata) {
+    _mergeWithPropertyMetadata(dm, propertyMetadata, directiveType) {
         var inputs = [];
         var outputs = [];
         var host = {};
@@ -87,11 +87,22 @@ export let DirectiveResolver = class {
                 }
             });
         });
-        return this._merge(dm, inputs, outputs, host, queries);
+        return this._merge(dm, inputs, outputs, host, queries, directiveType);
     }
-    _merge(dm, inputs, outputs, host, queries) {
+    _merge(dm, inputs, outputs, host, queries, directiveType) {
         var mergedInputs = isPresent(dm.inputs) ? ListWrapper.concat(dm.inputs, inputs) : inputs;
-        var mergedOutputs = isPresent(dm.outputs) ? ListWrapper.concat(dm.outputs, outputs) : outputs;
+        var mergedOutputs;
+        if (isPresent(dm.outputs)) {
+            dm.outputs.forEach((propName) => {
+                if (ListWrapper.contains(outputs, propName)) {
+                    throw new BaseException(`Output event '${propName}' defined multiple times in '${stringify(directiveType)}'`);
+                }
+            });
+            mergedOutputs = ListWrapper.concat(dm.outputs, outputs);
+        }
+        else {
+            mergedOutputs = outputs;
+        }
         var mergedHost = isPresent(dm.host) ? StringMapWrapper.merge(dm.host, host) : host;
         var mergedQueries = isPresent(dm.queries) ? StringMapWrapper.merge(dm.queries, queries) : queries;
         if (dm instanceof ComponentMetadata) {

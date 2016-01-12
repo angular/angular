@@ -6505,12 +6505,12 @@ System.register("angular2/src/core/linker/directive_resolver", ["angular2/src/co
         var metadata = typeMetadata.find(_isDirectiveMetadata);
         if (lang_1.isPresent(metadata)) {
           var propertyMetadata = reflection_1.reflector.propMetadata(type);
-          return this._mergeWithPropertyMetadata(metadata, propertyMetadata);
+          return this._mergeWithPropertyMetadata(metadata, propertyMetadata, type);
         }
       }
       throw new exceptions_1.BaseException("No Directive annotation found on " + lang_1.stringify(type));
     };
-    DirectiveResolver.prototype._mergeWithPropertyMetadata = function(dm, propertyMetadata) {
+    DirectiveResolver.prototype._mergeWithPropertyMetadata = function(dm, propertyMetadata, directiveType) {
       var inputs = [];
       var outputs = [];
       var host = {};
@@ -6556,11 +6556,21 @@ System.register("angular2/src/core/linker/directive_resolver", ["angular2/src/co
           }
         });
       });
-      return this._merge(dm, inputs, outputs, host, queries);
+      return this._merge(dm, inputs, outputs, host, queries, directiveType);
     };
-    DirectiveResolver.prototype._merge = function(dm, inputs, outputs, host, queries) {
+    DirectiveResolver.prototype._merge = function(dm, inputs, outputs, host, queries, directiveType) {
       var mergedInputs = lang_1.isPresent(dm.inputs) ? collection_1.ListWrapper.concat(dm.inputs, inputs) : inputs;
-      var mergedOutputs = lang_1.isPresent(dm.outputs) ? collection_1.ListWrapper.concat(dm.outputs, outputs) : outputs;
+      var mergedOutputs;
+      if (lang_1.isPresent(dm.outputs)) {
+        dm.outputs.forEach(function(propName) {
+          if (collection_1.ListWrapper.contains(outputs, propName)) {
+            throw new exceptions_1.BaseException("Output event '" + propName + "' defined multiple times in '" + lang_1.stringify(directiveType) + "'");
+          }
+        });
+        mergedOutputs = collection_1.ListWrapper.concat(dm.outputs, outputs);
+      } else {
+        mergedOutputs = outputs;
+      }
       var mergedHost = lang_1.isPresent(dm.host) ? collection_1.StringMapWrapper.merge(dm.host, host) : host;
       var mergedQueries = lang_1.isPresent(dm.queries) ? collection_1.StringMapWrapper.merge(dm.queries, queries) : queries;
       if (dm instanceof metadata_1.ComponentMetadata) {
