@@ -3557,7 +3557,7 @@
       }
     },
     "karma-browserstack-launcher": {
-      "version": "0.1.8"
+      "version": "0.1.9"
     },
     "karma-chrome-launcher": {
       "version": "0.2.2"
