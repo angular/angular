@@ -41,6 +41,11 @@ class SomeDirectiveWithOutputs {
   var c;
 }
 
+@Directive(selector: "someDirective", outputs: const ["a"])
+class SomeDirectiveWithDuplicateOutputs {
+  @Output() var a;
+}
+
 @Directive(selector: "someDirective", properties: const ["a"])
 class SomeDirectiveWithProperties {}
 
@@ -152,6 +157,12 @@ main() {
         var directiveMetadata =
             resolver.resolve(SomeDirectiveWithGetterOutputs);
         expect(directiveMetadata.outputs).toEqual(["a: renamed"]);
+      });
+      it("should throw if duplicate outputs", () {
+        expect(() {
+          resolver.resolve(SomeDirectiveWithDuplicateOutputs);
+        }).toThrowError(
+            '''Output event \'a\' defined multiple times in \'SomeDirectiveWithDuplicateOutputs\'''');
       });
     });
     describe("host", () {

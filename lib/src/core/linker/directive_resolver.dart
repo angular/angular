@@ -43,15 +43,16 @@ class DirectiveResolver {
           typeMetadata.firstWhere(_isDirectiveMetadata, orElse: () => null);
       if (isPresent(metadata)) {
         var propertyMetadata = reflector.propMetadata(type);
-        return this._mergeWithPropertyMetadata(metadata, propertyMetadata);
+        return this
+            ._mergeWithPropertyMetadata(metadata, propertyMetadata, type);
       }
     }
     throw new BaseException(
         '''No Directive annotation found on ${ stringify ( type )}''');
   }
 
-  DirectiveMetadata _mergeWithPropertyMetadata(
-      DirectiveMetadata dm, Map<String, List<dynamic>> propertyMetadata) {
+  DirectiveMetadata _mergeWithPropertyMetadata(DirectiveMetadata dm,
+      Map<String, List<dynamic>> propertyMetadata, Type directiveType) {
     var inputs = [];
     var outputs = [];
     Map<String, String> host = {};
@@ -99,7 +100,7 @@ class DirectiveResolver {
         }
       });
     });
-    return this._merge(dm, inputs, outputs, host, queries);
+    return this._merge(dm, inputs, outputs, host, queries, directiveType);
   }
 
   DirectiveMetadata _merge(
@@ -107,12 +108,22 @@ class DirectiveResolver {
       List<String> inputs,
       List<String> outputs,
       Map<String, String> host,
-      Map<String, dynamic> queries) {
+      Map<String, dynamic> queries,
+      Type directiveType) {
     var mergedInputs =
         isPresent(dm.inputs) ? ListWrapper.concat(dm.inputs, inputs) : inputs;
-    var mergedOutputs = isPresent(dm.outputs)
-        ? ListWrapper.concat(dm.outputs, outputs)
-        : outputs;
+    var mergedOutputs;
+    if (isPresent(dm.outputs)) {
+      dm.outputs.forEach((String propName) {
+        if (ListWrapper.contains(outputs, propName)) {
+          throw new BaseException(
+              '''Output event \'${ propName}\' defined multiple times in \'${ stringify ( directiveType )}\'''');
+        }
+      });
+      mergedOutputs = ListWrapper.concat(dm.outputs, outputs);
+    } else {
+      mergedOutputs = outputs;
+    }
     var mergedHost =
         isPresent(dm.host) ? StringMapWrapper.merge(dm.host, host) : host;
     var mergedQueries = isPresent(dm.queries)
