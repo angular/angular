@@ -60,6 +60,7 @@ addons:
   firefox: "38.0"
 
 before_install:
+- npm install -g npm@3.5.2
 - node tools/analytics/build-analytics start ci job
 - node tools/analytics/build-analytics start ci before_install
 - echo ${TSDRC} > .tsdrc
@@ -77,7 +78,9 @@ install:
   # Check the size of caches
   - du -sh ./node_modules || true
   # Install npm dependecies
-  - npm install
+  # check-node-modules will exit(1) if we don't need to install
+  # we need to manually kick off the postinstall script if check-node-modules exit(0)s
+  - node tools/npm/check-node-modules --purge && npm install || npm run postinstall
   - node tools/analytics/build-analytics success ci install
 
 before_script:
