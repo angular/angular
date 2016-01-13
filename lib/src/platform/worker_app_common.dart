@@ -20,7 +20,6 @@ import "package:angular2/src/web_workers/shared/client_message_broker.dart"
     show ClientMessageBrokerFactory, ClientMessageBrokerFactory_;
 import "package:angular2/src/web_workers/shared/service_message_broker.dart"
     show ServiceMessageBrokerFactory, ServiceMessageBrokerFactory_;
-import "package:angular2/src/compiler/compiler.dart" show COMPILER_PROVIDERS;
 import "package:angular2/src/web_workers/shared/serializer.dart"
     show Serializer;
 import "package:angular2/src/web_workers/shared/api.dart" show ON_WEB_WORKER;
@@ -38,7 +37,6 @@ class PrintLogger {
 const List<dynamic> WORKER_APP_PLATFORM = const [PLATFORM_COMMON_PROVIDERS];
 const List<dynamic> WORKER_APP_APPLICATION_COMMON = const [
   APPLICATION_COMMON_PROVIDERS,
-  COMPILER_PROVIDERS,
   FORM_PROVIDERS,
   Serializer,
   const Provider(PLATFORM_PIPES, useValue: COMMON_PIPES, multi: true),
