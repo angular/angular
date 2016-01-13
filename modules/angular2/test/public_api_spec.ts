@@ -1224,7 +1224,6 @@ var NG_CORE = [
   'SimpleChange.isFirstChange()',
   'TemplateRef',
   'TemplateRef.elementRef',
-  'TemplateRef.elementRef=',
   /*
    Abstract method
    'TemplateRef.hasLocal()',
