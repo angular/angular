@@ -1272,7 +1272,7 @@ gulp.task('!bundle.copy', function() {
 
 gulp.task('!bundles.js.checksize', function(done) {
   var reportSize = require('./tools/analytics/reportsize');
-  return reportSize('dist/js/bundle/**', {printToConsole: ['gzip level=2']});
+  return reportSize('dist/js/bundle/**/*.js', {printToConsole: ['gzip level=2']});
 });
 
 gulp.task('bundles.js',
