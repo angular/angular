@@ -339,7 +339,7 @@ export class UpgradeAdapter {
           (injector: angular.IInjectorService, rootScope: angular.IRootScopeService) => {
             ng1Injector = injector;
             ObservableWrapper.subscribe(ngZone.onTurnDone,
-                                        (_) => { ngZone.run(() => rootScope.$apply()); });
+                                        (_) => ngZone.runOutsideAngular(() => rootScope.$apply()));
             ng1compilePromise =
                 UpgradeNg1ComponentAdapterBuilder.resolve(this.downgradedComponents, injector);
           }
