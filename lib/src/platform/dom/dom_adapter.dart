@@ -22,6 +22,7 @@ abstract class DomAdapter {
   log(error);
   logGroup(error);
   logGroupEnd();
+  /** @deprecated */
   Type getXHR();
   /**
    * Maps attribute names to their corresponding property names for cases

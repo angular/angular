@@ -52,6 +52,8 @@ import "package:angular2/src/web_workers/shared/service_message_broker.dart"
     show ServiceMessageBrokerFactory, ServiceMessageBrokerFactory_;
 import "package:angular2/src/core/change_detection/change_detection.dart"
     show ChangeDetectorGenConfig;
+import "package:angular2/platform/testing/browser.dart"
+    show TEST_BROWSER_PLATFORM_PROVIDERS, TEST_BROWSER_APPLICATION_PROVIDERS;
 
 main() {
   ClientMessageBrokerFactory createWebWorkerBrokerFactory(
@@ -91,13 +93,16 @@ main() {
     RenderStore workerRenderStore;
     beforeEachProviders(() {
       uiRenderStore = new RenderStore();
-      var testInjector = new TestInjector();
-      testInjector.addProviders([
+      var testUiInjector = new TestInjector();
+      testUiInjector.platformProviders = TEST_BROWSER_PLATFORM_PROVIDERS;
+      testUiInjector.applicationProviders = TEST_BROWSER_APPLICATION_PROVIDERS;
+      testUiInjector.addProviders([
+        Serializer,
         provide(RenderStore, useValue: uiRenderStore),
         provide(DomRootRenderer, useClass: DomRootRenderer_),
         provide(RootRenderer, useExisting: DomRootRenderer)
       ]);
-      uiInjector = testInjector.createInjector();
+      uiInjector = testUiInjector.createInjector();
       var uiSerializer = uiInjector.get(Serializer);
       var domRootRenderer = uiInjector.get(DomRootRenderer);
       workerRenderStore = new RenderStore();

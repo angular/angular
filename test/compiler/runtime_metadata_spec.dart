@@ -94,21 +94,22 @@ main() {
           "should return the directive metadatas",
           inject([RuntimeMetadataResolver], (RuntimeMetadataResolver resolver) {
             expect(resolver.getViewDirectivesMetadata(ComponentWithEverything))
-                .toEqual([resolver.getDirectiveMetadata(SomeDirective)]);
+                .toContain(resolver.getDirectiveMetadata(SomeDirective));
           }));
       describe("platform directives", () {
         beforeEachProviders(() => [
-              provide(PLATFORM_DIRECTIVES, useValue: [ADirective])
+              provide(PLATFORM_DIRECTIVES, useValue: [ADirective], multi: true)
             ]);
         it(
             "should include platform directives when available",
             inject([RuntimeMetadataResolver],
                 (RuntimeMetadataResolver resolver) {
               expect(resolver
-                  .getViewDirectivesMetadata(ComponentWithEverything)).toEqual([
-                resolver.getDirectiveMetadata(ADirective),
-                resolver.getDirectiveMetadata(SomeDirective)
-              ]);
+                      .getViewDirectivesMetadata(ComponentWithEverything))
+                  .toContain(resolver.getDirectiveMetadata(ADirective));
+              expect(resolver
+                      .getViewDirectivesMetadata(ComponentWithEverything))
+                  .toContain(resolver.getDirectiveMetadata(SomeDirective));
             }));
       });
     });

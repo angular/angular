@@ -33,8 +33,14 @@ class Log {
   }
 }
 
+BrowserDetection browserDetection = null;
+
 class BrowserDetection {
   String _ua;
+  static setup() {
+    browserDetection = new BrowserDetection(null);
+  }
+
   BrowserDetection(String ua) {
     if (isPresent(ua)) {
       this._ua = ua;
@@ -84,7 +90,6 @@ class BrowserDetection {
   }
 }
 
-BrowserDetection browserDetection = new BrowserDetection(null);
 void dispatchEvent(element, eventType) {
   DOM.dispatchEvent(element, DOM.createEvent(eventType));
 }
