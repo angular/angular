@@ -11,7 +11,6 @@ environment:
 dependencies:
   analyzer: '>=0.24.4 <0.27.0'
   barback: '^0.15.2+2'
-  code_transformers: '0.2.9+4'
   dart_style: '>=0.1.8 <0.3.0'
   glob: '^1.0.0'
   html: '^0.12.0'
@@ -23,6 +22,7 @@ dependencies:
   source_span: '^1.0.0'
   stack_trace: '^1.1.1'
 dev_dependencies:
+  code_transformers: '0.2.9+4'
   guinness: '^0.1.18'
 transformers:
 - angular2
