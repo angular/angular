@@ -5,19 +5,29 @@ export declare class TestInjector {
     private _injector;
     private _providers;
     reset(): void;
+    platformProviders: Array<Type | Provider | any[]>;
+    applicationProviders: Array<Type | Provider | any[]>;
     addProviders(providers: Array<Type | Provider | any[]>): void;
     createInjector(): Injector;
     execute(fn: FunctionWithParamTokens): any;
 }
 export declare function getTestInjector(): TestInjector;
 /**
- * @deprecated Use TestInjector#createInjector() instead.
+ * Set the providers that the test injector should use. These should be providers
+ * common to every test in the suite.
+ *
+ * This may only be called once, to set up the common providers for the current test
+ * suite on teh current platform. If you absolutely need to change the providers,
+ * first use `resetBaseTestProviders`.
+ *
+ * Test Providers for individual platforms are available from
+ * 'angular2/platform/testing/<platform_name>'.
  */
-export declare function createTestInjector(providers: Array<Type | Provider | any[]>): Injector;
+export declare function setBaseTestProviders(platformProviders: Array<Type | Provider | any[]>, applicationProviders: Array<Type | Provider | any[]>): void;
 /**
- * @deprecated Use TestInjector#createInjector() instead.
+ * Reset the providers for the test injector.
  */
-export declare function createTestInjectorWithRuntimeCompiler(providers: Array<Type | Provider | any[]>): Injector;
+export declare function resetBaseTestProviders(): void;
 /**
  * Allows injecting dependencies in `beforeEach()` and `it()`.
  *

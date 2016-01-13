@@ -13,6 +13,7 @@ export declare abstract class DomAdapter {
     abstract log(error: any): any;
     abstract logGroup(error: any): any;
     abstract logGroupEnd(): any;
+    /** @deprecated */
     abstract getXHR(): Type;
     /**
      * Maps attribute names to their corresponding property names for cases

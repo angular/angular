@@ -562,19 +562,10 @@ System.register("angular2/http/testing", ["angular2/src/http/backends/mock_backe
   return module.exports;
 });
 
-System.register("angular2/src/mock/animation_builder_mock", ["angular2/src/core/di", "angular2/src/animate/animation_builder", "angular2/src/animate/css_animation_builder", "angular2/src/animate/animation", "angular2/src/animate/browser_details"], true, function(require, exports, module) {
+System.register("angular2/src/testing/utils", ["angular2/core", "angular2/src/facade/collection", "angular2/src/platform/dom/dom_adapter", "angular2/src/facade/lang"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
-  var __extends = (this && this.__extends) || function(d, b) {
-    for (var p in b)
-      if (b.hasOwnProperty(p))
-        d[p] = b[p];
-    function __() {
-      this.constructor = d;
-    }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-  };
   var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
     var c = arguments.length,
         r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
@@ -591,154 +582,313 @@ System.register("angular2/src/mock/animation_builder_mock", ["angular2/src/core/
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
       return Reflect.metadata(k, v);
   };
-  var di_1 = require("angular2/src/core/di");
-  var animation_builder_1 = require("angular2/src/animate/animation_builder");
-  var css_animation_builder_1 = require("angular2/src/animate/css_animation_builder");
-  var animation_1 = require("angular2/src/animate/animation");
-  var browser_details_1 = require("angular2/src/animate/browser_details");
-  var MockAnimationBuilder = (function(_super) {
-    __extends(MockAnimationBuilder, _super);
-    function MockAnimationBuilder() {
-      _super.call(this, null);
+  var core_1 = require("angular2/core");
+  var collection_1 = require("angular2/src/facade/collection");
+  var dom_adapter_1 = require("angular2/src/platform/dom/dom_adapter");
+  var lang_1 = require("angular2/src/facade/lang");
+  var Log = (function() {
+    function Log() {
+      this._result = [];
     }
-    MockAnimationBuilder.prototype.css = function() {
-      return new MockCssAnimationBuilder();
+    Log.prototype.add = function(value) {
+      this._result.push(value);
     };
-    MockAnimationBuilder = __decorate([di_1.Injectable(), __metadata('design:paramtypes', [])], MockAnimationBuilder);
-    return MockAnimationBuilder;
-  })(animation_builder_1.AnimationBuilder);
-  exports.MockAnimationBuilder = MockAnimationBuilder;
-  var MockCssAnimationBuilder = (function(_super) {
-    __extends(MockCssAnimationBuilder, _super);
-    function MockCssAnimationBuilder() {
-      _super.call(this, null);
+    Log.prototype.fn = function(value) {
+      var _this = this;
+      return function(a1, a2, a3, a4, a5) {
+        if (a1 === void 0) {
+          a1 = null;
+        }
+        if (a2 === void 0) {
+          a2 = null;
+        }
+        if (a3 === void 0) {
+          a3 = null;
+        }
+        if (a4 === void 0) {
+          a4 = null;
+        }
+        if (a5 === void 0) {
+          a5 = null;
+        }
+        _this._result.push(value);
+      };
+    };
+    Log.prototype.clear = function() {
+      this._result = [];
+    };
+    Log.prototype.result = function() {
+      return this._result.join("; ");
+    };
+    Log = __decorate([core_1.Injectable(), __metadata('design:paramtypes', [])], Log);
+    return Log;
+  })();
+  exports.Log = Log;
+  exports.browserDetection = null;
+  var BrowserDetection = (function() {
+    function BrowserDetection(ua) {
+      if (lang_1.isPresent(ua)) {
+        this._ua = ua;
+      } else {
+        this._ua = lang_1.isPresent(dom_adapter_1.DOM) ? dom_adapter_1.DOM.getUserAgent() : '';
+      }
     }
-    MockCssAnimationBuilder.prototype.start = function(element) {
-      return new MockAnimation(element, this.data);
+    BrowserDetection.setup = function() {
+      exports.browserDetection = new BrowserDetection(null);
     };
-    return MockCssAnimationBuilder;
-  })(css_animation_builder_1.CssAnimationBuilder);
-  var MockBrowserAbstraction = (function(_super) {
-    __extends(MockBrowserAbstraction, _super);
-    function MockBrowserAbstraction() {
-      _super.apply(this, arguments);
+    Object.defineProperty(BrowserDetection.prototype, "isFirefox", {
+      get: function() {
+        return this._ua.indexOf('Firefox') > -1;
+      },
+      enumerable: true,
+      configurable: true
+    });
+    Object.defineProperty(BrowserDetection.prototype, "isAndroid", {
+      get: function() {
+        return this._ua.indexOf('Mozilla/5.0') > -1 && this._ua.indexOf('Android') > -1 && this._ua.indexOf('AppleWebKit') > -1 && this._ua.indexOf('Chrome') == -1;
+      },
+      enumerable: true,
+      configurable: true
+    });
+    Object.defineProperty(BrowserDetection.prototype, "isEdge", {
+      get: function() {
+        return this._ua.indexOf('Edge') > -1;
+      },
+      enumerable: true,
+      configurable: true
+    });
+    Object.defineProperty(BrowserDetection.prototype, "isIE", {
+      get: function() {
+        return this._ua.indexOf('Trident') > -1;
+      },
+      enumerable: true,
+      configurable: true
+    });
+    Object.defineProperty(BrowserDetection.prototype, "isWebkit", {
+      get: function() {
+        return this._ua.indexOf('AppleWebKit') > -1 && this._ua.indexOf('Edge') == -1;
+      },
+      enumerable: true,
+      configurable: true
+    });
+    Object.defineProperty(BrowserDetection.prototype, "isIOS7", {
+      get: function() {
+        return this._ua.indexOf('iPhone OS 7') > -1 || this._ua.indexOf('iPad OS 7') > -1;
+      },
+      enumerable: true,
+      configurable: true
+    });
+    Object.defineProperty(BrowserDetection.prototype, "isSlow", {
+      get: function() {
+        return this.isAndroid || this.isIE || this.isIOS7;
+      },
+      enumerable: true,
+      configurable: true
+    });
+    Object.defineProperty(BrowserDetection.prototype, "supportsIntlApi", {
+      get: function() {
+        return this._ua.indexOf('Chrome/4') > -1 && this._ua.indexOf('Edge') == -1;
+      },
+      enumerable: true,
+      configurable: true
+    });
+    return BrowserDetection;
+  })();
+  exports.BrowserDetection = BrowserDetection;
+  function dispatchEvent(element, eventType) {
+    dom_adapter_1.DOM.dispatchEvent(element, dom_adapter_1.DOM.createEvent(eventType));
+  }
+  exports.dispatchEvent = dispatchEvent;
+  function el(html) {
+    return dom_adapter_1.DOM.firstChild(dom_adapter_1.DOM.content(dom_adapter_1.DOM.createTemplate(html)));
+  }
+  exports.el = el;
+  var _RE_SPECIAL_CHARS = ['-', '[', ']', '/', '{', '}', '\\', '(', ')', '*', '+', '?', '.', '^', '$', '|'];
+  var _ESCAPE_RE = lang_1.RegExpWrapper.create("[\\" + _RE_SPECIAL_CHARS.join('\\') + "]");
+  function containsRegexp(input) {
+    return lang_1.RegExpWrapper.create(lang_1.StringWrapper.replaceAllMapped(input, _ESCAPE_RE, function(match) {
+      return ("\\" + match[0]);
+    }));
+  }
+  exports.containsRegexp = containsRegexp;
+  function normalizeCSS(css) {
+    css = lang_1.StringWrapper.replaceAll(css, /\s+/g, ' ');
+    css = lang_1.StringWrapper.replaceAll(css, /:\s/g, ':');
+    css = lang_1.StringWrapper.replaceAll(css, /'/g, '"');
+    css = lang_1.StringWrapper.replaceAll(css, / }/g, '}');
+    css = lang_1.StringWrapper.replaceAllMapped(css, /url\((\"|\s)(.+)(\"|\s)\)(\s*)/g, function(match) {
+      return ("url(\"" + match[2] + "\")");
+    });
+    css = lang_1.StringWrapper.replaceAllMapped(css, /\[(.+)=([^"\]]+)\]/g, function(match) {
+      return ("[" + match[1] + "=\"" + match[2] + "\"]");
+    });
+    return css;
+  }
+  exports.normalizeCSS = normalizeCSS;
+  var _singleTagWhitelist = ['br', 'hr', 'input'];
+  function stringifyElement(el) {
+    var result = '';
+    if (dom_adapter_1.DOM.isElementNode(el)) {
+      var tagName = dom_adapter_1.DOM.tagName(el).toLowerCase();
+      result += "<" + tagName;
+      var attributeMap = dom_adapter_1.DOM.attributeMap(el);
+      var keys = [];
+      attributeMap.forEach(function(v, k) {
+        return keys.push(k);
+      });
+      collection_1.ListWrapper.sort(keys);
+      for (var i = 0; i < keys.length; i++) {
+        var key = keys[i];
+        var attValue = attributeMap.get(key);
+        if (!lang_1.isString(attValue)) {
+          result += " " + key;
+        } else {
+          result += " " + key + "=\"" + attValue + "\"";
+        }
+      }
+      result += '>';
+      var childrenRoot = dom_adapter_1.DOM.templateAwareRoot(el);
+      var children = lang_1.isPresent(childrenRoot) ? dom_adapter_1.DOM.childNodes(childrenRoot) : [];
+      for (var j = 0; j < children.length; j++) {
+        result += stringifyElement(children[j]);
+      }
+      if (!collection_1.ListWrapper.contains(_singleTagWhitelist, tagName)) {
+        result += "</" + tagName + ">";
+      }
+    } else if (dom_adapter_1.DOM.isCommentNode(el)) {
+      result += "<!--" + dom_adapter_1.DOM.nodeValue(el) + "-->";
+    } else {
+      result += dom_adapter_1.DOM.getText(el);
     }
-    MockBrowserAbstraction.prototype.doesElapsedTimeIncludesDelay = function() {
-      this.elapsedTimeIncludesDelay = false;
-    };
-    return MockBrowserAbstraction;
-  })(browser_details_1.BrowserDetails);
-  var MockAnimation = (function(_super) {
-    __extends(MockAnimation, _super);
-    function MockAnimation(element, data) {
-      _super.call(this, element, data, new MockBrowserAbstraction());
-    }
-    MockAnimation.prototype.wait = function(callback) {
-      this._callback = callback;
-    };
-    MockAnimation.prototype.flush = function() {
-      this._callback(0);
-      this._callback = null;
-    };
-    return MockAnimation;
-  })(animation_1.Animation);
+    return result;
+  }
+  exports.stringifyElement = stringifyElement;
   global.define = __define;
   return module.exports;
 });
 
-System.register("angular2/src/mock/directive_resolver_mock", ["angular2/src/core/di", "angular2/src/facade/collection", "angular2/src/facade/lang", "angular2/src/core/metadata", "angular2/src/core/linker/directive_resolver"], true, function(require, exports, module) {
+System.register("angular2/src/testing/fake_async", ["angular2/src/facade/lang", "angular2/src/facade/exceptions", "angular2/src/facade/collection"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
-  var __extends = (this && this.__extends) || function(d, b) {
-    for (var p in b)
-      if (b.hasOwnProperty(p))
-        d[p] = b[p];
-    function __() {
-      this.constructor = d;
-    }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-  };
-  var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
-    var c = arguments.length,
-        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
-        d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
-      r = Reflect.decorate(decorators, target, key, desc);
-    else
-      for (var i = decorators.length - 1; i >= 0; i--)
-        if (d = decorators[i])
-          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-  };
-  var __metadata = (this && this.__metadata) || function(k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
-      return Reflect.metadata(k, v);
-  };
-  var di_1 = require("angular2/src/core/di");
-  var collection_1 = require("angular2/src/facade/collection");
   var lang_1 = require("angular2/src/facade/lang");
-  var metadata_1 = require("angular2/src/core/metadata");
-  var directive_resolver_1 = require("angular2/src/core/linker/directive_resolver");
-  var MockDirectiveResolver = (function(_super) {
-    __extends(MockDirectiveResolver, _super);
-    function MockDirectiveResolver() {
-      _super.apply(this, arguments);
-      this._providerOverrides = new collection_1.Map();
-      this.viewProviderOverrides = new collection_1.Map();
+  var exceptions_1 = require("angular2/src/facade/exceptions");
+  var collection_1 = require("angular2/src/facade/collection");
+  var _scheduler;
+  var _microtasks = [];
+  var _pendingPeriodicTimers = [];
+  var _pendingTimers = [];
+  function fakeAsync(fn) {
+    if (lang_1.global.zone._inFakeAsyncZone) {
+      throw new Error('fakeAsync() calls can not be nested');
     }
-    MockDirectiveResolver.prototype.resolve = function(type) {
-      var dm = _super.prototype.resolve.call(this, type);
-      var providerOverrides = this._providerOverrides.get(type);
-      var viewProviderOverrides = this.viewProviderOverrides.get(type);
-      var providers = dm.providers;
-      if (lang_1.isPresent(providerOverrides)) {
-        providers = dm.providers.concat(providerOverrides);
+    var fakeAsyncZone = lang_1.global.zone.fork({
+      setTimeout: _setTimeout,
+      clearTimeout: _clearTimeout,
+      setInterval: _setInterval,
+      clearInterval: _clearInterval,
+      scheduleMicrotask: _scheduleMicrotask,
+      _inFakeAsyncZone: true
+    });
+    return function() {
+      var args = [];
+      for (var _i = 0; _i < arguments.length; _i++) {
+        args[_i - 0] = arguments[_i];
       }
-      if (dm instanceof metadata_1.ComponentMetadata) {
-        var viewProviders = dm.viewProviders;
-        if (lang_1.isPresent(viewProviderOverrides)) {
-          viewProviders = dm.viewProviders.concat(viewProviderOverrides);
-        }
-        return new metadata_1.ComponentMetadata({
-          selector: dm.selector,
-          inputs: dm.inputs,
-          outputs: dm.outputs,
-          host: dm.host,
-          exportAs: dm.exportAs,
-          moduleId: dm.moduleId,
-          queries: dm.queries,
-          changeDetection: dm.changeDetection,
-          providers: providers,
-          viewProviders: viewProviders
-        });
-      }
-      return new metadata_1.DirectiveMetadata({
-        selector: dm.selector,
-        inputs: dm.inputs,
-        outputs: dm.outputs,
-        host: dm.host,
-        providers: providers,
-        exportAs: dm.exportAs,
-        queries: dm.queries
+      _scheduler = new jasmine.DelayedFunctionScheduler();
+      clearPendingTimers();
+      var res = fakeAsyncZone.run(function() {
+        var res = fn.apply(void 0, args);
+        flushMicrotasks();
+        return res;
       });
+      if (_pendingPeriodicTimers.length > 0) {
+        throw new exceptions_1.BaseException(_pendingPeriodicTimers.length + " periodic timer(s) still in the queue.");
+      }
+      if (_pendingTimers.length > 0) {
+        throw new exceptions_1.BaseException(_pendingTimers.length + " timer(s) still in the queue.");
+      }
+      _scheduler = null;
+      collection_1.ListWrapper.clear(_microtasks);
+      return res;
     };
-    MockDirectiveResolver.prototype.setBindingsOverride = function(type, bindings) {
-      this._providerOverrides.set(type, bindings);
+  }
+  exports.fakeAsync = fakeAsync;
+  function clearPendingTimers() {
+    collection_1.ListWrapper.clear(_microtasks);
+    collection_1.ListWrapper.clear(_pendingPeriodicTimers);
+    collection_1.ListWrapper.clear(_pendingTimers);
+  }
+  exports.clearPendingTimers = clearPendingTimers;
+  function tick(millis) {
+    if (millis === void 0) {
+      millis = 0;
+    }
+    _assertInFakeAsyncZone();
+    flushMicrotasks();
+    _scheduler.tick(millis);
+  }
+  exports.tick = tick;
+  function flushMicrotasks() {
+    _assertInFakeAsyncZone();
+    while (_microtasks.length > 0) {
+      var microtask = collection_1.ListWrapper.removeAt(_microtasks, 0);
+      microtask();
+    }
+  }
+  exports.flushMicrotasks = flushMicrotasks;
+  function _setTimeout(fn, delay) {
+    var args = [];
+    for (var _i = 2; _i < arguments.length; _i++) {
+      args[_i - 2] = arguments[_i];
+    }
+    var cb = _fnAndFlush(fn);
+    var id = _scheduler.scheduleFunction(cb, delay, args);
+    _pendingTimers.push(id);
+    _scheduler.scheduleFunction(_dequeueTimer(id), delay);
+    return id;
+  }
+  function _clearTimeout(id) {
+    _dequeueTimer(id);
+    return _scheduler.removeFunctionWithId(id);
+  }
+  function _setInterval(fn, interval) {
+    var args = [];
+    for (var _i = 2; _i < arguments.length; _i++) {
+      args[_i - 2] = arguments[_i];
+    }
+    var cb = _fnAndFlush(fn);
+    var id = _scheduler.scheduleFunction(cb, interval, args, true);
+    _pendingPeriodicTimers.push(id);
+    return id;
+  }
+  function _clearInterval(id) {
+    collection_1.ListWrapper.remove(_pendingPeriodicTimers, id);
+    return _scheduler.removeFunctionWithId(id);
+  }
+  function _fnAndFlush(fn) {
+    return function() {
+      var args = [];
+      for (var _i = 0; _i < arguments.length; _i++) {
+        args[_i - 0] = arguments[_i];
+      }
+      fn.apply(lang_1.global, args);
+      flushMicrotasks();
     };
-    MockDirectiveResolver.prototype.setViewBindingsOverride = function(type, viewBindings) {
-      this.viewProviderOverrides.set(type, viewBindings);
+  }
+  function _scheduleMicrotask(microtask) {
+    _microtasks.push(microtask);
+  }
+  function _dequeueTimer(id) {
+    return function() {
+      collection_1.ListWrapper.remove(_pendingTimers, id);
     };
-    MockDirectiveResolver.prototype.setProvidersOverride = function(type, bindings) {
-      this._providerOverrides.set(type, bindings);
-    };
-    MockDirectiveResolver.prototype.setViewProvidersOverride = function(type, viewBindings) {
-      this.viewProviderOverrides.set(type, viewBindings);
-    };
-    MockDirectiveResolver = __decorate([di_1.Injectable(), __metadata('design:paramtypes', [])], MockDirectiveResolver);
-    return MockDirectiveResolver;
-  })(directive_resolver_1.DirectiveResolver);
-  exports.MockDirectiveResolver = MockDirectiveResolver;
+  }
+  function _assertInFakeAsyncZone() {
+    if (!lang_1.global.zone || !lang_1.global.zone._inFakeAsyncZone) {
+      throw new Error('The code should be running in the fakeAsync zone to call this function');
+    }
+  }
   global.define = __define;
   return module.exports;
 });
@@ -916,10 +1066,19 @@ System.register("angular2/src/mock/ng_zone_mock", ["angular2/src/core/di", "angu
   return module.exports;
 });
 
-System.register("angular2/src/testing/utils", ["angular2/core", "angular2/src/facade/collection", "angular2/src/platform/dom/dom_adapter", "angular2/src/facade/lang"], true, function(require, exports, module) {
+System.register("angular2/src/mock/mock_application_ref", ["angular2/src/core/application_ref", "angular2/src/core/di"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
+  var __extends = (this && this.__extends) || function(d, b) {
+    for (var p in b)
+      if (b.hasOwnProperty(p))
+        d[p] = b[p];
+    function __() {
+      this.constructor = d;
+    }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+  };
   var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
     var c = arguments.length,
         r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
@@ -936,192 +1095,65 @@ System.register("angular2/src/testing/utils", ["angular2/core", "angular2/src/fa
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
       return Reflect.metadata(k, v);
   };
-  var core_1 = require("angular2/core");
-  var collection_1 = require("angular2/src/facade/collection");
-  var dom_adapter_1 = require("angular2/src/platform/dom/dom_adapter");
-  var lang_1 = require("angular2/src/facade/lang");
-  var Log = (function() {
-    function Log() {
-      this._result = [];
+  var application_ref_1 = require("angular2/src/core/application_ref");
+  var di_1 = require("angular2/src/core/di");
+  var MockApplicationRef = (function(_super) {
+    __extends(MockApplicationRef, _super);
+    function MockApplicationRef() {
+      _super.apply(this, arguments);
     }
-    Log.prototype.add = function(value) {
-      this._result.push(value);
+    MockApplicationRef.prototype.registerBootstrapListener = function(listener) {};
+    MockApplicationRef.prototype.registerDisposeListener = function(dispose) {};
+    MockApplicationRef.prototype.bootstrap = function(componentType, bindings) {
+      return null;
     };
-    Log.prototype.fn = function(value) {
-      var _this = this;
-      return function(a1, a2, a3, a4, a5) {
-        if (a1 === void 0) {
-          a1 = null;
-        }
-        if (a2 === void 0) {
-          a2 = null;
-        }
-        if (a3 === void 0) {
-          a3 = null;
-        }
-        if (a4 === void 0) {
-          a4 = null;
-        }
-        if (a5 === void 0) {
-          a5 = null;
-        }
-        _this._result.push(value);
-      };
-    };
-    Log.prototype.clear = function() {
-      this._result = [];
-    };
-    Log.prototype.result = function() {
-      return this._result.join("; ");
-    };
-    Log = __decorate([core_1.Injectable(), __metadata('design:paramtypes', [])], Log);
-    return Log;
-  })();
-  exports.Log = Log;
-  var BrowserDetection = (function() {
-    function BrowserDetection(ua) {
-      if (lang_1.isPresent(ua)) {
-        this._ua = ua;
-      } else {
-        this._ua = lang_1.isPresent(dom_adapter_1.DOM) ? dom_adapter_1.DOM.getUserAgent() : '';
-      }
-    }
-    Object.defineProperty(BrowserDetection.prototype, "isFirefox", {
+    Object.defineProperty(MockApplicationRef.prototype, "injector", {
       get: function() {
-        return this._ua.indexOf('Firefox') > -1;
+        return null;
       },
       enumerable: true,
       configurable: true
     });
-    Object.defineProperty(BrowserDetection.prototype, "isAndroid", {
+    ;
+    Object.defineProperty(MockApplicationRef.prototype, "zone", {
       get: function() {
-        return this._ua.indexOf('Mozilla/5.0') > -1 && this._ua.indexOf('Android') > -1 && this._ua.indexOf('AppleWebKit') > -1 && this._ua.indexOf('Chrome') == -1;
+        return null;
       },
       enumerable: true,
       configurable: true
     });
-    Object.defineProperty(BrowserDetection.prototype, "isEdge", {
+    ;
+    MockApplicationRef.prototype.dispose = function() {};
+    MockApplicationRef.prototype.tick = function() {};
+    Object.defineProperty(MockApplicationRef.prototype, "componentTypes", {
       get: function() {
-        return this._ua.indexOf('Edge') > -1;
+        return null;
       },
       enumerable: true,
       configurable: true
     });
-    Object.defineProperty(BrowserDetection.prototype, "isIE", {
-      get: function() {
-        return this._ua.indexOf('Trident') > -1;
-      },
-      enumerable: true,
-      configurable: true
-    });
-    Object.defineProperty(BrowserDetection.prototype, "isWebkit", {
-      get: function() {
-        return this._ua.indexOf('AppleWebKit') > -1 && this._ua.indexOf('Edge') == -1;
-      },
-      enumerable: true,
-      configurable: true
-    });
-    Object.defineProperty(BrowserDetection.prototype, "isIOS7", {
-      get: function() {
-        return this._ua.indexOf('iPhone OS 7') > -1 || this._ua.indexOf('iPad OS 7') > -1;
-      },
-      enumerable: true,
-      configurable: true
-    });
-    Object.defineProperty(BrowserDetection.prototype, "isSlow", {
-      get: function() {
-        return this.isAndroid || this.isIE || this.isIOS7;
-      },
-      enumerable: true,
-      configurable: true
-    });
-    Object.defineProperty(BrowserDetection.prototype, "supportsIntlApi", {
-      get: function() {
-        return this._ua.indexOf('Chrome/4') > -1 && this._ua.indexOf('Edge') == -1;
-      },
-      enumerable: true,
-      configurable: true
-    });
-    return BrowserDetection;
-  })();
-  exports.BrowserDetection = BrowserDetection;
-  exports.browserDetection = new BrowserDetection(null);
-  function dispatchEvent(element, eventType) {
-    dom_adapter_1.DOM.dispatchEvent(element, dom_adapter_1.DOM.createEvent(eventType));
-  }
-  exports.dispatchEvent = dispatchEvent;
-  function el(html) {
-    return dom_adapter_1.DOM.firstChild(dom_adapter_1.DOM.content(dom_adapter_1.DOM.createTemplate(html)));
-  }
-  exports.el = el;
-  var _RE_SPECIAL_CHARS = ['-', '[', ']', '/', '{', '}', '\\', '(', ')', '*', '+', '?', '.', '^', '$', '|'];
-  var _ESCAPE_RE = lang_1.RegExpWrapper.create("[\\" + _RE_SPECIAL_CHARS.join('\\') + "]");
-  function containsRegexp(input) {
-    return lang_1.RegExpWrapper.create(lang_1.StringWrapper.replaceAllMapped(input, _ESCAPE_RE, function(match) {
-      return ("\\" + match[0]);
-    }));
-  }
-  exports.containsRegexp = containsRegexp;
-  function normalizeCSS(css) {
-    css = lang_1.StringWrapper.replaceAll(css, /\s+/g, ' ');
-    css = lang_1.StringWrapper.replaceAll(css, /:\s/g, ':');
-    css = lang_1.StringWrapper.replaceAll(css, /'/g, '"');
-    css = lang_1.StringWrapper.replaceAll(css, / }/g, '}');
-    css = lang_1.StringWrapper.replaceAllMapped(css, /url\((\"|\s)(.+)(\"|\s)\)(\s*)/g, function(match) {
-      return ("url(\"" + match[2] + "\")");
-    });
-    css = lang_1.StringWrapper.replaceAllMapped(css, /\[(.+)=([^"\]]+)\]/g, function(match) {
-      return ("[" + match[1] + "=\"" + match[2] + "\"]");
-    });
-    return css;
-  }
-  exports.normalizeCSS = normalizeCSS;
-  var _singleTagWhitelist = ['br', 'hr', 'input'];
-  function stringifyElement(el) {
-    var result = '';
-    if (dom_adapter_1.DOM.isElementNode(el)) {
-      var tagName = dom_adapter_1.DOM.tagName(el).toLowerCase();
-      result += "<" + tagName;
-      var attributeMap = dom_adapter_1.DOM.attributeMap(el);
-      var keys = [];
-      attributeMap.forEach(function(v, k) {
-        return keys.push(k);
-      });
-      collection_1.ListWrapper.sort(keys);
-      for (var i = 0; i < keys.length; i++) {
-        var key = keys[i];
-        var attValue = attributeMap.get(key);
-        if (!lang_1.isString(attValue)) {
-          result += " " + key;
-        } else {
-          result += " " + key + "=\"" + attValue + "\"";
-        }
-      }
-      result += '>';
-      var childrenRoot = dom_adapter_1.DOM.templateAwareRoot(el);
-      var children = lang_1.isPresent(childrenRoot) ? dom_adapter_1.DOM.childNodes(childrenRoot) : [];
-      for (var j = 0; j < children.length; j++) {
-        result += stringifyElement(children[j]);
-      }
-      if (!collection_1.ListWrapper.contains(_singleTagWhitelist, tagName)) {
-        result += "</" + tagName + ">";
-      }
-    } else if (dom_adapter_1.DOM.isCommentNode(el)) {
-      result += "<!--" + dom_adapter_1.DOM.nodeValue(el) + "-->";
-    } else {
-      result += dom_adapter_1.DOM.getText(el);
-    }
-    return result;
-  }
-  exports.stringifyElement = stringifyElement;
+    ;
+    MockApplicationRef = __decorate([di_1.Injectable(), __metadata('design:paramtypes', [])], MockApplicationRef);
+    return MockApplicationRef;
+  })(application_ref_1.ApplicationRef);
+  exports.MockApplicationRef = MockApplicationRef;
   global.define = __define;
   return module.exports;
 });
 
-System.register("angular2/src/web_workers/shared/render_store", ["angular2/src/core/di"], true, function(require, exports, module) {
+System.register("angular2/src/mock/directive_resolver_mock", ["angular2/src/core/di", "angular2/src/facade/collection", "angular2/src/facade/lang", "angular2/src/core/metadata", "angular2/src/core/linker/directive_resolver"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
+  var __extends = (this && this.__extends) || function(d, b) {
+    for (var p in b)
+      if (b.hasOwnProperty(p))
+        d[p] = b[p];
+    function __() {
+      this.constructor = d;
+    }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+  };
   var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
     var c = arguments.length,
         r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
@@ -1139,43 +1171,69 @@ System.register("angular2/src/web_workers/shared/render_store", ["angular2/src/c
       return Reflect.metadata(k, v);
   };
   var di_1 = require("angular2/src/core/di");
-  var RenderStore = (function() {
-    function RenderStore() {
-      this._nextIndex = 0;
-      this._lookupById = new Map();
-      this._lookupByObject = new Map();
+  var collection_1 = require("angular2/src/facade/collection");
+  var lang_1 = require("angular2/src/facade/lang");
+  var metadata_1 = require("angular2/src/core/metadata");
+  var directive_resolver_1 = require("angular2/src/core/linker/directive_resolver");
+  var MockDirectiveResolver = (function(_super) {
+    __extends(MockDirectiveResolver, _super);
+    function MockDirectiveResolver() {
+      _super.apply(this, arguments);
+      this._providerOverrides = new collection_1.Map();
+      this.viewProviderOverrides = new collection_1.Map();
     }
-    RenderStore.prototype.allocateId = function() {
-      return this._nextIndex++;
-    };
-    RenderStore.prototype.store = function(obj, id) {
-      this._lookupById.set(id, obj);
-      this._lookupByObject.set(obj, id);
-    };
-    RenderStore.prototype.remove = function(obj) {
-      var index = this._lookupByObject.get(obj);
-      this._lookupByObject.delete(obj);
-      this._lookupById.delete(index);
-    };
-    RenderStore.prototype.deserialize = function(id) {
-      if (id == null) {
-        return null;
+    MockDirectiveResolver.prototype.resolve = function(type) {
+      var dm = _super.prototype.resolve.call(this, type);
+      var providerOverrides = this._providerOverrides.get(type);
+      var viewProviderOverrides = this.viewProviderOverrides.get(type);
+      var providers = dm.providers;
+      if (lang_1.isPresent(providerOverrides)) {
+        providers = dm.providers.concat(providerOverrides);
       }
-      if (!this._lookupById.has(id)) {
-        return null;
+      if (dm instanceof metadata_1.ComponentMetadata) {
+        var viewProviders = dm.viewProviders;
+        if (lang_1.isPresent(viewProviderOverrides)) {
+          viewProviders = dm.viewProviders.concat(viewProviderOverrides);
+        }
+        return new metadata_1.ComponentMetadata({
+          selector: dm.selector,
+          inputs: dm.inputs,
+          outputs: dm.outputs,
+          host: dm.host,
+          exportAs: dm.exportAs,
+          moduleId: dm.moduleId,
+          queries: dm.queries,
+          changeDetection: dm.changeDetection,
+          providers: providers,
+          viewProviders: viewProviders
+        });
       }
-      return this._lookupById.get(id);
+      return new metadata_1.DirectiveMetadata({
+        selector: dm.selector,
+        inputs: dm.inputs,
+        outputs: dm.outputs,
+        host: dm.host,
+        providers: providers,
+        exportAs: dm.exportAs,
+        queries: dm.queries
+      });
     };
-    RenderStore.prototype.serialize = function(obj) {
-      if (obj == null) {
-        return null;
-      }
-      return this._lookupByObject.get(obj);
+    MockDirectiveResolver.prototype.setBindingsOverride = function(type, bindings) {
+      this._providerOverrides.set(type, bindings);
     };
-    RenderStore = __decorate([di_1.Injectable(), __metadata('design:paramtypes', [])], RenderStore);
-    return RenderStore;
-  })();
-  exports.RenderStore = RenderStore;
+    MockDirectiveResolver.prototype.setViewBindingsOverride = function(type, viewBindings) {
+      this.viewProviderOverrides.set(type, viewBindings);
+    };
+    MockDirectiveResolver.prototype.setProvidersOverride = function(type, bindings) {
+      this._providerOverrides.set(type, bindings);
+    };
+    MockDirectiveResolver.prototype.setViewProvidersOverride = function(type, viewBindings) {
+      this.viewProviderOverrides.set(type, viewBindings);
+    };
+    MockDirectiveResolver = __decorate([di_1.Injectable(), __metadata('design:paramtypes', [])], MockDirectiveResolver);
+    return MockDirectiveResolver;
+  })(directive_resolver_1.DirectiveResolver);
+  exports.MockDirectiveResolver = MockDirectiveResolver;
   global.define = __define;
   return module.exports;
 });
@@ -1366,312 +1424,6 @@ System.register("angular2/src/testing/matchers", ["angular2/src/platform/dom/dom
   return module.exports;
 });
 
-System.register("angular2/src/testing/fake_async", ["angular2/src/facade/lang", "angular2/src/facade/exceptions", "angular2/src/facade/collection"], true, function(require, exports, module) {
-  var global = System.global,
-      __define = global.define;
-  global.define = undefined;
-  var lang_1 = require("angular2/src/facade/lang");
-  var exceptions_1 = require("angular2/src/facade/exceptions");
-  var collection_1 = require("angular2/src/facade/collection");
-  var _scheduler;
-  var _microtasks = [];
-  var _pendingPeriodicTimers = [];
-  var _pendingTimers = [];
-  function fakeAsync(fn) {
-    if (lang_1.global.zone._inFakeAsyncZone) {
-      throw new Error('fakeAsync() calls can not be nested');
-    }
-    var fakeAsyncZone = lang_1.global.zone.fork({
-      setTimeout: _setTimeout,
-      clearTimeout: _clearTimeout,
-      setInterval: _setInterval,
-      clearInterval: _clearInterval,
-      scheduleMicrotask: _scheduleMicrotask,
-      _inFakeAsyncZone: true
-    });
-    return function() {
-      var args = [];
-      for (var _i = 0; _i < arguments.length; _i++) {
-        args[_i - 0] = arguments[_i];
-      }
-      _scheduler = new jasmine.DelayedFunctionScheduler();
-      clearPendingTimers();
-      var res = fakeAsyncZone.run(function() {
-        var res = fn.apply(void 0, args);
-        flushMicrotasks();
-        return res;
-      });
-      if (_pendingPeriodicTimers.length > 0) {
-        throw new exceptions_1.BaseException(_pendingPeriodicTimers.length + " periodic timer(s) still in the queue.");
-      }
-      if (_pendingTimers.length > 0) {
-        throw new exceptions_1.BaseException(_pendingTimers.length + " timer(s) still in the queue.");
-      }
-      _scheduler = null;
-      collection_1.ListWrapper.clear(_microtasks);
-      return res;
-    };
-  }
-  exports.fakeAsync = fakeAsync;
-  function clearPendingTimers() {
-    collection_1.ListWrapper.clear(_microtasks);
-    collection_1.ListWrapper.clear(_pendingPeriodicTimers);
-    collection_1.ListWrapper.clear(_pendingTimers);
-  }
-  exports.clearPendingTimers = clearPendingTimers;
-  function tick(millis) {
-    if (millis === void 0) {
-      millis = 0;
-    }
-    _assertInFakeAsyncZone();
-    flushMicrotasks();
-    _scheduler.tick(millis);
-  }
-  exports.tick = tick;
-  function flushMicrotasks() {
-    _assertInFakeAsyncZone();
-    while (_microtasks.length > 0) {
-      var microtask = collection_1.ListWrapper.removeAt(_microtasks, 0);
-      microtask();
-    }
-  }
-  exports.flushMicrotasks = flushMicrotasks;
-  function _setTimeout(fn, delay) {
-    var args = [];
-    for (var _i = 2; _i < arguments.length; _i++) {
-      args[_i - 2] = arguments[_i];
-    }
-    var cb = _fnAndFlush(fn);
-    var id = _scheduler.scheduleFunction(cb, delay, args);
-    _pendingTimers.push(id);
-    _scheduler.scheduleFunction(_dequeueTimer(id), delay);
-    return id;
-  }
-  function _clearTimeout(id) {
-    _dequeueTimer(id);
-    return _scheduler.removeFunctionWithId(id);
-  }
-  function _setInterval(fn, interval) {
-    var args = [];
-    for (var _i = 2; _i < arguments.length; _i++) {
-      args[_i - 2] = arguments[_i];
-    }
-    var cb = _fnAndFlush(fn);
-    var id = _scheduler.scheduleFunction(cb, interval, args, true);
-    _pendingPeriodicTimers.push(id);
-    return id;
-  }
-  function _clearInterval(id) {
-    collection_1.ListWrapper.remove(_pendingPeriodicTimers, id);
-    return _scheduler.removeFunctionWithId(id);
-  }
-  function _fnAndFlush(fn) {
-    return function() {
-      var args = [];
-      for (var _i = 0; _i < arguments.length; _i++) {
-        args[_i - 0] = arguments[_i];
-      }
-      fn.apply(lang_1.global, args);
-      flushMicrotasks();
-    };
-  }
-  function _scheduleMicrotask(microtask) {
-    _microtasks.push(microtask);
-  }
-  function _dequeueTimer(id) {
-    return function() {
-      collection_1.ListWrapper.remove(_pendingTimers, id);
-    };
-  }
-  function _assertInFakeAsyncZone() {
-    if (!lang_1.global.zone || !lang_1.global.zone._inFakeAsyncZone) {
-      throw new Error('The code should be running in the fakeAsync zone to call this function');
-    }
-  }
-  global.define = __define;
-  return module.exports;
-});
-
-System.register("angular2/src/compiler/xhr_mock", ["angular2/src/compiler/xhr", "angular2/src/facade/collection", "angular2/src/facade/lang", "angular2/src/facade/exceptions", "angular2/src/facade/async"], true, function(require, exports, module) {
-  var global = System.global,
-      __define = global.define;
-  global.define = undefined;
-  var __extends = (this && this.__extends) || function(d, b) {
-    for (var p in b)
-      if (b.hasOwnProperty(p))
-        d[p] = b[p];
-    function __() {
-      this.constructor = d;
-    }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-  };
-  var xhr_1 = require("angular2/src/compiler/xhr");
-  var collection_1 = require("angular2/src/facade/collection");
-  var lang_1 = require("angular2/src/facade/lang");
-  var exceptions_1 = require("angular2/src/facade/exceptions");
-  var async_1 = require("angular2/src/facade/async");
-  var MockXHR = (function(_super) {
-    __extends(MockXHR, _super);
-    function MockXHR() {
-      _super.apply(this, arguments);
-      this._expectations = [];
-      this._definitions = new collection_1.Map();
-      this._requests = [];
-    }
-    MockXHR.prototype.get = function(url) {
-      var request = new _PendingRequest(url);
-      this._requests.push(request);
-      return request.getPromise();
-    };
-    MockXHR.prototype.expect = function(url, response) {
-      var expectation = new _Expectation(url, response);
-      this._expectations.push(expectation);
-    };
-    MockXHR.prototype.when = function(url, response) {
-      this._definitions.set(url, response);
-    };
-    MockXHR.prototype.flush = function() {
-      if (this._requests.length === 0) {
-        throw new exceptions_1.BaseException('No pending requests to flush');
-      }
-      do {
-        this._processRequest(this._requests.shift());
-      } while (this._requests.length > 0);
-      this.verifyNoOutstandingExpectations();
-    };
-    MockXHR.prototype.verifyNoOutstandingExpectations = function() {
-      if (this._expectations.length === 0)
-        return ;
-      var urls = [];
-      for (var i = 0; i < this._expectations.length; i++) {
-        var expectation = this._expectations[i];
-        urls.push(expectation.url);
-      }
-      throw new exceptions_1.BaseException("Unsatisfied requests: " + urls.join(', '));
-    };
-    MockXHR.prototype._processRequest = function(request) {
-      var url = request.url;
-      if (this._expectations.length > 0) {
-        var expectation = this._expectations[0];
-        if (expectation.url == url) {
-          collection_1.ListWrapper.remove(this._expectations, expectation);
-          request.complete(expectation.response);
-          return ;
-        }
-      }
-      if (this._definitions.has(url)) {
-        var response = this._definitions.get(url);
-        request.complete(lang_1.normalizeBlank(response));
-        return ;
-      }
-      throw new exceptions_1.BaseException("Unexpected request " + url);
-    };
-    return MockXHR;
-  })(xhr_1.XHR);
-  exports.MockXHR = MockXHR;
-  var _PendingRequest = (function() {
-    function _PendingRequest(url) {
-      this.url = url;
-      this.completer = async_1.PromiseWrapper.completer();
-    }
-    _PendingRequest.prototype.complete = function(response) {
-      if (lang_1.isBlank(response)) {
-        this.completer.reject("Failed to load " + this.url, null);
-      } else {
-        this.completer.resolve(response);
-      }
-    };
-    _PendingRequest.prototype.getPromise = function() {
-      return this.completer.promise;
-    };
-    return _PendingRequest;
-  })();
-  var _Expectation = (function() {
-    function _Expectation(url, response) {
-      this.url = url;
-      this.response = response;
-    }
-    return _Expectation;
-  })();
-  global.define = __define;
-  return module.exports;
-});
-
-System.register("angular2/src/mock/mock_application_ref", ["angular2/src/core/application_ref", "angular2/src/core/di"], true, function(require, exports, module) {
-  var global = System.global,
-      __define = global.define;
-  global.define = undefined;
-  var __extends = (this && this.__extends) || function(d, b) {
-    for (var p in b)
-      if (b.hasOwnProperty(p))
-        d[p] = b[p];
-    function __() {
-      this.constructor = d;
-    }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-  };
-  var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
-    var c = arguments.length,
-        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
-        d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
-      r = Reflect.decorate(decorators, target, key, desc);
-    else
-      for (var i = decorators.length - 1; i >= 0; i--)
-        if (d = decorators[i])
-          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-  };
-  var __metadata = (this && this.__metadata) || function(k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
-      return Reflect.metadata(k, v);
-  };
-  var application_ref_1 = require("angular2/src/core/application_ref");
-  var di_1 = require("angular2/src/core/di");
-  var MockApplicationRef = (function(_super) {
-    __extends(MockApplicationRef, _super);
-    function MockApplicationRef() {
-      _super.apply(this, arguments);
-    }
-    MockApplicationRef.prototype.registerBootstrapListener = function(listener) {};
-    MockApplicationRef.prototype.registerDisposeListener = function(dispose) {};
-    MockApplicationRef.prototype.bootstrap = function(componentType, bindings) {
-      return null;
-    };
-    Object.defineProperty(MockApplicationRef.prototype, "injector", {
-      get: function() {
-        return null;
-      },
-      enumerable: true,
-      configurable: true
-    });
-    ;
-    Object.defineProperty(MockApplicationRef.prototype, "zone", {
-      get: function() {
-        return null;
-      },
-      enumerable: true,
-      configurable: true
-    });
-    ;
-    MockApplicationRef.prototype.dispose = function() {};
-    MockApplicationRef.prototype.tick = function() {};
-    Object.defineProperty(MockApplicationRef.prototype, "componentTypes", {
-      get: function() {
-        return null;
-      },
-      enumerable: true,
-      configurable: true
-    });
-    ;
-    MockApplicationRef = __decorate([di_1.Injectable(), __metadata('design:paramtypes', [])], MockApplicationRef);
-    return MockApplicationRef;
-  })(application_ref_1.ApplicationRef);
-  exports.MockApplicationRef = MockApplicationRef;
-  global.define = __define;
-  return module.exports;
-});
-
 System.register("angular2/src/testing/test_component_builder", ["angular2/core", "angular2/src/facade/lang", "angular2/src/facade/collection", "angular2/src/testing/utils", "angular2/src/platform/dom/dom_tokens", "angular2/src/platform/dom/dom_adapter", "angular2/src/core/debug/debug_element"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
@@ -1826,191 +1578,126 @@ System.register("angular2/src/testing/test_component_builder", ["angular2/core",
   return module.exports;
 });
 
-System.register("angular2/src/web_workers/shared/serializer", ["angular2/src/facade/lang", "angular2/src/facade/exceptions", "angular2/src/facade/collection", "angular2/src/core/render/api", "angular2/src/core/di", "angular2/src/web_workers/shared/render_store", "angular2/src/core/metadata/view"], true, function(require, exports, module) {
+System.register("angular2/src/compiler/xhr_mock", ["angular2/src/compiler/xhr", "angular2/src/facade/collection", "angular2/src/facade/lang", "angular2/src/facade/exceptions", "angular2/src/facade/async"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
-  var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
-    var c = arguments.length,
-        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
-        d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
-      r = Reflect.decorate(decorators, target, key, desc);
-    else
-      for (var i = decorators.length - 1; i >= 0; i--)
-        if (d = decorators[i])
-          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
+  var __extends = (this && this.__extends) || function(d, b) {
+    for (var p in b)
+      if (b.hasOwnProperty(p))
+        d[p] = b[p];
+    function __() {
+      this.constructor = d;
+    }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
   };
-  var __metadata = (this && this.__metadata) || function(k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
-      return Reflect.metadata(k, v);
-  };
+  var xhr_1 = require("angular2/src/compiler/xhr");
+  var collection_1 = require("angular2/src/facade/collection");
   var lang_1 = require("angular2/src/facade/lang");
   var exceptions_1 = require("angular2/src/facade/exceptions");
-  var collection_1 = require("angular2/src/facade/collection");
-  var api_1 = require("angular2/src/core/render/api");
-  var di_1 = require("angular2/src/core/di");
-  var render_store_1 = require("angular2/src/web_workers/shared/render_store");
-  var view_1 = require("angular2/src/core/metadata/view");
-  exports.PRIMITIVE = String;
-  var Serializer = (function() {
-    function Serializer(_renderStore) {
-      this._renderStore = _renderStore;
+  var async_1 = require("angular2/src/facade/async");
+  var MockXHR = (function(_super) {
+    __extends(MockXHR, _super);
+    function MockXHR() {
+      _super.apply(this, arguments);
+      this._expectations = [];
+      this._definitions = new collection_1.Map();
+      this._requests = [];
     }
-    Serializer.prototype.serialize = function(obj, type) {
-      var _this = this;
-      if (!lang_1.isPresent(obj)) {
-        return null;
-      }
-      if (lang_1.isArray(obj)) {
-        return obj.map(function(v) {
-          return _this.serialize(v, type);
-        });
-      }
-      if (type == exports.PRIMITIVE) {
-        return obj;
-      }
-      if (type == RenderStoreObject) {
-        return this._renderStore.serialize(obj);
-      } else if (type === api_1.RenderComponentType) {
-        return this._serializeRenderComponentType(obj);
-      } else if (type === view_1.ViewEncapsulation) {
-        return lang_1.serializeEnum(obj);
-      } else {
-        throw new exceptions_1.BaseException("No serializer for " + type.toString());
-      }
+    MockXHR.prototype.get = function(url) {
+      var request = new _PendingRequest(url);
+      this._requests.push(request);
+      return request.getPromise();
     };
-    Serializer.prototype.deserialize = function(map, type, data) {
-      var _this = this;
-      if (!lang_1.isPresent(map)) {
-        return null;
-      }
-      if (lang_1.isArray(map)) {
-        var obj = [];
-        map.forEach(function(val) {
-          return obj.push(_this.deserialize(val, type, data));
-        });
-        return obj;
-      }
-      if (type == exports.PRIMITIVE) {
-        return map;
-      }
-      if (type == RenderStoreObject) {
-        return this._renderStore.deserialize(map);
-      } else if (type === api_1.RenderComponentType) {
-        return this._deserializeRenderComponentType(map);
-      } else if (type === view_1.ViewEncapsulation) {
-        return view_1.VIEW_ENCAPSULATION_VALUES[map];
-      } else {
-        throw new exceptions_1.BaseException("No deserializer for " + type.toString());
-      }
+    MockXHR.prototype.expect = function(url, response) {
+      var expectation = new _Expectation(url, response);
+      this._expectations.push(expectation);
     };
-    Serializer.prototype.mapToObject = function(map, type) {
-      var _this = this;
-      var object = {};
-      var serialize = lang_1.isPresent(type);
-      map.forEach(function(value, key) {
-        if (serialize) {
-          object[key] = _this.serialize(value, type);
-        } else {
-          object[key] = value;
+    MockXHR.prototype.when = function(url, response) {
+      this._definitions.set(url, response);
+    };
+    MockXHR.prototype.flush = function() {
+      if (this._requests.length === 0) {
+        throw new exceptions_1.BaseException('No pending requests to flush');
+      }
+      do {
+        this._processRequest(this._requests.shift());
+      } while (this._requests.length > 0);
+      this.verifyNoOutstandingExpectations();
+    };
+    MockXHR.prototype.verifyNoOutstandingExpectations = function() {
+      if (this._expectations.length === 0)
+        return ;
+      var urls = [];
+      for (var i = 0; i < this._expectations.length; i++) {
+        var expectation = this._expectations[i];
+        urls.push(expectation.url);
+      }
+      throw new exceptions_1.BaseException("Unsatisfied requests: " + urls.join(', '));
+    };
+    MockXHR.prototype._processRequest = function(request) {
+      var url = request.url;
+      if (this._expectations.length > 0) {
+        var expectation = this._expectations[0];
+        if (expectation.url == url) {
+          collection_1.ListWrapper.remove(this._expectations, expectation);
+          request.complete(expectation.response);
+          return ;
         }
-      });
-      return object;
+      }
+      if (this._definitions.has(url)) {
+        var response = this._definitions.get(url);
+        request.complete(lang_1.normalizeBlank(response));
+        return ;
+      }
+      throw new exceptions_1.BaseException("Unexpected request " + url);
     };
-    Serializer.prototype.objectToMap = function(obj, type, data) {
-      var _this = this;
-      if (lang_1.isPresent(type)) {
-        var map = new collection_1.Map();
-        collection_1.StringMapWrapper.forEach(obj, function(val, key) {
-          map.set(key, _this.deserialize(val, type, data));
-        });
-        return map;
+    return MockXHR;
+  })(xhr_1.XHR);
+  exports.MockXHR = MockXHR;
+  var _PendingRequest = (function() {
+    function _PendingRequest(url) {
+      this.url = url;
+      this.completer = async_1.PromiseWrapper.completer();
+    }
+    _PendingRequest.prototype.complete = function(response) {
+      if (lang_1.isBlank(response)) {
+        this.completer.reject("Failed to load " + this.url, null);
       } else {
-        return collection_1.MapWrapper.createFromStringMap(obj);
+        this.completer.resolve(response);
       }
     };
-    Serializer.prototype._serializeRenderComponentType = function(obj) {
-      return {
-        'id': obj.id,
-        'encapsulation': this.serialize(obj.encapsulation, view_1.ViewEncapsulation),
-        'styles': this.serialize(obj.styles, exports.PRIMITIVE)
-      };
+    _PendingRequest.prototype.getPromise = function() {
+      return this.completer.promise;
     };
-    Serializer.prototype._deserializeRenderComponentType = function(map) {
-      return new api_1.RenderComponentType(map['id'], this.deserialize(map['encapsulation'], view_1.ViewEncapsulation), this.deserialize(map['styles'], exports.PRIMITIVE));
-    };
-    Serializer = __decorate([di_1.Injectable(), __metadata('design:paramtypes', [render_store_1.RenderStore])], Serializer);
-    return Serializer;
+    return _PendingRequest;
   })();
-  exports.Serializer = Serializer;
-  var RenderStoreObject = (function() {
-    function RenderStoreObject() {}
-    return RenderStoreObject;
+  var _Expectation = (function() {
+    function _Expectation(url, response) {
+      this.url = url;
+      this.response = response;
+    }
+    return _Expectation;
   })();
-  exports.RenderStoreObject = RenderStoreObject;
   global.define = __define;
   return module.exports;
 });
 
-System.register("angular2/src/testing/test_injector", ["angular2/core", "angular2/src/animate/animation_builder", "angular2/src/mock/animation_builder_mock", "angular2/src/core/linker/resolved_metadata_cache", "angular2/src/core/reflection/reflection", "angular2/src/core/change_detection/change_detection", "angular2/src/facade/exceptions", "angular2/src/core/linker/pipe_resolver", "angular2/src/compiler/xhr", "angular2/src/platform/dom/dom_adapter", "angular2/src/mock/directive_resolver_mock", "angular2/src/mock/view_resolver_mock", "angular2/src/mock/mock_location_strategy", "angular2/src/router/location_strategy", "angular2/src/mock/ng_zone_mock", "angular2/src/testing/test_component_builder", "angular2/platform/common_dom", "angular2/src/facade/collection", "angular2/src/facade/lang", "angular2/src/core/render/api", "angular2/src/platform/dom/dom_tokens", "angular2/src/platform/dom/dom_renderer", "angular2/src/platform/dom/shared_styles_host", "angular2/src/platform/dom/shared_styles_host", "angular2/src/platform/dom/events/dom_events", "angular2/src/web_workers/shared/serializer", "angular2/src/testing/utils", "angular2/src/compiler/compiler", "angular2/src/core/linker/dynamic_component_loader", "angular2/src/core/linker/view_manager"], true, function(require, exports, module) {
+System.register("angular2/src/testing/test_injector", ["angular2/core", "angular2/src/facade/exceptions", "angular2/src/facade/collection", "angular2/src/facade/lang"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
   var core_1 = require("angular2/core");
-  var animation_builder_1 = require("angular2/src/animate/animation_builder");
-  var animation_builder_mock_1 = require("angular2/src/mock/animation_builder_mock");
-  var resolved_metadata_cache_1 = require("angular2/src/core/linker/resolved_metadata_cache");
-  var reflection_1 = require("angular2/src/core/reflection/reflection");
-  var change_detection_1 = require("angular2/src/core/change_detection/change_detection");
   var exceptions_1 = require("angular2/src/facade/exceptions");
-  var pipe_resolver_1 = require("angular2/src/core/linker/pipe_resolver");
-  var xhr_1 = require("angular2/src/compiler/xhr");
-  var dom_adapter_1 = require("angular2/src/platform/dom/dom_adapter");
-  var directive_resolver_mock_1 = require("angular2/src/mock/directive_resolver_mock");
-  var view_resolver_mock_1 = require("angular2/src/mock/view_resolver_mock");
-  var mock_location_strategy_1 = require("angular2/src/mock/mock_location_strategy");
-  var location_strategy_1 = require("angular2/src/router/location_strategy");
-  var ng_zone_mock_1 = require("angular2/src/mock/ng_zone_mock");
-  var test_component_builder_1 = require("angular2/src/testing/test_component_builder");
-  var common_dom_1 = require("angular2/platform/common_dom");
   var collection_1 = require("angular2/src/facade/collection");
   var lang_1 = require("angular2/src/facade/lang");
-  var api_1 = require("angular2/src/core/render/api");
-  var dom_tokens_1 = require("angular2/src/platform/dom/dom_tokens");
-  var dom_renderer_1 = require("angular2/src/platform/dom/dom_renderer");
-  var shared_styles_host_1 = require("angular2/src/platform/dom/shared_styles_host");
-  var shared_styles_host_2 = require("angular2/src/platform/dom/shared_styles_host");
-  var dom_events_1 = require("angular2/src/platform/dom/events/dom_events");
-  var serializer_1 = require("angular2/src/web_workers/shared/serializer");
-  var utils_1 = require("angular2/src/testing/utils");
-  var compiler_1 = require("angular2/src/compiler/compiler");
-  var dynamic_component_loader_1 = require("angular2/src/core/linker/dynamic_component_loader");
-  var view_manager_1 = require("angular2/src/core/linker/view_manager");
-  function _getRootProviders() {
-    return [core_1.provide(reflection_1.Reflector, {useValue: reflection_1.reflector})];
-  }
-  function _getAppBindings() {
-    var appDoc;
-    try {
-      appDoc = dom_adapter_1.DOM.defaultDoc();
-    } catch (e) {
-      appDoc = null;
-    }
-    return [core_1.APPLICATION_COMMON_PROVIDERS, core_1.provide(change_detection_1.ChangeDetectorGenConfig, {useValue: new change_detection_1.ChangeDetectorGenConfig(true, false, false)}), core_1.provide(dom_tokens_1.DOCUMENT, {useValue: appDoc}), core_1.provide(dom_renderer_1.DomRootRenderer, {useClass: dom_renderer_1.DomRootRenderer_}), core_1.provide(api_1.RootRenderer, {useExisting: dom_renderer_1.DomRootRenderer}), core_1.provide(core_1.APP_ID, {useValue: 'a'}), shared_styles_host_1.DomSharedStylesHost, core_1.provide(shared_styles_host_2.SharedStylesHost, {useExisting: shared_styles_host_1.DomSharedStylesHost}), core_1.provide(core_1.AppViewManager, {useClass: view_manager_1.AppViewManager_}), serializer_1.Serializer, common_dom_1.ELEMENT_PROBE_PROVIDERS, resolved_metadata_cache_1.ResolvedMetadataCache, core_1.provide(core_1.DirectiveResolver, {useClass: directive_resolver_mock_1.MockDirectiveResolver}), core_1.provide(core_1.ViewResolver, {useClass: view_resolver_mock_1.MockViewResolver}), core_1.provide(change_detection_1.IterableDiffers, {useValue: change_detection_1.defaultIterableDiffers}), core_1.provide(change_detection_1.KeyValueDiffers, {useValue: change_detection_1.defaultKeyValueDiffers}), utils_1.Log, core_1.provide(core_1.DynamicComponentLoader, {useClass: dynamic_component_loader_1.DynamicComponentLoader_}), pipe_resolver_1.PipeResolver, core_1.provide(exceptions_1.ExceptionHandler, {useValue: new exceptions_1.ExceptionHandler(dom_adapter_1.DOM)}), core_1.provide(location_strategy_1.LocationStrategy, {useClass: mock_location_strategy_1.MockLocationStrategy}), core_1.provide(xhr_1.XHR, {useClass: dom_adapter_1.DOM.getXHR()}), test_component_builder_1.TestComponentBuilder, core_1.provide(core_1.NgZone, {useClass: ng_zone_mock_1.MockNgZone}), core_1.provide(animation_builder_1.AnimationBuilder, {useClass: animation_builder_mock_1.MockAnimationBuilder}), common_dom_1.EventManager, new core_1.Provider(common_dom_1.EVENT_MANAGER_PLUGINS, {
-      useClass: dom_events_1.DomEventsPlugin,
-      multi: true
-    })];
-  }
-  function _runtimeCompilerBindings() {
-    return [core_1.provide(xhr_1.XHR, {useClass: dom_adapter_1.DOM.getXHR()}), compiler_1.COMPILER_PROVIDERS];
-  }
   var TestInjector = (function() {
     function TestInjector() {
       this._instantiated = false;
       this._injector = null;
       this._providers = [];
+      this.platformProviders = [];
+      this.applicationProviders = [];
     }
     TestInjector.prototype.reset = function() {
       this._injector = null;
@@ -2024,8 +1711,8 @@ System.register("angular2/src/testing/test_injector", ["angular2/core", "angular
       this._providers = collection_1.ListWrapper.concat(this._providers, providers);
     };
     TestInjector.prototype.createInjector = function() {
-      var rootInjector = core_1.Injector.resolveAndCreate(_getRootProviders());
-      this._injector = rootInjector.resolveAndCreateChild(collection_1.ListWrapper.concat(collection_1.ListWrapper.concat(_getAppBindings(), _runtimeCompilerBindings()), this._providers));
+      var rootInjector = core_1.Injector.resolveAndCreate(this.platformProviders);
+      this._injector = rootInjector.resolveAndCreateChild(collection_1.ListWrapper.concat(this.applicationProviders, this._providers));
       this._instantiated = true;
       return this._injector;
     };
@@ -2046,15 +1733,30 @@ System.register("angular2/src/testing/test_injector", ["angular2/core", "angular
     return _testInjector;
   }
   exports.getTestInjector = getTestInjector;
-  function createTestInjector(providers) {
-    var rootInjector = core_1.Injector.resolveAndCreate(_getRootProviders());
-    return rootInjector.resolveAndCreateChild(collection_1.ListWrapper.concat(_getAppBindings(), providers));
+  function setBaseTestProviders(platformProviders, applicationProviders) {
+    var testInjector = getTestInjector();
+    if (testInjector.platformProviders.length > 0 || testInjector.applicationProviders.length > 0) {
+      throw new exceptions_1.BaseException('Cannot set base providers because it has already been called');
+    }
+    testInjector.platformProviders = platformProviders;
+    testInjector.applicationProviders = applicationProviders;
+    var injector = testInjector.createInjector();
+    var inits = injector.getOptional(core_1.PLATFORM_INITIALIZER);
+    if (lang_1.isPresent(inits)) {
+      inits.forEach(function(init) {
+        return init();
+      });
+    }
+    testInjector.reset();
   }
-  exports.createTestInjector = createTestInjector;
-  function createTestInjectorWithRuntimeCompiler(providers) {
-    return createTestInjector(collection_1.ListWrapper.concat(_runtimeCompilerBindings(), providers));
+  exports.setBaseTestProviders = setBaseTestProviders;
+  function resetBaseTestProviders() {
+    var testInjector = getTestInjector();
+    testInjector.platformProviders = [];
+    testInjector.applicationProviders = [];
+    testInjector.reset();
   }
-  exports.createTestInjectorWithRuntimeCompiler = createTestInjectorWithRuntimeCompiler;
+  exports.resetBaseTestProviders = resetBaseTestProviders;
   function inject(tokens, fn) {
     return new FunctionWithParamTokens(tokens, fn, false);
   }
