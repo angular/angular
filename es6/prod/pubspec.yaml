@@ -9,7 +9,7 @@ homepage: <%= packageJson.homepage %>
 environment:
   sdk: '>=1.10.0 <2.0.0'
 dependencies:
-  analyzer: '>=0.24.4 <0.27.0'
+  analyzer: '>=0.24.4 <0.28.0'
   barback: '^0.15.2+2'
   dart_style: '>=0.1.8 <0.3.0'
   glob: '^1.0.0'
@@ -22,8 +22,9 @@ dependencies:
   source_span: '^1.0.0'
   stack_trace: '^1.1.1'
 dev_dependencies:
-  code_transformers: '0.2.9+4'
+  code_transformers: '>=0.2.9+4 <0.4.0'
   guinness: '^0.1.18'
+  test: '^0.12.6'
 transformers:
 - angular2
 - $dart2js:
