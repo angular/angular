@@ -10,4 +10,4 @@ export declare class WebWorkerInstance {
 /**
  * An array of providers that should be passed into `application()` when initializing a new Worker.
  */
-export declare const WORKER_RENDER_APP: Array<any>;
+export declare const WORKER_RENDER_APPLICATION: Array<any>;
