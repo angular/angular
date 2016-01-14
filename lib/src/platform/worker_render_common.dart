@@ -73,7 +73,7 @@ const List<dynamic> WORKER_RENDER_PLATFORM = const [
   const Provider(PLATFORM_INITIALIZER,
       useValue: initWebWorkerRenderPlatform, multi: true)
 ];
-const List<dynamic> WORKER_RENDER_APPLICATION_COMMON = const [
+const List<dynamic> WORKER_RENDER_APP_COMMON = const [
   APPLICATION_COMMON_PROVIDERS, WORKER_RENDER_MESSAGING_PROVIDERS,
   const Provider(ExceptionHandler,
       useFactory: _exceptionHandler, deps: const []),
