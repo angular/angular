@@ -38,7 +38,7 @@ function getComponentsCssTree() {
     return scssFiles.map(fileName => {
       return BroccoliSass(
         [`src/components/${component}`, 'src/core/style'], // Directories w/ scss sources
-        `./${component}.scss`,                             // Root scss input file
+        `./${fileName}.scss`,                             // Root scss input file
         `components/${component}/${fileName}.css`);        // Css output file
     }).concat(trees);
   }, []);
