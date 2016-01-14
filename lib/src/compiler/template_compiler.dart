@@ -127,8 +127,7 @@ class TemplateCompiler {
       assertComponent(compMeta);
       CompileDirectiveMetadata hostMeta =
           createHostComponentMeta(compMeta.type, compMeta.selector);
-      this._compileComponentRuntime(
-          hostCacheKey, hostMeta, [compMeta], [], new Set());
+      this._compileComponentRuntime(hostCacheKey, hostMeta, [compMeta], [], []);
     }
     return this._compiledTemplateDone[
         hostCacheKey].then((CompiledTemplate compiledTemplate) =>
@@ -181,7 +180,7 @@ class TemplateCompiler {
       CompileDirectiveMetadata compMeta,
       List<CompileDirectiveMetadata> viewDirectives,
       List<CompilePipeMetadata> pipes,
-      Set<dynamic> compilingComponentCacheKeys) {
+      List<dynamic> compilingComponentsPath) {
     var uniqViewDirectives =
         (removeDuplicates(viewDirectives) as List<CompileDirectiveMetadata>);
     var uniqViewPipes = (removeDuplicates(pipes) as List<CompilePipeMetadata>);
@@ -190,7 +189,6 @@ class TemplateCompiler {
     if (isBlank(compiledTemplate)) {
       compiledTemplate = new CompiledTemplate();
       this._compiledTemplateCache[cacheKey] = compiledTemplate;
-      compilingComponentCacheKeys.add(cacheKey);
       done = PromiseWrapper
           .all((new List.from([
         (this._styleCompiler.compileComponentRuntime(compMeta.template)
@@ -213,7 +211,7 @@ class TemplateCompiler {
             DirectiveCollector.findUsedDirectives(parsedTemplate);
         usedDirectives.components.forEach((component) => this
             ._compileNestedComponentRuntime(
-                component, compilingComponentCacheKeys, childPromises));
+                component, compilingComponentsPath, childPromises));
         return PromiseWrapper.all(childPromises).then((_) {
           var filteredPipes = filterPipes(parsedTemplate, uniqViewPipes);
           compiledTemplate.init(this._createViewFactoryRuntime(
@@ -222,7 +220,6 @@ class TemplateCompiler {
               usedDirectives.directives,
               styles,
               filteredPipes));
-          SetWrapper.delete(compilingComponentCacheKeys, cacheKey);
           return compiledTemplate;
         });
       });
@@ -233,8 +230,10 @@ class TemplateCompiler {
 
   _compileNestedComponentRuntime(
       CompileDirectiveMetadata childComponentDir,
-      Set<Type> compilingComponentCacheKeys,
+      List<dynamic> parentCompilingComponentsPath,
       List<Future<dynamic>> childPromises) {
+    var compilingComponentsPath =
+        ListWrapper.clone(parentCompilingComponentsPath);
     var childCacheKey = childComponentDir.type.runtime;
     List<CompileDirectiveMetadata> childViewDirectives = this
         ._runtimeMetadataResolver
@@ -243,9 +242,10 @@ class TemplateCompiler {
         ._runtimeMetadataResolver
         .getViewPipesMetadata(childComponentDir.type.runtime);
     var childIsRecursive =
-        SetWrapper.has(compilingComponentCacheKeys, childCacheKey);
+        ListWrapper.contains(compilingComponentsPath, childCacheKey);
+    compilingComponentsPath.add(childCacheKey);
     this._compileComponentRuntime(childCacheKey, childComponentDir,
-        childViewDirectives, childViewPipes, compilingComponentCacheKeys);
+        childViewDirectives, childViewPipes, compilingComponentsPath);
     if (!childIsRecursive) {
       // Only wait for a child if it is not a cycle
       childPromises.add(this._compiledTemplateDone[childCacheKey]);
