@@ -15,6 +15,7 @@ import {
   xit
 } from 'angular2/testing_internal';
 
+import {By} from 'angular2/platform/common_dom';
 import {provide, Component, Injector, Inject} from 'angular2/core';
 
 import {Router, ROUTER_DIRECTIVES, RouteParams, RouteData, Location} from 'angular2/router';
@@ -24,7 +25,7 @@ import {specs, compile, TEST_ROUTER_PROVIDERS, clickOnElement, getHref} from '..
 import {BaseException} from 'angular2/src/facade/exceptions';
 
 function getLinkElement(rtc: ComponentFixture, linkIndex: number = 0) {
-  return rtc.debugElement.componentViewChildren[linkIndex].nativeElement;
+  return rtc.debugElement.queryAll(By.css('a'))[linkIndex].nativeElement;
 }
 
 function auxRoutes() {

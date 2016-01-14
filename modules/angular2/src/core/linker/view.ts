@@ -27,7 +27,7 @@ import {
   CONST_EXPR
 } from 'angular2/src/facade/lang';
 import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
-import {Renderer, RootRenderer} from 'angular2/src/core/render/api';
+import {Renderer, RootRenderer, RenderDebugInfo} from 'angular2/src/core/render/api';
 import {ViewRef_, HostViewFactoryRef} from './view_ref';
 import {ProtoPipes} from 'angular2/src/core/pipes/pipes';
 import {camelCaseToDashCase} from 'angular2/src/core/render/util';
@@ -119,6 +119,12 @@ export class AppView implements ChangeDispatcher {
                              (templateName, _) => { localsMap.set(templateName, null); });
     for (var i = 0; i < appElements.length; i++) {
       var appEl = appElements[i];
+      var providerTokens = [];
+      if (isPresent(appEl.proto.protoInjector)) {
+        for (var j = 0; j < appEl.proto.protoInjector.numberOfProviders; j++) {
+          providerTokens.push(appEl.proto.protoInjector.getProviderAtIndex(j).key.token);
+        }
+      }
       StringMapWrapper.forEach(appEl.proto.directiveVariableBindings, (directiveIndex, name) => {
         if (isBlank(directiveIndex)) {
           localsMap.set(name, appEl.nativeElement);
@@ -126,6 +132,9 @@ export class AppView implements ChangeDispatcher {
           localsMap.set(name, appEl.getDirectiveAtIndex(directiveIndex));
         }
       });
+      this.renderer.setElementDebugInfo(
+          appEl.nativeElement, new RenderDebugInfo(appEl.getInjector(), appEl.getComponent(),
+                                                   providerTokens, localsMap));
     }
     var parentLocals = null;
     if (this.proto.type !== ViewType.COMPONENT) {
