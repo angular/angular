@@ -11,7 +11,6 @@ import {DirectiveResolver} from 'angular2/src/core/linker/directive_resolver';
 import {AppView, AppProtoView, HostViewFactory} from 'angular2/src/core/linker/view';
 import {ElementRef} from 'angular2/src/core/linker/element_ref';
 import {AppViewManager_} from 'angular2/src/core/linker/view_manager';
-import {AppViewListener} from 'angular2/src/core/linker/view_listener';
 import {DomAdapter} from 'angular2/src/platform/dom/dom_adapter';
 
 import {SpyObject, proxy} from 'angular2/testing_internal';
@@ -71,6 +70,7 @@ export class SpyRenderer extends SpyObject {
     this.spy('setElementProperty');
     this.spy('setElementAttribute');
     this.spy('setBindingDebugInfo');
+    this.spy('setElementDebugInfo');
     this.spy('setElementClass');
     this.spy('setElementStyle');
     this.spy('invokeElementMethod');
@@ -86,10 +86,6 @@ export class SpyRootRenderer extends SpyObject {
     super(SpyRootRenderer);
     this.spy('renderComponent');
   }
-}
-
-export class SpyAppViewListener extends SpyObject {
-  constructor() { super(AppViewListener); }
 }
 
 export class SpyDomAdapter extends SpyObject {

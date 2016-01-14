@@ -1,4 +1,9 @@
-import {Renderer, RootRenderer, RenderComponentType} from 'angular2/src/core/render/api';
+import {
+  Renderer,
+  RootRenderer,
+  RenderComponentType,
+  RenderDebugInfo
+} from 'angular2/src/core/render/api';
 import {
   ClientMessageBroker,
   ClientMessageBrokerFactory,
@@ -185,6 +190,8 @@ export class WebWorkerRenderer implements Renderer, RenderStoreObject {
       new FnArg(propertyValue, null)
     ]);
   }
+
+  setElementDebugInfo(renderElement: any, info: RenderDebugInfo) {}
 
   setElementClass(renderElement: any, className: string, isAdd: boolean) {
     this._runOnService('setElementClass', [
