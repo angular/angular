@@ -15699,7 +15699,7 @@ System.register("angular2/src/platform/worker_render", ["angular2/src/web_worker
     return WebWorkerInstance;
   })();
   exports.WebWorkerInstance = WebWorkerInstance;
-  exports.WORKER_RENDER_APP = lang_1.CONST_EXPR([worker_render_common_1.WORKER_RENDER_APP_COMMON, WebWorkerInstance, new di_1.Provider(core_1.APP_INITIALIZER, {
+  exports.WORKER_RENDER_APPLICATION = lang_1.CONST_EXPR([worker_render_common_1.WORKER_RENDER_APPLICATION_COMMON, WebWorkerInstance, new di_1.Provider(core_1.APP_INITIALIZER, {
     useFactory: function(injector) {
       return function() {
         return initWebWorkerApplication(injector);
@@ -22817,7 +22817,7 @@ System.register("angular2/src/platform/worker_render_common", ["angular2/src/fac
     useValue: initWebWorkerRenderPlatform,
     multi: true
   })]);
-  exports.WORKER_RENDER_APP_COMMON = lang_1.CONST_EXPR([core_1.APPLICATION_COMMON_PROVIDERS, exports.WORKER_RENDER_MESSAGING_PROVIDERS, new di_1.Provider(core_1.ExceptionHandler, {
+  exports.WORKER_RENDER_APPLICATION_COMMON = lang_1.CONST_EXPR([core_1.APPLICATION_COMMON_PROVIDERS, exports.WORKER_RENDER_MESSAGING_PROVIDERS, new di_1.Provider(core_1.ExceptionHandler, {
     useFactory: _exceptionHandler,
     deps: []
   }), new di_1.Provider(dom_tokens_1.DOCUMENT, {
@@ -22860,7 +22860,7 @@ System.register("angular2/src/platform/worker_render_common", ["angular2/src/fac
   return module.exports;
 });
 
-System.register("angular2/platform/worker_render", ["angular2/src/platform/worker_render_common", "angular2/src/platform/worker_render", "angular2/src/web_workers/shared/client_message_broker", "angular2/src/web_workers/shared/service_message_broker", "angular2/src/web_workers/shared/serializer", "angular2/src/web_workers/shared/message_bus"], true, function(require, exports, module) {
+System.register("angular2/platform/worker_render", ["angular2/src/platform/worker_render_common", "angular2/src/platform/worker_render", "angular2/src/web_workers/shared/client_message_broker", "angular2/src/web_workers/shared/service_message_broker", "angular2/src/web_workers/shared/serializer", "angular2/src/web_workers/shared/message_bus", "angular2/src/platform/worker_render"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
@@ -22873,8 +22873,10 @@ System.register("angular2/platform/worker_render", ["angular2/src/platform/worke
   exports.WORKER_SCRIPT = worker_render_common_1.WORKER_SCRIPT;
   exports.WORKER_RENDER_PLATFORM = worker_render_common_1.WORKER_RENDER_PLATFORM;
   exports.initializeGenericWorkerRenderer = worker_render_common_1.initializeGenericWorkerRenderer;
-  exports.WORKER_RENDER_APP_COMMON = worker_render_common_1.WORKER_RENDER_APP_COMMON;
-  __export(require("angular2/src/platform/worker_render"));
+  exports.WORKER_RENDER_APPLICATION_COMMON = worker_render_common_1.WORKER_RENDER_APPLICATION_COMMON;
+  var worker_render_1 = require("angular2/src/platform/worker_render");
+  exports.WORKER_RENDER_APPLICATION = worker_render_1.WORKER_RENDER_APPLICATION;
+  exports.WebWorkerInstance = worker_render_1.WebWorkerInstance;
   var client_message_broker_1 = require("angular2/src/web_workers/shared/client_message_broker");
   exports.ClientMessageBroker = client_message_broker_1.ClientMessageBroker;
   exports.ClientMessageBrokerFactory = client_message_broker_1.ClientMessageBrokerFactory;
@@ -22887,6 +22889,8 @@ System.register("angular2/platform/worker_render", ["angular2/src/platform/worke
   var serializer_1 = require("angular2/src/web_workers/shared/serializer");
   exports.PRIMITIVE = serializer_1.PRIMITIVE;
   __export(require("angular2/src/web_workers/shared/message_bus"));
+  var worker_render_2 = require("angular2/src/platform/worker_render");
+  exports.WORKER_RENDER_APP = worker_render_2.WORKER_RENDER_APPLICATION;
   global.define = __define;
   return module.exports;
 });
