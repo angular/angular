@@ -105,6 +105,22 @@ export function main() {
                  });
            }));
 
+        it('should compile components at various nesting levels',
+           inject([AsyncTestCompleter], (async) => {
+             compile([CompWith2NestedComps, Comp1, Comp2])
+                 .then((humanizedView) => {
+                   expect(humanizedView['elements']).toEqual(['<comp-with-2nested>']);
+                   expect(humanizedView['componentViews'][0]['elements'])
+                       .toEqual(['<comp1>', '<comp2>']);
+                   expect(humanizedView['componentViews'][0]['componentViews'][0]['elements'])
+                       .toEqual(['<a>', '<comp2>']);
+                   expect(humanizedView['componentViews'][0]['componentViews'][1]['elements'])
+                       .toEqual(['<b>']);
+
+                   async.done();
+                 });
+           }));
+
         it('should compile recursive components', inject([AsyncTestCompleter], (async) => {
              compile([TreeComp])
                  .then((humanizedView) => {
@@ -364,6 +380,29 @@ export class CompWithEmbeddedTemplate {
 export class NonComponent {
 }
 
+
+@Component({selector: 'comp2', moduleId: THIS_MODULE_ID})
+@View({template: '<b></b>', encapsulation: ViewEncapsulation.None})
+export class Comp2 {
+}
+
+@Component({selector: 'comp1', moduleId: THIS_MODULE_ID})
+@View({
+  template: '<a></a>, <comp2></comp2>',
+  encapsulation: ViewEncapsulation.None,
+  directives: [Comp2]
+})
+export class Comp1 {
+}
+
+@Component({selector: 'comp-with-2nested', moduleId: THIS_MODULE_ID})
+@View({
+  template: '<comp1></comp1>, <comp2></comp2>',
+  encapsulation: ViewEncapsulation.None,
+  directives: [Comp1, Comp2]
+})
+export class CompWith2NestedComps {
+}
 
 function testableTemplateModule(sourceModule: SourceModule,
                                 normComp: CompileDirectiveMetadata): SourceModule {
