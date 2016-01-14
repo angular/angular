@@ -5,25 +5,20 @@ import "dart:async";
 import "package:angular2/testing_internal.dart"
     show
         AsyncTestCompleter,
-        SpyObject,
+        inject,
+        describe,
+        it,
+        expect,
         beforeEach,
         beforeEachProviders,
-        describe,
-        expect,
-        inject,
-        it,
-        proxy,
-        testSetup;
-import 'package:angular2/src/platform/server/html_adapter.dart';
+        SpyObject,
+        proxy;
 import "package:angular2/src/web_workers/debug_tools/single_client_server_message_bus.dart";
 import "./message_bus_common.dart";
 import "./spy_web_socket.dart";
 import "dart:convert" show JSON;
 
 main() {
-  Html5LibDomAdapter.makeCurrent();
-  testSetup();
-
   var MESSAGE = const {'test': 10};
   const CHANNEL = "TEST_CHANNEL";
   describe("SingleClientServerMessageBusSink", () {

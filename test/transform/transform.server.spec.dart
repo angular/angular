@@ -1,4 +1,4 @@
-library angular2.test.transform.transform.server.spec;
+library angular2.test.transform;
 
 import 'package:guinness/guinness.dart';
 import 'package:unittest/unittest.dart' hide expect;
@@ -12,6 +12,7 @@ import 'deferred_rewriter/all_tests.dart' as deferredRewriter;
 import 'directive_metadata_linker/all_tests.dart' as directiveMeta;
 import 'directive_processor/all_tests.dart' as directiveProcessor;
 import 'inliner_for_test/all_tests.dart' as inliner;
+import 'integration/all_tests.dart' as integration;
 import 'reflection_remover/all_tests.dart' as reflectionRemover;
 import 'template_compiler/all_tests.dart' as templateCompiler;
 import 'stylesheet_compiler/all_tests.dart' as stylesheetCompiler;
@@ -29,4 +30,8 @@ main() {
   describe('Deferred Rewriter', deferredRewriter.allTests);
   describe('Stylesheet Compiler', stylesheetCompiler.allTests);
   describe('Url Resolver', urlResolver.allTests);
+  // NOTE(kegluneq): These use `code_transformers#testPhases`, which is not
+  // designed to work with `guinness`.
+  group('Inliner For Test e2e', inliner.endToEndTests);
+  group('Transformer Pipeline', integration.allTests);
 }
