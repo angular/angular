@@ -1,0 +1,11 @@
+
+/**
+ * Mixin that creates a new stacking context.
+ * see https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Positioning/Understanding_z_index/The_stacking_context
+ */
+@mixin md-stacking-context() {
+  position: relative;
+
+  // Use a transform to create a new stacking context.
+  transform: translate3D(0, 0, 0);
+}

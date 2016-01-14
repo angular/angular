@@ -46,6 +46,8 @@ export function config(config) {
       // required for component assests fetched by Angular's compiler
       '/demo-app/': '/base/dist/demo-app/',
       '/components/': '/base/dist/components/',
+      '/core/': '/base/dist/core/',
+      '/directives/': '/base/dist/directives/',
     },
 
     customLaunchers: customLaunchers,

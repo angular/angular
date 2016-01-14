@@ -1,0 +1,143 @@
+@import "default-theme";
+@import "mixins";
+@import "variables";
+@import "shadows";
+
+
+// We use invert() here to have the darken the background color expected to be used. If the
+// background is light, we use a dark backdrop. If the background is dark, we use a light backdrop.
+$md-sidenav-backdrop-color: invert(md-color($md-background, card, 0.6)) !default;
+$md-sidenav-background-color: md-color($md-background, dialog) !default;
+$md-sidenav-push-background-color: md-color($md-background, dialog) !default;
+
+
+/**
+ * Mixin to help with defining LTR/RTL `transform: translateX()` values.
+ * @param $open The translation value when the sidenav is opened.
+ * @param $close The translation value when the sidenav is closed.
+ */
+@mixin md-sidenav-transition($open, $close) {
+  transform: translateX($close);
+
+  &.md-sidenav-closed {
+    // We use `visibility: hidden | visible` because `display: none` will not animate any
+    // transitions, while visibility will interpolate transitions properly.
+    // see https://developer.mozilla.org/en-US/docs/Web/CSS/visibility, the Interpolation
+    // section.
+    visibility: hidden;
+  }
+  &.md-sidenav-closing {
+    transform: translateX($close);
+    will-change: transform;
+  }
+  &.md-sidenav-opening {
+    visibility: visible;
+    transform: translateX($open);
+    will-change: transform;
+    box-shadow: $md-shadow-bottom-z-1;
+  }
+  &.md-sidenav-opened {
+    transform: translateX($open);
+    box-shadow: $md-shadow-bottom-z-1;
+  }
+}
+
+
+:host {
+  // We need a stacking context here so that the backdrop and drawers are clipped to the
+  // MdSidenavLayout. This creates a new z-index stack so we use low numbered z-indices.
+  // We create another stacking context in the `<md-content>` and in each sidenav so that
+  // the application content does not get messed up with our own CSS.
+  @include md-stacking-context();
+
+  box-sizing: border-box;
+
+  // Need this to take up space in the layout.
+  display: block;
+
+  // Hide the sidenavs when they're closed.
+  overflow-x: hidden;
+
+  transition: margin-left $swift-ease-out-duration $swift-ease-out-timing-function,
+              margin-right $swift-ease-out-duration $swift-ease-out-timing-function;
+
+  & > .md-sidenav-backdrop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    display: block;
+
+    // Because of the new stacking context, the z-index stack is new and we can use our own
+    // numbers.
+    z-index: 2;
+
+    // We use `visibility: hidden | visible` because `display: none` will not animate any
+    // transitions, while visibility will interpolate transitions properly.
+    // see https://developer.mozilla.org/en-US/docs/Web/CSS/visibility, the Interpolation
+    // section.
+    visibility: hidden;
+
+    &.md-sidenav-shown {
+      visibility: visible;
+      background-color: $md-sidenav-backdrop-color;
+      transition: background-color $swift-ease-out-duration $swift-ease-out-timing-function;
+    }
+  }
+
+  & > md-content {
+    @include md-stacking-context();
+
+    display: block;
+    transition: margin-left $swift-ease-out-duration $swift-ease-out-timing-function,
+                margin-right $swift-ease-out-duration $swift-ease-out-timing-function,
+                left $swift-ease-out-duration $swift-ease-out-timing-function,
+                right $swift-ease-out-duration $swift-ease-out-timing-function;
+  }
+
+  > md-sidenav {
+    @include md-stacking-context();
+
+    display: block;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    z-index: 3;
+
+    background-color: $md-sidenav-background-color;
+
+    transition: transform $swift-ease-out-duration $swift-ease-out-timing-function;
+
+    @include md-sidenav-transition(0, -100%);
+
+    &.md-sidenav-push {
+      background-color: $md-sidenav-push-background-color;
+    }
+
+    &.md-sidenav-side {
+      z-index: 1;
+    }
+
+    &.md-sidenav-end {
+      right: 0;
+
+      @include md-sidenav-transition(0, 100%);
+    }
+  }
+}
+
+
+:host-context([dir="rtl"]) {
+  > md-sidenav {
+    @include md-sidenav-transition(0, 100%);
+
+    &.md-sidenav-end {
+      left: 0;
+      right: auto;
+
+      @include md-sidenav-transition(0, -100%);
+    }
+  }
+}

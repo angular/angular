@@ -12,6 +12,7 @@
   <demo-app>Loading...</demo-app>
 
   <script src="vendor/systemjs/dist/system.src.js"></script>
+  <script src="vendor/systemjs/dist/system-polyfills.src.js"></script>
   <script src="vendor/rxjs/bundles/Rx.js"></script>
   <script src="vendor/angular2/bundles/angular2.dev.js"></script>
   <script src="vendor/angular2/bundles/http.dev.js"></script>
@@ -26,7 +27,15 @@
         'components': {
           format: 'register',
           defaultExtension: 'js'
-        }
+        },
+        'directives': {
+          format: 'register',
+          defaultExtension: 'js'
+        },
+        'core': {
+          format: 'register',
+          defaultExtension: 'js'
+        },
       }
     });
     System.import('main.js').then(null, console.error.bind(console));

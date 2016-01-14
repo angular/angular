@@ -89,7 +89,7 @@ $md-fab-mini-line-height: rem(4.00) !default;
   // Use a CSS class for focus style because we only want to render the focus style when
   // the focus originated from a keyboard event (see JS source for more details).
   &:hover, &.md-button-focus {
-    background: md-color($md-background, 500, 0.2);
+    background: md-color($md-background, background, 0.2);
   }
 
   &.md-primary {
@@ -157,8 +157,8 @@ $md-fab-mini-line-height: rem(4.00) !default;
 [md-raised-button] {
   @include md-raised-button();
 
-  color: md-color($md-background, default-contrast);
-  background-color: md-color($md-background, 50);
+  color: md-color($md-foreground, text);
+  background-color: md-color($md-background, background);
 }
 
 [md-fab] {

@@ -11,13 +11,14 @@ __karma__.loaded = function() {};
  */
 function getPathsMap(dir) {
   return Object.keys(window.__karma__.files)
-    .filter(isComponentsFile)
+    .filter(not(isSpecFile))
+    .filter(function(x) { return new RegExp('^/base/dist/' + dir + '/.*\\.js$').test(x); })
     .reduce(function(pathsMapping, appPath) {
       var pathToReplace = new RegExp('^/base/dist/' + dir + '/');
       var moduleName = appPath.replace(pathToReplace, './').replace(/\.js$/, '');
       pathsMapping[moduleName] = appPath + '?' + window.__karma__.files[appPath];
-    return pathsMapping;
-  }, {});
+      return pathsMapping;
+    }, {});
 }
 
 System.config({
@@ -26,7 +27,17 @@ System.config({
       defaultExtension: false,
       format: 'register',
       map: getPathsMap('components')
-    }
+    },
+    'base/dist/core': {
+      defaultExtension: false,
+      format: 'register',
+      map: getPathsMap('core')
+    },
+    'base/dist/directives': {
+      defaultExtension: false,
+      format: 'register',
+      map: getPathsMap('directives')
+    },
   }
 });
 
@@ -36,7 +47,7 @@ System.import('angular2/platform/browser').then(function(browser_adapter) {
 }).then(function() {
   return Promise.all(
     Object.keys(window.__karma__.files)
-      .filter(onlySpecFiles)
+      .filter(isSpecFile)
       .map(function(moduleName) {
         return System.import(moduleName);
       }));
@@ -46,10 +57,12 @@ System.import('angular2/platform/browser').then(function(browser_adapter) {
   __karma__.error(error.stack || error);
 });
 
-function isComponentsFile(filePath) {
-  return /^\/base\/dist\/components\/(?!spec)([a-z0-9-_\/]+)\.js$/.test(filePath);
+function isSpecFile(path) {
+  return /\.spec\.js$/.test(path);
 }
 
-function onlySpecFiles(path) {
-  return /\.spec\.js$/.test(path);
+function not(fn) {
+  return function() {
+    return !fn.apply(this, arguments);
+  };
 }

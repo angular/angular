@@ -20,3 +20,16 @@ md-card {
 img {
   background-color: gray;
 }
+
+md-sidenav-layout {
+  border: 3px solid black;
+
+  md-sidenav {
+    padding: 10px;
+  }
+}
+
+div.content {
+  padding: 10px;
+}
+

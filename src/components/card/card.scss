@@ -15,7 +15,7 @@ md-card {
   border-radius: $md-card-border-radius;
   box-shadow: $md-shadow-bottom-z-1;
   font-family: $font-family;
-  background: md-color($md-background, 50);       // TODO(kara): use updated background palette
+  background: md-color($md-background, card);
 }
 
 md-card:hover {
