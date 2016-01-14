@@ -34,7 +34,7 @@ export const WORKER_RENDER_PLATFORM = CONST_EXPR([
     PLATFORM_COMMON_PROVIDERS,
     new Provider(PLATFORM_INITIALIZER, { useValue: initWebWorkerRenderPlatform, multi: true })
 ]);
-export const WORKER_RENDER_APPLICATION_COMMON = CONST_EXPR([
+export const WORKER_RENDER_APP_COMMON = CONST_EXPR([
     APPLICATION_COMMON_PROVIDERS,
     WORKER_RENDER_MESSAGING_PROVIDERS,
     new Provider(ExceptionHandler, { useFactory: _exceptionHandler, deps: [] }),
