@@ -3,6 +3,11 @@
 This is the home for the Angular team's Material Design components built on top of Angular 2.
 Things are in very early stages now- check back soon for more progress.
 
+#### Quick links
+[Google group](https://groups.google.com/forum/#!forum/angular-material2),
+[Gitter](https://gitter.im/angular/material2),
+[Contributing](https://github.com/angular/material2/blob/master/CONTRIBUTING.md)
+
 ## The goal of Angular Material
 Our goal is to build a set of high-quality UI components built with Angular 2 and TypeScript, 
 following the Material Design spec, that are consumable by both JavaScript and Dart. These 
