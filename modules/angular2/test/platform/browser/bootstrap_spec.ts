@@ -15,6 +15,7 @@ import {
 import {IS_DART, isPresent, stringify} from 'angular2/src/facade/lang';
 import {bootstrap} from 'angular2/platform/browser';
 import {ApplicationRef} from 'angular2/src/core/application_ref';
+import {Console} from 'angular2/src/core/console';
 import {Component, Directive, View, OnDestroy, platform} from 'angular2/core';
 import {BROWSER_PROVIDERS, BROWSER_APP_PROVIDERS} from 'angular2/platform/browser';
 import {DOM} from 'angular2/src/platform/dom/dom_adapter';
@@ -76,7 +77,7 @@ class HelloOnDestroyTickCmp implements OnDestroy {
   appRef: ApplicationRef;
   constructor(@Inject(ApplicationRef) appRef) { this.appRef = appRef; }
 
-  onDestroy(): void { this.appRef.tick(); }
+  ngOnDestroy(): void { this.appRef.tick(); }
 }
 
 class _ArrayLogger {
@@ -87,6 +88,10 @@ class _ArrayLogger {
   logGroupEnd(){};
 }
 
+
+class DummyConsole implements Console {
+  log(message) {}
+}
 
 export function main() {
   var fakeDoc, el, el2, testProviders, lightDom;
@@ -101,7 +106,8 @@ export function main() {
       DOM.appendChild(fakeDoc.body, el2);
       DOM.appendChild(el, lightDom);
       DOM.setText(lightDom, 'loading');
-      testProviders = [provide(DOCUMENT, {useValue: fakeDoc})];
+      testProviders =
+          [provide(DOCUMENT, {useValue: fakeDoc}), provide(Console, {useClass: DummyConsole})];
     });
 
     afterEach(disposePlatform);
@@ -125,7 +131,7 @@ export function main() {
 
     it('should throw if no element is found', inject([AsyncTestCompleter], (async) => {
          var logger = new _ArrayLogger();
-         var exceptionHandler = new ExceptionHandler(logger, IS_DART ? false : true);
+         var exceptionHandler = new ExceptionHandler(logger, !IS_DART);
 
          var refPromise =
              bootstrap(HelloRootCmp, [provide(ExceptionHandler, {useValue: exceptionHandler})]);
@@ -140,7 +146,7 @@ export function main() {
       it('should invoke the default exception handler when bootstrap fails',
          inject([AsyncTestCompleter], (async) => {
            var logger = new _ArrayLogger();
-           var exceptionHandler = new ExceptionHandler(logger, IS_DART ? false : true);
+           var exceptionHandler = new ExceptionHandler(logger, !IS_DART);
 
            var refPromise =
                bootstrap(HelloRootCmp, [provide(ExceptionHandler, {useValue: exceptionHandler})]);

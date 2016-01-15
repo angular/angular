@@ -3,7 +3,7 @@ import {OpaqueToken} from 'angular2/core';
 
 /**
  * `LocationStrategy` is responsible for representing and reading route state
- * from the the browser's URL. Angular provides two strategies:
+ * from the browser's URL. Angular provides two strategies:
  * {@link HashLocationStrategy} (default) and {@link PathLocationStrategy}.
  *
  * This is used under the hood of the {@link Location} service.
@@ -21,6 +21,7 @@ export abstract class LocationStrategy {
   abstract path(): string;
   abstract prepareExternalUrl(internal: string): string;
   abstract pushState(state: any, title: string, url: string, queryParams: string): void;
+  abstract replaceState(state: any, title: string, url: string, queryParams: string): void;
   abstract forward(): void;
   abstract back(): void;
   abstract onPopState(fn: (_: any) => any): void;
@@ -39,7 +40,7 @@ export abstract class LocationStrategy {
  * ### Example
  *
  * ```
- * import {Component} from 'angular2/angular2';
+ * import {Component} from 'angular2/core';
  * import {ROUTER_DIRECTIVES, ROUTER_PROVIDERS, RouteConfig} from 'angular2/router';
  *
  * @Component({directives: [ROUTER_DIRECTIVES]})

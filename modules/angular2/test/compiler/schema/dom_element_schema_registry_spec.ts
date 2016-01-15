@@ -33,12 +33,15 @@ export function main() {
     it('should return true for custom-like elements',
        () => { expect(registry.hasProperty('custom-like', 'unknown')).toBeTruthy(); });
 
-    it('should not re-map property names that are not specified in DOM facade',
+    it('should re-map property names that are specified in DOM facade',
        () => { expect(registry.getMappedPropName('readonly')).toEqual('readOnly'); });
 
     it('should not re-map property names that are not specified in DOM facade', () => {
       expect(registry.getMappedPropName('title')).toEqual('title');
       expect(registry.getMappedPropName('exotic-unknown')).toEqual('exotic-unknown');
     });
+
+    it('should detect properties on namespaced elements',
+       () => { expect(registry.hasProperty('@svg:g', 'id')).toBeTruthy(); });
   });
 }

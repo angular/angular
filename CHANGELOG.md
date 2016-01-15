@@ -1,3 +1,442 @@
+<a name="2.0.0-beta.0"></a>
+# 2.0.0-beta.0 somnambulant-inauguration (2015-12-15)
+
+**Enjoy!**
+
+
+<a name="2.0.0-alpha.55"></a>
+# 2.0.0-alpha.55 (2015-12-15)
+
+
+### Bug Fixes
+
+* **router:** export ROUTER_LINK_DSL_PROVIDER and hide MockPopStateEvent ([fc75220](https://github.com/angular/angular/commit/fc75220))
+
+### Features
+
+* **core:** enable dev mode by default ([3dca9d5](https://github.com/angular/angular/commit/3dca9d5))
+
+
+### BREAKING CHANGES
+
+* Before
+Previously Angular would run in dev prod mode by default, and you could enable the dev mode by calling enableDevMode.
+After
+Now, Angular runs in the dev mode by default, and you can enable the prod mode by calling enableProdMode.
+
+
+
+<a name="2.0.0-alpha.54"></a>
+# 2.0.0-alpha.54 (2015-12-15)
+
+
+### Bug Fixes
+
+* **bundles:** don't include RxJS in System.register bundles ([77b7cae](https://github.com/angular/angular/commit/77b7cae))
+* **bundles:** remove ngUpgrade from the angular2.js bundle ([283962f](https://github.com/angular/angular/commit/283962f)), closes [#5739](https://github.com/angular/angular/issues/5739) [#5854](https://github.com/angular/angular/issues/5854)
+* **bundles:** remove polyfills from angular2.js bundle ([2983558](https://github.com/angular/angular/commit/2983558)), closes [#5881](https://github.com/angular/angular/issues/5881)
+* **bundles:** rename the testing.js bundle to testing.dev.js ([d55655f](https://github.com/angular/angular/commit/d55655f)), closes [#5899](https://github.com/angular/angular/issues/5899) [#5776](https://github.com/angular/angular/issues/5776)
+* **bundles:** rename UMD bundles ([61b9468](https://github.com/angular/angular/commit/61b9468)), closes [#5898](https://github.com/angular/angular/issues/5898)
+
+
+### BREAKING CHANGES
+
+* System.register testing bundle was renamed:
+`testing.js` -> `testing.dev.js`
+
+* UMD bundles were renamed:
+  * `angular2.umd.js` -> `angular2-all.umd.js`
+  * `angular2-testing.umd.js` -> `angular2-all-testing.umd.js`
+
+* RxJS used to be bundled with Angular 2 code and this is not the case
+any more. RxJS needs to be loaded explicitly.
+
+* Previously `angular2.js`, `angular2.min.js` and `angular2.dev.js` bundles
+would have zone.js and reflect-metadata pre-appended. New bundles don't
+contain zone.js nor reflect-metadata - those external dependencies can
+be easily loaded into a browser using `angular2-polyfills.js`
+
+* `ngUpgrade` related symbols are no longer part of the `angular2.js`
+bundle. `ngUpgrade` has a dedicated `upgrade.js` bundle now.
+
+
+
+
+<a name="2.0.0-alpha.53"></a>
+# 2.0.0-alpha.53 (2015-12-13)
+
+
+### Bug Fixes
+
+* **angular2:** don't export compiler bits as public API ([20c6eeb](https://github.com/angular/angular/commit/20c6eeb)), closes [#5815](https://github.com/angular/angular/issues/5815) [#5797](https://github.com/angular/angular/issues/5797)
+* **angular2:** remove `angular2.ts` module ([200dc00](https://github.com/angular/angular/commit/200dc00)), closes [#5815](https://github.com/angular/angular/issues/5815) [#5844](https://github.com/angular/angular/issues/5844)
+* **animate:** ensure transition properties are removed once the animation is over ([b8e69a2](https://github.com/angular/angular/commit/b8e69a2))
+* **async:** improve Rx support in ObservableWrapper ([4a17e69](https://github.com/angular/angular/commit/4a17e69))
+* **async:** support BehaviorSubjects in async pipe ([398f024](https://github.com/angular/angular/commit/398f024))
+* **bundles:** don't use angular2/angular2 in config of System.register bundles ([8c69497](https://github.com/angular/angular/commit/8c69497))
+* **changelog:** fix ngFor on template ([3190c59](https://github.com/angular/angular/commit/3190c59)), closes [#5785](https://github.com/angular/angular/issues/5785)
+* **compiler:** remove AppRootUrl ([ed2c25e](https://github.com/angular/angular/commit/ed2c25e))
+* **core:** workaround for typescript@1.7.3 breakage #5784 ([30e25ac](https://github.com/angular/angular/commit/30e25ac)), closes [#5784](https://github.com/angular/angular/issues/5784)
+* **dom_renderer:** moveNodeAfterSiblings should not detach the reference node ([edcb34d](https://github.com/angular/angular/commit/edcb34d)), closes [#5077](https://github.com/angular/angular/issues/5077) [#5759](https://github.com/angular/angular/issues/5759)
+* **HtmlParser:** allow ng-content elements regardless the namespace ([080469f](https://github.com/angular/angular/commit/080469f)), closes [#5745](https://github.com/angular/angular/issues/5745)
+* **parse5:** support comment nodes with getText and setText ([693d9dc](https://github.com/angular/angular/commit/693d9dc)), closes [#5805](https://github.com/angular/angular/issues/5805)
+* **public_spec:** check exports of barrels instead of angular2/angular2 ([979162d](https://github.com/angular/angular/commit/979162d)), closes [#5841](https://github.com/angular/angular/issues/5841)
+* **styles:** Escape \r characters in compiled text ([92ddc62](https://github.com/angular/angular/commit/92ddc62)), closes [#5772](https://github.com/angular/angular/issues/5772) [#5835](https://github.com/angular/angular/issues/5835)
+* **TemplateParser:** match element and attributes regardless the namespace ([7c13372](https://github.com/angular/angular/commit/7c13372))
+* **upgrade:** allow directives with empty template ([2ca5e38](https://github.com/angular/angular/commit/2ca5e38))
+* **web_workers:** remove unnecessary setup module and AppRootUrl ([a885f37](https://github.com/angular/angular/commit/a885f37)), closes [#5820](https://github.com/angular/angular/issues/5820)
+
+### Features
+
+* **benchpress:** add receivedData + requestCount to PerflogMetric ([fe1dd77](https://github.com/angular/angular/commit/fe1dd77)), closes [#5750](https://github.com/angular/angular/issues/5750)
+* **dom_renderer:** add setBindingDebugInfo method ([79399e1](https://github.com/angular/angular/commit/79399e1)), closes [#5227](https://github.com/angular/angular/issues/5227)
+* **facade:** do not reexport Observable from angular2/core ([43f42d9](https://github.com/angular/angular/commit/43f42d9))
+* **Headers:** implement `toJSON` ([0cb32c2](https://github.com/angular/angular/commit/0cb32c2))
+* **renderer:** use a comment instead of an element when stamping out template>` elements ([194dc7d](https://github.com/angular/angular/commit/194dc7d)), closes [#4805](https://github.com/angular/angular/issues/4805)
+
+
+### BREAKING CHANGES
+
+* `Observable` are no more re-exported from `angular2/core`
+
+    Before 
+    ```
+    import {Observable} from 'angular2/core'
+    ```
+    After 
+    ```
+    import {Observable} from 'rxjs/Observable';
+    ```
+
+* The setupWebWorker function exported from
+angular2/platform/worker_app  no longer returns a promise of providers,
+but instead synchronously returns providers.
+Related to #5815
+
+* `angular2/angular2` was removed. Use the correct import from one of the barrels. E.g. `angular2/core`, `angular2/platform/browser`,  `angular2/common`, …
+Note: This only applies to JavaScript, Dart is not changed.
+
+* The following symbols are not exported from angular2/angular2 any more:
+`UrlResolver`, `AppRootUrl`, `getUrlScheme`, `DEFAULT_PACKAGE_URL_PROVIDER`.
+Use imports from `angular2/compiler` instead.
+
+
+
+<a name="2.0.0-alpha.52"></a>
+# 2.0.0-alpha.52 (2015-12-10)
+
+
+### Features
+
+* **core:** case-sensitive camelCase templates (kebab-case removal) ([da9b46a](https://github.com/angular/angular/commit/da9b46a))
+
+
+### BREAKING CHANGES
+
+* Angular templates are now case-sensitive and use camelCase instead of kebab-case (dash-case).
+
+  Before:
+
+  ```
+      <p *ng-if="cond">
+      <my-cmp [my-prop]="exp">
+      <my-cmp (my-event)="action()">
+      <my-cmp [(my-prop)]="prop">
+      <input #my-input>
+      <template ng-for #my-item [ng-for-of]=items #my-index="index">
+  ```
+
+  After:
+
+  ```
+      <p *ngIf="cond">
+      <my-cmp [myProp]="exp">
+      <my-cmp (myEvent)="action()">
+      <my-cmp [(myProp)]="prop">
+      <input #myInput>`,
+      <template ngFor "#myItem" [ngForOf]=items #myIndex="index">
+  ```
+
+  The full migration instruction can be found at [angular2/docs/migration/kebab-case.md](https://github.com/angular/angular/blob/master/modules/angular2/docs/migration/kebab-case.md).
+
+
+
+<a name="2.0.0-alpha.51"></a>
+# 2.0.0-alpha.51 (2015-12-10)
+
+
+### Features
+
+* **bundles:** add angular2-testing UMD bundle ([d6d759d](https://github.com/angular/angular/commit/d6d759d)), closes [#5581](https://github.com/angular/angular/issues/5581) [#5734](https://github.com/angular/angular/issues/5734)
+* **core:** provide support for relative assets for components ([28860d3](https://github.com/angular/angular/commit/28860d3)), closes [#5634](https://github.com/angular/angular/issues/5634)
+* **core:** typescript 1.7.3 compatibility ([#5758](https://github.com/angular/angular/pull/5758))
+
+
+
+<a name="2.0.0-alpha.50"></a>
+# 2.0.0-alpha.50 (2015-12-09)
+
+
+### Bug Fixes
+
+* **http:** fix syntax error in package.json ([869a392](https://github.com/angular/angular/commit/869a3923574de9ed34b953e84e1744cc007ca629)), closes [#5636](https://github.com/angular/angular/issues/5636) [#5726](https://github.com/angular/angular/issues/5726)
+* **http:** use `any` for res.json() return ([cbf7888](https://github.com/angular/angular/commit/cbf7888)), closes [#5636](https://github.com/angular/angular/issues/5636) [#5646](https://github.com/angular/angular/issues/5646)
+* **testing:** remove Symbol dummy shim ([c1ae49d](https://github.com/angular/angular/commit/c1ae49d)), closes [#5067](https://github.com/angular/angular/issues/5067) [#5719](https://github.com/angular/angular/issues/5719)
+* **package:** update RxJS to alpha.14 ([4432cf5](https://github.com/angular/angular/commit/4432cf5438b8c615d297e8965f0ad69f0188169e)), closes [#5722](https://github.com/angular/angular/issues/5722)
+
+### Features
+
+* **testing:** package angular2_testing to prepare it for publishing ([cc8f1f9](https://github.com/angular/angular/commit/cc8f1f9)), closes [#5682](https://github.com/angular/angular/issues/5682)
+
+<a name="2.0.0-alpha.49"></a>
+# 2.0.0-alpha.49 (2015-12-09)
+
+
+### Bug Fixes
+
+* **bootstrap:** fix the configuration of ExceptionHandler ([0d9a1de](https://github.com/angular/angular/commit/0d9a1de))
+* **build:** lock down version of package:code_transformers ([85d89ba](https://github.com/angular/angular/commit/85d89ba))
+* **bundles:** clean-up and re-organize UMD bundles ([fb4f1e8](https://github.com/angular/angular/commit/fb4f1e8)), closes [#5593](https://github.com/angular/angular/issues/5593) [#5697](https://github.com/angular/angular/issues/5697)
+* **bundles:** remove SFX bundle ([a4ba46c](https://github.com/angular/angular/commit/a4ba46c)), closes [#5665](https://github.com/angular/angular/issues/5665) [#5712](https://github.com/angular/angular/issues/5712)
+* **bundles:** rename external-dependencies to angular-polyfills ([b3c91b1](https://github.com/angular/angular/commit/b3c91b1)), closes [#5714](https://github.com/angular/angular/issues/5714) [#5716](https://github.com/angular/angular/issues/5716)
+* **changelog:** add RxJS imports breaking change ([ad48169](https://github.com/angular/angular/commit/ad48169)), closes [#5678](https://github.com/angular/angular/issues/5678)
+* **changelog:** correct import path ([86c74cf](https://github.com/angular/angular/commit/86c74cf)), closes [#5681](https://github.com/angular/angular/issues/5681)
+* **compiler:** support properties on SVG elements ([daaa8ee](https://github.com/angular/angular/commit/daaa8ee)), closes [#5653](https://github.com/angular/angular/issues/5653)
+* **dynamic_component_loader:** leave the view tree in a consistent state when hydration fails ([0df8bc4](https://github.com/angular/angular/commit/0df8bc4)), closes [#5718](https://github.com/angular/angular/issues/5718)
+* **form:** Form directives are exportedAs 'ngForm' (was 'form') ([8657ca4](https://github.com/angular/angular/commit/8657ca4)), closes [#5658](https://github.com/angular/angular/issues/5658) [#5709](https://github.com/angular/angular/issues/5709)
+* **HtmlLexer:** handle CR in input stream per HTML spec ([9850e68](https://github.com/angular/angular/commit/9850e68)), closes [#5618](https://github.com/angular/angular/issues/5618) [#5629](https://github.com/angular/angular/issues/5629)
+* **HtmlLexer:** tag name must follow "<" without space ([47f1d12](https://github.com/angular/angular/commit/47f1d12))
+* **HtmlParser:** Do not add parent element for template children ([3a43861](https://github.com/angular/angular/commit/3a43861)), closes [#5638](https://github.com/angular/angular/issues/5638)
+* **HtmlParser:** ignore LF immediately following pre, textarea & listing ([eb0ea93](https://github.com/angular/angular/commit/eb0ea93)), closes [#5630](https://github.com/angular/angular/issues/5630) [#5688](https://github.com/angular/angular/issues/5688)
+* **HtmlParser:** mark <source> elements as void ([50490b5](https://github.com/angular/angular/commit/50490b5)), closes [#5663](https://github.com/angular/angular/issues/5663) [#5668](https://github.com/angular/angular/issues/5668)
+* **npm:** move es6-shim from devDependencies to dependencies ([21542ed](https://github.com/angular/angular/commit/21542ed))
+* **package:** relock RxJS to alpha.11 ([4b1618c](https://github.com/angular/angular/commit/4b1618c)), closes [#5643](https://github.com/angular/angular/issues/5643) [#5644](https://github.com/angular/angular/issues/5644)
+* **router:** set correct redirect/default URL from hashchange ([aa85856](https://github.com/angular/angular/commit/aa85856)), closes [#5590](https://github.com/angular/angular/issues/5590) [#5683](https://github.com/angular/angular/issues/5683)
+
+### Features
+
+* **HtmlLexer:** allow "<" in text tokens ([aecf681](https://github.com/angular/angular/commit/aecf681)), closes [#5550](https://github.com/angular/angular/issues/5550)
+* **TemplateParser:** allow template elements regardless the namespace  ([1f35048](https://github.com/angular/angular/commit/1f35048)), closes [#5703](https://github.com/angular/angular/issues/5703)
+
+
+### BREAKING CHANGES
+
+* The existing sfx bundle (angular2.sfx.dev.js) is replaced by UMD bundles:
+angular2.umd.js and angular2.umd.dev.js. The new UMD bundles dont have
+polyfills (zone.js, reflect-metadata) pre-appended. Those polyfills
+can be easily loaded by including the angular-polyfills.js bundle.
+
+* The `external-dependencies.js` bundle was removed.
+Use `angular-polyfills.js` instead.
+
+* Number and content of UMD bundles have changed:
+- we only publish one bundle that contains: core, common, platform/browser, http, router, instrumentation and upgrade
+- exported names have changed and now:
+  - core is exported as `ng.core`
+  - common is exported as `ng.common`
+  - platform/browser is exported as `ng.platform.browser`
+  - http is exported as `ng.http`
+  - router is exported as `ng.router`
+  - instrumentation is exported as `ng.instrumentation`
+  - upgrade is exported as `ng.upgrade`
+
+* Form directives are exportedAs 'ngForm' (was 'form')
+
+    Before:
+      ```html
+        <form #f="form">
+      ```
+
+    After:
+      ```html
+        <form #f="ngForm">
+      ```
+* rxjs, reflect-metadata, zone.js and es6-shims now must be specified as
+  explicit dependencies of each angular app that uses npm for package management.
+
+  To migrate, please add the following into the "dependencies" section of your package.json:
+
+  ```
+  "dependencies": {
+      ...
+
+      "es6-promise": "^3.0.2",
+      "es6-shim": "^0.33.3",
+      "reflect-metadata": "0.1.2",
+      "rxjs": "5.0.0-alpha.11",
+      "zone.js": "0.5.8"
+
+      ...
+  }
+  ```
+
+  or [check angular2's package.json](https://github.com/angular/angular/blob/master/package.json#L34) for the latest peer dependencies
+
+
+<a name="2.0.0-alpha.48"></a>
+# 2.0.0-alpha.48 (2015-12-05)
+
+
+### Bug Fixes
+
+* **build:** change npm publish script not to remove angular folder when building benchpress ([47d0942](https://github.com/angular/angular/commit/47d0942))
+* **build:** include benchpress into browser_tree ([87ac36f](https://github.com/angular/angular/commit/87ac36f))
+* **core/forms:**  input[type=text] .valueChanges fires unexpectedly ([680f7e0](https://github.com/angular/angular/commit/680f7e0)), closes [#4768](https://github.com/angular/angular/issues/4768) [#5284](https://github.com/angular/angular/issues/5284) [#5401](https://github.com/angular/angular/issues/5401)
+* **dart/reflection:** Fix `NoReflectionCapabilities` interface ([0a3a17f](https://github.com/angular/angular/commit/0a3a17f)), closes [#5559](https://github.com/angular/angular/issues/5559) [#5578](https://github.com/angular/angular/issues/5578)
+* **HtmlParser:** close void elements on all node types ([9c6b929](https://github.com/angular/angular/commit/9c6b929)), closes [#5528](https://github.com/angular/angular/issues/5528)
+* **HtmlParser:** do not add a tbody parent for tr inside thead & tfoot ([c58e7e0](https://github.com/angular/angular/commit/c58e7e0)), closes [#5403](https://github.com/angular/angular/issues/5403)
+* **HtmlParser:** ng-content is not a void element ([e67e195](https://github.com/angular/angular/commit/e67e195)), closes [#5563](https://github.com/angular/angular/issues/5563) [#5586](https://github.com/angular/angular/issues/5586)
+* **WebWorker:** Add @AngularEntrypoint to worker_app bundle ([5e50859](https://github.com/angular/angular/commit/5e50859)), closes [#5588](https://github.com/angular/angular/issues/5588)
+
+### Features
+
+* **core:** remove typings from package.json to disallow 'import * as n from 'angular2''' ([9a65ea7](https://github.com/angular/angular/commit/9a65ea7))
+* **dart/transform:** Add quick_transformer ([f77ca7b](https://github.com/angular/angular/commit/f77ca7b)), closes [#5484](https://github.com/angular/angular/issues/5484)
+* **dart/transform:** Introduce @AngularEntrypoint() ([6b2ef25](https://github.com/angular/angular/commit/6b2ef25))
+* **HtmlParser:** add most common named character references ([d90a226](https://github.com/angular/angular/commit/d90a226)), closes [#5546](https://github.com/angular/angular/issues/5546) [#5579](https://github.com/angular/angular/issues/5579)
+* **HtmlParser:** better error message when a void tag has content ([62c2ed7](https://github.com/angular/angular/commit/62c2ed7))
+* **HtmlParser:** enforce no end tag for void elements ([5660446](https://github.com/angular/angular/commit/5660446))
+* **HtmlParser:** enforce only void & foreign elts can be self closed ([d388c0a](https://github.com/angular/angular/commit/d388c0a)), closes [#5591](https://github.com/angular/angular/issues/5591)
+* **mocks:** Mark mock objects @Injectable() ([35e32bb](https://github.com/angular/angular/commit/35e32bb)), closes [#5576](https://github.com/angular/angular/issues/5576)
+* **router:** implement router link DSL ([4ea5b6e](https://github.com/angular/angular/commit/4ea5b6e)), closes [#5557](https://github.com/angular/angular/issues/5557) [#5562](https://github.com/angular/angular/issues/5562)
+* **sourcemaps:** use inline source maps and inline sources in node_tree ([7e18d4c](https://github.com/angular/angular/commit/7e18d4c)), closes [#5617](https://github.com/angular/angular/issues/5617)
+* **test:** add angular2_testing dart library ([93a1ec2](https://github.com/angular/angular/commit/93a1ec2)), closes [#3289](https://github.com/angular/angular/issues/3289)
+* **testing:** export useful properties from componentFixture ([e9f873a](https://github.com/angular/angular/commit/e9f873a))
+* **typings:** import global-es6.d.ts in core ([22e9590](https://github.com/angular/angular/commit/22e9590))
+
+
+### BREAKING CHANGES
+
+* `<whatever />` used to be expanded to `<whatever></whatever>`.
+The parser now follows the HTML5 spec more closely.
+Only void and foreign elements can be self closed.
+
+* End tags used to be tolerated for void elements with no content.
+They are no more allowed so that we more closely follow the HTML5 spec.
+
+* Before
+import * as ng from 'angular2';
+After
+import * as core from 'angular2/core';
+
+* Http's MockBackend is no longer exported from the `angular2/http` module. It's now available at `angular2/http/testing`
+
+* Operators and Observables from RxJS (e.g. .map(), .toArray(), .toPromise(), etc ) now need to be explicitly imported (once per operator in your app)
+  ```
+  import {Observable} from 'rxjs/Observable';
+  import 'rxjs/add/operators/map';
+  import 'rxjs/add/observable/interval';
+
+  Observable.interval(1000).subscribe(...);
+
+  http.get('foos.json').map(res => res.json()).subscribe(...);
+  ```
+
+<a name="2.0.0-alpha.47"></a>
+# 2.0.0-alpha.47 (2015-12-01)
+
+
+### Bug Fixes
+
+* **build:** do not reexport compiler from angular2/angular2 ([30d35b5](https://github.com/angular/angular/commit/30d35b5)), closes [#5422](https://github.com/angular/angular/issues/5422)
+* **build:** fix npm install not to depend on minimist ([6d70cd7](https://github.com/angular/angular/commit/6d70cd7)), closes [#5282](https://github.com/angular/angular/issues/5282)
+* **build:** fix source maps ([87d56ac](https://github.com/angular/angular/commit/87d56ac)), closes [#5444](https://github.com/angular/angular/issues/5444)
+* **build:** increase memory limit ([2cd0f07](https://github.com/angular/angular/commit/2cd0f07))
+* **compiler:** dedup directives in template compiler ([87ddc8f](https://github.com/angular/angular/commit/87ddc8f)), closes [#5311](https://github.com/angular/angular/issues/5311) [#5464](https://github.com/angular/angular/issues/5464)
+* **core:** Export dev mode API in Dart. ([a3e6406](https://github.com/angular/angular/commit/a3e6406)), closes [#5233](https://github.com/angular/angular/issues/5233)
+* **core:** reexport PLATFORM_DIRECTIVES and PLATFORM_PIPES in dart ([01ebff4](https://github.com/angular/angular/commit/01ebff4))
+* **core:** Run component disposal before destroyRootHostView() to avoid crash if change det ([b22eddf](https://github.com/angular/angular/commit/b22eddf)), closes [#5226](https://github.com/angular/angular/issues/5226)
+* **core:** various dart-specific fixes for core and facades ([4a43230](https://github.com/angular/angular/commit/4a43230))
+* **dart:** fix the static_browser platform not to include compiler ([ad6fb06](https://github.com/angular/angular/commit/ad6fb06)), closes [#5321](https://github.com/angular/angular/issues/5321)
+* **dart/transform:** Consider of line numbers in inliner_for_test ([a31e2f5](https://github.com/angular/angular/commit/a31e2f5)), closes [#5281](https://github.com/angular/angular/issues/5281) [#5285](https://github.com/angular/angular/issues/5285)
+* **dart/transform:** Omit bootstrap.dart in ng_deps ([0db0252](https://github.com/angular/angular/commit/0db0252)), closes [#5315](https://github.com/angular/angular/issues/5315) [#5348](https://github.com/angular/angular/issues/5348)
+* **EventEmitter:** resolve onError and onComplete asynchronously ([019cb41](https://github.com/angular/angular/commit/019cb41)), closes [#4443](https://github.com/angular/angular/issues/4443)
+* **examples:** Don't generate Dart code for TS examples in nested directories. ([b571baa](https://github.com/angular/angular/commit/b571baa))
+* **forms:** scope value accessors, validators, and async validators to self ([ba64b5e](https://github.com/angular/angular/commit/ba64b5e)), closes [#5440](https://github.com/angular/angular/issues/5440)
+* **http:** error on non-200 status codes ([201f189](https://github.com/angular/angular/commit/201f189)), closes [#5130](https://github.com/angular/angular/issues/5130)
+* **http:** Fix all requests defaulting to Get ([e1d7bdc](https://github.com/angular/angular/commit/e1d7bdc)), closes [#5309](https://github.com/angular/angular/issues/5309) [#5397](https://github.com/angular/angular/issues/5397)
+* **http:** refactor 'require' statements to 'import' declarations for Rx ([bcd926a](https://github.com/angular/angular/commit/bcd926a)), closes [#5287](https://github.com/angular/angular/issues/5287)
+* **http:** return Response headers ([4332ccf](https://github.com/angular/angular/commit/4332ccf)), closes [#5237](https://github.com/angular/angular/issues/5237)
+* **http:** return URL in Response ([46fc153](https://github.com/angular/angular/commit/46fc153)), closes [#5165](https://github.com/angular/angular/issues/5165)
+* **parser:** do not crash on untokenizable quote prefixes ([b90de66](https://github.com/angular/angular/commit/b90de66)), closes [#5486](https://github.com/angular/angular/issues/5486)
+* **publish:** syntax fix ([9985968](https://github.com/angular/angular/commit/9985968))
+* **renderer:** apply host element encapsulation also if the parent component is not encapsulate ([344776f](https://github.com/angular/angular/commit/344776f)), closes [#5240](https://github.com/angular/angular/issues/5240)
+* **router:** apply APP_BASE_HREF when using PathLocationStrategy ([ac38812](https://github.com/angular/angular/commit/ac38812)), closes [#5028](https://github.com/angular/angular/issues/5028)
+* **router:** fix a typing issue ([4215afc](https://github.com/angular/angular/commit/4215afc)), closes [#5518](https://github.com/angular/angular/issues/5518)
+* **transformers:** Fix @Input/@Output annotations with setters/getters ([d9f362a](https://github.com/angular/angular/commit/d9f362a)), closes [#5251](https://github.com/angular/angular/issues/5251) [#5259](https://github.com/angular/angular/issues/5259)
+* **transformers:** use BarbackMode instead of assertionEnabled to enable debug info generation ([7f3223b](https://github.com/angular/angular/commit/7f3223b)), closes [#5245](https://github.com/angular/angular/issues/5245) [#5466](https://github.com/angular/angular/issues/5466)
+* **typings:** two errors not reported by our build: ([7f6289c](https://github.com/angular/angular/commit/7f6289c))
+* **web worker:** remove usages of deprecated zone API ([d59c20c](https://github.com/angular/angular/commit/d59c20c)), closes [#5425](https://github.com/angular/angular/issues/5425)
+
+### Features
+
+* **bootstrap:** add platform and app initializers ([3c43a8c](https://github.com/angular/angular/commit/3c43a8c)), closes [#5355](https://github.com/angular/angular/issues/5355)
+* **build:** add an option to disable type checks when running tests ([4e585bc](https://github.com/angular/angular/commit/4e585bc)), closes [#5299](https://github.com/angular/angular/issues/5299)
+* **bundles:** publish UMD bundles ([fa725b4](https://github.com/angular/angular/commit/fa725b4)), closes [#5223](https://github.com/angular/angular/issues/5223)
+* **Compiler:** case sensitive html parser ([86aeb8b](https://github.com/angular/angular/commit/86aeb8b))
+* **Compiler:** case sensitive html parser ([a8edc1e](https://github.com/angular/angular/commit/a8edc1e)), closes [#4417](https://github.com/angular/angular/issues/4417) [#5264](https://github.com/angular/angular/issues/5264)
+* **Compiler:** case sensitive html parser ([36a423f](https://github.com/angular/angular/commit/36a423f)), closes [#4417](https://github.com/angular/angular/issues/4417) [#5264](https://github.com/angular/angular/issues/5264)
+* **Compiler:** case sensitive html parser ([adb8756](https://github.com/angular/angular/commit/adb8756))
+* **core:** extract platforms out of core ([3f4628c](https://github.com/angular/angular/commit/3f4628c)), closes [#5219](https://github.com/angular/angular/issues/5219)
+* **core:** extract platforms out of core ([0eab4fc](https://github.com/angular/angular/commit/0eab4fc)), closes [#5219](https://github.com/angular/angular/issues/5219) [#5280](https://github.com/angular/angular/issues/5280)
+* **dart/transform:** Bail early for files with no deferred libraries ([f80321f](https://github.com/angular/angular/commit/f80321f))
+* **dart/transform:** Do not re-process generated files ([8f91ff8](https://github.com/angular/angular/commit/8f91ff8))
+* **parser:** allows users install custom AST transformers ([a43ed79](https://github.com/angular/angular/commit/a43ed79)), closes [#5382](https://github.com/angular/angular/issues/5382)
+* **router:** add support for APP_BASE_HREF to HashLocationStrategy ([1bec4f6](https://github.com/angular/angular/commit/1bec4f6)), closes [#4935](https://github.com/angular/angular/issues/4935) [#5368](https://github.com/angular/angular/issues/5368) [#5451](https://github.com/angular/angular/issues/5451)
+* **router:** allow linking to auxiliary routes ([0b1ff2d](https://github.com/angular/angular/commit/0b1ff2d)), closes [#4694](https://github.com/angular/angular/issues/4694)
+* **templates:** introduce quoted expressions to support 3rd-party expression languages ([b6ec238](https://github.com/angular/angular/commit/b6ec238))
+* **testing:** use zones to avoid the need for injectAsync ([0c9596a](https://github.com/angular/angular/commit/0c9596a))
+
+
+### BREAKING CHANGES
+
+* Previously http would only error on network errors to match the fetch
+specification. Now status codes less than 200 and greater than 299 will
+cause Http's Observable to error.
+
+* A few private helpers (e.g., platformCommon or applicationCommon) were removed or replaced with other helpers. Look at PLATFORM_COMMON_PROVIDERS, APPLICATION_COMMON_PROVIDERS, BROWSER_PROVIDERS, BROWSER_APP_PROVIDERS to see if they export the providers you need.
+
+* Previously, components that would implement lifecycle interfaces would include methods
+like "onChanges" or "afterViewInit." Given that components were at risk of using such
+names without realizing that Angular would call the methods at different points of
+the component lifecycle. This change adds an "ng" prefix to all lifecycle hook methods,
+far reducing the risk of an accidental name collision.
+
+  To fix, just rename these methods:
+  * onInit
+  * onDestroy
+  * doCheck
+  * onChanges
+  * afterContentInit
+  * afterContentChecked
+  * afterViewInit
+  * afterViewChecked
+  * _Router Hooks_
+  * onActivate
+  * onReuse
+  * onDeactivate
+  * canReuse
+  * canDeactivate
+
+  To:
+  * ngOnInit,
+  * ngOnDestroy,
+  * ngDoCheck,
+  * ngOnChanges,
+  * ngAfterContentInit,
+  * ngAfterContentChecked,
+  * ngAfterViewInit,
+  * ngAfterViewChecked
+  * _Router Hooks_
+  * routerOnActivate
+  * routerOnReuse
+  * routerOnDeactivate
+  * routerCanReuse
+  * routerCanDeactivate
+
+  The names of lifecycle interfaces and enums have not changed, though interfaces
+  have been updated to reflect the new method names.
+
 <a name="2.0.0-alpha.46"></a>
 # 2.0.0-alpha.46 (2015-11-11)
 
@@ -1549,12 +1988,3 @@ After
     })
 
 * no longer cache ref
-
-
-
-
-
-
-
-
-

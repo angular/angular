@@ -49,8 +49,10 @@ const kServedPaths = [
   'playground/src/http',
   'playground/src/jsonp',
   'playground/src/key_events',
+  'playground/src/relative_assets',
   'playground/src/routing',
   'playground/src/sourcemap',
+  'playground/src/svg',
   'playground/src/todo',
   'playground/src/upgrade',
   'playground/src/zippy_component',
@@ -111,8 +113,20 @@ module.exports = function makeBrowserTree(options, destinationPath) {
                    {include: ['**/**'], exclude: ['e2e_test/**'], destDir: '/playground/'});
   }
 
-  var modulesTree = mergeTrees(
-      [angular2Tree, angular2MaterialTree, benchmarksTree, benchmarksExternalTree, playgroundTree]);
+  if (modules.benchpress) {
+    var benchpressTree =
+        new Funnel('modules/benchpress',
+                   {include: ['**/**'], exclude: ['e2e_test/**'], destDir: '/benchpress/'});
+  }
+
+  var modulesTree = mergeTrees([
+    angular2Tree,
+    angular2MaterialTree,
+    benchmarksTree,
+    benchmarksExternalTree,
+    playgroundTree,
+    benchpressTree
+  ]);
 
   var es6PolyfillTypings =
       new Funnel('modules', {include: ['angular2/typings/es6-*/**'], destDir: '/'});
@@ -267,7 +281,7 @@ module.exports = function makeBrowserTree(options, destinationPath) {
   // typescript resolves dependencies automatically
   if (modules.bundle_deps) {
     var nodeModules = new Funnel(
-        'node_modules', {include: ['@reactivex/**/**', 'parse5/**/**', 'css/**/**'], destDir: '/'});
+        'node_modules', {include: ['rxjs/**/**', 'parse5/**/**', 'css/**/**'], destDir: '/'});
   }
 
   if (generateEs6) {

@@ -1,11 +1,10 @@
-import {NgZone, NgFor, Component, View, NgIf, FORM_DIRECTIVES} from 'angular2/angular2';
+import {Component} from 'angular2/core';
 import {BitmapService} from './services/bitmap';
 import {EventListener} from 'angular2/src/facade/browser';
 import {FileReader, Uint8ArrayWrapper} from './file_api';
 import {TimerWrapper} from 'angular2/src/facade/async';
 
-@Component({selector: 'image-demo', viewProviders: [BitmapService]})
-@View({templateUrl: 'image_demo.html', directives: [NgFor, NgIf, FORM_DIRECTIVES]})
+@Component({selector: 'image-demo', viewProviders: [BitmapService], templateUrl: 'image_demo.html'})
 export class ImageDemo {
   images = [];
   fileInput: String;

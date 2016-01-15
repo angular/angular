@@ -21,7 +21,7 @@ import {Headers} from 'angular2/src/http/headers';
 import {Map} from 'angular2/src/facade/collection';
 import {RequestOptions, BaseRequestOptions} from 'angular2/src/http/base_request_options';
 import {BaseResponseOptions, ResponseOptions} from 'angular2/src/http/base_response_options';
-import {ResponseTypes} from 'angular2/src/http/enums';
+import {ResponseType} from 'angular2/src/http/enums';
 
 export function main() {
   describe('MockBackend', () => {

@@ -1,9 +1,12 @@
 
 angular.module('ngComponentRouter').
     value('$route', null). // can be overloaded with ngRouteShim
-    factory('$router', ['$q', '$location', '$$directiveIntrospector', '$browser', '$rootScope', '$injector', routerFactory]);
+    // Because Angular 1 has no notion of a root component, we use an object with unique identity
+    // to represent this. Can be overloaded with a component name
+    value('$routerRootComponent', new Object()).
+    factory('$router', ['$q', '$location', '$$directiveIntrospector', '$browser', '$rootScope', '$injector', '$routerRootComponent', routerFactory]);
 
-function routerFactory($q, $location, $$directiveIntrospector, $browser, $rootScope, $injector) {
+function routerFactory($q, $location, $$directiveIntrospector, $browser, $rootScope, $injector, $routerRootComponent) {
 
   // When this file is processed, the line below is replaced with
   // the contents of `../lib/facades.es5`.
@@ -42,12 +45,7 @@ function routerFactory($q, $location, $$directiveIntrospector, $browser, $rootSc
   var RouteRegistry = exports.RouteRegistry;
   var RootRouter = exports.RootRouter;
 
-
-  // Because Angular 1 has no notion of a root component, we use an object with unique identity
-  // to represent this.
-  var ROOT_COMPONENT_OBJECT = new Object();
-
-  var registry = new RouteRegistry(ROOT_COMPONENT_OBJECT);
+  var registry = new RouteRegistry($routerRootComponent);
   var location = new Location();
 
   $$directiveIntrospector(function (name, factory) {
@@ -58,7 +56,7 @@ function routerFactory($q, $location, $$directiveIntrospector, $browser, $rootSc
     }
   });
 
-  var router = new RootRouter(registry, location, ROOT_COMPONENT_OBJECT);
+  var router = new RootRouter(registry, location, $routerRootComponent);
   $rootScope.$watch(function () { return $location.path(); }, function (path) {
     if (router.lastNavigationAttempt !== path) {
       router.navigateByUrl(path);

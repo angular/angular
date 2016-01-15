@@ -1,9 +1,9 @@
 import {Inject, Injectable, OpaqueToken} from 'angular2/src/core/di';
 import {AnimationBuilder} from 'angular2/src/animate/animation_builder';
-
 import {
   isPresent,
   isBlank,
+  Json,
   RegExpWrapper,
   CONST_EXPR,
   stringify,
@@ -39,14 +39,14 @@ import {
   DefaultRenderFragmentRef,
   DefaultProtoViewRef
 } from 'angular2/src/core/render/view';
-import {camelCaseToDashCase} from './util';
 import {ViewEncapsulation} from 'angular2/src/core/metadata';
-
-// TODO move it once DomAdapter is moved
 import {DOM} from 'angular2/src/platform/dom/dom_adapter';
+import {camelCaseToDashCase} from './util';
 
 const NAMESPACE_URIS =
     CONST_EXPR({'xlink': 'http://www.w3.org/1999/xlink', 'svg': 'http://www.w3.org/2000/svg'});
+const TEMPLATE_COMMENT_TEXT = 'template bindings={}';
+var TEMPLATE_BINDINGS_EXP = /^template bindings=(.*)$/g;
 
 export abstract class DomRenderer extends Renderer implements NodeFactory<Node> {
   abstract registerComponentTemplate(template: RenderComponentTemplate);
@@ -119,7 +119,7 @@ export abstract class DomRenderer extends Renderer implements NodeFactory<Node> 
   dehydrateView(viewRef: RenderViewRef) { resolveInternalDomView(viewRef).dehydrate(); }
 
   createTemplateAnchor(attrNameAndValues: string[]): Node {
-    return this.createElement('script', attrNameAndValues);
+    return DOM.createComment(TEMPLATE_COMMENT_TEXT);
   }
   abstract createElement(name: string, attrNameAndValues: string[]): Node;
   abstract mergeElement(existing: Node, attrNameAndValues: string[]);
@@ -139,11 +139,31 @@ export abstract class DomRenderer extends Renderer implements NodeFactory<Node> 
                       attributeValue: string): void {
     var view = resolveInternalDomView(location.renderView);
     var element = view.boundElements[location.boundElementIndex];
-    var dashCasedAttributeName = camelCaseToDashCase(attributeName);
     if (isPresent(attributeValue)) {
-      DOM.setAttribute(element, dashCasedAttributeName, stringify(attributeValue));
+      DOM.setAttribute(element, attributeName, stringify(attributeValue));
     } else {
-      DOM.removeAttribute(element, dashCasedAttributeName);
+      DOM.removeAttribute(element, attributeName);
+    }
+  }
+
+  /**
+   * Used only in debug mode to serialize property changes to comment nodes,
+   * such as <template> placeholders.
+   */
+  setBindingDebugInfo(location: RenderElementRef, propertyName: string,
+                      propertyValue: string): void {
+    var view: DefaultRenderView<Node> = resolveInternalDomView(location.renderView);
+    var element = view.boundElements[location.boundElementIndex];
+    var dashCasedPropertyName = camelCaseToDashCase(propertyName);
+    if (DOM.isCommentNode(element)) {
+      var existingBindings = RegExpWrapper.firstMatch(
+          TEMPLATE_BINDINGS_EXP, StringWrapper.replaceAll(DOM.getText(element), /\n/g, ''));
+      var parsedBindings = Json.parse(existingBindings[1]);
+      parsedBindings[dashCasedPropertyName] = propertyValue;
+      DOM.setText(element, StringWrapper.replace(TEMPLATE_COMMENT_TEXT, '{}',
+                                                 Json.stringify(parsedBindings)));
+    } else {
+      this.setElementAttribute(location, propertyName, propertyValue);
     }
   }
 
@@ -160,11 +180,10 @@ export abstract class DomRenderer extends Renderer implements NodeFactory<Node> 
   setElementStyle(location: RenderElementRef, styleName: string, styleValue: string): void {
     var view = resolveInternalDomView(location.renderView);
     var element = view.boundElements[location.boundElementIndex];
-    var dashCasedStyleName = camelCaseToDashCase(styleName);
     if (isPresent(styleValue)) {
-      DOM.setStyle(element, dashCasedStyleName, stringify(styleValue));
+      DOM.setStyle(element, styleName, stringify(styleValue));
     } else {
-      DOM.removeStyle(element, dashCasedStyleName);
+      DOM.removeStyle(element, styleName);
     }
   }
 
@@ -346,11 +365,18 @@ function resolveInternalDomFragment(fragmentRef: RenderFragmentRef): Node[] {
 }
 
 function moveNodesAfterSibling(sibling, nodes) {
-  if (nodes.length > 0 && isPresent(DOM.parentElement(sibling))) {
-    for (var i = 0; i < nodes.length; i++) {
-      DOM.insertBefore(sibling, nodes[i]);
+  var parent = DOM.parentElement(sibling);
+  if (nodes.length > 0 && isPresent(parent)) {
+    var nextSibling = DOM.nextSibling(sibling);
+    if (isPresent(nextSibling)) {
+      for (var i = 0; i < nodes.length; i++) {
+        DOM.insertBefore(nextSibling, nodes[i]);
+      }
+    } else {
+      for (var i = 0; i < nodes.length; i++) {
+        DOM.appendChild(parent, nodes[i]);
+      }
     }
-    DOM.insertBefore(nodes[0], sibling);
   }
 }
 

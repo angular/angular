@@ -1,4 +1,4 @@
-import {ReadyStates, RequestMethods, ResponseTypes} from './enums';
+import {ReadyState, RequestMethod, ResponseType} from './enums';
 import {Headers} from './headers';
 import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
 import {EventEmitter} from 'angular2/src/facade/async';
@@ -17,7 +17,7 @@ export abstract class ConnectionBackend { abstract createConnection(request: any
  * Abstract class from which real connections are derived.
  */
 export abstract class Connection {
-  readyState: ReadyStates;
+  readyState: ReadyState;
   request: Request;
   response: any;  // TODO: generic of <Response>;
 }
@@ -28,7 +28,7 @@ export abstract class Connection {
  */
 export interface RequestOptionsArgs {
   url?: string;
-  method?: string | RequestMethods;
+  method?: string | RequestMethod;
   search?: string | URLSearchParams;
   headers?: Headers;
   // TODO: Support Blob, ArrayBuffer, JSON, URLSearchParams, FormData
@@ -50,6 +50,6 @@ export type ResponseOptionsArgs = {
   status?: number;
   statusText?: string;
   headers?: Headers;
-  type?: ResponseTypes;
+  type?: ResponseType;
   url?: string;
 }

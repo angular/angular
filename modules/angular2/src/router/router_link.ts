@@ -20,7 +20,7 @@ import {Instruction} from './instruction';
  * When linking to this `User` route, you can write:
  *
  * ```
- * <a [router-link]="['./User']">link to user component</a>
+ * <a [routerLink]="['./User']">link to user component</a>
  * ```
  *
  * RouterLink expects the value to be an array of route names, followed by the params
@@ -35,7 +35,7 @@ import {Instruction} from './instruction';
  * current component's parent.
  */
 @Directive({
-  selector: '[router-link]',
+  selector: '[routerLink]',
   inputs: ['routeParams: routerLink', 'target: target'],
   host: {
     '(click)': 'onClick()',
@@ -53,16 +53,24 @@ export class RouterLink {
   // the instruction passed to the router to navigate
   private _navigationInstruction: Instruction;
 
-  constructor(private _router: Router, private _location: Location) {}
+  constructor(private _router: Router, private _location: Location) {
+    // we need to update the link whenever a route changes to account for aux routes
+    this._router.subscribe((_) => this._updateLink());
+  }
+
+  // because auxiliary links take existing primary and auxiliary routes into account,
+  // we need to update the link whenever params or other routes change.
+  private _updateLink(): void {
+    this._navigationInstruction = this._router.generate(this._routeParams);
+    var navigationHref = this._navigationInstruction.toLinkUrl();
+    this.visibleHref = this._location.prepareExternalUrl(navigationHref);
+  }
 
   get isRouteActive(): boolean { return this._router.isRouteActive(this._navigationInstruction); }
 
   set routeParams(changes: any[]) {
     this._routeParams = changes;
-    this._navigationInstruction = this._router.generate(this._routeParams);
-
-    var navigationHref = this._navigationInstruction.toLinkUrl();
-    this.visibleHref = this._location.prepareExternalUrl(navigationHref);
+    this._updateLink();
   }
 
   onClick(): boolean {

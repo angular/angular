@@ -1,7 +1,13 @@
+import {Injectable} from 'angular2/src/core/di';
 import {EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
 import {LocationStrategy} from 'angular2/src/router/location_strategy';
 
 
+/**
+ * A mock implementation of {@link LocationStrategy} that allows tests to fire simulated
+ * location events.
+ */
+@Injectable()
 export class MockLocationStrategy extends LocationStrategy {
   internalBaseHref: string = '/';
   internalPath: string = '/';
@@ -13,7 +19,7 @@ export class MockLocationStrategy extends LocationStrategy {
 
   simulatePopState(url: string): void {
     this.internalPath = url;
-    ObservableWrapper.callEmit(this._subject, null);
+    ObservableWrapper.callEmit(this._subject, new _MockPopStateEvent(this.path()));
   }
 
   path(): string { return this.internalPath; }
@@ -25,18 +31,24 @@ export class MockLocationStrategy extends LocationStrategy {
     return this.internalBaseHref + internal;
   }
 
-  simulateUrlPop(pathname: string): void {
-    ObservableWrapper.callEmit(this._subject, {'url': pathname});
-  }
-
   pushState(ctx: any, title: string, path: string, query: string): void {
     this.internalTitle = title;
 
     var url = path + (query.length > 0 ? ('?' + query) : '');
     this.internalPath = url;
 
-    var external = this.prepareExternalUrl(url);
-    this.urlChanges.push(external);
+    var externalUrl = this.prepareExternalUrl(url);
+    this.urlChanges.push(externalUrl);
+  }
+
+  replaceState(ctx: any, title: string, path: string, query: string): void {
+    this.internalTitle = title;
+
+    var url = path + (query.length > 0 ? ('?' + query) : '');
+    this.internalPath = url;
+
+    var externalUrl = this.prepareExternalUrl(url);
+    this.urlChanges.push('replace: ' + externalUrl);
   }
 
   onPopState(fn: (value: any) => void): void { ObservableWrapper.subscribe(this._subject, fn); }
@@ -52,4 +64,10 @@ export class MockLocationStrategy extends LocationStrategy {
   }
 
   forward(): void { throw 'not implemented'; }
+}
+
+class _MockPopStateEvent {
+  pop: boolean = true;
+  type: string = 'popstate';
+  constructor(public newUrl: string) {}
 }

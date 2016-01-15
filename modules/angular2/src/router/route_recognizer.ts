@@ -59,7 +59,7 @@ export class RedirectRecognizer implements AbstractRecognizer {
 
 // represents something like '/foo/:bar'
 export class RouteRecognizer implements AbstractRecognizer {
-  specificity: number;
+  specificity: string;
   terminal: boolean = true;
   hash: string;
 

@@ -17,22 +17,13 @@ import {DependencyMetadata} from 'angular2/src/core/di/metadata';
  *
  * A decorator can inject string literal `text` like so:
  *
- * ```javascript
- * @Directive({
- *   selector: `input'
- * })
- * class InputDirective {
- *   constructor(@Attribute('type') type) {
- *     // type would be `text` in this example
- *   }
- * }
- * ```
+ * {@example core/ts/metadata/metadata.ts region='attributeMetadata'}
  */
 @CONST()
 export class AttributeMetadata extends DependencyMetadata {
   constructor(public attributeName: string) { super(); }
 
-  get token() {
+  get token(): AttributeMetadata {
     // Normally one would default a token to a type of an injected value but here
     // the type of a variable is "string" and we can't use primitive type as a return value
     // so we use instance of Attribute instead. This doesn't matter much in practice as arguments
@@ -55,7 +46,7 @@ export class AttributeMetadata extends DependencyMetadata {
  * ```html
  * <tabs>
  *   <pane title="Overview">...</pane>
- *   <pane *ng-for="#o of objects" [title]="o.title">{{o.text}}</pane>
+ *   <pane *ngFor="#o of objects" [title]="o.title">{{o.text}}</pane>
  * </tabs>
  * ```
  *
@@ -74,7 +65,7 @@ export class AttributeMetadata extends DependencyMetadata {
  *  selector: 'tabs',
  *  template: `
  *    <ul>
- *      <li *ng-for="#pane of panes">{{pane.title}}</li>
+ *      <li *ngFor="#pane of panes">{{pane.title}}</li>
  *    </ul>
  *    <content></content>
  *  `
@@ -194,7 +185,7 @@ export class QueryMetadata extends DependencyMetadata {
 /**
  * Configures a content query.
  *
- * Content queries are set before the `afterContentInit` callback is called.
+ * Content queries are set before the `ngAfterContentInit` callback is called.
  *
  * ### Example
  *
@@ -205,7 +196,7 @@ export class QueryMetadata extends DependencyMetadata {
  * class SomeDir {
  *   @ContentChildren(ChildDirective) contentChildren: QueryList<ChildDirective>;
  *
- *   afterContentInit() {
+ *   ngAfterContentInit() {
  *     // contentChildren is set
  *   }
  * }
@@ -222,7 +213,7 @@ export class ContentChildrenMetadata extends QueryMetadata {
 /**
  * Configures a content query.
  *
- * Content queries are set before the `afterContentInit` callback is called.
+ * Content queries are set before the `ngAfterContentInit` callback is called.
  *
  * ### Example
  *
@@ -233,7 +224,7 @@ export class ContentChildrenMetadata extends QueryMetadata {
  * class SomeDir {
  *   @ContentChild(ChildDirective) contentChild;
  *
- *   afterContentInit() {
+ *   ngAfterContentInit() {
  *     // contentChild is set
  *   }
  * }
@@ -296,7 +287,7 @@ export class ViewQueryMetadata extends QueryMetadata {
 /**
  * Configures a view query.
  *
- * View queries are set before the `afterViewInit` callback is called.
+ * View queries are set before the `ngAfterViewInit` callback is called.
  *
  * ### Example
  *
@@ -309,7 +300,7 @@ export class ViewQueryMetadata extends QueryMetadata {
  * class SomeDir {
  *   @ViewChildren(ItemDirective) viewChildren: QueryList<ItemDirective>;
  *
- *   afterViewInit() {
+ *   ngAfterViewInit() {
  *     // viewChildren is set
  *   }
  * }
@@ -323,7 +314,7 @@ export class ViewChildrenMetadata extends ViewQueryMetadata {
 /**
  * Configures a view query.
  *
- * View queries are set before the `afterViewInit` callback is called.
+ * View queries are set before the `ngAfterViewInit` callback is called.
  *
  * ### Example
  *
@@ -336,7 +327,7 @@ export class ViewChildrenMetadata extends ViewQueryMetadata {
  * class SomeDir {
  *   @ViewChild(ItemDirective) viewChild:ItemDirective;
  *
- *   afterViewInit() {
+ *   ngAfterViewInit() {
  *     // viewChild is set
  *   }
  * }

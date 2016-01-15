@@ -45,8 +45,8 @@ export function main() {
 
     it("should initialize DOM elements with the given form object",
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-         var t = `<div [ng-form-model]="form">
-                <input type="text" ng-control="login">
+         var t = `<div [ngFormModel]="form">
+                <input type="text" ngControl="login">
                </div>`;
 
          tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((fixture) => {
@@ -64,8 +64,8 @@ export function main() {
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
          var form = new ControlGroup({"login": new Control("oldValue")});
 
-         var t = `<div [ng-form-model]="form">
-                <input type="text" ng-control="login">
+         var t = `<div [ngFormModel]="form">
+                <input type="text" ngControl="login">
               </div>`;
 
          tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((fixture) => {
@@ -74,17 +74,40 @@ export function main() {
            var input = fixture.debugElement.query(By.css("input"));
 
            input.nativeElement.value = "updatedValue";
-           dispatchEvent(input.nativeElement, "change");
+           dispatchEvent(input.nativeElement, "input");
 
            expect(form.value).toEqual({"login": "updatedValue"});
            async.done();
          });
        }));
 
-    it("should emit ng-submit event on submit",
+    it("should ignore the change event for <input type=text>",
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+         var form = new ControlGroup({"login": new Control("oldValue")});
+
+         var t = `<div [ngFormModel]="form">
+                <input type="text" ngControl="login">
+              </div>`;
+
+         tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((fixture) => {
+           fixture.debugElement.componentInstance.form = form;
+           fixture.detectChanges();
+           var input = fixture.debugElement.query(By.css("input"));
+
+           input.nativeElement.value = "updatedValue";
+
+           ObservableWrapper.subscribe(form.valueChanges,
+                                       (value) => { throw 'Should not happen'; });
+           dispatchEvent(input.nativeElement, "change");
+
+           async.done();
+         });
+       }));
+
+    it("should emit ngSubmit event on submit",
        inject([TestComponentBuilder], fakeAsync((tcb: TestComponentBuilder) => {
                 var t = `<div>
-                      <form [ng-form-model]="form" (ng-submit)="name='updated'"></form>
+                      <form [ngFormModel]="form" (ngSubmit)="name='updated'"></form>
                       <span>{{name}}</span>
                     </div>`;
 
@@ -110,7 +133,7 @@ export function main() {
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
          var control = new Control("loginValue");
 
-         var t = `<div><input type="text" [ng-form-control]="form"></div>`;
+         var t = `<div><input type="text" [ngFormControl]="form"></div>`;
 
          tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((fixture) => {
            fixture.debugElement.componentInstance.form = control;
@@ -120,7 +143,7 @@ export function main() {
            expect(input.nativeElement.value).toEqual("loginValue");
 
            input.nativeElement.value = "updatedValue";
-           dispatchEvent(input.nativeElement, "change");
+           dispatchEvent(input.nativeElement, "input");
 
            expect(control.value).toEqual("updatedValue");
            async.done();
@@ -129,8 +152,8 @@ export function main() {
 
     it("should update DOM elements when rebinding the control group",
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-         var t = `<div [ng-form-model]="form">
-                <input type="text" ng-control="login">
+         var t = `<div [ngFormModel]="form">
+                <input type="text" ngControl="login">
                </div>`;
 
          tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((fixture) => {
@@ -153,8 +176,8 @@ export function main() {
          var login = new Control("oldValue");
          var form = new ControlGroup({"login": login});
 
-         var t = `<div [ng-form-model]="form">
-                <input type="text" ng-control="login">
+         var t = `<div [ngFormModel]="form">
+                <input type="text" ngControl="login">
                </div>`;
 
          tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((fixture) => {
@@ -176,8 +199,8 @@ export function main() {
          var login = new Control("oldValue");
          var form = new ControlGroup({"login": login});
 
-         var t = `<div [ng-form-model]="form">
-                <input type="text" ng-control="login">
+         var t = `<div [ngFormModel]="form">
+                <input type="text" ngControl="login">
                </div>`;
 
          tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((fixture) => {
@@ -198,8 +221,8 @@ export function main() {
     describe("different control types", () => {
       it("should support <input type=text>",
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-           var t = `<div [ng-form-model]="form">
-                  <input type="text" ng-control="text">
+           var t = `<div [ngFormModel]="form">
+                  <input type="text" ngControl="text">
                 </div>`;
 
            tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((fixture) => {
@@ -220,8 +243,8 @@ export function main() {
 
       it("should support <input> without type",
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-           var t = `<div [ng-form-model]="form">
-                  <input ng-control="text">
+           var t = `<div [ngFormModel]="form">
+                  <input ngControl="text">
                 </div>`;
 
            tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((fixture) => {
@@ -241,8 +264,8 @@ export function main() {
 
       it("should support <textarea>",
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-           var t = `<div [ng-form-model]="form">
-                  <textarea ng-control="text"></textarea>
+           var t = `<div [ngFormModel]="form">
+                  <textarea ngControl="text"></textarea>
                 </div>`;
 
            tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((fixture) => {
@@ -263,8 +286,8 @@ export function main() {
 
       it("should support <type=checkbox>",
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-           var t = `<div [ng-form-model]="form">
-                  <input type="checkbox" ng-control="checkbox">
+           var t = `<div [ngFormModel]="form">
+                  <input type="checkbox" ngControl="checkbox">
                 </div>`;
 
            tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((fixture) => {
@@ -285,8 +308,8 @@ export function main() {
 
       it("should support <type=number>",
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-           var t = `<div [ng-form-model]="form">
-                  <input type="number" ng-control="num">
+           var t = `<div [ngFormModel]="form">
+                  <input type="number" ngControl="num">
                 </div>`;
 
            tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((fixture) => {
@@ -298,7 +321,7 @@ export function main() {
              expect(input.nativeElement.value).toEqual("10");
 
              input.nativeElement.value = "20";
-             dispatchEvent(input.nativeElement, "change");
+             dispatchEvent(input.nativeElement, "input");
 
              expect(fixture.debugElement.componentInstance.form.value).toEqual({"num": 20});
              async.done();
@@ -307,8 +330,8 @@ export function main() {
 
       it("should support <select>",
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-           var t = `<div [ng-form-model]="form">
-                    <select ng-control="city">
+           var t = `<div [ngFormModel]="form">
+                    <select ngControl="city">
                       <option value="SF"></option>
                       <option value="NYC"></option>
                     </select>
@@ -335,9 +358,9 @@ export function main() {
 
       it("should support <select> with a dynamic list of options",
          inject([TestComponentBuilder], fakeAsync((tcb: TestComponentBuilder) => {
-                  var t = `<div [ng-form-model]="form">
-                      <select ng-control="city">
-                        <option *ng-for="#c of data" [value]="c"></option>
+                  var t = `<div [ngFormModel]="form">
+                      <select ngControl="city">
+                        <option *ngFor="#c of data" [value]="c"></option>
                       </select>
                   </div>`;
 
@@ -358,8 +381,8 @@ export function main() {
 
       it("should support custom value accessors",
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-           var t = `<div [ng-form-model]="form">
-                  <input type="text" ng-control="name" wrapped-value>
+           var t = `<div [ngFormModel]="form">
+                  <input type="text" ngControl="name" wrapped-value>
                 </div>`;
 
            tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((fixture) => {
@@ -370,7 +393,7 @@ export function main() {
              expect(input.nativeElement.value).toEqual("!aa!");
 
              input.nativeElement.value = "!bb!";
-             dispatchEvent(input.nativeElement, "change");
+             dispatchEvent(input.nativeElement, "input");
 
              expect(fixture.debugElement.componentInstance.form.value).toEqual({"name": "bb"});
              async.done();
@@ -379,8 +402,8 @@ export function main() {
 
       it("should support custom value accessors on non builtin input elements that fire a change event without a 'target' property",
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-           var t = `<div [ng-form-model]="form">
-                  <my-input ng-control="name"></my-input>
+           var t = `<div [ngFormModel]="form">
+                  <my-input ngControl="name"></my-input>
                 </div>`;
 
            tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((fixture) => {
@@ -391,7 +414,7 @@ export function main() {
              expect(input.componentInstance.value).toEqual("!aa!");
 
              input.componentInstance.value = "!bb!";
-             ObservableWrapper.subscribe(input.componentInstance.onChange, (value) => {
+             ObservableWrapper.subscribe(input.componentInstance.onInput, (value) => {
                expect(fixture.debugElement.componentInstance.form.value).toEqual({"name": "bb"});
                async.done();
              });
@@ -407,10 +430,10 @@ export function main() {
            var form = new ControlGroup(
                {"login": new Control(""), "min": new Control(""), "max": new Control("")});
 
-           var t = `<div [ng-form-model]="form" login-is-empty-validator>
-                    <input type="text" ng-control="login" required>
-                    <input type="text" ng-control="min" minlength="3">
-                    <input type="text" ng-control="max" maxlength="3">
+           var t = `<div [ngFormModel]="form" login-is-empty-validator>
+                    <input type="text" ngControl="login" required>
+                    <input type="text" ngControl="min" minlength="3">
+                    <input type="text" ngControl="max" maxlength="3">
                  </div>`;
 
            tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((fixture) => {
@@ -424,9 +447,9 @@ export function main() {
              required.nativeElement.value = "";
              minLength.nativeElement.value = "1";
              maxLength.nativeElement.value = "1234";
-             dispatchEvent(required.nativeElement, "change");
-             dispatchEvent(minLength.nativeElement, "change");
-             dispatchEvent(maxLength.nativeElement, "change");
+             dispatchEvent(required.nativeElement, "input");
+             dispatchEvent(minLength.nativeElement, "input");
+             dispatchEvent(maxLength.nativeElement, "input");
 
              expect(form.hasError("required", ["login"])).toEqual(true);
              expect(form.hasError("minlength", ["min"])).toEqual(true);
@@ -437,9 +460,9 @@ export function main() {
              required.nativeElement.value = "1";
              minLength.nativeElement.value = "123";
              maxLength.nativeElement.value = "123";
-             dispatchEvent(required.nativeElement, "change");
-             dispatchEvent(minLength.nativeElement, "change");
-             dispatchEvent(maxLength.nativeElement, "change");
+             dispatchEvent(required.nativeElement, "input");
+             dispatchEvent(minLength.nativeElement, "input");
+             dispatchEvent(maxLength.nativeElement, "input");
 
              expect(form.valid).toEqual(true);
 
@@ -451,8 +474,8 @@ export function main() {
          inject([TestComponentBuilder], fakeAsync((tcb: TestComponentBuilder) => {
                   var form = new ControlGroup({"login": new Control("")});
 
-                  var t = `<div [ng-form-model]="form">
-                    <input type="text" ng-control="login" uniq-login-validator="expected">
+                  var t = `<div [ngFormModel]="form">
+                    <input type="text" ngControl="login" uniq-login-validator="expected">
                  </div>`;
 
                   var rootTC;
@@ -470,7 +493,7 @@ export function main() {
 
                   var input = rootTC.debugElement.query(By.css("input"));
                   input.nativeElement.value = "expected";
-                  dispatchEvent(input.nativeElement, "change");
+                  dispatchEvent(input.nativeElement, "input");
                   tick(100);
 
                   expect(form.valid).toEqual(true);
@@ -480,8 +503,8 @@ export function main() {
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            var form = new ControlGroup({"login": new Control("aa", Validators.required)});
 
-           var t = `<div [ng-form-model]="form">
-                  <input type="text" ng-control="login">
+           var t = `<div [ngFormModel]="form">
+                  <input type="text" ngControl="login">
                  </div>`;
 
            tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((fixture) => {
@@ -492,7 +515,7 @@ export function main() {
              var input = fixture.debugElement.query(By.css("input"));
 
              input.nativeElement.value = "";
-             dispatchEvent(input.nativeElement, "change");
+             dispatchEvent(input.nativeElement, "input");
 
              expect(form.valid).toEqual(false);
              async.done();
@@ -505,8 +528,8 @@ export function main() {
                       new Control("", Validators.required, uniqLoginAsyncValidator("expected"));
                   var form = new ControlGroup({"login": control});
 
-                  var t = `<div [ng-form-model]="form">
-                  <input type="text" ng-control="login">
+                  var t = `<div [ngFormModel]="form">
+                  <input type="text" ngControl="login">
                  </div>`;
 
                   var fixture;
@@ -521,7 +544,7 @@ export function main() {
 
                   var input = fixture.debugElement.query(By.css("input"));
                   input.nativeElement.value = "wrong value";
-                  dispatchEvent(input.nativeElement, "change");
+                  dispatchEvent(input.nativeElement, "input");
 
                   expect(form.pending).toEqual(true);
                   tick();
@@ -529,7 +552,7 @@ export function main() {
                   expect(form.hasError("uniqLogin", ["login"])).toEqual(true);
 
                   input.nativeElement.value = "expected";
-                  dispatchEvent(input.nativeElement, "change");
+                  dispatchEvent(input.nativeElement, "input");
                   tick();
 
                   expect(form.valid).toEqual(true);
@@ -542,9 +565,9 @@ export function main() {
            var form =
                new ControlGroup({"nested": new ControlGroup({"login": new Control("value")})});
 
-           var t = `<div [ng-form-model]="form">
-                  <div ng-control-group="nested">
-                    <input type="text" ng-control="login">
+           var t = `<div [ngFormModel]="form">
+                  <div ngControlGroup="nested">
+                    <input type="text" ngControl="login">
                   </div>
               </div>`;
 
@@ -563,9 +586,9 @@ export function main() {
            var form =
                new ControlGroup({"nested": new ControlGroup({"login": new Control("value")})});
 
-           var t = `<div [ng-form-model]="form">
-                    <div ng-control-group="nested">
-                      <input type="text" ng-control="login">
+           var t = `<div [ngFormModel]="form">
+                    <div ngControlGroup="nested">
+                      <input type="text" ngControl="login">
                     </div>
                 </div>`;
 
@@ -575,7 +598,7 @@ export function main() {
              var input = fixture.debugElement.query(By.css("input"));
 
              input.nativeElement.value = "updatedValue";
-             dispatchEvent(input.nativeElement, "change");
+             dispatchEvent(input.nativeElement, "input");
 
              expect(form.value).toEqual({"nested": {"login": "updatedValue"}});
              async.done();
@@ -583,13 +606,13 @@ export function main() {
          }));
     });
 
-    it("should support ng-model for complex forms",
+    it("should support ngModel for complex forms",
        inject(
            [TestComponentBuilder], fakeAsync((tcb: TestComponentBuilder) => {
              var form = new ControlGroup({"name": new Control("")});
 
              var t =
-                 `<div [ng-form-model]="form"><input type="text" ng-control="name" [(ng-model)]="name"></div>`;
+                 `<div [ngFormModel]="form"><input type="text" ngControl="name" [(ngModel)]="name"></div>`;
 
              var fixture: ComponentFixture;
              tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then(
@@ -604,18 +627,17 @@ export function main() {
              expect(input.value).toEqual("oldValue");
 
              input.value = "updatedValue";
-             dispatchEvent(input, "change");
+             dispatchEvent(input, "input");
 
              tick();
              expect(fixture.debugElement.componentInstance.name).toEqual("updatedValue");
            })));
 
-    it("should support ng-model for single fields",
+    it("should support ngModel for single fields",
        inject([TestComponentBuilder], fakeAsync((tcb: TestComponentBuilder) => {
                 var form = new Control("");
 
-                var t =
-                    `<div><input type="text" [ng-form-control]="form" [(ng-model)]="name"></div>`;
+                var t = `<div><input type="text" [ngFormControl]="form" [(ngModel)]="name"></div>`;
 
                 var fixture: ComponentFixture;
                 tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then(
@@ -629,7 +651,7 @@ export function main() {
                 expect(input.value).toEqual("oldValue");
 
                 input.value = "updatedValue";
-                dispatchEvent(input, "change");
+                dispatchEvent(input, "input");
                 tick();
 
                 expect(fixture.debugElement.componentInstance.name).toEqual("updatedValue");
@@ -639,8 +661,8 @@ export function main() {
       it("should add new controls and control groups",
          inject([TestComponentBuilder], fakeAsync((tcb: TestComponentBuilder) => {
                   var t = `<form>
-                     <div ng-control-group="user">
-                      <input type="text" ng-control="login">
+                     <div ngControlGroup="user">
+                      <input type="text" ngControl="login">
                      </div>
                </form>`;
 
@@ -660,9 +682,9 @@ export function main() {
                   expect(form.controls['user'].controls['login']).toBeDefined();
                 })));
 
-      it("should emit ng-submit event on submit",
+      it("should emit ngSubmit event on submit",
          inject([TestComponentBuilder], fakeAsync((tcb: TestComponentBuilder) => {
-                  var t = `<div><form (ng-submit)="name='updated'"></form></div>`;
+                  var t = `<div><form (ngSubmit)="name='updated'"></form></div>`;
 
                   var fixture: ComponentFixture;
                   tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then(
@@ -677,9 +699,9 @@ export function main() {
                   expect(fixture.debugElement.componentInstance.name).toEqual("updated");
                 })));
 
-      it("should not create a template-driven form when ng-no-form is used",
+      it("should not create a template-driven form when ngNoForm is used",
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-           var t = `<form ng-no-form>
+           var t = `<form ngNoForm>
                </form>`;
 
            tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((fixture) => {
@@ -694,8 +716,8 @@ export function main() {
       it("should remove controls",
          inject([TestComponentBuilder], fakeAsync((tcb: TestComponentBuilder) => {
                   var t = `<form>
-                    <div *ng-if="name == 'show'">
-                      <input type="text" ng-control="login">
+                    <div *ngIf="name == 'show'">
+                      <input type="text" ngControl="login">
                     </div>
                   </form>`;
 
@@ -721,8 +743,8 @@ export function main() {
       it("should remove control groups",
          inject([TestComponentBuilder], fakeAsync((tcb: TestComponentBuilder) => {
                   var t = `<form>
-                     <div *ng-if="name=='show'" ng-control-group="user">
-                      <input type="text" ng-control="login">
+                     <div *ngIf="name=='show'" ngControlGroup="user">
+                      <input type="text" ngControl="login">
                      </div>
                </form>`;
 
@@ -745,10 +767,10 @@ export function main() {
                   expect(form.controls['user']).not.toBeDefined();
                 })));
 
-      it("should support ng-model for complex forms",
+      it("should support ngModel for complex forms",
          inject([TestComponentBuilder], fakeAsync((tcb: TestComponentBuilder) => {
                   var t = `<form>
-                      <input type="text" ng-control="name" [(ng-model)]="name">
+                      <input type="text" ngControl="name" [(ngModel)]="name">
                </form>`;
 
                   var fixture: ComponentFixture;
@@ -763,16 +785,16 @@ export function main() {
                   expect(input.value).toEqual("oldValue");
 
                   input.value = "updatedValue";
-                  dispatchEvent(input, "change");
+                  dispatchEvent(input, "input");
                   tick();
 
                   expect(fixture.debugElement.componentInstance.name).toEqual("updatedValue");
                 })));
 
 
-      it("should support ng-model for single fields",
+      it("should support ngModel for single fields",
          inject([TestComponentBuilder], fakeAsync((tcb: TestComponentBuilder) => {
-                  var t = `<div><input type="text" [(ng-model)]="name"></div>`;
+                  var t = `<div><input type="text" [(ngModel)]="name"></div>`;
 
                   var fixture: ComponentFixture;
                   tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then(
@@ -785,7 +807,7 @@ export function main() {
                   expect(input.value).toEqual("oldValue");
 
                   input.value = "updatedValue";
-                  dispatchEvent(input, "change");
+                  dispatchEvent(input, "input");
                   tick();
 
                   expect(fixture.debugElement.componentInstance.name).toEqual("updatedValue");
@@ -798,7 +820,7 @@ export function main() {
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            var form = new Control("", Validators.required);
 
-           var t = `<div><input type="text" [ng-form-control]="form"></div>`;
+           var t = `<div><input type="text" [ngFormControl]="form"></div>`;
 
            tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((fixture) => {
              fixture.debugElement.componentInstance.form = form;
@@ -813,7 +835,7 @@ export function main() {
              expect(sortedClassList(input)).toEqual(["ng-invalid", "ng-pristine", "ng-touched"]);
 
              input.value = "updatedValue";
-             dispatchEvent(input, "change");
+             dispatchEvent(input, "input");
              fixture.detectChanges();
 
              expect(sortedClassList(input)).toEqual(["ng-dirty", "ng-touched", "ng-valid"]);
@@ -825,7 +847,7 @@ export function main() {
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            var form = new ControlGroup({"name": new Control("", Validators.required)});
 
-           var t = `<form [ng-form-model]="form"><input type="text" ng-control="name"></form>`;
+           var t = `<form [ngFormModel]="form"><input type="text" ngControl="name"></form>`;
 
            tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((fixture) => {
              fixture.debugElement.componentInstance.form = form;
@@ -840,7 +862,7 @@ export function main() {
              expect(sortedClassList(input)).toEqual(["ng-invalid", "ng-pristine", "ng-touched"]);
 
              input.value = "updatedValue";
-             dispatchEvent(input, "change");
+             dispatchEvent(input, "input");
              fixture.detectChanges();
 
              expect(sortedClassList(input)).toEqual(["ng-dirty", "ng-touched", "ng-valid"]);
@@ -848,9 +870,9 @@ export function main() {
            });
          }));
 
-      it("should work with ng-model",
+      it("should work with ngModel",
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-           var t = `<div><input [(ng-model)]="name" required></div>`;
+           var t = `<div><input [(ngModel)]="name" required></div>`;
 
            tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((fixture) => {
              fixture.debugElement.componentInstance.name = "";
@@ -865,7 +887,7 @@ export function main() {
              expect(sortedClassList(input)).toEqual(["ng-invalid", "ng-pristine", "ng-touched"]);
 
              input.value = "updatedValue";
-             dispatchEvent(input, "change");
+             dispatchEvent(input, "input");
              fixture.detectChanges();
 
              expect(sortedClassList(input)).toEqual(["ng-dirty", "ng-touched", "ng-valid"]);
@@ -874,13 +896,13 @@ export function main() {
          }));
     });
 
-    describe("ng-model corner cases", () => {
+    describe("ngModel corner cases", () => {
       it("should not update the view when the value initially came from the view",
          inject([TestComponentBuilder], fakeAsync((tcb: TestComponentBuilder) => {
                   var form = new Control("");
 
                   var t =
-                      `<div><input type="text" [ng-form-control]="form" [(ng-model)]="name"></div>`;
+                      `<div><input type="text" [ngFormControl]="form" [(ngModel)]="name"></div>`;
                   var fixture: ComponentFixture;
                   tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then(
                       (root) => { fixture = root; });
@@ -898,7 +920,7 @@ export function main() {
                   var input = fixture.debugElement.query(By.css("input")).nativeElement;
                   input.value = "aa";
                   input.selectionStart = 1;
-                  dispatchEvent(input, "change");
+                  dispatchEvent(input, "input");
 
                   tick();
                   fixture.detectChanges();
@@ -909,7 +931,7 @@ export function main() {
 
       it("should update the view when the model is set back to what used to be in the view",
          inject([TestComponentBuilder], fakeAsync((tcb: TestComponentBuilder) => {
-                  var t = `<input type="text" [(ng-model)]="name">`;
+                  var t = `<input type="text" [(ngModel)]="name">`;
                   var fixture: ComponentFixture;
                   tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then(
                       (root) => { fixture = root; });
@@ -921,7 +943,7 @@ export function main() {
                   var input = fixture.debugElement.query(By.css("input")).nativeElement;
                   input.value = "aa";
                   input.selectionStart = 1;
-                  dispatchEvent(input, "change");
+                  dispatchEvent(input, "input");
 
                   tick();
                   fixture.detectChanges();
@@ -944,8 +966,8 @@ export function main() {
                   // {{x.valid}} used to crash because valid() tried to read a property
                   // from form.control before it was set. This test verifies this bug is
                   // fixed.
-                  var t = `<form><div ng-control-group="x" #x="form">
-                  <input type="text" ng-control="test"></div>{{x.valid}}</form>`;
+                  var t = `<form><div ngControlGroup="x" #x="ngForm">
+                  <input type="text" ngControl="test"></div>{{x.valid}}</form>`;
                   var fixture: ComponentFixture;
                   tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then(
                       (root) => { fixture = root; });
@@ -958,7 +980,7 @@ export function main() {
 
 @Directive({
   selector: '[wrapped-value]',
-  host: {'(change)': 'handleOnChange($event.target.value)', '[value]': 'value'}
+  host: {'(input)': 'handleOnInput($event.target.value)', '[value]': 'value'}
 })
 class WrappedValue implements ControlValueAccessor {
   value;
@@ -971,24 +993,24 @@ class WrappedValue implements ControlValueAccessor {
   registerOnChange(fn) { this.onChange = fn; }
   registerOnTouched(fn) {}
 
-  handleOnChange(value) { this.onChange(value.substring(1, value.length - 1)); }
+  handleOnInput(value) { this.onChange(value.substring(1, value.length - 1)); }
 }
 
 @Component({selector: "my-input", template: ''})
 class MyInput implements ControlValueAccessor {
-  @Output('change') onChange: EventEmitter<any> = new EventEmitter();
+  @Output('input') onInput: EventEmitter<any> = new EventEmitter();
   value: string;
 
   constructor(cd: NgControl) { cd.valueAccessor = this; }
 
   writeValue(value) { this.value = `!${value}!`; }
 
-  registerOnChange(fn) { ObservableWrapper.subscribe(this.onChange, fn); }
+  registerOnChange(fn) { ObservableWrapper.subscribe(this.onInput, fn); }
 
   registerOnTouched(fn) {}
 
   dispatchChangeEvent() {
-    ObservableWrapper.callEmit(this.onChange, this.value.substring(1, this.value.length - 1));
+    ObservableWrapper.callEmit(this.onInput, this.value.substring(1, this.value.length - 1));
   }
 }
 

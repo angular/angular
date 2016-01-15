@@ -19,7 +19,7 @@ var _allViewsById = new Map<number, AppView>();
 var _nextId = 0;
 
 function _setElementId(element, indices: number[]) {
-  if (isPresent(element)) {
+  if (isPresent(element) && DOM.isElementNode(element)) {
     DOM.setData(element, NG_ID_PROPERTY, indices.join(NG_ID_SEPARATOR));
   }
 }
@@ -33,6 +33,11 @@ function _getElementId(element): number[] {
   }
 }
 
+/**
+ * Returns a {@link DebugElement} for the given native DOM element, or
+ * null if the given native element does not have an Angular view associated
+ * with it.
+ */
 export function inspectNativeElement(element): DebugElement {
   var elId = _getElementId(element);
   if (isPresent(elId)) {
@@ -67,9 +72,21 @@ export class DebugElementViewListener implements AppViewListener {
   }
 }
 
+/**
+ * Providers which support debugging Angular applications (e.g. via `ng.probe`).
+ *
+ * ## Example
+ *
+ * {@example platform/dom/debug/ts/debug_element_view_listener/providers.ts region='providers'}
+ */
 export const ELEMENT_PROBE_PROVIDERS: any[] = CONST_EXPR([
   DebugElementViewListener,
   CONST_EXPR(new Provider(AppViewListener, {useExisting: DebugElementViewListener})),
 ]);
 
+/**
+ * Use {@link ELEMENT_PROBE_PROVIDERS}.
+ *
+ * @deprecated
+ */
 export const ELEMENT_PROBE_BINDINGS = ELEMENT_PROBE_PROVIDERS;

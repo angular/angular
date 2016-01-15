@@ -10,7 +10,7 @@ import {
   afterEach,
   AsyncTestCompleter,
   inject,
-  beforeEachBindings
+  beforeEachProviders
 } from 'angular2/testing_internal';
 import {provide} from 'angular2/src/core/di';
 
@@ -56,7 +56,7 @@ var THIS_MODULE_REF = moduleRef(THIS_MODULE_URL);
 
 export function main() {
   describe('ChangeDetectorCompiler', () => {
-    beforeEachBindings(() => TEST_PROVIDERS);
+    beforeEachProviders(() => TEST_PROVIDERS);
 
     var parser: TemplateParser;
     var compiler: ChangeDetectionCompiler;
@@ -78,26 +78,25 @@ export function main() {
       }
 
       describe('no jit', () => {
-        beforeEachBindings(() => [
+        beforeEachProviders(() => [
           provide(ChangeDetectorGenConfig,
                   {useValue: new ChangeDetectorGenConfig(true, false, false)})
         ]);
         it('should watch element properties', () => {
-          expect(detectChanges(compiler, '<div [el-prop]="someProp">'))
+          expect(detectChanges(compiler, '<div [elProp]="someProp">'))
               .toEqual(['elementProperty(elProp)=someValue']);
         });
       });
 
       describe('jit', () => {
-        beforeEachBindings(() => [
+        beforeEachProviders(() => [
           provide(ChangeDetectorGenConfig,
                   {useValue: new ChangeDetectorGenConfig(true, false, true)})
         ]);
         it('should watch element properties', () => {
-          expect(detectChanges(compiler, '<div [el-prop]="someProp">'))
+          expect(detectChanges(compiler, '<div [elProp]="someProp">'))
               .toEqual(['elementProperty(elProp)=someValue']);
         });
-
       });
 
 
@@ -117,7 +116,7 @@ export function main() {
       }
 
       it('should watch element properties', inject([AsyncTestCompleter], (async) => {
-           detectChanges(compiler, '<div [el-prop]="someProp">')
+           detectChanges(compiler, '<div [elProp]="someProp">')
                .then((value) => {
                  expect(value).toEqual(['elementProperty(elProp)=someValue']);
                  async.done();

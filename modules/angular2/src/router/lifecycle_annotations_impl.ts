@@ -10,9 +10,13 @@ export class CanActivate {
   constructor(public fn: Function) {}
 }
 
-export const canReuse: RouteLifecycleHook = CONST_EXPR(new RouteLifecycleHook("canReuse"));
-export const canDeactivate: RouteLifecycleHook =
-    CONST_EXPR(new RouteLifecycleHook("canDeactivate"));
-export const onActivate: RouteLifecycleHook = CONST_EXPR(new RouteLifecycleHook("onActivate"));
-export const onReuse: RouteLifecycleHook = CONST_EXPR(new RouteLifecycleHook("onReuse"));
-export const onDeactivate: RouteLifecycleHook = CONST_EXPR(new RouteLifecycleHook("onDeactivate"));
+export const routerCanReuse: RouteLifecycleHook =
+    CONST_EXPR(new RouteLifecycleHook("routerCanReuse"));
+export const routerCanDeactivate: RouteLifecycleHook =
+    CONST_EXPR(new RouteLifecycleHook("routerCanDeactivate"));
+export const routerOnActivate: RouteLifecycleHook =
+    CONST_EXPR(new RouteLifecycleHook("routerOnActivate"));
+export const routerOnReuse: RouteLifecycleHook =
+    CONST_EXPR(new RouteLifecycleHook("routerOnReuse"));
+export const routerOnDeactivate: RouteLifecycleHook =
+    CONST_EXPR(new RouteLifecycleHook("routerOnDeactivate"));

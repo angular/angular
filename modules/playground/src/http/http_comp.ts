@@ -1,13 +1,13 @@
-import {Component, View, NgFor} from 'angular2/angular2';
+import {Component} from 'angular2/core';
 import {Http, Response} from 'angular2/http';
+import 'rxjs/add/operator/map';
 
-@Component({selector: 'http-app'})
-@View({
-  directives: [NgFor],
+@Component({
+  selector: 'http-app',
   template: `
     <h1>people</h1>
     <ul class="people">
-      <li *ng-for="#person of people">
+      <li *ngFor="#person of people">
         hello, {{person['name']}}
       </li>
     </ul>

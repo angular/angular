@@ -30,7 +30,7 @@ import {PlatformLocation} from './platform_location';
  * ### Example
  *
  * ```
- * import {Component, provide} from 'angular2/angular2';
+ * import {Component, provide} from 'angular2/core';
  * import {
  *   APP_BASE_HREF
  *   ROUTER_DIRECTIVES,
@@ -91,6 +91,11 @@ export class PathLocationStrategy extends LocationStrategy {
   pushState(state: any, title: string, url: string, queryParams: string) {
     var externalUrl = this.prepareExternalUrl(url + normalizeQueryParams(queryParams));
     this._platformLocation.pushState(state, title, externalUrl);
+  }
+
+  replaceState(state: any, title: string, url: string, queryParams: string) {
+    var externalUrl = this.prepareExternalUrl(url + normalizeQueryParams(queryParams));
+    this._platformLocation.replaceState(state, title, externalUrl);
   }
 
   forward(): void { this._platformLocation.forward(); }

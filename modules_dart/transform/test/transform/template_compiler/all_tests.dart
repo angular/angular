@@ -87,7 +87,7 @@ void allTests() {
   // server and dart browser is in sync.
   it('should not contain notifyBinding', () async {
     fooComponentMeta.template = new CompileTemplateMetadata(
-        template: '<li *ng-for="#thing of things"><div>test</div></li>');
+        template: '<li *ngFor="#thing of things"><div>test</div></li>');
     final viewAnnotation = new AnnotationModel()
       ..name = 'View'
       ..isView = true;
@@ -352,7 +352,8 @@ void allTests() {
   });
 
   it('should include platform directives.', () async {
-    fooComponentMeta.template = new CompileTemplateMetadata(template: '<bar/>');
+    fooComponentMeta.template = new CompileTemplateMetadata(
+        template: '<bar></bar>');
     final viewAnnotation = new AnnotationModel()
       ..name = 'View'
       ..isView = true;
@@ -370,7 +371,8 @@ void allTests() {
   });
 
   it('should include platform directives when it it a list.', () async {
-    fooComponentMeta.template = new CompileTemplateMetadata(template: '<bar/>');
+    fooComponentMeta.template = new CompileTemplateMetadata(
+        template: '<bar></bar>');
     final viewAnnotation = new AnnotationModel()
       ..name = 'View'
       ..isView = true;

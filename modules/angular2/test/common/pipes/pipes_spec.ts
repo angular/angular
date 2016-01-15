@@ -10,20 +10,20 @@ import {
   afterEach
 } from 'angular2/testing_internal';
 
-import {Injector, Inject, provide, Pipe, PipeTransform} from 'angular2/core';
+import {Injector, Inject, provide, Pipe, PipeTransform, OnDestroy} from 'angular2/core';
 import {ProtoPipes, Pipes} from 'angular2/src/core/pipes/pipes';
 import {PipeProvider} from 'angular2/src/core/pipes/pipe_provider';
 
-class PipeA implements PipeTransform {
+class PipeA implements PipeTransform, OnDestroy {
   transform(a, b) {}
-  onDestroy() {}
+  ngOnDestroy() {}
 }
 
-class PipeB implements PipeTransform {
+class PipeB implements PipeTransform, OnDestroy {
   dep;
   constructor(@Inject("dep") dep: any) { this.dep = dep; }
   transform(a, b) {}
-  onDestroy() {}
+  ngOnDestroy() {}
 }
 
 export function main() {

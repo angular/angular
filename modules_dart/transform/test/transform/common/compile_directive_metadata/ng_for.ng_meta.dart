@@ -6,7 +6,7 @@ final ngFor = {
     "value": {
       "isComponent": false,
       "dynamicLoadable": true,
-      "selector": "[ng-for][ng-for-of]",
+      "selector": "[ngFor][ngForOf]",
       "exportAs": null,
       "type": {
         "id": 9999,

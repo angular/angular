@@ -7,8 +7,8 @@ import {
   iit,
   expect,
   beforeEach,
-  createTestInjector,
-  beforeEachBindings,
+  beforeEachProviders,
+  TestInjector,
   TestComponentBuilder
 } from "angular2/testing_internal";
 import {DOM} from 'angular2/src/platform/dom/dom_adapter';
@@ -49,7 +49,6 @@ import {
   RenderViewWithFragmentsStore,
   WebWorkerRenderViewRef
 } from 'angular2/src/web_workers/shared/render_view_with_fragments_store';
-import {WebWorkerApplication} from 'angular2/src/web_workers/ui/impl';
 import {MessageBasedRenderer} from 'angular2/src/web_workers/ui/renderer';
 import {createPairedMessageBuses, PairedMessageBuses} from '../shared/web_worker_test_util';
 import {
@@ -57,6 +56,7 @@ import {
   ServiceMessageBrokerFactory_
 } from 'angular2/src/web_workers/shared/service_message_broker';
 import {WebWorkerEventDispatcher} from 'angular2/src/web_workers/worker/event_dispatcher';
+import {ChangeDetectorGenConfig} from 'angular2/src/core/change_detection/change_detection';
 
 
 export function main() {
@@ -76,7 +76,6 @@ export function main() {
     var renderer = new MessageBasedRenderer(uiMessageBrokerFactory, uiMessageBus, uiSerializer,
                                             uiRenderProtoViewStore, uiRenderViewStore, domRenderer);
     renderer.start();
-    new WebWorkerApplication(null, null);
 
     return webWorkerBrokerFactory;
   }
@@ -100,20 +99,24 @@ export function main() {
     var uiInjector: Injector;
     var uiRenderViewStore: RenderViewWithFragmentsStore;
 
-    beforeEachBindings(() => {
+    beforeEachProviders(() => {
       var uiRenderProtoViewStore = new RenderProtoViewRefStore(false);
       uiRenderViewStore = new RenderViewWithFragmentsStore(false);
-      uiInjector = createTestInjector([
+      var testInjector = new TestInjector();
+      testInjector.addProviders([
         provide(RenderProtoViewRefStore, {useValue: uiRenderProtoViewStore}),
         provide(RenderViewWithFragmentsStore, {useValue: uiRenderViewStore}),
         provide(DomRenderer, {useClass: DomRenderer_}),
         provide(Renderer, {useExisting: DomRenderer})
       ]);
+      uiInjector = testInjector.createInjector();
       var uiSerializer = uiInjector.get(Serializer);
       var domRenderer = uiInjector.get(DomRenderer);
       var workerRenderProtoViewStore = new RenderProtoViewRefStore(true);
       var workerRenderViewStore = new RenderViewWithFragmentsStore(true);
       return [
+        provide(ChangeDetectorGenConfig,
+                {useValue: new ChangeDetectorGenConfig(true, true, false)}),
         provide(RenderProtoViewRefStore, {useValue: workerRenderProtoViewStore}),
         provide(RenderViewWithFragmentsStore, {useValue: workerRenderViewStore}),
         provide(Renderer,
@@ -172,8 +175,8 @@ export function main() {
                  renderer.setElementStyle(elr, 'width', null);
                  expect(DOM.getStyle(el, 'width')).toEqual('');
 
-                 renderer.setElementAttribute(elr, 'someAttr', 'someValue');
-                 expect(DOM.getAttribute(el, 'some-attr')).toEqual('someValue');
+                 renderer.setElementAttribute(elr, 'someattr', 'someValue');
+                 expect(DOM.getAttribute(el, 'someattr')).toEqual('someValue');
                };
 
                // root element
@@ -185,10 +188,26 @@ export function main() {
              });
        }));
 
+    it('should update any template comment property/attributes',
+       inject([TestComponentBuilder, Renderer, AsyncTestCompleter],
+              (tcb: TestComponentBuilder, renderer: Renderer, async) => {
+                var tpl = '<template [ngIf]="ctxBoolProp"></template>';
+                tcb.overrideView(MyComp, new ViewMetadata({template: tpl, directives: [NgIf]}))
+
+                    .createAsync(MyComp)
+                    .then((fixture) => {
+                      (<MyComp>fixture.debugElement.componentInstance).ctxBoolProp = true;
+                      fixture.detectChanges();
+                      var el = getRenderElement(fixture.debugElement.elementRef);
+                      expect(DOM.getInnerHTML(el)).toContain('"ng-reflect-ng-if": "true"');
+                      async.done();
+                    });
+              }));
+
     it('should add and remove fragments',
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
          tcb.overrideView(MyComp, new ViewMetadata({
-                            template: '<template [ng-if]="ctxBoolProp">hello</template>',
+                            template: '<template [ngIf]="ctxBoolProp">hello</template>',
                             directives: [NgIf]
                           }))
              .createAsync(MyComp)
@@ -213,8 +232,7 @@ export function main() {
       it('should call actions on the element independent of the compilation',
          inject([TestComponentBuilder, Renderer, AsyncTestCompleter],
                 (tcb: TestComponentBuilder, renderer: Renderer, async) => {
-                  tcb.overrideView(MyComp,
-                                   new ViewMetadata({template: '<input [title]="y"></input>'}))
+                  tcb.overrideView(MyComp, new ViewMetadata({template: '<input [title]="y">'}))
                       .createAsync(MyComp)
                       .then((fixture) => {
                         var elRef = fixture.debugElement.componentViewChildren[0].elementRef;
@@ -235,7 +253,7 @@ export function main() {
 class MyComp {
   ctxProp: string;
   ctxNumProp;
-  ctxBoolProp;
+  ctxBoolProp: boolean;
   constructor() {
     this.ctxProp = 'initial value';
     this.ctxNumProp = 0;

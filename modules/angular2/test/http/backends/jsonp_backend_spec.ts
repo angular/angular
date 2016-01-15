@@ -27,7 +27,7 @@ import {Response} from 'angular2/src/http/static_response';
 import {Map} from 'angular2/src/facade/collection';
 import {RequestOptions, BaseRequestOptions} from 'angular2/src/http/base_request_options';
 import {BaseResponseOptions, ResponseOptions} from 'angular2/src/http/base_response_options';
-import {ResponseTypes, ReadyStates, RequestMethods} from 'angular2/src/http/enums';
+import {ResponseType, ReadyState, RequestMethod} from 'angular2/src/http/enums';
 
 var addEventListenerSpy;
 var existingScripts = [];
@@ -94,9 +94,9 @@ export function main() {
       it('should use the injected BaseResponseOptions to create the response',
          inject([AsyncTestCompleter], async => {
            let connection = new JSONPConnection_(sampleRequest, new MockBrowserJsonp(),
-                                                 new ResponseOptions({type: ResponseTypes.Error}));
+                                                 new ResponseOptions({type: ResponseType.Error}));
            connection.response.subscribe(res => {
-             expect(res.type).toBe(ResponseTypes.Error);
+             expect(res.type).toBe(ResponseType.Error);
              async.done();
            });
            connection.finished();
@@ -117,7 +117,7 @@ export function main() {
            existingScripts[0].dispatchEvent('load');
 
            TimerWrapper.setTimeout(() => {
-             expect(connection.readyState).toBe(ReadyStates.Cancelled);
+             expect(connection.readyState).toBe(ReadyState.Cancelled);
              expect(loadSpy).not.toHaveBeenCalled();
              expect(errorSpy).not.toHaveBeenCalled();
              expect(returnSpy).not.toHaveBeenCalled();
@@ -158,8 +158,8 @@ export function main() {
          }));
 
       it('should throw if request method is not GET', () => {
-        [RequestMethods.Post, RequestMethods.Put, RequestMethods.Delete, RequestMethods.Options,
-         RequestMethods.Head, RequestMethods.Patch]
+        [RequestMethod.Post, RequestMethod.Put, RequestMethod.Delete, RequestMethod.Options,
+         RequestMethod.Head, RequestMethod.Patch]
             .forEach(method => {
               let base = new BaseRequestOptions();
               let req = new Request(

@@ -9,7 +9,7 @@ import {
   expect,
   iit,
   inject,
-  beforeEachBindings,
+  beforeEachProviders,
   it,
   xit,
   Log,

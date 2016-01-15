@@ -5,8 +5,7 @@ import {
   it,
   expect,
   beforeEach,
-  createTestInjector,
-  beforeEachBindings,
+  beforeEachProviders,
   SpyObject,
   proxy
 } from 'angular2/testing_internal';

@@ -5,8 +5,8 @@ import {RequestOptionsArgs, Connection, ConnectionBackend} from './interfaces';
 import {Request} from './static_request';
 import {Response} from './static_response';
 import {BaseRequestOptions, RequestOptions} from './base_request_options';
-import {RequestMethods} from './enums';
-import {Observable} from 'angular2/core';
+import {RequestMethod} from './enums';
+import {Observable} from 'rxjs/Observable';
 
 function httpRequest(backend: ConnectionBackend, request: Request): Observable<Response> {
   return backend.createConnection(request).response;
@@ -35,7 +35,7 @@ function mergeOptions(defaultOpts, providedOpts, method, url): RequestOptions {
  * Performs http requests using `XMLHttpRequest` as the default backend.
  *
  * `Http` is available as an injectable class, with methods to perform http requests. Calling
- * `request` returns an {@link Observable} which will emit a single {@link Response} when a
+ * `request` returns an `Observable` which will emit a single {@link Response} when a
  * response is received.
  *
  * ### Example
@@ -73,7 +73,8 @@ function mergeOptions(defaultOpts, providedOpts, method, url): RequestOptions {
  * ### Example
  *
  * ```typescript
- * import {MockBackend, BaseRequestOptions, Http} from 'angular2/http';
+ * import {BaseRequestOptions, Http} from 'angular2/http';
+ * import {MockBackend} from 'angular2/http/testing';
  * var injector = Injector.resolveAndCreate([
  *   BaseRequestOptions,
  *   MockBackend,
@@ -103,7 +104,7 @@ export class Http {
     if (isString(url)) {
       responseObservable = httpRequest(
           this._backend,
-          new Request(mergeOptions(this._defaultOptions, options, RequestMethods.Get, url)));
+          new Request(mergeOptions(this._defaultOptions, options, RequestMethod.Get, url)));
     } else if (url instanceof Request) {
       responseObservable = httpRequest(this._backend, url);
     } else {
@@ -117,7 +118,7 @@ export class Http {
    */
   get(url: string, options?: RequestOptionsArgs): Observable<Response> {
     return httpRequest(this._backend, new Request(mergeOptions(this._defaultOptions, options,
-                                                               RequestMethods.Get, url)));
+                                                               RequestMethod.Get, url)));
   }
 
   /**
@@ -127,7 +128,7 @@ export class Http {
     return httpRequest(
         this._backend,
         new Request(mergeOptions(this._defaultOptions.merge(new RequestOptions({body: body})),
-                                 options, RequestMethods.Post, url)));
+                                 options, RequestMethod.Post, url)));
   }
 
   /**
@@ -137,7 +138,7 @@ export class Http {
     return httpRequest(
         this._backend,
         new Request(mergeOptions(this._defaultOptions.merge(new RequestOptions({body: body})),
-                                 options, RequestMethods.Put, url)));
+                                 options, RequestMethod.Put, url)));
   }
 
   /**
@@ -145,7 +146,7 @@ export class Http {
    */
   delete (url: string, options?: RequestOptionsArgs): Observable<Response> {
     return httpRequest(this._backend, new Request(mergeOptions(this._defaultOptions, options,
-                                                               RequestMethods.Delete, url)));
+                                                               RequestMethod.Delete, url)));
   }
 
   /**
@@ -155,7 +156,7 @@ export class Http {
     return httpRequest(
         this._backend,
         new Request(mergeOptions(this._defaultOptions.merge(new RequestOptions({body: body})),
-                                 options, RequestMethods.Patch, url)));
+                                 options, RequestMethod.Patch, url)));
   }
 
   /**
@@ -163,7 +164,7 @@ export class Http {
    */
   head(url: string, options?: RequestOptionsArgs): Observable<Response> {
     return httpRequest(this._backend, new Request(mergeOptions(this._defaultOptions, options,
-                                                               RequestMethods.Head, url)));
+                                                               RequestMethod.Head, url)));
   }
 }
 
@@ -182,10 +183,10 @@ export class Jsonp extends Http {
   request(url: string | Request, options?: RequestOptionsArgs): Observable<Response> {
     var responseObservable: any;
     if (isString(url)) {
-      url = new Request(mergeOptions(this._defaultOptions, options, RequestMethods.Get, url));
+      url = new Request(mergeOptions(this._defaultOptions, options, RequestMethod.Get, url));
     }
     if (url instanceof Request) {
-      if (url.method !== RequestMethods.Get) {
+      if (url.method !== RequestMethod.Get) {
         makeTypeError('JSONP requests must use GET request method.');
       }
       responseObservable = httpRequest(this._backend, url);

@@ -239,21 +239,25 @@ export class Parse5DomAdapter extends DomAdapter {
       treeAdapter.appendChild(el, content.childNodes[i]);
     }
   }
-  getText(el): string {
+  getText(el, isRecursive?: boolean): string {
     if (this.isTextNode(el)) {
       return el.data;
+    } else if (this.isCommentNode(el)) {
+      // In the DOM, comments within an element return an empty string for textContent
+      // However, comment node instances return the comment content for textContent getter
+      return isRecursive ? '' : el.data;
     } else if (isBlank(el.childNodes) || el.childNodes.length == 0) {
       return "";
     } else {
       var textContent = "";
       for (var i = 0; i < el.childNodes.length; i++) {
-        textContent += this.getText(el.childNodes[i]);
+        textContent += this.getText(el.childNodes[i], true);
       }
       return textContent;
     }
   }
   setText(el, value: string) {
-    if (this.isTextNode(el)) {
+    if (this.isTextNode(el) || this.isCommentNode(el)) {
       el.data = value;
     } else {
       this.clearNodes(el);
@@ -274,7 +278,7 @@ export class Parse5DomAdapter extends DomAdapter {
   createElement(tagName): HTMLElement {
     return treeAdapter.createElement(tagName, 'http://www.w3.org/1999/xhtml', []);
   }
-  createElementNS(ns, tagName): HTMLElement { throw 'not implemented'; }
+  createElementNS(ns, tagName): HTMLElement { return treeAdapter.createElement(tagName, ns, []); }
   createTextNode(text: string): Text {
     var t = <any>this.createComment(text);
     t.type = 'text';

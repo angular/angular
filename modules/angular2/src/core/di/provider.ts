@@ -30,6 +30,10 @@ import {
 } from './exceptions';
 import {resolveForwardRef} from './forward_ref';
 
+/**
+ * `Dependency` is used by the framework to extend DI.
+ * This is internal to Angular and should not be used directly.
+ */
 export class Dependency {
   constructor(public key: Key, public optional: boolean, public lowerBoundVisibility: any,
               public upperBoundVisibility: any, public properties: any[]) {}
@@ -157,7 +161,7 @@ export class Provider {
    * expect(injector.get(String)).toEqual('Value: 3');
    * ```
    *
-   * Used in conjuction with dependencies.
+   * Used in conjunction with dependencies.
    */
   useFactory: Function;
 
@@ -207,7 +211,7 @@ export class Provider {
    * Creates multiple providers matching the same token (a multi-provider).
    *
    * Multi-providers are used for creating pluggable service, where the system comes
-   * with some default providers, and the user can register additonal providers.
+   * with some default providers, and the user can register additional providers.
    * The combination of the default providers and the additional providers will be
    * used to drive the behavior of the system.
    *
@@ -236,6 +240,8 @@ export class Provider {
 }
 
 /**
+ * See {@link Provider} instead.
+ *
  * @deprecated
  */
 @CONST()
@@ -311,6 +317,8 @@ export interface ResolvedProvider {
 }
 
 /**
+ * See {@link ResolvedProvider} instead.
+ *
  * @deprecated
  */
 export interface ResolvedBinding extends ResolvedProvider {}
@@ -339,7 +347,6 @@ export class ResolvedFactory {
 }
 
 /**
- * @deprecated
  * Creates a {@link Provider}.
  *
  * To construct a {@link Provider}, bind a `token` to either a class, a value, a factory function,
@@ -348,6 +355,8 @@ export class ResolvedFactory {
  * See {@link ProviderBuilder} for more details.
  *
  * The `token` is most commonly a class or {@link angular2/di/OpaqueToken}.
+ *
+ * @deprecated
  */
 export function bind(token): ProviderBuilder {
   return new ProviderBuilder(token);

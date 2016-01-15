@@ -14,7 +14,6 @@ ROOT_DIR=$(cd $(dirname $0)/../..; pwd)
 cd $ROOT_DIR
 
 NPM_DIR=$ROOT_DIR/dist/npm
-rm -fr $NPM_DIR
 FILES='!(test|e2e_test|docs)'
 DTS_FILES='*.d.ts'
 

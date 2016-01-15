@@ -1,4 +1,5 @@
-import {NgFor, View, Component, FORM_DIRECTIVES} from 'angular2/web_worker/worker';
+import {View, Component} from 'angular2/core';
+import {NgFor, FORM_DIRECTIVES} from 'angular2/common';
 import {Store, Todo, TodoFactory} from './services/TodoStore';
 
 @Component({selector: 'todo-app', viewProviders: [Store, TodoFactory]})

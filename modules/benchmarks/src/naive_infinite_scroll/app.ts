@@ -6,7 +6,7 @@ import {NgIf, NgFor} from 'angular2/common';
 import {DOM} from 'angular2/src/platform/dom/dom_adapter';
 import {document} from 'angular2/src/facade/browser';
 
-import {Component, Directive, View} from 'angular2/angular2';
+import {Component, Directive, View} from 'angular2/core';
 
 
 @Component({selector: 'scroll-app'})
@@ -17,9 +17,9 @@ import {Component, Directive, View} from 'angular2/angular2';
     <div style="display: flex">
       <scroll-area id="testArea"></scroll-area>
     </div>
-    <div template="ng-if scrollAreas.length > 0">
+    <div template="ngIf scrollAreas.length > 0">
       <p>Following tables are only here to add weight to the UI:</p>
-      <scroll-area template="ng-for #scrollArea of scrollAreas"></scroll-area>
+      <scroll-area template="ngFor #scrollArea of scrollAreas"></scroll-area>
     </div>
   </div>`
 })

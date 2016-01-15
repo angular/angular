@@ -175,6 +175,20 @@ In addition to that, one extra binding needs to be passed to benchpress in tests
 
     benchpress.sample(bindings: [bp.bind(bp.Options.CAPTURE_FRAMES).toValue(true)], ... )
 
+# Requests Metrics
+
+Benchpress can also record the number of requests sent and count the received "encoded" bytes since [window.performance.timing.navigationStart](http://www.w3.org/TR/navigation-timing/#dom-performancetiming-navigationstart):
+
+- `receivedData`: number of bytes received since the last navigation start
+- `requestCount`: number of requests sent since the last navigation start
+
+To collect these metrics, you need the following corresponding extra bindings:
+
+    benchpress.sample(bindings: [
+      bp.bind(bp.Options.RECEIVED_DATA).toValue(true),
+      bp.bind(bp.Options.REQUEST_COUNT).toValue(true)
+    ], ... )
+
 # Best practices
 
 * Use normalized environments

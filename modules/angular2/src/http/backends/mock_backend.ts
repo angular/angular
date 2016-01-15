@@ -1,11 +1,13 @@
 import {Injectable} from 'angular2/core';
 import {Request} from '../static_request';
 import {Response} from '../static_response';
-import {ReadyStates} from '../enums';
+import {ReadyState} from '../enums';
 import {Connection, ConnectionBackend} from '../interfaces';
 import {isPresent} from 'angular2/src/facade/lang';
 import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
-import {Subject, ReplaySubject} from '@reactivex/rxjs/dist/cjs/Rx';
+import {Subject} from 'rxjs/Subject';
+import {ReplaySubject} from 'rxjs/subject/ReplaySubject';
+import {take} from 'rxjs/operator/take';
 
 /**
  *
@@ -19,7 +21,7 @@ export class MockConnection implements Connection {
    * Describes the state of the connection, based on `XMLHttpRequest.readyState`, but with
    * additional states. For example, state 5 indicates an aborted connection.
    */
-  readyState: ReadyStates;
+  readyState: ReadyState;
 
   /**
    * {@link Request} instance used to create the connection.
@@ -33,8 +35,8 @@ export class MockConnection implements Connection {
   response: any;  // Subject<Response>
 
   constructor(req: Request) {
-    this.response = new ReplaySubject(1).take(1);
-    this.readyState = ReadyStates.Open;
+    this.response = take.call(new ReplaySubject(1), 1);
+    this.readyState = ReadyState.Open;
     this.request = req;
   }
 
@@ -53,10 +55,10 @@ export class MockConnection implements Connection {
    *
    */
   mockRespond(res: Response) {
-    if (this.readyState === ReadyStates.Done || this.readyState === ReadyStates.Cancelled) {
+    if (this.readyState === ReadyState.Done || this.readyState === ReadyState.Cancelled) {
       throw new BaseException('Connection has already been resolved');
     }
-    this.readyState = ReadyStates.Done;
+    this.readyState = ReadyState.Done;
     this.response.next(res);
     this.response.complete();
   }
@@ -82,7 +84,7 @@ export class MockConnection implements Connection {
    */
   mockError(err?: Error) {
     // Matches XHR semantics
-    this.readyState = ReadyStates.Done;
+    this.readyState = ReadyState.Done;
     this.response.error(err);
   }
 }
@@ -96,7 +98,8 @@ export class MockConnection implements Connection {
  * ### Example
  *
  * ```
- * import {MockBackend, DefaultOptions, Http} from 'angular2/http';
+ * import {DefaultOptions, Http} from 'angular2/http';
+ * import {MockBackend} from 'angular2/http/testing';
  * it('should get some data', inject([AsyncTestCompleter], (async) => {
  *   var connection;
  *   var injector = Injector.resolveAndCreate([

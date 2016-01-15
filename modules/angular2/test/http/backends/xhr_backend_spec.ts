@@ -21,7 +21,7 @@ import {Headers} from 'angular2/src/http/headers';
 import {Map} from 'angular2/src/facade/collection';
 import {RequestOptions, BaseRequestOptions} from 'angular2/src/http/base_request_options';
 import {BaseResponseOptions, ResponseOptions} from 'angular2/src/http/base_response_options';
-import {ResponseTypes} from 'angular2/src/http/enums';
+import {ResponseType} from 'angular2/src/http/enums';
 
 var abortSpy;
 var sendSpy;
@@ -104,9 +104,9 @@ export function main() {
       it('should use the injected BaseResponseOptions to create the response',
          inject([AsyncTestCompleter], async => {
            var connection = new XHRConnection(sampleRequest, new MockBrowserXHR(),
-                                              new ResponseOptions({type: ResponseTypes.Error}));
+                                              new ResponseOptions({type: ResponseType.Error}));
            connection.response.subscribe(res => {
-             expect(res.type).toBe(ResponseTypes.Error);
+             expect(res.type).toBe(ResponseType.Error);
              async.done();
            });
            existingXHRs[0].setStatusCode(200);
@@ -115,8 +115,8 @@ export function main() {
 
       it('should complete a request', inject([AsyncTestCompleter], async => {
            var connection = new XHRConnection(sampleRequest, new MockBrowserXHR(),
-                                              new ResponseOptions({type: ResponseTypes.Error}));
-           connection.response.subscribe(res => { expect(res.type).toBe(ResponseTypes.Error); },
+                                              new ResponseOptions({type: ResponseType.Error}));
+           connection.response.subscribe(res => { expect(res.type).toBe(ResponseType.Error); },
                                          null, () => { async.done(); });
            existingXHRs[0].setStatusCode(200);
            existingXHRs[0].dispatchEvent('load');
@@ -131,9 +131,9 @@ export function main() {
 
       it('should create an error Response on error', inject([AsyncTestCompleter], async => {
            var connection = new XHRConnection(sampleRequest, new MockBrowserXHR(),
-                                              new ResponseOptions({type: ResponseTypes.Error}));
+                                              new ResponseOptions({type: ResponseType.Error}));
            connection.response.subscribe(null, res => {
-             expect(res.type).toBe(ResponseTypes.Error);
+             expect(res.type).toBe(ResponseType.Error);
              async.done();
            });
            existingXHRs[0].dispatchEvent('error');

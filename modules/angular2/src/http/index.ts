@@ -2,7 +2,7 @@
 // require('reflect-metadata');
 // require('es6-shim');
 // import {HTTP_PROVIDERS, JSONP_PROVIDERS, Http, Jsonp} from './http';
-// import {Injector} from 'angular2/angular2';
+// import {Injector} from 'angular2/core';
 // export * from './http';
 
 // /**

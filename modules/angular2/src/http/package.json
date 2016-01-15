@@ -7,10 +7,9 @@
   "contributors": <%= JSON.stringify(packageJson.contributors) %>,
   "license": "<%= packageJson.license %>",
   "repository": <%= JSON.stringify(packageJson.repository) %>,
-  "dependencies": {
+  "devDependencies": <%= JSON.stringify(packageJson.defaultDevDependencies) %>,
+  "peerDependencies": {
     "angular2": "<%= packageJson.version %>",
-    "@reactivex/rxjs": "<%= packageJson.dependencies['@reactivex/rxjs'] %>",
-    "reflect-metadata": "<%= packageJson.dependencies['reflect-metadata'] %>"
-  },
-  "devDependencies": <%= JSON.stringify(packageJson.defaultDevDependencies) %>
+    "rxjs": "<%= packageJson.dependencies['rxjs'] %>"
+  }
 }

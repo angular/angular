@@ -29,6 +29,10 @@ export var Type = Function;
  * the `MyCustomComponent` constructor function.
  */
 export interface Type extends Function {}
+
+/**
+ * Runtime representation of a type that is constructable (non-abstract).
+ */
 export interface ConcreteType extends Type { new (...args): any; }
 
 export function getTypeNameForDebugging(type: Type): string {
@@ -39,30 +43,27 @@ export function getTypeNameForDebugging(type: Type): string {
 export var Math = _global.Math;
 export var Date = _global.Date;
 
-var _devMode: boolean = !!_global.angularDevMode;
-var _devModeLocked: boolean = false;
+var _devMode: boolean = true;
+var _modeLocked: boolean = false;
 
-export function lockDevMode() {
-  _devModeLocked = true;
+export function lockMode() {
+  _modeLocked = true;
 }
 
 /**
- * Enable Angular's development mode, which turns on assertions and other
+ * Disable Angular's development mode, which turns off assertions and other
  * checks within the framework.
  *
- * One important assertion this enables verifies that a change detection pass
+ * One important assertion this disables verifies that a change detection pass
  * does not result in additional changes to any bindings (also known as
  * unidirectional data flow).
- *
- * {@example core/ts/dev_mode/dev_mode_example.ts region='enableDevMode'}
  */
-export function enableDevMode() {
-  // TODO(alxhub): Refactor out of facade/lang as per issue #5157.
-  if (_devModeLocked) {
+export function enableProdMode() {
+  if (_modeLocked) {
     // Cannot use BaseException as that ends up importing from facade/lang.
-    throw 'Cannot enable dev mode after platform setup.';
+    throw 'Cannot enable prod mode after platform setup.';
   }
-  _devMode = true;
+  _devMode = false;
 }
 
 export function assertionsEnabled(): boolean {
@@ -165,6 +166,30 @@ export class StringWrapper {
   static split(s: string, regExp: RegExp): string[] { return s.split(regExp); }
 
   static equals(s: string, s2: string): boolean { return s === s2; }
+
+  static stripLeft(s: string, charVal: string): string {
+    if (s && s.length) {
+      var pos = 0;
+      for (var i = 0; i < s.length; i++) {
+        if (s[i] != charVal) break;
+        pos++;
+      }
+      s = s.substring(pos);
+    }
+    return s;
+  }
+
+  static stripRight(s: string, charVal: string): string {
+    if (s && s.length) {
+      var pos = s.length;
+      for (var i = s.length - 1; i >= 0; i--) {
+        if (s[i] != charVal) break;
+        pos--;
+      }
+      s = s.substring(0, pos);
+    }
+    return s;
+  }
 
   static replace(s: string, from: string, replace: string): string {
     return s.replace(from, replace);
@@ -354,7 +379,7 @@ export function setValueOnPath(global: any, path: string, value: any) {
   var obj: any = global;
   while (parts.length > 1) {
     var name = parts.shift();
-    if (obj.hasOwnProperty(name)) {
+    if (obj.hasOwnProperty(name) && isPresent(obj[name])) {
       obj = obj[name];
     } else {
       obj = obj[name] = {};
