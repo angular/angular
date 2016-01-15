@@ -422,14 +422,14 @@ export class NgZone {
                 fn();
                 ListWrapper.remove(ngZone._pendingTimeouts, id);
               };
-              id = parentSetTimeout(cb, delay, args);
+              id = parentSetTimeout.call(this, cb, delay, args);
               ngZone._pendingTimeouts.push(id);
               return id;
             };
           },
           '$clearTimeout': function(parentClearTimeout) {
             return function(id: number) {
-              parentClearTimeout(id);
+              parentClearTimeout.call(this, id);
               ListWrapper.remove(ngZone._pendingTimeouts, id);
             };
           },
