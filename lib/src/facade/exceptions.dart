@@ -4,11 +4,9 @@ import 'exception_handler.dart';
 export 'exception_handler.dart';
 
 class BaseException extends Error {
-  final String _message;
+  final String message;
 
-  BaseException([this._message]);
-
-  String get message => _message;
+  BaseException([this.message]);
 
   String toString() {
     return this.message;
@@ -16,16 +14,16 @@ class BaseException extends Error {
 }
 
 class WrappedException extends Error {
-  final dynamic _context;
-  final String _wrapperMessage;
+  final dynamic context;
+  final String wrapperMessage;
   final originalException;
   final originalStack;
 
   WrappedException(
-      [this._wrapperMessage,
+      [this.wrapperMessage,
       this.originalException,
       this.originalStack,
-      this._context]);
+      this.context]);
 
   get message {
     return ExceptionHandler.exceptionToString(this);
@@ -34,10 +32,6 @@ class WrappedException extends Error {
   String toString() {
     return this.message;
   }
-
-  dynamic get context => _context;
-
-  String get wrapperMessage => _wrapperMessage;
 }
 
 Error makeTypeError([String message = ""]) {
