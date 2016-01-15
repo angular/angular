@@ -5,7 +5,7 @@
   "homepage": "https://github.com/angular/angular",
   "bugs": "https://github.com/angular/angular/issues",
   "contributors": ["Alex Eagle <alexeagle@google.com>","Chirayu Krishnappa <chirayu@google.com>","Jeff Cross <crossj@google.com>","Matias Niemela <matsko@google.com>","Misko Hevery <misko@google.com>","Rado Kirov <radokirov@google.com>","Tobias Bosch <tbosch@google.com>","Victor Savkin <vsavkin@google.com>","Yegor Jbanov <yjbanov@google.com>","Jeremy Elbourn <jelbourn@google.com>"],
-  "license": "Apache-2.0",
+  "license": "MIT",
   "repository": {"type":"git","url":"https://github.com/angular/angular.git"},
   "devDependencies": {},
   "peerDependencies": {
