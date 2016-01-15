@@ -28,7 +28,8 @@ class DirectiveProcessor extends Transformer implements LazyTransformer {
   DirectiveProcessor(this.options);
 
   @override
-  bool isPrimary(AssetId id) => id.extension.endsWith('dart');
+  bool isPrimary(AssetId id) =>
+      id.extension.endsWith('dart') && !isGenerated(id.path);
 
   @override
   declareOutputs(DeclaringTransform transform) {
