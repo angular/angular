@@ -92,7 +92,7 @@ export function main() {
     });
     
     describe('wildcard segment', () => {
-      it('should be ignored on a wildcard segment', () => {
+      it('should return a url path which matches the original url path', () => {
         var rec = new PathRecognizer('/wild/*everything');
         var url = parser.parse('/wild/super;variable=value/anotherPartAfterSlash');
         var match = rec.recognize(url);
