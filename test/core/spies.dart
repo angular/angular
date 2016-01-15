@@ -13,77 +13,47 @@ import 'package:angular2/src/platform/dom/dom_adapter.dart';
 import 'package:angular2/testing_internal.dart';
 
 @proxy
-class SpyDependencyProvider extends SpyObject implements DependencyProvider {
-  noSuchMethod(m) => super.noSuchMethod(m);
-}
+class SpyDependencyProvider extends SpyObject implements DependencyProvider {}
 
 @proxy
-class SpyChangeDetector extends SpyObject implements ChangeDetector {
-  noSuchMethod(m) => super.noSuchMethod(m);
-}
+class SpyChangeDetector extends SpyObject implements ChangeDetector {}
 
 @proxy
-class SpyChangeDispatcher extends SpyObject implements ChangeDispatcher {
-  noSuchMethod(m) => super.noSuchMethod(m);
-}
+class SpyChangeDispatcher extends SpyObject implements ChangeDispatcher {}
 
 @proxy
 class SpyIterableDifferFactory extends SpyObject
-    implements IterableDifferFactory {
-  noSuchMethod(m) => super.noSuchMethod(m);
-}
+    implements IterableDifferFactory {}
 
 @proxy
-class SpyInjector extends SpyObject implements Injector {
-  noSuchMethod(m) => super.noSuchMethod(m);
-}
+class SpyInjector extends SpyObject implements Injector {}
 
 @proxy
-class SpyDirectiveResolver extends SpyObject implements DirectiveResolver {
-  noSuchMethod(m) => super.noSuchMethod(m);
-}
+class SpyDirectiveResolver extends SpyObject implements DirectiveResolver {}
 
 @proxy
-class SpyView extends SpyObject implements AppView {
-  noSuchMethod(m) => super.noSuchMethod(m);
-}
+class SpyView extends SpyObject implements AppView {}
 
 @proxy
-class SpyProtoView extends SpyObject implements AppProtoView {
-  noSuchMethod(m) => super.noSuchMethod(m);
-}
+class SpyProtoView extends SpyObject implements AppProtoView {}
 
 @proxy
-class SpyHostViewFactory extends SpyObject implements HostViewFactory {
-  noSuchMethod(m) => super.noSuchMethod(m);
-}
+class SpyHostViewFactory extends SpyObject implements HostViewFactory {}
 
 @proxy
-class SpyElementRef extends SpyObject implements ElementRef {
-  noSuchMethod(m) => super.noSuchMethod(m);
-}
+class SpyElementRef extends SpyObject implements ElementRef {}
 
 @proxy
-class SpyAppViewManager extends SpyObject implements AppViewManager_ {
-  noSuchMethod(m) => super.noSuchMethod(m);
-}
+class SpyAppViewManager extends SpyObject implements AppViewManager_ {}
 
 @proxy
-class SpyRenderer extends SpyObject implements Renderer {
-  noSuchMethod(m) => super.noSuchMethod(m);
-}
+class SpyRenderer extends SpyObject implements Renderer {}
 
 @proxy
-class SpyRootRenderer extends SpyObject implements RootRenderer {
-  noSuchMethod(m) => super.noSuchMethod(m);
-}
+class SpyRootRenderer extends SpyObject implements RootRenderer {}
 
 @proxy
-class SpyAppViewListener extends SpyObject implements AppViewListener {
-  noSuchMethod(m) => super.noSuchMethod(m);
-}
+class SpyAppViewListener extends SpyObject implements AppViewListener {}
 
 @proxy
-class SpyDomAdapter extends SpyObject implements DomAdapter {
-  noSuchMethod(m) => super.noSuchMethod(m);
-}
+class SpyDomAdapter extends SpyObject implements DomAdapter {}
