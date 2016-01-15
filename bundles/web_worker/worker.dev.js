@@ -32861,7 +32861,7 @@ System.register("angular2/src/compiler/template_compiler", ["angular2/src/facade
         this._hostCacheKeys.set(type, hostCacheKey);
         assertComponent(compMeta);
         var hostMeta = directive_metadata_1.createHostComponentMeta(compMeta.type, compMeta.selector);
-        this._compileComponentRuntime(hostCacheKey, hostMeta, [compMeta], [], []);
+        this._compileComponentRuntime(hostCacheKey, hostMeta, [compMeta], [], new Set());
       }
       return this._compiledTemplateDone.get(hostCacheKey).then(function(compiledTemplate) {
         return new view_1.HostViewFactory(compMeta.selector, compiledTemplate.viewFactory);
@@ -32898,7 +32898,7 @@ System.register("angular2/src/compiler/template_compiler", ["angular2/src/facade
     TemplateCompiler.prototype.compileStylesheetCodeGen = function(stylesheetUrl, cssText) {
       return this._styleCompiler.compileStylesheetCodeGen(stylesheetUrl, cssText);
     };
-    TemplateCompiler.prototype._compileComponentRuntime = function(cacheKey, compMeta, viewDirectives, pipes, compilingComponentsPath) {
+    TemplateCompiler.prototype._compileComponentRuntime = function(cacheKey, compMeta, viewDirectives, pipes, compilingComponentCacheKeys) {
       var _this = this;
       var uniqViewDirectives = removeDuplicates(viewDirectives);
       var uniqViewPipes = removeDuplicates(pipes);
@@ -32907,6 +32907,7 @@ System.register("angular2/src/compiler/template_compiler", ["angular2/src/facade
       if (lang_1.isBlank(compiledTemplate)) {
         compiledTemplate = new CompiledTemplate();
         this._compiledTemplateCache.set(cacheKey, compiledTemplate);
+        compilingComponentCacheKeys.add(cacheKey);
         done = async_1.PromiseWrapper.all([this._styleCompiler.compileComponentRuntime(compMeta.template)].concat(uniqViewDirectives.map(function(dirMeta) {
           return _this.normalizeDirectiveMetadata(dirMeta);
         }))).then(function(stylesAndNormalizedViewDirMetas) {
@@ -32916,11 +32917,12 @@ System.register("angular2/src/compiler/template_compiler", ["angular2/src/facade
           var childPromises = [];
           var usedDirectives = DirectiveCollector.findUsedDirectives(parsedTemplate);
           usedDirectives.components.forEach(function(component) {
-            return _this._compileNestedComponentRuntime(component, compilingComponentsPath, childPromises);
+            return _this._compileNestedComponentRuntime(component, compilingComponentCacheKeys, childPromises);
           });
           return async_1.PromiseWrapper.all(childPromises).then(function(_) {
             var filteredPipes = filterPipes(parsedTemplate, uniqViewPipes);
             compiledTemplate.init(_this._createViewFactoryRuntime(compMeta, parsedTemplate, usedDirectives.directives, styles, filteredPipes));
+            collection_1.SetWrapper.delete(compilingComponentCacheKeys, cacheKey);
             return compiledTemplate;
           });
         });
@@ -32928,14 +32930,12 @@ System.register("angular2/src/compiler/template_compiler", ["angular2/src/facade
       }
       return compiledTemplate;
     };
-    TemplateCompiler.prototype._compileNestedComponentRuntime = function(childComponentDir, parentCompilingComponentsPath, childPromises) {
-      var compilingComponentsPath = collection_1.ListWrapper.clone(parentCompilingComponentsPath);
+    TemplateCompiler.prototype._compileNestedComponentRuntime = function(childComponentDir, compilingComponentCacheKeys, childPromises) {
       var childCacheKey = childComponentDir.type.runtime;
       var childViewDirectives = this._runtimeMetadataResolver.getViewDirectivesMetadata(childComponentDir.type.runtime);
       var childViewPipes = this._runtimeMetadataResolver.getViewPipesMetadata(childComponentDir.type.runtime);
-      var childIsRecursive = collection_1.ListWrapper.contains(compilingComponentsPath, childCacheKey);
-      compilingComponentsPath.push(childCacheKey);
-      this._compileComponentRuntime(childCacheKey, childComponentDir, childViewDirectives, childViewPipes, compilingComponentsPath);
+      var childIsRecursive = collection_1.SetWrapper.has(compilingComponentCacheKeys, childCacheKey);
+      this._compileComponentRuntime(childCacheKey, childComponentDir, childViewDirectives, childViewPipes, compilingComponentCacheKeys);
       if (!childIsRecursive) {
         childPromises.push(this._compiledTemplateDone.get(childCacheKey));
       }

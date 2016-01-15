@@ -9,7 +9,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 import { IS_DART, isBlank, evalExpression } from 'angular2/src/facade/lang';
 import { BaseException } from 'angular2/src/facade/exceptions';
-import { ListWrapper, SetWrapper, StringMapWrapper } from 'angular2/src/facade/collection';
+import { SetWrapper, StringMapWrapper } from 'angular2/src/facade/collection';
 import { PromiseWrapper } from 'angular2/src/facade/async';
 import { createHostComponentMeta, CompileDirectiveMetadata } from './directive_metadata';
 import { templateVisitAll } from './template_ast';
@@ -77,7 +77,7 @@ export let TemplateCompiler = class {
             this._hostCacheKeys.set(type, hostCacheKey);
             assertComponent(compMeta);
             var hostMeta = createHostComponentMeta(compMeta.type, compMeta.selector);
-            this._compileComponentRuntime(hostCacheKey, hostMeta, [compMeta], [], []);
+            this._compileComponentRuntime(hostCacheKey, hostMeta, [compMeta], [], new Set());
         }
         return this._compiledTemplateDone.get(hostCacheKey)
             .then((compiledTemplate) => new HostViewFactory(compMeta.selector, compiledTemplate.viewFactory));
@@ -112,7 +112,7 @@ export let TemplateCompiler = class {
     compileStylesheetCodeGen(stylesheetUrl, cssText) {
         return this._styleCompiler.compileStylesheetCodeGen(stylesheetUrl, cssText);
     }
-    _compileComponentRuntime(cacheKey, compMeta, viewDirectives, pipes, compilingComponentsPath) {
+    _compileComponentRuntime(cacheKey, compMeta, viewDirectives, pipes, compilingComponentCacheKeys) {
         let uniqViewDirectives = removeDuplicates(viewDirectives);
         let uniqViewPipes = removeDuplicates(pipes);
         var compiledTemplate = this._compiledTemplateCache.get(cacheKey);
@@ -120,6 +120,7 @@ export let TemplateCompiler = class {
         if (isBlank(compiledTemplate)) {
             compiledTemplate = new CompiledTemplate();
             this._compiledTemplateCache.set(cacheKey, compiledTemplate);
+            compilingComponentCacheKeys.add(cacheKey);
             done = PromiseWrapper
                 .all([this._styleCompiler.compileComponentRuntime(compMeta.template)].concat(uniqViewDirectives.map(dirMeta => this.normalizeDirectiveMetadata(dirMeta))))
                 .then((stylesAndNormalizedViewDirMetas) => {
@@ -128,11 +129,12 @@ export let TemplateCompiler = class {
                 var parsedTemplate = this._templateParser.parse(compMeta.template.template, normalizedViewDirMetas, uniqViewPipes, compMeta.type.name);
                 var childPromises = [];
                 var usedDirectives = DirectiveCollector.findUsedDirectives(parsedTemplate);
-                usedDirectives.components.forEach(component => this._compileNestedComponentRuntime(component, compilingComponentsPath, childPromises));
+                usedDirectives.components.forEach(component => this._compileNestedComponentRuntime(component, compilingComponentCacheKeys, childPromises));
                 return PromiseWrapper.all(childPromises)
                     .then((_) => {
                     var filteredPipes = filterPipes(parsedTemplate, uniqViewPipes);
                     compiledTemplate.init(this._createViewFactoryRuntime(compMeta, parsedTemplate, usedDirectives.directives, styles, filteredPipes));
+                    SetWrapper.delete(compilingComponentCacheKeys, cacheKey);
                     return compiledTemplate;
                 });
             });
@@ -140,14 +142,12 @@ export let TemplateCompiler = class {
         }
         return compiledTemplate;
     }
-    _compileNestedComponentRuntime(childComponentDir, parentCompilingComponentsPath, childPromises) {
-        var compilingComponentsPath = ListWrapper.clone(parentCompilingComponentsPath);
+    _compileNestedComponentRuntime(childComponentDir, compilingComponentCacheKeys, childPromises) {
         var childCacheKey = childComponentDir.type.runtime;
         var childViewDirectives = this._runtimeMetadataResolver.getViewDirectivesMetadata(childComponentDir.type.runtime);
         var childViewPipes = this._runtimeMetadataResolver.getViewPipesMetadata(childComponentDir.type.runtime);
-        var childIsRecursive = ListWrapper.contains(compilingComponentsPath, childCacheKey);
-        compilingComponentsPath.push(childCacheKey);
-        this._compileComponentRuntime(childCacheKey, childComponentDir, childViewDirectives, childViewPipes, compilingComponentsPath);
+        var childIsRecursive = SetWrapper.has(compilingComponentCacheKeys, childCacheKey);
+        this._compileComponentRuntime(childCacheKey, childComponentDir, childViewDirectives, childViewPipes, compilingComponentCacheKeys);
         if (!childIsRecursive) {
             // Only wait for a child if it is not a cycle
             childPromises.push(this._compiledTemplateDone.get(childCacheKey));

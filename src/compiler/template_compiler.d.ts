@@ -37,8 +37,8 @@ export declare class TemplateCompiler {
     clearCache(): void;
     compileTemplatesCodeGen(components: NormalizedComponentWithViewDirectives[]): SourceModule;
     compileStylesheetCodeGen(stylesheetUrl: string, cssText: string): SourceModule[];
-    private _compileComponentRuntime(cacheKey, compMeta, viewDirectives, pipes, compilingComponentsPath);
-    private _compileNestedComponentRuntime(childComponentDir, parentCompilingComponentsPath, childPromises);
+    private _compileComponentRuntime(cacheKey, compMeta, viewDirectives, pipes, compilingComponentCacheKeys);
+    private _compileNestedComponentRuntime(childComponentDir, compilingComponentCacheKeys, childPromises);
     private _createViewFactoryRuntime(compMeta, parsedTemplate, directives, styles, pipes);
     private _getNestedComponentViewFactory(compMeta);
     private _compileComponentCodeGen(compMeta, directives, pipes, targetDeclarations);
