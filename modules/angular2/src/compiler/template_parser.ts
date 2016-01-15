@@ -51,8 +51,8 @@ import {splitAtColon} from './util';
 // Group 3 = "on-"
 // Group 4 = "bindon-"
 // Group 5 = the identifier after "bind-", "var-/#", or "on-"
-// Group 6 = idenitifer inside [()]
-// Group 7 = idenitifer inside []
+// Group 6 = identifer inside [()]
+// Group 7 = identifer inside []
 // Group 8 = identifier inside ()
 var BIND_NAME_REGEXP =
     /^(?:(?:(?:(bind-)|(var-|#)|(on-)|(bindon-))(.+))|\[\(([^\)]+)\)\]|\[([^\]]+)\]|\(([^\)]+)\))$/g;
@@ -210,13 +210,13 @@ class TemplateParseVisitor implements HtmlAstVisitor {
     var attrs = [];
 
     element.attrs.forEach(attr => {
-      matchableAttrs.push([attr.name, attr.value]);
       var hasBinding = this._parseAttr(attr, matchableAttrs, elementOrDirectiveProps, events, vars);
       var hasTemplateBinding = this._parseInlineTemplateBinding(
           attr, templateMatchableAttrs, templateElementOrDirectiveProps, templateVars);
       if (!hasBinding && !hasTemplateBinding) {
         // don't include the bindings as attributes as well in the AST
         attrs.push(this.visitAttr(attr, null));
+        matchableAttrs.push([attr.name, attr.value]);
       }
       if (hasTemplateBinding) {
         hasInlineTemplates = true;

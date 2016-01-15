@@ -47,9 +47,9 @@ export function main() {
       var instr = registry.generate(['FirstCmp', 'SecondCmp'], []);
       expect(stringifyInstruction(instr)).toEqual('first/second');
 
-      expect(stringifyInstruction(registry.generate(['SecondCmp'], [instr])))
+      expect(stringifyInstruction(registry.generate(['SecondCmp'], [instr, instr.child])))
           .toEqual('first/second');
-      expect(stringifyInstruction(registry.generate(['./SecondCmp'], [instr])))
+      expect(stringifyInstruction(registry.generate(['./SecondCmp'], [instr, instr.child])))
           .toEqual('first/second');
     });
 
@@ -177,6 +177,21 @@ export function main() {
          registry.recognize('/first/second/third', [])
              .then((instruction) => {
                expect(instruction.component.componentType).toBe(DummyCmpB);
+               async.done();
+             });
+       }));
+
+    it('should prefer routes with high specificity over routes with children with lower specificity',
+       inject([AsyncTestCompleter], (async) => {
+         registry.config(RootHostCmp, new Route({path: '/first', component: DummyCmpA}));
+
+         // terminates to DummyCmpB
+         registry.config(RootHostCmp,
+                         new Route({path: '/:second/...', component: SingleSlashChildCmp}));
+
+         registry.recognize('/first', [])
+             .then((instruction) => {
+               expect(instruction.component.componentType).toBe(DummyCmpA);
                async.done();
              });
        }));
@@ -320,6 +335,10 @@ class DummyCmpB {}
 @RouteConfig(
     [new Route({path: '/third', component: DummyCmpB, name: 'ThirdCmp', useAsDefault: true})])
 class DefaultRouteCmp {
+}
+
+@RouteConfig([new Route({path: '/', component: DummyCmpB, name: 'ThirdCmp'})])
+class SingleSlashChildCmp {
 }
 
 
