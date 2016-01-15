@@ -210,6 +210,34 @@ export function main() {
            existingXHRs[0].dispatchEvent('load');
          }));
 
+      it('should set ok to true on 200 return', inject([AsyncTestCompleter], async => {
+           var statusCode = 200;
+           var connection = new XHRConnection(sampleRequest, new MockBrowserXHR(),
+                                              new ResponseOptions({status: statusCode}));
+
+           connection.response.subscribe(res => {
+             expect(res.ok).toBe(true);
+             async.done();
+           });
+
+           existingXHRs[0].setStatusCode(statusCode);
+           existingXHRs[0].dispatchEvent('load');
+         }));
+
+      it('should set ok to false on 300 return', inject([AsyncTestCompleter], async => {
+           var statusCode = 300;
+           var connection = new XHRConnection(sampleRequest, new MockBrowserXHR(),
+                                              new ResponseOptions({status: statusCode}));
+
+           connection.response.subscribe(res => { throw 'should not be called'; }, errRes => {
+             expect(errRes.ok).toBe(false);
+             async.done();
+           });
+
+           existingXHRs[0].setStatusCode(statusCode);
+           existingXHRs[0].dispatchEvent('load');
+         }));
+
       it('should call error and not complete on 300+ codes', inject([AsyncTestCompleter], async => {
            var nextCalled = false;
            var errorCalled = false;
@@ -226,6 +254,7 @@ export function main() {
            existingXHRs[0].setStatusCode(statusCode);
            existingXHRs[0].dispatchEvent('load');
          }));
+
       it('should normalize IE\'s 1223 status code into 204', inject([AsyncTestCompleter], async => {
            var statusCode = 1223;
            var normalizedCode = 204;
