@@ -34,6 +34,9 @@ class SpyTestObj extends SpyObject {
   SpyTestObj() : super(TestObj) {
     /* super call moved to initializer */;
   }
+  noSuchMethod(m) {
+    return super.noSuchMethod(m);
+  }
 }
 
 main() {
