@@ -8,7 +8,7 @@
 # Modules, barrels and bundles
 
 Angular2 source code is authored using the ES2015 standardized module format where one module corresponds to exactly one file. Multiple modules (files) can be logically grouped into so-called "barrels".
- A bundle is a file the contains all the code for one or more barrels.
+ A bundle is a file that contains all the code for one or more barrels.
   
 Most bundles come in several flavors:
 * regular and minified (got `.min` in their name);
