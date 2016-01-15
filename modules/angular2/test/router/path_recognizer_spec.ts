@@ -90,5 +90,14 @@ export function main() {
         expect(match['allParams']).toEqual({'c': '3'});
       });
     });
+    
+    describe('wildcard segment', () => {
+      it('should be ignored on a wildcard segment', () => {
+        var rec = new PathRecognizer('/wild/*everything');
+        var url = parser.parse('/wild/super;variable=value/anotherPartAfterSlash');
+        var match = rec.recognize(url);
+        expect(match['urlPath']).toEqual('wild/super;variable=value/anotherPartAfterSlash');
+      });
+    });
   });
 }
