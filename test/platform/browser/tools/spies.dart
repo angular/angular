@@ -8,7 +8,6 @@ import 'dart:js';
 @proxy
 class SpyApplicationRef extends SpyObject implements ApplicationRef {
   tick() {}
-  noSuchMethod(m) => super.noSuchMethod(m);
 }
 
 @proxy
@@ -19,8 +18,6 @@ class SpyComponentRef extends SpyObject implements ComponentRef_ {
     this.injector = Injector
         .resolveAndCreate([bind(ApplicationRef).toClass(SpyApplicationRef)]);
   }
-
-  noSuchMethod(m) => super.noSuchMethod(m);
 }
 
 void callNgProfilerTimeChangeDetection([config]) {
