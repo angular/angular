@@ -4,8 +4,9 @@ var spawn = require('child_process').spawn;
 var through2 = require('through2');
 var path = require('path');
 var glob = require('glob');
+var fs = require('fs');
 
-module.exports = function(gulp, plugins, config) {
+function buildAllWebSubdirs(gulp, plugins, config) {
   return function() {
     var webFolders = [].slice.call(glob.sync(path.join(config.src, '*/web')));
     return nextFolder();
@@ -14,22 +15,35 @@ module.exports = function(gulp, plugins, config) {
       if (!webFolders.length) {
         return;
       }
-      var folder = getParentFolder(webFolders.shift());
+      var folder = path.resolve(path.join(webFolders.shift(), '..'));
       var destFolder = path.resolve(path.join(config.dest, path.basename(folder)));
-      return util.processToPromise(spawn(config.command, ['build', '-o', destFolder], {
-        stdio: 'inherit',
-        cwd: folder
-      })).then(function() {
+
+      const nextConfig = {
+        command: config.command,
+        dest: destFolder,
+        mode: config.mode,
+        src: folder
+      };
+      return single(nextConfig).then(function() {
         return replaceDartWithJsScripts(gulp, destFolder);
+      }).then(function() {
+        return removeWebFolder(gulp, destFolder);
       }).then(nextFolder);
     }
   };
-};
+}
 
-function getParentFolder(folder) {
-  var parts = folder.split(path.sep);
-  parts.pop();
-  return parts.join(path.sep);
+function single(config) {
+  var pubMode = config.mode || 'release';
+  var pubArgs = ['build', '--mode', pubMode];
+  if (config.dest) {
+    pubArgs = pubArgs.concat(['-o', config.dest]);
+  }
+
+  return util.processToPromise(spawn(config.command, pubArgs, {
+    stdio: 'inherit',
+    cwd: config.src
+  }));
 }
 
 function replaceDartWithJsScripts(gulp, folder) {
@@ -44,3 +58,21 @@ function replaceDartWithJsScripts(gulp, folder) {
     }))
     .pipe(gulp.dest(folder)));
 }
+
+function singleWrapper(gulp, plugins, config) {
+  return function() { return single(config); };
+}
+
+function removeWebFolder(gulp, folder) {
+  var folders = [].slice.call(glob.sync(path.join(folder, 'web', '*')));
+  folders.forEach(function(subFolder) {
+    fs.renameSync(subFolder, subFolder.replace('/web/', '/'));
+  });
+  fs.rmdirSync(path.join(folder, 'web'));
+  return Q.resolve();
+}
+
+module.exports = {
+  single: singleWrapper,
+  subdirs: buildAllWebSubdirs
+};

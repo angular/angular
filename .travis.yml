@@ -1,21 +1,113 @@
 language: node_js
 sudo: false
 node_js:
-- '0.10'
+- '4.2.1'
+
+branches:
+  except:
+    - g3_v2_0
+
+cache:
+  directories:
+    - node_modules
+    - $HOME/.pub-cache
+
 env:
   global:
-  - CHANNEL=stable
-  - BROWSERS=DartiumWithWebPlatform
+  - KARMA_BROWSERS=DartiumWithWebPlatform
+  - E2E_BROWSERS=Dartium
   - LOGS_DIR=/tmp/angular-build/logs
+  - SAUCE_USERNAME=angular-ci
+  - SAUCE_ACCESS_KEY=9b988f434ff8-fbca-8aa4-4ae3-35442987
+  - BROWSER_STACK_USERNAME=angularteam1
+  - BROWSER_STACK_ACCESS_KEY=BWCd4SynLzdDcv8xtzsB
+  - ARCH=linux-x64
+  - DART_DEV_VERSION=latest
+  - DART_STABLE_VERSION=latest
+  # Token for tsd to increase github rate limit
+  # See https://github.com/DefinitelyTyped/tsd#tsdrc
+  # This does not use http://docs.travis-ci.com/user/environment-variables/#Secure-Variables
+  # because those are not visible for pull requests, and those should also be reliable.
+  # This SSO token belongs to github account angular-github-ratelimit-token which has no access
+  # (password is in Valentine)
+  - TSDRC='{"token":"ef474500309daea53d5991b3079159a29520a40b"}'
+  # GITHUB_TOKEN_ANGULAR
+  - secure: "fq/U7VDMWO8O8SnAQkdbkoSe2X92PVqg4d044HmRYVmcf6YbO48+xeGJ8yOk0pCBwl3ISO4Q2ot0x546kxfiYBuHkZetlngZxZCtQiFT9kyId8ZKcYdXaIW9OVdw3Gh3tQyUwDucfkVhqcs52D6NZjyE2aWZ4/d1V4kWRO/LMgo="
+  matrix:
+    # Order: a slower build first, so that we don't occupy an idle travis worker waiting for others to complete.
+    - MODE=dart DART_CHANNEL=stable DART_VERSION=$DART_STABLE_VERSION
+    - MODE=dart DART_CHANNEL=dev DART_VERSION=$DART_DEV_VERSION
+    - MODE=saucelabs_required DART_CHANNEL=dev DART_VERSION=$DART_DEV_VERSION
+    - MODE=browserstack_required DART_CHANNEL=dev DART_VERSION=$DART_DEV_VERSION
+    - MODE=saucelabs_optional DART_CHANNEL=dev DART_VERSION=$DART_DEV_VERSION
+    - MODE=browserstack_optional DART_CHANNEL=dev DART_VERSION=$DART_DEV_VERSION
+    - MODE=dart_experimental DART_CHANNEL=dev DART_VERSION=$DART_DEV_VERSION
+    - MODE=js DART_CHANNEL=dev DART_VERSION=$DART_DEV_VERSION
+    - MODE=router DART_CHANNEL=dev DART_VERSION=$DART_DEV_VERSION
+    - MODE=build_only DART_CHANNEL=stable DART_VERSION=$DART_STABLE_VERSION
+    - MODE=lint DART_CHANNEL=dev DART_VERSION=$DART_DEV_VERSION
+    - MODE=payload DART_CHANNEL=stable DART_VERSION=$DART_STABLE_VERSION
+
+matrix:
+  allow_failures:
+  - env: "MODE=saucelabs_optional DART_CHANNEL=dev DART_VERSION=$DART_DEV_VERSION"
+  - env: "MODE=browserstack_optional DART_CHANNEL=dev DART_VERSION=$DART_DEV_VERSION"
+  - env: "MODE=dart_experimental DART_CHANNEL=dev DART_VERSION=$DART_DEV_VERSION"
+  # TODO(alxhub): remove when dartdoc #1039 is in dev channel
+  - env: "MODE=dart DART_CHANNEL=dev DART_VERSION=$DART_DEV_VERSION"
+
+addons:
+  firefox: "38.0"
 
 before_install:
+- node tools/analytics/build-analytics start ci job
+- node tools/analytics/build-analytics start ci before_install
+- echo ${TSDRC} > .tsdrc
 - export DISPLAY=:99.0
-- ./scripts/travis/install.sh
+- export GIT_SHA=$(git rev-parse HEAD)
+- ./scripts/ci/init_android.sh
+- ./scripts/ci/install_dart.sh ${DART_CHANNEL} ${DART_VERSION} ${ARCH}
 - sh -e /etc/init.d/xvfb start
 - if [[ -e SKIP_TRAVIS_TESTS ]]; then { cat SKIP_TRAVIS_TESTS ; exit 0; } fi
+- '[ "${TRAVIS_PULL_REQUEST}" = "false" ] && [ "${TRAVIS_BRANCH}" = "master" ] && SAUCE_USERNAME="angular2-ci" && SAUCE_ACCESS_KEY="693ebc16208a-0b5b-1614-8d66-a2662f4e" || true'
+- node tools/analytics/build-analytics success ci before_install
+
+install:
+  - node tools/analytics/build-analytics start ci install
+  # Check the size of caches
+  - du -sh ./node_modules || true
+  # Install npm dependecies
+  - npm install
+  - node tools/analytics/build-analytics success ci install
+
 before_script:
+- node tools/analytics/build-analytics start ci before_script
 - mkdir -p $LOGS_DIR
+- ./scripts/ci/presubmit-queue-setup.sh
+- node tools/analytics/build-analytics success ci before_script
+
 script:
-- ./scripts/travis/build.sh
+- node tools/analytics/build-analytics start ci script
+- ./scripts/ci/build_and_test.sh ${MODE}
+- node tools/analytics/build-analytics success ci script
+
 after_script:
-- ./scripts/travis/print-logs.sh
+- node tools/analytics/build-analytics start ci after_script
+- ./scripts/ci/print-logs.sh
+- ./scripts/ci/after-script.sh
+- ./scripts/publish/publish-build-artifacts.sh
+- node tools/analytics/build-analytics success ci after_script
+- if [[ $TRAVIS_TEST_RESULT -eq 0 ]]; then node tools/analytics/build-analytics success ci job; else node tools/analytics/build-analytics error ci job; fi
+
+notifications:
+  webhooks:
+    urls:
+    - https://webhooks.gitter.im/e/1ef62e23078036f9cee4
+    # trigger Buildtime Trend Service to parse Travis CI log
+    - https://buildtimetrend.herokuapp.com/travis
+    on_success: always  # options: [always|never|change] default: always
+    on_failure: always  # options: [always|never|change] default: always
+    on_start: false     # default: false
+  slack:
+    secure: EP4MzZ8JMyNQJ4S3cd5LEPWSMjC7ZRdzt3veelDiOeorJ6GwZfCDHncR+4BahDzQAuqyE/yNpZqaLbwRWloDi15qIUsm09vgl/1IyNky1Sqc6lEknhzIXpWSalo4/T9ZP8w870EoDvM/UO+LCV99R3wS8Nm9o99eLoWVb2HIUu0=
+

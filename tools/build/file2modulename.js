@@ -2,11 +2,11 @@ function file2moduleName(filePath) {
   return filePath.replace(/\\/g, '/')
     // module name should be relative to `modules` and `tools` folder
     .replace(/.*\/modules\//, '')
-    .replace(/.*\/tools\//, '')
-    // module name should not include `src`, `test`, `lib`
-    .replace(/\/src\//, '/')
+    //  and 'dist' folder
+    .replace(/.*\/dist\/js\/dev\/es5\//, '')
+    // module name should not include `lib`, `web` folders
+    // as they are wrapper packages for dart
     .replace(/\/web\//, '/')
-    .replace(/\/perf_tmp\//, '/')
     .replace(/\/lib\//, '/')
     // module name should not have a suffix
     .replace(/\.\w*$/, '');

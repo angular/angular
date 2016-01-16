@@ -1,0 +1,12 @@
+#!/usr/bin/env node
+
+var fse = require('fs-extra');
+var path = require('path');
+
+var NPM_SHRINKWRAP_FILE = 'npm-shrinkwrap.json';
+var NPM_SHRINKWRAP_CACHED_FILE = 'node_modules/npm-shrinkwrap.cached.json';
+var PROJECT_ROOT = path.join(__dirname, '../../');
+
+process.chdir(PROJECT_ROOT);
+
+fse.copySync(NPM_SHRINKWRAP_FILE, NPM_SHRINKWRAP_CACHED_FILE);

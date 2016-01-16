@@ -1,1 +1,0 @@
-export var Math = window.Math;

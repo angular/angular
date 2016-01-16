@@ -1,0 +1,7 @@
+#!/usr/bin/env node
+
+var checkNpm = require('./check-node-modules.js');
+
+var purgeIfStale = (process.argv.indexOf('--purge') !== -1)
+
+checkNpm(true, purgeIfStale);

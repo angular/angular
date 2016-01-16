@@ -1,89 +1,82 @@
+var browserProvidersConf = require('./browser-providers.conf.js');
+
+var packageSources = {
+  // Dependencies installed with `pub install`.
+  'unittest': 'packages/unittest',
+  'guinness': 'packages/guinness',
+  'matcher': 'packages/matcher',
+  'stack_trace': 'packages/stack_trace',
+  'collection': 'packages/collection',
+  'path': 'packages/path',
+  'observe': 'packages/observe',
+  'quiver': 'packages/quiver',
+  'intl': 'packages/intl',
+  'smoke': 'packages/smoke',
+  'logging': 'packages/logging',
+  'utf': 'packages/utf',
+
+  // Local dependencies, transpiled from the source.
+  'angular2': 'dist/dart/angular2/lib',
+  'angular2/test/': 'dist/dart/angular2/test/',
+  'http': 'dist/dart/http/lib',
+  'angular2_material': 'dist/dart/angular2_material/lib',
+  'benchpress': 'dist/dart/benchpress/lib',
+  'examples': 'dist/dart/examples/lib'
+};
+
+var proxyPaths = {};
+Object.keys(packageSources).map(function(packageName) {
+  var filePath = packageSources[packageName];
+  proxyPaths['/packages/'+packageName] = '/base/'+filePath;
+});
+
 // Karma configuration
 // Generated on Thu Sep 25 2014 11:52:02 GMT-0700 (PDT)
-var file2moduleName = require('./tools/build/file2modulename');
-
 module.exports = function(config) {
   config.set({
 
-    frameworks: ['dart-unittest'],
+    frameworks: ['dart-unittest', 'dart-evalcache'],
 
     files: [
+      // Init and configure guiness.
+      {pattern: 'test-init.dart', included: true},
       // Unit test files needs to be included.
-      // Karma-dart generates `__adapter_unittest.dart` that imports these files.
-      {pattern: 'modules/*/test/**/*_spec.js', included: true},
-      {pattern: 'tools/transpiler/spec/**/*_spec.js', included: true},
+      {pattern: 'dist/dart/**/*_spec.dart', included: true, watched: false},
 
-      // These files are not included, they are imported by the unit tests above.
-      {pattern: 'modules/**', included: false},
-      {pattern: 'tools/transpiler/spec/**/*', included: false},
+      // Karma-dart via the dart-unittest framework generates
+      // `__adapter_unittest.dart` that imports these files.
+      {pattern: 'dist/dart/**', included: false, watched: false},
 
       // Dependencies, installed with `pub install`.
       {pattern: 'packages/**/*.dart', included: false, watched: false},
 
       // Init and configure guiness.
-      {pattern: 'test-main.dart', included: true}
+      {pattern: 'test-main.dart', included: true},
+      {pattern: 'modules/**/test/**/static_assets/**', included: false, watched: false},
+    ],
+
+    exclude: [
+      'dist/dart/**/packages/**',
+      'modules/angular1_router/**'
     ],
 
     karmaDartImports: {
       guinness: 'package:guinness/guinness_html.dart'
     },
 
-    // TODO(vojta): Remove the localhost:9877 from urls, once the proxy fix is merged:
-    // https://github.com/karma-runner/karma/pull/1207
-    //
     // Map packages to the correct urls where Karma serves them.
-    proxies: {
-      // Dependencies installed with `pub install`.
-      '/packages/unittest': 'http://localhost:9877/base/packages/unittest',
-      '/packages/guinness': 'http://localhost:9877/base/packages/guinness',
-      '/packages/matcher': 'http://localhost:9877/base/packages/matcher',
-      '/packages/stack_trace': 'http://localhost:9877/base/packages/stack_trace',
-      '/packages/collection': 'http://localhost:9877/base/packages/collection',
-      '/packages/path': 'http://localhost:9877/base/packages/path',
+    proxies: proxyPaths,
 
-      // Local dependencies, transpiled from the source.
-      '/packages/core': 'http://localhost:9877/base/modules/core/src',
-      '/packages/change_detection': 'http://localhost:9877/base/modules/change_detection/src',
-      '/packages/reflection': 'http://localhost:9877/base/modules/reflection/src',
-      '/packages/di': 'http://localhost:9877/base/modules/di/src',
-      '/packages/directives': 'http://localhost:9877/base/modules/directives/src',
-      '/packages/facade': 'http://localhost:9877/base/modules/facade/src',
-      '/packages/test_lib': 'http://localhost:9877/base/modules/test_lib/src',
-    },
-
-    preprocessors: {
-      'modules/**/*.js': ['traceur'],
-      'tools/**/*.js': ['traceur']
-    },
-
-    traceurPreprocessor: {
-      options: {
-        outputLanguage: 'dart',
-        sourceMaps: true,
-        script: false,
-        modules: 'register',
-        memberVariables: true,
-        types: true,
-        // typeAssertions: true,
-        // typeAssertionModule: 'assert',
-        annotations: true
-      },
-      resolveModuleName: file2moduleName,
-      transformPath: function(fileName) {
-        return fileName.replace('.js', '.dart');
-      }
-    },
-
-    customLaunchers: {
-      DartiumWithWebPlatform: {
-        base: 'Dartium',
-        flags: ['--enable-experimental-web-platform-features'] }
-    },
+    customLaunchers: browserProvidersConf.customLaunchers,
     browsers: ['DartiumWithWebPlatform'],
 
-    port: 9877
+    port: 9877,
+
+    plugins: [
+      require('karma-dart'),
+      require('karma-chrome-launcher'),
+      require('karma-sauce-launcher'),
+      require('./karma-dart-evalcache')(packageSources)
+    ]
   });
-
-
-  config.plugins.push(require('./tools/transpiler/karma-traceur-preprocessor'));
 };

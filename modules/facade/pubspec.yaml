@@ -1,7 +1,0 @@
-name: facade
-environment:
-  sdk: '>=1.4.0'
-dev_dependencies:
-  test_lib:
-    path: ../test_lib
-  guinness: ">=0.1.16 <0.2.0"
