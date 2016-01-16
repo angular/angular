@@ -14,7 +14,7 @@ import {provide, Component, DebugElement} from 'angular2/core';
 import {By} from 'angular2/platform/browser';
 
 import {MdButton} from './button';
-import {AsyncTestFn, FunctionWithParamTokens} from "angular2/testing";
+import {AsyncTestFn, FunctionWithParamTokens} from 'angular2/testing';
 
 
 describe('MdButton', () => {

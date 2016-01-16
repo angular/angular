@@ -29,7 +29,7 @@ export class MdButton {
     // button continues to look :active after clicking.
     // @see http://marcysutton.com/button-focus-hell/
     this.isMouseDown = true;
-    setTimeout(() => {this.isMouseDown = false}, 100);
+    setTimeout(() => { this.isMouseDown = false; }, 100);
   }
 
   onFocus() {
