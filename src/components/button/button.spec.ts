@@ -34,6 +34,21 @@ describe('MdButton', () => {
       });
     });
 
+    it('should not increment if disabled', (done: () => void) => {
+      return builder.createAsync(TestApp).then((fixture) => {
+        let testComponent = fixture.debugElement.componentInstance;
+        let buttonDebugElement = fixture.debugElement.query(By.css('button'));
+
+        testComponent.isDisabled = true;
+        fixture.detectChanges();
+
+        buttonDebugElement.nativeElement.click();
+
+        expect(testComponent.clickCount).toBe(0);
+        done();
+      })
+    });
+
   });
 });
 
