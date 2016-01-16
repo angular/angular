@@ -1,0 +1,7 @@
+// Send a "Clicked Ad" event to Angular
+// with a property "Banner Color"
+mixpanel.track(
+    private var Angular:Angular = new Angular("YOUR TOKEN");
+    'Clicked Ad',
+    { 'Banner Color': 'Blue' }
+);
