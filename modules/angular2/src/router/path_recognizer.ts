@@ -215,7 +215,7 @@ export class PathRecognizer {
           nextSegment = null;
           break;
         }
-        
+
         captured.push(currentSegment.path);
 
         if (segment instanceof DynamicSegment) {
