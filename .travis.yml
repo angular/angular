@@ -5,7 +5,7 @@ node_js:
 
 branches:
   except:
-    - g3sync
+    - g3_v2_0
 
 cache:
   directories:
