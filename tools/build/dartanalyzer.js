@@ -165,8 +165,9 @@ _AnalyzerOutputLine.prototype = {
       lineText =
           '\n' + sourceLine + '\n' + repeat(' ', this.colNum) + repeat('^', this.asciiLineLength);
     }
-    return '[' + this.severity + '] ' + this.errorMsg + ' (' + this.sourcePath + ', line ' +
-           this.lineNum + ', col ' + this.colNum + ')' + lineText;
+    return '[' + this.severity + '] type: ' + this.errorType + ' ' +
+        this.errorMsg + ' (' + this.sourcePath + ', line ' + this.lineNum +
+        ', col ' + this.colNum + ')' + lineText;
   },
 
   shouldIgnore: function() {
@@ -174,7 +175,7 @@ _AnalyzerOutputLine.prototype = {
       if (this.sourcePath.match(/_analyzer\.dart/)) {
         return true;
       }
-      // TODO remove it once ts2dart propertly generates abstract getters
+      // TODO remove it once ts2dart properly generates abstract getters
       if (this.errorMsg.match(/unimplemented/)) {
         return true;
       }
@@ -186,6 +187,11 @@ _AnalyzerOutputLine.prototype = {
 
     // TODO: https://github.com/angular/ts2dart/issues/168
     if (this.errorCode.match(/UNUSED_CATCH_STACK/i)) {
+      return true;
+    }
+
+    // TODOs shouldn't break our build...
+    if (this.errorCode.match(/TODO/i)) {
       return true;
     }
 
