@@ -717,12 +717,11 @@ gulp.task('build.payload.js', ['build.js'], function(done) {
 });
 
 gulp.task('!build.payload.js.webpack', function() {
-  var q = require('q');
-  var webpack = q.denodeify(require('webpack'));
+  var webpack = require('./tools/build/webpack/promiseify');
 
   var ES5_PROD_ROOT = __dirname + '/' + CONFIG.dest.js.prod.es5;
 
-  return q.all(PAYLOAD_TESTS_CONFIG.ts.cases.map(function(caseName) {
+  return Promise.all(PAYLOAD_TESTS_CONFIG.ts.cases.map(function(caseName) {
     var CASE_PATH = PAYLOAD_TESTS_CONFIG.ts.dist(caseName, 'webpack');
 
     return webpack({
@@ -1346,8 +1345,7 @@ gulp.task('!bundles.js.docs', ['clean'], function() {
 });
 
 gulp.task('!bundles.js.umd', ['build.js.dev'], function() {
-  var q = require('q');
-  var webpack = q.denodeify(require('webpack'));
+  var webpack = require('./tools/build/webpack/promiseify');
 
   function resolveOptions(devOrProd) {
     return {
@@ -1403,7 +1401,7 @@ gulp.task('!bundles.js.umd', ['build.js.dev'], function() {
     };
   }
 
-  return q.all([
+  return Promise.all([
     webpack(webPackConf([__dirname + '/tools/build/webpack/angular2-all.umd.js'], 'angular2-all',
                         'dev')),
     webpack(webPackConf([__dirname + '/tools/build/webpack/angular2-all.umd.js'], 'angular2-all',
