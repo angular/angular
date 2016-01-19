@@ -41,6 +41,7 @@
     "karma-firefox-launcher": "^0.1.7",
     "karma-jasmine": "^0.3.6",
     "karma-sauce-launcher": "^0.2.14",
+    "tslint": "^3.2.2",
     "typescript": "^1.7.5"
   }
 }
