@@ -8,6 +8,7 @@
     "moduleResolution": "node",
     "noEmitOnError": true,
     "noImplicitAny": true,
+    "outDir": "../dist/",
     "rootDir": ".",
     "sourceMap": true,
     "sourceRoot": "/",
