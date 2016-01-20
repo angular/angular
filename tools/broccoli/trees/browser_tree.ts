@@ -227,7 +227,7 @@ module.exports = function makeBrowserTree(options, destinationPath) {
     destDir: '/'
   });
 
-  if (modules.benchmarks || modules.benchmarks_external || modules.playground) {
+  if (modules.playground) {
     htmlTree = replace(htmlTree, {
       files: ['playground*/**/*.html'],
       patterns: [

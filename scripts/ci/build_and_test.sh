@@ -22,7 +22,7 @@ elif [ "$MODE" = "build_only" ]; then
 elif [ "$MODE" = "payload" ]; then
   source ${SCRIPT_DIR}/env_dart.sh
   ./node_modules/.bin/gulp test.payload.dart/ci
-  ./node_modules/.bin/gulp test.payload.js/ci
+  node --max-old-space-size=2000 ./node_modules/.bin/gulp test.payload.js/ci
 else
   ${SCRIPT_DIR}/build_$MODE.sh
   ${SCRIPT_DIR}/test_$MODE.sh
