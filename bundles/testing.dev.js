@@ -1424,7 +1424,7 @@ System.register("angular2/src/testing/matchers", ["angular2/src/platform/dom/dom
   return module.exports;
 });
 
-System.register("angular2/src/testing/test_component_builder", ["angular2/core", "angular2/src/facade/lang", "angular2/src/facade/async", "angular2/src/facade/collection", "angular2/src/core/linker/compiler", "angular2/src/core/linker/view_listener", "angular2/src/testing/utils", "angular2/src/platform/dom/dom_tokens", "angular2/src/platform/dom/dom_adapter", "angular2/src/core/debug/debug_element"], true, function(require, exports, module) {
+System.register("angular2/src/testing/test_component_builder", ["angular2/core", "angular2/src/facade/lang", "angular2/src/facade/collection", "angular2/src/testing/utils", "angular2/src/platform/dom/dom_tokens", "angular2/src/platform/dom/dom_adapter", "angular2/src/core/debug/debug_element"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
@@ -1455,10 +1455,7 @@ System.register("angular2/src/testing/test_component_builder", ["angular2/core",
   };
   var core_1 = require("angular2/core");
   var lang_1 = require("angular2/src/facade/lang");
-  var async_1 = require("angular2/src/facade/async");
   var collection_1 = require("angular2/src/facade/collection");
-  var compiler_1 = require("angular2/src/core/linker/compiler");
-  var view_listener_1 = require("angular2/src/core/linker/view_listener");
   var utils_1 = require("angular2/src/testing/utils");
   var dom_tokens_1 = require("angular2/src/platform/dom/dom_tokens");
   var dom_adapter_1 = require("angular2/src/platform/dom/dom_adapter");
@@ -1489,21 +1486,6 @@ System.register("angular2/src/testing/test_component_builder", ["angular2/core",
   })(ComponentFixture);
   exports.ComponentFixture_ = ComponentFixture_;
   var _nextRootElementId = 0;
-  var TestViewFactoryProxy = (function() {
-    function TestViewFactoryProxy() {
-      this._componentFactoryOverrides = new Map();
-    }
-    TestViewFactoryProxy.prototype.getComponentViewFactory = function(component, originalViewFactory) {
-      var override = this._componentFactoryOverrides.get(component);
-      return lang_1.isPresent(override) ? override : originalViewFactory;
-    };
-    TestViewFactoryProxy.prototype.setComponentViewFactory = function(component, viewFactory) {
-      this._componentFactoryOverrides.set(component, viewFactory);
-    };
-    TestViewFactoryProxy = __decorate([core_1.Injectable(), __metadata('design:paramtypes', [])], TestViewFactoryProxy);
-    return TestViewFactoryProxy;
-  })();
-  exports.TestViewFactoryProxy = TestViewFactoryProxy;
   var TestComponentBuilder = (function() {
     function TestComponentBuilder(_injector) {
       this._injector = _injector;
@@ -1512,19 +1494,12 @@ System.register("angular2/src/testing/test_component_builder", ["angular2/core",
       this._templateOverrides = new Map();
       this._viewBindingsOverrides = new Map();
       this._viewOverrides = new Map();
-      this._componentOverrides = new Map();
     }
     TestComponentBuilder.prototype._clone = function() {
       var clone = new TestComponentBuilder(this._injector);
       clone._viewOverrides = collection_1.MapWrapper.clone(this._viewOverrides);
       clone._directiveOverrides = collection_1.MapWrapper.clone(this._directiveOverrides);
       clone._templateOverrides = collection_1.MapWrapper.clone(this._templateOverrides);
-      clone._componentOverrides = collection_1.MapWrapper.clone(this._componentOverrides);
-      return clone;
-    };
-    TestComponentBuilder.prototype.overrideComponent = function(componentType, mockType) {
-      var clone = this._clone();
-      clone._componentOverrides.set(componentType, mockType);
       return clone;
     };
     TestComponentBuilder.prototype.overrideTemplate = function(componentType, template) {
@@ -1564,7 +1539,6 @@ System.register("angular2/src/testing/test_component_builder", ["angular2/core",
       return this.overrideViewProviders(type, providers);
     };
     TestComponentBuilder.prototype.createAsync = function(rootComponentType) {
-      var _this = this;
       var mockDirectiveResolver = this._injector.get(core_1.DirectiveResolver);
       var mockViewResolver = this._injector.get(core_1.ViewResolver);
       this._viewOverrides.forEach(function(view, type) {
@@ -1592,29 +1566,14 @@ System.register("angular2/src/testing/test_component_builder", ["angular2/core",
         dom_adapter_1.DOM.remove(oldRoots[i]);
       }
       dom_adapter_1.DOM.appendChild(doc.body, rootEl);
-      var originalCompTypes = [];
-      var mockHostViewFactoryPromises = [];
-      var compiler = this._injector.get(compiler_1.Compiler);
-      var viewFactoryProxy = this._injector.get(TestViewFactoryProxy);
-      this._componentOverrides.forEach(function(mockCompType, originalCompType) {
-        originalCompTypes.push(originalCompType);
-        mockHostViewFactoryPromises.push(compiler.compileInHost(mockCompType));
-      });
-      return async_1.PromiseWrapper.all(mockHostViewFactoryPromises).then(function(mockHostViewFactories) {
-        for (var i = 0; i < mockHostViewFactories.length; i++) {
-          var originalCompType = originalCompTypes[i];
-          viewFactoryProxy.setComponentViewFactory(originalCompType, mockHostViewFactories[i].internalHostViewFactory.componentViewFactory);
-        }
-        return _this._injector.get(core_1.DynamicComponentLoader).loadAsRoot(rootComponentType, "#" + rootElId, _this._injector).then(function(componentRef) {
-          return new ComponentFixture_(componentRef);
-        });
+      return this._injector.get(core_1.DynamicComponentLoader).loadAsRoot(rootComponentType, "#" + rootElId, this._injector).then(function(componentRef) {
+        return new ComponentFixture_(componentRef);
       });
     };
     TestComponentBuilder = __decorate([core_1.Injectable(), __metadata('design:paramtypes', [core_1.Injector])], TestComponentBuilder);
     return TestComponentBuilder;
   })();
   exports.TestComponentBuilder = TestComponentBuilder;
-  exports.TEST_COMPONENT_BUILDER_PROVIDERS = lang_1.CONST_EXPR([TestViewFactoryProxy, lang_1.CONST_EXPR(new core_1.Provider(view_listener_1.ViewFactoryProxy, {useExisting: TestViewFactoryProxy})), TestComponentBuilder]);
   global.define = __define;
   return module.exports;
 });

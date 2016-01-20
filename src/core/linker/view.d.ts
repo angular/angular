@@ -92,8 +92,7 @@ export declare class AppProtoView {
 export declare class HostViewFactory {
     selector: string;
     viewFactory: Function;
-    componentViewFactory: Function;
-    constructor(selector: string, viewFactory: Function, componentViewFactory: Function);
+    constructor(selector: string, viewFactory: Function);
 }
 export declare function flattenNestedViewRenderNodes(nodes: any[]): any[];
 export declare function checkSlotCount(componentName: string, expectedSlotCount: number, projectableNodes: any[][]): void;

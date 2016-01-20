@@ -1,7 +1,6 @@
-import { ComponentRef, DebugElement, Injector, ViewMetadata, Provider } from 'angular2/core';
+import { ComponentRef, DebugElement, Injector, ViewMetadata } from 'angular2/core';
 import { Type } from 'angular2/src/facade/lang';
 import { Promise } from 'angular2/src/facade/async';
-import { ViewFactoryProxy } from 'angular2/src/core/linker/view_listener';
 /**
  * Fixture for debugging and testing a component.
  */
@@ -32,28 +31,12 @@ export declare class ComponentFixture_ extends ComponentFixture {
     detectChanges(): void;
     destroy(): void;
 }
-export declare class TestViewFactoryProxy implements ViewFactoryProxy {
-    private _componentFactoryOverrides;
-    getComponentViewFactory(component: Type, originalViewFactory: Function): Function;
-    setComponentViewFactory(component: Type, viewFactory: Function): void;
-}
 /**
  * Builds a ComponentFixture for use in component level tests.
  */
 export declare class TestComponentBuilder {
     private _injector;
     constructor(_injector: Injector);
-    /**
-     * Overrides a component with another component.
-     * This also works with precompiled templates if they were generated
-     * in development mode.
-     *
-     * @param {Type} original component
-     * @param {Type} mock component
-     *
-     * @return {TestComponentBuilder}
-     */
-    overrideComponent(componentType: Type, mockType: Type): TestComponentBuilder;
     /**
      * Overrides only the html of a {@link ComponentMetadata}.
      * All the other properties of the component's {@link ViewMetadata} are preserved.
@@ -130,4 +113,3 @@ export declare class TestComponentBuilder {
      */
     createAsync(rootComponentType: Type): Promise<ComponentFixture>;
 }
-export declare const TEST_COMPONENT_BUILDER_PROVIDERS: (typeof TestViewFactoryProxy | Provider | typeof TestComponentBuilder)[];

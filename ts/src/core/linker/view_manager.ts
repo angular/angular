@@ -4,11 +4,9 @@ import {
   Provider,
   Injectable,
   ResolvedProvider,
-  forwardRef,
-  OpaqueToken,
-  Optional
+  forwardRef
 } from 'angular2/src/core/di';
-import {isPresent, isBlank, isArray, Type, CONST_EXPR} from 'angular2/src/facade/lang';
+import {isPresent, isBlank, isArray} from 'angular2/src/facade/lang';
 import {ListWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
 import {BaseException} from 'angular2/src/facade/exceptions';
 import {AppView, HostViewFactory, flattenNestedViewRenderNodes} from './view';
@@ -23,7 +21,7 @@ import {
 } from './view_ref';
 import {ViewContainerRef} from './view_container_ref';
 import {TemplateRef, TemplateRef_} from './template_ref';
-import {AppViewListener, ViewFactoryProxy} from './view_listener';
+import {AppViewListener} from './view_listener';
 import {RootRenderer, RenderComponentType} from 'angular2/src/core/render/api';
 import {wtfCreateScope, wtfLeave, WtfScopeFn} from '../profile/profile';
 import {APP_ID} from 'angular2/src/core/application_tokens';
@@ -187,7 +185,7 @@ export class AppViewManager_ extends AppViewManager {
   private _nextCompTypeId: number = 0;
 
   constructor(private _renderer: RootRenderer, private _viewListener: AppViewListener,
-              private _viewFactoryProxy: ViewFactoryProxy, @Inject(APP_ID) private _appId: string) {
+              @Inject(APP_ID) private _appId: string) {
     super();
   }
 
@@ -322,11 +320,6 @@ export class AppViewManager_ extends AppViewManager {
                             styles: Array<string | any[]>): RenderComponentType {
     return new RenderComponentType(`${this._appId}-${this._nextCompTypeId++}`, encapsulation,
                                    styles);
-  }
-
-  /** @internal */
-  getComponentViewFactory(component: Type, originalViewFactory: Function): Function {
-    return this._viewFactoryProxy.getComponentViewFactory(component, originalViewFactory);
   }
 
   private _attachViewToContainer(view: AppView, vcAppElement: AppElement, viewIndex: number) {

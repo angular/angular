@@ -1,5 +1,5 @@
 import { TemplateAst, BoundEventAst } from './template_ast';
-import { CompileTypeMetadata, CompileDirectiveMetadata, CompilePipeMetadata } from './directive_metadata';
+import { CompileDirectiveMetadata, CompilePipeMetadata } from './directive_metadata';
 import { AppProtoView } from 'angular2/src/core/linker/view';
 import { ViewType } from 'angular2/src/core/linker/view_type';
 import { AppProtoElement } from 'angular2/src/core/linker/element';
@@ -40,4 +40,3 @@ export declare class CompileProtoElement<APP_PROTO_EL> {
     appProtoEl: APP_PROTO_EL;
     constructor(boundElementIndex: any, attrNameAndValues: string[][], variableNameAndValues: string[][], renderEvents: BoundEventAst[], directives: CompileDirectiveMetadata[], embeddedTemplateIndex: number, appProtoEl: APP_PROTO_EL);
 }
-export declare function codeGenType(type: CompileTypeMetadata): string;

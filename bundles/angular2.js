@@ -6315,15 +6315,6 @@ System.register("angular2/src/core/linker/view_listener", ["angular2/src/core/di
     return AppViewListener;
   })();
   exports.AppViewListener = AppViewListener;
-  var ViewFactoryProxy = (function() {
-    function ViewFactoryProxy() {}
-    ViewFactoryProxy.prototype.getComponentViewFactory = function(component, originalViewFactory) {
-      return originalViewFactory;
-    };
-    ViewFactoryProxy = __decorate([di_1.Injectable(), __metadata('design:paramtypes', [])], ViewFactoryProxy);
-    return ViewFactoryProxy;
-  })();
-  exports.ViewFactoryProxy = ViewFactoryProxy;
   global.define = __define;
   return module.exports;
 });
@@ -9145,11 +9136,10 @@ System.register("angular2/src/core/linker/view_manager", ["angular2/src/core/di"
   exports.AppViewManager = AppViewManager;
   var AppViewManager_ = (function(_super) {
     __extends(AppViewManager_, _super);
-    function AppViewManager_(_renderer, _viewListener, _viewFactoryProxy, _appId) {
+    function AppViewManager_(_renderer, _viewListener, _appId) {
       _super.call(this);
       this._renderer = _renderer;
       this._viewListener = _viewListener;
-      this._viewFactoryProxy = _viewFactoryProxy;
       this._appId = _appId;
       this._nextCompTypeId = 0;
       this._createRootHostViewScope = profile_1.wtfCreateScope('AppViewManager#createRootHostView()');
@@ -9244,9 +9234,6 @@ System.register("angular2/src/core/linker/view_manager", ["angular2/src/core/di"
     AppViewManager_.prototype.createRenderComponentType = function(encapsulation, styles) {
       return new api_1.RenderComponentType(this._appId + "-" + this._nextCompTypeId++, encapsulation, styles);
     };
-    AppViewManager_.prototype.getComponentViewFactory = function(component, originalViewFactory) {
-      return this._viewFactoryProxy.getComponentViewFactory(component, originalViewFactory);
-    };
     AppViewManager_.prototype._attachViewToContainer = function(view, vcAppElement, viewIndex) {
       if (view.proto.type === view_type_1.ViewType.COMPONENT) {
         throw new exceptions_1.BaseException("Component views can't be moved!");
@@ -9286,7 +9273,7 @@ System.register("angular2/src/core/linker/view_manager", ["angular2/src/core/di"
       view.changeDetector.remove();
       return view;
     };
-    AppViewManager_ = __decorate([di_1.Injectable(), __param(3, di_1.Inject(application_tokens_1.APP_ID)), __metadata('design:paramtypes', [api_1.RootRenderer, view_listener_1.AppViewListener, view_listener_1.ViewFactoryProxy, String])], AppViewManager_);
+    AppViewManager_ = __decorate([di_1.Injectable(), __param(2, di_1.Inject(application_tokens_1.APP_ID)), __metadata('design:paramtypes', [api_1.RootRenderer, view_listener_1.AppViewListener, String])], AppViewManager_);
     return AppViewManager_;
   })(AppViewManager);
   exports.AppViewManager_ = AppViewManager_;
@@ -10751,12 +10738,11 @@ System.register("angular2/src/core/linker/view", ["angular2/src/facade/collectio
   })();
   exports.AppProtoView = AppProtoView;
   var HostViewFactory = (function() {
-    function HostViewFactory(selector, viewFactory, componentViewFactory) {
+    function HostViewFactory(selector, viewFactory) {
       this.selector = selector;
       this.viewFactory = viewFactory;
-      this.componentViewFactory = componentViewFactory;
     }
-    HostViewFactory = __decorate([lang_1.CONST(), __metadata('design:paramtypes', [String, Function, Function])], HostViewFactory);
+    HostViewFactory = __decorate([lang_1.CONST(), __metadata('design:paramtypes', [String, Function])], HostViewFactory);
     return HostViewFactory;
   })();
   exports.HostViewFactory = HostViewFactory;
@@ -10811,7 +10797,7 @@ System.register("angular2/src/core/application_common_providers", ["angular2/src
   var compiler_2 = require("angular2/src/core/linker/compiler");
   var dynamic_component_loader_1 = require("angular2/src/core/linker/dynamic_component_loader");
   var dynamic_component_loader_2 = require("angular2/src/core/linker/dynamic_component_loader");
-  exports.APPLICATION_COMMON_PROVIDERS = lang_1.CONST_EXPR([new di_1.Provider(compiler_1.Compiler, {useClass: compiler_2.Compiler_}), application_tokens_1.APP_ID_RANDOM_PROVIDER, resolved_metadata_cache_1.ResolvedMetadataCache, new di_1.Provider(view_manager_1.AppViewManager, {useClass: view_manager_2.AppViewManager_}), view_listener_1.AppViewListener, view_listener_1.ViewFactoryProxy, view_resolver_1.ViewResolver, new di_1.Provider(change_detection_1.IterableDiffers, {useValue: change_detection_1.defaultIterableDiffers}), new di_1.Provider(change_detection_1.KeyValueDiffers, {useValue: change_detection_1.defaultKeyValueDiffers}), directive_resolver_1.DirectiveResolver, pipe_resolver_1.PipeResolver, new di_1.Provider(dynamic_component_loader_1.DynamicComponentLoader, {useClass: dynamic_component_loader_2.DynamicComponentLoader_})]);
+  exports.APPLICATION_COMMON_PROVIDERS = lang_1.CONST_EXPR([new di_1.Provider(compiler_1.Compiler, {useClass: compiler_2.Compiler_}), application_tokens_1.APP_ID_RANDOM_PROVIDER, resolved_metadata_cache_1.ResolvedMetadataCache, new di_1.Provider(view_manager_1.AppViewManager, {useClass: view_manager_2.AppViewManager_}), view_listener_1.AppViewListener, view_resolver_1.ViewResolver, new di_1.Provider(change_detection_1.IterableDiffers, {useValue: change_detection_1.defaultIterableDiffers}), new di_1.Provider(change_detection_1.KeyValueDiffers, {useValue: change_detection_1.defaultKeyValueDiffers}), directive_resolver_1.DirectiveResolver, pipe_resolver_1.PipeResolver, new di_1.Provider(dynamic_component_loader_1.DynamicComponentLoader, {useClass: dynamic_component_loader_2.DynamicComponentLoader_})]);
   global.define = __define;
   return module.exports;
 });
@@ -14823,6 +14809,7 @@ System.register("angular2/src/common/directives/ng_switch", ["angular2/core", "a
     };
     return SwitchView;
   })();
+  exports.SwitchView = SwitchView;
   var NgSwitch = (function() {
     function NgSwitch() {
       this._useDefault = false;
@@ -18971,12 +18958,12 @@ System.register("angular2/src/compiler/proto_view_compiler", ["angular2/src/faca
   }
   function codeGenDirectivesArray(directives) {
     var expressions = directives.map(function(directiveType) {
-      return codeGenType(directiveType.type);
+      return typeRef(directiveType.type);
     });
     return "[" + expressions.join(',') + "]";
   }
   function codeGenTypesArray(types) {
-    var expressions = types.map(codeGenType);
+    var expressions = types.map(typeRef);
     return "[" + expressions.join(',') + "]";
   }
   function codeGenViewType(value) {
@@ -18986,10 +18973,9 @@ System.register("angular2/src/compiler/proto_view_compiler", ["angular2/src/faca
       return "" + value;
     }
   }
-  function codeGenType(type) {
+  function typeRef(type) {
     return "" + source_module_1.moduleRef(type.moduleUrl) + type.name;
   }
-  exports.codeGenType = codeGenType;
   function getViewType(component, embeddedTemplateIndex) {
     if (embeddedTemplateIndex > 0) {
       return view_type_1.ViewType.EMBEDDED;
@@ -21088,7 +21074,6 @@ System.register("angular2/src/compiler/view_compiler", ["angular2/src/facade/lan
       return new util_1.Expression(appVar);
     };
     CodeGenViewFactory.prototype.createAndSetComponentView = function(renderer, viewManager, view, appEl, component, contentNodesByNgContentIndex, targetStatements) {
-      var viewFactoryExpr = this.componentViewFactory(component);
       var codeGenContentNodes;
       if (this.component.type.isHost) {
         codeGenContentNodes = view.expression + ".projectableNodes";
@@ -21096,11 +21081,8 @@ System.register("angular2/src/compiler/view_compiler", ["angular2/src/facade/lan
         codeGenContentNodes = "[" + contentNodesByNgContentIndex.map(function(nodes) {
           return util_1.codeGenFlatArray(nodes);
         }).join(',') + "]";
-        if (lang_1.assertionsEnabled()) {
-          viewFactoryExpr = "viewManager.getComponentViewFactory(" + proto_view_compiler_1.codeGenType(component.type) + ", " + viewFactoryExpr + ")";
-        }
       }
-      targetStatements.push(new util_1.Statement(viewFactoryExpr + "(" + renderer.expression + ", " + viewManager.expression + ", " + appEl.expression + ", " + codeGenContentNodes + ", null, null, null);"));
+      targetStatements.push(new util_1.Statement(this.componentViewFactory(component) + "(" + renderer.expression + ", " + viewManager.expression + ", " + appEl.expression + ", " + codeGenContentNodes + ", null, null, null);"));
     };
     CodeGenViewFactory.prototype.getProjectedNodes = function(projectableNodes, ngContentIndex) {
       return new util_1.Expression(projectableNodes.expression + "[" + ngContentIndex + "]", true);
@@ -21180,7 +21162,6 @@ System.register("angular2/src/compiler/view_compiler", ["angular2/src/facade/lan
     };
     RuntimeViewFactory.prototype.createAndSetComponentView = function(renderer, viewManager, appView, appEl, component, contentNodesByNgContentIndex, targetStatements) {
       var flattenedContentNodes;
-      var viewFactory = this.componentViewFactory(component);
       if (this.component.type.isHost) {
         flattenedContentNodes = appView.projectableNodes;
       } else {
@@ -21188,11 +21169,8 @@ System.register("angular2/src/compiler/view_compiler", ["angular2/src/facade/lan
         for (var i = 0; i < contentNodesByNgContentIndex.length; i++) {
           flattenedContentNodes[i] = util_1.flattenArray(contentNodesByNgContentIndex[i], []);
         }
-        if (lang_1.assertionsEnabled()) {
-          viewFactory = viewManager.getComponentViewFactory(component.type.runtime, viewFactory);
-        }
       }
-      viewFactory(renderer, viewManager, appEl, flattenedContentNodes);
+      this.componentViewFactory(component)(renderer, viewManager, appEl, flattenedContentNodes);
     };
     RuntimeViewFactory.prototype.getProjectedNodes = function(projectableNodes, ngContentIndex) {
       return projectableNodes[ngContentIndex];
@@ -23912,7 +23890,6 @@ System.register("angular2/src/compiler/template_compiler", ["angular2/src/facade
       });
     };
     TemplateCompiler.prototype.compileHostComponentRuntime = function(type) {
-      var _this = this;
       var compMeta = this._runtimeMetadataResolver.getDirectiveMetadata(type);
       var hostCacheKey = this._hostCacheKeys.get(type);
       if (lang_1.isBlank(hostCacheKey)) {
@@ -23922,10 +23899,8 @@ System.register("angular2/src/compiler/template_compiler", ["angular2/src/facade
         var hostMeta = directive_metadata_1.createHostComponentMeta(compMeta.type, compMeta.selector);
         this._compileComponentRuntime(hostCacheKey, hostMeta, [compMeta], [], []);
       }
-      return this._compiledTemplateDone.get(hostCacheKey).then(function(hostCompiledTemplate) {
-        return _this._compiledTemplateDone.get(type).then(function(componentCompiledTemplate) {
-          return new view_1.HostViewFactory(compMeta.selector, hostCompiledTemplate.viewFactory, componentCompiledTemplate.viewFactory);
-        });
+      return this._compiledTemplateDone.get(hostCacheKey).then(function(compiledTemplate) {
+        return new view_1.HostViewFactory(compMeta.selector, compiledTemplate.viewFactory);
       });
     };
     TemplateCompiler.prototype.clearCache = function() {
@@ -23943,12 +23918,12 @@ System.register("angular2/src/compiler/template_compiler", ["angular2/src/facade
       components.forEach(function(componentWithDirs) {
         var compMeta = componentWithDirs.component;
         assertComponent(compMeta);
-        var componentViewFactoryExpression = _this._compileComponentCodeGen(compMeta, componentWithDirs.directives, componentWithDirs.pipes, declarations);
+        _this._compileComponentCodeGen(compMeta, componentWithDirs.directives, componentWithDirs.pipes, declarations);
         if (compMeta.dynamicLoadable) {
           var hostMeta = directive_metadata_1.createHostComponentMeta(compMeta.type, compMeta.selector);
-          var hostViewFactoryExpression = _this._compileComponentCodeGen(hostMeta, [compMeta], [], declarations);
+          var viewFactoryExpression = _this._compileComponentCodeGen(hostMeta, [compMeta], [], declarations);
           var constructionKeyword = lang_1.IS_DART ? 'const' : 'new';
-          var compiledTemplateExpr = constructionKeyword + " " + proto_view_compiler_1.APP_VIEW_MODULE_REF + "HostViewFactory('" + compMeta.selector + "'," + hostViewFactoryExpression + "," + componentViewFactoryExpression + ")";
+          var compiledTemplateExpr = constructionKeyword + " " + proto_view_compiler_1.APP_VIEW_MODULE_REF + "HostViewFactory('" + compMeta.selector + "'," + viewFactoryExpression + ")";
           var varName = codeGenHostViewFactoryName(compMeta.type);
           declarations.push("" + util_1.codeGenExportVariable(varName) + compiledTemplateExpr + ";");
         }

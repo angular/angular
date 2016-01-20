@@ -80,11 +80,7 @@ export let TemplateCompiler = class {
             this._compileComponentRuntime(hostCacheKey, hostMeta, [compMeta], [], []);
         }
         return this._compiledTemplateDone.get(hostCacheKey)
-            .then((hostCompiledTemplate) => {
-            return this._compiledTemplateDone.get(type).then((componentCompiledTemplate) => {
-                return new HostViewFactory(compMeta.selector, hostCompiledTemplate.viewFactory, componentCompiledTemplate.viewFactory);
-            });
-        });
+            .then((compiledTemplate) => new HostViewFactory(compMeta.selector, compiledTemplate.viewFactory));
     }
     clearCache() {
         this._styleCompiler.clearCache();
@@ -100,12 +96,12 @@ export let TemplateCompiler = class {
         components.forEach(componentWithDirs => {
             var compMeta = componentWithDirs.component;
             assertComponent(compMeta);
-            var componentViewFactoryExpression = this._compileComponentCodeGen(compMeta, componentWithDirs.directives, componentWithDirs.pipes, declarations);
+            this._compileComponentCodeGen(compMeta, componentWithDirs.directives, componentWithDirs.pipes, declarations);
             if (compMeta.dynamicLoadable) {
                 var hostMeta = createHostComponentMeta(compMeta.type, compMeta.selector);
-                var hostViewFactoryExpression = this._compileComponentCodeGen(hostMeta, [compMeta], [], declarations);
+                var viewFactoryExpression = this._compileComponentCodeGen(hostMeta, [compMeta], [], declarations);
                 var constructionKeyword = IS_DART ? 'const' : 'new';
-                var compiledTemplateExpr = `${constructionKeyword} ${APP_VIEW_MODULE_REF}HostViewFactory('${compMeta.selector}',${hostViewFactoryExpression},${componentViewFactoryExpression})`;
+                var compiledTemplateExpr = `${constructionKeyword} ${APP_VIEW_MODULE_REF}HostViewFactory('${compMeta.selector}',${viewFactoryExpression})`;
                 var varName = codeGenHostViewFactoryName(compMeta.type);
                 declarations.push(`${codeGenExportVariable(varName)}${compiledTemplateExpr};`);
             }

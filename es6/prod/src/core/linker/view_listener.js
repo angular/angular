@@ -19,17 +19,3 @@ AppViewListener = __decorate([
     Injectable(), 
     __metadata('design:paramtypes', [])
 ], AppViewListener);
-/**
- * Proxy that allows to intercept component view factories.
- * This also works for precompiled templates, if they were
- * generated in development mode.
- */
-export let ViewFactoryProxy = class {
-    getComponentViewFactory(component, originalViewFactory) {
-        return originalViewFactory;
-    }
-};
-ViewFactoryProxy = __decorate([
-    Injectable(), 
-    __metadata('design:paramtypes', [])
-], ViewFactoryProxy);
