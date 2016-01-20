@@ -1,14 +1,7 @@
 library angular2.src.compiler.view_compiler;
 
 import "package:angular2/src/facade/lang.dart"
-    show
-        isPresent,
-        isBlank,
-        Type,
-        isString,
-        StringWrapper,
-        IS_DART,
-        assertionsEnabled;
+    show isPresent, isBlank, Type, isString, StringWrapper, IS_DART;
 import "package:angular2/src/facade/collection.dart"
     show SetWrapper, StringMapWrapper, ListWrapper;
 import "template_ast.dart"
@@ -62,8 +55,7 @@ import "proto_view_compiler.dart"
         APP_EL_MODULE_REF,
         METADATA_MODULE_REF,
         CompileProtoView,
-        CompileProtoElement,
-        codeGenType;
+        CompileProtoElement;
 
 const VIEW_JIT_IMPORTS = const {
   "AppView": AppView,
@@ -265,20 +257,15 @@ class CodeGenViewFactory implements ViewFactory<Expression, Statement> {
       CompileDirectiveMetadata component,
       List<List<Expression>> contentNodesByNgContentIndex,
       List<Statement> targetStatements) {
-    var viewFactoryExpr = this.componentViewFactory(component);
     var codeGenContentNodes;
     if (this.component.type.isHost) {
       codeGenContentNodes = '''${ view . expression}.projectableNodes''';
     } else {
       codeGenContentNodes =
           '''[${ contentNodesByNgContentIndex . map ( ( nodes ) => codeGenFlatArray ( nodes ) ) . toList ( ) . join ( "," )}]''';
-      if (assertionsEnabled()) {
-        viewFactoryExpr =
-            '''viewManager.getComponentViewFactory(${ codeGenType ( component . type )}, ${ viewFactoryExpr})''';
-      }
     }
     targetStatements.add(new Statement(
-        '''${ viewFactoryExpr}(${ renderer . expression}, ${ viewManager . expression}, ${ appEl . expression}, ${ codeGenContentNodes}, null, null, null);'''));
+        '''${ this . componentViewFactory ( component )}(${ renderer . expression}, ${ viewManager . expression}, ${ appEl . expression}, ${ codeGenContentNodes}, null, null, null);'''));
   }
 
   Expression getProjectedNodes(
@@ -452,7 +439,6 @@ class RuntimeViewFactory implements ViewFactory<dynamic, dynamic> {
               dynamic /* dynamic | List < dynamic > */ >> contentNodesByNgContentIndex,
       List<dynamic> targetStatements) {
     var flattenedContentNodes;
-    var viewFactory = this.componentViewFactory(component);
     if (this.component.type.isHost) {
       flattenedContentNodes = appView.projectableNodes;
     } else {
@@ -462,12 +448,9 @@ class RuntimeViewFactory implements ViewFactory<dynamic, dynamic> {
         flattenedContentNodes[i] =
             flattenArray(contentNodesByNgContentIndex[i], []);
       }
-      if (assertionsEnabled()) {
-        viewFactory = viewManager.getComponentViewFactory(
-            component.type.runtime, viewFactory);
-      }
     }
-    viewFactory(renderer, viewManager, appEl, flattenedContentNodes);
+    this.componentViewFactory(component)(
+        renderer, viewManager, appEl, flattenedContentNodes);
   }
 
   List<dynamic> getProjectedNodes(

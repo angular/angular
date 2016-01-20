@@ -1,16 +1,8 @@
 library angular2.src.core.linker.view_manager;
 
 import "package:angular2/src/core/di.dart"
-    show
-        Injector,
-        Inject,
-        Provider,
-        Injectable,
-        ResolvedProvider,
-        OpaqueToken,
-        Optional;
-import "package:angular2/src/facade/lang.dart"
-    show isPresent, isBlank, isArray, Type;
+    show Injector, Inject, Provider, Injectable, ResolvedProvider;
+import "package:angular2/src/facade/lang.dart" show isPresent, isBlank, isArray;
 import "package:angular2/src/facade/collection.dart"
     show ListWrapper, StringMapWrapper;
 import "package:angular2/src/facade/exceptions.dart" show BaseException;
@@ -26,7 +18,7 @@ import "view_ref.dart"
         ViewRef_;
 import "view_container_ref.dart" show ViewContainerRef;
 import "template_ref.dart" show TemplateRef, TemplateRef_;
-import "view_listener.dart" show AppViewListener, ViewFactoryProxy;
+import "view_listener.dart" show AppViewListener;
 import "package:angular2/src/core/render/api.dart"
     show RootRenderer, RenderComponentType;
 import "../profile/profile.dart" show wtfCreateScope, wtfLeave, WtfScopeFn;
@@ -188,11 +180,10 @@ abstract class AppViewManager {
 class AppViewManager_ extends AppViewManager {
   RootRenderer _renderer;
   AppViewListener _viewListener;
-  ViewFactoryProxy _viewFactoryProxy;
   String _appId;
   num _nextCompTypeId = 0;
-  AppViewManager_(this._renderer, this._viewListener, this._viewFactoryProxy,
-      @Inject(APP_ID) this._appId)
+  AppViewManager_(
+      this._renderer, this._viewListener, @Inject(APP_ID) this._appId)
       : super() {
     /* super call moved to initializer */;
   }
@@ -356,14 +347,6 @@ class AppViewManager_ extends AppViewManager {
         '''${ this . _appId}-${ this . _nextCompTypeId ++}''',
         encapsulation,
         styles);
-  }
-
-  /** @internal */
-  Function getComponentViewFactory(
-      Type component, Function originalViewFactory) {
-    return this
-        ._viewFactoryProxy
-        .getComponentViewFactory(component, originalViewFactory);
   }
 
   _attachViewToContainer(AppView view, AppElement vcAppElement, num viewIndex) {

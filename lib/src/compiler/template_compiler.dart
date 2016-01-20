@@ -129,15 +129,9 @@ class TemplateCompiler {
           createHostComponentMeta(compMeta.type, compMeta.selector);
       this._compileComponentRuntime(hostCacheKey, hostMeta, [compMeta], [], []);
     }
-    return this._compiledTemplateDone[hostCacheKey]
-        .then((hostCompiledTemplate) {
-      return this._compiledTemplateDone[type].then((componentCompiledTemplate) {
-        return new HostViewFactory(
-            compMeta.selector,
-            hostCompiledTemplate.viewFactory,
-            componentCompiledTemplate.viewFactory);
-      });
-    });
+    return this._compiledTemplateDone[
+        hostCacheKey].then((CompiledTemplate compiledTemplate) =>
+        new HostViewFactory(compMeta.selector, compiledTemplate.viewFactory));
   }
 
   clearCache() {
@@ -156,19 +150,16 @@ class TemplateCompiler {
     components.forEach((componentWithDirs) {
       var compMeta = (componentWithDirs.component as CompileDirectiveMetadata);
       assertComponent(compMeta);
-      var componentViewFactoryExpression = this._compileComponentCodeGen(
-          compMeta,
-          componentWithDirs.directives,
-          componentWithDirs.pipes,
-          declarations);
+      this._compileComponentCodeGen(compMeta, componentWithDirs.directives,
+          componentWithDirs.pipes, declarations);
       if (compMeta.dynamicLoadable) {
         var hostMeta =
             createHostComponentMeta(compMeta.type, compMeta.selector);
-        var hostViewFactoryExpression = this
+        var viewFactoryExpression = this
             ._compileComponentCodeGen(hostMeta, [compMeta], [], declarations);
         var constructionKeyword = IS_DART ? "const" : "new";
         var compiledTemplateExpr =
-            '''${ constructionKeyword} ${ APP_VIEW_MODULE_REF}HostViewFactory(\'${ compMeta . selector}\',${ hostViewFactoryExpression},${ componentViewFactoryExpression})''';
+            '''${ constructionKeyword} ${ APP_VIEW_MODULE_REF}HostViewFactory(\'${ compMeta . selector}\',${ viewFactoryExpression})''';
         var varName = codeGenHostViewFactoryName(compMeta.type);
         declarations.add(
             '''${ codeGenExportVariable ( varName )}${ compiledTemplateExpr};''');

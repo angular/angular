@@ -29,7 +29,7 @@ main() {
     var someHostViewFactory;
     beforeEachProviders(() {
       templateCompilerSpy = new SpyTemplateCompiler();
-      someHostViewFactory = new HostViewFactory(null, null, null);
+      someHostViewFactory = new HostViewFactory(null, null);
       templateCompilerSpy
           .spy("compileHostComponentRuntime")
           .andReturn(PromiseWrapper.resolve(someHostViewFactory));
