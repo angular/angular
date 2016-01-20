@@ -19,7 +19,7 @@
   ],
   "license": "MIT",
   "engines": {
-    "node": ">= 4.2.1 < 5"
+    "node": ">= 5.4.1 < 6"
   },
   "repository": {
     "type": "git",
