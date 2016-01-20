@@ -263,11 +263,11 @@ function keyValueArrayToStringMap(keyValueArray) {
     return stringMap;
 }
 function codeGenDirectivesArray(directives) {
-    var expressions = directives.map(directiveType => typeRef(directiveType.type));
+    var expressions = directives.map(directiveType => codeGenType(directiveType.type));
     return `[${expressions.join(',')}]`;
 }
 function codeGenTypesArray(types) {
-    var expressions = types.map(typeRef);
+    var expressions = types.map(codeGenType);
     return `[${expressions.join(',')}]`;
 }
 function codeGenViewType(value) {
@@ -278,7 +278,7 @@ function codeGenViewType(value) {
         return `${value}`;
     }
 }
-function typeRef(type) {
+export function codeGenType(type) {
     return `${moduleRef(type.moduleUrl)}${type.name}`;
 }
 function getViewType(component, embeddedTemplateIndex) {

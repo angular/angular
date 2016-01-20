@@ -10,7 +10,8 @@ import { LocationStrategy } from 'angular2/src/router/location_strategy';
 import { MockNgZone } from 'angular2/src/mock/ng_zone_mock';
 import { XHRImpl } from "angular2/src/platform/browser/xhr_impl";
 import { XHR } from 'angular2/compiler';
-import { TestComponentBuilder } from 'angular2/src/testing/test_component_builder';
+import { ViewFactoryProxy } from 'angular2/src/core/linker/view_listener';
+import { TestComponentBuilder, TestViewFactoryProxy } from 'angular2/src/testing/test_component_builder';
 import { BrowserDetection } from 'angular2/src/testing/utils';
 import { ELEMENT_PROBE_PROVIDERS } from 'angular2/platform/common_dom';
 import { CONST_EXPR } from 'angular2/src/facade/lang';
@@ -33,6 +34,8 @@ export const ADDITIONAL_TEST_BROWSER_PROVIDERS = CONST_EXPR([
     new Provider(ViewResolver, { useClass: MockViewResolver }),
     Log,
     TestComponentBuilder,
+    TestViewFactoryProxy,
+    new Provider(ViewFactoryProxy, { useExisting: TestViewFactoryProxy }),
     new Provider(NgZone, { useClass: MockNgZone }),
     new Provider(LocationStrategy, { useClass: MockLocationStrategy }),
     new Provider(AnimationBuilder, { useClass: MockAnimationBuilder }),

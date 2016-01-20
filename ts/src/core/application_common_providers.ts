@@ -15,7 +15,7 @@ import {ResolvedMetadataCache} from 'angular2/src/core/linker/resolved_metadata_
 import {AppViewManager} from './linker/view_manager';
 import {AppViewManager_} from "./linker/view_manager";
 import {ViewResolver} from './linker/view_resolver';
-import {AppViewListener} from './linker/view_listener';
+import {AppViewListener, ViewFactoryProxy} from './linker/view_listener';
 import {DirectiveResolver} from './linker/directive_resolver';
 import {PipeResolver} from './linker/pipe_resolver';
 import {Compiler} from './linker/compiler';
@@ -33,6 +33,7 @@ export const APPLICATION_COMMON_PROVIDERS: Array<Type | Provider | any[]> = CONS
   ResolvedMetadataCache,
   new Provider(AppViewManager, {useClass: AppViewManager_}),
   AppViewListener,
+  ViewFactoryProxy,
   ViewResolver,
   new Provider(IterableDiffers, {useValue: defaultIterableDiffers}),
   new Provider(KeyValueDiffers, {useValue: defaultKeyValueDiffers}),

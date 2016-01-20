@@ -127,8 +127,12 @@ export class TemplateCompiler {
       this._compileComponentRuntime(hostCacheKey, hostMeta, [compMeta], [], []);
     }
     return this._compiledTemplateDone.get(hostCacheKey)
-        .then((compiledTemplate: CompiledTemplate) =>
-                  new HostViewFactory(compMeta.selector, compiledTemplate.viewFactory));
+        .then((hostCompiledTemplate) => {
+          return this._compiledTemplateDone.get(type).then((componentCompiledTemplate) => {
+            return new HostViewFactory(compMeta.selector, hostCompiledTemplate.viewFactory,
+                                       componentCompiledTemplate.viewFactory);
+          });
+        });
   }
 
   clearCache() {
@@ -146,15 +150,15 @@ export class TemplateCompiler {
     components.forEach(componentWithDirs => {
       var compMeta = <CompileDirectiveMetadata>componentWithDirs.component;
       assertComponent(compMeta);
-      this._compileComponentCodeGen(compMeta, componentWithDirs.directives, componentWithDirs.pipes,
-                                    declarations);
+      var componentViewFactoryExpression = this._compileComponentCodeGen(
+          compMeta, componentWithDirs.directives, componentWithDirs.pipes, declarations);
       if (compMeta.dynamicLoadable) {
         var hostMeta = createHostComponentMeta(compMeta.type, compMeta.selector);
-        var viewFactoryExpression =
+        var hostViewFactoryExpression =
             this._compileComponentCodeGen(hostMeta, [compMeta], [], declarations);
         var constructionKeyword = IS_DART ? 'const' : 'new';
         var compiledTemplateExpr =
-            `${constructionKeyword} ${APP_VIEW_MODULE_REF}HostViewFactory('${compMeta.selector}',${viewFactoryExpression})`;
+            `${constructionKeyword} ${APP_VIEW_MODULE_REF}HostViewFactory('${compMeta.selector}',${hostViewFactoryExpression},${componentViewFactoryExpression})`;
         var varName = codeGenHostViewFactoryName(compMeta.type);
         declarations.push(`${codeGenExportVariable(varName)}${compiledTemplateExpr};`);
       }

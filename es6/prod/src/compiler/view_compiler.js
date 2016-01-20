@@ -7,7 +7,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-import { isPresent, isBlank, IS_DART, CONST_EXPR } from 'angular2/src/facade/lang';
+import { isPresent, isBlank, IS_DART, CONST_EXPR, assertionsEnabled } from 'angular2/src/facade/lang';
 import { ListWrapper } from 'angular2/src/facade/collection';
 import { templateVisitAll } from './template_ast';
 import { SourceExpression } from './source_module';
@@ -17,7 +17,7 @@ import { AppElement } from 'angular2/src/core/linker/element';
 import { ViewEncapsulation } from 'angular2/src/core/metadata/view';
 import { escapeSingleQuoteString, codeGenValueFn, codeGenFnHeader, Statement, escapeValue, codeGenArray, codeGenFlatArray, Expression, flattenArray, CONST_VAR } from './util';
 import { Injectable } from 'angular2/src/core/di';
-import { APP_VIEW_MODULE_REF, APP_EL_MODULE_REF, METADATA_MODULE_REF } from './proto_view_compiler';
+import { APP_VIEW_MODULE_REF, APP_EL_MODULE_REF, METADATA_MODULE_REF, codeGenType } from './proto_view_compiler';
 export const VIEW_JIT_IMPORTS = CONST_EXPR({
     'AppView': AppView,
     'AppElement': AppElement,
@@ -108,6 +108,7 @@ class CodeGenViewFactory {
         return new Expression(appVar);
     }
     createAndSetComponentView(renderer, viewManager, view, appEl, component, contentNodesByNgContentIndex, targetStatements) {
+        var viewFactoryExpr = this.componentViewFactory(component);
         var codeGenContentNodes;
         if (this.component.type.isHost) {
             codeGenContentNodes = `${view.expression}.projectableNodes`;
@@ -115,8 +116,12 @@ class CodeGenViewFactory {
         else {
             codeGenContentNodes =
                 `[${contentNodesByNgContentIndex.map(nodes => codeGenFlatArray(nodes)).join(',')}]`;
+            if (assertionsEnabled()) {
+                viewFactoryExpr =
+                    `viewManager.getComponentViewFactory(${codeGenType(component.type)}, ${viewFactoryExpr})`;
+            }
         }
-        targetStatements.push(new Statement(`${this.componentViewFactory(component)}(${renderer.expression}, ${viewManager.expression}, ${appEl.expression}, ${codeGenContentNodes}, null, null, null);`));
+        targetStatements.push(new Statement(`${viewFactoryExpr}(${renderer.expression}, ${viewManager.expression}, ${appEl.expression}, ${codeGenContentNodes}, null, null, null);`));
     }
     getProjectedNodes(projectableNodes, ngContentIndex) {
         return new Expression(`${projectableNodes.expression}[${ngContentIndex}]`, true);
@@ -217,6 +222,7 @@ class RuntimeViewFactory {
     }
     createAndSetComponentView(renderer, viewManager, appView, appEl, component, contentNodesByNgContentIndex, targetStatements) {
         var flattenedContentNodes;
+        var viewFactory = this.componentViewFactory(component);
         if (this.component.type.isHost) {
             flattenedContentNodes = appView.projectableNodes;
         }
@@ -225,8 +231,11 @@ class RuntimeViewFactory {
             for (var i = 0; i < contentNodesByNgContentIndex.length; i++) {
                 flattenedContentNodes[i] = flattenArray(contentNodesByNgContentIndex[i], []);
             }
+            if (assertionsEnabled()) {
+                viewFactory = viewManager.getComponentViewFactory(component.type.runtime, viewFactory);
+            }
         }
-        this.componentViewFactory(component)(renderer, viewManager, appEl, flattenedContentNodes);
+        viewFactory(renderer, viewManager, appEl, flattenedContentNodes);
     }
     getProjectedNodes(projectableNodes, ngContentIndex) {
         return projectableNodes[ngContentIndex];

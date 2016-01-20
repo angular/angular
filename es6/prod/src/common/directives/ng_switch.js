@@ -14,8 +14,7 @@ import { Directive, Host, ViewContainerRef, TemplateRef } from 'angular2/core';
 import { isPresent, isBlank, normalizeBlank, CONST_EXPR } from 'angular2/src/facade/lang';
 import { ListWrapper, Map } from 'angular2/src/facade/collection';
 const _WHEN_DEFAULT = CONST_EXPR(new Object());
-/** @internal */
-export class SwitchView {
+class SwitchView {
     constructor(_viewContainerRef, _templateRef) {
         this._viewContainerRef = _viewContainerRef;
         this._templateRef = _templateRef;

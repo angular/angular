@@ -16,7 +16,7 @@ import { ListWrapper, StringMapWrapper } from 'angular2/src/facade/collection';
 import { BaseException } from 'angular2/src/facade/exceptions';
 import { flattenNestedViewRenderNodes } from './view';
 import { AppElement } from './element';
-import { AppViewListener } from './view_listener';
+import { AppViewListener, ViewFactoryProxy } from './view_listener';
 import { RootRenderer, RenderComponentType } from 'angular2/src/core/render/api';
 import { wtfCreateScope, wtfLeave } from '../profile/profile';
 import { APP_ID } from 'angular2/src/core/application_tokens';
@@ -30,10 +30,11 @@ import { ViewType } from './view_type';
 export class AppViewManager {
 }
 export let AppViewManager_ = class extends AppViewManager {
-    constructor(_renderer, _viewListener, _appId) {
+    constructor(_renderer, _viewListener, _viewFactoryProxy, _appId) {
         super();
         this._renderer = _renderer;
         this._viewListener = _viewListener;
+        this._viewFactoryProxy = _viewFactoryProxy;
         this._appId = _appId;
         this._nextCompTypeId = 0;
         /** @internal */
@@ -134,6 +135,10 @@ export let AppViewManager_ = class extends AppViewManager {
     createRenderComponentType(encapsulation, styles) {
         return new RenderComponentType(`${this._appId}-${this._nextCompTypeId++}`, encapsulation, styles);
     }
+    /** @internal */
+    getComponentViewFactory(component, originalViewFactory) {
+        return this._viewFactoryProxy.getComponentViewFactory(component, originalViewFactory);
+    }
     _attachViewToContainer(view, vcAppElement, viewIndex) {
         if (view.proto.type === ViewType.COMPONENT) {
             throw new BaseException(`Component views can't be moved!`);
@@ -184,6 +189,6 @@ export let AppViewManager_ = class extends AppViewManager {
 };
 AppViewManager_ = __decorate([
     Injectable(),
-    __param(2, Inject(APP_ID)), 
-    __metadata('design:paramtypes', [RootRenderer, AppViewListener, String])
+    __param(3, Inject(APP_ID)), 
+    __metadata('design:paramtypes', [RootRenderer, AppViewListener, ViewFactoryProxy, String])
 ], AppViewManager_);

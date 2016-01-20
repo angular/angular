@@ -5,7 +5,8 @@ import {
   isString,
   StringWrapper,
   IS_DART,
-  CONST_EXPR
+  CONST_EXPR,
+  assertionsEnabled
 } from 'angular2/src/facade/lang';
 import {SetWrapper, StringMapWrapper, ListWrapper} from 'angular2/src/facade/collection';
 import {
@@ -58,7 +59,8 @@ import {
   APP_EL_MODULE_REF,
   METADATA_MODULE_REF,
   CompileProtoView,
-  CompileProtoElement
+  CompileProtoElement,
+  codeGenType
 } from './proto_view_compiler';
 
 export const VIEW_JIT_IMPORTS = CONST_EXPR({
@@ -227,15 +229,20 @@ class CodeGenViewFactory implements ViewFactory<Expression, Statement> {
                             appEl: Expression, component: CompileDirectiveMetadata,
                             contentNodesByNgContentIndex: Expression[][],
                             targetStatements: Statement[]) {
+    var viewFactoryExpr = this.componentViewFactory(component);
     var codeGenContentNodes;
     if (this.component.type.isHost) {
       codeGenContentNodes = `${view.expression}.projectableNodes`;
     } else {
       codeGenContentNodes =
           `[${contentNodesByNgContentIndex.map( nodes => codeGenFlatArray(nodes) ).join(',')}]`;
+      if (assertionsEnabled()) {
+        viewFactoryExpr =
+            `viewManager.getComponentViewFactory(${codeGenType(component.type)}, ${viewFactoryExpr})`;
+      }
     }
     targetStatements.push(new Statement(
-        `${this.componentViewFactory(component)}(${renderer.expression}, ${viewManager.expression}, ${appEl.expression}, ${codeGenContentNodes}, null, null, null);`));
+        `${viewFactoryExpr}(${renderer.expression}, ${viewManager.expression}, ${appEl.expression}, ${codeGenContentNodes}, null, null, null);`));
   }
 
   getProjectedNodes(projectableNodes: Expression, ngContentIndex: number): Expression {
@@ -366,6 +373,7 @@ class RuntimeViewFactory implements ViewFactory<any, any> {
                             contentNodesByNgContentIndex: Array<Array<any | any[]>>,
                             targetStatements: any[]) {
     var flattenedContentNodes;
+    var viewFactory = this.componentViewFactory(component);
     if (this.component.type.isHost) {
       flattenedContentNodes = appView.projectableNodes;
     } else {
@@ -373,8 +381,11 @@ class RuntimeViewFactory implements ViewFactory<any, any> {
       for (var i = 0; i < contentNodesByNgContentIndex.length; i++) {
         flattenedContentNodes[i] = flattenArray(contentNodesByNgContentIndex[i], []);
       }
+      if (assertionsEnabled()) {
+        viewFactory = viewManager.getComponentViewFactory(component.type.runtime, viewFactory);
+      }
     }
-    this.componentViewFactory(component)(renderer, viewManager, appEl, flattenedContentNodes);
+    viewFactory(renderer, viewManager, appEl, flattenedContentNodes);
   }
 
   getProjectedNodes(projectableNodes: any[][], ngContentIndex: number): any[] {

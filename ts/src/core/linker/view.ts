@@ -304,7 +304,8 @@ export class AppProtoView {
 
 @CONST()
 export class HostViewFactory {
-  constructor(public selector: string, public viewFactory: Function) {}
+  constructor(public selector: string, public viewFactory: Function,
+              public componentViewFactory: Function) {}
 }
 
 export function flattenNestedViewRenderNodes(nodes: any[]): any[] {

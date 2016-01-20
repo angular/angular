@@ -235,14 +235,15 @@ export class AppProtoView {
     }
 }
 export let HostViewFactory = class {
-    constructor(selector, viewFactory) {
+    constructor(selector, viewFactory, componentViewFactory) {
         this.selector = selector;
         this.viewFactory = viewFactory;
+        this.componentViewFactory = componentViewFactory;
     }
 };
 HostViewFactory = __decorate([
     CONST(), 
-    __metadata('design:paramtypes', [String, Function])
+    __metadata('design:paramtypes', [String, Function, Function])
 ], HostViewFactory);
 export function flattenNestedViewRenderNodes(nodes) {
     return _flattenNestedViewRenderNodes(nodes, []);

@@ -365,12 +365,12 @@ function keyValueArrayToStringMap(keyValueArray: any[][]): {[key: string]: any} 
 }
 
 function codeGenDirectivesArray(directives: CompileDirectiveMetadata[]): string {
-  var expressions = directives.map(directiveType => typeRef(directiveType.type));
+  var expressions = directives.map(directiveType => codeGenType(directiveType.type));
   return `[${expressions.join(',')}]`;
 }
 
 function codeGenTypesArray(types: CompileTypeMetadata[]): string {
-  var expressions = types.map(typeRef);
+  var expressions = types.map(codeGenType);
   return `[${expressions.join(',')}]`;
 }
 
@@ -382,7 +382,7 @@ function codeGenViewType(value: ViewType): string {
   }
 }
 
-function typeRef(type: CompileTypeMetadata): string {
+export function codeGenType(type: CompileTypeMetadata): string {
   return `${moduleRef(type.moduleUrl)}${type.name}`;
 }
 
