@@ -170,15 +170,14 @@ var BENCHPRESS_BUNDLE_CONFIG = {
 
 var PAYLOAD_TESTS_CONFIG = {
   ts: {
-    sizeLimits: {'uncompressed': 550 * 1024, 'gzip level=9': 120 * 1024},
-    webpack: {
-      cases: ['hello_world'],
-      bundleName: 'app-bundle-deps.min.js',
-      dist: function(caseName) {
-        return path.join(__dirname, CONFIG.dest.js.prod.es5, 'payload_tests', caseName,
-                         'ts/webpack');
-      }
-    }
+    bundleName: 'app-bundle-deps.min.js',
+    cases: ['hello_world'],
+    dist: function(caseName, packaging) {
+      return path.join(__dirname, CONFIG.dest.js.prod.es5, 'payload_tests', caseName,
+                       'ts/' + packaging);
+    },
+    systemjs: {sizeLimits: {'uncompressed': 850 * 1024, 'gzip level=9': 165 * 1024}},
+    webpack: {sizeLimits: {'uncompressed': 550 * 1024, 'gzip level=9': 120 * 1024}}
   }
 };
 
@@ -678,19 +677,18 @@ gulp.task('test.payload.js/ci', function(done) {
   runSequence('build.payload.js', '!checkAndReport.payload.js', sequenceComplete(done));
 });
 
-gulp.task('build.payload.js', ['build.js.prod'],
-          function(done) { runSequence('!build.payload.js.webpack', sequenceComplete(done)); });
+gulp.task('build.payload.js', ['build.js'], function(done) {
+  runSequence('!build.payload.js.webpack', '!build.payload.js.systemjs', sequenceComplete(done));
+});
 
 gulp.task('!build.payload.js.webpack', function() {
   var q = require('q');
   var webpack = q.denodeify(require('webpack'));
-  var concat = require('gulp-concat');
-  var uglify = require('gulp-uglify');
 
   var ES5_PROD_ROOT = __dirname + '/' + CONFIG.dest.js.prod.es5;
 
-  return q.all(PAYLOAD_TESTS_CONFIG.ts.webpack.cases.map(function(caseName) {
-    var CASE_PATH = PAYLOAD_TESTS_CONFIG.ts.webpack.dist(caseName);
+  return q.all(PAYLOAD_TESTS_CONFIG.ts.cases.map(function(caseName) {
+    var CASE_PATH = PAYLOAD_TESTS_CONFIG.ts.dist(caseName, 'webpack');
 
     return webpack({
              // bundle app + framework
@@ -710,8 +708,41 @@ gulp.task('!build.payload.js.webpack', function() {
                   'node_modules/reflect-metadata/Reflect.js',
                   CASE_PATH + '/app-bundle.js'
                 ])
-                .pipe(concat(PAYLOAD_TESTS_CONFIG.ts.webpack.bundleName))
-                .pipe(uglify())
+                .pipe(gulpPlugins.concat(PAYLOAD_TESTS_CONFIG.ts.bundleName))
+                .pipe(gulpPlugins.uglify())
+                .pipe(gulp.dest(CASE_PATH))
+                .on('end', resolve)
+                .on('error', reject);
+          });
+        });
+  }));
+});
+
+gulp.task('!build.payload.js.systemjs', function() {
+  var bundler = require('./tools/build/bundle');
+
+  return Promise.all(PAYLOAD_TESTS_CONFIG.ts.cases.map(function(caseName) {
+    var CASE_PATH = PAYLOAD_TESTS_CONFIG.ts.dist(caseName, 'systemjs');
+
+    return bundler
+        .bundle(
+            {
+              paths: {'index': CASE_PATH + '/index.js'},
+              meta: {'angular2/core': {build: false}, 'angular2/platform/browser': {build: false}}
+            },
+            'index', CASE_PATH + '/index.register.js', {})
+        .then(function() {
+          return new Promise(function(resolve, reject) {
+            gulp.src([
+                  'node_modules/systemjs/dist/system.src.js',
+                  'dist/js/prod/es5/bundle/angular2-polyfills.js',
+                  'dist/js/prod/es5/bundle/angular2.js',
+                  'dist/js/prod/es5//rxjs/bundles/Rx.js',
+                  CASE_PATH + '/index.register.js',
+                  'tools/build/systemjs/payload_tests_import.js'
+                ])
+                .pipe(gulpPlugins.concat(PAYLOAD_TESTS_CONFIG.ts.bundleName))
+                .pipe(gulpPlugins.uglify())
                 .pipe(gulp.dest(CASE_PATH))
                 .on('end', resolve)
                 .on('error', reject);
@@ -722,12 +753,19 @@ gulp.task('!build.payload.js.webpack', function() {
 
 gulp.task('!checkAndReport.payload.js', function() {
   var reportSize = require('./tools/analytics/reportsize');
-  var webPackConf = PAYLOAD_TESTS_CONFIG.ts.webpack;
 
-  return webPackConf.cases.reduce(function(sizeReportingStreams, caseName) {
-    sizeReportingStreams.add(
-        reportSize(webPackConf.dist(caseName) + '/' + webPackConf.bundleName,
-                   {failConditions: PAYLOAD_TESTS_CONFIG.ts.sizeLimits, prefix: caseName}))
+  function caseSizeStream(caseName, packaging) {
+    return reportSize(PAYLOAD_TESTS_CONFIG.ts.dist(caseName, packaging) + '/' +
+                          PAYLOAD_TESTS_CONFIG.ts.bundleName,
+                      {
+                        failConditions: PAYLOAD_TESTS_CONFIG.ts[packaging].sizeLimits,
+                        prefix: caseName + '_' + packaging
+                      })
+  }
+
+  return PAYLOAD_TESTS_CONFIG.ts.cases.reduce(function(sizeReportingStreams, caseName) {
+    sizeReportingStreams.add(caseSizeStream(caseName, 'systemjs'));
+    sizeReportingStreams.add(caseSizeStream(caseName, 'webpack'));
   }, merge2());
 });
 
