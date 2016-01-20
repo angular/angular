@@ -16,7 +16,7 @@ import {
   ComponentFixture
 } from 'angular2/testing_internal';
 
-import {OnDestroy} from 'angular2/core';
+import {OnDestroy, provide} from 'angular2/core';
 import {Injector, inspectElement} from 'angular2/core';
 import {NgIf} from 'angular2/common';
 import {By} from 'angular2/platform/common_dom';
@@ -203,6 +203,48 @@ export function main() {
                    });
              }));
 
+      it('should get providers from the injector',
+         inject([DynamicComponentLoader, TestComponentBuilder, AsyncTestCompleter],
+                (loader, tcb, async) => {
+
+                  tcb.overrideTemplate(MyCompWithInjector, '<div #loc></div>')
+                      .overrideProviders(MyCompWithInjector, [provide('foo', {useValue: 'bar'})])
+                      .createAsync(MyCompWithInjector)
+                      .then(fixture => {
+                        var injector = fixture.componentInstance.injector;
+                        var parentProviders = injector.getResolvedProviders();
+                        loader.loadIntoLocation(DynamicallyLoadedWithInjector,
+                                                fixture.debugElement.elementRef, 'loc',
+                                                parentProviders, [])
+                            .then((e) => {
+                              var childProviders = e.instance.injector.getResolvedProviders();
+                              expect(e.instance.injector.parent.getResolvedProviders())
+                                  .toEqual(parentProviders);
+                              expect(childProviders).toBeDefined();
+                              expect(childProviders.length).toBeGreaterThan(0);
+                              async.done();
+                            });
+                      });
+
+                }));
+
+      it('should allow to pass an injector instead of an array',
+         inject([DynamicComponentLoader, TestComponentBuilder, AsyncTestCompleter], (loader, tcb,
+                                                                                     async) => {
+
+           tcb.overrideTemplate(MyCompWithInjector, '<div #loc></div>')
+               .createAsync(MyCompWithInjector)
+               .then(fixture => {
+                 var injector = fixture.componentInstance.injector;
+                 loader.loadIntoLocation(DynamicallyLoadedWithInjector,
+                                         fixture.debugElement.elementRef, 'loc', injector, [])
+                     .then((e) => {
+                       expect(e.instance.injector.parent).toBeDefined();
+                       async.done();
+                     });
+               });
+
+         }));
     });
 
     describe("loading next to a location", () => {
@@ -306,6 +348,50 @@ export function main() {
                       });
                 }));
 
+
+      it('should get providers from the injector',
+         inject([DynamicComponentLoader, TestComponentBuilder, AsyncTestCompleter],
+                (loader, tcb, async) => {
+
+                  tcb.overrideTemplate(MyCompWithInjector, '<div #loc></div>')
+                      .overrideProviders(MyCompWithInjector, [provide('foo', {useValue: 'bar'})])
+                      .createAsync(MyCompWithInjector)
+                      .then(fixture => {
+                        var injector = fixture.componentInstance.injector;
+                        var providers = injector.getResolvedProviders();
+                        expect(providers).toBeDefined();
+                        expect(providers.length).toBeGreaterThan(0);
+
+                        loader.loadNextToLocation(DynamicallyLoadedWithInjector,
+                                                  fixture.debugElement.elementRef, providers, [])
+                            .then((e) => {
+                              var childProviders = e.instance.injector.getResolvedProviders();
+                              expect(childProviders).toBeDefined();
+                              expect(childProviders.length).toBeGreaterThan(0);
+                              async.done();
+                            });
+                      });
+
+                }));
+
+      it('should allow to pass an injector instead of an array',
+         inject([DynamicComponentLoader, TestComponentBuilder, AsyncTestCompleter],
+                (loader, tcb, async) => {
+
+                  tcb.overrideTemplate(MyCompWithInjector, '<div #loc></div>')
+                      .createAsync(MyCompWithInjector)
+                      .then(fixture => {
+                        var injector = fixture.componentInstance.injector;
+                        loader.loadNextToLocation(DynamicallyLoadedWithInjector,
+                                                  fixture.debugElement.elementRef, injector, [])
+                            .then((e) => {
+                              expect(e.instance.injector.parent).toBeDefined();
+                              async.done();
+                            });
+                      });
+
+                }));
+
     });
 
     describe('loadAsRoot', () => {
@@ -400,6 +486,13 @@ class DynamicallyLoaded {
 }
 
 @Component({selector: 'dummy'})
+@View({template: 'DynamicallyLoaded;'})
+class DynamicallyLoadedWithInjector {
+  injector: Injector;
+  constructor(injector: Injector) { this.injector = injector; }
+}
+
+@Component({selector: 'dummy'})
 @View({template: "DynamicallyLoaded;"})
 class DynamicallyLoadedThrows {
   constructor() { throw new BaseException("ThrownInConstructor"); }
@@ -440,4 +533,11 @@ class MyComp {
   ctxBoolProp: boolean;
 
   constructor() { this.ctxBoolProp = false; }
+}
+
+@Component({selector: 'my-comp', providers: []})
+@View({template: 'MyCompWithInjector;', directives: []})
+class MyCompWithInjector {
+  injector: Injector;
+  constructor(injector: Injector) { this.injector = injector; }
 }

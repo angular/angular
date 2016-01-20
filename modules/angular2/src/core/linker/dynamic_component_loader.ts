@@ -192,7 +192,7 @@ export abstract class DynamicComponentLoader {
    * ```
    */
   abstract loadIntoLocation(type: Type, hostLocation: ElementRef, anchorName: string,
-                            providers?: ResolvedProvider[],
+                            providers?: ResolvedProvider[] | Injector,
                             projectableNodes?: any[][]): Promise<ComponentRef>;
 
   /**
@@ -235,7 +235,8 @@ export abstract class DynamicComponentLoader {
    * <child-component>Child</child-component>
    * ```
    */
-  abstract loadNextToLocation(type: Type, location: ElementRef, providers?: ResolvedProvider[],
+  abstract loadNextToLocation(type: Type, location: ElementRef,
+                              providers?: ResolvedProvider[] | Injector,
                               projectableNodes?: any[][]): Promise<ComponentRef>;
 }
 
@@ -262,19 +263,29 @@ export class DynamicComponentLoader_ extends DynamicComponentLoader {
   }
 
   loadIntoLocation(type: Type, hostLocation: ElementRef, anchorName: string,
-                   providers: ResolvedProvider[] = null,
+                   providers: ResolvedProvider[] | Injector = null,
                    projectableNodes: any[][] = null): Promise<ComponentRef> {
+    if (providers instanceof Injector) {
+      let resolvedProviders = (<Injector>providers).getResolvedProviders();
+      providers = resolvedProviders.length == 0 ? null : resolvedProviders;
+    }
     return this.loadNextToLocation(
         type, this._viewManager.getNamedElementInComponentView(hostLocation, anchorName), providers,
         projectableNodes);
   }
 
-  loadNextToLocation(type: Type, location: ElementRef, providers: ResolvedProvider[] = null,
+  loadNextToLocation(type: Type, location: ElementRef,
+                     providers: ResolvedProvider[] | Injector = null,
                      projectableNodes: any[][] = null): Promise<ComponentRef> {
+    if (providers instanceof Injector) {
+      let resolvedProviders = (<Injector>providers).getResolvedProviders();
+      providers = resolvedProviders.length == 0 ? null : resolvedProviders;
+    }
     return this._compiler.compileInHost(type).then(hostProtoViewRef => {
       var viewContainer = this._viewManager.getViewContainer(location);
-      var hostViewRef = viewContainer.createHostView(hostProtoViewRef, viewContainer.length,
-                                                     providers, projectableNodes);
+      var hostViewRef =
+          viewContainer.createHostView(hostProtoViewRef, viewContainer.length,
+                                       (<ResolvedProvider[]>providers), projectableNodes);
       var newLocation = this._viewManager.getHostElement(hostViewRef);
       var component = this._viewManager.getComponent(newLocation);
 
