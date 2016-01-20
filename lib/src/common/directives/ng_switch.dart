@@ -7,7 +7,6 @@ import "package:angular2/src/facade/collection.dart" show ListWrapper, Map;
 
 const _WHEN_DEFAULT = const Object();
 
-/** @internal */
 class SwitchView {
   ViewContainerRef _viewContainerRef;
   TemplateRef _templateRef;

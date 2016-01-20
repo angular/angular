@@ -11,12 +11,18 @@ import "package:angular2/core.dart"
         ViewMetadata,
         EmbeddedViewRef,
         ViewResolver,
-        provide;
+        provide,
+        Provider;
 import "package:angular2/src/facade/lang.dart" show Type, isPresent, isBlank;
-import "package:angular2/src/facade/async.dart" show Future;
+import "package:angular2/src/facade/async.dart" show Future, PromiseWrapper;
 import "package:angular2/src/facade/collection.dart"
     show ListWrapper, MapWrapper;
-import "package:angular2/src/core/linker/view_ref.dart" show ViewRef_;
+import "package:angular2/src/core/linker/compiler.dart"
+    show Compiler, Compiler_;
+import "package:angular2/src/core/linker/view_listener.dart"
+    show ViewFactoryProxy;
+import "package:angular2/src/core/linker/view_ref.dart"
+    show ViewRef_, HostViewFactoryRef_;
 import "package:angular2/src/core/linker/view.dart" show AppView;
 import "utils.dart" show el;
 import "package:angular2/src/platform/dom/dom_tokens.dart" show DOCUMENT;
@@ -76,6 +82,20 @@ class ComponentFixture_ extends ComponentFixture {
 
 var _nextRootElementId = 0;
 
+@Injectable()
+class TestViewFactoryProxy implements ViewFactoryProxy {
+  Map<Type, Function> _componentFactoryOverrides = new Map<Type, Function>();
+  Function getComponentViewFactory(
+      Type component, Function originalViewFactory) {
+    var override = this._componentFactoryOverrides[component];
+    return isPresent(override) ? override : originalViewFactory;
+  }
+
+  setComponentViewFactory(Type component, Function viewFactory) {
+    this._componentFactoryOverrides[component] = viewFactory;
+  }
+}
+
 /**
  * Builds a ComponentFixture for use in component level tests.
  */
@@ -92,6 +112,8 @@ class TestComponentBuilder {
   var _viewBindingsOverrides = new Map<Type, List<dynamic>>();
   /** @internal */
   var _viewOverrides = new Map<Type, ViewMetadata>();
+  /** @internal */
+  var _componentOverrides = new Map<Type, Type>();
   TestComponentBuilder(this._injector) {}
   /** @internal */
   TestComponentBuilder _clone() {
@@ -99,6 +121,23 @@ class TestComponentBuilder {
     clone._viewOverrides = MapWrapper.clone(this._viewOverrides);
     clone._directiveOverrides = MapWrapper.clone(this._directiveOverrides);
     clone._templateOverrides = MapWrapper.clone(this._templateOverrides);
+    clone._componentOverrides = MapWrapper.clone(this._componentOverrides);
+    return clone;
+  }
+
+  /**
+   * Overrides a component with another component.
+   * This also works with precompiled templates if they were generated
+   * in development mode.
+   *
+   * @param {Type} original component
+   * @param {Type} mock component
+   *
+   * @return {TestComponentBuilder}
+   */
+  TestComponentBuilder overrideComponent(Type componentType, Type mockType) {
+    var clone = this._clone();
+    clone._componentOverrides[componentType] = mockType;
     return clone;
   }
 
@@ -241,12 +280,39 @@ class TestComponentBuilder {
       DOM.remove(oldRoots[i]);
     }
     DOM.appendChild(doc.body, rootEl);
-    return this
-        ._injector
-        .get(DynamicComponentLoader)
-        .loadAsRoot(rootComponentType, '''#${ rootElId}''', this._injector)
-        .then((componentRef) {
-      return new ComponentFixture_(componentRef);
+    var originalCompTypes = [];
+    var mockHostViewFactoryPromises = [];
+    Compiler_ compiler = this._injector.get(Compiler);
+    TestViewFactoryProxy viewFactoryProxy =
+        this._injector.get(TestViewFactoryProxy);
+    this._componentOverrides.forEach((originalCompType, mockCompType) {
+      originalCompTypes.add(originalCompType);
+      mockHostViewFactoryPromises.add(compiler.compileInHost(mockCompType));
+    });
+    return PromiseWrapper
+        .all(mockHostViewFactoryPromises)
+        .then((List<HostViewFactoryRef_> mockHostViewFactories) {
+      for (var i = 0; i < mockHostViewFactories.length; i++) {
+        var originalCompType = originalCompTypes[i];
+        viewFactoryProxy.setComponentViewFactory(
+            originalCompType,
+            mockHostViewFactories[i]
+                .internalHostViewFactory
+                .componentViewFactory);
+      }
+      return this
+          ._injector
+          .get(DynamicComponentLoader)
+          .loadAsRoot(rootComponentType, '''#${ rootElId}''', this._injector)
+          .then((componentRef) {
+        return new ComponentFixture_(componentRef);
+      });
     });
   }
 }
+
+const TEST_COMPONENT_BUILDER_PROVIDERS = const [
+  TestViewFactoryProxy,
+  const Provider(ViewFactoryProxy, useExisting: TestViewFactoryProxy),
+  TestComponentBuilder
+];

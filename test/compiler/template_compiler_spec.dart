@@ -464,6 +464,9 @@ Map<String, dynamic> humanizeViewFactory(Function viewFactory,
     cachedResults = new Map<AppProtoView, dynamic>();
   }
   var viewManager = new SpyAppViewManager();
+  viewManager
+      .spy("getComponentViewFactory")
+      .andCallFake((component, viewFactory) => viewFactory);
   viewManager.spy("createRenderComponentType").andCallFake(
       (ViewEncapsulation encapsulation,
           List<dynamic /* String | List < dynamic > */ > styles) {

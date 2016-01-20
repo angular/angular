@@ -26,7 +26,7 @@ main() {
     var someHostViewFactory;
     beforeEachProviders(() => [provide(Compiler, useClass: Compiler_)]);
     beforeEach(inject([Compiler], (_compiler) {
-      someHostViewFactory = new HostViewFactory(null, null);
+      someHostViewFactory = new HostViewFactory(null, null, null);
       reflector.registerType(
           SomeComponent, new ReflectionInfo([someHostViewFactory]));
     }));

@@ -467,13 +467,14 @@ Map<String, dynamic> keyValueArrayToStringMap(
 }
 
 String codeGenDirectivesArray(List<CompileDirectiveMetadata> directives) {
-  var expressions =
-      directives.map((directiveType) => typeRef(directiveType.type)).toList();
+  var expressions = directives
+      .map((directiveType) => codeGenType(directiveType.type))
+      .toList();
   return '''[${ expressions . join ( "," )}]''';
 }
 
 String codeGenTypesArray(List<CompileTypeMetadata> types) {
-  var expressions = types.map(typeRef).toList();
+  var expressions = types.map(codeGenType).toList();
   return '''[${ expressions . join ( "," )}]''';
 }
 
@@ -485,7 +486,7 @@ String codeGenViewType(ViewType value) {
   }
 }
 
-String typeRef(CompileTypeMetadata type) {
+String codeGenType(CompileTypeMetadata type) {
   return '''${ moduleRef ( type . moduleUrl )}${ type . name}''';
 }
 

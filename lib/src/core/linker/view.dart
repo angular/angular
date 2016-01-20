@@ -324,7 +324,9 @@ class AppProtoView {
 class HostViewFactory {
   final String selector;
   final Function viewFactory;
-  const HostViewFactory(this.selector, this.viewFactory);
+  final Function componentViewFactory;
+  const HostViewFactory(
+      this.selector, this.viewFactory, this.componentViewFactory);
 }
 
 List<dynamic> flattenNestedViewRenderNodes(List<dynamic> nodes) {

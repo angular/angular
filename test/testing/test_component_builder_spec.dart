@@ -19,6 +19,9 @@ import "package:angular2/core.dart" show Injectable, provide;
 import "package:angular2/common.dart" show NgIf;
 import "package:angular2/src/core/metadata.dart"
     show Directive, Component, View, ViewMetadata;
+import "package:angular2/src/facade/lang.dart" show IS_DART;
+import "package:angular2/src/core/change_detection/change_detection.dart"
+    show ChangeDetectorGenConfig;
 
 @Component(selector: "child-comp")
 @View(
@@ -99,6 +102,27 @@ class TestViewBindingsComp {
 }
 
 main() {
+  if (IS_DART) {
+    declareTests();
+  } else {
+    describe("no jit compiler", () {
+      beforeEachProviders(() => [
+            provide(ChangeDetectorGenConfig,
+                useValue: new ChangeDetectorGenConfig(true, false, false))
+          ]);
+      declareTests();
+    });
+    describe("jit compiler", () {
+      beforeEachProviders(() => [
+            provide(ChangeDetectorGenConfig,
+                useValue: new ChangeDetectorGenConfig(true, false, true))
+          ]);
+      declareTests();
+    });
+  }
+}
+
+declareTests() {
   describe("test component builder", () {
     it(
         "should instantiate a component with valid DOM",
@@ -120,6 +144,19 @@ main() {
             componentFixture.componentInstance.showMore = true;
             componentFixture.detectChanges();
             expect(componentFixture.nativeElement).toHaveText("MyIf(More)");
+            async.done();
+          });
+        }));
+    it(
+        "should override a component",
+        inject([TestComponentBuilder, AsyncTestCompleter],
+            (TestComponentBuilder tcb, async) {
+          tcb
+              .overrideComponent(ChildComp, MockChildComp)
+              .createAsync(ParentComp)
+              .then((componentFixture) {
+            componentFixture.detectChanges();
+            expect(componentFixture.nativeElement).toHaveText("Parent(Mock)");
             async.done();
           });
         }));

@@ -28,8 +28,10 @@ import "package:angular2/src/router/location_strategy.dart"
 import "package:angular2/src/mock/ng_zone_mock.dart" show MockNgZone;
 import "package:angular2/src/platform/browser/xhr_impl.dart" show XHRImpl;
 import "package:angular2/compiler.dart" show XHR;
+import "package:angular2/src/core/linker/view_listener.dart"
+    show ViewFactoryProxy;
 import "package:angular2/src/testing/test_component_builder.dart"
-    show TestComponentBuilder;
+    show TestComponentBuilder, TestViewFactoryProxy;
 import "package:angular2/src/testing/utils.dart" show BrowserDetection;
 import "package:angular2/platform/common_dom.dart" show ELEMENT_PROBE_PROVIDERS;
 import "package:angular2/src/testing/utils.dart" show Log;
@@ -53,6 +55,8 @@ const List<dynamic> ADDITIONAL_TEST_BROWSER_PROVIDERS = const [
   const Provider(ViewResolver, useClass: MockViewResolver),
   Log,
   TestComponentBuilder,
+  TestViewFactoryProxy,
+  const Provider(ViewFactoryProxy, useExisting: TestViewFactoryProxy),
   const Provider(NgZone, useClass: MockNgZone),
   const Provider(LocationStrategy, useClass: MockLocationStrategy),
   const Provider(AnimationBuilder, useClass: MockAnimationBuilder)
