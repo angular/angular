@@ -94,6 +94,15 @@ class TestViewProvidersComp {
   constructor(private fancyService: FancyService) {}
 }
 
+@Component({selector: 'external-template-comp'})
+@View({templateUrl: '/base/modules/angular2/test/testing/static_assets/test.html'})
+class ExternalTemplateComp {
+}
+
+@Component({selector: 'bad-template-comp'})
+@View({templateUrl: 'non-existant.html'})
+class BadTemplateUrl {
+}
 
 export function main() {
   describe('angular2 jasmine matchers', () => {
@@ -273,11 +282,12 @@ export function main() {
       restoreJasmineIt();
     });
 
-    it('should fail when an asynchronous error is thrown', (done) => {
+    // TODO(juliemr): reenable this test when we are using a test zone and can capture this error.
+    xit('should fail when an asynchronous error is thrown', (done) => {
       var itPromise = patchJasmineIt();
 
       it('throws an async error',
-         inject([], () => { setTimeout(() => { throw new Error('bar'); }, 0); }));
+         injectAsync([], () => { setTimeout(() => { throw new Error('bar'); }, 0); }));
 
       itPromise.then(() => { done.fail('Expected test to fail, but it did not'); }, (err) => {
         expect(err.message).toEqual('bar');
@@ -299,6 +309,19 @@ export function main() {
 
       itPromise.then(() => { done.fail('Expected test to fail, but it did not'); }, (err) => {
         expect(err).toEqual('baz');
+        done();
+      });
+      restoreJasmineIt();
+    });
+
+    it('should fail when an XHR fails', (done) => {
+      var itPromise = patchJasmineIt();
+
+      it('should fail with an error from a promise',
+         injectAsync([TestComponentBuilder], (tcb) => { return tcb.createAsync(BadTemplateUrl); }));
+
+      itPromise.then(() => { done.fail('Expected test to fail, but it did not'); }, (err) => {
+        expect(err).toEqual('Failed to load non-existant.html');
         done();
       });
       restoreJasmineIt();
@@ -426,6 +449,17 @@ export function main() {
                componentFixture.detectChanges();
                expect(componentFixture.debugElement.nativeElement)
                    .toHaveText('injected value: mocked out value');
+             });
+       }));
+
+    it('should allow an external templateUrl',
+       injectAsync([TestComponentBuilder], (tcb: TestComponentBuilder) => {
+
+         return tcb.createAsync(ExternalTemplateComp)
+             .then((componentFixture) => {
+               componentFixture.detectChanges();
+               expect(componentFixture.debugElement.nativeElement)
+                   .toHaveText('from external template\n');
              });
        }));
   });
