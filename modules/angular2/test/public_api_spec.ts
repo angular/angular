@@ -1046,6 +1046,7 @@ var NG_CORE = [
   'Injector.getOptional()',
   'Injector.hostBoundary',
   'Injector.instantiateResolved()',
+  'Injector.getResolvedProviders()',
   'Injector.internalStrategy',
   'Injector.parent',
   'Injector.resolveAndCreateChild()',

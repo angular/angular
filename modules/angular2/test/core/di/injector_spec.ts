@@ -388,6 +388,15 @@ export function main() {
             .toHaveBeenCalledWith(injector, providers[0],
                                   providers[0].resolvedFactories[0].dependencies[0]);
       });
+
+      it('should return an array of resolved providers', () => {
+        var injector = Injector.resolveAndCreate(
+            [provide('foo', {useValue: 'bar'}), provide('baz', {useValue: 'xyz'})]);
+        var resolvedProviders = injector.getResolvedProviders();
+        expect(resolvedProviders.length).toBeGreaterThan(0);
+        expect(resolvedProviders[0].key.displayName).toEqual('foo');
+        expect(resolvedProviders[1].key.displayName).toEqual('baz');
+      });
     });
 
 

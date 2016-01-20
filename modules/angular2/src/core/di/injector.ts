@@ -748,6 +748,18 @@ export class Injector {
     return this._instantiateProvider(provider, Visibility.PublicAndPrivate);
   }
 
+  /**
+   * Returns an array of providers
+   *
+   */
+  getResolvedProviders(): ResolvedProvider[] {
+    var res = [];
+    for (var i = 0; i < this._proto.numberOfProviders; ++i) {
+      res.push(this._proto.getProviderAtIndex(i));
+    }
+    return res;
+  }
+
   /** @internal */
   _new(provider: ResolvedProvider, visibility: Visibility): any {
     if (this._constructionCounter++ > this._strategy.getMaxNumberOfObjects()) {
