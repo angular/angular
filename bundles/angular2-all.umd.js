@@ -17981,6 +17981,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	var lang_1 = __webpack_require__(5);
 	var collection_1 = __webpack_require__(12);
 	var _WHEN_DEFAULT = lang_1.CONST_EXPR(new Object());
+	/** @internal */
 	var SwitchView = (function () {
 	    function SwitchView(_viewContainerRef, _templateRef) {
 	        this._viewContainerRef = _viewContainerRef;
@@ -17990,6 +17991,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    SwitchView.prototype.destroy = function () { this._viewContainerRef.clear(); };
 	    return SwitchView;
 	})();
+	exports.SwitchView = SwitchView;
 	/**
 	 * Adds or removes DOM sub-trees when their match expressions match the switch expression.
 	 *

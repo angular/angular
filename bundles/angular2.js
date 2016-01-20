@@ -14809,6 +14809,7 @@ System.register("angular2/src/common/directives/ng_switch", ["angular2/core", "a
     };
     return SwitchView;
   })();
+  exports.SwitchView = SwitchView;
   var NgSwitch = (function() {
     function NgSwitch() {
       this._useDefault = false;
