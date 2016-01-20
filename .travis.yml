@@ -1,7 +1,7 @@
 language: node_js
 sudo: false
 node_js:
-- '4.2.1'
+- '5.4.1'
 
 branches:
   except:
@@ -60,7 +60,7 @@ addons:
   firefox: "38.0"
 
 before_install:
-- npm install -g npm@3.5.2
+- npm install -g npm@3.5.3
 - node tools/analytics/build-analytics start ci job
 - node tools/analytics/build-analytics start ci before_install
 - echo ${TSDRC} > .tsdrc

@@ -3,7 +3,7 @@
 // THIS CHECK SHOULD BE THE FIRST THING IN THIS FILE
 // This is to ensure that we catch env issues before we error while requiring other dependencies.
 require('./tools/check-environment')(
-    {requiredNpmVersion: '>=3.5.2 <4.0.0', requiredNodeVersion: '>=4.2.1 <5.0.0'});
+    {requiredNpmVersion: '>=3.5.3 <4.0.0', requiredNodeVersion: '>=5.4.1 <6.0.0'});
 
 
 var fse = require('fs-extra');
