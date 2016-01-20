@@ -47,7 +47,7 @@ function mergeOptions(defaultOpts, providedOpts, method, url): RequestOptions {
  *   viewProviders: [HTTP_PROVIDERS],
  *   templateUrl: 'people.html'
  * })
- * class PeopleComponent {
+ * export class PeopleComponent {
  *   constructor(http: Http) {
  *     http.get('people.json')
  *       // Call map on the response observable to get the parsed people object
