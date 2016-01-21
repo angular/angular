@@ -32,10 +32,6 @@
       "avoid-escape"
     ],
     "semicolon": true,
-    "triple-equals": [
-      true,
-      "allow-null-check"
-    ],
     "typedef-whitespace": [
       true,
       {

@@ -20,7 +20,8 @@ export function config(config) {
     ],
     files: [
       {pattern: 'node_modules/es6-shim/es6-shim.js', included: true, watched: true},
-      {pattern: 'node_modules/angular2/bundles/angular2-polyfills.js', included: true, watched: true},
+      {pattern: 'node_modules/angular2/bundles/angular2-polyfills.js', included: true,
+          watched: true},
       {pattern: 'node_modules/systemjs/dist/system-polyfills.js', included: true, watched: true},
       {pattern: 'node_modules/systemjs/dist/system.src.js', included: true, watched: true},
       {pattern: 'node_modules/rxjs/bundles/Rx.js', included: true, watched: true},
@@ -43,8 +44,8 @@ export function config(config) {
     ],
     proxies: {
       // required for component assests fetched by Angular's compiler
-      "/demo-app/": "/base/dist/demo-app/",
-      "/components/": "/base/dist/components/",
+      '/demo-app/': '/base/dist/demo-app/',
+      '/components/': '/base/dist/components/',
     },
 
     customLaunchers: customLaunchers,
@@ -100,12 +101,10 @@ export function config(config) {
       // This speeds up the capturing a bit, as browsers don't even try to use websocket.
       console.log('>>>> setting socket.io transport to polling <<<<');
       config.transports = ['polling'];
-    }
-    else if (platform == 'browserstack') {
+    } else if (platform == 'browserstack') {
       config.browserStack.build = buildId;
       config.browserStack.tunnelIdentifier = process.env.TRAVIS_JOB_NUMBER;
-    }
-    else {
+    } else {
       throw new Error(`Platform "${platform}" unknown, but Travis specified. Exiting.`);
     }
 
