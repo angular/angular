@@ -19,7 +19,6 @@ var packageSources = {
   'angular2': 'dist/dart/angular2/lib',
   'angular2/test/': 'dist/dart/angular2/test/',
   'http': 'dist/dart/http/lib',
-  'angular2_material': 'dist/dart/angular2_material/lib',
   'benchpress': 'dist/dart/benchpress/lib',
   'examples': 'dist/dart/examples/lib'
 };

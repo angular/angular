@@ -1,4 +1,8 @@
-import {getIntParameter, getStringParameter, bindAction} from 'angular2/src/testing/benchmark_util';
+import {
+  getIntParameter,
+  getStringParameter,
+  bindAction
+} from 'benchmarks_external/src/benchmark_util';
 declare var angular: any;
 
 var totalRows = getIntParameter('rows');

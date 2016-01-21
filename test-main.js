@@ -13,7 +13,6 @@ System.config({
   paths: {
     'benchpress/*': 'dist/js/dev/es5/benchpress/*.js',
     'angular2/*': 'dist/js/dev/es5/angular2/*.js',
-    'angular2_material/*': 'dist/js/dev/es5/angular2_material/*.js',
     'rxjs/*': 'node_modules/rxjs/*.js'
   }
 });
