@@ -28,7 +28,16 @@ abstract class DomAdapter {
    * Maps attribute names to their corresponding property names for cases
    * where attribute name doesn't match property name.
    */
-  Map<String, String> attrToPropMap;
+  Map<String, String> get attrToPropMap {
+    return this._attrToPropMap;
+  }
+
+  set attrToPropMap(Map<String, String> value) {
+    this._attrToPropMap = value;
+  }
+
+  /** @internal */
+  Map<String, String> _attrToPropMap;
   parse(String templateHtml);
   dynamic query(String selector);
   dynamic querySelector(el, String selector);

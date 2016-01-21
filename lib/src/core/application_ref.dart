@@ -213,11 +213,7 @@ class PlatformRef_ extends PlatformRef {
   ApplicationRef application(
       List<dynamic /* Type | Provider | List < dynamic > */ > providers) {
     var app = this._initApp(createNgZone(), providers);
-    if (PromiseWrapper.isPromise(app)) {
-      throw new BaseException(
-          "Cannot use asyncronous app initializers with application. Use asyncApplication instead.");
-    }
-    return (app as ApplicationRef);
+    return app;
   }
 
   Future<ApplicationRef> asyncApplication(
@@ -226,24 +222,19 @@ class PlatformRef_ extends PlatformRef {
           dynamic /* Type | Provider | List < dynamic > */ > additionalProviders]) {
     var zone = createNgZone();
     var completer = PromiseWrapper.completer();
-    if (identical(bindingFn, null)) {
-      completer.resolve(this._initApp(zone, additionalProviders));
-    } else {
-      zone.run(() {
-        PromiseWrapper.then(bindingFn(zone), (List<
-            dynamic /* Type | Provider | List < dynamic > */ > providers) {
-          if (isPresent(additionalProviders)) {
-            providers = ListWrapper.concat(providers, additionalProviders);
-          }
-          var promise = this._initApp(zone, providers);
-          completer.resolve(promise);
-        });
+    zone.run(() {
+      PromiseWrapper.then(bindingFn(zone),
+          (List<dynamic /* Type | Provider | List < dynamic > */ > providers) {
+        if (isPresent(additionalProviders)) {
+          providers = ListWrapper.concat(providers, additionalProviders);
+        }
+        completer.resolve(this._initApp(zone, providers));
       });
-    }
+    });
     return completer.promise;
   }
 
-  dynamic /* Future < ApplicationRef > | ApplicationRef */ _initApp(NgZone zone,
+  ApplicationRef _initApp(NgZone zone,
       List<dynamic /* Type | Provider | List < dynamic > */ > providers) {
     Injector injector;
     ApplicationRef app;
@@ -267,12 +258,8 @@ class PlatformRef_ extends PlatformRef {
     });
     app = new ApplicationRef_(this, zone, injector);
     this._applications.add(app);
-    var promise = _runAppInitializers(injector);
-    if (!identical(promise, null)) {
-      return PromiseWrapper.then(promise, (_) => app);
-    } else {
-      return app;
-    }
+    _runAppInitializers(injector);
+    return app;
   }
 
   void dispose() {
@@ -287,22 +274,9 @@ class PlatformRef_ extends PlatformRef {
   }
 }
 
-Future<dynamic> _runAppInitializers(Injector injector) {
+void _runAppInitializers(Injector injector) {
   List<Function> inits = injector.getOptional(APP_INITIALIZER);
-  List<Future<dynamic>> promises = [];
-  if (isPresent(inits)) {
-    inits.forEach((init) {
-      var retVal = init();
-      if (PromiseWrapper.isPromise(retVal)) {
-        promises.add(retVal);
-      }
-    });
-  }
-  if (promises.length > 0) {
-    return PromiseWrapper.all(promises);
-  } else {
-    return null;
-  }
+  if (isPresent(inits)) inits.forEach((init) => init());
 }
 
 /**
