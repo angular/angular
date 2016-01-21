@@ -100,3 +100,31 @@ export class MaxLengthValidator implements Validator {
 
   validate(c: Control): {[key: string]: any} { return this._validator(c); }
 }
+
+/**
+ * Provider which adds {@link PatternValidator} to {@link NG_VALIDATORS}.
+ *
+ * ## Example:
+ *
+ * {@example common/forms/ts/validators/validators.ts region='pattern'}
+ */
+const PATTERN_VALIDATOR = CONST_EXPR(
+    new Provider(NG_VALIDATORS, {useExisting: forwardRef(() => PatternValidator), multi: true}));
+
+/**
+ * A directive which install the {@link PatternValidator} for any `ngControl`, `ngFormControl`,
+ * or control with `ngModel` that also has a `pattern` attribute.
+ */
+@Directive({
+  selector: '[pattern][ngControl],[pattern][ngFormControl],[pattern][ngModel]',
+  providers: [PATTERN_VALIDATOR]
+})
+export class PatternValidator implements Validator {
+  private _validator: Function;
+
+  constructor(@Attribute("pattern") pattern: string) {
+    this._validator = Validators.pattern(pattern);
+  }
+
+  validate(c: Control): {[key: string]: any} { return this._validator(c); }
+}

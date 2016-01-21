@@ -74,6 +74,17 @@ export class Validators {
   }
 
   /**
+   * Validator that requires controls to have a value matching a pattern.
+   */
+  static pattern(pattern: string): Function {
+    return (control: modelModule.Control): {[key: string]: any} => {
+      if (isPresent(Validators.required(control))) return null;
+      var v: string = control.value;
+      return !new RegExp(pattern).test(v) ? {"pattern":true} : null;
+    };
+  }
+
+  /**
    * No-op validator.
    */
   static nullValidator(c: any): {[key: string]: boolean} { return null; }
