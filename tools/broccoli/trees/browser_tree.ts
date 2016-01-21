@@ -68,7 +68,8 @@ const kServedPaths = [
   'playground/src/web_workers/kitchen_sink',
   'playground/src/web_workers/todo',
   'playground/src/web_workers/images',
-  'playground/src/web_workers/message_broker'
+  'playground/src/web_workers/message_broker',
+  'playground/src/web_workers/router'
 ];
 
 

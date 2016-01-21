@@ -217,7 +217,9 @@ SpySocketWrapper createSocket({Function messageHandler}) {
   var socket = new SpyWebSocket();
   if (messageHandler != null) {
     socket.spy("add").andCallFake(messageHandler);
-    socket.spy("addStream").andCallFake((Stream stream) => stream.listen(messageHandler));
+    socket
+        .spy("addStream")
+        .andCallFake((Stream stream) => stream.listen(messageHandler));
   }
 
   var controller = new StreamController<String>.broadcast();

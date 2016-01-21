@@ -50,6 +50,8 @@ transformers:
         - web/src/web_workers/todo/background_index.dart
         - web/src/web_workers/todo/index.dart
         - web/src/web_workers/todo/server_index.dart
+        - web/src/web_workers/router/index.dart
+        - web/src/web_workers/router/background_index.dart
         - web/src/zippy_component/index.dart
 
 - $dart2js:
