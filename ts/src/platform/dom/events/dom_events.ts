@@ -4,8 +4,6 @@ import {EventManagerPlugin, EventManager} from './event_manager';
 
 @Injectable()
 export class DomEventsPlugin extends EventManagerPlugin {
-  manager: EventManager;
-
   // This plugin should come last in the list of plugins, because it accepts all
   // events.
   supports(eventName: string): boolean { return true; }

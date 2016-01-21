@@ -217,36 +217,25 @@ export class PlatformRef_ extends PlatformRef {
 
   application(providers: Array<Type | Provider | any[]>): ApplicationRef {
     var app = this._initApp(createNgZone(), providers);
-    if (PromiseWrapper.isPromise(app)) {
-      throw new BaseException(
-          "Cannot use asyncronous app initializers with application. Use asyncApplication instead.");
-    }
-    return <ApplicationRef>app;
+    return app;
   }
 
   asyncApplication(bindingFn: (zone: NgZone) => Promise<Array<Type | Provider | any[]>>,
                    additionalProviders?: Array<Type | Provider | any[]>): Promise<ApplicationRef> {
     var zone = createNgZone();
     var completer = PromiseWrapper.completer();
-    if (bindingFn === null) {
-      completer.resolve(this._initApp(zone, additionalProviders));
-    } else {
-      zone.run(() => {
-        PromiseWrapper.then(bindingFn(zone), (providers: Array<Type | Provider | any[]>) => {
-          if (isPresent(additionalProviders)) {
-            providers = ListWrapper.concat(providers, additionalProviders);
-          }
-          let promise = this._initApp(zone, providers);
-          completer.resolve(promise);
-        });
+    zone.run(() => {
+      PromiseWrapper.then(bindingFn(zone), (providers: Array<Type | Provider | any[]>) => {
+        if (isPresent(additionalProviders)) {
+          providers = ListWrapper.concat(providers, additionalProviders);
+        }
+        completer.resolve(this._initApp(zone, providers));
       });
-    }
+    });
     return completer.promise;
   }
 
-  private _initApp(zone: NgZone,
-                   providers: Array<Type | Provider | any[]>): Promise<ApplicationRef>|
-      ApplicationRef {
+  private _initApp(zone: NgZone, providers: Array<Type | Provider | any[]>): ApplicationRef {
     var injector: Injector;
     var app: ApplicationRef;
     zone.run(() => {
@@ -270,12 +259,8 @@ export class PlatformRef_ extends PlatformRef {
     });
     app = new ApplicationRef_(this, zone, injector);
     this._applications.push(app);
-    var promise = _runAppInitializers(injector);
-    if (promise !== null) {
-      return PromiseWrapper.then(promise, (_) => app);
-    } else {
-      return app;
-    }
+    _runAppInitializers(injector);
+    return app;
   }
 
   dispose(): void {
@@ -288,22 +273,9 @@ export class PlatformRef_ extends PlatformRef {
   _applicationDisposed(app: ApplicationRef): void { ListWrapper.remove(this._applications, app); }
 }
 
-function _runAppInitializers(injector: Injector): Promise<any> {
+function _runAppInitializers(injector: Injector): void {
   let inits: Function[] = injector.getOptional(APP_INITIALIZER);
-  let promises: Promise<any>[] = [];
-  if (isPresent(inits)) {
-    inits.forEach(init => {
-      var retVal = init();
-      if (PromiseWrapper.isPromise(retVal)) {
-        promises.push(retVal);
-      }
-    });
-  }
-  if (promises.length > 0) {
-    return PromiseWrapper.all(promises);
-  } else {
-    return null;
-  }
+  if (isPresent(inits)) inits.forEach(init => init());
 }
 
 /**

@@ -10,4 +10,12 @@ export function setRootDomAdapter(adapter) {
  * Provides DOM operations in an environment-agnostic way.
  */
 export class DomAdapter {
+    /**
+     * Maps attribute names to their corresponding property names for cases
+     * where attribute name doesn't match property name.
+     */
+    get attrToPropMap() { return this._attrToPropMap; }
+    ;
+    set attrToPropMap(value) { this._attrToPropMap = value; }
+    ;
 }
