@@ -1,8 +1,14 @@
 import {ViewEncapsulation} from 'angular2/src/core/metadata/view';
+import {Injector} from 'angular2/src/core/di/injector';
 
 export class RenderComponentType {
   constructor(public id: string, public encapsulation: ViewEncapsulation,
               public styles: Array<string | any[]>) {}
+}
+
+export class RenderDebugInfo {
+  constructor(public injector: Injector, public component: any, public providerTokens: any[],
+              public locals: Map<string, any>) {}
 }
 
 export interface ParentRenderer { renderComponent(componentType: RenderComponentType): Renderer; }
@@ -28,7 +34,7 @@ export abstract class Renderer implements ParentRenderer {
 
   abstract destroyView(hostElement: any, viewAllNodes: any[]);
 
-  abstract listen(renderElement: any, name: string, callback: Function);
+  abstract listen(renderElement: any, name: string, callback: Function): Function;
 
   abstract listenGlobal(target: string, name: string, callback: Function): Function;
 
@@ -41,6 +47,8 @@ export abstract class Renderer implements ParentRenderer {
    * such as <template> placeholders.
    */
   abstract setBindingDebugInfo(renderElement: any, propertyName: string, propertyValue: string);
+
+  abstract setElementDebugInfo(renderElement: any, info: RenderDebugInfo);
 
   abstract setElementClass(renderElement: any, className: string, isAdd: boolean);
 

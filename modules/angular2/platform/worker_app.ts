@@ -8,12 +8,13 @@ export {
   ClientMessageBrokerFactory,
   FnArg,
   UiArguments
-} from '../src/web_workers/shared/client_message_broker';
+} from 'angular2/src/web_workers/shared/client_message_broker';
 export {
   ReceivedMessage,
   ServiceMessageBroker,
   ServiceMessageBrokerFactory
-} from '../src/web_workers/shared/service_message_broker';
-export {PRIMITIVE} from '../src/web_workers/shared/serializer';
-export * from '../src/web_workers/shared/message_bus';
+} from 'angular2/src/web_workers/shared/service_message_broker';
+export {PRIMITIVE} from 'angular2/src/web_workers/shared/serializer';
+export * from 'angular2/src/web_workers/shared/message_bus';
 export {AngularEntrypoint} from 'angular2/src/core/angular_entrypoint';
+export {WORKER_APP_ROUTER} from 'angular2/src/web_workers/worker/router_providers';

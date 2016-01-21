@@ -17,6 +17,7 @@ import {
   SpyObject
 } from 'angular2/testing_internal';
 
+import {By} from 'angular2/platform/common_dom';
 import {NumberWrapper} from 'angular2/src/facade/lang';
 import {PromiseWrapper} from 'angular2/src/facade/async';
 import {ListWrapper} from 'angular2/src/facade/collection';
@@ -111,9 +112,7 @@ export function main() {
                fixture.debugElement.componentInstance.name = 'brian';
                fixture.detectChanges();
                expect(fixture.debugElement.nativeElement).toHaveText('brian');
-               expect(DOM.getAttribute(fixture.debugElement.componentViewChildren[0].nativeElement,
-                                       'href'))
-                   .toEqual('/user/brian');
+               expect(getHref(fixture)).toEqual('/user/brian');
                async.done();
              });
        }));
@@ -127,11 +126,7 @@ export function main() {
              .then((_) => router.navigateByUrl('/page/1'))
              .then((_) => {
                fixture.detectChanges();
-               expect(DOM.getAttribute(fixture.debugElement.componentViewChildren[1]
-                                           .componentViewChildren[0]
-                                           .nativeElement,
-                                       'href'))
-                   .toEqual('/page/2');
+               expect(getHref(fixture)).toEqual('/page/2');
                async.done();
              });
        }));
@@ -146,11 +141,7 @@ export function main() {
              .then((_) => router.navigateByUrl('/page/1'))
              .then((_) => {
                fixture.detectChanges();
-               expect(DOM.getAttribute(fixture.debugElement.componentViewChildren[1]
-                                           .componentViewChildren[0]
-                                           .nativeElement,
-                                       'href'))
-                   .toEqual('/page/2');
+               expect(getHref(fixture)).toEqual('/page/2');
                async.done();
              });
        }));
@@ -164,11 +155,7 @@ export function main() {
              .then((_) => router.navigateByUrl('/book/1984/page/1'))
              .then((_) => {
                fixture.detectChanges();
-               expect(DOM.getAttribute(fixture.debugElement.componentViewChildren[1]
-                                           .componentViewChildren[0]
-                                           .nativeElement,
-                                       'href'))
-                   .toEqual('/book/1984/page/100');
+               expect(getHref(fixture)).toEqual('/book/1984/page/100');
                async.done();
              });
        }));
@@ -202,11 +189,7 @@ export function main() {
              .then((_) => router.navigateByUrl('/child-with-grandchild/grandchild'))
              .then((_) => {
                fixture.detectChanges();
-               expect(DOM.getAttribute(fixture.debugElement.componentViewChildren[1]
-                                           .componentViewChildren[0]
-                                           .nativeElement,
-                                       'href'))
-                   .toEqual('/child-with-grandchild/grandchild');
+               expect(getHref(fixture)).toEqual('/child-with-grandchild/grandchild');
                async.done();
              });
        }));
@@ -219,15 +202,17 @@ export function main() {
              .then((_) => router.navigateByUrl('/book/1984/page/1'))
              .then((_) => {
                fixture.detectChanges();
-               expect(DOM.getAttribute(fixture.debugElement.componentViewChildren[1]
-                                           .componentViewChildren[0]
+               // TODO(juliemr): This should be one By.css('book-cmp a') query, but the parse5
+               // adapter
+               // can't handle css child selectors.
+               expect(DOM.getAttribute(fixture.debugElement.query(By.css('book-cmp'))
+                                           .query(By.css('a'))
                                            .nativeElement,
                                        'href'))
                    .toEqual('/book/1984/page/100');
 
-               expect(DOM.getAttribute(fixture.debugElement.componentViewChildren[1]
-                                           .componentViewChildren[2]
-                                           .componentViewChildren[0]
+               expect(DOM.getAttribute(fixture.debugElement.query(By.css('page-cmp'))
+                                           .query(By.css('a'))
                                            .nativeElement,
                                        'href'))
                    .toEqual('/book/1984/page/2');
@@ -241,11 +226,7 @@ export function main() {
              .then((_) => router.navigateByUrl('/'))
              .then((_) => {
                fixture.detectChanges();
-               expect(DOM.getAttribute(fixture.debugElement.componentViewChildren[1]
-                                           .componentViewChildren[0]
-                                           .nativeElement,
-                                       'href'))
-                   .toEqual('/(aside)');
+               expect(getHref(fixture)).toEqual('/(aside)');
                async.done();
              });
        }));
@@ -335,9 +316,7 @@ export function main() {
                    fixture.debugElement.componentInstance.name = 'brian';
                    fixture.detectChanges();
                    expect(fixture.debugElement.nativeElement).toHaveText('brian');
-                   expect(DOM.getAttribute(
-                              fixture.debugElement.componentViewChildren[0].nativeElement, 'href'))
-                       .toEqual('/user/brian');
+                   expect(getHref(fixture)).toEqual('/user/brian');
                    async.done();
                  });
            }));
@@ -347,7 +326,7 @@ export function main() {
     describe('when clicked', () => {
 
       var clickOnElement = function(view) {
-        var anchorEl = fixture.debugElement.componentViewChildren[0].nativeElement;
+        var anchorEl = fixture.debugElement.query(By.css('a')).nativeElement;
         var dispatchedEvent = DOM.createMouseEvent('click');
         DOM.dispatchEvent(anchorEl, dispatchedEvent);
         return dispatchedEvent;
@@ -398,7 +377,7 @@ export function main() {
 }
 
 function getHref(tc: ComponentFixture) {
-  return DOM.getAttribute(tc.debugElement.componentViewChildren[0].nativeElement, 'href');
+  return DOM.getAttribute(tc.debugElement.query(By.css('a')).nativeElement, 'href');
 }
 
 @Component({selector: 'my-comp'})

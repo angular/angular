@@ -3,11 +3,11 @@ import {global} from 'angular2/src/facade/lang';
 
 let _nextRequestId = 0;
 export const JSONP_HOME = '__ng_jsonp__';
-var _jsonpConnections = null;
+var _jsonpConnections: {[key: string]: any} = null;
 
 function _getJsonpConnections(): {[key: string]: any} {
   if (_jsonpConnections === null) {
-    _jsonpConnections = global[JSONP_HOME] = {};
+    _jsonpConnections = (<{[key: string]: any}>global)[JSONP_HOME] = {};
   }
   return _jsonpConnections;
 }

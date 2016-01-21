@@ -3,10 +3,10 @@
 // THIS CHECK SHOULD BE THE FIRST THING IN THIS FILE
 // This is to ensure that we catch env issues before we error while requiring other dependencies.
 require('./tools/check-environment')(
-    {requiredNpmVersion: '>=2.14.7 <3.0.0', requiredNodeVersion: '>=4.2.1 <5.0.0'});
+    {requiredNpmVersion: '>=3.5.3 <4.0.0', requiredNodeVersion: '>=5.4.1 <6.0.0'});
 
 
-var del = require('del');
+var fse = require('fs-extra');
 var gulp = require('gulp');
 var gulpPlugins = require('gulp-load-plugins')();
 var merge = require('merge');
@@ -155,7 +155,7 @@ var HTTP_BUNDLE_CONTENT = 'angular2/http - rxjs/* - ' + ANGULAR2_BUNDLE_CONFIG.j
 var ROUTER_BUNDLE_CONTENT = 'angular2/router + angular2/router/router_link_dsl - rxjs/* - ' +
                             ANGULAR2_BUNDLE_CONFIG.join(' - ');
 var TESTING_BUNDLE_CONTENT =
-    'angular2/testing + angular2/http/testing + angular2/router/testing - rxjs/* - ' +
+    'angular2/testing + angular2/http/testing + angular2/router/testing + angular2/platform/testing/browser - rxjs/* - ' +
     ANGULAR2_BUNDLE_CONFIG.join(' - ');
 var UPGRADE_BUNDLE_CONTENT = 'angular2/upgrade - rxjs/* - ' + ANGULAR2_BUNDLE_CONFIG.join(' - ');
 
@@ -170,36 +170,34 @@ var BENCHPRESS_BUNDLE_CONFIG = {
 
 var PAYLOAD_TESTS_CONFIG = {
   ts: {
-    sizeLimits: {'uncompressed': 550 * 1024, 'gzip level=9': 120 * 1024},
-    webpack: {
-      cases: ['hello_world'],
-      bundleName: 'app-bundle-deps.min.js',
-      dist: function(caseName) {
-        return path.join(__dirname, CONFIG.dest.js.prod.es5, 'payload_tests', caseName,
-                         'ts/webpack');
-      }
-    }
+    bundleName: 'app-bundle-deps.min.js',
+    cases: ['hello_world'],
+    dist: function(caseName, packaging) {
+      return path.join(__dirname, CONFIG.dest.js.prod.es5, 'payload_tests', caseName,
+                       'ts/' + packaging);
+    },
+    systemjs: {sizeLimits: {'uncompressed': 850 * 1024, 'gzip level=9': 165 * 1024}},
+    webpack: {sizeLimits: {'uncompressed': 550 * 1024, 'gzip level=9': 120 * 1024}}
   }
 };
 
 // ------------
 // clean
 
-gulp.task('build/clean.tools', function() { del(path.join('dist', 'tools')); });
+gulp.task('build/clean.tools', (done) => fse.remove(path.join('dist', 'tools'), done));
 
-gulp.task('build/clean.js', function(done) { del(CONFIG.dest.js.all, done); });
+gulp.task('build/clean.js', (done) => fse.remove(CONFIG.dest.js.all, done));
 
-gulp.task('build/clean.dart', function(done) { del(CONFIG.dest.dart, done); });
+gulp.task('build/clean.dart', (done) => fse.remove(CONFIG.dest.dart, done));
 
-gulp.task('build/clean.docs', function(done) { del(CONFIG.dest.docs, done); });
+gulp.task('build/clean.docs', (done) => fse.remove(CONFIG.dest.docs, done));
 
-gulp.task('build/clean.docs_angular_io',
-          function(done) { del(CONFIG.dest.docs_angular_io, done); });
+gulp.task('build/clean.docs_angular_io', (done) => fse.remove(CONFIG.dest.docs_angular_io, done));
 
-gulp.task('build/clean.bundles', function(done) { del(CONFIG.dest.bundles.all, done); });
+gulp.task('build/clean.bundles', (done) => fse.remove(CONFIG.dest.bundles.all, done));
 
 gulp.task('build/clean.bundles.benchpress',
-          function(done) { del(CONFIG.dest.bundles.benchpress, done); });
+          (done) => fse.remove(CONFIG.dest.bundles.benchpress, done));
 
 // ------------
 // transpile
@@ -327,7 +325,9 @@ gulp.task('lint', ['build.tools'], function() {
       "requireParameterType": true,
       "requireReturnType": true,
       "semicolon": true,
-      "variable-name": [true, "ban-keywords"]
+
+      // TODO: find a way to just screen for reserved names
+      "variable-name": false
     }
   };
   return gulp.src(['modules/angular2/src/**/*.ts', '!modules/angular2/src/testing/**'])
@@ -463,7 +463,7 @@ function runKarma(configFile, done) {
 
 gulp.task('test.js', function(done) {
   runSequence('test.unit.tools/ci', 'test.transpiler.unittest', 'test.unit.js/ci',
-              'test.unit.cjs/ci', 'test.typings', sequenceComplete(done));
+              'test.unit.cjs/ci', 'test.typings', 'check-public-api', sequenceComplete(done));
 });
 
 gulp.task('test.dart', function(done) {
@@ -627,7 +627,11 @@ gulp.task('!test.unit.router/karma-run', function(done) {
                    });
 });
 
-gulp.task('buildRouter.dev', function() { buildRouter(); });
+gulp.task('buildRouter.dev', function() {
+  var modulesSrcDir = __dirname + '/modules';
+  var distDir = __dirname + '/dist';
+  buildRouter(modulesSrcDir, distDir);
+});
 
 gulp.task('test.unit.dart', function(done) {
   printModulesWarning();
@@ -677,19 +681,18 @@ gulp.task('test.payload.js/ci', function(done) {
   runSequence('build.payload.js', '!checkAndReport.payload.js', sequenceComplete(done));
 });
 
-gulp.task('build.payload.js', ['build.js.prod'],
-          function(done) { runSequence('!build.payload.js.webpack', sequenceComplete(done)); });
+gulp.task('build.payload.js', ['build.js'], function(done) {
+  runSequence('!build.payload.js.webpack', '!build.payload.js.systemjs', sequenceComplete(done));
+});
 
 gulp.task('!build.payload.js.webpack', function() {
   var q = require('q');
   var webpack = q.denodeify(require('webpack'));
-  var concat = require('gulp-concat');
-  var uglify = require('gulp-uglify');
 
   var ES5_PROD_ROOT = __dirname + '/' + CONFIG.dest.js.prod.es5;
 
-  return q.all(PAYLOAD_TESTS_CONFIG.ts.webpack.cases.map(function(caseName) {
-    var CASE_PATH = PAYLOAD_TESTS_CONFIG.ts.webpack.dist(caseName);
+  return q.all(PAYLOAD_TESTS_CONFIG.ts.cases.map(function(caseName) {
+    var CASE_PATH = PAYLOAD_TESTS_CONFIG.ts.dist(caseName, 'webpack');
 
     return webpack({
              // bundle app + framework
@@ -709,8 +712,41 @@ gulp.task('!build.payload.js.webpack', function() {
                   'node_modules/reflect-metadata/Reflect.js',
                   CASE_PATH + '/app-bundle.js'
                 ])
-                .pipe(concat(PAYLOAD_TESTS_CONFIG.ts.webpack.bundleName))
-                .pipe(uglify())
+                .pipe(gulpPlugins.concat(PAYLOAD_TESTS_CONFIG.ts.bundleName))
+                .pipe(gulpPlugins.uglify())
+                .pipe(gulp.dest(CASE_PATH))
+                .on('end', resolve)
+                .on('error', reject);
+          });
+        });
+  }));
+});
+
+gulp.task('!build.payload.js.systemjs', function() {
+  var bundler = require('./tools/build/bundle');
+
+  return Promise.all(PAYLOAD_TESTS_CONFIG.ts.cases.map(function(caseName) {
+    var CASE_PATH = PAYLOAD_TESTS_CONFIG.ts.dist(caseName, 'systemjs');
+
+    return bundler
+        .bundle(
+            {
+              paths: {'index': CASE_PATH + '/index.js'},
+              meta: {'angular2/core': {build: false}, 'angular2/platform/browser': {build: false}}
+            },
+            'index', CASE_PATH + '/index.register.js', {})
+        .then(function() {
+          return new Promise(function(resolve, reject) {
+            gulp.src([
+                  'node_modules/systemjs/dist/system.src.js',
+                  'dist/js/prod/es5/bundle/angular2-polyfills.js',
+                  'dist/js/prod/es5/bundle/angular2.js',
+                  'dist/js/prod/es5//rxjs/bundles/Rx.js',
+                  CASE_PATH + '/index.register.js',
+                  'tools/build/systemjs/payload_tests_import.js'
+                ])
+                .pipe(gulpPlugins.concat(PAYLOAD_TESTS_CONFIG.ts.bundleName))
+                .pipe(gulpPlugins.uglify())
                 .pipe(gulp.dest(CASE_PATH))
                 .on('end', resolve)
                 .on('error', reject);
@@ -721,12 +757,19 @@ gulp.task('!build.payload.js.webpack', function() {
 
 gulp.task('!checkAndReport.payload.js', function() {
   var reportSize = require('./tools/analytics/reportsize');
-  var webPackConf = PAYLOAD_TESTS_CONFIG.ts.webpack;
 
-  return webPackConf.cases.reduce(function(sizeReportingStreams, caseName) {
-    sizeReportingStreams.add(
-        reportSize(webPackConf.dist(caseName) + '/' + webPackConf.bundleName,
-                   {failConditions: PAYLOAD_TESTS_CONFIG.ts.sizeLimits, prefix: caseName}))
+  function caseSizeStream(caseName, packaging) {
+    return reportSize(PAYLOAD_TESTS_CONFIG.ts.dist(caseName, packaging) + '/' +
+                          PAYLOAD_TESTS_CONFIG.ts.bundleName,
+                      {
+                        failConditions: PAYLOAD_TESTS_CONFIG.ts[packaging].sizeLimits,
+                        prefix: caseName + '_' + packaging
+                      })
+  }
+
+  return PAYLOAD_TESTS_CONFIG.ts.cases.reduce(function(sizeReportingStreams, caseName) {
+    sizeReportingStreams.add(caseSizeStream(caseName, 'systemjs'));
+    sizeReportingStreams.add(caseSizeStream(caseName, 'webpack'));
   }, merge2());
 });
 
@@ -787,7 +830,7 @@ gulp.task('test.unit.js/ci', function(done) {
                  reporters: ['dots'],
                  browsers: browserConf.browsersToRun
                },
-               done)
+               function(err) { done(); })
       .start();
 });
 
@@ -827,6 +870,8 @@ gulp.task('test.unit.cjs/ci', function(done) {
   runJasmineTests(['dist/js/cjs/{angular2,benchpress}/test/**/*_spec.js'], done);
 });
 
+gulp.task('check-public-api',
+          function(done) { runJasmineTests(['dist/tools/public_api_guard/**/*_spec.js'], done); });
 
 gulp.task('test.unit.cjs', ['build/clean.js', 'build.tools'], function(neverDone) {
   var watch = require('./tools/build/watch');
@@ -936,15 +981,16 @@ gulp.task('!pre.test.typings.layoutNodeModule', ['build.js.cjs'], function() {
       .pipe(gulp.dest(path.join(tmpdir, 'node_modules')));
 });
 gulp.task('!pre.test.typings.copyTypingsSpec', function() {
-  return gulp.src(['typing_spec/*.ts'], {base: 'typing_spec'}).pipe(gulp.dest(path.join(tmpdir)));
+  return gulp.src(['typing_spec/*.ts'], {base: 'typing_spec'}).pipe(gulp.dest(tmpdir));
 });
+
 gulp.task('test.typings',
           ['!pre.test.typings.layoutNodeModule', '!pre.test.typings.copyTypingsSpec'], function() {
             var tsc = require('gulp-typescript');
 
-            return gulp.src([tmpdir + '/**'])
+            return gulp.src([tmpdir + '/*.ts'])
                 .pipe(tsc({
-                  target: 'ES5',
+                  target: 'ES6',
                   module: 'commonjs',
                   experimentalDecorators: true,
                   noImplicitAny: true,

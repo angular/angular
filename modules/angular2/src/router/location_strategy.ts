@@ -1,10 +1,11 @@
 import {CONST_EXPR} from 'angular2/src/facade/lang';
 import {OpaqueToken} from 'angular2/core';
+import {UrlChangeListener} from './platform_location';
 
 /**
  * `LocationStrategy` is responsible for representing and reading route state
  * from the browser's URL. Angular provides two strategies:
- * {@link HashLocationStrategy} (default) and {@link PathLocationStrategy}.
+ * {@link HashLocationStrategy} and {@link PathLocationStrategy} (default).
  *
  * This is used under the hood of the {@link Location} service.
  *
@@ -24,7 +25,7 @@ export abstract class LocationStrategy {
   abstract replaceState(state: any, title: string, url: string, queryParams: string): void;
   abstract forward(): void;
   abstract back(): void;
-  abstract onPopState(fn: (_: any) => any): void;
+  abstract onPopState(fn: UrlChangeListener): void;
   abstract getBaseHref(): string;
 }
 
@@ -53,7 +54,6 @@ export abstract class LocationStrategy {
  *
  * bootstrap(AppCmp, [
  *   ROUTER_PROVIDERS,
- *   PathLocationStrategy,
  *   provide(APP_BASE_HREF, {useValue: '/my/app'})
  * ]);
  * ```

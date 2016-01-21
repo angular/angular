@@ -32,7 +32,7 @@ filename    | list of barrels   | dev/prod | minified?
 `angular2-all.umd.js` | `angular2/core`, `angular2/common`, `angular2/compiler`, `angular2/platform/browser`, `angular2/platform/common_dom`, `angular2/http`, `angular2/router`, `angular2/instrumentation`, `angular2/upgrade`| prod | no
 `angular2-all.umd.min.js` | `angular2/core`, `angular2/common`, `angular2/compiler`, `angular2/platform/browser`, `angular2/platform/common_dom`, `angular2/http`, `angular2/router`, `angular2/instrumentation`, `angular2/upgrade` | prod | yes
 `angular2-all.umd.dev.js` | `angular2/core`, `angular2/common`, `angular2/compiler`, `angular2/platform/browser`, `angular2/platform/common_dom`, `angular2/http`, `angular2/router`, `angular2/instrumentation`, `angular2/upgrade` | dev | no
-`angular2-all-testing.umd.dev.js` | `angular2/core`, `angular2/common`, `angular2/compiler`, `angular2/platform/browser`, `angular2/platform/common_dom`, `angular2/http`, `angular2/router`, `angular2/instrumentation`, `angular2/upgrade`, `angular2/testing`, `angular2/http/testing`, `angular2/router/testing` | dev | no
+`angular2-all-testing.umd.dev.js` | `angular2/core`, `angular2/common`, `angular2/compiler`, `angular2/platform/browser`, `angular2/platform/common_dom`, `angular2/http`, `angular2/router`, `angular2/instrumentation`, `angular2/upgrade`, `angular2/testing`, `angular2/http/testing`, `angular2/router/testing`, `angular2/platform/testing/browser` | dev | no
 
 **Warning**: bundles in the `UMD` format are _not_ "additive". A single application should use only one bundle from the above list.
 
@@ -55,7 +55,7 @@ filename    | list of barrels   | dev/prod | minified?
 `upgrade.js` | `angular2/upgrade` | prod | no
 `upgrade.min.js` | `angular2/upgrade` | prod | yes
 `upgrade.dev.js` | `angular2/upgrade` | dev | no
-`testing.dev.js` | `angular2/testing`, `angular2/http/testing`, `angular2/router/testing` | dev | no
+`testing.dev.js` | `angular2/testing`, `angular2/http/testing`, `angular2/router/testing`, `angular2/platform/testing/browser` | dev | no
 
 **Note**: bundles in the `System.register` format are "additive" - it is quite common to include several bundles in one application.
 For example people using Angular 2 with `http` and `router` would include: `angular2.js`, `http.js` and `router.js`.

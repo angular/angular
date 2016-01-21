@@ -202,12 +202,12 @@ export class Router {
     return this._settleInstruction(instruction)
         .then((_) => this._routerCanReuse(instruction))
         .then((_) => this._canActivate(instruction))
-        .then((result) => {
+        .then((result: boolean) => {
           if (!result) {
             return false;
           }
           return this._routerCanDeactivate(instruction)
-              .then((result) => {
+              .then((result: boolean) => {
                 if (result) {
                   return this.commit(instruction, _skipLocationChange)
                       .then((_) => {
@@ -438,7 +438,7 @@ export class RootRouter extends Router {
                   }
                   var emitPath = instruction.toUrlPath();
                   var emitQuery = instruction.toUrlQuery();
-                  if (emitPath.length > 0) {
+                  if (emitPath.length > 0 && emitPath[0] != '/') {
                     emitPath = '/' + emitPath;
                   }
 
@@ -465,7 +465,7 @@ export class RootRouter extends Router {
   commit(instruction: Instruction, _skipLocationChange: boolean = false): Promise<any> {
     var emitPath = instruction.toUrlPath();
     var emitQuery = instruction.toUrlQuery();
-    if (emitPath.length > 0) {
+    if (emitPath.length > 0 && emitPath[0] != '/') {
       emitPath = '/' + emitPath;
     }
     var promise = super.commit(instruction);

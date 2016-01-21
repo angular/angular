@@ -17,14 +17,22 @@ var semver;
 var issues = [];
 
 // coarse Node version check
-if (process.version[1] !== '4') {
-  issues.push("Angular 2 build currently requires Node 4. Use nvm to update your node version.");
+if (Number.parseInt(process.version[1], 10) < 5) {
+  issues.push("Angular 2 build currently requires Node 5. Use nvm to update your node version.");
 }
 
 try {
   semver = require('semver');
 } catch(e) {
   issues.push("Looks like you are missing some npm dependencies. Run: npm install");
+}
+
+if (issues.length) {
+  printWarning(issues);
+  console.error("Your environment doesn't provide the prerequisite dependencies.\n" +
+                "Please fix the issues listed above and then rerun the gulp command.\n" +
+                "Check out https://github.com/angular/angular/blob/master/DEVELOPER.md for more info.");
+  process.exit(1);
 }
 
 // wrap in try/catch in case someone requires from within that file

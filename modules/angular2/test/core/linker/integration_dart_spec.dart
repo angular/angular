@@ -3,7 +3,7 @@ library angular2.test.di.integration_dart_spec;
 
 import 'package:angular2/angular2.dart';
 import 'package:angular2/core.dart';
-import 'package:angular2/src/core/debug/debug_element.dart';
+import 'package:angular2/src/core/debug/debug_node.dart';
 import 'package:angular2/testing_internal.dart';
 import 'package:observe/observe.dart';
 import 'package:angular2/src/core/change_detection/differs/default_iterable_differ.dart';
@@ -56,7 +56,7 @@ main() {
               .createAsync(Dummy)
               .then((tc) {
             tc.detectChanges();
-            expect(asNativeElements(tc.debugElement.componentViewChildren))
+            expect(asNativeElements(tc.debugElement.children))
                 .toHaveText('[Hello, World]');
             async.done();
           });
@@ -112,7 +112,7 @@ main() {
               .createAsync(Dummy)
               .then((tc) {
             tc.detectChanges();
-            expect(asNativeElements(tc.debugElement.componentViewChildren))
+            expect(asNativeElements(tc.debugElement.children))
                 .toHaveText('prop:foo-prop;map:foo-map');
             async.done();
           });
@@ -149,7 +149,7 @@ main() {
               .createAsync(Dummy)
               .then((tc) {
             tc.detectChanges();
-            var cmp = tc.debugElement.componentViewChildren[0]
+            var cmp = tc.debugElement.children[0]
                 .inject(OnChangeComponent);
             expect(cmp.prop).toEqual('hello');
             expect(cmp.changes.containsKey('prop')).toEqual(true);
@@ -178,7 +178,7 @@ main() {
             tc.detectChanges();
 
             expect(log.result()).toEqual("check");
-            expect(asNativeElements(tc.debugElement.componentViewChildren))
+            expect(asNativeElements(tc.debugElement.children))
                 .toHaveText('12');
 
             tc.detectChanges();
@@ -194,7 +194,7 @@ main() {
 
             // we changed the list => a check
             expect(log.result()).toEqual("check; check");
-            expect(asNativeElements(tc.debugElement.componentViewChildren))
+            expect(asNativeElements(tc.debugElement.children))
                 .toHaveText('123');
 
             // we replaced the list => a check
@@ -204,7 +204,7 @@ main() {
             tc.detectChanges();
 
             expect(log.result()).toEqual("check; check; check");
-            expect(asNativeElements(tc.debugElement.componentViewChildren))
+            expect(asNativeElements(tc.debugElement.children))
                 .toHaveText('567');
           });
         })));

@@ -11,7 +11,8 @@ describe('md-progress-linear', function() {
     var incrementButton = element(by.id('increment'));
     var decrementButton = element(by.id('decrement'));
 
-    var initialValue = progressBar.getAttribute('aria-valuenow');
+    // Really a Promise<string> but can be coerced to a number after resolving
+    var initialValue: any = progressBar.getAttribute('aria-valuenow');
 
     incrementButton.click();
     expect(progressBar.getAttribute('aria-valuenow')).toBeGreaterThan(initialValue);

@@ -141,6 +141,53 @@ export function main() {
         });
       });
 
+      describe("pristine", () => {
+        it("should be true after creating a control", () => {
+          var c = new Control("value");
+          expect(c.pristine).toEqual(true);
+        });
+
+        it("should be false after changing the value of the control", () => {
+          var c = new Control("value");
+          c.markAsDirty();
+          expect(c.pristine).toEqual(false);
+        });
+      });
+
+      describe("touched", () => {
+        it("should be false after creating a control", () => {
+          var c = new Control("value");
+          expect(c.touched).toEqual(false);
+        });
+
+        it("should be true after touching the control", () => {
+          var c = new Control("value");
+          c.markAsTouched();
+          expect(c.touched).toEqual(true);
+        });
+      });
+
+      describe("untouched", () => {
+        it("should be true after creating a control", () => {
+          var c = new Control("value");
+          expect(c.untouched).toEqual(true);
+        });
+
+        it("should be false after touching the control", () => {
+          var c = new Control("value");
+          c.markAsTouched();
+          expect(c.untouched).toEqual(false);
+        });
+
+        it("should be true after untouching the control", () => {
+          var c = new Control("value");
+          c.markAsTouched();
+          expect(c.untouched).toEqual(false);
+          c.markAsUntouched();
+          expect(c.untouched).toEqual(true);
+        });
+      });
+
       describe("updateValue", () => {
         var g, c;
         beforeEach(() => {
@@ -387,6 +434,243 @@ export function main() {
           c.markAsDirty();
 
           expect(g.dirty).toEqual(true);
+        });
+      });
+
+      describe("all dirty", () => {
+        var c11, c21, g0, g1, g2;
+
+        beforeEach(() => {
+          c11 = new Control('value');
+          g1 = new ControlGroup({"one": c11});
+          c21 = new Control('value');
+          g2 = new ControlGroup({"one": c21});
+
+          g0 = new ControlGroup({"groupone": g1, "grouptwo": g2});
+        });
+
+        it("should be false after creating controls", () => { expect(g0.dirty).toEqual(false); });
+
+        it("should be true after marking the group and all its children as dirty", () => {
+          g0.markAllAsDirty();
+
+          expect(c11.dirty).toEqual(true);
+          expect(g1.dirty).toEqual(true);
+          expect(c21.dirty).toEqual(true);
+          expect(g2.dirty).toEqual(true);
+          expect(g0.dirty).toEqual(true);
+        });
+      });
+
+      describe("pristine", () => {
+        var c1, c2, g;
+
+        beforeEach(() => {
+          c1 = new Control('value');
+          c2 = new Control('value');
+          g = new ControlGroup({"one": c1, "two": c2});
+        });
+
+        it("should be true after creating controls", () => { expect(g.pristine).toEqual(true); });
+
+        it("should be false after changing the value of one of the controls", () => {
+          c1.markAsDirty();
+          expect(g.pristine).toEqual(false);
+        });
+
+        it("should be false after trying to make the group pristine with a dirty control in it",
+           () => {
+             c1.markAsDirty();
+             expect(g.pristine).toEqual(false);
+             g.markAsPristine();
+             expect(g.pristine).toEqual(false);
+           });
+
+        it("should be true after all controls in it are pristine", () => {
+          c1.markAsDirty();
+          expect(g.pristine).toEqual(false);
+          c1.markAsPristine();
+          expect(g.pristine).toEqual(true);
+        });
+      });
+
+      describe("all pristine", () => {
+        var c11, c21, g0, g1, g2;
+
+        beforeEach(() => {
+          c11 = new Control('value');
+          g1 = new ControlGroup({"one": c11});
+          c21 = new Control('value');
+          g2 = new ControlGroup({"one": c21});
+
+          g0 = new ControlGroup({"groupone": g1, "grouptwo": g2});
+        });
+
+        it("should be true after creating controls", () => { expect(g0.pristine).toEqual(true); });
+
+        it("should be false after changing the value of one of the childrens control", () => {
+          c11.markAsDirty();
+          expect(g0.pristine).toEqual(false);
+        });
+
+        it("should be true after marking the dirty group and all its children as pristine", () => {
+          c11.markAsDirty();
+          expect(c11.pristine).toEqual(false);
+          expect(g1.pristine).toEqual(false);
+          expect(g0.pristine).toEqual(false);
+
+          g0.markAllAsPristine();
+          expect(g0.pristine).toEqual(true);
+          expect(g1.pristine).toEqual(true);
+          expect(c11.pristine).toEqual(true);
+        });
+      });
+
+      describe("touched", () => {
+        var c, g;
+
+        beforeEach(() => {
+          c = new Control('value');
+          g = new ControlGroup({"one": c});
+        });
+
+        it("should be false after creating a control", () => { expect(g.touched).toEqual(false); });
+
+        it("should be true after touching the group", () => {
+          g.markAsTouched();
+
+          expect(g.touched).toEqual(true);
+        });
+      });
+
+      describe("all touched", () => {
+        var c11, c21, g0, g1, g2;
+
+        beforeEach(() => {
+          c11 = new Control('value');
+          g1 = new ControlGroup({"one": c11});
+          c21 = new Control('value');
+          g2 = new ControlGroup({"one": c21});
+
+          g0 = new ControlGroup({"groupone": g1, "grouptwo": g2});
+        });
+
+        it("should be false after creating controls", () => { expect(g0.touched).toEqual(false); });
+
+        it("should be true after marking the group and all it's children as touched", () => {
+          g0.markAllAsTouched();
+          expect(g0.touched).toEqual(true);
+          expect(g1.touched).toEqual(true);
+          expect(g2.touched).toEqual(true);
+          expect(c11.touched).toEqual(true);
+          expect(c21.touched).toEqual(true);
+        });
+      });
+
+      describe("untouched", () => {
+        var c, g;
+
+        beforeEach(() => {
+          c = new Control('value');
+          g = new ControlGroup({"one": c});
+        });
+
+        it("should be true after creating a control", () => { expect(g.untouched).toEqual(true); });
+
+        it("should be false after touching the group", () => {
+          g.markAsTouched();
+
+          expect(g.untouched).toEqual(false);
+        });
+
+        it("should be true after untouching the group", () => {
+          g.markAsTouched();
+          expect(g.untouched).toEqual(false);
+          g.markAsUntouched();
+          expect(g.untouched).toEqual(true);
+        });
+      });
+
+      describe("all untouched", () => {
+        var c11, c21, g0, g1, g2;
+
+        beforeEach(() => {
+          c11 = new Control('value');
+          g1 = new ControlGroup({"one": c11});
+          c21 = new Control('value');
+          g2 = new ControlGroup({"one": c21});
+
+          g0 = new ControlGroup({"groupone": g1, "grouptwo": g2});
+        });
+
+        it("should be true after creating controls", () => { expect(g0.untouched).toEqual(true); });
+
+        it("should be true after marking the group and all it's children as untouched", () => {
+          c11.markAsTouched();
+          g1.markAsTouched();
+          c21.markAsTouched();
+          g2.markAsTouched();
+          g0.markAsTouched();
+
+          g0.markAllAsUntouched();
+          expect(g0.untouched).toEqual(true);
+          expect(g1.untouched).toEqual(true);
+          expect(g2.untouched).toEqual(true);
+          expect(c11.untouched).toEqual(true);
+          expect(c21.untouched).toEqual(true);
+        });
+      });
+
+      describe("pending", () => {
+        var c: Control;
+        var g: ControlGroup;
+
+        beforeEach(() => {
+          c = new Control('value');
+          g = new ControlGroup({"one": c});
+        });
+
+        it("should be false after creating a control", () => {
+          expect(c.pending).toEqual(false);
+          expect(g.pending).toEqual(false);
+        });
+
+        it("should be true after changing the value of the control", () => {
+          c.markAsPending();
+
+          expect(c.pending).toEqual(true);
+          expect(g.pending).toEqual(true);
+        });
+
+        it("should not update the parent when onlySelf = true", () => {
+          c.markAsPending({onlySelf: true});
+
+          expect(c.pending).toEqual(true);
+          expect(g.pending).toEqual(false);
+        });
+      });
+
+      describe("all pending", () => {
+        var c11, c21, g0, g1, g2;
+
+        beforeEach(() => {
+          c11 = new Control('value');
+          g1 = new ControlGroup({"one": c11});
+          c21 = new Control('value');
+          g2 = new ControlGroup({"one": c21});
+
+          g0 = new ControlGroup({"groupone": g1, "grouptwo": g2});
+        });
+
+        it("should be false after creating controls", () => { expect(g0.pending).toEqual(false); });
+
+        it("should be true after marking the group and all it's children as pending", () => {
+          g0.markAllAsPending();
+          expect(g0.pending).toEqual(true);
+          expect(g1.pending).toEqual(true);
+          expect(g2.pending).toEqual(true);
+          expect(c11.pending).toEqual(true);
+          expect(c21.pending).toEqual(true);
         });
       });
 
@@ -669,6 +953,191 @@ export function main() {
         });
       });
 
+      describe("all dirty", () => {
+        var c11, c21, a0, a1, a2;
+
+        beforeEach(() => {
+          c11 = new Control('value');
+          a1 = new ControlArray([c11]);
+          c21 = new Control('value');
+          a2 = new ControlArray([c21]);
+
+          a0 = new ControlArray([a1, a2]);
+        });
+
+        it("should be false after creating controls", () => { expect(a0.dirty).toEqual(false); });
+
+        it("should be true after marking the array and all its children as dirty", () => {
+          a0.markAllAsDirty();
+
+          expect(c11.dirty).toEqual(true);
+          expect(a1.dirty).toEqual(true);
+          expect(c21.dirty).toEqual(true);
+          expect(a2.dirty).toEqual(true);
+          expect(a0.dirty).toEqual(true);
+        });
+      });
+
+      describe("pristine", () => {
+        var c1, c2, a;
+
+        beforeEach(() => {
+          c1 = new Control('value');
+          c2 = new Control('value');
+          a = new ControlArray([c1, c2]);
+        });
+
+        it("should be true after creating controls", () => { expect(a.pristine).toEqual(true); });
+
+        it("should be false after changing the value of one of the controls", () => {
+          c1.markAsDirty();
+          expect(a.pristine).toEqual(false);
+        });
+
+        it("should be false after trying to make the array pristine with a dirty control in it",
+           () => {
+             c1.markAsDirty();
+             expect(a.pristine).toEqual(false);
+             a.markAsPristine();
+             expect(a.pristine).toEqual(false);
+           });
+
+        it("should be true after all controls in it are pristine", () => {
+          c1.markAsDirty();
+          expect(a.pristine).toEqual(false);
+          c1.markAsPristine();
+          expect(a.pristine).toEqual(true);
+        });
+      });
+
+      describe("all pristine", () => {
+        var c11, c21, a0, a1, a2;
+
+        beforeEach(() => {
+          c11 = new Control('value');
+          a1 = new ControlArray([c11]);
+          c21 = new Control('value');
+          a2 = new ControlArray([c21]);
+
+          a0 = new ControlArray([a1, a2]);
+        });
+
+        it("should be true after creating controls", () => { expect(a0.pristine).toEqual(true); });
+
+        it("should be false after changing the value of one of the childrens control", () => {
+          c11.markAsDirty();
+          expect(a0.pristine).toEqual(false);
+        });
+
+        it("should be true after marking the dirty array and all its children as pristine", () => {
+          c11.markAsDirty();
+          expect(c11.pristine).toEqual(false);
+          expect(a1.pristine).toEqual(false);
+          expect(a0.pristine).toEqual(false);
+
+          a0.markAllAsPristine();
+          expect(a0.pristine).toEqual(true);
+          expect(a1.pristine).toEqual(true);
+          expect(c11.pristine).toEqual(true);
+        });
+      });
+
+      describe("touched", () => {
+        var c: Control;
+        var a: ControlArray;
+
+        beforeEach(() => {
+          c = new Control('value');
+          a = new ControlArray([c]);
+        });
+
+        it("should be false after creating a control", () => { expect(a.touched).toEqual(false); });
+
+        it("should be true after touching the array", () => {
+          a.markAsTouched();
+
+          expect(a.touched).toEqual(true);
+        });
+      });
+
+      describe("all touched", () => {
+        var c11, c21, a0, a1, a2;
+
+        beforeEach(() => {
+          c11 = new Control('value');
+          a1 = new ControlArray([c11]);
+          c21 = new Control('value');
+          a2 = new ControlArray([c21]);
+
+          a0 = new ControlArray([a1, a2]);
+        });
+
+        it("should be false after creating controls", () => { expect(a0.touched).toEqual(false); });
+
+        it("should be true after marking the array and all it's children as touched", () => {
+          a0.markAllAsTouched();
+          expect(a0.touched).toEqual(true);
+          expect(a1.touched).toEqual(true);
+          expect(a2.touched).toEqual(true);
+          expect(c11.touched).toEqual(true);
+          expect(c21.touched).toEqual(true);
+        });
+      });
+
+      describe("untouched", () => {
+        var c: Control;
+        var a: ControlArray;
+
+        beforeEach(() => {
+          c = new Control('value');
+          a = new ControlArray([c]);
+        });
+
+        it("should be true after creating a control", () => { expect(a.untouched).toEqual(true); });
+
+        it("should be false after touching the array", () => {
+          a.markAsTouched();
+          expect(a.untouched).toEqual(false);
+        });
+
+        it("should be true after untouching the array", () => {
+          a.markAsTouched();
+          expect(a.untouched).toEqual(false);
+          a.markAsUntouched();
+          expect(a.untouched).toEqual(true);
+        });
+      });
+
+      describe("all untouched", () => {
+        var c11, c21, a0, a1, a2;
+
+        beforeEach(() => {
+          c11 = new Control('value');
+          a1 = new ControlArray([c11]);
+          c21 = new Control('value');
+          a2 = new ControlArray([c21]);
+
+          a0 = new ControlArray([a1, a2]);
+        });
+
+        it("should be true after creating controls", () => { expect(a0.untouched).toEqual(true); });
+
+        it("should be true after marking the array and all it's children as untouched", () => {
+          c11.markAsTouched();
+          a1.markAsTouched();
+          c21.markAsTouched();
+          a2.markAsTouched();
+          a0.markAsTouched();
+
+          a0.markAllAsUntouched();
+          expect(a0.untouched).toEqual(true);
+          expect(a1.untouched).toEqual(true);
+          expect(a2.untouched).toEqual(true);
+          expect(c11.untouched).toEqual(true);
+          expect(c21.untouched).toEqual(true);
+        });
+      });
+
       describe("pending", () => {
         var c: Control;
         var a: ControlArray;
@@ -695,6 +1164,30 @@ export function main() {
 
           expect(c.pending).toEqual(true);
           expect(a.pending).toEqual(false);
+        });
+      });
+
+      describe("all pending", () => {
+        var c11, c21, a0, a1, a2;
+
+        beforeEach(() => {
+          c11 = new Control('value');
+          a1 = new ControlArray([c11]);
+          c21 = new Control('value');
+          a2 = new ControlArray([c21]);
+
+          a0 = new ControlArray([a1, a2]);
+        });
+
+        it("should be false after creating controls", () => { expect(a0.pending).toEqual(false); });
+
+        it("should be true after marking the array and all it's children as pending", () => {
+          a0.markAllAsPending();
+          expect(a0.pending).toEqual(true);
+          expect(a1.pending).toEqual(true);
+          expect(a2.pending).toEqual(true);
+          expect(c11.pending).toEqual(true);
+          expect(c21.pending).toEqual(true);
         });
       });
 

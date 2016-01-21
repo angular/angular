@@ -9,7 +9,7 @@ JS and Dart versions. It also explains the basic mechanics of using `git`, `node
 * [Installing NPM Modules and Dart Packages](#installing-npm-modules-and-dart-packages)
 * [Build commands](#build-commands)
 * [Running Tests Locally](#running-tests-locally)
-* [Formatting](#clang-format)
+* [Code Style](#code-style)
 * [Project Information](#project-information)
 * [CI using Travis](#ci-using-travis)
 * [Transforming Dart code](#transforming-dart-code)
@@ -23,7 +23,16 @@ if you'd like to contribute to Angular.
 Before you can build and test Angular, you must install and configure the
 following products on your development machine:
 
-* [Dart](https://www.dartlang.org) (version ` >=1.12.0 <2.0.0`), specifically the Dart-SDK and
+* [Git](http://git-scm.com) and/or the **GitHub app** (for [Mac](http://mac.github.com) or
+  [Windows](http://windows.github.com)); [GitHub's Guide to Installing
+  Git](https://help.github.com/articles/set-up-git) is a good source of information.
+
+* [Node.js](http://nodejs.org), (version `>=5.4.1 <6`) which is used to run a development web server,
+  run tests, and generate distributable files. We also use Node's Package Manager, `npm`
+  (version `>=3.5.3 <4.0`), which comes with Node. Depending on your system, you can install Node either from
+  source or as a pre-packaged bundle.
+
+* *Optional*: [Dart](https://www.dartlang.org) (version ` >=1.13.2 <2.0.0`), specifically the Dart-SDK and
   Dartium (a version of [Chromium](http://www.chromium.org) with native support for Dart through
   the Dart VM). One of the **simplest** ways to get both is to install the **Dart Editor bundle**,
   which includes the editor, SDK and Dartium. See the [Dart tools](https://www.dartlang.org/tools)
@@ -33,19 +42,6 @@ following products on your development machine:
   to the `Path` (e.g. `path-to-dart-sdk-folder\bin`) and a new `DARTIUM_BIN` environment variable must be
   created, pointing to the executable (e.g. `path-to-dartium-folder\chrome.exe).`
 
-* [Git](http://git-scm.com) and/or the **GitHub app** (for [Mac](http://mac.github.com) or
-  [Windows](http://windows.github.com)); [GitHub's Guide to Installing
-  Git](https://help.github.com/articles/set-up-git) is a good source of information.
-
-* [Node.js](http://nodejs.org), (version `>=4.2.1 <5`) which is used to run a development web server,
-  run tests, and generate distributable files. We also use Node's Package Manager, `npm`
-  (version `>=2.14.7 <3.0`), which comes with Node. Depending on your system, you can install Node either from
-  source or as a pre-packaged bundle.
-
-* [Chrome Canary](https://www.google.com/chrome/browser/canary.html), a version of Chrome with
-  bleeding edge functionality, built especially for developers (and early adopters).
-
-* [Bower](http://bower.io/).
 
 
 ## Getting the Sources
@@ -231,7 +227,9 @@ Angular specific command line options when running protractor:
 Angular specific command line options when running protractor (e.g. force gc, ...):
 `$(npm bin)/protractor protractor-{js|dart2js}-conf.js --ng-help`
 
-## Formatting with <a name="clang-format">clang-format</a>
+## Code Style
+
+### Formatting with <a name="clang-format">clang-format</a>
 
 We use [clang-format](http://clang.llvm.org/docs/ClangFormat.html) to automatically enforce code
 style for our TypeScript code. This allows us to focus our code reviews more on the content, and
@@ -276,6 +274,14 @@ to some whitespace difference.
     - Working directory: `$ProjectFileDir$`
 * `clang-format` integrations are also available for many popular editors (`vim`, `emacs`,
   `Sublime Text`, etc.).
+
+### Linting
+
+We use [tslint](https://github.com/palantir/tslint) for linting. See linting rules in [gulpfile](gulpfile.js). To lint, run
+
+```shell
+$ gulp lint
+```
 
 ## Generating the API documentation
 

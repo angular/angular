@@ -93,12 +93,23 @@ export abstract class AbstractControl {
 
   markAsTouched(): void { this._touched = true; }
 
+  markAsUntouched(): void { this._touched = false; }
+
   markAsDirty({onlySelf}: {onlySelf?: boolean} = {}): void {
     onlySelf = normalizeBool(onlySelf);
     this._pristine = false;
 
     if (isPresent(this._parent) && !onlySelf) {
       this._parent.markAsDirty({onlySelf: onlySelf});
+    }
+  }
+
+  markAsPristine({onlySelf}: {onlySelf?: boolean} = {}): void {
+    onlySelf = normalizeBool(onlySelf);
+    this._pristine = true;
+
+    if (isPresent(this._parent) && !onlySelf) {
+      this._parent.markAsPristine({onlySelf: onlySelf});
     }
   }
 
@@ -206,6 +217,16 @@ export abstract class AbstractControl {
 
   hasError(errorCode: string, path: string[] = null): boolean {
     return isPresent(this.getError(errorCode, path));
+  }
+
+  get root(): AbstractControl {
+    let x: AbstractControl = this;
+
+    while (isPresent(x._parent)) {
+      x = x._parent;
+    }
+
+    return x;
   }
 
   /** @internal */
@@ -367,6 +388,101 @@ export class ControlGroup extends AbstractControl {
     return c && this._included(controlName);
   }
 
+  /**
+   * Mark the group as pristine if all children are pristine.
+   */
+  markAsPristine({onlySelf}: {onlySelf?: boolean} = {}): void {
+    onlySelf = normalizeBool(onlySelf);
+
+    var dirty = false;
+    StringMapWrapper.forEach(this.controls, (control, name) => { dirty = dirty || control.dirty; });
+
+    if (!dirty) {
+      super.markAsPristine({onlySelf: onlySelf});
+    }
+  }
+
+  /**
+   * Mark the group and all it's children as pristine.
+   */
+  markAllAsPristine({onlySelf}: {onlySelf?: boolean} = {}): void {
+    onlySelf = normalizeBool(onlySelf);
+
+    StringMapWrapper.forEach(this.controls, (control, name) => {
+      if (control instanceof ControlGroup || control instanceof ControlArray) {
+        control.markAllAsPristine({onlySelf: true});
+      } else {
+        control.markAsPristine({onlySelf: true});
+      }
+    });
+
+    super.markAsPristine({onlySelf: onlySelf});
+  }
+
+  /**
+   * Mark the group and all it's children as dirty.
+   */
+  markAllAsDirty({onlySelf}: {onlySelf?: boolean} = {}): void {
+    onlySelf = normalizeBool(onlySelf);
+
+    StringMapWrapper.forEach(this.controls, (control, name) => {
+      if (control instanceof ControlGroup || control instanceof ControlArray) {
+        control.markAllAsDirty({onlySelf: true});
+      } else {
+        control.markAsDirty({onlySelf: true});
+      }
+    });
+
+    super.markAsDirty({onlySelf: onlySelf});
+  }
+
+  /**
+   * Mark the group and all it's children as touched.
+   */
+  markAllAsTouched(): void {
+    StringMapWrapper.forEach(this.controls, (control, name) => {
+      if (control instanceof ControlGroup || control instanceof ControlArray) {
+        control.markAllAsTouched();
+      } else {
+        control.markAsTouched();
+      }
+    });
+
+    super.markAsTouched();
+  }
+
+  /**
+   * Mark the group and all it's children as untouched.
+   */
+  markAllAsUntouched(): void {
+    StringMapWrapper.forEach(this.controls, (control, name) => {
+      if (control instanceof ControlGroup || control instanceof ControlArray) {
+        control.markAllAsUntouched();
+      } else {
+        control.markAsUntouched();
+      }
+    });
+
+    super.markAsUntouched();
+  }
+
+  /**
+   * Mark the group and all it's children as pending.
+   */
+  markAllAsPending({onlySelf}: {onlySelf?: boolean} = {}): void {
+    onlySelf = normalizeBool(onlySelf);
+
+    StringMapWrapper.forEach(this.controls, (control, name) => {
+      if (control instanceof ControlGroup || control instanceof ControlArray) {
+        control.markAllAsPending({onlySelf: true});
+      } else {
+        control.markAsPending({onlySelf: true});
+      }
+    });
+
+    super.markAsPending({onlySelf: onlySelf});
+  }
+
   /** @internal */
   _setParentForControls() {
     StringMapWrapper.forEach(this.controls, (control, name) => { control.setParent(this); });
@@ -475,6 +591,108 @@ export class ControlArray extends AbstractControl {
    * Length of the control array.
    */
   get length(): number { return this.controls.length; }
+
+  /**
+  * Mark the array as pristine if all children are pristine.
+  */
+  markAsPristine({onlySelf}: {onlySelf?: boolean} = {}): void {
+    onlySelf = normalizeBool(onlySelf);
+
+    var dirty = false;
+    for (var i = 0; i < this.controls.length; i++) {
+      dirty = dirty || this.controls[i].dirty;
+    }
+
+    if (!dirty) {
+      super.markAsPristine({onlySelf: onlySelf});
+    }
+  }
+
+  /**
+   * Mark the array and all it's children as pristine.
+   */
+  markAllAsPristine({onlySelf}: {onlySelf?: boolean} = {}): void {
+    onlySelf = normalizeBool(onlySelf);
+
+    for (var i = 0; i < this.controls.length; i++) {
+      var control = this.controls[i];
+      if (control instanceof ControlGroup || control instanceof ControlArray) {
+        control.markAllAsPristine({onlySelf: true});
+      } else {
+        control.markAsPristine({onlySelf: true});
+      }
+    }
+
+    super.markAsPristine({onlySelf: onlySelf});
+  }
+
+  /**
+   * Mark the array and all it's children as dirty.
+   */
+  markAllAsDirty({onlySelf}: {onlySelf?: boolean} = {}): void {
+    onlySelf = normalizeBool(onlySelf);
+
+    for (var i = 0; i < this.controls.length; i++) {
+      var control = this.controls[i];
+      if (control instanceof ControlGroup || control instanceof ControlArray) {
+        control.markAllAsDirty({onlySelf: true});
+      } else {
+        control.markAsDirty({onlySelf: true});
+      }
+    }
+
+    super.markAsDirty({onlySelf: onlySelf});
+  }
+
+  /**
+   * Mark the array and all it's children as touched.
+   */
+  markAllAsTouched(): void {
+    for (var i = 0; i < this.controls.length; i++) {
+      var control = this.controls[i];
+      if (control instanceof ControlGroup || control instanceof ControlArray) {
+        control.markAllAsTouched();
+      } else {
+        control.markAsTouched();
+      }
+    }
+
+    super.markAsTouched();
+  }
+
+  /**
+   * Mark the array and all it's children as untouched.
+   */
+  markAllAsUntouched(): void {
+    for (var i = 0; i < this.controls.length; i++) {
+      var control = this.controls[i];
+      if (control instanceof ControlGroup || control instanceof ControlArray) {
+        control.markAllAsUntouched();
+      } else {
+        control.markAsUntouched();
+      }
+    }
+
+    super.markAsUntouched();
+  }
+
+  /**
+   * Mark the array and all it's children as pending.
+   */
+  markAllAsPending({onlySelf}: {onlySelf?: boolean} = {}): void {
+    onlySelf = normalizeBool(onlySelf);
+
+    for (var i = 0; i < this.controls.length; i++) {
+      var control = this.controls[i];
+      if (control instanceof ControlGroup || control instanceof ControlArray) {
+        control.markAllAsPending({onlySelf: true});
+      } else {
+        control.markAsPending({onlySelf: true});
+      }
+    }
+
+    super.markAsPending({onlySelf: onlySelf});
+  }
 
   /** @internal */
   _updateValue(): void { this._value = this.controls.map((control) => control.value); }

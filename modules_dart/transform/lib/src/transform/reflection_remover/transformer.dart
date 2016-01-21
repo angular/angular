@@ -18,9 +18,9 @@ import 'remove_reflection_capabilities.dart';
 /// The goal of this is to break the app's dependency on dart:mirrors.
 ///
 /// This transformer assumes that {@link DirectiveProcessor} and {@link DirectiveLinker}
-/// have already been run and that a .ng_deps.dart file has been generated for
+/// have already been run and that a .template.dart file has been generated for
 /// {@link options.entryPoint}. The instantiation of {@link ReflectionCapabilities} is
-/// replaced by calling `setupReflection` in that .ng_deps.dart file.
+/// replaced by calling `initReflector` in that .template.dart file.
 class ReflectionRemover extends Transformer implements LazyTransformer {
   final TransformerOptions options;
 

@@ -41,7 +41,7 @@ function publishRepo {
   # copy over build artifacts into the repo directory
   rm -rf $REPO_DIR/*
   cp -R $ARTIFACTS_DIR/* $REPO_DIR/
-  cp .gitignore $REPO_DIR/
+  grep -v /typings/ .gitignore > $REPO_DIR/.gitignore
   echo `date` > $REPO_DIR/BUILD_INFO
   echo $SHA >> $REPO_DIR/BUILD_INFO
 

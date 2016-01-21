@@ -44,36 +44,105 @@ describe('router', function () {
     expect(elt.text()).toBe('Home');
   }));
 
-  function registerComponent(name, options) {
-    var controller = options.controller || function () {};
+  it('should bind the component to the current router', inject(function($location) {
+    var router;
+    registerComponent('homeCmp', {
+      bindings: { router: '=' },
+      controller: function($scope, $element) {
+        this.$routerOnActivate = function() {
+          router = this.router;
+        };
+      },
+      template: 'Home'
+    });
 
-    ['$onActivate', '$onDeactivate', '$onReuse', '$canReuse', '$canDeactivate'].forEach(function (hookName) {
-      if (options[hookName]) {
-        controller.prototype[hookName] = options[hookName];
+    registerComponent('app', {
+      template: '<div ng-outlet></div>',
+      $routeConfig: [
+        { path: '/', component: 'homeCmp' }
+      ]
+    });
+
+    compile('<app></app>');
+
+    $location.path('/');
+    $rootScope.$digest();
+    var homeElement = elt.find('home-cmp');
+    expect(homeElement.text()).toBe('Home');
+    expect(homeElement.isolateScope().$ctrl.router).toBeDefined();
+    expect(router).toBeDefined();
+  }));
+
+  it('should work when an async route is provided route data', inject(function($location, $q) {
+    registerDirective('homeCmp', {
+      template: 'Home ({{homeCmp.isAdmin}})',
+      $routerOnActivate: function(next, prev) {
+        this.isAdmin = next.routeData.data.isAdmin;
       }
     });
 
+    registerDirective('app', {
+      template: '<div ng-outlet></div>',
+      $routeConfig: [
+        { path: '/', loader: function() { return $q.when('homeCmp'); }, data: { isAdmin: true } }
+      ]
+    });
+
+    compile('<app></app>');
+
+    $location.path('/');
+    $rootScope.$digest();
+    expect(elt.text()).toBe('Home (true)');
+  }));
+
+  function registerDirective(name, options) {
     function factory() {
       return {
         template: options.template || '',
         controllerAs: name,
-        controller: controller
+        controller: getController(options)
       };
     }
-
-    if (options.$canActivate) {
-      factory.$canActivate = options.$canActivate;
-    }
-    if (options.$routeConfig) {
-      factory.$routeConfig = options.$routeConfig;
-    }
-
+    applyStaticProperties(factory, options);
     $compileProvider.directive(name, factory);
+  }
+
+  function registerComponent(name, options) {
+
+    var definition = {
+      bindings: options.bindings,
+      template: options.template || '',
+      controller: getController(options),
+    }
+    applyStaticProperties(definition, options);
+    $compileProvider.component(name, definition);
   }
 
   function compile(template) {
     elt = $compile('<div>' + template + '</div>')($rootScope);
     $rootScope.$digest();
     return elt;
+  }
+
+  function getController(options) {
+    var controller = options.controller || function () {};
+    [
+      '$routerOnActivate', '$routerOnDeactivate',
+      '$routerOnReuse', '$routerCanReuse',
+      '$routerCanDeactivate'
+    ].forEach(function (hookName) {
+      if (options[hookName]) {
+        controller.prototype[hookName] = options[hookName];
+      }
+    });
+    return controller;
+  }
+
+  function applyStaticProperties(target, options) {
+    ['$canActivate', '$routeConfig'].forEach(function(property) {
+      if (options[property]) {
+        target[property] = options[property];
+      }
+    });
   }
 });

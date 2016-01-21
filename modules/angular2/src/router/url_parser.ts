@@ -206,7 +206,7 @@ export function serializeParams(paramMap: {[key: string]: any}): string[] {
   var params = [];
   if (isPresent(paramMap)) {
     StringMapWrapper.forEach(paramMap, (value, key) => {
-      if (value == true) {
+      if (value === true) {
         params.push(key);
       } else {
         params.push(key + '=' + value);

@@ -68,7 +68,8 @@ const kServedPaths = [
   'playground/src/web_workers/kitchen_sink',
   'playground/src/web_workers/todo',
   'playground/src/web_workers/images',
-  'playground/src/web_workers/message_broker'
+  'playground/src/web_workers/message_broker',
+  'playground/src/web_workers/router'
 ];
 
 
@@ -170,6 +171,14 @@ module.exports = function makeBrowserTree(options, destinationPath) {
     patterns: [{match: /\$SCRIPTS\$/, replacement: jsReplace('SCRIPTS')}]
   });
 
+  let ambientTypings = [
+    'angular2/typings/hammerjs/hammerjs.d.ts',
+    'angular2/typings/node/node.d.ts',
+    'angular2/manual_typings/globals.d.ts',
+    'angular2/typings/es6-collections/es6-collections.d.ts',
+    'angular2/typings/es6-promise/es6-promise.d.ts'
+  ];
+
   // Use TypeScript to transpile the *.ts files to ES5
   var es5Tree = compileWithTypescript(es5ModulesTree, {
     declaration: false,
@@ -179,7 +188,7 @@ module.exports = function makeBrowserTree(options, destinationPath) {
     moduleResolution: 'classic',
     noEmitOnError: !noTypeChecks,
     rootDir: './',
-    rootFilePaths: ['angular2/manual_typings/globals.d.ts'],
+    rootFilePaths: ambientTypings,
     inlineSourceMap: sourceMaps,
     inlineSources: sourceMaps,
     target: 'es5'
@@ -227,7 +236,7 @@ module.exports = function makeBrowserTree(options, destinationPath) {
     destDir: '/'
   });
 
-  if (modules.benchmarks || modules.benchmarks_external || modules.playground) {
+  if (modules.playground) {
     htmlTree = replace(htmlTree, {
       files: ['playground*/**/*.html'],
       patterns: [
@@ -310,7 +319,11 @@ module.exports = function makeBrowserTree(options, destinationPath) {
       experimentalDecorators: true,
       noEmitOnError: false,
       rootDir: './',
-      rootFilePaths: ['angular2/manual_typings/globals-es6.d.ts'],
+      rootFilePaths: [
+        'angular2/typings/zone.js/zone.js.d.ts',
+        'angular2/typings/hammerjs/hammerjs.d.ts',
+        'angular2/typings/node/node.d.ts',
+      ],
       inlineSourceMap: sourceMaps,
       inlineSources: sourceMaps,
       target: 'es6'

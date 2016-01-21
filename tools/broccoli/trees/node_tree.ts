@@ -9,6 +9,7 @@ var path = require('path');
 import renderLodashTemplate from '../broccoli-lodash';
 import replace from '../broccoli-replace';
 var stew = require('broccoli-stew');
+var writeFile = require('broccoli-file-creator');
 
 var projectRootDir = path.normalize(path.join(__dirname, '..', '..', '..', '..'));
 
@@ -32,9 +33,16 @@ module.exports = function makeNodeTree(projects, destinationPath) {
     ]
   });
 
+  let ambientTypings = [
+    'angular2/typings/hammerjs/hammerjs.d.ts',
+    'angular2/typings/node/node.d.ts',
+    'angular2/manual_typings/globals.d.ts',
+    'angular2/typings/es6-collections/es6-collections.d.ts',
+    'angular2/typings/es6-promise/es6-promise.d.ts'
+  ];
+
   // Compile the sources and generate the @internal .d.ts
-  let compiledSrcTreeWithInternals =
-      compileTree(srcTree, true, ['angular2/manual_typings/globals.d.ts']);
+  let compiledSrcTreeWithInternals = compileTree(srcTree, true, ambientTypings);
 
   var testTree = new Funnel('modules', {
     include: [
@@ -85,11 +93,10 @@ module.exports = function makeNodeTree(projects, destinationPath) {
 
   testTree = mergeTrees([testTree, srcPrivateDeclarations]);
 
-  let compiledTestTree = compileTree(testTree, false, [
+  let compiledTestTree = compileTree(testTree, false, ambientTypings.concat([
     'angular2/typings/jasmine/jasmine.d.ts',
     'angular2/typings/angular-protractor/angular-protractor.d.ts',
-    'angular2/manual_typings/globals.d.ts'
-  ]);
+  ]));
 
   // Merge the compiled sources and tests
   let compiledSrcTree =
@@ -112,9 +119,23 @@ module.exports = function makeNodeTree(projects, destinationPath) {
   var srcPkgJsons = extractPkgJsons(srcTree, BASE_PACKAGE_JSON);
   var testPkgJsons = extractPkgJsons(testTree, BASE_PACKAGE_JSON);
 
-  var typingsTree = new Funnel(
-      'modules',
-      {include: ['angular2/typings/**/*.d.ts', 'angular2/manual_typings/*.d.ts'], destDir: '/'});
+  // Copy es6 typings so quickstart doesn't require typings install
+  let typingsTree = mergeTrees([
+    new Funnel('modules',
+               {
+                 include: [
+                   'angular2/typings/es6-collections/es6-collections.d.ts',
+                   'angular2/typings/es6-promise/es6-promise.d.ts',
+                 ]
+               }),
+    writeFile('angular2/typings/browser.d.ts',
+              '// Typings needed for compilation with --target=es5\n' +
+                  '///<reference path="./es6-collections/es6-collections.d.ts"/>\n' +
+                  '///<reference path="./es6-promise/es6-promise.d.ts"/>\n' +
+                  '// Workaround for https://github.com/ReactiveX/RxJS/issues/1270\n' +
+                  '// to be removed when angular2 upgrades to rxjs beta.2\n' +
+                  'declare type PromiseConstructor = typeof Promise;\n')
+  ]);
 
   var nodeTree =
       mergeTrees([compiledTree, srcDocs, testDocs, srcPkgJsons, testPkgJsons, typingsTree]);
@@ -138,22 +159,6 @@ module.exports = function makeNodeTree(projects, destinationPath) {
   // See https://github.com/Microsoft/TypeScript/issues/3576
   nodeTree = replace(
       nodeTree, {files: ['**/*.js'], patterns: [{match: /^/, replacement: () => `'use strict';`}]});
-
-  // Add a line to the end of our top-level .d.ts file.
-  // This HACK for transitive typings is a workaround for
-  // https://github.com/Microsoft/TypeScript/issues/5097
-  //
-  // This allows users to get our top-level dependencies like zone.d.ts
-  // to appear when they compile against angular2.
-  //
-  // This carries the risk that the user brings their own copy of that file
-  // (or any other symbols exported here) and they will get a compiler error
-  // because of the duplicate definitions.
-  // TODO(alexeagle): remove this when typescript releases a fix
-  nodeTree = replace(nodeTree, {
-    files: ['angular2/core.d.ts'],
-    patterns: [{match: /$/, replacement: 'import "./manual_typings/globals-es6.d.ts";\r\n'}]
-  });
 
   return destCopy(nodeTree, destinationPath);
 };

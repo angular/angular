@@ -11,8 +11,10 @@ import 'package:guinness/guinness.dart';
 import 'package:angular2/src/core/change_detection/codegen_name_util.dart'
     show CONTEXT_ACCESSOR;
 import 'package:angular2/src/platform/server/html_adapter.dart';
-import 'package:angular2/src/transform/template_compiler/generator.dart';
+import 'package:angular2/src/transform/common/code/ng_deps_code.dart';
+import 'package:angular2/src/transform/common/code/source_module.dart';
 import 'package:angular2/src/transform/common/zone.dart' as zone;
+import 'package:angular2/src/transform/template_compiler/generator.dart';
 
 import '../common/compile_directive_metadata/ng_for.ng_meta.dart' as ngMeta;
 import '../common/ng_meta_helper.dart';
@@ -109,7 +111,7 @@ void allTests() {
 
     final outputs = await process(fooAssetId);
     // TODO(kegluenq): Does this next line need to be updated as well?
-    expect(outputs.templatesCode).not.toContain('notifyDispatcher');
+    expect(_generatedCode(outputs)).not.toContain('notifyDispatcher');
   });
 
   it('should parse simple expressions in inline templates.', () async {
@@ -121,14 +123,11 @@ void allTests() {
     final outputs = await process(fooAssetId);
     final ngDeps = outputs.ngDeps;
     expect(ngDeps).toBeNotNull();
-    expect(ngDeps.imports).toContain(new ImportModel()
-      ..uri = 'foo.template.dart'
-      ..prefix = '_templates');
     expect(ngDeps.reflectables.first.annotations)
         .toContain(new AnnotationModel()
-          ..name = '_templates.hostViewFactory_FooComponent'
+          ..name = 'hostViewFactory_FooComponent'
           ..isConstObject = true);
-    expect(outputs.templatesCode)
+    expect(_generatedCode(outputs))
       ..toContain('$CONTEXT_ACCESSOR.greeting')
       ..toContain('$CONTEXT_ACCESSOR.b');
   });
@@ -142,14 +141,11 @@ void allTests() {
     final outputs = await process(fooAssetId);
     final ngDeps = outputs.ngDeps;
     expect(ngDeps).toBeNotNull();
-    expect(ngDeps.imports).toContain(new ImportModel()
-      ..uri = 'foo.template.dart'
-      ..prefix = '_templates');
     expect(ngDeps.reflectables.first.annotations)
         .toContain(new AnnotationModel()
-          ..name = '_templates.hostViewFactory_FooComponent'
+          ..name = 'hostViewFactory_FooComponent'
           ..isConstObject = true);
-    expect(outputs.templatesCode)..toContain('$CONTEXT_ACCESSOR.action()');
+    expect(_generatedCode(outputs))..toContain('$CONTEXT_ACCESSOR.action()');
   });
 
   it('should parse `View` directives with a single dependency.', () async {
@@ -172,15 +168,12 @@ void allTests() {
     final outputs = await process(fooAssetId);
     final ngDeps = outputs.ngDeps;
     expect(ngDeps).toBeNotNull();
-    expect(ngDeps.imports).toContain(new ImportModel()
-      ..uri = 'foo.template.dart'
-      ..prefix = '_templates');
     expect(ngDeps.reflectables.first.annotations)
         .toContain(new AnnotationModel()
-          ..name = '_templates.hostViewFactory_FooComponent'
+          ..name = 'hostViewFactory_FooComponent'
           ..isConstObject = true);
 
-    expect(outputs.templatesCode)
+    expect(_generatedCode(outputs))
       ..toContain("import 'bar.dart'")
       ..toContain("import 'bar.template.dart'");
   });
@@ -206,15 +199,12 @@ void allTests() {
     final outputs = await process(fooAssetId);
     final ngDeps = outputs.ngDeps;
     expect(ngDeps).toBeNotNull();
-    expect(ngDeps.imports).toContain(new ImportModel()
-      ..uri = 'foo.template.dart'
-      ..prefix = '_templates');
     expect(ngDeps.reflectables.first.annotations)
         .toContain(new AnnotationModel()
-          ..name = '_templates.hostViewFactory_FooComponent'
+          ..name = 'hostViewFactory_FooComponent'
           ..isConstObject = true);
 
-    expect(outputs.templatesCode)
+    expect(_generatedCode(outputs))
       ..toContain("import 'bar.dart'")
       ..toContain("import 'bar.template.dart'");
   });
@@ -238,15 +228,12 @@ void allTests() {
     final outputs = await process(fooAssetId);
     final ngDeps = outputs.ngDeps;
     expect(ngDeps).toBeNotNull();
-    expect(ngDeps.imports).toContain(new ImportModel()
-      ..uri = 'foo.template.dart'
-      ..prefix = '_templates');
     expect(ngDeps.reflectables.first.annotations)
         .toContain(new AnnotationModel()
-          ..name = '_templates.hostViewFactory_FooComponent'
+          ..name = 'hostViewFactory_FooComponent'
           ..isConstObject = true);
 
-    expect(outputs.templatesCode)
+    expect(_generatedCode(outputs))
       ..toContain("import 'bar.dart'")
       ..toContain("import 'bar.template.dart'");
   });
@@ -260,7 +247,7 @@ void allTests() {
     final firstOutputs = await process(fooAssetId);
     final secondOutputs = await process(fooAssetId);
     expect(firstOutputs.ngDeps).toEqual(secondOutputs.ngDeps);
-    expect(firstOutputs.templatesCode).toEqual(secondOutputs.templatesCode);
+    expect(_generatedCode(firstOutputs)).toEqual(_generatedCode(secondOutputs));
   });
 
   it('should generate getters for Component#outputs.', () async {
@@ -370,7 +357,7 @@ void allTests() {
         platformDirectives: ['package:a/bar.dart#PLATFORM']);
     final ngDeps = outputs.ngDeps;
     expect(ngDeps).toBeNotNull();
-    expect(outputs.templatesCode)
+    expect(_generatedCode(outputs))
       ..toBeNotNull()
       ..toContain(barComponentMeta.template.template);
   });
@@ -389,7 +376,7 @@ void allTests() {
         platformDirectives: ['package:a/bar.dart#PLATFORM']);
     final ngDeps = outputs.ngDeps;
     expect(ngDeps).toBeNotNull();
-    expect(outputs.templatesCode)
+    expect(_generatedCode(outputs))
       ..toBeNotNull()
       ..toContain(barComponentMeta.template.template);
   });
@@ -440,7 +427,7 @@ void allTests() {
 
     final outputs = await process(fooAssetId);
 
-    expect(outputs.templatesCode)
+    expect(_generatedCode(outputs))
       ..toContain("import 'bar.dart'")
       ..toContain(barPipeMeta.name);
   });
@@ -455,10 +442,17 @@ void allTests() {
     final outputs = await process(fooAssetId,
         platformPipes: ['package:a/bar.dart#PLATFORM']);
 
-    expect(outputs.templatesCode)
+    expect(_generatedCode(outputs))
       ..toContain("import 'bar.dart'")
       ..toContain(barPipeMeta.name);
   });
+}
+
+String _generatedCode(Outputs outputs) {
+  final StringBuffer buf = new StringBuffer();
+  final writer = new NgDepsWriter(buf);
+  writeTemplateFile(writer, outputs.ngDeps, outputs.templatesSource);
+  return buf.toString();
 }
 
 void _formatThenExpectEquals(String actual, String expected) {

@@ -8,7 +8,6 @@ import 'package:angular2/src/core/linker/directive_resolver.dart';
 import 'package:angular2/src/core/linker/view.dart';
 import 'package:angular2/src/core/linker/element_ref.dart';
 import 'package:angular2/src/core/linker/view_manager.dart';
-import 'package:angular2/src/core/linker/view_listener.dart';
 import 'package:angular2/src/platform/dom/dom_adapter.dart';
 import 'package:angular2/testing_internal.dart';
 
@@ -51,9 +50,6 @@ class SpyRenderer extends SpyObject implements Renderer {}
 
 @proxy
 class SpyRootRenderer extends SpyObject implements RootRenderer {}
-
-@proxy
-class SpyAppViewListener extends SpyObject implements AppViewListener {}
 
 @proxy
 class SpyDomAdapter extends SpyObject implements DomAdapter {}

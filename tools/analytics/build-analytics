@@ -40,9 +40,13 @@ switch (eventType) {
     fs.writeFileSync(startTimestampFilePath, Date.now(), 'utf-8');
     break;
   case 'success':
-    var startTime = fs.readFileSync(startTimestampFilePath, 'utf-8');
-    analytics[actionCategory + 'Success'](actionName, Date.now() - startTime);
-    fs.unlinkSync(startTimestampFilePath);
+    try {
+      var startTime = fs.readFileSync(startTimestampFilePath, 'utf-8');
+      analytics[actionCategory + 'Success'](actionName, Date.now() - startTime);
+      fs.unlinkSync(startTimestampFilePath);
+    } catch(e) {
+      console.log('No start timestamp file "' + startTimestampFilePath + '" found, skipping analytics.');
+    }
     break;
   case 'error':
     var startTime = fs.readFileSync(startTimestampFilePath, 'utf-8');

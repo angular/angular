@@ -225,6 +225,19 @@ class ListWrapper {
 
 bool isListLikeIterable(obj) => obj is Iterable;
 
+bool areIterablesEqual(Iterable a, Iterable b, Function comparator) {
+  var iterator1 = a.iterator;
+  var iterator2 = b.iterator;
+
+  while (true) {
+    var done1 = !iterator1.moveNext();
+    var done2 = !iterator2.moveNext();
+    if (done1 && done2) return true;
+    if (done1 || done2) return false;
+    if (!comparator(iterator2.current, iterator2.current)) return false;
+  }
+}
+
 void iterateListLike(iter, fn(item)) {
   assert(iter is Iterable);
   for (var item in iter) {

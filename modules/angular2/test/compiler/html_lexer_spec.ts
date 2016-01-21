@@ -114,9 +114,9 @@ export function main() {
       });
     });
 
-    describe('cdata', () => {
-      it('should parse cdata', () => {
-        expect(tokenizeAndHumanizeParts('<![cdata[t\ne\rs\r\nt]]>'))
+    describe('CDATA', () => {
+      it('should parse CDATA', () => {
+        expect(tokenizeAndHumanizeParts('<![CDATA[t\ne\rs\r\nt]]>'))
             .toEqual([
               [HtmlTokenType.CDATA_START],
               [HtmlTokenType.RAW_TEXT, 't\ne\ns\nt'],
@@ -126,22 +126,22 @@ export function main() {
       });
 
       it('should store the locations', () => {
-        expect(tokenizeAndHumanizeSourceSpans('<![cdata[t\ne\rs\r\nt]]>'))
+        expect(tokenizeAndHumanizeSourceSpans('<![CDATA[t\ne\rs\r\nt]]>'))
             .toEqual([
-              [HtmlTokenType.CDATA_START, '<![cdata['],
+              [HtmlTokenType.CDATA_START, '<![CDATA['],
               [HtmlTokenType.RAW_TEXT, 't\ne\rs\r\nt'],
               [HtmlTokenType.CDATA_END, ']]>'],
               [HtmlTokenType.EOF, '']
             ]);
       });
 
-      it('should report <![ without cdata[', () => {
+      it('should report <![ without CDATA[', () => {
         expect(tokenizeAndHumanizeErrors('<![a'))
             .toEqual([[HtmlTokenType.CDATA_START, 'Unexpected character "a"', '0:3']]);
       });
 
       it('should report missing end cdata', () => {
-        expect(tokenizeAndHumanizeErrors('<![cdata['))
+        expect(tokenizeAndHumanizeErrors('<![CDATA['))
             .toEqual([[HtmlTokenType.RAW_TEXT, 'Unexpected character "EOF"', '0:9']]);
       });
     });
@@ -367,8 +367,8 @@ export function main() {
       });
 
       it('should parse hexadecimal entities', () => {
-        expect(tokenizeAndHumanizeParts('&#x41;'))
-            .toEqual([[HtmlTokenType.TEXT, 'A'], [HtmlTokenType.EOF]]);
+        expect(tokenizeAndHumanizeParts('&#x41;&#X41;'))
+            .toEqual([[HtmlTokenType.TEXT, 'AA'], [HtmlTokenType.EOF]]);
       });
 
       it('should parse decimal entities', () => {
@@ -473,7 +473,7 @@ export function main() {
       });
 
       it('should not detect entities', () => {
-        expect(tokenizeAndHumanizeParts(`<script>&amp;</script>`))
+        expect(tokenizeAndHumanizeParts(`<script>&amp;</SCRIPT>`))
             .toEqual([
               [HtmlTokenType.TAG_OPEN_START, null, 'script'],
               [HtmlTokenType.TAG_OPEN_END],
@@ -584,6 +584,19 @@ export function main() {
         let error = new HtmlTokenError('**ERROR**', null, location);
         expect(error.toString())
             .toEqual(`**ERROR** ("\n222\n333\n[ERROR ->]E\n444\n555\n"): file://@123:456`);
+      });
+    });
+
+    describe('unicode characters', () => {
+      it('should support unicode characters', () => {
+        expect(tokenizeAndHumanizeSourceSpans(`<p>İ</p>`))
+            .toEqual([
+              [HtmlTokenType.TAG_OPEN_START, '<p'],
+              [HtmlTokenType.TAG_OPEN_END, '>'],
+              [HtmlTokenType.TEXT, 'İ'],
+              [HtmlTokenType.TAG_CLOSE, '</p>'],
+              [HtmlTokenType.EOF, '']
+            ]);
       });
     });
 

@@ -4,22 +4,22 @@ Routing and navigation
 @description
 {@target ts}`import {RouteConfig, ROUTER_DIRECTIVES, ROUTER_PROVIDERS, ...} from 'angular2/router';`{@endtarget}
 {@target js}Available from the `ng.router` namespace{@endtarget}
-{@target dart}`import 'package:angular2/router.dart';`{@endtarget}
+{@target dart}`import 'package:angular2/angular2.dart';`{@endtarget}
 
 
 @cheatsheetItem
 syntax(ts):
 `@RouteConfig([
-  { path: '/:myParam', component: MyComponent, as: 'MyCmp' },
-  { path: '/staticPath', component: ..., as: ...},
-  { path: '/*wildCardParam', component: ..., as: ...}
+  { path: '/:myParam', component: MyComponent, name: 'MyCmp' },
+  { path: '/staticPath', component: ..., name: ...},
+  { path: '/*wildCardParam', component: ..., name: ...}
 ])
 class MyComponent() {}`|`@RouteConfig`
 syntax(js):
 `var MyComponent = ng.router.RouteConfig([
-  { path: '/:myParam', component: MyComponent, as: 'MyCmp' },
-  { path: '/staticPath', component: ..., as: ...},
-  { path: '/*wildCardParam', component: ..., as: ...}
+  { path: '/:myParam', component: MyComponent, name: 'MyCmp' },
+  { path: '/staticPath', component: ..., name: ...},
+  { path: '/*wildCardParam', component: ..., name: ...}
 ]).Class({
   constructor: function() {}
 });`|`ng.router.RouteConfig`

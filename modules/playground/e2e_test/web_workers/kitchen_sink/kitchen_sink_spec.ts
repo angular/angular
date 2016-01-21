@@ -23,9 +23,10 @@ describe('WebWorkers Kitchen Sink', function() {
     // This test can't wait for Angular 2 as Testability is not available when using WebWorker
     browser.ignoreSynchronization = true;
     browser.get(URL);
+    let changeButtonSelector = 'hello-app .changeButton';
 
-    browser.wait(protractor.until.elementLocated(by.css(selector)), 15000);
-    element(by.css("hello-app .changeButton")).click();
+    browser.wait(protractor.until.elementLocated(by.css(changeButtonSelector)), 15000);
+    element(by.css(changeButtonSelector)).click();
     var elem = element(by.css(selector));
     browser.wait(protractor.until.elementTextIs(elem, "howdy world!"), 5000);
     expect(elem.getText()).toEqual("howdy world!");

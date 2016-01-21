@@ -12,6 +12,9 @@ import {
   xit,
 } from 'angular2/testing_internal';
 
+
+import {By} from 'angular2/platform/common_dom';
+
 import {specs, compile, TEST_ROUTER_PROVIDERS, clickOnElement, getHref} from '../util';
 
 import {Router, AsyncRoute, Route, Location} from 'angular2/router';
@@ -33,7 +36,7 @@ import {
 } from './fixture_components';
 
 function getLinkElement(rtc: ComponentFixture) {
-  return rtc.debugElement.componentViewChildren[0].nativeElement;
+  return rtc.debugElement.query(By.css('a')).nativeElement;
 }
 
 function asyncRoutesWithoutChildrenWithRouteData() {

@@ -155,10 +155,12 @@ function ngOutletDirective($animate, $q: ng.IQService, $router) {
         }
 
         this.controller.$$routeParams = instruction.params;
-        this.controller.$$template = '<div ' + dashCase(componentName) + '></div>';
+        this.controller.$$template =
+            '<' + dashCase(componentName) + ' router="$$router"></' + dashCase(componentName) + '>';
         this.controller.$$router = this.router.childRouter(instruction.componentType);
 
         let newScope = scope.$new();
+        newScope.$$router = this.controller.$$router;
 
         let clone = $transclude(newScope, clone => {
           $animate.enter(clone, null, this.currentElement || element);
@@ -285,13 +287,13 @@ function dashCase(str: string): string {
  * A module for adding new a routing system Angular 1.
  */
 angular.module('ngComponentRouter', [])
-    .directive('ngOutlet', ngOutletDirective)
-    .directive('ngOutlet', ngOutletFillContentDirective)
-    .directive('ngLink', ngLinkDirective);
+    .directive('ngOutlet', ['$animate', '$q', '$router', ngOutletDirective])
+    .directive('ngOutlet', ['$compile', ngOutletFillContentDirective])
+    .directive('ngLink', ['$router', '$parse', ngLinkDirective]);
 
 /*
  * A module for inspecting controller constructors
  */
 angular.module('ng')
     .provider('$$directiveIntrospector', DirectiveIntrospectorProvider)
-    .config(compilerProviderDecorator);
+    .config(['$compileProvider', '$$directiveIntrospectorProvider', compilerProviderDecorator]);

@@ -84,7 +84,7 @@ export interface NgMatchers extends jasmine.Matchers {
   not: NgMatchers;
 }
 
-var _global: jasmine.GlobalPolluter = <any>(typeof window === 'undefined' ? global : window);
+var _global = <any>(typeof window === 'undefined' ? global : window);
 
 /**
  * Jasmine matching function with Angular matchers mixed in.

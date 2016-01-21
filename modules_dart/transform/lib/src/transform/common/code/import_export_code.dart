@@ -78,8 +78,8 @@ void _populateCombinators(NamespaceDirective node, dynamic model) {
   }
 }
 
-/// Defines the format in which an [ImportModel] is expressed as Dart code in a
-/// `.ng_deps.dart` file.
+/// Defines the format in which an [ImportModel] is expressed as Dart code when
+/// registered with the reflector.
 abstract class ImportWriterMixin {
   StringBuffer get buffer;
 
@@ -96,8 +96,8 @@ abstract class ImportWriterMixin {
   }
 }
 
-/// Defines the format in which an [ExportModel] is expressed as Dart code in a
-/// `.ng_deps.dart` file.
+/// Defines the format in which an [ExportModel] is expressed as Dart code when
+/// registered with the reflector.
 abstract class ExportWriterMixin {
   StringBuffer get buffer;
 

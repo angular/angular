@@ -32,8 +32,7 @@ export function main() {
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
          tcb.createAsync(App).then((tc) => {
            tc.detectChanges();
-           expect(asNativeElements(tc.debugElement.componentViewChildren))
-               .toHaveText('frame(lock)');
+           expect(asNativeElements(tc.debugElement.children)).toHaveText('frame(lock)');
            async.done();
          });
        }));

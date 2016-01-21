@@ -421,6 +421,10 @@ export function main() {
 
       it('should parse conditional expression',
          () => { checkInterpolation('{{ a < b ? a : b }}'); });
+
+      it('should parse expression with newline characters', () => {
+        checkInterpolation(`{{ 'foo' +\n 'bar' +\r 'baz' }}`, `{{ "foo" + "bar" + "baz" }}`);
+      });
     });
 
     describe("parseSimpleBinding", () => {

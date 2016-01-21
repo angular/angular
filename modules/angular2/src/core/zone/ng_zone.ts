@@ -1,9 +1,9 @@
 import {ListWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
-import {normalizeBlank, isPresent, global} from 'angular2/src/facade/lang';
+import {normalizeBlank, isPresent, global, ZoneLike} from 'angular2/src/facade/lang';
 import {ObservableWrapper, EventEmitter} from 'angular2/src/facade/async';
 import {wtfLeave, wtfCreateScope, WtfScopeFn} from '../profile/profile';
 
-export interface NgZoneZone extends Zone {
+export interface NgZoneZone extends ZoneLike {
   /** @internal */
   _innerZone: boolean;
 }
@@ -348,8 +348,9 @@ export class NgZone {
     var errorHandling;
 
     if (enableLongStackTrace) {
-      errorHandling = StringMapWrapper.merge(
-          Zone.longStackTraceZone, {onError: function(e) { ngZone._notifyOnError(this, e); }});
+      errorHandling =
+          StringMapWrapper.merge(global.Zone.longStackTraceZone,
+                                 {onError: function(e) { ngZone._notifyOnError(this, e); }});
     } else {
       errorHandling = {onError: function(e) { ngZone._notifyOnError(this, e); }};
     }
@@ -422,14 +423,14 @@ export class NgZone {
                 fn();
                 ListWrapper.remove(ngZone._pendingTimeouts, id);
               };
-              id = parentSetTimeout(cb, delay, args);
+              id = parentSetTimeout.call(this, cb, delay, args);
               ngZone._pendingTimeouts.push(id);
               return id;
             };
           },
           '$clearTimeout': function(parentClearTimeout) {
             return function(id: number) {
-              parentClearTimeout(id);
+              parentClearTimeout.call(this, id);
               ListWrapper.remove(ngZone._pendingTimeouts, id);
             };
           },

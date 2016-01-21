@@ -22,6 +22,11 @@ export var TEST_VALUE = 23;
 const THIS_MODULE_URL = `package:angular2/test/compiler/eval_module_spec${IS_DART?'.dart':'.js'}`;
 
 export function main() {
+  // Dart's isolate support is broken, and these tests will be obsolote soon with
+  // https://github.com/angular/angular/issues/6270
+  if (IS_DART) {
+    return;
+  }
   describe('evalModule', () => {
     it('should call the "run" function and allow to use imports',
        inject([AsyncTestCompleter], (async) => {

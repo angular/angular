@@ -31,7 +31,7 @@ export {
   NgSelectOption,
   SelectControlValueAccessor
 } from './forms/directives/select_control_value_accessor';
-export {FORM_DIRECTIVES} from './forms/directives';
+export {FORM_DIRECTIVES, RadioButtonState} from './forms/directives';
 export {NG_VALIDATORS, NG_ASYNC_VALIDATORS, Validators} from './forms/validators';
 export {
   RequiredValidator,
@@ -39,4 +39,25 @@ export {
   MaxLengthValidator,
   Validator
 } from './forms/directives/validators';
-export {FormBuilder, FORM_PROVIDERS, FORM_BINDINGS} from './forms/form_builder';
+export {FormBuilder} from './forms/form_builder';
+import {FormBuilder} from './forms/form_builder';
+import {RadioControlRegistry} from './forms/directives/radio_control_value_accessor';
+import {Type, CONST_EXPR} from 'angular2/src/facade/lang';
+
+/**
+ * Shorthand set of providers used for building Angular forms.
+ *
+ * ### Example
+ *
+ * ```typescript
+ * bootstrap(MyApp, [FORM_PROVIDERS]);
+ * ```
+ */
+export const FORM_PROVIDERS: Type[] = CONST_EXPR([FormBuilder, RadioControlRegistry]);
+
+/**
+ * See {@link FORM_PROVIDERS} instead.
+ *
+ * @deprecated
+ */
+export const FORM_BINDINGS = FORM_PROVIDERS;
