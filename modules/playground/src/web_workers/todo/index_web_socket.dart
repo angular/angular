@@ -10,7 +10,6 @@ main() {
   var webSocket = new WebSocket("ws://127.0.0.1:1337/ws");
   webSocket.onOpen.listen((e) {
     var bus = new WebSocketMessageBus.fromWebSocket(webSocket);
-
     platform([WORKER_RENDER_PLATFORM])
     .application([WORKER_RENDER_APPLICATION_COMMON, new Provider(MessageBus, useValue: bus),
       new Provider(APP_INITIALIZER, 
