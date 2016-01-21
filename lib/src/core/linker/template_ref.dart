@@ -28,9 +28,7 @@ abstract class TemplateRef {
    */
 
   // TODO(i): rename to anchor or location
-  ElementRef get elementRef {
-    return null;
-  }
+  ElementRef elementRef;
 }
 
 class TemplateRef_ extends TemplateRef {

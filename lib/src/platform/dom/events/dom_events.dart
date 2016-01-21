@@ -6,6 +6,7 @@ import "event_manager.dart" show EventManagerPlugin, EventManager;
 
 @Injectable()
 class DomEventsPlugin extends EventManagerPlugin {
+  EventManager manager;
   // This plugin should come last in the list of plugins, because it accepts all
 
   // events.
