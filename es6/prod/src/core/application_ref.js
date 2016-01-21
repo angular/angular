@@ -130,19 +130,28 @@ export class PlatformRef_ extends PlatformRef {
     get injector() { return this._injector; }
     application(providers) {
         var app = this._initApp(createNgZone(), providers);
+        if (PromiseWrapper.isPromise(app)) {
+            throw new BaseException("Cannot use asyncronous app initializers with application. Use asyncApplication instead.");
+        }
         return app;
     }
     asyncApplication(bindingFn, additionalProviders) {
         var zone = createNgZone();
         var completer = PromiseWrapper.completer();
-        zone.run(() => {
-            PromiseWrapper.then(bindingFn(zone), (providers) => {
-                if (isPresent(additionalProviders)) {
-                    providers = ListWrapper.concat(providers, additionalProviders);
-                }
-                completer.resolve(this._initApp(zone, providers));
+        if (bindingFn === null) {
+            completer.resolve(this._initApp(zone, additionalProviders));
+        }
+        else {
+            zone.run(() => {
+                PromiseWrapper.then(bindingFn(zone), (providers) => {
+                    if (isPresent(additionalProviders)) {
+                        providers = ListWrapper.concat(providers, additionalProviders);
+                    }
+                    let promise = this._initApp(zone, providers);
+                    completer.resolve(promise);
+                });
             });
-        });
+        }
         return completer.promise;
     }
     _initApp(zone, providers) {
@@ -170,8 +179,13 @@ export class PlatformRef_ extends PlatformRef {
         });
         app = new ApplicationRef_(this, zone, injector);
         this._applications.push(app);
-        _runAppInitializers(injector);
-        return app;
+        var promise = _runAppInitializers(injector);
+        if (promise !== null) {
+            return PromiseWrapper.then(promise, (_) => app);
+        }
+        else {
+            return app;
+        }
     }
     dispose() {
         ListWrapper.clone(this._applications).forEach((app) => app.dispose());
@@ -183,8 +197,21 @@ export class PlatformRef_ extends PlatformRef {
 }
 function _runAppInitializers(injector) {
     let inits = injector.getOptional(APP_INITIALIZER);
-    if (isPresent(inits))
-        inits.forEach(init => init());
+    let promises = [];
+    if (isPresent(inits)) {
+        inits.forEach(init => {
+            var retVal = init();
+            if (PromiseWrapper.isPromise(retVal)) {
+                promises.push(retVal);
+            }
+        });
+    }
+    if (promises.length > 0) {
+        return PromiseWrapper.all(promises);
+    }
+    else {
+        return null;
+    }
 }
 /**
  * A reference to an Angular application running on a page.

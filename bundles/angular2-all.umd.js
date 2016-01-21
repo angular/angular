@@ -12560,20 +12560,29 @@ return /******/ (function(modules) { // webpackBootstrap
 	    });
 	    PlatformRef_.prototype.application = function (providers) {
 	        var app = this._initApp(createNgZone(), providers);
+	        if (async_1.PromiseWrapper.isPromise(app)) {
+	            throw new exceptions_1.BaseException("Cannot use asyncronous app initializers with application. Use asyncApplication instead.");
+	        }
 	        return app;
 	    };
 	    PlatformRef_.prototype.asyncApplication = function (bindingFn, additionalProviders) {
 	        var _this = this;
 	        var zone = createNgZone();
 	        var completer = async_1.PromiseWrapper.completer();
-	        zone.run(function () {
-	            async_1.PromiseWrapper.then(bindingFn(zone), function (providers) {
-	                if (lang_1.isPresent(additionalProviders)) {
-	                    providers = collection_1.ListWrapper.concat(providers, additionalProviders);
-	                }
-	                completer.resolve(_this._initApp(zone, providers));
+	        if (bindingFn === null) {
+	            completer.resolve(this._initApp(zone, additionalProviders));
+	        }
+	        else {
+	            zone.run(function () {
+	                async_1.PromiseWrapper.then(bindingFn(zone), function (providers) {
+	                    if (lang_1.isPresent(additionalProviders)) {
+	                        providers = collection_1.ListWrapper.concat(providers, additionalProviders);
+	                    }
+	                    var promise = _this._initApp(zone, providers);
+	                    completer.resolve(promise);
+	                });
 	            });
-	        });
+	        }
 	        return completer.promise;
 	    };
 	    PlatformRef_.prototype._initApp = function (zone, providers) {
@@ -12602,8 +12611,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	        });
 	        app = new ApplicationRef_(this, zone, injector);
 	        this._applications.push(app);
-	        _runAppInitializers(injector);
-	        return app;
+	        var promise = _runAppInitializers(injector);
+	        if (promise !== null) {
+	            return async_1.PromiseWrapper.then(promise, function (_) { return app; });
+	        }
+	        else {
+	            return app;
+	        }
 	    };
 	    PlatformRef_.prototype.dispose = function () {
 	        collection_1.ListWrapper.clone(this._applications).forEach(function (app) { return app.dispose(); });
@@ -12617,8 +12631,21 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.PlatformRef_ = PlatformRef_;
 	function _runAppInitializers(injector) {
 	    var inits = injector.getOptional(application_tokens_1.APP_INITIALIZER);
-	    if (lang_1.isPresent(inits))
-	        inits.forEach(function (init) { return init(); });
+	    var promises = [];
+	    if (lang_1.isPresent(inits)) {
+	        inits.forEach(function (init) {
+	            var retVal = init();
+	            if (async_1.PromiseWrapper.isPromise(retVal)) {
+	                promises.push(retVal);
+	            }
+	        });
+	    }
+	    if (promises.length > 0) {
+	        return async_1.PromiseWrapper.all(promises);
+	    }
+	    else {
+	        return null;
+	    }
 	}
 	/**
 	 * A reference to an Angular application running on a page.
