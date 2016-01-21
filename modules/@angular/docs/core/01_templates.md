@@ -232,7 +232,7 @@ are always in the form of `property-name` which is assigned an `expression`. The
 <table>
   <tr>
     <th>Short form</th>
-    <td><pre>&lt;some-element [some-property]="expression"&gt;</pre></td>
+    <td><pre>&lt;some-element [someProperty]="expression"&gt;</pre></td>
   </tr>
   <tr>
     <th>Canonical form</th>
@@ -243,8 +243,8 @@ are always in the form of `property-name` which is assigned an `expression`. The
 
 Where:
 * `some-element` can be any existing DOM element.
-* `some-property` (escaped with `[]` or `bind-`) is the name of the property on `some-element`. In this case the
-  dash-case is converted into camel-case `someProperty`.
+* `someProperty` or `some-property` (escaped with `[]` or `bind-`) is the name of the property on `some-element`. If
+  the property is dash-case, it will be converted into camel-case `someProperty`.
 * `expression` is a valid expression (as defined in section below).
 
 Example:
@@ -477,7 +477,7 @@ Binding events allows wiring events from DOM (or other components) to the Angula
 <table>
   <tr>
     <th>Short form</th>
-    <td><pre>&lt;some-element (some-event)="statement"&gt;</pre></td>
+    <td><pre>&lt;some-element (someEvent)="statement"&gt;</pre></td>
   </tr>
   <tr>
     <th>Canonical form</th>
@@ -487,8 +487,8 @@ Binding events allows wiring events from DOM (or other components) to the Angula
 
 Where:
 * `some-element` Any element which can generate DOM events (or has an angular directive which generates the event).
-* `some-event` (escaped with `()` or `on-`) is the name of the event `some-event`. In this case the
-  dash-case is converted into camel-case `someEvent`.
+* `someEvent` or `some-event` (escaped with `()` or `on-`) is the name of the event `some-event`. If the event is
+  dash-case, it will be converted into camel-case `someEvent`.
 * `statement` is a valid statement (as defined in section below).
 If the execution of the statement returns `false`, then `preventDefault`is applied on the DOM event.
 
