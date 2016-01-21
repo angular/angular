@@ -67,12 +67,6 @@ class ComponentWithInputs {
 class ComponentWithHostBindings {
   @HostBinding() Object b;
   @HostBinding('renamed') Object c;
-
-  Object _d;
-  @HostBinding() Object get d => _d;
-
-  Object _e;
-  @HostBinding('get-renamed') Object get e => _e;
 }
 
 @Component(
