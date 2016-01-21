@@ -15057,6 +15057,23 @@ return /******/ (function(modules) { // webpackBootstrap
 	var TemplateRef = (function () {
 	    function TemplateRef() {
 	    }
+	    Object.defineProperty(TemplateRef.prototype, "elementRef", {
+	        /**
+	         * The location in the View where the Embedded View logically belongs to.
+	         *
+	         * The data-binding and injection contexts of Embedded Views created from this `TemplateRef`
+	         * inherit from the contexts of this location.
+	         *
+	         * Typically new Embedded Views are attached to the View Container of this location, but in
+	         * advanced use-cases, the View can be attached to a different container while keeping the
+	         * data-binding and injection context from the original location.
+	         *
+	         */
+	        // TODO(i): rename to anchor or location
+	        get: function () { return null; },
+	        enumerable: true,
+	        configurable: true
+	    });
 	    return TemplateRef;
 	})();
 	exports.TemplateRef = TemplateRef;
@@ -27035,6 +27052,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	var DomAdapter = (function () {
 	    function DomAdapter() {
 	    }
+	    Object.defineProperty(DomAdapter.prototype, "attrToPropMap", {
+	        /**
+	         * Maps attribute names to their corresponding property names for cases
+	         * where attribute name doesn't match property name.
+	         */
+	        get: function () { return this._attrToPropMap; },
+	        set: function (value) { this._attrToPropMap = value; },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    ;
+	    ;
 	    return DomAdapter;
 	})();
 	exports.DomAdapter = DomAdapter;

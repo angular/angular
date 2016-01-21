@@ -5972,6 +5972,13 @@ System.register("angular2/src/core/linker/template_ref", [], true, function(requ
   };
   var TemplateRef = (function() {
     function TemplateRef() {}
+    Object.defineProperty(TemplateRef.prototype, "elementRef", {
+      get: function() {
+        return null;
+      },
+      enumerable: true,
+      configurable: true
+    });
     return TemplateRef;
   })();
   exports.TemplateRef = TemplateRef;
@@ -7010,6 +7017,18 @@ System.register("angular2/src/platform/dom/dom_adapter", ["angular2/src/facade/l
   exports.setRootDomAdapter = setRootDomAdapter;
   var DomAdapter = (function() {
     function DomAdapter() {}
+    Object.defineProperty(DomAdapter.prototype, "attrToPropMap", {
+      get: function() {
+        return this._attrToPropMap;
+      },
+      set: function(value) {
+        this._attrToPropMap = value;
+      },
+      enumerable: true,
+      configurable: true
+    });
+    ;
+    ;
     return DomAdapter;
   })();
   exports.DomAdapter = DomAdapter;
