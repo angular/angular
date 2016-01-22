@@ -11,7 +11,8 @@ var FILE_ENCODING = {encoding: 'utf-8'};
  * the associated changes.
  */
 class DiffingReplace implements DiffingBroccoliPlugin {
-  constructor(private inputPath, private cachePath, private options) {}
+  // TODO: define an interface for options
+  constructor(private inputPath: string, private cachePath: string, private options: any) {}
 
   rebuild(treeDiff: DiffResult) {
     var patterns = this.options.patterns;
@@ -27,13 +28,13 @@ class DiffingReplace implements DiffingBroccoliPlugin {
             fse.mkdirpSync(destDirPath);
           }
 
-          var fileMatches = files.some((filePath) => minimatch(changedFilePath, filePath));
+          var fileMatches = files.some((filePath: string) => minimatch(changedFilePath, filePath));
           if (fileMatches) {
             var content = fs.readFileSync(sourceFilePath, FILE_ENCODING);
-            patterns.forEach((pattern) => {
+            patterns.forEach((pattern: any) => {
               var replacement = pattern.replacement;
               if (typeof replacement === 'function') {
-                replacement = function(content) {
+                replacement = function(content: string) {
                   return pattern.replacement(content, changedFilePath);
                 };
               }

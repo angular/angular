@@ -1023,6 +1023,7 @@ gulp.task('!build.tools', function() {
                    .pipe(tsc({
                      target: 'ES5',
                      module: 'commonjs',
+                     noImplicitAny: true,
                      // Don't use the version of typescript that gulp-typescript depends on
                      // see https://github.com/ivogabe/gulp-typescript#typescript-version
                      typescript: require('typescript')

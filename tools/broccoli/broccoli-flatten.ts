@@ -12,7 +12,8 @@ var isWindows = process.platform === 'win32';
  * the associated changes.
  */
 export class DiffingFlatten implements DiffingBroccoliPlugin {
-  constructor(private inputPath, private cachePath, private options) {}
+  constructor(private inputPath: string, private cachePath: string,
+              private options: AngularBuilderOptions) {}
 
 
   rebuild(treeDiff: DiffResult) {

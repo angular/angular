@@ -2,7 +2,7 @@
     "compilerOptions": {
         "module": "commonjs",
         "target": "es5",
-        "noImplicitAny": false,
+        "noImplicitAny": true,
         "outDir": "../dist/tools",
         "rootDir": ".",
         "sourceMap": false
