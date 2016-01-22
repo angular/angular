@@ -513,5 +513,5 @@ export class ApplicationRef_ extends ApplicationRef {
     this._platform._applicationDisposed(this);
   }
 
-  get componentTypes(): any[] { return this._rootComponentTypes; }
+  get componentTypes(): Type[] { return this._rootComponentTypes; }
 }

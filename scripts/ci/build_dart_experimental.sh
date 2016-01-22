@@ -60,3 +60,18 @@ then
 else
   echo "Warning count ok"
 fi
+
+function countWarnings {
+  local GREP_PATTERN=$1
+  local COUNT=`cat $LOG_FILE | grep -E '$GREP_PATTERN' | wc -l | sed -e 's/^[[:space:]]*//'`
+  echo $COUNT
+}
+
+SEVERE_ANGULAR_COUNT=$(countWarnings '^severe.*package:angular2')
+if [[ "$SEVERE_ANGULAR_COUNT" -gt "0" ]]
+then
+  echo "Found severe errors in angular2 package"
+  exit 1
+fi
+
+echo 'Dart DDC build finished'
