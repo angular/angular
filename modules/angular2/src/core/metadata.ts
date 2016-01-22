@@ -1217,7 +1217,7 @@ export var Pipe: PipeFactory = <PipeFactory>makeDecorator(PipeMetadata);
  *   `
  * })
  * class BankAccount {
- *   @Input() bankName: string;
+ *   @Input('bankName') bankName: string;
  *   @Input('account-id') id: string;
  *
  *   // this property is not bound, and won't be automatically updated by Angular
@@ -1227,7 +1227,7 @@ export var Pipe: PipeFactory = <PipeFactory>makeDecorator(PipeMetadata);
  * @Component({
  *   selector: 'app',
  *   template: `
- *     <bank-account bank-name="RBC" account-id="4747"></bank-account>
+ *     <bank-account bankName="RBC" account-id="4747"></bank-account>
  *   `,
  *   directives: [BankAccount]
  * })
