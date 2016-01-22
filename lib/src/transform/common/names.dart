@@ -39,8 +39,10 @@ const ALL_EXTENSIONS = const [
 bool isGenerated(String uri) {
   return const [
     DEPS_EXTENSION,
+    META_EXTENSION,
     NON_SHIMMED_STYLESHEET_EXTENSION,
     SHIMMED_STYLESHEET_EXTENSION,
+    SUMMARY_META_EXTENSION,
     TEMPLATE_EXTENSION,
   ].any((ext) => uri.endsWith(ext));
 }
