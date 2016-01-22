@@ -11,7 +11,7 @@ source $SCRIPT_DIR/env_dart.sh
 cd $SCRIPT_DIR/../..
 
 # Variables
-DDC_WARNING_CAP="260"
+DDC_WARNING_CAP="180"
 DDC_DIR=`pwd`/tmp/dev_compiler
 DDC_VERSION="0.1.14"
 
