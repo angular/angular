@@ -143,7 +143,7 @@ export class ProtoInjectorInlineStrategy implements ProtoInjectorStrategy {
     }
   }
 
-  getProviderAtIndex(index: number): any {
+  getProviderAtIndex(index: number): ResolvedProvider {
     if (index == 0) return this.provider0;
     if (index == 1) return this.provider1;
     if (index == 2) return this.provider2;
@@ -181,7 +181,7 @@ export class ProtoInjectorDynamicStrategy implements ProtoInjectorStrategy {
     }
   }
 
-  getProviderAtIndex(index: number): any {
+  getProviderAtIndex(index: number): ResolvedProvider {
     if (index < 0 || index >= this.providers.length) {
       throw new OutOfBoundsError(index);
     }
@@ -210,7 +210,9 @@ export class ProtoInjector {
                          new ProtoInjectorInlineStrategy(this, bwv);
   }
 
-  getProviderAtIndex(index: number): any { return this._strategy.getProviderAtIndex(index); }
+  getProviderAtIndex(index: number): ResolvedProvider {
+    return this._strategy.getProviderAtIndex(index);
+  }
 }
 
 

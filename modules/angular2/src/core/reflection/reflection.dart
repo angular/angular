@@ -23,7 +23,7 @@ class NoReflectionCapabilities implements PlatformReflectionCapabilities {
   }
 
   @override
-  List parameters(dynamic type) {
+  List<List> parameters(dynamic type) {
     throw "Cannot find reflection information on ${stringify(type)}";
   }
 
@@ -33,7 +33,7 @@ class NoReflectionCapabilities implements PlatformReflectionCapabilities {
   }
 
   @override
-  Map propMetadata(dynamic type) {
+  Map<String, List> propMetadata(dynamic type) {
     throw "Cannot find reflection information on ${stringify(type)}";
   }
 
