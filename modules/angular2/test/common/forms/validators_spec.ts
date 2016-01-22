@@ -80,7 +80,7 @@ export function main() {
         () => { expect(Validators.pattern("^.+@.+\..+$")(new Control("john@doe.com"))).toEqual(null); });
 
       it("should error on mismatched strings",
-        () => { expect(Validators.pattern("^.+@.+\..+$")(new Control("john@doe"))).toEqual({"pattern": true}); });
+        () => { expect(Validators.pattern("^.+@.+\..+$")(new Control("john-doe"))).toEqual({"pattern": true}); });
     });
 
     describe("compose", () => {
