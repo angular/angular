@@ -130,7 +130,7 @@ class _CompileDataCreator {
       } else if (depNgMeta.aliases.containsKey(dep.name)) {
         resolvedMetadata.addAll(depNgMeta.flatten(dep.name));
       } else {
-        log.warning(
+        log.error(
             'Could not find Directive/Pipe entry for $dep. '
             'Please be aware that Dart transformers have limited support for '
             'reusable, pre-defined lists of Directives/Pipes (aka '
