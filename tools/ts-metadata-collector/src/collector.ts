@@ -33,7 +33,7 @@ export class MetadataCollector {
             break;
           }
           if (importDecl.importClause.name) {
-            newImport['defaultName'] = importDecl.importClause.name.text;
+            (<any>newImport)['defaultName'] = importDecl.importClause.name.text;
           }
           const bindings = importDecl.importClause.namedBindings;
           if (bindings) {
@@ -44,14 +44,14 @@ export class MetadataCollector {
                     .elements.forEach(i => {
                       const namedImport = {name: i.name.text};
                       if (i.propertyName) {
-                        namedImport['propertyName'] = i.propertyName.text;
+                        (<any>namedImport)['propertyName'] = i.propertyName.text;
                       }
                       namedImports.push(namedImport);
                     });
-                newImport['namedImports'] = namedImports;
+                (<any>newImport)['namedImports'] = namedImports;
                 break;
               case ts.SyntaxKind.NamespaceImport:
-                newImport['namespace'] = (<ts.NamespaceImport>bindings).name.text;
+                (<any>newImport)['namespace'] = (<ts.NamespaceImport>bindings).name.text;
                 break;
             }
           }

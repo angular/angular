@@ -8,7 +8,7 @@ enum State {
 }
 
 export const TSC = 'node_modules/typescript/bin/tsc';
-export type Command = (stdIn, stdErr) => Promise<number>;
+export type Command = (stdIn: any, stdErr: any) => Promise<number>;
 
 export class TscWatch {
   private tsconfig: string;
@@ -47,11 +47,12 @@ export class TscWatch {
       tsc.then(() => this.triggerCmds(), code => process.exit(code));
     }
     this.state = State.waiting;
-    this.onStartCmds.forEach((cmd) => this.runCmd(cmd, () => null, () => null));
+    this.onStartCmds.forEach((cmd) => this.runCmd(cmd, null, () => null, () => null));
   }
 
-  private runCmd(argsOrCmd: string[] | Command, env?, stdOut = pipeStdOut,
-                 stdErr = pipeStdErr): Promise<number> {
+  private runCmd(argsOrCmd: string[] | Command, env?: {[k: string]: string}, 
+                 stdOut = pipeStdOut, stdErr = pipeStdErr): Promise<number> 
+  {
     if (typeof argsOrCmd == 'function') {
       return (argsOrCmd as Command)(stdErr, stdOut);
     } else if (argsOrCmd instanceof Array) {
@@ -153,7 +154,7 @@ function contains(line: string, text: string | RegExp): boolean {
   }
 }
 
-export function reportError(e) {
+export function reportError(e: any) {
   if (e.message && e.stack) {
     console.error(e.message);
     console.error(e.stack);
@@ -164,9 +165,9 @@ export function reportError(e) {
   return Promise.reject(e);
 }
 
-function pipeStdOut(d) {
+function pipeStdOut(d: any) {
   process.stdout.write(d);
 }
-function pipeStdErr(d) {
+function pipeStdErr(d: any) {
   process.stderr.write(d);
 }

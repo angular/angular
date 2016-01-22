@@ -2,6 +2,8 @@ import fs = require('fs');
 import fse = require('fs-extra');
 import path = require('path');
 import {wrapDiffingPlugin, DiffingBroccoliPlugin, DiffResult} from './diffing-broccoli-plugin';
+import {AngularBuilderOptions} from './angular_builder';
+
 var symlinkOrCopy = require('symlink-or-copy').sync;
 
 var isWindows = process.platform === 'win32';
@@ -12,7 +14,8 @@ var isWindows = process.platform === 'win32';
  * the associated changes.
  */
 export class DiffingFlatten implements DiffingBroccoliPlugin {
-  constructor(private inputPath, private cachePath, private options) {}
+  constructor(private inputPath: string, private cachePath: string,
+              private options: AngularBuilderOptions) {}
 
 
   rebuild(treeDiff: DiffResult) {

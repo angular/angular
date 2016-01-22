@@ -122,8 +122,8 @@ export class AngularBuilder {
   }
 
 
-  private rebuild(builder, name) {
-    return builder.build().then(
+  private rebuild(builder: BroccoliBuilder, name: string): Promise<BuildResult> {
+    return builder.build().then<BuildResult>(
         (result) => {
           if (!this.firstResult) {
             this.firstResult = result;
@@ -131,8 +131,9 @@ export class AngularBuilder {
 
           printSlowTrees(result.graph);
           writeBuildLog(result, name);
+          return result;
         },
-        (error) => {
+        (error): any => {
           // the build tree is the same during rebuilds, only leaf properties of the nodes change
           // so let's traverse it and get updated values for input/cache/output paths
           if (this.firstResult) {
@@ -155,10 +156,10 @@ function writeBuildLog(result: BuildResult, name: string) {
 }
 
 
-function broccoliNodeToBuildNode(broccoliNode) {
+function broccoliNodeToBuildNode(broccoliNode: BroccoliNode): BuildNode {
   let tree = broccoliNode.tree.newStyleTree || broccoliNode.tree;
 
-  return new BuildNode(tree.description || tree.constructor.name,
+  return new BuildNode(tree.description || (<any>tree.constructor).name,
                        tree.inputPath ? [tree.inputPath] : tree.inputPaths, tree.cachePath,
                        tree.outputPath, broccoliNode.selfTime / (1000 * 1000 * 1000),
                        broccoliNode.totalTime / (1000 * 1000 * 1000),
@@ -169,5 +170,5 @@ function broccoliNodeToBuildNode(broccoliNode) {
 class BuildNode {
   constructor(public pluginName: string, public inputPaths: string[], public cachePath: string,
               public outputPath: string, public selfTime: number, public totalTime: number,
-              public inputNodes: BroccoliNode[]) {}
+              public inputNodes: BuildNode[]) {}
 }

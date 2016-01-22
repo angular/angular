@@ -1161,6 +1161,7 @@ gulp.task('!build.tools', function() {
                      target: 'ES5',
                      module: 'commonjs',
                      declaration: true,
+                     noImplicitAny: true,
                      // Don't use the version of typescript that gulp-typescript depends on
                      // see https://github.com/ivogabe/gulp-typescript#typescript-version
                      typescript: require('typescript')
