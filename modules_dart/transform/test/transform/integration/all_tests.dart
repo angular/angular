@@ -2,8 +2,8 @@ library angular2.test.transform.integration;
 
 import 'package:angular2/src/platform/server/html_adapter.dart';
 import 'package:angular2/transformer.dart';
-import 'package:code_transformers/tests.dart';
 import 'package:dart_style/dart_style.dart';
+import 'package:transformer_test/utils.dart';
 
 import '../common/read_file.dart';
 import 'deferred_files/expected/output.dart' as deferredOuts;
@@ -205,8 +205,7 @@ void allTests() {
             [transform]
           ],
           config.assetPathToInputPath,
-          config.assetPathToExpectedOutputPath,
-          []);
+          config.assetPathToExpectedOutputPath);
     }
   }
 
@@ -233,8 +232,7 @@ void _testDeferredRewriter() {
         [transform]
       ],
       inputs,
-      outputs,
-      []);
+      outputs);
 }
 
 /// Smooths over differences in CWD between IDEs and running tests in Travis.
