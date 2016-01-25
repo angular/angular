@@ -88,7 +88,7 @@ export function main() {
       it('should watch element properties', () => {
         expect(detectChanges(compiler, '<div [elProp]="someProp">'))
             .toEqual(['elementProperty(elProp)=someValue']);
-      });
+      }, 3000); // This is slow and sometimes times out after 2 seconds on CI.
     });
 
     describe('compileComponentCodeGen', () => {
