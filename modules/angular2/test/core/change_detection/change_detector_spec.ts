@@ -1267,7 +1267,7 @@ export function main() {
 
           val.changeDetector.dehydrate();
           expect(() => {val.changeDetector.detectChanges()})
-              .toThrowErrorWith("Attempt to detect changes on a dehydrated detector");
+              .toThrowErrorWith("Attempt to use a dehydrated detector");
           expect(val.dispatcher.log).toEqual(['propName=Bob']);
         });
       });

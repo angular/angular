@@ -28,7 +28,7 @@ export abstract class Renderer implements ParentRenderer {
 
   abstract destroyView(hostElement: any, viewAllNodes: any[]);
 
-  abstract listen(renderElement: any, name: string, callback: Function);
+  abstract listen(renderElement: any, name: string, callback: Function): Function;
 
   abstract listenGlobal(target: string, name: string, callback: Function): Function;
 

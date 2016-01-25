@@ -155,9 +155,9 @@ export class DomRenderer implements Renderer {
     }
   }
 
-  listen(renderElement: any, name: string, callback: Function) {
-    this._rootRenderer.eventManager.addEventListener(renderElement, name,
-                                                     decoratePreventDefault(callback));
+  listen(renderElement: any, name: string, callback: Function): Function {
+    return this._rootRenderer.eventManager.addEventListener(renderElement, name,
+                                                            decoratePreventDefault(callback));
   }
 
   listenGlobal(target: string, name: string, callback: Function): Function {
