@@ -17,7 +17,14 @@ import {SpyXHR} from './spies';
 import {XHR} from 'angular2/src/compiler/xhr';
 import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
 
-import {CONST_EXPR, isPresent, isBlank, StringWrapper, isArray} from 'angular2/src/facade/lang';
+import {
+  CONST_EXPR,
+  isPresent,
+  isBlank,
+  StringWrapper,
+  isArray,
+  IS_DART
+} from 'angular2/src/facade/lang';
 import {PromiseWrapper, Promise} from 'angular2/src/facade/async';
 import {evalModule} from './eval_module';
 import {StyleCompiler} from 'angular2/src/compiler/style_compiler';
@@ -40,6 +47,11 @@ var IMPORT_ABS_STYLESHEET_URL_WITH_IMPORT =
     `package:angular2/test/compiler/style_compiler_transitive_import.css`;
 
 export function main() {
+  // Dart's isolate support is broken, and these tests will be obsolote soon with
+  // https://github.com/angular/angular/issues/6270
+  if (IS_DART) {
+    return;
+  }
   describe('StyleCompiler', () => {
     var xhr: SpyXHR;
 
