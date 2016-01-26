@@ -57,7 +57,7 @@ function routerFactory($q, $location, $$directiveIntrospector, $browser, $rootSc
   });
 
   var router = new RootRouter(registry, location, $routerRootComponent);
-  $rootScope.$watch(function () { return $location.path(); }, function (path) {
+  $rootScope.$watch(function () { return $location.url(); }, function (path) {
     if (router.lastNavigationAttempt !== path) {
       router.navigateByUrl(path);
     }

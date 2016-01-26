@@ -303,8 +303,8 @@ Location.prototype.subscribe = function () {
   //TODO: implement
 };
 Location.prototype.path = function () {
-  return $location.path();
+  return $location.url();
 };
-Location.prototype.go = function (url) {
-  return $location.path(url);
+Location.prototype.go = function (path, query) {
+  return $location.url(path + query);
 };
