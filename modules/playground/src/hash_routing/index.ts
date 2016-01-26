@@ -9,8 +9,6 @@ import {
   LocationStrategy
 } from 'angular2/router';
 
-import {reflector} from 'angular2/src/core/reflection/reflection';
-import {ReflectionCapabilities} from 'angular2/src/core/reflection/reflection_capabilities';
 
 @Component({selector: 'hello-cmp', template: `hello`})
 class HelloCmp {
@@ -46,7 +44,6 @@ class AppCmp {
 
 
 export function main() {
-  reflector.reflectionCapabilities = new ReflectionCapabilities();
   bootstrap(AppCmp,
             [ROUTER_PROVIDERS, provide(LocationStrategy, {useClass: HashLocationStrategy})]);
 }
