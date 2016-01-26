@@ -4,14 +4,14 @@ import { Provider } from 'angular2/src/core/di';
  * A differ that tracks changes made to an object over time.
  */
 export interface KeyValueDiffer {
-    diff(object: any): any;
+    diff(object: Object): any;
     onDestroy(): any;
 }
 /**
  * Provides a factory for {@link KeyValueDiffer}.
  */
 export interface KeyValueDifferFactory {
-    supports(objects: any): boolean;
+    supports(objects: Object): boolean;
     create(cdRef: ChangeDetectorRef): KeyValueDiffer;
 }
 /**

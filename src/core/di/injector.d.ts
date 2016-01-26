@@ -54,7 +54,7 @@ export declare class ProtoInjectorInlineStrategy implements ProtoInjectorStrateg
     visibility8: Visibility;
     visibility9: Visibility;
     constructor(protoEI: ProtoInjector, bwv: ProviderWithVisibility[]);
-    getProviderAtIndex(index: number): ResolvedProvider;
+    getProviderAtIndex(index: number): any;
     createInjectorStrategy(injector: Injector): InjectorStrategy;
 }
 export declare class ProtoInjectorDynamicStrategy implements ProtoInjectorStrategy {
@@ -62,14 +62,14 @@ export declare class ProtoInjectorDynamicStrategy implements ProtoInjectorStrate
     keyIds: number[];
     visibilities: Visibility[];
     constructor(protoInj: ProtoInjector, bwv: ProviderWithVisibility[]);
-    getProviderAtIndex(index: number): ResolvedProvider;
+    getProviderAtIndex(index: number): any;
     createInjectorStrategy(ei: Injector): InjectorStrategy;
 }
 export declare class ProtoInjector {
     static fromResolvedProviders(providers: ResolvedProvider[]): ProtoInjector;
     numberOfProviders: number;
     constructor(bwv: ProviderWithVisibility[]);
-    getProviderAtIndex(index: number): ResolvedProvider;
+    getProviderAtIndex(index: number): any;
 }
 export interface InjectorStrategy {
     getObjByKeyId(keyId: number, visibility: Visibility): any;

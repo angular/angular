@@ -5,14 +5,14 @@ import { Provider } from 'angular2/src/core/di';
  * respond to changes in an iterable by effecting equivalent changes in the DOM.
  */
 export interface IterableDiffer {
-    diff(object: any): any;
+    diff(object: Object): any;
     onDestroy(): any;
 }
 /**
  * Provides a factory for {@link IterableDiffer}.
  */
 export interface IterableDifferFactory {
-    supports(objects: any): boolean;
+    supports(objects: Object): boolean;
     create(cdRef: ChangeDetectorRef): IterableDiffer;
 }
 /**
@@ -42,5 +42,5 @@ export declare class IterableDiffers {
      * ```
      */
     static extend(factories: IterableDifferFactory[]): Provider;
-    find(iterable: any): IterableDifferFactory;
+    find(iterable: Object): IterableDifferFactory;
 }

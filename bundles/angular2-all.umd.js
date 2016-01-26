@@ -2736,9 +2736,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var bd = providers.map(function (b) { return new ProviderWithVisibility(b, Visibility.Public); });
 	        return new ProtoInjector(bd);
 	    };
-	    ProtoInjector.prototype.getProviderAtIndex = function (index) {
-	        return this._strategy.getProviderAtIndex(index);
-	    };
+	    ProtoInjector.prototype.getProviderAtIndex = function (index) { return this._strategy.getProviderAtIndex(index); };
 	    return ProtoInjector;
 	})();
 	exports.ProtoInjector = ProtoInjector;
@@ -15613,11 +15611,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	    AppViewManager_.prototype.createHostViewInContainer = function (viewContainerLocation, index, hostViewFactoryRef, dynamicallyCreatedProviders, projectableNodes) {
 	        var s = this._createHostViewInContainerScope();
 	        // TODO(tbosch): This should be specifiable via an additional argument!
-	        var viewContainerLocation_ = viewContainerLocation;
-	        var contextEl = viewContainerLocation_.internalElement;
+	        var contextEl = viewContainerLocation.internalElement;
 	        var hostViewFactory = hostViewFactoryRef.internalHostViewFactory;
 	        var view = hostViewFactory.viewFactory(contextEl.parentView.renderer, contextEl.parentView.viewManager, contextEl, projectableNodes, null, dynamicallyCreatedProviders, null);
-	        this._attachViewToContainer(view, viewContainerLocation_.internalElement, index);
+	        this._attachViewToContainer(view, viewContainerLocation.internalElement, index);
 	        return profile_1.wtfLeave(s, view.ref);
 	    };
 	    AppViewManager_.prototype.destroyViewInContainer = function (viewContainerLocation, index) {
@@ -15628,10 +15625,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 	    // TODO(i): refactor detachViewInContainer+attachViewInContainer to moveViewInContainer
 	    AppViewManager_.prototype.attachViewInContainer = function (viewContainerLocation, index, viewRef) {
-	        var viewRef_ = viewRef;
 	        var s = this._attachViewInContainerScope();
-	        this._attachViewToContainer(viewRef_.internalView, viewContainerLocation.internalElement, index);
-	        return profile_1.wtfLeave(s, viewRef_);
+	        this._attachViewToContainer(viewRef.internalView, viewContainerLocation.internalElement, index);
+	        return profile_1.wtfLeave(s, viewRef);
 	    };
 	    // TODO(i): refactor detachViewInContainer+attachViewInContainer to moveViewInContainer
 	    AppViewManager_.prototype.detachViewInContainer = function (viewContainerLocation, index) {

@@ -9,7 +9,7 @@ import {Provider, SkipSelfMetadata, OptionalMetadata, Injectable} from 'angular2
  * respond to changes in an iterable by effecting equivalent changes in the DOM.
  */
 export interface IterableDiffer {
-  diff(object: any): any;
+  diff(object: Object): any;
   onDestroy();
 }
 
@@ -17,7 +17,7 @@ export interface IterableDiffer {
  * Provides a factory for {@link IterableDiffer}.
  */
 export interface IterableDifferFactory {
-  supports(objects: any): boolean;
+  supports(objects: Object): boolean;
   create(cdRef: ChangeDetectorRef): IterableDiffer;
 }
 
@@ -74,7 +74,7 @@ export class IterableDiffers {
     });
   }
 
-  find(iterable: any): IterableDifferFactory {
+  find(iterable: Object): IterableDifferFactory {
     var factory = this.factories.find(f => f.supports(iterable));
     if (isPresent(factory)) {
       return factory;
