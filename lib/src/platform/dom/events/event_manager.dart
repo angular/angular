@@ -18,9 +18,10 @@ class EventManager {
     plugins.forEach((p) => p.manager = this);
     this._plugins = ListWrapper.reversed(plugins);
   }
-  addEventListener(dynamic element, String eventName, Function handler) {
+  Function addEventListener(
+      dynamic element, String eventName, Function handler) {
     var plugin = this._findPluginFor(eventName);
-    plugin.addEventListener(element, eventName, handler);
+    return plugin.addEventListener(element, eventName, handler);
   }
 
   Function addGlobalEventListener(
@@ -54,7 +55,8 @@ class EventManagerPlugin {
     return false;
   }
 
-  addEventListener(dynamic element, String eventName, Function handler) {
+  Function addEventListener(
+      dynamic element, String eventName, Function handler) {
     throw "not implemented";
   }
 

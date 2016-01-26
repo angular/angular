@@ -4446,8 +4446,9 @@ class ChangeDetector73 extends _gen.AbstractChangeDetector<dynamic> {
   }
 
   void hydrateDirectives(directives) {
+    this.outputSubscriptions = new List(1);
     this.directive_0_0 = this.getDirectiveFor(directives, 0);
-    this
+    this.outputSubscriptions[0] = this
         .directive_0_0
         .eventEmitter
         .listen((event) => this.handleEvent('host-event', 0, event));
@@ -4576,13 +4577,14 @@ class ChangeDetector74 extends _gen.AbstractChangeDetector<dynamic> {
   }
 
   void hydrateDirectives(directives) {
+    this.outputSubscriptions = new List(2);
     this.directive_0_0 = this.getDirectiveFor(directives, 0);
-    this
+    this.outputSubscriptions[0] = this
         .directive_0_0
         .eventEmitter
         .listen((event) => this.handleEvent('host-event', 0, event));
     this.directive_0_1 = this.getDirectiveFor(directives, 1);
-    this
+    this.outputSubscriptions[1] = this
         .directive_0_1
         .eventEmitter
         .listen((event) => this.handleEvent('host-event', 0, event));
@@ -4656,8 +4658,9 @@ class ChangeDetector75 extends _gen.AbstractChangeDetector<dynamic> {
   }
 
   void hydrateDirectives(directives) {
+    this.outputSubscriptions = new List(1);
     this.directive_0_0 = this.getDirectiveFor(directives, 0);
-    this
+    this.outputSubscriptions[0] = this
         .directive_0_0
         .eventEmitter
         .listen((event) => this.handleEvent('host-event', 0, event));
@@ -4719,8 +4722,9 @@ class ChangeDetector76 extends _gen.AbstractChangeDetector<dynamic> {
   }
 
   void hydrateDirectives(directives) {
+    this.outputSubscriptions = new List(1);
     this.directive_0_0 = this.getDirectiveFor(directives, 0);
-    this
+    this.outputSubscriptions[0] = this
         .directive_0_0
         .eventEmitter
         .listen((event) => this.handleEvent('host-event', 0, event));
@@ -4782,13 +4786,14 @@ class ChangeDetector77 extends _gen.AbstractChangeDetector<dynamic> {
   }
 
   void hydrateDirectives(directives) {
+    this.outputSubscriptions = new List(2);
     this.directive_0_0 = this.getDirectiveFor(directives, 0);
-    this
+    this.outputSubscriptions[0] = this
         .directive_0_0
         .eventEmitter
         .listen((event) => this.handleEvent('host-event', 0, event));
     this.directive_0_1 = this.getDirectiveFor(directives, 1);
-    this
+    this.outputSubscriptions[1] = this
         .directive_0_1
         .eventEmitter
         .listen((event) => this.handleEvent('host-event', 0, event));
@@ -4920,8 +4925,9 @@ class ChangeDetector79 extends _gen.AbstractChangeDetector<dynamic> {
   }
 
   void hydrateDirectives(directives) {
+    this.outputSubscriptions = new List(1);
     this.directive_0_0 = this.getDirectiveFor(directives, 0);
-    this
+    this.outputSubscriptions[0] = this
         .directive_0_0
         .eventEmitter
         .listen((event) => this.handleEvent('host-event', 0, event));
@@ -5424,13 +5430,14 @@ class ChangeDetector89 extends _gen.AbstractChangeDetector<dynamic> {
   }
 
   void hydrateDirectives(directives) {
+    this.outputSubscriptions = new List(2);
     this.directive_0_0 = this.getDirectiveFor(directives, 0);
-    this
+    this.outputSubscriptions[0] = this
         .directive_0_0
         .eventEmitter
         .listen((event) => this.handleEvent('host-event', 0, event));
     this.directive_0_1 = this.getDirectiveFor(directives, 1);
-    this
+    this.outputSubscriptions[1] = this
         .directive_0_1
         .eventEmitter
         .listen((event) => this.handleEvent('host-event', 0, event));

@@ -932,9 +932,17 @@ declareTests() {
               var emitter = tc.inject(DirectiveEmittingEvent);
               var listener = tc.inject(DirectiveListeningEvent);
               expect(listener.msg).toEqual("");
+              var eventCount = 0;
               ObservableWrapper.subscribe(emitter.event, (_) {
-                expect(listener.msg).toEqual("fired !");
-                async.done();
+                eventCount++;
+                if (identical(eventCount, 1)) {
+                  expect(listener.msg).toEqual("fired !");
+                  fixture.destroy();
+                  emitter.fireEvent("fired again !");
+                } else {
+                  expect(listener.msg).toEqual("fired !");
+                  async.done();
+                }
               });
               emitter.fireEvent("fired !");
             });
@@ -1015,6 +1023,10 @@ declareTests() {
                 "document_domEvent",
                 "window_domEvent"
               ]);
+              fixture.destroy();
+              listener.eventTypes = [];
+              dispatchEvent(tc.nativeElement, "domEvent");
+              expect(listener.eventTypes).toEqual([]);
               async.done();
             });
           }));

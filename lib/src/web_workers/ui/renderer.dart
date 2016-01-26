@@ -99,16 +99,14 @@ class MessageBasedRenderer {
         bind(this._setText, this));
     broker.registerMethod(
         "listen",
-        [RenderStoreObject, RenderStoreObject, PRIMITIVE],
+        [RenderStoreObject, RenderStoreObject, PRIMITIVE, PRIMITIVE],
         bind(this._listen, this));
     broker.registerMethod(
         "listenGlobal",
         [RenderStoreObject, PRIMITIVE, PRIMITIVE, PRIMITIVE],
         bind(this._listenGlobal, this));
-    broker.registerMethod(
-        "listenGlobalDone",
-        [RenderStoreObject, RenderStoreObject],
-        bind(this._listenGlobalDone, this));
+    broker.registerMethod("listenDone", [RenderStoreObject, RenderStoreObject],
+        bind(this._listenDone, this));
   }
 
   _renderComponent(RenderComponentType renderComponentType, num rendererId) {
@@ -196,13 +194,15 @@ class MessageBasedRenderer {
     renderer.setText(renderNode, text);
   }
 
-  _listen(Renderer renderer, dynamic renderElement, String eventName) {
-    renderer.listen(
+  _listen(Renderer renderer, dynamic renderElement, String eventName,
+      num unlistenId) {
+    var unregisterCallback = renderer.listen(
         renderElement,
         eventName,
         (event) => this
             ._eventDispatcher
             .dispatchRenderEvent(renderElement, null, eventName, event));
+    this._renderStore.store(unregisterCallback, unlistenId);
   }
 
   _listenGlobal(
@@ -216,7 +216,7 @@ class MessageBasedRenderer {
     this._renderStore.store(unregisterCallback, unlistenId);
   }
 
-  _listenGlobalDone(Renderer renderer, Function unlistenCallback) {
+  _listenDone(Renderer renderer, Function unlistenCallback) {
     unlistenCallback();
   }
 }

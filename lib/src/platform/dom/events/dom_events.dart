@@ -13,12 +13,12 @@ class DomEventsPlugin extends EventManagerPlugin {
     return true;
   }
 
-  addEventListener(dynamic element, String eventName, Function handler) {
+  Function addEventListener(
+      dynamic element, String eventName, Function handler) {
     var zone = this.manager.getZone();
     var outsideHandler = (event) => zone.run(() => handler(event));
-    this.manager.getZone().runOutsideAngular(() {
-      DOM.on(element, eventName, outsideHandler);
-    });
+    return this.manager.getZone().runOutsideAngular(
+        () => DOM.onAndCancel(element, eventName, outsideHandler));
   }
 
   Function addGlobalEventListener(
@@ -26,8 +26,7 @@ class DomEventsPlugin extends EventManagerPlugin {
     var element = DOM.getGlobalEventTarget(target);
     var zone = this.manager.getZone();
     var outsideHandler = (event) => zone.run(() => handler(event));
-    return this.manager.getZone().runOutsideAngular(() {
-      return DOM.onAndCancel(element, eventName, outsideHandler);
-    });
+    return this.manager.getZone().runOutsideAngular(
+        () => DOM.onAndCancel(element, eventName, outsideHandler));
   }
 }

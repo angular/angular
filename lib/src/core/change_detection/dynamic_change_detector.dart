@@ -120,6 +120,7 @@ class DynamicChangeDetector extends AbstractChangeDetector<dynamic> {
         super.observeDirective(this._getDirectiveFor(index), i);
       }
     }
+    this.outputSubscriptions = [];
     for (var i = 0; i < this._directiveRecords.length; ++i) {
       var r = this._directiveRecords[i];
       if (isPresent(r.outputs)) {
@@ -128,7 +129,8 @@ class DynamicChangeDetector extends AbstractChangeDetector<dynamic> {
               r.directiveIndex.elementIndex, output[1]) as dynamic);
           var directive = this._getDirectiveFor(r.directiveIndex);
           var getter = reflector.getter(output[0]);
-          ObservableWrapper.subscribe(getter(directive), eventHandler);
+          this.outputSubscriptions.add(
+              ObservableWrapper.subscribe(getter(directive), eventHandler));
         });
       }
     }

@@ -20,6 +20,7 @@ import "parser/locals.dart" show Locals;
 import "constants.dart" show ChangeDetectionStrategy, ChangeDetectorState;
 import "../profile/profile.dart" show wtfCreateScope, wtfLeave, WtfScopeFn;
 import "observable_facade.dart" show isObservable;
+import "package:angular2/src/facade/async.dart" show ObservableWrapper;
 
 WtfScopeFn _scope_check =
     wtfCreateScope('''ChangeDetector#check(ascii id, bool throwOnChange)''');
@@ -54,6 +55,7 @@ class AbstractChangeDetector<T> implements ChangeDetector {
   ChangeDetectionStrategy mode = null;
   Pipes pipes = null;
   num propertyBindingIndex;
+  List<dynamic> outputSubscriptions;
   // This is an experimental feature. Works only in Dart.
   List<dynamic> subscriptions;
   List<dynamic> streams;
@@ -86,7 +88,7 @@ class AbstractChangeDetector<T> implements ChangeDetector {
 
   bool handleEvent(String eventName, num elIndex, dynamic event) {
     if (!this.hydrated()) {
-      return true;
+      this.throwDehydratedError();
     }
     try {
       var locals = new Map<String, dynamic>();
@@ -199,6 +201,7 @@ class AbstractChangeDetector<T> implements ChangeDetector {
     if (identical(this.strategy, ChangeDetectionStrategy.OnPushObserve)) {
       this._unsubsribeFromObservables();
     }
+    this._unsubscribeFromOutputs();
     this.dispatcher = null;
     this.context = null;
     this.locals = null;
@@ -276,6 +279,15 @@ class AbstractChangeDetector<T> implements ChangeDetector {
           s.cancel();
           this.subscriptions[i] = null;
         }
+      }
+    }
+  }
+
+  void _unsubscribeFromOutputs() {
+    if (isPresent(this.outputSubscriptions)) {
+      for (var i = 0; i < this.outputSubscriptions.length; ++i) {
+        ObservableWrapper.dispose(this.outputSubscriptions[i]);
+        this.outputSubscriptions[i] = null;
       }
     }
   }

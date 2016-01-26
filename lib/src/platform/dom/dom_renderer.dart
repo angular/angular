@@ -174,8 +174,8 @@ class DomRenderer implements Renderer {
     }
   }
 
-  listen(dynamic renderElement, String name, Function callback) {
-    this._rootRenderer.eventManager.addEventListener(
+  Function listen(dynamic renderElement, String name, Function callback) {
+    return this._rootRenderer.eventManager.addEventListener(
         renderElement, name, decoratePreventDefault(callback));
   }
 

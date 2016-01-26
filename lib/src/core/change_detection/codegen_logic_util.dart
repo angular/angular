@@ -154,6 +154,7 @@ class CodegenLogicUtil {
 
   String genHydrateDirectives(List<DirectiveRecord> directiveRecords) {
     var res = [];
+    var outputCount = 0;
     for (var i = 0; i < directiveRecords.length; ++i) {
       var r = directiveRecords[i];
       var dirVarName = this._names.getDirectiveName(r.directiveIndex);
@@ -162,14 +163,25 @@ class CodegenLogicUtil {
         r.outputs.forEach((output) {
           var eventHandlerExpr =
               this._genEventHandler(r.directiveIndex.elementIndex, output[1]);
+          var statementStart =
+              '''this.outputSubscriptions[${ outputCount ++}] = ${ dirVarName}.${ output [ 0 ]}''';
           if (IS_DART) {
-            res.add(
-                '''${ dirVarName}.${ output [ 0 ]}.listen(${ eventHandlerExpr});''');
+            res.add('''${ statementStart}.listen(${ eventHandlerExpr});''');
           } else {
             res.add(
-                '''${ dirVarName}.${ output [ 0 ]}.subscribe({next: ${ eventHandlerExpr}});''');
+                '''${ statementStart}.subscribe({next: ${ eventHandlerExpr}});''');
           }
         });
+      }
+    }
+    if (outputCount > 0) {
+      var statementStart = "this.outputSubscriptions";
+      if (IS_DART) {
+        (res..insert(0, '''${ statementStart} = new List(${ outputCount});'''))
+            .length;
+      } else {
+        (res..insert(0, '''${ statementStart} = new Array(${ outputCount});'''))
+            .length;
       }
     }
     return res.join("\n");

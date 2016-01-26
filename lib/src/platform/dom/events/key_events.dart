@@ -28,16 +28,17 @@ class KeyEventsPlugin extends EventManagerPlugin {
     return isPresent(KeyEventsPlugin.parseEventName(eventName));
   }
 
-  addEventListener(dynamic element, String eventName, Function handler) {
+  Function addEventListener(
+      dynamic element, String eventName, Function handler) {
     var parsedEvent = KeyEventsPlugin.parseEventName(eventName);
     var outsideHandler = KeyEventsPlugin.eventCallback(
         element,
         StringMapWrapper.get(parsedEvent, "fullKey"),
         handler,
         this.manager.getZone());
-    this.manager.getZone().runOutsideAngular(() {
-      DOM.on(element, StringMapWrapper.get(parsedEvent, "domEventName"),
-          outsideHandler);
+    return this.manager.getZone().runOutsideAngular(() {
+      return DOM.onAndCancel(element,
+          StringMapWrapper.get(parsedEvent, "domEventName"), outsideHandler);
     });
   }
 

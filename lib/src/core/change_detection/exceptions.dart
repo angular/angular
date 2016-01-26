@@ -98,8 +98,7 @@ class ChangeDetectionError extends WrappedException {
  * This is an internal Angular error.
  */
 class DehydratedException extends BaseException {
-  DehydratedException()
-      : super("Attempt to detect changes on a dehydrated detector.") {
+  DehydratedException() : super("Attempt to use a dehydrated detector.") {
     /* super call moved to initializer */;
   }
 }

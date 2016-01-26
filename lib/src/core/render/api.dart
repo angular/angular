@@ -24,7 +24,7 @@ abstract class Renderer implements ParentRenderer {
   attachViewAfter(dynamic node, List<dynamic> viewRootNodes);
   detachView(List<dynamic> viewRootNodes);
   destroyView(dynamic hostElement, List<dynamic> viewAllNodes);
-  listen(dynamic renderElement, String name, Function callback);
+  Function listen(dynamic renderElement, String name, Function callback);
   Function listenGlobal(String target, String name, Function callback);
   setElementProperty(
       dynamic renderElement, String propertyName, dynamic propertyValue);
