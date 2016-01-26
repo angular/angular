@@ -174,5 +174,5 @@ export declare class ApplicationRef_ extends ApplicationRef {
     zone: NgZone;
     tick(): void;
     dispose(): void;
-    componentTypes: any[];
+    componentTypes: Type[];
 }

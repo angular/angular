@@ -12774,10 +12774,11 @@ System.register("angular2/src/core/linker/view_manager", ["angular2/src/core/di"
     };
     AppViewManager_.prototype.createHostViewInContainer = function(viewContainerLocation, index, hostViewFactoryRef, dynamicallyCreatedProviders, projectableNodes) {
       var s = this._createHostViewInContainerScope();
-      var contextEl = viewContainerLocation.internalElement;
+      var viewContainerLocation_ = viewContainerLocation;
+      var contextEl = viewContainerLocation_.internalElement;
       var hostViewFactory = hostViewFactoryRef.internalHostViewFactory;
       var view = hostViewFactory.viewFactory(contextEl.parentView.renderer, contextEl.parentView.viewManager, contextEl, projectableNodes, null, dynamicallyCreatedProviders, null);
-      this._attachViewToContainer(view, viewContainerLocation.internalElement, index);
+      this._attachViewToContainer(view, viewContainerLocation_.internalElement, index);
       return profile_1.wtfLeave(s, view.ref);
     };
     AppViewManager_.prototype.destroyViewInContainer = function(viewContainerLocation, index) {
@@ -12787,9 +12788,10 @@ System.register("angular2/src/core/linker/view_manager", ["angular2/src/core/di"
       profile_1.wtfLeave(s);
     };
     AppViewManager_.prototype.attachViewInContainer = function(viewContainerLocation, index, viewRef) {
+      var viewRef_ = viewRef;
       var s = this._attachViewInContainerScope();
-      this._attachViewToContainer(viewRef.internalView, viewContainerLocation.internalElement, index);
-      return profile_1.wtfLeave(s, viewRef);
+      this._attachViewToContainer(viewRef_.internalView, viewContainerLocation.internalElement, index);
+      return profile_1.wtfLeave(s, viewRef_);
     };
     AppViewManager_.prototype.detachViewInContainer = function(viewContainerLocation, index) {
       var s = this._detachViewInContainerScope();

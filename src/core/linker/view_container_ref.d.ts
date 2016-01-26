@@ -1,8 +1,8 @@
 import { ResolvedProvider } from 'angular2/src/core/di';
 import { AppElement } from './element';
 import { ElementRef, ElementRef_ } from './element_ref';
-import { TemplateRef, TemplateRef_ } from './template_ref';
-import { EmbeddedViewRef, HostViewRef, HostViewFactoryRef, HostViewFactoryRef_, ViewRef, ViewRef_ } from './view_ref';
+import { TemplateRef } from './template_ref';
+import { EmbeddedViewRef, HostViewRef, HostViewFactoryRef, ViewRef } from './view_ref';
 /**
  * Represents a container where one or more Views can be attached.
  *
@@ -97,10 +97,10 @@ export declare class ViewContainerRef_ extends ViewContainerRef {
     get(index: number): EmbeddedViewRef;
     length: number;
     element: ElementRef_;
-    createEmbeddedView(templateRef: TemplateRef_, index?: number): EmbeddedViewRef;
-    createHostView(hostViewFactoryRef: HostViewFactoryRef_, index?: number, dynamicallyCreatedProviders?: ResolvedProvider[], projectableNodes?: any[][]): HostViewRef;
-    insert(viewRef: ViewRef_, index?: number): EmbeddedViewRef;
-    indexOf(viewRef: ViewRef_): number;
+    createEmbeddedView(templateRef: TemplateRef, index?: number): EmbeddedViewRef;
+    createHostView(hostViewFactoryRef: HostViewFactoryRef, index?: number, dynamicallyCreatedProviders?: ResolvedProvider[], projectableNodes?: any[][]): HostViewRef;
+    insert(viewRef: ViewRef, index?: number): EmbeddedViewRef;
+    indexOf(viewRef: ViewRef): number;
     remove(index?: number): void;
     detach(index?: number): EmbeddedViewRef;
 }

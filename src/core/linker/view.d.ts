@@ -60,7 +60,7 @@ export declare class AppView implements ChangeDispatcher {
     notifyAfterViewChecked(): void;
     getDebugContext(appElement: AppElement, elementIndex: number, directiveIndex: number): DebugContext;
     getDirectiveFor(directive: DirectiveIndex): any;
-    getDetectorFor(directive: DirectiveIndex): any;
+    getDetectorFor(directive: DirectiveIndex): ChangeDetector;
     /**
      * Triggers the event handlers for the element and the directives.
      *
