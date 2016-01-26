@@ -250,7 +250,7 @@ export class AppView implements ChangeDispatcher {
     return this.appElements[directive.elementIndex].getDirectiveAtIndex(directive.directiveIndex);
   }
 
-  getDetectorFor(directive: DirectiveIndex): any {
+  getDetectorFor(directive: DirectiveIndex): ChangeDetector {
     var componentView = this.appElements[directive.elementIndex].componentView;
     return isPresent(componentView) ? componentView.changeDetector : null;
   }

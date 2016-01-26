@@ -173,7 +173,9 @@ export class ProtoInjector {
         var bd = providers.map(b => new ProviderWithVisibility(b, Visibility.Public));
         return new ProtoInjector(bd);
     }
-    getProviderAtIndex(index) { return this._strategy.getProviderAtIndex(index); }
+    getProviderAtIndex(index) {
+        return this._strategy.getProviderAtIndex(index);
+    }
 }
 export class InjectorInlineStrategy {
     constructor(injector, protoStrategy) {

@@ -102,10 +102,11 @@ export let AppViewManager_ = class extends AppViewManager {
     createHostViewInContainer(viewContainerLocation, index, hostViewFactoryRef, dynamicallyCreatedProviders, projectableNodes) {
         var s = this._createHostViewInContainerScope();
         // TODO(tbosch): This should be specifiable via an additional argument!
-        var contextEl = viewContainerLocation.internalElement;
+        var viewContainerLocation_ = viewContainerLocation;
+        var contextEl = viewContainerLocation_.internalElement;
         var hostViewFactory = hostViewFactoryRef.internalHostViewFactory;
         var view = hostViewFactory.viewFactory(contextEl.parentView.renderer, contextEl.parentView.viewManager, contextEl, projectableNodes, null, dynamicallyCreatedProviders, null);
-        this._attachViewToContainer(view, viewContainerLocation.internalElement, index);
+        this._attachViewToContainer(view, viewContainerLocation_.internalElement, index);
         return wtfLeave(s, view.ref);
     }
     destroyViewInContainer(viewContainerLocation, index) {
@@ -116,9 +117,10 @@ export let AppViewManager_ = class extends AppViewManager {
     }
     // TODO(i): refactor detachViewInContainer+attachViewInContainer to moveViewInContainer
     attachViewInContainer(viewContainerLocation, index, viewRef) {
+        var viewRef_ = viewRef;
         var s = this._attachViewInContainerScope();
-        this._attachViewToContainer(viewRef.internalView, viewContainerLocation.internalElement, index);
-        return wtfLeave(s, viewRef);
+        this._attachViewToContainer(viewRef_.internalView, viewContainerLocation.internalElement, index);
+        return wtfLeave(s, viewRef_);
     }
     // TODO(i): refactor detachViewInContainer+attachViewInContainer to moveViewInContainer
     detachViewInContainer(viewContainerLocation, index) {

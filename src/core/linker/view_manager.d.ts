@@ -1,8 +1,8 @@
 import { Injector, ResolvedProvider } from 'angular2/src/core/di';
-import { ElementRef, ElementRef_ } from './element_ref';
-import { HostViewFactoryRef, HostViewFactoryRef_, EmbeddedViewRef, HostViewRef, ViewRef_ } from './view_ref';
+import { ElementRef } from './element_ref';
+import { HostViewFactoryRef, EmbeddedViewRef, HostViewRef, ViewRef } from './view_ref';
 import { ViewContainerRef } from './view_container_ref';
-import { TemplateRef, TemplateRef_ } from './template_ref';
+import { TemplateRef } from './template_ref';
 import { AppViewListener } from './view_listener';
 import { RootRenderer } from 'angular2/src/core/render/api';
 /**
@@ -143,17 +143,17 @@ export declare class AppViewManager_ extends AppViewManager {
     private _appId;
     private _nextCompTypeId;
     constructor(_renderer: RootRenderer, _viewListener: AppViewListener, _appId: string);
-    getViewContainer(location: ElementRef_): ViewContainerRef;
-    getHostElement(hostViewRef: ViewRef_): ElementRef;
-    getNamedElementInComponentView(hostLocation: ElementRef_, variableName: string): ElementRef;
-    getComponent(hostLocation: ElementRef_): any;
-    createRootHostView(hostViewFactoryRef: HostViewFactoryRef_, overrideSelector: string, injector: Injector, projectableNodes?: any[][]): HostViewRef;
-    destroyRootHostView(hostViewRef: ViewRef_): void;
-    createEmbeddedViewInContainer(viewContainerLocation: ElementRef_, index: number, templateRef: TemplateRef_): EmbeddedViewRef;
-    createHostViewInContainer(viewContainerLocation: ElementRef_, index: number, hostViewFactoryRef: HostViewFactoryRef_, dynamicallyCreatedProviders: ResolvedProvider[], projectableNodes: any[][]): HostViewRef;
-    destroyViewInContainer(viewContainerLocation: ElementRef_, index: number): void;
-    attachViewInContainer(viewContainerLocation: ElementRef_, index: number, viewRef: ViewRef_): EmbeddedViewRef;
-    detachViewInContainer(viewContainerLocation: ElementRef_, index: number): EmbeddedViewRef;
+    getViewContainer(location: ElementRef): ViewContainerRef;
+    getHostElement(hostViewRef: ViewRef): ElementRef;
+    getNamedElementInComponentView(hostLocation: ElementRef, variableName: string): ElementRef;
+    getComponent(hostLocation: ElementRef): any;
+    createRootHostView(hostViewFactoryRef: HostViewFactoryRef, overrideSelector: string, injector: Injector, projectableNodes?: any[][]): HostViewRef;
+    destroyRootHostView(hostViewRef: ViewRef): void;
+    createEmbeddedViewInContainer(viewContainerLocation: ElementRef, index: number, templateRef: TemplateRef): EmbeddedViewRef;
+    createHostViewInContainer(viewContainerLocation: ElementRef, index: number, hostViewFactoryRef: HostViewFactoryRef, dynamicallyCreatedProviders: ResolvedProvider[], projectableNodes: any[][]): HostViewRef;
+    destroyViewInContainer(viewContainerLocation: ElementRef, index: number): void;
+    attachViewInContainer(viewContainerLocation: ElementRef, index: number, viewRef: ViewRef): EmbeddedViewRef;
+    detachViewInContainer(viewContainerLocation: ElementRef, index: number): EmbeddedViewRef;
     private _attachViewToContainer(view, vcAppElement, viewIndex);
     private _detachViewInContainer(vcAppElement, viewIndex);
 }

@@ -2,7 +2,7 @@ import { ChangeDetectorRef } from '../change_detector_ref';
 import { IterableDiffer, IterableDifferFactory } from '../differs/iterable_differs';
 export declare class DefaultIterableDifferFactory implements IterableDifferFactory {
     supports(obj: Object): boolean;
-    create(cdRef: ChangeDetectorRef): any;
+    create(cdRef: ChangeDetectorRef): DefaultIterableDiffer;
 }
 export declare class DefaultIterableDiffer implements IterableDiffer {
     private _collection;
