@@ -61,7 +61,7 @@ import {WORKER_APP_PLATFORM, WORKER_APP_APPLICATION} from "angular2/platform/wor
   selector: "hello-world"
 })
 @View({
-  template: "<h1>Hello {{name}}</h1>
+  template: "<h1>Hello {{name}}</h1>"
 })
 export class HelloWorld {
   name: string = "Jane";
