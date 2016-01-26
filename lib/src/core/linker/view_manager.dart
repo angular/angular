@@ -15,6 +15,7 @@ import "view_ref.dart"
         HostViewFactoryRef_,
         EmbeddedViewRef,
         HostViewRef,
+        ViewRef,
         ViewRef_;
 import "view_container_ref.dart" show ViewContainerRef;
 import "template_ref.dart" show TemplateRef, TemplateRef_;
@@ -187,12 +188,12 @@ class AppViewManager_ extends AppViewManager {
       : super() {
     /* super call moved to initializer */;
   }
-  ViewContainerRef getViewContainer(ElementRef_ location) {
-    return location.internalElement.getViewContainerRef();
+  ViewContainerRef getViewContainer(ElementRef location) {
+    return ((location as ElementRef_)).internalElement.getViewContainerRef();
   }
 
-  ElementRef getHostElement(ViewRef_ hostViewRef) {
-    var hostView = hostViewRef.internalView;
+  ElementRef getHostElement(ViewRef hostViewRef) {
+    var hostView = ((hostViewRef as ViewRef_)).internalView;
     if (!identical(hostView.proto.type, ViewType.HOST)) {
       throw new BaseException("This operation is only allowed on host views");
     }
@@ -200,8 +201,8 @@ class AppViewManager_ extends AppViewManager {
   }
 
   ElementRef getNamedElementInComponentView(
-      ElementRef_ hostLocation, String variableName) {
-    var appEl = hostLocation.internalElement;
+      ElementRef hostLocation, String variableName) {
+    var appEl = ((hostLocation as ElementRef_)).internalElement;
     var componentView = appEl.componentView;
     if (isBlank(componentView)) {
       throw new BaseException(
@@ -217,18 +218,19 @@ class AppViewManager_ extends AppViewManager {
     throw new BaseException('''Could not find variable ${ variableName}''');
   }
 
-  dynamic getComponent(ElementRef_ hostLocation) {
-    return hostLocation.internalElement.getComponent();
+  dynamic getComponent(ElementRef hostLocation) {
+    return ((hostLocation as ElementRef_)).internalElement.getComponent();
   }
 
   /** @internal */
   WtfScopeFn _createRootHostViewScope =
       wtfCreateScope("AppViewManager#createRootHostView()");
-  HostViewRef createRootHostView(HostViewFactoryRef_ hostViewFactoryRef,
+  HostViewRef createRootHostView(HostViewFactoryRef hostViewFactoryRef,
       String overrideSelector, Injector injector,
       [List<List<dynamic>> projectableNodes = null]) {
     var s = this._createRootHostViewScope();
-    var hostViewFactory = hostViewFactoryRef.internalHostViewFactory;
+    var hostViewFactory =
+        ((hostViewFactoryRef as HostViewFactoryRef_)).internalHostViewFactory;
     var selector = isPresent(overrideSelector)
         ? overrideSelector
         : hostViewFactory.selector;
@@ -240,9 +242,9 @@ class AppViewManager_ extends AppViewManager {
   /** @internal */
   WtfScopeFn _destroyRootHostViewScope =
       wtfCreateScope("AppViewManager#destroyRootHostView()");
-  destroyRootHostView(ViewRef_ hostViewRef) {
+  destroyRootHostView(ViewRef hostViewRef) {
     var s = this._destroyRootHostViewScope();
-    var hostView = hostViewRef.internalView;
+    var hostView = ((hostViewRef as ViewRef_)).internalView;
     hostView.renderer.detachView(
         flattenNestedViewRenderNodes(hostView.rootNodesOrAppElements));
     hostView.destroy();
@@ -253,9 +255,9 @@ class AppViewManager_ extends AppViewManager {
   WtfScopeFn _createEmbeddedViewInContainerScope =
       wtfCreateScope("AppViewManager#createEmbeddedViewInContainer()");
   EmbeddedViewRef createEmbeddedViewInContainer(
-      ElementRef_ viewContainerLocation, num index, TemplateRef_ templateRef) {
+      ElementRef viewContainerLocation, num index, TemplateRef templateRef) {
     var s = this._createEmbeddedViewInContainerScope();
-    var contextEl = templateRef.elementRef.internalElement;
+    var contextEl = ((templateRef as TemplateRef_)).elementRef.internalElement;
     AppView view = contextEl.embeddedViewFactory(
         contextEl.parentView.renderer,
         this,
@@ -265,7 +267,7 @@ class AppViewManager_ extends AppViewManager {
         null,
         null);
     this._attachViewToContainer(
-        view, viewContainerLocation.internalElement, index);
+        view, ((viewContainerLocation as ElementRef_)).internalElement, index);
     return wtfLeave(s, view.ref);
   }
 
@@ -273,15 +275,17 @@ class AppViewManager_ extends AppViewManager {
   WtfScopeFn _createHostViewInContainerScope =
       wtfCreateScope("AppViewManager#createHostViewInContainer()");
   HostViewRef createHostViewInContainer(
-      ElementRef_ viewContainerLocation,
+      ElementRef viewContainerLocation,
       num index,
-      HostViewFactoryRef_ hostViewFactoryRef,
+      HostViewFactoryRef hostViewFactoryRef,
       List<ResolvedProvider> dynamicallyCreatedProviders,
       List<List<dynamic>> projectableNodes) {
     var s = this._createHostViewInContainerScope();
     // TODO(tbosch): This should be specifiable via an additional argument!
-    var contextEl = viewContainerLocation.internalElement;
-    var hostViewFactory = hostViewFactoryRef.internalHostViewFactory;
+    var viewContainerLocation_ = (viewContainerLocation as ElementRef_);
+    var contextEl = viewContainerLocation_.internalElement;
+    var hostViewFactory =
+        ((hostViewFactoryRef as HostViewFactoryRef_)).internalHostViewFactory;
     var view = hostViewFactory.viewFactory(
         contextEl.parentView.renderer,
         contextEl.parentView.viewManager,
@@ -291,17 +295,17 @@ class AppViewManager_ extends AppViewManager {
         dynamicallyCreatedProviders,
         null);
     this._attachViewToContainer(
-        view, viewContainerLocation.internalElement, index);
+        view, viewContainerLocation_.internalElement, index);
     return wtfLeave(s, view.ref);
   }
 
   /** @internal */
   var _destroyViewInContainerScope =
       wtfCreateScope("AppViewMananger#destroyViewInContainer()");
-  destroyViewInContainer(ElementRef_ viewContainerLocation, num index) {
+  destroyViewInContainer(ElementRef viewContainerLocation, num index) {
     var s = this._destroyViewInContainerScope();
-    var view = this
-        ._detachViewInContainer(viewContainerLocation.internalElement, index);
+    var view = this._detachViewInContainer(
+        ((viewContainerLocation as ElementRef_)).internalElement, index);
     view.destroy();
     wtfLeave(s);
   }
@@ -311,11 +315,12 @@ class AppViewManager_ extends AppViewManager {
       wtfCreateScope("AppViewMananger#attachViewInContainer()");
   // TODO(i): refactor detachViewInContainer+attachViewInContainer to moveViewInContainer
   EmbeddedViewRef attachViewInContainer(
-      ElementRef_ viewContainerLocation, num index, ViewRef_ viewRef) {
+      ElementRef viewContainerLocation, num index, ViewRef viewRef) {
+    var viewRef_ = (viewRef as ViewRef_);
     var s = this._attachViewInContainerScope();
-    this._attachViewToContainer(
-        viewRef.internalView, viewContainerLocation.internalElement, index);
-    return wtfLeave(s, viewRef);
+    this._attachViewToContainer(viewRef_.internalView,
+        ((viewContainerLocation as ElementRef_)).internalElement, index);
+    return wtfLeave(s, viewRef_);
   }
 
   /** @internal */
@@ -323,10 +328,10 @@ class AppViewManager_ extends AppViewManager {
       wtfCreateScope("AppViewMananger#detachViewInContainer()");
   // TODO(i): refactor detachViewInContainer+attachViewInContainer to moveViewInContainer
   EmbeddedViewRef detachViewInContainer(
-      ElementRef_ viewContainerLocation, num index) {
+      ElementRef viewContainerLocation, num index) {
     var s = this._detachViewInContainerScope();
-    var view = this
-        ._detachViewInContainer(viewContainerLocation.internalElement, index);
+    var view = this._detachViewInContainer(
+        ((viewContainerLocation as ElementRef_)).internalElement, index);
     return wtfLeave(s, view.ref);
   }
 
