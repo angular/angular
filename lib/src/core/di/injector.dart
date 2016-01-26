@@ -140,7 +140,7 @@ class ProtoInjectorInlineStrategy implements ProtoInjectorStrategy {
       this.visibility9 = bwv[9].visibility;
     }
   }
-  dynamic getProviderAtIndex(num index) {
+  ResolvedProvider getProviderAtIndex(num index) {
     if (index == 0) return this.provider0;
     if (index == 1) return this.provider1;
     if (index == 2) return this.provider2;
@@ -175,7 +175,7 @@ class ProtoInjectorDynamicStrategy implements ProtoInjectorStrategy {
       this.visibilities[i] = bwv[i].visibility;
     }
   }
-  dynamic getProviderAtIndex(num index) {
+  ResolvedProvider getProviderAtIndex(num index) {
     if (index < 0 || index >= this.providers.length) {
       throw new OutOfBoundsError(index);
     }
@@ -204,7 +204,7 @@ class ProtoInjector {
         ? new ProtoInjectorDynamicStrategy(this, bwv)
         : new ProtoInjectorInlineStrategy(this, bwv);
   }
-  dynamic getProviderAtIndex(num index) {
+  ResolvedProvider getProviderAtIndex(num index) {
     return this._strategy.getProviderAtIndex(index);
   }
 }

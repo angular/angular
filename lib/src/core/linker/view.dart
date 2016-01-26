@@ -265,7 +265,7 @@ class AppView implements ChangeDispatcher {
         .getDirectiveAtIndex(directive.directiveIndex);
   }
 
-  dynamic getDetectorFor(DirectiveIndex directive) {
+  ChangeDetector getDetectorFor(DirectiveIndex directive) {
     var componentView = this.appElements[directive.elementIndex].componentView;
     return isPresent(componentView) ? componentView.changeDetector : null;
   }

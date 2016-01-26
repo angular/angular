@@ -12,7 +12,7 @@ import "package:angular2/src/core/di.dart"
  * respond to changes in an iterable by effecting equivalent changes in the DOM.
  */
 abstract class IterableDiffer {
-  dynamic diff(Object object);
+  dynamic diff(dynamic object);
   onDestroy();
 }
 
@@ -20,7 +20,7 @@ abstract class IterableDiffer {
  * Provides a factory for [IterableDiffer].
  */
 abstract class IterableDifferFactory {
-  bool supports(Object objects);
+  bool supports(dynamic objects);
   IterableDiffer create(ChangeDetectorRef cdRef);
 }
 
@@ -78,7 +78,7 @@ class IterableDiffers {
     ]);
   }
 
-  IterableDifferFactory find(Object iterable) {
+  IterableDifferFactory find(dynamic iterable) {
     var factory = this
         .factories
         .firstWhere((f) => f.supports(iterable), orElse: () => null);

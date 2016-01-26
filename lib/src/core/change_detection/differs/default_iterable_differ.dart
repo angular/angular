@@ -14,7 +14,7 @@ class DefaultIterableDifferFactory implements IterableDifferFactory {
     return isListLikeIterable(obj);
   }
 
-  dynamic create(ChangeDetectorRef cdRef) {
+  DefaultIterableDiffer create(ChangeDetectorRef cdRef) {
     return new DefaultIterableDiffer();
   }
 
