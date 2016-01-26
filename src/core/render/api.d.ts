@@ -19,7 +19,7 @@ export declare abstract class Renderer implements ParentRenderer {
     abstract attachViewAfter(node: any, viewRootNodes: any[]): any;
     abstract detachView(viewRootNodes: any[]): any;
     abstract destroyView(hostElement: any, viewAllNodes: any[]): any;
-    abstract listen(renderElement: any, name: string, callback: Function): any;
+    abstract listen(renderElement: any, name: string, callback: Function): Function;
     abstract listenGlobal(target: string, name: string, callback: Function): Function;
     abstract setElementProperty(renderElement: any, propertyName: string, propertyValue: any): any;
     abstract setElementAttribute(renderElement: any, attributeName: string, attributeValue: string): any;

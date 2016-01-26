@@ -145,7 +145,7 @@ export class DomRenderer {
         }
     }
     listen(renderElement, name, callback) {
-        this._rootRenderer.eventManager.addEventListener(renderElement, name, decoratePreventDefault(callback));
+        return this._rootRenderer.eventManager.addEventListener(renderElement, name, decoratePreventDefault(callback));
     }
     listenGlobal(target, name, callback) {
         return this._rootRenderer.eventManager.addGlobalEventListener(target, name, decoratePreventDefault(callback));

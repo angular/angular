@@ -84,7 +84,7 @@ export class ChangeDetectionError extends WrappedException {
  */
 export class DehydratedException extends BaseException {
     constructor() {
-        super('Attempt to detect changes on a dehydrated detector.');
+        super('Attempt to use a dehydrated detector.');
     }
 }
 /**

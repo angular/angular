@@ -24,7 +24,7 @@ export let EventManager = class {
     }
     addEventListener(element, eventName, handler) {
         var plugin = this._findPluginFor(eventName);
-        plugin.addEventListener(element, eventName, handler);
+        return plugin.addEventListener(element, eventName, handler);
     }
     addGlobalEventListener(target, eventName, handler) {
         var plugin = this._findPluginFor(eventName);

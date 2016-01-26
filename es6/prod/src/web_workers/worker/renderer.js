@@ -185,7 +185,16 @@ export class WebWorkerRenderer {
     }
     listen(renderElement, name, callback) {
         renderElement.events.listen(name, callback);
-        this._runOnService('listen', [new FnArg(renderElement, RenderStoreObject), new FnArg(name, null)]);
+        var unlistenCallbackId = this._rootRenderer.allocateId();
+        this._runOnService('listen', [
+            new FnArg(renderElement, RenderStoreObject),
+            new FnArg(name, null),
+            new FnArg(unlistenCallbackId, null)
+        ]);
+        return () => {
+            renderElement.events.unlisten(name, callback);
+            this._runOnService('listenDone', [new FnArg(unlistenCallbackId, null)]);
+        };
     }
     listenGlobal(target, name, callback) {
         this._rootRenderer.globalEvents.listen(eventNameWithTarget(target, name), callback);
@@ -193,7 +202,7 @@ export class WebWorkerRenderer {
         this._runOnService('listenGlobal', [new FnArg(target, null), new FnArg(name, null), new FnArg(unlistenCallbackId, null)]);
         return () => {
             this._rootRenderer.globalEvents.unlisten(eventNameWithTarget(target, name), callback);
-            this._runOnService('listenGlobalDone', [new FnArg(unlistenCallbackId, null)]);
+            this._runOnService('listenDone', [new FnArg(unlistenCallbackId, null)]);
         };
     }
 }

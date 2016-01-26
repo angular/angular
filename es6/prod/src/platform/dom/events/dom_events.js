@@ -17,13 +17,13 @@ export let DomEventsPlugin = class extends EventManagerPlugin {
     addEventListener(element, eventName, handler) {
         var zone = this.manager.getZone();
         var outsideHandler = (event) => zone.run(() => handler(event));
-        this.manager.getZone().runOutsideAngular(() => { DOM.on(element, eventName, outsideHandler); });
+        return this.manager.getZone().runOutsideAngular(() => DOM.onAndCancel(element, eventName, outsideHandler));
     }
     addGlobalEventListener(target, eventName, handler) {
         var element = DOM.getGlobalEventTarget(target);
         var zone = this.manager.getZone();
         var outsideHandler = (event) => zone.run(() => handler(event));
-        return this.manager.getZone().runOutsideAngular(() => { return DOM.onAndCancel(element, eventName, outsideHandler); });
+        return this.manager.getZone().runOutsideAngular(() => DOM.onAndCancel(element, eventName, outsideHandler));
     }
 };
 DomEventsPlugin = __decorate([

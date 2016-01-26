@@ -45,9 +45,9 @@ export let MessageBasedRenderer = class {
         broker.registerMethod("setElementStyle", [RenderStoreObject, RenderStoreObject, PRIMITIVE, PRIMITIVE], bind(this._setElementStyle, this));
         broker.registerMethod("invokeElementMethod", [RenderStoreObject, RenderStoreObject, PRIMITIVE, PRIMITIVE], bind(this._invokeElementMethod, this));
         broker.registerMethod("setText", [RenderStoreObject, RenderStoreObject, PRIMITIVE], bind(this._setText, this));
-        broker.registerMethod("listen", [RenderStoreObject, RenderStoreObject, PRIMITIVE], bind(this._listen, this));
+        broker.registerMethod("listen", [RenderStoreObject, RenderStoreObject, PRIMITIVE, PRIMITIVE], bind(this._listen, this));
         broker.registerMethod("listenGlobal", [RenderStoreObject, PRIMITIVE, PRIMITIVE, PRIMITIVE], bind(this._listenGlobal, this));
-        broker.registerMethod("listenGlobalDone", [RenderStoreObject, RenderStoreObject], bind(this._listenGlobalDone, this));
+        broker.registerMethod("listenDone", [RenderStoreObject, RenderStoreObject], bind(this._listenDone, this));
     }
     _renderComponent(renderComponentType, rendererId) {
         var renderer = this._rootRenderer.renderComponent(renderComponentType);
@@ -107,14 +107,15 @@ export let MessageBasedRenderer = class {
     _setText(renderer, renderNode, text) {
         renderer.setText(renderNode, text);
     }
-    _listen(renderer, renderElement, eventName) {
-        renderer.listen(renderElement, eventName, (event) => this._eventDispatcher.dispatchRenderEvent(renderElement, null, eventName, event));
+    _listen(renderer, renderElement, eventName, unlistenId) {
+        var unregisterCallback = renderer.listen(renderElement, eventName, (event) => this._eventDispatcher.dispatchRenderEvent(renderElement, null, eventName, event));
+        this._renderStore.store(unregisterCallback, unlistenId);
     }
     _listenGlobal(renderer, eventTarget, eventName, unlistenId) {
         var unregisterCallback = renderer.listenGlobal(eventTarget, eventName, (event) => this._eventDispatcher.dispatchRenderEvent(null, eventTarget, eventName, event));
         this._renderStore.store(unregisterCallback, unlistenId);
     }
-    _listenGlobalDone(renderer, unlistenCallback) { unlistenCallback(); }
+    _listenDone(renderer, unlistenCallback) { unlistenCallback(); }
 };
 MessageBasedRenderer = __decorate([
     Injectable(), 

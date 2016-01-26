@@ -4720,7 +4720,7 @@ System.register("angular2/src/core/change_detection/exceptions", ["angular2/src/
   var DehydratedException = (function(_super) {
     __extends(DehydratedException, _super);
     function DehydratedException() {
-      _super.call(this, 'Attempt to detect changes on a dehydrated detector.');
+      _super.call(this, 'Attempt to use a dehydrated detector.');
     }
     return DehydratedException;
   })(exceptions_1.BaseException);
@@ -16131,7 +16131,7 @@ System.register("angular2/src/platform/dom/events/event_manager", ["angular2/src
     }
     EventManager.prototype.addEventListener = function(element, eventName, handler) {
       var plugin = this._findPluginFor(eventName);
-      plugin.addEventListener(element, eventName, handler);
+      return plugin.addEventListener(element, eventName, handler);
     };
     EventManager.prototype.addGlobalEventListener = function(target, eventName, handler) {
       var plugin = this._findPluginFor(eventName);
@@ -16219,8 +16219,8 @@ System.register("angular2/src/platform/dom/events/dom_events", ["angular2/src/pl
           return handler(event);
         });
       };
-      this.manager.getZone().runOutsideAngular(function() {
-        dom_adapter_1.DOM.on(element, eventName, outsideHandler);
+      return this.manager.getZone().runOutsideAngular(function() {
+        return dom_adapter_1.DOM.onAndCancel(element, eventName, outsideHandler);
       });
     };
     DomEventsPlugin.prototype.addGlobalEventListener = function(target, eventName, handler) {
@@ -19999,6 +19999,7 @@ System.register("angular2/src/core/change_detection/codegen_logic_util", ["angul
     CodegenLogicUtil.prototype.genHydrateDirectives = function(directiveRecords) {
       var _this = this;
       var res = [];
+      var outputCount = 0;
       for (var i = 0; i < directiveRecords.length; ++i) {
         var r = directiveRecords[i];
         var dirVarName = this._names.getDirectiveName(r.directiveIndex);
@@ -20006,12 +20007,21 @@ System.register("angular2/src/core/change_detection/codegen_logic_util", ["angul
         if (lang_1.isPresent(r.outputs)) {
           r.outputs.forEach(function(output) {
             var eventHandlerExpr = _this._genEventHandler(r.directiveIndex.elementIndex, output[1]);
+            var statementStart = "this.outputSubscriptions[" + outputCount++ + "] = " + dirVarName + "." + output[0];
             if (lang_1.IS_DART) {
-              res.push(dirVarName + "." + output[0] + ".listen(" + eventHandlerExpr + ");");
+              res.push(statementStart + ".listen(" + eventHandlerExpr + ");");
             } else {
-              res.push(dirVarName + "." + output[0] + ".subscribe({next: " + eventHandlerExpr + "});");
+              res.push(statementStart + ".subscribe({next: " + eventHandlerExpr + "});");
             }
           });
+        }
+      }
+      if (outputCount > 0) {
+        var statementStart = 'this.outputSubscriptions';
+        if (lang_1.IS_DART) {
+          res.unshift(statementStart + " = new List(" + outputCount + ");");
+        } else {
+          res.unshift(statementStart + " = new Array(" + outputCount + ");");
         }
       }
       return res.join("\n");
@@ -21764,8 +21774,14 @@ System.register("angular2/src/web_workers/worker/renderer", ["angular2/src/core/
       this._runOnService('setText', [new client_message_broker_1.FnArg(renderNode, serializer_1.RenderStoreObject), new client_message_broker_1.FnArg(text, null)]);
     };
     WebWorkerRenderer.prototype.listen = function(renderElement, name, callback) {
+      var _this = this;
       renderElement.events.listen(name, callback);
-      this._runOnService('listen', [new client_message_broker_1.FnArg(renderElement, serializer_1.RenderStoreObject), new client_message_broker_1.FnArg(name, null)]);
+      var unlistenCallbackId = this._rootRenderer.allocateId();
+      this._runOnService('listen', [new client_message_broker_1.FnArg(renderElement, serializer_1.RenderStoreObject), new client_message_broker_1.FnArg(name, null), new client_message_broker_1.FnArg(unlistenCallbackId, null)]);
+      return function() {
+        renderElement.events.unlisten(name, callback);
+        _this._runOnService('listenDone', [new client_message_broker_1.FnArg(unlistenCallbackId, null)]);
+      };
     };
     WebWorkerRenderer.prototype.listenGlobal = function(target, name, callback) {
       var _this = this;
@@ -21774,7 +21790,7 @@ System.register("angular2/src/web_workers/worker/renderer", ["angular2/src/core/
       this._runOnService('listenGlobal', [new client_message_broker_1.FnArg(target, null), new client_message_broker_1.FnArg(name, null), new client_message_broker_1.FnArg(unlistenCallbackId, null)]);
       return function() {
         _this._rootRenderer.globalEvents.unlisten(eventNameWithTarget(target, name), callback);
-        _this._runOnService('listenGlobalDone', [new client_message_broker_1.FnArg(unlistenCallbackId, null)]);
+        _this._runOnService('listenDone', [new client_message_broker_1.FnArg(unlistenCallbackId, null)]);
       };
     };
     return WebWorkerRenderer;
@@ -23220,8 +23236,10 @@ System.register("angular2/src/compiler/view_compiler", ["angular2/src/facade/lan
       return new util_1.Expression(disposableVar);
     };
     CodeGenViewFactory.prototype.createElementEventListener = function(renderer, appView, boundElementIndex, renderNode, eventAst, targetStatements) {
+      var disposableVar = this._nextDisposableVar();
       var eventHandlerExpr = codeGenEventHandler(appView, boundElementIndex, eventAst.fullName);
-      targetStatements.push(new util_1.Statement(renderer.expression + ".listen(" + renderNode.expression + ", " + util_1.escapeValue(eventAst.name) + ", " + eventHandlerExpr + ");"));
+      targetStatements.push(new util_1.Statement("var " + disposableVar + " = " + renderer.expression + ".listen(" + renderNode.expression + ", " + util_1.escapeValue(eventAst.name) + ", " + eventHandlerExpr + ");"));
+      return new util_1.Expression(disposableVar);
     };
     CodeGenViewFactory.prototype.setElementAttribute = function(renderer, renderNode, attrName, attrValue, targetStatements) {
       targetStatements.push(new util_1.Statement(renderer.expression + ".setElementAttribute(" + renderNode.expression + ", " + util_1.escapeSingleQuoteString(attrName) + ", " + util_1.escapeSingleQuoteString(attrValue) + ");"));
@@ -23309,7 +23327,7 @@ System.register("angular2/src/compiler/view_compiler", ["angular2/src/facade/lan
       });
     };
     RuntimeViewFactory.prototype.createElementEventListener = function(renderer, appView, boundElementIndex, renderNode, eventAst, targetStatements) {
-      renderer.listen(renderNode, eventAst.name, function(event) {
+      return renderer.listen(renderNode, eventAst.name, function(event) {
         return appView.triggerEventHandlers(eventAst.fullName, event, boundElementIndex);
       });
     };
@@ -23456,12 +23474,13 @@ System.register("angular2/src/compiler/view_compiler", ["angular2/src/facade/lan
       var elementIndex = this.elementCount++;
       var protoEl = this.protoView.protoElements[elementIndex];
       protoEl.renderEvents.forEach(function(eventAst) {
+        var disposable;
         if (lang_1.isPresent(eventAst.target)) {
-          var disposable = _this.factory.createGlobalEventListener(_this.renderer, _this.view, protoEl.boundElementIndex, eventAst, _this.renderStmts);
-          _this.appDisposables.push(disposable);
+          disposable = _this.factory.createGlobalEventListener(_this.renderer, _this.view, protoEl.boundElementIndex, eventAst, _this.renderStmts);
         } else {
-          _this.factory.createElementEventListener(_this.renderer, _this.view, protoEl.boundElementIndex, renderNode, eventAst, _this.renderStmts);
+          disposable = _this.factory.createElementEventListener(_this.renderer, _this.view, protoEl.boundElementIndex, renderNode, eventAst, _this.renderStmts);
         }
+        _this.appDisposables.push(disposable);
       });
       for (var i = 0; i < protoEl.attrNameAndValues.length; i++) {
         var attrName = protoEl.attrNameAndValues[i][0];
@@ -24636,7 +24655,7 @@ System.register("angular2/src/core/di/provider", ["angular2/src/facade/lang", "a
   return module.exports;
 });
 
-System.register("angular2/src/core/change_detection/abstract_change_detector", ["angular2/src/facade/lang", "angular2/src/facade/collection", "angular2/src/core/change_detection/change_detection_util", "angular2/src/core/change_detection/change_detector_ref", "angular2/src/core/change_detection/exceptions", "angular2/src/core/change_detection/parser/locals", "angular2/src/core/change_detection/constants", "angular2/src/core/profile/profile", "angular2/src/core/change_detection/observable_facade"], true, function(require, exports, module) {
+System.register("angular2/src/core/change_detection/abstract_change_detector", ["angular2/src/facade/lang", "angular2/src/facade/collection", "angular2/src/core/change_detection/change_detection_util", "angular2/src/core/change_detection/change_detector_ref", "angular2/src/core/change_detection/exceptions", "angular2/src/core/change_detection/parser/locals", "angular2/src/core/change_detection/constants", "angular2/src/core/profile/profile", "angular2/src/core/change_detection/observable_facade", "angular2/src/facade/async"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
@@ -24649,6 +24668,7 @@ System.register("angular2/src/core/change_detection/abstract_change_detector", [
   var constants_1 = require("angular2/src/core/change_detection/constants");
   var profile_1 = require("angular2/src/core/profile/profile");
   var observable_facade_1 = require("angular2/src/core/change_detection/observable_facade");
+  var async_1 = require("angular2/src/facade/async");
   var _scope_check = profile_1.wtfCreateScope("ChangeDetector#check(ascii id, bool throwOnChange)");
   var _Context = (function() {
     function _Context(element, componentElement, context, locals, injector, expression) {
@@ -24695,7 +24715,7 @@ System.register("angular2/src/core/change_detection/abstract_change_detector", [
     };
     AbstractChangeDetector.prototype.handleEvent = function(eventName, elIndex, event) {
       if (!this.hydrated()) {
-        return true;
+        this.throwDehydratedError();
       }
       try {
         var locals = new Map();
@@ -24768,6 +24788,7 @@ System.register("angular2/src/core/change_detection/abstract_change_detector", [
       if (this.strategy === constants_1.ChangeDetectionStrategy.OnPushObserve) {
         this._unsubsribeFromObservables();
       }
+      this._unsubscribeFromOutputs();
       this.dispatcher = null;
       this.context = null;
       this.locals = null;
@@ -24830,6 +24851,14 @@ System.register("angular2/src/core/change_detection/abstract_change_detector", [
             s.cancel();
             this.subscriptions[i] = null;
           }
+        }
+      }
+    };
+    AbstractChangeDetector.prototype._unsubscribeFromOutputs = function() {
+      if (lang_1.isPresent(this.outputSubscriptions)) {
+        for (var i = 0; i < this.outputSubscriptions.length; ++i) {
+          async_1.ObservableWrapper.dispose(this.outputSubscriptions[i]);
+          this.outputSubscriptions[i] = null;
         }
       }
     };
@@ -28644,6 +28673,7 @@ System.register("angular2/src/core/change_detection/dynamic_change_detector", ["
           _super.prototype.observeDirective.call(this, this._getDirectiveFor(index), i);
         }
       }
+      this.outputSubscriptions = [];
       for (var i = 0; i < this._directiveRecords.length; ++i) {
         var r = this._directiveRecords[i];
         if (lang_1.isPresent(r.outputs)) {
@@ -28651,7 +28681,7 @@ System.register("angular2/src/core/change_detection/dynamic_change_detector", ["
             var eventHandler = _this._createEventHandler(r.directiveIndex.elementIndex, output[1]);
             var directive = _this._getDirectiveFor(r.directiveIndex);
             var getter = reflection_1.reflector.getter(output[0]);
-            async_1.ObservableWrapper.subscribe(getter(directive), eventHandler);
+            _this.outputSubscriptions.push(async_1.ObservableWrapper.subscribe(getter(directive), eventHandler));
           });
         }
       }
@@ -32680,7 +32710,7 @@ System.register("angular2/src/platform/dom/dom_renderer", ["angular2/src/core/di
       }
     };
     DomRenderer.prototype.listen = function(renderElement, name, callback) {
-      this._rootRenderer.eventManager.addEventListener(renderElement, name, decoratePreventDefault(callback));
+      return this._rootRenderer.eventManager.addEventListener(renderElement, name, decoratePreventDefault(callback));
     };
     DomRenderer.prototype.listenGlobal = function(target, name, callback) {
       return this._rootRenderer.eventManager.addGlobalEventListener(target, name, decoratePreventDefault(callback));

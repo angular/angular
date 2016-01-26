@@ -21,6 +21,7 @@ export declare class AbstractChangeDetector<T> implements ChangeDetector {
     mode: ChangeDetectionStrategy;
     pipes: Pipes;
     propertyBindingIndex: number;
+    outputSubscriptions: any[];
     subscriptions: any[];
     streams: any[];
     dispatcher: ChangeDispatcher;
@@ -50,6 +51,7 @@ export declare class AbstractChangeDetector<T> implements ChangeDetector {
     markAsCheckOnce(): void;
     markPathToRootAsCheckOnce(): void;
     private _unsubsribeFromObservables();
+    private _unsubscribeFromOutputs();
     observeValue(value: any, index: number): any;
     observeDirective(value: any, index: number): any;
     observeComponent(value: any): any;

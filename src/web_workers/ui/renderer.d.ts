@@ -29,7 +29,7 @@ export declare class MessageBasedRenderer {
     private _setElementStyle(renderer, renderElement, styleName, styleValue);
     private _invokeElementMethod(renderer, renderElement, methodName, args);
     private _setText(renderer, renderNode, text);
-    private _listen(renderer, renderElement, eventName);
+    private _listen(renderer, renderElement, eventName, unlistenId);
     private _listenGlobal(renderer, eventTarget, eventName, unlistenId);
-    private _listenGlobalDone(renderer, unlistenCallback);
+    private _listenDone(renderer, unlistenCallback);
 }

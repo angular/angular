@@ -94,8 +94,10 @@ class CodeGenViewFactory {
         return new Expression(disposableVar);
     }
     createElementEventListener(renderer, appView, boundElementIndex, renderNode, eventAst, targetStatements) {
+        var disposableVar = this._nextDisposableVar();
         var eventHandlerExpr = codeGenEventHandler(appView, boundElementIndex, eventAst.fullName);
-        targetStatements.push(new Statement(`${renderer.expression}.listen(${renderNode.expression}, ${escapeValue(eventAst.name)}, ${eventHandlerExpr});`));
+        targetStatements.push(new Statement(`var ${disposableVar} = ${renderer.expression}.listen(${renderNode.expression}, ${escapeValue(eventAst.name)}, ${eventHandlerExpr});`));
+        return new Expression(disposableVar);
     }
     setElementAttribute(renderer, renderNode, attrName, attrValue, targetStatements) {
         targetStatements.push(new Statement(`${renderer.expression}.setElementAttribute(${renderNode.expression}, ${escapeSingleQuoteString(attrName)}, ${escapeSingleQuoteString(attrValue)});`));
@@ -207,7 +209,7 @@ class RuntimeViewFactory {
         return renderer.listenGlobal(eventAst.target, eventAst.name, (event) => appView.triggerEventHandlers(eventAst.fullName, event, boundElementIndex));
     }
     createElementEventListener(renderer, appView, boundElementIndex, renderNode, eventAst, targetStatements) {
-        renderer.listen(renderNode, eventAst.name, (event) => appView.triggerEventHandlers(eventAst.fullName, event, boundElementIndex));
+        return renderer.listen(renderNode, eventAst.name, (event) => appView.triggerEventHandlers(eventAst.fullName, event, boundElementIndex));
     }
     setElementAttribute(renderer, renderNode, attrName, attrValue, targetStatements) {
         renderer.setElementAttribute(renderNode, attrName, attrValue);
@@ -349,13 +351,14 @@ class ViewBuilderVisitor {
         var elementIndex = this.elementCount++;
         var protoEl = this.protoView.protoElements[elementIndex];
         protoEl.renderEvents.forEach((eventAst) => {
+            var disposable;
             if (isPresent(eventAst.target)) {
-                var disposable = this.factory.createGlobalEventListener(this.renderer, this.view, protoEl.boundElementIndex, eventAst, this.renderStmts);
-                this.appDisposables.push(disposable);
+                disposable = this.factory.createGlobalEventListener(this.renderer, this.view, protoEl.boundElementIndex, eventAst, this.renderStmts);
             }
             else {
-                this.factory.createElementEventListener(this.renderer, this.view, protoEl.boundElementIndex, renderNode, eventAst, this.renderStmts);
+                disposable = this.factory.createElementEventListener(this.renderer, this.view, protoEl.boundElementIndex, renderNode, eventAst, this.renderStmts);
             }
+            this.appDisposables.push(disposable);
         });
         for (var i = 0; i < protoEl.attrNameAndValues.length; i++) {
             var attrName = protoEl.attrNameAndValues[i][0];

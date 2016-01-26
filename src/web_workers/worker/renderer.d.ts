@@ -39,7 +39,7 @@ export declare class WebWorkerRenderer implements Renderer, RenderStoreObject {
     setElementStyle(renderElement: any, styleName: string, styleValue: string): void;
     invokeElementMethod(renderElement: any, methodName: string, args: any[]): void;
     setText(renderNode: any, text: string): void;
-    listen(renderElement: WebWorkerRenderNode, name: string, callback: Function): void;
+    listen(renderElement: WebWorkerRenderNode, name: string, callback: Function): Function;
     listenGlobal(target: string, name: string, callback: Function): Function;
 }
 export declare class NamedEventEmitter {

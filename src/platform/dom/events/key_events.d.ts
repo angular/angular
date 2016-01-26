@@ -3,7 +3,7 @@ import { NgZone } from 'angular2/src/core/zone/ng_zone';
 export declare class KeyEventsPlugin extends EventManagerPlugin {
     constructor();
     supports(eventName: string): boolean;
-    addEventListener(element: HTMLElement, eventName: string, handler: Function): void;
+    addEventListener(element: HTMLElement, eventName: string, handler: Function): Function;
     static parseEventName(eventName: string): {
         [key: string]: string;
     };

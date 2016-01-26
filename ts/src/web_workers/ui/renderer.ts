@@ -66,12 +66,12 @@ export class MessageBasedRenderer {
                           bind(this._invokeElementMethod, this));
     broker.registerMethod("setText", [RenderStoreObject, RenderStoreObject, PRIMITIVE],
                           bind(this._setText, this));
-    broker.registerMethod("listen", [RenderStoreObject, RenderStoreObject, PRIMITIVE],
+    broker.registerMethod("listen", [RenderStoreObject, RenderStoreObject, PRIMITIVE, PRIMITIVE],
                           bind(this._listen, this));
     broker.registerMethod("listenGlobal", [RenderStoreObject, PRIMITIVE, PRIMITIVE, PRIMITIVE],
                           bind(this._listenGlobal, this));
-    broker.registerMethod("listenGlobalDone", [RenderStoreObject, RenderStoreObject],
-                          bind(this._listenGlobalDone, this));
+    broker.registerMethod("listenDone", [RenderStoreObject, RenderStoreObject],
+                          bind(this._listenDone, this));
   }
 
   private _renderComponent(renderComponentType: RenderComponentType, rendererId: number) {
@@ -155,9 +155,11 @@ export class MessageBasedRenderer {
     renderer.setText(renderNode, text);
   }
 
-  private _listen(renderer: Renderer, renderElement: any, eventName: string) {
-    renderer.listen(renderElement, eventName, (event) => this._eventDispatcher.dispatchRenderEvent(
-                                                  renderElement, null, eventName, event));
+  private _listen(renderer: Renderer, renderElement: any, eventName: string, unlistenId: number) {
+    var unregisterCallback = renderer.listen(renderElement, eventName,
+                                             (event) => this._eventDispatcher.dispatchRenderEvent(
+                                                 renderElement, null, eventName, event));
+    this._renderStore.store(unregisterCallback, unlistenId);
   }
 
   private _listenGlobal(renderer: Renderer, eventTarget: string, eventName: string,
@@ -168,5 +170,5 @@ export class MessageBasedRenderer {
     this._renderStore.store(unregisterCallback, unlistenId);
   }
 
-  private _listenGlobalDone(renderer: Renderer, unlistenCallback: Function) { unlistenCallback(); }
+  private _listenDone(renderer: Renderer, unlistenCallback: Function) { unlistenCallback(); }
 }

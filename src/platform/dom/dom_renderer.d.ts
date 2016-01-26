@@ -31,7 +31,7 @@ export declare class DomRenderer implements Renderer {
     attachViewAfter(node: any, viewRootNodes: any[]): void;
     detachView(viewRootNodes: any[]): void;
     destroyView(hostElement: any, viewAllNodes: any[]): void;
-    listen(renderElement: any, name: string, callback: Function): void;
+    listen(renderElement: any, name: string, callback: Function): Function;
     listenGlobal(target: string, name: string, callback: Function): Function;
     setElementProperty(renderElement: any, propertyName: string, propertyValue: any): void;
     setElementAttribute(renderElement: any, attributeName: string, attributeValue: string): void;

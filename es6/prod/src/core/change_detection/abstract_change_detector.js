@@ -7,6 +7,7 @@ import { Locals } from './parser/locals';
 import { ChangeDetectionStrategy, ChangeDetectorState } from './constants';
 import { wtfCreateScope, wtfLeave } from '../profile/profile';
 import { isObservable } from './observable_facade';
+import { ObservableWrapper } from 'angular2/src/facade/async';
 var _scope_check = wtfCreateScope(`ChangeDetector#check(ascii id, bool throwOnChange)`);
 class _Context {
     constructor(element, componentElement, context, locals, injector, expression) {
@@ -48,7 +49,7 @@ export class AbstractChangeDetector {
     remove() { this.parent.removeContentChild(this); }
     handleEvent(eventName, elIndex, event) {
         if (!this.hydrated()) {
-            return true;
+            this.throwDehydratedError();
         }
         try {
             var locals = new Map();
@@ -141,6 +142,7 @@ export class AbstractChangeDetector {
         if (this.strategy === ChangeDetectionStrategy.OnPushObserve) {
             this._unsubsribeFromObservables();
         }
+        this._unsubscribeFromOutputs();
         this.dispatcher = null;
         this.context = null;
         this.locals = null;
@@ -204,6 +206,14 @@ export class AbstractChangeDetector {
                     s.cancel();
                     this.subscriptions[i] = null;
                 }
+            }
+        }
+    }
+    _unsubscribeFromOutputs() {
+        if (isPresent(this.outputSubscriptions)) {
+            for (var i = 0; i < this.outputSubscriptions.length; ++i) {
+                ObservableWrapper.dispose(this.outputSubscriptions[i]);
+                this.outputSubscriptions[i] = null;
             }
         }
     }
