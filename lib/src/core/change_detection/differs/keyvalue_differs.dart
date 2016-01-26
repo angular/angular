@@ -11,7 +11,7 @@ import "package:angular2/src/core/di.dart"
  * A differ that tracks changes made to an object over time.
  */
 abstract class KeyValueDiffer {
-  diff(dynamic object);
+  diff(Object object);
   onDestroy();
 }
 
@@ -19,7 +19,7 @@ abstract class KeyValueDiffer {
  * Provides a factory for [KeyValueDiffer].
  */
 abstract class KeyValueDifferFactory {
-  bool supports(dynamic objects);
+  bool supports(Object objects);
   KeyValueDiffer create(ChangeDetectorRef cdRef);
 }
 

@@ -21,7 +21,7 @@ class ObservableListDiff extends DefaultIterableDiffer {
     }
   }
 
-  DefaultIterableDiffer diff(ObservableList collection) {
+  dynamic diff(ObservableList collection) {
     if (collection is! ObservableList) {
       throw "Cannot change the type of a collection";
     }

@@ -139,7 +139,7 @@ class ViewContainerRef_ extends ViewContainerRef {
   // TODO(rado): profile and decide whether bounds checks should be added
 
   // to the methods below.
-  EmbeddedViewRef createEmbeddedView(TemplateRef templateRef,
+  EmbeddedViewRef createEmbeddedView(TemplateRef_ templateRef,
       [num index = -1]) {
     if (index == -1) index = this.length;
     var vm = this._element.parentView.viewManager;
@@ -147,7 +147,7 @@ class ViewContainerRef_ extends ViewContainerRef {
         this._element.ref, index, templateRef);
   }
 
-  HostViewRef createHostView(HostViewFactoryRef hostViewFactoryRef,
+  HostViewRef createHostView(HostViewFactoryRef_ hostViewFactoryRef,
       [num index = -1,
       List<ResolvedProvider> dynamicallyCreatedProviders = null,
       List<List<dynamic>> projectableNodes = null]) {
@@ -158,15 +158,14 @@ class ViewContainerRef_ extends ViewContainerRef {
   }
 
   // TODO(i): refactor insert+remove into move
-  EmbeddedViewRef insert(ViewRef viewRef, [num index = -1]) {
+  EmbeddedViewRef insert(ViewRef_ viewRef, [num index = -1]) {
     if (index == -1) index = this.length;
     var vm = this._element.parentView.viewManager;
     return vm.attachViewInContainer(this._element.ref, index, viewRef);
   }
 
-  num indexOf(ViewRef viewRef) {
-    return ListWrapper.indexOf(
-        this._element.nestedViews, ((viewRef as ViewRef_)).internalView);
+  num indexOf(ViewRef_ viewRef) {
+    return ListWrapper.indexOf(this._element.nestedViews, viewRef.internalView);
   }
 
   // TODO(i): rename to destroy

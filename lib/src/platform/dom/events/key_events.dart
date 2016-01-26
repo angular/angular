@@ -28,7 +28,8 @@ class KeyEventsPlugin extends EventManagerPlugin {
     return isPresent(KeyEventsPlugin.parseEventName(eventName));
   }
 
-  addEventListener(dynamic element, String eventName, Function handler) {
+  addEventListener(dynamic element, String eventName,
+      dynamic /* (Event: any) => any */ handler) {
     var parsedEvent = KeyEventsPlugin.parseEventName(eventName);
     var outsideHandler = KeyEventsPlugin.eventCallback(
         element,
@@ -90,8 +91,11 @@ class KeyEventsPlugin extends EventManagerPlugin {
     return fullKey;
   }
 
-  static Function eventCallback(
-      dynamic element, dynamic fullKey, Function handler, NgZone zone) {
+  static dynamic /* (event: KeyboardEvent) => void */ eventCallback(
+      dynamic element,
+      dynamic fullKey,
+      dynamic /* (e: Event) => any */ handler,
+      NgZone zone) {
     return (event) {
       if (StringWrapper.equals(
           KeyEventsPlugin.getEventFullKey(event), fullKey)) {

@@ -532,7 +532,7 @@ class ApplicationRef_ extends ApplicationRef {
     this._platform._applicationDisposed(this);
   }
 
-  List<Type> get componentTypes {
+  List<dynamic> get componentTypes {
     return this._rootComponentTypes;
   }
 }
