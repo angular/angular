@@ -158,7 +158,7 @@ class TreeBuilder {
                                 new ParseSourceSpan(startTagToken.sourceSpan.start, end));
     this._pushElement(el);
     if (selfClosing) {
-      this._popElement(fullName);
+      this._popElement(fullName, null);
     }
   }
 
@@ -191,16 +191,19 @@ class TreeBuilder {
       this.errors.push(
           HtmlTreeError.create(fullName, endTagToken.sourceSpan.start,
                                `Void elements do not have end tags "${endTagToken.parts[1]}"`));
-    } else if (!this._popElement(fullName)) {
+    } else if (!this._popElement(fullName, endTagToken)) {
       this.errors.push(HtmlTreeError.create(fullName, endTagToken.sourceSpan.start,
                                             `Unexpected closing tag "${endTagToken.parts[1]}"`));
     }
   }
 
-  private _popElement(fullName: string): boolean {
+  private _popElement(fullName: string, endTagToken: HtmlToken): boolean {
     for (let stackIndex = this.elementStack.length - 1; stackIndex >= 0; stackIndex--) {
       let el = this.elementStack[stackIndex];
       if (el.name == fullName) {
+        if (isPresent(endTagToken)) {
+          el.endTagSourceSpan = endTagToken.sourceSpan;
+        }
         ListWrapper.splice(this.elementStack, stackIndex, this.elementStack.length - stackIndex);
         return true;
       }

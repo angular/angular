@@ -23,6 +23,8 @@ import {ParseError, ParseLocation, ParseSourceSpan} from 'angular2/src/compiler/
 
 import {BaseException} from 'angular2/src/facade/exceptions';
 
+import {isPresent} from 'angular2/src/facade/lang';
+
 export function main() {
   describe('HtmlParser', () => {
     var parser: HtmlParser;
@@ -244,12 +246,30 @@ export function main() {
           expect(humanizeDomSourceSpans(parser.parse(
                      '<div [prop]="v1" (e)="do()" attr="v2" noValue>\na\n</div>', 'TestComp')))
               .toEqual([
-                [HtmlElementAst, 'div', 0, '<div [prop]="v1" (e)="do()" attr="v2" noValue>'],
+                [
+                  HtmlElementAst,
+                  'div',
+                  0,
+                  '<div [prop]="v1" (e)="do()" attr="v2" noValue>',
+                  '</div>'
+                ],
                 [HtmlAttrAst, '[prop]', 'v1', '[prop]="v1"'],
                 [HtmlAttrAst, '(e)', 'do()', '(e)="do()"'],
                 [HtmlAttrAst, 'attr', 'v2', 'attr="v2"'],
                 [HtmlAttrAst, 'noValue', '', 'noValue'],
                 [HtmlTextAst, '\na\n', 1, '\na\n'],
+              ]);
+        });
+
+        it('should store the end tag locations', () => {
+          expect(humanizeDomSourceSpans(
+                     parser.parse('<ul><li><b><input></b><li></li></ul>', 'TestComp')))
+              .toEqual([
+                [HtmlElementAst, 'ul', 0, '<ul>', '</ul>'],
+                [HtmlElementAst, 'li', 1, '<li>', ''],
+                [HtmlElementAst, 'b', 2, '<b>', '</b>'],
+                [HtmlElementAst, 'input', 3, '<input>', ''],
+                [HtmlElementAst, 'li', 1, '<li>', '</li>'],
               ]);
         });
       });
@@ -365,6 +385,13 @@ class Humanizer implements HtmlAstVisitor {
   private _appendContext(ast: HtmlAst, input: any[]): any[] {
     if (!this.includeSourceSpan) return input;
     input.push(ast.sourceSpan.toString());
+    if (ast instanceof HtmlElementAst) {
+      if (isPresent(ast.endTagSourceSpan)) {
+        input.push(ast.endTagSourceSpan.toString())
+      } else {
+        input.push('');
+      }
+    }
     return input;
   }
 }
