@@ -8,7 +8,6 @@ const TRANSFORM_DYNAMIC_MODE = 'transform_dynamic';
 const CSS_EXTENSION = '.css';
 const SHIMMED_STYLESHEET_EXTENSION = '.css.shim.dart';
 const NON_SHIMMED_STYLESHEET_EXTENSION = '.css.dart';
-const DEPS_EXTENSION = '.ng_deps.dart';
 const META_EXTENSION = '.ng_meta.json';
 const REFLECTION_CAPABILITIES_NAME = 'ReflectionCapabilities';
 const REFLECTOR_IMPORT = 'package:angular2/src/core/reflection/reflection.dart';
@@ -24,7 +23,6 @@ const TEMPLATE_EXTENSION = '.template.dart';
 /// important. For example, putting '.dart' first in this list will cause
 /// incorrect behavior.
 const ALL_EXTENSIONS = const [
-  DEPS_EXTENSION,
   META_EXTENSION,
   SUMMARY_META_EXTENSION,
   TEMPLATE_EXTENSION,
@@ -38,7 +36,6 @@ const ALL_EXTENSIONS = const [
 /// any files named like transformer outputs will be reported as generated.
 bool isGenerated(String uri) {
   return const [
-    DEPS_EXTENSION,
     META_EXTENSION,
     NON_SHIMMED_STYLESHEET_EXTENSION,
     SHIMMED_STYLESHEET_EXTENSION,
@@ -50,10 +47,6 @@ bool isGenerated(String uri) {
 /// Returns `uri` with its extension updated to [META_EXTENSION].
 String toMetaExtension(String uri) =>
     _toExtension(uri, ALL_EXTENSIONS, META_EXTENSION);
-
-/// Returns `uri` with its extension updated to [DEPS_EXTENSION].
-String toDepsExtension(String uri) =>
-    _toExtension(uri, ALL_EXTENSIONS, DEPS_EXTENSION);
 
 /// Returns `uri` with its extension updated to [TEMPLATES_EXTENSION].
 String toTemplateExtension(String uri) =>

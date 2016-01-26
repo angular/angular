@@ -184,8 +184,8 @@ class _CompileDataCreator {
   }
 
   /// Creates a map from import prefix to the asset: uris of all `.dart`
-  /// libraries visible from `entryPoint`, excluding `dart:` and `.ng_deps.dart`
-  /// files it imports. Unprefixed imports have the empty string as their key.
+  /// libraries visible from `entryPoint`, excluding `dart:` and generated files
+  /// it imports. Unprefixed imports have the empty string as their key.
   /// `entryPoint` is included in the map with no prefix.
   Map<String, Iterable<String>> _createPrefixToImportsMap() {
     final baseUri = toAssetUri(entryPoint);

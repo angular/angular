@@ -37,7 +37,7 @@ class Codegen {
 
   /// Generates a change detector class with name `changeDetectorTypeName`,
   /// which must not conflict with other generated classes in the same
-  /// `.ng_deps.dart` file.  The change detector is used to detect changes in
+  /// `.template.dart` file.  The change detector is used to detect changes in
   /// Objects of type `typeName`.
   void generate(String typeName, String changeDetectorTypeName,
       ChangeDetectorDefinition def) {
