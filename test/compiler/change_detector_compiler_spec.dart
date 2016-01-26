@@ -15,7 +15,7 @@ import "package:angular2/testing_internal.dart"
         inject,
         beforeEachProviders;
 import "package:angular2/src/core/di.dart" show provide;
-import "package:angular2/src/facade/lang.dart" show stringify;
+import "package:angular2/src/facade/lang.dart" show stringify, IS_DART;
 import "package:angular2/src/facade/collection.dart" show MapWrapper;
 import "package:angular2/src/facade/async.dart" show Future;
 import "package:angular2/src/compiler/change_detector_compiler.dart"
@@ -45,6 +45,12 @@ var THIS_MODULE_ID = "angular2/test/compiler/change_detector_compiler_spec";
 var THIS_MODULE_URL = '''package:${ THIS_MODULE_ID}${ MODULE_SUFFIX}''';
 var THIS_MODULE_REF = moduleRef(THIS_MODULE_URL);
 main() {
+  // Dart's isolate support is broken, and these tests will be obsolote soon with
+
+  // https://github.com/angular/angular/issues/6270
+  if (IS_DART) {
+    return;
+  }
   describe("ChangeDetectorCompiler", () {
     beforeEachProviders(() => [
           TEST_PROVIDERS,
