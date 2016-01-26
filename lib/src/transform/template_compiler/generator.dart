@@ -69,9 +69,7 @@ Future<Outputs> processTemplates(AssetReader reader, AssetId assetId,
 
   var savedReflectionCapabilities = reflector.reflectionCapabilities;
   reflector.reflectionCapabilities = const NullReflectionCapabilities();
-  // Since we need global state to remain consistent here, make sure not to do
-  // any asynchronous operations here.
-  final compiledTemplates = logElapsedSync(() {
+  final compiledTemplates = await logElapsedAsync(() async {
     return templateCompiler.compileTemplatesCodeGen(compileData);
   }, operationName: 'compileTemplatesCodegen', assetId: assetId);
   reflector.reflectionCapabilities = savedReflectionCapabilities;
