@@ -2,7 +2,7 @@
 set -ex
 
 echo =============================================================================
-echo EXPERIMENTAL DART BUILD
+echo "DART DEV COMPILER (DDC) BUILD"
 echo =============================================================================
 
 # go to project dir
@@ -28,7 +28,7 @@ git clone https://github.com/dart-lang/dev_compiler.git tmp/dev_compiler
 ./node_modules/.bin/gulp build/packages.dart
 ./node_modules/.bin/gulp build.dart.material.css
 ./node_modules/.bin/gulp build/pubspec.dart
-node ./scripts/ci/dart_experimental/pubspec_for_ddc.js \
+node ./scripts/ci/dart_ddc/pubspec_for_ddc.js \
     --pubspec-file=dist/dart/playground/pubspec.yaml
 
 # Compile playground

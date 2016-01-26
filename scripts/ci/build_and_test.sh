@@ -8,7 +8,7 @@ echo ===========================================================================
 SCRIPT_DIR=$(dirname $0)
 cd $SCRIPT_DIR/../..
 
-if [ "$MODE" = "dart_experimental" ]; then
+if [ "$MODE" = "dart_ddc" ]; then
   ${SCRIPT_DIR}/build_$MODE.sh
 elif [[ $MODE = saucelabs* ]] ; then
   ${SCRIPT_DIR}/test_saucelabs.sh $MODE
