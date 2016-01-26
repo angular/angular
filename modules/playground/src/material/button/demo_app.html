@@ -34,7 +34,7 @@
 </p>
 
 <section>
-  <form (submit)="submit('form submit')">
+  <form (submit)="submit('form submit', $event)">
     <button mdButton>SUBMIT</button>
     <button>Native button</button>
   </form>

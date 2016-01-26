@@ -112,6 +112,10 @@ class TemplatePreparseVisitor implements HtmlAstVisitor {
       case PreparsedElementType.STYLESHEET:
         this.styleUrls.push(preparsedElement.hrefAttr);
         break;
+      default:
+        // DDC reports this as error. See:
+        // https://github.com/dart-lang/dev_compiler/issues/428
+        break;
     }
     if (preparsedElement.nonBindable) {
       this.ngNonBindableStackCount++;

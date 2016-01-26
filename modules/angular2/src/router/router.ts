@@ -202,12 +202,12 @@ export class Router {
     return this._settleInstruction(instruction)
         .then((_) => this._routerCanReuse(instruction))
         .then((_) => this._canActivate(instruction))
-        .then((result) => {
+        .then((result: boolean) => {
           if (!result) {
             return false;
           }
           return this._routerCanDeactivate(instruction)
-              .then((result) => {
+              .then((result: boolean) => {
                 if (result) {
                   return this.commit(instruction, _skipLocationChange)
                       .then((_) => {
