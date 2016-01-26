@@ -27,7 +27,7 @@ class Rewriter {
   ///    `_entryPoint`
   /// 2. Removes any libraries that don't require angular codegen.
   /// 3. For the remaining libraries, rewrites the import to the corresponding
-  ///    `ng_deps.dart` file.
+  ///    `.template.dart` file.
   /// 4. Chains a future to the `loadLibrary` call which initializes the
   ///    library.
   ///
@@ -62,11 +62,12 @@ class Rewriter {
       var buf = new StringBuffer();
       var idx =
           _visitor.deferredImports.fold(0, (int lastIdx, ImportDirective node) {
-        buf.write(code.substring(lastIdx, node.offset));
-
-        var import = code.substring(node.offset, node.end);
-        buf.write(import.replaceFirst('.dart', DEPS_EXTENSION));
-        return node.end;
+        // Write from where we left off until the start of the import uri.
+        buf.write(code.substring(lastIdx, node.uri.offset));
+        // Rewrite the uri to be that of the generated file.
+        buf.write("'${toTemplateExtension('${node.uri.stringValue}')}'");
+        // Update the last index we've processed.
+        return node.uri.end;
       });
 
       idx = _visitor.loadLibraryInvocations.fold(idx,
@@ -86,7 +87,7 @@ class Rewriter {
 
 /// Visitor responsible for finding the deferred libraries that need angular
 /// codegen. Those are the libraries that are loaded deferred and have a
-/// corresponding ng_deps file.
+/// corresponding generated file.
 class _FindDeferredLibraries extends Object with RecursiveAstVisitor<Object> {
   var deferredImports = new List<ImportDirective>();
   var loadLibraryInvocations = new List<MethodInvocation>();
@@ -132,25 +133,26 @@ class _FindDeferredLibraries extends Object with RecursiveAstVisitor<Object> {
   Future cull() async {
     var baseUri = toAssetUri(_entryPoint);
 
-    // Determine whether a deferred import has ng_deps.
+    // Determine whether a deferred import has an associated generated file.
     var hasInputs = await Future.wait(deferredImports
         .map((import) => stringLiteralToString(import.uri))
         .map((uri) => toMetaExtension(uri))
         .map((metaUri) => fromUri(_urlResolver.resolve(baseUri, metaUri)))
         .map((asset) => _reader.hasInput(asset)));
 
-    // Filter out any deferred imports that do not have ng_deps.
+    // Filter out any deferred imports that do not have an associated generated
+    // file.
     deferredImports = it.zip([deferredImports, hasInputs])
         .where((importHasInput) => importHasInput[1])
         .map((importHasInput) => importHasInput[0])
         .toList();
 
-    // Find the set of prefixes which have ng_deps.
+    // Find the set of prefixes which have associated generated files.
     var prefixes =
         new Set.from(deferredImports.map((import) => import.prefix.name));
 
     // Filters out any load library invocations where the prefix is not a known
-    // library with ng_deps.
+    // library with associated generated file.
     loadLibraryInvocations = loadLibraryInvocations.where((library) {
       var value = library.realTarget as SimpleIdentifier;
       return prefixes.contains(value.name);

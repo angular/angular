@@ -5,7 +5,7 @@ import 'logging.dart';
 import 'model/ng_deps_model.pb.dart';
 import 'url_resolver.dart' show isDartCoreUri;
 
-/// Metadata about directives, directive aliases, and injectable values.
+/// Metadata about directives, pipes, directive aliases, and injectable values.
 ///
 /// [NgMeta] is used in three stages of the transformation process:
 ///
@@ -20,12 +20,12 @@ import 'url_resolver.dart' show isDartCoreUri;
 /// 2. Use the [NgDepsModel] to write Dart code registering all injectable
 ///    values with the Angular 2 runtime reflection system.
 ///
-/// Further down the compilation process, the template compiler needs to reason
+/// Later in the compilation process, the template compiler needs to reason
 /// about the namespace of import prefixes, so it will combine multiple [NgMeta]
 /// instances together if they were imported into a file with the same prefix.
 ///
-/// Instances of this class are serialized into `.ng_meta.json` files as
-/// intermediate assets to make the compilation process easier.
+/// Instances of this class are serialized into `.ng_summary.json` and
+/// `.ng_meta.json` files as intermediate assets during the compilation process.
 class NgMeta {
   static const _ALIAS_VALUE = 'alias';
   static const _KIND_KEY = 'kind';
@@ -58,7 +58,8 @@ class NgMeta {
   bool get isNgDepsEmpty {
     if (ngDeps == null) return true;
     // If this file imports only dart: libraries and does not define any
-    // reflectables of its own, it doesn't need a .ng_deps.dart file.
+    // reflectables of its own, we don't need to register any information from
+    // it with the Angular 2 reflector.
     if (ngDeps.reflectables == null || ngDeps.reflectables.isEmpty) {
       if ((ngDeps.imports == null || ngDeps.imports.every(_isDartImport)) &&
           (ngDeps.exports == null || ngDeps.exports.every(_isDartImport))) {

@@ -3,16 +3,13 @@ library angular2.transform.template_compiler.generator;
 import 'dart:async';
 
 import 'package:barback/barback.dart';
-import 'package:path/path.dart' as path;
 
 import 'package:angular2/src/core/change_detection/interfaces.dart';
 import 'package:angular2/src/facade/lang.dart';
 import 'package:angular2/src/core/reflection/reflection.dart';
 import 'package:angular2/src/transform/common/asset_reader.dart';
-import 'package:angular2/src/transform/common/code/source_module.dart';
 import 'package:angular2/src/transform/common/logging.dart';
 import 'package:angular2/src/transform/common/model/annotation_model.pb.dart';
-import 'package:angular2/src/transform/common/model/import_export_model.pb.dart';
 import 'package:angular2/src/transform/common/model/ng_deps_model.pb.dart';
 import 'package:angular2/src/transform/common/names.dart';
 import 'package:angular2/src/transform/common/ng_compiler.dart';
@@ -22,17 +19,18 @@ import 'reflection/processor.dart' as reg;
 import 'reflection/reflection_capabilities.dart';
 import 'compile_data_creator.dart';
 
-/// Generates `.ng_deps.dart` files to initialize the Angular2 system.
+/// Generates `.template.dart` files to initialize the Angular2 system.
 ///
-/// Processes the `.ng_summary.json` file represented by `assetId`
-/// `createCompileData`.
-/// Uses the resulting `NgMeta` object to generate
-/// `getter`s, `setter`s, and `method`s that would otherwise need to be
-/// reflectively accessed.
-/// Passes the resulting `NormalizedComponentWithViewDirectives` instances
-/// to the `TemplateCompiler` to generate compiled template(s).
-/// Uses the resulting `NgDeps` object to generate a .ng_deps.dart file which
-/// initializes the Angular2 reflective system.
+/// - Processes the `.ng_meta.json` file represented by `assetId` using
+///   `createCompileData`.
+/// - Uses the resulting `NgMeta` object to register `getter`s, `setter`s, and
+///   `method`s that would otherwise need to be reflectively accessed with the
+///   `NgDeps` object.
+/// - Passes the resulting `NormalizedComponentWithViewDirectives` instance(s)
+///   to the `TemplateCompiler` to generate compiled template(s) as a
+///   `SourceModule`.
+/// - Uses the resulting `NgDeps` object to generate code which initializes the
+///   Angular2 reflective system.
 ///
 /// This method assumes a {@link DomAdapter} has been registered.
 Future<Outputs> processTemplates(AssetReader reader, AssetId assetId,
@@ -77,29 +75,26 @@ Future<Outputs> processTemplates(AssetReader reader, AssetId assetId,
   reflector.reflectionCapabilities = savedReflectionCapabilities;
 
   if (compiledTemplates != null) {
-    viewDefResults.ngMeta.ngDeps.imports.add(new ImportModel()
-      ..uri = toTemplateExtension(path.basename(assetId.path))
-      ..prefix = '_templates');
+    // We successfully compiled templates!
+    // For each compiled template, add the compiled template class as an
+    // "Annotation" on the code to be registered with the reflector.
     for (var reflectable in viewDefResults.viewDefinitions.keys) {
+      // TODO(kegluneq): Avoid duplicating naming logic for generated classes.
       reflectable.annotations.add(new AnnotationModel()
-        ..name = '_templates.hostViewFactory_${reflectable.name}'
+        ..name = 'hostViewFactory_${reflectable.name}'
         ..isConstObject = true);
     }
   }
 
-  return new Outputs._(
-      viewDefResults.ngMeta.ngDeps, writeSourceModule(compiledTemplates));
+  return new Outputs._(viewDefResults.ngMeta.ngDeps, compiledTemplates);
 }
-
-AssetId ngDepsAssetId(AssetId primaryId) =>
-    new AssetId(primaryId.package, toDepsExtension(primaryId.path));
 
 AssetId templatesAssetId(AssetId primaryId) =>
     new AssetId(primaryId.package, toTemplateExtension(primaryId.path));
 
 class Outputs {
   final NgDepsModel ngDeps;
-  final String templatesCode;
+  final SourceModule templatesSource;
 
-  Outputs._(this.ngDeps, this.templatesCode);
+  Outputs._(this.ngDeps, this.templatesSource);
 }
