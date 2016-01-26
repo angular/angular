@@ -77,7 +77,7 @@ class EventEmitter<T> extends Stream<T> {
 
   /// Creates an instance of [EventEmitter], which depending on [isAsync],
   /// delivers events synchronously or asynchronously.
-  EventEmitter([bool isAsync = true]) {
+  EventEmitter({isAsync: false}) {
     _controller = new StreamController<T>.broadcast(sync: !isAsync);
   }
 
@@ -108,7 +108,7 @@ class EventEmitter<T> extends Stream<T> {
 class Subject<T> extends Stream<T> {
   StreamController<T> _controller;
 
-  Subject([bool isAsync = true]) {
+  Subject({isAsync: false}) {
     _controller = new StreamController<T>.broadcast(sync: !isAsync);
   }
 
