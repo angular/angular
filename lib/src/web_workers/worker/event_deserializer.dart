@@ -31,6 +31,10 @@ class GenericEvent {
   Point get page => _getPoint('page');
   Point get screen => _getPoint('screen');
 
+  String get propertyName => properties['propertyName'];
+  num get elapsedTime => properties['elapsedTime'];
+  String get pseudoElement => properties['pseudoElement'];
+
   EventTarget get target {
     if (_target != null) {
       return _target;
