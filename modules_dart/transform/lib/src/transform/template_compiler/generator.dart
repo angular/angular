@@ -4,6 +4,7 @@ import 'dart:async';
 
 import 'package:barback/barback.dart';
 
+import 'package:angular2/src/compiler/source_module.dart';
 import 'package:angular2/src/core/change_detection/interfaces.dart';
 import 'package:angular2/src/facade/lang.dart';
 import 'package:angular2/src/core/reflection/reflection.dart';
