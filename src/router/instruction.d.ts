@@ -113,6 +113,9 @@ export declare abstract class Instruction {
     auxInstruction: {
         [key: string]: Instruction;
     };
+    constructor(component: ComponentInstruction, child: Instruction, auxInstruction: {
+        [key: string]: Instruction;
+    });
     urlPath: string;
     urlParams: string[];
     specificity: string;
@@ -137,11 +140,6 @@ export declare abstract class Instruction {
  * a resolved instruction has an outlet instruction for itself, but maybe not for...
  */
 export declare class ResolvedInstruction extends Instruction {
-    component: ComponentInstruction;
-    child: Instruction;
-    auxInstruction: {
-        [key: string]: Instruction;
-    };
     constructor(component: ComponentInstruction, child: Instruction, auxInstruction: {
         [key: string]: Instruction;
     });
@@ -151,8 +149,6 @@ export declare class ResolvedInstruction extends Instruction {
  * Represents a resolved default route
  */
 export declare class DefaultInstruction extends Instruction {
-    component: ComponentInstruction;
-    child: DefaultInstruction;
     constructor(component: ComponentInstruction, child: DefaultInstruction);
     resolveComponent(): Promise<ComponentInstruction>;
     toLinkUrl(): string;

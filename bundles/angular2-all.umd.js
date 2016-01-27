@@ -26824,6 +26824,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	            case template_preparser_1.PreparsedElementType.STYLESHEET:
 	                this.styleUrls.push(preparsedElement.hrefAttr);
 	                break;
+	            default:
+	                // DDC reports this as error. See:
+	                // https://github.com/dart-lang/dev_compiler/issues/428
+	                break;
 	        }
 	        if (preparsedElement.nonBindable) {
 	            this.ngNonBindableStackCount++;
@@ -32788,8 +32792,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * ```
 	 */
 	var Instruction = (function () {
-	    function Instruction() {
-	        this.auxInstruction = {};
+	    function Instruction(component, child, auxInstruction) {
+	        this.component = component;
+	        this.child = child;
+	        this.auxInstruction = auxInstruction;
 	    }
 	    Object.defineProperty(Instruction.prototype, "urlPath", {
 	        get: function () { return lang_1.isPresent(this.component) ? this.component.urlPath : ''; },
@@ -32889,10 +32895,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	var ResolvedInstruction = (function (_super) {
 	    __extends(ResolvedInstruction, _super);
 	    function ResolvedInstruction(component, child, auxInstruction) {
-	        _super.call(this);
-	        this.component = component;
-	        this.child = child;
-	        this.auxInstruction = auxInstruction;
+	        _super.call(this, component, child, auxInstruction);
 	    }
 	    ResolvedInstruction.prototype.resolveComponent = function () {
 	        return async_1.PromiseWrapper.resolve(this.component);
@@ -32906,9 +32909,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	var DefaultInstruction = (function (_super) {
 	    __extends(DefaultInstruction, _super);
 	    function DefaultInstruction(component, child) {
-	        _super.call(this);
-	        this.component = component;
-	        this.child = child;
+	        _super.call(this, component, child, {});
 	    }
 	    DefaultInstruction.prototype.resolveComponent = function () {
 	        return async_1.PromiseWrapper.resolve(this.component);
@@ -32927,7 +32928,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    function UnresolvedInstruction(_resolver, _urlPath, _urlParams) {
 	        if (_urlPath === void 0) { _urlPath = ''; }
 	        if (_urlParams === void 0) { _urlParams = lang_1.CONST_EXPR([]); }
-	        _super.call(this);
+	        _super.call(this, null, null, {});
 	        this._resolver = _resolver;
 	        this._urlPath = _urlPath;
 	        this._urlParams = _urlParams;

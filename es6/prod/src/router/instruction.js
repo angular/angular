@@ -104,8 +104,10 @@ export var BLANK_ROUTE_DATA = new RouteData();
  * ```
  */
 export class Instruction {
-    constructor() {
-        this.auxInstruction = {};
+    constructor(component, child, auxInstruction) {
+        this.component = component;
+        this.child = child;
+        this.auxInstruction = auxInstruction;
     }
     get urlPath() { return isPresent(this.component) ? this.component.urlPath : ''; }
     get urlParams() { return isPresent(this.component) ? this.component.urlParams : []; }
@@ -190,10 +192,7 @@ export class Instruction {
  */
 export class ResolvedInstruction extends Instruction {
     constructor(component, child, auxInstruction) {
-        super();
-        this.component = component;
-        this.child = child;
-        this.auxInstruction = auxInstruction;
+        super(component, child, auxInstruction);
     }
     resolveComponent() {
         return PromiseWrapper.resolve(this.component);
@@ -204,9 +203,7 @@ export class ResolvedInstruction extends Instruction {
  */
 export class DefaultInstruction extends Instruction {
     constructor(component, child) {
-        super();
-        this.component = component;
-        this.child = child;
+        super(component, child, {});
     }
     resolveComponent() {
         return PromiseWrapper.resolve(this.component);
@@ -220,7 +217,7 @@ export class DefaultInstruction extends Instruction {
  */
 export class UnresolvedInstruction extends Instruction {
     constructor(_resolver, _urlPath = '', _urlParams = CONST_EXPR([])) {
-        super();
+        super(null, null, {});
         this._resolver = _resolver;
         this._urlPath = _urlPath;
         this._urlParams = _urlParams;

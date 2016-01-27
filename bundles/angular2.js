@@ -19827,6 +19827,8 @@ System.register("angular2/src/compiler/template_normalizer", ["angular2/src/comp
         case template_preparser_1.PreparsedElementType.STYLESHEET:
           this.styleUrls.push(preparsedElement.hrefAttr);
           break;
+        default:
+          break;
       }
       if (preparsedElement.nonBindable) {
         this.ngNonBindableStackCount++;

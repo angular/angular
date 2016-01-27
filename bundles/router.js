@@ -386,8 +386,10 @@ System.register("angular2/src/router/instruction", ["angular2/src/facade/collect
   exports.RouteData = RouteData;
   exports.BLANK_ROUTE_DATA = new RouteData();
   var Instruction = (function() {
-    function Instruction() {
-      this.auxInstruction = {};
+    function Instruction(component, child, auxInstruction) {
+      this.component = component;
+      this.child = child;
+      this.auxInstruction = auxInstruction;
     }
     Object.defineProperty(Instruction.prototype, "urlPath", {
       get: function() {
@@ -470,10 +472,7 @@ System.register("angular2/src/router/instruction", ["angular2/src/facade/collect
   var ResolvedInstruction = (function(_super) {
     __extends(ResolvedInstruction, _super);
     function ResolvedInstruction(component, child, auxInstruction) {
-      _super.call(this);
-      this.component = component;
-      this.child = child;
-      this.auxInstruction = auxInstruction;
+      _super.call(this, component, child, auxInstruction);
     }
     ResolvedInstruction.prototype.resolveComponent = function() {
       return async_1.PromiseWrapper.resolve(this.component);
@@ -484,9 +483,7 @@ System.register("angular2/src/router/instruction", ["angular2/src/facade/collect
   var DefaultInstruction = (function(_super) {
     __extends(DefaultInstruction, _super);
     function DefaultInstruction(component, child) {
-      _super.call(this);
-      this.component = component;
-      this.child = child;
+      _super.call(this, component, child, {});
     }
     DefaultInstruction.prototype.resolveComponent = function() {
       return async_1.PromiseWrapper.resolve(this.component);
@@ -509,7 +506,7 @@ System.register("angular2/src/router/instruction", ["angular2/src/facade/collect
       if (_urlParams === void 0) {
         _urlParams = lang_1.CONST_EXPR([]);
       }
-      _super.call(this);
+      _super.call(this, null, null, {});
       this._resolver = _resolver;
       this._urlPath = _urlPath;
       this._urlParams = _urlParams;
