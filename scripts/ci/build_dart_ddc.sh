@@ -12,7 +12,7 @@ cd $SCRIPT_DIR/../..
 
 # Variables
 DDC_TOTAL_WARNING_CAP="1000"
-DDC_TOTAL_ERROR_CAP="2"
+DDC_TOTAL_ERROR_CAP="6"
 DDC_DIR=`pwd`/tmp/dev_compiler
 DDC_VERSION="0.1.14"
 
