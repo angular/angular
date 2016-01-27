@@ -131,6 +131,26 @@ describe('navigation', function () {
     expect(elt.text()).toBe('outer { inner { one } }');
   });
 
+  it('should work when parent route has empty path', inject(function ($location) {
+    registerComponent('childCmp', {
+      template: '<div>inner { <div ng-outlet></div> }</div>',
+      $routeConfig: [
+        { path: '/b', component: 'oneCmp' }
+      ]
+    });
+
+    $router.config([
+      { path: '/...', component: 'childCmp' }
+    ]);
+    compile('<div>outer { <div ng-outlet></div> }</div>');
+
+    $router.navigateByUrl('/b');
+    $rootScope.$digest();
+
+    expect(elt.text()).toBe('outer { inner { one } }');
+    expect($location.path()).toBe('/b');
+  }));
+
 
   it('should work with recursive nested outlets', function () {
     registerDirective('recurCmp', {
