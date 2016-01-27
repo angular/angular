@@ -124,3 +124,4 @@ export declare function getSymbolIterator(): string | symbol;
 export declare function evalExpression(sourceUrl: string, expr: string, declarations: string, vars: {
     [key: string]: any;
 }): any;
+export declare function isPrimitive(obj: any): boolean;

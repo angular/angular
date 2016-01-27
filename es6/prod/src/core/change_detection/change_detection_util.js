@@ -1,6 +1,6 @@
-import { CONST_EXPR, isPresent, isBlank, looseIdentical } from 'angular2/src/facade/lang';
+import { CONST_EXPR, isPresent, isBlank, looseIdentical, isPrimitive } from 'angular2/src/facade/lang';
 import { BaseException } from 'angular2/src/facade/exceptions';
-import { StringMapWrapper } from 'angular2/src/facade/collection';
+import { StringMapWrapper, isListLikeIterable, areIterablesEqual } from 'angular2/src/facade/collection';
 import { ChangeDetectionStrategy, isDefaultChangeDetectionStrategy } from './constants';
 import { implementsOnDestroy } from './pipe_lifecycle_reflector';
 import { BindingTarget } from './binding_record';
@@ -183,5 +183,17 @@ export class ChangeDetectionUtil {
         return new DirectiveIndex(elementIndex, directiveIndex);
     }
     static looseNotIdentical(a, b) { return !looseIdentical(a, b); }
+    static devModeEqual(a, b) {
+        if (isListLikeIterable(a) && isListLikeIterable(b)) {
+            return areIterablesEqual(a, b, ChangeDetectionUtil.devModeEqual);
+        }
+        else if (!isListLikeIterable(a) && !isPrimitive(a) && !isListLikeIterable(b) &&
+            !isPrimitive(b)) {
+            return true;
+        }
+        else {
+            return looseIdentical(a, b);
+        }
+    }
 }
 ChangeDetectionUtil.uninitialized = CONST_EXPR(new Object());

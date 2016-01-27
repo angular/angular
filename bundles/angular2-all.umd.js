@@ -1865,6 +1865,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return new (Function.bind.apply(Function, [void 0].concat(fnArgNames.concat(fnBody))))().apply(void 0, fnArgValues);
 	}
 	exports.evalExpression = evalExpression;
+	function isPrimitive(obj) {
+	    return !isJsObject(obj);
+	}
+	exports.isPrimitive = isPrimitive;
 
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
@@ -3766,6 +3770,21 @@ return /******/ (function(modules) { // webpackBootstrap
 	            lang_1.getSymbolIterator() in obj); // JS Iterable have a Symbol.iterator prop
 	}
 	exports.isListLikeIterable = isListLikeIterable;
+	function areIterablesEqual(a, b, comparator) {
+	    var iterator1 = a[lang_1.getSymbolIterator()]();
+	    var iterator2 = b[lang_1.getSymbolIterator()]();
+	    while (true) {
+	        var item1 = iterator1.next();
+	        var item2 = iterator2.next();
+	        if (item1.done && item2.done)
+	            return true;
+	        if (item1.done || item2.done)
+	            return false;
+	        if (!comparator(item1.value, item2.value))
+	            return false;
+	    }
+	}
+	exports.areIterablesEqual = areIterablesEqual;
 	function iterateListLike(obj, fn) {
 	    if (lang_1.isArray(obj)) {
 	        for (var i = 0; i < obj.length; i++) {
@@ -9960,6 +9979,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return new directive_record_1.DirectiveIndex(elementIndex, directiveIndex);
 	    };
 	    ChangeDetectionUtil.looseNotIdentical = function (a, b) { return !lang_1.looseIdentical(a, b); };
+	    ChangeDetectionUtil.devModeEqual = function (a, b) {
+	        if (collection_1.isListLikeIterable(a) && collection_1.isListLikeIterable(b)) {
+	            return collection_1.areIterablesEqual(a, b, ChangeDetectionUtil.devModeEqual);
+	        }
+	        else if (!collection_1.isListLikeIterable(a) && !lang_1.isPrimitive(a) && !collection_1.isListLikeIterable(b) &&
+	            !lang_1.isPrimitive(b)) {
+	            return true;
+	        }
+	        else {
+	            return lang_1.looseIdentical(a, b);
+	        }
+	    };
 	    ChangeDetectionUtil.uninitialized = lang_1.CONST_EXPR(new Object());
 	    return ChangeDetectionUtil;
 	})();
@@ -10402,7 +10433,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	        if (proto.shouldBeChecked()) {
 	            var prevValue = this._readSelf(proto, values);
-	            if (change_detection_util_1.ChangeDetectionUtil.looseNotIdentical(prevValue, currValue)) {
+	            var detectedChange = throwOnChange ?
+	                !change_detection_util_1.ChangeDetectionUtil.devModeEqual(prevValue, currValue) :
+	                change_detection_util_1.ChangeDetectionUtil.looseNotIdentical(prevValue, currValue);
+	            if (detectedChange) {
 	                if (proto.lastInBinding) {
 	                    var change = change_detection_util_1.ChangeDetectionUtil.simpleChange(prevValue, currValue);
 	                    if (throwOnChange)
@@ -10488,7 +10522,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	            var currValue = selectedPipe.pipe.transform(context, args);
 	            if (proto.shouldBeChecked()) {
 	                var prevValue = this._readSelf(proto, values);
-	                if (change_detection_util_1.ChangeDetectionUtil.looseNotIdentical(prevValue, currValue)) {
+	                var detectedChange = throwOnChange ?
+	                    !change_detection_util_1.ChangeDetectionUtil.devModeEqual(prevValue, currValue) :
+	                    change_detection_util_1.ChangeDetectionUtil.looseNotIdentical(prevValue, currValue);
+	                if (detectedChange) {
 	                    currValue = change_detection_util_1.ChangeDetectionUtil.unwrapValue(currValue);
 	                    if (proto.lastInBinding) {
 	                        var change = change_detection_util_1.ChangeDetectionUtil.simpleChange(prevValue, currValue);
@@ -11760,7 +11797,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var contexOrArgCheck = r.args.map(function (a) { return _this._names.getChangeName(a); });
 	        contexOrArgCheck.push(this._names.getChangeName(r.contextIndex));
 	        var condition = "!" + pipe + ".pure || (" + contexOrArgCheck.join(" || ") + ")";
-	        var check = "\n      if (" + this.changeDetectionUtilVarName + ".looseNotIdentical(" + oldValue + ", " + newValue + ")) {\n        " + newValue + " = " + this.changeDetectionUtilVarName + ".unwrapValue(" + newValue + ")\n        " + this._genChangeMarker(r) + "\n        " + this._genUpdateDirectiveOrElement(r) + "\n        " + this._genAddToChanges(r) + "\n        " + oldValue + " = " + newValue + ";\n      }\n    ";
+	        var check = "\n      " + this._genThrowOnChangeCheck(oldValue, newValue) + "\n      if (" + this.changeDetectionUtilVarName + ".looseNotIdentical(" + oldValue + ", " + newValue + ")) {\n        " + newValue + " = " + this.changeDetectionUtilVarName + ".unwrapValue(" + newValue + ")\n        " + this._genChangeMarker(r) + "\n        " + this._genUpdateDirectiveOrElement(r) + "\n        " + this._genAddToChanges(r) + "\n        " + oldValue + " = " + newValue + ";\n      }\n    ";
 	        var genCode = r.shouldBeChecked() ? "" + read + check : read;
 	        if (r.isUsedByOtherRecord()) {
 	            return init + " if (" + condition + ") { " + genCode + " } else { " + newValue + " = " + oldValue + "; }";
@@ -11775,7 +11812,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var oldValue = this._names.getFieldName(r.selfIndex);
 	        var newValue = this._names.getLocalName(r.selfIndex);
 	        var read = "\n      " + this._logic.genPropertyBindingEvalValue(r) + "\n    ";
-	        var check = "\n      if (" + this.changeDetectionUtilVarName + ".looseNotIdentical(" + oldValue + ", " + newValue + ")) {\n        " + this._genChangeMarker(r) + "\n        " + this._genUpdateDirectiveOrElement(r) + "\n        " + this._genAddToChanges(r) + "\n        " + oldValue + " = " + newValue + ";\n      }\n    ";
+	        var check = "\n      " + this._genThrowOnChangeCheck(oldValue, newValue) + "\n      if (" + this.changeDetectionUtilVarName + ".looseNotIdentical(" + oldValue + ", " + newValue + ")) {\n        " + this._genChangeMarker(r) + "\n        " + this._genUpdateDirectiveOrElement(r) + "\n        " + this._genAddToChanges(r) + "\n        " + oldValue + " = " + newValue + ";\n      }\n    ";
 	        var genCode = r.shouldBeChecked() ? "" + read + check : read;
 	        if (r.isPureFunction()) {
 	            var condition = r.args.map(function (a) { return _this._names.getChangeName(a); }).join(" || ");
@@ -11799,21 +11836,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	        if (!r.lastInBinding)
 	            return "";
 	        var newValue = this._names.getLocalName(r.selfIndex);
-	        var oldValue = this._names.getFieldName(r.selfIndex);
 	        var notifyDebug = this.genConfig.logBindingUpdate ? "this.logBindingUpdate(" + newValue + ");" : "";
 	        var br = r.bindingRecord;
 	        if (br.target.isDirective()) {
 	            var directiveProperty = this._names.getDirectiveName(br.directiveRecord.directiveIndex) + "." + br.target.name;
-	            return "\n        " + this._genThrowOnChangeCheck(oldValue, newValue) + "\n        " + directiveProperty + " = " + newValue + ";\n        " + notifyDebug + "\n        " + IS_CHANGED_LOCAL + " = true;\n      ";
+	            return "\n        " + directiveProperty + " = " + newValue + ";\n        " + notifyDebug + "\n        " + IS_CHANGED_LOCAL + " = true;\n      ";
 	        }
 	        else {
-	            return "\n        " + this._genThrowOnChangeCheck(oldValue, newValue) + "\n        this.notifyDispatcher(" + newValue + ");\n        " + notifyDebug + "\n      ";
+	            return "\n        this.notifyDispatcher(" + newValue + ");\n        " + notifyDebug + "\n      ";
 	        }
 	    };
 	    /** @internal */
 	    ChangeDetectorJITGenerator.prototype._genThrowOnChangeCheck = function (oldValue, newValue) {
 	        if (lang_1.assertionsEnabled()) {
-	            return "\n        if(throwOnChange) {\n          this.throwOnChangeError(" + oldValue + ", " + newValue + ");\n        }\n        ";
+	            return "\n        if (throwOnChange && !" + this.changeDetectionUtilVarName + ".devModeEqual(" + oldValue + ", " + newValue + ")) {\n          this.throwOnChangeError(" + oldValue + ", " + newValue + ");\n        }\n        ";
 	        }
 	        else {
 	            return '';

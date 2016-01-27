@@ -427,3 +427,7 @@ export function evalExpression(sourceUrl: string, expr: string, declarations: st
   }
   return new Function(...fnArgNames.concat(fnBody))(...fnArgValues);
 }
+
+export function isPrimitive(obj: any): boolean {
+  return !isJsObject(obj);
+}

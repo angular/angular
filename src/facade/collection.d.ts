@@ -89,6 +89,7 @@ export declare class ListWrapper {
     static maximum<T>(list: T[], predicate: (t: T) => number): T;
 }
 export declare function isListLikeIterable(obj: any): boolean;
+export declare function areIterablesEqual(a: any, b: any, comparator: Function): boolean;
 export declare function iterateListLike(obj: any, fn: Function): void;
 export declare class SetWrapper {
     static createFromList<T>(lst: T[]): Set<T>;

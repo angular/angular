@@ -77,4 +77,5 @@ export declare class ChangeDetectionUtil {
     static bindingTarget(mode: string, elementIndex: number, name: string, unit: string, debug: string): BindingTarget;
     static directiveIndex(elementIndex: number, directiveIndex: number): DirectiveIndex;
     static looseNotIdentical(a: any, b: any): boolean;
+    static devModeEqual(a: any, b: any): boolean;
 }
