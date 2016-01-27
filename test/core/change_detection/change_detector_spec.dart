@@ -797,6 +797,14 @@ main() {
           }).toThrowError(new RegExp(
               "Expression ['\"]a in location['\"] has changed after it was checked"));
         });
+        it("should not throw when two arrays are structurally the same", () {
+          var val = _createChangeDetector(
+              "a", new TestDataWithGetter(() => ["value"]));
+          val.changeDetector.detectChanges();
+          expect(() {
+            val.changeDetector.checkNoChanges();
+          }).not.toThrow();
+        });
         it("should not break the next run", () {
           var val = _createChangeDetector("a", new TestData("value"));
           expect(() =>
@@ -1470,6 +1478,14 @@ class Uninitialized {
 class TestData {
   dynamic a;
   TestData(this.a) {}
+}
+
+class TestDataWithGetter {
+  Function fn;
+  TestDataWithGetter(this.fn) {}
+  get a {
+    return this.fn();
+  }
 }
 
 class TestDispatcher implements ChangeDispatcher {
