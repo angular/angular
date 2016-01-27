@@ -5336,6 +5336,9 @@
     "trim-newlines": {
       "version": "1.0.0"
     },
+    "ts-api-guardian": {
+      "version": "0.0.2"
+    },
     "ts2dart": {
       "version": "0.7.19",
       "dependencies": {

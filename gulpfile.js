@@ -463,7 +463,7 @@ function runKarma(configFile, done) {
 
 gulp.task('test.js', function(done) {
   runSequence('test.unit.tools/ci', 'test.transpiler.unittest', 'test.unit.js/ci',
-              'test.unit.cjs/ci', 'test.typings', sequenceComplete(done));
+              'test.unit.cjs/ci', 'test.typings', 'check-public-api', sequenceComplete(done));
 });
 
 gulp.task('test.dart', function(done) {
@@ -866,6 +866,8 @@ gulp.task('test.unit.cjs/ci', function(done) {
   runJasmineTests(['dist/js/cjs/{angular2,benchpress}/test/**/*_spec.js'], done);
 });
 
+gulp.task('check-public-api',
+          function(done) { runJasmineTests(['dist/tools/public_api_guard/**/*_spec.js'], done); });
 
 gulp.task('test.unit.cjs', ['build/clean.js', 'build.tools'], function(neverDone) {
   var watch = require('./tools/build/watch');
