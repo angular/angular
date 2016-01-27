@@ -10750,6 +10750,7 @@ System.register("angular2/src/web_workers/ui/event_serializer", ["angular2/src/f
   var lang_1 = require("angular2/src/facade/lang");
   var MOUSE_EVENT_PROPERTIES = ["altKey", "button", "clientX", "clientY", "metaKey", "movementX", "movementY", "offsetX", "offsetY", "region", "screenX", "screenY", "shiftKey"];
   var KEYBOARD_EVENT_PROPERTIES = ['altkey', 'charCode', 'code', 'ctrlKey', 'isComposing', 'key', 'keyCode', 'location', 'metaKey', 'repeat', 'shiftKey', 'which'];
+  var TRANSITION_EVENT_PROPERTIES = ['propertyName', 'elapsedTime', 'pseudoElement'];
   var EVENT_PROPERTIES = ['type', 'bubbles', 'cancelable'];
   var NODES_WITH_VALUE = new collection_1.Set(["input", "select", "option", "button", "li", "meter", "progress", "param"]);
   function serializeGenericEvent(e) {
@@ -10770,6 +10771,11 @@ System.register("angular2/src/web_workers/ui/event_serializer", ["angular2/src/f
     return addTarget(e, serializedEvent);
   }
   exports.serializeKeyboardEvent = serializeKeyboardEvent;
+  function serializeTransitionEvent(e) {
+    var serializedEvent = serializeEvent(e, TRANSITION_EVENT_PROPERTIES);
+    return addTarget(e, serializedEvent);
+  }
+  exports.serializeTransitionEvent = serializeTransitionEvent;
   function addTarget(e, serializedEvent) {
     if (NODES_WITH_VALUE.has(e.target.tagName.toLowerCase())) {
       var target = e.target;
@@ -15871,6 +15877,9 @@ System.register("angular2/src/web_workers/ui/event_dispatcher", ["angular2/src/w
         case "volumechange":
         case "waiting":
           serializedEvent = event_serializer_1.serializeGenericEvent(event);
+          break;
+        case "transitionend":
+          serializedEvent = event_serializer_1.serializeTransitionEvent(event);
           break;
         default:
           throw new exceptions_1.BaseException(eventName + " not supported on WebWorkers");

@@ -29,6 +29,7 @@ const KEYBOARD_EVENT_PROPERTIES = [
     'shiftKey',
     'which'
 ];
+const TRANSITION_EVENT_PROPERTIES = ['propertyName', 'elapsedTime', 'pseudoElement'];
 const EVENT_PROPERTIES = ['type', 'bubbles', 'cancelable'];
 const NODES_WITH_VALUE = new Set(["input", "select", "option", "button", "li", "meter", "progress", "param"]);
 export function serializeGenericEvent(e) {
@@ -45,6 +46,10 @@ export function serializeMouseEvent(e) {
 }
 export function serializeKeyboardEvent(e) {
     var serializedEvent = serializeEvent(e, KEYBOARD_EVENT_PROPERTIES);
+    return addTarget(e, serializedEvent);
+}
+export function serializeTransitionEvent(e) {
+    var serializedEvent = serializeEvent(e, TRANSITION_EVENT_PROPERTIES);
     return addTarget(e, serializedEvent);
 }
 // TODO(jteplitz602): #3374. See above.

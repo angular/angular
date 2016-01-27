@@ -10,3 +10,6 @@ export declare function serializeMouseEvent(e: MouseEvent): {
 export declare function serializeKeyboardEvent(e: KeyboardEvent): {
     [key: string]: any;
 };
+export declare function serializeTransitionEvent(e: TransitionEvent): {
+    [key: string]: any;
+};

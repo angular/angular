@@ -86,6 +86,14 @@ Map<String, dynamic> serializeKeyboardEvent(dynamic e) {
   return serialized;
 }
 
+Map<String, dynamic> serializeTransitionEvent(dynamic e) {
+  var serialized = serializeGenericEvent(e);
+  serialized['propertyName'] = e.propertyName;
+  serialized['elapsedTime'] = e.elapsedTime;
+  serialized['pseudoElement'] = e.pseudoElement;
+  return addTarget(e, serialized);
+}
+
 // TODO(jteplitz602): #3374. See above.
 Map<String, dynamic> addTarget(
     dynamic e, Map<String, dynamic> serializedEvent) {
