@@ -12,7 +12,6 @@ import "package:angular2/src/web_workers/shared/render_store.dart"
     show RenderStore;
 import "package:angular2/src/core/metadata/view.dart"
     show ViewEncapsulation, VIEW_ENCAPSULATION_VALUES;
-import "serialized_types.dart" show LocationType;
 // PRIMITIVE is any type that does not need to be serialized (string, number, boolean)
 
 // We set it to String so that it is considered a Type.
@@ -40,8 +39,6 @@ class Serializer {
       return this._serializeRenderComponentType(obj);
     } else if (identical(type, ViewEncapsulation)) {
       return serializeEnum(obj);
-    } else if (identical(type, LocationType)) {
-      return this._serializeLocation(obj);
     } else {
       throw new BaseException("No serializer for " + type.toString());
     }
@@ -66,8 +63,6 @@ class Serializer {
       return this._deserializeRenderComponentType(map);
     } else if (identical(type, ViewEncapsulation)) {
       return VIEW_ENCAPSULATION_VALUES[map];
-    } else if (identical(type, LocationType)) {
-      return this._deserializeLocation(map);
     } else {
       throw new BaseException("No deserializer for " + type.toString());
     }
@@ -102,33 +97,6 @@ class Serializer {
     } else {
       return MapWrapper.createFromStringMap(obj);
     }
-  }
-
-  Object _serializeLocation(LocationType loc) {
-    return {
-      "href": loc.href,
-      "protocol": loc.protocol,
-      "host": loc.host,
-      "hostname": loc.hostname,
-      "port": loc.port,
-      "pathname": loc.pathname,
-      "search": loc.search,
-      "hash": loc.hash,
-      "origin": loc.origin
-    };
-  }
-
-  LocationType _deserializeLocation(Map<String, dynamic> loc) {
-    return new LocationType(
-        loc["href"],
-        loc["protocol"],
-        loc["host"],
-        loc["hostname"],
-        loc["port"],
-        loc["pathname"],
-        loc["search"],
-        loc["hash"],
-        loc["origin"]);
   }
 
   Object _serializeRenderComponentType(RenderComponentType obj) {

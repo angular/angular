@@ -18,7 +18,6 @@ export '../src/web_workers/shared/service_message_broker.dart'
 
 export '../src/web_workers/shared/serializer.dart' show PRIMITIVE;
 export '../src/web_workers/shared/message_bus.dart';
-export '../src/web_workers/ui/router_providers.dart' show WORKER_RENDER_ROUTER;
 
 import 'package:angular2/src/platform/worker_render_common.dart';
 

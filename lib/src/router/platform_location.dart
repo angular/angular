@@ -1,47 +1,73 @@
-/**
- * This class should not be used directly by an application developer. Instead, use
- * [Location].
- *
- * `PlatformLocation` encapsulates all calls to DOM apis, which allows the Router to be platform
- * agnostic.
- * This means that we can have different implementation of `PlatformLocation` for the different
- * platforms
- * that angular supports. For example, the default `PlatformLocation` is {@link
- * BrowserPlatformLocation},
- * however when you run your app in a WebWorker you use [WebWorkerPlatformLocation].
- *
- * The `PlatformLocation` class is used directly by all implementations of [LocationStrategy]
- * when
- * they need to interact with the DOM apis like pushState, popState, etc...
- *
- * [LocationStrategy] in turn is used by the [Location] service which is used directly
- * by
- * the [Router] in order to navigate between routes. Since all interactions between {@link
- * Router} /
- * [Location] / [LocationStrategy] and DOM apis flow through the `PlatformLocation`
- * class
- * they are all platform independent.
- */
 library angular2.src.router.platform_location;
 
-abstract class PlatformLocation {
-  String getBaseHrefFromDOM();
-  void onPopState(UrlChangeListener fn);
-  void onHashChange(UrlChangeListener fn);
-  String pathname;
-  String search;
-  String hash;
-  void replaceState(dynamic state, String title, String url);
-  void pushState(dynamic state, String title, String url);
-  void forward();
-  void back();
-}
+import "package:angular2/src/platform/dom/dom_adapter.dart" show DOM;
+import "package:angular2/core.dart" show Injectable;
+import "package:angular2/src/facade/browser.dart"
+    show EventListener, History, Location;
 
 /**
- * A serializable version of the event from onPopState or onHashChange
+ * `PlatformLocation` encapsulates all of the direct calls to platform APIs.
+ * This class should not be used directly by an application developer. Instead, use
+ * [Location].
  */
-abstract class UrlChangeEvent {
-  String type;
-}
+@Injectable()
+class PlatformLocation {
+  Location _location;
+  History _history;
+  PlatformLocation() {
+    this._init();
+  }
+  // This is moved to its own method so that `MockPlatformLocationStrategy` can overwrite it
 
-typedef dynamic UrlChangeListener(UrlChangeEvent e);
+  /** @internal */
+  _init() {
+    this._location = DOM.getLocation();
+    this._history = DOM.getHistory();
+  }
+
+  String getBaseHrefFromDOM() {
+    return DOM.getBaseHref();
+  }
+
+  void onPopState(EventListener fn) {
+    DOM.getGlobalEventTarget("window").addEventListener("popstate", fn, false);
+  }
+
+  void onHashChange(EventListener fn) {
+    DOM
+        .getGlobalEventTarget("window")
+        .addEventListener("hashchange", fn, false);
+  }
+
+  String get pathname {
+    return this._location.pathname;
+  }
+
+  String get search {
+    return this._location.search;
+  }
+
+  String get hash {
+    return this._location.hash;
+  }
+
+  set pathname(String newPath) {
+    this._location.pathname = newPath;
+  }
+
+  void pushState(dynamic state, String title, String url) {
+    this._history.pushState(state, title, url);
+  }
+
+  void replaceState(dynamic state, String title, String url) {
+    this._history.replaceState(state, title, url);
+  }
+
+  void forward() {
+    this._history.forward();
+  }
+
+  void back() {
+    this._history.back();
+  }
+}

@@ -61,14 +61,13 @@ class ServiceMessageBroker_ extends ServiceMessageBroker {
     ObservableWrapper.subscribe(
         source, (message) => this._handleMessage(message));
   }
-  void registerMethod(String methodName, List<Type> signature,
-      dynamic /* (..._: any[]) => Promise<any>| void */ method,
+  void registerMethod(String methodName, List<Type> signature, Function method,
       [Type returnType]) {
     this._methods[methodName] = (ReceivedMessage message) {
       var serializedArgs = message.args;
-      var numArgs = identical(signature, null) ? 0 : signature.length;
-      List<dynamic> deserializedArgs = ListWrapper.createFixedSize(numArgs);
-      for (var i = 0; i < numArgs; i++) {
+      List<dynamic> deserializedArgs =
+          ListWrapper.createFixedSize(signature.length);
+      for (var i = 0; i < signature.length; i++) {
         var serializedArg = serializedArgs[i];
         deserializedArgs[i] =
             this._serializer.deserialize(serializedArg, signature[i]);

@@ -1,11 +1,13 @@
 library angular2.src.router.path_location_strategy;
 
 import "package:angular2/core.dart" show Injectable, Inject, Optional;
+import "package:angular2/src/facade/browser.dart"
+    show EventListener, History, Location;
 import "package:angular2/src/facade/lang.dart" show isBlank;
 import "package:angular2/src/facade/exceptions.dart" show BaseException;
 import "location_strategy.dart"
     show LocationStrategy, APP_BASE_HREF, normalizeQueryParams, joinWithSlash;
-import "platform_location.dart" show PlatformLocation, UrlChangeListener;
+import "platform_location.dart" show PlatformLocation;
 
 /**
  * `PathLocationStrategy` is a [LocationStrategy] used to configure the
@@ -69,7 +71,7 @@ class PathLocationStrategy extends LocationStrategy {
     }
     this._baseHref = href;
   }
-  void onPopState(UrlChangeListener fn) {
+  void onPopState(EventListener fn) {
     this._platformLocation.onPopState(fn);
     this._platformLocation.onHashChange(fn);
   }
