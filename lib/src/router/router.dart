@@ -199,11 +199,11 @@ class Router {
         ._settleInstruction(instruction)
         .then((_) => this._routerCanReuse(instruction))
         .then((_) => this._canActivate(instruction))
-        .then((result) {
+        .then((bool result) {
       if (!result) {
         return false;
       }
-      return this._routerCanDeactivate(instruction).then((result) {
+      return this._routerCanDeactivate(instruction).then((bool result) {
         if (result) {
           return this.commit(instruction, _skipLocationChange).then((_) {
             this._emitNavigationFinish(instruction.toRootUrl());

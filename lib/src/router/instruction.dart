@@ -115,7 +115,8 @@ var BLANK_ROUTE_DATA = new RouteData();
 abstract class Instruction {
   ComponentInstruction component;
   Instruction child;
-  Map<String, Instruction> auxInstruction = {};
+  Map<String, Instruction> auxInstruction;
+  Instruction(this.component, this.child, this.auxInstruction) {}
   String get urlPath {
     return isPresent(this.component) ? this.component.urlPath : "";
   }
@@ -223,11 +224,9 @@ abstract class Instruction {
  * a resolved instruction has an outlet instruction for itself, but maybe not for...
  */
 class ResolvedInstruction extends Instruction {
-  ComponentInstruction component;
-  Instruction child;
-  Map<String, Instruction> auxInstruction;
-  ResolvedInstruction(this.component, this.child, this.auxInstruction)
-      : super() {
+  ResolvedInstruction(ComponentInstruction component, Instruction child,
+      Map<String, Instruction> auxInstruction)
+      : super(component, child, auxInstruction) {
     /* super call moved to initializer */;
   }
   Future<ComponentInstruction> resolveComponent() {
@@ -239,9 +238,8 @@ class ResolvedInstruction extends Instruction {
  * Represents a resolved default route
  */
 class DefaultInstruction extends Instruction {
-  ComponentInstruction component;
-  DefaultInstruction child;
-  DefaultInstruction(this.component, this.child) : super() {
+  DefaultInstruction(ComponentInstruction component, DefaultInstruction child)
+      : super(component, child, {}) {
     /* super call moved to initializer */;
   }
   Future<ComponentInstruction> resolveComponent() {
@@ -267,7 +265,7 @@ class UnresolvedInstruction extends Instruction {
   List<String> _urlParams;
   UnresolvedInstruction(this._resolver,
       [this._urlPath = "", this._urlParams = const []])
-      : super() {
+      : super(null, null, {}) {
     /* super call moved to initializer */;
   }
   String get urlPath {

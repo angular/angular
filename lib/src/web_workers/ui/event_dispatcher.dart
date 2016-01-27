@@ -7,8 +7,7 @@ import "package:angular2/src/web_workers/ui/event_serializer.dart"
         serializeMouseEvent,
         serializeKeyboardEvent,
         serializeGenericEvent,
-        serializeEventWithTarget,
-        serializeTransitionEvent;
+        serializeEventWithTarget;
 import "package:angular2/src/facade/exceptions.dart"
     show BaseException, WrappedException;
 import "package:angular2/src/facade/collection.dart" show StringMapWrapper;
@@ -96,9 +95,6 @@ class EventDispatcher {
       case "volumechange":
       case "waiting":
         serializedEvent = serializeGenericEvent(event);
-        break;
-      case "transitionend":
-        serializedEvent = serializeTransitionEvent(event);
         break;
       default:
         throw new BaseException(eventName + " not supported on WebWorkers");
