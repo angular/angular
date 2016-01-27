@@ -1,5 +1,5 @@
 import { RenderStoreObject } from 'angular2/src/web_workers/shared/serializer';
-import { serializeMouseEvent, serializeKeyboardEvent, serializeGenericEvent, serializeEventWithTarget } from 'angular2/src/web_workers/ui/event_serializer';
+import { serializeMouseEvent, serializeKeyboardEvent, serializeGenericEvent, serializeEventWithTarget, serializeTransitionEvent } from 'angular2/src/web_workers/ui/event_serializer';
 import { BaseException } from 'angular2/src/facade/exceptions';
 import { ObservableWrapper } from 'angular2/src/facade/async';
 export class EventDispatcher {
@@ -83,6 +83,9 @@ export class EventDispatcher {
             case "volumechange":
             case "waiting":
                 serializedEvent = serializeGenericEvent(event);
+                break;
+            case "transitionend":
+                serializedEvent = serializeTransitionEvent(event);
                 break;
             default:
                 throw new BaseException(eventName + " not supported on WebWorkers");
