@@ -105,6 +105,20 @@ export function main() {
              });
        }));
 
+    it('should navigate to child routes when the root component has an empty path',
+       inject([AsyncTestCompleter, Location], (async, location) => {
+         compile(tcb, 'outer { <router-outlet></router-outlet> }')
+             .then((rtc) => {fixture = rtc})
+             .then((_) => rtr.config([new Route({path: '/...', component: ParentCmp})]))
+             .then((_) => rtr.navigateByUrl('/b'))
+             .then((_) => {
+               fixture.detectChanges();
+               expect(fixture.debugElement.nativeElement).toHaveText('outer { inner { hello } }');
+               expect(location.urlChanges).toEqual(['/b']);
+               async.done();
+             });
+       }));
+
     it('should navigate to child routes of async routes', inject([AsyncTestCompleter], (async) => {
          compile(tcb, 'outer { <router-outlet></router-outlet> }')
              .then((rtc) => {fixture = rtc})
