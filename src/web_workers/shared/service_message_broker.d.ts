@@ -1,6 +1,7 @@
 import { Serializer } from "angular2/src/web_workers/shared/serializer";
 import { Type } from "angular2/src/facade/lang";
 import { MessageBus } from "angular2/src/web_workers/shared/message_bus";
+import { Promise } from 'angular2/src/facade/async';
 export declare abstract class ServiceMessageBrokerFactory {
     /**
      * Initializes the given channel and attaches a new {@link ServiceMessageBroker} to it.
@@ -27,7 +28,7 @@ export declare class ServiceMessageBroker_ extends ServiceMessageBroker {
     private _sink;
     private _methods;
     constructor(messageBus: MessageBus, _serializer: Serializer, channel: any);
-    registerMethod(methodName: string, signature: Type[], method: Function, returnType?: Type): void;
+    registerMethod(methodName: string, signature: Type[], method: (..._: any[]) => Promise<any> | void, returnType?: Type): void;
     private _handleMessage(map);
     private _wrapWebWorkerPromise(id, promise, type);
 }

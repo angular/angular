@@ -6,6 +6,7 @@ import {RenderComponentType} from "angular2/src/core/render/api";
 import {Injectable} from "angular2/src/core/di";
 import {RenderStore} from 'angular2/src/web_workers/shared/render_store';
 import {ViewEncapsulation, VIEW_ENCAPSULATION_VALUES} from 'angular2/src/core/metadata/view';
+import {LocationType} from './serialized_types';
 
 // PRIMITIVE is any type that does not need to be serialized (string, number, boolean)
 // We set it to String so that it is considered a Type.
@@ -31,6 +32,8 @@ export class Serializer {
       return this._serializeRenderComponentType(obj);
     } else if (type === ViewEncapsulation) {
       return serializeEnum(obj);
+    } else if (type === LocationType) {
+      return this._serializeLocation(obj);
     } else {
       throw new BaseException("No serializer for " + type.toString());
     }
@@ -55,6 +58,8 @@ export class Serializer {
       return this._deserializeRenderComponentType(map);
     } else if (type === ViewEncapsulation) {
       return VIEW_ENCAPSULATION_VALUES[map];
+    } else if (type === LocationType) {
+      return this._deserializeLocation(map);
     } else {
       throw new BaseException("No deserializer for " + type.toString());
     }
@@ -88,6 +93,25 @@ export class Serializer {
     } else {
       return MapWrapper.createFromStringMap(obj);
     }
+  }
+
+  private _serializeLocation(loc: LocationType): Object {
+    return {
+      'href': loc.href,
+      'protocol': loc.protocol,
+      'host': loc.host,
+      'hostname': loc.hostname,
+      'port': loc.port,
+      'pathname': loc.pathname,
+      'search': loc.search,
+      'hash': loc.hash,
+      'origin': loc.origin
+    };
+  }
+
+  private _deserializeLocation(loc: {[key: string]: any}): LocationType {
+    return new LocationType(loc['href'], loc['protocol'], loc['host'], loc['hostname'], loc['port'],
+                            loc['pathname'], loc['search'], loc['hash'], loc['origin']);
   }
 
   private _serializeRenderComponentType(obj: RenderComponentType): Object {

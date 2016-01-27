@@ -1,5 +1,5 @@
 import { LocationStrategy } from './location_strategy';
-import { PlatformLocation } from './platform_location';
+import { PlatformLocation, UrlChangeListener } from './platform_location';
 /**
  * `PathLocationStrategy` is a {@link LocationStrategy} used to configure the
  * {@link Location} service to represent its state in the
@@ -49,7 +49,7 @@ export declare class PathLocationStrategy extends LocationStrategy {
     private _platformLocation;
     private _baseHref;
     constructor(_platformLocation: PlatformLocation, href?: string);
-    onPopState(fn: EventListener): void;
+    onPopState(fn: UrlChangeListener): void;
     getBaseHref(): string;
     prepareExternalUrl(internal: string): string;
     path(): string;
