@@ -3,7 +3,7 @@ library angular2.src.router.hash_location_strategy;
 import "package:angular2/core.dart" show Injectable, Inject, Optional;
 import "location_strategy.dart"
     show LocationStrategy, joinWithSlash, APP_BASE_HREF, normalizeQueryParams;
-import "package:angular2/src/facade/browser.dart" show EventListener;
+import "platform_location.dart" show UrlChangeListener;
 import "package:angular2/src/facade/lang.dart" show isPresent;
 import "platform_location.dart" show PlatformLocation;
 
@@ -57,7 +57,7 @@ class HashLocationStrategy extends LocationStrategy {
       this._baseHref = _baseHref;
     }
   }
-  void onPopState(EventListener fn) {
+  void onPopState(UrlChangeListener fn) {
     this._platformLocation.onPopState(fn);
     this._platformLocation.onHashChange(fn);
   }

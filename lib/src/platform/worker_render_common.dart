@@ -52,6 +52,8 @@ import "package:angular2/src/web_workers/ui/renderer.dart"
     show MessageBasedRenderer;
 import "package:angular2/src/web_workers/ui/xhr_impl.dart"
     show MessageBasedXHRImpl;
+import "package:angular2/src/router/browser_platform_location.dart"
+    show BrowserPlatformLocation;
 import "package:angular2/src/web_workers/shared/service_message_broker.dart"
     show ServiceMessageBrokerFactory, ServiceMessageBrokerFactory_;
 import "package:angular2/src/web_workers/shared/client_message_broker.dart"
@@ -73,6 +75,11 @@ const List<dynamic> WORKER_RENDER_PLATFORM = const [
   const Provider(PLATFORM_INITIALIZER,
       useValue: initWebWorkerRenderPlatform, multi: true)
 ];
+/**
+ * A list of [Provider]s. To use the router in a Worker enabled application you must
+ * include these providers when setting up the render thread.
+ */
+const List<dynamic> WORKER_RENDER_ROUTER = const [BrowserPlatformLocation];
 const List<dynamic> WORKER_RENDER_APPLICATION_COMMON = const [
   APPLICATION_COMMON_PROVIDERS, WORKER_RENDER_MESSAGING_PROVIDERS,
   const Provider(ExceptionHandler,

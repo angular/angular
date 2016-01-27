@@ -1,6 +1,7 @@
 library angular2.src.router.location_strategy;
 
 import "package:angular2/core.dart" show OpaqueToken;
+import "platform_location.dart" show UrlChangeListener;
 
 /**
  * `LocationStrategy` is responsible for representing and reading route state
@@ -26,7 +27,7 @@ abstract class LocationStrategy {
       dynamic state, String title, String url, String queryParams);
   void forward();
   void back();
-  void onPopState(dynamic /* (_: any) => any */ fn);
+  void onPopState(UrlChangeListener fn);
   String getBaseHref();
 }
 
