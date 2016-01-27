@@ -50,13 +50,11 @@ export class ServiceMessageBroker_ extends ServiceMessageBroker {
     ObservableWrapper.subscribe(source, (message) => this._handleMessage(message));
   }
 
-  registerMethod(methodName: string, signature: Type[], method: (..._: any[]) => Promise<any>| void,
-                 returnType?: Type): void {
+  registerMethod(methodName: string, signature: Type[], method: Function, returnType?: Type): void {
     this._methods.set(methodName, (message: ReceivedMessage) => {
       var serializedArgs = message.args;
-      let numArgs = signature === null ? 0 : signature.length;
-      var deserializedArgs: any[] = ListWrapper.createFixedSize(numArgs);
-      for (var i = 0; i < numArgs; i++) {
+      var deserializedArgs: any[] = ListWrapper.createFixedSize(signature.length);
+      for (var i = 0; i < signature.length; i++) {
         var serializedArg = serializedArgs[i];
         deserializedArgs[i] = this._serializer.deserialize(serializedArg, signature[i]);
       }

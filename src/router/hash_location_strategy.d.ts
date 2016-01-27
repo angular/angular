@@ -1,5 +1,4 @@
 import { LocationStrategy } from './location_strategy';
-import { UrlChangeListener } from './platform_location';
 import { PlatformLocation } from './platform_location';
 /**
  * `HashLocationStrategy` is a {@link LocationStrategy} used to configure the
@@ -43,7 +42,7 @@ export declare class HashLocationStrategy extends LocationStrategy {
     private _platformLocation;
     private _baseHref;
     constructor(_platformLocation: PlatformLocation, _baseHref?: string);
-    onPopState(fn: UrlChangeListener): void;
+    onPopState(fn: EventListener): void;
     getBaseHref(): string;
     path(): string;
     prepareExternalUrl(internal: string): string;

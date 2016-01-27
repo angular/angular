@@ -51,9 +51,8 @@ export class ServiceMessageBroker_ extends ServiceMessageBroker {
     registerMethod(methodName, signature, method, returnType) {
         this._methods.set(methodName, (message) => {
             var serializedArgs = message.args;
-            let numArgs = signature === null ? 0 : signature.length;
-            var deserializedArgs = ListWrapper.createFixedSize(numArgs);
-            for (var i = 0; i < numArgs; i++) {
+            var deserializedArgs = ListWrapper.createFixedSize(signature.length);
+            for (var i = 0; i < signature.length; i++) {
                 var serializedArg = serializedArgs[i];
                 deserializedArgs[i] = this._serializer.deserialize(serializedArg, signature[i]);
             }

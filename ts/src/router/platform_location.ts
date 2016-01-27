@@ -1,48 +1,50 @@
+import {DOM} from 'angular2/src/platform/dom/dom_adapter';
+import {Injectable} from 'angular2/core';
+import {EventListener, History, Location} from 'angular2/src/facade/browser';
+
 /**
+ * `PlatformLocation` encapsulates all of the direct calls to platform APIs.
  * This class should not be used directly by an application developer. Instead, use
  * {@link Location}.
- *
- * `PlatformLocation` encapsulates all calls to DOM apis, which allows the Router to be platform
- * agnostic.
- * This means that we can have different implementation of `PlatformLocation` for the different
- * platforms
- * that angular supports. For example, the default `PlatformLocation` is {@link
- * BrowserPlatformLocation},
- * however when you run your app in a WebWorker you use {@link WebWorkerPlatformLocation}.
- *
- * The `PlatformLocation` class is used directly by all implementations of {@link LocationStrategy}
- * when
- * they need to interact with the DOM apis like pushState, popState, etc...
- *
- * {@link LocationStrategy} in turn is used by the {@link Location} service which is used directly
- * by
- * the {@link Router} in order to navigate between routes. Since all interactions between {@link
- * Router} /
- * {@link Location} / {@link LocationStrategy} and DOM apis flow through the `PlatformLocation`
- * class
- * they are all platform independent.
  */
-export abstract class PlatformLocation {
-  abstract getBaseHrefFromDOM(): string;
-  abstract onPopState(fn: UrlChangeListener): void;
-  abstract onHashChange(fn: UrlChangeListener): void;
+@Injectable()
+export class PlatformLocation {
+  private _location: Location;
+  private _history: History;
 
-  pathname: string;
-  search: string;
-  hash: string;
+  constructor() { this._init(); }
 
-  abstract replaceState(state: any, title: string, url: string): void;
+  // This is moved to its own method so that `MockPlatformLocationStrategy` can overwrite it
+  /** @internal */
+  _init() {
+    this._location = DOM.getLocation();
+    this._history = DOM.getHistory();
+  }
 
-  abstract pushState(state: any, title: string, url: string): void;
+  getBaseHrefFromDOM(): string { return DOM.getBaseHref(); }
 
-  abstract forward(): void;
+  onPopState(fn: EventListener): void {
+    DOM.getGlobalEventTarget('window').addEventListener('popstate', fn, false);
+  }
 
-  abstract back(): void;
+  onHashChange(fn: EventListener): void {
+    DOM.getGlobalEventTarget('window').addEventListener('hashchange', fn, false);
+  }
+
+  get pathname(): string { return this._location.pathname; }
+  get search(): string { return this._location.search; }
+  get hash(): string { return this._location.hash; }
+  set pathname(newPath: string) { this._location.pathname = newPath; }
+
+  pushState(state: any, title: string, url: string): void {
+    this._history.pushState(state, title, url);
+  }
+
+  replaceState(state: any, title: string, url: string): void {
+    this._history.replaceState(state, title, url);
+  }
+
+  forward(): void { this._history.forward(); }
+
+  back(): void { this._history.back(); }
 }
-
-/**
- * A serializable version of the event from onPopState or onHashChange
- */
-export interface UrlChangeEvent { type: string; }
-
-export interface UrlChangeListener { (e: UrlChangeEvent): any; }

@@ -1076,19 +1076,6 @@ System.register("angular2/src/router/router_link", ["angular2/core", "angular2/s
   return module.exports;
 });
 
-System.register("angular2/src/router/platform_location", [], true, function(require, exports, module) {
-  var global = System.global,
-      __define = global.define;
-  global.define = undefined;
-  var PlatformLocation = (function() {
-    function PlatformLocation() {}
-    return PlatformLocation;
-  })();
-  exports.PlatformLocation = PlatformLocation;
-  global.define = __define;
-  return module.exports;
-});
-
 System.register("angular2/src/router/hash_location_strategy", ["angular2/core", "angular2/src/router/location_strategy", "angular2/src/facade/lang", "angular2/src/router/platform_location"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
@@ -1271,42 +1258,6 @@ System.register("angular2/src/router/route_definition", [], true, function(requi
   var global = System.global,
       __define = global.define;
   global.define = undefined;
-  global.define = __define;
-  return module.exports;
-});
-
-System.register("angular2/src/router/router_providers_common", ["angular2/src/router/location_strategy", "angular2/src/router/path_location_strategy", "angular2/src/router/router", "angular2/src/router/route_registry", "angular2/src/router/location", "angular2/src/facade/lang", "angular2/core", "angular2/src/facade/exceptions"], true, function(require, exports, module) {
-  var global = System.global,
-      __define = global.define;
-  global.define = undefined;
-  var location_strategy_1 = require("angular2/src/router/location_strategy");
-  var path_location_strategy_1 = require("angular2/src/router/path_location_strategy");
-  var router_1 = require("angular2/src/router/router");
-  var route_registry_1 = require("angular2/src/router/route_registry");
-  var location_1 = require("angular2/src/router/location");
-  var lang_1 = require("angular2/src/facade/lang");
-  var core_1 = require("angular2/core");
-  var exceptions_1 = require("angular2/src/facade/exceptions");
-  exports.ROUTER_PROVIDERS_COMMON = lang_1.CONST_EXPR([route_registry_1.RouteRegistry, lang_1.CONST_EXPR(new core_1.Provider(location_strategy_1.LocationStrategy, {useClass: path_location_strategy_1.PathLocationStrategy})), location_1.Location, lang_1.CONST_EXPR(new core_1.Provider(router_1.Router, {
-    useFactory: routerFactory,
-    deps: lang_1.CONST_EXPR([route_registry_1.RouteRegistry, location_1.Location, route_registry_1.ROUTER_PRIMARY_COMPONENT, core_1.ApplicationRef])
-  })), lang_1.CONST_EXPR(new core_1.Provider(route_registry_1.ROUTER_PRIMARY_COMPONENT, {
-    useFactory: routerPrimaryComponentFactory,
-    deps: lang_1.CONST_EXPR([core_1.ApplicationRef])
-  }))]);
-  function routerFactory(registry, location, primaryComponent, appRef) {
-    var rootRouter = new router_1.RootRouter(registry, location, primaryComponent);
-    appRef.registerDisposeListener(function() {
-      return rootRouter.dispose();
-    });
-    return rootRouter;
-  }
-  function routerPrimaryComponentFactory(app) {
-    if (app.componentTypes.length == 0) {
-      throw new exceptions_1.BaseException("Bootstrap at least one component before injecting Router.");
-    }
-    return app.componentTypes[0];
-  }
   global.define = __define;
   return module.exports;
 });
@@ -2019,19 +1970,10 @@ System.register("angular2/src/router/router_outlet", ["angular2/src/facade/async
   return module.exports;
 });
 
-System.register("angular2/src/router/browser_platform_location", ["angular2/core", "angular2/src/router/platform_location", "angular2/src/platform/dom/dom_adapter"], true, function(require, exports, module) {
+System.register("angular2/src/router/platform_location", ["angular2/src/platform/dom/dom_adapter", "angular2/core"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
-  var __extends = (this && this.__extends) || function(d, b) {
-    for (var p in b)
-      if (b.hasOwnProperty(p))
-        d[p] = b[p];
-    function __() {
-      this.constructor = d;
-    }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-  };
   var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
     var c = arguments.length,
         r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
@@ -2048,36 +1990,26 @@ System.register("angular2/src/router/browser_platform_location", ["angular2/core
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
       return Reflect.metadata(k, v);
   };
-  var core_1 = require("angular2/core");
-  var platform_location_1 = require("angular2/src/router/platform_location");
   var dom_adapter_1 = require("angular2/src/platform/dom/dom_adapter");
-  var BrowserPlatformLocation = (function(_super) {
-    __extends(BrowserPlatformLocation, _super);
-    function BrowserPlatformLocation() {
-      _super.call(this);
+  var core_1 = require("angular2/core");
+  var PlatformLocation = (function() {
+    function PlatformLocation() {
       this._init();
     }
-    BrowserPlatformLocation.prototype._init = function() {
+    PlatformLocation.prototype._init = function() {
       this._location = dom_adapter_1.DOM.getLocation();
       this._history = dom_adapter_1.DOM.getHistory();
     };
-    Object.defineProperty(BrowserPlatformLocation.prototype, "location", {
-      get: function() {
-        return this._location;
-      },
-      enumerable: true,
-      configurable: true
-    });
-    BrowserPlatformLocation.prototype.getBaseHrefFromDOM = function() {
+    PlatformLocation.prototype.getBaseHrefFromDOM = function() {
       return dom_adapter_1.DOM.getBaseHref();
     };
-    BrowserPlatformLocation.prototype.onPopState = function(fn) {
+    PlatformLocation.prototype.onPopState = function(fn) {
       dom_adapter_1.DOM.getGlobalEventTarget('window').addEventListener('popstate', fn, false);
     };
-    BrowserPlatformLocation.prototype.onHashChange = function(fn) {
+    PlatformLocation.prototype.onHashChange = function(fn) {
       dom_adapter_1.DOM.getGlobalEventTarget('window').addEventListener('hashchange', fn, false);
     };
-    Object.defineProperty(BrowserPlatformLocation.prototype, "pathname", {
+    Object.defineProperty(PlatformLocation.prototype, "pathname", {
       get: function() {
         return this._location.pathname;
       },
@@ -2087,36 +2019,36 @@ System.register("angular2/src/router/browser_platform_location", ["angular2/core
       enumerable: true,
       configurable: true
     });
-    Object.defineProperty(BrowserPlatformLocation.prototype, "search", {
+    Object.defineProperty(PlatformLocation.prototype, "search", {
       get: function() {
         return this._location.search;
       },
       enumerable: true,
       configurable: true
     });
-    Object.defineProperty(BrowserPlatformLocation.prototype, "hash", {
+    Object.defineProperty(PlatformLocation.prototype, "hash", {
       get: function() {
         return this._location.hash;
       },
       enumerable: true,
       configurable: true
     });
-    BrowserPlatformLocation.prototype.pushState = function(state, title, url) {
+    PlatformLocation.prototype.pushState = function(state, title, url) {
       this._history.pushState(state, title, url);
     };
-    BrowserPlatformLocation.prototype.replaceState = function(state, title, url) {
+    PlatformLocation.prototype.replaceState = function(state, title, url) {
       this._history.replaceState(state, title, url);
     };
-    BrowserPlatformLocation.prototype.forward = function() {
+    PlatformLocation.prototype.forward = function() {
       this._history.forward();
     };
-    BrowserPlatformLocation.prototype.back = function() {
+    PlatformLocation.prototype.back = function() {
       this._history.back();
     };
-    BrowserPlatformLocation = __decorate([core_1.Injectable(), __metadata('design:paramtypes', [])], BrowserPlatformLocation);
-    return BrowserPlatformLocation;
-  })(platform_location_1.PlatformLocation);
-  exports.BrowserPlatformLocation = BrowserPlatformLocation;
+    PlatformLocation = __decorate([core_1.Injectable(), __metadata('design:paramtypes', [])], PlatformLocation);
+    return PlatformLocation;
+  })();
+  exports.PlatformLocation = PlatformLocation;
   global.define = __define;
   return module.exports;
 });
@@ -2232,21 +2164,6 @@ System.register("angular2/src/router/route_recognizer", ["angular2/src/facade/la
     return RouteRecognizer;
   })();
   exports.RouteRecognizer = RouteRecognizer;
-  global.define = __define;
-  return module.exports;
-});
-
-System.register("angular2/src/router/router_providers", ["angular2/router", "angular2/core", "angular2/src/facade/lang", "angular2/src/router/browser_platform_location", "angular2/src/router/platform_location"], true, function(require, exports, module) {
-  var global = System.global,
-      __define = global.define;
-  global.define = undefined;
-  var router_1 = require("angular2/router");
-  var core_1 = require("angular2/core");
-  var lang_1 = require("angular2/src/facade/lang");
-  var browser_platform_location_1 = require("angular2/src/router/browser_platform_location");
-  var platform_location_1 = require("angular2/src/router/platform_location");
-  exports.ROUTER_PROVIDERS = lang_1.CONST_EXPR([router_1.ROUTER_PROVIDERS_COMMON, lang_1.CONST_EXPR(new core_1.Provider(platform_location_1.PlatformLocation, {useClass: browser_platform_location_1.BrowserPlatformLocation}))]);
-  exports.ROUTER_BINDINGS = exports.ROUTER_PROVIDERS;
   global.define = __define;
   return module.exports;
 });
@@ -3050,7 +2967,7 @@ System.register("angular2/src/router/router", ["angular2/src/facade/async", "ang
   return module.exports;
 });
 
-System.register("angular2/router", ["angular2/src/router/router", "angular2/src/router/router_outlet", "angular2/src/router/router_link", "angular2/src/router/instruction", "angular2/src/router/platform_location", "angular2/src/router/route_registry", "angular2/src/router/location_strategy", "angular2/src/router/hash_location_strategy", "angular2/src/router/path_location_strategy", "angular2/src/router/location", "angular2/src/router/route_config_decorator", "angular2/src/router/route_definition", "angular2/src/router/lifecycle_annotations", "angular2/src/router/instruction", "angular2/core", "angular2/src/router/router_providers_common", "angular2/src/router/router_providers", "angular2/src/router/router_outlet", "angular2/src/router/router_link", "angular2/src/facade/lang"], true, function(require, exports, module) {
+System.register("angular2/router", ["angular2/src/router/router", "angular2/src/router/router_outlet", "angular2/src/router/router_link", "angular2/src/router/instruction", "angular2/src/router/platform_location", "angular2/src/router/route_registry", "angular2/src/router/location_strategy", "angular2/src/router/hash_location_strategy", "angular2/src/router/path_location_strategy", "angular2/src/router/location", "angular2/src/router/route_config_decorator", "angular2/src/router/route_definition", "angular2/src/router/lifecycle_annotations", "angular2/src/router/instruction", "angular2/core", "angular2/src/router/platform_location", "angular2/src/router/location_strategy", "angular2/src/router/path_location_strategy", "angular2/src/router/router", "angular2/src/router/router_outlet", "angular2/src/router/router_link", "angular2/src/router/route_registry", "angular2/src/router/location", "angular2/core", "angular2/src/facade/lang", "angular2/src/facade/exceptions"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
@@ -3091,15 +3008,39 @@ System.register("angular2/router", ["angular2/src/router/router", "angular2/src/
   exports.ComponentInstruction = instruction_2.ComponentInstruction;
   var core_1 = require("angular2/core");
   exports.OpaqueToken = core_1.OpaqueToken;
-  var router_providers_common_1 = require("angular2/src/router/router_providers_common");
-  exports.ROUTER_PROVIDERS_COMMON = router_providers_common_1.ROUTER_PROVIDERS_COMMON;
-  var router_providers_1 = require("angular2/src/router/router_providers");
-  exports.ROUTER_PROVIDERS = router_providers_1.ROUTER_PROVIDERS;
-  exports.ROUTER_BINDINGS = router_providers_1.ROUTER_BINDINGS;
+  var platform_location_2 = require("angular2/src/router/platform_location");
+  var location_strategy_2 = require("angular2/src/router/location_strategy");
+  var path_location_strategy_2 = require("angular2/src/router/path_location_strategy");
+  var router_2 = require("angular2/src/router/router");
   var router_outlet_2 = require("angular2/src/router/router_outlet");
   var router_link_2 = require("angular2/src/router/router_link");
+  var route_registry_2 = require("angular2/src/router/route_registry");
+  var location_2 = require("angular2/src/router/location");
+  var core_2 = require("angular2/core");
   var lang_1 = require("angular2/src/facade/lang");
+  var exceptions_1 = require("angular2/src/facade/exceptions");
   exports.ROUTER_DIRECTIVES = lang_1.CONST_EXPR([router_outlet_2.RouterOutlet, router_link_2.RouterLink]);
+  exports.ROUTER_PROVIDERS = lang_1.CONST_EXPR([route_registry_2.RouteRegistry, lang_1.CONST_EXPR(new core_2.Provider(location_strategy_2.LocationStrategy, {useClass: path_location_strategy_2.PathLocationStrategy})), platform_location_2.PlatformLocation, location_2.Location, lang_1.CONST_EXPR(new core_2.Provider(router_2.Router, {
+    useFactory: routerFactory,
+    deps: lang_1.CONST_EXPR([route_registry_2.RouteRegistry, location_2.Location, route_registry_2.ROUTER_PRIMARY_COMPONENT, core_2.ApplicationRef])
+  })), lang_1.CONST_EXPR(new core_2.Provider(route_registry_2.ROUTER_PRIMARY_COMPONENT, {
+    useFactory: routerPrimaryComponentFactory,
+    deps: lang_1.CONST_EXPR([core_2.ApplicationRef])
+  }))]);
+  exports.ROUTER_BINDINGS = exports.ROUTER_PROVIDERS;
+  function routerFactory(registry, location, primaryComponent, appRef) {
+    var rootRouter = new router_2.RootRouter(registry, location, primaryComponent);
+    appRef.registerDisposeListener(function() {
+      return rootRouter.dispose();
+    });
+    return rootRouter;
+  }
+  function routerPrimaryComponentFactory(app) {
+    if (app.componentTypes.length == 0) {
+      throw new exceptions_1.BaseException("Bootstrap at least one component before injecting Router.");
+    }
+    return app.componentTypes[0];
+  }
   global.define = __define;
   return module.exports;
 });

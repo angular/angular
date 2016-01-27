@@ -10,8 +10,6 @@ export declare class Serializer {
     objectToMap(obj: {
         [key: string]: any;
     }, type?: Type, data?: any): Map<string, any>;
-    private _serializeLocation(loc);
-    private _deserializeLocation(loc);
     private _serializeRenderComponentType(obj);
     private _deserializeRenderComponentType(map);
 }
