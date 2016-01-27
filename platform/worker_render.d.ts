@@ -8,3 +8,4 @@ export * from '../src/web_workers/shared/message_bus';
  * @deprecated Use WORKER_RENDER_APPLICATION
  */
 export declare const WORKER_RENDER_APP: any[];
+export { WORKER_RENDER_ROUTER } from 'angular2/src/web_workers/ui/router_providers';

@@ -5,7 +5,7 @@ import {
   APP_BASE_HREF,
   normalizeQueryParams
 } from './location_strategy';
-import {EventListener} from 'angular2/src/facade/browser';
+import {UrlChangeListener} from './platform_location';
 import {isPresent} from 'angular2/src/facade/lang';
 import {PlatformLocation} from './platform_location';
 
@@ -58,7 +58,7 @@ export class HashLocationStrategy extends LocationStrategy {
     }
   }
 
-  onPopState(fn: EventListener): void {
+  onPopState(fn: UrlChangeListener): void {
     this._platformLocation.onPopState(fn);
     this._platformLocation.onHashChange(fn);
   }

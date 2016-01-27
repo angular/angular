@@ -1,5 +1,4 @@
 import {Injectable, Inject, Optional} from 'angular2/core';
-import {EventListener, History, Location} from 'angular2/src/facade/browser';
 import {isBlank} from 'angular2/src/facade/lang';
 import {BaseException} from 'angular2/src/facade/exceptions';
 import {
@@ -8,7 +7,7 @@ import {
   normalizeQueryParams,
   joinWithSlash
 } from './location_strategy';
-import {PlatformLocation} from './platform_location';
+import {PlatformLocation, UrlChangeListener} from './platform_location';
 
 /**
  * `PathLocationStrategy` is a {@link LocationStrategy} used to configure the
@@ -75,7 +74,7 @@ export class PathLocationStrategy extends LocationStrategy {
     this._baseHref = href;
   }
 
-  onPopState(fn: EventListener): void {
+  onPopState(fn: UrlChangeListener): void {
     this._platformLocation.onPopState(fn);
     this._platformLocation.onHashChange(fn);
   }

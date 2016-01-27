@@ -10674,13 +10674,37 @@ System.register("angular2/src/web_workers/shared/render_store", ["angular2/src/c
   return module.exports;
 });
 
+System.register("angular2/src/web_workers/shared/serialized_types", [], true, function(require, exports, module) {
+  var global = System.global,
+      __define = global.define;
+  global.define = undefined;
+  var LocationType = (function() {
+    function LocationType(href, protocol, host, hostname, port, pathname, search, hash, origin) {
+      this.href = href;
+      this.protocol = protocol;
+      this.host = host;
+      this.hostname = hostname;
+      this.port = port;
+      this.pathname = pathname;
+      this.search = search;
+      this.hash = hash;
+      this.origin = origin;
+    }
+    return LocationType;
+  })();
+  exports.LocationType = LocationType;
+  global.define = __define;
+  return module.exports;
+});
+
 System.register("angular2/src/web_workers/shared/messaging_api", [], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
   exports.RENDERER_CHANNEL = "ng-Renderer";
   exports.XHR_CHANNEL = "ng-XHR";
-  exports.EVENT_CHANNEL = "ng-events";
+  exports.EVENT_CHANNEL = "ng-Events";
+  exports.ROUTER_CHANNEL = "ng-Router";
   global.define = __define;
   return module.exports;
 });
@@ -10828,8 +10852,9 @@ System.register("angular2/src/web_workers/shared/service_message_broker", ["angu
       var _this = this;
       this._methods.set(methodName, function(message) {
         var serializedArgs = message.args;
-        var deserializedArgs = collection_1.ListWrapper.createFixedSize(signature.length);
-        for (var i = 0; i < signature.length; i++) {
+        var numArgs = signature === null ? 0 : signature.length;
+        var deserializedArgs = collection_1.ListWrapper.createFixedSize(numArgs);
+        for (var i = 0; i < numArgs; i++) {
           var serializedArg = serializedArgs[i];
           deserializedArgs[i] = _this._serializer.deserialize(serializedArg, signature[i]);
         }
@@ -10911,6 +10936,19 @@ System.register("angular2/src/web_workers/ui/xhr_impl", ["angular2/src/core/di",
     return MessageBasedXHRImpl;
   })();
   exports.MessageBasedXHRImpl = MessageBasedXHRImpl;
+  global.define = __define;
+  return module.exports;
+});
+
+System.register("angular2/src/router/platform_location", [], true, function(require, exports, module) {
+  var global = System.global,
+      __define = global.define;
+  global.define = undefined;
+  var PlatformLocation = (function() {
+    function PlatformLocation() {}
+    return PlatformLocation;
+  })();
+  exports.PlatformLocation = PlatformLocation;
   global.define = __define;
   return module.exports;
 });
@@ -11281,6 +11319,75 @@ System.register("angular2/src/web_workers/shared/post_message_bus", ["angular2/s
     }
     return _Channel;
   })();
+  global.define = __define;
+  return module.exports;
+});
+
+System.register("angular2/src/web_workers/ui/platform_location", ["angular2/src/router/browser_platform_location", "angular2/src/core/di", "angular2/src/web_workers/shared/messaging_api", "angular2/src/web_workers/shared/service_message_broker", "angular2/src/web_workers/shared/serializer", "angular2/src/web_workers/ui/bind", "angular2/src/web_workers/shared/serialized_types", "angular2/src/web_workers/shared/message_bus", "angular2/src/facade/async"], true, function(require, exports, module) {
+  var global = System.global,
+      __define = global.define;
+  global.define = undefined;
+  var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    var c = arguments.length,
+        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
+        d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
+      r = Reflect.decorate(decorators, target, key, desc);
+    else
+      for (var i = decorators.length - 1; i >= 0; i--)
+        if (d = decorators[i])
+          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+  };
+  var __metadata = (this && this.__metadata) || function(k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
+      return Reflect.metadata(k, v);
+  };
+  var browser_platform_location_1 = require("angular2/src/router/browser_platform_location");
+  var di_1 = require("angular2/src/core/di");
+  var messaging_api_1 = require("angular2/src/web_workers/shared/messaging_api");
+  var service_message_broker_1 = require("angular2/src/web_workers/shared/service_message_broker");
+  var serializer_1 = require("angular2/src/web_workers/shared/serializer");
+  var bind_1 = require("angular2/src/web_workers/ui/bind");
+  var serialized_types_1 = require("angular2/src/web_workers/shared/serialized_types");
+  var message_bus_1 = require("angular2/src/web_workers/shared/message_bus");
+  var async_1 = require("angular2/src/facade/async");
+  var MessageBasedPlatformLocation = (function() {
+    function MessageBasedPlatformLocation(_brokerFactory, _platformLocation, bus, _serializer) {
+      this._brokerFactory = _brokerFactory;
+      this._platformLocation = _platformLocation;
+      this._serializer = _serializer;
+      this._platformLocation.onPopState(bind_1.bind(this._sendUrlChangeEvent, this));
+      this._platformLocation.onHashChange(bind_1.bind(this._sendUrlChangeEvent, this));
+      this._broker = this._brokerFactory.createMessageBroker(messaging_api_1.ROUTER_CHANNEL);
+      this._channelSink = bus.to(messaging_api_1.ROUTER_CHANNEL);
+    }
+    MessageBasedPlatformLocation.prototype.start = function() {
+      this._broker.registerMethod("getLocation", null, bind_1.bind(this._getLocation, this), serialized_types_1.LocationType);
+      this._broker.registerMethod("setPathname", [serializer_1.PRIMITIVE], bind_1.bind(this._setPathname, this));
+      this._broker.registerMethod("pushState", [serializer_1.PRIMITIVE, serializer_1.PRIMITIVE, serializer_1.PRIMITIVE], bind_1.bind(this._platformLocation.pushState, this._platformLocation));
+      this._broker.registerMethod("replaceState", [serializer_1.PRIMITIVE, serializer_1.PRIMITIVE, serializer_1.PRIMITIVE], bind_1.bind(this._platformLocation.replaceState, this._platformLocation));
+      this._broker.registerMethod("forward", null, bind_1.bind(this._platformLocation.forward, this._platformLocation));
+      this._broker.registerMethod("back", null, bind_1.bind(this._platformLocation.back, this._platformLocation));
+    };
+    MessageBasedPlatformLocation.prototype._getLocation = function() {
+      return async_1.PromiseWrapper.resolve(this._platformLocation.location);
+    };
+    MessageBasedPlatformLocation.prototype._sendUrlChangeEvent = function(e) {
+      var loc = this._serializer.serialize(this._platformLocation.location, serialized_types_1.LocationType);
+      var serializedEvent = {'type': e.type};
+      async_1.ObservableWrapper.callEmit(this._channelSink, {
+        'event': serializedEvent,
+        'location': loc
+      });
+    };
+    MessageBasedPlatformLocation.prototype._setPathname = function(pathname) {
+      this._platformLocation.pathname = pathname;
+    };
+    MessageBasedPlatformLocation = __decorate([di_1.Injectable(), __metadata('design:paramtypes', [service_message_broker_1.ServiceMessageBrokerFactory, browser_platform_location_1.BrowserPlatformLocation, message_bus_1.MessageBus, serializer_1.Serializer])], MessageBasedPlatformLocation);
+    return MessageBasedPlatformLocation;
+  })();
+  exports.MessageBasedPlatformLocation = MessageBasedPlatformLocation;
   global.define = __define;
   return module.exports;
 });
@@ -15497,7 +15604,7 @@ System.register("angular2/src/platform/browser/browser_adapter", ["angular2/src/
   return module.exports;
 });
 
-System.register("angular2/src/web_workers/shared/serializer", ["angular2/src/facade/lang", "angular2/src/facade/exceptions", "angular2/src/facade/collection", "angular2/src/core/render/api", "angular2/src/core/di", "angular2/src/web_workers/shared/render_store", "angular2/src/core/metadata/view"], true, function(require, exports, module) {
+System.register("angular2/src/web_workers/shared/serializer", ["angular2/src/facade/lang", "angular2/src/facade/exceptions", "angular2/src/facade/collection", "angular2/src/core/render/api", "angular2/src/core/di", "angular2/src/web_workers/shared/render_store", "angular2/src/core/metadata/view", "angular2/src/web_workers/shared/serialized_types"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
@@ -15524,6 +15631,7 @@ System.register("angular2/src/web_workers/shared/serializer", ["angular2/src/fac
   var di_1 = require("angular2/src/core/di");
   var render_store_1 = require("angular2/src/web_workers/shared/render_store");
   var view_1 = require("angular2/src/core/metadata/view");
+  var serialized_types_1 = require("angular2/src/web_workers/shared/serialized_types");
   exports.PRIMITIVE = String;
   var Serializer = (function() {
     function Serializer(_renderStore) {
@@ -15548,6 +15656,8 @@ System.register("angular2/src/web_workers/shared/serializer", ["angular2/src/fac
         return this._serializeRenderComponentType(obj);
       } else if (type === view_1.ViewEncapsulation) {
         return lang_1.serializeEnum(obj);
+      } else if (type === serialized_types_1.LocationType) {
+        return this._serializeLocation(obj);
       } else {
         throw new exceptions_1.BaseException("No serializer for " + type.toString());
       }
@@ -15573,6 +15683,8 @@ System.register("angular2/src/web_workers/shared/serializer", ["angular2/src/fac
         return this._deserializeRenderComponentType(map);
       } else if (type === view_1.ViewEncapsulation) {
         return view_1.VIEW_ENCAPSULATION_VALUES[map];
+      } else if (type === serialized_types_1.LocationType) {
+        return this._deserializeLocation(map);
       } else {
         throw new exceptions_1.BaseException("No deserializer for " + type.toString());
       }
@@ -15601,6 +15713,22 @@ System.register("angular2/src/web_workers/shared/serializer", ["angular2/src/fac
       } else {
         return collection_1.MapWrapper.createFromStringMap(obj);
       }
+    };
+    Serializer.prototype._serializeLocation = function(loc) {
+      return {
+        'href': loc.href,
+        'protocol': loc.protocol,
+        'host': loc.host,
+        'hostname': loc.hostname,
+        'port': loc.port,
+        'pathname': loc.pathname,
+        'search': loc.search,
+        'hash': loc.hash,
+        'origin': loc.origin
+      };
+    };
+    Serializer.prototype._deserializeLocation = function(loc) {
+      return new serialized_types_1.LocationType(loc['href'], loc['protocol'], loc['host'], loc['hostname'], loc['port'], loc['pathname'], loc['search'], loc['hash'], loc['origin']);
     };
     Serializer.prototype._serializeRenderComponentType = function(obj) {
       return {
@@ -15732,6 +15860,108 @@ System.register("angular2/src/web_workers/ui/event_dispatcher", ["angular2/src/w
   return module.exports;
 });
 
+System.register("angular2/src/router/browser_platform_location", ["angular2/core", "angular2/src/router/platform_location", "angular2/src/platform/dom/dom_adapter"], true, function(require, exports, module) {
+  var global = System.global,
+      __define = global.define;
+  global.define = undefined;
+  var __extends = (this && this.__extends) || function(d, b) {
+    for (var p in b)
+      if (b.hasOwnProperty(p))
+        d[p] = b[p];
+    function __() {
+      this.constructor = d;
+    }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+  };
+  var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    var c = arguments.length,
+        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
+        d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
+      r = Reflect.decorate(decorators, target, key, desc);
+    else
+      for (var i = decorators.length - 1; i >= 0; i--)
+        if (d = decorators[i])
+          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+  };
+  var __metadata = (this && this.__metadata) || function(k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
+      return Reflect.metadata(k, v);
+  };
+  var core_1 = require("angular2/core");
+  var platform_location_1 = require("angular2/src/router/platform_location");
+  var dom_adapter_1 = require("angular2/src/platform/dom/dom_adapter");
+  var BrowserPlatformLocation = (function(_super) {
+    __extends(BrowserPlatformLocation, _super);
+    function BrowserPlatformLocation() {
+      _super.call(this);
+      this._init();
+    }
+    BrowserPlatformLocation.prototype._init = function() {
+      this._location = dom_adapter_1.DOM.getLocation();
+      this._history = dom_adapter_1.DOM.getHistory();
+    };
+    Object.defineProperty(BrowserPlatformLocation.prototype, "location", {
+      get: function() {
+        return this._location;
+      },
+      enumerable: true,
+      configurable: true
+    });
+    BrowserPlatformLocation.prototype.getBaseHrefFromDOM = function() {
+      return dom_adapter_1.DOM.getBaseHref();
+    };
+    BrowserPlatformLocation.prototype.onPopState = function(fn) {
+      dom_adapter_1.DOM.getGlobalEventTarget('window').addEventListener('popstate', fn, false);
+    };
+    BrowserPlatformLocation.prototype.onHashChange = function(fn) {
+      dom_adapter_1.DOM.getGlobalEventTarget('window').addEventListener('hashchange', fn, false);
+    };
+    Object.defineProperty(BrowserPlatformLocation.prototype, "pathname", {
+      get: function() {
+        return this._location.pathname;
+      },
+      set: function(newPath) {
+        this._location.pathname = newPath;
+      },
+      enumerable: true,
+      configurable: true
+    });
+    Object.defineProperty(BrowserPlatformLocation.prototype, "search", {
+      get: function() {
+        return this._location.search;
+      },
+      enumerable: true,
+      configurable: true
+    });
+    Object.defineProperty(BrowserPlatformLocation.prototype, "hash", {
+      get: function() {
+        return this._location.hash;
+      },
+      enumerable: true,
+      configurable: true
+    });
+    BrowserPlatformLocation.prototype.pushState = function(state, title, url) {
+      this._history.pushState(state, title, url);
+    };
+    BrowserPlatformLocation.prototype.replaceState = function(state, title, url) {
+      this._history.replaceState(state, title, url);
+    };
+    BrowserPlatformLocation.prototype.forward = function() {
+      this._history.forward();
+    };
+    BrowserPlatformLocation.prototype.back = function() {
+      this._history.back();
+    };
+    BrowserPlatformLocation = __decorate([core_1.Injectable(), __metadata('design:paramtypes', [])], BrowserPlatformLocation);
+    return BrowserPlatformLocation;
+  })(platform_location_1.PlatformLocation);
+  exports.BrowserPlatformLocation = BrowserPlatformLocation;
+  global.define = __define;
+  return module.exports;
+});
+
 System.register("angular2/src/platform/worker_render", ["angular2/src/web_workers/shared/post_message_bus", "angular2/src/web_workers/shared/message_bus", "angular2/core", "angular2/src/core/di", "angular2/src/platform/worker_render_common", "angular2/src/facade/exceptions", "angular2/src/facade/lang"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
@@ -15800,6 +16030,31 @@ System.register("angular2/src/platform/worker_render", ["angular2/src/web_worker
     var source = new post_message_bus_1.PostMessageBusSource(webWorker);
     var bus = new post_message_bus_1.PostMessageBus(sink, source);
     instance.init(webWorker, bus);
+  }
+  global.define = __define;
+  return module.exports;
+});
+
+System.register("angular2/src/web_workers/ui/router_providers", ["angular2/src/web_workers/ui/platform_location", "angular2/src/facade/lang", "angular2/src/router/browser_platform_location", "angular2/core"], true, function(require, exports, module) {
+  var global = System.global,
+      __define = global.define;
+  global.define = undefined;
+  var platform_location_1 = require("angular2/src/web_workers/ui/platform_location");
+  var lang_1 = require("angular2/src/facade/lang");
+  var browser_platform_location_1 = require("angular2/src/router/browser_platform_location");
+  var core_1 = require("angular2/core");
+  exports.WORKER_RENDER_ROUTER = lang_1.CONST_EXPR([platform_location_1.MessageBasedPlatformLocation, browser_platform_location_1.BrowserPlatformLocation, lang_1.CONST_EXPR(new core_1.Provider(core_1.APP_INITIALIZER, {
+    useFactory: initRouterListeners,
+    multi: true,
+    deps: lang_1.CONST_EXPR([core_1.Injector])
+  }))]);
+  function initRouterListeners(injector) {
+    return function() {
+      var zone = injector.get(core_1.NgZone);
+      zone.run(function() {
+        return injector.get(platform_location_1.MessageBasedPlatformLocation).start();
+      });
+    };
   }
   global.define = __define;
   return module.exports;
@@ -22874,7 +23129,7 @@ System.register("angular2/src/core/application_ref", ["angular2/src/core/zone/ng
   return module.exports;
 });
 
-System.register("angular2/src/platform/worker_render_common", ["angular2/src/facade/lang", "angular2/src/web_workers/shared/message_bus", "angular2/src/core/zone/ng_zone", "angular2/core", "angular2/platform/common_dom", "angular2/src/core/di", "angular2/src/platform/dom/dom_adapter", "angular2/src/platform/dom/events/dom_events", "angular2/src/platform/dom/events/key_events", "angular2/src/platform/dom/events/hammer_gestures", "angular2/src/platform/dom/dom_tokens", "angular2/src/platform/dom/dom_renderer", "angular2/src/platform/dom/shared_styles_host", "angular2/src/platform/dom/shared_styles_host", "angular2/src/animate/browser_details", "angular2/src/animate/animation_builder", "angular2/compiler", "angular2/src/platform/browser/xhr_impl", "angular2/src/core/testability/testability", "angular2/src/platform/browser/testability", "angular2/src/platform/browser/browser_adapter", "angular2/src/core/profile/wtf_init", "angular2/src/web_workers/ui/renderer", "angular2/src/web_workers/ui/xhr_impl", "angular2/src/web_workers/shared/service_message_broker", "angular2/src/web_workers/shared/client_message_broker", "angular2/src/web_workers/shared/serializer", "angular2/src/web_workers/shared/api", "angular2/src/web_workers/shared/render_store"], true, function(require, exports, module) {
+System.register("angular2/src/platform/worker_render_common", ["angular2/src/facade/lang", "angular2/src/web_workers/shared/message_bus", "angular2/src/core/zone/ng_zone", "angular2/core", "angular2/platform/common_dom", "angular2/src/core/di", "angular2/src/platform/dom/dom_adapter", "angular2/src/platform/dom/events/dom_events", "angular2/src/platform/dom/events/key_events", "angular2/src/platform/dom/events/hammer_gestures", "angular2/src/platform/dom/dom_tokens", "angular2/src/platform/dom/dom_renderer", "angular2/src/platform/dom/shared_styles_host", "angular2/src/platform/dom/shared_styles_host", "angular2/src/animate/browser_details", "angular2/src/animate/animation_builder", "angular2/compiler", "angular2/src/platform/browser/xhr_impl", "angular2/src/core/testability/testability", "angular2/src/platform/browser/testability", "angular2/src/platform/browser/browser_adapter", "angular2/src/core/profile/wtf_init", "angular2/src/web_workers/ui/renderer", "angular2/src/web_workers/ui/xhr_impl", "angular2/src/router/browser_platform_location", "angular2/src/web_workers/shared/service_message_broker", "angular2/src/web_workers/shared/client_message_broker", "angular2/src/web_workers/shared/serializer", "angular2/src/web_workers/shared/api", "angular2/src/web_workers/shared/render_store"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
@@ -22902,6 +23157,7 @@ System.register("angular2/src/platform/worker_render_common", ["angular2/src/fac
   var wtf_init_1 = require("angular2/src/core/profile/wtf_init");
   var renderer_1 = require("angular2/src/web_workers/ui/renderer");
   var xhr_impl_2 = require("angular2/src/web_workers/ui/xhr_impl");
+  var browser_platform_location_1 = require("angular2/src/router/browser_platform_location");
   var service_message_broker_1 = require("angular2/src/web_workers/shared/service_message_broker");
   var client_message_broker_1 = require("angular2/src/web_workers/shared/client_message_broker");
   var serializer_1 = require("angular2/src/web_workers/shared/serializer");
@@ -22913,6 +23169,7 @@ System.register("angular2/src/platform/worker_render_common", ["angular2/src/fac
     useValue: initWebWorkerRenderPlatform,
     multi: true
   })]);
+  exports.WORKER_RENDER_ROUTER = lang_1.CONST_EXPR([browser_platform_location_1.BrowserPlatformLocation]);
   exports.WORKER_RENDER_APPLICATION_COMMON = lang_1.CONST_EXPR([core_1.APPLICATION_COMMON_PROVIDERS, exports.WORKER_RENDER_MESSAGING_PROVIDERS, new di_1.Provider(core_1.ExceptionHandler, {
     useFactory: _exceptionHandler,
     deps: []
@@ -22956,7 +23213,7 @@ System.register("angular2/src/platform/worker_render_common", ["angular2/src/fac
   return module.exports;
 });
 
-System.register("angular2/platform/worker_render", ["angular2/src/platform/worker_render_common", "angular2/src/platform/worker_render", "angular2/src/web_workers/shared/client_message_broker", "angular2/src/web_workers/shared/service_message_broker", "angular2/src/web_workers/shared/serializer", "angular2/src/web_workers/shared/message_bus", "angular2/src/platform/worker_render"], true, function(require, exports, module) {
+System.register("angular2/platform/worker_render", ["angular2/src/platform/worker_render_common", "angular2/src/platform/worker_render", "angular2/src/web_workers/shared/client_message_broker", "angular2/src/web_workers/shared/service_message_broker", "angular2/src/web_workers/shared/serializer", "angular2/src/web_workers/shared/message_bus", "angular2/src/platform/worker_render", "angular2/src/web_workers/ui/router_providers"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
@@ -22987,6 +23244,8 @@ System.register("angular2/platform/worker_render", ["angular2/src/platform/worke
   __export(require("angular2/src/web_workers/shared/message_bus"));
   var worker_render_2 = require("angular2/src/platform/worker_render");
   exports.WORKER_RENDER_APP = worker_render_2.WORKER_RENDER_APPLICATION;
+  var router_providers_1 = require("angular2/src/web_workers/ui/router_providers");
+  exports.WORKER_RENDER_ROUTER = router_providers_1.WORKER_RENDER_ROUTER;
   global.define = __define;
   return module.exports;
 });

@@ -5,3 +5,4 @@
 export declare const RENDERER_CHANNEL: string;
 export declare const XHR_CHANNEL: string;
 export declare const EVENT_CHANNEL: string;
+export declare const ROUTER_CHANNEL: string;
