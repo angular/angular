@@ -389,11 +389,6 @@
       "from": "binaryextensions@>=1.0.0 <1.1.0",
       "resolved": "https://registry.npmjs.org/binaryextensions/-/binaryextensions-1.0.0.tgz"
     },
-    "bindings": {
-      "version": "1.2.1",
-      "from": "bindings@>=1.2.0 <1.3.0",
-      "resolved": "https://registry.npmjs.org/bindings/-/bindings-1.2.1.tgz"
-    },
     "bl": {
       "version": "0.9.4",
       "from": "bl@>=0.9.0 <0.10.0",
@@ -2452,11 +2447,6 @@
       "from": "buffers@>=0.1.1 <0.2.0",
       "resolved": "https://registry.npmjs.org/buffers/-/buffers-0.1.1.tgz"
     },
-    "bufferutil": {
-      "version": "1.2.1",
-      "from": "bufferutil@>=1.2.0 <1.3.0",
-      "resolved": "https://registry.npmjs.org/bufferutil/-/bufferutil-1.2.1.tgz"
-    },
     "builtin-modules": {
       "version": "1.1.1",
       "from": "builtin-modules@>=1.0.0 <2.0.0",
@@ -2659,7 +2649,8 @@
       "dependencies": {
         "mime-db": {
           "version": "1.20.0",
-          "from": "mime-db@>=1.19.0 <2.0.0"
+          "from": "mime-db@1.20.0",
+          "resolved": "https://registry.npmjs.org/mime-db/-/mime-db-1.20.0.tgz"
         }
       }
     },
@@ -7666,9 +7657,9 @@
       "resolved": "https://registry.npmjs.org/run-sequence/-/run-sequence-1.1.5.tgz"
     },
     "rxjs": {
-      "version": "5.0.0-beta.0",
-      "from": "rxjs@5.0.0-beta.0",
-      "resolved": "https://registry.npmjs.org/rxjs/-/rxjs-5.0.0-beta.0.tgz"
+      "version": "5.0.0-beta.1",
+      "from": "rxjs@5.0.0-beta.1",
+      "resolved": "https://registry.npmjs.org/rxjs/-/rxjs-5.0.0-beta.1.tgz"
     },
     "sass-graph": {
       "version": "2.0.1",
@@ -7809,7 +7800,8 @@
         },
         "mime-types": {
           "version": "2.1.8",
-          "from": "mime-types@>=2.1.4 <2.2.0"
+          "from": "mime-types@2.1.8",
+          "resolved": "https://registry.npmjs.org/mime-types/-/mime-types-2.1.8.tgz"
         }
       }
     },
@@ -8820,11 +8812,6 @@
           "resolved": "https://registry.npmjs.org/lru-cache/-/lru-cache-2.2.4.tgz"
         }
       }
-    },
-    "utf-8-validate": {
-      "version": "1.2.1",
-      "from": "utf-8-validate@>=1.2.0 <1.3.0",
-      "resolved": "https://registry.npmjs.org/utf-8-validate/-/utf-8-validate-1.2.1.tgz"
     },
     "utf8": {
       "version": "2.1.0",

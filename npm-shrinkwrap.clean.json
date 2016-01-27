@@ -237,9 +237,6 @@
     "binaryextensions": {
       "version": "1.0.0"
     },
-    "bindings": {
-      "version": "1.2.1"
-    },
     "bl": {
       "version": "0.9.4",
       "dependencies": {
@@ -1569,9 +1566,6 @@
     },
     "buffers": {
       "version": "0.1.1"
-    },
-    "bufferutil": {
-      "version": "1.2.1"
     },
     "builtin-modules": {
       "version": "1.1.1"
@@ -4809,7 +4803,7 @@
       "version": "1.1.5"
     },
     "rxjs": {
-      "version": "5.0.0-beta.0"
+      "version": "5.0.0-beta.1"
     },
     "sass-graph": {
       "version": "2.0.1",
@@ -5533,9 +5527,6 @@
           "version": "2.2.4"
         }
       }
-    },
-    "utf-8-validate": {
-      "version": "1.2.1"
     },
     "utf8": {
       "version": "2.1.0"
