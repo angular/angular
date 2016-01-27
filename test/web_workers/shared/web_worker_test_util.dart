@@ -2,8 +2,16 @@ library angular2.test.web_workers.shared.web_worker_test_util;
 
 import "package:angular2/src/facade/collection.dart"
     show StringMapWrapper, ListWrapper;
+import "package:angular2/src/facade/async.dart" show PromiseWrapper;
+import "package:angular2/src/web_workers/shared/client_message_broker.dart"
+    show UiArguments;
+import "package:angular2/src/facade/lang.dart" show Type, isPresent;
+import "../worker/spies.dart" show SpyMessageBroker;
+import "package:angular2/testing_internal.dart" show expect;
 import "package:angular2/src/web_workers/shared/message_bus.dart"
     show MessageBusSink, MessageBusSource, MessageBus;
+import "package:angular2/src/web_workers/shared/client_message_broker.dart"
+    show ClientMessageBroker, ClientMessageBrokerFactory_;
 import "mock_event_emitter.dart" show MockEventEmitter;
 import "package:angular2/src/facade/exceptions.dart"
     show BaseException, WrappedException;
@@ -23,6 +31,41 @@ PairedMessageBuses createPairedMessageBuses() {
   return new PairedMessageBuses(
       new MockMessageBus(uiMessageBusSink, uiMessageBusSource),
       new MockMessageBus(workerMessageBusSink, workerMessageBusSource));
+}
+
+/**
+ * Spies on the given [SpyMessageBroker] and expects a call with the given methodName
+ * andvalues.
+ * If a handler is provided it will be called to handle the request.
+ * Only intended to be called on a given broker instance once.
+ */
+void expectBrokerCall(SpyMessageBroker broker, String methodName,
+    [List<dynamic> vals,
+    dynamic /* (..._: any[]) => Promise<any>| void */ handler]) {
+  broker.spy("runOnService").andCallFake((UiArguments args, Type returnType) {
+    expect(args.method).toEqual(methodName);
+    if (isPresent(vals)) {
+      expect(args.args.length).toEqual(vals.length);
+      ListWrapper.forEachWithIndex(vals, (v, i) {
+        expect(v).toEqual(args.args[i].value);
+      });
+    }
+    var promise = null;
+    if (isPresent(handler)) {
+      var givenValues = args.args.map((arg) {
+        arg.value;
+      }).toList();
+      if (givenValues.length > 0) {
+        promise = handler(givenValues);
+      } else {
+        promise = handler();
+      }
+    }
+    if (promise == null) {
+      promise = PromiseWrapper.wrap(() {});
+    }
+    return promise;
+  });
 }
 
 class PairedMessageBuses {
@@ -94,4 +137,14 @@ class MockMessageBus extends MessageBus {
   }
 
   attachToZone(NgZone zone) {}
+}
+
+class MockMessageBrokerFactory extends ClientMessageBrokerFactory_ {
+  ClientMessageBroker _messageBroker;
+  MockMessageBrokerFactory(this._messageBroker) : super(null, null) {
+    /* super call moved to initializer */;
+  }
+  createMessageBroker(String channel, [runInZone = true]) {
+    return this._messageBroker;
+  }
 }

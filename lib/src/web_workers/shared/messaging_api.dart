@@ -6,4 +6,5 @@ library angular2.src.web_workers.shared.messaging_api;
 
 const RENDERER_CHANNEL = "ng-Renderer";
 const XHR_CHANNEL = "ng-XHR";
-const EVENT_CHANNEL = "ng-events";
+const EVENT_CHANNEL = "ng-Events";
+const ROUTER_CHANNEL = "ng-Router";
