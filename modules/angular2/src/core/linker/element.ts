@@ -463,7 +463,7 @@ export class AppElement implements DependencyProvider, ElementRef, AfterViewChec
     var inj: AppElement = this;
     while (isPresent(inj)) {
       inj._setQueriesAsDirty();
-      if (isBlank(inj.parent) && isPresent(inj.parentView.containerAppElement)) {
+      if (isBlank(inj.parent) && inj.parentView.proto.type === ViewType.EMBEDDED) {
         inj = inj.parentView.containerAppElement;
       } else {
         inj = inj.parent;
