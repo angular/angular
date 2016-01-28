@@ -173,8 +173,47 @@ class _RewriterVisitor extends Object with RecursiveAstVisitor<Object> {
     if (_rewriter._writeStaticInit) {
       // rewrite bootstrap import to its static version.
       buf.write(_rewriter._code.substring(_currentIndex, node.offset));
-      // TODO(yjbanov): handle import "..." show/hide ...
-      buf.write("import '$BOOTSTRAP_STATIC_URI';");
+      buf.write("import '$BOOTSTRAP_STATIC_URI'");
+
+      // The index of the last character we've processed.
+      var lastIdx = node.uri.end;
+
+      // Maintain the import prefix, if present.
+      if (node.prefix != null) {
+        buf.write(_rewriter._code.substring(lastIdx, node.prefix.end));
+        lastIdx = node.prefix.end;
+      }
+
+      // Handle combinators ("show" and "hide" on an "import" directive).
+      // 1. A combinator like "show $BOOTSTRAP_NAME" no longer makes sense, so
+      //    we need to rewrite it.
+      // 2. It's possible we'll need to call the setup method
+      //    (SETUP_METHOD_NAME), so make sure it is visible.
+      if (node.combinators != null) {
+        for (var combinator in node.combinators) {
+          buf.write(_rewriter._code
+              .substring(lastIdx, combinator.end)
+              .replaceAll(BOOTSTRAP_NAME, BOOTSTRAP_STATIC_NAME));
+          lastIdx = combinator.end;
+          if (combinator is ShowCombinator) {
+            buf.write(', $SETUP_METHOD_NAME');
+          } else if (combinator is HideCombinator) {
+            // Ensure the user is not explicitly hiding SETUP_METHOD_NAME.
+            // I don't know why anyone would do this, but it would result in
+            // some confusing behavior, so throw an explicit error.
+            combinator.hiddenNames.forEach((id) {
+              if (id.toString() == SETUP_METHOD_NAME) {
+                throw new FormatException(
+                    'Import statement explicitly hides initialization function '
+                    '$SETUP_METHOD_NAME. Please do not do this: "$node"');
+              }
+            });
+          }
+        }
+      }
+
+      // Write anything after the combinators.
+      buf.write(_rewriter._code.substring(lastIdx, node.end));
       _hasStaticBootstrapImport = true;
     } else {
       // leave it as is
@@ -198,6 +237,10 @@ class _RewriterVisitor extends Object with RecursiveAstVisitor<Object> {
           _setupAdded ? '' : ', () { ${_getStaticReflectorInitBlock()} }';
 
       // rewrite `bootstrap(...)` to `bootstrapStatic(...)`
+      if (node.target != null && node.target is SimpleIdentifier) {
+        // `bootstrap` imported with a prefix, maintain this.
+        buf.write('${node.target}.');
+      }
       buf.write('$BOOTSTRAP_STATIC_NAME(${args[0]}');
       if (numArgs == 1) {
         // bootstrap args are positional, so before we pass reflectorInit code
