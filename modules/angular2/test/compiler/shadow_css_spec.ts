@@ -96,13 +96,14 @@ export function main() {
       expect(s(':host {}', 'a', 'a-host')).toEqual('[a-host] {}');
       expect(s(':host(.x,.y) {}', 'a', 'a-host')).toEqual('[a-host].x, [a-host].y {}');
       expect(s(':host(.x,.y) > .z {}', 'a', 'a-host'))
-          .toEqual('[a-host].x > .z, [a-host].y > .z {}');
+          .toEqual('[a-host].x > .z[a], [a-host].y > .z[a] {}');
+      expect(s(':host .x {}', 'a', 'a-host')).toEqual('[a-host] .x[a] {}');
     });
 
     it('should handle :host-context', () => {
       expect(s(':host-context(.x) {}', 'a', 'a-host')).toEqual('[a-host].x, .x [a-host] {}');
       expect(s(':host-context(.x) > .y {}', 'a', 'a-host'))
-          .toEqual('[a-host].x > .y, .x [a-host] > .y {}');
+          .toEqual('[a-host].x > .y[a], .x [a-host] > .y[a] {}');
     });
 
     it('should support polyfill-next-selector', () => {
@@ -131,10 +132,10 @@ export function main() {
 
     it('should support polyfill-rule', () => {
       var css = s("polyfill-rule {content: ':host.foo .bar';color: blue;}", 'a', 'a-host');
-      expect(css).toEqual('[a-host].foo .bar {;color:blue;}');
+      expect(css).toEqual('[a-host].foo .bar[a] {;color:blue;}');
 
       css = s('polyfill-rule {content: ":host.foo .bar";color:blue;}', 'a', 'a-host');
-      expect(css).toEqual('[a-host].foo .bar {;color:blue;}');
+      expect(css).toEqual('[a-host].foo .bar[a] {;color:blue;}');
     });
 
     it('should handle ::shadow', () => {
