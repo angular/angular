@@ -1,0 +1,221 @@
+
+@import "variables";
+@import "shadows";
+@import "default-theme";   // TODO: Remove this
+
+$md-card-default-padding: 24px !default;
+$md-card-mobile-padding: 24px 16px !default;
+$md-card-border-radius: 2px !default;
+$md-card-header-size: 40px !default;
+
+md-card {
+  display: block;
+  position: relative;
+  padding: $md-card-default-padding;
+  border-radius: $md-card-border-radius;
+  box-shadow: $md-shadow-bottom-z-1;
+  font-family: $font-family;
+  background: md-color($md-background, 50);       // TODO(kara): use updated background palette
+}
+
+md-card:hover {
+  box-shadow: $md-shadow-bottom-z-2;
+  transition: $swift-ease-in;
+}
+
+.md-card-flat {
+  box-shadow: none;
+}
+
+// base styles for each card section preset (md-card-content, etc)
+%md-card-section-base {
+  display: block;
+  margin-bottom: 16px;  
+}
+
+md-card-title {
+  @extend %md-card-section-base;
+  font-size: 24px;
+  font-weight: 400;
+}
+
+md-card-subtitle {
+  @extend %md-card-section-base;
+  font-size: $md-body-font-size-base;
+  color: md-color($md-foreground, secondary-text);
+}
+
+md-card-content {
+  @extend %md-card-section-base;
+  font-size: $md-body-font-size-base;
+}
+
+md-card-actions {
+  @extend %md-card-section-base;
+  margin-left: -16px;
+  margin-right: -16px;
+  padding: 8px 0;
+}
+
+[md-card-image] {
+  width: calc(100% + 48px);
+  margin: 0 -24px 16px -24px;
+}
+
+[md-card-xl-image] {
+  width: 240px;
+  height: 240px;
+  margin: -8px;
+}
+
+md-card-footer {
+  position: absolute;
+  bottom: 0;
+}
+
+md-card-actions {
+  [md-button], [md-raised-button] {
+    margin: 0 4px;
+  } 
+}
+
+/* HEADER STYLES */
+
+md-card-header {
+  display: flex;
+  flex-direction: row;
+  height: $md-card-header-size;
+  margin: -8px 0 16px 0;
+}
+
+.md-card-header-text {
+  height: $md-card-header-size;
+  margin: 0 8px;
+}
+
+[md-card-avatar] {
+  height: $md-card-header-size;
+  width: $md-card-header-size;
+  border-radius: 50%;
+}
+
+md-card-header md-card-title {
+  font-size: $md-body-font-size-base;
+}
+
+/* TITLE-GROUP STYLES */
+
+// images grouped with title in title-group layout
+%md-card-title-img {
+  margin: -8px 0;
+}
+
+md-card-title-group {
+  display: flex;
+  justify-content: space-between;
+  margin: 0 -8px;
+}
+
+[md-card-sm-image] {
+  @extend %md-card-title-img;
+  width: 80px;
+  height: 80px;
+}
+
+[md-card-md-image] {
+  @extend %md-card-title-img;
+  width: 112px;
+  height: 112px;
+}
+
+[md-card-lg-image] {
+  @extend %md-card-title-img;
+  width: 152px;
+  height: 152px;
+}
+
+/* MEDIA QUERIES */
+
+@media ($md-xsmall) {
+  md-card {
+    padding: $md-card-mobile-padding;
+  }
+
+  [md-card-image] {
+    width: calc(100% + 32px);
+    margin: 16px -16px;
+  }
+
+  md-card-title-group {
+    margin: 0;
+  }
+
+  [md-card-xl-image] {
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  md-card-header {
+    margin: -8px 0 0 0;
+  }
+
+}
+
+/* FIRST/LAST CHILD ADJUSTMENTS */
+
+// top els in md-card-content and md-card can't have their default margin-tops (e.g. <p> tags)
+// or they'll incorrectly add to card's top padding
+.md-card > :first-child, md-card-content > :first-child {
+  margin-top: 0;
+}
+
+// last els in md-card-content and md-card can't have their default margin-bottoms (e.g. <p> tags)
+// or they'll incorrectly add to card's bottom padding
+.md-card > :last-child, md-card-content > :last-child {
+  margin-bottom: 0;
+}
+
+// if main image is on top, need to place it flush against top 
+// (by stripping card's default 24px padding)
+[md-card-image]:first-child {
+  margin-top: -24px;
+}
+
+// actions panel on bottom should be 8px from bottom of card
+// so must strip 16px from default card padding of 24px
+.md-card > md-card-actions:last-child {
+  margin-bottom: -16px;
+  padding-bottom: 0;
+}
+
+// actions panel should always be 8px from sides,
+// so the first button in the actions panel can't add its own margins
+md-card-actions [md-button]:first-child,
+md-card-actions [md-raised-button]:first-child {
+  margin-left: 0;
+  margin-right: 0;
+}
+
+// should be 12px space between titles and subtitles generally
+// default margin-bottom is 16px, so need to move lower title up 4px
+md-card-title:not(:first-child), md-card-subtitle:not(:first-child) {
+  margin-top: -4px;
+}
+
+// should be 8px space between titles and subtitles in header
+// default margin-bottom is 16px, so need to move subtitle in header up 4px
+md-card-header md-card-subtitle:not(:first-child) {
+  margin-top: -8px;
+}
+
+// xl image should always have 16px on top. 
+// when it's the first el, it'll need to remove 8px from default card padding of 24px
+.md-card > [md-card-xl-image]:first-child{
+  margin-top: -8px;
+}
+
+// xl image should always have 16px on bottom
+// when it's the last el, it'll need to remove 8px from default card padding of 24px
+.md-card > [md-card-xl-image]:last-child {
+  margin-bottom: -8px;
+}
