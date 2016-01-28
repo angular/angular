@@ -12,7 +12,10 @@ import 'package:angular2/src/transform/reflection_remover/rewriter.dart';
 
 import '../common/read_file.dart';
 import 'bootstrap_files/expected/index.dart' as bootstrap_expected;
+import 'combinator_files/expected/index.dart' as combinator_expected;
 import 'debug_mirrors_files/expected/index.dart' as debug_mirrors;
+import 'deferred_bootstrap_files/expected/index.dart'
+    as deferred_bootstrap_expected;
 import 'function_annotation_files/expected/index.dart'
     as func_annotation_expected;
 import 'log_mirrors_files/expected/index.dart' as log_mirrors;
@@ -64,13 +67,31 @@ void allTests() {
     expect(output).toEqual(log_mirrors.code);
   });
 
-  it('should rewrite bootstrap.', () {
-    final bootstrapCode =
-        readFile('reflection_remover/bootstrap_files/index.dart')
-            .replaceAll('\r\n', '\n');
-    var output = new Rewriter(bootstrapCode, codegen, entrypointMatcher,
-        writeStaticInit: true).rewrite(parseCompilationUnit(bootstrapCode));
-    expect(output).toEqual(bootstrap_expected.code);
+  describe('`bootstrap` import and call', () {
+    it('should be rewritten to `bootstrapStatic`.', () {
+      final bootstrapCode =
+          readFile('reflection_remover/bootstrap_files/index.dart')
+              .replaceAll('\r\n', '\n');
+      var output = new Rewriter(bootstrapCode, codegen, entrypointMatcher,
+          writeStaticInit: true).rewrite(parseCompilationUnit(bootstrapCode));
+      expect(output).toEqual(bootstrap_expected.code);
+    });
+
+    it('should be rewritten correctly when deferred.', () {
+      final bootstrapCode =
+          readFile('reflection_remover/deferred_bootstrap_files/index.dart');
+      var output = new Rewriter(bootstrapCode, codegen, entrypointMatcher,
+          writeStaticInit: true).rewrite(parseCompilationUnit(bootstrapCode));
+      expect(output).toEqual(deferred_bootstrap_expected.code);
+    });
+
+    it('should maintain any combinators.', () {
+      final bootstrapCode =
+          readFile('reflection_remover/combinator_files/index.dart');
+      var output = new Rewriter(bootstrapCode, codegen, entrypointMatcher,
+          writeStaticInit: true).rewrite(parseCompilationUnit(bootstrapCode));
+      expect(output).toEqual(combinator_expected.code);
+    });
   });
 
   describe('AngularEntrypoint annotation', () {
