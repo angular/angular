@@ -2659,7 +2659,8 @@
       "dependencies": {
         "mime-db": {
           "version": "1.20.0",
-          "from": "mime-db@>=1.19.0 <2.0.0"
+          "from": "mime-db@1.20.0",
+          "resolved": "https://registry.npmjs.org/mime-db/-/mime-db-1.20.0.tgz"
         }
       }
     },
@@ -7809,7 +7810,8 @@
         },
         "mime-types": {
           "version": "2.1.8",
-          "from": "mime-types@>=2.1.4 <2.2.0"
+          "from": "mime-types@2.1.8",
+          "resolved": "https://registry.npmjs.org/mime-types/-/mime-types-2.1.8.tgz"
         }
       }
     },
@@ -8505,7 +8507,15 @@
     },
     "ts-api-guardian": {
       "version": "0.0.2",
-      "from": "ts-api-guardian@0.0.2"
+      "from": "ts-api-guardian@0.0.2",
+      "resolved": "https://registry.npmjs.org/ts-api-guardian/-/ts-api-guardian-0.0.2.tgz",
+      "dependencies": {
+        "typescript": {
+          "version": "1.7.3",
+          "from": "typescript@1.7.3",
+          "resolved": "https://registry.npmjs.org/typescript/-/typescript-1.7.3.tgz"
+        }
+      }
     },
     "ts2dart": {
       "version": "0.7.19",
@@ -9281,9 +9291,9 @@
       }
     },
     "zone.js": {
-      "version": "0.5.10",
-      "from": "zone.js@0.5.10",
-      "resolved": "https://registry.npmjs.org/zone.js/-/zone.js-0.5.10.tgz"
+      "version": "0.5.11",
+      "from": "zone.js@0.5.11",
+      "resolved": "https://registry.npmjs.org/zone.js/-/zone.js-0.5.11.tgz"
     }
   }
 }

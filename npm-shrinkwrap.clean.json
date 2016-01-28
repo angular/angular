@@ -5337,7 +5337,12 @@
       "version": "1.0.0"
     },
     "ts-api-guardian": {
-      "version": "0.0.2"
+      "version": "0.0.2",
+      "dependencies": {
+        "typescript": {
+          "version": "1.7.3"
+        }
+      }
     },
     "ts2dart": {
       "version": "0.7.19",
@@ -5819,7 +5824,7 @@
       }
     },
     "zone.js": {
-      "version": "0.5.10"
+      "version": "0.5.11"
     }
   },
   "name": "angular-srcs",
