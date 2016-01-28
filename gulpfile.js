@@ -1154,7 +1154,7 @@ var bundleConfig = {
 };
 
 // production build
-gulp.task('!bundle.js.prod', ['build.js.prod'], function() {
+gulp.task('!bundle.js.prod', function() {
   var bundler = require('./tools/build/bundle');
   var bundlerConfig = {sourceMaps: true};
 
@@ -1171,7 +1171,7 @@ gulp.task('!bundle.js.prod', ['build.js.prod'], function() {
 });
 
 // minified production build
-gulp.task('!bundle.js.min', ['build.js.prod'], function() {
+gulp.task('!bundle.js.min', function() {
   var bundler = require('./tools/build/bundle');
   var bundlerConfig = {sourceMaps: true, minify: true};
 
@@ -1190,7 +1190,7 @@ gulp.task('!bundle.js.min', ['build.js.prod'], function() {
 });
 
 // development build
-gulp.task('!bundle.js.dev', ['build.js.dev'], function() {
+gulp.task('!bundle.js.dev', function() {
   var bundler = require('./tools/build/bundle');
   var bundlerConfig = {sourceMaps: true};
 
@@ -1212,21 +1212,21 @@ gulp.task('!bundle.js.dev', ['build.js.dev'], function() {
 });
 
 // WebWorker build
-gulp.task("!bundle.web_worker.js.dev", ["build.js.dev"], function() {
+gulp.task("!bundle.web_worker.js.dev", function() {
   var bundler = require('./tools/build/bundle');
   var devBundleConfig = merge(true, bundleConfig);
 
   devBundleConfig.paths = merge(true, devBundleConfig.paths, {"*": "dist/js/dev/es5/*.js"});
 
   return bundler.bundle(devBundleConfig, 'angular2/web_worker/ui',
-                        './dist/build/web_worker/ui.dev.js', {sourceMaps: true})
+                        './dist/build/web_worker/ui.dev.js', {sourceMaps: false})
       .then(function() {
         return bundler.bundle(devBundleConfig, 'angular2/web_worker/worker',
-                              './dist/build/web_worker/worker.dev.js', {sourceMaps: true});
+                              './dist/build/web_worker/worker.dev.js', {sourceMaps: false});
       });
 });
 
-gulp.task('!bundle.testing', ['build.js.dev'], function() {
+gulp.task('!bundle.testing', function() {
   var bundler = require('./tools/build/bundle');
 
   var devBundleConfig = merge(true, bundleConfig);
@@ -1236,11 +1236,11 @@ gulp.task('!bundle.testing', ['build.js.dev'], function() {
                         {sourceMaps: true});
 });
 
-gulp.task('!bundles.js.docs', ['clean'], function() {
+gulp.task('!bundles.js.docs', function() {
   return gulp.src('modules/angular2/docs/bundles/*').pipe(gulp.dest('dist/js/bundle'));
 });
 
-gulp.task('!bundles.js.umd', ['build.js.dev'], function() {
+gulp.task('!bundles.js.umd', function() {
   var q = require('q');
   var webpack = q.denodeify(require('webpack'));
 
@@ -1341,7 +1341,7 @@ gulp.task('!bundle.js.min.deps', ['!bundle.js.min'], function() {
       .pipe(gulp.dest('dist/js/bundle'));
 });
 
-gulp.task('!bundle.ng.polyfills', ['clean'],
+gulp.task('!bundle.ng.polyfills', [],
           function() { return addDevDependencies('angular2-polyfills.js'); });
 
 var JS_DEV_DEPS = [
@@ -1388,21 +1388,25 @@ gulp.task('!bundles.js.checksize', function(done) {
   return reportSize('dist/js/bundle/**/*.js', {printToConsole: ['gzip level=2']});
 });
 
-gulp.task('bundles.js',
-          [
-            '!bundle.js.prod.deps',
-            '!bundle.js.dev.deps',
-            '!bundle.js.min.deps',
-            '!bundle.web_worker.js.dev.deps',
-            'bundles.js.umd.min',
-            '!bundle.testing',
-            '!bundle.ng.polyfills',
-            '!bundles.js.docs'
-          ],
-          function(done) { runSequence('!bundle.copy', '!bundles.js.checksize', done); });
+gulp.task('bundles.js', ['build.js.dev', 'build.js.prod', 'build.js.cjs'],
+          function(done) { runSequence('!bundles.js', done); });
 
-gulp.task('build.js',
-          ['build.js.dev', 'build.js.prod', 'build.js.cjs', 'bundles.js', 'benchpress.bundle']);
+gulp.task('!bundles.js', function(done) {
+  runSequence(
+      [
+        '!bundle.js.prod.deps',
+        '!bundle.js.dev.deps',
+        '!bundle.js.min.deps',
+        '!benchpress.bundle',
+        'bundles.js.umd.min',
+        '!bundle.ng.polyfills',
+        '!bundles.js.docs'
+      ],
+      '!bundle.web_worker.js.dev.deps', '!bundle.testing', '!bundle.copy', '!bundles.js.checksize',
+      done);
+});
+
+gulp.task('build.js', ['build.js.dev', 'build.js.prod', 'build.js.cjs', 'bundles.js']);
 
 gulp.task('clean', [
   'build/clean.tools',
@@ -1500,14 +1504,16 @@ gulp.task('build.dart.material', ['build/packages.dart'], function(done) {
 
 gulp.task('cleanup.builder', function() { return angularBuilder.cleanup(); });
 
-gulp.task('benchpress.bundle', ['build/clean.bundles.benchpress', 'build.js.cjs'], function(cb) {
+gulp.task('benchpress.bundle', ['build.js.cjs'],
+          function(done) { runSequence('!benchpress.bundle', sequenceComplete(done)); });
+
+gulp.task('!benchpress.bundle', ['build/clean.bundles.benchpress'], function(cb) {
   var bundler = require('./tools/build/bundle');
 
   bundler.benchpressBundle(BENCHPRESS_BUNDLE_CONFIG.entries, BENCHPRESS_BUNDLE_CONFIG.packageJson,
                            BENCHPRESS_BUNDLE_CONFIG.includes, BENCHPRESS_BUNDLE_CONFIG.excludes,
                            BENCHPRESS_BUNDLE_CONFIG.ignore, BENCHPRESS_BUNDLE_CONFIG.dest, cb);
 });
-
 
 // register cleanup listener for ctrl+c/kill used to quit any persistent task (autotest or serve
 // tasks)
