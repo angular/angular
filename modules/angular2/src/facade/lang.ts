@@ -299,6 +299,18 @@ export class RegExpWrapper {
     regExp.lastIndex = 0;
     return regExp.exec(input);
   }
+
+  /**
+   * Returns the position of the first match of regex in the input,
+   * starting at `startFrom`, inclusive.
+   *
+   * Returns -1 if no match is found.
+   */
+  static indexOf(regExp: RegExp, startFrom: number, input: string): number {
+    regExp.lastIndex = startFrom;
+    return regExp.exec(input) ? regExp.lastIndex - 1 : -1;
+  }
+
   static test(regExp: RegExp, input: string): boolean {
     regExp.lastIndex = 0;
     return regExp.test(input);
