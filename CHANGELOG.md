@@ -1,3 +1,66 @@
+<a name="2.0.0-beta.2"></a>
+# 2.0.0-beta.2 (2016-01-28)
+
+
+### Bug Fixes
+
+* **bundles:** testing bundle should include browser platform ([4a41442](https://github.com/angular/angular/commit/4a41442)), closes [#6626](https://github.com/angular/angular/issues/6626)
+* **ChangeDetection:** chain expressions evaluate to the last expression (codegen) ([933a911](https://github.com/angular/angular/commit/933a911)), closes [#4782](https://github.com/angular/angular/issues/4782) [#5892](https://github.com/angular/angular/issues/5892)
+* **core:** always remove DOM listeners and stream subscriptions ([0ae7775](https://github.com/angular/angular/commit/0ae7775))
+* **Dart:** make some playground samples run with Dart Dev Compiler ([3e65d14](https://github.com/angular/angular/commit/3e65d14)), closes [#6441](https://github.com/angular/angular/issues/6441)
+* **dart/transform:** Ensure template codegen is completed sync ([5f0baaa](https://github.com/angular/angular/commit/5f0baaa)), closes [#6603](https://github.com/angular/angular/issues/6603)
+* **ddc:** router, compiler, web worker fixes for DDC ([db87bae](https://github.com/angular/angular/commit/db87bae)), closes [#6693](https://github.com/angular/angular/issues/6693)
+* **ddc:** type fixes necessary to bring DDC severe count to 0 ([4282297](https://github.com/angular/angular/commit/4282297))
+* **ddc:** use dynamic types in reflection typedefs ([c785a1e](https://github.com/angular/angular/commit/c785a1e)), closes [#6437](https://github.com/angular/angular/issues/6437)
+* **directive:** throw if output the same event more than once ([8c37b7e](https://github.com/angular/angular/commit/8c37b7e))
+* **HtmlLexer:** fix for unicode chars ([a24ee6a](https://github.com/angular/angular/commit/a24ee6a)), closes [#6036](https://github.com/angular/angular/issues/6036) [#6061](https://github.com/angular/angular/issues/6061)
+* **perf:** faster looseIdentical implementation ([761c6d0](https://github.com/angular/angular/commit/761c6d0)), closes [#6364](https://github.com/angular/angular/issues/6364)
+* **template_compiler:** Fix erroneous cycle detection ([eda4c3e](https://github.com/angular/angular/commit/eda4c3e)), closes [#6404](https://github.com/angular/angular/issues/6404) [#6474](https://github.com/angular/angular/issues/6474)
+* **testing:** remove test zone for now and rely on returned promises ([c72ed99](https://github.com/angular/angular/commit/c72ed99)), closes [#6359](https://github.com/angular/angular/issues/6359) [#6601](https://github.com/angular/angular/issues/6601)
+* **transformer:** record HostBinding annotations applied to getters ([a593ffa](https://github.com/angular/angular/commit/a593ffa)), closes [#6283](https://github.com/angular/angular/issues/6283)
+* **web_workers:** support @AngularEntrypoint in web workers ([ac85cbb](https://github.com/angular/angular/commit/ac85cbb)), closes [#6013](https://github.com/angular/angular/issues/6013)
+
+### Features
+
+* **core/application_ref:** Allow asyncronous app initializers. ([df3074f](https://github.com/angular/angular/commit/df3074f)), closes [#5929](https://github.com/angular/angular/issues/5929) [#6063](https://github.com/angular/angular/issues/6063)
+* **dart/transform:** DirectiveProcessor: do not process generated files ([78bfdf7](https://github.com/angular/angular/commit/78bfdf7)), closes [#6517](https://github.com/angular/angular/issues/6517)
+* **dart/transform:** Promote missing Directive warning to error ([47a3b4d](https://github.com/angular/angular/commit/47a3b4d)), closes [#6519](https://github.com/angular/angular/issues/6519) [#6568](https://github.com/angular/angular/issues/6568)
+* **test:** allow tests to specify the platform and application providers used ([b0cebdb](https://github.com/angular/angular/commit/b0cebdb)), closes [#5351](https://github.com/angular/angular/issues/5351) [#5585](https://github.com/angular/angular/issues/5585) [#5975](https://github.com/angular/angular/issues/5975)
+* **testability:** Expose function frameworkStabilizers ([69ae363](https://github.com/angular/angular/commit/69ae363)), closes [#5485](https://github.com/angular/angular/issues/5485)
+
+### BREAKING CHANGES
+
+* there's a chance of breakage as router's Instruction constructor
+  signature changed.
+
+* `Renderer.listen` now has to return a function that
+  removes the event listener.
+
+* remove TemplateRef.elementRef setter
+
+* Tests are now required to use `setBaseTestProviders`
+to set up. Assuming your tests are run on a browser, setup would change
+as follows.
+Before:
+```js
+// Somewhere in test setup
+import {BrowserDomAdapter} from 'angular2/src/platform/browser/browser_adapter';
+BrowserDomAdapter.makeCurrent
+```
+After:
+```js
+// Somewhere in the test setup
+import {setBaseTestProviders} from 'angular2/testing';
+import {
+  TEST_BROWSER_PLATFORM_PROVIDERS,
+  TEST_BROWSER_APPLICATION_PROVIDERS
+} from 'angular2/platform/testing/browser';
+setBaseTestProviders(TEST_BROWSER_PLATFORM_PROVIDERS,
+                     TEST_BROWSER_APPLICATION_PROVIDERS);
+```
+
+* This is very unlikely to be breaking, but I'm still marking just in case. The only change to the user should be that dev mode is driven by Dart's checked mode, like it was in the past.
+
 <a name="2.0.0-beta.1"></a>
 # 2.0.0-beta.1 catamorphic-involution (2016-01-08)
 
