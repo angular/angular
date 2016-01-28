@@ -1,4 +1,6 @@
-// Core color palettes.
+// Color palettes from the Material Design spec.
+// See https://www.google.com/design/spec/style/color.html
+
 $md-red: (
   50: #ffebee,
   100: #ffcdd2,
@@ -325,28 +327,50 @@ $md-blue-grey: (
 );
 
 
-$md-light-theme-foreground: (
-  divider: rgba(black, 0.12),
-  dividers: rgba(black, 0.12),
-  disabled: rgba(black, 0.26),
-  disabled-text: rgba(black, 0.26),
-  hint-text: rgba(black, 0.26),
-  secondary-text: rgba(black, 0.54),
-  icon: rgba(black, 0.54),
-  icons: rgba(black, 0.54),
-  text: rgba(black, 0.87)
+// Background palette for light themes.
+$md-light-theme-background: (
+  status-bar: map_get($md-grey, 300),
+  app-bar:    map_get($md-grey, 100),
+  background: map_get($md-grey, 50),
+  card:       white,
+  dialog:     white,
 );
 
+// Background palette for dark themes.
+$md-dark-theme-background: (
+  status-bar: black,
+  app-bar:    map_get($md-grey, 900),
+  background: #303030,
+  card:       map_get($md-grey, 800),
+  dialog:     map_get($md-grey, 800),
+);
+
+// Foreground palette for light themes.
+$md-light-theme-foreground: (
+  base:           black,
+  divider:        rgba(black, 0.12),
+  dividers:       rgba(black, 0.12),
+  disabled:       rgba(black, 0.38),
+  disabled-text:  rgba(black, 0.38),
+  hint-text:      rgba(black, 0.38),
+  secondary-text: rgba(black, 0.54),
+  icon:           rgba(black, 0.54),
+  icons:          rgba(black, 0.54),
+  text:           rgba(black, 0.87)
+);
+
+// Foreground palette for dark themes.
 $md-dark-theme-foreground: (
-  divider: rgba(white, 0.12),
-  dividers: rgba(white, 0.12),
-  disabled: rgba(white, 0.30),
-  disabled-text: rgba(white, 0.30),
-  hint-text: rgba(white, 0.30),
+  base:           white,
+  divider:        rgba(white, 0.12),
+  dividers:       rgba(white, 0.12),
+  disabled:       rgba(white, 0.30),
+  disabled-text:  rgba(white, 0.30),
+  hint-text:      rgba(white, 0.30),
   secondary-text: rgba(white, 0.70),
-  icon: white,
-  icons: white,
-  text: white
+  icon:           white,
+  icons:          white,
+  text:           white
 );
 
 
