@@ -69,6 +69,20 @@ export function main() {
       });
     });
 
+    describe("pattern", () => {
+      it("should not error on an empty string",
+        () => { expect(Validators.pattern("^.+@.+\..+$")(new Control(""))).toEqual(null); });
+
+      it("should not error on null",
+        () => { expect(Validators.pattern("^.+@.+\..+$")(new Control(null))).toEqual(null); });
+
+      it("should not error on valid strings",
+        () => { expect(Validators.pattern("^.+@.+\..+$")(new Control("john@doe.com"))).toEqual(null); });
+
+      it("should error on mismatched strings",
+        () => { expect(Validators.pattern("^.+@.+\..+$")(new Control("john-doe"))).toEqual({"pattern": true}); });
+    });
+
     describe("compose", () => {
       it("should return null when given null",
          () => { expect(Validators.compose(null)).toBe(null); });
