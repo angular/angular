@@ -473,6 +473,7 @@ export function humanizeViewFactory(
     cachedResults = new Map<AppProtoView, any>();
   }
   var viewManager = new SpyAppViewManager();
+  viewManager.spy('getComponentViewFactory').andCallFake((component, viewFactory) => viewFactory);
   viewManager.spy('createRenderComponentType')
       .andCallFake((encapsulation: ViewEncapsulation, styles: Array<string | any[]>) => {
         return new RenderComponentType('someId', encapsulation, styles);

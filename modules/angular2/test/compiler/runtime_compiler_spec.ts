@@ -28,7 +28,7 @@ export function main() {
 
     beforeEachProviders(() => {
       templateCompilerSpy = new SpyTemplateCompiler();
-      someHostViewFactory = new HostViewFactory(null, null);
+      someHostViewFactory = new HostViewFactory(null, null, null);
       templateCompilerSpy.spy('compileHostComponentRuntime')
           .andReturn(PromiseWrapper.resolve(someHostViewFactory));
       return [provide(TemplateCompiler, {useValue: templateCompilerSpy})];
