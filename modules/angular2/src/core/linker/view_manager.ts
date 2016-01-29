@@ -22,7 +22,6 @@ import {
 } from './view_ref';
 import {ViewContainerRef} from './view_container_ref';
 import {TemplateRef, TemplateRef_} from './template_ref';
-import {AppViewListener} from './view_listener';
 import {RootRenderer, RenderComponentType} from 'angular2/src/core/render/api';
 import {wtfCreateScope, wtfLeave, WtfScopeFn} from '../profile/profile';
 import {APP_ID} from 'angular2/src/core/application_tokens';
@@ -185,10 +184,7 @@ export abstract class AppViewManager {
 export class AppViewManager_ extends AppViewManager {
   private _nextCompTypeId: number = 0;
 
-  constructor(private _renderer: RootRenderer, private _viewListener: AppViewListener,
-              @Inject(APP_ID) private _appId: string) {
-    super();
-  }
+  constructor(private _renderer: RootRenderer, @Inject(APP_ID) private _appId: string) { super(); }
 
   getViewContainer(location: ElementRef): ViewContainerRef {
     return (<ElementRef_>location).internalElement.getViewContainerRef();
@@ -316,10 +312,10 @@ export class AppViewManager_ extends AppViewManager {
   }
 
   /** @internal */
-  onViewCreated(view: AppView) { this._viewListener.onViewCreated(view); }
+  onViewCreated(view: AppView) {}
 
   /** @internal */
-  onViewDestroyed(view: AppView) { this._viewListener.onViewDestroyed(view); }
+  onViewDestroyed(view: AppView) {}
 
   /** @internal */
   createRenderComponentType(encapsulation: ViewEncapsulation,

@@ -14,7 +14,12 @@ import {
 import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
 import {DomSharedStylesHost} from './shared_styles_host';
 
-import {Renderer, RootRenderer, RenderComponentType} from 'angular2/core';
+import {
+  Renderer,
+  RootRenderer,
+  RenderComponentType,
+  RenderDebugInfo
+} from 'angular2/src/core/render/api';
 
 import {EventManager} from './events/event_manager';
 
@@ -200,6 +205,8 @@ export class DomRenderer implements Renderer {
       this.setElementAttribute(renderElement, propertyName, propertyValue);
     }
   }
+
+  setElementDebugInfo(renderElement: any, info: RenderDebugInfo) {}
 
   setElementClass(renderElement: any, className: string, isAdd: boolean): void {
     if (isAdd) {
