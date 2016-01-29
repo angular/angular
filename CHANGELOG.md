@@ -30,13 +30,10 @@
 
 ### BREAKING CHANGES
 
-* there's a chance of breakage as router's Instruction constructor
-  signature changed.
-
 * `Renderer.listen` now has to return a function that
   removes the event listener.
 
-* remove TemplateRef.elementRef setter
+* TemplateRef.elementRef is now read-only.
 
 * Tests are now required to use `setBaseTestProviders`
 to set up. Assuming your tests are run on a browser, setup would change
@@ -59,7 +56,6 @@ setBaseTestProviders(TEST_BROWSER_PLATFORM_PROVIDERS,
                      TEST_BROWSER_APPLICATION_PROVIDERS);
 ```
 
-* This is very unlikely to be breaking, but I'm still marking just in case. The only change to the user should be that dev mode is driven by Dart's checked mode, like it was in the past.
 
 <a name="2.0.0-beta.1"></a>
 # 2.0.0-beta.1 catamorphic-involution (2016-01-08)
