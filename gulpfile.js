@@ -155,7 +155,7 @@ var HTTP_BUNDLE_CONTENT = 'angular2/http - rxjs/* - ' + ANGULAR2_BUNDLE_CONFIG.j
 var ROUTER_BUNDLE_CONTENT = 'angular2/router + angular2/router/router_link_dsl - rxjs/* - ' +
                             ANGULAR2_BUNDLE_CONFIG.join(' - ');
 var TESTING_BUNDLE_CONTENT =
-    'angular2/testing + angular2/http/testing + angular2/router/testing - rxjs/* - ' +
+    'angular2/testing + angular2/http/testing + angular2/router/testing + angular2/platform/testing/browser - rxjs/* - ' +
     ANGULAR2_BUNDLE_CONFIG.join(' - ');
 var UPGRADE_BUNDLE_CONTENT = 'angular2/upgrade - rxjs/* - ' + ANGULAR2_BUNDLE_CONFIG.join(' - ');
 
