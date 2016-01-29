@@ -5,12 +5,17 @@ var path = require('path');
 require('ts-node/register');
 
 const detect = require('./tools/build/dart').detect;
+
 var mergeTrees = require('broccoli-merge-trees');
 var Angular2App = require('angular-cli/lib/broccoli/angular2-app');
 var BroccoliSass = require('broccoli-sass');
 var broccoliAutoprefixer = require('broccoli-autoprefixer');
-var BroccoliTs2Dart = require('./tools/broccoli/broccoli-ts2dart').default;
-var dartfmt = require('./tools/broccoli/broccoli-dartfmt').default;
+
+const BroccoliTs2Dart = require('./tools/broccoli/broccoli-ts2dart').default;
+const BroccoliDestCopy = require('./tools/broccoli/broccoli-dest-copy').default;
+const BroccoliDartFmt = require('./tools/broccoli/broccoli-dartfmt').default;
+const BroccoliFunnel = require('broccoli-funnel');
+const BroccoliSource = require('broccoli-source');
 
 var autoprefixerOptions = require('./build/autoprefixer-options');
 
@@ -31,17 +36,8 @@ module.exports = function(defaults) {
 
 /** Gets the Dart tree - Transpile Dart files and format them afterward. */
 function getDartTree(root) {
-  const ts2dart = new BroccoliTs2Dart('src/', {
-    generateLibraryName: true,
-    generateSourceMap: false,
-    translateBuiltins: true,
-  });
-
   const dartSDK = detect();
-  if (dartSDK) {
-    // If Dart isn't found, detect() will throw an error.
-    return dartfmt(ts2dart, { dartSDK });
-  } else {
+  if (!dartSDK) {
     console.warn('---------------------------------------');
     console.warn('You do not have the Dart SDK installed.');
     console.warn('In order to contribute to this repo, please refer to');
@@ -50,6 +46,41 @@ function getDartTree(root) {
     console.warn('You can still build and serve the demo app without dart support.');
     return null;
   }
+
+  const ts2dart = new BroccoliTs2Dart(root, {
+    generateLibraryName: true,
+    generateSourceMap: false,
+    translateBuiltins: true,
+  });
+
+  const formatter = new BroccoliDartFmt(ts2dart, { dartSDK });
+
+  const dartSources = new BroccoliFunnel(root, {
+    include: ['**/*.dart'],
+    destDir: 'dart/web',
+  });
+
+  const allDartFiles = mergeTrees([
+    dartSources,
+    formatter
+  ]);
+
+  //const pubSpecTree = new BroccoliFunnel('.', {
+  //  files: ['pubspec.yaml'],
+  //  //exclude: ['**/*'],
+  //  destDir: 'dart'
+  //});
+  const pubSpecTree = new BroccoliFunnel(new BroccoliSource.UnwatchedDir('.'), {
+    files: ['pubspec.yaml'],
+    destDir: 'dart',
+  });
+
+  // Publishes the Dart files and pubspec inside a
+  return mergeTrees([
+    dartSources,
+    pubSpecTree,
+    new BroccoliDestCopy(formatter, 'dart/web'),
+  ]);
 }
 
 /** Gets the tree for all of the components' CSS. */
@@ -74,4 +105,3 @@ function getCssTree(folder) {
   }, []);
   return broccoliAutoprefixer(mergeTrees(componentCssTrees), autoprefixerOptions);
 }
-

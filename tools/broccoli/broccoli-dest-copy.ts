@@ -11,22 +11,22 @@ import {wrapDiffingPlugin, DiffingBroccoliPlugin, DiffResult} from './diffing-br
  * and tees a copy to the given path outside the tmp dir.
  */
 class DestCopy implements DiffingBroccoliPlugin {
-  constructor(private inputPath, private cachePath, private outputRoot: string) {}
+  constructor(private inputPath, private cachePath: string, private outputRoot: string) {}
 
 
   rebuild(treeDiff: DiffResult) {
     treeDiff.addedPaths.concat(treeDiff.changedPaths)
         .forEach((changedFilePath) => {
-          var destFilePath = path.join(this.outputRoot, changedFilePath);
-
+          var sourceFilePath = path.join(this.inputPath, changedFilePath);
+          var destFilePath = path.join(this.cachePath, this.outputRoot, changedFilePath);
           var destDirPath = path.dirname(destFilePath);
+
           fse.mkdirsSync(destDirPath);
-          fse.copySync(path.join(this.inputPath, changedFilePath), destFilePath);
+          fse.copySync(sourceFilePath, destFilePath);
         });
 
     treeDiff.removedPaths.forEach((removedFilePath) => {
       var destFilePath = path.join(this.outputRoot, removedFilePath);
-
       // TODO: what about obsolete directories? we are not cleaning those up yet
       fs.unlinkSync(destFilePath);
     });

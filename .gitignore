@@ -13,6 +13,10 @@
 /.packages
 /packages
 /pubspec.lock
+/src/.pub
+/src/.packages
+/src/packages
+/src/pubspec.lock
 
 
 # IDEs
