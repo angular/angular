@@ -149,7 +149,6 @@ export class DomRenderer implements Renderer {
   detachView(viewRootNodes: any[]) {
     for (var i = 0; i < viewRootNodes.length; i++) {
       var node = viewRootNodes[i];
-      DOM.remove(node);
       this.animateNodeLeave(node);
     }
   }
