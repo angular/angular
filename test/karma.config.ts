@@ -14,9 +14,9 @@ export function config(config) {
     plugins: [
       require('karma-jasmine'),
       require('karma-browserstack-launcher'),
+      require('karma-sauce-launcher'),
       require('karma-chrome-launcher'),
       require('karma-firefox-launcher'),
-      require('karma-sauce-launcher'),
     ],
     files: [
       {pattern: 'node_modules/es6-shim/es6-shim.js', included: true, watched: true},

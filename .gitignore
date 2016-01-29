@@ -8,6 +8,13 @@
 /node_modules
 /bower_components
 
+# Dart
+/.pub
+/.packages
+/packages
+/pubspec.lock
+
+
 # IDEs
 /.idea
 

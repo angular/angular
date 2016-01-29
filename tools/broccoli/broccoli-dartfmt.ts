@@ -26,7 +26,6 @@ class DartFormatter implements DiffingBroccoliPlugin {
   constructor(public inputPath: string, public cachePath: string, options) {
     if (!options.dartSDK) throw new Error("Missing Dart SDK");
     this.DARTFMT = options.dartSDK.DARTFMT;
-    this.verbose = options.logs.dartfmt;
   }
 
   rebuild(treeDiff: DiffResult): Promise<any> {

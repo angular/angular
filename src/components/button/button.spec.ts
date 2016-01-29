@@ -16,42 +16,44 @@ import {By} from 'angular2/platform/browser';
 import {MdButton} from './button';
 import {AsyncTestFn, FunctionWithParamTokens} from 'angular2/testing';
 
+export function main() {
+  describe('MdButton', () => {
+    let builder: TestComponentBuilder;
 
-describe('MdButton', () => {
-  let builder: TestComponentBuilder;
+    beforeEach(inject([TestComponentBuilder], (tcb:TestComponentBuilder) => {
+      builder = tcb;
+    }));
 
-  beforeEach(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => { builder = tcb; }));
+    describe('button[md-button]', () => {
+      it('should handle a click on the button', (done:() => void) => {
+        return builder.createAsync(TestApp).then((fixture) => {
+          let testComponent = fixture.debugElement.componentInstance;
+          let buttonDebugElement = fixture.debugElement.query(By.css('button'));
 
-  describe('button[md-button]', () => {
-    it('should handle a click on the button', (done: () => void) => {
-      return builder.createAsync(TestApp).then((fixture) => {
-        let testComponent = fixture.debugElement.componentInstance;
-        let buttonDebugElement = fixture.debugElement.query(By.css('button'));
-
-        buttonDebugElement.nativeElement.click();
-        expect(testComponent.clickCount).toBe(1);
-        done();
+          buttonDebugElement.nativeElement.click();
+          expect(testComponent.clickCount).toBe(1);
+          done();
+        });
       });
+
+      it('should not increment if disabled', (done:() => void) => {
+        return builder.createAsync(TestApp).then((fixture) => {
+          let testComponent = fixture.debugElement.componentInstance;
+          let buttonDebugElement = fixture.debugElement.query(By.css('button'));
+
+          testComponent.isDisabled = true;
+          fixture.detectChanges();
+
+          buttonDebugElement.nativeElement.click();
+
+          expect(testComponent.clickCount).toBe(0);
+          done();
+        })
+      });
+
     });
-
-    it('should not increment if disabled', (done: () => void) => {
-      return builder.createAsync(TestApp).then((fixture) => {
-        let testComponent = fixture.debugElement.componentInstance;
-        let buttonDebugElement = fixture.debugElement.query(By.css('button'));
-
-        testComponent.isDisabled = true;
-        fixture.detectChanges();
-
-        buttonDebugElement.nativeElement.click();
-
-        expect(testComponent.clickCount).toBe(0);
-        done();
-      })
-    });
-
   });
-});
-
+}
 
 /** Shortcut function to use instead of `injectAsync` for less boilerplate on each `it`. */
 function testAsync(fn: Function): FunctionWithParamTokens {

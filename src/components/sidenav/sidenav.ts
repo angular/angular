@@ -61,16 +61,16 @@ export class MdSidenav {
   @Input('opened') private opened_: boolean;
 
   /** Event emitted when the sidenav is being opened. Use this to synchronize animations. */
-  @Output('open-start') onOpenStart = new EventEmitter<void>();
+  @Output('open-start') onOpenStart = new EventEmitter<Object>();
 
   /** Event emitted when the sidenav is fully opened. */
-  @Output('open') onOpen = new EventEmitter<void>();
+  @Output('open') onOpen = new EventEmitter<Object>();
 
   /** Event emitted when the sidenav is being closed. Use this to synchronize animations. */
-  @Output('close-start') onCloseStart = new EventEmitter<void>();
+  @Output('close-start') onCloseStart = new EventEmitter<Object>();
 
   /** Event emitted when the sidenav is fully closed. */
-  @Output('close') onClose = new EventEmitter<void>();
+  @Output('close') onClose = new EventEmitter<Object>();
 
 
   /**
@@ -91,7 +91,7 @@ export class MdSidenav {
 
   /** Open this sidenav, and return a Promise that will resolve when it's fully opened (or get
    * rejected if it didn't). */
-  open(): Promise<void> {
+  open(): Promise<{}> {
     return this.toggle(true);
   }
 
@@ -99,7 +99,7 @@ export class MdSidenav {
    * Close this sidenav, and return a Promise that will resolve when it's fully closed (or get
    * rejected if it didn't).
    */
-  close(): Promise<void> {
+  close(): Promise<{}> {
     return this.toggle(false);
   }
 
@@ -108,11 +108,11 @@ export class MdSidenav {
    * close() when it's closed.
    * @param isOpen
    */
-  toggle(isOpen: boolean = !this.opened): Promise<void> {
+  toggle(isOpen: boolean = !this.opened): Promise<{}> {
     // Shortcut it if we're already opened.
     if (isOpen === this.opened) {
       if (!this.transition_) {
-        return Promise.resolve();
+        return Promise.resolve(null);
       } else {
         return isOpen ? this.openPromise_ : this.closePromise_;
       }
@@ -132,7 +132,7 @@ export class MdSidenav {
 
     if (isOpen) {
       if (!this.openPromise_) {
-        this.openPromise_ = new Promise<void>((resolve, reject) => {
+        this.openPromise_ = new Promise<{}>((resolve, reject) => {
           this.openPromiseResolve_ = resolve;
           this.openPromiseReject_ = reject;
         });
@@ -140,7 +140,7 @@ export class MdSidenav {
       return this.openPromise_;
     } else {
       if (!this.closePromise_) {
-        this.closePromise_ = new Promise<void>((resolve, reject) => {
+        this.closePromise_ = new Promise<{}>((resolve, reject) => {
           this.closePromiseResolve_ = resolve;
           this.closePromiseReject_ = reject;
         });
@@ -225,10 +225,10 @@ export class MdSidenav {
   }
 
   private transition_: boolean = false;
-  private openPromise_: Promise<void>;
+  private openPromise_: Promise<{}>;
   private openPromiseResolve_: () => void;
   private openPromiseReject_: () => void;
-  private closePromise_: Promise<void>;
+  private closePromise_: Promise<{}>;
   private closePromiseResolve_: () => void;
   private closePromiseReject_: () => void;
 }

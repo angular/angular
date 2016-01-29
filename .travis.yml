@@ -10,6 +10,7 @@ node_js:
 cache:
   directories:
     - node_modules
+    - $HOME/.pub-cache
 
 env:
   global:
@@ -19,6 +20,8 @@ env:
   - BROWSER_STACK_USERNAME=angularteam1
   - BROWSER_STACK_ACCESS_KEY=BWCd4SynLzdDcv8xtzsB
   - ARCH=linux-x64
+  - DART_DEV_VERSION=latest
+  - DART_STABLE_VERSION=latest
   # Token for tsd to increase github rate limit
   # See https://github.com/DefinitelyTyped/tsd#tsdrc
   # This does not use http://docs.travis-ci.com/user/environment-variables/#Secure-Variables
@@ -32,6 +35,7 @@ env:
     # Order: a slower build first, so that we don't occupy an idle travis worker waiting for others to complete.
     - MODE=saucelabs_required
     - MODE=browserstack_required
+    - MODE=dart_required DART_CHANNEL=stable DART_VERSION=$DART_STABLE_VERSION
     - MODE=saucelabs_optional
     - MODE=browserstack_optional
 
@@ -39,6 +43,10 @@ matrix:
   allow_failures:
   - env: "MODE=saucelabs_optional"
   - env: "MODE=browserstack_optional"
+
+before_install:
+  - ./scripts/ci/install_dart.sh
+
 
 install:
   - npm install
@@ -52,7 +60,7 @@ before_script:
 
 
 script:
-- ./scripts/ci/build-and-test.sh ${MODE}
+- ./scripts/ci/build-and-test.sh
 
 cache:
   directories:

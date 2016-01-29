@@ -1,6 +1,6 @@
 Error.stackTraceLimit = Infinity;
 
-jasmine.DEFAULT_TIMEOUT_INTERVAL = 1000;
+jasmine.DEFAULT_TIMEOUT_INTERVAL = 2000;
 
 __karma__.loaded = function() {};
 
@@ -49,7 +49,13 @@ System.import('angular2/platform/browser').then(function(browser_adapter) {
     Object.keys(window.__karma__.files)
       .filter(isSpecFile)
       .map(function(moduleName) {
-        return System.import(moduleName);
+        return System.import(moduleName).then(function(module) {
+          if (module.hasOwnProperty('main')) {
+            return module.main();
+          } else {
+            return module;
+          }
+        });
       }));
 }).then(function() {
   __karma__.start();

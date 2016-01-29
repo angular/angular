@@ -16,7 +16,7 @@ import {OneOf} from "../../core/annotations/one-of";
 export class Dir {
   @Input('dir') @OneOf(['ltr', 'rtl']) private dir_: string = 'ltr';
 
-  @Output() dirChange = new EventEmitter<void>();
+  @Output() dirChange = new EventEmitter<{}>();
 
   @HostBinding('attr.dir')
   get dir(): string {
