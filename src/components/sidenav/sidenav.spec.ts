@@ -37,7 +37,9 @@ function waitOnEvent(fixture: ComponentFixture,
   // Wait for the animation end.
   let completer = PromiseWrapper.completer();
   let component: any = fixture.debugElement.query(by).componentInstance;
-  component[propertyName].subscribe(completer.resolve);
+  component[propertyName].subscribe(() => {
+    completer.resolve();
+  });
   return completer.promise;
 }
 
@@ -59,16 +61,18 @@ export function main() {
           .then((f) => {
             fixture = f;
             testComponent = fixture.debugElement.componentInstance;
-
+            fixture.detectChanges();
+            return wait(1);
+          }).then((f) => {
             let openButtonElement = fixture.debugElement.query(By.css('.open'));
             openButtonElement.nativeElement.click();
-          })
-          .then((_: any) => { wait(1); })
-          .then((_: any) => {
+            fixture.detectChanges();
+            return wait(1);
+          }).then((_: any) => {
             expect(testComponent.openStartCount).toBe(1);
             expect(testComponent.openCount).toBe(0);
           })
-          .then((_: any) => waitOnEvent(fixture, By.directive(MdSidenav), 'onOpen'))
+          .then((_: any) => { return waitOnEvent(fixture, By.directive(MdSidenav), 'onOpen'); })
           .then((_: any) => {
             expect(testComponent.openStartCount).toBe(1);
             expect(testComponent.openCount).toBe(1);
@@ -83,6 +87,8 @@ export function main() {
             // Close it.
             let closeButtonElement = fixture.debugElement.query(By.css('.close'));
             closeButtonElement.nativeElement.click();
+            fixture.detectChanges();
+            return wait(1);
           })
           .then((_: any) => wait(1))
           .then((_: any) => {
@@ -91,7 +97,7 @@ export function main() {
             expect(testComponent.closeStartCount).toBe(1);
             expect(testComponent.closeCount).toBe(0);
           })
-          .then((_: any) => waitOnEvent(fixture, By.directive(MdSidenav), 'onClose'))
+          .then((_: any) => { return waitOnEvent(fixture, By.directive(MdSidenav), 'onClose'); })
           .then((_: any) => fixture.detectChanges())
           .then((_: any) => {
             expect(testComponent.openStartCount).toBe(1);
@@ -123,7 +129,7 @@ export function main() {
               promise = sidenav.open();
               promise.then((_: any) => called = true);
             })
-            .then((_: any) => wait(1))
+            .then((_: any) => { return wait(1); })
             .then((_: any) => fixture.detectChanges())
             .then((_: any) => {
               expect(called).toBe(false);
@@ -136,7 +142,7 @@ export function main() {
               promise = sidenav.close();
               promise.then((_: any) => called = true);
             })
-            .then((_: any) => wait(1))
+            .then((_: any) => { return wait(1); })
             .then((_: any) => fixture.detectChanges())
             .then((_: any) => {
               expect(called).toBe(false);
@@ -160,7 +166,7 @@ export function main() {
             promise = sidenav.open();
             expect(sidenav.open()).toBe(promise);
           })
-          .then((_: any) => wait(1))
+          .then((_: any) => { return wait(1); })
           .then((_: any) => {
             fixture.detectChanges();
             return promise;
@@ -195,10 +201,10 @@ export function main() {
                   openCancelled = true;
                 });
             })
-            .then((_: any) => wait(1))
+            .then((_: any) => { return wait(1); })
             .then((_: any) => fixture.detectChanges())
             // We need to wait for the browser to start the transition.
-            .then((_: any) => wait(50))
+            .then((_: any) => { return wait(50); })
             .then((_: any) => {
               closePromise = sidenav.close().then((_: any) => {
                 closeCalled = true;
@@ -237,7 +243,7 @@ export function main() {
               /** First, open it. */
               openPromise = sidenav.open();
             })
-            .then((_: any) => wait(1))
+            .then((_: any) => { return wait(1); })
             .then((_: any) => {
               fixture.detectChanges();
               return openPromise;
@@ -251,10 +257,10 @@ export function main() {
                   closeCancelled = true;
                 });
             })
-            .then((_: any) => wait(1))
+            .then((_: any) => { return wait(1); })
             .then((_: any) => fixture.detectChanges())
             // We need to wait for the browser to start the transition.
-            .then((_: any) => wait(50))
+            .then((_: any) => { return wait(50); })
             .then((_: any) => {
               openPromise = sidenav.open().then((_: any) => {
                 openCalled = true;
