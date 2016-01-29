@@ -13,4 +13,4 @@ transformers:
 - angular2:
     platform_directives: 'package:angular2/src/common/directives.dart#CORE_DIRECTIVES'
     entry_points:
-        - web/src/demo-app/demo-app.dart
+        - lib/demo-app/demo-app.dart

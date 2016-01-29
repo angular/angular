@@ -38,3 +38,6 @@ Here's a list of gotchas to keep in mind when writing TypeScript code that will 
 * **Accessing any platform primitive must be done through a Facade.** For example, Promises or DOM manipulation. Facades are going to be provided on a need-to-have basis.
 * **Union types are a no-go.** Dart has them on its roadmap, but for now we must avoid them.
 * **Dart files cannot have the same name as a reserved keyword.** For example, `for.dart`, `switch.dart` or `class.dart` are all invalid names. Since the TypeScript files have the same name when transpiled to Dart, they also have the same restriction.
+* **Default values need to be constants.** This mean that code like `function myFunction(arg1: string = callToSomething()) {}` will not compile.
+* **The const keyword must have a const value.** Because of that, we cannot do `const x = a + b;` even if the value of `x`, `a` and `b` will not change.
+* **Lambdas need to abide to the type required.** Meaning that if a function requires a function that takes one argument, the lambda cannot be `() => {}`. Use `_` for temporary parameters. This is notable in Promises.

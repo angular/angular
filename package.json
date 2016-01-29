@@ -9,7 +9,7 @@
   },
   "scripts": {
     "build": "ng build",
-    "dartanalyzer": "ts-node scripts/ci/dart_analyzer",
+    "dartanalyzer": "cd dist/dart && pub install && cd ../.. && ts-node scripts/ci/dart_analyzer",
     "demo-app": "cd src && ng serve",
     "test": "karma start test/karma.conf.js"
   },
@@ -51,7 +51,7 @@
     "strip-ansi": "^3.0.0",
     "symlink-or-copy": "^1.0.1",
     "ts-node": "^0.5.5",
-    "ts2dart": "^0.7.20",
+    "ts2dart": "^0.7.24",
     "tslint": "^3.2.2",
     "typescript": "^1.7.5",
     "which": "^1.2.4"

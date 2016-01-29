@@ -16,14 +16,14 @@ import {OneOf} from "../../core/annotations/one-of";
 export class Dir {
   @Input('dir') @OneOf(['ltr', 'rtl']) private dir_: string = 'ltr';
 
-  @Output() dirChange = new EventEmitter<{}>();
+  @Output() dirChange = new EventEmitter<void>();
 
   @HostBinding('attr.dir')
   get dir(): string {
     return this.dir_;
   }
   set dir(v: string) {
-    const old = this.dir_;
+    let old = this.dir_;
     this.dir_ = v;
     if (old != this.dir_) {
       this.dirChange.emit(null);

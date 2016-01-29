@@ -15,13 +15,17 @@ import {By} from 'angular2/platform/browser';
 
 import {MdSidenav, MdSidenavLayout, MD_SIDENAV_DIRECTIVES} from './sidenav';
 import {AsyncTestFn, FunctionWithParamTokens} from 'angular2/testing';
-import {ComponentFixture} from "angular2/testing";
-import {EventEmitter} from "angular2/core";
-import {Predicate} from "angular2/src/facade/collection";
+import {ComponentFixture} from 'angular2/testing';
+import {EventEmitter} from 'angular2/core';
+import {Predicate} from 'angular2/src/facade/collection';
+import {PromiseWrapper} from 'angular2/src/facade/promise';
+import {TimerWrapper} from 'angular2/src/facade/async';
 
 
 function wait(msec: number) {
-  return new Promise(resolve => window.setTimeout(() => resolve(), msec));
+  let completer = PromiseWrapper.completer();
+  TimerWrapper.setTimeout(completer.resolve, msec);
+  return completer.promise;
 }
 
 
@@ -31,10 +35,10 @@ function waitOnEvent(fixture: ComponentFixture,
   fixture.detectChanges();
 
   // Wait for the animation end.
-  return new Promise(resolve => {
-    const component: any = fixture.debugElement.query(by).componentInstance;
-    component[propertyName].subscribe(resolve);
-  });
+  let completer = PromiseWrapper.completer();
+  let component: any = fixture.debugElement.query(by).componentInstance;
+  component[propertyName].subscribe(completer.resolve);
+  return completer.promise;
 }
 
 
@@ -56,47 +60,47 @@ export function main() {
             fixture = f;
             testComponent = fixture.debugElement.componentInstance;
 
-            const openButtonElement = fixture.debugElement.query(By.css('.open'));
+            let openButtonElement = fixture.debugElement.query(By.css('.open'));
             openButtonElement.nativeElement.click();
           })
-          .then(() => wait(1))
-          .then(() => {
+          .then((_: any) => { wait(1); })
+          .then((_: any) => {
             expect(testComponent.openStartCount).toBe(1);
             expect(testComponent.openCount).toBe(0);
           })
-          .then(() => waitOnEvent(fixture, By.directive(MdSidenav), 'onOpen'))
-          .then(() => {
+          .then((_: any) => waitOnEvent(fixture, By.directive(MdSidenav), 'onOpen'))
+          .then((_: any) => {
             expect(testComponent.openStartCount).toBe(1);
             expect(testComponent.openCount).toBe(1);
             expect(testComponent.closeStartCount).toBe(0);
             expect(testComponent.closeCount).toBe(0);
 
-            const sidenavElement = fixture.debugElement.query(By.css('md-sidenav'));
-            const sidenavBackdropElement = fixture.debugElement.query(By.css('.md-sidenav-backdrop'));
+            let sidenavElement = fixture.debugElement.query(By.css('md-sidenav'));
+            let sidenavBackdropElement = fixture.debugElement.query(By.css('.md-sidenav-backdrop'));
             expect(window.getComputedStyle(sidenavElement.nativeElement).visibility).toEqual('visible');
             expect(window.getComputedStyle(sidenavBackdropElement.nativeElement).visibility).toEqual('visible');
 
             // Close it.
-            const closeButtonElement = fixture.debugElement.query(By.css('.close'));
+            let closeButtonElement = fixture.debugElement.query(By.css('.close'));
             closeButtonElement.nativeElement.click();
           })
-          .then(() => wait(1))
-          .then(() => {
+          .then((_: any) => wait(1))
+          .then((_: any) => {
             expect(testComponent.openStartCount).toBe(1);
             expect(testComponent.openCount).toBe(1);
             expect(testComponent.closeStartCount).toBe(1);
             expect(testComponent.closeCount).toBe(0);
           })
-          .then(() => waitOnEvent(fixture, By.directive(MdSidenav), 'onClose'))
-          .then(() => fixture.detectChanges())
-          .then(() => {
+          .then((_: any) => waitOnEvent(fixture, By.directive(MdSidenav), 'onClose'))
+          .then((_: any) => fixture.detectChanges())
+          .then((_: any) => {
             expect(testComponent.openStartCount).toBe(1);
             expect(testComponent.openCount).toBe(1);
             expect(testComponent.closeStartCount).toBe(1);
             expect(testComponent.closeCount).toBe(1);
 
-            const sidenavElement = fixture.debugElement.query(By.css('md-sidenav'));
-            const sidenavBackdropElement = fixture.debugElement.query(By.css('.md-sidenav-backdrop'));
+            let sidenavElement = fixture.debugElement.query(By.css('md-sidenav'));
+            let sidenavBackdropElement = fixture.debugElement.query(By.css('.md-sidenav-backdrop'));
             expect(window.getComputedStyle(sidenavElement.nativeElement).visibility).toEqual('hidden');
             expect(window.getComputedStyle(sidenavBackdropElement.nativeElement).visibility).toEqual('hidden');
           })
@@ -105,11 +109,10 @@ export function main() {
 
       it('open() and close() return a promise that resolves after the animation ended',
         (done: any) => {
-          let testComponent: BasicTestApp;
           let fixture: ComponentFixture;
           let sidenav: MdSidenav;
 
-          let promise: Promise<{}>;
+          let promise: Promise<void>;
           let called: boolean = false;
 
           return builder.createAsync(BasicTestApp)
@@ -118,38 +121,36 @@ export function main() {
               sidenav = fixture.debugElement.query(By.directive(MdSidenav)).componentInstance;
 
               promise = sidenav.open();
-              promise.then(() => called = true);
+              promise.then((_: any) => called = true);
             })
-            .then(() => wait(1))
-            .then(() => fixture.detectChanges())
-            .then(() => {
+            .then((_: any) => wait(1))
+            .then((_: any) => fixture.detectChanges())
+            .then((_: any) => {
               expect(called).toBe(false);
             })
-            .then(() => promise)
-            .then(() => expect(called).toBe(true))
-            .then(() => {
+            .then((_: any) => promise)
+            .then((_: any) => expect(called).toBe(true))
+            .then((_: any) => {
               // Close it now.
               called = false;
               promise = sidenav.close();
-              promise.then(() => called = true);
+              promise.then((_: any) => called = true);
             })
-            .then(() => wait(1))
-            .then(() => fixture.detectChanges())
-            .then(() => {
+            .then((_: any) => wait(1))
+            .then((_: any) => fixture.detectChanges())
+            .then((_: any) => {
               expect(called).toBe(false);
             })
-            .then(() => promise)
-            .then(() => expect(called).toBe(true))
+            .then((_: any) => promise)
+            .then((_: any) => expect(called).toBe(true))
             .then(done, done.fail);
         }, 8000);
 
       it('open() twice returns the same promise', (done: any) => {
-        let testComponent: BasicTestApp;
         let fixture: ComponentFixture;
         let sidenav: MdSidenav;
 
-        let promise: Promise<{}>;
-        let called: boolean = false;
+        let promise: Promise<void>;
 
         return builder.createAsync(BasicTestApp)
           .then((f) => {
@@ -159,12 +160,12 @@ export function main() {
             promise = sidenav.open();
             expect(sidenav.open()).toBe(promise);
           })
-          .then(() => wait(1))
-          .then(() => {
+          .then((_: any) => wait(1))
+          .then((_: any) => {
             fixture.detectChanges();
             return promise;
           })
-          .then(() => {
+          .then((_: any) => {
             promise = sidenav.close();
             expect(sidenav.close()).toBe(promise);
           })
@@ -173,12 +174,11 @@ export function main() {
 
       it('open() then close() cancel animations when called too fast',
         (done: any) => {
-          let testComponent: BasicTestApp;
           let fixture: ComponentFixture;
           let sidenav: MdSidenav;
 
-          let openPromise: Promise<any>;
-          let closePromise: Promise<any>;
+          let openPromise: Promise<void>;
+          let closePromise: Promise<void>;
           let openCalled: boolean = false;
           let openCancelled: boolean = false;
           let closeCalled: boolean = false;
@@ -188,28 +188,28 @@ export function main() {
               fixture = f;
               sidenav = fixture.debugElement.query(By.directive(MdSidenav)).componentInstance;
 
-              openPromise = sidenav.open().then(() => {
+              openPromise = sidenav.open().then((_: any) => {
                   openCalled = true;
                 },
                 () => {
                   openCancelled = true;
                 });
             })
-            .then(() => wait(1))
-            .then(() => fixture.detectChanges())
+            .then((_: any) => wait(1))
+            .then((_: any) => fixture.detectChanges())
             // We need to wait for the browser to start the transition.
-            .then(() => wait(50))
-            .then(() => {
-              closePromise = sidenav.close().then(() => {
+            .then((_: any) => wait(50))
+            .then((_: any) => {
+              closePromise = sidenav.close().then((_: any) => {
                 closeCalled = true;
               }, done.fail);
               return wait(1);
             })
-            .then(() => {
+            .then((_: any) => {
               fixture.detectChanges();
               return closePromise;
             })
-            .then(() => {
+            .then((_: any) => {
               expect(openCalled).toBe(false);
               expect(openCancelled).toBe(true);
               expect(closeCalled).toBe(true);
@@ -223,8 +223,8 @@ export function main() {
           let fixture: ComponentFixture;
           let sidenav: MdSidenav;
 
-          let openPromise: Promise<any>;
-          let closePromise: Promise<any>;
+          let openPromise: Promise<void>;
+          let closePromise: Promise<void>;
           let closeCalled: boolean = false;
           let closeCancelled: boolean = false;
           let openCalled: boolean = false;
@@ -237,35 +237,35 @@ export function main() {
               /** First, open it. */
               openPromise = sidenav.open();
             })
-            .then(() => wait(1))
-            .then(() => {
+            .then((_: any) => wait(1))
+            .then((_: any) => {
               fixture.detectChanges();
               return openPromise;
             })
-            .then(() => {
+            .then((_: any) => {
               // Then close and check behavior.
-              closePromise = sidenav.close().then(() => {
+              closePromise = sidenav.close().then((_: any) => {
                   closeCalled = true;
                 },
                 () => {
                   closeCancelled = true;
                 });
             })
-            .then(() => wait(1))
-            .then(() => fixture.detectChanges())
+            .then((_: any) => wait(1))
+            .then((_: any) => fixture.detectChanges())
             // We need to wait for the browser to start the transition.
-            .then(() => wait(50))
-            .then(() => {
-              openPromise = sidenav.open().then(() => {
+            .then((_: any) => wait(50))
+            .then((_: any) => {
+              openPromise = sidenav.open().then((_: any) => {
                 openCalled = true;
               }, done.fail);
               return wait(1);
             })
-            .then(() => {
+            .then((_: any) => {
               fixture.detectChanges();
               return openPromise;
             })
-            .then(() => {
+            .then((_: any) => {
               expect(closeCalled).toBe(false);
               expect(closeCancelled).toBe(true);
               expect(openCalled).toBe(true);

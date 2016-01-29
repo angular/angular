@@ -57,7 +57,7 @@ function getDartTree(root) {
 
   const dartSources = new BroccoliFunnel(root, {
     include: ['**/*.dart'],
-    destDir: 'dart/web',
+    destDir: 'dart/lib',
   });
 
   const allDartFiles = mergeTrees([
@@ -79,7 +79,7 @@ function getDartTree(root) {
   return mergeTrees([
     dartSources,
     pubSpecTree,
-    new BroccoliDestCopy(formatter, 'dart/web'),
+    new BroccoliDestCopy(formatter, 'dart/lib'),
   ]);
 }
 

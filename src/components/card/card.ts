@@ -1,5 +1,5 @@
 import {Component, View, ViewEncapsulation} from 'angular2/core';
-import {CONST_EXPR, Type} from 'angular2/src/facade/lang';
+import {CONST_EXPR} from 'angular2/src/facade/lang';
 
 /*
 
@@ -66,6 +66,5 @@ TODO(kara): update link to demo site when it exists
 })
 export class MdCardTitleGroup {}
 
-export const MD_CARD_DIRECTIVES: Type[] =
-    CONST_EXPR([MdCard, MdCardHeader, MdCardTitleGroup]);
+export const MD_CARD_DIRECTIVES: any[] = CONST_EXPR([MdCard, MdCardHeader, MdCardTitleGroup]);
 
