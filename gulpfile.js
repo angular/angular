@@ -826,7 +826,7 @@ gulp.task('test.unit.js/ci', function(done) {
                  reporters: ['dots'],
                  browsers: browserConf.browsersToRun
                },
-               done)
+               function(err) { done(); })
       .start();
 });
 
