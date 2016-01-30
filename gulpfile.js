@@ -132,7 +132,8 @@ var CONFIG = {
       dev: {es6: 'dist/js/dev/es6', es5: 'dist/js/dev/es5'},
       prod: {es6: 'dist/js/prod/es6', es5: 'dist/js/prod/es5'},
       cjs: 'dist/js/cjs',
-      dart2js: 'dist/js/dart2js'
+      dart2js: 'dist/js/dart2js',
+      dart_dev_compiler: 'dist/js/ddc'
     },
     dart: 'dist/dart',
     docs: 'dist/docs',
@@ -369,6 +370,10 @@ function jsServeDartJs() {
   return jsserve(gulp, gulpPlugins, {path: CONFIG.dest.js.dart2js, port: 8002})();
 }
 
+function jsServeDartDevCompiler() {
+  return jsserve(gulp, gulpPlugins, {path: CONFIG.dest.js.dart_dev_compiler, port: 8003})();
+}
+
 function proxyServeDart() {
   return jsserve(gulp, gulpPlugins, {
     port: 8002,
@@ -406,6 +411,8 @@ gulp.task('serve.e2e.prod', ['build.js.prod', 'build.js.cjs'], function(neverDon
 });
 
 gulp.task('serve.js.dart2js', jsServeDartJs);
+
+gulp.task('serve.js.ddc', jsServeDartDevCompiler);
 
 gulp.task('!proxyServeDart', proxyServeDart);
 
