@@ -1,15 +1,9 @@
 import {
-  AsyncTestCompleter,
   beforeEach,
-  ddescribe,
   describe,
-  el,
   expect,
-  iit,
   inject,
   it,
-  xit,
-  TestComponentBuilder,
   beforeEachProviders
 } from 'angular2/testing_internal';
 import {MapWrapper} from 'angular2/src/facade/collection';
@@ -21,14 +15,10 @@ import {TemplateParser} from 'angular2/src/compiler/template_parser';
 import {
   Parser,
   Lexer,
-  ChangeDetectorDefinition,
   ChangeDetectorGenConfig,
   DynamicProtoChangeDetector,
   ChangeDetectionStrategy,
-  ChangeDispatcher,
-  DirectiveIndex,
   Locals,
-  BindingTarget,
   ChangeDetector
 } from 'angular2/src/core/change_detection/change_detection';
 import {Pipes} from 'angular2/src/core/change_detection/pipes';

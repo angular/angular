@@ -36,11 +36,7 @@ import {TemplateParser} from 'angular2/src/compiler/template_parser';
 import {
   ChangeDetectorGenConfig,
   ChangeDetectionStrategy,
-  ChangeDispatcher,
-  DirectiveIndex,
   Locals,
-  BindingTarget,
-  ChangeDetector
 } from 'angular2/src/core/change_detection/change_detection';
 
 import {evalModule} from './eval_module';
