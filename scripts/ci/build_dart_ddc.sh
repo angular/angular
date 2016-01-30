@@ -7,8 +7,9 @@ echo ===========================================================================
 
 # go to project dir
 SCRIPT_DIR=$(dirname $0)
+REPO_ROOT_DIR=`cd ${SCRIPT_DIR}/../..; pwd`
 source $SCRIPT_DIR/env_dart.sh
-cd $SCRIPT_DIR/../..
+cd $REPO_ROOT_DIR
 
 # Variables
 DDC_TOTAL_WARNING_CAP="210"
@@ -29,11 +30,23 @@ git clone https://github.com/dart-lang/dev_compiler.git tmp/dev_compiler
 ./node_modules/.bin/gulp build/pubspec.dart
 node ./scripts/ci/dart_ddc/pubspec_for_ddc.js \
     --pubspec-file=dist/dart/playground/pubspec.yaml
-
-# Compile playground
 cd dist/dart/playground
 $PUB build --mode=debug
 cd build/web
+
+# TODO: temporarily remove references to dart.js as ddc doesn't do it
+# automatically yet (https://github.com/dart-lang/dev_compiler/issues/437)
+echo `pwd`
+for htmlFile in `find ./src -name '*.html'`; do
+  tmpFile=$REPO_ROOT_DIR/tmp/scriptless_html.tmp
+  cat $htmlFile | grep -vE '<script.*dart\.js' >$tmpFile
+  mv $tmpFile $htmlFile
+done
+
+##############################################################################
+# Analyze code
+##############################################################################
+
 LOG_FILE="analyzer.log"
 set +e
 $DART_SDK/bin/dart $DDC_DIR/bin/dartdevc.dart \
@@ -90,6 +103,64 @@ then
 else
   echo "Warning count ok"
 fi
+
+
+##############################################################################
+# Run e2e tests
+##############################################################################
+
+DIST_DIR="${REPO_ROOT_DIR}/dist/js/ddc"
+
+# Build the apps (again)
+# TODO: ddc does not yet support compiling multiple html files. Ideally we
+# could build everything during analysis above.
+# See: https://github.com/dart-lang/dev_compiler/issues/430
+
+ln -s `pwd`/packages src/hello_world/packages
+
+set +e
+OUT_DIR="${DIST_DIR}/playground/src/hello_world"
+mkdir -p $OUT_DIR
+$DART_SDK/bin/dart $DDC_DIR/bin/dartdevc.dart \
+  --force-compile \
+  --dart-sdk=$DART_SDK_LIB_SEARCH_PATH -o $OUT_DIR \
+  src/hello_world/index.html
+EXIT_CODE=`echo $?`
+set -e
+
+if [[ "$EXIT_CODE" -ne "0" && "$EXIT_CODE" -ne "1" ]]
+then
+  echo "DDC compiler crashed with exit code $EXIT_CODE"
+  exit 1
+fi
+
+
+# Run e2e tests
+cd $REPO_ROOT_DIR
+
+./node_modules/.bin/webdriver-manager update
+
+function killServer () {
+  kill $serverPid
+}
+
+./node_modules/.bin/gulp serve.js.ddc&
+serverPid=$!
+
+trap killServer EXIT
+
+# wait for server to come up
+sleep 10
+
+function runSpec {
+  SPEC=$1
+  ./node_modules/.bin/protractor protractor-ddc.conf.js \
+      --browsers=${E2E_BROWSERS:-Dartium} \
+      --spec=$SPEC
+}
+
+# TODO: add more e2e tests
+runSpec hello_world/hello_world_spec.js
 
 echo 'Dart DDC build finished'
 exit $EXIT_CODE
