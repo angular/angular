@@ -1,6 +1,6 @@
 {
   "name": "angular-srcs",
-  "version": "2.0.0-beta.1",
+  "version": "2.0.0-beta.2",
   "dependencies": {
     "abbrev": {
       "version": "1.0.7",
@@ -74,19 +74,19 @@
       "resolved": "https://registry.npmjs.org/amdefine/-/amdefine-1.0.0.tgz"
     },
     "angular": {
-      "version": "1.4.8",
-      "from": "angular@>=1.4.7 <2.0.0",
-      "resolved": "https://registry.npmjs.org/angular/-/angular-1.4.8.tgz"
+      "version": "1.5.0-rc.2",
+      "from": "angular@1.5.0-rc.2",
+      "resolved": "https://registry.npmjs.org/angular/-/angular-1.5.0-rc.2.tgz"
     },
     "angular-animate": {
-      "version": "1.4.8",
-      "from": "angular-animate@>=1.4.7 <2.0.0",
-      "resolved": "https://registry.npmjs.org/angular-animate/-/angular-animate-1.4.8.tgz"
+      "version": "1.5.0-rc.2",
+      "from": "angular-animate@1.5.0-rc.2",
+      "resolved": "https://registry.npmjs.org/angular-animate/-/angular-animate-1.5.0-rc.2.tgz"
     },
     "angular-mocks": {
-      "version": "1.4.8",
-      "from": "angular-mocks@>=1.4.7 <2.0.0",
-      "resolved": "https://registry.npmjs.org/angular-mocks/-/angular-mocks-1.4.8.tgz"
+      "version": "1.5.0-rc.2",
+      "from": "angular-mocks@1.5.0-rc.2",
+      "resolved": "https://registry.npmjs.org/angular-mocks/-/angular-mocks-1.5.0-rc.2.tgz"
     },
     "ansi": {
       "version": "0.3.0",
@@ -2659,7 +2659,8 @@
       "dependencies": {
         "mime-db": {
           "version": "1.20.0",
-          "from": "mime-db@>=1.19.0 <2.0.0"
+          "from": "mime-db@1.20.0",
+          "resolved": "https://registry.npmjs.org/mime-db/-/mime-db-1.20.0.tgz"
         }
       }
     },
@@ -7809,7 +7810,8 @@
         },
         "mime-types": {
           "version": "2.1.8",
-          "from": "mime-types@>=2.1.4 <2.2.0"
+          "from": "mime-types@2.1.8",
+          "resolved": "https://registry.npmjs.org/mime-types/-/mime-types-2.1.8.tgz"
         }
       }
     },
@@ -8505,7 +8507,15 @@
     },
     "ts-api-guardian": {
       "version": "0.0.2",
-      "from": "ts-api-guardian@0.0.2"
+      "from": "ts-api-guardian@0.0.2",
+      "resolved": "https://registry.npmjs.org/ts-api-guardian/-/ts-api-guardian-0.0.2.tgz",
+      "dependencies": {
+        "typescript": {
+          "version": "1.7.3",
+          "from": "typescript@1.7.3",
+          "resolved": "https://registry.npmjs.org/typescript/-/typescript-1.7.3.tgz"
+        }
+      }
     },
     "ts2dart": {
       "version": "0.7.19",
