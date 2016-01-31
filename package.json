@@ -39,9 +39,9 @@
     "zone.js": "0.5.13"
   },
   "devDependencies": {
-    "angular": "^1.4.7",
-    "angular-animate": "^1.4.7",
-    "angular-mocks": "^1.4.7",
+    "angular": "^1.5.0",
+    "angular-animate": "^1.5.0",
+    "angular-mocks": "^1.5.0",
     "base64-js": "^0.0.8",
     "bower": "^1.3.12",
     "broccoli": "^0.16.9",
