@@ -44,7 +44,6 @@ describe('router', function () {
     expect(elt.text()).toBe('Home');
   }));
 
-
   it('should bind the component to the current router', inject(function($location) {
     var router;
     registerComponent('homeCmp', {
@@ -72,6 +71,28 @@ describe('router', function () {
     expect(homeElement.text()).toBe('Home');
     expect(homeElement.isolateScope().$ctrl.router).toBeDefined();
     expect(router).toBeDefined();
+  }));
+
+  it('should work when an async route is provided route data', inject(function($location, $q) {
+    registerDirective('homeCmp', {
+      template: 'Home ({{homeCmp.isAdmin}})',
+      $routerOnActivate: function(next, prev) {
+        this.isAdmin = next.routeData.data.isAdmin;
+      }
+    });
+
+    registerDirective('app', {
+      template: '<div ng-outlet></div>',
+      $routeConfig: [
+        { path: '/', loader: function() { return $q.when('homeCmp'); }, data: { isAdmin: true } }
+      ]
+    });
+
+    compile('<app></app>');
+
+    $location.path('/');
+    $rootScope.$digest();
+    expect(elt.text()).toBe('Home (true)');
   }));
 
   function registerDirective(name, options) {
