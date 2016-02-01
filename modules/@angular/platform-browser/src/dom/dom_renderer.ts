@@ -35,16 +35,16 @@ const TEMPLATE_COMMENT_TEXT = 'template bindings={}';
 var TEMPLATE_BINDINGS_EXP = /^template bindings=(.*)$/g;
 
 export abstract class DomRootRenderer implements RootRenderer {
-  private _registeredComponents: Map<string, DomRenderer> = new Map<string, DomRenderer>();
+  protected registeredComponents: Map<string, DomRenderer> = new Map<string, DomRenderer>();
 
   constructor(public document: any, public eventManager: EventManager,
               public sharedStylesHost: DomSharedStylesHost, public animate: AnimationBuilder) {}
 
   renderComponent(componentProto: RenderComponentType): Renderer {
-    var renderer = this._registeredComponents.get(componentProto.id);
+    var renderer = this.registeredComponents.get(componentProto.id);
     if (isBlank(renderer)) {
       renderer = new DomRenderer(this, componentProto);
-      this._registeredComponents.set(componentProto.id, renderer);
+      this.registeredComponents.set(componentProto.id, renderer);
     }
     return renderer;
   }
