@@ -14,7 +14,7 @@ import {
 } from 'angular2/testing_internal';
 
 import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
-import {Type, isPresent, isBlank, stringify, isString} from 'angular2/src/facade/lang';
+import {Type, isPresent, isBlank, stringify, isString, IS_DART} from 'angular2/src/facade/lang';
 import {
   MapWrapper,
   SetWrapper,
@@ -58,6 +58,11 @@ var REFLECTION_CAPS_MODULE_REF =
     moduleRef(`package:angular2/src/core/reflection/reflection_capabilities${MODULE_SUFFIX}`);
 
 export function main() {
+  // Dart's isolate support is broken, and these tests will be obsolote soon with
+  // https://github.com/angular/angular/issues/6270
+  if (IS_DART) {
+    return;
+  }
   describe('TemplateCompiler', () => {
     var compiler: TemplateCompiler;
     var runtimeMetadataResolver: RuntimeMetadataResolver;

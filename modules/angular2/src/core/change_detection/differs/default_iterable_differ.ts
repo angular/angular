@@ -22,7 +22,7 @@ import {IterableDiffer, IterableDifferFactory} from '../differs/iterable_differs
 @CONST()
 export class DefaultIterableDifferFactory implements IterableDifferFactory {
   supports(obj: Object): boolean { return isListLikeIterable(obj); }
-  create(cdRef: ChangeDetectorRef): any { return new DefaultIterableDiffer(); }
+  create(cdRef: ChangeDetectorRef): DefaultIterableDiffer { return new DefaultIterableDiffer(); }
 }
 
 export class DefaultIterableDiffer implements IterableDiffer {

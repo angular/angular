@@ -72,7 +72,8 @@ class RawEntity extends Object
   }
 
   @override
-  operator [](String key) {
+  operator [](untypedKey) {
+    var key = untypedKey as String;
     if (!key.contains('.')) {
       return _data[key];
     }
@@ -102,7 +103,8 @@ class RawEntity extends Object
   set(String name, dynamic value) { this[name] = value; }
 
   @override
-  remove(String key) {
+  remove(untypedKey) {
+    var key = untypedKey as String;
     if (!key.contains('.')) {
       return _data.remove(key);
     }

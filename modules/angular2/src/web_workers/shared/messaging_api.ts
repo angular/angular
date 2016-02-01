@@ -4,4 +4,5 @@
  */
 export const RENDERER_CHANNEL = "ng-Renderer";
 export const XHR_CHANNEL = "ng-XHR";
-export const EVENT_CHANNEL = "ng-events";
+export const EVENT_CHANNEL = "ng-Events";
+export const ROUTER_CHANNEL = "ng-Router";

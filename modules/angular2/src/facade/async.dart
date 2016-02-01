@@ -73,16 +73,16 @@ class ObservableWrapper {
 }
 
 class EventEmitter<T> extends Stream<T> {
-  StreamController<dynamic> _controller;
+  StreamController<T> _controller;
 
   /// Creates an instance of [EventEmitter], which depending on [isAsync],
   /// delivers events synchronously or asynchronously.
   EventEmitter([bool isAsync = true]) {
-    _controller = new StreamController.broadcast(sync: !isAsync);
+    _controller = new StreamController<T>.broadcast(sync: !isAsync);
   }
 
-  StreamSubscription listen(void onData(dynamic line),
-      {void onError(Error error), void onDone(), bool cancelOnError}) {
+  StreamSubscription<T> listen(void onData(T event),
+      {Function onError, void onDone(), bool cancelOnError}) {
     return _controller.stream.listen(onData,
         onError: onError, onDone: onDone, cancelOnError: cancelOnError);
   }
@@ -106,14 +106,14 @@ class EventEmitter<T> extends Stream<T> {
 
 //todo(robwormald): maybe fix in ts2dart?
 class Subject<T> extends Stream<T> {
-  StreamController<dynamic> _controller;
+  StreamController<T> _controller;
 
   Subject([bool isAsync = true]) {
-    _controller = new StreamController.broadcast(sync: !isAsync);
+    _controller = new StreamController<T>.broadcast(sync: !isAsync);
   }
 
-  StreamSubscription listen(void onData(dynamic line),
-      {void onError(Error error), void onDone(), bool cancelOnError}) {
+  StreamSubscription<T> listen(void onData(T data),
+      {Function onError, void onDone(), bool cancelOnError}) {
     return _controller.stream.listen(onData,
         onError: onError, onDone: onDone, cancelOnError: cancelOnError);
   }

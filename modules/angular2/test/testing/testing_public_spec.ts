@@ -325,7 +325,7 @@ export function main() {
         done();
       });
       restoreJasmineIt();
-    });
+    }, 10000);
 
     describe('using beforeEachProviders', () => {
       beforeEachProviders(() => [bind(FancyService).toValue(new FancyService())]);

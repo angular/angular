@@ -7667,7 +7667,7 @@
     },
     "rxjs": {
       "version": "5.0.0-beta.0",
-      "from": "rxjs@5.0.0-beta.0",
+      "from": "https://registry.npmjs.org/rxjs/-/rxjs-5.0.0-beta.0.tgz",
       "resolved": "https://registry.npmjs.org/rxjs/-/rxjs-5.0.0-beta.0.tgz"
     },
     "sass-graph": {
@@ -8502,6 +8502,10 @@
       "version": "1.0.0",
       "from": "trim-newlines@>=1.0.0 <2.0.0",
       "resolved": "https://registry.npmjs.org/trim-newlines/-/trim-newlines-1.0.0.tgz"
+    },
+    "ts-api-guardian": {
+      "version": "0.0.2",
+      "from": "ts-api-guardian@0.0.2"
     },
     "ts2dart": {
       "version": "0.7.19",

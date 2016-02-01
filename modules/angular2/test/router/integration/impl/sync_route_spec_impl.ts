@@ -14,13 +14,14 @@ import {
 
 import {specs, compile, TEST_ROUTER_PROVIDERS, clickOnElement, getHref} from '../util';
 
+import {By} from 'angular2/platform/common_dom';
 import {Router, Route, Location} from 'angular2/router';
 
 import {HelloCmp, UserCmp, TeamCmp, ParentCmp, ParentWithDefaultCmp} from './fixture_components';
 
 
 function getLinkElement(rtc: ComponentFixture) {
-  return rtc.debugElement.componentViewChildren[0].nativeElement;
+  return rtc.debugElement.query(By.css('a')).nativeElement;
 }
 
 function syncRoutesWithoutChildrenWithoutParams() {

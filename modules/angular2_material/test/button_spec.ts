@@ -12,9 +12,8 @@ import {
   it,
   xit,
 } from 'angular2/testing_internal';
-import {DebugElement} from 'angular2/src/core/debug/debug_element';
 
-import {Component, View, ViewMetadata, bind, provide} from 'angular2/core';
+import {Component, View, ViewMetadata, bind, provide, DebugElement} from 'angular2/core';
 import {UrlResolver} from 'angular2/compiler';
 
 import {MdButton, MdAnchor} from 'angular2_material/src/components/button/button';
@@ -110,7 +109,8 @@ export function main() {
 
 /** Gets a child DebugElement by tag name. */
 function getChildDebugElement(parent: DebugElement, tagName: string): DebugElement {
-  return parent.query(debugEl => debugEl.nativeElement.tagName.toLowerCase() == tagName);
+  var el = parent.query(debugEl => debugEl.nativeNode.tagName.toLowerCase() == tagName);
+  return <DebugElement>el;
 }
 
 /** Test component that contains an MdButton. */

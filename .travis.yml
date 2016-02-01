@@ -41,7 +41,7 @@ env:
     - MODE=browserstack_required DART_CHANNEL=dev DART_VERSION=$DART_DEV_VERSION
     - MODE=saucelabs_optional DART_CHANNEL=dev DART_VERSION=$DART_DEV_VERSION
     - MODE=browserstack_optional DART_CHANNEL=dev DART_VERSION=$DART_DEV_VERSION
-    - MODE=dart_experimental DART_CHANNEL=dev DART_VERSION=$DART_DEV_VERSION
+    - MODE=dart_ddc DART_CHANNEL=dev DART_VERSION=$DART_DEV_VERSION
     - MODE=js DART_CHANNEL=dev DART_VERSION=$DART_DEV_VERSION
     - MODE=router DART_CHANNEL=dev DART_VERSION=$DART_DEV_VERSION
     - MODE=build_only DART_CHANNEL=stable DART_VERSION=$DART_STABLE_VERSION
@@ -52,7 +52,6 @@ matrix:
   allow_failures:
   - env: "MODE=saucelabs_optional DART_CHANNEL=dev DART_VERSION=$DART_DEV_VERSION"
   - env: "MODE=browserstack_optional DART_CHANNEL=dev DART_VERSION=$DART_DEV_VERSION"
-  - env: "MODE=dart_experimental DART_CHANNEL=dev DART_VERSION=$DART_DEV_VERSION"
   # TODO(alxhub): remove when dartdoc #1039 is in dev channel
   - env: "MODE=dart DART_CHANNEL=dev DART_VERSION=$DART_DEV_VERSION"
 
