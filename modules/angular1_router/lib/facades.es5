@@ -173,6 +173,10 @@ var StringMapWrapper = {
 
 var List = Array;
 var ListWrapper = {
+  toJSON: function(l) {
+    return JSON.stringify(l);
+  },
+
   clear: function (l) {
     l.length = 0;
   },
@@ -247,6 +251,10 @@ var ListWrapper = {
 };
 
 var StringWrapper = {
+  charCodeAt: function(s, i) {
+    return s.charCodeAt(i);
+  },
+
   equals: function (s1, s2) {
     return s1 === s2;
   },
