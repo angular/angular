@@ -248,15 +248,12 @@ class _Scanner {
   }
 
   scanCharacter(start: number, code: number): Token {
-    assert(this.peek == code);
     this.advance();
     return newCharacterToken(start, code);
   }
 
 
   scanOperator(start: number, str: string): Token {
-    assert(this.peek == StringWrapper.charCodeAt(str, 0));
-    assert(SetWrapper.has(OPERATORS, str));
     this.advance();
     return newOperatorToken(start, str);
   }
@@ -274,7 +271,6 @@ class _Scanner {
    */
   scanComplexOperator(start: number, one: string, twoCode: number, two: string, threeCode?: number,
                       three?: string): Token {
-    assert(this.peek == StringWrapper.charCodeAt(one, 0));
     this.advance();
     var str: string = one;
     if (this.peek == twoCode) {
@@ -285,12 +281,10 @@ class _Scanner {
       this.advance();
       str += three;
     }
-    assert(SetWrapper.has(OPERATORS, str));
     return newOperatorToken(start, str);
   }
 
   scanIdentifier(): Token {
-    assert(isIdentifierStart(this.peek));
     var start: number = this.index;
     this.advance();
     while (isIdentifierPart(this.peek)) this.advance();
@@ -303,7 +297,6 @@ class _Scanner {
   }
 
   scanNumber(start: number): Token {
-    assert(isDigit(this.peek));
     var simple: boolean = (this.index === start);
     this.advance();  // Skip initial digit.
     while (true) {
@@ -329,7 +322,6 @@ class _Scanner {
   }
 
   scanString(): Token {
-    assert(this.peek == $SQ || this.peek == $DQ);
     var start: number = this.index;
     var quote: number = this.peek;
     this.advance();  // Skip initial quote.

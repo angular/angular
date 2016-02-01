@@ -1,3 +1,36 @@
+// Zones are TC-39 standards-track so users could choose a different implementation
+// Rather than import {Zone} from 'zone.js' we define an interface
+// so that any library that structurally matches may be used with Angular 2.
+export interface ZoneLike {
+  fork(locals?: any): ZoneLike;
+  run(fn: any, applyTo?: any, applyWith?: any): any;
+}
+export interface ZoneLikeConstructor {
+  longStackTraceZone: { [key: string]: any; };
+}
+
+export interface BrowserNodeGlobal {
+  Object: typeof Object;
+  Array: typeof Array;
+  Map: typeof Map;
+  Set: typeof Set;
+  Date: DateConstructor;
+  RegExp: RegExpConstructor;
+  JSON: typeof JSON;
+  Math: any;  // typeof Math;
+  assert(condition: any): void;
+  Reflect: any;
+  zone: ZoneLike;
+  Zone: ZoneLikeConstructor;
+  getAngularTestability: Function;
+  getAllAngularTestabilities: Function;
+  frameworkStabilizers: Array<Function>;
+  setTimeout: Function;
+  clearTimeout: Function;
+  setInterval: Function;
+  clearInterval: Function;
+}
+
 // TODO(jteplitz602): Load WorkerGlobalScope from lib.webworker.d.ts file #3492
 declare var WorkerGlobalScope;
 var globalScope: BrowserNodeGlobal;
@@ -10,7 +43,7 @@ if (typeof window === 'undefined') {
   }
 } else {
   globalScope = <any>window;
-};
+}
 
 export const IS_DART = false;
 

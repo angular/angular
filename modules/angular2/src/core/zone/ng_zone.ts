@@ -1,9 +1,9 @@
 import {ListWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
-import {normalizeBlank, isPresent, global} from 'angular2/src/facade/lang';
+import {normalizeBlank, isPresent, global, ZoneLike} from 'angular2/src/facade/lang';
 import {ObservableWrapper, EventEmitter} from 'angular2/src/facade/async';
 import {wtfLeave, wtfCreateScope, WtfScopeFn} from '../profile/profile';
 
-export interface NgZoneZone extends Zone {
+export interface NgZoneZone extends ZoneLike {
   /** @internal */
   _innerZone: boolean;
 }
@@ -348,8 +348,9 @@ export class NgZone {
     var errorHandling;
 
     if (enableLongStackTrace) {
-      errorHandling = StringMapWrapper.merge(
-          Zone.longStackTraceZone, {onError: function(e) { ngZone._notifyOnError(this, e); }});
+      errorHandling =
+          StringMapWrapper.merge(global.Zone.longStackTraceZone,
+                                 {onError: function(e) { ngZone._notifyOnError(this, e); }});
     } else {
       errorHandling = {onError: function(e) { ngZone._notifyOnError(this, e); }};
     }
