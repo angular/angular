@@ -981,15 +981,16 @@ gulp.task('!pre.test.typings.layoutNodeModule', ['build.js.cjs'], function() {
       .pipe(gulp.dest(path.join(tmpdir, 'node_modules')));
 });
 gulp.task('!pre.test.typings.copyTypingsSpec', function() {
-  return gulp.src(['typing_spec/*.ts'], {base: 'typing_spec'}).pipe(gulp.dest(path.join(tmpdir)));
+  return gulp.src(['typing_spec/*.ts'], {base: 'typing_spec'}).pipe(gulp.dest(tmpdir));
 });
+
 gulp.task('test.typings',
           ['!pre.test.typings.layoutNodeModule', '!pre.test.typings.copyTypingsSpec'], function() {
             var tsc = require('gulp-typescript');
 
-            return gulp.src([tmpdir + '/**'])
+            return gulp.src([tmpdir + '/*.ts'])
                 .pipe(tsc({
-                  target: 'ES5',
+                  target: 'ES6',
                   module: 'commonjs',
                   experimentalDecorators: true,
                   noImplicitAny: true,

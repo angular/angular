@@ -15,20 +15,16 @@ import {toPromise} from 'rxjs/operator/toPromise';
 export {Observable} from 'rxjs/Observable';
 export {Subject} from 'rxjs/Subject';
 
-export namespace NodeJS {
-  export interface Timer {}
-}
-
 export class TimerWrapper {
-  static setTimeout(fn: (...args: any[]) => void, millis: number): NodeJS.Timer {
+  static setTimeout(fn: (...args: any[]) => void, millis: number): number {
     return global.setTimeout(fn, millis);
   }
-  static clearTimeout(id: NodeJS.Timer): void { global.clearTimeout(id); }
+  static clearTimeout(id: number): void { global.clearTimeout(id); }
 
-  static setInterval(fn: (...args: any[]) => void, millis: number): NodeJS.Timer {
+  static setInterval(fn: (...args: any[]) => void, millis: number): number {
     return global.setInterval(fn, millis);
   }
-  static clearInterval(id: NodeJS.Timer): void { global.clearInterval(id); }
+  static clearInterval(id: number): void { global.clearInterval(id); }
 }
 
 export class ObservableWrapper {
