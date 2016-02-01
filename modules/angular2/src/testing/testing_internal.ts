@@ -14,7 +14,7 @@ export {expect, NgMatchers} from './matchers';
 
 export var proxy: ClassDecorator = (t) => t;
 
-var _global: jasmine.GlobalPolluter = <any>(typeof window === 'undefined' ? global : window);
+var _global = <any>(typeof window === 'undefined' ? global : window);
 
 export var afterEach: Function = _global.afterEach;
 

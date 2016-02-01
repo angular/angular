@@ -18,7 +18,7 @@ export {inject, injectAsync} from './test_injector';
 
 export {expect, NgMatchers} from './matchers';
 
-var _global: jasmine.GlobalPolluter = <any>(typeof window === 'undefined' ? global : window);
+var _global = <any>(typeof window === 'undefined' ? global : window);
 
 /**
  * Run a function (with an optional asynchronous callback) after each test case.
