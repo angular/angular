@@ -1,0 +1,10 @@
+$ git clone --bare https://github.com/angular/angular.git
+# Make a bare clone of the repository
+
+$ cd old-repository.git
+$ git push --mirror https://github.com/usernamealreadyis/commands.git
+# Mirror-push to the new repository
+
+$ cd ..
+$ rm -rf old-repository.git
+# Remove our temporary local repository
