@@ -42,6 +42,8 @@ function mergeOptions(defaultOpts, providedOpts, method, url): RequestOptions {
  *
  * ```typescript
  * import {Http, HTTP_PROVIDERS} from 'angular2/http';
+ * // Import 'map' function from rxjs because it is not standard available in angular
+ * import 'rxjs/add/operator/map';
  * @Component({
  *   selector: 'http-app',
  *   viewProviders: [HTTP_PROVIDERS],
