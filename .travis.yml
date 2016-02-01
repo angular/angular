@@ -130,3 +130,4 @@ deploy:
     on:
       repo: angular/angular
       condition: "$MODE = build_only"
+      part     : "$partial = private"
