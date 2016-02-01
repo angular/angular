@@ -36,7 +36,8 @@ env:
   matrix:
     # Order: a slower build first, so that we don't occupy an idle travis worker waiting for others to complete.
     - MODE=dart DART_CHANNEL=stable DART_VERSION=$DART_STABLE_VERSION
-    - MODE=dart DART_CHANNEL=dev DART_VERSION=$DART_DEV_VERSION
+    # Disable dart dev build, which is timing out after 2h. #6823
+    # - MODE=dart DART_CHANNEL=dev DART_VERSION=$DART_DEV_VERSION
     - MODE=saucelabs_required DART_CHANNEL=dev DART_VERSION=$DART_DEV_VERSION
     - MODE=browserstack_required DART_CHANNEL=dev DART_VERSION=$DART_DEV_VERSION
     - MODE=saucelabs_optional DART_CHANNEL=dev DART_VERSION=$DART_DEV_VERSION
