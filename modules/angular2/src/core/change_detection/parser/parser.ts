@@ -594,7 +594,7 @@ export class _ParseAST {
         if (prefix == null) {
           prefix = key;
         } else {
-          key = prefix + '-' + key;
+          key = prefix + key[0].toUpperCase() + key.substring(1);
         }
       }
       this.optionalCharacter($COLON);

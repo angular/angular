@@ -108,13 +108,13 @@ export function main() {
         });
 
 
-        it('should ensure that last possition is function', () => {
+        it('should ensure that last position is function', () => {
           expect(() => {Class({constructor: []})})
               .toThrowError(
                   "Last position of Class method array must be Function in key constructor was 'undefined'");
         });
 
-        it('should ensure that annotation count matches paramaters count', () => {
+        it('should ensure that annotation count matches parameters count', () => {
           expect(() => {Class({constructor: [String, function MyType() {}]})})
               .toThrowError(
                   "Number of annotations (1) does not match number of arguments (0) in the function: MyType");

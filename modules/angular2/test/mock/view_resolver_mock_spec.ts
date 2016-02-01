@@ -55,7 +55,7 @@ export function main() {
         expect(view.directives).toEqual([SomeDirective]);
       });
 
-      it('should allow overriding an overriden @View', () => {
+      it('should allow overriding an overridden @View', () => {
         viewResolver.setView(SomeComponent, new ViewMetadata({template: 'overridden template'}));
         viewResolver.setInlineTemplate(SomeComponent, 'overridden template x 2');
         var view = viewResolver.resolve(SomeComponent);
@@ -79,7 +79,7 @@ export function main() {
         expect(view.directives[0]).toBe(SomeOtherDirective);
       });
 
-      it('should allow overriding a directive from an overriden @View', () => {
+      it('should allow overriding a directive from an overridden @View', () => {
         viewResolver.setView(SomeComponent, new ViewMetadata({directives: [SomeOtherDirective]}));
         viewResolver.overrideViewDirective(SomeComponent, SomeOtherDirective, SomeComponent);
         var view = viewResolver.resolve(SomeComponent);

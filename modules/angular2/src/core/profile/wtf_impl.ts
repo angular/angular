@@ -1,5 +1,8 @@
 import {global} from 'angular2/src/facade/lang';
 
+/**
+ * A scope function for the Web Tracing Framework (WTF).
+ */
 export interface WtfScopeFn { (arg0?: any, arg1?: any): any; }
 
 interface WTF {

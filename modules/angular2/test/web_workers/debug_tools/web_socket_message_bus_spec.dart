@@ -8,8 +8,7 @@ import "package:angular2/testing_internal.dart"
         it,
         expect,
         beforeEach,
-        createTestInjector,
-        beforeEachBindings,
+        beforeEachProviders,
         SpyObject,
         proxy;
 import "package:angular2/src/web_workers/debug_tools/web_socket_message_bus.dart";

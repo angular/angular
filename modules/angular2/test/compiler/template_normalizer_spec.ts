@@ -10,7 +10,7 @@ import {
   it,
   xit,
   TestComponentBuilder,
-  beforeEachBindings
+  beforeEachProviders
 } from 'angular2/testing_internal';
 
 import {
@@ -29,7 +29,7 @@ export function main() {
     var dirType: CompileTypeMetadata;
     var dirTypeWithHttpUrl: CompileTypeMetadata;
 
-    beforeEachBindings(() => TEST_PROVIDERS);
+    beforeEachProviders(() => TEST_PROVIDERS);
 
     beforeEach(() => {
       dirType = new CompileTypeMetadata({moduleUrl: 'package:some/module/a.js', name: 'SomeComp'});
@@ -241,7 +241,7 @@ export function main() {
            var template = normalizer.normalizeLoadedTemplate(
                dirType,
                new CompileTemplateMetadata({encapsulation: null, styles: [], styleUrls: []}),
-               '<link href="b" rel="a"></link>', 'package:some/module/');
+               '<link href="b" rel="a">', 'package:some/module/');
            expect(template.styleUrls).toEqual([]);
          }));
 
@@ -250,8 +250,7 @@ export function main() {
            var template = normalizer.normalizeLoadedTemplate(
                dirType,
                new CompileTemplateMetadata({encapsulation: null, styles: [], styleUrls: []}),
-               '<link href="http://some/external.css" rel="stylesheet"></link>',
-               'package:some/module/');
+               '<link href="http://some/external.css" rel="stylesheet">', 'package:some/module/');
            expect(template.styleUrls).toEqual([]);
          }));
 
@@ -297,7 +296,7 @@ export function main() {
            expect(template.styleUrls).toEqual(['http://some/module/test.css']);
          }));
 
-      it('should normalize ViewEncapsulation.Emulated to ViewEncapsulation.None if there are no stlyes nor stylesheets',
+      it('should normalize ViewEncapsulation.Emulated to ViewEncapsulation.None if there are no styles nor stylesheets',
          inject([TemplateNormalizer], (normalizer: TemplateNormalizer) => {
            var template = normalizer.normalizeLoadedTemplate(
                dirType, new CompileTemplateMetadata(
@@ -306,22 +305,22 @@ export function main() {
            expect(template.encapsulation).toEqual(ViewEncapsulation.None);
          }));
 
-      it('should ignore ng-content in elements with ng-non-bindable',
+      it('should ignore ng-content in elements with ngNonBindable',
          inject([TemplateNormalizer], (normalizer: TemplateNormalizer) => {
            var template = normalizer.normalizeLoadedTemplate(
                dirType,
                new CompileTemplateMetadata({encapsulation: null, styles: [], styleUrls: []}),
-               '<div ng-non-bindable><ng-content select="a"></ng-content></div>',
+               '<div ngNonBindable><ng-content select="a"></ng-content></div>',
                'package:some/module/');
            expect(template.ngContentSelectors).toEqual([]);
          }));
 
-      it('should still collect <style> in elements with ng-non-bindable',
+      it('should still collect <style> in elements with ngNonBindable',
          inject([TemplateNormalizer], (normalizer: TemplateNormalizer) => {
            var template = normalizer.normalizeLoadedTemplate(
                dirType,
                new CompileTemplateMetadata({encapsulation: null, styles: [], styleUrls: []}),
-               '<div ng-non-bindable><style>div {color:red}</style></div>', 'package:some/module/');
+               '<div ngNonBindable><style>div {color:red}</style></div>', 'package:some/module/');
            expect(template.styles).toEqual(['div {color:red}']);
          }));
     });

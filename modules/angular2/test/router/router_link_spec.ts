@@ -33,11 +33,11 @@ import {
 import {DOM} from 'angular2/src/platform/dom/dom_adapter';
 import {ResolvedInstruction} from 'angular2/src/router/instruction';
 
-let dummyInstruction =
-    new ResolvedInstruction(new ComponentInstruction('detail', [], null, null, true, 0), null, {});
+let dummyInstruction = new ResolvedInstruction(
+    new ComponentInstruction('detail', [], null, null, true, '0'), null, {});
 
 export function main() {
-  describe('router-link directive', function() {
+  describe('routerLink directive', function() {
     var tcb: TestComponentBuilder;
 
     beforeEachProviders(() => [
@@ -113,16 +113,16 @@ class UserCmp {
 @View({
   template: `
     <div>
-      <a [router-link]="['/Detail']"
+      <a [routerLink]="['/Detail']"
          class="detail-view">
            detail view
       </a>
-      <a [router-link]="['/Detail']"
+      <a [routerLink]="['/Detail']"
          class="detail-view-self"
          target="_self">
            detail view with _self target
       </a>
-      <a [router-link]="['/Detail']"
+      <a [routerLink]="['/Detail']"
          class="detail-view-blank"
          target="_blank">
            detail view with _blank target

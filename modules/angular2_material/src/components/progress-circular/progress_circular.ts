@@ -1,7 +1,7 @@
-import {Component, View, ViewEncapsulation} from 'angular2/angular2';
+import {Component, ViewEncapsulation} from 'angular2/core';
 
-@Component({selector: 'md-progress-circular'})
-@View({
+@Component({
+  selector: 'md-progress-circular',
   templateUrl: 'package:angular2_material/src/components/progress-circular/progress_circular.html',
   encapsulation: ViewEncapsulation.None
 })

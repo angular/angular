@@ -109,16 +109,7 @@ export interface ViewDecorator extends TypeDecorator {
  *
  * ### Example as TypeScript Decorator
  *
- * ```
- * import {Directive} from "angular2/angular2";
- *
- * @Directive({...})
- * class MyDirective {
- *   constructor() {
- *     ...
- *   }
- * }
- * ```
+ * {@example core/ts/metadata/metadata.ts region='directive'}
  *
  * ### Example as ES5 DSL
  *
@@ -155,7 +146,6 @@ export interface DirectiveFactory {
     bindings?: any[],
     providers?: any[],
     exportAs?: string,
-    moduleId?: string,
     queries?: {[key: string]: any}
   }): DirectiveDecorator;
   new (obj: {
@@ -168,7 +158,6 @@ export interface DirectiveFactory {
     bindings?: any[],
     providers?: any[],
     exportAs?: string,
-    moduleId?: string,
     queries?: {[key: string]: any}
   }): DirectiveMetadata;
 }
@@ -178,16 +167,7 @@ export interface DirectiveFactory {
  *
  * ### Example as TypeScript Decorator
  *
- * ```
- * import {Component} from "angular2/angular2";
- *
- * @Component({...})
- * class MyComponent {
- *   constructor() {
- *     ...
- *   }
- * }
- * ```
+ * {@example core/ts/metadata/metadata.ts region='component'}
  *
  * ### Example as ES5 DSL
  *
@@ -271,7 +251,7 @@ export interface ComponentFactory {
  * ### Example as TypeScript Decorator
  *
  * ```
- * import {Component, View} from "angular2/angular2";
+ * import {Component, View} from "angular2/core";
  *
  * @Component({...})
  * @View({...})
@@ -334,16 +314,7 @@ export interface ViewFactory {
  *
  * ### Example as TypeScript Decorator
  *
- * ```
- * import {Attribute, Component} from "angular2/angular2";
- *
- * @Component({...})
- * class MyComponent {
- *   constructor(@Attribute('title') title: string) {
- *     ...
- *   }
- * }
- * ```
+ * {@example core/ts/metadata/metadata.ts region='attributeFactory'}
  *
  * ### Example as ES5 DSL
  *
@@ -383,7 +354,7 @@ export interface AttributeFactory {
  * ### Example as TypeScript Decorator
  *
  * ```
- * import {Query, QueryList, Component} from "angular2/angular2";
+ * import {Query, QueryList, Component} from "angular2/core";
  *
  * @Component({...})
  * class MyComponent {
@@ -425,21 +396,33 @@ export interface QueryFactory {
   new (selector: Type | string, {descendants}?: {descendants?: boolean}): QueryMetadata;
 }
 
+/**
+ * Factory for {@link ContentChildren}.
+ */
 export interface ContentChildrenFactory {
   (selector: Type | string, {descendants}?: {descendants?: boolean}): any;
   new (selector: Type | string, {descendants}?: {descendants?: boolean}): ContentChildrenMetadata;
 }
 
+/**
+ * Factory for {@link ContentChild}.
+ */
 export interface ContentChildFactory {
   (selector: Type | string): any;
   new (selector: Type | string): ContentChildFactory;
 }
 
+/**
+ * Factory for {@link ViewChildren}.
+ */
 export interface ViewChildrenFactory {
   (selector: Type | string): any;
   new (selector: Type | string): ViewChildrenMetadata;
 }
 
+/**
+ * Factory for {@link ViewChild}.
+ */
 export interface ViewChildFactory {
   (selector: Type | string): any;
   new (selector: Type | string): ViewChildFactory;
@@ -449,20 +432,9 @@ export interface ViewChildFactory {
 /**
  * {@link PipeMetadata} factory for creating decorators.
  *
- * ### Example as TypeScript Decorator
+ * ### Example
  *
- * ```
- * import {Pipe} from "angular2/angular2";
- *
- * @Pipe({...})
- * class MyPipe {
- *   constructor() {
- *     ...
- *   }
- *
- *   transform(v, args) {}
- * }
- * ```
+ * {@example core/ts/metadata/metadata.ts region='pipe'}
  */
 export interface PipeFactory {
   (obj: {name: string, pure?: boolean}): any;
@@ -530,20 +502,7 @@ export interface HostListenerFactory {
  *
  * ### Example
  *
- * ```
- * @Component({
- *   selector: 'greet',
- *   template: 'Hello {{name}}!'
- * })
- * class Greet {
- *   name: string;
- *
- *   constructor() {
- *     this.name = 'World';
- *   }
- * }
- * ```
- *
+ * {@example core/ts/metadata/metadata.ts region='component'}
  */
 export var Component: ComponentFactory =
     <ComponentFactory>makeDecorator(ComponentMetadata, (fn: any) => fn.View = View);
@@ -732,8 +691,8 @@ export var Component: ComponentFactory =
  * A directive can also query for other child directives. Since parent directives are instantiated
  * before child directives, a directive can't simply inject the list of child directives. Instead,
  * the directive injects a {@link QueryList}, which updates its contents as children are added,
- * removed, or moved by a directive that uses a {@link ViewContainerRef} such as a `ng-for`, an
- * `ng-if`, or an `ng-switch`.
+ * removed, or moved by a directive that uses a {@link ViewContainerRef} such as a `ngFor`, an
+ * `ngIf`, or an `ngSwitch`.
  *
  * ```
  * @Directive({ selector: '[my-directive]' })
@@ -962,35 +921,22 @@ export var Directive: DirectiveFactory = <DirectiveFactory>makeDecorator(Directi
 export var View: ViewFactory =
     <ViewFactory>makeDecorator(ViewMetadata, (fn: any) => fn.View = View);
 
-// TODO(alexeagle): remove the duplication of this doc. It is copied from AttributeMetadata.
 /**
- * Metadata properties available for configuring Views.
+ * Specifies that a constant attribute value should be injected.
  *
- * Each Angular component requires a single `@Component` and at least one `@View` annotation. The
- * `@View` annotation specifies the HTML template to use, and lists the directives that are active
- * within the template.
- *
- * When a component is instantiated, the template is loaded into the component's shadow root, and
- * the expressions and statements in the template are evaluated against the component.
- *
- * For details on the `@Component` annotation, see {@link ComponentMetadata}.
+ * The directive can inject constant string literals of host element attributes.
  *
  * ### Example
  *
- * ```
- * @Component({
- *   selector: 'greet',
- *   template: 'Hello {{name}}!',
- *   directives: [GreetUser, Bold]
- * })
- * class Greet {
- *   name: string;
+ * Suppose we have an `<input>` element and want to know its `type`.
  *
- *   constructor() {
- *     this.name = 'World';
- *   }
- * }
+ * ```html
+ * <input type="text">
  * ```
+ *
+ * A decorator can inject string literal `text` like so:
+ *
+ * {@example core/ts/metadata/metadata.ts region='attributeMetadata'}
  */
 export var Attribute: AttributeFactory = makeParamDecorator(AttributeMetadata);
 
@@ -1007,7 +953,7 @@ export var Attribute: AttributeFactory = makeParamDecorator(AttributeMetadata);
  * ```html
  * <tabs>
  *   <pane title="Overview">...</pane>
- *   <pane *ng-for="#o of objects" [title]="o.title">{{o.text}}</pane>
+ *   <pane *ngFor="#o of objects" [title]="o.title">{{o.text}}</pane>
  * </tabs>
  * ```
  *
@@ -1026,7 +972,7 @@ export var Attribute: AttributeFactory = makeParamDecorator(AttributeMetadata);
  *  selector: 'tabs',
  *  template: `
  *    <ul>
- *      <li *ng-for="#pane of panes">{{pane.title}}</li>
+ *      <li *ngFor="#pane of panes">{{pane.title}}</li>
  *    </ul>
  *    <content></content>
  *  `
@@ -1060,8 +1006,8 @@ export var Attribute: AttributeFactory = makeParamDecorator(AttributeMetadata);
  *
  * ```html
  * <seeker>
- *   <div #find-me>...</div>
- *   <div #find-me-too>...</div>
+ *   <div #findMe>...</div>
+ *   <div #findMeToo>...</div>
  * </seeker>
  *
  *  @Component({
@@ -1108,7 +1054,7 @@ export var Query: QueryFactory = makeParamDecorator(QueryMetadata);
 /**
  * Configures a content query.
  *
- * Content queries are set before the `afterContentInit` callback is called.
+ * Content queries are set before the `ngAfterContentInit` callback is called.
  *
  * ### Example
  *
@@ -1119,7 +1065,7 @@ export var Query: QueryFactory = makeParamDecorator(QueryMetadata);
  * class SomeDir {
  *   @ContentChildren(ChildDirective) contentChildren: QueryList<ChildDirective>;
  *
- *   afterContentInit() {
+ *   ngAfterContentInit() {
  *     // contentChildren is set
  *   }
  * }
@@ -1131,7 +1077,7 @@ export var ContentChildren: ContentChildrenFactory = makePropDecorator(ContentCh
 /**
  * Configures a content query.
  *
- * Content queries are set before the `afterContentInit` callback is called.
+ * Content queries are set before the `ngAfterContentInit` callback is called.
  *
  * ### Example
  *
@@ -1142,7 +1088,7 @@ export var ContentChildren: ContentChildrenFactory = makePropDecorator(ContentCh
  * class SomeDir {
  *   @ContentChild(ChildDirective) contentChild;
  *
- *   afterContentInit() {
+ *   ngAfterContentInit() {
  *     // contentChild is set
  *   }
  * }
@@ -1154,7 +1100,7 @@ export var ContentChild: ContentChildFactory = makePropDecorator(ContentChildMet
 /**
  * Configures a view query.
  *
- * View queries are set before the `afterViewInit` callback is called.
+ * View queries are set before the `ngAfterViewInit` callback is called.
  *
  * ### Example
  *
@@ -1167,7 +1113,7 @@ export var ContentChild: ContentChildFactory = makePropDecorator(ContentChildMet
  * class SomeDir {
  *   @ViewChildren(ItemDirective) viewChildren: QueryList<ItemDirective>;
  *
- *   afterViewInit() {
+ *   ngAfterViewInit() {
  *     // viewChildren is set
  *   }
  * }
@@ -1179,7 +1125,7 @@ export var ViewChildren: ViewChildrenFactory = makePropDecorator(ViewChildrenMet
 /**
  * Configures a view query.
  *
- * View queries are set before the `afterViewInit` callback is called.
+ * View queries are set before the `ngAfterViewInit` callback is called.
  *
  * ### Example
  *
@@ -1192,7 +1138,7 @@ export var ViewChildren: ViewChildrenFactory = makePropDecorator(ViewChildrenMet
  * class SomeDir {
  *   @ViewChild(ItemDirective) viewChild:ItemDirective;
  *
- *   afterViewInit() {
+ *   ngAfterViewInit() {
  *     // viewChild is set
  *   }
  * }
@@ -1244,14 +1190,7 @@ export var ViewQuery: QueryFactory = makeParamDecorator(ViewQueryMetadata);
  *
  * ### Example
  *
- * ```
- * @Pipe({
- *   name: 'lowercase'
- * })
- * class Lowercase {
- *   transform(v, args) { return v.toLowerCase(); }
- * }
- * ```
+ * {@example core/ts/metadata/metadata.ts region='pipe'}
  */
 export var Pipe: PipeFactory = <PipeFactory>makeDecorator(PipeMetadata);
 
@@ -1357,10 +1296,10 @@ export var Output: OutputFactory = makePropDecorator(OutputMetadata);
  * ### Example
  *
  * The following example creates a directive that sets the `valid` and `invalid` classes
- * on the DOM element that has ng-model directive on it.
+ * on the DOM element that has ngModel directive on it.
  *
  * ```typescript
- * @Directive({selector: '[ng-model]'})
+ * @Directive({selector: '[ngModel]'})
  * class NgModelStatus {
  *   constructor(public control:NgModel) {}
  *   @HostBinding('[class.valid]') get valid { return this.control.valid; }
@@ -1369,7 +1308,7 @@ export var Output: OutputFactory = makePropDecorator(OutputMetadata);
  *
  * @Component({
  *   selector: 'app',
- *   template: `<input [(ng-model)]="prop">`,
+ *   template: `<input [(ngModel)]="prop">`,
  *   directives: [FORM_DIRECTIVES, NgModelStatus]
  * })
  * class App {

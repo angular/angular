@@ -68,8 +68,8 @@ function getSourceTree() {
     translateBuiltins: true,
   });
   // Native sources, dart only examples, etc.
-  var dartSrcs =
-      modulesFunnel(['**/*.dart', '**/*.ng_meta.json', '**/*.aliases.json', '**/css/**']);
+  var dartSrcs = modulesFunnel(
+      ['**/*.dart', '**/*.ng_meta.json', '**/*.aliases.json', '**/css/**', '**/*.css']);
   return mergeTrees([transpiled, dartSrcs]);
 }
 

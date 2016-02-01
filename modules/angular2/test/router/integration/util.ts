@@ -3,7 +3,7 @@ import {Type, isBlank} from 'angular2/src/facade/lang';
 import {BaseException} from 'angular2/src/facade/exceptions';
 
 import {
-  RootTestComponent,
+  ComponentFixture,
   AsyncTestCompleter,
   TestComponentBuilder,
   beforeEach,
@@ -77,7 +77,11 @@ export var specs = {};
 export function describeRouter(description: string, fn: Function, exclusive = false): void {
   var specName = descriptionToSpecName(description);
   specNameBuilder.push(specName);
-  describe(description, fn);
+  if (exclusive) {
+    ddescribe(description, fn);
+  } else {
+    describe(description, fn);
+  }
   specNameBuilder.pop();
 }
 

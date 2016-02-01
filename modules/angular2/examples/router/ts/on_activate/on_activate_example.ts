@@ -1,4 +1,5 @@
-import {Component, provide, bootstrap} from 'angular2/angular2';
+import {Component, provide} from 'angular2/core';
+import {bootstrap} from 'angular2/bootstrap';
 import {
   OnActivate,
   ComponentInstruction,
@@ -8,12 +9,12 @@ import {
 } from 'angular2/router';
 
 
-// #docregion onActivate
-@Component({selector: 'my-cmp', template: `<div>onActivate: {{log}}</div>`})
+// #docregion routerOnActivate
+@Component({selector: 'my-cmp', template: `<div>routerOnActivate: {{log}}</div>`})
 class MyCmp implements OnActivate {
   log: string = '';
 
-  onActivate(next: ComponentInstruction, prev: ComponentInstruction) {
+  routerOnActivate(next: ComponentInstruction, prev: ComponentInstruction) {
     this.log = `Finished navigating from "${prev ? prev.urlPath : 'null'}" to "${next.urlPath}"`;
   }
 }
@@ -25,8 +26,8 @@ class MyCmp implements OnActivate {
   template: `
     <h1>My App</h1>
     <nav>
-      <a [router-link]="['/HomeCmp']" id="home-link">Navigate Home</a> |
-      <a [router-link]="['/ParamCmp', {param: 1}]" id="param-link">Navigate with a Param</a>
+      <a [routerLink]="['/HomeCmp']" id="home-link">Navigate Home</a> |
+      <a [routerLink]="['/ParamCmp', {param: 1}]" id="param-link">Navigate with a Param</a>
     </nav>
     <router-outlet></router-outlet>
   `,

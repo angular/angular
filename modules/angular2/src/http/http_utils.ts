@@ -1,13 +1,13 @@
 import {isString} from 'angular2/src/facade/lang';
-import {RequestMethods} from './enums';
+import {RequestMethod} from './enums';
 import {makeTypeError} from 'angular2/src/facade/exceptions';
 import {Response} from './static_response';
 
-export function normalizeMethodName(method): RequestMethods {
+export function normalizeMethodName(method): RequestMethod {
   if (isString(method)) {
     var originalMethod = method;
     method = method.replace(/(\w)(\w*)/g, (g0, g1, g2) => g1.toUpperCase() + g2.toLowerCase());
-    method = RequestMethods[method];
+    method = RequestMethod[method];
     if (typeof method !== 'number')
       throw makeTypeError(
           `Invalid request method. The method "${originalMethod}" is not supported.`);

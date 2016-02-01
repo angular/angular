@@ -1,5 +1,5 @@
 import {
-  RootTestComponent,
+  ComponentFixture,
   AsyncTestCompleter,
   TestComponentBuilder,
   beforeEach,
@@ -34,7 +34,7 @@ export function main() {
   describe('redirects', () => {
 
     var tcb: TestComponentBuilder;
-    var rootTC: RootTestComponent;
+    var rootTC: ComponentFixture;
     var rtr;
 
     beforeEachProviders(() => TEST_ROUTER_PROVIDERS);

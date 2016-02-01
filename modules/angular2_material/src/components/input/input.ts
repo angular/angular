@@ -1,4 +1,4 @@
-import {Directive, Attribute, Host, SkipSelf, AfterContentChecked} from 'angular2/angular2';
+import {Directive, Attribute, Host, SkipSelf, AfterContentChecked} from 'angular2/core';
 
 import {ObservableWrapper, EventEmitter} from 'angular2/src/facade/async';
 
@@ -30,7 +30,7 @@ export class MdInputContainer implements AfterContentChecked {
     this.inputHasFocus = false;
   }
 
-  afterContentChecked() {
+  ngAfterContentChecked() {
     // Enforce that this directive actually contains a text input.
     if (this._input == null) {
       throw 'No <input> or <textarea> found inside of <md-input-container>';

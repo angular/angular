@@ -1,7 +1,7 @@
 import {Injectable} from 'angular2/core';
 import {isPresent, isJsObject} from 'angular2/src/facade/lang';
 import {Headers} from './headers';
-import {ResponseTypes} from './enums';
+import {ResponseType} from './enums';
 import {ResponseOptionsArgs} from './interfaces';
 
 /**
@@ -52,7 +52,7 @@ export class ResponseOptions {
   /**
    * @internal
    */
-  type: ResponseTypes;
+  type: ResponseType;
   url: string;
   constructor({body, status, headers, statusText, type, url}: ResponseOptionsArgs = {}) {
     this.body = isPresent(body) ? body : null;
@@ -115,7 +115,8 @@ export class ResponseOptions {
  * ### Example ([live demo](http://plnkr.co/edit/qv8DLT?p=preview))
  *
  * ```typescript
- * import {provide, bootstrap} from 'angular2/angular2';
+ * import {provide} from 'angular2/core';
+ * import {bootstrap} from 'angular2/platform/browser';
  * import {HTTP_PROVIDERS, Headers, Http, BaseResponseOptions, ResponseOptions} from
  * 'angular2/http';
  * import {App} from './myapp';
@@ -147,6 +148,6 @@ export class ResponseOptions {
 @Injectable()
 export class BaseResponseOptions extends ResponseOptions {
   constructor() {
-    super({status: 200, statusText: 'Ok', type: ResponseTypes.Default, headers: new Headers()});
+    super({status: 200, statusText: 'Ok', type: ResponseType.Default, headers: new Headers()});
   }
 }

@@ -9,7 +9,8 @@ import {
   el,
   SpyObject,
   AsyncTestCompleter,
-  inject
+  inject,
+  browserDetection
 } from 'angular2/testing_internal';
 
 import {
@@ -62,43 +63,48 @@ export function main() {
       expect(called).toBe(false);
     });
 
-    it("delivers next and error events asynchronously", inject([AsyncTestCompleter], (async) => {
-         let log = [];
-         ObservableWrapper.subscribe(emitter,
-                                     (x) => {
-                                       log.push(x);
-                                       expect(log).toEqual([1, 3, 5, 2]);
-                                     },
-                                     (err) => {
-                                       log.push(err);
-                                       expect(log).toEqual([1, 3, 5, 2, 4]);
-                                       async.done();
-                                     });
-         log.push(1);
-         ObservableWrapper.callEmit(emitter, 2);
-         log.push(3);
-         ObservableWrapper.callError(emitter, 4);
-         log.push(5);
-       }));
+    // Makes Edge to disconnect when running the full unit test campaign
+    // TODO: remove when issue is solved: https://github.com/angular/angular/issues/4756
+    if (!browserDetection.isEdge) {
+      it("delivers next and error events asynchronously", inject([AsyncTestCompleter], (async) => {
+           let log = [];
+           ObservableWrapper.subscribe(emitter,
+                                       (x) => {
+                                         log.push(x);
+                                         expect(log).toEqual([1, 3, 5, 2]);
+                                       },
+                                       (err) => {
+                                         log.push(err);
+                                         expect(log).toEqual([1, 3, 5, 2, 4]);
+                                         async.done();
+                                       });
+           log.push(1);
+           ObservableWrapper.callEmit(emitter, 2);
+           log.push(3);
+           ObservableWrapper.callError(emitter, 4);
+           log.push(5);
+         }));
 
-    it("delivers next and complete events asynchronously", inject([AsyncTestCompleter], (async) => {
-         let log = [];
-         ObservableWrapper.subscribe(emitter,
-                                     (x) => {
-                                       log.push(x);
-                                       expect(log).toEqual([1, 3, 5, 2]);
-                                     },
-                                     null, () => {
-                                       log.push(4);
-                                       expect(log).toEqual([1, 3, 5, 2, 4]);
-                                       async.done();
-                                     });
-         log.push(1);
-         ObservableWrapper.callEmit(emitter, 2);
-         log.push(3);
-         ObservableWrapper.callComplete(emitter);
-         log.push(5);
-       }));
+      it("delivers next and complete events asynchronously",
+         inject([AsyncTestCompleter], (async) => {
+           let log = [];
+           ObservableWrapper.subscribe(emitter,
+                                       (x) => {
+                                         log.push(x);
+                                         expect(log).toEqual([1, 3, 5, 2]);
+                                       },
+                                       null, () => {
+                                         log.push(4);
+                                         expect(log).toEqual([1, 3, 5, 2, 4]);
+                                         async.done();
+                                       });
+           log.push(1);
+           ObservableWrapper.callEmit(emitter, 2);
+           log.push(3);
+           ObservableWrapper.callComplete(emitter);
+           log.push(5);
+         }));
+    }
 
     it('delivers events synchronously', () => {
       var e = new EventEmitter(false);

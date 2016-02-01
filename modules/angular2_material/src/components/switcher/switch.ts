@@ -1,4 +1,4 @@
-import {Component, View, ViewEncapsulation, Attribute} from 'angular2/angular2';
+import {Component, ViewEncapsulation, Attribute} from 'angular2/core';
 import {MdCheckbox} from "../checkbox/checkbox";
 
 // TODO(jelbourn): add gesture support
@@ -12,9 +12,7 @@ import {MdCheckbox} from "../checkbox/checkbox";
     '[attr.aria-checked]': 'checked',
     '[attr.aria-disabled]': 'disabled_',
     '(keydown)': 'onKeydown($event)',
-  }
-})
-@View({
+  },
   templateUrl: 'package:angular2_material/src/components/switcher/switch.html',
   directives: [],
   encapsulation: ViewEncapsulation.None

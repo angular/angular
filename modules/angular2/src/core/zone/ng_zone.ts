@@ -8,8 +8,14 @@ export interface NgZoneZone extends Zone {
   _innerZone: boolean;
 }
 
+/**
+ * Interface for a function with zero arguments.
+ */
 export interface ZeroArgFunction { (): void; }
 
+/**
+ * Function type for an error handler, which takes an error and a stack trace.
+ */
 export interface ErrorHandlingFn { (error: any, stackTrace: any): void; }
 
 /**
@@ -34,7 +40,8 @@ export class NgZoneError {
  *
  * ### Example ([live demo](http://plnkr.co/edit/lY9m8HLy7z06vDoUaSN2?p=preview))
  * ```
- * import {Component, View, NgIf, NgZone} from 'angular2/angular2';
+ * import {Component, View, NgZone} from 'angular2/core';
+ * import {NgIf} from 'angular2/common';
  *
  * @Component({
  *   selector: 'ng-zone-demo'.
@@ -42,7 +49,7 @@ export class NgZoneError {
  *     <h2>Demo: NgZone</h2>
  *
  *     <p>Progress: {{progress}}%</p>
- *     <p *ng-if="progress >= 100">Done processing {{label}} of Angular zone!</p>
+ *     <p *ngIf="progress >= 100">Done processing {{label}} of Angular zone!</p>
  *
  *     <button (click)="processWithinAngularZone()">Process within Angular zone</button>
  *     <button (click)="processOutsideOfAngularZone()">Process outside of Angular zone</button>
@@ -269,7 +276,7 @@ export class NgZone {
   get hasPendingTimers(): boolean { return this._pendingTimeouts.length > 0; }
 
   /**
-   * Whether there are any outstanding asychnronous tasks of any kind that are
+   * Whether there are any outstanding asynchronous tasks of any kind that are
    * scheduled to run within Angular zone.
    *
    * Useful as a signal of UI stability. For example, when a test reaches a

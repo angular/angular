@@ -2,8 +2,12 @@ import {Directive, Self} from 'angular2/core';
 import {NgControl} from './ng_control';
 import {isBlank, isPresent} from 'angular2/src/facade/lang';
 
+/**
+ * Directive automatically applied to Angular forms that sets CSS classes
+ * based on control status (valid/invalid/dirty/etc).
+ */
 @Directive({
-  selector: '[ng-control],[ng-model],[ng-form-control]',
+  selector: '[ngControl],[ngModel],[ngFormControl]',
   host: {
     '[class.ng-untouched]': 'ngClassUntouched',
     '[class.ng-touched]': 'ngClassTouched',

@@ -1,5 +1,6 @@
 import {HtmlElementAst} from './html_ast';
 import {isBlank, isPresent} from 'angular2/src/facade/lang';
+import {splitNsName} from './html_tags';
 
 const NG_CONTENT_SELECT_ATTR = 'select';
 const NG_CONTENT_ELEMENT = 'ng-content';
@@ -9,7 +10,7 @@ const LINK_STYLE_HREF_ATTR = 'href';
 const LINK_STYLE_REL_VALUE = 'stylesheet';
 const STYLE_ELEMENT = 'style';
 const SCRIPT_ELEMENT = 'script';
-const NG_NON_BINDABLE_ATTR = 'ng-non-bindable';
+const NG_NON_BINDABLE_ATTR = 'ngNonBindable';
 
 export function preparseElement(ast: HtmlElementAst): PreparsedElement {
   var selectAttr = null;
@@ -17,21 +18,21 @@ export function preparseElement(ast: HtmlElementAst): PreparsedElement {
   var relAttr = null;
   var nonBindable = false;
   ast.attrs.forEach(attr => {
-    let attrName = attr.name.toLowerCase();
-    if (attrName == NG_CONTENT_SELECT_ATTR) {
+    let lcAttrName = attr.name.toLowerCase();
+    if (lcAttrName == NG_CONTENT_SELECT_ATTR) {
       selectAttr = attr.value;
-    } else if (attrName == LINK_STYLE_HREF_ATTR) {
+    } else if (lcAttrName == LINK_STYLE_HREF_ATTR) {
       hrefAttr = attr.value;
-    } else if (attrName == LINK_STYLE_REL_ATTR) {
+    } else if (lcAttrName == LINK_STYLE_REL_ATTR) {
       relAttr = attr.value;
-    } else if (attrName == NG_NON_BINDABLE_ATTR) {
+    } else if (attr.name == NG_NON_BINDABLE_ATTR) {
       nonBindable = true;
     }
   });
   selectAttr = normalizeNgContentSelect(selectAttr);
   var nodeName = ast.name.toLowerCase();
   var type = PreparsedElementType.OTHER;
-  if (nodeName == NG_CONTENT_ELEMENT) {
+  if (splitNsName(nodeName)[1] == NG_CONTENT_ELEMENT) {
     type = PreparsedElementType.NG_CONTENT;
   } else if (nodeName == STYLE_ELEMENT) {
     type = PreparsedElementType.STYLE;

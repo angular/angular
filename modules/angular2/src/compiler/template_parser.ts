@@ -7,6 +7,7 @@ import {Parser, AST, ASTWithSource} from 'angular2/src/core/change_detection/cha
 import {TemplateBinding} from 'angular2/src/core/change_detection/parser/ast';
 import {CompileDirectiveMetadata} from './directive_metadata';
 import {HtmlParser} from './html_parser';
+import {splitNsName} from './html_tags';
 import {ParseSourceSpan, ParseError, ParseLocation} from './parse_util';
 
 
@@ -43,18 +44,18 @@ import {
   htmlVisitAll
 } from './html_ast';
 
-import {dashCaseToCamelCase, camelCaseToDashCase, splitAtColon} from './util';
+import {splitAtColon} from './util';
 
 // Group 1 = "bind-"
 // Group 2 = "var-" or "#"
 // Group 3 = "on-"
 // Group 4 = "bindon-"
 // Group 5 = the identifier after "bind-", "var-/#", or "on-"
-// Group 6 = idenitifer inside [()]
-// Group 7 = idenitifer inside []
+// Group 6 = identifer inside [()]
+// Group 7 = identifer inside []
 // Group 8 = identifier inside ()
 var BIND_NAME_REGEXP =
-    /^(?:(?:(?:(bind-)|(var-|#)|(on-)|(bindon-))(.+))|\[\(([^\)]+)\)\]|\[([^\]]+)\]|\(([^\)]+)\))$/ig;
+    /^(?:(?:(?:(bind-)|(var-|#)|(on-)|(bindon-))(.+))|\[\(([^\)]+)\)\]|\[([^\]]+)\]|\(([^\)]+)\))$/g;
 
 const TEMPLATE_ELEMENT = 'template';
 const TEMPLATE_ATTR = 'template';
@@ -68,6 +69,13 @@ const STYLE_PREFIX = 'style';
 
 var TEXT_CSS_SELECTOR = CssSelector.parse('*')[0];
 
+/**
+ * Provides an array of {@link TemplateAstVisitor}s which will be used to transform
+ * parsed templates before compilation is invoked, allowing custom expression syntax
+ * and other advanced transformations.
+ *
+ * This is currently an internal-only feature and not meant for general use.
+ */
 export const TEMPLATE_TRANSFORMS = CONST_EXPR(new OpaqueToken('TemplateTransforms'));
 
 export class TemplateParseError extends ParseError {
@@ -202,20 +210,21 @@ class TemplateParseVisitor implements HtmlAstVisitor {
     var attrs = [];
 
     element.attrs.forEach(attr => {
-      matchableAttrs.push([attr.name, attr.value]);
       var hasBinding = this._parseAttr(attr, matchableAttrs, elementOrDirectiveProps, events, vars);
       var hasTemplateBinding = this._parseInlineTemplateBinding(
           attr, templateMatchableAttrs, templateElementOrDirectiveProps, templateVars);
       if (!hasBinding && !hasTemplateBinding) {
         // don't include the bindings as attributes as well in the AST
         attrs.push(this.visitAttr(attr, null));
+        matchableAttrs.push([attr.name, attr.value]);
       }
       if (hasTemplateBinding) {
         hasInlineTemplates = true;
       }
     });
 
-    var isTemplateElement = nodeName.toLowerCase() == TEMPLATE_ELEMENT;
+    var lcElName = splitNsName(nodeName.toLowerCase())[1];
+    var isTemplateElement = lcElName == TEMPLATE_ELEMENT;
     var elementCssSelector = createElementCssSelector(nodeName, matchableAttrs);
     var directives = this._createDirectiveAsts(
         element.name, this._parseDirectives(this.selectorMatcher, elementCssSelector),
@@ -228,6 +237,11 @@ class TemplateParseVisitor implements HtmlAstVisitor {
         hasInlineTemplates ? null : component.findNgContentIndex(elementCssSelector);
     var parsedElement;
     if (preparsedElement.type === PreparsedElementType.NG_CONTENT) {
+      if (isPresent(element.children) && element.children.length > 0) {
+        this._reportError(
+            `<ng-content> element cannot have content. <ng-content> must be immediately followed by </ng-content>`,
+            element.sourceSpan);
+      }
       parsedElement =
           new NgContentAst(this.ngContentCount++, elementNgContentIndex, element.sourceSpan);
     } else if (isTemplateElement) {
@@ -263,7 +277,7 @@ class TemplateParseVisitor implements HtmlAstVisitor {
                                       targetProps: BoundElementOrDirectiveProperty[],
                                       targetVars: VariableAst[]): boolean {
     var templateBindingsSource = null;
-    if (attr.name.toLowerCase() == TEMPLATE_ATTR) {
+    if (attr.name == TEMPLATE_ATTR) {
       templateBindingsSource = attr.value;
     } else if (attr.name.startsWith(TEMPLATE_ATTR_PREFIX)) {
       var key = attr.name.substring(TEMPLATE_ATTR_PREFIX.length);  // remove the star
@@ -273,17 +287,15 @@ class TemplateParseVisitor implements HtmlAstVisitor {
       var bindings = this._parseTemplateBindings(templateBindingsSource, attr.sourceSpan);
       for (var i = 0; i < bindings.length; i++) {
         var binding = bindings[i];
-        var dashCaseKey = camelCaseToDashCase(binding.key);
         if (binding.keyIsVar) {
-          targetVars.push(
-              new VariableAst(dashCaseToCamelCase(binding.key), binding.name, attr.sourceSpan));
-          targetMatchableAttrs.push([dashCaseKey, binding.name]);
+          targetVars.push(new VariableAst(binding.key, binding.name, attr.sourceSpan));
+          targetMatchableAttrs.push([binding.key, binding.name]);
         } else if (isPresent(binding.expression)) {
-          this._parsePropertyAst(dashCaseKey, binding.expression, attr.sourceSpan,
+          this._parsePropertyAst(binding.key, binding.expression, attr.sourceSpan,
                                  targetMatchableAttrs, targetProps);
         } else {
-          targetMatchableAttrs.push([dashCaseKey, '']);
-          this._parseLiteralAttr(dashCaseKey, null, attr.sourceSpan, targetProps);
+          targetMatchableAttrs.push([binding.key, '']);
+          this._parseLiteralAttr(binding.key, null, attr.sourceSpan, targetProps);
         }
       }
       return true;
@@ -349,7 +361,10 @@ class TemplateParseVisitor implements HtmlAstVisitor {
 
   private _parseVariable(identifier: string, value: string, sourceSpan: ParseSourceSpan,
                          targetVars: VariableAst[]) {
-    targetVars.push(new VariableAst(dashCaseToCamelCase(identifier), value, sourceSpan));
+    if (identifier.indexOf('-') > -1) {
+      this._reportError(`"-" is not allowed in variable names`, sourceSpan);
+    }
+    targetVars.push(new VariableAst(identifier, value, sourceSpan));
   }
 
   private _parseProperty(name: string, expression: string, sourceSpan: ParseSourceSpan,
@@ -379,7 +394,7 @@ class TemplateParseVisitor implements HtmlAstVisitor {
 
   private _parseAssignmentEvent(name: string, expression: string, sourceSpan: ParseSourceSpan,
                                 targetMatchableAttrs: string[][], targetEvents: BoundEventAst[]) {
-    this._parseEvent(`${name}-change`, `${expression}=$event`, sourceSpan, targetMatchableAttrs,
+    this._parseEvent(`${name}Change`, `${expression}=$event`, sourceSpan, targetMatchableAttrs,
                      targetEvents);
   }
 
@@ -389,7 +404,7 @@ class TemplateParseVisitor implements HtmlAstVisitor {
     var parts = splitAtColon(name, [null, name]);
     var target = parts[0];
     var eventName = parts[1];
-    targetEvents.push(new BoundEventAst(dashCaseToCamelCase(eventName), target,
+    targetEvents.push(new BoundEventAst(eventName, target,
                                         this._parseAction(expression, sourceSpan), sourceSpan));
     // Don't detect directives for event names for now,
     // so don't add the event name to the matchableAttrs
@@ -398,8 +413,7 @@ class TemplateParseVisitor implements HtmlAstVisitor {
   private _parseLiteralAttr(name: string, value: string, sourceSpan: ParseSourceSpan,
                             targetProps: BoundElementOrDirectiveProperty[]) {
     targetProps.push(new BoundElementOrDirectiveProperty(
-        dashCaseToCamelCase(name), this._exprParser.wrapLiteralPrimitive(value, ''), true,
-        sourceSpan));
+        name, this._exprParser.wrapLiteralPrimitive(value, ''), true, sourceSpan));
   }
 
   private _parseDirectives(selectorMatcher: SelectorMatcher,
@@ -486,16 +500,14 @@ class TemplateParseVisitor implements HtmlAstVisitor {
     if (isPresent(directiveProperties)) {
       var boundPropsByName = new Map<string, BoundElementOrDirectiveProperty>();
       boundProps.forEach(boundProp => {
-        var key = dashCaseToCamelCase(boundProp.name);
         var prevValue = boundPropsByName.get(boundProp.name);
         if (isBlank(prevValue) || prevValue.isLiteral) {
-          // give [a]="b" a higher precedence thatn a="b" on the same element
-          boundPropsByName.set(key, boundProp);
+          // give [a]="b" a higher precedence than a="b" on the same element
+          boundPropsByName.set(boundProp.name, boundProp);
         }
       });
 
       StringMapWrapper.forEach(directiveProperties, (elProp: string, dirProp: string) => {
-        elProp = dashCaseToCamelCase(elProp);
         var boundProp = boundPropsByName.get(elProp);
 
         // Bindings are optional, so this binding only needs to be set up if an expression is given.
@@ -532,7 +544,7 @@ class TemplateParseVisitor implements HtmlAstVisitor {
     var boundPropertyName;
     var parts = name.split(PROPERTY_PARTS_SEPARATOR);
     if (parts.length === 1) {
-      boundPropertyName = this._schemaRegistry.getMappedPropName(dashCaseToCamelCase(parts[0]));
+      boundPropertyName = this._schemaRegistry.getMappedPropName(parts[0]);
       bindingType = PropertyBindingType.Property;
       if (!this._schemaRegistry.hasProperty(elementName, boundPropertyName)) {
         this._reportError(
@@ -540,20 +552,18 @@ class TemplateParseVisitor implements HtmlAstVisitor {
             sourceSpan);
       }
     } else {
-      let lcPrefix = parts[0].toLowerCase();
-      if (lcPrefix == ATTRIBUTE_PREFIX) {
-        boundPropertyName = dashCaseToCamelCase(parts[1]);
+      if (parts[0] == ATTRIBUTE_PREFIX) {
+        boundPropertyName = parts[1];
         bindingType = PropertyBindingType.Attribute;
-      } else if (lcPrefix == CLASS_PREFIX) {
-        // keep original case!
+      } else if (parts[0] == CLASS_PREFIX) {
         boundPropertyName = parts[1];
         bindingType = PropertyBindingType.Class;
-      } else if (lcPrefix == STYLE_PREFIX) {
+      } else if (parts[0] == STYLE_PREFIX) {
         unit = parts.length > 2 ? parts[2] : null;
-        boundPropertyName = dashCaseToCamelCase(parts[1]);
+        boundPropertyName = parts[1];
         bindingType = PropertyBindingType.Style;
       } else {
-        this._reportError(`Invalid property name ${name}`, sourceSpan);
+        this._reportError(`Invalid property name '${name}'`, sourceSpan);
         bindingType = null;
       }
     }
@@ -684,13 +694,17 @@ class Component {
 
 function createElementCssSelector(elementName: string, matchableAttrs: string[][]): CssSelector {
   var cssSelector = new CssSelector();
+  let elNameNoNs = splitNsName(elementName)[1];
 
-  cssSelector.setElement(elementName);
+  cssSelector.setElement(elNameNoNs);
+
   for (var i = 0; i < matchableAttrs.length; i++) {
-    var attrName = matchableAttrs[i][0].toLowerCase();
-    var attrValue = matchableAttrs[i][1];
-    cssSelector.addAttribute(attrName, attrValue);
-    if (attrName == CLASS_ATTR) {
+    let attrName = matchableAttrs[i][0];
+    let attrNameNoNs = splitNsName(attrName)[1];
+    let attrValue = matchableAttrs[i][1];
+
+    cssSelector.addAttribute(attrNameNoNs, attrValue);
+    if (attrName.toLowerCase() == CLASS_ATTR) {
       var classes = splitClasses(attrValue);
       classes.forEach(className => cssSelector.addClassName(className));
     }

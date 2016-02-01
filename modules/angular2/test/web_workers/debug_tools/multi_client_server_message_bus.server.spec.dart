@@ -11,8 +11,7 @@ import "package:angular2/testing_internal.dart"
         iit,
         expect,
         beforeEach,
-        createTestInjector,
-        beforeEachBindings,
+        beforeEachProviders,
         SpyObject,
         proxy;
 import "package:angular2/src/web_workers/debug_tools/multi_client_server_message_bus.dart";
@@ -213,6 +212,7 @@ SpySocketWrapper createSocket({Function messageHandler}) {
   var socket = new SpyWebSocket();
   if (messageHandler != null) {
     socket.spy("add").andCallFake(messageHandler);
+    socket.spy("addStream").andCallFake((Stream stream) => stream.listen(messageHandler));
   }
 
   var controller = new StreamController<String>.broadcast();

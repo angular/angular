@@ -14,11 +14,11 @@ import * as modelModule from './model';
  *   selector: 'my-app',
  *   viewBindings: [FORM_BINDINGS]
  *   template: `
- *     <form [ng-form-model]="loginForm">
- *       <p>Login <input ng-control="login"></p>
- *       <div ng-control-group="passwordRetry">
- *         <p>Password <input type="password" ng-control="password"></p>
- *         <p>Confirm password <input type="password" ng-control="passwordConfirmation"></p>
+ *     <form [ngFormModel]="loginForm">
+ *       <p>Login <input ngControl="login"></p>
+ *       <div ngControlGroup="passwordRetry">
+ *         <p>Password <input type="password" ngControl="password"></p>
+ *         <p>Confirm password <input type="password" ngControl="passwordConfirmation"></p>
  *       </div>
  *     </form>
  *     <h3>Form value:</h3>
@@ -119,6 +119,8 @@ export class FormBuilder {
 export const FORM_PROVIDERS: Type[] = CONST_EXPR([FormBuilder]);
 
 /**
+ * See {@link FORM_PROVIDERS} instead.
+ *
  * @deprecated
  */
 export const FORM_BINDINGS = FORM_PROVIDERS;

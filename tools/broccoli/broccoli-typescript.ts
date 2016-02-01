@@ -44,9 +44,10 @@ class DiffingTSCompiler implements DiffingBroccoliPlugin {
       this.rootFilePaths = [];
     }
 
-    // in tsc 1.7.x this api was renamed to parseJsonConfigFileContent
     // the conversion is a bit awkward, see https://github.com/Microsoft/TypeScript/issues/5276
-    this.tsOpts = ts.parseConfigFile({compilerOptions: options, files: []}, null, null).options;
+    // in 1.8 use convertCompilerOptionsFromJson
+    this.tsOpts =
+        ts.parseJsonConfigFileContent({compilerOptions: options, files: []}, null, null).options;
 
     // TODO: the above turns rootDir set to './' into an empty string - looks like a tsc bug
     //       check back when we upgrade to 1.7.x
@@ -211,7 +212,10 @@ class DiffingTSCompiler implements DiffingBroccoliPlugin {
 
     if (fs.existsSync(absoluteJsFilePath)) {
       fs.unlinkSync(absoluteJsFilePath);
-      fs.unlinkSync(absoluteMapFilePath);
+      if (fs.existsSync(absoluteMapFilePath)) {
+        // source map could be inline or not generated
+        fs.unlinkSync(absoluteMapFilePath);
+      }
       fs.unlinkSync(absoluteDtsFilePath);
     }
   }
@@ -263,7 +267,7 @@ class CustomLanguageServiceHost implements ts.LanguageServiceHost {
     } else if (this.compilerOptions.moduleResolution === ts.ModuleResolutionKind.NodeJs &&
                tsFilePath.match(/^node_modules/)) {
       absoluteTsFilePath = path.resolve(tsFilePath);
-    } else if (tsFilePath.match(/^@reactivex/)) {
+    } else if (tsFilePath.match(/^rxjs/)) {
       absoluteTsFilePath = path.resolve('node_modules', tsFilePath);
     } else {
       absoluteTsFilePath = path.join(this.treeInputPath, tsFilePath);

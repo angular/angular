@@ -3,9 +3,9 @@ import {StringMapWrapper} from 'angular2/src/facade/collection';
 import {global, isFunction, Math} from 'angular2/src/facade/lang';
 import {NgZoneZone} from 'angular2/src/core/zone/ng_zone';
 
-import {provide} from 'angular2/src/core/di';
+import {provide} from 'angular2/core';
 
-import {createTestInjector, FunctionWithParamTokens, inject} from './test_injector';
+import {TestInjector, getTestInjector, FunctionWithParamTokens, inject} from './test_injector';
 import {browserDetection} from './utils';
 
 export {inject} from './test_injector';
@@ -22,6 +22,9 @@ export type SyncTestFn = () => void;
 type AsyncTestFn = (done: () => void) => void;
 type AnyTestFn = SyncTestFn | AsyncTestFn;
 
+/**
+ * Injectable completer that allows signaling completion of an asynchronous test. Used internally.
+ */
 export class AsyncTestCompleter {
   constructor(private _done: Function) {}
 
@@ -41,7 +44,7 @@ var inIt = false;
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 500;
 var globalTimeOut = browserDetection.isSlow ? 3000 : jasmine.DEFAULT_TIMEOUT_INTERVAL;
 
-var testProviders;
+var testInjector = getTestInjector();
 
 /**
  * Mechanism to run `beforeEach()` functions of Angular tests.
@@ -55,16 +58,17 @@ class BeforeEachRunner {
 
   beforeEach(fn: FunctionWithParamTokens | SyncTestFn): void { this._fns.push(fn); }
 
-  run(injector): void {
-    if (this._parent) this._parent.run(injector);
+  run(): void {
+    if (this._parent) this._parent.run();
     this._fns.forEach((fn) => {
-      return isFunction(fn) ? (<SyncTestFn>fn)() : (<FunctionWithParamTokens>fn).execute(injector);
+      return isFunction(fn) ? (<SyncTestFn>fn)() :
+                              (testInjector.execute(<FunctionWithParamTokens>fn));
     });
   }
 }
 
 // Reset the test providers before each test
-jsmBeforeEach(() => { testProviders = []; });
+jsmBeforeEach(() => { testInjector.reset(); });
 
 function _describe(jsmFn, ...args) {
   var parentRunner = runnerStack.length === 0 ? null : runnerStack[runnerStack.length - 1];
@@ -104,16 +108,16 @@ export function beforeEach(fn: FunctionWithParamTokens | SyncTestFn): void {
  *
  * Example:
  *
- *   beforeEachBindings(() => [
+ *   beforeEachProviders(() => [
  *     provide(Compiler, {useClass: MockCompiler}),
  *     provide(SomeToken, {useValue: myValue}),
  *   ]);
  */
 export function beforeEachProviders(fn): void {
   jsmBeforeEach(() => {
-    var bindings = fn();
-    if (!bindings) return;
-    testProviders = [...testProviders, ...bindings];
+    var providers = fn();
+    if (!providers) return;
+    testInjector.addProviders(providers);
   });
 }
 
@@ -143,18 +147,17 @@ function _it(jsmFn: Function, name: string, testFn: FunctionWithParamTokens | An
           }
         });
 
-        var injector = createTestInjector([...testProviders, completerProvider]);
-        runner.run(injector);
+        testInjector.addProviders([completerProvider]);
+        runner.run();
 
         inIt = true;
-        testFn.execute(injector);
+        testInjector.execute(testFn);
         inIt = false;
       }, timeOut);
     } else {
       jsmFn(name, () => {
-        var injector = createTestInjector(testProviders);
-        runner.run(injector);
-        testFn.execute(injector);
+        runner.run();
+        testInjector.execute(testFn);
       }, timeOut);
     }
 
@@ -163,14 +166,12 @@ function _it(jsmFn: Function, name: string, testFn: FunctionWithParamTokens | An
 
     if ((<any>testFn).length === 0) {
       jsmFn(name, () => {
-        var injector = createTestInjector(testProviders);
-        runner.run(injector);
+        runner.run();
         (<SyncTestFn>testFn)();
       }, timeOut);
     } else {
       jsmFn(name, (done) => {
-        var injector = createTestInjector(testProviders);
-        runner.run(injector);
+        runner.run();
         (<AsyncTestFn>testFn)(done);
       }, timeOut);
     }

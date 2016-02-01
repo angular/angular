@@ -1,5 +1,5 @@
 import {ConnectionBackend, Connection} from '../interfaces';
-import {ReadyStates, RequestMethods, ResponseTypes} from '../enums';
+import {ReadyState, RequestMethod, ResponseType} from '../enums';
 import {Request} from '../static_request';
 import {Response} from '../static_response';
 import {ResponseOptions, BaseResponseOptions} from '../base_response_options';
@@ -7,15 +7,34 @@ import {Injectable} from 'angular2/core';
 import {BrowserJsonp} from './browser_jsonp';
 import {makeTypeError} from 'angular2/src/facade/exceptions';
 import {StringWrapper, isPresent} from 'angular2/src/facade/lang';
-import {Observable} from 'angular2/core';
+import {Observable} from 'rxjs/Observable';
 
 const JSONP_ERR_NO_CALLBACK = 'JSONP injected script did not invoke callback.';
 const JSONP_ERR_WRONG_METHOD = 'JSONP requests must use GET request method.';
 
+/**
+ * Abstract base class for an in-flight JSONP request.
+ */
 export abstract class JSONPConnection implements Connection {
-  readyState: ReadyStates;
+  /**
+   * The {@link ReadyState} of this request.
+   */
+  readyState: ReadyState;
+
+  /**
+   * The outgoing HTTP request.
+   */
   request: Request;
+
+  /**
+   * An observable that completes with the response, when the request is finished.
+   */
   response: Observable<Response>;
+
+  /**
+   * Callback called when the JSONP request completes, to notify the application
+   * of the new data.
+   */
   abstract finished(data?: any): void;
 }
 
@@ -28,13 +47,13 @@ export class JSONPConnection_ extends JSONPConnection {
   constructor(req: Request, private _dom: BrowserJsonp,
               private baseResponseOptions?: ResponseOptions) {
     super();
-    if (req.method !== RequestMethods.Get) {
+    if (req.method !== RequestMethod.Get) {
       throw makeTypeError(JSONP_ERR_WRONG_METHOD);
     }
     this.request = req;
     this.response = new Observable(responseObserver => {
 
-      this.readyState = ReadyStates.Loading;
+      this.readyState = ReadyState.Loading;
       let id = this._id = _dom.nextRequestID();
 
       _dom.exposeConnection(id, this);
@@ -52,12 +71,12 @@ export class JSONPConnection_ extends JSONPConnection {
       let script = this._script = _dom.build(url);
 
       let onLoad = event => {
-        if (this.readyState === ReadyStates.Cancelled) return;
-        this.readyState = ReadyStates.Done;
+        if (this.readyState === ReadyState.Cancelled) return;
+        this.readyState = ReadyState.Done;
         _dom.cleanup(script);
         if (!this._finished) {
           let responseOptions =
-              new ResponseOptions({body: JSONP_ERR_NO_CALLBACK, type: ResponseTypes.Error, url});
+              new ResponseOptions({body: JSONP_ERR_NO_CALLBACK, type: ResponseType.Error, url});
           if (isPresent(baseResponseOptions)) {
             responseOptions = baseResponseOptions.merge(responseOptions);
           }
@@ -75,10 +94,10 @@ export class JSONPConnection_ extends JSONPConnection {
       };
 
       let onError = error => {
-        if (this.readyState === ReadyStates.Cancelled) return;
-        this.readyState = ReadyStates.Done;
+        if (this.readyState === ReadyState.Cancelled) return;
+        this.readyState = ReadyState.Done;
         _dom.cleanup(script);
-        let responseOptions = new ResponseOptions({body: error.message, type: ResponseTypes.Error});
+        let responseOptions = new ResponseOptions({body: error.message, type: ResponseType.Error});
         if (isPresent(baseResponseOptions)) {
           responseOptions = baseResponseOptions.merge(responseOptions);
         }
@@ -91,7 +110,7 @@ export class JSONPConnection_ extends JSONPConnection {
       _dom.send(script);
 
       return () => {
-        this.readyState = ReadyStates.Cancelled;
+        this.readyState = ReadyState.Cancelled;
         script.removeEventListener('load', onLoad);
         script.removeEventListener('error', onError);
         if (isPresent(script)) {
@@ -106,11 +125,14 @@ export class JSONPConnection_ extends JSONPConnection {
     // Don't leak connections
     this._finished = true;
     this._dom.removeConnection(this._id);
-    if (this.readyState === ReadyStates.Cancelled) return;
+    if (this.readyState === ReadyState.Cancelled) return;
     this._responseData = data;
   }
 }
 
+/**
+ * A {@link ConnectionBackend} that uses the JSONP strategy of making requests.
+ */
 export abstract class JSONPBackend extends ConnectionBackend {}
 
 @Injectable()

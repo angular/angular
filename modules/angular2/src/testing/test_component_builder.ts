@@ -1,40 +1,60 @@
-import {Injector, provide, Injectable} from 'angular2/src/core/di';
+import {
+  ComponentRef,
+  DebugElement,
+  DirectiveResolver,
+  DynamicComponentLoader,
+  Injector,
+  Injectable,
+  ViewMetadata,
+  ViewRef,
+  ViewResolver,
+  provide
+} from 'angular2/core';
 
 import {Type, isPresent, isBlank} from 'angular2/src/facade/lang';
 import {Promise} from 'angular2/src/facade/async';
 import {ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
 
-import {ViewMetadata} from '../core/metadata';
-
-import {DirectiveResolver} from 'angular2/src/core/linker/directive_resolver';
-import {ViewResolver} from 'angular2/src/core/linker/view_resolver';
 import {AppView} from 'angular2/src/core/linker/view';
-import {internalView, ViewRef} from 'angular2/src/core/linker/view_ref';
-import {
-  DynamicComponentLoader,
-  ComponentRef
-} from 'angular2/src/core/linker/dynamic_component_loader';
+import {internalView} from 'angular2/src/core/linker/view_ref';
 
 import {el} from './utils';
 
 import {DOCUMENT} from 'angular2/src/platform/dom/dom_tokens';
 import {DOM} from 'angular2/src/platform/dom/dom_adapter';
 
-import {DebugElement, DebugElement_} from 'angular2/src/core/debug/debug_element';
+import {DebugElement_} from 'angular2/src/core/debug/debug_element';
 
 
 /**
- * @deprecated Use ComponentFixture
+ * Fixture for debugging and testing a component.
  */
-export abstract class RootTestComponent {
+export abstract class ComponentFixture {
+  /**
+   * The DebugElement associated with the root element of this component.
+   */
   debugElement: DebugElement;
 
+  /**
+   * The instance of the root component class.
+   */
+  componentInstance: any;
+
+  /**
+   * The native element at the root of the component.
+   */
+  nativeElement: any;
+
+  /**
+   * Trigger a change detection cycle for the component.
+   */
   abstract detectChanges(): void;
+
+  /**
+   * Trigger component destruction.
+   */
   abstract destroy(): void;
 }
-
-
-export abstract class ComponentFixture extends RootTestComponent {}
 
 
 export class ComponentFixture_ extends ComponentFixture {
@@ -46,6 +66,8 @@ export class ComponentFixture_ extends ComponentFixture {
   constructor(componentRef: ComponentRef) {
     super();
     this.debugElement = new DebugElement_(internalView(<ViewRef>componentRef.hostView), 0);
+    this.componentInstance = this.debugElement.componentInstance;
+    this.nativeElement = this.debugElement.nativeElement;
     this._componentParentView = internalView(<ViewRef>componentRef.hostView);
     this._componentRef = componentRef;
   }

@@ -275,7 +275,7 @@ class OnChangeComponent implements OnChanges {
   String prop;
 
   @override
-  void onChanges(Map changes) {
+  void ngOnChanges(Map changes) {
     this.changes = changes;
   }
 }
@@ -293,7 +293,7 @@ class OnChangeComponent implements OnChanges {
     ])
 @View(
     template:
-        '<span *ng-for="#item of list">{{item}}</span><directive-logging-checks></directive-logging-checks>',
+        '<span *ngFor="#item of list">{{item}}</span><directive-logging-checks></directive-logging-checks>',
     directives: const [NgFor, DirectiveLoggingChecks])
 class ComponentWithObservableList {
   Iterable list;
@@ -305,5 +305,5 @@ class DirectiveLoggingChecks implements DoCheck {
 
   DirectiveLoggingChecks(this.log);
 
-  doCheck() => log.add("check");
+  ngDoCheck() => log.add("check");
 }

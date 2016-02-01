@@ -22,9 +22,9 @@ const binding = const Binding(IterableDiffers,
     <div style="display: flex">
       <scroll-area id="testArea"></scroll-area>
     </div>
-    <div template="ng-if scrollAreas.length > 0">
+    <div template="ngIf scrollAreas.length > 0">
       <p>Following tables are only here to add weight to the UI:</p>
-      <scroll-area template="ng-for #scrollArea of scrollAreas"></scroll-area>
+      <scroll-area template="ngFor #scrollArea of scrollAreas"></scroll-area>
     </div>
   </div>''')
 class App {

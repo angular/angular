@@ -5,8 +5,7 @@ import {
   it,
   expect,
   beforeEach,
-  createTestInjector,
-  beforeEachBindings
+  beforeEachProviders
 } from 'angular2/testing_internal';
 import {SpyMessageBroker} from './spies';
 import {Type} from 'angular2/src/facade/lang';

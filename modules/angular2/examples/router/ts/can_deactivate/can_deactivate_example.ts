@@ -1,4 +1,5 @@
-import {provide, bootstrap, Component} from 'angular2/angular2';
+import {provide, Component} from 'angular2/core';
+import {bootstrap} from 'angular2/bootstrap';
 import {
   CanDeactivate,
   RouteConfig,
@@ -8,7 +9,7 @@ import {
   APP_BASE_HREF
 } from 'angular2/router';
 
-// #docregion canDeactivate
+// #docregion routerCanDeactivate
 @Component({
   selector: 'note-cmp',
   template: `
@@ -22,7 +23,7 @@ class NoteCmp implements CanDeactivate {
 
   constructor(params: RouteParams) { this.id = params.get('id'); }
 
-  canDeactivate(next: ComponentInstruction, prev: ComponentInstruction) {
+  routerCanDeactivate(next: ComponentInstruction, prev: ComponentInstruction) {
     return confirm('Are you sure you want to leave?');
   }
 }
@@ -34,8 +35,8 @@ class NoteCmp implements CanDeactivate {
   template: `
     <h1>Your Notes</h1>
     <div>
-      Edit <a [router-link]="['/NoteCmp', {id: 1}]" id="note-1-link">Note 1</a> |
-      Edit <a [router-link]="['/NoteCmp', {id: 2}]" id="note-2-link">Note 2</a>
+      Edit <a [routerLink]="['/NoteCmp', {id: 1}]" id="note-1-link">Note 1</a> |
+      Edit <a [routerLink]="['/NoteCmp', {id: 2}]" id="note-2-link">Note 2</a>
     </div>
   `,
   directives: [ROUTER_DIRECTIVES]

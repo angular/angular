@@ -1,4 +1,4 @@
-import {Component, View, ViewEncapsulation, OnChanges} from 'angular2/angular2';
+import {Component, View, ViewEncapsulation, OnChanges} from 'angular2/core';
 
 import {TimerWrapper} from 'angular2/src/facade/async';
 import {isPresent} from 'angular2/src/facade/lang';
@@ -8,7 +8,7 @@ import {isPresent} from 'angular2/src/facade/lang';
 // TODO(jelbourn): Make the `isMouseDown` stuff done with one global listener.
 
 @Component({
-  selector: '[md-button]:not(a), [md-fab]:not(a), [md-raised-button]:not(a)',
+  selector: '[mdButton]:not(a), [mdFab]:not(a), [mdRaisedButton]:not(a)',
   host: {
     '(mousedown)': 'onMousedown()',
     '(focus)': 'onFocus()',
@@ -22,7 +22,7 @@ import {isPresent} from 'angular2/src/facade/lang';
   encapsulation: ViewEncapsulation.None,
 })
 export class MdButton {
-  /** Whether a mousedown has occured on this element in the last 100ms. */
+  /** Whether a mousedown has occurred on this element in the last 100ms. */
   isMouseDown: boolean = false;
 
   /** Whether the button has focus from the keyboard (not the mouse). Used for class binding. */
@@ -48,7 +48,7 @@ export class MdButton {
 
 
 @Component({
-  selector: 'a[md-button], a[md-raised-button], a[md-fab]',
+  selector: 'a[mdButton], a[mdRaisedButton], a[mdFab]',
   inputs: ['disabled'],
   host: {
     '(click)': 'onClick($event)',
@@ -85,7 +85,7 @@ export class MdAnchor extends MdButton implements OnChanges {
   }
 
   /** Invoked when a change is detected. */
-  onChanges(_) {
+  ngOnChanges(_) {
     // A disabled anchor should not be in the tab flow.
     this.tabIndex = this.disabled ? -1 : 0;
   }

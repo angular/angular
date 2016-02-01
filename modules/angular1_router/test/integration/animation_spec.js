@@ -70,7 +70,7 @@ describe('ngOutlet animations', function () {
   function registerComponent(name, options) {
     var controller = options.controller || function () {};
 
-    ['$onActivate', '$onDeactivate', '$onReuse', '$canReuse', '$canDeactivate'].forEach(function (hookName) {
+    ['$routerOnActivate', '$routerOnDeactivate', '$routerOnReuse', '$routerCanReuse', '$routerCanDeactivate'].forEach(function (hookName) {
       if (options[hookName]) {
         controller.prototype[hookName] = options[hookName];
       }

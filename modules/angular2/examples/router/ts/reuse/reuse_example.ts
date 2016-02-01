@@ -1,4 +1,5 @@
-import {bootstrap, Component, provide} from 'angular2/angular2';
+import {Component, provide} from 'angular2/core';
+import {bootstrap} from 'angular2/bootstrap';
 import {
   CanActivate,
   RouteConfig,
@@ -24,9 +25,9 @@ class MyCmp implements CanReuse,
   name: string;
   constructor(params: RouteParams) { this.name = params.get('name') || 'NOBODY'; }
 
-  canReuse(next: ComponentInstruction, prev: ComponentInstruction) { return true; }
+  routerCanReuse(next: ComponentInstruction, prev: ComponentInstruction) { return true; }
 
-  onReuse(next: ComponentInstruction, prev: ComponentInstruction) {
+  routerOnReuse(next: ComponentInstruction, prev: ComponentInstruction) {
     this.name = next.params['name'];
   }
 }
@@ -37,8 +38,8 @@ class MyCmp implements CanReuse,
   selector: 'example-app',
   template: `
     <h1>Say hi to...</h1>
-    <a [router-link]="['/HomeCmp', {name: 'naomi'}]" id="naomi-link">Naomi</a> |
-    <a [router-link]="['/HomeCmp', {name: 'brad'}]" id="brad-link">Brad</a>
+    <a [routerLink]="['/HomeCmp', {name: 'naomi'}]" id="naomi-link">Naomi</a> |
+    <a [routerLink]="['/HomeCmp', {name: 'brad'}]" id="brad-link">Brad</a>
     <router-outlet></router-outlet>
   `,
   directives: [ROUTER_DIRECTIVES]

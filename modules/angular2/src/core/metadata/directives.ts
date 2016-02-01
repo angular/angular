@@ -186,8 +186,8 @@ import {ViewEncapsulation} from 'angular2/src/core/metadata/view';
  * A directive can also query for other child directives. Since parent directives are instantiated
  * before child directives, a directive can't simply inject the list of child directives. Instead,
  * the directive injects a {@link QueryList}, which updates its contents as children are added,
- * removed, or moved by a directive that uses a {@link ViewContainerRef} such as a `ng-for`, an
- * `ng-if`, or an `ng-switch`.
+ * removed, or moved by a directive that uses a {@link ViewContainerRef} such as a `ngFor`, an
+ * `ngIf`, or an `ngSwitch`.
  *
  * ```
  * @Directive({ selector: '[my-directive]' })
@@ -532,7 +532,7 @@ export class DirectiveMetadata extends InjectableMetadata {
    * Specifies which DOM events a directive listens to via a set of `(event)` to `method`
    * key-value pairs:
    *
-   * - `event1`: the DOM event that the directive listens to.
+   * - `event`: the DOM event that the directive listens to.
    * - `statement`: the statement to execute when the event occurs.
    * If the evaluation of the statement returns `false`, then `preventDefault`is applied on the DOM
    * event.
@@ -582,11 +582,11 @@ export class DirectiveMetadata extends InjectableMetadata {
    * ### Example ([live demo](http://plnkr.co/edit/gNg0ED?p=preview))
    *
    * The following example creates a directive that sets the `valid` and `invalid` classes
-   * on the DOM element that has ng-model directive on it.
+   * on the DOM element that has ngModel directive on it.
    *
    * ```typescript
    * @Directive({
-   *   selector: '[ng-model]',
+   *   selector: '[ngModel]',
    *   host: {
    *     '[class.valid]': 'valid',
    *     '[class.invalid]': 'invalid'
@@ -600,7 +600,7 @@ export class DirectiveMetadata extends InjectableMetadata {
    *
    * @Component({
    *   selector: 'app',
-   *   template: `<input [(ng-model)]="prop">`,
+   *   template: `<input [(ngModel)]="prop">`,
    *   directives: [FORM_DIRECTIVES, NgModelStatus]
    * })
    * class App {
@@ -696,32 +696,12 @@ export class DirectiveMetadata extends InjectableMetadata {
    */
   exportAs: string;
 
-  /**
-   * The module id of the module that contains the directive.
-   * Needed to be able to resolve relative urls for templates and styles.
-   * In Dart, this can be determined automatically and does not need to be set.
-   * In CommonJS, this can always be set to `module.id`.
-   *
-   * ## Simple Example
-   *
-   * ```
-   * @Directive({
-   *   selector: 'someDir',
-   *   moduleId: module.id
-   * })
-   * class SomeDir {
-   * }
-   *
-   * ```
-   */
-  moduleId: string;
-
   // TODO: add an example after ContentChildren and ViewChildren are in master
   /**
    * Configures the queries that will be injected into the directive.
    *
-   * Content queries are set before the `afterContentInit` callback is called.
-   * View queries are set before the `afterViewInit` callback is called.
+   * Content queries are set before the `ngAfterContentInit` callback is called.
+   * View queries are set before the `ngAfterViewInit` callback is called.
    *
    * ### Example
    *
@@ -739,11 +719,11 @@ export class DirectiveMetadata extends InjectableMetadata {
    *   contentChildren: QueryList<ChildDirective>,
    *   viewChildren: QueryList<ChildDirective>
    *
-   *   afterContentInit() {
+   *   ngAfterContentInit() {
    *     // contentChildren is set
    *   }
    *
-   *   afterViewInit() {
+   *   ngAfterViewInit() {
    *     // viewChildren is set
    *   }
    * }
@@ -752,7 +732,7 @@ export class DirectiveMetadata extends InjectableMetadata {
   queries: {[key: string]: any};
 
   constructor({selector, inputs, outputs, properties, events, host, bindings, providers, exportAs,
-               moduleId, queries}: {
+               queries}: {
     selector?: string,
     inputs?: string[],
     outputs?: string[],
@@ -762,7 +742,6 @@ export class DirectiveMetadata extends InjectableMetadata {
     providers?: any[],
     /** @deprecated */ bindings?: any[],
     exportAs?: string,
-    moduleId?: string,
     queries?: {[key: string]: any}
   } = {}) {
     super();
@@ -773,7 +752,6 @@ export class DirectiveMetadata extends InjectableMetadata {
     this._events = events;
     this.host = host;
     this.exportAs = exportAs;
-    this.moduleId = moduleId;
     this.queries = queries;
     this._providers = providers;
     this._bindings = bindings;
@@ -804,20 +782,7 @@ export class DirectiveMetadata extends InjectableMetadata {
  *
  * ### Example
  *
- * ```
- * @Component({
- *   selector: 'greet',
- *   template: 'Hello {{name}}!'
- * })
- * class Greet {
- *   name: string;
- *
- *   constructor() {
- *     this.name = 'World';
- *   }
- * }
- * ```
- *
+ * {@example core/ts/metadata/metadata.ts region='component'}
  */
 @CONST()
 export class ComponentMetadata extends DirectiveMetadata {
@@ -878,6 +843,26 @@ export class ComponentMetadata extends DirectiveMetadata {
   private _viewProviders: any[];
   private _viewBindings: any[];
 
+  /**
+   * The module id of the module that contains the component.
+   * Needed to be able to resolve relative urls for templates and styles.
+   * In Dart, this can be determined automatically and does not need to be set.
+   * In CommonJS, this can always be set to `module.id`.
+   *
+   * ## Simple Example
+   *
+   * ```
+   * @Directive({
+   *   selector: 'someDir',
+   *   moduleId: module.id
+   * })
+   * class SomeDir {
+   * }
+   *
+   * ```
+   */
+  moduleId: string;
+
   templateUrl: string;
 
   template: string;
@@ -926,7 +911,6 @@ export class ComponentMetadata extends DirectiveMetadata {
       events: events,
       host: host,
       exportAs: exportAs,
-      moduleId: moduleId,
       bindings: bindings,
       providers: providers,
       queries: queries
@@ -942,6 +926,7 @@ export class ComponentMetadata extends DirectiveMetadata {
     this.directives = directives;
     this.pipes = pipes;
     this.encapsulation = encapsulation;
+    this.moduleId = moduleId;
   }
 }
 
@@ -954,12 +939,7 @@ export class ComponentMetadata extends DirectiveMetadata {
  *
  * ### Example
  *
- * ```
- * @Pipe({name: 'lowercase'})
- * class Lowercase {
- *   transform(v, args) { return v.toLowerCase(); }
- * }
- * ```
+ * {@example core/ts/metadata/metadata.ts region='pipe'}
  */
 @CONST()
 export class PipeMetadata extends InjectableMetadata {
@@ -1085,10 +1065,10 @@ export class OutputMetadata {
  * ### Example
  *
  * The following example creates a directive that sets the `valid` and `invalid` classes
- * on the DOM element that has ng-model directive on it.
+ * on the DOM element that has ngModel directive on it.
  *
  * ```typescript
- * @Directive({selector: '[ng-model]'})
+ * @Directive({selector: '[ngModel]'})
  * class NgModelStatus {
  *   constructor(public control:NgModel) {}
  *   @HostBinding('[class.valid]') get valid { return this.control.valid; }
@@ -1097,7 +1077,7 @@ export class OutputMetadata {
  *
  * @Component({
  *   selector: 'app',
- *   template: `<input [(ng-model)]="prop">`,
+ *   template: `<input [(ngModel)]="prop">`,
  *   directives: [FORM_DIRECTIVES, NgModelStatus]
  * })
  * class App {
