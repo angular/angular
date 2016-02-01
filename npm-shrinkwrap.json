@@ -1,6 +1,6 @@
 {
   "name": "angular-srcs",
-  "version": "2.0.0-beta.1",
+  "version": "2.0.0-beta.2",
   "dependencies": {
     "abbrev": {
       "version": "1.0.7",
@@ -7668,7 +7668,7 @@
     },
     "rxjs": {
       "version": "5.0.0-beta.0",
-      "from": "https://registry.npmjs.org/rxjs/-/rxjs-5.0.0-beta.0.tgz",
+      "from": "rxjs@5.0.0-beta.0",
       "resolved": "https://registry.npmjs.org/rxjs/-/rxjs-5.0.0-beta.0.tgz"
     },
     "sass-graph": {
@@ -8518,9 +8518,9 @@
       }
     },
     "ts2dart": {
-      "version": "0.7.19",
-      "from": "ts2dart@>=0.7.18 <0.8.0",
-      "resolved": "https://registry.npmjs.org/ts2dart/-/ts2dart-0.7.19.tgz",
+      "version": "0.7.22",
+      "from": "ts2dart@>=0.7.22 <0.8.0",
+      "resolved": "https://registry.npmjs.org/ts2dart/-/ts2dart-0.7.22.tgz",
       "dependencies": {
         "source-map": {
           "version": "0.4.4",
@@ -9291,9 +9291,9 @@
       }
     },
     "zone.js": {
-      "version": "0.5.11",
-      "from": "zone.js@0.5.11",
-      "resolved": "https://registry.npmjs.org/zone.js/-/zone.js-0.5.11.tgz"
+      "version": "0.5.13",
+      "from": "zone.js@0.5.13",
+      "resolved": "https://registry.npmjs.org/zone.js/-/zone.js-0.5.13.tgz"
     }
   }
 }

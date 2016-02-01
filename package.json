@@ -36,7 +36,7 @@
     "es6-shim": "^0.33.3",
     "reflect-metadata": "0.1.2",
     "rxjs": "5.0.0-beta.0",
-    "zone.js": "0.5.11"
+    "zone.js": "0.5.13"
   },
   "devDependencies": {
     "angular": "^1.4.7",
@@ -111,7 +111,7 @@
     "systemjs": "0.18.10",
     "systemjs-builder": "^0.10.3",
     "through2": "^0.6.5",
-    "ts2dart": "^0.7.19",
+    "ts2dart": "^0.7.22",
     "ts-api-guardian": "0.0.2",
     "tsd": "^0.6.5-beta",
     "tslint": "^3.2.1",
