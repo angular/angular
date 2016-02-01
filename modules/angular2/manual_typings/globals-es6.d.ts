@@ -7,10 +7,6 @@
 /// <reference path="../typings/zone/zone.d.ts"/>
 /// <reference path="../typings/hammerjs/hammerjs.d.ts"/>
 
-// TODO: ideally the node.d.ts reference should be scoped only for files that need and not to all
-//       the code including client code
-/// <reference path="../typings/node/node.d.ts" />
-
 declare var assert: any;
 
 
