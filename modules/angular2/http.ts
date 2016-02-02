@@ -291,7 +291,6 @@ export const JSONP_PROVIDERS: any[] = [
   provide(ResponseOptions, {useClass: BaseResponseOptions}),
   provide(JSONPBackend, {useClass: JSONPBackend_})
 ];
-
 /**
  * See {@link JSONP_PROVIDERS} instead.
  *
