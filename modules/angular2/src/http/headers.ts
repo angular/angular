@@ -57,8 +57,9 @@ export class Headers {
     }
 
     // headers instanceof StringMap
-    StringMapWrapper.forEach(
-        headers, (v, k) => { this._headersMap.set(k, isListLikeIterable(v) ? v : [v]); });
+    StringMapWrapper.forEach(headers, (v: any, k: string) => {
+      this._headersMap.set(k, isListLikeIterable(v) ? v : [v]);
+    });
   }
 
   /**
@@ -110,13 +111,13 @@ export class Headers {
    * Sets or overrides header value for given name.
    */
   set(header: string, value: string | string[]): void {
-    var list = [];
+    var list: string[] = [];
 
     if (isListLikeIterable(value)) {
       var pushValue = (<string[]>value).join(',');
       list.push(pushValue);
     } else {
-      list.push(value);
+      list.push(<string>value);
     }
 
     this._headersMap.set(header, list);

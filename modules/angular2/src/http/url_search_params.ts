@@ -121,7 +121,7 @@ export class URLSearchParams {
   }
 
   toString(): string {
-    var paramsList = [];
+    var paramsList: string[] = [];
     this.paramsMap.forEach((values, k) => { values.forEach(v => paramsList.push(k + '=' + v)); });
     return paramsList.join('&');
   }

@@ -32,7 +32,7 @@ export class MockConnection implements Connection {
    * {@link EventEmitter} of {@link Response}. Can be subscribed to in order to be notified when a
    * response is available.
    */
-  response: any;  // Subject<Response>
+  response: ReplaySubject<Response>;
 
   constructor(req: Request) {
     this.response = take.call(new ReplaySubject(1), 1);
@@ -176,7 +176,8 @@ export class MockBackend implements ConnectionBackend {
   constructor() {
     this.connectionsArray = [];
     this.connections = new Subject();
-    this.connections.subscribe(connection => this.connectionsArray.push(connection));
+    this.connections.subscribe((connection: MockConnection) =>
+                                   this.connectionsArray.push(connection));
     this.pendingConnections = new Subject();
   }
 
@@ -187,7 +188,7 @@ export class MockBackend implements ConnectionBackend {
    */
   verifyNoPendingRequests() {
     let pending = 0;
-    this.pendingConnections.subscribe(c => pending++);
+    this.pendingConnections.subscribe((c: MockConnection) => pending++);
     if (pending > 0) throw new BaseException(`${pending} pending connections to be resolved`);
   }
 
@@ -197,7 +198,7 @@ export class MockBackend implements ConnectionBackend {
    *
    * This method only exists in the mock implementation, not in real Backends.
    */
-  resolveAllConnections() { this.connections.subscribe(c => c.readyState = 4); }
+  resolveAllConnections() { this.connections.subscribe((c: MockConnection) => c.readyState = 4); }
 
   /**
    * Creates a new {@link MockConnection}. This is equivalent to calling `new
@@ -205,7 +206,7 @@ export class MockBackend implements ConnectionBackend {
    * emitter of this `MockBackend` instance. This method will usually only be used by tests
    * against the framework itself, not by end-users.
    */
-  createConnection(req: Request): Connection {
+  createConnection(req: Request): MockConnection {
     if (!isPresent(req) || !(req instanceof Request)) {
       throw new BaseException(`createConnection requires an instance of Request, got ${req}`);
     }
