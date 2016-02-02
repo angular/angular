@@ -12,7 +12,8 @@ function httpRequest(backend: ConnectionBackend, request: Request): Observable<R
   return backend.createConnection(request).response;
 }
 
-function mergeOptions(defaultOpts, providedOpts, method, url): RequestOptions {
+function mergeOptions(defaultOpts: BaseRequestOptions, providedOpts: RequestOptionsArgs,
+                      method: RequestMethod, url: string): RequestOptions {
   var newOptions = defaultOpts;
   if (isPresent(providedOpts)) {
     // Hack so Dart can used named parameters
@@ -104,7 +105,7 @@ export class Http {
     if (isString(url)) {
       responseObservable = httpRequest(
           this._backend,
-          new Request(mergeOptions(this._defaultOptions, options, RequestMethod.Get, url)));
+          new Request(mergeOptions(this._defaultOptions, options, RequestMethod.Get, <string>url)));
     } else if (url instanceof Request) {
       responseObservable = httpRequest(this._backend, url);
     } else {
@@ -183,7 +184,8 @@ export class Jsonp extends Http {
   request(url: string | Request, options?: RequestOptionsArgs): Observable<Response> {
     var responseObservable: any;
     if (isString(url)) {
-      url = new Request(mergeOptions(this._defaultOptions, options, RequestMethod.Get, url));
+      url =
+          new Request(mergeOptions(this._defaultOptions, options, RequestMethod.Get, <string>url));
     }
     if (url instanceof Request) {
       if (url.method !== RequestMethod.Get) {

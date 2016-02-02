@@ -92,7 +92,7 @@ export class Response {
    * Attempts to return body as parsed `JSON` object, or raises an exception.
    */
   json(): any {
-    var jsonResponse;
+    var jsonResponse: string | Object;
     if (isJsObject(this._body)) {
       jsonResponse = this._body;
     } else if (isString(this._body)) {

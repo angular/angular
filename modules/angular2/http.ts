@@ -156,7 +156,8 @@ export const HTTP_PROVIDERS: any[] = [
   // issue: https://github.com/angular/angular/issues/3183
   provide(Http,
           {
-            useFactory: (xhrBackend, requestOptions) => new Http(xhrBackend, requestOptions),
+            useFactory: (xhrBackend: XHRBackend, requestOptions: RequestOptions) =>
+                            new Http(xhrBackend, requestOptions),
             deps: [XHRBackend, RequestOptions]
           }),
   BrowserXhr,
@@ -283,7 +284,8 @@ export const JSONP_PROVIDERS: any[] = [
   // issue: https://github.com/angular/angular/issues/3183
   provide(Jsonp,
           {
-            useFactory: (jsonpBackend, requestOptions) => new Jsonp(jsonpBackend, requestOptions),
+            useFactory: (jsonpBackend: JSONPBackend, requestOptions: RequestOptions) =>
+                            new Jsonp(jsonpBackend, requestOptions),
             deps: [JSONPBackend, RequestOptions]
           }),
   BrowserJsonp,
