@@ -153,7 +153,6 @@ export const $BAR = 124;
 export const $RBRACE = 125;
 const $NBSP = 160;
 
-
 export class ScannerError extends BaseException {
   constructor(public message) { super(); }
 
