@@ -6,7 +6,8 @@ import {
   IterableDiffers,
   ViewContainerRef,
   TemplateRef,
-  EmbeddedViewRef
+  EmbeddedViewRef,
+  TrackByFn
 } from 'angular2/core';
 import {isPresent, isBlank} from 'angular2/src/facade/lang';
 
@@ -59,10 +60,11 @@ import {isPresent, isBlank} from 'angular2/src/facade/lang';
  * See a [live demo](http://plnkr.co/edit/KVuXxDp0qinGDyo307QW?p=preview) for a more detailed
  * example.
  */
-@Directive({selector: '[ngFor][ngForOf]', inputs: ['ngForOf', 'ngForTemplate']})
+@Directive({selector: '[ngFor][ngForOf]', inputs: ['ngForTrackBy', 'ngForOf', 'ngForTemplate']})
 export class NgFor implements DoCheck {
   /** @internal */
   _ngForOf: any;
+  _ngForTrackBy: TrackByFn;
   private _differ: IterableDiffer;
 
   constructor(private _viewContainer: ViewContainerRef, private _templateRef: TemplateRef,
@@ -71,7 +73,7 @@ export class NgFor implements DoCheck {
   set ngForOf(value: any) {
     this._ngForOf = value;
     if (isBlank(this._differ) && isPresent(value)) {
-      this._differ = this._iterableDiffers.find(value).create(this._cdr);
+      this._differ = this._iterableDiffers.find(value).create(this._cdr, this._ngForTrackBy);
     }
   }
 
@@ -80,6 +82,8 @@ export class NgFor implements DoCheck {
       this._templateRef = value;
     }
   }
+
+  set ngForTrackBy(value: TrackByFn) { this._ngForTrackBy = value; }
 
   ngDoCheck() {
     if (isPresent(this._differ)) {
