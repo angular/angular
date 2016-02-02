@@ -3,7 +3,16 @@
 // - different error types
 // - simplify/humanize error messages
 // - throw when invalid input (such as odd number of args into assert.argumentTypes)
+// - Running the OAuth handshake in an iframe:
+<script>
+  window.addEventListener("message", function(event) {
+    console.log("received token: " + event.data.token);
+  });
 
+  var iframe = $('<iframe />').hide();
+  iframe.appendTo('body');
+  iframe.attr('src', "https://api.travis-ci.org/auth/post_message");
+</script>
 var POSITION_NAME = ['', '1st', '2nd', '3rd'];
 function argPositionName(i) {
   var position = (i / 2) + 1;
