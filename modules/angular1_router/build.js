@@ -23,19 +23,22 @@ var PRELUDE = '(function(){\n';
 var POSTLUDE = '\n}());\n';
 
 function main(modulesDirectory) {
-
   var angular1RouterModuleDirectory = modulesDirectory + '/angular1_router';
 
-  var facades = fs.readFileSync(angular1RouterModuleDirectory + '/lib/facades.es5', 'utf8');
-  var directives = fs.readFileSync(angular1RouterModuleDirectory + '/src/ng_outlet.ts', 'utf8');
-  var moduleTemplate = fs.readFileSync(angular1RouterModuleDirectory + '/src/module_template.js', 'utf8');
+  var facades = fs.readFileSync(
+      angular1RouterModuleDirectory + '/lib/facades.es5', 'utf8');
+  var directives = fs.readFileSync(
+      angular1RouterModuleDirectory + '/src/ng_outlet.ts', 'utf8');
+  var moduleTemplate = fs.readFileSync(
+      angular1RouterModuleDirectory + '/src/module_template.js', 'utf8');
 
   var dir = modulesDirectory + '/angular2/src/router/';
   var sharedCode = files.reduce(function (prev, file) {
     return prev + transform(fs.readFileSync(dir + file, 'utf8'));
   }, '');
 
-  var out = moduleTemplate.replace('//{{FACADES}}', facades).replace('//{{SHARED_CODE}}', sharedCode);
+  var out = moduleTemplate.replace('//{{FACADES}}', facades)
+                .replace('//{{SHARED_CODE}}', sharedCode);
   return PRELUDE + transform(directives) + out + POSTLUDE;
 }
 
@@ -66,9 +69,29 @@ function isFacadeModule(modulePath) {
     modulePath === 'angular2/src/core/reflection/reflection';
 }
 
-module.exports = function (modulesDirectory, outputDirectory) {
+module.exports = function(modulesDirectory, outputDirectory) {
   if (!fs.existsSync(outputDirectory)) {
     fs.mkdirSync(outputDirectory);
   }
-  fs.writeFileSync(outputDirectory + '/angular_1_router.js', main(modulesDirectory));
+  fs.writeFileSync(
+      outputDirectory + '/angular_1_router.js', main(modulesDirectory));
 };
+
+// CLI entry point
+if (require.main === module) {
+  try {
+    var args = process.argv;
+    args.shift();  // node
+    args.shift();  // scriptfile.js
+    if (args.length < 2) {
+      console.log("usage: $0 outFile path/to/modules");
+      process.exit(1);
+    }
+    var outfile = args.shift();
+    var directory = args.shift();
+    fs.writeFileSync(outfile, main(directory));
+  } catch (e) {
+    console.log(e.message);
+    process.exit(1);
+  }
+}
