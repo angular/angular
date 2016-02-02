@@ -456,7 +456,7 @@ Where
 * `local` is a local identifier for local variables.
 * `internal` is an internal variable which the directive exports for binding.
 * `key` is an attribute name usually only used to trigger a specific directive.
-* `keyExpression` is an property name to which the expression will be bound to.
+* `keyExpression` is a property name to which the expression will be bound to.
 * `varExport` allows exporting of directive internal state as variables for further binding. If no `internal` name
   is specified, the exporting is to an implicit variable.
 * `microsyntax` allows you to build a simple microsyntax which can still clearly identify which expressions bind to
