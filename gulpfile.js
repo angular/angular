@@ -627,7 +627,11 @@ gulp.task('!test.unit.router/karma-run', function(done) {
                    });
 });
 
-gulp.task('buildRouter.dev', function() { buildRouter(); });
+gulp.task('buildRouter.dev', function() {
+  var modulesSrcDir = __dirname + '/modules';
+  var distDir = __dirname + '/dist';
+  buildRouter(modulesSrcDir, distDir);
+});
 
 gulp.task('test.unit.dart', function(done) {
   printModulesWarning();

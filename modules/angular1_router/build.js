@@ -21,18 +21,22 @@ var files = [
 
 var PRELUDE = '(function(){\n';
 var POSTLUDE = '\n}());\n';
-var FACADES = fs.readFileSync(__dirname + '/lib/facades.es5', 'utf8');
-var DIRECTIVES = fs.readFileSync(__dirname + '/src/ng_outlet.ts', 'utf8');
-var moduleTemplate = fs.readFileSync(__dirname + '/src/module_template.js', 'utf8');
 
-function main() {
-  var dir = __dirname + '/../angular2/src/router/';
+function main(modulesDirectory) {
+
+  var angular1RouterModuleDirectory = modulesDirectory + '/angular1_router';
+
+  var facades = fs.readFileSync(angular1RouterModuleDirectory + '/lib/facades.es5', 'utf8');
+  var directives = fs.readFileSync(angular1RouterModuleDirectory + '/src/ng_outlet.ts', 'utf8');
+  var moduleTemplate = fs.readFileSync(angular1RouterModuleDirectory + '/src/module_template.js', 'utf8');
+
+  var dir = modulesDirectory + '/angular2/src/router/';
   var sharedCode = files.reduce(function (prev, file) {
     return prev + transform(fs.readFileSync(dir + file, 'utf8'));
   }, '');
 
-  var out = moduleTemplate.replace('//{{FACADES}}', FACADES).replace('//{{SHARED_CODE}}', sharedCode);
-  return PRELUDE + transform(DIRECTIVES) + out + POSTLUDE;
+  var out = moduleTemplate.replace('//{{FACADES}}', facades).replace('//{{SHARED_CODE}}', sharedCode);
+  return PRELUDE + transform(directives) + out + POSTLUDE;
 }
 
 /*
@@ -62,10 +66,9 @@ function isFacadeModule(modulePath) {
     modulePath === 'angular2/src/core/reflection/reflection';
 }
 
-module.exports = function () {
-  var dist = __dirname + '/../../dist';
-  if (!fs.existsSync(dist)) {
-    fs.mkdirSync(dist);
+module.exports = function (modulesDirectory, outputDirectory) {
+  if (!fs.existsSync(outputDirectory)) {
+    fs.mkdirSync(outputDirectory);
   }
-  fs.writeFileSync(dist + '/angular_1_router.js', main());
+  fs.writeFileSync(outputDirectory + '/angular_1_router.js', main(modulesDirectory));
 };
