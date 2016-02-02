@@ -16,7 +16,7 @@ import {
 import {ListWrapper} from 'angular2/src/facade/collection';
 import {Component, View, TemplateRef, ContentChild} from 'angular2/core';
 import {NgFor} from 'angular2/src/common/directives/ng_for';
-
+import {By} from 'angular2/platform/common_dom';
 
 export function main() {
   describe('ngFor', () => {
@@ -360,6 +360,31 @@ export function main() {
                async.done();
              });
        }));
+
+    it('should use custom track by if function is provided',
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+         var template =
+             `<template ngFor #item [ngForOf]="items" [ngForTrackBy]="customTrackBy" #i="index">
+               <p>{{items[i]}}</p>
+              </template>`;
+         tcb.overrideTemplate(TestComponent, template)
+             .createAsync(TestComponent)
+             .then((fixture) => {
+               var buildItemList =
+                   () => {
+                     fixture.debugElement.componentInstance.items = [{'id': 'a'}];
+                     fixture.detectChanges();
+                     return fixture.debugElement.queryAll(By.css('p'))[0];
+                   }
+
+               var firstP = buildItemList();
+               var finalP = buildItemList();
+               expect(finalP.nativeElement).toBe(firstP.nativeElement);
+               async.done();
+             });
+       }));
+
+
   });
 }
 
@@ -373,6 +398,7 @@ class TestComponent {
   @ContentChild(TemplateRef) contentTpl: TemplateRef;
   items: any;
   constructor() { this.items = [1, 2]; }
+  customTrackBy(index: number, item: any): string { return item['id']; }
 }
 
 @Component({selector: 'outer-cmp'})
