@@ -36,6 +36,7 @@ import {BrowserDomAdapter} from './browser/browser_adapter';
 import {wtfInit} from 'angular2/src/core/profile/wtf_init';
 import {MessageBasedRenderer} from 'angular2/src/web_workers/ui/renderer';
 import {MessageBasedXHRImpl} from 'angular2/src/web_workers/ui/xhr_impl';
+import {BrowserPlatformLocation} from 'angular2/src/router/browser_platform_location';
 import {
   ServiceMessageBrokerFactory,
   ServiceMessageBrokerFactory_
@@ -59,7 +60,14 @@ export const WORKER_RENDER_PLATFORM: Array<any /*Type | Provider | any[]*/> = CO
   new Provider(PLATFORM_INITIALIZER, {useValue: initWebWorkerRenderPlatform, multi: true})
 ]);
 
-export const WORKER_RENDER_APP_COMMON: Array<any /*Type | Provider | any[]*/> = CONST_EXPR([
+/**
+ * A list of {@link Provider}s. To use the router in a Worker enabled application you must
+ * include these providers when setting up the render thread.
+ */
+export const WORKER_RENDER_ROUTER: Array<any /*Type | Provider | any[]*/> =
+    CONST_EXPR([BrowserPlatformLocation]);
+
+export const WORKER_RENDER_APPLICATION_COMMON: Array<any /*Type | Provider | any[]*/> = CONST_EXPR([
   APPLICATION_COMMON_PROVIDERS,
   WORKER_RENDER_MESSAGING_PROVIDERS,
   new Provider(ExceptionHandler, {useFactory: _exceptionHandler, deps: []}),

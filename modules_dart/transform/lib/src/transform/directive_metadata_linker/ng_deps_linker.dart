@@ -12,12 +12,13 @@ import 'package:angular2/src/transform/common/url_resolver.dart';
 import 'package:barback/barback.dart';
 
 /// Modifies the [NgDepsModel] represented by `entryPoint` to import its
-/// dependencies' associated `.ng_deps.dart` files.
+/// dependencies' associated, generated files.
 ///
-/// For example, if entry_point.ng_deps.dart imports dependency.dart, this
-/// will check if dependency.ng_meta.json exists. If it does, we add an entry
-/// to the `depImports` of [NgDepsModel] for dependency.ng_deps.dart. We can
-/// use this information later to ensure that each file's dependencies are
+/// For example, if entry_point.dart imports dependency.dart, this will check if
+/// dependency.ng_meta.json exists. If it does, we add an entry to the
+/// `depImports` of [NgDepsModel] for dependency.template.dart.
+///
+/// We use this information later to ensure that each file's dependencies are
 /// initialized when that file is initialized.
 Future<NgDepsModel> linkNgDeps(NgDepsModel ngDepsModel, AssetReader reader,
     AssetId assetId, UrlResolver resolver) async {
@@ -29,7 +30,6 @@ Future<NgDepsModel> linkNgDeps(NgDepsModel ngDepsModel, AssetReader reader,
     if (linkedDepsMap.isEmpty) {
       // We are not calling `initReflector` on any other libraries, but we still
       // return the model to ensure it is written to code.
-      // TODO(kegluneq): Continue using the protobuf format after this phase.
       return ngDepsModel;
     }
 
@@ -40,7 +40,7 @@ Future<NgDepsModel> linkNgDeps(NgDepsModel ngDepsModel, AssetReader reader,
       if (linkedDepsMap.containsKey(dep.uri) && !seen.contains(dep.uri)) {
         seen.add(dep.uri);
         var linkedModel = new ImportModel()
-          ..uri = toDepsExtension(dep.uri)
+          ..uri = toTemplateExtension(dep.uri)
           ..prefix = 'i${idx++}';
         // TODO(kegluneq): Preserve combinators?
         ngDepsModel.depImports.add(linkedModel);

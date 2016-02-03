@@ -14,7 +14,7 @@ import {
 } from 'angular2/testing_internal';
 
 import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
-import {Type, isPresent, isBlank, stringify, isString} from 'angular2/src/facade/lang';
+import {Type, isPresent, isBlank, stringify, isString, IS_DART} from 'angular2/src/facade/lang';
 import {
   MapWrapper,
   SetWrapper,
@@ -58,6 +58,11 @@ var REFLECTION_CAPS_MODULE_REF =
     moduleRef(`package:angular2/src/core/reflection/reflection_capabilities${MODULE_SUFFIX}`);
 
 export function main() {
+  // Dart's isolate support is broken, and these tests will be obsolote soon with
+  // https://github.com/angular/angular/issues/6270
+  if (IS_DART) {
+    return;
+  }
   describe('TemplateCompiler', () => {
     var compiler: TemplateCompiler;
     var runtimeMetadataResolver: RuntimeMetadataResolver;
@@ -100,6 +105,22 @@ export function main() {
                    expect(componentView['elements']).toEqual(['<a>']);
                    expect(componentView['pipes']).toEqual({'uppercase': stringify(UpperCasePipe)});
                    expect(componentView['cd']).toEqual(['prop(href)=SOMECTXVALUE']);
+
+                   async.done();
+                 });
+           }));
+
+        it('should compile components at various nesting levels',
+           inject([AsyncTestCompleter], (async) => {
+             compile([CompWith2NestedComps, Comp1, Comp2])
+                 .then((humanizedView) => {
+                   expect(humanizedView['elements']).toEqual(['<comp-with-2nested>']);
+                   expect(humanizedView['componentViews'][0]['elements'])
+                       .toEqual(['<comp1>', '<comp2>']);
+                   expect(humanizedView['componentViews'][0]['componentViews'][0]['elements'])
+                       .toEqual(['<a>', '<comp2>']);
+                   expect(humanizedView['componentViews'][0]['componentViews'][1]['elements'])
+                       .toEqual(['<b>']);
 
                    async.done();
                  });
@@ -364,6 +385,29 @@ export class CompWithEmbeddedTemplate {
 export class NonComponent {
 }
 
+
+@Component({selector: 'comp2', moduleId: THIS_MODULE_ID})
+@View({template: '<b></b>', encapsulation: ViewEncapsulation.None})
+export class Comp2 {
+}
+
+@Component({selector: 'comp1', moduleId: THIS_MODULE_ID})
+@View({
+  template: '<a></a>, <comp2></comp2>',
+  encapsulation: ViewEncapsulation.None,
+  directives: [Comp2]
+})
+export class Comp1 {
+}
+
+@Component({selector: 'comp-with-2nested', moduleId: THIS_MODULE_ID})
+@View({
+  template: '<comp1></comp1>, <comp2></comp2>',
+  encapsulation: ViewEncapsulation.None,
+  directives: [Comp1, Comp2]
+})
+export class CompWith2NestedComps {
+}
 
 function testableTemplateModule(sourceModule: SourceModule,
                                 normComp: CompileDirectiveMetadata): SourceModule {

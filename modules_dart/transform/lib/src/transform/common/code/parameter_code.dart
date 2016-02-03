@@ -95,7 +95,7 @@ class ParameterVisitor extends SimpleAstVisitor<ParameterModel> {
 }
 
 /// Defines the format in which a [ParameterModel] is expressed as Dart code
-/// in a `.ng_deps.dart` file.
+/// when registered with the reflector.
 abstract class ParameterWriterMixin {
   StringBuffer get buffer;
 

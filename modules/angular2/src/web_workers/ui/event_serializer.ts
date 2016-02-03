@@ -32,6 +32,8 @@ const KEYBOARD_EVENT_PROPERTIES = [
   'which'
 ];
 
+const TRANSITION_EVENT_PROPERTIES = ['propertyName', 'elapsedTime', 'pseudoElement'];
+
 const EVENT_PROPERTIES = ['type', 'bubbles', 'cancelable'];
 
 const NODES_WITH_VALUE =
@@ -54,6 +56,11 @@ export function serializeMouseEvent(e: MouseEvent): {[key: string]: any} {
 
 export function serializeKeyboardEvent(e: KeyboardEvent): {[key: string]: any} {
   var serializedEvent = serializeEvent(e, KEYBOARD_EVENT_PROPERTIES);
+  return addTarget(e, serializedEvent);
+}
+
+export function serializeTransitionEvent(e: TransitionEvent): {[key: string]: any} {
+  var serializedEvent = serializeEvent(e, TRANSITION_EVENT_PROPERTIES);
   return addTarget(e, serializedEvent);
 }
 

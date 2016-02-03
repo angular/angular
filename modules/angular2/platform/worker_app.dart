@@ -12,3 +12,5 @@ export 'package:angular2/src/web_workers/shared/service_message_broker.dart'
     show ReceivedMessage, ServiceMessageBroker, ServiceMessageBrokerFactory;
 export 'package:angular2/src/web_workers/shared/serializer.dart' show PRIMITIVE;
 export 'package:angular2/src/web_workers/shared/message_bus.dart';
+export 'package:angular2/src/web_workers/worker/router_providers.dart'
+  show WORKER_APP_ROUTER;

@@ -124,7 +124,7 @@ export class TemplateCompiler {
       var hostMeta: CompileDirectiveMetadata =
           createHostComponentMeta(compMeta.type, compMeta.selector);
 
-      this._compileComponentRuntime(hostCacheKey, hostMeta, [compMeta], [], new Set());
+      this._compileComponentRuntime(hostCacheKey, hostMeta, [compMeta], [], []);
     }
     return this._compiledTemplateDone.get(hostCacheKey)
         .then((compiledTemplate: CompiledTemplate) =>
@@ -172,7 +172,7 @@ export class TemplateCompiler {
   private _compileComponentRuntime(cacheKey: any, compMeta: CompileDirectiveMetadata,
                                    viewDirectives: CompileDirectiveMetadata[],
                                    pipes: CompilePipeMetadata[],
-                                   compilingComponentCacheKeys: Set<any>): CompiledTemplate {
+                                   compilingComponentsPath: any[]): CompiledTemplate {
     let uniqViewDirectives = <CompileDirectiveMetadata[]>removeDuplicates(viewDirectives);
     let uniqViewPipes = <CompilePipeMetadata[]>removeDuplicates(pipes);
     var compiledTemplate = this._compiledTemplateCache.get(cacheKey);
@@ -180,7 +180,6 @@ export class TemplateCompiler {
     if (isBlank(compiledTemplate)) {
       compiledTemplate = new CompiledTemplate();
       this._compiledTemplateCache.set(cacheKey, compiledTemplate);
-      compilingComponentCacheKeys.add(cacheKey);
       done = PromiseWrapper
                  .all([<any>this._styleCompiler.compileComponentRuntime(compMeta.template)].concat(
                      uniqViewDirectives.map(dirMeta => this.normalizeDirectiveMetadata(dirMeta))))
@@ -195,14 +194,13 @@ export class TemplateCompiler {
                    var usedDirectives = DirectiveCollector.findUsedDirectives(parsedTemplate);
                    usedDirectives.components.forEach(
                        component => this._compileNestedComponentRuntime(
-                           component, compilingComponentCacheKeys, childPromises));
+                           component, compilingComponentsPath, childPromises));
                    return PromiseWrapper.all(childPromises)
                        .then((_) => {
                          var filteredPipes = filterPipes(parsedTemplate, uniqViewPipes);
                          compiledTemplate.init(this._createViewFactoryRuntime(
                              compMeta, parsedTemplate, usedDirectives.directives, styles,
                              filteredPipes));
-                         SetWrapper.delete(compilingComponentCacheKeys, cacheKey);
                          return compiledTemplate;
                        });
                  });
@@ -212,16 +210,19 @@ export class TemplateCompiler {
   }
 
   private _compileNestedComponentRuntime(childComponentDir: CompileDirectiveMetadata,
-                                         compilingComponentCacheKeys: Set<Type>,
+                                         parentCompilingComponentsPath: any[],
                                          childPromises: Promise<any>[]) {
+    var compilingComponentsPath = ListWrapper.clone(parentCompilingComponentsPath);
+
     var childCacheKey = childComponentDir.type.runtime;
     var childViewDirectives: CompileDirectiveMetadata[] =
         this._runtimeMetadataResolver.getViewDirectivesMetadata(childComponentDir.type.runtime);
     var childViewPipes: CompilePipeMetadata[] =
         this._runtimeMetadataResolver.getViewPipesMetadata(childComponentDir.type.runtime);
-    var childIsRecursive = SetWrapper.has(compilingComponentCacheKeys, childCacheKey);
+    var childIsRecursive = ListWrapper.contains(compilingComponentsPath, childCacheKey);
+    compilingComponentsPath.push(childCacheKey);
     this._compileComponentRuntime(childCacheKey, childComponentDir, childViewDirectives,
-                                  childViewPipes, compilingComponentCacheKeys);
+                                  childViewPipes, compilingComponentsPath);
     if (!childIsRecursive) {
       // Only wait for a child if it is not a cycle
       childPromises.push(this._compiledTemplateDone.get(childCacheKey));

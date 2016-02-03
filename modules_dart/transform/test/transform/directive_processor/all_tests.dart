@@ -552,7 +552,7 @@ void allTests() {
     it('should merge host bindings from the annotation and fields.', () async {
       var model = await _testCreateModel('directives_files/components.dart');
       expect(model.types['ComponentWithHostBindings'].hostProperties)
-          .toEqual({'a': 'a', 'b': 'b', 'renamed': 'c'});
+          .toEqual({'a': 'a', 'b': 'b', 'renamed': 'c', 'd': 'd', 'get-renamed': 'e'});
     });
 
     it('should merge host listeners from the annotation and fields.', () async {

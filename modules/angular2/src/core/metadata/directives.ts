@@ -504,7 +504,7 @@ export class DirectiveMetadata extends InjectableMetadata {
    * @Component({
    *   selector: 'app',
    *   template: `
-   *     <interval-dir (every-second)="everySecond()" (every-five-seconds)="everyFiveSeconds()">
+   *     <interval-dir (everySecond)="everySecond()" (everyFiveSeconds)="everyFiveSeconds()">
    *     </interval-dir>
    *   `,
    *   directives: [IntervalDir]
@@ -1035,7 +1035,7 @@ export class InputMetadata {
  * @Component({
  *   selector: 'app',
  *   template: `
- *     <interval-dir (every-second)="everySecond()" (every-five-seconds)="everyFiveSeconds()">
+ *     <interval-dir (everySecond)="everySecond()" (everyFiveSeconds)="everyFiveSeconds()">
  *     </interval-dir>
  *   `,
  *   directives: [IntervalDir]

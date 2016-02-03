@@ -33,7 +33,7 @@ message NgDepsModel {
   // framework.
   repeated string methods = 9;
 
-  // Imports for the .ng_deps.dart files associated with the declared `imports`
-  // and `exports` for this file.
+  // Imports of the generated files associated with the declared `imports`
+  // and `exports` of the source file.
   repeated ImportModel dep_imports = 10;
 }

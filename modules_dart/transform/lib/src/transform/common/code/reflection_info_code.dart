@@ -284,7 +284,7 @@ class _PropertyMetadataVisitor
 }
 
 /// Defines the format in which an [ReflectionInfoModel] is expressed as Dart
-/// code in a `.ng_deps.dart` file.
+/// code when registered with the reflector.
 abstract class ReflectionWriterMixin
     implements AnnotationWriterMixin, ParameterWriterMixin {
   StringBuffer get buffer;

@@ -107,9 +107,8 @@ export var BLANK_ROUTE_DATA = new RouteData();
  * ```
  */
 export abstract class Instruction {
-  public component: ComponentInstruction;
-  public child: Instruction;
-  public auxInstruction: {[key: string]: Instruction} = {};
+  constructor(public component: ComponentInstruction, public child: Instruction,
+              public auxInstruction: {[key: string]: Instruction}) {}
 
   get urlPath(): string { return isPresent(this.component) ? this.component.urlPath : ''; }
 
@@ -210,9 +209,9 @@ export abstract class Instruction {
  * a resolved instruction has an outlet instruction for itself, but maybe not for...
  */
 export class ResolvedInstruction extends Instruction {
-  constructor(public component: ComponentInstruction, public child: Instruction,
-              public auxInstruction: {[key: string]: Instruction}) {
-    super();
+  constructor(component: ComponentInstruction, child: Instruction,
+              auxInstruction: {[key: string]: Instruction}) {
+    super(component, child, auxInstruction);
   }
 
   resolveComponent(): Promise<ComponentInstruction> {
@@ -225,7 +224,9 @@ export class ResolvedInstruction extends Instruction {
  * Represents a resolved default route
  */
 export class DefaultInstruction extends Instruction {
-  constructor(public component: ComponentInstruction, public child: DefaultInstruction) { super(); }
+  constructor(component: ComponentInstruction, child: DefaultInstruction) {
+    super(component, child, {});
+  }
 
   resolveComponent(): Promise<ComponentInstruction> {
     return PromiseWrapper.resolve(this.component);
@@ -244,7 +245,7 @@ export class DefaultInstruction extends Instruction {
 export class UnresolvedInstruction extends Instruction {
   constructor(private _resolver: () => Promise<Instruction>, private _urlPath: string = '',
               private _urlParams: string[] = CONST_EXPR([])) {
-    super();
+    super(null, null, {});
   }
 
   get urlPath(): string {
@@ -296,7 +297,7 @@ export class RedirectInstruction extends ResolvedInstruction {
  * `ComponentInstructions` is a public API. Instances of `ComponentInstruction` are passed
  * to route lifecycle hooks, like {@link CanActivate}.
  *
- * `ComponentInstruction`s are [https://en.wikipedia.org/wiki/Hash_consing](hash consed). You should
+ * `ComponentInstruction`s are [hash consed](https://en.wikipedia.org/wiki/Hash_consing). You should
  * never construct one yourself with "new." Instead, rely on {@link Router/RouteRecognizer} to
  * construct `ComponentInstruction`s.
  *

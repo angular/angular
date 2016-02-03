@@ -7,6 +7,7 @@ import 'package:barback/barback.dart';
 import 'package:angular2/src/platform/server/html_adapter.dart';
 import 'package:angular2/src/transform/common/asset_reader.dart';
 import 'package:angular2/src/transform/common/code/ng_deps_code.dart';
+import 'package:angular2/src/transform/common/code/source_module.dart';
 import 'package:angular2/src/transform/common/formatter.dart';
 import 'package:angular2/src/transform/common/names.dart';
 import 'package:angular2/src/transform/common/options.dart';
@@ -33,7 +34,6 @@ class TemplateCompiler extends Transformer implements LazyTransformer {
 
   @override
   declareOutputs(DeclaringTransform transform) {
-    transform.declareOutput(ngDepsAssetId(transform.primaryId));
     transform.declareOutput(templatesAssetId(transform.primaryId));
   }
 
@@ -49,22 +49,18 @@ class TemplateCompiler extends Transformer implements LazyTransformer {
           platformDirectives: options.platformDirectives,
           platformPipes: options.platformPipes);
       var ngDepsCode = _emptyNgDepsContents;
-      var templatesCode = '';
       if (outputs != null) {
         if (outputs.ngDeps != null) {
           final buf = new StringBuffer();
-          final writer = new NgDepsWriter(buf);
-          writer.writeNgDepsModel(outputs.ngDeps);
+          final templatesSrc =
+              options.genCompiledTemplates ? outputs.templatesSource : null;
+          writeTemplateFile(
+              new NgDepsWriter(buf), outputs.ngDeps, templatesSrc);
           ngDepsCode = formatter.format(buf.toString());
-        }
-        if (outputs.templatesCode != null) {
-          templatesCode = formatter.format(outputs.templatesCode);
         }
       }
       transform.addOutput(
-          new Asset.fromString(ngDepsAssetId(primaryId), ngDepsCode));
-      transform.addOutput(
-          new Asset.fromString(templatesAssetId(primaryId), templatesCode));
+          new Asset.fromString(templatesAssetId(primaryId), ngDepsCode));
     }, log: transform.logger);
   }
 }

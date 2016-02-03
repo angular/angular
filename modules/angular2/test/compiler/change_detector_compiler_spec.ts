@@ -14,7 +14,7 @@ import {
 } from 'angular2/testing_internal';
 import {provide} from 'angular2/src/core/di';
 
-import {CONST_EXPR, stringify} from 'angular2/src/facade/lang';
+import {CONST_EXPR, stringify, IS_DART} from 'angular2/src/facade/lang';
 import {MapWrapper} from 'angular2/src/facade/collection';
 import {Promise} from 'angular2/src/facade/async';
 
@@ -55,6 +55,11 @@ var THIS_MODULE_URL = `package:${THIS_MODULE_ID}${MODULE_SUFFIX}`;
 var THIS_MODULE_REF = moduleRef(THIS_MODULE_URL);
 
 export function main() {
+  // Dart's isolate support is broken, and these tests will be obsolote soon with
+  // https://github.com/angular/angular/issues/6270
+  if (IS_DART) {
+    return;
+  }
   describe('ChangeDetectorCompiler', () => {
     beforeEachProviders(() => [
       TEST_PROVIDERS,

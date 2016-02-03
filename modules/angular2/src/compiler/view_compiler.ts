@@ -112,7 +112,7 @@ interface ViewFactory<EXPRESSION, STATEMENT> {
 
   createElementEventListener(renderer: EXPRESSION, view: EXPRESSION, boundElementIndex: number,
                              renderNode: EXPRESSION, eventAst: BoundEventAst,
-                             targetStatements: STATEMENT[]);
+                             targetStatements: STATEMENT[]): EXPRESSION;
 
   setElementAttribute(renderer: EXPRESSION, renderNode: EXPRESSION, attrName: string,
                       attrValue: string, targetStatements: STATEMENT[]);
@@ -201,9 +201,11 @@ class CodeGenViewFactory implements ViewFactory<Expression, Statement> {
   createElementEventListener(renderer: Expression, appView: Expression, boundElementIndex: number,
                              renderNode: Expression, eventAst: BoundEventAst,
                              targetStatements: Statement[]) {
+    var disposableVar = this._nextDisposableVar();
     var eventHandlerExpr = codeGenEventHandler(appView, boundElementIndex, eventAst.fullName);
     targetStatements.push(new Statement(
-        `${renderer.expression}.listen(${renderNode.expression}, ${escapeValue(eventAst.name)}, ${eventHandlerExpr});`));
+        `var ${disposableVar} = ${renderer.expression}.listen(${renderNode.expression}, ${escapeValue(eventAst.name)}, ${eventHandlerExpr});`));
+    return new Expression(disposableVar);
   }
 
   setElementAttribute(renderer: Expression, renderNode: Expression, attrName: string,
@@ -345,9 +347,11 @@ class RuntimeViewFactory implements ViewFactory<any, any> {
   }
 
   createElementEventListener(renderer: Renderer, appView: AppView, boundElementIndex: number,
-                             renderNode: any, eventAst: BoundEventAst, targetStatements: any[]) {
-    renderer.listen(renderNode, eventAst.name, (event) => appView.triggerEventHandlers(
-                                                   eventAst.fullName, event, boundElementIndex));
+                             renderNode: any, eventAst: BoundEventAst,
+                             targetStatements: any[]): any {
+    return renderer.listen(
+        renderNode, eventAst.name,
+        (event) => appView.triggerEventHandlers(eventAst.fullName, event, boundElementIndex));
   }
 
   setElementAttribute(renderer: Renderer, renderNode: any, attrName: string, attrValue: string,
@@ -520,14 +524,16 @@ class ViewBuilderVisitor<EXPRESSION, STATEMENT> implements TemplateAstVisitor {
     var protoEl = this.protoView.protoElements[elementIndex];
 
     protoEl.renderEvents.forEach((eventAst) => {
+      var disposable;
       if (isPresent(eventAst.target)) {
-        var disposable = this.factory.createGlobalEventListener(
+        disposable = this.factory.createGlobalEventListener(
             this.renderer, this.view, protoEl.boundElementIndex, eventAst, this.renderStmts);
-        this.appDisposables.push(disposable);
       } else {
-        this.factory.createElementEventListener(this.renderer, this.view, protoEl.boundElementIndex,
-                                                renderNode, eventAst, this.renderStmts);
+        disposable = this.factory.createElementEventListener(this.renderer, this.view,
+                                                             protoEl.boundElementIndex, renderNode,
+                                                             eventAst, this.renderStmts);
       }
+      this.appDisposables.push(disposable);
     });
     for (var i = 0; i < protoEl.attrNameAndValues.length; i++) {
       var attrName = protoEl.attrNameAndValues[i][0];

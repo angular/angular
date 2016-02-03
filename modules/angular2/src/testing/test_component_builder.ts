@@ -1,11 +1,11 @@
 import {
   ComponentRef,
-  DebugElement,
   DirectiveResolver,
   DynamicComponentLoader,
   Injector,
   Injectable,
   ViewMetadata,
+  ElementRef,
   EmbeddedViewRef,
   ViewResolver,
   provide
@@ -23,7 +23,7 @@ import {el} from './utils';
 import {DOCUMENT} from 'angular2/src/platform/dom/dom_tokens';
 import {DOM} from 'angular2/src/platform/dom/dom_adapter';
 
-import {DebugElement_} from 'angular2/src/core/debug/debug_element';
+import {DebugNode, DebugElement, getDebugNode} from 'angular2/src/core/debug/debug_node';
 
 
 /**
@@ -46,6 +46,11 @@ export abstract class ComponentFixture {
   nativeElement: any;
 
   /**
+   * The ElementRef for the element at the root of the component.
+   */
+  elementRef: ElementRef;
+
+  /**
    * Trigger a change detection cycle for the component.
    */
   abstract detectChanges(): void;
@@ -66,7 +71,9 @@ export class ComponentFixture_ extends ComponentFixture {
   constructor(componentRef: ComponentRef) {
     super();
     this._componentParentView = (<ViewRef_>componentRef.hostView).internalView;
-    this.debugElement = new DebugElement_(this._componentParentView.appElements[0]);
+    this.elementRef = this._componentParentView.appElements[0].ref;
+    this.debugElement = <DebugElement>getDebugNode(
+        this._componentParentView.rootNodesOrAppElements[0].nativeElement);
     this.componentInstance = this.debugElement.componentInstance;
     this.nativeElement = this.debugElement.nativeElement;
     this._componentRef = componentRef;

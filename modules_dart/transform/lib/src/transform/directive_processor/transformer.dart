@@ -28,10 +28,12 @@ class DirectiveProcessor extends Transformer implements LazyTransformer {
   DirectiveProcessor(this.options);
 
   @override
-  bool isPrimary(AssetId id) => id.extension.endsWith('dart');
+  bool isPrimary(AssetId id) =>
+      id.extension.endsWith('dart') && !isGenerated(id.path);
 
   @override
   declareOutputs(DeclaringTransform transform) {
+    transform.declareOutput(_deferredAssetId(transform.primaryId));
     transform.declareOutput(_ngSummaryAssetId(transform.primaryId));
   }
 
@@ -48,6 +50,17 @@ class DirectiveProcessor extends Transformer implements LazyTransformer {
       }
       transform.addOutput(new Asset.fromString(
           _ngSummaryAssetId(primaryId), _encoder.convert(ngMeta.toJson())));
+
+      var deferredCount = 0;
+      if (ngMeta.ngDeps != null) {
+        deferredCount = ngMeta.ngDeps.imports.where((i) => i.isDeferred).length;
+      }
+      if (deferredCount > 0) {
+        // The existence of this file with the value != "0" signals
+        // DeferredRewriter that the associated .dart file needs attention.
+        transform.addOutput(new Asset.fromString(
+            _deferredAssetId(primaryId), deferredCount.toString()));
+      }
     }, log: transform.logger);
   }
 }
@@ -55,4 +68,9 @@ class DirectiveProcessor extends Transformer implements LazyTransformer {
 AssetId _ngSummaryAssetId(AssetId primaryInputId) {
   return new AssetId(
       primaryInputId.package, toSummaryExtension(primaryInputId.path));
+}
+
+AssetId _deferredAssetId(AssetId primaryInputId) {
+  return new AssetId(
+      primaryInputId.package, toDeferredExtension(primaryInputId.path));
 }

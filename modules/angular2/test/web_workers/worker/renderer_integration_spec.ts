@@ -24,7 +24,6 @@ import {
   Injectable,
   ElementRef
 } from 'angular2/core';
-import {AppViewListener} from 'angular2/src/core/linker/view_listener';
 import {NgIf} from 'angular2/common';
 import {WebWorkerRootRenderer} from "angular2/src/web_workers/worker/renderer";
 import {
@@ -36,6 +35,7 @@ import {
 import {Serializer} from "angular2/src/web_workers/shared/serializer";
 import {RootRenderer} from "angular2/src/core/render/api";
 import {DomRootRenderer, DomRootRenderer_} from 'angular2/src/platform/dom/dom_renderer';
+import {DebugDomRootRenderer} from 'angular2/src/core/debug/debug_renderer';
 import {RenderStore} from "angular2/src/web_workers/shared/render_store";
 import {MessageBasedRenderer} from 'angular2/src/web_workers/ui/renderer';
 import {createPairedMessageBuses, PairedMessageBuses} from '../shared/web_worker_test_util';
@@ -44,6 +44,7 @@ import {
   ServiceMessageBrokerFactory_
 } from 'angular2/src/web_workers/shared/service_message_broker';
 import {ChangeDetectorGenConfig} from 'angular2/src/core/change_detection/change_detection';
+import {ElementRef_} from 'angular2/src/core/linker/element_ref';
 import {
   TEST_BROWSER_PLATFORM_PROVIDERS,
   TEST_BROWSER_APPLICATION_PROVIDERS
@@ -71,12 +72,13 @@ export function main() {
 
   function createWorkerRenderer(workerSerializer: Serializer, uiSerializer: Serializer,
                                 domRootRenderer: DomRootRenderer, uiRenderStore: RenderStore,
-                                workerRenderStore: RenderStore): WebWorkerRootRenderer {
+                                workerRenderStore: RenderStore): RootRenderer {
     var messageBuses = createPairedMessageBuses();
     var brokerFactory = createWebWorkerBrokerFactory(messageBuses, workerSerializer, uiSerializer,
                                                      domRootRenderer, uiRenderStore);
-    return new WebWorkerRootRenderer(brokerFactory, messageBuses.worker, workerSerializer,
-                                     workerRenderStore);
+    var workerRootRenderer = new WebWorkerRootRenderer(brokerFactory, messageBuses.worker,
+                                                       workerSerializer, workerRenderStore);
+    return new DebugDomRootRenderer(workerRootRenderer);
   }
 
   describe("Web Worker Renderer", () => {
@@ -110,8 +112,7 @@ export function main() {
                                                 uiRenderStore, workerRenderStore);
                   },
                   deps: [Serializer]
-                }),
-        provide(AppViewListener, {useClass: AppViewListener})
+                })
       ];
     });
 
@@ -129,7 +130,7 @@ export function main() {
          tcb.overrideView(MyComp, new ViewMetadata({template: '<div>{{ctxProp}}</div>'}))
              .createAsync(MyComp)
              .then((fixture) => {
-               var renderEl = getRenderElement(fixture.debugElement.elementRef);
+               var renderEl = getRenderElement(fixture.elementRef);
                expect(renderEl).toHaveText('');
 
                fixture.debugElement.componentInstance.ctxProp = 'Hello World!';
@@ -167,9 +168,11 @@ export function main() {
                };
 
                // root element
-               checkSetters(fixture.debugElement.elementRef);
+               checkSetters(fixture.elementRef);
                // nested elements
-               checkSetters(fixture.debugElement.componentViewChildren[0].elementRef);
+               checkSetters((<ElementRef_>fixture.elementRef)
+                                .internalElement.componentView.appElements[0]
+                                .ref);
 
                async.done();
              });
@@ -184,7 +187,7 @@ export function main() {
              .then((fixture) => {
                (<MyComp>fixture.debugElement.componentInstance).ctxBoolProp = true;
                fixture.detectChanges();
-               var el = getRenderElement(fixture.debugElement.elementRef);
+               var el = getRenderElement(fixture.elementRef);
                expect(DOM.getInnerHTML(el)).toContain('"ng-reflect-ng-if": "true"');
                async.done();
              });
@@ -199,7 +202,7 @@ export function main() {
              .createAsync(MyComp)
              .then((fixture) => {
 
-               var rootEl = getRenderElement(fixture.debugElement.elementRef);
+               var rootEl = getRenderElement(fixture.elementRef);
                expect(rootEl).toHaveText('');
 
                fixture.debugElement.componentInstance.ctxBoolProp = true;
@@ -220,7 +223,9 @@ export function main() {
            tcb.overrideView(MyComp, new ViewMetadata({template: '<input [title]="y">'}))
                .createAsync(MyComp)
                .then((fixture) => {
-                 var elRef = fixture.debugElement.componentViewChildren[0].elementRef;
+                 var elRef = (<ElementRef_>fixture.elementRef)
+                                 .internalElement.componentView.appElements[0]
+                                 .ref;
                  getRenderer(elRef)
                      .invokeElementMethod(elRef.nativeElement, 'setAttribute', ['a', 'b']);
 
@@ -235,7 +240,9 @@ export function main() {
                             new ViewMetadata({template: '<input (change)="ctxNumProp = 1">'}))
                .createAsync(MyComp)
                .then((fixture) => {
-                 var elRef = fixture.debugElement.componentViewChildren[0].elementRef;
+                 var elRef = (<ElementRef_>fixture.elementRef)
+                                 .internalElement.componentView.appElements[0]
+                                 .ref;
                  dispatchEvent(getRenderElement(elRef), 'change');
                  expect(fixture.componentInstance.ctxNumProp).toBe(1);
 

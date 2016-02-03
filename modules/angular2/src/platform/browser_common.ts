@@ -30,12 +30,12 @@ import {BrowserDomAdapter} from './browser/browser_adapter';
 import {BrowserGetTestability} from 'angular2/src/platform/browser/testability';
 import {wtfInit} from 'angular2/src/core/profile/wtf_init';
 import {EventManager, EVENT_MANAGER_PLUGINS} from "angular2/src/platform/dom/events/event_manager";
+import {ELEMENT_PROBE_PROVIDERS} from 'angular2/platform/common_dom';
 export {DOCUMENT} from 'angular2/src/platform/dom/dom_tokens';
 export {Title} from 'angular2/src/platform/browser/title';
 export {
-  DebugElementViewListener,
   ELEMENT_PROBE_PROVIDERS,
-  ELEMENT_PROBE_BINDINGS,
+  ELEMENT_PROBE_PROVIDERS_PROD_MODE,
   inspectNativeElement,
   By
 } from 'angular2/platform/common_dom';
@@ -84,7 +84,8 @@ export const BROWSER_APP_COMMON_PROVIDERS: Array<any /*Type | Provider | any[]*/
   Testability,
   BrowserDetails,
   AnimationBuilder,
-  EventManager
+  EventManager,
+  ELEMENT_PROBE_PROVIDERS
 ]);
 
 export function initDomAdapter() {

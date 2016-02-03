@@ -20,5 +20,6 @@ export {
   IterableDifferFactory,
   KeyValueDiffers,
   KeyValueDiffer,
-  KeyValueDifferFactory
+  KeyValueDifferFactory,
+  TrackByFn
 } from './change_detection/change_detection';

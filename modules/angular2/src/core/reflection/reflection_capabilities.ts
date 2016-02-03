@@ -83,7 +83,7 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
   }
 
   /** @internal */
-  _zipTypesAndAnnotaions(paramTypes, paramAnnotations): any[][] {
+  _zipTypesAndAnnotations(paramTypes, paramAnnotations): any[][] {
     var result;
 
     if (typeof paramTypes === 'undefined') {
@@ -119,7 +119,7 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
       var paramAnnotations = this._reflect.getMetadata('parameters', typeOrFunc);
       var paramTypes = this._reflect.getMetadata('design:paramtypes', typeOrFunc);
       if (isPresent(paramTypes) || isPresent(paramAnnotations)) {
-        return this._zipTypesAndAnnotaions(paramTypes, paramAnnotations);
+        return this._zipTypesAndAnnotations(paramTypes, paramAnnotations);
       }
     }
     // The array has to be filled with `undefined` because holes would be skipped by `some`

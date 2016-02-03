@@ -14,7 +14,12 @@ import {
 import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
 import {DomSharedStylesHost} from './shared_styles_host';
 
-import {Renderer, RootRenderer, RenderComponentType} from 'angular2/core';
+import {
+  Renderer,
+  RootRenderer,
+  RenderComponentType,
+  RenderDebugInfo
+} from 'angular2/src/core/render/api';
 
 import {EventManager} from './events/event_manager';
 
@@ -155,9 +160,9 @@ export class DomRenderer implements Renderer {
     }
   }
 
-  listen(renderElement: any, name: string, callback: Function) {
-    this._rootRenderer.eventManager.addEventListener(renderElement, name,
-                                                     decoratePreventDefault(callback));
+  listen(renderElement: any, name: string, callback: Function): Function {
+    return this._rootRenderer.eventManager.addEventListener(renderElement, name,
+                                                            decoratePreventDefault(callback));
   }
 
   listenGlobal(target: string, name: string, callback: Function): Function {
@@ -200,6 +205,8 @@ export class DomRenderer implements Renderer {
       this.setElementAttribute(renderElement, propertyName, propertyValue);
     }
   }
+
+  setElementDebugInfo(renderElement: any, info: RenderDebugInfo) {}
 
   setElementClass(renderElement: any, className: string, isAdd: boolean): void {
     if (isAdd) {

@@ -9,16 +9,23 @@ import {Provider, SkipSelfMetadata, OptionalMetadata, Injectable} from 'angular2
  * respond to changes in an iterable by effecting equivalent changes in the DOM.
  */
 export interface IterableDiffer {
-  diff(object: Object): any;
+  diff(object: any): any;
   onDestroy();
 }
+
+/**
+  * An optional function passed into {@link NgFor} that defines how to track
+  * items in an iterable (e.g. by index or id)
+ */
+export interface TrackByFn { (index: number, item: any): any; }
+
 
 /**
  * Provides a factory for {@link IterableDiffer}.
  */
 export interface IterableDifferFactory {
-  supports(objects: Object): boolean;
-  create(cdRef: ChangeDetectorRef): IterableDiffer;
+  supports(objects: any): boolean;
+  create(cdRef: ChangeDetectorRef, trackByFn?: TrackByFn): IterableDiffer;
 }
 
 /**
@@ -74,7 +81,7 @@ export class IterableDiffers {
     });
   }
 
-  find(iterable: Object): IterableDifferFactory {
+  find(iterable: any): IterableDifferFactory {
     var factory = this.factories.find(f => f.supports(iterable));
     if (isPresent(factory)) {
       return factory;

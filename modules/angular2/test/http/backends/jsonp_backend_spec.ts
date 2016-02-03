@@ -29,8 +29,8 @@ import {RequestOptions, BaseRequestOptions} from 'angular2/src/http/base_request
 import {BaseResponseOptions, ResponseOptions} from 'angular2/src/http/base_response_options';
 import {ResponseType, ReadyState, RequestMethod} from 'angular2/src/http/enums';
 
-var addEventListenerSpy;
-var existingScripts = [];
+var addEventListenerSpy: any;
+var existingScripts: MockBrowserJsonp[] = [];
 var unused: Response;
 
 class MockBrowserJsonp extends BrowserJsonp {
@@ -67,8 +67,8 @@ class MockBrowserJsonp extends BrowserJsonp {
 
 export function main() {
   describe('JSONPBackend', () => {
-    let backend;
-    let sampleRequest;
+    let backend: JSONPBackend_;
+    let sampleRequest: Request;
 
     beforeEach(() => {
       let injector = Injector.resolveAndCreate([
@@ -84,7 +84,7 @@ export function main() {
     afterEach(() => { existingScripts = []; });
 
     it('should create a connection', () => {
-      var instance;
+      var instance: JSONPConnection;
       expect(() => instance = backend.createConnection(sampleRequest)).not.toThrow();
       expect(instance).toBeAnInstanceOf(JSONPConnection);
     });
@@ -92,7 +92,7 @@ export function main() {
 
     describe('JSONPConnection', () => {
       it('should use the injected BaseResponseOptions to create the response',
-         inject([AsyncTestCompleter], async => {
+         inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
            let connection = new JSONPConnection_(sampleRequest, new MockBrowserJsonp(),
                                                  new ResponseOptions({type: ResponseType.Error}));
            connection.response.subscribe(res => {
@@ -103,7 +103,8 @@ export function main() {
            existingScripts[0].dispatchEvent('load');
          }));
 
-      it('should ignore load/callback when disposed', inject([AsyncTestCompleter], async => {
+      it('should ignore load/callback when disposed',
+         inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
            var connection = new JSONPConnection_(sampleRequest, new MockBrowserJsonp());
            let spy = new SpyObject();
            let loadSpy = spy.spy('load');
@@ -126,7 +127,7 @@ export function main() {
          }));
 
       it('should report error if loaded without invoking callback',
-         inject([AsyncTestCompleter], async => {
+         inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
            let connection = new JSONPConnection_(sampleRequest, new MockBrowserJsonp());
            connection.response.subscribe(
                res => {
@@ -141,7 +142,8 @@ export function main() {
            existingScripts[0].dispatchEvent('load');
          }));
 
-      it('should report error if script contains error', inject([AsyncTestCompleter], async => {
+      it('should report error if script contains error',
+         inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
            let connection = new JSONPConnection_(sampleRequest, new MockBrowserJsonp());
 
            connection.response.subscribe(
@@ -169,7 +171,8 @@ export function main() {
             });
       });
 
-      it('should respond with data passed to callback', inject([AsyncTestCompleter], async => {
+      it('should respond with data passed to callback',
+         inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
            let connection = new JSONPConnection_(sampleRequest, new MockBrowserJsonp());
 
            connection.response.subscribe(res => {

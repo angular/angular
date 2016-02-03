@@ -9,7 +9,7 @@ JS and Dart versions. It also explains the basic mechanics of using `git`, `node
 * [Installing NPM Modules and Dart Packages](#installing-npm-modules-and-dart-packages)
 * [Build commands](#build-commands)
 * [Running Tests Locally](#running-tests-locally)
-* [Formatting](#clang-format)
+* [Code Style](#code-style)
 * [Project Information](#project-information)
 * [CI using Travis](#ci-using-travis)
 * [Transforming Dart code](#transforming-dart-code)
@@ -23,7 +23,16 @@ if you'd like to contribute to Angular.
 Before you can build and test Angular, you must install and configure the
 following products on your development machine:
 
-* [Dart](https://www.dartlang.org) (version ` >=1.12.0 <2.0.0`), specifically the Dart-SDK and
+* [Git](http://git-scm.com) and/or the **GitHub app** (for [Mac](http://mac.github.com) or
+  [Windows](http://windows.github.com)); [GitHub's Guide to Installing
+  Git](https://help.github.com/articles/set-up-git) is a good source of information.
+
+* [Node.js](http://nodejs.org), (version `>=5.4.1 <6`) which is used to run a development web server,
+  run tests, and generate distributable files. We also use Node's Package Manager, `npm`
+  (version `>=3.5.3 <4.0`), which comes with Node. Depending on your system, you can install Node either from
+  source or as a pre-packaged bundle.
+
+* *Optional*: [Dart](https://www.dartlang.org) (version ` >=1.13.2 <2.0.0`), specifically the Dart-SDK and
   Dartium (a version of [Chromium](http://www.chromium.org) with native support for Dart through
   the Dart VM). One of the **simplest** ways to get both is to install the **Dart Editor bundle**,
   which includes the editor, SDK and Dartium. See the [Dart tools](https://www.dartlang.org/tools)
@@ -33,19 +42,6 @@ following products on your development machine:
   to the `Path` (e.g. `path-to-dart-sdk-folder\bin`) and a new `DARTIUM_BIN` environment variable must be
   created, pointing to the executable (e.g. `path-to-dartium-folder\chrome.exe).`
 
-* [Git](http://git-scm.com) and/or the **GitHub app** (for [Mac](http://mac.github.com) or
-  [Windows](http://windows.github.com)); [GitHub's Guide to Installing
-  Git](https://help.github.com/articles/set-up-git) is a good source of information.
-
-* [Node.js](http://nodejs.org), (version `>=4.2.1 <5`) which is used to run a development web server,
-  run tests, and generate distributable files. We also use Node's Package Manager, `npm`
-  (version `>=2.14.7 <3.0`), which comes with Node. Depending on your system, you can install Node either from
-  source or as a pre-packaged bundle.
-
-* [Chrome Canary](https://www.google.com/chrome/browser/canary.html), a version of Chrome with
-  bleeding edge functionality, built especially for developers (and early adopters).
-
-* [Bower](http://bower.io/).
 
 
 ## Getting the Sources
@@ -200,15 +196,15 @@ Then, in another terminal:
 export SAUCE_USERNAME='my_user'; export SAUCE_ACCESS_KEY='my_key';
 export BROWSER_STACK_USERNAME='my_user'; export BROWSER_STACK_ACCESS_KEY='my_key';
 ```
- - Then run `gulp test.unit.js.(saucelabs|browserstack) --browsers=option1,option2,..,optionN`  
+ - Then run `gulp test.unit.js.(sauce|browserstack) --browsers=option1,option2,..,optionN`  
 The options are any mix of browsers and aliases which are defined in the [browser-providers.conf.js](https://github.com/angular/angular/blob/master/browser-providers.conf.js) file.  
 They are case insensitive, and the `SL_` or `BS_` prefix must not be added for browsers.
 
 Some examples of commands:
 ```
-gulp test.unit.js.saucelabs --browsers=Safari8,ie11  //run in Sauce Labs with Safari 8 and IE11
+gulp test.unit.js.sauce --browsers=Safari8,ie11  //run in Sauce Labs with Safari 8 and IE11
 gulp test.unit.js.browserstack --browsers=Safari,IE  //run in Browser Stack with Safari 7, Safari 8, Safari 9, IE 9, IE 10 and IE 11
-gulp test.unit.js.saucelabs --browsers=IOS,safari8,android5.1  //run in Sauce Labs with iOS 7, iOS 8, iOs 9, Safari 8 and Android 5.1
+gulp test.unit.js.sauce --browsers=IOS,safari8,android5.1  //run in Sauce Labs with iOS 7, iOS 8, iOs 9, Safari 8 and Android 5.1
 ```
 
 ### E2E tests
@@ -231,7 +227,9 @@ Angular specific command line options when running protractor:
 Angular specific command line options when running protractor (e.g. force gc, ...):
 `$(npm bin)/protractor protractor-{js|dart2js}-conf.js --ng-help`
 
-## Formatting with <a name="clang-format">clang-format</a>
+## Code Style
+
+### Formatting with <a name="clang-format">clang-format</a>
 
 We use [clang-format](http://clang.llvm.org/docs/ClangFormat.html) to automatically enforce code
 style for our TypeScript code. This allows us to focus our code reviews more on the content, and
@@ -276,6 +274,14 @@ to some whitespace difference.
     - Working directory: `$ProjectFileDir$`
 * `clang-format` integrations are also available for many popular editors (`vim`, `emacs`,
   `Sublime Text`, etc.).
+
+### Linting
+
+We use [tslint](https://github.com/palantir/tslint) for linting. See linting rules in [gulpfile](gulpfile.js). To lint, run
+
+```shell
+$ gulp lint
+```
 
 ## Generating the API documentation
 

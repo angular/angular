@@ -22,8 +22,8 @@ class Codegen {
   /// The code generated here should follow the example of code generated for
   /// an {@link ImportDirective} node.
   String codegenImport() {
-    var importUri = path
-        .basename(reflectionEntryPoint.changeExtension(DEPS_EXTENSION).path);
+    var importUri = path.basename(
+        reflectionEntryPoint.changeExtension(TEMPLATE_EXTENSION).path);
     return '''import '$importUri' as $prefix;''';
   }
 
