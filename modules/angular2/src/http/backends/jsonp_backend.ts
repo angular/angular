@@ -12,55 +12,28 @@ import {Observable} from 'rxjs/Observable';
 const JSONP_ERR_NO_CALLBACK = 'JSONP injected script did not invoke callback.';
 const JSONP_ERR_WRONG_METHOD = 'JSONP requests must use GET request method.';
 
-/**
- * Abstract base class for an in-flight JSONP request.
- */
-export abstract class JSONPConnection implements Connection {
-  /**
-   * The {@link ReadyState} of this request.
-   */
-  readyState: ReadyState;
-
-  /**
-   * The outgoing HTTP request.
-   */
+export class JSONPConnection extends Observable<Response> {
   request: Request;
-
-  /**
-   * An observable that completes with the response, when the request is finished.
-   */
-  response: Observable<Response>;
-
-  /**
-   * Callback called when the JSONP request completes, to notify the application
-   * of the new data.
-   */
-  abstract finished(data?: any): void;
-}
-
-export class JSONPConnection_ extends JSONPConnection {
   private _id: string;
   private _script: Element;
   private _responseData: any;
-  private _finished: boolean = false;
+  private _finished: boolean;
 
-  constructor(req: Request, private _dom: BrowserJsonp,
-              private baseResponseOptions?: ResponseOptions) {
-    super();
+  constructor(req: Request, _dom: BrowserJsonp, baseResponseOptions?: ResponseOptions) {
     if (req.method !== RequestMethod.Get) {
       throw makeTypeError(JSONP_ERR_WRONG_METHOD);
     }
-    this.request = req;
-    this.response = new Observable(responseObserver => {
 
-      this.readyState = ReadyState.Loading;
-      let id = this._id = _dom.nextRequestID();
+    const subscriber = responseObserver => {
+
+      const id = _dom.nextRequestID();
+      let canceled = false;
 
       _dom.exposeConnection(id, this);
 
       // Workaround Dart
       // url = url.replace(/=JSONP_CALLBACK(&|$)/, `generated method`);
-      let callback = _dom.requestCallback(this._id);
+      let callback = _dom.requestCallback(id);
       let url: string = req.url;
       if (url.indexOf('=JSONP_CALLBACK&') > -1) {
         url = StringWrapper.replace(url, '=JSONP_CALLBACK&', `=${callback}&`);
@@ -68,12 +41,12 @@ export class JSONPConnection_ extends JSONPConnection {
         url = url.substring(0, url.length - '=JSONP_CALLBACK'.length) + `=${callback}`;
       }
 
-      let script = this._script = _dom.build(url);
+      let script = _dom.build(url);
 
       let onLoad = event => {
-        if (this.readyState === ReadyState.Cancelled) return;
-        this.readyState = ReadyState.Done;
+        if (canceled) return;
         _dom.cleanup(script);
+        _dom.removeConnection(id);
         if (!this._finished) {
           let responseOptions =
               new ResponseOptions({body: JSONP_ERR_NO_CALLBACK, type: ResponseType.Error, url});
@@ -85,8 +58,8 @@ export class JSONPConnection_ extends JSONPConnection {
         }
 
         let responseOptions = new ResponseOptions({body: this._responseData, url});
-        if (isPresent(this.baseResponseOptions)) {
-          responseOptions = this.baseResponseOptions.merge(responseOptions);
+        if (isPresent(baseResponseOptions)) {
+          responseOptions = baseResponseOptions.merge(responseOptions);
         }
 
         responseObserver.next(new Response(responseOptions));
@@ -94,9 +67,9 @@ export class JSONPConnection_ extends JSONPConnection {
       };
 
       let onError = error => {
-        if (this.readyState === ReadyState.Cancelled) return;
-        this.readyState = ReadyState.Done;
+        if (canceled) return;
         _dom.cleanup(script);
+        _dom.removeConnection(id);
         let responseOptions = new ResponseOptions({body: error.message, type: ResponseType.Error});
         if (isPresent(baseResponseOptions)) {
           responseOptions = baseResponseOptions.merge(responseOptions);
@@ -110,22 +83,25 @@ export class JSONPConnection_ extends JSONPConnection {
       _dom.send(script);
 
       return () => {
-        this.readyState = ReadyState.Cancelled;
+        canceled = true;
         script.removeEventListener('load', onLoad);
         script.removeEventListener('error', onError);
         if (isPresent(script)) {
-          this._dom.cleanup(script);
+          _dom.cleanup(script);
+          _dom.removeConnection(id);
         }
 
       };
-    });
+    };
+
+    super(subscriber);
+
+    this.request = req;
   }
 
   finished(data?: any) {
     // Don't leak connections
     this._finished = true;
-    this._dom.removeConnection(this._id);
-    if (this.readyState === ReadyState.Cancelled) return;
     this._responseData = data;
   }
 }
@@ -133,15 +109,13 @@ export class JSONPConnection_ extends JSONPConnection {
 /**
  * A {@link ConnectionBackend} that uses the JSONP strategy of making requests.
  */
-export abstract class JSONPBackend extends ConnectionBackend {}
-
 @Injectable()
-export class JSONPBackend_ extends JSONPBackend {
+export class JSONPBackend extends ConnectionBackend {
   constructor(private _browserJSONP: BrowserJsonp, private _baseResponseOptions: ResponseOptions) {
     super();
   }
 
   createConnection(request: Request): JSONPConnection {
-    return new JSONPConnection_(request, this._browserJSONP, this._baseResponseOptions);
+    return new JSONPConnection(request, this._browserJSONP, this._baseResponseOptions);
   }
 }

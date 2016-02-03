@@ -7,7 +7,7 @@
 import {provide, Provider} from 'angular2/core';
 import {Http, Jsonp} from './src/http/http';
 import {XHRBackend, XHRConnection} from './src/http/backends/xhr_backend';
-import {JSONPBackend, JSONPBackend_, JSONPConnection} from './src/http/backends/jsonp_backend';
+import {JSONPBackend, JSONPConnection} from './src/http/backends/jsonp_backend';
 import {BrowserXhr} from './src/http/backends/browser_xhr';
 import {BrowserJsonp} from './src/http/backends/browser_jsonp';
 import {BaseRequestOptions, RequestOptions} from './src/http/base_request_options';
@@ -289,7 +289,7 @@ export const JSONP_PROVIDERS: any[] = [
   BrowserJsonp,
   provide(RequestOptions, {useClass: BaseRequestOptions}),
   provide(ResponseOptions, {useClass: BaseResponseOptions}),
-  provide(JSONPBackend, {useClass: JSONPBackend_})
+  JSONPBackend
 ];
 
 /**

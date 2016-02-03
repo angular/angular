@@ -93,6 +93,8 @@ export function main() {
     var backend: MockBackend;
     var baseResponse;
     var jsonp: Jsonp;
+    var sampleRequest;
+
     beforeEach(() => {
       injector = Injector.resolveAndCreate([
         BaseRequestOptions,
@@ -118,6 +120,8 @@ export function main() {
       jsonp = injector.get(Jsonp);
       backend = injector.get(MockBackend);
       baseResponse = new Response(new ResponseOptions({body: 'base response'}));
+      sampleRequest =
+          new Request(new RequestOptions({url: 'https://google.com', method: RequestMethod.Get}));
     });
 
     afterEach(() => backend.verifyNoPendingRequests());
@@ -125,7 +129,7 @@ export function main() {
     describe('Http', () => {
       describe('.request()', () => {
         it('should return an Observable',
-           () => { expect(http.request(url)).toBeAnInstanceOf(Observable); });
+           () => { expect(http.request(sampleRequest)).toBeAnInstanceOf(Observable); });
 
 
         it('should accept a fully-qualified request as its only parameter',
@@ -135,32 +139,18 @@ export function main() {
                c.mockRespond(new Response(new ResponseOptions({body: 'Thank you'})));
                async.done();
              });
-             http.request(new Request(new RequestOptions({url: 'https://google.com'})))
-                 .subscribe((res) => {});
+             http.request(sampleRequest).subscribe((res) => {});
            }));
 
         it('should accept a fully-qualified request as its only parameter',
            inject([AsyncTestCompleter], (async) => {
              backend.connections.subscribe(c => {
                expect(c.request.url).toBe('https://google.com');
-               expect(c.request.method).toBe(RequestMethod.Post);
+               expect(c.request.method).toBe(RequestMethod.Get);
                c.mockRespond(new Response(new ResponseOptions({body: 'Thank you'})));
                async.done();
              });
-             http.request(new Request(new RequestOptions(
-                              {url: 'https://google.com', method: RequestMethod.Post})))
-                 .subscribe((res) => {});
-           }));
-
-
-        it('should perform a get request for given url if only passed a string',
-           inject([AsyncTestCompleter], (async) => {
-             backend.connections.subscribe(c => c.mockRespond(baseResponse));
-             http.request('http://basic.connection')
-                 .subscribe(res => {
-                   expect(res.text()).toBe('base response');
-                   async.done();
-                 });
+             http.request(sampleRequest).subscribe((res) => {});
            }));
 
         it('should perform a post request for given url if options include a method',
@@ -169,22 +159,9 @@ export function main() {
                expect(c.request.method).toEqual(RequestMethod.Post);
                c.mockRespond(baseResponse);
              });
-             let requestOptions = new RequestOptions({method: RequestMethod.Post});
-             http.request('http://basic.connection', requestOptions)
-                 .subscribe(res => {
-                   expect(res.text()).toBe('base response');
-                   async.done();
-                 });
-           }));
-
-        it('should perform a post request for given url if options include a method',
-           inject([AsyncTestCompleter], (async) => {
-             backend.connections.subscribe(c => {
-               expect(c.request.method).toEqual(RequestMethod.Post);
-               c.mockRespond(baseResponse);
-             });
-             let requestOptions = {method: RequestMethod.Post};
-             http.request('http://basic.connection', requestOptions)
+             let postRequest = new Request(
+                 new RequestOptions({url: 'http://basic.connection', method: RequestMethod.Post}));
+             http.request(postRequest)
                  .subscribe(res => {
                    expect(res.text()).toBe('base response');
                    async.done();
@@ -194,7 +171,7 @@ export function main() {
         it('should perform a get request and complete the response',
            inject([AsyncTestCompleter], (async) => {
              backend.connections.subscribe(c => c.mockRespond(baseResponse));
-             http.request('http://basic.connection')
+             http.request(sampleRequest)
                  .subscribe(res => { expect(res.text()).toBe('base response'); }, null,
                             () => { async.done(); });
            }));
@@ -203,17 +180,17 @@ export function main() {
            inject([AsyncTestCompleter], (async) => {
              backend.connections.subscribe(c => c.mockRespond(baseResponse));
 
-             http.request('http://basic.connection')
+             http.request(sampleRequest)
                  .subscribe(res => { expect(res.text()).toBe('base response'); });
-             http.request('http://basic.connection')
+             http.request(sampleRequest)
                  .subscribe(res => { expect(res.text()).toBe('base response'); }, null,
                             () => { async.done(); });
            }));
 
-        it('should throw if url is not a string or Request', () => {
+        it('should throw if request is not an instance of Request', () => {
           var req = <Request>{};
           expect(() => http.request(req))
-              .toThrowError('First argument must be a url string or Request instance.');
+              .toThrowError('http.request must be called with an instance of Request');
         });
       });
 
@@ -237,40 +214,41 @@ export function main() {
                backend.resolveAllConnections();
                async.done();
              });
-             http.post(url, 'post me').subscribe(res => {});
+             http.post(url, {foo: 'bar'}).subscribe(res => {});
            }));
 
 
         it('should attach the provided body to the request', inject([AsyncTestCompleter], async => {
-             var body = 'this is my post body';
+             var data = {foo: 'bar'};
              backend.connections.subscribe(c => {
-               expect(c.request.text()).toBe(body);
+               expect(c.request.text()).toBe(JSON.stringify(data));
                backend.resolveAllConnections();
                async.done();
              });
-             http.post(url, body).subscribe(res => {});
+             http.post(url, data).subscribe(res => {});
            }));
       });
 
 
       describe('.put()', () => {
         it('should perform a put request for given url', inject([AsyncTestCompleter], async => {
+             var data = {foo: 'bar'};
              backend.connections.subscribe(c => {
                expect(c.request.method).toBe(RequestMethod.Put);
                backend.resolveAllConnections();
                async.done();
              });
-             http.put(url, 'put me').subscribe(res => {});
+             http.put(url, data).subscribe(res => {});
            }));
 
         it('should attach the provided body to the request', inject([AsyncTestCompleter], async => {
-             var body = 'this is my put body';
+             var data = {foo: 'bar'};
              backend.connections.subscribe(c => {
-               expect(c.request.text()).toBe(body);
+               expect(c.request.text()).toBe(JSON.stringify(data));
                backend.resolveAllConnections();
                async.done();
              });
-             http.put(url, body).subscribe(res => {});
+             http.put(url, data).subscribe(res => {});
            }));
       });
 
@@ -294,17 +272,17 @@ export function main() {
                backend.resolveAllConnections();
                async.done();
              });
-             http.patch(url, 'this is my patch body').subscribe(res => {});
+             http.patch(url, {foo: 'bar'}).subscribe(res => {});
            }));
 
         it('should attach the provided body to the request', inject([AsyncTestCompleter], async => {
-             var body = 'this is my patch body';
+             var data = {foo: 'bar'};
              backend.connections.subscribe(c => {
-               expect(c.request.text()).toBe(body);
+               expect(c.request.text()).toBe(JSON.stringify(data));
                backend.resolveAllConnections();
                async.done();
              });
-             http.patch(url, body).subscribe(res => {});
+             http.patch(url, data).subscribe(res => {});
            }));
       });
 

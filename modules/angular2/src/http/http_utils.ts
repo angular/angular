@@ -15,7 +15,14 @@ export function normalizeMethodName(method): RequestMethod {
   return method;
 }
 
+const toString = Object.prototype.toString;
+
+// utilities for JSON serialization
 export const isSuccess = (status: number): boolean => (status >= 200 && status < 300);
+export const isObject = (value: any): boolean => value !== null && typeof value === 'object';
+export const isDate = (value: any) => toString.call(value) === '[object Date]';
+export const toJSON = (value: any) => JSON.stringify(value);
+
 
 export function getResponseURL(xhr: any): string {
   if ('responseURL' in xhr) {

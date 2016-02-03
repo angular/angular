@@ -51,39 +51,39 @@ export function main() {
 
     it('should create a new connection and allow subscription', () => {
       let connection = backend.createConnection(sampleRequest1);
-      connection.response.subscribe(() => {});
+      connection.subscribe(() => {});
     });
 
     it('should allow responding after subscription', inject([AsyncTestCompleter], async => {
          let connection = backend.createConnection(sampleRequest1);
-         connection.response.subscribe((res) => { async.done(); });
+         connection.subscribe((res) => { async.done(); });
          connection.mockRespond(sampleResponse1);
        }));
 
     it('should allow subscribing after responding', inject([AsyncTestCompleter], async => {
          let connection = backend.createConnection(sampleRequest1);
          connection.mockRespond(sampleResponse1);
-         connection.response.subscribe((res) => { async.done(); });
+         connection.subscribe((res) => { async.done(); });
        }));
 
     it('should allow responding after subscription with an error',
        inject([AsyncTestCompleter], async => {
          let connection = backend.createConnection(sampleRequest1);
-         connection.response.subscribe(null, () => { async.done(); });
+         connection.subscribe(null, () => { async.done(); });
          connection.mockError(new Error('nope'));
        }));
 
     it('should not throw when there are no unresolved requests',
        inject([AsyncTestCompleter], async => {
          let connection = backend.createConnection(sampleRequest1);
-         connection.response.subscribe(() => { async.done(); });
+         connection.subscribe(() => { async.done(); });
          connection.mockRespond(sampleResponse1);
          backend.verifyNoPendingRequests();
        }));
 
     xit('should throw when there are unresolved requests', inject([AsyncTestCompleter], async => {
           let connection = backend.createConnection(sampleRequest1);
-          connection.response.subscribe(() => { async.done(); });
+          connection.subscribe(() => { async.done(); });
           backend.verifyNoPendingRequests();
         }));
 
@@ -91,8 +91,8 @@ export function main() {
        inject([AsyncTestCompleter], async => {
          let connection1 = backend.createConnection(sampleRequest1);
          let connection2 = backend.createConnection(sampleRequest1);
-         connection1.response.subscribe(() => { async.done(); });
-         connection2.response.subscribe(() => {});
+         connection1.subscribe(() => { async.done(); });
+         connection2.subscribe(() => {});
          connection2.mockRespond(sampleResponse1);
          connection1.mockRespond(sampleResponse1);
          backend.verifyNoPendingRequests();
@@ -111,8 +111,8 @@ export function main() {
     it('should allow resolution of requests manually', () => {
       let connection1: MockConnection = backend.createConnection(sampleRequest1);
       let connection2: MockConnection = backend.createConnection(sampleRequest1);
-      connection1.response.subscribe(() => {});
-      connection2.response.subscribe(() => {});
+      connection1.subscribe(() => {});
+      connection2.subscribe(() => {});
       backend.resolveAllConnections();
       backend.verifyNoPendingRequests();
     });

@@ -5,6 +5,9 @@ import {ReadyState} from '../enums';
 import {Connection, ConnectionBackend} from '../interfaces';
 import {isPresent} from 'angular2/src/facade/lang';
 import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
+import {Observable} from 'rxjs/Observable';
+import {Subscriber} from 'rxjs/Subscriber';
+import {Subscription} from 'rxjs/Subscription';
 import {Subject} from 'rxjs/Subject';
 import {ReplaySubject} from 'rxjs/subject/ReplaySubject';
 import {take} from 'rxjs/operator/take';
@@ -14,31 +17,8 @@ import {take} from 'rxjs/operator/take';
  * Mock Connection to represent a {@link Connection} for tests.
  *
  **/
-export class MockConnection implements Connection {
-  // TODO Name `readyState` should change to be more generic, and states could be made to be more
-  // descriptive than XHR states.
-  /**
-   * Describes the state of the connection, based on `XMLHttpRequest.readyState`, but with
-   * additional states. For example, state 5 indicates an aborted connection.
-   */
-  readyState: ReadyState;
-
-  /**
-   * {@link Request} instance used to create the connection.
-   */
-  request: Request;
-
-  /**
-   * {@link EventEmitter} of {@link Response}. Can be subscribed to in order to be notified when a
-   * response is available.
-   */
-  response: any;  // Subject<Response>
-
-  constructor(req: Request) {
-    this.response = take.call(new ReplaySubject(1), 1);
-    this.readyState = ReadyState.Open;
-    this.request = req;
-  }
+export class MockConnection extends ReplaySubject<Response> implements Connection<Response> {
+  constructor(public request: Request) { super(1); }
 
   /**
    * Sends a mock response to the connection. This response is the value that is emitted to the
@@ -55,12 +35,8 @@ export class MockConnection implements Connection {
    *
    */
   mockRespond(res: Response) {
-    if (this.readyState === ReadyState.Done || this.readyState === ReadyState.Cancelled) {
-      throw new BaseException('Connection has already been resolved');
-    }
-    this.readyState = ReadyState.Done;
-    this.response.next(res);
-    this.response.complete();
+    this.next(res);
+    this.complete();
   }
 
   /**
@@ -84,8 +60,7 @@ export class MockConnection implements Connection {
    */
   mockError(err?: Error) {
     // Matches XHR semantics
-    this.readyState = ReadyState.Done;
-    this.response.error(err);
+    this.error(err);
   }
 }
 
@@ -155,7 +130,7 @@ export class MockBackend implements ConnectionBackend {
    *
    * This property only exists in the mock implementation, not in real Backends.
    */
-  connections: any;  //<MockConnection>
+  connections: Subject<MockConnection>;  //<MockConnection>
 
   /**
    * An array representation of `connections`. This array will be updated with each connection that
@@ -163,7 +138,7 @@ export class MockBackend implements ConnectionBackend {
    *
    * This property only exists in the mock implementation, not in real Backends.
    */
-  connectionsArray: MockConnection[];
+  connectionsArray: Connection<Response>[];
   /**
    * {@link EventEmitter} of {@link MockConnection} instances that haven't yet been resolved (i.e.
    * with a `readyState`
@@ -197,7 +172,7 @@ export class MockBackend implements ConnectionBackend {
    *
    * This method only exists in the mock implementation, not in real Backends.
    */
-  resolveAllConnections() { this.connections.subscribe(c => c.readyState = 4); }
+  resolveAllConnections() { this.connections.subscribe(c => /*c.readyState = 4 */ {}); }
 
   /**
    * Creates a new {@link MockConnection}. This is equivalent to calling `new
@@ -205,7 +180,7 @@ export class MockBackend implements ConnectionBackend {
    * emitter of this `MockBackend` instance. This method will usually only be used by tests
    * against the framework itself, not by end-users.
    */
-  createConnection(req: Request): Connection {
+  createConnection(req: Request): Connection<Response> {
     if (!isPresent(req) || !(req instanceof Request)) {
       throw new BaseException(`createConnection requires an instance of Request, got ${req}`);
     }

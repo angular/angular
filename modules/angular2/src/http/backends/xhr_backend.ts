@@ -17,17 +17,10 @@ import {isSuccess, getResponseURL} from '../http_utils';
 * This class would typically not be created or interacted with directly inside applications, though
 * the {@link MockConnection} may be interacted with in tests.
 */
-export class XHRConnection implements Connection {
+export class XHRConnection extends Observable<Response> implements Connection<Response> {
   request: Request;
-  /**
-   * Response {@link EventEmitter} which emits a single {@link Response} value on load event of
-   * `XMLHttpRequest`.
-   */
-  response: Observable<Response>;
-  readyState: ReadyState;
   constructor(req: Request, browserXHR: BrowserXhr, baseResponseOptions?: ResponseOptions) {
-    this.request = req;
-    this.response = new Observable(responseObserver => {
+    const subscriberFn = (responseObserver) => {
       let _xhr: XMLHttpRequest = browserXHR.build();
       _xhr.open(RequestMethod[req.method].toUpperCase(), req.url);
       // load event handler
@@ -64,11 +57,11 @@ export class XHRConnection implements Connection {
         responseObserver.error(response);
       };
       // error event handler
+      // See https://xhr.spec.whatwg.org/#request-error-steps and
+      // https://fetch.spec.whatwg.org/#concept-network-error
       let onError = (err) => {
-        var responseOptions = new ResponseOptions({body: err, type: ResponseType.Error});
-        if (isPresent(baseResponseOptions)) {
-          responseOptions = baseResponseOptions.merge(responseOptions);
-        }
+        var responseOptions = new ResponseOptions(
+            {body: null, type: ResponseType.Error, status: -1, headers: null, statusText: ''});
         responseObserver.error(new Response(responseOptions));
       };
 
@@ -86,7 +79,10 @@ export class XHRConnection implements Connection {
         _xhr.removeEventListener('error', onError);
         _xhr.abort();
       };
-    });
+    };
+
+    super(subscriberFn);
+    this.request = req;
   }
 }
 
