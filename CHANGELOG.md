@@ -27,6 +27,52 @@
 
 * **dart/transform:** Only process deferred libs when necessary ([f56df65](https://github.com/angular/angular/commit/f56df65)), closes [#6745](https://github.com/angular/angular/issues/6745)
 
+### BREAKING CHANGES
+
+This is a breaking change for unit tests. The API for the DebugElement
+has changed. Now, there is a DebugElement or DebugNode for every node
+in the DOM, not only nodes with an ElementRef. `componentViewChildren` is
+removed, and `childNodes` is a list of ElementNodes corresponding to every
+child in the DOM. `query` no longer takes a scope parameter, since
+the entire rendered DOM is included in the `childNodes`.
+
+Before:
+
+```
+componentFixture.debugElement.componentViewChildren[0];
+```
+
+After
+```
+// Depending on the DOM structure of your component, the
+// index may have changed or the first component child
+// may be a sub-child.
+componentFixture.debugElement.children[0];
+```
+
+Before:
+
+```
+debugElement.query(By.css('div'), Scope.all());
+```
+
+After:
+
+```
+debugElement.query(By.css('div'));
+```
+
+Before:
+
+```
+componentFixture.debugElement.elementRef;
+```
+
+After:
+
+```
+componentFixture.elementRef;
+```
 
 <a name="2.0.0-beta.2"></a>
 # 2.0.0-beta.2 (2016-01-28)
