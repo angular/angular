@@ -1,4 +1,5 @@
-import {runBenchmark, verifyNoBrowserErrors} from 'angular2/src/testing/perf_util';
+import {runBenchmark} from './perf_util';
+import {verifyNoBrowserErrors} from 'angular2/testing';
 
 describe('ng-dart1.x naive infinite scroll benchmark', function() {
 

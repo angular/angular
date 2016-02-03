@@ -1,5 +1,5 @@
 import {isPresent} from 'angular2/src/facade/lang';
-import {getIntParameter, bindAction} from 'angular2/src/testing/benchmark_util';
+import {getIntParameter, bindAction} from '../benchmark_util';
 import {TimerWrapper} from 'angular2/src/facade/async';
 import {ScrollAreaComponent} from './scroll_area';
 import {NgIf, NgFor} from 'angular2/common';

@@ -1,4 +1,5 @@
-import {runClickBenchmark, verifyNoBrowserErrors} from 'angular2/src/testing/perf_util';
+import {runClickBenchmark} from './perf_util';
+import {verifyNoBrowserErrors} from 'angular2/testing';
 
 describe('ng1.x tree benchmark', function() {
 

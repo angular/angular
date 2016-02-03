@@ -22,7 +22,7 @@ import {
   bindAction,
   windowProfile,
   windowProfileEnd
-} from 'angular2/src/testing/benchmark_util';
+} from '../benchmark_util';
 import {BrowserDomAdapter} from 'angular2/src/platform/browser/browser_adapter';
 
 function createBindings(): Provider[] {

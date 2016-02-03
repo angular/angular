@@ -3,7 +3,7 @@ import {Component, Directive, DynamicComponentLoader, ElementRef, View} from 'an
 import {NgIf, NgFor} from 'angular2/common';
 import {ApplicationRef} from 'angular2/src/core/application_ref';
 import {ListWrapper} from 'angular2/src/facade/collection';
-import {getIntParameter, bindAction} from 'angular2/src/testing/benchmark_util';
+import {getIntParameter, bindAction} from '../benchmark_util';
 
 var testList = null;
 

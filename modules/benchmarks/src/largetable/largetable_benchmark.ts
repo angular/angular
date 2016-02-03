@@ -6,7 +6,7 @@ import {
   bindAction,
   windowProfile,
   windowProfileEnd
-} from 'angular2/src/testing/benchmark_util';
+} from '../benchmark_util';
 import {bootstrap} from 'angular2/bootstrap';
 import {Component, Directive, View, bind, provide} from 'angular2/core';
 import {NgFor, NgSwitch, NgSwitchWhen, NgSwitchDefault} from 'angular2/common';

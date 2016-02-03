@@ -4,12 +4,11 @@
 <script>
   var scriptUrls;
   var loadRuntimePackages = [
-    'angular2_material',
     'benchmarks',
     'playground',
     // TODO(rado): These helpers don't end up in the bundle, thus they should
     // not even be in src/*. Move them!
-    'angular2/src/testing/benchmark_util',
+    'benchmarks_external/src/benchmark_util',
     'angular2/src/facade/browser',
     'angular2/bootstrap',
     'rxjs'
