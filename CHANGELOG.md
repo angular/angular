@@ -1,3 +1,33 @@
+<a name="2.0.0-beta.3"></a>
+# 2.0.0-beta.3 (2016-02-03)
+
+
+### Bug Fixes
+
+* **bundle:** add angular2/platform/testing/browser to SystemJS testing bundle ([ae7d2ab](https://github.com/angular/angular/commit/ae7d2ab))
+* **circle:** pre-dependencies `npm install npm` ([36a0e04](https://github.com/angular/angular/commit/36a0e04)), closes [#6777](https://github.com/angular/angular/issues/6777)
+* **dart/transform:** Handle edge cases in ReflectionRemover ([3e9b532](https://github.com/angular/angular/commit/3e9b532)), closes [#6749](https://github.com/angular/angular/issues/6749)
+* **docs:** `rxjs/add/operators/map` -> `rxjs/add/operator/map` (no 's'). ([2a302aa](https://github.com/angular/angular/commit/2a302aa))
+* **karma:** fix running karma via gulp ([27daeaf](https://github.com/angular/angular/commit/27daeaf))
+* **query:** don’t cross component boundaries ([c6adbf6](https://github.com/angular/angular/commit/c6adbf6)), closes [#6759](https://github.com/angular/angular/issues/6759)
+* **query:** update view queries that query directives in embedded views ([1f7a41c](https://github.com/angular/angular/commit/1f7a41c)), closes [#6747](https://github.com/angular/angular/issues/6747)
+* **WebWorkers:** Add support for transitionend events. ([c2a38c0](https://github.com/angular/angular/commit/c2a38c0)), closes [#6649](https://github.com/angular/angular/issues/6649)
+* **zone:** correct incorrect calls to zone ([3211938](https://github.com/angular/angular/commit/3211938))
+
+### Features
+
+* **change_detection:** allow all legal programs in the dev mode ([42231f5](https://github.com/angular/angular/commit/42231f5))
+* **dart/transform:** Generate all code into <file>.template.dart ([8c36aa8](https://github.com/angular/angular/commit/8c36aa8))
+* **debug:** replace DebugElement with new Debug DOM ([e1bf3d3](https://github.com/angular/angular/commit/e1bf3d3))
+* **ngFor:** add custom trackBy function support ([cee2318](https://github.com/angular/angular/commit/cee2318)), closes [#6779](https://github.com/angular/angular/issues/6779)
+* **upgrade:** support bindToController with binding definitions ([99e6500](https://github.com/angular/angular/commit/99e6500)), closes [#4784](https://github.com/angular/angular/issues/4784)
+* **WebWorker:** Add Router Support for WebWorker Apps ([8bea667](https://github.com/angular/angular/commit/8bea667)), closes [#3563](https://github.com/angular/angular/issues/3563)
+
+### Performance Improvements
+
+* **dart/transform:** Only process deferred libs when necessary ([f56df65](https://github.com/angular/angular/commit/f56df65)), closes [#6745](https://github.com/angular/angular/issues/6745)
+
+
 <a name="2.0.0-beta.2"></a>
 # 2.0.0-beta.2 (2016-01-28)
 
