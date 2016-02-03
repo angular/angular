@@ -9,7 +9,6 @@
   "repository": <%= JSON.stringify(packageJson.repository) %>,
   "devDependencies": <%= JSON.stringify(packageJson.defaultDevDependencies) %>,
   "peerDependencies": {
-    "angular2": "<%= packageJson.version %>",
-    "rxjs": "<%= packageJson.dependencies['rxjs'] %>"
+    "angular2": "<%= packageJson.version %>"
   }
 }
