@@ -221,6 +221,37 @@ export function main() {
                });
 
          }));
+
+      it('should properly run cleanup when ng1 directive is destroyed', inject([AsyncTestCompleter], (async) => {
+           var adapter: UpgradeAdapter = new UpgradeAdapter();
+           var ng1Module = angular.module('ng1', []);
+           var onDestroyed: EventEmitter<boolean> = new EventEmitter<boolean>();
+
+           var Ng2 =
+               Component({
+                 selector: 'ng2',
+                 template: "test"
+               })
+                   .Class({
+                     constructor: function() {
+
+                     },
+                     ngOnDestroy: function(changes) {
+                       onDestroyed.emit(true);
+                     }
+                   });
+           ng1Module.directive('ng2', adapter.downgradeNg2Component(Ng2));
+           var element = html(`<div>
+              <ng2></ng2>
+              </div>`);
+           adapter.bootstrap(element, ['ng1'])
+               .ready((ref) => {
+                 onDestroyed.subscribe(() => {
+                   ref.dispose();
+                   async.done();
+                 })
+               });
+         }));
     });
 
     describe('upgrade ng1 component', () => {
