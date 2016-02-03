@@ -433,8 +433,9 @@ class TemplateParseVisitor implements HtmlAstVisitor {
     var parts = splitAtColon(name, [null, name]);
     var target = parts[0];
     var eventName = parts[1];
-    targetEvents.push(new BoundEventAst(eventName, target,
-                                        this._parseAction(expression, sourceSpan), sourceSpan));
+    var ast = this._parseAction(expression, sourceSpan);
+    targetMatchableAttrs.push([name, ast.source]);
+    targetEvents.push(new BoundEventAst(eventName, target, ast, sourceSpan));
     // Don't detect directives for event names for now,
     // so don't add the event name to the matchableAttrs
   }

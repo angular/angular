@@ -448,6 +448,21 @@ function declareTests() {
                });
          }));
 
+      it('should support directives where a selector matches event binding',
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+           tcb.overrideView(
+                  MyComp,
+                  new ViewMetadata(
+                      {template: '<p (customEvent)="doNothing()"></p>', directives: [EventDir]}))
+
+               .createAsync(MyComp)
+               .then((fixture) => {
+                 var tc = fixture.debugElement.children[0];
+                 expect(tc.inject(EventDir)).not.toBe(null);
+                 async.done();
+               });
+         }));
+
       it('should read directives metadata from their binding token',
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            tcb.overrideView(MyComp, new ViewMetadata({
@@ -2131,6 +2146,13 @@ class DirectiveListeningDomEventNoPrevent {
 @Injectable()
 class IdDir {
   id: string;
+}
+
+@Directive({selector: '[customEvent]'})
+@Injectable()
+class EventDir {
+  @Output() customEvent = new EventEmitter();
+  doSomething() {}
 }
 
 @Directive({selector: '[static]'})
