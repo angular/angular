@@ -17,6 +17,7 @@ import {
   OutOfBoundsError
 } from './exceptions';
 import {FunctionWrapper, Type, isPresent, isBlank, CONST_EXPR} from 'angular2/src/facade/lang';
+import {BaseException} from 'angular2/src/facade/exceptions';
 import {Key} from './key';
 import {SelfMetadata, HostMetadata, SkipSelfMetadata} from './metadata';
 
@@ -874,6 +875,9 @@ export class Injector {
           obj = factory(d0, d1, d2, d3, d4, d5, d6, d7, d8, d9, d10, d11, d12, d13, d14, d15, d16,
                         d17, d18, d19);
           break;
+        default:
+          throw new BaseException(
+              `Cannot instantiate '${provider.key.displayName}' because it has more than 20 dependencies`);
       }
     } catch (e) {
       throw new InstantiationError(this, e, e.stack, provider.key);
