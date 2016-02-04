@@ -1,9 +1,10 @@
 library angular2.test.transform.common.annotation_matcher_test;
 
+import 'package:test/test.dart';
+
 import 'package:angular2/src/core/render/api.dart';
 import 'package:angular2/src/compiler/directive_metadata.dart';
 import 'package:angular2/src/transform/common/ng_meta.dart';
-import 'package:guinness/guinness.dart';
 
 main() => allTests();
 
@@ -15,18 +16,18 @@ void allTests() {
     CompileDirectiveMetadata.create(type: new CompileTypeMetadata(name: 'N4'))
   ];
 
-  it('should allow empty data.', () {
+  test('should allow empty data.', () {
     var ngMeta = new NgMeta.empty();
-    expect(ngMeta.isEmpty).toBeTrue();
+    expect(ngMeta.isEmpty, isTrue);
   });
 
-  describe('serialization', () {
-    it('should parse empty data correctly.', () {
+  group('serialization', () {
+    test('should parse empty data correctly.', () {
       var ngMeta = new NgMeta.fromJson({});
-      expect(ngMeta.isEmpty).toBeTrue();
+      expect(ngMeta.isEmpty, isTrue);
     });
 
-    it('should be lossless', () {
+    test('should be lossless', () {
       var a = new NgMeta.empty();
       a.identifiers['T0'] = mockDirMetadata[0];
       a.identifiers['T1'] = mockDirMetadata[1];
@@ -42,8 +43,8 @@ void allTests() {
     });
   });
 
-  describe('flatten', () {
-    it('should include recursive aliases.', () {
+  group('flatten', () {
+    test('should include recursive aliases.', () {
       var a = new NgMeta.empty();
       a.identifiers['T0'] = mockDirMetadata[0];
       a.identifiers['T1'] = mockDirMetadata[1];
@@ -54,62 +55,62 @@ void allTests() {
       a.aliases['a3'] = ['T3', 'a2'];
       a.aliases['a4'] = ['a3', 'T0'];
 
-      expect(a.flatten('a4')).toEqual([mockDirMetadata[3], mockDirMetadata[1], mockDirMetadata[0]]);
+      expect(a.flatten('a4'), equals([mockDirMetadata[3], mockDirMetadata[1], mockDirMetadata[0]]));
     });
 
-    it('should detect cycles.', () {
+    test('should detect cycles.', () {
       var a = new NgMeta.empty();
       a.identifiers['T0'] = mockDirMetadata[0];
       a.aliases['a1'] = ['T0', 'a2'];
       a.aliases['a2'] = ['a1'];
 
-      expect(() => a.flatten('a1')).toThrowWith(message: new RegExp('Cycle: a1 -> a2 -> a1.'));
+      expect(() => a.flatten('a1'), throwsA(predicate((ex) => new RegExp('Cycle: a1 -> a2 -> a1.').hasMatch(ex.message))));
     });
 
-    it('should allow duplicates.', () {
+    test('should allow duplicates.', () {
       var a = new NgMeta.empty();
       a.identifiers['T0'] = mockDirMetadata[0];
       a.aliases['a1'] = ['T0', 'a2'];
       a.aliases['a2'] = ['T0'];
 
-      expect(() => a.flatten('a1')).not.toThrow();
+      expect(() => a.flatten('a1'), returnsNormally);
     });
   });
 
-  describe('merge', () {
-    it('should merge all identifiers on addAll', () {
+  group('merge', () {
+    test('should merge all identifiers on addAll', () {
       var a = new NgMeta.empty();
       var b = new NgMeta.empty();
       a.identifiers['T0'] = mockDirMetadata[0];
       b.identifiers['T1'] = mockDirMetadata[1];
       a.addAll(b);
-      expect(a.identifiers).toContain('T1');
-      expect(a.identifiers['T1']).toEqual(mockDirMetadata[1]);
+      expect(a.identifiers, contains('T1'));
+      expect(a.identifiers['T1'], equals(mockDirMetadata[1]));
     });
 
-    it('should merge all aliases on addAll', () {
+    test('should merge all aliases on addAll', () {
       var a = new NgMeta.empty();
       var b = new NgMeta.empty();
       a.aliases['a'] = ['x'];
       b.aliases['b'] = ['y'];
       a.addAll(b);
-      expect(a.aliases).toContain('b');
-      expect(a.aliases['b']).toEqual(['y']);
+      expect(a.aliases, contains('b'));
+      expect(a.aliases['b'], equals(['y']));
     });
   });
 }
 
 _checkSimilar(NgMeta a, NgMeta b) {
-  expect(a.identifiers.length).toEqual(b.identifiers.length);
-  expect(a.aliases.length).toEqual(b.aliases.length);
+  expect(a.identifiers.length, equals(b.identifiers.length));
+  expect(a.aliases.length, equals(b.aliases.length));
   for (var k in a.identifiers.keys) {
-    expect(b.identifiers).toContain(k);
+    expect(b.identifiers, contains(k));
     var at = a.identifiers[k];
     var bt = b.identifiers[k];
-    expect(at.type.name).toEqual(bt.type.name);
+    expect(at.type.name, equals(bt.type.name));
   }
   for (var k in a.aliases.keys) {
-    expect(b.aliases).toContain(k);
-    expect(b.aliases[k]).toEqual(a.aliases[k]);
+    expect(b.aliases, contains(k));
+    expect(b.aliases[k], equals(a.aliases[k]));
   }
 }
