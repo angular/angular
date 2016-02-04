@@ -31,7 +31,7 @@ export class PostMessageBusSink implements MessageBusSink {
       throw new BaseException(`${channel} has already been initialized`);
     }
 
-    var emitter = new EventEmitter();
+    var emitter = new EventEmitter(false);
     var channelInfo = new _Channel(emitter, runInZone);
     this._channels[channel] = channelInfo;
     emitter.subscribe((data: Object) => {
@@ -82,7 +82,7 @@ export class PostMessageBusSource implements MessageBusSource {
       throw new BaseException(`${channel} has already been initialized`);
     }
 
-    var emitter = new EventEmitter();
+    var emitter = new EventEmitter(false);
     var channelInfo = new _Channel(emitter, runInZone);
     this._channels[channel] = channelInfo;
   }
