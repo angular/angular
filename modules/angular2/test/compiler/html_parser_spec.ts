@@ -17,6 +17,7 @@ import {
   HtmlElementAst,
   HtmlAttrAst,
   HtmlTextAst,
+  HtmlCommentAst,
   htmlVisitAll
 } from 'angular2/src/compiler/html_ast';
 import {ParseError, ParseLocation, ParseSourceSpan} from 'angular2/src/compiler/parse_util';
@@ -49,6 +50,23 @@ export function main() {
         it('should parse CDATA', () => {
           expect(humanizeDom(parser.parse('<![CDATA[text]]>', 'TestComp')))
               .toEqual([[HtmlTextAst, 'text', 0]]);
+        });
+      });
+
+      describe('comments', () => {
+        it('should parse root level comments', () => {
+          expect(humanizeDom(parser.parse('<!--a-->', 'TestComp')))
+              .toEqual([[HtmlCommentAst, 'a', 0]]);
+        });
+
+        it('should parse comments inside regular elements', () => {
+          expect(humanizeDom(parser.parse('<div><!--a--></div>', 'TestComp')))
+              .toEqual([[HtmlElementAst, 'div', 0], [HtmlCommentAst, 'a', 1]]);
+        });
+
+        it('should parse comments inside template elements', () => {
+          expect(humanizeDom(parser.parse('<template><!--a--></template>', 'TestComp')))
+              .toEqual([[HtmlElementAst, 'template', 0], [HtmlCommentAst, 'a', 1]]);
         });
       });
 
@@ -234,17 +252,11 @@ export function main() {
         });
       });
 
-      describe('comments', () => {
-        it('should ignore comments', () => {
-          expect(humanizeDom(parser.parse('<!-- comment --><div></div>', 'TestComp')))
-              .toEqual([[HtmlElementAst, 'div', 0]]);
-        });
-      });
-
       describe('source spans', () => {
         it('should store the location', () => {
-          expect(humanizeDomSourceSpans(parser.parse(
-                     '<div [prop]="v1" (e)="do()" attr="v2" noValue>\na\n</div>', 'TestComp')))
+          expect(
+              humanizeDomSourceSpans(parser.parse(
+                  '<div [prop]="v1" (e)="do()" attr="v2" noValue>\na\n</div><!--a-->', 'TestComp')))
               .toEqual([
                 [
                   HtmlElementAst,
@@ -258,6 +270,7 @@ export function main() {
                 [HtmlAttrAst, 'attr', 'v2', 'attr="v2"'],
                 [HtmlAttrAst, 'noValue', '', 'noValue'],
                 [HtmlTextAst, '\na\n', 1, '\na\n'],
+                [HtmlCommentAst, 'a', 0, 'a']
               ]);
         });
 
@@ -378,6 +391,12 @@ class Humanizer implements HtmlAstVisitor {
 
   visitText(ast: HtmlTextAst, context: any): any {
     var res = this._appendContext(ast, [HtmlTextAst, ast.value, this.elDepth]);
+    this.result.push(res);
+    return null;
+  }
+
+  visitComment(ast: HtmlCommentAst, context: any): any {
+    var res = this._appendContext(ast, [HtmlCommentAst, ast.value, this.elDepth]);
     this.result.push(res);
     return null;
   }

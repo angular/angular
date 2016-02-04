@@ -19,7 +19,7 @@ import {
   HtmlElementAst,
   HtmlTextAst,
   HtmlAttrAst,
-  HtmlAst,
+  HtmlCommentAst,
   htmlVisitAll
 } from './html_ast';
 import {HtmlParser} from './html_parser';
@@ -128,4 +128,5 @@ class TemplatePreparseVisitor implements HtmlAstVisitor {
   }
   visitAttr(ast: HtmlAttrAst, context: any): any { return null; }
   visitText(ast: HtmlTextAst, context: any): any { return null; }
+  visitComment(ast: HtmlCommentAst, context: any): any { return null; }
 }

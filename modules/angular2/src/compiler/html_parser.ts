@@ -1,22 +1,13 @@
-import {
-  isPresent,
-  isBlank,
-  StringWrapper,
-  stringify,
-  assertionsEnabled,
-  StringJoiner,
-  serializeEnum,
-  CONST_EXPR
-} from 'angular2/src/facade/lang';
+import {isPresent, isBlank} from 'angular2/src/facade/lang';
 
 import {ListWrapper} from 'angular2/src/facade/collection';
 
-import {HtmlAst, HtmlAttrAst, HtmlTextAst, HtmlElementAst} from './html_ast';
+import {HtmlAst, HtmlAttrAst, HtmlTextAst, HtmlElementAst, HtmlCommentAst} from './html_ast';
 
 import {Injectable} from 'angular2/src/core/di';
 import {HtmlToken, HtmlTokenType, tokenizeHtml} from './html_lexer';
 import {ParseError, ParseLocation, ParseSourceSpan} from './parse_util';
-import {HtmlTagDefinition, getHtmlTagDefinition, getNsPrefix} from './html_tags';
+import {getHtmlTagDefinition, getNsPrefix} from './html_tags';
 
 export class HtmlTreeError extends ParseError {
   static create(elementName: string, location: ParseLocation, msg: string): HtmlTreeError {
@@ -101,7 +92,9 @@ class TreeBuilder {
   }
 
   private _consumeComment(startToken: HtmlToken) {
-    this._advanceIf(HtmlTokenType.RAW_TEXT);
+    let textToken = this._advance();
+    let text = textToken.parts[0];
+    this._addToParent(new HtmlCommentAst(text, textToken.sourceSpan));
     this._advanceIf(HtmlTokenType.COMMENT_END);
   }
 
