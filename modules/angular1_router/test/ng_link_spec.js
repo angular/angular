@@ -135,6 +135,20 @@ describe('ngLink', function () {
     }).not.toThrow();
   });
 
+  it('should add an ng-link-active class on the current link', inject(function ($rootRouter) {
+    $rootRouter.config([
+      { path: '/', component: 'oneCmp', name: 'One' }
+    ]);
+
+    compile('<a ng-link="[\'/One\']">one</a> | <div ng-outlet></div>');
+    $rootScope.$digest();
+
+    $rootRouter.navigateByUrl('/');
+    $rootScope.$digest();
+
+    expect(elt.find('a').attr('class')).toBe('ng-link-active');
+  }));
+
 
   function registerComponent(name, template, config) {
     var controller = function () {};

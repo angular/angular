@@ -257,6 +257,16 @@ function ngLinkDirective($rootRouter, $parse) {
 
     function getLink(params) {
       instruction = router.generate(params);
+
+      scope.$watch(function() { return router.isRouteActive(instruction); },
+                   function(active) {
+                     if (active) {
+                       element.addClass('ng-link-active');
+                     } else {
+                       element.removeClass('ng-link-active');
+                     }
+                   });
+
       return './' + angular.stringifyInstruction(instruction);
     }
 
