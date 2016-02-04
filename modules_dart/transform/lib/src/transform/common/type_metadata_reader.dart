@@ -21,22 +21,24 @@ import 'url_resolver.dart';
 class TypeMetadataReader {
   final _DirectiveMetadataVisitor _directiveVisitor;
   final _PipeMetadataVisitor _pipeVisitor;
+  final _CompileTypeMetadataVisitor _typeVisitor;
   final TemplateCompiler _templateCompiler;
 
   TypeMetadataReader._(
-      this._directiveVisitor, this._pipeVisitor, this._templateCompiler);
+      this._directiveVisitor, this._pipeVisitor, this._templateCompiler, this._typeVisitor);
 
   /// Accepts an [AnnotationMatcher] which tests that an [Annotation]
   /// is a [Directive], [Component], or [View].
   factory TypeMetadataReader(AnnotationMatcher annotationMatcher,
       InterfaceMatcher interfaceMatcher, TemplateCompiler templateCompiler) {
     var lifecycleVisitor = new _LifecycleHookVisitor(interfaceMatcher);
+    var typeVisitor = new _CompileTypeMetadataVisitor(annotationMatcher);
     var directiveVisitor =
-        new _DirectiveMetadataVisitor(annotationMatcher, lifecycleVisitor);
+        new _DirectiveMetadataVisitor(annotationMatcher, lifecycleVisitor, typeVisitor);
     var pipeVisitor = new _PipeMetadataVisitor(annotationMatcher);
 
     return new TypeMetadataReader._(
-        directiveVisitor, pipeVisitor, templateCompiler);
+        directiveVisitor, pipeVisitor, templateCompiler, typeVisitor);
   }
 
   /// Reads *un-normalized* [CompileDirectiveMetadata]/[CompilePipeMetadata] from the
@@ -52,13 +54,19 @@ class TypeMetadataReader {
   Future<dynamic> readTypeMetadata(ClassDeclaration node, AssetId assetId) {
     _directiveVisitor.reset(assetId);
     _pipeVisitor.reset(assetId);
+    _typeVisitor.reset(assetId);
+
     node.accept(_directiveVisitor);
     node.accept(_pipeVisitor);
+    node.accept(_typeVisitor);
+
     if (_directiveVisitor.hasMetadata) {
       final metadata = _directiveVisitor.createMetadata();
       return _templateCompiler.normalizeDirectiveMetadata(metadata);
     } else if (_pipeVisitor.hasMetadata) {
       return new Future.value(_pipeVisitor.createMetadata());
+    } else if (_typeVisitor.isInjectable) {
+      return new Future.value(_typeVisitor.type);
     } else {
       return new Future.value(null);
     }
@@ -124,6 +132,67 @@ bool _expressionToBool(Expression node, String nodeDescription) {
   return value;
 }
 
+class _CompileTypeMetadataVisitor extends Object
+    with RecursiveAstVisitor<CompileTypeMetadata> {
+
+  bool _isInjectable = false;
+  CompileTypeMetadata _type;
+  AssetId _assetId;
+  final AnnotationMatcher _annotationMatcher;
+
+  _CompileTypeMetadataVisitor(this._annotationMatcher);
+
+  bool get isInjectable => _isInjectable;
+
+  CompileTypeMetadata get type => _type;
+
+  void reset(AssetId assetId) {
+    this._assetId = assetId;
+    this._isInjectable = false;
+    this._type = null;
+  }
+
+  @override
+  Object visitAnnotation(Annotation node) {
+    final isComponent = _annotationMatcher.isComponent(node, _assetId);
+    final isDirective = _annotationMatcher.isDirective(node, _assetId);
+    final isInjectable = _annotationMatcher.isInjectable(node, _assetId);
+
+    _isInjectable = _isInjectable || isComponent || isDirective || isInjectable;
+
+    return null;
+  }
+
+  @override
+  Object visitClassDeclaration(ClassDeclaration node) {
+    node.metadata.accept(this);
+    if (this._isInjectable) {
+      _type = new CompileTypeMetadata(
+          moduleUrl: toAssetUri(_assetId),
+          name: node.name.toString(),
+          diDeps: _getCompileDiDependencyMetadata(node),
+          runtime: null // Intentionally `null`, cannot be provided here.
+      );
+    }
+    return null;
+  }
+
+  List<CompileDiDependencyMetadata> _getCompileDiDependencyMetadata(ClassDeclaration node) {
+    final constructor = node.getConstructor(null);
+    if (constructor == null) return [];
+
+    return constructor.parameters.parameters.map((p) {
+      final typeToken = p is SimpleFormalParameter && p.type != null ? _readIdentifier(p.type.name) : null;
+      final injectTokens = p.metadata.where((m) => m.name.toString() == "Inject").map((m) => _readIdentifier(m.arguments.arguments[0]));
+      final token = injectTokens.isNotEmpty ? injectTokens.first : typeToken;
+      return new CompileDiDependencyMetadata(token: token);
+    }).toList();
+  }
+}
+
+
+
+
 /// Visitor responsible for processing a [Directive] annotated
 /// [ClassDeclaration] and creating a [CompileDirectiveMetadata] object.
 class _DirectiveMetadataVisitor extends Object
@@ -134,10 +203,12 @@ class _DirectiveMetadataVisitor extends Object
 
   final _LifecycleHookVisitor _lifecycleVisitor;
 
+  final _CompileTypeMetadataVisitor _typeVisitor;
+
   /// The [AssetId] we are currently processing.
   AssetId _assetId;
 
-  _DirectiveMetadataVisitor(this._annotationMatcher, this._lifecycleVisitor) {
+  _DirectiveMetadataVisitor(this._annotationMatcher, this._lifecycleVisitor, this._typeVisitor) {
     reset(null);
   }
 
@@ -154,12 +225,14 @@ class _DirectiveMetadataVisitor extends Object
   List<String> _inputs;
   List<String> _outputs;
   Map<String, String> _host;
+  List<CompileProviderMetadata> _providers;
   List<LifecycleHooks> _lifecycleHooks;
   CompileTemplateMetadata _cmpTemplate;
   CompileTemplateMetadata _viewTemplate;
 
   void reset(AssetId assetId) {
     _lifecycleVisitor.reset(assetId);
+    _typeVisitor.reset(assetId);
     _assetId = assetId;
 
     _type = null;
@@ -171,6 +244,7 @@ class _DirectiveMetadataVisitor extends Object
     _inputs = <String>[];
     _outputs = <String>[];
     _host = <String, String>{};
+    _providers = <CompileProviderMetadata>[];
     _lifecycleHooks = null;
     _cmpTemplate = null;
     _viewTemplate = null;
@@ -192,6 +266,7 @@ class _DirectiveMetadataVisitor extends Object
         inputs: _inputs,
         outputs: _outputs,
         host: _host,
+        providers: _providers,
         lifecycleHooks: _lifecycleHooks,
         template: _template);
   }
@@ -316,6 +391,34 @@ class _DirectiveMetadataVisitor extends Object
     }
   }
 
+  void _populateProviders(Expression providerValues) {
+    _checkMeta();
+
+    final providers = (providerValues as ListLiteral).elements.map((el) {
+      if (el is PrefixedIdentifier || el is SimpleIdentifier) {
+        return new CompileProviderMetadata(token: _readIdentifier(el));
+
+      } else if (el is InstanceCreationExpression && el.constructorName.toString() == "Provider") {
+        final token = el.argumentList.arguments.first;
+
+        var useClass;
+        el.argumentList.arguments.skip(1).forEach((arg) {
+          if (arg.name.toString() == "useClass:") {
+            final id = _readIdentifier(arg.expression);
+            useClass = new CompileTypeMetadata(prefix: id.prefix, name: id.name);
+          }
+        });
+        return new CompileProviderMetadata(token: _readIdentifier(token), useClass: useClass);
+
+      } else {
+        throw new ArgumentError(
+            'Incorrect value. Expected a Provider or a String, but got "${el}".');
+      }
+    });
+
+    _providers.addAll(providers);
+  }
+
   //TODO Use AnnotationMatcher instead of string matching
   bool _isAnnotation(Annotation node, String annotationName) {
     var id = node.name;
@@ -356,12 +459,10 @@ class _DirectiveMetadataVisitor extends Object
   @override
   Object visitClassDeclaration(ClassDeclaration node) {
     node.metadata.accept(this);
+    node.accept(_typeVisitor);
+    _type = _typeVisitor.type;
+
     if (this._hasMetadata) {
-      _type = new CompileTypeMetadata(
-          moduleUrl: toAssetUri(_assetId),
-          name: node.name.toString(),
-          runtime: null // Intentionally `null`, cannot be provided here.
-          );
       _lifecycleHooks = node.implementsClause != null
           ? node.implementsClause.accept(_lifecycleVisitor)
           : const [];
@@ -404,6 +505,9 @@ class _DirectiveMetadataVisitor extends Object
         break;
       case 'events':
         _populateEvents(node.expression);
+        break;
+      case 'providers':
+        _populateProviders(node.expression);
         break;
     }
     return null;
@@ -685,5 +789,21 @@ class _PipeMetadataVisitor extends Object with RecursiveAstVisitor<Object> {
   void _populatePure(Expression pureValue) {
     _checkMeta();
     _pure = _expressionToBool(pureValue, 'Pipe#pure');
+  }
+}
+
+
+dynamic _readIdentifier(dynamic el) {
+  if (el is PrefixedIdentifier) {
+    return new CompileIdentifierMetadata(name: '${el.identifier}', prefix: '${el.prefix}');
+
+  } else if (el is SimpleIdentifier) {
+    return new CompileIdentifierMetadata(name: '$el');
+
+  } else if (el is SimpleStringLiteral){
+    return el.value;
+
+  } else {
+    throw new ArgumentError('Incorrect identifier "${el}".');
   }
 }

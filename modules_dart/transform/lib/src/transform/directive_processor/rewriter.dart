@@ -5,6 +5,7 @@ import 'dart:async';
 import 'package:analyzer/analyzer.dart';
 import 'package:barback/barback.dart' show AssetId;
 
+import 'package:angular2/src/compiler/directive_metadata.dart' show CompileIdentifierMetadata;
 import 'package:angular2/src/compiler/template_compiler.dart';
 import 'package:angular2/src/transform/common/annotation_matcher.dart';
 import 'package:angular2/src/transform/common/asset_reader.dart';
@@ -14,6 +15,7 @@ import 'package:angular2/src/transform/common/interface_matcher.dart';
 import 'package:angular2/src/transform/common/logging.dart';
 import 'package:angular2/src/transform/common/ng_compiler.dart';
 import 'package:angular2/src/transform/common/ng_meta.dart';
+import 'package:angular2/src/transform/common/url_resolver.dart';
 import 'package:angular2/src/transform/common/zone.dart' as zone;
 
 import 'inliner.dart';
@@ -89,14 +91,15 @@ class _NgMetaVisitor extends Object with SimpleAstVisitor<Object> {
   @override
   Object visitClassDeclaration(ClassDeclaration node) {
     _normalizations.add(
-        _reader.readTypeMetadata(node, assetId).then((compileMetadataWithType) {
-      if (compileMetadataWithType != null) {
-        ngMeta.types[compileMetadataWithType.type.name] =
-            compileMetadataWithType;
+        _reader.readTypeMetadata(node, assetId).then((compileMetadataWithIdentifier) {
+      if (compileMetadataWithIdentifier!= null) {
+        ngMeta.identifiers[compileMetadataWithIdentifier.identifier.name] =
+            compileMetadataWithIdentifier;
       }
     }).catchError((err) {
       log.error('ERROR: $err', asset: assetId);
     }));
+
     return null;
   }
 
@@ -108,6 +111,11 @@ class _NgMetaVisitor extends Object with SimpleAstVisitor<Object> {
     // doesn't support decorators on variable declarations (see
     // angular/angular#1747 and angular/ts2dart#249 for context).
     outer: for (var variable in node.variables.variables) {
+      if (variable.isConst) {
+        ngMeta.identifiers[variable.name.name] =
+          new CompileIdentifierMetadata(name: variable.name.name, moduleUrl: toAssetUri(assetId));
+      }
+
       var initializer = variable.initializer;
       if (initializer != null && initializer is ListLiteral) {
         var otherNames = [];

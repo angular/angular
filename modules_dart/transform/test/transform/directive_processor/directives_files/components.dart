@@ -1,7 +1,7 @@
 library angular2.test.transform.directive_processor.directive_files.components;
 
 import 'package:angular2/angular2.dart'
-    show Component, Directive, View, NgElement, Output, Input;
+    show Component, Directive, View, NgElement, Output, Input, Provider;
 import 'dep1.dart';
 import 'dep2.dart' as dep2;
 
@@ -83,4 +83,36 @@ class ComponentWithHostListeners {
   @HostListener('b') void onB() {}
   @HostListener('c', ['\$event.target', '\$event.target.value']) void onC(
       t, v) {}
+}
+
+@Component(
+    selector: 'component-with-providers-types',
+    template: '',
+    providers: [ServiceDep, dep2.ServiceDep])
+class ComponentWithProvidersTypes {}
+
+@Component(
+    selector: 'component-with-providers-string-token',
+    template: '',
+    providers: [const Provider("StringDep", useClass: ServiceDep)])
+class ComponentWithProvidersStringToken {}
+
+@Component(
+    selector: 'component-with-providers-use-class',
+    template: '',
+    providers: [const Provider(ServiceDep, useClass: ServiceDep)])
+class ComponentWithProvidersUseClass {}
+
+@Component(
+    selector: 'component-with-di-deps',
+    template: '')
+class ComponentWithDiDeps {
+  ComponentWithDiDeps(ServiceDep arg1, @Inject(ServiceDep) arg2);
+}
+
+@Component(
+    selector: 'component-with-di-deps-string-token',
+    template: '')
+class ComponentWithDiDepsStrToken {
+  ComponentWithDiDepsStrToken(@Inject("StringDep") arg1);
 }
