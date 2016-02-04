@@ -2,8 +2,10 @@ import {
   isPresent,
   isBlank,
   normalizeBool,
+  normalizeBlank,
   serializeEnum,
   Type,
+  isString,
   RegExpWrapper,
   StringWrapper
 } from 'angular2/src/facade/lang';
@@ -22,7 +24,17 @@ import {LifecycleHooks, LIFECYCLE_HOOKS_VALUES} from 'angular2/src/core/linker/i
 // group 2: "event" from "(event)"
 var HOST_REG_EXP = /^(?:(?:\[([^\]]+)\])|(?:\(([^\)]+)\)))$/g;
 
-export abstract class CompileMetadataWithType {
+export abstract class CompileMetadataWithIdentifier {
+  static fromJson(data: {[key: string]: any}): CompileMetadataWithIdentifier {
+    return _COMPILE_METADATA_FROM_JSON[data['class']](data);
+  }
+
+  abstract toJson(): {[key: string]: any};
+
+  get identifier(): CompileIdentifierMetadata { return unimplemented(); }
+}
+
+export abstract class CompileMetadataWithType extends CompileMetadataWithIdentifier {
   static fromJson(data: {[key: string]: any}): CompileMetadataWithType {
     return _COMPILE_METADATA_FROM_JSON[data['class']](data);
   }
@@ -30,36 +42,220 @@ export abstract class CompileMetadataWithType {
   abstract toJson(): {[key: string]: any};
 
   get type(): CompileTypeMetadata { return unimplemented(); }
+
+  get identifier(): CompileIdentifierMetadata { return unimplemented(); }
 }
 
-/**
- * Metadata regarding compilation of a type.
- */
-export class CompileTypeMetadata {
-  runtime: Type;
+export class CompileIdentifierMetadata implements CompileMetadataWithIdentifier {
+  runtime: any;
   name: string;
+  prefix: string;
   moduleUrl: string;
-  isHost: boolean;
-  constructor({runtime, name, moduleUrl, isHost}:
-                  {runtime?: Type, name?: string, moduleUrl?: string, isHost?: boolean} = {}) {
+  constructor({runtime, name, moduleUrl,
+               prefix}: {runtime?: any, name?: string, moduleUrl?: string, prefix?: string} = {}) {
     this.runtime = runtime;
     this.name = name;
+    this.prefix = prefix;
     this.moduleUrl = moduleUrl;
-    this.isHost = normalizeBool(isHost);
   }
 
-  static fromJson(data: {[key: string]: any}): CompileTypeMetadata {
-    return new CompileTypeMetadata(
-        {name: data['name'], moduleUrl: data['moduleUrl'], isHost: data['isHost']});
+  static fromJson(data: {[key: string]: any}): CompileIdentifierMetadata {
+    return new CompileIdentifierMetadata(
+        {name: data['name'], prefix: data['prefix'], moduleUrl: data['moduleUrl']});
   }
 
   toJson(): {[key: string]: any} {
     return {
       // Note: Runtime type can't be serialized...
+      'class': 'Identifier',
       'name': this.name,
       'moduleUrl': this.moduleUrl,
-      'isHost': this.isHost
+      'prefix': this.prefix
     };
+  }
+
+  get identifier(): CompileIdentifierMetadata { return this; }
+}
+
+export class CompileDiDependencyMetadata {
+  isAttribute: boolean;
+  isSelf: boolean;
+  isHost: boolean;
+  isSkipSelf: boolean;
+  isOptional: boolean;
+  query: CompileQueryMetadata;
+  viewQuery: CompileQueryMetadata;
+  token: CompileIdentifierMetadata | string;
+
+  constructor({isAttribute, isSelf, isHost, isSkipSelf, isOptional, query, viewQuery, token}: {
+    isAttribute?: boolean,
+    isSelf?: boolean,
+    isHost?: boolean,
+    isSkipSelf?: boolean,
+    isOptional?: boolean,
+    query?: CompileQueryMetadata,
+    viewQuery?: CompileQueryMetadata,
+    token?: CompileIdentifierMetadata | string
+  } = {}) {
+    this.isAttribute = normalizeBool(isAttribute);
+    this.isSelf = normalizeBool(isSelf);
+    this.isHost = normalizeBool(isHost);
+    this.isSkipSelf = normalizeBool(isSkipSelf);
+    this.isOptional = normalizeBool(isOptional);
+    this.query = query;
+    this.viewQuery = viewQuery;
+    this.token = token;
+  }
+
+  static fromJson(data: {[key: string]: any}): CompileDiDependencyMetadata {
+    return new CompileDiDependencyMetadata(
+        {token: objFromJson(data['token'], CompileIdentifierMetadata.fromJson)});
+  }
+
+  toJson(): {[key: string]: any} {
+    return {
+      // Note: Runtime type can't be serialized...
+      'token': objToJson(this.token)
+    };
+  }
+}
+
+export class CompileProviderMetadata {
+  token: CompileIdentifierMetadata | string;
+  useClass: CompileTypeMetadata;
+  useValue: any;
+  useExisting: CompileIdentifierMetadata | string;
+  useFactory: CompileFactoryMetadata;
+  deps: CompileDiDependencyMetadata[];
+  multi: boolean;
+
+  constructor({token, useClass, useValue, useExisting, useFactory, deps, multi}: {
+    token?: CompileIdentifierMetadata | string,
+    useClass?: CompileTypeMetadata,
+    useValue?: any,
+    useExisting?: CompileIdentifierMetadata | string,
+    useFactory?: CompileFactoryMetadata,
+    deps?: CompileDiDependencyMetadata[],
+    multi?: boolean
+  }) {
+    this.token = token;
+    this.useClass = useClass;
+    this.useValue = useValue;
+    this.useExisting = useExisting;
+    this.useFactory = useFactory;
+    this.deps = deps;
+    this.multi = multi;
+  }
+
+  static fromJson(data: {[key: string]: any}): CompileProviderMetadata {
+    return new CompileProviderMetadata({
+      token: objFromJson(data['token'], CompileIdentifierMetadata.fromJson),
+      useClass: objFromJson(data['useClass'], CompileTypeMetadata.fromJson)
+    });
+  }
+
+  toJson(): {[key: string]: any} {
+    return {
+      // Note: Runtime type can't be serialized...
+      'token': objToJson(this.token),
+      'useClass': objToJson(this.useClass)
+    };
+  }
+}
+
+export class CompileFactoryMetadata implements CompileIdentifierMetadata {
+  runtime: Function;
+  name: string;
+  prefix: string;
+  moduleUrl: string;
+  diDeps: CompileDiDependencyMetadata[];
+
+  constructor({runtime, name, moduleUrl, diDeps}: {
+    runtime?: Function,
+    name?: string,
+    moduleUrl?: string,
+    diDeps?: CompileDiDependencyMetadata[]
+  }) {
+    this.runtime = runtime;
+    this.name = name;
+    this.moduleUrl = moduleUrl;
+    this.diDeps = diDeps;
+  }
+
+  get identifier(): CompileIdentifierMetadata { return this; }
+
+  toJson() { return null; }
+}
+
+/**
+ * Metadata regarding compilation of a type.
+ */
+export class CompileTypeMetadata implements CompileIdentifierMetadata, CompileMetadataWithType {
+  runtime: Type;
+  name: string;
+  prefix: string;
+  moduleUrl: string;
+  isHost: boolean;
+  diDeps: CompileDiDependencyMetadata[];
+
+  constructor({runtime, name, moduleUrl, prefix, isHost, diDeps}: {
+    runtime?: Type,
+    name?: string,
+    moduleUrl?: string,
+    prefix?: string,
+    isHost?: boolean,
+    diDeps?: CompileDiDependencyMetadata[]
+  } = {}) {
+    this.runtime = runtime;
+    this.name = name;
+    this.moduleUrl = moduleUrl;
+    this.prefix = prefix;
+    this.isHost = normalizeBool(isHost);
+    this.diDeps = normalizeBlank(diDeps);
+  }
+
+  static fromJson(data: {[key: string]: any}): CompileTypeMetadata {
+    return new CompileTypeMetadata({
+      name: data['name'],
+      moduleUrl: data['moduleUrl'],
+      prefix: data['prefix'],
+      isHost: data['isHost'],
+      diDeps: arrayFromJson(data['diDeps'], CompileDiDependencyMetadata.fromJson)
+    });
+  }
+
+  get identifier(): CompileIdentifierMetadata { return this; }
+  get type(): CompileTypeMetadata { return this; }
+
+  toJson(): {[key: string]: any} {
+    return {
+      // Note: Runtime type can't be serialized...
+      'class': 'Type',
+      'name': this.name,
+      'moduleUrl': this.moduleUrl,
+      'prefix': this.prefix,
+      'isHost': this.isHost,
+      'diDeps': arrayToJson(this.diDeps)
+    };
+  }
+}
+
+export class CompileQueryMetadata {
+  selectors: Array<CompileIdentifierMetadata | string>;
+  descendants: boolean;
+  first: boolean;
+  propertyName: string;
+
+  constructor({selectors, descendants, first, propertyName}: {
+    selectors?: Array<CompileIdentifierMetadata | string>,
+    descendants?: boolean,
+    first?: boolean,
+    propertyName?: string
+  } = {}) {
+    this.selectors = selectors;
+    this.descendants = descendants;
+    this.first = first;
+    this.propertyName = propertyName;
   }
 }
 
@@ -120,7 +316,8 @@ export class CompileTemplateMetadata {
  */
 export class CompileDirectiveMetadata implements CompileMetadataWithType {
   static create({type, isComponent, dynamicLoadable, selector, exportAs, changeDetection, inputs,
-                 outputs, host, lifecycleHooks, template}: {
+                 outputs, host, lifecycleHooks, providers, viewProviders, queries, viewQueries,
+                 template}: {
     type?: CompileTypeMetadata,
     isComponent?: boolean,
     dynamicLoadable?: boolean,
@@ -131,6 +328,10 @@ export class CompileDirectiveMetadata implements CompileMetadataWithType {
     outputs?: string[],
     host?: {[key: string]: string},
     lifecycleHooks?: LifecycleHooks[],
+    providers?: Array<CompileProviderMetadata | CompileTypeMetadata | any[]>,
+    viewProviders?: Array<CompileProviderMetadata | CompileTypeMetadata | any[]>,
+    queries?: CompileQueryMetadata[],
+    viewQueries?: CompileQueryMetadata[],
     template?: CompileTemplateMetadata
   } = {}): CompileDirectiveMetadata {
     var hostListeners: {[key: string]: string} = {};
@@ -180,10 +381,13 @@ export class CompileDirectiveMetadata implements CompileMetadataWithType {
       hostProperties: hostProperties,
       hostAttributes: hostAttributes,
       lifecycleHooks: isPresent(lifecycleHooks) ? lifecycleHooks : [],
+      providers: providers,
+      viewProviders: viewProviders,
+      queries: queries,
+      viewQueries: viewQueries,
       template: template
     });
   }
-
   type: CompileTypeMetadata;
   isComponent: boolean;
   dynamicLoadable: boolean;
@@ -196,9 +400,14 @@ export class CompileDirectiveMetadata implements CompileMetadataWithType {
   hostProperties: {[key: string]: string};
   hostAttributes: {[key: string]: string};
   lifecycleHooks: LifecycleHooks[];
+  providers: Array<CompileProviderMetadata | CompileTypeMetadata | any[]>;
+  viewProviders: Array<CompileProviderMetadata | CompileTypeMetadata | any[]>;
+  queries: CompileQueryMetadata[];
+  viewQueries: CompileQueryMetadata[];
   template: CompileTemplateMetadata;
   constructor({type, isComponent, dynamicLoadable, selector, exportAs, changeDetection, inputs,
-               outputs, hostListeners, hostProperties, hostAttributes, lifecycleHooks, template}: {
+               outputs, hostListeners, hostProperties, hostAttributes, lifecycleHooks, providers,
+               viewProviders, queries, viewQueries, template}: {
     type?: CompileTypeMetadata,
     isComponent?: boolean,
     dynamicLoadable?: boolean,
@@ -211,6 +420,10 @@ export class CompileDirectiveMetadata implements CompileMetadataWithType {
     hostProperties?: {[key: string]: string},
     hostAttributes?: {[key: string]: string},
     lifecycleHooks?: LifecycleHooks[],
+    providers?: Array<CompileProviderMetadata | CompileTypeMetadata | any[]>,
+    viewProviders?: Array<CompileProviderMetadata | CompileTypeMetadata | any[]>,
+    queries?: CompileQueryMetadata[],
+    viewQueries?: CompileQueryMetadata[],
     template?: CompileTemplateMetadata
   } = {}) {
     this.type = type;
@@ -225,8 +438,14 @@ export class CompileDirectiveMetadata implements CompileMetadataWithType {
     this.hostProperties = hostProperties;
     this.hostAttributes = hostAttributes;
     this.lifecycleHooks = lifecycleHooks;
+    this.providers = normalizeBlank(providers);
+    this.viewProviders = normalizeBlank(viewProviders);
+    this.queries = queries;
+    this.viewQueries = viewQueries;
     this.template = template;
   }
+
+  get identifier(): CompileIdentifierMetadata { return this.type; }
 
   static fromJson(data: {[key: string]: any}): CompileDirectiveMetadata {
     return new CompileDirectiveMetadata({
@@ -246,7 +465,8 @@ export class CompileDirectiveMetadata implements CompileMetadataWithType {
       lifecycleHooks:
           (<any[]>data['lifecycleHooks']).map(hookValue => LIFECYCLE_HOOKS_VALUES[hookValue]),
       template: isPresent(data['template']) ? CompileTemplateMetadata.fromJson(data['template']) :
-                                              data['template']
+                                              data['template'],
+      providers: arrayFromJson(data['providers'], CompileProviderMetadata.fromJson)
     });
   }
 
@@ -266,7 +486,8 @@ export class CompileDirectiveMetadata implements CompileMetadataWithType {
       'hostProperties': this.hostProperties,
       'hostAttributes': this.hostAttributes,
       'lifecycleHooks': this.lifecycleHooks.map(hook => serializeEnum(hook)),
-      'template': isPresent(this.template) ? this.template.toJson() : this.template
+      'template': isPresent(this.template) ? this.template.toJson() : this.template,
+      'providers': arrayToJson(this.providers)
     };
   }
 }
@@ -293,7 +514,11 @@ export function createHostComponentMeta(componentType: CompileTypeMetadata,
     lifecycleHooks: [],
     isComponent: true,
     dynamicLoadable: false,
-    selector: '*'
+    selector: '*',
+    providers: [],
+    viewProviders: [],
+    queries: [],
+    viewQueries: []
   });
 }
 
@@ -308,6 +533,7 @@ export class CompilePipeMetadata implements CompileMetadataWithType {
     this.name = name;
     this.pure = normalizeBool(pure);
   }
+  get identifier(): CompileIdentifierMetadata { return this.type; }
 
   static fromJson(data: {[key: string]: any}): CompilePipeMetadata {
     return new CompilePipeMetadata({
@@ -329,5 +555,23 @@ export class CompilePipeMetadata implements CompileMetadataWithType {
 
 var _COMPILE_METADATA_FROM_JSON = {
   'Directive': CompileDirectiveMetadata.fromJson,
-  'Pipe': CompilePipeMetadata.fromJson
+  'Pipe': CompilePipeMetadata.fromJson,
+  'Type': CompileTypeMetadata.fromJson,
+  'Identifier': CompileIdentifierMetadata.fromJson
 };
+
+function arrayFromJson(obj: any[], fn: (a: {[key: string]: any}) => any): any {
+  return isBlank(obj) ? null : obj.map(fn);
+}
+
+function arrayToJson(obj: any[]): string | {[key: string]: any} {
+  return isBlank(obj) ? null : obj.map(o => o.toJson());
+}
+
+function objFromJson(obj: any, fn: (a: {[key: string]: any}) => any): any {
+  return (isString(obj) || isBlank(obj)) ? obj : fn(obj);
+}
+
+function objToJson(obj: any): string | {[key: string]: any} {
+  return (isString(obj) || isBlank(obj)) ? obj : obj.toJson();
+}

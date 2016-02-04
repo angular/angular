@@ -34,6 +34,7 @@ let _resolveToFalse = PromiseWrapper.resolve(false);
  * `Instruction`.
  * The router uses the `RouteRegistry` to get an `Instruction`.
  */
+@Injectable()
 export class Router {
   navigating: boolean = false;
   lastNavigationAttempt: string;
