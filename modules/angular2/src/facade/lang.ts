@@ -179,6 +179,9 @@ export function stringify(token): string {
   }
 
   var res = token.toString();
+  if (typeof token === "function") {
+    return res.substr("function ".length, res.indexOf("()") - "function ".length);
+  }
   var newLineIndex = res.indexOf("\n");
   return (newLineIndex === -1) ? res : res.substring(0, newLineIndex);
 }
