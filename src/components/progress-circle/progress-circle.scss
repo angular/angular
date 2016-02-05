@@ -1,0 +1,110 @@
+@import "variables";
+
+@import "default-theme";
+
+/* Animation Durations */
+$md-progress-circle-duration : 5.25s !default;
+$md-progress-circle-value-change-duration : $md-progress-circle-duration * 0.25 !default;
+$md-progress-circle-constant-rotate-duration : $md-progress-circle-duration * 0.55 !default;
+$md-progress-circle-sporadic-rotate-duration : $md-progress-circle-duration !default;
+
+/** Component sizing */
+$md-progress-circle-stroke-width: 10px !default;
+$md-progress-circle-radius: 40px !default;
+$md-progress-circle-circumference: $pi * $md-progress-circle-radius * 2 !default;
+$md-progress-circle-center-point: 50px !default;
+// Height and weight of the viewport for md-progress-circle.
+$md-progress-circle-viewport-size : 100px !default;
+
+
+:host {
+  display: block;
+  /** Height and width are provided for md-progress-circle to act as a default.
+      The height and width are expected to be overwritten by application css. */
+  height: $md-progress-circle-viewport-size;
+  width: $md-progress-circle-viewport-size;
+
+  /** SVG's viewBox is defined as 0 0 100 100, this means that all SVG children will placed
+      based on a 100px by 100px box.
+
+      The SVG and Circle dimensions/location:
+        SVG
+          Height: 100px
+          Width: 100px
+        Circle
+          Radius: 40px
+          Circumference: 251.3274px
+          Center x: 50px
+          Center y: 50px
+  */
+  svg {
+    height: 100%;
+    width: 100%;
+  }
+
+
+  circle {
+    cx: $md-progress-circle-center-point;
+    cy: $md-progress-circle-center-point;
+    fill: transparent;
+    r: $md-progress-circle-radius;
+    stroke: md-color($md-primary, 600);
+    /** Stroke width of 10px defines stroke as 10% of the viewBox */
+    stroke-width: $md-progress-circle-stroke-width;
+    /** SVG circle rotations begin rotated 90deg clockwise from the circle's center top */
+    transform: rotate(-90deg);
+    transform-origin: center;
+    transition: stroke-dashoffset 0.225s linear;
+    /** The dash array of the circle is defined as the circumference of the circle. */
+    stroke-dasharray: $md-progress-circle-circumference;
+    /** The stroke dashoffset is used to "fill" the circle, 0px represents an full circle,
+        while the circles full circumference represents an empty circle. */
+    stroke-dashoffset: 0px;
+  }
+
+
+  &.md-accent circle {
+    stroke: md-color($md-accent, 600);
+  }
+
+
+  &.md-warn circle {
+    stroke: md-color($md-warn, 600);
+  }
+
+
+  &[mode="indeterminate"] circle {
+    animation-duration: $md-progress-circle-sporadic-rotate-duration,
+                        $md-progress-circle-constant-rotate-duration,
+                        $md-progress-circle-value-change-duration;
+    animation-name: md-progress-circle-sporadic-rotate,
+                    md-progress-circle-linear-rotate,
+                    md-progress-circle-value-change;
+    animation-timing-function: $ease-in-out-curve-function,
+                               linear,
+                               $ease-in-out-curve-function;
+    animation-iteration-count: infinite;
+    transition: none;
+  }
+}
+
+
+/** Animations for indeterminate mode */
+@keyframes md-progress-circle-linear-rotate {
+  0%       { transform: rotate(0deg); }
+  100%     { transform: rotate(360deg); }
+}
+@keyframes md-progress-circle-sporadic-rotate {
+  12.5%    { transform: rotate( 135deg); }
+  25%      { transform: rotate( 270deg); }
+  37.5%    { transform: rotate( 405deg); }
+  50%      { transform: rotate( 540deg); }
+  62.5%    { transform: rotate( 675deg); }
+  75%      { transform: rotate( 810deg); }
+  87.5%    { transform: rotate( 945deg); }
+  100%     { transform: rotate(1080deg); }
+}
+@keyframes md-progress-circle-value-change {
+  0%       { stroke-dashoffset: 261.3274px; }
+  100%     { stroke-dashoffset: -241.3274px; }
+}
