@@ -117,6 +117,11 @@ export class NgFor implements DoCheck {
       var viewRef = <EmbeddedViewRef>this._viewContainer.get(i);
       viewRef.setLocal('last', i === ilen - 1);
     }
+
+    changes.forEachIdentityChange((record) => {
+      var viewRef = <EmbeddedViewRef>this._viewContainer.get(record.currentIndex);
+      viewRef.setLocal('\$implicit', record.item);
+    });
   }
 
   private _perViewChange(view, record) {
