@@ -18,7 +18,7 @@ const CHECKBOX_VALUE_ACCESSOR = CONST_EXPR(new Provider(
   selector:
       'input[type=checkbox][ngControl],input[type=checkbox][ngFormControl],input[type=checkbox][ngModel]',
   host: {'(change)': 'onChange($event.target.checked)', '(blur)': 'onTouched()'},
-  bindings: [CHECKBOX_VALUE_ACCESSOR]
+  providers: [CHECKBOX_VALUE_ACCESSOR]
 })
 export class CheckboxControlValueAccessor implements ControlValueAccessor {
   onChange = (_) => {};

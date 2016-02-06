@@ -106,21 +106,3 @@ export class FormBuilder {
     }
   }
 }
-
-/**
- * Shorthand set of providers used for building Angular forms.
- *
- * ### Example
- *
- * ```typescript
- * bootstrap(MyApp, [FORM_PROVIDERS]);
- * ```
- */
-export const FORM_PROVIDERS: Type[] = CONST_EXPR([FormBuilder]);
-
-/**
- * See {@link FORM_PROVIDERS} instead.
- *
- * @deprecated
- */
-export const FORM_BINDINGS = FORM_PROVIDERS;
