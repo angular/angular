@@ -165,10 +165,10 @@ export class NgZone {
       this._disabled = true;
       this._mountZone = null;
     }
-    this._onTurnStartEvents = new EventEmitter(false);
-    this._onTurnDoneEvents = new EventEmitter(false);
-    this._onEventDoneEvents = new EventEmitter(false);
-    this._onErrorEvents = new EventEmitter(false);
+    this._onTurnStartEvents = new EventEmitter();
+    this._onTurnDoneEvents = new EventEmitter();
+    this._onEventDoneEvents = new EventEmitter();
+    this._onErrorEvents = new EventEmitter();
   }
 
   /**
