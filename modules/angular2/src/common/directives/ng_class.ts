@@ -75,33 +75,28 @@ import {StringMapWrapper, isListLikeIterable} from 'angular2/src/facade/collecti
 export class NgClass implements DoCheck, OnDestroy {
   private _differ: any;
   private _mode: string;
-  private _initialClasses = [];
-  private _rawClass;
+  private _initialClasses: string[] = [];
+  private _rawClass: string[] | Set<string>| {[key: string]: string};
 
   constructor(private _iterableDiffers: IterableDiffers, private _keyValueDiffers: KeyValueDiffers,
               private _ngEl: ElementRef, private _renderer: Renderer) {}
 
-  set initialClasses(v) {
+  set initialClasses(v: string) {
     this._applyInitialClasses(true);
     this._initialClasses = isPresent(v) && isString(v) ? v.split(' ') : [];
     this._applyInitialClasses(false);
     this._applyClasses(this._rawClass, false);
   }
 
-  set rawClass(v) {
+  set rawClass(v: any) {
     this._cleanupClasses(this._rawClass);
-
-    if (isString(v)) {
-      v = v.split(' ');
-    }
-
-    this._rawClass = v;
-    if (isPresent(v)) {
-      if (isListLikeIterable(v)) {
-        this._differ = this._iterableDiffers.find(v).create(null);
+    this._rawClass = isString(v) ? (<string>v).split(' ') : v;
+    if (isPresent(this._rawClass)) {
+      if (isListLikeIterable(this._rawClass)) {
+        this._differ = this._iterableDiffers.find(this._rawClass).create(null);
         this._mode = 'iterable';
       } else {
-        this._differ = this._keyValueDiffers.find(v).create(null);
+        this._differ = this._keyValueDiffers.find(this._rawClass).create(null);
         this._mode = 'keyValue';
       }
     } else {
@@ -124,15 +119,17 @@ export class NgClass implements DoCheck, OnDestroy {
 
   ngOnDestroy(): void { this._cleanupClasses(this._rawClass); }
 
-  private _cleanupClasses(rawClassVal): void {
+  private _cleanupClasses(rawClassVal: string[] | Set<string>| {[key: string]: string}): void {
     this._applyClasses(rawClassVal, true);
     this._applyInitialClasses(false);
   }
 
   private _applyKeyValueChanges(changes: any): void {
-    changes.forEachAddedItem((record) => { this._toggleClass(record.key, record.currentValue); });
-    changes.forEachChangedItem((record) => { this._toggleClass(record.key, record.currentValue); });
-    changes.forEachRemovedItem((record) => {
+    changes.forEachAddedItem(
+        (record: any) => { this._toggleClass(record.key, record.currentValue); });
+    changes.forEachChangedItem(
+        (record: any) => { this._toggleClass(record.key, record.currentValue); });
+    changes.forEachRemovedItem((record: any) => {
       if (record.previousValue) {
         this._toggleClass(record.key, false);
       }
@@ -140,8 +137,8 @@ export class NgClass implements DoCheck, OnDestroy {
   }
 
   private _applyIterableChanges(changes: any): void {
-    changes.forEachAddedItem((record) => { this._toggleClass(record.item, true); });
-    changes.forEachRemovedItem((record) => { this._toggleClass(record.item, false); });
+    changes.forEachAddedItem((record: any) => { this._toggleClass(record.item, true); });
+    changes.forEachRemovedItem((record: any) => { this._toggleClass(record.item, false); });
   }
 
   private _applyInitialClasses(isCleanup: boolean) {
@@ -156,14 +153,15 @@ export class NgClass implements DoCheck, OnDestroy {
       } else if (rawClassVal instanceof Set) {
         (<Set<string>>rawClassVal).forEach(className => this._toggleClass(className, !isCleanup));
       } else {
-        StringMapWrapper.forEach(<{[k: string]: string}>rawClassVal, (expVal, className) => {
-          if (expVal) this._toggleClass(className, !isCleanup);
-        });
+        StringMapWrapper.forEach(<{[k: string]: string}>rawClassVal,
+                                 (expVal: boolean, className: string) => {
+                                   if (expVal) this._toggleClass(className, !isCleanup);
+                                 });
       }
     }
   }
 
-  private _toggleClass(className: string, enabled): void {
+  private _toggleClass(className: string, enabled: boolean): void {
     className = className.trim();
     if (className.length > 0) {
       if (className.indexOf(' ') > -1) {
