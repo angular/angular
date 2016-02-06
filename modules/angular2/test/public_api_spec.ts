@@ -419,6 +419,7 @@ var NG_COMMON = [
   'ObservableListDiff.forEachMovedItem():dart',
   'ObservableListDiff.forEachPreviousItem():dart',
   'ObservableListDiff.forEachRemovedItem():dart',
+  'ObservableListDiff.forEachIdentityChange():dart',
   'ObservableListDiff.isDirty:dart',
   'ObservableListDiff.length:dart',
   'ObservableListDiff.onDestroy():dart',
