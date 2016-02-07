@@ -36,6 +36,14 @@ describe('navigation', function () {
       template: '<div>{{$ctrl.number}}</div>',
       controller: function () {this.number = 'three'}
     });
+    registerComponent('getParams', {
+      template: '<div>{{$ctrl.params.x}}</div>',
+      controller: function () {
+        this.$routerOnActivate = function(next) {
+          this.params = next.params;
+        };
+      }
+    })
   });
 
   it('should work in a simple case', function () {
@@ -186,6 +194,21 @@ describe('navigation', function () {
   }));
 
 
+  it('should pass through query terms to the location', inject(function ($location) {
+    $router.config([
+      { path: '/user', component: 'userCmp' }
+    ]);
+
+    compile('<div ng-outlet></div>');
+
+    $router.navigateByUrl('/user?x=y');
+    $rootScope.$digest();
+
+    expect($location.path()).toBe('/user');
+    expect($location.search()).toEqual({ x: 'y'});
+  }));
+
+
   it('should change location to the canonical route', inject(function ($location) {
     compile('<div ng-outlet></div>');
 
@@ -242,6 +265,19 @@ describe('navigation', function () {
     $rootScope.$digest();
 
     expect(elt.text()).toBe('one');
+  }));
+
+
+  it('should navigate when the location query changes', inject(function ($location) {
+    $router.config([
+      { path: '/get/params', component: 'getParams' }
+    ]);
+    compile('<div ng-outlet></div>');
+
+    $location.url('/get/params?x=y');
+    $rootScope.$digest();
+
+    expect(elt.text()).toBe('y');
   }));
 
 
