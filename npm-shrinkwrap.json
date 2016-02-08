@@ -74,19 +74,19 @@
       "resolved": "https://registry.npmjs.org/amdefine/-/amdefine-1.0.0.tgz"
     },
     "angular": {
-      "version": "1.4.8",
-      "from": "angular@>=1.4.7 <2.0.0",
-      "resolved": "https://registry.npmjs.org/angular/-/angular-1.4.8.tgz"
+      "version": "1.5.0-rc.2",
+      "from": "angular@1.5.0-rc.2",
+      "resolved": "https://registry.npmjs.org/angular/-/angular-1.5.0-rc.2.tgz"
     },
     "angular-animate": {
-      "version": "1.4.8",
-      "from": "angular-animate@>=1.4.7 <2.0.0",
-      "resolved": "https://registry.npmjs.org/angular-animate/-/angular-animate-1.4.8.tgz"
+      "version": "1.5.0-rc.2",
+      "from": "angular-animate@1.5.0-rc.2",
+      "resolved": "https://registry.npmjs.org/angular-animate/-/angular-animate-1.5.0-rc.2.tgz"
     },
     "angular-mocks": {
-      "version": "1.4.8",
-      "from": "angular-mocks@>=1.4.7 <2.0.0",
-      "resolved": "https://registry.npmjs.org/angular-mocks/-/angular-mocks-1.4.8.tgz"
+      "version": "1.5.0-rc.2",
+      "from": "angular-mocks@1.5.0-rc.2",
+      "resolved": "https://registry.npmjs.org/angular-mocks/-/angular-mocks-1.5.0-rc.2.tgz"
     },
     "ansi": {
       "version": "0.3.0",

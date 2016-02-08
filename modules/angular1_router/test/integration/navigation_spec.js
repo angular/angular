@@ -21,16 +21,20 @@ describe('navigation', function () {
       $router = _$router_;
     });
 
-    registerComponent('userCmp', {
+    registerDirective('userCmp', {
       template: '<div>hello {{userCmp.$routeParams.name}}</div>'
     });
-    registerComponent('oneCmp', {
+    registerDirective('oneCmp', {
       template: '<div>{{oneCmp.number}}</div>',
       controller: function () {this.number = 'one'}
     });
-    registerComponent('twoCmp', {
+    registerDirective('twoCmp', {
       template: '<div>{{twoCmp.number}}</div>',
       controller: function () {this.number = 'two'}
+    });
+    registerComponent('threeCmp', {
+      template: '<div>{{$ctrl.number}}</div>',
+      controller: function () {this.number = 'three'}
     });
   });
 
@@ -46,6 +50,21 @@ describe('navigation', function () {
 
     expect(elt.text()).toBe('one');
   });
+
+
+  it('should work with components created by the `mod.component()` helper', function () {
+    compile('<ng-outlet></ng-outlet>');
+
+    $router.config([
+      { path: '/', component: 'threeCmp' }
+    ]);
+
+    $router.navigateByUrl('/');
+    $rootScope.$digest();
+
+    expect(elt.text()).toBe('three');
+  });
+
 
   it('should navigate between components with different parameters', function () {
     $router.config([
@@ -68,7 +87,7 @@ describe('navigation', function () {
     function ParentController() {
       instanceCount += 1;
     }
-    registerComponent('parentCmp', {
+    registerDirective('parentCmp', {
       template: 'parent { <ng-outlet></ng-outlet> }',
       $routeConfig: [
         { path: '/user/:name', component: 'userCmp' }
@@ -94,7 +113,7 @@ describe('navigation', function () {
 
 
   it('should work with nested outlets', function () {
-    registerComponent('childCmp', {
+    registerDirective('childCmp', {
       template: '<div>inner { <div ng-outlet></div> }</div>',
       $routeConfig: [
         { path: '/b', component: 'oneCmp' }
@@ -114,7 +133,7 @@ describe('navigation', function () {
 
 
   it('should work with recursive nested outlets', function () {
-    registerComponent('recurCmp', {
+    registerDirective('recurCmp', {
       template: '<div>recur { <div ng-outlet></div> }</div>',
       $routeConfig: [
         { path: '/recur', component: 'recurCmp' },
@@ -163,7 +182,7 @@ describe('navigation', function () {
 
 
   it('should change location to the canonical route with nested components', inject(function ($location) {
-    registerComponent('childRouter', {
+    registerDirective('childRouter', {
       template: '<div>inner { <div ng-outlet></div> }</div>',
       $routeConfig: [
         { path: '/new-child', component: 'oneCmp', name: 'NewChild'},
@@ -208,7 +227,7 @@ describe('navigation', function () {
 
   it('should expose a "navigating" property on $router', inject(function ($q) {
     var defer;
-    registerComponent('pendingActivate', {
+    registerDirective('pendingActivate', {
       $canActivate: function () {
         defer = $q.defer();
         return defer.promise;
@@ -227,31 +246,26 @@ describe('navigation', function () {
     expect($router.navigating).toBe(false);
   }));
 
-  function registerComponent(name, options) {
-    var controller = options.controller || function () {};
-
-    ['$routerOnActivate', '$routerOnDeactivate', '$routerOnReuse', '$routerCanReuse', '$routerCanDeactivate'].forEach(function (hookName) {
-      if (options[hookName]) {
-        controller.prototype[hookName] = options[hookName];
-      }
-    });
-
+  function registerDirective(name, options) {
     function factory() {
       return {
         template: options.template || '',
         controllerAs: name,
-        controller: controller
+        controller: getController(options)
       };
     }
-
-    if (options.$canActivate) {
-      factory.$canActivate = options.$canActivate;
-    }
-    if (options.$routeConfig) {
-      factory.$routeConfig = options.$routeConfig;
-    }
-
+    applyStaticProperties(factory, options);
     $compileProvider.directive(name, factory);
+  }
+
+  function registerComponent(name, options) {
+
+    var definition = {
+      template: options.template || '',
+      controller: getController(options),
+    }
+    applyStaticProperties(definition, options);
+    $compileProvider.component(name, definition);
   }
 
   function compile(template) {
@@ -259,4 +273,27 @@ describe('navigation', function () {
     $rootScope.$digest();
     return elt;
   }
+
+  function getController(options) {
+    var controller = options.controller || function () {};
+    [
+      '$routerOnActivate', '$routerOnDeactivate',
+      '$routerOnReuse', '$routerCanReuse',
+      '$routerCanDeactivate'
+    ].forEach(function (hookName) {
+      if (options[hookName]) {
+        controller.prototype[hookName] = options[hookName];
+      }
+    });
+    return controller;
+  }
+
+  function applyStaticProperties(target, options) {
+    ['$canActivate', '$routeConfig'].forEach(function(property) {
+      if (options[property]) {
+        target[property] = options[property];
+      }
+    });
+  }
 });
+
