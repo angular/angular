@@ -87,7 +87,6 @@ export class DependencyMetadata {
  * ### Example ([live demo](http://plnkr.co/edit/Wk4DMQ?p=preview))
  *
  * ```typescript
- * @Injectable()
  * class UsefulService {}
  *
  * @Injectable()
