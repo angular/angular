@@ -1878,9 +1878,6 @@
     "dargs": {
       "version": "4.0.1"
     },
-    "dart-style": {
-      "version": "0.2.6"
-    },
     "dart2jsaas": {
       "version": "0.0.16",
       "dependencies": {
@@ -5348,7 +5345,7 @@
       }
     },
     "ts2dart": {
-      "version": "0.7.23",
+      "version": "0.7.22",
       "dependencies": {
         "source-map": {
           "version": "0.4.4"
