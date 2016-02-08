@@ -12,6 +12,10 @@ cache:
     - node_modules
     - $HOME/.pub-cache
 
+before_cache:
+  # Undo the pollution of the typescript_next build
+  - npm install typescript
+
 env:
   global:
   - KARMA_BROWSERS=DartiumWithWebPlatform
@@ -46,6 +50,7 @@ env:
     - MODE=js DART_CHANNEL=dev DART_VERSION=$DART_DEV_VERSION
     - MODE=router DART_CHANNEL=dev DART_VERSION=$DART_DEV_VERSION
     - MODE=build_only DART_CHANNEL=stable DART_VERSION=$DART_STABLE_VERSION
+    - MODE=typescript_next DART_CHANNEL=stable DART_VERSION=$DART_STABLE_VERSION
     - MODE=lint DART_CHANNEL=dev DART_VERSION=$DART_DEV_VERSION
     - MODE=payload DART_CHANNEL=stable DART_VERSION=$DART_STABLE_VERSION
 
@@ -55,6 +60,8 @@ matrix:
   - env: "MODE=browserstack_optional DART_CHANNEL=dev DART_VERSION=$DART_DEV_VERSION"
   # TODO(alxhub): remove when dartdoc #1039 is in dev channel
   - env: "MODE=dart DART_CHANNEL=dev DART_VERSION=$DART_DEV_VERSION"
+  # Tracked in https://github.com/angular/angular/issues/7050
+  - env: "MODE=typescript_next DART_CHANNEL=stable DART_VERSION=$DART_STABLE_VERSION"
 
 addons:
   firefox: "38.0"
