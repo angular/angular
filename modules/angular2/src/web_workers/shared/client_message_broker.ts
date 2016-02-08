@@ -1,7 +1,6 @@
 import {MessageBus} from "angular2/src/web_workers/shared/message_bus";
 import {print, isPresent, DateWrapper, stringify} from "angular2/src/facade/lang";
 import {
-  Promise,
   PromiseCompleter,
   PromiseWrapper,
   ObservableWrapper,

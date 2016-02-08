@@ -2,7 +2,6 @@ library angular2.core.facade.promise;
 
 import 'dart:async';
 import 'dart:async' as async;
-export 'dart:async' show Future;
 
 class PromiseWrapper {
   static Future resolve(obj) => new Future.value(obj);

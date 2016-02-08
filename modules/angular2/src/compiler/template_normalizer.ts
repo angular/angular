@@ -5,7 +5,7 @@ import {
 } from './directive_metadata';
 import {isPresent, isBlank} from 'angular2/src/facade/lang';
 import {BaseException} from 'angular2/src/facade/exceptions';
-import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
+import {PromiseWrapper} from 'angular2/src/facade/async';
 
 import {XHR} from 'angular2/src/compiler/xhr';
 import {UrlResolver} from 'angular2/src/compiler/url_resolver';

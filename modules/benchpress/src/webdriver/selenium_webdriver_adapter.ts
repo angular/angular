@@ -1,4 +1,4 @@
-import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
+import {PromiseWrapper} from 'angular2/src/facade/async';
 import {bind, provide, Provider} from 'angular2/src/core/di';
 import {WebDriverAdapter} from '../web_driver_adapter';
 
@@ -21,9 +21,8 @@ export class SeleniumWebDriverAdapter extends WebDriverAdapter {
         (data) => completer.resolve(convertToLocalProcess(data)), completer.reject);
     return completer.promise;
   }
-  b
 
-      waitFor(callback): Promise<any> {
+  waitFor(callback): Promise<any> {
     return this._convertPromise(this._driver.controlFlow().execute(callback));
   }
 

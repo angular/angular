@@ -1,5 +1,4 @@
 import {verifyNoBrowserErrors} from 'angular2/src/testing/e2e_util';
-import {Promise} from 'angular2/src/facade/async';
 
 describe('WebWorkers Kitchen Sink', function() {
   afterEach(() => {

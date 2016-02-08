@@ -5,7 +5,6 @@
 
 import {makeDecorator} from 'angular2/src/core/util/decorators';
 import {CanActivate as CanActivateAnnotation} from './lifecycle_annotations_impl';
-import {Promise} from 'angular2/src/facade/async';
 import {ComponentInstruction} from './instruction';
 
 export {

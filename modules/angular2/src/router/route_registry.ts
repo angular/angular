@@ -1,5 +1,5 @@
 import {ListWrapper, Map, MapWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
-import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
+import {PromiseWrapper} from 'angular2/src/facade/async';
 import {
   isPresent,
   isArray,

@@ -9,7 +9,7 @@ import {
   RouteParams
 } from 'angular2/router';
 import * as db from './data';
-import {ObservableWrapper, PromiseWrapper, Promise} from 'angular2/src/facade/async';
+import {ObservableWrapper, PromiseWrapper} from 'angular2/src/facade/async';
 import {ListWrapper} from 'angular2/src/facade/collection';
 import {isPresent, DateWrapper} from 'angular2/src/facade/lang';
 

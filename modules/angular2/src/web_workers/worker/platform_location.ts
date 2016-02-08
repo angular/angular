@@ -12,7 +12,7 @@ import {
 } from 'angular2/src/web_workers/shared/client_message_broker';
 import {ROUTER_CHANNEL} from 'angular2/src/web_workers/shared/messaging_api';
 import {LocationType} from 'angular2/src/web_workers/shared/serialized_types';
-import {Promise, PromiseWrapper, EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
+import {PromiseWrapper, EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
 import {BaseException} from 'angular2/src/facade/exceptions';
 import {PRIMITIVE, Serializer} from 'angular2/src/web_workers/shared/serializer';
 import {MessageBus} from 'angular2/src/web_workers/shared/message_bus';

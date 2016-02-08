@@ -16,7 +16,7 @@ import {
   ViewEncapsulation
 } from 'angular2/core';
 
-import {ObservableWrapper, Promise, PromiseWrapper} from 'angular2/src/facade/async';
+import {ObservableWrapper, PromiseWrapper} from 'angular2/src/facade/async';
 import {isPresent, Type} from 'angular2/src/facade/lang';
 import {DOM} from 'angular2/src/platform/dom/dom_adapter';
 import {MouseEvent, KeyboardEvent} from 'angular2/src/facade/browser';

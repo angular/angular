@@ -1,4 +1,4 @@
-import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
+import {PromiseWrapper} from 'angular2/src/facade/async';
 import {StringMapWrapper} from 'angular2/src/facade/collection';
 import {isBlank, isPresent} from 'angular2/src/facade/lang';
 import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';

@@ -15,12 +15,7 @@ import {
   PLATFORM_INITIALIZER,
   APP_INITIALIZER
 } from './application_tokens';
-import {
-  Promise,
-  PromiseWrapper,
-  PromiseCompleter,
-  ObservableWrapper
-} from 'angular2/src/facade/async';
+import {PromiseWrapper, PromiseCompleter, ObservableWrapper} from 'angular2/src/facade/async';
 import {ListWrapper} from 'angular2/src/facade/collection';
 import {TestabilityRegistry, Testability} from 'angular2/src/core/testability/testability';
 import {

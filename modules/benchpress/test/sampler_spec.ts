@@ -12,7 +12,7 @@ import {
 } from 'angular2/testing_internal';
 
 import {isBlank, isPresent, stringify, Date, DateWrapper} from 'angular2/src/facade/lang';
-import {PromiseWrapper, Promise} from 'angular2/src/facade/async';
+import {PromiseWrapper} from 'angular2/src/facade/async';
 
 import {
   Sampler,

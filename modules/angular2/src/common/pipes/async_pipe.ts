@@ -1,5 +1,5 @@
 import {isBlank, isPresent, isPromise, CONST} from 'angular2/src/facade/lang';
-import {Promise, ObservableWrapper, Observable, EventEmitter} from 'angular2/src/facade/async';
+import {ObservableWrapper, Observable, EventEmitter} from 'angular2/src/facade/async';
 import {
   Pipe,
   Injectable,

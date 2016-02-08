@@ -13,7 +13,6 @@ export {
 } from 'angular2/src/platform/browser_common';
 
 import {Type, isPresent, CONST_EXPR} from 'angular2/src/facade/lang';
-import {Promise} from 'angular2/src/facade/promise';
 import {
   BROWSER_PROVIDERS,
   BROWSER_APP_COMMON_PROVIDERS

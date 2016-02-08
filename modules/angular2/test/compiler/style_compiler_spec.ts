@@ -25,7 +25,7 @@ import {
   isArray,
   IS_DART
 } from 'angular2/src/facade/lang';
-import {PromiseWrapper, Promise} from 'angular2/src/facade/async';
+import {PromiseWrapper} from 'angular2/src/facade/async';
 import {evalModule} from './eval_module';
 import {StyleCompiler} from 'angular2/src/compiler/style_compiler';
 import {
