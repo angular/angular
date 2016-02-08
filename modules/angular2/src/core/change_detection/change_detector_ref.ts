@@ -1,8 +1,6 @@
 import {ChangeDetector} from './interfaces';
 import {ChangeDetectionStrategy} from './constants';
-import {Injectable} from 'angular2/src/core/di';
 
-@Injectable()
 export abstract class ChangeDetectorRef {
   /**
    * Marks all {@link ChangeDetectionStrategy#OnPush} ancestors as to be checked.

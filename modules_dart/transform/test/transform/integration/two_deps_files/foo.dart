@@ -1,11 +1,6 @@
 library foo;
 
-import 'package:angular2/angular2.dart';
-
-@Injectable()
-class MyDep {}
-
 class MyContext {
-  final MyDep selector;
+  final String selector;
   const MyContext(this.selector);
 }

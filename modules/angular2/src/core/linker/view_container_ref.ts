@@ -1,6 +1,6 @@
 import {ListWrapper} from 'angular2/src/facade/collection';
 import {unimplemented} from 'angular2/src/facade/exceptions';
-import {ResolvedProvider, Injectable} from 'angular2/src/core/di';
+import {ResolvedProvider} from 'angular2/src/core/di';
 import {isPresent, isBlank} from 'angular2/src/facade/lang';
 
 import {AppElement} from './element';
@@ -36,7 +36,6 @@ import {
  *
  * <!-- TODO(i): we are also considering ElementRef#viewContainer api -->
  */
-@Injectable()
 export abstract class ViewContainerRef {
   /**
    * Anchor element that specifies the location of this container in the containing View.

@@ -127,7 +127,6 @@ export class MdDialog {
 /**
  * Reference to an opened dialog.
  */
-@Injectable()
 export class MdDialogRef {
   // Reference to the MdDialogContainer component.
   containerRef: ComponentRef;

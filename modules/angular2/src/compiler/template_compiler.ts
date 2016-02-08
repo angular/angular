@@ -109,7 +109,6 @@ export class TemplateCompiler {
                 hostProperties: directive.hostProperties,
                 hostAttributes: directive.hostAttributes,
                 lifecycleHooks: directive.lifecycleHooks,
-                providers: directive.providers,
                 template: normalizedTemplate
               }));
   }

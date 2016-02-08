@@ -1,5 +1,5 @@
 import {ViewEncapsulation} from 'angular2/src/core/metadata/view';
-import {Injector, Injectable} from 'angular2/src/core/di';
+import {Injector} from 'angular2/src/core/di/injector';
 
 export class RenderComponentType {
   constructor(public id: string, public encapsulation: ViewEncapsulation,
@@ -13,7 +13,6 @@ export class RenderDebugInfo {
 
 export interface ParentRenderer { renderComponent(componentType: RenderComponentType): Renderer; }
 
-@Injectable()
 export abstract class Renderer implements ParentRenderer {
   abstract renderComponent(componentType: RenderComponentType): Renderer;
 

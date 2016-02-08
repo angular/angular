@@ -41,15 +41,15 @@ void allTests() {
     // Establish some test NgMeta objects with one Component each.
     var fooComponentMeta = createFoo(moduleBase);
     fooNgMeta = new NgMeta(ngDeps: new NgDepsModel());
-    fooNgMeta.identifiers[fooComponentMeta.type.name] = fooComponentMeta;
+    fooNgMeta.types[fooComponentMeta.type.name] = fooComponentMeta;
 
     var barComponentMeta = createBar(moduleBase);
     barNgMeta = new NgMeta(ngDeps: new NgDepsModel());
-    barNgMeta.identifiers[barComponentMeta.type.name] = barComponentMeta;
+    barNgMeta.types[barComponentMeta.type.name] = barComponentMeta;
 
     var bazComponentMeta = createBaz(moduleBase);
     bazNgMeta = new NgMeta(ngDeps: new NgDepsModel());
-    barNgMeta.identifiers[bazComponentMeta.type.name] = bazComponentMeta;
+    barNgMeta.types[bazComponentMeta.type.name] = bazComponentMeta;
 
     fooAssetId = new AssetId('a', toSummaryExtension('lib/foo.dart'));
     barAssetId = new AssetId('a', toSummaryExtension('lib/bar.dart'));
@@ -63,11 +63,11 @@ void allTests() {
       updateReader();
 
       var extracted = await _testLink(reader, fooAssetId);
-      expect(extracted.identifiers).toContain('FooComponent');
-      expect(extracted.identifiers).toContain('BarComponent');
+      expect(extracted.types).toContain('FooComponent');
+      expect(extracted.types).toContain('BarComponent');
 
-      expect(extracted.identifiers['FooComponent'].selector).toEqual('foo');
-      expect(extracted.identifiers['BarComponent'].selector).toEqual('bar');
+      expect(extracted.types['FooComponent'].selector).toEqual('foo');
+      expect(extracted.types['BarComponent'].selector).toEqual('bar');
     });
 
     it('should include `DirectiveMetadata` recursively from exported files.',
@@ -77,13 +77,13 @@ void allTests() {
       updateReader();
 
       var extracted = await _testLink(reader, fooAssetId);
-      expect(extracted.identifiers).toContain('FooComponent');
-      expect(extracted.identifiers).toContain('BarComponent');
-      expect(extracted.identifiers).toContain('BazComponent');
+      expect(extracted.types).toContain('FooComponent');
+      expect(extracted.types).toContain('BarComponent');
+      expect(extracted.types).toContain('BazComponent');
 
-      expect(extracted.identifiers['FooComponent'].selector).toEqual('foo');
-      expect(extracted.identifiers['BarComponent'].selector).toEqual('bar');
-      expect(extracted.identifiers['BazComponent'].selector).toEqual('baz');
+      expect(extracted.types['FooComponent'].selector).toEqual('foo');
+      expect(extracted.types['BarComponent'].selector).toEqual('bar');
+      expect(extracted.types['BazComponent'].selector).toEqual('baz');
     });
 
     it('should handle `DirectiveMetadata` export cycles gracefully.', () async {
@@ -93,9 +93,9 @@ void allTests() {
       updateReader();
 
       var extracted = await _testLink(reader, bazAssetId);
-      expect(extracted.identifiers).toContain('FooComponent');
-      expect(extracted.identifiers).toContain('BarComponent');
-      expect(extracted.identifiers).toContain('BazComponent');
+      expect(extracted.types).toContain('FooComponent');
+      expect(extracted.types).toContain('BarComponent');
+      expect(extracted.types).toContain('BazComponent');
     });
 
     it(
@@ -109,11 +109,11 @@ void allTests() {
 
       var extracted = await _testLink(reader, fooAssetId);
 
-      expect(extracted.identifiers).toContain('FooComponent');
-      expect(extracted.identifiers).toContain('BarComponent');
+      expect(extracted.types).toContain('FooComponent');
+      expect(extracted.types).toContain('BarComponent');
 
-      expect(extracted.identifiers['FooComponent'].selector).toEqual('foo');
-      expect(extracted.identifiers['BarComponent'].selector).toEqual('bar');
+      expect(extracted.types['FooComponent'].selector).toEqual('foo');
+      expect(extracted.types['BarComponent'].selector).toEqual('bar');
     });
   });
 

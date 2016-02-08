@@ -8,7 +8,7 @@ import 'package:guinness/guinness.dart';
 main() => allTests();
 
 void allTests() {
-  var mockDirMetadata = [
+  var mockData = [
     CompileDirectiveMetadata.create(type: new CompileTypeMetadata(name: 'N1')),
     CompileDirectiveMetadata.create(type: new CompileTypeMetadata(name: 'N2')),
     CompileDirectiveMetadata.create(type: new CompileTypeMetadata(name: 'N3')),
@@ -28,16 +28,14 @@ void allTests() {
 
     it('should be lossless', () {
       var a = new NgMeta.empty();
-      a.identifiers['T0'] = mockDirMetadata[0];
-      a.identifiers['T1'] = mockDirMetadata[1];
-      a.identifiers['T2'] = mockDirMetadata[2];
-      a.identifiers['T3'] = mockDirMetadata[3];
-
+      a.types['T0'] = mockData[0];
+      a.types['T1'] = mockData[1];
+      a.types['T2'] = mockData[2];
+      a.types['T3'] = mockData[3];
       a.aliases['a1'] = ['T1'];
       a.aliases['a2'] = ['a1'];
       a.aliases['a3'] = ['T3', 'a2'];
       a.aliases['a4'] = ['a3', 'T3'];
-
       _checkSimilar(a, new NgMeta.fromJson(a.toJson()));
     });
   });
@@ -45,36 +43,35 @@ void allTests() {
   describe('flatten', () {
     it('should include recursive aliases.', () {
       var a = new NgMeta.empty();
-      a.identifiers['T0'] = mockDirMetadata[0];
-      a.identifiers['T1'] = mockDirMetadata[1];
-      a.identifiers['T2'] = mockDirMetadata[2];
-      a.identifiers['T3'] = mockDirMetadata[3];
+      a.types['T0'] = mockData[0];
+      a.types['T1'] = mockData[1];
+      a.types['T2'] = mockData[2];
+      a.types['T3'] = mockData[3];
       a.aliases['a1'] = ['T1'];
       a.aliases['a2'] = ['a1'];
       a.aliases['a3'] = ['T3', 'a2'];
       a.aliases['a4'] = ['a3', 'T0'];
-
-      expect(a.flatten('a4')).toEqual([mockDirMetadata[3], mockDirMetadata[1], mockDirMetadata[0]]);
+      expect(a.flatten('a4')).toEqual([mockData[3], mockData[1], mockData[0]]);
     });
 
     it('should detect cycles.', () {
       var a = new NgMeta.empty();
-      a.identifiers['T0'] = mockDirMetadata[0];
+      a.types['T0'] = mockData[0];
       a.aliases['a1'] = ['T0', 'a1'];
       a.aliases['a2'] = ['a1'];
-      expect(a.flatten('a1')).toEqual([mockDirMetadata[0]]);
+      expect(a.flatten('a1')).toEqual([mockData[0]]);
     });
   });
 
   describe('merge', () {
-    it('should merge all identifiers on addAll', () {
+    it('should merge all types on addAll', () {
       var a = new NgMeta.empty();
       var b = new NgMeta.empty();
-      a.identifiers['T0'] = mockDirMetadata[0];
-      b.identifiers['T1'] = mockDirMetadata[1];
+      a.types['T0'] = mockData[0];
+      b.types['T1'] = mockData[1];
       a.addAll(b);
-      expect(a.identifiers).toContain('T1');
-      expect(a.identifiers['T1']).toEqual(mockDirMetadata[1]);
+      expect(a.types).toContain('T1');
+      expect(a.types['T1']).toEqual(mockData[1]);
     });
 
     it('should merge all aliases on addAll', () {
@@ -90,12 +87,12 @@ void allTests() {
 }
 
 _checkSimilar(NgMeta a, NgMeta b) {
-  expect(a.identifiers.length).toEqual(b.identifiers.length);
+  expect(a.types.length).toEqual(b.types.length);
   expect(a.aliases.length).toEqual(b.aliases.length);
-  for (var k in a.identifiers.keys) {
-    expect(b.identifiers).toContain(k);
-    var at = a.identifiers[k];
-    var bt = b.identifiers[k];
+  for (var k in a.types.keys) {
+    expect(b.types).toContain(k);
+    var at = a.types[k];
+    var bt = b.types[k];
     expect(at.type.name).toEqual(bt.type.name);
   }
   for (var k in a.aliases.keys) {

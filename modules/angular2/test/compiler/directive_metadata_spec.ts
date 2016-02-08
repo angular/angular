@@ -15,8 +15,7 @@ import {
 import {
   CompileDirectiveMetadata,
   CompileTypeMetadata,
-  CompileTemplateMetadata,
-  CompileProviderMetadata
+  CompileTemplateMetadata
 } from 'angular2/src/compiler/directive_metadata';
 import {ViewEncapsulation} from 'angular2/src/core/metadata/view';
 import {ChangeDetectionStrategy} from 'angular2/src/core/change_detection';
@@ -29,8 +28,8 @@ export function main() {
     var fullDirectiveMeta: CompileDirectiveMetadata;
 
     beforeEach(() => {
-      fullTypeMeta = new CompileTypeMetadata(
-          {name: 'SomeType', moduleUrl: 'someUrl', isHost: true, diDeps: []});
+      fullTypeMeta =
+          new CompileTypeMetadata({name: 'SomeType', moduleUrl: 'someUrl', isHost: true});
       fullTemplateMeta = new CompileTemplateMetadata({
         encapsulation: ViewEncapsulation.Emulated,
         template: '<a></a>',
@@ -49,8 +48,7 @@ export function main() {
         inputs: ['someProp'],
         outputs: ['someEvent'],
         host: {'(event1)': 'handler1', '[prop1]': 'expr1', 'attr1': 'attrValue2'},
-        lifecycleHooks: [LifecycleHooks.OnChanges],
-        providers: [new CompileProviderMetadata({token: 'token', useClass: fullTypeMeta})]
+        lifecycleHooks: [LifecycleHooks.OnChanges]
       });
 
     });

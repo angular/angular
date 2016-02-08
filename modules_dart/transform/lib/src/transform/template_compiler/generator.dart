@@ -42,18 +42,16 @@ Future<Outputs> processTemplates(AssetReader reader, AssetId assetId,
   var viewDefResults = await createCompileData(
       reader, assetId, platformDirectives, platformPipes);
   if (viewDefResults == null) return null;
-  final compileTypeMetadatas = viewDefResults.ngMeta.identifiers.values;
+  final compileTypeMetadatas = viewDefResults.ngMeta.types.values;
   if (compileTypeMetadatas.isNotEmpty) {
     var processor = new reg.Processor();
     compileTypeMetadatas.forEach(processor.process);
-    if (viewDefResults.ngMeta.ngDeps != null) {
-      viewDefResults.ngMeta.ngDeps.getters
-          .addAll(processor.getterNames.map((e) => e.sanitizedName));
-      viewDefResults.ngMeta.ngDeps.setters
-          .addAll(processor.setterNames.map((e) => e.sanitizedName));
-      viewDefResults.ngMeta.ngDeps.methods
-          .addAll(processor.methodNames.map((e) => e.sanitizedName));
-    }
+    viewDefResults.ngMeta.ngDeps.getters
+        .addAll(processor.getterNames.map((e) => e.sanitizedName));
+    viewDefResults.ngMeta.ngDeps.setters
+        .addAll(processor.setterNames.map((e) => e.sanitizedName));
+    viewDefResults.ngMeta.ngDeps.methods
+        .addAll(processor.methodNames.map((e) => e.sanitizedName));
   }
   var templateCompiler = zone.templateCompiler;
   if (templateCompiler == null) {

@@ -2,6 +2,7 @@ var broccoli = require('broccoli');
 var fs = require('fs');
 var makeBrowserTree = require('./trees/browser_tree');
 var makeNodeTree = require('./trees/node_tree');
+var makeDartTree = require('./trees/dart_tree');
 var path = require('path');
 var printSlowTrees = require('broccoli-slow-trees');
 var Q = require('q');
@@ -110,7 +111,6 @@ export class AngularBuilder {
       logs: this.options.logs,
       projects: projects
     };
-    var makeDartTree = require('./trees/dart_tree');
     let tree = makeDartTree(options);
     return new broccoli.Builder(tree);
   }
