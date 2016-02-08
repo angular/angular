@@ -35,7 +35,7 @@ export function main() {
       expect(matched).toEqual([s1[0], 1]);
     });
 
-    it('should select by class name case insensitive', () => {
+    it('should select by class name case sensitive', () => {
       matcher.addSelectables(s1 = CssSelector.parse('.someClass'), 1);
       matcher.addSelectables(s2 = CssSelector.parse('.someClass.class2'), 2);
 
@@ -43,7 +43,11 @@ export function main() {
           .toEqual(false);
       expect(matched).toEqual([]);
 
-      expect(matcher.match(CssSelector.parse('.SOMECLASS')[0], selectableCollector)).toEqual(true);
+      expect(matcher.match(CssSelector.parse('.SOMECLASS')[0], selectableCollector)).toEqual(false);
+
+      reset();
+
+      expect(matcher.match(CssSelector.parse('.someClass')[0], selectableCollector)).toEqual(true);
       expect(matched).toEqual([s1[0], 1]);
 
       reset();
@@ -246,9 +250,9 @@ export function main() {
 
     it('should detect class names', () => {
       var cssSelector = CssSelector.parse('.someClass')[0];
-      expect(cssSelector.classNames).toEqual(['someclass']);
+      expect(cssSelector.classNames).toEqual(['someClass']);
 
-      expect(cssSelector.toString()).toEqual('.someclass');
+      expect(cssSelector.toString()).toEqual('.someClass');
     });
 
     it('should detect attr names', () => {
