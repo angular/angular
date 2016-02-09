@@ -15,10 +15,10 @@ import {
 import {Injector, provide} from 'angular2/core';
 import {CONST_EXPR} from 'angular2/src/facade/lang';
 
-import {PlatformLocation} from 'angular2/src/router/platform_location';
-import {LocationStrategy, APP_BASE_HREF} from 'angular2/src/router/location_strategy';
-import {PathLocationStrategy} from 'angular2/src/router/path_location_strategy';
-import {SpyPlatformLocation} from './spies';
+import {PlatformLocation} from 'angular2/src/router/location/platform_location';
+import {LocationStrategy, APP_BASE_HREF} from 'angular2/src/router/location/location_strategy';
+import {PathLocationStrategy} from 'angular2/src/router/location/path_location_strategy';
+import {SpyPlatformLocation} from '../spies';
 
 export function main() {
   describe('PathLocationStrategy', () => {
