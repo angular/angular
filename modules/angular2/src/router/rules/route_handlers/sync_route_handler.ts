@@ -2,7 +2,7 @@ import {PromiseWrapper} from 'angular2/src/facade/async';
 import {isPresent, Type} from 'angular2/src/facade/lang';
 
 import {RouteHandler} from './route_handler';
-import {RouteData, BLANK_ROUTE_DATA} from './instruction';
+import {RouteData, BLANK_ROUTE_DATA} from '../../instruction';
 
 
 export class SyncRouteHandler implements RouteHandler {

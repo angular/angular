@@ -31,7 +31,7 @@ import {
   AuxRoute,
   AsyncRoute,
   Redirect
-} from 'angular2/src/router/route_config_decorator';
+} from 'angular2/src/router/route_config/route_config_decorator';
 
 import {
   OnActivate,
@@ -40,7 +40,7 @@ import {
   CanDeactivate,
   CanReuse
 } from 'angular2/src/router/interfaces';
-import {CanActivate} from 'angular2/src/router/lifecycle_annotations';
+import {CanActivate} from 'angular2/src/router/lifecycle/lifecycle_annotations';
 import {ComponentInstruction} from 'angular2/src/router/instruction';
 
 
