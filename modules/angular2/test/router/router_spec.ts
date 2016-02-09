@@ -18,10 +18,15 @@ import {ListWrapper} from 'angular2/src/facade/collection';
 
 import {Router, RootRouter} from 'angular2/src/router/router';
 import {SpyLocation} from 'angular2/src/mock/location_mock';
-import {Location} from 'angular2/src/router/location';
+import {Location} from 'angular2/src/router/location/location';
 
 import {RouteRegistry, ROUTER_PRIMARY_COMPONENT} from 'angular2/src/router/route_registry';
-import {RouteConfig, AsyncRoute, Route, Redirect} from 'angular2/src/router/route_config_decorator';
+import {
+  RouteConfig,
+  AsyncRoute,
+  Route,
+  Redirect
+} from 'angular2/src/router/route_config/route_config_decorator';
 import {DirectiveResolver} from 'angular2/src/core/linker/directive_resolver';
 
 import {provide} from 'angular2/core';

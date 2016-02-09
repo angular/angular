@@ -1,6 +1,8 @@
 import {CONST, Type, isPresent} from 'angular2/src/facade/lang';
-import {RouteDefinition} from './route_definition';
-export {RouteDefinition} from './route_definition';
+import {RouteDefinition} from '../route_definition';
+import {RegexSerializer} from '../rules/route_paths/regex_route_path';
+
+export {RouteDefinition} from '../route_definition';
 
 /**
  * The `RouteConfig` decorator defines routes for a given component.
@@ -10,6 +12,25 @@ export {RouteDefinition} from './route_definition';
 @CONST()
 export class RouteConfig {
   constructor(public configs: RouteDefinition[]) {}
+}
+
+@CONST()
+export abstract class AbstractRoute implements RouteDefinition {
+  name: string;
+  useAsDefault: boolean;
+  path: string;
+  regex: string;
+  serializer: RegexSerializer;
+  data: {[key: string]: any};
+
+  constructor({name, useAsDefault, path, regex, serializer, data}: RouteDefinition) {
+    this.name = name;
+    this.useAsDefault = useAsDefault;
+    this.path = path;
+    this.regex = regex;
+    this.serializer = serializer;
+    this.data = data;
+  }
 }
 
 /**
@@ -35,25 +56,20 @@ export class RouteConfig {
  * ```
  */
 @CONST()
-export class Route implements RouteDefinition {
-  data: {[key: string]: any};
-  path: string;
-  component: Type;
-  name: string;
-  useAsDefault: boolean;
-  // added next three properties to work around https://github.com/Microsoft/TypeScript/issues/4107
+export class Route extends AbstractRoute {
+  component: any;
   aux: string = null;
-  loader: Function = null;
-  redirectTo: any[] = null;
-  constructor({path, component, name, data, useAsDefault}: {
-    path: string,
-    component: Type, name?: string, data?: {[key: string]: any}, useAsDefault?: boolean
-  }) {
-    this.path = path;
+
+  constructor({name, useAsDefault, path, regex, serializer, data, component}: RouteDefinition) {
+    super({
+      name: name,
+      useAsDefault: useAsDefault,
+      path: path,
+      regex: regex,
+      serializer: serializer,
+      data: data
+    });
     this.component = component;
-    this.name = name;
-    this.data = data;
-    this.useAsDefault = useAsDefault;
   }
 }
 
@@ -78,20 +94,19 @@ export class Route implements RouteDefinition {
  * ```
  */
 @CONST()
-export class AuxRoute implements RouteDefinition {
-  data: {[key: string]: any} = null;
-  path: string;
-  component: Type;
-  name: string;
-  // added next three properties to work around https://github.com/Microsoft/TypeScript/issues/4107
-  aux: string = null;
-  loader: Function = null;
-  redirectTo: any[] = null;
-  useAsDefault: boolean = false;
-  constructor({path, component, name}: {path: string, component: Type, name?: string}) {
-    this.path = path;
+export class AuxRoute extends AbstractRoute {
+  component: any;
+
+  constructor({name, useAsDefault, path, regex, serializer, data, component}: RouteDefinition) {
+    super({
+      name: name,
+      useAsDefault: useAsDefault,
+      path: path,
+      regex: regex,
+      serializer: serializer,
+      data: data
+    });
     this.component = component;
-    this.name = name;
   }
 }
 
@@ -120,22 +135,20 @@ export class AuxRoute implements RouteDefinition {
  * ```
  */
 @CONST()
-export class AsyncRoute implements RouteDefinition {
-  data: {[key: string]: any};
-  path: string;
+export class AsyncRoute extends AbstractRoute {
   loader: Function;
-  name: string;
-  useAsDefault: boolean;
   aux: string = null;
-  constructor({path, loader, name, data, useAsDefault}: {
-    path: string,
-    loader: Function, name?: string, data?: {[key: string]: any}, useAsDefault?: boolean
-  }) {
-    this.path = path;
+
+  constructor({name, useAsDefault, path, regex, serializer, data, loader}: RouteDefinition) {
+    super({
+      name: name,
+      useAsDefault: useAsDefault,
+      path: path,
+      regex: regex,
+      serializer: serializer,
+      data: data
+    });
     this.loader = loader;
-    this.name = name;
-    this.data = data;
-    this.useAsDefault = useAsDefault;
   }
 }
 
@@ -161,17 +174,18 @@ export class AsyncRoute implements RouteDefinition {
  * ```
  */
 @CONST()
-export class Redirect implements RouteDefinition {
-  path: string;
+export class Redirect extends AbstractRoute {
   redirectTo: any[];
-  name: string = null;
-  // added next three properties to work around https://github.com/Microsoft/TypeScript/issues/4107
-  loader: Function = null;
-  data: any = null;
-  aux: string = null;
-  useAsDefault: boolean = false;
-  constructor({path, redirectTo}: {path: string, redirectTo: any[]}) {
-    this.path = path;
+
+  constructor({name, useAsDefault, path, regex, serializer, data, redirectTo}: RouteDefinition) {
+    super({
+      name: name,
+      useAsDefault: useAsDefault,
+      path: path,
+      regex: regex,
+      serializer: serializer,
+      data: data
+    });
     this.redirectTo = redirectTo;
   }
 }
