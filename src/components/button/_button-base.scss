@@ -1,0 +1,108 @@
+
+@import "variables";
+@import "shadows";
+
+// TODO(jelbourn): This goes away.
+@import "default-theme";
+@import "button-theme";
+
+// Flat and raised button standards
+$md-button-padding: 0 16px !default;
+$md-button-min-width: 88px !default;
+$md-button-margin: 0 !default;
+$md-button-line-height: 36px !default;
+$md-button-border-radius: 3px !default;
+
+// Fab standards
+$md-fab-border-radius: 50% !default;
+$md-fab-size: 56px !default;
+$md-fab-padding: 16px !default;
+
+$md-mini-fab-size: 40px !default;
+$md-mini-fab-padding: 8px !default;
+
+// Applies base styles to all button types.
+%md-button-base {
+  @include md-button-theme('color');
+
+  box-sizing: border-box;
+  position: relative;
+
+  // Reset browser <button> styles.
+  background: transparent;
+  text-align: center;
+  overflow: hidden;
+  cursor: pointer;
+  user-select: none;
+  outline: none;
+  border: none;
+
+  // Make anchors render like buttons.
+  display: inline-block;
+  white-space: nowrap;
+  text-decoration: none;
+  vertical-align: middle;
+
+  // Typography.
+  font-size: $md-body-font-size-base;
+  font-family: $md-font-family;
+  font-weight: 500;
+  color: md-color($md-foreground, text);
+
+  // Sizing.
+  margin: $md-button-margin;
+  min-width: $md-button-min-width;
+  line-height: $md-button-line-height;
+  padding: $md-button-padding;
+  border-radius: $md-button-border-radius;
+
+  &[disabled] {
+    cursor: default;
+  }
+}
+
+// Applies styles to buttons with backgrounds: raised, fab, and mini-fab
+%md-raised-button {
+  @extend %md-button-base;
+
+  @include md-button-theme('color', default-contrast);
+  @include md-button-theme('background-color');
+
+  background-color: md-color($md-background, background);
+  box-shadow: $md-shadow-bottom-z-1;
+  // Force hardware acceleration.
+  transform: translate3d(0, 0, 0);
+
+  // Animation.
+  transition: background $swift-ease-out-duration $swift-ease-out-timing-function,
+  box-shadow $swift-ease-out-duration $swift-ease-out-timing-function;
+
+  &:active {
+    box-shadow: $md-shadow-bottom-z-2;
+  }
+
+  &.md-button-focus {
+    background-color: md-color($md-foreground, base, 0.12);
+    @include md-button-theme('background-color', 600);
+  }
+
+  &[disabled] {
+    box-shadow: none;
+  }
+}
+
+// Applies styles to fab and mini-fab button types only
+@mixin md-fab($size, $padding) {
+  @extend %md-raised-button;
+
+  min-width: 0;
+  border-radius: $md-fab-border-radius;
+  background-color: md-color($md-accent);
+  width: $size;
+  height: $size;
+  padding: $padding;
+
+  &.md-button-focus {
+    background-color: md-color($md-accent, 600);
+  }
+}

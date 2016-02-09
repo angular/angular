@@ -1,0 +1,20 @@
+
+// Applies specified coloring to three supported palettes
+@mixin md-button-theme ($property, $color:500, $opacity: 1) {
+  &.md-primary {
+    #{$property}: md-color($md-primary, $color, $opacity);
+  }
+  &.md-accent {
+    #{$property}: md-color($md-accent, $color, $opacity);
+  }
+  &.md-warn {
+    #{$property}: md-color($md-warn, $color, $opacity);
+  }
+
+  &.md-primary, &.md-accent, &.md-warn, &[disabled] {
+    &[disabled] {
+      $palette: if($property == 'color', $md-foreground, $md-background);
+      #{$property}: md-color($palette, disabled-button);
+    }
+  }
+}

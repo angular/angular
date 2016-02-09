@@ -1,10 +1,13 @@
 import {Component} from 'angular2/core';
-import {MdButton} from '../../components/button/button';
+import {MdButton, MdAnchor} from '../../components/button/button';
 
 @Component({
     selector: 'button-demo',
     templateUrl: 'demo-app/button/button-demo.html',
     styleUrls: ['demo-app/button/button-demo.css'],
-    directives: [MdButton]
+    directives: [MdButton, MdAnchor]
 })
-export class ButtonDemo {}
+export class ButtonDemo {
+  isDisabled: boolean = false;
+
+}

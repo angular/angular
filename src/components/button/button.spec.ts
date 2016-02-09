@@ -13,7 +13,7 @@ import {
 import {provide, Component, DebugElement} from 'angular2/core';
 import {By} from 'angular2/platform/browser';
 
-import {MdButton} from './button';
+import {MdButton, MdAnchor} from './button';
 import {AsyncTestFn, FunctionWithParamTokens} from 'angular2/testing';
 
 export function main() {
@@ -24,6 +24,27 @@ export function main() {
       builder = tcb;
     }));
 
+    // General button tests
+    it('should apply class based on color attribute', (done:() => void) => {
+      return builder.createAsync(TestApp).then((fixture) => {
+        let testComponent = fixture.debugElement.componentInstance;
+        let buttonDebugElement = fixture.debugElement.query(By.css('button'));
+        let aDebugElement = fixture.debugElement.query(By.css('a'));
+
+        testComponent.buttonColor = 'primary';
+        fixture.detectChanges();
+        expect(buttonDebugElement.nativeElement.classList.contains('md-primary')).toBe(true);
+        expect(aDebugElement.nativeElement.classList.contains('md-primary')).toBe(true);
+
+        testComponent.buttonColor = 'accent';
+        fixture.detectChanges();
+        expect(buttonDebugElement.nativeElement.classList.contains('md-accent')).toBe(true);
+        expect(aDebugElement.nativeElement.classList.contains('md-accent')).toBe(true);
+        done();
+      });
+    });
+
+    // Regular button tests
     describe('button[md-button]', () => {
       it('should handle a click on the button', (done:() => void) => {
         return builder.createAsync(TestApp).then((fixture) => {
@@ -48,7 +69,52 @@ export function main() {
 
           expect(testComponent.clickCount).toBe(0);
           done();
-        })
+        });
+      });
+
+    });
+
+    // Anchor button tests
+    describe('a[md-button]', () => {
+      it('should not redirect if disabled',(done:() => void)=>{
+        return builder.createAsync(TestApp).then((fixture) => {
+          let testComponent = fixture.debugElement.componentInstance;
+          let buttonDebugElement = fixture.debugElement.query(By.css('a'));
+
+          testComponent.isDisabled = true;
+          fixture.detectChanges();
+
+          buttonDebugElement.nativeElement.click();
+          // will error if page reloads
+          done();
+        });
+      });
+
+      it('should remove tabindex if disabled', (done:() => void) => {
+        return builder.createAsync(TestApp).then((fixture) => {
+          let testComponent = fixture.debugElement.componentInstance;
+          let buttonDebugElement = fixture.debugElement.query(By.css('a'));
+          expect(buttonDebugElement.nativeElement.getAttribute('tabIndex')).toBe(null);
+
+          testComponent.isDisabled = true;
+          fixture.detectChanges();
+          expect(buttonDebugElement.nativeElement.getAttribute('tabIndex')).toBe('-1');
+          done();
+        });
+      });
+
+      it('should add aria-disabled attribute if disabled', (done:() => void) => {
+        return builder.createAsync(TestApp).then((fixture) => {
+          let testComponent = fixture.debugElement.componentInstance;
+          let buttonDebugElement = fixture.debugElement.query(By.css('a'));
+          fixture.detectChanges();
+          expect(buttonDebugElement.nativeElement.getAttribute('aria-disabled')).toBe('false');
+
+          testComponent.isDisabled = true;
+          fixture.detectChanges();
+          expect(buttonDebugElement.nativeElement.getAttribute('aria-disabled')).toBe('true');
+          done();
+        });
       });
 
     });
@@ -63,9 +129,13 @@ function testAsync(fn: Function): FunctionWithParamTokens {
 /** Test component that contains an MdButton. */
 @Component({
   selector: 'test-app',
-  directives: [MdButton],
-  template:
-      `<button md-button type="button" (click)="increment()" [disabled]="isDisabled">Go</button>`,
+  template: `
+    <button md-button type="button" (click)="increment()" [disabled]="isDisabled" [color]="buttonColor">
+      Go
+    </button>
+    <a href="http://www.google.com" md-button [disabled]="isDisabled" [color]="buttonColor">Link</a>
+  `,
+  directives: [MdButton, MdAnchor]
 })
 class TestApp {
   clickCount: number = 0;
@@ -75,3 +145,5 @@ class TestApp {
     this.clickCount++;
   }
 }
+
+
