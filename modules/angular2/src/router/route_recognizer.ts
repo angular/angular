@@ -6,7 +6,7 @@ import {Map} from 'angular2/src/facade/collection';
 import {RouteHandler} from './route_handler';
 import {Url} from './url_parser';
 import {ComponentInstruction} from './instruction';
-import {PathRecognizer} from './path_recognizer';
+import {PathRecognizer, GeneratedUrlSegment} from './path_recognizer';
 
 
 export abstract class RouteMatch {}
@@ -83,19 +83,19 @@ export class RouteRecognizer implements AbstractRecognizer {
 
     return this.handler.resolveComponentType().then((_) => {
       var componentInstruction =
-          this._getInstruction(res['urlPath'], res['urlParams'], res['allParams']);
-      return new PathMatch(componentInstruction, res['nextSegment'], res['auxiliary']);
+          this._getInstruction(res.urlPath, res.urlParams, res.allParams);
+      return new PathMatch(componentInstruction, res.nextSegment, res.auxiliary);
     });
   }
 
   generate(params: {[key: string]: any}): ComponentInstruction {
     var generated = this._pathRecognizer.generate(params);
-    var urlPath = generated['urlPath'];
-    var urlParams = generated['urlParams'];
+    var urlPath = generated.urlPath;
+    var urlParams = generated.urlParams;
     return this._getInstruction(urlPath, urlParams, params);
   }
 
-  generateComponentPathValues(params: {[key: string]: any}): {[key: string]: any} {
+  generateComponentPathValues(params: {[key: string]: any}): GeneratedUrlSegment {
     return this._pathRecognizer.generate(params);
   }
 

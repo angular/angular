@@ -11,7 +11,7 @@ import {
 } from 'angular2/testing_internal';
 
 import {PathRecognizer} from 'angular2/src/router/path_recognizer';
-import {parser, Url, RootUrl} from 'angular2/src/router/url_parser';
+import {parser, Url} from 'angular2/src/router/url_parser';
 
 export function main() {
   describe('PathRecognizer', () => {
@@ -38,7 +38,7 @@ export function main() {
         var rec = new PathRecognizer('/hello/there');
         var url = parser.parse('/hello/there?name=igor');
         var match = rec.recognize(url);
-        expect(match['allParams']).toEqual({'name': 'igor'});
+        expect(match.allParams).toEqual({'name': 'igor'});
       });
 
       it('should return a combined map of parameters with the param expected in the URL path',
@@ -46,7 +46,7 @@ export function main() {
            var rec = new PathRecognizer('/hello/:name');
            var url = parser.parse('/hello/paul?topic=success');
            var match = rec.recognize(url);
-           expect(match['allParams']).toEqual({'name': 'paul', 'topic': 'success'});
+           expect(match.allParams).toEqual({'name': 'paul', 'topic': 'success'});
          });
     });
 
@@ -55,28 +55,28 @@ export function main() {
         var rec = new PathRecognizer('/hello/:id');
         var url = new Url('hello', new Url('matias', null, null, {'key': 'value'}));
         var match = rec.recognize(url);
-        expect(match['allParams']).toEqual({'id': 'matias', 'key': 'value'});
+        expect(match.allParams).toEqual({'id': 'matias', 'key': 'value'});
       });
 
       it('should be parsed on a static path', () => {
         var rec = new PathRecognizer('/person');
         var url = new Url('person', null, null, {'name': 'dave'});
         var match = rec.recognize(url);
-        expect(match['allParams']).toEqual({'name': 'dave'});
+        expect(match.allParams).toEqual({'name': 'dave'});
       });
 
       it('should be ignored on a wildcard segment', () => {
         var rec = new PathRecognizer('/wild/*everything');
         var url = parser.parse('/wild/super;variable=value');
         var match = rec.recognize(url);
-        expect(match['allParams']).toEqual({'everything': 'super;variable=value'});
+        expect(match.allParams).toEqual({'everything': 'super;variable=value'});
       });
 
       it('should set matrix param values to true when no value is present', () => {
         var rec = new PathRecognizer('/path');
         var url = new Url('path', null, null, {'one': true, 'two': true, 'three': '3'});
         var match = rec.recognize(url);
-        expect(match['allParams']).toEqual({'one': true, 'two': true, 'three': '3'});
+        expect(match.allParams).toEqual({'one': true, 'two': true, 'three': '3'});
       });
 
       it('should be parsed on the final segment of the path', () => {
@@ -87,7 +87,7 @@ export function main() {
         var one = new Url('one', two, null, {'a': '1'});
 
         var match = rec.recognize(one);
-        expect(match['allParams']).toEqual({'c': '3'});
+        expect(match.allParams).toEqual({'c': '3'});
       });
     });
 

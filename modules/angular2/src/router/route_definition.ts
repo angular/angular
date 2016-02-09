@@ -14,6 +14,9 @@ import {CONST, Type} from 'angular2/src/facade/lang';
 export interface RouteDefinition {
   path?: string;
   aux?: string;
+  regex?: string;
+  //TODO:
+  //serializer?:
   component?: Type | ComponentDefinition;
   loader?: Function;
   redirectTo?: any[];

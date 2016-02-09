@@ -171,16 +171,73 @@ function assertPath(path: string) {
   }
 }
 
+export class RecognizedUrlSegment {
+  constructor(
+    public urlPath: string,
+    public urlParams: string[],
+    public allParams: {[key: string]: string},
+    public auxiliary: Url[],
+    public nextSegment: Url) {}
+}
+
+export class GeneratedUrlSegment {
+  constructor(public urlPath: string, public urlParams: string[]) {}
+}
+
+export interface Recognizer {
+  specificity: string;
+  terminal: boolean;
+  hash: string;
+
+  recognize(beginningSegment: Url): RecognizedUrlSegment;
+  generate(params: {[key: string]: any}): GeneratedUrlSegment;
+}
+
+export class RegexRecognizer implements Recognizer {
+  public hash: string;
+  public terminal: boolean = true;
+  public specificity: string = '2';
+  private _regex: RegExp;
+
+  constructor(private _reString: string, private _serializer: (params: {[key: string]: any}) => GeneratedUrlSegment) {
+    this.hash = this._reString;
+    this._regex = RegExpWrapper.create(this._reString);
+  }
+
+  recognize(beginningSegment: Url): RecognizedUrlSegment {
+    var url = beginningSegment.toString();
+    var match = RegExpWrapper.firstMatch(this._regex, url);
+
+    if (isBlank(match)) {
+      return null;
+    }
+
+    var params : {[key: string]: string} = {};
+
+    for (let i = 0; i < match.length; i += 1) {
+      params[i.toString()] = match[i];
+    }
+
+    return new RecognizedUrlSegment(url, [], params, [], null);
+  }
+
+  generate(params: {[key: string]: any}): GeneratedUrlSegment {
+    return this._serializer(params);
+  }
+}
 
 /**
  * Parses a URL string using a given matcher DSL, and generates URLs from param maps
  */
-export class PathRecognizer {
+export class PathRecognizer implements Recognizer {
   private _segments: Segment[];
   specificity: string;
   terminal: boolean = true;
   hash: string;
 
+  /**
+   * Takes a string representing the matcher DSL
+   */
   constructor(public path: string) {
     assertPath(path);
     var parsed = parsePathString(path);
@@ -193,7 +250,7 @@ export class PathRecognizer {
     this.terminal = !(lastSegment instanceof ContinuationSegment);
   }
 
-  recognize(beginningSegment: Url): {[key: string]: any} {
+  recognize(beginningSegment: Url): RecognizedUrlSegment {
     var nextSegment = beginningSegment;
     var currentSegment: Url;
     var positionalParams = {};
@@ -256,11 +313,12 @@ export class PathRecognizer {
       auxiliary = [];
       urlParams = [];
     }
-    return {urlPath, urlParams, allParams, auxiliary, nextSegment};
+
+    return new RecognizedUrlSegment(urlPath, urlParams, allParams, auxiliary, nextSegment);
   }
 
 
-  generate(params: {[key: string]: any}): {[key: string]: any} {
+  generate(params: {[key: string]: any}): GeneratedUrlSegment {
     var paramTokens = new TouchMap(params);
 
     var path = [];
@@ -276,6 +334,6 @@ export class PathRecognizer {
     var nonPositionalParams = paramTokens.getUnused();
     var urlParams = serializeParams(nonPositionalParams);
 
-    return {urlPath, urlParams};
+    return new GeneratedUrlSegment(urlPath, urlParams);
   }
 }
