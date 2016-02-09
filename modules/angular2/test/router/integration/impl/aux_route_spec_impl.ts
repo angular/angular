@@ -19,7 +19,12 @@ import {By} from 'angular2/platform/common_dom';
 import {provide, Component, Injector, Inject} from 'angular2/core';
 
 import {Router, ROUTER_DIRECTIVES, RouteParams, RouteData, Location} from 'angular2/router';
-import {RouteConfig, Route, AuxRoute, Redirect} from 'angular2/src/router/route_config_decorator';
+import {
+  RouteConfig,
+  Route,
+  AuxRoute,
+  Redirect
+} from 'angular2/src/router/route_config/route_config_decorator';
 
 import {specs, compile, TEST_ROUTER_PROVIDERS, clickOnElement, getHref} from '../util';
 import {BaseException} from 'angular2/src/facade/exceptions';

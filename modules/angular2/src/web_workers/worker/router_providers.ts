@@ -1,5 +1,5 @@
 import {ApplicationRef, Provider, NgZone, APP_INITIALIZER} from 'angular2/core';
-import {PlatformLocation} from 'angular2/src/router/platform_location';
+import {PlatformLocation} from 'angular2/src/router/location/platform_location';
 import {WebWorkerPlatformLocation} from './platform_location';
 import {ROUTER_PROVIDERS_COMMON} from 'angular2/src/router/router_providers_common';
 

@@ -20,7 +20,12 @@ import {DOM} from 'angular2/src/platform/dom/dom_adapter';
 import {Console} from 'angular2/src/core/console';
 import {provide, ViewChild, AfterViewInit} from 'angular2/core';
 import {DOCUMENT} from 'angular2/src/platform/dom/dom_tokens';
-import {RouteConfig, Route, Redirect, AuxRoute} from 'angular2/src/router/route_config_decorator';
+import {
+  RouteConfig,
+  Route,
+  Redirect,
+  AuxRoute
+} from 'angular2/src/router/route_config/route_config_decorator';
 import {PromiseWrapper} from 'angular2/src/facade/async';
 import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
 import {

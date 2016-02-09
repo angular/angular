@@ -4,17 +4,20 @@ var fs = require('fs');
 var ts = require('typescript');
 
 var files = [
-  'lifecycle_annotations_impl.ts',
+  'utils.ts',
   'url_parser.ts',
-  'route_recognizer.ts',
-  'route_config_impl.ts',
-  'async_route_handler.ts',
-  'sync_route_handler.ts',
-  'component_recognizer.ts',
+  'lifecycle/lifecycle_annotations_impl.ts',
+  'lifecycle/route_lifecycle_reflector.ts',
+  'route_config/route_config_impl.ts',
+  'route_config/route_config_normalizer.ts',
+  'rules/route_handlers/async_route_handler.ts',
+  'rules/route_handlers/sync_route_handler.ts',
+  'rules/rules.ts',
+  'rules/rule_set.ts',
+  'rules/route_paths/route_path.ts',
+  'rules/route_paths/param_route_path.ts',
+  'rules/route_paths/regex_route_path.ts',
   'instruction.ts',
-  'path_recognizer.ts',
-  'route_config_nomalizer.ts',
-  'route_lifecycle_reflector.ts',
   'route_registry.ts',
   'router.ts'
 ];

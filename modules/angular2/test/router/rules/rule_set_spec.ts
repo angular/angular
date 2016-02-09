@@ -12,19 +12,20 @@ import {
 
 import {Map, StringMapWrapper} from 'angular2/src/facade/collection';
 
-import {RouteMatch, PathMatch, RedirectMatch} from 'angular2/src/router/route_recognizer';
-import {ComponentRecognizer} from 'angular2/src/router/component_recognizer';
+import {RouteMatch, PathMatch, RedirectMatch} from 'angular2/src/router/rules/rules';
+import {RuleSet} from 'angular2/src/router/rules/rule_set';
+import {GeneratedUrl} from 'angular2/src/router/rules/route_paths/route_path';
 
-import {Route, Redirect} from 'angular2/src/router/route_config_decorator';
+import {Route, Redirect} from 'angular2/src/router/route_config/route_config_decorator';
 import {parser} from 'angular2/src/router/url_parser';
 import {PromiseWrapper} from 'angular2/src/facade/promise';
 
 
 export function main() {
-  describe('ComponentRecognizer', () => {
-    var recognizer: ComponentRecognizer;
+  describe('RuleSet', () => {
+    var recognizer: RuleSet;
 
-    beforeEach(() => { recognizer = new ComponentRecognizer(); });
+    beforeEach(() => { recognizer = new RuleSet(); });
 
 
     it('should recognize a static segment', inject([AsyncTestCompleter], (async) => {
@@ -68,6 +69,21 @@ export function main() {
                expect(solutions.length).toBe(1);
                expect(getComponentType(solutions[0])).toEqual(DummyCmpA);
                expect(getParams(solutions[0])).toEqual({'rest': 'second/third'});
+               async.done();
+             });
+       }));
+
+    it('should recognize a regex', inject([AsyncTestCompleter], (async) => {
+         function emptySerializer(params): GeneratedUrl { return new GeneratedUrl('', {}); }
+
+         recognizer.config(
+             new Route({regex: '^(.+)/(.+)$', serializer: emptySerializer, component: DummyCmpA}));
+         recognize(recognizer, '/first/second')
+             .then((solutions: RouteMatch[]) => {
+               expect(solutions.length).toBe(1);
+               expect(getComponentType(solutions[0])).toEqual(DummyCmpA);
+               expect(getParams(solutions[0]))
+                   .toEqual({'0': 'first/second', '1': 'first', '2': 'second'});
                async.done();
              });
        }));
@@ -120,6 +136,25 @@ export function main() {
     it('should generate URLs with numeric params', () => {
       recognizer.config(new Route({path: '/app/page/:number', component: DummyCmpA, name: 'Page'}));
       expect(recognizer.generate('Page', {'number': 42}).urlPath).toEqual('app/page/42');
+    });
+
+
+    it('should generate using a serializer', () => {
+      function simpleSerializer(params): GeneratedUrl {
+        var extra = {c: params['c']};
+        return new GeneratedUrl(`/${params['a']}/${params['b']}`, extra);
+      }
+
+      recognizer.config(new Route({
+        name: 'Route1',
+        regex: '^(.+)/(.+)$',
+        serializer: simpleSerializer,
+        component: DummyCmpA
+      }));
+      var params = {a: 'first', b: 'second', c: 'third'};
+      var result = recognizer.generate('Route1', params);
+      expect(result.urlPath).toEqual('/first/second');
+      expect(result.urlParams).toEqual(['c=third']);
     });
 
 
@@ -193,7 +228,7 @@ export function main() {
   });
 }
 
-function recognize(recognizer: ComponentRecognizer, url: string): Promise<RouteMatch[]> {
+function recognize(recognizer: RuleSet, url: string): Promise<RouteMatch[]> {
   var parsedUrl = parser.parse(url);
   return PromiseWrapper.all(recognizer.recognize(parsedUrl));
 }
