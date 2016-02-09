@@ -374,6 +374,10 @@ $md-dark-theme-foreground: (
 );
 
 
+
+// TODO(jelbourn): Do we actually need these any more? Updates to the spec about how foreground
+// colors are used may have made this obsolete.
+
 // Contrast colors. These are hard-coded because it is too difficult (probably impossible) to
 // calculate them. These contrast colors are pulled from the public Material Design spec swatches.
 // While the contrast colors in the spec are not perscriptive, we will use them for convenience.
