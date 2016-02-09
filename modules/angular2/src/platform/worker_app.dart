@@ -6,12 +6,14 @@ import 'package:angular2/src/platform/worker_app_common.dart';
 import 'package:angular2/core.dart';
 import 'package:angular2/src/web_workers/shared/isolate_message_bus.dart';
 import 'package:angular2/src/web_workers/shared/message_bus.dart';
+import 'package:angular2/src/compiler/compiler.dart';
 import 'dart:isolate';
 
 const OpaqueToken RENDER_SEND_PORT = const OpaqueToken("RenderSendPort");
 
 const List<dynamic> WORKER_APP_APPLICATION = const [
   WORKER_APP_APPLICATION_COMMON,
+  COMPILER_PROVIDERS,
   const Provider(MessageBus,
       useFactory: createMessageBus, deps: const [NgZone, RENDER_SEND_PORT]),
   const Provider(APP_INITIALIZER, useValue: setupIsolate, multi: true)
