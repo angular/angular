@@ -1,3 +1,56 @@
+<a name="2.0.0-beta.4"></a>
+# 2.0.0-beta.4 (2016-02-10)
+
+
+### Bug Fixes
+
+* **angular1-router:** add missing wrapper methods ([55122cd](https://github.com/angular/angular/commit/55122cd)), closes [#6763](https://github.com/angular/angular/issues/6763) [#6861](https://github.com/angular/angular/issues/6861) [#6861](https://github.com/angular/angular/issues/6861)
+* **angular1-router:** add support for using the component helper ([d86be24](https://github.com/angular/angular/commit/d86be24)), closes [angular/angular.js#13860](https://github.com/angular/angular.js/issues/13860) [#6076](https://github.com/angular/angular/issues/6076) [#5278](https://github.com/angular/angular/issues/5278)
+* **async:** handle synchronous initial value in async pipe ([26e60d6](https://github.com/angular/angular/commit/26e60d6)), closes [#5996](https://github.com/angular/angular/issues/5996)
+* **build:** don't try to copy .d.ts files into the npm distro ([16b5217](https://github.com/angular/angular/commit/16b5217)), closes [#6921](https://github.com/angular/angular/issues/6921)
+* **compiler:** fix interpolation regexp ([9b0e10e](https://github.com/angular/angular/commit/9b0e10e)), closes [#6056](https://github.com/angular/angular/issues/6056)
+* **compiler:** use event names for matching directives ([231773e](https://github.com/angular/angular/commit/231773e)), closes [#6870](https://github.com/angular/angular/issues/6870)
+* **core:** add detail to dehydrated detector exception ([e7ad03c](https://github.com/angular/angular/commit/e7ad03c)), closes [#6939](https://github.com/angular/angular/issues/6939)
+* **core:** mute mode printing in console in prod mode ([74be3d3](https://github.com/angular/angular/commit/74be3d3)), closes [#6873](https://github.com/angular/angular/issues/6873)
+* **di:** throw if a token uses more than 20 dependencies. ([de77700](https://github.com/angular/angular/commit/de77700)), closes [#6690](https://github.com/angular/angular/issues/6690) [#6869](https://github.com/angular/angular/issues/6869)
+* **forms:** add RadioButtonValueAccessor to the list of default value accessors ([8f47aa3](https://github.com/angular/angular/commit/8f47aa3))
+* **forms:** add support for radio buttons ([e725542](https://github.com/angular/angular/commit/e725542)), closes [#6877](https://github.com/angular/angular/issues/6877)
+* **forms:** use strict runtimeType checks instead of instanceof ([50548fb](https://github.com/angular/angular/commit/50548fb)), closes [#6981](https://github.com/angular/angular/issues/6981)
+* **Headers:** serializable toJSON ([b55f176](https://github.com/angular/angular/commit/b55f176)), closes [#6073](https://github.com/angular/angular/issues/6073) [#6714](https://github.com/angular/angular/issues/6714)
+* **ngFor:** update view locals if identity changes ([0f10624](https://github.com/angular/angular/commit/0f10624)), closes [#6923](https://github.com/angular/angular/issues/6923)
+* **router:** Added route data to normalized async route ([df7885c](https://github.com/angular/angular/commit/df7885c)), closes [#6802](https://github.com/angular/angular/issues/6802)
+* **router:** don't prepend `/` unnecessarily to Location paths ([c603643](https://github.com/angular/angular/commit/c603643)), closes [#6729](https://github.com/angular/angular/issues/6729) [#5502](https://github.com/angular/angular/issues/5502)
+* **router:** fix incorrect url param value coercion of 1 to true ([995a9e0](https://github.com/angular/angular/commit/995a9e0)), closes [#5346](https://github.com/angular/angular/issues/5346) [#6286](https://github.com/angular/angular/issues/6286)
+* **router:** fix url path for star segment in path recognizer ([6f1ef33](https://github.com/angular/angular/commit/6f1ef33)), closes [#6976](https://github.com/angular/angular/issues/6976)
+* **router:** fixed the location wrapper for angular1 ([e73fee7](https://github.com/angular/angular/commit/e73fee7)), closes [#6943](https://github.com/angular/angular/issues/6943)
+* **typings:** Don't expose typing dependencies to users. ([2a70f4e](https://github.com/angular/angular/commit/2a70f4e)), closes [#5973](https://github.com/angular/angular/issues/5973) [#5807](https://github.com/angular/angular/issues/5807) [#6266](https://github.com/angular/angular/issues/6266) [#5242](https://github.com/angular/angular/issues/5242) [#6817](https://github.com/angular/angular/issues/6817) [#6267](https://github.com/angular/angular/issues/6267)
+* **upgrade:** fix infinite $rootScope.$digest() ([7e0f02f](https://github.com/angular/angular/commit/7e0f02f)), closes [#6385](https://github.com/angular/angular/issues/6385) [#6386](https://github.com/angular/angular/issues/6386)
+* **Validators:** fix Validators.required marking number zero as invalid ([c2ceb7f](https://github.com/angular/angular/commit/c2ceb7f)), closes [#6617](https://github.com/angular/angular/issues/6617)
+* **WebWorkers:** Fix flaky WebWorker test ([da1fcfd](https://github.com/angular/angular/commit/da1fcfd)), closes [#6851](https://github.com/angular/angular/issues/6851)
+
+### Features
+
+* **angular1_router:** allow component to bind to router ([0f22dce](https://github.com/angular/angular/commit/0f22dce))
+* **typings:** install es6-shim typings to a location users can reference. ([f1f5b45](https://github.com/angular/angular/commit/f1f5b45))
+
+### BREAKING CHANGES
+
+Transitive typings are no longer included in the distribution.
+
+If you use `--target=es5`, you will need to add a line somewhere in your
+application (for example, at the top of the `.ts` file where you call `bootstrap`):
+```
+///<reference path="node_modules/angular2/typings/browser.d.ts"/>
+```
+(Note that if your file is not in the same directory as `node_modules`, you'll
+need to add one or more `../` to the start of that path.)
+
+If you have unit tests, you need to install typings in your project using
+http://github.com/typings/typings
+And install typings such as `jasmine`, `angular-protractor`, or `selenium-webdriver`
+to satisfy the type-checker.
+
+
 <a name="2.0.0-beta.3"></a>
 # 2.0.0-beta.3 (2016-02-03)
 
