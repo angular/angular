@@ -8,6 +8,12 @@
   "license": "<%= packageJson.license %>",
   "repository": <%= JSON.stringify(packageJson.repository) %>,
   "devDependencies": <%= JSON.stringify(packageJson.defaultDevDependencies) %>,
+  "dependencies": {
+    "typings": "0.6.6"
+  },
+  "scripts": {
+    "postinstall": "typings install --ambient --name es6-promise github:DefinitelyTyped/DefinitelyTyped/es6-promise/es6-promise.d.ts#830e8ebd9ef137d039d5c7ede24a421f08595f83; typings install --ambient --name es6-collections github:DefinitelyTyped/DefinitelyTyped/es6-collections/es6-collections.d.ts#9f97e2a2bc1f502550c9b4fcaad1c48df5521d37"
+  },
   "peerDependencies": {
     "es6-promise": "<%= packageJson.dependencies['es6-promise'] %>",
     "es6-shim": "<%= packageJson.dependencies['es6-shim'] %>",
