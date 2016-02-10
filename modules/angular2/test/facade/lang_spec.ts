@@ -4,8 +4,12 @@ import {
   RegExpWrapper,
   RegExpMatcherWrapper,
   StringWrapper,
-  CONST_EXPR
+  CONST_EXPR,
+  hasConstructor
 } from 'angular2/src/facade/lang';
+
+class MySuperclass {}
+class MySubclass extends MySuperclass {}
 
 export function main() {
   describe('RegExp', () => {
@@ -118,6 +122,14 @@ export function main() {
         expect(StringWrapper.stripRight("", "S")).toEqual("");
         expect(StringWrapper.stripRight(null, "S")).toEqual(null);
       });
+    });
+
+    describe('hasConstructor', () => {
+      it("should be true when the type matches",
+         () => { expect(hasConstructor(new MySuperclass(), MySuperclass)).toEqual(true); });
+
+      it("should be false for subtypes",
+         () => { expect(hasConstructor(new MySubclass(), MySuperclass)).toEqual(false); });
     });
   });
 }
