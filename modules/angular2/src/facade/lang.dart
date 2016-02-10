@@ -353,3 +353,7 @@ var global = null;
 dynamic evalExpression(String sourceUrl, String expr, String declarations, Map<String, String> vars) {
   throw "Dart does not support evaluating expression during runtime!";
 }
+
+bool hasConstructor(Object value, Type type) {
+  return value.runtimeType == type;
+}
