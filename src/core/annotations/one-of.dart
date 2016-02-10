@@ -3,5 +3,5 @@
  * TODO(hansl): Implement this properly in Dart.
  */
 class OneOf {
-  const OneOf(List<string> values);
+  const OneOf(List<String> values);
 }

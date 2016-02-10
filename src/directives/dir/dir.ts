@@ -1,4 +1,5 @@
-import {Directive, HostBinding, EventEmitter, Output, Input} from 'angular2/core';
+import {EventEmitter} from 'angular2/src/facade/async';
+import {Directive, HostBinding, Output, Input} from 'angular2/core';
 import {OneOf} from "../../core/annotations/one-of";
 
 

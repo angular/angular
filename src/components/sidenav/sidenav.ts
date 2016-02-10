@@ -3,7 +3,6 @@ import {
   Component,
   ContentChildren,
   ElementRef,
-  EventEmitter,
   Host,
   HostBinding,
   HostListener,
@@ -14,7 +13,8 @@ import {
   Type,
   ChangeDetectionStrategy
 } from 'angular2/core';
-import {PromiseWrapper} from 'angular2/src/facade/promise';
+import {PromiseWrapper, ObservableWrapper, EventEmitter} from 'angular2/src/facade/async';
+import {iterateListLike} from 'angular2/src/facade/collection';
 import {BaseException} from 'angular2/src/facade/exceptions';
 import {CONST_EXPR, isPresent} from 'angular2/src/facade/lang';
 import {Dir} from '../../directives/dir/dir';
@@ -127,9 +127,6 @@ export class MdSidenav {
     } else {
       this.onCloseStart.emit(null);
     }
-
-    let emitter = isOpen ? this.onOpen : this.onClose;
-    let other = isOpen ? this.onClose : this.onOpen;
 
     if (isOpen) {
       if (this.openPromise_ == null) {
@@ -259,13 +256,13 @@ export class MdSidenavLayout implements AfterContentInit {
     // If a `Dir` directive exists up the tree, listen direction changes and update the left/right
     // properties to point to the proper start/end.
     if (dir_ != null) {
-      dir_.dirChange.subscribe(() => this.validateDrawers_());
+      dir_.dirChange.add(() => this.validateDrawers_());
     }
   }
 
   ngAfterContentInit() {
     // On changes, assert on consistency.
-    this.sidenavs_.changes.subscribe(() => this.validateDrawers_());
+    ObservableWrapper.subscribe(this.sidenavs_.changes, () => this.validateDrawers_());
     this.validateDrawers_();
   }
 
@@ -294,17 +291,17 @@ export class MdSidenavLayout implements AfterContentInit {
     }
 
     // Ensure that we have at most one start and one end sidenav.
-    this.sidenavs_.toArray().forEach(drawer => {
-      if (drawer.align == 'end') {
+    iterateListLike(this.sidenavs_, (sidenav: any) => {
+      if (sidenav.align == 'end') {
         if (this.end_ != null) {
           throw new MdDuplicatedSidenavException('end');
         }
-        this.end_ = drawer;
+        this.end_ = sidenav;
       } else {
         if (this.start_ != null) {
           throw new MdDuplicatedSidenavException('start');
         }
-        this.start_ = drawer;
+        this.start_ = sidenav;
       }
     });
 

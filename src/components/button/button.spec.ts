@@ -1,15 +1,18 @@
 import {
+  inject,
+  injectAsync,
+  ComponentFixture,
+  TestComponentBuilder,
+  beforeEachProviders,
+} from 'angular2/testing';
+import {
   it,
   iit,
   describe,
   ddescribe,
   expect,
-  inject,
-  injectAsync,
-  TestComponentBuilder,
-  beforeEachProviders,
   beforeEach,
-} from 'angular2/testing';
+} from '../../core/facade/testing';
 import {provide, Component, DebugElement} from 'angular2/core';
 import {By} from 'angular2/platform/browser';
 

@@ -1,30 +1,34 @@
 import {
+  inject,
+  injectAsync,
+  ComponentFixture,
+  TestComponentBuilder,
+  beforeEachProviders,
+} from 'angular2/testing';
+import {
   it,
   iit,
   describe,
   ddescribe,
   expect,
-  inject,
-  injectAsync,
-  TestComponentBuilder,
-  beforeEachProviders,
   beforeEach,
-} from 'angular2/testing';
+} from '../../core/facade/testing';
+import {
+  getComputedStyle
+} from '../../core/facade/html';
 import {provide, Component, DebugElement} from 'angular2/core';
 import {By} from 'angular2/platform/browser';
-
-import {MdSidenav, MdSidenavLayout, MD_SIDENAV_DIRECTIVES} from './sidenav';
-import {AsyncTestFn, FunctionWithParamTokens} from 'angular2/testing';
-import {ComponentFixture} from 'angular2/testing';
-import {EventEmitter} from 'angular2/core';
 import {Predicate} from 'angular2/src/facade/collection';
 import {PromiseWrapper} from 'angular2/src/facade/promise';
 import {TimerWrapper} from 'angular2/src/facade/async';
+import {MdSidenav, MdSidenavLayout, MD_SIDENAV_DIRECTIVES} from './sidenav';
 
 
 function wait(msec: number) {
   let completer = PromiseWrapper.completer();
-  TimerWrapper.setTimeout(completer.resolve, msec);
+  TimerWrapper.setTimeout(() => {
+    completer.resolve(null);
+  }, msec);
   return completer.promise;
 }
 
@@ -38,7 +42,7 @@ function waitOnEvent(fixture: ComponentFixture,
   let completer = PromiseWrapper.completer();
   let component: any = fixture.debugElement.query(by).componentInstance;
   component[propertyName].subscribe(() => {
-    completer.resolve();
+    completer.resolve(null);
   });
   return completer.promise;
 }
@@ -63,7 +67,7 @@ export function main() {
             testComponent = fixture.debugElement.componentInstance;
             fixture.detectChanges();
             return wait(1);
-          }).then((f) => {
+          }).then((_: any) => {
             let openButtonElement = fixture.debugElement.query(By.css('.open'));
             openButtonElement.nativeElement.click();
             fixture.detectChanges();
@@ -81,8 +85,8 @@ export function main() {
 
             let sidenavElement = fixture.debugElement.query(By.css('md-sidenav'));
             let sidenavBackdropElement = fixture.debugElement.query(By.css('.md-sidenav-backdrop'));
-            expect(window.getComputedStyle(sidenavElement.nativeElement).visibility).toEqual('visible');
-            expect(window.getComputedStyle(sidenavBackdropElement.nativeElement).visibility).toEqual('visible');
+            expect(getComputedStyle(sidenavElement.nativeElement).visibility).toEqual('visible');
+            expect(getComputedStyle(sidenavBackdropElement.nativeElement).visibility).toEqual('visible');
 
             // Close it.
             let closeButtonElement = fixture.debugElement.query(By.css('.close'));
@@ -107,10 +111,10 @@ export function main() {
 
             let sidenavElement = fixture.debugElement.query(By.css('md-sidenav'));
             let sidenavBackdropElement = fixture.debugElement.query(By.css('.md-sidenav-backdrop'));
-            expect(window.getComputedStyle(sidenavElement.nativeElement).visibility).toEqual('hidden');
-            expect(window.getComputedStyle(sidenavBackdropElement.nativeElement).visibility).toEqual('hidden');
+            expect(getComputedStyle(sidenavElement.nativeElement).visibility).toEqual('hidden');
+            expect(getComputedStyle(sidenavBackdropElement.nativeElement).visibility).toEqual('hidden');
           })
-          .then(done, done.fail);
+          .then((_: any) => { done(); });
       }, 8000);
 
       it('open() and close() return a promise that resolves after the animation ended',
@@ -149,7 +153,7 @@ export function main() {
             })
             .then((_: any) => promise)
             .then((_: any) => expect(called).toBe(true))
-            .then(done, done.fail);
+            .then((_: any) => { done(); });
         }, 8000);
 
       it('open() twice returns the same promise', (done: any) => {
@@ -175,7 +179,7 @@ export function main() {
             promise = sidenav.close();
             expect(sidenav.close()).toBe(promise);
           })
-          .then(done, done.fail);
+          .then((_: any) => { done(); });
       });
 
       it('open() then close() cancel animations when called too fast',
@@ -183,7 +187,6 @@ export function main() {
           let fixture: ComponentFixture;
           let sidenav: MdSidenav;
 
-          let openPromise: Promise<void>;
           let closePromise: Promise<void>;
           let openCalled: boolean = false;
           let openCancelled: boolean = false;
@@ -194,7 +197,7 @@ export function main() {
               fixture = f;
               sidenav = fixture.debugElement.query(By.directive(MdSidenav)).componentInstance;
 
-              openPromise = sidenav.open().then((_: any) => {
+              sidenav.open().then((_: any) => {
                   openCalled = true;
                 },
                 () => {
@@ -208,7 +211,7 @@ export function main() {
             .then((_: any) => {
               closePromise = sidenav.close().then((_: any) => {
                 closeCalled = true;
-              }, done.fail);
+              });
               return wait(1);
             })
             .then((_: any) => {
@@ -220,17 +223,15 @@ export function main() {
               expect(openCancelled).toBe(true);
               expect(closeCalled).toBe(true);
             })
-            .then(done, done.fail);
+            .then((_: any) => { done(); });
         }, 8000);
 
       it('close() then open() cancel animations when called too fast',
         (done: any) => {
-          let testComponent: BasicTestApp;
           let fixture: ComponentFixture;
           let sidenav: MdSidenav;
 
           let openPromise: Promise<void>;
-          let closePromise: Promise<void>;
           let closeCalled: boolean = false;
           let closeCancelled: boolean = false;
           let openCalled: boolean = false;
@@ -250,10 +251,9 @@ export function main() {
             })
             .then((_: any) => {
               // Then close and check behavior.
-              closePromise = sidenav.close().then((_: any) => {
+              sidenav.close().then((_: any) => {
                   closeCalled = true;
-                },
-                () => {
+                }, () => {
                   closeCancelled = true;
                 });
             })
@@ -276,7 +276,7 @@ export function main() {
               expect(closeCancelled).toBe(true);
               expect(openCalled).toBe(true);
             })
-            .then(done, done.fail);
+            .then((_: any) => { done(); });
         }, 8000);
     });
   });
