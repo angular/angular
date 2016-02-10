@@ -1,5 +1,5 @@
-<a name="2.0.0-beta.4"></a>
-# 2.0.0-beta.4 (2016-02-10)
+<a name="2.0.0-beta.5"></a>
+# 2.0.0-beta.5 (2016-02-10)
 
 
 ### Bug Fixes
@@ -50,6 +50,10 @@ http://github.com/typings/typings
 And install typings such as `jasmine`, `angular-protractor`, or `selenium-webdriver`
 to satisfy the type-checker.
 
+<a name="2.0.0-beta.4"></a>
+# 2.0.0-beta.4 (2016-02-10)
+
+This release was incorrect; replaced with beta.5.
 
 <a name="2.0.0-beta.3"></a>
 # 2.0.0-beta.3 (2016-02-03)
