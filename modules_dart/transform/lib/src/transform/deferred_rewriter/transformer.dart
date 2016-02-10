@@ -81,7 +81,5 @@ class DeferredRewriter extends AggregateTransformer implements LazyTransformer {
 }
 
 // Visible for testing
-Future<String> rewriteDeferredLibraries(AssetReader reader, AssetId id) async {
-  var rewriter = new Rewriter(id, reader);
-  return await rewriter.rewrite();
-}
+Future<String> rewriteDeferredLibraries(AssetReader reader, AssetId id) =>
+    rewriteLibrary(id, reader);
