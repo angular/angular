@@ -4,25 +4,34 @@ import {
   describeWith,
   describeWithout,
   describeWithAndWithout,
-  itShouldRoute
+  itShouldRoute,
+  TEST_ROUTER_PROVIDERS
 } from './util';
+
+import {beforeEachProviders, describe} from 'angular2/testing_internal';
 
 import {registerSpecs} from './impl/async_route_spec_impl';
 
 export function main() {
-  registerSpecs();
+  describe('async route spec', () => {
 
-  describeRouter('async routes', () => {
-    describeWithout('children', () => {
-      describeWith('route data', itShouldRoute);
-      describeWithAndWithout('params', itShouldRoute);
-    });
+    beforeEachProviders(() => TEST_ROUTER_PROVIDERS);
 
-    describeWith('sync children',
-                 () => { describeWithAndWithout('default routes', itShouldRoute); });
+    registerSpecs();
 
-    describeWith('async children', () => {
-      describeWithAndWithout('params', () => { describeWithout('default routes', itShouldRoute); });
+    describeRouter('async routes', () => {
+      describeWithout('children', () => {
+        describeWith('route data', itShouldRoute);
+        describeWithAndWithout('params', itShouldRoute);
+      });
+
+      describeWith('sync children',
+                   () => { describeWithAndWithout('default routes', itShouldRoute); });
+
+      describeWith('async children', () => {
+        describeWithAndWithout('params',
+                               () => { describeWithout('default routes', itShouldRoute); });
+      });
     });
   });
 }

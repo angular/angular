@@ -238,7 +238,9 @@ export function main() {
                    async.done();
                  });
 
-                 router.navigateByUrl('/rainbow(pony)');
+                 // TODO(juliemr): This isn't necessary for the test to pass - figure
+                 // out what's going on.
+                 // router.navigateByUrl('/rainbow(pony)');
                });
          }));
     });

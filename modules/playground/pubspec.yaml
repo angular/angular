@@ -7,7 +7,7 @@ dependencies:
   angular2_material: '^<%= packageJson.version %>'
   browser: '^0.10.0'
 dev_dependencies:
-  guinness: '^0.1.17'
+  guinness2: '0.0.5'
   benchpress:
     path: ../benchpress
 dependency_overrides:
@@ -15,6 +15,7 @@ dependency_overrides:
     path: ../angular2
   angular2_material:
     path: ../angular2_material
+  matcher: '0.12.0+1'
 transformers:
 - angular2:
     platform_directives: 'package:angular2/src/common/directives.dart#CORE_DIRECTIVES'

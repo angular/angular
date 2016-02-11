@@ -18,9 +18,9 @@ import {DOM} from 'angular2/src/platform/dom/dom_adapter';
 export function main() {
   var domEventPlugin;
 
-  beforeEach(() => { domEventPlugin = new DomEventsPlugin(); });
-
   describe('EventManager', () => {
+
+    beforeEach(() => { domEventPlugin = new DomEventsPlugin(); });
 
     it('should delegate event bindings to plugins that are passed in from the most generic one to the most specific one',
        () => {
