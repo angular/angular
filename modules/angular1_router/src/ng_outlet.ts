@@ -154,8 +154,8 @@ function ngOutletDirective($animate, $q: ng.IQService, $rootRouter) {
           throw new Error('Component is not a string for ' + instruction.urlPath);
         }
 
-        this.controller.$$template =
-            '<' + dashCase(componentName) + ' $router="$$router"></' + dashCase(componentName) + '>';
+        this.controller.$$template = '<' + dashCase(componentName) + ' $router="::$$router"></' +
+                                     dashCase(componentName) + '>';
         this.controller.$$router = this.router.childRouter(instruction.componentType);
         this.controller.$$outlet = this;
 
