@@ -6,11 +6,8 @@ import {splitNsName} from 'angular2/src/compiler/html_tags';
 
 import {ElementSchemaRegistry} from './element_schema_registry';
 
-const NAMESPACE_URIS = CONST_EXPR({
-  'xlink': 'http://www.w3.org/1999/xlink',
-  'svg': 'http://www.w3.org/2000/svg',
-  'xhtml': 'http://www.w3.org/1999/xhtml'
-});
+const NAMESPACE_URIS =
+    CONST_EXPR({'xlink': 'http://www.w3.org/1999/xlink', 'svg': 'http://www.w3.org/2000/svg'});
 
 @Injectable()
 export class DomElementSchemaRegistry extends ElementSchemaRegistry {

@@ -1859,30 +1859,6 @@ function declareTests() {
                  });
            }));
 
-        it('should support foreignObjects',
-           inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder,
-                                                               async) => {
-             tcb.overrideView(
-                    MyComp, new ViewMetadata({
-                      template:
-                          '<svg><foreignObject><xhtml:div><p>Test</p></xhtml:div></foreignObject></svg>'
-                    }))
-                 .createAsync(MyComp)
-                 .then((fixture) => {
-                   var el = fixture.debugElement.nativeElement;
-                   var svg = DOM.childNodes(el)[0];
-                   var foreignObject = DOM.childNodes(svg)[0];
-                   var p = DOM.childNodes(foreignObject)[0];
-                   expect(DOM.getProperty(<Element>svg, 'namespaceURI'))
-                       .toEqual('http://www.w3.org/2000/svg');
-                   expect(DOM.getProperty(<Element>foreignObject, 'namespaceURI'))
-                       .toEqual('http://www.w3.org/2000/svg');
-                   expect(DOM.getProperty(<Element>p, 'namespaceURI'))
-                       .toEqual('http://www.w3.org/1999/xhtml');
-
-                   async.done();
-                 });
-           }));
       });
 
       describe('attributes', () => {
