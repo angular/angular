@@ -1350,6 +1350,7 @@ var NG_CORE = [
   */
   'ViewContainerRef.length',
   'ViewEncapsulation#Emulated',
+  'ViewEncapsulation#EmulatedLegacy',
   'ViewEncapsulation#Native',
   'ViewEncapsulation#None',
   'ViewEncapsulation#values',

@@ -16,6 +16,13 @@ export enum ViewEncapsulation {
    */
   Emulated,
   /**
+   * Similar to Emulated but the selectors after `:host` and `:host-context` are not scoped to the
+   * component. That is `:host .foo` can select nodes of child components.
+   *
+   * @deprecated
+   */
+  EmulatedLegacy,
+  /**
    * Use the native encapsulation mechanism of the renderer.
    *
    * For the DOM this means using [Shadow DOM](https://w3c.github.io/webcomponents/spec/shadow/) and
@@ -28,9 +35,12 @@ export enum ViewEncapsulation {
   None
 }
 
-export var VIEW_ENCAPSULATION_VALUES =
-    [ViewEncapsulation.Emulated, ViewEncapsulation.Native, ViewEncapsulation.None];
-
+export var VIEW_ENCAPSULATION_VALUES = [
+  ViewEncapsulation.Emulated,
+  ViewEncapsulation.EmulatedLegacy,
+  ViewEncapsulation.Native,
+  ViewEncapsulation.None
+];
 
 /**
  * Metadata properties available for configuring Views.

@@ -161,7 +161,7 @@ export function main() {
     });
 
     describe('normalizeLoadedTemplate', () => {
-      it('should store the viewEncapsulationin the result',
+      it('should store the viewEncapsulation in the result',
          inject([TemplateNormalizer], (normalizer: TemplateNormalizer) => {
 
            var viewEncapsulation = ViewEncapsulation.Native;
@@ -301,6 +301,16 @@ export function main() {
            var template = normalizer.normalizeLoadedTemplate(
                dirType, new CompileTemplateMetadata(
                             {encapsulation: ViewEncapsulation.Emulated, styles: [], styleUrls: []}),
+               '', 'package:some/module/id');
+           expect(template.encapsulation).toEqual(ViewEncapsulation.None);
+         }));
+
+      it('should normalize ViewEncapsulation.EmulatedLegacy to ViewEncapsulation.None if there are no styles nor stylesheets',
+         inject([TemplateNormalizer], (normalizer: TemplateNormalizer) => {
+           var template = normalizer.normalizeLoadedTemplate(
+               dirType,
+               new CompileTemplateMetadata(
+                   {encapsulation: ViewEncapsulation.EmulatedLegacy, styles: [], styleUrls: []}),
                '', 'package:some/module/id');
            expect(template.encapsulation).toEqual(ViewEncapsulation.None);
          }));

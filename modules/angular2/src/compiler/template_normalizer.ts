@@ -71,8 +71,9 @@ export class TemplateNormalizer {
     });
 
     var encapsulation = templateMeta.encapsulation;
-    if (encapsulation === ViewEncapsulation.Emulated && allResolvedStyles.length === 0 &&
-        allStyleAbsUrls.length === 0) {
+    if ((encapsulation === ViewEncapsulation.Emulated ||
+         encapsulation === ViewEncapsulation.EmulatedLegacy) &&
+        allResolvedStyles.length === 0 && allStyleAbsUrls.length === 0) {
       encapsulation = ViewEncapsulation.None;
     }
     return new CompileTemplateMetadata({

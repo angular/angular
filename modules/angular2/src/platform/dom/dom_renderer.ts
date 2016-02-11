@@ -64,10 +64,12 @@ export class DomRenderer implements Renderer {
 
   constructor(private _rootRenderer: DomRootRenderer, private componentProto: RenderComponentType) {
     this._styles = _flattenStyles(componentProto.id, componentProto.styles, []);
-    if (componentProto.encapsulation !== ViewEncapsulation.Native) {
+    var encapsulation = componentProto.encapsulation;
+    if (encapsulation !== ViewEncapsulation.Native) {
       this._rootRenderer.sharedStylesHost.addStyles(this._styles);
     }
-    if (this.componentProto.encapsulation === ViewEncapsulation.Emulated) {
+    if (encapsulation === ViewEncapsulation.Emulated ||
+        encapsulation === ViewEncapsulation.EmulatedLegacy) {
       this._contentAttr = _shimContentAttribute(componentProto.id);
       this._hostAttr = _shimHostAttribute(componentProto.id);
     } else {
