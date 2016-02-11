@@ -467,7 +467,7 @@ gulp.task('test.js', function(done) {
 
 gulp.task('test.dart', function(done) {
   runSequence('versions.dart', 'test.transpiler.unittest', 'test.unit.dart/ci',
-              'test.dart.angular2_testing/ci', sequenceComplete(done));
+              sequenceComplete(done));
 });
 
 gulp.task('versions.dart', function() { dartSdk.logVersion(DART_SDK); });
@@ -635,8 +635,7 @@ gulp.task('buildRouter.dev', function() {
 gulp.task('test.unit.dart', function(done) {
   printModulesWarning();
   runSequence('build/tree.dart', 'build/pure-packages.dart', '!build/pubget.angular2.dart',
-              '!build/change_detect.dart', '!build/remove-pub-symlinks', 'build.dart.material.css',
-              '!test.unit.dart/karma-server', '!test.unit.dart/karma-run', function(error) {
+              '!build/change_detect.dart', '!build/remove-pub-symlinks', function(error) {
                 var watch = require('./tools/build/watch');
 
                 // if initial build failed (likely due to build or formatting step) then exit
@@ -645,9 +644,10 @@ gulp.task('test.unit.dart', function(done) {
                   done(error);
                   return;
                 }
+                // treatTestErrorsAsFatal = false;
 
-                watch(['modules/angular2/**'], {ignoreInitial: true},
-                      ['!build/tree.dart', '!test.unit.dart/karma-run']);
+                watch(['modules/angular2/**'],
+                      ['!build/tree.dart', '!test.unit.dart/run/angular2']);
               });
 });
 
@@ -789,20 +789,6 @@ gulp.task('watch.dart.dev', function(done) {
               });
 });
 
-gulp.task('!test.unit.dart/karma-run', function(done) {
-  // run the run command in a new process to avoid duplicate logging by both server and runner from
-  // a single process
-  runKarma('karma-dart.conf.js', done);
-});
-
-
-gulp.task('!test.unit.dart/karma-server', function() {
-  var karma = require('karma');
-
-  new karma.Server({configFile: __dirname + '/karma-dart.conf.js', reporters: 'dots'}).start();
-});
-
-
 gulp.task('test.unit.router/ci', function(done) {
   var karma = require('karma');
 
@@ -850,20 +836,56 @@ gulp.task('test.unit.js.browserstack/ci', function(done) {
 });
 
 gulp.task('test.unit.dart/ci', function(done) {
-  var karma = require('karma');
-
-  var browserConf = getBrowsersFromCLI(null, true);
-  new karma.Server(
-               {
-                 configFile: __dirname + '/karma-dart.conf.js',
-                 singleRun: true,
-                 reporters: ['dots'],
-                 browsers: browserConf.browsersToRun
-               },
-               done)
-      .start();
+  runSequence('test.dart.dartium_symlink', '!test.unit.dart/run/angular2',
+              '!test.unit.dart/run/angular2_testing', '!test.unit.dart/run/benchpress',
+              sequenceComplete(done));
 });
 
+// At the moment, dart test requires dartium to be an executable on the path.
+// Make a temporary directory and symlink dartium from there (just for this command)
+// so that it can run.
+// TODO(juliemr): this won't work with windows - remove the hack and make this platform agnostic.
+var dartiumTmpdir = path.join(os.tmpdir(), 'dartium' + new Date().getTime().toString());
+var dartiumPathPrefix = 'PATH=$PATH:' + dartiumTmpdir + ' ';
+gulp.task(
+    'test.dart.dartium_symlink',
+    shell.task(['mkdir ' + dartiumTmpdir, 'ln -s $DARTIUM_BIN ' + dartiumTmpdir + '/dartium']));
+
+gulp.task('!test.unit.dart/run/angular2', function() {
+  var pubtest = require('./tools/build/pubtest');
+  return pubtest({
+    dir: path.join(CONFIG.dest.dart, 'angular2'),
+    dartiumTmpdir: dartiumTmpdir,
+    command: DART_SDK.PUB,
+    files: '**/*_spec.dart',
+    bunchFiles: true,
+    useExclusiveTests: true
+  });
+});
+
+gulp.task('!test.unit.dart/run/angular2_testing', function() {
+  var pubtest = require('./tools/build/pubtest');
+
+  return pubtest({
+    dir: path.join(CONFIG.dest.dart, 'angular2_testing'),
+    dartiumTmpdir: dartiumTmpdir,
+    command: DART_SDK.PUB,
+    files: '**/*_test.dart',
+    useExclusiveTests: true
+  });
+});
+
+gulp.task('!test.unit.dart/run/benchpress', function() {
+  var pubtest = require('./tools/build/pubtest');
+
+  return pubtest({
+    dir: path.join(CONFIG.dest.dart, 'benchpress'),
+    dartiumTmpdir: dartiumTmpdir,
+    command: DART_SDK.PUB,
+    files: '**/*_spec.dart',
+    useExclusiveTests: true
+  });
+});
 
 gulp.task('test.unit.cjs/ci', function(done) {
   runJasmineTests(['dist/js/cjs/{angular2,benchpress}/test/**/*_spec.js'], done);
@@ -929,24 +951,6 @@ gulp.task('test.server.dart', runServerDartTests(gulp, gulpPlugins, {dest: 'dist
 // test builders
 gulp.task('test.transpiler.unittest',
           function(done) { runJasmineTests(['tools/transpiler/unittest/**/*.js'], done); });
-
-// At the moment, dart test requires dartium to be an executable on the path.
-// Make a temporary directory and symlink dartium from there (just for this command)
-// so that it can run.
-var dartiumTmpdir = path.join(os.tmpdir(), 'dartium' + new Date().getTime().toString());
-gulp.task('test.dart.angular2_testing/ci', ['build/pubspec.dart'], function(done) {
-  runSequence('test.dart.angular2_testing_symlink', 'test.dart.angular2_testing',
-              sequenceComplete(done));
-});
-
-gulp.task(
-    'test.dart.angular2_testing_symlink',
-    shell.task(['mkdir ' + dartiumTmpdir, 'ln -s $DARTIUM_BIN ' + dartiumTmpdir + '/dartium']));
-
-gulp.task('test.dart.angular2_testing',
-          shell.task(['PATH=$PATH:' + dartiumTmpdir + ' pub run test -p dartium'],
-                     {'cwd': 'dist/dart/angular2_testing'}));
-
 
 // -----------------
 // Pre-test checks
@@ -1017,6 +1021,7 @@ gulp.task('build/pure-packages.dart/standalone', function() {
                'modules_dart/**/*',
                '!modules_dart/**/*.proto',
                '!modules_dart/**/packages{,/**}',
+               '!modules_dart/**/.packages',
                '!modules_dart/payload{,/**}',
                '!modules_dart/transform{,/**}',
              ])

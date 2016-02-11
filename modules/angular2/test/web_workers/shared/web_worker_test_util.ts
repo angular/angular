@@ -3,7 +3,7 @@ import {PromiseWrapper} from 'angular2/src/facade/async';
 import {UiArguments} from 'angular2/src/web_workers/shared/client_message_broker';
 import {Type, isPresent} from 'angular2/src/facade/lang';
 import {SpyMessageBroker} from '../worker/spies';
-import {expect} from 'angular2/testing_internal';
+import {expect} from 'angular2/src/testing/matchers';
 import {
   MessageBusSink,
   MessageBusSource,

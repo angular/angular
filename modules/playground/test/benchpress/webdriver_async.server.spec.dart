@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:io' show Platform;
-import 'package:guinness/guinness.dart';
+import 'package:guinness2/guinness2.dart';
 import 'package:benchpress/benchpress.dart';
 import 'package:webdriver/webdriver.dart'
     show WebDriver, Capabilities, LogType, LogLevel, By;
