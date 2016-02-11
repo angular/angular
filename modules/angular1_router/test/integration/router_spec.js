@@ -139,8 +139,12 @@ describe('router', function () {
       bindings: options.bindings,
       controller: getController(options),
     };
-    if (options.template) definition.template = options.template;
-    if (options.templateUrl) definition.templateUrl = options.templateUrl;
+    if (options.template) {
+      definition.template = options.template;
+    }
+    if (options.templateUrl) {
+      definition.templateUrl = options.templateUrl;
+    }
 
     applyStaticProperties(definition, options);
     $compileProvider.component(name, definition);
