@@ -1451,6 +1451,14 @@
         }
       }
     },
+    "broccoli-file-creator": {
+      "version": "1.1.0",
+      "dependencies": {
+        "rsvp": {
+          "version": "3.0.21"
+        }
+      }
+    },
     "broccoli-filter": {
       "version": "0.1.14",
       "dependencies": {
@@ -4809,7 +4817,7 @@
       "version": "1.1.5"
     },
     "rxjs": {
-      "version": "5.0.0-beta.0"
+      "version": "5.0.0-beta.2"
     },
     "sass-graph": {
       "version": "2.0.1",
@@ -5824,9 +5832,9 @@
       }
     },
     "zone.js": {
-      "version": "0.5.13"
+      "version": "0.5.14"
     }
   },
   "name": "angular-srcs",
-  "version": "2.0.0-beta.3"
+  "version": "2.0.0-beta.5"
 }
