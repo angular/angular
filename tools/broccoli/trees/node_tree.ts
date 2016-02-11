@@ -9,6 +9,7 @@ var path = require('path');
 import renderLodashTemplate from '../broccoli-lodash';
 import replace from '../broccoli-replace';
 var stew = require('broccoli-stew');
+var writeFile = require('broccoli-file-creator');
 
 var projectRootDir = path.normalize(path.join(__dirname, '..', '..', '..', '..'));
 
@@ -118,7 +119,17 @@ module.exports = function makeNodeTree(projects, destinationPath) {
   var srcPkgJsons = extractPkgJsons(srcTree, BASE_PACKAGE_JSON);
   var testPkgJsons = extractPkgJsons(testTree, BASE_PACKAGE_JSON);
 
-  var nodeTree = mergeTrees([compiledTree, srcDocs, testDocs, srcPkgJsons, testPkgJsons]);
+  // Copy es6 typings so quickstart doesn't require typings install
+  let typingsTree = new Funnel('modules', {
+    include: [
+      'angular2/typings/es6-collections/es6-collections.d.ts',
+      'angular2/typings/es6-promise/es6-promise.d.ts',
+    ]});
+  typingsTree = mergeTrees([typingsTree, writeFile('angular2/typings/browser.d.ts',
+    `///<reference path="./es6-collections/es6-collections.d.ts"/>
+     ///<reference path="./es6-promise/es6-promise.d.ts"/>`)]);
+
+  var nodeTree = mergeTrees([compiledTree, srcDocs, testDocs, srcPkgJsons, testPkgJsons, typingsTree]);
 
   // Transform all tests to make them runnable in node
   nodeTree = replace(nodeTree, {
