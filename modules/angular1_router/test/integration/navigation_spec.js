@@ -22,7 +22,10 @@ describe('navigation', function () {
     });
 
     registerDirective('userCmp', {
-      template: '<div>hello {{userCmp.$routeParams.name}}</div>'
+      template: '<div>hello {{userCmp.$routeParams.name}}</div>',
+      $routerOnActivate: function(next) {
+        this.$routeParams = next.params;
+      }
     });
     registerDirective('oneCmp', {
       template: '<div>{{oneCmp.number}}</div>',

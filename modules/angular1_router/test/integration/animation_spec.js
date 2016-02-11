@@ -25,7 +25,10 @@ describe('ngOutlet animations', function () {
     });
 
     registerComponent('userCmp', {
-      template: '<div>hello {{userCmp.$routeParams.name}}</div>'
+      template: '<div>hello {{userCmp.$routeParams.name}}</div>',
+      $routerOnActivate: function(next) {
+        this.$routeParams = next.params;
+      }
     });
   });
 
