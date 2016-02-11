@@ -122,44 +122,46 @@ export function main() {
       });
 
       describe('with shim', () => {
-        var encapsulation = ViewEncapsulation.Emulated;
+        [ViewEncapsulation.Emulated, ViewEncapsulation.EmulatedLegacy].forEach((encapsulation) => {
+          it('should compile plain css rules', inject([AsyncTestCompleter], (async) => {
+               compile(['div {\ncolor: red;\n}', 'span {\ncolor: blue;\n}'], [], encapsulation)
+                   .then(styles => {
+                     compareStyles(styles, [
+                       'div[_ngcontent-%COMP%] {\ncolor: red;\n}',
+                       'span[_ngcontent-%COMP%] {\ncolor: blue;\n}'
+                     ]);
+                     async.done();
+                   });
+             }));
 
-        it('should compile plain css rules', inject([AsyncTestCompleter], (async) => {
-             compile(['div {\ncolor: red;\n}', 'span {\ncolor: blue;\n}'], [], encapsulation)
-                 .then(styles => {
-                   compareStyles(styles, [
-                     'div[_ngcontent-%COMP%] {\ncolor: red;\n}',
-                     'span[_ngcontent-%COMP%] {\ncolor: blue;\n}'
-                   ]);
-                   async.done();
-                 });
-           }));
-
-        it('should allow to import rules', inject([AsyncTestCompleter], (async) => {
-             compile(['div {\ncolor: red;\n}'], [IMPORT_ABS_STYLESHEET_URL], encapsulation)
-                 .then(styles => {
-                   compareStyles(styles, [
-                     'div[_ngcontent-%COMP%] {\ncolor: red;\n}',
-                     ['span[_ngcontent-%COMP%] {color: blue}']
-                   ]);
-                   async.done();
-                 });
-           }));
-
-        it('should allow to import rules transitively', inject([AsyncTestCompleter], (async) => {
-             compile(['div {\ncolor: red;\n}'], [IMPORT_ABS_STYLESHEET_URL_WITH_IMPORT],
-                     encapsulation)
-                 .then(styles => {
-                   compareStyles(styles, [
-                     'div[_ngcontent-%COMP%] {\ncolor: red;\n}',
-                     [
-                       'a[_ngcontent-%COMP%] {color: green}',
+          it('should allow to import rules', inject([AsyncTestCompleter], (async) => {
+               compile(['div {\ncolor: red;\n}'], [IMPORT_ABS_STYLESHEET_URL], encapsulation)
+                   .then(styles => {
+                     compareStyles(styles, [
+                       'div[_ngcontent-%COMP%] {\ncolor: red;\n}',
                        ['span[_ngcontent-%COMP%] {color: blue}']
-                     ]
-                   ]);
-                   async.done();
-                 });
-           }));
+                     ]);
+                     async.done();
+                   });
+             }));
+
+          it('should allow to import rules transitively', inject([AsyncTestCompleter], (async) => {
+               compile(['div {\ncolor: red;\n}'], [IMPORT_ABS_STYLESHEET_URL_WITH_IMPORT],
+                       encapsulation)
+                   .then(styles => {
+                     compareStyles(styles, [
+                       'div[_ngcontent-%COMP%] {\ncolor: red;\n}',
+                       [
+                         'a[_ngcontent-%COMP%] {color: green}',
+                         ['span[_ngcontent-%COMP%] {color: blue}']
+                       ]
+                     ]);
+                     async.done();
+                   });
+             }));
+
+        });
+
       });
 
       it('should cache stylesheets for parallel requests', inject([AsyncTestCompleter], (async) => {
@@ -243,29 +245,29 @@ export function main() {
       });
 
       describe('with shim', () => {
-        var encapsulation = ViewEncapsulation.Emulated;
+        [ViewEncapsulation.Emulated, ViewEncapsulation.EmulatedLegacy].forEach((encapsulation) => {
+          it('should compile plain css ruless', inject([AsyncTestCompleter], (async) => {
+               compile(['div {\ncolor: red;\n}', 'span {\ncolor: blue;\n}'], [], encapsulation)
+                   .then(styles => {
+                     compareStyles(styles, [
+                       'div[_ngcontent-%COMP%] {\ncolor: red;\n}',
+                       'span[_ngcontent-%COMP%] {\ncolor: blue;\n}'
+                     ]);
+                     async.done();
+                   });
+             }));
 
-        it('should compile plain css ruless', inject([AsyncTestCompleter], (async) => {
-             compile(['div {\ncolor: red;\n}', 'span {\ncolor: blue;\n}'], [], encapsulation)
-                 .then(styles => {
-                   compareStyles(styles, [
-                     'div[_ngcontent-%COMP%] {\ncolor: red;\n}',
-                     'span[_ngcontent-%COMP%] {\ncolor: blue;\n}'
-                   ]);
-                   async.done();
-                 });
-           }));
-
-        it('should allow to import rules', inject([AsyncTestCompleter], (async) => {
-             compile(['div {color: red}'], [IMPORT_ABS_STYLESHEET_URL], encapsulation)
-                 .then(styles => {
-                   compareStyles(styles, [
-                     'div[_ngcontent-%COMP%] {color: red}',
-                     ['span[_ngcontent-%COMP%] {\ncolor: blue;\n}']
-                   ]);
-                   async.done();
-                 });
-           }), 1000);
+          it('should allow to import rules', inject([AsyncTestCompleter], (async) => {
+               compile(['div {color: red}'], [IMPORT_ABS_STYLESHEET_URL], encapsulation)
+                   .then(styles => {
+                     compareStyles(styles, [
+                       'div[_ngcontent-%COMP%] {color: red}',
+                       ['span[_ngcontent-%COMP%] {\ncolor: blue;\n}']
+                     ]);
+                     async.done();
+                   });
+             }), 1000);
+        });
       });
     });
 

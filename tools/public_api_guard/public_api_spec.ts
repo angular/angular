@@ -468,6 +468,7 @@ const CORE = [
   'ViewDecorator.View(obj:{templateUrl?:string, template?:string, directives?:Array<Type|any[]>, pipes?:Array<Type|any[]>, renderer?:string, styles?:string[], styleUrls?:string[]}):ViewDecorator',
   'ViewEncapsulation',
   'ViewEncapsulation.Emulated',
+  'ViewEncapsulation.EmulatedLegacy',
   'ViewEncapsulation.Native',
   'ViewEncapsulation.None',
   'ViewFactory',
