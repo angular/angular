@@ -5,8 +5,13 @@ import {detect} from '../../tools/build/dart';
 const command = detect()['ANALYZER'];
 
 analyze('dist/dart', command, true)
-  .then(() => {
+  .then((err) => {
+    if (err) {
+      throw err;
+    }
     console.log('Done.');
-  }, (err) => {
+  })
+  .catch((err) => {
     console.error('Error:', err);
+    process.exit(1);
   });

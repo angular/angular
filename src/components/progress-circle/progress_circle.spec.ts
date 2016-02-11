@@ -1,4 +1,12 @@
-import {beforeEach, ddescribe, expect, inject, it, TestComponentBuilder} from 'angular2/testing';
+import {inject, TestComponentBuilder} from 'angular2/testing';
+import {
+  it,
+  iit,
+  describe,
+  ddescribe,
+  expect,
+  beforeEach,
+} from '../../core/facade/testing';
 import {Component, DebugElement} from 'angular2/core';
 import {By} from 'angular2/platform/browser'
 import {MdProgressCircle} from './progress_circle';

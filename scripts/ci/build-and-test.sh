@@ -18,8 +18,7 @@ is_dart && pub install
 
 wait_for_tunnel
 if is_dart; then
-  # npm run dartanalyzer
-  echo 'TODO(hans): Implement dartanalyzer'
+  npm run dartanalyzer
 else
   karma start test/karma.conf.js --single-run --no-auto-watch --reporters='dots'
 fi

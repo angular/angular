@@ -138,8 +138,8 @@ export function main() {
             .then((_: any) => {
               expect(called).toBe(false);
             })
-            .then((_: any) => promise)
-            .then((_: any) => expect(called).toBe(true))
+            .then((_: any) => { return promise; })
+            .then((_: any) => { expect(called).toBe(true); })
             .then((_: any) => {
               // Close it now.
               called = false;
@@ -151,8 +151,8 @@ export function main() {
             .then((_: any) => {
               expect(called).toBe(false);
             })
-            .then((_: any) => promise)
-            .then((_: any) => expect(called).toBe(true))
+            .then((_: any) => { return promise; })
+            .then((_: any) => { expect(called).toBe(true); })
             .then((_: any) => { done(); });
         }, 8000);
 

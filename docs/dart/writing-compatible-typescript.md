@@ -41,3 +41,4 @@ Here's a list of gotchas to keep in mind when writing TypeScript code that will 
 * **Default values need to be constants.** This mean that code like `function myFunction(arg1: string = callToSomething()) {}` will not compile.
 * **The const keyword must have a const value.** Because of that, we cannot do `const x = a + b;` even if the value of `x`, `a` and `b` will not change.
 * **Lambdas need to abide to the type required.** Meaning that if a function requires a function that takes one argument, the lambda cannot be `() => {}`. Use `_` for temporary parameters. This is notable in Promises.
+* **Dynamic return values fat arrows can't return non-primitive types without casting.** For example, a fat arrow that return a promise (or Future) generates a warning if using directly, like so: `promiseA.then(() => promiseB)`. In this case simply using a block works as expected; `promiseA.then(() => { return promiseB; })`.

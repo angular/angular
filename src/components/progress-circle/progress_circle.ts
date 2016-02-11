@@ -8,6 +8,7 @@ import {
   ViewEncapsulation,
 } from 'angular2/core';
 import {isPresent, CONST} from 'angular2/src/facade/lang';
+import {Math} from 'angular2/src/facade/math';
 import {OneOf} from '../../core/annotations/one-of';
 
 
@@ -42,12 +43,9 @@ export class MdProgressCircle {
    * Input:number, defaults to 0.
    * value_ is bound to the host as the attribute aria-valuenow.
    */
+  @HostBinding('attr.aria-valuenow')
   @Input('value')
   value_: number = 0;
-  @HostBinding('attr.aria-valuenow')
-  get _value() {
-    return this.value_;
-  }
 
   /**
    * Mode of the progress circle
@@ -55,13 +53,10 @@ export class MdProgressCircle {
    * Input must be one of the values from ProgressMode, defaults to 'determinate'.
    * mode is bound to the host as the attribute host.
    */
+  @HostBinding('attr.mode')
   @Input()
   @OneOf([ProgressMode.DETERMINATE, ProgressMode.INDETERMINATE])
   mode: string;
-  @HostBinding('attr.mode')
-  get _mode() {
-    return this.mode;
-  }
 
 
   /**
@@ -119,5 +114,8 @@ export class MdProgressCircle {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MdSpinner extends MdProgressCircle {
-  mode: string = ProgressMode.INDETERMINATE;
+  constructor() {
+    super();
+    this.mode = ProgressMode.INDETERMINATE;
+  }
 }

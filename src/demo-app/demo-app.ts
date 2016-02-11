@@ -3,7 +3,7 @@ import {CardDemo} from './card/card-demo';
 import {ButtonDemo} from './button/button-demo';
 import {SidenavDemo} from './sidenav/sidenav-demo';
 import {ProgressCircleDemo} from './progress-circle/progress-circle-demo';
-import {RouteConfig, ROUTER_DIRECTIVES} from 'angular2/router';
+import {Route, RouteConfig, ROUTER_DIRECTIVES} from 'angular2/router';
 import {Dir} from '../directives/dir/dir';
 import {MdButton} from '../components/button/button';
 
@@ -22,10 +22,10 @@ export class Home {}
   pipes: []
 })
 @RouteConfig([
-  {path: '/', name: 'Home', component: Home, useAsDefault: true},
-  {path: '/button',   name: 'ButtonDemo', component: ButtonDemo},
-  {path: '/card', name: 'CardDemo', component: CardDemo},
-  {path: '/sidenav', name: 'SidenavDemo', component: SidenavDemo},
-  {path: '/progress-circle', name: 'ProgressCircleDemo', component: ProgressCircleDemo},
+  new Route({path: '/', name: 'Home', component: Home, useAsDefault: true}),
+  new Route({path: '/button',   name: 'ButtonDemo', component: ButtonDemo}),
+  new Route({path: '/card', name: 'CardDemo', component: CardDemo}),
+  new Route({path: '/sidenav', name: 'SidenavDemo', component: SidenavDemo}),
+  new Route({path: '/progress-circle', name: 'ProgressCircleDemo', component: ProgressCircleDemo}),
 ])
 export class DemoApp { }

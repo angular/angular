@@ -23,7 +23,7 @@ const tempFile = '_analyzer.dart';
  * @param command The command to use for dartanalyzer.
  * @param use_ddc Enable strong static type checking (see https://goo.gl/DqcBsw).
  */
-export function analyze(dir: string, command: string, use_ddc: boolean = false): Promise<void> {
+export function analyze(dir: string, command: string, use_ddc: boolean = false): Promise<any> {
   var travisFoldEnd = travisFoldStart(`dartanalyzer-${use_ddc ? 'ddc' : ''}-${dir}`);
 
   var pubspecContents = fs.readFileSync(path.join(dir, 'pubspec.yaml'));
