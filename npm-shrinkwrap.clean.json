@@ -1451,6 +1451,14 @@
         }
       }
     },
+    "broccoli-file-creator": {
+      "version": "1.1.0",
+      "dependencies": {
+        "rsvp": {
+          "version": "3.0.21"
+        }
+      }
+    },
     "broccoli-filter": {
       "version": "0.1.14",
       "dependencies": {
@@ -5828,5 +5836,5 @@
     }
   },
   "name": "angular-srcs",
-  "version": "2.0.0-beta.3"
+  "version": "2.0.0-beta.5"
 }

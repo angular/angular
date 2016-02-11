@@ -35,8 +35,8 @@
     "es6-promise": "^3.0.2",
     "es6-shim": "^0.33.3",
     "reflect-metadata": "0.1.2",
-    "rxjs": "^5.0.0-beta.2",
-    "zone.js": "^0.5.14"
+    "rxjs": "5.0.0-beta.0",
+    "zone.js": "0.5.13"
   },
   "devDependencies": {
     "angular": "^1.5.0",
@@ -45,6 +45,7 @@
     "base64-js": "^0.0.8",
     "bower": "^1.3.12",
     "broccoli": "^0.16.9",
+    "broccoli-file-creator": "^1.1.0",
     "broccoli-funnel": "^1.0.1",
     "broccoli-slow-trees": "1.x.x",
     "broccoli-stew": "^0.2.1",
@@ -111,8 +112,8 @@
     "systemjs": "0.18.10",
     "systemjs-builder": "^0.10.3",
     "through2": "^0.6.5",
-    "ts2dart": "^0.7.22",
     "ts-api-guardian": "0.0.2",
+    "ts2dart": "^0.7.22",
     "tsd": "^0.6.5-beta",
     "tslint": "^3.2.1",
     "typescript": "^1.7.3",

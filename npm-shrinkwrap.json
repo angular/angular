@@ -1,6 +1,6 @@
 {
   "name": "angular-srcs",
-  "version": "2.0.0-beta.3",
+  "version": "2.0.0-beta.5",
   "dependencies": {
     "abbrev": {
       "version": "1.0.7",
@@ -2260,6 +2260,18 @@
           "version": "3.10.0",
           "from": "yargs@>=3.10.0 <3.11.0",
           "resolved": "https://registry.npmjs.org/yargs/-/yargs-3.10.0.tgz"
+        }
+      }
+    },
+    "broccoli-file-creator": {
+      "version": "1.1.0",
+      "from": "broccoli-file-creator@latest",
+      "resolved": "https://registry.npmjs.org/broccoli-file-creator/-/broccoli-file-creator-1.1.0.tgz",
+      "dependencies": {
+        "rsvp": {
+          "version": "3.0.21",
+          "from": "rsvp@>=3.0.6 <3.1.0",
+          "resolved": "https://registry.npmjs.org/rsvp/-/rsvp-3.0.21.tgz"
         }
       }
     },
@@ -7668,7 +7680,7 @@
     },
     "rxjs": {
       "version": "5.0.0-beta.0",
-      "from": "https://registry.npmjs.org/rxjs/-/rxjs-5.0.0-beta.0.tgz",
+      "from": "rxjs@5.0.0-beta.0",
       "resolved": "https://registry.npmjs.org/rxjs/-/rxjs-5.0.0-beta.0.tgz"
     },
     "sass-graph": {
@@ -8524,24 +8536,24 @@
       "dependencies": {
         "source-map": {
           "version": "0.4.4",
-          "from": "https://registry.npmjs.org/source-map/-/source-map-0.4.4.tgz",
+          "from": "source-map@>=0.4.2 <0.5.0",
           "resolved": "https://registry.npmjs.org/source-map/-/source-map-0.4.4.tgz"
         },
         "source-map-support": {
           "version": "0.3.3",
-          "from": "https://registry.npmjs.org/source-map-support/-/source-map-support-0.3.3.tgz",
+          "from": "source-map-support@>=0.3.1 <0.4.0",
           "resolved": "https://registry.npmjs.org/source-map-support/-/source-map-support-0.3.3.tgz",
           "dependencies": {
             "source-map": {
               "version": "0.1.32",
-              "from": "https://registry.npmjs.org/source-map/-/source-map-0.1.32.tgz",
+              "from": "source-map@0.1.32",
               "resolved": "https://registry.npmjs.org/source-map/-/source-map-0.1.32.tgz"
             }
           }
         },
         "typescript": {
           "version": "1.7.3",
-          "from": "https://registry.npmjs.org/typescript/-/typescript-1.7.3.tgz",
+          "from": "typescript@1.7.3",
           "resolved": "https://registry.npmjs.org/typescript/-/typescript-1.7.3.tgz"
         }
       }
@@ -8699,7 +8711,7 @@
     },
     "typescript": {
       "version": "1.7.5",
-      "from": "typescript@>=1.7.3 <2.0.0",
+      "from": "typescript@>=1.7.0 <1.8.0",
       "resolved": "https://registry.npmjs.org/typescript/-/typescript-1.7.5.tgz"
     },
     "ua-parser-js": {
@@ -9292,7 +9304,7 @@
     },
     "zone.js": {
       "version": "0.5.13",
-      "from": "https://registry.npmjs.org/zone.js/-/zone.js-0.5.13.tgz",
+      "from": "zone.js@0.5.13",
       "resolved": "https://registry.npmjs.org/zone.js/-/zone.js-0.5.13.tgz"
     }
   }
