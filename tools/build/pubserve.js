@@ -1,7 +1,7 @@
 var util = require('./util');
 var spawn = require('child_process').spawn;
 
-module.exports = function(gulp, plugins, config, module) {
+module.exports = function(gulp, plugins, config) {
   return function() {
     config.port = config.port || 8080;
     var pubMode = config.mode || 'debug';

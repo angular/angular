@@ -22,7 +22,7 @@ dependencies:
   stack_trace: '^1.1.1'
 dev_dependencies:
   code_transformers: '>=0.2.9+4 <0.4.0'
-  guinness: '^0.1.18'
+  guinness2: '0.0.4'
   quiver: '^0.21.4'
   test: '^0.12.6'
 transformers:

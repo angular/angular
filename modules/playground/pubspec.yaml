@@ -7,7 +7,7 @@ dependencies:
   angular2_material: '^<%= packageJson.version %>'
   browser: '^0.10.0'
 dev_dependencies:
-  guinness: '^0.1.17'
+  guinness2: '0.0.4'
   benchpress:
     path: ../benchpress
 dependency_overrides:

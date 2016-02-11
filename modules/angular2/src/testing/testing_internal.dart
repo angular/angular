@@ -2,8 +2,8 @@ library angular2.src.testing.testing_internal;
 
 import 'dart:async';
 
-import 'package:guinness/guinness.dart' as gns;
-export 'package:guinness/guinness.dart'
+import 'package:guinness2/guinness2.dart' as gns;
+export 'package:guinness2/guinness2.dart'
     hide
         Expect,
         expect,
@@ -12,6 +12,9 @@ export 'package:guinness/guinness.dart'
         it,
         iit,
         xit,
+        describe,
+        ddescribe,
+        xdescribe,
         SpyObject,
         SpyFunction;
 
@@ -23,6 +26,7 @@ import 'package:angular2/src/core/reflection/reflection_capabilities.dart';
 import 'package:angular2/src/core/di/provider.dart' show bind;
 import 'package:angular2/src/facade/collection.dart' show StringMapWrapper;
 
+import 'package:angular2/platform/testing/browser.dart';
 import 'test_injector.dart';
 export 'test_injector.dart' show inject;
 
@@ -30,6 +34,7 @@ TestInjector _testInjector = getTestInjector();
 bool _isCurrentTestAsync;
 Future _currentTestFuture;
 bool _inIt = false;
+bool _initialized = false;
 
 class AsyncTestCompleter {
   final _completer = new Completer();
@@ -45,17 +50,22 @@ class AsyncTestCompleter {
   Future get future => _completer.future;
 }
 
-void testSetup() {
+void testSetup() { // TODO(juliemr): Can we just do this when the file is loaded?
+  if (_initialized) {
+    return;
+  }
+  _initialized = true;
   reflector.reflectionCapabilities = new ReflectionCapabilities();
+  setBaseTestProviders(TEST_BROWSER_PLATFORM_PROVIDERS, TEST_BROWSER_APPLICATION_PROVIDERS);
   // beforeEach configuration:
-  // - Priority 3: clear the bindings before each test,
-  // - Priority 2: collect the bindings before each test, see beforeEachProviders(),
-  // - Priority 1: create the test injector to be used in beforeEach() and it()
+  // - clear the bindings before each test,
+  // - collect the bindings before each test, see beforeEachProviders(),
+  // - create the test injector to be used in beforeEach() and it()
 
   gns.beforeEach(() {
     _testInjector.reset();
     _currentTestFuture = null;
-  }, priority: 3);
+  });
 
   var completerProvider = bind(AsyncTestCompleter).toFactory(() {
     // Mark the test as async when an AsyncTestCompleter is injected in an it(),
@@ -67,7 +77,7 @@ void testSetup() {
   gns.beforeEach(() {
     _isCurrentTestAsync = false;
     _testInjector.addProviders([completerProvider]);
-  }, priority: 1);
+  });
 }
 
 /**
@@ -83,10 +93,11 @@ void testSetup() {
  *   ]);
  */
 void beforeEachProviders(Function fn) {
+  testSetup();
   gns.beforeEach(() {
     var providers = fn();
     if (providers != null) _testInjector.addProviders(providers);
-  }, priority: 2);
+  });
 }
 
 @Deprecated('using beforeEachProviders instead')
@@ -95,6 +106,7 @@ void beforeEachBindings(Function fn) {
 }
 
 void beforeEach(fn) {
+  testSetup();
   if (fn is! FunctionWithParamTokens) fn =
       new FunctionWithParamTokens([], fn, false);
   gns.beforeEach(() {
@@ -103,6 +115,7 @@ void beforeEach(fn) {
 }
 
 void _it(gnsFn, name, fn) {
+  testSetup();
   if (fn is! FunctionWithParamTokens) fn =
       new FunctionWithParamTokens([], fn, false);
   gnsFn(name, () {
@@ -123,6 +136,21 @@ void iit(name, fn, [timeOut = null]) {
 
 void xit(name, fn, [timeOut = null]) {
   _it(gns.xit, name, fn);
+}
+
+void describe(name, fn) {
+  testSetup();
+  gns.describe(name, fn);
+}
+
+void ddescribe(name, fn) {
+  testSetup();
+  gns.ddescribe(name, fn);
+}
+
+void xdescribe(name, fn) {
+  testSetup();
+  gns.xdescribe(name, fn);
 }
 
 class SpyFunction extends gns.SpyFunction {
