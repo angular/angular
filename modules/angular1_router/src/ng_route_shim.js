@@ -116,53 +116,41 @@
           console.warn('Route for "' + path + '" should use "controllerAs".');
         }
 
-        var directiveName = routeObjToRouteName(routeCopy, path);
+        var componentName = routeObjToRouteName(routeCopy, path);
 
-        if (!directiveName) {
+        if (!componentName) {
           throw new Error('Could not determine a name for route "' + path + '".');
         }
 
-        routeDefinition.component = directiveName;
-        routeDefinition.name = route.name || upperCase(directiveName);
+        routeDefinition.component = componentName;
+        routeDefinition.name = route.name || upperCase(componentName);
 
         var directiveController = routeCopy.controller;
 
-        var directiveDefinition = {
-          scope: false,
+        var componentDefinition = {
           controller: directiveController,
-          controllerAs: routeCopy.controllerAs,
-          templateUrl: routeCopy.templateUrl,
-          template: routeCopy.template
-        };
+          controllerAs: routeCopy.controllerAs
 
-        var directiveFactory = function () {
-          return directiveDefinition;
         };
+        if (routeCopy.templateUrl) componentDefinition.templateUrl = routeCopy.templateUrl;
+        if (routeCopy.template) componentDefinition.template = routeCopy.template;
+
 
         // if we have route resolve options, prepare a wrapper controller
         if (directiveController && routeCopy.resolve) {
           var originalController = directiveController;
           var resolvedLocals = {};
 
-          directiveDefinition.controller = ['$injector', '$scope', function ($injector, $scope) {
+          componentDefinition.controller = ['$injector', '$scope', function ($injector, $scope) {
             var locals = angular.extend({
               $scope: $scope
             }, resolvedLocals);
 
-            var ctrl = $injector.instantiate(originalController, locals);
-
-            if (routeCopy.controllerAs) {
-              locals.$scope[routeCopy.controllerAs] = ctrl;
-            }
-
-            return ctrl;
+            return $injector.instantiate(originalController, locals);
           }];
 
-          // we take care of controllerAs in the directive controller wrapper
-          delete directiveDefinition.controllerAs;
-
           // we resolve the locals in a canActivate block
-          directiveFactory.$canActivate = function() {
+          componentDefinition.$canActivate = function() {
             var locals = angular.extend({}, routeCopy.resolve);
 
             angular.forEach(locals, function(value, key) {
@@ -179,7 +167,7 @@
         }
 
         // register the dynamically created directive
-        $compileProvider.directive(directiveName, directiveFactory);
+        $compileProvider.component(componentName, componentDefinition);
       }
       if (subscriptionFn) {
         subscriptionFn(routeDefinition);
