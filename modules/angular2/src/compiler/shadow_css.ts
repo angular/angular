@@ -135,6 +135,7 @@ import {
 
 export class ShadowCss {
   strictStyling: boolean = true;
+  private _legacyMode: boolean;
 
   constructor() {}
 
@@ -146,7 +147,9 @@ export class ShadowCss {
   * - selector is the attribute added to all elements inside the host,
   * - hostSelector is the attribute added to the host itself.
   */
-  shimCssText(cssText: string, selector: string, hostSelector: string = ''): string {
+  shimCssText(cssText: string, selector: string, hostSelector: string = '',
+              legacyMode: boolean): string {
+    this._legacyMode = legacyMode;
     cssText = stripComments(cssText);
     cssText = this._insertDirectives(cssText);
     return this._scopeCssText(cssText, selector, hostSelector);
@@ -390,6 +393,13 @@ export class ShadowCss {
                                     hostSelector: string): string {
     var isRe = /\[is=([^\]]*)\]/g;
     scopeSelector = StringWrapper.replaceAllMapped(scopeSelector, isRe, (m) => m[1]);
+
+    var indexOfShadowHost = selector.indexOf(_polyfillHostNoCombinator);
+
+    if (indexOfShadowHost > -1 && this._legacyMode) {
+      return this._applySelectorScope(selector, scopeSelector, hostSelector);
+    }
+
     var attrName = '[' + scopeSelector + ']';
 
     var _scopeSelectorPart = (p: string) => {
@@ -419,12 +429,10 @@ export class ShadowCss {
     var prev = 0;
     var next = 0;
     var scoped = '';
-    var indexOfShadowHost = selector.indexOf(_polyfillHostNoCombinator);
     while ((next = RegExpWrapper.indexOf(sep, prev, selector)) > -1) {
       var separator = selector[next];
       var part = selector.substring(prev, next).trim();
-      // if a selector appears before :host-context it should not be shimmed as it
-      // matches on ancestor elements and not on elements in the host's shadow
+
       var scopedPart =
           (indexOfShadowHost == -1 || prev >= indexOfShadowHost) ? _scopeSelectorPart(part) : part;
       scoped += `${scopedPart} ${separator} `;

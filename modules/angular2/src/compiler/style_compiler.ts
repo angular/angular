@@ -29,83 +29,96 @@ export class StyleCompiler {
   compileComponentRuntime(template: CompileTemplateMetadata): Promise<Array<string | any[]>> {
     var styles = template.styles;
     var styleAbsUrls = template.styleUrls;
-    var shim = this._shouldShim(template.encapsulation);
-    return this._loadStyles(styles, styleAbsUrls, shim);
+    var encapsulation = template.encapsulation;
+    return this._loadStyles(styles, styleAbsUrls, encapsulation);
   }
 
   compileComponentCodeGen(template: CompileTemplateMetadata): SourceExpression {
-    var shim = this._shouldShim(template.encapsulation);
-    return this._styleCodeGen(template.styles, template.styleUrls, shim);
+    return this._styleCodeGen(template.styles, template.styleUrls, template.encapsulation);
   }
 
   compileStylesheetCodeGen(stylesheetUrl: string, cssText: string): SourceModule[] {
     var styleWithImports = extractStyleUrls(this._urlResolver, stylesheetUrl, cssText);
-    return [
-      this._styleModule(
-          stylesheetUrl, false,
-          this._styleCodeGen([styleWithImports.style], styleWithImports.styleUrls, false)),
-      this._styleModule(stylesheetUrl, true, this._styleCodeGen([styleWithImports.style],
-                                                                styleWithImports.styleUrls, true))
+
+    var encapsulations = [
+      ViewEncapsulation.None,
+      ViewEncapsulation.Emulated,
+      ViewEncapsulation.EmulatedLegacy,
     ];
+
+    return encapsulations.map(encapsulation => {
+      var srcExp =
+          this._styleCodeGen([styleWithImports.style], styleWithImports.styleUrls, encapsulation);
+      return this._styleModule(stylesheetUrl, encapsulation, srcExp);
+    });
   }
 
   clearCache() { this._styleCache.clear(); }
 
   private _loadStyles(plainStyles: string[], absUrls: string[],
-                      encapsulate: boolean): Promise<Array<string | any[]>> {
+                      encapsulation: ViewEncapsulation): Promise<Array<string | any[]>> {
     var promises = absUrls.map((absUrl) => {
-      var cacheKey = `${absUrl}${encapsulate ? '.shim' : ''}`;
+      var cacheKey = `${absUrl}${this._getEncapsulationSuffix(encapsulation)}`;
       var result = this._styleCache.get(cacheKey);
       if (isBlank(result)) {
         result = this._xhr.get(absUrl).then((style) => {
           var styleWithImports = extractStyleUrls(this._urlResolver, absUrl, style);
           return this._loadStyles([styleWithImports.style], styleWithImports.styleUrls,
-                                  encapsulate);
+                                  encapsulation);
         });
         this._styleCache.set(cacheKey, result);
       }
       return result;
     });
+
     return PromiseWrapper.all(promises).then((nestedStyles: string[][]) => {
       var result: Array<string | any[]> =
-          plainStyles.map(plainStyle => this._shimIfNeeded(plainStyle, encapsulate));
+          plainStyles.map(plainStyle => this._shimIfNeeded(plainStyle, encapsulation));
       nestedStyles.forEach(styles => result.push(styles));
       return result;
     });
   }
 
-  private _styleCodeGen(plainStyles: string[], absUrls: string[], shim: boolean): SourceExpression {
+  private _styleCodeGen(plainStyles: string[], absUrls: string[],
+                        encapsulation: ViewEncapsulation): SourceExpression {
     var arrayPrefix = IS_DART ? `const` : '';
     var styleExpressions = plainStyles.map(
-        plainStyle => escapeSingleQuoteString(this._shimIfNeeded(plainStyle, shim)));
+        plainStyle => escapeSingleQuoteString(this._shimIfNeeded(plainStyle, encapsulation)));
 
     for (var i = 0; i < absUrls.length; i++) {
-      var moduleUrl = this._createModuleUrl(absUrls[i], shim);
+      var moduleUrl = this._createModuleUrl(absUrls[i], encapsulation);
       styleExpressions.push(`${moduleRef(moduleUrl)}STYLES`);
     }
     var expressionSource = `${arrayPrefix} [${styleExpressions.join(',')}]`;
     return new SourceExpression([], expressionSource);
   }
 
-  private _styleModule(stylesheetUrl: string, shim: boolean,
+  private _styleModule(stylesheetUrl: string, encapsulation: ViewEncapsulation,
                        expression: SourceExpression): SourceModule {
     var moduleSource = `
       ${expression.declarations.join('\n')}
       ${codeGenExportVariable('STYLES')}${expression.expression};
     `;
-    return new SourceModule(this._createModuleUrl(stylesheetUrl, shim), moduleSource);
+    return new SourceModule(this._createModuleUrl(stylesheetUrl, encapsulation), moduleSource);
   }
 
-  private _shimIfNeeded(style: string, shim: boolean): string {
-    return shim ? this._shadowCss.shimCssText(style, CONTENT_ATTR, HOST_ATTR) : style;
+  private _shimIfNeeded(style: string, encapsulation: ViewEncapsulation): string {
+    if (encapsulation === ViewEncapsulation.Emulated) {
+      return this._shadowCss.shimCssText(style, CONTENT_ATTR, HOST_ATTR, false);
+    }
+    if (encapsulation === ViewEncapsulation.EmulatedLegacy) {
+      return this._shadowCss.shimCssText(style, CONTENT_ATTR, HOST_ATTR, true);
+    }
+    return style;
   }
 
-  private _shouldShim(encapsulation: ViewEncapsulation): boolean {
-    return encapsulation === ViewEncapsulation.Emulated ||
-           encapsulation === ViewEncapsulation.EmulatedLegacy;
+  private _createModuleUrl(stylesheetUrl: string, encapsulation: ViewEncapsulation): string {
+    return `${stylesheetUrl}${this._getEncapsulationSuffix(encapsulation)}${MODULE_SUFFIX}`;
   }
 
-  private _createModuleUrl(stylesheetUrl: string, shim: boolean): string {
-    return shim ? `${stylesheetUrl}.shim${MODULE_SUFFIX}` : `${stylesheetUrl}${MODULE_SUFFIX}`;
+  private _getEncapsulationSuffix(encapsulation: ViewEncapsulation): string {
+    if (encapsulation === ViewEncapsulation.Emulated) return '.shim';
+    if (encapsulation === ViewEncapsulation.EmulatedLegacy) return '.shimlegacy';
+    return '';
   }
 }
