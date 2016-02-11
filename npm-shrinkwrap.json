@@ -1,6 +1,6 @@
 {
   "name": "angular-srcs",
-  "version": "2.0.0-beta.3",
+  "version": "2.0.0-beta.5",
   "dependencies": {
     "abbrev": {
       "version": "1.0.7",
@@ -3264,7 +3264,7 @@
     },
     "es6-promise": {
       "version": "3.0.2",
-      "from": "es6-promise@>=3.0.2 <4.0.0",
+      "from": "es6-promise@3.0.2",
       "resolved": "https://registry.npmjs.org/es6-promise/-/es6-promise-3.0.2.tgz"
     },
     "es6-shim": {
@@ -7667,9 +7667,9 @@
       "resolved": "https://registry.npmjs.org/run-sequence/-/run-sequence-1.1.5.tgz"
     },
     "rxjs": {
-      "version": "5.0.0-beta.0",
-      "from": "https://registry.npmjs.org/rxjs/-/rxjs-5.0.0-beta.0.tgz",
-      "resolved": "https://registry.npmjs.org/rxjs/-/rxjs-5.0.0-beta.0.tgz"
+      "version": "5.0.0-beta.2",
+      "from": "rxjs@5.0.0-beta.2",
+      "resolved": "https://registry.npmjs.org/rxjs/-/rxjs-5.0.0-beta.2.tgz"
     },
     "sass-graph": {
       "version": "2.0.1",
@@ -7806,7 +7806,8 @@
       "dependencies": {
         "mime-db": {
           "version": "1.20.0",
-          "from": "mime-db@>=1.20.0 <1.21.0"
+          "from": "mime-db@1.20.0",
+          "resolved": "https://registry.npmjs.org/mime-db/-/mime-db-1.20.0.tgz"
         },
         "mime-types": {
           "version": "2.1.8",
@@ -8524,24 +8525,24 @@
       "dependencies": {
         "source-map": {
           "version": "0.4.4",
-          "from": "https://registry.npmjs.org/source-map/-/source-map-0.4.4.tgz",
+          "from": "source-map@>=0.4.2 <0.5.0",
           "resolved": "https://registry.npmjs.org/source-map/-/source-map-0.4.4.tgz"
         },
         "source-map-support": {
           "version": "0.3.3",
-          "from": "https://registry.npmjs.org/source-map-support/-/source-map-support-0.3.3.tgz",
+          "from": "source-map-support@>=0.3.1 <0.4.0",
           "resolved": "https://registry.npmjs.org/source-map-support/-/source-map-support-0.3.3.tgz",
           "dependencies": {
             "source-map": {
               "version": "0.1.32",
-              "from": "https://registry.npmjs.org/source-map/-/source-map-0.1.32.tgz",
+              "from": "source-map@0.1.32",
               "resolved": "https://registry.npmjs.org/source-map/-/source-map-0.1.32.tgz"
             }
           }
         },
         "typescript": {
           "version": "1.7.3",
-          "from": "https://registry.npmjs.org/typescript/-/typescript-1.7.3.tgz",
+          "from": "typescript@1.7.3",
           "resolved": "https://registry.npmjs.org/typescript/-/typescript-1.7.3.tgz"
         }
       }
@@ -9291,9 +9292,16 @@
       }
     },
     "zone.js": {
-      "version": "0.5.13",
-      "from": "https://registry.npmjs.org/zone.js/-/zone.js-0.5.13.tgz",
-      "resolved": "https://registry.npmjs.org/zone.js/-/zone.js-0.5.13.tgz"
+      "version": "0.5.14",
+      "from": "zone.js@0.5.14",
+      "resolved": "https://registry.npmjs.org/zone.js/-/zone.js-0.5.14.tgz",
+      "dependencies": {
+        "es6-promise": {
+          "version": "3.0.2",
+          "from": "es6-promise@>=3.0.2 <4.0.0",
+          "resolved": "https://registry.npmjs.org/es6-promise/-/es6-promise-3.0.2.tgz"
+        }
+      }
     }
   }
 }
