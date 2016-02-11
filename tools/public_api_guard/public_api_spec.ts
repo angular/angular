@@ -342,6 +342,7 @@ const CORE = [
   'QueryList.changes:Observable<any>',
   'QueryList.filter(fn:(item: T) => boolean):T[]',
   'QueryList.first:T',
+  'QueryList.forEach(fn:(item: T) => void):void',
   'QueryList.last:T',
   'QueryList.length:number',
   'QueryList.map(fn:(item: T) => U):U[]',
