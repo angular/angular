@@ -7,6 +7,7 @@ config.exclude.push(
   'dist/js/cjs/playground/e2e_test/sourcemap/sourcemap_spec.js',
   'dist/js/cjs/playground/e2e_test/http/http_spec.js',
   'dist/js/cjs/playground/e2e_test/jsonp/jsonp_spec.js',
+  'dist/js/cjs/playground/e2e_test/upgrade/upgrade_spec.js',
   // TODO: remove this line when largetable dart has been added
   'dist/js/cjs/benchmarks_external/e2e_test/largetable_perf.js',
   'dist/js/cjs/benchmarks_external/e2e_test/polymer_tree_perf.js',
@@ -15,4 +16,3 @@ config.exclude.push(
 );
 
 data.createBenchpressRunner({ lang: 'dart' });
-

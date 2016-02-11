@@ -559,6 +559,28 @@ export function main() {
          }));
     });
 
+    describe('bootstrap', () => {
+
+      it('should support deferred bootstrap', inject([AsyncTestCompleter], (async) => {
+           var adapter = new UpgradeAdapter();
+           var module = angular.module('myExample', []);
+
+           window.name = 'NG_DEFER_BOOTSTRAP! test';
+           var element = html(`<div>{{ 'ng1' }}</div>`);
+           adapter.bootstrap(element, ['myExample'])
+               .ready((ref) => {
+                 expect(multiTrim(document.body.textContent)).toEqual("ng1");
+                 ref.dispose();
+                 async.done();
+               });
+           setTimeout(() => {
+             var resumeBootstrap = angular.getResumeBootstrap();
+             resumeBootstrap();
+           }, 0);
+         }));
+
+    });
+
     describe('examples', () => {
       it('should verify UpgradeAdapter example', inject([AsyncTestCompleter], (async) => {
            var adapter = new UpgradeAdapter();
