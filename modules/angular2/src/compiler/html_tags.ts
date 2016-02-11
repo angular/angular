@@ -420,7 +420,3 @@ export function splitNsName(elementName: string): string[] {
 export function getNsPrefix(elementName: string): string {
   return splitNsName(elementName)[0];
 }
-
-export function mergeNsAndName(prefix: string, localName: string): string {
-  return isPresent(prefix) ? `@${prefix}:${localName}` : localName;
-}

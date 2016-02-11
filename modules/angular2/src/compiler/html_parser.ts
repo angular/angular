@@ -16,7 +16,7 @@ import {HtmlAst, HtmlAttrAst, HtmlTextAst, HtmlElementAst} from './html_ast';
 import {Injectable} from 'angular2/src/core/di';
 import {HtmlToken, HtmlTokenType, tokenizeHtml} from './html_lexer';
 import {ParseError, ParseLocation, ParseSourceSpan} from './parse_util';
-import {HtmlTagDefinition, getHtmlTagDefinition, getNsPrefix, mergeNsAndName} from './html_tags';
+import {HtmlTagDefinition, getHtmlTagDefinition, getNsPrefix} from './html_tags';
 
 export class HtmlTreeError extends ParseError {
   static create(elementName: string, location: ParseLocation, msg: string): HtmlTreeError {
@@ -236,6 +236,10 @@ class TreeBuilder {
       this.rootNodes.push(node);
     }
   }
+}
+
+function mergeNsAndName(prefix: string, localName: string): string {
+  return isPresent(prefix) ? `@${prefix}:${localName}` : localName;
 }
 
 function getElementFullName(prefix: string, localName: string,
