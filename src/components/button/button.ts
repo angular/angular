@@ -1,4 +1,4 @@
-import {Component, View, ViewEncapsulation, Input, Attribute, HostBinding, HostListener} from 'angular2/core';
+import {Component, ViewEncapsulation, Input, HostBinding, HostListener, ChangeDetectionStrategy} from 'angular2/core';
 
 // TODO(jelbourn): Ink ripples.
 // TODO(jelbourn): Make the `isMouseDown` stuff done with one global listener.
@@ -17,7 +17,8 @@ import {Component, View, ViewEncapsulation, Input, Attribute, HostBinding, HostL
   },
   templateUrl: './components/button/button.html',
   styleUrls: ['./components/button/button.css'],
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MdButton {
   color: string;

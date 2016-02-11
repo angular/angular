@@ -8,15 +8,11 @@ import {
   HostBinding,
   HostListener,
   Input,
-  View,
-  ViewEncapsulation,
-  OnChanges,
   Optional,
   Output,
-  Query,
   QueryList,
-  SimpleChange,
-  Type
+  Type,
+  ChangeDetectionStrategy
 } from 'angular2/core';
 import {PromiseWrapper} from 'angular2/src/facade/promise';
 import {BaseException} from 'angular2/src/facade/exceptions';
@@ -50,6 +46,7 @@ export class MdDuplicatedSidenavException extends BaseException {
 @Component({
   selector: 'md-sidenav',
   template: '<ng-content></ng-content>',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MdSidenav {
   /** Alignment of the sidenav (direction neutral); whether 'start' or 'end'. */
@@ -250,6 +247,7 @@ export class MdSidenav {
   directives: [MdSidenav],
   templateUrl: './components/sidenav/sidenav.html',
   styleUrls: ['./components/sidenav/sidenav.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MdSidenavLayout implements AfterContentInit {
   @ContentChildren(MdSidenav) private sidenavs_: QueryList<MdSidenav>;

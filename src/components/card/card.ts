@@ -1,4 +1,4 @@
-import {Component, View, ViewEncapsulation} from 'angular2/core';
+import {Component, ViewEncapsulation, ChangeDetectionStrategy} from 'angular2/core';
 import {CONST_EXPR} from 'angular2/src/facade/lang';
 
 /*
@@ -23,7 +23,8 @@ While you can use this component alone, it also provides a number of preset styl
   selector: 'md-card',
   templateUrl: './components/card/card.html',
   styleUrls: ['./components/card/card.css'],
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MdCard {}
 
@@ -44,7 +45,8 @@ TODO(kara): update link to demo site when it exists
 @Component({
   selector: 'md-card-header',
   templateUrl: '/components/card/card-header.html',
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MdCardHeader {}
 
@@ -62,7 +64,8 @@ TODO(kara): update link to demo site when it exists
 @Component({
   selector: 'md-card-title-group',
   templateUrl: './components/card/card-title-group.html',
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MdCardTitleGroup {}
 
