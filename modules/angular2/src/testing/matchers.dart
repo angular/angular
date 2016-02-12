@@ -2,7 +2,7 @@ library testing.matchers;
 
 import 'dart:async';
 
-import 'package:guinness/guinness.dart' as gns;
+import 'package:guinness2/guinness2.dart' as gns;
 
 import 'package:angular2/src/platform/dom/dom_adapter.dart' show DOM;
 

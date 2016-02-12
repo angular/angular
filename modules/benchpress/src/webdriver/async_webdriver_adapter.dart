@@ -1,6 +1,6 @@
 library benchpress.src.webdriver.async_webdriver_adapter_dart;
 
-import 'package:webdriver/webdriver.dart' show WebDriver, LogEntry;
+import 'package:webdriver/core.dart' show WebDriver, LogEntry;
 import 'package:angular2/src/facade/async.dart' show Future;
 import '../web_driver_adapter.dart' show WebDriverAdapter;
 
