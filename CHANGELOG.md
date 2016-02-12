@@ -1,5 +1,5 @@
-<a name="2.0.0-beta.5"></a>
-# 2.0.0-beta.5 (2016-02-10)
+<a name="2.0.0-beta.6"></a>
+# 2.0.0-beta.6 (2016-02-11)
 
 
 ### Bug Fixes
@@ -50,10 +50,19 @@ http://github.com/typings/typings
 And install typings such as `jasmine`, `angular-protractor`, or `selenium-webdriver`
 to satisfy the type-checker.
 
+If you rely on es6 APIs other than Promises and Collections, you will need to
+install the es6-shim typing instead of using the <reference> tag above.
+Angular previously exposed typings for the entire ES6 API.
+
+<a name="2.0.0-beta.5"></a>
+# 2.0.0-beta.5 (2016-02-10)
+
+This release was incorrect; replaced with beta.6.
+
 <a name="2.0.0-beta.4"></a>
 # 2.0.0-beta.4 (2016-02-10)
 
-This release was incorrect; replaced with beta.5.
+This release was incorrect; replaced with beta.6.
 
 <a name="2.0.0-beta.3"></a>
 # 2.0.0-beta.3 (2016-02-03)
