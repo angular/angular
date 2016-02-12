@@ -7,6 +7,7 @@ import {
   Renderer
 } from 'angular2/core';
 import {isPresent, isBlank, print} from 'angular2/src/facade/lang';
+import {KVChangeRecord} from "../../core/change_detection/differs/default_keyvalue_differ";
 
 /**
  * The `NgStyle` directive changes styles based on a result of expression evaluation.
@@ -62,14 +63,14 @@ import {isPresent, isBlank, print} from 'angular2/src/facade/lang';
 @Directive({selector: '[ngStyle]', inputs: ['rawStyle: ngStyle']})
 export class NgStyle implements DoCheck {
   /** @internal */
-  _rawStyle;
+  _rawStyle: {[key: string]: string};
   /** @internal */
   _differ: KeyValueDiffer;
 
   constructor(private _differs: KeyValueDiffers, private _ngEl: ElementRef,
               private _renderer: Renderer) {}
 
-  set rawStyle(v) {
+  set rawStyle(v: {[key: string]: string}) {
     this._rawStyle = v;
     if (isBlank(this._differ) && isPresent(v)) {
       this._differ = this._differs.find(this._rawStyle).create(null);
@@ -86,9 +87,11 @@ export class NgStyle implements DoCheck {
   }
 
   private _applyChanges(changes: any): void {
-    changes.forEachAddedItem((record) => { this._setStyle(record.key, record.currentValue); });
-    changes.forEachChangedItem((record) => { this._setStyle(record.key, record.currentValue); });
-    changes.forEachRemovedItem((record) => { this._setStyle(record.key, null); });
+    changes.forEachAddedItem(
+        (record: KVChangeRecord) => { this._setStyle(record.key, record.currentValue); });
+    changes.forEachChangedItem(
+        (record: KVChangeRecord) => { this._setStyle(record.key, record.currentValue); });
+    changes.forEachRemovedItem((record: KVChangeRecord) => { this._setStyle(record.key, null); });
   }
 
   private _setStyle(name: string, val: string): void {

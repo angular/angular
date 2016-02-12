@@ -279,118 +279,135 @@ class TestObjWith00Args {
 
 class TestObjWith01Args {
   args: any[];
-  constructor(a1) { this.args = [a1]; }
+  constructor(a1: any) { this.args = [a1]; }
 }
 
 class TestObjWith02Args {
   args: any[];
-  constructor(a1, a2) { this.args = [a1, a2]; }
+  constructor(a1: any, a2: any) { this.args = [a1, a2]; }
 }
 
 class TestObjWith03Args {
   args: any[];
-  constructor(a1, a2, a3) { this.args = [a1, a2, a3]; }
+  constructor(a1: any, a2: any, a3: any) { this.args = [a1, a2, a3]; }
 }
 
 class TestObjWith04Args {
   args: any[];
-  constructor(a1, a2, a3, a4) { this.args = [a1, a2, a3, a4]; }
+  constructor(a1: any, a2: any, a3: any, a4: any) { this.args = [a1, a2, a3, a4]; }
 }
 
 class TestObjWith05Args {
   args: any[];
-  constructor(a1, a2, a3, a4, a5) { this.args = [a1, a2, a3, a4, a5]; }
+  constructor(a1: any, a2: any, a3: any, a4: any, a5: any) { this.args = [a1, a2, a3, a4, a5]; }
 }
 
 class TestObjWith06Args {
   args: any[];
-  constructor(a1, a2, a3, a4, a5, a6) { this.args = [a1, a2, a3, a4, a5, a6]; }
+  constructor(a1: any, a2: any, a3: any, a4: any, a5: any, a6: any) {
+    this.args = [a1, a2, a3, a4, a5, a6];
+  }
 }
 
 class TestObjWith07Args {
   args: any[];
-  constructor(a1, a2, a3, a4, a5, a6, a7) { this.args = [a1, a2, a3, a4, a5, a6, a7]; }
+  constructor(a1: any, a2: any, a3: any, a4: any, a5: any, a6: any, a7: any) {
+    this.args = [a1, a2, a3, a4, a5, a6, a7];
+  }
 }
 
 class TestObjWith08Args {
   args: any[];
-  constructor(a1, a2, a3, a4, a5, a6, a7, a8) { this.args = [a1, a2, a3, a4, a5, a6, a7, a8]; }
+  constructor(a1: any, a2: any, a3: any, a4: any, a5: any, a6: any, a7: any, a8: any) {
+    this.args = [a1, a2, a3, a4, a5, a6, a7, a8];
+  }
 }
 
 class TestObjWith09Args {
   args: any[];
-  constructor(a1, a2, a3, a4, a5, a6, a7, a8, a9) {
+  constructor(a1: any, a2: any, a3: any, a4: any, a5: any, a6: any, a7: any, a8: any, a9: any) {
     this.args = [a1, a2, a3, a4, a5, a6, a7, a8, a9];
   }
 }
 
 class TestObjWith10Args {
   args: any[];
-  constructor(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10) {
+  constructor(a1: any, a2: any, a3: any, a4: any, a5: any, a6: any, a7: any, a8: any, a9: any,
+              a10: any) {
     this.args = [a1, a2, a3, a4, a5, a6, a7, a8, a9, a10];
   }
 }
 
 class TestObjWith11Args {
   args: any[];
-  constructor(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11) {
+  constructor(a1: any, a2: any, a3: any, a4: any, a5: any, a6: any, a7: any, a8: any, a9: any,
+              a10: any, a11: any) {
     this.args = [a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11];
   }
 }
 
 class TestObjWith12Args {
   args: any[];
-  constructor(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12) {
+  constructor(a1: any, a2: any, a3: any, a4: any, a5: any, a6: any, a7: any, a8: any, a9: any,
+              a10: any, a11: any, a12: any) {
     this.args = [a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12];
   }
 }
 
 class TestObjWith13Args {
   args: any[];
-  constructor(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13) {
+  constructor(a1: any, a2: any, a3: any, a4: any, a5: any, a6: any, a7: any, a8: any, a9: any,
+              a10: any, a11: any, a12: any, a13: any) {
     this.args = [a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13];
   }
 }
 
 class TestObjWith14Args {
   args: any[];
-  constructor(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14) {
+  constructor(a1: any, a2: any, a3: any, a4: any, a5: any, a6: any, a7: any, a8: any, a9: any,
+              a10: any, a11: any, a12: any, a13: any, a14: any) {
     this.args = [a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14];
   }
 }
 
 class TestObjWith15Args {
   args: any[];
-  constructor(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15) {
+  constructor(a1: any, a2: any, a3: any, a4: any, a5: any, a6: any, a7: any, a8: any, a9: any,
+              a10: any, a11: any, a12: any, a13: any, a14: any, a15: any) {
     this.args = [a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15];
   }
 }
 
 class TestObjWith16Args {
   args: any[];
-  constructor(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16) {
+  constructor(a1: any, a2: any, a3: any, a4: any, a5: any, a6: any, a7: any, a8: any, a9: any,
+              a10: any, a11: any, a12: any, a13: any, a14: any, a15: any, a16: any) {
     this.args = [a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16];
   }
 }
 
 class TestObjWith17Args {
   args: any[];
-  constructor(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17) {
+  constructor(a1: any, a2: any, a3: any, a4: any, a5: any, a6: any, a7: any, a8: any, a9: any,
+              a10: any, a11: any, a12: any, a13: any, a14: any, a15: any, a16: any, a17: any) {
     this.args = [a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17];
   }
 }
 
 class TestObjWith18Args {
   args: any[];
-  constructor(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18) {
+  constructor(a1: any, a2: any, a3: any, a4: any, a5: any, a6: any, a7: any, a8: any, a9: any,
+              a10: any, a11: any, a12: any, a13: any, a14: any, a15: any, a16: any, a17: any,
+              a18: any) {
     this.args = [a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18];
   }
 }
 
 class TestObjWith19Args {
   args: any[];
-  constructor(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18,
-              a19) {
+  constructor(a1: any, a2: any, a3: any, a4: any, a5: any, a6: any, a7: any, a8: any, a9: any,
+              a10: any, a11: any, a12: any, a13: any, a14: any, a15: any, a16: any, a17: any,
+              a18: any, a19: any) {
     this.args =
         [a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19];
   }
@@ -398,8 +415,9 @@ class TestObjWith19Args {
 
 class TestObjWith20Args {
   args: any[];
-  constructor(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19,
-              a20) {
+  constructor(a1: any, a2: any, a3: any, a4: any, a5: any, a6: any, a7: any, a8: any, a9: any,
+              a10: any, a11: any, a12: any, a13: any, a14: any, a15: any, a16: any, a17: any,
+              a18: any, a19: any, a20: any) {
     this.args =
         [a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20];
   }
@@ -407,8 +425,9 @@ class TestObjWith20Args {
 
 class TestObjWith21Args {
   args: any[];
-  constructor(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19,
-              a20, a21) {
+  constructor(a1: any, a2: any, a3: any, a4: any, a5: any, a6: any, a7: any, a8: any, a9: any,
+              a10: any, a11: any, a12: any, a13: any, a14: any, a15: any, a16: any, a17: any,
+              a18: any, a19: any, a20: any, a21: any) {
     this.args = [
       a1,
       a2,

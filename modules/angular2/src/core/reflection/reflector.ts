@@ -148,7 +148,7 @@ export class Reflector {
   }
 
   /** @internal */
-  _getReflectionInfo(typeOrFunc) {
+  _getReflectionInfo(typeOrFunc: any) {
     if (isPresent(this._usedKeys)) {
       this._usedKeys.add(typeOrFunc);
     }
@@ -156,11 +156,11 @@ export class Reflector {
   }
 
   /** @internal */
-  _containsReflectionInfo(typeOrFunc) { return this._injectableInfo.has(typeOrFunc); }
+  _containsReflectionInfo(typeOrFunc: any) { return this._injectableInfo.has(typeOrFunc); }
 
   importUri(type: Type): string { return this.reflectionCapabilities.importUri(type); }
 }
 
-function _mergeMaps(target: Map<any, any>, config: {[key: string]: Function}): void {
-  StringMapWrapper.forEach(config, (v, k) => target.set(k, v));
+function _mergeMaps(target: Map<string, Function>, config: {[key: string]: Function}): void {
+  StringMapWrapper.forEach(config, (v: Function, k: string) => target.set(k, v));
 }

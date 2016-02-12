@@ -763,7 +763,7 @@ const COMMON = [
   'NgStyle',
   'NgStyle.constructor(_differs:KeyValueDiffers, _ngEl:ElementRef, _renderer:Renderer)',
   'NgStyle.ngDoCheck():any',
-  'NgStyle.rawStyle=(v:any)',
+  'NgStyle.rawStyle=(v:{[key:string]:string})',
   'NgSwitch',
   'NgSwitch.ngSwitch=(value:any)',
   'NgSwitchDefault',

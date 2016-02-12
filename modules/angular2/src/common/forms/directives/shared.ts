@@ -32,14 +32,14 @@ export function setUpControl(control: Control, dir: NgControl): void {
   dir.valueAccessor.writeValue(control.value);
 
   // view -> model
-  dir.valueAccessor.registerOnChange(newValue => {
+  dir.valueAccessor.registerOnChange((newValue: any) => {
     dir.viewToModelUpdate(newValue);
     control.updateValue(newValue, {emitModelToViewChange: false});
     control.markAsDirty();
   });
 
   // model -> view
-  control.registerOnChange(newValue => dir.valueAccessor.writeValue(newValue));
+  control.registerOnChange((newValue: any) => dir.valueAccessor.writeValue(newValue));
 
   // touched
   dir.valueAccessor.registerOnTouched(() => control.markAsTouched());
@@ -78,10 +78,10 @@ export function selectValueAccessor(dir: NgControl,
                                     valueAccessors: ControlValueAccessor[]): ControlValueAccessor {
   if (isBlank(valueAccessors)) return null;
 
-  var defaultAccessor;
-  var builtinAccessor;
-  var customAccessor;
-  valueAccessors.forEach(v => {
+  var defaultAccessor: ControlValueAccessor;
+  var builtinAccessor: ControlValueAccessor;
+  var customAccessor: ControlValueAccessor;
+  valueAccessors.forEach((v: ControlValueAccessor) => {
     if (hasConstructor(v, DefaultValueAccessor)) {
       defaultAccessor = v;
 

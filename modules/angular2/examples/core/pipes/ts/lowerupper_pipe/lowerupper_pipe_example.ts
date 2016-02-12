@@ -12,7 +12,7 @@ import {bootstrap} from 'angular2/bootstrap';
 })
 export class LowerUpperPipeExample {
   value: string;
-  change(value) { this.value = value; }
+  change(value: string) { this.value = value; }
 }
 // #enddocregion
 

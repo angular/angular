@@ -76,7 +76,7 @@ export class NgSwitch {
   private _valueViews = new Map<any, SwitchView[]>();
   private _activeViews: SwitchView[] = [];
 
-  set ngSwitch(value) {
+  set ngSwitch(value: any) {
     // Empty the currently active ViewContainers
     this._emptyAllActiveViews();
 
@@ -93,7 +93,7 @@ export class NgSwitch {
   }
 
   /** @internal */
-  _onWhenValueChanged(oldWhen, newWhen, view: SwitchView): void {
+  _onWhenValueChanged(oldWhen: any, newWhen: any, view: SwitchView): void {
     this._deregisterView(oldWhen, view);
     this._registerView(newWhen, view);
 
@@ -137,7 +137,7 @@ export class NgSwitch {
   }
 
   /** @internal */
-  _registerView(value, view: SwitchView): void {
+  _registerView(value: any, view: SwitchView): void {
     var views = this._valueViews.get(value);
     if (isBlank(views)) {
       views = [];
@@ -147,7 +147,7 @@ export class NgSwitch {
   }
 
   /** @internal */
-  _deregisterView(value, view: SwitchView): void {
+  _deregisterView(value: any, view: SwitchView): void {
     // `_WHEN_DEFAULT` is used a marker for non-registered whens
     if (value === _WHEN_DEFAULT) return;
     var views = this._valueViews.get(value);
@@ -182,7 +182,7 @@ export class NgSwitchWhen {
     this._view = new SwitchView(viewContainer, templateRef);
   }
 
-  set ngSwitchWhen(value) {
+  set ngSwitchWhen(value: any) {
     this._switch._onWhenValueChanged(this._value, value, this._view);
     this._value = value;
   }

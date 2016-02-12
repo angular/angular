@@ -17,7 +17,7 @@ export class BrowserDetails {
     DOM.setAttribute(div, 'style', `position: absolute; top: -9999px; left: -9999px; width: 1px;
       height: 1px; transition: all 1ms linear 1ms;`);
     // Firefox requires that we wait for 2 frames for some reason
-    this.raf(timestamp => {
+    this.raf((timestamp: any) => {
       DOM.on(div, 'transitionend', (event: any) => {
         var elapsed = Math.round(event.elapsedTime * 1000);
         this.elapsedTimeIncludesDelay = elapsed == 2;
@@ -37,7 +37,8 @@ class RafQueue {
   currentFrameId: number;
   constructor(public callback: Function, public frames: number) { this._raf(); }
   private _raf() {
-    this.currentFrameId = DOM.requestAnimationFrame(timestamp => this._nextFrame(timestamp));
+    this.currentFrameId =
+        DOM.requestAnimationFrame((timestamp: number) => this._nextFrame(timestamp));
   }
   private _nextFrame(timestamp: number) {
     this.frames--;

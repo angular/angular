@@ -102,8 +102,8 @@ export class AsyncPipe implements PipeTransform, OnDestroy {
   _subscribe(obj: Observable<any>| Promise<any>| EventEmitter<any>): void {
     this._obj = obj;
     this._strategy = this._selectStrategy(obj);
-    this._subscription =
-        this._strategy.createSubscription(obj, value => this._updateLatestValue(obj, value));
+    this._subscription = this._strategy.createSubscription(
+        obj, (value: Object) => this._updateLatestValue(obj, value));
   }
 
   /** @internal */

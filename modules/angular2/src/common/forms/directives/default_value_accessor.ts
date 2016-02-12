@@ -24,7 +24,7 @@ const DEFAULT_VALUE_ACCESSOR = CONST_EXPR(new Provider(
   bindings: [DEFAULT_VALUE_ACCESSOR]
 })
 export class DefaultValueAccessor implements ControlValueAccessor {
-  onChange = (_) => {};
+  onChange = (_: any) => {};
   onTouched = () => {};
 
   constructor(private _renderer: Renderer, private _elementRef: ElementRef) {}
