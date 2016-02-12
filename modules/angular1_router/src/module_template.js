@@ -17,7 +17,7 @@ function routerFactory($q, $location, $$directiveIntrospector, $browser, $rootSc
     OpaqueToken: function () {},
     Inject: function () {}
   };
-  var require = function () {return exports;};
+  var routerRequire = function () {return exports;};
 
   // When this file is processed, the line below is replaced with
   // the contents of the compiled TypeScript classes.

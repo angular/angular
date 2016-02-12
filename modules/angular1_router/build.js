@@ -51,9 +51,10 @@ function main(modulesDirectory) {
  */
 var IMPORT_RE = new RegExp("import \\{?([\\w\\n_, ]+)\\}? from '(.+)';?", 'g');
 var INJECT_RE = new RegExp("@Inject\\(ROUTER_PRIMARY_COMPONENT\\)", 'g');
-var IMJECTABLE_RE = new RegExp("@Injectable\\(\\)", 'g');
+var INJECTABLE_RE = new RegExp("@Injectable\\(\\)", 'g');
+var REQUIRE_RE = new RegExp("require\\('(.*?)'\\);", 'g');
 function transform(contents) {
-  contents = contents.replace(INJECT_RE, '').replace(IMJECTABLE_RE, '');
+  contents = contents.replace(INJECT_RE, '').replace(INJECTABLE_RE, '');
   contents = contents.replace(IMPORT_RE, function (match, imports, includePath) {
     //TODO: remove special-case
     if (isFacadeModule(includePath) || includePath === './router_outlet') {
@@ -61,10 +62,15 @@ function transform(contents) {
     }
     return match;
   });
-  return ts.transpile(contents, {
+  contents = ts.transpile(contents, {
     target: ts.ScriptTarget.ES5,
     module: ts.ModuleKind.CommonJS
   });
+
+  // Rename require functions from transpiled imports
+  contents = contents.replace(REQUIRE_RE, 'routerRequire(\'$1\');');
+
+  return contents;
 }
 
 function isFacadeModule(modulePath) {
