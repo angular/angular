@@ -17,6 +17,8 @@ import {MockEventEmitter} from './mock_event_emitter';
 import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
 import {NgZone} from 'angular2/src/core/zone/ng_zone';
 
+var __unused: Promise<any>;  // avoid unused import when Promise union types are erased
+
 /**
  * Returns two MessageBus instances that are attached to each other.
  * Such that whatever goes into one's sink comes out the others source.
