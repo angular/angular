@@ -29,7 +29,7 @@ export class NgIf {
 
   constructor(private _viewContainer: ViewContainerRef, private _templateRef: TemplateRef) {}
 
-  set ngIf(newCondition /* boolean */) {
+  set ngIf(newCondition: any /* boolean */) {
     if (newCondition && (isBlank(this._prevCondition) || !this._prevCondition)) {
       this._prevCondition = true;
       this._viewContainer.createEmbeddedView(this._templateRef);
