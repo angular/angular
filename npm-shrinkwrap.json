@@ -1,6 +1,6 @@
 {
   "name": "angular-srcs",
-  "version": "2.0.0-beta.5",
+  "version": "2.0.0-beta.6",
   "dependencies": {
     "abbrev": {
       "version": "1.0.7",
@@ -2959,6 +2959,11 @@
       "version": "4.0.1",
       "from": "dargs@>=4.0.1 <5.0.0",
       "resolved": "https://registry.npmjs.org/dargs/-/dargs-4.0.1.tgz"
+    },
+    "dart-style": {
+      "version": "0.2.6",
+      "from": "dart-style@>=0.2.6 <0.3.0",
+      "resolved": "https://registry.npmjs.org/dart-style/-/dart-style-0.2.6.tgz"
     },
     "dart2jsaas": {
       "version": "0.0.16",
@@ -8530,9 +8535,8 @@
       }
     },
     "ts2dart": {
-      "version": "0.7.22",
-      "from": "https://registry.npmjs.org/ts2dart/-/ts2dart-0.7.22.tgz",
-      "resolved": "https://registry.npmjs.org/ts2dart/-/ts2dart-0.7.22.tgz",
+      "version": "0.7.24",
+      "from": "ts2dart@0.7.24",
       "dependencies": {
         "source-map": {
           "version": "0.4.4",
