@@ -33,7 +33,7 @@ class PromiseStrategy {
 
 var _promiseStrategy = new PromiseStrategy();
 var _observableStrategy = new ObservableStrategy();
-
+var __unused: Promise<any>;  // avoid unused import when Promise union types are erased
 
 /**
  * The `async` pipe subscribes to an Observable or Promise and returns the latest value it has

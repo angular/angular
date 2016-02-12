@@ -1886,6 +1886,9 @@
     "dargs": {
       "version": "4.0.1"
     },
+    "dart-style": {
+      "version": "0.2.6"
+    },
     "dart2jsaas": {
       "version": "0.0.16",
       "dependencies": {
@@ -5353,7 +5356,7 @@
       }
     },
     "ts2dart": {
-      "version": "0.7.22",
+      "version": "0.7.24",
       "dependencies": {
         "source-map": {
           "version": "0.4.4"
@@ -5836,5 +5839,5 @@
     }
   },
   "name": "angular-srcs",
-  "version": "2.0.0-beta.5"
+  "version": "2.0.0-beta.6"
 }

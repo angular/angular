@@ -5,11 +5,12 @@ var insert = require('gulp-insert');
 var fs = require('fs-extra');
 var browserify = require('browserify');
 var path = require('path');
-var Builder = require('systemjs-builder');
 
 module.exports.bundle = function(buildConfig, moduleName, outputFile, outputConfig,
     sfx) {
   var sfx = sfx || false;
+  // Workaround for https://github.com/dart-lang/dart_style/issues/493
+  var Builder = require('systemjs-builder');
   var builder = new Builder();
   builder.config(buildConfig);
   if (sfx) {
