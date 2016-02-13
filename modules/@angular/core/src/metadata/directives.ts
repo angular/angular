@@ -468,6 +468,11 @@ export class DirectiveMetadata extends InjectableMetadata {
     return isPresent(this._properties) && this._properties.length > 0 ? this._properties :
                                                                         this._inputs;
   }
+  /**
+   * Use `inputs` instead
+   *
+   * @deprecated
+   */
   get properties(): string[] { return this.inputs; }
   private _inputs: string[];
   private _properties: string[];
@@ -520,6 +525,11 @@ export class DirectiveMetadata extends InjectableMetadata {
   get outputs(): string[] {
     return isPresent(this._events) && this._events.length > 0 ? this._events : this._outputs;
   }
+  /**
+   * Use `outputs` instead
+   *
+   * @deprecated
+   */
   get events(): string[] { return this.outputs; }
   private _outputs: string[];
   private _events: string[];
@@ -732,8 +742,8 @@ export class DirectiveMetadata extends InjectableMetadata {
     selector?: string,
     inputs?: string[],
     outputs?: string[],
-    properties?: string[],
-    events?: string[],
+    /** @deprecated */ properties?: string[],
+    /** @deprecated */ events?: string[],
     host?: {[key: string]: string},
     providers?: any[],
     exportAs?: string,
@@ -875,8 +885,8 @@ export class ComponentMetadata extends DirectiveMetadata {
     selector?: string,
     inputs?: string[],
     outputs?: string[],
-    properties?: string[],
-    events?: string[],
+    /** @deprecated */ properties?: string[],
+    /** @deprecated */ events?: string[],
     host?: {[key: string]: string},
     providers?: any[],
     exportAs?: string,
