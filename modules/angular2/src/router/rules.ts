@@ -3,7 +3,7 @@ import {BaseException} from 'angular2/src/facade/exceptions';
 import {PromiseWrapper} from 'angular2/src/facade/promise';
 import {Map} from 'angular2/src/facade/collection';
 
-import {RouteHandler} from './route_handler';
+import {RouteHandler} from './route_handlers/route_handler';
 import {Url} from './url_parser';
 import {ComponentInstruction} from './instruction';
 import {PathRecognizer, GeneratedUrlSegment} from './path_recognizer';
