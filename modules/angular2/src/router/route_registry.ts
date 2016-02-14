@@ -25,7 +25,7 @@ import {
   Redirect,
   RouteDefinition
 } from './route_config_impl';
-import {PathMatch, RedirectMatch, RouteMatch} from './route_recognizer';
+import {PathMatch, RedirectMatch, RouteMatch} from './rules';
 import {RuleSet} from './rule_set';
 import {
   Instruction,
@@ -383,7 +383,7 @@ export class RouteRegistry {
         }
       }
       var routeRecognizer =
-          (_aux ? rules.auxNames : rules.names).get(routeName);
+          (_aux ? rules.auxRulesByName : rules.rulesByName).get(routeName);
 
       if (isBlank(routeRecognizer)) {
         throw new BaseException(
@@ -455,21 +455,21 @@ export class RouteRegistry {
     }
 
     var rules = this._rules.get(componentCursor);
-    if (isBlank(rules) || isBlank(rules.defaultRoute)) {
+    if (isBlank(rules) || isBlank(rules.defaultRule)) {
       return null;
     }
 
     var defaultChild = null;
-    if (isPresent(rules.defaultRoute.handler.componentType)) {
-      var componentInstruction = rules.defaultRoute.generate({});
-      if (!rules.defaultRoute.terminal) {
-        defaultChild = this.generateDefault(rules.defaultRoute.handler.componentType);
+    if (isPresent(rules.defaultRule.handler.componentType)) {
+      var componentInstruction = rules.defaultRule.generate({});
+      if (!rules.defaultRule.terminal) {
+        defaultChild = this.generateDefault(rules.defaultRule.handler.componentType);
       }
       return new DefaultInstruction(componentInstruction, defaultChild);
     }
 
     return new UnresolvedInstruction(() => {
-      return rules.defaultRoute.handler.resolveComponentType().then(
+      return rules.defaultRule.handler.resolveComponentType().then(
           (_) => this.generateDefault(componentCursor));
     });
   }

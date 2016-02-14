@@ -9,15 +9,8 @@ import {ComponentInstruction} from './instruction';
 import {PathRecognizer, GeneratedUrlSegment} from './path_recognizer';
 
 
+// RouteMatch objects hold information about a match between a rule and a URL
 export abstract class RouteMatch {}
-
-export interface AbstractRecognizer {
-  hash: string;
-  path: string;
-  recognize(beginningSegment: Url): Promise<RouteMatch>;
-  generate(params: {[key: string]: any}): ComponentInstruction;
-}
-
 
 export class PathMatch extends RouteMatch {
   constructor(public instruction: ComponentInstruction, public remaining: Url,
@@ -26,12 +19,19 @@ export class PathMatch extends RouteMatch {
   }
 }
 
-
 export class RedirectMatch extends RouteMatch {
   constructor(public redirectTo: any[], public specificity) { super(); }
 }
 
-export class RedirectRecognizer implements AbstractRecognizer {
+// Rules are responsible for recognizing URL segments and generating instructions
+export interface AbstractRule {
+  hash: string;
+  path: string;
+  recognize(beginningSegment: Url): Promise<RouteMatch>;
+  generate(params: {[key: string]: any}): ComponentInstruction;
+}
+
+export class RedirectRule implements AbstractRule {
   private _pathRecognizer: PathRecognizer;
   public hash: string;
 
@@ -58,7 +58,7 @@ export class RedirectRecognizer implements AbstractRecognizer {
 
 
 // represents something like '/foo/:bar'
-export class RouteRecognizer implements AbstractRecognizer {
+export class RouteRule implements AbstractRule {
   specificity: string;
   terminal: boolean = true;
   hash: string;

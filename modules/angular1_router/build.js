@@ -6,7 +6,7 @@ var ts = require('typescript');
 var files = [
   'lifecycle_annotations_impl.ts',
   'url_parser.ts',
-  'route_recognizer.ts',
+  'rules.ts',
   'route_config_impl.ts',
   'async_route_handler.ts',
   'sync_route_handler.ts',

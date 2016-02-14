@@ -12,7 +12,7 @@ import {
 
 import {Map, StringMapWrapper} from 'angular2/src/facade/collection';
 
-import {RouteMatch, PathMatch, RedirectMatch} from 'angular2/src/router/route_recognizer';
+import {RouteMatch, PathMatch, RedirectMatch} from 'angular2/src/router/rules';
 import {RuleSet} from 'angular2/src/router/rule_set';
 
 import {Route, Redirect} from 'angular2/src/router/route_config_decorator';

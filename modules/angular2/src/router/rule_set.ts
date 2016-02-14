@@ -4,12 +4,12 @@ import {Map, MapWrapper, ListWrapper, StringMapWrapper} from 'angular2/src/facad
 import {PromiseWrapper} from 'angular2/src/facade/async';
 
 import {
-  AbstractRecognizer,
-  RouteRecognizer,
-  RedirectRecognizer,
+  AbstractRule,
+  RouteRule,
+  RedirectRule,
   RouteMatch,
   PathMatch
-} from './route_recognizer';
+} from './rules';
 import {Route, AsyncRoute, AuxRoute, Redirect, RouteDefinition} from './route_config_impl';
 import {AsyncRouteHandler} from './async_route_handler';
 import {SyncRouteHandler} from './sync_route_handler';
@@ -18,32 +18,34 @@ import {ComponentInstruction} from './instruction';
 
 
 /**
- * A `RuleSet` is responsible for recognzing routes for a particular component.
+ * A `RuleSet` is responsible for recognizing routes for a particular component.
  * It is consumed by `RouteRegistry`, which knows how to recognize an entire hierarchy of
  * components.
  */
 export class RuleSet {
-  names = new Map<string, RouteRecognizer>();
+  rulesByName = new Map<string, RouteRule>();
 
-  // map from name to recognizer
-  auxNames = new Map<string, RouteRecognizer>();
+  // map from name to rule
+  auxRulesByName = new Map<string, RouteRule>();
 
-  // map from starting path to recognizer
-  auxRoutes = new Map<string, RouteRecognizer>();
+  // map from starting path to rule
+  auxRulesByPath = new Map<string, RouteRule>();
 
   // TODO: optimize this into a trie
-  matchers: AbstractRecognizer[] = [];
+  rules: AbstractRule[] = [];
 
-  defaultRoute: RouteRecognizer = null;
+  // the rule to use automatically when recognizing or generating from this rule set
+  defaultRule: RouteRule = null;
 
   /**
-   * returns whether or not the config is terminal
+   * Configure additional rules in this rule set from a route definition
+   * @returns {boolean} true if the config is terminal
    */
   config(config: RouteDefinition): boolean {
-    var handler;
+    let handler;
 
     if (isPresent(config.name) && config.name[0].toUpperCase() != config.name[0]) {
-      var suggestedName = config.name[0].toUpperCase() + config.name.substring(1);
+      let suggestedName = config.name[0].toUpperCase() + config.name.substring(1);
       throw new BaseException(
           `Route "${config.path}" with name "${config.name}" does not begin with an uppercase letter. Route names should be CamelCase like "${suggestedName}".`);
     }
@@ -51,20 +53,20 @@ export class RuleSet {
     if (config instanceof AuxRoute) {
       handler = new SyncRouteHandler(config.component, config.data);
       let path = config.path.startsWith('/') ? config.path.substring(1) : config.path;
-      var recognizer = new RouteRecognizer(config.path, handler);
-      this.auxRoutes.set(path, recognizer);
+      let auxRule = new RouteRule(config.path, handler);
+      this.auxRulesByPath.set(path, auxRule);
       if (isPresent(config.name)) {
-        this.auxNames.set(config.name, recognizer);
+        this.auxRulesByName.set(config.name, auxRule);
       }
-      return recognizer.terminal;
+      return auxRule.terminal;
     }
 
-    var useAsDefault = false;
+    let useAsDefault = false;
 
     if (config instanceof Redirect) {
-      let redirector = new RedirectRecognizer(config.path, config.redirectTo);
+      let redirector = new RedirectRule(config.path, config.redirectTo);
       this._assertNoHashCollision(redirector.hash, config.path);
-      this.matchers.push(redirector);
+      this.rules.push(redirector);
       return true;
     }
 
@@ -75,27 +77,27 @@ export class RuleSet {
       handler = new AsyncRouteHandler(config.loader, config.data);
       useAsDefault = isPresent(config.useAsDefault) && config.useAsDefault;
     }
-    var recognizer = new RouteRecognizer(config.path, handler);
+    let newRule = new RouteRule(config.path, handler);
 
-    this._assertNoHashCollision(recognizer.hash, config.path);
+    this._assertNoHashCollision(newRule.hash, config.path);
 
     if (useAsDefault) {
-      if (isPresent(this.defaultRoute)) {
+      if (isPresent(this.defaultRule)) {
         throw new BaseException(`Only one route can be default`);
       }
-      this.defaultRoute = recognizer;
+      this.defaultRule = newRule;
     }
 
-    this.matchers.push(recognizer);
+    this.rules.push(newRule);
     if (isPresent(config.name)) {
-      this.names.set(config.name, recognizer);
+      this.rulesByName.set(config.name, newRule);
     }
-    return recognizer.terminal;
+    return newRule.terminal;
   }
 
 
   private _assertNoHashCollision(hash: string, path) {
-    this.matchers.forEach((matcher) => {
+    this.rules.forEach((matcher) => {
       if (hash == matcher.hash) {
         throw new BaseException(
             `Configuration '${path}' conflicts with existing route '${matcher.path}'`);
@@ -110,7 +112,7 @@ export class RuleSet {
   recognize(urlParse: Url): Promise<RouteMatch>[] {
     var solutions = [];
 
-    this.matchers.forEach((routeRecognizer: AbstractRecognizer) => {
+    this.rules.forEach((routeRecognizer: AbstractRule) => {
       var pathMatch = routeRecognizer.recognize(urlParse);
 
       if (isPresent(pathMatch)) {
@@ -127,7 +129,7 @@ export class RuleSet {
   }
 
   recognizeAuxiliary(urlParse: Url): Promise<RouteMatch>[] {
-    var routeRecognizer: RouteRecognizer = this.auxRoutes.get(urlParse.path);
+    var routeRecognizer: RouteRule = this.auxRulesByPath.get(urlParse.path);
     if (isPresent(routeRecognizer)) {
       return [routeRecognizer.recognize(urlParse)];
     }
@@ -135,18 +137,18 @@ export class RuleSet {
     return [PromiseWrapper.resolve(null)];
   }
 
-  hasRoute(name: string): boolean { return this.names.has(name); }
+  hasRoute(name: string): boolean { return this.rulesByName.has(name); }
 
   componentLoaded(name: string): boolean {
-    return this.hasRoute(name) && isPresent(this.names.get(name).handler.componentType);
+    return this.hasRoute(name) && isPresent(this.rulesByName.get(name).handler.componentType);
   }
 
   loadComponent(name: string): Promise<any> {
-    return this.names.get(name).handler.resolveComponentType();
+    return this.rulesByName.get(name).handler.resolveComponentType();
   }
 
   generate(name: string, params: any): ComponentInstruction {
-    var pathRecognizer: RouteRecognizer = this.names.get(name);
+    var pathRecognizer: RouteRule = this.rulesByName.get(name);
     if (isBlank(pathRecognizer)) {
       return null;
     }
@@ -154,7 +156,7 @@ export class RuleSet {
   }
 
   generateAuxiliary(name: string, params: any): ComponentInstruction {
-    var pathRecognizer: RouteRecognizer = this.auxNames.get(name);
+    var pathRecognizer: RouteRule = this.auxRulesByName.get(name);
     if (isBlank(pathRecognizer)) {
       return null;
     }
