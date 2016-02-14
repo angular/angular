@@ -13,7 +13,7 @@ import {
 import {Map, StringMapWrapper} from 'angular2/src/facade/collection';
 
 import {RouteMatch, PathMatch, RedirectMatch} from 'angular2/src/router/route_recognizer';
-import {ComponentRecognizer} from 'angular2/src/router/component_recognizer';
+import {RuleSet} from 'angular2/src/router/rule_set';
 
 import {Route, Redirect} from 'angular2/src/router/route_config_decorator';
 import {parser} from 'angular2/src/router/url_parser';
@@ -21,10 +21,10 @@ import {PromiseWrapper} from 'angular2/src/facade/promise';
 
 
 export function main() {
-  describe('ComponentRecognizer', () => {
-    var recognizer: ComponentRecognizer;
+  describe('RuleSet', () => {
+    var recognizer: RuleSet;
 
-    beforeEach(() => { recognizer = new ComponentRecognizer(); });
+    beforeEach(() => { recognizer = new RuleSet(); });
 
 
     it('should recognize a static segment', inject([AsyncTestCompleter], (async) => {
@@ -193,7 +193,7 @@ export function main() {
   });
 }
 
-function recognize(recognizer: ComponentRecognizer, url: string): Promise<RouteMatch[]> {
+function recognize(recognizer: RuleSet, url: string): Promise<RouteMatch[]> {
   var parsedUrl = parser.parse(url);
   return PromiseWrapper.all(recognizer.recognize(parsedUrl));
 }

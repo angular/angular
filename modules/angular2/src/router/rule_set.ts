@@ -18,11 +18,11 @@ import {ComponentInstruction} from './instruction';
 
 
 /**
- * `ComponentRecognizer` is responsible for recognizing routes for a single component.
+ * A `RuleSet` is responsible for recognzing routes for a particular component.
  * It is consumed by `RouteRegistry`, which knows how to recognize an entire hierarchy of
  * components.
  */
-export class ComponentRecognizer {
+export class RuleSet {
   names = new Map<string, RouteRecognizer>();
 
   // map from name to recognizer

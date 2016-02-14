@@ -10,7 +10,7 @@ var files = [
   'route_config_impl.ts',
   'async_route_handler.ts',
   'sync_route_handler.ts',
-  'component_recognizer.ts',
+  'rule_set.ts',
   'instruction.ts',
   'path_recognizer.ts',
   'route_config_nomalizer.ts',
