@@ -80,7 +80,13 @@ export abstract class EmbeddedViewRef<C> extends ViewRef {
 }
 
 export class ViewRef_<C> implements EmbeddedViewRef<C>, ChangeDetectorRef {
-  constructor(private _view: AppView<C>) { this._view = _view; }
+  /** @internal */
+  _originalMode: ChangeDetectionStrategy;
+
+  constructor(private _view: AppView<C>) {
+    this._view = _view;
+    this._originalMode = this._view.cdMode;
+  }
 
   get internalView(): AppView<C> { return this._view; }
 
@@ -95,7 +101,7 @@ export class ViewRef_<C> implements EmbeddedViewRef<C>, ChangeDetectorRef {
   detectChanges(): void { this._view.detectChanges(false); }
   checkNoChanges(): void { this._view.detectChanges(true); }
   reattach(): void {
-    this._view.cdMode = ChangeDetectionStrategy.CheckAlways;
+    this._view.cdMode = this._originalMode;
     this.markForCheck();
   }
 
