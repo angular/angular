@@ -551,6 +551,7 @@ export class Parse5DomAdapter extends DomAdapter {
   performanceNow(): number { return DateWrapper.toMillis(DateWrapper.now()); }
   getAnimationPrefix(): string { return ''; }
   getTransitionEnd(): string { return 'transitionend'; }
+  getAnimationEnd(): string { return 'animationend'; }
   supportsAnimation(): boolean { return true; }
 
   replaceChild(el, newNode, oldNode) { throw new Error('not implemented'); }
