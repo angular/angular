@@ -1032,6 +1032,43 @@ export function main() {
 
            expect(renderLog.log).toEqual([]);
          }));
+
+      it('Reattaches', fakeAsync(() => {
+           var ctx = createCompFixture('<comp-with-ref></comp-with-ref>');
+           var cmp: CompWithRef = queryDirs(ctx.debugElement, CompWithRef)[0];
+
+           cmp.value = 'hello';
+           cmp.changeDetectorRef.detach();
+
+           ctx.detectChanges();
+
+           expect(renderLog.log).toEqual([]);
+
+           cmp.changeDetectorRef.reattach();
+
+           ctx.detectChanges();
+
+           expect(renderLog.log).toEqual(['{{hello}}']);
+
+         }));
+
+      it('Reattaches in the original cd mode', fakeAsync(() => {
+           var ctx = createCompFixture('<push-cmp></push-cmp>');
+           var cmp: PushComp = queryDirs(ctx.debugElement, PushComp)[0];
+           cmp.changeDetectorRef.detach();
+           cmp.changeDetectorRef.reattach();
+
+           // renderCount should NOT be incremented with each CD as CD mode should be resetted to
+           // on-push
+           ctx.detectChanges();
+           expect(cmp.renderCount).toBeGreaterThan(0);
+           var count = cmp.renderCount;
+
+           ctx.detectChanges();
+           expect(cmp.renderCount).toBe(count);
+
+         }));
+
     });
 
     describe('multi directive order', () => {
@@ -1192,7 +1229,7 @@ class CompWithRef {
 
 @Component({
   selector: 'push-cmp',
-  template: '<div (event)="noop()" emitterDirective></div>{{value}}',
+  template: '<div (event)="noop()" emitterDirective></div>{{value}}{{renderIncrement}}',
   host: {'(event)': 'noop()'},
   directives: ALL_DIRECTIVES,
   pipes: ALL_PIPES,
@@ -1200,6 +1237,12 @@ class CompWithRef {
 })
 class PushComp {
   @Input() public value: any;
+  public renderCount: any = 0;
+
+  get renderIncrement() {
+    this.renderCount++;
+    return '';
+  }
 
   constructor(public changeDetectorRef: ChangeDetectorRef) {}
 
