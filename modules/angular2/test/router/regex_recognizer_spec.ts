@@ -18,17 +18,17 @@ export function main() {
 
     it('should throw when given an invalid regex', () => {
       expect(() => new RegexRecognizer('[abc', emptySerializer))
-          .toThrowError(`Regex "[abc" is invalid.`);
+          .toThrowError('Invalid regular expression: /[abc/: Unterminated character class');
     });
 
-    iit('should parse a single param using capture groups', () => {
+    it('should parse a single param using capture groups', () => {
       var rec = new RegexRecognizer('^(.+)$', emptySerializer);
       var url = parser.parse('hello');
       var match = rec.recognize(url);
       expect(match.allParams).toEqual({ '0': 'hello', '1': 'hello' });
     });
 
-    iit('should parse multiple params using capture groups', () => {
+    it('should parse multiple params using capture groups', () => {
       var rec = new RegexRecognizer('^(.+)\\.(.+)$', emptySerializer);
       var url = parser.parse('hello.goodbye');
       var match = rec.recognize(url);
