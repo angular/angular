@@ -10,7 +10,7 @@ import {
   SpyObject
 } from 'angular2/testing_internal';
 
-import {UrlParser, Url} from 'angular2/src/router/url_parser';
+import {UrlParser, Url} from 'angular2/src/router/rules/url_parser';
 
 
 export function main() {

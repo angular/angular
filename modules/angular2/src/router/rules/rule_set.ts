@@ -13,7 +13,7 @@ import {
 import {Route, AsyncRoute, AuxRoute, Redirect, RouteDefinition} from '../route_config/route_config_impl';
 import {AsyncRouteHandler} from '../route_handlers/async_route_handler';
 import {SyncRouteHandler} from '../route_handlers/sync_route_handler';
-import {Url} from '../url_parser';
+import {Url} from './url_parser';
 import {ComponentInstruction} from '../instruction';
 
 

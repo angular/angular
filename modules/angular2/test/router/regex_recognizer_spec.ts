@@ -12,7 +12,7 @@ import {
 
 import {GeneratedUrlSegment} from 'angular2/src/router/rules/recognizer';
 import {RegexRecognizer} from 'angular2/src/router/rules/regex_recognizer';
-import {parser, Url} from 'angular2/src/router/url_parser';
+import {parser, Url} from 'angular2/src/router/rules/url_parser';
 
 export function main() {
   describe('RegexRecognizer', () => {

@@ -36,7 +36,7 @@ import {
 } from './instruction';
 
 import {normalizeRouteConfig, assertComponentExists} from './route_config/route_config_nomalizer';
-import {parser, Url, pathSegmentsToUrl} from './url_parser';
+import {parser, Url, pathSegmentsToUrl} from './rules/url_parser';
 
 var _resolveToNull = PromiseWrapper.resolve(null);
 

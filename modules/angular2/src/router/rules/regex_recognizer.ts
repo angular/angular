@@ -1,5 +1,5 @@
 import {RegExpWrapper, isBlank} from 'angular2/src/facade/lang';
-import {Url, RootUrl, serializeParams} from '../url_parser';
+import {Url, RootUrl, serializeParams} from './url_parser';
 import {GeneratedUrlSegment, RecognizedUrlSegment, Recognizer} from './recognizer';
 
 export class RegexRecognizer implements Recognizer {

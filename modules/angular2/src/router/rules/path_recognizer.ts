@@ -9,7 +9,7 @@ import {
 import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
 import {Map, MapWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
 
-import {Url, RootUrl, serializeParams} from '../url_parser';
+import {Url, RootUrl, serializeParams} from './url_parser';
 import {GeneratedUrlSegment, RecognizedUrlSegment, Recognizer} from './recognizer';
 
 class TouchMap {

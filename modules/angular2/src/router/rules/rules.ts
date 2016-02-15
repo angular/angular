@@ -4,7 +4,7 @@ import {PromiseWrapper} from 'angular2/src/facade/promise';
 import {Map} from 'angular2/src/facade/collection';
 
 import {RouteHandler} from '../route_handlers/route_handler';
-import {Url} from '../url_parser';
+import {Url} from './url_parser';
 import {ComponentInstruction} from '../instruction';
 import {PathRecognizer} from './path_recognizer';
 import {GeneratedUrlSegment} from './recognizer';
