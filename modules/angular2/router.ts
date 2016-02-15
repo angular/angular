@@ -5,8 +5,8 @@
  */
 
 export {Router} from './src/router/router';
-export {RouterOutlet} from './src/router/router_outlet';
-export {RouterLink} from './src/router/router_link';
+export {RouterOutlet} from './src/router/directives/router_outlet';
+export {RouterLink} from './src/router/directives/router_link';
 export {RouteParams, RouteData} from './src/router/instruction';
 export {PlatformLocation} from './src/router/location/platform_location';
 export {RouteRegistry, ROUTER_PRIMARY_COMPONENT} from './src/router/route_registry';
@@ -23,8 +23,8 @@ export {OpaqueToken} from 'angular2/core';
 export {ROUTER_PROVIDERS_COMMON} from 'angular2/src/router/router_providers_common';
 export {ROUTER_PROVIDERS, ROUTER_BINDINGS} from 'angular2/src/router/router_providers';
 
-import {RouterOutlet} from './src/router/router_outlet';
-import {RouterLink} from './src/router/router_link';
+import {RouterOutlet} from './src/router/directives/router_outlet';
+import {RouterLink} from './src/router/directives/router_link';
 import {CONST_EXPR} from './src/facade/lang';
 
 /**

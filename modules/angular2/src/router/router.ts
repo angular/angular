@@ -9,7 +9,7 @@ import {
   ComponentInstruction,
   Instruction,
 } from './instruction';
-import {RouterOutlet} from './router_outlet';
+import {RouterOutlet} from './directives/router_outlet';
 import {Location} from './location/location';
 import {getCanActivateHook} from './lifecycle/route_lifecycle_reflector';
 import {RouteDefinition} from './route_config/route_config_impl';

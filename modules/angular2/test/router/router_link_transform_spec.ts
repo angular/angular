@@ -15,7 +15,7 @@ import {
 import {Injector, provide} from 'angular2/core';
 import {CONST_EXPR} from 'angular2/src/facade/lang';
 
-import {parseRouterLinkExpression} from 'angular2/src/router/router_link_transform';
+import {parseRouterLinkExpression} from 'angular2/src/router/directives/router_link_transform';
 import {Unparser} from '../core/change_detection/parser/unparser';
 import {Parser} from 'angular2/src/core/change_detection/parser/parser';
 
