@@ -16,8 +16,8 @@ import {
 
 import * as routerMod from './router';
 import {ComponentInstruction, RouteParams, RouteData} from './instruction';
-import * as hookMod from './lifecycle_annotations';
-import {hasLifecycleHook} from './route_lifecycle_reflector';
+import * as hookMod from './lifecycle/lifecycle_annotations';
+import {hasLifecycleHook} from './lifecycle/route_lifecycle_reflector';
 import {OnActivate, CanReuse, OnReuse, OnDeactivate, CanDeactivate} from './interfaces';
 
 let _resolveToTrue = PromiseWrapper.resolve(true);

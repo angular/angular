@@ -5,7 +5,7 @@
 
 import {makeDecorator} from 'angular2/src/core/util/decorators';
 import {CanActivate as CanActivateAnnotation} from './lifecycle_annotations_impl';
-import {ComponentInstruction} from './instruction';
+import {ComponentInstruction} from '../instruction';
 
 export {
   routerCanReuse,

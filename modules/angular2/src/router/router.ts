@@ -11,7 +11,7 @@ import {
 } from './instruction';
 import {RouterOutlet} from './router_outlet';
 import {Location} from './location/location';
-import {getCanActivateHook} from './route_lifecycle_reflector';
+import {getCanActivateHook} from './lifecycle/route_lifecycle_reflector';
 import {RouteDefinition} from './route_config_impl';
 
 let _resolveToTrue = PromiseWrapper.resolve(true);
