@@ -6,8 +6,8 @@ import {Map} from 'angular2/src/facade/collection';
 import {RouteHandler} from '../route_handlers/route_handler';
 import {Url} from '../url_parser';
 import {ComponentInstruction} from '../instruction';
-import {PathRecognizer} from '../recognizers/path_recognizer';
-import {GeneratedUrlSegment} from '../recognizers/recognizer';
+import {PathRecognizer} from './path_recognizer';
+import {GeneratedUrlSegment} from './recognizer';
 
 
 // RouteMatch objects hold information about a match between a rule and a URL

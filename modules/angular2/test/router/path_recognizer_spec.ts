@@ -10,7 +10,7 @@ import {
   SpyObject
 } from 'angular2/testing_internal';
 
-import {PathRecognizer} from 'angular2/src/router/recognizers/path_recognizer';
+import {PathRecognizer} from 'angular2/src/router/rules/path_recognizer';
 import {parser, Url} from 'angular2/src/router/url_parser';
 
 export function main() {
