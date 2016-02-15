@@ -206,3 +206,17 @@ export class ChangeDetectorRef_ extends ChangeDetectorRef {
     this.markForCheck();
   }
 }
+
+export class ChangeDetectorRef_ extends ChangeDetectorRef {
+  constructor(private _cd: [[Prototype]]) { super(); }
+  constructor(private _cd: ChangeDetector) { super(); }
+
+  markForCheck(): void { this._cd.markPathToRootAsCheckOnce(); }
+  detach(): void { this._cd.mode = ChangeDetectionStrategy.Detached; }
+  detectChanges(): void { this._cd.detectChanges(); }
+  checkNoChanges(): void { this._cd.checkNoChanges(); }
+  reattach(): void {
+    this._cd.mode = ChangeDetectionStrategy.CheckAlways;
+    this.markForCheck();
+  }
+}
