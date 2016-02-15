@@ -25,8 +25,8 @@ import {
   Redirect,
   RouteDefinition
 } from './route_config_impl';
-import {PathMatch, RedirectMatch, RouteMatch} from './rules';
-import {RuleSet} from './rule_set';
+import {PathMatch, RedirectMatch, RouteMatch} from './rules/rules';
+import {RuleSet} from './rules/rule_set';
 import {
   Instruction,
   ResolvedInstruction,
