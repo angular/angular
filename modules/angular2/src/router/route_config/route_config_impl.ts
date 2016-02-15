@@ -1,6 +1,6 @@
 import {CONST, Type, isPresent} from 'angular2/src/facade/lang';
-import {RouteDefinition} from './route_definition';
-export {RouteDefinition} from './route_definition';
+import {RouteDefinition} from '../route_definition';
+export {RouteDefinition} from '../route_definition';
 
 /**
  * The `RouteConfig` decorator defines routes for a given component.

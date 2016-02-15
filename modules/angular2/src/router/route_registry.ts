@@ -24,7 +24,7 @@ import {
   AuxRoute,
   Redirect,
   RouteDefinition
-} from './route_config_impl';
+} from './route_config/route_config_impl';
 import {PathMatch, RedirectMatch, RouteMatch} from './rules/rules';
 import {RuleSet} from './rules/rule_set';
 import {
@@ -35,7 +35,7 @@ import {
   DefaultInstruction
 } from './instruction';
 
-import {normalizeRouteConfig, assertComponentExists} from './route_config_nomalizer';
+import {normalizeRouteConfig, assertComponentExists} from './route_config/route_config_nomalizer';
 import {parser, Url, pathSegmentsToUrl} from './url_parser';
 
 var _resolveToNull = PromiseWrapper.resolve(null);

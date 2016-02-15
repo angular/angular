@@ -12,7 +12,7 @@ import {
 import {RouterOutlet} from './router_outlet';
 import {Location} from './location/location';
 import {getCanActivateHook} from './lifecycle/route_lifecycle_reflector';
-import {RouteDefinition} from './route_config_impl';
+import {RouteDefinition} from './route_config/route_config_impl';
 
 let _resolveToTrue = PromiseWrapper.resolve(true);
 let _resolveToFalse = PromiseWrapper.resolve(false);
