@@ -9,7 +9,8 @@ import {
 import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
 import {Map, MapWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
 
-import {Url, RootUrl, serializeParams} from './url_parser';
+import {Url, RootUrl, serializeParams} from '../url_parser';
+import {GeneratedUrlSegment, RecognizedUrlSegment, Recognizer} from './recognizer';
 
 class TouchMap {
   map: {[key: string]: string} = {};
@@ -45,26 +46,26 @@ function normalizeString(obj: any): string {
   }
 }
 
-interface Segment {
+interface PathSegment {
   name: string;
   generate(params: TouchMap): string;
   match(path: string): boolean;
 }
 
-class ContinuationSegment implements Segment {
+class ContinuationPathSegment implements PathSegment {
   name: string = '';
   generate(params: TouchMap): string { return ''; }
   match(path: string): boolean { return true; }
 }
 
-class StaticSegment implements Segment {
+class StaticPathSegment implements PathSegment {
   name: string = '';
   constructor(public path: string) {}
   match(path: string): boolean { return path == this.path; }
   generate(params: TouchMap): string { return this.path; }
 }
 
-class DynamicSegment implements Segment {
+class DynamicPathSegment implements PathSegment {
   constructor(public name: string) {}
   match(path: string): boolean { return path.length > 0; }
   generate(params: TouchMap): string {
@@ -77,15 +78,15 @@ class DynamicSegment implements Segment {
 }
 
 
-class StarSegment implements Segment {
+class StarPathSegment implements PathSegment {
   constructor(public name: string) {}
   match(path: string): boolean { return true; }
   generate(params: TouchMap): string { return normalizeString(params.get(this.name)); }
 }
 
 
-var paramMatcher = /^:([^\/]+)$/g;
-var wildcardMatcher = /^\*([^\/]+)$/g;
+const paramMatcher = /^:([^\/]+)$/g;
+const wildcardMatcher = /^\*([^\/]+)$/g;
 
 function parsePathString(route: string): {[key: string]: any} {
   // normalize route as not starting with a "/". Recognition will
@@ -118,18 +119,18 @@ function parsePathString(route: string): {[key: string]: any} {
     var segment = segments[i], match;
 
     if (isPresent(match = RegExpWrapper.firstMatch(paramMatcher, segment))) {
-      results.push(new DynamicSegment(match[1]));
+      results.push(new DynamicPathSegment(match[1]));
       specificity += '1';
     } else if (isPresent(match = RegExpWrapper.firstMatch(wildcardMatcher, segment))) {
-      results.push(new StarSegment(match[1]));
+      results.push(new StarPathSegment(match[1]));
       specificity += '0';
     } else if (segment == '...') {
       if (i < limit) {
         throw new BaseException(`Unexpected "..." before the end of the path for "${route}".`);
       }
-      results.push(new ContinuationSegment());
+      results.push(new ContinuationPathSegment());
     } else {
-      results.push(new StaticSegment(segment));
+      results.push(new StaticPathSegment(segment));
       specificity += '2';
     }
   }
@@ -139,15 +140,15 @@ function parsePathString(route: string): {[key: string]: any} {
 
 // this function is used to determine whether a route config path like `/foo/:id` collides with
 // `/foo/:name`
-function pathDslHash(segments: Segment[]): string {
+function pathDslHash(segments: PathSegment[]): string {
   return segments.map((segment) => {
-                   if (segment instanceof StarSegment) {
+                   if (segment instanceof StarPathSegment) {
                      return '*';
-                   } else if (segment instanceof ContinuationSegment) {
+                   } else if (segment instanceof ContinuationPathSegment) {
                      return '...';
-                   } else if (segment instanceof DynamicSegment) {
+                   } else if (segment instanceof DynamicPathSegment) {
                      return ':';
-                   } else if (segment instanceof StaticSegment) {
+                   } else if (segment instanceof StaticPathSegment) {
                      return segment.path;
                    }
                  })
@@ -171,66 +172,12 @@ function assertPath(path: string) {
   }
 }
 
-export class RecognizedUrlSegment {
-  constructor(
-    public urlPath: string,
-    public urlParams: string[],
-    public allParams: {[key: string]: string},
-    public auxiliary: Url[],
-    public nextSegment: Url) {}
-}
-
-export class GeneratedUrlSegment {
-  constructor(public urlPath: string, public urlParams: string[]) {}
-}
-
-export interface Recognizer {
-  specificity: string;
-  terminal: boolean;
-  hash: string;
-
-  recognize(beginningSegment: Url): RecognizedUrlSegment;
-  generate(params: {[key: string]: any}): GeneratedUrlSegment;
-}
-
-export class RegexRecognizer implements Recognizer {
-  public hash: string;
-  public terminal: boolean = true;
-  public specificity: string = '2';
-  private _regex: RegExp;
-
-  constructor(private _reString: string, private _serializer: (params: {[key: string]: any}) => GeneratedUrlSegment) {
-    this.hash = this._reString;
-    this._regex = RegExpWrapper.create(this._reString);
-  }
-
-  recognize(beginningSegment: Url): RecognizedUrlSegment {
-    var url = beginningSegment.toString();
-    var match = RegExpWrapper.firstMatch(this._regex, url);
-
-    if (isBlank(match)) {
-      return null;
-    }
-
-    var params : {[key: string]: string} = {};
-
-    for (let i = 0; i < match.length; i += 1) {
-      params[i.toString()] = match[i];
-    }
-
-    return new RecognizedUrlSegment(url, [], params, [], null);
-  }
-
-  generate(params: {[key: string]: any}): GeneratedUrlSegment {
-    return this._serializer(params);
-  }
-}
 
 /**
  * Parses a URL string using a given matcher DSL, and generates URLs from param maps
  */
 export class PathRecognizer implements Recognizer {
-  private _segments: Segment[];
+  private _segments: PathSegment[];
   specificity: string;
   terminal: boolean = true;
   hash: string;
@@ -247,47 +194,47 @@ export class PathRecognizer implements Recognizer {
     this.hash = pathDslHash(this._segments);
 
     var lastSegment = this._segments[this._segments.length - 1];
-    this.terminal = !(lastSegment instanceof ContinuationSegment);
+    this.terminal = !(lastSegment instanceof ContinuationPathSegment);
   }
 
-  recognize(beginningSegment: Url): RecognizedUrlSegment {
-    var nextSegment = beginningSegment;
-    var currentSegment: Url;
+  recognize(beginningUrlSegment: Url): RecognizedUrlSegment {
+    var nextUrlSegment = beginningUrlSegment;
+    var currentUrlSegment: Url;
     var positionalParams = {};
-    var captured = [];
+    var captured : string[] = [];
 
     for (var i = 0; i < this._segments.length; i += 1) {
-      var segment = this._segments[i];
+      var pathSegment = this._segments[i];
 
-      currentSegment = nextSegment;
-      if (segment instanceof ContinuationSegment) {
+      currentUrlSegment = nextUrlSegment;
+      if (pathSegment instanceof ContinuationPathSegment) {
         break;
       }
 
-      if (isPresent(currentSegment)) {
+      if (isPresent(currentUrlSegment)) {
         // the star segment consumes all of the remaining URL, including matrix params
-        if (segment instanceof StarSegment) {
-          positionalParams[segment.name] = currentSegment.toString();
-          captured.push(currentSegment.toString());
-          nextSegment = null;
+        if (pathSegment instanceof StarPathSegment) {
+          positionalParams[pathSegment.name] = currentUrlSegment.toString();
+          captured.push(currentUrlSegment.toString());
+          nextUrlSegment = null;
           break;
         }
 
-        captured.push(currentSegment.path);
+        captured.push(currentUrlSegment.path);
 
-        if (segment instanceof DynamicSegment) {
-          positionalParams[segment.name] = currentSegment.path;
-        } else if (!segment.match(currentSegment.path)) {
+        if (pathSegment instanceof DynamicPathSegment) {
+          positionalParams[pathSegment.name] = currentUrlSegment.path;
+        } else if (!pathSegment.match(currentUrlSegment.path)) {
           return null;
         }
 
-        nextSegment = currentSegment.child;
-      } else if (!segment.match('')) {
+        nextUrlSegment = currentUrlSegment.child;
+      } else if (!pathSegment.match('')) {
         return null;
       }
     }
 
-    if (this.terminal && isPresent(nextSegment)) {
+    if (this.terminal && isPresent(nextUrlSegment)) {
       return null;
     }
 
@@ -296,9 +243,9 @@ export class PathRecognizer implements Recognizer {
     var auxiliary;
     var urlParams;
     var allParams;
-    if (isPresent(currentSegment)) {
+    if (isPresent(currentUrlSegment)) {
       // If this is the root component, read query params. Otherwise, read matrix params.
-      var paramsSegment = beginningSegment instanceof RootUrl ? beginningSegment : currentSegment;
+      var paramsSegment = beginningUrlSegment instanceof RootUrl ? beginningUrlSegment : currentUrlSegment;
 
       allParams = isPresent(paramsSegment.params) ?
                       StringMapWrapper.merge(paramsSegment.params, positionalParams) :
@@ -307,14 +254,14 @@ export class PathRecognizer implements Recognizer {
       urlParams = serializeParams(paramsSegment.params);
 
 
-      auxiliary = currentSegment.auxiliary;
+      auxiliary = currentUrlSegment.auxiliary;
     } else {
       allParams = positionalParams;
       auxiliary = [];
       urlParams = [];
     }
 
-    return new RecognizedUrlSegment(urlPath, urlParams, allParams, auxiliary, nextSegment);
+    return new RecognizedUrlSegment(urlPath, urlParams, allParams, auxiliary, nextUrlSegment);
   }
 
 
@@ -325,7 +272,7 @@ export class PathRecognizer implements Recognizer {
 
     for (var i = 0; i < this._segments.length; i++) {
       let segment = this._segments[i];
-      if (!(segment instanceof ContinuationSegment)) {
+      if (!(segment instanceof ContinuationPathSegment)) {
         path.push(segment.generate(paramTokens));
       }
     }

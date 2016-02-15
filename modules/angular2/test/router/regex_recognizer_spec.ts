@@ -10,7 +10,8 @@ import {
   SpyObject
 } from 'angular2/testing_internal';
 
-import {RegexRecognizer, GeneratedUrlSegment} from 'angular2/src/router/path_recognizer';
+import {GeneratedUrlSegment} from 'angular2/src/router/recognizers/recognizer';
+import {RegexRecognizer} from 'angular2/src/router/recognizers/regex_recognizer';
 import {parser, Url} from 'angular2/src/router/url_parser';
 
 export function main() {
