@@ -192,7 +192,7 @@ Must be one of the following:
 * **refactor**: A code change that neither fixes a bug nor adds a feature
 * **perf**: A code change that improves performance
 * **test**: Adding missing tests or correcting existing tests
-* **build** Changes that affect the build system, CI configuration or external dependencies
+* **build**: Changes that affect the build system, CI configuration or external dependencies
             (example scopes: gulp, broccoli, npm)
 * **chore**: Other changes that don't modify `src` or `test` files
 
