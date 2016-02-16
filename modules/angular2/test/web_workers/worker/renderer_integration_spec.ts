@@ -225,19 +225,19 @@ export function main() {
             tcb
               .overrideView(MyComp, new ViewMetadata({
                               template: `
-                                <template>
-                                  <div id="animateTarget" class="ng-animate" [ngIf]="ctxBoolProp"></div>
-                                </template>
+                                <div class="ng-animate" *ngIf="ctxBoolProp">
+                                </div>
                               `,
                               directives: [NgIf]
                             }))
               .createAsync(MyComp)
               .then((fixture) => {
                 var rootEl = getRenderElement(fixture.elementRef);
-                var targetEl = DOM.querySelector(rootEl, '#animateTarget');
 
                 fixture.debugElement.componentInstance.ctxBoolProp = true;
                 fixture.detectChanges();
+
+                var targetEl = DOM.querySelector(rootEl, '.ng-animate');
 
                 // should add ng-enter first.
                 expect(DOM.hasClass(targetEl, 'ng-enter')).toBe(true);
@@ -252,21 +252,24 @@ export function main() {
             tcb
               .overrideView(MyComp, new ViewMetadata({
                               template: `
-                                <template>
-                                  <div id="animateTarget" class="ng-animate" [ngIf]="ctxBoolProp"></div>
-                                </template>
+                                <div class="ng-animate" *ngIf="ctxBoolProp">
+                                </div>
                               `,
                               directives: [NgIf]
                             }))
               .createAsync(MyComp)
               .then((fixture) => {
                 var rootEl = getRenderElement(fixture.elementRef);
-                var targetEl = DOM.querySelector(rootEl, '#animateTarget');
 
                 fixture.debugElement.componentInstance.ctxBoolProp = true;
                 fixture.detectChanges();
 
-                // should add ng-enter first.
+                fixture.debugElement.componentInstance.ctxBoolProp = false;
+                fixture.detectChanges();
+
+                var targetEl = DOM.querySelector(rootEl, '.ng-animate');
+
+                // should add ng-leave before DOM remove.
                 expect(DOM.hasClass(targetEl, 'ng-leave')).toBe(true);
 
                 async.done();
