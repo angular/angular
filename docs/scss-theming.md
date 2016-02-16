@@ -28,6 +28,7 @@ palette plus contrast colors and semantic shortcuts for the specified hues.
 
 
 Once that is defined, an individual component is styled in terms of the theme palettes:
+```scss
 my-comp {
   color: md-color($md-foreground, text); 
   background-color: md-color($md-background, lighter); // Use one of the configured hue by semantic name.
@@ -36,6 +37,7 @@ my-comp {
     background-color: md-color($md-primary, 300, 0.7); // Use a specific hue and opacity
   }
 }
+```
 
 The md-color function lets the user reference a specific color from the theme palette, 
 either by a semantic name (e.g., "primary, lighter"), or directly by numbered hue 
