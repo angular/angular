@@ -244,7 +244,9 @@ export class MdSidenav {
   directives: [MdSidenav],
   templateUrl: './components/sidenav/sidenav.html',
   styleUrls: ['./components/sidenav/sidenav.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  // Do not use ChangeDetectionStrategy.OnPush. It does not work for this component because
+  // technically it is a sibling of MdSidenav (on the content tree) and isn't updated when MdSidenav
+  // changes its state.
 })
 export class MdSidenavLayout implements AfterContentInit {
   @ContentChildren(MdSidenav) private sidenavs_: QueryList<MdSidenav>;
