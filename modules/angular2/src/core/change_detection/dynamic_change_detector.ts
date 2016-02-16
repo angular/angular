@@ -110,12 +110,6 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
     this.values[0] = this.context;
     this.dispatcher = dispatcher;
 
-    if (this.strategy === ChangeDetectionStrategy.OnPushObserve) {
-      for (var i = 0; i < this.directiveIndices.length; ++i) {
-        var index = this.directiveIndices[i];
-        super.observeDirective(this._getDirectiveFor(index), i);
-      }
-    }
     this.outputSubscriptions = [];
     for (var i = 0; i < this._directiveRecords.length; ++i) {
       var r = this._directiveRecords[i];
@@ -300,9 +294,6 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
     }
 
     var currValue = this._calculateCurrValue(proto, values, locals);
-    if (this.strategy === ChangeDetectionStrategy.OnPushObserve) {
-      super.observeValue(currValue, proto.selfIndex);
-    }
 
     if (proto.shouldBeChecked()) {
       var prevValue = this._readSelf(proto, values);
