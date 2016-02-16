@@ -70,7 +70,6 @@ const CORE = [
   'ChangeDetectionStrategy.Default',
   'ChangeDetectionStrategy.Detached',
   'ChangeDetectionStrategy.OnPush',
-  'ChangeDetectionStrategy.OnPushObserve',
   'ChangeDetectorRef',
   'ChangeDetectorRef.checkNoChanges():void',
   'ChangeDetectorRef.detach():void',
