@@ -95,6 +95,26 @@ export function main() {
         expect(tokenizeAndHumanizeErrors('<!--'))
             .toEqual([[HtmlTokenType.RAW_TEXT, 'Unexpected character "EOF"', '0:4']]);
       });
+
+      it('should accept comments finishing by too many dashes (even number)', () => {
+        expect(tokenizeAndHumanizeSourceSpans('<!-- test ---->'))
+            .toEqual([
+              [HtmlTokenType.COMMENT_START, '<!--'],
+              [HtmlTokenType.RAW_TEXT, ' test --'],
+              [HtmlTokenType.COMMENT_END, '-->'],
+              [HtmlTokenType.EOF, '']
+            ]);
+      });
+
+      it('should accept comments finishing by too many dashes (odd number)', () => {
+        expect(tokenizeAndHumanizeSourceSpans('<!-- test --->'))
+            .toEqual([
+              [HtmlTokenType.COMMENT_START, '<!--'],
+              [HtmlTokenType.RAW_TEXT, ' test -'],
+              [HtmlTokenType.COMMENT_END, '-->'],
+              [HtmlTokenType.EOF, '']
+            ]);
+      });
     });
 
     describe('doctype', () => {
