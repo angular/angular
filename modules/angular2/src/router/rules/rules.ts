@@ -6,7 +6,7 @@ import {Map} from 'angular2/src/facade/collection';
 import {RouteHandler} from './route_handlers/route_handler';
 import {Url, serializeParams} from '../url_parser';
 import {ComponentInstruction} from '../instruction';
-import {ParamRoutePath} from './route_paths/param_route_path';
+import {RoutePath} from './route_paths/route_path';
 import {GeneratedUrl, UrlParams} from './route_paths/route_path';
 
 
@@ -33,12 +33,14 @@ export interface AbstractRule {
 }
 
 export class RedirectRule implements AbstractRule {
-  private _pathRecognizer: ParamRoutePath;
   public hash: string;
 
-  constructor(public path: string, public redirectTo: any[]) {
-    this._pathRecognizer = new ParamRoutePath(path);
+  constructor(private _pathRecognizer: RoutePath, public redirectTo: any[]) {
     this.hash = this._pathRecognizer.hash;
+  }
+
+  get path() {
+    return this._pathRecognizer.toString();
   }
 
   /**
@@ -65,15 +67,17 @@ export class RouteRule implements AbstractRule {
   hash: string;
 
   private _cache: Map<string, ComponentInstruction> = new Map<string, ComponentInstruction>();
-  private _pathRecognizer: ParamRoutePath;
 
   // TODO: cache component instruction instances by params and by ParsedUrl instance
 
-  constructor(public path: string, public handler: RouteHandler) {
-    this._pathRecognizer = new ParamRoutePath(path);
+  constructor(private _pathRecognizer : RoutePath, public handler: RouteHandler) {
     this.specificity = this._pathRecognizer.specificity;
     this.hash = this._pathRecognizer.hash;
     this.terminal = this._pathRecognizer.terminal;
+  }
+
+  get path() {
+    return this._pathRecognizer.toString();
   }
 
   recognize(beginningSegment: Url): Promise<RouteMatch> {

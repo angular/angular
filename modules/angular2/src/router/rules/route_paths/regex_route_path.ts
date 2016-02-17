@@ -35,4 +35,8 @@ export class RegexRoutePath implements RoutePath {
   }
 
   generateUrl(params: UrlParams): GeneratedUrl { return this._serializer(params); }
+
+  toString() {
+    return this._reString;
+  }
 }

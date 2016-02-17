@@ -18,4 +18,5 @@ export interface RoutePath {
   hash: string;
   matchUrl(url: Url): MatchedUrl;
   generateUrl(params: UrlParams): GeneratedUrl;
+  toString(): string;
 }

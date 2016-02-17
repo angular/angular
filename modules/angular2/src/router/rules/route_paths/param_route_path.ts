@@ -191,6 +191,11 @@ export class ParamRoutePath implements RoutePath {
     return new GeneratedUrl(urlPath, urlParams);
   }
 
+
+  toString(): string {
+    return this.routePath;
+  }
+
   private _parsePathString(routePath: string) {
     // normalize route as not starting with a "/". Recognition will
     // also normalize.

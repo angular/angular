@@ -11,8 +11,13 @@ import {
   Redirect,
   RouteDefinition
 } from '../route_config/route_config_impl';
+
 import {AsyncRouteHandler} from './route_handlers/async_route_handler';
 import {SyncRouteHandler} from './route_handlers/sync_route_handler';
+
+import {ParamRoutePath} from './route_paths/param_route_path';
+import {RegexRoutePath} from './route_paths/regex_route_path';
+
 import {Url} from '../url_parser';
 import {ComponentInstruction} from '../instruction';
 
@@ -53,7 +58,8 @@ export class RuleSet {
     if (config instanceof AuxRoute) {
       handler = new SyncRouteHandler(config.component, config.data);
       let path = config.path.startsWith('/') ? config.path.substring(1) : config.path;
-      let auxRule = new RouteRule(config.path, handler);
+      let routePath = new ParamRoutePath(path);
+      let auxRule = new RouteRule(routePath, handler);
       this.auxRulesByPath.set(path, auxRule);
       if (isPresent(config.name)) {
         this.auxRulesByName.set(config.name, auxRule);
@@ -64,7 +70,8 @@ export class RuleSet {
     let useAsDefault = false;
 
     if (config instanceof Redirect) {
-      let redirector = new RedirectRule(config.path, config.redirectTo);
+      let routePath = new ParamRoutePath(config.path);
+      let redirector = new RedirectRule(routePath, config.redirectTo);
       this._assertNoHashCollision(redirector.hash, config.path);
       this.rules.push(redirector);
       return true;
@@ -77,7 +84,8 @@ export class RuleSet {
       handler = new AsyncRouteHandler(config.loader, config.data);
       useAsDefault = isPresent(config.useAsDefault) && config.useAsDefault;
     }
-    let newRule = new RouteRule(config.path, handler);
+    let routePath = new ParamRoutePath(config.path);
+    let newRule = new RouteRule(routePath, handler);
 
     this._assertNoHashCollision(newRule.hash, config.path);
 
@@ -97,10 +105,10 @@ export class RuleSet {
 
 
   private _assertNoHashCollision(hash: string, path) {
-    this.rules.forEach((matcher) => {
-      if (hash == matcher.hash) {
+    this.rules.forEach((rule) => {
+      if (hash == rule.hash) {
         throw new BaseException(
-            `Configuration '${path}' conflicts with existing route '${matcher.path}'`);
+            `Configuration '${path}' conflicts with existing route '${rule.path}'`);
       }
     });
   }
