@@ -581,7 +581,8 @@ export function main() {
         let src = "111\n222\n333\nE\n444\n555\n666\n";
         let file = new ParseSourceFile(src, 'file://');
         let location = new ParseLocation(file, 12, 123, 456);
-        let error = new HtmlTokenError('**ERROR**', null, location);
+        let span = new ParseSourceSpan(location, location);
+        let error = new HtmlTokenError('**ERROR**', null, span);
         expect(error.toString())
             .toEqual(`**ERROR** ("\n222\n333\n[ERROR ->]E\n444\n555\n"): file://@123:456`);
       });
@@ -631,7 +632,9 @@ function tokenizeAndHumanizeLineColumn(input: string): any[] {
 
 function tokenizeAndHumanizeErrors(input: string): any[] {
   return tokenizeHtml(input, 'someUrl')
-      .errors.map(
-          tokenError =>
-              [<any>tokenError.tokenType, tokenError.msg, humanizeLineColumn(tokenError.location)]);
+      .errors.map(tokenError => [
+        <any>tokenError.tokenType,
+        tokenError.msg,
+        humanizeLineColumn(tokenError.span.start)
+      ]);
 }
