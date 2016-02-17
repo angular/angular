@@ -267,8 +267,16 @@ class _HtmlTokenizer {
   }
 
   private _attemptStr(chars: string): boolean {
+    var indexBeforeAttempt = this.index;
+    var columnBeforeAttempt = this.column;
+    var lineBeforeAttempt = this.line;
     for (var i = 0; i < chars.length; i++) {
       if (!this._attemptCharCode(StringWrapper.charCodeAt(chars, i))) {
+        // If attempting to parse the string fails, we want to reset the parser
+        // to where it was before the attempt
+        this.index = indexBeforeAttempt;
+        this.column = columnBeforeAttempt;
+        this.line = lineBeforeAttempt;
         return false;
       }
     }
