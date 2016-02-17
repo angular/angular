@@ -6,7 +6,7 @@ import {Subject} from 'rxjs/Subject';
 import {Subscription} from 'rxjs/Subscription';
 import {Operator} from 'rxjs/Operator';
 
-import {PromiseObservable} from 'rxjs/observable/fromPromise';
+import {PromiseObservable} from 'rxjs/observable/PromiseObservable';
 import {toPromise} from 'rxjs/operator/toPromise';
 
 export {Observable} from 'rxjs/Observable';
