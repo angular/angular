@@ -249,42 +249,42 @@ function commonTests() {
          }, resultTimer);
        }), testTimeout);
 
-    it('should run subscriber listeners in the subscription zone (outside)',
-       inject([AsyncTestCompleter], (async) => {
-         // Each subscriber fires a microtask outside the Angular zone. The test
-         // then verifies that those microtasks do not cause additional digests.
+    xit('should run subscriber listeners in the subscription zone (outside)',
+        inject([AsyncTestCompleter], (async) => {
+          // Each subscriber fires a microtask outside the Angular zone. The test
+          // then verifies that those microtasks do not cause additional digests.
 
-         var turnStart = false;
-         ObservableWrapper.subscribe(_zone.onTurnStart, (_) => {
-           if (turnStart) throw 'Should not call this more than once';
-           _log.add('onTurnStart');
-           microTask(() => {});
-           turnStart = true;
-         });
+          var turnStart = false;
+          ObservableWrapper.subscribe(_zone.onTurnStart, (_) => {
+            if (turnStart) throw 'Should not call this more than once';
+            _log.add('onTurnStart');
+            microTask(() => {});
+            turnStart = true;
+          });
 
-         var turnDone = false;
-         ObservableWrapper.subscribe(_zone.onTurnDone, (_) => {
-           if (turnDone) throw 'Should not call this more than once';
-           _log.add('onTurnDone');
-           microTask(() => {});
-           turnDone = true;
-         });
+          var turnDone = false;
+          ObservableWrapper.subscribe(_zone.onTurnDone, (_) => {
+            if (turnDone) throw 'Should not call this more than once';
+            _log.add('onTurnDone');
+            microTask(() => {});
+            turnDone = true;
+          });
 
-         var eventDone = false;
-         ObservableWrapper.subscribe(_zone.onEventDone, (_) => {
-           if (eventDone) throw 'Should not call this more than once';
-           _log.add('onEventDone');
-           microTask(() => {});
-           eventDone = true;
-         });
+          var eventDone = false;
+          ObservableWrapper.subscribe(_zone.onEventDone, (_) => {
+            if (eventDone) throw 'Should not call this more than once';
+            _log.add('onEventDone');
+            microTask(() => {});
+            eventDone = true;
+          });
 
-         macroTask(() => { _zone.run(_log.fn('run')); });
+          macroTask(() => { _zone.run(_log.fn('run')); });
 
-         macroTask(() => {
-           expect(_log.result()).toEqual('onTurnStart; run; onTurnDone; onEventDone');
-           async.done();
-         }, resultTimer);
-       }), testTimeout);
+          macroTask(() => {
+            expect(_log.result()).toEqual('onTurnStart; run; onTurnDone; onEventDone');
+            async.done();
+          }, resultTimer);
+        }), testTimeout);
 
     it('should run subscriber listeners in the subscription zone (inside)',
        inject([AsyncTestCompleter], (async) => {

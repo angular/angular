@@ -7684,9 +7684,9 @@
       "resolved": "https://registry.npmjs.org/run-sequence/-/run-sequence-1.1.5.tgz"
     },
     "rxjs": {
-      "version": "5.0.0-beta.0",
-      "from": "rxjs@5.0.0-beta.0",
-      "resolved": "https://registry.npmjs.org/rxjs/-/rxjs-5.0.0-beta.0.tgz"
+      "version": "5.0.0-beta.2",
+      "from": "rxjs@5.0.0-beta.2",
+      "resolved": "https://registry.npmjs.org/rxjs/-/rxjs-5.0.0-beta.2.tgz"
     },
     "sass-graph": {
       "version": "2.0.1",
@@ -7823,7 +7823,8 @@
       "dependencies": {
         "mime-db": {
           "version": "1.20.0",
-          "from": "mime-db@>=1.20.0 <1.21.0"
+          "from": "mime-db@1.20.0",
+          "resolved": "https://registry.npmjs.org/mime-db/-/mime-db-1.20.0.tgz"
         },
         "mime-types": {
           "version": "2.1.8",
@@ -8537,6 +8538,7 @@
     "ts2dart": {
       "version": "0.7.24",
       "from": "ts2dart@0.7.24",
+      "resolved": "https://registry.npmjs.org/ts2dart/-/ts2dart-0.7.24.tgz",
       "dependencies": {
         "source-map": {
           "version": "0.4.4",
