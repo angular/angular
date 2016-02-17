@@ -178,6 +178,11 @@ export class ListWrapper {
   static createFixedSize(size: number): any[] { return new Array(size); }
   static createGrowableSize(size: number): any[] { return new Array(size); }
   static clone<T>(array: T[]): T[] { return array.slice(0); }
+  static createImmutable<T>(array: T[]): T[] {
+    var result = ListWrapper.clone(array);
+    Object.seal(result);
+    return result;
+  }
   static forEachWithIndex<T>(array: T[], fn: (t: T, n: number) => void) {
     for (var i = 0; i < array.length; i++) {
       fn(array[i], i);
@@ -265,6 +270,8 @@ export class ListWrapper {
     }
     return solution;
   }
+
+  static isImmutable(list: any[]): boolean { return Object.isSealed(list); }
 }
 
 export function isListLikeIterable(obj: any): boolean {
