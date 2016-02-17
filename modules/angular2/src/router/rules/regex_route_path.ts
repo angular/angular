@@ -3,9 +3,7 @@ import {Url, RootUrl, serializeParams} from './url_parser';
 import {RoutePath, GeneratedUrl, MatchedUrl, UrlParams} from './route_path';
 
 
-export interface RegexSerializer {
-  (params: UrlParams) : GeneratedUrl
-}
+export interface RegexSerializer { (params: UrlParams): GeneratedUrl }
 
 export class RegexRoutePath implements RoutePath {
   public hash: string;
@@ -14,9 +12,7 @@ export class RegexRoutePath implements RoutePath {
 
   private _regex: RegExp;
 
-  constructor(
-    private _reString: string,
-    private _serializer: RegexSerializer) {
+  constructor(private _reString: string, private _serializer: RegexSerializer) {
     this.hash = this._reString;
     this._regex = RegExpWrapper.create(this._reString);
   }
@@ -29,7 +25,7 @@ export class RegexRoutePath implements RoutePath {
       return null;
     }
 
-    var params : UrlParams = {};
+    var params: UrlParams = {};
 
     for (let i = 0; i < match.length; i += 1) {
       params[i.toString()] = match[i];
@@ -38,7 +34,5 @@ export class RegexRoutePath implements RoutePath {
     return new MatchedUrl(urlPath, [], params, [], null);
   }
 
-  generateUrl(params: UrlParams): GeneratedUrl {
-    return this._serializer(params);
-  }
+  generateUrl(params: UrlParams): GeneratedUrl { return this._serializer(params); }
 }

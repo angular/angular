@@ -1,23 +1,15 @@
 import {Url} from './url_parser';
 
-export interface UrlParams {
-  [key: string]: any
-}
+export interface UrlParams { [key: string]: any }
 
 export class MatchedUrl {
-  constructor(
-    public urlPath: string,
-    public urlParams: string[],
-    public allParams: UrlParams,
-    public auxiliary: Url[],
-    public rest: Url) {}
+  constructor(public urlPath: string, public urlParams: string[], public allParams: UrlParams,
+              public auxiliary: Url[], public rest: Url) {}
 }
 
 
 export class GeneratedUrl {
-  constructor(
-    public urlPath: string,
-    public urlParams: UrlParams) {}
+  constructor(public urlPath: string, public urlParams: UrlParams) {}
 }
 
 export interface RoutePath {
@@ -27,4 +19,3 @@ export interface RoutePath {
   matchUrl(url: Url): MatchedUrl;
   generateUrl(params: UrlParams): GeneratedUrl;
 }
-

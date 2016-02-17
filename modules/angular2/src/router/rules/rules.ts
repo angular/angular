@@ -83,8 +83,7 @@ export class RouteRule implements AbstractRule {
     }
 
     return this.handler.resolveComponentType().then((_) => {
-      var componentInstruction =
-          this._getInstruction(res.urlPath, res.urlParams, res.allParams);
+      var componentInstruction = this._getInstruction(res.urlPath, res.urlParams, res.allParams);
       return new PathMatch(componentInstruction, res.rest, res.auxiliary);
     });
   }
@@ -96,7 +95,7 @@ export class RouteRule implements AbstractRule {
     return this._getInstruction(urlPath, urlParams, params);
   }
 
-  generateComponentPathValues(params: {[key: string]: any}): GeneratedUrl  {
+  generateComponentPathValues(params: {[key: string]: any}): GeneratedUrl {
     return this._pathRecognizer.generateUrl(params);
   }
 
@@ -111,9 +110,9 @@ export class RouteRule implements AbstractRule {
     if (this._cache.has(hashKey)) {
       return this._cache.get(hashKey);
     }
-    var instruction =
-        new ComponentInstruction(urlPath, serializedParams, this.handler.data, this.handler.componentType,
-                                 this.terminal, this.specificity, params);
+    var instruction = new ComponentInstruction(urlPath, serializedParams, this.handler.data,
+                                               this.handler.componentType, this.terminal,
+                                               this.specificity, params);
     this._cache.set(hashKey, instruction);
 
     return instruction;

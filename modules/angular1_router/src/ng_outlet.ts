@@ -200,7 +200,6 @@ function ngOutletFillContentDirective($compile) {
 
 
 
-
 function routerTriggerDirective($q) {
   return {
     require: '^ngOutlet',

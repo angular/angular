@@ -1,9 +1,4 @@
-import {
-  RegExpWrapper,
-  StringWrapper,
-  isPresent,
-  isBlank
-} from 'angular2/src/facade/lang';
+import {RegExpWrapper, StringWrapper, isPresent, isBlank} from 'angular2/src/facade/lang';
 import {BaseException} from 'angular2/src/facade/exceptions';
 import {StringMapWrapper} from 'angular2/src/facade/collection';
 
@@ -46,9 +41,7 @@ class StaticPathSegment implements PathSegment {
   name: string = '';
   specificity = '2';
   hash: string;
-  constructor(public path: string) {
-    this.hash = path;
-  }
+  constructor(public path: string) { this.hash = path; }
   match(path: string): boolean { return path == this.path; }
   generate(params: TouchMap): string { return this.path; }
 }
@@ -115,7 +108,7 @@ export class ParamRoutePath implements RoutePath {
     var nextUrlSegment = url;
     var currentUrlSegment: Url;
     var positionalParams = {};
-    var captured : string[] = [];
+    var captured: string[] = [];
 
     for (var i = 0; i < this._segments.length; i += 1) {
       var pathSegment = this._segments[i];
@@ -214,11 +207,13 @@ export class ParamRoutePath implements RoutePath {
 
       if (isPresent(match = RegExpWrapper.firstMatch(DynamicPathSegment.paramMatcher, segment))) {
         this._segments.push(new DynamicPathSegment(match[1]));
-      } else if (isPresent(match = RegExpWrapper.firstMatch(StarPathSegment.wildcardMatcher, segment))) {
+      } else if (isPresent(
+                     match = RegExpWrapper.firstMatch(StarPathSegment.wildcardMatcher, segment))) {
         this._segments.push(new StarPathSegment(match[1]));
       } else if (segment == '...') {
         if (i < limit) {
-          throw new BaseException(`Unexpected "..." before the end of the path for "${routePath}".`);
+          throw new BaseException(
+              `Unexpected "..." before the end of the path for "${routePath}".`);
         }
         this._segments.push(new ContinuationPathSegment());
       } else {
@@ -227,10 +222,13 @@ export class ParamRoutePath implements RoutePath {
     }
   }
 
-  private _calculateSpecificity() : string {
-    // The "specificity" of a path is used to determine which route is used when multiple routes match
-    // a URL. Static segments (like "/foo") are the most specific, followed by dynamic segments (like
-    // "/:id"). Star segments add no specificity. Segments at the start of the path are more specific
+  private _calculateSpecificity(): string {
+    // The "specificity" of a path is used to determine which route is used when multiple routes
+    // match
+    // a URL. Static segments (like "/foo") are the most specific, followed by dynamic segments
+    // (like
+    // "/:id"). Star segments add no specificity. Segments at the start of the path are more
+    // specific
     // than proceeding ones.
     //
     // The code below uses place values to combine the different types of segments into a single
@@ -249,12 +247,12 @@ export class ParamRoutePath implements RoutePath {
     return specificity;
   }
 
-  private _calculateHash() : string{
+  private _calculateHash(): string {
     // this function is used to determine whether a route config path like `/foo/:id` collides with
     // `/foo/:name`
     var i, length = this._segments.length, hash;
     var hashParts = [];
-    for(i = 0; i < length; i++) {
+    for (i = 0; i < length; i++) {
       hashParts.push(this._segments[i].hash);
     }
     return hashParts.join('/');
@@ -273,4 +271,3 @@ export class ParamRoutePath implements RoutePath {
     }
   }
 }
-

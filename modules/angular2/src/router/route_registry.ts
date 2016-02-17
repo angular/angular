@@ -166,8 +166,7 @@ export class RouteRegistry {
 
     // Matches some beginning part of the given URL
     var possibleMatches: Promise<RouteMatch>[] =
-        _aux ? rules.recognizeAuxiliary(parsedUrl) :
-               rules.recognize(parsedUrl);
+        _aux ? rules.recognizeAuxiliary(parsedUrl) : rules.recognize(parsedUrl);
 
     var matchPromises: Promise<Instruction>[] = possibleMatches.map(
         (candidate: Promise<RouteMatch>) => candidate.then((candidate: RouteMatch) => {
@@ -382,8 +381,7 @@ export class RouteRegistry {
           linkParamIndex += 1;
         }
       }
-      var routeRecognizer =
-          (_aux ? rules.auxRulesByName : rules.rulesByName).get(routeName);
+      var routeRecognizer = (_aux ? rules.auxRulesByName : rules.rulesByName).get(routeName);
 
       if (isBlank(routeRecognizer)) {
         throw new BaseException(
