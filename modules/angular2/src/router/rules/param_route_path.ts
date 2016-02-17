@@ -3,7 +3,7 @@ import {BaseException} from 'angular2/src/facade/exceptions';
 import {StringMapWrapper} from 'angular2/src/facade/collection';
 
 import {TouchMap, normalizeString} from '../utils';
-import {Url, RootUrl, serializeParams} from './url_parser';
+import {Url, RootUrl, serializeParams} from '../url_parser';
 import {RoutePath, GeneratedUrl, MatchedUrl, UrlParams} from './route_path';
 
 
