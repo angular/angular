@@ -61,8 +61,8 @@ class DirectiveIntrospectorProvider {
  *
  * The value for the `ngOutlet` attribute is optional.
  */
-function ngOutletDirective($animate, $q: ng.IQService, $router) {
-  let rootRouter = $router;
+function ngOutletDirective($animate, $q: ng.IQService, $rootRouter) {
+  let rootRouter = $rootRouter;
 
   return {
     restrict: 'AE',
@@ -231,8 +231,8 @@ function routerTriggerDirective($q) {
  *
  * ```js
  * angular.module('myApp', ['ngComponentRouter'])
- *   .controller('AppController', ['$router', function($router) {
- *     $router.config({ path: '/user/:id', component: 'user' });
+ *   .controller('AppController', ['$rootRouter', function($rootRouter) {
+ *     $rootRouter.config({ path: '/user/:id', component: 'user' });
  *     this.user = { name: 'Brian', id: 123 };
  *   });
  * ```
@@ -243,13 +243,11 @@ function routerTriggerDirective($q) {
  * </div>
  * ```
  */
-function ngLinkDirective($router, $parse) {
-  let rootRouter = $router;
-
+function ngLinkDirective($rootRouter, $parse) {
   return {require: '?^^ngOutlet', restrict: 'A', link: ngLinkDirectiveLinkFn};
 
   function ngLinkDirectiveLinkFn(scope, element, attrs, ctrl) {
-    let router = (ctrl && ctrl.$$router) || rootRouter;
+    let router = (ctrl && ctrl.$$router) || $rootRouter;
     if (!router) {
       return;
     }
@@ -277,7 +275,7 @@ function ngLinkDirective($router, $parse) {
         return;
       }
 
-      $router.navigateByInstruction(instruction);
+      $rootRouter.navigateByInstruction(instruction);
       event.preventDefault();
     });
   }
@@ -291,9 +289,9 @@ function dashCase(str: string): string {
  * A module for adding new a routing system Angular 1.
  */
 angular.module('ngComponentRouter', [])
-    .directive('ngOutlet', ['$animate', '$q', '$router', ngOutletDirective])
+    .directive('ngOutlet', ['$animate', '$q', '$rootRouter', ngOutletDirective])
     .directive('ngOutlet', ['$compile', ngOutletFillContentDirective])
-    .directive('ngLink', ['$router', '$parse', ngLinkDirective])
+    .directive('ngLink', ['$rootRouter', '$parse', ngLinkDirective])
     .directive('$router', ['$q', routerTriggerDirective]);
 
 /*

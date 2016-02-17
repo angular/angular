@@ -5,7 +5,7 @@ describe('ngLink', function () {
   var elt,
     $compile,
     $rootScope,
-    $router,
+    $rootRouter,
     $compileProvider;
 
   beforeEach(function () {
@@ -15,10 +15,10 @@ describe('ngLink', function () {
       $compileProvider = _$compileProvider_;
     });
 
-    inject(function (_$compile_, _$rootScope_, _$router_) {
+    inject(function (_$compile_, _$rootScope_, _$rootRouter_) {
       $compile = _$compile_;
       $rootScope = _$rootScope_;
-      $router = _$router_;
+      $rootRouter = _$rootRouter_;
     });
 
     registerComponent('userCmp', '<div>hello {{userCmp.$routeParams.name}}</div>', function () {});
@@ -28,26 +28,26 @@ describe('ngLink', function () {
 
 
   it('should allow linking from the parent to the child', function () {
-    $router.config([
+    $rootRouter.config([
       { path: '/a', component: 'oneCmp' },
       { path: '/b', component: 'twoCmp', name: 'Two' }
     ]);
     compile('<a ng-link="[\'/Two\']">link</a> | outer { <div ng-outlet></div> }');
 
-    $router.navigateByUrl('/a');
+    $rootRouter.navigateByUrl('/a');
     $rootScope.$digest();
 
     expect(elt.find('a').attr('href')).toBe('./b');
   });
 
   it('should allow linking from the child and the parent', function () {
-    $router.config([
+    $rootRouter.config([
       { path: '/a', component: 'oneCmp' },
       { path: '/b', component: 'twoCmp', name: 'Two' }
     ]);
     compile('outer { <div ng-outlet></div> }');
 
-    $router.navigateByUrl('/b');
+    $rootRouter.navigateByUrl('/b');
     $rootScope.$digest();
 
     expect(elt.find('a').attr('href')).toBe('./b');
@@ -57,13 +57,13 @@ describe('ngLink', function () {
   it('should allow params in routerLink directive', function () {
     registerComponent('twoLinkCmp', '<div><a ng-link="[\'/Two\', {param: \'lol\'}]">{{twoLinkCmp.number}}</a></div>', function () {this.number = 'two'});
 
-    $router.config([
+    $rootRouter.config([
       { path: '/a', component: 'twoLinkCmp' },
       { path: '/b/:param', component: 'twoCmp', name: 'Two' }
     ]);
     compile('<div ng-outlet></div>');
 
-    $router.navigateByUrl('/a');
+    $rootRouter.navigateByUrl('/a');
     $rootScope.$digest();
 
     expect(elt.find('a').attr('href')).toBe('./b/lol');
@@ -72,13 +72,13 @@ describe('ngLink', function () {
 
   it('should update the href of links with bound params', function () {
     registerComponent('twoLinkCmp', '<div><a ng-link="[\'/Two\', {param: twoLinkCmp.number}]">{{twoLinkCmp.number}}</a></div>', function () {this.number = 'param'});
-    $router.config([
+    $rootRouter.config([
       { path: '/a', component: 'twoLinkCmp' },
       { path: '/b/:param', component: 'twoCmp', name: 'Two' }
     ]);
     compile('<div ng-outlet></div>');
 
-    $router.navigateByUrl('/a');
+    $rootRouter.navigateByUrl('/a');
     $rootScope.$digest();
 
     expect(elt.find('a').attr('href')).toBe('./b/param');
@@ -86,7 +86,7 @@ describe('ngLink', function () {
 
 
   it('should navigate on left-mouse click when a link url matches a route', function () {
-    $router.config([
+    $rootRouter.config([
       { path: '/', component: 'oneCmp' },
       { path: '/two', component: 'twoCmp', name: 'Two'}
     ]);
@@ -104,8 +104,8 @@ describe('ngLink', function () {
   });
 
 
-  it('should not navigate on non-left mouse click when a link url matches a route', inject(function ($router) {
-    $router.config([
+  it('should not navigate on non-left mouse click when a link url matches a route', inject(function ($rootRouter) {
+    $rootRouter.config([
       { path: '/', component: 'oneCmp' },
       { path: '/two', component: 'twoCmp', name: 'Two'}
     ]);
@@ -122,7 +122,7 @@ describe('ngLink', function () {
 
   // See https://github.com/angular/router/issues/206
   it('should not navigate a link without an href', function () {
-    $router.config([
+    $rootRouter.config([
       { path: '/', component: 'oneCmp' },
       { path: '/two', component: 'twoCmp', name: 'Two'}
     ]);

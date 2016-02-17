@@ -5,7 +5,7 @@ describe('navigation', function () {
   var elt,
       $compile,
       $rootScope,
-      $router,
+      $rootRouter,
       $compileProvider;
 
   beforeEach(function () {
@@ -15,10 +15,10 @@ describe('navigation', function () {
       $compileProvider = _$compileProvider_;
     });
 
-    inject(function (_$compile_, _$rootScope_, _$router_) {
+    inject(function (_$compile_, _$rootScope_, _$rootRouter_) {
       $compile = _$compile_;
       $rootScope = _$rootScope_;
-      $router = _$router_;
+      $rootRouter = _$rootRouter_;
     });
 
     registerDirective('userCmp', {
@@ -52,11 +52,11 @@ describe('navigation', function () {
   it('should work in a simple case', function () {
     compile('<ng-outlet></ng-outlet>');
 
-    $router.config([
+    $rootRouter.config([
       { path: '/', component: 'oneCmp' }
     ]);
 
-    $router.navigateByUrl('/');
+    $rootRouter.navigateByUrl('/');
     $rootScope.$digest();
 
     expect(elt.text()).toBe('one');
@@ -66,11 +66,11 @@ describe('navigation', function () {
   it('should work with components created by the `mod.component()` helper', function () {
     compile('<ng-outlet></ng-outlet>');
 
-    $router.config([
+    $rootRouter.config([
       { path: '/', component: 'threeCmp' }
     ]);
 
-    $router.navigateByUrl('/');
+    $rootRouter.navigateByUrl('/');
     $rootScope.$digest();
 
     expect(elt.text()).toBe('three');
@@ -78,16 +78,16 @@ describe('navigation', function () {
 
 
   it('should navigate between components with different parameters', function () {
-    $router.config([
+    $rootRouter.config([
       { path: '/user/:name', component: 'userCmp' }
     ]);
     compile('<ng-outlet></ng-outlet>');
 
-    $router.navigateByUrl('/user/brian');
+    $rootRouter.navigateByUrl('/user/brian');
     $rootScope.$digest();
     expect(elt.text()).toBe('hello brian');
 
-    $router.navigateByUrl('/user/igor');
+    $rootRouter.navigateByUrl('/user/igor');
     $rootScope.$digest();
     expect(elt.text()).toBe('hello igor');
   });
@@ -106,17 +106,17 @@ describe('navigation', function () {
       controller: ParentController
     });
 
-    $router.config([
+    $rootRouter.config([
       { path: '/parent/...', component: 'parentCmp' }
     ]);
     compile('<ng-outlet></ng-outlet>');
 
-    $router.navigateByUrl('/parent/user/brian');
+    $rootRouter.navigateByUrl('/parent/user/brian');
     $rootScope.$digest();
     expect(instanceCount).toBe(1);
     expect(elt.text()).toBe('parent { hello brian }');
 
-    $router.navigateByUrl('/parent/user/igor');
+    $rootRouter.navigateByUrl('/parent/user/igor');
     $rootScope.$digest();
     expect(instanceCount).toBe(1);
     expect(elt.text()).toBe('parent { hello igor }');
@@ -131,12 +131,12 @@ describe('navigation', function () {
       ]
     });
 
-    $router.config([
+    $rootRouter.config([
       { path: '/a/...', component: 'childCmp' }
     ]);
     compile('<div>outer { <div ng-outlet></div> }</div>');
 
-    $router.navigateByUrl('/a/b');
+    $rootRouter.navigateByUrl('/a/b');
     $rootScope.$digest();
 
     expect(elt.text()).toBe('outer { inner { one } }');
@@ -150,12 +150,12 @@ describe('navigation', function () {
       ]
     });
 
-    $router.config([
+    $rootRouter.config([
       { path: '/...', component: 'childCmp' }
     ]);
     compile('<div>outer { <div ng-outlet></div> }</div>');
 
-    $router.navigateByUrl('/b');
+    $rootRouter.navigateByUrl('/b');
     $rootScope.$digest();
 
     expect(elt.text()).toBe('outer { inner { one } }');
@@ -171,26 +171,26 @@ describe('navigation', function () {
         { path: '/end', component: 'oneCmp' }
       ]});
 
-    $router.config([
+    $rootRouter.config([
       { path: '/recur', component: 'recurCmp' },
       { path: '/', component: 'oneCmp' }
     ]);
 
     compile('<div>root { <div ng-outlet></div> }</div>');
-    $router.navigateByUrl('/recur/recur/end');
+    $rootRouter.navigateByUrl('/recur/recur/end');
     $rootScope.$digest();
     expect(elt.text()).toBe('root { one }');
   });
 
 
   it('should change location path', inject(function ($location) {
-    $router.config([
+    $rootRouter.config([
       { path: '/user', component: 'userCmp' }
     ]);
 
     compile('<div ng-outlet></div>');
 
-    $router.navigateByUrl('/user');
+    $rootRouter.navigateByUrl('/user');
     $rootScope.$digest();
 
     expect($location.path()).toBe('/user');
@@ -198,13 +198,13 @@ describe('navigation', function () {
 
 
   it('should pass through query terms to the location', inject(function ($location) {
-    $router.config([
+    $rootRouter.config([
       { path: '/user', component: 'userCmp' }
     ]);
 
     compile('<div ng-outlet></div>');
 
-    $router.navigateByUrl('/user?x=y');
+    $rootRouter.navigateByUrl('/user?x=y');
     $rootScope.$digest();
 
     expect($location.path()).toBe('/user');
@@ -215,12 +215,12 @@ describe('navigation', function () {
   it('should change location to the canonical route', inject(function ($location) {
     compile('<div ng-outlet></div>');
 
-    $router.config([
+    $rootRouter.config([
       { path: '/',     redirectTo: ['/User'] },
       { path: '/user', component:  'userCmp', name: 'User' }
     ]);
 
-    $router.navigateByUrl('/');
+    $rootRouter.navigateByUrl('/');
     $rootScope.$digest();
 
     expect($location.path()).toBe('/user');
@@ -236,7 +236,7 @@ describe('navigation', function () {
       ]
     });
 
-    $router.config([
+    $rootRouter.config([
       { path: '/old-parent/old-child', redirectTo: ['/NewParent', 'NewChild'] },
       { path: '/old-parent/old-child-two', redirectTo: ['/NewParent', 'NewChildTwo'] },
       { path: '/new-parent/...', component:  'childRouter', name: 'NewParent' }
@@ -244,13 +244,13 @@ describe('navigation', function () {
 
     compile('<div ng-outlet></div>');
 
-    $router.navigateByUrl('/old-parent/old-child');
+    $rootRouter.navigateByUrl('/old-parent/old-child');
     $rootScope.$digest();
 
     expect($location.path()).toBe('/new-parent/new-child');
     expect(elt.text()).toBe('inner { one }');
 
-    $router.navigateByUrl('/old-parent/old-child-two');
+    $rootRouter.navigateByUrl('/old-parent/old-child-two');
     $rootScope.$digest();
 
     expect($location.path()).toBe('/new-parent/new-child-two');
@@ -259,7 +259,7 @@ describe('navigation', function () {
 
 
   it('should navigate when the location path changes', inject(function ($location) {
-    $router.config([
+    $rootRouter.config([
       { path: '/one', component: 'oneCmp' }
     ]);
     compile('<div ng-outlet></div>');
@@ -272,7 +272,7 @@ describe('navigation', function () {
 
 
   it('should navigate when the location query changes', inject(function ($location) {
-    $router.config([
+    $rootRouter.config([
       { path: '/get/params', component: 'getParams' }
     ]);
     compile('<div ng-outlet></div>');
@@ -284,7 +284,7 @@ describe('navigation', function () {
   }));
 
 
-  it('should expose a "navigating" property on $router', inject(function ($q) {
+  it('should expose a "navigating" property on $rootRouter', inject(function ($q) {
     var defer;
     registerDirective('pendingActivate', {
       $canActivate: function () {
@@ -292,17 +292,17 @@ describe('navigation', function () {
         return defer.promise;
       }
     });
-    $router.config([
+    $rootRouter.config([
       { path: '/pending-activate', component: 'pendingActivate' }
     ]);
     compile('<div ng-outlet></div>');
 
-    $router.navigateByUrl('/pending-activate');
+    $rootRouter.navigateByUrl('/pending-activate');
     $rootScope.$digest();
-    expect($router.navigating).toBe(true);
+    expect($rootRouter.navigating).toBe(true);
     defer.resolve();
     $rootScope.$digest();
-    expect($router.navigating).toBe(false);
+    expect($rootRouter.navigating).toBe(false);
   }));
 
   function registerDirective(name, options) {
