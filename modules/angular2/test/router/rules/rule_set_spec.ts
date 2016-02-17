@@ -16,7 +16,7 @@ import {RouteMatch, PathMatch, RedirectMatch} from 'angular2/src/router/rules/ru
 import {RuleSet} from 'angular2/src/router/rules/rule_set';
 
 import {Route, Redirect} from 'angular2/src/router/route_config/route_config_decorator';
-import {parser} from 'angular2/src/router/rules/url_parser';
+import {parser} from 'angular2/src/router/url_parser';
 import {PromiseWrapper} from 'angular2/src/facade/promise';
 
 

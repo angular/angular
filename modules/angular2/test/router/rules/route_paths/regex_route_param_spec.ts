@@ -10,9 +10,9 @@ import {
   SpyObject
 } from 'angular2/testing_internal';
 
-import {GeneratedUrl} from 'angular2/src/router/rules/route_path';
-import {RegexRoutePath} from 'angular2/src/router/rules/regex_route_path';
-import {parser, Url} from 'angular2/src/router/rules/url_parser';
+import {GeneratedUrl} from 'angular2/src/router/rules/route_paths/route_path';
+import {RegexRoutePath} from 'angular2/src/router/rules/route_paths/regex_route_path';
+import {parser, Url} from 'angular2/src/router/url_parser';
 
 export function main() {
   describe('RegexRoutePath', () => {
