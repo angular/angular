@@ -239,7 +239,6 @@ exports.createBenchpressRunner = function(options) {
     bindings.push(benchpress.Validator.bindTo(benchpress.SizeValidator));
     bindings.push(benchpress.bind(benchpress.SizeValidator.SAMPLE_SIZE).toValue(1));
     bindings.push(benchpress.MultiReporter.createBindings([]));
-    bindings.push(benchpress.MultiMetric.createBindings([]));
   }
 
   global.benchpressRunner = new benchpress.Runner(bindings);
