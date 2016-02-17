@@ -1,4 +1,4 @@
-import {Url} from '../url_parser';
+import {Url} from '../../url_parser';
 
 export interface UrlParams { [key: string]: any }
 
