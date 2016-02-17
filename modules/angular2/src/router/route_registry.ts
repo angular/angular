@@ -36,7 +36,7 @@ import {
 } from './instruction';
 
 import {normalizeRouteConfig, assertComponentExists} from './route_config/route_config_nomalizer';
-import {parser, Url, pathSegmentsToUrl} from './rules/url_parser';
+import {parser, Url, pathSegmentsToUrl, serializeParams} from './rules/url_parser';
 
 var _resolveToNull = PromiseWrapper.resolve(null);
 
@@ -394,13 +394,13 @@ export class RouteRegistry {
       // we'll figure out the rest of the route when we resolve the instruction and
       // perform a navigation
       if (isBlank(routeRecognizer.handler.componentType)) {
-        var compInstruction = routeRecognizer.generateComponentPathValues(routeParams);
+        var generatedUrl = routeRecognizer.generateComponentPathValues(routeParams);
         return new UnresolvedInstruction(() => {
           return routeRecognizer.handler.resolveComponentType().then((_) => {
             return this._generate(linkParams, ancestorInstructions, prevInstruction, _aux,
                                   _originalLink);
           });
-        }, compInstruction['urlPath'], compInstruction['urlParams']);
+        }, generatedUrl.urlPath, serializeParams(generatedUrl.urlParams));
       }
 
       componentInstruction = _aux ? rules.generateAuxiliary(routeName, routeParams) :
