@@ -41,10 +41,6 @@ export class Route implements RouteDefinition {
   component: Type;
   name: string;
   useAsDefault: boolean;
-  // added next three properties to work around https://github.com/Microsoft/TypeScript/issues/4107
-  aux: string = null;
-  loader: Function = null;
-  redirectTo: any[] = null;
   constructor({path, component, name, data, useAsDefault}: {
     path: string,
     component: Type, name?: string, data?: {[key: string]: any}, useAsDefault?: boolean
