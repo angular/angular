@@ -36,6 +36,15 @@ export function main() {
       expect(match.allParams).toEqual({'0': 'hello.goodbye', '1': 'hello', '2': 'goodbye'});
     });
 
+    it('should generate a url by calling the provided serializer', () => {
+      function serializer(params) {
+        return new GeneratedUrl(`/a/${params.a}/b/${params.b}`, {});
+      }
+      var rec = new RegexRoutePath('/a/(.+)/b/(.+)$', serializer);
+      var url = rec.generateUrl({a: 'one', b: 'two'});
+      expect(url.urlPath).toEqual('/a/one/b/two');
+    });
+
     function emptySerializer(params) { return new GeneratedUrl('', []); }
   });
 }

@@ -14,6 +14,7 @@ import {Map, StringMapWrapper} from 'angular2/src/facade/collection';
 
 import {RouteMatch, PathMatch, RedirectMatch} from 'angular2/src/router/rules/rules';
 import {RuleSet} from 'angular2/src/router/rules/rule_set';
+import {GeneratedUrl} from 'angular2/src/router/rules/route_paths/route_path';
 
 import {Route, Redirect} from 'angular2/src/router/route_config/route_config_decorator';
 import {parser} from 'angular2/src/router/url_parser';
@@ -72,6 +73,25 @@ export function main() {
              });
        }));
 
+    it('should recognize a regex', inject([AsyncTestCompleter], (async) => {
+      function emptySerializer(params): GeneratedUrl {
+        return new GeneratedUrl('', {});
+      }
+
+      recognizer.config(new Route({
+        regex: '^(.+)/(.+)$',
+        serializer: emptySerializer,
+        component: DummyCmpA
+      }));
+      recognize(recognizer, '/first/second')
+          .then((solutions: RouteMatch[]) => {
+            expect(solutions.length).toBe(1);
+               expect(getComponentType(solutions[0])).toEqual(DummyCmpA);
+               expect(getParams(solutions[0])).toEqual({'0': 'first/second', '1': 'first', '2':'second'});
+               async.done();
+          });
+    }));
+
 
     it('should throw when given two routes that start with the same static segment', () => {
       recognizer.config(new Route({path: '/hello', component: DummyCmpA}));
@@ -120,6 +140,23 @@ export function main() {
     it('should generate URLs with numeric params', () => {
       recognizer.config(new Route({path: '/app/page/:number', component: DummyCmpA, name: 'Page'}));
       expect(recognizer.generate('Page', {'number': 42}).urlPath).toEqual('app/page/42');
+    });
+
+
+    it('should generate using a serializer', () => {
+      function simpleSerializer(params): GeneratedUrl {
+        return new GeneratedUrl(`/${params.a}/${params.b}`, {c: params.c});
+      }
+
+      recognizer.config(new Route({
+        name: 'Route1',
+        regex: '^(.+)/(.+)$',
+        serializer: simpleSerializer,
+        component: DummyCmpA
+      }));
+      var result = recognizer.generate('Route1', { a: 'first', b:'second', c:'third'});
+      expect(result.urlPath).toEqual('/first/second');
+      expect(result.urlParams).toEqual(['c=third']);
     });
 
 

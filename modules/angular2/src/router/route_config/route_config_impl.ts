@@ -1,5 +1,7 @@
 import {CONST, Type, isPresent} from 'angular2/src/facade/lang';
 import {RouteDefinition} from '../route_definition';
+import {RegexSerializer} from 'rules/route_paths/regex_route_path';
+
 export {RouteDefinition} from '../route_definition';
 
 /**
@@ -41,15 +43,25 @@ export class Route implements RouteDefinition {
   component: Type;
   name: string;
   useAsDefault: boolean;
-  constructor({path, component, name, data, useAsDefault}: {
-    path: string,
-    component: Type, name?: string, data?: {[key: string]: any}, useAsDefault?: boolean
+  regex: string;
+  serializer: RegexSerializer;
+
+  constructor({path, component, name, data, useAsDefault, regex, serializer}: {
+    path?: string,
+    component: Type,
+    name?: string,
+    data?: {[key: string]: any},
+    useAsDefault?: boolean,
+    regex?: string,
+    serializer?: RegexSerializer
   }) {
     this.path = path;
     this.component = component;
     this.name = name;
     this.data = data;
     this.useAsDefault = useAsDefault;
+    this.regex = regex;
+    this.serializer = serializer;
   }
 }
 

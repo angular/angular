@@ -1,4 +1,4 @@
-import {isBlank, isPresent} from 'angular2/src/facade/lang';
+import {isBlank, isPresent, isFunction} from 'angular2/src/facade/lang';
 import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
 import {Map, MapWrapper, ListWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
 import {PromiseWrapper} from 'angular2/src/facade/async';
@@ -15,6 +15,7 @@ import {
 import {AsyncRouteHandler} from './route_handlers/async_route_handler';
 import {SyncRouteHandler} from './route_handlers/sync_route_handler';
 
+import {RoutePath} from './route_paths/route_path';
 import {ParamRoutePath} from './route_paths/param_route_path';
 import {RegexRoutePath} from './route_paths/regex_route_path';
 
@@ -57,10 +58,9 @@ export class RuleSet {
 
     if (config instanceof AuxRoute) {
       handler = new SyncRouteHandler(config.component, config.data);
-      let path = config.path.startsWith('/') ? config.path.substring(1) : config.path;
-      let routePath = new ParamRoutePath(path);
+      let routePath = this._getRoutePath(config);
       let auxRule = new RouteRule(routePath, handler);
-      this.auxRulesByPath.set(path, auxRule);
+      this.auxRulesByPath.set(routePath.toString(), auxRule);
       if (isPresent(config.name)) {
         this.auxRulesByName.set(config.name, auxRule);
       }
@@ -70,7 +70,7 @@ export class RuleSet {
     let useAsDefault = false;
 
     if (config instanceof Redirect) {
-      let routePath = new ParamRoutePath(config.path);
+      let routePath = this._getRoutePath(config);
       let redirector = new RedirectRule(routePath, config.redirectTo);
       this._assertNoHashCollision(redirector.hash, config.path);
       this.rules.push(redirector);
@@ -84,7 +84,7 @@ export class RuleSet {
       handler = new AsyncRouteHandler(config.loader, config.data);
       useAsDefault = isPresent(config.useAsDefault) && config.useAsDefault;
     }
-    let routePath = new ParamRoutePath(config.path);
+    let routePath = this._getRoutePath(config);
     let newRule = new RouteRule(routePath, handler);
 
     this._assertNoHashCollision(newRule.hash, config.path);
@@ -168,6 +168,24 @@ export class RuleSet {
             `Configuration '${path}' conflicts with existing route '${rule.path}'`);
       }
     });
+  }
+
+  private _getRoutePath(config : RouteDefinition) : RoutePath {
+    if (config.regex) {
+      if (isFunction(config.serializer)) {
+        return new RegexRoutePath(config.regex, config.serializer);
+      } else {
+        throw new BaseException(
+          `Route provides a regex property, '${config.regex}', but no serializer property`);
+      }
+    }
+    if (config.path) {
+      // Auxiliary routes do not have a slash at the start
+      let path = (config instanceof AuxRoute && config.path.startsWith('/')) ?
+          config.path.substring(1) : config.path;
+      return new ParamRoutePath(path);
+    }
+    throw new BaseException('Route must provide either a path or regex property');
   }
 
 }
