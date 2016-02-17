@@ -13,7 +13,7 @@ import {
   beforeEachProviders
 } from 'angular2/testing_internal';
 
-import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
+import {PromiseWrapper} from 'angular2/src/facade/async';
 import {Type, isPresent, isBlank, stringify, isString, IS_DART} from 'angular2/src/facade/lang';
 import {
   MapWrapper,

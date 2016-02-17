@@ -9,7 +9,7 @@ import {PRIMITIVE, Serializer} from 'angular2/src/web_workers/shared/serializer'
 import {bind} from './bind';
 import {LocationType} from 'angular2/src/web_workers/shared/serialized_types';
 import {MessageBus} from 'angular2/src/web_workers/shared/message_bus';
-import {Promise, EventEmitter, ObservableWrapper, PromiseWrapper} from 'angular2/src/facade/async';
+import {EventEmitter, ObservableWrapper, PromiseWrapper} from 'angular2/src/facade/async';
 import {UrlChangeListener} from 'angular2/src/router/platform_location';
 
 @Injectable()

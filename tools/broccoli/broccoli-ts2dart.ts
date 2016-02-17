@@ -4,17 +4,18 @@
 import fs = require('fs');
 import fse = require('fs-extra');
 import path = require('path');
-import * as ts2dart from 'ts2dart';
 import {wrapDiffingPlugin, DiffingBroccoliPlugin, DiffResult} from './diffing-broccoli-plugin';
 
 class TSToDartTranspiler implements DiffingBroccoliPlugin {
   static includeExtensions = ['.ts'];
 
-  private transpiler: ts2dart.Transpiler;
+  private transpiler: any /*ts2dart.Transpiler*/;
 
   constructor(public inputPath: string, public cachePath: string,
-              public options: ts2dart.TranspilerOptions) {
+              public options: any /*ts2dart.TranspilerOptions*/) {
     options.basePath = inputPath;
+    // Workaround for https://github.com/dart-lang/dart_style/issues/493
+    var ts2dart = require('ts2dart');
     this.transpiler = new ts2dart.Transpiler(options);
   }
 

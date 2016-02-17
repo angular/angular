@@ -18,7 +18,6 @@ import {
 import {provide, Component, Injector, Inject, View} from 'angular2/core';
 import {isPresent} from 'angular2/src/facade/lang';
 import {
-  Promise,
   PromiseWrapper,
   PromiseCompleter,
   EventEmitter,

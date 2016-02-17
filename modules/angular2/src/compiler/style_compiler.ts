@@ -3,7 +3,7 @@ import {SourceModule, SourceExpression, moduleRef} from './source_module';
 import {ViewEncapsulation} from 'angular2/src/core/metadata/view';
 import {XHR} from 'angular2/src/compiler/xhr';
 import {IS_DART, StringWrapper, isBlank} from 'angular2/src/facade/lang';
-import {PromiseWrapper, Promise} from 'angular2/src/facade/async';
+import {PromiseWrapper} from 'angular2/src/facade/async';
 import {ShadowCss} from 'angular2/src/compiler/shadow_css';
 import {UrlResolver} from 'angular2/src/compiler/url_resolver';
 import {extractStyleUrls} from './style_url_resolver';

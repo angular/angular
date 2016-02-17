@@ -4,7 +4,6 @@ import {TemplateCompiler} from './template_compiler';
 
 import {Injectable} from 'angular2/src/core/di';
 import {Type} from 'angular2/src/facade/lang';
-import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
 
 export abstract class RuntimeCompiler extends Compiler {
   abstract compileInHost(componentType: Type): Promise<HostViewFactoryRef>;

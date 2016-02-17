@@ -40,7 +40,6 @@ import {
   EventEmitter,
   ObservableWrapper,
   PromiseCompleter,
-  Promise
 } from 'angular2/src/facade/async';
 
 import {

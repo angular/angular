@@ -1,6 +1,3 @@
-// Promises are put into their own facade file so that they can be used without
-// introducing a dependency on rxjs. They are re-exported through facade/async.
-export {Promise};
 
 export interface PromiseCompleter<R> {
   promise: Promise<R>;

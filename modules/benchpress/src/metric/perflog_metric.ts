@@ -1,4 +1,4 @@
-import {PromiseWrapper, Promise, TimerWrapper} from 'angular2/src/facade/async';
+import {PromiseWrapper, TimerWrapper} from 'angular2/src/facade/async';
 import {
   isPresent,
   isBlank,

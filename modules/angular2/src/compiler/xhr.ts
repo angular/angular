@@ -1,5 +1,3 @@
-import {Promise} from 'angular2/src/facade/async';
-
 // TODO: vsavkin rename it into TemplateLoader
 /**
  * An interface for retrieving documents by URL that the compiler uses

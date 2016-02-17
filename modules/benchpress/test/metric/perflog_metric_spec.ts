@@ -12,7 +12,7 @@ import {
 } from 'angular2/testing_internal';
 
 import {StringMapWrapper} from 'angular2/src/facade/collection';
-import {PromiseWrapper, Promise} from 'angular2/src/facade/async';
+import {PromiseWrapper} from 'angular2/src/facade/async';
 import {isPresent, isBlank} from 'angular2/src/facade/lang';
 
 import {

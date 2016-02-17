@@ -3,7 +3,7 @@ import {ListWrapper, Map, MapWrapper} from 'angular2/src/facade/collection';
 import {Serializer} from "angular2/src/web_workers/shared/serializer";
 import {isPresent, Type, FunctionWrapper} from "angular2/src/facade/lang";
 import {MessageBus} from "angular2/src/web_workers/shared/message_bus";
-import {EventEmitter, Promise, PromiseWrapper, ObservableWrapper} from 'angular2/src/facade/async';
+import {EventEmitter, PromiseWrapper, ObservableWrapper} from 'angular2/src/facade/async';
 
 export abstract class ServiceMessageBrokerFactory {
   /**

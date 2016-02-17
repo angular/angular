@@ -12,7 +12,7 @@ import {
 } from 'angular2/testing_internal';
 import {SpyRouterOutlet} from './spies';
 import {Type} from 'angular2/src/facade/lang';
-import {Promise, PromiseWrapper, ObservableWrapper} from 'angular2/src/facade/async';
+import {PromiseWrapper, ObservableWrapper} from 'angular2/src/facade/async';
 import {ListWrapper} from 'angular2/src/facade/collection';
 
 import {Router, RootRouter} from 'angular2/src/router/router';

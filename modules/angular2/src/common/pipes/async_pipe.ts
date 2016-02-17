@@ -1,5 +1,5 @@
 import {isBlank, isPresent, isPromise, CONST} from 'angular2/src/facade/lang';
-import {Promise, ObservableWrapper, Observable, EventEmitter} from 'angular2/src/facade/async';
+import {ObservableWrapper, Observable, EventEmitter} from 'angular2/src/facade/async';
 import {
   Pipe,
   Injectable,
@@ -33,7 +33,7 @@ class PromiseStrategy {
 
 var _promiseStrategy = new PromiseStrategy();
 var _observableStrategy = new ObservableStrategy();
-
+var __unused: Promise<any>;  // avoid unused import when Promise union types are erased
 
 /**
  * The `async` pipe subscribes to an Observable or Promise and returns the latest value it has

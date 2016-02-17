@@ -12,7 +12,6 @@ import {
 } from 'angular2/core';
 
 import {Type, isPresent, isBlank} from 'angular2/src/facade/lang';
-import {Promise} from 'angular2/src/facade/async';
 import {ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
 
 import {ViewRef_} from 'angular2/src/core/linker/view_ref';

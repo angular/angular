@@ -24,7 +24,7 @@ import {
   SampleState
 } from 'benchpress/common';
 import {isBlank} from 'angular2/src/facade/lang';
-import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
+import {PromiseWrapper} from 'angular2/src/facade/async';
 
 export function main() {
   describe('runner', () => {

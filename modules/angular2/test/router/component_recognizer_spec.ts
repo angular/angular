@@ -17,7 +17,7 @@ import {ComponentRecognizer} from 'angular2/src/router/component_recognizer';
 
 import {Route, Redirect} from 'angular2/src/router/route_config_decorator';
 import {parser} from 'angular2/src/router/url_parser';
-import {Promise, PromiseWrapper} from 'angular2/src/facade/promise';
+import {PromiseWrapper} from 'angular2/src/facade/promise';
 
 
 export function main() {
