@@ -26,6 +26,7 @@ git clone https://github.com/dart-lang/dev_compiler.git tmp/dev_compiler
   $PUB get)
 
 # Convert TypeScript to Dart
+./node_modules/.bin/gulp build.js.cjs
 ./node_modules/.bin/gulp build/packages.dart
 ./node_modules/.bin/gulp build/pubspec.dart
 node ./scripts/ci/dart_ddc/pubspec_for_ddc.js \
@@ -147,6 +148,9 @@ function killServer () {
 ./node_modules/.bin/gulp serve.js.ddc&
 serverPid=$!
 
+echo CHROM_BIN=$CHROME_BIN
+echo CHROM_BIN_VERSION=`$CHROME_BIN --version`
+
 trap killServer EXIT
 
 # wait for server to come up
@@ -155,7 +159,7 @@ sleep 10
 function runSpec {
   SPEC=$1
   ./node_modules/.bin/protractor protractor-ddc.conf.js \
-      --browsers=${E2E_BROWSERS:-Dartium} \
+      --browsers=${E2E_BROWSERS:-ChromeDesktop} \
       --spec=$SPEC
 }
 
