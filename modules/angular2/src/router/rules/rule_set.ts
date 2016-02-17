@@ -104,16 +104,6 @@ export class RuleSet {
   }
 
 
-  private _assertNoHashCollision(hash: string, path) {
-    this.rules.forEach((rule) => {
-      if (hash == rule.hash) {
-        throw new BaseException(
-            `Configuration '${path}' conflicts with existing route '${rule.path}'`);
-      }
-    });
-  }
-
-
   /**
    * Given a URL, returns a list of `RouteMatch`es, which are partial recognitions for some route.
    */
@@ -170,4 +160,14 @@ export class RuleSet {
     }
     return pathRecognizer.generate(params);
   }
+
+  private _assertNoHashCollision(hash: string, path) {
+    this.rules.forEach((rule) => {
+      if (hash == rule.hash) {
+        throw new BaseException(
+            `Configuration '${path}' conflicts with existing route '${rule.path}'`);
+      }
+    });
+  }
+
 }
