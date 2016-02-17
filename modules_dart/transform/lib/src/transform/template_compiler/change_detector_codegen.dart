@@ -253,7 +253,7 @@ class _CodegenState {
       var evalRecord = _logic.genEventBindingEvalValue(eb, r);
       var markPath = _genMarkPathToRootAsCheckOnce(r);
       var prevDefault = _genUpdatePreventDefault(eb, r);
-      return "${evalRecord}\n${markPath}\n${prevDefault}";
+      return "${markPath}\n${evalRecord}\n${prevDefault}";
     } else {
       return _logic.genEventBindingEvalValue(eb, r);
     }
