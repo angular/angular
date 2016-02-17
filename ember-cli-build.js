@@ -11,6 +11,7 @@ var Angular2App = require('angular-cli/lib/broccoli/angular2-app');
 var BroccoliSass = require('broccoli-sass');
 var broccoliAutoprefixer = require('broccoli-autoprefixer');
 
+const BroccoliTypescript = require('./tools/broccoli/broccoli-typescript').default;
 const BroccoliTs2Dart = require('./tools/broccoli/broccoli-ts2dart').default;
 const BroccoliDestCopy = require('./tools/broccoli/broccoli-dest-copy').default;
 const BroccoliDartFmt = require('./tools/broccoli/broccoli-dartfmt').default;
@@ -24,6 +25,7 @@ module.exports = function(defaults) {
   var demoCssTree = getCssTree('demo-app');
   var componentCssTree = getCssTree('components');
   var angularAppTree = new Angular2App(defaults);
+
   var dartAppTree = getDartTree('src/');
 
   return mergeTrees([
@@ -51,6 +53,8 @@ function getDartTree(root) {
     generateLibraryName: true,
     generateSourceMap: false,
     translateBuiltins: true,
+    typingsRoot: '../../typings/browser/ambient/',
+    additionalFiles: [path.join(process.cwd(), root, 'typings.d.ts')],
   });
 
   const formatter = new BroccoliDartFmt(ts2dart, { dartSDK });
@@ -65,11 +69,6 @@ function getDartTree(root) {
     formatter
   ]);
 
-  //const pubSpecTree = new BroccoliFunnel('.', {
-  //  files: ['pubspec.yaml'],
-  //  //exclude: ['**/*'],
-  //  destDir: 'dart'
-  //});
   const pubSpecTree = new BroccoliFunnel(new BroccoliSource.UnwatchedDir('.'), {
     files: ['pubspec.yaml'],
     destDir: 'dart',

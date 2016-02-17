@@ -156,7 +156,7 @@ export function main() {
             .then((_: any) => { done(); });
         }, 8000);
 
-      it('open() twice returns the same promise', (done: any) => {
+      it('open/close() twice returns the same promise', (done: any) => {
         let fixture: ComponentFixture;
         let sidenav: MdSidenav;
 
@@ -169,12 +169,14 @@ export function main() {
 
             promise = sidenav.open();
             expect(sidenav.open()).toBe(promise);
+            return wait(1);
           })
           .then((_: any) => { return wait(1); })
           .then((_: any) => {
             fixture.detectChanges();
             return promise;
           })
+          .then((_: any) => { return wait(1); })
           .then((_: any) => {
             promise = sidenav.close();
             expect(sidenav.close()).toBe(promise);

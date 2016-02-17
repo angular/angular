@@ -11,7 +11,8 @@
     "build": "ng build",
     "dartanalyzer": "cd dist/dart && pub install && cd ../.. && ts-node scripts/ci/dart_analyzer",
     "demo-app": "cd src && ng serve",
-    "test": "karma start test/karma.conf.js"
+    "test": "karma start test/karma.conf.js",
+    "typings": "typings install --ambient"
   },
   "version": "2.0.0-alpha.0",
   "license": "MIT",
@@ -19,16 +20,16 @@
     "node": ">= 4.2.1 < 5"
   },
   "dependencies": {
-    "angular2": "2.0.0-beta.0",
+    "angular2": "2.0.0-beta.6",
     "es6-promise": "^3.0.2",
     "es6-shim": "^0.33.3",
     "reflect-metadata": "0.1.2",
     "rxjs": "5.0.0-beta.0",
     "systemjs": "0.19.4",
-    "zone.js": "0.5.10"
+    "zone.js": "0.5.14"
   },
   "devDependencies": {
-    "angular-cli": "0.0.*",
+    "angular-cli": "^0.0.24",
     "angular-cli-github-pages": "^0.2.0",
     "broccoli-autoprefixer": "^4.1.0",
     "broccoli-funnel": "^1.0.1",
@@ -51,9 +52,10 @@
     "strip-ansi": "^3.0.0",
     "symlink-or-copy": "^1.0.1",
     "ts-node": "^0.5.5",
-    "ts2dart": "^0.7.25",
+    "ts2dart": "^0.7.27",
     "tslint": "^3.2.2",
     "typescript": "^1.7.5",
+    "typings": "^0.6.8",
     "which": "^1.2.4"
   }
 }

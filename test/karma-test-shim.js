@@ -41,10 +41,32 @@ System.config({
   }
 });
 
-System.import('angular2/platform/browser').then(function(browser_adapter) {
-  // TODO: once beta is out we should change this code to use a "test platform"
-  browser_adapter.BrowserDomAdapter.makeCurrent();
-}).then(function() {
+
+/**
+ * Bootstrap the browser testing providers from Angular2. The equivalent code in TypeScript
+ * would be:
+ *
+ * <code>
+ *   import {setBaseTestProviders} from 'angular2/testing';
+ *   import * as browser from 'angular2/platform/testing/browser';
+ *
+ *   setBaseTestProviders(browser.TEST_BROWSER_PLATFORM_PROVIDERS,
+ *                        browser.TEST_BROWSER_APPLICATION_PROVIDERS);
+ * </code>
+ *
+ * See https://github.com/angular/angular/blob/master/CHANGELOG.md#200-beta2-2016-01-28
+ *
+ * Followed by the normal import of all spec files, then bootstrap Karma.
+ */
+Promise.all([
+  System.import('angular2/testing'),
+  System.import('angular2/platform/testing/browser'),
+]).then(function(imports) {
+  var testing = imports[0];
+  var browser = imports[1];
+  testing.setBaseTestProviders(browser.TEST_BROWSER_PLATFORM_PROVIDERS,
+                               browser.TEST_BROWSER_APPLICATION_PROVIDERS);
+
   return Promise.all(
     Object.keys(window.__karma__.files)
       .filter(isSpecFile)

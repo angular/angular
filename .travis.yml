@@ -9,7 +9,6 @@ node_js:
 
 cache:
   directories:
-    - node_modules
     - $HOME/.pub-cache
 
 env:
@@ -50,6 +49,7 @@ before_install:
 
 install:
   - npm install
+  - npm run typings
 
 before_script:
   # Necessary to run test on Travis CI that require a graphical interface.

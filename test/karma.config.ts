@@ -19,13 +19,15 @@ export function config(config) {
       require('karma-firefox-launcher'),
     ],
     files: [
-      {pattern: 'node_modules/es6-shim/es6-shim.js', included: true, watched: true},
-      {pattern: 'node_modules/angular2/bundles/angular2-polyfills.js', included: true,
-          watched: true},
+      {pattern: 'node_modules/es6-shim/es6-shim.min.js', included: true, watched: true},
       {pattern: 'node_modules/systemjs/dist/system-polyfills.js', included: true, watched: true},
+      'node_modules/angular2/es6/dev/src/testing/shims_for_IE.js',
+
+      {pattern: 'node_modules/angular2/bundles/angular2-polyfills.js', included: true, watched: true},
       {pattern: 'node_modules/systemjs/dist/system.src.js', included: true, watched: true},
       {pattern: 'node_modules/rxjs/bundles/Rx.js', included: true, watched: true},
-      {pattern: 'node_modules/angular2/bundles/angular2.js', included: true, watched: true},
+      'node_modules/reflect-metadata/Reflect.js',
+      {pattern: 'node_modules/angular2/bundles/angular2.dev.js', included: true, watched: true},
       {pattern: 'node_modules/angular2/bundles/testing.dev.js', included: true, watched: true},
 
       {pattern: 'test/karma-test-shim.js', included: true, watched: true},
@@ -78,9 +80,11 @@ export function config(config) {
       startTunnel: false,
       retryLimit: 1,
       timeout: 600,
-      pollingTimeout: 10000
+      pollingTimeout: 20000
     },
 
+    browserDisconnectTimeout: 20000,
+    browserNoActivityTimeout: 100000,
     browsers: ['Chrome'],
 
     singleRun: false

@@ -54,7 +54,7 @@ export function analyze(dir: string, command: string, use_ddc: boolean = false):
 
 function analyze_(command, dirName, done, useDdc) {
   // TODO remove --package-warnings once dartanalyzer handles transitive libraries
-  var flags = ['--fatal-warnings', '--package-warnings', '--format=machine'];
+  var flags = ['--fatal-warnings', '--format=machine'];
 
   if (useDdc) {
     console.log('Using DDC analyzer to analyze', dirName);

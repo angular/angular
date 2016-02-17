@@ -1,0 +1,11 @@
+{
+  "name": "material2",
+  "dependencies": {},
+  "devDependencies": {},
+  "ambientDevDependencies": {
+    "jasmine": "github:DefinitelyTyped/DefinitelyTyped/jasmine/jasmine.d.ts#26c98c8a9530c44f8c801ccc3b2057e2101187ee"
+  },
+  "ambientDependencies": {
+    "es6-shim": "github:DefinitelyTyped/DefinitelyTyped/es6-shim/es6-shim.d.ts#6697d6f7dadbf5773cb40ecda35a76027e0783b2"
+  }
+}

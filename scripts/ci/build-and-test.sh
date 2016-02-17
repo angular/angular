@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -e
 
 echo "=======  Starting build-and-test.sh  ========================================"
 
