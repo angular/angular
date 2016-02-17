@@ -26,6 +26,7 @@ git clone https://github.com/dart-lang/dev_compiler.git tmp/dev_compiler
   $PUB get)
 
 # Convert TypeScript to Dart
+./node_modules/.bin/gulp build.js.cjs
 ./node_modules/.bin/gulp build/packages.dart
 ./node_modules/.bin/gulp build.dart.material.css
 ./node_modules/.bin/gulp build/pubspec.dart
@@ -164,7 +165,7 @@ sleep 10
 function runSpec {
   SPEC=$1
   ./node_modules/.bin/protractor protractor-ddc.conf.js \
-      --browsers=${E2E_BROWSERS:-Dartium} \
+      --browsers=${E2E_BROWSERS:-ChromeDesktop} \
       --spec=$SPEC
 }
 
