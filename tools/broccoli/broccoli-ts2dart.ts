@@ -20,7 +20,11 @@ class TSToDartTranspiler implements DiffingBroccoliPlugin {
   }
 
   rebuild(treeDiff: DiffResult) {
-    let toEmit = [path.resolve(this.inputPath, 'angular2/manual_typings/globals.d.ts')];
+    let toEmit = [
+      path.resolve(this.inputPath, 'angular2/manual_typings/globals.d.ts'),
+      path.resolve(this.inputPath, 'angular2/typings/es6-promise/es6-promise.d.ts'),
+      path.resolve(this.inputPath, 'angular2/typings/es6-collections/es6-collections.d.ts')
+    ];
     let getDartFilePath = (path: string) => path.replace(/((\.js)|(\.ts))$/i, '.dart');
     treeDiff.addedPaths.concat(treeDiff.changedPaths)
         .forEach((changedPath) => {
