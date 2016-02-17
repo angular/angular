@@ -24,12 +24,12 @@
     .directive('a', anchorLinkDirective)
 
     // Connects the legacy $routeProvider config shim to Component Router's config.
-    .run(['$route', '$router', function ($route, $router) {
+    .run(['$route', '$rootRouter', function ($route, $rootRouter) {
       $route.$$subscribe(function (routeDefinition) {
         if (!angular.isArray(routeDefinition)) {
           routeDefinition = [routeDefinition];
         }
-        $router.config(routeDefinition);
+        $rootRouter.config(routeDefinition);
       });
     }]);
 
@@ -241,12 +241,12 @@
 
   }
 
-  function $routeParamsFactory($router, $rootScope) {
+  function $routeParamsFactory($rootRouter, $rootScope) {
     // the identity of this object cannot change
     var paramsObj = {};
 
     $rootScope.$on('$routeChangeSuccess', function () {
-      var newParams = $router._currentInstruction && $router._currentInstruction.component.params;
+      var newParams = $rootRouter._currentInstruction && $rootRouter._currentInstruction.component.params;
 
       angular.forEach(paramsObj, function (val, name) {
         delete paramsObj[name];
@@ -262,7 +262,7 @@
   /**
    * Allows normal anchor links to kick off routing.
    */
-  function anchorLinkDirective($router) {
+  function anchorLinkDirective($rootRouter) {
     return {
       restrict: 'E',
       link: function (scope, element) {
@@ -281,8 +281,8 @@
           }
 
           var href = element.attr(hrefAttrName);
-          if (href && $router.recognize(href)) {
-            $router.navigateByUrl(href);
+          if (href && $rootRouter.recognize(href)) {
+            $rootRouter.navigateByUrl(href);
             event.preventDefault();
           }
         });

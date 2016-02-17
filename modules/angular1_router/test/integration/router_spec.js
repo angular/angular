@@ -5,7 +5,7 @@ describe('router', function () {
   var elt,
       $compile,
       $rootScope,
-      $router,
+      $rootRouter,
       $compileProvider;
 
   beforeEach(function () {
@@ -18,10 +18,10 @@ describe('router', function () {
       $compileProvider = _$compileProvider_;
     });
 
-    inject(function (_$compile_, _$rootScope_, _$router_) {
+    inject(function (_$compile_, _$rootScope_, _$rootRouter_) {
       $compile = _$compile_;
       $rootScope = _$rootScope_;
-      $router = _$router_;
+      $rootRouter = _$rootRouter_;
     });
   });
 
