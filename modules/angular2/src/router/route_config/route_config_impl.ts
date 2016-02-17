@@ -83,10 +83,6 @@ export class AuxRoute implements RouteDefinition {
   path: string;
   component: Type;
   name: string;
-  // added next three properties to work around https://github.com/Microsoft/TypeScript/issues/4107
-  aux: string = null;
-  loader: Function = null;
-  redirectTo: any[] = null;
   useAsDefault: boolean = false;
   constructor({path, component, name}: {path: string, component: Type, name?: string}) {
     this.path = path;
