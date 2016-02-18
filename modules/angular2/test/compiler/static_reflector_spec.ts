@@ -2,7 +2,7 @@ import {describe, it, iit, expect, ddescribe, beforeEach} from 'angular2/testing
 import {IS_DART} from 'angular2/src/facade/lang';
 import {ListWrapper} from 'angular2/src/facade/collection';
 
-import {StaticReflector, StaticReflectorHost} from 'angular2/src/compiler/static_reflector';
+import {StaticReflector, StaticReflectorHost, StaticType} from 'angular2/src/compiler/static_reflector';
 
 export function main() {
   // Static reflector is not supported in Dart
@@ -252,8 +252,8 @@ export function main() {
 class MockReflectorHost implements StaticReflectorHost {
   // In tests, assume that symbols are not re-exported
   findDeclaration(modulePath: string,
-                  symbolName: string): {declarationPath: string, declaredName: string} {
-    return {declarationPath: modulePath, declaredName: symbolName};
+                  symbolName: string): StaticType {
+    return {moduleId: 'UNKNOWN', filePath: modulePath, name: symbolName};
   }
   resolveModule(moduleName: string, containingFile?: string): string {
     function splitPath(path: string): string[] { return path.split(/\/|\\/g); }
@@ -287,9 +287,9 @@ class MockReflectorHost implements StaticReflectorHost {
     }
 
     if (moduleName.indexOf('.') === 0) {
-      return pathTo(containingFile, moduleName) + '.d.ts';
+      return {moduleId: 'FIXME', filePath: pathTo(containingFile, moduleName) + '.d.ts'};
     }
-    return '/tmp/' + moduleName + '.d.ts';
+    return {moduleId: 'FIXME', filePath: '/tmp/' + moduleName + '.d.ts'};
   }
 
   getMetadataFor(moduleId: string): any {

@@ -19,7 +19,6 @@ import {
   HostListenerMetadata,
   OutputMetadata,
   PipeMetadata,
-  ViewMetadata,
   ViewChildMetadata,
   ViewChildrenMetadata,
   ViewQueryMetadata,
@@ -36,6 +35,8 @@ import {
   SkipSelfMetadata,
   InjectMetadata
 } from "angular2/src/core/di/metadata";
+
+export type ModuleContext = {moduleId: string, filePath: string};
 
 /**
  * The host of the static resolver is expected to be able to provide module metadata in the form of
@@ -190,11 +191,10 @@ export class StaticReflector implements ReflectorReader {
   }
 
   private initializeConversionMap(): void {
-    let coreDecorators = this.host.resolveModule('angular2/src/core/metadata');
-    let diDecorators = this.host.resolveModule('angular2/src/core/di/decorators');
-    let diMetadata = this.host.resolveModule('angular2/src/core/di/metadata');
-
-    let provider = this.host.resolveModule('angular2/src/core/di/provider');
+    let coreDecorators = this.host.resolveModule('angular2/src/core/metadata').filePath;
+    let diDecorators = this.host.resolveModule('angular2/src/core/di/decorators').filePath;
+    let diMetadata = this.host.resolveModule('angular2/src/core/di/metadata').filePath;
+    let provider = this.host.resolveModule('angular2/src/core/di/provider').filePath;
     this.registerDecoratorOrConstructor(this.getStaticType(provider, 'Provider'), Provider);
 
     this.registerDecoratorOrConstructor(this.getStaticType(diDecorators, 'Host'), HostMetadata);
@@ -357,7 +357,7 @@ export class StaticReflector implements ReflectorReader {
             case "new":
             case "call":
               let target = expression['expression'];
-              let moduleId = _this.host.resolveModule(target['module'], moduleContext);
+              let moduleId = _this.host.resolveModule(target['module'], moduleContext).filePath;
               let decl = _this.host.findDeclaration(moduleId, target['name']);
               let staticType = _this.getStaticType(decl['declarationPath'], decl['declaredName']);
               let converter = _this.conversionMap.get(staticType);
