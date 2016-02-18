@@ -14,7 +14,7 @@ import {
 } from 'angular2/testing_internal';
 
 import {IS_DART, stringify} from 'angular2/src/facade/lang';
-import {RuntimeMetadataResolver} from 'angular2/src/compiler/runtime_metadata';
+import {CompileMetadataResolver} from 'angular2/src/compiler/metadata_resolver';
 import {LifecycleHooks, LIFECYCLE_HOOKS_VALUES} from 'angular2/src/core/metadata/lifecycle_hooks';
 import {
   Component,
@@ -36,15 +36,15 @@ import {
 import {TEST_PROVIDERS} from './test_bindings';
 import {MODULE_SUFFIX} from 'angular2/src/compiler/util';
 import {PLATFORM_DIRECTIVES} from 'angular2/src/core/platform_directives_and_pipes';
-import {MalformedStylesComponent} from './runtime_metadata_fixture';
+import {MalformedStylesComponent} from './metadata_resolver_fixture';
 
 export function main() {
-  describe('RuntimeMetadataResolver', () => {
+  describe('CompileMetadataResolver', () => {
     beforeEachProviders(() => TEST_PROVIDERS);
 
     describe('getMetadata', () => {
       it('should read metadata',
-         inject([RuntimeMetadataResolver], (resolver: RuntimeMetadataResolver) => {
+         inject([CompileMetadataResolver], (resolver: CompileMetadataResolver) => {
            var meta = resolver.getDirectiveMetadata(ComponentWithEverything);
            expect(meta.selector).toEqual('someSelector');
            expect(meta.exportAs).toEqual('someExportAs');
@@ -67,16 +67,16 @@ export function main() {
          }));
 
       it('should use the moduleUrl from the reflector if none is given',
-         inject([RuntimeMetadataResolver], (resolver: RuntimeMetadataResolver) => {
+         inject([CompileMetadataResolver], (resolver: CompileMetadataResolver) => {
            var value: string =
                resolver.getDirectiveMetadata(ComponentWithoutModuleId).type.moduleUrl;
            var expectedEndValue =
-               IS_DART ? 'test/compiler/runtime_metadata_spec.dart' : './ComponentWithoutModuleId';
+               IS_DART ? 'test/compiler/metadata_resolver_spec.dart' : './ComponentWithoutModuleId';
            expect(value.endsWith(expectedEndValue)).toBe(true);
          }));
 
       it('should throw when metadata is incorrectly typed',
-         inject([RuntimeMetadataResolver], (resolver: RuntimeMetadataResolver) => {
+         inject([CompileMetadataResolver], (resolver: CompileMetadataResolver) => {
            if (!IS_DART) {
              expect(() => resolver.getDirectiveMetadata(MalformedStylesComponent))
                  .toThrowError(`Expected 'styles' to be an array of strings.`);
@@ -87,7 +87,7 @@ export function main() {
     describe('getViewDirectivesMetadata', () => {
 
       it('should return the directive metadatas',
-         inject([RuntimeMetadataResolver], (resolver: RuntimeMetadataResolver) => {
+         inject([CompileMetadataResolver], (resolver: CompileMetadataResolver) => {
            expect(resolver.getViewDirectivesMetadata(ComponentWithEverything))
                .toContain(resolver.getDirectiveMetadata(SomeDirective));
          }));
@@ -97,7 +97,7 @@ export function main() {
             () => [provide(PLATFORM_DIRECTIVES, {useValue: [ADirective], multi: true})]);
 
         it('should include platform directives when available',
-           inject([RuntimeMetadataResolver], (resolver: RuntimeMetadataResolver) => {
+           inject([CompileMetadataResolver], (resolver: CompileMetadataResolver) => {
              expect(resolver.getViewDirectivesMetadata(ComponentWithEverything))
                  .toContain(resolver.getDirectiveMetadata(ADirective));
              expect(resolver.getViewDirectivesMetadata(ComponentWithEverything))

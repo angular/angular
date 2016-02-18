@@ -44,7 +44,7 @@ import {StyleCompiler, StylesCompileDependency, StylesCompileResult} from './sty
 import {ViewCompiler} from './view_compiler/view_compiler';
 import {TemplateParser} from './template_parser';
 import {DirectiveNormalizer} from './directive_normalizer';
-import {RuntimeMetadataResolver} from './runtime_metadata';
+import {CompileMetadataResolver} from './metadata_resolver';
 import {ComponentFactory} from 'angular2/src/core/linker/component_factory';
 import {
   ComponentResolver,
@@ -71,7 +71,7 @@ export class RuntimeCompiler implements ComponentResolver {
   private _compiledTemplateCache = new Map<any, CompiledTemplate>();
   private _compiledTemplateDone = new Map<any, Promise<CompiledTemplate>>();
 
-  constructor(private _runtimeMetadataResolver: RuntimeMetadataResolver,
+  constructor(private _metadataResolver: CompileMetadataResolver,
               private _templateNormalizer: DirectiveNormalizer,
               private _templateParser: TemplateParser, private _styleCompiler: StyleCompiler,
               private _viewCompiler: ViewCompiler, private _xhr: XHR,
@@ -79,7 +79,7 @@ export class RuntimeCompiler implements ComponentResolver {
 
   resolveComponent(componentType: Type): Promise<ComponentFactory> {
     var compMeta: CompileDirectiveMetadata =
-        this._runtimeMetadataResolver.getDirectiveMetadata(componentType);
+        this._metadataResolver.getDirectiveMetadata(componentType);
     var hostCacheKey = this._hostCacheKeys.get(componentType);
     if (isBlank(hostCacheKey)) {
       hostCacheKey = new Object();
@@ -146,9 +146,9 @@ export class RuntimeCompiler implements ComponentResolver {
 
       var childCacheKey = dep.comp.type.runtime;
       var childViewDirectives: CompileDirectiveMetadata[] =
-          this._runtimeMetadataResolver.getViewDirectivesMetadata(dep.comp.type.runtime);
+          this._metadataResolver.getViewDirectivesMetadata(dep.comp.type.runtime);
       var childViewPipes: CompilePipeMetadata[] =
-          this._runtimeMetadataResolver.getViewPipesMetadata(dep.comp.type.runtime);
+          this._metadataResolver.getViewPipesMetadata(dep.comp.type.runtime);
       var childIsRecursive = ListWrapper.contains(childCompilingComponentsPath, childCacheKey);
       childCompilingComponentsPath.push(childCacheKey);
 
