@@ -1,14 +1,16 @@
-
-<h1 class="title">Angular Material2 Demos</h1>
-<ul>
-  <li><a [routerLink]="['ButtonDemo']">Button demo</a></li>
-  <li><a [routerLink]="['CardDemo']">Card demo</a></li>
-  <li><a [routerLink]="['SidenavDemo']">Sidenav demo</a></li>
-  <li><a [routerLink]="['ProgressCircleDemo']">Progress Circle demo</a></li>
-</ul>
-<button md-raised-button (click)="root.dir = (root.dir == 'rtl' ? 'ltr' : 'rtl')">
-  {{root.dir.toUpperCase()}}
-</button>
-<div #root="$implicit" dir="ltr">
-  <router-outlet></router-outlet>
+<div class="demo-content">
+  <h1 class="title">Angular Material2 Demos</h1>
+  <ul>
+    <li><a [routerLink]="['ButtonDemo']">Button demo</a></li>
+    <li><a [routerLink]="['CardDemo']">Card demo</a></li>
+    <li><a [routerLink]="['SidenavDemo']">Sidenav demo</a></li>
+    <li><a [routerLink]="['ProgressCircleDemo']">Progress Circle demo</a></li>
+    <li><a [routerLink]="['PortalDemo']">Portal demo</a></li>
+  </ul>
+  <button md-raised-button (click)="root.dir = (root.dir == 'rtl' ? 'ltr' : 'rtl')">
+    {{root.dir.toUpperCase()}}
+  </button>
+  <div #root="$implicit" dir="ltr">
+    <router-outlet></router-outlet>
+  </div>
 </div>

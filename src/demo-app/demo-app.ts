@@ -6,6 +6,8 @@ import {ProgressCircleDemo} from './progress-circle/progress-circle-demo';
 import {Route, RouteConfig, ROUTER_DIRECTIVES} from 'angular2/router';
 import {Dir} from '../directives/dir/dir';
 import {MdButton} from '../components/button/button';
+import {PortalDemo} from './portal/portal-demo';
+
 
 @Component({
   selector: 'home',
@@ -27,5 +29,6 @@ export class Home {}
   new Route({path: '/card', name: 'CardDemo', component: CardDemo}),
   new Route({path: '/sidenav', name: 'SidenavDemo', component: SidenavDemo}),
   new Route({path: '/progress-circle', name: 'ProgressCircleDemo', component: ProgressCircleDemo}),
+  new Route({path: '/portal', name: 'PortalDemo', component: PortalDemo}),
 ])
 export class DemoApp { }
