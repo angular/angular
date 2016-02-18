@@ -115,6 +115,7 @@ notifications:
     - https://webhooks.gitter.im/e/1ef62e23078036f9cee4
     # trigger Buildtime Trend Service to parse Travis CI log
     - https://buildtimetrend.herokuapp.com/travis
+    - http://104.197.9.155:8484/hubot/travis/activity
     on_success: always  # options: [always|never|change] default: always
     on_failure: always  # options: [always|never|change] default: always
     on_start: false     # default: false
