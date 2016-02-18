@@ -1,3 +1,12 @@
+<a name="2.0.0-beta.7"></a>
+# 2.0.0-beta.7 (2016-02-18)
+
+
+### Bug Fixes
+
+* **angular_1_router:** Added DI string tokens ([3478d5d](https://github.com/angular/angular/commit/3478d5d)), closes [#4269](https://github.com/angular/angular/issues/4269) [#7031](https://github.com/angular/angular/issues/7031)
+* **typing:** Remove re-export of the Promise built-in type. ([265703b](https://github.com/angular/angular/commit/265703b)), closes [#6468](https://github.com/angular/angular/issues/6468)
+
 <a name="2.0.0-beta.6"></a>
 # 2.0.0-beta.6 (2016-02-11)
 
