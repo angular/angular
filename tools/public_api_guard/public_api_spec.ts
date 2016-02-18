@@ -440,6 +440,7 @@ const CORE = [
   'TestabilityRegistry.constructor()',
   'TestabilityRegistry.findTestabilityInTree(elem:Node, findInAncestors:boolean):Testability',
   'TestabilityRegistry.getAllTestabilities():Testability[]',
+  'TestabilityRegistry.getAllRootElements():any[]',
   'TestabilityRegistry.getTestability(elem:any):Testability',
   'TestabilityRegistry.registerApplication(token:any, testability:Testability):any',
   'TrackByFn',

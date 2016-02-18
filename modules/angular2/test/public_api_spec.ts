@@ -1308,6 +1308,7 @@ var NG_CORE = [
   'TestabilityRegistry',
   'TestabilityRegistry.findTestabilityInTree()',
   'TestabilityRegistry.getAllTestabilities()',
+  'TestabilityRegistry.getAllRootElements()',
   'TestabilityRegistry.getTestability()',
   'TestabilityRegistry.registerApplication()',
   'GetTestability:dart',
