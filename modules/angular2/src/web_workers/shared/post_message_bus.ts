@@ -9,28 +9,8 @@ import {StringMapWrapper} from 'angular2/src/facade/collection';
 import {Injectable} from "angular2/src/core/di";
 import {NgZone} from 'angular2/src/core/zone/ng_zone';
 
-/**
- * A TypeScript implementation of {@link MessageBus} for communicating via JavaScript's
- * postMessage API.
- */
-@Injectable()
-export class PostMessageBus implements MessageBus {
-  constructor(public sink: PostMessageBusSink, public source: PostMessageBusSource) {}
-
-  attachToZone(zone: NgZone): void {
-    this.source.attachToZone(zone);
-    this.sink.attachToZone(zone);
-  }
-
-  initChannel(channel: string, runInZone: boolean = true): void {
-    this.source.initChannel(channel, runInZone);
-    this.sink.initChannel(channel, runInZone);
-  }
-
-  from(channel: string): EventEmitter<any> { return this.source.from(channel); }
-
-  to(channel: string): EventEmitter<any> { return this.sink.to(channel); }
-}
+// TODO(jteplitz602) Replace this with the definition in lib.webworker.d.ts(#3492)
+export interface PostMessageTarget { postMessage: (message: any, transfer?:[ArrayBuffer]) => void; }
 
 export class PostMessageBusSink implements MessageBusSink {
   private _zone: NgZone;
@@ -136,12 +116,32 @@ export class PostMessageBusSource implements MessageBusSource {
 }
 
 /**
+ * A TypeScript implementation of {@link MessageBus} for communicating via JavaScript's
+ * postMessage API.
+ */
+@Injectable()
+export class PostMessageBus implements MessageBus {
+  constructor(public sink: PostMessageBusSink, public source: PostMessageBusSource) {}
+
+  attachToZone(zone: NgZone): void {
+    this.source.attachToZone(zone);
+    this.sink.attachToZone(zone);
+  }
+
+  initChannel(channel: string, runInZone: boolean = true): void {
+    this.source.initChannel(channel, runInZone);
+    this.sink.initChannel(channel, runInZone);
+  }
+
+  from(channel: string): EventEmitter<any> { return this.source.from(channel); }
+
+  to(channel: string): EventEmitter<any> { return this.sink.to(channel); }
+}
+
+/**
  * Helper class that wraps a channel's {@link EventEmitter} and
  * keeps track of if it should run in the zone.
  */
 class _Channel {
   constructor(public emitter: EventEmitter<any>, public runInZone: boolean) {}
 }
-
-// TODO(jteplitz602) Replace this with the definition in lib.webworker.d.ts(#3492)
-export interface PostMessageTarget { postMessage: (message: any, transfer?:[ArrayBuffer]) => void; }
