@@ -47,6 +47,34 @@ class NgZoneError {
 }
 
 /**
+ * Adds information about Http Requests currently in process, so that
+ * they can be treated as macrotasks.
+ */
+class ZoneExtensions {
+  NgZoneImpl _zoneImpl;
+
+  ZoneExtensions(this._zoneImpl);
+
+  startHttpRequest() {
+    _zoneImpl.startHttpRequest();
+  }
+
+  endHttpRequest() {
+    _zoneImpl.endHttpRequest();
+  }
+
+  static get current => Zone.current['_ngDartZoneExtensions'] ?? new EmptyZoneExtensions();
+}
+
+class EmptyZoneExtensions implements ZoneExtensions {
+  NgZoneImpl _zoneImpl = null;
+
+  startHttpRequest() {}
+
+  endHttpRequest() {}
+}
+
+/**
  * A `Zone` wrapper that lets you schedule tasks after its private microtask queue is exhausted but
  * before the next "VM turn", i.e. event loop iteration.
  *
@@ -69,6 +97,7 @@ class NgZoneImpl {
   // Number of microtasks pending from _innerZone (& descendants)
   int _pendingMicrotasks = 0;
   List<Timer> _pendingTimers = [];
+  int _pendingXhrMacrotasks = 0;
   Function onEnter;
   Function onLeave;
   Function setMicrotask;
@@ -118,7 +147,10 @@ class NgZoneImpl {
         runBinary: _runBinary,
         handleUncaughtError: handleUncaughtError,
         createTimer: _createTimer),
-      zoneValues: {'isAngularZone': true}
+      zoneValues: {
+        'isAngularZone': true,
+        '_ngDartZoneExtensions': new ZoneExtensions(this)
+      }
     );
   }
 
@@ -196,6 +228,10 @@ class NgZoneImpl {
     onError(new NgZoneError(error, [trace.toString()]));
   }
 
+  bool _pendingMacrotasks() {
+    return _pendingTimers.isNotEmpty || _pendingXhrMacrotasks > 0;
+  }
+
   Timer _createTimer(
       Zone self, ZoneDelegate parent, Zone zone, Duration duration, fn()) {
     WrappedTimer wrappedTimer;
@@ -204,14 +240,14 @@ class NgZoneImpl {
         fn();
       } finally {
         _pendingTimers.remove(wrappedTimer);
-        setMacrotask(_pendingTimers.isNotEmpty);
+        setMacrotask(_pendingMacrotasks());
       }
     };
     Timer timer = parent.createTimer(zone, duration, cb);
     wrappedTimer = new WrappedTimer(timer);
     wrappedTimer.addOnCancelCb(() {
       _pendingTimers.remove(wrappedTimer);
-      setMacrotask(_pendingTimers.isNotEmpty);
+      setMacrotask(_pendingMacrotasks());
     });
 
     _pendingTimers.add(wrappedTimer);
@@ -219,4 +255,13 @@ class NgZoneImpl {
     return wrappedTimer;
   }
 
+  void startHttpRequest() {
+    _pendingXhrMacrotasks++;
+    setMacrotask(_pendingMacrotasks());
+  }
+
+  void endHttpRequest() {
+    _pendingXhrMacrotasks--;
+    setMacrotask(_pendingMacrotasks());
+  }
 }

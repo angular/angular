@@ -88,5 +88,29 @@ describe('async', () => {
     });
   });
 
+  // TODO(juliemr): enable when zones track HTTP for both dart and JS
+  xit('should wait for a slow Http Request', () => {
+    var http = $('#http');
+
+    expect(http.$('.val').getText()).toEqual('placeholder');
+
+    http.$('.action').click();
+
+    // whenStable should only be called after the Http Request returns.
+    expect(http.$('.val').getText()).toEqual('responsedata');
+  });
+
+  // TODO(juliemr): enable when zones track HTTP for both dart and JS
+  xit('should wait for a routing change', () => {
+    var routeChange = $('#routing');
+
+    expect(routeChange.$('.val').getText()).toEqual('Old page');
+
+    routeChange.$('.action').click();
+
+    // whenStable should only be called after the route change finishes.
+    expect(routeChange.$('.val').getText()).toEqual('New page');
+  });
+
   afterEach(verifyNoBrowserErrors);
 });

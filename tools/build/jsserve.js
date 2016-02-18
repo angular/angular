@@ -18,6 +18,7 @@ module.exports = function(gulp, plugins, config) {
         // so we must turn off Chromium strict MIME type checking
         // see https://github.com/angular/angular/issues/3030#issuecomment-123453168
         middlewares.unshift(stripHeader('x-content-type-options'));
+        middlewares.unshift(makeSlowThingsSlow(4000));
         return middlewares;
       }
     });
@@ -37,4 +38,18 @@ function stripHeader(toStrip) {
     });
     next();
   };
+}
+
+/**
+ * This handler is used for end to end tests verifying that testability
+ * works properly with XmlHttpRequests.
+ */
+function makeSlowThingsSlow(delay) {
+  return function(req, res, next) {
+    if (req.url.indexOf('slowslowslow') !== -1) {
+      setTimeout(next, delay);
+    } else {
+      next();
+    }
+  }
 }
