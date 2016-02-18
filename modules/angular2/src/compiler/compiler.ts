@@ -17,7 +17,7 @@ import {provide, Provider} from 'angular2/src/core/di';
 import {TemplateParser} from 'angular2/src/compiler/template_parser';
 import {HtmlParser} from 'angular2/src/compiler/html_parser';
 import {DirectiveNormalizer} from 'angular2/src/compiler/directive_normalizer';
-import {RuntimeMetadataResolver} from 'angular2/src/compiler/runtime_metadata';
+import {CompileMetadataResolver} from 'angular2/src/compiler/metadata_resolver';
 import {StyleCompiler} from 'angular2/src/compiler/style_compiler';
 import {ViewCompiler} from 'angular2/src/compiler/view_compiler/view_compiler';
 import {CompilerConfig} from './config';
@@ -46,7 +46,7 @@ export const COMPILER_PROVIDERS: Array<Type | Provider | any[]> = CONST_EXPR([
   HtmlParser,
   TemplateParser,
   DirectiveNormalizer,
-  RuntimeMetadataResolver,
+  CompileMetadataResolver,
   DEFAULT_PACKAGE_URL_PROVIDER,
   StyleCompiler,
   ViewCompiler,
