@@ -6,7 +6,7 @@ describe('md-dialog', function() {
   beforeEach(() => { browser.get(url); });
   afterEach(verifyNoBrowserErrors);
 
-  it('should open a dialog', function() {
+  xit('should open a dialog', function() {
     var openButton = element(by.id('open'));
     openButton.click();
 
