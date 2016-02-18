@@ -7823,7 +7823,8 @@
       "dependencies": {
         "mime-db": {
           "version": "1.20.0",
-          "from": "mime-db@>=1.20.0 <1.21.0"
+          "from": "mime-db@1.20.0",
+          "resolved": "https://registry.npmjs.org/mime-db/-/mime-db-1.20.0.tgz"
         },
         "mime-types": {
           "version": "2.1.8",
@@ -8537,6 +8538,7 @@
     "ts2dart": {
       "version": "0.7.24",
       "from": "ts2dart@0.7.24",
+      "resolved": "https://registry.npmjs.org/ts2dart/-/ts2dart-0.7.24.tgz",
       "dependencies": {
         "source-map": {
           "version": "0.4.4",
@@ -9307,9 +9309,8 @@
       }
     },
     "zone.js": {
-      "version": "0.5.14",
-      "from": "zone.js@0.5.14",
-      "resolved": "https://registry.npmjs.org/zone.js/-/zone.js-0.5.14.tgz"
+      "version": "0.5.15",
+      "from": "zone.js@0.5.15"
     }
   }
 }
