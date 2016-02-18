@@ -452,16 +452,31 @@ gulp.task('serve.e2e.dart', ['build.js.cjs'], function(neverDone) {
 // ------------------
 // CI tests suites
 
-function runKarma(configFile, done) {
+function execProcess(name, args, done) {
   var exec = require('child_process').exec;
 
-  var cmd = process.platform === 'win32' ? 'node_modules\\.bin\\karma run ' :
-                                           'node node_modules/.bin/karma run ';
-  cmd += configFile;
-  exec(cmd, function(e, stdout) {
+  var cmd = process.platform === 'win32' ? 'node_modules\\.bin\\' + name + ' ':
+                                           'node node_modules/.bin/' + name + ' ';
+  cmd += args;
+  exec(cmd, done);
+}
+function runKarma(configFile, done) {
+  execProcess('karma', 'run ' + configFile, function(e, stdout) {
     // ignore errors, we don't want to fail the build in the interactive (non-ci) mode
     // karma server will print all test failures
     done();
+  });
+}
+
+// Gulp-typescript doesn't work with typescript@next:
+// https://github.com/ivogabe/gulp-typescript/issues/299
+function runTsc(project, done) {
+  execProcess('tsc', '-p ' + project, function(e, stdout, stderr) {
+    if (e) {
+      console.log(stdout);
+      console.err(stderr);
+      done(e);
+    } else { done(); }
   });
 }
 
@@ -768,7 +783,7 @@ gulp.task('!checkAndReport.payload.js', function() {
                       {
                         failConditions: PAYLOAD_TESTS_CONFIG.ts[packaging].sizeLimits,
                         prefix: caseName + '_' + packaging
-                      })
+                      });
   }
 
   return PAYLOAD_TESTS_CONFIG.ts.cases.reduce(function(sizeReportingStreams, caseName) {
@@ -1023,6 +1038,26 @@ gulp.task('test.typings',
                 }));
           });
 
+gulp.task('!build.compiler_cli'/*, ['build.js.cjs']*/, function(done) {
+  runTsc('tools/compiler_cli', done);
+});
+gulp.task('test.compiler_cli', ['!build.compiler_cli'], function(done) {
+  var tmpdir = path.join(os.tmpdir(), 'compiler_cli_test', new Date().getTime().toString());
+  // Allow the test to require modules from the angular2 dist.
+  // This is an alternative to setting up symlinks.
+  require('child_process').fork('./dist/tools/compiler_cli/test', [tmpdir], {env: {NODE_PATH: 'dist/js/cjs'}})
+    .on('close', function (exitCode) {
+      if (exitCode) {
+        var err = new Error('Compiler CLI test failed');
+        // Mark the error for gulp similar to how gulp-utils.PluginError does it.
+        // The stack is not useful in this context.
+        err.showStack = false;
+        done(err);
+      } else {
+        runTsc(tmpdir, done);
+      }
+    });
+});
 // -----------------
 // orchestrated targets
 
@@ -1088,7 +1123,7 @@ gulp.task('!build.tools', function() {
   var sourcemaps = require('gulp-sourcemaps');
   var tsc = require('gulp-typescript');
 
-  var stream = gulp.src(['tools/**/*.ts'])
+  var stream = gulp.src(['tools/**/*.ts', '!tools/compiler_cli/**'])
                    .pipe(sourcemaps.init())
                    .pipe(tsc({
                      target: 'ES5',
@@ -1508,7 +1543,7 @@ gulp.on('task_start', (e) => {
     analytics.buildSuccess('gulp <startup>', process.uptime() * 1000);
   }
 
-  analytics.buildStart('gulp ' + e.task)
+  analytics.buildStart('gulp ' + e.task);
 });
-gulp.on('task_stop', (e) => {analytics.buildSuccess('gulp ' + e.task, e.duration * 1000)});
-gulp.on('task_err', (e) => {analytics.buildError('gulp ' + e.task, e.duration * 1000)});
+gulp.on('task_stop', (e) => {analytics.buildSuccess('gulp ' + e.task, e.duration * 1000);});
+gulp.on('task_err', (e) => {analytics.buildError('gulp ' + e.task, e.duration * 1000);});

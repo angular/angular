@@ -1,0 +1,12 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "target": "es6",
+        "noImplicitAny": false,
+        "sourceMap": true,
+        "baseUrl": "../../dist/js/cjs",
+        "experimentalDecorators": true,
+        "outDir": "../../dist/tools/compiler_cli",
+        "declaration": true
+    }
+}

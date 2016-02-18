@@ -180,7 +180,6 @@ export class AppViewManager_ extends AppViewManager {
     wtfLeave(s);
   }
 
-  /** @internal */
   createRenderComponentType(templateUrl: string, slotCount: number, encapsulation: ViewEncapsulation,
                             styles: Array<string | any[]>): RenderComponentType {
     return new RenderComponentType(`${this._appId}-${this._nextCompTypeId++}`, templateUrl, slotCount, encapsulation,
