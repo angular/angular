@@ -17,7 +17,7 @@ void initReflector() {
         new _ngRef.ReflectionInfo(const [
           const Component(selector: '[soup]'),
           const View(template: 'Salad: {{myNum}} is awesome'),
-          _templates.HostMyComponentTemplate
+          _templates.hostViewFactory_MyComponent
         ], const [], () => new MyComponent()));
   i0.initReflector();
 }

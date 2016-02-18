@@ -1,0 +1,19 @@
+// Appends <b>hello</b>:
+$( "<b>hello</b>" ).appendTo( "body" );
+ 
+// Appends <b>hello</b>:
+$( "<b>hello</b>bye" ).appendTo( "body" );
+ 
+// Syntax error, unrecognized expression: bye<b>hello</b>
+$( "bye<b>hello</b>" ).appendTo( "body" );
+ 
+// Appends bye<b>hello</b>:
+$( $.parseHTML( "bye<b>hello</b>" ) ).appendTo( "body" );
+ 
+// Appends <b>hello</b>wait<b>bye</b>:
+$( "<b>hello</b>wait<b>bye</b>" ).appendTo( "body" );
+document.addEventListener('beforecopy', function(e){
+    if(weHaveDataToCopy()){ // use your web app's internal logic to determine if something can be copied
+        e.preventDefault(); // enable copy UI and events
+    }
+});

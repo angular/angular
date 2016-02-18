@@ -86,18 +86,40 @@ import {
 import {QueryList} from 'angular2/src/core/linker/query_list';
 
 import {ViewContainerRef} from 'angular2/src/core/linker/view_container_ref';
-import {ViewRef, ViewRef_} from 'angular2/src/core/linker/view_ref';
+import {EmbeddedViewRef} from 'angular2/src/core/linker/view_ref';
 
 import {Compiler} from 'angular2/src/core/linker/compiler';
-import {ElementRef, ElementRef_} from 'angular2/src/core/linker/element_ref';
+import {ElementRef} from 'angular2/src/core/linker/element_ref';
 import {TemplateRef} from 'angular2/src/core/linker/template_ref';
 
-import {DomRenderer} from 'angular2/src/platform/dom/dom_renderer';
+import {Renderer} from 'angular2/src/core/render';
 import {IS_DART} from 'angular2/src/facade/lang';
 
 const ANCHOR_ELEMENT = CONST_EXPR(new OpaqueToken('AnchorElement'));
 
 export function main() {
+  if (IS_DART) {
+    declareTests();
+  } else {
+    describe('no jit', () => {
+      beforeEachProviders(() => [
+        provide(ChangeDetectorGenConfig,
+                {useValue: new ChangeDetectorGenConfig(true, false, false)})
+      ]);
+      declareTests();
+    });
+
+    describe('jit', () => {
+      beforeEachProviders(() => [
+        provide(ChangeDetectorGenConfig,
+                {useValue: new ChangeDetectorGenConfig(true, false, true)})
+      ]);
+      declareTests();
+    });
+  }
+}
+
+function declareTests() {
   describe('integration tests', function() {
 
     beforeEachProviders(() => [provide(ANCHOR_ELEMENT, {useValue: el('<div></div>')})]);
@@ -151,7 +173,6 @@ export function main() {
 
                .createAsync(MyComp)
                .then((fixture) => {
-
                  fixture.debugElement.componentInstance.ctxProp = 'Initial aria label';
                  fixture.detectChanges();
                  expect(
@@ -306,17 +327,16 @@ export function main() {
 
       it('should consume directive watch expression change.',
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-           var tpl = '<div>' +
+           var tpl = '<span>' +
                      '<div my-dir [elprop]="ctxProp"></div>' +
                      '<div my-dir elprop="Hi there!"></div>' +
                      '<div my-dir elprop="Hi {{\'there!\'}}"></div>' +
                      '<div my-dir elprop="One more {{ctxProp}}"></div>' +
-                     '</div>';
+                     '</span>';
            tcb.overrideView(MyComp, new ViewMetadata({template: tpl, directives: [MyDir]}))
 
                .createAsync(MyComp)
                .then((fixture) => {
-
                  fixture.debugElement.componentInstance.ctxProp = 'Hello World!';
                  fixture.detectChanges();
 
@@ -677,7 +697,6 @@ export function main() {
                  .createAsync(MyComp)
                  .then((fixture) => {
                    fixture.detectChanges();
-
                    // Get the element at index 2, since index 0 is the <template>.
                    expect(DOM.childNodes(fixture.debugElement.nativeElement)[2])
                        .toHaveText("1-hello");
@@ -1084,6 +1103,9 @@ export function main() {
                  fixture.detectChanges();
                  dispatchEvent(DOM.getGlobalEventTarget("window"), 'domEvent');
                  expect(globalCounter).toEqual(2);
+
+                 // need to destroy to release all remaining global event listeners
+                 fixture.destroy();
 
                  async.done();
                });
@@ -1850,8 +1872,8 @@ class MyService {
 class SimpleImperativeViewComponent {
   done;
 
-  constructor(self: ElementRef, renderer: DomRenderer) {
-    var hostElement = renderer.getNativeElementSync(self);
+  constructor(self: ElementRef, renderer: Renderer) {
+    var hostElement = self.nativeElement;
     DOM.appendChild(hostElement, el('hello imp view'));
   }
 }
@@ -2332,10 +2354,10 @@ class ChildConsumingEventBus {
 @Directive({selector: '[someImpvp]', inputs: ['someImpvp']})
 @Injectable()
 class SomeImperativeViewport {
-  view: ViewRef;
+  view: EmbeddedViewRef;
   anchor;
   constructor(public vc: ViewContainerRef, public templateRef: TemplateRef,
-              public renderer: DomRenderer, @Inject(ANCHOR_ELEMENT) anchor) {
+              @Inject(ANCHOR_ELEMENT) anchor) {
     this.view = null;
     this.anchor = anchor;
   }
@@ -2347,7 +2369,7 @@ class SomeImperativeViewport {
     }
     if (value) {
       this.view = this.vc.createEmbeddedView(this.templateRef);
-      var nodes = this.renderer.getRootNodes((<ViewRef_>this.view).renderFragment);
+      var nodes = this.view.rootNodes;
       for (var i = 0; i < nodes.length; i++) {
         DOM.appendChild(this.anchor, nodes[i]);
       }

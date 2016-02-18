@@ -15,7 +15,12 @@ import {
 
 import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
 import {Type, isPresent, isBlank, stringify, isString} from 'angular2/src/facade/lang';
-import {MapWrapper, SetWrapper, ListWrapper} from 'angular2/src/facade/collection';
+import {
+  MapWrapper,
+  SetWrapper,
+  ListWrapper,
+  StringMapWrapper
+} from 'angular2/src/facade/collection';
 import {RuntimeMetadataResolver} from 'angular2/src/compiler/runtime_metadata';
 import {
   TemplateCompiler,
@@ -26,31 +31,31 @@ import {evalModule} from './eval_module';
 import {SourceModule, moduleRef} from 'angular2/src/compiler/source_module';
 import {XHR} from 'angular2/src/compiler/xhr';
 import {MockXHR} from 'angular2/src/compiler/xhr_mock';
+import {SpyRootRenderer, SpyRenderer, SpyAppViewManager} from '../core/spies';
 import {ViewEncapsulation} from 'angular2/src/core/metadata/view';
+import {AppView, AppProtoView} from 'angular2/src/core/linker/view';
+import {AppElement} from 'angular2/src/core/linker/element';
+import {Locals, ChangeDetectorGenConfig} from 'angular2/src/core/change_detection/change_detection';
 
-import {Locals} from 'angular2/src/core/change_detection/change_detection';
-
-import {
-  CommandVisitor,
-  TextCmd,
-  NgContentCmd,
-  BeginElementCmd,
-  BeginComponentCmd,
-  EmbeddedTemplateCmd,
-  TemplateCmd,
-  visitAllCommands,
-  CompiledComponentTemplate
-} from 'angular2/src/core/linker/template_commands';
-
-import {Component, View, Directive, provide} from 'angular2/core';
+import {Component, View, Directive, provide, RenderComponentType} from 'angular2/core';
 
 import {TEST_PROVIDERS} from './test_bindings';
-import {TestDispatcher, TestPipes} from './change_detector_mocks';
-import {codeGenValueFn, codeGenExportVariable, MODULE_SUFFIX} from 'angular2/src/compiler/util';
+import {
+  codeGenValueFn,
+  codeGenFnHeader,
+  codeGenExportVariable,
+  MODULE_SUFFIX
+} from 'angular2/src/compiler/util';
+import {PipeTransform, WrappedValue, Injectable, Pipe} from 'angular2/core';
+
 
 // Attention: This path has to point to this test file!
 const THIS_MODULE_ID = 'angular2/test/compiler/template_compiler_spec';
 var THIS_MODULE_REF = moduleRef(`package:${THIS_MODULE_ID}${MODULE_SUFFIX}`);
+var REFLECTOR_MODULE_REF =
+    moduleRef(`package:angular2/src/core/reflection/reflection${MODULE_SUFFIX}`);
+var REFLECTION_CAPS_MODULE_REF =
+    moduleRef(`package:angular2/src/core/reflection/reflection_capabilities${MODULE_SUFFIX}`);
 
 export function main() {
   describe('TemplateCompiler', () => {
@@ -77,23 +82,24 @@ export function main() {
            }));
 
         it('should compile host components', inject([AsyncTestCompleter], (async) => {
-             compile([CompWithBindingsAndStyles])
-                 .then((humanizedTemplate) => {
-                   expect(humanizedTemplate['styles']).toEqual([]);
-                   expect(humanizedTemplate['commands'][0]).toEqual('<comp-a>');
-                   expect(humanizedTemplate['cd']).toEqual(['elementProperty(title)=someDirValue']);
-
+             compile([CompWithBindingsAndStylesAndPipes])
+                 .then((humanizedView) => {
+                   expect(humanizedView['styles']).toEqual([]);
+                   expect(humanizedView['elements']).toEqual(['<comp-a>']);
+                   expect(humanizedView['pipes']).toEqual({});
+                   expect(humanizedView['cd']).toEqual(['prop(title)=someHostValue']);
                    async.done();
                  });
            }));
 
         it('should compile nested components', inject([AsyncTestCompleter], (async) => {
-             compile([CompWithBindingsAndStyles])
-                 .then((humanizedTemplate) => {
-                   var nestedTemplate = humanizedTemplate['commands'][1];
-                   expect(nestedTemplate['styles']).toEqual(['div {color: red}']);
-                   expect(nestedTemplate['commands'][0]).toEqual('<a>');
-                   expect(nestedTemplate['cd']).toEqual(['elementProperty(href)=someCtxValue']);
+             compile([CompWithBindingsAndStylesAndPipes])
+                 .then((humanizedView) => {
+                   var componentView = humanizedView['componentViews'][0];
+                   expect(componentView['styles']).toEqual(['div {color: red}']);
+                   expect(componentView['elements']).toEqual(['<a>']);
+                   expect(componentView['pipes']).toEqual({'uppercase': stringify(UpperCasePipe)});
+                   expect(componentView['cd']).toEqual(['prop(href)=SOMECTXVALUE']);
 
                    async.done();
                  });
@@ -101,23 +107,24 @@ export function main() {
 
         it('should compile recursive components', inject([AsyncTestCompleter], (async) => {
              compile([TreeComp])
-                 .then((humanizedTemplate) => {
-                   expect(humanizedTemplate['commands'][0]).toEqual('<tree>');
-                   expect(humanizedTemplate['commands'][1]['commands'][0]).toEqual('<tree>');
-                   expect(humanizedTemplate['commands'][1]['commands'][1]['commands'][0])
-                       .toEqual('<tree>');
+                 .then((humanizedView) => {
+                   expect(humanizedView['elements']).toEqual(['<tree>']);
+                   expect(humanizedView['componentViews'][0]['embeddedViews'][0]['elements'])
+                       .toEqual(['<tree>']);
+                   expect(humanizedView['componentViews'][0]['embeddedViews'][0]['componentViews']
+                                       [0]['embeddedViews'][0]['elements'])
+                       .toEqual(['<tree>']);
 
                    async.done();
                  });
            }));
 
-        it('should pass the right change detector to embedded templates',
-           inject([AsyncTestCompleter], (async) => {
+        it('should compile embedded templates', inject([AsyncTestCompleter], (async) => {
              compile([CompWithEmbeddedTemplate])
-                 .then((humanizedTemplate) => {
-                   expect(humanizedTemplate['commands'][1]['commands'][0]).toEqual('<template>');
-                   expect(humanizedTemplate['commands'][1]['commands'][1]['cd'])
-                       .toEqual(['elementProperty(href)=someCtxValue']);
+                 .then((humanizedView) => {
+                   var embeddedView = humanizedView['componentViews'][0]['embeddedViews'][0];
+                   expect(embeddedView['elements']).toEqual(['<a>']);
+                   expect(embeddedView['cd']).toEqual(['prop(href)=someEmbeddedValue']);
 
                    async.done();
                  });
@@ -125,8 +132,8 @@ export function main() {
 
         it('should dedup directives', inject([AsyncTestCompleter], (async) => {
              compile([CompWithDupDirectives, TreeComp])
-                 .then((humanizedTemplate) => {
-                   expect(humanizedTemplate['commands'][1]['commands'][0]).toEqual("<tree>");
+                 .then((humanizedView) => {
+                   expect(humanizedView['componentViews'][0]['componentViews'].length).toBe(1);
                    async.done();
 
                  });
@@ -136,18 +143,34 @@ export function main() {
       describe('compileHostComponentRuntime', () => {
         function compile(components: Type[]): Promise<any[]> {
           return compiler.compileHostComponentRuntime(components[0])
-              .then((compiledHostTemplate) => humanizeTemplate(compiledHostTemplate.template));
+              .then((compiledHostTemplate) =>
+                        humanizeViewFactory(compiledHostTemplate.viewFactory));
         }
 
-        runTests(compile);
+        describe('no jit', () => {
+          beforeEachProviders(() => [
+            provide(ChangeDetectorGenConfig,
+                    {useValue: new ChangeDetectorGenConfig(true, false, false)})
+          ]);
+          runTests(compile);
+        });
+
+        describe('jit', () => {
+          beforeEachProviders(() => [
+            provide(ChangeDetectorGenConfig,
+                    {useValue: new ChangeDetectorGenConfig(true, false, true)})
+          ]);
+          runTests(compile);
+        });
 
         it('should cache components for parallel requests',
            inject([AsyncTestCompleter, XHR], (async, xhr: MockXHR) => {
-             xhr.expect('package:angular2/test/compiler/compUrl.html', 'a');
+             // Expecting only one xhr...
+             xhr.expect('package:angular2/test/compiler/compUrl.html', '<a></a>');
              PromiseWrapper.all([compile([CompWithTemplateUrl]), compile([CompWithTemplateUrl])])
-                 .then((humanizedTemplates) => {
-                   expect(humanizedTemplates[0]['commands'][1]['commands']).toEqual(['#text(a)']);
-                   expect(humanizedTemplates[1]['commands'][1]['commands']).toEqual(['#text(a)']);
+                 .then((humanizedViews) => {
+                   expect(humanizedViews[0]['componentViews'][0]['elements']).toEqual(['<a>']);
+                   expect(humanizedViews[1]['componentViews'][0]['elements']).toEqual(['<a>']);
 
                    async.done();
                  });
@@ -156,15 +179,14 @@ export function main() {
 
         it('should cache components for sequential requests',
            inject([AsyncTestCompleter, XHR], (async, xhr: MockXHR) => {
-             xhr.expect('package:angular2/test/compiler/compUrl.html', 'a');
+             // Expecting only one xhr...
+             xhr.expect('package:angular2/test/compiler/compUrl.html', '<a>');
              compile([CompWithTemplateUrl])
-                 .then((humanizedTemplate0) => {
+                 .then((humanizedView0) => {
                    return compile([CompWithTemplateUrl])
-                       .then((humanizedTemplate1) => {
-                         expect(humanizedTemplate0['commands'][1]['commands'])
-                             .toEqual(['#text(a)']);
-                         expect(humanizedTemplate1['commands'][1]['commands'])
-                             .toEqual(['#text(a)']);
+                       .then((humanizedView1) => {
+                         expect(humanizedView0['componentViews'][0]['elements']).toEqual(['<a>']);
+                         expect(humanizedView1['componentViews'][0]['elements']).toEqual(['<a>']);
                          async.done();
                        });
                  });
@@ -173,17 +195,17 @@ export function main() {
 
         it('should allow to clear the cache',
            inject([AsyncTestCompleter, XHR], (async, xhr: MockXHR) => {
-             xhr.expect('package:angular2/test/compiler/compUrl.html', 'a');
+             xhr.expect('package:angular2/test/compiler/compUrl.html', '<a>');
              compile([CompWithTemplateUrl])
-                 .then((humanizedTemplate) => {
+                 .then((humanizedView) => {
                    compiler.clearCache();
-                   xhr.expect('package:angular2/test/compiler/compUrl.html', 'b');
+                   xhr.expect('package:angular2/test/compiler/compUrl.html', '<b>');
                    var result = compile([CompWithTemplateUrl]);
                    xhr.flush();
                    return result;
                  })
-                 .then((humanizedTemplate) => {
-                   expect(humanizedTemplate['commands'][1]['commands']).toEqual(['#text(b)']);
+                 .then((humanizedView) => {
+                   expect(humanizedView['componentViews'][0]['elements']).toEqual(['<b>']);
                    async.done();
                  });
              xhr.flush();
@@ -193,14 +215,17 @@ export function main() {
       describe('compileTemplatesCodeGen', () => {
         function normalizeComponent(
             component: Type): Promise<NormalizedComponentWithViewDirectives> {
-          var compAndViewDirMetas = [runtimeMetadataResolver.getMetadata(component)].concat(
-              runtimeMetadataResolver.getViewDirectivesMetadata(component));
+          var compAndViewDirMetas =
+              [runtimeMetadataResolver.getDirectiveMetadata(component)].concat(
+                  runtimeMetadataResolver.getViewDirectivesMetadata(component));
+          var upperCasePipeMeta = runtimeMetadataResolver.getPipeMetadata(UpperCasePipe);
+          upperCasePipeMeta.type.moduleUrl = `package:${THIS_MODULE_ID}${MODULE_SUFFIX}`;
           return PromiseWrapper.all(compAndViewDirMetas.map(
                                         meta => compiler.normalizeDirectiveMetadata(meta)))
               .then((normalizedCompAndViewDirMetas: CompileDirectiveMetadata[]) =>
                         new NormalizedComponentWithViewDirectives(
                             normalizedCompAndViewDirMetas[0],
-                            normalizedCompAndViewDirMetas.slice(1)));
+                            normalizedCompAndViewDirMetas.slice(1), [upperCasePipeMeta]));
         }
 
         function compile(components: Type[]): Promise<any[]> {
@@ -223,7 +248,7 @@ export function main() {
     describe('normalizeDirectiveMetadata', () => {
       it('should return the given DirectiveMetadata for non components',
          inject([AsyncTestCompleter], (async) => {
-           var meta = runtimeMetadataResolver.getMetadata(NonComponent);
+           var meta = runtimeMetadataResolver.getDirectiveMetadata(NonComponent);
            compiler.normalizeDirectiveMetadata(meta).then(normMeta => {
              expect(normMeta).toBe(meta);
              async.done();
@@ -234,7 +259,7 @@ export function main() {
          inject([AsyncTestCompleter, XHR], (async, xhr: MockXHR) => {
            xhr.expect('package:angular2/test/compiler/compUrl.html', 'loadedTemplate');
            compiler.normalizeDirectiveMetadata(
-                       runtimeMetadataResolver.getMetadata(CompWithTemplateUrl))
+                       runtimeMetadataResolver.getDirectiveMetadata(CompWithTemplateUrl))
                .then((meta: CompileDirectiveMetadata) => {
                  expect(meta.template.template).toEqual('loadedTemplate');
                  async.done();
@@ -243,7 +268,8 @@ export function main() {
          }));
 
       it('should copy all the other fields', inject([AsyncTestCompleter], (async) => {
-           var meta = runtimeMetadataResolver.getMetadata(CompWithBindingsAndStyles);
+           var meta =
+               runtimeMetadataResolver.getDirectiveMetadata(CompWithBindingsAndStylesAndPipes);
            compiler.normalizeDirectiveMetadata(meta).then((normMeta: CompileDirectiveMetadata) => {
              expect(normMeta.type).toEqual(meta.type);
              expect(normMeta.isComponent).toEqual(meta.isComponent);
@@ -279,23 +305,35 @@ export function main() {
   });
 }
 
+
+@Pipe({name: 'uppercase'})
+@Injectable()
+export class UpperCasePipe implements PipeTransform {
+  transform(value: string, args: any[] = null): string { return value.toUpperCase(); }
+}
+
 @Component({
   selector: 'comp-a',
-  host: {'[title]': 'someProp'},
+  host: {'[title]': '\'someHostValue\''},
   moduleId: THIS_MODULE_ID,
   exportAs: 'someExportAs'
 })
 @View({
-  template: '<a [href]="someProp"></a>',
+  template: '<a [href]="\'someCtxValue\' | uppercase"></a>',
   styles: ['div {color: red}'],
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
+  pipes: [UpperCasePipe]
 })
-class CompWithBindingsAndStyles {
+export class CompWithBindingsAndStylesAndPipes {
 }
 
 @Component({selector: 'tree', moduleId: THIS_MODULE_ID})
-@View({template: '<tree></tree>', directives: [TreeComp], encapsulation: ViewEncapsulation.None})
-class TreeComp {
+@View({
+  template: '<template><tree></tree></template>',
+  directives: [TreeComp],
+  encapsulation: ViewEncapsulation.None
+})
+export class TreeComp {
 }
 
 @Component({selector: 'comp-wit-dup-tpl', moduleId: THIS_MODULE_ID})
@@ -304,34 +342,37 @@ class TreeComp {
   directives: [TreeComp, TreeComp],
   encapsulation: ViewEncapsulation.None
 })
-class CompWithDupDirectives {
+export class CompWithDupDirectives {
 }
 
 @Component({selector: 'comp-url', moduleId: THIS_MODULE_ID})
 @View({templateUrl: 'compUrl.html', encapsulation: ViewEncapsulation.None})
-class CompWithTemplateUrl {
+export class CompWithTemplateUrl {
 }
 
 @Component({selector: 'comp-tpl', moduleId: THIS_MODULE_ID})
 @View({
-  template: '<template><a [href]="someProp"></a></template>',
+  template: '<template><a [href]="\'someEmbeddedValue\'"></a></template>',
   encapsulation: ViewEncapsulation.None
 })
-class CompWithEmbeddedTemplate {
+export class CompWithEmbeddedTemplate {
 }
 
 
 @Directive({selector: 'plain'})
 @View({template: ''})
-class NonComponent {
+export class NonComponent {
 }
+
 
 function testableTemplateModule(sourceModule: SourceModule,
                                 normComp: CompileDirectiveMetadata): SourceModule {
-  var resultExpression =
-      `${THIS_MODULE_REF}humanizeTemplate(Host${normComp.type.name}Template.template)`;
-  var testableSource = `${sourceModule.sourceWithModuleRefs}
-  ${codeGenValueFn(['_'], resultExpression, '_run')};
+  var testableSource = `
+  ${sourceModule.sourceWithModuleRefs}
+  ${codeGenFnHeader(['_'], '_run')}{
+    ${REFLECTOR_MODULE_REF}reflector.reflectionCapabilities = new ${REFLECTION_CAPS_MODULE_REF}ReflectionCapabilities();
+    return ${THIS_MODULE_REF}humanizeViewFactory(hostViewFactory_${normComp.type.name}.viewFactory);
+  }
   ${codeGenExportVariable('run')}_run;`;
   return new SourceModule(sourceModule.moduleUrl, testableSource);
 }
@@ -343,75 +384,71 @@ function testableStylesModule(sourceModule: SourceModule): SourceModule {
   return new SourceModule(sourceModule.moduleUrl, testableSource);
 }
 
-// Attention: read by eval!
-export function humanizeTemplate(
-    template: CompiledComponentTemplate,
-    humanizedTemplates: Map<string, {[key: string]: any}> = null): {[key: string]: any} {
-  if (isBlank(humanizedTemplates)) {
-    humanizedTemplates = new Map<string, {[key: string]: any}>();
-  }
-  var result = humanizedTemplates.get(template.id);
+function humanizeView(view: AppView, cachedResults: Map<AppProtoView, any>): {[key: string]: any} {
+  var result = cachedResults.get(view.proto);
   if (isPresent(result)) {
     return result;
   }
-  var commands = [];
-  result = {
-    'styles': template.styles,
-    'commands': commands,
-    'cd': testChangeDetector(template.changeDetectorFactory)
-  };
-  humanizedTemplates.set(template.id, result);
-  visitAllCommands(new CommandHumanizer(commands, humanizedTemplates), template.commands);
+  result = {};
+  // fill the cache early to break cycles.
+  cachedResults.set(view.proto, result);
+
+  view.changeDetector.detectChanges();
+
+  var pipes = {};
+  if (isPresent(view.proto.protoPipes)) {
+    StringMapWrapper.forEach(view.proto.protoPipes.config, (pipeProvider, pipeName) => {
+      pipes[pipeName] = stringify(pipeProvider.key.token);
+    });
+  }
+  var componentViews = [];
+  var embeddedViews = [];
+
+  view.appElements.forEach((appElement) => {
+    if (isPresent(appElement.componentView)) {
+      componentViews.push(humanizeView(appElement.componentView, cachedResults));
+    } else if (isPresent(appElement.embeddedViewFactory)) {
+      embeddedViews.push(
+          humanizeViewFactory(appElement.embeddedViewFactory, appElement, cachedResults));
+    }
+  });
+  result['styles'] = (<any>view.renderer).styles;
+  result['elements'] = (<any>view.renderer).elements;
+  result['pipes'] = pipes;
+  result['cd'] = (<any>view.renderer).props;
+  result['componentViews'] = componentViews;
+  result['embeddedViews'] = embeddedViews;
   return result;
 }
 
-class TestContext implements CompWithBindingsAndStyles, TreeComp, CompWithTemplateUrl,
-    CompWithEmbeddedTemplate, CompWithDupDirectives {
-  someProp: string;
+// Attention: read by eval!
+export function humanizeViewFactory(
+    viewFactory: Function, containerAppElement: AppElement = null,
+    cachedResults: Map<AppProtoView, any> = null): {[key: string]: any} {
+  if (isBlank(cachedResults)) {
+    cachedResults = new Map<AppProtoView, any>();
+  }
+  var viewManager = new SpyAppViewManager();
+  viewManager.spy('createRenderComponentType')
+      .andCallFake((encapsulation: ViewEncapsulation, styles: Array<string | any[]>) => {
+        return new RenderComponentType('someId', encapsulation, styles);
+      });
+  var view: AppView = viewFactory(new RecordingRenderer([]), viewManager, containerAppElement, [],
+                                  null, null, null);
+  return humanizeView(view, cachedResults);
 }
 
+class RecordingRenderer extends SpyRenderer {
+  props: string[] = [];
+  elements: string[] = [];
 
-function testChangeDetector(changeDetectorFactory: Function): string[] {
-  var ctx = new TestContext();
-  ctx.someProp = 'someCtxValue';
-  var dir1 = new TestContext();
-  dir1.someProp = 'someDirValue';
-
-  var dispatcher = new TestDispatcher([dir1], []);
-  var cd = changeDetectorFactory(dispatcher);
-  var locals = new Locals(null, MapWrapper.createFromStringMap({'someVar': null}));
-  cd.hydrate(ctx, locals, dispatcher, new TestPipes());
-  cd.detectChanges();
-  return dispatcher.log;
-}
-
-
-class CommandHumanizer implements CommandVisitor {
-  constructor(private result: any[],
-              private humanizedTemplates: Map<string, {[key: string]: any}>) {}
-  visitText(cmd: TextCmd, context: any): any {
-    this.result.push(`#text(${cmd.value})`);
-    return null;
-  }
-  visitNgContent(cmd: NgContentCmd, context: any): any { return null; }
-  visitBeginElement(cmd: BeginElementCmd, context: any): any {
-    this.result.push(`<${cmd.name}>`);
-    return null;
-  }
-  visitEndElement(context: any): any {
-    this.result.push('</>');
-    return null;
-  }
-  visitBeginComponent(cmd: BeginComponentCmd, context: any): any {
-    this.result.push(`<${cmd.name}>`);
-    this.result.push(humanizeTemplate(cmd.templateGetter(), this.humanizedTemplates));
-    return null;
-  }
-  visitEndComponent(context: any): any { return this.visitEndElement(context); }
-  visitEmbeddedTemplate(cmd: EmbeddedTemplateCmd, context: any): any {
-    this.result.push(`<template>`);
-    this.result.push({'cd': testChangeDetector(cmd.changeDetectorFactory)});
-    this.result.push(`</template>`);
-    return null;
+  constructor(public styles: string[]) {
+    super();
+    this.spy('renderComponent')
+        .andCallFake((componentProto) => new RecordingRenderer(componentProto.styles));
+    this.spy('setElementProperty')
+        .andCallFake((el, prop, value) => { this.props.push(`prop(${prop})=${value}`); });
+    this.spy('createElement')
+        .andCallFake((parent, elName) => { this.elements.push(`<${elName}>`); });
   }
 }

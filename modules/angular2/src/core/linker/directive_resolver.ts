@@ -138,3 +138,5 @@ export class DirectiveResolver {
     }
   }
 }
+
+export var CODEGEN_DIRECTIVE_RESOLVER = new DirectiveResolver();

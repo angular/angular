@@ -3,6 +3,7 @@ import {
   inject,
   ddescribe,
   describe,
+  dispatchEvent,
   it,
   iit,
   expect,
@@ -23,8 +24,9 @@ import {
   Injectable,
   ElementRef
 } from 'angular2/core';
+import {AppViewListener} from 'angular2/src/core/linker/view_listener';
 import {NgIf} from 'angular2/common';
-import {WebWorkerRenderer} from "angular2/src/web_workers/worker/renderer";
+import {WebWorkerRootRenderer} from "angular2/src/web_workers/worker/renderer";
 import {
   ClientMessageBrokerFactory,
   ClientMessageBrokerFactory_,
@@ -32,38 +34,22 @@ import {
   FnArg
 } from "angular2/src/web_workers/shared/client_message_broker";
 import {Serializer} from "angular2/src/web_workers/shared/serializer";
-import {
-  RenderProtoViewRef,
-  RenderViewWithFragments,
-  RenderViewRef,
-  RenderFragmentRef,
-  Renderer
-} from "angular2/src/core/render/api";
-import {DomRenderer, DomRenderer_} from 'angular2/src/platform/dom/dom_renderer';
-import {DefaultRenderView} from 'angular2/src/core/render/view';
-import {
-  RenderProtoViewRefStore,
-  WebWorkerRenderProtoViewRef
-} from "angular2/src/web_workers/shared/render_proto_view_ref_store";
-import {
-  RenderViewWithFragmentsStore,
-  WebWorkerRenderViewRef
-} from 'angular2/src/web_workers/shared/render_view_with_fragments_store';
+import {RootRenderer} from "angular2/src/core/render/api";
+import {DomRootRenderer, DomRootRenderer_} from 'angular2/src/platform/dom/dom_renderer';
+import {RenderStore} from "angular2/src/web_workers/shared/render_store";
 import {MessageBasedRenderer} from 'angular2/src/web_workers/ui/renderer';
 import {createPairedMessageBuses, PairedMessageBuses} from '../shared/web_worker_test_util';
 import {
   ServiceMessageBrokerFactory,
   ServiceMessageBrokerFactory_
 } from 'angular2/src/web_workers/shared/service_message_broker';
-import {WebWorkerEventDispatcher} from 'angular2/src/web_workers/worker/event_dispatcher';
 import {ChangeDetectorGenConfig} from 'angular2/src/core/change_detection/change_detection';
 
 
 export function main() {
   function createWebWorkerBrokerFactory(
       messageBuses: PairedMessageBuses, workerSerializer: Serializer, uiSerializer: Serializer,
-      domRenderer: DomRenderer, uiRenderProtoViewStore: RenderProtoViewRefStore,
-      uiRenderViewStore: RenderViewWithFragmentsStore): ClientMessageBrokerFactory {
+      domRootRenderer: DomRootRenderer, uiRenderStore: RenderStore): ClientMessageBrokerFactory {
     var uiMessageBus = messageBuses.ui;
     var workerMessageBus = messageBuses.worker;
 
@@ -74,67 +60,62 @@ export function main() {
     // set up the ui side
     var uiMessageBrokerFactory = new ServiceMessageBrokerFactory_(uiMessageBus, uiSerializer);
     var renderer = new MessageBasedRenderer(uiMessageBrokerFactory, uiMessageBus, uiSerializer,
-                                            uiRenderProtoViewStore, uiRenderViewStore, domRenderer);
+                                            uiRenderStore, domRootRenderer);
     renderer.start();
 
     return webWorkerBrokerFactory;
   }
 
-  function createWorkerRenderer(
-      workerSerializer: Serializer, uiSerializer: Serializer, domRenderer: DomRenderer,
-      uiRenderProtoViewStore: RenderProtoViewRefStore,
-      uiRenderViewStore: RenderViewWithFragmentsStore,
-      workerRenderProtoViewStore: RenderProtoViewRefStore,
-      workerRenderViewStore: RenderViewWithFragmentsStore): WebWorkerRenderer {
+  function createWorkerRenderer(workerSerializer: Serializer, uiSerializer: Serializer,
+                                domRootRenderer: DomRootRenderer, uiRenderStore: RenderStore,
+                                workerRenderStore: RenderStore): WebWorkerRootRenderer {
     var messageBuses = createPairedMessageBuses();
-    var brokerFactory =
-        createWebWorkerBrokerFactory(messageBuses, workerSerializer, uiSerializer, domRenderer,
-                                     uiRenderProtoViewStore, uiRenderViewStore);
-    var workerEventDispatcher = new WebWorkerEventDispatcher(messageBuses.worker, workerSerializer);
-    return new WebWorkerRenderer(brokerFactory, workerRenderProtoViewStore, workerRenderViewStore,
-                                 workerEventDispatcher);
+    var brokerFactory = createWebWorkerBrokerFactory(messageBuses, workerSerializer, uiSerializer,
+                                                     domRootRenderer, uiRenderStore);
+    return new WebWorkerRootRenderer(brokerFactory, messageBuses.worker, workerSerializer,
+                                     workerRenderStore);
   }
 
   describe("Web Worker Renderer", () => {
     var uiInjector: Injector;
-    var uiRenderViewStore: RenderViewWithFragmentsStore;
+    var uiRenderStore: RenderStore;
+    var workerRenderStore: RenderStore;
 
     beforeEachProviders(() => {
-      var uiRenderProtoViewStore = new RenderProtoViewRefStore(false);
-      uiRenderViewStore = new RenderViewWithFragmentsStore(false);
+      uiRenderStore = new RenderStore();
       var testInjector = new TestInjector();
       testInjector.addProviders([
-        provide(RenderProtoViewRefStore, {useValue: uiRenderProtoViewStore}),
-        provide(RenderViewWithFragmentsStore, {useValue: uiRenderViewStore}),
-        provide(DomRenderer, {useClass: DomRenderer_}),
-        provide(Renderer, {useExisting: DomRenderer})
+        provide(RenderStore, {useValue: uiRenderStore}),
+        provide(DomRootRenderer, {useClass: DomRootRenderer_}),
+        provide(RootRenderer, {useExisting: DomRootRenderer})
       ]);
       uiInjector = testInjector.createInjector();
       var uiSerializer = uiInjector.get(Serializer);
-      var domRenderer = uiInjector.get(DomRenderer);
-      var workerRenderProtoViewStore = new RenderProtoViewRefStore(true);
-      var workerRenderViewStore = new RenderViewWithFragmentsStore(true);
+      var domRootRenderer = uiInjector.get(DomRootRenderer);
+      workerRenderStore = new RenderStore();
       return [
         provide(ChangeDetectorGenConfig,
                 {useValue: new ChangeDetectorGenConfig(true, true, false)}),
-        provide(RenderProtoViewRefStore, {useValue: workerRenderProtoViewStore}),
-        provide(RenderViewWithFragmentsStore, {useValue: workerRenderViewStore}),
-        provide(Renderer,
+        provide(RenderStore, {useValue: workerRenderStore}),
+        provide(RootRenderer,
                 {
                   useFactory: (workerSerializer) => {
-                    return createWorkerRenderer(workerSerializer, uiSerializer, domRenderer,
-                                                uiRenderProtoViewStore, uiRenderViewStore,
-                                                workerRenderProtoViewStore, workerRenderViewStore);
+                    return createWorkerRenderer(workerSerializer, uiSerializer, domRootRenderer,
+                                                uiRenderStore, workerRenderStore);
                   },
                   deps: [Serializer]
-                })
+                }),
+        provide(AppViewListener, {useClass: AppViewListener})
       ];
     });
 
     function getRenderElement(elementRef: ElementRef) {
-      var renderView = <DefaultRenderView<Node>>uiRenderViewStore.deserializeRenderViewRef(
-          (<WebWorkerRenderViewRef>elementRef.renderView).refNumber);
-      return renderView.boundElements[elementRef.boundElementIndex];
+      var id = workerRenderStore.serialize(elementRef.nativeElement);
+      return uiRenderStore.deserialize(id);
+    }
+
+    function getRenderer(elementRef: ElementRef) {
+      return (<any>elementRef).internalElement.parentView.renderer;
     }
 
     it('should update text nodes',
@@ -154,28 +135,28 @@ export function main() {
        }));
 
     it('should update any element property/attributes/class/style independent of the compilation on the root element and other elements',
-       inject([TestComponentBuilder, Renderer, AsyncTestCompleter], (tcb: TestComponentBuilder,
-                                                                     renderer: Renderer, async) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
          tcb.overrideView(MyComp, new ViewMetadata(
                                       {template: '<input [title]="y" style="position:absolute">'}))
              .createAsync(MyComp)
              .then((fixture) => {
                var checkSetters = (elr) => {
+                 var renderer = getRenderer(elr);
                  var el = getRenderElement(elr);
-                 renderer.setElementProperty(elr, 'tabIndex', 1);
+                 renderer.setElementProperty(elr.nativeElement, 'tabIndex', 1);
                  expect((<HTMLInputElement>el).tabIndex).toEqual(1);
 
-                 renderer.setElementClass(elr, 'a', true);
+                 renderer.setElementClass(elr.nativeElement, 'a', true);
                  expect(DOM.hasClass(el, 'a')).toBe(true);
-                 renderer.setElementClass(elr, 'a', false);
+                 renderer.setElementClass(elr.nativeElement, 'a', false);
                  expect(DOM.hasClass(el, 'a')).toBe(false);
 
-                 renderer.setElementStyle(elr, 'width', '10px');
+                 renderer.setElementStyle(elr.nativeElement, 'width', '10px');
                  expect(DOM.getStyle(el, 'width')).toEqual('10px');
-                 renderer.setElementStyle(elr, 'width', null);
+                 renderer.setElementStyle(elr.nativeElement, 'width', null);
                  expect(DOM.getStyle(el, 'width')).toEqual('');
 
-                 renderer.setElementAttribute(elr, 'someattr', 'someValue');
+                 renderer.setElementAttribute(elr.nativeElement, 'someattr', 'someValue');
                  expect(DOM.getAttribute(el, 'someattr')).toEqual('someValue');
                };
 
@@ -189,20 +170,19 @@ export function main() {
        }));
 
     it('should update any template comment property/attributes',
-       inject([TestComponentBuilder, Renderer, AsyncTestCompleter],
-              (tcb: TestComponentBuilder, renderer: Renderer, async) => {
-                var tpl = '<template [ngIf]="ctxBoolProp"></template>';
-                tcb.overrideView(MyComp, new ViewMetadata({template: tpl, directives: [NgIf]}))
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+         var tpl = '<template [ngIf]="ctxBoolProp"></template>';
+         tcb.overrideView(MyComp, new ViewMetadata({template: tpl, directives: [NgIf]}))
 
-                    .createAsync(MyComp)
-                    .then((fixture) => {
-                      (<MyComp>fixture.debugElement.componentInstance).ctxBoolProp = true;
-                      fixture.detectChanges();
-                      var el = getRenderElement(fixture.debugElement.elementRef);
-                      expect(DOM.getInnerHTML(el)).toContain('"ng-reflect-ng-if": "true"');
-                      async.done();
-                    });
-              }));
+             .createAsync(MyComp)
+             .then((fixture) => {
+               (<MyComp>fixture.debugElement.componentInstance).ctxBoolProp = true;
+               fixture.detectChanges();
+               var el = getRenderElement(fixture.debugElement.elementRef);
+               expect(DOM.getInnerHTML(el)).toContain('"ng-reflect-ng-if": "true"');
+               async.done();
+             });
+       }));
 
     it('should add and remove fragments',
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
@@ -229,19 +209,35 @@ export function main() {
        }));
 
     if (DOM.supportsDOMEvents()) {
-      it('should call actions on the element independent of the compilation',
-         inject([TestComponentBuilder, Renderer, AsyncTestCompleter],
-                (tcb: TestComponentBuilder, renderer: Renderer, async) => {
-                  tcb.overrideView(MyComp, new ViewMetadata({template: '<input [title]="y">'}))
-                      .createAsync(MyComp)
-                      .then((fixture) => {
-                        var elRef = fixture.debugElement.componentViewChildren[0].elementRef;
-                        renderer.invokeElementMethod(elRef, 'setAttribute', ['a', 'b']);
+      it('should call actions on the element',
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+           tcb.overrideView(MyComp, new ViewMetadata({template: '<input [title]="y">'}))
+               .createAsync(MyComp)
+               .then((fixture) => {
+                 var elRef = fixture.debugElement.componentViewChildren[0].elementRef;
+                 getRenderer(elRef)
+                     .invokeElementMethod(elRef.nativeElement, 'setAttribute', ['a', 'b']);
 
-                        expect(DOM.getAttribute(getRenderElement(elRef), 'a')).toEqual('b');
-                        async.done();
-                      });
-                }));
+                 expect(DOM.getAttribute(getRenderElement(elRef), 'a')).toEqual('b');
+                 async.done();
+               });
+         }));
+
+      it('should listen to events',
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+           tcb.overrideView(MyComp,
+                            new ViewMetadata({template: '<input (change)="ctxNumProp = 1">'}))
+               .createAsync(MyComp)
+               .then((fixture) => {
+                 var elRef = fixture.debugElement.componentViewChildren[0].elementRef;
+                 dispatchEvent(getRenderElement(elRef), 'change');
+                 expect(fixture.componentInstance.ctxNumProp).toBe(1);
+
+                 fixture.destroy();
+
+                 async.done();
+               });
+         }));
     }
   });
 }

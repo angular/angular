@@ -14,7 +14,10 @@ import {
   MODULE_SUFFIX
 } from './util';
 import {Injectable} from 'angular2/src/core/di';
-import {COMPONENT_VARIABLE, HOST_ATTR, CONTENT_ATTR} from 'angular2/src/core/render/view_factory';
+
+const COMPONENT_VARIABLE = '%COMP%';
+const HOST_ATTR = `_nghost-${COMPONENT_VARIABLE}`;
+const CONTENT_ATTR = `_ngcontent-${COMPONENT_VARIABLE}`;
 
 @Injectable()
 export class StyleCompiler {
