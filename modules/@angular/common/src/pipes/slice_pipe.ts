@@ -42,6 +42,8 @@ import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
  * When operating on a [List], the returned list is always a copy even when all
  * the elements are being returned.
  *
+ * When operating on a blank value, returns it.
+ *
  * ## List Example
  *
  * This `ngFor` example:
@@ -62,10 +64,10 @@ import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
 @Injectable()
 export class SlicePipe implements PipeTransform {
   transform(value: any, start: number, end: number = null): any {
+    if (isBlank(value)) return value;
     if (!this.supports(value)) {
       throw new InvalidPipeArgumentException(SlicePipe, value);
     }
-    if (isBlank(value)) return value;
     if (isString(value)) {
       return StringWrapper.slice(value, start, end);
     }
