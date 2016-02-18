@@ -246,7 +246,7 @@
     var paramsObj = {};
 
     $rootScope.$on('$routeChangeSuccess', function () {
-      var newParams = $rootRouter._currentInstruction && $rootRouter._currentInstruction.component.params;
+      var newParams = $rootRouter.currentInstruction && $rootRouter.currentInstruction.component.params;
 
       angular.forEach(paramsObj, function (val, name) {
         delete paramsObj[name];
