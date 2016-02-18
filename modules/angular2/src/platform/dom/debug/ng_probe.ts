@@ -3,11 +3,13 @@ import {Injectable, provide, Provider} from 'angular2/src/core/di';
 import {DOM} from 'angular2/src/platform/dom/dom_adapter';
 import {DebugNode, getDebugNode} from 'angular2/src/core/debug/debug_node';
 import {DomRootRenderer} from 'angular2/src/platform/dom/dom_renderer';
-import {RootRenderer} from 'angular2/core';
+import {RootRenderer, NgZone, ApplicationRef} from 'angular2/core';
 import {DebugDomRootRenderer} from 'angular2/src/core/debug/debug_renderer';
 
+const CORE_TOKENS = CONST_EXPR({'ApplicationRef': ApplicationRef, 'NgZone': NgZone});
 
 const INSPECT_GLOBAL_NAME = 'ng.probe';
+const CORE_TOKENS_GLOBAL_NAME = 'ng.coreTokens';
 
 /**
  * Returns a {@link DebugElement} for the given native DOM element, or
@@ -27,6 +29,7 @@ function _createConditionalRootRenderer(rootRenderer) {
 
 function _createRootRenderer(rootRenderer) {
   DOM.setGlobalVar(INSPECT_GLOBAL_NAME, inspectNativeElement);
+  DOM.setGlobalVar(CORE_TOKENS_GLOBAL_NAME, CORE_TOKENS);
   return new DebugDomRootRenderer(rootRenderer);
 }
 
