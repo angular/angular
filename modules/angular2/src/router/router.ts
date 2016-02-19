@@ -75,7 +75,7 @@ export class Router {
    *
    * You probably don't need to use this unless you're writing a reusable component.
    */
-  registerPrimaryOutlet(outlet: RouterOutlet): Promise<boolean> {
+  registerPrimaryOutlet(outlet: RouterOutlet): Promise<any> {
     if (isPresent(outlet.name)) {
       throw new BaseException(`registerPrimaryOutlet expects to be called with an unnamed outlet.`);
     }
@@ -109,7 +109,7 @@ export class Router {
    *
    * You probably don't need to use this unless you're writing a reusable component.
    */
-  registerAuxOutlet(outlet: RouterOutlet): Promise<boolean> {
+  registerAuxOutlet(outlet: RouterOutlet): Promise<any> {
     var outletName = outlet.name;
     if (isBlank(outletName)) {
       throw new BaseException(`registerAuxOutlet expects to be called with an outlet with a name.`);
@@ -230,7 +230,7 @@ export class Router {
         unsettledInstructions.push(this._settleInstruction(instruction.child));
       }
 
-      StringMapWrapper.forEach(instruction.auxInstruction, (instruction, _) => {
+      StringMapWrapper.forEach(instruction.auxInstruction, (instruction: Instruction, _) => {
         unsettledInstructions.push(this._settleInstruction(instruction));
       });
       return PromiseWrapper.all(unsettledInstructions);
@@ -311,7 +311,7 @@ export class Router {
       next = this._outlet.routerCanDeactivate(componentInstruction);
     }
     // TODO: aux route lifecycle hooks
-    return next.then((result) => {
+    return next.then<boolean>((result): boolean | Promise<boolean> => {
       if (result == false) {
         return false;
       }
@@ -346,7 +346,7 @@ export class Router {
       }
     }
 
-    var promises = [];
+    var promises: Promise<any>[] = [];
     this._auxRouters.forEach((router, name) => {
       if (isPresent(instruction.auxInstruction[name])) {
         promises.push(router.commit(instruction.auxInstruction[name]));
@@ -405,7 +405,7 @@ export class Router {
   }
 
   private _getAncestorInstructions(): Instruction[] {
-    var ancestorInstructions = [this.currentInstruction];
+    var ancestorInstructions: Instruction[] = [this.currentInstruction];
     var ancestorRouter: Router = this;
     while (isPresent(ancestorRouter = ancestorRouter.parent)) {
       ancestorInstructions.unshift(ancestorRouter.currentInstruction);
@@ -534,7 +534,7 @@ function canActivateOne(nextInstruction: Instruction,
     next = canActivateOne(nextInstruction.child,
                           isPresent(prevInstruction) ? prevInstruction.child : null);
   }
-  return next.then((result) => {
+  return next.then<boolean>((result: boolean): boolean => {
     if (result == false) {
       return false;
     }

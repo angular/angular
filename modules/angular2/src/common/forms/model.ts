@@ -1,7 +1,8 @@
-import {StringWrapper, isPresent, isBlank, normalizeBool} from 'angular2/src/facade/lang';
+import {isPresent, isBlank, normalizeBool} from 'angular2/src/facade/lang';
 import {Observable, EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
 import {PromiseWrapper} from 'angular2/src/facade/promise';
 import {StringMapWrapper, ListWrapper} from 'angular2/src/facade/collection';
+import {ValidatorFn, AsyncValidatorFn} from './directives/validators';
 
 /**
  * Indicates that a Control is valid, i.e. that no errors exist in the input value.
@@ -64,7 +65,7 @@ export abstract class AbstractControl {
   private _parent: ControlGroup | ControlArray;
   private _asyncValidationSubscription: any;
 
-  constructor(public validator: Function, public asyncValidator: Function) {}
+  constructor(public validator: ValidatorFn, public asyncValidator: AsyncValidatorFn) {}
 
   get value(): any { return this._value; }
 
@@ -137,15 +138,17 @@ export abstract class AbstractControl {
     }
   }
 
-  private _runValidator() { return isPresent(this.validator) ? this.validator(this) : null; }
+  private _runValidator(): {[key: string]: any} {
+    return isPresent(this.validator) ? this.validator(this) : null;
+  }
 
   private _runAsyncValidator(emitEvent: boolean): void {
     if (isPresent(this.asyncValidator)) {
       this._status = PENDING;
       this._cancelExistingSubscription();
       var obs = toObservable(this.asyncValidator(this));
-      this._asyncValidationSubscription =
-          ObservableWrapper.subscribe(obs, res => this.setErrors(res, {emitEvent: emitEvent}));
+      this._asyncValidationSubscription = ObservableWrapper.subscribe(
+          obs, (res: {[key: string]: any}) => this.setErrors(res, {emitEvent: emitEvent}));
     }
   }
 
@@ -268,7 +271,8 @@ export class Control extends AbstractControl {
   /** @internal */
   _onChange: Function;
 
-  constructor(value: any = null, validator: Function = null, asyncValidator: Function = null) {
+  constructor(value: any = null, validator: ValidatorFn = null,
+              asyncValidator: AsyncValidatorFn = null) {
     super(validator, asyncValidator);
     this._value = value;
     this.updateValueAndValidity({onlySelf: true, emitEvent: false});
@@ -331,8 +335,8 @@ export class ControlGroup extends AbstractControl {
   private _optionals: {[key: string]: boolean};
 
   constructor(public controls: {[key: string]: AbstractControl},
-              optionals: {[key: string]: boolean} = null, validator: Function = null,
-              asyncValidator: Function = null) {
+              optionals: {[key: string]: boolean} = null, validator: ValidatorFn = null,
+              asyncValidator: AsyncValidatorFn = null) {
     super(validator, asyncValidator);
     this._optionals = isPresent(optionals) ? optionals : {};
     this._initObservables();
@@ -444,8 +448,8 @@ export class ControlGroup extends AbstractControl {
  * ### Example ([live demo](http://plnkr.co/edit/23DESOpbNnBpBHZt1BR4?p=preview))
  */
 export class ControlArray extends AbstractControl {
-  constructor(public controls: AbstractControl[], validator: Function = null,
-              asyncValidator: Function = null) {
+  constructor(public controls: AbstractControl[], validator: ValidatorFn = null,
+              asyncValidator: AsyncValidatorFn = null) {
     super(validator, asyncValidator);
     this._initObservables();
     this._setParentForControls();

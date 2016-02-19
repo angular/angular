@@ -505,7 +505,7 @@ class TemplateParseVisitor implements HtmlAstVisitor {
                                            sourceSpan: ParseSourceSpan,
                                            targetPropertyAsts: BoundElementPropertyAst[]) {
     if (isPresent(hostProps)) {
-      StringMapWrapper.forEach(hostProps, (expression, propName) => {
+      StringMapWrapper.forEach(hostProps, (expression: string, propName: string) => {
         var exprAst = this._parseBinding(expression, sourceSpan);
         targetPropertyAsts.push(
             this._createElementPropertyAst(elementName, propName, exprAst, sourceSpan));
@@ -517,7 +517,7 @@ class TemplateParseVisitor implements HtmlAstVisitor {
                                         sourceSpan: ParseSourceSpan,
                                         targetEventAsts: BoundEventAst[]) {
     if (isPresent(hostListeners)) {
-      StringMapWrapper.forEach(hostListeners, (expression, propName) => {
+      StringMapWrapper.forEach(hostListeners, (expression: string, propName: string) => {
         this._parseEvent(propName, expression, sourceSpan, [], targetEventAsts);
       });
     }
@@ -645,7 +645,7 @@ class TemplateParseVisitor implements HtmlAstVisitor {
     var allDirectiveEvents = new Set<string>();
     directives.forEach(directive => {
       StringMapWrapper.forEach(directive.directive.outputs,
-                               (eventName, _) => { allDirectiveEvents.add(eventName); });
+                               (eventName: string, _) => { allDirectiveEvents.add(eventName); });
     });
     events.forEach(event => {
       if (isPresent(event.target) || !SetWrapper.has(allDirectiveEvents, event.name)) {

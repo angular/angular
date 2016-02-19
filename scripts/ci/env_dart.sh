@@ -66,12 +66,7 @@ if [[ -z $ENV_SET ]]; then
     fi
   fi
 
-  case "$PLATFORM" in
-    (Linux) export DART_SDK_LIB_SEARCH_PATH="$DART_SDK" ;;
-    (Darwin) export DART_SDK_LIB_SEARCH_PATH="$DART_SDK/libexec" ;;
-    (*) echo Unsupported platform $PLATFORM.  Exiting ... >&2 ; exit 3 ;;
-  esac
-
+  export DART_SDK_LIB_SEARCH_PATH="$DART_SDK"
   export DART_SDK
   export DARTSDK
   export DART

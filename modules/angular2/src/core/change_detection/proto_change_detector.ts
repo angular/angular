@@ -64,8 +64,9 @@ export class DynamicProtoChangeDetector implements ProtoChangeDetector {
 
 export function createPropertyRecords(definition: ChangeDetectorDefinition): ProtoRecord[] {
   var recordBuilder = new ProtoRecordBuilder();
-  ListWrapper.forEachWithIndex(definition.bindingRecords,
-                               (b, index) => recordBuilder.add(b, definition.variableNames, index));
+  ListWrapper.forEachWithIndex(
+      definition.bindingRecords,
+      (b: BindingRecord, index: number) => recordBuilder.add(b, definition.variableNames, index));
   return coalesce(recordBuilder.records);
 }
 

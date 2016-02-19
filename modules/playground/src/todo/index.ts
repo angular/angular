@@ -8,7 +8,7 @@ import {Store, Todo, TodoFactory} from './services/TodoStore';
 class TodoApp {
   todoEdit: Todo = null;
 
-  constructor(public todoStore: Store, public factory: TodoFactory) {}
+  constructor(public todoStore: Store<Todo>, public factory: TodoFactory) {}
 
   enterTodo(inputElement): void {
     this.addTodo(inputElement.value);

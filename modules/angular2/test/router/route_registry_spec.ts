@@ -25,7 +25,7 @@ import {
 
 export function main() {
   describe('RouteRegistry', () => {
-    var registry;
+    var registry: RouteRegistry;
 
     beforeEach(() => { registry = new RouteRegistry(RootHostCmp); });
 

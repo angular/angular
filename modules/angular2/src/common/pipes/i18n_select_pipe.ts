@@ -37,7 +37,7 @@ import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
 @Injectable()
 export class I18nSelectPipe implements PipeTransform {
   transform(value: string, args: any[] = null): string {
-    var mapping: {[key: string]: string} = args[0];
+    var mapping: {[key: string]: string} = <{[count: string]: string}>(args[0]);
     if (!isStringMap(mapping)) {
       throw new InvalidPipeArgumentException(I18nSelectPipe, mapping);
     }

@@ -91,19 +91,19 @@ export class DebugElement extends DebugNode {
   }
 
   queryAll(predicate: Predicate<DebugElement>): DebugElement[] {
-    var matches = [];
+    var matches: DebugElement[] = [];
     _queryElementChildren(this, predicate, matches);
     return matches;
   }
 
   queryAllNodes(predicate: Predicate<DebugNode>): DebugNode[] {
-    var matches = [];
+    var matches: DebugNode[] = [];
     _queryNodeChildren(this, predicate, matches);
     return matches;
   }
 
   get children(): DebugElement[] {
-    var children = [];
+    var children: DebugElement[] = [];
     this.childNodes.forEach((node) => {
       if (node instanceof DebugElement) {
         children.push(node);

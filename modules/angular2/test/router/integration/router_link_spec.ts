@@ -49,7 +49,8 @@ export function main() {
   describe('routerLink directive', function() {
     var tcb: TestComponentBuilder;
     var fixture: ComponentFixture;
-    var router, location;
+    var router: Router;
+    var location: Location;
 
     beforeEachProviders(() => [
       RouteRegistry,
@@ -60,11 +61,12 @@ export function main() {
       provide(TEMPLATE_TRANSFORMS, {useClass: RouterLinkTransform, multi: true})
     ]);
 
-    beforeEach(inject([TestComponentBuilder, Router, Location], (tcBuilder, rtr, loc) => {
-      tcb = tcBuilder;
-      router = rtr;
-      location = loc;
-    }));
+    beforeEach(inject([TestComponentBuilder, Router, Location],
+                      (tcBuilder, rtr: Router, loc: Location) => {
+                        tcb = tcBuilder;
+                        router = rtr;
+                        location = loc;
+                      }));
 
     function compile(template: string = "<router-outlet></router-outlet>") {
       return tcb.overrideView(MyComp, new View({
@@ -77,7 +79,7 @@ export function main() {
 
     it('should generate absolute hrefs that include the base href',
        inject([AsyncTestCompleter], (async) => {
-         location.setBaseHref('/my/base');
+         (<SpyLocation>location).setBaseHref('/my/base');
          compile('<a href="hello" [routerLink]="[\'./User\']"></a>')
              .then((_) => router.config(
                        [new Route({path: '/user', component: UserCmp, name: 'User'})]))
@@ -345,7 +347,7 @@ export function main() {
 
                  // router navigation is async.
                  router.subscribe((_) => {
-                   expect(location.urlChanges).toEqual(['/user']);
+                   expect((<SpyLocation>location).urlChanges).toEqual(['/user']);
                    async.done();
                  });
                });
@@ -353,7 +355,7 @@ export function main() {
 
       it('should navigate to link hrefs in presence of base href',
          inject([AsyncTestCompleter], (async) => {
-           location.setBaseHref('/base');
+           (<SpyLocation>location).setBaseHref('/base');
            compile('<a href="hello" [routerLink]="[\'./User\']"></a>')
                .then((_) => router.config(
                          [new Route({path: '/user', component: UserCmp, name: 'User'})]))
@@ -367,7 +369,7 @@ export function main() {
 
                  // router navigation is async.
                  router.subscribe((_) => {
-                   expect(location.urlChanges).toEqual(['/base/user']);
+                   expect((<SpyLocation>location).urlChanges).toEqual(['/base/user']);
                    async.done();
                  });
                });

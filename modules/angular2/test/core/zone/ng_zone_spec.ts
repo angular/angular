@@ -674,7 +674,7 @@ function commonTests() {
          logOnTurnStart();
          logOnTurnDone();
 
-         var promise;
+         var promise: Promise<any>;
 
          macroTask(() => {
            _zone.runOutsideAngular(() => {

@@ -65,8 +65,8 @@ export function main() {
                });
          }));
 
-      function mockAsyncAppInitializer(completer, providers: Array<any> = null,
-                                       injector?: Injector) {
+      function mockAsyncAppInitializer(completer: PromiseCompleter<any>,
+                                       providers: Array<any> = null, injector?: Injector) {
         return () => {
           if (providers != null) {
             expectProviders(injector, providers);
@@ -76,23 +76,11 @@ export function main() {
         };
       }
 
-      function createSpyPromiseCompleter(): SpyObject {
-        let completer = PromiseWrapper.completer();
-        let completerSpy = <any>new SpyObject();
-        // Note that in TypeScript we need to provide a value for the promise attribute
-        // whereas in dart we need to override the promise getter
-        completerSpy.promise = completer.promise;
-        completerSpy.spy("get:promise").andReturn(completer.promise);
-        completerSpy.spy("resolve").andCallFake(completer.resolve);
-        completerSpy.spy("reject").andCallFake(completer.reject);
-        return completerSpy;
-      }
-
       it("should wait for asyncronous app initializers",
          inject([AsyncTestCompleter, Injector], (async, injector) => {
            let ref = new PlatformRef_(injector, null);
 
-           let completer = createSpyPromiseCompleter();
+           let completer: PromiseCompleter<any> = PromiseWrapper.completer();
            let SYNC_PROVIDERS = [
              new Provider(Bar, {useValue: new Bar()}),
              new Provider(APP_INITIALIZER,
@@ -102,8 +90,7 @@ export function main() {
                .then((appRef) => {
                  expectProviders(appRef.injector,
                                  SYNC_PROVIDERS.slice(0, SYNC_PROVIDERS.length - 1));
-                 expect(completer.spy("resolve")).toHaveBeenCalled();
-                 async.done();
+                 completer.promise.then((_) => async.done());
                });
          }));
 
@@ -111,13 +98,13 @@ export function main() {
          inject([AsyncTestCompleter, Injector], (async, injector) => {
            let ref = new PlatformRef_(injector, null);
            let ASYNC_PROVIDERS = [new Provider(Foo, {useValue: new Foo()})];
-           let completer = createSpyPromiseCompleter();
+           let completer: PromiseCompleter<any> = PromiseWrapper.completer();
            let SYNC_PROVIDERS = [
              new Provider(Bar, {useValue: new Bar()}),
              new Provider(APP_INITIALIZER,
                           {
                             useFactory: (injector) => mockAsyncAppInitializer(
-                                            completer, ASYNC_PROVIDERS, injector),
+                                            <any>completer, ASYNC_PROVIDERS, injector),
                             multi: true,
                             deps: [Injector]
                           })
@@ -126,8 +113,7 @@ export function main() {
                .then((appRef) => {
                  expectProviders(appRef.injector,
                                  SYNC_PROVIDERS.slice(0, SYNC_PROVIDERS.length - 1));
-                 expect(completer.spy("resolve")).toHaveBeenCalled();
-                 async.done();
+                 completer.promise.then((_) => async.done());
                });
          }));
     });

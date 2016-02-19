@@ -1,9 +1,10 @@
-import {forwardRef, Provider, OpaqueToken, Attribute, Directive} from 'angular2/core';
+import {forwardRef, Provider, Attribute, Directive} from 'angular2/core';
 import {CONST_EXPR} from 'angular2/src/facade/lang';
 import {Validators, NG_VALIDATORS} from '../validators';
-import {Control} from '../model';
+import {AbstractControl} from '../model';
 import * as modelModule from '../model';
 import {NumberWrapper} from "angular2/src/facade/lang";
+
 
 
 /**
@@ -23,7 +24,7 @@ import {NumberWrapper} from "angular2/src/facade/lang";
  * }
  * ```
  */
-export interface Validator { validate(c: modelModule.Control): {[key: string]: any}; }
+export interface Validator { validate(c: modelModule.AbstractControl): {[key: string]: any}; }
 
 const REQUIRED_VALIDATOR =
     CONST_EXPR(new Provider(NG_VALIDATORS, {useValue: Validators.required, multi: true}));
@@ -45,6 +46,11 @@ const REQUIRED_VALIDATOR =
 export class RequiredValidator {
 }
 
+export interface ValidatorFn { (c: AbstractControl): {[key: string]: any}; }
+export interface AsyncValidatorFn {
+  (c: AbstractControl): any /*Promise<{[key: string]: any}>|Observable<{[key: string]: any}>*/;
+}
+
 /**
  * Provivder which adds {@link MinLengthValidator} to {@link NG_VALIDATORS}.
  *
@@ -64,13 +70,13 @@ const MIN_LENGTH_VALIDATOR = CONST_EXPR(
   providers: [MIN_LENGTH_VALIDATOR]
 })
 export class MinLengthValidator implements Validator {
-  private _validator: Function;
+  private _validator: ValidatorFn;
 
   constructor(@Attribute("minlength") minLength: string) {
     this._validator = Validators.minLength(NumberWrapper.parseInt(minLength, 10));
   }
 
-  validate(c: Control): {[key: string]: any} { return this._validator(c); }
+  validate(c: AbstractControl): {[key: string]: any} { return this._validator(c); }
 }
 
 /**
@@ -92,13 +98,13 @@ const MAX_LENGTH_VALIDATOR = CONST_EXPR(
   providers: [MAX_LENGTH_VALIDATOR]
 })
 export class MaxLengthValidator implements Validator {
-  private _validator: Function;
+  private _validator: ValidatorFn;
 
   constructor(@Attribute("maxlength") maxLength: string) {
     this._validator = Validators.maxLength(NumberWrapper.parseInt(maxLength, 10));
   }
 
-  validate(c: Control): {[key: string]: any} { return this._validator(c); }
+  validate(c: AbstractControl): {[key: string]: any} { return this._validator(c); }
 }
 
 
@@ -121,11 +127,11 @@ const PATTERN_VALIDATOR = CONST_EXPR(
   providers: [PATTERN_VALIDATOR]
 })
 export class PatternValidator implements Validator {
-  private _validator: Function;
+  private _validator: ValidatorFn;
 
   constructor(@Attribute("pattern") pattern: string) {
     this._validator = Validators.pattern(pattern);
   }
 
-  validate(c: Control): {[key: string]: any} { return this._validator(c); }
+  validate(c: AbstractControl): {[key: string]: any} { return this._validator(c); }
 }

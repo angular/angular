@@ -43,7 +43,7 @@ class SimpleClass {}
 
 export function main() {
   describe("ViewResolver", () => {
-    var resolver;
+    var resolver: ViewResolver;
 
     beforeEach(() => { resolver = new ViewResolver(); });
 

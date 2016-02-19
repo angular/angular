@@ -87,7 +87,7 @@ export class Reflector {
     }
   }
 
-  parameters(typeOrFunc: /*Type*/ any): any[] {
+  parameters(typeOrFunc: /*Type*/ any): any[][] {
     if (this._injectableInfo.has(typeOrFunc)) {
       var res = this._getReflectionInfo(typeOrFunc).parameters;
       return isPresent(res) ? res : [];
@@ -148,7 +148,7 @@ export class Reflector {
   }
 
   /** @internal */
-  _getReflectionInfo(typeOrFunc: any) {
+  _getReflectionInfo(typeOrFunc: any): ReflectionInfo {
     if (isPresent(this._usedKeys)) {
       this._usedKeys.add(typeOrFunc);
     }

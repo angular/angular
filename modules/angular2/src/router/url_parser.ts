@@ -113,7 +113,7 @@ export class UrlParser {
     var path = matchUrlSegment(this._remaining);
     this.capture(path);
 
-    var aux = [];
+    var aux: Url[] = [];
     if (this.peekStartsWith('(')) {
       aux = this.parseAuxiliaryRoutes();
     }
@@ -126,7 +126,7 @@ export class UrlParser {
       this.capture('/');
       child = this.parseSegment();
     }
-    var queryParams = null;
+    var queryParams: {[key: string]: any} = null;
     if (this.peekStartsWith('?')) {
       queryParams = this.parseQueryParams();
     }
@@ -144,15 +144,15 @@ export class UrlParser {
     var path = matchUrlSegment(this._remaining);
     this.capture(path);
 
-    var matrixParams = null;
+    var matrixParams: {[key: string]: any} = null;
     if (this.peekStartsWith(';')) {
       matrixParams = this.parseMatrixParams();
     }
-    var aux = [];
+    var aux: Url[] = [];
     if (this.peekStartsWith('(')) {
       aux = this.parseAuxiliaryRoutes();
     }
-    var child = null;
+    var child: Url = null;
     if (this.peekStartsWith('/') && !this.peekStartsWith('//')) {
       this.capture('/');
       child = this.parseSegment();
@@ -161,7 +161,7 @@ export class UrlParser {
   }
 
   parseQueryParams(): {[key: string]: any} {
-    var params = {};
+    var params: {[key: string]: any} = {};
     this.capture('?');
     this.parseParam(params);
     while (this._remaining.length > 0 && this.peekStartsWith('&')) {
@@ -172,7 +172,7 @@ export class UrlParser {
   }
 
   parseMatrixParams(): {[key: string]: any} {
-    var params = {};
+    var params: {[key: string]: any} = {};
     while (this._remaining.length > 0 && this.peekStartsWith(';')) {
       this.capture(';');
       this.parseParam(params);
@@ -200,7 +200,7 @@ export class UrlParser {
   }
 
   parseAuxiliaryRoutes(): Url[] {
-    var routes = [];
+    var routes: Url[] = [];
     this.capture('(');
 
     while (!this.peekStartsWith(')') && this._remaining.length > 0) {

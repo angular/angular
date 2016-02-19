@@ -37,8 +37,9 @@ import {
 
 import {normalizeRouteConfig, assertComponentExists} from './route_config/route_config_normalizer';
 import {parser, Url, convertUrlParamsToArray, pathSegmentsToUrl} from './url_parser';
+import {GeneratedUrl} from './rules/route_paths/route_path';
 
-var _resolveToNull = PromiseWrapper.resolve(null);
+var _resolveToNull = PromiseWrapper.resolve<Instruction>(null);
 
 // A LinkItemArray is an array, which describes a set of routes
 // The items in the array are found in groups:
@@ -180,7 +181,7 @@ export class RouteRegistry {
         (candidate: Promise<RouteMatch>) => candidate.then((candidate: RouteMatch) => {
 
           if (candidate instanceof PathMatch) {
-            var auxParentInstructions =
+            var auxParentInstructions: Instruction[] =
                 ancestorInstructions.length > 0 ? [ListWrapper.last(ancestorInstructions)] : [];
             var auxInstructions =
                 this._auxRoutesToUnresolved(candidate.remainingAux, auxParentInstructions);
@@ -191,7 +192,7 @@ export class RouteRegistry {
               return instruction;
             }
 
-            var newAncestorInstructions = ancestorInstructions.concat([instruction]);
+            var newAncestorInstructions: Instruction[] = ancestorInstructions.concat([instruction]);
 
             return this._recognize(candidate.remaining, newAncestorInstructions)
                 .then((childInstruction) => {
@@ -220,7 +221,7 @@ export class RouteRegistry {
       return PromiseWrapper.resolve(this.generateDefault(parentComponent));
     }
 
-    return PromiseWrapper.all(matchPromises).then(mostSpecific);
+    return PromiseWrapper.all<Instruction>(matchPromises).then(mostSpecific);
   }
 
   private _auxRoutesToUnresolved(auxRoutes: Url[],
@@ -400,7 +401,7 @@ export class RouteRegistry {
       // we'll figure out the rest of the route when we resolve the instruction and
       // perform a navigation
       if (isBlank(routeRecognizer.handler.componentType)) {
-        var generatedUrl = routeRecognizer.generateComponentPathValues(routeParams);
+        var generatedUrl: GeneratedUrl = routeRecognizer.generateComponentPathValues(routeParams);
         return new UnresolvedInstruction(() => {
           return routeRecognizer.handler.resolveComponentType().then((_) => {
             return this._generate(linkParams, ancestorInstructions, prevInstruction, _aux,
@@ -416,7 +417,7 @@ export class RouteRegistry {
     // Next, recognize auxiliary instructions.
     // If we have an ancestor instruction, we preserve whatever aux routes are active from it.
     while (linkParamIndex < linkParams.length && isArray(linkParams[linkParamIndex])) {
-      let auxParentInstruction = [parentInstruction];
+      let auxParentInstruction: Instruction[] = [parentInstruction];
       let auxInstruction = this._generate(linkParams[linkParamIndex], auxParentInstruction, null,
                                           true, _originalLink);
 
@@ -436,7 +437,7 @@ export class RouteRegistry {
           // TODO: throw that there are extra link params beyond the terminal component
         }
       } else {
-        let childAncestorComponents = ancestorInstructions.concat([instruction]);
+        let childAncestorComponents: Instruction[] = ancestorInstructions.concat([instruction]);
         let remainingLinkParams = linkParams.slice(linkParamIndex);
         childInstruction = this._generate(remainingLinkParams, childAncestorComponents, null, false,
                                           _originalLink);

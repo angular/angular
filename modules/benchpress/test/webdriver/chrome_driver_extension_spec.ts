@@ -49,7 +49,7 @@ export function main() {
     var normEvents = new TraceEventFactory('timeline', 'pid0');
 
     function createExtension(perfRecords = null, userAgent = null,
-                             messageMethod = 'Tracing.dataCollected') {
+                             messageMethod = 'Tracing.dataCollected'): WebDriverExtension {
       if (isBlank(perfRecords)) {
         perfRecords = [];
       }
@@ -85,7 +85,7 @@ export function main() {
 
     it('should mark the timeline via console.timeEnd()', inject([AsyncTestCompleter], (async) => {
          createExtension()
-             .timeEnd('someName')
+             .timeEnd('someName', null)
              .then((_) => {
                expect(log).toEqual([['executeScript', `console.timeEnd('someName');`]]);
                async.done();
@@ -467,7 +467,7 @@ export function main() {
                    benchmarkEvents.instant('BenchmarkInstrumentation::ImplThreadRenderingStats',
                                            1100, {'data': {'frame_count': 2}})
                  ]).readPerfLog(),
-                 (err) => {
+                 (err): any => {
                    expect(() => { throw err; })
                        .toThrowError('multi-frame render stats not supported');
                    async.done();
@@ -502,7 +502,7 @@ export function main() {
                    ],
                    CHROME45_USER_AGENT, 'Tracing.bufferUsage')
                    .readPerfLog(),
-               (err) => {
+               (err): any => {
                  expect(() => { throw err; })
                      .toThrowError('The DevTools trace buffer filled during the test!');
                  async.done();

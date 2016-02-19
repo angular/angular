@@ -1,6 +1,6 @@
 {
   "name": "angular-srcs",
-  "version": "2.0.0-beta.6",
+  "version": "2.0.0-beta.8",
   "dependencies": {
     "abbrev": {
       "version": "1.0.7",
@@ -2961,9 +2961,9 @@
       "resolved": "https://registry.npmjs.org/dargs/-/dargs-4.0.1.tgz"
     },
     "dart-style": {
-      "version": "0.2.6",
+      "version": "0.2.7",
       "from": "dart-style@>=0.2.6 <0.3.0",
-      "resolved": "https://registry.npmjs.org/dart-style/-/dart-style-0.2.6.tgz"
+      "resolved": "https://registry.npmjs.org/dart-style/-/dart-style-0.2.7.tgz"
     },
     "dart2jsaas": {
       "version": "0.0.16",
@@ -8536,9 +8536,9 @@
       }
     },
     "ts2dart": {
-      "version": "0.7.24",
-      "from": "ts2dart@0.7.24",
-      "resolved": "https://registry.npmjs.org/ts2dart/-/ts2dart-0.7.24.tgz",
+      "version": "0.7.31",
+      "from": "ts2dart@0.7.31",
+      "resolved": "https://registry.npmjs.org/ts2dart/-/ts2dart-0.7.31.tgz",
       "dependencies": {
         "source-map": {
           "version": "0.4.4",
@@ -9310,7 +9310,8 @@
     },
     "zone.js": {
       "version": "0.5.15",
-      "from": "zone.js@0.5.15"
+      "from": "zone.js@0.5.15",
+      "resolved": "https://registry.npmjs.org/zone.js/-/zone.js-0.5.15.tgz"
     }
   }
 }

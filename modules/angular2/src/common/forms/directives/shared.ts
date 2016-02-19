@@ -14,7 +14,8 @@ import {NumberValueAccessor} from './number_value_accessor';
 import {CheckboxControlValueAccessor} from './checkbox_value_accessor';
 import {SelectControlValueAccessor} from './select_control_value_accessor';
 import {RadioControlValueAccessor} from './radio_control_value_accessor';
-import {normalizeValidator} from './normalize_validator';
+import {normalizeValidator, normalizeAsyncValidator} from './normalize_validator';
+import {ValidatorFn, AsyncValidatorFn} from './validators';
 
 
 export function controlPath(name: string, parent: ControlContainer): string[] {
@@ -56,13 +57,14 @@ function _throwError(dir: AbstractControlDirective, message: string): void {
   throw new BaseException(`${message} '${path}'`);
 }
 
-export function composeValidators(validators: /* Array<Validator|Function> */ any[]): Function {
+export function composeValidators(validators: /* Array<Validator|Function> */ any[]): ValidatorFn {
   return isPresent(validators) ? Validators.compose(validators.map(normalizeValidator)) : null;
 }
 
 export function composeAsyncValidators(
-    validators: /* Array<Validator|Function> */ any[]): Function {
-  return isPresent(validators) ? Validators.composeAsync(validators.map(normalizeValidator)) : null;
+    validators: /* Array<Validator|Function> */ any[]): AsyncValidatorFn {
+  return isPresent(validators) ? Validators.composeAsync(validators.map(normalizeAsyncValidator)) :
+                                 null;
 }
 
 export function isPropertyUpdated(changes: {[key: string]: any}, viewModel: any): boolean {

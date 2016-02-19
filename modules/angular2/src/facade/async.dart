@@ -25,7 +25,7 @@ class TimerWrapper {
 }
 
 class ObservableWrapper {
-  static StreamSubscription subscribe(Stream s, Function onNext,
+  static StreamSubscription subscribe/*<T>*/(Stream s, onNext(/*=T*/ value),
       [onError, onComplete]) {
     return s.listen(onNext,
         onError: onError, onDone: onComplete, cancelOnError: true);

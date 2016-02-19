@@ -32,7 +32,7 @@ export function main() {
 
     var normEvents = new TraceEventFactory('timeline', 'pid0');
 
-    function createExtension(perfRecords = null) {
+    function createExtension(perfRecords = null): WebDriverExtension {
       if (isBlank(perfRecords)) {
         perfRecords = [];
       }
@@ -61,7 +61,7 @@ export function main() {
 
     it('should mark the timeline via console.timeEnd()', inject([AsyncTestCompleter], (async) => {
          createExtension()
-             .timeEnd('someName')
+             .timeEnd('someName', null)
              .then((_) => {
                expect(log).toEqual([['executeScript', `console.timeEnd('someName');`]]);
                async.done();

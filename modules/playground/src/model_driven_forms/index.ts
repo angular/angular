@@ -12,11 +12,12 @@ import {
 import {Component, Directive, View, Host} from 'angular2/core';
 
 import {RegExpWrapper, print, isPresent} from 'angular2/src/facade/lang';
+import {AbstractControl} from 'angular2/common';
 
 /**
  * Custom validator.
  */
-function creditCardValidator(c): {[key: string]: boolean} {
+function creditCardValidator(c: AbstractControl): {[key: string]: boolean} {
   if (isPresent(c.value) && RegExpWrapper.test(/^\d{16}$/g, c.value)) {
     return null;
   } else {

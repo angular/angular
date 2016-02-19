@@ -31,7 +31,7 @@ export abstract class CompileMetadataWithIdentifier {
 
   abstract toJson(): {[key: string]: any};
 
-  get identifier(): CompileIdentifierMetadata { return unimplemented(); }
+  get identifier(): CompileIdentifierMetadata { return <CompileIdentifierMetadata>unimplemented(); }
 }
 
 export abstract class CompileMetadataWithType extends CompileMetadataWithIdentifier {
@@ -41,9 +41,9 @@ export abstract class CompileMetadataWithType extends CompileMetadataWithIdentif
 
   abstract toJson(): {[key: string]: any};
 
-  get type(): CompileTypeMetadata { return unimplemented(); }
+  get type(): CompileTypeMetadata { return <CompileTypeMetadata>unimplemented(); }
 
-  get identifier(): CompileIdentifierMetadata { return unimplemented(); }
+  get identifier(): CompileIdentifierMetadata { return <CompileIdentifierMetadata>unimplemented(); }
 }
 
 export class CompileIdentifierMetadata implements CompileMetadataWithIdentifier {

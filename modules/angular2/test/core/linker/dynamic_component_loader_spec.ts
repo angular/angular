@@ -34,7 +34,7 @@ export function main() {
     describe("loading into a location", () => {
       it('should work',
          inject([DynamicComponentLoader, TestComponentBuilder, AsyncTestCompleter],
-                (loader, tcb: TestComponentBuilder, async) => {
+                (loader: DynamicComponentLoader, tcb: TestComponentBuilder, async) => {
                   tcb.overrideView(
                          MyComp,
                          new ViewMetadata(
@@ -52,7 +52,7 @@ export function main() {
 
       it('should return a disposable component ref',
          inject([DynamicComponentLoader, TestComponentBuilder, AsyncTestCompleter],
-                (loader, tcb: TestComponentBuilder, async) => {
+                (loader: DynamicComponentLoader, tcb: TestComponentBuilder, async) => {
                   tcb.overrideView(
                          MyComp,
                          new ViewMetadata(
@@ -72,7 +72,7 @@ export function main() {
       it('should allow to dispose even if the location has been removed',
          inject(
              [DynamicComponentLoader, TestComponentBuilder, AsyncTestCompleter],
-             (loader, tcb: TestComponentBuilder, async) => {
+             (loader: DynamicComponentLoader, tcb: TestComponentBuilder, async) => {
                tcb.overrideView(MyComp, new ViewMetadata({
                                   template: '<child-cmp *ngIf="ctxBoolProp"></child-cmp>',
                                   directives: [NgIf, ChildComp]
@@ -109,7 +109,7 @@ export function main() {
       it('should update host properties',
          inject(
              [DynamicComponentLoader, TestComponentBuilder, AsyncTestCompleter],
-             (loader, tcb: TestComponentBuilder, async) => {
+             (loader: DynamicComponentLoader, tcb: TestComponentBuilder, async) => {
                tcb.overrideView(
                       MyComp, new ViewMetadata(
                                   {template: '<location #loc></location>', directives: [Location]}))
@@ -131,7 +131,7 @@ export function main() {
 
       it('should leave the view tree in a consistent state if hydration fails',
          inject([DynamicComponentLoader, TestComponentBuilder, AsyncTestCompleter],
-                (loader, tcb: TestComponentBuilder, async) => {
+                (loader: DynamicComponentLoader, tcb: TestComponentBuilder, async) => {
                   tcb.overrideView(MyComp, new ViewMetadata({
                                      template: '<div><location #loc></location></div>',
                                      directives: [Location]
@@ -147,13 +147,14 @@ export function main() {
                                   expect(error.message).toContain("ThrownInConstructor");
                                   expect(() => tc.detectChanges()).not.toThrow();
                                   async.done();
+                                  return null;
                                 });
                       });
                 }));
 
       it('should throw if the variable does not exist',
          inject([DynamicComponentLoader, TestComponentBuilder, AsyncTestCompleter],
-                (loader, tcb: TestComponentBuilder, async) => {
+                (loader: DynamicComponentLoader, tcb: TestComponentBuilder, async) => {
                   tcb.overrideView(
                          MyComp,
                          new ViewMetadata(
@@ -169,7 +170,7 @@ export function main() {
 
       it('should allow to pass projectable nodes',
          inject([DynamicComponentLoader, TestComponentBuilder, AsyncTestCompleter],
-                (loader, tcb: TestComponentBuilder, async) => {
+                (loader: DynamicComponentLoader, tcb: TestComponentBuilder, async) => {
                   tcb.overrideView(MyComp,
                                    new ViewMetadata({template: '<div #loc></div>', directives: []}))
                       .createAsync(MyComp)
@@ -187,7 +188,7 @@ export function main() {
       it('should throw if not enough projectable nodes are passed in',
          inject(
              [DynamicComponentLoader, TestComponentBuilder, AsyncTestCompleter],
-             (loader, tcb: TestComponentBuilder, async) => {
+             (loader: DynamicComponentLoader, tcb: TestComponentBuilder, async) => {
                tcb.overrideView(MyComp,
                                 new ViewMetadata({template: '<div #loc></div>', directives: []}))
                    .createAsync(MyComp)
@@ -199,6 +200,7 @@ export function main() {
                            expect(e.message).toContain(
                                `The component ${stringify(DynamicallyLoadedWithNgContent)} has 1 <ng-content> elements, but only 0 slots were provided`);
                            async.done();
+                           return null;
                          });
                    });
              }));
@@ -208,7 +210,7 @@ export function main() {
     describe("loading next to a location", () => {
       it('should work',
          inject([DynamicComponentLoader, TestComponentBuilder, AsyncTestCompleter],
-                (loader, tcb: TestComponentBuilder, async) => {
+                (loader: DynamicComponentLoader, tcb: TestComponentBuilder, async) => {
                   tcb.overrideView(MyComp, new ViewMetadata({
                                      template: '<div><location #loc></location></div>',
                                      directives: [Location]
@@ -228,7 +230,7 @@ export function main() {
 
       it('should return a disposable component ref',
          inject([DynamicComponentLoader, TestComponentBuilder, AsyncTestCompleter],
-                (loader, tcb: TestComponentBuilder, async) => {
+                (loader: DynamicComponentLoader, tcb: TestComponentBuilder, async) => {
                   tcb.overrideView(MyComp, new ViewMetadata({
                                      template: '<div><location #loc></location></div>',
                                      directives: [Location]
@@ -262,7 +264,7 @@ export function main() {
 
       it('should update host properties',
          inject([DynamicComponentLoader, TestComponentBuilder, AsyncTestCompleter],
-                (loader, tcb: TestComponentBuilder, async) => {
+                (loader: DynamicComponentLoader, tcb: TestComponentBuilder, async) => {
                   tcb.overrideView(MyComp, new ViewMetadata({
                                      template: '<div><location #loc></location></div>',
                                      directives: [Location]
@@ -288,7 +290,7 @@ export function main() {
 
       it('should allow to pass projectable nodes',
          inject([DynamicComponentLoader, TestComponentBuilder, AsyncTestCompleter],
-                (loader, tcb: TestComponentBuilder, async) => {
+                (loader: DynamicComponentLoader, tcb: TestComponentBuilder, async) => {
                   tcb.overrideView(MyComp, new ViewMetadata({template: '', directives: [Location]}))
                       .createAsync(MyComp)
                       .then((tc) => {
@@ -309,7 +311,8 @@ export function main() {
     describe('loadAsRoot', () => {
       it('should allow to create, update and destroy components',
          inject([AsyncTestCompleter, DynamicComponentLoader, DOCUMENT, Injector],
-                (async, loader, doc, injector) => {
+                (async: AsyncTestCompleter, loader: DynamicComponentLoader, doc,
+                 injector: Injector) => {
                   var rootEl = createRootElement(doc, 'child-cmp');
                   DOM.appendChild(doc.body, rootEl);
                   loader.loadAsRoot(ChildComp, null, injector)
@@ -338,7 +341,8 @@ export function main() {
 
       it('should allow to pass projectable nodes',
          inject([AsyncTestCompleter, DynamicComponentLoader, DOCUMENT, Injector],
-                (async, loader, doc, injector) => {
+                (async: AsyncTestCompleter, loader: DynamicComponentLoader, doc,
+                 injector: Injector) => {
                   var rootEl = createRootElement(doc, 'dummy');
                   DOM.appendChild(doc.body, rootEl);
                   loader.loadAsRoot(DynamicallyLoadedWithNgContent, null, injector, null,

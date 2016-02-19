@@ -225,7 +225,7 @@ class _CodegenState {
     List<String> codes = [];
     _endOfBlockIdxs.clear();
 
-    ListWrapper.forEachWithIndex(eb.records, (_, i) {
+    ListWrapper.forEachWithIndex(eb.records, (ProtoRecord _, int i) {
       var code;
       var r = eb.records[i];
 

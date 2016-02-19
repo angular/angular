@@ -22,7 +22,7 @@ class ObservableStrategy {
 }
 
 class PromiseStrategy {
-  createSubscription(async: any, updateLatestValue: any): any {
+  createSubscription(async: Promise<any>, updateLatestValue: (v: any) => any): any {
     return async.then(updateLatestValue);
   }
 

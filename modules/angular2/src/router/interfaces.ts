@@ -5,7 +5,7 @@ import {global} from 'angular2/src/facade/lang';
 // TODO(rado): find a better way to fix this, or remove if likely culprit
 // https://github.com/systemjs/systemjs/issues/487 gets closed.
 var __ignore_me = global;
-
+var __make_dart_analyzer_happy: Promise<any> = null;
 
 /**
  * Defines route lifecycle method `routerOnActivate`, which is called by the router at the end of a
@@ -27,7 +27,8 @@ var __ignore_me = global;
  */
 export interface OnActivate {
   routerOnActivate(nextInstruction: ComponentInstruction,
-                   prevInstruction: ComponentInstruction): any;
+                   prevInstruction: ComponentInstruction): any |
+      Promise<any>;
 }
 
 /**
@@ -46,7 +47,8 @@ export interface OnActivate {
  * {@example router/ts/reuse/reuse_example.ts region='reuseCmp'}
  */
 export interface OnReuse {
-  routerOnReuse(nextInstruction: ComponentInstruction, prevInstruction: ComponentInstruction): any;
+  routerOnReuse(nextInstruction: ComponentInstruction, prevInstruction: ComponentInstruction): any |
+      Promise<any>;
 }
 
 /**
@@ -66,7 +68,8 @@ export interface OnReuse {
  */
 export interface OnDeactivate {
   routerOnDeactivate(nextInstruction: ComponentInstruction,
-                     prevInstruction: ComponentInstruction): any;
+                     prevInstruction: ComponentInstruction): any |
+      Promise<any>;
 }
 
 /**
@@ -90,7 +93,9 @@ export interface OnDeactivate {
  * {@example router/ts/reuse/reuse_example.ts region='reuseCmp'}
  */
 export interface CanReuse {
-  routerCanReuse(nextInstruction: ComponentInstruction, prevInstruction: ComponentInstruction): any;
+  routerCanReuse(nextInstruction: ComponentInstruction,
+                 prevInstruction: ComponentInstruction): boolean |
+      Promise<boolean>;
 }
 
 /**
@@ -114,5 +119,6 @@ export interface CanReuse {
  */
 export interface CanDeactivate {
   routerCanDeactivate(nextInstruction: ComponentInstruction,
-                      prevInstruction: ComponentInstruction): any;
+                      prevInstruction: ComponentInstruction): boolean |
+      Promise<boolean>;
 }

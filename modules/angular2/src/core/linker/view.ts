@@ -115,8 +115,9 @@ export class AppView implements ChangeDispatcher {
     this.disposables = disposables;
     this.appElements = appElements;
     var localsMap = new Map<string, any>();
-    StringMapWrapper.forEach(this.proto.templateVariableBindings,
-                             (templateName, _) => { localsMap.set(templateName, null); });
+    StringMapWrapper.forEach(
+        this.proto.templateVariableBindings,
+        (templateName: string, _: string) => { localsMap.set(templateName, null); });
     for (var i = 0; i < appElements.length; i++) {
       var appEl = appElements[i];
       var providerTokens = [];
@@ -125,13 +126,14 @@ export class AppView implements ChangeDispatcher {
           providerTokens.push(appEl.proto.protoInjector.getProviderAtIndex(j).key.token);
         }
       }
-      StringMapWrapper.forEach(appEl.proto.directiveVariableBindings, (directiveIndex, name) => {
-        if (isBlank(directiveIndex)) {
-          localsMap.set(name, appEl.nativeElement);
-        } else {
-          localsMap.set(name, appEl.getDirectiveAtIndex(directiveIndex));
-        }
-      });
+      StringMapWrapper.forEach(appEl.proto.directiveVariableBindings,
+                               (directiveIndex: number, name: string) => {
+                                 if (isBlank(directiveIndex)) {
+                                   localsMap.set(name, appEl.nativeElement);
+                                 } else {
+                                   localsMap.set(name, appEl.getDirectiveAtIndex(directiveIndex));
+                                 }
+                               });
       this.renderer.setElementDebugInfo(
           appEl.nativeElement, new RenderDebugInfo(appEl.getInjector(), appEl.getComponent(),
                                                    providerTokens, localsMap));
