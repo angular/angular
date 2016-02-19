@@ -23,11 +23,9 @@ import {
   windowProfileEnd
 } from 'angular2/src/testing/benchmark_util';
 import {BrowserDomAdapter} from 'angular2/src/platform/browser/browser_adapter';
-import {APP_VIEW_POOL_CAPACITY} from 'angular2/src/core/linker/view_pool';
 
 function createProviders(): Provider[] {
-  var viewCacheCapacity = getStringParameter('viewcache') == 'true' ? 10000 : 1;
-  return [provide(APP_VIEW_POOL_CAPACITY, {useValue: viewCacheCapacity})];
+  return [];
 }
 
 var BASELINE_TREE_TEMPLATE;

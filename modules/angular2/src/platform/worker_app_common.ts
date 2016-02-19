@@ -1,8 +1,8 @@
 import {XHR} from 'angular2/src/compiler/xhr';
 import {WebWorkerXHRImpl} from 'angular2/src/web_workers/worker/xhr_impl';
-import {WebWorkerRenderer} from 'angular2/src/web_workers/worker/renderer';
+import {WebWorkerRootRenderer} from 'angular2/src/web_workers/worker/renderer';
 import {print, Type, CONST_EXPR, isPresent} from 'angular2/src/facade/lang';
-import {Renderer} from 'angular2/src/core/render/api';
+import {RootRenderer} from 'angular2/src/core/render/api';
 import {
   PLATFORM_DIRECTIVES,
   PLATFORM_PIPES,
@@ -19,15 +19,10 @@ import {
   ServiceMessageBrokerFactory,
   ServiceMessageBrokerFactory_
 } from 'angular2/src/web_workers/shared/service_message_broker';
-import {COMPILER_PROVIDERS} from 'angular2/src/compiler/compiler';
 import {Serializer} from "angular2/src/web_workers/shared/serializer";
 import {ON_WEB_WORKER} from "angular2/src/web_workers/shared/api";
 import {Provider} from 'angular2/src/core/di';
-import {RenderProtoViewRefStore} from 'angular2/src/web_workers/shared/render_proto_view_ref_store';
-import {
-  RenderViewWithFragmentsStore
-} from 'angular2/src/web_workers/shared/render_view_with_fragments_store';
-import {WebWorkerEventDispatcher} from 'angular2/src/web_workers/worker/event_dispatcher';
+import {RenderStore} from 'angular2/src/web_workers/shared/render_store';
 
 class PrintLogger {
   log = print;
@@ -41,22 +36,19 @@ export const WORKER_APP_PLATFORM: Array<any /*Type | Provider | any[]*/> =
 
 export const WORKER_APP_APPLICATION_COMMON: Array<any /*Type | Provider | any[]*/> = CONST_EXPR([
   APPLICATION_COMMON_PROVIDERS,
-  COMPILER_PROVIDERS,
   FORM_PROVIDERS,
   Serializer,
   new Provider(PLATFORM_PIPES, {useValue: COMMON_PIPES, multi: true}),
   new Provider(PLATFORM_DIRECTIVES, {useValue: COMMON_DIRECTIVES, multi: true}),
   new Provider(ClientMessageBrokerFactory, {useClass: ClientMessageBrokerFactory_}),
   new Provider(ServiceMessageBrokerFactory, {useClass: ServiceMessageBrokerFactory_}),
-  WebWorkerRenderer,
-  new Provider(Renderer, {useExisting: WebWorkerRenderer}),
+  WebWorkerRootRenderer,
+  new Provider(RootRenderer, {useExisting: WebWorkerRootRenderer}),
   new Provider(ON_WEB_WORKER, {useValue: true}),
-  RenderViewWithFragmentsStore,
-  RenderProtoViewRefStore,
+  RenderStore,
   new Provider(ExceptionHandler, {useFactory: _exceptionHandler, deps: []}),
   WebWorkerXHRImpl,
-  new Provider(XHR, {useExisting: WebWorkerXHRImpl}),
-  WebWorkerEventDispatcher
+  new Provider(XHR, {useExisting: WebWorkerXHRImpl})
 ]);
 
 function _exceptionHandler(): ExceptionHandler {

@@ -48,6 +48,25 @@ export class BrowserGetTestability implements GetTestability {
       var testabilities = registry.getAllTestabilities();
       return testabilities.map((testability) => { return new PublicTestability(testability); });
     };
+
+    var whenAllStable = (callback) => {
+      var testabilities = global.getAllAngularTestabilities();
+      var count = testabilities.length;
+      var didWork = false;
+      var decrement = function(didWork_) {
+        didWork = didWork || didWork_;
+        count--;
+        if (count == 0) {
+          callback(didWork);
+        }
+      };
+      testabilities.forEach(function(testability) { testability.whenStable(decrement); });
+    };
+
+    if (!global.frameworkStabilizers) {
+      global.frameworkStabilizers = ListWrapper.createGrowableSize(0);
+    }
+    global.frameworkStabilizers.push(whenAllStable);
   }
 
   findTestabilityInTree(registry: TestabilityRegistry, elem: any,

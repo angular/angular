@@ -47,7 +47,6 @@ export function main() {
     var directive: TestDirective;
     var locals: Locals;
     var pipes: Pipes;
-    var eventLocals: Locals;
 
     beforeEach(inject([TemplateParser], (_templateParser) => {
       parser = _templateParser;
@@ -55,7 +54,6 @@ export function main() {
       directive = new TestDirective();
       dispatcher = new TestDispatcher([directive], []);
       locals = new Locals(null, MapWrapper.createFromStringMap({'someVar': null}));
-      eventLocals = new Locals(null, MapWrapper.createFromStringMap({'$event': null}));
       pipes = new TestPipes();
     }));
 
@@ -65,9 +63,9 @@ export function main() {
           createChangeDetectorDefinitions(new CompileTypeMetadata({name: 'SomeComp'}),
                                           ChangeDetectionStrategy.Default,
                                           new ChangeDetectorGenConfig(true, false, false),
-                                          parser.parse(template, directives, 'TestComp'))
+                                          parser.parse(template, directives, [], 'TestComp'))
               .map(definition => new DynamicProtoChangeDetector(definition));
-      var changeDetector = protoChangeDetectors[protoViewIndex].instantiate(dispatcher);
+      var changeDetector = protoChangeDetectors[protoViewIndex].instantiate();
       changeDetector.hydrate(context, locals, dispatcher, pipes);
       return changeDetector;
     }
@@ -91,8 +89,7 @@ export function main() {
     it('should handle events on regular elements', () => {
       var changeDetector = createChangeDetector('<div on-click="onEvent($event)">', [], 0);
 
-      eventLocals.set('$event', 'click');
-      changeDetector.handleEvent('click', 0, eventLocals);
+      changeDetector.handleEvent('click', 0, 'click');
       expect(context.eventLog).toEqual(['click']);
     });
 
@@ -105,16 +102,14 @@ export function main() {
       var changeDetector =
           createChangeDetector('<template on-click="onEvent($event)">', [dirMeta], 0);
 
-      eventLocals.set('$event', 'click');
-      changeDetector.handleEvent('click', 0, eventLocals);
+      changeDetector.handleEvent('click', 0, 'click');
       expect(context.eventLog).toEqual(['click']);
     });
 
     it('should handle events with targets', () => {
       var changeDetector = createChangeDetector('<div (window:click)="onEvent($event)">', [], 0);
 
-      eventLocals.set('$event', 'click');
-      changeDetector.handleEvent('window:click', 0, eventLocals);
+      changeDetector.handleEvent('window:click', 0, 'click');
       expect(context.eventLog).toEqual(['click']);
     });
 
@@ -177,8 +172,7 @@ export function main() {
 
       var changeDetector = createChangeDetector('<div>', [dirMeta], 0);
 
-      eventLocals.set('$event', 'click');
-      changeDetector.handleEvent('click', 0, eventLocals);
+      changeDetector.handleEvent('click', 0, 'click');
       expect(directive.eventLog).toEqual(['click']);
     });
 

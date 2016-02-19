@@ -13,6 +13,26 @@ const FS_OPTS = {
   encoding: 'utf-8'
 };
 
+// Sub-directory where the @internal typing files (.d.ts) are stored
+export const INTERNAL_TYPINGS_PATH: string = 'internal_typings';
+
+// Monkey patch the TS compiler to be able to re-emit files with @internal symbols
+let tsEmitInternal: boolean = false;
+
+const originalEmitFiles: Function = (<any>ts).emitFiles;
+
+(<any>ts).emitFiles = function(resolver: any, host: any, targetSourceFile: any): any {
+  if (tsEmitInternal) {
+    const orignalgetCompilerOptions = host.getCompilerOptions;
+    host.getCompilerOptions = () => {
+      let options = clone(orignalgetCompilerOptions.call(host));
+      options.stripInternal = false;
+      options.outDir = `${options.outDir}/${INTERNAL_TYPINGS_PATH}`;
+      return options;
+    }
+  }
+  return originalEmitFiles(resolver, host, targetSourceFile);
+};
 
 /**
  * Broccoli plugin that implements incremental Typescript compiler.
@@ -32,6 +52,9 @@ class DiffingTSCompiler implements DiffingBroccoliPlugin {
   private tsService: ts.LanguageService;
   private firstRun: boolean = true;
   private previousRunFailed: boolean = false;
+  // Whether to generate the @internal typing files (they are only generated when `stripInternal` is
+  // true)
+  private genInternalTypings: boolean = false;
 
   static includeExtensions = ['.ts'];
   static excludeExtensions = ['.d.ts'];
@@ -44,10 +67,20 @@ class DiffingTSCompiler implements DiffingBroccoliPlugin {
       this.rootFilePaths = [];
     }
 
+    if (options.internalTypings) {
+      this.genInternalTypings = true;
+      delete options.internalTypings;
+    }
+
     // the conversion is a bit awkward, see https://github.com/Microsoft/TypeScript/issues/5276
     // in 1.8 use convertCompilerOptionsFromJson
     this.tsOpts =
         ts.parseJsonConfigFileContent({compilerOptions: options, files: []}, null, null).options;
+
+    if ((<any>this.tsOpts).stripInternal === false) {
+      // @internal are included in the generated .d.ts, do not generate them separately
+      this.genInternalTypings = false;
+    }
 
     // TODO: the above turns rootDir set to './' into an empty string - looks like a tsc bug
     //       check back when we upgrade to 1.7.x
@@ -91,6 +124,7 @@ class DiffingTSCompiler implements DiffingBroccoliPlugin {
       this.firstRun = false;
       this.doFullBuild();
     } else {
+      tsEmitInternal = false;
       pathsToEmit.forEach((tsFilePath) => {
         let output = this.tsService.getEmitOutput(tsFilePath);
 
@@ -117,10 +151,25 @@ class DiffingTSCompiler implements DiffingBroccoliPlugin {
         throw error;
       } else if (this.previousRunFailed) {
         this.doFullBuild();
+      } else if (this.genInternalTypings) {
+        // serialize the .d.ts files containing @internal symbols
+        tsEmitInternal = true;
+        pathsToEmit.forEach((tsFilePath) => {
+          let output = this.tsService.getEmitOutput(tsFilePath);
+          if (!output.emitSkipped) {
+            output.outputFiles.forEach(o => {
+              if (endsWith(o.name, '.d.ts')) {
+                let destDirPath = path.dirname(o.name);
+                fse.mkdirsSync(destDirPath);
+                fs.writeFileSync(o.name, this.fixSourceMapSources(o.text), FS_OPTS);
+              }
+            });
+          }
+        });
+        tsEmitInternal = false;
       }
     }
   }
-
 
   private collectErrors(tsFilePath): String {
     let allDiagnostics = this.tsService.getCompilerOptionsDiagnostics()
@@ -143,13 +192,26 @@ class DiffingTSCompiler implements DiffingBroccoliPlugin {
     }
   }
 
-
   private doFullBuild() {
     let program = this.tsService.getProgram();
+
+    tsEmitInternal = false;
     let emitResult = program.emit(undefined, (absoluteFilePath, fileContent) => {
       fse.mkdirsSync(path.dirname(absoluteFilePath));
       fs.writeFileSync(absoluteFilePath, this.fixSourceMapSources(fileContent), FS_OPTS);
     });
+
+    if (this.genInternalTypings) {
+      // serialize the .d.ts files containing @internal symbols
+      tsEmitInternal = true;
+      program.emit(undefined, (absoluteFilePath, fileContent) => {
+        if (endsWith(absoluteFilePath, '.d.ts')) {
+          fse.mkdirsSync(path.dirname(absoluteFilePath));
+          fs.writeFileSync(absoluteFilePath, fileContent, FS_OPTS);
+        }
+      });
+      tsEmitInternal = false;
+    }
 
     if (emitResult.emitSkipped) {
       let allDiagnostics = ts.getPreEmitDiagnostics(program).concat(emitResult.diagnostics);
@@ -293,5 +355,16 @@ class CustomLanguageServiceHost implements ts.LanguageServiceHost {
   }
 }
 
-
 export default wrapDiffingPlugin(DiffingTSCompiler);
+
+function clone<T>(object: T): T {
+  const result: any = {};
+  for (const id in object) {
+    result[id] = (<any>object)[id];
+  }
+  return <T>result;
+}
+
+function endsWith(str: string, substring: string): boolean {
+  return str.indexOf(substring, str.length - substring.length) !== -1;
+}

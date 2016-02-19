@@ -47,8 +47,7 @@ const _ON_AFTER_CONTENT_INIT_INTERFACES = const [
       'AfterContentInit', 'package:angular2/lifecycle_hooks.dart'),
   const ClassDescriptor(
       'AfterContentInit', 'package:angular2/src/core/linker.dart'),
-  const ClassDescriptor(
-      'AfterContentInit', 'package:angular2/core.dart'),
+  const ClassDescriptor('AfterContentInit', 'package:angular2/core.dart'),
   const ClassDescriptor(
       'AfterContentInit', 'package:angular2/src/core/linker/interfaces.dart')
 ];
@@ -59,8 +58,7 @@ const _ON_AFTER_CONTENT_CHECKED_INTERFACES = const [
       'AfterContentChecked', 'package:angular2/lifecycle_hooks.dart'),
   const ClassDescriptor(
       'AfterContentChecked', 'package:angular2/src/core/linker.dart'),
-  const ClassDescriptor(
-      'AfterContentChecked', 'package:angular2/core.dart'),
+  const ClassDescriptor('AfterContentChecked', 'package:angular2/core.dart'),
   const ClassDescriptor(
       'AfterContentChecked', 'package:angular2/src/core/linker/interfaces.dart')
 ];
@@ -70,8 +68,7 @@ const _ON_AFTER_VIEW_INIT_INTERFACES = const [
       'AfterViewInit', 'package:angular2/lifecycle_hooks.dart'),
   const ClassDescriptor(
       'AfterViewInit', 'package:angular2/src/core/linker.dart'),
-  const ClassDescriptor(
-      'AfterViewInit', 'package:angular2/core.dart'),
+  const ClassDescriptor('AfterViewInit', 'package:angular2/core.dart'),
   const ClassDescriptor(
       'AfterViewInit', 'package:angular2/src/core/linker/interfaces.dart')
 ];
@@ -81,8 +78,7 @@ const _ON_AFTER_VIEW_CHECKED_INTERFACES = const [
       'AfterViewChecked', 'package:angular2/lifecycle_hooks.dart'),
   const ClassDescriptor(
       'AfterViewChecked', 'package:angular2/src/core/linker.dart'),
-  const ClassDescriptor(
-      'AfterViewChecked', 'package:angular2/core.dart'),
+  const ClassDescriptor('AfterViewChecked', 'package:angular2/core.dart'),
   const ClassDescriptor(
       'AfterViewChecked', 'package:angular2/src/core/linker/interfaces.dart')
 ];

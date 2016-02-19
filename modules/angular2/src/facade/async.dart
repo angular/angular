@@ -50,7 +50,7 @@ class ObservableWrapper {
   static void callNext(EventEmitter emitter, value) {
     emitter.add(value);
   }
-  
+
   static void callEmit(EventEmitter emitter, value) {
     emitter.add(value);
   }
@@ -90,7 +90,7 @@ class EventEmitter<T> extends Stream<T> {
   void add(value) {
     _controller.add(value);
   }
-  
+
   void emit(value) {
     _controller.add(value);
   }
