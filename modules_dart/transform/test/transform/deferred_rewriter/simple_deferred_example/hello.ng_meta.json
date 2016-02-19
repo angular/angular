@@ -3,6 +3,7 @@
   {
     "kind": "type",
     "value": {
+      "class": "Directive",
       "isComponent": true,
       "dynamicLoadable": true,
       "selector":"hello-app",

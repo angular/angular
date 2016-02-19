@@ -7,6 +7,7 @@ import {
   RegExpWrapper,
   StringWrapper
 } from 'angular2/src/facade/lang';
+import {unimplemented} from 'angular2/src/facade/exceptions';
 import {StringMapWrapper} from 'angular2/src/facade/collection';
 import {
   ChangeDetectionStrategy,
@@ -20,6 +21,16 @@ import {LifecycleHooks, LIFECYCLE_HOOKS_VALUES} from 'angular2/src/core/linker/i
 // group 1: "property" from "[property]"
 // group 2: "event" from "(event)"
 var HOST_REG_EXP = /^(?:(?:\[([^\]]+)\])|(?:\(([^\)]+)\)))$/g;
+
+export abstract class CompileMetadataWithType {
+  static fromJson(data: {[key: string]: any}): CompileMetadataWithType {
+    return _COMPILE_METADATA_FROM_JSON[data['class']](data);
+  }
+
+  abstract toJson(): {[key: string]: any};
+
+  get type(): CompileTypeMetadata { return unimplemented(); }
+}
 
 /**
  * Metadata regarding compilation of a type.
@@ -107,7 +118,7 @@ export class CompileTemplateMetadata {
 /**
  * Metadata regarding compilation of a directive.
  */
-export class CompileDirectiveMetadata {
+export class CompileDirectiveMetadata implements CompileMetadataWithType {
   static create({type, isComponent, dynamicLoadable, selector, exportAs, changeDetection, inputs,
                  outputs, host, lifecycleHooks, template}: {
     type?: CompileTypeMetadata,
@@ -241,6 +252,7 @@ export class CompileDirectiveMetadata {
 
   toJson(): {[key: string]: any} {
     return {
+      'class': 'Directive',
       'isComponent': this.isComponent,
       'dynamicLoadable': this.dynamicLoadable,
       'selector': this.selector,
@@ -284,3 +296,38 @@ export function createHostComponentMeta(componentType: CompileTypeMetadata,
     selector: '*'
   });
 }
+
+
+export class CompilePipeMetadata implements CompileMetadataWithType {
+  type: CompileTypeMetadata;
+  name: string;
+  pure: boolean;
+  constructor({type, name,
+               pure}: {type?: CompileTypeMetadata, name?: string, pure?: boolean} = {}) {
+    this.type = type;
+    this.name = name;
+    this.pure = normalizeBool(pure);
+  }
+
+  static fromJson(data: {[key: string]: any}): CompilePipeMetadata {
+    return new CompilePipeMetadata({
+      type: isPresent(data['type']) ? CompileTypeMetadata.fromJson(data['type']) : data['type'],
+      name: data['name'],
+      pure: data['pure']
+    });
+  }
+
+  toJson(): {[key: string]: any} {
+    return {
+      'class': 'Pipe',
+      'type': isPresent(this.type) ? this.type.toJson() : null,
+      'name': this.name,
+      'pure': this.pure
+    };
+  }
+}
+
+var _COMPILE_METADATA_FROM_JSON = {
+  'Directive': CompileDirectiveMetadata.fromJson,
+  'Pipe': CompilePipeMetadata.fromJson
+};

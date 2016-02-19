@@ -31,7 +31,7 @@ export function main() {
        () => { expect(() => locals.set('notPresent', 'bar')).toThrowError(); });
 
     it('should clearValues', () => {
-      locals.clearValues();
+      locals.clearLocalValues();
       expect(locals.get('key')).toBe(null);
     });
   })

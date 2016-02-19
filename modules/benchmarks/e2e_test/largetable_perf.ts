@@ -29,21 +29,6 @@ describe('ng2 largetable benchmark', function() {
     });
   });
 
-  it('should log the stats without viewcache', function(done) {
-    runClickBenchmark({
-      url: URL,
-      buttons: ['#ng2DestroyDom', '#ng2CreateDom'],
-      id: 'ng2.largetable.interpolation.plain',
-      params: [
-        {name: 'rows', value: 20, scale: 'sqrt'},
-        {name: 'columns', value: 20, scale: 'sqrt'},
-        {name: 'benchmarkType', value: 'interpolation'},
-        {name: 'viewcache', value: 'false'}
-      ]
-    }).then(done, done.fail);
-  });
-
-
   it('should log the baseline stats', function(done) {
     runClickBenchmark({
       url: URL,

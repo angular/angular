@@ -19,20 +19,12 @@ transformers:
 - angular2:
     platform_directives: 'package:angular2/src/common/directives.dart#CORE_DIRECTIVES'
     entry_points:
+        - web/src/animate/index.dart
+        - web/src/async/index.dart
         - web/src/gestures/index.dart
+        - web/src/hash_routing/index.dart
         - web/src/hello_world/index.dart
         - web/src/key_events/index.dart
-        - web/src/sourcemap/index.dart
-        - web/src/todo/index.dart
-        - web/src/order_management/index.dart
-        - web/src/model_driven_forms/index.dart
-        - web/src/observable_models/index.dart
-        - web/src/person_management/index.dart
-        - web/src/routing/index.dart
-        - web/src/template_driven_forms/index.dart
-        - web/src/zippy_component/index.dart
-        - web/src/relative_assets/index.dart
-        - web/src/svg/index.dart
         - web/src/material/button/index.dart
         - web/src/material/checkbox/index.dart
         - web/src/material/dialog/index.dart
@@ -41,25 +33,50 @@ transformers:
         - web/src/material/progress-linear/index.dart
         - web/src/material/radio/index.dart
         - web/src/material/switcher/index.dart
-
-        # These entrypoints are disabled untl the transformer supports UI bootstrap (issue #3971)
-        # - web/src/web_workers/message_broker/index.dart
-        # - web/src/web_workers/kitchen_sink/index.dart
-        # - web/src/web_workers/todo/index.dart
-        # - web/src/web_workers/todo/server_index.dart
-        # - web/src/web_workers/todo/background_index.dart
-        # - web/src/web_workers/message_broker/background_index.dart
-        # - web/src/web_workers/kitchen_sink/background_index.dart
-        #
-        # This entrypoint is not needed:
-        # - web/src/material/demo_common.dart
+        - web/src/model_driven_forms/index.dart
+        - web/src/observable_models/index.dart
+        - web/src/order_management/index.dart
+        - web/src/person_management/index.dart
+        - web/src/relative_assets/index.dart
+        - web/src/routing/index.dart
+        - web/src/sourcemap/index.dart
+        - web/src/svg/index.dart
+        - web/src/template_driven_forms/index.dart
+        - web/src/todo/index.dart
+        - web/src/web_workers/kitchen_sink/background_index.dart
+        - web/src/web_workers/kitchen_sink/index.dart
+        - web/src/web_workers/message_broker/background_index.dart
+        - web/src/web_workers/message_broker/index.dart
+        - web/src/web_workers/todo/background_index.dart
+        - web/src/web_workers/todo/index.dart
+        - web/src/web_workers/todo/server_index.dart
+        - web/src/zippy_component/index.dart
 
 - $dart2js:
+    $include:
+        - web/src/**
+    $exclude:
+        # web worker code compiled separately; see below
+        - web/src/web_workers/**
     minify: false
     commandLineOptions:
-    - --show-package-warnings
-    - --trust-type-annotations
-    - --trust-primitives
-    - --enable-experimental-mirrors
-    # Uncomment to generate summaries from dart2js
-    # - --dump-info
+        - --show-package-warnings
+        - --trust-type-annotations
+        - --trust-primitives
+        - --enable-experimental-mirrors
+        - --fatal-warnings
+
+# TODO(yjbanov): cannot use --fatal-warnings on web-worker code due to
+#                dart2js bug https://github.com/dart-lang/sdk/issues/23875
+- $dart2js:
+    $include:
+        - web/src/web_workers/**
+    $exclude:
+        - web/src/web_workers/images/**
+        - web/src/web_workers/todo/server_index.dart
+    minify: false
+    commandLineOptions:
+        - --show-package-warnings
+        - --trust-type-annotations
+        - --trust-primitives
+        - --enable-experimental-mirrors

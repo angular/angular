@@ -2,9 +2,10 @@ library angular2.transform.common.class_matcher_base;
 
 import 'package:analyzer/src/generated/ast.dart';
 import 'package:barback/barback.dart' show AssetId;
-import 'package:code_transformers/assets.dart';
 import 'package:path/path.dart' as path;
+
 import 'logging.dart' show log;
+import 'url_resolver.dart';
 
 /// Checks if a given [Identifier] matches any of the given [ClassDescriptor]s.
 abstract class ClassMatcherBase {
@@ -74,6 +75,7 @@ ImportDirective _getMatchingImport(
     name = className.name;
   }
   if (name != descriptor.name) return null;
+  final assetUri = toAssetUri(assetId);
   return (className.root as CompilationUnit)
       .directives
       .where((d) => d is ImportDirective)
@@ -82,12 +84,13 @@ ImportDirective _getMatchingImport(
     var uriString = i.uri.stringValue;
     if (uriString == descriptor.import) {
       importMatch = true;
-    } else if (uriString.startsWith('package:') ||
-        uriString.startsWith('dart:')) {
+    } else if (uriString.startsWith('package:') || isDartCoreUri(uriString)) {
       return false;
     } else {
-      importMatch =
-          descriptor.assetId == uriToAssetId(assetId, uriString, log, null);
+      final candidateAssetId =
+          fromUri(const TransformerUrlResolver().resolve(assetUri, uriString));
+
+      importMatch = descriptor.assetId == candidateAssetId;
     }
 
     if (!importMatch) return false;

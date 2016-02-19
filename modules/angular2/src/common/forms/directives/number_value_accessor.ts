@@ -31,7 +31,7 @@ export class NumberValueAccessor implements ControlValueAccessor {
   constructor(private _renderer: Renderer, private _elementRef: ElementRef) {}
 
   writeValue(value: number): void {
-    this._renderer.setElementProperty(this._elementRef, 'value', value);
+    this._renderer.setElementProperty(this._elementRef.nativeElement, 'value', value);
   }
 
   registerOnChange(fn: (_: number) => void): void {

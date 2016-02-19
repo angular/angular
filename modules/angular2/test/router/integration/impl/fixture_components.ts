@@ -10,6 +10,12 @@ import {
 } from 'angular2/router';
 import {PromiseWrapper} from 'angular2/src/facade/async';
 
+@Component({selector: 'goodbye-cmp', template: `{{farewell}}`})
+export class GoodbyeCmp {
+  farewell: string;
+  constructor() { this.farewell = 'goodbye'; }
+}
+
 @Component({selector: 'hello-cmp', template: `{{greeting}}`})
 export class HelloCmp {
   greeting: string;
