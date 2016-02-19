@@ -32,3 +32,4 @@ The publishing script will automatically rewrite version numbers, so use
 include `authors` and `homepage`, as they will be auto-populated. However,
 do provide `description`, `name` (prefixed with `angular2_`), `dependencies`,
 and `dev_dependencies`.
+_
