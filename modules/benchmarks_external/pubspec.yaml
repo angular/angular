@@ -11,10 +11,11 @@ dependency_overrides:
   intl: '^0.12.4' # angular depends on an older version of intl.
 transformers:
 - angular:
-    $exclude: "web/e2e_test"
+    $include: "web/src"
     html_files:
       - web/src/naive_infinite_scroll/scroll_area.html
       - web/src/naive_infinite_scroll/scroll_item.html
 - $dart2js:
+    $include: "web/src"
     commandLineOptions:
     - --show-package-warnings

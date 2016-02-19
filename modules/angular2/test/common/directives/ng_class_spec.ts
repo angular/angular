@@ -18,7 +18,6 @@ import {ListWrapper, StringMapWrapper, SetWrapper} from 'angular2/src/facade/col
 import {Component, View, provide} from 'angular2/core';
 import {NgFor} from 'angular2/common';
 import {NgClass} from 'angular2/src/common/directives/ng_class';
-import {APP_VIEW_POOL_CAPACITY} from 'angular2/src/core/linker/view_pool';
 
 function detectChangesAndCheck(fixture: ComponentFixture, classes: string, elIndex: number = 0) {
   fixture.detectChanges();
@@ -30,8 +29,6 @@ export function main() {
   describe('binding to CSS class list', () => {
 
     describe('viewpool support', () => {
-      beforeEachProviders(() => { return [provide(APP_VIEW_POOL_CAPACITY, {useValue: 100})]; });
-
       it('should clean up when the directive is destroyed',
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            var template = '<div *ngFor="var item of items" [ngClass]="item"></div>';

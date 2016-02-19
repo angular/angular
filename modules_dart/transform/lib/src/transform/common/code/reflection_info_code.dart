@@ -79,25 +79,33 @@ class ReflectionInfoVisitor extends RecursiveAstVisitor<ReflectionInfoModel> {
     }
 
     if (node.metadata != null) {
-      var componentDirectives, viewDirectives;
+      var componentDirectives = new Iterable.empty();
+      var componentPipes = new Iterable.empty();
+      var viewDirectives, viewPipes;
       node.metadata.forEach((node) {
         if (_annotationMatcher.isComponent(node, assetId)) {
-          componentDirectives = _extractDirectives(node);
+          componentDirectives = _extractReferencedTypes(node, 'directives');
+          componentPipes = _extractReferencedTypes(node, 'pipes');
         } else if (_annotationMatcher.isView(node, assetId)) {
-          viewDirectives = _extractDirectives(node);
+          viewDirectives = _extractReferencedTypes(node, 'directives');
+          viewPipes = _extractReferencedTypes(node, 'pipes');
         }
         model.annotations.add(_annotationVisitor.visitAnnotation(node));
       });
-      if (componentDirectives != null && componentDirectives.isNotEmpty) {
-        if (viewDirectives != null) {
-          log.warning(
-              'Cannot specify view parameters on @Component when a @View '
-              'is present. Component name: ${model.name}',
-              asset: assetId);
-        }
-        model.directives.addAll(componentDirectives);
-      } else if (viewDirectives != null) {
+      if ((componentDirectives.isNotEmpty || componentPipes.isNotEmpty) &&
+          (viewDirectives != null || viewPipes != null)) {
+        log.warning(
+            'Cannot specify view parameters on @Component when a @View '
+            'is present. Component name: ${model.name}',
+            asset: assetId);
+      }
+      model.directives.addAll(componentDirectives);
+      model.pipes.addAll(componentPipes);
+      if (viewDirectives != null) {
         model.directives.addAll(viewDirectives);
+      }
+      if (viewPipes != null) {
+        model.pipes.addAll(viewPipes);
       }
     }
     if (ctor != null &&
@@ -151,43 +159,44 @@ class ReflectionInfoVisitor extends RecursiveAstVisitor<ReflectionInfoModel> {
     }
   }
 
-  /// Returns [PrefixedDirective] values parsed from the value of the
-  /// `directives` parameter of the provided `node`.
-  /// This will always return a non-null value, so if there are no `directives`
-  /// specified on `node`, it will return an empty iterable.
-  Iterable<PrefixedDirective> _extractDirectives(Annotation node) {
+  /// Returns [PrefixedType] values parsed from the value of the
+  /// `fieldName` parameter of the provided `node`.
+  /// This will always return a non-null value, so if there is no field
+  /// called `fieldName`, it will return an empty iterable.
+  Iterable<PrefixedType> _extractReferencedTypes(
+      Annotation node, String fieldName) {
     assert(_annotationMatcher.isComponent(node, assetId) ||
         _annotationMatcher.isView(node, assetId));
 
     if (node.arguments == null && node.arguments.arguments == null) {
       return const [];
     }
-    final directivesNode = node.arguments.arguments.firstWhere((arg) {
-      return arg is NamedExpression && '${arg.name.label}' == 'directives';
+    final typesNode = node.arguments.arguments.firstWhere((arg) {
+      return arg is NamedExpression && '${arg.name.label}' == fieldName;
     }, orElse: () => null);
-    if (directivesNode == null) return const [];
+    if (typesNode == null) return const [];
 
-    if (directivesNode.expression is! ListLiteral) {
+    if (typesNode.expression is! ListLiteral) {
       log.warning(
-          'Angular 2 expects a list literal for `directives` '
-          'but found a ${directivesNode.expression.runtimeType}',
+          'Angular 2 expects a list literal for `${fieldName}` '
+          'but found a ${typesNode.expression.runtimeType}',
           asset: assetId);
       return const [];
     }
-    final directives = <PrefixedDirective>[];
-    for (var dep in (directivesNode.expression as ListLiteral).elements) {
+    final types = <PrefixedType>[];
+    for (var dep in (typesNode.expression as ListLiteral).elements) {
       if (dep is PrefixedIdentifier) {
-        directives.add(new PrefixedDirective()
+        types.add(new PrefixedType()
           ..prefix = '${dep.prefix}'
           ..name = '${dep.identifier}');
       } else if (dep is Identifier) {
-        directives.add(new PrefixedDirective()..name = '${dep}');
+        types.add(new PrefixedType()..name = '${dep}');
       } else {
-        log.warning('Found unexpected value $dep in `directives`.',
+        log.warning('Ignoring unexpected value $dep in `${fieldName}`.',
             asset: assetId);
       }
     }
-    return directives;
+    return types;
   }
 
   @override
