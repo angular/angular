@@ -31,7 +31,7 @@ export function main() {
   var EMPTY_EXECUTE = () => {};
 
   describe('sampler', () => {
-    var sampler;
+    var sampler: Sampler;
 
     function createSampler({driver, metric, reporter, validator, prepare, execute}: {
       driver?: any,

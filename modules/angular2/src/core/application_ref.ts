@@ -128,7 +128,7 @@ function _createPlatform(providers?: Array<Type | Provider | any[]>): PlatformRe
 }
 
 function _runPlatformInitializers(injector: Injector): void {
-  let inits: Function[] = injector.getOptional(PLATFORM_INITIALIZER);
+  let inits: Function[] = <Function[]>injector.getOptional(PLATFORM_INITIALIZER);
   if (isPresent(inits)) inits.forEach(init => init());
 }
 
@@ -150,7 +150,7 @@ export abstract class PlatformRef {
    * Retrieve the platform {@link Injector}, which is the parent injector for
    * every Angular application on the page and provides singleton providers.
    */
-  get injector(): Injector { return unimplemented(); };
+  get injector(): Injector { throw unimplemented(); };
 
   /**
    * Instantiate a new Angular application on the page.
@@ -222,7 +222,7 @@ export class PlatformRef_ extends PlatformRef {
   asyncApplication(bindingFn: (zone: NgZone) => Promise<Array<Type | Provider | any[]>>,
                    additionalProviders?: Array<Type | Provider | any[]>): Promise<ApplicationRef> {
     var zone = createNgZone();
-    var completer = PromiseWrapper.completer();
+    var completer = PromiseWrapper.completer<ApplicationRef>();
     if (bindingFn === null) {
       completer.resolve(this._initApp(zone, additionalProviders));
     } else {
@@ -342,12 +342,12 @@ export abstract class ApplicationRef {
   /**
    * Retrieve the application {@link Injector}.
    */
-  get injector(): Injector { return unimplemented(); };
+  get injector(): Injector { return <Injector>unimplemented(); };
 
   /**
    * Retrieve the application {@link NgZone}.
    */
-  get zone(): NgZone { return unimplemented(); };
+  get zone(): NgZone { return <NgZone>unimplemented(); };
 
   /**
    * Dispose of this application and all of its components.
@@ -369,7 +369,7 @@ export abstract class ApplicationRef {
   /**
    * Get a list of component types registered to this application.
    */
-  get componentTypes(): Type[] { return unimplemented(); };
+  get componentTypes(): Type[] { return <Type[]>unimplemented(); };
 }
 
 export class ApplicationRef_ extends ApplicationRef {
@@ -449,13 +449,13 @@ export class ApplicationRef_ extends ApplicationRef {
         completer.reject(e, e.stack);
       }
     });
-    return completer.promise.then(_ => {
+    return completer.promise.then<ComponentRef>((ref: ComponentRef) => {
       let c = this._injector.get(Console);
       if (assertionsEnabled()) {
         c.log(
             "Angular 2 is running in the development mode. Call enableProdMode() to enable the production mode.");
       }
-      return _;
+      return ref;
     });
   }
 

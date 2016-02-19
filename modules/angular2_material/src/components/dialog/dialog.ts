@@ -21,6 +21,7 @@ import {isPresent, Type} from 'angular2/src/facade/lang';
 import {DOM} from 'angular2/src/platform/dom/dom_adapter';
 import {MouseEvent, KeyboardEvent} from 'angular2/src/facade/browser';
 import {KeyCodes} from 'angular2_material/src/core/key_codes';
+import {PromiseCompleter} from 'angular2/src/facade/promise';
 
 // TODO(jelbourn): Opener of dialog can control where it is rendered.
 // TODO(jelbourn): body scrolling is disabled while dialog is open.
@@ -61,7 +62,7 @@ export class MdDialog {
 
     // First, load the MdDialogContainer, into which the given component will be loaded.
     return this.componentLoader.loadNextToLocation(MdDialogContainer, elementRef)
-        .then(containerRef => {
+        .then /*<ComponentRef>*/ ((containerRef: ComponentRef) => {
           // TODO(tbosch): clean this up when we have custom renderers
           // (https://github.com/angular/angular/issues/1807)
           // TODO(jelbourn): Don't use direct DOM access. Need abstraction to create an element
@@ -84,7 +85,7 @@ export class MdDialog {
           // Now load the given component into the MdDialogContainer.
           return this.componentLoader.loadNextToLocation(type, containerRef.instance.contentRef,
                                                          bindings)
-              .then(contentRef => {
+              .then((contentRef: ComponentRef) => {
 
                 // Wrap both component refs for the container and the content so that we can return
                 // the `instance` of the content but the dispose method of the container back to the
@@ -92,7 +93,7 @@ export class MdDialog {
                 dialogRef.contentRef = contentRef;
                 containerRef.instance.dialogRef = dialogRef;
 
-                backdropRefPromise.then(backdropRef => {
+                backdropRefPromise.then((backdropRef: ComponentRef) => {
                   dialogRef.whenClosed.then((_) => { backdropRef.dispose(); });
                 });
 
@@ -104,7 +105,7 @@ export class MdDialog {
   /** Loads the dialog backdrop (transparent overlay over the rest of the page). */
   _openBackdrop(elementRef: ElementRef, bindings: ResolvedProvider[]): Promise<ComponentRef> {
     return this.componentLoader.loadNextToLocation(MdBackdrop, elementRef, bindings)
-        .then((componentRef) => {
+        .then((componentRef: ComponentRef) => {
           // TODO(tbosch): clean this up when we have custom renderers
           // (https://github.com/angular/angular/issues/1807)
           var backdropElement = componentRef.location.nativeElement;
@@ -139,10 +140,10 @@ export class MdDialogRef {
   isClosed: boolean;
 
   // Deferred resolved when the dialog is closed. The promise for this deferred is publicly exposed.
-  whenClosedDeferred: any;
+  whenClosedDeferred: PromiseCompleter<any>;
 
   // Deferred resolved when the content ComponentRef is set. Only used internally.
-  contentRefDeferred: any;
+  contentRefDeferred: PromiseCompleter<any>;
 
   constructor() {
     this._contentRef = null;

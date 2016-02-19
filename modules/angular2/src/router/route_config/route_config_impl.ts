@@ -4,6 +4,8 @@ import {RegexSerializer} from '../rules/route_paths/regex_route_path';
 
 export {RouteDefinition} from '../route_definition';
 
+var __make_dart_analyzer_happy: Promise<any> = null;
+
 /**
  * The `RouteConfig` decorator defines routes for a given component.
  *
@@ -136,7 +138,7 @@ export class AuxRoute extends AbstractRoute {
  */
 @CONST()
 export class AsyncRoute extends AbstractRoute {
-  loader: Function;
+  loader: () => Promise<Type>;
   aux: string = null;
 
   constructor({name, useAsDefault, path, regex, serializer, data, loader}: RouteDefinition) {

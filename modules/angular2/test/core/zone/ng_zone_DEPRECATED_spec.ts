@@ -566,7 +566,7 @@ function commonTests() {
 
     it('should call onTurnStart and onTurnDone for promises created outside of run body',
        inject([AsyncTestCompleter], (async) => {
-         var promise;
+         var promise: Promise<any>;
 
          macroTask(() => {
            _zone.runOutsideAngular(() => {

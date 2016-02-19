@@ -25,7 +25,7 @@ import {provide, Inject, Injector, PLATFORM_INITIALIZER, APP_INITIALIZER} from '
 import {disposePlatform} from 'angular2/src/core/application_ref';
 import {ExceptionHandler} from 'angular2/src/facade/exceptions';
 import {Testability, TestabilityRegistry} from 'angular2/src/core/testability/testability';
-import {ComponentRef_} from "angular2/src/core/linker/dynamic_component_loader";
+import {ComponentRef_, ComponentRef} from "angular2/src/core/linker/dynamic_component_loader";
 
 @Component({selector: 'hello-app'})
 @View({template: '{{greeting}} world!'})
@@ -243,11 +243,11 @@ export function main() {
 
     it('should register each application with the testability registry',
        inject([AsyncTestCompleter], (async) => {
-         var refPromise1 = bootstrap(HelloRootCmp, testProviders);
-         var refPromise2 = bootstrap(HelloRootCmp2, testProviders);
+         var refPromise1: Promise<ComponentRef> = bootstrap(HelloRootCmp, testProviders);
+         var refPromise2: Promise<ComponentRef> = bootstrap(HelloRootCmp2, testProviders);
 
          PromiseWrapper.all([refPromise1, refPromise2])
-             .then((refs: ApplicationRef[]) => {
+             .then((refs: ComponentRef[]) => {
                var registry = refs[0].injector.get(TestabilityRegistry);
                var testabilities =
                    [refs[0].injector.get(Testability), refs[1].injector.get(Testability)];

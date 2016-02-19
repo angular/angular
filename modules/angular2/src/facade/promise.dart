@@ -4,22 +4,21 @@ import 'dart:async';
 import 'dart:async' as async;
 
 class PromiseWrapper {
-  static Future resolve(obj) => new Future.value(obj);
+  static Future/*<T>*/ resolve/*<T>*/(dynamic /*=T*/ obj) => new Future.value(obj);
 
-  static Future reject(obj, stackTrace) => new Future.error(obj,
-      stackTrace != null ? stackTrace : obj is Error ? obj.stackTrace : null);
+  static Future/*<T>*/ reject/*<T>*/(dynamic /*=T*/ obj, Object stackTrace) => new Future.error(obj,
+      stackTrace != null ? stackTrace : obj is Error ? (obj as Error).stackTrace : null);
 
-  static Future<List> all(List<dynamic> promises) {
+  static Future<List/*<T>*/> all/*<T>*/(List<dynamic> promises) {
     return Future
-        .wait(promises.map((p) => p is Future ? p : new Future.value(p)));
+      .wait(promises.map((p) => p is Future ? p as Future/*<T>*/ : new Future/*<T>*/.value(p)));
   }
-
-  static Future then(Future promise, success(value), [Function onError]) {
+  static Future/*<R>*/ then/*<T, R>*/(Future/*<T>*/ promise, dynamic /*=R*/ success(dynamic /*=T*/ value), [Function onError]) {
     if (success == null) return promise.catchError(onError);
     return promise.then(success, onError: onError);
   }
 
-  static Future wrap(Function fn) {
+  static Future/*<T>*/ wrap/*<T>*/(dynamic /*=T*/ fn()) {
     return new Future(fn);
   }
 
@@ -37,16 +36,14 @@ class PromiseWrapper {
     return obj is Future;
   }
 
-  static PromiseCompleter<dynamic> completer() =>
-      new PromiseCompleter(new Completer());
+  static PromiseCompleter/*<T>*/ completer/*<T>*/() =>
+      new PromiseCompleter();
 }
 
 class PromiseCompleter<T> {
-  final Completer<T> c;
+  final Completer<T> c = new Completer();
 
-  PromiseCompleter(this.c);
-
-  Future get promise => c.future;
+  Future<T> get promise => c.future;
 
   void resolve(v) {
     c.complete(v);

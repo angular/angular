@@ -33,15 +33,15 @@ class IterableMap extends IterableBase<List> {
 }
 
 class MapWrapper {
-  static Map clone(Map m) => new Map.from(m);
+  static Map/*<K,V>*/ clone/*<K,V>*/(Map/*<K,V>*/ m) => new Map.from(m);
 
   // in opposite to JS, Dart does not create a new map
-  static Map createFromStringMap(Map m) => m;
+  static Map/*<K,V>*/ createFromStringMap/*<K,V>*/(Map/*<K,V>*/ m) => m;
 
   // in opposite to JS, Dart does not create a new map
-  static Map toStringMap(Map m) => m;
+  static Map/*<K,V>*/ toStringMap/*<K,V>*/(Map/*<K,V>*/ m) => m;
 
-  static Map createFromPairs(List pairs) => pairs.fold({}, (m, p) {
+  static Map/*<K,V>*/ createFromPairs/*<K,V>*/(List pairs) => pairs.fold(/*<K,V>*/{}, (m, p) {
         m[p[0]] = p[1];
         return m;
       });
@@ -52,29 +52,29 @@ class MapWrapper {
     }
   }
 
-  static Iterable iterable(Map m) => new IterableMap(m);
-  static List keys(Map m) => m.keys.toList();
-  static List values(Map m) => m.values.toList();
+  static Iterable/*<List<dynamic>>*/ iterable/*<K,V>*/(Map/*<K,V>*/ m) => new IterableMap(m);
+  static List/*<K>*/ keys/*<K,V>*/(Map/*<K,V>*/ m) => m.keys.toList();
+  static List/*<V>*/ values/*<K,V>*/(Map/*<K,V>*/ m) => m.values.toList();
 }
 
 class StringMapWrapper {
-  static Map create() => {};
-  static bool contains(Map map, key) => map.containsKey(key);
-  static get(Map map, key) => map[key];
-  static void set(Map map, key, value) {
+  static Map/*<String,V>*/ create/*<V>*/() => {};
+  static bool contains/*<V>*/(Map/*<String,V>*/ map, String key) => map.containsKey(key);
+  static get/*<V>*/(Map/*<String,V>*/ map, String key) => map[key];
+  static void set/*<V>*/(Map/*<String,V>*/ map, String key, /*=V*/value) {
     map[key] = value;
   }
 
-  static void delete(Map m, k) {
+  static void delete/*<V>*/(Map/*<String,V>*/ m, String k) {
     m.remove(k);
   }
 
-  static void forEach(Map m, fn(v, k)) {
+  static void forEach/*<V>*/(Map/*<String,V>*/ m, fn(/*=V*/ v, String k)) {
     m.forEach((k, v) => fn(v, k));
   }
 
-  static Map merge(Map a, Map b) {
-    var m = new Map.from(a);
+  static Map/*<String,V>*/ merge/*<V>*/(Map/*<String,V>*/ a, Map/*<String,V>*/ b) {
+    var m = new Map/*<String,V>*/.from(a);
     if (b != null) {
       b.forEach((k, v) => m[k] = v);
     }
@@ -86,7 +86,7 @@ class StringMapWrapper {
   }
 
   static bool isEmpty(Map m) => m.isEmpty;
-  static bool equals(Map m1, Map m2) {
+  static bool equals/*<V>*/(Map/*<String,V>*/ m1, Map/*<String,V>*/ m2) {
     if (m1.length != m2.length) {
       return false;
     }
@@ -102,9 +102,9 @@ class StringMapWrapper {
 typedef bool Predicate<T>(T item);
 
 class ListWrapper {
-  static List clone(Iterable l) => new List.from(l);
-  static List createFixedSize(int size) => new List(size);
-  static List createGrowableSize(int size) =>
+  static List/*<T>*/ clone/*<T>*/(Iterable/*<T>*/ l) => new List.from(l);
+  static List/*<T>*/ createFixedSize/*<T>*/(int size) => new List(size);
+  static List/*<T>*/ createGrowableSize/*<T>*/(int size) =>
       new List.generate(size, (_) => null, growable: true);
   static UnmodifiableListView createImmutable(List input) {
     return new UnmodifiableListView(input);
@@ -116,43 +116,43 @@ class ListWrapper {
   static int lastIndexOf(List list, value, [int startIndex = null]) =>
       list.lastIndexOf(value, startIndex == null ? list.length : startIndex);
 
-  static void forEachWithIndex(List list, fn(item, index)) {
+  static void forEachWithIndex/*<T>*/(List/*<T>*/ list, fn(/*=T*/ item, int index)) {
     for (var i = 0; i < list.length; ++i) {
       fn(list[i], i);
     }
   }
-  static first(List list) => list.isEmpty ? null : list.first;
-  static last(List list) => list.isEmpty ? null : list.last;
-  static List reversed(List list) => list.reversed.toList();
-  static List concat(List a, List b) {
+  static /*=T*/ first/*<T>*/(List/*<T>*/ list) => list.isEmpty ? null : list.first;
+  static /*=T*/ last/*<T>*/(List/*<T>*/ list) => list.isEmpty ? null : list.last;
+  static List/*<T>*/ reversed/*<T>*/(List/*<T>*/ list) => list.reversed.toList();
+  static List/*<T>*/ concat/*<T>*/(List/*<T>*/ a, List/*<T>*/ b) {
     return new List()
       ..length = a.length + b.length
       ..setRange(0, a.length, a)
       ..setRange(a.length, a.length + b.length, b);
   }
 
-  static void insert(List l, int index, value) {
+  static void insert/*<T>*/(List/*<T>*/ l, int index, /*=T*/ value) {
     l.insert(index, value);
   }
 
   static removeAt(List l, int index) => l.removeAt(index);
-  static void removeAll(List list, List items) {
+  static void removeAll/*<T>*/(List/*<T>*/ list, List/*<T>*/ items) {
     for (var i = 0; i < items.length; ++i) {
       list.remove(items[i]);
     }
   }
 
-  static bool remove(List list, item) => list.remove(item);
+  static bool remove/*<T>*/(List/*<T>*/ list, /*=T*/ item) => list.remove(item);
   static void clear(List l) {
     l.clear();
   }
 
   static bool isEmpty(Iterable list) => list.isEmpty;
-  static void fill(List l, value, [int start = 0, int end]) {
+  static void fill/*<T>*/(List/*<T>*/ l, /*=T*/ value, [int start = 0, int end]) {
     l.fillRange(_startOffset(l, start), _endOffset(l, end), value);
   }
 
-  static bool equals(List a, List b) {
+  static bool equals/*<T>*/(List/*<T>*/ a, List/*<T>*/ b) {
     if (a.length != b.length) return false;
     for (var i = 0; i < a.length; ++i) {
       if (a[i] != b[i]) return false;
@@ -160,7 +160,7 @@ class ListWrapper {
     return true;
   }
 
-  static List slice(List l, [int from = 0, int to]) {
+  static List/*<T>*/ slice/*<T>*/(List/*<T>*/ l, [int from = 0, int to]) {
     from = _startOffset(l, from);
     to = _endOffset(l, to);
     //in JS if from > to an empty array is returned
@@ -170,7 +170,7 @@ class ListWrapper {
     return l.sublist(from, to);
   }
 
-  static List splice(List l, int from, int length) {
+  static List/*<T>*/ splice/*<T>*/(List/*<T>*/ l, int from, int length) {
     from = _startOffset(l, from);
     var to = from + length;
     var sub = l.sublist(from, to);
@@ -178,7 +178,7 @@ class ListWrapper {
     return sub;
   }
 
-  static void sort(List l, [compareFn(a, b) = null]) {
+  static void sort/*<T>*/(List/*<T>*/ l, [int compareFn(/*=T*/a, /*=T*/b) = null]) {
     if (compareFn == null) {
       l.sort();
     } else {
@@ -232,7 +232,11 @@ class ListWrapper {
 
 bool isListLikeIterable(obj) => obj is Iterable;
 
-bool areIterablesEqual(Iterable a, Iterable b, Function comparator) {
+bool areIterablesEqual/*<T>*/(
+  Iterable/*<T>*/ a,
+  Iterable/*<T>*/ b,
+  bool comparator(/*=T*/a, /*=T*/b))
+{
   var iterator1 = a.iterator;
   var iterator2 = b.iterator;
 
@@ -241,11 +245,11 @@ bool areIterablesEqual(Iterable a, Iterable b, Function comparator) {
     var done2 = !iterator2.moveNext();
     if (done1 && done2) return true;
     if (done1 || done2) return false;
-    if (!comparator(iterator2.current, iterator2.current)) return false;
+    if (!comparator(iterator1.current, iterator2.current)) return false;
   }
 }
 
-void iterateListLike(iter, fn(item)) {
+void iterateListLike/*<T>*/(Iterable/*<T>*/ iter, fn(/*=T*/item)) {
   assert(iter is Iterable);
   for (var item in iter) {
     fn(item);
@@ -253,9 +257,9 @@ void iterateListLike(iter, fn(item)) {
 }
 
 class SetWrapper {
-  static Set createFromList(List l) => new Set.from(l);
-  static bool has(Set s, key) => s.contains(key);
-  static void delete(Set m, k) {
+  static Set/*<T>*/ createFromList/*<T>*/(List/*<T>*/ l) => new Set.from(l);
+  static bool has/*<T>*/(Set/*<T>*/ s, /*=T*/key) => s.contains(key);
+  static void delete/*<T>*/(Set/*<T>*/ m, /*=T*/k) {
     m.remove(k);
   }
 }

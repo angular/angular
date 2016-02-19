@@ -1,10 +1,8 @@
-import {global, isPresent, noop} from 'angular2/src/facade/lang';
+import {global, noop} from 'angular2/src/facade/lang';
 export {PromiseWrapper, PromiseCompleter} from 'angular2/src/facade/promise';
 
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
-import {Subscription} from 'rxjs/Subscription';
-import {Operator} from 'rxjs/Operator';
 
 import {PromiseObservable} from 'rxjs/observable/PromiseObservable';
 import {toPromise} from 'rxjs/operator/toPromise';

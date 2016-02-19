@@ -6,15 +6,15 @@ import {RouteData, BLANK_ROUTE_DATA} from '../../instruction';
 
 export class AsyncRouteHandler implements RouteHandler {
   /** @internal */
-  _resolvedComponent: Promise<any> = null;
+  _resolvedComponent: Promise<Type> = null;
   componentType: Type;
   public data: RouteData;
 
-  constructor(private _loader: Function, data: {[key: string]: any} = null) {
+  constructor(private _loader: () => Promise<Type>, data: {[key: string]: any} = null) {
     this.data = isPresent(data) ? new RouteData(data) : BLANK_ROUTE_DATA;
   }
 
-  resolveComponentType(): Promise<any> {
+  resolveComponentType(): Promise<Type> {
     if (isPresent(this._resolvedComponent)) {
       return this._resolvedComponent;
     }

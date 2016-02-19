@@ -31,7 +31,7 @@ export function main() {
     var injector: Injector;
     var runner;
 
-    function createRunner(defaultBindings = null) {
+    function createRunner(defaultBindings = null): Runner {
       if (isBlank(defaultBindings)) {
         defaultBindings = [];
       }

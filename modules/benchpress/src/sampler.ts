@@ -62,8 +62,8 @@ export class Sampler {
     return loop(new SampleState([], null));
   }
 
-  _iterate(lastState) {
-    var resultPromise;
+  _iterate(lastState): Promise<SampleState> {
+    var resultPromise: Promise<any>;
     if (isPresent(this._prepare)) {
       resultPromise = this._driver.waitFor(this._prepare);
     } else {

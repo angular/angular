@@ -6,9 +6,9 @@ export abstract class ViewRef {
   /**
    * @internal
    */
-  get changeDetectorRef(): ChangeDetectorRef { return unimplemented(); };
+  get changeDetectorRef(): ChangeDetectorRef { return <ChangeDetectorRef>unimplemented(); };
 
-  get destroyed(): boolean { return unimplemented(); }
+  get destroyed(): boolean { return <boolean>unimplemented(); }
 }
 
 /**
@@ -21,7 +21,7 @@ export abstract class ViewRef {
  * {@link AppViewManager#createHostViewInContainer}, {@link ViewContainerRef#createHostView}.
  */
 export abstract class HostViewRef extends ViewRef {
-  get rootNodes(): any[] { return unimplemented(); };
+  get rootNodes(): any[] { return <any[]>unimplemented(); };
 }
 
 /**
@@ -88,7 +88,7 @@ export abstract class EmbeddedViewRef extends ViewRef {
    */
   abstract hasLocal(variableName: string): boolean;
 
-  get rootNodes(): any[] { return unimplemented(); };
+  get rootNodes(): any[] { return <any[]>unimplemented(); };
 }
 
 export class ViewRef_ implements EmbeddedViewRef, HostViewRef {

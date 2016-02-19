@@ -20,16 +20,16 @@ class CONST {
 
 const IS_DART = true;
 
-bool isPresent(obj) => obj != null;
-bool isBlank(obj) => obj == null;
-bool isString(obj) => obj is String;
-bool isFunction(obj) => obj is Function;
-bool isType(obj) => obj is Type;
-bool isStringMap(obj) => obj is Map;
-bool isArray(obj) => obj is List;
-bool isPromise(obj) => obj is Future;
-bool isNumber(obj) => obj is num;
-bool isDate(obj) => obj is DateTime;
+bool isPresent(Object obj) => obj != null;
+bool isBlank(Object obj) => obj == null;
+bool isString(Object obj) => obj is String;
+bool isFunction(Object obj) => obj is Function;
+bool isType(Object obj) => obj is Type;
+bool isStringMap(Object obj) => obj is Map;
+bool isArray(Object obj) => obj is List;
+bool isPromise(Object obj) => obj is Future;
+bool isNumber(Object obj) => obj is num;
+bool isDate(Object obj) => obj is DateTime;
 
 String stringify(obj) {
   final exp = new RegExp(r"from Function '(\w+)'");

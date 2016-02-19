@@ -234,7 +234,7 @@ class ProtoViewBuilderVisitor<APP_PROTO_VIEW, APP_PROTO_EL, STATEMENT> implement
                                  attrAsts: TemplateAst[]): string[][] {
     var attrs = visitAndReturnContext(this, attrAsts, {});
     directives.forEach(directiveMeta => {
-      StringMapWrapper.forEach(directiveMeta.hostAttributes, (value, name) => {
+      StringMapWrapper.forEach(directiveMeta.hostAttributes, (value: string, name: string) => {
         var prevValue = attrs[name];
         attrs[name] = isPresent(prevValue) ? mergeAttributeValue(name, prevValue, value) : value;
       });
@@ -330,12 +330,14 @@ class ProtoViewBuilderVisitor<APP_PROTO_VIEW, APP_PROTO_EL, STATEMENT> implement
 }
 
 function mapToKeyValueArray(data: {[key: string]: string}): string[][] {
-  var entryArray = [];
-  StringMapWrapper.forEach(data, (value, name) => { entryArray.push([name, value]); });
+  var entryArray: string[][] = [];
+  StringMapWrapper.forEach(data,
+                           (value: string, name: string) => { entryArray.push([name, value]); });
   // We need to sort to get a defined output order
   // for tests and for caching generated artifacts...
-  ListWrapper.sort(entryArray, (entry1, entry2) => StringWrapper.compare(entry1[0], entry2[0]));
-  var keyValueArray = [];
+  ListWrapper.sort<string[]>(entryArray, (entry1: string[], entry2: string[]) =>
+                                             StringWrapper.compare(entry1[0], entry2[0]));
+  var keyValueArray: string[][] = [];
   entryArray.forEach((entry) => { keyValueArray.push([entry[0], entry[1]]); });
   return keyValueArray;
 }

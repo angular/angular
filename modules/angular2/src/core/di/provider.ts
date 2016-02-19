@@ -513,7 +513,7 @@ export class ProviderBuilder {
  */
 export function resolveFactory(provider: Provider): ResolvedFactory {
   var factoryFn: Function;
-  var resolvedDeps;
+  var resolvedDeps: Dependency[];
   if (isPresent(provider.useClass)) {
     var useClass = resolveForwardRef(provider.useClass);
     factoryFn = reflector.factory(useClass);
@@ -619,7 +619,7 @@ function _constructDependencies(factoryFunction: Function, dependencies: any[]):
 }
 
 function _dependenciesFor(typeOrFunc): Dependency[] {
-  var params = reflector.parameters(typeOrFunc);
+  var params: any[][] = reflector.parameters(typeOrFunc);
   if (isBlank(params)) return [];
   if (params.some(isBlank)) {
     throw new NoAnnotationError(typeOrFunc, params);

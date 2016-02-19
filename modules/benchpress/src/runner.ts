@@ -33,7 +33,9 @@ export class Runner {
     this._defaultBindings = defaultBindings;
   }
 
-  sample({id, execute, prepare, microMetrics, bindings}): Promise<SampleState> {
+  sample({id, execute, prepare, microMetrics, bindings}:
+             {id: string, execute?: any, prepare?: any, microMetrics?: any, bindings?: any}):
+      Promise<SampleState> {
     var sampleBindings = [
       _DEFAULT_PROVIDERS,
       this._defaultBindings,

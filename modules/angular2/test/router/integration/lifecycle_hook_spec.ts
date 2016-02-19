@@ -56,17 +56,18 @@ export function main() {
 
     var tcb: TestComponentBuilder;
     var fixture: ComponentFixture;
-    var rtr;
+    var rtr: Router;
 
     beforeEachProviders(() => TEST_ROUTER_PROVIDERS);
 
-    beforeEach(inject([TestComponentBuilder, Router], (tcBuilder, router) => {
-      tcb = tcBuilder;
-      rtr = router;
-      cmpInstanceCount = 0;
-      log = [];
-      eventBus = new EventEmitter();
-    }));
+    beforeEach(inject([TestComponentBuilder, Router],
+                      (tcBuilder: TestComponentBuilder, router: Router) => {
+                        tcb = tcBuilder;
+                        rtr = router;
+                        cmpInstanceCount = 0;
+                        log = [];
+                        eventBus = new EventEmitter();
+                      }));
 
     it('should call the routerOnActivate hook', inject([AsyncTestCompleter], (async) => {
          compile(tcb)

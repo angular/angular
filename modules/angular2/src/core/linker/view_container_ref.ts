@@ -41,7 +41,7 @@ export abstract class ViewContainerRef {
    * Anchor element that specifies the location of this container in the containing View.
    * <!-- TODO: rename to anchorElement -->
    */
-  get element(): ElementRef { return unimplemented(); }
+  get element(): ElementRef { return <ElementRef>unimplemented(); }
 
   /**
    * Destroys all Views in this container.
@@ -60,7 +60,7 @@ export abstract class ViewContainerRef {
   /**
    * Returns the number of Views currently attached to this container.
    */
-  get length(): number { return unimplemented(); };
+  get length(): number { return <number>unimplemented(); };
 
   /**
    * Instantiates an Embedded View based on the {@link TemplateRef `templateRef`} and inserts it

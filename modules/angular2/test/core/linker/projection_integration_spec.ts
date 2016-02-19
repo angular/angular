@@ -286,7 +286,7 @@ export function main() {
     // important as we are removing the ng-content element during compilation,
     // which could skrew up text node indices.
     it('should support text nodes after content tags',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb, async) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
 
          tcb.overrideView(
                 MainComp,
@@ -307,7 +307,7 @@ export function main() {
     // important as we are moving style tags around during compilation,
     // which could skrew up text node indices.
     it('should support text nodes after style tags',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb, async) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
 
          tcb.overrideView(
                 MainComp,

@@ -254,8 +254,9 @@ export class TestComponentBuilder {
     DOM.appendChild(doc.body, rootEl);
 
 
-    return this._injector.get(DynamicComponentLoader)
-        .loadAsRoot(rootComponentType, `#${rootElId}`, this._injector)
-        .then((componentRef) => { return new ComponentFixture_(componentRef); });
+    var promise: Promise<ComponentRef> =
+        this._injector.get(DynamicComponentLoader)
+            .loadAsRoot(rootComponentType, `#${rootElId}`, this._injector);
+    return promise.then((componentRef) => { return new ComponentFixture_(componentRef); });
   }
 }

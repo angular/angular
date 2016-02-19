@@ -18,7 +18,7 @@ import {isBlank} from 'angular2/src/facade/lang';
 
 export function main() {
   describe('MockViewResolver', () => {
-    var viewResolver;
+    var viewResolver: MockViewResolver;
 
     beforeEach(() => { viewResolver = new MockViewResolver(); });
 

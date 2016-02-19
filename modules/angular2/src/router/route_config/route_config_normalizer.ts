@@ -92,7 +92,8 @@ export function normalizeRouteConfig(config: RouteDefinition,
 }
 
 
-function wrapLoaderToReconfigureRegistry(loader: Function, registry: RouteRegistry): Function {
+function wrapLoaderToReconfigureRegistry(loader: Function, registry: RouteRegistry): () =>
+    Promise<Type> {
   return () => {
     return loader().then((componentType) => {
       registry.configFromComponent(componentType);

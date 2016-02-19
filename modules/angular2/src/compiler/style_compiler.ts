@@ -53,9 +53,9 @@ export class StyleCompiler {
 
   private _loadStyles(plainStyles: string[], absUrls: string[],
                       encapsulate: boolean): Promise<Array<string | any[]>> {
-    var promises = absUrls.map((absUrl) => {
+    var promises: Promise<string[]>[] = absUrls.map((absUrl: string): Promise<string[]> => {
       var cacheKey = `${absUrl}${encapsulate ? '.shim' : ''}`;
-      var result = this._styleCache.get(cacheKey);
+      var result: Promise<string[]> = this._styleCache.get(cacheKey);
       if (isBlank(result)) {
         result = this._xhr.get(absUrl).then((style) => {
           var styleWithImports = extractStyleUrls(this._urlResolver, absUrl, style);
@@ -66,7 +66,7 @@ export class StyleCompiler {
       }
       return result;
     });
-    return PromiseWrapper.all(promises).then((nestedStyles: string[][]) => {
+    return PromiseWrapper.all<string[]>(promises).then((nestedStyles: string[][]) => {
       var result: Array<string | any[]> =
           plainStyles.map(plainStyle => this._shimIfNeeded(plainStyle, encapsulate));
       nestedStyles.forEach(styles => result.push(styles));

@@ -140,7 +140,7 @@ export function main() {
            ]);
 
            var value = null;
-           c(new Control("invalid")).then(v => value = v);
+           (<Promise<any>>c(new Control("invalid"))).then(v => value = v);
 
            tick(1);
 
@@ -151,7 +151,7 @@ export function main() {
            var c = Validators.composeAsync([asyncValidator("expected", {"one": true})]);
 
            var value = null;
-           c(new Control("expected")).then(v => value = v);
+           (<Promise<any>>c(new Control("expected"))).then(v => value = v);
 
            tick(1);
 
@@ -162,7 +162,7 @@ export function main() {
            var c = Validators.composeAsync([asyncValidator("expected", {"one": true}), null]);
 
            var value = null;
-           c(new Control("invalid")).then(v => value = v);
+           (<Promise<any>>c(new Control("invalid"))).then(v => value = v);
 
            tick(1);
 

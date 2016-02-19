@@ -2,6 +2,7 @@ import {Injectable} from 'angular2/core';
 import {StringMapWrapper} from 'angular2/src/facade/collection';
 import {isPresent, isArray, CONST_EXPR, Type} from 'angular2/src/facade/lang';
 import * as modelModule from './model';
+import {ValidatorFn, AsyncValidatorFn} from './directives/validators';
 
 
 /**
@@ -56,16 +57,18 @@ export class FormBuilder {
   group(controlsConfig: {[key: string]: any},
         extra: {[key: string]: any} = null): modelModule.ControlGroup {
     var controls = this._reduceControls(controlsConfig);
-    var optionals = isPresent(extra) ? StringMapWrapper.get(extra, "optionals") : null;
-    var validator = isPresent(extra) ? StringMapWrapper.get(extra, "validator") : null;
-    var asyncValidator = isPresent(extra) ? StringMapWrapper.get(extra, "asyncValidator") : null;
+    var optionals = <{[key: string]: boolean}>(
+        isPresent(extra) ? StringMapWrapper.get(extra, "optionals") : null);
+    var validator: ValidatorFn = isPresent(extra) ? StringMapWrapper.get(extra, "validator") : null;
+    var asyncValidator: AsyncValidatorFn =
+        isPresent(extra) ? StringMapWrapper.get(extra, "asyncValidator") : null;
     return new modelModule.ControlGroup(controls, optionals, validator, asyncValidator);
   }
   /**
    * Construct a new {@link Control} with the given `value`,`validator`, and `asyncValidator`.
    */
-  control(value: Object, validator: Function = null,
-          asyncValidator: Function = null): modelModule.Control {
+  control(value: Object, validator: ValidatorFn = null,
+          asyncValidator: AsyncValidatorFn = null): modelModule.Control {
     return new modelModule.Control(value, validator, asyncValidator);
   }
 
@@ -73,8 +76,8 @@ export class FormBuilder {
    * Construct an array of {@link Control}s from the given `controlsConfig` array of
    * configuration, with the given optional `validator` and `asyncValidator`.
    */
-  array(controlsConfig: any[], validator: Function = null,
-        asyncValidator: Function = null): modelModule.ControlArray {
+  array(controlsConfig: any[], validator: ValidatorFn = null,
+        asyncValidator: AsyncValidatorFn = null): modelModule.ControlArray {
     var controls = controlsConfig.map(c => this._createControl(c));
     return new modelModule.ControlArray(controls, validator, asyncValidator);
   }
@@ -98,8 +101,8 @@ export class FormBuilder {
 
     } else if (isArray(controlConfig)) {
       var value = controlConfig[0];
-      var validator = controlConfig.length > 1 ? controlConfig[1] : null;
-      var asyncValidator = controlConfig.length > 2 ? controlConfig[2] : null;
+      var validator: ValidatorFn = controlConfig.length > 1 ? controlConfig[1] : null;
+      var asyncValidator: AsyncValidatorFn = controlConfig.length > 2 ? controlConfig[2] : null;
       return this.control(value, validator, asyncValidator);
 
     } else {

@@ -5,6 +5,7 @@ import {ListWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
 import {OpaqueToken} from 'angular2/core';
 
 import * as modelModule from './model';
+import {ValidatorFn, AsyncValidatorFn} from './directives/validators';
 
 /**
  * Providers for validators to be used for {@link Control}s in a form.
@@ -43,7 +44,7 @@ export class Validators {
   /**
    * Validator that requires controls to have a non-empty value.
    */
-  static required(control: modelModule.Control): {[key: string]: boolean} {
+  static required(control: modelModule.AbstractControl): {[key: string]: boolean} {
     return isBlank(control.value) || (isString(control.value) && control.value == "") ?
                {"required": true} :
                null;
@@ -52,8 +53,8 @@ export class Validators {
   /**
    * Validator that requires controls to have a value of a minimum length.
    */
-  static minLength(minLength: number): Function {
-    return (control: modelModule.Control): {[key: string]: any} => {
+  static minLength(minLength: number): ValidatorFn {
+    return (control: modelModule.AbstractControl): {[key: string]: any} => {
       if (isPresent(Validators.required(control))) return null;
       var v: string = control.value;
       return v.length < minLength ?
@@ -65,8 +66,8 @@ export class Validators {
   /**
    * Validator that requires controls to have a value of a maximum length.
    */
-  static maxLength(maxLength: number): Function {
-    return (control: modelModule.Control): {[key: string]: any} => {
+  static maxLength(maxLength: number): ValidatorFn {
+    return (control: modelModule.AbstractControl): {[key: string]: any} => {
       if (isPresent(Validators.required(control))) return null;
       var v: string = control.value;
       return v.length > maxLength ?
@@ -78,8 +79,8 @@ export class Validators {
   /**
    * Validator that requires a control to match a regex to its value.
    */
-  static pattern(pattern: string): Function {
-    return (control: modelModule.Control): {[key: string]: any} => {
+  static pattern(pattern: string): ValidatorFn {
+    return (control: modelModule.AbstractControl): {[key: string]: any} => {
       if (isPresent(Validators.required(control))) return null;
       let regex = new RegExp(`^${pattern}$`);
       let v: string = control.value;
@@ -91,13 +92,13 @@ export class Validators {
   /**
    * No-op validator.
    */
-  static nullValidator(c: any): {[key: string]: boolean} { return null; }
+  static nullValidator(c: modelModule.AbstractControl): {[key: string]: boolean} { return null; }
 
   /**
    * Compose multiple validators into a single function that returns the union
    * of the individual error maps.
    */
-  static compose(validators: Function[]): Function {
+  static compose(validators: ValidatorFn[]): ValidatorFn {
     if (isBlank(validators)) return null;
     var presentValidators = validators.filter(isPresent);
     if (presentValidators.length == 0) return null;
@@ -107,13 +108,13 @@ export class Validators {
     };
   }
 
-  static composeAsync(validators: Function[]): Function {
+  static composeAsync(validators: AsyncValidatorFn[]): AsyncValidatorFn {
     if (isBlank(validators)) return null;
     var presentValidators = validators.filter(isPresent);
     if (presentValidators.length == 0) return null;
 
     return function(control: modelModule.AbstractControl) {
-      let promises = _executeValidators(control, presentValidators).map(_convertToPromise);
+      let promises = _executeAsyncValidators(control, presentValidators).map(_convertToPromise);
       return PromiseWrapper.all(promises).then(_mergeErrors);
     };
   }
@@ -123,13 +124,20 @@ function _convertToPromise(obj: any): any {
   return PromiseWrapper.isPromise(obj) ? obj : ObservableWrapper.toPromise(obj);
 }
 
-function _executeValidators(control: modelModule.AbstractControl, validators: Function[]): any[] {
+function _executeValidators(control: modelModule.AbstractControl,
+                            validators: ValidatorFn[]): any[] {
+  return validators.map(v => v(control));
+}
+
+function _executeAsyncValidators(control: modelModule.AbstractControl,
+                                 validators: AsyncValidatorFn[]): any[] {
   return validators.map(v => v(control));
 }
 
 function _mergeErrors(arrayOfErrors: any[]): {[key: string]: any} {
-  var res = arrayOfErrors.reduce((res, errors) => {
-    return isPresent(errors) ? StringMapWrapper.merge(<any>res, <any>errors) : res;
-  }, {});
+  var res: {[key: string]: any} =
+      arrayOfErrors.reduce((res: {[key: string]: any}, errors: {[key: string]: any}) => {
+        return isPresent(errors) ? StringMapWrapper.merge(res, errors) : res;
+      }, {});
   return StringMapWrapper.isEmpty(res) ? null : res;
 }

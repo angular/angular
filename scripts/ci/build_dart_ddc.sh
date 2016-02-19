@@ -11,10 +11,10 @@ source $SCRIPT_DIR/env_dart.sh
 cd $SCRIPT_DIR/../..
 
 # Variables
-DDC_TOTAL_WARNING_CAP="1000"
-DDC_TOTAL_ERROR_CAP="11"
+DDC_TOTAL_WARNING_CAP="210"
+DDC_TOTAL_ERROR_CAP="0"
 DDC_DIR=`pwd`/tmp/dev_compiler
-DDC_VERSION="0.1.14"
+DDC_VERSION="0.1.20"
 
 # Get DDC
 mkdir -p tmp
@@ -78,21 +78,27 @@ then
 fi
 
 cat $LOG_FILE
-WARNING_COUNT=`cat $LOG_FILE | wc -l | sed -e 's/^[[:space:]]*//'`
+EXIT_CODE=0
+
+# TODO remove  `grep -v template.dart` after Tobias new compiler lands.
+
+WARNING_COUNT=$(cat $LOG_FILE | grep -E '^warning.*' | grep -v template.dart | wc -l | sed -e 's/^[[:space:]]*//' || true)
+ERROR_COUNT=$(cat $LOG_FILE | grep -E '^severe.*' | wc -l | sed -e 's/^[[:space:]]*//' || true)
+
+
+if [[ "$ERROR_COUNT" -gt "$DDC_TOTAL_ERROR_CAP" ]]
+then
+  echo "Found severe errors in angular2 package"
+  EXIT_CODE=1
+fi
 
 if [[ "$WARNING_COUNT" -gt "$DDC_TOTAL_WARNING_CAP" ]]
 then
   echo "Too many warnings: $WARNING_COUNT"
-  exit 1
+  EXIT_CODE=1
 else
   echo "Warning count ok"
 fi
 
-ERROR_COUNT=`cat $LOG_FILE | grep -E '^severe.*' | wc -l | sed -e 's/^[[:space:]]*//'`
-if [[ "$ERROR_COUNT" -gt "$DDC_TOTAL_ERROR_CAP" ]]
-then
-  echo "Found severe errors in angular2 package"
-  exit 1
-fi
-
 echo 'Dart DDC build finished'
+exit $EXIT_CODE

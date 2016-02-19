@@ -23,6 +23,7 @@ import {
   TimerWrapper
 } from 'angular2/src/facade/async';
 import {DOM} from 'angular2/src/platform/dom/dom_adapter';
+import {PromiseCompleter} from 'angular2/src/facade/promise';
 
 export function main() {
   describe("AsyncPipe", () => {
@@ -116,16 +117,16 @@ export function main() {
 
     describe("Promise", () => {
       var message = new Object();
-      var pipe;
-      var completer;
-      var ref;
+      var pipe: AsyncPipe;
+      var completer: PromiseCompleter<any>;
+      var ref: SpyChangeDetectorRef;
       // adds longer timers for passing tests in IE
       var timer = (!isBlank(DOM) && browserDetection.isIE) ? 50 : 0;
 
       beforeEach(() => {
         completer = PromiseWrapper.completer();
         ref = new SpyChangeDetectorRef();
-        pipe = new AsyncPipe(ref);
+        pipe = new AsyncPipe(<any>ref);
       });
 
       describe("transform", () => {

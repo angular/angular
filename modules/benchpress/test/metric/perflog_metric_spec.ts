@@ -39,7 +39,7 @@ export function main() {
                           captureFrames?: boolean,
                           receivedData?: boolean,
                           requestCount?: boolean
-                        } = {}) {
+                        } = {}): Metric {
     commandLog = [];
     if (isBlank(perfLogFeatures)) {
       perfLogFeatures =
@@ -384,7 +384,7 @@ export function main() {
                  aggregate(
                      [eventFactory.instant('frame', 4), eventFactory.markEnd('frameCapture', 5)],
                      {captureFrames: true}),
-                 (err) => {
+                 (err): any => {
                    expect(() => { throw err; })
                        .toThrowError('missing start event for frame capture');
                    async.done();
@@ -396,7 +396,7 @@ export function main() {
                  aggregate(
                      [eventFactory.markStart('frameCapture', 3), eventFactory.instant('frame', 4)],
                      {captureFrames: true}),
-                 (err) => {
+                 (err): any => {
                    expect(() => { throw err; }).toThrowError('missing end event for frame capture');
                    async.done();
                  });
@@ -410,7 +410,7 @@ export function main() {
                        eventFactory.markStart('frameCapture', 4)
                      ],
                      {captureFrames: true}),
-                 (err) => {
+                 (err): any => {
                    expect(() => { throw err; })
                        .toThrowError('can capture frames only once per benchmark run');
                    async.done();
@@ -424,12 +424,13 @@ export function main() {
                    .toThrowError(
                        'found start event for frame capture, but frame capture was not requested in benchpress');
                async.done();
+               return null;
              });
            }));
 
         it('should throw if frame capture is enabled, but nothing is captured',
            inject([AsyncTestCompleter], (async) => {
-             PromiseWrapper.catchError(aggregate([], {captureFrames: true}), (err) => {
+             PromiseWrapper.catchError(aggregate([], {captureFrames: true}), (err): any => {
                expect(() => { throw err; })
                    .toThrowError(
                        'frame capture requested in benchpress, but no start event was found');
