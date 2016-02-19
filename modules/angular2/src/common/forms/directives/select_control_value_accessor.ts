@@ -39,7 +39,7 @@ function _extractId(valueString: string): string {
  */
 @Directive({
   selector: 'select[ngControl],select[ngFormControl],select[ngModel]',
-  host: {'(input)': 'onChange($event.target.value)', '(blur)': 'onTouched()'},
+  host: {'(change)': 'onChange($event.target.value)', '(blur)': 'onTouched()'},
   providers: [SELECT_VALUE_ACCESSOR]
 })
 export class SelectControlValueAccessor implements ControlValueAccessor {
