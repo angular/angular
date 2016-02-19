@@ -1,22 +1,13 @@
-import {
-  isPresent,
-  isBlank,
-  StringWrapper,
-  stringify,
-  assertionsEnabled,
-  StringJoiner,
-  serializeEnum,
-  CONST_EXPR
-} from 'angular2/src/facade/lang';
+import {isPresent, isBlank} from 'angular2/src/facade/lang';
 
 import {ListWrapper} from 'angular2/src/facade/collection';
 
-import {HtmlAst, HtmlAttrAst, HtmlTextAst, HtmlElementAst} from './html_ast';
+import {HtmlAst, HtmlAttrAst, HtmlTextAst, HtmlElementAst, HtmlCommentAst} from './html_ast';
 
 import {Injectable} from 'angular2/src/core/di';
 import {HtmlToken, HtmlTokenType, tokenizeHtml} from './html_lexer';
 import {ParseError, ParseLocation, ParseSourceSpan} from './parse_util';
-import {HtmlTagDefinition, getHtmlTagDefinition, getNsPrefix} from './html_tags';
+import {getHtmlTagDefinition, getNsPrefix} from './html_tags';
 
 export class HtmlTreeError extends ParseError {
   static create(elementName: string, location: ParseLocation, msg: string): HtmlTreeError {
@@ -101,7 +92,9 @@ class TreeBuilder {
   }
 
   private _consumeComment(startToken: HtmlToken) {
-    this._advanceIf(HtmlTokenType.RAW_TEXT);
+    let textToken = this._advance();
+    let text = textToken.parts[0];
+    this._addToParent(new HtmlCommentAst(text, textToken.sourceSpan));
     this._advanceIf(HtmlTokenType.COMMENT_END);
   }
 
@@ -158,7 +151,7 @@ class TreeBuilder {
                                 new ParseSourceSpan(startTagToken.sourceSpan.start, end));
     this._pushElement(el);
     if (selfClosing) {
-      this._popElement(fullName);
+      this._popElement(fullName, null);
     }
   }
 
@@ -191,16 +184,19 @@ class TreeBuilder {
       this.errors.push(
           HtmlTreeError.create(fullName, endTagToken.sourceSpan.start,
                                `Void elements do not have end tags "${endTagToken.parts[1]}"`));
-    } else if (!this._popElement(fullName)) {
+    } else if (!this._popElement(fullName, endTagToken)) {
       this.errors.push(HtmlTreeError.create(fullName, endTagToken.sourceSpan.start,
                                             `Unexpected closing tag "${endTagToken.parts[1]}"`));
     }
   }
 
-  private _popElement(fullName: string): boolean {
+  private _popElement(fullName: string, endTagToken: HtmlToken): boolean {
     for (let stackIndex = this.elementStack.length - 1; stackIndex >= 0; stackIndex--) {
       let el = this.elementStack[stackIndex];
       if (el.name == fullName) {
+        if (isPresent(endTagToken)) {
+          el.endTagSourceSpan = endTagToken.sourceSpan;
+        }
         ListWrapper.splice(this.elementStack, stackIndex, this.elementStack.length - stackIndex);
         return true;
       }

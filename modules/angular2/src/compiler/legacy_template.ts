@@ -8,7 +8,14 @@ import {
   isPresent
 } from 'angular2/src/facade/lang';
 
-import {HtmlAstVisitor, HtmlAttrAst, HtmlElementAst, HtmlTextAst, HtmlAst} from './html_ast';
+import {
+  HtmlAstVisitor,
+  HtmlAttrAst,
+  HtmlElementAst,
+  HtmlTextAst,
+  HtmlAst,
+  HtmlCommentAst
+} from './html_ast';
 import {HtmlParser, HtmlParseTreeResult} from './html_parser';
 
 import {dashCaseToCamelCase, camelCaseToDashCase} from './util';
@@ -73,6 +80,8 @@ export class LegacyHtmlAstTransformer implements HtmlAstVisitor {
   }
 
   visitText(ast: HtmlTextAst, context: any): HtmlTextAst { return ast; }
+
+  visitComment(ast: HtmlCommentAst, context: any): HtmlCommentAst { return ast; }
 
   private _rewriteLongSyntax(ast: HtmlAttrAst): HtmlAttrAst {
     let m = RegExpWrapper.firstMatch(LONG_SYNTAX_REGEXP, ast.name);

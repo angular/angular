@@ -17,11 +17,14 @@ import {
   HtmlElementAst,
   HtmlAttrAst,
   HtmlTextAst,
+  HtmlCommentAst,
   htmlVisitAll
 } from 'angular2/src/compiler/html_ast';
 import {ParseError, ParseLocation, ParseSourceSpan} from 'angular2/src/compiler/parse_util';
 
 import {BaseException} from 'angular2/src/facade/exceptions';
+
+import {isPresent} from 'angular2/src/facade/lang';
 
 export function main() {
   describe('HtmlParser', () => {
@@ -47,6 +50,23 @@ export function main() {
         it('should parse CDATA', () => {
           expect(humanizeDom(parser.parse('<![CDATA[text]]>', 'TestComp')))
               .toEqual([[HtmlTextAst, 'text', 0]]);
+        });
+      });
+
+      describe('comments', () => {
+        it('should parse root level comments', () => {
+          expect(humanizeDom(parser.parse('<!--a-->', 'TestComp')))
+              .toEqual([[HtmlCommentAst, 'a', 0]]);
+        });
+
+        it('should parse comments inside regular elements', () => {
+          expect(humanizeDom(parser.parse('<div><!--a--></div>', 'TestComp')))
+              .toEqual([[HtmlElementAst, 'div', 0], [HtmlCommentAst, 'a', 1]]);
+        });
+
+        it('should parse comments inside template elements', () => {
+          expect(humanizeDom(parser.parse('<template><!--a--></template>', 'TestComp')))
+              .toEqual([[HtmlElementAst, 'template', 0], [HtmlCommentAst, 'a', 1]]);
         });
       });
 
@@ -232,24 +252,37 @@ export function main() {
         });
       });
 
-      describe('comments', () => {
-        it('should ignore comments', () => {
-          expect(humanizeDom(parser.parse('<!-- comment --><div></div>', 'TestComp')))
-              .toEqual([[HtmlElementAst, 'div', 0]]);
-        });
-      });
-
       describe('source spans', () => {
         it('should store the location', () => {
-          expect(humanizeDomSourceSpans(parser.parse(
-                     '<div [prop]="v1" (e)="do()" attr="v2" noValue>\na\n</div>', 'TestComp')))
+          expect(
+              humanizeDomSourceSpans(parser.parse(
+                  '<div [prop]="v1" (e)="do()" attr="v2" noValue>\na\n</div><!--a-->', 'TestComp')))
               .toEqual([
-                [HtmlElementAst, 'div', 0, '<div [prop]="v1" (e)="do()" attr="v2" noValue>'],
+                [
+                  HtmlElementAst,
+                  'div',
+                  0,
+                  '<div [prop]="v1" (e)="do()" attr="v2" noValue>',
+                  '</div>'
+                ],
                 [HtmlAttrAst, '[prop]', 'v1', '[prop]="v1"'],
                 [HtmlAttrAst, '(e)', 'do()', '(e)="do()"'],
                 [HtmlAttrAst, 'attr', 'v2', 'attr="v2"'],
                 [HtmlAttrAst, 'noValue', '', 'noValue'],
                 [HtmlTextAst, '\na\n', 1, '\na\n'],
+                [HtmlCommentAst, 'a', 0, 'a']
+              ]);
+        });
+
+        it('should store the end tag locations', () => {
+          expect(humanizeDomSourceSpans(
+                     parser.parse('<ul><li><b><input></b><li></li></ul>', 'TestComp')))
+              .toEqual([
+                [HtmlElementAst, 'ul', 0, '<ul>', '</ul>'],
+                [HtmlElementAst, 'li', 1, '<li>', ''],
+                [HtmlElementAst, 'b', 2, '<b>', '</b>'],
+                [HtmlElementAst, 'input', 3, '<input>', ''],
+                [HtmlElementAst, 'li', 1, '<li>', '</li>'],
               ]);
         });
       });
@@ -362,9 +395,22 @@ class Humanizer implements HtmlAstVisitor {
     return null;
   }
 
+  visitComment(ast: HtmlCommentAst, context: any): any {
+    var res = this._appendContext(ast, [HtmlCommentAst, ast.value, this.elDepth]);
+    this.result.push(res);
+    return null;
+  }
+
   private _appendContext(ast: HtmlAst, input: any[]): any[] {
     if (!this.includeSourceSpan) return input;
     input.push(ast.sourceSpan.toString());
+    if (ast instanceof HtmlElementAst) {
+      if (isPresent(ast.endTagSourceSpan)) {
+        input.push(ast.endTagSourceSpan.toString())
+      } else {
+        input.push('');
+      }
+    }
     return input;
   }
 }
