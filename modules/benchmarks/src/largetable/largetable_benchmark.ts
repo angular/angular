@@ -12,7 +12,6 @@ import {Component, Directive, View, bind, provide} from 'angular2/core';
 import {NgFor, NgSwitch, NgSwitchWhen, NgSwitchDefault} from 'angular2/common';
 import {ApplicationRef} from 'angular2/src/core/application_ref';
 import {BrowserDomAdapter} from 'angular2/src/platform/browser/browser_adapter';
-import {APP_VIEW_POOL_CAPACITY} from 'angular2/src/core/linker/view_pool';
 
 import {ListWrapper} from 'angular2/src/facade/collection';
 
@@ -24,12 +23,10 @@ export const LARGETABLE_ROWS = 'LargetableComponent.rows';
 export const LARGETABLE_COLS = 'LargetableComponent.cols';
 
 function _createBindings() {
-  var viewCacheCapacity = getStringParameter('viewcache') == 'true' ? 10000 : 1;
   return [
     provide(BENCHMARK_TYPE, {useValue: getStringParameter('benchmarkType')}),
     provide(LARGETABLE_ROWS, {useValue: getIntParameter('rows')}),
-    provide(LARGETABLE_COLS, {useValue: getIntParameter('columns')}),
-    provide(APP_VIEW_POOL_CAPACITY, {useValue: viewCacheCapacity})
+    provide(LARGETABLE_COLS, {useValue: getIntParameter('columns')})
   ];
 }
 

@@ -1,3 +1,32 @@
+// Unique place to configure the browsers which are used in the different CI jobs in Sauce Labs (SL) and BrowserStack (BS).
+// If the target is set to null, then the browser is not run anywhere during CI.
+// If a category becomes empty (e.g. BS and required), then the corresponding job must be commented out in Travis configuration.
+var CIconfiguration = {
+  'Chrome':       { unitTest: {target: 'SL', required: true}, e2e: {target: null, required: true}},
+  'Firefox':      { unitTest: {target: 'SL', required: true}, e2e: {target: null, required: true}},
+  'ChromeBeta':   { unitTest: {target: 'SL', required: true}, e2e: {target: null, required: true}},
+  'FirefoxBeta':  { unitTest: {target: 'SL', required: true}, e2e: {target: null, required: true}},
+  'ChromeDev':    { unitTest: {target: null, required: true}, e2e: {target: null, required: true}},
+  'FirefoxDev':   { unitTest: {target: null, required: true}, e2e: {target: null, required: true}},
+  'IE9':          { unitTest: {target: 'SL', required: false}, e2e: {target: null, required: true}},
+  'IE10':         { unitTest: {target: 'SL', required: true}, e2e: {target: null, required: true}},
+  'IE11':         { unitTest: {target: 'SL', required: true}, e2e: {target: null, required: true}},
+  'Edge':         { unitTest: {target: 'SL', required: true}, e2e: {target: null, required: true}},
+  'Android4.1':   { unitTest: {target: 'SL', required: false}, e2e: {target: null, required: true}},
+  'Android4.2':   { unitTest: {target: 'SL', required: false}, e2e: {target: null, required: true}},
+  'Android4.3':   { unitTest: {target: 'SL', required: false}, e2e: {target: null, required: true}},
+  'Android4.4':   { unitTest: {target: 'SL', required: false}, e2e: {target: null, required: true}},
+  'Android5':     { unitTest: {target: 'SL', required: false}, e2e: {target: null, required: true}},
+  'Safari7':      { unitTest: {target: 'BS', required: false}, e2e: {target: null, required: true}},
+  'Safari8':      { unitTest: {target: 'BS', required: false}, e2e: {target: null, required: true}},
+  'Safari9':      { unitTest: {target: 'BS', required: false}, e2e: {target: null, required: true}},
+  'iOS7':         { unitTest: {target: 'BS', required: true}, e2e: {target: null, required: true}},
+  'iOS8':         { unitTest: {target: 'BS', required: false}, e2e: {target: null, required: true}},
+  // TODO(mlaval): iOS9 deactivated as not reliable, reactivate after https://github.com/angular/angular/issues/5408
+  'iOS9':         { unitTest: {target: null, required: false}, e2e: {target: null, required: true}},
+  'WindowsPhone': { unitTest: {target: 'BS', required: false}, e2e: {target: null, required: true}}
+};
+
 var customLaunchers = {
   'DartiumWithWebPlatform': {
     base: 'Dartium',
@@ -47,7 +76,7 @@ var customLaunchers = {
     platform: 'OS X 10.10',
     version: '8'
   },
-  'SL_SAFARI9.0': {
+  'SL_SAFARI9': {
     base: 'SauceLabs',
     browserName: 'safari',
     platform: 'OS X 10.11',
@@ -119,7 +148,7 @@ var customLaunchers = {
     platform: 'Linux',
     version: '4.4'
   },
-  'SL_ANDROID5.1': {
+  'SL_ANDROID5': {
     base: 'SauceLabs',
     browserName: 'android',
     platform: 'Linux',
@@ -239,21 +268,18 @@ var customLaunchers = {
   }
 };
 
-// iOS9 deactivated as not reliable in both providers
-// TODO(mlaval): reactivate after https://github.com/angular/angular/issues/5408
-
 var sauceAliases = {
   'ALL': Object.keys(customLaunchers).filter(function(item) {return customLaunchers[item].base == 'SauceLabs';}),
-  'DESKTOP': ['SL_CHROME', 'SL_FIREFOX', 'SL_IE9', 'SL_IE10', 'SL_IE11', 'SL_EDGE', 'SL_SAFARI7', 'SL_SAFARI8', 'SL_SAFARI9.0'],
-  'MOBILE': ['SL_ANDROID4.1', 'SL_ANDROID4.2', 'SL_ANDROID4.3', 'SL_ANDROID4.4', 'SL_ANDROID5.1', 'SL_IOS7', 'SL_IOS8', 'SL_IOS9'],
-  'ANDROID': ['SL_ANDROID4.1', 'SL_ANDROID4.2', 'SL_ANDROID4.3', 'SL_ANDROID4.4', 'SL_ANDROID5.1'],
+  'DESKTOP': ['SL_CHROME', 'SL_FIREFOX', 'SL_IE9', 'SL_IE10', 'SL_IE11', 'SL_EDGE', 'SL_SAFARI7', 'SL_SAFARI8', 'SL_SAFARI9'],
+  'MOBILE': ['SL_ANDROID4.1', 'SL_ANDROID4.2', 'SL_ANDROID4.3', 'SL_ANDROID4.4', 'SL_ANDROID5', 'SL_IOS7', 'SL_IOS8', 'SL_IOS9'],
+  'ANDROID': ['SL_ANDROID4.1', 'SL_ANDROID4.2', 'SL_ANDROID4.3', 'SL_ANDROID4.4', 'SL_ANDROID5'],
   'IE': ['SL_IE9', 'SL_IE10', 'SL_IE11'],
   'IOS': ['SL_IOS7', 'SL_IOS8', 'SL_IOS9'],
-  'SAFARI': ['SL_SAFARI7', 'SL_SAFARI8', 'SL_SAFARI9.0'],
+  'SAFARI': ['SL_SAFARI7', 'SL_SAFARI8', 'SL_SAFARI9'],
   'BETA': ['SL_CHROMEBETA', 'SL_FIREFOXBETA'],
   'DEV': ['SL_CHROMEDEV', 'SL_FIREFOXDEV'],
-  'CI': ['SL_CHROME',' SL_FIREFOX', 'SL_CHROMEDEV', 'SL_FIREFOXBETA', 'SL_IE9', 'SL_IE10', 'SL_IE11', 'SL_EDGE',
-    'SL_ANDROID4.1', 'SL_ANDROID4.2', 'SL_ANDROID4.3', 'SL_ANDROID4.4', 'SL_ANDROID5.1']
+  'CI_REQUIRED': buildConfiguration('unitTest', 'SL', true),
+  'CI_OPTIONAL': buildConfiguration('unitTest', 'SL', false)
 };
 
 var browserstackAliases = {
@@ -264,7 +290,8 @@ var browserstackAliases = {
   'IE': ['BS_IE9', 'BS_IE10', 'BS_IE11'],
   'IOS': ['BS_IOS7', 'BS_IOS8', 'BS_IOS9'],
   'SAFARI': ['BS_SAFARI7', 'BS_SAFARI8', 'BS_SAFARI9'],
-  'CI': ['BS_SAFARI7', 'BS_SAFARI8', 'BS_SAFARI9', 'BS_IOS7', 'BS_IOS8', 'BS_WINDOWSPHONE']
+  'CI_REQUIRED': buildConfiguration('unitTest', 'BS', true),
+  'CI_OPTIONAL': buildConfiguration('unitTest', 'BS', false)
 };
 
 module.exports = {
@@ -276,4 +303,15 @@ module.exports = {
 if (process.env.TRAVIS) {
   process.env.SAUCE_ACCESS_KEY = process.env.SAUCE_ACCESS_KEY.split('').reverse().join('');
   process.env.BROWSER_STACK_ACCESS_KEY = process.env.BROWSER_STACK_ACCESS_KEY.split('').reverse().join('');
+}
+
+function buildConfiguration(type, target, required) {
+  return Object.keys(CIconfiguration)
+    .filter((item) => {
+      var conf = CIconfiguration[item][type];
+      return conf.required === required && conf.target === target;
+    })
+    .map((item) => {
+      return target + '_' + item.toUpperCase();
+    });
 }

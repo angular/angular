@@ -1,6 +1,5 @@
-import {BaseException, unimplemented} from 'angular2/src/facade/exceptions';
-import {ViewRef, ViewRef_} from './view_ref';
-import {RenderViewRef, RenderElementRef, Renderer} from 'angular2/src/core/render/api';
+import {unimplemented} from 'angular2/src/facade/exceptions';
+import {AppElement} from './element';
 
 /**
  * Represents a location in a View that has an injection, change-detection and render context
@@ -12,23 +11,7 @@ import {RenderViewRef, RenderElementRef, Renderer} from 'angular2/src/core/rende
  * An `ElementRef` is backed by a render-specific element. In the browser, this is usually a DOM
  * element.
  */
-export abstract class ElementRef implements RenderElementRef {
-  /**
-   * @internal
-   *
-   * Reference to the {@link ViewRef} that this `ElementRef` is part of.
-   */
-  parentView: ViewRef;
-
-  /**
-   * @internal
-   *
-   * Index of the element inside the {@link ViewRef}.
-   *
-   * This is used internally by the Angular framework to locate elements.
-   */
-  boundElementIndex: number;
-
+export abstract class ElementRef {
   /**
    * The underlying native element or `null` if direct access to native elements is not supported
    * (e.g. when the application runs in a web worker).
@@ -48,24 +31,13 @@ export abstract class ElementRef implements RenderElementRef {
    *   </p>
    * </div>
    */
-  get nativeElement(): any { return unimplemented(); };
-
-  get renderView(): RenderViewRef { return unimplemented(); }
+  get nativeElement(): any { return unimplemented(); }
 }
 
-export class ElementRef_ extends ElementRef {
-  constructor(public parentView: ViewRef,
+export class ElementRef_ implements ElementRef {
+  constructor(private _appElement: AppElement) {}
 
-              /**
-               * Index of the element inside the {@link ViewRef}.
-               *
-               * This is used internally by the Angular framework to locate elements.
-               */
-              public boundElementIndex: number, private _renderer: Renderer) {
-    super();
-  }
+  get internalElement(): AppElement { return this._appElement; }
 
-  get renderView(): RenderViewRef { return (<ViewRef_>this.parentView).render; }
-  set renderView(value) { unimplemented(); }
-  get nativeElement(): any { return this._renderer.getNativeElementSync(this); }
+  get nativeElement() { return this._appElement.nativeElement; }
 }

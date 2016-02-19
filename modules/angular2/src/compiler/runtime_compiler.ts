@@ -1,23 +1,23 @@
-import {Compiler, Compiler_, internalCreateProtoView} from 'angular2/src/core/linker/compiler';
-import {ProtoViewRef} from 'angular2/src/core/linker/view_ref';
-import {ProtoViewFactory} from 'angular2/src/core/linker/proto_view_factory';
+import {Compiler, Compiler_} from 'angular2/src/core/linker/compiler';
+import {HostViewFactoryRef, HostViewFactoryRef_} from 'angular2/src/core/linker/view_ref';
 import {TemplateCompiler} from './template_compiler';
 
 import {Injectable} from 'angular2/src/core/di';
 import {Type} from 'angular2/src/facade/lang';
 import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
 
-export abstract class RuntimeCompiler extends Compiler {}
+export abstract class RuntimeCompiler extends Compiler {
+  abstract compileInHost(componentType: Type): Promise<HostViewFactoryRef>;
+  abstract clearCache();
+}
 
 @Injectable()
 export class RuntimeCompiler_ extends Compiler_ implements RuntimeCompiler {
-  constructor(_protoViewFactory: ProtoViewFactory, private _templateCompiler: TemplateCompiler) {
-    super(_protoViewFactory);
-  }
+  constructor(private _templateCompiler: TemplateCompiler) { super(); }
 
-  compileInHost(componentType: Type): Promise<ProtoViewRef> {
+  compileInHost(componentType: Type): Promise<HostViewFactoryRef_> {
     return this._templateCompiler.compileHostComponentRuntime(componentType)
-        .then(compiledHostTemplate => internalCreateProtoView(this, compiledHostTemplate));
+        .then(hostViewFactory => new HostViewFactoryRef_(hostViewFactory));
   }
 
   clearCache() {

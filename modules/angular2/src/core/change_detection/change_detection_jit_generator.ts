@@ -66,8 +66,8 @@ export class ChangeDetectorJITGenerator {
   generate(): Function {
     var factorySource = `
       ${this.generateSource()}
-      return function(dispatcher) {
-        return new ${this.typeName}(dispatcher);
+      return function() {
+        return new ${this.typeName}();
       }
     `;
     return new Function(this.abstractChangeDetectorVarName, this.changeDetectionUtilVarName,
@@ -77,9 +77,9 @@ export class ChangeDetectorJITGenerator {
 
   generateSource(): string {
     return `
-      var ${this.typeName} = function ${this.typeName}(dispatcher) {
+      var ${this.typeName} = function ${this.typeName}() {
         ${this.abstractChangeDetectorVarName}.call(
-            this, ${JSON.stringify(this.id)}, dispatcher, ${this.records.length},
+            this, ${JSON.stringify(this.id)}, ${this.records.length},
             ${this.typeName}.gen_propertyBindingTargets, ${this.typeName}.gen_directiveIndices,
             ${codify(this.changeDetectionStrategy)});
         this.dehydrateDirectives(false);
@@ -199,13 +199,14 @@ export class ChangeDetectorJITGenerator {
   /** @internal */
   _maybeGenDehydrateDirectives(): string {
     var destroyPipesCode = this._names.genPipeOnDestroy();
-    if (destroyPipesCode) {
-      destroyPipesCode = `if (destroyPipes) { ${destroyPipesCode} }`;
-    }
+    var destroyDirectivesCode = this._logic.genDirectivesOnDestroy(this.directiveRecords);
     var dehydrateFieldsCode = this._names.genDehydrateFields();
-    if (!destroyPipesCode && !dehydrateFieldsCode) return '';
+    if (!destroyPipesCode && !destroyDirectivesCode && !dehydrateFieldsCode) return '';
     return `${this.typeName}.prototype.dehydrateDirectives = function(destroyPipes) {
-        ${destroyPipesCode}
+        if (destroyPipes) {
+          ${destroyPipesCode}
+          ${destroyDirectivesCode}
+        }
         ${dehydrateFieldsCode}
     }`;
   }

@@ -23,13 +23,17 @@ export abstract class DomAdapter {
   abstract logGroup(error);
   abstract logGroupEnd();
 
+  /** @deprecated */
   abstract getXHR(): Type;
 
   /**
    * Maps attribute names to their corresponding property names for cases
    * where attribute name doesn't match property name.
    */
-  attrToPropMap: {[key: string]: string};
+  get attrToPropMap(): {[key: string]: string} { return this._attrToPropMap; };
+  set attrToPropMap(value: {[key: string]: string}) { this._attrToPropMap = value; };
+  /** @internal */
+  _attrToPropMap: {[key: string]: string};
 
   abstract parse(templateHtml: string);
   abstract query(selector: string): any;

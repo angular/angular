@@ -77,6 +77,7 @@ module.exports = function makeBrowserTree(options, destinationPath) {
   const noTypeChecks = options.noTypeChecks;
   const generateEs6 = options.generateEs6;
   const sourceMaps = options.sourceMaps;
+  const useBundles = options.useBundles;
 
   if (modules.angular2) {
     var angular2Tree = new Funnel('modules/angular2', {
@@ -107,6 +108,12 @@ module.exports = function makeBrowserTree(options, destinationPath) {
         {include: ['**/**'], exclude: ['e2e_test/**'], destDir: '/benchmarks_external/'});
   }
 
+  if (modules.payload_tests) {
+    var payloadTestsTree =
+        new Funnel('modules/payload_tests',
+                   {include: ['**/ts/**'], exclude: ['e2e_test/**'], destDir: '/payload_tests/'});
+  }
+
   if (modules.playground) {
     var playgroundTree =
         new Funnel('modules/playground',
@@ -124,6 +131,7 @@ module.exports = function makeBrowserTree(options, destinationPath) {
     angular2MaterialTree,
     benchmarksTree,
     benchmarksExternalTree,
+    payloadTestsTree,
     playgroundTree,
     benchpressTree
   ]);
@@ -147,6 +155,11 @@ module.exports = function makeBrowserTree(options, destinationPath) {
       var parts = relativePath.replace(/\\/g, '/').split('/');
       return parts[parts.length - 1].replace('html', 'js');
     }
+  };
+
+  var useBundlesPatternReplacement = {
+    match: '@@USE_BUNDLES',
+    replacement: function(replacement, relativePath) { return useBundles; }
   };
 
   // Check that imports do not break barrel boundaries
@@ -209,8 +222,10 @@ module.exports = function makeBrowserTree(options, destinationPath) {
         modulesTree, {include: ['**/*'], exclude: ['**/*.{html,ts,dart}'], destDir: '/'});
   }
 
-  var htmlTree = new Funnel(
-      modulesTree, {include: ['*/src/**/*.html', '**/playground/**/*.html'], destDir: '/'});
+  var htmlTree = new Funnel(modulesTree, {
+    include: ['*/src/**/*.html', '**/playground/**/*.html', '**/payload_tests/**/ts/**/*.html'],
+    destDir: '/'
+  });
 
   if (modules.benchmarks || modules.benchmarks_external || modules.playground) {
     htmlTree = replace(htmlTree, {
@@ -218,7 +233,8 @@ module.exports = function makeBrowserTree(options, destinationPath) {
       patterns: [
         {match: /\$SCRIPTS\$/, replacement: htmlReplace('SCRIPTS')},
         scriptPathPatternReplacement,
-        scriptFilePatternReplacement
+        scriptFilePatternReplacement,
+        useBundlesPatternReplacement
       ]
     });
   }
@@ -229,7 +245,8 @@ module.exports = function makeBrowserTree(options, destinationPath) {
       patterns: [
         {match: /\$SCRIPTS\$/, replacement: htmlReplace('SCRIPTS_benchmarks')},
         scriptPathPatternReplacement,
-        scriptFilePatternReplacement
+        scriptFilePatternReplacement,
+        useBundlesPatternReplacement
       ]
     });
   }
@@ -240,7 +257,8 @@ module.exports = function makeBrowserTree(options, destinationPath) {
       patterns: [
         {match: /\$SCRIPTS\$/, replacement: htmlReplace('SCRIPTS_benchmarks_external')},
         scriptPathPatternReplacement,
-        scriptFilePatternReplacement
+        scriptFilePatternReplacement,
+        useBundlesPatternReplacement
       ]
     });
   }
