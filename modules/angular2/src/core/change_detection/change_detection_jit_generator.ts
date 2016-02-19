@@ -174,7 +174,7 @@ export class ChangeDetectorJITGenerator {
       var evalRecord = this._logic.genEventBindingEvalValue(eb, r);
       var markPath = this._genMarkPathToRootAsCheckOnce(r);
       var prevDefault = this._genUpdatePreventDefault(eb, r);
-      return `${markPath}\n${evalRecord}\n${prevDefault}`;
+      return `${evalRecord}\n${markPath}\n${prevDefault}`;
     } else {
       return this._logic.genEventBindingEvalValue(eb, r);
     }
