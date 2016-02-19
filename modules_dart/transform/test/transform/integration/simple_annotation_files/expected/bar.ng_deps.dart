@@ -16,7 +16,7 @@ void initReflector() {
         MyComponent,
         new _ngRef.ReflectionInfo(const [
           const Component(selector: '[soup]', template: 'aa'),
-          _templates.HostMyComponentTemplate
+          _templates.hostViewFactory_MyComponent
         ], const [], () => new MyComponent()));
   i0.initReflector();
 }

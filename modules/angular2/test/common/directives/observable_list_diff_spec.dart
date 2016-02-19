@@ -6,9 +6,7 @@ import 'package:angular2/core.dart' show ChangeDetectorRef;
 import 'package:angular2/common.dart' show ObservableListDiffFactory;
 
 @proxy
-class SpyChangeDetectorRef extends SpyObject implements ChangeDetectorRef {
-  noSuchMethod(m) => super.noSuchMethod(m);
-}
+class SpyChangeDetectorRef extends SpyObject implements ChangeDetectorRef {}
 
 main() {
   describe('ObservableListDiff', () {

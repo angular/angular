@@ -5,15 +5,17 @@ import "dart:async";
 import "package:angular2/testing_internal.dart"
     show
         AsyncTestCompleter,
-        inject,
-        describe,
-        it,
-        iit,
-        expect,
+        SpyObject,
         beforeEach,
         beforeEachProviders,
-        SpyObject,
-        proxy;
+        describe,
+        expect,
+        iit,
+        inject,
+        it,
+        proxy,
+        testSetup;
+import 'package:angular2/src/platform/server/html_adapter.dart';
 import "package:angular2/src/web_workers/debug_tools/multi_client_server_message_bus.dart";
 import "package:angular2/src/web_workers/shared/messaging_api.dart";
 import "./message_bus_common.dart";
@@ -22,6 +24,9 @@ import "dart:convert" show JSON;
 import 'dart:math';
 
 main() {
+  Html5LibDomAdapter.makeCurrent();
+  testSetup();
+
   List<String> messageHistory = new List<String>();
   List<int> resultMarkers = new List<int>();
   describe("MultiClientServerMessageBusSink", () {

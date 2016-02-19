@@ -18,7 +18,7 @@ void initReflector() {
             const [
               const Component(selector: '[soup]'),
               const View(template: ''),
-              _templates.HostMyComponentTemplate
+              _templates.hostViewFactory_MyComponent
             ],
             const [],
             () => new MyComponent(),

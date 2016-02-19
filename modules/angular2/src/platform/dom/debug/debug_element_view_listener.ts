@@ -4,7 +4,6 @@ import {Injectable, provide, Provider} from 'angular2/src/core/di';
 import {AppViewListener} from 'angular2/src/core/linker/view_listener';
 import {AppView} from 'angular2/src/core/linker/view';
 import {DOM} from 'angular2/src/platform/dom/dom_adapter';
-import {Renderer} from 'angular2/src/core/render/api';
 import {DebugElement, DebugElement_} from 'angular2/src/core/debug/debug_element';
 
 const NG_ID_PROPERTY = 'ngid';
@@ -43,7 +42,7 @@ export function inspectNativeElement(element): DebugElement {
   if (isPresent(elId)) {
     var view = _allViewsById.get(elId[0]);
     if (isPresent(view)) {
-      return new DebugElement_(view, elId[1]);
+      return new DebugElement_(view.appElements[elId[1]]);
     }
   }
   return null;
@@ -51,17 +50,15 @@ export function inspectNativeElement(element): DebugElement {
 
 @Injectable()
 export class DebugElementViewListener implements AppViewListener {
-  constructor(private _renderer: Renderer) {
-    DOM.setGlobalVar(INSPECT_GLOBAL_NAME, inspectNativeElement);
-  }
+  constructor() { DOM.setGlobalVar(INSPECT_GLOBAL_NAME, inspectNativeElement); }
 
   onViewCreated(view: AppView) {
     var viewId = _nextId++;
     _allViewsById.set(viewId, view);
     _allIdsByView.set(view, viewId);
-    for (var i = 0; i < view.elementRefs.length; i++) {
-      var el = view.elementRefs[i];
-      _setElementId(this._renderer.getNativeElementSync(el), [viewId, i]);
+    for (var i = 0; i < view.appElements.length; i++) {
+      var el = view.appElements[i];
+      _setElementId(el.nativeElement, [viewId, i]);
     }
   }
 

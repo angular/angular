@@ -43,12 +43,13 @@ class MockNgZone extends NgZone {
 
 export function main() {
   describe('Testability', () => {
-    var testability, execute, ngZone;
+    var testability, execute, execute2, ngZone;
 
     beforeEach(() => {
       ngZone = new MockNgZone();
       testability = new Testability(ngZone);
       execute = new SpyObject().spy('execute');
+      execute2 = new SpyObject().spy('execute');
     });
 
     describe('Pending count logic', () => {
@@ -109,6 +110,35 @@ export function main() {
 
         expect(execute).not.toHaveBeenCalled();
       });
+
+      it('should fire whenstable callbacks with didWork if pending count is 0',
+         inject([AsyncTestCompleter], (async) => {
+           testability.whenStable(execute);
+           microTask(() => {
+             expect(execute).toHaveBeenCalledWith(false);
+             async.done();
+           });
+         }));
+
+      it('should fire whenstable callbacks with didWork when pending drops to 0',
+         inject([AsyncTestCompleter], (async) => {
+           testability.increasePendingRequestCount();
+           testability.whenStable(execute);
+
+           microTask(() => {
+             testability.decreasePendingRequestCount();
+
+             microTask(() => {
+               expect(execute).toHaveBeenCalledWith(true);
+               testability.whenStable(execute2);
+
+               microTask(() => {
+                 expect(execute2).toHaveBeenCalledWith(false);
+                 async.done();
+               });
+             });
+           });
+         }));
     });
 
     describe('NgZone callback logic', () => {
@@ -204,6 +234,43 @@ export function main() {
                    expect(execute).toHaveBeenCalled();
                    async.done();
                  });
+               });
+             });
+           });
+         }));
+
+      it('should fire whenstable callback with didWork if event is already finished',
+         inject([AsyncTestCompleter], (async) => {
+           ngZone.start();
+           ngZone.finish();
+           testability.whenStable(execute);
+
+           microTask(() => {
+             expect(execute).toHaveBeenCalledWith(true);
+             testability.whenStable(execute2);
+
+             microTask(() => {
+               expect(execute2).toHaveBeenCalledWith(false);
+               async.done();
+             });
+           });
+         }));
+
+      it('should fire whenstable callback with didwork when event finishes',
+         inject([AsyncTestCompleter], (async) => {
+           ngZone.start();
+           testability.whenStable(execute);
+
+           microTask(() => {
+             ngZone.finish();
+
+             microTask(() => {
+               expect(execute).toHaveBeenCalledWith(true);
+               testability.whenStable(execute2);
+
+               microTask(() => {
+                 expect(execute2).toHaveBeenCalledWith(false);
+                 async.done();
                });
              });
            });

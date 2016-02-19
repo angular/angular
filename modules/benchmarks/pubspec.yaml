@@ -26,9 +26,11 @@ transformers:
         - web/src/static_tree/tree_benchmark.dart
         - web/src/tree/tree_benchmark.dart
 - $dart2js:
+    $include: web/src/**
     minify: false
     commandLineOptions:
     - --dump-info
     - --trust-type-annotations
     - --trust-primitives
     - --show-package-warnings
+    - --fatal-warnings

@@ -33,4 +33,5 @@ jrunner.onComplete(function(passed) { process.exit(passed ? 0 : 1); });
 jrunner.projectBaseDir = path.resolve(__dirname, '../../');
 jrunner.specDir = '';
 jrunner.addSpecFiles(specFiles);
+require('./test-cjs-main.js');
 jrunner.execute();

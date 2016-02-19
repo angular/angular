@@ -4,13 +4,14 @@ import 'dart:async';
 
 import 'package:analyzer/analyzer.dart';
 import 'package:analyzer/src/generated/ast.dart';
-import 'package:angular2/src/transform/common/async_string_writer.dart';
-import 'package:angular2/src/transform/common/logging.dart';
-import 'package:code_transformers/assets.dart';
-import 'package:angular2/src/transform/common/asset_reader.dart';
 import 'package:barback/barback.dart' show AssetId;
 import 'package:source_span/source_span.dart';
 import 'package:path/path.dart' as path;
+
+import 'package:angular2/src/transform/common/asset_reader.dart';
+import 'package:angular2/src/transform/common/async_string_writer.dart';
+import 'package:angular2/src/transform/common/logging.dart';
+import 'package:angular2/src/transform/common/url_resolver.dart';
 
 /// Reads the code at `assetId`, inlining any `part` directives in that code.
 ///
@@ -50,12 +51,13 @@ Future<String> _getAllDeclarations(AssetReader reader, AssetId assetId,
 
   var partsStart = visitor.parts.first.offset,
       partsEnd = visitor.parts.last.end;
+  final assetUri = toAssetUri(assetId);
 
   var asyncWriter = new AsyncStringWriter(code.substring(0, partsStart));
   visitor.parts.forEach((partDirective) {
     var uri = stringLiteralToString(partDirective.uri);
-    var partAssetId = uriToAssetId(assetId, uri, log, null /* span */,
-        errorOnAbsolute: false);
+    var partAssetId =
+        fromUri(const TransformerUrlResolver().resolve(assetUri, uri));
     asyncWriter.asyncPrint(reader.readAsString(partAssetId).then((partCode) {
       if (partCode == null || partCode.isEmpty) {
         log.warning('Empty part at "${partDirective.uri}. Ignoring.',

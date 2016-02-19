@@ -14,17 +14,18 @@ import dartfmt from '../broccoli-dartfmt';
 import replace from '../broccoli-replace';
 
 var global_excludes = [
-  'angular2/http*',
-  'angular2/upgrade*',
   'angular2/examples/**/ts/**/*',
+  'angular2/http*',
   'angular2/http/**/*',
   'angular2/src/http/**/*',
-  'angular2/test/http/**/*',
   'angular2/src/upgrade/**/*',
+  'angular2/test/http/**/*',
   'angular2/test/upgrade/**/*',
+  'angular2/upgrade*',
+  'payload_tests/**/ts/**/*',
   'playground/src/http/**/*',
-  'playground/test/http/**/*',
   'playground/src/jsonp/**/*',
+  'playground/test/http/**/*',
   'playground/test/jsonp/**/*'
 ];
 
@@ -145,7 +146,12 @@ function getDocsTree() {
   var licenses = new MultiCopy('', {
     srcPath: 'LICENSE',
     targetPatterns: ['modules/*'],
-    exclude: ['*/angular2/src/http', '*/upgrade', '*/angular1_router']  // Not in dart.
+    exclude: [
+      '*/angular1_router',
+      '*/angular2/src/http',
+      '*/payload_tests',
+      '*/upgrade'
+    ]  // Not in dart.
   });
   licenses = stew.rename(licenses, stripModulePrefix);
 

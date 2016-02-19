@@ -9,7 +9,7 @@ import 'package:angular2/src/compiler/template_compiler.dart';
 import 'package:angular2/src/transform/common/annotation_matcher.dart';
 import 'package:angular2/src/transform/common/asset_reader.dart';
 import 'package:angular2/src/transform/common/code/ng_deps_code.dart';
-import 'package:angular2/src/transform/common/directive_metadata_reader.dart';
+import 'package:angular2/src/transform/common/type_metadata_reader.dart';
 import 'package:angular2/src/transform/common/interface_matcher.dart';
 import 'package:angular2/src/transform/common/logging.dart';
 import 'package:angular2/src/transform/common/ng_compiler.dart';
@@ -64,12 +64,12 @@ class _NgMetaVisitor extends Object with SimpleAstVisitor<Object> {
   /// The [AssetId] we are currently processing.
   final AssetId assetId;
 
-  final DirectiveMetadataReader _reader;
+  final TypeMetadataReader _reader;
   final _normalizations = <Future>[];
 
   _NgMetaVisitor(this.ngMeta, this.assetId, AnnotationMatcher annotationMatcher,
       InterfaceMatcher interfaceMatcher, TemplateCompiler templateCompiler)
-      : _reader = new DirectiveMetadataReader(
+      : _reader = new TypeMetadataReader(
             annotationMatcher, interfaceMatcher, templateCompiler);
 
   Future whenDone() {
@@ -88,12 +88,11 @@ class _NgMetaVisitor extends Object with SimpleAstVisitor<Object> {
 
   @override
   Object visitClassDeclaration(ClassDeclaration node) {
-    _normalizations.add(_reader
-        .readDirectiveMetadata(node, assetId)
-        .then((compileDirectiveMetadata) {
-      if (compileDirectiveMetadata != null) {
-        ngMeta.types[compileDirectiveMetadata.type.name] =
-            compileDirectiveMetadata;
+    _normalizations.add(
+        _reader.readTypeMetadata(node, assetId).then((compileMetadataWithType) {
+      if (compileMetadataWithType != null) {
+        ngMeta.types[compileMetadataWithType.type.name] =
+            compileMetadataWithType;
       }
     }).catchError((err) {
       log.error('ERROR: $err', asset: assetId);

@@ -17,7 +17,6 @@ import {UpgradeAdapter} from 'angular2/upgrade';
 import * as angular from 'angular2/src/upgrade/angular_js';
 
 export function main() {
-  if (!DOM.supportsDOMEvents()) return;
   describe('adapter: ng1 to ng2', () => {
     it('should have angular 1 loaded', () => expect(angular.version.major).toBe(1));
 

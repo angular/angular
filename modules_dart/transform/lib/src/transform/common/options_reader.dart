@@ -13,6 +13,7 @@ TransformerOptions parseBarbackSettings(BarbackSettings settings) {
   var reflectPropertiesAsAttributes =
       _readBool(config, REFLECT_PROPERTIES_AS_ATTRIBUTES, defaultValue: false);
   var platformDirectives = _readStringList(config, PLATFORM_DIRECTIVES);
+  var platformPipes = _readStringList(config, PLATFORM_PIPES);
   var formatCode = _readBool(config, FORMAT_CODE_PARAM, defaultValue: false);
   String mirrorModeVal =
       config.containsKey(MIRROR_MODE_PARAM) ? config[MIRROR_MODE_PARAM] : '';
@@ -36,6 +37,7 @@ TransformerOptions parseBarbackSettings(BarbackSettings settings) {
       customAnnotationDescriptors: _readCustomAnnotations(config),
       reflectPropertiesAsAttributes: reflectPropertiesAsAttributes,
       platformDirectives: platformDirectives,
+      platformPipes: platformPipes,
       inlineViews: _readBool(config, INLINE_VIEWS_PARAM, defaultValue: false),
       lazyTransformers:
           _readBool(config, LAZY_TRANSFORMERS, defaultValue: false),

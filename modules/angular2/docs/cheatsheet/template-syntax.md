@@ -71,7 +71,7 @@ The `*` symbol means that the current element will be turned into an embedded te
 syntax:
 `<p>Card No.: {{cardNumber | myCreditCardNumberFormatter}}</p>`|`{{cardNumber | myCreditCardNumberFormatter}}`
 description:
-Transforms the current value of expression `cardNumber` via the pipe called `creditCardNumberFormatter`.
+Transforms the current value of expression `cardNumber` via the pipe called `myCreditCardNumberFormatter`.
 
 @cheatsheetItem
 syntax:

@@ -27,7 +27,7 @@ export class CheckboxControlValueAccessor implements ControlValueAccessor {
   constructor(private _renderer: Renderer, private _elementRef: ElementRef) {}
 
   writeValue(value: any): void {
-    this._renderer.setElementProperty(this._elementRef, 'checked', value);
+    this._renderer.setElementProperty(this._elementRef.nativeElement, 'checked', value);
   }
   registerOnChange(fn: (_: any) => {}): void { this.onChange = fn; }
   registerOnTouched(fn: () => {}): void { this.onTouched = fn; }

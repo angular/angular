@@ -24,7 +24,6 @@ class TestObj {
 
 class SpyTestObj extends SpyObject {
   constructor() { super(TestObj); }
-  noSuchMethod(m) { return super.noSuchMethod(m) }
 }
 
 
