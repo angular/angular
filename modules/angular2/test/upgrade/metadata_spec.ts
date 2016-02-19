@@ -16,7 +16,6 @@ import {getComponentInfo, parseFields} from 'angular2/src/upgrade/metadata';
 import {DOM} from 'angular2/src/platform/dom/dom_adapter';
 
 export function main() {
-  if (!DOM.supportsDOMEvents()) return;
   describe('upgrade metadata', () => {
     it('should extract component selector', () => {
       expect(getComponentInfo(ElementNameComponent).selector).toEqual('elementNameDashed');

@@ -200,15 +200,15 @@ Then, in another terminal:
 export SAUCE_USERNAME='my_user'; export SAUCE_ACCESS_KEY='my_key';
 export BROWSER_STACK_USERNAME='my_user'; export BROWSER_STACK_ACCESS_KEY='my_key';
 ```
- - Then run `gulp test.unit.js.(saucelabs|browserstack) --browsers=option1,option2,..,optionN`  
+ - Then run `gulp test.unit.js.(sauce|browserstack) --browsers=option1,option2,..,optionN`  
 The options are any mix of browsers and aliases which are defined in the [browser-providers.conf.js](https://github.com/angular/angular/blob/master/browser-providers.conf.js) file.  
 They are case insensitive, and the `SL_` or `BS_` prefix must not be added for browsers.
 
 Some examples of commands:
 ```
-gulp test.unit.js.saucelabs --browsers=Safari8,ie11  //run in Sauce Labs with Safari 8 and IE11
+gulp test.unit.js.sauce --browsers=Safari8,ie11  //run in Sauce Labs with Safari 8 and IE11
 gulp test.unit.js.browserstack --browsers=Safari,IE  //run in Browser Stack with Safari 7, Safari 8, Safari 9, IE 9, IE 10 and IE 11
-gulp test.unit.js.saucelabs --browsers=IOS,safari8,android5.1  //run in Sauce Labs with iOS 7, iOS 8, iOs 9, Safari 8 and Android 5.1
+gulp test.unit.js.sauce --browsers=IOS,safari8,android5.1  //run in Sauce Labs with iOS 7, iOS 8, iOs 9, Safari 8 and Android 5.1
 ```
 
 ### E2E tests

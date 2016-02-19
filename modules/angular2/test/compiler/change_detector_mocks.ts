@@ -1,7 +1,8 @@
 import {isBlank} from 'angular2/src/facade/lang';
 import {Pipes} from 'angular2/src/core/change_detection/pipes';
+import {EventEmitter} from 'angular2/src/facade/async';
 import {
-  ProtoChangeDetector,
+  ChangeDetector,
   ChangeDispatcher,
   DirectiveIndex,
   BindingTarget
@@ -10,6 +11,7 @@ import {
 export class TestDirective {
   eventLog: string[] = [];
   dirProp: string;
+  click: EventEmitter<any> = new EventEmitter<any>();
 
   onEvent(value: string) { this.eventLog.push(value); }
 }
@@ -17,7 +19,7 @@ export class TestDirective {
 export class TestDispatcher implements ChangeDispatcher {
   log: string[];
 
-  constructor(public directives: any[], public detectors: ProtoChangeDetector[]) { this.clear(); }
+  constructor(public directives: any[], public detectors: ChangeDetector[]) { this.clear(); }
 
   getDirectiveFor(di: DirectiveIndex) { return this.directives[di.directiveIndex]; }
 
@@ -34,7 +36,9 @@ export class TestDispatcher implements ChangeDispatcher {
   notifyAfterContentChecked() {}
   notifyAfterViewChecked() {}
 
-  getDebugContext(a, b) { return null; }
+  notifyOnDestroy() {}
+
+  getDebugContext(a, b, c) { return null; }
 
   _asString(value) { return (isBlank(value) ? 'null' : value.toString()); }
 }

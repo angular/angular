@@ -371,14 +371,14 @@ In TypeScript:
 import {platform, Provider, APP_INITIALIZER, Injector} from 'angular2/core';
 import {
     WORKER_RENDER_PLATFORM,
-    WORKER_RENDER_APP_COMMON,
+    WORKER_RENDER_APPLICATION_COMMON,
     initializeGenericWorkerRenderer,
     MessageBus
 } from 'angular2/platform/worker_render';
 
 var bus = new MyAwesomeMessageBus();
 platform([WORKER_RENDER_PLATFORM])
-.application([WORKER_RENDER_APP_COMMON, new Provider(MessageBus, {useValue: bus}),
+.application([WORKER_RENDER_APPLICATION_COMMON, new Provider(MessageBus, {useValue: bus}),
   new Provider(APP_INITIALIZER, {
     useFactory: (injector) => () => initializeGenericWorkerRenderer(injector),
     deps: [Injector],
@@ -419,7 +419,7 @@ import 'package:angular2/platform/worker_render.dart';
 main() {
   var bus = new MyAwesomeMessageBus();
   platform([WORKER_RENDER_PLATFORM])
-  .application([WORKER_RENDER_APP_COMMON, new Provider(MessageBus, useValue: bus),
+  .application([WORKER_RENDER_APPLICATION_COMMON, new Provider(MessageBus, useValue: bus),
     new Provider(APP_INITIALIZER, 
       useFactory: (injector) => () => initializeGenericWorkerRenderer(injector),
       deps: [Injector],
@@ -456,9 +456,9 @@ void initAppThread(NgZone zone) {
   */
 }
 ```
-Notice how we use the `WORKER_RENDER_APP_COMMON` providers instead of the `WORKER_RENDER_APP` providers on the render thread.
-This is because the `WORKER_RENDER_APP` providers include an application initializer that starts a new WebWorker/Isolate.
-The `WORKER_RENDER_APP_COMMON` providers make no assumption about where your application code lives.
+Notice how we use the `WORKER_RENDER_APPLICTION_COMMON` providers instead of the `WORKER_RENDER_APPLICATION` providers on the render thread.
+This is because the `WORKER_RENDER_APPLICATION` providers include an application initializer that starts a new WebWorker/Isolate.
+The `WORKER_RENDER_APPLICATION_COMMON` providers make no assumption about where your application code lives.
 However, we now need to provide our own app initializer. At the very least this initializer needs to call `initializeGenericWorkerRenderer`.
 
 ## MessageBroker

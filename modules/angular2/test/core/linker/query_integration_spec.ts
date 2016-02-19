@@ -35,7 +35,7 @@ import {
   AfterViewChecked
 } from 'angular2/core';
 import {NgIf, NgFor} from 'angular2/common';
-import {asNativeElements} from 'angular2/core';
+import {asNativeElements, ViewContainerRef} from 'angular2/core';
 
 export function main() {
   describe('Query API', () => {
@@ -99,6 +99,8 @@ export function main() {
                  view.debugElement.componentInstance.shouldShow = false;
                  view.detectChanges();
 
+                 // TODO: this fails right now!
+                 // -> queries are not dirtied!
                  expect(q.log).toEqual([
                    ["setter", "foo"],
                    ["init", "foo"],
@@ -250,8 +252,11 @@ export function main() {
                  view.detectChanges();
                  var needsTpl: NeedsTpl =
                      view.debugElement.componentViewChildren[0].inject(NeedsTpl);
-                 expect(needsTpl.query.first.hasLocal('light')).toBe(true);
-                 expect(needsTpl.viewQuery.first.hasLocal('shadow')).toBe(true);
+
+                 expect(needsTpl.vc.createEmbeddedView(needsTpl.query.first).hasLocal('light'))
+                     .toBe(true);
+                 expect(needsTpl.vc.createEmbeddedView(needsTpl.viewQuery.first).hasLocal('shadow'))
+                     .toBe(true);
 
                  async.done();
                });
@@ -892,7 +897,7 @@ class NeedsTpl {
   viewQuery: QueryList<TemplateRef>;
   query: QueryList<TemplateRef>;
   constructor(@ViewQuery(TemplateRef) viewQuery: QueryList<TemplateRef>,
-              @Query(TemplateRef) query: QueryList<TemplateRef>) {
+              @Query(TemplateRef) query: QueryList<TemplateRef>, public vc: ViewContainerRef) {
     this.viewQuery = viewQuery;
     this.query = query;
   }

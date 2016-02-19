@@ -348,7 +348,7 @@ export function main() {
              expect(sfOption.nativeElement.selected).toBe(true);
 
              select.nativeElement.value = 'NYC';
-             dispatchEvent(select.nativeElement, "change");
+             dispatchEvent(select.nativeElement, "input");
 
              expect(fixture.debugElement.componentInstance.form.value).toEqual({"city": 'NYC'});
              expect(sfOption.nativeElement.selected).toBe(false);

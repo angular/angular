@@ -28,6 +28,7 @@ import {DOM} from 'angular2/src/platform/dom/dom_adapter';
 import {ComponentFixture_} from "angular2/src/testing/test_component_builder";
 import {BaseException} from 'angular2/src/facade/exceptions';
 import {PromiseWrapper} from 'angular2/src/facade/promise';
+import {stringify} from 'angular2/src/facade/lang';
 
 export function main() {
   describe('DynamicComponentLoader', function() {
@@ -164,6 +165,44 @@ export function main() {
                         async.done();
                       });
                 }));
+
+      it('should allow to pass projectable nodes',
+         inject([DynamicComponentLoader, TestComponentBuilder, AsyncTestCompleter],
+                (loader, tcb: TestComponentBuilder, async) => {
+                  tcb.overrideView(MyComp,
+                                   new ViewMetadata({template: '<div #loc></div>', directives: []}))
+                      .createAsync(MyComp)
+                      .then((tc) => {
+                        loader.loadIntoLocation(DynamicallyLoadedWithNgContent,
+                                                tc.debugElement.elementRef, 'loc', null,
+                                                [[DOM.createTextNode('hello')]])
+                            .then(ref => {
+                              tc.detectChanges();
+                              expect(tc.nativeElement).toHaveText('dynamic(hello)');
+                              async.done();
+                            });
+                      });
+                }));
+
+      it('should throw if not enough projectable nodes are passed in',
+         inject(
+             [DynamicComponentLoader, TestComponentBuilder, AsyncTestCompleter],
+             (loader, tcb: TestComponentBuilder, async) => {
+               tcb.overrideView(MyComp,
+                                new ViewMetadata({template: '<div #loc></div>', directives: []}))
+                   .createAsync(MyComp)
+                   .then((tc) => {
+                     PromiseWrapper.catchError(
+                         loader.loadIntoLocation(DynamicallyLoadedWithNgContent,
+                                                 tc.debugElement.elementRef, 'loc', null, []),
+                         (e) => {
+                           expect(e.message).toContain(
+                               `The component ${stringify(DynamicallyLoadedWithNgContent)} has 1 <ng-content> elements, but only 0 slots were provided`);
+                           async.done();
+                         });
+                   });
+             }));
+
     });
 
     describe("loading next to a location", () => {
@@ -248,17 +287,37 @@ export function main() {
                       });
                 }));
 
+      it('should allow to pass projectable nodes',
+         inject([DynamicComponentLoader, TestComponentBuilder, AsyncTestCompleter],
+                (loader, tcb: TestComponentBuilder, async) => {
+                  tcb.overrideView(MyComp, new ViewMetadata({template: '', directives: [Location]}))
+                      .createAsync(MyComp)
+                      .then((tc) => {
+                        loader.loadNextToLocation(DynamicallyLoadedWithNgContent,
+                                                  tc.debugElement.elementRef, null,
+                                                  [[DOM.createTextNode('hello')]])
+                            .then(ref => {
+                              tc.detectChanges();
+                              var newlyInsertedElement =
+                                  DOM.nextSibling(tc.debugElement.nativeElement);
+                              expect(newlyInsertedElement).toHaveText('dynamic(hello)');
+                              async.done();
+                            });
+                      });
+                }));
+
     });
 
     describe('loadAsRoot', () => {
       it('should allow to create, update and destroy components',
          inject([AsyncTestCompleter, DynamicComponentLoader, DOCUMENT, Injector],
                 (async, loader, doc, injector) => {
-                  var rootEl = el('<child-cmp></child-cmp>');
+                  var rootEl = createRootElement(doc, 'child-cmp');
                   DOM.appendChild(doc.body, rootEl);
                   loader.loadAsRoot(ChildComp, null, injector)
                       .then((componentRef) => {
                         var el = new ComponentFixture_(componentRef);
+
                         expect(rootEl.parentNode).toBe(doc.body);
 
                         el.detectChanges();
@@ -279,9 +338,33 @@ export function main() {
                       });
                 }));
 
+      it('should allow to pass projectable nodes',
+         inject([AsyncTestCompleter, DynamicComponentLoader, DOCUMENT, Injector],
+                (async, loader, doc, injector) => {
+                  var rootEl = createRootElement(doc, 'dummy');
+                  DOM.appendChild(doc.body, rootEl);
+                  loader.loadAsRoot(DynamicallyLoadedWithNgContent, null, injector, null,
+                                    [[DOM.createTextNode('hello')]])
+                      .then((_) => {
+                        expect(rootEl).toHaveText('dynamic(hello)');
+
+                        async.done();
+                      });
+                }));
+
     });
 
   });
+}
+
+function createRootElement(doc: any, name: string): any {
+  var nodes = DOM.querySelectorAll(doc, name);
+  for (var i = 0; i < nodes.length; i++) {
+    DOM.remove(nodes[i]);
+  }
+  var rootEl = el(`<${name}></${name}>`);
+  DOM.appendChild(doc.body, rootEl);
+  return rootEl;
 }
 
 @Component({
@@ -330,6 +413,14 @@ class DynamicallyLoaded2 {
 @Component({selector: 'dummy', host: {'[id]': 'id'}})
 @View({template: "DynamicallyLoadedWithHostProps;"})
 class DynamicallyLoadedWithHostProps {
+  id: string;
+
+  constructor() { this.id = "default"; }
+}
+
+@Component({selector: 'dummy'})
+@View({template: "dynamic(<ng-content></ng-content>)"})
+class DynamicallyLoadedWithNgContent {
   id: string;
 
   constructor() { this.id = "default"; }
