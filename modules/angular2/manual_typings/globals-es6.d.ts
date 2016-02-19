@@ -6,8 +6,6 @@
 
 /// <reference path="../typings/zone/zone.d.ts"/>
 /// <reference path="../typings/hammerjs/hammerjs.d.ts"/>
-/// <reference path="../typings/jasmine/jasmine.d.ts"/>
-/// <reference path="../typings/angular-protractor/angular-protractor.d.ts"/>
 
 // TODO: ideally the node.d.ts reference should be scoped only for files that need and not to all
 //       the code including client code
@@ -30,6 +28,7 @@ interface BrowserNodeGlobal {
   zone: Zone;
   getAngularTestability: Function;
   getAllAngularTestabilities: Function;
+  frameworkStabilizers: Array<Function>;
   setTimeout: Function;
   clearTimeout: Function;
   setInterval: Function;

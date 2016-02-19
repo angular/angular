@@ -18,9 +18,13 @@ System.config({
   }
 });
 
-// Import all the specs, execute their `main()` method and kick off Karma (Jasmine).
-System.import('angular2/src/platform/browser/browser_adapter').then(function(browser_adapter) {
-  browser_adapter.BrowserDomAdapter.makeCurrent();
+// Set up the test injector, then import all the specs, execute their `main()`
+// method and kick off Karma (Jasmine).
+System.import('angular2/testing').then(function(testing) {
+  return System.import('angular2/platform/testing/browser').then(function(testing_platform_browser) {
+    testing.setBaseTestProviders(testing_platform_browser.TEST_BROWSER_PLATFORM_PROVIDERS,
+                                 testing_platform_browser.TEST_BROWSER_APPLICATION_PROVIDERS);
+  });
 }).then(function() {
   return Promise.all(
     Object.keys(window.__karma__.files) // All files served by Karma.

@@ -141,6 +141,9 @@ export function stringify(token): string {
   if (token.name) {
     return token.name;
   }
+  if (token.overriddenName) {
+    return token.overriddenName;
+  }
 
   var res = token.toString();
   var newLineIndex = res.indexOf("\n");
@@ -411,4 +414,16 @@ export function getSymbolIterator(): string | symbol {
     }
   }
   return _symbolIterator;
+}
+
+export function evalExpression(sourceUrl: string, expr: string, declarations: string,
+                               vars: {[key: string]: any}): any {
+  var fnBody = `${declarations}\nreturn ${expr}\n//# sourceURL=${sourceUrl}`;
+  var fnArgNames = [];
+  var fnArgValues = [];
+  for (var argName in vars) {
+    fnArgNames.push(argName);
+    fnArgValues.push(vars[argName]);
+  }
+  return new Function(...fnArgNames.concat(fnBody))(...fnArgValues);
 }
