@@ -2,7 +2,7 @@
 Bootstrapping
 @cheatsheetIndex 0
 @description
-{@target ts}`import {bootstrap} from 'angular2/angular2';`{@endtarget}
+{@target ts}`import {bootstrap} from 'angular2/platform/browser';`{@endtarget}
 {@target js}Available from the `ng.platform.browser` namespace.{@endtarget}
 {@target dart}`import 'package:angular2/bootstrap.dart';`{@endtarget}
 

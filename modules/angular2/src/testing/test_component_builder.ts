@@ -6,7 +6,7 @@ import {
   Injector,
   Injectable,
   ViewMetadata,
-  ViewRef,
+  EmbeddedViewRef,
   ViewResolver,
   provide
 } from 'angular2/core';
@@ -15,8 +15,8 @@ import {Type, isPresent, isBlank} from 'angular2/src/facade/lang';
 import {Promise} from 'angular2/src/facade/async';
 import {ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
 
+import {ViewRef_} from 'angular2/src/core/linker/view_ref';
 import {AppView} from 'angular2/src/core/linker/view';
-import {internalView} from 'angular2/src/core/linker/view_ref';
 
 import {el} from './utils';
 
@@ -65,10 +65,10 @@ export class ComponentFixture_ extends ComponentFixture {
 
   constructor(componentRef: ComponentRef) {
     super();
-    this.debugElement = new DebugElement_(internalView(<ViewRef>componentRef.hostView), 0);
+    this._componentParentView = (<ViewRef_>componentRef.hostView).internalView;
+    this.debugElement = new DebugElement_(this._componentParentView.appElements[0]);
     this.componentInstance = this.debugElement.componentInstance;
     this.nativeElement = this.debugElement.nativeElement;
-    this._componentParentView = internalView(<ViewRef>componentRef.hostView);
     this._componentRef = componentRef;
   }
 

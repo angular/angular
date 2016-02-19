@@ -46,7 +46,7 @@ export function main() {
     describe('getMetadata', () => {
       it('should read metadata',
          inject([RuntimeMetadataResolver], (resolver: RuntimeMetadataResolver) => {
-           var meta = resolver.getMetadata(ComponentWithEverything);
+           var meta = resolver.getDirectiveMetadata(ComponentWithEverything);
            expect(meta.selector).toEqual('someSelector');
            expect(meta.exportAs).toEqual('someExportAs');
            expect(meta.isComponent).toBe(true);
@@ -70,7 +70,8 @@ export function main() {
 
       it('should use the moduleUrl from the reflector if none is given',
          inject([RuntimeMetadataResolver], (resolver: RuntimeMetadataResolver) => {
-           var value: string = resolver.getMetadata(ComponentWithoutModuleId).type.moduleUrl;
+           var value: string =
+               resolver.getDirectiveMetadata(ComponentWithoutModuleId).type.moduleUrl;
            var expectedEndValue =
                IS_DART ? 'base/dist/dart/angular2/test/compiler/runtime_metadata_spec.dart' : './';
            expect(value.endsWith(expectedEndValue)).toBe(true);
@@ -82,16 +83,19 @@ export function main() {
       it('should return the directive metadatas',
          inject([RuntimeMetadataResolver], (resolver: RuntimeMetadataResolver) => {
            expect(resolver.getViewDirectivesMetadata(ComponentWithEverything))
-               .toEqual([resolver.getMetadata(SomeDirective)]);
+               .toContain(resolver.getDirectiveMetadata(SomeDirective));
          }));
 
       describe("platform directives", () => {
-        beforeEachProviders(() => [provide(PLATFORM_DIRECTIVES, {useValue: [ADirective]})]);
+        beforeEachProviders(
+            () => [provide(PLATFORM_DIRECTIVES, {useValue: [ADirective], multi: true})]);
 
         it('should include platform directives when available',
            inject([RuntimeMetadataResolver], (resolver: RuntimeMetadataResolver) => {
              expect(resolver.getViewDirectivesMetadata(ComponentWithEverything))
-                 .toEqual([resolver.getMetadata(ADirective), resolver.getMetadata(SomeDirective)]);
+                 .toContain(resolver.getDirectiveMetadata(ADirective));
+             expect(resolver.getViewDirectivesMetadata(ComponentWithEverything))
+                 .toContain(resolver.getDirectiveMetadata(SomeDirective));
            }));
       });
     });

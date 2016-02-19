@@ -17,7 +17,7 @@ import 'package:angular2/src/core/reflection/reflection.dart';
 
 @AngularEntrypoint()
 void main() {ngStaticInit.initReflector();
-  ngStaticInit.initReflector();/*reflector.reflectionCapabilities = new ReflectionCapabilities();*/
+  /*reflector.reflectionCapabilities = new ReflectionCapabilities();*/
   bootstrapStatic(MyComponent);
 }
 """;

@@ -26,6 +26,17 @@ CompileDirectiveMetadata createComponentMetadataForTest(
           encapsulation: ViewEncapsulation.Emulated, template: template));
 }
 
+CompilePipeMetadata createPipeMetadataForTest(
+    {String name: 'TestPipe',
+    moduleUrl: 'asset:angular2/test/test.dart',
+    String pipeName: 'test',
+    bool pure: false}) {
+  return new CompilePipeMetadata(
+      type: new CompileTypeMetadata(name: name, moduleUrl: moduleUrl),
+      name: pipeName,
+      pure: pure);
+}
+
 CompileDirectiveMetadata createDirectiveMetadataForTest(
     {String name: 'TestMetadata',
     String moduleUrl: 'asset:angular2/test/test.dart',
@@ -58,6 +69,13 @@ CompileDirectiveMetadata createBar([String moduleBase = 'asset:a']) =>
         moduleUrl: '$moduleBase/export_cycle_files/bar.dart',
         selector: 'bar',
         template: 'Bar');
+
+CompilePipeMetadata createBarPipe([String moduleBase = 'asset:a']) =>
+    createPipeMetadataForTest(
+        name: 'BarPipe',
+        pipeName: 'bar',
+        moduleUrl: '$moduleBase/export_cycle_files/bar.dart',
+        pure: false);
 
 CompileDirectiveMetadata createBaz([String moduleBase = 'asset:a']) =>
     createComponentMetadataForTest(

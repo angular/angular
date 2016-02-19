@@ -10,6 +10,7 @@ const ENTRY_POINT_PARAM = 'entry_points';
 const FORMAT_CODE_PARAM = 'format_code';
 const REFLECT_PROPERTIES_AS_ATTRIBUTES = 'reflect_properties_as_attributes';
 const PLATFORM_DIRECTIVES = 'platform_directives';
+const PLATFORM_PIPES = 'platform_pipes';
 const INIT_REFLECTOR_PARAM = 'init_reflector';
 const INLINE_VIEWS_PARAM = 'inline_views';
 const MIRROR_MODE_PARAM = 'mirror_mode';
@@ -44,8 +45,14 @@ class TransformerOptions {
   final bool genChangeDetectionDebugInfo;
 
   /// A set of directives that will be automatically passed-in to the template compiler
-  /// Format of an item in the list: angular2/lib/src/common/directives.dart#CORE_DIRECTIVES
+  /// Format of an item in the list:
+  /// angular2/lib/src/common/common_directives.dart#COMMON_DIRECTIVES
   final List<String> platformDirectives;
+
+  /// A set of pipes that will be automatically passed-in to the template compiler
+  /// Format of an item in the list:
+  /// angular2/lib/src/common/pipes.dart#COMMON_PIPES
+  final List<String> platformPipes;
 
   /// Whether to format generated code.
   /// Code that is only modified will never be formatted because doing so may
@@ -76,6 +83,7 @@ class TransformerOptions {
       {this.genChangeDetectionDebugInfo,
       this.reflectPropertiesAsAttributes,
       this.platformDirectives,
+      this.platformPipes,
       this.inlineViews,
       this.lazyTransformers,
       this.formatCode});
@@ -89,6 +97,7 @@ class TransformerOptions {
       bool genChangeDetectionDebugInfo: false,
       bool reflectPropertiesAsAttributes: false,
       List<String> platformDirectives,
+      List<String> platformPipes,
       bool lazyTransformers: false,
       bool formatCode: false}) {
     var annotationMatcher = new AnnotationMatcher()
@@ -101,6 +110,7 @@ class TransformerOptions {
         genChangeDetectionDebugInfo: genChangeDetectionDebugInfo,
         reflectPropertiesAsAttributes: reflectPropertiesAsAttributes,
         platformDirectives: platformDirectives,
+        platformPipes: platformPipes,
         inlineViews: inlineViews,
         lazyTransformers: lazyTransformers,
         formatCode: formatCode);

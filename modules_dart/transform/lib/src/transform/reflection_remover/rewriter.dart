@@ -69,6 +69,10 @@ class _RewriterVisitor extends Object with RecursiveAstVisitor<Object> {
   bool _setupAdded = false;
   bool _importAdded = false;
 
+  /// Whether we imported static bootstrap by e.g. rewriting a non-static
+  /// bootstrap import.
+  bool _hasStaticBootstrapImport = false;
+
   _RewriterVisitor(this._rewriter);
 
   @override
@@ -111,7 +115,8 @@ class _RewriterVisitor extends Object with RecursiveAstVisitor<Object> {
 
   @override
   Object visitMethodInvocation(MethodInvocation node) {
-    if (node.methodName.toString() == BOOTSTRAP_NAME) {
+    if (_hasStaticBootstrapImport &&
+        node.methodName.toString() == BOOTSTRAP_NAME) {
       _rewriteBootstrapCallToStatic(node);
     }
     return super.visitMethodInvocation(node);
@@ -143,6 +148,7 @@ class _RewriterVisitor extends Object with RecursiveAstVisitor<Object> {
       buf.write(_rewriter._code.substring(_currentIndex, insertOffset));
       buf.write(_getStaticReflectorInitBlock());
       _currentIndex = insertOffset;
+      _setupAdded = true;
     } else if (node is ExpressionFunctionBody) {
       // TODO(kegluneq): Add support, see issue #5474.
       throw new ArgumentError(
@@ -169,6 +175,7 @@ class _RewriterVisitor extends Object with RecursiveAstVisitor<Object> {
       buf.write(_rewriter._code.substring(_currentIndex, node.offset));
       // TODO(yjbanov): handle import "..." show/hide ...
       buf.write("import '$BOOTSTRAP_STATIC_URI';");
+      _hasStaticBootstrapImport = true;
     } else {
       // leave it as is
       buf.write(_rewriter._code.substring(_currentIndex, node.end));
