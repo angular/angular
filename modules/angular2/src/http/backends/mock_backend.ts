@@ -131,15 +131,16 @@ export class MockBackend implements ConnectionBackend {
    * ### Example
    *
    * ```
-   * import {Http, BaseRequestOptions} from 'angular2/http';
+   * import {Http, BaseRequestOptions, Response} from 'angular2/http';
    * import {MockBackend} from 'angular2/http/testing';
-   * import {Injector} from 'angular2/core';
+   * import {Injector, provide} from 'angular2/core';
    *
    * it('should get a response', () => {
    *   var connection; //this will be set when a new connection is emitted from the backend.
    *   var text; //this will be set from mock response
    *   var injector = Injector.resolveAndCreate([
    *     MockBackend,
+   *     BaseRequestOptions,
    *     provide(Http, {useFactory: (backend, options) => {
    *       return new Http(backend, options);
    *     }, deps: [MockBackend, BaseRequestOptions]}]);
