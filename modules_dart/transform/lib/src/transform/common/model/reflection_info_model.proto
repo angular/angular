@@ -13,12 +13,12 @@ message PropertyMetadataModel {
   repeated AnnotationModel annotations = 2;
 }
 
-message PrefixedDirective {
-  // The prefix used to reference this Directive, if any.
+message PrefixedType {
+  // The prefix used to reference this Type, if any.
   optional string prefix = 1;
 
-  // The name of the Directive or directive alias.
-  // See https://goo.gl/d8XPt0 for info on directive aliases.
+  // The name of the Type or type alias.
+  // See https://goo.gl/d8XPt0 for info on type aliases.
   optional string name = 2;
 }
 
@@ -44,5 +44,8 @@ message ReflectionInfoModel {
 
   // Directive dependencies parsed from the @View or @Component `directives`
   // parameter.
-  repeated PrefixedDirective directives = 8;
+  repeated PrefixedType directives = 8;
+
+  // Pipe dependencies parsed from the @View or @Component `pipes` parameter.
+  repeated PrefixedType pipes = 9;
 }

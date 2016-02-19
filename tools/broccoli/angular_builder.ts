@@ -15,6 +15,7 @@ type Options = {
   projects: ProjectMap;
 noTypeChecks: boolean;
 generateEs6: boolean;
+useBundles: boolean;
 }
 ;
 
@@ -73,7 +74,8 @@ export class AngularBuilder {
           sourceMaps: true,
           projects: opts.projects,
           noTypeChecks: opts.noTypeChecks,
-          generateEs6: opts.generateEs6
+          generateEs6: opts.generateEs6,
+          useBundles: opts.useBundles
         },
         path.join(this.outputPath, 'js', 'dev'));
     return new broccoli.Builder(tree);
@@ -88,7 +90,8 @@ export class AngularBuilder {
           sourceMaps: false,
           projects: opts.projects,
           noTypeChecks: opts.noTypeChecks,
-          generateEs6: opts.generateEs6
+          generateEs6: opts.generateEs6,
+          useBundles: opts.useBundles
         },
         path.join(this.outputPath, 'js', 'prod'));
     return new broccoli.Builder(tree);

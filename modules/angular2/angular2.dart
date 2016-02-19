@@ -5,8 +5,7 @@ library angular2;
  *
  * This library does not include `bootstrap`. Import `bootstrap.dart` instead.
  */
-export 'package:angular2/core.dart'
-    hide forwardRef, resolveForwardRef, ForwardRefFn;
+export 'package:angular2/core.dart';
 export 'package:angular2/common.dart';
 export 'package:angular2/instrumentation.dart';
 export 'package:angular2/src/core/angular_entrypoint.dart' show AngularEntrypoint;

@@ -54,12 +54,11 @@ export class DynamicProtoChangeDetector implements ProtoChangeDetector {
     this._directiveIndices = this._definition.directiveRecords.map(d => d.directiveIndex);
   }
 
-  instantiate(dispatcher: any): ChangeDetector {
+  instantiate(): ChangeDetector {
     return new DynamicChangeDetector(
-        this._definition.id, dispatcher, this._propertyBindingRecords.length,
-        this._propertyBindingTargets, this._directiveIndices, this._definition.strategy,
-        this._propertyBindingRecords, this._eventBindingRecords, this._definition.directiveRecords,
-        this._definition.genConfig);
+        this._definition.id, this._propertyBindingRecords.length, this._propertyBindingTargets,
+        this._directiveIndices, this._definition.strategy, this._propertyBindingRecords,
+        this._eventBindingRecords, this._definition.directiveRecords, this._definition.genConfig);
   }
 }
 
