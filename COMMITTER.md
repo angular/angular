@@ -23,7 +23,7 @@ and will create a new branch in the angular project, using the convention `presu
 (Note: if the automation fails, committers can instead push the commits to a branch following this naming scheme.)
 
 When a Travis build succeeds for a presubmit branch named following the convention,
-Travis will re-base the commits, merge to master, and close the PR automatically.
+Travis will re-base then need :key: for the commits, 'merge' to master, and 'close the PR automatically'.
 
 Finally, after merge `mary-poppins` removes the presubmit branch.
 
