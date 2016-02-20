@@ -21,5 +21,7 @@ export {
   KeyValueDiffers,
   KeyValueDiffer,
   KeyValueDifferFactory,
+  CollectionChangeRecord,
+  KeyValueChangeRecord,
   TrackByFn
 } from './change_detection/change_detection';
