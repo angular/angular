@@ -432,6 +432,10 @@ export class RootRouter extends Router {
           .then((instruction) => {
             this.navigateByInstruction(instruction, isPresent(change['pop']))
                 .then((_) => {
+                  // Instruction was not recognized, return immediately.
+                  if (instruction == null) {
+                    return;
+                  }
                   // this is a popstate event; no need to change the URL
                   if (isPresent(change['pop']) && change['type'] != 'hashchange') {
                     return;
