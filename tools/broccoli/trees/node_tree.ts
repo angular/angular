@@ -186,10 +186,7 @@ module.exports = function makeNodeTree(projects: string[], destinationPath: stri
     writeFile('angular2/typings/browser.d.ts',
               '// Typings needed for compilation with --target=es5\n' +
                   '///<reference path="./es6-collections/es6-collections.d.ts"/>\n' +
-                  '///<reference path="./es6-promise/es6-promise.d.ts"/>\n' +
-                  '// Workaround for https://github.com/ReactiveX/RxJS/issues/1270\n' +
-                  '// to be removed when angular2 upgrades to rxjs beta.2\n' +
-                  'declare type PromiseConstructor = typeof Promise;\n')
+                  '///<reference path="./es6-promise/es6-promise.d.ts"/>\n')
   ]);
 
   var nodeTree =
