@@ -7,7 +7,7 @@ import {
   Renderer
 } from 'angular2/core';
 import {isPresent, isBlank, print} from 'angular2/src/facade/lang';
-import {KVChangeRecord} from "../../core/change_detection/differs/default_keyvalue_differ";
+import {KeyValueChangeRecord} from "../../core/change_detection/differs/default_keyvalue_differ";
 
 /**
  * The `NgStyle` directive changes styles based on a result of expression evaluation.
@@ -88,10 +88,11 @@ export class NgStyle implements DoCheck {
 
   private _applyChanges(changes: any): void {
     changes.forEachAddedItem(
-        (record: KVChangeRecord) => { this._setStyle(record.key, record.currentValue); });
+        (record: KeyValueChangeRecord) => { this._setStyle(record.key, record.currentValue); });
     changes.forEachChangedItem(
-        (record: KVChangeRecord) => { this._setStyle(record.key, record.currentValue); });
-    changes.forEachRemovedItem((record: KVChangeRecord) => { this._setStyle(record.key, null); });
+        (record: KeyValueChangeRecord) => { this._setStyle(record.key, record.currentValue); });
+    changes.forEachRemovedItem(
+        (record: KeyValueChangeRecord) => { this._setStyle(record.key, null); });
   }
 
   private _setStyle(name: string, val: string): void {
