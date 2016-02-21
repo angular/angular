@@ -461,7 +461,8 @@ There is no directive with "exportAs" set to "dirA" ("<div [ERROR ->]#a="dirA"><
         });
 
         it('should report duplicate variable names', () => {
-          expect(() => parse('<div #a></div><div #a></div>', [])).toThrowError(`Template parse errors:
+          expect(() => parse('<div #a></div><div #a></div>', []))
+              .toThrowError(`Template parse errors:
 Variable "#a" is defined several times ("<div #a></div><div [ERROR ->]#a></div>"): TestComp@0:19`);
         });
 
