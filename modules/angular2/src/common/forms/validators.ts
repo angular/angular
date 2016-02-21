@@ -1,4 +1,4 @@
-import {isBlank, isPresent, CONST_EXPR, isString} from 'angular2/src/facade/lang';
+import {isBlank, isPresent, CONST_EXPR, isString, isNumber, NumberWrapper} from 'angular2/src/facade/lang';
 import {PromiseWrapper} from 'angular2/src/facade/promise';
 import {ObservableWrapper} from 'angular2/src/facade/async';
 import {ListWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
@@ -44,7 +44,9 @@ export class Validators {
    * Validator that requires controls to have a non-empty value.
    */
   static required(control: modelModule.Control): {[key: string]: boolean} {
-    return isBlank(control.value) || (isString(control.value) && control.value == "") ?
+    return isBlank(control.value) ||
+		        (isString(control.value) && control.value == "") ||
+		        (isNumber(control.value) && NumberWrapper.isNaN(control.value)) ?
                {"required": true} :
                null;
   }
