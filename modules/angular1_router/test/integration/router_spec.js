@@ -47,10 +47,10 @@ describe('router', function () {
   it('should bind the component to the current router', inject(function($location) {
     var router;
     registerComponent('homeCmp', {
-      bindings: { router: '=' },
+      bindings: { $router: '=' },
       controller: function($scope, $element) {
         this.$routerOnActivate = function() {
-          router = this.router;
+          router = this.$router;
         };
       },
       template: 'Home'
@@ -69,7 +69,7 @@ describe('router', function () {
     $rootScope.$digest();
     var homeElement = elt.find('home-cmp');
     expect(homeElement.text()).toBe('Home');
-    expect(homeElement.isolateScope().$ctrl.router).toBeDefined();
+    expect(homeElement.isolateScope().$ctrl.$router).toBeDefined();
     expect(router).toBeDefined();
   }));
 

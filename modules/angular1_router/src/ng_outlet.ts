@@ -155,7 +155,7 @@ function ngOutletDirective($animate, $q: ng.IQService, $router) {
         }
 
         this.controller.$$template =
-            '<' + dashCase(componentName) + ' router="$$router"></' + dashCase(componentName) + '>';
+            '<' + dashCase(componentName) + ' $router="$$router"></' + dashCase(componentName) + '>';
         this.controller.$$router = this.router.childRouter(instruction.componentType);
         this.controller.$$outlet = this;
 
@@ -294,7 +294,7 @@ angular.module('ngComponentRouter', [])
     .directive('ngOutlet', ['$animate', '$q', '$router', ngOutletDirective])
     .directive('ngOutlet', ['$compile', ngOutletFillContentDirective])
     .directive('ngLink', ['$router', '$parse', ngLinkDirective])
-    .directive('router', ['$q', routerTriggerDirective]);
+    .directive('$router', ['$q', routerTriggerDirective]);
 
 /*
  * A module for inspecting controller constructors
