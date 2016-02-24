@@ -70,18 +70,18 @@ export class RouteRule implements AbstractRule {
 
   // TODO: cache component instruction instances by params and by ParsedUrl instance
 
-  constructor(private _pathRecognizer : RoutePath, public handler: RouteHandler) {
-    this.specificity = this._pathRecognizer.specificity;
-    this.hash = this._pathRecognizer.hash;
-    this.terminal = this._pathRecognizer.terminal;
+  constructor(private _routePath : RoutePath, public handler: RouteHandler) {
+    this.specificity = this._routePath.specificity;
+    this.hash = this._routePath.hash;
+    this.terminal = this._routePath.terminal;
   }
 
   get path() {
-    return this._pathRecognizer.toString();
+    return this._routePath.toString();
   }
 
   recognize(beginningSegment: Url): Promise<RouteMatch> {
-    var res = this._pathRecognizer.matchUrl(beginningSegment);
+    var res = this._routePath.matchUrl(beginningSegment);
     if (isBlank(res)) {
       return null;
     }
@@ -93,14 +93,14 @@ export class RouteRule implements AbstractRule {
   }
 
   generate(params: {[key: string]: any}): ComponentInstruction {
-    var generated = this._pathRecognizer.generateUrl(params);
+    var generated = this._routePath.generateUrl(params);
     var urlPath = generated.urlPath;
     var urlParams = generated.urlParams;
     return this._getInstruction(urlPath, urlParams, params);
   }
 
   generateComponentPathValues(params: {[key: string]: any}): GeneratedUrl {
-    return this._pathRecognizer.generateUrl(params);
+    return this._routePath.generateUrl(params);
   }
 
   private _getInstruction(urlPath: string, urlParams: UrlParams,
