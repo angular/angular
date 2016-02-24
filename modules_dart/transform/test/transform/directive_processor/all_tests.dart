@@ -6,6 +6,7 @@ import 'package:barback/barback.dart';
 import 'package:dart_style/dart_style.dart';
 import 'package:guinness/guinness.dart';
 
+import 'package:angular2/src/compiler/directive_metadata.dart' show CompileIdentifierMetadata;
 import 'package:angular2/src/core/change_detection/change_detection.dart';
 import 'package:angular2/src/platform/server/html_adapter.dart';
 import 'package:angular2/src/core/linker/interfaces.dart' show LifecycleHooks;
@@ -317,10 +318,10 @@ void allTests() {
     it('should include hooks for implemented types (single)', () async {
       var ngMeta = await _testCreateModel('interfaces_files/soup.dart');
 
-      expect(ngMeta.types.isNotEmpty).toBeTrue();
-      expect(ngMeta.types['ChangingSoupComponent']).toBeNotNull();
-      expect(ngMeta.types['ChangingSoupComponent'].selector).toEqual('[soup]');
-      expect(ngMeta.types['ChangingSoupComponent'].lifecycleHooks)
+      expect(ngMeta.identifiers.isNotEmpty).toBeTrue();
+      expect(ngMeta.identifiers['ChangingSoupComponent']).toBeNotNull();
+      expect(ngMeta.identifiers['ChangingSoupComponent'].selector).toEqual('[soup]');
+      expect(ngMeta.identifiers['ChangingSoupComponent'].lifecycleHooks)
           .toContain(LifecycleHooks.OnChanges);
     });
 
@@ -328,10 +329,10 @@ void allTests() {
       var ngMeta = await _testCreateModel(
           'multiple_interface_lifecycle_files/soup.dart');
 
-      expect(ngMeta.types.isNotEmpty).toBeTrue();
-      expect(ngMeta.types['MultiSoupComponent']).toBeNotNull();
-      expect(ngMeta.types['MultiSoupComponent'].selector).toEqual('[soup]');
-      expect(ngMeta.types['MultiSoupComponent'].lifecycleHooks)
+      expect(ngMeta.identifiers.isNotEmpty).toBeTrue();
+      expect(ngMeta.identifiers['MultiSoupComponent']).toBeNotNull();
+      expect(ngMeta.identifiers['MultiSoupComponent'].selector).toEqual('[soup]');
+      expect(ngMeta.identifiers['MultiSoupComponent'].lifecycleHooks)
         ..toContain(LifecycleHooks.OnChanges)
         ..toContain(LifecycleHooks.OnDestroy)
         ..toContain(LifecycleHooks.OnInit);
@@ -345,18 +346,18 @@ void allTests() {
           'absolute_url_expression_files/hello.dart',
           reader: fakeReader);
 
-      expect(ngMeta.types.isNotEmpty).toBeTrue();
-      expect(ngMeta.types['HelloCmp']).toBeNotNull();
-      expect(ngMeta.types['HelloCmp'].selector).toEqual('hello-app');
+      expect(ngMeta.identifiers.isNotEmpty).toBeTrue();
+      expect(ngMeta.identifiers['HelloCmp']).toBeNotNull();
+      expect(ngMeta.identifiers['HelloCmp'].selector).toEqual('hello-app');
     });
 
     it('should populate all provided values for Components & Directives',
         () async {
       var ngMeta = await _testCreateModel('unusual_component_files/hello.dart');
 
-      expect(ngMeta.types.isNotEmpty).toBeTrue();
+      expect(ngMeta.identifiers.isNotEmpty).toBeTrue();
 
-      var component = ngMeta.types['UnusualComp'];
+      var component = ngMeta.identifiers['UnusualComp'];
       expect(component).toBeNotNull();
       expect(component.selector).toEqual('unusual-comp');
       expect(component.isComponent).toBeTrue();
@@ -370,7 +371,7 @@ void allTests() {
       expect(component.hostAttributes).toContain('hostKey');
       expect(component.hostAttributes['hostKey']).toEqual('hostValue');
 
-      var directive = ngMeta.types['UnusualDirective'];
+      var directive = ngMeta.identifiers['UnusualDirective'];
       expect(directive).toBeNotNull();
       expect(directive.selector).toEqual('unusual-directive');
       expect(directive.isComponent).toBeFalse();
@@ -388,10 +389,10 @@ void allTests() {
     it('should include hooks for implemented types (single)', () async {
       var ngMeta = await _testCreateModel('interfaces_files/soup.dart');
 
-      expect(ngMeta.types.isNotEmpty).toBeTrue();
-      expect(ngMeta.types['ChangingSoupComponent']).toBeNotNull();
-      expect(ngMeta.types['ChangingSoupComponent'].selector).toEqual('[soup]');
-      expect(ngMeta.types['ChangingSoupComponent'].lifecycleHooks)
+      expect(ngMeta.identifiers.isNotEmpty).toBeTrue();
+      expect(ngMeta.identifiers['ChangingSoupComponent']).toBeNotNull();
+      expect(ngMeta.identifiers['ChangingSoupComponent'].selector).toEqual('[soup]');
+      expect(ngMeta.identifiers['ChangingSoupComponent'].lifecycleHooks)
           .toContain(LifecycleHooks.OnChanges);
     });
 
@@ -399,10 +400,10 @@ void allTests() {
       var ngMeta = await _testCreateModel(
           'multiple_interface_lifecycle_files/soup.dart');
 
-      expect(ngMeta.types.isNotEmpty).toBeTrue();
-      expect(ngMeta.types['MultiSoupComponent']).toBeNotNull();
-      expect(ngMeta.types['MultiSoupComponent'].selector).toEqual('[soup]');
-      expect(ngMeta.types['MultiSoupComponent'].lifecycleHooks)
+      expect(ngMeta.identifiers.isNotEmpty).toBeTrue();
+      expect(ngMeta.identifiers['MultiSoupComponent']).toBeNotNull();
+      expect(ngMeta.identifiers['MultiSoupComponent'].selector).toEqual('[soup]');
+      expect(ngMeta.identifiers['MultiSoupComponent'].lifecycleHooks)
         ..toContain(LifecycleHooks.OnChanges)
         ..toContain(LifecycleHooks.OnDestroy)
         ..toContain(LifecycleHooks.OnInit);
@@ -416,10 +417,10 @@ void allTests() {
           'absolute_url_expression_files/hello.dart',
           reader: fakeReader);
 
-      expect(ngMeta.types.isNotEmpty).toBeTrue();
-      expect(ngMeta.types['HelloCmp']).toBeNotNull();
-      expect(ngMeta.types['HelloCmp'].template).toBeNotNull();
-      expect(ngMeta.types['HelloCmp'].template.templateUrl)
+      expect(ngMeta.identifiers.isNotEmpty).toBeTrue();
+      expect(ngMeta.identifiers['HelloCmp']).toBeNotNull();
+      expect(ngMeta.identifiers['HelloCmp'].template).toBeNotNull();
+      expect(ngMeta.identifiers['HelloCmp'].template.templateUrl)
           .toEqual('asset:other_package/lib/template.html');
     });
 
@@ -442,6 +443,49 @@ void allTests() {
           .toEqual('selector');
       expect(componentAnnotation.namedParameters.first.value)
           .toContain('[soup]');
+    });
+  });
+
+  describe("identifiers", () {
+    it("should populate `identifier` with class types.", () async {
+      var model = (await _testCreateModel('identifiers/classes.dart'));
+      final moduleUrl = "asset:angular2/test/transform/directive_processor/identifiers/classes.dart";
+      expect(model.identifiers['Service1'].name).toEqual('Service1');
+      expect(model.identifiers['Service1'].moduleUrl).toEqual(moduleUrl);
+      expect(model.identifiers['Service2'].name).toEqual('Service2');
+      expect(model.identifiers['Service2'].moduleUrl).toEqual(moduleUrl);
+    });
+
+    it("should populate `identifier` with constants.", () async {
+      var model = (await _testCreateModel('identifiers/constants.dart'));
+      final moduleUrl = "asset:angular2/test/transform/directive_processor/identifiers/constants.dart";
+      expect(model.identifiers['a']).
+        toHaveSameProps(new CompileIdentifierMetadata(name: 'a', moduleUrl: moduleUrl));
+      expect(model.identifiers['b']).
+        toHaveSameProps(new CompileIdentifierMetadata(name: 'b', moduleUrl: moduleUrl));
+      expect(model.identifiers['c']).toBeNull();
+    });
+
+    it("should populate `identifier` with class names that do not have @Injectable;'.", () async {
+      var model = (await _testCreateModel('identifiers/classes_no_injectable.dart'));
+      final moduleUrl = "asset:angular2/test/transform/directive_processor/identifiers/classes_no_injectable.dart";
+      expect(model.identifiers['ClassA']).
+        toHaveSameProps(new CompileIdentifierMetadata(name: 'ClassA', moduleUrl: moduleUrl));
+    });
+
+    it("should populate `identifier` with typedefs.", () async {
+      var model = (await _testCreateModel('identifiers/typedefs.dart'));
+      final moduleUrl = "asset:angular2/test/transform/directive_processor/identifiers/typedefs.dart";
+      expect(model.identifiers['TypeDef']).
+      toHaveSameProps(new CompileIdentifierMetadata(name: 'TypeDef', moduleUrl: moduleUrl));
+    });
+
+    it("should populate `identifier` with enums.", () async {
+      var model = (await _testCreateModel('identifiers/enums.dart'));
+      final moduleUrl = "asset:angular2/test/transform/directive_processor/identifiers/enums.dart";
+
+      expect(model.identifiers['Enum']).
+      toHaveSameProps(new CompileIdentifierMetadata(name: 'Enum', moduleUrl: moduleUrl));
     });
   });
 
@@ -537,27 +581,128 @@ void allTests() {
         ..prefix = 'dep2');
     });
 
+    it('should populate `diDependency`.',
+        () async {
+      var cmp =
+      (await _testCreateModel('directives_files/components.dart')).identifiers['ComponentWithDiDeps'];
+
+      expect(cmp).toBeNotNull();
+      var deps = cmp.type.diDeps;
+      expect(deps).toBeNotNull();
+      expect(deps.length).toEqual(2);
+      expect(deps[0].token.name).toEqual("ServiceDep");
+      expect(deps[1].token.name).toEqual("ServiceDep");
+    });
+
+    it('should populate `diDependency` using a string token.',
+        () async {
+      var cmp =
+      (await _testCreateModel('directives_files/components.dart')).identifiers['ComponentWithDiDepsStrToken'];
+
+      var deps = cmp.type.diDeps;
+      expect(deps).toBeNotNull();
+      expect(deps.length).toEqual(1);
+      expect(deps[0].token).toEqual("StringDep");
+    });
+
+    it('should populate `services`.',
+        () async {
+      var service =
+      (await _testCreateModel('directives_files/services.dart')).identifiers['Service'];
+
+      expect(service).toBeNotNull();
+
+      var deps = service.diDeps;
+      expect(deps).toBeNotNull();
+      expect(deps.length).toEqual(2);
+      expect(deps[0].token.name).toEqual("ServiceDep");
+      expect(deps[1].token.name).toEqual("ServiceDep");
+    });
+
+    it('should populate `providers` using types.',
+        () async {
+      var cmp =
+          (await _testCreateModel('directives_files/components.dart')).identifiers['ComponentWithProvidersTypes'];
+
+      expect(cmp).toBeNotNull();
+      expect(cmp.providers).toBeNotNull();
+      expect(cmp.providers.length).toEqual(2);
+
+      var firstToken = cmp.providers.first.token;
+      expect(firstToken.prefix).toEqual(null);
+      expect(firstToken.name).toEqual("ServiceDep");
+
+      var secondToken = cmp.providers[1].token;
+      expect(secondToken.prefix).toEqual("dep2");
+      expect(secondToken.name).toEqual("ServiceDep");
+    });
+
+    it('should populate `providers` using useClass.',
+        () async {
+      var cmp =
+          (await _testCreateModel('directives_files/components.dart')).identifiers['ComponentWithProvidersUseClass'];
+
+      expect(cmp).toBeNotNull();
+      expect(cmp.providers).toBeNotNull();
+      expect(cmp.providers.length).toEqual(1);
+
+      var token = cmp.providers.first.token;
+      var useClass = cmp.providers.first.useClass;
+      expect(token.prefix).toEqual(null);
+      expect(token.name).toEqual("ServiceDep");
+
+      expect(useClass.prefix).toEqual(null);
+      expect(useClass.name).toEqual("ServiceDep");
+    });
+
+    it('should populate `providers` using a string token.',
+        () async {
+      var cmp =
+          (await _testCreateModel('directives_files/components.dart')).identifiers['ComponentWithProvidersStringToken'];
+
+      expect(cmp).toBeNotNull();
+      expect(cmp.providers).toBeNotNull();
+      expect(cmp.providers.length).toEqual(1);
+
+      var token = cmp.providers.first.token;
+      expect(token).toEqual("StringDep");
+    });
+
+    it('should populate `providers` using a const token.',
+        () async {
+      var cmp =
+          (await _testCreateModel('directives_files/components.dart')).identifiers['ComponentWithProvidersConstToken'];
+
+      expect(cmp).toBeNotNull();
+      expect(cmp.providers).toBeNotNull();
+      expect(cmp.providers.length).toEqual(1);
+
+      var token = cmp.providers.first.token;
+      expect(token.name).toEqual("ServiceDep");
+      expect(token.constConstructor).toEqual(true);
+    });
+
     it('should merge `outputs` from the annotation and fields.', () async {
       var model = await _testCreateModel('directives_files/components.dart');
-      expect(model.types['ComponentWithOutputs'].outputs).toEqual(
+      expect(model.identifiers['ComponentWithOutputs'].outputs).toEqual(
           {'a': 'a', 'b': 'b', 'c': 'renamed', 'd': 'd', 'e': 'get-renamed'});
     });
 
     it('should merge `inputs` from the annotation and fields.', () async {
       var model = await _testCreateModel('directives_files/components.dart');
-      expect(model.types['ComponentWithInputs'].inputs).toEqual(
+      expect(model.identifiers['ComponentWithInputs'].inputs).toEqual(
           {'a': 'a', 'b': 'b', 'c': 'renamed', 'd': 'd', 'e': 'set-renamed'});
     });
 
     it('should merge host bindings from the annotation and fields.', () async {
       var model = await _testCreateModel('directives_files/components.dart');
-      expect(model.types['ComponentWithHostBindings'].hostProperties)
+      expect(model.identifiers['ComponentWithHostBindings'].hostProperties)
           .toEqual({'a': 'a', 'b': 'b', 'renamed': 'c', 'd': 'd', 'get-renamed': 'e'});
     });
 
     it('should merge host listeners from the annotation and fields.', () async {
       var model = await _testCreateModel('directives_files/components.dart');
-      expect(model.types['ComponentWithHostListeners'].hostListeners).toEqual({
+      expect(model.identifiers['ComponentWithHostListeners'].hostListeners).toEqual({
         'a': 'onA()',
         'b': 'onB()',
         'c': 'onC(\$event.target,\$event.target.value)'
@@ -617,13 +762,13 @@ void allTests() {
   describe('pipes', () {
     it('should read the pipe name', () async {
       var model = await _testCreateModel('pipe_files/pipes.dart');
-      expect(model.types['NameOnlyPipe'].name).toEqual('nameOnly');
-      expect(model.types['NameOnlyPipe'].pure).toBe(false);
+      expect(model.identifiers['NameOnlyPipe'].name).toEqual('nameOnly');
+      expect(model.identifiers['NameOnlyPipe'].pure).toBe(false);
     });
 
     it('should read the pure flag', () async {
       var model = await _testCreateModel('pipe_files/pipes.dart');
-      expect(model.types['NameAndPurePipe'].pure).toBe(true);
+      expect(model.identifiers['NameAndPurePipe'].pure).toBe(true);
     });
   });
 }
