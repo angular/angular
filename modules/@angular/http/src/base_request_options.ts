@@ -10,7 +10,7 @@ import {Injectable} from '@angular/core';
 
 import {isPresent, isString} from '../src/facade/lang';
 
-import {RequestMethod} from './enums';
+import {RequestMethod, ResponseBuffer} from './enums';
 import {Headers} from './headers';
 import {normalizeMethodName} from './http_utils';
 import {RequestOptionsArgs} from './interfaces';
@@ -69,7 +69,13 @@ export class RequestOptions {
    * Enable use credentials for a {@link Request}.
    */
   withCredentials: boolean;
-  constructor({method, headers, body, url, search, withCredentials}: RequestOptionsArgs = {}) {
+  /*
+   * Select a buffer to store the response, such as ArrayBuffer, Blob, Json (or Document)
+   */
+  buffer: ResponseBuffer;
+  
+  constructor({method, headers, body, url, search, withCredentials, buffer}: RequestOptionsArgs = {}) {
+
     this.method = isPresent(method) ? normalizeMethodName(method) : null;
     this.headers = isPresent(headers) ? headers : null;
     this.body = isPresent(body) ? body : null;
@@ -78,6 +84,7 @@ export class RequestOptions {
         (isString(search) ? new URLSearchParams(<string>(search)) : <URLSearchParams>(search)) :
         null;
     this.withCredentials = isPresent(withCredentials) ? withCredentials : null;
+    this.buffer = isPresent(buffer) ? buffer : null;
   }
 
   /**
@@ -117,7 +124,8 @@ export class RequestOptions {
           this.search,
       withCredentials: isPresent(options) && isPresent(options.withCredentials) ?
           options.withCredentials :
-          this.withCredentials
+          this.withCredentials,                 
+      buffer: isPresent(options) && isPresent(options.buffer) ? options.buffer : this.buffer
     });
   }
 }

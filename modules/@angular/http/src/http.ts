@@ -35,7 +35,8 @@ function mergeOptions(
       search: providedOpts.search,
       headers: providedOpts.headers,
       body: providedOpts.body,
-      withCredentials: providedOpts.withCredentials
+      withCredentials: providedOpts.withCredentials,
+      buffer: providedOpts.buffer
     }));
   }
   if (isPresent(method)) {

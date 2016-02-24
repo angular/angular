@@ -44,11 +44,11 @@ import {ResponseOptionsArgs} from './interfaces';
  * @experimental
  */
 export class ResponseOptions {
-  // TODO: ArrayBuffer | FormData | Blob
+  // TODO: FormData | Blob
   /**
-   * String or Object representing the body of the {@link Response}.
+   * String, Object, ArrayBuffer representing the body of the {@link Response}.
    */
-  body: string|Object;
+  body: string | Object | ArrayBuffer;
   /**
    * Http {@link http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html status code}
    * associated with the response.
