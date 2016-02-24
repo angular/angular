@@ -338,7 +338,7 @@ export function main() {
       });
     });
 
-    describe('trackBy function', function() {
+    describe('trackBy function by id', function() {
       var differ;
 
       var trackByItemId = (index: number, item: any): any => item.id;
@@ -433,5 +433,29 @@ export function main() {
             }));
       });
     });
+    describe('trackBy function by index', function() {
+      var differ;
+
+      var trackByIndex = (index: number, item: any): number => index;
+
+      beforeEach(() => { differ = new DefaultIterableDiffer(trackByIndex); });
+
+      it('should track removals normally', () => {
+        differ.check(['a', 'b', 'c', 'd']);
+        differ.check(['e', 'f', 'g', 'h']);
+        differ.check(['e', 'f', 'h']);
+
+        expect(differ.toString())
+            .toEqual(iterableChangesAsString({
+              collection: ['e', 'f', 'h'],
+              previous: ['e', 'f', 'h', 'h[3->null]'],
+              removals: ['h[3->null]'],
+              identityChanges: ['h']
+            }));
+      });
+
+    });
+
+
   });
 }
