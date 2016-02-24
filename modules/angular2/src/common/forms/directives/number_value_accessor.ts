@@ -25,7 +25,7 @@ const NUMBER_VALUE_ACCESSOR = CONST_EXPR(new Provider(
   bindings: [NUMBER_VALUE_ACCESSOR]
 })
 export class NumberValueAccessor implements ControlValueAccessor {
-  onChange = (_) => {};
+  onChange = (_: string) => {};
   onTouched = () => {};
 
   constructor(private _renderer: Renderer, private _elementRef: ElementRef) {}
@@ -35,7 +35,7 @@ export class NumberValueAccessor implements ControlValueAccessor {
   }
 
   registerOnChange(fn: (_: number) => void): void {
-    this.onChange = (value) => { fn(NumberWrapper.parseFloat(value)); };
+    this.onChange = (value: string) => { fn(NumberWrapper.parseFloat(value)); };
   }
   registerOnTouched(fn: () => void): void { this.onTouched = fn; }
 }

@@ -21,7 +21,7 @@ const CHECKBOX_VALUE_ACCESSOR = CONST_EXPR(new Provider(
   providers: [CHECKBOX_VALUE_ACCESSOR]
 })
 export class CheckboxControlValueAccessor implements ControlValueAccessor {
-  onChange = (_) => {};
+  onChange = (_: boolean) => {};
   onTouched = () => {};
 
   constructor(private _renderer: Renderer, private _elementRef: ElementRef) {}
@@ -29,6 +29,6 @@ export class CheckboxControlValueAccessor implements ControlValueAccessor {
   writeValue(value: any): void {
     this._renderer.setElementProperty(this._elementRef.nativeElement, 'checked', value);
   }
-  registerOnChange(fn: (_: any) => {}): void { this.onChange = fn; }
+  registerOnChange(fn: (_: boolean) => {}): void { this.onChange = fn; }
   registerOnTouched(fn: () => {}): void { this.onTouched = fn; }
 }
