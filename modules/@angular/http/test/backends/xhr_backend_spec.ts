@@ -35,6 +35,7 @@ class MockBrowserXHR extends BrowserXhr {
   send: any;
   open: any;
   response: any;
+  responseType: string;
   responseText: string;
   setRequestHeader: any;
   callbacks = new Map<string, Function>();

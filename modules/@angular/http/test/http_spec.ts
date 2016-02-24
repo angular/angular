@@ -10,9 +10,12 @@ import {Injector, ReflectiveInjector, provide} from '@angular/core';
 import {afterEach, beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
 import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
 import {Observable} from 'rxjs/Observable';
+import 'rxjs/add/observable/zip';
 import {Subject} from 'rxjs/Subject';
+import {stringToArrayBuffer} from "../src/http_utils";
+import {Json} from "../src/facade/lang";
 
-import {BaseRequestOptions, ConnectionBackend, HTTP_PROVIDERS, Http, JSONPBackend, JSONP_PROVIDERS, Jsonp, Request, RequestMethod, RequestOptions, Response, ResponseOptions, URLSearchParams, XHRBackend} from '../http';
+import {BaseRequestOptions, ConnectionBackend, HTTP_PROVIDERS, Http, JSONPBackend, JSONP_PROVIDERS, Jsonp, Request, RequestMethod, RequestOptions, Response, ResponseBuffer, ResponseOptions, URLSearchParams, XHRBackend} from '../http';
 import {MockBackend, MockConnection} from '../testing/mock_backend';
 
 export function main() {
@@ -379,5 +382,122 @@ export function main() {
         });
       });
     });
+
+    describe('response buffer', () => {
+
+      it('should attach the provided buffer to the response',
+         inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+           backend.connections.subscribe((c: MockConnection) => {
+             expect(c.request.buffer).toBe(ResponseBuffer.ArrayBuffer);
+             c.mockRespond(new Response(new ResponseOptions({body: new ArrayBuffer(32)})));
+             async.done();
+           });
+           http.get('https://www.google.com',
+                    new RequestOptions({buffer: ResponseBuffer.ArrayBuffer}))
+               .subscribe((res: Response) => {});
+         }));
+
+      it('should be able to consume a buffer containing a String as any response type',
+         inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+           backend.connections.subscribe((c: MockConnection) => c.mockRespond(baseResponse));
+           http.get('https://www.google.com')
+               .subscribe((res: Response) => {
+                 expect(res.arrayBuffer()).toBeAnInstanceOf(ArrayBuffer);
+                 expect(res.text()).toBe("base response");
+                 async.done();
+               });
+         }));
+
+
+      it('should be able to consume a buffer containing an ArrayBuffer as any response type',
+         inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+           let arrayBuffer = stringToArrayBuffer('{"response": "ok"}');
+           backend.connections.subscribe((c: MockConnection) => c.mockRespond(new Response(
+                                             new ResponseOptions({body: arrayBuffer}))));
+           http.get('https://www.google.com')
+               .subscribe((res: Response) => {
+                 expect(res.arrayBuffer()).toBe(arrayBuffer);
+                 expect(res.text()).toEqual('{"response": "ok"}');
+                 expect(res.json()).toEqual({response: "ok"});
+                 async.done();
+               });
+         }));
+
+      it('should be able to consume a buffer containing an Object as any response type',
+         inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+           let simpleObject = {"content": "ok"};
+           backend.connections.subscribe((c: MockConnection) => c.mockRespond(new Response(
+                                             new ResponseOptions({body: simpleObject}))));
+           http.get('https://www.google.com')
+               .subscribe((res: Response) => {
+                 expect(res.arrayBuffer()).toBeAnInstanceOf(ArrayBuffer);
+                 expect(res.text()).toEqual(Json.stringify(simpleObject));
+                 expect(res.json()).toBe(simpleObject);
+                 async.done();
+               });
+         }));
+
+      it('should preserve encoding of ArrayBuffer response',
+         inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+           let message = "é@θЂ";
+           let arrayBuffer = stringToArrayBuffer(message);
+           backend.connections.subscribe((c: MockConnection) => c.mockRespond(new Response(
+                                             new ResponseOptions({body: arrayBuffer}))));
+           http.get('https://www.google.com')
+               .subscribe((res: Response) => {
+                 expect(res.arrayBuffer()).toBeAnInstanceOf(ArrayBuffer);
+                 expect(res.text()).toEqual(message);
+                 async.done();
+               });
+         }));
+
+      it('should preserve encoding of String response',
+         inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+           let message = "é@θЂ";
+           backend.connections.subscribe((c: MockConnection) => c.mockRespond(
+                                             new Response(new ResponseOptions({body: message}))));
+           http.get('https://www.google.com')
+               .subscribe((res: Response) => {
+                 expect(res.arrayBuffer()).toEqual(stringToArrayBuffer(message));
+                 async.done();
+               });
+         }));
+
+      it('should have an equivalent response independently of the buffer used',
+         inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+           let message = {"param": "content"};
+
+           backend.connections.subscribe((c: MockConnection) => {
+             let body = (): any => {
+               switch (c.request.buffer) {
+                 case ResponseBuffer.Text:
+                   return Json.stringify(message);
+                 case ResponseBuffer.Json:
+                   return message;
+                 case ResponseBuffer.ArrayBuffer:
+                   return stringToArrayBuffer(Json.stringify(message));
+               }
+             };
+             c.mockRespond(new Response(new ResponseOptions({body: body()})))
+           });
+
+           Observable.zip(http.get('https://www.google.com',
+                                   new RequestOptions({buffer: ResponseBuffer.Text})),
+                          http.get('https://www.google.com',
+                                   new RequestOptions({buffer: ResponseBuffer.Json})),
+                          http.get('https://www.google.com',
+                                   new RequestOptions({buffer: ResponseBuffer.ArrayBuffer})),
+                          (x, y, z) => [x, y, z])
+               .subscribe((res: Array<Response>) => {
+                 expect(res[0].text()).toEqual(res[1].text());
+                 expect(res[1].text()).toEqual(res[2].text());
+                 async.done();
+               });
+         }));
+
+
+    });
+
+
   });
 }

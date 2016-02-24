@@ -8,7 +8,7 @@
 
 import {StringWrapper, isPresent} from '../src/facade/lang';
 
-import {ContentType, RequestMethod} from './enums';
+import {ContentType, RequestMethod, ResponseBuffer} from './enums';
 import {Headers} from './headers';
 import {normalizeMethodName} from './http_utils';
 import {RequestArgs} from './interfaces';
@@ -72,6 +72,8 @@ export class Request {
   private contentType: ContentType;
   /** Enable use credentials */
   withCredentials: boolean;
+  /* Select a buffer to store the response */
+  buffer: ResponseBuffer;
   constructor(requestOptions: RequestArgs) {
     // TODO: assert that url is present
     let url = requestOptions.url;
@@ -95,6 +97,7 @@ export class Request {
     // TODO(jeffbcross): implement behavior
     this.headers = new Headers(requestOptions.headers);
     this.withCredentials = requestOptions.withCredentials;
+    this.buffer = requestOptions.buffer;
   }
 
 
