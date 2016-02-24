@@ -1,0 +1,18 @@
+<section class="demo-section">
+  <md-radio-button name="group1">Option 1</md-radio-button>
+  <md-radio-button name="group1">Option 2</md-radio-button>
+  <md-radio-button name="group1" disabled="true">Option 3 (disabled)</md-radio-button>
+</section>
+<section class="demo-section">
+  <div>
+    <span>isDisabled: {{isDisabled}}</span>
+    <button md-raised-button (click)="isDisabled=!isDisabled" class="demo-button">
+      Disable buttons
+    </button>
+  </div>
+  <md-radio-group name="my_options" [disabled]="isDisabled">
+    <md-radio-button value="option_1">Option 1</md-radio-button>
+    <md-radio-button value="option_2">Option 2</md-radio-button>
+    <md-radio-button value="option_3">Option 3</md-radio-button>
+  </md-radio-group>
+</section>

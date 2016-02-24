@@ -1,0 +1,129 @@
+@import "default-theme";
+
+$md-radio-width: 20px !default;
+
+// Top-level host container.
+md-radio-button {
+  display: inline-block;
+}
+
+// Inner label container, wrapping entire element.
+// Enables focus by click.
+.md-radio-label {
+  cursor: pointer;
+  display: block;
+  padding: 8px;
+  white-space: nowrap;
+}
+
+// Container for radio circles and ripple.
+.md-radio-container {
+  box-sizing: border-box;
+  display: inline-block;
+  height: $md-radio-width;
+  position: relative;
+  top: 2px;
+  width: $md-radio-width;
+}
+
+// TODO(mtlin): Replace when ink ripple component is implemented.
+// A placeholder ink ripple, shown when keyboard focused.
+.md-ink-ripple {
+  background-color: md-color($md-accent);
+  border-radius: 50%;
+  height: 48px;
+  left: 10px;
+  opacity: 0;
+  pointer-events: none;
+  position: absolute;
+  top: 10px;
+  transform: translate(-50%,-50%);
+  transition: opacity ease 0.28s, background-color ease 0.28s;
+  width: 48px;
+  overflow: hidden;
+
+  // Fade in when radio focused.
+  .md-radio-focused & {
+    opacity: 0.1;
+  }
+
+  // TODO(mtlin): This corresponds to disabled focus state, but it's unclear how to enter into
+  // this state.
+  .md-radio-disabled & {
+    background: #000;
+  }
+}
+
+// The outer circle for the radio, always present.
+.md-radio-outer-circle {
+  border-color: md-color($md-foreground, secondary-text);
+  border: solid 2px;
+  border-radius: 50%;
+  box-sizing: border-box;
+  height: $md-radio-width;
+  left: 0;
+  position: absolute;
+  top: 0;
+  transition: border-color ease 0.28s;
+  width: $md-radio-width;
+
+  .md-radio-checked & {
+    border-color: md-color($md-accent);
+  }
+
+  .md-radio-disabled & {
+    border-color: md-color($md-foreground, disabled);
+  }
+}
+
+// The inner circle for the radio, shown when checked.
+.md-radio-inner-circle {
+  background-color: md-color($md-accent);
+  border-radius: 50%;
+  box-sizing: border-box;
+  height: $md-radio-width;
+  left: 0;
+  position: absolute;
+  top: 0;
+  transition: transform ease 0.28s, background-color ease 0.28s;
+  transform: scale(0);
+  width: $md-radio-width;
+
+  .md-radio-checked & {
+    transform: scale(0.5);
+  }
+
+  .md-radio-disabled & {
+    background-color: md-color($md-foreground, disabled);
+  }
+}
+
+// Text label next to radio.
+.md-radio-label-content {
+  display: inline-block;
+  float: right;
+  line-height: 24px;
+  // Equal padding on both sides, for RTL.
+  padding-left: 8px;
+  padding-right: 8px;
+  position: relative;
+  vertical-align: top;
+}
+
+// Underlying native input element.
+// Visually hidden but still able to respond to focus.
+.md-radio-input {
+  position: absolute;
+  width: 0;
+  height: 0;
+  margin: 0;
+  padding: 0;
+  opacity: 0;
+  appearance: none;
+  border: none;
+}
+
+// Basic disabled state.
+.md-radio-disabled, .md-radio-disabled .md-radio-label {
+  cursor: default;
+}
