@@ -4,10 +4,10 @@ import {PromiseWrapper} from 'angular2/src/facade/promise';
 import {Map} from 'angular2/src/facade/collection';
 
 import {RouteHandler} from './route_handlers/route_handler';
-import {Url, serializeParams} from '../url_parser';
+import {Url, UrlParams} from '../url_parser';
 import {ComponentInstruction} from '../instruction';
 import {RoutePath} from './route_paths/route_path';
-import {GeneratedUrl, UrlParams} from './route_paths/route_path';
+import {GeneratedUrl} from './route_paths/route_path';
 
 
 // RouteMatch objects hold information about a match between a rule and a URL
@@ -92,29 +92,27 @@ export class RouteRule implements AbstractRule {
     });
   }
 
-  generate(params: {[key: string]: any}): ComponentInstruction {
+  generate(params: UrlParams): ComponentInstruction {
     var generated = this._routePath.generateUrl(params);
     var urlPath = generated.urlPath;
     var urlParams = generated.urlParams;
-    return this._getInstruction(urlPath, urlParams, params);
+    return this._getInstruction(urlPath, urlParams.toArray(), params);
   }
 
-  generateComponentPathValues(params: {[key: string]: any}): GeneratedUrl {
+  generateComponentPathValues(params: UrlParams): GeneratedUrl {
     return this._routePath.generateUrl(params);
   }
 
-  private _getInstruction(urlPath: string, urlParams: UrlParams,
+  private _getInstruction(urlPath: string, urlParams: string[],
                           params: {[key: string]: any}): ComponentInstruction {
     if (isBlank(this.handler.componentType)) {
       throw new BaseException(`Tried to get instruction before the type was loaded.`);
     }
-    var serializedParams = serializeParams(urlParams);
-
-    var hashKey = urlPath + '?' + serializedParams.join('?');
+    var hashKey = urlPath + '?' + urlParams.join('&');
     if (this._cache.has(hashKey)) {
       return this._cache.get(hashKey);
     }
-    var instruction = new ComponentInstruction(urlPath, serializedParams, this.handler.data,
+    var instruction = new ComponentInstruction(urlPath, urlParams, this.handler.data,
                                                this.handler.componentType, this.terminal,
                                                this.specificity, params);
     this._cache.set(hashKey, instruction);

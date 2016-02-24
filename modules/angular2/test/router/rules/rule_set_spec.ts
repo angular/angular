@@ -15,6 +15,7 @@ import {Map, StringMapWrapper} from 'angular2/src/facade/collection';
 import {RouteMatch, PathMatch, RedirectMatch} from 'angular2/src/router/rules/rules';
 import {RuleSet} from 'angular2/src/router/rules/rule_set';
 import {GeneratedUrl} from 'angular2/src/router/rules/route_paths/route_path';
+import {UrlParams} from 'angular2/src/router/url_parser';
 
 import {Route, Redirect} from 'angular2/src/router/route_config/route_config_decorator';
 import {parser} from 'angular2/src/router/url_parser';
@@ -75,7 +76,7 @@ export function main() {
 
     it('should recognize a regex', inject([AsyncTestCompleter], (async) => {
       function emptySerializer(params): GeneratedUrl {
-        return new GeneratedUrl('', {});
+        return new GeneratedUrl('', new UrlParams());
       }
 
       recognizer.config(new Route({
@@ -145,7 +146,7 @@ export function main() {
 
     it('should generate using a serializer', () => {
       function simpleSerializer(params): GeneratedUrl {
-        return new GeneratedUrl(`/${params.a}/${params.b}`, {c: params.c});
+        return new GeneratedUrl(`/${params.a}/${params.b}`, new UrlParams({c: params.c}));
       }
 
       recognizer.config(new Route({

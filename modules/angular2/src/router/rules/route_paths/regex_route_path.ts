@@ -1,6 +1,6 @@
 import {RegExpWrapper, isBlank} from 'angular2/src/facade/lang';
-import {Url, RootUrl, serializeParams} from '../../url_parser';
-import {RoutePath, GeneratedUrl, MatchedUrl, UrlParams} from './route_path';
+import {Url, RootUrl, UrlParams} from '../../url_parser';
+import {RoutePath, GeneratedUrl, MatchedUrl} from './route_path';
 
 
 export interface RegexSerializer { (params: UrlParams): GeneratedUrl }
@@ -25,7 +25,7 @@ export class RegexRoutePath implements RoutePath {
       return null;
     }
 
-    var params: UrlParams = {};
+    var params: UrlParams = new UrlParams();
 
     for (let i = 0; i < match.length; i += 1) {
       params[i.toString()] = match[i];

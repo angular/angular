@@ -11,7 +11,7 @@ import {
 } from 'angular2/testing_internal';
 
 import {ParamRoutePath} from 'angular2/src/router/rules/route_paths/param_route_path';
-import {parser, Url} from 'angular2/src/router/url_parser';
+import {parser, Url, UrlParams} from 'angular2/src/router/url_parser';
 
 export function main() {
   describe('PathRecognizer', () => {
@@ -53,14 +53,14 @@ export function main() {
     describe('matrix params', () => {
       it('should be parsed along with dynamic paths', () => {
         var rec = new ParamRoutePath('/hello/:id');
-        var url = new Url('hello', new Url('matias', null, null, {'key': 'value'}));
+        var url = new Url('hello', new Url('matias', null, null, new UrlParams({'key': 'value'})));
         var match = rec.matchUrl(url);
         expect(match.allParams).toEqual({'id': 'matias', 'key': 'value'});
       });
 
       it('should be parsed on a static path', () => {
         var rec = new ParamRoutePath('/person');
-        var url = new Url('person', null, null, {'name': 'dave'});
+        var url = new Url('person', null, null, new UrlParams({'name': 'dave'}));
         var match = rec.matchUrl(url);
         expect(match.allParams).toEqual({'name': 'dave'});
       });
@@ -74,7 +74,7 @@ export function main() {
 
       it('should set matrix param values to true when no value is present', () => {
         var rec = new ParamRoutePath('/path');
-        var url = new Url('path', null, null, {'one': true, 'two': true, 'three': '3'});
+        var url = new Url('path', null, null, new UrlParams({'one': true, 'two': true, 'three': '3'}));
         var match = rec.matchUrl(url);
         expect(match.allParams).toEqual({'one': true, 'two': true, 'three': '3'});
       });
@@ -82,9 +82,9 @@ export function main() {
       it('should be parsed on the final segment of the path', () => {
         var rec = new ParamRoutePath('/one/two/three');
 
-        var three = new Url('three', null, null, {'c': '3'});
-        var two = new Url('two', three, null, {'b': '2'});
-        var one = new Url('one', two, null, {'a': '1'});
+        var three = new Url('three', null, null, new UrlParams({'c': '3'}));
+        var two = new Url('two', three, null, new UrlParams({'b': '2'}));
+        var one = new Url('one', two, null, new UrlParams({'a': '1'}));
 
         var match = rec.matchUrl(one);
         expect(match.allParams).toEqual({'c': '3'});

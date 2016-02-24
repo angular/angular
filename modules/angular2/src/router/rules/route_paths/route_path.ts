@@ -1,6 +1,4 @@
-import {Url} from '../../url_parser';
-
-export interface UrlParams { [key: string]: any }
+import {Url, UrlParams} from '../../url_parser';
 
 export class MatchedUrl {
   constructor(public urlPath: string, public urlParams: string[], public allParams: UrlParams,

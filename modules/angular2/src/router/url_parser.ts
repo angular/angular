@@ -2,13 +2,37 @@ import {StringMapWrapper} from 'angular2/src/facade/collection';
 import {isPresent, isBlank, RegExpWrapper, CONST_EXPR} from 'angular2/src/facade/lang';
 import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
 
+export class UrlParams {
+  [key: string]: any
+
+  constructor(params : {[key: string]: any} = {}) {
+    if (isPresent(params)) {
+      StringMapWrapper.forEach(params, (value, key) => {
+        this[key] = value;
+      });
+    }
+  }
+
+  toArray() : string[] {
+    var params = [];
+    StringMapWrapper.forEach(this, (value, key) => {
+      if (value === true) {
+        params.push(key);
+      } else {
+        params.push(key + '=' + value);
+      }
+    });
+    return params;
+  }
+}
+
 /**
  * This class represents a parsed URL
  */
 export class Url {
   constructor(public path: string, public child: Url = null,
               public auxiliary: Url[] = CONST_EXPR([]),
-              public params: {[key: string]: any} = null) {}
+              public params: UrlParams = new UrlParams()) {}
 
   toString(): string {
     return this.path + this._matrixParamsToString() + this._auxToString() + this._childString();
@@ -28,7 +52,7 @@ export class Url {
       return '';
     }
 
-    return ';' + serializeParams(this.params).join(';');
+    return ';' + this.params.toArray().join(';');
   }
 
   /** @internal */
@@ -37,7 +61,7 @@ export class Url {
 
 export class RootUrl extends Url {
   constructor(path: string, child: Url = null, auxiliary: Url[] = CONST_EXPR([]),
-              params: {[key: string]: any} = null) {
+              params: UrlParams = null) {
     super(path, child, auxiliary, params);
   }
 
@@ -52,7 +76,7 @@ export class RootUrl extends Url {
       return '';
     }
 
-    return '?' + serializeParams(this.params).join('&');
+    return '?' + this.params.toArray().join('&');
   }
 }
 
@@ -145,8 +169,8 @@ export class UrlParser {
     return new Url(path, child, aux, matrixParams);
   }
 
-  parseQueryParams(): {[key: string]: any} {
-    var params = {};
+  parseQueryParams(): UrlParams {
+    var params = new UrlParams();
     this.capture('?');
     this.parseParam(params);
     while (this._remaining.length > 0 && this.peekStartsWith('&')) {
@@ -156,8 +180,8 @@ export class UrlParser {
     return params;
   }
 
-  parseMatrixParams(): {[key: string]: any} {
-    var params = {};
+  parseMatrixParams(): UrlParams {
+    var params = new UrlParams();
     while (this._remaining.length > 0 && this.peekStartsWith(';')) {
       this.capture(';');
       this.parseParam(params);
@@ -165,7 +189,7 @@ export class UrlParser {
     return params;
   }
 
-  parseParam(params: {[key: string]: any}): void {
+  parseParam(params: UrlParams): void {
     var key = matchUrlSegment(this._remaining);
     if (isBlank(key)) {
       return;
@@ -201,17 +225,3 @@ export class UrlParser {
 }
 
 export var parser = new UrlParser();
-
-export function serializeParams(paramMap: {[key: string]: any}): string[] {
-  var params = [];
-  if (isPresent(paramMap)) {
-    StringMapWrapper.forEach(paramMap, (value, key) => {
-      if (value === true) {
-        params.push(key);
-      } else {
-        params.push(key + '=' + value);
-      }
-    });
-  }
-  return params;
-}

@@ -3,8 +3,8 @@ import {BaseException} from 'angular2/src/facade/exceptions';
 import {StringMapWrapper} from 'angular2/src/facade/collection';
 
 import {TouchMap, normalizeString} from '../../utils';
-import {Url, RootUrl, serializeParams} from '../../url_parser';
-import {RoutePath, GeneratedUrl, MatchedUrl, UrlParams} from './route_path';
+import {Url, RootUrl, UrlParams} from '../../url_parser';
+import {RoutePath, GeneratedUrl, MatchedUrl} from './route_path';
 
 
 
@@ -147,28 +147,23 @@ export class ParamRoutePath implements RoutePath {
 
     var urlPath = captured.join('/');
 
-    var auxiliary;
-    var urlParams;
-    var allParams;
+    var auxiliary = [];
+    var urlParams = [];
+    var allParams = positionalParams;
     if (isPresent(currentUrlSegment)) {
       // If this is the root component, read query params. Otherwise, read matrix params.
       var paramsSegment = url instanceof RootUrl ? url : currentUrlSegment;
 
-      allParams = isPresent(paramsSegment.params) ?
-                      StringMapWrapper.merge(paramsSegment.params, positionalParams) :
-                      positionalParams;
-
-      urlParams = serializeParams(paramsSegment.params);
-
-
+      if (isPresent(paramsSegment.params)) {
+        allParams = StringMapWrapper.merge(paramsSegment.params, positionalParams);
+        urlParams = paramsSegment.params.toArray();
+      } else {
+        allParams = positionalParams;
+      }
       auxiliary = currentUrlSegment.auxiliary;
-    } else {
-      allParams = positionalParams;
-      auxiliary = [];
-      urlParams = [];
     }
 
-    return new MatchedUrl(urlPath, urlParams, allParams, auxiliary, nextUrlSegment);
+    return new MatchedUrl(urlPath, urlParams, new UrlParams(allParams), auxiliary, nextUrlSegment);
   }
 
 
@@ -186,7 +181,7 @@ export class ParamRoutePath implements RoutePath {
     var urlPath = path.join('/');
 
     var nonPositionalParams = paramTokens.getUnused();
-    var urlParams = nonPositionalParams;
+    var urlParams = new UrlParams(nonPositionalParams);
 
     return new GeneratedUrl(urlPath, urlParams);
   }
