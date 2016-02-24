@@ -93,7 +93,7 @@ const controlNameBinding =
   bindings: [controlNameBinding],
   inputs: ['name: ngControl', 'model: ngModel'],
   outputs: ['update: ngModelChange'],
-  exportAs: 'ngForm'
+  exportAs: 'ngControl'
 })
 export class NgControlName extends NgControl implements OnChanges,
     OnDestroy {
