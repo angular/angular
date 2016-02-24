@@ -31,6 +31,7 @@ export class AsyncTestCompleter {
   done(): void { this._done(); }
 }
 
+console.log(browserDetection);
 var jsmBeforeEach = _global.beforeEach;
 var jsmDescribe = _global.describe;
 var jsmDDescribe = _global.fdescribe;
