@@ -52,7 +52,11 @@ export class RequestOptions {
    * Search parameters to be included in a {@link Request}.
    */
   search: URLSearchParams;
-  constructor({method, headers, body, url, search}: RequestOptionsArgs = {}) {
+  /**
+   * Enable use credentials for a {@link Request}.
+   */
+  withCredentials: boolean;
+  constructor({method, headers, body, url, search, withCredentials}: RequestOptionsArgs = {}) {
     this.method = isPresent(method) ? normalizeMethodName(method) : null;
     this.headers = isPresent(headers) ? headers : null;
     this.body = isPresent(body) ? body : null;
@@ -60,6 +64,7 @@ export class RequestOptions {
     this.search = isPresent(search) ? (isString(search) ? new URLSearchParams(<string>(search)) :
                                                           <URLSearchParams>(search)) :
                                       null;
+    this.withCredentials = isPresent(withCredentials) ? withCredentials : null;
   }
 
   /**
@@ -96,7 +101,10 @@ export class RequestOptions {
       search: isPresent(options) && isPresent(options.search) ?
                   (isString(options.search) ? new URLSearchParams(<string>(options.search)) :
                                               (<URLSearchParams>(options.search)).clone()) :
-                  this.search
+                  this.search,
+      withCredentials: isPresent(options) && isPresent(options.withCredentials) ?
+                           options.withCredentials :
+                           this.withCredentials
     });
   }
 }

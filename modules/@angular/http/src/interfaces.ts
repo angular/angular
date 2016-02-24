@@ -30,6 +30,7 @@ export interface RequestOptionsArgs {
   search?: string | URLSearchParams;
   headers?: Headers;
   body?: any;
+  withCredentials?: boolean;
 }
 
 /**

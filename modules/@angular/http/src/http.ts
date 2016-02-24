@@ -23,7 +23,8 @@ function mergeOptions(defaultOpts: BaseRequestOptions, providedOpts: RequestOpti
       url: providedOpts.url || url,
       search: providedOpts.search,
       headers: providedOpts.headers,
-      body: providedOpts.body
+      body: providedOpts.body,
+      withCredentials: providedOpts.withCredentials
     }));
   }
   if (isPresent(method)) {

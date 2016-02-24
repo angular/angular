@@ -59,6 +59,8 @@ export class Request {
   private _body: any;
   /** Type of the request body **/
   private contentType: ContentType;
+  /** Enable use credentials */
+  withCredentials: boolean;
   constructor(requestOptions: RequestArgs) {
     // TODO: assert that url is present
     let url = requestOptions.url;
@@ -81,6 +83,7 @@ export class Request {
     // Defaults to 'omit', consistent with browser
     // TODO(jeffbcross): implement behavior
     this.headers = new Headers(requestOptions.headers);
+    this.withCredentials = requestOptions.withCredentials;
   }
 
 
