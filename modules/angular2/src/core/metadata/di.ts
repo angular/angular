@@ -176,7 +176,7 @@ export class QueryMetadata extends DependencyMetadata {
    * returns a list of variable bindings this is querying for.
    * Only applicable if this is a variable bindings query.
    */
-  get varBindings(): string[] { return this.selector.split(','); }
+  get varBindings(): string[] { return this.selector.split(',').map(s => s.trim()); }
 
   toString(): string { return `@Query(${stringify(this.selector)})`; }
 }
