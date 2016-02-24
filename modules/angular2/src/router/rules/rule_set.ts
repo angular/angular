@@ -146,19 +146,19 @@ export class RuleSet {
   }
 
   generate(name: string, params: any): ComponentInstruction {
-    var pathRecognizer: RouteRule = this.rulesByName.get(name);
-    if (isBlank(pathRecognizer)) {
+    var rule: RouteRule = this.rulesByName.get(name);
+    if (isBlank(rule)) {
       return null;
     }
-    return pathRecognizer.generate(params);
+    return rule.generate(params);
   }
 
   generateAuxiliary(name: string, params: any): ComponentInstruction {
-    var pathRecognizer: RouteRule = this.auxRulesByName.get(name);
-    if (isBlank(pathRecognizer)) {
+    var rule: RouteRule = this.auxRulesByName.get(name);
+    if (isBlank(rule)) {
       return null;
     }
-    return pathRecognizer.generate(params);
+    return rule.generate(params);
   }
 
   private _assertNoHashCollision(hash: string, path) {
