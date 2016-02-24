@@ -1,9 +1,6 @@
 import {stringify, CONST, Type, isBlank} from 'angular2/src/facade/lang';
 import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
-import {TypeLiteral} from './type_literal';
 import {resolveForwardRef} from './forward_ref';
-
-export {TypeLiteral} from './type_literal';
 
 /**
  * A unique object used for retrieving items from the {@link Injector}.
@@ -52,13 +49,6 @@ export class KeyRegistry {
 
   get(token: Object): Key {
     if (token instanceof Key) return token;
-
-    // TODO: workaround for https://github.com/Microsoft/TypeScript/issues/3123
-    var theToken = token;
-    if (token instanceof TypeLiteral) {
-      theToken = token.type;
-    }
-    token = theToken;
 
     if (this._allKeys.has(token)) {
       return this._allKeys.get(token);

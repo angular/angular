@@ -1313,8 +1313,6 @@ var NG_CORE = [
   'GetTestability:dart',
   'setTestabilityGetter()',
   'Type:js',
-  'TypeLiteral',
-  'TypeLiteral.type',
   'PACKAGE_ROOT_URL',
   'View',
   'View.directives',

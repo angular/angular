@@ -446,8 +446,6 @@ const CORE = [
   'TypeDecorator',
   'TypeDecorator.Class(obj:ClassDefinition):ConcreteType',
   'TypeDecorator.annotations:any[]',
-  'TypeLiteral',
-  'TypeLiteral.type:any',
   'ViewChildFactory',
   'ViewChildMetadata',
   'ViewChildMetadata.constructor(_selector:Type|string)',
