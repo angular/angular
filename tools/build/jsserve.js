@@ -1,5 +1,6 @@
 var onHeaders = require('on-headers');
 var proxy = require('proxy-middleware');
+var cors = require('cors');
 var url = require('url');
 
 module.exports = function(gulp, plugins, config) {
@@ -14,6 +15,7 @@ module.exports = function(gulp, plugins, config) {
         var middlewares =
             config.proxies.map(function(entry) { return makeProxy(entry.route, entry.url); });
         middlewares.push(connect.favicon());
+        middlewares.push(cors());
         // pub serve can't give the right content-type header for jsonp requests
         // so we must turn off Chromium strict MIME type checking
         // see https://github.com/angular/angular/issues/3030#issuecomment-123453168

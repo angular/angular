@@ -1831,6 +1831,9 @@
     "core-util-is": {
       "version": "1.0.2"
     },
+    "cors": {
+      "version": "2.7.1"
+    },
     "crc": {
       "version": "3.3.0"
     },
