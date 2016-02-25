@@ -87,6 +87,8 @@ const formDirectiveProvider =
   exportAs: 'ngForm'
 })
 export class NgForm extends ControlContainer implements Form {
+  private _submitted: boolean = false;
+
   form: ControlGroup;
   ngSubmit = new EventEmitter();
 
@@ -96,6 +98,8 @@ export class NgForm extends ControlContainer implements Form {
     this.form = new ControlGroup({}, null, composeValidators(validators),
                                  composeAsyncValidators(asyncValidators));
   }
+
+  get submitted(): boolean { return this._submitted; }
 
   get formDirective(): Form { return this; }
 
@@ -159,6 +163,7 @@ export class NgForm extends ControlContainer implements Form {
   }
 
   onSubmit(): boolean {
+    this._submitted = true;
     ObservableWrapper.callEmit(this.ngSubmit, null);
     return false;
   }
