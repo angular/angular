@@ -1,51 +1,6 @@
 ///<reference path="../typings/angularjs/angular.d.ts"/>
 
-/*
- * decorates $compileProvider so that we have access to routing metadata
- */
-function compilerProviderDecorator($compileProvider,
-                                   $$directiveIntrospectorProvider: DirectiveIntrospectorProvider) {
-  let directive = $compileProvider.directive;
-  $compileProvider.directive = function(name: string, factory: Function) {
-    $$directiveIntrospectorProvider.register(name, factory);
-    return directive.apply(this, arguments);
-  };
-}
 
-/*
- * private service that holds route mappings for each controller
- */
-class DirectiveIntrospectorProvider {
-  private directiveBuffer: any[] = [];
-  private directiveFactoriesByName: {[name: string]: Function} = {};
-  private onDirectiveRegistered: (name: string, factory: Function) => any = null;
-
-  register(name: string, factory: Function) {
-    if (angular.isArray(factory)) {
-      factory = factory[factory.length - 1];
-    }
-    this.directiveFactoriesByName[name] = factory;
-    if (this.onDirectiveRegistered) {
-      this.onDirectiveRegistered(name, factory);
-    } else {
-      this.directiveBuffer.push({name: name, factory: factory});
-    }
-  }
-
-  $get() {
-    let fn: any = newOnControllerRegistered => {
-      this.onDirectiveRegistered = newOnControllerRegistered;
-      while (this.directiveBuffer.length > 0) {
-        let directive = this.directiveBuffer.pop();
-        this.onDirectiveRegistered(directive.name, directive.factory);
-      }
-    };
-
-    fn.getTypeByName = name => this.directiveFactoriesByName[name];
-
-    return fn;
-  }
-}
 
 /**
  * @name ngOutlet
@@ -303,10 +258,3 @@ angular.module('ngComponentRouter', [])
     .directive('ngOutlet', ['$compile', ngOutletFillContentDirective])
     .directive('ngLink', ['$rootRouter', '$parse', ngLinkDirective])
     .directive('$router', ['$q', routerTriggerDirective]);
-
-/*
- * A module for inspecting controller constructors
- */
-angular.module('ng')
-    .provider('$$directiveIntrospector', DirectiveIntrospectorProvider)
-    .config(['$compileProvider', '$$directiveIntrospectorProvider', compilerProviderDecorator]);
