@@ -51,7 +51,7 @@ export function main() {
       el = DOM.createElement('app-cmp', fakeDoc);
       DOM.appendChild(fakeDoc.body, el);
       var logger = new _ArrayLogger();
-      var exceptionHandler = new ExceptionHandler(logger, !IS_DART);
+      var exceptionHandler = new ExceptionHandler(logger, false);
       testBindings = [
         ROUTER_PROVIDERS,
         provide(LocationStrategy, {useClass: MockLocationStrategy}),

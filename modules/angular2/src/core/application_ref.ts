@@ -1,4 +1,4 @@
-import {NgZone} from 'angular2/src/core/zone/ng_zone';
+import {NgZone, NgZoneError} from 'angular2/src/core/zone/ng_zone';
 import {
   Type,
   isBlank,
@@ -254,7 +254,9 @@ export class PlatformRef_ extends PlatformRef {
       try {
         injector = this.injector.resolveAndCreateChild(providers);
         exceptionHandler = injector.get(ExceptionHandler);
-        zone.overrideOnErrorHandler((e, s) => exceptionHandler.call(e, s));
+        ObservableWrapper.subscribe(zone.onError, (error: NgZoneError) => {
+          exceptionHandler.call(error.error, error.stackTrace);
+        });
       } catch (e) {
         if (isPresent(exceptionHandler)) {
           exceptionHandler.call(e, e.stack);
@@ -394,7 +396,7 @@ export class ApplicationRef_ extends ApplicationRef {
   constructor(private _platform: PlatformRef_, private _zone: NgZone, private _injector: Injector) {
     super();
     if (isPresent(this._zone)) {
-      ObservableWrapper.subscribe(this._zone.onTurnDone,
+      ObservableWrapper.subscribe(this._zone.onMicrotaskEmpty,
                                   (_) => { this._zone.run(() => { this.tick(); }); });
     }
     this._enforceNoNewChanges = assertionsEnabled();
@@ -434,16 +436,10 @@ export class ApplicationRef_ extends ApplicationRef {
 
         var tickResult = PromiseWrapper.then(compRefToken, tick);
 
-        // THIS MUST ONLY RUN IN DART.
-        // This is required to report an error when no components with a matching selector found.
-        // Otherwise the promise will never be completed.
-        // Doing this in JS causes an extra error message to appear.
-        if (IS_DART) {
-          PromiseWrapper.then(tickResult, (_) => {});
-        }
-
-        PromiseWrapper.then(tickResult, null,
-                            (err, stackTrace) => completer.reject(err, stackTrace));
+        PromiseWrapper.then(tickResult, null, (err, stackTrace) => {
+          completer.reject(err, stackTrace);
+          exceptionHandler.call(err, stackTrace);
+        });
       } catch (e) {
         exceptionHandler.call(e, e.stack);
         completer.reject(e, e.stack);

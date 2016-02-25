@@ -128,7 +128,7 @@ export function main() {
             }));
       });
 
-      it('should handle swapping element', () => {
+      it('should handle incremental swapping element', () => {
         let l = ['a', 'b', 'c'];
         differ.check(l);
 
