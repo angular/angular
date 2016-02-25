@@ -9,7 +9,6 @@ branches:
 
 cache:
   directories:
-    - node_modules
     - $HOME/.pub-cache
 
 before_cache:
