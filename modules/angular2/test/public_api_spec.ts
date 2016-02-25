@@ -243,6 +243,7 @@ var NG_CORE = [
   'forwardRef:js',
   'platform',
   'resolveForwardRef:js',
+  'WrappedValue.wrapped',
   'PLATFORM_COMMON_PROVIDERS',
   'PLATFORM_INITIALIZER',
   'AfterContentChecked:dart',
