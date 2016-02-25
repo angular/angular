@@ -478,6 +478,6 @@ export function main() {
                expect(componentFixture.debugElement.nativeElement)
                    .toHaveText('from external template\n');
              });
-       }));
+       }), 10000);  // Long timeout here because this test makes an actual XHR, and is slow on Edge.
   });
 }
