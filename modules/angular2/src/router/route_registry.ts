@@ -35,8 +35,8 @@ import {
   DefaultInstruction
 } from './instruction';
 
-import {normalizeRouteConfig, assertComponentExists} from './route_config/route_config_nomalizer';
-import {parser, Url, UrlParams, pathSegmentsToUrl} from './url_parser';
+import {normalizeRouteConfig, assertComponentExists} from './route_config/route_config_normalizer';
+import {parser, Url, convertUrlParamsToArray, pathSegmentsToUrl} from './url_parser';
 
 var _resolveToNull = PromiseWrapper.resolve(null);
 
@@ -46,9 +46,9 @@ var _resolveToNull = PromiseWrapper.resolve(null);
 // - the next items are:
 //   - an object containing parameters
 //   - or an array describing an aux route
-export type LinkRouteItem = string | {[key: string]: any};
-export type LinkItem = LinkRouteItem | Array<LinkRouteItem>;
-export type LinkItemArray = Array<LinkItem>;
+// export type LinkRouteItem = string | Object;
+// export type LinkItem = LinkRouteItem | Array<LinkRouteItem>;
+// export type LinkItemArray = Array<LinkItem>;
 
 /**
  * Token used to bind the component with the top-level {@link RouteConfig}s for the
@@ -243,7 +243,7 @@ export class RouteRegistry {
    * If the optional param `_aux` is `true`, then we generate starting at an auxiliary
    * route boundary.
    */
-  generate(linkParams: LinkItemArray, ancestorInstructions: Instruction[], _aux = false): Instruction {
+  generate(linkParams: any[], ancestorInstructions: Instruction[], _aux = false): Instruction {
     var params = splitAndFlattenLinkParams(linkParams);
     var prevInstruction;
 
@@ -271,7 +271,7 @@ export class RouteRegistry {
         // we're on to implicit child/sibling route
       } else {
         // we must only peak at the link param, and not consume it
-        let routeName = ListWrapper.first(params) as string;
+        let routeName = ListWrapper.first(params);
         let parentComponentType = this._rootComponent;
         let grandparentComponentType = null;
 
@@ -373,7 +373,7 @@ export class RouteRegistry {
     }
 
     let linkParamIndex = 0;
-    let routeParams = new UrlParams();
+    let routeParams : {[key: string]: any} = {};
 
     // first, recognize the primary route if one is provided
     if (linkParamIndex < linkParams.length && isString(linkParams[linkParamIndex])) {
@@ -385,7 +385,7 @@ export class RouteRegistry {
       if (linkParamIndex < linkParams.length) {
         let linkParam = linkParams[linkParamIndex];
         if (isStringMap(linkParam) && !isArray(linkParam)) {
-          routeParams = new UrlParams(linkParam);
+          routeParams = linkParam;
           linkParamIndex += 1;
         }
       }
@@ -406,7 +406,7 @@ export class RouteRegistry {
             return this._generate(linkParams, ancestorInstructions, prevInstruction, _aux,
                                   _originalLink);
           });
-        }, generatedUrl.urlPath, generatedUrl.urlParams.toArray());
+        }, generatedUrl.urlPath, convertUrlParamsToArray(generatedUrl.urlParams));
       }
 
       componentInstruction = _aux ? rules.generateAuxiliary(routeName, routeParams) :
@@ -467,7 +467,7 @@ export class RouteRegistry {
 
     var defaultChild = null;
     if (isPresent(rules.defaultRule.handler.componentType)) {
-      var componentInstruction = rules.defaultRule.generate(new UrlParams());
+      var componentInstruction = rules.defaultRule.generate({});
       if (!rules.defaultRule.terminal) {
         defaultChild = this.generateDefault(rules.defaultRule.handler.componentType);
       }
@@ -485,11 +485,11 @@ export class RouteRegistry {
  * Given: ['/a/b', {c: 2}]
  * Returns: ['', 'a', 'b', {c: 2}]
  */
-function splitAndFlattenLinkParams(linkParams) {
+function splitAndFlattenLinkParams(linkParams : any[]) {
   var accumulation = [];
-  linkParams.forEach(function (item) {
+  linkParams.forEach(function (item : any) {
     if (isString(item)) {
-      var strItem = item;
+      var strItem : string = <string>item;
       accumulation = accumulation.concat(strItem.split('/'));
     } else {
       accumulation.push(item);

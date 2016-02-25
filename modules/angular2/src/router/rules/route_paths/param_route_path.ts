@@ -3,7 +3,7 @@ import {BaseException} from 'angular2/src/facade/exceptions';
 import {StringMapWrapper} from 'angular2/src/facade/collection';
 
 import {TouchMap, normalizeString} from '../../utils';
-import {Url, RootUrl, UrlParams} from '../../url_parser';
+import {Url, RootUrl, convertUrlParamsToArray} from '../../url_parser';
 import {RoutePath, GeneratedUrl, MatchedUrl} from './route_path';
 
 
@@ -156,18 +156,18 @@ export class ParamRoutePath implements RoutePath {
 
       if (isPresent(paramsSegment.params)) {
         allParams = StringMapWrapper.merge(paramsSegment.params, positionalParams);
-        urlParams = paramsSegment.params.toArray();
+        urlParams = convertUrlParamsToArray(paramsSegment.params);
       } else {
         allParams = positionalParams;
       }
       auxiliary = currentUrlSegment.auxiliary;
     }
 
-    return new MatchedUrl(urlPath, urlParams, new UrlParams(allParams), auxiliary, nextUrlSegment);
+    return new MatchedUrl(urlPath, urlParams, allParams, auxiliary, nextUrlSegment);
   }
 
 
-  generateUrl(params: UrlParams): GeneratedUrl {
+  generateUrl(params: {[key: string]: any}): GeneratedUrl {
     var paramTokens = new TouchMap(params);
 
     var path = [];
@@ -181,7 +181,7 @@ export class ParamRoutePath implements RoutePath {
     var urlPath = path.join('/');
 
     var nonPositionalParams = paramTokens.getUnused();
-    var urlParams = new UrlParams(nonPositionalParams);
+    var urlParams = nonPositionalParams;
 
     return new GeneratedUrl(urlPath, urlParams);
   }
@@ -250,7 +250,7 @@ export class ParamRoutePath implements RoutePath {
   private _calculateHash(): string {
     // this function is used to determine whether a route config path like `/foo/:id` collides with
     // `/foo/:name`
-    var i, length = this._segments.length, hash;
+    var i, length = this._segments.length;
     var hashParts = [];
     for (i = 0; i < length; i++) {
       hashParts.push(this._segments[i].hash);
@@ -259,15 +259,15 @@ export class ParamRoutePath implements RoutePath {
   }
 
   private _assertValidPath(path: string) {
-    const RESERVED_CHARS = RegExpWrapper.create('//|\\(|\\)|;|\\?|=');
     if (StringWrapper.contains(path, '#')) {
       throw new BaseException(
           `Path "${path}" should not include "#". Use "HashLocationStrategy" instead.`);
     }
-    var illegalCharacter = RegExpWrapper.firstMatch(RESERVED_CHARS, path);
+    var illegalCharacter = RegExpWrapper.firstMatch(ParamRoutePath.RESERVED_CHARS, path);
     if (isPresent(illegalCharacter)) {
       throw new BaseException(
           `Path "${path}" contains "${illegalCharacter[0]}" which is not allowed in a route config.`);
     }
   }
+  static RESERVED_CHARS = RegExpWrapper.create('//|\\(|\\)|;|\\?|=');
 }

@@ -2,28 +2,17 @@ import {StringMapWrapper} from 'angular2/src/facade/collection';
 import {isPresent, isBlank, RegExpWrapper, CONST_EXPR} from 'angular2/src/facade/lang';
 import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
 
-export class UrlParams {
-  [key: string]: any
+export function convertUrlParamsToArray(urlParams : {[key: string]: any}) : string[] {
+  var paramsArray = [];
+  StringMapWrapper.forEach(urlParams, (value, key) => {
+    paramsArray.push((value === true) ? key : key + '=' + value);
+  });
+  return paramsArray;
+}
 
-  constructor(params : {[key: string]: any} = {}) {
-    if (isPresent(params)) {
-      StringMapWrapper.forEach(params, (value, key) => {
-        this[key] = value;
-      });
-    }
-  }
-
-  toArray() : string[] {
-    var params = [];
-    StringMapWrapper.forEach(this, (value, key) => {
-      if (value === true) {
-        params.push(key);
-      } else {
-        params.push(key + '=' + value);
-      }
-    });
-    return params;
-  }
+// Convert an object of url parameters into a string that can be used in an URL
+export function serializeParams(urlParams : {[key: string]: any}, joiner = '&') : string {
+  return convertUrlParamsToArray(urlParams).join(joiner);
 }
 
 /**
@@ -32,7 +21,7 @@ export class UrlParams {
 export class Url {
   constructor(public path: string, public child: Url = null,
               public auxiliary: Url[] = CONST_EXPR([]),
-              public params: UrlParams = new UrlParams()) {}
+              public params: {[key: string]: any} = CONST_EXPR({})) {}
 
   toString(): string {
     return this.path + this._matrixParamsToString() + this._auxToString() + this._childString();
@@ -48,11 +37,11 @@ export class Url {
   }
 
   private _matrixParamsToString(): string {
-    if (isBlank(this.params)) {
-      return '';
+    var paramString = serializeParams(this.params,';');
+    if (paramString.length > 0) {
+      return ';' + paramString;
     }
-
-    return ';' + this.params.toArray().join(';');
+    return '';
   }
 
   /** @internal */
@@ -61,7 +50,7 @@ export class Url {
 
 export class RootUrl extends Url {
   constructor(path: string, child: Url = null, auxiliary: Url[] = CONST_EXPR([]),
-              params: UrlParams = null) {
+              params: {[key: string]: any} = null) {
     super(path, child, auxiliary, params);
   }
 
@@ -76,7 +65,7 @@ export class RootUrl extends Url {
       return '';
     }
 
-    return '?' + this.params.toArray().join('&');
+    return '?' + serializeParams(this.params);
   }
 }
 
@@ -115,7 +104,7 @@ export class UrlParser {
   }
 
   // segment + (aux segments) + (query params)
-  parseRoot(): Url {
+  parseRoot(): RootUrl {
     if (this.peekStartsWith('/')) {
       this.capture('/');
     }
@@ -169,8 +158,8 @@ export class UrlParser {
     return new Url(path, child, aux, matrixParams);
   }
 
-  parseQueryParams(): UrlParams {
-    var params = new UrlParams();
+  parseQueryParams(): {[key: string]: any} {
+    var params = {};
     this.capture('?');
     this.parseParam(params);
     while (this._remaining.length > 0 && this.peekStartsWith('&')) {
@@ -180,8 +169,8 @@ export class UrlParser {
     return params;
   }
 
-  parseMatrixParams(): UrlParams {
-    var params = new UrlParams();
+  parseMatrixParams(): {[key: string]: any} {
+    var params = {};
     while (this._remaining.length > 0 && this.peekStartsWith(';')) {
       this.capture(';');
       this.parseParam(params);
@@ -189,7 +178,7 @@ export class UrlParser {
     return params;
   }
 
-  parseParam(params: UrlParams): void {
+  parseParam(params: {[key: string]: any}): void {
     var key = matchUrlSegment(this._remaining);
     if (isBlank(key)) {
       return;

@@ -4,7 +4,7 @@ import {PromiseWrapper} from 'angular2/src/facade/promise';
 import {Map} from 'angular2/src/facade/collection';
 
 import {RouteHandler} from './route_handlers/route_handler';
-import {Url, UrlParams} from '../url_parser';
+import {Url, convertUrlParamsToArray} from '../url_parser';
 import {ComponentInstruction} from '../instruction';
 import {RoutePath} from './route_paths/route_path';
 import {GeneratedUrl} from './route_paths/route_path';
@@ -41,6 +41,9 @@ export class RedirectRule implements AbstractRule {
 
   get path() {
     return this._pathRecognizer.toString();
+  }
+  set path(val) {
+    throw new BaseException('you cannot set the path of a RedirectRule directly');
   }
 
   /**
@@ -79,6 +82,9 @@ export class RouteRule implements AbstractRule {
   get path() {
     return this._routePath.toString();
   }
+  set path(val) {
+    throw new BaseException('you cannot set the path of a RouteRule directly');
+  }
 
   recognize(beginningSegment: Url): Promise<RouteMatch> {
     var res = this._routePath.matchUrl(beginningSegment);
@@ -92,14 +98,14 @@ export class RouteRule implements AbstractRule {
     });
   }
 
-  generate(params: UrlParams): ComponentInstruction {
+  generate(params: {[key: string]: any}): ComponentInstruction {
     var generated = this._routePath.generateUrl(params);
     var urlPath = generated.urlPath;
     var urlParams = generated.urlParams;
-    return this._getInstruction(urlPath, urlParams.toArray(), params);
+    return this._getInstruction(urlPath, convertUrlParamsToArray(urlParams), params);
   }
 
-  generateComponentPathValues(params: UrlParams): GeneratedUrl {
+  generateComponentPathValues(params: {[key: string]: any}): GeneratedUrl {
     return this._routePath.generateUrl(params);
   }
 

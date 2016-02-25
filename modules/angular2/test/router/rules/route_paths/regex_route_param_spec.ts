@@ -12,7 +12,9 @@ import {
 
 import {GeneratedUrl} from 'angular2/src/router/rules/route_paths/route_path';
 import {RegexRoutePath} from 'angular2/src/router/rules/route_paths/regex_route_path';
-import {parser, Url, UrlParams} from 'angular2/src/router/url_parser';
+import {parser, Url} from 'angular2/src/router/url_parser';
+
+function emptySerializer(params) { return new GeneratedUrl('', {}); }
 
 export function main() {
   describe('RegexRoutePath', () => {
@@ -38,13 +40,12 @@ export function main() {
 
     it('should generate a url by calling the provided serializer', () => {
       function serializer(params) {
-        return new GeneratedUrl(`/a/${params.a}/b/${params.b}`, new UrlParams());
+        return new GeneratedUrl(`/a/${params.a}/b/${params.b}`, {});
       }
       var rec = new RegexRoutePath('/a/(.+)/b/(.+)$', serializer);
-      var url = rec.generateUrl(new UrlParams({a: 'one', b: 'two'}));
+      var params = {a: 'one', b: 'two'};
+      var url = rec.generateUrl(params);
       expect(url.urlPath).toEqual('/a/one/b/two');
     });
-
-    function emptySerializer(params) { return new GeneratedUrl('', new UrlParams()); }
   });
 }

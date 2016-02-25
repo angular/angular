@@ -171,7 +171,7 @@ export class RuleSet {
   }
 
   private _getRoutePath(config : RouteDefinition) : RoutePath {
-    if (config.regex) {
+    if (isPresent(config.regex)) {
       if (isFunction(config.serializer)) {
         return new RegexRoutePath(config.regex, config.serializer);
       } else {
@@ -179,7 +179,7 @@ export class RuleSet {
           `Route provides a regex property, '${config.regex}', but no serializer property`);
       }
     }
-    if (config.path) {
+    if (isPresent(config.path)) {
       // Auxiliary routes do not have a slash at the start
       let path = (config instanceof AuxRoute && config.path.startsWith('/')) ?
           config.path.substring(1) : config.path;
