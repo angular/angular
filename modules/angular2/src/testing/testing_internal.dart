@@ -15,6 +15,8 @@ export 'testing_internal_core.dart'
         xdescribe;
 
 import 'package:angular2/platform/testing/browser.dart';
+import 'package:angular2/src/facade/collection.dart' show StringMapWrapper;
+import "package:angular2/src/core/zone/ng_zone.dart" show NgZone;
 
 export 'test_injector.dart' show inject;
 
@@ -63,3 +65,5 @@ void xdescribe(name, fn) {
   testSetup();
   core.xdescribe(name, fn);
 }
+
+bool isInInnerZone() => NgZone.isInAngularZone();

@@ -20,10 +20,10 @@ import {Component, Directive, OnDestroy, platform} from 'angular2/core';
 import {BROWSER_PROVIDERS, BROWSER_APP_PROVIDERS} from 'angular2/platform/browser';
 import {DOM} from 'angular2/src/platform/dom/dom_adapter';
 import {DOCUMENT} from 'angular2/src/platform/dom/dom_tokens';
-import {PromiseWrapper} from 'angular2/src/facade/async';
+import {PromiseWrapper, TimerWrapper} from 'angular2/src/facade/async';
 import {provide, Inject, Injector, PLATFORM_INITIALIZER, APP_INITIALIZER} from 'angular2/core';
 import {disposePlatform} from 'angular2/src/core/application_ref';
-import {ExceptionHandler} from 'angular2/src/facade/exceptions';
+import {ExceptionHandler, BaseException} from 'angular2/src/facade/exceptions';
 import {Testability, TestabilityRegistry} from 'angular2/src/core/testability/testability';
 import {ComponentRef_, ComponentRef} from "angular2/src/core/linker/dynamic_component_loader";
 
@@ -119,13 +119,12 @@ export function main() {
                `Could not compile '${stringify(HelloRootDirectiveIsNotCmp)}' because it is not a component.`);
            expect(logger.res.join("")).toContain("Could not compile");
            async.done();
-           return null;
          });
        }));
 
     it('should throw if no element is found', inject([AsyncTestCompleter], (async) => {
          var logger = new _ArrayLogger();
-         var exceptionHandler = new ExceptionHandler(logger, !IS_DART);
+         var exceptionHandler = new ExceptionHandler(logger, false);
 
          var refPromise =
              bootstrap(HelloRootCmp, [provide(ExceptionHandler, {useValue: exceptionHandler})]);
@@ -137,10 +136,25 @@ export function main() {
        }));
 
     if (DOM.supportsDOMEvents()) {
+      it('should forward the error to promise when bootstrap fails',
+         inject([AsyncTestCompleter], (async) => {
+           // Skip for dart since it causes a confusing error message in console when test passes.
+           var logger = new _ArrayLogger();
+           var exceptionHandler = new ExceptionHandler(logger, false);
+
+           var refPromise =
+               bootstrap(HelloRootCmp, [provide(ExceptionHandler, {useValue: exceptionHandler})]);
+           PromiseWrapper.then(refPromise, null, (reason: BaseException) => {
+             expect(reason.message)
+                 .toContain('The selector "hello-app" did not match any elements');
+             async.done();
+           });
+         }));
+
       it('should invoke the default exception handler when bootstrap fails',
          inject([AsyncTestCompleter], (async) => {
            var logger = new _ArrayLogger();
-           var exceptionHandler = new ExceptionHandler(logger, !IS_DART);
+           var exceptionHandler = new ExceptionHandler(logger, false);
 
            var refPromise =
                bootstrap(HelloRootCmp, [provide(ExceptionHandler, {useValue: exceptionHandler})]);

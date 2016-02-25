@@ -5,22 +5,21 @@ import {isPresent, isString, RegExpWrapper, StringWrapper, RegExp} from 'angular
 
 @Injectable()
 export class Log {
-  /** @internal */
-  _result: any[];
+  logItems: any[];
 
-  constructor() { this._result = []; }
+  constructor() { this.logItems = []; }
 
-  add(value): void { this._result.push(value); }
+  add(value): void { this.logItems.push(value); }
 
   fn(value) {
     return (a1: any = null, a2: any = null, a3: any = null, a4: any = null, a5: any = null) => {
-      this._result.push(value);
+      this.logItems.push(value);
     }
   }
 
-  clear(): void { this._result = []; }
+  clear(): void { this.logItems = []; }
 
-  result(): string { return this._result.join("; "); }
+  result(): string { return this.logItems.join("; "); }
 }
 
 export var browserDetection: BrowserDetection = null;

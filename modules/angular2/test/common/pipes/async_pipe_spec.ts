@@ -93,7 +93,7 @@ export function main() {
              TimerWrapper.setTimeout(() => {
                expect(ref.spy('markForCheck')).toHaveBeenCalled();
                async.done();
-             }, 0)
+             }, 10)
            }));
       });
 
@@ -121,7 +121,7 @@ export function main() {
       var completer: PromiseCompleter<any>;
       var ref: SpyChangeDetectorRef;
       // adds longer timers for passing tests in IE
-      var timer = (!isBlank(DOM) && browserDetection.isIE) ? 50 : 0;
+      var timer = (!isBlank(DOM) && browserDetection.isIE) ? 50 : 10;
 
       beforeEach(() => {
         completer = PromiseWrapper.completer();
@@ -174,11 +174,12 @@ export function main() {
 
         it("should request a change detection check upon receiving a new value",
            inject([AsyncTestCompleter], (async) => {
+             var markForCheck = ref.spy('markForCheck');
              pipe.transform(completer.promise);
              completer.resolve(message);
 
              TimerWrapper.setTimeout(() => {
-               expect(ref.spy('markForCheck')).toHaveBeenCalled();
+               expect(markForCheck).toHaveBeenCalled();
                async.done();
              }, timer)
            }));

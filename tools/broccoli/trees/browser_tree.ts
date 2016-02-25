@@ -174,6 +174,7 @@ module.exports = function makeBrowserTree(options, destinationPath) {
   let ambientTypings = [
     'angular2/typings/hammerjs/hammerjs.d.ts',
     'angular2/typings/node/node.d.ts',
+    'node_modules/zone.js/dist/zone.js.d.ts',
     'angular2/manual_typings/globals.d.ts',
     'angular2/typings/es6-collections/es6-collections.d.ts',
     'angular2/typings/es6-promise/es6-promise.d.ts'
@@ -197,7 +198,7 @@ module.exports = function makeBrowserTree(options, destinationPath) {
   var vendorScriptsTree = flatten(new Funnel('.', {
     files: [
       'node_modules/es6-shim/es6-shim.js',
-      'node_modules/zone.js/dist/zone-microtask.js',
+      'node_modules/zone.js/dist/zone.js',
       'node_modules/zone.js/dist/long-stack-trace-zone.js',
       'node_modules/systemjs/dist/system.src.js',
       'node_modules/base64-js/lib/b64.js',
