@@ -3,7 +3,7 @@ library angular.core.facade.lang;
 export 'dart:core' show Type, RegExp, print, DateTime;
 import 'dart:math' as math;
 import 'dart:convert' as convert;
-import 'dart:async' show Future;
+import 'dart:async' show Future, Zone;
 
 String getTypeNameForDebugging(Type type) => type.toString();
 
@@ -19,6 +19,10 @@ class CONST {
 }
 
 const IS_DART = true;
+
+scheduleMicroTask(Function fn) {
+  Zone.current.scheduleMicrotask(fn);
+}
 
 bool isPresent(Object obj) => obj != null;
 bool isBlank(Object obj) => obj == null;

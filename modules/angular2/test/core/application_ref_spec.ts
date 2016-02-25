@@ -20,6 +20,8 @@ import {Injector, Provider, APP_INITIALIZER} from "angular2/core";
 import {ChangeDetectorRef_} from "angular2/src/core/change_detection/change_detector_ref";
 import {PromiseWrapper, PromiseCompleter, TimerWrapper} from "angular2/src/facade/async";
 import {ListWrapper} from "angular2/src/facade/collection";
+import {ExceptionHandler} from 'angular2/src/facade/exception_handler';
+import {DOM} from 'angular2/src/platform/dom/dom_adapter';
 
 export function main() {
   describe("ApplicationRef", () => {
@@ -33,6 +35,8 @@ export function main() {
   });
 
   describe("PlatformRef", () => {
+    var exceptionHandler =
+        new Provider(ExceptionHandler, {useValue: new ExceptionHandler(DOM, true)});
     describe("asyncApplication", () => {
       function expectProviders(injector: Injector, providers: Array<any>): void {
         for (let i = 0; i < providers.length; i++) {
@@ -44,7 +48,7 @@ export function main() {
       it("should merge syncronous and asyncronous providers",
          inject([AsyncTestCompleter, Injector], (async, injector) => {
            let ref = new PlatformRef_(injector, null);
-           let ASYNC_PROVIDERS = [new Provider(Foo, {useValue: new Foo()})];
+           let ASYNC_PROVIDERS = [new Provider(Foo, {useValue: new Foo()}), exceptionHandler];
            let SYNC_PROVIDERS = [new Provider(Bar, {useValue: new Bar()})];
            ref.asyncApplication((zone) => PromiseWrapper.resolve(ASYNC_PROVIDERS), SYNC_PROVIDERS)
                .then((appRef) => {
@@ -57,7 +61,7 @@ export function main() {
       it("should allow function to be null",
          inject([AsyncTestCompleter, Injector], (async, injector) => {
            let ref = new PlatformRef_(injector, null);
-           let SYNC_PROVIDERS = [new Provider(Bar, {useValue: new Bar()})];
+           let SYNC_PROVIDERS = [new Provider(Bar, {useValue: new Bar()}), exceptionHandler];
            ref.asyncApplication(null, SYNC_PROVIDERS)
                .then((appRef) => {
                  expectProviders(appRef.injector, SYNC_PROVIDERS);
@@ -86,7 +90,7 @@ export function main() {
              new Provider(APP_INITIALIZER,
                           {useValue: mockAsyncAppInitializer(completer), multi: true})
            ];
-           ref.asyncApplication(null, SYNC_PROVIDERS)
+           ref.asyncApplication(null, [SYNC_PROVIDERS, exceptionHandler])
                .then((appRef) => {
                  expectProviders(appRef.injector,
                                  SYNC_PROVIDERS.slice(0, SYNC_PROVIDERS.length - 1));
@@ -109,7 +113,8 @@ export function main() {
                             deps: [Injector]
                           })
            ];
-           ref.asyncApplication((zone) => PromiseWrapper.resolve(ASYNC_PROVIDERS), SYNC_PROVIDERS)
+           ref.asyncApplication((zone) => PromiseWrapper.resolve(ASYNC_PROVIDERS),
+                                [SYNC_PROVIDERS, exceptionHandler])
                .then((appRef) => {
                  expectProviders(appRef.injector,
                                  SYNC_PROVIDERS.slice(0, SYNC_PROVIDERS.length - 1));
@@ -123,7 +128,7 @@ export function main() {
            let ref = new PlatformRef_(injector, null);
            let appInitializer = new Provider(
                APP_INITIALIZER, {useValue: () => PromiseWrapper.resolve([]), multi: true});
-           expect(() => ref.application([appInitializer]))
+           expect(() => ref.application([appInitializer, exceptionHandler]))
                .toThrowError(
                    "Cannot use asyncronous app initializers with application. Use asyncApplication instead.");
          }));

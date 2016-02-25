@@ -3,6 +3,8 @@
 var glob = require('glob');
 var JasmineRunner = require('jasmine');
 var path = require('path');
+require('zone.js/dist/zone-node.js');
+require('zone.js/dist/long-stack-trace-zone.js');
 require('es6-shim/es6-shim.js');
 require('reflect-metadata/Reflect');
 

@@ -271,9 +271,9 @@ export class UnresolvedInstruction extends Instruction {
     if (isPresent(this.component)) {
       return PromiseWrapper.resolve(this.component);
     }
-    return this._resolver().then((resolution: Instruction) => {
-      this.child = resolution.child;
-      return this.component = resolution.component;
+    return this._resolver().then((instruction: Instruction) => {
+      this.child = isPresent(instruction) ? instruction.child : null;
+      return this.component = isPresent(instruction) ? instruction.component : null;
     });
   }
 }

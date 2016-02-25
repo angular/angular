@@ -1,14 +1,3 @@
-// Zones are TC-39 standards-track so users could choose a different implementation
-// Rather than import {Zone} from 'zone.js' we define an interface
-// so that any library that structurally matches may be used with Angular 2.
-export interface ZoneLike {
-  fork(locals?: any): ZoneLike;
-  run(fn: any, applyTo?: any, applyWith?: any): any;
-}
-export interface ZoneLikeConstructor {
-  longStackTraceZone: { [key: string]: any; };
-}
-
 export interface BrowserNodeGlobal {
   Object: typeof Object;
   Array: typeof Array;
@@ -20,8 +9,7 @@ export interface BrowserNodeGlobal {
   Math: any;  // typeof Math;
   assert(condition: any): void;
   Reflect: any;
-  zone: ZoneLike;
-  Zone: ZoneLikeConstructor;
+  Zone: typeof Zone;
   getAngularTestability: Function;
   getAllAngularTestabilities: Function;
   getAllAngularRootElements: Function;
@@ -44,6 +32,10 @@ if (typeof window === 'undefined') {
   }
 } else {
   globalScope = <any>window;
+}
+
+export function scheduleMicroTask(fn: Function) {
+  Zone.current.scheduleMicroTask('scheduleMicrotask', fn);
 }
 
 export const IS_DART = false;
