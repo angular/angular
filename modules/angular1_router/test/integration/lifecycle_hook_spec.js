@@ -466,10 +466,10 @@ describe('Navigation lifecycle', function () {
     }
 
     if (options.$canActivate) {
-      factory.$canActivate = options.$canActivate;
+      controller.$canActivate = options.$canActivate;
     }
     if (options.$routeConfig) {
-      factory.$routeConfig = options.$routeConfig;
+      controller.$routeConfig = options.$routeConfig;
     }
 
     $compileProvider.directive(name, factory);

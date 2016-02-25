@@ -150,7 +150,7 @@
           }];
 
           // we resolve the locals in a canActivate block
-          componentDefinition.$canActivate = function() {
+          componentDefinition.controller.$canActivate = function() {
             var locals = angular.extend({}, routeCopy.resolve);
 
             angular.forEach(locals, function(value, key) {

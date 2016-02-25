@@ -306,14 +306,15 @@ describe('navigation', function () {
   }));
 
   function registerDirective(name, options) {
+    var controller = getController(options);
     function factory() {
       return {
         template: options.template || '',
         controllerAs: name,
-        controller: getController(options)
+        controller: controller
       };
     }
-    applyStaticProperties(factory, options);
+    applyStaticProperties(controller, options);
     $compileProvider.directive(name, factory);
   }
 
@@ -323,7 +324,7 @@ describe('navigation', function () {
       template: options.template || '',
       controller: getController(options),
     }
-    applyStaticProperties(definition, options);
+    applyStaticProperties(definition.controller, options);
     $compileProvider.component(name, definition);
   }
 
