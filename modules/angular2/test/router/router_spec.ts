@@ -4,6 +4,7 @@ import {
   proxy,
   it,
   iit,
+  xit,
   ddescribe,
   expect,
   inject,
@@ -103,23 +104,23 @@ export function main() {
     // This test is disabled because it is flaky.
     // TODO: bford. make this test not flaky and reenable it.
     xit('should replace history when triggered by a hashchange with a redirect',
-       inject([AsyncTestCompleter], (async) => {
-         var outlet = makeDummyOutlet();
+        inject([AsyncTestCompleter], (async) => {
+          var outlet = makeDummyOutlet();
 
-         router.registerPrimaryOutlet(outlet)
-             .then((_) => router.config([
-               new Redirect({path: '/a', redirectTo: ['B']}),
-               new Route({path: '/b', component: DummyComponent, name: 'B'})
-             ]))
-             .then((_) => {
-               router.subscribe((_) => {
-                 expect(location.urlChanges).toEqual(['hash: a', 'replace: /b']);
-                 async.done();
-               });
+          router.registerPrimaryOutlet(outlet)
+              .then((_) => router.config([
+                new Redirect({path: '/a', redirectTo: ['B']}),
+                new Route({path: '/b', component: DummyComponent, name: 'B'})
+              ]))
+              .then((_) => {
+                router.subscribe((_) => {
+                  expect(location.urlChanges).toEqual(['hash: a', 'replace: /b']);
+                  async.done();
+                });
 
-               location.simulateHashChange('a');
-             });
-       }));
+                location.simulateHashChange('a');
+              });
+        }));
 
     it('should push history when triggered by a hashchange without a redirect',
        inject([AsyncTestCompleter], (async) => {
