@@ -181,7 +181,7 @@ describe('router', function () {
     if (options.template) definition.template = options.template;
     if (options.templateUrl) definition.templateUrl = options.templateUrl;
 
-    applyStaticProperties(definition, options);
+    applyStaticProperties(definition.controller, options);
     angular.module('testMod').component(name, definition);
   }
 
