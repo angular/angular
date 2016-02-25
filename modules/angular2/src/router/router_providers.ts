@@ -1,5 +1,4 @@
-// import {ROUTER_PROVIDERS_COMMON} from './router_providers_common';
-import {ROUTER_PROVIDERS_COMMON} from 'angular2/router';
+import {ROUTER_PROVIDERS_COMMON} from './router_providers_common';
 import {Provider} from 'angular2/core';
 import {CONST_EXPR} from 'angular2/src/facade/lang';
 import {BrowserPlatformLocation} from './location/browser_platform_location';
