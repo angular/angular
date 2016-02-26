@@ -13,5 +13,7 @@ class SpyRouter extends SpyObject implements Router {}
 class SpyRouterOutlet extends SpyObject implements RouterOutlet {}
 
 class SpyPlatformLocation extends SpyObject implements PlatformLocation {
-  String pathname;
+  String pathname = null;
+  String search = null;
+  String hash = null;
 }

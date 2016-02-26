@@ -15,5 +15,7 @@ export class SpyLocation extends SpyObject {
 
 export class SpyPlatformLocation extends SpyObject {
   pathname: string = null;
+  search: string = null;
+  hash: string = null;
   constructor() { super(SpyPlatformLocation); }
 }
