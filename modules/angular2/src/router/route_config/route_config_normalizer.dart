@@ -1,7 +1,9 @@
 library angular2.src.router.route_config_normalizer;
 
 import "route_config_decorator.dart";
-import "route_registry.dart";
+import "../route_definition.dart";
+import "../route_registry.dart";
+import "package:angular2/src/facade/lang.dart";
 import "package:angular2/src/facade/exceptions.dart" show BaseException;
 
 RouteDefinition normalizeRouteConfig(RouteDefinition config, RouteRegistry registry) {

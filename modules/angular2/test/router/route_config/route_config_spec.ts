@@ -28,7 +28,7 @@ import {
 } from 'angular2/router';
 
 import {ExceptionHandler} from 'angular2/src/facade/exceptions';
-import {LocationStrategy} from 'angular2/src/router/location_strategy';
+import {LocationStrategy} from 'angular2/src/router/location/location_strategy';
 import {MockLocationStrategy} from 'angular2/src/mock/mock_location_strategy';
 
 class _ArrayLogger {

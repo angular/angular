@@ -14,7 +14,7 @@ import {
   TestComponentBuilder
 } from 'angular2/testing_internal';
 
-import {SpyRouter, SpyLocation} from './spies';
+import {SpyRouter, SpyLocation} from '../spies';
 
 import {provide, Component, View} from 'angular2/core';
 import {By} from 'angular2/platform/common_dom';
