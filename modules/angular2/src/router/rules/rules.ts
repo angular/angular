@@ -39,12 +39,8 @@ export class RedirectRule implements AbstractRule {
     this.hash = this._pathRecognizer.hash;
   }
 
-  get path() {
-    return this._pathRecognizer.toString();
-  }
-  set path(val) {
-    throw new BaseException('you cannot set the path of a RedirectRule directly');
-  }
+  get path() { return this._pathRecognizer.toString(); }
+  set path(val) { throw new BaseException('you cannot set the path of a RedirectRule directly'); }
 
   /**
    * Returns `null` or a `ParsedUrl` representing the new path to match
@@ -73,18 +69,14 @@ export class RouteRule implements AbstractRule {
 
   // TODO: cache component instruction instances by params and by ParsedUrl instance
 
-  constructor(private _routePath : RoutePath, public handler: RouteHandler) {
+  constructor(private _routePath: RoutePath, public handler: RouteHandler) {
     this.specificity = this._routePath.specificity;
     this.hash = this._routePath.hash;
     this.terminal = this._routePath.terminal;
   }
 
-  get path() {
-    return this._routePath.toString();
-  }
-  set path(val) {
-    throw new BaseException('you cannot set the path of a RouteRule directly');
-  }
+  get path() { return this._routePath.toString(); }
+  set path(val) { throw new BaseException('you cannot set the path of a RouteRule directly'); }
 
   recognize(beginningSegment: Url): Promise<RouteMatch> {
     var res = this._routePath.matchUrl(beginningSegment);
@@ -118,9 +110,9 @@ export class RouteRule implements AbstractRule {
     if (this._cache.has(hashKey)) {
       return this._cache.get(hashKey);
     }
-    var instruction = new ComponentInstruction(urlPath, urlParams, this.handler.data,
-                                               this.handler.componentType, this.terminal,
-                                               this.specificity, params);
+    var instruction =
+        new ComponentInstruction(urlPath, urlParams, this.handler.data, this.handler.componentType,
+                                 this.terminal, this.specificity, params);
     this._cache.set(hashKey, instruction);
 
     return instruction;

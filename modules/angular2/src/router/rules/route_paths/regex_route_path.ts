@@ -3,7 +3,7 @@ import {Url, RootUrl} from '../../url_parser';
 import {RoutePath, GeneratedUrl, MatchedUrl} from './route_path';
 
 
-export interface RegexSerializer { (params: {[key: string]: any}): GeneratedUrl }
+export interface RegexSerializer { (params: {[key: string]: any}): GeneratedUrl; }
 
 export class RegexRoutePath implements RoutePath {
   public hash: string;
@@ -19,7 +19,7 @@ export class RegexRoutePath implements RoutePath {
 
   matchUrl(url: Url): MatchedUrl {
     var urlPath = url.toString();
-    var params: {[key: string]: string} = {}
+    var params: {[key: string]: string} = {};
     var match;
 
     // this slightly weird method is used to prevent strange Dart type mismatch errors
@@ -38,7 +38,5 @@ export class RegexRoutePath implements RoutePath {
 
   generateUrl(params: {[key: string]: any}): GeneratedUrl { return this._serializer(params); }
 
-  toString() {
-    return this._reString;
-  }
+  toString() { return this._reString; }
 }

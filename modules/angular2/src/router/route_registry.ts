@@ -373,7 +373,7 @@ export class RouteRegistry {
     }
 
     let linkParamIndex = 0;
-    let routeParams : {[key: string]: any} = {};
+    let routeParams: {[key: string]: any} = {};
 
     // first, recognize the primary route if one is provided
     if (linkParamIndex < linkParams.length && isString(linkParams[linkParamIndex])) {
@@ -485,11 +485,11 @@ export class RouteRegistry {
  * Given: ['/a/b', {c: 2}]
  * Returns: ['', 'a', 'b', {c: 2}]
  */
-function splitAndFlattenLinkParams(linkParams : any[]) {
+function splitAndFlattenLinkParams(linkParams: any[]) {
   var accumulation = [];
-  linkParams.forEach(function (item : any) {
+  linkParams.forEach(function(item: any) {
     if (isString(item)) {
-      var strItem : string = <string>item;
+      var strItem: string = <string>item;
       accumulation = accumulation.concat(strItem.split('/'));
     } else {
       accumulation.push(item);

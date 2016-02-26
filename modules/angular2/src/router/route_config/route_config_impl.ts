@@ -61,7 +61,14 @@ export class Route extends AbstractRoute {
   aux: string = null;
 
   constructor({name, useAsDefault, path, regex, serializer, data, component}: RouteDefinition) {
-    super({name: name, useAsDefault: useAsDefault, path: path, regex: regex, serializer: serializer, data: data});
+    super({
+      name: name,
+      useAsDefault: useAsDefault,
+      path: path,
+      regex: regex,
+      serializer: serializer,
+      data: data
+    });
     this.component = component;
   }
 }
@@ -91,7 +98,14 @@ export class AuxRoute extends AbstractRoute {
   component: any;
 
   constructor({name, useAsDefault, path, regex, serializer, data, component}: RouteDefinition) {
-    super({name: name, useAsDefault: useAsDefault, path: path, regex: regex, serializer: serializer, data: data});
+    super({
+      name: name,
+      useAsDefault: useAsDefault,
+      path: path,
+      regex: regex,
+      serializer: serializer,
+      data: data
+    });
     this.component = component;
   }
 }
@@ -126,7 +140,14 @@ export class AsyncRoute extends AbstractRoute {
   aux: string = null;
 
   constructor({name, useAsDefault, path, regex, serializer, data, loader}: RouteDefinition) {
-    super({name: name, useAsDefault: useAsDefault, path: path, regex: regex, serializer: serializer, data: data});
+    super({
+      name: name,
+      useAsDefault: useAsDefault,
+      path: path,
+      regex: regex,
+      serializer: serializer,
+      data: data
+    });
     this.loader = loader;
   }
 }
@@ -157,7 +178,14 @@ export class Redirect extends AbstractRoute {
   redirectTo: any[];
 
   constructor({name, useAsDefault, path, regex, serializer, data, redirectTo}: RouteDefinition) {
-    super({name: name, useAsDefault: useAsDefault, path: path, regex: regex, serializer: serializer, data: data});
+    super({
+      name: name,
+      useAsDefault: useAsDefault,
+      path: path,
+      regex: regex,
+      serializer: serializer,
+      data: data
+    });
     this.redirectTo = redirectTo;
   }
 }

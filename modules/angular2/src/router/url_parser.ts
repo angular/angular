@@ -2,16 +2,15 @@ import {StringMapWrapper} from 'angular2/src/facade/collection';
 import {isPresent, isBlank, RegExpWrapper, CONST_EXPR} from 'angular2/src/facade/lang';
 import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
 
-export function convertUrlParamsToArray(urlParams : {[key: string]: any}) : string[] {
+export function convertUrlParamsToArray(urlParams: {[key: string]: any}): string[] {
   var paramsArray = [];
-  StringMapWrapper.forEach(urlParams, (value, key) => {
-    paramsArray.push((value === true) ? key : key + '=' + value);
-  });
+  StringMapWrapper.forEach(
+      urlParams, (value, key) => { paramsArray.push((value === true) ? key : key + '=' + value); });
   return paramsArray;
 }
 
 // Convert an object of url parameters into a string that can be used in an URL
-export function serializeParams(urlParams : {[key: string]: any}, joiner = '&') : string {
+export function serializeParams(urlParams: {[key: string]: any}, joiner = '&'): string {
   return convertUrlParamsToArray(urlParams).join(joiner);
 }
 
@@ -37,7 +36,7 @@ export class Url {
   }
 
   private _matrixParamsToString(): string {
-    var paramString = serializeParams(this.params,';');
+    var paramString = serializeParams(this.params, ';');
     if (paramString.length > 0) {
       return ';' + paramString;
     }

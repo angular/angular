@@ -74,23 +74,19 @@ export function main() {
        }));
 
     it('should recognize a regex', inject([AsyncTestCompleter], (async) => {
-      function emptySerializer(params): GeneratedUrl {
-        return new GeneratedUrl('', {});
-      }
+         function emptySerializer(params): GeneratedUrl { return new GeneratedUrl('', {}); }
 
-      recognizer.config(new Route({
-        regex: '^(.+)/(.+)$',
-        serializer: emptySerializer,
-        component: DummyCmpA
-      }));
-      recognize(recognizer, '/first/second')
-          .then((solutions: RouteMatch[]) => {
-            expect(solutions.length).toBe(1);
+         recognizer.config(
+             new Route({regex: '^(.+)/(.+)$', serializer: emptySerializer, component: DummyCmpA}));
+         recognize(recognizer, '/first/second')
+             .then((solutions: RouteMatch[]) => {
+               expect(solutions.length).toBe(1);
                expect(getComponentType(solutions[0])).toEqual(DummyCmpA);
-               expect(getParams(solutions[0])).toEqual({'0': 'first/second', '1': 'first', '2':'second'});
+               expect(getParams(solutions[0]))
+                   .toEqual({'0': 'first/second', '1': 'first', '2': 'second'});
                async.done();
-          });
-    }));
+             });
+       }));
 
 
     it('should throw when given two routes that start with the same static segment', () => {
@@ -155,7 +151,7 @@ export function main() {
         serializer: simpleSerializer,
         component: DummyCmpA
       }));
-      var params = { a: 'first', b:'second', c:'third'};
+      var params = {a: 'first', b: 'second', c: 'third'};
       var result = recognizer.generate('Route1', params);
       expect(result.urlPath).toEqual('/first/second');
       expect(result.urlParams).toEqual(['c=third']);

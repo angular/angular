@@ -170,22 +170,22 @@ export class RuleSet {
     });
   }
 
-  private _getRoutePath(config : RouteDefinition) : RoutePath {
+  private _getRoutePath(config: RouteDefinition): RoutePath {
     if (isPresent(config.regex)) {
       if (isFunction(config.serializer)) {
         return new RegexRoutePath(config.regex, config.serializer);
       } else {
         throw new BaseException(
-          `Route provides a regex property, '${config.regex}', but no serializer property`);
+            `Route provides a regex property, '${config.regex}', but no serializer property`);
       }
     }
     if (isPresent(config.path)) {
       // Auxiliary routes do not have a slash at the start
       let path = (config instanceof AuxRoute && config.path.startsWith('/')) ?
-          config.path.substring(1) : config.path;
+                     config.path.substring(1) :
+                     config.path;
       return new ParamRoutePath(path);
     }
     throw new BaseException('Route must provide either a path or regex property');
   }
-
 }
