@@ -4,6 +4,9 @@ import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
 
 export function convertUrlParamsToArray(urlParams: {[key: string]: any}): string[] {
   var paramsArray = [];
+  if (isBlank(urlParams)) {
+    return [];
+  }
   StringMapWrapper.forEach(
       urlParams, (value, key) => { paramsArray.push((value === true) ? key : key + '=' + value); });
   return paramsArray;
