@@ -30,7 +30,7 @@ import {Control} from '../model';
 import {Validators, NG_VALIDATORS, NG_ASYNC_VALIDATORS} from '../validators';
 
 
-const controlNameBinding =
+const controlNameProvider =
     CONST_EXPR(new Provider(NgControl, {useExisting: forwardRef(() => NgControlName)}));
 
 /**
@@ -90,7 +90,7 @@ const controlNameBinding =
  */
 @Directive({
   selector: '[ngControl]',
-  bindings: [controlNameBinding],
+  providers: [controlNameProvider],
   inputs: ['name: ngControl', 'model: ngModel'],
   outputs: ['update: ngModelChange'],
   exportAs: 'ngForm'

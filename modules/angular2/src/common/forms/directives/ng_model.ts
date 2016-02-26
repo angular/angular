@@ -23,7 +23,7 @@ import {
   composeAsyncValidators
 } from './shared';
 
-const formControlBinding =
+const formControlProvider =
     CONST_EXPR(new Provider(NgControl, {useExisting: forwardRef(() => NgModel)}));
 
 /**
@@ -49,7 +49,7 @@ const formControlBinding =
  */
 @Directive({
   selector: '[ngModel]:not([ngControl]):not([ngFormControl])',
-  bindings: [formControlBinding],
+  providers: [formControlProvider],
   inputs: ['model: ngModel'],
   outputs: ['update: ngModelChange'],
   exportAs: 'ngForm'
