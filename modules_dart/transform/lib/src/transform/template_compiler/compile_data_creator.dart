@@ -174,6 +174,12 @@ class _CompileDataCreator {
     if (deps == null) return;
     for (var dep in deps) {
       dep.token = _resolveIdentifier(ngMetaMap, neededBy, dep.token);
+      if (dep.query != null) {
+        dep.query.selectors = dep.query.selectors.map((s) => _resolveIdentifier(ngMetaMap, neededBy, s)).toList();
+      }
+      if (dep.viewQuery != null) {
+        dep.viewQuery.selectors = dep.viewQuery.selectors.map((s) => _resolveIdentifier(ngMetaMap, neededBy, s)).toList();
+      }
     }
   }
 

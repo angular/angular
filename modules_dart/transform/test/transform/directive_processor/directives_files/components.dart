@@ -115,7 +115,16 @@ class ComponentWithProvidersUseClass {}
     selector: 'component-with-di-deps',
     template: '')
 class ComponentWithDiDeps {
-  ComponentWithDiDeps(ServiceDep arg1, @Inject(ServiceDep) arg2);
+  ComponentWithDiDeps(
+    ServiceDep arg1,
+    @Inject(ServiceDep) arg2,
+    @Attribute('one') arg3,
+    @Self() ServiceDep arg4,
+    @SkipSelf() ServiceDep arg5,
+    @Optional() ServiceDep arg6,
+    @Query(ServiceDep, descendants:true) arg6,
+    @ViewQuery("one,two") arg7
+  );
 }
 
 @Component(

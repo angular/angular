@@ -597,9 +597,17 @@ void allTests() {
       expect(cmp).toBeNotNull();
       var deps = cmp.type.diDeps;
       expect(deps).toBeNotNull();
-      expect(deps.length).toEqual(2);
+      expect(deps.length).toEqual(8);
       expect(deps[0].token.name).toEqual("ServiceDep");
       expect(deps[1].token.name).toEqual("ServiceDep");
+      expect(deps[2].isAttribute).toEqual(true);
+      expect(deps[3].isSelf).toEqual(true);
+      expect(deps[4].isSkipSelf).toEqual(true);
+      expect(deps[5].isOptional).toEqual(true);
+      expect(deps[6].query.selectors[0].name).toEqual("ServiceDep");
+      expect(deps[6].query.descendants).toEqual(true);
+      expect(deps[7].viewQuery.selectors[0]).toEqual("one");
+      expect(deps[7].viewQuery.selectors[1]).toEqual("two");
     });
 
     it('should populate `diDependency` using a string token.',
