@@ -21,10 +21,8 @@ function emptySerializer(params) {
 export function main() {
   describe('RegexRoutePath', () => {
 
-    it('should throw when given an invalid regex', () => {
-      expect(() => new RegexRoutePath('[abc', emptySerializer))
-          .toThrowError('Invalid regular expression: /[abc/: Unterminated character class');
-    });
+    it('should throw when given an invalid regex',
+       () => { expect(() => new RegexRoutePath('[abc', emptySerializer)).toThrowError(); });
 
     it('should parse a single param using capture groups', () => {
       var rec = new RegexRoutePath('^(.+)$', emptySerializer);
