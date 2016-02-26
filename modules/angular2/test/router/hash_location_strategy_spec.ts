@@ -13,16 +13,16 @@ import {
 } from 'angular2/testing_internal';
 
 import {Injector, provide} from 'angular2/core';
-import {CONST_EXPR} from 'angular2/src/facade/lang';
 
 import {PlatformLocation} from 'angular2/src/router/platform_location';
-import {LocationStrategy, APP_BASE_HREF} from 'angular2/src/router/location_strategy';
+import {APP_BASE_HREF} from 'angular2/src/router/location_strategy';
 import {HashLocationStrategy} from 'angular2/src/router/hash_location_strategy';
 import {SpyPlatformLocation} from './spies';
 
 export function main() {
   describe('HashLocationStrategy', () => {
-    var platformLocation, locationStrategy;
+    var platformLocation: SpyPlatformLocation;
+    var locationStrategy: HashLocationStrategy;
 
     beforeEachProviders(
         () => [HashLocationStrategy, provide(PlatformLocation, {useClass: SpyPlatformLocation})]);
@@ -161,6 +161,26 @@ export function main() {
 
         locationStrategy.pushState(null, 'Title', '', '');
         expect(platformLocation.spy('pushState')).toHaveBeenCalledWith(null, 'Title', '#/app/');
+      });
+    });
+
+    describe('hashLocationStrategy bugs', () => {
+      beforeEach(inject([PlatformLocation, HashLocationStrategy], (pl, ls) => {
+        platformLocation = pl;
+        locationStrategy = ls;
+        platformLocation.spy('pushState');
+        platformLocation.pathname = '';
+      }));
+
+      it('should not include platform search', () => {
+        platformLocation.search = '?donotinclude';
+        expect(locationStrategy.path()).toEqual('');
+      });
+
+      it('should not include platform search even with hash', () => {
+        platformLocation.hash = '#hashPath';
+        platformLocation.search = '?donotinclude';
+        expect(locationStrategy.path()).toEqual('hashPath');
       });
     });
   });
