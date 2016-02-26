@@ -9,10 +9,10 @@ import {
   ComponentInstruction,
   Instruction,
 } from './instruction';
-import {RouterOutlet} from './router_outlet';
-import {Location} from './location';
-import {getCanActivateHook} from './route_lifecycle_reflector';
-import {RouteDefinition} from './route_config_impl';
+import {RouterOutlet} from './directives/router_outlet';
+import {Location} from './location/location';
+import {getCanActivateHook} from './lifecycle/route_lifecycle_reflector';
+import {RouteDefinition} from './route_config/route_config_impl';
 
 let _resolveToTrue = PromiseWrapper.resolve(true);
 let _resolveToFalse = PromiseWrapper.resolve(false);

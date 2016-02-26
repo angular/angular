@@ -24,9 +24,9 @@ import {
   AuxRoute,
   Redirect,
   RouteDefinition
-} from './route_config_impl';
-import {PathMatch, RedirectMatch, RouteMatch} from './route_recognizer';
-import {ComponentRecognizer} from './component_recognizer';
+} from './route_config/route_config_impl';
+import {PathMatch, RedirectMatch, RouteMatch} from './rules/rules';
+import {RuleSet} from './rules/rule_set';
 import {
   Instruction,
   ResolvedInstruction,
@@ -35,12 +35,20 @@ import {
   DefaultInstruction
 } from './instruction';
 
-import {normalizeRouteConfig, assertComponentExists} from './route_config_nomalizer';
-import {parser, Url, pathSegmentsToUrl} from './url_parser';
+import {normalizeRouteConfig, assertComponentExists} from './route_config/route_config_normalizer';
+import {parser, Url, convertUrlParamsToArray, pathSegmentsToUrl} from './url_parser';
 
 var _resolveToNull = PromiseWrapper.resolve(null);
 
-
+// A LinkItemArray is an array, which describes a set of routes
+// The items in the array are found in groups:
+// - the first item is the name of the route
+// - the next items are:
+//   - an object containing parameters
+//   - or an array describing an aux route
+// export type LinkRouteItem = string | Object;
+// export type LinkItem = LinkRouteItem | Array<LinkRouteItem>;
+// export type LinkItemArray = Array<LinkItem>;
 
 /**
  * Token used to bind the component with the top-level {@link RouteConfig}s for the
@@ -78,7 +86,7 @@ export const ROUTER_PRIMARY_COMPONENT: OpaqueToken =
  */
 @Injectable()
 export class RouteRegistry {
-  private _rules = new Map<any, ComponentRecognizer>();
+  private _rules = new Map<any, RuleSet>();
 
   constructor(@Inject(ROUTER_PRIMARY_COMPONENT) private _rootComponent: Type) {}
 
@@ -95,14 +103,14 @@ export class RouteRegistry {
       assertComponentExists(config.component, config.path);
     }
 
-    var recognizer: ComponentRecognizer = this._rules.get(parentComponent);
+    var rules = this._rules.get(parentComponent);
 
-    if (isBlank(recognizer)) {
-      recognizer = new ComponentRecognizer();
-      this._rules.set(parentComponent, recognizer);
+    if (isBlank(rules)) {
+      rules = new RuleSet();
+      this._rules.set(parentComponent, rules);
     }
 
-    var terminal = recognizer.config(config);
+    var terminal = rules.config(config);
 
     if (config instanceof Route) {
       if (terminal) {
@@ -159,15 +167,14 @@ export class RouteRegistry {
     var parentComponent = isPresent(parentInstruction) ? parentInstruction.component.componentType :
                                                          this._rootComponent;
 
-    var componentRecognizer = this._rules.get(parentComponent);
-    if (isBlank(componentRecognizer)) {
+    var rules = this._rules.get(parentComponent);
+    if (isBlank(rules)) {
       return _resolveToNull;
     }
 
     // Matches some beginning part of the given URL
     var possibleMatches: Promise<RouteMatch>[] =
-        _aux ? componentRecognizer.recognizeAuxiliary(parsedUrl) :
-               componentRecognizer.recognize(parsedUrl);
+        _aux ? rules.recognizeAuxiliary(parsedUrl) : rules.recognize(parsedUrl);
 
     var matchPromises: Promise<Instruction>[] = possibleMatches.map(
         (candidate: Promise<RouteMatch>) => candidate.then((candidate: RouteMatch) => {
@@ -184,9 +191,9 @@ export class RouteRegistry {
               return instruction;
             }
 
-            var newAncestorComponents = ancestorInstructions.concat([instruction]);
+            var newAncestorInstructions = ancestorInstructions.concat([instruction]);
 
-            return this._recognize(candidate.remaining, newAncestorComponents)
+            return this._recognize(candidate.remaining, newAncestorInstructions)
                 .then((childInstruction) => {
                   if (isBlank(childInstruction)) {
                     return null;
@@ -359,14 +366,14 @@ export class RouteRegistry {
       componentInstruction = prevInstruction.component;
     }
 
-    var componentRecognizer = this._rules.get(parentComponentType);
-    if (isBlank(componentRecognizer)) {
+    var rules = this._rules.get(parentComponentType);
+    if (isBlank(rules)) {
       throw new BaseException(
           `Component "${getTypeNameForDebugging(parentComponentType)}" has no route config.`);
     }
 
     let linkParamIndex = 0;
-    let routeParams = {};
+    let routeParams: {[key: string]: any} = {};
 
     // first, recognize the primary route if one is provided
     if (linkParamIndex < linkParams.length && isString(linkParams[linkParamIndex])) {
@@ -382,8 +389,7 @@ export class RouteRegistry {
           linkParamIndex += 1;
         }
       }
-      var routeRecognizer =
-          (_aux ? componentRecognizer.auxNames : componentRecognizer.names).get(routeName);
+      var routeRecognizer = (_aux ? rules.auxRulesByName : rules.rulesByName).get(routeName);
 
       if (isBlank(routeRecognizer)) {
         throw new BaseException(
@@ -394,17 +400,17 @@ export class RouteRegistry {
       // we'll figure out the rest of the route when we resolve the instruction and
       // perform a navigation
       if (isBlank(routeRecognizer.handler.componentType)) {
-        var compInstruction = routeRecognizer.generateComponentPathValues(routeParams);
+        var generatedUrl = routeRecognizer.generateComponentPathValues(routeParams);
         return new UnresolvedInstruction(() => {
           return routeRecognizer.handler.resolveComponentType().then((_) => {
             return this._generate(linkParams, ancestorInstructions, prevInstruction, _aux,
                                   _originalLink);
           });
-        }, compInstruction['urlPath'], compInstruction['urlParams']);
+        }, generatedUrl.urlPath, convertUrlParamsToArray(generatedUrl.urlParams));
       }
 
-      componentInstruction = _aux ? componentRecognizer.generateAuxiliary(routeName, routeParams) :
-                                    componentRecognizer.generate(routeName, routeParams);
+      componentInstruction = _aux ? rules.generateAuxiliary(routeName, routeParams) :
+                                    rules.generate(routeName, routeParams);
     }
 
     // Next, recognize auxiliary instructions.
@@ -442,11 +448,11 @@ export class RouteRegistry {
   }
 
   public hasRoute(name: string, parentComponent: any): boolean {
-    var componentRecognizer: ComponentRecognizer = this._rules.get(parentComponent);
-    if (isBlank(componentRecognizer)) {
+    var rules = this._rules.get(parentComponent);
+    if (isBlank(rules)) {
       return false;
     }
-    return componentRecognizer.hasRoute(name);
+    return rules.hasRoute(name);
   }
 
   public generateDefault(componentCursor: Type): Instruction {
@@ -454,22 +460,22 @@ export class RouteRegistry {
       return null;
     }
 
-    var componentRecognizer = this._rules.get(componentCursor);
-    if (isBlank(componentRecognizer) || isBlank(componentRecognizer.defaultRoute)) {
+    var rules = this._rules.get(componentCursor);
+    if (isBlank(rules) || isBlank(rules.defaultRule)) {
       return null;
     }
 
     var defaultChild = null;
-    if (isPresent(componentRecognizer.defaultRoute.handler.componentType)) {
-      var componentInstruction = componentRecognizer.defaultRoute.generate({});
-      if (!componentRecognizer.defaultRoute.terminal) {
-        defaultChild = this.generateDefault(componentRecognizer.defaultRoute.handler.componentType);
+    if (isPresent(rules.defaultRule.handler.componentType)) {
+      var componentInstruction = rules.defaultRule.generate({});
+      if (!rules.defaultRule.terminal) {
+        defaultChild = this.generateDefault(rules.defaultRule.handler.componentType);
       }
       return new DefaultInstruction(componentInstruction, defaultChild);
     }
 
     return new UnresolvedInstruction(() => {
-      return componentRecognizer.defaultRoute.handler.resolveComponentType().then(
+      return rules.defaultRule.handler.resolveComponentType().then(
           (_) => this.generateDefault(componentCursor));
     });
   }
@@ -479,16 +485,19 @@ export class RouteRegistry {
  * Given: ['/a/b', {c: 2}]
  * Returns: ['', 'a', 'b', {c: 2}]
  */
-function splitAndFlattenLinkParams(linkParams: any[]): any[] {
-  return linkParams.reduce((accumulation: any[], item) => {
+function splitAndFlattenLinkParams(linkParams: any[]) {
+  var accumulation = [];
+  linkParams.forEach(function(item: any) {
     if (isString(item)) {
-      let strItem: string = item;
-      return accumulation.concat(strItem.split('/'));
+      var strItem: string = <string>item;
+      accumulation = accumulation.concat(strItem.split('/'));
+    } else {
+      accumulation.push(item);
     }
-    accumulation.push(item);
-    return accumulation;
-  }, []);
+  });
+  return accumulation;
 }
+
 
 /*
  * Given a list of instructions, returns the most specific instruction

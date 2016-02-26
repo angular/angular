@@ -43,7 +43,7 @@ import {RootRouter} from 'angular2/src/router/router';
 
 import {DOM} from 'angular2/src/platform/dom/dom_adapter';
 import {TEMPLATE_TRANSFORMS} from 'angular2/compiler';
-import {RouterLinkTransform} from 'angular2/src/router/router_link_transform';
+import {RouterLinkTransform} from 'angular2/src/router/directives/router_link_transform';
 
 export function main() {
   describe('routerLink directive', function() {
