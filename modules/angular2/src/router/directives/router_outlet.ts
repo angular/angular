@@ -1,7 +1,6 @@
 import {PromiseWrapper} from 'angular2/src/facade/async';
 import {StringMapWrapper} from 'angular2/src/facade/collection';
 import {isBlank, isPresent} from 'angular2/src/facade/lang';
-import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
 
 import {
   Directive,
@@ -11,7 +10,8 @@ import {
   ElementRef,
   Injector,
   provide,
-  Dependency
+  Dependency,
+  OnDestroy
 } from 'angular2/core';
 
 import * as routerMod from '../router';
@@ -32,7 +32,7 @@ let _resolveToTrue = PromiseWrapper.resolve(true);
  * ```
  */
 @Directive({selector: 'router-outlet'})
-export class RouterOutlet {
+export class RouterOutlet implements OnDestroy {
   name: string = null;
   private _componentRef: ComponentRef = null;
   private _currentInstruction: ComponentInstruction = null;
@@ -81,8 +81,11 @@ export class RouterOutlet {
     var previousInstruction = this._currentInstruction;
     this._currentInstruction = nextInstruction;
 
+    // it's possible the component is removed before it can be reactivated (if nested withing
+    // another dynamically loaded component, for instance). In that case, we simply activate
+    // a new one.
     if (isBlank(this._componentRef)) {
-      throw new BaseException(`Cannot reuse an outlet that does not contain a component.`);
+      return this.activate(nextInstruction);
     }
     return PromiseWrapper.resolve(
         hasLifecycleHook(hookMod.routerOnReuse, this._currentInstruction.componentType) ?
@@ -157,4 +160,6 @@ export class RouterOutlet {
     }
     return PromiseWrapper.resolve(result);
   }
+
+  ngOnDestroy(): void { this._parentRouter.unregisterPrimaryOutlet(this); }
 }
