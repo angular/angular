@@ -67,6 +67,7 @@ class ReflectionInfoVisitor extends RecursiveAstVisitor<ReflectionInfoModel> {
 
   @override
   ReflectionInfoModel visitClassDeclaration(ClassDeclaration node) {
+    if (node.isAbstract) return null;
     if (!node.metadata
         .any((a) => _annotationMatcher.hasMatch(a.name, assetId))) {
       return null;
