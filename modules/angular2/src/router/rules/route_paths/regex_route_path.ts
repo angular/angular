@@ -1,4 +1,4 @@
-import {RegExpWrapper, isBlank, StringWrapper} from 'angular2/src/facade/lang';
+import {RegExpWrapper, RegExpMatcherWrapper, isBlank} from 'angular2/src/facade/lang';
 import {Url, RootUrl} from '../../url_parser';
 import {RoutePath, GeneratedUrl, MatchedUrl} from './route_path';
 
@@ -20,10 +20,8 @@ export class RegexRoutePath implements RoutePath {
   matchUrl(url: Url): MatchedUrl {
     var urlPath = url.toString();
     var params: {[key: string]: string} = {};
-    var match;
-
-    // this slightly weird method is used to prevent strange Dart type mismatch errors
-    StringWrapper.replaceAllMapped(urlPath, this._regex, (m) => { match = m; });
+    var matcher = RegExpWrapper.matcher(this._regex, urlPath);
+    var match = RegExpMatcherWrapper.next(matcher);
 
     if (isBlank(match)) {
       return null;
