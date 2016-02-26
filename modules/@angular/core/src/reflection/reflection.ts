@@ -7,3 +7,4 @@ import {ReflectionCapabilities} from './reflection_capabilities';
  * about symbols.
  */
 export var reflector = new Reflector(new ReflectionCapabilities());
+

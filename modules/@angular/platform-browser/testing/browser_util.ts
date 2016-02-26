@@ -50,6 +50,8 @@ export class BrowserDetection {
   }
 }
 
+BrowserDetection.setup();
+
 export function dispatchEvent(element, eventType): void {
   getDOM().dispatchEvent(element, getDOM().createEvent(eventType));
 }

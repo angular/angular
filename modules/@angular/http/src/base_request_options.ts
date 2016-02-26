@@ -43,8 +43,7 @@ export class RequestOptions {
   /**
    * Body to be used when creating a {@link Request}.
    */
-  // TODO: support FormData, Blob, URLSearchParams
-  body: string;
+  body: any;
   /**
    * Url with which to perform a {@link Request}.
    */

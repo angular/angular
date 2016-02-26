@@ -36,3 +36,16 @@ export enum ResponseType {
   Error,
   Opaque
 }
+
+/**
+ * Supported content type to be automatically associated with a {@link Request}.
+ */
+export enum ContentType {
+  NONE,
+  JSON,
+  FORM,
+  FORM_DATA,
+  TEXT,
+  BLOB,
+  ARRAY_BUFFER
+}
