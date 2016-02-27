@@ -2,7 +2,14 @@ import {TemplateRef, Type} from 'angular2/core';
 import {ElementRef} from 'angular2/core';
 import {ComponentRef} from 'angular2/core';
 
-import {BaseException} from 'angular2/src/facade/exceptions';
+import {
+  MdNullPortalHostException,
+  MdPortalAlreadyAttachedException,
+  MdNoPortalAttachedException,
+  MdNullPortalException,
+  MdPortalHostAlreadyDisposedException,
+  MdUnknownPortalTypeException
+} from './portal-exceptions';
 
 
 /**
@@ -15,11 +22,11 @@ export abstract class Portal<T> {
   /** Attach this portal to a host. */
   attach(host: PortalHost): Promise<T> {
     if (host == null) {
-      throw new BaseException('Attempting to attach a portal to a null host');
+      throw new MdNullPortalHostException();
     }
 
     if (host.hasAttached()) {
-      throw new BaseException('Host already has a portal attached');
+      throw new MdPortalAlreadyAttachedException();
     }
 
     this._attachedHost = host;
@@ -30,7 +37,7 @@ export abstract class Portal<T> {
   detach(): Promise<void> {
     let host = this._attachedHost;
     if (host == null) {
-      throw new BaseException('Portal has no host from which to detach');
+      throw new MdNoPortalAttachedException();
     }
 
     this._attachedHost = null;
@@ -145,15 +152,15 @@ export abstract class BasePortalHost implements PortalHost {
 
   attach(portal: Portal<any>): Promise<any> {
     if (portal == null) {
-      throw new BaseException('Must provide a portal to attach');
+      throw new MdNullPortalException();
     }
 
     if (this.hasAttached()) {
-      throw new BaseException('A portal is already attached');
+      throw new MdPortalAlreadyAttachedException();
     }
 
     if (this._isDisposed) {
-      throw new BaseException('This PortalHost has already been disposed');
+      throw new MdPortalHostAlreadyDisposedException();
     }
 
     if (portal instanceof ComponentPortal) {
@@ -164,9 +171,7 @@ export abstract class BasePortalHost implements PortalHost {
       return this.attachTemplatePortal(portal);
     }
 
-    throw new BaseException(
-        'Attempting to attach an unknown Portal type. ' +
-        'BasePortalHost accepts either a ComponentPortal or a TemplatePortal.');
+    throw new MdUnknownPortalTypeException();
   }
 
   abstract attachComponentPortal(portal: ComponentPortal): Promise<ComponentRef>;
