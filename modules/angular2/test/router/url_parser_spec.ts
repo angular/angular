@@ -15,7 +15,7 @@ import {UrlParser, Url} from 'angular2/src/router/url_parser';
 
 export function main() {
   describe('ParsedUrl', () => {
-    var urlParser;
+    var urlParser: UrlParser;
 
     beforeEach(() => { urlParser = new UrlParser(); });
 
