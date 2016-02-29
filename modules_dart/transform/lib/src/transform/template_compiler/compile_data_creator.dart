@@ -215,14 +215,24 @@ class _CompileDataCreator {
     } else if (_isPrimitive(id.name)) {
       return id;
 
+      // TODO: move the following if statements into transformer configuration
     } else if (id.name == "Window") {
       return new CompileIdentifierMetadata(name: "Window", moduleUrl: 'dart:html');
 
     } else if (id.name == "Clock") {
-      return new CompileIdentifierMetadata(name: "Clock", moduleUrl: 'dart:time');
+      return new CompileIdentifierMetadata(name: "Clock", moduleUrl: 'asset:quiver/time/clock.dart');
 
     } else if (id.name == "Profiler") {
-      return new CompileIdentifierMetadata(name: "Clock", moduleUrl: 'profiler');
+      return new CompileIdentifierMetadata(name: "Profiler", moduleUrl: 'asset:perf_api/perf_api.dart');
+
+    } else if (id.name == "Campaign") {
+      return new CompileIdentifierMetadata(name: "Campaign", moduleUrl: 'unspecified');
+
+    } else if (id.name == "PreloadData") {
+      return new CompileIdentifierMetadata(name: "PreloadData", moduleUrl: 'unspecified');
+
+    } else if (id.name == "FiberMarket") {
+      return new CompileIdentifierMetadata(name: "FiberMarket", moduleUrl: 'unspecified');
 
     } else {
       log.error(
