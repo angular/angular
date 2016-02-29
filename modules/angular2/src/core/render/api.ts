@@ -13,7 +13,6 @@ export class RenderDebugInfo {
 
 export interface ParentRenderer { renderComponent(componentType: RenderComponentType): Renderer; }
 
-@Injectable()
 export abstract class Renderer implements ParentRenderer {
   abstract renderComponent(componentType: RenderComponentType): Renderer;
 

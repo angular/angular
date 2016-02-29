@@ -1,5 +1,4 @@
 import {unimplemented} from 'angular2/src/facade/exceptions';
-import {Injectable} from 'angular2/src/core/di';
 import {AppElement} from './element';
 
 /**
@@ -12,7 +11,6 @@ import {AppElement} from './element';
  * An `ElementRef` is backed by a render-specific element. In the browser, this is usually a DOM
  * element.
  */
-@Injectable()
 export abstract class ElementRef {
   /**
    * The underlying native element or `null` if direct access to native elements is not supported
