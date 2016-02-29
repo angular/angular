@@ -280,6 +280,14 @@ void allTests() {
     });
   });
 
+  it('should record information about abstract classes',
+      () async {
+    var model = (await _testCreateModel(
+        'abstract_classes/classes.dart')).ngDeps;
+
+    expect(model.reflectables.first.name).toEqual("Service");
+  });
+
   it('should not throw/hang on invalid urls', () async {
     var logger = new RecordingLogger();
     await _testCreateModel('invalid_url_files/hello.dart', logger: logger);
