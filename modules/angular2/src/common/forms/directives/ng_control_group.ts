@@ -31,14 +31,11 @@ const controlGroupProvider =
  * ```typescript
  * @Component({
  *   selector: 'my-app',
- *   directives: [FORM_DIRECTIVES],
- * })
- * @View({
  *   template: `
  *     <div>
  *       <h2>Angular2 Control &amp; ControlGroup Example</h2>
  *       <form #f="ngForm">
- *         <div ngControlGroup="name" #cg-name="form">
+ *         <div ngControlGroup="name" #cgName="ngForm">
  *           <h3>Enter your name:</h3>
  *           <p>First: <input ngControl="first" required></p>
  *           <p>Middle: <input ngControl="middle"></p>
@@ -53,8 +50,7 @@ const controlGroupProvider =
  *         <pre>{{valueOf(f)}}</pre>
  *       </form>
  *     </div>
- *   `,
- *   directives: [FORM_DIRECTIVES]
+ *   `
  * })
  * export class App {
  *   valueOf(cg: NgControlGroup): string {
