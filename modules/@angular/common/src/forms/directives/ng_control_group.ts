@@ -33,12 +33,11 @@ export const controlGroupProvider: any =
  * ```typescript
  * @Component({
  *   selector: 'my-app',
- *   directives: [FORM_DIRECTIVES],
  *   template: `
  *     <div>
  *       <h2>Angular Control &amp; ControlGroup Example</h2>
  *       <form #f="ngForm">
- *         <div ngControlGroup="name" #cg-name="form">
+ *         <div ngControlGroup="name" #cgName="ngForm">
  *           <h3>Enter your name:</h3>
  *           <p>First: <input ngControl="first" required></p>
  *           <p>Middle: <input ngControl="middle"></p>
