@@ -58,9 +58,6 @@ $md-sidenav-push-background-color: md-color($md-background, dialog) !default;
   // Hide the sidenavs when they're closed.
   overflow-x: hidden;
 
-  transition: margin-left $swift-ease-out-duration $swift-ease-out-timing-function,
-              margin-right $swift-ease-out-duration $swift-ease-out-timing-function;
-
   & > .md-sidenav-backdrop {
     position: absolute;
     top: 0;
@@ -83,7 +80,6 @@ $md-sidenav-push-background-color: md-color($md-background, dialog) !default;
     &.md-sidenav-shown {
       visibility: visible;
       background-color: $md-sidenav-backdrop-color;
-      transition: background-color $swift-ease-out-duration $swift-ease-out-timing-function;
     }
   }
 
@@ -91,10 +87,6 @@ $md-sidenav-push-background-color: md-color($md-background, dialog) !default;
     @include md-stacking-context();
 
     display: block;
-    transition: margin-left $swift-ease-out-duration $swift-ease-out-timing-function,
-                margin-right $swift-ease-out-duration $swift-ease-out-timing-function,
-                left $swift-ease-out-duration $swift-ease-out-timing-function,
-                right $swift-ease-out-duration $swift-ease-out-timing-function;
   }
 
   > md-sidenav {
@@ -107,8 +99,6 @@ $md-sidenav-push-background-color: md-color($md-background, dialog) !default;
     z-index: 3;
 
     background-color: $md-sidenav-background-color;
-
-    transition: transform $swift-ease-out-duration $swift-ease-out-timing-function;
 
     @include md-sidenav-transition(0, -100%);
 

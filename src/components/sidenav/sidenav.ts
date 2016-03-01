@@ -11,6 +11,7 @@ import {
   Output,
   QueryList,
   Type,
+  View,
   ChangeDetectionStrategy
 } from 'angular2/core';
 import {PromiseWrapper, ObservableWrapper, EventEmitter} from 'angular2/src/facade/async';
@@ -155,7 +156,7 @@ export class MdSidenav {
    * @param e The event.
    * @private
    */
-  @HostListener('transitionend', ['$event']) private onTransitionEnd_(e: any) {
+  @HostListener('transitionend', ['$event']) onTransitionEnd(e: any) {
     if (e.target == this.elementRef_.nativeElement
         // Simpler version to check for prefixes.
         && e.propertyName.endsWith('transform')) {
@@ -241,12 +242,17 @@ export class MdSidenav {
  */
 @Component({
   selector: 'md-sidenav-layout',
-  directives: [MdSidenav],
-  templateUrl: './components/sidenav/sidenav.html',
-  styleUrls: ['./components/sidenav/sidenav.css'],
   // Do not use ChangeDetectionStrategy.OnPush. It does not work for this component because
   // technically it is a sibling of MdSidenav (on the content tree) and isn't updated when MdSidenav
   // changes its state.
+})
+@View({
+  directives: [MdSidenav],
+  templateUrl: './components/sidenav/sidenav.html',
+  styleUrls: [
+    './components/sidenav/sidenav.css',
+    './components/sidenav/sidenav-transitions.css',
+  ],
 })
 export class MdSidenavLayout implements AfterContentInit {
   @ContentChildren(MdSidenav) private sidenavs_: QueryList<MdSidenav>;
@@ -269,10 +275,10 @@ export class MdSidenavLayout implements AfterContentInit {
   }
 
 
-
   /** The sidenav at the start/end alignment, independent of direction. */
   private start_: MdSidenav;
   private end_: MdSidenav;
+
   /**
    * The sidenav at the left/right. When direction changes, these will change as well.
    * They're used as aliases for the above to set the left/right style properly.

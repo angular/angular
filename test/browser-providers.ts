@@ -27,7 +27,7 @@ export type AliasMap = { [name: string]: string[] };
 const configuration: { [name: string]: ConfigurationInfo } = {
   'Chrome':       { unitTest: {target: 'SL', required: true}, e2e: {target: null, required: true}},
   'Firefox':      { unitTest: {target: 'SL', required: true}, e2e: {target: null, required: true}},
-  'ChromeBeta':   { unitTest: {target: 'SL', required: true}, e2e: {target: null, required: true}},
+  'ChromeBeta':   { unitTest: {target: 'SL', required: false}, e2e: {target: null, required: true}},
   'FirefoxBeta':  { unitTest: {target: 'SL', required: true}, e2e: {target: null, required: true}},
   'ChromeDev':    { unitTest: {target: null, required: true}, e2e: {target: null, required: true}},
   'FirefoxDev':   { unitTest: {target: null, required: true}, e2e: {target: null, required: true}},
