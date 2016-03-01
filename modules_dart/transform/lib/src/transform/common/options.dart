@@ -11,6 +11,7 @@ const FORMAT_CODE_PARAM = 'format_code';
 const REFLECT_PROPERTIES_AS_ATTRIBUTES = 'reflect_properties_as_attributes';
 const PLATFORM_DIRECTIVES = 'platform_directives';
 const PLATFORM_PIPES = 'platform_pipes';
+const RESOLVED_IDENTIFIERS = 'resolved_identifiers';
 const INIT_REFLECTOR_PARAM = 'init_reflector';
 const INLINE_VIEWS_PARAM = 'inline_views';
 const MIRROR_MODE_PARAM = 'mirror_mode';
@@ -53,6 +54,9 @@ class TransformerOptions {
   /// Format of an item in the list:
   /// angular2/lib/src/common/pipes.dart#COMMON_PIPES
   final List<String> platformPipes;
+
+  /// A map of identifier/asset pairs used when resolving identifiers.
+  final Map<String, String> resolvedIdentifiers;
 
   /// Whether to format generated code.
   /// Code that is only modified will never be formatted because doing so may
@@ -98,6 +102,7 @@ class TransformerOptions {
       this.lazyTransformers,
       this.platformDirectives,
       this.platformPipes,
+      this.resolvedIdentifiers,
       this.reflectPropertiesAsAttributes});
 
   factory TransformerOptions(List<String> entryPoints,
@@ -111,6 +116,7 @@ class TransformerOptions {
       bool reflectPropertiesAsAttributes: false,
       List<String> platformDirectives,
       List<String> platformPipes,
+      Map<String, String> resolvedIdentifiers,
       bool lazyTransformers: false,
       bool formatCode: false}) {
     var annotationMatcher = new AnnotationMatcher()
@@ -125,6 +131,7 @@ class TransformerOptions {
         reflectPropertiesAsAttributes: reflectPropertiesAsAttributes,
         platformDirectives: platformDirectives,
         platformPipes: platformPipes,
+        resolvedIdentifiers: resolvedIdentifiers,
         inlineViews: inlineViews,
         lazyTransformers: lazyTransformers,
         formatCode: formatCode);

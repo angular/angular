@@ -29,10 +29,12 @@ Future<CompileDataResults> createCompileData(
     AssetReader reader,
     AssetId assetId,
     List<String> platformDirectives,
-    List<String> platformPipes) async {
+    List<String> platformPipes,
+    Map<String, String> resolvedIdentifiers
+    ) async {
   return logElapsedAsync(() async {
     final creator = await _CompileDataCreator.create(
-        reader, assetId, platformDirectives, platformPipes);
+        reader, assetId, platformDirectives, platformPipes, resolvedIdentifiers);
     return creator != null ? creator.createCompileData() : null;
   }, operationName: 'createCompileData', assetId: assetId);
 }
@@ -53,19 +55,20 @@ class _CompileDataCreator {
   final NgMeta ngMeta;
   final List<String> platformDirectives;
   final List<String> platformPipes;
+  final Map<String, String> resolvedIdentifiers;
 
   _CompileDataCreator(this.reader, this.entryPoint, this.ngMeta,
-      this.platformDirectives, this.platformPipes);
+      this.platformDirectives, this.platformPipes, this.resolvedIdentifiers);
 
   static Future<_CompileDataCreator> create(AssetReader reader, AssetId assetId,
-      List<String> platformDirectives, List<String> platformPipes) async {
+      List<String> platformDirectives, List<String> platformPipes, Map<String, String> resolvedIdentifiers) async {
     if (!(await reader.hasInput(assetId))) return null;
     final json = await reader.readAsString(assetId);
     if (json == null || json.isEmpty) return null;
 
     final ngMeta = new NgMeta.fromJson(JSON.decode(json));
     return new _CompileDataCreator(
-        reader, assetId, ngMeta, platformDirectives, platformPipes);
+        reader, assetId, ngMeta, platformDirectives, platformPipes, resolvedIdentifiers);
   }
 
   NgDepsModel get ngDeps => ngMeta.ngDeps;
@@ -215,24 +218,8 @@ class _CompileDataCreator {
     } else if (_isPrimitive(id.name)) {
       return id;
 
-      // TODO: move the following if statements into transformer configuration
-    } else if (id.name == "Window") {
-      return new CompileIdentifierMetadata(name: "Window", moduleUrl: 'dart:html');
-
-    } else if (id.name == "Clock") {
-      return new CompileIdentifierMetadata(name: "Clock", moduleUrl: 'asset:quiver/time/clock.dart');
-
-    } else if (id.name == "Profiler") {
-      return new CompileIdentifierMetadata(name: "Profiler", moduleUrl: 'asset:perf_api/perf_api.dart');
-
-    } else if (id.name == "Campaign") {
-      return new CompileIdentifierMetadata(name: "Campaign", moduleUrl: 'unspecified');
-
-    } else if (id.name == "PreloadData") {
-      return new CompileIdentifierMetadata(name: "PreloadData", moduleUrl: 'unspecified');
-
-    } else if (id.name == "FiberMarket") {
-      return new CompileIdentifierMetadata(name: "FiberMarket", moduleUrl: 'unspecified');
+    } else if (resolvedIdentifiers != null && resolvedIdentifiers.containsKey(id.name)) {
+      return new CompileIdentifierMetadata(name: id.name, moduleUrl: resolvedIdentifiers[id.name]);
 
     } else {
       log.warning(
