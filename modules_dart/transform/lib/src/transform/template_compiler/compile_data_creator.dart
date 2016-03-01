@@ -235,7 +235,7 @@ class _CompileDataCreator {
       return new CompileIdentifierMetadata(name: "FiberMarket", moduleUrl: 'unspecified');
 
     } else {
-      log.error(
+      log.warning(
           'Missing identifier "${id.name}" '
               'needed by "${neededBy.name}" from metadata map',
           asset: entryPoint);
