@@ -120,14 +120,29 @@ export class CompileDiDependencyMetadata {
   }
 
   static fromJson(data: {[key: string]: any}): CompileDiDependencyMetadata {
-    return new CompileDiDependencyMetadata(
-        {token: objFromJson(data['token'], CompileIdentifierMetadata.fromJson)});
+    return new CompileDiDependencyMetadata({
+      token: objFromJson(data['token'], CompileIdentifierMetadata.fromJson),
+      query: objFromJson(data['query'], CompileQueryMetadata.fromJson),
+      viewQuery: objFromJson(data['viewQuery'], CompileQueryMetadata.fromJson),
+      isAttribute: data['isAttribute'],
+      isSelf: data['isSelf'],
+      isHost: data['isHost'],
+      isSkipSelf: data['isSkipSelf'],
+      isOptional: data['isOptional']
+    });
   }
 
   toJson(): {[key: string]: any} {
     return {
       // Note: Runtime type can't be serialized...
-      'token': objToJson(this.token)
+      'token': objToJson(this.token),
+      'query': objToJson(this.query),
+      'viewQuery': objToJson(this.viewQuery),
+      'isAttribute': this.isAttribute,
+      'isSelf': this.isSelf,
+      'isHost': this.isHost,
+      'isSkipSelf': this.isSkipSelf,
+      'isOptional': this.isOptional
     };
   }
 }
@@ -274,8 +289,27 @@ export class CompileQueryMetadata {
   } = {}) {
     this.selectors = selectors;
     this.descendants = descendants;
-    this.first = first;
+    this.first = normalizeBool(first);
     this.propertyName = propertyName;
+  }
+
+  static fromJson(data: {[key: string]: any}): CompileQueryMetadata {
+    return new CompileQueryMetadata({
+      selectors: arrayFromJson(data['selectors'], CompileIdentifierMetadata.fromJson),
+      descendants: data['descendants'],
+      first: data['first'],
+      propertyName: data['propertyName']
+    });
+  }
+
+  toJson(): {[key: string]: any} {
+    return {
+      // Note: Runtime type can't be serialized...
+      'selectors': arrayToJson(this.selectors),
+      'descendants': this.descendants,
+      'first': this.first,
+      'propertyName': this.propertyName
+    };
   }
 }
 
@@ -581,11 +615,11 @@ var _COMPILE_METADATA_FROM_JSON = {
 };
 
 function arrayFromJson(obj: any[], fn: (a: {[key: string]: any}) => any): any {
-  return isBlank(obj) ? null : obj.map(fn);
+  return isBlank(obj) ? null : obj.map(o => objFromJson(o, fn));
 }
 
 function arrayToJson(obj: any[]): string | {[key: string]: any} {
-  return isBlank(obj) ? null : obj.map(o => o.toJson());
+  return isBlank(obj) ? null : obj.map(objToJson);
 }
 
 function objFromJson(obj: any, fn: (a: {[key: string]: any}) => any): any {

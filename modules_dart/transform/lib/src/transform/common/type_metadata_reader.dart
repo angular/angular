@@ -185,8 +185,33 @@ class _CompileTypeMetadataVisitor extends Object
       final typeToken = p is SimpleFormalParameter && p.type != null ? _readIdentifier(p.type.name) : null;
       final injectTokens = p.metadata.where((m) => m.name.toString() == "Inject").map((m) => _readIdentifier(m.arguments.arguments[0]));
       final token = injectTokens.isNotEmpty ? injectTokens.first : typeToken;
-      return new CompileDiDependencyMetadata(token: token);
+      final query = _hasAnnotation(p, "Query") ? _createQueryMetadata(_getAnnotation(p, "Query")) : null;
+      final viewQuery = _hasAnnotation(p, "ViewQuery") ? _createQueryMetadata(_getAnnotation(p, "ViewQuery")) : null;
+
+      return new CompileDiDependencyMetadata(
+          token: token,
+          isAttribute: _hasAnnotation(p, "Attribute"),
+          isSelf: _hasAnnotation(p, "Self"),
+          isHost: _hasAnnotation(p, "Host"),
+          isSkipSelf: _hasAnnotation(p, "SkipSelf"),
+          isOptional: _hasAnnotation(p, "Optional"),
+          query: query,
+          viewQuery: viewQuery);
     }).toList();
+  }
+
+  _getAnnotation(p, String attrName) => p.metadata.where((m) => m.name.toString() == attrName).first;
+  _hasAnnotation(p, String attrName) => p.metadata.where((m) => m.name.toString() == attrName).isNotEmpty;
+  _createQueryMetadata(Annotation a) {
+    final selector = _readIdentifier(a.arguments.arguments.first);
+    var descendants = false;
+    a.arguments.arguments.skip(0).forEach((arg) {
+      if (arg is NamedExpression && arg.name.toString() == "descendants:")
+        descendants = naiveEval(arg.expression);
+    });
+
+    final selectors = selector is String ? selector.split(",") : [selector];
+    return new CompileQueryMetadata(selectors: selectors, descendants: descendants);
   }
 }
 

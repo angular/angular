@@ -16,7 +16,9 @@ import {
   CompileDirectiveMetadata,
   CompileTypeMetadata,
   CompileTemplateMetadata,
-  CompileProviderMetadata
+  CompileProviderMetadata,
+  CompileDiDependencyMetadata,
+  CompileQueryMetadata
 } from 'angular2/src/compiler/directive_metadata';
 import {ViewEncapsulation} from 'angular2/src/core/metadata/view';
 import {ChangeDetectionStrategy} from 'angular2/src/core/change_detection';
@@ -29,8 +31,25 @@ export function main() {
     var fullDirectiveMeta: CompileDirectiveMetadata;
 
     beforeEach(() => {
-      fullTypeMeta = new CompileTypeMetadata(
-          {name: 'SomeType', moduleUrl: 'someUrl', isHost: true, diDeps: []});
+      fullTypeMeta = new CompileTypeMetadata({
+        name: 'SomeType',
+        moduleUrl: 'someUrl',
+        isHost: true,
+        diDeps: [
+          new CompileDiDependencyMetadata({
+            isAttribute: true,
+            isSelf: true,
+            isHost: true,
+            isSkipSelf: true,
+            isOptional: true,
+            token: 'someToken',
+            query: new CompileQueryMetadata(
+                {selectors: ['one'], descendants: true, first: true, propertyName: 'one'}),
+            viewQuery: new CompileQueryMetadata(
+                {selectors: ['one'], descendants: true, first: true, propertyName: 'one'})
+          })
+        ]
+      });
       fullTemplateMeta = new CompileTemplateMetadata({
         encapsulation: ViewEncapsulation.Emulated,
         template: '<a></a>',
