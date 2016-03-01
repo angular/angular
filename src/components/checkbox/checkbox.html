@@ -1,0 +1,22 @@
+<div class="md-checkbox-layout">
+  <div class="md-checkbox-inner-container">
+    <div class="md-checkbox-frame"></div>
+    <div class="md-checkbox-background">
+      <svg version="1.1"
+           class="md-checkbox-checkmark"
+           xmlns="http://www.w3.org/2000/svg"
+           viewBox="0 0 24 24"
+           xml:space="preserve">
+        <path class="md-checkbox-checkmark-path"
+              fill="none"
+              stroke="white"
+              d="M4.1,12.7 9,17.6 20.3,6.3"/>
+      </svg>
+      <!-- Element for rendering the indeterminate state checkbox. -->
+      <div class="md-checkbox-mixedmark"></div>
+    </div>
+  </div>
+  <label [id]="labelId">
+    <ng-content></ng-content>
+  </label>
+</div>

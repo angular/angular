@@ -1,9 +1,10 @@
 import {Component} from 'angular2/core';
+import {Route, RouteConfig, ROUTER_DIRECTIVES} from 'angular2/router';
 import {CardDemo} from './card/card-demo';
 import {ButtonDemo} from './button/button-demo';
 import {SidenavDemo} from './sidenav/sidenav-demo';
 import {ProgressCircleDemo} from './progress-circle/progress-circle-demo';
-import {Route, RouteConfig, ROUTER_DIRECTIVES} from 'angular2/router';
+import {CheckboxDemo} from './checkbox/checkbox-demo';
 import {Dir} from '../directives/dir/dir';
 import {MdButton} from '../components/button/button';
 import {PortalDemo} from './portal/portal-demo';
@@ -30,5 +31,6 @@ export class Home {}
   new Route({path: '/sidenav', name: 'SidenavDemo', component: SidenavDemo}),
   new Route({path: '/progress-circle', name: 'ProgressCircleDemo', component: ProgressCircleDemo}),
   new Route({path: '/portal', name: 'PortalDemo', component: PortalDemo}),
+  new Route({path: '/checkbox', name: 'CheckboxDemo', component: CheckboxDemo})
 ])
 export class DemoApp { }

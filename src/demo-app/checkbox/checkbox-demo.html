@@ -1,0 +1,41 @@
+<h1>md-checkbox: Basic Example</h1>
+<md-checkbox [(ngModel)]="isChecked"
+             (change)="isIndeterminate = false"
+             [indeterminate]="isIndeterminate"
+             [disabled]="isDisabled"
+             [align]="alignment">
+  Do you want to <em>foobar</em> the <em>bazquux</em>?
+</md-checkbox> - <strong>{{printResult()}}</strong>
+<div>
+<input id="indeterminate-toggle"
+       type="checkbox"
+       [(ngModel)]="isIndeterminate"
+       [disabled]="isDisabled">
+<label for="indeterminate-toggle">Toggle Indeterminate</label>
+<input id="disabled-toggle" type="checkbox" [(ngModel)]="isDisabled">
+<label for="disabled-toggle">Toggle Disabled</label>
+</div>
+<div>
+  <p>Alignment:</p>
+  <div>
+    <input #start type="radio"
+                  value="start"
+                  id="align-start"
+                  name="alignment"
+                  (click)="alignment = start.value"
+                  checked>
+    <label for="align-start">Start</label>
+  </div>
+  <div>
+    <input #end type="radio"
+                  value="end"
+                  id="align-end"
+                  name="alignment"
+                  (click)="alignment = end.value">
+    <label for="align-end">End</label>
+  </div>
+</div>
+
+<h1>Application Example: Nested Checklist</h1>
+<h2><em>Caution: WIP!</em></h2>
+<md-checkbox-demo-nested-checklist></md-checkbox-demo-nested-checklist>

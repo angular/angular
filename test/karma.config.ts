@@ -86,7 +86,8 @@ export function config(config) {
     },
 
     browserDisconnectTimeout: 20000,
-    browserNoActivityTimeout: 100000,
+    browserNoActivityTimeout: 240000,
+    captureTimeout: 120000,
     browsers: ['Chrome'],
 
     singleRun: false
