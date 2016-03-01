@@ -38,9 +38,11 @@ Future<Outputs> processTemplates(AssetReader reader, AssetId assetId,
     {bool genChangeDetectionDebugInfo: false,
     bool reflectPropertiesAsAttributes: false,
     List<String> platformDirectives,
-    List<String> platformPipes}) async {
+    List<String> platformPipes,
+    Map<String, String> resolvedIdentifiers
+    }) async {
   var viewDefResults = await createCompileData(
-      reader, assetId, platformDirectives, platformPipes);
+      reader, assetId, platformDirectives, platformPipes, resolvedIdentifiers);
   if (viewDefResults == null) return null;
   final compileTypeMetadatas = viewDefResults.ngMeta.identifiers.values;
   if (compileTypeMetadatas.isNotEmpty) {

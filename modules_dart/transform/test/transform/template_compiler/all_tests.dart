@@ -83,12 +83,13 @@ void allTests() {
   });
 
   Future<String> process(AssetId assetId,
-      {List<String> platformDirectives, List<String> platformPipes}) {
+      {List<String> platformDirectives, List<String> platformPipes, Map<String,String> resolvedIdentifiers}) {
     logger = new RecordingLogger();
     return zone.exec(
         () => processTemplates(reader, assetId,
             platformDirectives: platformDirectives,
-            platformPipes: platformPipes),
+            platformPipes: platformPipes,
+            resolvedIdentifiers: resolvedIdentifiers),
         log: logger);
   }
 
@@ -142,7 +143,7 @@ void allTests() {
 
     updateReader();
 
-    final viewDefResults = await createCompileData(reader, fooAssetId, [], []);
+    final viewDefResults = await createCompileData(reader, fooAssetId, [], [], {});
     final cmp = viewDefResults.viewDefinitions.values.first.component;
 
     expect(cmp.providers.length).toEqual(1);
@@ -165,7 +166,7 @@ void allTests() {
 
     updateReader();
 
-    final viewDefResults = await createCompileData(reader, fooAssetId, [], []);
+    final viewDefResults = await createCompileData(reader, fooAssetId, [], [], {});
     final cmp = viewDefResults.viewDefinitions.values.first.component;
 
     expect(cmp.providers.length).toEqual(1);
@@ -193,7 +194,7 @@ void allTests() {
 
     updateReader();
 
-    final viewDefResults = await createCompileData(reader, fooAssetId, [], []);
+    final viewDefResults = await createCompileData(reader, fooAssetId, [], [], {});
     final cmp = viewDefResults.viewDefinitions.values.first.component;
 
     expect(cmp.providers.length).toEqual(1);
@@ -219,7 +220,7 @@ void allTests() {
 
     updateReader();
 
-    final viewDefResults = await createCompileData(reader, fooAssetId, [], []);
+    final viewDefResults = await createCompileData(reader, fooAssetId, [], [], {});
     final cmp = viewDefResults.viewDefinitions.values.first.component;
 
     expect(cmp.providers.length).toEqual(1);
@@ -248,7 +249,7 @@ void allTests() {
 
     updateReader();
 
-    final viewDefResults = await createCompileData(reader, fooAssetId, [], []);
+    final viewDefResults = await createCompileData(reader, fooAssetId, [], [], {});
     final cmp = viewDefResults.viewDefinitions.values.first.component;
 
     expect(cmp.providers.length).toEqual(1);
@@ -586,6 +587,31 @@ void allTests() {
     expect(_generatedCode(outputs))
       ..toContain("import 'bar.dart'")
       ..toContain(barPipeMeta.name);
+  });
+
+  it('should fallback to the list of resolved identifiers.', () async {
+    barNgMeta.identifiers['Service2'] = new CompileTypeMetadata(name: 'Service2', moduleUrl: 'moduleUrl');
+
+    fooComponentMeta.template = new CompileTemplateMetadata(template: "import 'bar.dart';");
+    fooComponentMeta.providers = [new CompileProviderMetadata(token: new CompileIdentifierMetadata(name: 'Service1'), useClass:
+    new CompileTypeMetadata(name: 'Service2'))];
+
+    final viewAnnotation = new AnnotationModel()..name = 'View'..isView = true;
+    final reflectable = fooNgMeta.ngDeps.reflectables.first;
+    reflectable.annotations.add(viewAnnotation);
+    fooNgMeta.ngDeps.imports.add(new ImportModel()..uri = 'package:a/bar.dart');
+
+    updateReader();
+
+    final viewDefResults = await createCompileData(reader, fooAssetId, [], [], {"Service1": "someModuleUrl", "Service2": "someModuleUrl"});
+    final cmp = viewDefResults.viewDefinitions.values.first.component;
+
+    expect(cmp.providers.length).toEqual(1);
+
+    expect(cmp.providers[0].token.name).toEqual("Service1");
+    expect(cmp.providers[0].token.moduleUrl).toEqual("someModuleUrl");
+    expect(cmp.providers[0].useClass.name).toEqual("Service2");
+    expect(cmp.providers[0].useClass.moduleUrl).toEqual("moduleUrl");
   });
 }
 

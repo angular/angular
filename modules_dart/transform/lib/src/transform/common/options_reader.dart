@@ -5,7 +5,7 @@ import 'annotation_matcher.dart';
 import 'mirror_mode.dart';
 import 'options.dart';
 
-TransformerOptions parseBarbackSettings(BarbackSettings settings) {
+  TransformerOptions parseBarbackSettings(BarbackSettings settings) {
   var config = settings.configuration;
   var entryPoints = _readStringList(config, ENTRY_POINT_PARAM);
   var initReflector =
@@ -14,6 +14,7 @@ TransformerOptions parseBarbackSettings(BarbackSettings settings) {
       _readBool(config, REFLECT_PROPERTIES_AS_ATTRIBUTES, defaultValue: false);
   var platformDirectives = _readStringList(config, PLATFORM_DIRECTIVES);
   var platformPipes = _readStringList(config, PLATFORM_PIPES);
+  var resolvedIdentifiers = config[RESOLVED_IDENTIFIERS];
   var formatCode = _readBool(config, FORMAT_CODE_PARAM, defaultValue: false);
   String mirrorModeVal =
       config.containsKey(MIRROR_MODE_PARAM) ? config[MIRROR_MODE_PARAM] : '';
@@ -38,6 +39,7 @@ TransformerOptions parseBarbackSettings(BarbackSettings settings) {
       reflectPropertiesAsAttributes: reflectPropertiesAsAttributes,
       platformDirectives: platformDirectives,
       platformPipes: platformPipes,
+      resolvedIdentifiers: resolvedIdentifiers,
       inlineViews: _readBool(config, INLINE_VIEWS_PARAM, defaultValue: false),
       lazyTransformers:
           _readBool(config, LAZY_TRANSFORMERS, defaultValue: false),
