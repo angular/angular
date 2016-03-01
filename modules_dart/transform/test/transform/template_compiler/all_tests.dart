@@ -201,7 +201,7 @@ void allTests() {
 
     updateReader();
 
-    final viewDefResults = await createCompileData(reader, fooAssetId, [], []);
+    final viewDefResults = await createCompileData(reader, fooAssetId, [], [], {});
     final cmp = viewDefResults.viewDefinitions.values.first.component;
 
     expect(cmp.type.diDeps.length).toEqual(2);
