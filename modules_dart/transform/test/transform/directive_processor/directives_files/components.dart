@@ -128,8 +128,81 @@ class ComponentWithDiDeps {
 }
 
 @Component(
+    selector: 'component-with-providers-use-class',
+    template: '',
+    providers: [const Provider(ServiceDep, useClass: ServiceDep)])
+class ComponentWithProvidersUseClass {}
+
+@Component(
+    selector: 'component-with-providers-to-class',
+    template: '',
+    providers: [const Binding(ServiceDep, toClass: ServiceDep)])
+class ComponentWithProvidersToClass{}
+
+
+@Component(
+    selector: 'component-with-providers-use-existing',
+    template: '',
+    providers: [const Provider(ServiceDep, useExisting: ServiceDep)])
+class ComponentWithProvidersUseExisting{}
+
+@Component(
+    selector: 'component-with-providers-to-alias',
+    template: '',
+    providers: [const Binding(ServiceDep, toAlias: ServiceDep)])
+class ComponentWithProvidersToAlias{}
+
+@Component(
+    selector: 'component-with-providers-use-existing-string',
+    template: '',
+    providers: [const Provider(ServiceDep, useExisting: 'StrToken')])
+class ComponentWithProvidersUseExistingStr{}
+
+
+@Component(
+    selector: 'component-with-providers-use-value',
+    template: '',
+    providers: [const Provider(ServiceDep, useValue: ServiceDep)])
+class ComponentWithProvidersUseValue{}
+
+@Component(
+    selector: 'component-with-providers-to-value',
+    template: '',
+    providers: [const Binding(ServiceDep, toValue: ServiceDep)])
+class ComponentWithProvidersToValue{}
+
+@Component(
+    selector: 'component-with-providers-use-value-string',
+    template: '',
+    providers: [const Provider(ServiceDep, useValue: 'StrToken')])
+class ComponentWithProvidersUseValueStr{}
+
+
+@Component(
+    selector: 'component-with-providers-use-factory',
+    template: '',
+    providers: [const Provider(ServiceDep, useFactory: funcDep, deps:
+    const [
+        ServiceDep,
+        "Str",
+        [const Inject(ServiceDep)],
+        [ServiceDep, const Self()],
+        [ServiceDep, const SkipSelf()],
+        [ServiceDep, const Optional()]
+    ])])
+class ComponentWithProvidersUseFactory{}
+
+@Component(
+    selector: 'component-with-providers-to-factory',
+    template: '',
+    providers: [const Binding(ServiceDep, toFactory: funcDep)])
+class ComponentWithProvidersToFactory{}
+
+@Component(
     selector: 'component-with-di-deps-string-token',
     template: '')
 class ComponentWithDiDepsStrToken {
   ComponentWithDiDepsStrToken(@Inject("StringDep") arg1);
 }
+
+funcDep(){}

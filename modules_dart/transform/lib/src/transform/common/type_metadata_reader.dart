@@ -431,14 +431,38 @@ class _DirectiveMetadataVisitor extends Object
         ) {
           final token = el.argumentList.arguments.first;
 
-          var useClass;
+          var useClass, useExisting, useValue, factoryId, useFactory, deps;
           el.argumentList.arguments.skip(1).forEach((arg) {
             if (arg.name.toString() == "useClass:") {
               final id = _readIdentifier(arg.expression);
               useClass = new CompileTypeMetadata(prefix: id.prefix, name: id.name);
+            } else if (arg.name.toString() == "toClass:") {
+              final id = _readIdentifier(arg.expression);
+              useClass = new CompileTypeMetadata(prefix: id.prefix, name: id.name);
+
+            } else if (arg.name.toString() == "useExisting:") {
+              useExisting = _readIdentifier(arg.expression);
+            } else if (arg.name.toString() == "toAlias:") {
+              useExisting = _readIdentifier(arg.expression);
+
+            } else if (arg.name.toString() == "useValue:") {
+              useValue = _readIdentifier(arg.expression);
+            } else if (arg.name.toString() == "toValue:") {
+              useValue = _readIdentifier(arg.expression);
+
+            } else if (arg.name.toString() == "useFactory:") {
+              factoryId = _readIdentifier(arg.expression);
+            } else if (arg.name.toString() == "toFactory:") {
+              factoryId = _readIdentifier(arg.expression);
+
+            } else if (arg.name.toString() == "deps:") {
+              deps = _readDeps(arg.expression);
             }
           });
-          return new CompileProviderMetadata(token: _readIdentifier(token), useClass: useClass);
+          if (factoryId != null) {
+            useFactory = new CompileFactoryMetadata(name: factoryId.name, prefix: factoryId.prefix);
+          }
+          return new CompileProviderMetadata(token: _readIdentifier(token), useClass: useClass, useExisting: useExisting, useValue: useValue, useFactory: useFactory, deps: deps);
 
         } else {
           throw new ArgumentError(
@@ -450,6 +474,29 @@ class _DirectiveMetadataVisitor extends Object
       _providers.add(new CompileProviderMetadata(token: _readIdentifier(providerValues)));
     }
   }
+
+  List<CompileDiDependencyMetadata> _readDeps(ListLiteral deps) {
+    return deps.elements.map((p) {
+      final list = p is ListLiteral ? p.elements : [p];
+      final first = list.first;
+
+      var token;
+      if (first is InstanceCreationExpression && first.constructorName.toString() == "Inject") {
+        token = _readIdentifier(first.argumentList.arguments[0]);
+      } else {
+        token = _readIdentifier(first);
+      }
+
+      return new CompileDiDependencyMetadata(
+          token: token,
+          isSelf: _hasConst(list, "Self"),
+          isHost: _hasConst(list, "Host"),
+          isSkipSelf: _hasConst(list, "SkipSelf"),
+          isOptional: _hasConst(list, "Optional"));
+    }).toList();
+  }
+
+  bool _hasConst(List list, String name) => list.where((m) => m is InstanceCreationExpression && m.constructorName.toString() == name).isNotEmpty;
 
   //TODO Use AnnotationMatcher instead of string matching
   bool _isAnnotation(Annotation node, String annotationName) {

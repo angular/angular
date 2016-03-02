@@ -671,6 +671,160 @@ void allTests() {
       expect(useClass.name).toEqual("ServiceDep");
     });
 
+    it('should populate `providers` using toClass.',
+        () async {
+      var cmp =
+          (await _testCreateModel('directives_files/components.dart')).identifiers['ComponentWithProvidersToClass'];
+
+      expect(cmp).toBeNotNull();
+      expect(cmp.providers).toBeNotNull();
+      expect(cmp.providers.length).toEqual(1);
+
+      var token = cmp.providers.first.token;
+      var useExisting = cmp.providers.first.useClass;
+
+      expect(useExisting.prefix).toEqual(null);
+      expect(useExisting.name).toEqual("ServiceDep");
+    });
+
+    it('should populate `providers` using useExisting.',
+        () async {
+      var cmp =
+          (await _testCreateModel('directives_files/components.dart')).identifiers['ComponentWithProvidersUseExisting'];
+
+      expect(cmp).toBeNotNull();
+      expect(cmp.providers).toBeNotNull();
+      expect(cmp.providers.length).toEqual(1);
+
+      var token = cmp.providers.first.token;
+      var useExisting = cmp.providers.first.useExisting;
+
+      expect(useExisting.prefix).toEqual(null);
+      expect(useExisting.name).toEqual("ServiceDep");
+    });
+
+    it('should populate `providers` using toAlias.',
+        () async {
+      var cmp =
+          (await _testCreateModel('directives_files/components.dart')).identifiers['ComponentWithProvidersToAlias'];
+
+      expect(cmp).toBeNotNull();
+      expect(cmp.providers).toBeNotNull();
+      expect(cmp.providers.length).toEqual(1);
+
+      var token = cmp.providers.first.token;
+      var useExisting = cmp.providers.first.useExisting;
+
+      expect(useExisting.prefix).toEqual(null);
+      expect(useExisting.name).toEqual("ServiceDep");
+    });
+
+    it('should populate `providers` using useExisting (string token).',
+        () async {
+      var cmp =
+      (await _testCreateModel('directives_files/components.dart')).identifiers['ComponentWithProvidersUseExistingStr'];
+
+      expect(cmp).toBeNotNull();
+      expect(cmp.providers).toBeNotNull();
+      expect(cmp.providers.length).toEqual(1);
+
+      var token = cmp.providers.first.token;
+      var useExisting = cmp.providers.first.useExisting;
+
+      expect(useExisting).toEqual("StrToken");
+    });
+
+    it('should populate `providers` using useValue.',
+        () async {
+      var cmp =
+      (await _testCreateModel('directives_files/components.dart')).identifiers['ComponentWithProvidersUseValue'];
+
+      expect(cmp).toBeNotNull();
+      expect(cmp.providers).toBeNotNull();
+      expect(cmp.providers.length).toEqual(1);
+
+      var token = cmp.providers.first.token;
+      var useValue = cmp.providers.first.useValue;
+
+      expect(useValue.prefix).toEqual(null);
+      expect(useValue.name).toEqual("ServiceDep");
+    });
+
+    it('should populate `providers` using toValue.',
+        () async {
+      var cmp =
+      (await _testCreateModel('directives_files/components.dart')).identifiers['ComponentWithProvidersToValue'];
+
+      expect(cmp).toBeNotNull();
+      expect(cmp.providers).toBeNotNull();
+      expect(cmp.providers.length).toEqual(1);
+
+      var token = cmp.providers.first.token;
+      var useValue = cmp.providers.first.useValue;
+
+      expect(useValue.prefix).toEqual(null);
+      expect(useValue.name).toEqual("ServiceDep");
+    });
+
+    it('should populate `providers` using useValue (string token).',
+        () async {
+      var cmp =
+      (await _testCreateModel('directives_files/components.dart')).identifiers['ComponentWithProvidersUseValueStr'];
+
+      expect(cmp).toBeNotNull();
+      expect(cmp.providers).toBeNotNull();
+      expect(cmp.providers.length).toEqual(1);
+
+      var token = cmp.providers.first.token;
+      var useValue = cmp.providers.first.useValue;
+
+      expect(useValue).toEqual("StrToken");
+    });
+
+    it('should populate `providers` using useFactory.',
+        () async {
+      var cmp =
+      (await _testCreateModel('directives_files/components.dart')).identifiers['ComponentWithProvidersUseFactory'];
+
+      expect(cmp).toBeNotNull();
+      expect(cmp.providers).toBeNotNull();
+      expect(cmp.providers.length).toEqual(1);
+
+      var token = cmp.providers.first.token;
+      var useFactory = cmp.providers.first.useFactory;
+      var deps = cmp.providers.first.deps;
+
+      expect(useFactory.prefix).toEqual(null);
+      expect(useFactory.name).toEqual("funcDep");
+
+      expect(deps[0].token.name).toEqual("ServiceDep");
+      expect(deps[1].token).toEqual("Str");
+      expect(deps[2].token.name).toEqual("ServiceDep");
+      expect(deps[3].token.name).toEqual("ServiceDep");
+      expect(deps[3].isSelf).toEqual(true);
+      expect(deps[4].token.name).toEqual("ServiceDep");
+      expect(deps[4].isSkipSelf).toEqual(true);
+      expect(deps[5].token.name).toEqual("ServiceDep");
+      expect(deps[5].isOptional).toEqual(true);
+    });
+
+    it('should populate `providers` using toFactory.',
+        () async {
+      var cmp =
+      (await _testCreateModel('directives_files/components.dart')).identifiers['ComponentWithProvidersToFactory'];
+
+      expect(cmp).toBeNotNull();
+      expect(cmp.providers).toBeNotNull();
+      expect(cmp.providers.length).toEqual(1);
+
+      var token = cmp.providers.first.token;
+      var useFactory = cmp.providers.first.useFactory;
+      var deps = cmp.providers.first.deps;
+
+      expect(useFactory.prefix).toEqual(null);
+      expect(useFactory.name).toEqual("funcDep");
+    });
+
     it('should populate `providers` using a string token.',
         () async {
       var cmp =

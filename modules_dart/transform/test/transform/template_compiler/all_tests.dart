@@ -217,8 +217,17 @@ void allTests() {
     barNgMeta.identifiers['Service2'] = new CompileTypeMetadata(name: 'Service2', moduleUrl: 'moduleUrl');
 
     fooComponentMeta.template = new CompileTemplateMetadata(template: "import 'bar.dart';");
-    fooComponentMeta.providers = [new CompileProviderMetadata(token: new CompileIdentifierMetadata(name: 'Service1'), useClass:
-    new CompileTypeMetadata(name: 'Service2'))];
+    fooComponentMeta.providers = [
+      new CompileProviderMetadata(token: new CompileIdentifierMetadata(name: 'Service1'), useClass: new CompileTypeMetadata(name: 'Service2')),
+      new CompileProviderMetadata(token: new CompileIdentifierMetadata(name: 'Service1'), useExisting: new CompileIdentifierMetadata(name: 'Service2')),
+      new CompileProviderMetadata(token: new CompileIdentifierMetadata(name: 'Service1'), useValue: new CompileIdentifierMetadata(name: 'Service2')),
+      new CompileProviderMetadata(token: new CompileIdentifierMetadata(name: 'Service1'), useFactory:
+         new CompileFactoryMetadata(
+              name: 'Service2',
+              diDeps: [new CompileDiDependencyMetadata(token: new CompileIdentifierMetadata(name: 'Service2'))]
+         )
+      )
+    ];
 
     final viewAnnotation = new AnnotationModel()..name = 'View'..isView = true;
     final reflectable = fooNgMeta.ngDeps.reflectables.first;
@@ -230,12 +239,29 @@ void allTests() {
     final viewDefResults = await createCompileData(reader, fooAssetId, [], [], {});
     final cmp = viewDefResults.viewDefinitions.values.first.component;
 
-    expect(cmp.providers.length).toEqual(1);
+    expect(cmp.providers.length).toEqual(4);
 
     expect(cmp.providers[0].token.name).toEqual("Service1");
     expect(cmp.providers[0].token.moduleUrl).toEqual("moduleUrl");
     expect(cmp.providers[0].useClass.name).toEqual("Service2");
     expect(cmp.providers[0].useClass.moduleUrl).toEqual("moduleUrl");
+
+    expect(cmp.providers[1].token.name).toEqual("Service1");
+    expect(cmp.providers[1].token.moduleUrl).toEqual("moduleUrl");
+    expect(cmp.providers[1].useExisting.name).toEqual("Service2");
+    expect(cmp.providers[1].useExisting.moduleUrl).toEqual("moduleUrl");
+
+    expect(cmp.providers[2].token.name).toEqual("Service1");
+    expect(cmp.providers[2].token.moduleUrl).toEqual("moduleUrl");
+    expect(cmp.providers[2].useValue.name).toEqual("Service2");
+    expect(cmp.providers[2].useValue.moduleUrl).toEqual("moduleUrl");
+
+    expect(cmp.providers[3].token.name).toEqual("Service1");
+    expect(cmp.providers[3].token.moduleUrl).toEqual("moduleUrl");
+    expect(cmp.providers[3].useFactory.name).toEqual("Service2");
+    expect(cmp.providers[3].useFactory.moduleUrl).toEqual("moduleUrl");
+    expect(cmp.providers[3].useFactory.diDeps[0].token.name).toEqual("Service2");
+    expect(cmp.providers[3].useFactory.diDeps[0].token.moduleUrl).toEqual("moduleUrl");
   });
 
   it('should generate providers from Provider objects (literals).', () async {
