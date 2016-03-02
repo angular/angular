@@ -92,7 +92,13 @@ export class ObservableWrapper {
  * }
  * ```
  *
- * Use Rx.Observable but provides an adapter to make it work as specified here:
+ * The events payload can be accessed by the parameter `$event` on the components output event handler:
+ *
+ * ```
+ * <zippy (open)="onOpen($event)" (close)="onClose($event)"></zippy>
+ * ```
+ *
+ * Uses Rx.Observable but provides an adapter to make it work as specified here:
  * https://github.com/jhusain/observable-spec
  *
  * Once a reference implementation of the spec is available, switch to it.
