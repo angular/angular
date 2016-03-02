@@ -1,4 +1,4 @@
-import {CONST, Type, stringify, isPresent, isString} from 'angular2/src/facade/lang';
+import {CONST, Type, stringify, isPresent, isString, StringWrapper} from 'angular2/src/facade/lang';
 import {resolveForwardRef} from 'angular2/src/core/di';
 import {DependencyMetadata} from 'angular2/src/core/di/metadata';
 
@@ -176,7 +176,7 @@ export class QueryMetadata extends DependencyMetadata {
    * returns a list of variable bindings this is querying for.
    * Only applicable if this is a variable bindings query.
    */
-  get varBindings(): string[] { return this.selector.split(',').map(s => s.trim()); }
+  get varBindings(): string[] { return StringWrapper.split(this.selector, /\s*,\s*/g); }
 
   toString(): string { return `@Query(${stringify(this.selector)})`; }
 }
