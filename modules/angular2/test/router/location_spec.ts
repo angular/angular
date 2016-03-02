@@ -84,5 +84,24 @@ export function main() {
       location.go('/home', "key=value");
       expect(location.path()).toEqual("/home?key=value");
     });
+
+    it('should provide query params as an Object', () => {
+      var locationStrategy = new MockLocationStrategy();
+      var location = new Location(locationStrategy);
+
+      location.go('/home', "key=value");
+      expect(location.search()['key']).toEqual("value");
+
+      // should parse various formats cleanly
+      location.go('/home', "opinion=angular+is+awesome!");
+      expect(location.search()['opinion']).toEqual("angular is awesome!");
+
+      location.go(
+          '/home',
+          "opinion=Jeff+Cross is good as a worldwide news+reporter&random=other:formatting");
+      expect(location.search()['opinion'])
+          .toEqual("Jeff Cross is good as a worldwide news reporter");
+      expect(location.search()['random']).toEqual("other:formatting");
+    });
   });
 }

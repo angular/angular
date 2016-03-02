@@ -1,6 +1,8 @@
 import {LocationStrategy} from './location_strategy';
 import {EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
 import {Injectable, Inject} from 'angular2/core';
+import {StringWrapper, RegExpWrapper, isPresent, isArray} from 'angular2/src/facade/lang';
+import {tryDecodeURIComponent} from 'angular2/src/core/facade/decode';
 
 /**
  * `Location` is a service that applications can use to interact with a browser's URL.
@@ -61,6 +63,19 @@ export class Location {
    * Returns the normalized URL path.
    */
   path(): string { return this.normalize(this.platformStrategy.path()); }
+
+  /**
+   * Returns query params as an object.
+   */
+  search(): any {
+    // the search value is always prefixed with a `?`
+    let search = this.platformStrategy.search();
+
+    // Dart will complain if a call to substring is
+    // executed with a position value that extends the
+    // length of string.
+    return (search.length > 0 ? parseKeyValue(search.substring(1)) : {});
+  }
 
   /**
    * Given a string representing a URL, returns the normalized URL path without leading or
@@ -139,4 +154,32 @@ function stripTrailingSlash(url: string): string {
     url = url.substring(0, url.length - 1);
   }
   return url;
+}
+
+/**
+ * Parses an escaped url query string into key-value pairs.
+ */
+function parseKeyValue(keyValue: string = ""): any {
+  let obj: any = {};
+  let pairs: Array<string> = keyValue.split('&');
+  for (let i = 0; i < pairs.length; i++) {
+    let key: string;
+    let val: string;
+    let kv: string = pairs[i];
+    let parts: Array<string>;
+    if (isPresent(kv)) {
+      key = kv = StringWrapper.replaceAll(kv, /\+/g, '%20');
+      parts = kv.split('=');
+      if (parts.length === 2) {
+        key = parts[0];
+        val = parts[1];
+      }
+      key = tryDecodeURIComponent(key);
+      if (isPresent(key)) {
+        val = isPresent(val) ? tryDecodeURIComponent(val) : '';
+        obj[key] = val;
+      }
+    }
+  }
+  return obj;
 }
