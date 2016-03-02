@@ -8,6 +8,7 @@ import 'package:angular2/src/compiler/template_normalizer.dart';
 import 'package:angular2/src/compiler/template_parser.dart';
 import 'package:angular2/src/core/change_detection/parser/lexer.dart' as ng;
 import 'package:angular2/src/core/change_detection/parser/parser.dart' as ng;
+import 'package:angular2/src/core/change_detection/parser/interpolate_regexp.dart';
 import 'package:angular2/src/compiler/schema/dom_element_schema_registry.dart';
 import 'package:angular2/src/transform/common/asset_reader.dart';
 import 'package:angular2/src/core/change_detection/interfaces.dart';
@@ -25,7 +26,7 @@ TemplateCompiler createTemplateCompiler(AssetReader reader,
   var _urlResolver = const TransformerUrlResolver();
 
   // TODO(yjbanov): add router AST transformer when ready
-  var parser = new ng.Parser(new ng.Lexer());
+  var parser = new ng.Parser(new ng.Lexer(), DEFAULT_INTERPOLATE_REGEXP);
   var templateParser = new TemplateParser(
       parser,
       new DomElementSchemaRegistry(),

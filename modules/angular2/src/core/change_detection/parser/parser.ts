@@ -1,4 +1,4 @@
-import {Injectable} from 'angular2/src/core/di/decorators';
+import {Injectable, Inject} from 'angular2/src/core/di/decorators';
 import {isBlank, isPresent, StringWrapper} from 'angular2/src/facade/lang';
 import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
 import {ListWrapper} from 'angular2/src/facade/collection';
@@ -45,11 +45,10 @@ import {
   AstVisitor,
   Quote
 } from './ast';
+import {INTERPOLATE_REGEXP} from './interpolate_regexp';
 
 
 var _implicitReceiver = new ImplicitReceiver();
-// TODO(tbosch): Cannot make this const/final right now because of the transpiler...
-var INTERPOLATION_REGEXP = /\{\{([\s\S]*?)\}\}/g;
 
 class ParseException extends BaseException {
   constructor(message: string, input: string, errLocation: string, ctxLocation?: any) {
@@ -63,7 +62,8 @@ export class Parser {
   _reflector: Reflector;
 
   constructor(/** @internal */
-              public _lexer: Lexer, providedReflector: Reflector = null) {
+              public _lexer: Lexer, @Inject(INTERPOLATE_REGEXP) public _interpolateRegex: RegExp,
+              providedReflector: Reflector = null) {
     this._reflector = isPresent(providedReflector) ? providedReflector : reflector;
   }
 
@@ -118,7 +118,7 @@ export class Parser {
   }
 
   parseInterpolation(input: string, location: any): ASTWithSource {
-    var parts = StringWrapper.split(input, INTERPOLATION_REGEXP);
+    var parts = StringWrapper.split(input, this._interpolateRegex);
     if (parts.length <= 1) {
       return null;
     }
@@ -148,7 +148,7 @@ export class Parser {
   }
 
   private _checkNoInterpolation(input: string, location: any): void {
-    var parts = StringWrapper.split(input, INTERPOLATION_REGEXP);
+    var parts = StringWrapper.split(input, this._interpolateRegex);
     if (parts.length > 1) {
       throw new ParseException('Got interpolation ({{}}) where expression was expected', input,
                                `at column ${this._findInterpolationErrorColumn(parts, 1)} in`,

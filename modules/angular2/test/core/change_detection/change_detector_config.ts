@@ -9,7 +9,8 @@ import {
   Lexer,
   Locals,
   Parser,
-  ChangeDetectorGenConfig
+  ChangeDetectorGenConfig,
+  DEFAULT_INTERPOLATE_REGEXP
 } from 'angular2/src/core/change_detection/change_detection';
 import {reflector} from 'angular2/src/core/reflection/reflection';
 import {ReflectionCapabilities} from 'angular2/src/core/reflection/reflection_capabilities';
@@ -19,7 +20,7 @@ import {ReflectionCapabilities} from 'angular2/src/core/reflection/reflection_ca
  * the change_detector_spec library. Please see that library for more information.
  */
 
-var _parser = new Parser(new Lexer());
+var _parser = new Parser(new Lexer(), DEFAULT_INTERPOLATE_REGEXP);
 
 function _getParser() {
   reflector.reflectionCapabilities = new ReflectionCapabilities();

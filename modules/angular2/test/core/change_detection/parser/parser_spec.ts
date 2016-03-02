@@ -5,9 +5,12 @@ import {Parser} from 'angular2/src/core/change_detection/parser/parser';
 import {Unparser} from './unparser';
 import {Lexer} from 'angular2/src/core/change_detection/parser/lexer';
 import {BindingPipe, LiteralPrimitive, AST} from 'angular2/src/core/change_detection/parser/ast';
+import {
+  DEFAULT_INTERPOLATE_REGEXP
+} from 'angular2/src/core/change_detection/parser/interpolate_regexp';
 
 export function main() {
-  function createParser() { return new Parser(new Lexer(), reflector); }
+  function createParser() { return new Parser(new Lexer(), DEFAULT_INTERPOLATE_REGEXP, reflector); }
 
   function parseAction(text, location = null): any {
     return createParser().parseAction(text, location);

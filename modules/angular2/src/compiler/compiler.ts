@@ -26,10 +26,19 @@ import {RuntimeCompiler} from 'angular2/src/compiler/runtime_compiler';
 import {ElementSchemaRegistry} from 'angular2/src/compiler/schema/element_schema_registry';
 import {DomElementSchemaRegistry} from 'angular2/src/compiler/schema/dom_element_schema_registry';
 import {UrlResolver, DEFAULT_PACKAGE_URL_PROVIDER} from 'angular2/src/compiler/url_resolver';
-import {Parser, Lexer} from 'angular2/src/core/change_detection/change_detection';
+import {
+  Parser,
+  Lexer,
+  INTERPOLATE_REGEXP,
+  DEFAULT_INTERPOLATE_REGEXP
+} from 'angular2/src/core/change_detection/change_detection';
 
 function _createChangeDetectorGenConfig() {
   return new ChangeDetectorGenConfig(assertionsEnabled(), false, true);
+}
+
+function _createDefaultInterpolateRegexp() {
+  return DEFAULT_INTERPOLATE_REGEXP;
 }
 
 /**
@@ -38,6 +47,7 @@ function _createChangeDetectorGenConfig() {
  */
 export const COMPILER_PROVIDERS: Array<Type | Provider | any[]> = CONST_EXPR([
   Lexer,
+  new Provider(INTERPOLATE_REGEXP, {useFactory: _createDefaultInterpolateRegexp, deps: []}),
   Parser,
   HtmlParser,
   TemplateParser,

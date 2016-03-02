@@ -14,7 +14,8 @@ import {
   ChangeDetectorGenConfig,
   BindingRecord,
   DirectiveRecord,
-  DirectiveIndex
+  DirectiveIndex,
+  DEFAULT_INTERPOLATE_REGEXP
 } from 'angular2/src/core/change_detection/change_detection';
 
 
@@ -245,7 +246,7 @@ function runBaselineWrites(baselineHead, numberOfRuns, object) {
 // ---- CHANGE DETECTION
 
 function setUpChangeDetection(protoChangeDetectorFactory: Function, iterations, object) {
-  var parser = new Parser(new Lexer());
+  var parser = new Parser(new Lexer(), DEFAULT_INTERPOLATE_REGEXP);
 
   var genConfig = new ChangeDetectorGenConfig(false, false, true);
   var parentProto = protoChangeDetectorFactory(
