@@ -391,7 +391,9 @@ export function print(obj: Error | Object) {
 
 // Can't be all uppercase as our transpiler would think it is a special directive...
 export class Json {
-  static parse(s: string): Object { return _global.JSON.parse(s); }
+  static parse(s: string, reviver?: (key: string, value: any) => any): Object {
+    return _global.JSON.parse(s, reviver);
+  }
   static stringify(data: Object): string {
     // Dart doesn't take 3 arguments
     return _global.JSON.stringify(data, null, 2);
