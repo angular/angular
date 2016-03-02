@@ -64,7 +64,7 @@ export const BROWSER_APP_PROVIDERS: Array<any /*Type | Provider | any[]*/> =
  *     to be upgraded into the angular component.
  *  2. It creates a new child injector (from the platform injector). Optionally, you can
  *     also override the injector configuration for an app by invoking `bootstrap` with the
- *     `componentInjectableBindings` argument.
+ *     `customProviders` argument.
  *  3. It creates a new `Zone` and connects it to the angular application's change detection
  *     domain instance.
  *  4. It creates an emulated or shadow DOM on the selected component's host element and loads the
