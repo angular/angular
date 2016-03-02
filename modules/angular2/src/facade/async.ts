@@ -61,11 +61,11 @@ export class ObservableWrapper {
 }
 
 /**
- * Use by directives and components to emit custom Events.
+ * Used by directives and components to emit custom Events.
  *
  * ### Examples
  *
- * In the following example, `Zippy` alternatively emits `open` and `close` events when its
+ * In the following example, `Zippy` either emits `open` or `close` events, depending on `this.visible`, when its
  * title gets clicked:
  *
  * ```
@@ -94,7 +94,13 @@ export class ObservableWrapper {
  * }
  * ```
  *
- * Use Rx.Observable but provides an adapter to make it work as specified here:
+ * The events payload can be accessed the parameter `$event` on the components output event handler:
+ *
+ * ```
+ * <zippy (open)="onOpen($event)" (close)="onClose($event)"></zippy>
+ * ```
+ *
+ * Uses Rx.Observable but provides an adapter to make it work as specified here:
  * https://github.com/jhusain/observable-spec
  *
  * Once a reference implementation of the spec is available, switch to it.
