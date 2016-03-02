@@ -94,7 +94,7 @@ export class ObservableWrapper {
  * }
  * ```
  *
- * The events payload can be accessed the parameter `$event` on the components output event handler:
+ * The events payload can be accessed by the parameter `$event` on the components output event handler:
  *
  * ```
  * <zippy (open)="onOpen($event)" (close)="onClose($event)"></zippy>
