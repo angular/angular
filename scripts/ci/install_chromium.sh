@@ -8,8 +8,8 @@ set -e -x
 # 3) If not available, it downloads and caches it, using the "decrement commit number" trick.
 
 #Build version read from the OmahaProxy CSV Viewer at https://www.chromium.org/developers/calendar
-#Let's use Chromium 47 as the default (352221 build number), and try to grab the latest stable from https://omahaproxy.appspot.com/all
-CHROMIUM_VERSION=352221
+#Let's use the following version of Chromium, and inform about availability of newer build from https://omahaproxy.appspot.com/all
+CHROMIUM_VERSION=359700
 TMP=$(curl -s "https://omahaproxy.appspot.com/all") || true
 oldIFS="$IFS"
 IFS='
@@ -21,7 +21,7 @@ for line in "${lines[@]}"
   do
     lineArray=($line);
     if [ "${lineArray[0]}" = "linux" ] && [ "${lineArray[1]}" = "stable" ] ; then
-      CHROMIUM_VERSION="${lineArray[7]}"
+      LATEST_CHROMIUM_VERSION="${lineArray[7]}"
     fi
 done
 IFS="$oldIFS"
@@ -56,4 +56,7 @@ if [[ "$EXISTING_VERSION" != "$CHROMIUM_VERSION" ]]; then
   echo $CHROMIUM_VERSION > $CHROMIUM_VERSION_FILE
 fi
 
+if [[ "$CHROMIUM_VERSION" != "$LATEST_CHROMIUM_VERSION" ]]; then
+  echo "New version of Chromium available. Update install_chromium.sh with build number: ${LATEST_CHROMIUM_VERSION}"
+fi
 
