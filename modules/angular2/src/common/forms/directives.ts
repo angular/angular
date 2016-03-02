@@ -14,7 +14,12 @@ import {
   SelectControlValueAccessor,
   NgSelectOption
 } from './directives/select_control_value_accessor';
-import {RequiredValidator, MinLengthValidator, MaxLengthValidator} from './directives/validators';
+import {
+  RequiredValidator,
+  MinLengthValidator,
+  MaxLengthValidator,
+  PatternValidator
+} from './directives/validators';
 
 export {NgControlName} from './directives/ng_control_name';
 export {NgFormControl} from './directives/ng_form_control';
@@ -34,7 +39,12 @@ export {
   SelectControlValueAccessor,
   NgSelectOption
 } from './directives/select_control_value_accessor';
-export {RequiredValidator, MinLengthValidator, MaxLengthValidator} from './directives/validators';
+export {
+  RequiredValidator,
+  MinLengthValidator,
+  MaxLengthValidator,
+  PatternValidator
+} from './directives/validators';
 export {NgControl} from './directives/ng_control';
 export {ControlValueAccessor} from './directives/control_value_accessor';
 
@@ -73,5 +83,6 @@ export const FORM_DIRECTIVES: Type[] = CONST_EXPR([
 
   RequiredValidator,
   MinLengthValidator,
-  MaxLengthValidator
+  MaxLengthValidator,
+  PatternValidator
 ]);

@@ -6,10 +6,12 @@ import {
   ddescribe,
   xdescribe,
   expect,
+  fakeAsync,
   tick,
   beforeEach,
   inject,
   injectAsync,
+  withProviders,
   beforeEachProviders,
   TestComponentBuilder
 } from 'angular2/testing';
@@ -168,6 +170,14 @@ export function main() {
                (value) => { expect(value).toEqual('async value'); });
          }));
 
+      it('should allow the use of fakeAsync',
+         inject([FancyService], fakeAsync((service) => {
+                  var value;
+                  service.getAsyncValue().then(function(val) { value = val; });
+                  tick();
+                  expect(value).toEqual('async value');
+                })));
+
       describe('using beforeEach', () => {
         beforeEach(inject([FancyService],
                           (service) => { service.value = 'value modified in beforeEach'; }));
@@ -185,6 +195,13 @@ export function main() {
         it('should use asynchronously modified value',
            inject([FancyService], (service) => { expect(service.value).toEqual('async value'); }));
       });
+    });
+
+    describe('per test providers', () => {
+      it('should allow per test providers',
+         withProviders(() => [bind(FancyService).toValue(new FancyService())])
+             .inject([FancyService],
+                     (service) => { expect(service.value).toEqual('real value'); }));
     });
   });
 
@@ -461,6 +478,6 @@ export function main() {
                expect(componentFixture.debugElement.nativeElement)
                    .toHaveText('from external template\n');
              });
-       }));
+       }), 10000);  // Long timeout here because this test makes an actual XHR, and is slow on Edge.
   });
 }

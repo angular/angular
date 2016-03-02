@@ -4,7 +4,7 @@ angular.module('ngComponentRouter').
     // Because Angular 1 has no notion of a root component, we use an object with unique identity
     // to represent this. Can be overloaded with a component name
     value('$routerRootComponent', new Object()).
-    factory('$router', ['$q', '$location', '$$directiveIntrospector', '$browser', '$rootScope', '$injector', '$routerRootComponent', routerFactory]);
+    factory('$rootRouter', ['$q', '$location', '$$directiveIntrospector', '$browser', '$rootScope', '$injector', '$routerRootComponent', routerFactory]);
 
 function routerFactory($q, $location, $$directiveIntrospector, $browser, $rootScope, $injector, $routerRootComponent) {
 

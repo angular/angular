@@ -10,6 +10,9 @@ import {JsonPipe} from './json_pipe';
 import {SlicePipe} from './slice_pipe';
 import {DatePipe} from './date_pipe';
 import {DecimalPipe, PercentPipe, CurrencyPipe} from './number_pipe';
+import {ReplacePipe} from './replace_pipe';
+import {I18nPluralPipe} from './i18n_plural_pipe';
+import {I18nSelectPipe} from './i18n_select_pipe';
 import {CONST_EXPR} from 'angular2/src/facade/lang';
 
 /**
@@ -28,5 +31,8 @@ export const COMMON_PIPES = CONST_EXPR([
   DecimalPipe,
   PercentPipe,
   CurrencyPipe,
-  DatePipe
+  DatePipe,
+  ReplacePipe,
+  I18nPluralPipe,
+  I18nSelectPipe
 ]);

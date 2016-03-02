@@ -66,9 +66,25 @@ export function main() {
       it("should not error on valid strings",
          () => { expect(Validators.maxLength(2)(new Control("aa"))).toEqual(null); });
 
-      it("should error on short strings", () => {
+      it("should error on long strings", () => {
         expect(Validators.maxLength(2)(new Control("aaa")))
             .toEqual({"maxlength": {"requiredLength": 2, "actualLength": 3}});
+      });
+    });
+
+    describe("pattern", () => {
+      it("should not error on an empty string",
+         () => { expect(Validators.pattern("[a-zA-Z ]*")(new Control(""))).toEqual(null); });
+
+      it("should not error on null",
+         () => { expect(Validators.pattern("[a-zA-Z ]*")(new Control(null))).toEqual(null); });
+
+      it("should not error on valid strings",
+         () => { expect(Validators.pattern("[a-zA-Z ]*")(new Control("aaAA"))).toEqual(null); });
+
+      it("should error on failure to match string", () => {
+        expect(Validators.pattern("[a-zA-Z ]*")(new Control("aaa0")))
+            .toEqual({"pattern": {"requiredPattern": "^[a-zA-Z ]*$", "actualValue": "aaa0"}});
       });
     });
 

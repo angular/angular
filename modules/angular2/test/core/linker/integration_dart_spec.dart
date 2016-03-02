@@ -42,27 +42,6 @@ void functionThatThrowsNonError() {
 }
 
 main() {
-  describe('TypeLiteral', () {
-    it(
-        'should publish via viewBindings',
-        inject([TestComponentBuilder, AsyncTestCompleter], (tb, async) {
-          tb
-              .overrideView(
-                  Dummy,
-                  new ViewMetadata(
-                      template:
-                          '<type-literal-component></type-literal-component>',
-                      directives: [TypeLiteralComponent]))
-              .createAsync(Dummy)
-              .then((tc) {
-            tc.detectChanges();
-            expect(asNativeElements(tc.debugElement.children))
-                .toHaveText('[Hello, World]');
-            async.done();
-          });
-        }));
-  });
-
   describe('Error handling', () {
     it(
         'should preserve Error stack traces thrown from components',
@@ -214,19 +193,6 @@ main() {
 @Component(selector: 'dummy')
 class Dummy {
   dynamic value;
-}
-
-@Component(
-    selector: 'type-literal-component',
-    viewBindings: const [
-      const Binding(const TypeLiteral<List<String>>(),
-          toValue: const <String>['Hello', 'World'])
-    ])
-@View(template: '{{list}}')
-class TypeLiteralComponent {
-  final List<String> list;
-
-  TypeLiteralComponent(this.list);
 }
 
 @Component(selector: 'throwing-component')

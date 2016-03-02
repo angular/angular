@@ -9,8 +9,8 @@ branches:
 
 cache:
   directories:
-    - node_modules
     - $HOME/.pub-cache
+    - $HOME/.chrome/chromium
 
 before_cache:
   # Undo the pollution of the typescript_next build
@@ -18,8 +18,10 @@ before_cache:
 
 env:
   global:
-  - KARMA_BROWSERS=DartiumWithWebPlatform
-  - E2E_BROWSERS=Dartium
+  - KARMA_DART_BROWSERS=DartiumWithWebPlatform
+  # No sandbox mode is needed for Chromium in Travis, it crashes otherwise: https://sites.google.com/a/chromium.org/chromedriver/help/chrome-doesn-t-start
+  - KARMA_JS_BROWSERS=ChromeNoSandbox
+  - E2E_BROWSERS=ChromeOnTravis
   - LOGS_DIR=/tmp/angular-build/logs
   - SAUCE_USERNAME=angular-ci
   - SAUCE_ACCESS_KEY=9b988f434ff8-fbca-8aa4-4ae3-35442987
@@ -40,8 +42,7 @@ env:
   matrix:
     # Order: a slower build first, so that we don't occupy an idle travis worker waiting for others to complete.
     - MODE=dart DART_CHANNEL=stable DART_VERSION=$DART_STABLE_VERSION
-    # Disable dart dev build, which is timing out after 2h. #6823
-    # - MODE=dart DART_CHANNEL=dev DART_VERSION=$DART_DEV_VERSION
+    - MODE=dart DART_CHANNEL=dev DART_VERSION=$DART_DEV_VERSION
     - MODE=saucelabs_required DART_CHANNEL=dev DART_VERSION=$DART_DEV_VERSION
     - MODE=browserstack_required DART_CHANNEL=dev DART_VERSION=$DART_DEV_VERSION
     - MODE=saucelabs_optional DART_CHANNEL=dev DART_VERSION=$DART_DEV_VERSION
@@ -58,8 +59,6 @@ matrix:
   allow_failures:
   - env: "MODE=saucelabs_optional DART_CHANNEL=dev DART_VERSION=$DART_DEV_VERSION"
   - env: "MODE=browserstack_optional DART_CHANNEL=dev DART_VERSION=$DART_DEV_VERSION"
-  # TODO(alxhub): remove when dartdoc #1039 is in dev channel
-  - env: "MODE=dart DART_CHANNEL=dev DART_VERSION=$DART_DEV_VERSION"
   # Tracked in https://github.com/angular/angular/issues/7050
   - env: "MODE=typescript_next DART_CHANNEL=stable DART_VERSION=$DART_STABLE_VERSION"
 
@@ -71,6 +70,8 @@ before_install:
 - node tools/analytics/build-analytics start ci job
 - node tools/analytics/build-analytics start ci before_install
 - echo ${TSDRC} > .tsdrc
+- ./scripts/ci/install_chromium.sh
+- export CHROME_BIN=$HOME/.chrome/chromium/chrome-linux/chrome
 - export DISPLAY=:99.0
 - export GIT_SHA=$(git rev-parse HEAD)
 - ./scripts/ci/init_android.sh
@@ -115,6 +116,7 @@ notifications:
     - https://webhooks.gitter.im/e/1ef62e23078036f9cee4
     # trigger Buildtime Trend Service to parse Travis CI log
     - https://buildtimetrend.herokuapp.com/travis
+    - http://104.197.9.155:8484/hubot/travis/activity
     on_success: always  # options: [always|never|change] default: always
     on_failure: always  # options: [always|never|change] default: always
     on_start: false     # default: false

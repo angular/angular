@@ -61,8 +61,8 @@ class DirectiveIntrospectorProvider {
  *
  * The value for the `ngOutlet` attribute is optional.
  */
-function ngOutletDirective($animate, $q: ng.IQService, $router) {
-  let rootRouter = $router;
+function ngOutletDirective($animate, $q: ng.IQService, $rootRouter) {
+  let rootRouter = $rootRouter;
 
   return {
     restrict: 'AE',
@@ -145,7 +145,7 @@ function ngOutletDirective($animate, $q: ng.IQService, $router) {
       }
 
       activate(instruction) {
-        let previousInstruction = this.currentInstruction;
+        this.previousInstruction = this.currentInstruction;
         this.currentInstruction = instruction;
 
         let componentName = this.controller.$$componentName = instruction.componentType;
@@ -154,13 +154,14 @@ function ngOutletDirective($animate, $q: ng.IQService, $router) {
           throw new Error('Component is not a string for ' + instruction.urlPath);
         }
 
-        this.controller.$$routeParams = instruction.params;
-        this.controller.$$template =
-            '<' + dashCase(componentName) + ' router="$$router"></' + dashCase(componentName) + '>';
+        this.controller.$$template = '<' + dashCase(componentName) + ' $router="::$$router"></' +
+                                     dashCase(componentName) + '>';
         this.controller.$$router = this.router.childRouter(instruction.componentType);
+        this.controller.$$outlet = this;
 
         let newScope = scope.$new();
         newScope.$$router = this.controller.$$router;
+        this.deferredActivation = $q.defer();
 
         let clone = $transclude(newScope, clone => {
           $animate.enter(clone, null, this.currentElement || element);
@@ -169,15 +170,7 @@ function ngOutletDirective($animate, $q: ng.IQService, $router) {
 
         this.currentElement = clone;
         this.currentScope = newScope;
-
-        // TODO: prefer the other directive retrieving the controller
-        // by debug mode
-        this.currentController = this.currentElement.children().eq(0).controller(componentName);
-
-        if (this.currentController && this.currentController.$routerOnActivate) {
-          return this.currentController.$routerOnActivate(instruction, previousInstruction);
-        }
-        return $q.when();
+        return this.deferredActivation.promise;
       }
     }
 
@@ -200,20 +193,31 @@ function ngOutletFillContentDirective($compile) {
     link: (scope, element, attrs, ctrl) => {
       let template = ctrl.$$template;
       element.html(template);
-      let link = $compile(element.contents());
-      link(scope);
-
-      // TODO: move to primary directive
-      let componentInstance = scope[ctrl.$$componentName];
-      if (componentInstance) {
-        ctrl.$$currentComponent = componentInstance;
-
-        componentInstance.$router = ctrl.$$router;
-        componentInstance.$routeParams = ctrl.$$routeParams;
-      }
+      $compile(element.contents())(scope);
     }
   };
 }
+
+
+
+function routerTriggerDirective($q) {
+  return {
+    require: '^ngOutlet',
+    priority: -1000,
+    link: function(scope, element, attr, ngOutletCtrl) {
+      var promise = $q.when();
+      var outlet = ngOutletCtrl.$$outlet;
+      var currentComponent = outlet.currentController =
+          element.controller(ngOutletCtrl.$$componentName);
+      if (currentComponent.$routerOnActivate) {
+        promise = $q.when(currentComponent.$routerOnActivate(outlet.currentInstruction,
+                                                             outlet.previousInstruction));
+      }
+      promise.then(outlet.deferredActivation.resolve, outlet.deferredActivation.reject);
+    }
+  };
+}
+
 
 /**
  * @name ngLink
@@ -227,8 +231,8 @@ function ngOutletFillContentDirective($compile) {
  *
  * ```js
  * angular.module('myApp', ['ngComponentRouter'])
- *   .controller('AppController', ['$router', function($router) {
- *     $router.config({ path: '/user/:id', component: 'user' });
+ *   .controller('AppController', ['$rootRouter', function($rootRouter) {
+ *     $rootRouter.config({ path: '/user/:id', component: 'user' });
  *     this.user = { name: 'Brian', id: 123 };
  *   });
  * ```
@@ -239,13 +243,11 @@ function ngOutletFillContentDirective($compile) {
  * </div>
  * ```
  */
-function ngLinkDirective($router, $parse) {
-  let rootRouter = $router;
-
+function ngLinkDirective($rootRouter, $parse) {
   return {require: '?^^ngOutlet', restrict: 'A', link: ngLinkDirectiveLinkFn};
 
   function ngLinkDirectiveLinkFn(scope, element, attrs, ctrl) {
-    let router = (ctrl && ctrl.$$router) || rootRouter;
+    let router = (ctrl && ctrl.$$router) || $rootRouter;
     if (!router) {
       return;
     }
@@ -273,7 +275,7 @@ function ngLinkDirective($router, $parse) {
         return;
       }
 
-      $router.navigateByInstruction(instruction);
+      $rootRouter.navigateByInstruction(instruction);
       event.preventDefault();
     });
   }
@@ -287,9 +289,10 @@ function dashCase(str: string): string {
  * A module for adding new a routing system Angular 1.
  */
 angular.module('ngComponentRouter', [])
-    .directive('ngOutlet', ['$animate', '$q', '$router', ngOutletDirective])
+    .directive('ngOutlet', ['$animate', '$q', '$rootRouter', ngOutletDirective])
     .directive('ngOutlet', ['$compile', ngOutletFillContentDirective])
-    .directive('ngLink', ['$router', '$parse', ngLinkDirective]);
+    .directive('ngLink', ['$rootRouter', '$parse', ngLinkDirective])
+    .directive('$router', ['$q', routerTriggerDirective]);
 
 /*
  * A module for inspecting controller constructors

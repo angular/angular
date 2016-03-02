@@ -57,9 +57,8 @@ export class ChangeDetectorJITGenerator {
     this.directiveRecords = definition.directiveRecords;
     this._names = new CodegenNameUtil(this.records, this.eventBindings, this.directiveRecords,
                                       this.changeDetectionUtilVarName);
-    this._logic =
-        new CodegenLogicUtil(this._names, this.changeDetectionUtilVarName,
-                             this.changeDetectorStateVarName, this.changeDetectionStrategy);
+    this._logic = new CodegenLogicUtil(this._names, this.changeDetectionUtilVarName,
+                                       this.changeDetectorStateVarName);
     this.typeName = sanitizeName(`ChangeDetector_${this.id}`);
   }
 
@@ -174,7 +173,7 @@ export class ChangeDetectorJITGenerator {
       var evalRecord = this._logic.genEventBindingEvalValue(eb, r);
       var markPath = this._genMarkPathToRootAsCheckOnce(r);
       var prevDefault = this._genUpdatePreventDefault(eb, r);
-      return `${evalRecord}\n${markPath}\n${prevDefault}`;
+      return `${markPath}\n${evalRecord}\n${prevDefault}`;
     } else {
       return this._logic.genEventBindingEvalValue(eb, r);
     }

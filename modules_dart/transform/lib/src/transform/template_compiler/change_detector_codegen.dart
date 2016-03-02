@@ -124,7 +124,7 @@ class _CodegenState {
     var names = new CodegenNameUtil(
         protoRecords, eventBindings, def.directiveRecords, '$genPrefix$_UTIL');
     var logic = new CodegenLogicUtil(
-        names, '$genPrefix$_UTIL', '$genPrefix$_STATE', def.strategy);
+        names, '$genPrefix$_UTIL', '$genPrefix$_STATE');
     return new _CodegenState._(
         genPrefix,
         def.id,
@@ -253,7 +253,7 @@ class _CodegenState {
       var evalRecord = _logic.genEventBindingEvalValue(eb, r);
       var markPath = _genMarkPathToRootAsCheckOnce(r);
       var prevDefault = _genUpdatePreventDefault(eb, r);
-      return "${evalRecord}\n${markPath}\n${prevDefault}";
+      return "${markPath}\n${evalRecord}\n${prevDefault}";
     } else {
       return _logic.genEventBindingEvalValue(eb, r);
     }

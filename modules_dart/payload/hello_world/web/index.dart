@@ -17,7 +17,7 @@ class GreetingService {
 @Directive(selector: "[red]")
 class RedDec {
   RedDec(ElementRef el, Renderer renderer) {
-    renderer.setElementStyle(el, "color", "red");
+    renderer.setElementStyle(el.nativeElement, "color", "red");
   }
 }
 

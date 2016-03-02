@@ -16,6 +16,7 @@ import {
 import {ListWrapper} from 'angular2/src/facade/collection';
 import {Component, View, TemplateRef, ContentChild} from 'angular2/core';
 import {NgFor} from 'angular2/src/common/directives/ng_for';
+import {NgIf} from 'angular2/src/common/directives/ng_if';
 import {By} from 'angular2/platform/common_dom';
 
 export function main() {
@@ -232,6 +233,33 @@ export function main() {
              });
        }));
 
+    it('should repeat over nested ngIf that are the last node in the ngFor temlate',
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+         var template =
+             `<div><template ngFor #item [ngForOf]="items" #i="index"><div>{{i}}|</div>` +
+             `<div *ngIf="i % 2 == 0">even|</div></template></div>`;
+
+         tcb.overrideTemplate(TestComponent, template)
+             .createAsync(TestComponent)
+             .then((fixture) => {
+               var el = fixture.debugElement.nativeElement;
+               var items = [1];
+               fixture.debugElement.componentInstance.items = items;
+               fixture.detectChanges();
+               expect(el).toHaveText('0|even|');
+
+               items.push(1);
+               fixture.detectChanges();
+               expect(el).toHaveText('0|even|1|');
+
+               items.push(1);
+               fixture.detectChanges();
+               expect(el).toHaveText('0|even|1|2|even|');
+
+               async.done();
+             });
+       }));
+
     it('should display indices correctly',
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
          var template =
@@ -365,7 +393,7 @@ export function main() {
       it('should not replace tracked items',
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            var template =
-               `<template ngFor #item [ngForOf]="items" [ngForTrackBy]="customTrackBy" #i="index">
+               `<template ngFor #item [ngForOf]="items" [ngForTrackBy]="trackById" #i="index">
                <p>{{items[i]}}</p>
               </template>`;
            tcb.overrideTemplate(TestComponent, template)
@@ -387,7 +415,7 @@ export function main() {
       it('should update implicit local variable on view',
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            var template =
-               `<div><template ngFor #item [ngForOf]="items" [ngForTrackBy]="customTrackBy">{{item['color']}}</template></div>`;
+               `<div><template ngFor #item [ngForOf]="items" [ngForTrackBy]="trackById">{{item['color']}}</template></div>`;
            tcb.overrideTemplate(TestComponent, template)
                .createAsync(TestComponent)
                .then((fixture) => {
@@ -403,7 +431,7 @@ export function main() {
       it('should move items around and keep them updated ',
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            var template =
-               `<div><template ngFor #item [ngForOf]="items" [ngForTrackBy]="customTrackBy">{{item['color']}}</template></div>`;
+               `<div><template ngFor #item [ngForOf]="items" [ngForTrackBy]="trackById">{{item['color']}}</template></div>`;
            tcb.overrideTemplate(TestComponent, template)
                .createAsync(TestComponent)
                .then((fixture) => {
@@ -418,6 +446,24 @@ export function main() {
                  async.done();
                });
          }));
+
+      it('should handle added and removed items properly when tracking by index',
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+           var template =
+               `<div><template ngFor #item [ngForOf]="items" [ngForTrackBy]="trackByIndex">{{item}}</template></div>`;
+           tcb.overrideTemplate(TestComponent, template)
+               .createAsync(TestComponent)
+               .then((fixture) => {
+                 fixture.debugElement.componentInstance.items = ['a', 'b', 'c', 'd'];
+                 fixture.detectChanges();
+                 fixture.debugElement.componentInstance.items = ['e', 'f', 'g', 'h'];
+                 fixture.detectChanges();
+                 fixture.debugElement.componentInstance.items = ['e', 'f', 'h'];
+                 fixture.detectChanges();
+                 expect(fixture.debugElement.nativeElement).toHaveText('efh');
+                 async.done();
+               });
+         }));
     });
   });
 }
@@ -427,12 +473,13 @@ class Foo {
 }
 
 @Component({selector: 'test-cmp'})
-@View({directives: [NgFor]})
+@View({directives: [NgFor, NgIf]})
 class TestComponent {
   @ContentChild(TemplateRef) contentTpl: TemplateRef;
   items: any;
   constructor() { this.items = [1, 2]; }
-  customTrackBy(index: number, item: any): string { return item['id']; }
+  trackById(index: number, item: any): string { return item['id']; }
+  trackByIndex(index: number, item: any): number { return index; }
 }
 
 @Component({selector: 'outer-cmp'})

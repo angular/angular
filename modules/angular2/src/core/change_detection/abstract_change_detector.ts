@@ -16,7 +16,6 @@ import {BindingTarget} from './binding_record';
 import {Locals} from './parser/locals';
 import {ChangeDetectionStrategy, ChangeDetectorState} from './constants';
 import {wtfCreateScope, wtfLeave, WtfScopeFn} from '../profile/profile';
-import {isObservable} from './observable_facade';
 import {ObservableWrapper} from 'angular2/src/facade/async';
 
 var _scope_check: WtfScopeFn = wtfCreateScope(`ChangeDetector#check(ascii id, bool throwOnChange)`);
@@ -41,10 +40,6 @@ export class AbstractChangeDetector<T> implements ChangeDetector {
   pipes: Pipes = null;
   propertyBindingIndex: number;
   outputSubscriptions: any[];
-
-  // This is an experimental feature. Works only in Dart.
-  subscriptions: any[];
-  streams: any[];
 
   dispatcher: ChangeDispatcher;
 
@@ -158,10 +153,6 @@ export class AbstractChangeDetector<T> implements ChangeDetector {
     this.mode = ChangeDetectionUtil.changeDetectionMode(this.strategy);
     this.context = context;
 
-    if (this.strategy === ChangeDetectionStrategy.OnPushObserve) {
-      this.observeComponent(context);
-    }
-
     this.locals = locals;
     this.pipes = pipes;
     this.hydrateDirectives(dispatcher);
@@ -175,11 +166,6 @@ export class AbstractChangeDetector<T> implements ChangeDetector {
   // implementation of `dehydrateDirectives`.
   dehydrate(): void {
     this.dehydrateDirectives(true);
-
-    // This is an experimental feature. Works only in Dart.
-    if (this.strategy === ChangeDetectionStrategy.OnPushObserve) {
-      this._unsubsribeFromObservables();
-    }
 
     this._unsubscribeFromOutputs();
 
@@ -248,72 +234,12 @@ export class AbstractChangeDetector<T> implements ChangeDetector {
     }
   }
 
-  // This is an experimental feature. Works only in Dart.
-  private _unsubsribeFromObservables(): void {
-    if (isPresent(this.subscriptions)) {
-      for (var i = 0; i < this.subscriptions.length; ++i) {
-        var s = this.subscriptions[i];
-        if (isPresent(this.subscriptions[i])) {
-          s.cancel();
-          this.subscriptions[i] = null;
-        }
-      }
-    }
-  }
-
   private _unsubscribeFromOutputs(): void {
     if (isPresent(this.outputSubscriptions)) {
       for (var i = 0; i < this.outputSubscriptions.length; ++i) {
         ObservableWrapper.dispose(this.outputSubscriptions[i]);
         this.outputSubscriptions[i] = null;
       }
-    }
-  }
-
-  // This is an experimental feature. Works only in Dart.
-  observeValue(value: any, index: number): any {
-    if (isObservable(value)) {
-      this._createArrayToStoreObservables();
-      if (isBlank(this.subscriptions[index])) {
-        this.streams[index] = value.changes;
-        this.subscriptions[index] = value.changes.listen((_) => this.ref.markForCheck());
-      } else if (this.streams[index] !== value.changes) {
-        this.subscriptions[index].cancel();
-        this.streams[index] = value.changes;
-        this.subscriptions[index] = value.changes.listen((_) => this.ref.markForCheck());
-      }
-    }
-    return value;
-  }
-
-  // This is an experimental feature. Works only in Dart.
-  observeDirective(value: any, index: number): any {
-    if (isObservable(value)) {
-      this._createArrayToStoreObservables();
-      var arrayIndex = this.numberOfPropertyProtoRecords + index + 2;  // +1 is component
-      this.streams[arrayIndex] = value.changes;
-      this.subscriptions[arrayIndex] = value.changes.listen((_) => this.ref.markForCheck());
-    }
-    return value;
-  }
-
-  // This is an experimental feature. Works only in Dart.
-  observeComponent(value: any): any {
-    if (isObservable(value)) {
-      this._createArrayToStoreObservables();
-      var index = this.numberOfPropertyProtoRecords + 1;
-      this.streams[index] = value.changes;
-      this.subscriptions[index] = value.changes.listen((_) => this.ref.markForCheck());
-    }
-    return value;
-  }
-
-  private _createArrayToStoreObservables(): void {
-    if (isBlank(this.subscriptions)) {
-      this.subscriptions = ListWrapper.createFixedSize(this.numberOfPropertyProtoRecords +
-                                                       this.directiveIndices.length + 2);
-      this.streams = ListWrapper.createFixedSize(this.numberOfPropertyProtoRecords +
-                                                 this.directiveIndices.length + 2);
     }
   }
 

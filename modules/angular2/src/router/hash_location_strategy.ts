@@ -69,12 +69,12 @@ export class HashLocationStrategy extends LocationStrategy {
     // the hash value is always prefixed with a `#`
     // and if it is empty then it will stay empty
     var path = this._platformLocation.hash;
+    if (!isPresent(path)) path = '#';
 
     // Dart will complain if a call to substring is
     // executed with a position value that extends the
     // length of string.
-    return (path.length > 0 ? path.substring(1) : path) +
-           normalizeQueryParams(this._platformLocation.search);
+    return (path.length > 0 ? path.substring(1) : path);
   }
 
   prepareExternalUrl(internal: string): string {

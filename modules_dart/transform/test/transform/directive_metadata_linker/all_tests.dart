@@ -27,13 +27,15 @@ void allTests() {
   var fooNgMeta, fooAssetId;
   var barNgMeta, barAssetId;
   var bazNgMeta, bazAssetId;
+  var aliasNgMeta, aliasAssetId;
 
   /// Call after making changes to `fooNgMeta`, `barNgMeta`, or `bazNgMeta` and
   /// before trying to read them from `reader`.
   final updateReader = () => reader
     ..addAsset(fooAssetId, JSON.encode(fooNgMeta.toJson()))
     ..addAsset(barAssetId, JSON.encode(barNgMeta.toJson()))
-    ..addAsset(bazAssetId, JSON.encode(bazNgMeta.toJson()));
+    ..addAsset(bazAssetId, JSON.encode(bazNgMeta.toJson()))
+    ..addAsset(aliasAssetId, JSON.encode(aliasNgMeta.toJson()));
 
   beforeEach(() {
     reader = new TestAssetReader();
@@ -41,19 +43,24 @@ void allTests() {
     // Establish some test NgMeta objects with one Component each.
     var fooComponentMeta = createFoo(moduleBase);
     fooNgMeta = new NgMeta(ngDeps: new NgDepsModel());
-    fooNgMeta.types[fooComponentMeta.type.name] = fooComponentMeta;
+    fooNgMeta.identifiers[fooComponentMeta.type.name] = fooComponentMeta;
 
     var barComponentMeta = createBar(moduleBase);
     barNgMeta = new NgMeta(ngDeps: new NgDepsModel());
-    barNgMeta.types[barComponentMeta.type.name] = barComponentMeta;
+    barNgMeta.identifiers[barComponentMeta.type.name] = barComponentMeta;
 
     var bazComponentMeta = createBaz(moduleBase);
     bazNgMeta = new NgMeta(ngDeps: new NgDepsModel());
-    barNgMeta.types[bazComponentMeta.type.name] = bazComponentMeta;
+    barNgMeta.identifiers[bazComponentMeta.type.name] = bazComponentMeta;
+
+    aliasNgMeta = new NgMeta(ngDeps: new NgDepsModel());
+    aliasNgMeta.aliases["Providers"] = ["someAlias"];
+    aliasNgMeta.definesAlias = true;
 
     fooAssetId = new AssetId('a', toSummaryExtension('lib/foo.dart'));
     barAssetId = new AssetId('a', toSummaryExtension('lib/bar.dart'));
     bazAssetId = new AssetId('a', toSummaryExtension('lib/baz.dart'));
+    aliasAssetId = new AssetId('a', toSummaryExtension('lib/alais.dart'));
     updateReader();
   });
 
@@ -63,11 +70,11 @@ void allTests() {
       updateReader();
 
       var extracted = await _testLink(reader, fooAssetId);
-      expect(extracted.types).toContain('FooComponent');
-      expect(extracted.types).toContain('BarComponent');
+      expect(extracted.identifiers).toContain('FooComponent');
+      expect(extracted.identifiers).toContain('BarComponent');
 
-      expect(extracted.types['FooComponent'].selector).toEqual('foo');
-      expect(extracted.types['BarComponent'].selector).toEqual('bar');
+      expect(extracted.identifiers['FooComponent'].selector).toEqual('foo');
+      expect(extracted.identifiers['BarComponent'].selector).toEqual('bar');
     });
 
     it('should include `DirectiveMetadata` recursively from exported files.',
@@ -77,13 +84,33 @@ void allTests() {
       updateReader();
 
       var extracted = await _testLink(reader, fooAssetId);
-      expect(extracted.types).toContain('FooComponent');
-      expect(extracted.types).toContain('BarComponent');
-      expect(extracted.types).toContain('BazComponent');
+      expect(extracted.identifiers).toContain('FooComponent');
+      expect(extracted.identifiers).toContain('BarComponent');
+      expect(extracted.identifiers).toContain('BazComponent');
 
-      expect(extracted.types['FooComponent'].selector).toEqual('foo');
-      expect(extracted.types['BarComponent'].selector).toEqual('bar');
-      expect(extracted.types['BazComponent'].selector).toEqual('baz');
+      expect(extracted.identifiers['FooComponent'].selector).toEqual('foo');
+      expect(extracted.identifiers['BarComponent'].selector).toEqual('bar');
+      expect(extracted.identifiers['BazComponent'].selector).toEqual('baz');
+    });
+
+    it('should include metadata recursively from imported files when they are aliases.',
+        () async {
+      aliasNgMeta.ngDeps.imports.add(new ImportModel()..uri = 'bar.dart');
+      updateReader();
+
+      var extracted = await _testLink(reader, aliasAssetId);
+      expect(extracted.identifiers).toContain('BarComponent');
+    });
+
+    it('should NOT include metadata recursively from imported files when no aliases defined.',
+        () async {
+      fooNgMeta.ngDeps.imports.add(new ImportModel()..uri = 'bar.dart');
+      barNgMeta.ngDeps.imports.add(new ImportModel()..uri = 'baz.dart');
+      updateReader();
+
+      var extracted = await _testLink(reader, fooAssetId);
+      expect(extracted.identifiers).not.toContain('BarComponent');
+      expect(extracted.identifiers).not.toContain('BazComponent');
     });
 
     it('should handle `DirectiveMetadata` export cycles gracefully.', () async {
@@ -93,9 +120,9 @@ void allTests() {
       updateReader();
 
       var extracted = await _testLink(reader, bazAssetId);
-      expect(extracted.types).toContain('FooComponent');
-      expect(extracted.types).toContain('BarComponent');
-      expect(extracted.types).toContain('BazComponent');
+      expect(extracted.identifiers).toContain('FooComponent');
+      expect(extracted.identifiers).toContain('BarComponent');
+      expect(extracted.identifiers).toContain('BazComponent');
     });
 
     it(
@@ -109,11 +136,11 @@ void allTests() {
 
       var extracted = await _testLink(reader, fooAssetId);
 
-      expect(extracted.types).toContain('FooComponent');
-      expect(extracted.types).toContain('BarComponent');
+      expect(extracted.identifiers).toContain('FooComponent');
+      expect(extracted.identifiers).toContain('BarComponent');
 
-      expect(extracted.types['FooComponent'].selector).toEqual('foo');
-      expect(extracted.types['BarComponent'].selector).toEqual('bar');
+      expect(extracted.identifiers['FooComponent'].selector).toEqual('foo');
+      expect(extracted.identifiers['BarComponent'].selector).toEqual('bar');
     });
   });
 

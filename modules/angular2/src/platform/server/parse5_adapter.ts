@@ -429,11 +429,13 @@ export class Parse5DomAdapter extends DomAdapter {
   hasAttribute(element, attribute: string): boolean {
     return element.attribs && element.attribs.hasOwnProperty(attribute);
   }
+  hasAttributeNS(element, ns: string, attribute: string): boolean { throw 'not implemented'; }
   getAttribute(element, attribute: string): string {
     return element.attribs && element.attribs.hasOwnProperty(attribute) ?
                element.attribs[attribute] :
                null;
   }
+  getAttributeNS(element, ns: string, attribute: string): string { throw 'not implemented'; }
   setAttribute(element, attribute: string, value: string) {
     if (attribute) {
       element.attribs[attribute] = value;
@@ -448,6 +450,7 @@ export class Parse5DomAdapter extends DomAdapter {
       StringMapWrapper.delete(element.attribs, attribute);
     }
   }
+  removeAttributeNS(element, ns: string, name: string) { throw 'not implemented'; }
   templateAwareRoot(el): any { return this.isTemplateElement(el) ? this.content(el) : el; }
   createHtmlDocument(): Document {
     var newDoc = treeAdapter.createDocument();

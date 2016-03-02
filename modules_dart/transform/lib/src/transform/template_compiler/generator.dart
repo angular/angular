@@ -38,20 +38,24 @@ Future<Outputs> processTemplates(AssetReader reader, AssetId assetId,
     {bool genChangeDetectionDebugInfo: false,
     bool reflectPropertiesAsAttributes: false,
     List<String> platformDirectives,
-    List<String> platformPipes}) async {
+    List<String> platformPipes,
+    Map<String, String> resolvedIdentifiers
+    }) async {
   var viewDefResults = await createCompileData(
-      reader, assetId, platformDirectives, platformPipes);
+      reader, assetId, platformDirectives, platformPipes, resolvedIdentifiers);
   if (viewDefResults == null) return null;
-  final compileTypeMetadatas = viewDefResults.ngMeta.types.values;
+  final compileTypeMetadatas = viewDefResults.ngMeta.identifiers.values;
   if (compileTypeMetadatas.isNotEmpty) {
     var processor = new reg.Processor();
     compileTypeMetadatas.forEach(processor.process);
-    viewDefResults.ngMeta.ngDeps.getters
-        .addAll(processor.getterNames.map((e) => e.sanitizedName));
-    viewDefResults.ngMeta.ngDeps.setters
-        .addAll(processor.setterNames.map((e) => e.sanitizedName));
-    viewDefResults.ngMeta.ngDeps.methods
-        .addAll(processor.methodNames.map((e) => e.sanitizedName));
+    if (viewDefResults.ngMeta.ngDeps != null) {
+      viewDefResults.ngMeta.ngDeps.getters
+          .addAll(processor.getterNames.map((e) => e.sanitizedName));
+      viewDefResults.ngMeta.ngDeps.setters
+          .addAll(processor.setterNames.map((e) => e.sanitizedName));
+      viewDefResults.ngMeta.ngDeps.methods
+          .addAll(processor.methodNames.map((e) => e.sanitizedName));
+    }
   }
   var templateCompiler = zone.templateCompiler;
   if (templateCompiler == null) {

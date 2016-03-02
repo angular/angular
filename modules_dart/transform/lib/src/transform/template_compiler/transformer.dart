@@ -47,7 +47,9 @@ class TemplateCompiler extends Transformer implements LazyTransformer {
           genChangeDetectionDebugInfo: options.genChangeDetectionDebugInfo,
           reflectPropertiesAsAttributes: options.reflectPropertiesAsAttributes,
           platformDirectives: options.platformDirectives,
-          platformPipes: options.platformPipes);
+          platformPipes: options.platformPipes,
+          resolvedIdentifiers: options.resolvedIdentifiers
+          );
       var ngDepsCode = _emptyNgDepsContents;
       if (outputs != null) {
         if (outputs.ngDeps != null) {
