@@ -37,4 +37,4 @@ cp ${ROOT_DIR}/dist/js/bundle/router* ${PUBLISH_DIR}/angular2/
 rm -f ${PUBLISH_DIR}/{,**/}{*.dart,*.dart.md}
 
 # Actually publish to npm
-npm publish ${PUBLISH_DIR} --tag pre-release --access public
+npm publish ${PUBLISH_DIR} --tag latest --access public
