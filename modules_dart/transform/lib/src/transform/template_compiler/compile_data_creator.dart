@@ -228,7 +228,7 @@ class _CompileDataCreator {
       return new CompileIdentifierMetadata(name: id.name, moduleUrl: resolvedIdentifiers[id.name]);
 
     } else {
-      log.warning(
+      log.error(
           'Missing identifier "${id.name}" '
               'needed by "${neededBy.name}" from metadata map',
           asset: entryPoint);
