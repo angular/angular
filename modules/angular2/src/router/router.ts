@@ -78,12 +78,29 @@ export class Router {
       throw new BaseException(`registerPrimaryOutlet expects to be called with an unnamed outlet.`);
     }
 
+    if (isPresent(this._outlet)) {
+      throw new BaseException(`Primary outlet is already registered.`);
+    }
+
     this._outlet = outlet;
     if (isPresent(this._currentInstruction)) {
       return this.commit(this._currentInstruction, false);
     }
     return _resolveToTrue;
   }
+
+  /**
+   * Unregister an outlet (because it was destroyed, etc).
+   *
+   * You probably don't need to use this unless you're writing a custom outlet implementation.
+   */
+  unregisterPrimaryOutlet(outlet: RouterOutlet): void {
+    if (isPresent(outlet.name)) {
+      throw new BaseException(`registerPrimaryOutlet expects to be called with an unnamed outlet.`);
+    }
+    this._outlet = null;
+  }
+
 
   /**
    * Register an outlet to notified of auxiliary route changes.
@@ -199,6 +216,26 @@ export class Router {
   }
 
   /** @internal */
+  _settleInstruction(instruction: Instruction): Promise<any> {
+    return instruction.resolveComponent().then((_) => {
+      var unsettledInstructions: Array<Promise<any>> = [];
+
+      if (isPresent(instruction.component)) {
+        instruction.component.reuse = false;
+      }
+
+      if (isPresent(instruction.child)) {
+        unsettledInstructions.push(this._settleInstruction(instruction.child));
+      }
+
+      StringMapWrapper.forEach(instruction.auxInstruction, (instruction, _) => {
+        unsettledInstructions.push(this._settleInstruction(instruction));
+      });
+      return PromiseWrapper.all(unsettledInstructions);
+    });
+  }
+
+  /** @internal */
   _navigate(instruction: Instruction, _skipLocationChange: boolean): Promise<any> {
     return this._settleInstruction(instruction)
         .then((_) => this._routerCanReuse(instruction))
@@ -218,26 +255,6 @@ export class Router {
                 }
               });
         });
-  }
-
-  /** @internal */
-  _settleInstruction(instruction: Instruction): Promise<any> {
-    return instruction.resolveComponent().then((_) => {
-      var unsettledInstructions: Array<Promise<any>> = [];
-
-      if (isPresent(instruction.component)) {
-        instruction.component.reuse = false;
-      }
-
-      if (isPresent(instruction.child)) {
-        unsettledInstructions.push(this._settleInstruction(instruction.child));
-      }
-
-      StringMapWrapper.forEach(instruction.auxInstruction, (instruction, _) => {
-        unsettledInstructions.push(this._settleInstruction(instruction));
-      });
-      return PromiseWrapper.all(unsettledInstructions);
-    });
   }
 
   private _emitNavigationFinish(url): void { ObservableWrapper.callEmit(this._subject, url); }
