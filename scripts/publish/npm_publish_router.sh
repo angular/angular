@@ -6,7 +6,7 @@ ROOT_DIR=$(cd $(dirname $0)/../..; pwd)
 cd ${ROOT_DIR}
 
 gulp clean
-gulp build.js buildRouter.dev
+node --max-old-space-size=6000 ./node_modules/.bin/gulp build.js buildRouter.dev
 
 NPM_DIR=${ROOT_DIR}/dist/npm
 rm -fr ${NPM_DIR}
