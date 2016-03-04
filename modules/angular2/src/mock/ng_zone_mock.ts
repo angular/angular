@@ -12,7 +12,7 @@ export class MockNgZone extends NgZone {
 
   constructor() {
     super({enableLongStackTrace: false});
-    this._mockOnEventDone = new EventEmitter<any>(false);
+    this._mockOnEventDone = new EventEmitter<any>();
   }
 
   get onEventDone() { return this._mockOnEventDone; }
