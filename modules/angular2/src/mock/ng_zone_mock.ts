@@ -8,7 +8,7 @@ import {EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
 @Injectable()
 export class MockNgZone extends NgZone {
   /** @internal */
-  private _mockOnStable: EventEmitter<any> = new EventEmitter(false);
+  private _mockOnStable: EventEmitter<any> = new EventEmitter();
 
   constructor() { super({enableLongStackTrace: false}); }
 

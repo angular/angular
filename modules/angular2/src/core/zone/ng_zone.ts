@@ -98,13 +98,13 @@ export class NgZone {
   /** @internal */
   private _nesting = 0;
   /** @internal */
-  private _onUnstable: EventEmitter<any> = new EventEmitter(false);
+  private _onUnstable: EventEmitter<any> = new EventEmitter();
   /** @internal */
-  private _onMicrotaskEmpty: EventEmitter<any> = new EventEmitter(false);
+  private _onMicrotaskEmpty: EventEmitter<any> = new EventEmitter();
   /** @internal */
-  private _onStable: EventEmitter<any> = new EventEmitter(false);
+  private _onStable: EventEmitter<any> = new EventEmitter();
   /** @internal */
-  private _onErrorEvents: EventEmitter<any> = new EventEmitter(false);
+  private _onErrorEvents: EventEmitter<any> = new EventEmitter();
 
   /**
    * @param {bool} enableLongStackTrace whether to enable long stack trace. They should only be

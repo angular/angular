@@ -36,8 +36,8 @@ class MockNgZone extends NgZone {
 
   constructor() {
     super({enableLongStackTrace: false});
-    this._onUnstableStream = new EventEmitter(false);
-    this._onStableStream = new EventEmitter(false);
+    this._onUnstableStream = new EventEmitter();
+    this._onStableStream = new EventEmitter();
   }
 
   unstable(): void { ObservableWrapper.callEmit(this._onUnstableStream, null); }

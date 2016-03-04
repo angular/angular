@@ -40,6 +40,7 @@ import {
   EventEmitter,
   ObservableWrapper,
   PromiseCompleter,
+  TimerWrapper
 } from 'angular2/src/facade/async';
 
 import {
@@ -926,7 +927,8 @@ function declareTests(isJit: boolean) {
                    if (eventCount === 1) {
                      expect(listener.msg).toEqual('fired !');
                      fixture.destroy();
-                     emitter.fireEvent('fired again !');
+                     // see https://github.com/dart-lang/sdk/issues/22240
+                     TimerWrapper.setTimeout(() => { emitter.fireEvent('fired again !'); }, 0);
                    } else {
                      expect(listener.msg).toEqual('fired !');
                      async.done();
@@ -1474,10 +1476,9 @@ function declareTests(isJit: boolean) {
                     tick();
 
                     var tc = fixture.debugElement.children[0];
-                    tc.inject(DirectiveEmittingEvent).fireEvent("boom");
 
                     try {
-                      tick();
+                      tc.inject(DirectiveEmittingEvent).fireEvent("boom");
                       throw "Should throw";
                     } catch (e) {
                       clearPendingTimers();
