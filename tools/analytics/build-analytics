@@ -1,5 +1,10 @@
 #!/usr/bin/env node
 
+// Usage:
+//
+// build analytics start|success|error|<exitCode> <actionCategory> <actionName>
+
+
 'use strict';
 
 
@@ -14,6 +19,11 @@ var actionName = process.argv[4];
 
 if (!analytics[actionCategory + 'Start']) {
   throw new Error('Unknown build-analytics actionCategory "' + actionCategory + '"');
+}
+
+var exitCode = Number.parseInt(eventType, 10);
+if (!Number.isNaN(exitCode)) {
+  eventType = (exitCode === 0) ? 'success' : 'error';
 }
 
 if (eventType != 'start' && eventType != 'success' && eventType != 'error') {
