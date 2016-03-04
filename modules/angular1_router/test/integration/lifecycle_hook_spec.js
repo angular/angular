@@ -351,7 +351,7 @@ describe('Navigation lifecycle', function () {
 
     expect(spy).toHaveBeenCalled();
     var args = spy.calls.mostRecent().args;
-    expect(args[0].params).toEqual({name: 'brian'});
+    expect(args[0].params).toEqual(jasmine.objectContaining({name: 'brian'}));
     expect(args[1]).toBe($http);
   }));
 

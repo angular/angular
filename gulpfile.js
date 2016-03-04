@@ -344,9 +344,8 @@ gulp.task('lint', ['build.tools'], function() {
 gulp.task('build/checkCircularDependencies', function(done) {
   var madge = require('madge');
 
-  var dependencyObject = madge(CONFIG.dest.js.dev.es5, {
+  var dependencyObject = madge([CONFIG.dest.js.dev.es5], {
     format: 'cjs',
-    paths: [CONFIG.dest.js.dev.es5],
     extensions: ['.js'],
     onParseFile: function(data) { data.src = data.src.replace(/\/\* circular \*\//g, "//"); }
   });

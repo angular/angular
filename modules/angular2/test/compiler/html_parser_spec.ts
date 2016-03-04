@@ -328,10 +328,10 @@ function humanizeErrors(errors: ParseError[]): any[] {
   return errors.map(error => {
     if (error instanceof HtmlTreeError) {
       // Parser errors
-      return [<any>error.elementName, error.msg, humanizeLineColumn(error.location)];
+      return [<any>error.elementName, error.msg, humanizeLineColumn(error.span.start)];
     }
     // Tokenizer errors
-    return [(<any>error).tokenType, error.msg, humanizeLineColumn(error.location)];
+    return [(<any>error).tokenType, error.msg, humanizeLineColumn(error.span.start)];
   });
 }
 

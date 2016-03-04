@@ -79,7 +79,7 @@ var TEXT_CSS_SELECTOR = CssSelector.parse('*')[0];
 export const TEMPLATE_TRANSFORMS = CONST_EXPR(new OpaqueToken('TemplateTransforms'));
 
 export class TemplateParseError extends ParseError {
-  constructor(message: string, location: ParseLocation) { super(location, message); }
+  constructor(message: string, span: ParseSourceSpan) { super(span, message); }
 }
 
 @Injectable()
@@ -128,7 +128,7 @@ class TemplateParseVisitor implements HtmlAstVisitor {
   }
 
   private _reportError(message: string, sourceSpan: ParseSourceSpan) {
-    this.errors.push(new TemplateParseError(message, sourceSpan.start));
+    this.errors.push(new TemplateParseError(message, sourceSpan));
   }
 
   private _parseInterpolation(value: string, sourceSpan: ParseSourceSpan): ASTWithSource {

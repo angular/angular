@@ -1,3 +1,70 @@
+<a name="2.0.0-beta.8"></a>
+# 2.0.0-beta.8 (2016-03-02)
+
+
+### Bug Fixes
+
+* **angular1_router:** rename `$route` service to `$rootRouter` ([a1c3be2](https://github.com/angular/angular/commit/a1c3be2))
+* **angular1_router:** rename `router` component binding to `$router` ([edad8e3](https://github.com/angular/angular/commit/edad8e3))
+* **angular1_router:** support templateUrl components ([d4a4d81](https://github.com/angular/angular/commit/d4a4d81))
+* **change_detection:** allow to destroy `OnPush` components inside of a host event. ([280b86e](https://github.com/angular/angular/commit/280b86e))
+* **change_detection:** allow to destroy `OnPush` components inside of a host event. ([ebd438f](https://github.com/angular/angular/commit/ebd438f)), closes [#7192](https://github.com/angular/angular/issues/7192)
+* **core:** support `ngFor` that has an `ngIf` as last node ([1779caf](https://github.com/angular/angular/commit/1779caf)), closes [#6304](https://github.com/angular/angular/issues/6304) [#6878](https://github.com/angular/angular/issues/6878)
+* **dart/payload:** Fix runtime error in hello_world payload app ([eeb594c](https://github.com/angular/angular/commit/eeb594c)), closes [#7358](https://github.com/angular/angular/issues/7358)
+* **differ:** clean up stale identity change refs ([ab36ea0](https://github.com/angular/angular/commit/ab36ea0)), closes [#7193](https://github.com/angular/angular/issues/7193)
+* **DomRenderer:** correctly handle namespaced attributes ([c6afea6](https://github.com/angular/angular/commit/c6afea6))
+* **Router:** Query strings are copied for HashLocationStrategy ([b47f80e](https://github.com/angular/angular/commit/b47f80e)), closes [#7298](https://github.com/angular/angular/issues/7298)
+* **test:** fix a broken test ([9aedef2](https://github.com/angular/angular/commit/9aedef2))
+* **transformers:** record reflection info about abstract classes ([05c185a](https://github.com/angular/angular/commit/05c185a)), closes [#7347](https://github.com/angular/angular/issues/7347)
+* **transformers:** replace an error with a warning when cannot resolve a symbol ([ee3c580](https://github.com/angular/angular/commit/ee3c580))
+* **transformers:** special case types some built-in types, so they can be resolved ([331b9c1](https://github.com/angular/angular/commit/331b9c1))
+* **web_worker:** wait for bindings in kitchen sink spec ([4a93f58](https://github.com/angular/angular/commit/4a93f58))
+* **web_workers:** make waitForElementText function more stable ([f6a8d04](https://github.com/angular/angular/commit/f6a8d04))
+* **WebWorker:** Fix PostMessageBusSink and Source undefined error. ([01fe7f5](https://github.com/angular/angular/commit/01fe7f5)), closes [#7156](https://github.com/angular/angular/issues/7156)
+* **WebWorker:** Make MessageBus EventEmitter synchronous ([69c1694](https://github.com/angular/angular/commit/69c1694))
+
+### Features
+
+* **core:** Add `QueryList.forEach` to public api. ([e7470d5](https://github.com/angular/angular/commit/e7470d5))
+* **core:** Add `QueryList#forEach` ([b634a25](https://github.com/angular/angular/commit/b634a25))
+* **core:** add more debug APIs to inspect the application form a browser ([b5e6319](https://github.com/angular/angular/commit/b5e6319)), closes [#7045](https://github.com/angular/angular/issues/7045) [#7161](https://github.com/angular/angular/issues/7161)
+* **core:** drop `ChangeDetectionStrategy.OnPushObserve` ([f60fa14](https://github.com/angular/angular/commit/f60fa14))
+* **di:** drop support for injecting types with generics in Dart ([c9a3df9](https://github.com/angular/angular/commit/c9a3df9)), closes [#7262](https://github.com/angular/angular/issues/7262)
+* **forms/validators:** pattern validator ([38cb526](https://github.com/angular/angular/commit/38cb526)), closes [#5561](https://github.com/angular/angular/issues/5561)
+* **i18n:** added i18nPlural and i18nSelect pipes ([59629a0](https://github.com/angular/angular/commit/59629a0)), closes [#7268](https://github.com/angular/angular/issues/7268)
+* **pipes:** add ReplacePipe for string manipulation ([6ef2121](https://github.com/angular/angular/commit/6ef2121))
+* **test:** add withProviders for per test providers ([c1a0af5](https://github.com/angular/angular/commit/c1a0af5)), closes [#5128](https://github.com/angular/angular/issues/5128)
+* **transformers:** collect data needed for the template compiler ([ebe531b](https://github.com/angular/angular/commit/ebe531b)), closes [#7299](https://github.com/angular/angular/issues/7299)
+* **transformers:** collect information for CompileDiDependencyMetadata ([39b6e0e](https://github.com/angular/angular/commit/39b6e0e))
+* **transformers:** makes the map of resolved identifiers configurable ([0bb10d6](https://github.com/angular/angular/commit/0bb10d6)), closes [#7359](https://github.com/angular/angular/issues/7359)
+
+
+### BREAKING CHANGES
+
+* `OnPushObserve` was an experimental
+feature for Dart and had
+conceptual performance problems,
+as setting up observables is slow.
+Use `OnPush` instead.
+
+* In Dart we used to support injecting types with generics. As this feature is hard to implement with the upcoming codegen we are dropping it.
+Merge cl/115454020 in G3 with this change.
+
+* The `$router` injectable service has been renamed to `$rootRouter`
+
+* The recently added binding of the current router to the current component
+has been renamed from `router` to `$router`.
+So now the recommended set up for your bindings in your routed component
+is:
+```js
+{
+  ...
+  bindings: {
+    $router: '<'
+  }
+}
+```
+
 <a name="2.0.0-beta.7"></a>
 # 2.0.0-beta.7 (2016-02-18)
 
