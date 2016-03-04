@@ -18,6 +18,9 @@ before_cache:
 
 env:
   global:
+  # Use newer verison of GCC to that is required to compile native npm modules for Node v4+ on Ubuntu Precise
+  # more info: https://docs.travis-ci.com/user/languages/javascript-with-nodejs#Node.js-v4-(or-io.js-v3)-compiler-requirements
+  - CXX=g++-4.8
   - KARMA_DART_BROWSERS=DartiumWithWebPlatform
   # No sandbox mode is needed for Chromium in Travis, it crashes otherwise: https://sites.google.com/a/chromium.org/chromedriver/help/chrome-doesn-t-start
   - KARMA_JS_BROWSERS=ChromeNoSandbox
@@ -64,6 +67,11 @@ matrix:
 
 addons:
   firefox: "38.0"
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - g++-4.8
 
 before_install:
 - npm install -g npm@3.5.3
