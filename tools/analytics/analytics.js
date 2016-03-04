@@ -167,7 +167,7 @@ module.exports = {
   },
 
   ciError: (actionName, duration) => {
-    recordEvent('success', 'ci', actionName, duration);
+    recordEvent('error', 'ci', actionName, duration);
   },
 
   bundleSize: (filePath, sizeInBytes, compressionLevel) => {
