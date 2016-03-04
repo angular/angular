@@ -85,7 +85,6 @@ before_install:
 - ./scripts/ci/init_android.sh
 - ./scripts/ci/install_dart.sh ${DART_CHANNEL} ${DART_VERSION} ${ARCH}
 - sh -e /etc/init.d/xvfb start
-- if [[ -e SKIP_TRAVIS_TESTS ]]; then { cat SKIP_TRAVIS_TESTS ; exit 0; } fi
 - '[ "${TRAVIS_PULL_REQUEST}" = "false" ] && [ "${TRAVIS_BRANCH}" = "master" ] && SAUCE_USERNAME="angular2-ci" && SAUCE_ACCESS_KEY="693ebc16208a-0b5b-1614-8d66-a2662f4e" || true'
 - node tools/analytics/build-analytics success ci before_install
 
