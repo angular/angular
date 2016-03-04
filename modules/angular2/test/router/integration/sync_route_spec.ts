@@ -20,5 +20,7 @@ export function main() {
       describeWith('default routes', () => { describeWithout('params', itShouldRoute); });
 
     });
+
+    describeWith('dynamic components', itShouldRoute);
   });
 }

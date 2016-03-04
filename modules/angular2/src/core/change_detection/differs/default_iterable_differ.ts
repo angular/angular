@@ -109,7 +109,6 @@ export class DefaultIterableDiffer implements IterableDiffer {
 
   onDestroy() {}
 
-  // todo(vicb): optim for UnmodifiableListView (frozen arrays)
   check(collection: any): boolean {
     this._reset();
 
@@ -119,24 +118,27 @@ export class DefaultIterableDiffer implements IterableDiffer {
     var item;
     var itemTrackBy;
     if (isArray(collection)) {
-      var list = collection;
-      this._length = collection.length;
+      if (collection !== this._collection || !ListWrapper.isImmutable(collection)) {
+        var list = collection;
+        this._length = collection.length;
 
-      for (index = 0; index < this._length; index++) {
-        item = list[index];
-        itemTrackBy = this._trackByFn(index, item);
-        if (record === null || !looseIdentical(record.trackById, itemTrackBy)) {
-          record = this._mismatch(record, item, itemTrackBy, index);
-          mayBeDirty = true;
-        } else {
-          if (mayBeDirty) {
-            // TODO(misko): can we limit this to duplicates only?
-            record = this._verifyReinsertion(record, item, itemTrackBy, index);
+        for (index = 0; index < this._length; index++) {
+          item = list[index];
+          itemTrackBy = this._trackByFn(index, item);
+          if (record === null || !looseIdentical(record.trackById, itemTrackBy)) {
+            record = this._mismatch(record, item, itemTrackBy, index);
+            mayBeDirty = true;
+          } else {
+            if (mayBeDirty) {
+              // TODO(misko): can we limit this to duplicates only?
+              record = this._verifyReinsertion(record, item, itemTrackBy, index);
+            }
+            if (!looseIdentical(record.item, item)) this._addIdentityChange(record, item);
           }
-          if (!looseIdentical(record.item, item)) this._addIdentityChange(record, item);
-        }
 
-        record = record._next;
+          record = record._next;
+        }
+        this._truncate(record);
       }
     } else {
       index = 0;
@@ -156,9 +158,9 @@ export class DefaultIterableDiffer implements IterableDiffer {
         index++;
       });
       this._length = index;
+      this._truncate(record);
     }
 
-    this._truncate(record);
     this._collection = collection;
     return this.isDirty;
   }

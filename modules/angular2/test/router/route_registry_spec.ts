@@ -20,7 +20,7 @@ import {
   Redirect,
   AuxRoute,
   AsyncRoute
-} from 'angular2/src/router/route_config_decorator';
+} from 'angular2/src/router/route_config/route_config_decorator';
 
 
 export function main() {
