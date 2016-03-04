@@ -74,23 +74,27 @@ addons:
       - g++-4.8
 
 before_install:
-- npm install -g npm@3.5.3
-- node tools/analytics/build-analytics start ci job
-- node tools/analytics/build-analytics start ci before_install
-- echo ${TSDRC} > .tsdrc
-- ./scripts/ci/install_chromium.sh
-- export CHROME_BIN=$HOME/.chrome/chromium/chrome-linux/chrome
-- export DISPLAY=:99.0
-- export GIT_SHA=$(git rev-parse HEAD)
-- ./scripts/ci/init_android.sh
-- ./scripts/ci/install_dart.sh ${DART_CHANNEL} ${DART_VERSION} ${ARCH}
-- sh -e /etc/init.d/xvfb start
-- '[ "${TRAVIS_PULL_REQUEST}" = "false" ] && [ "${TRAVIS_BRANCH}" = "master" ] && SAUCE_USERNAME="angular2-ci" && SAUCE_ACCESS_KEY="693ebc16208a-0b5b-1614-8d66-a2662f4e" || true'
-- node tools/analytics/build-analytics success ci before_install
+  - node tools/analytics/build-analytics start ci job
+  - node tools/analytics/build-analytics start ci before_install
+  - echo ${TSDRC} > .tsdrc
+  - export CHROME_BIN=$HOME/.chrome/chromium/chrome-linux/chrome
+  - export DISPLAY=:99.0
+  - export GIT_SHA=$(git rev-parse HEAD)
+  - ./scripts/ci/init_android.sh
+  - sh -e /etc/init.d/xvfb start
+  # Use a separate SauseLabs account for upstream/master builds in order for Sauce to create a badge representing the status of just upstream/master
+  - '[ "${TRAVIS_PULL_REQUEST}" = "false" ] && [ "${TRAVIS_BRANCH}" = "master" ] && SAUCE_USERNAME="angular2-ci" && SAUCE_ACCESS_KEY="693ebc16208a-0b5b-1614-8d66-a2662f4e" || true'
+  - node tools/analytics/build-analytics success ci before_install
 
 install:
   - node tools/analytics/build-analytics start ci install
-  # Check the size of caches
+  # Install version of npm that we are locked against
+  - npm install -g npm@3.5.3
+  # Install version of Chromium that we are locked against
+  - ./scripts/ci/install_chromium.sh
+  # Install version of Dart based on the matrix build variables
+  - ./scripts/ci/install_dart.sh ${DART_CHANNEL} ${DART_VERSION} ${ARCH}
+  # Print the size of caches to ease debugging
   - du -sh ./node_modules || true
   # Install npm dependecies
   # check-node-modules will exit(1) if we don't need to install
