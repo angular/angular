@@ -63,36 +63,6 @@ export class Serializer {
     }
   }
 
-  mapToObject(map: Map<string, any>, type?: Type): Object {
-    var object = {};
-    var serialize = isPresent(type);
-
-    map.forEach((value, key) => {
-      if (serialize) {
-        object[key] = this.serialize(value, type);
-      } else {
-        object[key] = value;
-      }
-    });
-    return object;
-  }
-
-  /*
-   * Transforms a Javascript object (StringMap) into a Map<string, V>
-   * If the values need to be deserialized pass in their type
-   * and they will be deserialized before being placed in the map
-   */
-  objectToMap(obj: {[key: string]: any}, type?: Type, data?: any): Map<string, any> {
-    if (isPresent(type)) {
-      var map = new Map<string, any>();
-      StringMapWrapper.forEach(obj,
-                               (val, key) => { map.set(key, this.deserialize(val, type, data)); });
-      return map;
-    } else {
-      return MapWrapper.createFromStringMap(obj);
-    }
-  }
-
   private _serializeLocation(loc: LocationType): Object {
     return {
       'href': loc.href,
