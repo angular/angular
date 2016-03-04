@@ -16,6 +16,7 @@ export {
 export {Lexer} from './parser/lexer';
 export {Parser} from './parser/parser';
 export {Locals} from './parser/locals';
+export {INTERPOLATE_REGEXP, DEFAULT_INTERPOLATE_REGEXP} from './parser/interpolate_regexp';
 
 export {
   DehydratedException,
