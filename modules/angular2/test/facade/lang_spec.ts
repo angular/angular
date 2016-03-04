@@ -1,11 +1,22 @@
-import {describe, it, expect, beforeEach, ddescribe, iit, xit, el} from 'angular2/testing_internal';
+import {
+  describe,
+  it,
+  expect,
+  beforeEach,
+  ddescribe,
+  iit,
+  xit,
+  el,
+  SpyObject
+} from 'angular2/testing_internal';
 import {
   isPresent,
   RegExpWrapper,
   RegExpMatcherWrapper,
   StringWrapper,
   CONST_EXPR,
-  hasConstructor
+  hasConstructor,
+  Json
 } from 'angular2/src/facade/lang';
 
 class MySuperclass {}
@@ -130,6 +141,25 @@ export function main() {
 
       it("should be false for subtypes",
          () => { expect(hasConstructor(new MySubclass(), MySuperclass)).toEqual(false); });
+    });
+  });
+
+  describe('Json', () => {
+    var s;
+
+    describe('parse', () => {
+      beforeEach(() => { s = '{"1": 1, "2": 2, "3": { "4": 4, "5": { "6": 6 } } }'; });
+
+      it('should parse the JSON string',
+         () => { expect(Json.parse(s)).toEqual({1: 1, 2: 2, 3: {4: 4, 5: {6: 6}}}); });
+
+      it('should parse the JSON string with revival callback', () => {
+        var spy = new SpyObject();
+        var revivalSpy = spy.spy('revival').and.callFake((key, value) => { return value; });
+
+        expect(Json.parse(s, revivalSpy)).toEqual({1: 1, 2: 2, 3: {4: 4, 5: {6: 6}}});
+        expect(revivalSpy).toHaveBeenCalled();
+      });
     });
   });
 }
