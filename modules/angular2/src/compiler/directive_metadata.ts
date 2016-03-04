@@ -177,10 +177,7 @@ export class CompileProviderMetadata {
   static fromJson(data: {[key: string]: any}): CompileProviderMetadata {
     return new CompileProviderMetadata({
       token: objFromJson(data['token'], CompileIdentifierMetadata.fromJson),
-      useClass: objFromJson(data['useClass'], CompileTypeMetadata.fromJson),
-      useExisting: objFromJson(data['useExisting'], CompileIdentifierMetadata.fromJson),
-      useValue: objFromJson(data['useValue'], CompileIdentifierMetadata.fromJson),
-      useFactory: objFromJson(data['useFactory'], CompileFactoryMetadata.fromJson)
+      useClass: objFromJson(data['useClass'], CompileTypeMetadata.fromJson)
     });
   }
 
@@ -188,10 +185,7 @@ export class CompileProviderMetadata {
     return {
       // Note: Runtime type can't be serialized...
       'token': objToJson(this.token),
-      'useClass': objToJson(this.useClass),
-      'useExisting': objToJson(this.useExisting),
-      'useValue': objToJson(this.useValue),
-      'useFactory': objToJson(this.useFactory)
+      'useClass': objToJson(this.useClass)
     };
   }
 }
@@ -204,17 +198,15 @@ export class CompileFactoryMetadata implements CompileIdentifierMetadata {
   constConstructor: boolean;
   diDeps: CompileDiDependencyMetadata[];
 
-  constructor({runtime, name, moduleUrl, prefix, constConstructor, diDeps}: {
+  constructor({runtime, name, moduleUrl, constConstructor, diDeps}: {
     runtime?: Function,
     name?: string,
-    prefix?: string,
     moduleUrl?: string,
     constConstructor?: boolean,
     diDeps?: CompileDiDependencyMetadata[]
   }) {
     this.runtime = runtime;
     this.name = name;
-    this.prefix = prefix;
     this.moduleUrl = moduleUrl;
     this.diDeps = diDeps;
     this.constConstructor = constConstructor;
@@ -222,25 +214,7 @@ export class CompileFactoryMetadata implements CompileIdentifierMetadata {
 
   get identifier(): CompileIdentifierMetadata { return this; }
 
-  static fromJson(data: {[key: string]: any}): CompileFactoryMetadata {
-    return new CompileFactoryMetadata({
-      name: data['name'],
-      prefix: data['prefix'],
-      moduleUrl: data['moduleUrl'],
-      constConstructor: data['constConstructor'],
-      diDeps: arrayFromJson(data['diDeps'], CompileDiDependencyMetadata.fromJson)
-    });
-  }
-
-  toJson(): {[key: string]: any} {
-    return {
-      'name': this.name,
-      'prefix': this.prefix,
-      'moduleUrl': this.moduleUrl,
-      'constConstructor': this.constConstructor,
-      'diDeps': arrayToJson(this.diDeps)
-    };
-  }
+  toJson() { return null; }
 }
 
 /**
