@@ -33,6 +33,8 @@ env:
   - ARCH=linux-x64
   - DART_DEV_VERSION=latest
   - DART_STABLE_VERSION=latest
+  - DART_CHANNEL=stable
+  - DART_VERSION=$DART_STABLE_VERSION
   # Token for tsd to increase github rate limit
   # See https://github.com/DefinitelyTyped/tsd#tsdrc
   # This does not use http://docs.travis-ci.com/user/environment-variables/#Secure-Variables
@@ -44,26 +46,26 @@ env:
   - secure: "fq/U7VDMWO8O8SnAQkdbkoSe2X92PVqg4d044HmRYVmcf6YbO48+xeGJ8yOk0pCBwl3ISO4Q2ot0x546kxfiYBuHkZetlngZxZCtQiFT9kyId8ZKcYdXaIW9OVdw3Gh3tQyUwDucfkVhqcs52D6NZjyE2aWZ4/d1V4kWRO/LMgo="
   matrix:
     # Order: a slower build first, so that we don't occupy an idle travis worker waiting for others to complete.
-    - MODE=dart DART_CHANNEL=stable DART_VERSION=$DART_STABLE_VERSION
-    - MODE=dart DART_CHANNEL=dev DART_VERSION=$DART_DEV_VERSION
-    - MODE=saucelabs_required DART_CHANNEL=dev DART_VERSION=$DART_DEV_VERSION
-    - MODE=browserstack_required DART_CHANNEL=dev DART_VERSION=$DART_DEV_VERSION
-    - MODE=saucelabs_optional DART_CHANNEL=dev DART_VERSION=$DART_DEV_VERSION
-    - MODE=browserstack_optional DART_CHANNEL=dev DART_VERSION=$DART_DEV_VERSION
-    - MODE=dart_ddc DART_CHANNEL=dev DART_VERSION=$DART_DEV_VERSION
-    - MODE=js DART_CHANNEL=dev DART_VERSION=$DART_DEV_VERSION
-    - MODE=router DART_CHANNEL=dev DART_VERSION=$DART_DEV_VERSION
-    - MODE=build_only DART_CHANNEL=stable DART_VERSION=$DART_STABLE_VERSION
-    - MODE=typescript_next DART_CHANNEL=stable DART_VERSION=$DART_STABLE_VERSION
-    - MODE=lint DART_CHANNEL=dev DART_VERSION=$DART_DEV_VERSION
-    - MODE=payload DART_CHANNEL=stable DART_VERSION=$DART_STABLE_VERSION
+    - MODE=dart
+    - MODE=dart DART_CHANNEL=dev
+    - MODE=saucelabs_required
+    - MODE=browserstack_required
+    - MODE=saucelabs_optional
+    - MODE=browserstack_optional
+    - MODE=dart_ddc
+    - MODE=js
+    - MODE=router
+    - MODE=build_only
+    - MODE=typescript_next
+    - MODE=lint
+    - MODE=payload
 
 matrix:
   allow_failures:
-  - env: "MODE=saucelabs_optional DART_CHANNEL=dev DART_VERSION=$DART_DEV_VERSION"
-  - env: "MODE=browserstack_optional DART_CHANNEL=dev DART_VERSION=$DART_DEV_VERSION"
+  - env: "MODE=saucelabs_optional"
+  - env: "MODE=browserstack_optional"
   # Tracked in https://github.com/angular/angular/issues/7050
-  - env: "MODE=typescript_next DART_CHANNEL=stable DART_VERSION=$DART_STABLE_VERSION"
+  - env: "MODE=typescript_next"
 
 addons:
   firefox: "38.0"
