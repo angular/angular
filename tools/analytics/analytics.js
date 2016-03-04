@@ -55,7 +55,7 @@ let customParams = {
   // Dev Environment
   cd4: process.env.TRAVIS ? 'Travis CI' : 'Local Dev',
   // Travis - Pull Request?
-  cd5: process.env.TRAVIS && process.env.TRAVIS_PULL_REQUEST ? 'true' : 'false',
+  cd5: (process.env.TRAVIS_PULL_REQUEST == 'true') ? 'true' : 'false',
   // Travis - Branch Name (master)
   cd6: process.env.TRAVIS_BRANCH,
   // Travis - Repo Slug  (angular/angular)
