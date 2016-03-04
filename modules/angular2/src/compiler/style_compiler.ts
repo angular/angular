@@ -29,12 +29,12 @@ export class StyleCompiler {
   compileComponentRuntime(template: CompileTemplateMetadata): Promise<Array<string | any[]>> {
     var styles = template.styles;
     var styleAbsUrls = template.styleUrls;
-    return this._loadStyles(styles, styleAbsUrls,
-                            template.encapsulation === ViewEncapsulation.Emulated);
+    var shim = this._shouldShim(template.encapsulation);
+    return this._loadStyles(styles, styleAbsUrls, shim);
   }
 
   compileComponentCodeGen(template: CompileTemplateMetadata): SourceExpression {
-    var shim = template.encapsulation === ViewEncapsulation.Emulated;
+    var shim = this._shouldShim(template.encapsulation);
     return this._styleCodeGen(template.styles, template.styleUrls, shim);
   }
 
@@ -98,6 +98,11 @@ export class StyleCompiler {
 
   private _shimIfNeeded(style: string, shim: boolean): string {
     return shim ? this._shadowCss.shimCssText(style, CONTENT_ATTR, HOST_ATTR) : style;
+  }
+
+  private _shouldShim(encapsulation: ViewEncapsulation): boolean {
+    return encapsulation === ViewEncapsulation.Emulated ||
+           encapsulation === ViewEncapsulation.EmulatedLegacy;
   }
 
   private _createModuleUrl(stylesheetUrl: string, shim: boolean): string {
