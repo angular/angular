@@ -13,8 +13,8 @@ cache:
     - $HOME/.chrome/chromium
 
 before_cache:
-  # Undo the pollution of the typescript_next build
-  - npm install typescript
+  # Undo the pollution of the typescript_next build before the cache is primed for future use
+  - if [[ "$MODE" == "typescript_next" ]]; then npm install typescript; fi
 
 env:
   global:
