@@ -207,13 +207,13 @@ function ngLinkDirective($rootRouter, $parse) {
       return;
     }
 
-    let instruction = null;
+    let navigationInstruction = null;
     let link = attrs.ngLink || '';
 
     function getLink(params) {
-      instruction = router.generate(params);
+      navigationInstruction = router.generate(params);
 
-      scope.$watch(function() { return router.isRouteActive(instruction); },
+      scope.$watch(function() { return router.isRouteActive(navigationInstruction); },
                    function(active) {
                      if (active) {
                        element.addClass('ng-link-active');
@@ -222,7 +222,8 @@ function ngLinkDirective($rootRouter, $parse) {
                      }
                    });
 
-      return './' + angular.stringifyInstruction(instruction);
+      const navigationHref = navigationInstruction.toLinkUrl();
+      return $rootRouter._location.prepareExternalUrl(navigationHref);
     }
 
     let routeParamsGetter = $parse(link);
@@ -236,11 +237,11 @@ function ngLinkDirective($rootRouter, $parse) {
     }
 
     element.on('click', event => {
-      if (event.which !== 1 || !instruction) {
+      if (event.which !== 1 || !navigationInstruction) {
         return;
       }
 
-      $rootRouter.navigateByInstruction(instruction);
+      $rootRouter.navigateByInstruction(navigationInstruction);
       event.preventDefault();
     });
   }
