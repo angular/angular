@@ -91,6 +91,15 @@ export function main() {
       expect(instruction.component.params).toEqual({});
     });
 
+    it('should generate URLs with extra params in the query', () => {
+      registry.config(RootHostCmp,
+                      new Route({path: '/first/second', component: DummyCmpA, name: 'FirstCmp'}));
+
+      var instruction = registry.generate(['FirstCmp', {a: 'one'}], []);
+      expect(instruction.toLinkUrl()).toEqual('first/second?a=one');
+    });
+
+
     it('should generate URLs of loaded components after they are loaded',
        inject([AsyncTestCompleter], (async) => {
          registry.config(
