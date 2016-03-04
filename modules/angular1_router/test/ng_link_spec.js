@@ -6,14 +6,18 @@ describe('ngLink', function () {
     $compile,
     $rootScope,
     $rootRouter,
-    $compileProvider;
+    $compileProvider,
+    $locationProvider;
 
   beforeEach(function () {
     module('ng');
     module('ngComponentRouter');
-    module(function (_$compileProvider_) {
+    module(function (_$compileProvider_, _$locationProvider_) {
       $compileProvider = _$compileProvider_;
+      $locationProvider = _$locationProvider_;
     });
+
+    $locationProvider.html5mode(true);
 
     inject(function (_$compile_, _$rootScope_, _$rootRouter_) {
       $compile = _$compile_;
@@ -133,6 +137,24 @@ describe('ngLink', function () {
       elt.find('a')[0].click();
       $rootScope.$digest();
     }).not.toThrow();
+  });
+
+  describe('html5mode disabled', function () {
+    beforeEach(function () {
+      $locationProvider.html5mode(false);
+    });
+
+
+    it('should prepend href with a hash', function () {
+      $rootRouter.config([
+        { path: '/b', component: 'twoCmp', name: 'Two' }
+      ]);
+      compile('<a ng-link="[\'/Two\']">link</a>');
+
+      $rootScope.$digest();
+
+      expect(elt.find('a').attr('href')).toBe('#/b');
+    });
   });
 
 
