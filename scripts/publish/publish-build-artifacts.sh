@@ -59,7 +59,9 @@ function publishRepo {
   )
 }
 
-if [[ "$TRAVIS_REPO_SLUG" = "angular/angular" && "$MODE" == "build_only" ]]; then
+if [[ "$TRAVIS_REPO_SLUG" == "angular/angular" && \
+      "$TRAVIS_PULL_REQUEST" == "false" && \
+      "$MODE" == "build_only" ]]; then
   scripts/publish/npm_prepare.sh angular2
   publishRepo "js" "${JS_BUILD_ARTIFACTS_DIR}"
 
