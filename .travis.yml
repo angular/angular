@@ -121,7 +121,7 @@ after_script:
   - ./scripts/ci/after-script.sh
   - ./scripts/publish/publish-build-artifacts.sh
   - node tools/analytics/build-analytics success ci after_script
-  - if [[ $TRAVIS_TEST_RESULT -eq 0 ]]; then node tools/analytics/build-analytics success ci job; else node tools/analytics/build-analytics error ci job; fi
+  - tools/analytics/build-analytics $TRAVIS_TEST_RESULT ci job
 
 notifications:
   webhooks:
