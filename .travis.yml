@@ -132,6 +132,6 @@ notifications:
       - http://104.197.9.155:8484/hubot/travis/activity
     on_success: always  # options: [always|never|change] default: always
     on_failure: always  # options: [always|never|change] default: always
-    on_start: false     # default: false
+    on_start: never     # default: never
   slack:
     secure: EP4MzZ8JMyNQJ4S3cd5LEPWSMjC7ZRdzt3veelDiOeorJ6GwZfCDHncR+4BahDzQAuqyE/yNpZqaLbwRWloDi15qIUsm09vgl/1IyNky1Sqc6lEknhzIXpWSalo4/T9ZP8w870EoDvM/UO+LCV99R3wS8Nm9o99eLoWVb2HIUu0=
