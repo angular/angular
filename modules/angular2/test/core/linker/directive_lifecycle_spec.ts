@@ -9,8 +9,7 @@ import {
   iit,
   inject,
   it,
-  SpyObject,
-  proxy
+  SpyObject
 } from 'angular2/testing_internal';
 
 import {hasLifecycleHook} from 'angular2/src/core/linker/directive_lifecycle_reflector';

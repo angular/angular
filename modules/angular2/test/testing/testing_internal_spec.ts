@@ -7,7 +7,6 @@ import {
   tick,
   SpyObject,
   beforeEach,
-  proxy,
   containsRegexp
 } from 'angular2/testing_internal';
 

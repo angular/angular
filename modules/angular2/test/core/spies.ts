@@ -13,7 +13,7 @@ import {ElementRef} from 'angular2/src/core/linker/element_ref';
 import {AppViewManager_} from 'angular2/src/core/linker/view_manager';
 import {DomAdapter} from 'angular2/src/platform/dom/dom_adapter';
 
-import {SpyObject, proxy} from 'angular2/testing_internal';
+import {SpyObject} from 'angular2/testing_internal';
 
 export class SpyDependencyProvider extends SpyObject {}
 
