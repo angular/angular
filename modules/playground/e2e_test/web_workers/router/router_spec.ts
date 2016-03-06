@@ -1,6 +1,12 @@
 import {verifyNoBrowserErrors} from 'angular2/src/testing/e2e_util';
 
 describe("WebWorker Router", () => {
+  beforeEach(() => {
+    // This test can't wait for Angular 2 as Testability is not available when using WebWorker
+    browser.ignoreSynchronization = true;
+    browser.get('/');
+  });
+
   afterEach(() => {
     verifyNoBrowserErrors();
     browser.ignoreSynchronization = false;
@@ -11,8 +17,6 @@ describe("WebWorker Router", () => {
   var baseUrl = "playground/src/web_workers/router/index.html";
 
   it("should route on click", () => {
-    // This test can't wait for Angular 2 as Testability is not available when using WebWorker
-    browser.ignoreSynchronization = true;
     browser.get(baseUrl);
 
     waitForElement(contentSelector);
@@ -23,8 +27,8 @@ describe("WebWorker Router", () => {
     aboutBtn.click();
     waitForUrl(/\/about/);
     waitForElement(contentSelector);
+    waitForElementText(contentSelector, "About");
     content = element(by.css(contentSelector));
-    waitForElementText(content, "About");
     expect(content.getText()).toEqual("About");
     expect(browser.getCurrentUrl()).toMatch(/\/about/);
 
@@ -32,20 +36,18 @@ describe("WebWorker Router", () => {
     contactBtn.click();
     waitForUrl(/\/contact/);
     waitForElement(contentSelector);
+    waitForElementText(contentSelector, "Contact");
     content = element(by.css(contentSelector));
-    waitForElementText(content, "Contact");
     expect(content.getText()).toEqual("Contact");
     expect(browser.getCurrentUrl()).toMatch(/\/contact/);
   });
 
   it("should load the correct route from the URL", () => {
-    // This test can't wait for Angular 2 as Testability is not available when using WebWorker
-    browser.ignoreSynchronization = true;
     browser.get(baseUrl + "#/about");
 
     waitForElement(contentSelector);
+    waitForElementText(contentSelector, "About");
     let content = element(by.css(contentSelector));
-    waitForElementText(content, "About");
     expect(content.getText()).toEqual("About");
   });
 
@@ -53,9 +55,10 @@ describe("WebWorker Router", () => {
     browser.wait(protractor.until.elementLocated(by.css(selector)), 15000);
   }
 
-  function waitForElementText(elem: protractor.ElementFinder, expected: string): void {
+  function waitForElementText(contentSelector: string, expected: string): void {
     browser.wait(() => {
       let deferred = protractor.promise.defer();
+      var elem = element(by.css(contentSelector));
       elem.getText().then((text) => { return deferred.fulfill(text === expected); });
       return deferred.promise;
     }, 5000);

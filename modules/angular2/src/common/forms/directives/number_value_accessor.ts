@@ -25,7 +25,7 @@ const NUMBER_VALUE_ACCESSOR = CONST_EXPR(new Provider(
   bindings: [NUMBER_VALUE_ACCESSOR]
 })
 export class NumberValueAccessor implements ControlValueAccessor {
-  onChange = (_) => {};
+  onChange = (_: any) => {};
   onTouched = () => {};
 
   constructor(private _renderer: Renderer, private _elementRef: ElementRef) {}

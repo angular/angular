@@ -33,9 +33,9 @@ class NgMeta {
   static const _TYPE_VALUE = 'type';
   static const _VALUE_KEY = 'value';
 
-  /// Metadata for each type annotated as a directive/pipe.
-  /// Type: [CompileDirectiveMetadata]/[CompilePipeMetadata]
-  final Map<String, dynamic> types;
+  /// Metadata for each identifier
+  /// Type: [CompileDirectiveMetadata]|[CompilePipeMetadata]|[CompileTypeMetadata]|[CompileIdentifierMetadata]
+  final Map<String, dynamic> identifiers;
 
   /// List of other types and names associated with a given name.
   final Map<String, List<String>> aliases;
@@ -43,12 +43,13 @@ class NgMeta {
   // The NgDeps generated from
   final NgDepsModel ngDeps;
 
-  NgMeta(
-      {Map<String, dynamic> types,
-      Map<String, List<String>> aliases,
-      this.ngDeps: null})
-      : this.types = types != null ? types : {},
-        this.aliases = aliases != null ? aliases : {};
+  bool definesAlias;
+
+  NgMeta({Map<String, List<String>> aliases,
+      Map<String, dynamic> identifiers,
+      this.ngDeps: null, this.definesAlias: false})
+      :this.aliases = aliases != null ? aliases : {},
+        this.identifiers = identifiers != null ? identifiers : {};
 
   NgMeta.empty() : this();
 
@@ -69,13 +70,22 @@ class NgMeta {
     return false;
   }
 
-  bool get isEmpty => types.isEmpty && aliases.isEmpty && isNgDepsEmpty;
+  bool get isEmpty => identifiers.isEmpty && aliases.isEmpty && isNgDepsEmpty;
+
+  List<String> get linkingUris {
+    final r = ngDeps.exports.map((r) => r.uri).toList();
+    if (definesAlias) {
+      r.addAll(ngDeps.imports.map((r) => r.uri));
+    }
+    return r;
+  }
 
   /// Parse from the serialized form produced by [toJson].
   factory NgMeta.fromJson(Map json) {
     var ngDeps = null;
-    final types = {};
     final aliases = {};
+    final identifiers = {};
+    var definesAlias = false;
     for (var key in json.keys) {
       if (key == _NG_DEPS_KEY) {
         var ngDepsJsonMap = json[key];
@@ -85,7 +95,11 @@ class NgMeta {
               'Unexpected value $ngDepsJsonMap for key "$key" in NgMeta.');
           continue;
         }
-        ngDeps = new NgDepsModel()..mergeFromJsonMap(ngDepsJsonMap);
+        ngDeps = new NgDepsModel()
+          ..mergeFromJsonMap(ngDepsJsonMap);
+      } else if (key == 'definesAlias') {
+        definesAlias = json[key];
+
       } else {
         var entry = json[key];
         if (entry is! Map) {
@@ -93,13 +107,13 @@ class NgMeta {
           continue;
         }
         if (entry[_KIND_KEY] == _TYPE_VALUE) {
-          types[key] = CompileMetadataWithType.fromJson(entry[_VALUE_KEY]);
+          identifiers[key] = CompileMetadataWithIdentifier.fromJson(entry[_VALUE_KEY]);
         } else if (entry[_KIND_KEY] == _ALIAS_VALUE) {
           aliases[key] = entry[_VALUE_KEY];
         }
       }
     }
-    return new NgMeta(types: types, aliases: aliases, ngDeps: ngDeps);
+    return new NgMeta(identifiers: identifiers, aliases: aliases, ngDeps: ngDeps, definesAlias: definesAlias);
   }
 
   /// Serialized representation of this instance.
@@ -107,41 +121,44 @@ class NgMeta {
     var result = {};
     result[_NG_DEPS_KEY] = isNgDepsEmpty ? null : ngDeps.writeToJsonMap();
 
-    types.forEach((k, v) {
+    identifiers.forEach((k, v) {
       result[k] = {_KIND_KEY: _TYPE_VALUE, _VALUE_KEY: v.toJson()};
     });
 
     aliases.forEach((k, v) {
       result[k] = {_KIND_KEY: _ALIAS_VALUE, _VALUE_KEY: v};
     });
+
+    result['definesAlias'] = definesAlias;
+
     return result;
   }
 
   /// Merge into this instance all information from [other].
   /// This does not include `ngDeps`.
   void addAll(NgMeta other) {
-    types.addAll(other.types);
     aliases.addAll(other.aliases);
+    identifiers.addAll(other.identifiers);
   }
 
   /// Returns the metadata for every type associated with the given [alias].
   List<dynamic> flatten(String alias) {
     var result = [];
-    var seen = new Set();
-    helper(name) {
-      if (!seen.add(name)) {
-        log.warning('Circular alias dependency for "$name".');
+    helper(name, path) {
+      final newPath = []..addAll(path)..add(name);
+      if (path.contains(name)) {
+        log.error('Circular alias dependency for "$name". Cycle: ${newPath.join(' -> ')}.');
         return;
       }
-      if (types.containsKey(name)) {
-        result.add(types[name]);
+      if (identifiers.containsKey(name)) {
+        result.add(identifiers[name]);
       } else if (aliases.containsKey(name)) {
-        aliases[name].forEach(helper);
+        aliases[name].forEach((n) => helper(n, newPath));
       } else {
-        log.warning('Unknown alias: "$name".');
+        log.error('Unknown alias: ${newPath.join(' -> ')}. Make sure you export ${name} from the file where ${path.last} is defined.');
       }
     }
-    helper(alias);
+    helper(alias, []);
     return result;
   }
 }

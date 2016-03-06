@@ -106,21 +106,6 @@ export function getDefinition(id: string): TestDefinition {
         [_DirectiveUpdating.basicRecords[0], _DirectiveUpdating.basicRecords[1]], genConfig);
     testDef = new TestDefinition(id, cdDef, null);
 
-  } else if (id == "onPushObserveBinding") {
-    var records = _createBindingRecords("a");
-    let cdDef = new ChangeDetectorDefinition(id, ChangeDetectionStrategy.OnPushObserve, [], records,
-                                             [], [], genConfig);
-    testDef = new TestDefinition(id, cdDef, null);
-
-  } else if (id == "onPushObserveComponent") {
-    let cdDef = new ChangeDetectorDefinition(id, ChangeDetectionStrategy.OnPushObserve, [], [], [],
-                                             [], genConfig);
-    testDef = new TestDefinition(id, cdDef, null);
-
-  } else if (id == "onPushObserveDirective") {
-    let cdDef = new ChangeDetectorDefinition(id, ChangeDetectionStrategy.OnPushObserve, [], [], [],
-                                             [_DirectiveUpdating.recordNoCallbacks], genConfig);
-    testDef = new TestDefinition(id, cdDef, null);
   } else if (id == "updateElementProduction") {
     var genConfig = new ChangeDetectorGenConfig(false, false, true);
     var records = _createBindingRecords("name");
@@ -151,12 +136,7 @@ export function getAllDefinitions(): TestDefinition[] {
   allDefs = allDefs.concat(StringMapWrapper.keys(_DirectiveUpdating.availableDefinitions));
   allDefs = allDefs.concat(_availableEventDefinitions);
   allDefs = allDefs.concat(_availableHostEventDefinitions);
-  allDefs = allDefs.concat([
-    "onPushObserveBinding",
-    "onPushObserveComponent",
-    "onPushObserveDirective",
-    "updateElementProduction"
-  ]);
+  allDefs = allDefs.concat(["updateElementProduction"]);
   return allDefs.map(getDefinition);
 }
 

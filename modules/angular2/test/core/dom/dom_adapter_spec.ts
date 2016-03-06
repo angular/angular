@@ -99,7 +99,7 @@ export function main() {
           DOM.removeChild(headEl, baseEl);
           DOM.resetBaseElement();
 
-          expect(baseHref).toEqual('/base');
+          expect(baseHref.endsWith('/base')).toBe(true);
         });
       });
     }

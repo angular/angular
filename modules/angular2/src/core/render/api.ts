@@ -1,5 +1,5 @@
 import {ViewEncapsulation} from 'angular2/src/core/metadata/view';
-import {Injector} from 'angular2/src/core/di/injector';
+import {Injector, Injectable} from 'angular2/src/core/di';
 
 export class RenderComponentType {
   constructor(public id: string, public encapsulation: ViewEncapsulation,

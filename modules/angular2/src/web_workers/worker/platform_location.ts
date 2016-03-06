@@ -3,7 +3,7 @@ import {
   PlatformLocation,
   UrlChangeEvent,
   UrlChangeListener
-} from 'angular2/src/router/platform_location';
+} from 'angular2/src/router/location/platform_location';
 import {
   FnArg,
   UiArguments,

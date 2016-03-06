@@ -20,7 +20,7 @@ module.exports = function(gulp, plugins, config) {
         middlewares.unshift(stripHeader('x-content-type-options'));
         return middlewares;
       }
-    })();
+    });
   };
 };
 

@@ -52,7 +52,7 @@ export class Animation {
     this.startTime = DateWrapper.toMillis(DateWrapper.now());
     this._stringPrefix = DOM.getAnimationPrefix();
     this.setup();
-    this.wait(timestamp => this.start());
+    this.wait((timestamp: any) => this.start());
   }
 
   wait(callback: Function) {
@@ -97,7 +97,7 @@ export class Animation {
    * @param styles
    */
   applyStyles(styles: {[key: string]: any}): void {
-    StringMapWrapper.forEach(styles, (value, key) => {
+    StringMapWrapper.forEach(styles, (value: any, key: string) => {
       var dashCaseKey = camelCaseToDashCase(key);
       if (isPresent(DOM.getStyle(this.element, dashCaseKey))) {
         DOM.setStyle(this.element, dashCaseKey, value.toString());

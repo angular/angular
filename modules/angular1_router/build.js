@@ -4,17 +4,20 @@ var fs = require('fs');
 var ts = require('typescript');
 
 var files = [
-  'lifecycle_annotations_impl.ts',
+  'utils.ts',
   'url_parser.ts',
-  'route_recognizer.ts',
-  'route_config_impl.ts',
-  'async_route_handler.ts',
-  'sync_route_handler.ts',
-  'component_recognizer.ts',
+  'lifecycle/lifecycle_annotations_impl.ts',
+  'lifecycle/route_lifecycle_reflector.ts',
+  'route_config/route_config_impl.ts',
+  'route_config/route_config_normalizer.ts',
+  'rules/route_handlers/async_route_handler.ts',
+  'rules/route_handlers/sync_route_handler.ts',
+  'rules/rules.ts',
+  'rules/rule_set.ts',
+  'rules/route_paths/route_path.ts',
+  'rules/route_paths/param_route_path.ts',
+  'rules/route_paths/regex_route_path.ts',
   'instruction.ts',
-  'path_recognizer.ts',
-  'route_config_nomalizer.ts',
-  'route_lifecycle_reflector.ts',
   'route_registry.ts',
   'router.ts'
 ];
@@ -48,9 +51,10 @@ function main(modulesDirectory) {
  */
 var IMPORT_RE = new RegExp("import \\{?([\\w\\n_, ]+)\\}? from '(.+)';?", 'g');
 var INJECT_RE = new RegExp("@Inject\\(ROUTER_PRIMARY_COMPONENT\\)", 'g');
-var IMJECTABLE_RE = new RegExp("@Injectable\\(\\)", 'g');
+var INJECTABLE_RE = new RegExp("@Injectable\\(\\)", 'g');
+var REQUIRE_RE = new RegExp("require\\('(.*?)'\\);", 'g');
 function transform(contents) {
-  contents = contents.replace(INJECT_RE, '').replace(IMJECTABLE_RE, '');
+  contents = contents.replace(INJECT_RE, '').replace(INJECTABLE_RE, '');
   contents = contents.replace(IMPORT_RE, function (match, imports, includePath) {
     //TODO: remove special-case
     if (isFacadeModule(includePath) || includePath === './router_outlet') {
@@ -58,10 +62,15 @@ function transform(contents) {
     }
     return match;
   });
-  return ts.transpile(contents, {
+  contents = ts.transpile(contents, {
     target: ts.ScriptTarget.ES5,
     module: ts.ModuleKind.CommonJS
   });
+
+  // Rename require functions from transpiled imports
+  contents = contents.replace(REQUIRE_RE, 'routerRequire(\'$1\');');
+
+  return contents;
 }
 
 function isFacadeModule(modulePath) {

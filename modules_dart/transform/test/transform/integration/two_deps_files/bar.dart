@@ -7,8 +7,8 @@ import 'foo.dart' as prefix;
 @View(template: '')
 class MyComponent {
   final prefix.MyContext c;
-  final String generatedValue;
-  MyComponent(this.c, String inValue) {
-    generatedValue = 'generated ' + inValue;
+  final prefix.MyDep generatedValue;
+  MyComponent(this.c, prefix.MyDep inValue) {
+    generatedValue = inValue;
   }
 }

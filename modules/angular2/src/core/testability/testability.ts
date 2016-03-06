@@ -118,6 +118,8 @@ export class TestabilityRegistry {
 
   getAllTestabilities(): Testability[] { return MapWrapper.values(this._applications); }
 
+  getAllRootElements(): any[] { return MapWrapper.keys(this._applications); }
+
   findTestabilityInTree(elem: Node, findInAncestors: boolean = true): Testability {
     return _testabilityGetter.findTestabilityInTree(this, elem, findInAncestors);
   }

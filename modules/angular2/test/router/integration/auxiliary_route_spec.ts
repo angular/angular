@@ -4,16 +4,27 @@ import {
   describeWith,
   describeWithout,
   describeWithAndWithout,
-  itShouldRoute
+  itShouldRoute,
+  TEST_ROUTER_PROVIDERS
 } from './util';
+
+import {
+  beforeEachProviders,
+  describe,
+} from 'angular2/testing_internal';
 
 import {registerSpecs} from './impl/aux_route_spec_impl';
 
 export function main() {
-  registerSpecs();
+  describe('auxiliary route spec', () => {
 
-  describeRouter('aux routes', () => {
-    itShouldRoute();
-    describeWith('a primary route', itShouldRoute);
+    beforeEachProviders(() => TEST_ROUTER_PROVIDERS);
+
+    registerSpecs();
+
+    describeRouter('aux routes', () => {
+      itShouldRoute();
+      describeWith('a primary route', itShouldRoute);
+    });
   });
 }

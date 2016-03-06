@@ -1,7 +1,7 @@
 library angular2.test.web_workers.debug_tools.bootstrap;
 
 import 'package:angular2/src/platform/server/html_adapter.dart';
-import "package:angular2/testing_internal.dart";
+import "package:angular2/src/testing/testing_internal_core.dart";
 import "package:angular2/src/core/reflection/reflection_capabilities.dart";
 import "package:angular2/src/core/reflection/reflection.dart";
 import "package:angular2/src/platform/worker_app_common.dart"

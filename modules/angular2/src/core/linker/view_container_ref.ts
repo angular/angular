@@ -1,6 +1,6 @@
 import {ListWrapper} from 'angular2/src/facade/collection';
 import {unimplemented} from 'angular2/src/facade/exceptions';
-import {ResolvedProvider} from 'angular2/src/core/di';
+import {ResolvedProvider, Injectable} from 'angular2/src/core/di';
 import {isPresent, isBlank} from 'angular2/src/facade/lang';
 
 import {AppElement} from './element';

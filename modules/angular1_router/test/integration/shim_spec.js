@@ -5,7 +5,7 @@ describe('ngRoute shim', function () {
   var elt,
     $compile,
     $rootScope,
-    $router,
+    $rootRouter,
     $compileProvider,
     $routeProvider;
 
@@ -18,10 +18,10 @@ describe('ngRoute shim', function () {
       $routeProvider = _$routeProvider_;
     });
 
-    inject(function (_$compile_, _$rootScope_, _$router_) {
+    inject(function (_$compile_, _$rootScope_, _$rootRouter_) {
       $compile = _$compile_;
       $rootScope = _$rootScope_;
-      $router = _$router_;
+      $rootRouter = _$rootRouter_;
     });
   });
 
@@ -36,7 +36,7 @@ describe('ngRoute shim', function () {
 
     compile('<ng-outlet></ng-outlet>');
 
-    $router.navigateByUrl('/');
+    $rootRouter.navigateByUrl('/');
     $rootScope.$digest();
 
     expect(elt.text()).toBe('one');
@@ -55,7 +55,7 @@ describe('ngRoute shim', function () {
 
     compile('root {<ng-outlet></ng-outlet>}');
 
-    $router.navigateByUrl('/');
+    $rootRouter.navigateByUrl('/');
     $rootScope.$digest();
     expect(elt.text()).toBe('root {one}');
   }));
@@ -76,7 +76,7 @@ describe('ngRoute shim', function () {
 
     compile('<ng-outlet></ng-outlet>');
 
-    $router.navigateByUrl('/');
+    $rootRouter.navigateByUrl('/');
     $rootScope.$digest();
 
     expect(elt.text()).toBe('value: 42');
@@ -94,11 +94,11 @@ describe('ngRoute shim', function () {
 
     compile('<ng-outlet></ng-outlet>');
 
-    $router.navigateByUrl('/user/brian');
+    $rootRouter.navigateByUrl('/user/brian');
     $rootScope.$digest();
     expect(elt.text()).toBe('hello brian');
 
-    $router.navigateByUrl('/user/igor');
+    $rootRouter.navigateByUrl('/user/igor');
     $rootScope.$digest();
     expect(elt.text()).toBe('hello igor');
   });
@@ -115,7 +115,7 @@ describe('ngRoute shim', function () {
 
     compile('<ng-outlet></ng-outlet>');
 
-    $router.navigateByUrl('/home/foo/bar/123');
+    $rootRouter.navigateByUrl('/home/foo/bar/123');
     $rootScope.$digest();
     expect(elt.text()).toBe('rest: foo/bar/123');
   });
@@ -129,7 +129,7 @@ describe('ngRoute shim', function () {
 
     compile('root {<ng-outlet></ng-outlet>}');
 
-    $router.navigateByUrl('/home/test');
+    $rootRouter.navigateByUrl('/home/test');
     $rootScope.$digest();
     expect(elt.text()).toBe('root {}');
     expect(console.warn)
@@ -150,7 +150,7 @@ describe('ngRoute shim', function () {
 
     compile('root {<ng-outlet></ng-outlet>}');
 
-    $router.navigateByUrl('/');
+    $rootRouter.navigateByUrl('/');
     $rootScope.$digest();
     expect(elt.text()).toBe('root {welcome home!}');
     expect($location.path()).toBe('/home');
@@ -169,7 +169,7 @@ describe('ngRoute shim', function () {
 
     compile('root {<ng-outlet></ng-outlet>}');
 
-    $router.navigateByUrl('/somewhere');
+    $rootRouter.navigateByUrl('/somewhere');
     $rootScope.$digest();
     expect(elt.text()).toBe('root {welcome home!}');
     expect($location.path()).toBe('/home');

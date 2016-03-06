@@ -31,7 +31,7 @@ export {
   ResolvedProvider,
   provide
 } from './di/provider';
-export {Key, TypeLiteral} from './di/key';
+export {Key} from './di/key';
 export {
   NoProviderError,
   AbstractProviderError,

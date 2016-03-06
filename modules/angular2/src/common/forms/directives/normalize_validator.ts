@@ -1,9 +1,14 @@
 import {Validator} from './validators';
+import {Control} from "../model";
 
-export function normalizeValidator(validator: Function | Validator): Function {
+export type ctrlFunc = ((c: Control) => {
+  [key: string]: any
+});
+
+export function normalizeValidator(validator: (ctrlFunc | Validator)): ctrlFunc {
   if ((<Validator>validator).validate !== undefined) {
-    return (c) => (<Validator>validator).validate(c);
+    return (c: Control) => (<Validator>validator).validate(c);
   } else {
-    return <Function>validator;
+    return <ctrlFunc>validator;
   }
 }

@@ -2,7 +2,7 @@ library angular2.test.web_workers.debug_tools.single_client_server_message_bus;
 
 import "dart:io";
 import "dart:async";
-import "package:angular2/testing_internal.dart"
+import "package:angular2/src/testing/testing_internal_core.dart"
     show
         AsyncTestCompleter,
         SpyObject,

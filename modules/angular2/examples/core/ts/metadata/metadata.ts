@@ -1,6 +1,6 @@
 import {Component, Attribute, Directive, Pipe} from 'angular2/core';
 
-var CustomDirective;
+var CustomDirective: Function;
 
 // #docregion component
 @Component({selector: 'greet', template: 'Hello {{name}}!', directives: [CustomDirective]})
@@ -20,7 +20,7 @@ class Page {
 // #docregion attributeMetadata
 @Directive({selector: 'input'})
 class InputAttrDirective {
-  constructor(@Attribute('type') type) {
+  constructor(@Attribute('type') type: string) {
     // type would be 'text' in this example
   }
 }
@@ -38,6 +38,6 @@ class InputDirective {
 // #docregion pipe
 @Pipe({name: 'lowercase'})
 class Lowercase {
-  transform(v, args) { return v.toLowerCase(); }
+  transform(v: string, args: any[]) { return v.toLowerCase(); }
 }
 // #enddocregion

@@ -5,6 +5,7 @@ import 'package:angular2/src/core/reflection/reflection.dart' as _ngRef;
 import 'package:angular2/src/core/metadata.dart';
 import 'foo.dart';
 import 'package:angular2/src/core/metadata.template.dart' as i0;
+import 'foo.template.dart' as i1;
 export 'bar.dart';
 
 var _visited = false;
@@ -22,4 +23,5 @@ void initReflector() {
           const [MyContext]
         ], (MyContext c) => new MyComponent(c)));
   i0.initReflector();
+  i1.initReflector();
 }

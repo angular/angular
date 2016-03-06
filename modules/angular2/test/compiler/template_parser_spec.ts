@@ -50,49 +50,57 @@ import {Unparser} from '../core/change_detection/parser/unparser';
 
 var expressionUnparser = new Unparser();
 
+var MOCK_SCHEMA_REGISTRY = [
+  provide(
+      ElementSchemaRegistry,
+      {useValue: new MockSchemaRegistry({'invalidProp': false}, {'mappedAttr': 'mappedProp'})})
+];
+
 export function main() {
-  describe('TemplateParser', () => {
-    beforeEachProviders(() => [
-      TEST_PROVIDERS,
-      provide(ElementSchemaRegistry,
-              {
-                useValue: new MockSchemaRegistry({'invalidProp': false},
-                                                 {'mappedAttr': 'mappedProp'})
-              })
-    ]);
+  var ngIf;
+  var parse;
 
-    var parser: TemplateParser;
-    var ngIf;
-
-    beforeEach(inject([TemplateParser], (_parser) => {
-      parser = _parser;
+  function commonBeforeEach() {
+    beforeEach(inject([TemplateParser], (parser) => {
       ngIf = CompileDirectiveMetadata.create(
           {selector: '[ngIf]', type: new CompileTypeMetadata({name: 'NgIf'}), inputs: ['ngIf']});
+
+      parse = (template: string, directives: CompileDirectiveMetadata[],
+               pipes: CompilePipeMetadata[] = null): TemplateAst[] => {
+        if (pipes === null) {
+          pipes = [];
+        }
+        return parser.parse(template, directives, pipes, 'TestComp');
+      };
     }));
+  }
 
-    function parse(template: string, directives: CompileDirectiveMetadata[],
-                   pipes: CompilePipeMetadata[] = null): TemplateAst[] {
-      if (pipes === null) {
-        pipes = [];
-      }
-      return parser.parse(template, directives, pipes, 'TestComp');
-    }
+  describe('TemplateParser template transform', () => {
+    beforeEachProviders(() => [TEST_PROVIDERS, MOCK_SCHEMA_REGISTRY]);
 
-    describe('template transform', () => {
-      beforeEachProviders(
-          () => [provide(TEMPLATE_TRANSFORMS, {useValue: new FooAstTransformer(), multi: true})]);
+    beforeEachProviders(
+        () => [provide(TEMPLATE_TRANSFORMS, {useValue: new FooAstTransformer(), multi: true})]);
 
+    describe('single', () => {
+      commonBeforeEach();
       it('should transform TemplateAST',
          () => { expect(humanizeTplAst(parse('<div>', []))).toEqual([[ElementAst, 'foo']]); });
-
-      describe('multiple', () => {
-        beforeEachProviders(
-            () => [provide(TEMPLATE_TRANSFORMS, {useValue: new BarAstTransformer(), multi: true})]);
-
-        it('should compose transformers',
-           () => { expect(humanizeTplAst(parse('<div>', []))).toEqual([[ElementAst, 'bar']]); });
-      });
     });
+
+    describe('multiple', () => {
+      beforeEachProviders(
+          () => [provide(TEMPLATE_TRANSFORMS, {useValue: new BarAstTransformer(), multi: true})]);
+
+      commonBeforeEach();
+      it('should compose transformers',
+         () => { expect(humanizeTplAst(parse('<div>', []))).toEqual([[ElementAst, 'bar']]); });
+    });
+  });
+
+  describe('TemplateParser', () => {
+    beforeEachProviders(() => [TEST_PROVIDERS, MOCK_SCHEMA_REGISTRY]);
+
+    commonBeforeEach();
 
     describe('parse', () => {
       describe('nodes without bindings', () => {
