@@ -17,4 +17,4 @@ dependency_overrides:
 dev_dependencies:
   guinness2: '0.0.4'
 transformers:
-- angular2
+- angular2/transform/codegen
