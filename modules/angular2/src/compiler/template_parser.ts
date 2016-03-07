@@ -41,6 +41,7 @@ import {
   HtmlElementAst,
   HtmlAttrAst,
   HtmlTextAst,
+  HtmlCommentAst,
   htmlVisitAll
 } from './html_ast';
 
@@ -208,6 +209,8 @@ class TemplateParseVisitor implements HtmlAstVisitor {
   visitAttr(ast: HtmlAttrAst, contex: any): any {
     return new AttrAst(ast.name, ast.value, ast.sourceSpan);
   }
+
+  visitComment(ast: HtmlCommentAst, context: any): any { return null; }
 
   visitElement(element: HtmlElementAst, component: Component): any {
     var nodeName = element.name;
@@ -676,6 +679,7 @@ class NonBindableVisitor implements HtmlAstVisitor {
     return new ElementAst(ast.name, htmlVisitAll(this, ast.attrs), [], [], [], [], children,
                           ngContentIndex, ast.sourceSpan);
   }
+  visitComment(ast: HtmlCommentAst, context: any): any { return null; }
   visitAttr(ast: HtmlAttrAst, context: any): AttrAst {
     return new AttrAst(ast.name, ast.value, ast.sourceSpan);
   }

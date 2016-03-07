@@ -11,7 +11,7 @@ import {
 
 import {ListWrapper} from 'angular2/src/facade/collection';
 
-import {HtmlAst, HtmlAttrAst, HtmlTextAst, HtmlElementAst} from './html_ast';
+import {HtmlAst, HtmlAttrAst, HtmlTextAst, HtmlCommentAst, HtmlElementAst} from './html_ast';
 
 import {Injectable} from 'angular2/src/core/di';
 import {HtmlToken, HtmlTokenType, tokenizeHtml} from './html_lexer';
@@ -98,9 +98,11 @@ class TreeBuilder {
     this._advanceIf(HtmlTokenType.CDATA_END);
   }
 
-  private _consumeComment(startToken: HtmlToken) {
-    this._advanceIf(HtmlTokenType.RAW_TEXT);
+  private _consumeComment(token: HtmlToken) {
+    var text = this._advanceIf(HtmlTokenType.RAW_TEXT);
     this._advanceIf(HtmlTokenType.COMMENT_END);
+    var value = isPresent(text) ? text.parts[0].trim() : null;
+    this._addToParent(new HtmlCommentAst(value, token.sourceSpan))
   }
 
   private _consumeText(token: HtmlToken) {
