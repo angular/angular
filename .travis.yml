@@ -7,10 +7,6 @@ sudo: false
 node_js:
   - '4.2.3'
 
-cache:
-  directories:
-    - $HOME/.pub-cache
-
 env:
   global:
   - LOGS_DIR=/tmp/angular-material2-build/logs
