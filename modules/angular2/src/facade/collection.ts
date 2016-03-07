@@ -116,6 +116,12 @@ export class StringMapWrapper {
   }
   static set<V>(map: {[key: string]: V}, key: string, value: V) { map[key] = value; }
   static keys(map: {[key: string]: any}): string[] { return Object.keys(map); }
+  static values<T>(map: {[key: string]: T}): T[] {
+    return Object.keys(map).reduce((r, a) => {
+      r.push(map[a]);
+      return r;
+    }, []);
+  }
   static isEmpty(map: {[key: string]: any}): boolean {
     for (var prop in map) {
       return false;

@@ -85,6 +85,10 @@ class StringMapWrapper {
     return a.keys.toList();
   }
 
+  static List values(Map<String, dynamic> a) {
+    return a.values.toList();
+  }
+
   static bool isEmpty(Map m) => m.isEmpty;
   static bool equals/*<V>*/(Map/*<String,V>*/ m1, Map/*<String,V>*/ m2) {
     if (m1.length != m2.length) {
