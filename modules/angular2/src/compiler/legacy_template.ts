@@ -8,7 +8,14 @@ import {
   isPresent
 } from 'angular2/src/facade/lang';
 
-import {HtmlAstVisitor, HtmlAttrAst, HtmlElementAst, HtmlTextAst, HtmlAst} from './html_ast';
+import {
+  HtmlAstVisitor,
+  HtmlAttrAst,
+  HtmlElementAst,
+  HtmlTextAst,
+  HtmlCommentAst,
+  HtmlAst
+} from './html_ast';
 import {HtmlParser, HtmlParseTreeResult} from './html_parser';
 
 import {dashCaseToCamelCase, camelCaseToDashCase} from './util';
@@ -36,6 +43,8 @@ export class LegacyHtmlAstTransformer implements HtmlAstVisitor {
   visitingTemplateEl: boolean = false;
 
   constructor(private dashCaseSelectors?: string[]) {}
+
+  visitComment(ast: HtmlCommentAst, context: any): any { return ast; }
 
   visitElement(ast: HtmlElementAst, context: any): HtmlElementAst {
     this.visitingTemplateEl = ast.name.toLowerCase() == 'template';
