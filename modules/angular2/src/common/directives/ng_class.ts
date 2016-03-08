@@ -1,14 +1,16 @@
-import {isPresent, isString, StringWrapper, isBlank, isArray} from 'angular2/src/facade/lang';
+import {isPresent, isString, isArray} from 'angular2/src/facade/lang';
 import {
   DoCheck,
   OnDestroy,
   Directive,
   ElementRef,
-  IterableDiffer,
   IterableDiffers,
-  KeyValueDiffer,
   KeyValueDiffers,
-  Renderer
+  Renderer,
+  IterableDiffer,
+  KeyValueDiffer,
+  CollectionChangeRecord,
+  KeyValueChangeRecord
 } from 'angular2/core';
 import {StringMapWrapper, isListLikeIterable} from 'angular2/src/facade/collection';
 
@@ -73,66 +75,68 @@ import {StringMapWrapper, isListLikeIterable} from 'angular2/src/facade/collecti
  */
 @Directive({selector: '[ngClass]', inputs: ['rawClass: ngClass', 'initialClasses: class']})
 export class NgClass implements DoCheck, OnDestroy {
-  private _differ: any;
-  private _mode: string;
-  private _initialClasses = [];
-  private _rawClass;
+  private _iterableDiffer: IterableDiffer;
+  private _keyValueDiffer: KeyValueDiffer;
+  private _initialClasses: string[] = [];
+  private _rawClass: string[] | Set<string>;
 
   constructor(private _iterableDiffers: IterableDiffers, private _keyValueDiffers: KeyValueDiffers,
               private _ngEl: ElementRef, private _renderer: Renderer) {}
 
-  set initialClasses(v) {
+  set initialClasses(v: string) {
     this._applyInitialClasses(true);
     this._initialClasses = isPresent(v) && isString(v) ? v.split(' ') : [];
     this._applyInitialClasses(false);
     this._applyClasses(this._rawClass, false);
   }
 
-  set rawClass(v) {
+  set rawClass(v: string | string[] | Set<string>| {[key: string]: any}) {
     this._cleanupClasses(this._rawClass);
 
     if (isString(v)) {
-      v = v.split(' ');
+      v = (<string>v).split(' ');
     }
 
-    this._rawClass = v;
+    this._rawClass = <string[] | Set<string>>v;
+    this._iterableDiffer = null;
+    this._keyValueDiffer = null;
     if (isPresent(v)) {
       if (isListLikeIterable(v)) {
-        this._differ = this._iterableDiffers.find(v).create(null);
-        this._mode = 'iterable';
+        this._iterableDiffer = this._iterableDiffers.find(v).create(null);
       } else {
-        this._differ = this._keyValueDiffers.find(v).create(null);
-        this._mode = 'keyValue';
+        this._keyValueDiffer = this._keyValueDiffers.find(v).create(null);
       }
-    } else {
-      this._differ = null;
     }
   }
 
   ngDoCheck(): void {
-    if (isPresent(this._differ)) {
-      var changes = this._differ.diff(this._rawClass);
+    if (isPresent(this._iterableDiffer)) {
+      var changes = this._iterableDiffer.diff(this._rawClass);
       if (isPresent(changes)) {
-        if (this._mode == 'iterable') {
-          this._applyIterableChanges(changes);
-        } else {
-          this._applyKeyValueChanges(changes);
-        }
+        this._applyIterableChanges(changes);
+      }
+    }
+    if (isPresent(this._keyValueDiffer)) {
+      var changes = this._keyValueDiffer.diff(this._rawClass);
+      if (isPresent(changes)) {
+        this._applyKeyValueChanges(changes);
       }
     }
   }
 
   ngOnDestroy(): void { this._cleanupClasses(this._rawClass); }
 
-  private _cleanupClasses(rawClassVal): void {
+  private _cleanupClasses(rawClassVal: string[] | Set<string>| {[key: string]: any}): void {
     this._applyClasses(rawClassVal, true);
     this._applyInitialClasses(false);
   }
 
   private _applyKeyValueChanges(changes: any): void {
-    changes.forEachAddedItem((record) => { this._toggleClass(record.key, record.currentValue); });
-    changes.forEachChangedItem((record) => { this._toggleClass(record.key, record.currentValue); });
-    changes.forEachRemovedItem((record) => {
+    changes.forEachAddedItem(
+        (record: KeyValueChangeRecord) => { this._toggleClass(record.key, record.currentValue); });
+    changes.forEachChangedItem(
+        (record: KeyValueChangeRecord) => { this._toggleClass(record.key, record.currentValue); });
+    changes.forEachRemovedItem((record: KeyValueChangeRecord) => {
       if (record.previousValue) {
         this._toggleClass(record.key, false);
       }
@@ -140,15 +144,17 @@ export class NgClass implements DoCheck, OnDestroy {
   }
 
   private _applyIterableChanges(changes: any): void {
-    changes.forEachAddedItem((record) => { this._toggleClass(record.item, true); });
-    changes.forEachRemovedItem((record) => { this._toggleClass(record.item, false); });
+    changes.forEachAddedItem(
+        (record: CollectionChangeRecord) => { this._toggleClass(record.item, true); });
+    changes.forEachRemovedItem(
+        (record: CollectionChangeRecord) => { this._toggleClass(record.item, false); });
   }
 
   private _applyInitialClasses(isCleanup: boolean) {
     this._initialClasses.forEach(className => this._toggleClass(className, !isCleanup));
   }
 
-  private _applyClasses(rawClassVal: string[] | Set<string>| {[key: string]: string},
+  private _applyClasses(rawClassVal: string[] | Set<string>| {[key: string]: any},
                         isCleanup: boolean) {
     if (isPresent(rawClassVal)) {
       if (isArray(rawClassVal)) {
@@ -156,14 +162,15 @@ export class NgClass implements DoCheck, OnDestroy {
       } else if (rawClassVal instanceof Set) {
         (<Set<string>>rawClassVal).forEach(className => this._toggleClass(className, !isCleanup));
       } else {
-        StringMapWrapper.forEach(<{[k: string]: string}>rawClassVal, (expVal, className) => {
-          if (expVal) this._toggleClass(className, !isCleanup);
-        });
+        StringMapWrapper.forEach(<{[k: string]: any}>rawClassVal,
+                                 (expVal: any, className: string) => {
+                                   if (isPresent(expVal)) this._toggleClass(className, !isCleanup);
+                                 });
       }
     }
   }
 
-  private _toggleClass(className: string, enabled): void {
+  private _toggleClass(className: string, enabled: boolean): void {
     className = className.trim();
     if (className.length > 0) {
       if (className.indexOf(' ') > -1) {

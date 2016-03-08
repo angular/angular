@@ -120,6 +120,46 @@ describe('router', function () {
     expect($routerOnActivate).toHaveBeenCalled();
   }));
 
+  it('should provide the current instruction', inject(function($location, $q) {
+    registerComponent('homeCmp', {
+      template: 'Home ({{homeCmp.isAdmin}})'
+    });
+
+    registerComponent('app', {
+      template: '<div ng-outlet></div>',
+      $routeConfig: [
+        { path: '/', component: 'homeCmp', name: 'Home' }
+      ]
+    });
+    compile('<app></app>');
+
+    $location.path('/');
+    $rootScope.$digest();
+    var instruction = $rootRouter.generate(['/Home']);
+    expect($rootRouter.currentInstruction).toEqual(instruction);
+  }));
+
+  it('should provide the root level router', inject(function($location, $q) {
+    registerComponent('homeCmp', {
+      template: 'Home ({{homeCmp.isAdmin}})',
+      bindings: {
+        $router: '<'
+      }
+    });
+
+    registerComponent('app', {
+      template: '<div ng-outlet></div>',
+      $routeConfig: [
+        { path: '/', component: 'homeCmp', name: 'Home' }
+      ]
+    });
+    compile('<app></app>');
+
+    $location.path('/');
+    $rootScope.$digest();
+    var homeElement = elt.find('home-cmp');
+    expect(homeElement.isolateScope().$ctrl.$router.root).toEqual($rootRouter);
+  }));
 
   function registerDirective(name, options) {
     function factory() {

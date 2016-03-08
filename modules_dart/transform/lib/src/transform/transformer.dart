@@ -37,7 +37,7 @@ class AngularTransformerGroup extends TransformerGroup {
         [new DirectiveMetadataLinker()],
         [new ReflectionRemover(options)],
         [
-          new DeferredRewriter(options),
+          new DeferredRewriter(),
           new StylesheetCompiler(),
           new TemplateCompiler(options)
         ],

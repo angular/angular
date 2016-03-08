@@ -1,7 +1,7 @@
 language: node_js
 sudo: false
 node_js:
-- '5.4.1'
+  - '5.4.1'
 
 branches:
   except:
@@ -13,77 +13,90 @@ cache:
     - $HOME/.chrome/chromium
 
 before_cache:
-  # Undo the pollution of the typescript_next build
-  - npm install typescript
+  # Undo the pollution of the typescript_next build before the cache is primed for future use
+  - if [[ "$MODE" == "typescript_next" ]]; then npm install typescript; fi
 
 env:
   global:
-  - KARMA_DART_BROWSERS=DartiumWithWebPlatform
-  # No sandbox mode is needed for Chromium in Travis, it crashes otherwise: https://sites.google.com/a/chromium.org/chromedriver/help/chrome-doesn-t-start
-  - KARMA_JS_BROWSERS=ChromeNoSandbox
-  - E2E_BROWSERS=ChromeOnTravis
-  - LOGS_DIR=/tmp/angular-build/logs
-  - SAUCE_USERNAME=angular-ci
-  - SAUCE_ACCESS_KEY=9b988f434ff8-fbca-8aa4-4ae3-35442987
-  - BROWSER_STACK_USERNAME=angularteam1
-  - BROWSER_STACK_ACCESS_KEY=BWCd4SynLzdDcv8xtzsB
-  - ARCH=linux-x64
-  - DART_DEV_VERSION=latest
-  - DART_STABLE_VERSION=latest
-  # Token for tsd to increase github rate limit
-  # See https://github.com/DefinitelyTyped/tsd#tsdrc
-  # This does not use http://docs.travis-ci.com/user/environment-variables/#Secure-Variables
-  # because those are not visible for pull requests, and those should also be reliable.
-  # This SSO token belongs to github account angular-github-ratelimit-token which has no access
-  # (password is in Valentine)
-  - TSDRC='{"token":"ef474500309daea53d5991b3079159a29520a40b"}'
-  # GITHUB_TOKEN_ANGULAR
-  - secure: "fq/U7VDMWO8O8SnAQkdbkoSe2X92PVqg4d044HmRYVmcf6YbO48+xeGJ8yOk0pCBwl3ISO4Q2ot0x546kxfiYBuHkZetlngZxZCtQiFT9kyId8ZKcYdXaIW9OVdw3Gh3tQyUwDucfkVhqcs52D6NZjyE2aWZ4/d1V4kWRO/LMgo="
+    # Use newer verison of GCC to that is required to compile native npm modules for Node v4+ on Ubuntu Precise
+    # more info: https://docs.travis-ci.com/user/languages/javascript-with-nodejs#Node.js-v4-(or-io.js-v3)-compiler-requirements
+    - CXX=g++-4.8
+    - KARMA_DART_BROWSERS=DartiumWithWebPlatform
+    # No sandbox mode is needed for Chromium in Travis, it crashes otherwise: https://sites.google.com/a/chromium.org/chromedriver/help/chrome-doesn-t-start
+    - KARMA_JS_BROWSERS=ChromeNoSandbox
+    - E2E_BROWSERS=ChromeOnTravis
+    - LOGS_DIR=/tmp/angular-build/logs
+    - SAUCE_USERNAME=angular-ci
+    - SAUCE_ACCESS_KEY=9b988f434ff8-fbca-8aa4-4ae3-35442987
+    - BROWSER_STACK_USERNAME=angularteam1
+    - BROWSER_STACK_ACCESS_KEY=BWCd4SynLzdDcv8xtzsB
+    - ARCH=linux-x64
+    - DART_DEV_VERSION=latest
+    - DART_STABLE_VERSION=latest
+    - DART_CHANNEL=stable
+    - DART_VERSION=$DART_STABLE_VERSION
+    # Token for tsd to increase github rate limit
+    # See https://github.com/DefinitelyTyped/tsd#tsdrc
+    # This does not use http://docs.travis-ci.com/user/environment-variables/#Secure-Variables
+    # because those are not visible for pull requests, and those should also be reliable.
+    # This SSO token belongs to github account angular-github-ratelimit-token which has no access
+    # (password is in Valentine)
+    - TSDRC='{"token":"ef474500309daea53d5991b3079159a29520a40b"}'
+    # GITHUB_TOKEN_ANGULAR
+    - secure: "fq/U7VDMWO8O8SnAQkdbkoSe2X92PVqg4d044HmRYVmcf6YbO48+xeGJ8yOk0pCBwl3ISO4Q2ot0x546kxfiYBuHkZetlngZxZCtQiFT9kyId8ZKcYdXaIW9OVdw3Gh3tQyUwDucfkVhqcs52D6NZjyE2aWZ4/d1V4kWRO/LMgo="
   matrix:
     # Order: a slower build first, so that we don't occupy an idle travis worker waiting for others to complete.
-    - MODE=dart DART_CHANNEL=stable DART_VERSION=$DART_STABLE_VERSION
-    - MODE=dart DART_CHANNEL=dev DART_VERSION=$DART_DEV_VERSION
-    - MODE=saucelabs_required DART_CHANNEL=dev DART_VERSION=$DART_DEV_VERSION
-    - MODE=browserstack_required DART_CHANNEL=dev DART_VERSION=$DART_DEV_VERSION
-    - MODE=saucelabs_optional DART_CHANNEL=dev DART_VERSION=$DART_DEV_VERSION
-    - MODE=browserstack_optional DART_CHANNEL=dev DART_VERSION=$DART_DEV_VERSION
-    - MODE=dart_ddc DART_CHANNEL=dev DART_VERSION=$DART_DEV_VERSION
-    - MODE=js DART_CHANNEL=dev DART_VERSION=$DART_DEV_VERSION
-    - MODE=router DART_CHANNEL=dev DART_VERSION=$DART_DEV_VERSION
-    - MODE=build_only DART_CHANNEL=stable DART_VERSION=$DART_STABLE_VERSION
-    - MODE=typescript_next DART_CHANNEL=stable DART_VERSION=$DART_STABLE_VERSION
-    - MODE=lint DART_CHANNEL=dev DART_VERSION=$DART_DEV_VERSION
-    - MODE=payload DART_CHANNEL=stable DART_VERSION=$DART_STABLE_VERSION
+    - MODE=dart
+    - MODE=dart DART_CHANNEL=dev
+    - MODE=saucelabs_required
+    - MODE=browserstack_required
+    - MODE=saucelabs_optional
+    - MODE=browserstack_optional
+    - MODE=dart_ddc
+    - MODE=js
+    - MODE=router
+    - MODE=build_only
+    - MODE=typescript_next
+    - MODE=lint
+    - MODE=payload
 
 matrix:
   allow_failures:
-  - env: "MODE=saucelabs_optional DART_CHANNEL=dev DART_VERSION=$DART_DEV_VERSION"
-  - env: "MODE=browserstack_optional DART_CHANNEL=dev DART_VERSION=$DART_DEV_VERSION"
-  # Tracked in https://github.com/angular/angular/issues/7050
-  - env: "MODE=typescript_next DART_CHANNEL=stable DART_VERSION=$DART_STABLE_VERSION"
+    - env: "MODE=saucelabs_optional"
+    - env: "MODE=browserstack_optional"
+    # Tracked in https://github.com/angular/angular/issues/7050
+    - env: "MODE=typescript_next"
 
 addons:
   firefox: "38.0"
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - g++-4.8
 
 before_install:
-- npm install -g npm@3.5.3
-- node tools/analytics/build-analytics start ci job
-- node tools/analytics/build-analytics start ci before_install
-- echo ${TSDRC} > .tsdrc
-- ./scripts/ci/install_chromium.sh
-- export CHROME_BIN=$HOME/.chrome/chromium/chrome-linux/chrome
-- export DISPLAY=:99.0
-- export GIT_SHA=$(git rev-parse HEAD)
-- ./scripts/ci/init_android.sh
-- ./scripts/ci/install_dart.sh ${DART_CHANNEL} ${DART_VERSION} ${ARCH}
-- sh -e /etc/init.d/xvfb start
-- if [[ -e SKIP_TRAVIS_TESTS ]]; then { cat SKIP_TRAVIS_TESTS ; exit 0; } fi
-- '[ "${TRAVIS_PULL_REQUEST}" = "false" ] && [ "${TRAVIS_BRANCH}" = "master" ] && SAUCE_USERNAME="angular2-ci" && SAUCE_ACCESS_KEY="693ebc16208a-0b5b-1614-8d66-a2662f4e" || true'
-- node tools/analytics/build-analytics success ci before_install
+  - node tools/analytics/build-analytics start ci job
+  - node tools/analytics/build-analytics start ci before_install
+  - echo ${TSDRC} > .tsdrc
+  - export CHROME_BIN=$HOME/.chrome/chromium/chrome-linux/chrome
+  - export DISPLAY=:99.0
+  - export GIT_SHA=$(git rev-parse HEAD)
+  - ./scripts/ci/init_android.sh
+  - sh -e /etc/init.d/xvfb start
+  # Use a separate SauseLabs account for upstream/master builds in order for Sauce to create a badge representing the status of just upstream/master
+  - '[ "${TRAVIS_PULL_REQUEST}" = "false" ] && [ "${TRAVIS_BRANCH}" = "master" ] && SAUCE_USERNAME="angular2-ci" && SAUCE_ACCESS_KEY="693ebc16208a-0b5b-1614-8d66-a2662f4e" || true'
+  - node tools/analytics/build-analytics success ci before_install
 
 install:
   - node tools/analytics/build-analytics start ci install
-  # Check the size of caches
+  # Install version of npm that we are locked against
+  - npm install -g npm@3.5.3
+  # Install version of Chromium that we are locked against
+  - ./scripts/ci/install_chromium.sh
+  # Install version of Dart based on the matrix build variables
+  - ./scripts/ci/install_dart.sh ${DART_CHANNEL} ${DART_VERSION} ${ARCH}
+  # Print the size of caches to ease debugging
   - du -sh ./node_modules || true
   # Install npm dependecies
   # check-node-modules will exit(1) if we don't need to install
@@ -92,34 +105,33 @@ install:
   - node tools/analytics/build-analytics success ci install
 
 before_script:
-- node tools/analytics/build-analytics start ci before_script
-- mkdir -p $LOGS_DIR
-- ./scripts/ci/presubmit-queue-setup.sh
-- node tools/analytics/build-analytics success ci before_script
+  - node tools/analytics/build-analytics start ci before_script
+  - mkdir -p $LOGS_DIR
+  - ./scripts/ci/presubmit-queue-setup.sh
+  - node tools/analytics/build-analytics success ci before_script
 
 script:
-- node tools/analytics/build-analytics start ci script
-- ./scripts/ci/build_and_test.sh ${MODE}
-- node tools/analytics/build-analytics success ci script
+  - node tools/analytics/build-analytics start ci script
+  - ./scripts/ci/build_and_test.sh ${MODE}
+  - node tools/analytics/build-analytics success ci script
 
 after_script:
-- node tools/analytics/build-analytics start ci after_script
-- ./scripts/ci/print-logs.sh
-- ./scripts/ci/after-script.sh
-- ./scripts/publish/publish-build-artifacts.sh
-- node tools/analytics/build-analytics success ci after_script
-- if [[ $TRAVIS_TEST_RESULT -eq 0 ]]; then node tools/analytics/build-analytics success ci job; else node tools/analytics/build-analytics error ci job; fi
+  - node tools/analytics/build-analytics start ci after_script
+  - ./scripts/ci/print-logs.sh
+  - ./scripts/ci/after-script.sh
+  - ./scripts/publish/publish-build-artifacts.sh
+  - node tools/analytics/build-analytics success ci after_script
+  - tools/analytics/build-analytics $TRAVIS_TEST_RESULT ci job
 
 notifications:
   webhooks:
     urls:
-    - https://webhooks.gitter.im/e/1ef62e23078036f9cee4
-    # trigger Buildtime Trend Service to parse Travis CI log
-    - https://buildtimetrend.herokuapp.com/travis
-    - http://104.197.9.155:8484/hubot/travis/activity
+      - https://webhooks.gitter.im/e/1ef62e23078036f9cee4
+      # trigger Buildtime Trend Service to parse Travis CI log
+      - https://buildtimetrend.herokuapp.com/travis
+      - http://104.197.9.155:8484/hubot/travis/activity
     on_success: always  # options: [always|never|change] default: always
     on_failure: always  # options: [always|never|change] default: always
-    on_start: false     # default: false
+    on_start: never     # default: never
   slack:
     secure: EP4MzZ8JMyNQJ4S3cd5LEPWSMjC7ZRdzt3veelDiOeorJ6GwZfCDHncR+4BahDzQAuqyE/yNpZqaLbwRWloDi15qIUsm09vgl/1IyNky1Sqc6lEknhzIXpWSalo4/T9ZP8w870EoDvM/UO+LCV99R3wS8Nm9o99eLoWVb2HIUu0=
-

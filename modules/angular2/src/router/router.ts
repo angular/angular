@@ -38,8 +38,10 @@ let _resolveToFalse = PromiseWrapper.resolve(false);
 export class Router {
   navigating: boolean = false;
   lastNavigationAttempt: string;
-
-  private _currentInstruction: Instruction = null;
+  /**
+   * The current `Instruction` for the router
+   */
+  public currentInstruction: Instruction = null;
 
   private _currentNavigation: Promise<any> = _resolveToTrue;
   private _outlet: RouterOutlet = null;
@@ -50,8 +52,8 @@ export class Router {
   private _subject: EventEmitter<any> = new EventEmitter();
 
 
-  constructor(public registry: RouteRegistry, public parent: Router, public hostComponent: any) {}
-
+  constructor(public registry: RouteRegistry, public parent: Router, public hostComponent: any,
+              public root?: Router) {}
 
   /**
    * Constructs a child router. You probably don't need to use this unless you're writing a reusable
@@ -83,8 +85,8 @@ export class Router {
     }
 
     this._outlet = outlet;
-    if (isPresent(this._currentInstruction)) {
-      return this.commit(this._currentInstruction, false);
+    if (isPresent(this.currentInstruction)) {
+      return this.commit(this.currentInstruction, false);
     }
     return _resolveToTrue;
   }
@@ -119,8 +121,8 @@ export class Router {
     router._outlet = outlet;
 
     var auxInstruction;
-    if (isPresent(this._currentInstruction) &&
-        isPresent(auxInstruction = this._currentInstruction.auxInstruction[outletName])) {
+    if (isPresent(this.currentInstruction) &&
+        isPresent(auxInstruction = this.currentInstruction.auxInstruction[outletName])) {
       return router.commit(auxInstruction);
     }
     return _resolveToTrue;
@@ -137,8 +139,8 @@ export class Router {
       router = router.parent;
       instruction = instruction.child;
     }
-    return isPresent(this._currentInstruction) &&
-           this._currentInstruction.component == instruction.component;
+    return isPresent(this.currentInstruction) &&
+           this.currentInstruction.component == instruction.component;
   }
 
 
@@ -287,7 +289,7 @@ export class Router {
   }
 
   private _canActivate(nextInstruction: Instruction): Promise<boolean> {
-    return canActivateOne(nextInstruction, this._currentInstruction);
+    return canActivateOne(nextInstruction, this.currentInstruction);
   }
 
   private _routerCanDeactivate(instruction: Instruction): Promise<boolean> {
@@ -324,7 +326,7 @@ export class Router {
    * Updates this router and all descendant routers according to the given instruction
    */
   commit(instruction: Instruction, _skipLocationChange: boolean = false): Promise<any> {
-    this._currentInstruction = instruction;
+    this.currentInstruction = instruction;
 
     var next: Promise<any> = _resolveToTrue;
     if (isPresent(this._outlet) && isPresent(instruction.component)) {
@@ -403,10 +405,10 @@ export class Router {
   }
 
   private _getAncestorInstructions(): Instruction[] {
-    var ancestorInstructions = [this._currentInstruction];
+    var ancestorInstructions = [this.currentInstruction];
     var ancestorRouter: Router = this;
     while (isPresent(ancestorRouter = ancestorRouter.parent)) {
-      ancestorInstructions.unshift(ancestorRouter._currentInstruction);
+      ancestorInstructions.unshift(ancestorRouter.currentInstruction);
     }
     return ancestorInstructions;
   }
@@ -443,6 +445,7 @@ export class RootRouter extends Router {
   constructor(registry: RouteRegistry, location: Location,
               @Inject(ROUTER_PRIMARY_COMPONENT) primaryComponent: Type) {
     super(registry, null, primaryComponent);
+    this.root = this;
     this._location = location;
     this._locationSub = this._location.subscribe((change) => {
       // we call recognize ourselves
@@ -503,7 +506,7 @@ export class RootRouter extends Router {
 
 class ChildRouter extends Router {
   constructor(parent: Router, hostComponent) {
-    super(parent.registry, parent, hostComponent);
+    super(parent.registry, parent, hostComponent, parent.root);
     this.parent = parent;
   }
 

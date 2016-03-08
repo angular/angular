@@ -218,6 +218,28 @@ export function main() {
              });
        }));
 
+    it('should provide the current instruction', inject([AsyncTestCompleter], (async) => {
+         var outlet = makeDummyOutlet();
+
+         router.registerPrimaryOutlet(outlet)
+             .then((_) => router.config([
+               new Route({path: '/a', component: DummyComponent, name: 'A'}),
+               new Route({path: '/b', component: DummyComponent, name: 'B'})
+             ]))
+             .then((_) => router.navigateByUrl('/a'))
+             .then((_) => {
+               var instruction = router.generate(['/A']);
+
+               expect(router.currentInstruction).toEqual(instruction);
+               async.done();
+             });
+       }));
+
+    it('should provide the root level router from child routers', () => {
+      let childRouter = router.childRouter(DummyComponent);
+      expect(childRouter.root).toBe(router);
+    });
+
     describe('query string params', () => {
       it('should use query string params for the root route', () => {
         router.config(

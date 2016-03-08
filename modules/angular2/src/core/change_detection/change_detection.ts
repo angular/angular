@@ -1,9 +1,20 @@
-import {IterableDiffers, IterableDifferFactory, TrackByFn} from './differs/iterable_differs';
+import {IterableDiffers, IterableDifferFactory} from './differs/iterable_differs';
 import {DefaultIterableDifferFactory} from './differs/default_iterable_differ';
 import {KeyValueDiffers, KeyValueDifferFactory} from './differs/keyvalue_differs';
-import {DefaultKeyValueDifferFactory} from './differs/default_keyvalue_differ';
-import {CONST, CONST_EXPR, isPresent} from 'angular2/src/facade/lang';
+import {
+  DefaultKeyValueDifferFactory,
+  KeyValueChangeRecord
+} from './differs/default_keyvalue_differ';
+import {CONST_EXPR} from 'angular2/src/facade/lang';
 
+export {
+  DefaultKeyValueDifferFactory,
+  KeyValueChangeRecord
+} from './differs/default_keyvalue_differ';
+export {
+  DefaultIterableDifferFactory,
+  CollectionChangeRecord
+} from './differs/default_iterable_differ';
 export {
   ASTWithSource,
   AST,

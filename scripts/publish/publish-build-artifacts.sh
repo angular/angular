@@ -1,21 +1,6 @@
 #!/bin/bash
 set -e -x
 
-DART_BUILD_ARTIFACTS_DIR="dist/pub/angular2"
-JS_BUILD_ARTIFACTS_DIR="dist/npm/angular2"
-
-DART_BUILD_BRANCH="builds-dart"
-JS_BUILD_BRANCH="builds-js"
-
-REPO_URL="https://github.com/angular/angular.git"
-# Use the below URL for testing when using SSH authentication
-# REPO_URL="git@github.com:angular/angular.git"
-
-SHA=`git rev-parse HEAD`
-SHORT_SHA=`git rev-parse --short HEAD`
-COMMIT_MSG=`git log --oneline | head -n1`
-COMMITTER_USER_NAME=`git --no-pager show -s --format='%cN' HEAD`
-COMMITTER_USER_EMAIL=`git --no-pager show -s --format='%cE' HEAD`
 
 function publishRepo {
   LANG=$1
@@ -59,11 +44,34 @@ function publishRepo {
   )
 }
 
-if [[ "$TRAVIS_REPO_SLUG" = "angular/angular" && "$MODE" == "build_only" ]]; then
+
+if [[ "$TRAVIS_REPO_SLUG" == "angular/angular" && \
+      "$TRAVIS_PULL_REQUEST" == "false" && \
+      "$MODE" == "build_only" ]]; then
+
+  DART_BUILD_ARTIFACTS_DIR="dist/pub/angular2"
+  JS_BUILD_ARTIFACTS_DIR="dist/npm/angular2"
+
+  DART_BUILD_BRANCH="builds-dart"
+  JS_BUILD_BRANCH="builds-js"
+
+  REPO_URL="https://github.com/angular/angular.git"
+  # Use the below URL for testing when using SSH authentication
+  # REPO_URL="git@github.com:angular/angular.git"
+
+  SHA=`git rev-parse HEAD`
+  SHORT_SHA=`git rev-parse --short HEAD`
+  COMMIT_MSG=`git log --oneline | head -n1`
+  COMMITTER_USER_NAME=`git --no-pager show -s --format='%cN' HEAD`
+  COMMITTER_USER_EMAIL=`git --no-pager show -s --format='%cE' HEAD`
+
   scripts/publish/npm_prepare.sh angular2
   publishRepo "js" "${JS_BUILD_ARTIFACTS_DIR}"
 
   scripts/publish/pub_prepare.sh angular2
   publishRepo "dart" "${DART_BUILD_ARTIFACTS_DIR}"
   echo "Finished publishing build artifacts"
+
+else
+  echo "Not building the upstream/master branch, build artifacts won't be published."
 fi
