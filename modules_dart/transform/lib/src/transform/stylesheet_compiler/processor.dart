@@ -15,6 +15,9 @@ import 'package:barback/barback.dart';
 AssetId shimmedStylesheetAssetId(AssetId cssAssetId) => new AssetId(
     cssAssetId.package, toShimmedStylesheetExtension(cssAssetId.path));
 
+AssetId shimmedLegacyStylesheetAssetId(AssetId cssAssetId) => new AssetId(
+    cssAssetId.package, toShimmedLegacyStylesheetExtension(cssAssetId.path));
+
 AssetId nonShimmedStylesheetAssetId(AssetId cssAssetId) => new AssetId(
     cssAssetId.package, toNonShimmedStylesheetExtension(cssAssetId.path));
 

@@ -8,6 +8,7 @@ const TRANSFORM_DYNAMIC_MODE = 'transform_dynamic';
 const CSS_EXTENSION = '.css';
 const DEFERRED_EXTENSION = '.dart.deferredCount';
 const SHIMMED_STYLESHEET_EXTENSION = '.css.shim.dart';
+const SHIMMED_LEGACY_STYLESHEET_EXTENSION = '.css.shimlegacy.dart';
 const NON_SHIMMED_STYLESHEET_EXTENSION = '.css.dart';
 const META_EXTENSION = '.ng_meta.json';
 const REFLECTION_CAPABILITIES_NAME = 'ReflectionCapabilities';
@@ -43,6 +44,7 @@ bool isGenerated(String uri) {
     META_EXTENSION,
     NON_SHIMMED_STYLESHEET_EXTENSION,
     SHIMMED_STYLESHEET_EXTENSION,
+    SHIMMED_LEGACY_STYLESHEET_EXTENSION,
     SUMMARY_META_EXTENSION,
     TEMPLATE_EXTENSION,
   ].any((ext) => uri.endsWith(ext));
@@ -63,6 +65,11 @@ String toTemplateExtension(String uri) =>
 /// Returns `uri` with its extension updated to [SHIMMED_STYLESHEET_EXTENSION].
 String toShimmedStylesheetExtension(String uri) =>
     _toExtension(uri, const [CSS_EXTENSION], SHIMMED_STYLESHEET_EXTENSION);
+
+/// Returns `uri` with its extension updated to [SHIMMED_STYLESHEET_EXTENSION].
+String toShimmedLegacyStylesheetExtension(String uri) =>
+    _toExtension(uri, const [CSS_EXTENSION],
+        SHIMMED_LEGACY_STYLESHEET_EXTENSION);
 
 /// Returns `uri` with its extension updated to [NON_SHIMMED_STYLESHEET_EXTENSION].
 String toNonShimmedStylesheetExtension(String uri) =>

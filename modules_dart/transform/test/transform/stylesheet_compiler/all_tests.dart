@@ -46,11 +46,13 @@ allTests() {
         new AssetId('somepackage', 'lib/style.css'), SIMPLE_CSS);
     var transform = new FakeTransform()..primaryInput = cssFile;
     await subject.apply(transform);
-    expect(transform.outputs.length).toBe(2);
+    expect(transform.outputs.length).toBe(3);
     expect(transform.outputs[0].id.toString())
         .toEqual('somepackage|lib/style.css.dart');
     expect(transform.outputs[1].id.toString())
         .toEqual('somepackage|lib/style.css.shim.dart');
+    expect(transform.outputs[2].id.toString())
+        .toEqual('somepackage|lib/style.css.shimlegacy.dart');
   });
 
   it('should compile stylesheets with imports', () async {
@@ -58,13 +60,16 @@ allTests() {
         new AssetId('somepackage', 'lib/style.css'), CSS_WITH_IMPORT);
     var transform = new FakeTransform()..primaryInput = cssFile;
     await subject.apply(transform);
-    expect(transform.outputs.length).toBe(2);
+    expect(transform.outputs.length).toBe(3);
     expect(transform.outputs[0].id.toString())
         .toEqual('somepackage|lib/style.css.dart');
     expect(transform.outputs[1].id.toString())
         .toEqual('somepackage|lib/style.css.shim.dart');
+    expect(transform.outputs[2].id.toString())
+        .toEqual('somepackage|lib/style.css.shimlegacy.dart');
     expect(await transform.outputs[0].readAsString()).toContain(HTTP_IMPORT);
     expect(await transform.outputs[1].readAsString()).toContain(HTTP_IMPORT);
+    expect(await transform.outputs[2].readAsString()).toContain(HTTP_IMPORT);
   });
 }
 

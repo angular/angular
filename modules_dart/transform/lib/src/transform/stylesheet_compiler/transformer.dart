@@ -27,7 +27,11 @@ class StylesheetCompiler extends Transformer implements LazyTransformer {
   }
 
   List<AssetId> _getExpectedOutputs(AssetId cssId) =>
-      [shimmedStylesheetAssetId(cssId), nonShimmedStylesheetAssetId(cssId)];
+      [
+        shimmedStylesheetAssetId(cssId),
+        shimmedLegacyStylesheetAssetId(cssId),
+        nonShimmedStylesheetAssetId(cssId)
+      ];
 
   @override
   Future apply(Transform transform) async {

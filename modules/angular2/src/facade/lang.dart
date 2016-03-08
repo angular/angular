@@ -199,6 +199,10 @@ class RegExpWrapper {
     return regExp.firstMatch(input);
   }
 
+  static int indexOf(RegExp regExp, num startFrom, String input) {
+    return input.indexOf(regExp, startFrom);
+  }
+
   static bool test(RegExp regExp, String input) {
     return regExp.hasMatch(input);
   }

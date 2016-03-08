@@ -1,4 +1,3 @@
-import {ListWrapper} from 'angular2/src/facade/collection';
 import {
   StringWrapper,
   RegExp,
@@ -136,6 +135,7 @@ import {
 
 export class ShadowCss {
   strictStyling: boolean = true;
+  private _legacyMode: boolean;
 
   constructor() {}
 
@@ -147,7 +147,9 @@ export class ShadowCss {
   * - selector is the attribute added to all elements inside the host,
   * - hostSelector is the attribute added to the host itself.
   */
-  shimCssText(cssText: string, selector: string, hostSelector: string = ''): string {
+  shimCssText(cssText: string, selector: string, hostSelector: string = '',
+              legacyMode: boolean): string {
+    this._legacyMode = legacyMode;
     cssText = stripComments(cssText);
     cssText = this._insertDirectives(cssText);
     return this._scopeCssText(cssText, selector, hostSelector);
@@ -346,9 +348,8 @@ export class ShadowCss {
       var p = parts[i];
       p = p.trim();
       if (this._selectorNeedsScoping(p, scopeSelector)) {
-        p = strict && !StringWrapper.contains(p, _polyfillHostNoCombinator) ?
-                this._applyStrictSelectorScope(p, scopeSelector) :
-                this._applySelectorScope(p, scopeSelector, hostSelector);
+        p = strict ? this._applyStrictSelectorScope(p, scopeSelector, hostSelector) :
+                     this._applySelectorScope(p, scopeSelector, hostSelector);
       }
       r.push(p);
     }
@@ -388,28 +389,56 @@ export class ShadowCss {
 
   // return a selector with [name] suffix on each simple selector
   // e.g. .foo.bar > .zot becomes .foo[name].bar[name] > .zot[name]  /** @internal */
-  private _applyStrictSelectorScope(selector: string, scopeSelector: string): string {
+  private _applyStrictSelectorScope(selector: string, scopeSelector: string,
+                                    hostSelector: string): string {
     var isRe = /\[is=([^\]]*)\]/g;
     scopeSelector = StringWrapper.replaceAllMapped(scopeSelector, isRe, (m) => m[1]);
-    var splits = [' ', '>', '+', '~'], scoped = selector, attrName = '[' + scopeSelector + ']';
-    for (var i = 0; i < splits.length; i++) {
-      var sep = splits[i];
-      var parts = scoped.split(sep);
-      scoped = parts.map(p => {
-                      // remove :host since it should be unnecessary
-                      var t = StringWrapper.replaceAll(p.trim(), _polyfillHostRe, '');
-                      if (t.length > 0 && !ListWrapper.contains(splits, t) &&
-                          !StringWrapper.contains(t, attrName)) {
-                        var re = /([^:]*)(:*)(.*)/g;
-                        var m = RegExpWrapper.firstMatch(re, t);
-                        if (isPresent(m)) {
-                          p = m[1] + attrName + m[2] + m[3];
-                        }
-                      }
-                      return p;
-                    })
-                   .join(sep);
+
+    var indexOfShadowHost = selector.indexOf(_polyfillHostNoCombinator);
+
+    if (indexOfShadowHost > -1 && this._legacyMode) {
+      return this._applySelectorScope(selector, scopeSelector, hostSelector);
     }
+
+    var attrName = '[' + scopeSelector + ']';
+
+    var _scopeSelectorPart = (p: string) => {
+      var scopedP = p.trim();
+      if (scopedP.length == 0) {
+        return '';
+      }
+
+      if (StringWrapper.contains(p, _polyfillHostNoCombinator)) {
+        scopedP = this._applySimpleSelectorScope(p, scopeSelector, hostSelector);
+      } else {
+        // remove :host since it should be unnecessary
+        var t = StringWrapper.replaceAll(p, _polyfillHostRe, '');
+        if (t.length > 0) {
+          var re = /([^:]*)(:*)(.*)/g;
+          var m1 = RegExpWrapper.firstMatch(re, t);
+          if (isPresent(m1)) {
+            scopedP = m1[1] + attrName + m1[2] + m1[3];
+          }
+        }
+      }
+
+      return scopedP;
+    };
+
+    var sep = / |>|\+|\~/g;
+    var prev = 0;
+    var next = 0;
+    var scoped = '';
+    while ((next = RegExpWrapper.indexOf(sep, prev, selector)) > -1) {
+      var separator = selector[next];
+      var part = selector.substring(prev, next).trim();
+
+      var scopedPart =
+          (indexOfShadowHost == -1 || prev >= indexOfShadowHost) ? _scopeSelectorPart(part) : part;
+      scoped += `${scopedPart} ${separator} `;
+      prev = next + 1;
+    }
+    scoped += _scopeSelectorPart(selector.substring(prev));
     return scoped;
   }
 
