@@ -4,8 +4,8 @@ import 'dart:async';
 import 'dart:convert' show LineSplitter;
 
 import 'package:barback/barback.dart';
-import 'package:guinness/guinness.dart';
 import 'package:dart_style/dart_style.dart';
+import 'package:test/test.dart';
 import 'package:transformer_test/utils.dart';
 
 import 'package:angular2/src/transform/common/annotation_matcher.dart';
@@ -28,20 +28,20 @@ AnnotationMatcher annotationMatcher;
 void allTests() {
   TestAssetReader absoluteReader;
 
-  beforeEach(() {
+  setUp(() {
     absoluteReader = new TestAssetReader();
     annotationMatcher = new AnnotationMatcher();
   });
 
-  it('should inline `templateUrl` values', () async {
+  test('should inline `templateUrl` values', () async {
     var output = await _testInline(
         absoluteReader, _assetId('url_expression_files/hello.dart'));
-    expect(output).toBeNotNull();
-    expect(() => formatter.format(output)).not.toThrow();
-    expect(output).toContain("r'''{{greeting}}'''");
+    expect(output, isNotNull);
+    expect(() => formatter.format(output), returnsNormally);
+    expect(output, contains("r'''{{greeting}}'''"));
   });
 
-  it(
+  test(
       'should inline `templateUrl` and `styleUrls` values expressed as '
       'absolute urls.', () async {
     absoluteReader.addAsset(
@@ -56,14 +56,14 @@ void allTests() {
     var output = await _testInline(
         absoluteReader, _assetId('absolute_url_expression_files/hello.dart'));
 
-    expect(output).toBeNotNull();
-    expect(() => formatter.format(output)).not.toThrow();
+    expect(output, isNotNull);
+    expect(() => formatter.format(output), returnsNormally);
 
-    expect(output).toContain("r'''{{greeting}}'''");
-    expect(output).toContain("r'''.greeting { .color: blue; }'''");
+    expect(output, contains("r'''{{greeting}}'''"));
+    expect(output, contains("r'''.greeting { .color: blue; }'''"));
   });
 
-  it('should inline multiple `styleUrls` values expressed as absolute urls.',
+  test('should inline multiple `styleUrls` values expressed as absolute urls.',
       () async {
     absoluteReader
       ..addAsset(new AssetId('other_package', 'lib/template.html'), '')
@@ -71,51 +71,50 @@ void allTests() {
     var output = await _testInline(
         absoluteReader, _assetId('multiple_style_urls_files/hello.dart'));
 
-    expect(output).toBeNotNull();
-    expect(() => formatter.format(output)).not.toThrow();
+    expect(output, isNotNull);
+    expect(() => formatter.format(output), returnsNormally);
 
-    expect(output)
-      ..toContain("r'''.greeting { .color: blue; }'''")
-      ..toContain("r'''.hello { .color: red; }'''");
+    expect(output, contains("r'''.greeting { .color: blue; }'''"));
+    expect(output, contains("r'''.hello { .color: red; }'''"));
   });
 
-  it('should inline `templateUrl`s expressed as adjacent strings.', () async {
+  test('should inline `templateUrl`s expressed as adjacent strings.', () async {
     var output = await _testInline(
         absoluteReader, _assetId('split_url_expression_files/hello.dart'));
 
-    expect(output).toBeNotNull();
-    expect(() => formatter.format(output)).not.toThrow();
+    expect(output, isNotNull);
+    expect(() => formatter.format(output), returnsNormally);
 
-    expect(output).toContain("{{greeting}}");
+    expect(output, contains("{{greeting}}"));
   });
 
-  it('should not inline values outside of View/Component annotations',
+  test('should not inline values outside of View/Component annotations',
       () async {
     var output = await _testInline(
         absoluteReader, _assetId('false_match_files/hello.dart'));
 
-    expect(output).toBeNotNull();
-    expect(output).not.toContain('{{greeting}}');
-    expect(output).toContain('.greeting { .color: blue; }');
+    expect(output, isNotNull);
+    expect(output, isNot(contains('{{greeting}}')));
+    expect(output, contains('.greeting { .color: blue; }'));
   });
 
-  it('should not modify files with no `templateUrl` or `styleUrls` values.',
+  test('should not modify files with no `templateUrl` or `styleUrls` values.',
       () async {
     var output = await _testInline(
         absoluteReader, _assetId('no_modify_files/hello.dart'));
 
-    expect(output).toBeNull();
+    expect(output, isNull);
   });
 
-  it('should not strip property annotations.', () async {
+  test('should not strip property annotations.', () async {
     // Regression test for https://github.com/dart-lang/sdk/issues/24578
     var output = await _testInline(
         absoluteReader, _assetId('prop_annotations_files/hello.dart'));
 
-    expect(output).toContain('@Attribute(\'thing\')');
+    expect(output, contains('@Attribute(\'thing\')'));
   });
 
-  it('should maintain line numbers for long `templateUrl` values', () async {
+  test('should maintain line numbers for long `templateUrl` values', () async {
     // Regression test for https://github.com/angular/angular/issues/5281
     final templateUrlVal =
         'supersupersupersupersupersupersupersupersupersupersupersuper'
@@ -124,14 +123,13 @@ void allTests() {
         _assetId('multiline_template/$templateUrlVal'), '{{greeting}}');
     var output = await _testInline(
         absoluteReader, _assetId('multiline_template/hello.dart'));
-    expect(output).toBeNotNull();
-    expect(() => formatter.format(output)).not.toThrow();
-    expect(output)
-      ..toContain("r'''{{greeting}}'''")
-      ..toContain('template: _template0\n');
+    expect(output, isNotNull);
+    expect(() => formatter.format(output), returnsNormally);
+    expect(output, contains("r'''{{greeting}}'''"));
+    expect(output, contains('template: _template0\n'));
   });
 
-  it('should maintain line numbers when replacing values', () async {
+  test('should maintain line numbers when replacing values', () async {
     // Regression test for https://github.com/angular/angular/issues/5281
     final templateUrlVal =
         'supersupersupersupersupersupersupersupersupersupersupersuper'
@@ -147,20 +145,19 @@ void allTests() {
         t2Styles);
     var output = await _testInline(
         absoluteReader, _assetId('multiline_template/hello.dart'));
-    expect(output).toBeNotNull();
-    expect(() => formatter.format(output)).not.toThrow();
-    expect(output)
-      ..toContain("r'''{{greeting}}'''")
-      ..toContain("r'''$t1Styles'''")
-      ..toContain("r'''$t2Styles'''");
+    expect(output, isNotNull);
+    expect(() => formatter.format(output), returnsNormally);
+    expect(output, contains("r'''{{greeting}}'''"));
+    expect(output, contains("r'''$t1Styles'''"));
+    expect(output, contains("r'''$t2Styles'''"));
 
     final splitter = const LineSplitter();
     final inputLines =
         splitter.convert(_readFile('multiline_template/hello.dart'));
     final outputLines = splitter.convert(output);
 
-    expect(outputLines.indexOf('class HelloCmp {}'))
-        .toEqual(inputLines.indexOf('class HelloCmp {}'));
+    expect(outputLines.indexOf('class HelloCmp {}'),
+        equals(inputLines.indexOf('class HelloCmp {}')));
   });
 }
 
