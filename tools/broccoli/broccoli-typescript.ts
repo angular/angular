@@ -5,7 +5,7 @@ import fse = require('fs-extra');
 import path = require('path');
 import * as ts from 'typescript';
 import {wrapDiffingPlugin, DiffingBroccoliPlugin, DiffResult} from './diffing-broccoli-plugin';
-
+import {MetadataExtractor} from '../metadata/extractor';
 
 type FileRegistry = ts.Map<{version: number}>;
 
@@ -50,6 +50,7 @@ class DiffingTSCompiler implements DiffingBroccoliPlugin {
   private rootFilePaths: string[];
   private tsServiceHost: ts.LanguageServiceHost;
   private tsService: ts.LanguageService;
+  private metadataExtractor: MetadataExtractor;
   private firstRun: boolean = true;
   private previousRunFailed: boolean = false;
   // Whether to generate the @internal typing files (they are only generated when `stripInternal` is
@@ -92,6 +93,7 @@ class DiffingTSCompiler implements DiffingBroccoliPlugin {
     this.tsServiceHost = new CustomLanguageServiceHost(this.tsOpts, this.rootFilePaths,
                                                        this.fileRegistry, this.inputPath);
     this.tsService = ts.createLanguageService(this.tsServiceHost, ts.createDocumentRegistry());
+    this.metadataExtractor = new MetadataExtractor(this.tsService);
   }
 
 
@@ -124,6 +126,8 @@ class DiffingTSCompiler implements DiffingBroccoliPlugin {
       this.firstRun = false;
       this.doFullBuild();
     } else {
+      let program = this.tsService.getProgram();
+      let typeChecker = program.getTypeChecker();
       tsEmitInternal = false;
       pathsToEmit.forEach((tsFilePath) => {
         let output = this.tsService.getEmitOutput(tsFilePath);
@@ -139,6 +143,10 @@ class DiffingTSCompiler implements DiffingBroccoliPlugin {
             let destDirPath = path.dirname(o.name);
             fse.mkdirsSync(destDirPath);
             fs.writeFileSync(o.name, this.fixSourceMapSources(o.text), FS_OPTS);
+            if (endsWith(o.name, '.d.ts')) {
+              const sourceFile = program.getSourceFile(tsFilePath);
+              this.emitMetadata(o.name, sourceFile, typeChecker);
+            }
           });
         }
       });
@@ -194,11 +202,22 @@ class DiffingTSCompiler implements DiffingBroccoliPlugin {
 
   private doFullBuild() {
     let program = this.tsService.getProgram();
-
+    let typeChecker = program.getTypeChecker();
+    let diagnostics: ts.Diagnostic[] = [];
     tsEmitInternal = false;
+
     let emitResult = program.emit(undefined, (absoluteFilePath, fileContent) => {
       fse.mkdirsSync(path.dirname(absoluteFilePath));
       fs.writeFileSync(absoluteFilePath, this.fixSourceMapSources(fileContent), FS_OPTS);
+      if (endsWith(absoluteFilePath, '.d.ts')) {
+        // TODO: Use sourceFile from the callback if
+        //   https://github.com/Microsoft/TypeScript/issues/7438
+        // is taken
+        const originalFile = absoluteFilePath.replace(this.tsOpts.outDir, this.tsOpts.rootDir)
+                                 .replace(/\.d\.ts$/, '.ts');
+        const sourceFile = program.getSourceFile(originalFile);
+        this.emitMetadata(absoluteFilePath, sourceFile, typeChecker);
+      }
     });
 
     if (this.genInternalTypings) {
@@ -235,6 +254,22 @@ class DiffingTSCompiler implements DiffingBroccoliPlugin {
         throw error;
       } else {
         this.previousRunFailed = false;
+      }
+    }
+  }
+
+  /**
+   * Emit a .metadata.json file to correspond to the .d.ts file if the module contains classes that
+   * use decorators or exported constants.
+   */
+  private emitMetadata(dtsFileName: string, sourceFile: ts.SourceFile,
+                       typeChecker: ts.TypeChecker) {
+    if (sourceFile) {
+      const metadata = this.metadataExtractor.getMetadata(sourceFile, typeChecker);
+      if (metadata && metadata.metadata) {
+        const metadataText = JSON.stringify(metadata);
+        const metadataFileName = dtsFileName.replace(/\.d.ts$/, '.metadata.json');
+        fs.writeFileSync(metadataFileName, metadataText, FS_OPTS);
       }
     }
   }
