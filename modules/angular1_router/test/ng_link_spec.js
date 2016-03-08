@@ -14,10 +14,8 @@ describe('ngLink', function () {
     module('ngComponentRouter');
     module(function (_$compileProvider_, _$locationProvider_) {
       $compileProvider = _$compileProvider_;
-      $locationProvider = _$locationProvider_;
+      $locationProvider = _$locationProvider_;      
     });
-
-    $locationProvider.html5mode(true);
 
     inject(function (_$compile_, _$rootScope_, _$rootRouter_) {
       $compile = _$compile_;
@@ -31,13 +29,17 @@ describe('ngLink', function () {
   });
   
   describe('html5mode enabled', function () {
-    $locationProvider.html5mode(true);
-    runHrefTestsAndExpectPrefix('.')
+    beforeEach(function () {
+      $locationProvider.html5Mode(true);
+    });
+    runHrefTestsAndExpectPrefix('.');
   });
   
   describe('html5mode disabled', function () {
-    $locationProvider.html5mode(false);
-    runHrefTestsAndExpectPrefix('#')
+    beforeEach(function () {
+      $locationProvider.html5Mode(false);
+    });
+    runHrefTestsAndExpectPrefix('#');
   });
 
   function runHrefTestsAndExpectPrefix(prefix) {
@@ -95,7 +97,7 @@ describe('ngLink', function () {
         $rootRouter.navigateByUrl('/a');
         $rootScope.$digest();
 
-        expect(elt.find('a').attr('href')).toBe(pefix + '/b/param');
+        expect(elt.find('a').attr('href')).toBe(prefix + '/b/param');
     });
 
 
