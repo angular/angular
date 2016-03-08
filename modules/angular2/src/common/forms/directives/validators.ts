@@ -2,7 +2,6 @@ import {forwardRef, Provider, OpaqueToken, Attribute, Directive} from 'angular2/
 import {CONST_EXPR} from 'angular2/src/facade/lang';
 import {Validators, NG_VALIDATORS} from '../validators';
 import {Control} from '../model';
-import * as modelModule from '../model';
 import {NumberWrapper} from "angular2/src/facade/lang";
 
 
@@ -23,7 +22,7 @@ import {NumberWrapper} from "angular2/src/facade/lang";
  * }
  * ```
  */
-export interface Validator { validate(c: modelModule.Control): {[key: string]: any}; }
+export interface Validator { validate(c: Control): {[key: string]: any}; }
 
 const REQUIRED_VALIDATOR =
     CONST_EXPR(new Provider(NG_VALIDATORS, {useValue: Validators.required, multi: true}));
