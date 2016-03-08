@@ -8,19 +8,19 @@ import {
   beforeEach,
 } from '../../core/facade/testing';
 import {Component, DebugElement} from 'angular2/core';
-import {By} from 'angular2/platform/browser'
+import {By} from 'angular2/platform/browser';
 import {MdProgressCircle} from './progress_circle';
 
 
 export function main() {
   describe('MdProgressCircular', () => {
-    let builder:TestComponentBuilder;
+    let builder: TestComponentBuilder;
 
-    beforeEach(inject([TestComponentBuilder], (tcb:TestComponentBuilder) => {
+    beforeEach(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
       builder = tcb;
     }));
 
-    it('should apply a mode of "determinate" if no mode is provided.', (done:() => void) => {
+    it('should apply a mode of "determinate" if no mode is provided.', (done: () => void) => {
       builder
         .overrideTemplate(TestApp, '<md-progress-circle></md-progress-circle>')
         .createAsync(TestApp)
@@ -32,7 +32,7 @@ export function main() {
         });
     });
 
-    it('should apply a mode of "determinate" if an invalid mode is provided.', (done:() => void) => {
+    it('should apply mode of "determinate" if an invalid mode is provided.', (done: () => void) => {
       builder
         .overrideTemplate(TestApp, '<md-progress-circle mode="spinny"></md-progress-circle>')
         .createAsync(TestApp)
@@ -44,7 +44,7 @@ export function main() {
         });
     });
 
-    it('should not modify the mode if a valid mode is provided.', (done:() => void) => {
+    it('should not modify the mode if a valid mode is provided.', (done: () => void) => {
       builder
         .overrideTemplate(TestApp, '<md-progress-circle mode="indeterminate"></md-progress-circle>')
         .createAsync(TestApp)
@@ -56,7 +56,7 @@ export function main() {
         });
     });
 
-    it('should define a default value for the value attribute', (done:() => void) => {
+    it('should define a default value for the value attribute', (done: () => void) => {
       builder
         .overrideTemplate(TestApp, '<md-progress-circle></md-progress-circle>')
         .createAsync(TestApp)
@@ -68,7 +68,7 @@ export function main() {
         });
     });
 
-    it('should clamp the value of the progress between 0 and 100', (done:() => void) => {
+    it('should clamp the value of the progress between 0 and 100', (done: () => void) => {
       builder
         .overrideTemplate(TestApp, '<md-progress-circle></md-progress-circle>')
         .createAsync(TestApp)

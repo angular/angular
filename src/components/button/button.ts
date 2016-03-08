@@ -37,7 +37,7 @@ export class MdButton {
   /** Whether a mousedown has occurred on this element in the last 100ms. */
   isMouseDown: boolean = false;
 
-  setClassList() {return `md-${this.color}`;}
+  setClassList() { return `md-${this.color}`; }
 
   setMousedown() {
     // We only *show* the focus style when focus has come to the button via the keyboard.
@@ -75,7 +75,7 @@ export class MdAnchor extends MdButton {
   disabled_: boolean = null;
 
   @HostBinding('tabIndex')
-  get tabIndex():number {
+  get tabIndex(): number {
     return this.disabled ? -1 : 0;
   }
 

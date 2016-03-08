@@ -1,11 +1,8 @@
 import {
-  Attribute,
   Component,
   ChangeDetectionStrategy,
-  ElementRef,
   HostBinding,
-  Input,
-  ViewEncapsulation,
+  Input
 } from 'angular2/core';
 import {isPresent, CONST} from 'angular2/src/facade/lang';
 import {Math} from 'angular2/src/facade/math';

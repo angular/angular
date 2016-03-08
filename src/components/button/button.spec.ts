@@ -1,9 +1,6 @@
 import {
   inject,
-  injectAsync,
-  ComponentFixture,
-  TestComponentBuilder,
-  beforeEachProviders,
+  TestComponentBuilder
 } from 'angular2/testing';
 import {
   it,
@@ -13,22 +10,21 @@ import {
   expect,
   beforeEach,
 } from '../../core/facade/testing';
-import {provide, Component, DebugElement} from 'angular2/core';
+import {Component} from 'angular2/core';
 import {By} from 'angular2/platform/browser';
 
 import {MdButton, MdAnchor} from './button';
-import {AsyncTestFn, FunctionWithParamTokens} from 'angular2/testing';
 
 export function main() {
   describe('MdButton', () => {
     let builder: TestComponentBuilder;
 
-    beforeEach(inject([TestComponentBuilder], (tcb:TestComponentBuilder) => {
+    beforeEach(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
       builder = tcb;
     }));
 
     // General button tests
-    it('should apply class based on color attribute', (done:() => void) => {
+    it('should apply class based on color attribute', (done: () => void) => {
       return builder.createAsync(TestApp).then((fixture) => {
         let testComponent = fixture.debugElement.componentInstance;
         let buttonDebugElement = fixture.debugElement.query(By.css('button'));
@@ -49,7 +45,7 @@ export function main() {
 
     // Regular button tests
     describe('button[md-button]', () => {
-      it('should handle a click on the button', (done:() => void) => {
+      it('should handle a click on the button', (done: () => void) => {
         return builder.createAsync(TestApp).then((fixture) => {
           let testComponent = fixture.debugElement.componentInstance;
           let buttonDebugElement = fixture.debugElement.query(By.css('button'));
@@ -60,7 +56,7 @@ export function main() {
         });
       });
 
-      it('should not increment if disabled', (done:() => void) => {
+      it('should not increment if disabled', (done: () => void) => {
         return builder.createAsync(TestApp).then((fixture) => {
           let testComponent = fixture.debugElement.componentInstance;
           let buttonDebugElement = fixture.debugElement.query(By.css('button'));
@@ -79,7 +75,7 @@ export function main() {
 
     // Anchor button tests
     describe('a[md-button]', () => {
-      it('should not redirect if disabled',(done:() => void)=>{
+      it('should not redirect if disabled', (done: () => void) => {
         return builder.createAsync(TestApp).then((fixture) => {
           let testComponent = fixture.debugElement.componentInstance;
           let buttonDebugElement = fixture.debugElement.query(By.css('a'));
@@ -93,7 +89,7 @@ export function main() {
         });
       });
 
-      it('should remove tabindex if disabled', (done:() => void) => {
+      it('should remove tabindex if disabled', (done: () => void) => {
         return builder.createAsync(TestApp).then((fixture) => {
           let testComponent = fixture.debugElement.componentInstance;
           let buttonDebugElement = fixture.debugElement.query(By.css('a'));
@@ -106,7 +102,7 @@ export function main() {
         });
       });
 
-      it('should add aria-disabled attribute if disabled', (done:() => void) => {
+      it('should add aria-disabled attribute if disabled', (done: () => void) => {
         return builder.createAsync(TestApp).then((fixture) => {
           let testComponent = fixture.debugElement.componentInstance;
           let buttonDebugElement = fixture.debugElement.query(By.css('a'));
@@ -124,16 +120,12 @@ export function main() {
   });
 }
 
-/** Shortcut function to use instead of `injectAsync` for less boilerplate on each `it`. */
-function testAsync(fn: Function): FunctionWithParamTokens {
-  return injectAsync([], fn);
-}
-
 /** Test component that contains an MdButton. */
 @Component({
   selector: 'test-app',
   template: `
-    <button md-button type="button" (click)="increment()" [disabled]="isDisabled" [color]="buttonColor">
+    <button md-button type="button" (click)="increment()"
+      [disabled]="isDisabled" [color]="buttonColor">
       Go
     </button>
     <a href="http://www.google.com" md-button [disabled]="isDisabled" [color]="buttonColor">Link</a>
@@ -148,5 +140,3 @@ class TestApp {
     this.clickCount++;
   }
 }
-
-

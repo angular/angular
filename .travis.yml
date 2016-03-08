@@ -53,6 +53,7 @@ before_script:
   - "export DISPLAY=:99.0"
   - "sh -e /etc/init.d/xvfb start"
   - mkdir -p $LOGS_DIR
+  - npm run tslint
 
 
 script:
@@ -62,4 +63,3 @@ cache:
   directories:
     - node_modules
     - $HOME/.pub-cache
-

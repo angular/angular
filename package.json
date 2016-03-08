@@ -12,6 +12,7 @@
     "dartanalyzer": "cd dist/dart && pub install && cd ../.. && ts-node scripts/ci/dart_analyzer",
     "demo-app": "cd src && ng serve",
     "test": "karma start test/karma.conf.js",
+    "tslint" : "tslint -c tslint.json 'src/**/*.ts'",
     "typings": "typings install --ambient"
   },
   "version": "2.0.0-alpha.0",
@@ -53,7 +54,7 @@
     "symlink-or-copy": "^1.0.1",
     "ts-node": "^0.5.5",
     "ts2dart": "^0.7.27",
-    "tslint": "^3.2.2",
+    "tslint": "^3.5.0",
     "typescript": "^1.7.5",
     "typings": "^0.6.8",
     "which": "^1.2.4"

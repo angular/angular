@@ -20,7 +20,7 @@
     "no-bitwise": true,
     "no-shadowed-variable": true,
     "no-unused-expression": true,
-    "no-unused-variable": true,
+    "no-unused-variable": [true, {"ignore-pattern": "ddescribe|iit|.*_$"}],
     "one-line": [
       true,
       "check-catch",

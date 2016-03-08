@@ -5,7 +5,8 @@ import {CONST_EXPR} from 'angular2/src/facade/lang';
 
 <md-card> is a basic content container component that adds the styles of a material design card.
 
-While you can use this component alone, it also provides a number of preset styles for common card sections, including:
+While you can use this component alone,
+it also provides a number of preset styles for common card sections, including:
  - md-card-title
  - md-card-subtitle
  - md-card-content
@@ -29,10 +30,11 @@ While you can use this component alone, it also provides a number of preset styl
 export class MdCard {}
 
 
-/*  The following components don't have any behavior. They simply use content projection to wrap user content 
- for flex layout purposes in <md-card> (and thus allow a cleaner, boilerplate-free API). 
+/*  The following components don't have any behavior.
+ They simply use content projection to wrap user content
+ for flex layout purposes in <md-card> (and thus allow a cleaner, boilerplate-free API).
 
- 
+
 <md-card-header> is a component intended to be used within the <md-card> component.
 It adds styles for a preset header section (i.e. a title, subtitle, and avatar layout).
 
@@ -70,4 +72,3 @@ TODO(kara): update link to demo site when it exists
 export class MdCardTitleGroup {}
 
 export const MD_CARD_DIRECTIVES: any[] = CONST_EXPR([MdCard, MdCardHeader, MdCardTitleGroup]);
-

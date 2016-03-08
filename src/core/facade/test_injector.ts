@@ -1,19 +1,20 @@
 import {Injector, Provider, PLATFORM_INITIALIZER} from 'angular2/core';
-import {BaseException, ExceptionHandler} from 'angular2/src/facade/exceptions';
+import {BaseException} from 'angular2/src/facade/exceptions';
 import {ListWrapper} from 'angular2/src/facade/collection';
 import {FunctionWrapper, isPresent, Type} from 'angular2/src/facade/lang';
 
 export class TestInjector {
-  private _instantiated: boolean = false;
 
-  private _injector: Injector = null;
+  private instantiated_: boolean = false;
 
-  private _providers: Array<Type | Provider | any[]> = [];
+  private injector_: Injector = null;
+
+  private providers_: Array<Type | Provider | any[]> = [];
 
   reset() {
-    this._injector = null;
-    this._providers = [];
-    this._instantiated = false;
+    this.injector_ = null;
+    this.providers_ = [];
+    this.instantiated_ = false;
   }
 
   platformProviders: Array<Type | Provider | any[]> = [];
@@ -21,35 +22,35 @@ export class TestInjector {
   applicationProviders: Array<Type | Provider | any[]> = [];
 
   addProviders(providers: Array<Type | Provider | any[]>) {
-    if (this._instantiated) {
+    if (this.instantiated_) {
       throw new BaseException('Cannot add providers after test injector is instantiated');
     }
-    this._providers = ListWrapper.concat(this._providers, providers);
+    this.providers_ = ListWrapper.concat(this.providers_, providers);
   }
 
   createInjector() {
-    var rootInjector = Injector.resolveAndCreate(this.platformProviders);
-    this._injector = rootInjector.resolveAndCreateChild(
-      ListWrapper.concat(this.applicationProviders, this._providers));
-    this._instantiated = true;
-    return this._injector;
+    let rootInjector = Injector.resolveAndCreate(this.platformProviders);
+    this.injector_ = rootInjector.resolveAndCreateChild(
+      ListWrapper.concat(this.applicationProviders, this.providers_));
+    this.instantiated_ = true;
+    return this.injector_;
   }
 
   execute(fn: FunctionWithParamTokens): any {
-    if (!this._instantiated) {
+    if (!this.instantiated_) {
       this.createInjector();
     }
-    return fn.execute(this._injector);
+    return fn.execute(this.injector_);
   }
 }
 
-var _testInjector: TestInjector = null;
+let testInjectorCache: TestInjector = null;
 
 export function getTestInjector() {
-  if (_testInjector == null) {
-    _testInjector = new TestInjector();
+  if (testInjectorCache == null) {
+    testInjectorCache = new TestInjector();
   }
-  return _testInjector;
+  return testInjectorCache;
 }
 
 /**
@@ -65,13 +66,13 @@ export function getTestInjector() {
  */
 export function setBaseTestProviders(platformProviders: Array<Type | Provider | any[]>,
                                      applicationProviders: Array<Type | Provider | any[]>) {
-  var testInjector = getTestInjector();
+  let testInjector = getTestInjector();
   if (testInjector.platformProviders.length > 0 || testInjector.applicationProviders.length > 0) {
     throw new BaseException('Cannot set base providers because it has already been called');
   }
   testInjector.platformProviders = platformProviders;
   testInjector.applicationProviders = applicationProviders;
-  var injector = testInjector.createInjector();
+  let injector = testInjector.createInjector();
   let inits: Function[] = <Function[]>injector.getOptional(PLATFORM_INITIALIZER);
   if (isPresent(inits)) {
     inits.forEach(init => init());
@@ -83,7 +84,7 @@ export function setBaseTestProviders(platformProviders: Array<Type | Provider | 
  * Reset the providers for the test injector.
  */
 export function resetBaseTestProviders() {
-  var testInjector = getTestInjector();
+  let testInjector = getTestInjector();
   testInjector.platformProviders = [];
   testInjector.applicationProviders = [];
   testInjector.reset();
@@ -142,15 +143,15 @@ export function injectAsync(tokens: any[], fn: Function): FunctionWithParamToken
 }
 
 export class FunctionWithParamTokens {
-  constructor(private _tokens: any[], private _fn: Function, public isAsync: boolean) {}
+  constructor(private tokens_: any[], private fn_: Function, public isAsync: boolean) {}
 
   /**
    * Returns the value of the executed function.
    */
   execute(injector: Injector): any {
-    var params = this._tokens.map(t => injector.get(t));
-    return FunctionWrapper.apply(this._fn, params);
+    let params = this.tokens_.map(t => injector.get(t));
+    return FunctionWrapper.apply(this.fn_, params);
   }
 
-  hasToken(token: any): boolean { return this._tokens.indexOf(token) > -1; }
+  hasToken(token: any): boolean { return this.tokens_.indexOf(token) > -1; }
 }
