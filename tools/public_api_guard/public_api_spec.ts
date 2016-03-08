@@ -546,7 +546,6 @@ const CORE = [
   'var Self:SelfFactory',
   'var SkipSelf:SkipSelfFactory',
   'var Type:any',
-  'var View:ViewFactory',
   'var ViewChild:ViewChildFactory',
   'var ViewChildren:ViewChildrenFactory',
   'var ViewQuery:QueryFactory',

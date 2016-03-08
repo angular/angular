@@ -10,7 +10,7 @@ import {
   xit,
 } from 'angular2/testing_internal';
 
-import {Component, View, Directive} from 'angular2/core';
+import {Component, Directive} from 'angular2/core';
 import {reflector} from 'angular2/src/core/reflection/reflection';
 
 export function main() {

@@ -7,7 +7,7 @@ import {
   FormattedCellComponent
 } from './cells';
 
-import {Component, Directive, View} from 'angular2/core';
+import {Component, Directive} from 'angular2/core';
 
 import {
   Offering,
@@ -25,8 +25,9 @@ import {
   AAT_STATUS_WIDTH
 } from './common';
 
-@Component({selector: 'scroll-item', inputs: ['offering']})
-@View({
+@Component({
+  selector: 'scroll-item',
+  inputs: ['offering'],
   directives: [
     CompanyNameComponent,
     OpportunityNameComponent,

@@ -22,7 +22,7 @@ import {Injectable} from 'angular2/core';
 import {NgFor, NgIf} from 'angular2/common';
 import {By} from 'angular2/platform/common_dom';
 
-import {Directive, Component, View, Input} from 'angular2/src/core/metadata';
+import {Directive, Component, Input} from 'angular2/src/core/metadata';
 
 @Injectable()
 class Logger {
@@ -43,8 +43,8 @@ class MessageDir {
   set message(newMessage) { this.logger.add(newMessage); }
 }
 
-@Component({selector: 'child-comp'})
-@View({
+@Component({
+  selector: 'child-comp',
   template: `<div class="child" message="child">
                <span class="childnested" message="nestedchild">Child</span>
              </div>
@@ -58,8 +58,9 @@ class ChildComp {
   constructor() { this.childBinding = 'Original'; }
 }
 
-@Component({selector: 'parent-comp', viewProviders: [Logger]})
-@View({
+@Component({
+  selector: 'parent-comp',
+  viewProviders: [Logger],
   template: `<div class="parent" message="parent">
                <span class="parentnested" message="nestedparent">Parent</span>
              </div>
@@ -81,8 +82,8 @@ class CustomEmitter {
   constructor() { this.myevent = new EventEmitter(); }
 }
 
-@Component({selector: 'events-comp'})
-@View({
+@Component({
+  selector: 'events-comp',
   template: `<button (click)="handleClick()"></button>
              <custom-emitter (myevent)="handleCustom()"></custom-emitter>`,
   directives: [CustomEmitter],
@@ -102,8 +103,9 @@ class EventsComp {
   handleCustom() { this.customed = true; }
 }
 
-@Component({selector: 'cond-content-comp', viewProviders: [Logger]})
-@View({
+@Component({
+  selector: 'cond-content-comp',
+  viewProviders: [Logger],
   template: `<div class="child" message="child" *ngIf="myBool"><ng-content></ng-content></div>`,
   directives: [NgIf, MessageDir],
 })
@@ -112,8 +114,9 @@ class ConditionalContentComp {
   myBool: boolean = false;
 }
 
-@Component({selector: 'conditional-parent-comp', viewProviders: [Logger]})
-@View({
+@Component({
+  selector: 'conditional-parent-comp',
+  viewProviders: [Logger],
   template: `<span class="parent" [innerHtml]="parentBinding"></span>
             <cond-content-comp class="cond-content-comp-class">
               <span class="from-parent"></span>
@@ -126,8 +129,9 @@ class ConditionalParentComp {
   constructor() { this.parentBinding = 'OriginalParent'; }
 }
 
-@Component({selector: 'using-for', viewProviders: [Logger]})
-@View({
+@Component({
+  selector: 'using-for',
+  viewProviders: [Logger],
   template: `<span *ngFor="#thing of stuff" [innerHtml]="thing"></span>
             <ul message="list">
               <li *ngFor="#item of stuff" [innerHtml]="item"></li>

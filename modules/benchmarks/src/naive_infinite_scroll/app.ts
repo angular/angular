@@ -6,11 +6,11 @@ import {NgIf, NgFor} from 'angular2/common';
 import {DOM} from 'angular2/src/platform/dom/dom_adapter';
 import {document} from 'angular2/src/facade/browser';
 
-import {Component, Directive, View} from 'angular2/core';
+import {Component, Directive} from 'angular2/core';
 
 
-@Component({selector: 'scroll-app'})
-@View({
+@Component({
+  selector: 'scroll-app',
   directives: [ScrollAreaComponent, NgIf, NgFor],
   template: `
   <div>

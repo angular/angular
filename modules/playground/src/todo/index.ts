@@ -1,10 +1,14 @@
 import {bootstrap} from 'angular2/bootstrap';
-import {Component, View} from 'angular2/core';
+import {Component} from 'angular2/core';
 import {NgFor} from 'angular2/common';
 import {Store, Todo, TodoFactory} from './services/TodoStore';
 
-@Component({selector: 'todo-app', viewProviders: [Store, TodoFactory]})
-@View({templateUrl: 'todo.html', directives: [NgFor]})
+@Component({
+  selector: 'todo-app',
+  viewProviders: [Store, TodoFactory],
+  templateUrl: 'todo.html',
+  directives: [NgFor]
+})
 class TodoApp {
   todoEdit: Todo = null;
 

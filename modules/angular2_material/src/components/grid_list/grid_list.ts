@@ -1,6 +1,5 @@
 import {
   Component,
-  View,
   ViewEncapsulation,
   Host,
   SkipSelf,
@@ -27,8 +26,9 @@ class RowHeightMode {
 }
 
 
-@Component({selector: 'md-grid-list', inputs: ['cols', 'rowHeight', 'gutterSize']})
-@View({
+@Component({
+  selector: 'md-grid-list',
+  inputs: ['cols', 'rowHeight', 'gutterSize'],
   templateUrl: 'package:angular2_material/src/components/grid_list/grid_list.html',
   encapsulation: ViewEncapsulation.None
 })
@@ -223,9 +223,7 @@ export class MdGridList implements AfterContentChecked {
     '[style.left]': 'style.left',
     '[style.marginTop]': 'style.marginTop',
     '[style.paddingTop]': 'style.paddingTop',
-  }
-})
-@View({
+  },
   templateUrl: 'package:angular2_material/src/components/grid_list/grid_tile.html',
   encapsulation: ViewEncapsulation.None
 })

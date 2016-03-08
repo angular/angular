@@ -1,13 +1,5 @@
 import {bootstrap} from 'angular2/bootstrap';
-import {
-  bind,
-  provide,
-  ElementRef,
-  ComponentRef,
-  Component,
-  View,
-  ViewEncapsulation
-} from 'angular2/core';
+import {bind, provide, ElementRef, ComponentRef, Component, ViewEncapsulation} from 'angular2/core';
 import {UrlResolver} from 'angular2/compiler';
 import {
   MdDialog,
@@ -21,8 +13,6 @@ import {isPresent} from 'angular2/src/facade/lang';
 @Component({
   selector: 'demo-app',
   viewProviders: [MdDialog],
-})
-@View({
   templateUrl: './demo_app.html',
   directives: [],
   encapsulation: ViewEncapsulation.None,
@@ -69,8 +59,6 @@ class DemoApp {
 @Component({
   selector: 'simple-dialog',
   inputs: ['numCoconuts'],
-})
-@View({
   encapsulation: ViewEncapsulation.None,
   template: `
     <h2>This is the dialog content</h2>

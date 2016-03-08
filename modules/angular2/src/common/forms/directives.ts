@@ -50,7 +50,7 @@ export {ControlValueAccessor} from './directives/control_value_accessor';
 
 /**
  *
- * A list of all the form directives used as part of a `@View` annotation.
+ * A list of all the form directives used as part of a `@Component` annotation.
  *
  *  This is a shorthand for importing them each individually.
  *

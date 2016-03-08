@@ -22,7 +22,7 @@ import {
   AfterViewInit,
   AfterViewChecked
 } from 'angular2/core';
-import {Directive, Component, View, ViewMetadata} from 'angular2/src/core/metadata';
+import {Directive, Component, ViewMetadata} from 'angular2/src/core/metadata';
 
 export function main() {
   describe('directive lifecycle integration spec', () => {
@@ -63,10 +63,14 @@ class LifecycleDir implements DoCheck {
   ngDoCheck() { this._log.add("child_ngDoCheck"); }
 }
 
-@Component({selector: "[lifecycle]", inputs: ['field']})
-@View({template: `<div lifecycle-dir></div>`, directives: [LifecycleDir]})
-class LifecycleCmp implements OnChanges, OnInit, DoCheck, AfterContentInit, AfterContentChecked,
-    AfterViewInit, AfterViewChecked {
+@Component({
+  selector: "[lifecycle]",
+  inputs: ['field'],
+  template: `<div lifecycle-dir></div>`,
+  directives: [LifecycleDir]
+})
+class LifecycleCmp implements OnChanges,
+    OnInit, DoCheck, AfterContentInit, AfterContentChecked, AfterViewInit, AfterViewChecked {
   field;
   constructor(private _log: Log) {}
 
@@ -85,7 +89,6 @@ class LifecycleCmp implements OnChanges, OnInit, DoCheck, AfterContentInit, Afte
   ngAfterViewChecked() { this._log.add("ngAfterViewChecked"); }
 }
 
-@Component({selector: 'my-comp'})
-@View({directives: []})
+@Component({selector: 'my-comp', directives: []})
 class MyComp {
 }

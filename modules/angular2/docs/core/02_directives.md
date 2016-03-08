@@ -112,9 +112,7 @@ Example of a component:
     'title',                      |  - title mapped to component title
     'open'                        |  - open attribute mapped to component's open property
   ],                              |
-})                                |
-@View({                           | View annotation
-  templateUrl: 'pane.html'        |  - URL of template HTML
+  templateUrl: 'pane.html'        | URL of template HTML
 })                                |
 class Pane {                      | Component controller class
   title:string;                   |  - title property
@@ -227,11 +225,9 @@ class MyService {}                   | Assume a service which needs to be inject
                                      |
 @Component({                         | Assume a top level application component which
   selector: 'my-app',                | configures the services to be injected.
-  viewBindings: [MyService]          |
-})                                   |
-@View({                              | Assume we have a template that needs to be
-  templateUrl: 'my_app.html',        | configured with directives to be injected.
-  directives: [House]                |
+  viewBindings: [MyService],         |
+  templateUrl: 'my_app.html',        | Assume we have a template that needs to be
+  directives: [House]                | configured with directives to be injected.
 })                                   |
 class MyApp {}                       |
                                      |
@@ -273,8 +269,6 @@ Here is an example of the kinds of injections which can be achieved:
 ```
 @Component({                         |
   selector: 'my-app'                 |
-})                                   |
-@View({                              |
   templateUrl: 'my_app.html',        |
   directives: [Form, FieldSet,       |
     Field, Primary]                  |
@@ -329,8 +323,6 @@ Shadow DOM provides an encapsulation for components, so as a general rule it doe
 ```
 @Component({
   selector: '[kid]'
-})
-@View({
   templateUrl: 'kid.html',
   directives: []
 })
@@ -347,8 +339,6 @@ class Kid {
 
 @Component({
   selector: '[dad]'
-})
-@View({
   templateUrl: 'dad.html',
   directives: [Kid]
 })
@@ -361,9 +351,7 @@ class Dad {
 
 @Component({
   selector: '[grandpa]',
-  viewBindings: []
-})
-@View({
+  viewBindings: [],
   templateUrl: 'grandpa.html',
   directives: [Dad]
 })

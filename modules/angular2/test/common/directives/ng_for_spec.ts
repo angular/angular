@@ -14,7 +14,7 @@ import {
 } from 'angular2/testing_internal';
 
 import {ListWrapper} from 'angular2/src/facade/collection';
-import {Component, View, TemplateRef, ContentChild} from 'angular2/core';
+import {Component, TemplateRef, ContentChild} from 'angular2/core';
 import {NgFor} from 'angular2/src/common/directives/ng_for';
 import {NgIf} from 'angular2/src/common/directives/ng_if';
 import {By} from 'angular2/platform/common_dom';
@@ -472,8 +472,7 @@ class Foo {
   toString() { return 'foo'; }
 }
 
-@Component({selector: 'test-cmp'})
-@View({directives: [NgFor, NgIf]})
+@Component({selector: 'test-cmp', directives: [NgFor, NgIf], template: ''})
 class TestComponent {
   @ContentChild(TemplateRef) contentTpl: TemplateRef;
   items: any;
@@ -482,8 +481,7 @@ class TestComponent {
   trackByIndex(index: number, item: any): number { return index; }
 }
 
-@Component({selector: 'outer-cmp'})
-@View({directives: [TestComponent]})
+@Component({selector: 'outer-cmp', directives: [TestComponent], template: ''})
 class ComponentUsingTestComponent {
   items: any;
   constructor() { this.items = [1, 2]; }

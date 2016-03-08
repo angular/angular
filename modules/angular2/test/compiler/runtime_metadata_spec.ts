@@ -18,7 +18,6 @@ import {RuntimeMetadataResolver} from 'angular2/src/compiler/runtime_metadata';
 import {LifecycleHooks, LIFECYCLE_HOOKS_VALUES} from 'angular2/src/core/linker/interfaces';
 import {
   Component,
-  View,
   Directive,
   ViewEncapsulation,
   ChangeDetectionStrategy,
@@ -125,9 +124,7 @@ class ComponentWithoutModuleId {
   },
   exportAs: 'someExportAs',
   moduleId: 'someModuleId',
-  changeDetection: ChangeDetectionStrategy.CheckAlways
-})
-@View({
+  changeDetection: ChangeDetectionStrategy.CheckAlways,
   template: 'someTemplate',
   templateUrl: 'someTemplateUrl',
   encapsulation: ViewEncapsulation.Emulated,

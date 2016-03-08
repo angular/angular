@@ -14,7 +14,7 @@ import {
 
 import {DOM} from 'angular2/src/platform/dom/dom_adapter';
 
-import {Component, View} from 'angular2/core';
+import {Component} from 'angular2/core';
 import {NgIf} from 'angular2/common';
 
 import {IS_DART} from 'angular2/src/facade/lang';
@@ -224,8 +224,7 @@ export function main() {
   });
 }
 
-@Component({selector: 'test-cmp'})
-@View({directives: [NgIf]})
+@Component({selector: 'test-cmp', directives: [NgIf], template: ''})
 class TestComponent {
   booleanCondition: boolean;
   nestedBooleanCondition: boolean;

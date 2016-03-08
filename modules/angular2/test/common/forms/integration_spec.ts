@@ -1,4 +1,4 @@
-import {Component, Directive, View, Output, EventEmitter} from 'angular2/core';
+import {Component, Directive, Output, EventEmitter} from 'angular2/core';
 import {
   ComponentFixture,
   afterEach,

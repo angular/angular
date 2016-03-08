@@ -222,7 +222,16 @@ var NG_CORE = [
   'setTestabilityGetter',
   'Type',
   'PACKAGE_ROOT_URL',
-  'View',
+  'View:dart',
+  /*
+  'View.directives:dart',
+  'View.encapsulation:dart',
+  'View.pipes:dart',
+  'View.styleUrls:dart',
+  'View.styles:dart',
+  'View.template:dart',
+  'View.templateUrl:dart',
+  */
   'ViewChild',
   'ViewChildMetadata',
   'ViewChildren',

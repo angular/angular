@@ -1,4 +1,4 @@
-import {Component, View, ViewEncapsulation, OnChanges} from 'angular2/core';
+import {Component, ViewEncapsulation, OnChanges} from 'angular2/core';
 
 import {TimerWrapper} from 'angular2/src/facade/async';
 import {isPresent} from 'angular2/src/facade/lang';
@@ -15,8 +15,6 @@ import {isPresent} from 'angular2/src/facade/lang';
     '(blur)': 'onBlur()',
     '[class.md-button-focus]': 'isKeyboardFocused',
   },
-})
-@View({
   templateUrl: 'package:angular2_material/src/components/button/button.html',
   styleUrls: ['package:angular2_material/src/components/button/button.css'],
   encapsulation: ViewEncapsulation.None,
@@ -59,8 +57,6 @@ export class MdButton {
     '[class.md-button-focus]': 'isKeyboardFocused',
     '[attr.aria-disabled]': 'isAriaDisabled',
   },
-})
-@View({
   templateUrl: 'package:angular2_material/src/components/button/button.html',
   encapsulation: ViewEncapsulation.None
 })

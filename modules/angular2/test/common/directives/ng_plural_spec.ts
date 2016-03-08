@@ -13,7 +13,7 @@ import {
   xit,
 } from 'angular2/testing_internal';
 
-import {Component, View, Injectable, provide} from 'angular2/core';
+import {Component, Injectable, provide} from 'angular2/core';
 import {NgPlural, NgPluralCase, NgLocalization} from 'angular2/common';
 
 export function main() {
@@ -128,8 +128,7 @@ export class TestLocalizationMap extends NgLocalization {
 }
 
 
-@Component({selector: 'test-cmp'})
-@View({directives: [NgPlural, NgPluralCase]})
+@Component({selector: 'test-cmp', directives: [NgPlural, NgPluralCase], template: ''})
 class TestComponent {
   switchValue: number;
 
