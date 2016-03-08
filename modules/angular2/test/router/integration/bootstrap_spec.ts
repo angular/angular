@@ -15,7 +15,7 @@ import {
 } from 'angular2/testing_internal';
 
 import {bootstrap} from 'angular2/platform/browser';
-import {Component, Directive, View} from 'angular2/src/core/metadata';
+import {Component, Directive} from 'angular2/src/core/metadata';
 import {DOM} from 'angular2/src/platform/dom/dom_adapter';
 import {Console} from 'angular2/src/core/console';
 import {provide, ViewChild, AfterViewInit} from 'angular2/core';

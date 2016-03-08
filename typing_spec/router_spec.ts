@@ -1,11 +1,9 @@
-import {Component, View} from 'angular2/core';
+import {Component} from 'angular2/core';
 import {bootstrap} from 'angular2/platform/browser';
 import {RouteConfig, ROUTER_DIRECTIVES, ROUTER_PROVIDERS} from 'angular2/router';
 
 @Component({
-  selector: 'my-app'
-})
-@View({
+  selector: 'my-app',
   template: '<h1>Hello</h1>',
 })
 class FooCmp {
@@ -14,9 +12,7 @@ class FooCmp {
 
 
 @Component({
-  selector: 'my-app'
-})
-@View({
+  selector: 'my-app',
 	template: '<h1>Hello {{ name }}</h1><router-outlet></router-outlet>',
   directives: ROUTER_DIRECTIVES
 })

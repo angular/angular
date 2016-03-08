@@ -20,7 +20,7 @@ import {CONST_EXPR} from 'angular2/src/facade/lang';
  * application.
  *
  * This collection can be used to quickly enumerate all the built-in pipes in the `pipes`
- * property of the `@Component` or `@View` decorators.
+ * property of the `@Component` decorator.
  */
 export const COMMON_PIPES = CONST_EXPR([
   AsyncPipe,

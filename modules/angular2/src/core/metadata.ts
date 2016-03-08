@@ -254,7 +254,6 @@ export interface ComponentFactory {
  * import {Component, View} from "angular2/core";
  *
  * @Component({...})
- * @View({...})
  * class MyComponent {
  *   constructor() {
  *     ...
@@ -481,8 +480,7 @@ export interface HostListenerFactory {
 /**
  * Declare reusable UI building blocks for an application.
  *
- * Each Angular component requires a single `@Component` and at least one `@View` annotation. The
- * `@Component`
+ * Each Angular component requires a single `@Component` annotation. The `@Component`
  * annotation specifies when a component is instantiated, and which properties and hostListeners it
  * binds to.
  *
@@ -492,8 +490,6 @@ export interface HostListenerFactory {
  * - creates all the injectable objects configured with `providers` and `viewProviders`.
  *
  * All template expressions and statements are then evaluated against the component instance.
- *
- * For details on the `@View` annotation, see {@link ViewMetadata}.
  *
  * ## Lifecycle hooks
  *
@@ -918,8 +914,7 @@ export var Directive: DirectiveFactory = <DirectiveFactory>makeDecorator(Directi
  * }
  * ```
  */
-export var View: ViewFactory =
-    <ViewFactory>makeDecorator(ViewMetadata, (fn: any) => fn.View = View);
+var View: ViewFactory = <ViewFactory>makeDecorator(ViewMetadata, (fn: any) => fn.View = View);
 
 /**
  * Specifies that a constant attribute value should be injected.
@@ -1154,8 +1149,8 @@ export var ViewChild: ViewChildFactory = makePropDecorator(ViewChildMetadata);
  * ### Example ([live demo](http://plnkr.co/edit/eNsFHDf7YjyM6IzKxM1j?p=preview))
  *
  * ```javascript
- * @Component({...})
- * @View({
+ * @Component({
+ *   ...,
  *   template: `
  *     <item> a </item>
  *     <item> b </item>

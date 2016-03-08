@@ -12,7 +12,6 @@ import {
   ResolvedProvider,
   SkipSelf,
   Injector,
-  View,
   ViewEncapsulation
 } from 'angular2/core';
 
@@ -212,8 +211,6 @@ export class MdDialogConfig {
     'tabindex': '0',
     '(body:keydown)': 'documentKeypress($event)',
   },
-})
-@View({
   encapsulation: ViewEncapsulation.None,
   templateUrl: 'package:angular2_material/src/components/dialog/dialog.html',
   directives: [forwardRef(() => MdDialogContent)]
@@ -261,8 +258,9 @@ class MdDialogContent {
   host: {
     '(click)': 'onClick()',
   },
+  template: '',
+  encapsulation: ViewEncapsulation.None
 })
-@View({template: '', encapsulation: ViewEncapsulation.None})
 class MdBackdrop {
   dialogRef: MdDialogRef;
 

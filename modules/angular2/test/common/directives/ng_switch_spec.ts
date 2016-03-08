@@ -12,7 +12,7 @@ import {
   xit,
 } from 'angular2/testing_internal';
 
-import {Component, View} from 'angular2/core';
+import {Component} from 'angular2/core';
 
 import {NgSwitch, NgSwitchWhen, NgSwitchDefault} from 'angular2/src/common/directives/ng_switch';
 
@@ -145,8 +145,8 @@ export function main() {
   });
 }
 
-@Component({selector: 'test-cmp'})
-@View({directives: [NgSwitch, NgSwitchWhen, NgSwitchDefault]})
+@Component(
+    {selector: 'test-cmp', directives: [NgSwitch, NgSwitchWhen, NgSwitchDefault], template: ''})
 class TestComponent {
   switchValue: any;
   when1: any;

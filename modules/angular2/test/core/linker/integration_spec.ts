@@ -71,7 +71,6 @@ import {
 import {
   Directive,
   Component,
-  View,
   ViewMetadata,
   Attribute,
   Query,
@@ -1358,8 +1357,7 @@ function declareTests() {
            try {
              tcb.createAsync(ComponentWithoutView);
            } catch (e) {
-             expect(e.message)
-                 .toContain(`must have either 'template', 'templateUrl', or '@View' set.`);
+             expect(e.message).toContain(`must have either 'template' or 'templateUrl' set.`);
              return null;
            }
          }));
@@ -1936,8 +1934,7 @@ class MyService {
   constructor() { this.greeting = 'hello'; }
 }
 
-@Component({selector: 'simple-imp-cmp'})
-@View({template: ''})
+@Component({selector: 'simple-imp-cmp', template: ''})
 @Injectable()
 class SimpleImperativeViewComponent {
   done;
@@ -1979,9 +1976,12 @@ class DirectiveWithTitleAndHostProperty {
   title: string;
 }
 
-@Component(
-    {selector: 'push-cmp', inputs: ['prop'], changeDetection: ChangeDetectionStrategy.OnPush})
-@View({template: '{{field}}'})
+@Component({
+  selector: 'push-cmp',
+  inputs: ['prop'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '{{field}}'
+})
 @Injectable()
 class PushCmp {
   numberOfChecks: number;
@@ -1998,9 +1998,9 @@ class PushCmp {
 @Component({
   selector: 'push-cmp-with-ref',
   inputs: ['prop'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '{{field}}'
 })
-@View({template: '{{field}}'})
 @Injectable()
 class PushCmpWithRef {
   numberOfChecks: number;
@@ -2055,8 +2055,7 @@ class PushCmpWithAsyncPipe {
   resolve(value) { this.completer.resolve(value); }
 }
 
-@Component({selector: 'my-comp'})
-@View({directives: []})
+@Component({selector: 'my-comp', directives: []})
 @Injectable()
 class MyComp {
   ctxProp: string;
@@ -2071,8 +2070,13 @@ class MyComp {
   throwError() { throw 'boom'; }
 }
 
-@Component({selector: 'child-cmp', inputs: ['dirProp'], viewProviders: [MyService]})
-@View({directives: [MyDir], template: '{{ctxProp}}'})
+@Component({
+  selector: 'child-cmp',
+  inputs: ['dirProp'],
+  viewProviders: [MyService],
+  directives: [MyDir],
+  template: '{{ctxProp}}'
+})
 @Injectable()
 class ChildComp {
   ctxProp: string;
@@ -2083,15 +2087,13 @@ class ChildComp {
   }
 }
 
-@Component({selector: 'child-cmp-no-template'})
-@View({directives: [], template: ''})
+@Component({selector: 'child-cmp-no-template', directives: [], template: ''})
 @Injectable()
 class ChildCompNoTemplate {
   ctxProp: string = 'hello';
 }
 
-@Component({selector: 'child-cmp-svc'})
-@View({template: '{{ctxProp}}'})
+@Component({selector: 'child-cmp-svc', template: '{{ctxProp}}'})
 @Injectable()
 class ChildCompUsingService {
   ctxProp: string;
@@ -2105,8 +2107,11 @@ class SomeDirective {
 
 class SomeDirectiveMissingAnnotation {}
 
-@Component({selector: 'cmp-with-host'})
-@View({template: '<p>Component with an injected host</p>', directives: [SomeDirective]})
+@Component({
+  selector: 'cmp-with-host',
+  template: '<p>Component with an injected host</p>',
+  directives: [SomeDirective]
+})
 @Injectable()
 class CompWithHost {
   myHost: SomeDirective;
@@ -2283,8 +2288,8 @@ class ToolbarViewContainer {
   }
 }
 
-@Component({selector: 'toolbar'})
-@View({
+@Component({
+  selector: 'toolbar',
   template: 'TOOLBAR(<div *ngFor="var part of query" [toolbarVc]="part"></div>)',
   directives: [ToolbarViewContainer, NgFor]
 })
@@ -2321,9 +2326,9 @@ function createInjectableWithLogging(inj: Injector) {
   selector: 'component-providing-logging-injectable',
   providers: [
     new Provider(InjectableService, {useFactory: createInjectableWithLogging, deps: [Injector]})
-  ]
+  ],
+  template: ''
 })
-@View({template: ''})
 @Injectable()
 class ComponentProvidingLoggingInjectable {
   created: boolean = false;
@@ -2335,8 +2340,11 @@ class ComponentProvidingLoggingInjectable {
 class DirectiveProvidingInjectable {
 }
 
-@Component({selector: 'directive-providing-injectable', viewProviders: [[InjectableService]]})
-@View({template: ''})
+@Component({
+  selector: 'directive-providing-injectable',
+  viewProviders: [[InjectableService]],
+  template: ''
+})
 @Injectable()
 class DirectiveProvidingInjectableInView {
 }
@@ -2344,16 +2352,15 @@ class DirectiveProvidingInjectableInView {
 @Component({
   selector: 'directive-providing-injectable',
   providers: [new Provider(InjectableService, {useValue: 'host'})],
-  viewProviders: [new Provider(InjectableService, {useValue: 'view'})]
+  viewProviders: [new Provider(InjectableService, {useValue: 'view'})],
+  template: ''
 })
-@View({template: ''})
 @Injectable()
 class DirectiveProvidingInjectableInHostAndView {
 }
 
 
-@Component({selector: 'directive-consuming-injectable'})
-@View({template: ''})
+@Component({selector: 'directive-consuming-injectable', template: ''})
 @Injectable()
 class DirectiveConsumingInjectable {
   injectable;
@@ -2369,8 +2376,7 @@ class DirectiveContainingDirectiveConsumingAnInjectable {
   directive;
 }
 
-@Component({selector: 'directive-consuming-injectable-unbounded'})
-@View({template: ''})
+@Component({selector: 'directive-consuming-injectable-unbounded', template: ''})
 @Injectable()
 class DirectiveConsumingInjectableUnbounded {
   injectable;
@@ -2413,9 +2419,7 @@ function createParentBus(peb) {
   providers: [
     new Provider(EventBus,
                  {useFactory: createParentBus, deps: [[EventBus, new SkipSelfMetadata()]]})
-  ]
-})
-@View({
+  ],
   directives: [forwardRef(() => ChildConsumingEventBus)],
   template: `
     <child-consuming-event-bus></child-consuming-event-bus>

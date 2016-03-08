@@ -12,7 +12,7 @@ import {
 } from 'angular2/testing_internal';
 
 import {bootstrap} from 'angular2/platform/browser';
-import {Component, Directive, View} from 'angular2/src/core/metadata';
+import {Component, Directive} from 'angular2/src/core/metadata';
 import {DOM} from 'angular2/src/platform/dom/dom_adapter';
 import {Console} from 'angular2/src/core/console';
 import {provide} from 'angular2/core';
@@ -213,13 +213,15 @@ export function main() {
 }
 
 
-@Component({selector: 'hello-cmp'})
-@View({template: 'hello'})
+@Component({selector: 'hello-cmp', template: 'hello'})
 class HelloCmp {
 }
 
-@Component({selector: 'app-cmp'})
-@View({template: `root { <router-outlet></router-outlet> }`, directives: ROUTER_DIRECTIVES})
+@Component({
+  selector: 'app-cmp',
+  template: `root { <router-outlet></router-outlet> }`,
+  directives: ROUTER_DIRECTIVES
+})
 @RouteConfig([
   {path: '/before', redirectTo: ['Hello']},
   {path: '/after', component: HelloCmp, name: 'Hello'}
@@ -232,8 +234,11 @@ function HelloLoader(): Promise<any> {
   return Promise.resolve(HelloCmp);
 }
 
-@Component({selector: 'app-cmp'})
-@View({template: `root { <router-outlet></router-outlet> }`, directives: ROUTER_DIRECTIVES})
+@Component({
+  selector: 'app-cmp',
+  template: `root { <router-outlet></router-outlet> }`,
+  directives: ROUTER_DIRECTIVES
+})
 @RouteConfig([
   {path: '/hello', component: {type: 'loader', loader: HelloLoader}},
 ])
@@ -241,8 +246,11 @@ class AsyncAppCmp {
   constructor(public router: Router, public location: LocationStrategy) {}
 }
 
-@Component({selector: 'app-cmp'})
-@View({template: `root { <router-outlet></router-outlet> }`, directives: ROUTER_DIRECTIVES})
+@Component({
+  selector: 'app-cmp',
+  template: `root { <router-outlet></router-outlet> }`,
+  directives: ROUTER_DIRECTIVES
+})
 @RouteConfig([
   {path: '/hello', loader: HelloLoader},
 ])
@@ -250,15 +258,21 @@ class ConciseAsyncAppCmp {
   constructor(public router: Router, public location: LocationStrategy) {}
 }
 
-@Component({selector: 'app-cmp'})
-@View({template: `root { <router-outlet></router-outlet> } aside { <router-outlet name="aside"></router-outlet> }`, directives: ROUTER_DIRECTIVES})
+@Component({
+  selector: 'app-cmp',
+  template: `root { <router-outlet></router-outlet> } aside { <router-outlet name="aside"></router-outlet> }`,
+  directives: ROUTER_DIRECTIVES
+})
 @RouteConfig([{path: '/hello', component: HelloCmp}, {aux: 'aside', component: HelloCmp}])
 class AuxAppCmp {
   constructor(public router: Router, public location: LocationStrategy) {}
 }
 
-@Component({selector: 'app-cmp'})
-@View({template: `root { <router-outlet></router-outlet> }`, directives: ROUTER_DIRECTIVES})
+@Component({
+  selector: 'app-cmp',
+  template: `root { <router-outlet></router-outlet> }`,
+  directives: ROUTER_DIRECTIVES
+})
 @RouteConfig([
   {path: '/hello', component: {type: 'constructor', constructor: HelloCmp}},
 ])
@@ -266,45 +280,66 @@ class ExplicitConstructorAppCmp {
   constructor(public router: Router, public location: LocationStrategy) {}
 }
 
-@Component({selector: 'parent-cmp'})
-@View({template: `parent { <router-outlet></router-outlet> }`, directives: ROUTER_DIRECTIVES})
+@Component({
+  selector: 'parent-cmp',
+  template: `parent { <router-outlet></router-outlet> }`,
+  directives: ROUTER_DIRECTIVES
+})
 @RouteConfig([{path: '/child', component: HelloCmp}])
 class ParentCmp {
 }
 
-@Component({selector: 'app-cmp'})
-@View({template: `root { <router-outlet></router-outlet> }`, directives: ROUTER_DIRECTIVES})
+@Component({
+  selector: 'app-cmp',
+  template: `root { <router-outlet></router-outlet> }`,
+  directives: ROUTER_DIRECTIVES
+})
 @RouteConfig([{path: '/parent/...', component: ParentCmp}])
 class HierarchyAppCmp {
   constructor(public router: Router, public location: LocationStrategy) {}
 }
 
-@Component({selector: 'app-cmp'})
-@View({template: `root { <router-outlet></router-outlet> }`, directives: ROUTER_DIRECTIVES})
+@Component({
+  selector: 'app-cmp',
+  template: `root { <router-outlet></router-outlet> }`,
+  directives: ROUTER_DIRECTIVES
+})
 @RouteConfig([{path: '/hello'}])
 class WrongConfigCmp {
 }
 
-@Component({selector: 'app-cmp'})
-@View({template: `root { <router-outlet></router-outlet> }`, directives: ROUTER_DIRECTIVES})
+@Component({
+  selector: 'app-cmp',
+  template: `root { <router-outlet></router-outlet> }`,
+  directives: ROUTER_DIRECTIVES
+})
 @RouteConfig([{path: '/child', component: HelloCmp, name: 'child'}])
 class BadAliasNameCmp {
 }
 
-@Component({selector: 'app-cmp'})
-@View({template: `root { <router-outlet></router-outlet> }`, directives: ROUTER_DIRECTIVES})
+@Component({
+  selector: 'app-cmp',
+  template: `root { <router-outlet></router-outlet> }`,
+  directives: ROUTER_DIRECTIVES
+})
 @RouteConfig([{path: '/child', component: HelloCmp, as: 'child'}])
 class BadAliasCmp {
 }
 
-@Component({selector: 'app-cmp'})
-@View({template: `root { <router-outlet></router-outlet> }`, directives: ROUTER_DIRECTIVES})
+@Component({
+  selector: 'app-cmp',
+  template: `root { <router-outlet></router-outlet> }`,
+  directives: ROUTER_DIRECTIVES
+})
 @RouteConfig([{path: '/child', component: HelloCmp, as: 'Child', name: 'Child'}])
 class MultipleAliasCmp {
 }
 
-@Component({selector: 'app-cmp'})
-@View({template: `root { <router-outlet></router-outlet> }`, directives: ROUTER_DIRECTIVES})
+@Component({
+  selector: 'app-cmp',
+  template: `root { <router-outlet></router-outlet> }`,
+  directives: ROUTER_DIRECTIVES
+})
 @RouteConfig([
   {path: '/hello', component: {type: 'intentionallyWrongComponentType', constructor: HelloCmp}},
 ])

@@ -1,5 +1,5 @@
 import {bootstrap} from 'angular2/bootstrap';
-import {bind, provide, Component, View, ViewEncapsulation} from 'angular2/core';
+import {bind, provide, Component, ViewEncapsulation} from 'angular2/core';
 import {MdGridList, MdGridTile} from 'angular2_material/src/components/grid_list/grid_list';
 import {UrlResolver} from 'angular2/compiler';
 import {commonDemoSetup, DemoUrlResolver} from '../demo_common';
@@ -7,8 +7,6 @@ import {commonDemoSetup, DemoUrlResolver} from '../demo_common';
 
 @Component({
   selector: 'demo-app',
-})
-@View({
   templateUrl: './demo_app.html',
   directives: [MdGridList, MdGridTile],
   encapsulation: ViewEncapsulation.None,

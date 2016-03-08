@@ -1,4 +1,4 @@
-import {provide, Provider, Component, View} from 'angular2/core';
+import {provide, Provider, Component} from 'angular2/core';
 import {Type, isBlank} from 'angular2/src/facade/lang';
 import {BaseException} from 'angular2/src/facade/exceptions';
 

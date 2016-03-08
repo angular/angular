@@ -9,7 +9,7 @@ import {
   NgIf,
   NgFor
 } from 'angular2/common';
-import {Component, Directive, View, Host} from 'angular2/core';
+import {Component, Directive, Host} from 'angular2/core';
 
 import {RegExpWrapper, print, isPresent} from 'angular2/src/facade/lang';
 import {AbstractControl} from 'angular2/common';
@@ -40,8 +40,9 @@ function creditCardValidator(c: AbstractControl): {[key: string]: boolean} {
  * actual error message.
  * To make it simple, we are using a simple map here.
  */
-@Component({selector: 'show-error', inputs: ['controlPath: control', 'errorTypes: errors']})
-@View({
+@Component({
+  selector: 'show-error',
+  inputs: ['controlPath: control', 'errorTypes: errors'],
   template: `
     <span *ngIf="errorMessage !== null">{{errorMessage}}</span>
   `,
@@ -74,8 +75,9 @@ class ShowError {
 }
 
 
-@Component({selector: 'model-driven-forms', viewProviders: [FormBuilder]})
-@View({
+@Component({
+  selector: 'model-driven-forms',
+  viewProviders: [FormBuilder],
   template: `
     <h1>Checkout Form (Model Driven)</h1>
 

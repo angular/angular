@@ -15,7 +15,7 @@ import {
   xit
 } from 'angular2/testing_internal';
 
-import {provide, Component, Injector, Inject, View} from 'angular2/core';
+import {provide, Component, Injector, Inject} from 'angular2/core';
 import {isPresent} from 'angular2/src/facade/lang';
 import {
   PromiseWrapper,

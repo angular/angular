@@ -1,10 +1,8 @@
-import {Component, View} from 'angular2/core';
+import {Component} from 'angular2/core';
 import {bootstrap} from 'angular2/platform/browser';
 
 @Component({
-  selector: 'my-app'
-})
-@View({
+  selector: 'my-app',
 	template: '<h1>Hello {{ name }}</h1>'
 })
 // Component controller

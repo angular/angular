@@ -19,7 +19,7 @@ import {
 import {OnDestroy} from 'angular2/core';
 import {Injector} from 'angular2/core';
 import {NgIf} from 'angular2/common';
-import {Component, View, ViewMetadata} from 'angular2/src/core/metadata';
+import {Component, ViewMetadata} from 'angular2/src/core/metadata';
 import {DynamicComponentLoader} from 'angular2/src/core/linker/dynamic_component_loader';
 import {ElementRef, ElementRef_} from 'angular2/src/core/linker/element_ref';
 import {DOCUMENT} from 'angular2/src/platform/dom/dom_tokens';
@@ -369,10 +369,7 @@ function createRootElement(doc: any, name: string): any {
   return rootEl;
 }
 
-@Component({
-  selector: 'child-cmp',
-})
-@View({template: '{{ctxProp}}'})
+@Component({selector: 'child-cmp', template: '{{ctxProp}}'})
 class ChildComp {
   ctxProp: string;
   constructor() { this.ctxProp = 'hello'; }
@@ -381,8 +378,11 @@ class ChildComp {
 
 class DynamicallyCreatedComponentService {}
 
-@Component({selector: 'hello-cmp', viewProviders: [DynamicallyCreatedComponentService]})
-@View({template: "{{greeting}}"})
+@Component({
+  selector: 'hello-cmp',
+  viewProviders: [DynamicallyCreatedComponentService],
+  template: "{{greeting}}"
+})
 class DynamicallyCreatedCmp implements OnDestroy {
   greeting: string;
   dynamicallyCreatedComponentService: DynamicallyCreatedComponentService;
@@ -396,48 +396,41 @@ class DynamicallyCreatedCmp implements OnDestroy {
   ngOnDestroy() { this.destroyed = true; }
 }
 
-@Component({selector: 'dummy'})
-@View({template: "DynamicallyLoaded;"})
+@Component({selector: 'dummy', template: "DynamicallyLoaded;"})
 class DynamicallyLoaded {
 }
 
-@Component({selector: 'dummy'})
-@View({template: "DynamicallyLoaded;"})
+@Component({selector: 'dummy', template: "DynamicallyLoaded;"})
 class DynamicallyLoadedThrows {
   constructor() { throw new BaseException("ThrownInConstructor"); }
 }
 
-@Component({selector: 'dummy'})
-@View({template: "DynamicallyLoaded2;"})
+@Component({selector: 'dummy', template: "DynamicallyLoaded2;"})
 class DynamicallyLoaded2 {
 }
 
-@Component({selector: 'dummy', host: {'[id]': 'id'}})
-@View({template: "DynamicallyLoadedWithHostProps;"})
+@Component({selector: 'dummy', host: {'[id]': 'id'}, template: "DynamicallyLoadedWithHostProps;"})
 class DynamicallyLoadedWithHostProps {
   id: string;
 
   constructor() { this.id = "default"; }
 }
 
-@Component({selector: 'dummy'})
-@View({template: "dynamic(<ng-content></ng-content>)"})
+@Component({selector: 'dummy', template: "dynamic(<ng-content></ng-content>)"})
 class DynamicallyLoadedWithNgContent {
   id: string;
 
   constructor() { this.id = "default"; }
 }
 
-@Component({selector: 'location'})
-@View({template: "Location;"})
+@Component({selector: 'location', template: "Location;"})
 class Location {
   elementRef: ElementRef;
 
   constructor(elementRef: ElementRef) { this.elementRef = elementRef; }
 }
 
-@Component({selector: 'my-comp'})
-@View({directives: []})
+@Component({selector: 'my-comp', directives: []})
 class MyComp {
   ctxBoolProp: boolean;
 

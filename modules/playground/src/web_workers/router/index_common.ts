@@ -1,4 +1,4 @@
-import {Component, View} from 'angular2/core';
+import {Component} from 'angular2/core';
 import {Start} from './components/start';
 import {About} from './components/about';
 import {Contact} from './components/contact';

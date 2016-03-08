@@ -20,7 +20,6 @@ import {
   Injector,
   ViewMetadata,
   Component,
-  View,
   Injectable,
   ElementRef
 } from 'angular2/core';
@@ -257,8 +256,7 @@ export function main() {
 }
 
 
-@Component({selector: 'my-comp'})
-@View({directives: []})
+@Component({selector: 'my-comp', directives: []})
 @Injectable()
 class MyComp {
   ctxProp: string;

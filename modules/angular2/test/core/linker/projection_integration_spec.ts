@@ -30,7 +30,6 @@ import {
   Directive,
   ElementRef,
   TemplateRef,
-  View,
   ViewContainerRef,
   ViewEncapsulation,
   ViewMetadata
@@ -580,26 +579,28 @@ export function main() {
   });
 }
 
-@Component({selector: 'main'})
-@View({template: '', directives: []})
+@Component({selector: 'main', template: '', directives: []})
 class MainComp {
   text: string = '';
 }
 
-@Component({selector: 'other'})
-@View({template: '', directives: []})
+@Component({selector: 'other', template: '', directives: []})
 class OtherComp {
   text: string = '';
 }
 
-@Component({selector: 'simple', inputs: ['stringProp']})
-@View({template: 'SIMPLE(<ng-content></ng-content>)', directives: []})
+@Component({
+  selector: 'simple',
+  inputs: ['stringProp'],
+  template: 'SIMPLE(<ng-content></ng-content>)',
+  directives: []
+})
 class Simple {
   stringProp: string = '';
 }
 
-@Component({selector: 'simple-native1'})
-@View({
+@Component({
+  selector: 'simple-native1',
   template: 'SIMPLE1(<content></content>)',
   directives: [],
   encapsulation: ViewEncapsulation.Native,
@@ -608,8 +609,8 @@ class Simple {
 class SimpleNative1 {
 }
 
-@Component({selector: 'simple-native2'})
-@View({
+@Component({
+  selector: 'simple-native2',
   template: 'SIMPLE2(<content></content>)',
   directives: [],
   encapsulation: ViewEncapsulation.Native,
@@ -618,13 +619,12 @@ class SimpleNative1 {
 class SimpleNative2 {
 }
 
-@Component({selector: 'empty'})
-@View({template: '', directives: []})
+@Component({selector: 'empty', template: '', directives: []})
 class Empty {
 }
 
-@Component({selector: 'multiple-content-tags'})
-@View({
+@Component({
+  selector: 'multiple-content-tags',
   template: '(<ng-content SELECT=".left"></ng-content>, <ng-content></ng-content>)',
   directives: []
 })
@@ -645,16 +645,16 @@ class ProjectDirective {
   hide() { this.vc.clear(); }
 }
 
-@Component({selector: 'outer-with-indirect-nested'})
-@View({
+@Component({
+  selector: 'outer-with-indirect-nested',
   template: 'OUTER(<simple><div><ng-content></ng-content></div></simple>)',
   directives: [Simple]
 })
 class OuterWithIndirectNestedComponent {
 }
 
-@Component({selector: 'outer'})
-@View({
+@Component({
+  selector: 'outer',
   template:
       'OUTER(<inner><ng-content select=".left" class="left"></ng-content><ng-content></ng-content></inner>)',
   directives: [forwardRef(() => InnerComponent)]
@@ -662,8 +662,8 @@ class OuterWithIndirectNestedComponent {
 class OuterComponent {
 }
 
-@Component({selector: 'inner'})
-@View({
+@Component({
+  selector: 'inner',
   template:
       'INNER(<innerinner><ng-content select=".left" class="left"></ng-content><ng-content></ng-content></innerinner>)',
   directives: [forwardRef(() => InnerInnerComponent)]
@@ -671,16 +671,16 @@ class OuterComponent {
 class InnerComponent {
 }
 
-@Component({selector: 'innerinner'})
-@View({
+@Component({
+  selector: 'innerinner',
   template: 'INNERINNER(<ng-content select=".left"></ng-content>,<ng-content></ng-content>)',
   directives: []
 })
 class InnerInnerComponent {
 }
 
-@Component({selector: 'conditional-content'})
-@View({
+@Component({
+  selector: 'conditional-content',
   template:
       '<div>(<div *manual><ng-content select=".left"></ng-content></div>, <ng-content></ng-content>)</div>',
   directives: [ManualViewportDirective]
@@ -688,8 +688,8 @@ class InnerInnerComponent {
 class ConditionalContentComponent {
 }
 
-@Component({selector: 'conditional-text'})
-@View({
+@Component({
+  selector: 'conditional-text',
   template:
       'MAIN(<template manual>FIRST(<template manual>SECOND(<ng-content></ng-content>)</template>)</template>)',
   directives: [ManualViewportDirective]
@@ -697,16 +697,17 @@ class ConditionalContentComponent {
 class ConditionalTextComponent {
 }
 
-@Component({selector: 'tab'})
-@View({
+@Component({
+  selector: 'tab',
   template: '<div><div *manual>TAB(<ng-content></ng-content>)</div></div>',
   directives: [ManualViewportDirective]
 })
 class Tab {
 }
 
-@Component({selector: 'tree', inputs: ['depth']})
-@View({
+@Component({
+  selector: 'tree',
+  inputs: ['depth'],
   template: 'TREE({{depth}}:<tree *manual [depth]="depth+1"></tree>)',
   directives: [ManualViewportDirective, Tree]
 })
@@ -715,8 +716,7 @@ class Tree {
 }
 
 
-@Component({selector: 'cmp-d'})
-@View({template: `<d>{{tagName}}</d>`})
+@Component({selector: 'cmp-d', template: `<d>{{tagName}}</d>`})
 class CmpD {
   tagName: string;
   constructor(elementRef: ElementRef) {
@@ -725,8 +725,7 @@ class CmpD {
 }
 
 
-@Component({selector: 'cmp-c'})
-@View({template: `<c>{{tagName}}</c>`})
+@Component({selector: 'cmp-c', template: `<c>{{tagName}}</c>`})
 class CmpC {
   tagName: string;
   constructor(elementRef: ElementRef) {
@@ -735,43 +734,37 @@ class CmpC {
 }
 
 
-@Component({selector: 'cmp-b'})
-@View({template: `<ng-content></ng-content><cmp-d></cmp-d>`, directives: [CmpD]})
+@Component({selector: 'cmp-b', template: `<ng-content></ng-content><cmp-d></cmp-d>`, directives: [CmpD]})
 class CmpB {
 }
 
 
-@Component({selector: 'cmp-a'})
-@View({template: `<ng-content></ng-content><cmp-c></cmp-c>`, directives: [CmpC]})
+@Component({selector: 'cmp-a', template: `<ng-content></ng-content><cmp-c></cmp-c>`, directives: [CmpC]})
 class CmpA {
 }
 
-@Component({selector: 'cmp-b11'})
-@View({template: `{{'b11'}}`, directives: []})
+@Component({selector: 'cmp-b11', template: `{{'b11'}}`, directives: []})
 class CmpB11 {
 }
 
-@Component({selector: 'cmp-b12'})
-@View({template: `{{'b12'}}`, directives: []})
+@Component({selector: 'cmp-b12', template: `{{'b12'}}`, directives: []})
 class CmpB12 {
 }
 
-@Component({selector: 'cmp-b21'})
-@View({template: `{{'b21'}}`, directives: []})
+@Component({selector: 'cmp-b21', template: `{{'b21'}}`, directives: []})
 class CmpB21 {
 }
 
-@Component({selector: 'cmp-b22'})
-@View({template: `{{'b22'}}`, directives: []})
+@Component({selector: 'cmp-b22', template: `{{'b22'}}`, directives: []})
 class CmpB22 {
 }
 
-@Component({selector: 'cmp-a1'})
-@View({template: `{{'a1'}}<cmp-b11></cmp-b11><cmp-b12></cmp-b12>`, directives: [CmpB11, CmpB12]})
+@Component(
+    {selector: 'cmp-a1', template: `{{'a1'}}<cmp-b11></cmp-b11><cmp-b12></cmp-b12>`, directives: [CmpB11, CmpB12]})
 class CmpA1 {
 }
 
-@Component({selector: 'cmp-a2'})
-@View({template: `{{'a2'}}<cmp-b21></cmp-b21><cmp-b22></cmp-b22>`, directives: [CmpB21, CmpB22]})
+@Component(
+    {selector: 'cmp-a2', template: `{{'a2'}}<cmp-b21></cmp-b21><cmp-b22></cmp-b22>`, directives: [CmpB21, CmpB22]})
 class CmpA2 {
 }

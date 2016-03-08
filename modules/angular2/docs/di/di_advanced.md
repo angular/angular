@@ -179,9 +179,7 @@ Both `MyComponent` and `MyDirective` are created on the same element.
   ],
   viewBindings: [
     bind('viewService').toValue('View_MyComponentService')
-  ]
-})
-@View({
+  ],
   template: `<needs-view-service></needs-view-service>`,
   directives: [NeedsViewService]
 })

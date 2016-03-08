@@ -13,7 +13,7 @@ import {
   xit,
 } from 'angular2/testing_internal';
 
-import {Component, View, ViewMetadata, bind, provide, DebugElement} from 'angular2/core';
+import {Component, ViewMetadata, bind, provide, DebugElement} from 'angular2/core';
 import {UrlResolver} from 'angular2/compiler';
 
 import {MdButton, MdAnchor} from 'angular2_material/src/components/button/button';
@@ -114,8 +114,8 @@ function getChildDebugElement(parent: DebugElement, tagName: string): DebugEleme
 }
 
 /** Test component that contains an MdButton. */
-@Component({selector: 'test-app'})
-@View({
+@Component({
+  selector: 'test-app',
   directives: [MdButton],
   template:
       `<button mdButton type="button" (click)="increment()" [disabled]="isDisabled">Go</button>`

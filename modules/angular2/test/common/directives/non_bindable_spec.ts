@@ -12,7 +12,7 @@ import {
   xit,
 } from 'angular2/testing_internal';
 import {DOM} from 'angular2/src/platform/dom/dom_adapter';
-import {Component, Directive, View} from 'angular2/core';
+import {Component, Directive} from 'angular2/core';
 import {ElementRef} from 'angular2/src/core/linker/element_ref';
 
 export function main() {
@@ -65,8 +65,7 @@ class TestDirective {
   constructor(el: ElementRef) { DOM.addClass(el.nativeElement, 'compiled'); }
 }
 
-@Component({selector: 'test-cmp'})
-@View({directives: [TestDirective]})
+@Component({selector: 'test-cmp', directives: [TestDirective], template: ''})
 class TestComponent {
   text: string;
   constructor() { this.text = 'foo'; }

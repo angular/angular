@@ -37,7 +37,7 @@ import {AppView, AppProtoView} from 'angular2/src/core/linker/view';
 import {AppElement} from 'angular2/src/core/linker/element';
 import {Locals, ChangeDetectorGenConfig} from 'angular2/src/core/change_detection/change_detection';
 
-import {Component, View, Directive, provide, RenderComponentType} from 'angular2/core';
+import {Component, Directive, provide, RenderComponentType} from 'angular2/core';
 
 import {TEST_PROVIDERS} from './test_bindings';
 import {
@@ -338,9 +338,7 @@ export class UpperCasePipe implements PipeTransform {
   selector: 'comp-a',
   host: {'[title]': '\'someHostValue\''},
   moduleId: THIS_MODULE_ID,
-  exportAs: 'someExportAs'
-})
-@View({
+  exportAs: 'someExportAs',
   template: '<a [href]="\'someCtxValue\' | uppercase"></a>',
   styles: ['div {color: red}'],
   encapsulation: ViewEncapsulation.None,
@@ -349,8 +347,9 @@ export class UpperCasePipe implements PipeTransform {
 export class CompWithBindingsAndStylesAndPipes {
 }
 
-@Component({selector: 'tree', moduleId: THIS_MODULE_ID})
-@View({
+@Component({
+  selector: 'tree',
+  moduleId: THIS_MODULE_ID,
   template: '<template><tree></tree></template>',
   directives: [TreeComp],
   encapsulation: ViewEncapsulation.None
@@ -358,8 +357,9 @@ export class CompWithBindingsAndStylesAndPipes {
 export class TreeComp {
 }
 
-@Component({selector: 'comp-wit-dup-tpl', moduleId: THIS_MODULE_ID})
-@View({
+@Component({
+  selector: 'comp-wit-dup-tpl',
+  moduleId: THIS_MODULE_ID,
   template: '<tree></tree>',
   directives: [TreeComp, TreeComp],
   encapsulation: ViewEncapsulation.None
@@ -367,13 +367,18 @@ export class TreeComp {
 export class CompWithDupDirectives {
 }
 
-@Component({selector: 'comp-url', moduleId: THIS_MODULE_ID})
-@View({templateUrl: 'compUrl.html', encapsulation: ViewEncapsulation.None})
+@Component({
+  selector: 'comp-url',
+  moduleId: THIS_MODULE_ID,
+  templateUrl: 'compUrl.html',
+  encapsulation: ViewEncapsulation.None
+})
 export class CompWithTemplateUrl {
 }
 
-@Component({selector: 'comp-tpl', moduleId: THIS_MODULE_ID})
-@View({
+@Component({
+  selector: 'comp-tpl',
+  moduleId: THIS_MODULE_ID,
   template: '<template><a [href]="\'someEmbeddedValue\'"></a></template>',
   encapsulation: ViewEncapsulation.None
 })
@@ -382,18 +387,22 @@ export class CompWithEmbeddedTemplate {
 
 
 @Directive({selector: 'plain'})
-@View({template: ''})
 export class NonComponent {
 }
 
 
-@Component({selector: 'comp2', moduleId: THIS_MODULE_ID})
-@View({template: '<b></b>', encapsulation: ViewEncapsulation.None})
+@Component({
+  selector: 'comp2',
+  moduleId: THIS_MODULE_ID,
+  template: '<b></b>',
+  encapsulation: ViewEncapsulation.None
+})
 export class Comp2 {
 }
 
-@Component({selector: 'comp1', moduleId: THIS_MODULE_ID})
-@View({
+@Component({
+  selector: 'comp1',
+  moduleId: THIS_MODULE_ID,
   template: '<a></a>, <comp2></comp2>',
   encapsulation: ViewEncapsulation.None,
   directives: [Comp2]
@@ -401,8 +410,9 @@ export class Comp2 {
 export class Comp1 {
 }
 
-@Component({selector: 'comp-with-2nested', moduleId: THIS_MODULE_ID})
-@View({
+@Component({
+  selector: 'comp-with-2nested',
+  moduleId: THIS_MODULE_ID,
   template: '<comp1></comp1>, <comp2></comp2>',
   encapsulation: ViewEncapsulation.None,
   directives: [Comp1, Comp2]
