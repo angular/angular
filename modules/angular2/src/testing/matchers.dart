@@ -55,6 +55,8 @@ class Expect extends gns.Expect {
   void toHaveCssStyle(styles) {
     gns.guinness.matchers.toBeTrue(elementContainsStyle(actual, styles));
   }
+  void toMatchPattern(pattern) =>
+      gns.guinness.matchers.toBeTrue(pattern.hasMatch(actual));
   void toImplement(expected) => toBeA(expected);
   void toBeNaN() =>
       gns.guinness.matchers.toBeTrue(double.NAN.compareTo(actual) == 0);
@@ -98,6 +100,8 @@ class NotExpect extends gns.NotExpect {
   void toHaveCssStyle(styles) {
     gns.guinness.matchers.toBeFalse(elementContainsStyle(actual, styles));
   }
+  void toMatchPattern(pattern) =>
+      gns.guinness.matchers.toBeFalse(pattern.hasMatch(actual));
   void toBeNull() => gns.guinness.matchers.toBeFalse(actual == null);
   Function get _expect => gns.guinness.matchers.expect;
 }

@@ -54,6 +54,14 @@ export function main() {
       });
     });
 
+    describe("toMatchPAttern", () => {
+      it("should assert that a string matches a given pattern", () => {
+        expect("matias").toMatchPattern(/ias$/g);
+        expect("tobias").toMatchPattern(/ias$/g);
+        expect("joonas").not.toMatchPattern(/ias$/g);
+      });
+    });
+
     describe('toEqual for Maps', () => {
       it('should detect equality for same reference', () => {
         var m1 = MapWrapper.createFromStringMap({'a': 1});
