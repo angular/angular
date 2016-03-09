@@ -4,7 +4,16 @@
 [![Gitter](https://badges.gitter.im/angular/material2.svg)](https://gitter.im/angular/material2?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
 This is the home for the Angular team's Material Design components built on top of Angular 2.
-Things are in very early stages now- check back soon for more progress.
+
+### Project status
+Nothing has been released yet. An alpha.0 is coming soon.
+Check out our [directory of design documents](https://github.com/angular/material2/wiki/Design-doc-directory) for more insight into our process.
+
+We are still getting our CI infrastructure (tests, lint etc.) set up, as well as building out
+the core library pieces that components will be built upon. If you'd like to contribute,
+please look through the issues (which should be up-to-date on who is working on which features and
+which pieces are blocked) and make a comment. 
+Also see our [`Good for community contribution`](https://github.com/angular/material2/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+for+community+contribution%22) label.
 
 #### Quick links
 [Google group](https://groups.google.com/forum/#!forum/angular-material2),
