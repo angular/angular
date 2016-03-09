@@ -62,7 +62,10 @@ export interface Type extends Function {}
 export interface ConcreteType extends Type { new (...args): any; }
 
 export function getTypeNameForDebugging(type: Type): string {
-  return type['name'];
+  if (type['name']) {
+    return type['name'];
+  }
+  return typeof type;
 }
 
 
