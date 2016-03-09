@@ -1,4 +1,4 @@
-import {isBlank, isPresent, CONST} from 'angular2/src/facade/lang';
+import {isBlank, isPresent, CONST, getTypeNameForDebugging} from 'angular2/src/facade/lang';
 import {BaseException} from 'angular2/src/facade/exceptions';
 import {ListWrapper} from 'angular2/src/facade/collection';
 import {ChangeDetectorRef} from '../change_detector_ref';
@@ -86,7 +86,8 @@ export class IterableDiffers {
     if (isPresent(factory)) {
       return factory;
     } else {
-      throw new BaseException(`Cannot find a differ supporting object '${iterable}'`);
+      throw new BaseException(
+          `Cannot find a differ supporting object '${iterable}' of type '${getTypeNameForDebugging(iterable)}'`);
     }
   }
 }
