@@ -7,7 +7,7 @@ As a contributor, here are the guidelines we would like you to follow:
  - [Question or Problem?](#question)
  - [Issues and Bugs](#issue)
  - [Feature Requests](#feature)
- - [Submission Guidelines](#submit)
+ - [Submission Guidelines](#submit-pr)
  - [Coding Rules](#rules)
  - [Commit Message Guidelines](#commit)
  - [Signing the CLA](#cla)
