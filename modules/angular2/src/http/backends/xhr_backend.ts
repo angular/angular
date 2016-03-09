@@ -45,6 +45,7 @@ export class XHRConnection implements Connection {
 
         // normalize IE9 bug (http://bugs.jquery.com/ticket/1450)
         let status: number = _xhr.status === 1223 ? 204 : _xhr.status;
+        let statusText: string = _xhr.statusText;
 
         // fix status code when it is 0 (0 status is undocumented).
         // Occurs when accessing file resources or on Android 4.1 stock browser
@@ -52,7 +53,7 @@ export class XHRConnection implements Connection {
         if (status === 0) {
           status = body ? 200 : 0;
         }
-        var responseOptions = new ResponseOptions({body, status, headers, url});
+        var responseOptions = new ResponseOptions({body, status, statusText, headers, url});
         if (isPresent(baseResponseOptions)) {
           responseOptions = baseResponseOptions.merge(responseOptions);
         }

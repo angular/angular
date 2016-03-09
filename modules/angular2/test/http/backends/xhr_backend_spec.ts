@@ -40,6 +40,7 @@ class MockBrowserXHR extends BrowserXhr {
   setRequestHeader: any;
   callbacks = new Map<string, Function>();
   status: number;
+  statusText: string;
   responseHeaders: string;
   responseURL: string;
   constructor() {
@@ -52,6 +53,8 @@ class MockBrowserXHR extends BrowserXhr {
   }
 
   setStatusCode(status: number) { this.status = status; }
+
+  setStatusText(statusText: string) { this.statusText = statusText; }
 
   setResponse(value: string) { this.response = value; }
 
@@ -177,8 +180,10 @@ export function main() {
       it('should return the correct status code',
          inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
            var statusCode = 418;
-           var connection = new XHRConnection(sampleRequest, new MockBrowserXHR(),
-                                              new ResponseOptions({status: statusCode}));
+           var statusText = 'some';
+           var connection =
+               new XHRConnection(sampleRequest, new MockBrowserXHR(),
+                                 new ResponseOptions({status: statusCode, statusText: statusText}));
 
            connection.response.subscribe(
                (res: Response) => {
@@ -186,10 +191,12 @@ export function main() {
                },
                errRes => {
                  expect(errRes.status).toBe(statusCode);
+                 expect(errRes.statusText).toBe(statusText);
                  async.done();
                });
 
            existingXHRs[0].setStatusCode(statusCode);
+           existingXHRs[0].setStatusText(statusText);
            existingXHRs[0].dispatchEvent('load');
          }));
 
