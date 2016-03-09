@@ -5,8 +5,14 @@ import {
   RegExpMatcherWrapper,
   StringWrapper,
   CONST_EXPR,
-  hasConstructor
+  hasConstructor,
+  resolveEnumToken
 } from 'angular2/src/facade/lang';
+
+enum UsefulEnum {
+  MyToken,
+  MyOtherToken
+}
 
 class MySuperclass {}
 class MySubclass extends MySuperclass {}
@@ -121,6 +127,16 @@ export function main() {
       it('should not do any alterations when an empty string or null value is passed in', () => {
         expect(StringWrapper.stripRight("", "S")).toEqual("");
         expect(StringWrapper.stripRight(null, "S")).toEqual(null);
+      });
+    });
+
+    describe('resolveEnumToken', () => {
+      it("should resolve a token given an enum and index values", () => {
+        var token = UsefulEnum.MyToken;
+        expect(resolveEnumToken(UsefulEnum, token)).toEqual('MyToken');
+
+        token = UsefulEnum.MyOtherToken;
+        expect(resolveEnumToken(UsefulEnum, token)).toEqual('MyOtherToken');
       });
     });
 
