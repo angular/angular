@@ -37,6 +37,7 @@ import {TEST_PROVIDERS} from './test_bindings';
 import {MODULE_SUFFIX} from 'angular2/src/compiler/util';
 import {IS_DART} from 'angular2/src/facade/lang';
 import {PLATFORM_DIRECTIVES} from 'angular2/src/core/platform_directives_and_pipes';
+import {MalformedStylesComponent} from './runtime_metadata_fixture';
 
 export function main() {
   describe('RuntimeMetadataResolver', () => {
@@ -73,6 +74,14 @@ export function main() {
                resolver.getDirectiveMetadata(ComponentWithoutModuleId).type.moduleUrl;
            var expectedEndValue = IS_DART ? 'test/compiler/runtime_metadata_spec.dart' : './';
            expect(value.endsWith(expectedEndValue)).toBe(true);
+         }));
+
+      it('should throw when metadata is incorrectly typed',
+         inject([RuntimeMetadataResolver], (resolver: RuntimeMetadataResolver) => {
+           if (!IS_DART) {
+             expect(() => resolver.getDirectiveMetadata(MalformedStylesComponent))
+                 .toThrowError(`Expected 'styles' to be an array of strings.`);
+           }
          }));
     });
 
