@@ -1,3 +1,59 @@
+<a name="2.0.0-beta.9"></a>
+# 2.0.0-beta.9 (2016-03-09)
+
+
+### Bug Fixes
+
+* **angular_1_router:** Renamed require statements after TypeScript files are transpiled ([ae49085](https://github.com/angular/angular/commit/ae49085)), closes [#7049](https://github.com/angular/angular/issues/7049)
+* **angular1_router:** rename `router` component binding to `$router` ([2548ce8](https://github.com/angular/angular/commit/2548ce8))
+* **angular1_router:** rename `router` component binding to `$router` ([1174473](https://github.com/angular/angular/commit/1174473))
+* **angular1_router:** support templateUrl components ([5586c29](https://github.com/angular/angular/commit/5586c29))
+* **build:** Use fixed version of Chromium Canary that will be updated manually instead of au ([1d49b3e](https://github.com/angular/angular/commit/1d49b3e))
+* **router:** support outlets within dynamic components ([7d44b82](https://github.com/angular/angular/commit/7d44b82))
+
+### Features
+
+* **angular1_router:** Add ng-link-active class to active ng-link ([11e8aa2](https://github.com/angular/angular/commit/11e8aa2)), closes [#6882](https://github.com/angular/angular/issues/6882)
+* **compiler:** Added spans to HTML parser errors ([19a08f3](https://github.com/angular/angular/commit/19a08f3))
+* **dart:** Add a dev-mode check for undeclared lifecycle interfaces ([a3d7629](https://github.com/angular/angular/commit/a3d7629)), closes [#6849](https://github.com/angular/angular/issues/6849)
+* **dart/transform:** Create standalone transformers for phases ([15e1614](https://github.com/angular/angular/commit/15e1614))
+* **iterable_differ:** support immutable lists ([a10c02c](https://github.com/angular/angular/commit/a10c02c)), closes [#7127](https://github.com/angular/angular/issues/7127)
+* **router:** add regex matchers ([75343eb](https://github.com/angular/angular/commit/75343eb)), closes [#7325](https://github.com/angular/angular/issues/7325) [#7126](https://github.com/angular/angular/issues/7126)
+* **router:** Added method to get current instruction ([6dce4f4](https://github.com/angular/angular/commit/6dce4f4))
+* **transformers:** change 'Missing Identifier' to be an error ([45fd6f0](https://github.com/angular/angular/commit/45fd6f0)), closes [#7403](https://github.com/angular/angular/issues/7403)
+* **transformers:** collect provider information ([81beb1c](https://github.com/angular/angular/commit/81beb1c))
+
+
+### BREAKING CHANGES
+
+* The recently added binding of the current router to the current component
+has been renamed from `router` to `$router`.
+So now the recommended set up for your bindings in your routed component
+is:
+```js
+{
+  ...
+  bindings: {
+    $router: '<'
+  }
+}
+```
+
+* The recently added binding of the current router to the current component
+has been renamed from `router` to `$router`.
+So now the recommended set up for your bindings in your routed component
+is:
+```js
+{
+  ...
+  bindings: {
+    $router: '<'
+  }
+}
+```
+
+
+
 <a name="2.0.0-beta.8"></a>
 # 2.0.0-beta.8 (2016-03-02)
 
