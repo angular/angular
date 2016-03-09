@@ -54,6 +54,11 @@ dynamic deserializeEnum(num val, Map<num, dynamic> values) {
   return values[val];
 }
 
+String resolveEnumToken(enumValue, val) {
+  // turn Enum.Token -> Token
+  return val.toString().replaceFirst(new RegExp('^.+\\.'),'');
+}
+
 class StringWrapper {
   static String fromCharCode(int code) {
     return new String.fromCharCode(code);

@@ -195,6 +195,10 @@ export function deserializeEnum(val, values: Map<number, any>): any {
   return val;
 }
 
+export function resolveEnumToken(enumValue, val): string {
+  return enumValue[val];
+}
+
 export class StringWrapper {
   static fromCharCode(code: number): string { return String.fromCharCode(code); }
 
