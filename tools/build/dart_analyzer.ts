@@ -47,12 +47,12 @@ export function analyze(dir: string, command: string, use_ddc: boolean = false):
   fs.writeFileSync(path.join(dir, tempFile), analyzeFile.join('\n'));
 
   return new Promise<void>((resolve, reject) => {
-    analyze_(command, dir, resolve, use_ddc);
+    _analyze(command, dir, resolve, use_ddc);
   });
 }
 
 
-function analyze_(command, dirName, done, useDdc) {
+function _analyze(command, dirName, done, useDdc) {
   // TODO remove --package-warnings once dartanalyzer handles transitive libraries
   var flags = ['--fatal-warnings', '--format=machine'];
 
@@ -158,11 +158,11 @@ class _AnalyzerOutputLine {
   }
 
   static parse(line: string) {
-    const result = this.analyzerParseRegExp_.exec(line);
+    const result = this._analyzerParseRegExp.exec(line);
     return result ? new this(result) : null;
   }
 
-  private static analyzerParseRegExp_ =
+  private static _analyzerParseRegExp =
       new RegExp('([^\|]+)\\|' +           // #1, severity (NONE, INFO, WARNING, ERROR)
                  '([^\|]+)\\|' +           // #2, errorCode.type (HINT, *_WARNING, *_ERROR, etc)
                  '([^\|]+)\\|' +           // #3, errorCode (UNUSED_IMPORT, UNUSED_CATCH_STACK, etc)
@@ -173,7 +173,7 @@ class _AnalyzerOutputLine {
                  '(.*)$');                 // #8, error message
 
   /* Maps file path (as string) to file source (an array of strings, one per line). */
-  private static cache_ = {};
+  private static _cache = {};
 
   private static ERR_NO_SOURCE = '(Could not find source line).';
 
@@ -228,7 +228,7 @@ class _AnalyzerOutputLine {
 
   // Reads the source file for the Analyzer output, caching it for future use.
   _getSourceLine() {
-    var cache = _AnalyzerOutputLine.cache_;
+    var cache = _AnalyzerOutputLine._cache;
     var sourceLines = null;
     if (cache.hasOwnProperty(this.sourcePath)) {
       sourceLines = cache[this.sourcePath];

@@ -5,16 +5,16 @@ import {FunctionWrapper, isPresent, Type} from 'angular2/src/facade/lang';
 
 export class TestInjector {
 
-  private instantiated_: boolean = false;
+  private _instantiated: boolean = false;
 
-  private injector_: Injector = null;
+  private _injector: Injector = null;
 
-  private providers_: Array<Type | Provider | any[]> = [];
+  private _providers: Array<Type | Provider | any[]> = [];
 
   reset() {
-    this.injector_ = null;
-    this.providers_ = [];
-    this.instantiated_ = false;
+    this._injector = null;
+    this._providers = [];
+    this._instantiated = false;
   }
 
   platformProviders: Array<Type | Provider | any[]> = [];
@@ -22,25 +22,25 @@ export class TestInjector {
   applicationProviders: Array<Type | Provider | any[]> = [];
 
   addProviders(providers: Array<Type | Provider | any[]>) {
-    if (this.instantiated_) {
+    if (this._instantiated) {
       throw new BaseException('Cannot add providers after test injector is instantiated');
     }
-    this.providers_ = ListWrapper.concat(this.providers_, providers);
+    this._providers = ListWrapper.concat(this._providers, providers);
   }
 
   createInjector() {
     let rootInjector = Injector.resolveAndCreate(this.platformProviders);
-    this.injector_ = rootInjector.resolveAndCreateChild(
-      ListWrapper.concat(this.applicationProviders, this.providers_));
-    this.instantiated_ = true;
-    return this.injector_;
+    this._injector = rootInjector.resolveAndCreateChild(
+      ListWrapper.concat(this.applicationProviders, this._providers));
+    this._instantiated = true;
+    return this._injector;
   }
 
   execute(fn: FunctionWithParamTokens): any {
-    if (!this.instantiated_) {
+    if (!this._instantiated) {
       this.createInjector();
     }
-    return fn.execute(this.injector_);
+    return fn.execute(this._injector);
   }
 }
 
@@ -143,15 +143,15 @@ export function injectAsync(tokens: any[], fn: Function): FunctionWithParamToken
 }
 
 export class FunctionWithParamTokens {
-  constructor(private tokens_: any[], private fn_: Function, public isAsync: boolean) {}
+  constructor(private _tokens: any[], private _fn: Function, public isAsync: boolean) {}
 
   /**
    * Returns the value of the executed function.
    */
   execute(injector: Injector): any {
-    let params = this.tokens_.map(t => injector.get(t));
-    return FunctionWrapper.apply(this.fn_, params);
+    let params = this._tokens.map(t => injector.get(t));
+    return FunctionWrapper.apply(this._fn, params);
   }
 
-  hasToken(token: any): boolean { return this.tokens_.indexOf(token) > -1; }
+  hasToken(token: any): boolean { return this._tokens.indexOf(token) > -1; }
 }

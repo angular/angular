@@ -15,18 +15,18 @@ import {OneOf} from '../../core/annotations/one-of';
   exportAs: '$implicit'
 })
 export class Dir {
-  @Input('dir') @OneOf(['ltr', 'rtl']) private dir_: string = 'ltr';
+  @Input('dir') @OneOf(['ltr', 'rtl']) private _dir: string = 'ltr';
 
   @Output() dirChange = new EventEmitter<void>();
 
   @HostBinding('attr.dir')
   get dir(): string {
-    return this.dir_;
+    return this._dir;
   }
   set dir(v: string) {
-    let old = this.dir_;
-    this.dir_ = v;
-    if (old != this.dir_) {
+    let old = this._dir;
+    this._dir = v;
+    if (old != this._dir) {
       this.dirChange.emit(null);
     }
   }

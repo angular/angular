@@ -43,21 +43,21 @@ export class TemplatePortalDirective extends TemplatePortal {
 })
 export class PortalHostDirective extends BasePortalHost {
   /** The attached portal. */
-  private portal_: Portal<any>;
+  private _portal: Portal<any>;
 
   constructor(
-      private dynamicComponentLoader_: DynamicComponentLoader,
-      private elementRef_: ElementRef,
-      private viewContainerRef_: ViewContainerRef) {
+      private _dynamicComponentLoader: DynamicComponentLoader,
+      private _elementRef: ElementRef,
+      private _viewContainerRef: ViewContainerRef) {
     super();
   }
 
   get portal(): Portal<any> {
-    return this.portal_;
+    return this._portal;
   }
 
   set portal(p: Portal<any>) {
-    this.replaceAttachedPortal_(p);
+    this._replaceAttachedPortal(p);
   }
 
   /** Attach the given ComponentPortal to this PortlHost using the DynamicComponentLoader. */
@@ -66,11 +66,11 @@ export class PortalHostDirective extends BasePortalHost {
 
     // If the portal specifies an origin, use that as the logical location of the component
     // in the application tree. Otherwise use the location of this PortalHost.
-    let elementRef = portal.origin != null ? portal.origin : this.elementRef_;
+    let elementRef = portal.origin != null ? portal.origin : this._elementRef;
 
     // Typecast is necessary for Dart transpilation.
     return <Promise<ComponentRef>>
-        this.dynamicComponentLoader_.loadNextToLocation(portal.component, elementRef)
+        this._dynamicComponentLoader.loadNextToLocation(portal.component, elementRef)
         .then(ref => {
           this.setDisposeFn(() => ref.dispose());
           return ref;
@@ -81,9 +81,9 @@ export class PortalHostDirective extends BasePortalHost {
   attachTemplatePortal(portal: TemplatePortal): Promise<Map<string, any>> {
     portal.setAttachedHost(this);
 
-    let viewRef = this.viewContainerRef_.createEmbeddedView(portal.templateRef);
+    let viewRef = this._viewContainerRef.createEmbeddedView(portal.templateRef);
     portal.locals.forEach((v, k) => viewRef.setLocal(k, v));
-    this.setDisposeFn(() => this.viewContainerRef_.clear());
+    this.setDisposeFn(() => this._viewContainerRef.clear());
 
     // TODO(jelbourn): return locals from view
     // Typecast is necessary for Dart transpilation.
@@ -91,13 +91,13 @@ export class PortalHostDirective extends BasePortalHost {
   }
 
   /** Detatches the currently attached Portal (if there is one) and attaches the given Portal. */
-  private replaceAttachedPortal_(p: Portal<any>): void {
+  private _replaceAttachedPortal(p: Portal<any>): void {
     let maybeDetach = this.hasAttached() ? this.detach() : Promise.resolve(null);
 
     maybeDetach.then(_ => {
       if (p != null) {
         this.attach(p);
-        this.portal_ = p;
+        this._portal = p;
       }
     });
   }

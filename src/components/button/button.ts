@@ -72,7 +72,7 @@ export class MdButton {
   encapsulation: ViewEncapsulation.None
 })
 export class MdAnchor extends MdButton {
-  disabled_: boolean = null;
+  _disabled: boolean = null;
 
   @HostBinding('tabIndex')
   get tabIndex(): number {
@@ -87,11 +87,11 @@ export class MdAnchor extends MdButton {
 
   @HostBinding('attr.disabled')
   @Input('disabled')
-  get disabled() { return this.disabled_; }
+  get disabled() { return this._disabled; }
 
   set disabled(value: boolean) {
     // The presence of *any* disabled value makes the component disabled, *except* for false.
-    this.disabled_ = (value != null && value != false) ? true : null;
+    this._disabled = (value != null && value != false) ? true : null;
   }
 
   @HostListener('click', ['$event'])

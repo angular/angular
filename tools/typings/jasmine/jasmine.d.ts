@@ -153,10 +153,10 @@ declare module jasmine {
         it(description: string, func: () => void): Spec;
         // iit(description: string, func: () => void): Spec; Not a part of jasmine. Angular team adds these
         xit(desc: string, func: () => void): XSpec;
-        compareRegExps_(a: RegExp, b: RegExp, mismatchKeys: string[], mismatchValues: string[]): boolean;
-        compareObjects_(a: any, b: any, mismatchKeys: string[], mismatchValues: string[]): boolean;
-        equals_(a: any, b: any, mismatchKeys: string[], mismatchValues: string[]): boolean;
-        contains_(haystack: any, needle: any): boolean;
+        _compareRegExps(a: RegExp, b: RegExp, mismatchKeys: string[], mismatchValues: string[]): boolean;
+        _compareObjects(a: any, b: any, mismatchKeys: string[], mismatchValues: string[]): boolean;
+        _equals(a: any, b: any, mismatchKeys: string[], mismatchValues: string[]): boolean;
+        _contains(haystack: any, needle: any): boolean;
         addCustomEqualityTester(equalityTester: CustomEqualityTester): void;
         addMatchers(matchers: CustomMatcherFactories): void;
         specFilter(spec: Spec): boolean;
@@ -253,7 +253,7 @@ declare module jasmine {
         insertNext(block: any, ensure?: boolean): void;
         start(onComplete?: () => void): void;
         isRunning(): boolean;
-        next_(): void;
+        _next(): void;
         results(): NestedResults;
     }
 
@@ -343,9 +343,9 @@ declare module jasmine {
         suite: Suite;
 
         afterCallbacks: SpecFunction[];
-        spies_: Spy[];
+        _spies: Spy[];
 
-        results_: NestedResults;
+        _results: NestedResults;
         matchersClass: Matchers;
 
         getFullName(): string;
@@ -358,7 +358,7 @@ declare module jasmine {
         waits(timeout: number): Spec;
         waitsFor(latchFunction: SpecFunction, timeoutMessage?: string, timeout?: number): Spec;
         fail(e?: any): void;
-        getMatchersClass_(): Matchers;
+        _getMatchersClass(): Matchers;
         addMatchers(matchersPrototype: CustomMatcherFactories): void;
         finishCallback(): void;
         finish(onComplete?: () => void): void;
@@ -461,12 +461,12 @@ declare module jasmine {
         new (): any;
 
         suites(): Suite[];
-        summarize_(suiteOrSpec: SuiteOrSpec): any;
+        _summarize(suiteOrSpec: SuiteOrSpec): any;
         results(): any;
         resultsForSpec(specId: any): any;
         log(str: any): any;
         resultsForSpecs(specIds: any): any;
-        summarizeResult_(result: any): any;
+        _summarizeResult(result: any): any;
     }
 
     interface Jasmine {

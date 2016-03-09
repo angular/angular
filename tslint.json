@@ -20,7 +20,7 @@
     "no-bitwise": true,
     "no-shadowed-variable": true,
     "no-unused-expression": true,
-    "no-unused-variable": [true, {"ignore-pattern": "ddescribe|iit|.*_$"}],
+    "no-unused-variable": [true, {"ignore-pattern": "^(ddescribe|iit|_.*)$"}],
     "one-line": [
       true,
       "check-catch",
@@ -49,7 +49,7 @@
       true,
       "ban-keywords",
       "check-format",
-      "allow-trailing-underscore"
+      "allow-leading-underscore"
     ],
     "whitespace": [
       true,

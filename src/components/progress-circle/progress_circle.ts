@@ -38,11 +38,11 @@ export class MdProgressCircle {
    * Value of the progress circle.
    *
    * Input:number, defaults to 0.
-   * value_ is bound to the host as the attribute aria-valuenow.
+   * _value is bound to the host as the attribute aria-valuenow.
    */
   @HostBinding('attr.aria-valuenow')
   @Input('value')
-  value_: number = 0;
+  _value: number = 0;
 
   /**
    * Mode of the progress circle
@@ -69,20 +69,20 @@ export class MdProgressCircle {
 
     // The total circumference is calculated based on the radius we use, 45.
     // PI * 2 * 45
-    return 251.3274 * (100 - this.value_) / 100;
+    return 251.3274 * (100 - this._value) / 100;
   }
 
 
   /** Gets the progress value, returning the clamped value. */
   get value() {
-    return this.value_;
+    return this._value;
   }
 
 
   /** Sets the progress value, clamping before setting the internal value. */
   set value(v: number) {
     if (isPresent(v)) {
-      this.value_ = MdProgressCircle.clamp(v);
+      this._value = MdProgressCircle.clamp(v);
     }
   }
 
