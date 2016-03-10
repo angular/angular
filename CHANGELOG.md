@@ -24,36 +24,6 @@
 * **transformers:** collect provider information ([81beb1c](https://github.com/angular/angular/commit/81beb1c))
 
 
-### BREAKING CHANGES
-
-* The recently added binding of the current router to the current component
-has been renamed from `router` to `$router`.
-So now the recommended set up for your bindings in your routed component
-is:
-```js
-{
-  ...
-  bindings: {
-    $router: '<'
-  }
-}
-```
-
-* The recently added binding of the current router to the current component
-has been renamed from `router` to `$router`.
-So now the recommended set up for your bindings in your routed component
-is:
-```js
-{
-  ...
-  bindings: {
-    $router: '<'
-  }
-}
-```
-
-
-
 <a name="2.0.0-beta.8"></a>
 # 2.0.0-beta.8 (2016-03-02)
 
