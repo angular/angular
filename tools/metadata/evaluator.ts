@@ -1,6 +1,18 @@
 import * as ts from 'typescript';
 import {Symbols} from './symbols';
 
+// TOOD: Remove when tools directory is upgraded to support es6 target
+interface Map<K, V> {
+  has(k: K): boolean;
+  set(k: K, v: V): void;
+  get(k: K): V;
+  delete (k: K): void;
+}
+interface MapConstructor {
+  new<K, V>(): Map<K, V>;
+}
+declare var Map: MapConstructor;
+
 function isMethodCallOf(callExpression: ts.CallExpression, memberName: string): boolean {
   const expression = callExpression.expression;
   if (expression.kind === ts.SyntaxKind.PropertyAccessExpression) {
@@ -105,25 +117,30 @@ export class Evaluator {
    * - An identifier is foldable if a value can be found for its symbol is in the evaluator symbol
    *   table.
    */
-  public isFoldable(node: ts.Node) {
+  public isFoldable(node: ts.Node): boolean {
+    return this.isFoldableWorker(node, new Map<ts.Node, boolean>());
+  }
+
+  private isFoldableWorker(node: ts.Node, folding: Map<ts.Node, boolean>): boolean {
     if (node) {
       switch (node.kind) {
         case ts.SyntaxKind.ObjectLiteralExpression:
           return everyNodeChild(node, child => {
             if (child.kind === ts.SyntaxKind.PropertyAssignment) {
               const propertyAssignment = <ts.PropertyAssignment>child;
-              return this.isFoldable(propertyAssignment.initializer)
+              return this.isFoldableWorker(propertyAssignment.initializer, folding)
             }
             return false;
           });
         case ts.SyntaxKind.ArrayLiteralExpression:
-          return everyNodeChild(node, child => this.isFoldable(child));
+          return everyNodeChild(node, child => this.isFoldableWorker(child, folding));
         case ts.SyntaxKind.CallExpression:
           const callExpression = <ts.CallExpression>node;
           // We can fold a <array>.concat(<v>).
           if (isMethodCallOf(callExpression, "concat") && callExpression.arguments.length === 1) {
             const arrayNode = (<ts.PropertyAccessExpression>callExpression.expression).expression;
-            if (this.isFoldable(arrayNode) && this.isFoldable(callExpression.arguments[0])) {
+            if (this.isFoldableWorker(arrayNode, folding) &&
+                this.isFoldableWorker(callExpression.arguments[0], folding)) {
               // It needs to be an array.
               const arrayValue = this.evaluateNode(arrayNode);
               if (arrayValue && Array.isArray(arrayValue)) {
@@ -133,7 +150,7 @@ export class Evaluator {
           }
           // We can fold a call to CONST_EXPR
           if (isCallOf(callExpression, "CONST_EXPR") && callExpression.arguments.length === 1)
-            return this.isFoldable(callExpression.arguments[0]);
+            return this.isFoldableWorker(callExpression.arguments[0], folding);
           return false;
         case ts.SyntaxKind.NoSubstitutionTemplateLiteral:
         case ts.SyntaxKind.StringLiteral:
@@ -142,6 +159,9 @@ export class Evaluator {
         case ts.SyntaxKind.TrueKeyword:
         case ts.SyntaxKind.FalseKeyword:
           return true;
+        case ts.SyntaxKind.ParenthesizedExpression:
+          const parenthesizedExpression = <ts.ParenthesizedExpression>node;
+          return this.isFoldableWorker(parenthesizedExpression.expression, folding);
         case ts.SyntaxKind.BinaryExpression:
           const binaryExpression = <ts.BinaryExpression>node;
           switch (binaryExpression.operatorToken.kind) {
@@ -152,19 +172,37 @@ export class Evaluator {
             case ts.SyntaxKind.PercentToken:
             case ts.SyntaxKind.AmpersandAmpersandToken:
             case ts.SyntaxKind.BarBarToken:
-              return this.isFoldable(binaryExpression.left) &&
-                     this.isFoldable(binaryExpression.right);
+              return this.isFoldableWorker(binaryExpression.left, folding) &&
+                     this.isFoldableWorker(binaryExpression.right, folding);
           }
         case ts.SyntaxKind.PropertyAccessExpression:
           const propertyAccessExpression = <ts.PropertyAccessExpression>node;
-          return this.isFoldable(propertyAccessExpression.expression);
+          return this.isFoldableWorker(propertyAccessExpression.expression, folding);
         case ts.SyntaxKind.ElementAccessExpression:
           const elementAccessExpression = <ts.ElementAccessExpression>node;
-          return this.isFoldable(elementAccessExpression.expression) &&
-                 this.isFoldable(elementAccessExpression.argumentExpression);
+          return this.isFoldableWorker(elementAccessExpression.expression, folding) &&
+                 this.isFoldableWorker(elementAccessExpression.argumentExpression, folding);
         case ts.SyntaxKind.Identifier:
-          const symbol = this.typeChecker.getSymbolAtLocation(node);
+          let symbol = this.typeChecker.getSymbolAtLocation(node);
+          if (symbol.flags & ts.SymbolFlags.Alias) {
+            symbol = this.typeChecker.getAliasedSymbol(symbol);
+          }
           if (this.symbols.has(symbol)) return true;
+
+          // If this is a reference to a foldable variable then it is foldable too.
+          const variableDeclaration = <ts.VariableDeclaration>(
+              symbol.declarations && symbol.declarations.length && symbol.declarations[0]);
+          if (variableDeclaration.kind === ts.SyntaxKind.VariableDeclaration) {
+            const initializer = variableDeclaration.initializer;
+            if (folding.has(initializer)) {
+              // A recursive reference is not foldable.
+              return false;
+            }
+            folding.set(initializer, true);
+            const result = this.isFoldableWorker(initializer, folding);
+            folding.delete(initializer);
+            return result;
+          }
           break;
       }
     }
@@ -252,8 +290,17 @@ export class Evaluator {
         break;
       }
       case ts.SyntaxKind.Identifier:
-        const symbol = this.typeChecker.getSymbolAtLocation(node);
+        let symbol = this.typeChecker.getSymbolAtLocation(node);
+        if (symbol.flags & ts.SymbolFlags.Alias) {
+          symbol = this.typeChecker.getAliasedSymbol(symbol);
+        }
         if (this.symbols.has(symbol)) return this.symbols.get(symbol);
+        if (this.isFoldable(node)) {
+          // isFoldable implies, in this context, symbol declaration is a VariableDeclaration
+          const variableDeclaration = <ts.VariableDeclaration>(
+              symbol.declarations && symbol.declarations.length && symbol.declarations[0]);
+          return this.evaluateNode(variableDeclaration.initializer);
+        }
         return this.nodeSymbolReference(node);
       case ts.SyntaxKind.NoSubstitutionTemplateLiteral:
         return (<ts.LiteralExpression>node).text;
@@ -267,7 +314,42 @@ export class Evaluator {
         return true;
       case ts.SyntaxKind.FalseKeyword:
         return false;
-
+      case ts.SyntaxKind.ParenthesizedExpression:
+        const parenthesizedExpression = <ts.ParenthesizedExpression>node;
+        return this.evaluateNode(parenthesizedExpression.expression);
+      case ts.SyntaxKind.PrefixUnaryExpression:
+        const prefixUnaryExpression = <ts.PrefixUnaryExpression>node;
+        const operand = this.evaluateNode(prefixUnaryExpression.operand);
+        if (isDefined(operand) && isPrimitive(operand)) {
+          switch (prefixUnaryExpression.operator) {
+            case ts.SyntaxKind.PlusToken:
+              return +operand;
+            case ts.SyntaxKind.MinusToken:
+              return -operand;
+            case ts.SyntaxKind.TildeToken:
+              return ~operand;
+            case ts.SyntaxKind.ExclamationToken:
+              return !operand;
+          }
+        }
+        let operatorText: string;
+        switch (prefixUnaryExpression.operator) {
+          case ts.SyntaxKind.PlusToken:
+            operatorText = '+';
+            break;
+          case ts.SyntaxKind.MinusToken:
+            operatorText = '-';
+            break;
+          case ts.SyntaxKind.TildeToken:
+            operatorText = '~';
+            break;
+          case ts.SyntaxKind.ExclamationToken:
+            operatorText = '!';
+            break;
+          default:
+            return undefined;
+        }
+        return {__symbolic: "pre", operator: operatorText, operand: operand };
       case ts.SyntaxKind.BinaryExpression:
         const binaryExpression = <ts.BinaryExpression>node;
         const left = this.evaluateNode(binaryExpression.left);
