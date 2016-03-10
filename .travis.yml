@@ -5,7 +5,14 @@ language: node_js
 sudo: false
 
 node_js:
-  - '4.2.3'
+  - '5.6.0'
+
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - libstdc++6
 
 env:
   global:
@@ -33,6 +40,7 @@ env:
     - MODE=dart_required DART_CHANNEL=stable DART_VERSION=$DART_STABLE_VERSION
     - MODE=saucelabs_optional
     - MODE=browserstack_optional
+    - MODE=e2e
 
 matrix:
   allow_failures:

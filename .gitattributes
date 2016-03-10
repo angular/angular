@@ -1,0 +1,2 @@
+# Files ending with `.screenshot.png` will be stored using `git-lfs` rather than stored in the git repository
+*.screenshot.png filter=lfs diff=lfs merge=lfs -text

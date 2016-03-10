@@ -3,7 +3,7 @@
 
 start_tunnel() {
   case "$MODE" in
-    saucelabs*)
+    e2e*|saucelabs*)
       ./scripts/sauce/sauce_connect_setup.sh
       ;;
     browserstack*)
@@ -16,7 +16,7 @@ start_tunnel() {
 
 wait_for_tunnel() {
   case "$MODE" in
-    saucelabs*)
+    e2e*|saucelabs*)
       ./scripts/sauce/sauce_connect_block.sh
       ;;
     browserstack*)
@@ -30,7 +30,7 @@ wait_for_tunnel() {
 
 teardown_tunnel() {
   case "$MODE" in
-    saucelabs*)
+    e2e*|saucelabs*)
       ./scripts/sauce/sauce_connect_teardown.sh
       ;;
     browserstack*)
