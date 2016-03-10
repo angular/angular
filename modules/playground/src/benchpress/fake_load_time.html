@@ -1,0 +1,50 @@
+<!doctype html>
+<html>
+<head>
+  <title>Benchpress Fake Load Time Test</title>
+</head>
+<body>
+  <script>
+    (function() {
+      // Setup fake Angular testability callback.
+      var angularVersion;
+      var delay;
+
+      if (!location.search) throw new Error('No parameters provided! (expected angular, delay)');
+      location.search.substring(1).split("&").forEach(function(keyValue) {
+        var kv = keyValue.split("=");
+        var key = kv[0], value = kv[1];
+        switch (key) {
+          case "delay":
+            delay = Number(value);
+            break;
+          case "angular":
+            angularVersion = Number(value);
+            break;
+          default:
+            throw new Error('Unexpected param: ' + key);
+        }
+      });
+
+      var testability = {
+        whenStable: function(callback) {
+          if (delay) setTimeout(callback, delay);
+          else callback();
+        }
+      };
+
+      switch (angularVersion) {
+        case 1:
+          var angular = window.angular = { getTestability: function() { return testability } };
+          break;
+        case 2:
+          window.getAllAngularTestabilities = function() { return [testability] };
+          break;
+        default:
+          throw new Error('Unknown angular version: ' + angularVersion);
+      }
+    })();
+    
+  </script>
+</body>
+</html>

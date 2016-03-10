@@ -189,6 +189,54 @@ To collect these metrics, you need the following corresponding extra bindings:
       bp.bind(bp.Options.REQUEST_COUNT).toValue(true)
     ], ... )
 
+# Load Time Metrics
+
+Benchpress can measure the load time of an Angular1 or Angular2 app.
+
+- `angular.stable`: load time in ms, from [window.performance.timing.navigationStart](http://www.w3.org/TR/navigation-timing/#dom-performancetiming-navigationstart) to a stable Angular UI',
+- `interactiveDom`: time in ms, from [window.performance.timing.navigationStart](http://www.w3.org/TR/navigation-timing/#dom-performancetiming-navigationstart) to [domInteractive](http://www.w3.org/TR/navigation-timing/#dom-performancetiming-domInteractive)
+- `completeDom`: time in ms, from [window.performance.timing.navigationStart](http://www.w3.org/TR/navigation-timing/#dom-performancetiming-navigationstart) to [domComplete](http://www.w3.org/TR/navigation-timing/#dom-performancetiming-domComplete)
+- `load`: time in ms, from [window.performance.timing.navigationStart](http://www.w3.org/TR/navigation-timing/#dom-performancetiming-navigationstart) to [loadEventEnd](http://www.w3.org/TR/navigation-timing/#dom-performancetiming-loadEventEnd)
+
+To collect these metrics, you need the following bindings:
+
+    benchpress.sample(bindings: [
+      bp.MultiMetric.createBindings([bp.AngularLoadTimeMetric]),
+      bp.bind(bp.RegressionSlopeValidator.METRIC).toValue('angular.stable'),
+    ], ... )
+
+On Chrome, you can combine these metrics with `PerflogMetric`:
+  
+    benchpress.sample(bindings: [
+      bp.MultiMetric.createBindings([bp.AngularLoadTimeMetric, bp.PerflogMetric]),
+    ], ... )
+
+Limitations:
+
+- These metrics will work on any browser that supports the [PerformanceTiming API](http://www.w3.org/TR/navigation-timing), which notably [excludes Safari for iOS 8.1 to 8.4](http://caniuse.com/#feat=nav-timing).
+- Benchpress injects scripts on the page to be notified of when Angular first becomes stable. If the page loads too quickly (~ below 400ms), then Benchpress' injected scripts will arrive too late to the party. In that case you can have your application record the time when the UI is stable, for Benchpress to pick up later:
+  
+    (function() {
+      function setupAngularStableTimeRecording() {
+        var testabilities =
+            window.getAllAngularTestabilities && window.getAllAngularTestabilities() || // Angular2
+            typeof(angular) != 'undefined' && [angular.getTestability(document.body)];  // Angular1
+        if (!testabilities) return false;
+
+        testabilities.forEach(function(t) {
+          t.whenStable(function() { window.benchpressAngularStableTime = Date.now(); })
+        });
+        return true;
+      }
+
+      if (!setupAngularStableTimeRecording()) {
+        var intervalId = setInterval(function() {
+          if (setupAngularStableTimeRecording()) clearInterval(intervalId);
+        }, 30);
+      }
+    })();
+
+
 # Best practices
 
 * Use normalized environments
