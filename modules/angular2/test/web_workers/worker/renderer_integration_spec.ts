@@ -194,29 +194,92 @@ export function main() {
              });
        }));
 
-    it('should add and remove fragments',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-         tcb.overrideView(MyComp, new ViewMetadata({
-                            template: '<template [ngIf]="ctxBoolProp">hello</template>',
-                            directives: [NgIf]
-                          }))
-             .createAsync(MyComp)
-             .then((fixture) => {
+    describe("add / remove fragments", () => {
+      it('should add and remove fragments',
+        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+          tcb.overrideView(MyComp, new ViewMetadata({
+                              template: '<template [ngIf]="ctxBoolProp">hello</template>',
+                              directives: [NgIf]
+                            }))
+              .createAsync(MyComp)
+              .then((fixture) => {
 
-               var rootEl = getRenderElement(fixture.elementRef);
-               expect(rootEl).toHaveText('');
+                var rootEl = getRenderElement(fixture.elementRef);
+                expect(rootEl).toHaveText('');
 
-               fixture.debugElement.componentInstance.ctxBoolProp = true;
-               fixture.detectChanges();
-               expect(rootEl).toHaveText('hello');
+                fixture.debugElement.componentInstance.ctxBoolProp = true;
+                fixture.detectChanges();
+                expect(rootEl).toHaveText('hello');
 
-               fixture.debugElement.componentInstance.ctxBoolProp = false;
-               fixture.detectChanges();
-               expect(rootEl).toHaveText('');
+                fixture.debugElement.componentInstance.ctxBoolProp = false;
+                fixture.detectChanges();
+                expect(rootEl).toHaveText('');
 
-               async.done();
-             });
-       }));
+                async.done();
+              });
+        })
+      );
+
+      describe("with ng-animate", () => {
+        it('should add fragments with ng-enter class manipulation follow to css animation',
+          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+            tcb
+              .overrideView(MyComp, new ViewMetadata({
+                              template: `
+                                <div class="ng-animate" *ngIf="ctxBoolProp">
+                                </div>
+                              `,
+                              directives: [NgIf]
+                            }))
+              .createAsync(MyComp)
+              .then((fixture) => {
+                var rootEl = getRenderElement(fixture.elementRef);
+
+                fixture.debugElement.componentInstance.ctxBoolProp = true;
+                fixture.detectChanges();
+
+                var targetEl = DOM.querySelector(rootEl, '.ng-animate');
+
+                // should add ng-enter first.
+                expect(DOM.hasClass(targetEl, 'ng-enter')).toBe(true);
+
+                async.done();
+              });
+          })
+        );
+
+        it('should remove fragments with ng-leave class manipulation follow to css animation',
+          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+            tcb
+              .overrideView(MyComp, new ViewMetadata({
+                              template: `
+                                <div class="ng-animate" *ngIf="ctxBoolProp">
+                                </div>
+                              `,
+                              directives: [NgIf]
+                            }))
+              .createAsync(MyComp)
+              .then((fixture) => {
+                var rootEl = getRenderElement(fixture.elementRef);
+
+                fixture.debugElement.componentInstance.ctxBoolProp = true;
+                fixture.detectChanges();
+
+                fixture.debugElement.componentInstance.ctxBoolProp = false;
+                fixture.detectChanges();
+
+                var targetEl = DOM.querySelector(rootEl, '.ng-animate');
+
+                // should add ng-leave before DOM remove.
+                expect(DOM.hasClass(targetEl, 'ng-leave')).toBe(true);
+
+                async.done();
+              });
+          })
+        );
+      });
+    });
+
 
     if (DOM.supportsDOMEvents()) {
       it('should call actions on the element',
