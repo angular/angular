@@ -1001,7 +1001,7 @@ export class PipeMetadata extends InjectableMetadata {
 export class InputMetadata {
   constructor(
       /**
-       * Name used when instantiating a component in the temlate.
+       * Name used when instantiating a component in the template.
        */
       public bindingPropertyName?: string) {}
 }
