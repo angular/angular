@@ -343,14 +343,16 @@ export class ShadowCss {
                          strict: boolean): string {
     var r = [], parts = selector.split(',');
     for (var i = 0; i < parts.length; i++) {
-      var p = parts[i];
-      p = p.trim();
-      if (this._selectorNeedsScoping(p, scopeSelector)) {
-        p = strict && !StringWrapper.contains(p, _polyfillHostNoCombinator) ?
-                this._applyStrictSelectorScope(p, scopeSelector) :
-                this._applySelectorScope(p, scopeSelector, hostSelector);
+      var p = parts[i].trim();
+      var deepParts = StringWrapper.split(p, _shadowDeepSelectors);
+      var shallowPart = deepParts[0];
+      if (this._selectorNeedsScoping(shallowPart, scopeSelector)) {
+        deepParts[0] = strict && !StringWrapper.contains(shallowPart, _polyfillHostNoCombinator) ?
+                           this._applyStrictSelectorScope(shallowPart, scopeSelector) :
+                           this._applySelectorScope(shallowPart, scopeSelector, hostSelector);
       }
-      r.push(p);
+      // replace /deep/ with a space for child selectors
+      r.push(deepParts.join(' '));
     }
     return r.join(', ');
   }
@@ -434,17 +436,16 @@ var _cssColonHostRe = RegExpWrapper.create('(' + _polyfillHost + _parenSuffix, '
 var _cssColonHostContextRe = RegExpWrapper.create('(' + _polyfillHostContext + _parenSuffix, 'im');
 var _polyfillHostNoCombinator = _polyfillHost + '-no-combinator';
 var _shadowDOMSelectorsRe = [
-  />>>/g,
   /::shadow/g,
   /::content/g,
   // Deprecated selectors
   // TODO(vicb): see https://github.com/angular/clang-format/issues/16
   // clang-format off
-  /\/deep\//g,         // former >>>
   /\/shadow-deep\//g,  // former /deep/
   /\/shadow\//g,       // former ::shadow
   // clanf-format on
 ];
+var _shadowDeepSelectors = /(?:>>>)|(?:\/deep\/)/g;
 var _selectorReSuffix = '([>\\s~+\[.,{:][\\s\\S]*)?$';
 var _polyfillHostRe = RegExpWrapper.create(_polyfillHost, 'im');
 var _colonHostRe = /:host/gim;
