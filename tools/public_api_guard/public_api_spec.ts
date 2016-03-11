@@ -106,7 +106,7 @@ const CORE = [
   'ComponentMetadata.viewProviders:any[]',
   'ComponentRef',
   'ComponentRef.componentType:Type',
-  'ComponentRef.dispose():any',
+  'ComponentRef.dispose():void',
   'ComponentRef.hostComponent:any',
   'ComponentRef.hostView:HostViewRef',
   'ComponentRef.injector:Injector',
