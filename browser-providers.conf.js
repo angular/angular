@@ -4,7 +4,9 @@
 var CIconfiguration = {
   'Chrome':       { unitTest: {target: 'SL', required: true}, e2e: {target: null, required: true}},
   'Firefox':      { unitTest: {target: 'SL', required: true}, e2e: {target: null, required: true}},
-  'FirefoxBeta':  { unitTest: {target: 'SL', required: true}, e2e: {target: null, required: true}},
+  // FirefoxBeta should be required:true
+  // https://github.com/angular/angular/issues/7560
+  'FirefoxBeta':  { unitTest: {target: 'SL', required: false}, e2e: {target: null, required: false}},
   'ChromeDev':    { unitTest: {target: null, required: true}, e2e: {target: null, required: true}},
   'FirefoxDev':   { unitTest: {target: null, required: true}, e2e: {target: null, required: true}},
   'IE9':          { unitTest: {target: 'SL', required: false}, e2e: {target: null, required: true}},
