@@ -1,0 +1,99 @@
+# md-button
+
+`md-button` is an HTML `<button>` or `<a>` tag enhanced with styling and animation to match the [spec of a Material Design button](https://www.google.com/design/spec/components/buttons.html).
+
+### Button types
+
+There are four types of buttons:
+ 1. Flat buttons - `md-button`
+    * Rectangular button
+    * Defaults to white background
+    * No box shadow
+ 2. Raised buttons - `md-raised-button`
+    * Rectangular button
+    * Defaults to white background
+    * Box shadow applied
+ 3. Floating Action Buttons (FABs) - `md-fab`
+    * Circular button
+    * Defaults background to "accent" palette defined in theme
+    * Box shadow applied
+    * 56 by 56 px
+ 4. Mini Floating Action Buttons (Mini FABs) - `md-mini-fab`
+    * Circular button
+    * Defaults background to "accent" palette defined in theme
+    * Box shadow applied
+    * 40 by 40 px
+ 
+Each is an attribute directive that you can add to a `button` or `a` tag.  You can provide custom content to the button by inserting it
+between the tags, as you would with a normal button.
+ 
+Example:
+ 
+ ```html
+<button md-button>FLAT</button>
+<button md-raised-button>RAISED</button>
+<button md-fab>
+    <i class="material-icons md-24">add</i>
+</button>
+<button md-mini-fab>
+    <i class="material-icons md-24">add</i>
+</button>
+ ```
+
+Output:
+
+<img src="https://material.angularjs.org/material2_assets/buttons/basic-buttons.png">
+
+### Theming
+
+All button types can be themed to match your "primary" palette, your "accent" palette, or your "warn" palette using the `color` attribute. 
+Simply pass in the palette name.
+
+In flat buttons, the palette chosen will affect the text color, while in other buttons, it affects the background. 
+
+Example:
+ 
+ ```html
+<button md-raised-button color="primary">PRIMARY</button>
+<button md-raised-button color="accent">ACCENT</button>
+<button md-raised-button color="warn">WARN</button>
+ ```
+
+Output:
+
+<img src="https://material.angularjs.org/material2_assets/buttons/colored-buttons.png">
+
+### Disabling
+
+You can disable any button type through the native `disabled` property.  You can add it directly, or bind it to a property on your
+component class.
+
+```html
+<button md-button disabled>off</button>
+<button md-raised-button [disabled]="isDisabled">off</button>
+<button md-mini-fab [disabled]="isDisabled">check circle</button>
+```
+
+Output:
+
+<img src="https://material.angularjs.org/material2_assets/buttons/disabled-buttons.png">
+
+### Accessibility
+
+ * In high contrast mode, a strong border is added to the button to make it easier to see.
+ * Button focus events originating from the keyboard will retain focus styles, while button focus events from the mouse will not.
+ * As `md-button` is added to an existing `button` or `a` tag, it enjoys all the accessibility natively built into these elements.
+ 
+ 
+### Upcoming work
+
+We will also be adding ink ripples to buttons in an upcoming milestone.
+
+### API Summary
+
+Properties:
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `color` | `"primary"|"accent"|"warn"` | The color palette of the button
+| `disabled` | boolean | Whether or not the button is disabled
