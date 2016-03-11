@@ -57,13 +57,11 @@ class ExportedSymbol {
   addTo(List<String> names) {
     var name = unwrapSymbol(symbol);
     if (declaration is MethodMirror) {
-      names.add('$name()');
+      names.add(name);
     } else if (declaration is ClassMirror) {
       var classMirror = declaration as ClassMirror;
       if (classMirror.isAbstract) name = '$name';
       names.add(name);
-      classMirror.staticMembers.forEach(members('$name#', names));
-      classMirror.instanceMembers.forEach(members('$name.', names));
     } else if (declaration is TypedefMirror) {
       names.add(name);
     } else if (declaration is VariableMirror) {
@@ -74,15 +72,6 @@ class ExportedSymbol {
   }
 
   toString() => unwrapSymbol(symbol);
-}
-
-members(String prefix, List<String> names) {
-  return (Symbol symbol, MethodMirror method) {
-    var name = unwrapSymbol(symbol);
-    if (method.isOperator || method.isPrivate || IGNORE[name] == true) return;
-    var suffix = (method.isSetter || method.isGetter) ? '' : '()';
-    names.add('$prefix$name$suffix');
-  };
 }
 
 class LibraryInfo {
@@ -134,19 +123,6 @@ Iterable<Symbol> _getUsedSymbols(
           print("Got error [$e] when visiting $d\n$s");
         }
       });
-    }
-
-    if (decl is MethodMirror) {
-      MethodMirror mdecl = decl;
-      if (mdecl.parameters != null) mdecl.parameters.forEach((p) {
-        used.addAll(_getUsedSymbols(p.type, seenDecls, path, true));
-      });
-      used.addAll(_getUsedSymbols(mdecl.returnType, seenDecls, path, true));
-    }
-
-    if (decl is VariableMirror) {
-      VariableMirror vdecl = decl;
-      used.addAll(_getUsedSymbols(vdecl.type, seenDecls, path, true));
     }
   }
 
