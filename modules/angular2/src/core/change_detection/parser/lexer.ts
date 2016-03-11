@@ -153,6 +153,7 @@ export const $BAR = 124;
 export const $RBRACE = 125;
 const $NBSP = 160;
 
+
 export class ScannerError extends BaseException {
   constructor(public message) { super(); }
 
@@ -378,7 +379,7 @@ class _Scanner {
   }
 }
 
-export function isWhitespace(code: number): boolean {
+function isWhitespace(code: number): boolean {
   return (code >= $TAB && code <= $SPACE) || (code == $NBSP);
 }
 
