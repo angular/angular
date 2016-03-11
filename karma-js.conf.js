@@ -17,8 +17,7 @@ module.exports = function(config) {
       // include Angular v1 for upgrade module testing
       'node_modules/angular/angular.min.js',
 
-      // zone-microtask must be included first as it contains a Promise monkey patch
-      'node_modules/zone.js/dist/zone-microtask.js',
+      'node_modules/zone.js/dist/zone.js',
       'node_modules/zone.js/dist/long-stack-trace-zone.js',
       'node_modules/zone.js/dist/jasmine-patch.js',
 

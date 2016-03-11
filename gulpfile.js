@@ -382,7 +382,7 @@ function proxyServeDart() {
 
 // ------------------
 // web servers
-gulp.task('serve.js.dev', ['build.js.dev'], function(neverDone) {
+gulp.task('serve.js.dev', ['build.js.dev', 'build.js.cjs'], function(neverDone) {
   var watch = require('./tools/build/watch');
 
   watch('modules/**', {ignoreInitial: true}, '!broccoli.js.dev');
@@ -706,7 +706,7 @@ gulp.task('!build.payload.js.webpack', function() {
         .then(function() {  // pad bundle with mandatory dependencies
           return new Promise(function(resolve, reject) {
             gulp.src([
-                  'node_modules/zone.js/dist/zone-microtask.js',
+                  'node_modules/zone.js/dist/zone.js',
                   'node_modules/zone.js/dist/long-stack-trace-zone.js',
                   'node_modules/reflect-metadata/Reflect.js',
                   CASE_PATH + '/app-bundle.js'
@@ -991,7 +991,7 @@ gulp.task('test.typings',
           ['!pre.test.typings.layoutNodeModule', '!pre.test.typings.copyTypingsSpec'], function() {
             var tsc = require('gulp-typescript');
 
-            return gulp.src([tmpdir + '/*.ts'])
+            return gulp.src([tmpdir + '/*.ts', 'node_modules/zone.js/dist/zone.js.d.ts'])
                 .pipe(tsc({
                   target: 'ES6',
                   module: 'commonjs',
@@ -1355,7 +1355,7 @@ gulp.task('!bundle.ng.polyfills', ['clean'],
 
 var JS_DEV_DEPS = [
   licenseWrap('node_modules/zone.js/LICENSE', true),
-  'node_modules/zone.js/dist/zone-microtask.js',
+  'node_modules/zone.js/dist/zone.js',
   'node_modules/zone.js/dist/long-stack-trace-zone.js',
   licenseWrap('node_modules/reflect-metadata/LICENSE', true),
   'node_modules/reflect-metadata/Reflect.js'
