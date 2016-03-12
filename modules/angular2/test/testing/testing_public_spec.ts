@@ -20,8 +20,11 @@ import {Injectable, bind} from 'angular2/core';
 import {NgIf} from 'angular2/common';
 import {Directive, Component, View, ViewMetadata} from 'angular2/core';
 import {PromiseWrapper} from 'angular2/src/facade/promise';
+import {scheduleMicrotask} from 'angular2/src/facade/lang';
+import {EventEmitter} from 'angular2/src/facade/async';
 import {XHR} from 'angular2/src/compiler/xhr';
 import {XHRImpl} from 'angular2/src/platform/browser/xhr_impl';
+import {DOM} from 'angular2/src/platform/dom/dom_adapter';
 
 // Services, and components for the tests.
 
@@ -107,6 +110,79 @@ class BadTemplateUrl {
 }
 
 export function main() {
+  describe('initial tests for zone', () => {
+    beforeEachProviders(() => [bind(FancyService).toValue(new FancyService())]);
+
+    describe('passing tests', () => {
+      it('should pass in a normal test', () => { expect(4).toEqual(4); });
+
+      it('should pass inside injectAsync', injectAsync([], () => { expect(4).toEqual(4); }));
+
+      it('should pass inside a setTimeout',
+         injectAsync([], () => { setTimeout(() => { expect(4).toEqual(4); }, 100); }));
+
+      it('should pass inside a microtask',
+         injectAsync([], () => { scheduleMicrotask(() => { expect(4).toEqual(4); }); }));
+
+      it('should work with event tasks', injectAsync([], () => {
+           var div = DOM.createElement('div');
+           var x = 1;
+
+           DOM.on(div, 'click', () => { x++; });
+
+           DOM.dispatchEvent(div, DOM.createMouseEvent('click'));
+           expect(x).toEqual(2);
+
+           DOM.dispatchEvent(div, DOM.createMouseEvent('click'));
+           expect(x).toEqual(3);
+         }));
+
+      it('should pass inside promise callbacks', injectAsync([FancyService], (service) => {
+           service.getAsyncValue().then((value) => { expect(value).toEqual('async value'); });
+         }));
+    });
+
+    xdescribe('failure cases', () => {
+      it('should fail in a normal test', () => { expect(4).toEqual(5); });
+
+      it('fails async normally', (done) => { done.fail('my error'); });
+
+      it('should fail inside injectAsync', injectAsync([], () => { expect(4).toEqual(6); }));
+
+      it('should fail inside a setTimeout',
+         injectAsync([], () => { setTimeout(() => { expect(4).toEqual(7); }, 100); }));
+
+      it('should fail inside a microtask',
+         injectAsync([], () => { scheduleMicrotask(() => { expect(4).toEqual(8); }); }));
+
+      it('should fail inside event tasks', injectAsync([], () => {
+           var div = DOM.createElement('div');
+           var x = 1;
+
+           DOM.on(div, 'click', () => { expect(4).toEqual(9); });
+         }));
+
+      it('should fail inside promise callbacks', injectAsync([FancyService], (service) => {
+           service.getAsyncValue().then((value) => { expect(value).toEqual('async valueXX'); });
+         }));
+
+      it('should fail if an error is thrown',
+         injectAsync([], () => { throw new Error('error1'); }));
+
+      it('should fail if an error is thrown inside a timeout',
+         injectAsync([], () => { setTimeout(() => { throw new Error('error2'); }, 100); }));
+
+      it('should fail if you try to use setInterval',
+         injectAsync([], () => { setInterval(() => { expect(4).toEqual(4); }, 100); }));
+
+      it('should time out without affecting future tests',
+         injectAsync([], () => { setTimeout(() => { expect(4).toEqual(7); }, 10000); }));
+
+      it('should pass inside a setTimeout',
+         injectAsync([], () => { setTimeout(() => { expect(2).toEqual(2); }, 100); }));
+    });
+  });
+
   describe('angular2 jasmine matchers', () => {
     describe('toHaveCssClass', () => {
       it('should assert that the CSS class is present', () => {
@@ -205,7 +281,7 @@ export function main() {
     });
   });
 
-  describe('errors', () => {
+  xdescribe('errors', () => {
     var originalJasmineIt: any;
     var originalJasmineBeforeEach: any;
 
@@ -369,7 +445,7 @@ export function main() {
     it('should instantiate a component with valid DOM',
        injectAsync([TestComponentBuilder], (tcb: TestComponentBuilder) => {
 
-         return tcb.createAsync(ChildComp).then((componentFixture) => {
+         tcb.createAsync(ChildComp).then((componentFixture) => {
            componentFixture.detectChanges();
 
            expect(componentFixture.debugElement.nativeElement).toHaveText('Original Child');

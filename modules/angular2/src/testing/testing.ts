@@ -126,32 +126,102 @@ function _isPromiseLike(input): boolean {
   return input && !!(input.then);
 }
 
+class AsyncTestZoneSpec implements ZoneSpec {
+  _finishCallback: Function;
+  _failCallback: Function;
+  _pendingMicroTasks: boolean = false;
+  _pendingMacroTasks: boolean = false;
+  _pendingEventTasks: boolean = false;
+
+  constructor(finishCallback: Function, failCallback: Function, namePrefix: string) {
+    this._finishCallback = finishCallback;
+    this._failCallback = failCallback;
+    this.name = 'asyncTestZone for ' + namePrefix;
+  }
+
+  _finishCallbackIfDone() {
+    if (!(this._pendingMicroTasks || this._pendingMacroTasks || this._pendingEventTasks)) {
+      this._finishCallback();
+    }
+  }
+
+  // ZoneSpec implementation below.
+
+  name: string = 'asyncTestZone';
+
+  onInvoke(parentZoneDelegate: ZoneDelegate, currentZone: Zone, targetZone: Zone,
+           delegate: Function, applyThis: any, applyArgs: any[], source: string): any {
+    try {
+      return parentZoneDelegate.invoke(targetZone, delegate, applyThis, applyArgs, source);
+    } finally {
+      this._finishCallbackIfDone();
+    }
+  }
+
+  onInvokeTask(delegate: ZoneDelegate, current: Zone, target: Zone, task: Task, applyThis: any,
+               applyArgs: any): any {
+    try {
+      return delegate.invokeTask(target, task, applyThis, applyArgs);
+    } finally {
+      this._finishCallbackIfDone();
+    }
+  };
+
+  onHandleError(parentZoneDelegate: ZoneDelegate, currentZone: Zone, targetZone: Zone,
+                error: any): boolean {
+    // Let the parent try to handle it.
+    var result = parentZoneDelegate.handleError(targetZone, error);
+    if (result) {
+      console.log(error.message);
+      console.log(error.stack);
+      this._failCallback(error.message ? error.message : 'unknown error');
+    }
+    return false;
+  }
+
+  onScheduleTask(delegate: ZoneDelegate, currentZone: Zone, targetZone: Zone, task: Task): Task {
+    if (task.type == 'macroTask' && task.source == 'setInterval') {
+      this._failCallback('Cannot use setInterval from within an async zone test.');
+      // TODO(juliemr): any other cleanup we want to handle here?
+      return;
+    }
+
+    return delegate.scheduleTask(targetZone, task);
+  }
+
+  onHasTask(delegate: ZoneDelegate, current: Zone, target: Zone, hasTaskState: HasTaskState) {
+    delegate.hasTask(target, hasTaskState);
+
+    if (hasTaskState.change == 'microTask') {
+      this._pendingMicroTasks = hasTaskState.microTask;
+      this._finishCallbackIfDone();
+    } else if (hasTaskState.change == 'macroTask') {
+      this._pendingMicroTasks = hasTaskState.macroTask;
+      this._finishCallbackIfDone();
+    } else if (hasTaskState.change == 'eventTask') {
+      this._finishCallbackIfDone();
+    }
+  }
+}
+
+function runInTestZone(fnToExecute, finishCallback: Function, failCallback: Function, testName = ""): any {
+  var testZoneSpec = new AsyncTestZoneSpec(finishCallback, failCallback, testName);
+
+  var testZone = global.Zone.current.fork(testZoneSpec);
+  return testZone.run(fnToExecute);  // runGuarded?
+}
+
 function _it(jsmFn: Function, name: string, testFn: FunctionWithParamTokens | AnyTestFn,
              testTimeOut: number): void {
   var timeOut = testTimeOut;
 
   if (testFn instanceof FunctionWithParamTokens) {
     jsmFn(name, (done) => {
-      var returnedTestValue;
-      try {
-        returnedTestValue = testInjector.execute(testFn);
-      } catch (err) {
-        done.fail(err);
-        return;
-      }
-
       if (testFn.isAsync) {
-        if (_isPromiseLike(returnedTestValue)) {
-          (<Promise<any>>returnedTestValue).then(() => { done(); }, (err) => { done.fail(err); });
-        } else {
-          done.fail('Error: injectAsync was expected to return a promise, but the ' +
-                    ' returned value was: ' + returnedTestValue);
-        }
+        runInTestZone(() => testInjector.execute(testFn), done, done.fail, name);
+
       } else {
-        if (!(returnedTestValue === undefined)) {
-          done.fail('Error: inject returned a value. Did you mean to use injectAsync? Returned ' +
-                    'value was: ' + returnedTestValue);
-        }
+        testInjector.execute(testFn);
         done();
       }
     }, timeOut);
@@ -179,26 +249,10 @@ export function beforeEach(fn: FunctionWithParamTokens | AnyTestFn): void {
     // The test case uses inject(). ie `beforeEach(inject([ClassA], (a) => { ...
     // }));`
     jsmBeforeEach((done) => {
-
-      var returnedTestValue;
-      try {
-        returnedTestValue = testInjector.execute(fn);
-      } catch (err) {
-        done.fail(err);
-        return;
-      }
       if (fn.isAsync) {
-        if (_isPromiseLike(returnedTestValue)) {
-          (<Promise<any>>returnedTestValue).then(() => { done(); }, (err) => { done.fail(err); });
-        } else {
-          done.fail('Error: injectAsync was expected to return a promise, but the ' +
-                    ' returned value was: ' + returnedTestValue);
-        }
+        runInTestZone(() => testInjector.execute(fn), done, done.fail);
       } else {
-        if (!(returnedTestValue === undefined)) {
-          done.fail('Error: inject returned a value. Did you mean to use injectAsync? Returned ' +
-                    'value was: ' + returnedTestValue);
-        }
+        testInjector.execute(fn);
         done();
       }
     });
