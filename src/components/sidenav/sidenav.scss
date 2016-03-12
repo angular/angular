@@ -12,7 +12,7 @@ $md-sidenav-push-background-color: md-color($md-background, dialog) !default;
 
 
 /**
- * Mixin to help with defining LTR/RTL `transform: translateX()` values.
+ * Mixin to help with defining LTR/RTL 'transform: translateX()' values.
  * @param $open The translation value when the sidenav is opened.
  * @param $close The translation value when the sidenav is closed.
  */
@@ -20,7 +20,7 @@ $md-sidenav-push-background-color: md-color($md-background, dialog) !default;
   transform: translateX($close);
 
   &.md-sidenav-closed {
-    // We use `visibility: hidden | visible` because `display: none` will not animate any
+    // We use 'visibility: hidden | visible' because 'display: none' will not animate any
     // transitions, while visibility will interpolate transitions properly.
     // see https://developer.mozilla.org/en-US/docs/Web/CSS/visibility, the Interpolation
     // section.
@@ -46,7 +46,7 @@ $md-sidenav-push-background-color: md-color($md-background, dialog) !default;
 :host {
   // We need a stacking context here so that the backdrop and drawers are clipped to the
   // MdSidenavLayout. This creates a new z-index stack so we use low numbered z-indices.
-  // We create another stacking context in the `<md-content>` and in each sidenav so that
+  // We create another stacking context in the '<md-content>' and in each sidenav so that
   // the application content does not get messed up with our own CSS.
   @include md-stacking-context();
 
@@ -71,7 +71,7 @@ $md-sidenav-push-background-color: md-color($md-background, dialog) !default;
     // numbers.
     z-index: 2;
 
-    // We use `visibility: hidden | visible` because `display: none` will not animate any
+    // We use 'visibility: hidden | visible' because 'display: none' will not animate any
     // transitions, while visibility will interpolate transitions properly.
     // see https://developer.mozilla.org/en-US/docs/Web/CSS/visibility, the Interpolation
     // section.
