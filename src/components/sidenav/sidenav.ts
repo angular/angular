@@ -18,7 +18,7 @@ import {PromiseWrapper, ObservableWrapper, EventEmitter} from 'angular2/src/faca
 import {iterateListLike} from 'angular2/src/facade/collection';
 import {BaseException} from 'angular2/src/facade/exceptions';
 import {CONST_EXPR, isPresent} from 'angular2/src/facade/lang';
-import {Dir} from '../../directives/dir/dir';
+import {Dir} from '../../core/rtl/dir';
 import {OneOf} from '../../core/annotations/one-of';
 
 

@@ -5,7 +5,7 @@ import {ButtonDemo} from './button/button-demo';
 import {SidenavDemo} from './sidenav/sidenav-demo';
 import {ProgressCircleDemo} from './progress-circle/progress-circle-demo';
 import {CheckboxDemo} from './checkbox/checkbox-demo';
-import {Dir} from '../directives/dir/dir';
+import {Dir} from '../core/rtl/dir';
 import {MdButton} from '../components/button/button';
 import {PortalDemo} from './portal/portal-demo';
 
