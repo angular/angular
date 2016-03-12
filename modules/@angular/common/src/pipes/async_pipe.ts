@@ -5,7 +5,13 @@ import {ObservableWrapper, Observable, EventEmitter} from '../../src/facade/asyn
 
 import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
 
-class ObservableStrategy {
+interface SubscriptionStrategy {
+  createSubscription(async: any, updateLatestValue: any, onError?: (v: any) => any): any;
+  dispose(subscription: any): void;
+  onDestroy(subscription: any): void;
+}
+
+class ObservableStrategy implements SubscriptionStrategy {
   createSubscription(async: any, updateLatestValue: any,
                      onError: (v: any) => any = e => { throw e; }): any {
     return ObservableWrapper.subscribe(async, updateLatestValue, onError);
@@ -16,7 +22,7 @@ class ObservableStrategy {
   onDestroy(subscription: any): void { ObservableWrapper.dispose(subscription); }
 }
 
-class PromiseStrategy {
+class PromiseStrategy implements SubscriptionStrategy {
   createSubscription(async: Promise<any>, updateLatestValue: (v: any) => any,
                      onError: (v: any) => any = e => { throw e; }): any {
     return async.then(updateLatestValue, onError);
@@ -61,7 +67,7 @@ export class AsyncPipe implements OnDestroy {
   _subscription: Object = null;
   /** @internal */
   _obj: Observable<any>| Promise<any>| EventEmitter<any> = null;
-  private _strategy: any = null;
+  private _strategy: SubscriptionStrategy = null;
   /** @internal */
   public _ref: ChangeDetectorRef;
   constructor(_ref: ChangeDetectorRef) { this._ref = _ref; }
