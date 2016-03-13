@@ -1,6 +1,7 @@
 export interface IModule {
   config(fn: any): IModule;
   directive(selector: string, factory: any): IModule;
+  component(selector: string, component: IComponent): IModule;
   controller(name: string, type: any): IModule;
   factory(key: string, factoryFn: any): IModule;
   value(key: string, value: any): IModule;
@@ -58,6 +59,15 @@ export interface IDirectivePrePost {
 export interface IDirectiveLinkFn {
   (scope: IScope, instanceElement: IAugmentedJQuery, instanceAttributes: IAttributes,
    controller: any, transclude: ITranscludeFunction): void;
+}
+export interface IComponent {
+  bindings?: Object;
+  controller?: any;
+  controllerAs?: string;
+  require?: any;
+  template?: any;
+  templateUrl?: any;
+  transclude?: any;
 }
 export interface IAttributes { $observe(attr: string, fn: (v: string) => void): void; }
 export interface ITranscludeFunction {
