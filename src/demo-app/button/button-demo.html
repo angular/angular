@@ -1,60 +1,61 @@
-<section>
+<div class="demo-button">
+  <section>
     <button md-button>flat</button>
     <button md-raised-button>raised</button>
     <button md-fab>
-        <i class="material-icons md-24">check circle</i>
+      <i class="material-icons md-24">check circle</i>
     </button>
     <button md-mini-fab>
-        <i class="material-icons md-24">check circle</i>
+      <i class="material-icons md-24">check circle</i>
     </button>
-</section>
+  </section>
 
-<section>
+  <section>
     <a href="http://www.google.com" md-button color="primary">link</a>
     <a href="http://www.google.com" md-raised-button>link</a>
     <a href="http://www.google.com" md-fab>
-        <i class="material-icons md-24">check circle</i>
+      <i class="material-icons md-24">check circle</i>
     </a>
     <a href="http://www.google.com" md-mini-fab>
-        <i class="material-icons md-24">check circle</i>
+      <i class="material-icons md-24">check circle</i>
     </a>
-</section>
+  </section>
 
-<section>
+  <section>
     <button md-button color="primary">primary</button>
     <button md-button color="accent">accent</button>
     <button md-button color="warn">warn</button>
-</section>
+  </section>
 
-<section>
+  <section>
     <button md-raised-button color="primary">primary</button>
     <button md-raised-button color="accent">accent</button>
     <button md-raised-button color="warn">warn</button>
-</section>
+  </section>
 
-<section>
+  <section>
     <button md-fab color="primary">
-        <i class="material-icons md-24">home</i>
+      <i class="material-icons md-24">home</i>
     </button>
     <button md-fab color="accent">
-        <i class="material-icons md-24">favorite</i>
+      <i class="material-icons md-24">favorite</i>
     </button>
     <button md-fab color="warn">
-        <i class="material-icons md-24">feedback</i>
+      <i class="material-icons md-24">feedback</i>
     </button>
-</section>
+  </section>
 
-<section>
+  <section>
     <div>
-        <span>isDisabled: {{isDisabled}}</span>
-        <button md-raised-button (click)="isDisabled=!isDisabled">Disable buttons</button>
+      <span>isDisabled: {{isDisabled}}</span>
+      <button md-raised-button (click)="isDisabled=!isDisabled">Disable buttons</button>
     </div>
     <button md-button [disabled]="isDisabled">off</button>
     <button md-button color="primary" [disabled]="isDisabled">off</button>
     <a href="http://www.google.com" md-button color="accent" [disabled]="isDisabled">off</a>
     <button md-raised-button color="primary" [disabled]="isDisabled">off</button>
     <button md-mini-fab [disabled]="isDisabled">
-        <i class="material-icons md-24">check circle</i>
+      <i class="material-icons md-24">check circle</i>
     </button>
-</section>
-
+  </section>
+</div>

@@ -1,19 +1,13 @@
 
-// Helps fonts on OSX looks more consistent with other systems
-// Isn't currently in button styles due to performance concerns
-* {
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
+.demo-button {
+  button, a {
+    margin: 8px;
+    text-transform: uppercase;
+  }
 
-button, a, {
-  margin: 8px;
-  text-transform: uppercase;
-}
-
-
-section {
-  background-color: #f7f7f7;
-  margin: 8px;
+  section {
+    background-color: #f7f7f7;
+    margin: 8px;
+  }
 }
 

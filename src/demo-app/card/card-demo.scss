@@ -1,22 +1,22 @@
-md-card {
-  margin: 0 16px 16px 0;
-  width: 350px;
-}
-
-.card-container {
+.demo-card-container {
   display: flex;
   flex-flow: column nowrap;
+
+  md-card {
+    margin: 0 16px 16px 0;
+    width: 350px;
+  }
+
+  img {
+    background-color: gray;
+  }
 }
 
-.blue {
+.demo-card-blue {
   background-color: #B0BECC;
-}
 
-.blue md-card-actions {
-  display: flex;
-  flex-direction: column;
-}
-
-img {
-  background-color: gray;
+  md-card-actions {
+    display: flex;
+    flex-direction: column;
+  }
 }
