@@ -1,0 +1,57 @@
+@import "variables";
+@import "mixins";
+@import "default-theme"; //TODO: remove that soon.
+
+$md-toolbar-min-height: 64px !default;
+$md-toolbar-font-size: 20px !default;
+$md-toolbar-padding: 16px !default;
+
+@mixin toolbar-theme($palette) {
+  background: md-color($palette);
+  color: md-color($palette, default-contrast);
+}
+
+:host {
+  display: flex;
+  box-sizing: border-box;
+
+  width: 100%;
+  min-height: $md-toolbar-min-height;
+
+  // Font Styling
+  font-size: $md-toolbar-font-size;
+  font-weight: 400;
+  font-family: $md-font-family;
+
+  padding: 0 $md-toolbar-padding;
+
+  flex-direction: column;
+
+  background: md-color($md-background, app-bar);
+  color: md-color($md-foreground, text);
+
+  &.md-primary {
+    @include toolbar-theme($md-primary);
+  }
+
+  &.md-accent {
+    @include toolbar-theme($md-accent);
+  }
+
+  &.md-warn {
+    @include toolbar-theme($md-warn);
+  }
+
+  md-toolbar-row {
+    display: flex;
+    box-sizing: border-box;
+
+    width: 100%;
+    height: $md-toolbar-min-height;
+
+    // Flexbox Vertical Alignment
+    flex-direction: row;
+    align-items: center;
+  }
+
+}

@@ -8,6 +8,7 @@ import {CheckboxDemo} from './checkbox/checkbox-demo';
 import {Dir} from '../core/rtl/dir';
 import {MdButton} from '../components/button/button';
 import {PortalDemo} from './portal/portal-demo';
+import {ToolbarDemo} from './toolbar/toolbar-demo';
 
 
 @Component({
@@ -31,6 +32,7 @@ export class Home {}
   new Route({path: '/sidenav', name: 'SidenavDemo', component: SidenavDemo}),
   new Route({path: '/progress-circle', name: 'ProgressCircleDemo', component: ProgressCircleDemo}),
   new Route({path: '/portal', name: 'PortalDemo', component: PortalDemo}),
-  new Route({path: '/checkbox', name: 'CheckboxDemo', component: CheckboxDemo})
+  new Route({path: '/checkbox', name: 'CheckboxDemo', component: CheckboxDemo}),
+  new Route({path: '/toolbar', name: 'ToolbarDemo', component: ToolbarDemo}),
 ])
 export class DemoApp { }
