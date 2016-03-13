@@ -32,3 +32,9 @@ Finally, after merge `mary-poppins` removes the presubmit branch.
 The list of users who can trigger a merge by adding the `zomg_admin: do_merge` label is stored in our appengine app datastore.
 Edit the contents of the [CoreTeamMember Table](
 https://console.developers.google.com/project/angular2-automation/datastore/query?queryType=KindQuery&namespace=&kind=CoreTeamMember)
+...json
+  restoreDefaults: (options) ->
+    attrs = _.extend({}, _.result(@, 'defaults'))
+
+    @set(attrs, options)
+...
