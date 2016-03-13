@@ -454,8 +454,14 @@ export class CssScanner {
   scanCssValueFunction() {
     var start = this.index;
     var startingColumn = this.column;
-    while (this.peek != $EOF && this.peek != $RPAREN) {
+    var parenBalance = 1;
+    while (this.peek != $EOF && parenBalance > 0) {
       this.advance();
+      if (this.peek == $LPAREN) {
+        parenBalance++;
+      } else if (this.peek == $RPAREN) {
+        parenBalance--;
+      }
     }
     var strValue = this.input.substring(start, this.index);
     return new CssToken(start, startingColumn, this.line, CssTokenType.Identifier, strValue);
