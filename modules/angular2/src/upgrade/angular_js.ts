@@ -64,6 +64,7 @@ export interface IComponent {
   bindings?: Object;
   controller?: any;
   controllerAs?: string;
+  require?: any;
   template?: any;
   templateUrl?: any;
   transclude?: any;
