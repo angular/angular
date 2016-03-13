@@ -18,13 +18,13 @@
 
 
 
+# File lib/labels/.cla%3A%20yes, line 21
+```json
+  initialize: ->
+    setupStorage(@)
 
-
-
-
-
-
-
+    @init(arguments...)
+```
 
 
 
