@@ -1,3 +1,4 @@
+declare var Promise: PromiseConstructor;
 
 export class PromiseCompleter<R> {
   promise: Promise<R>;
