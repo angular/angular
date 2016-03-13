@@ -12,6 +12,8 @@ import {PortalDemo} from './portal/portal-demo';
 import {ToolbarDemo} from './toolbar/toolbar-demo';
 import {OverlayDemo} from './overlay/overlay-demo';
 import {ListDemo} from './list/list-demo';
+import {InputDemo} from './input/input-demo';
+
 
 @Component({
   selector: 'home',
@@ -37,6 +39,7 @@ export class Home {}
   new Route({path: '/portal', name: 'PortalDemo', component: PortalDemo}),
   new Route({path: '/overlay', name: 'OverlayDemo', component: OverlayDemo}),
   new Route({path: '/checkbox', name: 'CheckboxDemo', component: CheckboxDemo}),
+  new Route({path: '/input', name: 'InputDemo', component: InputDemo}),
   new Route({path: '/toolbar', name: 'ToolbarDemo', component: ToolbarDemo}),
   new Route({path: '/list', name: 'ListDemo', component: ListDemo})
 ])

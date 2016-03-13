@@ -1,0 +1,99 @@
+<md-card class="demo-card">
+  <md-card-title>
+    Hello <md-input [(ngModel)]="name" type="string" placeholder="First name"></md-input>,
+    how are you?
+  </md-card-title>
+  <md-card-content>
+    <p>
+      <md-input disabled placeholder="Disabled field" value="Value"></md-input>
+      <md-input required placeholder="Required field"></md-input>
+    </p>
+    <p>
+      <md-input placeholder="100% width placeholder" style="width: 100%"></md-input>
+    </p>
+    <p>
+      <md-input placeholder="Character count (100 max)" maxLength="100" style="width: 100%"
+                #input>
+        <md-hint align="end">{{input.characterCount}} / 100</md-hint>
+      </md-input>
+    </p>
+    <p>
+      <md-input placeholder="Show Hint Label" style="width: 100%"
+                hintLabel="Hint label"></md-input>
+    </p>
+
+    <p>
+      <md-input>
+        <md-placeholder>
+          I <i class="material-icons demo-icons">favorite</i> <b>bold</b> placeholder
+        </md-placeholder>
+        <md-hint>
+          I also <i class="material-icons demo-icons">home</i> <i>italic</i> hint labels
+        </md-hint>
+      </md-input>
+    </p>
+    <p>
+      <md-input placeholder="Show Hint Label With Character Count" style="width: 100%"
+                hintLabel="Hint label" characterCounter></md-input>
+    </p>
+    <p>
+      <md-checkbox [(ngModel)]="dividerColor">Check to change the divider color:</md-checkbox>
+      <md-input [dividerColor]="dividerColor ? 'primary' : 'accent'"
+                [placeholder]="dividerColor ? 'Primary color' : 'Accent color'"></md-input>
+    </p>
+    <p>
+      <md-checkbox [(ngModel)]="requiredField"> Check to make required:</md-checkbox>
+      <md-input [required]="requiredField"
+                [placeholder]="requiredField ? 'Required field' : 'Not required field'"></md-input>
+    </p>
+    <p>
+      <md-checkbox [(ngModel)]="floatingLabel"> Check to make floating label:</md-checkbox>
+      <md-input [floatingPlaceholder]="floatingLabel"
+                [placeholder]="floatingLabel ? 'Floating label' : 'Not floating label'"></md-input>
+    </p>
+
+    <p>
+      <md-input placeholder="Prefixed" value="example">
+        <div md-prefix>Example:&nbsp;</div>
+      </md-input>
+      <md-input placeholder="Suffixed" value="123" align="end">
+        <span md-suffix>.00 €</span>
+      </md-input>
+      <br/>
+      Both:
+      <md-input #email placeholder="Email Address" value="angular-core" align="end">
+        <span md-prefix><i [class.primary]="email.focused" class="material-icons demo-icons demo-transform">email</i>&nbsp;</span>
+        <span md-suffix class="demo-transform" [class.primary]="email.focused">&nbsp;@gmail.com</span>
+      </md-input>
+    </p>
+
+    <p>
+      Empty: <md-input></md-input>
+      <label>Label: <md-input></md-input></label>
+    </p>
+  </md-card-content>
+</md-card>
+
+<md-card class="demo-card">
+  <table width="100%">
+    <thead>
+      <td>Table</td>
+      <td colspan="3">
+        <button (click)="addABunch(5)">Add 5</button>
+        <button (click)="addABunch(10)">Add 10</button>
+        <button (click)="addABunch(100)">Add 100</button>
+        <button (click)="addABunch(1000)">Add 1000</button>
+      </td>
+    </thead>
+    <tr *ngFor="#item of items; #i = index">
+      <td>{{i+1}}</td>
+      <td>
+        <md-input type="number" placeholder="value" aria-label="hello" [(ngModel)]="items[i].value"></md-input>
+      </td>
+      <td>
+        <input type="number" [(ngModel)]="items[i].value">
+      </td>
+      <td>{{item.value}}</td>
+    </tr>
+  </table>
+</md-card>
