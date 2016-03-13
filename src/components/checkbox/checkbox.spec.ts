@@ -137,7 +137,7 @@ export function main() {
     it('sets the "aria-labelledby" attribute to the id of the label', function(done: () => void) {
       builder.createAsync(CheckboxController).then(function(fixture) {
         fixture.detectChanges();
-        let el = fixture.debugElement.query(By.css('.mc-checkbox'));
+        let el = fixture.debugElement.query(By.css('.md-checkbox'));
         let label = el.nativeElement.querySelector('label');
         expect(el.nativeElement.getAttribute('aria-labelledby')).toEqual(label.id);
       }).then(done).catch(done);
