@@ -206,6 +206,7 @@ export function main() {
           background: url(matias.css);
           animation-timing-function: cubic-bezier(0.755, 0.050, 0.855, 0.060);
           height: calc(100% - 50px);
+          background-image: linear-gradient( 45deg, rgba(100, 0, 0, 0.5), black );
         }
       `;
 
@@ -213,12 +214,14 @@ export function main() {
          expect(ast.rules.length).toEqual(1);
 
          var defs = (<CssSelectorRuleAST>ast.rules[0]).block.entries;
-         expect(defs.length).toEqual(3);
+         expect(defs.length).toEqual(4);
 
          assertTokens((<CssDefinitionAST>defs[0]).value.tokens, ['url', '(', 'matias.css', ')']);
          assertTokens((<CssDefinitionAST>defs[1]).value.tokens,
                       ['cubic-bezier', '(', '0.755, 0.050, 0.855, 0.060', ')']);
          assertTokens((<CssDefinitionAST>defs[2]).value.tokens, ['calc', '(', '100% - 50px', ')']);
+         assertTokens((<CssDefinitionAST>defs[3]).value.tokens,
+                      ['linear-gradient', '(', '45deg, rgba(100, 0, 0, 0.5), black', ')']);
        });
 
     it('should parse un-named block-level CSS values', () => {
