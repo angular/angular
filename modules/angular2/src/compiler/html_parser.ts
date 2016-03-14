@@ -102,7 +102,7 @@ class TreeBuilder {
     var text = this._advanceIf(HtmlTokenType.RAW_TEXT);
     this._advanceIf(HtmlTokenType.COMMENT_END);
     var value = isPresent(text) ? text.parts[0].trim() : null;
-    this._addToParent(new HtmlCommentAst(value, token.sourceSpan))
+    this._addToParent(new HtmlCommentAst(value, token.sourceSpan));
   }
 
   private _consumeText(token: HtmlToken) {
