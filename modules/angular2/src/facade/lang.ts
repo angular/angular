@@ -18,6 +18,7 @@ export interface BrowserNodeGlobal {
   clearTimeout: Function;
   setInterval: Function;
   clearInterval: Function;
+  encodeURI: Function;
 }
 
 // TODO(jteplitz602): Load WorkerGlobalScope from lib.webworker.d.ts file #3492
@@ -472,4 +473,8 @@ export function bitWiseOr(values: number[]): number {
 
 export function bitWiseAnd(values: number[]): number {
   return values.reduce((a, b) => { return a & b; });
+}
+
+export function escape(s: string): string {
+  return _global.encodeURI(s);
 }

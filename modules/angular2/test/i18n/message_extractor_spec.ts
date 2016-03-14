@@ -12,7 +12,8 @@ import {
 } from 'angular2/testing_internal';
 
 import {HtmlParser} from 'angular2/src/compiler/html_parser';
-import {MessageExtractor, Message, removeDuplicates} from 'angular2/src/i18n/message_extractor';
+import {MessageExtractor, removeDuplicates} from 'angular2/src/i18n/message_extractor';
+import {Message} from 'angular2/src/i18n/message';
 import {Parser} from 'angular2/src/core/change_detection/parser/parser';
 import {Lexer} from 'angular2/src/core/change_detection/parser/lexer';
 
