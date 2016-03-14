@@ -55,7 +55,7 @@ components will serve as an example of how to write Angular code following best 
 * Behave as expected across a wide variety of use-cases without bugs.
 * Behavior is well-tested with both unit and integration tests.
 * Customizable within the bounds of the Material Design specification.
-* Performance cost is minimized 
+* Performance cost is minimized.
 * Code is clean and well-documented to serve as an example for Angular devs.
 
 ## Browser and screen reader support
