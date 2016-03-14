@@ -1,11 +1,7 @@
-**IMPORTANT**: This repository's issues are reserved for feature requests and bug reports. Do not submit support requests here, see https://github.com/angular/angular/blob/master/CONTRIBUTING.md#question. 
-
-
-**Steps to reproduce and a minimal demo of the problem**
-
-_Use https://plnkr.co or similar -- try this template as a starting point: http://plnkr.co/edit/tpl:AvJOMERrnz94ekVua0u5_
-
-_What steps should we try in your demo to see the problem?_
+* **I'm submitting a ...**
+- [ ] bug report
+- [ ] feature request
+- [ ] support request => Please do not submit support request here, see note at the top of this template.
 
 **Current behavior**
 
@@ -13,4 +9,23 @@ _What steps should we try in your demo to see the problem?_
 **Expected/desired behavior**
 
 
-**Other information**
+* **If the current behavior is a bug, please provide the steps to reproduce and if possible a minimal demo of the problem** via
+https://plnkr.co or similar (you can use this template as a starting point: http://plnkr.co/edit/tpl:AvJOMERrnz94ekVua0u5).
+
+
+
+* **What is the expected behavior?**
+
+
+
+* **What is the motivation / use case for changing the behavior?**
+
+
+
+* **Please tell us about your environment:**
+
+* **Angular version:** 2.0.0-beta.X 
+ 
+* **Browser:** [all | Chrome XX | Firefox XX | IE XX | Safari XX | Mobile Chrome XX | Android X.X Web Browser | iOS XX Safari | iOS XX UIWebView | iOS XX WKWebView ] 
+ 
+* **Language:** [all | TypeScript X.X | ES6/7 | ES5 | Dart] 
