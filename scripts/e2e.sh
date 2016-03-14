@@ -2,7 +2,6 @@
 
 export MODE=e2e
 export LOGS_DIR=/tmp/angular-material2-build/logs
-export BROWSER_PROVIDER_READY_FILE=$LOGS_DIR/sauce-connect-readyfile
 export SAUCE_USERNAME=angular-ci
 export SAUCE_ACCESS_KEY=9b988f434ff8-fbca-8aa4-4ae3-35442987
 export TRAVIS_JOB_NUMBER=12345

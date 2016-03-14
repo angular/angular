@@ -24,6 +24,7 @@ env:
   - ARCH=linux-x64
   - DART_DEV_VERSION=latest
   - DART_STABLE_VERSION=latest
+  - BROWSER_PROVIDER_READY_FILE=/tmp/angular-material2-build/readyfile
   # Token for tsd to increase github rate limit
   # See https://github.com/DefinitelyTyped/tsd#tsdrc
   # This does not use http://docs.travis-ci.com/user/environment-variables/#Secure-Variables
@@ -35,12 +36,12 @@ env:
   - secure: "fq/U7VDMWO8O8SnAQkdbkoSe2X92PVqg4d044HmRYVmcf6YbO48+xeGJ8yOk0pCBwl3ISO4Q2ot0x546kxfiYBuHkZetlngZxZCtQiFT9kyId8ZKcYdXaIW9OVdw3Gh3tQyUwDucfkVhqcs52D6NZjyE2aWZ4/d1V4kWRO/LMgo="
   matrix:
     # Order: a slower build first, so that we don't occupy an idle travis worker waiting for others to complete.
+    - MODE=e2e
     - MODE=saucelabs_required
     - MODE=browserstack_required
     - MODE=dart_required DART_CHANNEL=stable DART_VERSION=$DART_STABLE_VERSION
     - MODE=saucelabs_optional
     - MODE=browserstack_optional
-    - MODE=e2e
 
 matrix:
   allow_failures:
