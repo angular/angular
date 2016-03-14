@@ -13,20 +13,10 @@ import {isPresent, isBlank} from 'angular2/src/facade/lang';
 import {StringMapWrapper} from 'angular2/src/facade/collection';
 import {Parser} from 'angular2/src/core/change_detection/parser/parser';
 import {Interpolation} from 'angular2/src/core/change_detection/parser/ast';
+import {Message, id} from './message';
 
 const I18N_ATTR = "i18n";
 const I18N_ATTR_PREFIX = "i18n-";
-
-/**
- * A message extracted from a template.
- *
- * The identity of a message is comprised of `content` and `meaning`.
- *
- * `description` is additional information provided to the translator.
- */
-export class Message {
-  constructor(public content: string, public meaning: string, public description: string) {}
-}
 
 /**
  * All messages extracted from a template.
@@ -56,9 +46,8 @@ export class I18nExtractionError extends ParseError {
 export function removeDuplicates(messages: Message[]): Message[] {
   let uniq: {[key: string]: Message} = {};
   messages.forEach(m => {
-    let key = `$ng__${m.meaning}__|${m.content}`;
-    if (!StringMapWrapper.contains(uniq, key)) {
-      uniq[key] = m;
+    if (!StringMapWrapper.contains(uniq, id(m))) {
+      uniq[id(m)] = m;
     }
   });
   return StringMapWrapper.values(uniq);
