@@ -12,7 +12,16 @@ import {
 } from 'angular2/testing_internal';
 import {DOM} from 'angular2/src/platform/dom/dom_adapter';
 
-import {Component, Class, Inject, EventEmitter, ApplicationRef, provide} from 'angular2/core';
+import {global} from 'angular2/src/facade/lang';
+import {
+  Component,
+  Class,
+  Inject,
+  EventEmitter,
+  ApplicationRef,
+  provide,
+  Testability,
+} from 'angular2/core';
 import {UpgradeAdapter} from 'angular2/upgrade';
 import * as angular from 'angular2/src/upgrade/angular_js';
 
@@ -559,6 +568,52 @@ export function main() {
          }));
     });
 
+    describe('testability', () => {
+      it('should handle deferred bootstrap', inject([AsyncTestCompleter], (async) => {
+           var adapter: UpgradeAdapter = new UpgradeAdapter();
+           var ng1Module = angular.module('ng1', []);
+           var bootstrapResumed: boolean = false;
+
+           var element = html("<div></div>");
+           window.name = 'NG_DEFER_BOOTSTRAP!' + window.name;
+
+           adapter.bootstrap(element, ['ng1'])
+               .ready((ref) => {
+                 expect(bootstrapResumed).toEqual(true);
+                 ref.dispose();
+                 async.done();
+               });
+
+           setTimeout(() => {
+             bootstrapResumed = true;
+             (<any>global).angular.resumeBootstrap();
+           }, 100);
+         }));
+
+      it('should wait for ng2 testability', inject([AsyncTestCompleter], (async) => {
+           var adapter: UpgradeAdapter = new UpgradeAdapter();
+           var ng1Module = angular.module('ng1', []);
+           var element = html("<div></div>");
+           adapter.bootstrap(element, ['ng1'])
+               .ready((ref) => {
+                 var ng2Testability: Testability = ref.ng2Injector.get(Testability);
+                 ng2Testability.increasePendingRequestCount();
+                 var ng2Stable = false;
+
+                 angular.getTestability(element).whenStable(function() {
+                   expect(ng2Stable).toEqual(true);
+                   ref.dispose();
+                   async.done();
+                 });
+
+                 setTimeout(() => {
+                   ng2Stable = true;
+                   ng2Testability.decreasePendingRequestCount();
+                 }, 100);
+               });
+         }));
+    });
+
     describe('examples', () => {
       it('should verify UpgradeAdapter example', inject([AsyncTestCompleter], (async) => {
            var adapter = new UpgradeAdapter();
@@ -594,7 +649,6 @@ export function main() {
                });
          }));
     });
-
   });
 }
 
