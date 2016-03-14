@@ -9,7 +9,7 @@ import {
 } from '../../core/facade/testing';
 import {Component, DebugElement} from 'angular2/core';
 import {By} from 'angular2/platform/browser';
-import {MdProgressCircle} from './progress_circle';
+import {MdProgressCircle} from './progress-circle';
 
 
 export function main() {

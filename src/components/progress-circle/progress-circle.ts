@@ -29,7 +29,7 @@ class ProgressMode {
     'aria-valuemin': '0',
     'aria-valuemax': '100',
   },
-  templateUrl: './components/progress-circle/progress_circle.html',
+  templateUrl: './components/progress-circle/progress-circle.html',
   styleUrls: ['./components/progress-circle/progress-circle.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -106,7 +106,7 @@ export class MdProgressCircle {
   host: {
     'role': 'progressbar',
   },
-  templateUrl: './components/progress-circle/progress_circle.html',
+  templateUrl: './components/progress-circle/progress-circle.html',
   styleUrls: ['./components/progress-circle/progress-circle.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

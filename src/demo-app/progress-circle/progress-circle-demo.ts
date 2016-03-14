@@ -1,6 +1,6 @@
 import {Component} from 'angular2/core';
 import {MdButton} from '../../components/button/button';
-import {MdProgressCircle, MdSpinner} from '../../components/progress-circle/progress_circle';
+import {MdProgressCircle, MdSpinner} from '../../components/progress-circle/progress-circle';
 
 @Component({
   selector: 'progress-circle-demo',
