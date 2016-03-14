@@ -10,8 +10,10 @@ import {
   HostViewFactoryRef,
   Provider,
   Type,
+  Testability,
   APPLICATION_COMMON_PROVIDERS
 } from 'angular2/core';
+import {global} from 'angular2/src/facade/lang';
 import {ObservableWrapper} from 'angular2/src/facade/async';
 import {BROWSER_PROVIDERS, BROWSER_APP_PROVIDERS} from 'angular2/platform/browser';
 
@@ -23,6 +25,7 @@ import {
   NG1_PARSE,
   NG1_ROOT_SCOPE,
   NG1_SCOPE,
+  NG1_TESTABILITY,
   NG2_APP_VIEW_MANAGER,
   NG2_COMPILER,
   NG2_INJECTOR,
@@ -309,6 +312,7 @@ export class UpgradeAdapter {
     var rootScope: angular.IRootScopeService;
     var hostViewFactoryRefMap: HostViewFactoryRefMap = {};
     var ng1Module = angular.module(this.idPrefix, modules);
+    var ng1BootstrapPromise: Promise<any> = null;
     var ng1compilePromise: Promise<any> = null;
     ng1Module.value(NG2_INJECTOR, injector)
         .value(NG2_ZONE, ngZone)
@@ -331,23 +335,68 @@ export class UpgradeAdapter {
                 return rootScope = rootScopeDelegate;
               }
             ]);
-          }
-        ])
-        .run([
-          '$injector',
-          '$rootScope',
-          (injector: angular.IInjectorService, rootScope: angular.IRootScopeService) => {
-            ng1Injector = injector;
-            ObservableWrapper.subscribe(ngZone.onMicrotaskEmpty,
-                                        (_) => ngZone.runOutsideAngular(() => rootScope.$apply()));
-            ng1compilePromise =
-                UpgradeNg1ComponentAdapterBuilder.resolve(this.downgradedComponents, injector);
+            provide.decorator(NG1_TESTABILITY, [
+              '$delegate',
+              function(testabilityDelegate: angular.ITestabilityService) {
+                var ng2Testability: Testability = injector.get(Testability);
+
+                var origonalWhenStable: Function = testabilityDelegate.whenStable;
+                var newWhenStable = (callback: Function): void => {
+                  var whenStableContext: any = this;
+                  origonalWhenStable.call(this, function() {
+                    if (ng2Testability.isStable()) {
+                      callback.apply(this, arguments);
+                    } else {
+                      ng2Testability.whenStable(newWhenStable.bind(whenStableContext, callback));
+                    }
+                  });
+                };
+
+                testabilityDelegate.whenStable = newWhenStable;
+                return testabilityDelegate;
+              }
+            ]);
           }
         ]);
 
+    ng1compilePromise = new Promise((resolve, reject) => {
+      ng1Module.run([
+        '$injector',
+        '$rootScope',
+        (injector: angular.IInjectorService, rootScope: angular.IRootScopeService) => {
+          ng1Injector = injector;
+          ObservableWrapper.subscribe(ngZone.onMicrotaskEmpty,
+                                      (_) => ngZone.runOutsideAngular(() => rootScope.$apply()));
+          UpgradeNg1ComponentAdapterBuilder.resolve(this.downgradedComponents, injector)
+              .then(resolve, reject);
+        }
+      ]);
+    });
+
+    // Make sure resumeBootstrap() only exists if the current bootstrap is deferred
+    var windowAngular = (<any>global).angular;
+    windowAngular.resumeBootstrap = undefined;
+
     angular.element(element).data(controllerKey(NG2_INJECTOR), injector);
     ngZone.run(() => { angular.bootstrap(element, [this.idPrefix], config); });
-    Promise.all([this.compileNg2Components(compiler, hostViewFactoryRefMap), ng1compilePromise])
+    ng1BootstrapPromise = new Promise((resolve, reject) => {
+      if (windowAngular.resumeBootstrap) {
+        var originalResumeBootstrap: () => void = windowAngular.resumeBootstrap;
+        windowAngular.resumeBootstrap = function() {
+          windowAngular.resumeBootstrap = originalResumeBootstrap;
+          windowAngular.resumeBootstrap.apply(this, arguments);
+          resolve();
+        };
+      } else {
+        resolve();
+      }
+    });
+
+    Promise.all([
+             this.compileNg2Components(compiler, hostViewFactoryRefMap),
+             ng1BootstrapPromise,
+             ng1compilePromise
+           ])
         .then(() => {
           ngZone.run(() => {
             if (rootScopePrototype) {

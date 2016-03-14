@@ -97,16 +97,33 @@ export interface IControllerService {
 
 export interface IInjectorService { get(key: string): any; }
 
+export interface ITestabilityService {
+  findBindings(element: Element, expression: string, opt_exactMatch?: boolean): Element[];
+  findModels(element: Element, expression: string, opt_exactMatch?: boolean): Element[];
+  getLocation(): string;
+  setLocation(url: string): void;
+  whenStable(callback: Function): void;
+}
+
 function noNg() {
   throw new Error('AngularJS v1.x is not loaded!');
 }
 
-var angular: {
-  bootstrap: (e: Element, modules: string[], config: IAngularBootstrapConfig) => void,
-  module: (prefix: string, dependencies?: string[]) => IModule,
-  element: (e: Element) => IAugmentedJQuery,
-  version: {major: number}
-} = <any>{bootstrap: noNg, module: noNg, element: noNg, version: noNg};
+var angular:
+    {
+      bootstrap: (e: Element, modules: string[], config: IAngularBootstrapConfig) => void,
+      module: (prefix: string, dependencies?: string[]) => IModule,
+      element: (e: Element) => IAugmentedJQuery,
+      version: {major: number}, resumeBootstrap?: () => void,
+      getTestability: (e: Element) => ITestabilityService
+    } = <any>{
+      bootstrap: noNg,
+      module: noNg,
+      element: noNg,
+      version: noNg,
+      resumeBootstrap: noNg,
+      getTestability: noNg
+    };
 
 
 try {
@@ -121,3 +138,5 @@ export var bootstrap = angular.bootstrap;
 export var module = angular.module;
 export var element = angular.element;
 export var version = angular.version;
+export var resumeBootstrap = angular.resumeBootstrap;
+export var getTestability = angular.getTestability;
