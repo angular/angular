@@ -53,6 +53,7 @@ export class UpgradeNg1ComponentAdapterBuilder {
                       self.outputs, self.propertyOutputs, self.checkProperties, self.propertyMap);
                 }
               ],
+              ngOnInit: function() { /* needs to be here for ng2 to properly detect it */ },
               ngOnChanges: function() { /* needs to be here for ng2 to properly detect it */ },
               ngDoCheck: function() { /* needs to be here for ng2 to properly detect it */ }
             });
@@ -106,6 +107,8 @@ export class UpgradeNg1ComponentAdapterBuilder {
               this.propertyMap[outputName] = localName;
             // don't break; let it fall through to '@'
             case '@':
+            // handle the '<' binding of angular 1.5 components
+            case '<':
               this.inputs.push(inputName);
               this.inputsRename.push(inputNameRename);
               this.propertyMap[inputName] = localName;
@@ -228,6 +231,13 @@ class UpgradeNg1ComponentAdapter implements OnChanges, DoCheck {
     for (var k = 0; k < propOuts.length; k++) {
       this[propOuts[k]] = new EventEmitter();
       this.checkLastValues.push(INITIAL_VALUE);
+    }
+  }
+
+
+  ngOnInit() {
+    if (this.destinationObj.$onInit) {
+      this.destinationObj.$onInit();
     }
   }
 

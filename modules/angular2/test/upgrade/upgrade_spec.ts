@@ -561,6 +561,65 @@ export function main() {
                });
          }));
 
+      it('should call $onInit of components', inject([AsyncTestCompleter], (async) => {
+           var adapter = new UpgradeAdapter();
+           var ng1Module = angular.module('ng1', []);
+           var valueToFind = '$onInit';
+
+           var ng1 = {
+             bindings: {},
+             template: '{{$ctrl.value}}',
+             controller: Class(
+                 {constructor: function() {}, $onInit: function() { this.value = valueToFind; }})
+           };
+           ng1Module.component('ng1', ng1);
+
+           var Ng2 = Component({
+                       selector: 'ng2',
+                       template: '<ng1></ng1>',
+                       directives: [adapter.upgradeNg1Component('ng1')]
+                     }).Class({constructor: function() {}});
+           ng1Module.directive('ng2', adapter.downgradeNg2Component(Ng2));
+
+           var element = html(`<div><ng2></ng2></div>`);
+           adapter.bootstrap(element, ['ng1'])
+               .ready((ref) => {
+                 expect(multiTrim(document.body.textContent)).toEqual(valueToFind);
+                 ref.dispose();
+                 async.done();
+               });
+         }));
+
+      it('should bind input properties (<) of components', inject([AsyncTestCompleter], (async) => {
+           var adapter = new UpgradeAdapter();
+           var ng1Module = angular.module('ng1', []);
+
+           var ng1 = {
+             bindings: {personProfile: '<'},
+             template: 'Hello {{$ctrl.personProfile.firstName}} {{$ctrl.personProfile.lastName}}',
+             controller: Class({constructor: function() {}})
+           };
+           ng1Module.component('ng1', ng1);
+
+           var Ng2 =
+               Component({
+                 selector: 'ng2',
+                 template: '<ng1 [personProfile]="goku"></ng1>',
+                 directives: [adapter.upgradeNg1Component('ng1')]
+               })
+                   .Class({
+                     constructor: function() { this.goku = {firstName: 'GOKU', lastName: 'SAN'}; }
+                   });
+           ng1Module.directive('ng2', adapter.downgradeNg2Component(Ng2));
+
+           var element = html(`<div><ng2></ng2></div>`);
+           adapter.bootstrap(element, ['ng1'])
+               .ready((ref) => {
+                 expect(multiTrim(document.body.textContent)).toEqual(`Hello GOKU SAN`);
+                 ref.dispose();
+                 async.done();
+               });
+         }));
     });
 
     describe('injection', () => {
