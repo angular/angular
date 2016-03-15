@@ -23,9 +23,6 @@
     "selenium-webdriver/selenium-webdriver.d.ts": {
       "commit": "6eebd5e90a1cbd6b47b0705ba72dbcd5baf846f3"
     },
-    "zone.js/zone.js.d.ts": {
-      "commit": "6eebd5e90a1cbd6b47b0705ba72dbcd5baf846f3"
-    },
     "angular-protractor/angular-protractor.d.ts": {
       "commit": "6eebd5e90a1cbd6b47b0705ba72dbcd5baf846f3"
     }

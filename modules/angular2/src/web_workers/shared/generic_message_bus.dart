@@ -46,7 +46,7 @@ abstract class GenericMessageBusSink implements MessageBusSink {
   void attachToZone(NgZone zone) {
     _zone = zone;
     _zone.runOutsideAngular(() {
-      _zone.onEventDone.listen((_) {
+      _zone.onStable.listen((_) {
         if (_messageBuffer.length > 0) {
           sendMessages(_messageBuffer);
           _messageBuffer.clear();
