@@ -107,7 +107,7 @@ export function main() {
     }
 
     it('delivers events synchronously', () => {
-      var e = new EventEmitter(false);
+      var e = new EventEmitter({ isAsync: false });
       var log = [];
       ObservableWrapper.subscribe(e, (x) => { log.push(x); });
       log.push(1);
@@ -117,7 +117,7 @@ export function main() {
     });
 
     it('reports whether it has subscribers', () => {
-      var e = new EventEmitter(false);
+      var e = new EventEmitter({ isAsync: false });
       expect(ObservableWrapper.hasSubscribers(e)).toBe(false);
       ObservableWrapper.subscribe(e, (_) => {});
       expect(ObservableWrapper.hasSubscribers(e)).toBe(true);
@@ -132,7 +132,7 @@ export function main() {
   describe("ObservableWrapper", () => {
 
     it('should correctly check isObservable for EventEmitter', () => {
-      var e = new EventEmitter(false);
+      var e = new EventEmitter({ isAsync: false });
       expect(ObservableWrapper.isObservable(e)).toBe(true);
     });
 
@@ -142,7 +142,7 @@ export function main() {
     });
 
     it('should subscribe to EventEmitters', () => {
-      let e = new EventEmitter(false);
+      let e = new EventEmitter({ isAsync: false });
 
       ObservableWrapper.subscribe(e, (val) => {});
 
