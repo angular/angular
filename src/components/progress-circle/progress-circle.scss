@@ -63,12 +63,12 @@ $md-progress-circle-viewport-size : 100px !default;
   }
 
 
-  &.md-accent circle {
+  &[color="accent"] circle {
     stroke: md-color($md-accent, 600);
   }
 
 
-  &.md-warn circle {
+  &[color="warn"] circle {
     stroke: md-color($md-warn, 600);
   }
 
