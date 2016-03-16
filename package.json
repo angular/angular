@@ -14,6 +14,7 @@
     "test": "karma start test/karma.conf.js",
     "tslint" : "tslint -c tslint.json 'src/**/*.ts'",
     "typings": "typings install --ambient",
+    "postinstall": "npm run typings",
     "e2e": "protractor ./protractor.conf.js"
   },
   "version": "2.0.0-alpha.0",
