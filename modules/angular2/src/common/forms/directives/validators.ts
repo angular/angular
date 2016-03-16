@@ -26,8 +26,10 @@ import {NumberWrapper} from "angular2/src/facade/lang";
  */
 export interface Validator { validate(c: modelModule.AbstractControl): {[key: string]: any}; }
 
+const REQUIRED = Validators.required;
+
 const REQUIRED_VALIDATOR =
-    CONST_EXPR(new Provider(NG_VALIDATORS, {useValue: Validators.required, multi: true}));
+    CONST_EXPR(new Provider(NG_VALIDATORS, {useValue: REQUIRED, multi: true}));
 
 /**
  * A Directive that adds the `required` validator to any controls marked with the
