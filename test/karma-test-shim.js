@@ -33,11 +33,6 @@ System.config({
       format: 'cjs',
       map: getPathsMap('core')
     },
-    'base/dist/directives': {
-      defaultExtension: false,
-      format: 'cjs',
-      map: getPathsMap('directives')
-    },
   }
 });
 
