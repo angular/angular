@@ -12,15 +12,8 @@ set -ex
 rm -rf ./dist
 rm -rf ./deploy
 
-# For packaging for npm only, replace the TypeScript module format to commonjs.
-# Creates a tscongig.json.backup with the original file that we'll use to restore after building.
-sed -i.backup 's|"module": ".+"|"module": "commonjs"|g' ./src/tsconfig.json
-
 # Perform a build with the modified tsconfig.json.
 ng build
-
-# Return tsconfig.json to its original state.
-mv -f ./src/tsconfig.json.backup ./src/tsconfig.json
 
 # Inline the css and html into the component ts files.
 ./node_modules/gulp/bin/gulp.js inline-resources
