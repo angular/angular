@@ -57,14 +57,6 @@ const kServedPaths = [
   'playground/src/upgrade',
   'playground/src/zippy_component',
   'playground/src/async',
-  'playground/src/material/button',
-  'playground/src/material/checkbox',
-  'playground/src/material/dialog',
-  'playground/src/material/grid_list',
-  'playground/src/material/input',
-  'playground/src/material/progress-linear',
-  'playground/src/material/radio',
-  'playground/src/material/switcher',
   'playground/src/web_workers/kitchen_sink',
   'playground/src/web_workers/todo',
   'playground/src/web_workers/images',
@@ -89,12 +81,6 @@ module.exports = function makeBrowserTree(options, destinationPath) {
       ],
       destDir: '/angular2/'
     });
-  }
-
-  if (modules.angular2_material) {
-    var angular2MaterialTree =
-        new Funnel('modules/angular2_material',
-                   {include: ['**/**'], exclude: ['e2e_test/**'], destDir: '/angular2_material/'});
   }
 
   if (modules.benchmarks) {
@@ -129,7 +115,6 @@ module.exports = function makeBrowserTree(options, destinationPath) {
 
   var modulesTree = mergeTrees([
     angular2Tree,
-    angular2MaterialTree,
     benchmarksTree,
     benchmarksExternalTree,
     payloadTestsTree,
@@ -226,8 +211,7 @@ module.exports = function makeBrowserTree(options, destinationPath) {
   }
 
 
-  if (modules.angular2_material || modules.benchmarks || modules.benchmarks_external ||
-      modules.playground) {
+  if (modules.benchmarks || modules.benchmarks_external || modules.playground) {
     var assetsTree = new Funnel(
         modulesTree, {include: ['**/*'], exclude: ['**/*.{html,ts,dart}'], destDir: '/'});
   }

@@ -17,7 +17,6 @@ gulp clean
 gulp build/packages.dart
 gulp build/pubspec.dart
 gulp build/analyze.dart
-gulp build.dart.material
 
 PKG_DIR=$ROOT_DIR/dist/pub
 rm -fr $PKG_DIR
@@ -36,5 +35,4 @@ function publishModule {
 publishModule angular2
 publishModule benchpress
 publishModule benchmarks
-publishModule angular2_material
 publishModule angular2_testing

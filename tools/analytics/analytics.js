@@ -66,7 +66,7 @@ let customParams = {
   cd8: `${os.cpus().length} x ${os.cpus()[0].model}`,
   // HW - Memory Info
   cd9: `${Math.round(os.totalmem()/1024/1024/1024)}GB`,
-  // gulp --projects (angular2,angular2_material)
+  // gulp --projects (angular2)
   cd13: minimist(process.argv.slice(2)).projects
 };
 

@@ -26,7 +26,6 @@ git clone https://github.com/dart-lang/dev_compiler.git tmp/dev_compiler
 
 # Convert TypeScript to Dart
 ./node_modules/.bin/gulp build/packages.dart
-./node_modules/.bin/gulp build.dart.material.css
 ./node_modules/.bin/gulp build/pubspec.dart
 node ./scripts/ci/dart_ddc/pubspec_for_ddc.js \
     --pubspec-file=dist/dart/playground/pubspec.yaml
@@ -45,14 +44,6 @@ $DART_SDK/bin/dart $DDC_DIR/bin/dartdevc.dart \
   src/hash_routing/index.dart \
   src/hello_world/index.dart \
   src/key_events/index.dart \
-  src/material/button/index.dart \
-  src/material/checkbox/index.dart \
-  src/material/dialog/index.dart \
-  src/material/grid_list/index.dart \
-  src/material/input/index.dart \
-  src/material/progress-linear/index.dart \
-  src/material/radio/index.dart \
-  src/material/switcher/index.dart \
   src/model_driven_forms/index.dart \
   src/observable_models/index.dart \
   src/order_management/index.dart \
