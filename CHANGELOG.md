@@ -1,3 +1,13 @@
+<a name="2.0.0-alpha.1"></a>
+# [2.0.0-alpha.1 nylon-hyperdrive](https://github.com/angular/material2/compare/2.0.0-alpha.0...v2.0.0-alpha.1) (2016-03-16)
+
+
+### Features
+
+* **radio:** Radio button component. ([d76465b](https://github.com/angular/material2/commit/d76465b)), closes [#125](https://github.com/angular/material2/issues/125)
+
+
+
 <a name="2.0.0-alpha.0"></a>
 # 2.0.0-alpha.0 titanium-octopus (2016-03-15)
 
