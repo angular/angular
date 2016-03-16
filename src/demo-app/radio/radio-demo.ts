@@ -1,5 +1,5 @@
 import {Component} from 'angular2/core';
-import {MdRadioButton, MdRadioGroup} from '../../components/radio/radio_button';
+import {MdRadioButton, MdRadioGroup} from '../../components/radio/radio';
 import {MdRadioDispatcher} from '../../components/radio/radio_dispatcher';
 
 @Component({

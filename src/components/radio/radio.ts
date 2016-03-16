@@ -161,8 +161,8 @@ export class MdRadioGroup implements AfterContentInit {
 
 @Component({
   selector: 'md-radio-button',
-  templateUrl: './components/radio/radio_button.html',
-  styleUrls: ['./components/radio/radio-button.css'],
+  templateUrl: './components/radio/radio.html',
+  styleUrls: ['./components/radio/radio.css'],
   encapsulation: ViewEncapsulation.None
 })
 export class MdRadioButton implements OnInit {

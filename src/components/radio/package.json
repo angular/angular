@@ -1,0 +1,27 @@
+{
+  "name": "@angular2-material/radio",
+  "version": "2.0.0-alpha.1",
+  "description": "Angular 2 Material radio",
+  "main": "./radio.js",
+  "typings": "./radio.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/angular/material2.git"
+  },
+  "keywords": [
+    "angular",
+    "material",
+    "material design",
+    "components",
+    "radio"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/angular/material2/issues"
+  },
+  "homepage": "https://github.com/angular/material2#readme",
+  "peerDependencies": {
+    "angular2": "^2.0.0-beta.8",
+    "@angular2-material/core": "2.0.0-alpha.1"
+  }
+}

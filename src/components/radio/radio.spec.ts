@@ -13,7 +13,7 @@ import {
 import {Component, DebugElement} from 'angular2/core';
 import {By} from 'angular2/platform/browser';
 
-import {MdRadioButton, MdRadioGroup, MdRadioChange} from './radio_button';
+import {MdRadioButton, MdRadioGroup, MdRadioChange} from './radio';
 import {MdRadioDispatcher} from './radio_dispatcher';
 
 export function main() {
