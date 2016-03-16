@@ -164,7 +164,7 @@ export class RuntimeMetadataResolver {
     for (var i = 0; i < directives.length; i++) {
       if (!isValidType(directives[i])) {
         throw new BaseException(
-            `Unexpected directive value '${stringify(directives[i])}' on the View of component '${stringify(component)}'`);
+            `Unexpected directive value '${stringify(directives[i])}' on the directives property of component '${stringify(component)}'`);
       }
     }
 
@@ -177,7 +177,7 @@ export class RuntimeMetadataResolver {
     for (var i = 0; i < pipes.length; i++) {
       if (!isValidType(pipes[i])) {
         throw new BaseException(
-            `Unexpected piped value '${stringify(pipes[i])}' on the View of component '${stringify(component)}'`);
+            `Unexpected pipe value '${stringify(pipes[i])}' on the pipes property of component '${stringify(component)}'`);
       }
     }
     return pipes.map(type => this.getPipeMetadata(type));
