@@ -25,17 +25,17 @@ System.config({
   packages: {
     'base/dist/components': {
       defaultExtension: false,
-      format: 'register',
+      format: 'cjs',
       map: getPathsMap('components')
     },
     'base/dist/core': {
       defaultExtension: false,
-      format: 'register',
+      format: 'cjs',
       map: getPathsMap('core')
     },
     'base/dist/directives': {
       defaultExtension: false,
-      format: 'register',
+      format: 'cjs',
       map: getPathsMap('directives')
     },
   }
