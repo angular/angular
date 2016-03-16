@@ -23,7 +23,6 @@ export interface KeyValueDifferFactory {
 /**
  * A repository of different Map diffing strategies used by NgClass, NgStyle, and others.
  */
-@Injectable()
 @CONST()
 export class KeyValueDiffers {
   constructor(public factories: KeyValueDifferFactory[]) {}
