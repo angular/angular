@@ -12,7 +12,7 @@
     "dartanalyzer": "cd dist/dart && pub install && cd ../.. && ts-node scripts/ci/dart_analyzer",
     "demo-app": "ng serve",
     "test": "karma start test/karma.conf.js",
-    "tslint" : "tslint -c tslint.json 'src/**/*.ts'",
+    "tslint": "tslint -c tslint.json 'src/**/*.ts'",
     "typings": "typings install --ambient",
     "postinstall": "npm run typings",
     "e2e": "protractor ./protractor.conf.js"
@@ -34,6 +34,7 @@
     "zone.js": "0.5.15"
   },
   "devDependencies": {
+    "add-stream": "^1.0.0",
     "angular-cli": "^0.0.24",
     "angular-cli-github-pages": "^0.2.0",
     "broccoli-autoprefixer": "^4.1.0",
@@ -42,6 +43,7 @@
     "broccoli-sass": "^0.7.0",
     "broccoli-source": "^1.1.0",
     "browserstacktunnel-wrapper": "^1.4.2",
+    "conventional-changelog": "^1.1.0",
     "ember-cli-inject-live-reload": "^1.3.0",
     "fs-extra": "^0.26.5",
     "glob": "^6.0.4",
