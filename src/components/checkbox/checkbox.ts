@@ -68,12 +68,13 @@ enum TransitionCheckState {
     '[class.md-checkbox-checked]': 'checked',
     '[class.md-checkbox-disabled]': 'disabled',
     '[class.md-checkbox-align-end]': 'align == "end"',
-    '[tabindex]': 'disabled ? -1 : tabindex',
+    '[attr.tabindex]': 'disabled ? null : tabindex',
     '[attr.aria-label]': 'ariaLabel',
     '[attr.aria-labelledby]': 'labelId',
     '[attr.aria-checked]': 'getAriaChecked()',
     '[attr.aria-disabled]': 'disabled',
     '(click)': 'onInteractionEvent($event)',
+    '(keydown.space)': 'onSpaceDown($event)',
     '(keyup.space)': 'onInteractionEvent($event)',
     '(blur)': 'onTouched()'
   },
@@ -102,7 +103,7 @@ export class MdCheckbox implements ControlValueAccessor {
 
   /**
    * The tabindex attribute for the checkbox. Note that when the checkbox is disabled, the attribute
-   * on the host element will be set to -1, regardless of the actual tabindex value.
+   * on the host element will be removed. It will be placed back when the checkbox is re-enabled.
    */
   @Input() tabindex: number = 0;
 
@@ -190,6 +191,14 @@ export class MdCheckbox implements ControlValueAccessor {
       return;
     }
     this.toggle();
+  }
+
+  /**
+   * Event handler used for (keydown.space) events. Used to prevent spacebar events from bubbling
+   * when the component is focused, which prevents side effects like page scrolling from happening.
+   */
+  onSpaceDown(evt: Event) {
+    evt.preventDefault();
   }
 
   /** Implemented as part of ControlValueAccessor. */

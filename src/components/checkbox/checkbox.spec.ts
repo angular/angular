@@ -289,9 +289,9 @@ export function main() {
         expect(el.nativeElement.className).toContain('md-checkbox-disabled');
       });
 
-      it('sets the tabindex to -1 on the host element', function() {
+      it('removes the tabindex attribute from the host element', function() {
         let el = fixture.debugElement.query(By.css('.md-checkbox'));
-        expect(el.nativeElement.getAttribute('tabindex')).toEqual('-1');
+        expect(el.nativeElement.hasAttribute('tabindex')).toBe(false);
       });
 
       it('sets "aria-disabled" to "true" on the host element', function() {
@@ -307,7 +307,7 @@ export function main() {
           tabindexController.isDisabled = true;
           fixture.detectChanges();
           let el = fixture.debugElement.query(By.css('.md-checkbox'));
-          expect(el.nativeElement.getAttribute('tabindex')).toEqual('-1');
+          expect(el.nativeElement.hasAttribute('tabindex')).toBe(false);
 
           tabindexController.isDisabled = false;
           fixture.detectChanges();
@@ -334,9 +334,9 @@ export function main() {
           }).then(done).catch(done);
         });
 
-        it('keeps the tabindex at -1', function() {
+        it('keeps the tabindex removed from the host', function() {
           let el = fixture.debugElement.query(By.css('.md-checkbox'));
-          expect(el.nativeElement.getAttribute('tabindex')).toEqual('-1');
+          expect(el.nativeElement.hasAttribute('tabindex')).toBe(false);
         });
 
         it('uses the newly changed tabindex when re-enabled', function() {
@@ -391,6 +391,48 @@ export function main() {
           clickCheckbox();
           expect(el.nativeElement.className).not.toContain('md-checkbox-checked');
         });
+      });
+    });
+
+    describe('when the checkbox is focused', function() {
+      var fixture: ComponentFixture;
+      var controller: CheckboxController;
+      var el: DebugElement;
+
+      function dispatchUIEventOnEl(evtName: string) {
+        var evt: Event;
+        if (BROWSER_SUPPORTS_EVENT_CONSTRUCTORS) {
+          evt = new Event(evtName);
+        } else {
+          evt = document.createEvent('Event');
+          evt.initEvent(evtName, true, true);
+        }
+        el.nativeElement.dispatchEvent(evt);
+        fixture.detectChanges();
+      }
+
+      beforeEach(function(done: () => void) {
+        builder.createAsync(CheckboxController).then(function(f) {
+          fixture = f;
+          controller = fixture.componentInstance;
+
+          fixture.detectChanges();
+          el = fixture.debugElement.query(By.css('.md-checkbox'));
+        }).then(done).catch(done);
+      });
+
+      it('blocks spacebar keydown events from performing their default behavior', function() {
+        dispatchUIEventOnEl('focus');
+
+        var evt = keydown(el, ' ', fixture);
+        expect(evt.preventDefault).toHaveBeenCalled();
+      });
+
+      it('does not block other keyboard events from performing their default behavior', function() {
+        dispatchUIEventOnEl('focus');
+
+        var evt = keydown(el, 'Tab', fixture);
+        expect(evt.preventDefault).not.toHaveBeenCalled();
       });
     });
 
@@ -597,25 +639,34 @@ function click(el: DebugElement, fixture: ComponentFixture) {
 }
 
 // TODO(traviskaufman): Reinvestigate implementation of this method once tests in Dart begin to run.
-function keyup(el: DebugElement, key: string, fixture: ComponentFixture) {
+function keyEvent(name: string, el: DebugElement, key: string, fixture: ComponentFixture): Event {
   var kbdEvent: Event;
   if (BROWSER_SUPPORTS_EVENT_CONSTRUCTORS) {
-    kbdEvent = new KeyboardEvent('keyup');
+    kbdEvent = new KeyboardEvent(name);
   } else {
-    kbdEvent = document.createEvent('Events');
-    kbdEvent.initEvent('keyup', true, true);
+    kbdEvent = document.createEvent('Event');
+    kbdEvent.initEvent(name, true, true);
   }
   // Hack DOM Level 3 Events "key" prop into keyboard event.
   Object.defineProperty(kbdEvent, 'key', {
-    value: ' ',
+    value: key,
     enumerable: false,
     writable: false,
     configurable: true
   });
+  spyOn(kbdEvent, 'preventDefault').and.callThrough();
   spyOn(kbdEvent, 'stopPropagation').and.callThrough();
   el.nativeElement.dispatchEvent(kbdEvent);
   fixture.detectChanges();
   return kbdEvent;
+}
+
+function keydown(el: DebugElement, key: string, fixture: ComponentFixture): Event {
+  return keyEvent('keydown', el, key, fixture);
+}
+
+function keyup(el: DebugElement, key: string, fixture: ComponentFixture): Event {
+  return keyEvent('keyup', el, key, fixture);
 }
 
 @Component({
