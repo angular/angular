@@ -9,7 +9,7 @@ library angular2.test.transform.reflection_remover.combinator_files;
 // those we are removing.
 
 var code = """
-import 'package:angular2/bootstrap_static.dart' show bootstrapStatic, initReflector;import 'index.template.dart' as ngStaticInit;
+import 'package:angular2/platform/browser_static.dart' show bootstrapStatic, initReflector;import 'index.template.dart' as ngStaticInit;
 
 void main() {
   bootstrapStatic(MyComponent, null, () { ngStaticInit.initReflector(); });

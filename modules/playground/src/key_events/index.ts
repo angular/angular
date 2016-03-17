@@ -1,4 +1,4 @@
-import {bootstrap} from 'angular2/bootstrap';
+import {bootstrap} from 'angular2/platform/browser';
 import {Component} from 'angular2/core';
 import {KeyEventsPlugin} from 'angular2/src/platform/dom/events/key_events';
 

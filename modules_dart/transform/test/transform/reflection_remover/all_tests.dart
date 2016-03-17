@@ -48,7 +48,8 @@ void allTests() {
       'should replace uses of mirrors with the debug implementation & '
       'insert calls to generated code in `MirrorMode.debug`.', () {
     var output = new Rewriter(code, codegen, entrypointMatcher,
-        mirrorMode: MirrorMode.debug).rewrite(parseCompilationUnit(code));
+            mirrorMode: MirrorMode.debug)
+        .rewrite(parseCompilationUnit(code));
     expect(output).toEqual(debug_mirrors.code);
   });
 
@@ -56,24 +57,38 @@ void allTests() {
       'should replace uses of mirrors with the verbose implementation '
       'in `MirrorMode.verbose`.', () {
     var output = new Rewriter(code, codegen, entrypointMatcher,
-        mirrorMode: MirrorMode.verbose).rewrite(parseCompilationUnit(code));
+            mirrorMode: MirrorMode.verbose)
+        .rewrite(parseCompilationUnit(code));
     expect(output).toEqual(verbose_mirrors.code);
   });
 
   it('should not initialize the reflector when `writeStaticInit` is `false`.',
       () {
-    var output = new Rewriter(code, codegen, entrypointMatcher,
-        writeStaticInit: false).rewrite(parseCompilationUnit(code));
+    var output =
+        new Rewriter(code, codegen, entrypointMatcher, writeStaticInit: false)
+            .rewrite(parseCompilationUnit(code));
     expect(output).toEqual(log_mirrors.code);
   });
 
   describe('`bootstrap` import and call', () {
+    // TODO(kegluneq): Remove when we remove angular2/bootstrap.dart
+    it('deprecated import should be rewritten to `bootstrapStatic`.', () {
+      final bootstrapCode =
+          readFile('reflection_remover/deprecated_bootstrap_files/index.dart')
+              .replaceAll('\r\n', '\n');
+      var output = new Rewriter(bootstrapCode, codegen, entrypointMatcher,
+              writeStaticInit: true)
+          .rewrite(parseCompilationUnit(bootstrapCode));
+      expect(output).toEqual(bootstrap_expected.code);
+    });
+
     it('should be rewritten to `bootstrapStatic`.', () {
       final bootstrapCode =
           readFile('reflection_remover/bootstrap_files/index.dart')
               .replaceAll('\r\n', '\n');
       var output = new Rewriter(bootstrapCode, codegen, entrypointMatcher,
-          writeStaticInit: true).rewrite(parseCompilationUnit(bootstrapCode));
+              writeStaticInit: true)
+          .rewrite(parseCompilationUnit(bootstrapCode));
       expect(output).toEqual(bootstrap_expected.code);
     });
 
@@ -81,7 +96,8 @@ void allTests() {
       final bootstrapCode =
           readFile('reflection_remover/deferred_bootstrap_files/index.dart');
       var output = new Rewriter(bootstrapCode, codegen, entrypointMatcher,
-          writeStaticInit: true).rewrite(parseCompilationUnit(bootstrapCode));
+              writeStaticInit: true)
+          .rewrite(parseCompilationUnit(bootstrapCode));
       expect(output).toEqual(deferred_bootstrap_expected.code);
     });
 
@@ -89,7 +105,8 @@ void allTests() {
       final bootstrapCode =
           readFile('reflection_remover/combinator_files/index.dart');
       var output = new Rewriter(bootstrapCode, codegen, entrypointMatcher,
-          writeStaticInit: true).rewrite(parseCompilationUnit(bootstrapCode));
+              writeStaticInit: true)
+          .rewrite(parseCompilationUnit(bootstrapCode));
       expect(output).toEqual(combinator_expected.code);
     });
   });

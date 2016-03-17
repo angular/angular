@@ -9,7 +9,7 @@ library angular2.test.transform.reflection_remover.deferred_bootstrap_files;
 // those we are removing.
 
 var code = """
-import 'package:angular2/bootstrap_static.dart' deferred as ng;import 'index.template.dart' as ngStaticInit;
+import 'package:angular2/platform/browser_static.dart' deferred as ng;import 'index.template.dart' as ngStaticInit;
 
 void main() {
   ng.loadLibrary().then((_) {

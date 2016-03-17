@@ -1,4 +1,4 @@
-import 'package:angular2/bootstrap.dart' show bootstrap;
+import 'package:angular2/platform/browser.dart' show bootstrap;
 
 void main() {
   bootstrap(MyComponent);

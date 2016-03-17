@@ -11,7 +11,7 @@ library angular2.test.transform.reflection_remover.method_annotation_files;
 const code = """
 library web_foo;
 
-import 'package:angular2/bootstrap_static.dart';import 'index.template.dart' as ngStaticInit;
+import 'package:angular2/platform/browser_static.dart';import 'index.template.dart' as ngStaticInit;
 
 class TestBootstrapper {
   @AngularEntrypoint("Method entrypoint")

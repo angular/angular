@@ -1,4 +1,4 @@
-import {bootstrap} from 'angular2/bootstrap';
+import {bootstrap} from 'angular2/platform/browser';
 import {Renderer, ElementRef, Component, Directive, Injectable} from 'angular2/core';
 
 export function main() {

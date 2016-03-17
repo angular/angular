@@ -1,4 +1,4 @@
-import {bootstrap} from 'angular2/bootstrap';
+import {bootstrap} from 'angular2/platform/browser';
 import {Component, Directive, DynamicComponentLoader, ElementRef} from 'angular2/core';
 import {NgIf, NgFor} from 'angular2/common';
 import {ApplicationRef} from 'angular2/src/core/application_ref';
