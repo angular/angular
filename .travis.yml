@@ -63,6 +63,7 @@ before_script:
   - "sh -e /etc/init.d/xvfb start"
   - mkdir -p $LOGS_DIR
   - npm run tslint
+  - "node ./scripts/ci/analyze-commits.js"
 
 
 script:
