@@ -1,3 +1,39 @@
+<a name="2.0.0-beta.10"></a>
+# 2.0.0-beta.10 (2016-03-17)
+
+
+### Bug Fixes
+
+* **change_detection:** fix a memory leak ([128acbb](https://github.com/angular/angular/commit/128acbb))
+* **closure:** don't throw from top-level ([5824866](https://github.com/angular/angular/commit/5824866))
+* **router:** handle URL that does not match a route ([8e3e450](https://github.com/angular/angular/commit/8e3e450)), closes [#7349](https://github.com/angular/angular/issues/7349) [#7203](https://github.com/angular/angular/issues/7203)
+* **router/instruction:** ensure toLinkUrl includes extra params ([0d58b13](https://github.com/angular/angular/commit/0d58b13)), closes [#7367](https://github.com/angular/angular/issues/7367)
+
+### Features
+
+* **compiler:** change html parser to preserve comments ([70d18b5](https://github.com/angular/angular/commit/70d18b5))
+* **core:** introduce a CSS lexer/parser ([b72bab4](https://github.com/angular/angular/commit/b72bab4))
+* **core:** introduce a CSS lexer/parser ([293fa55](https://github.com/angular/angular/commit/293fa55))
+* **facade:** add .values to StringMapWrapper ([f1796d6](https://github.com/angular/angular/commit/f1796d6))
+* **i18n:** add ngPlural directive ([df1f78e](https://github.com/angular/angular/commit/df1f78e))
+* **i18n:** implement a simple version of message extractor ([095db67](https://github.com/angular/angular/commit/095db67)), closes [#7454](https://github.com/angular/angular/issues/7454)
+* **shadow_css:** support `/deep/` and `>>>` ([cb38d72](https://github.com/angular/angular/commit/cb38d72)), closes [#7562](https://github.com/angular/angular/issues/7562) [#7563](https://github.com/angular/angular/issues/7563)
+* **TAG_DEFINITIONS:** include <meta> and <base> ([2c7c3e3](https://github.com/angular/angular/commit/2c7c3e3)), closes [#7455](https://github.com/angular/angular/issues/7455)
+
+### BREAKING CHANGES
+
+Removed deprecated API from NgZone
+- `NgZone.overrideOnTurnStart`
+- `NgZone.overrideOnTurnDone`
+- `NgZone.overrideOnEventDone`
+- `NgZone.overrideOnErrorHandler`
+
+Rename NgZone API
+- `NgZone.onTurnStart` => `NgZone.onUnstable`
+- `NgZone.onTurnDone` => `NgZone.onMicrotaskEmpty`
+- `NgZone.onEventDone` => `NgZone.onStable`
+
+
 <a name="2.0.0-beta.9"></a>
 # 2.0.0-beta.9 (2016-03-09)
 
