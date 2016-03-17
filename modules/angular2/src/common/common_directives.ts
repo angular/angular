@@ -16,14 +16,14 @@ import {CORE_DIRECTIVES} from './directives';
  * Instead of writing:
  *
  * ```typescript
- * import {NgClass, NgIf, NgFor, NgSwitch, NgSwitchWhen, NgSwitchDefault, NgModel, NgForm} from
+ * import {NgClass, NgIf, NgFor, NgSwitch, NgSwitchCase, NgSwitchDefault, NgModel, NgForm} from
  * 'angular2/common';
  * import {OtherDirective} from './myDirectives';
  *
  * @Component({
  *   selector: 'my-component',
  *   templateUrl: 'myComponent.html',
- *   directives: [NgClass, NgIf, NgFor, NgSwitch, NgSwitchWhen, NgSwitchDefault, NgModel, NgForm,
+ *   directives: [NgClass, NgIf, NgFor, NgSwitch, NgSwitchCase, NgSwitchDefault, NgModel, NgForm,
  * OtherDirective]
  * })
  * export class MyComponent {

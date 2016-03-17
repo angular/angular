@@ -9,7 +9,7 @@ import {
 } from 'angular2/src/testing/benchmark_util';
 import {bootstrap} from 'angular2/bootstrap';
 import {Component, Directive, bind, provide} from 'angular2/core';
-import {NgFor, NgSwitch, NgSwitchWhen, NgSwitchDefault} from 'angular2/common';
+import {NgFor, NgSwitch, NgSwitchCase, NgSwitchDefault} from 'angular2/common';
 import {ApplicationRef} from 'angular2/src/core/application_ref';
 import {BrowserDomAdapter} from 'angular2/src/platform/browser/browser_adapter';
 
@@ -210,24 +210,24 @@ class CellData {
 @Component({
   selector: 'largetable',
   inputs: ['data', 'benchmarkType'],
-  directives: [NgFor, NgSwitch, NgSwitchWhen, NgSwitchDefault],
+  directives: [NgFor, NgSwitch, NgSwitchCase, NgSwitchDefault],
   template: `
       <table [ngSwitch]="benchmarkType">
-        <tbody template="ngSwitchWhen 'interpolation'">
+        <tbody template="ngSwitchCase 'interpolation'">
           <tr template="ngFor #row of data">
             <td template="ngFor #column of row">
               {{column.i}}:{{column.j}}|
             </td>
           </tr>
         </tbody>
-        <tbody template="ngSwitchWhen 'interpolationAttr'">
+        <tbody template="ngSwitchCase 'interpolationAttr'">
           <tr template="ngFor #row of data">
             <td template="ngFor #column of row" attr.i="{{column.i}}" attr.j="{{column.j}}">
               i,j attrs
             </td>
           </tr>
         </tbody>
-        <tbody template="ngSwitchWhen 'interpolationFn'">
+        <tbody template="ngSwitchCase 'interpolationFn'">
           <tr template="ngFor #row of data">
             <td template="ngFor #column of row">
               {{column.iFn()}}:{{column.jFn()}}|
