@@ -298,7 +298,7 @@ $_md-checkbox-indeterminate-checked-easing-function: cubic-bezier(0.14, 0, 0, 1)
   @extend %md-checkbox-mark;
 
   background-color: $md-checkbox-mark-color;
-  height: $md-checkbox-mark-stroke-size;
+  height: floor($md-checkbox-mark-stroke-size);
   opacity: 0;
   transform: scaleX(0) rotate(0deg);
 }
