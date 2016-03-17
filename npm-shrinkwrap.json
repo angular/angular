@@ -3285,9 +3285,9 @@
       "resolved": "https://registry.npmjs.org/es6-promise/-/es6-promise-3.0.2.tgz"
     },
     "es6-shim": {
-      "version": "0.33.13",
-      "from": "es6-shim@>=0.33.3 <0.34.0",
-      "resolved": "https://registry.npmjs.org/es6-shim/-/es6-shim-0.33.13.tgz"
+      "version": "0.35.0",
+      "from": "es6-shim@0.35.0",
+      "resolved": "https://registry.npmjs.org/es6-shim/-/es6-shim-0.35.0.tgz"
     },
     "es6-symbol": {
       "version": "3.0.2",

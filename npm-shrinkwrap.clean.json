@@ -2087,7 +2087,7 @@
       "version": "3.0.2"
     },
     "es6-shim": {
-      "version": "0.33.13"
+      "version": "0.35.0"
     },
     "es6-symbol": {
       "version": "3.0.2"
@@ -5839,5 +5839,5 @@
     }
   },
   "name": "angular-srcs",
-  "version": "2.0.0-beta.8"
+  "version": "2.0.0-beta.10"
 }
