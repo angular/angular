@@ -1,4 +1,4 @@
-import {bootstrap} from 'angular2/bootstrap';
+import {bootstrap} from 'angular2/platform/browser';
 import {NG_VALIDATORS} from 'angular2/common';
 import {Provider} from 'angular2/core';
 

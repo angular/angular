@@ -1,4 +1,4 @@
-import {bootstrap} from 'angular2/bootstrap';
+import {bootstrap} from 'angular2/platform/browser';
 import {BrowserDomAdapter} from 'angular2/src/platform/browser/browser_adapter';
 import {DOM} from 'angular2/src/platform/dom/dom_adapter';
 import {PromiseWrapper} from 'angular2/src/facade/async';

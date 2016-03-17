@@ -4,7 +4,7 @@ Bootstrapping
 @description
 {@target ts}`import {bootstrap} from 'angular2/platform/browser';`{@endtarget}
 {@target js}Available from the `ng.platform.browser` namespace{@endtarget}
-{@target dart}`import 'package:angular2/bootstrap.dart';`{@endtarget}
+{@target dart}`import 'package:angular2/platform/browser.dart';`{@endtarget}
 
 @cheatsheetItem
 syntax(ts dart):
