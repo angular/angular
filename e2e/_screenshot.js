@@ -58,14 +58,14 @@ class Screenshot {
       let referenceScreenshot = mapnik.Image.open(this.path);
       this.overwriteExistingScreenshot();
       if (referenceScreenshot.compare(this.png)) {
-        throw new Error(`screenshot "${this.id}" has changed.`);
+        throw `screenshot "${this.id}" has changed.`;
       } else {
         console.info('[STATUS] Screenshot has not changed');
       }
     } catch (e) {
-      console.info(`[STATUS] No reference screenshot found`);
+      console.error(`[ERROR] `, e);
       this.overwriteExistingScreenshot();
-      throw new Error(`screenshot "${this.id}" was not found.`);
+      throw e;
     }
   }
 
