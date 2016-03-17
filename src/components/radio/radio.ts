@@ -15,9 +15,8 @@ import {
   forwardRef
 } from 'angular2/core';
 
-import {Event} from 'angular2/src/facade/browser';
-
 import {MdRadioDispatcher} from './radio_dispatcher';
+export {MdRadioDispatcher} from './radio_dispatcher';
 
 // TODO(mtlin):
 // Ink ripple is currently placeholder.
