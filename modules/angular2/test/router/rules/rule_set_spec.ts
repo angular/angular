@@ -225,6 +225,13 @@ export function main() {
                });
          }));
     });
+
+    it('should provide the route name on the component instruction', () => {
+      recognizer.config(new Route({path: 'home/page', component: DummyCmpA, name: 'HomePage'}));
+
+      var result = recognizer.generate('HomePage', {});
+      expect(result.name).toEqual('HomePage');
+    });
   });
 }
 

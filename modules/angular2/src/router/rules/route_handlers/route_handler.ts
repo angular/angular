@@ -5,4 +5,5 @@ export interface RouteHandler {
   componentType: Type;
   resolveComponentType(): Promise<any>;
   data: RouteData;
+  name: string;
 }
