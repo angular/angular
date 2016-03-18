@@ -88,11 +88,6 @@
       "from": "angular-mocks@1.5.0",
       "resolved": "https://registry.npmjs.org/angular-mocks/-/angular-mocks-1.5.0.tgz"
     },
-    "angular2": {
-      "version": "2.0.0-beta.17",
-      "from": "angular/angular#2.0.0-build.cacdead.js",
-      "resolved": "git://github.com/angular/angular.git#08cbd5481d04255864f5ff8e33d0756d4ec4c440"
-    },
     "ansi": {
       "version": "0.3.0",
       "from": "ansi@>=0.3.0 <0.4.0",
@@ -7455,9 +7450,9 @@
       "resolved": "https://registry.npmjs.org/redent/-/redent-1.0.0.tgz"
     },
     "reflect-metadata": {
-      "version": "0.1.2",
-      "from": "reflect-metadata@0.1.2",
-      "resolved": "https://registry.npmjs.org/reflect-metadata/-/reflect-metadata-0.1.2.tgz"
+      "version": "0.1.3",
+      "from": "reflect-metadata@0.1.3",
+      "resolved": "https://registry.npmjs.org/reflect-metadata/-/reflect-metadata-0.1.3.tgz"
     },
     "regex-cache": {
       "version": "0.4.2",

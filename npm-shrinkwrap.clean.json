@@ -54,10 +54,6 @@
     "angular-mocks": {
       "version": "1.5.0"
     },
-    "angular2": {
-      "version": "2.0.0-beta.17",
-      "resolved": "git://github.com/angular/angular.git#08cbd5481d04255864f5ff8e33d0756d4ec4c440"
-    },
     "ansi": {
       "version": "0.3.0"
     },
@@ -4678,7 +4674,7 @@
       "version": "1.0.0"
     },
     "reflect-metadata": {
-      "version": "0.1.2"
+      "version": "0.1.3"
     },
     "regex-cache": {
       "version": "0.4.2"
