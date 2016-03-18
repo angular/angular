@@ -3,14 +3,11 @@ library angular2.transform.common.mirror_matcher;
 import 'package:analyzer/src/generated/ast.dart';
 import 'package:angular2/src/transform/common/names.dart';
 
-/// Files from which `bootstrap` is exported.
+/// File from which `bootstrap` is exported.
 ///
-/// These files transitively imports dart:mirrors.
-/// They should be replaced with [BOOTSTRAP_STATIC_URI] in production apps.
-const _BOOTSTRAP_URIS = const <String>[
-  'package:angular2/bootstrap.dart',
-  'package:angular2/platform/browser.dart',
-];
+/// This file transitively imports dart:mirrors.
+/// It should be replaced with [BOOTSTRAP_STATIC_URI] in production apps.
+const _BOOTSTRAP_URI = 'package:angular2/platform/browser.dart';
 
 /// File from which `ReflectionCapabilities` is exported.
 ///
@@ -23,7 +20,7 @@ const _REFLECTION_CAPABILITIES_URI =
 /// File from which `bootstrapStatic` is exported.
 ///
 /// This file does not transitively import dart:mirrors.
-/// It should be used in place of [_BOOTSTRAP_URIS] in production apps.
+/// It should be used in place of [_BOOTSTRAP_URI] in production apps.
 const BOOTSTRAP_STATIC_URI = 'package:angular2/platform/browser_static.dart';
 
 /// Syntactially checks for code related to the use of `dart:mirrors`.
@@ -42,5 +39,5 @@ class MirrorMatcher {
   }
 
   bool hasBootstrapUri(UriBasedDirective node) =>
-      _BOOTSTRAP_URIS.contains(node.uri.stringValue);
+      _BOOTSTRAP_URI == node.uri.stringValue;
 }
