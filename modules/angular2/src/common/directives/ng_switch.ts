@@ -4,7 +4,6 @@ import {ListWrapper, Map} from 'angular2/src/facade/collection';
 
 const _WHEN_DEFAULT = CONST_EXPR(new Object());
 
-/** @internal */
 export class SwitchView {
   constructor(private _viewContainerRef: ViewContainerRef, private _templateRef: TemplateRef) {}
 
