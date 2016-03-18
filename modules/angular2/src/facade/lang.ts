@@ -9,7 +9,6 @@ export interface BrowserNodeGlobal {
   Math: any;  // typeof Math;
   assert(condition: any): void;
   Reflect: any;
-  Zone: typeof Zone;
   getAngularTestability: Function;
   getAllAngularTestabilities: Function;
   getAllAngularRootElements: Function;
