@@ -36,11 +36,13 @@ export function main() {
         testComponent.toolbarColor = 'accent';
         fixture.detectChanges();
 
+        expect(toolbarDebugElement.nativeElement.classList.contains('md-primary')).toBe(false);
         expect(toolbarDebugElement.nativeElement.classList.contains('md-accent')).toBe(true);
 
         testComponent.toolbarColor = 'warn';
         fixture.detectChanges();
 
+        expect(toolbarDebugElement.nativeElement.classList.contains('md-accent')).toBe(false);
         expect(toolbarDebugElement.nativeElement.classList.contains('md-warn')).toBe(true);
 
         done();

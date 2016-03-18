@@ -43,6 +43,30 @@ export function main() {
       });
     });
 
+    it('should should not clear previous defined classes', (done: () => void) => {
+      return builder.createAsync(TestApp).then((fixture) => {
+        let testComponent = fixture.debugElement.componentInstance;
+        let buttonDebugElement = fixture.debugElement.query(By.css('button'));
+
+        buttonDebugElement.nativeElement.classList.add('custom-class');
+
+        testComponent.buttonColor = 'primary';
+        fixture.detectChanges();
+
+        expect(buttonDebugElement.nativeElement.classList.contains('md-primary')).toBe(true);
+        expect(buttonDebugElement.nativeElement.classList.contains('custom-class')).toBe(true);
+
+        testComponent.buttonColor = 'accent';
+        fixture.detectChanges();
+
+        expect(buttonDebugElement.nativeElement.classList.contains('md-primary')).toBe(false);
+        expect(buttonDebugElement.nativeElement.classList.contains('md-accent')).toBe(true);
+        expect(buttonDebugElement.nativeElement.classList.contains('custom-class')).toBe(true);
+
+        done();
+      });
+    });
+
     // Regular button tests
     describe('button[md-button]', () => {
       it('should handle a click on the button', (done: () => void) => {

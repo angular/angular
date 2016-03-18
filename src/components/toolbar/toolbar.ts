@@ -28,15 +28,15 @@ export class MdToolbar {
   }
 
   _updateColor(newColor: string) {
-    if (this._color != null && this._color != '') {
-      this.renderer.setElementClass(this.elementRef.nativeElement, `md-${newColor}`, false);
-    }
-
-    if (newColor != null && newColor != '') {
-      this.renderer.setElementClass(this.elementRef.nativeElement, `md-${newColor}`, true);
-    }
-
+    this._setElementColor(this._color, false);
+    this._setElementColor(newColor, true);
     this._color = newColor;
+  }
+
+  _setElementColor(color: string, isAdd: boolean) {
+    if (color != null && color != '') {
+      this.renderer.setElementClass(this.elementRef.nativeElement, `md-${color}`, isAdd);
+    }
   }
 
 }
