@@ -1,3 +1,20 @@
+<a name="2.0.0-beta.11"></a>
+# 2.0.0-beta.11 (2016-03-18)
+
+
+### Bug Fixes
+
+* make sure that Zone does not show up in angular2.d.ts ([d4e9b55](https://github.com/angular/angular/commit/d4e9b55fb69d87f948d02905d34fc78221adb11a))
+* **common:** remove @internal annotation on SwitchView ([967ae3e](https://github.com/angular/angular/commit/967ae3e)), closes [#7657](https://github.com/angular/angular/issues/7657)
+* **router:** RouterOutlet loads component twice in a race condition ([2f581ff](https://github.com/angular/angular/commit/2f581ff)), closes [#7497](https://github.com/angular/angular/issues/7497) [#7545](https://github.com/angular/angular/issues/7545)
+
+### Features
+
+* **i18n:** add a simple dart script extracting all i18n messages from a package ([8326ab3](https://github.com/angular/angular/commit/8326ab3)), closes [#7620](https://github.com/angular/angular/issues/7620)
+* **i18n:** create i18n barrel ([a7fe983](https://github.com/angular/angular/commit/a7fe983))
+* **i18n:** implement xmb serializer ([e1f8e54](https://github.com/angular/angular/commit/e1f8e54))
+
+
 <a name="2.0.0-beta.10"></a>
 # 2.0.0-beta.10 (2016-03-17)
 
