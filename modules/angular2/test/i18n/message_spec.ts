@@ -14,7 +14,7 @@ import {
 import {Message, id} from 'angular2/src/i18n/message';
 
 export function main() {
-  ddescribe('Message', () => {
+  describe('Message', () => {
     describe("id", () => {
       it("should return a different id for messages with and without the meaning", () => {
         let m1 = new Message("content", "meaning", null);
