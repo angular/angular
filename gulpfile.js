@@ -988,7 +988,7 @@ gulp.task('test.typings',
           ['!pre.test.typings.layoutNodeModule', '!pre.test.typings.copyTypingsSpec'], function() {
             var tsc = require('gulp-typescript');
 
-            return gulp.src([tmpdir + '/*.ts', 'node_modules/zone.js/dist/zone.js.d.ts'])
+            return gulp.src([tmpdir + '/*.ts'])
                 .pipe(tsc({
                   target: 'ES6',
                   module: 'commonjs',
