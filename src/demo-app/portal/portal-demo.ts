@@ -17,10 +17,6 @@ export class PortalDemo {
 
   selectedPortal: Portal<any>;
 
-  constructor() {
-    console.log('~~ contructor ~~');
-  }
-
   get programmingJoke() {
     return this.templatePortals.first;
   }

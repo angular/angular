@@ -51,4 +51,11 @@ export class DomPortalHost extends BasePortalHost {
     // TODO(jelbourn): Return locals from view.
     return Promise.resolve(new Map<string, any>());
   }
+
+  dispose(): void {
+    super.dispose();
+    if (this._hostDomElement.parentNode != null) {
+      this._hostDomElement.parentNode.removeChild(this._hostDomElement);
+    }
+  }
 }
