@@ -72,7 +72,7 @@ An example of an Angular 2 project built with WebPack can be found in the [angul
 
 Polyfills are required for Angular 2 to function properly (the exact list depends on the browser used) and external dependencies ([zone.js](https://github.com/angular/zone.js)).
 To ease setup of Angular 2 applications there is one file - `angular2-polyfills.js` - that combines:
-* a pollyfill mandatory for all browsers: [reflect-metadata](https://www.npmjs.com/package/reflect-metadata)
+* a polyfill mandatory for all browsers: [reflect-metadata](https://www.npmjs.com/package/reflect-metadata)
 * [zone.js](https://github.com/angular/zone.js)     
 
 **Note**: `angular2-polyfills.js` contains code that should be loaded into the browser as the very first code of the web application even before the module loader. The preferred solution is to load the mentioned file in a `script` tag as early as possible. 
