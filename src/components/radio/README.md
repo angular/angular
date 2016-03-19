@@ -21,6 +21,15 @@ A dynamic example, populated from a `data` variable:
 </md-radio-group>
 ```
 
+A dynamic example for use inside a form showing support for `[(ngModel)]`:
+```html
+<md-radio-group [(ngModel)]="chosenOption">
+  <md-radio-button *ngFor="#o of options" [value]="o.value">
+    {{o.label}}
+  </md-radio-button>
+</md-radio-group>
+```
+
 ## `<md-radio-group>`
 ### Properties
 

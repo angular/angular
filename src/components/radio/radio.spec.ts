@@ -258,6 +258,68 @@ export function main() {
           });
         }).then(done);
     });
+
+    it('should bind value to model without initial value', (done: () => void) => {
+      builder
+        .overrideTemplate(TestApp, `
+            <md-radio-group  [(ngModel)]="choice">
+              <md-radio-button [value]="0"></md-radio-button>
+              <md-radio-button [value]="1"></md-radio-button>
+            </md-radio-group>`)
+        .createAsync(TestApp)
+        .then((fixture) => {
+          fakeAsync(function() {
+            let buttons = fixture.debugElement.queryAll(By.css('md-radio-button'));
+            let group = fixture.debugElement.query(By.css('md-radio-group'));
+
+            fixture.detectChanges();
+            expect(buttons[0].componentInstance.checked).toBe(false);
+            expect(buttons[1].componentInstance.checked).toBe(false);
+            expect(fixture.componentInstance.choice).toBe(undefined);
+
+            group.componentInstance.selected = buttons[0].componentInstance;
+            fixture.detectChanges();
+            expect(isSinglySelected(buttons[0], buttons)).toBe(true);
+            expect(fixture.componentInstance.choice).toBe(0);
+
+            group.componentInstance.selected = buttons[1].componentInstance;
+            fixture.detectChanges();
+            expect(isSinglySelected(buttons[1], buttons)).toBe(true);
+            expect(fixture.componentInstance.choice).toBe(1);
+          });
+        }).then(done);
+    });
+
+    it('should bind value to model with initial value', (done: () => void) => {
+      builder
+        .overrideTemplate(TestAppWithInitialValue, `
+            <md-radio-group  [(ngModel)]="choice">
+              <md-radio-button [value]="0"></md-radio-button>
+              <md-radio-button [value]="1"></md-radio-button>
+            </md-radio-group>`)
+        .createAsync(TestAppWithInitialValue)
+        .then((fixture) => {
+          fakeAsync(function() {
+            let buttons = fixture.debugElement.queryAll(By.css('md-radio-button'));
+            let group = fixture.debugElement.query(By.css('md-radio-group'));
+
+            fixture.detectChanges();
+            expect(isSinglySelected(buttons[1], buttons)).toBe(true);
+            expect(fixture.componentInstance.choice).toBe(1);
+
+            group.componentInstance.selected = buttons[0].componentInstance;
+            fixture.detectChanges();
+            expect(isSinglySelected(buttons[0], buttons)).toBe(true);
+            expect(fixture.componentInstance.choice).toBe(0);
+
+            group.componentInstance.selected = buttons[1].componentInstance;
+            fixture.detectChanges();
+            expect(isSinglySelected(buttons[1], buttons)).toBe(true);
+            expect(fixture.componentInstance.choice).toBe(1);
+          });
+        }).then(done);
+    });
+
   });
 }
 
@@ -289,4 +351,16 @@ function createEvent(name: string): Event {
   providers: [MdRadioDispatcher],
   template: ''
 })
-class TestApp {}
+class TestApp {
+  choice: number;
+}
+
+/** Test component. */
+@Component({
+  directives: [MdRadioButton, MdRadioGroup],
+  providers: [MdRadioDispatcher],
+  template: ''
+})
+class TestAppWithInitialValue {
+  choice: number = 1;
+}

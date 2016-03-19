@@ -11,4 +11,11 @@ import {MdRadioDispatcher} from '../../components/radio/radio_dispatcher';
 })
 export class RadioDemo {
   isDisabled: boolean = false;
+  favoriteSeason: string = 'Autumn';
+  seasonOptions = [
+    'Winter',
+    'Spring',
+    'Summer',
+    'Autumn',
+  ];
 }

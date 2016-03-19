@@ -10,13 +10,30 @@ import {
   OnInit,
   Optional,
   Output,
+  Provider,
   QueryList,
   ViewEncapsulation,
   forwardRef
 } from 'angular2/core';
 
+import {
+  NG_VALUE_ACCESSOR,
+  ControlValueAccessor
+} from 'angular2/src/common/forms/directives/control_value_accessor';
+import {CONST_EXPR} from 'angular2/src/facade/lang';
+
 import {MdRadioDispatcher} from './radio_dispatcher';
 export {MdRadioDispatcher} from './radio_dispatcher';
+
+/**
+ * Provider Expression that allows md-radio-group to register as a ControlValueAccessor. This
+ * allows it to support [(ngModel)] and ngControl.
+ */
+const MD_RADIO_GROUP_CONTROL_VALUE_ACCESSOR = CONST_EXPR(new Provider(
+    NG_VALUE_ACCESSOR, {
+      useExisting: forwardRef(() => MdRadioGroup),
+      multi: true
+    }));
 
 // TODO(mtlin):
 // Ink ripple is currently placeholder.
@@ -36,11 +53,12 @@ export class MdRadioChange {
 
 @Directive({
   selector: 'md-radio-group',
+  providers: [MD_RADIO_GROUP_CONTROL_VALUE_ACCESSOR],
   host: {
     'role': 'radiogroup',
   },
 })
-export class MdRadioGroup implements AfterContentInit {
+export class MdRadioGroup implements AfterContentInit, ControlValueAccessor {
   /** The value for the radio group. Should match currently selected button. */
   private _value: any = null;
 
@@ -52,6 +70,11 @@ export class MdRadioGroup implements AfterContentInit {
 
   /** The currently selected radio button. Should match value. */
   private _selected: MdRadioButton = null;
+
+  /** Change event subscription set up by registerOnChange (ControlValueAccessor). */
+  private _changeSubscription: {unsubscribe: () => any} = null;
+
+  onTouched: () => any = () => {};
 
   /** Event emitted when the group value changes. */
   @Output()
@@ -155,6 +178,25 @@ export class MdRadioGroup implements AfterContentInit {
 
     selected.checked = true;
   }
+
+   /** Implemented as part of ControlValueAccessor. */
+  writeValue(value: any) {
+    this.value = value;
+  }
+
+  /** Implemented as part of ControlValueAccessor. */
+  registerOnChange(fn: any) {
+    if (this._changeSubscription) {
+      this._changeSubscription.unsubscribe();
+    }
+    this._changeSubscription = <{unsubscribe: () => any}>this.change.subscribe(
+      (changeEvent: MdRadioChange) => { fn(changeEvent.value); });
+  }
+
+  /** Implemented as part of ControlValueAccessor. */
+  registerOnTouched(fn: any) {
+    this.onTouched = fn;
+  }
 }
 
 
@@ -209,6 +251,10 @@ export class MdRadioButton implements OnInit {
   ngOnInit() {
     if (this.id == null) {
       this.id = `md-radio-${_uniqueIdCounter++}`;
+    }
+
+    if (this.radioGroup && this._value == this.radioGroup.value) {
+      this._checked = true;
     }
   }
 

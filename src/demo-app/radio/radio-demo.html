@@ -1,8 +1,10 @@
+<h1>Basic Example</h1>
 <section class="demo-section">
   <md-radio-button name="group1">Option 1</md-radio-button>
   <md-radio-button name="group1">Option 2</md-radio-button>
   <md-radio-button name="group1" disabled="true">Option 3 (disabled)</md-radio-button>
 </section>
+<h1>Dynamic Example</h1>
 <section class="demo-section">
   <div>
     <span>isDisabled: {{isDisabled}}</span>
@@ -15,4 +17,14 @@
     <md-radio-button value="option_2">Option 2</md-radio-button>
     <md-radio-button value="option_3">Option 3</md-radio-button>
   </md-radio-group>
+</section>
+<h1>Favorite Season Example</h1>
+<h2>Dynamic Example with two-way data-binding</h2>
+<section class="demo-section">
+  <md-radio-group name="more_options" [(ngModel)]="favoriteSeason">
+    <md-radio-button *ngFor="#season of seasonOptions" name="more_options" [value]="season">
+      {{season}}
+    </md-radio-button>
+  </md-radio-group>
+  <p>Your favorite season is: {{favoriteSeason}}</p>
 </section>
