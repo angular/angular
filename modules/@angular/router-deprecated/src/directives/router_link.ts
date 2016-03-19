@@ -11,7 +11,7 @@ import {Instruction} from '../instruction';
 
  * ```
  * @RouteConfig([
- *   { path: '/user', component: UserCmp, as: 'User' }
+ *   { path: '/user', component: UserCmp, name: 'User' }
  * ]);
  * class MyComp {}
  * ```

@@ -7,7 +7,7 @@ import {RegexSerializer} from './rules/route_paths/regex_route_path';
  * Supported keys:
  * - `path` or `aux` (requires exactly one of these)
  * - `component`, `loader`,  `redirectTo` (requires exactly one of these)
- * - `name` or `as` (optional) (requires exactly one of these)
+ * - `name` (optional)
  * - `data` (optional)
  *
  * See also {@link Route}, {@link AsyncRoute}, {@link AuxRoute}, and {@link Redirect}.
@@ -21,7 +21,6 @@ export interface RouteDefinition {
   component?: Type | ComponentDefinition;
   loader?: () => Promise<Type>;
   redirectTo?: any[];
-  as?: string;
   name?: string;
   data?: any;
   useAsDefault?: boolean;
