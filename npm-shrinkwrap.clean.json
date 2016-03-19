@@ -2083,9 +2083,6 @@
     "es6-module-loader": {
       "version": "0.17.9"
     },
-    "es6-promise": {
-      "version": "3.0.2"
-    },
     "es6-shim": {
       "version": "0.35.0"
     },
