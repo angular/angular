@@ -523,6 +523,50 @@ export function main() {
                });
          }));
 
+      it('should support support interleaved ng1 and ng2 components',
+         inject([AsyncTestCompleter], (async) => {
+           var adapter = new UpgradeAdapter();
+           var ng1Module = angular.module('ng1', []);
+
+           @Component({selector: `inner-ng2`, template: `Inner Ng2`})
+           class InnerNg2 {
+           }
+           ng1Module.directive("innerNg2", adapter.downgradeNg2Component(InnerNg2))
+
+               ng1Module.directive("ng1Comp", () => ({
+                                                template: `
+                    <div>
+                        <inner-ng2></inner-ng2>
+                    </div>
+                    `,
+                                                controller: class {},
+                                                controllerAs: "ctrl",
+                                                scope: {},
+                                                bindToController: {}
+                                              }));
+           var UpgradedNg1Component = adapter.upgradeNg1Component("ng1Comp");
+
+           @Component({
+             selector: 'outer-ng2',
+             directives: [UpgradedNg1Component],
+             template: `
+                <div>
+                <ng1-comp></ng1-comp>
+                </div>
+                `
+           })
+           class OuterNg2 {
+           }
+           ng1Module.directive("outerNg2", adapter.downgradeNg2Component(OuterNg2));
+
+           var element = html(`<div><outer-ng2></outer-ng2></div>`);
+           adapter.bootstrap(element, ['ng1'])
+               .ready((ref) => {
+                 expect(multiTrim(document.body.textContent)).toEqual('Inner Ng2');
+                 ref.dispose();
+                 async.done();
+               });
+         }));
     });
 
     describe('injection', () => {
