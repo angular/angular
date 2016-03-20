@@ -11,7 +11,6 @@ import {
   Output,
   QueryList,
   Type,
-  View,
   ChangeDetectionStrategy
 } from 'angular2/core';
 import {PromiseWrapper, ObservableWrapper, EventEmitter} from 'angular2/src/facade/async';
@@ -245,8 +244,6 @@ export class MdSidenav {
   // Do not use ChangeDetectionStrategy.OnPush. It does not work for this component because
   // technically it is a sibling of MdSidenav (on the content tree) and isn't updated when MdSidenav
   // changes its state.
-})
-@View({
   directives: [MdSidenav],
   templateUrl: './components/sidenav/sidenav.html',
   styleUrls: [
