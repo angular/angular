@@ -46,6 +46,20 @@
   </section>
 
   <section>
+    <button md-icon-button color="primary">
+      <i class="material-icons md-24">menu</i>
+    </button>
+
+    <button md-icon-button color="accent">
+      <i class="material-icons md-24">favorite</i>
+    </button>
+
+    <button md-icon-button>
+      <i class="material-icons md-24">more_vert</i>
+    </button>
+  </section>
+
+  <section>
     <div>
       <span>isDisabled: {{isDisabled}}</span>
       <button md-raised-button (click)="isDisabled=!isDisabled">Disable buttons</button>
@@ -56,6 +70,10 @@
     <button md-raised-button color="primary" [disabled]="isDisabled">off</button>
     <button md-mini-fab [disabled]="isDisabled">
       <i class="material-icons md-24">check</i>
+    </button>
+
+    <button md-icon-button color="accent" [disabled]="isDisabled">
+      <i class="material-icons md-24">favorite</i>
     </button>
   </section>
 </div>

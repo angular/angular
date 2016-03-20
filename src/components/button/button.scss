@@ -31,6 +31,28 @@
   @include md-fab($md-mini-fab-size, $md-mini-fab-padding)
 }
 
+[md-icon-button] {
+  @extend %md-button-base;
+
+  min-width: 0;
+  padding: 0;
+
+  width: $md-icon-button-size;
+  height: $md-icon-button-size;
+
+  line-height: $md-icon-button-line-height;
+  border-radius: $md-icon-button-border-radius;
+
+  &.md-button-focus {
+    background-color: md-color($md-foreground, base, 0.12);
+    @include md-button-theme('background-color', 0.12);
+  }
+
+  .md-button-wrapper > * {
+    vertical-align: middle;
+  }
+}
+
 // Applies a clearer border for high-contrast mode (a11y)
 @media screen and (-ms-high-contrast: active) {
   .md-raised-button, .md-fab, .md-mini-fab {

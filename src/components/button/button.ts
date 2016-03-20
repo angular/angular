@@ -16,7 +16,8 @@ import {TimerWrapper} from 'angular2/src/facade/async';
 
 
 @Component({
-  selector: '[md-button]:not(a), [md-raised-button]:not(a), [md-fab]:not(a), [md-mini-fab]:not(a)',
+  selector: '[md-button]:not(a), [md-raised-button]:not(a), [md-icon-button]:not(a), ' +
+            '[md-fab]:not(a), [md-mini-fab]:not(a)',
   inputs: ['color'],
   host: {
     '[class.md-button-focus]': 'isKeyboardFocused',
@@ -79,7 +80,7 @@ export class MdButton {
 }
 
 @Component({
-  selector: 'a[md-button], a[md-raised-button], a[md-fab], a[md-mini-fab]',
+  selector: 'a[md-button], a[md-raised-button], a[md-icon-button], a[md-fab], a[md-mini-fab]',
   inputs: ['color'],
   host: {
     '[class.md-button-focus]': 'isKeyboardFocused',
