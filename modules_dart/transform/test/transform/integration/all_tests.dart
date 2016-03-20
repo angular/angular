@@ -167,14 +167,22 @@ void allTests() {
           'queries_class_annotation_files/expected/bar.template.dart'
     }),
     new IntegrationTestConfig(
-        'should handle @override annotations in properties on Directives.',
+      'should handle @override annotations in properties on Directives.',
         inputs: {
       'a|web/bar.dart': 'override_annotation_files/bar.dart'
     },
         outputs: {
       'a|web/bar.template.dart':
           'override_annotation_files/expected/bar.template.dart'
-    })
+    }),
+    // Regression test for i/5704
+    new IntegrationTestConfig(
+      'should generate TypeLiterals for parameters with type arguments',
+      inputs: {'a|web/bar.dart': 'type_arguments_files/bar.dart'},
+      outputs:
+      {
+        'a|web/bar.ng_deps.dart': 'type_arguments_files/expected/bar.ng_deps.dart'
+      })
   ];
 
   var cache = {};
