@@ -195,7 +195,10 @@ export function main() {
       });
 
       it('sets "aria-checked" to be "true" on the host element', function() {
-        let el = fixture.debugElement.query(By.css('.md-checkbox'));
+        let el = fixture.debugElement.query(By.css('md-checkbox'));
+        controller.isIndeterminate = false;
+        controller.isChecked = true;
+        fixture.detectChanges();
         expect(el.nativeElement.getAttribute('aria-checked')).toEqual('true');
       });
 

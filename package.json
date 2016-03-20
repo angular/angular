@@ -15,7 +15,8 @@
     "tslint": "tslint -c tslint.json 'src/**/*.ts'",
     "typings": "typings install --ambient",
     "postinstall": "npm run typings",
-    "e2e": "protractor ./protractor.conf.js"
+    "e2e": "protractor ./protractor.conf.js",
+    "inline-resources": "gulp inline-resources"
   },
   "version": "2.0.0-alpha.1",
   "license": "MIT",

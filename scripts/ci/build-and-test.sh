@@ -15,6 +15,7 @@ is_dart && source scripts/ci/sources/env_dart.sh
 
 start_tunnel
 npm run build
+npm run inline-resources
 echo
 is_dart && pub install
 

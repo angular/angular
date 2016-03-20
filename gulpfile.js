@@ -14,6 +14,6 @@ var inlineNg2Template = require('gulp-inline-ng2-template');
 
 gulp.task('inline-resources', function(){
   gulp.src('./dist/components/**/*.js')
-      .pipe(inlineNg2Template({base: './dist'}))
+      .pipe(inlineNg2Template({base: './dist', target: 'es5'}))
       .pipe(gulp.dest('./dist/components'));
 });
