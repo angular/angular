@@ -10,7 +10,7 @@ import {Dir} from '../core/rtl/dir';
 import {MdButton} from '../components/button/button';
 import {PortalDemo} from './portal/portal-demo';
 import {ToolbarDemo} from './toolbar/toolbar-demo';
-
+import {ListDemo} from './list/list-demo';
 
 @Component({
   selector: 'home',
@@ -36,5 +36,6 @@ export class Home {}
   new Route({path: '/portal', name: 'PortalDemo', component: PortalDemo}),
   new Route({path: '/checkbox', name: 'CheckboxDemo', component: CheckboxDemo}),
   new Route({path: '/toolbar', name: 'ToolbarDemo', component: ToolbarDemo}),
+  new Route({path: '/list', name: 'ListDemo', component: ListDemo})
 ])
 export class DemoApp { }

@@ -1,0 +1,138 @@
+@import "variables";
+
+$md-list-side-padding: 16px;
+$md-list-avatar-size: 40px;
+
+/*  Normal list variables */
+$md-list-top-padding: 8px;
+$md-list-font-size: 16px;
+$md-list-secondary-font: 14px;
+// height for single-line lists
+$md-list-base-height: 48px;
+// height for single-line lists with avatars
+$md-list-avatar-height: 56px;
+// spec requires two- and three-line lists be taller
+$md-list-two-line-height: 72px;
+$md-list-three-line-height: 88px;
+
+/* Dense list variables */
+$md-dense-top-padding: 4px;
+$md-dense-font-size: 13px;
+$md-dense-base-height: 40px;
+$md-dense-avatar-height: 48px;
+$md-dense-two-line-height: 60px;
+$md-dense-three-line-height: 76px;
+
+/*  
+This mixin provides all list-item styles, changing font size and height
+based on whether the list is in "dense" mode.
+*/
+@mixin md-list-item-base($font-size, $base-height, $avatar-height, 
+  $two-line-height, $three-line-height) {
+
+  .md-list-item {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    font-family: $md-font-family;
+    box-sizing: border-box;
+    font-size: $font-size;
+    height: $base-height;
+    padding: 0 $md-list-side-padding;
+  }
+
+  &.md-list-avatar .md-list-item {
+    height: $avatar-height;
+  }
+
+  &.md-2-line .md-list-item {
+    height: $two-line-height;
+  }
+
+  &.md-3-line .md-list-item {
+    height: $three-line-height;
+  }
+
+  .md-list-text {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    padding: 0 $md-list-side-padding;
+
+    &:first-child {
+      padding: 0;
+    }
+
+    &:empty {
+      display: none;
+    }
+
+    & > * {
+      margin: 0;
+      padding: 0;
+      font-weight: normal;
+      font-size: inherit;
+    }
+  }
+
+  [md-list-avatar] {
+    width: $md-list-avatar-size;
+    height: $md-list-avatar-size;
+  }
+}
+
+/*
+This mixin provides all md-line styles, changing secondary font size 
+based on whether the list is in "dense" mode.
+*/
+@mixin md-line-base($secondary-font-size) {
+
+  [md-line] {
+    display: block;
+    white-space: nowrap;
+    overflow-x: hidden;
+    text-overflow: ellipsis;
+    box-sizing: border-box;
+
+    // all lines but the top line should have smaller text
+    &:nth-child(n+2) {
+      font-size: $secondary-font-size;
+    }
+  }
+}
+
+md-list {
+  padding-top: $md-list-top-padding;
+  display: block;
+
+  md-list-item {
+    @include md-list-item-base(
+      $md-list-font-size,
+      $md-list-base-height,
+      $md-list-avatar-height,
+      $md-list-two-line-height,
+      $md-list-three-line-height
+    );
+
+    @include md-line-base($md-list-secondary-font);
+  }
+}
+
+
+md-list[dense] {
+  padding-top: $md-dense-top-padding;
+  display: block;
+
+
+  md-list-item {
+    @include md-list-item-base(
+      $md-dense-font-size,
+      $md-dense-base-height,
+      $md-dense-avatar-height,
+      $md-dense-two-line-height,
+      $md-dense-three-line-height
+    );
+
+    @include md-line-base($md-dense-font-size);
+  }
+}

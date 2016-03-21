@@ -1,0 +1,23 @@
+
+.demo {
+  width: 350px;
+  display: flex;
+
+  md-list {
+    border: 1px dotted gray;
+    width: 350px;
+    margin: 0 20px;
+
+  }
+  h2 {
+    margin: 0 20px;
+  }
+}
+
+.demo-button {
+  margin: 20px;
+}
+
+.demo-secondary-text {
+  color: rgba(0, 0, 0, 0.54);
+}

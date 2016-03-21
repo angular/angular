@@ -1,0 +1,68 @@
+
+<h1>md-list demo</h1>
+
+<button md-raised-button (click)="thirdLine=!thirdLine" class="demo-button">Show third line</button>
+
+<div class="demo">
+  <div>
+    <h2>Normal lists</h2>
+
+    <md-list>
+      <md-list-item *ngFor="#item of items">
+        {{item}}
+      </md-list-item>
+    </md-list>
+
+    <md-list>
+      <md-list-item *ngFor="#contact of contacts">
+        <img md-list-avatar src="" alt="">
+        <h3 md-line>{{contact.name}}</h3>
+        <p md-line *ngIf="thirdLine">extra line</p>
+        <p md-line class="demo-secondary-text">{{contact.headline}}</p>
+      </md-list-item>
+    </md-list>
+
+    <md-list>
+      <md-list-item *ngFor="#message of messages">
+        <h3 md-line>{{message.from}}</h3>
+        <p md-line>
+          <span>{{message.subject}} -- </span>
+          <span class="demo-secondary-text">{{message.message}}</span>
+        </p>
+      </md-list-item>
+    </md-list>
+
+    <md-list>
+      <md-list-item *ngFor="#message of messages">
+        <h3 md-line>{{message.from}}</h3>
+        <p md-line> {{message.subject}} </p>
+        <p md-line class="demo-secondary-text">{{message.message}} </p>
+      </md-list-item>
+    </md-list>
+  </div>
+
+  <div>
+    <h2>Dense lists</h2>
+    <md-list dense>
+      <md-list-item *ngFor="#item of items">
+        {{item}}
+      </md-list-item>
+    </md-list>
+
+    <md-list dense>
+      <md-list-item *ngFor="#contact of contacts">
+        <img md-list-avatar src="" alt="">
+        <h3 md-line>{{contact.name}}</h3>
+        <p md-line class="demo-secondary-text">{{contact.headline}}</p>
+      </md-list-item>
+    </md-list>
+
+    <md-list dense>
+      <md-list-item *ngFor="#message of messages">
+        <h3 md-line>{{message.from}}</h3>
+        <p md-line> {{message.subject}} </p>
+        <p md-line class="demo-secondary-text">{{message.message}} </p>
+      </md-list-item>
+    </md-list>
+  </div>
+</div>
