@@ -15,7 +15,7 @@ export class JsonFileReporter extends Reporter {
   // TODO(tbosch): use static values when our transpiler supports them
   static get PATH(): OpaqueToken { return _PATH; }
   // TODO(tbosch): use static values when our transpiler supports them
-  static get BINDINGS(): Provider[] { return _PROVIDERS; }
+  static get PROVIDERS(): Provider[] { return _PROVIDERS; }
 
   _writeFile: Function;
   _path: string;

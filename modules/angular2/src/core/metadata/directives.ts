@@ -649,7 +649,7 @@ export class DirectiveMetadata extends InjectableMetadata {
    *
    * @Directive({
    *   selector: 'greet',
-   *   bindings: [
+   *   providers: [
    *     Greeter
    *   ]
    * })
@@ -663,13 +663,9 @@ export class DirectiveMetadata extends InjectableMetadata {
    * ```
    */
   get providers(): any[] {
-    return isPresent(this._bindings) && this._bindings.length > 0 ? this._bindings :
-                                                                    this._providers;
+    return this._providers;
   }
-  /** @deprecated */
-  get bindings(): any[] { return this.providers; }
   private _providers: any[];
-  private _bindings: any[];
 
   /**
    * Defines the name that can be used in the template to assign this directive to a variable.
@@ -731,7 +727,7 @@ export class DirectiveMetadata extends InjectableMetadata {
    */
   queries: {[key: string]: any};
 
-  constructor({selector, inputs, outputs, properties, events, host, bindings, providers, exportAs,
+  constructor({selector, inputs, outputs, properties, events, host, providers, exportAs,
                queries}: {
     selector?: string,
     inputs?: string[],
@@ -740,7 +736,6 @@ export class DirectiveMetadata extends InjectableMetadata {
     events?: string[],
     host?: {[key: string]: string},
     providers?: any[],
-    /** @deprecated */ bindings?: any[],
     exportAs?: string,
     queries?: {[key: string]: any}
   } = {}) {
@@ -754,7 +749,6 @@ export class DirectiveMetadata extends InjectableMetadata {
     this.exportAs = exportAs;
     this.queries = queries;
     this._providers = providers;
-    this._bindings = bindings;
   }
 }
 
@@ -836,12 +830,9 @@ export class ComponentMetadata extends DirectiveMetadata {
    * ```
    */
   get viewProviders(): any[] {
-    return isPresent(this._viewBindings) && this._viewBindings.length > 0 ? this._viewBindings :
-                                                                            this._viewProviders;
+    return this._viewProviders;
   }
-  get viewBindings(): any[] { return this.viewProviders; }
   private _viewProviders: any[];
-  private _viewBindings: any[];
 
   /**
    * The module id of the module that contains the component.
@@ -877,8 +868,8 @@ export class ComponentMetadata extends DirectiveMetadata {
 
   encapsulation: ViewEncapsulation;
 
-  constructor({selector, inputs, outputs, properties, events, host, exportAs, moduleId, bindings,
-               providers, viewBindings, viewProviders,
+  constructor({selector, inputs, outputs, properties, events, host, exportAs, moduleId,
+               providers, viewProviders,
                changeDetection = ChangeDetectionStrategy.Default, queries, templateUrl, template,
                styleUrls, styles, directives, pipes, encapsulation}: {
     selector?: string,
@@ -887,11 +878,9 @@ export class ComponentMetadata extends DirectiveMetadata {
     properties?: string[],
     events?: string[],
     host?: {[key: string]: string},
-    /** @deprecated */ bindings?: any[],
     providers?: any[],
     exportAs?: string,
     moduleId?: string,
-    /** @deprecated */ viewBindings?: any[],
     viewProviders?: any[],
     queries?: {[key: string]: any},
     changeDetection?: ChangeDetectionStrategy,
@@ -911,14 +900,12 @@ export class ComponentMetadata extends DirectiveMetadata {
       events: events,
       host: host,
       exportAs: exportAs,
-      bindings: bindings,
       providers: providers,
       queries: queries
     });
 
     this.changeDetection = changeDetection;
     this._viewProviders = viewProviders;
-    this._viewBindings = viewBindings;
     this.templateUrl = templateUrl;
     this.template = template;
     this.styleUrls = styleUrls;

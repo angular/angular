@@ -225,7 +225,7 @@ exports.createBenchpressRunner = function(options) {
     benchpress.bind(benchpress.Options.FORCE_GC).toValue(argv['force-gc']),
     benchpress.bind(benchpress.Options.DEFAULT_DESCRIPTION)
         .toValue({'lang': options.lang, 'runId': runId}),
-    benchpress.JsonFileReporter.BINDINGS,
+    benchpress.JsonFileReporter.PROVIDERS,
     benchpress.bind(benchpress.JsonFileReporter.PATH).toValue(resultsFolder)
   ];
   if (!argv['dryrun']) {
