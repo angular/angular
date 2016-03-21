@@ -38,7 +38,7 @@ export function main() {
       }
       log = [];
       extension = ReflectiveInjector.resolveAndCreate([
-                                      IOsDriverExtension.BINDINGS,
+                                      IOsDriverExtension.PROVIDERS,
                                       provide(WebDriverAdapter,
                                               {useValue: new MockDriverAdapter(log, perfRecords)})
                                     ])

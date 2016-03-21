@@ -23,7 +23,7 @@ import {Options} from '../common_options';
  */
 export class ChromeDriverExtension extends WebDriverExtension {
   // TODO(tbosch): use static values when our transpiler supports them
-  static get BINDINGS(): Provider[] { return _PROVIDERS; }
+  static get PROVIDERS(): Provider[] { return _PROVIDERS; }
 
   private _majorChromeVersion: number;
 

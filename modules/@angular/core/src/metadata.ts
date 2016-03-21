@@ -153,7 +153,6 @@ export interface DirectiveMetadataFactory {
     properties?: string[],
     events?: string[],
     host?: {[key: string]: string},
-    bindings?: any[],
     providers?: any[],
     exportAs?: string,
     queries?: {[key: string]: any}
@@ -165,7 +164,6 @@ export interface DirectiveMetadataFactory {
     properties?: string[],
     events?: string[],
     host?: {[key: string]: string},
-    bindings?: any[],
     providers?: any[],
     exportAs?: string,
     queries?: {[key: string]: any}
@@ -211,13 +209,10 @@ export interface ComponentMetadataFactory {
     properties?: string[],
     events?: string[],
     host?: {[key: string]: string},
-    /* @deprecated */
-    bindings?: any[],
     providers?: any[],
     exportAs?: string,
     moduleId?: string,
     queries?: {[key: string]: any},
-    viewBindings?: any[],
     viewProviders?: any[],
     changeDetection?: ChangeDetectionStrategy,
     templateUrl?: string,
@@ -235,14 +230,10 @@ export interface ComponentMetadataFactory {
     properties?: string[],
     events?: string[],
     host?: {[key: string]: string},
-    /* @deprecated */
-    bindings?: any[],
     providers?: any[],
     exportAs?: string,
     moduleId?: string,
     queries?: {[key: string]: any},
-    /* @deprecated */
-    viewBindings?: any[],
     viewProviders?: any[],
     changeDetection?: ChangeDetectionStrategy,
     templateUrl?: string,

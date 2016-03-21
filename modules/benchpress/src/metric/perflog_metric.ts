@@ -20,7 +20,7 @@ import {Options} from '../common_options';
  */
 export class PerflogMetric extends Metric {
   // TODO(tbosch): use static values when our transpiler supports them
-  static get BINDINGS(): Provider[] { return _PROVIDERS; }
+  static get PROVIDERS(): Provider[] { return _PROVIDERS; }
   // TODO(tbosch): use static values when our transpiler supports them
   static get SET_TIMEOUT(): OpaqueToken { return _SET_TIMEOUT; }
 

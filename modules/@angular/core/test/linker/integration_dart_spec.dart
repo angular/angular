@@ -250,7 +250,7 @@ class OnChangeComponent implements OnChanges {
     selector: 'component-with-observable-list',
     changeDetection: ChangeDetectionStrategy.OnPush,
     inputs: const ['list'],
-    bindings: const [
+    providers: const [
       const Binding(IterableDiffers,
           toValue: const IterableDiffers(const [
             const ObservableListDiffFactory(),

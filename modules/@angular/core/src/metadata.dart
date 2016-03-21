@@ -32,8 +32,6 @@ class Directive extends DirectiveMetadata {
       @Deprecated('Use `outputs` or `@Output` instead')
       List<String> events,
       Map<String, String> host,
-      @Deprecated('Use `providers` instead')
-      List bindings,
       List providers,
       String exportAs,
       Map<String, dynamic> queries})
@@ -44,7 +42,6 @@ class Directive extends DirectiveMetadata {
             properties: properties,
             events: events,
             host: host,
-            bindings: bindings,
             providers: providers,
             exportAs: exportAs,
             queries: queries);
@@ -63,14 +60,10 @@ class Component extends ComponentMetadata {
       @Deprecated('Use `outputs` or `@Output` instead')
       List<String> events,
       Map<String, String> host,
-      @Deprecated('Use `providers` instead')
-      List bindings,
       List providers,
       String exportAs,
       String moduleId,
       Map<String, dynamic> queries,
-      @Deprecated('Use `viewProviders` instead')
-      List viewBindings,
       List viewProviders,
       ChangeDetectionStrategy changeDetection,
       String templateUrl,
@@ -87,11 +80,9 @@ class Component extends ComponentMetadata {
             properties: properties,
             events: events,
             host: host,
-            bindings: bindings,
             providers: providers,
             exportAs: exportAs,
             moduleId: moduleId,
-            viewBindings: viewBindings,
             viewProviders: viewProviders,
             queries: queries,
             changeDetection: changeDetection,

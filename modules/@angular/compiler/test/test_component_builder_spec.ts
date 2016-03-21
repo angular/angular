@@ -154,7 +154,7 @@ class MockFancyService extends FancyService {
 
 @Component({
   selector: 'my-service-comp',
-  bindings: [FancyService],
+  providers: [FancyService],
   template: `injected value: {{fancyService.value}}`
 })
 class TestBindingsComp {

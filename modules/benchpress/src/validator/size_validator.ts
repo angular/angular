@@ -9,7 +9,7 @@ import {MeasureValues} from '../measure_values';
  */
 export class SizeValidator extends Validator {
   // TODO(tbosch): use static values when our transpiler supports them
-  static get BINDINGS(): Provider[] { return _PROVIDERS; }
+  static get PROVIDERS(): Provider[] { return _PROVIDERS; }
   // TODO(tbosch): use static values when our transpiler supports them
   static get SAMPLE_SIZE() { return _SAMPLE_SIZE; }
 

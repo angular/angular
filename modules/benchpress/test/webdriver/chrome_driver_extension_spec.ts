@@ -59,10 +59,10 @@ export function main() {
       log = [];
       extension =
           ReflectiveInjector.resolveAndCreate([
-                              ChromeDriverExtension.BINDINGS,
-                              bind(WebDriverAdapter)
+                              ChromeDriverExtension.PROVIDERS,
+                              provide(WebDriverAdapter)
                                   .toValue(new MockDriverAdapter(log, perfRecords, messageMethod)),
-                              bind(Options.USER_AGENT).toValue(userAgent)
+                              provide(Options.USER_AGENT).toValue(userAgent)
                             ])
               .get(ChromeDriverExtension);
       return extension;

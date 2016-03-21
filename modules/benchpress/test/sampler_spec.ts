@@ -51,9 +51,9 @@ export function main() {
       if (isBlank(driver)) {
         driver = new MockDriverAdapter([]);
       }
-      var bindings = [
+      var providers = [
         Options.DEFAULT_PROVIDERS,
-        Sampler.BINDINGS,
+        Sampler.PROVIDERS,
         provide(Metric, {useValue: metric}),
         provide(Reporter, {useValue: reporter}),
         provide(WebDriverAdapter, {useValue: driver}),
@@ -62,10 +62,10 @@ export function main() {
         bind(Options.NOW).toValue(() => DateWrapper.fromMillis(time++))
       ];
       if (isPresent(prepare)) {
-        bindings.push(bind(Options.PREPARE).toValue(prepare));
+        providers.push(bind(Options.PREPARE).toValue(prepare));
       }
 
-      sampler = ReflectiveInjector.resolveAndCreate(bindings).get(Sampler);
+      sampler = ReflectiveInjector.resolveAndCreate(providers).get(Sampler);
     }
 
     it('should call the prepare and execute callbacks using WebDriverAdapter.waitFor',

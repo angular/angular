@@ -56,20 +56,6 @@ export class MockDirectiveResolver extends DirectiveResolver {
     });
   }
 
-  /**
-   * @deprecated
-   */
-  setBindingsOverride(type: Type, bindings: any[]): void {
-    this._providerOverrides.set(type, bindings);
-  }
-
-  /**
-   * @deprecated
-   */
-  setViewBindingsOverride(type: Type, viewBindings: any[]): void {
-    this.viewProviderOverrides.set(type, viewBindings);
-  }
-
   setProvidersOverride(type: Type, providers: any[]): void {
     this._providerOverrides.set(type, providers);
   }

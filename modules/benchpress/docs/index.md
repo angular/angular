@@ -173,7 +173,7 @@ To collect these metrics, you need to execute `console.time('frameCapture')` and
 
 In addition to that, one extra binding needs to be passed to benchpress in tests that want to collect these metrics:
 
-    benchpress.sample(bindings: [bp.bind(bp.Options.CAPTURE_FRAMES).toValue(true)], ... )
+    benchpress.sample(providers: [bp.bind(bp.Options.CAPTURE_FRAMES).toValue(true)], ... )
 
 # Requests Metrics
 
@@ -182,9 +182,9 @@ Benchpress can also record the number of requests sent and count the received "e
 - `receivedData`: number of bytes received since the last navigation start
 - `requestCount`: number of requests sent since the last navigation start
 
-To collect these metrics, you need the following corresponding extra bindings:
+To collect these metrics, you need the following corresponding extra providers:
 
-    benchpress.sample(bindings: [
+    benchpress.sample(providers: [
       bp.bind(bp.Options.RECEIVED_DATA).toValue(true),
       bp.bind(bp.Options.REQUEST_COUNT).toValue(true)
     ], ... )

@@ -179,7 +179,7 @@ class PersonsComponent {
 
 @Component({
   selector: 'person-management-app',
-  viewBindings: [DataService],
+  viewProviders: [DataService],
   template: `
     <button (click)="switchToEditName()">Edit Full Name</button>
     <button (click)="switchToPersonList()">Person Array</button>

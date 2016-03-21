@@ -25,34 +25,34 @@ import {Options} from './common_options';
  * It provides defaults, creates the injector and calls the sampler.
  */
 export class Runner {
-  private _defaultBindings: Provider[];
-  constructor(defaultBindings: Provider[] = null) {
-    if (isBlank(defaultBindings)) {
-      defaultBindings = [];
+  private _defaultProviders: Provider[];
+  constructor(defaultProviders: Provider[] = null) {
+    if (isBlank(defaultProviders)) {
+      defaultProviders = [];
     }
-    this._defaultBindings = defaultBindings;
+    this._defaultProviders = defaultProviders;
   }
 
-  sample({id, execute, prepare, microMetrics, bindings}:
-             {id: string, execute?: any, prepare?: any, microMetrics?: any, bindings?: any}):
+  sample({id, execute, prepare, microMetrics, providers}:
+             {id: string, execute?: any, prepare?: any, microMetrics?: any, providers?: any}):
       Promise<SampleState> {
-    var sampleBindings = [
+    var sampleProviders = [
       _DEFAULT_PROVIDERS,
-      this._defaultBindings,
+      this._defaultProviders,
       bind(Options.SAMPLE_ID).toValue(id),
       bind(Options.EXECUTE).toValue(execute)
     ];
     if (isPresent(prepare)) {
-      sampleBindings.push(bind(Options.PREPARE).toValue(prepare));
+      sampleProviders.push(bind(Options.PREPARE).toValue(prepare));
     }
     if (isPresent(microMetrics)) {
-      sampleBindings.push(bind(Options.MICRO_METRICS).toValue(microMetrics));
+      sampleProviders.push(bind(Options.MICRO_METRICS).toValue(microMetrics));
     }
-    if (isPresent(bindings)) {
-      sampleBindings.push(bindings);
+    if (isPresent(providers)) {
+      sampleProviders.push(providers);
     }
 
-    var inj = ReflectiveInjector.resolveAndCreate(sampleBindings);
+    var inj = ReflectiveInjector.resolveAndCreate(sampleProviders);
     var adapter = inj.get(WebDriverAdapter);
 
     return PromiseWrapper
@@ -67,7 +67,7 @@ export class Runner {
           // TODO vsavkin consider changing it when toAsyncFactory is added back or when child
           // injectors are handled better.
           var injector = ReflectiveInjector.resolveAndCreate([
-            sampleBindings,
+            sampleProviders,
             bind(Options.CAPABILITIES).toValue(capabilities),
             bind(Options.USER_AGENT).toValue(userAgent),
             provide(WebDriverAdapter, {useValue: adapter})
@@ -81,15 +81,15 @@ export class Runner {
 
 var _DEFAULT_PROVIDERS = [
   Options.DEFAULT_PROVIDERS,
-  Sampler.BINDINGS,
-  ConsoleReporter.BINDINGS,
-  RegressionSlopeValidator.BINDINGS,
-  SizeValidator.BINDINGS,
-  ChromeDriverExtension.BINDINGS,
-  FirefoxDriverExtension.BINDINGS,
-  IOsDriverExtension.BINDINGS,
-  PerflogMetric.BINDINGS,
-  SampleDescription.BINDINGS,
+  Sampler.PROVIDERS,
+  ConsoleReporter.PROVIDERS,
+  RegressionSlopeValidator.PROVIDERS,
+  SizeValidator.PROVIDERS,
+  ChromeDriverExtension.PROVIDERS,
+  FirefoxDriverExtension.PROVIDERS,
+  IOsDriverExtension.PROVIDERS,
+  PerflogMetric.PROVIDERS,
+  SampleDescription.PROVIDERS,
   MultiReporter.createBindings([ConsoleReporter]),
   MultiMetric.createBindings([PerflogMetric]),
 

@@ -48,9 +48,9 @@ export function main() {
     if (isBlank(microMetrics)) {
       microMetrics = StringMapWrapper.create();
     }
-    var bindings = [
+    var providers = [
       Options.DEFAULT_PROVIDERS,
-      PerflogMetric.BINDINGS,
+      PerflogMetric.PROVIDERS,
       bind(Options.MICRO_METRICS).toValue(microMetrics),
       bind(PerflogMetric.SET_TIMEOUT)
           .toValue((fn, millis) => {
@@ -61,18 +61,18 @@ export function main() {
           .toValue(new MockDriverExtension(perfLogs, commandLog, perfLogFeatures))
     ];
     if (isPresent(forceGc)) {
-      bindings.push(bind(Options.FORCE_GC).toValue(forceGc));
+      providers.push(bind(Options.FORCE_GC).toValue(forceGc));
     }
     if (isPresent(captureFrames)) {
-      bindings.push(bind(Options.CAPTURE_FRAMES).toValue(captureFrames));
+      providers.push(bind(Options.CAPTURE_FRAMES).toValue(captureFrames));
     }
     if (isPresent(receivedData)) {
-      bindings.push(bind(Options.RECEIVED_DATA).toValue(receivedData));
+      providers.push(bind(Options.RECEIVED_DATA).toValue(receivedData));
     }
     if (isPresent(requestCount)) {
-      bindings.push(bind(Options.REQUEST_COUNT).toValue(requestCount));
+      providers.push(bind(Options.REQUEST_COUNT).toValue(requestCount));
     }
-    return ReflectiveInjector.resolveAndCreate(bindings).get(PerflogMetric);
+    return ReflectiveInjector.resolveAndCreate(providers).get(PerflogMetric);
   }
 
   describe('perflog metric', () => {

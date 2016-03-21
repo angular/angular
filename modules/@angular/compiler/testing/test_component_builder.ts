@@ -344,9 +344,9 @@ export class TestComponentBuilder {
             (to, from) => { mockViewResolver.overrideViewDirective(component, from, to); });
       });
       this._bindingsOverrides.forEach(
-          (bindings, type) => mockDirectiveResolver.setBindingsOverride(type, bindings));
+          (bindings, type) => mockDirectiveResolver.setProvidersOverride(type, bindings));
       this._viewBindingsOverrides.forEach(
-          (bindings, type) => mockDirectiveResolver.setViewBindingsOverride(type, bindings));
+          (bindings, type) => mockDirectiveResolver.setViewProvidersOverride(type, bindings));
 
       let promise: Promise<ComponentFactory<any>> =
           this._injector.get(ComponentResolver).resolveComponent(rootComponentType);

@@ -63,7 +63,7 @@ export function main() {
 
     it('should merge SampleDescription.description', inject([AsyncTestCompleter], (async) => {
          createRunner([bind(Options.DEFAULT_DESCRIPTION).toValue({'a': 1})])
-             .sample({id: 'someId', bindings: [bind(Options.SAMPLE_DESCRIPTION).toValue({'b': 2})]})
+             .sample({id: 'someId', providers: [bind(Options.SAMPLE_DESCRIPTION).toValue({'b': 2})]})
              .then((_) => injector.get(SampleDescription))
              .then((desc) => {
                expect(desc.description)
@@ -121,7 +121,7 @@ export function main() {
          ])
              .sample({
                id: 'someId',
-               bindings: [
+               providers: [
                  bind(Options.DEFAULT_DESCRIPTION)
                      .toValue({'a': 2}),
                ]

@@ -18,7 +18,7 @@ export class ConsoleReporter extends Reporter {
   // TODO(tbosch): use static values when our transpiler supports them
   static get COLUMN_WIDTH(): OpaqueToken { return _COLUMN_WIDTH; }
   // TODO(tbosch): use static values when our transpiler supports them
-  static get BINDINGS(): Provider[] { return _PROVIDERS; }
+  static get PROVIDERS(): Provider[] { return _PROVIDERS; }
 
 
   static _lpad(value, columnWidth, fill = ' ') {

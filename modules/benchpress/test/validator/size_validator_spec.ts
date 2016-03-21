@@ -26,8 +26,8 @@ export function main() {
 
     function createValidator(size) {
       validator = ReflectiveInjector.resolveAndCreate([
-                                      SizeValidator.BINDINGS,
-                                      bind(SizeValidator.SAMPLE_SIZE).toValue(size)
+                                      SizeValidator.PROVIDERS,
+                                      provide(SizeValidator.SAMPLE_SIZE).toValue(size)
                                     ])
                       .get(SizeValidator);
     }
