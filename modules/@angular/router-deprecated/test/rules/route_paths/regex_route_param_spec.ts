@@ -45,5 +45,21 @@ export function main() {
       var url = rec.generateUrl(params);
       expect(url.urlPath).toEqual('/a/one/b/two');
     });
+
+    it('should raise an error when the number of parameters doesnt match', () => {
+      expect(() => {new RegexRoutePath('^a-([0-9]+)-b-([0-9]+)$', emptySerializer,
+                                       ['complete_match', 'a'])})
+          .toThrowError(`Regex group names [complete_match,a] must contain names for each matching \
+group and a name for the complete match as its first element of regex '^a-([0-9]+)-b-([0-9]+)$'. \
+3 group names are expected.`);
+    });
+
+    it('should take group naming into account when passing params', () => {
+      var rec = new RegexRoutePath('^a-([0-9]+)-b-([0-9]+)$', emptySerializer,
+                                   ['complete_match', 'a', 'b']);
+      var url = parser.parse('a-123-b-345');
+      var match = rec.matchUrl(url);
+      expect(match.allParams).toEqual({'complete_match': 'a-123-b-345', 'a': '123', 'b': '345'});
+    });
   });
 }

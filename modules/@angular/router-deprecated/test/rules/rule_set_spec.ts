@@ -83,6 +83,26 @@ export function main() {
              });
        }));
 
+    it('should recognize a regex with named_groups', inject([AsyncTestCompleter], (async) => {
+         function emptySerializer(params): GeneratedUrl { return new GeneratedUrl('', {}); }
+
+         recognizer.config(new Route({
+           regex: '^(.+)/(.+)$',
+           regex_group_names: ['cc', 'a', 'b'],
+           serializer: emptySerializer,
+           component: DummyCmpA
+         }));
+         recognize(recognizer, '/first/second')
+             .then((solutions: RouteMatch[]) => {
+               expect(solutions.length).toBe(1);
+               expect(getComponentType(solutions[0])).toEqual(DummyCmpA);
+               expect(getParams(solutions[0]))
+                   .toEqual({'cc': 'first/second', 'a': 'first', 'b': 'second'});
+               async.done();
+             });
+       }));
+
+
 
     it('should throw when given two routes that start with the same static segment', () => {
       recognizer.config(new Route({path: '/hello', component: DummyCmpA}));

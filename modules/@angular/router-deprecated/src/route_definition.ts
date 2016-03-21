@@ -16,6 +16,7 @@ export interface RouteDefinition {
   path?: string;
   aux?: string;
   regex?: string;
+  regex_group_names?: string[];
   serializer?: RegexSerializer;
   component?: Type | ComponentDefinition;
   loader?: () => Promise<Type>;
