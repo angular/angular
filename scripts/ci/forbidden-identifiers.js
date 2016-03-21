@@ -16,15 +16,18 @@ var blocked_statements = [
 ];
 
 var blockedRegex = new RegExp('\\+.*(' + blocked_statements.join('|') + ').*$', 'mg');
+var commit_range = process.env.TRAVIS_COMMIT_RANGE || 'HEAD~1';
 
-var diff = child_process.execSync('git diff --unified=0 HEAD~1 ./src ./e2e').toString();
-var isInvalid = blockedRegex.test(diff);
+var diff = child_process.execSync(`git diff --unified=0 ${commit_range} ./src ./e2e`).toString();
 
-if (isInvalid) {
+if (blockedRegex.test(diff)) {
+
   console.warn('Warning: You are using a statement in your commit, which is not allowed.\n' +
     'Blocked Statements are: ' + blocked_statements.join(', ') + '\n' +
     'Please remove them, and the CI will continue.');
+
   process.exit(1);
+
 } else {
   console.log('Info: The commits have been analyzed and are valid!');
 }
