@@ -9,9 +9,7 @@ import {
 import {XHR} from 'angular2/src/compiler/xhr';
 import {
   it,
-  iit,
   describe,
-  ddescribe,
   expect,
   beforeEach,
 } from '../../core/facade/testing';

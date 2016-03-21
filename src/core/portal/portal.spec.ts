@@ -5,9 +5,7 @@ import {
 } from 'angular2/testing';
 import {
   it,
-  iit,
   describe,
-  ddescribe,
   expect,
   beforeEach,
 } from '../../core/facade/testing';
