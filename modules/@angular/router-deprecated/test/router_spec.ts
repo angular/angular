@@ -135,14 +135,31 @@ export function main() {
        }));
 
 
-    it('should trigger the onError callback of a router change subscription if the URL does not match a route',
+    it('should pass an object containing the component instruction to the router change subscription after a successful navigation',
        inject([AsyncTestCompleter], (async) => {
          var outlet = makeDummyOutlet();
 
          router.registerPrimaryOutlet(outlet)
              .then((_) => router.config([new Route({path: '/a', component: DummyComponent})]))
              .then((_) => {
-               router.subscribe((_) => {}, (url) => {
+               router.subscribe(({status, instruction}) => {
+                 expect(status).toEqual('success');
+                 expect(instruction).toEqual(jasmine.objectContaining({urlPath: 'a', urlParams: []}));
+                 async.done();
+               });
+               (<SpyLocation>location).simulateHashChange('a');
+             });
+       }));
+
+    it('should pass an object containing the bad url to the router change subscription after a failed navigation',
+       inject([AsyncTestCompleter], (async) => {
+         var outlet = makeDummyOutlet();
+
+         router.registerPrimaryOutlet(outlet)
+             .then((_) => router.config([new Route({path: '/a', component: DummyComponent})]))
+             .then((_) => {
+               router.subscribe(({status, url}) => {
+                 expect(status).toEqual('fail');
                  expect(url).toEqual('b');
                  async.done();
                });
