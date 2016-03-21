@@ -251,7 +251,7 @@ export class Router {
                 if (result) {
                   return this.commit(instruction, _skipLocationChange)
                       .then((_) => {
-                        this._emitNavigationFinish(instruction.toRootUrl());
+                        this._emitNavigationFinish(instruction.component);
                         return true;
                       });
                 }
@@ -259,8 +259,8 @@ export class Router {
         });
   }
 
-  private _emitNavigationFinish(url): void { ObservableWrapper.callEmit(this._subject, url); }
-  _emitNavigationFail(url): void { ObservableWrapper.callError(this._subject, url); }
+  private _emitNavigationFinish(instruction : ComponentInstruction): void { ObservableWrapper.callEmit(this._subject, {status: 'success', instruction}); }
+  _emitNavigationFail(url: string): void { ObservableWrapper.callEmit(this._subject, {status: 'fail', url}); }
 
   private _afterPromiseFinishNavigating(promise: Promise<any>): Promise<any> {
     return PromiseWrapper.catchError(promise.then((_) => this._finishNavigating()), (err) => {
