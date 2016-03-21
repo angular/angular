@@ -320,9 +320,5 @@ Location.prototype.prepareExternalUrl = function(url) {
   if (url.length > 0 && !url.startsWith('/')) {
     url = '/' + url;
   }
-  if(!$location.$$html5) {
-    return '#' + url;
-  } else {
-    return '.' + url;
-  }
+  return $location.$$html5 ? '.' + url : '#' + $locationHashPrefix + url;
 };
