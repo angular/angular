@@ -3,22 +3,34 @@
 describe('ngLink', function () {
 
   describe('html5Mode enabled', function () {
-    runHrefTestsAndExpectPrefix(true);
+    runHrefTestsAndExpectPrefix('/', true);
   });
 
   describe('html5Mode disabled', function () {
-    runHrefTestsAndExpectPrefix(false, '');
+    runHrefTestsAndExpectPrefix('', false, '');
   });
 
   describe('html5Mode disabled, with hash prefix', function () {
-    runHrefTestsAndExpectPrefix(false, '!');
+    runHrefTestsAndExpectPrefix('', false, '!');
   });
 
-  function runHrefTestsAndExpectPrefix(html5Mode, hashPrefix) {
+  describe('html5Mode enabled', function () {
+    runHrefTestsAndExpectPrefix('/moo', true);
+  });
+
+  describe('html5Mode disabled', function () {
+    runHrefTestsAndExpectPrefix('/moo', false, '');
+  });
+
+  describe('html5Mode disabled, with hash prefix', function () {
+    runHrefTestsAndExpectPrefix('/moo', false, '!');
+  });
+
+  function runHrefTestsAndExpectPrefix(baseHref, html5Mode, hashPrefix) {
     var prefix = html5Mode ? '.' : '#' + hashPrefix;
 
     it('should allow linking from the parent to the child', function () {
-      setup({html5Mode: html5Mode, hashPrefix: hashPrefix});
+      setup({baseHref: baseHref, html5Mode: html5Mode, hashPrefix: hashPrefix});
       configureRouter([
         { path: '/a', component: 'oneCmp' },
         { path: '/b', component: 'twoCmp', name: 'Two' }
@@ -30,7 +42,7 @@ describe('ngLink', function () {
     });
 
     it('should allow linking from the child and the parent', function () {
-      setup({html5Mode: html5Mode, hashPrefix: hashPrefix});
+      setup({baseHref: baseHref, html5Mode: html5Mode, hashPrefix: hashPrefix});
       configureRouter([
         { path: '/a', component: 'oneCmp' },
         { path: '/b', component: 'twoCmp', name: 'Two' }
@@ -43,7 +55,7 @@ describe('ngLink', function () {
 
 
     it('should allow params in routerLink directive', function () {
-      setup({html5Mode: html5Mode, hashPrefix: hashPrefix});
+      setup({baseHref: baseHref, html5Mode: html5Mode, hashPrefix: hashPrefix});
       registerComponent('twoLinkCmp', '<div><a ng-link="[\'/Two\', {param: \'lol\'}]">{{twoLinkCmp.number}}</a></div>', function () {this.number = 'two'});
       configureRouter([
         { path: '/a', component: 'twoLinkCmp' },
@@ -57,7 +69,7 @@ describe('ngLink', function () {
 
 
     it('should update the href of links with bound params', function () {
-      setup({html5Mode: html5Mode, hashPrefix: hashPrefix});
+      setup({baseHref: baseHref, html5Mode: html5Mode, hashPrefix: hashPrefix});
       registerComponent('twoLinkCmp', '<div><a ng-link="[\'/Two\', {param: $ctrl.number}]">{{$ctrl.number}}</a></div>', function () {this.number = 43});
       configureRouter([
         { path: '/a', component: 'twoLinkCmp' },
@@ -72,7 +84,7 @@ describe('ngLink', function () {
 
 
     it('should navigate on left-mouse click when a link url matches a route', function () {
-      setup({html5Mode: html5Mode, hashPrefix: hashPrefix});
+      setup({baseHref: baseHref, html5Mode: html5Mode, hashPrefix: hashPrefix});
       configureRouter([
         { path: '/', component: 'oneCmp' },
         { path: '/two', component: 'twoCmp', name: 'Two'}
@@ -89,7 +101,7 @@ describe('ngLink', function () {
 
 
     it('should not navigate on non-left mouse click when a link url matches a route', function() {
-      setup({html5Mode: html5Mode, hashPrefix: hashPrefix});
+      setup({baseHref: baseHref, html5Mode: html5Mode, hashPrefix: hashPrefix});
       configureRouter([
         { path: '/', component: 'oneCmp' },
         { path: '/two', component: 'twoCmp', name: 'Two'}
@@ -105,7 +117,7 @@ describe('ngLink', function () {
 
     // See https://github.com/angular/router/issues/206
     it('should not navigate a link without an href', function () {
-      setup({html5Mode: html5Mode, hashPrefix: hashPrefix});
+      setup({baseHref: baseHref, html5Mode: html5Mode, hashPrefix: hashPrefix});
       configureRouter([
         { path: '/', component: 'oneCmp' },
         { path: '/two', component: 'twoCmp', name: 'Two'}
@@ -119,7 +131,7 @@ describe('ngLink', function () {
     });
 
     it('should add an ng-link-active class on the current link', function() {
-      setup({html5Mode: html5Mode, hashPrefix: hashPrefix});
+      setup({baseHref: baseHref, html5Mode: html5Mode, hashPrefix: hashPrefix});
       configureRouter([
         { path: '/', component: 'oneCmp', name: 'One' }
       ]);
@@ -140,7 +152,13 @@ describe('ngLink', function () {
   }
 
   function setup(config) {
-    module('ngComponentRouter')
+    module(function($provide) {
+      $provide.decorator('$browser', function($delegate) {
+        $delegate.baseHref = function() { return config.baseHref; };
+        return $delegate;
+      });
+    });
+    module('ngComponentRouter');
     module(function($locationProvider) {
       $locationProvider.html5Mode(config.html5Mode);
       $locationProvider.hashPrefix(config.hashPrefix);
