@@ -15,7 +15,6 @@
 
     <md-list>
       <md-list-item *ngFor="#contact of contacts">
-        <img md-list-avatar src="" alt="">
         <h3 md-line>{{contact.name}}</h3>
         <p md-line *ngIf="thirdLine">extra line</p>
         <p md-line class="demo-secondary-text">{{contact.headline}}</p>
@@ -24,6 +23,7 @@
 
     <md-list>
       <md-list-item *ngFor="#message of messages">
+        <img md-list-avatar [src]="message.image" alt="Image of {{message.from}}">
         <h3 md-line>{{message.from}}</h3>
         <p md-line>
           <span>{{message.subject}} -- </span>
@@ -51,7 +51,6 @@
 
     <md-list dense>
       <md-list-item *ngFor="#contact of contacts">
-        <img md-list-avatar src="" alt="">
         <h3 md-line>{{contact.name}}</h3>
         <p md-line class="demo-secondary-text">{{contact.headline}}</p>
       </md-list-item>
@@ -59,6 +58,7 @@
 
     <md-list dense>
       <md-list-item *ngFor="#message of messages">
+        <img md-list-avatar [src]="message.image" alt="Image of {{message.from}}">
         <h3 md-line>{{message.from}}</h3>
         <p md-line> {{message.subject}} </p>
         <p md-line class="demo-secondary-text">{{message.message}} </p>

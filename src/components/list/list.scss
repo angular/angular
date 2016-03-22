@@ -58,6 +58,8 @@ based on whether the list is in "dense" mode.
     flex-direction: column;
     width: 100%;
     padding: 0 $md-list-side-padding;
+    box-sizing: border-box;
+    overflow: hidden;
 
     &:first-child {
       padding: 0;
@@ -78,6 +80,7 @@ based on whether the list is in "dense" mode.
   [md-list-avatar] {
     width: $md-list-avatar-size;
     height: $md-list-avatar-size;
+    border-radius: 50%;
   }
 }
 
