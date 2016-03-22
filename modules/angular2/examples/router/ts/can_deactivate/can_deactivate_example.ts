@@ -2,7 +2,7 @@ import {provide, Component} from 'angular2/core';
 import {bootstrap} from 'angular2/platform/browser';
 import {
   CanDeactivate,
-  RouteConfig,
+  Routes,
   RouteParams,
   ComponentInstruction,
   ROUTER_DIRECTIVES,
@@ -53,7 +53,7 @@ class NoteIndexCmp {
   `,
   directives: [ROUTER_DIRECTIVES]
 })
-@RouteConfig([
+@Routes([
   {path: '/note/:id', component: NoteCmp, name: 'NoteCmp'},
   {path: '/', component: NoteIndexCmp, name: 'NoteIndexCmp'}
 ])

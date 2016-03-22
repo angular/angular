@@ -20,7 +20,7 @@ import {provide, Component, Injector, Inject} from 'angular2/core';
 
 import {Router, ROUTER_DIRECTIVES, RouteParams, RouteData, Location} from 'angular2/router';
 import {
-  RouteConfig,
+  Routes,
   Route,
   AuxRoute,
   Redirect
@@ -241,7 +241,7 @@ class ModalCmp {
                 'aux {<router-outlet name="modal"></router-outlet>}',
   directives: [ROUTER_DIRECTIVES],
 })
-@RouteConfig([
+@Routes([
   new Route({path: '/hello', component: HelloCmp, name: 'Hello'}),
   new AuxRoute({path: '/modal', component: ModalCmp, name: 'Aux'})
 ])

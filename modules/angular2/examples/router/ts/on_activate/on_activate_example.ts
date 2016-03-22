@@ -3,7 +3,7 @@ import {bootstrap} from 'angular2/platform/browser';
 import {
   OnActivate,
   ComponentInstruction,
-  RouteConfig,
+  Routes,
   ROUTER_DIRECTIVES,
   APP_BASE_HREF
 } from 'angular2/router';
@@ -19,7 +19,7 @@ class ChildCmp {
     <p>{{log}}</p>`,
   directives: [ROUTER_DIRECTIVES]
 })
-@RouteConfig([{path: '/child', name: 'Child', component: ChildCmp}])
+@Routes([{path: '/child', name: 'Child', component: ChildCmp}])
 class ParentCmp implements OnActivate {
   log: string = '';
 
@@ -47,7 +47,7 @@ class ParentCmp implements OnActivate {
   `,
   directives: [ROUTER_DIRECTIVES]
 })
-@RouteConfig([{path: '/parent/...', name: 'Parent', component: ParentCmp}])
+@Routes([{path: '/parent/...', name: 'Parent', component: ParentCmp}])
 export class AppCmp {
 }
 

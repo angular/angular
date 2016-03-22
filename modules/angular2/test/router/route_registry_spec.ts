@@ -15,7 +15,7 @@ import {Type, IS_DART} from 'angular2/src/facade/lang';
 
 import {RouteRegistry} from 'angular2/src/router/route_registry';
 import {
-  RouteConfig,
+  Routes,
   Route,
   Redirect,
   AuxRoute,
@@ -334,40 +334,38 @@ function asyncChildLoader() {
 
 class RootHostCmp {}
 
-@RouteConfig([new AsyncRoute({path: '/second', loader: asyncChildLoader})])
+@Routes([new AsyncRoute({path: '/second', loader: asyncChildLoader})])
 class DummyAsyncCmp {
 }
 
 class DummyCmpA {}
 class DummyCmpB {}
 
-@RouteConfig(
-    [new Route({path: '/third', component: DummyCmpB, name: 'ThirdCmp', useAsDefault: true})])
+@Routes([new Route({path: '/third', component: DummyCmpB, name: 'ThirdCmp', useAsDefault: true})])
 class DefaultRouteCmp {
 }
 
-@RouteConfig([new Route({path: '/', component: DummyCmpB, name: 'ThirdCmp'})])
+@Routes([new Route({path: '/', component: DummyCmpB, name: 'ThirdCmp'})])
 class SingleSlashChildCmp {
 }
 
 
-@RouteConfig([
+@Routes([
   new Route(
       {path: '/second/...', component: DefaultRouteCmp, name: 'SecondCmp', useAsDefault: true})
 ])
 class MultipleDefaultCmp {
 }
 
-@RouteConfig(
-    [new Route({path: '/second', component: DummyCmpB, name: 'SecondCmp', useAsDefault: true})])
+@Routes([new Route({path: '/second', component: DummyCmpB, name: 'SecondCmp', useAsDefault: true})])
 class ParentWithDefaultRouteCmp {
 }
 
-@RouteConfig([new Route({path: '/second', component: DummyCmpB, name: 'SecondCmp'})])
+@Routes([new Route({path: '/second', component: DummyCmpB, name: 'SecondCmp'})])
 class DummyParentCmp {
 }
 
 
-@RouteConfig([new Route({path: '/second/:param', component: DummyCmpB, name: 'SecondCmp'})])
+@Routes([new Route({path: '/second/:param', component: DummyCmpB, name: 'SecondCmp'})])
 class DummyParentParamCmp {
 }

@@ -26,7 +26,7 @@ import {
 
 import {Router, RouterOutlet, RouterLink, RouteParams} from 'angular2/router';
 import {
-  RouteConfig,
+  Routes,
   Route,
   AuxRoute,
   AsyncRoute,
@@ -408,7 +408,7 @@ class ActivateCmp implements OnActivate {
   template: `parent {<router-outlet></router-outlet>}`,
   directives: [RouterOutlet]
 })
-@RouteConfig([new Route({path: '/child-activate', component: ActivateCmp})])
+@Routes([new Route({path: '/child-activate', component: ActivateCmp})])
 class ParentActivateCmp implements OnActivate {
   routerOnActivate(next: ComponentInstruction, prev: ComponentInstruction): Promise<any> {
     completer = PromiseWrapper.completer();
@@ -438,7 +438,7 @@ class WaitDeactivateCmp implements OnDeactivate {
   template: `parent {<router-outlet></router-outlet>}`,
   directives: [RouterOutlet]
 })
-@RouteConfig([new Route({path: '/child-deactivate', component: WaitDeactivateCmp})])
+@Routes([new Route({path: '/child-deactivate', component: WaitDeactivateCmp})])
 class ParentDeactivateCmp implements OnDeactivate {
   routerOnDeactivate(next: ComponentInstruction, prev: ComponentInstruction) {
     logHook('parent deactivate', next, prev);
@@ -450,7 +450,7 @@ class ParentDeactivateCmp implements OnDeactivate {
   template: `reuse {<router-outlet></router-outlet>}`,
   directives: [RouterOutlet]
 })
-@RouteConfig([new Route({path: '/a', component: A}), new Route({path: '/b', component: B})])
+@Routes([new Route({path: '/a', component: A}), new Route({path: '/b', component: B})])
 class ReuseCmp implements OnReuse,
     CanReuse {
   constructor() { cmpInstanceCount += 1; }
@@ -465,7 +465,7 @@ class ReuseCmp implements OnReuse,
   template: `reuse {<router-outlet></router-outlet>}`,
   directives: [RouterOutlet]
 })
-@RouteConfig([new Route({path: '/a', component: A}), new Route({path: '/b', component: B})])
+@Routes([new Route({path: '/a', component: A}), new Route({path: '/b', component: B})])
 class NeverReuseCmp implements OnReuse,
     CanReuse {
   constructor() { cmpInstanceCount += 1; }
@@ -480,7 +480,7 @@ class NeverReuseCmp implements OnReuse,
   template: `routerCanActivate {<router-outlet></router-outlet>}`,
   directives: [RouterOutlet]
 })
-@RouteConfig([new Route({path: '/a', component: A}), new Route({path: '/b', component: B})])
+@Routes([new Route({path: '/a', component: A}), new Route({path: '/b', component: B})])
 @CanActivate(CanActivateCmp.routerCanActivate)
 class CanActivateCmp {
   static routerCanActivate(next: ComponentInstruction,
@@ -496,7 +496,7 @@ class CanActivateCmp {
   template: `routerCanDeactivate {<router-outlet></router-outlet>}`,
   directives: [RouterOutlet]
 })
-@RouteConfig([new Route({path: '/a', component: A}), new Route({path: '/b', component: B})])
+@Routes([new Route({path: '/a', component: A}), new Route({path: '/b', component: B})])
 class CanDeactivateCmp implements CanDeactivate {
   routerCanDeactivate(next: ComponentInstruction, prev: ComponentInstruction): Promise<boolean> {
     completer = PromiseWrapper.completer();
@@ -532,7 +532,7 @@ class AllHooksChildCmp implements CanDeactivate, OnDeactivate, OnActivate {
   template: `<router-outlet></router-outlet>`,
   directives: [RouterOutlet]
 })
-@RouteConfig([new Route({path: '/child', component: AllHooksChildCmp})])
+@Routes([new Route({path: '/child', component: AllHooksChildCmp})])
 @CanActivate(AllHooksParentCmp.routerCanActivate)
 class AllHooksParentCmp implements CanDeactivate,
     OnDeactivate, OnActivate {
@@ -592,7 +592,7 @@ class ReuseHooksCmp implements OnActivate, OnReuse, OnDeactivate, CanReuse, CanD
   template: `<router-outlet></router-outlet>`,
   directives: [RouterOutlet]
 })
-@RouteConfig([
+@Routes([
   new Route({path: '/a', component: A}),
   new Route({path: '/on-activate', component: ActivateCmp}),
   new Route({path: '/parent-activate/...', component: ParentActivateCmp}),

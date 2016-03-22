@@ -3,7 +3,7 @@ import {
   AsyncRoute,
   Route,
   Redirect,
-  RouteConfig,
+  Routes,
   RouteParams,
   RouteData,
   ROUTER_DIRECTIVES
@@ -49,7 +49,7 @@ export function userCmpLoader() {
   template: `inner { <router-outlet></router-outlet> }`,
   directives: [ROUTER_DIRECTIVES],
 })
-@RouteConfig([new Route({path: '/b', component: HelloCmp, name: 'Child'})])
+@Routes([new Route({path: '/b', component: HelloCmp, name: 'Child'})])
 export class ParentCmp {
 }
 
@@ -63,7 +63,7 @@ export function parentCmpLoader() {
   template: `inner { <router-outlet></router-outlet> }`,
   directives: [ROUTER_DIRECTIVES],
 })
-@RouteConfig([new AsyncRoute({path: '/b', loader: helloCmpLoader, name: 'Child'})])
+@Routes([new AsyncRoute({path: '/b', loader: helloCmpLoader, name: 'Child'})])
 export class AsyncParentCmp {
 }
 
@@ -76,8 +76,7 @@ export function asyncParentCmpLoader() {
   template: `inner { <router-outlet></router-outlet> }`,
   directives: [ROUTER_DIRECTIVES],
 })
-@RouteConfig(
-    [new AsyncRoute({path: '/b', loader: helloCmpLoader, name: 'Child', useAsDefault: true})])
+@Routes([new AsyncRoute({path: '/b', loader: helloCmpLoader, name: 'Child', useAsDefault: true})])
 export class AsyncDefaultParentCmp {
 }
 
@@ -91,7 +90,7 @@ export function asyncDefaultParentCmpLoader() {
   template: `inner { <router-outlet></router-outlet> }`,
   directives: [ROUTER_DIRECTIVES],
 })
-@RouteConfig([new Route({path: '/b', component: HelloCmp, name: 'Child', useAsDefault: true})])
+@Routes([new Route({path: '/b', component: HelloCmp, name: 'Child', useAsDefault: true})])
 export class ParentWithDefaultCmp {
 }
 
@@ -105,7 +104,7 @@ export function parentWithDefaultCmpLoader() {
   template: `team {{id}} | user { <router-outlet></router-outlet> }`,
   directives: [ROUTER_DIRECTIVES],
 })
-@RouteConfig([new Route({path: '/user/:name', component: UserCmp, name: 'User'})])
+@Routes([new Route({path: '/user/:name', component: UserCmp, name: 'User'})])
 export class TeamCmp {
   id: string;
   constructor(params: RouteParams) { this.id = params.get('id'); }
@@ -116,7 +115,7 @@ export class TeamCmp {
   template: `team {{id}} | user { <router-outlet></router-outlet> }`,
   directives: [ROUTER_DIRECTIVES],
 })
-@RouteConfig([new AsyncRoute({path: '/user/:name', loader: userCmpLoader, name: 'User'})])
+@Routes([new AsyncRoute({path: '/user/:name', loader: userCmpLoader, name: 'User'})])
 export class AsyncTeamCmp {
   id: string;
   constructor(params: RouteParams) { this.id = params.get('id'); }
@@ -138,13 +137,13 @@ export function asyncRouteDataCmp() {
 }
 
 @Component({selector: 'redirect-to-parent-cmp', template: 'redirect-to-parent'})
-@RouteConfig([new Redirect({path: '/child-redirect', redirectTo: ['../HelloSib']})])
+@Routes([new Redirect({path: '/child-redirect', redirectTo: ['../HelloSib']})])
 export class RedirectToParentCmp {
 }
 
 
 @Component({selector: 'dynamic-loader-cmp', template: `{ <div #viewport></div> }`})
-@RouteConfig([new Route({path: '/', component: HelloCmp})])
+@Routes([new Route({path: '/', component: HelloCmp})])
 export class DynamicLoaderCmp {
   private _componentRef: ComponentRef = null;
   constructor(private _dynamicComponentLoader: DynamicComponentLoader,

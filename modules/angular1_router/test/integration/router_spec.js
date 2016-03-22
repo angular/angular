@@ -16,7 +16,7 @@ describe('router', function () {
 
     registerComponent('app', {
       template: '<div ng-outlet></div>',
-      $routeConfig: [
+      $routes: [
         { path: '/', component: 'homeCmp' }
       ]
     });
@@ -45,7 +45,7 @@ describe('router', function () {
 
     registerComponent('app', {
       template: '<div ng-outlet></div>',
-      $routeConfig: [
+      $routes: [
         { path: '/', component: 'homeCmp' }
       ]
     });
@@ -73,7 +73,7 @@ describe('router', function () {
 
     registerComponent('app', {
       template: '<div ng-outlet></div>',
-      $routeConfig: [
+      $routes: [
         { path: '/', loader: function($q) { return $q.when('homeCmp'); }, data: { isAdmin: true } }
       ]
     });
@@ -99,7 +99,7 @@ describe('router', function () {
 
     registerComponent('app', {
       template: '<div ng-outlet></div>',
-      $routeConfig: [
+      $routes: [
         { path: '/', component: 'homeCmp' }
       ]
     });
@@ -128,7 +128,7 @@ describe('router', function () {
 
     registerComponent('app', {
       template: '<div ng-outlet></div>',
-      $routeConfig: [
+      $routes: [
         { path: '/', component: 'homeCmp', name: 'Home' }
       ]
     });
@@ -155,7 +155,7 @@ describe('router', function () {
 
     registerComponent('app', {
       template: '<div ng-outlet></div>',
-      $routeConfig: [
+      $routes: [
         { path: '/', component: 'homeCmp', name: 'Home' }
       ]
     });
@@ -208,7 +208,7 @@ describe('router', function () {
   }
 
   function applyStaticProperties(target, options) {
-    ['$canActivate', '$routeConfig'].forEach(function(property) {
+    ['$canActivate', '$routes'].forEach(function(property) {
       if (options[property]) {
         target[property] = options[property];
       }

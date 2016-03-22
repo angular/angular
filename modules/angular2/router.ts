@@ -36,10 +36,10 @@ import {CONST_EXPR} from './src/facade/lang';
  *
  * ```
  * import {Component} from 'angular2/core';
- * import {ROUTER_DIRECTIVES, ROUTER_PROVIDERS, RouteConfig} from 'angular2/router';
+ * import {ROUTER_DIRECTIVES, ROUTER_PROVIDERS, Routes} from 'angular2/router';
  *
  * @Component({directives: [ROUTER_DIRECTIVES]})
- * @RouteConfig([
+ * @Routes([
  *  {...},
  * ])
  * class AppCmp {

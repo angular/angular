@@ -90,8 +90,8 @@ describe('ngOutlet animations', function () {
     if (options.$canActivate) {
       factory.$canActivate = options.$canActivate;
     }
-    if (options.$routeConfig) {
-      factory.$routeConfig = options.$routeConfig;
+    if (options.$routes) {
+      factory.$routes = options.$routes;
     }
 
     $compileProvider.directive(name, factory);

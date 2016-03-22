@@ -18,7 +18,7 @@ import {reflector} from 'angular2/src/core/reflection/reflection';
 import {Injectable, Inject, OpaqueToken} from 'angular2/core';
 
 import {
-  RouteConfig,
+  Routes,
   AsyncRoute,
   Route,
   AuxRoute,
@@ -52,7 +52,7 @@ var _resolveToNull = PromiseWrapper.resolve<Instruction>(null);
 // export type LinkItemArray = Array<LinkItem>;
 
 /**
- * Token used to bind the component with the top-level {@link RouteConfig}s for the
+ * Token used to bind the component with the top-level {@link Routes}s for the
  * application.
  *
  * ### Example ([live demo](http://plnkr.co/edit/iRUP8B5OUbxCWQ3AcIDm))
@@ -62,11 +62,11 @@ var _resolveToNull = PromiseWrapper.resolve<Instruction>(null);
  * import {
  *   ROUTER_DIRECTIVES,
  *   ROUTER_PROVIDERS,
- *   RouteConfig
+ *   Routes
  * } from 'angular2/router';
  *
  * @Component({directives: [ROUTER_DIRECTIVES]})
- * @RouteConfig([
+ * @Routes([
  *  {...},
  * ])
  * class AppCmp {
@@ -140,7 +140,7 @@ export class RouteRegistry {
       for (var i = 0; i < annotations.length; i++) {
         var annotation = annotations[i];
 
-        if (annotation instanceof RouteConfig) {
+        if (annotation instanceof Routes) {
           let routeCfgs: RouteDefinition[] = annotation.configs;
           routeCfgs.forEach(config => this.config(component, config));
         }
@@ -549,7 +549,7 @@ function assertTerminalComponent(component, path) {
     for (var i = 0; i < annotations.length; i++) {
       var annotation = annotations[i];
 
-      if (annotation instanceof RouteConfig) {
+      if (annotation instanceof Routes) {
         throw new BaseException(
             `Child routes are not allowed for "${path}". Use "..." on the parent's route path.`);
       }

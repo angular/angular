@@ -17,7 +17,7 @@ import {
 
 import {Router, RouterOutlet, RouterLink, RouteParams, RouteData, Location} from 'angular2/router';
 import {
-  RouteConfig,
+  Routes,
   Route,
   AuxRoute,
   AsyncRoute,

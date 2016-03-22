@@ -21,7 +21,7 @@ import {Console} from 'angular2/src/core/console';
 import {provide, ViewChild, AfterViewInit} from 'angular2/core';
 import {DOCUMENT} from 'angular2/src/platform/dom/dom_tokens';
 import {
-  RouteConfig,
+  Routes,
   Route,
   Redirect,
   AuxRoute
@@ -263,7 +263,7 @@ class Hello2Cmp {
   template: `outer { <router-outlet></router-outlet> }`,
   directives: ROUTER_DIRECTIVES
 })
-@RouteConfig([new Route({path: '/', component: HelloCmp})])
+@Routes([new Route({path: '/', component: HelloCmp})])
 class AppCmp {
   constructor(public router: Router, public location: LocationStrategy) {}
 }
@@ -276,7 +276,7 @@ class AppCmp {
     <router-outlet name="pony"></router-outlet>`,
   directives: ROUTER_DIRECTIVES
 })
-@RouteConfig([
+@Routes([
   new Route({path: '/rainbow', component: HelloCmp}),
   new AuxRoute({name: 'pony', path: 'pony', component: Hello2Cmp})
 ])
@@ -294,7 +294,7 @@ class AppWithViewChildren implements AfterViewInit {
   template: `parent { <router-outlet></router-outlet> }`,
   directives: ROUTER_DIRECTIVES
 })
-@RouteConfig([new Route({path: '/child', component: HelloCmp})])
+@Routes([new Route({path: '/child', component: HelloCmp})])
 class ParentCmp {
 }
 
@@ -303,7 +303,7 @@ class ParentCmp {
   template: `super-parent { <router-outlet></router-outlet> }`,
   directives: ROUTER_DIRECTIVES
 })
-@RouteConfig([new Route({path: '/child', component: Hello2Cmp})])
+@Routes([new Route({path: '/child', component: Hello2Cmp})])
 class SuperParentCmp {
 }
 
@@ -312,7 +312,7 @@ class SuperParentCmp {
   template: `root { <router-outlet></router-outlet> }`,
   directives: ROUTER_DIRECTIVES
 })
-@RouteConfig([
+@Routes([
   new Route({path: '/parent/...', component: ParentCmp}),
   new Route({path: '/super-parent/...', component: SuperParentCmp})
 ])
@@ -331,7 +331,7 @@ class QSCmp {
   template: `<router-outlet></router-outlet>`,
   directives: ROUTER_DIRECTIVES
 })
-@RouteConfig([new Route({path: '/qs', component: QSCmp})])
+@Routes([new Route({path: '/qs', component: QSCmp})])
 class QueryStringAppCmp {
   constructor(public router: Router, public location: LocationStrategy) {}
 }
@@ -346,7 +346,7 @@ class BrokenCmp {
   template: `outer { <router-outlet></router-outlet> }`,
   directives: ROUTER_DIRECTIVES
 })
-@RouteConfig([new Route({path: '/cause-error', component: BrokenCmp})])
+@Routes([new Route({path: '/cause-error', component: BrokenCmp})])
 class BrokenAppCmp {
   constructor(public router: Router, public location: LocationStrategy) {}
 }

@@ -35,7 +35,7 @@ import {
   AuxRoute,
   Route,
   RouteParams,
-  RouteConfig,
+  Routes,
   ROUTER_DIRECTIVES,
   ROUTER_PRIMARY_COMPONENT
 } from 'angular2/router';
@@ -439,7 +439,7 @@ function parentCmpLoader() {
                <router-outlet></router-outlet> }`,
   directives: ROUTER_DIRECTIVES
 })
-@RouteConfig([
+@Routes([
   new Route({path: '/grandchild', component: HelloCmp, name: 'Grandchild'}),
   new Route({path: '/better-grandchild', component: Hello2Cmp, name: 'BetterGrandchild'})
 ])
@@ -452,7 +452,7 @@ class ParentCmp {
     <router-outlet></router-outlet>`,
   directives: ROUTER_DIRECTIVES
 })
-@RouteConfig([new Route({path: '/page/:number', component: SiblingPageCmp, name: 'Page'})])
+@Routes([new Route({path: '/page/:number', component: SiblingPageCmp, name: 'Page'})])
 class BookCmp {
   title: string;
   constructor(params: RouteParams) { this.title = params.get('title'); }
@@ -464,7 +464,7 @@ class BookCmp {
     <router-outlet></router-outlet>`,
   directives: ROUTER_DIRECTIVES
 })
-@RouteConfig([new Route({path: '/page/:number', component: SiblingPageCmp, name: 'Page'})])
+@Routes([new Route({path: '/page/:number', component: SiblingPageCmp, name: 'Page'})])
 class NoPrefixBookCmp {
   title: string;
   constructor(params: RouteParams) { this.title = params.get('title'); }
@@ -476,7 +476,7 @@ class NoPrefixBookCmp {
     <router-outlet></router-outlet>`,
   directives: ROUTER_DIRECTIVES
 })
-@RouteConfig([new Route({path: '/page/:number', component: SiblingPageCmp, name: 'Book'})])
+@Routes([new Route({path: '/page/:number', component: SiblingPageCmp, name: 'Book'})])
 class AmbiguousBookCmp {
   title: string;
   constructor(params: RouteParams) { this.title = params.get('title'); }
@@ -489,7 +489,7 @@ class AmbiguousBookCmp {
     <router-outlet></router-outlet> | aside <router-outlet name="aside"></router-outlet>`,
   directives: ROUTER_DIRECTIVES
 })
-@RouteConfig([
+@Routes([
   new Route({path: '/', component: HelloCmp, name: 'Hello'}),
   new AuxRoute({path: '/aside', component: Hello2Cmp, name: 'Aside'})
 ])
