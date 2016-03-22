@@ -290,7 +290,7 @@ describe('TreeDiffer', () => {
   describe('diff of new files', () => {
 
     it('should detect file additions', () => {
-      let testDir = {
+      let testDir: any = {
         'dir1':
             {'file-1.txt': mockfs.file({content: 'file-1.txt content', mtime: new Date(1000)})}
       };
@@ -310,7 +310,7 @@ describe('TreeDiffer', () => {
 
 
     it('should detect file additions mixed with file changes', () => {
-      let testDir = {
+      let testDir: any = {
         'dir1':
             {'file-1.txt': mockfs.file({content: 'file-1.txt content', mtime: new Date(1000)})}
       };
@@ -352,7 +352,7 @@ describe('TreeDiffer', () => {
 
 
     it('should detect file removals mixed with file changes and additions', () => {
-      let testDir = {
+      let testDir: any = {
         'dir1': {
           'file-1.txt': mockfs.file({content: 'file-1.txt content', mtime: new Date(1000)}),
           'file-2.txt': mockfs.file({content: 'file-1.txt content', mtime: new Date(1000)})

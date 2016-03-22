@@ -10,13 +10,13 @@ interface MergeTreesOptions {
   overwrite?: boolean;
 }
 
-function outputFileSync(sourcePath, destPath) {
+function outputFileSync(sourcePath: string, destPath: string) {
   let dirname = path.dirname(destPath);
   fse.mkdirsSync(dirname, {fs: fs});
   symlinkOrCopySync(sourcePath, destPath);
 }
 
-function pathOverwrittenError(path) {
+function pathOverwrittenError(path: string) {
   const msg = 'Either remove the duplicate or enable the "overwrite" option for this merge.';
   return new Error(`Duplicate path found while merging trees. Path: "${path}".\n${msg}`);
 }
@@ -36,14 +36,14 @@ export class MergeTrees implements DiffingBroccoliPlugin {
     let pathsToEmit: string[] = [];
     let pathsToRemove: string[] = [];
     let emitted: {[key: string]: boolean} = Object.create(null);
-    let contains = (cache, val) => {
+    let contains = (cache: number[], val: number) => {
       for (let i = 0, ii = cache.length; i < ii; ++i) {
         if (cache[i] === val) return true;
       }
       return false;
     };
 
-    let emit = (relativePath) => {
+    let emit = (relativePath: string) => {
       // ASSERT(!emitted[relativePath]);
       pathsToEmit.push(relativePath);
       emitted[relativePath] = true;
@@ -53,7 +53,7 @@ export class MergeTrees implements DiffingBroccoliPlugin {
       this.firstBuild = false;
 
       // Build initial cache
-      treeDiffs.reverse().forEach((treeDiff: DiffResult, index) => {
+      treeDiffs.reverse().forEach((treeDiff: DiffResult, index: number) => {
         index = treeDiffs.length - 1 - index;
         treeDiff.addedPaths.forEach((changedPath) => {
           let cache = this.pathCache[changedPath];
@@ -71,7 +71,7 @@ export class MergeTrees implements DiffingBroccoliPlugin {
 
     } else {
       // Update cache
-      treeDiffs.reverse().forEach((treeDiff: DiffResult, index) => {
+      treeDiffs.reverse().forEach((treeDiff: DiffResult, index: number) => {
         index = treeDiffs.length - 1 - index;
         if (treeDiff.removedPaths) {
           treeDiff.removedPaths.forEach((removedPath) => {

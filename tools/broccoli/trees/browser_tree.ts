@@ -65,7 +65,8 @@ const kServedPaths = [
 ];
 
 
-module.exports = function makeBrowserTree(options, destinationPath) {
+module.exports = function makeBrowserTree(options: any, destinationPath: string) {
+  // TODO: define an interface for the options
   const modules = options.projects;
   const noTypeChecks = options.noTypeChecks;
   const generateEs6 = options.generateEs6;
@@ -129,7 +130,7 @@ module.exports = function makeBrowserTree(options, destinationPath) {
 
   var scriptPathPatternReplacement = {
     match: '@@PATH',
-    replacement: function(replacement, relativePath) {
+    replacement: function(replacement: string, relativePath: string) {
       var parts = relativePath.replace(/\\/g, '/').split('/');
       return parts.splice(0, parts.length - 1).join('/');
     }
@@ -137,7 +138,7 @@ module.exports = function makeBrowserTree(options, destinationPath) {
 
   var scriptFilePatternReplacement = {
     match: '@@FILENAME',
-    replacement: function(replacement, relativePath) {
+    replacement: function(replacement: string, relativePath: string) {
       var parts = relativePath.replace(/\\/g, '/').split('/');
       return parts[parts.length - 1].replace('html', 'js');
     }
@@ -145,7 +146,7 @@ module.exports = function makeBrowserTree(options, destinationPath) {
 
   var useBundlesPatternReplacement = {
     match: '@@USE_BUNDLES',
-    replacement: function(replacement, relativePath) { return useBundles; }
+    replacement: function(replacement: string, relativePath: string) { return useBundles; }
   };
 
   // Check that imports do not break barrel boundaries
@@ -198,7 +199,7 @@ module.exports = function makeBrowserTree(options, destinationPath) {
 
   // Get scripts for each benchmark or example
   let servingTrees = kServedPaths.reduce(getServedFunnels, []);
-  function getServedFunnels(funnels, destDir) {
+  function getServedFunnels(funnels: BroccoliTree[], destDir: string) {
     let options = {srcDir: '/', destDir: destDir};
     funnels.push(new Funnel(vendorScriptsTree, options));
     if (destDir.indexOf('benchmarks') > -1) {
