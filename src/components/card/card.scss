@@ -1,6 +1,6 @@
 
 @import "variables";
-@import "shadows";
+@import "elevation";
 @import "default-theme";   // TODO: Remove this
 
 $md-card-default-padding: 24px !default;
@@ -9,18 +9,18 @@ $md-card-border-radius: 2px !default;
 $md-card-header-size: 40px !default;
 
 md-card {
+  @include md-elevation(1);
+  @include md-elevation-transition;
   display: block;
   position: relative;
   padding: $md-card-default-padding;
   border-radius: $md-card-border-radius;
-  box-shadow: $md-shadow-bottom-z-1;
   font-family: $md-font-family;
   background: md-color($md-background, card);
 }
 
 md-card:hover {
-  box-shadow: $md-shadow-bottom-z-2;
-  transition: $swift-ease-in;
+  @include md-elevation(2);
 }
 
 .md-card-flat {
@@ -30,7 +30,7 @@ md-card:hover {
 // base styles for each card section preset (md-card-content, etc)
 %md-card-section-base {
   display: block;
-  margin-bottom: 16px;  
+  margin-bottom: 16px;
 }
 
 md-card-title {
@@ -76,7 +76,7 @@ md-card-footer {
 md-card-actions {
   [md-button], [md-raised-button] {
     margin: 0 4px;
-  } 
+  }
 }
 
 /* HEADER STYLES */
@@ -175,7 +175,7 @@ md-card-title-group {
   margin-bottom: 0;
 }
 
-// if main image is on top, need to place it flush against top 
+// if main image is on top, need to place it flush against top
 // (by stripping card's default 24px padding)
 [md-card-image]:first-child {
   margin-top: -24px;
@@ -208,7 +208,7 @@ md-card-header md-card-subtitle:not(:first-child) {
   margin-top: -8px;
 }
 
-// xl image should always have 16px on top. 
+// xl image should always have 16px on top.
 // when it's the first el, it'll need to remove 8px from default card padding of 24px
 .md-card > [md-card-xl-image]:first-child{
   margin-top: -8px;

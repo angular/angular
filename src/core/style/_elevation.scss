@@ -1,0 +1,179 @@
+/**
+ * A collection of mixins and CSS classes that can be used to apply elevation to a material
+ * element.
+ * See: https://www.google.com/design/spec/what-is-material/elevation-shadows.html
+ * Examples:
+ *
+ *
+ * .md-foo {
+ *   @include $md-elevation(2);
+ *
+ *   &:active {
+ *     @include $md-elevation(8);
+ *   }
+ * }
+ *
+ * <div id="external-card" class="md-elevation-z2"><p>Some content</p></div>
+ *
+ * For an explanation of the design behind how elevation is implemented, see the design doc at
+ * https://goo.gl/Kq0k9Z.
+ */
+
+// Colors for umbra, penumbra, and ambient shadows. As described in the design doc, each elevation
+// level is created using a set of 3 shadow values, one for umbra (the shadow representing the
+// space completely obscured by an object relative to its light source), one for penumbra (the
+// space partially obscured by an object), and one for ambient (the space which contains the object
+// itself). For a further explanation of these terms and their meanings, see
+// https://en.wikipedia.org/wiki/Umbra,_penumbra_and_antumbra.
+
+$_umbra-color: rgba(black, 0.2);
+$_penumbra-color: rgba(black, 0.14);
+$_ambient-color: rgba(black, 0.12);
+
+// Maps for the different shadow sets and their values within each z-space. These values were
+// created by taking a few reference shadow sets created by Google's Designers and interpolating
+// all of the values between them.
+
+$_umbra-elevation-map: (
+  0: '0px 0px 0px 0px #{$_umbra-color}',
+  1: '0px 2px 1px -1px #{$_umbra-color}',
+  2: '0px 3px 1px -2px #{$_umbra-color}',
+  3: '0px 3px 3px -2px #{$_umbra-color}',
+  4: '0px 2px 4px -1px #{$_umbra-color}',
+  5: '0px 3px 5px -1px #{$_umbra-color}',
+  6: '0px 3px 5px -1px #{$_umbra-color}',
+  7: '0px 4px 5px -2px #{$_umbra-color}',
+  8: '0px 5px 5px -3px #{$_umbra-color}',
+  9: '0px 5px 6px -3px #{$_umbra-color}',
+  10: '0px 6px 6px -3px #{$_umbra-color}',
+  11: '0px 6px 7px -4px #{$_umbra-color}',
+  12: '0px 7px 8px -4px #{$_umbra-color}',
+  13: '0px 7px 8px -4px #{$_umbra-color}',
+  14: '0px 7px 9px -4px #{$_umbra-color}',
+  15: '0px 8px 9px -5px #{$_umbra-color}',
+  16: '0px 8px 10px -5px #{$_umbra-color}',
+  17: '0px 8px 11px -5px #{$_umbra-color}',
+  18: '0px 9px 11px -5px #{$_umbra-color}',
+  19: '0px 9px 12px -6px #{$_umbra-color}',
+  20: '0px 10px 13px -6px #{$_umbra-color}',
+  21: '0px 10px 13px -6px #{$_umbra-color}',
+  22: '0px 10px 14px -6px #{$_umbra-color}',
+  23: '0px 11px 14px -7px #{$_umbra-color}',
+  24: '0px 11px 15px -7px #{$_umbra-color}'
+);
+
+$_penumbra-elevation-map: (
+  0: '0px 0px 0px 0px #{$_penumbra-color}',
+  1: '0px 1px 1px 0px #{$_penumbra-color}',
+  2: '0px 2px 2px 0px #{$_penumbra-color}',
+  3: '0px 3px 4px 0px #{$_penumbra-color}',
+  4: '0px 4px 5px 0px #{$_penumbra-color}',
+  5: '0px 5px 8px 0px #{$_penumbra-color}',
+  6: '0px 6px 10px 0px #{$_penumbra-color}',
+  7: '0px 7px 10px 1px #{$_penumbra-color}',
+  8: '0px 8px 10px 1px #{$_penumbra-color}',
+  9: '0px 9px 12px 1px #{$_penumbra-color}',
+  10: '0px 10px 14px 1px #{$_penumbra-color}',
+  11: '0px 11px 15px 1px #{$_penumbra-color}',
+  12: '0px 12px 17px 2px #{$_penumbra-color}',
+  13: '0px 13px 19px 2px #{$_penumbra-color}',
+  14: '0px 14px 21px 2px #{$_penumbra-color}',
+  15: '0px 15px 22px 2px #{$_penumbra-color}',
+  16: '0px 16px 24px 2px #{$_penumbra-color}',
+  17: '0px 17px 26px 2px #{$_penumbra-color}',
+  18: '0px 18px 28px 2px #{$_penumbra-color}',
+  19: '0px 19px 29px 2px #{$_penumbra-color}',
+  20: '0px 20px 31px 3px #{$_penumbra-color}',
+  21: '0px 21px 33px 3px #{$_penumbra-color}',
+  22: '0px 22px 35px 3px #{$_penumbra-color}',
+  23: '0px 23px 36px 3px #{$_penumbra-color}',
+  24: '0px 24px 38px 3px #{$_penumbra-color}'
+);
+
+$_ambient-elevation-map: (
+  0: '0px 0px 0px 0px #{$_ambient-color}',
+  1: '0px 1px 3px 0px #{$_ambient-color}',
+  2: '0px 1px 5px 0px #{$_ambient-color}',
+  3: '0px 1px 8px 0px #{$_ambient-color}',
+  4: '0px 1px 10px 0px #{$_ambient-color}',
+  5: '0px 1px 14px 0px #{$_ambient-color}',
+  6: '0px 1px 18px 0px #{$_ambient-color}',
+  7: '0px 2px 16px 1px #{$_ambient-color}',
+  8: '0px 3px 14px 2px #{$_ambient-color}',
+  9: '0px 3px 16px 2px #{$_ambient-color}',
+  10: '0px 4px 18px 3px #{$_ambient-color}',
+  11: '0px 4px 20px 3px #{$_ambient-color}',
+  12: '0px 5px 22px 4px #{$_ambient-color}',
+  13: '0px 5px 24px 4px #{$_ambient-color}',
+  14: '0px 5px 26px 4px #{$_ambient-color}',
+  15: '0px 6px 28px 5px #{$_ambient-color}',
+  16: '0px 6px 30px 5px #{$_ambient-color}',
+  17: '0px 6px 32px 5px #{$_ambient-color}',
+  18: '0px 7px 34px 6px #{$_ambient-color}',
+  19: '0px 7px 36px 6px #{$_ambient-color}',
+  20: '0px 8px 38px 7px #{$_ambient-color}',
+  21: '0px 8px 40px 7px #{$_ambient-color}',
+  22: '0px 8px 42px 7px #{$_ambient-color}',
+  23: '0px 9px 44px 8px #{$_ambient-color}',
+  24: '0px 9px 46px 8px #{$_ambient-color}'
+);
+
+/**
+ * The css property used for elevation. In most cases this should not be changed. It is exposed
+ * as a variable for abstraction / easy use when needing to reference the property directly, for
+ * example in a will-change rule.
+ */
+$md-elevation-property: box-shadow !default;
+
+/** The default duration value for elevation transitions. */
+$md-elevation-transition-duration: 280ms !default;
+
+/** The default easing value for elevation transitions. */
+$md-elevation-transition-timing-function: $md-fast-out-slow-in-timing-function;
+
+/**
+ * Applies the correct css rules to an element to give it the elevation specified by $zValue.
+ * The $zValue must be between 0 and 24.
+ */
+@mixin md-elevation($zValue) {
+  @if type-of($zValue) != number or not unitless($zValue) {
+    @error "$zValue must be a unitless number";
+  }
+  @if $zValue < 0 or $zValue > 24 {
+    @error "$zValue must be between 0 and 24";
+  }
+
+  #{$md-elevation-property}: #{map-get($_umbra-elevation-map, $zValue)},
+                             #{map-get($_penumbra-elevation-map, $zValue)},
+                             #{map-get($_ambient-elevation-map, $zValue)};
+}
+
+/**
+ * Returns a string that can be used as the value for a transition property for elevation.
+ * Calling this function directly is useful in situations where a component needs to transition
+ * more than one property.
+ *
+ * .foo {
+ *   transition: md-elevation-transition-property-value(), opacity 100ms ease;
+ *   will-change: $md-elevation-property, opacity;
+ * }
+ */
+@function md-elevation-transition-property-value(
+    $duration: $md-elevation-transition-duration,
+    $easing: $md-elevation-transition-timing-function) {
+  @return #{$md-elevation-property} #{$duration} #{$easing};
+}
+
+/**
+ * Applies the correct css rules needed to have an element transition between elevations.
+ * This mixin should be applied to elements whose elevation values will change depending on their
+ * context (e.g. when active or disabled).
+ */
+// NOTE(traviskaufman): Both this mixin and the above function use default parameters so they can
+// be used in the same way by clients.
+@mixin md-elevation-transition(
+    $duration: $md-elevation-transition-duration,
+    $easing: $md-elevation-transition-timing-function) {
+  transition: md-elevation-transition-property-value($duration, $easing);
+  will-change: $md-elevation-property;
+}

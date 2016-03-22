@@ -1,7 +1,7 @@
 @import "default-theme";
 @import "mixins";
 @import "variables";
-@import "shadows";
+@import "elevation";
 
 
 // We use invert() here to have the darken the background color expected to be used. If the
@@ -31,14 +31,14 @@ $md-sidenav-push-background-color: md-color($md-background, dialog) !default;
     will-change: transform;
   }
   &.md-sidenav-opening {
+    @include md-elevation(1);
     visibility: visible;
     transform: translateX($open);
     will-change: transform;
-    box-shadow: $md-shadow-bottom-z-1;
   }
   &.md-sidenav-opened {
+    @include md-elevation(1);
     transform: translateX($open);
-    box-shadow: $md-shadow-bottom-z-1;
   }
 }
 

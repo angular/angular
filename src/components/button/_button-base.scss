@@ -1,6 +1,6 @@
 
 @import "variables";
-@import "shadows";
+@import "elevation";
 
 // TODO(jelbourn): This goes away.
 @import "default-theme";
@@ -70,20 +70,20 @@ $md-mini-fab-padding: 8px !default;
 %md-raised-button {
   @extend %md-button-base;
 
+  @include md-elevation(1);
   @include md-button-theme('color', default-contrast);
   @include md-button-theme('background-color');
 
   background-color: md-color($md-background, background);
-  box-shadow: $md-shadow-bottom-z-1;
   // Force hardware acceleration.
   transform: translate3d(0, 0, 0);
 
   // Animation.
   transition: background $swift-ease-out-duration $swift-ease-out-timing-function,
-  box-shadow $swift-ease-out-duration $swift-ease-out-timing-function;
+              md-elevation-transition-property-value();
 
   &:active {
-    box-shadow: $md-shadow-bottom-z-2;
+    @include md-elevation(2);
   }
 
   &.md-button-focus {
