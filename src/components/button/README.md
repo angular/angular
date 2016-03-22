@@ -4,7 +4,7 @@
 
 ### Button types
 
-There are four types of buttons:
+There are five types of buttons:
  1. Flat buttons - `md-button`
     * Rectangular button
     * Defaults to white background
@@ -13,12 +13,16 @@ There are four types of buttons:
     * Rectangular button
     * Defaults to white background
     * Box shadow applied
- 3. Floating Action Buttons (FABs) - `md-fab`
+ 3. Icon buttons - `md-icon-button`
+    * Circular button
+    * Transparent background
+    * 40 by 40 px
+ 4. Floating Action Buttons (FABs) - `md-fab`
     * Circular button
     * Defaults background to "accent" palette defined in theme
     * Box shadow applied
     * 56 by 56 px
- 4. Mini Floating Action Buttons (Mini FABs) - `md-mini-fab`
+ 5. Mini Floating Action Buttons (Mini FABs) - `md-mini-fab`
     * Circular button
     * Defaults background to "accent" palette defined in theme
     * Box shadow applied
@@ -32,6 +36,9 @@ Example:
  ```html
 <button md-button>FLAT</button>
 <button md-raised-button>RAISED</button>
+<button md-icon-button>
+    <i class="material-icons md-24">favorite</i>
+</button>
 <button md-fab>
     <i class="material-icons md-24">add</i>
 </button>
