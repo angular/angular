@@ -46,7 +46,7 @@ TODO(kara): update link to demo site when it exists
 
 @Component({
   selector: 'md-card-header',
-  templateUrl: '/components/card/card-header.html',
+  templateUrl: './components/card/card-header.html',
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
