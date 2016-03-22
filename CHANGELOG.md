@@ -506,6 +506,10 @@ After:
 * **i18n:** create i18n barrel ([a7fe983](https://github.com/angular/angular/commit/a7fe983))
 * **i18n:** implement xmb serializer ([e1f8e54](https://github.com/angular/angular/commit/e1f8e54))
 
+### BREAKING CHANGES
+
+`@View()` annotation (previously deprecated) has been removed. Apps should use the `@Component()` decorator instead.
+
 
 <a name="2.0.0-beta.10"></a>
 # 2.0.0-beta.10 (2016-03-17)
