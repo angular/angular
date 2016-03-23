@@ -20,9 +20,8 @@ import {
   HtmlCommentAst,
   htmlVisitAll
 } from 'angular2/src/compiler/html_ast';
-import {ParseError, ParseLocation, ParseSourceSpan} from 'angular2/src/compiler/parse_util';
-
-import {BaseException} from 'angular2/src/facade/exceptions';
+import {ParseError, ParseLocation} from 'angular2/src/compiler/parse_util';
+import {humanizeDom, humanizeDomSourceSpans, humanizeLineColumn} from './html_ast_spec_utils';
 
 export function main() {
   describe('HtmlParser', () => {
@@ -50,6 +49,7 @@ export function main() {
               .toEqual([[HtmlTextAst, 'text', 0]]);
         });
       });
+
 
       describe('elements', () => {
         it('should parse root level elements', () => {
@@ -253,6 +253,16 @@ export function main() {
                 [HtmlTextAst, '\na\n', 1, '\na\n'],
               ]);
         });
+
+        it('should set the start and end source spans', () => {
+          let node = <HtmlElementAst>parser.parse('<div>a</div>', 'TestComp').rootNodes[0];
+
+          expect(node.startSourceSpan.start.offset).toEqual(0);
+          expect(node.startSourceSpan.end.offset).toEqual(5);
+
+          expect(node.endSourceSpan.start.offset).toEqual(6);
+          expect(node.endSourceSpan.end.offset).toEqual(12);
+        });
       });
 
       describe('errors', () => {
@@ -299,33 +309,7 @@ export function main() {
   });
 }
 
-function humanizeDom(parseResult: HtmlParseTreeResult): any[] {
-  if (parseResult.errors.length > 0) {
-    var errorString = parseResult.errors.join('\n');
-    throw new BaseException(`Unexpected parse errors:\n${errorString}`);
-  }
-
-  var humanizer = new Humanizer(false);
-  htmlVisitAll(humanizer, parseResult.rootNodes);
-  return humanizer.result;
-}
-
-function humanizeDomSourceSpans(parseResult: HtmlParseTreeResult): any[] {
-  if (parseResult.errors.length > 0) {
-    var errorString = parseResult.errors.join('\n');
-    throw new BaseException(`Unexpected parse errors:\n${errorString}`);
-  }
-
-  var humanizer = new Humanizer(true);
-  htmlVisitAll(humanizer, parseResult.rootNodes);
-  return humanizer.result;
-}
-
-function humanizeLineColumn(location: ParseLocation): string {
-  return `${location.line}:${location.col}`;
-}
-
-function humanizeErrors(errors: ParseError[]): any[] {
+export function humanizeErrors(errors: ParseError[]): any[] {
   return errors.map(error => {
     if (error instanceof HtmlTreeError) {
       // Parser errors
@@ -334,44 +318,4 @@ function humanizeErrors(errors: ParseError[]): any[] {
     // Tokenizer errors
     return [(<any>error).tokenType, error.msg, humanizeLineColumn(error.span.start)];
   });
-}
-
-class Humanizer implements HtmlAstVisitor {
-  result: any[] = [];
-  elDepth: number = 0;
-
-  constructor(private includeSourceSpan: boolean){};
-
-  visitElement(ast: HtmlElementAst, context: any): any {
-    var res = this._appendContext(ast, [HtmlElementAst, ast.name, this.elDepth++]);
-    this.result.push(res);
-    htmlVisitAll(this, ast.attrs);
-    htmlVisitAll(this, ast.children);
-    this.elDepth--;
-    return null;
-  }
-
-  visitAttr(ast: HtmlAttrAst, context: any): any {
-    var res = this._appendContext(ast, [HtmlAttrAst, ast.name, ast.value]);
-    this.result.push(res);
-    return null;
-  }
-
-  visitText(ast: HtmlTextAst, context: any): any {
-    var res = this._appendContext(ast, [HtmlTextAst, ast.value, this.elDepth]);
-    this.result.push(res);
-    return null;
-  }
-
-  visitComment(ast: HtmlCommentAst, context: any): any {
-    var res = this._appendContext(ast, [HtmlCommentAst, ast.value, this.elDepth]);
-    this.result.push(res);
-    return null;
-  }
-
-  private _appendContext(ast: HtmlAst, input: any[]): any[] {
-    if (!this.includeSourceSpan) return input;
-    input.push(ast.sourceSpan.toString());
-    return input;
-  }
 }
