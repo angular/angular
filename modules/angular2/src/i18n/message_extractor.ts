@@ -12,24 +12,23 @@ import {
 import {isPresent, isBlank} from 'angular2/src/facade/lang';
 import {StringMapWrapper} from 'angular2/src/facade/collection';
 import {Parser} from 'angular2/src/core/change_detection/parser/parser';
-import {Interpolation} from 'angular2/src/core/change_detection/parser/ast';
 import {Message, id} from './message';
-
-const I18N_ATTR = "i18n";
-const I18N_ATTR_PREFIX = "i18n-";
+import {
+  I18nError,
+  Part,
+  partition,
+  meaning,
+  description,
+  isI18nAttr,
+  stringifyNodes,
+  messageFromAttribute
+} from './shared';
 
 /**
  * All messages extracted from a template.
  */
 export class ExtractionResult {
   constructor(public messages: Message[], public errors: ParseError[]) {}
-}
-
-/**
- * An extraction error.
- */
-export class I18nExtractionError extends ParseError {
-  constructor(span: ParseSourceSpan, msg: string) { super(span, msg); }
 }
 
 /**
@@ -56,20 +55,61 @@ export function removeDuplicates(messages: Message[]): Message[] {
 /**
  * Extracts all messages from a template.
  *
- * It works like this. First, the extractor uses the provided html parser to get
- * the html AST of the template. Then it partitions the root nodes into parts.
- * Everything between two i18n comments becomes a single part. Every other nodes becomes
- * a part too.
+ * Algorithm:
  *
- * We process every part as follows. Say we have a part A.
+ * To understand the algorithm, you need to know how partitioning works.
+ * Partitioning is required as we can use two i18n comments to group node siblings together.
+ * That is why we cannot just use nodes.
  *
- * If the part has the i18n attribute, it gets converted into a message.
- * And we do not recurse into that part, except to extract messages from the attributes.
+ * Partitioning transforms an array of HtmlAst into an array of Part.
+ * A part can optionally contain a root element or a root text node. And it can also contain
+ * children.
+ * A part can contain i18n property, in which case it needs to be extracted.
  *
- * If the part doesn't have the i18n attribute, we recurse into that part and
- * partition its children.
+ * Example:
  *
- * While walking the AST we also remove i18n attributes from messages.
+ * The following array of nodes will be split into four parts:
+ *
+ * ```
+ * <a>A</a>
+ * <b i18n>B</b>
+ * <!-- i18n -->
+ * <c>C</c>
+ * D
+ * <!-- /i18n -->
+ * E
+ * ```
+ *
+ * Part 1 containing the a tag. It should not be translated.
+ * Part 2 containing the b tag. It should be translated.
+ * Part 3 containing the c tag and the D text node. It should be translated.
+ * Part 4 containing the E text node. It should not be translated..
+ *
+ * It is also important to understand how we stringify nodes to create a message.
+ *
+ * We walk the tree and replace every element node with a placeholder. We also replace
+ * all expressions in interpolation with placeholders. We also insert a placeholder element
+ * to wrap a text node containing interpolation.
+ *
+ * Example:
+ *
+ * The following tree:
+ *
+ * ```
+ * <a>A{{I}}</a><b>B</b>
+ * ```
+ *
+ * will be stringified into:
+ * ```
+ * <ph name="e0"><ph name="t1">A<ph name="0"/></ph></ph><ph name="e2">B</ph>
+ * ```
+ *
+ * This is what the algorithm does:
+ *
+ * 1. Use the provided html parser to get the html AST of the template.
+ * 2. Partition the root nodes, and process each part separately.
+ * 3. If a part does not have the i18n attribute, recurse to process children and attributes.
+ * 4. If a part has the i18n attribute, stringify the nodes to create a Message.
  */
 export class MessageExtractor {
   messages: Message[];
@@ -85,16 +125,14 @@ export class MessageExtractor {
     if (res.errors.length > 0) {
       return new ExtractionResult([], res.errors);
     } else {
-      let ps = this._partition(res.rootNodes);
-      ps.forEach(p => this._extractMessagesFromPart(p));
+      this._recurse(res.rootNodes);
       return new ExtractionResult(this.messages, this.errors);
     }
   }
 
-  private _extractMessagesFromPart(p: _Part): void {
+  private _extractMessagesFromPart(p: Part): void {
     if (p.hasI18n) {
-      this.messages.push(new Message(_stringifyNodes(p.children, this._parser), _meaning(p.i18n),
-                                     _description(p.i18n)));
+      this.messages.push(p.createMessage(this._parser));
       this._recurseToExtractMessagesFromAttributes(p.children);
     } else {
       this._recurse(p.children);
@@ -106,8 +144,10 @@ export class MessageExtractor {
   }
 
   private _recurse(nodes: HtmlAst[]): void {
-    let ps = this._partition(nodes);
-    ps.forEach(p => this._extractMessagesFromPart(p));
+    if (isPresent(nodes)) {
+      let ps = partition(nodes, this.errors);
+      ps.forEach(p => this._extractMessagesFromPart(p));
+    }
   }
 
   private _recurseToExtractMessagesFromAttributes(nodes: HtmlAst[]): void {
@@ -121,130 +161,17 @@ export class MessageExtractor {
 
   private _extractMessagesFromAttributes(p: HtmlElementAst): void {
     p.attrs.forEach(attr => {
-      if (attr.name.startsWith(I18N_ATTR_PREFIX)) {
-        let expectedName = attr.name.substring(5);
-        let matching = p.attrs.filter(a => a.name == expectedName);
-
-        if (matching.length > 0) {
-          let value = _removeInterpolation(matching[0].value, p.sourceSpan, this._parser);
-          this.messages.push(new Message(value, _meaning(attr.value), _description(attr.value)));
-        } else {
-          this.errors.push(
-              new I18nExtractionError(p.sourceSpan, `Missing attribute '${expectedName}'.`));
+      if (isI18nAttr(attr.name)) {
+        try {
+          this.messages.push(messageFromAttribute(this._parser, p, attr));
+        } catch (e) {
+          if (e instanceof I18nError) {
+            this.errors.push(e);
+          } else {
+            throw e;
+          }
         }
       }
     });
   }
-
-  // Man, this is so ugly!
-  private _partition(nodes: HtmlAst[]): _Part[] {
-    let res = [];
-
-    for (let i = 0; i < nodes.length; ++i) {
-      let n = nodes[i];
-      let temp = [];
-      if (_isOpeningComment(n)) {
-        let i18n = (<HtmlCommentAst>n).value.substring(5).trim();
-        i++;
-        while (!_isClosingComment(nodes[i])) {
-          temp.push(nodes[i++]);
-          if (i === nodes.length) {
-            this.errors.push(
-                new I18nExtractionError(n.sourceSpan, "Missing closing 'i18n' comment."));
-            break;
-          }
-        }
-        res.push(new _Part(null, temp, i18n, true));
-
-      } else if (n instanceof HtmlElementAst) {
-        let i18n = _findI18nAttr(n);
-        res.push(new _Part(n, n.children, isPresent(i18n) ? i18n.value : null, isPresent(i18n)));
-      }
-    }
-
-    return res;
-  }
-}
-
-class _Part {
-  constructor(public rootElement: HtmlElementAst, public children: HtmlAst[], public i18n: string,
-              public hasI18n: boolean) {}
-}
-
-function _isOpeningComment(n: HtmlAst): boolean {
-  return n instanceof HtmlCommentAst && isPresent(n.value) && n.value.startsWith("i18n:");
-}
-
-function _isClosingComment(n: HtmlAst): boolean {
-  return n instanceof HtmlCommentAst && isPresent(n.value) && n.value == "/i18n";
-}
-
-function _stringifyNodes(nodes: HtmlAst[], parser: Parser) {
-  let visitor = new _StringifyVisitor(parser);
-  return htmlVisitAll(visitor, nodes).join("");
-}
-
-class _StringifyVisitor implements HtmlAstVisitor {
-  constructor(private _parser: Parser) {}
-
-  visitElement(ast: HtmlElementAst, context: any): any {
-    let attrs = this._join(htmlVisitAll(this, ast.attrs), " ");
-    let children = this._join(htmlVisitAll(this, ast.children), "");
-    return `<${ast.name} ${attrs}>${children}</${ast.name}>`;
-  }
-
-  visitAttr(ast: HtmlAttrAst, context: any): any {
-    if (ast.name.startsWith(I18N_ATTR_PREFIX)) {
-      return "";
-    } else {
-      return `${ast.name}="${ast.value}"`;
-    }
-  }
-
-  visitText(ast: HtmlTextAst, context: any): any {
-    return _removeInterpolation(ast.value, ast.sourceSpan, this._parser);
-  }
-
-  visitComment(ast: HtmlCommentAst, context: any): any { return ""; }
-
-  private _join(strs: string[], str: string): string {
-    return strs.filter(s => s.length > 0).join(str);
-  }
-}
-
-function _removeInterpolation(value: string, source: ParseSourceSpan, parser: Parser): string {
-  try {
-    let parsed = parser.parseInterpolation(value, source.toString());
-    if (isPresent(parsed)) {
-      let ast: Interpolation = <any>parsed.ast;
-      let res = "";
-      for (let i = 0; i < ast.strings.length; ++i) {
-        res += ast.strings[i];
-        if (i != ast.strings.length - 1) {
-          res += `{{I${i}}}`;
-        }
-      }
-      return res;
-    } else {
-      return value;
-    }
-  } catch (e) {
-    return value;
-  }
-}
-
-function _findI18nAttr(p: HtmlElementAst): HtmlAttrAst {
-  let i18n = p.attrs.filter(a => a.name == I18N_ATTR);
-  return i18n.length == 0 ? null : i18n[0];
-}
-
-function _meaning(i18n: string): string {
-  if (isBlank(i18n) || i18n == "") return null;
-  return i18n.split("|")[0];
-}
-
-function _description(i18n: string): string {
-  if (isBlank(i18n) || i18n == "") return null;
-  let parts = i18n.split("|");
-  return parts.length > 1 ? parts[1] : null;
 }
