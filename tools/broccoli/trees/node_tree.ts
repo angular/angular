@@ -76,7 +76,7 @@ module.exports = function makeNodeTree(projects, destinationPath) {
       'angular2/test/animate/**',
       'angular2/test/core/zone/**',
       'angular2/test/testing/fake_async_spec.ts',
-      'angular2/test/testing/testing_public_spec.ts',
+      'angular2/test/testing/testing_public_browser_spec.ts',
       'angular2/test/platform/xhr_impl_spec.ts',
       'angular2/test/platform/browser/**/*.ts',
       'angular2/test/common/forms/**',
