@@ -1,7 +1,6 @@
-import {Component, provide, ElementRef, ViewChildren, QueryList} from 'angular2/core';
-import {Overlay, OVERLAY_CONTAINER_TOKEN} from '../../core/overlay/overlay';
+import {Component, ElementRef, ViewChildren, QueryList} from 'angular2/core';
+import {Overlay} from '../../core/overlay/overlay';
 import {ComponentPortal, Portal} from '../../core/portal/portal';
-import {BrowserDomAdapter} from '../../core/platform/browser/browser_adapter';
 import {TemplatePortalDirective} from '../../core/portal/portal-directives';
 
 
@@ -12,15 +11,12 @@ import {TemplatePortalDirective} from '../../core/portal/portal-directives';
   directives: [TemplatePortalDirective],
   providers: [
     Overlay,
-    provide(OVERLAY_CONTAINER_TOKEN, {useValue: document.body})
   ]
 })
 export class OverlayDemo {
   @ViewChildren(TemplatePortalDirective) templatePortals: QueryList<Portal<any>>;
 
-  constructor(public overlay: Overlay, public elementRef: ElementRef) {
-    BrowserDomAdapter.makeCurrent();
-  }
+  constructor(public overlay: Overlay, public elementRef: ElementRef) { }
 
   openRotiniPanel() {
     this.overlay.create().then(ref => {

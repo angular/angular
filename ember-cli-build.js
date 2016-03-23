@@ -11,7 +11,6 @@ var Angular2App = require('angular-cli/lib/broccoli/angular2-app');
 var BroccoliSass = require('broccoli-sass');
 var broccoliAutoprefixer = require('broccoli-autoprefixer');
 
-const BroccoliTypescript = require('./tools/broccoli/broccoli-typescript').default;
 const BroccoliTs2Dart = require('./tools/broccoli/broccoli-ts2dart').default;
 const BroccoliDestCopy = require('./tools/broccoli/broccoli-dest-copy').default;
 const BroccoliDartFmt = require('./tools/broccoli/broccoli-dartfmt').default;
@@ -24,6 +23,7 @@ module.exports = function(defaults) {
   var demoAppCssTree = new BroccoliSass(['src/demo-app'], './demo-app.scss', 'demo-app/demo-app.css');
   var demoCssTree = getCssTree('demo-app');
   var componentCssTree = getCssTree('components');
+  var mainCssTree = new BroccoliSass(['src', 'src/core/style'], './main.scss', 'main.css');
   var angularAppTree = new Angular2App(defaults);
 
   var dartAppTree = getDartTree('src/');
@@ -31,6 +31,7 @@ module.exports = function(defaults) {
   return mergeTrees([
     angularAppTree.toTree(),
     componentCssTree,
+    mainCssTree,
     demoAppCssTree,
     demoCssTree,
   ].concat(dartAppTree || []));

@@ -10,9 +10,10 @@ import {DomPortalHost} from '../portal/dom-portal-host';
 import {OverlayRef} from './overlay-ref';
 import {DOM} from '../platform/dom/dom_adapter';
 
-// Re-export OverlayState and OverlayRef so they can be imported directly from here.
+// Re-export overlay-related modules so they can be imported directly from here.
 export {OverlayState} from './overlay-state';
 export {OverlayRef} from './overlay-ref';
+export {createOverlayContainer} from './overlay-container';
 
 /** Token used to inject the DOM element that serves as the overlay container. */
 export const OVERLAY_CONTAINER_TOKEN = CONST_EXPR(new OpaqueToken('overlayContainer'));
