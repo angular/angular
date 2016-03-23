@@ -50,7 +50,8 @@ export class LegacyHtmlAstTransformer implements HtmlAstVisitor {
     this.visitingTemplateEl = ast.name.toLowerCase() == 'template';
     let attrs = ast.attrs.map(attr => attr.visit(this, null));
     let children = ast.children.map(child => child.visit(this, null));
-    return new HtmlElementAst(ast.name, attrs, children, ast.sourceSpan);
+    return new HtmlElementAst(ast.name, attrs, children, ast.sourceSpan, ast.startSourceSpan,
+                              ast.endSourceSpan);
   }
 
   visitAttr(originalAst: HtmlAttrAst, context: any): HtmlAttrAst {
