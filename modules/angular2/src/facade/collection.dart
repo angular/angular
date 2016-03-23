@@ -232,6 +232,14 @@ class ListWrapper {
   static bool isImmutable(List l) {
     return l is UnmodifiableListView;
   }
+
+  static List flatten(List l) {
+    final res = [];
+    l.forEach((item) {
+      res.addAll(item);
+    });
+    return res;
+  }
 }
 
 bool isListLikeIterable(obj) => obj is Iterable;
