@@ -25,8 +25,10 @@ var global_excludes = [
   'payload_tests/**/ts/**/*',
   'playground/src/http/**/*',
   'playground/src/jsonp/**/*',
+  'playground/src/upgrade/**/*',
   'playground/test/http/**/*',
-  'playground/test/jsonp/**/*'
+  'playground/test/jsonp/**/*',
+  'playground/test/upgrade/**/*'
 ];
 
 

@@ -103,6 +103,7 @@ function noNg() {
 
 var angular: {
   bootstrap: (e: Element, modules: string[], config: IAngularBootstrapConfig) => void,
+  resumeBootstrap?: (extraModules?: string[]) => void,
   module: (prefix: string, dependencies?: string[]) => IModule,
   element: (e: Element) => IAugmentedJQuery,
   version: {major: number}
@@ -118,6 +119,7 @@ try {
 }
 
 export var bootstrap = angular.bootstrap;
+export var getResumeBootstrap = () => angular.resumeBootstrap;
 export var module = angular.module;
 export var element = angular.element;
 export var version = angular.version;

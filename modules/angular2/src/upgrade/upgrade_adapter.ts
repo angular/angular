@@ -308,9 +308,8 @@ export class UpgradeAdapter {
     var rootScopePrototype: any;
     var rootScope: angular.IRootScopeService;
     var hostViewFactoryRefMap: HostViewFactoryRefMap = {};
-    var ng1Module = angular.module(this.idPrefix, modules);
-    var ng1compilePromise: Promise<any> = null;
-    ng1Module.value(NG2_INJECTOR, injector)
+    angular.module(this.idPrefix, modules)
+        .value(NG2_INJECTOR, injector)
         .value(NG2_ZONE, ngZone)
         .value(NG2_COMPILER, compiler)
         .value(NG2_HOST_VIEW_FACTORY_REF_MAP, hostViewFactoryRefMap)
@@ -340,26 +339,27 @@ export class UpgradeAdapter {
             ng1Injector = injector;
             ObservableWrapper.subscribe(ngZone.onMicrotaskEmpty,
                                         (_) => ngZone.runOutsideAngular(() => rootScope.$apply()));
-            ng1compilePromise =
+            var ng2compilePromise = this.compileNg2Components(compiler, hostViewFactoryRefMap);
+            var ng1compilePromise =
                 UpgradeNg1ComponentAdapterBuilder.resolve(this.downgradedComponents, injector);
+            Promise.all([ng2compilePromise, ng1compilePromise])
+                .then(() => {
+                  ngZone.run(() => {
+                    if (rootScopePrototype) {
+                      rootScopePrototype.$apply = original$applyFn;  // restore original $apply
+                      while (delayApplyExps.length) {
+                        rootScope.$apply(delayApplyExps.shift());
+                      }
+                      (<any>upgrade)._bootstrapDone(applicationRef, ng1Injector);
+                      rootScopePrototype = null;
+                    }
+                  });
+                }, onError);
           }
         ]);
 
     angular.element(element).data(controllerKey(NG2_INJECTOR), injector);
     ngZone.run(() => { angular.bootstrap(element, [this.idPrefix], config); });
-    Promise.all([this.compileNg2Components(compiler, hostViewFactoryRefMap), ng1compilePromise])
-        .then(() => {
-          ngZone.run(() => {
-            if (rootScopePrototype) {
-              rootScopePrototype.$apply = original$applyFn;  // restore original $apply
-              while (delayApplyExps.length) {
-                rootScope.$apply(delayApplyExps.shift());
-              }
-              (<any>upgrade)._bootstrapDone(applicationRef, ng1Injector);
-              rootScopePrototype = null;
-            }
-          });
-        }, onError);
     return upgrade;
   }
 
