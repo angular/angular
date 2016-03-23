@@ -1,13 +1,8 @@
-**Note: for support questions, please use one of these channels:** https://github.com/angular/angular/blob/master/CONTRIBUTING.md#question. This repository's issues are reserved for feature requests and bug reports.
 
-* **I'm submitting a ... **
-[ ] bug report
-[ ] feature request
-[ ] support request => Please do not submit support request here, see note at the top of this template.
-
-
-* **Do you want to request a *feature* or report a *bug*?**
-
+* **I'm submitting a ...**
+- [ ] bug report
+- [ ] feature request
+- [ ] support request => Please do not submit support request here, see note at the top of this template.
 
 
 * **What is the current behavior?**
@@ -29,9 +24,11 @@ https://plnkr.co or similar (you can use this template as a starting point: http
 
 * **Please tell us about your environment:**
 
-- Angular version: 2.0.0-beta.X
-- Browser: [all | Chrome XX | Firefox XX | IE XX | Safari XX | Mobile Chrome XX | Android X.X Web Browser | iOS XX Safari | iOS XX UIWebView | iOS XX WKWebView ]
-- Language: [all | TypeScript X.X | ES6/7 | ES5 | Dart]
+* **Angular version:** 2.0.0-beta.X 
+ 
+* **Browser:** [all | Chrome XX | Firefox XX | IE XX | Safari XX | Mobile Chrome XX | Android X.X Web Browser | iOS XX Safari | iOS XX UIWebView | iOS XX WKWebView ] 
+ 
+* **Language:** [all | TypeScript X.X | ES6/7 | ES5 | Dart] 
 
 
 
