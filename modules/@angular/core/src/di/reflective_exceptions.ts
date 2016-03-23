@@ -175,8 +175,7 @@ export class InstantiationError extends WrappedException {
  */
 export class InvalidProviderError extends BaseException {
   constructor(provider) {
-    super("Invalid provider - only instances of Provider and Type are allowed, got: " +
-          provider.toString());
+    super(`Invalid provider - only instances of Provider and Type are allowed, got: ${provider}`);
   }
 }
 
