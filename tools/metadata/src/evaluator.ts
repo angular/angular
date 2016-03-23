@@ -1,6 +1,13 @@
 import * as ts from 'typescript';
 import {Symbols} from './symbols';
 
+import {
+  MetadataValue,
+  MetadataObject,
+  MetadataSymbolicCallExpression,
+  MetadataSymbolicReferenceExpression
+} from './schema';
+
 // TOOD: Remove when tools directory is upgraded to support es6 target
 interface Map<K, V> {
   has(k: K): boolean;
@@ -43,12 +50,6 @@ function everyNodeChild(node: ts.Node, cb: (node: ts.Node) => boolean) {
   return !ts.forEachChild(node, node => !cb(node));
 }
 
-export interface SymbolReference {
-  __symbolic: string;  // TODO: Change this to type "reference" when we move to TypeScript 1.8
-  name: string;
-  module: string;
-}
-
 function isPrimitive(value: any): boolean {
   return Object(value) !== value;
 }
@@ -82,7 +83,7 @@ export class Evaluator {
     return undefined;
   }
 
-  private symbolReference(symbol: ts.Symbol): SymbolReference {
+  private symbolReference(symbol: ts.Symbol): MetadataSymbolicReferenceExpression {
     if (symbol) {
       const name = symbol.name;
       const module = this.moduleNameOf(this.symbolFileName(symbol));
@@ -90,7 +91,7 @@ export class Evaluator {
     }
   }
 
-  private nodeSymbolReference(node: ts.Node): SymbolReference {
+  private nodeSymbolReference(node: ts.Node): MetadataSymbolicReferenceExpression {
     return this.symbolReference(this.typeChecker.getSymbolAtLocation(node));
   }
 
@@ -98,7 +99,7 @@ export class Evaluator {
     if (node.kind == ts.SyntaxKind.Identifier) {
       return (<ts.Identifier>node).text;
     }
-    return this.evaluateNode(node);
+    return <string>this.evaluateNode(node);
   }
 
   /**
@@ -213,10 +214,10 @@ export class Evaluator {
    * Produce a JSON serialiable object representing `node`. The foldable values in the expression
    * tree are folded. For example, a node representing `1 + 2` is folded into `3`.
    */
-  public evaluateNode(node: ts.Node): any {
+  public evaluateNode(node: ts.Node): MetadataValue {
     switch (node.kind) {
       case ts.SyntaxKind.ObjectLiteralExpression:
-        let obj = {};
+        let obj: MetadataValue = {};
         let allPropertiesDefined = true;
         ts.forEachChild(node, child => {
           switch (child.kind) {
@@ -245,7 +246,7 @@ export class Evaluator {
         const args = callExpression.arguments.map(arg => this.evaluateNode(arg));
         if (this.isFoldable(callExpression)) {
           if (isMethodCallOf(callExpression, "concat")) {
-            const arrayValue = this.evaluateNode(
+            const arrayValue = <MetadataValue[]>this.evaluateNode(
                 (<ts.PropertyAccessExpression>callExpression.expression).expression);
             return arrayValue.concat(args[0]);
           }
@@ -256,11 +257,14 @@ export class Evaluator {
         }
         const expression = this.evaluateNode(callExpression.expression);
         if (isDefined(expression) && args.every(isDefined)) {
-          return {
+          const result: MetadataSymbolicCallExpression = {
             __symbolic: "call",
-            expression: this.evaluateNode(callExpression.expression),
-            arguments: args
+            expression: this.evaluateNode(callExpression.expression)
           };
+          if (args && args.length) {
+            result.arguments = args;
+          }
+          return result;
         }
         break;
       case ts.SyntaxKind.PropertyAccessExpression: {
@@ -279,13 +283,9 @@ export class Evaluator {
         const index = this.evaluateNode(elementAccessExpression.argumentExpression);
         if (this.isFoldable(elementAccessExpression.expression) &&
             this.isFoldable(elementAccessExpression.argumentExpression))
-          return expression[index];
+          return expression[<string | number>index];
         if (isDefined(expression) && isDefined(index)) {
-          return {
-            __symbolic: "index",
-            expression,
-            index: this.evaluateNode(elementAccessExpression.argumentExpression)
-          };
+          return {__symbolic: "index", expression, index};
         }
         break;
       }
@@ -317,6 +317,9 @@ export class Evaluator {
       case ts.SyntaxKind.ParenthesizedExpression:
         const parenthesizedExpression = <ts.ParenthesizedExpression>node;
         return this.evaluateNode(parenthesizedExpression.expression);
+      case ts.SyntaxKind.TypeAssertionExpression:
+        const typeAssertion = <ts.TypeAssertion>node;
+        return this.evaluateNode(typeAssertion.expression);
       case ts.SyntaxKind.PrefixUnaryExpression:
         const prefixUnaryExpression = <ts.PrefixUnaryExpression>node;
         const operand = this.evaluateNode(prefixUnaryExpression.operand);
@@ -357,20 +360,48 @@ export class Evaluator {
         if (isDefined(left) && isDefined(right)) {
           if (isPrimitive(left) && isPrimitive(right))
             switch (binaryExpression.operatorToken.kind) {
-              case ts.SyntaxKind.PlusToken:
-                return left + right;
-              case ts.SyntaxKind.MinusToken:
-                return left - right;
-              case ts.SyntaxKind.AsteriskToken:
-                return left * right;
-              case ts.SyntaxKind.SlashToken:
-                return left / right;
-              case ts.SyntaxKind.PercentToken:
-                return left % right;
-              case ts.SyntaxKind.AmpersandAmpersandToken:
-                return left && right;
               case ts.SyntaxKind.BarBarToken:
-                return left || right;
+                return <any>left || <any>right;
+              case ts.SyntaxKind.AmpersandAmpersandToken:
+                return <any>left && <any>right;
+              case ts.SyntaxKind.AmpersandToken:
+                return <any>left & <any>right;
+              case ts.SyntaxKind.BarToken:
+                return <any>left | <any>right;
+              case ts.SyntaxKind.CaretToken:
+                return <any>left ^ <any>right;
+              case ts.SyntaxKind.EqualsEqualsToken:
+                return <any>left == <any>right;
+              case ts.SyntaxKind.ExclamationEqualsToken:
+                return <any>left != <any>right;
+              case ts.SyntaxKind.EqualsEqualsEqualsToken:
+                return <any>left === <any>right;
+              case ts.SyntaxKind.ExclamationEqualsEqualsToken:
+                return <any>left !== <any>right;
+              case ts.SyntaxKind.LessThanToken:
+                return <any>left < <any>right;
+              case ts.SyntaxKind.GreaterThanToken:
+                return <any>left > <any>right;
+              case ts.SyntaxKind.LessThanEqualsToken:
+                return <any>left <= <any>right;
+              case ts.SyntaxKind.GreaterThanEqualsToken:
+                return <any>left >= <any>right;
+              case ts.SyntaxKind.LessThanLessThanToken:
+                return (<any>left) << (<any>right);
+              case ts.SyntaxKind.GreaterThanGreaterThanToken:
+                return <any>left >> <any>right;
+              case ts.SyntaxKind.GreaterThanGreaterThanGreaterThanToken:
+                return <any>left >>> <any>right;
+              case ts.SyntaxKind.PlusToken:
+                return <any>left + <any>right;
+              case ts.SyntaxKind.MinusToken:
+                return <any>left - <any>right;
+              case ts.SyntaxKind.AsteriskToken:
+                return <any>left * <any>right;
+              case ts.SyntaxKind.SlashToken:
+                return <any>left / <any>right;
+              case ts.SyntaxKind.PercentToken:
+                return <any>left % <any>right;
             }
           return {
             __symbolic: "binop",

@@ -1,19 +1,10 @@
-var mockfs = require('mock-fs');
-
 import * as ts from 'typescript';
 import * as fs from 'fs';
-import {MockHost, expectNoDiagnostics, findVar} from './typescript.mock';
-import {Evaluator} from './evaluator';
-import {Symbols} from './symbols';
+import {Directory, Host, expectNoDiagnostics, findVar} from './typescript.mocks';
+import {Evaluator} from '../src/evaluator';
+import {Symbols} from '../src/symbols';
 
 describe('Evaluator', () => {
-  // Read the lib.d.ts before mocking fs.
-  let libTs: string = fs.readFileSync(ts.getDefaultLibFilePath({}), 'utf8');
-
-  beforeEach(() => files['lib.d.ts'] = libTs);
-  beforeEach(() => mockfs(files));
-  afterEach(() => mockfs.restore());
-
   let host: ts.LanguageServiceHost;
   let service: ts.LanguageService;
   let program: ts.Program;
@@ -22,7 +13,7 @@ describe('Evaluator', () => {
   let evaluator: Evaluator;
 
   beforeEach(() => {
-    host = new MockHost(['expressions.ts'], /*currentDirectory*/ undefined, 'lib.d.ts');
+    host = new Host(FILES, ['expressions.ts']);
     service = ts.createLanguageService(host);
     program = service.getProgram();
     typeChecker = program.getTypeChecker();
@@ -74,6 +65,33 @@ describe('Evaluator', () => {
     expect(evaluator.evaluateNode(findVar(expressions, 'bOr').initializer)).toEqual(true);
     expect(evaluator.evaluateNode(findVar(expressions, 'nDiv').initializer)).toEqual(2);
     expect(evaluator.evaluateNode(findVar(expressions, 'nMod').initializer)).toEqual(1);
+
+
+    expect(evaluator.evaluateNode(findVar(expressions, 'bLOr').initializer)).toEqual(false || true);
+    expect(evaluator.evaluateNode(findVar(expressions, 'bLAnd').initializer)).toEqual(true && true);
+    expect(evaluator.evaluateNode(findVar(expressions, 'bBOr').initializer)).toEqual(0x11 | 0x22);
+    expect(evaluator.evaluateNode(findVar(expressions, 'bBAnd').initializer)).toEqual(0x11 & 0x03);
+    expect(evaluator.evaluateNode(findVar(expressions, 'bXor').initializer)).toEqual(0x11 ^ 0x21);
+    expect(evaluator.evaluateNode(findVar(expressions, 'bEqual').initializer))
+        .toEqual(1 == <any>"1");
+    expect(evaluator.evaluateNode(findVar(expressions, 'bNotEqual').initializer))
+        .toEqual(1 != <any>"1");
+    expect(evaluator.evaluateNode(findVar(expressions, 'bIdentical').initializer))
+        .toEqual(1 === <any>"1");
+    expect(evaluator.evaluateNode(findVar(expressions, 'bNotIdentical').initializer))
+        .toEqual(1 !== <any>"1");
+    expect(evaluator.evaluateNode(findVar(expressions, 'bLessThan').initializer)).toEqual(1 < 2);
+    expect(evaluator.evaluateNode(findVar(expressions, 'bGreaterThan').initializer)).toEqual(1 > 2);
+    expect(evaluator.evaluateNode(findVar(expressions, 'bLessThanEqual').initializer))
+        .toEqual(1 <= 2);
+    expect(evaluator.evaluateNode(findVar(expressions, 'bGreaterThanEqual').initializer))
+        .toEqual(1 >= 2);
+    expect(evaluator.evaluateNode(findVar(expressions, 'bShiftLeft').initializer)).toEqual(1 << 2);
+    expect(evaluator.evaluateNode(findVar(expressions, 'bShiftRight').initializer))
+        .toEqual(-1 >> 2);
+    expect(evaluator.evaluateNode(findVar(expressions, 'bShiftRightU').initializer))
+        .toEqual(-1 >>> 2);
+
   });
 
   it('should report recursive references as symbolic', () => {
@@ -85,7 +103,7 @@ describe('Evaluator', () => {
   });
 });
 
-const files = {
+const FILES: Directory = {
   'directives.ts': `
     export function Pipe(options: { name?: string, pure?: boolean}) {
       return function(fn: Function) { }
@@ -111,6 +129,23 @@ const files = {
     export var nDiv = four / two;
     export var nMod = (four + one) % two;
 
+    export var bLOr = false || true;             // true
+    export var bLAnd = true && true;             // true
+    export var bBOr = 0x11 | 0x22;               // 0x33
+    export var bBAnd = 0x11 & 0x03;              // 0x01
+    export var bXor = 0x11 ^ 0x21;               // 0x20
+    export var bEqual = 1 == <any>"1";           // true
+    export var bNotEqual = 1 != <any>"1";        // false
+    export var bIdentical = 1 === <any>"1";      // false
+    export var bNotIdentical = 1 !== <any>"1";   // true
+    export var bLessThan = 1 < 2;                // true
+    export var bGreaterThan = 1 > 2;             // false
+    export var bLessThanEqual = 1 <= 2;          // true
+    export var bGreaterThanEqual = 1 >= 2;       // false
+    export var bShiftLeft = 1 << 2;              // 0x04
+    export var bShiftRight = -1 >> 2;            // -1
+    export var bShiftRightU = -1 >>> 2;          // 0x3fffffff
+    
     export var recursiveA = recursiveB;
     export var recursiveB = recursiveA;
   `,

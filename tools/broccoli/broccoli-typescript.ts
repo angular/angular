@@ -5,7 +5,7 @@ import fse = require('fs-extra');
 import path = require('path');
 import * as ts from 'typescript';
 import {wrapDiffingPlugin, DiffingBroccoliPlugin, DiffResult} from './diffing-broccoli-plugin';
-import {MetadataExtractor} from '../metadata/extractor';
+import {MetadataCollector} from '../metadata';
 
 type FileRegistry = ts.Map<{version: number}>;
 
@@ -50,7 +50,7 @@ class DiffingTSCompiler implements DiffingBroccoliPlugin {
   private rootFilePaths: string[];
   private tsServiceHost: ts.LanguageServiceHost;
   private tsService: ts.LanguageService;
-  private metadataExtractor: MetadataExtractor;
+  private metadataCollector: MetadataCollector;
   private firstRun: boolean = true;
   private previousRunFailed: boolean = false;
   // Whether to generate the @internal typing files (they are only generated when `stripInternal` is
@@ -93,7 +93,7 @@ class DiffingTSCompiler implements DiffingBroccoliPlugin {
     this.tsServiceHost = new CustomLanguageServiceHost(this.tsOpts, this.rootFilePaths,
                                                        this.fileRegistry, this.inputPath);
     this.tsService = ts.createLanguageService(this.tsServiceHost, ts.createDocumentRegistry());
-    this.metadataExtractor = new MetadataExtractor(this.tsService);
+    this.metadataCollector = new MetadataCollector(this.tsService);
   }
 
 
@@ -265,7 +265,7 @@ class DiffingTSCompiler implements DiffingBroccoliPlugin {
   private emitMetadata(dtsFileName: string, sourceFile: ts.SourceFile,
                        typeChecker: ts.TypeChecker) {
     if (sourceFile) {
-      const metadata = this.metadataExtractor.getMetadata(sourceFile, typeChecker);
+      const metadata = this.metadataCollector.getMetadata(sourceFile, typeChecker);
       if (metadata && metadata.metadata) {
         const metadataText = JSON.stringify(metadata);
         const metadataFileName = dtsFileName.replace(/\.d.ts$/, '.metadata.json');
