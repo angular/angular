@@ -264,29 +264,40 @@ class TemplateParseVisitor implements HtmlAstVisitor {
         this._createElementPropertyAsts(element.name, elementOrDirectiveProps, directives);
     var children = htmlVisitAll(preparsedElement.nonBindable ? NON_BINDABLE_VISITOR : this,
                                 element.children, Component.create(directives));
-    var elementNgContentIndex =
-        hasInlineTemplates ? null : component.findNgContentIndex(elementCssSelector);
+
+    // Override the actual selector when the `ngProjectAs` attribute is provided
+    var projectionSelector = isPresent(preparsedElement.projectAs) ?
+                                 CssSelector.parse(preparsedElement.projectAs)[0] :
+                                 elementCssSelector;
+    var ngContentIndex = component.findNgContentIndex(projectionSelector);
     var parsedElement;
+
     if (preparsedElement.type === PreparsedElementType.NG_CONTENT) {
       if (isPresent(element.children) && element.children.length > 0) {
         this._reportError(
             `<ng-content> element cannot have content. <ng-content> must be immediately followed by </ng-content>`,
             element.sourceSpan);
       }
-      parsedElement =
-          new NgContentAst(this.ngContentCount++, elementNgContentIndex, element.sourceSpan);
+
+      parsedElement = new NgContentAst(
+          this.ngContentCount++, hasInlineTemplates ? null : ngContentIndex, element.sourceSpan);
     } else if (isTemplateElement) {
       this._assertAllEventsPublishedByDirectives(directives, events);
       this._assertNoComponentsNorElementBindingsOnTemplate(directives, elementProps,
                                                            element.sourceSpan);
-      parsedElement = new EmbeddedTemplateAst(attrs, events, vars, directives, children,
-                                              elementNgContentIndex, element.sourceSpan);
+
+      parsedElement =
+          new EmbeddedTemplateAst(attrs, events, vars, directives, children,
+                                  hasInlineTemplates ? null : ngContentIndex, element.sourceSpan);
     } else {
       this._assertOnlyOneComponent(directives, element.sourceSpan);
       var elementExportAsVars = vars.filter(varAst => varAst.value.length === 0);
+      let ngContentIndex =
+          hasInlineTemplates ? null : component.findNgContentIndex(projectionSelector);
+
       parsedElement =
           new ElementAst(nodeName, attrs, elementProps, events, elementExportAsVars, directives,
-                         children, elementNgContentIndex, element.sourceSpan);
+                         children, hasInlineTemplates ? null : ngContentIndex, element.sourceSpan);
     }
     if (hasInlineTemplates) {
       var templateCssSelector = createElementCssSelector(TEMPLATE_ELEMENT, templateMatchableAttrs);
@@ -297,9 +308,9 @@ class TemplateParseVisitor implements HtmlAstVisitor {
           element.name, templateElementOrDirectiveProps, templateDirectives);
       this._assertNoComponentsNorElementBindingsOnTemplate(templateDirectives, templateElementProps,
                                                            element.sourceSpan);
-      parsedElement = new EmbeddedTemplateAst(
-          [], [], templateVars, templateDirectives, [parsedElement],
-          component.findNgContentIndex(templateCssSelector), element.sourceSpan);
+
+      parsedElement = new EmbeddedTemplateAst([], [], templateVars, templateDirectives,
+                                              [parsedElement], ngContentIndex, element.sourceSpan);
     }
     return parsedElement;
   }
