@@ -42,6 +42,12 @@ export function main() {
       // If not reset, the second attempt to test results in false
       expect(RegExpWrapper.test(re, str)).toEqual(true);
     });
+
+    it("should implement replace all", () => {
+      let re = /(\d)+/g;
+      let m = RegExpWrapper.replaceAll(re, 'a1b2c', (match) => `!${match[1]}!`);
+      expect(m).toEqual('a!1!b!2!c');
+    });
   });
 
   describe('const', () => {
