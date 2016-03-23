@@ -1,3 +1,18 @@
+<a name="2.0.0-beta.12"></a>
+# 2.0.0-beta.12 (2016-03-23)
+
+
+### Bug Fixes
+
+* **angular_1_router:** ng-link is generating wrong hrefs ([69c1405](https://github.com/angular/angular/commit/69c1405)), closes [#7423](https://github.com/angular/angular/issues/7423)
+* **angular1_router:** support link generation with custom hashPrefixes ([0f8efce](https://github.com/angular/angular/commit/0f8efce))
+* **package.json:** remove es6-promise from the peerDependency list ([8b67b07](https://github.com/angular/angular/commit/8b67b07))
+
+### Features
+
+* **dart/transform:** Use angular2/platform/browser as bootstrap lib ([b6507e3](https://github.com/angular/angular/commit/b6507e3)), closes [#7647](https://github.com/angular/angular/issues/7647)
+
+
 <a name="2.0.0-beta.11"></a>
 # 2.0.0-beta.11 (2016-03-18)
 
