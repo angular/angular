@@ -347,6 +347,21 @@ export class RegExpWrapper {
     regExp.lastIndex = 0;
     return {re: regExp, input: input};
   }
+  static replaceAll(regExp: RegExp, input: string, replace: Function): string {
+    let c = regExp.exec(input);
+    let res = '';
+    regExp.lastIndex = 0;
+    let prev = 0;
+    while (c) {
+      res += input.substring(prev, c.index);
+      res += replace(c);
+      prev = c.index + c[0].length;
+      regExp.lastIndex = prev;
+      c = regExp.exec(input);
+    }
+    res += input.substring(prev);
+    return res;
+  }
 }
 
 export class RegExpMatcherWrapper {
