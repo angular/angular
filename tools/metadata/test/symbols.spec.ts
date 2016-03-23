@@ -1,9 +1,6 @@
-/// <reference path="../typings/node/node.d.ts" />
-/// <reference path="../typings/jasmine/jasmine.d.ts" />
-
 import * as ts from 'typescript';
-import {Symbols} from './symbols';
-import {MockSymbol, MockVariableDeclaration} from './typescript.mock';
+import {Symbols} from '../src/symbols';
+import {MockSymbol, MockVariableDeclaration} from './typescript.mocks';
 
 describe('Symbols', () => {
   let symbols: Symbols;
