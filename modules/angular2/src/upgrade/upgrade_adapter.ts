@@ -310,6 +310,7 @@ export class UpgradeAdapter {
     var hostViewFactoryRefMap: HostViewFactoryRefMap = {};
     var ng1Module = angular.module(this.idPrefix, modules);
     var ng1compilePromise: Promise<any> = null;
+    var ng2componentPromise: Promise<any> = null;
     ng1Module.value(NG2_INJECTOR, injector)
         .value(NG2_ZONE, ngZone)
         .value(NG2_COMPILER, compiler)
@@ -341,13 +342,17 @@ export class UpgradeAdapter {
             ObservableWrapper.subscribe(ngZone.onMicrotaskEmpty,
                                         (_) => ngZone.runOutsideAngular(() => rootScope.$apply()));
             ng1compilePromise =
-                UpgradeNg1ComponentAdapterBuilder.resolve(this.downgradedComponents, injector);
+                ng2componentPromise.then(() => UpgradeNg1ComponentAdapterBuilder.resolve(
+                                             this.downgradedComponents, injector));
           }
         ]);
 
     angular.element(element).data(controllerKey(NG2_INJECTOR), injector);
+    ngZone.run(() => {
+      ng2componentPromise = this.compileNg2Components(compiler, hostViewFactoryRefMap);
+    });
     ngZone.run(() => { angular.bootstrap(element, [this.idPrefix], config); });
-    Promise.all([this.compileNg2Components(compiler, hostViewFactoryRefMap), ng1compilePromise])
+    Promise.all([ng2componentPromise, ng1compilePromise])
         .then(() => {
           ngZone.run(() => {
             if (rootScopePrototype) {
