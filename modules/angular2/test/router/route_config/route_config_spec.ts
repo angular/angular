@@ -172,6 +172,17 @@ export function main() {
                      return null;
                    })}));
 
+    it('should throw if a config component is undefined',
+       inject([AsyncTestCompleter],
+              (async) => {bootstrap(UndefinedComponentTypeCmp, testBindings)
+                              .catch((e) => {
+                                expect(e.originalException)
+                                    .toContainError(
+                                        `Route 'Hello' expected a valid component, got undefined.`);
+                                async.done();
+                                return null;
+                              })}));
+
     it('should throw if a config has an invalid alias name',
        inject(
            [AsyncTestCompleter],
@@ -344,4 +355,15 @@ class MultipleAliasCmp {
   {path: '/hello', component: {type: 'intentionallyWrongComponentType', constructor: HelloCmp}},
 ])
 class WrongComponentTypeCmp {
+}
+
+@Component({
+  selector: 'app-cmp',
+  template: `root { <router-outlet></router-outlet> }`,
+  directives: ROUTER_DIRECTIVES
+})
+@RouteConfig([
+  {path: '/hello', component: undefined, name: 'Hello'},
+])
+class UndefinedComponentTypeCmp {
 }
