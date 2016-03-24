@@ -246,7 +246,14 @@ export class MdCheckbox implements ControlValueAccessor {
 
     switch (oldState) {
     case TransitionCheckState.Init:
-      return '';
+      // Handle edge case where user interacts with checkbox that does not have [(ngModel)] or
+      // [checked] bound to it.
+      if (newState === TransitionCheckState.Checked) {
+        animSuffix = 'unchecked-checked';
+      } else {
+        return '';
+      }
+      break;
     case TransitionCheckState.Unchecked:
       animSuffix = newState === TransitionCheckState.Checked ?
           'unchecked-checked' : 'unchecked-indeterminate';

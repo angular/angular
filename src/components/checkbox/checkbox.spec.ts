@@ -621,6 +621,29 @@ export function main() {
         let el = fixture.debugElement.query(By.css('.md-checkbox'));
         expect(el.nativeElement.className).not.toMatch(/^md\-checkbox\-anim/g);
       });
+
+      describe('when interacted with from the initial state', function() {
+        beforeEach(function(done: any) {
+          builder.createAsync(CheckboxBarebonesController).then(function(f) {
+            fixture = f;
+            controller = fixture.componentInstance;
+            fixture.detectChanges();
+          }).then(done).catch(done.fail);
+        });
+
+        it('applies a transition class when checked', function() {
+          let el = fixture.debugElement.query(By.css('.md-checkbox'));
+          click(el, fixture);
+          expect(el.nativeElement.className).toContain('md-checkbox-anim-unchecked-checked');
+        });
+
+        it('applies a transition class when made indeterminate', function() {
+          let el = fixture.debugElement.query(By.css('.md-checkbox'));
+          controller.isIndeterminate = true;
+          fixture.detectChanges();
+          expect(el.nativeElement.className).toContain('md-checkbox-anim-unchecked-indeterminate');
+        });
+      });
     });
   });
 }
@@ -783,3 +806,12 @@ class CheckboxFormcontrolController {
   directives: [MdCheckbox]
 })
 class CheckboxEndAlignedController {}
+
+@Component({
+  selector: 'checkbox-barebones-controller',
+  template: `<md-checkbox [indeterminate]="isIndeterminate"></md-checkbox>`,
+  directives: [MdCheckbox]
+})
+class CheckboxBarebonesController {
+  public isIndeterminate: boolean = false;
+}
