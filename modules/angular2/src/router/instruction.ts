@@ -169,7 +169,7 @@ export abstract class Instruction {
   /** @internal */
   _toLinkUrl(): string {
     return this._stringifyPathMatrixAuxPrefixed() +
-           (isPresent(this.child) ? this.child._toLinkUrl() : '');
+           (isPresent(this.child) ? this.child._toLinkUrl() : '/' + this.urlPath);
   }
 
   /** @internal */
