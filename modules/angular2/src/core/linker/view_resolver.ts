@@ -6,16 +6,26 @@ import {Type, stringify, isBlank, isPresent} from 'angular2/src/facade/lang';
 import {BaseException} from 'angular2/src/facade/exceptions';
 import {Map} from 'angular2/src/facade/collection';
 
+import {ReflectorReader} from 'angular2/src/core/reflection/reflector_reader';
 import {reflector} from 'angular2/src/core/reflection/reflection';
-
 
 /**
  * Resolves types to {@link ViewMetadata}.
  */
 @Injectable()
 export class ViewResolver {
+  private _reflector: ReflectorReader;
+
   /** @internal */
   _cache = new Map<Type, ViewMetadata>();
+
+  constructor(_reflector?: ReflectorReader) {
+    if (isPresent(_reflector)) {
+      this._reflector = _reflector;
+    } else {
+      this._reflector = reflector;
+    }
+  }
 
   resolve(component: Type): ViewMetadata {
     var view = this._cache.get(component);
@@ -33,7 +43,7 @@ export class ViewResolver {
     var compMeta: ComponentMetadata;
     var viewMeta: ViewMetadata;
 
-    reflector.annotations(component).forEach(m => {
+    this._reflector.annotations(component).forEach(m => {
       if (m instanceof ViewMetadata) {
         viewMeta = m;
       }

@@ -16,6 +16,7 @@ import {
   ViewChildMetadata
 } from 'angular2/src/core/metadata';
 import {reflector} from 'angular2/src/core/reflection/reflection';
+import {ReflectorReader} from 'angular2/src/core/reflection/reflector_reader';
 
 function _isDirectiveMetadata(type: any): boolean {
   return type instanceof DirectiveMetadata;
@@ -30,15 +31,25 @@ function _isDirectiveMetadata(type: any): boolean {
  */
 @Injectable()
 export class DirectiveResolver {
+  private _reflector: ReflectorReader;
+
+  constructor(_reflector?: ReflectorReader) {
+    if (isPresent(_reflector)) {
+      this._reflector = _reflector;
+    } else {
+      this._reflector = reflector;
+    }
+  }
+
   /**
    * Return {@link DirectiveMetadata} for a given `Type`.
    */
   resolve(type: Type): DirectiveMetadata {
-    var typeMetadata = reflector.annotations(resolveForwardRef(type));
+    var typeMetadata = this._reflector.annotations(resolveForwardRef(type));
     if (isPresent(typeMetadata)) {
       var metadata = typeMetadata.find(_isDirectiveMetadata);
       if (isPresent(metadata)) {
-        var propertyMetadata = reflector.propMetadata(type);
+        var propertyMetadata = this._reflector.propMetadata(type);
         return this._mergeWithPropertyMetadata(metadata, propertyMetadata, type);
       }
     }
@@ -155,4 +166,4 @@ export class DirectiveResolver {
   }
 }
 
-export var CODEGEN_DIRECTIVE_RESOLVER = new DirectiveResolver();
+export var CODEGEN_DIRECTIVE_RESOLVER = new DirectiveResolver(reflector);
