@@ -6,17 +6,16 @@ var path = require('path');
 var printSlowTrees = require('broccoli-slow-trees');
 var Q = require('q');
 
-type ProjectMap = {
+export type ProjectMap = {
   [key: string]: boolean
 };
 
-type Options = {
+export type Options = {
   projects: ProjectMap;
-noTypeChecks: boolean;
-generateEs6: boolean;
-useBundles: boolean;
-}
-;
+  noTypeChecks: boolean;
+  generateEs6: boolean;
+  useBundles: boolean;
+};
 
 /**
  * BroccoliBuilder facade for all of our build pipelines.
