@@ -2,7 +2,7 @@ library web_foo.template.dart;
 
 import 'index.dart';
 import 'package:angular2/src/core/reflection/reflection.dart' as _ngRef;
-import 'package:angular2/bootstrap_static.dart' show bootstrapStatic;
+import 'package:angular2/platform/browser_static.dart' show bootstrapStatic;
 import 'package:angular2/src/core/reflection/reflection.dart';
 import 'bar.dart';
 import 'bar.template.dart' as i0;

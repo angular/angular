@@ -4,9 +4,33 @@ angular.module('ngComponentRouter').
     // Because Angular 1 has no notion of a root component, we use an object with unique identity
     // to represent this. Can be overloaded with a component name
     value('$routerRootComponent', new Object()).
-    factory('$rootRouter', ['$q', '$location', '$browser', '$rootScope', '$injector', '$routerRootComponent', routerFactory]);
 
-function routerFactory($q, $location, $browser, $rootScope, $injector, $routerRootComponent) {
+    // Unfortunately, $location doesn't expose what the current hashPrefix is
+    // So we have to monkey patch the $locationProvider to capture this value
+    provider('$locationHashPrefix', ['$locationProvider', $locationHashPrefixProvider]).
+    factory('$rootRouter', ['$q', '$location', '$browser', '$rootScope', '$injector', '$routerRootComponent', '$locationHashPrefix', routerFactory]);
+
+function $locationHashPrefixProvider($locationProvider) {
+
+  // Get hold of the original hashPrefix method
+  var hashPrefixFn = $locationProvider.hashPrefix.bind($locationProvider);
+
+  // Read the current hashPrefix (in case it was set before this monkey-patch occurred)
+  var hashPrefix = hashPrefixFn();
+
+  // Override the helper so that we can read any changes to the prefix (after this monkey-patch)
+  $locationProvider.hashPrefix = function(prefix) {
+    if (angular.isDefined(prefix)) {
+      hashPrefix = prefix;
+    }
+    return hashPrefixFn(prefix);
+  }
+
+  // Return the final hashPrefix as the value of this service
+  this.$get = function() { return hashPrefix; };
+}
+
+function routerFactory($q, $location, $browser, $rootScope, $injector, $routerRootComponent, $locationHashPrefix) {
 
   // When this file is processed, the line below is replaced with
   // the contents of `../lib/facades.es5`.

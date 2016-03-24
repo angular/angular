@@ -1,6 +1,6 @@
 {
   "name": "angular-srcs",
-  "version": "2.0.0-beta.8",
+  "version": "2.0.0-beta.11",
   "dependencies": {
     "abbrev": {
       "version": "1.0.7",
@@ -3278,11 +3278,6 @@
       "version": "0.17.9",
       "from": "es6-module-loader@>=0.17.4 <0.18.0",
       "resolved": "https://registry.npmjs.org/es6-module-loader/-/es6-module-loader-0.17.9.tgz"
-    },
-    "es6-promise": {
-      "version": "3.0.2",
-      "from": "es6-promise@>=3.0.2 <4.0.0",
-      "resolved": "https://registry.npmjs.org/es6-promise/-/es6-promise-3.0.2.tgz"
     },
     "es6-shim": {
       "version": "0.35.0",
@@ -9309,8 +9304,8 @@
       }
     },
     "zone.js": {
-      "version": "0.6.4",
-      "from": "zone.js@0.6.4"
+      "version": "0.6.6",
+      "from": "zone.js@0.6.6"
     }
   }
 }

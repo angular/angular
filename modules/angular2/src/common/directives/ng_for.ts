@@ -9,11 +9,12 @@ import {
   EmbeddedViewRef,
   TrackByFn
 } from 'angular2/core';
-import {isPresent, isBlank} from 'angular2/src/facade/lang';
+import {isPresent, isBlank, stringify, getTypeNameForDebugging} from 'angular2/src/facade/lang';
 import {
   DefaultIterableDiffer,
   CollectionChangeRecord
 } from "../../core/change_detection/differs/default_iterable_differ";
+import {BaseException} from "../../facade/exceptions";
 
 /**
  * The `NgFor` directive instantiates a template once per item from an iterable. The context for
@@ -77,7 +78,12 @@ export class NgFor implements DoCheck {
   set ngForOf(value: any) {
     this._ngForOf = value;
     if (isBlank(this._differ) && isPresent(value)) {
-      this._differ = this._iterableDiffers.find(value).create(this._cdr, this._ngForTrackBy);
+      try {
+        this._differ = this._iterableDiffers.find(value).create(this._cdr, this._ngForTrackBy);
+      } catch (e) {
+        throw new BaseException(
+            `Cannot find a differ supporting object '${value}' of type '${getTypeNameForDebugging(value)}'. NgFor only supports binding to Iterables such as Arrays.`);
+      }
     }
   }
 

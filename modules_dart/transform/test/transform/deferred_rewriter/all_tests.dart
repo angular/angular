@@ -2,8 +2,8 @@ library angular2.test.transform.deferred_rewriter.all_tests;
 
 import 'package:barback/barback.dart';
 import 'package:dart_style/dart_style.dart';
-import 'package:guinness/guinness.dart';
 import 'package:path/path.dart' as path;
+import 'package:test/test.dart';
 
 import 'package:angular2/src/transform/common/zone.dart' as zone;
 import 'package:angular2/src/transform/deferred_rewriter/transformer.dart';
@@ -36,7 +36,7 @@ void allTests() {
 }
 
 void _testRewriteDeferredLibraries(String name, String inputPath) {
-  it(name, () {
+  test(name, () {
     return zone.exec(() async {
       var inputId = _assetIdForPath(inputPath);
       var reader = new TestAssetReader();
@@ -48,11 +48,11 @@ void _testRewriteDeferredLibraries(String name, String inputPath) {
       var expectedOutput = await reader.readAsString(expectedId);
       if (expectedOutput == null) {
         // Null expectedOutput signals no output. Ensure that is true.
-        expect(actualOutput).toBeNull();
+        expect(actualOutput, isNull);
       } else {
-        expect(actualOutput).toBeNotNull();
-        expect(formatter.format(actualOutput))
-            .toEqual(formatter.format(expectedOutput));
+        expect(actualOutput, isNotNull);
+        expect(formatter.format(actualOutput),
+            equals(formatter.format(expectedOutput)));
       }
     }, log: new RecordingLogger());
   });

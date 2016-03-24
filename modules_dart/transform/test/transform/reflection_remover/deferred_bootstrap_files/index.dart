@@ -1,4 +1,4 @@
-import 'package:angular2/bootstrap.dart' deferred as ng;
+import 'package:angular2/platform/browser.dart' deferred as ng;
 
 void main() {
   ng.loadLibrary().then((_) {
