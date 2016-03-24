@@ -1093,25 +1093,26 @@ gulp.task('!build.tools', function() {
                    .pipe(tsc({
                      target: 'ES5',
                      module: 'commonjs',
+                     declaration: true,
                      // Don't use the version of typescript that gulp-typescript depends on
                      // see https://github.com/ivogabe/gulp-typescript#typescript-version
                      typescript: require('typescript')
-                   }))
-                   .on('error',
-                       function(error) {
-                         // nodejs doesn't propagate errors from the src stream into the final
-                         // stream so we are
-                         // forwarding the error into the final stream
-                         stream.emit('error', error);
-                       })
-                   .pipe(sourcemaps.write('.'))
-                   .pipe(gulp.dest('dist/tools'))
-                   .on('end', function() {
-                     var AngularBuilder =
-                         require('./dist/tools/broccoli/angular_builder').AngularBuilder;
-                     angularBuilder =
-                         new AngularBuilder({outputPath: 'dist', dartSDK: DART_SDK, logs: logs});
-                   });
+                   }));
+  stream =
+      merge2([stream.js.pipe(gulp.dest('dist/tools')), stream.dts.pipe(gulp.dest('dist/tools'))])
+          .on('error',
+              function(error) {
+                // nodejs doesn't propagate errors from the src stream into the final
+                // stream so we are
+                // forwarding the error into the final stream
+                stream.emit('error', error);
+              })
+          .pipe(sourcemaps.write('.'))
+          .on('end', function() {
+            var AngularBuilder = require('./dist/tools/broccoli/angular_builder').AngularBuilder;
+            angularBuilder =
+                new AngularBuilder({outputPath: 'dist', dartSDK: DART_SDK, logs: logs});
+          });
 
   return stream;
 });

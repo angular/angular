@@ -40,6 +40,6 @@ class TreeStabilizer implements BroccoliTree {
 }
 
 
-export default function stabilizeTree(inputTree) {
+export default function stabilizeTree(inputTree): BroccoliTree {
   return new TreeStabilizer(inputTree);
 }
