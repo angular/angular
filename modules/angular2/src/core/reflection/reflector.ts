@@ -9,6 +9,7 @@ import {
   StringMapWrapper
 } from 'angular2/src/facade/collection';
 import {SetterFn, GetterFn, MethodFn} from './types';
+import {ReflectorReader} from './reflector_reader';
 import {PlatformReflectionCapabilities} from './platform_reflection_capabilities';
 export {SetterFn, GetterFn, MethodFn} from './types';
 export {PlatformReflectionCapabilities} from './platform_reflection_capabilities';
@@ -25,7 +26,7 @@ export class ReflectionInfo {
  * Provides access to reflection data about symbols. Used internally by Angular
  * to power dependency injection and compilation.
  */
-export class Reflector {
+export class Reflector extends ReflectorReader {
   /** @internal */
   _injectableInfo = new Map<any, ReflectionInfo>();
   /** @internal */
@@ -39,6 +40,7 @@ export class Reflector {
   reflectionCapabilities: PlatformReflectionCapabilities;
 
   constructor(reflectionCapabilities: PlatformReflectionCapabilities) {
+    super();
     this._usedKeys = null;
     this.reflectionCapabilities = reflectionCapabilities;
   }
