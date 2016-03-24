@@ -984,18 +984,35 @@ gulp.task('static-checks', ['!build.tools'], function(done) {
 // Make sure the two typings tests are isolated, by running this one in a tempdir
 var tmpdir = path.join(os.tmpdir(), 'test.typings', new Date().getTime().toString());
 gulp.task('!pre.test.typings.layoutNodeModule', ['build.js.cjs'], function() {
-  return gulp.src(['dist/js/cjs/angular2/**/*', 'node_modules/rxjs/**'], {base: 'dist/js/cjs'})
+  return gulp.src(['dist/js/cjs/angular2/**/*', 'node_modules/rxjs/**/*'], {base: 'dist/js/cjs'})
       .pipe(gulp.dest(path.join(tmpdir, 'node_modules')));
 });
+
+gulp.task('!pre.test.typings.copyDeps', function() {
+  return gulp.src(
+                 [
+                   'modules/angular2/typings/angular-protractor/*.ts',
+                   'modules/angular2/typings/jasmine/*.ts',
+                   'modules/angular2/typings/selenium-webdriver/*.ts',
+                 ],
+                 {base: 'modules/angular2/typings'})
+      .pipe(gulp.dest(tmpdir));
+});
+
 gulp.task('!pre.test.typings.copyTypingsSpec', function() {
-  return gulp.src(['typing_spec/*.ts'], {base: 'typing_spec'}).pipe(gulp.dest(tmpdir));
+  return gulp.src(['modules/angular2/examples/**/*.ts']).pipe(gulp.dest(tmpdir));
 });
 
 gulp.task('test.typings',
-          ['!pre.test.typings.layoutNodeModule', '!pre.test.typings.copyTypingsSpec'], function() {
+          [
+            '!pre.test.typings.layoutNodeModule',
+            '!pre.test.typings.copyTypingsSpec',
+            '!pre.test.typings.copyDeps'
+          ],
+          function() {
             var tsc = require('gulp-typescript');
 
-            return gulp.src([tmpdir + '/*.ts'])
+            return gulp.src([tmpdir + '/**/*.ts', '!' + tmpdir + '/node_modules/**/*'])
                 .pipe(tsc({
                   target: 'ES6',
                   module: 'commonjs',
