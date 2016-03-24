@@ -38,7 +38,7 @@ syntax:
 `<div title="Hello {{ponyName}}">`|`{{ponyName}}`
 description:
 Binds a property to an interpolated string, e.g. "Hello Seabiscuit". Equivalent to:
-`<div [title]="'Hello' + ponyName">`
+`<div [title]="'Hello ' + ponyName">`
 
 @cheatsheetItem
 syntax:
