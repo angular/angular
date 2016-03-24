@@ -23,6 +23,8 @@ import {TemplatePortal, ComponentPortal} from '../portal/portal';
 import {Overlay, OVERLAY_CONTAINER_TOKEN} from './overlay';
 import {DOM} from '../platform/dom/dom_adapter';
 import {OverlayRef} from './overlay-ref';
+import {OverlayState} from './overlay-state';
+import {PositionStrategy} from './position/position-strategy';
 
 
 export function main() {
@@ -121,6 +123,26 @@ export function main() {
       expect(overlayContainerElement.childNodes.length).toBe(0);
       expect(overlayContainerElement.textContent).toBe('');
     }));
+
+    describe('applyState', () => {
+      let state: OverlayState;
+
+      beforeEach(() => {
+        state = new OverlayState();
+      });
+
+      it('should apply the positioning strategy', fakeAsyncTest(() => {
+        state.positionStrategy = new FakePositionStrategy();
+
+        overlay.create(state).then(ref => {
+          ref.attach(componentPortal);
+        });
+
+        flushMicrotasks();
+
+        expect(DOM.querySelectorAll(overlayContainerElement, '.fake-positioned').length).toBe(1);
+      }));
+    });
   });
 }
 
@@ -142,6 +164,14 @@ class PizzaMsg {}
 class TestComponentWithTemplatePortals {
   @ViewChild(TemplatePortalDirective) templatePortal: TemplatePortalDirective;
   constructor(public elementRef: ElementRef) { }
+}
+
+class FakePositionStrategy implements PositionStrategy {
+  apply(element: Element): Promise<void> {
+    DOM.addClass(element, 'fake-positioned');
+    return Promise.resolve();
+  }
+
 }
 
 function fakeAsyncTest(fn: () => void) {

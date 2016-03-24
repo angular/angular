@@ -1,14 +1,18 @@
 import {
-  DynamicComponentLoader,
-  AppViewManager,
-  OpaqueToken,
-  Inject,
-  Injectable} from 'angular2/core';
+    DynamicComponentLoader,
+    AppViewManager,
+    OpaqueToken,
+    Inject,
+    Injectable, ElementRef
+} from 'angular2/core';
 import {CONST_EXPR} from 'angular2/src/facade/lang';
 import {OverlayState} from './overlay-state';
 import {DomPortalHost} from '../portal/dom-portal-host';
 import {OverlayRef} from './overlay-ref';
 import {DOM} from '../platform/dom/dom_adapter';
+import {GlobalPositionStrategy} from './position/global-position-strategy';
+import {RelativePositionStrategy} from './position/relative-position-strategy';
+
 
 // Re-export overlay-related modules so they can be imported directly from here.
 export {OverlayState} from './overlay-state';
@@ -51,6 +55,14 @@ export class Overlay {
   }
 
   /**
+   * Returns a position builder that can be used, via fluent API,
+   * to construct and configure a position strategy.
+   */
+  position() {
+    return POSITION_BUILDER;
+  }
+
+  /**
    * Creates the DOM element for an overlay.
    * @param state State to apply to the created element.
    * @returns Promise resolving to the created element.
@@ -72,8 +84,9 @@ export class Overlay {
    * @param state The state to apply.
    */
   applyState(pane: Element, state: OverlayState) {
-    // Not yet implemented.
-    // TODO(jelbourn): apply state to the pane element.
+    if (state.positionStrategy != null) {
+      state.positionStrategy.apply(pane);
+    }
   }
 
   /**
@@ -97,3 +110,20 @@ export class Overlay {
     return new OverlayRef(this._createPortalHost(pane));
   }
 }
+
+
+/** Builder for overlay position strategy. */
+export class OverlayPositionBuilder {
+  /** Creates a global position strategy. */
+  global() {
+    return new GlobalPositionStrategy();
+  }
+
+  /** Creates a relative position strategy. */
+  relativeTo(elementRef: ElementRef) {
+    return new RelativePositionStrategy(elementRef);
+  }
+}
+
+// We only ever need one position builder.
+let POSITION_BUILDER: OverlayPositionBuilder = new OverlayPositionBuilder();

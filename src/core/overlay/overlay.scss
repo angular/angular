@@ -15,4 +15,5 @@
 /** A single overlay pane. */
 .md-overlay-pane {
   position: absolute;
+  pointer-events: auto;
 }
