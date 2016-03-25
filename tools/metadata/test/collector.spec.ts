@@ -172,14 +172,42 @@ describe('Collector', () => {
     expect(metadata).toBeFalsy();
   });
 
+  let casesFile;
+  let casesMetadata;
+
+  beforeEach(() => {
+    casesFile = program.getSourceFile('/app/cases-data.ts');
+    casesMetadata = collector.getMetadata(casesFile, typeChecker);
+  });
+
   it('should provide null for an any ctor pameter type', () => {
-    const sourceFile = program.getSourceFile('/app/cases-data.ts');
-    const metadata = collector.getMetadata(sourceFile, typeChecker);
-    expect(metadata).toBeTruthy();
-    const casesAny = <ClassMetadata>metadata.metadata['CaseAny'];
+    const casesAny = <ClassMetadata>casesMetadata.metadata['CaseAny'];
     expect(casesAny).toBeTruthy();
     const ctorData = casesAny.members['__ctor__'];
     expect(ctorData).toEqual([{__symbolic: 'constructor', parameters: [null]}]);
+  });
+
+  it('should record annotations on set and get declartions', () => {
+    const propertyData = {
+      name: [
+        {
+          __symbolic: 'property',
+          decorators: [
+            {
+              __symbolic: 'call',
+              expression: {__symbolic: 'reference', module: 'angular2/core', name: 'Input'},
+              arguments: ['firstName']
+            }
+          ]
+        }
+      ]
+    };
+    const caseGetProp = <ClassMetadata>casesMetadata.metadata['GetProp'];
+    expect(caseGetProp.members).toEqual(propertyData);
+    const caseSetProp = <ClassMetadata>casesMetadata.metadata['SetProp'];
+    expect(caseSetProp.members).toEqual(propertyData);
+    const caseFullProp = <ClassMetadata>casesMetadata.metadata['FullProp'];
+    expect(caseFullProp.members).toEqual(propertyData);
   });
 });
 
@@ -285,11 +313,38 @@ const FILES: Directory = {
           }
       }`,
     'cases-data.ts': `
-      import {Injectable} from 'angular2/core';
+      import {Injectable, Input} from 'angular2/core';
 
       @Injectable()
       export class CaseAny {
         constructor(param: any) {}
+      }
+      
+      @Injectable()
+      export class GetProp {
+        private _name: string;
+        @Input('firstName') get name(): string {
+          return this._name;
+        }
+      }
+      
+      @Injectable()
+      export class SetProp {
+        private _name: string;
+        @Input('firstName') set name(value: string) {
+          this._name = value;
+        }
+      }
+      
+      @Injectable()
+      export class FullProp {
+        private _name: string;
+        @Input('firstName') get name(): string {
+          return this._name;
+        }
+        set name(value: string) {
+          this._name = value;
+        }
       }
      `,
     'cases-no-data.ts': `

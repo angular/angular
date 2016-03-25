@@ -148,6 +148,8 @@ export class MetadataCollector {
             }
             break;
           case ts.SyntaxKind.PropertyDeclaration:
+          case ts.SyntaxKind.GetAccessor:
+          case ts.SyntaxKind.SetAccessor:
             const property = <ts.PropertyDeclaration>member;
             const propertyDecorators = getDecorators(property.decorators);
             if (propertyDecorators) {
