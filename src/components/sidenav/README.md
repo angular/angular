@@ -69,11 +69,11 @@ Here's a simple example of using the sidenav:
     <md-sidenav #start (open)="mybutton.focus()">
       Start Sidenav.
       <br>
-      <md-button #mybutton (click)="start.close()">Close</button>
+      <button md-button #mybutton (click)="start.close()">Close</button>
     </md-sidenav>
     <md-sidenav #end align="end">
       End Sidenav.
-      <md-button (click)="end.close()">Close</button>
+      <button md-button (click)="end.close()">Close</button>
     </md-sidenav>
 
     My regular content. This will be moved into the proper DOM at runtime.
