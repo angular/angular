@@ -321,9 +321,10 @@ export class Control extends AbstractControl {
 /**
  * Defines a part of a form, of fixed length, that can contain other controls.
  *
- * A `ControlGroup` aggregates the values and errors of each {@link Control} in the group. Thus, if
- * one of the controls in a group is invalid, the entire group is invalid. Similarly, if a control
- * changes its value, the entire group changes as well.
+ * A `ControlGroup` aggregates the values of each {@link Control} in the group.
+ * The status of a `ControlGroup` depends on the status of its children.
+ * If one of the controls in a group is invalid, the entire group is invalid.
+ * Similarly, if a control changes its value, the entire group changes as well.
  *
  * `ControlGroup` is one of the three fundamental building blocks used to define forms in Angular,
  * along with {@link Control} and {@link ControlArray}. {@link ControlArray} can also contain other
@@ -429,9 +430,10 @@ export class ControlGroup extends AbstractControl {
 /**
  * Defines a part of a form, of variable length, that can contain other controls.
  *
- * A `ControlArray` aggregates the values and errors of each {@link Control} in the group. Thus, if
- * one of the controls in a group is invalid, the entire group is invalid. Similarly, if a control
- * changes its value, the entire group changes as well.
+ * A `ControlArray` aggregates the values of each {@link Control} in the group.
+ * The status of a `ControlArray` depends on the status of its children.
+ * If one of the controls in a group is invalid, the entire array is invalid.
+ * Similarly, if a control changes its value, the entire array changes as well.
  *
  * `ControlArray` is one of the three fundamental building blocks used to define forms in Angular,
  * along with {@link Control} and {@link ControlGroup}. {@link ControlGroup} can also contain
