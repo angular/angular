@@ -686,6 +686,39 @@ There is no directive with "exportAs" set to "dirA" ("<div [ERROR ->]#a="dirA"><
                                                [createComp('div', ['*'])])))
             .toEqual([['div', null], ['#text({{hello}})', 0], ['span', 0]]);
       });
+
+      it('should match the element when there is an inline template', () => {
+        expect(humanizeContentProjection(
+                   parse('<div><b *ngIf="cond"></b></div>', [createComp('div', ['a', 'b']), ngIf])))
+            .toEqual([['div', null], ['template', 1], ['b', null]]);
+      });
+
+      describe('ngProjectAs', () => {
+        it('should override elements', () => {
+          expect(humanizeContentProjection(
+                     parse('<div><a ngProjectAs="b"></a></div>', [createComp('div', ['a', 'b'])])))
+              .toEqual([['div', null], ['a', 1]]);
+        });
+
+        it('should override <ng-content>', () => {
+          expect(humanizeContentProjection(
+                     parse('<div><ng-content ngProjectAs="b"></ng-content></div>',
+                           [createComp('div', ['ng-content', 'b'])])))
+              .toEqual([['div', null], ['ng-content', 1]]);
+        });
+
+        it('should override <template>', () => {
+          expect(humanizeContentProjection(parse('<div><template ngProjectAs="b"></template></div>',
+                                                 [createComp('div', ['template', 'b'])])))
+              .toEqual([['div', null], ['template', 1]]);
+        });
+
+        it('should override inline templates', () => {
+          expect(humanizeContentProjection(parse('<div><a *ngIf="cond" ngProjectAs="b"></a></div>',
+                                                 [createComp('div', ['a', 'b']), ngIf])))
+              .toEqual([['div', null], ['template', 1], ['a', null]]);
+        });
+      });
     });
 
     describe('splitClasses', () => {
