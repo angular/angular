@@ -359,6 +359,10 @@ class CustomLanguageServiceHost implements ts.LanguageServiceHost {
   getScriptSnapshot(tsFilePath: string): ts.IScriptSnapshot {
     let absoluteTsFilePath;
 
+    if (path.isAbsolute(tsFilePath) && !fs.existsSync(tsFilePath)) {
+      tsFilePath = tsFilePath.slice(1);
+    }
+
     if (tsFilePath == this.defaultLibFilePath || path.isAbsolute(tsFilePath)) {
       absoluteTsFilePath = tsFilePath;
     } else if (this.compilerOptions.moduleResolution === ts.ModuleResolutionKind.NodeJs &&
@@ -373,7 +377,7 @@ class CustomLanguageServiceHost implements ts.LanguageServiceHost {
     }
 
 
-    if (!fs.existsSync(absoluteTsFilePath)) {
+    if (!fs.existsSync(absoluteTsFilePath) || fs.statSync(absoluteTsFilePath).isDirectory()) {
       // TypeScript seems to request lots of bogus paths during import path lookup and resolution,
       // so we we just return undefined when the path is not correct.
       return undefined;
