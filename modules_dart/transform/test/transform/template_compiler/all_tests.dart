@@ -26,7 +26,7 @@ RecordingLogger logger;
 main() => allTests();
 
 var fooComponentMeta, fooNgMeta, fooAssetId;
-var barComponentMeta, barNgMeta, barAssetId;
+var barComponentMeta, barPipeMeta, barNgMeta, barAssetId;
 var bazComponentMeta, bazNgMeta, bazAssetId;
 
 /// Call after making changes to `fooNgMeta`, `barNgMeta`, or `bazNgMeta` and
@@ -58,10 +58,13 @@ void allTests() {
     fooNgMeta.types[fooComponentMeta.type.name] = fooComponentMeta;
 
     barComponentMeta = createBar(moduleBase);
+    barPipeMeta = createBarPipe(moduleBase);
     barNgMeta = new NgMeta(ngDeps: new NgDepsModel()
       ..libraryUri = 'test.bar'
+      ..reflectables.add(new ReflectionInfoModel()..name = barPipeMeta.type.name)
       ..reflectables.add(new ReflectionInfoModel()..name = barComponentMeta.type.name));
     barNgMeta.types[barComponentMeta.type.name] = barComponentMeta;
+    barNgMeta.types[barPipeMeta.type.name] = barPipeMeta;
 
     bazComponentMeta = createBaz(moduleBase);
     bazNgMeta = new NgMeta(ngDeps: new NgDepsModel()
@@ -75,11 +78,13 @@ void allTests() {
     updateReader();
   });
 
-  Future<String> process(AssetId assetId, {List<String> platformDirectives}) {
+  Future<String> process(AssetId assetId,
+      {List<String> platformDirectives, List<String> platformPipes}) {
     logger = new RecordingLogger();
     return zone.exec(
         () => processTemplates(reader, assetId,
-            platformDirectives: platformDirectives),
+            platformDirectives: platformDirectives,
+            platformPipes: platformPipes),
         log: logger);
   }
 
@@ -93,7 +98,7 @@ void allTests() {
       ..isView = true;
     fooNgMeta.ngDeps.reflectables.first.annotations.add(viewAnnotation);
     fooNgMeta.ngDeps.reflectables.first.directives
-        .add(new PrefixedDirective()..name = 'NgFor');
+        .add(new PrefixedType()..name = 'NgFor');
     fooNgMeta.ngDeps.imports.add(
         new ImportModel()..uri = 'package:angular2/src/directives/ng_for.dart');
 
@@ -121,7 +126,7 @@ void allTests() {
       ..prefix = '_templates');
     expect(ngDeps.reflectables.first.annotations)
         .toContain(new AnnotationModel()
-          ..name = '_templates.HostFooComponentTemplate'
+          ..name = '_templates.hostViewFactory_FooComponent'
           ..isConstObject = true);
     expect(outputs.templatesCode)
       ..toContain('$CONTEXT_ACCESSOR.greeting')
@@ -142,7 +147,7 @@ void allTests() {
       ..prefix = '_templates');
     expect(ngDeps.reflectables.first.annotations)
         .toContain(new AnnotationModel()
-          ..name = '_templates.HostFooComponentTemplate'
+          ..name = '_templates.hostViewFactory_FooComponent'
           ..isConstObject = true);
     expect(outputs.templatesCode)..toContain('$CONTEXT_ACCESSOR.action()');
   });
@@ -158,7 +163,7 @@ void allTests() {
       ..value = 'const [${barComponentMeta.type.name}]');
     fooNgMeta.ngDeps.reflectables.first.annotations.add(viewAnnotation);
     fooNgMeta.ngDeps.reflectables.first.directives
-        .add(new PrefixedDirective()..name = barComponentMeta.type.name);
+        .add(new PrefixedType()..name = barComponentMeta.type.name);
     fooNgMeta.ngDeps.imports.add(new ImportModel()..uri = 'bar.dart');
     barComponentMeta.template =
         new CompileTemplateMetadata(template: 'BarTemplate');
@@ -172,7 +177,7 @@ void allTests() {
       ..prefix = '_templates');
     expect(ngDeps.reflectables.first.annotations)
         .toContain(new AnnotationModel()
-          ..name = '_templates.HostFooComponentTemplate'
+          ..name = '_templates.hostViewFactory_FooComponent'
           ..isConstObject = true);
 
     expect(outputs.templatesCode)
@@ -188,7 +193,7 @@ void allTests() {
       ..name = 'View'
       ..isView = true;
     fooNgMeta.ngDeps.reflectables.first.annotations.add(componentAnnotation);
-    fooNgMeta.ngDeps.reflectables.first.directives.add(new PrefixedDirective()
+    fooNgMeta.ngDeps.reflectables.first.directives.add(new PrefixedType()
       ..name = barComponentMeta.type.name
       ..prefix = 'prefix');
     fooNgMeta.ngDeps.imports.add(new ImportModel()
@@ -206,7 +211,7 @@ void allTests() {
       ..prefix = '_templates');
     expect(ngDeps.reflectables.first.annotations)
         .toContain(new AnnotationModel()
-          ..name = '_templates.HostFooComponentTemplate'
+          ..name = '_templates.hostViewFactory_FooComponent'
           ..isConstObject = true);
 
     expect(outputs.templatesCode)
@@ -222,7 +227,7 @@ void allTests() {
       ..isView = true;
     fooNgMeta.ngDeps.reflectables.first.annotations.add(componentAnnotation);
     fooNgMeta.ngDeps.reflectables.first.directives
-        .add(new PrefixedDirective()..name = 'directiveAlias');
+        .add(new PrefixedType()..name = 'directiveAlias');
     fooNgMeta.ngDeps.imports.add(new ImportModel()..uri = 'bar.dart');
 
     fooNgMeta.aliases['directiveAlias'] = [barComponentMeta.type.name];
@@ -238,7 +243,7 @@ void allTests() {
       ..prefix = '_templates');
     expect(ngDeps.reflectables.first.annotations)
         .toContain(new AnnotationModel()
-          ..name = '_templates.HostFooComponentTemplate'
+          ..name = '_templates.hostViewFactory_FooComponent'
           ..isConstObject = true);
 
     expect(outputs.templatesCode)
@@ -352,8 +357,8 @@ void allTests() {
   });
 
   it('should include platform directives.', () async {
-    fooComponentMeta.template = new CompileTemplateMetadata(
-        template: '<bar></bar>');
+    fooComponentMeta.template =
+        new CompileTemplateMetadata(template: '<bar></bar>');
     final viewAnnotation = new AnnotationModel()
       ..name = 'View'
       ..isView = true;
@@ -370,9 +375,9 @@ void allTests() {
       ..toContain(barComponentMeta.template.template);
   });
 
-  it('should include platform directives when it it a list.', () async {
-    fooComponentMeta.template = new CompileTemplateMetadata(
-        template: '<bar></bar>');
+  it('should include platform directives when it is a list.', () async {
+    fooComponentMeta.template =
+        new CompileTemplateMetadata(template: '<bar></bar>');
     final viewAnnotation = new AnnotationModel()
       ..name = 'View'
       ..isView = true;
@@ -416,6 +421,43 @@ void allTests() {
         platformDirectives: ['package:a/bar.dart#PLATFORM']);
     final ngDeps = outputs.ngDeps;
     expect(ngDeps).toBeNotNull();
+  });
+
+  it('should parse `View` pipes with a single dependency.', () async {
+    fooComponentMeta.template =
+        new CompileTemplateMetadata(template: '{{1 | bar}}');
+    final viewAnnotation = new AnnotationModel()
+      ..name = 'View'
+      ..isView = true;
+    viewAnnotation.namedParameters.add(new NamedParameter()
+      ..name = 'pipes'
+      ..value = 'const [${barPipeMeta.type.name}]');
+    fooNgMeta.ngDeps.reflectables.first.annotations.add(viewAnnotation);
+    fooNgMeta.ngDeps.reflectables.first.pipes
+        .add(new PrefixedType()..name = barPipeMeta.type.name);
+    fooNgMeta.ngDeps.imports.add(new ImportModel()..uri = 'bar.dart');
+    updateReader();
+
+    final outputs = await process(fooAssetId);
+
+    expect(outputs.templatesCode)
+      ..toContain("import 'bar.dart'")
+      ..toContain(barPipeMeta.name);
+  });
+
+  it('should include platform pipes.', () async {
+    fooComponentMeta.template =
+        new CompileTemplateMetadata(template: '{{1 | bar}}');
+
+    barNgMeta.aliases['PLATFORM'] = [barPipeMeta.type.name];
+    updateReader();
+
+    final outputs = await process(fooAssetId,
+        platformPipes: ['package:a/bar.dart#PLATFORM']);
+
+    expect(outputs.templatesCode)
+      ..toContain("import 'bar.dart'")
+      ..toContain(barPipeMeta.name);
   });
 }
 

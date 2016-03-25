@@ -6,7 +6,7 @@ import {
   IterableDiffers,
   ViewContainerRef,
   TemplateRef,
-  ViewRef
+  EmbeddedViewRef
 } from 'angular2/core';
 import {isPresent, isBlank} from 'angular2/src/facade/lang';
 
@@ -110,7 +110,8 @@ export class NgFor implements DoCheck {
     }
 
     for (var i = 0, ilen = this._viewContainer.length; i < ilen; i++) {
-      this._viewContainer.get(i).setLocal('last', i === ilen - 1);
+      var viewRef = <EmbeddedViewRef>this._viewContainer.get(i);
+      viewRef.setLocal('last', i === ilen - 1);
     }
   }
 
@@ -153,7 +154,7 @@ export class NgFor implements DoCheck {
 }
 
 class RecordViewTuple {
-  view: ViewRef;
+  view: EmbeddedViewRef;
   record: any;
   constructor(record, view) {
     this.record = record;

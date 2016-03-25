@@ -115,8 +115,8 @@ export abstract class Instruction {
 
   get urlParams(): string[] { return isPresent(this.component) ? this.component.urlParams : []; }
 
-  get specificity(): number {
-    var total = 0;
+  get specificity(): string {
+    var total = '';
     if (isPresent(this.component)) {
       total += this.component.specificity;
     }
@@ -281,9 +281,11 @@ export class UnresolvedInstruction extends Instruction {
 
 export class RedirectInstruction extends ResolvedInstruction {
   constructor(component: ComponentInstruction, child: Instruction,
-              auxInstruction: {[key: string]: Instruction}) {
+              auxInstruction: {[key: string]: Instruction}, private _specificity: string) {
     super(component, child, auxInstruction);
   }
+
+  get specificity(): string { return this._specificity; }
 }
 
 
@@ -305,7 +307,7 @@ export class ComponentInstruction {
   public routeData: RouteData;
 
   constructor(public urlPath: string, public urlParams: string[], data: RouteData,
-              public componentType, public terminal: boolean, public specificity: number,
+              public componentType, public terminal: boolean, public specificity: string,
               public params: {[key: string]: any} = null) {
     this.routeData = isPresent(data) ? data : BLANK_ROUTE_DATA;
   }

@@ -14,7 +14,7 @@ import {
 import {AnimationBuilder} from 'angular2/src/animate/animation_builder';
 import {MockAnimationBuilder} from 'angular2/src/mock/animation_builder_mock';
 
-import {ProtoViewFactory} from 'angular2/src/core/linker/proto_view_factory';
+import {ResolvedMetadataCache} from 'angular2/src/core/linker/resolved_metadata_cache';
 import {Reflector, reflector} from 'angular2/src/core/reflection/reflection';
 import {
   IterableDiffers,
@@ -23,7 +23,7 @@ import {
   defaultKeyValueDiffers,
   ChangeDetectorGenConfig
 } from 'angular2/src/core/change_detection/change_detection';
-import {ExceptionHandler} from 'angular2/src/facade/exceptions';
+import {BaseException, ExceptionHandler} from 'angular2/src/facade/exceptions';
 import {PipeResolver} from 'angular2/src/core/linker/pipe_resolver';
 import {XHR} from 'angular2/src/compiler/xhr';
 
@@ -46,11 +46,10 @@ import {
 import {ListWrapper} from 'angular2/src/facade/collection';
 import {FunctionWrapper, Type} from 'angular2/src/facade/lang';
 
-import {AppViewPool, APP_VIEW_POOL_CAPACITY} from 'angular2/src/core/linker/view_pool';
-import {AppViewManagerUtils} from 'angular2/src/core/linker/view_manager_utils';
+import {RootRenderer} from 'angular2/src/core/render/api';
 
 import {DOCUMENT} from 'angular2/src/platform/dom/dom_tokens';
-import {DomRenderer} from 'angular2/src/platform/dom/dom_renderer';
+import {DomRootRenderer, DomRootRenderer_} from 'angular2/src/platform/dom/dom_renderer';
 import {DomSharedStylesHost} from 'angular2/src/platform/dom/shared_styles_host';
 import {SharedStylesHost} from 'angular2/src/platform/dom/shared_styles_host';
 import {DomEventsPlugin} from 'angular2/src/platform/dom/events/dom_events';
@@ -58,7 +57,6 @@ import {DomEventsPlugin} from 'angular2/src/platform/dom/events/dom_events';
 import {Serializer} from "angular2/src/web_workers/shared/serializer";
 import {Log} from './utils';
 import {COMPILER_PROVIDERS} from 'angular2/src/compiler/compiler';
-import {DomRenderer_} from "angular2/src/platform/dom/dom_renderer";
 import {DynamicComponentLoader_} from "angular2/src/core/linker/dynamic_component_loader";
 import {AppViewManager_} from "angular2/src/core/linker/view_manager";
 
@@ -92,20 +90,17 @@ function _getAppBindings() {
 
   return [
     APPLICATION_COMMON_PROVIDERS,
-    provide(ChangeDetectorGenConfig, {useValue: new ChangeDetectorGenConfig(true, false, true)}),
+    provide(ChangeDetectorGenConfig, {useValue: new ChangeDetectorGenConfig(true, false, false)}),
     provide(DOCUMENT, {useValue: appDoc}),
-    provide(DomRenderer, {useClass: DomRenderer_}),
-    provide(Renderer, {useExisting: DomRenderer}),
+    provide(DomRootRenderer, {useClass: DomRootRenderer_}),
+    provide(RootRenderer, {useExisting: DomRootRenderer}),
     provide(APP_ID, {useValue: 'a'}),
     DomSharedStylesHost,
     provide(SharedStylesHost, {useExisting: DomSharedStylesHost}),
-    AppViewPool,
     provide(AppViewManager, {useClass: AppViewManager_}),
-    AppViewManagerUtils,
     Serializer,
     ELEMENT_PROBE_PROVIDERS,
-    provide(APP_VIEW_POOL_CAPACITY, {useValue: 500}),
-    ProtoViewFactory,
+    ResolvedMetadataCache,
     provide(DirectiveResolver, {useClass: MockDirectiveResolver}),
     provide(ViewResolver, {useClass: MockViewResolver}),
     provide(IterableDiffers, {useValue: defaultIterableDiffers}),
@@ -131,11 +126,62 @@ function _runtimeCompilerBindings() {
   ];
 }
 
+export class TestInjector {
+  private _instantiated: boolean = false;
+
+  private _injector: Injector = null;
+
+  private _providers: Array<Type | Provider | any[]> = [];
+
+  reset() {
+    this._injector = null;
+    this._providers = [];
+    this._instantiated = false;
+  }
+
+  addProviders(providers: Array<Type | Provider | any[]>) {
+    if (this._instantiated) {
+      throw new BaseException('Cannot add providers after test injector is instantiated');
+    }
+    this._providers = ListWrapper.concat(this._providers, providers);
+  }
+
+  createInjector() {
+    var rootInjector = Injector.resolveAndCreate(_getRootProviders());
+    this._injector = rootInjector.resolveAndCreateChild(ListWrapper.concat(
+        ListWrapper.concat(_getAppBindings(), _runtimeCompilerBindings()), this._providers));
+    this._instantiated = true;
+    return this._injector;
+  }
+
+  execute(fn: FunctionWithParamTokens): any {
+    if (!this._instantiated) {
+      this.createInjector();
+    }
+    return fn.execute(this._injector);
+  }
+}
+
+var _testInjector: TestInjector = null;
+
+export function getTestInjector() {
+  if (_testInjector == null) {
+    _testInjector = new TestInjector();
+  }
+  return _testInjector;
+}
+
+/**
+ * @deprecated Use TestInjector#createInjector() instead.
+ */
 export function createTestInjector(providers: Array<Type | Provider | any[]>): Injector {
   var rootInjector = Injector.resolveAndCreate(_getRootProviders());
   return rootInjector.resolveAndCreateChild(ListWrapper.concat(_getAppBindings(), providers));
 }
 
+/**
+ * @deprecated Use TestInjector#createInjector() instead.
+ */
 export function createTestInjectorWithRuntimeCompiler(
     providers: Array<Type | Provider | any[]>): Injector {
   return createTestInjector(ListWrapper.concat(_runtimeCompilerBindings(), providers));
@@ -159,7 +205,8 @@ export function createTestInjectorWithRuntimeCompiler(
  * ```
  *
  * Notes:
- * - inject is currently a function because of some Traceur limitation the syntax should eventually
+ * - inject is currently a function because of some Traceur limitation the syntax should
+ * eventually
  *   becomes `it('...', @Inject (object: AClass, async: AsyncTestCompleter) => { ... });`
  *
  * @param {Array} tokens

@@ -4,6 +4,7 @@ final ngFor = {
   "NgFor": {
     "kind": "type",
     "value": {
+      "class": "Directive",
       "isComponent": false,
       "dynamicLoadable": true,
       "selector": "[ngFor][ngForOf]",

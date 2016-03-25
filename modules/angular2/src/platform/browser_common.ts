@@ -9,7 +9,7 @@ import {
   platform,
   ExceptionHandler,
   Reflector,
-  Renderer,
+  RootRenderer,
   reflector,
   APPLICATION_COMMON_PROVIDERS,
   PLATFORM_COMMON_PROVIDERS
@@ -21,7 +21,7 @@ import {DomEventsPlugin} from 'angular2/src/platform/dom/events/dom_events';
 import {KeyEventsPlugin} from 'angular2/src/platform/dom/events/key_events';
 import {HammerGesturesPlugin} from 'angular2/src/platform/dom/events/hammer_gestures';
 import {DOCUMENT} from 'angular2/src/platform/dom/dom_tokens';
-import {DomRenderer, DomRenderer_} from 'angular2/src/platform/dom/dom_renderer';
+import {DomRootRenderer, DomRootRenderer_} from 'angular2/src/platform/dom/dom_renderer';
 import {DomSharedStylesHost} from 'angular2/src/platform/dom/shared_styles_host';
 import {SharedStylesHost} from "angular2/src/platform/dom/shared_styles_host";
 import {BrowserDetails} from "angular2/src/animate/browser_details";
@@ -77,8 +77,8 @@ export const BROWSER_APP_COMMON_PROVIDERS: Array<any /*Type | Provider | any[]*/
   new Provider(EVENT_MANAGER_PLUGINS, {useClass: DomEventsPlugin, multi: true}),
   new Provider(EVENT_MANAGER_PLUGINS, {useClass: KeyEventsPlugin, multi: true}),
   new Provider(EVENT_MANAGER_PLUGINS, {useClass: HammerGesturesPlugin, multi: true}),
-  new Provider(DomRenderer, {useClass: DomRenderer_}),
-  new Provider(Renderer, {useExisting: DomRenderer}),
+  new Provider(DomRootRenderer, {useClass: DomRootRenderer_}),
+  new Provider(RootRenderer, {useExisting: DomRootRenderer}),
   new Provider(SharedStylesHost, {useExisting: DomSharedStylesHost}),
   DomSharedStylesHost,
   Testability,

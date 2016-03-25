@@ -11,7 +11,7 @@ import {
   reflector,
   APPLICATION_COMMON_PROVIDERS,
   PLATFORM_COMMON_PROVIDERS,
-  Renderer,
+  RootRenderer,
   PLATFORM_INITIALIZER,
   APP_INITIALIZER
 } from 'angular2/core';
@@ -23,7 +23,7 @@ import {DomEventsPlugin} from 'angular2/src/platform/dom/events/dom_events';
 import {KeyEventsPlugin} from 'angular2/src/platform/dom/events/key_events';
 import {HammerGesturesPlugin} from 'angular2/src/platform/dom/events/hammer_gestures';
 import {DOCUMENT} from 'angular2/src/platform/dom/dom_tokens';
-import {DomRenderer, DomRenderer_} from 'angular2/src/platform/dom/dom_renderer';
+import {DomRootRenderer, DomRootRenderer_} from 'angular2/src/platform/dom/dom_renderer';
 import {DomSharedStylesHost} from 'angular2/src/platform/dom/shared_styles_host';
 import {SharedStylesHost} from "angular2/src/platform/dom/shared_styles_host";
 import {BrowserDetails} from 'angular2/src/animate/browser_details';
@@ -46,10 +46,7 @@ import {
 } from 'angular2/src/web_workers/shared/client_message_broker';
 import {Serializer} from 'angular2/src/web_workers/shared/serializer';
 import {ON_WEB_WORKER} from 'angular2/src/web_workers/shared/api';
-import {RenderProtoViewRefStore} from 'angular2/src/web_workers/shared/render_proto_view_ref_store';
-import {
-  RenderViewWithFragmentsStore
-} from 'angular2/src/web_workers/shared/render_view_with_fragments_store';
+import {RenderStore} from 'angular2/src/web_workers/shared/render_store';
 
 export const WORKER_SCRIPT: OpaqueToken = CONST_EXPR(new OpaqueToken("WebWorkerScript"));
 
@@ -72,8 +69,8 @@ export const WORKER_RENDER_APP_COMMON: Array<any /*Type | Provider | any[]*/> = 
   new Provider(EVENT_MANAGER_PLUGINS, {useClass: DomEventsPlugin, multi: true}),
   new Provider(EVENT_MANAGER_PLUGINS, {useClass: KeyEventsPlugin, multi: true}),
   new Provider(EVENT_MANAGER_PLUGINS, {useClass: HammerGesturesPlugin, multi: true}),
-  new Provider(DomRenderer, {useClass: DomRenderer_}),
-  new Provider(Renderer, {useExisting: DomRenderer}),
+  new Provider(DomRootRenderer, {useClass: DomRootRenderer_}),
+  new Provider(RootRenderer, {useExisting: DomRootRenderer}),
   new Provider(SharedStylesHost, {useExisting: DomSharedStylesHost}),
   new Provider(XHR, {useClass: XHRImpl}),
   MessageBasedXHRImpl,
@@ -81,8 +78,7 @@ export const WORKER_RENDER_APP_COMMON: Array<any /*Type | Provider | any[]*/> = 
   new Provider(ClientMessageBrokerFactory, {useClass: ClientMessageBrokerFactory_}),
   Serializer,
   new Provider(ON_WEB_WORKER, {useValue: false}),
-  RenderViewWithFragmentsStore,
-  RenderProtoViewRefStore,
+  RenderStore,
   DomSharedStylesHost,
   Testability,
   BrowserDetails,

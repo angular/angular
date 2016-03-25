@@ -19,11 +19,14 @@ import 'package:barback/barback.dart';
 ///
 /// The returned value wraps the [NgDepsModel] at `assetId` as well as these
 /// created objects.
-Future<CompileDataResults> createCompileData(AssetReader reader,
-    AssetId assetId, List<String> platformDirectives) async {
+Future<CompileDataResults> createCompileData(
+    AssetReader reader,
+    AssetId assetId,
+    List<String> platformDirectives,
+    List<String> platformPipes) async {
   return logElapsedAsync(() async {
-    final creator =
-        await _CompileDataCreator.create(reader, assetId, platformDirectives);
+    final creator = await _CompileDataCreator.create(
+        reader, assetId, platformDirectives, platformPipes);
     return creator != null ? creator.createCompileData() : null;
   }, operationName: 'createCompileData', assetId: assetId);
 }
@@ -43,18 +46,20 @@ class _CompileDataCreator {
   final AssetId entryPoint;
   final NgMeta ngMeta;
   final List<String> platformDirectives;
+  final List<String> platformPipes;
 
-  _CompileDataCreator(
-      this.reader, this.entryPoint, this.ngMeta, this.platformDirectives);
+  _CompileDataCreator(this.reader, this.entryPoint, this.ngMeta,
+      this.platformDirectives, this.platformPipes);
 
   static Future<_CompileDataCreator> create(AssetReader reader, AssetId assetId,
-      List<String> platformDirectives) async {
+      List<String> platformDirectives, List<String> platformPipes) async {
     if (!(await reader.hasInput(assetId))) return null;
     final json = await reader.readAsString(assetId);
     if (json == null || json.isEmpty) return null;
 
     final ngMeta = new NgMeta.fromJson(JSON.decode(json));
-    return new _CompileDataCreator(reader, assetId, ngMeta, platformDirectives);
+    return new _CompileDataCreator(
+        reader, assetId, ngMeta, platformDirectives, platformPipes);
   }
 
   NgDepsModel get ngDeps => ngMeta.ngDeps;
@@ -67,39 +72,25 @@ class _CompileDataCreator {
     final compileData =
         <ReflectionInfoModel, NormalizedComponentWithViewDirectives>{};
     final ngMetaMap = await _extractNgMeta();
-    final platformDirectives = await _readPlatformDirectives();
+    final platformDirectives =
+        await _readPlatformTypes(this.platformDirectives, 'directives');
+    final platformPipes = await _readPlatformTypes(this.platformPipes, 'pipes');
 
     for (var reflectable in ngDeps.reflectables) {
       if (ngMeta.types.containsKey(reflectable.name)) {
         final compileDirectiveMetadata = ngMeta.types[reflectable.name];
-        if (compileDirectiveMetadata.template != null) {
+        if (compileDirectiveMetadata is CompileDirectiveMetadata &&
+            compileDirectiveMetadata.template != null) {
           final compileDatum = new NormalizedComponentWithViewDirectives(
-              compileDirectiveMetadata, <CompileDirectiveMetadata>[]);
+              compileDirectiveMetadata,
+              <CompileDirectiveMetadata>[],
+              <CompilePipeMetadata>[]);
           compileDatum.directives.addAll(platformDirectives);
-
-          for (var dep in reflectable.directives) {
-            if (!ngMetaMap.containsKey(dep.prefix)) {
-              log.warning(
-                  'Missing prefix "${dep.prefix}" '
-                  'needed by "${dep}" from metadata map',
-                  asset: entryPoint);
-              continue;
-            }
-            final depNgMeta = ngMetaMap[dep.prefix];
-
-            if (depNgMeta.types.containsKey(dep.name)) {
-              compileDatum.directives.add(depNgMeta.types[dep.name]);
-            } else if (depNgMeta.aliases.containsKey(dep.name)) {
-              compileDatum.directives.addAll(depNgMeta.flatten(dep.name));
-            } else {
-              log.warning(
-                  'Could not find Directive entry for $dep. '
-                  'Please be aware that Dart transformers have limited support for '
-                  'reusable, pre-defined lists of Directives (aka '
-                  '"directive aliases"). See https://goo.gl/d8XPt0 for details.',
-                  asset: entryPoint);
-            }
-          }
+          compileDatum.directives
+              .addAll(_resolveTypeMetadata(ngMetaMap, reflectable.directives));
+          compileDatum.pipes.addAll(platformPipes);
+          compileDatum.pipes
+              .addAll(_resolveTypeMetadata(ngMetaMap, reflectable.pipes));
           compileData[reflectable] = compileDatum;
         }
       }
@@ -107,46 +98,73 @@ class _CompileDataCreator {
     return new CompileDataResults._(ngMeta, compileData);
   }
 
-  Future<List<CompileDirectiveMetadata>> _readPlatformDirectives() async {
-    if (platformDirectives == null) return const [];
+  List<dynamic> _resolveTypeMetadata(
+      Map<String, NgMeta> ngMetaMap, List<PrefixedType> prefixedTypes) {
+    var resolvedMetadata = [];
+    for (var dep in prefixedTypes) {
+      if (!ngMetaMap.containsKey(dep.prefix)) {
+        log.warning(
+            'Missing prefix "${dep.prefix}" '
+            'needed by "${dep}" from metadata map',
+            asset: entryPoint);
+        continue;
+      }
+      final depNgMeta = ngMetaMap[dep.prefix];
+
+      if (depNgMeta.types.containsKey(dep.name)) {
+        resolvedMetadata.add(depNgMeta.types[dep.name]);
+      } else if (depNgMeta.aliases.containsKey(dep.name)) {
+        resolvedMetadata.addAll(depNgMeta.flatten(dep.name));
+      } else {
+        log.warning(
+            'Could not find Directive/Pipe entry for $dep. '
+            'Please be aware that Dart transformers have limited support for '
+            'reusable, pre-defined lists of Directives/Pipes (aka '
+            '"directive/pipe aliases"). See https://goo.gl/d8XPt0 for details.',
+            asset: entryPoint);
+      }
+    }
+    return resolvedMetadata;
+  }
+
+  Future<List<dynamic>> _readPlatformTypes(
+      List<String> inputPlatformTypes, String configOption) async {
+    if (inputPlatformTypes == null) return const [];
 
     final res = [];
-    for (var ad in platformDirectives) {
-      final parts = ad.split("#");
+    for (var pd in inputPlatformTypes) {
+      final parts = pd.split("#");
       if (parts.length != 2) {
         log.warning(
-            'The platform directives configuration option '
+            'The platform ${configOption} configuration option '
             'must be in the following format: "URI#TOKEN"',
             asset: entryPoint);
         return const [];
       }
-      res.addAll(await _readPlatformDirectivesFromUri(parts[0], parts[1]));
+      res.addAll(await _readPlatformTypesFromUri(parts[0], parts[1]));
     }
     return res;
   }
 
-  Future<List<CompileDirectiveMetadata>> _readPlatformDirectivesFromUri(
+  Future<List<dynamic>> _readPlatformTypesFromUri(
       String uri, String token) async {
     final metaAssetId = fromUri(toMetaExtension(uri));
-    if (await reader.hasInput(metaAssetId)) {
-      try {
-        var jsonString = await reader.readAsString(metaAssetId);
-        if (jsonString != null && jsonString.isNotEmpty) {
-          var newMetadata = new NgMeta.fromJson(JSON.decode(jsonString));
+    try {
+      var jsonString = await reader.readAsString(metaAssetId);
+      if (jsonString != null && jsonString.isNotEmpty) {
+        var newMetadata = new NgMeta.fromJson(JSON.decode(jsonString));
 
-          if (newMetadata.types.containsKey(token)) {
-            return [newMetadata.types[token]];
-          } else if (newMetadata.aliases.containsKey(token)) {
-            return newMetadata.flatten(token);
-          } else {
-            log.warning(
-                'Could not resolve platform directive ${token} in ${uri}',
-                asset: metaAssetId);
-          }
+        if (newMetadata.types.containsKey(token)) {
+          return [newMetadata.types[token]];
+        } else if (newMetadata.aliases.containsKey(token)) {
+          return newMetadata.flatten(token);
+        } else {
+          log.warning('Could not resolve platform type ${token} in ${uri}',
+              asset: metaAssetId);
         }
-      } catch (ex, stackTrace) {
-        log.warning('Failed to decode: $ex, $stackTrace', asset: metaAssetId);
       }
+    } catch (ex, stackTrace) {
+      log.warning('Failed to decode: $ex, $stackTrace', asset: metaAssetId);
     }
     return [];
   }

@@ -11,6 +11,7 @@ class Math {
   static final _random = new math.Random();
   static int floor(num n) => n.floor();
   static double random() => _random.nextDouble();
+  static num min(num a, num b) => math.min(a, b);
 }
 
 class CONST {
@@ -330,3 +331,7 @@ class DateWrapper {
 
 // needed to match the exports from lang.js
 var global = null;
+
+dynamic evalExpression(String sourceUrl, String expr, String declarations, Map<String, String> vars) {
+  throw "Dart does not support evaluating expression during runtime!";
+}
