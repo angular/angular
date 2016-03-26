@@ -260,6 +260,10 @@ to some whitespace difference.
     $ chmod u+x !$
 ```
 
+**NOTE**: To use ```git clang-format``` use have to make sure that ```git-clang-format``` is in your
+```PATH```. The easiest way is probably to just ```npm install -g clang-format``` as it comes with
+```git-clang-format```.
+
 * **WebStorm** can run clang-format on the current file.
   1. Under Preferences, open Tools > External Tools.
   1. Plus icon to Create Tool
