@@ -1,91 +1,91 @@
 /// <reference path="../typings/node/node.d.ts" />
 /// <reference path="../typings/fs-extra/fs-extra.d.ts" />
+/// <reference path="./broccoli.d.ts" />
+
+interface BroccoliCachingWriterPlugin extends BroccoliTree {
+  listFiles(): string[];
+  listEntries(): any[];
+}
+
+interface Constructor {
+  new (...args: any[]): BroccoliCachingWriterPlugin;
+}
+
+interface CacheEntry {
+  version: number;
+}
+
+
+import fs = require('fs');
 import fse = require('fs-extra');
 import path = require('path');
-import {wrapDiffingPlugin, DiffingBroccoliPlugin, DiffResult} from './diffing-broccoli-plugin';
-var spawn = require('child_process').spawn;
-var exec = require('child_process').exec;
 
-function processToPromise(process) {
-  return new Promise(function(resolve, reject) {
-    process.on('close', function(code) {
-      if (code) {
-        reject(code);
+const Plugin: Constructor = require('broccoli-caching-writer');
+const exec = require('child_process').exec;
+
+
+const promiseExec = (cmd: string): Promise<void> => {
+  return new Promise<void>((resolve, reject) => {
+    exec(cmd, (err, stdout, stderr) => {
+      if (err) {
+        console.error(shortenFormatterOutput(stderr));
+        reject('Formatting failed.');
       } else {
         resolve();
       }
     });
   });
-}
+};
 
-class DartFormatter implements DiffingBroccoliPlugin {
+
+export default class DartFormatter extends Plugin {
   private DARTFMT: string;
-  private verbose: boolean;
-  private firstBuild: boolean = true;
+  private cache: {[filePath: string]: CacheEntry} = Object.create(null);
 
-  constructor(public inputPath: string, public cachePath: string, options) {
+  constructor(inputPaths: any[], options: any) {
+    super(inputPaths, options);
     if (!options.dartSDK) throw new Error("Missing Dart SDK");
     this.DARTFMT = options.dartSDK.DARTFMT;
   }
 
-  rebuild(treeDiff: DiffResult): Promise<any> {
-    let args = ['-w'];
-    let argsLength = 2;
-    let argPackages = [];
-    let firstBuild = this.firstBuild;
-    treeDiff.addedPaths.concat(treeDiff.changedPaths)
-        .forEach((changedFile) => {
-          let sourcePath = path.join(this.inputPath, changedFile);
-          let destPath = path.join(this.cachePath, changedFile);
-          if (!firstBuild && /\.dart$/.test(changedFile)) {
-            if ((argsLength + destPath.length + 2) >= 0x2000) {
-              // Win32 command line arguments length
-              argPackages.push(args);
-              args = ['-w'];
-              argsLength = 2;
-            }
-            args.push(destPath);
-            argsLength += destPath.length + 2;
-          }
-          fse.copySync(sourcePath, destPath);
-        });
-    treeDiff.removedPaths.forEach((removedFile) => {
-      let destPath = path.join(this.cachePath, removedFile);
-      fse.removeSync(destPath);
-    });
+  build(): Promise<any> {
+    const dartEntries = this.listEntries().filter(entry => entry.relativePath.match(/\.dart$/));
 
-    if (!firstBuild && args.length > 1) {
-      argPackages.push(args);
-    }
+    const changedEntries: any[] = dartEntries.map(entry => {
+      const filePath = entry.relativePath;
+      const inputPath = path.join(this.inputPaths[0], filePath);
+      const cachePath = path.join(this.cachePath, filePath);
 
-    let execute = (args) => {
-      if (args.length < 2) return Promise.resolve();
-      return new Promise((resolve, reject) => {
-        exec(this.DARTFMT + ' ' + args.join(' '), (err, stdout, stderr) => {
-          if (this.verbose) {
-            console.log(stdout);
-          }
-          if (err) {
-            console.error(shortenFormatterOutput(stderr));
-            reject('Formatting failed.');
-          } else {
+      if (!this.cache[inputPath]) {
+        this.cache[inputPath] = { version: entry.mtime };
+      } else if (this.cache[inputPath].version >= entry.mtime) {
+        // Ignore this, cache is as young as input.
+        return;
+      }
+
+      fse.copySync(inputPath, cachePath);
+    }).filter(x => !!x);
+
+    return Promise.all(
+      changedEntries.map(entry => {
+        const filePath = entry.relativePath;
+        const cachePath = path.join(this.cachePath, filePath);
+        return promiseExec(this.DARTFMT + ' ' + cachePath);
+      }))
+      .then(() => Promise.all(
+        Object.keys(this.cache).map(filePath => {
+          const cachePath = filePath.replace(this.inputPaths[0], this.cachePath);
+          const outputPath = filePath.replace(this.inputPaths[0], this.outputPath);
+
+          return new Promise(resolve => {
+            fse.mkdirsSync(path.dirname(outputPath));
+            fs.linkSync(cachePath, outputPath);
             resolve();
-          }
-        });
-      });
-    };
-
-    if (firstBuild) {
-      // On firstBuild, format the entire cachePath
-      this.firstBuild = false;
-      return execute(['-w', this.cachePath]);
-    }
-
-    return Promise.all(argPackages.map(execute));
+          });
+        })
+      ));
   }
 }
-
-export default wrapDiffingPlugin(DartFormatter);
 
 var ARROW_LINE = /^(\s+)\^+/;
 var BEFORE_CHARS = 15;

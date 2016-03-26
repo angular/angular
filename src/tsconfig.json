@@ -13,5 +13,9 @@
     "sourceMap": true,
     "sourceRoot": "/",
     "target": "es5"
-  }
+  },
+  "files": [
+    "main.ts",
+    "typings.d.ts"
+  ]
 }

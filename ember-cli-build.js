@@ -1,3 +1,4 @@
+'use strict';
 var fs = require('fs');
 var path = require('path');
 
@@ -12,28 +13,38 @@ var BroccoliSass = require('broccoli-sass');
 var broccoliAutoprefixer = require('broccoli-autoprefixer');
 
 const BroccoliTs2Dart = require('./tools/broccoli/broccoli-ts2dart').default;
-const BroccoliDestCopy = require('./tools/broccoli/broccoli-dest-copy').default;
 const BroccoliDartFmt = require('./tools/broccoli/broccoli-dartfmt').default;
 const BroccoliFunnel = require('broccoli-funnel');
-const BroccoliSource = require('broccoli-source');
 
 var autoprefixerOptions = require('./build/autoprefixer-options');
+
+/**
+ * Almost the same as using a plain string for a tree; but unlike a plain
+ * string, Broccoli won't watch this. Used only internally.
+ */
+class UnwatchedTree {
+  constructor(dir) { this.dir = dir; }
+  read() { return this.dir; }
+  cleanup() { /* DoNothing */ }
+}
+
 
 module.exports = function(defaults) {
   var demoAppCssTree = new BroccoliSass(['src/demo-app'], './demo-app.scss', 'demo-app/demo-app.css');
   var demoCssTree = getCssTree('demo-app');
   var componentCssTree = getCssTree('components');
   var mainCssTree = new BroccoliSass(['src', 'src/core/style'], './main.scss', 'main.css');
-  var angularAppTree = new Angular2App(defaults);
+  var angularAppTree = new Angular2App(defaults, {
+    vendorNpmFiles: []
+  });
 
   var dartAppTree = getDartTree('src/');
-
   return mergeTrees([
     angularAppTree.toTree(),
     componentCssTree,
     mainCssTree,
     demoAppCssTree,
-    demoCssTree,
+    demoCssTree
   ].concat(dartAppTree || []));
 };
 
@@ -50,15 +61,16 @@ function getDartTree(root) {
     return null;
   }
 
-  const ts2dart = new BroccoliTs2Dart(root, {
+  const ts2dart = new BroccoliTs2Dart([root], {
     generateLibraryName: true,
     generateSourceMap: false,
     translateBuiltins: true,
-    typingsRoot: '../../typings/browser/ambient/',
-    additionalFiles: [path.join(process.cwd(), root, 'typings.d.ts')],
+    basePath: path.join(__dirname, root),
+    typingsRoot: '../typings/browser/ambient/',
+    additionalFiles: [path.join(process.cwd(), root, 'typings.d.ts')]
   });
 
-  const formatter = new BroccoliDartFmt(ts2dart, { dartSDK });
+  const formatter = new BroccoliDartFmt([ts2dart], { dartSDK });
 
   const dartSources = new BroccoliFunnel(root, {
     include: ['**/*.dart'],
@@ -70,16 +82,16 @@ function getDartTree(root) {
     formatter
   ]);
 
-  const pubSpecTree = new BroccoliFunnel(new BroccoliSource.UnwatchedDir('.'), {
+  const pubSpecTree = new BroccoliFunnel(new UnwatchedTree('.'), {
     files: ['pubspec.yaml'],
-    destDir: 'dart',
+    destDir: 'dart'
   });
 
   // Publishes the Dart files and pubspec inside a
   return mergeTrees([
-    dartSources,
     pubSpecTree,
-    new BroccoliDestCopy(formatter, 'dart/lib'),
+    new BroccoliFunnel(formatter, { destDir: 'dart/lib' }),
+    allDartFiles
   ]);
 }
 

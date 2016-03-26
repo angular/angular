@@ -66,7 +66,7 @@ interface BroccoliTree {
    */
   description?: string;
 
-  rebuild(): (Promise<any>| void);
+  build(): (Promise<any>| void);
   cleanup(): void;
 }
 
