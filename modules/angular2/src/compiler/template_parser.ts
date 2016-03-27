@@ -508,7 +508,8 @@ class TemplateParseVisitor implements HtmlAstVisitor {
     });
     possibleExportAsVars.forEach((varAst) => {
       if (varAst.value.length > 0 && !SetWrapper.has(matchedVariables, varAst.name)) {
-        this._reportError(`There is no directive with "exportAs" set to "${varAst.value}"`,
+        'There is no directive with "exportAs" set to ' + varAst.value + '"', varAst.sourceSpan);
+        this._reportError('There is no directive with "exportAs" set to ' + varAst.value + '"',
                           varAst.sourceSpan);
       }
     });
