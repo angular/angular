@@ -61,7 +61,7 @@ class I18nMessageExtractor {
 
   I18nMessageExtractor(this.readInput);
 
-  String get output => serialize(removeDuplicates(messages));
+  String get output => serializeXmb(removeDuplicates(messages));
 
   Future processLibrary(LibraryElement el) async  {
     return Future.wait(el.units.map(processCompilationUnit));

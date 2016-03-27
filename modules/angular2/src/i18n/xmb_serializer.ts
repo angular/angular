@@ -1,7 +1,7 @@
 import {isPresent} from 'angular2/src/facade/lang';
 import {Message, id} from './message';
 
-export function serialize(messages: Message[]): string {
+export function serializeXmb(messages: Message[]): string {
   let ms = messages.map((m) => _serializeMessage(m)).join("");
   return `<message-bundle>${ms}</message-bundle>`;
 }
