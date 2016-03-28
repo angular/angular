@@ -20,13 +20,16 @@ import {StyleCompiler} from 'angular2/src/compiler/style_compiler';
 import {ViewCompiler} from 'angular2/src/compiler/view_compiler';
 import {ProtoViewCompiler} from 'angular2/src/compiler/proto_view_compiler';
 import {TemplateCompiler} from 'angular2/src/compiler/template_compiler';
-import {ChangeDetectorGenConfig} from 'angular2/src/core/change_detection/change_detection';
+import {
+  Parser,
+  Lexer,
+  ChangeDetectorGenConfig
+} from 'angular2/src/core/change_detection/change_detection';
 import {Compiler} from 'angular2/src/core/linker/compiler';
 import {RuntimeCompiler} from 'angular2/src/compiler/runtime_compiler';
 import {ElementSchemaRegistry} from 'angular2/src/compiler/schema/element_schema_registry';
 import {DomElementSchemaRegistry} from 'angular2/src/compiler/schema/dom_element_schema_registry';
 import {UrlResolver, DEFAULT_PACKAGE_URL_PROVIDER} from 'angular2/src/compiler/url_resolver';
-import {Parser, Lexer} from 'angular2/src/core/change_detection/change_detection';
 
 function _createChangeDetectorGenConfig() {
   return new ChangeDetectorGenConfig(assertionsEnabled(), false, true);

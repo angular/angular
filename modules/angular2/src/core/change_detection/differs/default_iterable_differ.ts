@@ -1,4 +1,3 @@
-import {CONST} from 'angular2/src/facade/lang';
 import {BaseException} from 'angular2/src/facade/exceptions';
 import {isListLikeIterable, iterateListLike, ListWrapper} from 'angular2/src/facade/collection';
 
@@ -8,7 +7,8 @@ import {
   stringify,
   getMapKey,
   looseIdentical,
-  isArray
+  isArray,
+  CONST
 } from 'angular2/src/facade/lang';
 
 import {ChangeDetectorRef} from '../change_detector_ref';

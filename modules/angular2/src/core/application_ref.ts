@@ -5,6 +5,7 @@ import {
   isPresent,
   assertionsEnabled,
   print,
+  lockMode,
   IS_DART
 } from 'angular2/src/facade/lang';
 import {provide, Provider, Injector, OpaqueToken} from 'angular2/src/core/di';
@@ -31,7 +32,6 @@ import {
 import {Console} from 'angular2/src/core/console';
 import {wtfLeave, wtfCreateScope, WtfScopeFn} from './profile/profile';
 import {ChangeDetectorRef} from 'angular2/src/core/change_detection/change_detector_ref';
-import {lockMode} from 'angular2/src/facade/lang';
 import {ElementRef_} from 'angular2/src/core/linker/element_ref';
 
 /**

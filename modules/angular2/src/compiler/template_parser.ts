@@ -1,15 +1,23 @@
 import {ListWrapper, StringMapWrapper, SetWrapper} from 'angular2/src/facade/collection';
-import {RegExpWrapper, isPresent, StringWrapper, isBlank} from 'angular2/src/facade/lang';
+import {
+  CONST_EXPR,
+  RegExpWrapper,
+  isPresent,
+  StringWrapper,
+  isBlank
+} from 'angular2/src/facade/lang';
 import {Injectable, Inject, OpaqueToken, Optional} from 'angular2/core';
-import {CONST_EXPR} from 'angular2/src/facade/lang';
 import {BaseException} from 'angular2/src/facade/exceptions';
 import {Parser, AST, ASTWithSource} from 'angular2/src/core/change_detection/change_detection';
-import {TemplateBinding} from 'angular2/src/core/change_detection/parser/ast';
 import {CompileDirectiveMetadata, CompilePipeMetadata} from './directive_metadata';
 import {HtmlParser} from './html_parser';
 import {splitNsName, mergeNsAndName} from './html_tags';
 import {ParseSourceSpan, ParseError, ParseLocation} from './parse_util';
-import {RecursiveAstVisitor, BindingPipe} from 'angular2/src/core/change_detection/parser/ast';
+import {
+  RecursiveAstVisitor,
+  BindingPipe,
+  TemplateBinding
+} from 'angular2/src/core/change_detection/parser/ast';
 
 import {
   ElementAst,

@@ -21,7 +21,6 @@ import {
   resolveForwardRef,
   Injectable
 } from 'angular2/src/core/di';
-import {mergeResolvedProviders} from 'angular2/src/core/di/provider';
 import {
   UNDEFINED,
   ProtoInjector,
@@ -31,16 +30,20 @@ import {
   ProviderWithVisibility,
   DependencyProvider
 } from 'angular2/src/core/di/injector';
-import {resolveProvider, ResolvedFactory, ResolvedProvider_} from 'angular2/src/core/di/provider';
+import {
+  mergeResolvedProviders,
+  resolveProvider,
+  ResolvedFactory,
+  ResolvedProvider_
+} from 'angular2/src/core/di/provider';
 
 import {AttributeMetadata, QueryMetadata} from '../metadata/di';
 
 import {AppView} from './view';
 import {ViewType} from './view_type';
-import {ElementRef_} from './element_ref';
+import {ElementRef, ElementRef_} from './element_ref';
 
 import {ViewContainerRef} from './view_container_ref';
-import {ElementRef} from './element_ref';
 import {Renderer} from 'angular2/src/core/render/api';
 import {TemplateRef, TemplateRef_} from './template_ref';
 import {DirectiveMetadata, ComponentMetadata} from '../metadata/directives';

@@ -3,7 +3,7 @@
       "requireInternalWithUnderscore": true,
       "requireParameterType": true,
       "requireReturnType": true,
-      "duplicateModuleImport": false,
+      "duplicateModuleImport": true,
       "semicolon": true,
       "variable-name": false
     }
