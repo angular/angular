@@ -4,6 +4,7 @@ import 'package:glob/glob.dart';
 
 import 'annotation_matcher.dart';
 import 'mirror_mode.dart';
+import 'package:barback/src/asset/asset_id.dart';
 
 const CUSTOM_ANNOTATIONS_PARAM = 'custom_annotations';
 const ENTRY_POINT_PARAM = 'entry_points';
@@ -16,6 +17,7 @@ const INIT_REFLECTOR_PARAM = 'init_reflector';
 const INLINE_VIEWS_PARAM = 'inline_views';
 const MIRROR_MODE_PARAM = 'mirror_mode';
 const LAZY_TRANSFORMERS = 'lazy_transformers';
+const TRANSLATIONS = 'translations';
 
 /// Provides information necessary to transform an Angular2 app.
 class TransformerOptions {
@@ -88,6 +90,9 @@ class TransformerOptions {
   /// change.
   final bool genCompiledTemplates;
 
+  /// The path to the file with translations.
+  final AssetId translations;
+
   TransformerOptions._internal(
       this.entryPoints,
       this.entryPointGlobs,
@@ -103,6 +108,7 @@ class TransformerOptions {
       this.platformDirectives,
       this.platformPipes,
       this.resolvedIdentifiers,
+      this.translations,
       this.reflectPropertiesAsAttributes});
 
   factory TransformerOptions(List<String> entryPoints,
@@ -118,6 +124,7 @@ class TransformerOptions {
       List<String> platformPipes,
       Map<String, String> resolvedIdentifiers,
       bool lazyTransformers: false,
+      AssetId translations: null,
       bool formatCode: false}) {
     var annotationMatcher = new AnnotationMatcher()
       ..addAll(customAnnotationDescriptors);
@@ -134,6 +141,7 @@ class TransformerOptions {
         resolvedIdentifiers: resolvedIdentifiers,
         inlineViews: inlineViews,
         lazyTransformers: lazyTransformers,
+        translations: translations,
         formatCode: formatCode);
   }
 }
