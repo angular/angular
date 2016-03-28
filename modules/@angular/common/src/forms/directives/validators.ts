@@ -2,7 +2,6 @@ import {forwardRef, Attribute, Directive} from '@angular/core';
 import {NumberWrapper} from '../../facade/lang';
 import {Validators, NG_VALIDATORS} from '../validators';
 import {AbstractControl} from '../model';
-import * as modelModule from '../model';
 
 
 
@@ -23,7 +22,7 @@ import * as modelModule from '../model';
  * }
  * ```
  */
-export interface Validator { validate(c: modelModule.AbstractControl): {[key: string]: any}; }
+export interface Validator { validate(c: AbstractControl): {[key: string]: any}; }
 
 const REQUIRED = /*@ts2dart_const*/ Validators.required;
 
