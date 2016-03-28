@@ -260,6 +260,7 @@ export class Router {
   }
 
   private _emitNavigationFinish(url): void { ObservableWrapper.callEmit(this._subject, url); }
+  /** @internal */
   _emitNavigationFail(url): void { ObservableWrapper.callError(this._subject, url); }
 
   private _afterPromiseFinishNavigating(promise: Promise<any>): Promise<any> {

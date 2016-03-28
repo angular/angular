@@ -1,0 +1,10 @@
+{
+    "rules": {
+      "requireInternalWithUnderscore": true,
+      "requireParameterType": true,
+      "requireReturnType": true,
+      "duplicateModuleImport": false,
+      "semicolon": true,
+      "variable-name": false
+    }
+}
