@@ -121,7 +121,7 @@ export class StaticReflector {
   }
 
   private conversionMap = new Map<StaticType, (moduleContext: string, expression: any) => any>();
-  private initializeConversionMap() {
+  private initializeConversionMap(): any {
     let core_metadata = 'angular2/src/core/metadata';
     let conversionMap = this.conversionMap;
     conversionMap.set(this.getStaticType(core_metadata, 'Directive'),
@@ -244,6 +244,7 @@ export class StaticReflector {
                       (moduleContext, expression) => new HostListenerMetadata(
                           this.getDecoratorParameter(moduleContext, expression, 0),
                           this.getDecoratorParameter(moduleContext, expression, 1)));
+    return null;
   }
 
   private convertKnownDecorator(moduleContext: string, expression: {[key: string]: any}): any {

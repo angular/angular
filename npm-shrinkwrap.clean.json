@@ -3038,15 +3038,7 @@
       }
     },
     "gulp-tslint": {
-      "version": "3.6.0",
-      "dependencies": {
-        "tslint": {
-          "version": "2.5.1"
-        },
-        "underscore.string": {
-          "version": "3.1.1"
-        }
-      }
+      "version": "4.3.4"
     },
     "gulp-typescript": {
       "version": "2.10.0",
@@ -4623,12 +4615,7 @@
       }
     },
     "rcloader": {
-      "version": "0.1.4",
-      "dependencies": {
-        "lodash": {
-          "version": "3.10.1"
-        }
-      }
+      "version": "0.2.0"
     },
     "react": {
       "version": "0.14.5"
@@ -5836,5 +5823,5 @@
     }
   },
   "name": "angular-srcs",
-  "version": "2.0.0-beta.11"
+  "version": "2.0.0-beta.12"
 }

@@ -69,6 +69,7 @@ import {BaseException} from "../../facade/exceptions";
 export class NgFor implements DoCheck {
   /** @internal */
   _ngForOf: any;
+  /** @internal */
   _ngForTrackBy: TrackByFn;
   private _differ: IterableDiffer;
 
