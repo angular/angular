@@ -42,7 +42,7 @@ Here's a list of gotchas to keep in mind when writing TypeScript code that will 
 * **The const keyword must have a const value.** Because of that, we cannot do `const x = a + b;` even if the value of `x`, `a` and `b` will not change.
 * **Lambdas need to abide to the type required.** Meaning that if a function requires a function that takes one argument, the lambda cannot be `() => {}`. Use `_` for temporary parameters. This is notable in Promises.
 * **Dynamic return values fat arrows can't return non-primitive types without casting.** For example, a fat arrow that return a promise (or Future) generates a warning if using directly, like so: `promiseA.then(() => promiseB)`. In this case simply using a block works as expected; `promiseA.then(() => { return promiseB; })`.
-* **Dart does not have [generic methods](http://www.typescriptlang.org/Handbook#generics)** ([issue](https://github.com/dart-lang/sdk/issues/254)).
+* **Dart does not have [generic methods](http://www.typescriptlang.org/docs/handbook/generics.html)** ([issue](https://github.com/dart-lang/sdk/issues/254)).
 * **Dart does not have destructuring** but it does have a [proposal](https://github.com/dart-lang/dart_enhancement_proposals/issues/24) for it.
 * **Dart does not support type aliases.** Code like `type Nop = () => void` will not compile.
 * **Dart does not support [tagged template literals](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals#Tagged_template_literals)**.
