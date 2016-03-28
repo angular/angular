@@ -15,3 +15,6 @@ for package in ./deploy/*
 do
   npm publish ${package}
 done
+
+# Always log out of npm when publish is complete.
+npm logout
