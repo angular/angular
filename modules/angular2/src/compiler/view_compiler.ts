@@ -200,7 +200,7 @@ class CodeGenViewFactory implements ViewFactory<Expression, Statement> {
 
   createElementEventListener(renderer: Expression, appView: Expression, boundElementIndex: number,
                              renderNode: Expression, eventAst: BoundEventAst,
-                             targetStatements: Statement[]) {
+                             targetStatements: Statement[]): Expression {
     var disposableVar = this._nextDisposableVar();
     var eventHandlerExpr = codeGenEventHandler(appView, boundElementIndex, eventAst.fullName);
     targetStatements.push(new Statement(

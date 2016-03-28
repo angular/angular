@@ -44,7 +44,9 @@ function _extractId(valueString: string): string {
 })
 export class SelectControlValueAccessor implements ControlValueAccessor {
   value: any;
+  /** @internal */
   _optionMap: Map<string, any> = new Map<string, any>();
+  /** @internal */
   _idCounter: number = 0;
 
   onChange = (_: any) => {};
@@ -63,8 +65,10 @@ export class SelectControlValueAccessor implements ControlValueAccessor {
   }
   registerOnTouched(fn: () => any): void { this.onTouched = fn; }
 
+  /** @internal */
   _registerOption(): string { return (this._idCounter++).toString(); }
 
+  /** @internal */
   _getOptionId(value: any): string {
     for (let id of MapWrapper.keys(this._optionMap)) {
       if (looseIdentical(this._optionMap.get(id), value)) return id;
@@ -72,6 +76,7 @@ export class SelectControlValueAccessor implements ControlValueAccessor {
     return null;
   }
 
+  /** @internal */
   _getOptionValue(valueString: string): any {
     let value = this._optionMap.get(_extractId(valueString));
     return isPresent(value) ? value : valueString;
@@ -113,6 +118,7 @@ export class NgSelectOption implements OnDestroy {
     this._select.writeValue(this._select.value);
   }
 
+  /** @internal */
   _setElementValue(value: string): void {
     this._renderer.setElementProperty(this._element.nativeElement, 'value', value);
   }

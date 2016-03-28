@@ -130,7 +130,7 @@ export function removeInterpolation(value: string, source: ParseSourceSpan,
   }
 }
 
-export function stringifyNodes(nodes: HtmlAst[], parser: Parser) {
+export function stringifyNodes(nodes: HtmlAst[], parser: Parser): string {
   let visitor = new _StringifyVisitor(parser);
   return htmlVisitAll(visitor, nodes).join("");
 }

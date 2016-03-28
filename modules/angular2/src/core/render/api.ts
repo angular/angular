@@ -26,27 +26,29 @@ export abstract class Renderer implements ParentRenderer {
 
   abstract createText(parentElement: any, value: string): any;
 
-  abstract projectNodes(parentElement: any, nodes: any[]);
+  abstract projectNodes(parentElement: any, nodes: any[]): void;
 
-  abstract attachViewAfter(node: any, viewRootNodes: any[]);
+  abstract attachViewAfter(node: any, viewRootNodes: any[]): void;
 
-  abstract detachView(viewRootNodes: any[]);
+  abstract detachView(viewRootNodes: any[]): void;
 
-  abstract destroyView(hostElement: any, viewAllNodes: any[]);
+  abstract destroyView(hostElement: any, viewAllNodes: any[]): void;
 
   abstract listen(renderElement: any, name: string, callback: Function): Function;
 
   abstract listenGlobal(target: string, name: string, callback: Function): Function;
 
-  abstract setElementProperty(renderElement: any, propertyName: string, propertyValue: any);
+  abstract setElementProperty(renderElement: any, propertyName: string, propertyValue: any): void;
 
-  abstract setElementAttribute(renderElement: any, attributeName: string, attributeValue: string);
+  abstract setElementAttribute(renderElement: any, attributeName: string,
+                               attributeValue: string): void;
 
   /**
    * Used only in debug mode to serialize property changes to comment nodes,
    * such as <template> placeholders.
    */
-  abstract setBindingDebugInfo(renderElement: any, propertyName: string, propertyValue: string);
+  abstract setBindingDebugInfo(renderElement: any, propertyName: string,
+                               propertyValue: string): void;
 
   abstract setElementDebugInfo(renderElement: any, info: RenderDebugInfo);
 
