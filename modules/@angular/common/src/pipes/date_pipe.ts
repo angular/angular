@@ -2,6 +2,7 @@ import {PipeTransform, Pipe, Injectable} from '@angular/core';
 import {
   isDate,
   isNumber,
+  isString,
   DateWrapper,
   isBlank,
 } from '../../src/facade/lang';
@@ -29,8 +30,9 @@ var defaultLocale: string = 'en-US';
  *
  *     expression | date[:format]
  *
- * where `expression` is a date object or a number (milliseconds since UTC epoch) and
- * `format` indicates which date/time components to include:
+ * where `expression` is a date object or a number (milliseconds since UTC epoch) or an ISO string
+ * (https://www.w3.org/TR/NOTE-datetime) and `format` indicates which date/time components to
+ * include:
  *
  *  | Component | Symbol | Short Form   | Long Form         | Numeric   | 2-digit   |
  *  |-----------|:------:|--------------|-------------------|-----------|-----------|
@@ -105,6 +107,8 @@ export class DatePipe implements PipeTransform {
 
     if (isNumber(value)) {
       value = DateWrapper.fromMillis(value);
+    } else if (isString(value)) {
+      value = DateWrapper.fromISOString(value);
     }
     if (StringMapWrapper.contains(DatePipe._ALIASES, pattern)) {
       pattern = <string>StringMapWrapper.get(DatePipe._ALIASES, pattern);
@@ -112,5 +116,13 @@ export class DatePipe implements PipeTransform {
     return DateFormatter.format(value, defaultLocale, pattern);
   }
 
-  supports(obj: any): boolean { return isDate(obj) || isNumber(obj); }
+  supports(obj: any): boolean {
+    if (isDate(obj) || isNumber(obj)) {
+      return true;
+    }
+    if (isString(obj) && isDate(DateWrapper.fromISOString(obj))) {
+      return true;
+    }
+    return false;
+  }
 }
