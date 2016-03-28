@@ -16,6 +16,7 @@ import 'package:angular2/src/transform/common/code/source_module.dart';
 import 'package:angular2/src/transform/common/zone.dart' as zone;
 import 'package:angular2/src/transform/template_compiler/generator.dart';
 import 'package:angular2/src/transform/template_compiler/compile_data_creator.dart';
+import 'package:angular2/i18n.dart';
 
 import 'package:angular2/src/transform/common/model/parameter_model.pb.dart';
 import '../common/compile_directive_metadata/ng_for.ng_meta.dart' as ngMeta;
@@ -83,13 +84,15 @@ void allTests() {
   });
 
   Future<String> process(AssetId assetId,
-      {List<String> platformDirectives, List<String> platformPipes, Map<String,String> resolvedIdentifiers}) {
+      {List<String> platformDirectives, List<String> platformPipes, Map<String,String> resolvedIdentifiers,
+      XmbDeserializationResult translations}) {
     logger = new RecordingLogger();
     return zone.exec(
         () => processTemplates(reader, assetId,
             platformDirectives: platformDirectives,
             platformPipes: platformPipes,
-            resolvedIdentifiers: resolvedIdentifiers),
+            resolvedIdentifiers: resolvedIdentifiers,
+            translations: translations),
         log: logger);
   }
 
@@ -645,6 +648,23 @@ void allTests() {
     expect(cmp.providers[0].token.moduleUrl).toEqual("someModuleUrl");
     expect(cmp.providers[0].useClass.name).toEqual("Service2");
     expect(cmp.providers[0].useClass.moduleUrl).toEqual("moduleUrl");
+  });
+
+  it('should use i18n parser when translations are provided.', () async {
+    fooComponentMeta.template = new CompileTemplateMetadata(
+        template: '<div i18n>content</div>',
+        templateUrl: 'template.html');
+    updateReader();
+
+    final translations = deserializeXmb("""
+      <message-bundle>
+        <msg id="${id(new Message("content", null))}">another</msg>
+      </message-bundle>
+    """, "someUrl");
+
+    final outputs = await process(fooAssetId, translations: translations);
+    expect(_generatedCode(outputs)).toContain('another');
+    expect(_generatedCode(outputs)).not.toContain('content');
   });
 }
 

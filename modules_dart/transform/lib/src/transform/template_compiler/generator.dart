@@ -15,6 +15,7 @@ import 'package:angular2/src/transform/common/model/ng_deps_model.pb.dart';
 import 'package:angular2/src/transform/common/names.dart';
 import 'package:angular2/src/transform/common/ng_compiler.dart';
 import 'package:angular2/src/transform/common/zone.dart' as zone;
+import 'package:angular2/i18n.dart';
 
 import 'reflection/processor.dart' as reg;
 import 'reflection/reflection_capabilities.dart';
@@ -39,6 +40,7 @@ Future<Outputs> processTemplates(AssetReader reader, AssetId assetId,
     bool reflectPropertiesAsAttributes: false,
     List<String> platformDirectives,
     List<String> platformPipes,
+    XmbDeserializationResult translations,
     Map<String, String> resolvedIdentifiers
     }) async {
   var viewDefResults = await createCompileData(
@@ -61,7 +63,9 @@ Future<Outputs> processTemplates(AssetReader reader, AssetId assetId,
   if (templateCompiler == null) {
     templateCompiler = createTemplateCompiler(reader,
         changeDetectionConfig: new ChangeDetectorGenConfig(
-            genChangeDetectionDebugInfo, reflectPropertiesAsAttributes, false));
+            genChangeDetectionDebugInfo, reflectPropertiesAsAttributes, false),
+        translations: translations
+        );
   }
 
   final compileData =
