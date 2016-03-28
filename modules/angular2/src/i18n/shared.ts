@@ -12,8 +12,8 @@ import {isPresent, isBlank} from 'angular2/src/facade/lang';
 import {Message} from './message';
 import {Parser} from 'angular2/src/core/change_detection/parser/parser';
 
-const I18N_ATTR = "i18n";
-const I18N_ATTR_PREFIX = "i18n-";
+export const I18N_ATTR = "i18n";
+export const I18N_ATTR_PREFIX = "i18n-";
 
 /**
  * An i18n error.
@@ -78,10 +78,6 @@ function _isOpeningComment(n: HtmlAst): boolean {
 
 function _isClosingComment(n: HtmlAst): boolean {
   return n instanceof HtmlCommentAst && isPresent(n.value) && n.value == "/i18n";
-}
-
-export function isI18nAttr(n: string): boolean {
-  return n.startsWith(I18N_ATTR_PREFIX);
 }
 
 function _findI18nAttr(p: HtmlElementAst): HtmlAttrAst {
