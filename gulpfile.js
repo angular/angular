@@ -329,17 +329,7 @@ gulp.task('lint', ['build.tools'], function() {
   var tslint = require('gulp-tslint');
   // Built-in rules are at
   // https://github.com/palantir/tslint#supported-rules
-  var tslintConfig = {
-    "rules": {
-      "requireInternalWithUnderscore": true,
-      "requireParameterType": true,
-      "requireReturnType": true,
-      "semicolon": true,
-
-      // TODO: find a way to just screen for reserved names
-      "variable-name": false
-    }
-  };
+  var tslintConfig = require('./tslint.json');
   return gulp.src(['modules/angular2/src/**/*.ts', '!modules/angular2/src/testing/**'])
       .pipe(tslint({
         tslint: require('tslint').default,
