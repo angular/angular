@@ -13,7 +13,6 @@ import {
   it,
   xit,
   TestComponentBuilder,
-  proxy,
   SpyObject
 } from 'angular2/testing_internal';
 

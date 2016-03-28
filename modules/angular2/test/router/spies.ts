@@ -1,5 +1,5 @@
 import {Router, RouterOutlet, Location, PlatformLocation} from 'angular2/router';
-import {SpyObject, proxy} from 'angular2/testing_internal';
+import {SpyObject} from 'angular2/testing_internal';
 
 export class SpyRouter extends SpyObject {
   constructor() { super(Router); }
