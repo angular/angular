@@ -19,6 +19,7 @@ import {BaseException} from 'angular2/src/facade/exceptions';
 import {CONST_EXPR, isPresent} from 'angular2/src/facade/lang';
 import {Dir} from '../../core/rtl/dir';
 import {OneOf} from '../../core/annotations/one-of';
+import {PromiseCompleter} from 'angular2/src/facade/promise';
 
 
 /**
@@ -130,7 +131,7 @@ export class MdSidenav {
 
     if (isOpen) {
       if (this._openPromise == null) {
-        let completer = PromiseWrapper.completer();
+        let completer = new PromiseCompleter<void>();
         this._openPromise = completer.promise;
         this._openPromiseReject = completer.reject;
         this._openPromiseResolve = completer.resolve;
@@ -138,7 +139,7 @@ export class MdSidenav {
       return this._openPromise;
     } else {
       if (this._closePromise == null) {
-        let completer = PromiseWrapper.completer();
+        let completer = new PromiseCompleter<void>();
         this._closePromise = completer.promise;
         this._closePromiseReject = completer.reject;
         this._closePromiseResolve = completer.resolve;
