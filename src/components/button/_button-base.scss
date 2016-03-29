@@ -36,7 +36,6 @@ $md-mini-fab-padding: 8px !default;
   // Reset browser <button> styles.
   background: transparent;
   text-align: center;
-  overflow: hidden;
   cursor: pointer;
   user-select: none;
   outline: none;
@@ -46,7 +45,7 @@ $md-mini-fab-padding: 8px !default;
   display: inline-block;
   white-space: nowrap;
   text-decoration: none;
-  vertical-align: middle;
+  vertical-align: baseline;
 
   // Typography.
   font-size: $md-body-font-size-base;
