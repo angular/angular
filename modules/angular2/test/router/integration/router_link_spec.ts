@@ -259,7 +259,7 @@ export function main() {
 
                    async.done();
                  });
-                 router.navigateByUrl('/better-child');
+                 router.navigateByUrl('/better-child?extra=0');
                });
          }));
 
@@ -300,7 +300,7 @@ export function main() {
 
                    async.done();
                  });
-                 router.navigateByUrl('/child-with-grandchild/grandchild');
+                 router.navigateByUrl('/child-with-grandchild/grandchild?extra=0');
                });
          }));
 

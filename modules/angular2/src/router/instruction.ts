@@ -310,7 +310,7 @@ export class ComponentInstruction {
    */
   constructor(public urlPath: string, public urlParams: string[], data: RouteData,
               public componentType, public terminal: boolean, public specificity: string,
-              public params: {[key: string]: string} = null) {
+              public params: {[key: string]: string} = null, public routeName: string) {
     this.routeData = isPresent(data) ? data : BLANK_ROUTE_DATA;
   }
 }
