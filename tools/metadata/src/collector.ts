@@ -48,7 +48,7 @@ function moduleNameFromBaseName(moduleFileName: string, baseFileName: string): s
  * Collect decorator metadata from a TypeScript module.
  */
 export class MetadataCollector {
-  constructor(private service: ts.LanguageService) {}
+  constructor() {}
 
   /**
    * Returns a JSON.stringify friendly form describing the decorators of the exported classes from
@@ -58,7 +58,7 @@ export class MetadataCollector {
     const locals = new Symbols();
     const moduleNameOf = (fileName: string) =>
         moduleNameFromBaseName(fileName, sourceFile.fileName);
-    const evaluator = new Evaluator(this.service, typeChecker, locals, moduleNameOf);
+    const evaluator = new Evaluator(typeChecker, locals, moduleNameOf);
 
     function objFromDecorator(decoratorNode: ts.Decorator): MetadataSymbolicExpression {
       return <MetadataSymbolicExpression>evaluator.evaluateNode(decoratorNode.expression);

@@ -18,7 +18,7 @@ describe('Collector', () => {
     service = ts.createLanguageService(host);
     program = service.getProgram();
     typeChecker = program.getTypeChecker();
-    collector = new MetadataCollector(service);
+    collector = new MetadataCollector();
   });
 
   it('should not have errors in test data', () => { expectValidSources(service, program); });
