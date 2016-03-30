@@ -93,7 +93,7 @@ class DiffingTSCompiler implements DiffingBroccoliPlugin {
     this.tsServiceHost = new CustomLanguageServiceHost(this.tsOpts, this.rootFilePaths,
                                                        this.fileRegistry, this.inputPath);
     this.tsService = ts.createLanguageService(this.tsServiceHost, ts.createDocumentRegistry());
-    this.metadataCollector = new MetadataCollector(this.tsService);
+    this.metadataCollector = new MetadataCollector();
   }
 
 
