@@ -36,8 +36,8 @@ const TRANSITION_EVENT_PROPERTIES = ['propertyName', 'elapsedTime', 'pseudoEleme
 
 const EVENT_PROPERTIES = ['type', 'bubbles', 'cancelable'];
 
-const NODES_WITH_VALUE =
-    new Set(["input", "select", "option", "button", "li", "meter", "progress", "param"]);
+const NODES_WITH_VALUE = new Set(
+    ["input", "select", "option", "button", "li", "meter", "progress", "param", "textarea"]);
 
 export function serializeGenericEvent(e: Event): {[key: string]: any} {
   return serializeEvent(e, EVENT_PROPERTIES);
