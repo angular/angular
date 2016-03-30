@@ -1,7 +1,7 @@
 # md-progress-circle
 
 `md-progress-circle` is a component for indicating progress and activity, matching the spec of 
-[Material Design Progress & Activity](https://http://www.google.com/design/spec/components/progress-activity.html).
+[Material Design Progress & Activity](https://www.google.com/design/spec/components/progress-activity.html).
 
 ### Progress Modes
 
