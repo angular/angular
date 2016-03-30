@@ -59,7 +59,7 @@ export class RuleSet {
     if (config instanceof AuxRoute) {
       handler = new SyncRouteHandler(config.component, config.data);
       let routePath = this._getRoutePath(config);
-      let auxRule = new RouteRule(routePath, handler);
+      let auxRule = new RouteRule(routePath, handler, config.name);
       this.auxRulesByPath.set(routePath.toString(), auxRule);
       if (isPresent(config.name)) {
         this.auxRulesByName.set(config.name, auxRule);
@@ -85,7 +85,7 @@ export class RuleSet {
       useAsDefault = isPresent(config.useAsDefault) && config.useAsDefault;
     }
     let routePath = this._getRoutePath(config);
-    let newRule = new RouteRule(routePath, handler);
+    let newRule = new RouteRule(routePath, handler, config.name);
 
     this._assertNoHashCollision(newRule.hash, config.path);
 

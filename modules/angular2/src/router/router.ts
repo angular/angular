@@ -135,12 +135,33 @@ export class Router {
    */
   isRouteActive(instruction: Instruction): boolean {
     var router: Router = this;
+
+    if (isBlank(this.currentInstruction)) {
+      return false;
+    }
+
+    // `instruction` corresponds to the root router
     while (isPresent(router.parent) && isPresent(instruction.child)) {
       router = router.parent;
       instruction = instruction.child;
     }
-    return isPresent(this.currentInstruction) &&
-           this.currentInstruction.component == instruction.component;
+
+    if (isBlank(instruction.component) || isBlank(this.currentInstruction.component) ||
+        this.currentInstruction.component.routeName != instruction.component.routeName) {
+      return false;
+    }
+
+    let paramEquals = true;
+
+    if (isPresent(this.currentInstruction.component.params)) {
+      StringMapWrapper.forEach(instruction.component.params, (value, key) => {
+        if (this.currentInstruction.component.params[key] !== value) {
+          paramEquals = false;
+        }
+      });
+    }
+
+    return paramEquals;
   }
 
 
