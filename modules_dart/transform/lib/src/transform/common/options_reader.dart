@@ -6,7 +6,7 @@ import 'mirror_mode.dart';
 import 'options.dart';
 import './url_resolver.dart';
 
-  TransformerOptions parseBarbackSettings(BarbackSettings settings) {
+TransformerOptions parseBarbackSettings(BarbackSettings settings) {
   var config = settings.configuration;
   var entryPoints = _readStringList(config, ENTRY_POINT_PARAM);
   var initReflector =

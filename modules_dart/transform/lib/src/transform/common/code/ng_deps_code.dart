@@ -166,11 +166,11 @@ abstract class NgDepsWriterMixin
       ..writeln('void ${SETUP_METHOD_NAME}() {')
       ..writeln('if (_visited) return; _visited = true;');
 
-    final needsReceiver = (model.reflectables != null &&
-            model.reflectables.isNotEmpty) ||
-        (model.getters != null && model.getters.isNotEmpty) ||
-        (model.setters != null && model.setters.isNotEmpty) ||
-        (model.methods != null && model.methods.isNotEmpty);
+    final needsReceiver =
+        (model.reflectables != null && model.reflectables.isNotEmpty) ||
+            (model.getters != null && model.getters.isNotEmpty) ||
+            (model.setters != null && model.setters.isNotEmpty) ||
+            (model.methods != null && model.methods.isNotEmpty);
 
     if (needsReceiver) {
       buffer.writeln('$REFLECTOR_PREFIX.$REFLECTOR_VAR_NAME');

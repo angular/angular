@@ -39,7 +39,7 @@ class CodegenTransformer extends TransformerGroup {
     } else {
       phases = [
         [new DirectiveProcessor(options)],
-        [new DirectiveMetadataLinker()],
+        [new DirectiveMetadataLinker(options)],
         [new StylesheetCompiler(), new TemplateCompiler(options),],
       ];
     }
