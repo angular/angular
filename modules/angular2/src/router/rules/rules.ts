@@ -112,7 +112,7 @@ export class RouteRule implements AbstractRule {
     }
     var instruction =
         new ComponentInstruction(urlPath, urlParams, this.handler.data, this.handler.componentType,
-                                 this.terminal, this.specificity, params);
+                                 this.terminal, this.specificity, params, this.handler.name);
     this._cache.set(hashKey, instruction);
 
     return instruction;

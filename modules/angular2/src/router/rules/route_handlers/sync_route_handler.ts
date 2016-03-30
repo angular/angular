@@ -11,7 +11,7 @@ export class SyncRouteHandler implements RouteHandler {
   /** @internal */
   _resolvedComponent: Promise<any> = null;
 
-  constructor(public componentType: Type, data?: {[key: string]: any}) {
+  constructor(public componentType: Type, data?: {[key: string]: any}, public name: string = null) {
     this._resolvedComponent = PromiseWrapper.resolve(componentType);
     this.data = isPresent(data) ? new RouteData(data) : BLANK_ROUTE_DATA;
   }

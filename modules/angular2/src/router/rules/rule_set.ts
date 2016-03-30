@@ -57,7 +57,7 @@ export class RuleSet {
     }
 
     if (config instanceof AuxRoute) {
-      handler = new SyncRouteHandler(config.component, config.data);
+      handler = new SyncRouteHandler(config.component, config.data, config.name);
       let routePath = this._getRoutePath(config);
       let auxRule = new RouteRule(routePath, handler);
       this.auxRulesByPath.set(routePath.toString(), auxRule);
@@ -78,10 +78,10 @@ export class RuleSet {
     }
 
     if (config instanceof Route) {
-      handler = new SyncRouteHandler(config.component, config.data);
+      handler = new SyncRouteHandler(config.component, config.data, config.name);
       useAsDefault = isPresent(config.useAsDefault) && config.useAsDefault;
     } else if (config instanceof AsyncRoute) {
-      handler = new AsyncRouteHandler(config.loader, config.data);
+      handler = new AsyncRouteHandler(config.loader, config.data, config.name);
       useAsDefault = isPresent(config.useAsDefault) && config.useAsDefault;
     }
     let routePath = this._getRoutePath(config);
