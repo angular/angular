@@ -250,7 +250,7 @@ export class PlatformRef_ extends PlatformRef {
         provide(ApplicationRef, {useFactory: (): ApplicationRef => app, deps: []})
       ]);
 
-      var exceptionHandler: Function;
+      var exceptionHandler: ExceptionHandler;
       try {
         injector = this.injector.resolveAndCreateChild(providers);
         exceptionHandler = injector.get(ExceptionHandler);

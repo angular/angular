@@ -338,7 +338,9 @@ export class Router {
         return false;
       }
       if (isPresent(this._childRouter)) {
-        return this._childRouter._routerCanDeactivate(childInstruction);
+        // TODO: ideally, this closure would map to async-await in Dart.
+        // For now, casting to any to suppress an error.
+        return <any>this._childRouter._routerCanDeactivate(childInstruction);
       }
       return true;
     });
