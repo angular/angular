@@ -296,6 +296,22 @@ export function main() {
              });
        }));
 
+    it('should match query params on the root component even when the next URL segment is null',
+       inject([AsyncTestCompleter], (async) => {
+         registry.config(RootHostCmp,
+                         new Route({path: '/first/...', component: SingleSlashChildCmp}));
+
+         registry.recognize('/first?comments=all', [])
+             .then((instruction) => {
+               expect(instruction.component.componentType).toBe(SingleSlashChildCmp);
+               expect(instruction.component.params).toEqual({'comments': 'all'});
+
+               expect(instruction.child.component.componentType).toBe(DummyCmpB);
+               expect(instruction.child.component.params).toEqual({});
+               async.done();
+             });
+       }));
+
     it('should generate URLs with matrix and query params', () => {
       registry.config(
           RootHostCmp,
