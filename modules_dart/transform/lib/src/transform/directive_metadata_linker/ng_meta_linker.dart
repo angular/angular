@@ -190,6 +190,8 @@ class _NgMetaIdentifierResolver {
         _resolveDiDependencyMetadata(ngMetaMap, meta.type.name, meta.type.diDeps);
       } else if (meta is CompileTypeMetadata) {
         _resolveDiDependencyMetadata(ngMetaMap, meta.name, meta.diDeps);
+      }  else if (meta is CompileFactoryMetadata) {
+        _resolveDiDependencyMetadata(ngMetaMap, meta.name, meta.diDeps);
       }
     });
   }
@@ -275,10 +277,11 @@ class _NgMetaIdentifierResolver {
           _resolveIdentifier(ngMetaMap, neededBy, provider.useValue);
     }
     if (provider.useFactory != null) {
-      _setModuleUrl(ngMetaMap, neededBy, provider.useFactory);
-      _resolveDiDependencyMetadata(
-          ngMetaMap, neededBy, provider.useFactory.diDeps);
+      provider.useFactory =
+          _resolveIdentifier(ngMetaMap, neededBy, provider.useFactory);
     }
+    _resolveDiDependencyMetadata(
+        ngMetaMap, neededBy, provider.deps);
   }
 
   void _resolveDiDependencyMetadata(Map<String, NgMeta> ngMetaMap,

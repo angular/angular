@@ -850,7 +850,6 @@ void allTests() {
       var token = cmp.providers.first.token;
       var useFactory = cmp.providers.first.useFactory;
       var deps = cmp.providers.first.deps;
-      var useFactoryDeps = useFactory.diDeps;
 
       expect(useFactory.prefix, isNull);
       expect(useFactory.name, equals("funcDep"));
@@ -864,16 +863,6 @@ void allTests() {
       expect(deps[4].isSkipSelf, equals(true));
       expect(deps[5].token.identifier.name, equals("ServiceDep"));
       expect(deps[5].isOptional, equals(true));
-
-      expect(useFactoryDeps[0].token.identifier.name, equals("ServiceDep"));
-      expect(useFactoryDeps[1].token.value, equals("Str"));
-      expect(useFactoryDeps[2].token.identifier.name, equals("ServiceDep"));
-      expect(useFactoryDeps[3].token.identifier.name, equals("ServiceDep"));
-      expect(useFactoryDeps[3].isSelf, equals(true));
-      expect(useFactoryDeps[4].token.identifier.name, equals("ServiceDep"));
-      expect(useFactoryDeps[4].isSkipSelf, equals(true));
-      expect(useFactoryDeps[5].token.identifier.name, equals("ServiceDep"));
-      expect(useFactoryDeps[5].isOptional, equals(true));
     });
 
     test('should populate `providers` using toFactory.', () async {
@@ -887,6 +876,28 @@ void allTests() {
       var useFactory = cmp.providers.first.useFactory;
       expect(useFactory.prefix, isNull);
       expect(useFactory.name, equals("funcDep"));
+    });
+
+    test('should populate factories', () async {
+      var factory = (await _testCreateModel('directives_files/components.dart'))
+          .identifiers['factoryWithDeps'];
+
+      expect(factory, isNotNull);
+
+      expect(factory.prefix, isNull);
+      expect(factory.name, equals("factoryWithDeps"));
+
+      var factoryDeps = factory.diDeps;
+
+      expect(factoryDeps[0].token.identifier.name, equals("ServiceDep"));
+      expect(factoryDeps[1].token.value, equals("Str"));
+      expect(factoryDeps[2].token.identifier.name, equals("ServiceDep"));
+      expect(factoryDeps[3].token.identifier.name, equals("ServiceDep"));
+      expect(factoryDeps[3].isSelf, equals(true));
+      expect(factoryDeps[4].token.identifier.name, equals("ServiceDep"));
+      expect(factoryDeps[4].isSkipSelf, equals(true));
+      expect(factoryDeps[5].token.identifier.name, equals("ServiceDep"));
+      expect(factoryDeps[5].isOptional, equals(true));
     });
 
     test('should populate `providers` using a const token.', () async {

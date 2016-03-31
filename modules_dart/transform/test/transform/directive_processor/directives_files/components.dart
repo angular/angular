@@ -261,3 +261,11 @@ class ComponentWithQueries {
 }
 
 funcDep() {}
+
+@Injectable()
+factoryWithDeps(ServiceDep a,
+        @Inject("Str") b,
+        @Inject(ServiceDep) c,
+        @Self ServiceDep d,
+        @SkipSelf ServiceDep e,
+        @Optional ServiceDep f) {}

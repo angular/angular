@@ -249,6 +249,7 @@ export class CompileFactoryMetadata implements CompileIdentifierMetadata,
 
   toJson(): {[key: string]: any} {
     return {
+      'class': 'Factory',
       'name': this.name,
       'prefix': this.prefix,
       'moduleUrl': this.moduleUrl,
@@ -756,7 +757,8 @@ var _COMPILE_METADATA_FROM_JSON = {
   'Pipe': CompilePipeMetadata.fromJson,
   'Type': CompileTypeMetadata.fromJson,
   'Provider': CompileProviderMetadata.fromJson,
-  'Identifier': CompileIdentifierMetadata.fromJson
+  'Identifier': CompileIdentifierMetadata.fromJson,
+  'Factory': CompileFactoryMetadata.fromJson
 };
 
 function _arrayFromJson(obj: any[], fn: (a: {[key: string]: any}) => any): any {

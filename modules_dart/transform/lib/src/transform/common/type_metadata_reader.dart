@@ -22,10 +22,11 @@ class TypeMetadataReader {
   final _DirectiveMetadataVisitor _directiveVisitor;
   final _PipeMetadataVisitor _pipeVisitor;
   final _CompileTypeMetadataVisitor _typeVisitor;
+  final _CompileFactoryMetadataVisitor _factoryVisitor;
   final OfflineCompiler _templateCompiler;
 
   TypeMetadataReader._(this._directiveVisitor, this._pipeVisitor,
-      this._templateCompiler, this._typeVisitor);
+      this._templateCompiler, this._typeVisitor, this._factoryVisitor);
 
   /// Accepts an [AnnotationMatcher] which tests that an [Annotation]
   /// is a [Directive], [Component], or [View].
@@ -33,12 +34,13 @@ class TypeMetadataReader {
       InterfaceMatcher interfaceMatcher, OfflineCompiler templateCompiler) {
     var lifecycleVisitor = new _LifecycleHookVisitor(interfaceMatcher);
     var typeVisitor = new _CompileTypeMetadataVisitor(annotationMatcher);
+    var factoryVisitor = new _CompileFactoryMetadataVisitor(annotationMatcher);
     var directiveVisitor = new _DirectiveMetadataVisitor(
         annotationMatcher, lifecycleVisitor, typeVisitor);
     var pipeVisitor = new _PipeMetadataVisitor(annotationMatcher);
 
     return new TypeMetadataReader._(
-        directiveVisitor, pipeVisitor, templateCompiler, typeVisitor);
+        directiveVisitor, pipeVisitor, templateCompiler, typeVisitor, factoryVisitor);
   }
 
   /// Reads *un-normalized* [CompileDirectiveMetadata]/[CompilePipeMetadata] from the
@@ -71,6 +73,19 @@ class TypeMetadataReader {
       return new Future.value(null);
     }
   }
+
+  Future<dynamic> readFactoryMetadata(FunctionDeclaration node, AssetId assetId) {
+    _factoryVisitor.reset(assetId);
+
+    node.accept(_factoryVisitor);
+
+    if (_factoryVisitor.isInjectable) {
+      return new Future.value(_factoryVisitor.factory);
+    } else {
+      return new Future.value(null);
+    }
+  }
+
 
   CompileIdentifierMetadata readIdentifierMetadata(
       VariableDeclaration decl, AssetId assetId) {
@@ -275,6 +290,83 @@ class _CompileTypeMetadataVisitor extends Object
           isOptional: _hasAnnotation(p, "Optional"),
           query: query,
           viewQuery: viewQuery);
+    }).toList();
+  }
+
+  _getAnnotation(p, String attrName) =>
+      p.metadata.where((m) => m.name.toString() == attrName).first;
+
+  _hasAnnotation(p, String attrName) =>
+      p.metadata.where((m) => m.name.toString() == attrName).isNotEmpty;
+}
+
+class _CompileFactoryMetadataVisitor extends Object
+    with RecursiveAstVisitor<CompileFactoryMetadata> {
+  bool _isInjectable = false;
+  CompileFactoryMetadata _factory;
+  AssetId _assetId;
+  final AnnotationMatcher _annotationMatcher;
+
+  _CompileFactoryMetadataVisitor(this._annotationMatcher);
+
+  bool get isInjectable => _isInjectable;
+
+  CompileFactoryMetadata get factory => _factory;
+
+  void reset(AssetId assetId) {
+    this._assetId = assetId;
+    this._isInjectable = false;
+    this._factory = null;
+  }
+
+  @override
+  Object visitAnnotation(Annotation node) {
+    _isInjectable = _annotationMatcher.isInjectable(node, _assetId);
+
+    return null;
+  }
+
+  @override
+  Object visitFunctionDeclaration(FunctionDeclaration node) {
+    node.metadata.accept(this);
+    if (this._isInjectable) {
+      _factory = new CompileFactoryMetadata(
+          moduleUrl: toAssetUri(_assetId),
+          name: node.name.toString(),
+          diDeps: _getCompileDiDependencyMetadata(node),
+          runtime: null // Intentionally `null`, cannot be provided here.
+          );
+    }
+    return null;
+  }
+
+  List<CompileDiDependencyMetadata> _getCompileDiDependencyMetadata(
+      FunctionDeclaration node) {
+    return node.functionExpression.parameters.parameters.map((p) {
+      if (p is DefaultFormalParameter) {
+        p = p.parameter;
+      }
+
+      var token;
+      var type = null;
+      if (p is SimpleFormalParameter) {
+        type = p.type;
+      }
+      final typeToken = type != null ? _readToken(type.name) : null;
+      final injectTokens = p.metadata
+          .where((m) => m.name.toString() == "Inject")
+          .map((m) => _readToken(m.arguments.arguments[0]));
+      token = injectTokens.isNotEmpty ? injectTokens.first : typeToken;
+
+      return new CompileDiDependencyMetadata(
+          token: token,
+          isAttribute: false,
+          isSelf: _hasAnnotation(p, "Self"),
+          isHost: _hasAnnotation(p, "Host"),
+          isSkipSelf: _hasAnnotation(p, "SkipSelf"),
+          isOptional: _hasAnnotation(p, "Optional"),
+          query: null,
+          viewQuery: null);
     }).toList();
   }
 
@@ -956,10 +1048,12 @@ CompileProviderMetadata _readProvider(InstanceCreationExpression el) {
         useValue = _readValue(arg.expression);
         break;
       case "useFactory:":
-        factoryId = _readIdentifier(arg.expression);
+        final id = _readIdentifier(arg.expression);
+        useFactory = new CompileFactoryMetadata(prefix: id.prefix, name: id.name);
         break;
       case "toFactory:":
-        factoryId = _readIdentifier(arg.expression);
+        final id = _readIdentifier(arg.expression);
+        useFactory = new CompileFactoryMetadata(prefix: id.prefix, name: id.name);
         break;
       case "deps:":
         deps = _readDeps(arg.expression);
@@ -969,10 +1063,6 @@ CompileProviderMetadata _readProvider(InstanceCreationExpression el) {
         break;
     }
   });
-  if (factoryId != null) {
-    useFactory = new CompileFactoryMetadata(
-        name: factoryId.name, prefix: factoryId.prefix, diDeps: deps);
-  }
   return new CompileProviderMetadata(
       token: _readToken(token),
       useClass: useClass,

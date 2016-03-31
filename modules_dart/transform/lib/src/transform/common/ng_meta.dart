@@ -32,7 +32,8 @@ class NgMeta {
   static const _TYPE_VALUE = 'type';
 
   /// Metadata for each identifier
-  /// Type: [CompileDirectiveMetadata]|[CompilePipeMetadata]|[CompileTypeMetadata]|[CompileIdentifierMetadata]
+  /// Type: [CompileDirectiveMetadata]|[CompilePipeMetadata]|[CompileTypeMetadata]|
+  /// [CompileIdentifierMetadata]|[CompileFactoryMetadata]
   final Map<String, dynamic> identifiers;
 
   /// List of other types and names associated with a given name.
@@ -70,7 +71,7 @@ class NgMeta {
 
   bool get needsResolution {
     return identifiers.values.any((id) =>
-      id is CompileDirectiveMetadata || id is CompilePipeMetadata || id is CompileTypeMetadata
+      id is CompileDirectiveMetadata || id is CompilePipeMetadata || id is CompileTypeMetadata || id is CompileFactoryMetadata
           || (id is CompileIdentifierMetadata && id.value != null));
   }
 

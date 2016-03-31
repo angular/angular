@@ -324,8 +324,8 @@ void allTests() {
       final cmp = extracted.identifiers["FooComponent"];
 
       expect(cmp.providers.length, equals(1));
-      expect(cmp.providers[0].token.name, equals("Service"));
-      expect(cmp.providers[0].token.moduleUrl, equals("moduleUrl"));
+      expect(cmp.providers[0].token.identifier.name, equals("Service"));
+      expect(cmp.providers[0].token.identifier.moduleUrl, equals("moduleUrl"));
     });
 
     test('should resolve providers when there is a level of indirection.', () async {
@@ -431,6 +431,8 @@ void allTests() {
       new CompileTypeMetadata(name: 'Service1', moduleUrl: 'moduleUrl');
       barNgMeta.identifiers['Service2'] =
       new CompileTypeMetadata(name: 'Service2', moduleUrl: 'moduleUrl');
+      barNgMeta.identifiers['Service3'] =
+      new CompileFactoryMetadata(name: 'Service3', moduleUrl: 'moduleUrl');
 
       fooComponentMeta.template =
       new CompileTemplateMetadata(template: "import 'bar.dart';");
@@ -446,10 +448,7 @@ void allTests() {
             useValue: new CompileIdentifierMetadata(name: 'Service2')),
         new CompileProviderMetadata(
             token: new CompileTokenMetadata(identifier: new CompileIdentifierMetadata(name: 'Service1')),
-            useFactory: new CompileFactoryMetadata(name: 'Service2', diDeps: [
-              new CompileDiDependencyMetadata(
-                  token: new CompileTokenMetadata(identifier: new CompileIdentifierMetadata(name: 'Service2')))
-            ]))
+            useFactory: new CompileFactoryMetadata(name: 'Service3'))
       ];
 
       fooNgMeta.ngDeps.imports
@@ -479,10 +478,8 @@ void allTests() {
 
       expect(cmp.providers[3].token.identifier.name, equals("Service1"));
       expect(cmp.providers[3].token.identifier.moduleUrl, equals("moduleUrl"));
-      expect(cmp.providers[3].useFactory.name, equals("Service2"));
+      expect(cmp.providers[3].useFactory.name, equals("Service3"));
       expect(cmp.providers[3].useFactory.moduleUrl, equals("moduleUrl"));
-      expect(cmp.providers[3].useFactory.diDeps[0].token.identifier.name, equals("Service2"));
-      expect(cmp.providers[3].useFactory.diDeps[0].token.identifier.moduleUrl, equals("moduleUrl"));
     });
 
     test('should fallback to the list of resolved identifiers.', () async {

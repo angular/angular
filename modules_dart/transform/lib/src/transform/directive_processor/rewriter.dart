@@ -145,8 +145,20 @@ class _NgMetaVisitor extends Object with SimpleAstVisitor<Object> {
 
   @override
   Object visitFunctionDeclaration(FunctionDeclaration node) {
-    ngMeta.identifiers[node.name.name] = new CompileIdentifierMetadata(
-        name: node.name.name, moduleUrl: toAssetUri(assetId));
+    _normalizations.add(_reader
+        .readFactoryMetadata(node, assetId)
+        .then((compileMetadataWithIdentifier) {
+      if (compileMetadataWithIdentifier != null) {
+        ngMeta.identifiers[compileMetadataWithIdentifier.identifier.name] =
+            compileMetadataWithIdentifier;
+      } else {
+        ngMeta.identifiers[node.name.name] = new CompileIdentifierMetadata(
+            name: node.name.name, moduleUrl: toAssetUri(assetId));
+      }
+    }).catchError((err) {
+      log.error('ERROR: $err', asset: assetId);
+    }));
+
     return null;
   }
 
