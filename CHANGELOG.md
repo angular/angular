@@ -30,14 +30,20 @@
 ### BREAKING CHANGES
 
 * For static content projection, elements with *-directives are now matched against the element itself vs the template before.
-    <p *ngIf="condition" foo></p>
+    
+`<p *ngIf="condition" foo></p>`
+
 Before:
+```html
     // Use the implicit template for projection
     <ng-content select="template"></ng-content>
+```
+
 After:
+```html
     // Use the actual element for projection
     <ng-content select="p[foo]"></ng-content>
-
+```
 
 <a name="2.0.0-beta.12"></a>
 # 2.0.0-beta.12 (2016-03-23)
