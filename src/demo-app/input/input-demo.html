@@ -1,3 +1,63 @@
+<md-card class="demo-card demo-basic">
+  <md-toolbar color="primary">Basic</md-toolbar>
+  <md-card-content>
+    <form>
+      <md-input class="demo-full-width" placeholder="Company (disabled)" disabled value="Google">
+      </md-input>
+
+      <table style="width: 100%" cellspacing="0"><tr>
+        <td><md-input placeholder="First name" style="width: 100%"></md-input></td>
+        <td><md-input placeholder="Long Last Name That Will Be Truncated" style="width: 100%"></md-input></td>
+      </tr></table>
+      <p>
+        <md-input class="demo-full-width" placeholder="Address" value="1600 Amphitheatre Pkway"></md-input>
+        <md-input class="demo-full-width" placeholder="Address 2"></md-input>
+      </p>
+      <table style="width: 100%" cellspacing="0"><tr>
+        <td><md-input class="demo-full-width" placeholder="City" value="Mountain View"></md-input></td>
+        <td><md-input class="demo-full-width" placeholder="State" maxLength="2" value="CA"></md-input></td>
+        <td><md-input #postalCode class="demo-full-width" maxLength="5"
+                      placeholder="Postal Code"
+                      value="94043">
+          <md-hint align="end">{{postalCode.characterCount}} / 5</md-hint>
+        </md-input></td>
+      </tr></table>
+    </form>
+  </md-card-content>
+</md-card>
+
+<md-card class="demo-card demo-basic">
+  <md-toolbar color="primary">Prefix + Suffix</md-toolbar>
+  <md-card-content>
+    <md-input placeholder="amount" align="end">
+      <span md-prefix>$&nbsp;</span>
+      <span md-suffix>.00</span>
+    </md-input>
+  </md-card-content>
+</md-card>
+
+<md-card class="demo-card demo-basic">
+  <md-toolbar color="primary">Divider Colors</md-toolbar>
+  <md-card-content>
+    <md-input dividerColor="primary" placeholder="Default Color" value="example"></md-input>
+    <md-input dividerColor="accent" placeholder="Accent Color" value="example"></md-input>
+    <md-input dividerColor="warn" placeholder="Warn Color" value="example"></md-input>
+  </md-card-content>
+</md-card>
+
+<md-card class="demo-card demo-basic">
+  <md-toolbar color="primary">Hints</md-toolbar>
+  <md-card-content>
+    <p>
+      <md-input placeholder="Character count (100 max)" maxLength="100" class="demo-full-width"
+                value="Hello world. How are you?"
+                #characterCountHintExample>
+        <md-hint align="end">{{characterCountHintExample.characterCount}} / 100</md-hint>
+      </md-input>
+    </p>
+  </md-card-content>
+</md-card>
+
 <md-card class="demo-card">
   <md-card-title>
     Hello <md-input [(ngModel)]="name" type="string" placeholder="First name"></md-input>,

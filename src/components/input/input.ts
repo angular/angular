@@ -131,7 +131,7 @@ export class MdInput implements ControlValueAccessor, AfterContentInit, OnChange
    */
   @Input() @OneOf(['start', 'end']) align: string = 'start';
   @Input() @BooleanFieldValue() disabled: boolean = false;
-  @Input() @OneOf(['primary', 'accent']) dividerColor: string = 'primary';
+  @Input() @OneOf(['primary', 'accent', 'warn']) dividerColor: string = 'primary';
   @Input() @BooleanFieldValue() floatingPlaceholder: boolean = true;
   @Input() hintLabel: string = '';
   @Input() id: string = `md-input-${nextUniqueId++}`;

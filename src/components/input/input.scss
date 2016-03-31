@@ -11,6 +11,7 @@ $md-input-required-placeholder-color: md-color($md-accent);
 // Underline colors.
 $md-input-underline-color: md-color($md-foreground, hint-text);
 $md-input-underline-color-accent: md-color($md-accent);
+$md-input-underline-color-warn: md-color($md-warn);
 $md-input-underline-disabled-color: md-color($md-foreground, hint-text);
 $md-input-underline-focused-color: md-color($md-primary);
 
@@ -18,10 +19,28 @@ $md-input-underline-focused-color: md-color($md-primary);
 $md-input-underline-disabled-background-image: linear-gradient(to right,
         rgba(0,0,0,0.26) 0%, rgba(0,0,0,0.26) 33%, transparent 0%);
 
+
+/**
+ * Applies a floating placeholder above the input itself.
+ */
+%md-input-placeholder-floating {
+  visibility: visible;
+  padding-bottom: 5px;
+  transform: translateY(-100%) scale(0.75);
+
+  .md-placeholder-required {
+    color: $md-input-required-placeholder-color;
+  }
+}
+
+
 :host {
   display: inline-block;
   position: relative;
   font-family: $md-font-family;
+
+  // To avoid problems with text-align.
+  text-align: left;
 
   // Global wrapper. We need to apply margin to the element for spacing, but
   // cannot apply it to the host element directly.
@@ -61,18 +80,32 @@ $md-input-underline-disabled-background-image: linear-gradient(to right,
     }
   }
 
+  .md-input-infix {
+    position: relative;
+  }
+
   // The placeholder label. This is invisible unless it is. The logic to show it is
   // basically `empty || (float && (!empty || focused))`. Float is dependent on the
   // `floatingPlaceholder` input.
   .md-input-placeholder {
+    // The placeholder is after the <input>, but needs to be aligned top-left of the
+    // infix <div>.
     position: absolute;
+    left: 0;
+    top: 0;
+
     visibility: hidden;
     font-size: 100%;
     pointer-events: none;  // We shouldn't catch mouse events (let them through).
     color: $md-input-placeholder-color;
     z-index: 1;
 
+    // Put ellipsis text overflow.
     width: 100%;
+    display: block;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow-x: hidden;
 
     transform: translateY(0);
     transform-origin: bottom left;
@@ -87,13 +120,7 @@ $md-input-underline-disabled-background-image: linear-gradient(to right,
 
     // Show the placeholder above the input when it's not empty, or focused.
     &.md-float:not(.md-empty), &.md-float.md-focused {
-      visibility: visible;
-      padding-bottom: 5px;
-      transform: translateY(-100%) scale(0.75);
-
-      .md-placeholder-required {
-        color: $md-input-required-placeholder-color;
-      }
+      @extend %md-input-placeholder-floating;
     }
 
     // :focus is applied to the input, but we apply md-focused to the other elements
@@ -104,7 +131,19 @@ $md-input-underline-disabled-background-image: linear-gradient(to right,
       &.md-accent {
         color: $md-input-underline-color-accent;
       }
+      &.md-warn {
+        color: $md-input-underline-color-warn;
+      }
     }
+  }
+
+  // Pseudo-class for Chrome and Safari auto-fill to move the placeholder to
+  // the floating position. This is necessary because these browsers do not actually
+  // fire any events when a form auto-fill is occurring.
+  // Once the autofill is committed, a change event happen and the regular md-input
+  // classes take over to fulfill this behaviour.
+  input:-webkit-autofill + .md-input-placeholder {
+    @extend %md-input-placeholder-floating;
   }
 
   // The underline is what's shown under the input, its prefix and its suffix.
@@ -140,6 +179,9 @@ $md-input-underline-disabled-background-image: linear-gradient(to right,
       &.md-accent {
         background-color: $md-input-underline-color-accent;
       }
+      &.md-warn {
+        background-color: $md-input-underline-color-warn;
+      }
 
       &.md-focused {
         opacity: 1;
@@ -164,6 +206,8 @@ $md-input-underline-disabled-background-image: linear-gradient(to right,
 
 // RTL support.
 :host-context([dir="rtl"]) {
+  text-align: right;
+
   .md-input-placeholder {
     transform-origin: bottom right;
   }

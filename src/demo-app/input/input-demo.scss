@@ -1,6 +1,15 @@
 @import 'default-theme';
 @import 'variables';
 
+.demo-basic {
+  padding: 0;
+}
+.demo-basic md-card-content {
+  padding: 16px;
+}
+.demo-full-width {
+  width: 100%;
+}
 
 .demo-icons {
   font-size: 100%;
