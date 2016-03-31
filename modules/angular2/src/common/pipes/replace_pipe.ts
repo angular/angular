@@ -69,7 +69,7 @@ export class ReplacePipe implements PipeTransform {
     if (isFunction(replacement)) {
       var rgxPattern = isString(pattern) ? RegExpWrapper.create(pattern) : pattern;
 
-      return StringWrapper.replaceAllMapped(input, rgxPattern, replacement);
+      return StringWrapper.replaceAllMapped(input, rgxPattern, <Function>replacement);
     }
     if (pattern instanceof RegExp) {
       // use the replaceAll variant

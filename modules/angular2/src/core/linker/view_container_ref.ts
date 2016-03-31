@@ -120,7 +120,7 @@ export abstract class ViewContainerRef {
 }
 
 export class ViewContainerRef_ implements ViewContainerRef {
-  constructor(private _element: AppElement) {}
+  constructor(private _element: AppElement<any>) {}
 
   get(index: number): EmbeddedViewRef { return this._element.nestedViews[index].ref; }
   get length(): number {

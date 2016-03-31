@@ -12,7 +12,7 @@ function _flattenNestedViewRenderNodes(nodes: any[], renderNodes: any[]): any[] 
   for (var i = 0; i < nodes.length; i++) {
     var node = nodes[i];
     if (node instanceof AppElement) {
-      var appEl = <AppElement>node;
+      var appEl = <AppElement<any>>node;
       renderNodes.push(appEl.nativeElement);
       if (isPresent(appEl.nestedViews)) {
         for (var k = 0; k < appEl.nestedViews.length; k++) {
@@ -26,10 +26,11 @@ function _flattenNestedViewRenderNodes(nodes: any[], renderNodes: any[]): any[] 
   return renderNodes;
 }
 
-const EMPTY_ARR = CONST_EXPR([]);
+// TODO: change to const after https://github.com/angular/ts2dart/issues/359
+var EMPTY_ARR: any[][] = <any[][]>[];
 
 export function ensureSlotCount(projectableNodes: any[][], expectedSlotCount: number): any[][] {
-  var res;
+  var res: any[][];
   if (isBlank(projectableNodes)) {
     res = EMPTY_ARR;
   } else if (projectableNodes.length < expectedSlotCount) {

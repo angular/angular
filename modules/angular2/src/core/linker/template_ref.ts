@@ -31,7 +31,7 @@ export abstract class TemplateRef {
 }
 
 export class TemplateRef_ extends TemplateRef {
-  constructor(private _appElement: AppElement, private _viewFactory: Function) { super(); }
+  constructor(private _appElement: AppElement<any>, private _viewFactory: Function) { super(); }
 
   createEmbeddedView(): AppView<any> {
     return this._viewFactory(this._appElement.parentView.viewManager,

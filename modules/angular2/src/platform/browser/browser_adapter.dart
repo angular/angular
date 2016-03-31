@@ -178,7 +178,7 @@ class BrowserDomAdapter extends GenericBrowserDomAdapter {
   Element querySelector(el, String selector) => el.querySelector(selector);
 
   ElementList querySelectorAll(el, String selector) =>
-      el.querySelectorAll(selector);
+      el.querySelectorAll(selector) as ElementList;
 
   void on(EventTarget element, String event, callback(arg)) {
     // due to https://code.google.com/p/dart/issues/detail?id=17406
@@ -352,7 +352,7 @@ class BrowserDomAdapter extends GenericBrowserDomAdapter {
   String tagName(Element element) => element.tagName;
 
   Map<String, String> attributeMap(Element element) {
-    var result = {};
+    var result = <String, String>{};
     result.addAll(element.attributes);
     // TODO(tbosch): element.getNamespacedAttributes() somehow does not return the attribute value
     var xlinkHref = element.getAttributeNS('http://www.w3.org/1999/xlink', 'href');
@@ -398,7 +398,7 @@ class BrowserDomAdapter extends GenericBrowserDomAdapter {
       document.implementation.createHtmlDocument('fakeTitle');
 
   HtmlDocument defaultDoc() => document;
-  Rectangle getBoundingClientRect(el) => el.getBoundingClientRect();
+  Rectangle getBoundingClientRect(el) => el.getBoundingClientRect() as Rectangle;
   String getTitle() => document.title;
   void setTitle(String newTitle) {
     document.title = newTitle;
@@ -496,7 +496,7 @@ class BrowserDomAdapter extends GenericBrowserDomAdapter {
     obj[parts.removeAt(0)] = value;
   }
 
-  requestAnimationFrame(callback) {
+  requestAnimationFrame(callback(num timestamp)) {
     return window.requestAnimationFrame(callback);
   }
 

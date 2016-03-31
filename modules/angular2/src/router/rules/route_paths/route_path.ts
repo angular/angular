@@ -2,7 +2,8 @@ import {Url} from '../../url_parser';
 
 export class MatchedUrl {
   constructor(public urlPath: string, public urlParams: string[],
-              public allParams: {[key: string]: any}, public auxiliary: Url[], public rest: Url) {}
+              public allParams: {[key: string]: string}, public auxiliary: Url[],
+              public rest: Url) {}
 }
 
 

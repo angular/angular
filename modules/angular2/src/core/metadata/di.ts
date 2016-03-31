@@ -165,7 +165,7 @@ export class QueryMetadata extends DependencyMetadata {
   /**
    * what this is querying for.
    */
-  get selector() { return resolveForwardRef(this._selector); }
+  get selector(): string | Type { return resolveForwardRef(this._selector); }
 
   /**
    * whether this is querying for a variable binding or a directive.
@@ -176,7 +176,7 @@ export class QueryMetadata extends DependencyMetadata {
    * returns a list of variable bindings this is querying for.
    * Only applicable if this is a variable bindings query.
    */
-  get varBindings(): string[] { return this.selector.split(','); }
+  get varBindings(): string[] { return (<string>this.selector).split(','); }
 
   toString(): string { return `@Query(${stringify(this.selector)})`; }
 }

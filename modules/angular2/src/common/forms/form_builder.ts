@@ -59,9 +59,10 @@ export class FormBuilder {
     var controls = this._reduceControls(controlsConfig);
     var optionals = <{[key: string]: boolean}>(
         isPresent(extra) ? StringMapWrapper.get(extra, "optionals") : null);
-    var validator: ValidatorFn = isPresent(extra) ? StringMapWrapper.get(extra, "validator") : null;
+    var validator: ValidatorFn =
+        isPresent(extra) ? <ValidatorFn>StringMapWrapper.get(extra, "validator") : null;
     var asyncValidator: AsyncValidatorFn =
-        isPresent(extra) ? StringMapWrapper.get(extra, "asyncValidator") : null;
+        isPresent(extra) ? <AsyncValidatorFn>StringMapWrapper.get(extra, "asyncValidator") : null;
     return new modelModule.ControlGroup(controls, optionals, validator, asyncValidator);
   }
   /**
@@ -101,8 +102,9 @@ export class FormBuilder {
 
     } else if (isArray(controlConfig)) {
       var value = controlConfig[0];
-      var validator: ValidatorFn = controlConfig.length > 1 ? controlConfig[1] : null;
-      var asyncValidator: AsyncValidatorFn = controlConfig.length > 2 ? controlConfig[2] : null;
+      var validator: ValidatorFn = controlConfig.length > 1 ? <ValidatorFn>controlConfig[1] : null;
+      var asyncValidator: AsyncValidatorFn =
+          controlConfig.length > 2 ? <AsyncValidatorFn>controlConfig[2] : null;
       return this.control(value, validator, asyncValidator);
 
     } else {

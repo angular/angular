@@ -13,7 +13,7 @@ export class SharedStylesHost {
   constructor() {}
 
   addStyles(styles: string[]) {
-    var additions = [];
+    var additions = <string[]>[];
     styles.forEach(style => {
       if (!SetWrapper.has(this._stylesSet, style)) {
         this._stylesSet.add(style);

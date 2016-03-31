@@ -107,7 +107,7 @@ export class ParamRoutePath implements RoutePath {
   matchUrl(url: Url): MatchedUrl {
     var nextUrlSegment = url;
     var currentUrlSegment: Url;
-    var positionalParams = {};
+    var positionalParams = <{[key: string]: string}>{};
     var captured: string[] = [];
 
     for (var i = 0; i < this._segments.length; i += 1) {
@@ -147,9 +147,9 @@ export class ParamRoutePath implements RoutePath {
 
     var urlPath = captured.join('/');
 
-    var auxiliary = [];
-    var urlParams = [];
-    var allParams = positionalParams;
+    var auxiliary = <Url[]>[];
+    var urlParams = <string[]>[];
+    var allParams: {[key: string]: string} = positionalParams;
     if (isPresent(currentUrlSegment)) {
       // If this is the root component, read query params. Otherwise, read matrix params.
       var paramsSegment = url instanceof RootUrl ? url : currentUrlSegment;

@@ -8,11 +8,11 @@ export class RenderComponentType {
 }
 
 export abstract class RenderDebugInfo {
-  get injector(): Injector { return unimplemented(); }
+  get injector(): Injector { return <Injector>unimplemented(); }
   get component(): any { return unimplemented(); }
-  get providerTokens(): any[] { return unimplemented(); }
-  get locals(): {[key: string]: string} { return unimplemented(); }
-  get source(): string { return unimplemented(); }
+  get providerTokens(): any[] { return <any[]>unimplemented(); }
+  get locals(): {[key: string]: string} { return <{[key: string]: string}>unimplemented(); }
+  get source(): string { return <string>unimplemented(); }
 }
 
 export abstract class Renderer {

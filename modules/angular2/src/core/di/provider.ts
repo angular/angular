@@ -41,7 +41,8 @@ export class Dependency {
   static fromKey(key: Key): Dependency { return new Dependency(key, false, null, null, []); }
 }
 
-const _EMPTY_LIST = CONST_EXPR([]);
+// TODO: change to const after https://github.com/angular/ts2dart/issues/359
+var _EMPTY_LIST: Dependency[] = <Dependency[]>[];
 
 /**
  * Describes how the {@link Injector} should instantiate a given token.
@@ -513,7 +514,7 @@ export class ProviderBuilder {
  */
 export function resolveFactory(provider: Provider): ResolvedFactory {
   var factoryFn: Function;
-  var resolvedDeps;
+  var resolvedDeps: Dependency[];
   if (isPresent(provider.useClass)) {
     var useClass = resolveForwardRef(provider.useClass);
     factoryFn = reflector.factory(useClass);

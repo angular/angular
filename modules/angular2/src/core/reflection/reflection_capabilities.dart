@@ -246,8 +246,8 @@ class ReflectionCapabilities implements PlatformReflectionCapabilities {
   List _convertParameter(ParameterMirror p) {
     var t = p.type;
     var res = (!t.hasReflectedType || t.reflectedType == dynamic)
-        ? []
-        : [t.reflectedType];
+        ? <Object>[]
+        : <Object>[t.reflectedType];
     res.addAll(p.metadata.map((m) => m.reflectee));
     return res;
   }

@@ -227,7 +227,7 @@ export class PlatformRef_ extends PlatformRef {
       completer.resolve(this._initApp(zone, additionalProviders));
     } else {
       zone.run(() => {
-        PromiseWrapper.then(bindingFn(zone), (providers: Array<Type | Provider | any[]>) => {
+        bindingFn(zone).then((providers) => {
           if (isPresent(additionalProviders)) {
             providers = ListWrapper.concat(providers, additionalProviders);
           }
@@ -250,7 +250,7 @@ export class PlatformRef_ extends PlatformRef {
         provide(ApplicationRef, {useFactory: (): ApplicationRef => app, deps: []})
       ]);
 
-      var exceptionHandler: Function;
+      var exceptionHandler: ExceptionHandler;
       try {
         injector = this.injector.resolveAndCreateChild(providers);
         exceptionHandler = injector.get(ExceptionHandler);
@@ -286,7 +286,7 @@ export class PlatformRef_ extends PlatformRef {
 }
 
 function _runAppInitializers(injector: Injector): Promise<any> {
-  let inits: Function[] = injector.getOptional(APP_INITIALIZER);
+  let inits: Function[] = <Function[]>injector.getOptional(APP_INITIALIZER);
   let promises: Promise<any>[] = [];
   if (isPresent(inits)) {
     inits.forEach(init => {
@@ -428,7 +428,7 @@ export class ApplicationRef_ extends ApplicationRef {
       this._rootComponentTypes.push(componentType);
       try {
         var injector: Injector = this._injector.resolveAndCreateChild(componentProviders);
-        var compRefToken: Promise<ComponentRef> = injector.get(APP_COMPONENT_REF_PROMISE);
+        var compRefToken = <Promise<ComponentRef>>injector.get(APP_COMPONENT_REF_PROMISE);
         var tick = (componentRef: ComponentRef) => {
           this._loadComponent(componentRef);
           completer.resolve(componentRef);

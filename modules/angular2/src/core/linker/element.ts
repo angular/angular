@@ -17,13 +17,13 @@ import {
 
 import {QueryList} from './query_list';
 
-export class AppElement {
+export class AppElement<T> {
   public nestedViews: AppView<any>[] = null;
   public componentView: AppView<any> = null;
 
   private _ref: ElementRef_;
   private _vcRef: ViewContainerRef_;
-  public component: any;
+  public component: T;
   public componentConstructorViewQueries: QueryList<any>[];
 
   private _componentChangeDetectorRef: BufferingChangeDetectorRef = null;
@@ -45,7 +45,7 @@ export class AppElement {
     return this._vcRef;
   }
 
-  initComponent(component: any, componentConstructorViewQueries: QueryList<any>[]) {
+  initComponent(component: T, componentConstructorViewQueries: QueryList<any>[]) {
     this.component = component;
     this.componentConstructorViewQueries = componentConstructorViewQueries;
   }

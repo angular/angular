@@ -50,7 +50,8 @@ export class ServiceMessageBroker_ extends ServiceMessageBroker {
     ObservableWrapper.subscribe(source, (message) => this._handleMessage(message));
   }
 
-  registerMethod(methodName: string, signature: Type[], method: (..._: any[]) => Promise<any>| void,
+  registerMethod(methodName: string, signature: Type[],
+                 method: Function /*(..._: any[]) => Promise<any>| void*/,
                  returnType?: Type): void {
     this._methods.set(methodName, (message: ReceivedMessage) => {
       var serializedArgs = message.args;

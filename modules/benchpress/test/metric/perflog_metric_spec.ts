@@ -46,7 +46,7 @@ export function main() {
           new PerfLogFeatures({render: true, gc: true, frameCapture: true, userTiming: true});
     }
     if (isBlank(microMetrics)) {
-      microMetrics = StringMapWrapper.create();
+      microMetrics = StringMapWrapper.create<string>();
     }
     var bindings = [
       Options.DEFAULT_PROVIDERS,

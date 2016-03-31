@@ -1,7 +1,7 @@
 import {isPresent, isBlank} from 'angular2/src/facade/lang';
 import {BaseException} from 'angular2/src/facade/exceptions';
 import {PromiseWrapper} from 'angular2/src/facade/promise';
-import {Map} from 'angular2/src/facade/collection';
+import {Map, MapWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
 
 import {RouteHandler} from './route_handlers/route_handler';
 import {Url, convertUrlParamsToArray} from '../url_parser';
@@ -29,7 +29,7 @@ export interface AbstractRule {
   hash: string;
   path: string;
   recognize(beginningSegment: Url): Promise<RouteMatch>;
-  generate(params: {[key: string]: any}): ComponentInstruction;
+  generate(params: {[key: string]: string}): ComponentInstruction;
 }
 
 export class RedirectRule implements AbstractRule {
@@ -46,14 +46,14 @@ export class RedirectRule implements AbstractRule {
    * Returns `null` or a `ParsedUrl` representing the new path to match
    */
   recognize(beginningSegment: Url): Promise<RouteMatch> {
-    var match = null;
+    var match: RedirectMatch = null;
     if (isPresent(this._pathRecognizer.matchUrl(beginningSegment))) {
       match = new RedirectMatch(this.redirectTo, this._pathRecognizer.specificity);
     }
     return PromiseWrapper.resolve(match);
   }
 
-  generate(params: {[key: string]: any}): ComponentInstruction {
+  generate(params: {[key: string]: string}): ComponentInstruction {
     throw new BaseException(`Tried to generate a redirect.`);
   }
 }
@@ -94,7 +94,9 @@ export class RouteRule implements AbstractRule {
     var generated = this._routePath.generateUrl(params);
     var urlPath = generated.urlPath;
     var urlParams = generated.urlParams;
-    return this._getInstruction(urlPath, convertUrlParamsToArray(urlParams), params);
+    var stringParams = <{[key: string]: string}>{};
+    StringMapWrapper.forEach(params, (v: any, k: string) => stringParams[k] = '' + v);
+    return this._getInstruction(urlPath, convertUrlParamsToArray(urlParams), stringParams);
   }
 
   generateComponentPathValues(params: {[key: string]: any}): GeneratedUrl {
@@ -102,7 +104,7 @@ export class RouteRule implements AbstractRule {
   }
 
   private _getInstruction(urlPath: string, urlParams: string[],
-                          params: {[key: string]: any}): ComponentInstruction {
+                          params: {[key: string]: string}): ComponentInstruction {
     if (isBlank(this.handler.componentType)) {
       throw new BaseException(`Tried to get instruction before the type was loaded.`);
     }

@@ -14,7 +14,7 @@ class PromiseWrapper {
       .wait(promises.map((p) => p is Future ? p as Future/*<T>*/ : new Future/*<T>*/.value(p)));
   }
   static Future/*<R>*/ then/*<T, R>*/(Future/*<T>*/ promise, dynamic /*=R*/ success(dynamic /*=T*/ value), [Function onError]) {
-    if (success == null) return promise.catchError(onError);
+    if (success == null) return promise.catchError(onError) as Future<dynamic/*=R*/>;
     return promise.then(success, onError: onError);
   }
 
@@ -28,7 +28,7 @@ class PromiseWrapper {
     return promise.catchError(onError);
   }
 
-  static void scheduleMicrotask(fn) {
+  static void scheduleMicrotask(fn()) {
     async.scheduleMicrotask(fn);
   }
 

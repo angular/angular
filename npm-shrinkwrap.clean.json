@@ -5353,7 +5353,7 @@
       }
     },
     "ts2dart": {
-      "version": "0.7.31",
+      "version": "0.7.35",
       "dependencies": {
         "source-map": {
           "version": "0.4.4"

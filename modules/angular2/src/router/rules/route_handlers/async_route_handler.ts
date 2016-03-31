@@ -19,7 +19,7 @@ export class AsyncRouteHandler implements RouteHandler {
       return this._resolvedComponent;
     }
 
-    return this._resolvedComponent = this._loader().then((componentType) => {
+    return this._resolvedComponent = <Promise<Type>>this._loader().then((componentType) => {
       this.componentType = componentType;
       return componentType;
     });

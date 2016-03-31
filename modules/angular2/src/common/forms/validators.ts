@@ -135,9 +135,10 @@ function _executeAsyncValidators(control: modelModule.AbstractControl,
 }
 
 function _mergeErrors(arrayOfErrors: any[]): {[key: string]: any} {
-  var res: {[key: string]: any} =
-      arrayOfErrors.reduce((res: {[key: string]: any}, errors: {[key: string]: any}) => {
+  var res: {[key: string]: any} = arrayOfErrors.reduce<{[key: string]: any}>(
+      (res: {[key: string]: any}, errors: {[key: string]: any}) => {
         return isPresent(errors) ? StringMapWrapper.merge(res, errors) : res;
-      }, {});
+      },
+      {});
   return StringMapWrapper.isEmpty(res) ? null : res;
 }

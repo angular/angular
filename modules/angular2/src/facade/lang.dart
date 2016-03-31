@@ -20,7 +20,7 @@ class CONST {
 
 const IS_DART = true;
 
-scheduleMicroTask(Function fn) {
+scheduleMicroTask(fn()) {
   Zone.current.scheduleMicrotask(fn);
 }
 
@@ -134,7 +134,7 @@ class StringWrapper {
   }
 
   static String replaceAllMapped(String s, RegExp from, Function cb) {
-    return s.replaceAllMapped(from, cb);
+    return s.replaceAllMapped(from, (Match m) => cb(m) as String);
   }
 
   static bool contains(String s, String substr) {

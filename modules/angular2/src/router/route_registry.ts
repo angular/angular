@@ -386,7 +386,7 @@ export class RouteRegistry {
       if (linkParamIndex < linkParams.length) {
         let linkParam = linkParams[linkParamIndex];
         if (isStringMap(linkParam) && !isArray(linkParam)) {
-          routeParams = linkParam;
+          routeParams = <{[key: string]: any}>linkParam;
           linkParamIndex += 1;
         }
       }

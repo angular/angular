@@ -3,7 +3,7 @@ import {isPresent, isBlank, RegExpWrapper, CONST_EXPR} from 'angular2/src/facade
 import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
 
 export function convertUrlParamsToArray(urlParams: {[key: string]: any}): string[] {
-  var paramsArray = [];
+  var paramsArray = <string[]>[];
   if (isBlank(urlParams)) {
     return [];
   }
@@ -23,7 +23,7 @@ export function serializeParams(urlParams: {[key: string]: any}, joiner = '&'): 
 export class Url {
   constructor(public path: string, public child: Url = null,
               public auxiliary: Url[] = CONST_EXPR([]),
-              public params: {[key: string]: any} = CONST_EXPR({})) {}
+              public params: {[key: string]: string} = CONST_EXPR(<{[key: string]: string}>{})) {}
 
   toString(): string {
     return this.path + this._matrixParamsToString() + this._auxToString() + this._childString();
@@ -52,7 +52,7 @@ export class Url {
 
 export class RootUrl extends Url {
   constructor(path: string, child: Url = null, auxiliary: Url[] = CONST_EXPR([]),
-              params: {[key: string]: any} = null) {
+              params: {[key: string]: string} = null) {
     super(path, child, auxiliary, params);
   }
 
@@ -126,7 +126,7 @@ export class UrlParser {
       this.capture('/');
       child = this.parseSegment();
     }
-    var queryParams: {[key: string]: any} = null;
+    var queryParams: {[key: string]: string} = null;
     if (this.peekStartsWith('?')) {
       queryParams = this.parseQueryParams();
     }
@@ -144,7 +144,7 @@ export class UrlParser {
     var path = matchUrlSegment(this._remaining);
     this.capture(path);
 
-    var matrixParams: {[key: string]: any} = null;
+    var matrixParams: {[key: string]: string} = null;
     if (this.peekStartsWith(';')) {
       matrixParams = this.parseMatrixParams();
     }
@@ -160,8 +160,8 @@ export class UrlParser {
     return new Url(path, child, aux, matrixParams);
   }
 
-  parseQueryParams(): {[key: string]: any} {
-    var params: {[key: string]: any} = {};
+  parseQueryParams(): {[key: string]: string} {
+    var params = <{[key: string]: string}>{};
     this.capture('?');
     this.parseParam(params);
     while (this._remaining.length > 0 && this.peekStartsWith('&')) {
@@ -171,8 +171,8 @@ export class UrlParser {
     return params;
   }
 
-  parseMatrixParams(): {[key: string]: any} {
-    var params: {[key: string]: any} = {};
+  parseMatrixParams(): {[key: string]: string} {
+    var params = <{[key: string]: string}>{};
     while (this._remaining.length > 0 && this.peekStartsWith(';')) {
       this.capture(';');
       this.parseParam(params);
@@ -180,13 +180,13 @@ export class UrlParser {
     return params;
   }
 
-  parseParam(params: {[key: string]: any}): void {
+  parseParam(params: {[key: string]: string}): void {
     var key = matchUrlSegment(this._remaining);
     if (isBlank(key)) {
       return;
     }
     this.capture(key);
-    var value: any = true;
+    var value: string = '';
     if (this.peekStartsWith('=')) {
       this.capture('=');
       var valueMatch = matchUrlSegment(this._remaining);

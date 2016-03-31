@@ -26,7 +26,7 @@ class TimerWrapper {
 
 class ObservableWrapper {
   static StreamSubscription subscribe/*<T>*/(Stream s, onNext(/*=T*/ value),
-      [onError, onComplete]) {
+      [onError(dynamic error), onComplete()]) {
     return s.listen(onNext,
         onError: onError, onDone: onComplete, cancelOnError: true);
   }
@@ -87,11 +87,11 @@ class EventEmitter<T> extends Stream<T> {
         onError: onError, onDone: onDone, cancelOnError: cancelOnError);
   }
 
-  void add(value) {
+  void add(T value) {
     _controller.add(value);
   }
 
-  void emit(value) {
+  void emit(T value) {
     _controller.add(value);
   }
 
@@ -118,7 +118,7 @@ class Subject<T> extends Stream<T> {
         onError: onError, onDone: onDone, cancelOnError: cancelOnError);
   }
 
-  void add(value) {
+  void add(T value) {
     _controller.add(value);
   }
 

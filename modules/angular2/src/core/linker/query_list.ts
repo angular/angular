@@ -30,7 +30,7 @@ import {Observable, EventEmitter} from 'angular2/src/facade/async';
 export class QueryList<T> {
   private _dirty = true;
   private _results: Array<T> = [];
-  private _emitter = new EventEmitter();
+  private _emitter = new EventEmitter<QueryList<T>>();
 
   get changes(): Observable<any> { return this._emitter; }
   get length(): number { return this._results.length; }

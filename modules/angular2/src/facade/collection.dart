@@ -42,7 +42,7 @@ class MapWrapper {
   static Map/*<K,V>*/ toStringMap/*<K,V>*/(Map/*<K,V>*/ m) => m;
 
   static Map/*<K,V>*/ createFromPairs/*<K,V>*/(List pairs) => pairs.fold(/*<K,V>*/{}, (m, p) {
-        m[p[0]] = p[1];
+        m[p[0] as K] = p[1] as V;
         return m;
       });
 
@@ -69,12 +69,12 @@ class StringMapWrapper {
     m.remove(k);
   }
 
-  static void forEach/*<V>*/(Map/*<String,V>*/ m, fn(/*=V*/ v, String k)) {
+  static void forEach/*<V>*/(Map/*<String,V>*/ m, void fn(/*=V*/ v, String k)) {
     m.forEach((k, v) => fn(v, k));
   }
 
   static Map/*<String,V>*/ merge/*<V>*/(Map/*<String,V>*/ a, Map/*<String,V>*/ b) {
-    var m = new Map/*<String,V>*/.from(a);
+    var m = new Map<String, dynamic /*=V*/>.from(a);
     if (b != null) {
       b.forEach((k, v) => m[k] = v);
     }
@@ -233,25 +233,25 @@ class ListWrapper {
     return l is UnmodifiableListView;
   }
 
-  static List flatten(List l) {
-    var target = [];
+  static List/*<T>*/ flatten/*<T>*/(List/*<T>*/ l) {
+    var target = /*<T>*/[];
     _flattenArray(l, target);
     return target;
   }
 
-  static addAll(List l, List source) {
+  static addAll/*<T>*/(List/*<T>*/ l, List/*<T>*/ source) {
     l.addAll(source);
   }
 }
 
-List _flattenArray(List source, List target) {
+List/*<T>*/ _flattenArray/*<T>*/(List source, List/*<T>*/ target) {
   if (source != null) {
     for (var i = 0; i < source.length; i++) {
       var item = source[i];
       if (item is List) {
-        _flattenArray(item, target);
+        _flattenArray/*<T>*/(item, target);
       } else {
-        target.add(item);
+        target.add(item as dynamic/*=T*/);
       }
     }
   }

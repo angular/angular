@@ -102,7 +102,7 @@ export class MapWrapper {
  * Wraps Javascript Objects
  */
 export class StringMapWrapper {
-  static create(): {[k: /*any*/ string]: any} {
+  static create<T>(): {[k: /*any*/ string]: T} {
     // Note: We are not using Object.create(null) here due to
     // performance!
     // http://jsperf.com/ng2-object-create-null
@@ -129,7 +129,7 @@ export class StringMapWrapper {
     return true;
   }
   static delete (map: {[key: string]: any}, key: string) { delete map[key]; }
-  static forEach<K, V>(map: {[key: string]: V}, callback: /*(V, K) => void*/ Function) {
+  static forEach<V>(map: {[key: string]: V}, callback: (value: V, key: string) => void) {
     for (var prop in map) {
       if (map.hasOwnProperty(prop)) {
         callback(map[prop], prop);

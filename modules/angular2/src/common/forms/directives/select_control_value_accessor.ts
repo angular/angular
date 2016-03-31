@@ -54,7 +54,7 @@ export class SelectControlValueAccessor implements ControlValueAccessor {
     this._renderer.setElementProperty(this._elementRef.nativeElement, 'value', value);
   }
 
-  registerOnChange(fn: () => any): void { this.onChange = fn; }
+  registerOnChange(fn: (_: any) => any): void { this.onChange = fn; }
   registerOnTouched(fn: () => any): void { this.onTouched = fn; }
 
   private _updateValueWhenListOfOptionsChanges(query: QueryList<NgSelectOption>) {

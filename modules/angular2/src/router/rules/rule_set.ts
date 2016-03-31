@@ -108,7 +108,7 @@ export class RuleSet {
    * Given a URL, returns a list of `RouteMatch`es, which are partial recognitions for some route.
    */
   recognize(urlParse: Url): Promise<RouteMatch>[] {
-    var solutions = [];
+    var solutions = <Promise<RouteMatch>[]>[];
 
     this.rules.forEach((routeRecognizer: AbstractRule) => {
       var pathMatch = routeRecognizer.recognize(urlParse);
@@ -145,7 +145,7 @@ export class RuleSet {
     return this.rulesByName.get(name).handler.resolveComponentType();
   }
 
-  generate(name: string, params: any): ComponentInstruction {
+  generate(name: string, params: {[k: string]: any}): ComponentInstruction {
     var rule: RouteRule = this.rulesByName.get(name);
     if (isBlank(rule)) {
       return null;
@@ -153,7 +153,7 @@ export class RuleSet {
     return rule.generate(params);
   }
 
-  generateAuxiliary(name: string, params: any): ComponentInstruction {
+  generateAuxiliary(name: string, params: {[k: string]: any}): ComponentInstruction {
     var rule: RouteRule = this.auxRulesByName.get(name);
     if (isBlank(rule)) {
       return null;

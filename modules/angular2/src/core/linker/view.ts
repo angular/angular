@@ -48,8 +48,6 @@ import {ElementInjector} from './element_injector';
 
 export const HOST_VIEW_ELEMENT_NAME = '$hostViewEl';
 
-const EMPTY_CONTEXT = CONST_EXPR(new Object());
-
 var _scope_check: WtfScopeFn = wtfCreateScope(`AppView#check(ascii id)`);
 
 /**
@@ -62,7 +60,7 @@ export abstract class AppView<T> {
   allNodes: any[];
   disposables: Function[];
   subscriptions: any[];
-  namedAppElements: {[key: string]: AppElement};
+  namedAppElements: {[key: string]: AppElement<any>};
   contentChildren: AppView<any>[] = [];
   viewChildren: AppView<any>[] = [];
   renderParent: AppView<any>;
@@ -87,10 +85,10 @@ export abstract class AppView<T> {
   constructor(public templateUrl: string, public clazz: any, public type: ViewType, public locals: {[key: string]: any},
               public renderer: Renderer, public viewManager: AppViewManager_,
               public parentInjector: Injector, public projectableNodes: Array<any | any[]>,
-              public declarationAppElement: AppElement, strategy: ChangeDetectionStrategy,
+              public declarationAppElement: AppElement<T>, strategy: ChangeDetectionStrategy,
               public staticNodeDebugInfos: StaticNodeDebugInfo[]) {
     this.ref = new ViewRef_(this);
-    var context;
+    var context: T;
     var mode = ChangeDetectionStrategy.CheckAlways;
     switch (this.type) {
       case ViewType.COMPONENT:
@@ -99,10 +97,10 @@ export abstract class AppView<T> {
                                                             ChangeDetectionStrategy.CheckOnce;
         break;
       case ViewType.EMBEDDED:
-        context = this.declarationAppElement.parentView.context;
+        context = <T>this.declarationAppElement.parentView.context;
         break;
       case ViewType.HOST:
-        context = EMPTY_CONTEXT;
+        context = null;
         break;
     }
     this.context = context;
@@ -129,8 +127,8 @@ export abstract class AppView<T> {
    */
   createInternal(rootSelector:string) {}
 
-  init(rootNodesOrAppElements: any[], allNodes: any[], appElements: {[key: string]: AppElement},
-       disposables: Function[], subscriptions: any[]) {
+  init(rootNodesOrAppElements: any[], allNodes: any[], appElements: {[key: string]: AppElement<T>},
+       disposables: Function[], subscriptions: any[], hadError: boolean) {
     this.rootNodesOrAppElements = rootNodesOrAppElements;
     this.allNodes = allNodes;
     this.namedAppElements = appElements;
@@ -146,7 +144,7 @@ export abstract class AppView<T> {
     }
   }
 
-  getHostViewElement(): AppElement { return this.namedAppElements[HOST_VIEW_ELEMENT_NAME]; }
+  getHostViewElement(): AppElement<any> { return this.namedAppElements[HOST_VIEW_ELEMENT_NAME]; }
 
   /**
    * Overwritten by implementations
@@ -430,7 +428,7 @@ export class HostViewFactory {
 function _findLastRenderNode(node: any): any {
   var lastNode;
   if (node instanceof AppElement) {
-    var appEl = <AppElement>node;
+    var appEl = <AppElement<any>>node;
     lastNode = appEl.nativeElement;
     if (isPresent(appEl.nestedViews)) {
       // Note: Views might have no root nodes at all!

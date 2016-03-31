@@ -324,11 +324,11 @@ export class DefaultKeyValueDiffer implements KeyValueDiffer {
   }
 
   /** @internal */
-  _forEach(obj, fn: Function) {
+  _forEach(obj, fn: (v: any, k: any) => void) {
     if (obj instanceof Map) {
       (<Map<any, any>>obj).forEach(<any>fn);
     } else {
-      StringMapWrapper.forEach(obj, fn);
+      StringMapWrapper.forEach(<{[k: string]: any}>obj, (v: any, k: string) => fn(v, k));
     }
   }
 }

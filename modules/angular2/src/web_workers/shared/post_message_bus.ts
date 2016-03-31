@@ -14,7 +14,7 @@ export interface PostMessageTarget { postMessage: (message: any, transfer?:[Arra
 
 export class PostMessageBusSink implements MessageBusSink {
   private _zone: NgZone;
-  private _channels: {[key: string]: _Channel} = StringMapWrapper.create();
+  private _channels: {[key: string]: _Channel} = StringMapWrapper.create<_Channel>();
   private _messageBuffer: Array<Object> = [];
 
   constructor(private _postMessageTarget: PostMessageTarget) {}
@@ -64,7 +64,7 @@ export class PostMessageBusSink implements MessageBusSink {
 
 export class PostMessageBusSource implements MessageBusSource {
   private _zone: NgZone;
-  private _channels: {[key: string]: _Channel} = StringMapWrapper.create();
+  private _channels: {[key: string]: _Channel} = StringMapWrapper.create<_Channel>();
 
   constructor(eventTarget?: EventTarget) {
     if (eventTarget) {
