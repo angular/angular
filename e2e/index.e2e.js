@@ -1,5 +1,3 @@
-const screenshot = require('./_screenshot.js');
-
 describe('hello, protractor', function () {
   describe('index', function () {
     browser.get('/');
