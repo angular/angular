@@ -12,10 +12,10 @@ source $SCRIPT_DIR/env_dart.sh
 cd $REPO_ROOT_DIR
 
 # Variables
-DDC_TOTAL_WARNING_CAP="210"
+DDC_TOTAL_WARNING_CAP="100"
 DDC_TOTAL_ERROR_CAP="0"
 DDC_DIR=`pwd`/tmp/dev_compiler
-DDC_VERSION="0.1.23"
+DDC_VERSION="0.1.24"
 
 # Get DDC
 mkdir -p tmp
