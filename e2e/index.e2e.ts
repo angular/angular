@@ -1,3 +1,5 @@
+/// <reference path="e2e.d.ts" />
+
 describe('hello, protractor', function () {
   describe('index', function () {
     browser.get('/');
