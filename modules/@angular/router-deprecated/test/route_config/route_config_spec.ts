@@ -172,7 +172,7 @@ export function main() {
                    .catch((e) => {
                      expect(e.originalException)
                          .toContainError(
-                             `Route "/child" with name "child" does not begin with an uppercase letter. Route names should be CamelCase like "Child".`);
+                             `Route "/child" with name "child" does not begin with an uppercase letter. Route names should be PascalCase like "Child".`);
                      async.done();
                      return null;
                    })}));
@@ -185,7 +185,7 @@ export function main() {
                    .catch((e) => {
                      expect(e.originalException)
                          .toContainError(
-                             `Route "/child" with name "child" does not begin with an uppercase letter. Route names should be CamelCase like "Child".`);
+                             `Route "/child" with name "child" does not begin with an uppercase letter. Route names should be PascalCase like "Child".`);
                      async.done();
                      return null;
                    })}));

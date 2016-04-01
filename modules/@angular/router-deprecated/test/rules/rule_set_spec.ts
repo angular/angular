@@ -164,7 +164,7 @@ export function main() {
       expect(() => recognizer.config(
                  new Route({path: 'app/user/:name', component: DummyCmpA, name: 'user'})))
           .toThrowError(
-              `Route "app/user/:name" with name "user" does not begin with an uppercase letter. Route names should be CamelCase like "User".`);
+              `Route "app/user/:name" with name "user" does not begin with an uppercase letter. Route names should be PascalCase like "User".`);
     });
 
 
