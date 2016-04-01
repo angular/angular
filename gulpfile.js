@@ -31,7 +31,8 @@ var shouldLog = require('./tools/build/logging');
 var dartSdk = require('./tools/build/dart');
 var browserProvidersConf = require('./browser-providers.conf.js');
 
-
+// This value should be updated when new stable versions of the Dart SDK are released
+const MIN_DART_SDK_VERSION = '1.15.0';
 
 var cliArgs = minimist(process.argv.slice(2));
 
@@ -98,6 +99,10 @@ function sequenceComplete(done) {
   };
 }
 
+gulp.task('enforce-dart-version',
+          () => { dartSdk.checkMinVersion(DART_SDK, MIN_DART_SDK_VERSION, true); });
+
+gulp.task('check-dart-version', () => { dartSdk.checkMinVersion(DART_SDK, MIN_DART_SDK_VERSION); });
 
 var treatTestErrorsAsFatal = true;
 
@@ -471,11 +476,9 @@ gulp.task('test.js', function(done) {
 });
 
 gulp.task('test.dart', function(done) {
-  runSequence('versions.dart', 'test.transpiler.unittest', 'test.unit.dart/ci',
+  runSequence('check-dart-version', 'test.transpiler.unittest', 'test.unit.dart/ci',
               sequenceComplete(done));
 });
-
-gulp.task('versions.dart', function() { dartSdk.logVersion(DART_SDK); });
 
 // Reuse the Travis scripts
 // TODO: rename test_*.sh to test_all_*.sh
@@ -1072,7 +1075,7 @@ gulp.task('build/packages.dart', function(done) {
 });
 
 // Builds and compiles all Dart packages
-gulp.task('build.dart', function(done) {
+gulp.task('build.dart', ['check-dart-version'], function(done) {
   runSequence('build/packages.dart', 'build/pubspec.dart', 'build/analyze.dart',
               'build/check.apidocs.dart', sequenceComplete(done));
 });

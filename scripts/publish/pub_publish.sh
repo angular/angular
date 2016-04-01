@@ -13,6 +13,7 @@ fi;
 ROOT_DIR=$(cd $(dirname $0)/../..; pwd)
 cd $ROOT_DIR
 
+gulp enforce-dart-version
 gulp clean
 gulp build/packages.dart
 gulp build/pubspec.dart
