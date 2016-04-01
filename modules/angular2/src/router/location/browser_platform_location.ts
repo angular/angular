@@ -45,11 +45,19 @@ export class BrowserPlatformLocation extends PlatformLocation {
   set pathname(newPath: string) { this._location.pathname = newPath; }
 
   pushState(state: any, title: string, url: string): void {
-    this._history.pushState(state, title, url);
+    if(this._history.pushState) {
+      this._history.pushState(state, title, url);
+    } else if (this._location) {
+      this._location.hash = url;
+    }
   }
 
   replaceState(state: any, title: string, url: string): void {
-    this._history.replaceState(state, title, url);
+    if(this._history.replaceState) {
+      this._history.replaceState(state, title, url);
+    } else if (this._location) {
+      this._location.hash = url;
+    }
   }
 
   forward(): void { this._history.forward(); }
