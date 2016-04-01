@@ -9,5 +9,6 @@ export {NgIf} from './directives/ng_if';
 export {NgStyle} from './directives/ng_style';
 export {NgSwitch, NgSwitchWhen, NgSwitchDefault} from './directives/ng_switch';
 export {NgPlural, NgPluralCase, NgLocalization} from './directives/ng_plural';
+export {NgLeftPad} from './directives/ng_leftpad';
 export * from './directives/observable_list_diff';
 export {CORE_DIRECTIVES} from './directives/core_directives';

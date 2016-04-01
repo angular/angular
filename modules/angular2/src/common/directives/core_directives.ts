@@ -5,6 +5,7 @@ import {NgIf} from './ng_if';
 import {NgStyle} from './ng_style';
 import {NgSwitch, NgSwitchWhen, NgSwitchDefault} from './ng_switch';
 import {NgPlural, NgPluralCase} from './ng_plural';
+import {NgLeftPad} from './ng_leftpad';
 
 /**
  * A collection of Angular core directives that are likely to be used in each and every Angular
@@ -50,6 +51,7 @@ export const CORE_DIRECTIVES: Type[] = CONST_EXPR([
   NgClass,
   NgFor,
   NgIf,
+  NgLeftPad,
   NgStyle,
   NgSwitch,
   NgSwitchWhen,
