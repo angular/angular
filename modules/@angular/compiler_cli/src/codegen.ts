@@ -156,13 +156,14 @@ export class CodeGenerator {
     const staticReflector = new StaticReflector(reflectorHost);
     StaticAndDynamicReflectionCapabilities.install(staticReflector);
     const htmlParser = new HtmlParser();
-    const normalizer = new DirectiveNormalizer(xhr, urlResolver, htmlParser);
+    const config = new compiler.CompilerConfig(true, true, true);
+    const normalizer = new DirectiveNormalizer(xhr, urlResolver, htmlParser, config);
     const parser = new Parser(new Lexer());
     const tmplParser = new TemplateParser(parser, new DomElementSchemaRegistry(), htmlParser,
                                           /*console*/ null, []);
     const offlineCompiler = new compiler.OfflineCompiler(
         normalizer, tmplParser, new StyleCompiler(urlResolver),
-        new ViewCompiler(new compiler.CompilerConfig(true, true, true)),
+        new ViewCompiler(config),
         new TypeScriptEmitter(reflectorHost), xhr);
     const resolver = new CompileMetadataResolver(
         new compiler.DirectiveResolver(staticReflector), new compiler.PipeResolver(staticReflector),
