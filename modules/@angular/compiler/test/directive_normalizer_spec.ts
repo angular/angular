@@ -12,6 +12,7 @@ import {
 import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
 import {CompileTypeMetadata, CompileTemplateMetadata} from '@angular/compiler/src/compile_metadata';
 import {ViewEncapsulation} from '@angular/core/src/metadata/view';
+import {CompilerConfig} from "@angular/compiler/src/config";
 
 import {DirectiveNormalizer} from '@angular/compiler/src/directive_normalizer';
 import {XHR} from '@angular/compiler/src/xhr';
@@ -78,6 +79,39 @@ export function main() {
                                                  }))
                         .then((template: CompileTemplateMetadata) => {
                           expect(template.styleUrls).toEqual(['package:some/module/test.css']);
+                          async.done();
+                        });
+                  }));
+
+        it('should use ViewEncapsulation.Emulated by default',
+           inject([AsyncTestCompleter, DirectiveNormalizer],
+                  (async, normalizer: DirectiveNormalizer) => {
+                    normalizer.normalizeTemplate(dirType, new CompileTemplateMetadata({
+                                                   encapsulation: null,
+                                                   template: '',
+                                                   templateUrl: null,
+                                                   styles: [],
+                                                   styleUrls: ['test.css']
+                                                 }))
+                        .then((template: CompileTemplateMetadata) => {
+                          expect(template.encapsulation).toEqual(ViewEncapsulation.Emulated);
+                          async.done();
+                        });
+                  }));
+
+        it('should use default encapsulation provided by CompilerConfig',
+           inject([AsyncTestCompleter, CompilerConfig , DirectiveNormalizer],
+                  (async, config: CompilerConfig, normalizer: DirectiveNormalizer) => {
+                    config.defaultEncapsulation = ViewEncapsulation.None;
+                    normalizer.normalizeTemplate(dirType, new CompileTemplateMetadata({
+                                                   encapsulation: null,
+                                                   template: '',
+                                                   templateUrl: null,
+                                                   styles: [],
+                                                   styleUrls: ['test.css']
+                                                 }))
+                        .then((template: CompileTemplateMetadata) => {
+                          expect(template.encapsulation).toEqual(ViewEncapsulation.None);
                           async.done();
                         });
                   }));

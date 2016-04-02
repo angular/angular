@@ -156,8 +156,8 @@ export class CodeGenerator {
     const staticReflector = new StaticReflector(reflectorHost);
     StaticAndDynamicReflectionCapabilities.install(staticReflector);
     const htmlParser = new HtmlParser();
-    const normalizer = new DirectiveNormalizer(xhr, urlResolver, htmlParser);
     const config = new compiler.CompilerConfig(true, true, true);
+    const normalizer = new DirectiveNormalizer(xhr, urlResolver, htmlParser, config);
     const parser = new Parser(new Lexer(), config);
     const tmplParser = new TemplateParser(parser, new DomElementSchemaRegistry(), htmlParser,
                                           /*console*/ null, []);

@@ -2,12 +2,16 @@ import {isBlank} from '../src/facade/lang';
 import {unimplemented} from '../src/facade/exceptions';
 import {Identifiers} from './identifiers';
 import {CompileIdentifierMetadata} from './compile_metadata';
+import {ViewEncapsulation} from '@angular/core';
 
 export class CompilerConfig {
   public renderTypes: RenderTypes;
   public interpolateRegexp: RegExp;
+  public defaultEncapsulation: ViewEncapsulation;
+
   constructor(public genDebugInfo: boolean, public logBindingUpdate: boolean,
-              public useJit: boolean, renderTypes: RenderTypes = null, interpolateRegexp: RegExp = null) {
+              public useJit: boolean, renderTypes: RenderTypes = null, 
+              interpolateRegexp: RegExp = null, defaultEncapsulation: ViewEncapsulation = null) {
     if (isBlank(renderTypes)) {
       renderTypes = new DefaultRenderTypes();
     }
@@ -16,6 +20,10 @@ export class CompilerConfig {
       interpolateRegexp = DEFAULT_INTERPOLATE_REGEXP;
     }
     this.interpolateRegexp = interpolateRegexp;
+    if (isBlank(defaultEncapsulation)) {
+      defaultEncapsulation = ViewEncapsulation.Emulated;
+    }
+    this.defaultEncapsulation = defaultEncapsulation;
   }
 }
 

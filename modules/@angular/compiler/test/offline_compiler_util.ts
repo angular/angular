@@ -49,8 +49,8 @@ function _createOfflineCompiler(xhr: MockXHR, emitter: OutputEmitter): OfflineCo
   var urlResolver = createOfflineCompileUrlResolver();
   xhr.when(`${THIS_MODULE_PATH}/offline_compiler_compa.html`, 'Hello World {{user}}!');
   var htmlParser = new HtmlParser();
-  var normalizer = new DirectiveNormalizer(xhr, urlResolver, htmlParser);
   var config = new CompilerConfig(true, true, true);
+  var normalizer = new DirectiveNormalizer(xhr, urlResolver, htmlParser, config);
   return new OfflineCompiler(
       normalizer, new TemplateParser(new Parser(new Lexer(), config), new MockSchemaRegistry({}, {}),
                                      htmlParser, new Console(), []),

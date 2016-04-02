@@ -1120,7 +1120,7 @@ export var ContentChildren: ContentChildrenMetadataFactory =
  *   }
  * }
  * ```
- * 
+ *
  * ```html
  * <container #container_ref>
  *   <item>a</item>

@@ -656,7 +656,7 @@ export class CompileTemplateMetadata {
     ngContentSelectors?: string[],
     animations?: CompileAnimationEntryMetadata[]
   } = {}) {
-    this.encapsulation = isPresent(encapsulation) ? encapsulation : ViewEncapsulation.Emulated;
+    this.encapsulation = encapsulation;
     this.template = template;
     this.templateUrl = templateUrl;
     this.styles = isPresent(styles) ? styles : [];
