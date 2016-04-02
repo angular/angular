@@ -9284,9 +9284,9 @@
       }
     },
     "zone.js": {
-      "version": "0.6.6",
-      "from": "zone.js@0.6.6",
-      "resolved": "https://registry.npmjs.org/zone.js/-/zone.js-0.6.6.tgz"
+      "version": "0.6.10",
+      "from": "zone.js@0.6.10",
+      "resolved": "https://registry.npmjs.org/zone.js/-/zone.js-0.6.10.tgz"
     }
   }
 }
