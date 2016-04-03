@@ -22,9 +22,9 @@ import {Codegen} from 'angular2/src/transform/template_compiler/change_detector_
 import {MODULE_SUFFIX} from './util';
 import {Injectable} from 'angular2/src/core/di';
 
-const ABSTRACT_CHANGE_DETECTOR = "AbstractChangeDetector";
-const UTIL = "ChangeDetectionUtil";
-const CHANGE_DETECTOR_STATE = "ChangeDetectorState";
+export const ABSTRACT_CHANGE_DETECTOR = "AbstractChangeDetector";
+export const UTIL = "ChangeDetectionUtil";
+export const CHANGE_DETECTOR_STATE = "ChangeDetectorState";
 
 export const CHANGE_DETECTION_JIT_IMPORTS = CONST_EXPR({
   'AbstractChangeDetector': AbstractChangeDetector,
@@ -32,13 +32,13 @@ export const CHANGE_DETECTION_JIT_IMPORTS = CONST_EXPR({
   'ChangeDetectorState': ChangeDetectorState
 });
 
-var ABSTRACT_CHANGE_DETECTOR_MODULE = moduleRef(
+export var ABSTRACT_CHANGE_DETECTOR_MODULE = moduleRef(
     `package:angular2/src/core/change_detection/abstract_change_detector${MODULE_SUFFIX}`);
-var UTIL_MODULE =
+export var UTIL_MODULE =
     moduleRef(`package:angular2/src/core/change_detection/change_detection_util${MODULE_SUFFIX}`);
-var PREGEN_PROTO_CHANGE_DETECTOR_MODULE = moduleRef(
+export var PREGEN_PROTO_CHANGE_DETECTOR_MODULE = moduleRef(
     `package:angular2/src/core/change_detection/pregen_proto_change_detector${MODULE_SUFFIX}`);
-var CONSTANTS_MODULE =
+export var CONSTANTS_MODULE =
     moduleRef(`package:angular2/src/core/change_detection/constants${MODULE_SUFFIX}`);
 
 @Injectable()
