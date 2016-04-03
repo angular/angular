@@ -8,6 +8,7 @@
     "url": "https://github.com/angular/material2.git"
   },
   "scripts": {
+    "ci:forbidden-identifiers": "node ./scripts/ci/forbidden-identifiers.js",
     "build": "ng build",
     "dartanalyzer": "cd dist/dart && pub install && cd ../.. && ts-node scripts/ci/dart_analyzer",
     "demo-app": "ng serve",

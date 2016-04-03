@@ -40,6 +40,7 @@ env:
   - secure: "fq/U7VDMWO8O8SnAQkdbkoSe2X92PVqg4d044HmRYVmcf6YbO48+xeGJ8yOk0pCBwl3ISO4Q2ot0x546kxfiYBuHkZetlngZxZCtQiFT9kyId8ZKcYdXaIW9OVdw3Gh3tQyUwDucfkVhqcs52D6NZjyE2aWZ4/d1V4kWRO/LMgo="
   matrix:
     # Order: a slower build first, so that we don't occupy an idle travis worker waiting for others to complete.
+    - MODE=lint
     - MODE=e2e
     - MODE=saucelabs_required
     - MODE=browserstack_required
@@ -52,23 +53,12 @@ matrix:
   - env: "MODE=saucelabs_optional"
   - env: "MODE=browserstack_optional"
 
-before_install:
-  - ./scripts/ci/install_dart.sh
-
-
 install:
   - npm install
   - npm run typings
 
 before_script:
-  # Necessary to run test on Travis CI that require a graphical interface.
-  # See https://docs.travis-ci.com/user/gui-and-headless-browsers
-  - "export DISPLAY=:99.0"
-  - "sh -e /etc/init.d/xvfb start"
   - mkdir -p $LOGS_DIR
-  - npm run tslint
-  - "node ./scripts/ci/forbidden-identifiers.js"
-
 
 script:
 - ./scripts/ci/build-and-test.sh
