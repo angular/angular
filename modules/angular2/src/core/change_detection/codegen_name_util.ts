@@ -17,6 +17,7 @@ const _LOCALS_ACCESSOR = "locals";
 const _MODE_ACCESSOR = "mode";
 const _PIPES_ACCESSOR = "pipes";
 const _PROTOS_ACCESSOR = "protos";
+const _DEFAULT_ASSIGNMENT_CHUNK_SIZE = 100;
 export const CONTEXT_ACCESSOR = "context";
 
 // `context` is always first.
@@ -166,14 +167,42 @@ export class CodegenNameUtil {
   /**
    * Generates statements which clear all fields so that the change detector is dehydrated.
    */
-  genDehydrateFields(): string {
-    var fields = this.getAllFieldNames();
-    ListWrapper.removeAt(fields, CONTEXT_INDEX);
-    if (ListWrapper.isEmpty(fields)) return '';
+  genDehydrateFields(assignmentChunkSize: number = _DEFAULT_ASSIGNMENT_CHUNK_SIZE): string {
+    const separator = '=';
 
-    // At least one assignment.
-    fields.push(`${this._utilName}.uninitialized;`);
-    return fields.join(' = ');
+    var uninitializedValue = `${this._utilName}.uninitialized;`;
+    var fields = this.getAllFieldNames();
+    var assignmentChunks: string[][];
+
+    ListWrapper.removeAt(fields, CONTEXT_INDEX);
+
+    if (ListWrapper.isEmpty(fields)) {
+      return '';
+    }
+
+    if (fields.length <= assignmentChunkSize) {  // length is in bounds, no need to chunk
+      fields.push(uninitializedValue);           // At least one assignment.
+      assignmentChunks = [fields];
+    } else {
+      assignmentChunks = [];
+      for (var i = 0; i < fields.length; i += assignmentChunkSize) {
+        var assignmentLines = fields.slice(i, i + assignmentChunkSize);
+        if (assignmentLines.length > 0) {
+          assignmentLines.push(uninitializedValue);  // At least one assignment.
+          assignmentChunks.push(assignmentLines);
+        }
+      }
+    }
+
+    if (assignmentChunks.length === 1) {
+      return assignmentChunks[0].join(separator);
+    }
+
+    var outLines: string[] = [];
+    for (var j = 0; j < assignmentChunks.length; j++) {
+      outLines.push(assignmentChunks[j].join(separator));
+    }
+    return outLines.join('\n');
   }
 
   /**

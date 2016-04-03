@@ -498,4 +498,7 @@ export class ChangeDetectorJITGenerator {
     `;
     return retVal;
   }
+
+  /** @internal */
+  _getCodegenNameUtil(): CodegenNameUtil { return this._names; }
 }
