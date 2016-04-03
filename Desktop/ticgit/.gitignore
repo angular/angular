@@ -1,0 +1,4 @@
+*.gem
+*.swp
+rdoc/
+pkg/
