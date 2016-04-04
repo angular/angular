@@ -7,7 +7,10 @@ import 'package:dart_style/dart_style.dart';
 import 'package:test/test.dart';
 
 import 'package:angular2/src/compiler/directive_metadata.dart'
-    show CompileIdentifierMetadata;
+    show
+        CompileIdentifierMetadata,
+        CompileProviderMetadata,
+        CompileTypeMetadata;
 import 'package:angular2/src/core/change_detection/change_detection.dart';
 import 'package:angular2/src/platform/server/html_adapter.dart';
 import 'package:angular2/src/core/linker/interfaces.dart' show LifecycleHooks;
@@ -41,7 +44,14 @@ void _expectSelector(ReflectionInfoModel model, Matcher matcher) {
   return expect(selectorArg.value, matcher);
 }
 
+var oldTest = test;
 void allTests() {
+  var test = (name, fn) {
+//    if (name.contains('CompileFactoryMetadata')) {
+      oldTest(name, fn);
+//    }
+  };
+
   test('should preserve parameter annotations.', () async {
     var model = (await _testCreateModel('parameter_metadata/soup.dart')).ngDeps;
     expect(model.reflectables.length, equals(1));
@@ -422,6 +432,7 @@ void allTests() {
       expect(ngMeta.identifiers.isNotEmpty, isTrue);
       expect(ngMeta.identifiers['MultiSoupComponent'], isNotNull);
       expect(
+
           ngMeta.identifiers['MultiSoupComponent'].selector, equals('[soup]'));
       final hooks = ngMeta.identifiers['MultiSoupComponent'].lifecycleHooks;
       expect(hooks, contains(LifecycleHooks.OnChanges));
@@ -467,7 +478,7 @@ void allTests() {
   });
 
   group("identifiers", () {
-    test("should populate `identifier` with class types.", () async {
+    test("should populate `identifier` with CompileTypeMetadata.", () async {
       var model = (await _testCreateModel('identifiers/classes.dart'));
       final moduleUrl =
           "asset:angular2/test/transform/directive_processor/identifiers/classes.dart";
@@ -475,6 +486,24 @@ void allTests() {
       expect(model.identifiers['Service1'].moduleUrl, equals(moduleUrl));
       expect(model.identifiers['Service2'].name, equals('Service2'));
       expect(model.identifiers['Service2'].moduleUrl, equals(moduleUrl));
+
+      expect(model.identifiers['Service2'].diDeps.length, equals(1));
+      expect(model.identifiers['Service2'].diDeps[0].token.name, equals('Service1'));
+    });
+
+    test("should populate `identifier` with CompileFactoryMetadata.", () async {
+      var model = (await _testCreateModel('identifiers/factories'
+          '.dart'));
+      final moduleUrl =
+          "asset:angular2/test/transform/directive_processor/identifiers/factories.dart";
+
+      expect(model.identifiers['factory1'].name, equals('factory1'));
+      expect(model.identifiers['factory1'].moduleUrl, equals(moduleUrl));
+      expect(model.identifiers['factory2'].name, equals('factory2'));
+      expect(model.identifiers['factory2'].moduleUrl, equals(moduleUrl));
+
+      expect(model.identifiers['factory2'].diDeps.length, equals(1));
+      expect(model.identifiers['factory2'].diDeps[0].token.name, equals('SomeClass'));
     });
 
     test("should populate `identifier` with constants.", () async {
@@ -490,6 +519,32 @@ void allTests() {
           equals(new CompileIdentifierMetadata(name: 'b', moduleUrl: moduleUrl)
               .toJson()));
       expect(model.identifiers['c'], isNull);
+    });
+
+    test("should populate `identifier` with provider constants.", () async {
+      var model =
+          (await _testCreateModel('identifiers/provider_constants.dart'));
+      expect(
+          model.identifiers['a'].value.toJson(),
+          equals(new CompileProviderMetadata(
+                  token: 'someToken',
+                  useClass: new CompileTypeMetadata(name: 'SomeClass'))
+              .toJson()));
+    });
+
+    test("should populate `identifier` with lists of providers.", () async {
+      var model =
+          (await _testCreateModel('identifiers/provider_constants.dart'));
+
+      final List list = model.identifiers['b'].value;
+
+      expect(list.length, equals(3));
+      expect(list[0].name, equals("SomeClass"));
+      expect(list[1].name, equals("a"));
+      expect(list[2].toJson(), equals(new CompileProviderMetadata(
+          token: 'someOtherToken',
+          useClass: new CompileTypeMetadata(name: 'SomeClass'))
+          .toJson()));
     });
 
     test(
@@ -642,17 +697,25 @@ void allTests() {
       expect(cmp, isNotNull);
       var deps = cmp.type.diDeps;
       expect(deps, isNotNull);
-      expect(deps.length, equals(8));
+      expect(deps.length, equals(13));
       expect(deps[0].token.name, equals("ServiceDep"));
       expect(deps[1].token.name, equals("ServiceDep"));
+      expect(deps[2].token, "one");
       expect(deps[2].isAttribute, isTrue);
       expect(deps[3].isSelf, isTrue);
       expect(deps[4].isSkipSelf, isTrue);
       expect(deps[5].isOptional, isTrue);
       expect(deps[6].query.selectors[0].name, equals("ServiceDep"));
       expect(deps[6].query.descendants, isTrue);
-      expect(deps[7].viewQuery.selectors[0], equals("one"));
-      expect(deps[7].viewQuery.selectors[1], equals("two"));
+      expect(deps[7].query.selectors[0].name, equals("ServiceDep"));
+      expect(deps[7].query.descendants, isTrue);
+      expect(deps[8].viewQuery.selectors[0], equals("one"));
+      expect(deps[8].viewQuery.selectors[1], equals("two"));
+      expect(deps[9].viewQuery.selectors[0], equals("one"));
+      expect(deps[9].viewQuery.selectors[1], equals("two"));
+      expect(deps[10].token.name, equals("ServiceDep"));
+      expect(deps[11].token.name, equals("ServiceDep"));
+      expect(deps[12].token.name, equals("ServiceDep"));
     });
 
     test('should populate `diDependency` using a string token.', () async {
@@ -686,13 +749,52 @@ void allTests() {
       expect(cmp.providers, isNotNull);
       expect(cmp.providers.length, equals(2));
 
-      var firstToken = cmp.providers.first.token;
+      var firstToken = cmp.providers.first;
       expect(firstToken.prefix, isNull);
       expect(firstToken.name, equals("ServiceDep"));
 
-      var secondToken = cmp.providers[1].token;
+      var secondToken = cmp.providers[1];
       expect(secondToken.prefix, equals("dep2"));
       expect(secondToken.name, equals("ServiceDep"));
+    });
+
+    test('should populate `viewProviders` using types.', () async {
+      var cmp = (await _testCreateModel('directives_files/components.dart'))
+          .identifiers['ComponentWithViewProvidersTypes'];
+
+      expect(cmp, isNotNull);
+      expect(cmp.viewProviders, isNotNull);
+      expect(cmp.viewProviders.length, equals(1));
+
+      var firstToken = cmp.viewProviders.first;
+      expect(firstToken.prefix, isNull);
+      expect(firstToken.name, equals("ServiceDep"));
+    });
+
+    test('should populate `bindings` using types.', () async {
+      var cmp = (await _testCreateModel('directives_files/components.dart'))
+          .identifiers['ComponentWithBindingsTypes'];
+
+      expect(cmp, isNotNull);
+      expect(cmp.providers, isNotNull);
+      expect(cmp.providers.length, equals(1));
+
+      var firstToken = cmp.providers.first;
+      expect(firstToken.prefix, isNull);
+      expect(firstToken.name, equals("ServiceDep"));
+    });
+
+    test('should populate `viewBindings` using types.', () async {
+      var cmp = (await _testCreateModel('directives_files/components.dart'))
+          .identifiers['ComponentWithViewBindingsTypes'];
+
+      expect(cmp, isNotNull);
+      expect(cmp.viewProviders, isNotNull);
+      expect(cmp.viewProviders.length, equals(1));
+
+      var firstToken = cmp.viewProviders.first;
+      expect(firstToken.prefix, isNull);
+      expect(firstToken.name, equals("ServiceDep"));
     });
 
     test('should populate `providers` using useClass.', () async {
@@ -724,6 +826,191 @@ void allTests() {
       expect(token, equals("StringDep"));
     });
 
+    test('should populate `providers` using toClass.', () async {
+      var cmp = (await _testCreateModel('directives_files/components.dart'))
+          .identifiers['ComponentWithProvidersToClass'];
+
+      expect(cmp, isNotNull);
+      expect(cmp.providers, isNotNull);
+      expect(cmp.providers.length, equals(1));
+
+      var token = cmp.providers.first.token;
+      var useExisting = cmp.providers.first.useClass;
+
+      expect(useExisting.prefix, isNull);
+      expect(useExisting.name, equals("ServiceDep"));
+    });
+
+    test('should populate `providers` using useExisting.', () async {
+      var cmp = (await _testCreateModel('directives_files/components.dart'))
+          .identifiers['ComponentWithProvidersUseExisting'];
+
+      expect(cmp, isNotNull);
+      expect(cmp.providers, isNotNull);
+      expect(cmp.providers.length, equals(1));
+
+      var token = cmp.providers.first.token;
+      var useExisting = cmp.providers.first.useExisting;
+
+      expect(useExisting.prefix, isNull);
+      expect(useExisting.name, equals("ServiceDep"));
+    });
+
+    test('should populate `providers` using toAlias.', () async {
+      var cmp = (await _testCreateModel('directives_files/components.dart'))
+          .identifiers['ComponentWithProvidersToAlias'];
+
+      expect(cmp, isNotNull);
+      expect(cmp.providers, isNotNull);
+      expect(cmp.providers.length, equals(1));
+
+      var token = cmp.providers.first.token;
+      var useExisting = cmp.providers.first.useExisting;
+
+      expect(useExisting.prefix, isNull);
+      expect(useExisting.name, equals("ServiceDep"));
+    });
+
+    test('should populate `providers` using useExisting (string token).',
+        () async {
+      var cmp = (await _testCreateModel('directives_files/components.dart'))
+          .identifiers['ComponentWithProvidersUseExistingStr'];
+
+      expect(cmp, isNotNull);
+      expect(cmp.providers, isNotNull);
+      expect(cmp.providers.length, equals(1));
+
+      var token = cmp.providers.first.token;
+      var useExisting = cmp.providers.first.useExisting;
+
+      expect(useExisting, equals("StrToken"));
+    });
+
+    test('should populate `providers` using useValue.', () async {
+      var cmp = (await _testCreateModel('directives_files/components.dart'))
+          .identifiers['ComponentWithProvidersUseValue'];
+
+      expect(cmp, isNotNull);
+      expect(cmp.providers, isNotNull);
+      expect(cmp.providers.length, equals(1));
+
+      var token = cmp.providers.first.token;
+      var useValue = cmp.providers.first.useValue;
+
+      expect(useValue.prefix, isNull);
+      expect(useValue.name, equals("ServiceDep"));
+    });
+
+    test('should populate `providers` using toValue.', () async {
+      var cmp = (await _testCreateModel('directives_files/components.dart'))
+          .identifiers['ComponentWithProvidersToValue'];
+
+      expect(cmp, isNotNull);
+      expect(cmp.providers, isNotNull);
+      expect(cmp.providers.length, equals(1));
+
+      var token = cmp.providers.first.token;
+      var useValue = cmp.providers.first.useValue;
+
+      expect(useValue.prefix, isNull);
+      expect(useValue.name, equals("ServiceDep"));
+    });
+
+    test('should populate `providers` using useValue (string token).',
+        () async {
+      var cmp = (await _testCreateModel('directives_files/components.dart'))
+          .identifiers['ComponentWithProvidersUseValueStr'];
+
+      expect(cmp, isNotNull);
+      expect(cmp.providers, isNotNull);
+      expect(cmp.providers.length, equals(1));
+
+      var token = cmp.providers.first.token;
+      var useValue = cmp.providers.first.useValue;
+
+      expect(useValue, equals("StrToken"));
+    });
+
+    test('should populate `providers` using useValue (num token).', () async {
+      var cmp = (await _testCreateModel('directives_files/components.dart'))
+          .identifiers['ComponentWithProvidersUseValueNum'];
+
+      expect(cmp, isNotNull);
+      expect(cmp.providers, isNotNull);
+      expect(cmp.providers.length, equals(1));
+
+      var token = cmp.providers.first.token;
+      var useValue = cmp.providers.first.useValue;
+
+      expect(useValue, equals(42));
+    });
+
+    test('should populate `providers` using useValue (bool token).', () async {
+      var cmp = (await _testCreateModel('directives_files/components.dart'))
+          .identifiers['ComponentWithProvidersUseValueBool'];
+
+      expect(cmp, isNotNull);
+      expect(cmp.providers, isNotNull);
+      expect(cmp.providers.length, equals(1));
+
+      var token = cmp.providers.first.token;
+      var useValue = cmp.providers.first.useValue;
+
+      expect(useValue, equals(true));
+    });
+
+    test('should populate `providers` using useValue (null token).', () async {
+      var cmp = (await _testCreateModel('directives_files/components.dart'))
+          .identifiers['ComponentWithProvidersUseValueNull'];
+
+      expect(cmp, isNotNull);
+      expect(cmp.providers, isNotNull);
+      expect(cmp.providers.length, equals(1));
+
+      var token = cmp.providers.first.token;
+      var useValue = cmp.providers.first.useValue;
+
+      expect(useValue, isNull);
+    });
+
+    test('should populate `providers` using useFactory.', () async {
+      var cmp = (await _testCreateModel('directives_files/components.dart'))
+          .identifiers['ComponentWithProvidersUseFactory'];
+
+      expect(cmp, isNotNull);
+      expect(cmp.providers, isNotNull);
+      expect(cmp.providers.length, equals(1));
+
+      var useFactory = cmp.providers.first.useFactory;
+      var deps = cmp.providers.first.deps;
+
+      expect(useFactory.prefix, isNull);
+      expect(useFactory.name, equals("funcDep"));
+
+      expect(deps[0].token.name, equals("ServiceDep"));
+      expect(deps[1].token, equals("Str"));
+      expect(deps[2].token.name, equals("ServiceDep"));
+      expect(deps[3].token.name, equals("ServiceDep"));
+      expect(deps[3].isSelf, equals(true));
+      expect(deps[4].token.name, equals("ServiceDep"));
+      expect(deps[4].isSkipSelf, equals(true));
+      expect(deps[5].token.name, equals("ServiceDep"));
+      expect(deps[5].isOptional, equals(true));
+    });
+
+    test('should populate `providers` using toFactory.', () async {
+      var cmp = (await _testCreateModel('directives_files/components.dart'))
+          .identifiers['ComponentWithProvidersToFactory'];
+
+      expect(cmp, isNotNull);
+      expect(cmp.providers, isNotNull);
+      expect(cmp.providers.length, equals(1));
+
+      var useFactory = cmp.providers.first.useFactory;
+      expect(useFactory.prefix, isNull);
+      expect(useFactory.name, equals("funcDep"));
+    });
+
     test('should populate `providers` using a const token.', () async {
       var cmp = (await _testCreateModel('directives_files/components.dart'))
           .identifiers['ComponentWithProvidersConstToken'];
@@ -735,6 +1022,36 @@ void allTests() {
       var token = cmp.providers.first.token;
       expect(token.name, equals("ServiceDep"));
       expect(token.constConstructor, isTrue);
+    });
+
+    test('should populate `queries`.', () async {
+      var cmp = (await _testCreateModel('directives_files/components.dart'))
+          .identifiers['ComponentWithQueries'];
+
+      expect(cmp, isNotNull);
+      expect(cmp.queries, isNotNull);
+      expect(cmp.queries.length, equals(4));
+      expect(cmp.queries[0].selectors, equals(["child"]));
+      expect(cmp.queries[0].first, isTrue);
+      expect(cmp.queries[1].selectors, equals(["child"]));
+      expect(cmp.queries[1].first, isFalse);
+      expect(cmp.queries[1].descendants, isTrue);
+      expect(cmp.queries[2].selectors, equals(["child"]));
+      expect(cmp.queries[2].first, isTrue);
+      expect(cmp.queries[3].selectors, equals(["child"]));
+      expect(cmp.queries[3].first, isFalse);
+      expect(cmp.queries[3].descendants, isTrue);
+
+      expect(cmp.viewQueries, isNotNull);
+      expect(cmp.viewQueries.length, equals(4));
+      expect(cmp.viewQueries[0].selectors, equals(["child"]));
+      expect(cmp.viewQueries[0].first, isTrue);
+      expect(cmp.viewQueries[1].selectors, equals(["child"]));
+      expect(cmp.viewQueries[1].first, isFalse);
+      expect(cmp.viewQueries[2].selectors, equals(["child"]));
+      expect(cmp.viewQueries[2].first, isTrue);
+      expect(cmp.viewQueries[3].selectors, equals(["child"]));
+      expect(cmp.viewQueries[3].first, isFalse);
     });
 
     test('should merge `outputs` from the annotation and fields.', () async {

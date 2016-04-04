@@ -44,7 +44,7 @@ Future<Outputs> processTemplates(AssetReader reader, AssetId assetId,
     Map<String, String> resolvedIdentifiers
     }) async {
   var viewDefResults = await createCompileData(
-      reader, assetId, platformDirectives, platformPipes, resolvedIdentifiers);
+      reader, assetId, platformDirectives, platformPipes);
   if (viewDefResults == null) return null;
   final compileTypeMetadatas = viewDefResults.ngMeta.identifiers.values;
   if (compileTypeMetadatas.isNotEmpty) {
