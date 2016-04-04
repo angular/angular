@@ -175,4 +175,11 @@ md-list[dense] {
 
     @include md-line-base($md-dense-font-size);
   }
+
+}
+
+md-divider {
+  display: block;
+  border-top: 1px solid md-color($md-foreground, divider);
+  margin: 0;
 }
