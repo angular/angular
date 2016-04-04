@@ -105,6 +105,33 @@ Output:
 
 <img src="https://material.angularjs.org/material2_assets/list/dense-list.png">
 
+### Lists with multiple sections
+
+You can add a subheader to a list by annotating a heading tag with an `md-subheader` attribute. To add a divider,
+use `<md-divider>` tags.
+
+```html
+<md-list>
+   <h3 md-subheader>Folders</h3>
+   <md-list-item *ngFor="#folder of folders">
+      <i md-list-avatar class="material-icons">folder</i>
+      <h4 md-line>{{folder.name}}</h4>
+      <p md-line class="demo-secondary-text"> {{folder.updated}} </p>
+   </md-list-item>
+   <md-divider></md-divider>
+   <h3 md-subheader>Notes</h3>
+   <md-list-item *ngFor="#note of notes">
+      <i md-list-avatar class="material-icons">note</i>
+      <h4 md-line>{{note.name}}</h4>
+      <p md-line class="demo-secondary-text"> {{note.updated}} </p>
+   </md-list-item>   
+</md-list>
+```
+
+Output:
+
+<img src="https://material.angularjs.org/material2_assets/list/subheader-list.png">
+
 ### Lists with secondary text
 Secondary text styling will be part of a broader typography module to 
 [come later](https://github.com/angular/material2/issues/205), and won’t be implemented as part of this component 
