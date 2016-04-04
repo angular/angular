@@ -25,7 +25,7 @@ export const NUMBER_VALUE_ACCESSOR: any = /*@ts2dart_const*/ /*@ts2dart_Provider
     '(input)': 'onChange($event.target.value)',
     '(blur)': 'onTouched()'
   },
-  bindings: [NUMBER_VALUE_ACCESSOR]
+  providers: [NUMBER_VALUE_ACCESSOR]
 })
 export class NumberValueAccessor implements ControlValueAccessor {
   onChange = (_: any) => {};

@@ -1,5 +1,4 @@
 import {OpaqueToken} from '@angular/core';
-
 import {isBlank, isPresent, isString} from '../../src/facade/lang';
 import {PromiseWrapper} from '../../src/facade/promise';
 import {ObservableWrapper} from '../../src/facade/async';

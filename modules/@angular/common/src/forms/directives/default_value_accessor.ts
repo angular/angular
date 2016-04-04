@@ -25,7 +25,7 @@ export const DEFAULT_VALUE_ACCESSOR: any = /*@ts2dart_const*/
   // https://github.com/angular/angular/issues/3011 is implemented
   // selector: '[ngControl],[ngModel],[ngFormControl]',
   host: {'(input)': 'onChange($event.target.value)', '(blur)': 'onTouched()'},
-  bindings: [DEFAULT_VALUE_ACCESSOR]
+  providers: [DEFAULT_VALUE_ACCESSOR]
 })
 export class DefaultValueAccessor implements ControlValueAccessor {
   onChange = (_: any) => {};

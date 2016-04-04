@@ -79,7 +79,7 @@ export const formControlBinding: any =
  */
 @Directive({
   selector: '[ngFormControl]',
-  bindings: [formControlBinding],
+  providers: [formControlBinding],
   inputs: ['form: ngFormControl', 'model: ngModel'],
   outputs: ['update: ngModelChange'],
   exportAs: 'ngForm'
