@@ -4,7 +4,7 @@ import 'package:angular2/angular2.dart' show Injectable;
 
 @Injectable()
 abstract class Service {
-  factory Service(){
+  factory Service() {
     return null;
   }
 }

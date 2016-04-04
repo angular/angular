@@ -13,8 +13,8 @@ class TransformerUrlResolver implements UrlResolver {
 
     if (!uri.isAbsolute) {
       if (baseUrl == null) throw new ArgumentError.notNull('baseUrl');
-      if (baseUrl.isEmpty) throw new ArgumentError.value(
-          '(empty string)', 'baseUrl');
+      if (baseUrl.isEmpty)
+        throw new ArgumentError.value('(empty string)', 'baseUrl');
       uri = Uri.parse(baseUrl).resolveUri(uri);
     }
 
@@ -29,8 +29,8 @@ String toAssetUri(AssetId assetId) {
 
 AssetId fromUri(String assetUri) {
   if (assetUri == null) throw new ArgumentError.notNull('assetUri');
-  if (assetUri.isEmpty) throw new ArgumentError.value(
-      '(empty string)', 'assetUri');
+  if (assetUri.isEmpty)
+    throw new ArgumentError.value('(empty string)', 'assetUri');
   var uri = toAssetScheme(Uri.parse(assetUri));
   return new AssetId(
       uri.pathSegments.first, uri.pathSegments.skip(1).join('/'));
