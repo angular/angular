@@ -36,7 +36,7 @@ export function bindDirectiveAfterContentLifecycleCallbacks(directiveMeta: Compi
   var view = compileElement.view;
   var lifecycleHooks = directiveMeta.lifecycleHooks;
   var afterContentLifecycleCallbacksMethod = view.afterContentLifecycleCallbacksMethod;
-  afterContentLifecycleCallbacksMethod.resetDebugInfo({nodeIndex: compileElement.nodeIndex});
+  afterContentLifecycleCallbacksMethod.resetDebugInfo(compileElement.nodeIndex, compileElement.sourceAst);
   if (lifecycleHooks.indexOf(LifecycleHooks.AfterContentInit) !== -1) {
     afterContentLifecycleCallbacksMethod.addStmt(new o.IfStmt(
         STATE_IS_NEVER_CHECKED, [directiveInstance.callMethod('ngAfterContentInit', []).toStmt()]));
@@ -53,7 +53,7 @@ export function bindDirectiveAfterViewLifecycleCallbacks(directiveMeta: CompileD
   var view = compileElement.view;
   var lifecycleHooks = directiveMeta.lifecycleHooks;
   var afterViewLifecycleCallbacksMethod = view.afterViewLifecycleCallbacksMethod;
-  afterViewLifecycleCallbacksMethod.resetDebugInfo({nodeIndex: compileElement.nodeIndex});
+  afterViewLifecycleCallbacksMethod.resetDebugInfo(compileElement.nodeIndex, compileElement.sourceAst);
   if (lifecycleHooks.indexOf(LifecycleHooks.AfterViewInit) !== -1) {
     afterViewLifecycleCallbacksMethod.addStmt(new o.IfStmt(
         STATE_IS_NEVER_CHECKED, [directiveInstance.callMethod('ngAfterViewInit', []).toStmt()]));
@@ -68,7 +68,7 @@ export function bindDirectiveDestroyLifecycleCallbacks(directiveMeta: CompileDir
                                                        directiveInstance: o.Expression,
                                                        compileElement: CompileElement) {
   var onDestroyMethod = compileElement.view.destroyMethod;
-  onDestroyMethod.resetDebugInfo({nodeIndex: compileElement.nodeIndex});
+  onDestroyMethod.resetDebugInfo(compileElement.nodeIndex, compileElement.sourceAst);
   if (directiveMeta.lifecycleHooks.indexOf(LifecycleHooks.OnDestroy) !== -1) {
     onDestroyMethod.addStmt(directiveInstance.callMethod('ngOnDestroy', []).toStmt());
   }

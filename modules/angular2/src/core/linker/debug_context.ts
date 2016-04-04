@@ -4,29 +4,21 @@ import {Injector} from 'angular2/src/core/di';
 import {RenderDebugInfo} from 'angular2/src/core/render/api';
 import {AppView} from './view';
 import {ViewType} from './view_type';
+import {getDebugNode} from '../debug/debug_node';
+import {ViewWrappedException} from './exceptions';
 
 @CONST()
 export class StaticNodeDebugInfo {
-  constructor(public source: string, public providerTokens: any[], public componentToken: any,
+  constructor(public providerTokens: any[], public componentToken: any,
               public varTokens: {[key: string]: any}) {}
 }
 
-@CONST()
-export class StaticBindingDebugInfo {
-  constructor(public source: string) {}
-}
-
 export class DebugContext implements RenderDebugInfo {
-  constructor(private _view: AppView<any>, public nodeIndex: number = null,
-              public bindingIndex: number = null) {}
+  constructor(private _view: AppView<any>, private _nodeIndex: number,
+              private _tplRow:number, private _tplCol: number) {}
 
   private get _staticNodeInfo(): StaticNodeDebugInfo {
-    return isPresent(this.nodeIndex) ? this._view.staticNodeDebugInfos[this.nodeIndex] : null;
-  }
-
-  private get _staticBindingInfo(): StaticBindingDebugInfo {
-    return isPresent(this.bindingIndex) ? this._view.staticBindingDebugInfos[this.bindingIndex] :
-                                          null;
+    return isPresent(this._nodeIndex) ? this._view.staticNodeDebugInfos[this._nodeIndex] : null;
   }
 
   get context() { return this._view.context; }
@@ -52,10 +44,10 @@ export class DebugContext implements RenderDebugInfo {
                componentView.declarationAppElement.nativeElement :
                null;
   }
-  get injector(): Injector { return this._view.injector(this.nodeIndex, true); }
+  get injector(): Injector { return this._view.injector(this._nodeIndex, true); }
   get renderNode(): any {
-    if (isPresent(this.nodeIndex)) {
-      return this._view.allNodes[this.nodeIndex];
+    if (isPresent(this._nodeIndex) && isPresent(this._view.allNodes)) {
+      return this._view.allNodes[this._nodeIndex];
     } else {
       return null;
     }
@@ -64,26 +56,8 @@ export class DebugContext implements RenderDebugInfo {
     var staticNodeInfo = this._staticNodeInfo;
     return isPresent(staticNodeInfo) ? staticNodeInfo.providerTokens : null;
   }
-  get nodeSource(): string {
-    var staticNodeInfo = this._staticNodeInfo;
-    return isPresent(staticNodeInfo) ? staticNodeInfo.source : null;
-  }
   get source(): string {
-    var sourceStack = [];
-    var ctx: DebugContext = this;
-    var view = this._view;
-    while (isPresent(ctx)) {
-      if (sourceStack.length === 0 || view.type === ViewType.COMPONENT) {
-        sourceStack.push(isPresent(ctx.bindingSource) ? ctx.bindingSource : ctx.nodeSource);
-      }
-      if (isPresent(view.declarationAppElement)) {
-        ctx = view.declarationAppElement.debugContext;
-        view = view.declarationAppElement.parentView;
-      } else {
-        ctx = null;
-      }
-    }
-    return sourceStack.join('\n in component ');
+    return `${this._view.templateUrl}:${this._tplRow}:${this._tplCol}`;
   }
   get locals(): {[key: string]: string} {
     var varValues: {[key: string]: string} = {};
@@ -97,7 +71,7 @@ export class DebugContext implements RenderDebugInfo {
                                    StringMapWrapper.forEach(vars, (varToken, varName) => {
                                      var varValue;
                                      if (isBlank(varToken)) {
-                                       varValue = this._view.allNodes[nodeIndex];
+                                       varValue = isPresent(this._view.allNodes) ? this._view.allNodes[nodeIndex] : null;
                                      } else {
                                        varValue = this._view.injectorGet(varToken, nodeIndex, null);
                                      }
@@ -107,10 +81,5 @@ export class DebugContext implements RenderDebugInfo {
     StringMapWrapper.forEach(this._view.locals,
                              (localValue, localName) => { varValues[localName] = localValue; });
     return varValues;
-  }
-
-  get bindingSource(): string {
-    var staticBindingInfo = this._staticBindingInfo;
-    return isPresent(staticBindingInfo) ? staticBindingInfo.source : null;
   }
 }

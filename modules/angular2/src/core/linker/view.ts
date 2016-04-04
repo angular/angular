@@ -22,6 +22,7 @@ import {
   looseIdentical,
   isPrimitive
 } from 'angular2/src/facade/lang';
+import {WrappedException} from 'angular2/src/facade/exceptions';
 
 import {ObservableWrapper} from 'angular2/src/facade/async';
 import {Renderer, RootRenderer, RenderDebugInfo} from 'angular2/src/core/render/api';
@@ -38,11 +39,11 @@ import {
 } from 'angular2/src/core/change_detection/change_detection';
 import {wtfCreateScope, wtfLeave, WtfScopeFn} from '../profile/profile';
 import {
-  ViewWrappedException,
   ExpressionChangedAfterItHasBeenCheckedException,
-  ViewDestroyedException
+  ViewDestroyedException,
+  ViewWrappedException
 } from './exceptions';
-import {StaticNodeDebugInfo, StaticBindingDebugInfo, DebugContext} from './debug_context';
+import {StaticNodeDebugInfo, DebugContext} from './debug_context';
 import {ElementInjector} from './element_injector';
 
 export const HOST_VIEW_ELEMENT_NAME = '$hostViewEl';
@@ -79,12 +80,15 @@ export abstract class AppView<T> {
 
   destroyed: boolean = false;
 
-  constructor(public clazz: any, public type: ViewType, public locals: {[key: string]: any},
+  inDetectChanges: boolean = false;
+
+  private _currentDebugContext: DebugContext = null;
+
+  constructor(public templateUrl: string, public clazz: any, public type: ViewType, public locals: {[key: string]: any},
               public renderer: Renderer, public viewManager: AppViewManager_,
               public parentInjector: Injector, public projectableNodes: Array<any | any[]>,
               public declarationAppElement: AppElement, strategy: ChangeDetectionStrategy,
-              public staticNodeDebugInfos: StaticNodeDebugInfo[],
-              public staticBindingDebugInfos: StaticBindingDebugInfo[]) {
+              public staticNodeDebugInfos: StaticNodeDebugInfo[]) {
     this.ref = new ViewRef_(this);
     var context;
     var mode = ChangeDetectionStrategy.CheckAlways;
@@ -106,22 +110,39 @@ export abstract class AppView<T> {
     this.state = ChangeDetectorState.NeverChecked;
   }
 
+  create(rootSelector: string) {
+    if (this.debugMode) {
+      this._resetDebug();
+      try {
+        this.createInternal(rootSelector);
+      } catch (e) {
+        this._rethrowWithContext(e, e.stack);
+        throw e;
+      }
+    } else {
+      this.createInternal(rootSelector);
+    }
+  }
+
+  /**
+   * @internal
+   */
+  createInternal(rootSelector:string) {}
+
   init(rootNodesOrAppElements: any[], allNodes: any[], appElements: {[key: string]: AppElement},
-       disposables: Function[], subscriptions: any[], hadError: boolean) {
+       disposables: Function[], subscriptions: any[]) {
     this.rootNodesOrAppElements = rootNodesOrAppElements;
     this.allNodes = allNodes;
     this.namedAppElements = appElements;
     this.disposables = disposables;
     this.subscriptions = subscriptions;
-    if (!hadError) {
-      if (this.type === ViewType.COMPONENT) {
-        // Note: the render nodes have been attached to their host element
-        // in the ViewFactory already.
-        this.declarationAppElement.initComponentView(this);
-        this.declarationAppElement.parentView.viewChildren.push(this);
-        this.renderParent = this.declarationAppElement.parentView;
-        this.dirtyParentQueriesInternal();
-      }
+    if (this.type === ViewType.COMPONENT) {
+      // Note: the render nodes have been attached to their host element
+      // in the ViewFactory already.
+      this.declarationAppElement.initComponentView(this);
+      this.declarationAppElement.parentView.viewChildren.push(this);
+      this.renderParent = this.declarationAppElement.parentView;
+      this.dirtyParentQueriesInternal();
     }
   }
 
@@ -159,7 +180,22 @@ export abstract class AppView<T> {
     for (var i = 0; i < children.length; i++) {
       children[i].destroy();
     }
+    if (this.debugMode) {
+      this._resetDebug();
+      try {
+        this._destroyLocal();
+      } catch (e) {
+        this._rethrowWithContext(e, e.stack);
+        throw e;
+      }
+    } else {
+      this._destroyLocal();
+    }
 
+    this.destroyed = true;
+  }
+
+  private _destroyLocal() {
     var hostElement =
         this.type === ViewType.COMPONENT ? this.declarationAppElement.nativeElement : null;
     this.renderer.destroyView(hostElement, this.allNodes);
@@ -172,13 +208,16 @@ export abstract class AppView<T> {
     this.destroyInternal();
 
     this.dirtyParentQueriesInternal();
-    this.destroyed = true;
   }
 
   /**
    * Overwritten by implementations
    */
   destroyInternal(): void {}
+
+  get debugMode():boolean {
+    return isPresent(this.staticNodeDebugInfos);
+  }
 
   get changeDetectorRef(): ChangeDetectorRef { return this.ref; }
 
@@ -239,6 +278,22 @@ export abstract class AppView<T> {
     if (this.mode === ChangeDetectionStrategy.Detached ||
         this.mode === ChangeDetectionStrategy.Checked || this.state === ChangeDetectorState.Errored)
       return;
+    if (this.debugMode) {
+      this._resetDebug();
+      try {
+        this.detectChangesInternal();
+      } catch (e) {
+        this._rethrowWithContext(e, e.stack);
+        throw e;
+      }
+    } else {
+      this.detectChangesInternal();
+    }
+
+    wtfLeave(s);
+  }
+
+  detectChangesInternal(): void {
     if (this.destroyed) {
       this.throwDestroyedError('detectChanges');
     }
@@ -262,14 +317,29 @@ export abstract class AppView<T> {
       this.mode = ChangeDetectionStrategy.Checked;
 
     this.state = ChangeDetectorState.CheckedBefore;
-    wtfLeave(s);
   }
 
-  checkNoChanges(): void {
+  checkNoChanges() {
     if (!assertionsEnabled()) return;
     if (this.mode === ChangeDetectionStrategy.Detached ||
         this.mode === ChangeDetectionStrategy.Checked || this.state === ChangeDetectorState.Errored)
       return;
+    if (this.debugMode) {
+      this._resetDebug();
+      try {
+        this.checkNoChangesInternal2();
+      } catch (e) {
+        this._rethrowWithContext(e, e.stack);
+        throw e;
+      }
+    } else {
+      this.checkNoChangesInternal2();
+    }
+  }
+
+  // TODO: Remove this again when we
+  // inline this into detectChanges again!
+  checkNoChangesInternal2(): void {
     if (this.destroyed) {
       this.throwDestroyedError('checkNoChanges');
     }
@@ -310,23 +380,43 @@ export abstract class AppView<T> {
     }
   }
 
-  debugContext(nodeIndex: number, bindingIndex: number): DebugContext {
-    return new DebugContext(this, nodeIndex, bindingIndex);
+  private _resetDebug() {
+    this._currentDebugContext = null;
   }
 
-  throwOnChangeError(debugCtx: DebugContext, oldValue: any, newValue: any): void {
-    throw new ExpressionChangedAfterItHasBeenCheckedException(debugCtx.bindingSource, oldValue,
-                                                              newValue, null);
+  debug(nodeIndex: number, rowNum: number, colNum: number): DebugContext {
+    return this._currentDebugContext = new DebugContext(this, nodeIndex, rowNum, colNum);
   }
 
-  rethrowWithContext(methodName: string, debugCtx: DebugContext, e: any, stack: any) {
-    if ((e instanceof ViewWrappedException)) {
-      throw e;
+  throwOnChangeError(oldValue: any, newValue: any): void {
+    throw new ExpressionChangedAfterItHasBeenCheckedException(oldValue, newValue, null);
+  }
+
+  private _rethrowWithContext(e: any, stack: any) {
+    if (!(e instanceof ViewWrappedException)) {
+      if (!(e instanceof ExpressionChangedAfterItHasBeenCheckedException)) {
+        this.state = ChangeDetectorState.Errored;
+      }
+      if (isPresent(this._currentDebugContext)) {
+        throw new ViewWrappedException(e, stack, this._currentDebugContext);
+      }
     }
-    if (!(e instanceof ExpressionChangedAfterItHasBeenCheckedException)) {
-      this.state = ChangeDetectorState.Errored;
+  }
+
+  eventHandler(cb: Function):Function {
+    if (this.debugMode) {
+      return (event) => {
+        this._resetDebug();
+        try {
+          return cb(event);
+        } catch (e) {
+          this._rethrowWithContext(e, e.stack);
+          throw e;
+        }
+      };
+    } else {
+      return cb;
     }
-    throw new ViewWrappedException(methodName, e, stack, debugCtx);
   }
 
   throwDestroyedError(details: string): void { throw new ViewDestroyedException(details); }

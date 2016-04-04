@@ -20,8 +20,7 @@ import {
   getViewFactoryName,
   injectFromViewParentInjector,
   createDiTokenExpression,
-  getPropertyInView,
-  getTemplateSource
+  getPropertyInView
 } from './util';
 import {CompilerConfig} from '../config';
 import {CompileBinding} from './compile_binding';
@@ -139,7 +138,7 @@ export class CompileView implements NameResolver {
       });
       this.fields.push(
           new o.ClassField(pipeFieldName, o.importType(pipeMeta.type), [o.StmtModifier.Private]));
-      this.constructorMethod.resetDebugInfo();
+      this.constructorMethod.resetDebugInfo(null, null);
       this.constructorMethod.addStmt(o.THIS_EXPR.prop(pipeFieldName)
                                          .set(o.importExpr(pipeMeta.type).instantiate(deps))
                                          .toStmt());

@@ -13,7 +13,7 @@ import {
 import {provide} from 'angular2/src/core/di';
 
 import {TEST_PROVIDERS} from './test_bindings';
-import {isPresent} from 'angular2/src/facade/lang';
+import {isPresent, CONST_EXPR} from 'angular2/src/facade/lang';
 import {
   TemplateParser,
   splitClasses,
@@ -25,7 +25,8 @@ import {
   CompileTypeMetadata,
   CompileTemplateMetadata,
   CompileProviderMetadata,
-  CompileTokenMetadata
+  CompileTokenMetadata,
+  CompileDiDependencyMetadata
 } from 'angular2/src/compiler/compile_metadata';
 import {
   templateVisitAll,
@@ -467,11 +468,12 @@ export function main() {
       describe('providers', () => {
         var nextProviderId;
 
-        function createProvider(token: string, multi: boolean = false): CompileProviderMetadata {
+        function createProvider(token: string, multi: boolean = false, deps: string[] = CONST_EXPR([])): CompileProviderMetadata {
           return new CompileProviderMetadata({
             token: new CompileTokenMetadata({value: token}),
             multi: multi,
-            useValue: `provider${nextProviderId++}`
+            useClass: new CompileTypeMetadata({name: `provider${nextProviderId++}`}),
+            deps: deps.map( (dep) => new CompileDiDependencyMetadata({token: new CompileTokenMetadata({value: dep})}))
           });
         }
 
@@ -592,6 +594,29 @@ export function main() {
                   `Template parse errors:\n` +
                   `Mixing multi and non multi provider is not possible for token service0 ("[ERROR ->]<div dirA dirB>"): TestComp@0:0`);
         });
+
+        it('should sort providers by their DI order', () => {
+          var provider0 = createProvider('service0', false, ['service2']);
+          var provider1 = createProvider('service1', false);
+          var provider2 = createProvider('service2', false, ['service1']);
+          var comp = createDir('my-comp', [provider0, provider1, provider2]);
+          var elAst: ElementAst = <ElementAst>parse('<my-comp>', [comp])[0];
+          expect(elAst.providers.length).toBe(4);
+          expect(elAst.providers[1].providers).toEqual([provider1]);
+          expect(elAst.providers[2].providers).toEqual([provider2]);
+          expect(elAst.providers[3].providers).toEqual([provider0]);
+        });
+
+        // TODO: sort directives by their DI order
+
+        // TODO: eager calculation
+        // - from directives
+        // - from children
+        // - from queries
+        // - across view boundaries
+
+        // TODO: errors and nulls (isOptional)
+        // - isSelf, isHost
 
       });
 

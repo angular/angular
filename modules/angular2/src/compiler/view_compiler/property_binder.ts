@@ -1,7 +1,7 @@
 import * as cdAst from '../expression_parser/ast';
 import * as o from '../output/output_ast';
 import {Identifiers} from '../identifiers';
-import {AllMethodVars, DetectChangesVars} from './constants';
+import {DetectChangesVars} from './constants';
 
 import {
   BoundTextAst,
@@ -72,7 +72,7 @@ function bind(view: CompileView, currValueExpr: o.ReadVarExpr, fieldExpr: o.Read
       actions.concat([<o.Statement>o.THIS_EXPR.prop(fieldExpr.name).set(currValueExpr).toStmt()])));
   checkNoChangesMethod.addStmt(new o.IfStmt(notChangedCondition, [
     o.THIS_EXPR.callMethod('throwOnChangeError',
-                           [AllMethodVars.debugContext, fieldExpr, currValueExpr])
+                           [fieldExpr, currValueExpr])
         .toStmt()
   ]));
 }
@@ -83,10 +83,8 @@ export function bindRenderText(boundText: BoundTextAst, compileNode: CompileNode
   view.bindings.push(new CompileBinding(compileNode, boundText));
   var valueField = createBindFieldExpr(bindingIndex);
   var currValueVar = createBindCurrValueExpr(bindingIndex);
-  view.detectChangesInInputsMethod.resetDebugInfo(
-      {nodeIndex: compileNode.nodeIndex, bindingIndex: bindingIndex});
-  view.checkNoChangesMethod.resetDebugInfo(
-      {nodeIndex: compileNode.nodeIndex, bindingIndex: bindingIndex});
+  view.detectChangesInInputsMethod.resetDebugInfo(compileNode.nodeIndex, boundText);
+  view.checkNoChangesMethod.resetDebugInfo(compileNode.nodeIndex, boundText);
 
   bind(view, currValueVar, valueField, boundText.value, o.THIS_EXPR.prop('context'),
        [
@@ -104,10 +102,8 @@ function bindAndWriteToRenderer(boundProps: BoundElementPropertyAst[], context: 
   boundProps.forEach((boundProp) => {
     var bindingIndex = view.bindings.length;
     view.bindings.push(new CompileBinding(compileElement, boundProp));
-    view.detectChangesHostPropertiesMethod.resetDebugInfo(
-        {nodeIndex: compileElement.nodeIndex, bindingIndex: bindingIndex});
-    view.checkNoChangesMethod.resetDebugInfo(
-        {nodeIndex: compileElement.nodeIndex, bindingIndex: bindingIndex});
+    view.detectChangesHostPropertiesMethod.resetDebugInfo(compileElement.nodeIndex,boundProp);
+    view.checkNoChangesMethod.resetDebugInfo(compileElement.nodeIndex, boundProp);
     var valueField = createBindFieldExpr(bindingIndex);
     var currValueVar = createBindCurrValueExpr(bindingIndex);
     var renderMethod: string;
@@ -161,7 +157,7 @@ export function bindDirectiveInputs(directiveAst: DirectiveAst, directiveInstanc
                                     compileElement: CompileElement) {
   var view = compileElement.view;
   var detectChangesInInputsMethod = view.detectChangesInInputsMethod;
-  detectChangesInInputsMethod.resetDebugInfo({nodeIndex: compileElement.nodeIndex});
+  detectChangesInInputsMethod.resetDebugInfo(compileElement.nodeIndex, compileElement.sourceAst);
 
   var lifecycleHooks = directiveAst.directive.lifecycleHooks;
   var calcChangesMap = lifecycleHooks.indexOf(LifecycleHooks.OnChanges) !== -1;
@@ -176,10 +172,8 @@ export function bindDirectiveInputs(directiveAst: DirectiveAst, directiveInstanc
   directiveAst.inputs.forEach((input) => {
     var bindingIndex = view.bindings.length;
     view.bindings.push(new CompileBinding(compileElement, input));
-    detectChangesInInputsMethod.resetDebugInfo(
-        {nodeIndex: compileElement.nodeIndex, bindingIndex: bindingIndex});
-    view.checkNoChangesMethod.resetDebugInfo(
-        {nodeIndex: compileElement.nodeIndex, bindingIndex: bindingIndex});
+    detectChangesInInputsMethod.resetDebugInfo(compileElement.nodeIndex, input);
+    view.checkNoChangesMethod.resetDebugInfo(compileElement.nodeIndex, input);
     var valueField = createBindFieldExpr(bindingIndex);
     var currValueVar = createBindCurrValueExpr(bindingIndex);
     var statements: o.Statement[] =

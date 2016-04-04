@@ -66,12 +66,15 @@ export class ViewConstructorVars {
   static parentInjector = o.variable('parentInjector');
   static declarationEl = o.variable('declarationEl');
   static rootSelector = o.variable('rootSelector');
-  static parentRenderNode = o.variable('parentRenderNode');
+}
+
+export class ViewProperties {
+  static renderer = o.THIS_EXPR.prop('renderer');
+  static projectableNodes = o.THIS_EXPR.prop('projectableNodes');
+  static viewManager = o.THIS_EXPR.prop('viewManager');
 }
 
 export class EventHandlerVars { static event = o.variable('$event'); }
-
-export class AllMethodVars { static debugContext = o.variable('debugContext'); }
 
 export class InjectMethodVars {
   static token = o.variable('token');

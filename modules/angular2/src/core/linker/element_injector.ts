@@ -20,28 +20,18 @@ export class ElementInjector extends Injector {
   }
 
   get(token: any): any {
-    try {
-      var result = this._getFromView(token);
-      if (result === UNDEFINED) {
-        result = this._view.parentInjector.get(token);
-      }
-      return result;
-    } catch (e) {
-      this._view.rethrowWithContext('inject', this.debugContext(), e, e.stack);
+    var result = this._getFromView(token);
+    if (result === UNDEFINED) {
+      result = this._view.parentInjector.get(token);
     }
+    return result;
   }
 
   getOptional(token: any): any {
-    try {
-      var result = this._getFromView(token);
-      if (result === UNDEFINED) {
-        result = this._view.parentInjector.getOptional(token);
-      }
-      return result;
-    } catch (e) {
-      this._view.rethrowWithContext('inject', this.debugContext(), e, e.stack);
+    var result = this._getFromView(token);
+    if (result === UNDEFINED) {
+      result = this._view.parentInjector.getOptional(token);
     }
+    return result;
   }
-
-  debugContext(): any { return this._view.debugContext(this._nodeIndex, null); }
 }

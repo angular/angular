@@ -412,7 +412,7 @@ function createProviderProperty(propName: string, provider: ProviderAst,
     var internalField = `_${propName}`;
     view.fields.push(new o.ClassField(internalField, type, [o.StmtModifier.Private]));
     var getter = new CompileMethod(view, `lazy create ${provider.token.name}`);
-    getter.resetDebugInfo({nodeIndex: compileElement.nodeIndex});
+    getter.resetDebugInfo(compileElement.nodeIndex, compileElement.sourceAst);
     // Note: Equals is important for JS so that it also checks the undefined case!
     getter.addStmt(
         new o.IfStmt(o.THIS_EXPR.prop(internalField).isBlank(),

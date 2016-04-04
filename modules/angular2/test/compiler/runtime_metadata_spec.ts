@@ -71,7 +71,7 @@ export function main() {
          inject([RuntimeMetadataResolver], (resolver: RuntimeMetadataResolver) => {
            var value: string =
                resolver.getDirectiveMetadata(ComponentWithoutModuleId).type.moduleUrl;
-           var expectedEndValue = IS_DART ? 'test/compiler/runtime_metadata_spec.dart' : './';
+           var expectedEndValue = IS_DART ? 'test/compiler/runtime_metadata_spec.dart' : './ComponentWithoutModuleId';
            expect(value.endsWith(expectedEndValue)).toBe(true);
          }));
 

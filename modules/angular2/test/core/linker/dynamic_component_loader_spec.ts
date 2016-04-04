@@ -16,8 +16,8 @@ import {
   ComponentFixture
 } from 'angular2/testing_internal';
 
-import {Injector, OnDestroy} from 'angular2/core';
-import {By} from 'angular2/platform/browser';
+import {Predicate} from 'angular2/src/facade/collection';
+import {Injector, OnDestroy, DebugElement, Type} from 'angular2/core';
 import {NgIf} from 'angular2/common';
 import {Component, ViewMetadata} from 'angular2/src/core/metadata';
 import {DynamicComponentLoader} from 'angular2/src/core/linker/dynamic_component_loader';
@@ -83,7 +83,7 @@ export function main() {
                       .then((tc) => {
                         tc.debugElement.componentInstance.ctxBoolProp = true;
                         tc.detectChanges();
-                        var childElementRef = tc.debugElement.query(By.directive(ChildComp))
+                        var childElementRef = tc.debugElement.query(filterByDirective(ChildComp))
                                                   .inject(ChildComp)
                                                   .elementRef;
                         loader.loadIntoLocation(DynamicallyLoaded, childElementRef, 'loc')
@@ -351,6 +351,10 @@ function createRootElement(doc: any, name: string): any {
   var rootEl = el(`<${name}></${name}>`);
   DOM.appendChild(doc.body, rootEl);
   return rootEl;
+}
+
+function filterByDirective(type: Type): Predicate<DebugElement> {
+  return (debugElement) => { return debugElement.providerTokens.indexOf(type) !== -1; };
 }
 
 @Component({selector: 'child-cmp', template: '{{ctxProp}}'})

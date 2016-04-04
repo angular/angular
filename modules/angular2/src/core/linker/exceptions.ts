@@ -34,48 +34,21 @@ import {BaseException, WrappedException} from "angular2/src/facade/exceptions";
  * ```
  */
 export class ExpressionChangedAfterItHasBeenCheckedException extends BaseException {
-  constructor(exp: string, oldValue: any, currValue: any, context: any) {
-    super(`Expression '${exp}' has changed after it was checked. ` +
+  constructor(oldValue: any, currValue: any, context: any) {
+    super(`Expression has changed after it was checked. ` +
           `Previous value: '${oldValue}'. Current value: '${currValue}'`);
   }
 }
 
 /**
- * Thrown when an exception was raised during view creation or change detection.
+ * Thrown when an exception was raised during view creation, change detection or destruction.
  *
  * This error wraps the original exception to attach additional contextual information that can
  * be useful for debugging.
- *
- * ### Example ([live demo](http://plnkr.co/edit/2Kywoz?p=preview))
- *
- * ```typescript
- * @Directive({selector: 'child', inputs: ['prop']})
- * class Child {
- *   prop;
- * }
- *
- * @Component({
- *   selector: 'app',
- *   template: `
- *     <child [prop]="field.first"></child>
- *   `,
- *   directives: [Child]
- * })
- * class App {
- *   field = null;
- * }
- *
- * bootstrap(App);
- * ```
- *
- * You can access the original exception and stack through the `originalException` and
- * `originalStack` properties.
  */
 export class ViewWrappedException extends WrappedException {
-  public methodName: string;
-  constructor(methodName: string, originalException: any, originalStack: any, context: any) {
-    super(`Error in ${methodName} in ${context.source}`, originalException, originalStack, context);
-    this.methodName = methodName;
+  constructor(originalException: any, originalStack: any, context: any) {
+    super(`Error in ${context.source}`, originalException, originalStack, context);
   }
 }
 

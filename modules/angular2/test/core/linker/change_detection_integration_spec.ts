@@ -936,12 +936,12 @@ export function main() {
 
     describe('enforce no new changes', () => {
       it('should throw when a record gets changed after it has been checked', fakeAsync(() => {
-           var ctx = _bindSimpleValue('a', TestData);
+           var ctx = createCompFixture('<div [someProp]="a"></div>', TestData);
 
            ctx.componentInstance.a = 1;
            expect(() => ctx.checkNoChanges())
                .toThrowError(
-                   /Expression '\[someProp\]='a':TestData@0:5' has changed after it was checked/g);
+                   /:0:5[\s\S]*Expression has changed after it was checked./g);
          }));
 
       it('should not throw when two arrays are structurally the same', fakeAsync(() => {

@@ -1,7 +1,7 @@
 import {isBlank, isPresent, StringWrapper} from 'angular2/src/facade/lang';
 import {ListWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
 import {Identifiers} from '../identifiers';
-import {EventHandlerVars, ViewConstructorVars} from './constants';
+import {EventHandlerVars, ViewProperties} from './constants';
 
 import * as o from '../output/output_ast';
 import {CompileElement} from './compile_element';
@@ -36,7 +36,6 @@ export class CompileEventListener {
   constructor(public compileElement: CompileElement, public eventTarget: string,
               public eventName: string, listenerIndex: number) {
     this._method = new CompileMethod(compileElement.view, `handleEvent "${eventName}"`);
-    this._method.resetDebugInfo({nodeIndex: this.compileElement.nodeIndex});
     this._methodName =
         `_handle_${santitizeEventName(eventName)}_${compileElement.nodeIndex}_${listenerIndex}`;
     this._eventParam =
@@ -45,12 +44,12 @@ export class CompileEventListener {
   }
 
   addAction(hostEvent: BoundEventAst, directive: CompileDirectiveMetadata,
-            directiveInstance: o.Expression, bindingIndex: number) {
+            directiveInstance: o.Expression) {
     if (isPresent(directive) && directive.isComponent) {
       this._hasComponentHostListener = true;
     }
     this._method.resetDebugInfo(
-        {nodeIndex: this.compileElement.nodeIndex, bindingIndex: bindingIndex});
+        this.compileElement.nodeIndex, hostEvent);
     var context = isPresent(directiveInstance) ? directiveInstance : o.THIS_EXPR.prop('context');
     var actionStmts = convertCdStatementToIr(this.compileElement.view, context, hostEvent.handler);
     var lastIndex = actionStmts.length - 1;
@@ -89,16 +88,16 @@ export class CompileEventListener {
       new o.ReturnStatement(o.THIS_EXPR.callMethod(this._methodName, [EventHandlerVars.event]))
     ]);
     if (isPresent(this.eventTarget)) {
-      listenExpr = ViewConstructorVars.renderer.callMethod(
+      listenExpr = ViewProperties.renderer.callMethod(
           'listenGlobal', [o.literal(this.eventTarget), o.literal(this.eventName), eventListener]);
     } else {
-      listenExpr = ViewConstructorVars.renderer.callMethod(
+      listenExpr = ViewProperties.renderer.callMethod(
           'listen', [this.compileElement.renderNode, o.literal(this.eventName), eventListener]);
     }
     var disposable = o.variable(`disposable_${this.compileElement.view.disposables.length}`);
     this.compileElement.view.disposables.push(disposable);
     this.compileElement.view.constructorMethod.addStmt(
-        disposable.set(listenExpr).toDeclStmt(o.FUNCTION_TYPE, [o.StmtModifier.Private]));
+        disposable.set( o.THIS_EXPR.callMethod('eventHandler', [listenExpr])).toDeclStmt(o.FUNCTION_TYPE, [o.StmtModifier.Private]));
   }
 
   listenToDirective(directiveInstance: o.Expression, observablePropName: string) {
@@ -106,8 +105,8 @@ export class CompileEventListener {
     this.compileElement.view.subscriptions.push(subscription);
     // No return value by purpose so that type checkers don't complain!
     var eventListener =
-        o.fn([this._eventParam],
-             [o.THIS_EXPR.callMethod(this._methodName, [EventHandlerVars.event]).toStmt()]);
+        o.THIS_EXPR.callMethod('eventHandler', [o.fn([this._eventParam],
+             [o.THIS_EXPR.callMethod(this._methodName, [EventHandlerVars.event]).toStmt()])]);
     this.compileElement.view.constructorMethod.addStmt(
         subscription.set(directiveInstance.prop(observablePropName)
                              .callMethod(o.BuiltinMethod.SubscribeObservable, [eventListener]))
@@ -119,20 +118,18 @@ export function collectEventListeners(hostEvents: BoundEventAst[], dirs: Directi
                                       compileElement: CompileElement): CompileEventListener[] {
   var eventListeners: CompileEventListener[] = [];
   hostEvents.forEach((hostEvent) => {
-    var bindingIndex = compileElement.view.bindings.length;
     compileElement.view.bindings.push(new CompileBinding(compileElement, hostEvent));
     var listener = CompileEventListener.getOrCreate(compileElement, hostEvent.target,
                                                     hostEvent.name, eventListeners);
-    listener.addAction(hostEvent, null, null, bindingIndex);
+    listener.addAction(hostEvent, null, null);
   });
   ListWrapper.forEachWithIndex(dirs, (directiveAst, i) => {
     var directiveInstance = compileElement.directiveInstances[i];
     directiveAst.hostEvents.forEach((hostEvent) => {
-      var bindingIndex = compileElement.view.bindings.length;
       compileElement.view.bindings.push(new CompileBinding(compileElement, hostEvent));
       var listener = CompileEventListener.getOrCreate(compileElement, hostEvent.target,
                                                       hostEvent.name, eventListeners);
-      listener.addAction(hostEvent, directiveAst.directive, directiveInstance, bindingIndex);
+      listener.addAction(hostEvent, directiveAst.directive, directiveInstance);
     });
   });
   eventListeners.forEach((listener) => listener.finishMethod());

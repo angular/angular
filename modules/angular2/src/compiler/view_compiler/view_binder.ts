@@ -131,7 +131,7 @@ class ViewBinderVisitor implements TemplateAstVisitor, NameResolver {
       });
       this.view.fields.push(
           new o.ClassField(pipeFieldName, o.importType(pipeMeta.type), [o.StmtModifier.Private]));
-      this.view.constructorMethod.resetDebugInfo();
+      this.view.constructorMethod.resetDebugInfo(null, null);
       this.view.constructorMethod.addStmt(o.THIS_EXPR.prop(pipeFieldName)
                                               .set(o.importExpr(pipeMeta.type).instantiate(deps))
                                               .toStmt());

@@ -19,6 +19,14 @@ class _InterpretiveAppView extends AppView<any> implements DynamicInstance {
     super(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8], args[9],
           args[10]);
   }
+  createInternal(rootSelector: string) {
+    var m = this.methods.get('createInternal');
+    if (isPresent(m)) {
+      return m(rootSelector);
+    } else {
+      return super.createInternal(rootSelector);
+    }
+  }
   injectorGet(token: any, nodeIndex: number, notFoundResult: any): any {
     var m = this.methods.get('injectorGet');
     if (isPresent(m)) {

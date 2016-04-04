@@ -3,7 +3,6 @@ import {CompileIdentifierMetadata, CompileTokenMetadata} from './compile_metadat
 import {AppView} from 'angular2/src/core/linker/view';
 import {
   StaticNodeDebugInfo,
-  StaticBindingDebugInfo,
   DebugContext
 } from 'angular2/src/core/linker/debug_context';
 import {
@@ -57,7 +56,6 @@ var impViewEncapsulation = ViewEncapsulation;
 var impViewType = ViewType;
 var impChangeDetectionStrategy = ChangeDetectionStrategy;
 var impStaticNodeDebugInfo = StaticNodeDebugInfo;
-var impStaticBindingDebugInfo = StaticBindingDebugInfo;
 var impRenderer = Renderer;
 var impSimpleChange = SimpleChange;
 var impUninitialized = uninitialized;
@@ -142,11 +140,6 @@ export class Identifiers {
     name: 'StaticNodeDebugInfo',
     moduleUrl: `asset:angular2/lib/src/core/linker/debug_context${MODULE_SUFFIX}`,
     runtime: impStaticNodeDebugInfo
-  });
-  static StaticBindingDebugInfo = new CompileIdentifierMetadata({
-    name: 'StaticBindingDebugInfo',
-    moduleUrl: `asset:angular2/lib/src/core/linker/debug_context${MODULE_SUFFIX}`,
-    runtime: impStaticBindingDebugInfo
   });
   static DebugContext = new CompileIdentifierMetadata({
     name: 'DebugContext',

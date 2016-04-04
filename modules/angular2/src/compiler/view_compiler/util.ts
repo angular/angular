@@ -71,7 +71,3 @@ export function createFlatArray(expressions: o.Expression[]): o.Expression {
   }
   return result;
 }
-
-export function getTemplateSource(ast: TemplateAst): string {
-  return `${ast.sourceSpan}:${ast.sourceSpan.start}`;
-}

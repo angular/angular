@@ -100,16 +100,16 @@ export function main() {
   if (IS_DART) {
     declareTests(false);
   } else {
-    describe('no jit', () => {
-      beforeEachProviders(
-          () => [provide(CompilerConfig, {useValue: new CompilerConfig(true, false, false)})]);
-      declareTests(false);
-    });
-
     describe('jit', () => {
       beforeEachProviders(
           () => [provide(CompilerConfig, {useValue: new CompilerConfig(true, false, true)})]);
       declareTests(true);
+    });
+
+    describe('no jit', () => {
+      beforeEachProviders(
+          () => [provide(CompilerConfig, {useValue: new CompilerConfig(true, false, false)})]);
+      declareTests(false);
     });
   }
 }
@@ -1408,7 +1408,6 @@ function declareTests(isJit: boolean) {
 
            PromiseWrapper.catchError(tcb.createAsync(MyComp), (e) => {
              var c = e.context;
-             expect(DOM.nodeName(c.renderNode).toUpperCase()).toEqual("DIRECTIVE-THROWING-ERROR");
              expect(DOM.nodeName(c.componentRenderElement).toUpperCase()).toEqual("DIV");
              expect(c.injector.getOptional).toBeTruthy();
              async.done();
@@ -1431,7 +1430,7 @@ function declareTests(isJit: boolean) {
                expect(DOM.nodeName(c.renderNode).toUpperCase()).toEqual("INPUT");
                expect(DOM.nodeName(c.componentRenderElement).toUpperCase()).toEqual("DIV");
                expect(c.injector.getOptional).toBeTruthy();
-               expect(c.bindingSource).toContain("one.two.three");
+               expect(c.source).toContain(":0:7");
                expect(c.context).toBe(fixture.debugElement.componentInstance);
                expect(c.locals["local"]).toBeDefined();
              }
@@ -1443,7 +1442,7 @@ function declareTests(isJit: boolean) {
       it('should provide an error context when an error happens in change detection (text node)',
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
 
-           tcb = tcb.overrideView(MyComp, new ViewMetadata({template: `{{one.two.three}}`}));
+           tcb = tcb.overrideView(MyComp, new ViewMetadata({template: `<div>{{one.two.three}}</div>`}));
 
            tcb.createAsync(MyComp).then(fixture => {
              try {
@@ -1452,7 +1451,7 @@ function declareTests(isJit: boolean) {
              } catch (e) {
                var c = e.context;
                expect(c.renderNode).toBeTruthy();
-               expect(c.bindingSource).toContain('one.two.three');
+               expect(c.source).toContain(':0:5');
              }
 
              async.done();
@@ -1515,12 +1514,12 @@ function declareTests(isJit: boolean) {
          inject([TestComponentBuilder, AsyncTestCompleter],
                 (tcb: TestComponentBuilder, async) => {
 
-                    tcb.overrideView(MyComp, new ViewMetadata({template: '{{a.b}}'}))
+                    tcb.overrideView(MyComp, new ViewMetadata({template: '<div>{{a.b}}</div>'}))
 
                         .createAsync(MyComp)
                         .then((fixture) => {
                           expect(() => fixture.detectChanges())
-                              .toThrowError(containsRegexp(`{{a.b}}:${stringify(MyComp)}`));
+                              .toThrowError(containsRegexp(`:0:5`));
                           async.done();
                         })}));
 
@@ -1534,7 +1533,7 @@ function declareTests(isJit: boolean) {
                      .createAsync(MyComp)
                      .then((fixture) => {
                        expect(() => fixture.detectChanges())
-                           .toThrowError(containsRegexp(`"a.b":${stringify(MyComp)}`));
+                           .toThrowError(containsRegexp(`:0:5`));
                        async.done();
                      })}));
 
@@ -1550,7 +1549,7 @@ function declareTests(isJit: boolean) {
                         .createAsync(MyComp)
                         .then((fixture) => {
                           expect(() => fixture.detectChanges())
-                              .toThrowError(containsRegexp(`"a.b":${stringify(MyComp)}`));
+                              .toThrowError(containsRegexp(`:0:11`));
                           async.done();
                         })}));
     });
