@@ -1,4 +1,5 @@
 @import "variables";
+@import "default-theme";
 
 $md-list-side-padding: 16px;
 $md-list-avatar-size: 40px;
@@ -25,7 +26,7 @@ $md-dense-three-line-height: 76px;
 
 /*  
 This mixin provides all list-item styles, changing font size and height
-based on whether the list is in "dense" mode.
+based on whether the list is in dense mode.
 */
 @mixin md-list-item-base($font-size, $base-height, $avatar-height, 
   $two-line-height, $three-line-height) {
@@ -86,7 +87,7 @@ based on whether the list is in "dense" mode.
 
 /*
 This mixin provides all md-line styles, changing secondary font size 
-based on whether the list is in "dense" mode.
+based on whether the list is in dense mode.
 */
 @mixin md-line-base($secondary-font-size) {
 
@@ -104,9 +105,38 @@ based on whether the list is in "dense" mode.
   }
 }
 
+/*
+This mixin provides all subheader styles, adjusting heights and padding
+based on whether the list is in dense mode.
+*/
+@mixin md-subheader-base($top-padding, $secondary-size, $base-height) {
+  display: block;
+  box-sizing: border-box;
+  height: $base-height;
+  padding: $md-list-side-padding;
+  margin: 0;
+
+  font-size: $secondary-size;
+  font-weight: 500;
+  color: md-color($md-foreground, secondary-text);
+
+  &:first-child {
+    margin-top: -$top-padding;
+  }
+}
+
 md-list {
   padding-top: $md-list-top-padding;
   display: block;
+
+  [md-subheader] {
+    @include md-subheader-base(
+      $md-list-top-padding,
+      $md-list-secondary-font,
+      $md-list-base-height
+    );
+  }
+
 
   md-list-item {
     @include md-list-item-base(
@@ -126,6 +156,13 @@ md-list[dense] {
   padding-top: $md-dense-top-padding;
   display: block;
 
+  [md-subheader] {
+    @include md-subheader-base(
+      $md-dense-top-padding,
+      $md-dense-font-size,
+      $md-dense-base-height
+    );
+  }
 
   md-list-item {
     @include md-list-item-base(
