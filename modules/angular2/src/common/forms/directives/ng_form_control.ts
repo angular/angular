@@ -4,7 +4,6 @@ import {EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
 import {
   OnChanges,
   SimpleChange,
-  Query,
   Directive,
   forwardRef,
   Provider,
@@ -14,7 +13,7 @@ import {
 } from 'angular2/core';
 import {NgControl} from './ng_control';
 import {Control} from '../model';
-import {Validators, NG_VALIDATORS, NG_ASYNC_VALIDATORS} from '../validators';
+import {NG_VALIDATORS, NG_ASYNC_VALIDATORS} from '../validators';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
 import {
   setUpControl,
@@ -77,7 +76,7 @@ const formControlBinding =
  */
 @Directive({
   selector: '[ngFormControl]',
-  bindings: [formControlBinding],
+  providers: [formControlBinding],
   inputs: ['form: ngFormControl', 'model: ngModel'],
   outputs: ['update: ngModelChange'],
   exportAs: 'ngForm'

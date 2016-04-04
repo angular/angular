@@ -1,6 +1,6 @@
-import {Directive, ElementRef, Renderer, Self, forwardRef, Provider} from 'angular2/core';
+import {Directive, ElementRef, Renderer, forwardRef, Provider} from 'angular2/core';
 import {NG_VALUE_ACCESSOR, ControlValueAccessor} from './control_value_accessor';
-import {isBlank, CONST_EXPR, NumberWrapper} from 'angular2/src/facade/lang';
+import {CONST_EXPR, NumberWrapper} from 'angular2/src/facade/lang';
 
 const NUMBER_VALUE_ACCESSOR = CONST_EXPR(new Provider(
     NG_VALUE_ACCESSOR, {useExisting: forwardRef(() => NumberValueAccessor), multi: true}));
@@ -22,7 +22,7 @@ const NUMBER_VALUE_ACCESSOR = CONST_EXPR(new Provider(
     '(input)': 'onChange($event.target.value)',
     '(blur)': 'onTouched()'
   },
-  bindings: [NUMBER_VALUE_ACCESSOR]
+  providers: [NUMBER_VALUE_ACCESSOR]
 })
 export class NumberValueAccessor implements ControlValueAccessor {
   onChange = (_: any) => {};

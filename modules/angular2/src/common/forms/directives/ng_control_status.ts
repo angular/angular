@@ -1,6 +1,6 @@
 import {Directive, Self} from 'angular2/core';
 import {NgControl} from './ng_control';
-import {isBlank, isPresent} from 'angular2/src/facade/lang';
+import {isPresent} from 'angular2/src/facade/lang';
 
 /**
  * Directive automatically applied to Angular forms that sets CSS classes

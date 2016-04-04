@@ -1,4 +1,4 @@
-import {Directive, ElementRef, Renderer, Self, forwardRef, Provider} from 'angular2/core';
+import {Directive, ElementRef, Renderer, forwardRef, Provider} from 'angular2/core';
 import {NG_VALUE_ACCESSOR, ControlValueAccessor} from './control_value_accessor';
 import {isBlank, CONST_EXPR} from 'angular2/src/facade/lang';
 
@@ -21,7 +21,7 @@ const DEFAULT_VALUE_ACCESSOR = CONST_EXPR(new Provider(
   // https://github.com/angular/angular/issues/3011 is implemented
   // selector: '[ngControl],[ngModel],[ngFormControl]',
   host: {'(input)': 'onChange($event.target.value)', '(blur)': 'onTouched()'},
-  bindings: [DEFAULT_VALUE_ACCESSOR]
+  providers: [DEFAULT_VALUE_ACCESSOR]
 })
 export class DefaultValueAccessor implements ControlValueAccessor {
   onChange = (_: any) => {};

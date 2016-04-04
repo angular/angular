@@ -49,7 +49,7 @@ const formControlBinding =
  */
 @Directive({
   selector: '[ngModel]:not([ngControl]):not([ngFormControl])',
-  bindings: [formControlBinding],
+  providers: [formControlBinding],
   inputs: ['model: ngModel'],
   outputs: ['update: ngModelChange'],
   exportAs: 'ngForm'
