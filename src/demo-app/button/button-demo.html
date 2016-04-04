@@ -1,18 +1,5 @@
 <div class="demo-button">
   <section>
-    Link
-    <a href="http://www.google.com" md-button color="primary">link</a>
-    Button
-    <button md-button>flat</button>
-  </section>
-  <section>
-    Link
-    <a href="http://www.google.com" md-raised-button color="primary">link</a>
-    Button
-    <button md-raised-button>button</button>
-  </section>
-
-  <section>
     <button md-button>flat</button>
     <button md-raised-button>raised</button>
     <button md-fab>
@@ -74,10 +61,10 @@
 
   <section>
     <div>
-      <span>isDisabled: {{isDisabled}}</span>
-      <button md-raised-button (click)="isDisabled=!isDisabled">Disable buttons</button>
+      <p>isDisabled: {{isDisabled}}, clickCounter: <span id="clickCounter">{{clickCounter}}</span></p>
+      <button md-raised-button (click)="isDisabled=!isDisabled" id="disableToggle">Disable buttons</button>
     </div>
-    <button md-button [disabled]="isDisabled">off</button>
+    <button md-button [disabled]="isDisabled" (click)="clickCounter=clickCounter+1" id="testButton">off</button>
     <button md-button color="primary" [disabled]="isDisabled">off</button>
     <a href="http://www.google.com" md-button color="accent" [disabled]="isDisabled">off</a>
     <button md-raised-button color="primary" [disabled]="isDisabled">off</button>
@@ -88,5 +75,17 @@
     <button md-icon-button color="accent" [disabled]="isDisabled">
       <i class="material-icons md-24">favorite</i>
     </button>
+  </section>
+  <section>
+    Link
+    <a href="http://www.google.com" md-button color="primary">link</a>
+    Button
+    <button md-button>flat</button>
+  </section>
+  <section>
+    Link
+    <a href="http://www.google.com" md-raised-button color="primary">link</a>
+    Button
+    <button md-raised-button>button</button>
   </section>
 </div>

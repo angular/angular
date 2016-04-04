@@ -9,5 +9,5 @@ import {MdButton, MdAnchor} from '../../components/button/button';
 })
 export class ButtonDemo {
   isDisabled: boolean = false;
-
+  clickCounter: number = 0;
 }
