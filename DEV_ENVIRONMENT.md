@@ -17,6 +17,31 @@ After the changes rebuild, the browser currently needs to be manually refreshed.
 
 To run unit tests, run `npm test`.
 
-Running e2e tests: <not yet implemented>
-Running benchmarks: <not yet implemented>
-Running screenshot diff tests: <not yet implemented>
+###Running e2e tests:
+
+To prepare your environment, you'll need to install protractor and selenium.
+
+1. Globally install protractor:
+
+```
+npm install -g protractor
+```
+
+2.  Install the correct selenium version with webdriver-manager (this comes with protractor):
+
+```
+webdriver-manager update
+```
+
+When running the tests:
+
+1.  Spin up a local server with `ng-serve`. 
+
+2.  Run tests with:
+
+```
+protractor test/protractor.conf.js
+```
+
+Running benchmarks: not yet implemented
+Running screenshot diff tests: not yet implemented
