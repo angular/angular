@@ -46,7 +46,7 @@ Also see our [`Good for community contribution`](https://github.com/angular/mate
 
 ## The goal of Angular Material
 Our goal is to build a set of high-quality UI components built with Angular 2 and TypeScript, 
-following the Material Design spec, that are consumable by both JavaScript and Dart. These 
+following the Material Design spec. These 
 components will serve as an example of how to write Angular code following best practices.
 
 ### What do we mean by "high-quality"?

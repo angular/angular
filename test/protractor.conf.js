@@ -1,11 +1,6 @@
-/**
- * This file is Node ES6 and will not be translated to Dart.
- */
 const path = require('path');
 
-/**
- * Setup TypeScript for our tests.
- */
+/** Setup TypeScript for our tests. */
 require('ts-node/register');
 
 const E2E_BASE_URL = process.env['E2E_BASE_URL'] || 'http://localhost:4200';

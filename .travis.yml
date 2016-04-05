@@ -1,6 +1,3 @@
-# TODO(hansl): When we're ready to test for Dart, readd every mention of Dart to this file.
-# Base the Dart config on the main repo travis.yml file.
-
 language: node_js
 sudo: false
 
@@ -26,8 +23,6 @@ env:
   - BROWSER_STACK_USERNAME=angularteam1
   - BROWSER_STACK_ACCESS_KEY=BWCd4SynLzdDcv8xtzsB
   - ARCH=linux-x64
-  - DART_DEV_VERSION=latest
-  - DART_STABLE_VERSION=latest
   - BROWSER_PROVIDER_READY_FILE=/tmp/angular-material2-build/readyfile
   # Token for tsd to increase github rate limit
   # See https://github.com/DefinitelyTyped/tsd#tsdrc
@@ -44,7 +39,6 @@ env:
     - MODE=e2e
     - MODE=saucelabs_required
     - MODE=browserstack_required
-    - MODE=dart_required DART_CHANNEL=stable DART_VERSION=$DART_STABLE_VERSION
     - MODE=saucelabs_optional
     - MODE=browserstack_optional
 

@@ -103,7 +103,7 @@ Before you submit your Pull Request (PR) consider the following guidelines:
 * In GitHub, send a pull request to `material2:master`.
 * If we suggest changes then:
   * Make the required updates.
-  * Re-run the Angular Material test suites for JS and Dart to ensure tests are still passing.
+  * Re-run the Angular Material test suites to ensure tests are still passing.
   * Rebase your branch and force push to your GitHub repository (this will update your Pull
     Request):
 

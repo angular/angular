@@ -10,7 +10,6 @@
   "scripts": {
     "ci:forbidden-identifiers": "node ./scripts/ci/forbidden-identifiers.js",
     "build": "ng build",
-    "dartanalyzer": "cd dist/dart && pub install && cd ../.. && ts-node scripts/ci/dart_analyzer",
     "demo-app": "ng serve",
     "test": "karma start test/karma.conf.js",
     "tslint": "tslint -c tslint.json 'src/**/*.ts'",
@@ -55,7 +54,6 @@
     "karma": "^0.13.15",
     "karma-browserstack-launcher": "^0.1.7",
     "karma-chrome-launcher": "^0.2.1",
-    "karma-dart": "^0.3.0",
     "karma-firefox-launcher": "^0.1.7",
     "karma-jasmine": "^0.3.6",
     "karma-sauce-launcher": "^0.2.14",
@@ -63,7 +61,6 @@
     "strip-ansi": "^3.0.0",
     "symlink-or-copy": "^1.0.1",
     "ts-node": "^0.5.5",
-    "ts2dart": "^0.7.27",
     "tslint": "^3.5.0",
     "typescript": "^1.7.5",
     "typings": "^0.6.8",

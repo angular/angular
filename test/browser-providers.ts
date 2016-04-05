@@ -52,9 +52,6 @@ const configuration: { [name: string]: ConfigurationInfo } = {
 };
 
 export const customLaunchers: { [name: string]: BrowserLauncherInfo } = {
-  'DartiumWithWebPlatform': {
-    base: 'Dartium',
-    flags: ['--enable-experimental-web-platform-features'] },
   'ChromeNoSandbox': {
     base: 'Chrome',
     flags: ['--no-sandbox'] },
