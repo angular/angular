@@ -202,9 +202,7 @@ $_md-checkbox-indeterminate-checked-easing-function: cubic-bezier(0.14, 0, 0, 1)
  */
 %md-checkbox-mark {
   $width-padding-inset: 2 * $md-checkbox-border-width;
-
   width: calc(100% - #{$width-padding-inset});
-  will-change: opacity, transform;
 }
 
 /**
