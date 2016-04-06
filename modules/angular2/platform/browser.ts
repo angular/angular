@@ -1,6 +1,7 @@
 export {AngularEntrypoint} from 'angular2/src/core/angular_entrypoint';
 export {
   BROWSER_PROVIDERS,
+  CACHED_TEMPLATE_PROVIDER,
   ELEMENT_PROBE_PROVIDERS,
   ELEMENT_PROBE_PROVIDERS_PROD_MODE,
   inspectNativeElement,
