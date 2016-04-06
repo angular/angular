@@ -780,6 +780,7 @@ const COMMON = [
   'NgSelectOption.constructor(_element:ElementRef, _renderer:Renderer, _select:SelectControlValueAccessor)',
   'NgSelectOption.id:string',
   'NgSelectOption.ngOnDestroy():any',
+  'NgSelectOption.ngValue=(value:any)',
   'NgSelectOption.value=(value:any)',
   'NgStyle',
   'NgStyle.constructor(_differs:KeyValueDiffers, _ngEl:ElementRef, _renderer:Renderer)',

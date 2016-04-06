@@ -15,6 +15,7 @@ import {
   StringWrapper,
   isPrimitive,
   isPresent,
+  isBlank,
   looseIdentical
 } from 'angular2/src/facade/lang';
 
@@ -24,6 +25,7 @@ const SELECT_VALUE_ACCESSOR = CONST_EXPR(new Provider(
     NG_VALUE_ACCESSOR, {useExisting: forwardRef(() => SelectControlValueAccessor), multi: true}));
 
 function _buildValueString(id: string, value: any): string {
+  if (isBlank(id)) return `${value}`;
   if (!isPrimitive(value)) value = "Object";
   return StringWrapper.slice(`${id}: ${value}`, 0, 50);
 }
@@ -70,7 +72,10 @@ export class SelectControlValueAccessor implements ControlValueAccessor {
     return null;
   }
 
-  _getOptionValue(valueString: string): any { return this._optionMap.get(_extractId(valueString)); }
+  _getOptionValue(valueString: string): any {
+    let value = this._optionMap.get(_extractId(valueString));
+    return isPresent(value) ? value : valueString;
+  }
 }
 
 /**
@@ -93,11 +98,18 @@ export class NgSelectOption implements OnDestroy {
     if (isPresent(this._select)) this.id = this._select._registerOption();
   }
 
-  @Input()
-  set value(value: any) {
+  @Input('ng-value')
+  set ngValue(value: any) {
     if (this._select == null) return;
     this._select._optionMap.set(this.id, value);
     this._setElementValue(_buildValueString(this.id, value));
+    this._select.writeValue(this._select.value);
+  }
+
+  @Input('value')
+  set value(value: any) {
+    if (this._select == null) return;
+    this._setElementValue(value);
     this._select.writeValue(this._select.value);
   }
 

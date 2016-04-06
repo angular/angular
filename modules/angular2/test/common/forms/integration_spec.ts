@@ -396,10 +396,11 @@ export function main() {
                var select = fixture.debugElement.query(By.css("select"));
                var sfOption = fixture.debugElement.query(By.css("option"));
 
-               expect(select.nativeElement.value).toEqual("0: SF");
+
+               expect(select.nativeElement.value).toEqual("SF");
                expect(sfOption.nativeElement.selected).toBe(true);
 
-               select.nativeElement.value = "1: NYC";
+               select.nativeElement.value = "NYC";
                dispatchEvent(select.nativeElement, "input");
 
                expect(fixture.debugElement.componentInstance.form.value).toEqual({"city": 'NYC'});
@@ -423,12 +424,13 @@ export function main() {
 
                     fixture.debugElement.componentInstance.form =
                         new ControlGroup({"city": new Control("NYC")});
+
                     fixture.debugElement.componentInstance.data = ['SF', 'NYC'];
                     fixture.detectChanges();
                     tick();
 
                     var select = fixture.debugElement.query(By.css("select"));
-                    expect(select.nativeElement.value).toEqual("1: NYC");
+                    expect(select.nativeElement.value).toEqual("NYC");
                   })));
 
         it("with option values that are objects",
@@ -436,7 +438,7 @@ export function main() {
                   (tcb: TestComponentBuilder, async) => {
                     var t = `<div>
                       <select [(ngModel)]="selectedCity">
-                        <option *ngFor="#c of list" [value]="c">{{c['name']}}</option>
+                        <option *ngFor="#c of list" [ng-value]="c">{{c['name']}}</option>
                       </select>
                   </div>`;
 
@@ -468,7 +470,7 @@ export function main() {
                   (tcb: TestComponentBuilder, async) => {
                     var t = `<div>
                       <select [(ngModel)]="selectedCity">
-                        <option *ngFor="#c of list" [value]="c">{{c['name']}}</option>
+                        <option *ngFor="#c of list" [ng-value]="c">{{c['name']}}</option>
                       </select>
                   </div>`;
 
@@ -496,23 +498,23 @@ export function main() {
                   (tcb: TestComponentBuilder, async) => {
                     var t = `<div>
                       <select [(ngModel)]="selectedCity">
-                        <option *ngFor="#c of list" [value]="c">{{c}}</option>
+                        <option *ngFor="#c of list" [ng-value]="c">{{c}}</option>
                       </select>
                   </div>`;
                     tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((fixture) => {
 
                       var testComp: MyComp = fixture.debugElement.componentInstance;
-                      testComp.list = ["SF", "NYC"];
+                      testComp.list = [{"name": "SF"}, {"name": "NYC"}];
                       testComp.selectedCity = testComp.list[1];
                       fixture.detectChanges();
 
                       var select = fixture.debugElement.query(By.css("select"));
-                      expect(select.nativeElement.value).toEqual("1: NYC");
+                      expect(select.nativeElement.value).toEqual("1: Object");
 
                       testComp.list.pop();
                       fixture.detectChanges();
 
-                      expect(select.nativeElement.value).not.toEqual("1: NYC");
+                      expect(select.nativeElement.value).not.toEqual("1: Object");
                       async.done();
                     });
                   }));
@@ -522,7 +524,7 @@ export function main() {
                   (tcb: TestComponentBuilder, async) => {
                     var t = `<div>
                       <select [(ngModel)]="selectedCity">
-                        <option *ngFor="#c of list; trackBy:customTrackBy" [value]="c">{{c}}</option>
+                        <option *ngFor="#c of list; trackBy:customTrackBy" [ng-value]="c">{{c}}</option>
                       </select>
                   </div>`;
 
@@ -530,12 +532,12 @@ export function main() {
 
                       var testComp = fixture.debugElement.componentInstance;
 
-                      testComp.list = ["SF", "NYC"];
+                      testComp.list = [{"name": "SF"}, {"name": "NYC"}];
                       testComp.selectedCity = testComp.list[0];
                       fixture.detectChanges();
 
                       testComp.list[1] = "Buffalo";
-                      testComp.selectedCity = "Buffalo";
+                      testComp.selectedCity = testComp.list[1];
                       fixture.detectChanges();
 
                       var select = fixture.debugElement.query(By.css("select"));
@@ -552,7 +554,7 @@ export function main() {
                   (tcb: TestComponentBuilder, async) => {
                     var t = `<div>
                       <select [(ngModel)]="selectedCity">
-                        <option *ngFor="#c of list" [value]="c">{{c}}</option>
+                        <option *ngFor="#c of list" [ng-value]="c">{{c}}</option>
                       </select>
                   </div>`;
 
@@ -560,17 +562,17 @@ export function main() {
 
                       var testComp = fixture.debugElement.componentInstance;
 
-                      testComp.list = ["NYC", "SF", "SF"];
+                      testComp.list = [{"name": "NYC"}, {"name": "SF"}, {"name": "SF"}];
                       testComp.selectedCity = testComp.list[0];
                       fixture.detectChanges();
 
-                      testComp.selectedCity = "SF";
+                      testComp.selectedCity = testComp.list[1];
                       fixture.detectChanges();
 
                       var select = fixture.debugElement.query(By.css("select"));
                       var firstSF = fixture.debugElement.queryAll(By.css("option"))[1];
 
-                      expect(select.nativeElement.value).toEqual("1: SF");
+                      expect(select.nativeElement.value).toEqual("1: Object");
                       expect(firstSF.nativeElement.selected).toBe(true);
                       async.done();
                     });
@@ -581,7 +583,7 @@ export function main() {
                   (tcb: TestComponentBuilder, async) => {
                     var t = `<div>
                       <select [(ngModel)]="selectedCity">
-                        <option *ngFor="#c of list" [value]="c">{{c['name']}}</option>
+                        <option *ngFor="#c of list" [ng-value]="c">{{c['name']}}</option>
                       </select>
                   </div>`;
 
