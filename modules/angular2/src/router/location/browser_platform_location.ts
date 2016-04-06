@@ -3,6 +3,7 @@ import {History, Location} from 'angular2/src/facade/browser';
 import {UrlChangeListener} from './platform_location';
 import {PlatformLocation} from './platform_location';
 import {DOM} from 'angular2/src/platform/dom/dom_adapter';
+import {isPresent} from 'angular2/src/facade/lang'
 
 /**
  * `PlatformLocation` encapsulates all of the direct calls to platform APIs.
@@ -45,17 +46,17 @@ export class BrowserPlatformLocation extends PlatformLocation {
   set pathname(newPath: string) { this._location.pathname = newPath; }
 
   pushState(state: any, title: string, url: string): void {
-    if(this._history.pushState) {
+    if(isPresent(this._history.pushState)) {
       this._history.pushState(state, title, url);
-    } else if (this._location) {
+    } else {
       this._location.hash = url;
     }
   }
 
   replaceState(state: any, title: string, url: string): void {
-    if(this._history.replaceState) {
+    if(isPresent(this._history.replaceState)) {
       this._history.replaceState(state, title, url);
-    } else if (this._location) {
+    } else {
       this._location.hash = url;
     }
   }
