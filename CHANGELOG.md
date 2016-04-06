@@ -42,7 +42,7 @@
 
 
 <a name="2.0.0-alpha.0"></a>
-# 2.0.0-alpha.0 titanium-octopus (2016-03-15)
+# [2.0.0-alpha.0 titanium-octopus](https://github.com/angular/material2/releases/tag/2.0.0-alpha.0) (2016-03-15)
 
 ### First release of angular2-material!
 
