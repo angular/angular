@@ -30,20 +30,28 @@ module.exports = function makeNodeTree(projects, destinationPath) {
       'angular2/src/upgrade/**',
       'angular2/upgrade.ts',
       'angular2/platform/testing/**',
+      'angular2/manual_typings/**',
+      'angular2/typings/**'
     ]
   });
 
-  let ambientTypings = [
+  let externalTypings = [
     'angular2/typings/hammerjs/hammerjs.d.ts',
     'angular2/typings/node/node.d.ts',
-    'node_modules/zone.js/dist/zone.js.d.ts',
     'angular2/manual_typings/globals.d.ts',
     'angular2/typings/es6-collections/es6-collections.d.ts',
     'angular2/typings/es6-promise/es6-promise.d.ts'
   ];
 
+  let externalTypingsTree = new Funnel('modules', {files: externalTypings});
+
+  let packageTypings =
+      new Funnel('node_modules', {include: ['rxjs/**/*.d.ts', 'zone.js/**/*.d.ts']});
+
+  let compileSrcContext = mergeTrees([srcTree, externalTypingsTree, packageTypings]);
+
   // Compile the sources and generate the @internal .d.ts
-  let compiledSrcTreeWithInternals = compileTree(srcTree, true, ambientTypings);
+  let compiledSrcTreeWithInternals = compileTree(compileSrcContext, true, []);
 
   var testTree = new Funnel('modules', {
     include: [
@@ -71,6 +79,8 @@ module.exports = function makeNodeTree(projects, destinationPath) {
       'angular2/test/platform/xhr_impl_spec.ts',
       'angular2/test/platform/browser/**/*.ts',
       'angular2/test/common/forms/**',
+      'angular2/manual_typings/**',
+      'angular2/typings/**',
 
       // we call browser's bootstrap
       'angular2/test/router/route_config/route_config_spec.ts',
@@ -92,12 +102,17 @@ module.exports = function makeNodeTree(projects, destinationPath) {
   let srcPrivateDeclarations =
       new Funnel(compiledSrcTreeWithInternals, {srcDir: INTERNAL_TYPINGS_PATH});
 
-  testTree = mergeTrees([testTree, srcPrivateDeclarations]);
-
-  let compiledTestTree = compileTree(testTree, false, ambientTypings.concat([
+  let testAmbients = [
     'angular2/typings/jasmine/jasmine.d.ts',
     'angular2/typings/angular-protractor/angular-protractor.d.ts',
-  ]));
+    'angular2/typings/selenium-webdriver/selenium-webdriver.d.ts'
+  ];
+  let testAmbientsTree = new Funnel('modules', {files: testAmbients});
+
+  testTree = mergeTrees(
+      [testTree, srcPrivateDeclarations, testAmbientsTree, externalTypingsTree, packageTypings]);
+
+  let compiledTestTree = compileTree(testTree, false, []);
 
   // Merge the compiled sources and tests
   let compiledSrcTree =
