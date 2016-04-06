@@ -1,6 +1,6 @@
 {
   "name": "@angular2-material/card",
-  "version": "2.0.0-alpha.1",
+  "version": "2.0.0-alpha.2",
   "description": "Angular 2 Material card",
   "main": "./card.js",
   "typings": "./card.d.ts",
@@ -22,6 +22,6 @@
   "homepage": "https://github.com/angular/material2#readme",
   "peerDependencies": {
     "angular2": "^2.0.0-beta.8",
-    "@angular2-material/core": "2.0.0-alpha.1"
+    "@angular2-material/core": "2.0.0-alpha.2"
   }
 }

@@ -11,8 +11,8 @@
     "outDir": "../dist/",
     "rootDir": ".",
     "sourceMap": true,
-    "sourceRoot": "/",
-    "target": "es5"
+    "target": "es5",
+    "inlineSources": true
   },
   "files": [
     "main.ts",

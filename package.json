@@ -18,7 +18,7 @@
     "e2e": "protractor test/protractor.conf.js",
     "inline-resources": "gulp inline-resources"
   },
-  "version": "2.0.0-alpha.1",
+  "version": "2.0.0-alpha.2",
   "license": "MIT",
   "engines": {
     "node": ">= 4.2.1 < 5"
