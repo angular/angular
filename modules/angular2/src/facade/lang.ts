@@ -124,14 +124,6 @@ export function isBlank(obj: any): boolean {
   return obj === undefined || obj === null;
 }
 
-export function isBoolean(obj: any): boolean {
-  return typeof obj === "boolean";
-}
-
-export function isNumber(obj: any): boolean {
-  return typeof obj === "number";
-}
-
 export function isString(obj: any): boolean {
   return typeof obj === "string";
 }
@@ -154,6 +146,10 @@ export function isPromise(obj: any): boolean {
 
 export function isArray(obj: any): boolean {
   return Array.isArray(obj);
+}
+
+export function isNumber(obj): boolean {
+  return typeof obj === 'number';
 }
 
 export function isDate(obj): boolean {

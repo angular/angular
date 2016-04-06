@@ -41,10 +41,6 @@ class TestAssetReader implements AssetReader {
     return new Future.value(exists);
   }
 
-  void clear() {
-    this._overrideAssets.clear();
-  }
-
   void addAsset(AssetId id, String contents) {
     _overrideAssets[id] = contents;
   }

@@ -33,7 +33,6 @@ bool isStringMap(Object obj) => obj is Map;
 bool isArray(Object obj) => obj is List;
 bool isPromise(Object obj) => obj is Future;
 bool isNumber(Object obj) => obj is num;
-bool isBoolean(Object obj) => obj is bool;
 bool isDate(Object obj) => obj is DateTime;
 
 String stringify(obj) {

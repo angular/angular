@@ -27,15 +27,15 @@ class PropertyMetadataModel extends GeneratedMessage {
   static PbList<PropertyMetadataModel> createRepeated() =>
       new PbList<PropertyMetadataModel>();
   static PropertyMetadataModel getDefault() {
-    if (_defaultInstance == null)
-      _defaultInstance = new _ReadonlyPropertyMetadataModel();
+    if (_defaultInstance == null) _defaultInstance =
+        new _ReadonlyPropertyMetadataModel();
     return _defaultInstance;
   }
 
   static PropertyMetadataModel _defaultInstance;
   static void $checkItem(PropertyMetadataModel v) {
-    if (v is! PropertyMetadataModel)
-      checkItemFailed(v, 'PropertyMetadataModel');
+    if (v
+        is! PropertyMetadataModel) checkItemFailed(v, 'PropertyMetadataModel');
   }
 
   String get name => $_get(0, 1, '');
@@ -70,8 +70,8 @@ class PrefixedType extends GeneratedMessage {
   static PrefixedType create() => new PrefixedType();
   static PbList<PrefixedType> createRepeated() => new PbList<PrefixedType>();
   static PrefixedType getDefault() {
-    if (_defaultInstance == null)
-      _defaultInstance = new _ReadonlyPrefixedType();
+    if (_defaultInstance == null) _defaultInstance =
+        new _ReadonlyPrefixedType();
     return _defaultInstance;
   }
 
@@ -130,8 +130,8 @@ class ReflectionInfoModel extends GeneratedMessage {
   static PbList<ReflectionInfoModel> createRepeated() =>
       new PbList<ReflectionInfoModel>();
   static ReflectionInfoModel getDefault() {
-    if (_defaultInstance == null)
-      _defaultInstance = new _ReadonlyReflectionInfoModel();
+    if (_defaultInstance == null) _defaultInstance =
+        new _ReadonlyReflectionInfoModel();
     return _defaultInstance;
   }
 

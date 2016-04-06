@@ -23,8 +23,8 @@ class NamedParameter extends GeneratedMessage {
   static PbList<NamedParameter> createRepeated() =>
       new PbList<NamedParameter>();
   static NamedParameter getDefault() {
-    if (_defaultInstance == null)
-      _defaultInstance = new _ReadonlyNamedParameter();
+    if (_defaultInstance == null) _defaultInstance =
+        new _ReadonlyNamedParameter();
     return _defaultInstance;
   }
 
@@ -78,8 +78,8 @@ class AnnotationModel extends GeneratedMessage {
   static PbList<AnnotationModel> createRepeated() =>
       new PbList<AnnotationModel>();
   static AnnotationModel getDefault() {
-    if (_defaultInstance == null)
-      _defaultInstance = new _ReadonlyAnnotationModel();
+    if (_defaultInstance == null) _defaultInstance =
+        new _ReadonlyAnnotationModel();
     return _defaultInstance;
   }
 

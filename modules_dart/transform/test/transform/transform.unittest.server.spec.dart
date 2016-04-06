@@ -14,5 +14,3 @@ main() {
   describe('Template Compiler', templateCompiler.allTests);
   describe('Stylesheet Compiler', stylesheetCompiler.allTests);
 }
-
-

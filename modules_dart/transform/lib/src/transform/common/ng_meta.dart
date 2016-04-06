@@ -28,8 +28,10 @@ import 'url_resolver.dart' show isDartCoreUri;
 /// `.ng_meta.json` files as intermediate assets during the compilation process.
 class NgMeta {
   static const _ALIAS_VALUE = 'alias';
+  static const _KIND_KEY = 'kind';
   static const _NG_DEPS_KEY = 'ngDeps';
   static const _TYPE_VALUE = 'type';
+  static const _VALUE_KEY = 'value';
 
   /// Metadata for each identifier
   /// Type: [CompileDirectiveMetadata]|[CompilePipeMetadata]|[CompileTypeMetadata]|[CompileIdentifierMetadata]
@@ -41,9 +43,11 @@ class NgMeta {
   // The NgDeps generated from
   final NgDepsModel ngDeps;
 
+  bool definesAlias;
+
   NgMeta({Map<String, List<String>> aliases,
-  Map<String, dynamic> identifiers,
-  this.ngDeps: null})
+      Map<String, dynamic> identifiers,
+      this.ngDeps: null, this.definesAlias: false})
       :this.aliases = aliases != null ? aliases : {},
         this.identifiers = identifiers != null ? identifiers : {};
 
@@ -68,43 +72,48 @@ class NgMeta {
 
   bool get isEmpty => identifiers.isEmpty && aliases.isEmpty && isNgDepsEmpty;
 
-  bool get needsResolution {
-    return identifiers.values.any((id) =>
-      id is CompileDirectiveMetadata || id is CompilePipeMetadata || id is CompileTypeMetadata
-          || (id is CompileIdentifierMetadata && id.value != null));
+  List<String> get linkingUris {
+    final r = ngDeps.exports.map((r) => r.uri).toList();
+    if (definesAlias) {
+      r.addAll(ngDeps.imports.map((r) => r.uri));
+    }
+    return r;
   }
 
   /// Parse from the serialized form produced by [toJson].
   factory NgMeta.fromJson(Map json) {
     var ngDeps = null;
-
-    if (json.containsKey(_NG_DEPS_KEY)) {
-      var ngDepsJsonMap = json[_NG_DEPS_KEY];
-      if (ngDepsJsonMap != null) {
+    final aliases = {};
+    final identifiers = {};
+    var definesAlias = false;
+    for (var key in json.keys) {
+      if (key == _NG_DEPS_KEY) {
+        var ngDepsJsonMap = json[key];
+        if (ngDepsJsonMap == null) continue;
         if (ngDepsJsonMap is! Map) {
           log.warning(
-              'Unexpected value $ngDepsJsonMap for key "$_NG_DEPS_KEY" in NgMeta.');
-        } else {
-          ngDeps = new NgDepsModel()..mergeFromJsonMap(ngDepsJsonMap);
+              'Unexpected value $ngDepsJsonMap for key "$key" in NgMeta.');
+          continue;
         }
-      }
-    }
+        ngDeps = new NgDepsModel()
+          ..mergeFromJsonMap(ngDepsJsonMap);
+      } else if (key == 'definesAlias') {
+        definesAlias = json[key];
 
-    final aliases = json[_ALIAS_VALUE] != null ? json[_ALIAS_VALUE] : {};
-
-    final identifiers = {};
-    if (json.containsKey(_TYPE_VALUE)) {
-      for (var key in json[_TYPE_VALUE].keys) {
-        var entry = json[_TYPE_VALUE][key];
+      } else {
+        var entry = json[key];
         if (entry is! Map) {
           log.warning('Unexpected value $entry for key "$key" in NgMeta.');
           continue;
         }
-        identifiers[key] = metadataFromJson(entry);
+        if (entry[_KIND_KEY] == _TYPE_VALUE) {
+          identifiers[key] = CompileMetadataWithIdentifier.fromJson(entry[_VALUE_KEY]);
+        } else if (entry[_KIND_KEY] == _ALIAS_VALUE) {
+          aliases[key] = entry[_VALUE_KEY];
+        }
       }
     }
-
-    return new NgMeta(identifiers: identifiers, aliases: aliases, ngDeps: ngDeps);
+    return new NgMeta(identifiers: identifiers, aliases: aliases, ngDeps: ngDeps, definesAlias: definesAlias);
   }
 
   /// Serialized representation of this instance.
@@ -112,11 +121,16 @@ class NgMeta {
     var result = {};
     result[_NG_DEPS_KEY] = isNgDepsEmpty ? null : ngDeps.writeToJsonMap();
 
-    result[_TYPE_VALUE] = {};
     identifiers.forEach((k, v) {
-      result[_TYPE_VALUE][k] = v.toJson();
+      result[k] = {_KIND_KEY: _TYPE_VALUE, _VALUE_KEY: v.toJson()};
     });
-    result[_ALIAS_VALUE] = aliases;
+
+    aliases.forEach((k, v) {
+      result[k] = {_KIND_KEY: _ALIAS_VALUE, _VALUE_KEY: v};
+    });
+
+    result['definesAlias'] = definesAlias;
+
     return result;
   }
 
@@ -136,10 +150,10 @@ class NgMeta {
         log.error('Circular alias dependency for "$name". Cycle: ${newPath.join(' -> ')}.');
         return;
       }
-      if (aliases.containsKey(name)) {
-        aliases[name].forEach((n) => helper(n, newPath));
-      } else if (identifiers.containsKey(name)) {
+      if (identifiers.containsKey(name)) {
         result.add(identifiers[name]);
+      } else if (aliases.containsKey(name)) {
+        aliases[name].forEach((n) => helper(n, newPath));
       } else {
         log.error('Unknown alias: ${newPath.join(' -> ')}. Make sure you export ${name} from the file where ${path.last} is defined.');
       }

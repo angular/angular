@@ -26,7 +26,7 @@ void initReflector() {
               const [prefix.MyDep]
             ],
             (prefix.MyContext c, prefix.MyDep inValue) =>
-                new MyComponent(c, inValue)));
+        new MyComponent(c, inValue)));
   i0.initReflector();
   i1.initReflector();
 }

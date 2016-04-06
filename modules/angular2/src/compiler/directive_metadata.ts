@@ -1,16 +1,13 @@
 import {
   isPresent,
   isBlank,
-  isNumber,
-  isBoolean,
   normalizeBool,
   normalizeBlank,
   serializeEnum,
   Type,
   isString,
   RegExpWrapper,
-  StringWrapper,
-  isArray
+  StringWrapper
 } from 'angular2/src/facade/lang';
 import {unimplemented} from 'angular2/src/facade/exceptions';
 import {StringMapWrapper} from 'angular2/src/facade/collection';
@@ -28,21 +25,25 @@ import {LifecycleHooks, LIFECYCLE_HOOKS_VALUES} from 'angular2/src/core/linker/i
 var HOST_REG_EXP = /^(?:(?:\[([^\]]+)\])|(?:\(([^\)]+)\)))$/g;
 
 export abstract class CompileMetadataWithIdentifier {
+  static fromJson(data: {[key: string]: any}): CompileMetadataWithIdentifier {
+    return _COMPILE_METADATA_FROM_JSON[data['class']](data);
+  }
+
   abstract toJson(): {[key: string]: any};
 
   get identifier(): CompileIdentifierMetadata { return <CompileIdentifierMetadata>unimplemented(); }
 }
 
 export abstract class CompileMetadataWithType extends CompileMetadataWithIdentifier {
+  static fromJson(data: {[key: string]: any}): CompileMetadataWithType {
+    return _COMPILE_METADATA_FROM_JSON[data['class']](data);
+  }
+
   abstract toJson(): {[key: string]: any};
 
   get type(): CompileTypeMetadata { return <CompileTypeMetadata>unimplemented(); }
 
   get identifier(): CompileIdentifierMetadata { return <CompileIdentifierMetadata>unimplemented(); }
-}
-
-export function metadataFromJson(data: {[key: string]: any}): any {
-  return _COMPILE_METADATA_FROM_JSON[data['class']](data);
 }
 
 export class CompileIdentifierMetadata implements CompileMetadataWithIdentifier {
@@ -51,47 +52,37 @@ export class CompileIdentifierMetadata implements CompileMetadataWithIdentifier 
   prefix: string;
   moduleUrl: string;
   constConstructor: boolean;
-  value: any;
-
-  constructor({runtime, name, moduleUrl, prefix, constConstructor, value}: {
+  constructor({runtime, name, moduleUrl, prefix, constConstructor}: {
     runtime?: any,
     name?: string,
-    staticMethodName?: string,
     moduleUrl?: string,
     prefix?: string,
-    constConstructor?: boolean,
-    value?: any
+    constConstructor?: boolean
   } = {}) {
     this.runtime = runtime;
     this.name = name;
     this.prefix = prefix;
     this.moduleUrl = moduleUrl;
     this.constConstructor = constConstructor;
-    this.value = value;
   }
 
   static fromJson(data: {[key: string]: any}): CompileIdentifierMetadata {
-    let value = isArray(data['value']) ? arrayFromJson(data['value'], metadataFromJson) :
-                                         objFromJson(data['value'], metadataFromJson);
     return new CompileIdentifierMetadata({
       name: data['name'],
       prefix: data['prefix'],
       moduleUrl: data['moduleUrl'],
-      constConstructor: data['constConstructor'],
-      value: value
+      constConstructor: data['constConstructor']
     });
   }
 
   toJson(): {[key: string]: any} {
-    let value = isArray(this.value) ? arrayToJson(this.value) : objToJson(this.value);
     return {
       // Note: Runtime type can't be serialized...
       'class': 'Identifier',
       'name': this.name,
       'moduleUrl': this.moduleUrl,
       'prefix': this.prefix,
-      'constConstructor': this.constConstructor,
-      'value': value
+      'constConstructor': this.constConstructor
     };
   }
 
@@ -186,78 +177,44 @@ export class CompileProviderMetadata {
   static fromJson(data: {[key: string]: any}): CompileProviderMetadata {
     return new CompileProviderMetadata({
       token: objFromJson(data['token'], CompileIdentifierMetadata.fromJson),
-      useClass: objFromJson(data['useClass'], CompileTypeMetadata.fromJson),
-      useExisting: objFromJson(data['useExisting'], CompileIdentifierMetadata.fromJson),
-      useValue: objFromJson(data['useValue'], CompileIdentifierMetadata.fromJson),
-      useFactory: objFromJson(data['useFactory'], CompileFactoryMetadata.fromJson)
+      useClass: objFromJson(data['useClass'], CompileTypeMetadata.fromJson)
     });
   }
 
   toJson(): {[key: string]: any} {
     return {
       // Note: Runtime type can't be serialized...
-      'class': 'Provider',
       'token': objToJson(this.token),
-      'useClass': objToJson(this.useClass),
-      'useExisting': objToJson(this.useExisting),
-      'useValue': objToJson(this.useValue),
-      'useFactory': objToJson(this.useFactory)
+      'useClass': objToJson(this.useClass)
     };
   }
 }
 
-export class CompileFactoryMetadata implements CompileIdentifierMetadata,
-    CompileMetadataWithIdentifier {
+export class CompileFactoryMetadata implements CompileIdentifierMetadata {
   runtime: Function;
   name: string;
   prefix: string;
   moduleUrl: string;
   constConstructor: boolean;
-  value: any;
   diDeps: CompileDiDependencyMetadata[];
 
-  constructor({runtime, name, moduleUrl, prefix, constConstructor, diDeps, value}: {
+  constructor({runtime, name, moduleUrl, constConstructor, diDeps}: {
     runtime?: Function,
     name?: string,
-    prefix?: string,
     moduleUrl?: string,
     constConstructor?: boolean,
-    value?: boolean,
     diDeps?: CompileDiDependencyMetadata[]
   }) {
     this.runtime = runtime;
     this.name = name;
-    this.prefix = prefix;
     this.moduleUrl = moduleUrl;
     this.diDeps = diDeps;
     this.constConstructor = constConstructor;
-    this.value = value;
   }
 
   get identifier(): CompileIdentifierMetadata { return this; }
 
-  static fromJson(data: {[key: string]: any}): CompileFactoryMetadata {
-    return new CompileFactoryMetadata({
-      name: data['name'],
-      prefix: data['prefix'],
-      moduleUrl: data['moduleUrl'],
-      constConstructor: data['constConstructor'],
-      value: data['value'],
-      diDeps: arrayFromJson(data['diDeps'], CompileDiDependencyMetadata.fromJson)
-    });
-  }
-
-  toJson(): {[key: string]: any} {
-    return {
-      'class': 'Factory',
-      'name': this.name,
-      'prefix': this.prefix,
-      'moduleUrl': this.moduleUrl,
-      'constConstructor': this.constConstructor,
-      'value': this.value,
-      'diDeps': arrayToJson(this.diDeps)
-    };
-  }
+  toJson() { return null; }
 }
 
 /**
@@ -270,17 +227,15 @@ export class CompileTypeMetadata implements CompileIdentifierMetadata, CompileMe
   moduleUrl: string;
   isHost: boolean;
   constConstructor: boolean;
-  value: any;
   diDeps: CompileDiDependencyMetadata[];
 
-  constructor({runtime, name, moduleUrl, prefix, isHost, constConstructor, value, diDeps}: {
+  constructor({runtime, name, moduleUrl, prefix, isHost, constConstructor, diDeps}: {
     runtime?: Type,
     name?: string,
     moduleUrl?: string,
     prefix?: string,
     isHost?: boolean,
     constConstructor?: boolean,
-    value?: any,
     diDeps?: CompileDiDependencyMetadata[]
   } = {}) {
     this.runtime = runtime;
@@ -289,7 +244,6 @@ export class CompileTypeMetadata implements CompileIdentifierMetadata, CompileMe
     this.prefix = prefix;
     this.isHost = normalizeBool(isHost);
     this.constConstructor = constConstructor;
-    this.value = value;
     this.diDeps = normalizeBlank(diDeps);
   }
 
@@ -300,7 +254,6 @@ export class CompileTypeMetadata implements CompileIdentifierMetadata, CompileMe
       prefix: data['prefix'],
       isHost: data['isHost'],
       constConstructor: data['constConstructor'],
-      value: data['value'],
       diDeps: arrayFromJson(data['diDeps'], CompileDiDependencyMetadata.fromJson)
     });
   }
@@ -317,7 +270,6 @@ export class CompileTypeMetadata implements CompileIdentifierMetadata, CompileMe
       'prefix': this.prefix,
       'isHost': this.isHost,
       'constConstructor': this.constConstructor,
-      'value': this.value,
       'diDeps': arrayToJson(this.diDeps)
     };
   }
@@ -430,10 +382,8 @@ export class CompileDirectiveMetadata implements CompileMetadataWithType {
     outputs?: string[],
     host?: {[key: string]: string},
     lifecycleHooks?: LifecycleHooks[],
-    providers?:
-        Array<CompileProviderMetadata | CompileTypeMetadata | CompileIdentifierMetadata | any[]>,
-    viewProviders?:
-        Array<CompileProviderMetadata | CompileTypeMetadata | CompileIdentifierMetadata | any[]>,
+    providers?: Array<CompileProviderMetadata | CompileTypeMetadata | any[]>,
+    viewProviders?: Array<CompileProviderMetadata | CompileTypeMetadata | any[]>,
     queries?: CompileQueryMetadata[],
     viewQueries?: CompileQueryMetadata[],
     template?: CompileTemplateMetadata
@@ -524,10 +474,8 @@ export class CompileDirectiveMetadata implements CompileMetadataWithType {
     hostProperties?: {[key: string]: string},
     hostAttributes?: {[key: string]: string},
     lifecycleHooks?: LifecycleHooks[],
-    providers?:
-        Array<CompileProviderMetadata | CompileTypeMetadata | CompileIdentifierMetadata | any[]>,
-    viewProviders?:
-        Array<CompileProviderMetadata | CompileTypeMetadata | CompileIdentifierMetadata | any[]>,
+    providers?: Array<CompileProviderMetadata | CompileTypeMetadata | any[]>,
+    viewProviders?: Array<CompileProviderMetadata | CompileTypeMetadata | any[]>,
     queries?: CompileQueryMetadata[],
     viewQueries?: CompileQueryMetadata[],
     template?: CompileTemplateMetadata
@@ -546,8 +494,8 @@ export class CompileDirectiveMetadata implements CompileMetadataWithType {
     this.lifecycleHooks = lifecycleHooks;
     this.providers = normalizeBlank(providers);
     this.viewProviders = normalizeBlank(viewProviders);
-    this.queries = normalizeBlank(queries);
-    this.viewQueries = normalizeBlank(viewQueries);
+    this.queries = queries;
+    this.viewQueries = viewQueries;
     this.template = template;
   }
 
@@ -572,10 +520,7 @@ export class CompileDirectiveMetadata implements CompileMetadataWithType {
           (<any[]>data['lifecycleHooks']).map(hookValue => LIFECYCLE_HOOKS_VALUES[hookValue]),
       template: isPresent(data['template']) ? CompileTemplateMetadata.fromJson(data['template']) :
                                               data['template'],
-      providers: arrayFromJson(data['providers'], metadataFromJson),
-      viewProviders: arrayFromJson(data['viewProviders'], metadataFromJson),
-      queries: arrayFromJson(data['queries'], CompileQueryMetadata.fromJson),
-      viewQueries: arrayFromJson(data['viewQueries'], CompileQueryMetadata.fromJson)
+      providers: arrayFromJson(data['providers'], CompileProviderMetadata.fromJson)
     });
   }
 
@@ -596,10 +541,7 @@ export class CompileDirectiveMetadata implements CompileMetadataWithType {
       'hostAttributes': this.hostAttributes,
       'lifecycleHooks': this.lifecycleHooks.map(hook => serializeEnum(hook)),
       'template': isPresent(this.template) ? this.template.toJson() : this.template,
-      'providers': arrayToJson(this.providers),
-      'viewProviders': arrayToJson(this.viewProviders),
-      'queries': arrayToJson(this.queries),
-      'viewQueries': arrayToJson(this.viewQueries)
+      'providers': arrayToJson(this.providers)
     };
   }
 }
@@ -669,9 +611,7 @@ var _COMPILE_METADATA_FROM_JSON = {
   'Directive': CompileDirectiveMetadata.fromJson,
   'Pipe': CompilePipeMetadata.fromJson,
   'Type': CompileTypeMetadata.fromJson,
-  'Provider': CompileProviderMetadata.fromJson,
-  'Identifier': CompileIdentifierMetadata.fromJson,
-  'Factory': CompileFactoryMetadata.fromJson
+  'Identifier': CompileIdentifierMetadata.fromJson
 };
 
 function arrayFromJson(obj: any[], fn: (a: {[key: string]: any}) => any): any {
@@ -683,9 +623,9 @@ function arrayToJson(obj: any[]): string | {[key: string]: any} {
 }
 
 function objFromJson(obj: any, fn: (a: {[key: string]: any}) => any): any {
-  return (isString(obj) || isBlank(obj) || isBoolean(obj) || isNumber(obj)) ? obj : fn(obj);
+  return (isString(obj) || isBlank(obj)) ? obj : fn(obj);
 }
 
 function objToJson(obj: any): string | {[key: string]: any} {
-  return (isString(obj) || isBlank(obj) || isBoolean(obj) || isNumber(obj)) ? obj : obj.toJson();
+  return (isString(obj) || isBlank(obj)) ? obj : obj.toJson();
 }

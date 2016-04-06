@@ -18,9 +18,7 @@ import {
   CompileTemplateMetadata,
   CompileProviderMetadata,
   CompileDiDependencyMetadata,
-  CompileQueryMetadata,
-  CompileIdentifierMetadata,
-  CompileFactoryMetadata
+  CompileQueryMetadata
 } from 'angular2/src/compiler/directive_metadata';
 import {ViewEncapsulation} from 'angular2/src/core/metadata/view';
 import {ChangeDetectionStrategy} from 'angular2/src/core/change_detection';
@@ -33,21 +31,25 @@ export function main() {
     var fullDirectiveMeta: CompileDirectiveMetadata;
 
     beforeEach(() => {
-      var diDep = new CompileDiDependencyMetadata({
-        isAttribute: true,
-        isSelf: true,
+      fullTypeMeta = new CompileTypeMetadata({
+        name: 'SomeType',
+        moduleUrl: 'someUrl',
         isHost: true,
-        isSkipSelf: true,
-        isOptional: true,
-        token: 'someToken',
-        query: new CompileQueryMetadata(
-            {selectors: ['one'], descendants: true, first: true, propertyName: 'one'}),
-        viewQuery: new CompileQueryMetadata(
-            {selectors: ['one'], descendants: true, first: true, propertyName: 'one'})
+        diDeps: [
+          new CompileDiDependencyMetadata({
+            isAttribute: true,
+            isSelf: true,
+            isHost: true,
+            isSkipSelf: true,
+            isOptional: true,
+            token: 'someToken',
+            query: new CompileQueryMetadata(
+                {selectors: ['one'], descendants: true, first: true, propertyName: 'one'}),
+            viewQuery: new CompileQueryMetadata(
+                {selectors: ['one'], descendants: true, first: true, propertyName: 'one'})
+          })
+        ]
       });
-
-      fullTypeMeta = new CompileTypeMetadata(
-          {name: 'SomeType', moduleUrl: 'someUrl', isHost: true, diDeps: [diDep]});
       fullTemplateMeta = new CompileTemplateMetadata({
         encapsulation: ViewEncapsulation.Emulated,
         template: '<a></a>',
@@ -67,32 +69,7 @@ export function main() {
         outputs: ['someEvent'],
         host: {'(event1)': 'handler1', '[prop1]': 'expr1', 'attr1': 'attrValue2'},
         lifecycleHooks: [LifecycleHooks.OnChanges],
-        providers: [
-          new CompileProviderMetadata({
-            token: 'token',
-            useClass: fullTypeMeta,
-            useExisting: new CompileIdentifierMetadata({name: 'someName'}),
-            useFactory: new CompileFactoryMetadata({name: 'someName', diDeps: [diDep]}),
-            useValue: 'someValue',
-          })
-        ],
-        viewProviders: [
-          new CompileProviderMetadata({
-            token: 'token',
-            useClass: fullTypeMeta,
-            useExisting: new CompileIdentifierMetadata({name: 'someName'}),
-            useFactory: new CompileFactoryMetadata({name: 'someName', diDeps: [diDep]}),
-            useValue: 'someValue',
-          })
-        ],
-        queries: [
-          new CompileQueryMetadata(
-              {selectors: ['selector'], descendants: true, first: false, propertyName: 'prop'})
-        ],
-        viewQueries: [
-          new CompileQueryMetadata(
-              {selectors: ['selector'], descendants: true, first: false, propertyName: 'prop'})
-        ]
+        providers: [new CompileProviderMetadata({token: 'token', useClass: fullTypeMeta})]
       });
 
     });

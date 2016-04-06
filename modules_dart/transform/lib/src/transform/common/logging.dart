@@ -74,50 +74,6 @@ class PrintLogger implements TransformLogger {
   }
 }
 
-/// Wraps the logger and prints the messages
-/// only if they have not been printed before
-class DeduppingLogger implements TransformLogger {
-  Set<String> _printedMessages;
-
-  final TransformLogger _logger;
-
-  DeduppingLogger(this._logger, this._printedMessages);
-
-  String _key(msg, AssetId asset) => "$msg $asset";
-
-  @override
-  void info(msg, {AssetId asset, SourceSpan span}) {
-    if (!_printedMessages.contains(_key(msg, asset))) {
-      _printedMessages.add(_key(msg, asset));
-      _logger.info(msg, asset: asset, span: span);
-    }
-  }
-
-  @override
-  void fine(msg, {AssetId asset, SourceSpan span}) {
-    if (!_printedMessages.contains(_key(msg, asset))) {
-      _printedMessages.add(_key(msg, asset));
-      _logger.fine(msg, asset: asset, span: span);
-    }
-  }
-
-  @override
-  void warning(msg, {AssetId asset, SourceSpan span}) {
-    if (!_printedMessages.contains(_key(msg, asset))) {
-      _printedMessages.add(_key(msg, asset));
-      _logger.warning(msg, asset: asset, span: span);
-    }
-  }
-
-  @override
-  void error(msg, {AssetId asset, SourceSpan span}) {
-    if (!_printedMessages.contains(_key(msg, asset))) {
-      _printedMessages.add(_key(msg, asset));
-      _logger.error(msg, asset: asset, span: span);
-    }
-  }
-}
-
 class PrintLoggerError extends Error {
   final String message;
   final AssetId asset;

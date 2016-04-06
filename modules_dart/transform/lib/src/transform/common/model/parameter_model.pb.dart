@@ -26,8 +26,8 @@ class ParameterModel extends GeneratedMessage {
   static PbList<ParameterModel> createRepeated() =>
       new PbList<ParameterModel>();
   static ParameterModel getDefault() {
-    if (_defaultInstance == null)
-      _defaultInstance = new _ReadonlyParameterModel();
+    if (_defaultInstance == null) _defaultInstance =
+        new _ReadonlyParameterModel();
     return _defaultInstance;
   }
 
