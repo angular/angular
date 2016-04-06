@@ -13,7 +13,7 @@ set -ex
 
 for package in ./deploy/*
 do
-  npm publish ${package}
+  npm publish --access public ${package}
 done
 
 # Always log out of npm when publish is complete.
