@@ -67,7 +67,6 @@ class DiffingTSCompiler implements DiffingBroccoliPlugin {
     } else {
       this.rootFilePaths = [];
     }
-
     if (options.internalTypings) {
       this.genInternalTypings = true;
       delete options.internalTypings;
@@ -77,6 +76,18 @@ class DiffingTSCompiler implements DiffingBroccoliPlugin {
     // in 1.8 use convertCompilerOptionsFromJson
     this.tsOpts =
         ts.parseJsonConfigFileContent({compilerOptions: options, files: []}, null, null).options;
+
+    // Configure the look up paths
+    this.tsOpts.baseUrl = inputPath;
+    this.tsOpts.rootDir = inputPath;
+    this.tsOpts.paths = {
+      // TODO: This shouldn't be here, but in the configuration passed in by the angular builder.
+      'angular2/*': [path.join(inputPath, 'angular2/*')],
+
+      // TODO: This wouldn't be necessary if rxjs was added to expected location in the broccoli
+      // tree.
+      'rxjs/*': [path.join(process.cwd(), 'node_modules/rxjs/*')]
+    };
 
     if ((<any>this.tsOpts).stripInternal === false) {
       // @internal are included in the generated .d.ts, do not generate them separately
@@ -331,7 +342,18 @@ class CustomLanguageServiceHost implements ts.LanguageServiceHost {
   }
 
 
-  getScriptFileNames(): string[] { return this.fileNames; }
+  getScriptFileNames(): string[] {
+    var result = this.fileNames.map(file => {
+      if (file.match(/^node_modules\//)) {
+        // TODO: This is required because ambient type files are included as direct referenced to
+        // files not in the broccoli tree. This should be fixed in the broccoli tree.
+        return path.resolve(file);
+      } else {
+        return path.join(this.treeInputPath, file);
+      }
+    });
+    return result;
+  }
 
 
   getScriptVersion(fileName: string): string {
@@ -357,28 +379,12 @@ class CustomLanguageServiceHost implements ts.LanguageServiceHost {
    * not worth the potential issues with stale cache records.
    */
   getScriptSnapshot(tsFilePath: string): ts.IScriptSnapshot {
-    let absoluteTsFilePath;
-
-    if (tsFilePath == this.defaultLibFilePath || path.isAbsolute(tsFilePath)) {
-      absoluteTsFilePath = tsFilePath;
-    } else if (this.compilerOptions.moduleResolution === ts.ModuleResolutionKind.NodeJs &&
-               tsFilePath.match(/^node_modules/)) {
-      absoluteTsFilePath = path.resolve(tsFilePath);
-    } else if (tsFilePath.match(/^rxjs/)) {
-      absoluteTsFilePath = path.resolve('node_modules', tsFilePath);
-    } else if (tsFilePath.match(/^node_modules/)) {
-      absoluteTsFilePath = path.resolve('node_modules/../', tsFilePath);
-    } else {
-      absoluteTsFilePath = path.join(this.treeInputPath, tsFilePath);
-    }
-
-
-    if (!fs.existsSync(absoluteTsFilePath)) {
+    if (!fs.existsSync(tsFilePath)) {
       // TypeScript seems to request lots of bogus paths during import path lookup and resolution,
       // so we we just return undefined when the path is not correct.
       return undefined;
     }
-    return ts.ScriptSnapshot.fromString(fs.readFileSync(absoluteTsFilePath, FS_OPTS));
+    return ts.ScriptSnapshot.fromString(fs.readFileSync(tsFilePath, FS_OPTS));
   }
 
 
