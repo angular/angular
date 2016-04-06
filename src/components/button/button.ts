@@ -8,7 +8,6 @@ import {
   ElementRef,
   Renderer,
 } from 'angular2/core';
-import {TimerWrapper} from 'angular2/src/facade/async';
 
 // TODO(jelbourn): Ink ripples.
 // TODO(jelbourn): Make the `isMouseDown` stuff done with one global listener.
@@ -55,7 +54,7 @@ export class MdButton {
     // button continues to look :active after clicking.
     // @see http://marcysutton.com/button-focus-hell/
     this.isMouseDown = true;
-    TimerWrapper.setTimeout(() => { this.isMouseDown = false; }, 100);
+    setTimeout(() => { this.isMouseDown = false; }, 100);
   }
 
   _updateColor(newColor: string) {

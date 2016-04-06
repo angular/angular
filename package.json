@@ -62,7 +62,7 @@
     "symlink-or-copy": "^1.0.1",
     "ts-node": "^0.5.5",
     "tslint": "^3.5.0",
-    "typescript": "^1.7.5",
+    "typescript": "^1.8.0",
     "typings": "^0.6.8",
     "which": "^1.2.4"
   }

@@ -1,4 +1,3 @@
-import {DOM} from '../platform/dom/dom_adapter';
 
 
 /**
@@ -6,9 +5,8 @@ import {DOM} from '../platform/dom/dom_adapter';
  * with the 'md-overlay-container' class on the document body.
  */
 export function createOverlayContainer(): Element {
-  let documentBody = DOM.getGlobalEventTarget('body');
-  let container = DOM.createElement('div');
-  DOM.addClass(container, 'md-overlay-container');
-  DOM.appendChild(documentBody, container);
+  let container = document.createElement('div');
+  container.classList.add('md-overlay-container');
+  document.body.appendChild(container);
   return container;
 }

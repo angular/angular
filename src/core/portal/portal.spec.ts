@@ -1,14 +1,12 @@
 import {
-  inject,
-  ComponentFixture,
-  TestComponentBuilder,
-} from 'angular2/testing';
-import {
   it,
   describe,
   expect,
   beforeEach,
-} from '../../core/facade/testing';
+  inject,
+  ComponentFixture,
+  TestComponentBuilder,
+} from 'angular2/testing';
 import {Component, ViewChildren, QueryList, ElementRef} from 'angular2/core';
 import {TemplatePortalDirective} from './portal-directives';
 import {Portal} from './portal';
@@ -19,8 +17,6 @@ import {flushMicrotasks} from 'angular2/testing';
 import {DynamicComponentLoader} from 'angular2/core';
 import {AppViewManager} from 'angular2/core';
 import {DomPortalHost} from './dom-portal-host';
-import {BrowserDomAdapter} from '../platform/browser/browser_adapter';
-import {DOM} from '../platform/dom/dom_adapter';
 
 
 
@@ -30,7 +26,6 @@ export function main() {
 
     beforeEach(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
       builder = tcb;
-      BrowserDomAdapter.makeCurrent();
     }));
 
     describe('PortalHostDirective', () => {
@@ -234,7 +229,7 @@ export function main() {
           fakeAsync((dcl: DynamicComponentLoader, avm: AppViewManager) => {
         viewManager = avm;
         componentLoader = dcl;
-        someDomElement = DOM.createElement('div');
+        someDomElement = document.createElement('div');
         host = new DomPortalHost(someDomElement, componentLoader, viewManager);
 
         builder.createAsync(ArbitraryElementRefComponent).then(fixture => {

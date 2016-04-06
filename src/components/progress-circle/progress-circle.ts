@@ -4,19 +4,9 @@ import {
   HostBinding,
   Input
 } from 'angular2/core';
-import {isPresent, CONST} from 'angular2/src/facade/lang';
-import {Math} from 'angular2/src/facade/math';
-import {OneOf} from '../../core/annotations/one-of';
 
 
 // TODO(josephperrott): Benchpress tests.
-
-/** Display modes of Progress Circle */
-@CONST()
-class ProgressMode {
-  @CONST() static DETERMINATE = 'determinate';
-  @CONST() static INDETERMINATE = 'indeterminate';
-}
 
 
 /**
@@ -51,9 +41,7 @@ export class MdProgressCircle {
    * mode is bound to the host as the attribute host.
    */
   @HostBinding('attr.mode')
-  @Input()
-  @OneOf([ProgressMode.DETERMINATE, ProgressMode.INDETERMINATE])
-  mode: string;
+  @Input() mode: 'determinate' | 'indeterminate' = 'determinate';
 
 
   /**
@@ -81,7 +69,7 @@ export class MdProgressCircle {
 
   /** Sets the progress value, clamping before setting the internal value. */
   set value(v: number) {
-    if (isPresent(v)) {
+    if (v != null) {
       this._value = MdProgressCircle.clamp(v);
     }
   }
@@ -113,6 +101,6 @@ export class MdProgressCircle {
 export class MdSpinner extends MdProgressCircle {
   constructor() {
     super();
-    this.mode = ProgressMode.INDETERMINATE;
+    this.mode = 'indeterminate';
   }
 }

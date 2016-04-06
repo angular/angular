@@ -1,14 +1,12 @@
-import {Portal} from './portal';
-import {TemplatePortal} from './portal';
-import {ComponentRef} from 'angular2/core';
-import {ComponentPortal} from './portal';
-import {Directive} from 'angular2/core';
-import {TemplateRef} from 'angular2/core';
-import {BasePortalHost} from './portal';
-import {DynamicComponentLoader} from 'angular2/core';
-import {ElementRef} from 'angular2/core';
-import {ViewContainerRef} from 'angular2/core';
-
+import {
+    ComponentRef,
+    Directive,
+    TemplateRef,
+    DynamicComponentLoader,
+    ElementRef,
+    ViewContainerRef
+} from 'angular2/core';
+import {Portal, TemplatePortal, ComponentPortal, BasePortalHost} from './portal';
 
 /**
  * Directive version of a `TemplatePortal`. Because the directive *is* a TemplatePortal,
@@ -69,12 +67,11 @@ export class PortalHostDirective extends BasePortalHost {
     let elementRef = portal.origin != null ? portal.origin : this._elementRef;
 
     // Typecast is necessary for Dart transpilation.
-    return <Promise<ComponentRef>>
-        this._dynamicComponentLoader.loadNextToLocation(portal.component, elementRef)
-        .then(ref => {
-          this.setDisposeFn(() => ref.dispose());
-          return ref;
-        });
+    return this._dynamicComponentLoader.loadNextToLocation(portal.component, elementRef)
+      .then(ref => {
+        this.setDisposeFn(() => ref.dispose());
+        return ref;
+      });
   }
 
   /** Attach the given TemplatePortal to this PortlHost as an embedded View. */
@@ -86,15 +83,14 @@ export class PortalHostDirective extends BasePortalHost {
     this.setDisposeFn(() => this._viewContainerRef.clear());
 
     // TODO(jelbourn): return locals from view
-    // Typecast is necessary for Dart transpilation.
-    return <Promise<Map<string, any>>> Promise.resolve(new Map<string, any>());
+    return Promise.resolve(new Map<string, any>());
   }
 
   /** Detatches the currently attached Portal (if there is one) and attaches the given Portal. */
   private _replaceAttachedPortal(p: Portal<any>): void {
-    let maybeDetach = this.hasAttached() ? this.detach() : Promise.resolve(null);
+    let maybeDetach = this.hasAttached() ? this.detach() : Promise.resolve();
 
-    maybeDetach.then(_ => {
+    maybeDetach.then(() => {
       if (p != null) {
         this.attach(p);
         this._portal = p;

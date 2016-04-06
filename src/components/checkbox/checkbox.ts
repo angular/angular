@@ -15,9 +15,6 @@ import {
   NG_VALUE_ACCESSOR,
   ControlValueAccessor
 } from 'angular2/src/common/forms/directives/control_value_accessor';
-import {CONST_EXPR} from 'angular2/src/facade/lang';
-
-import { OneOf } from '../../core/annotations/one-of';
 
 /**
  * Monotonically increasing integer used to auto-generate unique ids for checkbox components.
@@ -28,11 +25,11 @@ let nextId = 0;
  * Provider Expression that allows md-checkbox to register as a ControlValueAccessor. This allows it
  * to support [(ngModel)] and ngControl.
  */
-const MD_CHECKBOX_CONTROL_VALUE_ACCESSOR = CONST_EXPR(new Provider(
+const MD_CHECKBOX_CONTROL_VALUE_ACCESSOR = new Provider(
     NG_VALUE_ACCESSOR, {
       useExisting: forwardRef(() => MdCheckbox),
       multi: true
-    }));
+    });
 
 /**
  * Represents the different states that require custom transitions between them.
@@ -93,7 +90,7 @@ export class MdCheckbox implements ControlValueAccessor {
   @Input() id: string = `md-checkbox-${++nextId}`;
 
   /** Whether or not the checkbox should come before or after the label. */
-  @Input() @OneOf(['start', 'end']) align: string = 'start';
+  @Input() align: 'start' | 'end' = 'start';
 
   /**
    * Whether the checkbox is disabled. When the checkbox is disabled it cannot be interacted with.

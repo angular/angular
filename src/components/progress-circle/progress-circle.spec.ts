@@ -1,10 +1,10 @@
-import {inject, TestComponentBuilder} from 'angular2/testing';
 import {
   it,
   describe,
   expect,
   beforeEach,
-} from '../../core/facade/testing';
+  inject,
+  TestComponentBuilder} from 'angular2/testing';
 import {Component, DebugElement} from 'angular2/core';
 import {By} from 'angular2/platform/browser';
 import {MdProgressCircle} from './progress-circle';
@@ -21,18 +21,6 @@ export function main() {
     it('should apply a mode of "determinate" if no mode is provided.', (done: () => void) => {
       builder
         .overrideTemplate(TestApp, '<md-progress-circle></md-progress-circle>')
-        .createAsync(TestApp)
-        .then((fixture) => {
-          fixture.detectChanges();
-          let progressElement = getChildDebugElement(fixture.debugElement, 'md-progress-circle');
-          expect(progressElement.componentInstance.mode).toBe('determinate');
-          done();
-        });
-    });
-
-    it('should apply mode of "determinate" if an invalid mode is provided.', (done: () => void) => {
-      builder
-        .overrideTemplate(TestApp, '<md-progress-circle mode="spinny"></md-progress-circle>')
         .createAsync(TestApp)
         .then((fixture) => {
           fixture.detectChanges();

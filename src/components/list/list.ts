@@ -1,6 +1,5 @@
 import {Component, ViewEncapsulation, ContentChildren, ContentChild, QueryList, Directive,
   ElementRef, Renderer, AfterContentInit} from 'angular2/core';
-import {CONST_EXPR} from 'angular2/src/facade/lang';
 
 @Component({
   selector: 'md-list',
@@ -60,4 +59,4 @@ export class MdListItem implements AfterContentInit {
   }
 }
 
-export const MD_LIST_DIRECTIVES: any[] = CONST_EXPR([MdList, MdListItem, MdLine, MdListAvatar]);
+export const MD_LIST_DIRECTIVES: any[] = [MdList, MdListItem, MdLine, MdListAvatar];

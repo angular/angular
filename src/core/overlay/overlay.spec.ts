@@ -1,4 +1,8 @@
 import {
+  it,
+  describe,
+  expect,
+  beforeEach,
   inject,
   TestComponentBuilder,
   fakeAsync,
@@ -6,22 +10,14 @@ import {
   beforeEachProviders,
 } from 'angular2/testing';
 import {
-  it,
-  describe,
-  expect,
-  beforeEach,
-} from '../../core/facade/testing';
-import {
   Component,
   ViewChild,
   ElementRef,
   provide,
 } from 'angular2/core';
-import {BrowserDomAdapter} from '../platform/browser/browser_adapter';
 import {TemplatePortalDirective} from '../portal/portal-directives';
 import {TemplatePortal, ComponentPortal} from '../portal/portal';
 import {Overlay, OVERLAY_CONTAINER_TOKEN} from './overlay';
-import {DOM} from '../platform/dom/dom_adapter';
 import {OverlayRef} from './overlay-ref';
 import {OverlayState} from './overlay-state';
 import {PositionStrategy} from './position/position-strategy';
@@ -29,18 +25,16 @@ import {PositionStrategy} from './position/position-strategy';
 
 export function main() {
   describe('Overlay', () => {
-    BrowserDomAdapter.makeCurrent();
-
     let builder: TestComponentBuilder;
     let overlay: Overlay;
     let componentPortal: ComponentPortal;
     let templatePortal: TemplatePortal;
-    let overlayContainerElement: Element;
+    let overlayContainerElement: HTMLElement;
 
     beforeEachProviders(() => [
       Overlay,
       provide(OVERLAY_CONTAINER_TOKEN, {useFactory: () => {
-        overlayContainerElement = DOM.createElement('div');
+        overlayContainerElement = document.createElement('div');
         return overlayContainerElement;
       }})
     ]);
@@ -140,7 +134,7 @@ export function main() {
 
         flushMicrotasks();
 
-        expect(DOM.querySelectorAll(overlayContainerElement, '.fake-positioned').length).toBe(1);
+        expect(overlayContainerElement.querySelectorAll('.fake-positioned').length).toBe(1);
       }));
     });
   });
@@ -168,7 +162,7 @@ class TestComponentWithTemplatePortals {
 
 class FakePositionStrategy implements PositionStrategy {
   apply(element: Element): Promise<void> {
-    DOM.addClass(element, 'fake-positioned');
+    element.classList.add('fake-positioned');
     return Promise.resolve();
   }
 

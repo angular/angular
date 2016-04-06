@@ -1,6 +1,3 @@
-import {isPresent} from 'angular2/src/facade/lang';
-
-
 declare var Symbol: any;
 
 
@@ -22,13 +19,13 @@ function booleanFieldValueFactory() {
     const defaultValue = target[key];
 
     // Use a fallback if Symbol isn't available.
-    const localKey = isPresent(Symbol) ? Symbol(key) : `__md_private_symbol_${key}`;
+    const localKey = Symbol ? Symbol(key) : `__md_private_symbol_${key}`;
     target[localKey] = defaultValue;
 
     Object.defineProperty(target, key, {
       get() { return this[localKey]; },
       set(value: boolean) {
-        this[localKey] = isPresent(value) && value !== null && String(value) != 'false';
+        this[localKey] = value != null && `${value}` !== 'false';
       }
     });
   };

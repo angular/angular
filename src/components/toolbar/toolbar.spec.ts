@@ -1,15 +1,12 @@
 import {Component} from 'angular2/core';
 import {
-  inject,
-  TestComponentBuilder
-} from 'angular2/testing';
-
-import {
   it,
   describe,
   expect,
   beforeEach,
-} from '../../core/facade/testing';
+  inject,
+  TestComponentBuilder
+} from 'angular2/testing';
 import {By} from 'angular2/platform/browser';
 import {MdToolbar} from './toolbar';
 

@@ -12,28 +12,28 @@ import {
   QueryList,
   OnChanges,
 } from 'angular2/core';
-import {CONST_EXPR, noop} from 'angular2/src/facade/lang';
 import {
   NG_VALUE_ACCESSOR,
   ControlValueAccessor
 } from 'angular2/src/common/forms/directives/control_value_accessor';
 import {BaseException} from 'angular2/src/facade/exceptions';
 import {BooleanFieldValue} from '../../core/annotations/field-value';
-import {OneOf} from '../../core/annotations/one-of';
 
 
-const MD_INPUT_CONTROL_VALUE_ACCESSOR = CONST_EXPR(new Provider(
+const noop = () => {};
+
+const MD_INPUT_CONTROL_VALUE_ACCESSOR = new Provider(
     NG_VALUE_ACCESSOR, {
       useExisting: forwardRef(() => MdInput),
       multi: true
-    }));
+    });
 
 // Invalid input type. Using one of these will throw an MdInputUnsupportedTypeException.
-const MD_INPUT_INVALID_INPUT_TYPE = CONST_EXPR([
+const MD_INPUT_INVALID_INPUT_TYPE = [
   'file',
   'radio',
   'checkbox',
-]);
+];
 
 
 let nextUniqueId = 0;
@@ -81,7 +81,7 @@ export class MdPlaceholder {}
 })
 export class MdHint {
   // Whether to align the hint label at the start or end of the line.
-  @Input() @OneOf(['start', 'end']) align: string;
+  @Input() align: 'start' | 'end' = 'start';
 }
 
 
@@ -129,9 +129,9 @@ export class MdInput implements ControlValueAccessor, AfterContentInit, OnChange
   /**
    * Bindings.
    */
-  @Input() @OneOf(['start', 'end']) align: string = 'start';
+  @Input() align: 'start' | 'end' = 'start';
+  @Input() dividerColor: 'primary' | 'accent' | 'warn' = 'primary';
   @Input() @BooleanFieldValue() disabled: boolean = false;
-  @Input() @OneOf(['primary', 'accent', 'warn']) dividerColor: string = 'primary';
   @Input() @BooleanFieldValue() floatingPlaceholder: boolean = true;
   @Input() hintLabel: string = '';
   @Input() id: string = `md-input-${nextUniqueId++}`;
@@ -234,8 +234,8 @@ export class MdInput implements ControlValueAccessor, AfterContentInit, OnChange
   }
 }
 
-export const MD_INPUT_DIRECTIVES: any[] = CONST_EXPR([
+export const MD_INPUT_DIRECTIVES: any[] = [
   MdPlaceholder,
   MdInput,
   MdHint,
-]);
+];

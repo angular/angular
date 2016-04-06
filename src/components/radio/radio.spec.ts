@@ -1,15 +1,13 @@
 import {
+  it,
+  describe,
+  expect,
+  beforeEach,
   fakeAsync,
   inject,
   tick,
   TestComponentBuilder
 } from 'angular2/testing';
-import {
-  it,
-  describe,
-  expect,
-  beforeEach,
-} from '../../core/facade/testing';
 import {Component, DebugElement} from 'angular2/core';
 import {By} from 'angular2/platform/browser';
 

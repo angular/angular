@@ -5,11 +5,9 @@ import {
     Inject,
     Injectable, ElementRef
 } from 'angular2/core';
-import {CONST_EXPR} from 'angular2/src/facade/lang';
 import {OverlayState} from './overlay-state';
 import {DomPortalHost} from '../portal/dom-portal-host';
 import {OverlayRef} from './overlay-ref';
-import {DOM} from '../platform/dom/dom_adapter';
 import {GlobalPositionStrategy} from './position/global-position-strategy';
 import {RelativePositionStrategy} from './position/relative-position-strategy';
 
@@ -20,7 +18,7 @@ export {OverlayRef} from './overlay-ref';
 export {createOverlayContainer} from './overlay-container';
 
 /** Token used to inject the DOM element that serves as the overlay container. */
-export const OVERLAY_CONTAINER_TOKEN = CONST_EXPR(new OpaqueToken('overlayContainer'));
+export const OVERLAY_CONTAINER_TOKEN = new OpaqueToken('overlayContainer');
 
 /** Next overlay unique ID. */
 let nextUniqueId = 0;
@@ -40,7 +38,7 @@ let defaultState = new OverlayState();
  @Injectable()
 export class Overlay {
   constructor(
-      @Inject(OVERLAY_CONTAINER_TOKEN) private _overlayContainerElement: Element,
+      @Inject(OVERLAY_CONTAINER_TOKEN) private _overlayContainerElement: HTMLElement,
       private _dynamicComponentLoader: DynamicComponentLoader,
       private _appViewManager: AppViewManager) {
   }
@@ -67,10 +65,10 @@ export class Overlay {
    * @param state State to apply to the created element.
    * @returns Promise resolving to the created element.
    */
-  private _createPaneElement(state: OverlayState): Promise<Element> {
-    var pane = DOM.createElement('div');
+  private _createPaneElement(state: OverlayState): Promise<HTMLElement> {
+    var pane = document.createElement('div');
     pane.id  = `md-overlay-${nextUniqueId++}`;
-    DOM.addClass(pane, 'md-overlay-pane');
+    pane.classList.add('md-overlay-pane');
 
     this.applyState(pane, state);
     this._overlayContainerElement.appendChild(pane);
@@ -83,7 +81,7 @@ export class Overlay {
    * @param pane The pane to modify.
    * @param state The state to apply.
    */
-  applyState(pane: Element, state: OverlayState) {
+  applyState(pane: HTMLElement, state: OverlayState) {
     if (state.positionStrategy != null) {
       state.positionStrategy.apply(pane);
     }
@@ -94,7 +92,7 @@ export class Overlay {
    * @param pane The DOM element to turn into a portal host.
    * @returns A portal host for the given DOM element.
    */
-  private _createPortalHost(pane: Element): DomPortalHost {
+  private _createPortalHost(pane: HTMLElement): DomPortalHost {
     return new DomPortalHost(
         pane,
         this._dynamicComponentLoader,
@@ -106,7 +104,7 @@ export class Overlay {
    * @param pane DOM element for the overlay
    * @returns {OverlayRef}
    */
-  private _createOverlayRef(pane: Element): OverlayRef {
+  private _createOverlayRef(pane: HTMLElement): OverlayRef {
     return new OverlayRef(this._createPortalHost(pane));
   }
 }

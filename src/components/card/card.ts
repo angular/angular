@@ -1,5 +1,5 @@
 import {Component, ViewEncapsulation, ChangeDetectionStrategy} from 'angular2/core';
-import {CONST_EXPR} from 'angular2/src/facade/lang';
+
 
 /*
 
@@ -71,4 +71,4 @@ TODO(kara): update link to demo site when it exists
 })
 export class MdCardTitleGroup {}
 
-export const MD_CARD_DIRECTIVES: any[] = CONST_EXPR([MdCard, MdCardHeader, MdCardTitleGroup]);
+export const MD_CARD_DIRECTIVES: any[] = [MdCard, MdCardHeader, MdCardTitleGroup];

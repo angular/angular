@@ -1,7 +1,6 @@
-import {EventEmitter} from 'angular2/src/facade/async';
-import {Directive, HostBinding, Output, Input} from 'angular2/core';
-import {OneOf} from '../annotations/one-of';
+import {Directive, HostBinding, Output, Input, EventEmitter} from 'angular2/core';
 
+export type LayoutDirection = 'ltr' | 'rtl';
 
 /**
  * Directive to listen to changes of direction of part of the DOM.
@@ -15,15 +14,15 @@ import {OneOf} from '../annotations/one-of';
   exportAs: '$implicit'
 })
 export class Dir {
-  @Input('dir') @OneOf(['ltr', 'rtl']) private _dir: string = 'ltr';
+  @Input('dir') private _dir: LayoutDirection = 'ltr';
 
   @Output() dirChange = new EventEmitter<void>();
 
   @HostBinding('attr.dir')
-  get dir(): string {
+  get dir(): LayoutDirection {
     return this._dir;
   }
-  set dir(v: string) {
+  set dir(v: LayoutDirection) {
     let old = this._dir;
     this._dir = v;
     if (old != this._dir) {
@@ -31,6 +30,6 @@ export class Dir {
     }
   }
 
-  get value(): string { return this.dir; }
-  set value(v: string) { this.dir = v; }
+  get value(): LayoutDirection { return this.dir; }
+  set value(v: LayoutDirection) { this.dir = v; }
 }

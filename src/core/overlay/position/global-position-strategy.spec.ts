@@ -1,27 +1,22 @@
 import {
-  inject,
-  fakeAsync,
-  flushMicrotasks,
-} from 'angular2/testing';
-import {
   it,
   describe,
   expect,
   beforeEach,
-} from '../../../core/facade/testing';
-import {BrowserDomAdapter} from '../../platform/browser/browser_adapter';
-import {DOM} from '../../platform/dom/dom_adapter';
+  inject,
+  fakeAsync,
+  flushMicrotasks,
+} from 'angular2/testing';
 import {GlobalPositionStrategy} from './global-position-strategy';
 
 
 export function main() {
   describe('GlobalPositonStrategy', () => {
-    BrowserDomAdapter.makeCurrent();
     let element: HTMLElement;
     let strategy: GlobalPositionStrategy;
 
     beforeEach(() => {
-      element = DOM.createElement('div');
+      element = document.createElement('div');
       strategy = new GlobalPositionStrategy();
     });
 

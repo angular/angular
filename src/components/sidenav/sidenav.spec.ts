@@ -1,4 +1,8 @@
 import {
+  it,
+  describe,
+  expect,
+  beforeEach,
   ComponentFixture,
   TestComponentBuilder,
   fakeAsync,
@@ -7,15 +11,6 @@ import {
   tick
 } from 'angular2/testing';
 import {XHR} from 'angular2/src/compiler/xhr';
-import {
-  it,
-  describe,
-  expect,
-  beforeEach,
-} from '../../core/facade/testing';
-import {
-  getComputedStyle
-} from '../../core/facade/html';
 import {
   Component,
   ViewMetadata

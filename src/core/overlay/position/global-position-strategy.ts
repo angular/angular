@@ -1,5 +1,4 @@
 import {PositionStrategy} from './position-strategy';
-import {DOM} from '../../platform/dom/dom_adapter';
 
 
 /**
@@ -86,12 +85,12 @@ export class GlobalPositionStrategy implements PositionStrategy {
   }
 
   /** Apply the position to the element. */
-  apply(element: Element): Promise<void> {
-    DOM.setStyle(element, 'position', this._cssPosition);
-    DOM.setStyle(element, 'top', this._top);
-    DOM.setStyle(element, 'left', this._left);
-    DOM.setStyle(element, 'bottom', this._bottom);
-    DOM.setStyle(element, 'right', this._right);
+  apply(element: HTMLElement): Promise<void> {
+    element.style.position = this._cssPosition;
+    element.style.top = this._top;
+    element.style.left = this._left;
+    element.style.bottom = this._bottom;
+    element.style.right = this._right;
 
     // TODO(jelbourn): we don't want to always overwrite the transform property here,
     // because it will need to be used for animations.
@@ -100,7 +99,7 @@ export class GlobalPositionStrategy implements PositionStrategy {
 
     // It's important to trim the result, because the browser will ignore the set operation
     // if the string contains only whitespace.
-    DOM.setStyle(element, 'transform', `${tranlateX} ${translateY}`.trim());
+    element.style.transform = `${tranlateX} ${translateY}`.trim();
 
     return Promise.resolve();
   }

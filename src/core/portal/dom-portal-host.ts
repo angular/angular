@@ -37,9 +37,7 @@ export class DomPortalHost extends BasePortalHost {
     // is a bug in Angular.
     portal.locals.forEach((v, k) => viewRef.setLocal(k, v));
 
-    viewRef.rootNodes.forEach(rootNode => {
-      this._hostDomElement.appendChild(rootNode);
-    });
+    viewRef.rootNodes.forEach(rootNode => this._hostDomElement.appendChild(rootNode));
 
     this.setDisposeFn((() => {
       let index = viewContainer.indexOf(viewRef);

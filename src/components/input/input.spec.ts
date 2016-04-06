@@ -1,4 +1,7 @@
 import {
+  it,
+  expect,
+  beforeEach,
   fakeAsync,
   inject,
   ComponentFixture,
@@ -8,11 +11,6 @@ import {
 } from 'angular2/testing';
 import {Component} from 'angular2/core';
 import {By} from 'angular2/platform/browser';
-import {
-  it,
-  expect,
-  beforeEach,
-} from '../../core/facade/testing';
 import {
   MdInput,
   MdInputDuplicatedHintException,

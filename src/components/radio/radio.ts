@@ -20,7 +20,6 @@ import {
   NG_VALUE_ACCESSOR,
   ControlValueAccessor
 } from 'angular2/src/common/forms/directives/control_value_accessor';
-import {CONST_EXPR} from 'angular2/src/facade/lang';
 
 import {MdRadioDispatcher} from './radio_dispatcher';
 export {MdRadioDispatcher} from './radio_dispatcher';
@@ -29,11 +28,11 @@ export {MdRadioDispatcher} from './radio_dispatcher';
  * Provider Expression that allows md-radio-group to register as a ControlValueAccessor. This
  * allows it to support [(ngModel)] and ngControl.
  */
-const MD_RADIO_GROUP_CONTROL_VALUE_ACCESSOR = CONST_EXPR(new Provider(
+const MD_RADIO_GROUP_CONTROL_VALUE_ACCESSOR = new Provider(
     NG_VALUE_ACCESSOR, {
       useExisting: forwardRef(() => MdRadioGroup),
       multi: true
-    }));
+    });
 
 // TODO(mtlin):
 // Ink ripple is currently placeholder.
