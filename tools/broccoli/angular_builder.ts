@@ -17,6 +17,12 @@ export type Options = {
   useBundles: boolean;
 };
 
+export interface AngularBuilderOptions {
+  outputPath: string;
+  dartSDK?: any;
+  logs?: any;
+}
+
 /**
  * BroccoliBuilder facade for all of our build pipelines.
  */

@@ -3081,7 +3081,7 @@
           "version": "2.0.0"
         },
         "typescript": {
-          "version": "1.7.3"
+          "version": "1.9.0-dev.20160405"
         },
         "unique-stream": {
           "version": "2.2.0"

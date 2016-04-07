@@ -131,16 +131,17 @@ function _it(jsmFn: Function, name: string, testFn: FunctionWithParamTokens | An
   var timeOut = testTimeOut;
 
   if (testFn instanceof FunctionWithParamTokens) {
+    const testFnF = testFn;
     jsmFn(name, (done) => {
       var returnedTestValue;
       try {
-        returnedTestValue = testInjector.execute(testFn);
+        returnedTestValue = testInjector.execute(testFnF);
       } catch (err) {
         done.fail(err);
         return;
       }
 
-      if (testFn.isAsync) {
+      if (testFnF.isAsync) {
         if (_isPromiseLike(returnedTestValue)) {
           (<Promise<any>>returnedTestValue).then(() => { done(); }, (err) => { done.fail(err); });
         } else {
@@ -178,16 +179,17 @@ export function beforeEach(fn: FunctionWithParamTokens | AnyTestFn): void {
   if (fn instanceof FunctionWithParamTokens) {
     // The test case uses inject(). ie `beforeEach(inject([ClassA], (a) => { ...
     // }));`
+    const fnT = fn;
     jsmBeforeEach((done) => {
 
       var returnedTestValue;
       try {
-        returnedTestValue = testInjector.execute(fn);
+        returnedTestValue = testInjector.execute(fnT);
       } catch (err) {
         done.fail(err);
         return;
       }
-      if (fn.isAsync) {
+      if (fnT.isAsync) {
         if (_isPromiseLike(returnedTestValue)) {
           (<Promise<any>>returnedTestValue).then(() => { done(); }, (err) => { done.fail(err); });
         } else {
