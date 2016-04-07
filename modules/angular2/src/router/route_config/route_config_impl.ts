@@ -22,14 +22,17 @@ export abstract class AbstractRoute implements RouteDefinition {
   useAsDefault: boolean;
   path: string;
   regex: string;
+  regex_group_names: string[];
   serializer: RegexSerializer;
   data: {[key: string]: any};
 
-  constructor({name, useAsDefault, path, regex, serializer, data}: RouteDefinition) {
+  constructor({name, useAsDefault, path, regex, regex_group_names, serializer,
+               data}: RouteDefinition) {
     this.name = name;
     this.useAsDefault = useAsDefault;
     this.path = path;
     this.regex = regex;
+    this.regex_group_names = regex_group_names;
     this.serializer = serializer;
     this.data = data;
   }
@@ -62,12 +65,14 @@ export class Route extends AbstractRoute {
   component: any;
   aux: string = null;
 
-  constructor({name, useAsDefault, path, regex, serializer, data, component}: RouteDefinition) {
+  constructor({name, useAsDefault, path, regex, regex_group_names, serializer, data,
+               component}: RouteDefinition) {
     super({
       name: name,
       useAsDefault: useAsDefault,
       path: path,
       regex: regex,
+      regex_group_names: regex_group_names,
       serializer: serializer,
       data: data
     });
@@ -99,12 +104,14 @@ export class Route extends AbstractRoute {
 export class AuxRoute extends AbstractRoute {
   component: any;
 
-  constructor({name, useAsDefault, path, regex, serializer, data, component}: RouteDefinition) {
+  constructor({name, useAsDefault, path, regex, regex_group_names, serializer, data,
+               component}: RouteDefinition) {
     super({
       name: name,
       useAsDefault: useAsDefault,
       path: path,
       regex: regex,
+      regex_group_names: regex_group_names,
       serializer: serializer,
       data: data
     });
@@ -141,12 +148,14 @@ export class AsyncRoute extends AbstractRoute {
   loader: () => Promise<Type>;
   aux: string = null;
 
-  constructor({name, useAsDefault, path, regex, serializer, data, loader}: RouteDefinition) {
+  constructor({name, useAsDefault, path, regex, regex_group_names, serializer, data,
+               loader}: RouteDefinition) {
     super({
       name: name,
       useAsDefault: useAsDefault,
       path: path,
       regex: regex,
+      regex_group_names: regex_group_names,
       serializer: serializer,
       data: data
     });
@@ -179,12 +188,14 @@ export class AsyncRoute extends AbstractRoute {
 export class Redirect extends AbstractRoute {
   redirectTo: any[];
 
-  constructor({name, useAsDefault, path, regex, serializer, data, redirectTo}: RouteDefinition) {
+  constructor({name, useAsDefault, path, regex, regex_group_names, serializer, data,
+               redirectTo}: RouteDefinition) {
     super({
       name: name,
       useAsDefault: useAsDefault,
       path: path,
       regex: regex,
+      regex_group_names: regex_group_names,
       serializer: serializer,
       data: data
     });
