@@ -20,11 +20,6 @@ import {PromiseCompleter} from 'angular2/src/facade/promise';
 
 
 /**
- * Exception thrown when a MdSidenavLayout is missing both sidenavs.
- */
-export class MdMissingSidenavException extends BaseException {}
-
-/**
  * Exception thrown when two MdSidenav are matching the same side.
  */
 export class MdDuplicatedSidenavException extends BaseException {
@@ -286,9 +281,6 @@ export class MdSidenavLayout implements AfterContentInit {
    */
   private _validateDrawers() {
     this._start = this._end = null;
-    if (this._sidenavs.length === 0) {
-      throw new MdMissingSidenavException();
-    }
 
     // Ensure that we have at most one start and one end sidenav.
     this._sidenavs.forEach(sidenav => {
