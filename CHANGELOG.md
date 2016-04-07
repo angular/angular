@@ -1,3 +1,24 @@
+<a name="2.0.0-beta.14"></a>
+# 2.0.0-beta.14 (2016-04-07)
+
+
+### Bug Fixes
+
+* **forms:** support both value and ng-value ([8db97b0](https://github.com/angular/angular/commit/8db97b0))
+* **router:** allow forward slashes in query parameters ([4902244](https://github.com/angular/angular/commit/4902244)), closes [#7824](https://github.com/angular/angular/issues/7824)
+* **select:** support objects as select values ([74e2bd7](https://github.com/angular/angular/commit/74e2bd7)), closes [#4843](https://github.com/angular/angular/issues/4843) [#7842](https://github.com/angular/angular/issues/7842)
+* **select:** update name from ng-value to ngValue ([3ca6df8](https://github.com/angular/angular/commit/3ca6df8)), closes [#7939](https://github.com/angular/angular/issues/7939)
+* **upgrade:** leak when angular1 destroys element ([9be04f8](https://github.com/angular/angular/commit/9be04f8)), closes [#6401](https://github.com/angular/angular/issues/6401) [#7935](https://github.com/angular/angular/issues/7935)
+
+### Features
+
+* **dart/transform:** Avoid `print` in transformer code. ([e310bee](https://github.com/angular/angular/commit/e310bee)), closes [#7855](https://github.com/angular/angular/issues/7855)
+* **static-reflector:** Added StaticReflector ([0dbf959](https://github.com/angular/angular/commit/0dbf959))
+
+
+
+
+
 <a name="2.0.0-beta.13"></a>
 # 2.0.0-beta.13 (2016-03-31)
 
@@ -30,7 +51,7 @@
 ### BREAKING CHANGES
 
 * For static content projection, elements with *-directives are now matched against the element itself vs the template before.
-    
+
 `<p *ngIf="condition" foo></p>`
 
 Before:
