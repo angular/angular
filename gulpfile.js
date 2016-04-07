@@ -177,7 +177,7 @@ var PAYLOAD_TESTS_CONFIG = {
       return path.join(__dirname, CONFIG.dest.js.prod.es5, 'payload_tests', caseName,
                        'ts/' + packaging);
     },
-    systemjs: {sizeLimits: {'uncompressed': 850 * 1024, 'gzip level=9': 165 * 1024}},
+    systemjs: {sizeLimits: {'uncompressed': 870 * 1024, 'gzip level=9': 165 * 1024}},
     webpack: {sizeLimits: {'uncompressed': 550 * 1024, 'gzip level=9': 120 * 1024}}
   }
 };
