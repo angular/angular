@@ -1,6 +1,6 @@
 {
   "name": "angular-srcs",
-  "version": "2.0.0-beta.11",
+  "version": "2.0.0-beta.13",
   "dependencies": {
     "abbrev": {
       "version": "1.0.7",
@@ -7679,9 +7679,9 @@
       "resolved": "https://registry.npmjs.org/run-sequence/-/run-sequence-1.1.5.tgz"
     },
     "rxjs": {
-      "version": "5.0.0-beta.2",
-      "from": "rxjs@5.0.0-beta.2",
-      "resolved": "https://registry.npmjs.org/rxjs/-/rxjs-5.0.0-beta.2.tgz"
+      "version": "5.0.0-beta.5",
+      "from": "rxjs@5.0.0-beta.5",
+      "resolved": "https://registry.npmjs.org/rxjs/-/rxjs-5.0.0-beta.5.tgz"
     },
     "sass-graph": {
       "version": "2.0.1",
@@ -9305,7 +9305,8 @@
     },
     "zone.js": {
       "version": "0.6.6",
-      "from": "zone.js@0.6.6"
+      "from": "zone.js@0.6.6",
+      "resolved": "https://registry.npmjs.org/zone.js/-/zone.js-0.6.6.tgz"
     }
   }
 }
