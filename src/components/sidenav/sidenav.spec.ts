@@ -1,5 +1,4 @@
 import {
-  iit,
   it,
   describe,
   expect,
