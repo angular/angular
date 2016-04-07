@@ -1,4 +1,11 @@
-import {Injectable} from 'angular2/core';
+import {
+  Injectable,
+  OpaqueToken,
+  Optional,
+  Inject
+} from 'angular2/core';
+
+export const LIVE_ANNOUNCER_ELEMENT_TOKEN  = new OpaqueToken('mdLiveAnnouncerElement');
 
 export type AriaLivePoliteness = 'off' | 'polite' | 'assertive';
 
@@ -7,8 +14,8 @@ export class MdLiveAnnouncer {
 
   private _liveElement: Element;
 
-  constructor() {
-    this._liveElement = this._createLiveElement();
+  constructor(@Optional() @Inject(LIVE_ANNOUNCER_ELEMENT_TOKEN) elementToken: Element) {
+    this._liveElement = elementToken || this._createLiveElement();
   }
 
   /**

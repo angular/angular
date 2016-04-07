@@ -9,11 +9,12 @@ import {
   fakeAsync,
   flushMicrotasks,
   tick,
-  beforeEachProviders
+  beforeEachProviders,
+  getTestInjector
 } from 'angular2/testing';
-import {Component} from 'angular2/core';
+import {Component, provide} from 'angular2/core';
 import {By} from 'angular2/platform/browser';
-import {MdLiveAnnouncer} from './live-announcer';
+import {MdLiveAnnouncer, LIVE_ANNOUNCER_ELEMENT_TOKEN} from './live-announcer';
 
 export function main() {
   describe('MdLiveAnnouncer', () => {
@@ -90,6 +91,28 @@ export function main() {
 
       expect(liveEl.textContent).toBe('Hey Google');
       expect(liveEl.getAttribute('aria-live')).toBe('polite');
+    }));
+
+    it('should allow to use a custom live element', fakeAsyncTest(() => {
+      let customLiveEl = document.createElement('div');
+
+      // We need to reset our test injector here, because it is already instantiated above.
+      getTestInjector().reset();
+
+      getTestInjector().addProviders([
+        provide(LIVE_ANNOUNCER_ELEMENT_TOKEN, {useValue: customLiveEl}),
+        MdLiveAnnouncer
+      ]);
+
+      let injector = getTestInjector().createInjector();
+      let liveService: MdLiveAnnouncer = injector.get(MdLiveAnnouncer);
+
+      liveService.announce('Custom Element');
+
+      // This flushes our 100ms timeout for the screenreaders.
+      tick(100);
+
+      expect(customLiveEl.textContent).toBe('Custom Element');
     }));
 
   });

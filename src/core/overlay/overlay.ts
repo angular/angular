@@ -1,9 +1,10 @@
 import {
-    DynamicComponentLoader,
-    AppViewManager,
-    OpaqueToken,
-    Inject,
-    Injectable, ElementRef
+  DynamicComponentLoader,
+  AppViewManager,
+  OpaqueToken,
+  Inject,
+  Injectable,
+  ElementRef
 } from 'angular2/core';
 import {OverlayState} from './overlay-state';
 import {DomPortalHost} from '../portal/dom-portal-host';
