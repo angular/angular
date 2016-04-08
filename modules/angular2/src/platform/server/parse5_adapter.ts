@@ -531,11 +531,11 @@ export class Parse5DomAdapter extends DomAdapter {
   supportsDOMEvents(): boolean { return false; }
   supportsNativeShadowDOM(): boolean { return false; }
   getGlobalEventTarget(target: string): any {
-    if (target == "window") {
+    if (target === "window" || target === "global") {
       return (<any>this.defaultDoc())._window;
-    } else if (target == "document") {
+    } else if (target === "document") {
       return this.defaultDoc();
-    } else if (target == "body") {
+    } else if (target === "body") {
       return this.defaultDoc().body;
     }
   }

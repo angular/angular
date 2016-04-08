@@ -309,11 +309,11 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
     return key;
   }
   getGlobalEventTarget(target: string): EventTarget {
-    if (target == "window") {
+    if (target === "window" || target === "global") {
       return window;
-    } else if (target == "document") {
+    } else if (target === "document") {
       return document;
-    } else if (target == "body") {
+    } else if (target === "body") {
       return document.body;
     }
   }

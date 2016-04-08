@@ -438,7 +438,7 @@ class BrowserDomAdapter extends GenericBrowserDomAdapter {
   }
 
   getGlobalEventTarget(String target) {
-    if (target == "window") {
+    if (target == "window" || target == "global") {
       return window;
     } else if (target == "document") {
       return document;
