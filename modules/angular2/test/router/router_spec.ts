@@ -1,16 +1,4 @@
-import {
-  AsyncTestCompleter,
-  describe,
-  proxy,
-  it,
-  iit,
-  xit,
-  ddescribe,
-  expect,
-  inject,
-  beforeEach,
-  beforeEachProviders
-} from 'angular2/testing_internal';
+import {AsyncTestCompleter, describe, proxy, it, iit, xit, ddescribe, expect, inject, beforeEach, beforeEachProviders} from 'angular2/testing_internal';
 import {SpyRouterOutlet} from './spies';
 import {Type} from 'angular2/src/facade/lang';
 import {PromiseWrapper, ObservableWrapper} from 'angular2/src/facade/async';
@@ -21,12 +9,7 @@ import {SpyLocation} from 'angular2/src/mock/location_mock';
 import {Location} from 'angular2/src/router/location/location';
 
 import {RouteRegistry, ROUTER_PRIMARY_COMPONENT} from 'angular2/src/router/route_registry';
-import {
-  RouteConfig,
-  AsyncRoute,
-  Route,
-  Redirect
-} from 'angular2/src/router/route_config/route_config_decorator';
+import {RouteConfig, AsyncRoute, Route, Redirect} from 'angular2/src/router/route_config/route_config_decorator';
 import {DirectiveResolver} from 'angular2/src/core/linker/directive_resolver';
 
 import {provide} from 'angular2/core';
@@ -37,13 +20,11 @@ export function main() {
     var router: Router;
     var location: Location;
 
-    beforeEachProviders(() => [
-      RouteRegistry,
-      DirectiveResolver,
-      provide(Location, {useClass: SpyLocation}),
-      provide(ROUTER_PRIMARY_COMPONENT, {useValue: AppCmp}),
-      provide(Router, {useClass: RootRouter})
-    ]);
+    beforeEachProviders(
+        () =>
+            [RouteRegistry, DirectiveResolver, provide(Location, {useClass: SpyLocation}),
+             provide(ROUTER_PRIMARY_COMPONENT, {useValue: AppCmp}),
+             provide(Router, {useClass: RootRouter})]);
 
 
     beforeEach(inject([Router, Location], (rtr: Router, loc: Location) => {
@@ -83,8 +64,9 @@ export function main() {
          var outlet = makeDummyOutlet();
 
          router.registerPrimaryOutlet(outlet)
-             .then((_) => router.config(
-                       [new Route({path: '/a', component: DummyComponent, name: 'A'})]))
+             .then(
+                 (_) =>
+                     router.config([new Route({path: '/a', component: DummyComponent, name: 'A'})]))
              .then((_) => router.navigate(['/A']))
              .then((_) => {
                expect((<any>outlet).spy('activate')).toHaveBeenCalled();
@@ -209,11 +191,10 @@ export function main() {
          router.config([new AsyncRoute({path: '/first', loader: loader, name: 'FirstCmp'})]);
 
          var instruction = router.generate(['/FirstCmp']);
-         router.navigateByInstruction(instruction)
-             .then((_) => {
-               expect((<any>outlet).spy('activate')).toHaveBeenCalled();
-               async.done();
-             });
+         router.navigateByInstruction(instruction).then((_) => {
+           expect((<any>outlet).spy('activate')).toHaveBeenCalled();
+           async.done();
+         });
        }));
 
     it('should return whether a given instruction is active with isRouteActive',
@@ -279,9 +260,8 @@ export function main() {
 
       it('should serialize parameters that are not part of the route definition as query string params',
          () => {
-           router.config([
-             new Route({path: '/one/two/:three', component: DummyComponent, name: 'NumberUrl'})
-           ]);
+           router.config([new Route(
+               {path: '/one/two/:three', component: DummyComponent, name: 'NumberUrl'})]);
 
            var instruction = router.generate(['/NumberUrl', {'three': 'three', 'four': 'four'}]);
            var path = stringifyInstruction(instruction);

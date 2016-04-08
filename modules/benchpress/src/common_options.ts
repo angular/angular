@@ -49,14 +49,9 @@ var _REQUEST_COUNT = new OpaqueToken('Options.requestCount');
 var _CAPTURE_FRAMES = new OpaqueToken('Options.frameCapture');
 
 var _DEFAULT_PROVIDERS = [
-  bind(_DEFAULT_DESCRIPTION)
-      .toValue({}),
-  provide(_SAMPLE_DESCRIPTION, {useValue: {}}),
-  provide(_FORCE_GC, {useValue: false}),
-  provide(_PREPARE, {useValue: false}),
-  provide(_MICRO_METRICS, {useValue: {}}),
-  provide(_NOW, {useValue: () => DateWrapper.now()}),
-  provide(_RECEIVED_DATA, {useValue: false}),
-  provide(_REQUEST_COUNT, {useValue: false}),
+  bind(_DEFAULT_DESCRIPTION).toValue({}), provide(_SAMPLE_DESCRIPTION, {useValue: {}}),
+  provide(_FORCE_GC, {useValue: false}), provide(_PREPARE, {useValue: false}),
+  provide(_MICRO_METRICS, {useValue: {}}), provide(_NOW, {useValue: () => DateWrapper.now()}),
+  provide(_RECEIVED_DATA, {useValue: false}), provide(_REQUEST_COUNT, {useValue: false}),
   provide(_CAPTURE_FRAMES, {useValue: false})
 ];

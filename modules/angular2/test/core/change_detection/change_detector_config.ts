@@ -1,16 +1,6 @@
 import {ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
 import {isBlank, isPresent} from 'angular2/src/facade/lang';
-import {
-  ChangeDetectionStrategy,
-  BindingRecord,
-  ChangeDetectorDefinition,
-  DirectiveIndex,
-  DirectiveRecord,
-  Lexer,
-  Locals,
-  Parser,
-  ChangeDetectorGenConfig
-} from 'angular2/src/core/change_detection/change_detection';
+import {ChangeDetectionStrategy, BindingRecord, ChangeDetectorDefinition, DirectiveIndex, DirectiveRecord, Lexer, Locals, Parser, ChangeDetectorGenConfig} from 'angular2/src/core/change_detection/change_detection';
 import {reflector} from 'angular2/src/core/reflection/reflection';
 import {ReflectionCapabilities} from 'angular2/src/core/reflection/reflection_capabilities';
 
@@ -32,16 +22,16 @@ function _createBindingRecords(expression: string): BindingRecord[] {
 }
 
 function _createEventRecords(expression: string): BindingRecord[] {
-  var eq = expression.indexOf("=");
+  var eq = expression.indexOf('=');
   var eventName = expression.substring(1, eq - 1);
   var exp = expression.substring(eq + 2, expression.length - 1);
   var ast = _getParser().parseAction(exp, 'location');
   return [BindingRecord.createForEvent(ast, eventName, 0)];
 }
 
-function _createHostEventRecords(expression: string,
-                                 directiveRecord: DirectiveRecord): BindingRecord[] {
-  var parts = expression.split("=");
+function _createHostEventRecords(
+    expression: string, directiveRecord: DirectiveRecord): BindingRecord[] {
+  var parts = expression.split('=');
   var eventName = parts[0].substring(1, parts[0].length - 1);
   var exp = parts[1].substring(1, parts[1].length - 1);
 
@@ -90,8 +80,8 @@ export function getDefinition(id: string): TestDefinition {
     var variableBindings = [];
     var eventRecords = _createBindingRecords(id);
     var directiveRecords = [];
-    let cdDef = new ChangeDetectorDefinition(id, strategy, variableBindings, eventRecords, [],
-                                             directiveRecords, genConfig);
+    let cdDef = new ChangeDetectorDefinition(
+        id, strategy, variableBindings, eventRecords, [], directiveRecords, genConfig);
     testDef = new TestDefinition(id, cdDef, null);
 
   } else if (ListWrapper.indexOf(_availableEventDefinitions, id) >= 0) {
@@ -106,9 +96,9 @@ export function getDefinition(id: string): TestDefinition {
         [_DirectiveUpdating.basicRecords[0], _DirectiveUpdating.basicRecords[1]], genConfig);
     testDef = new TestDefinition(id, cdDef, null);
 
-  } else if (id == "updateElementProduction") {
+  } else if (id == 'updateElementProduction') {
     var genConfig = new ChangeDetectorGenConfig(false, false, true);
-    var records = _createBindingRecords("name");
+    var records = _createBindingRecords('name');
     let cdDef = new ChangeDetectorDefinition(id, null, [], records, [], [], genConfig);
     testDef = new TestDefinition(id, cdDef, null);
   }
@@ -130,13 +120,13 @@ export class TestDefinition {
  */
 export function getAllDefinitions(): TestDefinition[] {
   var allDefs = _availableDefinitions;
-  allDefs = ListWrapper.concat(allDefs,
-                               StringMapWrapper.keys(_ExpressionWithLocals.availableDefinitions));
+  allDefs = ListWrapper.concat(
+      allDefs, StringMapWrapper.keys(_ExpressionWithLocals.availableDefinitions));
   allDefs = allDefs.concat(StringMapWrapper.keys(_ExpressionWithMode.availableDefinitions));
   allDefs = allDefs.concat(StringMapWrapper.keys(_DirectiveUpdating.availableDefinitions));
   allDefs = allDefs.concat(_availableEventDefinitions);
   allDefs = allDefs.concat(_availableHostEventDefinitions);
-  allDefs = allDefs.concat(["updateElementProduction"]);
+  allDefs = allDefs.concat(['updateElementProduction']);
   return allDefs.map(getDefinition);
 }
 
@@ -149,8 +139,8 @@ class _ExpressionWithLocals {
     var bindingRecords = _createBindingRecords(this._expression);
     var directiveRecords = [];
     var genConfig = new ChangeDetectorGenConfig(true, true, true);
-    return new ChangeDetectorDefinition('(empty id)', strategy, variableBindings, bindingRecords,
-                                        [], directiveRecords, genConfig);
+    return new ChangeDetectorDefinition(
+        '(empty id)', strategy, variableBindings, bindingRecords, [], directiveRecords, genConfig);
   }
 
   /**
@@ -175,8 +165,9 @@ class _ExpressionWithLocals {
 }
 
 class _ExpressionWithMode {
-  constructor(private _strategy: ChangeDetectionStrategy, private _withRecords: boolean,
-              private _withEvents: boolean) {}
+  constructor(
+      private _strategy: ChangeDetectionStrategy, private _withRecords: boolean,
+      private _withEvents: boolean) {}
 
   createChangeDetectorDefinition(): ChangeDetectorDefinition {
     var variableBindings = [];
@@ -194,12 +185,12 @@ class _ExpressionWithMode {
     });
 
     if (this._withRecords) {
-      var updateDirWithOnDefaultRecord =
-          BindingRecord.createForDirective(_getParser().parseBinding('42', 'location'), 'a',
-                                           (o, v) => (<any>o).a = v, dirRecordWithDefault);
-      var updateDirWithOnPushRecord =
-          BindingRecord.createForDirective(_getParser().parseBinding('42', 'location'), 'a',
-                                           (o, v) => (<any>o).a = v, dirRecordWithOnPush);
+      var updateDirWithOnDefaultRecord = BindingRecord.createForDirective(
+          _getParser().parseBinding('42', 'location'), 'a', (o, v) => (<any>o).a = v,
+          dirRecordWithDefault);
+      var updateDirWithOnPushRecord = BindingRecord.createForDirective(
+          _getParser().parseBinding('42', 'location'), 'a', (o, v) => (<any>o).a = v,
+          dirRecordWithOnPush);
 
       directiveRecords = [dirRecordWithDefault, dirRecordWithOnPush];
       bindingRecords = [updateDirWithOnDefaultRecord, updateDirWithOnPushRecord];
@@ -207,15 +198,16 @@ class _ExpressionWithMode {
 
     if (this._withEvents) {
       directiveRecords = [dirRecordWithDefault, dirRecordWithOnPush];
-      eventRecords =
-          ListWrapper.concat(_createEventRecords("(event)='false'"),
-                             _createHostEventRecords("(host-event)='false'", dirRecordWithOnPush))
+      eventRecords = ListWrapper.concat(
+          _createEventRecords('(event)=\'false\''),
+          _createHostEventRecords('(host-event)=\'false\'', dirRecordWithOnPush))
     }
 
     var genConfig = new ChangeDetectorGenConfig(true, true, true);
 
-    return new ChangeDetectorDefinition('(empty id)', this._strategy, variableBindings,
-                                        bindingRecords, eventRecords, directiveRecords, genConfig);
+    return new ChangeDetectorDefinition(
+        '(empty id)', this._strategy, variableBindings, bindingRecords, eventRecords,
+        directiveRecords, genConfig);
   }
 
   /**
@@ -235,27 +227,29 @@ class _ExpressionWithMode {
 }
 
 class _DirectiveUpdating {
-  constructor(private _bindingRecords: BindingRecord[],
-              private _directiveRecords: DirectiveRecord[]) {}
+  constructor(
+      private _bindingRecords: BindingRecord[], private _directiveRecords: DirectiveRecord[]) {}
 
   createChangeDetectorDefinition(): ChangeDetectorDefinition {
     var strategy = null;
     var variableBindings = [];
     var genConfig = new ChangeDetectorGenConfig(true, true, true);
 
-    return new ChangeDetectorDefinition('(empty id)', strategy, variableBindings,
-                                        this._bindingRecords, [], this._directiveRecords,
-                                        genConfig);
+    return new ChangeDetectorDefinition(
+        '(empty id)', strategy, variableBindings, this._bindingRecords, [], this._directiveRecords,
+        genConfig);
   }
 
   static updateA(expression: string, dirRecord): BindingRecord {
-    return BindingRecord.createForDirective(_getParser().parseBinding(expression, 'location'), 'a',
-                                            (o, v) => (<any>o).a = v, dirRecord);
+    return BindingRecord.createForDirective(
+        _getParser().parseBinding(expression, 'location'), 'a', (o, v) => (<any>o).a = v,
+        dirRecord);
   }
 
   static updateB(expression: string, dirRecord): BindingRecord {
-    return BindingRecord.createForDirective(_getParser().parseBinding(expression, 'location'), 'b',
-                                            (o, v) => (<any>o).b = v, dirRecord);
+    return BindingRecord.createForDirective(
+        _getParser().parseBinding(expression, 'location'), 'b', (o, v) => (<any>o).b = v,
+        dirRecord);
   }
 
   static basicRecords: DirectiveRecord[] = [
@@ -304,16 +298,15 @@ class _DirectiveUpdating {
     'directNoDispatcher': new _DirectiveUpdating(
         [_DirectiveUpdating.updateA('42', _DirectiveUpdating.basicRecords[0])],
         [_DirectiveUpdating.basicRecords[0]]),
-    'groupChanges':
-        new _DirectiveUpdating(
-            [
-              _DirectiveUpdating.updateA('1', _DirectiveUpdating.basicRecords[0]),
-              _DirectiveUpdating.updateB('2', _DirectiveUpdating.basicRecords[0]),
-              BindingRecord.createDirectiveOnChanges(_DirectiveUpdating.basicRecords[0]),
-              _DirectiveUpdating.updateA('3', _DirectiveUpdating.basicRecords[1]),
-              BindingRecord.createDirectiveOnChanges(_DirectiveUpdating.basicRecords[1])
-            ],
-            [_DirectiveUpdating.basicRecords[0], _DirectiveUpdating.basicRecords[1]]),
+    'groupChanges': new _DirectiveUpdating(
+        [
+          _DirectiveUpdating.updateA('1', _DirectiveUpdating.basicRecords[0]),
+          _DirectiveUpdating.updateB('2', _DirectiveUpdating.basicRecords[0]),
+          BindingRecord.createDirectiveOnChanges(_DirectiveUpdating.basicRecords[0]),
+          _DirectiveUpdating.updateA('3', _DirectiveUpdating.basicRecords[1]),
+          BindingRecord.createDirectiveOnChanges(_DirectiveUpdating.basicRecords[1])
+        ],
+        [_DirectiveUpdating.basicRecords[0], _DirectiveUpdating.basicRecords[1]]),
     'directiveDoCheck': new _DirectiveUpdating(
         [BindingRecord.createDirectiveDoCheck(_DirectiveUpdating.basicRecords[0])],
         [_DirectiveUpdating.basicRecords[0]]),
@@ -325,20 +318,14 @@ class _DirectiveUpdating {
     'noCallbacks': new _DirectiveUpdating(
         [_DirectiveUpdating.updateA('1', _DirectiveUpdating.recordNoCallbacks)],
         [_DirectiveUpdating.recordNoCallbacks]),
-    'readingDirectives':
-        new _DirectiveUpdating(
-            [
-              BindingRecord.createForHostProperty(
-                  new DirectiveIndex(0, 0), _getParser().parseBinding('a', 'location'), PROP_NAME)
-            ],
-            [_DirectiveUpdating.basicRecords[0]]),
-    'interpolation':
-        new _DirectiveUpdating(
-            [
-              BindingRecord.createForElementProperty(
-                  _getParser().parseInterpolation('B{{a}}A', 'location'), 0, PROP_NAME)
-            ],
-            [])
+    'readingDirectives': new _DirectiveUpdating(
+        [BindingRecord.createForHostProperty(
+            new DirectiveIndex(0, 0), _getParser().parseBinding('a', 'location'), PROP_NAME)],
+        [_DirectiveUpdating.basicRecords[0]]),
+    'interpolation': new _DirectiveUpdating(
+        [BindingRecord.createForElementProperty(
+            _getParser().parseInterpolation('B{{a}}A', 'location'), 0, PROP_NAME)],
+        [])
   };
 }
 
@@ -390,8 +377,8 @@ var _availableDefinitions = [
   '{z: a}',
   'name | pipe',
   '(name | pipe).length',
-  "name | pipe:'one':address.city",
-  "name | pipe:'a':'b' | pipe:0:1:2",
+  'name | pipe:\'one\':address.city',
+  'name | pipe:\'a\':\'b\' | pipe:0:1:2',
   'value',
   'a',
   'address.city',

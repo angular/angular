@@ -24,8 +24,8 @@ export class SizeValidator extends Validator {
 
   validate(completeSample: MeasureValues[]): MeasureValues[] {
     if (completeSample.length >= this._sampleSize) {
-      return ListWrapper.slice(completeSample, completeSample.length - this._sampleSize,
-                               completeSample.length);
+      return ListWrapper.slice(
+          completeSample, completeSample.length - this._sampleSize, completeSample.length);
     } else {
       return null;
     }
@@ -34,7 +34,6 @@ export class SizeValidator extends Validator {
 
 var _SAMPLE_SIZE = new OpaqueToken('SizeValidator.sampleSize');
 var _PROVIDERS = [
-  bind(SizeValidator)
-      .toFactory((size) => new SizeValidator(size), [_SAMPLE_SIZE]),
+  bind(SizeValidator).toFactory((size) => new SizeValidator(size), [_SAMPLE_SIZE]),
   provide(_SAMPLE_SIZE, {useValue: 10})
 ];

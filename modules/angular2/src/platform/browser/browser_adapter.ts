@@ -58,7 +58,7 @@ var _chromeNumKeyPadMap = {
  */
 /* tslint:disable:requireParameterType */
 export class BrowserDomAdapter extends GenericBrowserDomAdapter {
-  parse(templateHtml: string) { throw new Error("parse not implemented"); }
+  parse(templateHtml: string) { throw new Error('parse not implemented'); }
   static makeCurrent() { setRootDomAdapter(new BrowserDomAdapter()); }
   hasProperty(element, name: string): boolean { return name in element; }
   setProperty(el: /*element*/ any, name: string, value: any) { el[name] = value; }
@@ -129,7 +129,7 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   nodeValue(node: Node): string { return node.nodeValue; }
   type(node: HTMLInputElement): string { return node.type; }
   content(node: Node): Node {
-    if (this.hasProperty(node, "content")) {
+    if (this.hasProperty(node, 'content')) {
       return (<any>node).content;
     } else {
       return node;
@@ -266,7 +266,7 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
     return matches;
   }
   isTemplateElement(el: any): boolean {
-    return el instanceof HTMLElement && el.nodeName == "TEMPLATE";
+    return el instanceof HTMLElement && el.nodeName == 'TEMPLATE';
   }
   isTextNode(node: Node): boolean { return node.nodeType === Node.TEXT_NODE; }
   isCommentNode(node: Node): boolean { return node.nodeType === Node.COMMENT_NODE; }
@@ -309,11 +309,11 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
     return key;
   }
   getGlobalEventTarget(target: string): EventTarget {
-    if (target == "window") {
+    if (target == 'window') {
       return window;
-    } else if (target == "document") {
+    } else if (target == 'document') {
       return document;
-    } else if (target == "body") {
+    } else if (target == 'body') {
       return document.body;
     }
   }
@@ -364,7 +364,7 @@ function getBaseElementHref(): string {
 var urlParsingNode = null;
 function relativePath(url): string {
   if (isBlank(urlParsingNode)) {
-    urlParsingNode = document.createElement("a");
+    urlParsingNode = document.createElement('a');
   }
   urlParsingNode.setAttribute('href', url);
   return (urlParsingNode.pathname.charAt(0) === '/') ? urlParsingNode.pathname :

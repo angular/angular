@@ -11,6 +11,6 @@ export class MessageBasedXHRImpl {
 
   start(): void {
     var broker = this._brokerFactory.createMessageBroker(XHR_CHANNEL);
-    broker.registerMethod("get", [PRIMITIVE], bind(this._xhr.get, this._xhr), PRIMITIVE);
+    broker.registerMethod('get', [PRIMITIVE], bind(this._xhr.get, this._xhr), PRIMITIVE);
   }
 }

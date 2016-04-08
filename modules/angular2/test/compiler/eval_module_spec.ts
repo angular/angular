@@ -1,16 +1,4 @@
-import {
-  ddescribe,
-  describe,
-  xdescribe,
-  it,
-  iit,
-  xit,
-  expect,
-  beforeEach,
-  afterEach,
-  AsyncTestCompleter,
-  inject
-} from 'angular2/testing_internal';
+import {ddescribe, describe, xdescribe, it, iit, xit, expect, beforeEach, afterEach, AsyncTestCompleter, inject} from 'angular2/testing_internal';
 import {IS_DART} from 'angular2/src/facade/lang';
 
 import {evalModule} from './eval_module';
@@ -31,11 +19,10 @@ export function main() {
     it('should call the "run" function and allow to use imports',
        inject([AsyncTestCompleter], (async) => {
          var moduleSource = IS_DART ? testDartModule : testJsModule;
-         evalModule(moduleSource, [[THIS_MODULE_URL, 'tst']], [1])
-             .then((value) => {
-               expect(value).toEqual([1, 23]);
-               async.done();
-             });
+         evalModule(moduleSource, [[THIS_MODULE_URL, 'tst']], [1]).then((value) => {
+           expect(value).toEqual([1, 23]);
+           async.done();
+         });
        }));
   });
 }

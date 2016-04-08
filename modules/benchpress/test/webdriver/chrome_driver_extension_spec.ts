@@ -1,28 +1,9 @@
-import {
-  afterEach,
-  AsyncTestCompleter,
-  beforeEach,
-  ddescribe,
-  describe,
-  expect,
-  iit,
-  inject,
-  it,
-  xit,
-} from 'angular2/testing_internal';
+import {afterEach, AsyncTestCompleter, beforeEach, ddescribe, describe, expect, iit, inject, it, xit,} from 'angular2/testing_internal';
 
 import {PromiseWrapper} from 'angular2/src/facade/async';
 import {Json, isBlank} from 'angular2/src/facade/lang';
 
-import {
-  WebDriverExtension,
-  ChromeDriverExtension,
-  WebDriverAdapter,
-  Injector,
-  bind,
-  provide,
-  Options
-} from 'benchpress/common';
+import {WebDriverExtension, ChromeDriverExtension, WebDriverAdapter, Injector, bind, provide, Options} from 'benchpress/common';
 
 import {TraceEventFactory} from '../trace_event_factory';
 
@@ -48,8 +29,9 @@ export function main() {
     var benchmarkEvents = new TraceEventFactory('benchmark', 'pid0');
     var normEvents = new TraceEventFactory('timeline', 'pid0');
 
-    function createExtension(perfRecords = null, userAgent = null,
-                             messageMethod = 'Tracing.dataCollected'): WebDriverExtension {
+    function createExtension(
+        perfRecords = null, userAgent = null,
+        messageMethod = 'Tracing.dataCollected'): WebDriverExtension {
       if (isBlank(perfRecords)) {
         perfRecords = [];
       }
@@ -57,12 +39,13 @@ export function main() {
         userAgent = CHROME44_USER_AGENT;
       }
       log = [];
-      extension = Injector.resolveAndCreate([
-                            ChromeDriverExtension.BINDINGS,
-                            bind(WebDriverAdapter)
-                                .toValue(new MockDriverAdapter(log, perfRecords, messageMethod)),
-                            bind(Options.USER_AGENT).toValue(userAgent)
-                          ])
+      extension = Injector
+                      .resolveAndCreate([
+                        ChromeDriverExtension.BINDINGS,
+                        bind(WebDriverAdapter)
+                            .toValue(new MockDriverAdapter(log, perfRecords, messageMethod)),
+                        bind(Options.USER_AGENT).toValue(userAgent)
+                      ])
                       .get(ChromeDriverExtension);
       return extension;
     }
@@ -75,32 +58,26 @@ export function main() {
        }));
 
     it('should mark the timeline via console.time()', inject([AsyncTestCompleter], (async) => {
-         createExtension()
-             .timeBegin('someName')
-             .then((_) => {
-               expect(log).toEqual([['executeScript', `console.time('someName');`]]);
-               async.done();
-             });
+         createExtension().timeBegin('someName').then((_) => {
+           expect(log).toEqual([['executeScript', `console.time('someName');`]]);
+           async.done();
+         });
        }));
 
     it('should mark the timeline via console.timeEnd()', inject([AsyncTestCompleter], (async) => {
-         createExtension()
-             .timeEnd('someName', null)
-             .then((_) => {
-               expect(log).toEqual([['executeScript', `console.timeEnd('someName');`]]);
-               async.done();
-             });
+         createExtension().timeEnd('someName', null).then((_) => {
+           expect(log).toEqual([['executeScript', `console.timeEnd('someName');`]]);
+           async.done();
+         });
        }));
 
     it('should mark the timeline via console.time() and console.timeEnd()',
        inject([AsyncTestCompleter], (async) => {
-         createExtension()
-             .timeEnd('name1', 'name2')
-             .then((_) => {
-               expect(log)
-                   .toEqual([['executeScript', `console.timeEnd('name1');console.time('name2');`]]);
-               async.done();
-             });
+         createExtension().timeEnd('name1', 'name2').then((_) => {
+           expect(log).toEqual(
+               [['executeScript', `console.timeEnd('name1');console.time('name2');`]]);
+           async.done();
+         });
        }));
 
     describe('readPerfLog Chrome44', () => {
@@ -206,10 +183,8 @@ export function main() {
       });
 
       it('should ignore FunctionCalls from webdriver', inject([AsyncTestCompleter], (async) => {
-           createExtension([
-             chromeTimelineEvents.start('FunctionCall', 0,
-                                        {'data': {'scriptName': 'InjectedScript'}})
-           ])
+           createExtension([chromeTimelineEvents.start(
+                               'FunctionCall', 0, {'data': {'scriptName': 'InjectedScript'}})])
                .readPerfLog()
                .then((events) => {
                  expect(events).toEqual([]);
@@ -223,8 +198,9 @@ export function main() {
     describe('readPerfLog Chrome45', () => {
       it('should normalize times to ms and forward ph and pid event properties',
          inject([AsyncTestCompleter], (async) => {
-           createExtension([chromeTimelineV8Events.complete('FunctionCall', 1100, 5500, null)],
-                           CHROME45_USER_AGENT)
+           createExtension(
+               [chromeTimelineV8Events.complete('FunctionCall', 1100, 5500, null)],
+               CHROME45_USER_AGENT)
                .readPerfLog()
                .then((events) => {
                  expect(events).toEqual([
@@ -237,14 +213,12 @@ export function main() {
       it('should normalize "tdur" to "dur"', inject([AsyncTestCompleter], (async) => {
            var event = chromeTimelineV8Events.create('X', 'FunctionCall', 1100, null);
            event['tdur'] = 5500;
-           createExtension([event], CHROME45_USER_AGENT)
-               .readPerfLog()
-               .then((events) => {
-                 expect(events).toEqual([
-                   normEvents.complete('script', 1.1, 5.5, null),
-                 ]);
-                 async.done();
-               });
+           createExtension([event], CHROME45_USER_AGENT).readPerfLog().then((events) => {
+             expect(events).toEqual([
+               normEvents.complete('script', 1.1, 5.5, null),
+             ]);
+             async.done();
+           });
          }));
 
       it('should report FunctionCall events as "script"', inject([AsyncTestCompleter], (async) => {
@@ -270,8 +244,8 @@ export function main() {
                  expect(events.length).toEqual(2);
                  expect(events[0]).toEqual(
                      normEvents.start('gc', 1.0, {'usedHeapSize': 1000, 'majorGc': false}));
-                 expect(events[1])
-                     .toEqual(normEvents.end('gc', 2.0, {'usedHeapSize': 0, 'majorGc': false}));
+                 expect(events[1]).toEqual(
+                     normEvents.end('gc', 2.0, {'usedHeapSize': 0, 'majorGc': false}));
                  async.done();
                });
          }));
@@ -286,10 +260,10 @@ export function main() {
                .readPerfLog()
                .then((events) => {
                  expect(events.length).toEqual(2);
-                 expect(events[0])
-                     .toEqual(normEvents.start('gc', 1.0, {'usedHeapSize': 1000, 'majorGc': true}));
-                 expect(events[1])
-                     .toEqual(normEvents.end('gc', 2.0, {'usedHeapSize': 0, 'majorGc': true}));
+                 expect(events[0]).toEqual(
+                     normEvents.start('gc', 1.0, {'usedHeapSize': 1000, 'majorGc': true}));
+                 expect(events[1]).toEqual(
+                     normEvents.end('gc', 2.0, {'usedHeapSize': 0, 'majorGc': true}));
                  async.done();
                });
          }));
@@ -333,10 +307,8 @@ export function main() {
 
 
       it('should ignore FunctionCalls from webdriver', inject([AsyncTestCompleter], (async) => {
-           createExtension([
-             chromeTimelineV8Events.start('FunctionCall', 0,
-                                          {'data': {'scriptName': 'InjectedScript'}})
-           ])
+           createExtension([chromeTimelineV8Events.start(
+                               'FunctionCall', 0, {'data': {'scriptName': 'InjectedScript'}})])
                .readPerfLog()
                .then((events) => {
                  expect(events).toEqual([]);
@@ -356,8 +328,8 @@ export function main() {
          }));
 
       it('should report navigationStart', inject([AsyncTestCompleter], (async) => {
-           createExtension([chromeBlinkUserTimingEvents.start('navigationStart', 1234)],
-                           CHROME45_USER_AGENT)
+           createExtension(
+               [chromeBlinkUserTimingEvents.start('navigationStart', 1234)], CHROME45_USER_AGENT)
                .readPerfLog()
                .then((events) => {
                  expect(events).toEqual([normEvents.start('navigationStart', 1.234)]);
@@ -367,10 +339,8 @@ export function main() {
 
       it('should report receivedData', inject([AsyncTestCompleter], (async) => {
            createExtension(
-               [
-                 chrome45TimelineEvents.instant('ResourceReceivedData', 1234,
-                                                {'data': {'encodedDataLength': 987}})
-               ],
+               [chrome45TimelineEvents.instant(
+                   'ResourceReceivedData', 1234, {'data': {'encodedDataLength': 987}})],
                CHROME45_USER_AGENT)
                .readPerfLog()
                .then((events) => {
@@ -382,18 +352,14 @@ export function main() {
 
       it('should report sendRequest', inject([AsyncTestCompleter], (async) => {
            createExtension(
-               [
-                 chrome45TimelineEvents.instant(
-                     'ResourceSendRequest', 1234,
-                     {'data': {'url': 'http://here', 'requestMethod': 'GET'}})
-               ],
+               [chrome45TimelineEvents.instant(
+                   'ResourceSendRequest', 1234,
+                   {'data': {'url': 'http://here', 'requestMethod': 'GET'}})],
                CHROME45_USER_AGENT)
                .readPerfLog()
                .then((events) => {
-                 expect(events).toEqual([
-                   normEvents.instant('sendRequest', 1.234,
-                                      {'url': 'http://here', 'method': 'GET'})
-                 ]);
+                 expect(events).toEqual([normEvents.instant(
+                     'sendRequest', 1.234, {'url': 'http://here', 'method': 'GET'})]);
                  async.done();
                });
          }));
@@ -434,10 +400,9 @@ export function main() {
       describe('frame metrics', () => {
         it('should report ImplThreadRenderingStats as frame event',
            inject([AsyncTestCompleter], (async) => {
-             createExtension([
-               benchmarkEvents.instant('BenchmarkInstrumentation::ImplThreadRenderingStats', 1100,
-                                       {'data': {'frame_count': 1}})
-             ])
+             createExtension([benchmarkEvents.instant(
+                                 'BenchmarkInstrumentation::ImplThreadRenderingStats', 1100,
+                                 {'data': {'frame_count': 1}})])
                  .readPerfLog()
                  .then((events) => {
                    expect(events).toEqual([
@@ -449,10 +414,9 @@ export function main() {
 
         it('should not report ImplThreadRenderingStats with zero frames',
            inject([AsyncTestCompleter], (async) => {
-             createExtension([
-               benchmarkEvents.instant('BenchmarkInstrumentation::ImplThreadRenderingStats', 1100,
-                                       {'data': {'frame_count': 0}})
-             ])
+             createExtension([benchmarkEvents.instant(
+                                 'BenchmarkInstrumentation::ImplThreadRenderingStats', 1100,
+                                 {'data': {'frame_count': 0}})])
                  .readPerfLog()
                  .then((events) => {
                    expect(events).toEqual([]);
@@ -464,12 +428,14 @@ export function main() {
            inject([AsyncTestCompleter], (async) => {
              PromiseWrapper.catchError(
                  createExtension([
-                   benchmarkEvents.instant('BenchmarkInstrumentation::ImplThreadRenderingStats',
-                                           1100, {'data': {'frame_count': 2}})
+                   benchmarkEvents.instant(
+                       'BenchmarkInstrumentation::ImplThreadRenderingStats', 1100,
+                       {'data': {'frame_count': 2}})
                  ]).readPerfLog(),
                  (err): any => {
-                   expect(() => { throw err; })
-                       .toThrowError('multi-frame render stats not supported');
+                   expect(() => {
+                     throw err;
+                   }).toThrowError('multi-frame render stats not supported');
                    async.done();
                  });
            }));
@@ -503,8 +469,9 @@ export function main() {
                    CHROME45_USER_AGENT, 'Tracing.bufferUsage')
                    .readPerfLog(),
                (err): any => {
-                 expect(() => { throw err; })
-                     .toThrowError('The DevTools trace buffer filled during the test!');
+                 expect(() => {
+                   throw err;
+                 }).toThrowError('The DevTools trace buffer filled during the test!');
                  async.done();
                });
          }));

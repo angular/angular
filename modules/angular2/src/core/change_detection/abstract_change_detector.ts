@@ -5,13 +5,7 @@ import {ChangeDetectorRef, ChangeDetectorRef_} from './change_detector_ref';
 import {DirectiveIndex} from './directive_record';
 import {ChangeDetector, ChangeDispatcher} from './interfaces';
 import {Pipes} from './pipes';
-import {
-  ChangeDetectionError,
-  ExpressionChangedAfterItHasBeenCheckedException,
-  DehydratedException,
-  EventEvaluationErrorContext,
-  EventEvaluationError
-} from './exceptions';
+import {ChangeDetectionError, ExpressionChangedAfterItHasBeenCheckedException, DehydratedException, EventEvaluationErrorContext, EventEvaluationError} from './exceptions';
 import {BindingTarget} from './binding_record';
 import {Locals} from './parser/locals';
 import {ChangeDetectionStrategy, ChangeDetectorState} from './constants';
@@ -21,8 +15,9 @@ import {ObservableWrapper} from 'angular2/src/facade/async';
 var _scope_check: WtfScopeFn = wtfCreateScope(`ChangeDetector#check(ascii id, bool throwOnChange)`);
 
 class _Context {
-  constructor(public element: any, public componentElement: any, public context: any,
-              public locals: any, public injector: any, public expression: any) {}
+  constructor(
+      public element: any, public componentElement: any, public context: any, public locals: any,
+      public injector: any, public expression: any) {}
 }
 
 export class AbstractChangeDetector<T> implements ChangeDetector {
@@ -44,9 +39,10 @@ export class AbstractChangeDetector<T> implements ChangeDetector {
   dispatcher: ChangeDispatcher;
 
 
-  constructor(public id: string, public numberOfPropertyProtoRecords: number,
-              public bindingTargets: BindingTarget[], public directiveIndices: DirectiveIndex[],
-              public strategy: ChangeDetectionStrategy) {
+  constructor(
+      public id: string, public numberOfPropertyProtoRecords: number,
+      public bindingTargets: BindingTarget[], public directiveIndices: DirectiveIndex[],
+      public strategy: ChangeDetectionStrategy) {
     this.ref = new ChangeDetectorRef_(this);
   }
 
@@ -79,9 +75,9 @@ export class AbstractChangeDetector<T> implements ChangeDetector {
     } catch (e) {
       var c = this.dispatcher.getDebugContext(null, elIndex, null);
       var context = isPresent(c) ?
-                        new EventEvaluationErrorContext(c.element, c.componentElement, c.context,
-                                                        c.locals, c.injector) :
-                        null;
+          new EventEvaluationErrorContext(
+              c.element, c.componentElement, c.context, c.locals, c.injector) :
+          null;
       throw new EventEvaluationError(eventName, e, e.stack, context);
     }
   }
@@ -271,8 +267,9 @@ export class AbstractChangeDetector<T> implements ChangeDetector {
     var error;
     try {
       var c = this.dispatcher.getDebugContext(null, this._currentBinding().elementIndex, null);
-      var context = isPresent(c) ? new _Context(c.element, c.componentElement, c.context, c.locals,
-                                                c.injector, this._currentBinding().debug) :
+      var context = isPresent(c) ? new _Context(
+                                       c.element, c.componentElement, c.context, c.locals,
+                                       c.injector, this._currentBinding().debug) :
                                    null;
       error = new ChangeDetectionError(this._currentBinding().debug, exception, stack, context);
     } catch (e) {
@@ -284,8 +281,8 @@ export class AbstractChangeDetector<T> implements ChangeDetector {
   }
 
   throwOnChangeError(oldValue: any, newValue: any): void {
-    throw new ExpressionChangedAfterItHasBeenCheckedException(this._currentBinding().debug,
-                                                              oldValue, newValue, null);
+    throw new ExpressionChangedAfterItHasBeenCheckedException(
+        this._currentBinding().debug, oldValue, newValue, null);
   }
 
   throwDehydratedError(detail: string): void { throw new DehydratedException(detail); }

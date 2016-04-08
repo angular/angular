@@ -13,9 +13,8 @@ import {Options} from './common_options';
 export abstract class WebDriverExtension {
   static bindTo(childTokens: any[]): Provider[] {
     var res = [
-      bind(_CHILDREN)
-          .toFactory((injector: Injector) => childTokens.map(token => injector.get(token)),
-                     [Injector]),
+      bind(_CHILDREN).toFactory(
+          (injector: Injector) => childTokens.map(token => injector.get(token)), [Injector]),
       bind(WebDriverExtension)
           .toFactory(
               (children: WebDriverExtension[], capabilities) => {

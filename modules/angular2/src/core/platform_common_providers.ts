@@ -12,9 +12,7 @@ function _reflector(): Reflector {
 /**
  * A default set of providers which should be included in any Angular platform.
  */
-export const PLATFORM_COMMON_PROVIDERS: Array<Type | Provider | any[]> = CONST_EXPR([
+export const PLATFORM_COMMON_PROVIDERS: Array<Type|Provider|any[]> = CONST_EXPR([
   new Provider(Reflector, {useFactory: _reflector, deps: []}),
-  new Provider(ReflectorReader, {useExisting: Reflector}),
-  TestabilityRegistry,
-  Console
+  new Provider(ReflectorReader, {useExisting: Reflector}), TestabilityRegistry, Console
 ]);

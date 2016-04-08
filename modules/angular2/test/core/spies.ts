@@ -1,9 +1,4 @@
-import {
-  ChangeDetector,
-  ChangeDetectorRef,
-  ProtoChangeDetector,
-  DynamicChangeDetector
-} from 'angular2/src/core/change_detection/change_detection';
+import {ChangeDetector, ChangeDetectorRef, ProtoChangeDetector, DynamicChangeDetector} from 'angular2/src/core/change_detection/change_detection';
 
 import {Renderer} from 'angular2/src/core/render/api';
 import {DirectiveResolver} from 'angular2/src/core/linker/directive_resolver';

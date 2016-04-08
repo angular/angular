@@ -1,12 +1,4 @@
-import {
-  describeRouter,
-  ddescribeRouter,
-  describeWith,
-  describeWithout,
-  describeWithAndWithout,
-  itShouldRoute,
-  TEST_ROUTER_PROVIDERS
-} from './util';
+import {describeRouter, ddescribeRouter, describeWith, describeWithout, describeWithAndWithout, itShouldRoute, TEST_ROUTER_PROVIDERS} from './util';
 
 import {beforeEachProviders, describe, ddescribe} from 'angular2/testing_internal';
 
@@ -23,8 +15,8 @@ export function main() {
       describeWithout('children', () => { describeWithAndWithout('params', itShouldRoute); });
 
       describeWith('sync children', () => {
-        describeWithout('default routes',
-                        () => { describeWithAndWithout('params', itShouldRoute); });
+        describeWithout(
+            'default routes', () => { describeWithAndWithout('params', itShouldRoute); });
         describeWith('default routes', () => { describeWithout('params', itShouldRoute); });
 
       });

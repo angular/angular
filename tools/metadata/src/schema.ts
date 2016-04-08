@@ -6,7 +6,7 @@ export interface ModuleMetadata {
   metadata: {[name: string]: (ClassMetadata | MetadataValue)};
 }
 export function isModuleMetadata(value: any): value is ModuleMetadata {
-  return value && value.__symbolic === "module";
+  return value && value.__symbolic === 'module';
 }
 
 export interface ClassMetadata {
@@ -15,7 +15,7 @@ export interface ClassMetadata {
   members?: MetadataMap;
 }
 export function isClassMetadata(value: any): value is ClassMetadata {
-  return value && value.__symbolic === "class";
+  return value && value.__symbolic === 'class';
 }
 
 export interface MetadataMap { [name: string]: MemberMetadata[]; }
@@ -27,9 +27,9 @@ export interface MemberMetadata {
 export function isMemberMetadata(value: any): value is MemberMetadata {
   if (value) {
     switch (value.__symbolic) {
-      case "constructor":
-      case "method":
-      case "property":
+      case 'constructor':
+      case 'method':
+      case 'property':
         return true;
     }
   }
@@ -41,7 +41,7 @@ export interface MethodMetadata extends MemberMetadata {
   parameterDecorators?: MetadataSymbolicExpression[][];
 }
 export function isMethodMetadata(value: any): value is MemberMetadata {
-  return value && (value.__symbolic === "constructor" || value.__symbolic === "method");
+  return value && (value.__symbolic === 'constructor' || value.__symbolic === 'method');
 }
 
 export interface ConstructorMetadata extends MethodMetadata {
@@ -49,7 +49,7 @@ export interface ConstructorMetadata extends MethodMetadata {
   parameters?: MetadataSymbolicExpression[];
 }
 export function isConstructorMetadata(value: any): value is ConstructorMetadata {
-  return value && value.__symbolic === "constructor";
+  return value && value.__symbolic === 'constructor';
 }
 
 export type MetadataValue =
@@ -65,12 +65,12 @@ export interface MetadataSymbolicExpression {
 export function isMetadataSymbolicExpression(value: any): value is MetadataSymbolicExpression {
   if (value) {
     switch (value.__symbolic) {
-      case "binary":
-      case "call":
-      case "index":
-      case "pre":
-      case "reference":
-      case "select":
+      case 'binary':
+      case 'call':
+      case 'index':
+      case 'pre':
+      case 'reference':
+      case 'select':
         return true;
     }
   }
@@ -85,9 +85,9 @@ export interface MetadataSymbolicBinaryExpression extends MetadataSymbolicExpres
   left: MetadataValue;
   right: MetadataValue;
 }
-export function isMetadataSymbolicBinaryExpression(
-    value: any): value is MetadataSymbolicBinaryExpression {
-  return value && value.__symbolic === "binary";
+export function isMetadataSymbolicBinaryExpression(value: any):
+    value is MetadataSymbolicBinaryExpression {
+  return value && value.__symbolic === 'binary';
 }
 
 export interface MetadataSymbolicIndexExpression extends MetadataSymbolicExpression {
@@ -95,9 +95,9 @@ export interface MetadataSymbolicIndexExpression extends MetadataSymbolicExpress
   expression: MetadataValue;
   index: MetadataValue;
 }
-export function isMetadataSymbolicIndexExpression(
-    value: any): value is MetadataSymbolicIndexExpression {
-  return value && value.__symbolic === "index";
+export function isMetadataSymbolicIndexExpression(value: any):
+    value is MetadataSymbolicIndexExpression {
+  return value && value.__symbolic === 'index';
 }
 
 export interface MetadataSymbolicCallExpression extends MetadataSymbolicExpression {
@@ -105,9 +105,9 @@ export interface MetadataSymbolicCallExpression extends MetadataSymbolicExpressi
   expression: MetadataValue;
   arguments?: MetadataValue[];
 }
-export function isMetadataSymbolicCallExpression(
-    value: any): value is MetadataSymbolicCallExpression {
-  return value && value.__symbolic === "call";
+export function isMetadataSymbolicCallExpression(value: any):
+    value is MetadataSymbolicCallExpression {
+  return value && value.__symbolic === 'call';
 }
 
 export interface MetadataSymbolicPrefixExpression extends MetadataSymbolicExpression {
@@ -115,9 +115,9 @@ export interface MetadataSymbolicPrefixExpression extends MetadataSymbolicExpres
   operator: string;  // "+" | "-" | "~" | "!";
   operand: MetadataValue;
 }
-export function isMetadataSymbolicPrefixExpression(
-    value: any): value is MetadataSymbolicPrefixExpression {
-  return value && value.__symbolic === "pre";
+export function isMetadataSymbolicPrefixExpression(value: any):
+    value is MetadataSymbolicPrefixExpression {
+  return value && value.__symbolic === 'pre';
 }
 
 export interface MetadataSymbolicReferenceExpression extends MetadataSymbolicExpression {
@@ -125,9 +125,9 @@ export interface MetadataSymbolicReferenceExpression extends MetadataSymbolicExp
   name: string;
   module: string;
 }
-export function isMetadataSymbolicReferenceExpression(
-    value: any): value is MetadataSymbolicReferenceExpression {
-  return value && value.__symbolic === "reference";
+export function isMetadataSymbolicReferenceExpression(value: any):
+    value is MetadataSymbolicReferenceExpression {
+  return value && value.__symbolic === 'reference';
 }
 
 export interface MetadataSymbolicSelectExpression extends MetadataSymbolicExpression {
@@ -135,7 +135,7 @@ export interface MetadataSymbolicSelectExpression extends MetadataSymbolicExpres
   expression: MetadataValue;
   name: string;
 }
-export function isMetadataSymbolicSelectExpression(
-    value: any): value is MetadataSymbolicSelectExpression {
-  return value && value.__symbolic === "select";
+export function isMetadataSymbolicSelectExpression(value: any):
+    value is MetadataSymbolicSelectExpression {
+  return value && value.__symbolic === 'select';
 }

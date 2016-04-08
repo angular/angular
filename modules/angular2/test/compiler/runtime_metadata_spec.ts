@@ -1,37 +1,9 @@
-import {
-  ddescribe,
-  describe,
-  xdescribe,
-  it,
-  iit,
-  xit,
-  expect,
-  beforeEach,
-  afterEach,
-  AsyncTestCompleter,
-  inject,
-  beforeEachProviders
-} from 'angular2/testing_internal';
+import {ddescribe, describe, xdescribe, it, iit, xit, expect, beforeEach, afterEach, AsyncTestCompleter, inject, beforeEachProviders} from 'angular2/testing_internal';
 
 import {stringify} from 'angular2/src/facade/lang';
 import {RuntimeMetadataResolver} from 'angular2/src/compiler/runtime_metadata';
 import {LifecycleHooks, LIFECYCLE_HOOKS_VALUES} from 'angular2/src/core/linker/interfaces';
-import {
-  Component,
-  Directive,
-  ViewEncapsulation,
-  ChangeDetectionStrategy,
-  OnChanges,
-  OnInit,
-  DoCheck,
-  OnDestroy,
-  AfterContentInit,
-  AfterContentChecked,
-  AfterViewInit,
-  AfterViewChecked,
-  SimpleChange,
-  provide
-} from 'angular2/core';
+import {Component, Directive, ViewEncapsulation, ChangeDetectionStrategy, OnChanges, OnInit, DoCheck, OnDestroy, AfterContentInit, AfterContentChecked, AfterViewInit, AfterViewChecked, SimpleChange, provide} from 'angular2/core';
 
 import {TEST_PROVIDERS} from './test_bindings';
 import {MODULE_SUFFIX} from 'angular2/src/compiler/util';
@@ -93,7 +65,7 @@ export function main() {
                .toContain(resolver.getDirectiveMetadata(SomeDirective));
          }));
 
-      describe("platform directives", () => {
+      describe('platform directives', () => {
         beforeEachProviders(
             () => [provide(PLATFORM_DIRECTIVES, {useValue: [ADirective], multi: true})]);
 

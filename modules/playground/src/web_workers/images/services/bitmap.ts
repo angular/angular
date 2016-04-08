@@ -4,10 +4,7 @@ declare var base64js;
 
 // Temporary fix for Typescript issue #4220 (https://github.com/Microsoft/TypeScript/issues/4220)
 // var _ImageData: (width: number, height: number) => void = <any>postMessage;
-var _ImageData: {
-  prototype: ImageData, new (width: number, height: number): ImageData;
-}
-= ImageData;
+var _ImageData: {prototype: ImageData, new (width: number, height: number): ImageData;} = ImageData;
 
 // This class is based on the Bitmap examples at:
 // http://www.i-programmer.info/projects/36-web/6234-reading-a-bmp-file-in-javascript.html
@@ -63,7 +60,7 @@ export class BitmapService {
     return imageData;
   }
 
-  private _swap(data: Uint8Array | number[], index1: number, index2: number) {
+  private _swap(data: Uint8Array|number[], index1: number, index2: number) {
     var temp = data[index1];
     data[index1] = data[index2];
     data[index2] = temp;
@@ -75,22 +72,22 @@ export class BitmapService {
     var numFileBytes = this._getLittleEndianHex(imageData.width * imageData.height);
     var w = this._getLittleEndianHex(imageData.width);
     var h = this._getLittleEndianHex(imageData.height);
-    return 'BM' +                // Signature
-           numFileBytes +        // size of the file (bytes)*
-           '\x00\x00' +          // reserved
-           '\x00\x00' +          // reserved
-           '\x36\x00\x00\x00' +  // offset of where BMP data lives (54 bytes)
-           '\x28\x00\x00\x00' +  // number of remaining bytes in header from here (40 bytes)
-           w +                   // the width of the bitmap in pixels*
-           h +                   // the height of the bitmap in pixels*
-           '\x01\x00' +          // the number of color planes (1)
-           '\x20\x00' +          // 32 bits / pixel
-           '\x00\x00\x00\x00' +  // No compression (0)
-           '\x00\x00\x00\x00' +  // size of the BMP data (bytes)*
-           '\x13\x0B\x00\x00' +  // 2835 pixels/meter - horizontal resolution
-           '\x13\x0B\x00\x00' +  // 2835 pixels/meter - the vertical resolution
-           '\x00\x00\x00\x00' +  // Number of colors in the palette (keep 0 for 32-bit)
-           '\x00\x00\x00\x00';   // 0 important colors (means all colors are important)
+    return 'BM' +             // Signature
+        numFileBytes +        // size of the file (bytes)*
+        '\x00\x00' +          // reserved
+        '\x00\x00' +          // reserved
+        '\x36\x00\x00\x00' +  // offset of where BMP data lives (54 bytes)
+        '\x28\x00\x00\x00' +  // number of remaining bytes in header from here (40 bytes)
+        w +                   // the width of the bitmap in pixels*
+        h +                   // the height of the bitmap in pixels*
+        '\x01\x00' +          // the number of color planes (1)
+        '\x20\x00' +          // 32 bits / pixel
+        '\x00\x00\x00\x00' +  // No compression (0)
+        '\x00\x00\x00\x00' +  // size of the BMP data (bytes)*
+        '\x13\x0B\x00\x00' +  // 2835 pixels/meter - horizontal resolution
+        '\x13\x0B\x00\x00' +  // 2835 pixels/meter - the vertical resolution
+        '\x00\x00\x00\x00' +  // Number of colors in the palette (keep 0 for 32-bit)
+        '\x00\x00\x00\x00';   // 0 important colors (means all colors are important)
   }
 
   private _BMPToImageData(bmp: BitmapFile): ImageData {
@@ -164,18 +161,10 @@ export class BitmapService {
 
 interface BitmapFile {
   fileHeader: {
-    bfType: number;
-    bfSize: number;
-    bfReserved1: number;
-    bfReserved2: number;
-    bfOffBits: number;
+    bfType: number; bfSize: number; bfReserved1: number; bfReserved2: number; bfOffBits: number;
   };
   infoHeader: {
-    biSize: number;
-    biWidth: number;
-    biHeight: number;
-    biPlanes: number;
-    biBitCount: number;
+    biSize: number; biWidth: number; biHeight: number; biPlanes: number; biBitCount: number;
     biCompression: number;
     biSizeImage: number;
     biXPelsPerMeter: number;

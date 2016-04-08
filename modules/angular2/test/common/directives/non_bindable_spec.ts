@@ -1,16 +1,4 @@
-import {
-  AsyncTestCompleter,
-  TestComponentBuilder,
-  beforeEach,
-  ddescribe,
-  describe,
-  el,
-  expect,
-  iit,
-  inject,
-  it,
-  xit,
-} from 'angular2/testing_internal';
+import {AsyncTestCompleter, TestComponentBuilder, beforeEach, ddescribe, describe, el, expect, iit, inject, it, xit,} from 'angular2/testing_internal';
 import {DOM} from 'angular2/src/platform/dom/dom_adapter';
 import {Component, Directive} from 'angular2/core';
 import {ElementRef} from 'angular2/src/core/linker/element_ref';

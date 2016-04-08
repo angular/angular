@@ -27,19 +27,10 @@ export {ControlValueAccessor, NG_VALUE_ACCESSOR} from './forms/directives/contro
 export {DefaultValueAccessor} from './forms/directives/default_value_accessor';
 export {NgControlStatus} from './forms/directives/ng_control_status';
 export {CheckboxControlValueAccessor} from './forms/directives/checkbox_value_accessor';
-export {
-  NgSelectOption,
-  SelectControlValueAccessor
-} from './forms/directives/select_control_value_accessor';
+export {NgSelectOption, SelectControlValueAccessor} from './forms/directives/select_control_value_accessor';
 export {FORM_DIRECTIVES, RadioButtonState} from './forms/directives';
 export {NG_VALIDATORS, NG_ASYNC_VALIDATORS, Validators} from './forms/validators';
-export {
-  RequiredValidator,
-  MinLengthValidator,
-  MaxLengthValidator,
-  PatternValidator,
-  Validator
-} from './forms/directives/validators';
+export {RequiredValidator, MinLengthValidator, MaxLengthValidator, PatternValidator, Validator} from './forms/directives/validators';
 export {FormBuilder} from './forms/form_builder';
 import {FormBuilder} from './forms/form_builder';
 import {RadioControlRegistry} from './forms/directives/radio_control_value_accessor';

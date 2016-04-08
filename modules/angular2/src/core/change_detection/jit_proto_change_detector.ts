@@ -18,8 +18,8 @@ export class JitProtoChangeDetector implements ProtoChangeDetector {
 
   /** @internal */
   _createFactory(definition: ChangeDetectorDefinition) {
-    return new ChangeDetectorJITGenerator(definition, 'util', 'AbstractChangeDetector',
-                                          'ChangeDetectorStatus')
+    return new ChangeDetectorJITGenerator(
+               definition, 'util', 'AbstractChangeDetector', 'ChangeDetectorStatus')
         .generate();
   }
 }

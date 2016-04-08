@@ -1,34 +1,17 @@
 import {HtmlParser, HtmlParseTreeResult} from 'angular2/src/compiler/html_parser';
 import {ParseSourceSpan, ParseError} from 'angular2/src/compiler/parse_util';
-import {
-  HtmlAst,
-  HtmlAstVisitor,
-  HtmlElementAst,
-  HtmlAttrAst,
-  HtmlTextAst,
-  HtmlCommentAst,
-  htmlVisitAll
-} from 'angular2/src/compiler/html_ast';
+import {HtmlAst, HtmlAstVisitor, HtmlElementAst, HtmlAttrAst, HtmlTextAst, HtmlCommentAst, htmlVisitAll} from 'angular2/src/compiler/html_ast';
 import {ListWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
 import {RegExpWrapper, NumberWrapper, isPresent} from 'angular2/src/facade/lang';
 import {BaseException} from 'angular2/src/facade/exceptions';
 import {Parser} from 'angular2/src/core/change_detection/parser/parser';
 import {Message, id} from './message';
-import {
-  messageFromAttribute,
-  I18nError,
-  I18N_ATTR_PREFIX,
-  I18N_ATTR,
-  partition,
-  Part,
-  stringifyNodes,
-  meaning
-} from './shared';
+import {messageFromAttribute, I18nError, I18N_ATTR_PREFIX, I18N_ATTR, partition, Part, stringifyNodes, meaning} from './shared';
 
-const _I18N_ATTR = "i18n";
-const _PLACEHOLDER_ELEMENT = "ph";
-const _NAME_ATTR = "name";
-const _I18N_ATTR_PREFIX = "i18n-";
+const _I18N_ATTR = 'i18n';
+const _PLACEHOLDER_ELEMENT = 'ph';
+const _NAME_ATTR = 'name';
+const _I18N_ATTR_PREFIX = 'i18n-';
 let _PLACEHOLDER_EXPANDED_REGEXP = RegExpWrapper.create(`\\<ph(\\s)+name=("(\\d)+")\\>\\<\\/ph\\>`);
 
 /**
@@ -114,8 +97,9 @@ let _PLACEHOLDER_EXPANDED_REGEXP = RegExpWrapper.create(`\\<ph(\\s)+name=("(\\d)
 export class I18nHtmlParser implements HtmlParser {
   errors: ParseError[];
 
-  constructor(private _htmlParser: HtmlParser, private _parser: Parser,
-              private _messagesContent: string, private _messages: {[key: string]: HtmlAst[]}) {}
+  constructor(
+      private _htmlParser: HtmlParser, private _parser: Parser, private _messagesContent: string,
+      private _messages: {[key: string]: HtmlAst[]}) {}
 
   parse(sourceContent: string, sourceUrl: string): HtmlParseTreeResult {
     this.errors = [];
@@ -161,10 +145,8 @@ export class I18nHtmlParser implements HtmlParser {
       let root = p.rootElement;
       let children = this._recurse(p.children);
       let attrs = this._i18nAttributes(root);
-      return [
-        new HtmlElementAst(root.name, attrs, children, root.sourceSpan, root.startSourceSpan,
-                           root.endSourceSpan)
-      ];
+      return [new HtmlElementAst(
+          root.name, attrs, children, root.sourceSpan, root.startSourceSpan, root.endSourceSpan)];
 
       // a text node without i18n or interpolation, nothing to do
     } else if (isPresent(p.rootTextNode)) {
@@ -193,14 +175,12 @@ export class I18nHtmlParser implements HtmlParser {
     if (isPresent(p.rootElement)) {
       let root = p.rootElement;
       let attrs = this._i18nAttributes(root);
-      return [
-        new HtmlElementAst(root.name, attrs, merged, root.sourceSpan, root.startSourceSpan,
-                           root.endSourceSpan)
-      ];
+      return [new HtmlElementAst(
+          root.name, attrs, merged, root.sourceSpan, root.startSourceSpan, root.endSourceSpan)];
 
       // this should never happen with a part. Parts that have root text node should not be merged.
     } else if (isPresent(p.rootTextNode)) {
-      throw new BaseException("should not be reached");
+      throw new BaseException('should not be reached');
 
     } else {
       return merged;
@@ -216,24 +196,24 @@ export class I18nHtmlParser implements HtmlParser {
         return t;
 
       } else {
-        throw new BaseException("should not be reached");
+        throw new BaseException('should not be reached');
       }
     });
   }
 
-  private _mergeElementOrInterpolation(t: HtmlElementAst, translated: HtmlAst[],
-                                       mapping: HtmlAst[]): HtmlAst {
+  private _mergeElementOrInterpolation(
+      t: HtmlElementAst, translated: HtmlAst[], mapping: HtmlAst[]): HtmlAst {
     let name = this._getName(t);
     let type = name[0];
     let index = NumberWrapper.parseInt(name.substring(1), 10);
     let originalNode = mapping[index];
 
-    if (type == "t") {
+    if (type == 't') {
       return this._mergeTextInterpolation(t, <HtmlTextAst>originalNode);
-    } else if (type == "e") {
+    } else if (type == 'e') {
       return this._mergeElement(t, <HtmlElementAst>originalNode, mapping);
     } else {
-      throw new BaseException("should not be reached");
+      throw new BaseException('should not be reached');
     }
   }
 
@@ -263,12 +243,12 @@ export class I18nHtmlParser implements HtmlParser {
     return new HtmlTextAst(translated, originalNode.sourceSpan);
   }
 
-  private _mergeElement(t: HtmlElementAst, originalNode: HtmlElementAst,
-                        mapping: HtmlAst[]): HtmlElementAst {
+  private _mergeElement(t: HtmlElementAst, originalNode: HtmlElementAst, mapping: HtmlAst[]):
+      HtmlElementAst {
     let children = this._mergeTreesHelper(t.children, mapping);
-    return new HtmlElementAst(originalNode.name, this._i18nAttributes(originalNode), children,
-                              originalNode.sourceSpan, originalNode.startSourceSpan,
-                              originalNode.endSourceSpan);
+    return new HtmlElementAst(
+        originalNode.name, this._i18nAttributes(originalNode), children, originalNode.sourceSpan,
+        originalNode.startSourceSpan, originalNode.endSourceSpan);
   }
 
   private _i18nAttributes(el: HtmlElementAst): HtmlAttrAst[] {
@@ -311,8 +291,8 @@ export class I18nHtmlParser implements HtmlParser {
     return this._replacePlaceholdersWithExpressions(messageSubstring, exps, attr.sourceSpan);
   };
 
-  private _replacePlaceholdersWithExpressions(message: string, exps: string[],
-                                              sourceSpan: ParseSourceSpan): string {
+  private _replacePlaceholdersWithExpressions(
+      message: string, exps: string[], sourceSpan: ParseSourceSpan): string {
     return RegExpWrapper.replaceAll(_PLACEHOLDER_EXPANDED_REGEXP, message, (match) => {
       let nameWithQuotes = match[2];
       let name = nameWithQuotes.substring(1, nameWithQuotes.length - 1);
@@ -346,5 +326,5 @@ class _CreateNodeMapping implements HtmlAstVisitor {
     return null;
   }
 
-  visitComment(ast: HtmlCommentAst, context: any): any { return ""; }
+  visitComment(ast: HtmlCommentAst, context: any): any { return ''; }
 }

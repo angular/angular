@@ -1,14 +1,4 @@
-import {
-  AsyncTestCompleter,
-  describe,
-  it,
-  iit,
-  ddescribe,
-  expect,
-  inject,
-  beforeEach,
-  SpyObject
-} from 'angular2/testing_internal';
+import {AsyncTestCompleter, describe, it, iit, ddescribe, expect, inject, beforeEach, SpyObject} from 'angular2/testing_internal';
 
 import {UrlParser, Url} from 'angular2/src/router/url_parser';
 

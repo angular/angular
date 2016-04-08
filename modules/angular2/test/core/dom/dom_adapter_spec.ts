@@ -1,18 +1,4 @@
-import {
-  AsyncTestCompleter,
-  beforeEach,
-  ddescribe,
-  describe,
-  el,
-  expect,
-  iit,
-  inject,
-  it,
-  xit,
-  beforeEachProviders,
-  SpyObject,
-  stringifyElement
-} from 'angular2/testing_internal';
+import {AsyncTestCompleter, beforeEach, ddescribe, describe, el, expect, iit, inject, it, xit, beforeEachProviders, SpyObject, stringifyElement} from 'angular2/testing_internal';
 
 import {DOM} from 'angular2/src/platform/dom/dom_adapter';
 

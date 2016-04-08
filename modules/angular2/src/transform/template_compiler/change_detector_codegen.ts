@@ -1,6 +1,4 @@
-import {
-  ChangeDetectorDefinition,
-} from 'angular2/src/core/change_detection/change_detection';
+import {ChangeDetectorDefinition,} from 'angular2/src/core/change_detection/change_detection';
 
 // Note: This class is only here so that we can reference it from TypeScript code.
 // The actual implementation lives under modules_dart.
@@ -9,7 +7,7 @@ import {
 export class Codegen {
   constructor(moduleAlias: string) {}
   generate(typeName: string, changeDetectorTypeName: string, def: ChangeDetectorDefinition): void {
-    throw "Not implemented in JS";
+    throw 'Not implemented in JS';
   }
-  toString(): string { throw "Not implemented in JS"; }
+  toString(): string { throw 'Not implemented in JS'; }
 }

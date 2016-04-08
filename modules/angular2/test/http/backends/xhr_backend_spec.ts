@@ -1,16 +1,4 @@
-import {
-  AsyncTestCompleter,
-  afterEach,
-  beforeEach,
-  ddescribe,
-  describe,
-  expect,
-  iit,
-  inject,
-  it,
-  xit,
-  SpyObject
-} from 'angular2/testing_internal';
+import {AsyncTestCompleter, afterEach, beforeEach, ddescribe, describe, expect, iit, inject, it, xit, SpyObject} from 'angular2/testing_internal';
 import {ObservableWrapper} from 'angular2/src/facade/async';
 import {BrowserXhr} from 'angular2/src/http/backends/browser_xhr';
 import {XHRConnection, XHRBackend} from 'angular2/src/http/backends/xhr_backend';
@@ -88,8 +76,7 @@ export function main() {
     beforeEach(() => {
       var injector = Injector.resolveAndCreate([
         provide(ResponseOptions, {useClass: BaseResponseOptions}),
-        provide(BrowserXhr, {useClass: MockBrowserXHR}),
-        XHRBackend
+        provide(BrowserXhr, {useClass: MockBrowserXHR}), XHRBackend
       ]);
       backend = injector.get(XHRBackend);
       var base = new BaseRequestOptions();
@@ -105,8 +92,9 @@ export function main() {
     describe('XHRConnection', () => {
       it('should use the injected BaseResponseOptions to create the response',
          inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-           var connection = new XHRConnection(sampleRequest, new MockBrowserXHR(),
-                                              new ResponseOptions({type: ResponseType.Error}));
+           var connection = new XHRConnection(
+               sampleRequest, new MockBrowserXHR(),
+               new ResponseOptions({type: ResponseType.Error}));
            connection.response.subscribe((res: Response) => {
              expect(res.type).toBe(ResponseType.Error);
              async.done();
@@ -116,11 +104,12 @@ export function main() {
          }));
 
       it('should complete a request', inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-           var connection = new XHRConnection(sampleRequest, new MockBrowserXHR(),
-                                              new ResponseOptions({type: ResponseType.Error}));
-           connection.response.subscribe((res: Response) => {
-             expect(res.type).toBe(ResponseType.Error);
-           }, null, () => { async.done(); });
+           var connection = new XHRConnection(
+               sampleRequest, new MockBrowserXHR(),
+               new ResponseOptions({type: ResponseType.Error}));
+           connection.response.subscribe(
+               (res: Response) => { expect(res.type).toBe(ResponseType.Error); }, null,
+               () => { async.done(); });
            existingXHRs[0].setStatusCode(200);
            existingXHRs[0].dispatchEvent('load');
          }));
@@ -134,8 +123,9 @@ export function main() {
 
       it('should create an error Response on error',
          inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-           var connection = new XHRConnection(sampleRequest, new MockBrowserXHR(),
-                                              new ResponseOptions({type: ResponseType.Error}));
+           var connection = new XHRConnection(
+               sampleRequest, new MockBrowserXHR(),
+               new ResponseOptions({type: ResponseType.Error}));
            connection.response.subscribe(null, (res: Response) => {
              expect(res.type).toBe(ResponseType.Error);
              async.done();
@@ -177,8 +167,8 @@ export function main() {
       it('should return the correct status code',
          inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
            var statusCode = 418;
-           var connection = new XHRConnection(sampleRequest, new MockBrowserXHR(),
-                                              new ResponseOptions({status: statusCode}));
+           var connection = new XHRConnection(
+               sampleRequest, new MockBrowserXHR(), new ResponseOptions({status: statusCode}));
 
            connection.response.subscribe(
                (res: Response) => {
@@ -198,15 +188,16 @@ export function main() {
            var nextCalled = false;
            var errorCalled = false;
            var statusCode = 200;
-           var connection = new XHRConnection(sampleRequest, new MockBrowserXHR(),
-                                              new ResponseOptions({status: statusCode}));
+           var connection = new XHRConnection(
+               sampleRequest, new MockBrowserXHR(), new ResponseOptions({status: statusCode}));
 
            connection.response.subscribe(
                (res: Response) => {
                  nextCalled = true;
                  expect(res.status).toBe(statusCode);
                },
-               errRes => { errorCalled = true; }, () => {
+               errRes => { errorCalled = true; },
+               () => {
                  expect(nextCalled).toBe(true);
                  expect(errorCalled).toBe(false);
                  async.done();
@@ -221,14 +212,17 @@ export function main() {
            var nextCalled = false;
            var errorCalled = false;
            var statusCode = 301;
-           var connection = new XHRConnection(sampleRequest, new MockBrowserXHR(),
-                                              new ResponseOptions({status: statusCode}));
+           var connection = new XHRConnection(
+               sampleRequest, new MockBrowserXHR(), new ResponseOptions({status: statusCode}));
 
-           connection.response.subscribe((res: Response) => { nextCalled = true; }, errRes => {
-             expect(errRes.status).toBe(statusCode);
-             expect(nextCalled).toBe(false);
-             async.done();
-           }, () => { throw 'should not be called'; });
+           connection.response.subscribe(
+               (res: Response) => { nextCalled = true; },
+               errRes => {
+                 expect(errRes.status).toBe(statusCode);
+                 expect(nextCalled).toBe(false);
+                 async.done();
+               },
+               () => { throw 'should not be called'; });
 
            existingXHRs[0].setStatusCode(statusCode);
            existingXHRs[0].dispatchEvent('load');
@@ -237,8 +231,8 @@ export function main() {
          inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
            var statusCode = 1223;
            var normalizedCode = 204;
-           var connection = new XHRConnection(sampleRequest, new MockBrowserXHR(),
-                                              new ResponseOptions({status: statusCode}));
+           var connection = new XHRConnection(
+               sampleRequest, new MockBrowserXHR(), new ResponseOptions({status: statusCode}));
 
            connection.response.subscribe((res: Response) => {
              expect(res.status).toBe(normalizedCode);
@@ -278,8 +272,8 @@ export function main() {
       it('should parse response headers and add them to the response',
          inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
            var statusCode = 200;
-           var connection = new XHRConnection(sampleRequest, new MockBrowserXHR(),
-                                              new ResponseOptions({status: statusCode}));
+           var connection = new XHRConnection(
+               sampleRequest, new MockBrowserXHR(), new ResponseOptions({status: statusCode}));
 
            let responseHeaderString =
                `Date: Fri, 20 Nov 2015 01:45:26 GMT
@@ -303,8 +297,8 @@ export function main() {
       it('should add the responseURL to the response',
          inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
            var statusCode = 200;
-           var connection = new XHRConnection(sampleRequest, new MockBrowserXHR(),
-                                              new ResponseOptions({status: statusCode}));
+           var connection = new XHRConnection(
+               sampleRequest, new MockBrowserXHR(), new ResponseOptions({status: statusCode}));
 
            connection.response.subscribe((res: Response) => {
              expect(res.url).toEqual('http://google.com');
@@ -319,8 +313,8 @@ export function main() {
       it('should add use the X-Request-URL in CORS situations',
          inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
            var statusCode = 200;
-           var connection = new XHRConnection(sampleRequest, new MockBrowserXHR(),
-                                              new ResponseOptions({status: statusCode}));
+           var connection = new XHRConnection(
+               sampleRequest, new MockBrowserXHR(), new ResponseOptions({status: statusCode}));
            var responseHeaders = `X-Request-URL: http://somedomain.com
            Foo: Bar`
 

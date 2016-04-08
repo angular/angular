@@ -32,8 +32,8 @@ export class RegressionSlopeValidator extends Validator {
 
   validate(completeSample: MeasureValues[]): MeasureValues[] {
     if (completeSample.length >= this._sampleSize) {
-      var latestSample = ListWrapper.slice(completeSample, completeSample.length - this._sampleSize,
-                                           completeSample.length);
+      var latestSample = ListWrapper.slice(
+          completeSample, completeSample.length - this._sampleSize, completeSample.length);
       var xValues = [];
       var yValues = [];
       for (var i = 0; i < latestSample.length; i++) {
@@ -55,8 +55,8 @@ var _SAMPLE_SIZE = new OpaqueToken('RegressionSlopeValidator.sampleSize');
 var _METRIC = new OpaqueToken('RegressionSlopeValidator.metric');
 var _PROVIDERS = [
   bind(RegressionSlopeValidator)
-      .toFactory((sampleSize, metric) => new RegressionSlopeValidator(sampleSize, metric),
-                 [_SAMPLE_SIZE, _METRIC]),
-  provide(_SAMPLE_SIZE, {useValue: 10}),
-  provide(_METRIC, {useValue: 'scriptTime'})
+      .toFactory(
+          (sampleSize, metric) => new RegressionSlopeValidator(sampleSize, metric),
+          [_SAMPLE_SIZE, _METRIC]),
+  provide(_SAMPLE_SIZE, {useValue: 10}), provide(_METRIC, {useValue: 'scriptTime'})
 ];

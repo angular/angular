@@ -1,36 +1,9 @@
-import {
-  isPresent,
-  isBlank,
-  Type,
-  stringify,
-  CONST_EXPR,
-  StringWrapper
-} from 'angular2/src/facade/lang';
+import {isPresent, isBlank, Type, stringify, CONST_EXPR, StringWrapper} from 'angular2/src/facade/lang';
 import {BaseException} from 'angular2/src/facade/exceptions';
 import {ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
-import {
-  Injector,
-  Key,
-  Dependency,
-  provide,
-  Provider,
-  ResolvedProvider,
-  NoProviderError,
-  AbstractProviderError,
-  CyclicDependencyError,
-  resolveForwardRef,
-  Injectable
-} from 'angular2/src/core/di';
+import {Injector, Key, Dependency, provide, Provider, ResolvedProvider, NoProviderError, AbstractProviderError, CyclicDependencyError, resolveForwardRef, Injectable} from 'angular2/src/core/di';
 import {mergeResolvedProviders} from 'angular2/src/core/di/provider';
-import {
-  UNDEFINED,
-  ProtoInjector,
-  Visibility,
-  InjectorInlineStrategy,
-  InjectorDynamicStrategy,
-  ProviderWithVisibility,
-  DependencyProvider
-} from 'angular2/src/core/di/injector';
+import {UNDEFINED, ProtoInjector, Visibility, InjectorInlineStrategy, InjectorDynamicStrategy, ProviderWithVisibility, DependencyProvider} from 'angular2/src/core/di/injector';
 import {resolveProvider, ResolvedFactory, ResolvedProvider_} from 'angular2/src/core/di/provider';
 
 import {AttributeMetadata, QueryMetadata} from '../metadata/di';
@@ -44,17 +17,14 @@ import {ElementRef} from './element_ref';
 import {Renderer} from 'angular2/src/core/render/api';
 import {TemplateRef, TemplateRef_} from './template_ref';
 import {DirectiveMetadata, ComponentMetadata} from '../metadata/directives';
-import {
-  ChangeDetector,
-  ChangeDetectorRef
-} from 'angular2/src/core/change_detection/change_detection';
+import {ChangeDetector, ChangeDetectorRef} from 'angular2/src/core/change_detection/change_detection';
 import {QueryList} from './query_list';
 import {reflector} from 'angular2/src/core/reflection/reflection';
 import {SetterFn} from 'angular2/src/core/reflection/types';
 import {AfterViewChecked} from 'angular2/src/core/linker/interfaces';
 import {PipeProvider} from 'angular2/src/core/pipes/pipe_provider';
 
-import {ViewContainerRef_} from "./view_container_ref";
+import {ViewContainerRef_} from './view_container_ref';
 import {ResolvedMetadataCache} from './resolved_metadata_cache';
 
 var _staticKeys;
@@ -81,9 +51,9 @@ export class StaticKeys {
 }
 
 export class DirectiveDependency extends Dependency {
-  constructor(key: Key, optional: boolean, lowerBoundVisibility: Object,
-              upperBoundVisibility: Object, properties: any[], public attributeName: string,
-              public queryDecorator: QueryMetadata) {
+  constructor(
+      key: Key, optional: boolean, lowerBoundVisibility: Object, upperBoundVisibility: Object,
+      properties: any[], public attributeName: string, public queryDecorator: QueryMetadata) {
     super(key, optional, lowerBoundVisibility, upperBoundVisibility, properties);
     this._verify();
   }
@@ -117,9 +87,10 @@ export class DirectiveDependency extends Dependency {
 }
 
 export class DirectiveProvider extends ResolvedProvider_ {
-  constructor(key: Key, factory: Function, deps: Dependency[], public isComponent: boolean,
-              public providers: ResolvedProvider[], public viewProviders: ResolvedProvider[],
-              public queries: QueryMetadataWithSetter[]) {
+  constructor(
+      key: Key, factory: Function, deps: Dependency[], public isComponent: boolean,
+      public providers: ResolvedProvider[], public viewProviders: ResolvedProvider[],
+      public queries: QueryMetadataWithSetter[]) {
     super(key, [new ResolvedFactory(factory, deps)], false);
   }
 
@@ -136,8 +107,8 @@ export class DirectiveProvider extends ResolvedProvider_ {
     var isComponent = meta instanceof ComponentMetadata;
     var resolvedProviders = isPresent(meta.providers) ? Injector.resolve(meta.providers) : null;
     var resolvedViewProviders = meta instanceof ComponentMetadata && isPresent(meta.viewProviders) ?
-                                    Injector.resolve(meta.viewProviders) :
-                                    null;
+        Injector.resolve(meta.viewProviders) :
+        null;
     var queries = [];
     if (isPresent(meta.queries)) {
       StringMapWrapper.forEach(meta.queries, (meta, fieldName) => {
@@ -152,8 +123,8 @@ export class DirectiveProvider extends ResolvedProvider_ {
         queries.push(new QueryMetadataWithSetter(null, d.queryDecorator));
       }
     });
-    return new DirectiveProvider(rb.key, rf.factory, deps, isComponent, resolvedProviders,
-                                 resolvedViewProviders, queries);
+    return new DirectiveProvider(
+        rb.key, rf.factory, deps, isComponent, resolvedProviders, resolvedViewProviders, queries);
   }
 }
 
@@ -162,8 +133,8 @@ export class QueryMetadataWithSetter {
 }
 
 
-function setProvidersVisibility(providers: ResolvedProvider[], visibility: Visibility,
-                                result: Map<number, Visibility>) {
+function setProvidersVisibility(
+    providers: ResolvedProvider[], visibility: Visibility, result: Map<number, Visibility>) {
   for (var i = 0; i < providers.length; i++) {
     result.set(providers[i].key.id, visibility);
   }
@@ -172,9 +143,9 @@ function setProvidersVisibility(providers: ResolvedProvider[], visibility: Visib
 export class AppProtoElement {
   protoInjector: ProtoInjector;
 
-  static create(metadataCache: ResolvedMetadataCache, index: number,
-                attributes: {[key: string]: string}, directiveTypes: Type[],
-                directiveVariableBindings: {[key: string]: number}): AppProtoElement {
+  static create(
+      metadataCache: ResolvedMetadataCache, index: number, attributes: {[key: string]: string},
+      directiveTypes: Type[], directiveVariableBindings: {[key: string]: number}): AppProtoElement {
     var componentDirProvider = null;
     var mergedProvidersMap: Map<number, ResolvedProvider> = new Map<number, ResolvedProvider>();
     var providerVisibilityMap: Map<number, Visibility> = new Map<number, Visibility>();
@@ -196,8 +167,8 @@ export class AppProtoElement {
       }
       if (isPresent(dirProvider.viewProviders)) {
         mergeResolvedProviders(dirProvider.viewProviders, mergedProvidersMap);
-        setProvidersVisibility(dirProvider.viewProviders, Visibility.Private,
-                               providerVisibilityMap);
+        setProvidersVisibility(
+            dirProvider.viewProviders, Visibility.Private, providerVisibilityMap);
       }
       for (var queryIdx = 0; queryIdx < dirProvider.queries.length; queryIdx++) {
         var q = dirProvider.queries[queryIdx];
@@ -207,22 +178,24 @@ export class AppProtoElement {
     if (isPresent(componentDirProvider) && isPresent(componentDirProvider.providers)) {
       // directive providers need to be prioritized over component providers
       mergeResolvedProviders(componentDirProvider.providers, mergedProvidersMap);
-      setProvidersVisibility(componentDirProvider.providers, Visibility.Public,
-                             providerVisibilityMap);
+      setProvidersVisibility(
+          componentDirProvider.providers, Visibility.Public, providerVisibilityMap);
     }
     mergedProvidersMap.forEach((provider, _) => {
       providers.push(
           new ProviderWithVisibility(provider, providerVisibilityMap.get(provider.key.id)));
     });
 
-    return new AppProtoElement(isPresent(componentDirProvider), index, attributes, providers,
-                               protoQueryRefs, directiveVariableBindings);
+    return new AppProtoElement(
+        isPresent(componentDirProvider), index, attributes, providers, protoQueryRefs,
+        directiveVariableBindings);
   }
 
-  constructor(public firstProviderIsComponent: boolean, public index: number,
-              public attributes: {[key: string]: string}, pwvs: ProviderWithVisibility[],
-              public protoQueryRefs: ProtoQueryRef[],
-              public directiveVariableBindings: {[key: string]: number}) {
+  constructor(
+      public firstProviderIsComponent: boolean, public index: number,
+      public attributes: {[key: string]: string}, pwvs: ProviderWithVisibility[],
+      public protoQueryRefs: ProtoQueryRef[],
+      public directiveVariableBindings: {[key: string]: number}) {
     var length = pwvs.length;
     if (length > 0) {
       this.protoInjector = new ProtoInjector(pwvs);
@@ -244,9 +217,10 @@ export class InjectorWithHostBoundary {
 }
 
 export class AppElement implements DependencyProvider, ElementRef, AfterViewChecked {
-  static getViewParentInjector(parentViewType: ViewType, containerAppElement: AppElement,
-                               imperativelyCreatedProviders: ResolvedProvider[],
-                               rootInjector: Injector): InjectorWithHostBoundary {
+  static getViewParentInjector(
+      parentViewType: ViewType, containerAppElement: AppElement,
+      imperativelyCreatedProviders: ResolvedProvider[],
+      rootInjector: Injector): InjectorWithHostBoundary {
     var parentInjector;
     var hostInjectorBoundary;
     switch (parentViewType) {
@@ -256,24 +230,25 @@ export class AppElement implements DependencyProvider, ElementRef, AfterViewChec
         break;
       case ViewType.EMBEDDED:
         parentInjector = isPresent(containerAppElement.proto.protoInjector) ?
-                             containerAppElement._injector.parent :
-                             containerAppElement._injector;
+            containerAppElement._injector.parent :
+            containerAppElement._injector;
         hostInjectorBoundary = containerAppElement._injector.hostBoundary;
         break;
       case ViewType.HOST:
         if (isPresent(containerAppElement)) {
           // host view is attached to a container
           parentInjector = isPresent(containerAppElement.proto.protoInjector) ?
-                               containerAppElement._injector.parent :
-                               containerAppElement._injector;
+              containerAppElement._injector.parent :
+              containerAppElement._injector;
           if (isPresent(imperativelyCreatedProviders)) {
             var imperativeProvidersWithVisibility = imperativelyCreatedProviders.map(
                 p => new ProviderWithVisibility(p, Visibility.Public));
             // The imperative injector is similar to having an element between
             // the dynamic-loaded component and its parent => no boundary between
             // the component and imperativelyCreatedInjector.
-            parentInjector = new Injector(new ProtoInjector(imperativeProvidersWithVisibility),
-                                          parentInjector, true, null, null);
+            parentInjector = new Injector(
+                new ProtoInjector(imperativeProvidersWithVisibility), parentInjector, true, null,
+                null);
             hostInjectorBoundary = false;
           } else {
             hostInjectorBoundary = containerAppElement._injector.hostBoundary;
@@ -296,8 +271,9 @@ export class AppElement implements DependencyProvider, ElementRef, AfterViewChec
   private _strategy: _ElementDirectiveStrategy;
   public ref: ElementRef_;
 
-  constructor(public proto: AppProtoElement, public parentView: AppView, public parent: AppElement,
-              public nativeElement: any, public embeddedViewFactory: Function) {
+  constructor(
+      public proto: AppProtoElement, public parentView: AppView, public parent: AppElement,
+      public nativeElement: any, public embeddedViewFactory: Function) {
     this.ref = new ElementRef_(this);
     var parentInjector = isPresent(parent) ? parent._injector : parentView.parentInjector;
     if (isPresent(this.proto.protoInjector)) {
@@ -308,14 +284,14 @@ export class AppElement implements DependencyProvider, ElementRef, AfterViewChec
         isBoundary = parentView.hostInjectorBoundary;
       }
       this._queryStrategy = this._buildQueryStrategy();
-      this._injector = new Injector(this.proto.protoInjector, parentInjector, isBoundary, this,
-                                    () => this._debugContext());
+      this._injector = new Injector(
+          this.proto.protoInjector, parentInjector, isBoundary, this, () => this._debugContext());
 
       // we couple ourselves to the injector strategy to avoid polymorphic calls
       var injectorStrategy = <any>this._injector.internalStrategy;
       this._strategy = injectorStrategy instanceof InjectorInlineStrategy ?
-                           new ElementDirectiveInlineStrategy(injectorStrategy, this) :
-                           new ElementDirectiveDynamicStrategy(injectorStrategy, this);
+          new ElementDirectiveInlineStrategy(injectorStrategy, this) :
+          new ElementDirectiveDynamicStrategy(injectorStrategy, this);
       this._strategy.init();
     } else {
       this._queryStrategy = null;
@@ -440,8 +416,8 @@ export class AppElement implements DependencyProvider, ElementRef, AfterViewChec
   private _buildQueryStrategy(): _QueryStrategy {
     if (this.proto.protoQueryRefs.length === 0) {
       return _emptyQueryStrategy;
-    } else if (this.proto.protoQueryRefs.length <=
-               InlineQueryStrategy.NUMBER_OF_SUPPORTED_QUERIES) {
+    } else if (
+        this.proto.protoQueryRefs.length <= InlineQueryStrategy.NUMBER_OF_SUPPORTED_QUERIES) {
       return new InlineQueryStrategy(this);
     } else {
       return new DynamicQueryStrategy(this);
@@ -660,7 +636,7 @@ class ElementDirectiveInlineStrategy implements _ElementDirectiveStrategy {
 
   isComponentKey(key: Key): boolean {
     return this._ei.proto.firstProviderIsComponent && isPresent(key) &&
-           key.id === this.injectorStrategy.protoStrategy.keyId0;
+        key.id === this.injectorStrategy.protoStrategy.keyId0;
   }
 
   addDirectivesMatchingQuery(query: QueryMetadata, list: any[]): void {

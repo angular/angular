@@ -1,25 +1,6 @@
-import {
-  describe,
-  it,
-  expect,
-  beforeEach,
-  ddescribe,
-  iit,
-  xit,
-  el,
-  SpyObject,
-  AsyncTestCompleter,
-  inject,
-  browserDetection
-} from 'angular2/testing_internal';
+import {describe, it, expect, beforeEach, ddescribe, iit, xit, el, SpyObject, AsyncTestCompleter, inject, browserDetection} from 'angular2/testing_internal';
 
-import {
-  ObservableWrapper,
-  Observable,
-  Subject,
-  EventEmitter,
-  PromiseWrapper
-} from 'angular2/src/facade/async';
+import {ObservableWrapper, Observable, Subject, EventEmitter, PromiseWrapper} from 'angular2/src/facade/async';
 
 export function main() {
   describe('EventEmitter', () => {
@@ -27,7 +8,7 @@ export function main() {
 
     beforeEach(() => { emitter = new EventEmitter(); });
 
-    it("should call the next callback", inject([AsyncTestCompleter], (async) => {
+    it('should call the next callback', inject([AsyncTestCompleter], (async) => {
          ObservableWrapper.subscribe(emitter, (value) => {
            expect(value).toEqual(99);
            async.done();
@@ -36,26 +17,26 @@ export function main() {
          ObservableWrapper.callEmit(emitter, 99);
        }));
 
-    it("should call the throw callback", inject([AsyncTestCompleter], (async) => {
+    it('should call the throw callback', inject([AsyncTestCompleter], (async) => {
          ObservableWrapper.subscribe(emitter, (_) => {}, (error) => {
-           expect(error).toEqual("Boom");
+           expect(error).toEqual('Boom');
            async.done();
          });
-         ObservableWrapper.callError(emitter, "Boom");
+         ObservableWrapper.callError(emitter, 'Boom');
        }));
 
-    it("should work when no throw callback is provided", inject([AsyncTestCompleter], (async) => {
+    it('should work when no throw callback is provided', inject([AsyncTestCompleter], (async) => {
          ObservableWrapper.subscribe(emitter, (_) => {}, (_) => { async.done(); });
-         ObservableWrapper.callError(emitter, "Boom");
+         ObservableWrapper.callError(emitter, 'Boom');
        }));
 
-    it("should call the return callback", inject([AsyncTestCompleter], (async) => {
+    it('should call the return callback', inject([AsyncTestCompleter], (async) => {
          ObservableWrapper.subscribe(emitter, (_) => {}, (_) => {}, () => { async.done(); });
 
          ObservableWrapper.callComplete(emitter);
        }));
 
-    it("should subscribe to the wrapper asynchronously", () => {
+    it('should subscribe to the wrapper asynchronously', () => {
       var called = false;
       ObservableWrapper.subscribe(emitter, (value) => { called = true; });
 
@@ -66,18 +47,19 @@ export function main() {
     // Makes Edge to disconnect when running the full unit test campaign
     // TODO: remove when issue is solved: https://github.com/angular/angular/issues/4756
     if (!browserDetection.isEdge) {
-      it("delivers next and error events asynchronously", inject([AsyncTestCompleter], (async) => {
+      it('delivers next and error events asynchronously', inject([AsyncTestCompleter], (async) => {
            let log = [];
-           ObservableWrapper.subscribe(emitter,
-                                       (x) => {
-                                         log.push(x);
-                                         expect(log).toEqual([1, 3, 5, 2]);
-                                       },
-                                       (err) => {
-                                         log.push(err);
-                                         expect(log).toEqual([1, 3, 5, 2, 4]);
-                                         async.done();
-                                       });
+           ObservableWrapper.subscribe(
+               emitter,
+               (x) => {
+                 log.push(x);
+                 expect(log).toEqual([1, 3, 5, 2]);
+               },
+               (err) => {
+                 log.push(err);
+                 expect(log).toEqual([1, 3, 5, 2, 4]);
+                 async.done();
+               });
            log.push(1);
            ObservableWrapper.callEmit(emitter, 2);
            log.push(3);
@@ -85,19 +67,21 @@ export function main() {
            log.push(5);
          }));
 
-      it("delivers next and complete events asynchronously",
+      it('delivers next and complete events asynchronously',
          inject([AsyncTestCompleter], (async) => {
            let log = [];
-           ObservableWrapper.subscribe(emitter,
-                                       (x) => {
-                                         log.push(x);
-                                         expect(log).toEqual([1, 3, 5, 2]);
-                                       },
-                                       null, () => {
-                                         log.push(4);
-                                         expect(log).toEqual([1, 3, 5, 2, 4]);
-                                         async.done();
-                                       });
+           ObservableWrapper.subscribe(
+               emitter,
+               (x) => {
+                 log.push(x);
+                 expect(log).toEqual([1, 3, 5, 2]);
+               },
+               null,
+               () => {
+                 log.push(4);
+                 expect(log).toEqual([1, 3, 5, 2, 4]);
+                 async.done();
+               });
            log.push(1);
            ObservableWrapper.callEmit(emitter, 2);
            log.push(3);
@@ -129,7 +113,7 @@ export function main() {
     // should call dispose on the subscription on return
   });
 
-  describe("ObservableWrapper", () => {
+  describe('ObservableWrapper', () => {
 
     it('should correctly check isObservable for EventEmitter', () => {
       var e = new EventEmitter(false);
@@ -153,9 +137,9 @@ export function main() {
   });
 
   // See ECMAScript 6 Spec 25.4.4.1
-  describe("PromiseWrapper", () => {
-    describe("#all", () => {
-      it("should combine lists of Promises", inject([AsyncTestCompleter], (async) => {
+  describe('PromiseWrapper', () => {
+    describe('#all', () => {
+      it('should combine lists of Promises', inject([AsyncTestCompleter], (async) => {
            var one = PromiseWrapper.completer();
            var two = PromiseWrapper.completer();
 

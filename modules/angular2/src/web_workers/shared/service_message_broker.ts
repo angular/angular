@@ -1,8 +1,8 @@
 import {Injectable} from 'angular2/src/core/di';
 import {ListWrapper, Map, MapWrapper} from 'angular2/src/facade/collection';
-import {Serializer} from "angular2/src/web_workers/shared/serializer";
-import {isPresent, Type, FunctionWrapper} from "angular2/src/facade/lang";
-import {MessageBus} from "angular2/src/web_workers/shared/message_bus";
+import {Serializer} from 'angular2/src/web_workers/shared/serializer';
+import {isPresent, Type, FunctionWrapper} from 'angular2/src/facade/lang';
+import {MessageBus} from 'angular2/src/web_workers/shared/message_bus';
 import {EventEmitter, PromiseWrapper, ObservableWrapper} from 'angular2/src/facade/async';
 
 export abstract class ServiceMessageBrokerFactory {
@@ -29,8 +29,8 @@ export class ServiceMessageBrokerFactory_ extends ServiceMessageBrokerFactory {
 }
 
 export abstract class ServiceMessageBroker {
-  abstract registerMethod(methodName: string, signature: Type[], method: Function,
-                          returnType?: Type): void;
+  abstract registerMethod(
+      methodName: string, signature: Type[], method: Function, returnType?: Type): void;
 }
 
 /**
@@ -50,8 +50,9 @@ export class ServiceMessageBroker_ extends ServiceMessageBroker {
     ObservableWrapper.subscribe(source, (message) => this._handleMessage(message));
   }
 
-  registerMethod(methodName: string, signature: Type[], method: (..._: any[]) => Promise<any>| void,
-                 returnType?: Type): void {
+  registerMethod(
+      methodName: string, signature: Type[], method: (..._: any[]) => Promise<any>| void,
+      returnType?: Type): void {
     this._methods.set(methodName, (message: ReceivedMessage) => {
       var serializedArgs = message.args;
       let numArgs = signature === null ? 0 : signature.length;

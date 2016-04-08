@@ -1,11 +1,4 @@
-import {
-  isJsObject,
-  global,
-  isPresent,
-  isBlank,
-  isArray,
-  getSymbolIterator
-} from 'angular2/src/facade/lang';
+import {isJsObject, global, isPresent, isBlank, isArray, getSymbolIterator} from 'angular2/src/facade/lang';
 
 export var Map = global.Map;
 export var Set = global.Set;
@@ -288,8 +281,8 @@ export class ListWrapper {
 export function isListLikeIterable(obj: any): boolean {
   if (!isJsObject(obj)) return false;
   return isArray(obj) ||
-         (!(obj instanceof Map) &&      // JS Map are iterables but return entries as [k, v]
-          getSymbolIterator() in obj);  // JS Iterable have a Symbol.iterator prop
+      (!(obj instanceof Map) &&      // JS Map are iterables but return entries as [k, v]
+       getSymbolIterator() in obj);  // JS Iterable have a Symbol.iterator prop
 }
 
 export function areIterablesEqual(a: any, b: any, comparator: Function): boolean {

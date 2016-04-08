@@ -177,8 +177,8 @@ export class MockBackend implements ConnectionBackend {
   constructor() {
     this.connectionsArray = [];
     this.connections = new Subject();
-    this.connections.subscribe((connection: MockConnection) =>
-                                   this.connectionsArray.push(connection));
+    this.connections.subscribe(
+        (connection: MockConnection) => this.connectionsArray.push(connection));
     this.pendingConnections = new Subject();
   }
 

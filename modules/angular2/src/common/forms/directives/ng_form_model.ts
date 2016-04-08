@@ -1,16 +1,7 @@
 import {CONST_EXPR} from 'angular2/src/facade/lang';
 import {ListWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
 import {ObservableWrapper, EventEmitter} from 'angular2/src/facade/async';
-import {
-  SimpleChange,
-  OnChanges,
-  Directive,
-  forwardRef,
-  Provider,
-  Inject,
-  Optional,
-  Self
-} from 'angular2/core';
+import {SimpleChange, OnChanges, Directive, forwardRef, Provider, Inject, Optional, Self} from 'angular2/core';
 import {NgControl} from './ng_control';
 import {NgControlGroup} from './ng_control_group';
 import {ControlContainer} from './control_container';
@@ -108,13 +99,14 @@ export class NgFormModel extends ControlContainer implements Form,
   directives: NgControl[] = [];
   ngSubmit = new EventEmitter();
 
-  constructor(@Optional() @Self() @Inject(NG_VALIDATORS) private _validators: any[],
-              @Optional() @Self() @Inject(NG_ASYNC_VALIDATORS) private _asyncValidators: any[]) {
+  constructor(
+      @Optional() @Self() @Inject(NG_VALIDATORS) private _validators: any[],
+      @Optional() @Self() @Inject(NG_ASYNC_VALIDATORS) private _asyncValidators: any[]) {
     super();
   }
 
   ngOnChanges(changes: {[key: string]: SimpleChange}): void {
-    if (StringMapWrapper.contains(changes, "form")) {
+    if (StringMapWrapper.contains(changes, 'form')) {
       var sync = composeValidators(this._validators);
       this.form.validator = Validators.compose([this.form.validator, sync]);
 

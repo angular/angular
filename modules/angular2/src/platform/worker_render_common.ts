@@ -1,20 +1,7 @@
 import {CONST_EXPR, IS_DART} from 'angular2/src/facade/lang';
 import {MessageBus} from 'angular2/src/web_workers/shared/message_bus';
 import {NgZone} from 'angular2/src/core/zone/ng_zone';
-import {
-  PLATFORM_DIRECTIVES,
-  PLATFORM_PIPES,
-  ComponentRef,
-  platform,
-  ExceptionHandler,
-  Reflector,
-  reflector,
-  APPLICATION_COMMON_PROVIDERS,
-  PLATFORM_COMMON_PROVIDERS,
-  RootRenderer,
-  PLATFORM_INITIALIZER,
-  APP_INITIALIZER
-} from 'angular2/core';
+import {PLATFORM_DIRECTIVES, PLATFORM_PIPES, ComponentRef, platform, ExceptionHandler, Reflector, reflector, APPLICATION_COMMON_PROVIDERS, PLATFORM_COMMON_PROVIDERS, RootRenderer, PLATFORM_INITIALIZER, APP_INITIALIZER} from 'angular2/core';
 import {EVENT_MANAGER_PLUGINS, EventManager} from 'angular2/platform/common_dom';
 import {provide, Provider, Injector, OpaqueToken} from 'angular2/src/core/di';
 // TODO change these imports once dom_adapter is moved out of core
@@ -25,7 +12,7 @@ import {HammerGesturesPlugin} from 'angular2/src/platform/dom/events/hammer_gest
 import {DOCUMENT} from 'angular2/src/platform/dom/dom_tokens';
 import {DomRootRenderer, DomRootRenderer_} from 'angular2/src/platform/dom/dom_renderer';
 import {DomSharedStylesHost} from 'angular2/src/platform/dom/shared_styles_host';
-import {SharedStylesHost} from "angular2/src/platform/dom/shared_styles_host";
+import {SharedStylesHost} from 'angular2/src/platform/dom/shared_styles_host';
 import {BrowserDetails} from 'angular2/src/animate/browser_details';
 import {AnimationBuilder} from 'angular2/src/animate/animation_builder';
 import {XHR} from 'angular2/compiler';
@@ -37,20 +24,14 @@ import {wtfInit} from 'angular2/src/core/profile/wtf_init';
 import {MessageBasedRenderer} from 'angular2/src/web_workers/ui/renderer';
 import {MessageBasedXHRImpl} from 'angular2/src/web_workers/ui/xhr_impl';
 import {BrowserPlatformLocation} from 'angular2/src/router/location/browser_platform_location';
-import {
-  ServiceMessageBrokerFactory,
-  ServiceMessageBrokerFactory_
-} from 'angular2/src/web_workers/shared/service_message_broker';
-import {
-  ClientMessageBrokerFactory,
-  ClientMessageBrokerFactory_
-} from 'angular2/src/web_workers/shared/client_message_broker';
+import {ServiceMessageBrokerFactory, ServiceMessageBrokerFactory_} from 'angular2/src/web_workers/shared/service_message_broker';
+import {ClientMessageBrokerFactory, ClientMessageBrokerFactory_} from 'angular2/src/web_workers/shared/client_message_broker';
 import {Serializer} from 'angular2/src/web_workers/shared/serializer';
 import {ON_WEB_WORKER} from 'angular2/src/web_workers/shared/api';
 import {RenderStore} from 'angular2/src/web_workers/shared/render_store';
 import {HAMMER_GESTURE_CONFIG, HammerGestureConfig} from './dom/events/hammer_gestures';
 
-export const WORKER_SCRIPT: OpaqueToken = CONST_EXPR(new OpaqueToken("WebWorkerScript"));
+export const WORKER_SCRIPT: OpaqueToken = CONST_EXPR(new OpaqueToken('WebWorkerScript'));
 
 // Message based Worker classes that listen on the MessageBus
 export const WORKER_RENDER_MESSAGING_PROVIDERS: Array<any /*Type | Provider | any[]*/> =
@@ -69,8 +50,7 @@ export const WORKER_RENDER_ROUTER: Array<any /*Type | Provider | any[]*/> =
     CONST_EXPR([BrowserPlatformLocation]);
 
 export const WORKER_RENDER_APPLICATION_COMMON: Array<any /*Type | Provider | any[]*/> = CONST_EXPR([
-  APPLICATION_COMMON_PROVIDERS,
-  WORKER_RENDER_MESSAGING_PROVIDERS,
+  APPLICATION_COMMON_PROVIDERS, WORKER_RENDER_MESSAGING_PROVIDERS,
   new Provider(ExceptionHandler, {useFactory: _exceptionHandler, deps: []}),
   new Provider(DOCUMENT, {useFactory: _document, deps: []}),
   // TODO(jteplitz602): Investigate if we definitely need EVENT_MANAGER on the render thread
@@ -82,18 +62,11 @@ export const WORKER_RENDER_APPLICATION_COMMON: Array<any /*Type | Provider | any
   new Provider(DomRootRenderer, {useClass: DomRootRenderer_}),
   new Provider(RootRenderer, {useExisting: DomRootRenderer}),
   new Provider(SharedStylesHost, {useExisting: DomSharedStylesHost}),
-  new Provider(XHR, {useClass: XHRImpl}),
-  MessageBasedXHRImpl,
+  new Provider(XHR, {useClass: XHRImpl}), MessageBasedXHRImpl,
   new Provider(ServiceMessageBrokerFactory, {useClass: ServiceMessageBrokerFactory_}),
-  new Provider(ClientMessageBrokerFactory, {useClass: ClientMessageBrokerFactory_}),
-  Serializer,
-  new Provider(ON_WEB_WORKER, {useValue: false}),
-  RenderStore,
-  DomSharedStylesHost,
-  Testability,
-  BrowserDetails,
-  AnimationBuilder,
-  EventManager
+  new Provider(ClientMessageBrokerFactory, {useClass: ClientMessageBrokerFactory_}), Serializer,
+  new Provider(ON_WEB_WORKER, {useValue: false}), RenderStore, DomSharedStylesHost, Testability,
+  BrowserDetails, AnimationBuilder, EventManager
 ]);
 
 export function initializeGenericWorkerRenderer(injector: Injector) {

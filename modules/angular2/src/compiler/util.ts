@@ -1,11 +1,4 @@
-import {
-  IS_DART,
-  StringWrapper,
-  isBlank,
-  isPresent,
-  isString,
-  isArray
-} from 'angular2/src/facade/lang';
+import {IS_DART, StringWrapper, isBlank, isPresent, isString, isArray} from 'angular2/src/facade/lang';
 
 var CAMEL_CASE_REGEXP = /([A-Z])/g;
 var DASH_CASE_REGEXP = /-([a-z])/g;
@@ -17,13 +10,13 @@ export var MODULE_SUFFIX = IS_DART ? '.dart' : '.js';
 export var CONST_VAR = IS_DART ? 'const' : 'var';
 
 export function camelCaseToDashCase(input: string): string {
-  return StringWrapper.replaceAllMapped(input, CAMEL_CASE_REGEXP,
-                                        (m) => { return '-' + m[1].toLowerCase(); });
+  return StringWrapper.replaceAllMapped(
+      input, CAMEL_CASE_REGEXP, (m) => { return '-' + m[1].toLowerCase(); });
 }
 
 export function dashCaseToCamelCase(input: string): string {
-  return StringWrapper.replaceAllMapped(input, DASH_CASE_REGEXP,
-                                        (m) => { return m[1].toUpperCase(); });
+  return StringWrapper.replaceAllMapped(
+      input, DASH_CASE_REGEXP, (m) => { return m[1].toUpperCase(); });
 }
 
 export function escapeSingleQuoteString(input: string): string {

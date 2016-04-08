@@ -5,18 +5,19 @@ import {HtmlParser} from 'angular2/src/compiler/html_parser';
 import {ParseSourceSpan, ParseError} from 'angular2/src/compiler/parse_util';
 
 let _PLACEHOLDER_REGEXP = RegExpWrapper.create(`\\<ph(\\s)+name=("(\\w)+")\\/\\>`);
-const _ID_ATTR = "id";
-const _MSG_ELEMENT = "msg";
-const _BUNDLE_ELEMENT = "message-bundle";
+const _ID_ATTR = 'id';
+const _MSG_ELEMENT = 'msg';
+const _BUNDLE_ELEMENT = 'message-bundle';
 
 export function serializeXmb(messages: Message[]): string {
-  let ms = messages.map((m) => _serializeMessage(m)).join("");
+  let ms = messages.map((m) => _serializeMessage(m)).join('');
   return `<message-bundle>${ms}</message-bundle>`;
 }
 
 export class XmbDeserializationResult {
-  constructor(public content: string, public messages: {[key: string]: HtmlAst[]},
-              public errors: ParseError[]) {}
+  constructor(
+      public content: string, public messages: {[key: string]: HtmlAst[]},
+      public errors: ParseError[]) {}
 }
 
 export class XmbDeserializationError extends ParseError {
@@ -44,17 +45,17 @@ export function deserializeXmb(content: string, url: string): XmbDeserialization
   _createMessages(bundleEl.children, messages, errors);
 
   return (errors.length == 0) ?
-             new XmbDeserializationResult(normalizedContent, messages, []) :
-             new XmbDeserializationResult(null, <{[key: string]: HtmlAst[]}>{}, errors);
+      new XmbDeserializationResult(normalizedContent, messages, []) :
+      new XmbDeserializationResult(null, <{[key: string]: HtmlAst[]}>{}, errors);
 }
 
 function _checkRootElement(nodes: HtmlAst[]): boolean {
   return nodes.length < 1 || !(nodes[0] instanceof HtmlElementAst) ||
-         (<HtmlElementAst>nodes[0]).name != _BUNDLE_ELEMENT;
+      (<HtmlElementAst>nodes[0]).name != _BUNDLE_ELEMENT;
 }
 
-function _createMessages(nodes: HtmlAst[], messages: {[key: string]: HtmlAst[]},
-                         errors: ParseError[]): void {
+function _createMessages(
+    nodes: HtmlAst[], messages: {[key: string]: HtmlAst[]}, errors: ParseError[]): void {
   nodes.forEach((item) => {
     if (item instanceof HtmlElementAst) {
       let msg = <HtmlElementAst>item;
@@ -83,7 +84,7 @@ function _id(el: HtmlElementAst): string {
 }
 
 function _serializeMessage(m: Message): string {
-  let desc = isPresent(m.description) ? ` desc='${m.description}'` : "";
+  let desc = isPresent(m.description) ? ` desc='${m.description}'` : '';
   return `<msg id='${id(m)}'${desc}>${m.content}</msg>`;
 }
 

@@ -110,8 +110,9 @@ export var BLANK_ROUTE_DATA = new RouteData();
  * ```
  */
 export abstract class Instruction {
-  constructor(public component: ComponentInstruction, public child: Instruction,
-              public auxInstruction: {[key: string]: Instruction}) {}
+  constructor(
+      public component: ComponentInstruction, public child: Instruction,
+      public auxInstruction: {[key: string]: Instruction}) {}
 
   get urlPath(): string { return isPresent(this.component) ? this.component.urlPath : ''; }
 
@@ -138,7 +139,7 @@ export abstract class Instruction {
   /** @internal */
   _toNonRootUrl(): string {
     return this._stringifyPathMatrixAuxPrefixed() +
-           (isPresent(this.child) ? this.child._toNonRootUrl() : '');
+        (isPresent(this.child) ? this.child._toNonRootUrl() : '');
   }
 
   toUrlQuery(): string { return this.urlParams.length > 0 ? ('?' + this.urlParams.join('&')) : ''; }
@@ -156,20 +157,20 @@ export abstract class Instruction {
    */
   toUrlPath(): string {
     return this.urlPath + this._stringifyAux() +
-           (isPresent(this.child) ? this.child._toNonRootUrl() : '');
+        (isPresent(this.child) ? this.child._toNonRootUrl() : '');
   }
 
   // default instructions override these
   toLinkUrl(): string {
     return this.urlPath + this._stringifyAux() +
-           (isPresent(this.child) ? this.child._toLinkUrl() : '') + this.toUrlQuery();
+        (isPresent(this.child) ? this.child._toLinkUrl() : '') + this.toUrlQuery();
   }
 
   // this is the non-root version (called recursively)
   /** @internal */
   _toLinkUrl(): string {
     return this._stringifyPathMatrixAuxPrefixed() +
-           (isPresent(this.child) ? this.child._toLinkUrl() : '');
+        (isPresent(this.child) ? this.child._toLinkUrl() : '');
   }
 
   /** @internal */
@@ -212,8 +213,9 @@ export abstract class Instruction {
  * a resolved instruction has an outlet instruction for itself, but maybe not for...
  */
 export class ResolvedInstruction extends Instruction {
-  constructor(component: ComponentInstruction, child: Instruction,
-              auxInstruction: {[key: string]: Instruction}) {
+  constructor(
+      component: ComponentInstruction, child: Instruction,
+      auxInstruction: {[key: string]: Instruction}) {
     super(component, child, auxInstruction);
   }
 
@@ -242,8 +244,9 @@ export class DefaultInstruction extends ResolvedInstruction {
  * Represents a component that may need to do some redirection or lazy loading at a later time.
  */
 export class UnresolvedInstruction extends Instruction {
-  constructor(private _resolver: () => Promise<Instruction>, private _urlPath: string = '',
-              private _urlParams: string[] = CONST_EXPR([])) {
+  constructor(
+      private _resolver: () => Promise<Instruction>, private _urlPath: string = '',
+      private _urlParams: string[] = CONST_EXPR([])) {
     super(null, null, {});
   }
 
@@ -280,8 +283,9 @@ export class UnresolvedInstruction extends Instruction {
 
 
 export class RedirectInstruction extends ResolvedInstruction {
-  constructor(component: ComponentInstruction, child: Instruction,
-              auxInstruction: {[key: string]: Instruction}, private _specificity: string) {
+  constructor(
+      component: ComponentInstruction, child: Instruction,
+      auxInstruction: {[key: string]: Instruction}, private _specificity: string) {
     super(component, child, auxInstruction);
   }
 
@@ -308,9 +312,10 @@ export class ComponentInstruction {
   /**
    * @internal
    */
-  constructor(public urlPath: string, public urlParams: string[], data: RouteData,
-              public componentType, public terminal: boolean, public specificity: string,
-              public params: {[key: string]: string} = null, public routeName: string) {
+  constructor(
+      public urlPath: string, public urlParams: string[], data: RouteData, public componentType,
+      public terminal: boolean, public specificity: string,
+      public params: {[key: string]: string} = null, public routeName: string) {
     this.routeData = isPresent(data) ? data : BLANK_ROUTE_DATA;
   }
 }

@@ -26,24 +26,23 @@ export class MultiCopy extends Writer {
   constructor(private inputTree, private options: MultiCopyOptions) { super(); }
 
   write(readTree: (tree) => Promise<string>, destDir: string): Promise<any> {
-    return readTree(this.inputTree)
-        .then((inputPath: string) => {
-          var fileName = path.basename(this.options.srcPath);
-          var data = fs.readFileSync(path.join(inputPath, this.options.srcPath), 'utf-8');
+    return readTree(this.inputTree).then((inputPath: string) => {
+      var fileName = path.basename(this.options.srcPath);
+      var data = fs.readFileSync(path.join(inputPath, this.options.srcPath), 'utf-8');
 
-          this.options.targetPatterns.forEach(pattern => {
-            var paths: string[] = glob.sync(pattern);
-            paths = paths.filter(p => fs.statSync(p).isDirectory());
-            if (this.options.exclude) {
-              paths = paths.filter(p => !this.options.exclude.some((excl) => minimatch(p, excl)));
-            }
-            paths.forEach(p => {
-              var folder = path.join(destDir, p);
-              fsx.mkdirsSync(folder);
-              var outputPath = path.join(folder, fileName);
-              fs.writeFileSync(outputPath, data);
-            });
-          });
+      this.options.targetPatterns.forEach(pattern => {
+        var paths: string[] = glob.sync(pattern);
+        paths = paths.filter(p => fs.statSync(p).isDirectory());
+        if (this.options.exclude) {
+          paths = paths.filter(p => !this.options.exclude.some((excl) => minimatch(p, excl)));
+        }
+        paths.forEach(p => {
+          var folder = path.join(destDir, p);
+          fsx.mkdirsSync(folder);
+          var outputPath = path.join(folder, fileName);
+          fs.writeFileSync(outputPath, data);
         });
+      });
+    });
   }
 }

@@ -35,7 +35,7 @@ export class ResponseOptions {
   /**
    * String or Object representing the body of the {@link Response}.
    */
-  body: string | Object;
+  body: string|Object;
   /**
    * Http {@link http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html status code}
    * associated with the response.

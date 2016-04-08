@@ -12,8 +12,9 @@ export class SampleDescription {
   static get BINDINGS(): Provider[] { return _PROVIDERS; }
   description: {[key: string]: any};
 
-  constructor(public id: string, descriptions: Array<{[key: string]: any}>,
-              public metrics: {[key: string]: any}) {
+  constructor(
+      public id: string, descriptions: Array<{[key: string]: any}>,
+      public metrics: {[key: string]: any}) {
     this.description = {};
     descriptions.forEach(description => {
       StringMapWrapper.forEach(description, (value, prop) => this.description[prop] = value);
@@ -23,24 +24,17 @@ export class SampleDescription {
   toJson() { return {'id': this.id, 'description': this.description, 'metrics': this.metrics}; }
 }
 
-var _PROVIDERS = [
-  bind(SampleDescription)
-      .toFactory((metric, id, forceGc, userAgent, validator, defaultDesc, userDesc) =>
-                     new SampleDescription(id,
-                                           [
-                                             {'forceGc': forceGc, 'userAgent': userAgent},
-                                             validator.describe(),
-                                             defaultDesc,
-                                             userDesc
-                                           ],
-                                           metric.describe()),
-                 [
-                   Metric,
-                   Options.SAMPLE_ID,
-                   Options.FORCE_GC,
-                   Options.USER_AGENT,
-                   Validator,
-                   Options.DEFAULT_DESCRIPTION,
-                   Options.SAMPLE_DESCRIPTION
-                 ])
-];
+var _PROVIDERS = [bind(SampleDescription)
+                      .toFactory(
+                          (metric, id, forceGc, userAgent, validator, defaultDesc, userDesc) =>
+                              new SampleDescription(
+                                  id,
+                                  [
+                                    {'forceGc': forceGc, 'userAgent': userAgent},
+                                    validator.describe(), defaultDesc, userDesc
+                                  ],
+                                  metric.describe()),
+                          [
+                            Metric, Options.SAMPLE_ID, Options.FORCE_GC, Options.USER_AGENT,
+                            Validator, Options.DEFAULT_DESCRIPTION, Options.SAMPLE_DESCRIPTION
+                          ])];

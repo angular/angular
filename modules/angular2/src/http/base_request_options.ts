@@ -35,7 +35,7 @@ export class RequestOptions {
    * Http method with which to execute a {@link Request}.
    * Acceptable methods are defined in the {@link RequestMethod} enum.
    */
-  method: RequestMethod | string;
+  method: RequestMethod|string;
   /**
    * {@link Headers} to be attached to a {@link Request}.
    */
@@ -58,9 +58,9 @@ export class RequestOptions {
     this.headers = isPresent(headers) ? headers : null;
     this.body = isPresent(body) ? body : null;
     this.url = isPresent(url) ? url : null;
-    this.search = isPresent(search) ? (isString(search) ? new URLSearchParams(<string>(search)) :
-                                                          <URLSearchParams>(search)) :
-                                      null;
+    this.search = isPresent(search) ?
+        (isString(search) ? new URLSearchParams(<string>(search)) : <URLSearchParams>(search)) :
+        null;
   }
 
   /**
@@ -95,9 +95,9 @@ export class RequestOptions {
       body: isPresent(options) && isPresent(options.body) ? options.body : this.body,
       url: isPresent(options) && isPresent(options.url) ? options.url : this.url,
       search: isPresent(options) && isPresent(options.search) ?
-                  (isString(options.search) ? new URLSearchParams(<string>(options.search)) :
-                                              (<URLSearchParams>(options.search)).clone()) :
-                  this.search
+          (isString(options.search) ? new URLSearchParams(<string>(options.search)) :
+                                      (<URLSearchParams>(options.search)).clone()) :
+          this.search
     });
   }
 }

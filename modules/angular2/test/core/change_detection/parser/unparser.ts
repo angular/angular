@@ -1,27 +1,4 @@
-import {
-  AST,
-  AstVisitor,
-  PropertyRead,
-  PropertyWrite,
-  Binary,
-  Chain,
-  Conditional,
-  EmptyExpr,
-  BindingPipe,
-  FunctionCall,
-  ImplicitReceiver,
-  Interpolation,
-  KeyedRead,
-  KeyedWrite,
-  LiteralArray,
-  LiteralMap,
-  LiteralPrimitive,
-  MethodCall,
-  PrefixNot,
-  Quote,
-  SafePropertyRead,
-  SafeMethodCall
-} from 'angular2/src/core/change_detection/parser/ast';
+import {AST, AstVisitor, PropertyRead, PropertyWrite, Binary, Chain, Conditional, EmptyExpr, BindingPipe, FunctionCall, ImplicitReceiver, Interpolation, KeyedRead, KeyedWrite, LiteralArray, LiteralMap, LiteralPrimitive, MethodCall, PrefixNot, Quote, SafePropertyRead, SafeMethodCall} from 'angular2/src/core/change_detection/parser/ast';
 
 
 import {StringWrapper, isPresent, isString} from 'angular2/src/facade/lang';

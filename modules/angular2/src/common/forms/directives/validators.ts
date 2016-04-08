@@ -3,7 +3,7 @@ import {CONST_EXPR} from 'angular2/src/facade/lang';
 import {Validators, NG_VALIDATORS} from '../validators';
 import {AbstractControl} from '../model';
 import * as modelModule from '../model';
-import {NumberWrapper} from "angular2/src/facade/lang";
+import {NumberWrapper} from 'angular2/src/facade/lang';
 
 
 
@@ -74,7 +74,7 @@ const MIN_LENGTH_VALIDATOR = CONST_EXPR(
 export class MinLengthValidator implements Validator {
   private _validator: ValidatorFn;
 
-  constructor(@Attribute("minlength") minLength: string) {
+  constructor(@Attribute('minlength') minLength: string) {
     this._validator = Validators.minLength(NumberWrapper.parseInt(minLength, 10));
   }
 
@@ -102,7 +102,7 @@ const MAX_LENGTH_VALIDATOR = CONST_EXPR(
 export class MaxLengthValidator implements Validator {
   private _validator: ValidatorFn;
 
-  constructor(@Attribute("maxlength") maxLength: string) {
+  constructor(@Attribute('maxlength') maxLength: string) {
     this._validator = Validators.maxLength(NumberWrapper.parseInt(maxLength, 10));
   }
 
@@ -131,7 +131,7 @@ const PATTERN_VALIDATOR = CONST_EXPR(
 export class PatternValidator implements Validator {
   private _validator: ValidatorFn;
 
-  constructor(@Attribute("pattern") pattern: string) {
+  constructor(@Attribute('pattern') pattern: string) {
     this._validator = Validators.pattern(pattern);
   }
 

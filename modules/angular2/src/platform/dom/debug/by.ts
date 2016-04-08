@@ -26,8 +26,8 @@ export class By {
   static css(selector: string): Predicate<DebugElement> {
     return (debugElement) => {
       return isPresent(debugElement.nativeElement) ?
-                 DOM.elementMatches(debugElement.nativeElement, selector) :
-                 false;
+          DOM.elementMatches(debugElement.nativeElement, selector) :
+          false;
     };
   }
 

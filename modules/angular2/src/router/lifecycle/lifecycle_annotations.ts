@@ -7,13 +7,7 @@ import {makeDecorator} from 'angular2/src/core/util/decorators';
 import {CanActivate as CanActivateAnnotation} from './lifecycle_annotations_impl';
 import {ComponentInstruction} from '../instruction';
 
-export {
-  routerCanReuse,
-  routerCanDeactivate,
-  routerOnActivate,
-  routerOnReuse,
-  routerOnDeactivate
-} from './lifecycle_annotations_impl';
+export {routerCanReuse, routerCanDeactivate, routerOnActivate, routerOnReuse, routerOnDeactivate} from './lifecycle_annotations_impl';
 
 /**
  * Defines route lifecycle hook `CanActivate`, which is called by the router to determine
@@ -41,6 +35,6 @@ export {
  *
  * {@example router/ts/can_activate/can_activate_example.ts region='canActivate' }
  */
-export var CanActivate: (hook: (next: ComponentInstruction, prev: ComponentInstruction) =>
-                             Promise<boolean>| boolean) => ClassDecorator =
-    makeDecorator(CanActivateAnnotation);
+export var CanActivate:
+    (hook: (next: ComponentInstruction, prev: ComponentInstruction) => Promise<boolean>| boolean) =>
+        ClassDecorator = makeDecorator(CanActivateAnnotation);

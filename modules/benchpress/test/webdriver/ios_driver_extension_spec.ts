@@ -1,27 +1,9 @@
-import {
-  afterEach,
-  AsyncTestCompleter,
-  beforeEach,
-  ddescribe,
-  describe,
-  expect,
-  iit,
-  inject,
-  it,
-  xit,
-} from 'angular2/testing_internal';
+import {afterEach, AsyncTestCompleter, beforeEach, ddescribe, describe, expect, iit, inject, it, xit,} from 'angular2/testing_internal';
 
 import {PromiseWrapper} from 'angular2/src/facade/async';
 import {Json, isBlank, isPresent} from 'angular2/src/facade/lang';
 
-import {
-  WebDriverExtension,
-  IOsDriverExtension,
-  WebDriverAdapter,
-  Injector,
-  bind,
-  provide
-} from 'benchpress/common';
+import {WebDriverExtension, IOsDriverExtension, WebDriverAdapter, Injector, bind, provide} from 'benchpress/common';
 
 import {TraceEventFactory} from '../trace_event_factory';
 
@@ -38,10 +20,11 @@ export function main() {
       }
       log = [];
       extension =
-          Injector.resolveAndCreate([
-                    IOsDriverExtension.BINDINGS,
-                    provide(WebDriverAdapter, {useValue: new MockDriverAdapter(log, perfRecords)})
-                  ])
+          Injector
+              .resolveAndCreate([
+                IOsDriverExtension.BINDINGS,
+                provide(WebDriverAdapter, {useValue: new MockDriverAdapter(log, perfRecords)})
+              ])
               .get(IOsDriverExtension);
       return extension;
     }
@@ -51,32 +34,26 @@ export function main() {
     });
 
     it('should mark the timeline via console.time()', inject([AsyncTestCompleter], (async) => {
-         createExtension()
-             .timeBegin('someName')
-             .then((_) => {
-               expect(log).toEqual([['executeScript', `console.time('someName');`]]);
-               async.done();
-             });
+         createExtension().timeBegin('someName').then((_) => {
+           expect(log).toEqual([['executeScript', `console.time('someName');`]]);
+           async.done();
+         });
        }));
 
     it('should mark the timeline via console.timeEnd()', inject([AsyncTestCompleter], (async) => {
-         createExtension()
-             .timeEnd('someName', null)
-             .then((_) => {
-               expect(log).toEqual([['executeScript', `console.timeEnd('someName');`]]);
-               async.done();
-             });
+         createExtension().timeEnd('someName', null).then((_) => {
+           expect(log).toEqual([['executeScript', `console.timeEnd('someName');`]]);
+           async.done();
+         });
        }));
 
     it('should mark the timeline via console.time() and console.timeEnd()',
        inject([AsyncTestCompleter], (async) => {
-         createExtension()
-             .timeEnd('name1', 'name2')
-             .then((_) => {
-               expect(log)
-                   .toEqual([['executeScript', `console.timeEnd('name1');console.time('name2');`]]);
-               async.done();
-             });
+         createExtension().timeEnd('name1', 'name2').then((_) => {
+           expect(log).toEqual(
+               [['executeScript', `console.timeEnd('name1');console.time('name2');`]]);
+           async.done();
+         });
        }));
 
     describe('readPerfLog', () => {
@@ -93,40 +70,31 @@ export function main() {
          }));
 
       it('should report FunctionCall records as "script"', inject([AsyncTestCompleter], (async) => {
-           createExtension([durationRecord('FunctionCall', 1, 5)])
-               .readPerfLog()
-               .then((events) => {
-                 expect(events)
-                     .toEqual([normEvents.start('script', 1), normEvents.end('script', 5)]);
-                 async.done();
-               });
+           createExtension([durationRecord('FunctionCall', 1, 5)]).readPerfLog().then((events) => {
+             expect(events).toEqual([normEvents.start('script', 1), normEvents.end('script', 5)]);
+             async.done();
+           });
          }));
 
       it('should ignore FunctionCalls from webdriver', inject([AsyncTestCompleter], (async) => {
-           createExtension([internalScriptRecord(1, 5)])
-               .readPerfLog()
-               .then((events) => {
-                 expect(events).toEqual([]);
-                 async.done();
-               });
+           createExtension([internalScriptRecord(1, 5)]).readPerfLog().then((events) => {
+             expect(events).toEqual([]);
+             async.done();
+           });
          }));
 
       it('should report begin time', inject([AsyncTestCompleter], (async) => {
-           createExtension([timeBeginRecord('someName', 12)])
-               .readPerfLog()
-               .then((events) => {
-                 expect(events).toEqual([normEvents.markStart('someName', 12)]);
-                 async.done();
-               });
+           createExtension([timeBeginRecord('someName', 12)]).readPerfLog().then((events) => {
+             expect(events).toEqual([normEvents.markStart('someName', 12)]);
+             async.done();
+           });
          }));
 
       it('should report end timestamps', inject([AsyncTestCompleter], (async) => {
-           createExtension([timeEndRecord('someName', 12)])
-               .readPerfLog()
-               .then((events) => {
-                 expect(events).toEqual([normEvents.markEnd('someName', 12)]);
-                 async.done();
-               });
+           createExtension([timeEndRecord('someName', 12)]).readPerfLog().then((events) => {
+             expect(events).toEqual([normEvents.markEnd('someName', 12)]);
+             async.done();
+           });
          }));
 
       ['RecalculateStyles', 'Layout', 'UpdateLayerTree', 'Paint', 'Rasterize', 'CompositeLayers']
@@ -150,8 +118,7 @@ export function main() {
                .readPerfLog()
                .then((events) => {
                  expect(events).toEqual([
-                   normEvents.start('script', 1),
-                   normEvents.markStart('someName', 2),
+                   normEvents.start('script', 1), normEvents.markStart('someName', 2),
                    normEvents.end('script', 5)
                  ]);
                  async.done();

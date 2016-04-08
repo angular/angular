@@ -36,9 +36,8 @@ exports.getFirefoxProfileWithExtension = function() {
   var savedCwd = process.cwd();
   process.chdir(absPackageJsonDir);
 
-  return jpm(packageJson)
-      .then(xpiPath => {
-        process.chdir(savedCwd);
-        return exports.getFirefoxProfile(xpiPath);
-      });
+  return jpm(packageJson).then(xpiPath => {
+    process.chdir(savedCwd);
+    return exports.getFirefoxProfile(xpiPath);
+  });
 };

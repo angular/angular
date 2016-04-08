@@ -1,13 +1,4 @@
-import {
-  isNumber,
-  isPresent,
-  isBlank,
-  StringWrapper,
-  NumberWrapper,
-  RegExpWrapper,
-  CONST,
-  FunctionWrapper
-} from 'angular2/src/facade/lang';
+import {isNumber, isPresent, isBlank, StringWrapper, NumberWrapper, RegExpWrapper, CONST, FunctionWrapper} from 'angular2/src/facade/lang';
 import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
 import {NumberFormatter, NumberFormatStyle} from 'angular2/src/facade/intl';
 import {Injectable, PipeTransform, WrappedValue, Pipe} from 'angular2/core';
@@ -25,8 +16,9 @@ var _re = RegExpWrapper.create('^(\\d+)?\\.((\\d+)(\\-(\\d+))?)?$');
 @Injectable()
 export class NumberPipe {
   /** @internal */
-  static _format(value: number, style: NumberFormatStyle, digits: string, currency: string = null,
-                 currencyAsSymbol: boolean = false): string {
+  static _format(
+      value: number, style: NumberFormatStyle, digits: string, currency: string = null,
+      currencyAsSymbol: boolean = false): string {
     if (isBlank(value)) return null;
     if (!isNumber(value)) {
       throw new InvalidPipeArgumentException(NumberPipe, value);
@@ -147,7 +139,7 @@ export class CurrencyPipe extends NumberPipe implements PipeTransform {
     var currencyCode: string = isPresent(args) && args.length > 0 ? args[0] : 'USD';
     var symbolDisplay: boolean = isPresent(args) && args.length > 1 ? args[1] : false;
     var digits: string = isPresent(args) && args.length > 2 ? args[2] : null;
-    return NumberPipe._format(value, NumberFormatStyle.Currency, digits, currencyCode,
-                              symbolDisplay);
+    return NumberPipe._format(
+        value, NumberFormatStyle.Currency, digits, currencyCode, symbolDisplay);
   }
 }

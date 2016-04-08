@@ -58,25 +58,25 @@ export class ViewResolver {
             `Component '${stringify(component)}' must have either 'template' or 'templateUrl' set.`);
 
       } else if (isPresent(compMeta.template) && isPresent(viewMeta)) {
-        this._throwMixingViewAndComponent("template", component);
+        this._throwMixingViewAndComponent('template', component);
 
       } else if (isPresent(compMeta.templateUrl) && isPresent(viewMeta)) {
-        this._throwMixingViewAndComponent("templateUrl", component);
+        this._throwMixingViewAndComponent('templateUrl', component);
 
       } else if (isPresent(compMeta.directives) && isPresent(viewMeta)) {
-        this._throwMixingViewAndComponent("directives", component);
+        this._throwMixingViewAndComponent('directives', component);
 
       } else if (isPresent(compMeta.pipes) && isPresent(viewMeta)) {
-        this._throwMixingViewAndComponent("pipes", component);
+        this._throwMixingViewAndComponent('pipes', component);
 
       } else if (isPresent(compMeta.encapsulation) && isPresent(viewMeta)) {
-        this._throwMixingViewAndComponent("encapsulation", component);
+        this._throwMixingViewAndComponent('encapsulation', component);
 
       } else if (isPresent(compMeta.styles) && isPresent(viewMeta)) {
-        this._throwMixingViewAndComponent("styles", component);
+        this._throwMixingViewAndComponent('styles', component);
 
       } else if (isPresent(compMeta.styleUrls) && isPresent(viewMeta)) {
-        this._throwMixingViewAndComponent("styleUrls", component);
+        this._throwMixingViewAndComponent('styleUrls', component);
 
       } else if (isPresent(viewMeta)) {
         return viewMeta;

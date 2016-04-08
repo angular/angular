@@ -1,20 +1,4 @@
-import {
-  it,
-  iit,
-  xit,
-  describe,
-  ddescribe,
-  xdescribe,
-  expect,
-  fakeAsync,
-  tick,
-  beforeEach,
-  inject,
-  injectAsync,
-  withProviders,
-  beforeEachProviders,
-  TestComponentBuilder
-} from 'angular2/testing';
+import {it, iit, xit, describe, ddescribe, xdescribe, expect, fakeAsync, tick, beforeEach, inject, injectAsync, withProviders, beforeEachProviders, TestComponentBuilder} from 'angular2/testing';
 
 import {Injectable, bind} from 'angular2/core';
 import {NgIf} from 'angular2/common';
@@ -189,8 +173,8 @@ export function main() {
                 })));
 
       describe('using beforeEach', () => {
-        beforeEach(inject([FancyService],
-                          (service) => { service.value = 'value modified in beforeEach'; }));
+        beforeEach(inject(
+            [FancyService], (service) => { service.value = 'value modified in beforeEach'; }));
 
         it('should use modified providers', inject([FancyService], (service) => {
              expect(service.value).toEqual('value modified in beforeEach');
@@ -210,8 +194,8 @@ export function main() {
     describe('per test providers', () => {
       it('should allow per test providers',
          withProviders(() => [bind(FancyService).toValue(new FancyService())])
-             .inject([FancyService],
-                     (service) => { expect(service.value).toEqual('real value'); }));
+             .inject(
+                 [FancyService], (service) => { expect(service.value).toEqual('real value'); }));
     });
   });
 
@@ -252,11 +236,13 @@ export function main() {
       var itPromise = patchJasmineIt();
       it('forgets to return a proimse', injectAsync([], () => { return true; }));
 
-      itPromise.then(() => { done.fail('Expected function to throw, but it did not'); }, (err) => {
-        expect(err).toEqual(
-            'Error: injectAsync was expected to return a promise, but the  returned value was: true');
-        done();
-      });
+      itPromise.then(
+          () => { done.fail('Expected function to throw, but it did not'); },
+          (err) => {
+            expect(err).toEqual(
+                'Error: injectAsync was expected to return a promise, but the  returned value was: true');
+            done();
+          });
       restoreJasmineIt();
     });
 
@@ -264,11 +250,13 @@ export function main() {
       var itPromise = patchJasmineIt();
       it('returns a value', inject([], () => { return true; }));
 
-      itPromise.then(() => { done.fail('Expected function to throw, but it did not'); }, (err) => {
-        expect(err).toEqual(
-            'Error: inject returned a value. Did you mean to use injectAsync? Returned value was: true');
-        done();
-      });
+      itPromise.then(
+          () => { done.fail('Expected function to throw, but it did not'); },
+          (err) => {
+            expect(err).toEqual(
+                'Error: inject returned a value. Did you mean to use injectAsync? Returned value was: true');
+            done();
+          });
       restoreJasmineIt();
     });
 
@@ -277,7 +265,8 @@ export function main() {
       beforeEach(injectAsync([], () => { return true; }));
 
       beforeEachPromise.then(
-          () => { done.fail('Expected function to throw, but it did not'); }, (err) => {
+          () => { done.fail('Expected function to throw, but it did not'); },
+          (err) => {
             expect(err).toEqual(
                 'Error: injectAsync was expected to return a promise, but the  returned value was: true');
             done();
@@ -290,7 +279,8 @@ export function main() {
       beforeEach(inject([], () => { return true; }));
 
       beforeEachPromise.then(
-          () => { done.fail('Expected function to throw, but it did not'); }, (err) => {
+          () => { done.fail('Expected function to throw, but it did not'); },
+          (err) => {
             expect(err).toEqual(
                 'Error: inject returned a value. Did you mean to use injectAsync? Returned value was: true');
             done();
@@ -302,10 +292,12 @@ export function main() {
       var itPromise = patchJasmineIt();
       it('throws an error', inject([], () => { throw new Error('foo'); }));
 
-      itPromise.then(() => { done.fail('Expected function to throw, but it did not'); }, (err) => {
-        expect(err.message).toEqual('foo');
-        done();
-      });
+      itPromise.then(
+          () => { done.fail('Expected function to throw, but it did not'); },
+          (err) => {
+            expect(err.message).toEqual('foo');
+            done();
+          });
       restoreJasmineIt();
     });
 
@@ -316,10 +308,12 @@ export function main() {
       it('throws an async error',
          injectAsync([], () => { setTimeout(() => { throw new Error('bar'); }, 0); }));
 
-      itPromise.then(() => { done.fail('Expected test to fail, but it did not'); }, (err) => {
-        expect(err.message).toEqual('bar');
-        done();
-      });
+      itPromise.then(
+          () => { done.fail('Expected test to fail, but it did not'); },
+          (err) => {
+            expect(err.message).toEqual('bar');
+            done();
+          });
       restoreJasmineIt();
     });
 
@@ -334,10 +328,12 @@ export function main() {
            return p;
          }));
 
-      itPromise.then(() => { done.fail('Expected test to fail, but it did not'); }, (err) => {
-        expect(err).toEqual('baz');
-        done();
-      });
+      itPromise.then(
+          () => { done.fail('Expected test to fail, but it did not'); },
+          (err) => {
+            expect(err).toEqual('baz');
+            done();
+          });
       restoreJasmineIt();
     });
 
@@ -347,10 +343,12 @@ export function main() {
       it('should fail with an error from a promise',
          injectAsync([TestComponentBuilder], (tcb) => { return tcb.createAsync(BadTemplateUrl); }));
 
-      itPromise.then(() => { done.fail('Expected test to fail, but it did not'); }, (err) => {
-        expect(err).toEqual('Failed to load non-existant.html');
-        done();
-      });
+      itPromise.then(
+          () => { done.fail('Expected test to fail, but it did not'); },
+          (err) => {
+            expect(err).toEqual('Failed to load non-existant.html');
+            done();
+          });
       restoreJasmineIt();
     }, 10000);
 
@@ -367,8 +365,9 @@ export function main() {
           expect(() => {
             beforeEachProviders(() => [bind(FancyService).toValue(new FancyService())]);
           })
-              .toThrowError('beforeEachProviders was called after the injector had been used ' +
-                            'in a beforeEach or it block. This invalidates the test injector');
+              .toThrowError(
+                  'beforeEachProviders was called after the injector had been used ' +
+                  'in a beforeEach or it block. This invalidates the test injector');
           restoreJasmineBeforeEach();
         });
       });
@@ -414,9 +413,9 @@ export function main() {
     it('should override a view',
        injectAsync([TestComponentBuilder], (tcb: TestComponentBuilder) => {
 
-         return tcb.overrideView(
-                       ChildComp,
-                       new ViewMetadata({template: '<span>Modified {{childBinding}}</span>'}))
+         return tcb
+             .overrideView(
+                 ChildComp, new ViewMetadata({template: '<span>Modified {{childBinding}}</span>'}))
              .createAsync(ChildComp)
              .then((componentFixture) => {
                componentFixture.detectChanges();
@@ -438,7 +437,7 @@ export function main() {
        }));
 
 
-    it("should override child component's dependencies",
+    it('should override child component\'s dependencies',
        injectAsync([TestComponentBuilder], (tcb: TestComponentBuilder) => {
 
          return tcb.overrideDirective(ParentComp, ChildComp, ChildWithChildComp)
@@ -455,8 +454,8 @@ export function main() {
     it('should override a provider',
        injectAsync([TestComponentBuilder], (tcb: TestComponentBuilder) => {
 
-         return tcb.overrideProviders(TestProvidersComp,
-                                      [bind(FancyService).toClass(MockFancyService)])
+         return tcb
+             .overrideProviders(TestProvidersComp, [bind(FancyService).toClass(MockFancyService)])
              .createAsync(TestProvidersComp)
              .then((componentFixture) => {
                componentFixture.detectChanges();
@@ -469,8 +468,9 @@ export function main() {
     it('should override a viewProvider',
        injectAsync([TestComponentBuilder], (tcb: TestComponentBuilder) => {
 
-         return tcb.overrideViewProviders(TestViewProvidersComp,
-                                          [bind(FancyService).toClass(MockFancyService)])
+         return tcb
+             .overrideViewProviders(
+                 TestViewProvidersComp, [bind(FancyService).toClass(MockFancyService)])
              .createAsync(TestViewProvidersComp)
              .then((componentFixture) => {
                componentFixture.detectChanges();
@@ -482,12 +482,11 @@ export function main() {
     it('should allow an external templateUrl',
        injectAsync([TestComponentBuilder], (tcb: TestComponentBuilder) => {
 
-         return tcb.createAsync(ExternalTemplateComp)
-             .then((componentFixture) => {
-               componentFixture.detectChanges();
-               expect(componentFixture.debugElement.nativeElement)
-                   .toHaveText('from external template\n');
-             });
+         return tcb.createAsync(ExternalTemplateComp).then((componentFixture) => {
+           componentFixture.detectChanges();
+           expect(componentFixture.debugElement.nativeElement)
+               .toHaveText('from external template\n');
+         });
        }), 10000);  // Long timeout here because this test makes an actual XHR, and is slow on Edge.
   });
 }

@@ -2,13 +2,7 @@ import {RequestMethod} from './enums';
 import {RequestArgs} from './interfaces';
 import {Headers} from './headers';
 import {normalizeMethodName} from './http_utils';
-import {
-  RegExpWrapper,
-  CONST_EXPR,
-  isPresent,
-  isJsObject,
-  StringWrapper
-} from 'angular2/src/facade/lang';
+import {RegExpWrapper, CONST_EXPR, isPresent, isJsObject, StringWrapper} from 'angular2/src/facade/lang';
 
 // TODO(jeffbcross): properly implement body accessors
 /**

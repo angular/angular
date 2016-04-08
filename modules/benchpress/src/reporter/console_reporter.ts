@@ -75,12 +75,13 @@ export class ConsoleReporter extends Reporter {
       var samples = validSamples.map(measureValues => measureValues.values[metricName]);
       var mean = Statistic.calculateMean(samples);
       var cv = Statistic.calculateCoefficientOfVariation(samples, mean);
-      var formattedMean = ConsoleReporter._formatNum(mean)
-                              // Note: Don't use the unicode character for +- as it might cause
-                              // hickups for consoles...
-                              return NumberWrapper.isNaN(cv) ?
-                              formattedMean :
-                              `${formattedMean}+-${Math.floor(cv)}%`;
+      var formattedMean = ConsoleReporter
+                              ._formatNum(mean)
+                          // Note: Don't use the unicode character for +- as it might cause
+                          // hickups for consoles...
+                          return NumberWrapper.isNaN(cv) ?
+          formattedMean :
+          `${formattedMean}+-${Math.floor(cv)}%`;
     }));
     return PromiseWrapper.resolve(null);
   }
@@ -95,9 +96,9 @@ var _PRINT = new OpaqueToken('ConsoleReporter.print');
 var _COLUMN_WIDTH = new OpaqueToken('ConsoleReporter.columnWidth');
 var _PROVIDERS = [
   bind(ConsoleReporter)
-      .toFactory((columnWidth, sampleDescription, print) =>
-                     new ConsoleReporter(columnWidth, sampleDescription, print),
-                 [_COLUMN_WIDTH, SampleDescription, _PRINT]),
-  provide(_COLUMN_WIDTH, {useValue: 18}),
-  provide(_PRINT, {useValue: print})
+      .toFactory(
+          (columnWidth, sampleDescription, print) =>
+              new ConsoleReporter(columnWidth, sampleDescription, print),
+          [_COLUMN_WIDTH, SampleDescription, _PRINT]),
+  provide(_COLUMN_WIDTH, {useValue: 18}), provide(_PRINT, {useValue: print})
 ];

@@ -2,34 +2,13 @@ import {Set} from 'angular2/src/facade/collection';
 import {isPresent} from 'angular2/src/facade/lang';
 
 const MOUSE_EVENT_PROPERTIES = [
-  "altKey",
-  "button",
-  "clientX",
-  "clientY",
-  "metaKey",
-  "movementX",
-  "movementY",
-  "offsetX",
-  "offsetY",
-  "region",
-  "screenX",
-  "screenY",
-  "shiftKey"
+  'altKey', 'button', 'clientX', 'clientY', 'metaKey', 'movementX', 'movementY', 'offsetX',
+  'offsetY', 'region', 'screenX', 'screenY', 'shiftKey'
 ];
 
 const KEYBOARD_EVENT_PROPERTIES = [
-  'altkey',
-  'charCode',
-  'code',
-  'ctrlKey',
-  'isComposing',
-  'key',
-  'keyCode',
-  'location',
-  'metaKey',
-  'repeat',
-  'shiftKey',
-  'which'
+  'altkey', 'charCode', 'code', 'ctrlKey', 'isComposing', 'key', 'keyCode', 'location', 'metaKey',
+  'repeat', 'shiftKey', 'which'
 ];
 
 const TRANSITION_EVENT_PROPERTIES = ['propertyName', 'elapsedTime', 'pseudoElement'];
@@ -37,7 +16,7 @@ const TRANSITION_EVENT_PROPERTIES = ['propertyName', 'elapsedTime', 'pseudoEleme
 const EVENT_PROPERTIES = ['type', 'bubbles', 'cancelable'];
 
 const NODES_WITH_VALUE =
-    new Set(["input", "select", "option", "button", "li", "meter", "progress", "param"]);
+    new Set(['input', 'select', 'option', 'button', 'li', 'meter', 'progress', 'param']);
 
 export function serializeGenericEvent(e: Event): {[key: string]: any} {
   return serializeEvent(e, EVENT_PROPERTIES);

@@ -1,14 +1,4 @@
-import {
-  AsyncTestCompleter,
-  inject,
-  ddescribe,
-  describe,
-  it,
-  iit,
-  xit,
-  expect,
-  SpyObject
-} from 'angular2/testing_internal';
+import {AsyncTestCompleter, inject, ddescribe, describe, it, iit, xit, expect, SpyObject} from 'angular2/testing_internal';
 import {SpyElementRef, SpyDomAdapter} from '../../core/spies';
 
 import {DOM, DomAdapter} from 'angular2/src/platform/dom/dom_adapter';
@@ -43,7 +33,7 @@ export function main() {
        inject([AsyncTestCompleter], (async) => {
          var ruler = new Ruler(DOM);
          var elRef = <any>new SpyElementRef();
-         elRef.prop("nativeElement", DOM.createElement('div'));
+         elRef.prop('nativeElement', DOM.createElement('div'));
          ruler.measure(elRef).then((rect) => {
            // here we are using an element created in a doc fragment so all the measures will come
            // back as 0

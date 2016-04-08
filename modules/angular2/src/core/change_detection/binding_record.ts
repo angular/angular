@@ -3,21 +3,22 @@ import {SetterFn} from 'angular2/src/core/reflection/types';
 import {AST} from './parser/ast';
 import {DirectiveIndex, DirectiveRecord} from './directive_record';
 
-const DIRECTIVE_LIFECYCLE = "directiveLifecycle";
-const BINDING = "native";
+const DIRECTIVE_LIFECYCLE = 'directiveLifecycle';
+const BINDING = 'native';
 
-const DIRECTIVE = "directive";
-const ELEMENT_PROPERTY = "elementProperty";
-const ELEMENT_ATTRIBUTE = "elementAttribute";
-const ELEMENT_CLASS = "elementClass";
-const ELEMENT_STYLE = "elementStyle";
-const TEXT_NODE = "textNode";
-const EVENT = "event";
-const HOST_EVENT = "hostEvent";
+const DIRECTIVE = 'directive';
+const ELEMENT_PROPERTY = 'elementProperty';
+const ELEMENT_ATTRIBUTE = 'elementAttribute';
+const ELEMENT_CLASS = 'elementClass';
+const ELEMENT_STYLE = 'elementStyle';
+const TEXT_NODE = 'textNode';
+const EVENT = 'event';
+const HOST_EVENT = 'hostEvent';
 
 export class BindingTarget {
-  constructor(public mode: string, public elementIndex: number, public name: string,
-              public unit: string, public debug: string) {}
+  constructor(
+      public mode: string, public elementIndex: number, public name: string, public unit: string,
+      public debug: string) {}
 
   isDirective(): boolean { return this.mode === DIRECTIVE; }
 
@@ -33,9 +34,10 @@ export class BindingTarget {
 }
 
 export class BindingRecord {
-  constructor(public mode: string, public target: BindingTarget, public implicitReceiver: any,
-              public ast: AST, public setter: SetterFn, public lifecycleEvent: string,
-              public directiveRecord: DirectiveRecord) {}
+  constructor(
+      public mode: string, public target: BindingTarget, public implicitReceiver: any,
+      public ast: AST, public setter: SetterFn, public lifecycleEvent: string,
+      public directiveRecord: DirectiveRecord) {}
 
   isDirectiveLifecycle(): boolean { return this.mode === DIRECTIVE_LIFECYCLE; }
 
@@ -48,22 +50,23 @@ export class BindingRecord {
   }
 
   static createDirectiveDoCheck(directiveRecord: DirectiveRecord): BindingRecord {
-    return new BindingRecord(DIRECTIVE_LIFECYCLE, null, 0, null, null, "DoCheck", directiveRecord);
+    return new BindingRecord(DIRECTIVE_LIFECYCLE, null, 0, null, null, 'DoCheck', directiveRecord);
   }
 
   static createDirectiveOnInit(directiveRecord: DirectiveRecord): BindingRecord {
-    return new BindingRecord(DIRECTIVE_LIFECYCLE, null, 0, null, null, "OnInit", directiveRecord);
+    return new BindingRecord(DIRECTIVE_LIFECYCLE, null, 0, null, null, 'OnInit', directiveRecord);
   }
 
   static createDirectiveOnChanges(directiveRecord: DirectiveRecord): BindingRecord {
-    return new BindingRecord(DIRECTIVE_LIFECYCLE, null, 0, null, null, "OnChanges",
-                             directiveRecord);
+    return new BindingRecord(
+        DIRECTIVE_LIFECYCLE, null, 0, null, null, 'OnChanges', directiveRecord);
   }
 
 
 
-  static createForDirective(ast: AST, propertyName: string, setter: SetterFn,
-                            directiveRecord: DirectiveRecord): BindingRecord {
+  static createForDirective(
+      ast: AST, propertyName: string, setter: SetterFn,
+      directiveRecord: DirectiveRecord): BindingRecord {
     var elementIndex = directiveRecord.directiveIndex.elementIndex;
     var t = new BindingTarget(DIRECTIVE, elementIndex, propertyName, null, ast.toString());
     return new BindingRecord(DIRECTIVE, t, 0, ast, setter, null, directiveRecord);
@@ -71,14 +74,14 @@ export class BindingRecord {
 
 
 
-  static createForElementProperty(ast: AST, elementIndex: number,
-                                  propertyName: string): BindingRecord {
+  static createForElementProperty(ast: AST, elementIndex: number, propertyName: string):
+      BindingRecord {
     var t = new BindingTarget(ELEMENT_PROPERTY, elementIndex, propertyName, null, ast.toString());
     return new BindingRecord(BINDING, t, 0, ast, null, null, null);
   }
 
-  static createForElementAttribute(ast: AST, elementIndex: number,
-                                   attributeName: string): BindingRecord {
+  static createForElementAttribute(ast: AST, elementIndex: number, attributeName: string):
+      BindingRecord {
     var t = new BindingTarget(ELEMENT_ATTRIBUTE, elementIndex, attributeName, null, ast.toString());
     return new BindingRecord(BINDING, t, 0, ast, null, null, null);
   }
@@ -88,39 +91,39 @@ export class BindingRecord {
     return new BindingRecord(BINDING, t, 0, ast, null, null, null);
   }
 
-  static createForElementStyle(ast: AST, elementIndex: number, styleName: string,
-                               unit: string): BindingRecord {
+  static createForElementStyle(ast: AST, elementIndex: number, styleName: string, unit: string):
+      BindingRecord {
     var t = new BindingTarget(ELEMENT_STYLE, elementIndex, styleName, unit, ast.toString());
     return new BindingRecord(BINDING, t, 0, ast, null, null, null);
   }
 
 
 
-  static createForHostProperty(directiveIndex: DirectiveIndex, ast: AST,
-                               propertyName: string): BindingRecord {
-    var t = new BindingTarget(ELEMENT_PROPERTY, directiveIndex.elementIndex, propertyName, null,
-                              ast.toString());
+  static createForHostProperty(directiveIndex: DirectiveIndex, ast: AST, propertyName: string):
+      BindingRecord {
+    var t = new BindingTarget(
+        ELEMENT_PROPERTY, directiveIndex.elementIndex, propertyName, null, ast.toString());
     return new BindingRecord(BINDING, t, directiveIndex, ast, null, null, null);
   }
 
-  static createForHostAttribute(directiveIndex: DirectiveIndex, ast: AST,
-                                attributeName: string): BindingRecord {
-    var t = new BindingTarget(ELEMENT_ATTRIBUTE, directiveIndex.elementIndex, attributeName, null,
-                              ast.toString());
+  static createForHostAttribute(directiveIndex: DirectiveIndex, ast: AST, attributeName: string):
+      BindingRecord {
+    var t = new BindingTarget(
+        ELEMENT_ATTRIBUTE, directiveIndex.elementIndex, attributeName, null, ast.toString());
     return new BindingRecord(BINDING, t, directiveIndex, ast, null, null, null);
   }
 
-  static createForHostClass(directiveIndex: DirectiveIndex, ast: AST,
-                            className: string): BindingRecord {
-    var t = new BindingTarget(ELEMENT_CLASS, directiveIndex.elementIndex, className, null,
-                              ast.toString());
+  static createForHostClass(directiveIndex: DirectiveIndex, ast: AST, className: string):
+      BindingRecord {
+    var t = new BindingTarget(
+        ELEMENT_CLASS, directiveIndex.elementIndex, className, null, ast.toString());
     return new BindingRecord(BINDING, t, directiveIndex, ast, null, null, null);
   }
 
-  static createForHostStyle(directiveIndex: DirectiveIndex, ast: AST, styleName: string,
-                            unit: string): BindingRecord {
-    var t = new BindingTarget(ELEMENT_STYLE, directiveIndex.elementIndex, styleName, unit,
-                              ast.toString());
+  static createForHostStyle(
+      directiveIndex: DirectiveIndex, ast: AST, styleName: string, unit: string): BindingRecord {
+    var t = new BindingTarget(
+        ELEMENT_STYLE, directiveIndex.elementIndex, styleName, unit, ast.toString());
     return new BindingRecord(BINDING, t, directiveIndex, ast, null, null, null);
   }
 
@@ -138,8 +141,8 @@ export class BindingRecord {
     return new BindingRecord(EVENT, t, 0, ast, null, null, null);
   }
 
-  static createForHostEvent(ast: AST, eventName: string,
-                            directiveRecord: DirectiveRecord): BindingRecord {
+  static createForHostEvent(ast: AST, eventName: string, directiveRecord: DirectiveRecord):
+      BindingRecord {
     var directiveIndex = directiveRecord.directiveIndex;
     var t =
         new BindingTarget(HOST_EVENT, directiveIndex.elementIndex, eventName, null, ast.toString());

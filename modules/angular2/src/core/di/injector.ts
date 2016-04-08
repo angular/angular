@@ -1,21 +1,6 @@
 import {Map, MapWrapper, ListWrapper} from 'angular2/src/facade/collection';
-import {
-  ResolvedProvider,
-  Provider,
-  Dependency,
-  ProviderBuilder,
-  ResolvedFactory,
-  provide,
-  resolveProviders
-} from './provider';
-import {
-  AbstractProviderError,
-  NoProviderError,
-  CyclicDependencyError,
-  InstantiationError,
-  InvalidProviderError,
-  OutOfBoundsError
-} from './exceptions';
+import {ResolvedProvider, Provider, Dependency, ProviderBuilder, ResolvedFactory, provide, resolveProviders} from './provider';
+import {AbstractProviderError, NoProviderError, CyclicDependencyError, InstantiationError, InvalidProviderError, OutOfBoundsError} from './exceptions';
 import {FunctionWrapper, Type, isPresent, isBlank, CONST_EXPR} from 'angular2/src/facade/lang';
 import {BaseException} from 'angular2/src/facade/exceptions';
 import {Key} from './key';
@@ -46,7 +31,7 @@ export enum Visibility {
 
 function canSee(src: Visibility, dst: Visibility): boolean {
   return (src === dst) ||
-         (dst === Visibility.PublicAndPrivate || src === Visibility.PublicAndPrivate);
+      (dst === Visibility.PublicAndPrivate || src === Visibility.PublicAndPrivate);
 }
 
 
@@ -207,8 +192,8 @@ export class ProtoInjector {
   constructor(bwv: ProviderWithVisibility[]) {
     this.numberOfProviders = bwv.length;
     this._strategy = bwv.length > _MAX_CONSTRUCTION_COUNTER ?
-                         new ProtoInjectorDynamicStrategy(this, bwv) :
-                         new ProtoInjectorInlineStrategy(this, bwv);
+        new ProtoInjectorDynamicStrategy(this, bwv) :
+        new ProtoInjectorInlineStrategy(this, bwv);
   }
 
   getProviderAtIndex(index: number): ResolvedProvider {
@@ -453,7 +438,7 @@ export class Injector {
    *
    * See {@link Injector#fromResolvedProviders} for more info.
    */
-  static resolve(providers: Array<Type | Provider | any[]>): ResolvedProvider[] {
+  static resolve(providers: Array<Type|Provider|any[]>): ResolvedProvider[] {
     return resolveProviders(providers);
   }
 
@@ -483,7 +468,7 @@ export class Injector {
    * because it needs to resolve the passed-in providers first.
    * See {@link Injector#resolve} and {@link Injector#fromResolvedProviders}.
    */
-  static resolveAndCreate(providers: Array<Type | Provider | any[]>): Injector {
+  static resolveAndCreate(providers: Array<Type|Provider|any[]>): Injector {
     var resolvedProviders = Injector.resolve(providers);
     return Injector.fromResolvedProviders(resolvedProviders);
   }
@@ -532,10 +517,11 @@ export class Injector {
   /**
    * Private
    */
-  constructor(_proto: any /* ProtoInjector */, _parent: Injector = null,
-              private _isHostBoundary: boolean = false,
-              private _depProvider: any /* DependencyProvider */ = null,
-              private _debugContext: Function = null) {
+  constructor(
+      _proto: any /* ProtoInjector */, _parent: Injector = null,
+      private _isHostBoundary: boolean = false,
+      private _depProvider: any /* DependencyProvider */ = null,
+      private _debugContext: Function = null) {
     this._proto = _proto;
     this._parent = _parent;
     this._strategy = _proto._strategy.createInjectorStrategy(this);
@@ -657,7 +643,7 @@ export class Injector {
    * because it needs to resolve the passed-in providers first.
    * See {@link Injector#resolve} and {@link Injector#createChildFromResolved}.
    */
-  resolveAndCreateChild(providers: Array<Type | Provider | any[]>): Injector {
+  resolveAndCreateChild(providers: Array<Type|Provider|any[]>): Injector {
     var resolvedProviders = Injector.resolve(providers);
     return this.createChildFromResolved(resolvedProviders);
   }
@@ -719,7 +705,7 @@ export class Injector {
    * expect(car).not.toBe(injector.resolveAndInstantiate(Car));
    * ```
    */
-  resolveAndInstantiate(provider: Type | Provider): any {
+  resolveAndInstantiate(provider: Type|Provider): any {
     return this.instantiateResolved(Injector.resolve([provider])[0]);
   }
 
@@ -771,8 +757,8 @@ export class Injector {
     }
   }
 
-  private _instantiate(provider: ResolvedProvider, resolvedFactory: ResolvedFactory,
-                       visibility: Visibility): any {
+  private _instantiate(
+      provider: ResolvedProvider, resolvedFactory: ResolvedFactory, visibility: Visibility): any {
     var factory = resolvedFactory.factory;
     var deps = resolvedFactory.dependencies;
     var length = deps.length;
@@ -883,16 +869,17 @@ export class Injector {
           obj = factory(d0, d1, d2, d3, d4, d5, d6, d7, d8, d9, d10, d11, d12, d13, d14, d15, d16);
           break;
         case 18:
-          obj = factory(d0, d1, d2, d3, d4, d5, d6, d7, d8, d9, d10, d11, d12, d13, d14, d15, d16,
-                        d17);
+          obj = factory(
+              d0, d1, d2, d3, d4, d5, d6, d7, d8, d9, d10, d11, d12, d13, d14, d15, d16, d17);
           break;
         case 19:
-          obj = factory(d0, d1, d2, d3, d4, d5, d6, d7, d8, d9, d10, d11, d12, d13, d14, d15, d16,
-                        d17, d18);
+          obj = factory(
+              d0, d1, d2, d3, d4, d5, d6, d7, d8, d9, d10, d11, d12, d13, d14, d15, d16, d17, d18);
           break;
         case 20:
-          obj = factory(d0, d1, d2, d3, d4, d5, d6, d7, d8, d9, d10, d11, d12, d13, d14, d15, d16,
-                        d17, d18, d19);
+          obj = factory(
+              d0, d1, d2, d3, d4, d5, d6, d7, d8, d9, d10, d11, d12, d13, d14, d15, d16, d17, d18,
+              d19);
           break;
         default:
           throw new BaseException(
@@ -904,21 +891,23 @@ export class Injector {
     return obj;
   }
 
-  private _getByDependency(provider: ResolvedProvider, dep: Dependency,
-                           providerVisibility: Visibility): any {
+  private _getByDependency(
+      provider: ResolvedProvider, dep: Dependency, providerVisibility: Visibility): any {
     var special = isPresent(this._depProvider) ?
-                      this._depProvider.getDependency(this, provider, dep) :
-                      UNDEFINED;
+        this._depProvider.getDependency(this, provider, dep) :
+        UNDEFINED;
     if (special !== UNDEFINED) {
       return special;
     } else {
-      return this._getByKey(dep.key, dep.lowerBoundVisibility, dep.upperBoundVisibility,
-                            dep.optional, providerVisibility);
+      return this._getByKey(
+          dep.key, dep.lowerBoundVisibility, dep.upperBoundVisibility, dep.optional,
+          providerVisibility);
     }
   }
 
-  private _getByKey(key: Key, lowerBoundVisibility: Object, upperBoundVisibility: Object,
-                    optional: boolean, providerVisibility: Visibility): any {
+  private _getByKey(
+      key: Key, lowerBoundVisibility: Object, upperBoundVisibility: Object, optional: boolean,
+      providerVisibility: Visibility): any {
     if (key === INJECTOR_KEY) {
       return this;
     }
@@ -950,8 +939,9 @@ export class Injector {
   }
 
   /** @internal */
-  _getByKeyHost(key: Key, optional: boolean, providerVisibility: Visibility,
-                lowerBoundVisibility: Object): any {
+  _getByKeyHost(
+      key: Key, optional: boolean, providerVisibility: Visibility,
+      lowerBoundVisibility: Object): any {
     var inj: Injector = this;
 
     if (lowerBoundVisibility instanceof SkipSelfMetadata) {
@@ -983,8 +973,9 @@ export class Injector {
   }
 
   /** @internal */
-  _getByKeyDefault(key: Key, optional: boolean, providerVisibility: Visibility,
-                   lowerBoundVisibility: Object): any {
+  _getByKeyDefault(
+      key: Key, optional: boolean, providerVisibility: Visibility,
+      lowerBoundVisibility: Object): any {
     var inj: Injector = this;
 
     if (lowerBoundVisibility instanceof SkipSelfMetadata) {
@@ -1004,7 +995,7 @@ export class Injector {
   }
 
   get displayName(): string {
-    return `Injector(providers: [${_mapProviders(this, (b: ResolvedProvider) => ` "${b.key.displayName}" `).join(", ")}])`;
+    return `Injector(providers: [${_mapProviders(this, (b: ResolvedProvider) => ` '${b.key.displayName}' `).join(", ")}])`;
   }
 
   toString(): string { return this.displayName; }

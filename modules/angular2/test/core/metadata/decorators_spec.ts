@@ -1,14 +1,4 @@
-import {
-  AsyncTestCompleter,
-  beforeEach,
-  ddescribe,
-  describe,
-  expect,
-  iit,
-  inject,
-  it,
-  xit,
-} from 'angular2/testing_internal';
+import {AsyncTestCompleter, beforeEach, ddescribe, describe, expect, iit, inject, it, xit,} from 'angular2/testing_internal';
 
 import {Component, Directive} from 'angular2/core';
 import {reflector} from 'angular2/src/core/reflection/reflection';

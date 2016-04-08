@@ -7,12 +7,7 @@ import {PromiseWrapper} from 'angular2/src/facade/async';
 import {ShadowCss} from 'angular2/src/compiler/shadow_css';
 import {UrlResolver} from 'angular2/src/compiler/url_resolver';
 import {extractStyleUrls} from './style_url_resolver';
-import {
-  escapeSingleQuoteString,
-  codeGenExportVariable,
-  codeGenToString,
-  MODULE_SUFFIX
-} from './util';
+import {escapeSingleQuoteString, codeGenExportVariable, codeGenToString, MODULE_SUFFIX} from './util';
 import {Injectable} from 'angular2/src/core/di';
 
 const COMPONENT_VARIABLE = '%COMP%';
@@ -26,11 +21,11 @@ export class StyleCompiler {
 
   constructor(private _xhr: XHR, private _urlResolver: UrlResolver) {}
 
-  compileComponentRuntime(template: CompileTemplateMetadata): Promise<Array<string | any[]>> {
+  compileComponentRuntime(template: CompileTemplateMetadata): Promise<Array<string|any[]>> {
     var styles = template.styles;
     var styleAbsUrls = template.styleUrls;
-    return this._loadStyles(styles, styleAbsUrls,
-                            template.encapsulation === ViewEncapsulation.Emulated);
+    return this._loadStyles(
+        styles, styleAbsUrls, template.encapsulation === ViewEncapsulation.Emulated);
   }
 
   compileComponentCodeGen(template: CompileTemplateMetadata): SourceExpression {
@@ -44,30 +39,31 @@ export class StyleCompiler {
       this._styleModule(
           stylesheetUrl, false,
           this._styleCodeGen([styleWithImports.style], styleWithImports.styleUrls, false)),
-      this._styleModule(stylesheetUrl, true, this._styleCodeGen([styleWithImports.style],
-                                                                styleWithImports.styleUrls, true))
+      this._styleModule(
+          stylesheetUrl, true,
+          this._styleCodeGen([styleWithImports.style], styleWithImports.styleUrls, true))
     ];
   }
 
   clearCache() { this._styleCache.clear(); }
 
-  private _loadStyles(plainStyles: string[], absUrls: string[],
-                      encapsulate: boolean): Promise<Array<string | any[]>> {
+  private _loadStyles(plainStyles: string[], absUrls: string[], encapsulate: boolean):
+      Promise<Array<string|any[]>> {
     var promises: Promise<string[]>[] = absUrls.map((absUrl: string): Promise<string[]> => {
       var cacheKey = `${absUrl}${encapsulate ? '.shim' : ''}`;
       var result: Promise<string[]> = this._styleCache.get(cacheKey);
       if (isBlank(result)) {
         result = this._xhr.get(absUrl).then((style) => {
           var styleWithImports = extractStyleUrls(this._urlResolver, absUrl, style);
-          return this._loadStyles([styleWithImports.style], styleWithImports.styleUrls,
-                                  encapsulate);
+          return this._loadStyles(
+              [styleWithImports.style], styleWithImports.styleUrls, encapsulate);
         });
         this._styleCache.set(cacheKey, result);
       }
       return result;
     });
     return PromiseWrapper.all<string[]>(promises).then((nestedStyles: string[][]) => {
-      var result: Array<string | any[]> =
+      var result: Array<string|any[]> =
           plainStyles.map(plainStyle => this._shimIfNeeded(plainStyle, encapsulate));
       nestedStyles.forEach(styles => result.push(styles));
       return result;
@@ -87,8 +83,8 @@ export class StyleCompiler {
     return new SourceExpression([], expressionSource);
   }
 
-  private _styleModule(stylesheetUrl: string, shim: boolean,
-                       expression: SourceExpression): SourceModule {
+  private _styleModule(stylesheetUrl: string, shim: boolean, expression: SourceExpression):
+      SourceModule {
     var moduleSource = `
       ${expression.declarations.join('\n')}
       ${codeGenExportVariable('STYLES')}${expression.expression};

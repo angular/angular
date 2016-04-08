@@ -1,17 +1,4 @@
-import {
-  AsyncTestCompleter,
-  TestComponentBuilder,
-  beforeEachProviders,
-  beforeEach,
-  ddescribe,
-  describe,
-  el,
-  expect,
-  iit,
-  inject,
-  it,
-  xit,
-} from 'angular2/testing_internal';
+import {AsyncTestCompleter, TestComponentBuilder, beforeEachProviders, beforeEach, ddescribe, describe, el, expect, iit, inject, it, xit,} from 'angular2/testing_internal';
 
 import {Component, Injectable, provide} from 'angular2/core';
 import {NgPlural, NgPluralCase, NgLocalization} from 'angular2/common';
@@ -23,10 +10,10 @@ export function main() {
     it('should display the template according to the exact value',
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
          var template = '<div>' +
-                        '<ul [ngPlural]="switchValue">' +
-                        '<template ngPluralCase="=0"><li>you have no messages.</li></template>' +
-                        '<template ngPluralCase="=1"><li>you have one message.</li></template>' +
-                        '</ul></div>';
+             '<ul [ngPlural]="switchValue">' +
+             '<template ngPluralCase="=0"><li>you have no messages.</li></template>' +
+             '<template ngPluralCase="=1"><li>you have one message.</li></template>' +
+             '</ul></div>';
 
          tcb.overrideTemplate(TestComponent, template)
              .createAsync(TestComponent)
@@ -45,8 +32,7 @@ export function main() {
 
     it('should display the template according to the category',
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-         var template =
-             '<div>' +
+         var template = '<div>' +
              '<ul [ngPlural]="switchValue">' +
              '<template ngPluralCase="few"><li>you have a few messages.</li></template>' +
              '<template ngPluralCase="many"><li>you have many messages.</li></template>' +
@@ -69,8 +55,7 @@ export function main() {
 
     it('should default to other when no matches are found',
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-         var template =
-             '<div>' +
+         var template = '<div>' +
              '<ul [ngPlural]="switchValue">' +
              '<template ngPluralCase="few"><li>you have a few messages.</li></template>' +
              '<template ngPluralCase="other"><li>default message.</li></template>' +
@@ -89,8 +74,7 @@ export function main() {
 
     it('should prioritize value matches over category matches',
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-         var template =
-             '<div>' +
+         var template = '<div>' +
              '<ul [ngPlural]="switchValue">' +
              '<template ngPluralCase="few"><li>you have a few messages.</li></template>' +
              '<template ngPluralCase="=2">you have two messages.</template>' +

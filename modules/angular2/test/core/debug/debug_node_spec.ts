@@ -1,18 +1,4 @@
-import {
-  AsyncTestCompleter,
-  beforeEach,
-  ddescribe,
-  xdescribe,
-  describe,
-  dispatchEvent,
-  expect,
-  iit,
-  inject,
-  beforeEachProviders,
-  it,
-  xit,
-  TestComponentBuilder
-} from 'angular2/testing_internal';
+import {AsyncTestCompleter, beforeEach, ddescribe, xdescribe, describe, dispatchEvent, expect, iit, inject, beforeEachProviders, it, xit, TestComponentBuilder} from 'angular2/testing_internal';
 
 import {DOM} from 'angular2/src/platform/dom/dom_adapter';
 
@@ -187,74 +173,70 @@ export function main() {
   describe('debug element', function() {
     it('should list all child nodes',
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-         tcb.createAsync(ParentComp)
-             .then((fixture) => {
-               fixture.detectChanges();
+         tcb.createAsync(ParentComp).then((fixture) => {
+           fixture.detectChanges();
 
-               // The root component has 3 elements and 2 text node children.
-               expect(fixture.debugElement.childNodes.length).toEqual(5);
-               async.done();
-             });
+           // The root component has 3 elements and 2 text node children.
+           expect(fixture.debugElement.childNodes.length).toEqual(5);
+           async.done();
+         });
        }));
 
     it('should list all component child elements',
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
 
-         tcb.createAsync(ParentComp)
-             .then((fixture) => {
-               fixture.detectChanges();
+         tcb.createAsync(ParentComp).then((fixture) => {
+           fixture.detectChanges();
 
-               var childEls = fixture.debugElement.children;
+           var childEls = fixture.debugElement.children;
 
-               // The root component has 3 elements in its view.
-               expect(childEls.length).toEqual(3);
-               expect(DOM.hasClass(childEls[0].nativeElement, 'parent')).toBe(true);
-               expect(DOM.hasClass(childEls[1].nativeElement, 'parent')).toBe(true);
-               expect(DOM.hasClass(childEls[2].nativeElement, 'child-comp-class')).toBe(true);
+           // The root component has 3 elements in its view.
+           expect(childEls.length).toEqual(3);
+           expect(DOM.hasClass(childEls[0].nativeElement, 'parent')).toBe(true);
+           expect(DOM.hasClass(childEls[1].nativeElement, 'parent')).toBe(true);
+           expect(DOM.hasClass(childEls[2].nativeElement, 'child-comp-class')).toBe(true);
 
-               var nested = childEls[0].children;
-               expect(nested.length).toEqual(1);
-               expect(DOM.hasClass(nested[0].nativeElement, 'parentnested')).toBe(true);
+           var nested = childEls[0].children;
+           expect(nested.length).toEqual(1);
+           expect(DOM.hasClass(nested[0].nativeElement, 'parentnested')).toBe(true);
 
-               var childComponent = childEls[2];
+           var childComponent = childEls[2];
 
-               var childCompChildren = childComponent.children;
-               expect(childCompChildren.length).toEqual(2);
-               expect(DOM.hasClass(childCompChildren[0].nativeElement, 'child')).toBe(true);
-               expect(DOM.hasClass(childCompChildren[1].nativeElement, 'child')).toBe(true);
+           var childCompChildren = childComponent.children;
+           expect(childCompChildren.length).toEqual(2);
+           expect(DOM.hasClass(childCompChildren[0].nativeElement, 'child')).toBe(true);
+           expect(DOM.hasClass(childCompChildren[1].nativeElement, 'child')).toBe(true);
 
-               var childNested = childCompChildren[0].children;
-               expect(childNested.length).toEqual(1);
-               expect(DOM.hasClass(childNested[0].nativeElement, 'childnested')).toBe(true);
+           var childNested = childCompChildren[0].children;
+           expect(childNested.length).toEqual(1);
+           expect(DOM.hasClass(childNested[0].nativeElement, 'childnested')).toBe(true);
 
-               async.done();
-             });
+           async.done();
+         });
        }));
 
     it('should list conditional component child elements',
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-         tcb.createAsync(ConditionalParentComp)
-             .then((fixture) => {
-               fixture.detectChanges();
+         tcb.createAsync(ConditionalParentComp).then((fixture) => {
+           fixture.detectChanges();
 
-               var childEls = fixture.debugElement.children;
+           var childEls = fixture.debugElement.children;
 
-               // The root component has 2 elements in its view.
-               expect(childEls.length).toEqual(2);
-               expect(DOM.hasClass(childEls[0].nativeElement, 'parent')).toBe(true);
-               expect(DOM.hasClass(childEls[1].nativeElement, 'cond-content-comp-class'))
-                   .toBe(true);
+           // The root component has 2 elements in its view.
+           expect(childEls.length).toEqual(2);
+           expect(DOM.hasClass(childEls[0].nativeElement, 'parent')).toBe(true);
+           expect(DOM.hasClass(childEls[1].nativeElement, 'cond-content-comp-class')).toBe(true);
 
-               var conditionalContentComp = childEls[1];
+           var conditionalContentComp = childEls[1];
 
-               expect(conditionalContentComp.children.length).toEqual(0);
+           expect(conditionalContentComp.children.length).toEqual(0);
 
-               conditionalContentComp.componentInstance.myBool = true;
-               fixture.detectChanges();
+           conditionalContentComp.componentInstance.myBool = true;
+           fixture.detectChanges();
 
-               expect(conditionalContentComp.children.length).toEqual(1);
-               async.done();
-             });
+           expect(conditionalContentComp.children.length).toEqual(1);
+           async.done();
+         });
        }));
 
     it('should list child elements within viewports',
@@ -288,109 +270,103 @@ export function main() {
 
     it('should query child elements by css',
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-         tcb.createAsync(ParentComp)
-             .then((fixture) => {
-               fixture.detectChanges();
+         tcb.createAsync(ParentComp).then((fixture) => {
+           fixture.detectChanges();
 
-               var childTestEls = fixture.debugElement.queryAll(By.css('child-comp'));
+           var childTestEls = fixture.debugElement.queryAll(By.css('child-comp'));
 
-               expect(childTestEls.length).toBe(1);
-               expect(DOM.hasClass(childTestEls[0].nativeElement, 'child-comp-class')).toBe(true);
+           expect(childTestEls.length).toBe(1);
+           expect(DOM.hasClass(childTestEls[0].nativeElement, 'child-comp-class')).toBe(true);
 
-               async.done();
-             });
+           async.done();
+         });
        }));
 
     it('should query child elements by directive',
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-         tcb.createAsync(ParentComp)
-             .then((fixture) => {
-               fixture.detectChanges();
+         tcb.createAsync(ParentComp).then((fixture) => {
+           fixture.detectChanges();
 
-               var childTestEls = fixture.debugElement.queryAll(By.directive(MessageDir));
+           var childTestEls = fixture.debugElement.queryAll(By.directive(MessageDir));
 
-               expect(childTestEls.length).toBe(4);
-               expect(DOM.hasClass(childTestEls[0].nativeElement, 'parent')).toBe(true);
-               expect(DOM.hasClass(childTestEls[1].nativeElement, 'parentnested')).toBe(true);
-               expect(DOM.hasClass(childTestEls[2].nativeElement, 'child')).toBe(true);
-               expect(DOM.hasClass(childTestEls[3].nativeElement, 'childnested')).toBe(true);
+           expect(childTestEls.length).toBe(4);
+           expect(DOM.hasClass(childTestEls[0].nativeElement, 'parent')).toBe(true);
+           expect(DOM.hasClass(childTestEls[1].nativeElement, 'parentnested')).toBe(true);
+           expect(DOM.hasClass(childTestEls[2].nativeElement, 'child')).toBe(true);
+           expect(DOM.hasClass(childTestEls[3].nativeElement, 'childnested')).toBe(true);
 
-               async.done();
-             });
+           async.done();
+         });
        }));
 
     it('should list providerTokens',
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
 
-         tcb.createAsync(ParentComp)
-             .then((fixture) => {
-               fixture.detectChanges();
+         tcb.createAsync(ParentComp).then((fixture) => {
+           fixture.detectChanges();
 
-               expect(fixture.debugElement.providerTokens).toContain(Logger);
+           expect(fixture.debugElement.providerTokens).toContain(Logger);
 
-               async.done();
-             });
+           async.done();
+         });
        }));
 
     it('should list locals',
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-         tcb.createAsync(LocalsComp)
-             .then((fixture) => {
-               fixture.detectChanges();
+         tcb.createAsync(LocalsComp).then((fixture) => {
+           fixture.detectChanges();
 
-               expect(fixture.debugElement.children[0].getLocal('alice')).toBeAnInstanceOf(MyDir);
+           expect(fixture.debugElement.children[0].getLocal('alice')).toBeAnInstanceOf(MyDir);
 
-               async.done();
-             });
+           async.done();
+         });
        }));
 
     it('should allow injecting from the element injector',
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
 
-         tcb.createAsync(ParentComp)
-             .then((fixture) => {
-               fixture.detectChanges();
+         tcb.createAsync(ParentComp).then((fixture) => {
+           fixture.detectChanges();
 
-               expect(fixture.debugElement.children[0].inject(Logger).log)
-                   .toEqual(['parent', 'nestedparent', 'child', 'nestedchild']);
+           expect(fixture.debugElement.children[0].inject(Logger).log).toEqual([
+             'parent', 'nestedparent', 'child', 'nestedchild'
+           ]);
 
-               async.done();
-             });
+           async.done();
+         });
        }));
 
     it('should list event listeners',
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
 
-         tcb.createAsync(EventsComp)
-             .then((fixture) => {
-               fixture.detectChanges();
+         tcb.createAsync(EventsComp).then((fixture) => {
+           fixture.detectChanges();
 
-               expect(fixture.debugElement.children[0].listeners.length).toEqual(1);
-               expect(fixture.debugElement.children[1].listeners.length).toEqual(1);
+           expect(fixture.debugElement.children[0].listeners.length).toEqual(1);
+           expect(fixture.debugElement.children[1].listeners.length).toEqual(1);
 
-               async.done();
-             });
+           async.done();
+         });
        }));
 
 
     it('should trigger event handlers',
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
 
-         tcb.createAsync(EventsComp)
-             .then((fixture) => {
-               fixture.detectChanges();
+         tcb.createAsync(EventsComp).then((fixture) => {
+           fixture.detectChanges();
 
-               expect(fixture.debugElement.componentInstance.clicked).toBe(false);
-               expect(fixture.debugElement.componentInstance.customed).toBe(false);
+           expect(fixture.debugElement.componentInstance.clicked).toBe(false);
+           expect(fixture.debugElement.componentInstance.customed).toBe(false);
 
-               fixture.debugElement.children[0].triggerEventHandler('click', <Event>{});
-               expect(fixture.debugElement.componentInstance.clicked).toBe(true);
+           fixture.debugElement.children[0].triggerEventHandler('click', <Event>{});
+           expect(fixture.debugElement.componentInstance.clicked).toBe(true);
 
-               fixture.debugElement.children[1].triggerEventHandler('myevent', <Event>{});
-               expect(fixture.debugElement.componentInstance.customed).toBe(true);
+           fixture.debugElement.children[1].triggerEventHandler('myevent', <Event>{});
+           expect(fixture.debugElement.componentInstance.customed).toBe(true);
 
-               async.done();
-             });
+           async.done();
+         });
        }));
   });
 }

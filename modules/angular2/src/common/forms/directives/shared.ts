@@ -25,8 +25,8 @@ export function controlPath(name: string, parent: ControlContainer): string[] {
 }
 
 export function setUpControl(control: Control, dir: NgControl): void {
-  if (isBlank(control)) _throwError(dir, "Cannot find control");
-  if (isBlank(dir.valueAccessor)) _throwError(dir, "No value accessor for");
+  if (isBlank(control)) _throwError(dir, 'Cannot find control');
+  if (isBlank(dir.valueAccessor)) _throwError(dir, 'No value accessor for');
 
   control.validator = Validators.compose([control.validator, dir.validator]);
   control.asyncValidator = Validators.composeAsync([control.asyncValidator, dir.asyncValidator]);
@@ -47,13 +47,13 @@ export function setUpControl(control: Control, dir: NgControl): void {
 }
 
 export function setUpControlGroup(control: ControlGroup, dir: NgControlGroup) {
-  if (isBlank(control)) _throwError(dir, "Cannot find control");
+  if (isBlank(control)) _throwError(dir, 'Cannot find control');
   control.validator = Validators.compose([control.validator, dir.validator]);
   control.asyncValidator = Validators.composeAsync([control.asyncValidator, dir.asyncValidator]);
 }
 
 function _throwError(dir: AbstractControlDirective, message: string): void {
-  var path = dir.path.join(" -> ");
+  var path = dir.path.join(' -> ');
   throw new BaseException(`${message} '${path}'`);
 }
 
@@ -61,23 +61,23 @@ export function composeValidators(validators: /* Array<Validator|Function> */ an
   return isPresent(validators) ? Validators.compose(validators.map(normalizeValidator)) : null;
 }
 
-export function composeAsyncValidators(
-    validators: /* Array<Validator|Function> */ any[]): AsyncValidatorFn {
+export function composeAsyncValidators(validators: /* Array<Validator|Function> */ any[]):
+    AsyncValidatorFn {
   return isPresent(validators) ? Validators.composeAsync(validators.map(normalizeAsyncValidator)) :
                                  null;
 }
 
 export function isPropertyUpdated(changes: {[key: string]: any}, viewModel: any): boolean {
-  if (!StringMapWrapper.contains(changes, "model")) return false;
-  var change = changes["model"];
+  if (!StringMapWrapper.contains(changes, 'model')) return false;
+  var change = changes['model'];
 
   if (change.isFirstChange()) return true;
   return !looseIdentical(viewModel, change.currentValue);
 }
 
 // TODO: vsavkin remove it once https://github.com/angular/angular/issues/3011 is implemented
-export function selectValueAccessor(dir: NgControl,
-                                    valueAccessors: ControlValueAccessor[]): ControlValueAccessor {
+export function selectValueAccessor(
+    dir: NgControl, valueAccessors: ControlValueAccessor[]): ControlValueAccessor {
   if (isBlank(valueAccessors)) return null;
 
   var defaultAccessor: ControlValueAccessor;
@@ -87,17 +87,17 @@ export function selectValueAccessor(dir: NgControl,
     if (hasConstructor(v, DefaultValueAccessor)) {
       defaultAccessor = v;
 
-    } else if (hasConstructor(v, CheckboxControlValueAccessor) ||
-               hasConstructor(v, NumberValueAccessor) ||
-               hasConstructor(v, SelectControlValueAccessor) ||
-               hasConstructor(v, RadioControlValueAccessor)) {
+    } else if (
+        hasConstructor(v, CheckboxControlValueAccessor) || hasConstructor(v, NumberValueAccessor) ||
+        hasConstructor(v, SelectControlValueAccessor) ||
+        hasConstructor(v, RadioControlValueAccessor)) {
       if (isPresent(builtinAccessor))
-        _throwError(dir, "More than one built-in value accessor matches");
+        _throwError(dir, 'More than one built-in value accessor matches');
       builtinAccessor = v;
 
     } else {
       if (isPresent(customAccessor))
-        _throwError(dir, "More than one custom value accessor matches");
+        _throwError(dir, 'More than one custom value accessor matches');
       customAccessor = v;
     }
   });
@@ -106,6 +106,6 @@ export function selectValueAccessor(dir: NgControl,
   if (isPresent(builtinAccessor)) return builtinAccessor;
   if (isPresent(defaultAccessor)) return defaultAccessor;
 
-  _throwError(dir, "No valid value accessor for");
+  _throwError(dir, 'No valid value accessor for');
   return null;
 }

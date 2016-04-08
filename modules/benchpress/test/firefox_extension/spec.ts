@@ -21,8 +21,9 @@ describe('firefox extension', function() {
 
     browser.driver.get(TEST_URL);
 
-    browser.executeScript('window.startProfiler()')
-        .then(function() { console.log('started measuring perf'); });
+    browser.executeScript('window.startProfiler()').then(function() {
+      console.log('started measuring perf');
+    });
 
     browser.executeAsyncScript('setTimeout(arguments[0], 1000);');
     browser.executeScript('window.forceGC()');

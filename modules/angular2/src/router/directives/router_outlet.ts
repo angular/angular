@@ -2,17 +2,7 @@ import {PromiseWrapper} from 'angular2/src/facade/async';
 import {StringMapWrapper} from 'angular2/src/facade/collection';
 import {isBlank, isPresent} from 'angular2/src/facade/lang';
 
-import {
-  Directive,
-  Attribute,
-  DynamicComponentLoader,
-  ComponentRef,
-  ElementRef,
-  Injector,
-  provide,
-  Dependency,
-  OnDestroy
-} from 'angular2/core';
+import {Directive, Attribute, DynamicComponentLoader, ComponentRef, ElementRef, Injector, provide, Dependency, OnDestroy} from 'angular2/core';
 
 import * as routerMod from '../router';
 import {ComponentInstruction, RouteParams, RouteData} from '../instruction';
@@ -37,8 +27,9 @@ export class RouterOutlet implements OnDestroy {
   private _componentRef: Promise<ComponentRef> = null;
   private _currentInstruction: ComponentInstruction = null;
 
-  constructor(private _elementRef: ElementRef, private _loader: DynamicComponentLoader,
-              private _parentRouter: routerMod.Router, @Attribute('name') nameAttr: string) {
+  constructor(
+      private _elementRef: ElementRef, private _loader: DynamicComponentLoader,
+      private _parentRouter: routerMod.Router, @Attribute('name') nameAttr: string) {
     if (isPresent(nameAttr)) {
       this.name = nameAttr;
       this._parentRouter.registerAuxOutlet(this);
@@ -165,8 +156,8 @@ export class RouterOutlet implements OnDestroy {
               (<CanReuse>ref.instance).routerCanReuse(nextInstruction, this._currentInstruction));
     } else {
       result = nextInstruction == this._currentInstruction ||
-               (isPresent(nextInstruction.params) && isPresent(this._currentInstruction.params) &&
-                StringMapWrapper.equals(nextInstruction.params, this._currentInstruction.params));
+          (isPresent(nextInstruction.params) && isPresent(this._currentInstruction.params) &&
+           StringMapWrapper.equals(nextInstruction.params, this._currentInstruction.params));
     }
     return <Promise<boolean>>PromiseWrapper.resolve(result);
   }

@@ -8,7 +8,7 @@ export interface IModule {
   run(a: any): void;
 }
 export interface ICompileService {
-  (element: Element | NodeList | string, transclude?: Function): ILinkFn;
+  (element: Element|NodeList|string, transclude?: Function): ILinkFn;
 }
 export interface ILinkFn {
   (scope: IScope, cloneAttachFn?: Function, options?: ILinkFnOptions): void;
@@ -35,8 +35,8 @@ export interface IDirective {
   compile?: IDirectiveCompileFn;
   controller?: any;
   controllerAs?: string;
-  bindToController?: boolean | Object;
-  link?: IDirectiveLinkFn | IDirectivePrePost;
+  bindToController?: boolean|Object;
+  link?: IDirectiveLinkFn|IDirectivePrePost;
   name?: string;
   priority?: number;
   replace?: boolean;
@@ -119,21 +119,20 @@ function noNg() {
   throw new Error('AngularJS v1.x is not loaded!');
 }
 
-var angular:
-    {
-      bootstrap: (e: Element, modules: string[], config: IAngularBootstrapConfig) => void,
-      module: (prefix: string, dependencies?: string[]) => IModule,
-      element: (e: Element) => IAugmentedJQuery,
-      version: {major: number}, resumeBootstrap?: () => void,
-      getTestability: (e: Element) => ITestabilityService
-    } = <any>{
-      bootstrap: noNg,
-      module: noNg,
-      element: noNg,
-      version: noNg,
-      resumeBootstrap: noNg,
-      getTestability: noNg
-    };
+var angular: {
+  bootstrap: (e: Element, modules: string[], config: IAngularBootstrapConfig) => void,
+  module: (prefix: string, dependencies?: string[]) => IModule,
+  element: (e: Element) => IAugmentedJQuery,
+  version: {major: number}, resumeBootstrap?: () => void,
+  getTestability: (e: Element) => ITestabilityService
+} = <any>{
+  bootstrap: noNg,
+  module: noNg,
+  element: noNg,
+  version: noNg,
+  resumeBootstrap: noNg,
+  getTestability: noNg
+};
 
 
 try {

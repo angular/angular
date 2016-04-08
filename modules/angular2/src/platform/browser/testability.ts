@@ -5,13 +5,7 @@ import {PromiseWrapper, ObservableWrapper} from 'angular2/src/facade/async';
 
 import {DOM} from 'angular2/src/platform/dom/dom_adapter';
 
-import {
-  Injectable,
-  TestabilityRegistry,
-  Testability,
-  GetTestability,
-  setTestabilityGetter
-} from 'angular2/core';
+import {Injectable, TestabilityRegistry, Testability, GetTestability, setTestabilityGetter} from 'angular2/core';
 
 class PublicTestability {
   /** @internal */
@@ -71,8 +65,8 @@ export class BrowserGetTestability implements GetTestability {
     global.frameworkStabilizers.push(whenAllStable);
   }
 
-  findTestabilityInTree(registry: TestabilityRegistry, elem: any,
-                        findInAncestors: boolean): Testability {
+  findTestabilityInTree(registry: TestabilityRegistry, elem: any, findInAncestors: boolean):
+      Testability {
     if (elem == null) {
       return null;
     }

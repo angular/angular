@@ -24,10 +24,11 @@ export class TimerWrapper {
 
 export class ObservableWrapper {
   // TODO(vsavkin): when we use rxnext, try inferring the generic type from the first arg
-  static subscribe<T>(emitter: any, onNext: (value: T) => void, onError?: (exception: any) => void,
-                      onComplete: () => void = () => {}): Object {
-    onError = (typeof onError === "function") && onError || noop;
-    onComplete = (typeof onComplete === "function") && onComplete || noop;
+  static subscribe<T>(
+      emitter: any, onNext: (value: T) => void, onError?: (exception: any) => void,
+      onComplete: () => void = () => {}): Object {
+    onError = (typeof onError === 'function') && onError || noop;
+    onComplete = (typeof onComplete === 'function') && onComplete || noop;
     return emitter.subscribe({next: onNext, error: onError, complete: onComplete});
   }
 

@@ -4,7 +4,7 @@ import {reflector} from 'angular2/src/core/reflection/reflection';
 
 export function hasLifecycleHook(e: RouteLifecycleHook, type): boolean {
   if (!(type instanceof Type)) return false;
-  return e.name in(<any>type).prototype;
+  return e.name in (<any>type).prototype;
 }
 
 export function getCanActivateHook(type): Function {

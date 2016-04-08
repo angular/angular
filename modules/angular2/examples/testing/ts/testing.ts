@@ -1,15 +1,4 @@
-import {
-  describe,
-  fdescribe,
-  xdescribe,
-  it,
-  fit,
-  xit,
-  beforeEach,
-  afterEach,
-  beforeEachProviders,
-  inject
-} from 'angular2/testing';
+import {describe, fdescribe, xdescribe, it, fit, xit, beforeEach, afterEach, beforeEachProviders, inject} from 'angular2/testing';
 import {provide} from 'angular2/core';
 
 var db: any;
@@ -30,8 +19,9 @@ fdescribe('some component', () => {
                        // This test will run.
                    });
 });
-describe('another component',
-         () => { it('also has a test', () => { throw 'This test will not run.'; }); });
+describe('another component', () => {
+  it('also has a test', () => { throw 'This test will not run.'; });
+});
 // #enddocregion
 
 // #docregion xdescribe
@@ -73,9 +63,10 @@ describe('some component', () => {
 // #docregion beforeEachProviders
 describe('some component', () => {
   beforeEachProviders(() => [provide(MyService, {useClass: MyMockService})]);
-  it('uses MyService', inject([MyService], (service: MyMockService) => {
-                                               // service is an instance of MyMockService.
-                                           }));
+  it('uses MyService', inject(
+                           [MyService], (service: MyMockService) => {
+                                            // service is an instance of MyMockService.
+                                        }));
 });
 // #enddocregion
 

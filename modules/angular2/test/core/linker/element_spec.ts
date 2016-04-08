@@ -48,8 +48,8 @@ import {ElementRef} from 'angular2/src/core/linker/element_ref';
 import {DynamicChangeDetector, ChangeDetectorRef, Parser, Lexer} from 'angular2/src/core/change_detection/change_detection';
 import {ChangeDetectorRef_} from 'angular2/src/core/change_detection/change_detector_ref';
 import {QueryList} from 'angular2/src/core/linker/query_list';
-import {AppView, AppProtoView} from "angular2/src/core/linker/view";
-import {ViewType} from "angular2/src/core/linker/view_type";
+import {AppView, AppProtoView} from 'angular2/src/core/linker/view';
+import {ViewType} from 'angular2/src/core/linker/view_type';
 
 @Directive({selector: ''})
 class SimpleDirective {}
@@ -101,18 +101,18 @@ class NeedsDirectiveFromHostShadowDom {
 @Directive({selector: ''})
 class NeedsService {
   service: any;
-  constructor(@Inject("service") service) { this.service = service; }
+  constructor(@Inject('service') service) { this.service = service; }
 }
 
 @Directive({selector: ''})
 class NeedsServiceFromHost {
   service: any;
-  constructor(@Host() @Inject("service") service) { this.service = service; }
+  constructor(@Host() @Inject('service') service) { this.service = service; }
 }
 
 class HasEventEmitter {
   emitter;
-  constructor() { this.emitter = "emitter"; }
+  constructor() { this.emitter = 'emitter'; }
 }
 
 @Directive({selector: ''})
@@ -149,7 +149,7 @@ class NeedsViewQuery {
 @Directive({selector: ''})
 class NeedsQueryByVarBindings {
   query: QueryList<any>;
-  constructor(@Query("one,two") query: QueryList<any>) { this.query = query; }
+  constructor(@Query('one,two') query: QueryList<any>) { this.query = query; }
 }
 
 @Directive({selector: ''})
@@ -334,11 +334,11 @@ export function main() {
     }));
   }
 
-  describe("ProtoAppElement", () => {
+  describe('ProtoAppElement', () => {
     init();
 
     describe('inline strategy', () => {
-      it("should allow for direct access using getProviderAtIndex", () => {
+      it('should allow for direct access using getProviderAtIndex', () => {
         var proto = protoAppElement(0, [SimpleDirective]);
 
         expect(proto.getProviderAtIndex(0)).toBeAnInstanceOf(DirectiveProvider);
@@ -348,7 +348,7 @@ export function main() {
     });
 
     describe('dynamic strategy', () => {
-      it("should allow for direct access using getProviderAtIndex", () => {
+      it('should allow for direct access using getProviderAtIndex', () => {
         var proto = protoAppElement(0, dynamicStrategyDirectives);
 
         expect(proto.getProviderAtIndex(0)).toBeAnInstanceOf(DirectiveProvider);
@@ -359,8 +359,8 @@ export function main() {
       });
     });
 
-    describe(".create", () => {
-      it("should collect providers from all directives", () => {
+    describe('.create', () => {
+      it('should collect providers from all directives', () => {
         mockDirectiveMeta.set(SimpleDirective, new DirectiveMetadata({providers: [provide('injectable1', {useValue: 'injectable1'})]}));
         mockDirectiveMeta.set(SomeOtherDirective, new DirectiveMetadata({
             providers: [provide('injectable2', {useValue: 'injectable2'})]
@@ -372,21 +372,21 @@ export function main() {
 
         expect(pel.getProviderAtIndex(0).key.token).toBe(SimpleDirective);
         expect(pel.getProviderAtIndex(1).key.token).toBe(SomeOtherDirective);
-        expect(pel.getProviderAtIndex(2).key.token).toEqual("injectable1");
-        expect(pel.getProviderAtIndex(3).key.token).toEqual("injectable2");
+        expect(pel.getProviderAtIndex(2).key.token).toEqual('injectable1');
+        expect(pel.getProviderAtIndex(3).key.token).toEqual('injectable2');
       });
 
-      it("should collect view providers from the component", () => {
+      it('should collect view providers from the component', () => {
         mockDirectiveMeta.set(SimpleDirective, new ComponentMetadata({
                               viewProviders: [provide('injectable1', {useValue: 'injectable1'})]
                             }));
         var pel = protoAppElement(0, [SimpleDirective]);
 
         expect(pel.getProviderAtIndex(0).key.token).toBe(SimpleDirective);
-        expect(pel.getProviderAtIndex(1).key.token).toEqual("injectable1");
+        expect(pel.getProviderAtIndex(1).key.token).toEqual('injectable1');
       });
 
-      it("should flatten nested arrays in viewProviders and providers", () => {
+      it('should flatten nested arrays in viewProviders and providers', () => {
         mockDirectiveMeta.set(SimpleDirective, new ComponentMetadata({
                 viewProviders: [[[provide('view', {useValue: 'view'})]]],
                 providers: [[[provide('host', {useValue: 'host'})]]]
@@ -394,8 +394,8 @@ export function main() {
         var pel = protoAppElement(0, [SimpleDirective]);
 
         expect(pel.getProviderAtIndex(0).key.token).toBe(SimpleDirective);
-        expect(pel.getProviderAtIndex(1).key.token).toEqual("view");
-        expect(pel.getProviderAtIndex(2).key.token).toEqual("host");
+        expect(pel.getProviderAtIndex(1).key.token).toEqual('view');
+        expect(pel.getProviderAtIndex(2).key.token).toEqual('host');
       });
 
       it('should support an arbitrary number of providers', () => {
@@ -406,7 +406,7 @@ export function main() {
     });
   });
 
-  describe("AppElement", () => {
+  describe('AppElement', () => {
     init();
 
     [{ strategy: 'inline', directives: [] }, { strategy: 'dynamic',
@@ -415,14 +415,14 @@ export function main() {
       var extraDirectives = context['directives'];
       describe(`${context['strategy']} strategy`, () => {
 
-        describe("injection", () => {
-          it("should instantiate directives that have no dependencies", () => {
+        describe('injection', () => {
+          it('should instantiate directives that have no dependencies', () => {
             var directives = ListWrapper.concat([SimpleDirective], extraDirectives);
             var el = appElement(null, directives);
             expect(el.get(SimpleDirective)).toBeAnInstanceOf(SimpleDirective);
           });
 
-          it("should instantiate directives that depend on an arbitrary number of directives", () => {
+          it('should instantiate directives that depend on an arbitrary number of directives', () => {
             var directives = ListWrapper.concat([SimpleDirective, NeedsDirective], extraDirectives);
             var el = appElement(null, directives);
 
@@ -432,7 +432,7 @@ export function main() {
             expect(d.dependency).toBeAnInstanceOf(SimpleDirective);
           });
 
-          it("should instantiate providers that have dependencies with set visibility",
+          it('should instantiate providers that have dependencies with set visibility',
              function() {
                mockDirectiveMeta.set(SimpleDirective, new ComponentMetadata({
                   providers: [provide('injectable1', {useValue: 'injectable1'})]
@@ -452,7 +452,7 @@ export function main() {
                expect(childInj.get('injectable2')).toEqual('injectable1-injectable2');
              });
 
-          it("should instantiate providers that have dependencies", () => {
+          it('should instantiate providers that have dependencies', () => {
             var providers = [
                     provide('injectable1', {useValue: 'injectable1'}),
                     provide('injectable2', {useFactory:
@@ -466,7 +466,7 @@ export function main() {
             expect(el.get('injectable2')).toEqual('injectable1-injectable2');
           });
 
-          it("should instantiate viewProviders that have dependencies", () => {
+          it('should instantiate viewProviders that have dependencies', () => {
             var viewProviders = [
                     provide('injectable1', {useValue: 'injectable1'}),
                     provide('injectable2', {useFactory:
@@ -481,7 +481,7 @@ export function main() {
             expect(el.get('injectable2')).toEqual('injectable1-injectable2');
           });
 
-          it("should instantiate components that depend on viewProviders providers", () => {
+          it('should instantiate components that depend on viewProviders providers', () => {
             mockDirectiveMeta.set(NeedsService, new ComponentMetadata({
               viewProviders: [provide('service', {useValue: 'service'})]
             }));
@@ -490,7 +490,7 @@ export function main() {
             expect(el.get(NeedsService).service).toEqual('service');
           });
 
-          it("should instantiate providers lazily", () => {
+          it('should instantiate providers lazily', () => {
             var created = false;
             mockDirectiveMeta.set(SimpleDirective, new ComponentMetadata({
               providers: [provide('service', {useFactory: () => created = true})]
@@ -506,7 +506,7 @@ export function main() {
             expect(created).toBe(true);
           });
 
-          it("should instantiate view providers lazily", () => {
+          it('should instantiate view providers lazily', () => {
             var created = false;
             mockDirectiveMeta.set(SimpleDirective, new ComponentMetadata({
                                      viewProviders: [provide('service', {useFactory: () => created = true})]
@@ -522,18 +522,18 @@ export function main() {
             expect(created).toBe(true);
           });
 
-          it("should not instantiate other directives that depend on viewProviders providers",
+          it('should not instantiate other directives that depend on viewProviders providers',
              () => {
                mockDirectiveMeta.set(SimpleDirective,
                new ComponentMetadata({
-                 viewProviders: [provide("service", {useValue: "service"})]
+                 viewProviders: [provide('service', {useValue: 'service'})]
                }));
                expect(() => { appElement(null, ListWrapper.concat([SimpleDirective, NeedsService], extraDirectives)); })
                    .toThrowError(containsRegexp(
                        `No provider for service! (${stringify(NeedsService) } -> service)`));
              });
 
-          it("should instantiate directives that depend on providers of other directives", () => {
+          it('should instantiate directives that depend on providers of other directives', () => {
             mockDirectiveMeta.set(SimpleDirective, new ComponentMetadata({
                       providers: [provide('service', {useValue: 'hostService'})]})
                     );
@@ -544,7 +544,7 @@ export function main() {
             expect(shadowInj.get(NeedsService).service).toEqual('hostService');
           });
 
-          it("should instantiate directives that depend on view providers of a component", () => {
+          it('should instantiate directives that depend on view providers of a component', () => {
             mockDirectiveMeta.set(SimpleDirective, new ComponentMetadata({
                       viewProviders: [provide('service', {useValue: 'hostService'})]})
                     );
@@ -555,7 +555,7 @@ export function main() {
             expect(shadowInj.get(NeedsService).service).toEqual('hostService');
           });
 
-          it("should instantiate directives in a root embedded view that depend on view providers of a component", () => {
+          it('should instantiate directives in a root embedded view that depend on view providers of a component', () => {
             mockDirectiveMeta.set(SimpleDirective, new ComponentMetadata({
                       viewProviders: [provide('service', {useValue: 'hostService'})]})
                     );
@@ -570,9 +570,9 @@ export function main() {
             expect(rootEmbeddedEl.get(NeedsService).service).toEqual('hostService');
           });
 
-          it("should instantiate directives that depend on imperatively created injector (bootstrap)", () => {
+          it('should instantiate directives that depend on imperatively created injector (bootstrap)', () => {
             var rootInjector = Injector.resolveAndCreate([
-              provide("service", {useValue: 'appService'})
+              provide('service', {useValue: 'appService'})
             ]);
             var view = createView(ViewType.HOST, null, null, rootInjector);
             expect(appElement(null, [NeedsService], view).get(NeedsService).service).toEqual('appService');
@@ -580,9 +580,9 @@ export function main() {
             expect(() => appElement(null, [NeedsServiceFromHost], view)).toThrowError();
           });
 
-          it("should instantiate directives that depend on imperatively created providers (root injector)", () => {
+          it('should instantiate directives that depend on imperatively created providers (root injector)', () => {
             var imperativelyCreatedProviders = Injector.resolve([
-              provide("service", {useValue: 'appService'})
+              provide('service', {useValue: 'appService'})
             ]);
             var containerAppElement = appElement(null, []);
             var view = createView(ViewType.HOST, containerAppElement, imperativelyCreatedProviders, null);
@@ -590,8 +590,8 @@ export function main() {
             expect(appElement(null, [NeedsServiceFromHost], view).get(NeedsServiceFromHost).service).toEqual('appService');
           });
 
-          it("should not instantiate a directive in a view that has a host dependency on providers"+
-            " of the component", () => {
+          it('should not instantiate a directive in a view that has a host dependency on providers'+
+            ' of the component', () => {
             mockDirectiveMeta.set(SomeOtherDirective, new DirectiveMetadata({
                     providers: [provide('service', {useValue: 'hostService'})]})
                 );
@@ -600,11 +600,11 @@ export function main() {
                 ListWrapper.concat([SomeOtherDirective], extraDirectives),
                 ListWrapper.concat([NeedsServiceFromHost], extraDirectives)
               );
-            }).toThrowError(new RegExp("No provider for service!"));
+            }).toThrowError(new RegExp('No provider for service!'));
           });
 
-          it("should not instantiate a directive in a view that has a host dependency on providers"+
-            " of a decorator directive", () => {
+          it('should not instantiate a directive in a view that has a host dependency on providers'+
+            ' of a decorator directive', () => {
             mockDirectiveMeta.set(SomeOtherDirective, new DirectiveMetadata({
                       providers: [provide('service', {useValue: 'hostService'})]}));
             expect(() => {
@@ -612,10 +612,10 @@ export function main() {
                 ListWrapper.concat([SimpleDirective, SomeOtherDirective], extraDirectives),
                 ListWrapper.concat([NeedsServiceFromHost], extraDirectives)
               );
-            }).toThrowError(new RegExp("No provider for service!"));
+            }).toThrowError(new RegExp('No provider for service!'));
           });
 
-          it("should get directives", () => {
+          it('should get directives', () => {
             var child = hostShadowElement(
                 ListWrapper.concat([SomeOtherDirective, SimpleDirective], extraDirectives),
                 [NeedsDirectiveFromHostShadowDom]);
@@ -626,7 +626,7 @@ export function main() {
             expect(d.dependency).toBeAnInstanceOf(SimpleDirective);
           });
 
-          it("should get directives from the host", () => {
+          it('should get directives from the host', () => {
             var child = parentChildElements(ListWrapper.concat([SimpleDirective], extraDirectives),
                                              [NeeedsDirectiveFromHost]);
 
@@ -636,19 +636,19 @@ export function main() {
             expect(d.dependency).toBeAnInstanceOf(SimpleDirective);
           });
 
-          it("should throw when a dependency cannot be resolved", () => {
+          it('should throw when a dependency cannot be resolved', () => {
             expect(() => appElement(null, ListWrapper.concat([NeeedsDirectiveFromHost], extraDirectives)))
                 .toThrowError(containsRegexp(
                     `No provider for ${stringify(SimpleDirective) }! (${stringify(NeeedsDirectiveFromHost) } -> ${stringify(SimpleDirective) })`));
           });
 
-          it("should inject null when an optional dependency cannot be resolved", () => {
+          it('should inject null when an optional dependency cannot be resolved', () => {
             var el = appElement(null, ListWrapper.concat([OptionallyNeedsDirective], extraDirectives));
             var d = el.get(OptionallyNeedsDirective);
             expect(d.dependency).toEqual(null);
           });
 
-          it("should allow for direct access using getDirectiveAtIndex", () => {
+          it('should allow for direct access using getDirectiveAtIndex', () => {
             var providers =
                 ListWrapper.concat([SimpleDirective], extraDirectives);
 
@@ -662,7 +662,7 @@ export function main() {
                 .toThrowError(`Index ${firsIndexOut} is out-of-bounds.`);
           });
 
-          it("should instantiate directives that depend on the containing component", () => {
+          it('should instantiate directives that depend on the containing component', () => {
             mockDirectiveMeta.set(SimpleDirective, new ComponentMetadata());
             var shadow = hostShadowElement(ListWrapper.concat([SimpleDirective], extraDirectives),
                                              [NeeedsDirectiveFromHost]);
@@ -672,7 +672,7 @@ export function main() {
             expect(d.dependency).toBeAnInstanceOf(SimpleDirective);
           });
 
-          it("should not instantiate directives that depend on other directives in the containing component's ElementInjector",
+          it('should not instantiate directives that depend on other directives in the containing component\'s ElementInjector',
              () => {
                mockDirectiveMeta.set(SomeOtherDirective, new ComponentMetadata());
                expect(() =>
@@ -708,13 +708,13 @@ export function main() {
           });
         });
 
-        describe("refs", () => {
-          it("should inject ElementRef", () => {
+        describe('refs', () => {
+          it('should inject ElementRef', () => {
             var el = appElement(null, ListWrapper.concat([NeedsElementRef], extraDirectives));
             expect(el.get(NeedsElementRef).elementRef).toBe(el.ref);
           });
 
-          it("should inject ChangeDetectorRef of the component's view into the component via a proxy", () => {
+          it('should inject ChangeDetectorRef of the component\'s view into the component via a proxy', () => {
             mockDirectiveMeta.set(ComponentNeedsChangeDetectorRef, new ComponentMetadata());
             var host = appElement(null, ListWrapper.concat([ComponentNeedsChangeDetectorRef], extraDirectives));
             var view = createView(ViewType.COMPONENT, host);
@@ -723,7 +723,7 @@ export function main() {
             expect((<any>view.changeDetector).spy('markPathToRootAsCheckOnce')).toHaveBeenCalled();
           });
 
-          it("should inject ChangeDetectorRef of the containing component into directives", () => {
+          it('should inject ChangeDetectorRef of the containing component into directives', () => {
             mockDirectiveMeta.set(DirectiveNeedsChangeDetectorRef, new DirectiveMetadata());
             var view = createView(ViewType.HOST);
             var el = appElement(null, ListWrapper.concat([DirectiveNeedsChangeDetectorRef], extraDirectives), view);
@@ -735,12 +735,12 @@ export function main() {
             expect(el.get(NeedsViewContainer).viewContainer).toBeAnInstanceOf(ViewContainerRef_);
           });
 
-          it("should inject TemplateRef", () => {
+          it('should inject TemplateRef', () => {
             var el = appElement(null, ListWrapper.concat([NeedsTemplateRef], extraDirectives), null, dummyViewFactory);
             expect(el.get(NeedsTemplateRef).templateRef.elementRef).toBe(el.ref);
           });
 
-          it("should throw if there is no TemplateRef", () => {
+          it('should throw if there is no TemplateRef', () => {
             expect(() => appElement(null, ListWrapper.concat([NeedsTemplateRef], extraDirectives)))
                 .toThrowError(
                     `No provider for TemplateRef! (${stringify(NeedsTemplateRef) } -> TemplateRef)`);
@@ -795,7 +795,7 @@ export function main() {
             var dirs:Type[] = [NeedsQueryByVarBindings];
 
             var dirVariableBindings:{[key:string]:number} = {
-              "one": null // element
+              'one': null // element
             };
 
             var el = appElement(null, dirs.concat(extraDirectives), null, null, null, dirVariableBindings);
@@ -810,8 +810,8 @@ export function main() {
             var dirs:Type[] = [NeedsQueryByVarBindings, NeedsDirective, SimpleDirective];
 
             var dirVariableBindings:{[key:string]:number} = {
-              "one": 2, // 2 is the index of SimpleDirective
-              "two": 1 // 1 is the index of NeedsDirective
+              'one': 2, // 2 is the index of SimpleDirective
+              'two': 1 // 1 is the index of NeedsDirective
             };
 
             var el = appElement(null, dirs.concat(extraDirectives), null, null, null, dirVariableBindings);

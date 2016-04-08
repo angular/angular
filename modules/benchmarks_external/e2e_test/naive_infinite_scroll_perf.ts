@@ -21,8 +21,7 @@ describe('ng-dart1.x naive infinite scroll benchmark', function() {
           browser.sleep(s);
         },
         params: [
-          {name: 'appSize', value: appSize},
-          {name: 'iterationCount', value: 20, scale: 'linear'},
+          {name: 'appSize', value: appSize}, {name: 'iterationCount', value: 20, scale: 'linear'},
           {name: 'scrollIncrement', value: 40}
         ],
         waitForAngular2: false

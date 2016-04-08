@@ -1,14 +1,4 @@
-import {
-  AsyncTestCompleter,
-  describe,
-  it,
-  iit,
-  ddescribe,
-  expect,
-  inject,
-  beforeEach,
-  SpyObject
-} from 'angular2/testing_internal';
+import {AsyncTestCompleter, describe, it, iit, ddescribe, expect, inject, beforeEach, SpyObject} from 'angular2/testing_internal';
 
 import {GeneratedUrl} from 'angular2/src/router/rules/route_paths/route_path';
 import {RegexRoutePath} from 'angular2/src/router/rules/route_paths/regex_route_path';

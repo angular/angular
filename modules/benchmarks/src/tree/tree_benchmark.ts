@@ -1,26 +1,12 @@
 import {bootstrap} from 'angular2/platform/browser';
-import {
-  Compiler,
-  Component,
-  Directive,
-  ViewContainerRef,
-  bind,
-  provide,
-  Provider
-} from 'angular2/core';
+import {Compiler, Component, Directive, ViewContainerRef, bind, provide, Provider} from 'angular2/core';
 import {NgIf} from 'angular2/common';
 
 import {ApplicationRef} from 'angular2/src/core/application_ref';
 import {DOM} from 'angular2/src/platform/dom/dom_adapter';
 import {isPresent} from 'angular2/src/facade/lang';
 import {window, document, gc} from 'angular2/src/facade/browser';
-import {
-  getIntParameter,
-  getStringParameter,
-  bindAction,
-  windowProfile,
-  windowProfileEnd
-} from 'angular2/src/testing/benchmark_util';
+import {getIntParameter, getStringParameter, bindAction, windowProfile, windowProfileEnd} from 'angular2/src/testing/benchmark_util';
 import {BrowserDomAdapter} from 'angular2/src/platform/browser/browser_adapter';
 
 function createProviders(): Provider[] {
@@ -89,17 +75,16 @@ export function main() {
   function noop() {}
 
   function initNg2() {
-    bootstrap(AppComponent, createProviders())
-        .then((ref) => {
-          var injector = ref.injector;
-          appRef = injector.get(ApplicationRef);
+    bootstrap(AppComponent, createProviders()).then((ref) => {
+      var injector = ref.injector;
+      appRef = injector.get(ApplicationRef);
 
-          app = ref.hostComponent;
-          bindAction('#ng2DestroyDom', ng2DestroyDom);
-          bindAction('#ng2CreateDom', ng2CreateDom);
-          bindAction('#ng2UpdateDomProfile', profile(ng2CreateDom, noop, 'ng2-update'));
-          bindAction('#ng2CreateDomProfile', profile(ng2CreateDom, ng2DestroyDom, 'ng2-create'));
-        });
+      app = ref.hostComponent;
+      bindAction('#ng2DestroyDom', ng2DestroyDom);
+      bindAction('#ng2CreateDom', ng2CreateDom);
+      bindAction('#ng2UpdateDomProfile', profile(ng2CreateDom, noop, 'ng2-update'));
+      bindAction('#ng2CreateDomProfile', profile(ng2CreateDom, ng2DestroyDom, 'ng2-create'));
+    });
   }
 
   function baselineDestroyDom() { baselineRootTreeComponent.update(new TreeNode('', null, null)); }
@@ -120,8 +105,9 @@ export function main() {
     bindAction('#baselineCreateDom', baselineCreateDom);
 
     bindAction('#baselineUpdateDomProfile', profile(baselineCreateDom, noop, 'baseline-update'));
-    bindAction('#baselineCreateDomProfile',
-               profile(baselineCreateDom, baselineDestroyDom, 'baseline-create'));
+    bindAction(
+        '#baselineCreateDomProfile',
+        profile(baselineCreateDom, baselineDestroyDom, 'baseline-create'));
   }
 
   initNg2();
@@ -141,8 +127,9 @@ class TreeNode {
 
 function buildTree(maxDepth, values, curDepth) {
   if (maxDepth === curDepth) return new TreeNode('', null, null);
-  return new TreeNode(values[curDepth], buildTree(maxDepth, values, curDepth + 1),
-                      buildTree(maxDepth, values, curDepth + 1));
+  return new TreeNode(
+      values[curDepth], buildTree(maxDepth, values, curDepth + 1),
+      buildTree(maxDepth, values, curDepth + 1));
 }
 
 // http://jsperf.com/nextsibling-vs-childnodes

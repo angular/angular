@@ -1,17 +1,5 @@
-import {
-  ddescribe,
-  describe,
-  it,
-  iit,
-  xit,
-  expect,
-  beforeEach,
-  afterEach
-} from 'angular2/testing_internal';
-import {
-  DefaultKeyValueDiffer,
-  DefaultKeyValueDifferFactory
-} from 'angular2/src/core/change_detection/differs/default_keyvalue_differ';
+import {ddescribe, describe, it, iit, xit, expect, beforeEach, afterEach} from 'angular2/testing_internal';
+import {DefaultKeyValueDiffer, DefaultKeyValueDifferFactory} from 'angular2/src/core/change_detection/differs/default_keyvalue_differ';
 import {NumberWrapper, isJsObject} from 'angular2/src/facade/lang';
 import {kvChangesAsString} from '../../../core/change_detection/util';
 
@@ -52,12 +40,11 @@ export function main() {
         m.set(2, 10);
         m.set(1, 20);
         differ.check(m);
-        expect(differ.toString())
-            .toEqual(kvChangesAsString({
-              map: ['1[10->20]', '2[20->10]'],
-              previous: ['1[10->20]', '2[20->10]'],
-              changes: ['1[10->20]', '2[20->10]']
-            }));
+        expect(differ.toString()).toEqual(kvChangesAsString({
+          map: ['1[10->20]', '2[20->10]'],
+          previous: ['1[10->20]', '2[20->10]'],
+          changes: ['1[10->20]', '2[20->10]']
+        }));
       });
 
       it('should expose previous and current value', () => {
@@ -95,13 +82,12 @@ export function main() {
         m.set('b', 'BB');
         m.set('d', 'D');
         differ.check(m);
-        expect(differ.toString())
-            .toEqual(kvChangesAsString({
-              map: ['a', 'b[B->BB]', 'd[null->D]'],
-              previous: ['a', 'b[B->BB]'],
-              additions: ['d[null->D]'],
-              changes: ['b[B->BB]']
-            }));
+        expect(differ.toString()).toEqual(kvChangesAsString({
+          map: ['a', 'b[B->BB]', 'd[null->D]'],
+          previous: ['a', 'b[B->BB]'],
+          additions: ['d[null->D]'],
+          changes: ['b[B->BB]']
+        }));
 
         m.delete('b');
         differ.check(m);
@@ -111,9 +97,10 @@ export function main() {
 
         m.clear();
         differ.check(m);
-        expect(differ.toString())
-            .toEqual(kvChangesAsString(
-                {previous: ['a[A->null]', 'd[D->null]'], removals: ['a[A->null]', 'd[D->null]']}));
+        expect(differ.toString()).toEqual(kvChangesAsString({
+          previous: ['a[A->null]', 'd[D->null]'],
+          removals: ['a[A->null]', 'd[D->null]']
+        }));
       });
 
       it('should test string by value rather than by reference (DART)', () => {
@@ -145,7 +132,7 @@ export function main() {
           it('should support JS Object', () => {
             var f = new DefaultKeyValueDifferFactory();
             expect(f.supports({})).toBeTruthy();
-            expect(f.supports("not supported")).toBeFalsy();
+            expect(f.supports('not supported')).toBeFalsy();
             expect(f.supports(0)).toBeFalsy();
             expect(f.supports(null)).toBeFalsy();
           });
@@ -168,32 +155,29 @@ export function main() {
             m['b'] = 'BB';
             m['d'] = 'D';
             differ.check(m);
-            expect(differ.toString())
-                .toEqual(kvChangesAsString({
-                  map: ['a', 'b[B->BB]', 'd[null->D]'],
-                  previous: ['a', 'b[B->BB]'],
-                  additions: ['d[null->D]'],
-                  changes: ['b[B->BB]']
-                }));
+            expect(differ.toString()).toEqual(kvChangesAsString({
+              map: ['a', 'b[B->BB]', 'd[null->D]'],
+              previous: ['a', 'b[B->BB]'],
+              additions: ['d[null->D]'],
+              changes: ['b[B->BB]']
+            }));
 
             m = {};
             m['a'] = 'A';
             m['d'] = 'D';
             differ.check(m);
-            expect(differ.toString())
-                .toEqual(kvChangesAsString({
-                  map: ['a', 'd'],
-                  previous: ['a', 'b[BB->null]', 'd'],
-                  removals: ['b[BB->null]']
-                }));
+            expect(differ.toString()).toEqual(kvChangesAsString({
+              map: ['a', 'd'],
+              previous: ['a', 'b[BB->null]', 'd'],
+              removals: ['b[BB->null]']
+            }));
 
             m = {};
             differ.check(m);
-            expect(differ.toString())
-                .toEqual(kvChangesAsString({
-                  previous: ['a[A->null]', 'd[D->null]'],
-                  removals: ['a[A->null]', 'd[D->null]']
-                }));
+            expect(differ.toString()).toEqual(kvChangesAsString({
+              previous: ['a[A->null]', 'd[D->null]'],
+              removals: ['a[A->null]', 'd[D->null]']
+            }));
           });
         });
 
@@ -217,7 +201,8 @@ export function main() {
           });
 
           it('should throw when given an invalid collection', () => {
-            expect(() => differ.diff("invalid")).toThrowErrorWith("Error trying to diff 'invalid'");
+            expect(() => differ.diff('invalid'))
+                .toThrowErrorWith('Error trying to diff \'invalid\'');
           });
         });
       }

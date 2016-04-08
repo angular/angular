@@ -49,8 +49,9 @@ export class JsonFileReporter extends Reporter {
 var _PATH = new OpaqueToken('JsonFileReporter.path');
 var _PROVIDERS = [
   bind(JsonFileReporter)
-      .toFactory((sampleDescription, path, writeFile, now) =>
-                     new JsonFileReporter(sampleDescription, path, writeFile, now),
-                 [SampleDescription, _PATH, Options.WRITE_FILE, Options.NOW]),
+      .toFactory(
+          (sampleDescription, path, writeFile, now) =>
+              new JsonFileReporter(sampleDescription, path, writeFile, now),
+          [SampleDescription, _PATH, Options.WRITE_FILE, Options.NOW]),
   provide(_PATH, {useValue: '.'})
 ];

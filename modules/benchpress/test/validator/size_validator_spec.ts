@@ -1,13 +1,4 @@
-import {
-  describe,
-  ddescribe,
-  it,
-  iit,
-  xit,
-  expect,
-  beforeEach,
-  afterEach
-} from 'angular2/testing_internal';
+import {describe, ddescribe, it, iit, xit, expect, beforeEach, afterEach} from 'angular2/testing_internal';
 import {Date, DateWrapper} from 'angular2/src/facade/lang';
 import {ListWrapper} from 'angular2/src/facade/collection';
 
@@ -18,10 +9,10 @@ export function main() {
     var validator;
 
     function createValidator(size) {
-      validator =
-          Injector.resolveAndCreate(
-                      [SizeValidator.BINDINGS, bind(SizeValidator.SAMPLE_SIZE).toValue(size)])
-              .get(SizeValidator);
+      validator = Injector
+                      .resolveAndCreate(
+                          [SizeValidator.BINDINGS, bind(SizeValidator.SAMPLE_SIZE).toValue(size)])
+                      .get(SizeValidator);
     }
 
     it('should return sampleSize as description', () => {

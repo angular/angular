@@ -1,28 +1,11 @@
 import {HtmlParser} from 'angular2/src/compiler/html_parser';
 import {ParseSourceSpan, ParseError} from 'angular2/src/compiler/parse_util';
-import {
-  HtmlAst,
-  HtmlAstVisitor,
-  HtmlElementAst,
-  HtmlAttrAst,
-  HtmlTextAst,
-  HtmlCommentAst,
-  htmlVisitAll
-} from 'angular2/src/compiler/html_ast';
+import {HtmlAst, HtmlAstVisitor, HtmlElementAst, HtmlAttrAst, HtmlTextAst, HtmlCommentAst, htmlVisitAll} from 'angular2/src/compiler/html_ast';
 import {isPresent, isBlank} from 'angular2/src/facade/lang';
 import {StringMapWrapper} from 'angular2/src/facade/collection';
 import {Parser} from 'angular2/src/core/change_detection/parser/parser';
 import {Message, id} from './message';
-import {
-  I18nError,
-  Part,
-  I18N_ATTR_PREFIX,
-  partition,
-  meaning,
-  description,
-  stringifyNodes,
-  messageFromAttribute
-} from './shared';
+import {I18nError, Part, I18N_ATTR_PREFIX, partition, meaning, description, stringifyNodes, messageFromAttribute} from './shared';
 
 /**
  * All messages extracted from a template.

@@ -1,12 +1,4 @@
-import {
-  beforeEach,
-  ddescribe,
-  describe,
-  el,
-  expect,
-  iit,
-  it,
-} from 'angular2/testing_internal';
+import {beforeEach, ddescribe, describe, el, expect, iit, it,} from 'angular2/testing_internal';
 
 import {stringify} from 'angular2/src/facade/lang';
 

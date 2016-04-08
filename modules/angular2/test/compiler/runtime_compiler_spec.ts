@@ -1,17 +1,4 @@
-import {
-  ddescribe,
-  describe,
-  xdescribe,
-  it,
-  iit,
-  xit,
-  expect,
-  beforeEach,
-  afterEach,
-  AsyncTestCompleter,
-  inject,
-  beforeEachProviders
-} from 'angular2/testing_internal';
+import {ddescribe, describe, xdescribe, it, iit, xit, expect, beforeEach, afterEach, AsyncTestCompleter, inject, beforeEachProviders} from 'angular2/testing_internal';
 
 import {Component, provide} from 'angular2/core';
 import {PromiseWrapper} from 'angular2/src/facade/async';
@@ -38,11 +25,10 @@ export function main() {
 
     it('compileInHost should compile the template via TemplateCompiler',
        inject([AsyncTestCompleter], (async) => {
-         compiler.compileInHost(SomeComponent)
-             .then((hostViewFactoryRef) => {
-               expect(hostViewFactoryRef.internalHostViewFactory).toBe(someHostViewFactory);
-               async.done();
-             });
+         compiler.compileInHost(SomeComponent).then((hostViewFactoryRef) => {
+           expect(hostViewFactoryRef.internalHostViewFactory).toBe(someHostViewFactory);
+           async.done();
+         });
        }));
 
     it('should clear the cache', () => {

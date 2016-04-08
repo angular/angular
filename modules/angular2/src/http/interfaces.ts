@@ -28,8 +28,8 @@ export abstract class Connection {
  */
 export interface RequestOptionsArgs {
   url?: string;
-  method?: string | RequestMethod;
-  search?: string | URLSearchParams;
+  method?: string|RequestMethod;
+  search?: string|URLSearchParams;
   headers?: Headers;
   // TODO: Support Blob, ArrayBuffer, JSON, URLSearchParams, FormData
   body?: string;
@@ -46,10 +46,7 @@ export interface RequestArgs extends RequestOptionsArgs { url: string; }
  */
 export type ResponseOptionsArgs = {
   // TODO: Support Blob, ArrayBuffer, JSON
-  body?: string | Object | FormData;
-  status?: number;
-  statusText?: string;
-  headers?: Headers;
+  body?: string | Object | FormData; status?: number; statusText?: string; headers?: Headers;
   type?: ResponseType;
   url?: string;
 }

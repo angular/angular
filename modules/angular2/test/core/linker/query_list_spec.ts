@@ -1,15 +1,4 @@
-import {
-  describe,
-  it,
-  expect,
-  beforeEach,
-  ddescribe,
-  iit,
-  xit,
-  el,
-  fakeAsync,
-  tick
-} from 'angular2/testing_internal';
+import {describe, it, expect, beforeEach, ddescribe, iit, xit, el, fakeAsync, tick} from 'angular2/testing_internal';
 import {MapWrapper, ListWrapper, iterateListLike} from 'angular2/src/facade/collection';
 import {IS_DART, StringWrapper} from 'angular2/src/facade/lang';
 import {ObservableWrapper} from 'angular2/src/facade/async';
@@ -60,22 +49,22 @@ export function main() {
     if (!IS_DART) {
       it('should support filter', () => {
         queryList.reset(['one', 'two']);
-        expect((<_JsQueryList>queryList).filter((x) => x == "one")).toEqual(['one']);
+        expect((<_JsQueryList>queryList).filter((x) => x == 'one')).toEqual(['one']);
       });
 
       it('should support reduce', () => {
-        queryList.reset(["one", "two"]);
-        expect((<_JsQueryList>queryList).reduce((a, x) => a + x, "start:")).toEqual("start:onetwo");
+        queryList.reset(['one', 'two']);
+        expect((<_JsQueryList>queryList).reduce((a, x) => a + x, 'start:')).toEqual('start:onetwo');
       });
 
       it('should support toArray', () => {
-        queryList.reset(["one", "two"]);
-        expect((<_JsQueryList>queryList).reduce((a, x) => a + x, "start:")).toEqual("start:onetwo");
+        queryList.reset(['one', 'two']);
+        expect((<_JsQueryList>queryList).reduce((a, x) => a + x, 'start:')).toEqual('start:onetwo');
       });
 
       it('should support toArray', () => {
-        queryList.reset(["one", "two"]);
-        expect((<_JsQueryList>queryList).toArray()).toEqual(["one", "two"]);
+        queryList.reset(['one', 'two']);
+        expect((<_JsQueryList>queryList).toArray()).toEqual(['one', 'two']);
       });
     }
 
@@ -113,7 +102,7 @@ export function main() {
              var recorded;
              ObservableWrapper.subscribe(queryList.changes, (v: any) => { recorded = v; });
 
-             queryList.reset(["one"]);
+             queryList.reset(['one']);
              queryList.notifyOnChanges();
              tick();
 

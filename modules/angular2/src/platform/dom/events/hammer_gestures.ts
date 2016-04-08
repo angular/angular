@@ -4,7 +4,7 @@ import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
 import {Injectable, Inject, OpaqueToken} from 'angular2/core';
 
 export const HAMMER_GESTURE_CONFIG: OpaqueToken =
-    CONST_EXPR(new OpaqueToken("HammerGestureConfig"));
+    CONST_EXPR(new OpaqueToken('HammerGestureConfig'));
 
 export interface HammerInstance {
   on(eventName: string, callback: Function): void;

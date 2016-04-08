@@ -35,7 +35,7 @@ declare module Intl {
   }
 
   interface DateTimeFormat {
-    format(date?: Date | number): string;
+    format(date?: Date|number): string;
   }
 
   var DateTimeFormat: {new (locale?: string, options?: DateTimeFormatOptions): DateTimeFormat};
@@ -48,15 +48,16 @@ export enum NumberFormatStyle {
 }
 
 export class NumberFormatter {
-  static format(num: number, locale: string, style: NumberFormatStyle,
-                {minimumIntegerDigits = 1, minimumFractionDigits = 0, maximumFractionDigits = 3,
-                 currency, currencyAsSymbol = false}: {
-                  minimumIntegerDigits?: number,
-                  minimumFractionDigits?: number,
-                  maximumFractionDigits?: number,
-                  currency?: string,
-                  currencyAsSymbol?: boolean
-                } = {}): string {
+  static format(
+      num: number, locale: string, style: NumberFormatStyle,
+      {minimumIntegerDigits = 1, minimumFractionDigits = 0, maximumFractionDigits = 3, currency,
+       currencyAsSymbol = false}: {
+        minimumIntegerDigits?: number,
+        minimumFractionDigits?: number,
+        maximumFractionDigits?: number,
+        currency?: string,
+        currencyAsSymbol?: boolean
+      } = {}): string {
     var intlOptions: Intl.NumberFormatOptions = {
       minimumIntegerDigits: minimumIntegerDigits,
       minimumFractionDigits: minimumFractionDigits,

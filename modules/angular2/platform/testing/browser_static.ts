@@ -1,12 +1,4 @@
-import {
-  APP_ID,
-  DirectiveResolver,
-  NgZone,
-  Provider,
-  ViewResolver,
-  PLATFORM_COMMON_PROVIDERS,
-  PLATFORM_INITIALIZER
-} from 'angular2/core';
+import {APP_ID, DirectiveResolver, NgZone, Provider, ViewResolver, PLATFORM_COMMON_PROVIDERS, PLATFORM_INITIALIZER} from 'angular2/core';
 import {BROWSER_APP_COMMON_PROVIDERS} from 'angular2/src/platform/browser_common';
 import {BrowserDomAdapter} from 'angular2/src/platform/browser/browser_adapter';
 
@@ -18,7 +10,7 @@ import {MockLocationStrategy} from 'angular2/src/mock/mock_location_strategy';
 import {LocationStrategy} from 'angular2/src/router/location/location_strategy';
 import {MockNgZone} from 'angular2/src/mock/ng_zone_mock';
 
-import {XHRImpl} from "angular2/src/platform/browser/xhr_impl";
+import {XHRImpl} from 'angular2/src/platform/browser/xhr_impl';
 import {XHR} from 'angular2/compiler';
 
 import {TestComponentBuilder} from 'angular2/src/testing/test_component_builder';
@@ -63,7 +55,6 @@ export const ADDITIONAL_TEST_BROWSER_PROVIDERS: Array<any /*Type | Provider | an
  */
 export const TEST_BROWSER_STATIC_APPLICATION_PROVIDERS: Array<any /*Type | Provider | any[]*/> =
     CONST_EXPR([
-      BROWSER_APP_COMMON_PROVIDERS,
-      new Provider(XHR, {useClass: XHRImpl}),
+      BROWSER_APP_COMMON_PROVIDERS, new Provider(XHR, {useClass: XHRImpl}),
       ADDITIONAL_TEST_BROWSER_PROVIDERS
     ]);

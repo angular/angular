@@ -2,49 +2,9 @@ import {Injectable} from 'angular2/src/core/di/decorators';
 import {isBlank, isPresent, StringWrapper} from 'angular2/src/facade/lang';
 import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
 import {ListWrapper} from 'angular2/src/facade/collection';
-import {
-  Lexer,
-  EOF,
-  isIdentifier,
-  Token,
-  $PERIOD,
-  $COLON,
-  $SEMICOLON,
-  $LBRACKET,
-  $RBRACKET,
-  $COMMA,
-  $LBRACE,
-  $RBRACE,
-  $LPAREN,
-  $RPAREN
-} from './lexer';
+import {Lexer, EOF, isIdentifier, Token, $PERIOD, $COLON, $SEMICOLON, $LBRACKET, $RBRACKET, $COMMA, $LBRACE, $RBRACE, $LPAREN, $RPAREN} from './lexer';
 import {reflector, Reflector} from 'angular2/src/core/reflection/reflection';
-import {
-  AST,
-  EmptyExpr,
-  ImplicitReceiver,
-  PropertyRead,
-  PropertyWrite,
-  SafePropertyRead,
-  LiteralPrimitive,
-  Binary,
-  PrefixNot,
-  Conditional,
-  BindingPipe,
-  Chain,
-  KeyedRead,
-  KeyedWrite,
-  LiteralArray,
-  LiteralMap,
-  Interpolation,
-  MethodCall,
-  SafeMethodCall,
-  FunctionCall,
-  TemplateBinding,
-  ASTWithSource,
-  AstVisitor,
-  Quote
-} from './ast';
+import {AST, EmptyExpr, ImplicitReceiver, PropertyRead, PropertyWrite, SafePropertyRead, LiteralPrimitive, Binary, PrefixNot, Conditional, BindingPipe, Chain, KeyedRead, KeyedWrite, LiteralArray, LiteralMap, Interpolation, MethodCall, SafeMethodCall, FunctionCall, TemplateBinding, ASTWithSource, AstVisitor, Quote} from './ast';
 
 
 var _implicitReceiver = new ImplicitReceiver();
@@ -152,9 +112,9 @@ export class Parser {
       } else if (part.trim().length > 0) {
         expressions.push(part);
       } else {
-        throw new ParseException('Blank expressions are not allowed in interpolated strings', input,
-                                 `at column ${this._findInterpolationErrorColumn(parts, i)} in`,
-                                 location);
+        throw new ParseException(
+            'Blank expressions are not allowed in interpolated strings', input,
+            `at column ${this._findInterpolationErrorColumn(parts, i)} in`, location);
       }
     }
     return new SplitInterpolation(strings, expressions);
@@ -167,9 +127,9 @@ export class Parser {
   private _checkNoInterpolation(input: string, location: any): void {
     var parts = StringWrapper.split(input, INTERPOLATION_REGEXP);
     if (parts.length > 1) {
-      throw new ParseException('Got interpolation ({{}}) where expression was expected', input,
-                               `at column ${this._findInterpolationErrorColumn(parts, 1)} in`,
-                               location);
+      throw new ParseException(
+          'Got interpolation ({{}}) where expression was expected', input,
+          `at column ${this._findInterpolationErrorColumn(parts, 1)} in`, location);
     }
   }
 
@@ -185,8 +145,9 @@ export class Parser {
 
 export class _ParseAST {
   index: number = 0;
-  constructor(public input: string, public location: any, public tokens: any[],
-              public reflector: Reflector, public parseAction: boolean) {}
+  constructor(
+      public input: string, public location: any, public tokens: any[], public reflector: Reflector,
+      public parseAction: boolean) {}
 
   peek(offset: number): Token {
     var i = this.index + offset;
@@ -267,7 +228,7 @@ export class _ParseAST {
 
       if (this.optionalCharacter($SEMICOLON)) {
         if (!this.parseAction) {
-          this.error("Binding expression cannot contain chained expression");
+          this.error('Binding expression cannot contain chained expression');
         }
         while (this.optionalCharacter($SEMICOLON)) {
         }  // read all semicolons
@@ -282,9 +243,9 @@ export class _ParseAST {
 
   parsePipe(): AST {
     var result = this.parseExpression();
-    if (this.optionalOperator("|")) {
+    if (this.optionalOperator('|')) {
       if (this.parseAction) {
-        this.error("Cannot have a pipe in an action expression");
+        this.error('Cannot have a pipe in an action expression');
       }
 
       do {
@@ -294,7 +255,7 @@ export class _ParseAST {
           args.push(this.parseExpression());
         }
         result = new BindingPipe(result, name, args);
-      } while (this.optionalOperator("|"));
+      } while (this.optionalOperator('|'));
     }
 
     return result;
@@ -428,7 +389,7 @@ export class _ParseAST {
       } else if (this.optionalCharacter($LBRACKET)) {
         var key = this.parsePipe();
         this.expectCharacter($RBRACKET);
-        if (this.optionalOperator("=")) {
+        if (this.optionalOperator('=')) {
           var value = this.parseConditional();
           result = new KeyedWrite(result, key, value);
         } else {
@@ -491,7 +452,7 @@ export class _ParseAST {
       this.error(`Unexpected token ${this.next}`);
     }
     // error() throws, so we don't reach here.
-    throw new BaseException("Fell through all cases in parsePrimary");
+    throw new BaseException('Fell through all cases in parsePrimary');
   }
 
   parseExpressionList(terminator: number): any[] {
@@ -532,15 +493,15 @@ export class _ParseAST {
 
     } else {
       if (isSafe) {
-        if (this.optionalOperator("=")) {
-          this.error("The '?.' operator cannot be used in the assignment");
+        if (this.optionalOperator('=')) {
+          this.error('The \'?.\' operator cannot be used in the assignment');
         } else {
           return new SafePropertyRead(receiver, id, this.reflector.getter(id));
         }
       } else {
-        if (this.optionalOperator("=")) {
+        if (this.optionalOperator('=')) {
           if (!this.parseAction) {
-            this.error("Bindings cannot contain assignments");
+            this.error('Bindings cannot contain assignments');
           }
 
           let value = this.parseConditional();
@@ -565,7 +526,7 @@ export class _ParseAST {
 
   parseBlockContent(): AST {
     if (!this.parseAction) {
-      this.error("Binding expression cannot contain chained expression");
+      this.error('Binding expression cannot contain chained expression');
     }
     var exprs = [];
     while (this.index < this.tokens.length && !this.next.isCharacter($RBRACE)) {
@@ -618,7 +579,7 @@ export class _ParseAST {
       var name = null;
       var expression = null;
       if (keyIsVar) {
-        if (this.optionalOperator("=")) {
+        if (this.optionalOperator('=')) {
           name = this.expectTemplateBindingKey();
         } else {
           name = '\$implicit';

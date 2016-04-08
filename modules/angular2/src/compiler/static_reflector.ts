@@ -1,30 +1,6 @@
 import {ListWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
-import {
-  isArray,
-  isBlank,
-  isNumber,
-  isPresent,
-  isPrimitive,
-  isString,
-  Type
-} from 'angular2/src/facade/lang';
-import {
-  AttributeMetadata,
-  DirectiveMetadata,
-  ComponentMetadata,
-  ContentChildrenMetadata,
-  ContentChildMetadata,
-  InputMetadata,
-  HostBindingMetadata,
-  HostListenerMetadata,
-  OutputMetadata,
-  PipeMetadata,
-  ViewMetadata,
-  ViewChildMetadata,
-  ViewChildrenMetadata,
-  ViewQueryMetadata,
-  QueryMetadata,
-} from 'angular2/src/core/metadata';
+import {isArray, isBlank, isNumber, isPresent, isPrimitive, isString, Type} from 'angular2/src/facade/lang';
+import {AttributeMetadata, DirectiveMetadata, ComponentMetadata, ContentChildrenMetadata, ContentChildMetadata, InputMetadata, HostBindingMetadata, HostListenerMetadata, OutputMetadata, PipeMetadata, ViewMetadata, ViewChildMetadata, ViewChildrenMetadata, ViewQueryMetadata, QueryMetadata,} from 'angular2/src/core/metadata';
 
 /**
  * The host of the static resolver is expected to be able to provide module metadata in the form of
@@ -124,60 +100,62 @@ export class StaticReflector {
   private initializeConversionMap(): any {
     let core_metadata = 'angular2/src/core/metadata';
     let conversionMap = this.conversionMap;
-    conversionMap.set(this.getStaticType(core_metadata, 'Directive'),
-                      (moduleContext, expression) => {
-                        let p0 = this.getDecoratorParameter(moduleContext, expression, 0);
-                        if (!isPresent(p0)) {
-                          p0 = {};
-                        }
-                        return new DirectiveMetadata({
-                          selector: p0['selector'],
-                          inputs: p0['inputs'],
-                          outputs: p0['outputs'],
-                          events: p0['events'],
-                          host: p0['host'],
-                          bindings: p0['bindings'],
-                          providers: p0['providers'],
-                          exportAs: p0['exportAs'],
-                          queries: p0['queries'],
-                        });
-                      });
-    conversionMap.set(this.getStaticType(core_metadata, 'Component'),
-                      (moduleContext, expression) => {
-                        let p0 = this.getDecoratorParameter(moduleContext, expression, 0);
-                        if (!isPresent(p0)) {
-                          p0 = {};
-                        }
-                        return new ComponentMetadata({
-                          selector: p0['selector'],
-                          inputs: p0['inputs'],
-                          outputs: p0['outputs'],
-                          properties: p0['properties'],
-                          events: p0['events'],
-                          host: p0['host'],
-                          exportAs: p0['exportAs'],
-                          moduleId: p0['moduleId'],
-                          bindings: p0['bindings'],
-                          providers: p0['providers'],
-                          viewBindings: p0['viewBindings'],
-                          viewProviders: p0['viewProviders'],
-                          changeDetection: p0['changeDetection'],
-                          queries: p0['queries'],
-                          templateUrl: p0['templateUrl'],
-                          template: p0['template'],
-                          styleUrls: p0['styleUrls'],
-                          styles: p0['styles'],
-                          directives: p0['directives'],
-                          pipes: p0['pipes'],
-                          encapsulation: p0['encapsulation']
-                        });
-                      });
-    conversionMap.set(this.getStaticType(core_metadata, 'Input'),
-                      (moduleContext, expression) => new InputMetadata(
-                          this.getDecoratorParameter(moduleContext, expression, 0)));
-    conversionMap.set(this.getStaticType(core_metadata, 'Output'),
-                      (moduleContext, expression) => new OutputMetadata(
-                          this.getDecoratorParameter(moduleContext, expression, 0)));
+    conversionMap.set(
+        this.getStaticType(core_metadata, 'Directive'), (moduleContext, expression) => {
+          let p0 = this.getDecoratorParameter(moduleContext, expression, 0);
+          if (!isPresent(p0)) {
+            p0 = {};
+          }
+          return new DirectiveMetadata({
+            selector: p0['selector'],
+            inputs: p0['inputs'],
+            outputs: p0['outputs'],
+            events: p0['events'],
+            host: p0['host'],
+            bindings: p0['bindings'],
+            providers: p0['providers'],
+            exportAs: p0['exportAs'],
+            queries: p0['queries'],
+          });
+        });
+    conversionMap.set(
+        this.getStaticType(core_metadata, 'Component'), (moduleContext, expression) => {
+          let p0 = this.getDecoratorParameter(moduleContext, expression, 0);
+          if (!isPresent(p0)) {
+            p0 = {};
+          }
+          return new ComponentMetadata({
+            selector: p0['selector'],
+            inputs: p0['inputs'],
+            outputs: p0['outputs'],
+            properties: p0['properties'],
+            events: p0['events'],
+            host: p0['host'],
+            exportAs: p0['exportAs'],
+            moduleId: p0['moduleId'],
+            bindings: p0['bindings'],
+            providers: p0['providers'],
+            viewBindings: p0['viewBindings'],
+            viewProviders: p0['viewProviders'],
+            changeDetection: p0['changeDetection'],
+            queries: p0['queries'],
+            templateUrl: p0['templateUrl'],
+            template: p0['template'],
+            styleUrls: p0['styleUrls'],
+            styles: p0['styles'],
+            directives: p0['directives'],
+            pipes: p0['pipes'],
+            encapsulation: p0['encapsulation']
+          });
+        });
+    conversionMap.set(
+        this.getStaticType(core_metadata, 'Input'),
+        (moduleContext, expression) =>
+            new InputMetadata(this.getDecoratorParameter(moduleContext, expression, 0)));
+    conversionMap.set(
+        this.getStaticType(core_metadata, 'Output'),
+        (moduleContext, expression) =>
+            new OutputMetadata(this.getDecoratorParameter(moduleContext, expression, 0)));
     conversionMap.set(this.getStaticType(core_metadata, 'View'), (moduleContext, expression) => {
       let p0 = this.getDecoratorParameter(moduleContext, expression, 0);
       if (!isPresent(p0)) {
@@ -192,9 +170,10 @@ export class StaticReflector {
         styles: p0['styles'],
       });
     });
-    conversionMap.set(this.getStaticType(core_metadata, 'Attribute'),
-                      (moduleContext, expression) => new AttributeMetadata(
-                          this.getDecoratorParameter(moduleContext, expression, 0)));
+    conversionMap.set(
+        this.getStaticType(core_metadata, 'Attribute'),
+        (moduleContext, expression) =>
+            new AttributeMetadata(this.getDecoratorParameter(moduleContext, expression, 0)));
     conversionMap.set(this.getStaticType(core_metadata, 'Query'), (moduleContext, expression) => {
       let p0 = this.getDecoratorParameter(moduleContext, expression, 0);
       let p1 = this.getDecoratorParameter(moduleContext, expression, 1);
@@ -203,30 +182,34 @@ export class StaticReflector {
       }
       return new QueryMetadata(p0, {descendants: p1.descendants, first: p1.first});
     });
-    conversionMap.set(this.getStaticType(core_metadata, 'ContentChildren'),
-                      (moduleContext, expression) => new ContentChildrenMetadata(
-                          this.getDecoratorParameter(moduleContext, expression, 0)));
-    conversionMap.set(this.getStaticType(core_metadata, 'ContentChild'),
-                      (moduleContext, expression) => new ContentChildMetadata(
-                          this.getDecoratorParameter(moduleContext, expression, 0)));
-    conversionMap.set(this.getStaticType(core_metadata, 'ViewChildren'),
-                      (moduleContext, expression) => new ViewChildrenMetadata(
-                          this.getDecoratorParameter(moduleContext, expression, 0)));
-    conversionMap.set(this.getStaticType(core_metadata, 'ViewChild'),
-                      (moduleContext, expression) => new ViewChildMetadata(
-                          this.getDecoratorParameter(moduleContext, expression, 0)));
-    conversionMap.set(this.getStaticType(core_metadata, 'ViewQuery'),
-                      (moduleContext, expression) => {
-                        let p0 = this.getDecoratorParameter(moduleContext, expression, 0);
-                        let p1 = this.getDecoratorParameter(moduleContext, expression, 1);
-                        if (!isPresent(p1)) {
-                          p1 = {};
-                        }
-                        return new ViewQueryMetadata(p0, {
-                          descendants: p1['descendants'],
-                          first: p1['first'],
-                        });
-                      });
+    conversionMap.set(
+        this.getStaticType(core_metadata, 'ContentChildren'),
+        (moduleContext, expression) =>
+            new ContentChildrenMetadata(this.getDecoratorParameter(moduleContext, expression, 0)));
+    conversionMap.set(
+        this.getStaticType(core_metadata, 'ContentChild'),
+        (moduleContext, expression) =>
+            new ContentChildMetadata(this.getDecoratorParameter(moduleContext, expression, 0)));
+    conversionMap.set(
+        this.getStaticType(core_metadata, 'ViewChildren'),
+        (moduleContext, expression) =>
+            new ViewChildrenMetadata(this.getDecoratorParameter(moduleContext, expression, 0)));
+    conversionMap.set(
+        this.getStaticType(core_metadata, 'ViewChild'),
+        (moduleContext, expression) =>
+            new ViewChildMetadata(this.getDecoratorParameter(moduleContext, expression, 0)));
+    conversionMap.set(
+        this.getStaticType(core_metadata, 'ViewQuery'), (moduleContext, expression) => {
+          let p0 = this.getDecoratorParameter(moduleContext, expression, 0);
+          let p1 = this.getDecoratorParameter(moduleContext, expression, 1);
+          if (!isPresent(p1)) {
+            p1 = {};
+          }
+          return new ViewQueryMetadata(p0, {
+            descendants: p1['descendants'],
+            first: p1['first'],
+          });
+        });
     conversionMap.set(this.getStaticType(core_metadata, 'Pipe'), (moduleContext, expression) => {
       let p0 = this.getDecoratorParameter(moduleContext, expression, 0);
       if (!isPresent(p0)) {
@@ -237,13 +220,15 @@ export class StaticReflector {
         pure: p0['pure'],
       });
     });
-    conversionMap.set(this.getStaticType(core_metadata, 'HostBinding'),
-                      (moduleContext, expression) => new HostBindingMetadata(
-                          this.getDecoratorParameter(moduleContext, expression, 0)));
-    conversionMap.set(this.getStaticType(core_metadata, 'HostListener'),
-                      (moduleContext, expression) => new HostListenerMetadata(
-                          this.getDecoratorParameter(moduleContext, expression, 0),
-                          this.getDecoratorParameter(moduleContext, expression, 1)));
+    conversionMap.set(
+        this.getStaticType(core_metadata, 'HostBinding'),
+        (moduleContext, expression) =>
+            new HostBindingMetadata(this.getDecoratorParameter(moduleContext, expression, 0)));
+    conversionMap.set(
+        this.getStaticType(core_metadata, 'HostListener'),
+        (moduleContext, expression) => new HostListenerMetadata(
+            this.getDecoratorParameter(moduleContext, expression, 0),
+            this.getDecoratorParameter(moduleContext, expression, 1)));
     return null;
   }
 
@@ -264,8 +249,8 @@ export class StaticReflector {
     return null;
   }
 
-  private getDecoratorParameter(moduleContext: string, expression: {[key: string]: any},
-                                index: number): any {
+  private getDecoratorParameter(
+      moduleContext: string, expression: {[key: string]: any}, index: number): any {
     if (isMetadataSymbolicCallExpression(expression) && isPresent(expression['arguments']) &&
         (<any[]>expression['arguments']).length <= index + 1) {
       return this.simplify(moduleContext, (<any[]>expression['arguments'])[index]);
@@ -273,14 +258,14 @@ export class StaticReflector {
     return null;
   }
 
-  private getPropertyMetadata(moduleContext: string,
-                              value: {[key: string]: any}): {[key: string]: any} {
+  private getPropertyMetadata(moduleContext: string, value: {[key: string]: any}):
+      {[key: string]: any} {
     if (isPresent(value)) {
       let result = {};
       StringMapWrapper.forEach(value, (value, name) => {
         let data = this.getMemberData(moduleContext, value);
         if (isPresent(data)) {
-          let propertyData = data.filter(d => d['kind'] == "property")
+          let propertyData = data.filter(d => d['kind'] == 'property')
                                  .map(d => d['directives'])
                                  .reduce((p, c) => (<any[]>p).concat(<any[]>c), []);
           if (propertyData.length != 0) {
@@ -301,12 +286,11 @@ export class StaticReflector {
       for (let item of member) {
         result.push({
           kind: item['__symbolic'],
-          directives:
-              isPresent(item['decorators']) ?
-                  (<any[]>item['decorators'])
-                      .map(decorator => this.convertKnownDecorator(moduleContext, decorator))
-                      .filter(d => isPresent(d)) :
-                  null
+          directives: isPresent(item['decorators']) ?
+              (<any[]>item['decorators'])
+                  .map(decorator => this.convertKnownDecorator(moduleContext, decorator))
+                  .filter(d => isPresent(d)) :
+              null
         });
       }
     }
@@ -323,7 +307,7 @@ export class StaticReflector {
       }
       if (isArray(expression)) {
         let result = [];
-        for (let item of(<any>expression)) {
+        for (let item of (<any>expression)) {
           result.push(simplify(item));
         }
         return result;
@@ -331,7 +315,7 @@ export class StaticReflector {
       if (isPresent(expression)) {
         if (isPresent(expression['__symbolic'])) {
           switch (expression['__symbolic']) {
-            case "binop":
+            case 'binop':
               let left = simplify(expression['left']);
               let right = simplify(expression['right']);
               switch (expression['operator']) {
@@ -377,7 +361,7 @@ export class StaticReflector {
                   return left % right;
               }
               return null;
-            case "pre":
+            case 'pre':
               let operand = simplify(expression['operand']);
               switch (expression['operator']) {
                 case '+':
@@ -390,17 +374,17 @@ export class StaticReflector {
                   return ~operand;
               }
               return null;
-            case "index":
+            case 'index':
               let indexTarget = simplify(expression['expression']);
               let index = simplify(expression['index']);
               if (isPresent(indexTarget) && isPrimitive(index)) return indexTarget[index];
               return null;
-            case "select":
+            case 'select':
               let selectTarget = simplify(expression['expression']);
               let member = simplify(expression['member']);
               if (isPresent(selectTarget) && isPrimitive(member)) return selectTarget[member];
               return null;
-            case "reference":
+            case 'reference':
               let referenceModuleName =
                   _this.normalizeModuleName(moduleContext, expression['module']);
               let referenceModule = _this.getModuleMetadata(referenceModuleName);
@@ -410,7 +394,7 @@ export class StaticReflector {
                 return _this.getStaticType(referenceModuleName, expression['name']);
               }
               return _this.simplify(referenceModuleName, referenceValue);
-            case "call":
+            case 'call':
               return null;
           }
           return null;
@@ -430,7 +414,7 @@ export class StaticReflector {
     if (!isPresent(moduleMetadata)) {
       moduleMetadata = this.host.getMetadataFor(module);
       if (!isPresent(moduleMetadata)) {
-        moduleMetadata = {__symbolic: "module", module: module, metadata: {}};
+        moduleMetadata = {__symbolic: 'module', module: module, metadata: {}};
       }
       this.metadataCache.set(module, moduleMetadata);
     }
@@ -441,7 +425,7 @@ export class StaticReflector {
     let moduleMetadata = this.getModuleMetadata(type.moduleId);
     let result = moduleMetadata['metadata'][type.name];
     if (!isPresent(result)) {
-      result = {__symbolic: "class"};
+      result = {__symbolic: 'class'};
     }
     return result;
   }
@@ -460,7 +444,7 @@ function isMetadataSymbolicCallExpression(expression: any): boolean {
 
 function isMetadataSymbolicReferenceExpression(expression: any): boolean {
   return !isPrimitive(expression) && !isArray(expression) &&
-         expression['__symbolic'] == 'reference';
+      expression['__symbolic'] == 'reference';
 }
 
 function isClassMetadata(expression: any): boolean {

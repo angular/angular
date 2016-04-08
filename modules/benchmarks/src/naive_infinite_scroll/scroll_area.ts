@@ -3,15 +3,7 @@ import {Math} from 'angular2/src/facade/math';
 
 import {Component, Directive} from 'angular2/core';
 
-import {
-  Offering,
-  ITEMS,
-  ITEM_HEIGHT,
-  VISIBLE_ITEMS,
-  VIEW_PORT_HEIGHT,
-  ROW_WIDTH,
-  HEIGHT
-} from './common';
+import {Offering, ITEMS, ITEM_HEIGHT, VISIBLE_ITEMS, VIEW_PORT_HEIGHT, ROW_WIDTH, HEIGHT} from './common';
 import {generateOfferings} from './random_data';
 import {ScrollItemComponent} from './scroll_item';
 import {NgFor} from 'angular2/common';

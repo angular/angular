@@ -14,7 +14,7 @@ export class ImageDemo {
   uploadFiles(files) {
     for (var i = 0; i < files.length; i++) {
       var reader = new FileReader();
-      reader.addEventListener("load", this.handleReaderLoad(reader));
+      reader.addEventListener('load', this.handleReaderLoad(reader));
       reader.readAsArrayBuffer(files[i]);
     }
   }

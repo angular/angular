@@ -1,26 +1,8 @@
-import {
-  describe,
-  ddescribe,
-  it,
-  iit,
-  xit,
-  expect,
-  beforeEach,
-  afterEach
-} from 'angular2/testing_internal';
+import {describe, ddescribe, it, iit, xit, expect, beforeEach, afterEach} from 'angular2/testing_internal';
 
 import {isBlank, isPresent, Date, DateWrapper} from 'angular2/src/facade/lang';
 
-import {
-  SampleState,
-  Reporter,
-  bind,
-  provide,
-  Injector,
-  ConsoleReporter,
-  SampleDescription,
-  MeasureValues
-} from 'benchpress/common';
+import {SampleState, Reporter, bind, provide, Injector, ConsoleReporter, SampleDescription, MeasureValues} from 'benchpress/common';
 
 export function main() {
   describe('console reporter', () => {
@@ -38,8 +20,8 @@ export function main() {
       }
       var bindings = [
         ConsoleReporter.BINDINGS,
-        provide(SampleDescription,
-                {useValue: new SampleDescription(sampleId, descriptions, metrics)}),
+        provide(
+            SampleDescription, {useValue: new SampleDescription(sampleId, descriptions, metrics)}),
         bind(ConsoleReporter.PRINT).toValue((line) => log.push(line))
       ];
       if (isPresent(columnWidth)) {

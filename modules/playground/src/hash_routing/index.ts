@@ -1,13 +1,6 @@
 import {Component, provide} from 'angular2/core';
 import {bootstrap} from 'angular2/platform/browser';
-import {
-  RouteConfig,
-  Route,
-  ROUTER_PROVIDERS,
-  ROUTER_DIRECTIVES,
-  HashLocationStrategy,
-  LocationStrategy
-} from 'angular2/router';
+import {RouteConfig, Route, ROUTER_PROVIDERS, ROUTER_DIRECTIVES, HashLocationStrategy, LocationStrategy} from 'angular2/router';
 
 
 @Component({selector: 'hello-cmp', template: `hello`})
@@ -44,6 +37,6 @@ class AppCmp {
 
 
 export function main() {
-  bootstrap(AppCmp,
-            [ROUTER_PROVIDERS, provide(LocationStrategy, {useClass: HashLocationStrategy})]);
+  bootstrap(
+      AppCmp, [ROUTER_PROVIDERS, provide(LocationStrategy, {useClass: HashLocationStrategy})]);
 }

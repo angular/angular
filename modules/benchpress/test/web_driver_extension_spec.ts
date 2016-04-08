@@ -1,15 +1,4 @@
-import {
-  afterEach,
-  AsyncTestCompleter,
-  beforeEach,
-  ddescribe,
-  describe,
-  expect,
-  iit,
-  inject,
-  it,
-  xit,
-} from 'angular2/testing_internal';
+import {afterEach, AsyncTestCompleter, beforeEach, ddescribe, describe, expect, iit, inject, it, xit,} from 'angular2/testing_internal';
 
 import {isPresent, StringWrapper} from 'angular2/src/facade/lang';
 import {PromiseWrapper} from 'angular2/src/facade/async';
@@ -19,11 +8,11 @@ import {WebDriverExtension, bind, provide, Injector, Options} from 'benchpress/c
 export function main() {
   function createExtension(ids: any[], caps) {
     return PromiseWrapper.wrap(() => {
-      return Injector.resolveAndCreate([
-                       ids.map(id => provide(id, {useValue: new MockExtension(id)})),
-                       bind(Options.CAPABILITIES).toValue(caps),
-                       WebDriverExtension.bindTo(ids)
-                     ])
+      return Injector
+          .resolveAndCreate([
+            ids.map(id => provide(id, {useValue: new MockExtension(id)})),
+            bind(Options.CAPABILITIES).toValue(caps), WebDriverExtension.bindTo(ids)
+          ])
           .get(WebDriverExtension);
     });
   }
@@ -32,11 +21,10 @@ export function main() {
 
     it('should bind the extension that matches the capabilities',
        inject([AsyncTestCompleter], (async) => {
-         createExtension(['m1', 'm2', 'm3'], {'browser': 'm2'})
-             .then((m) => {
-               expect(m.id).toEqual('m2');
-               async.done();
-             });
+         createExtension(['m1', 'm2', 'm3'], {'browser': 'm2'}).then((m) => {
+           expect(m.id).toEqual('m2');
+           async.done();
+         });
        }));
 
     it('should throw if there is no match', inject([AsyncTestCompleter], (async) => {

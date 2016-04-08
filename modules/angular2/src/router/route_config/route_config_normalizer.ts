@@ -12,8 +12,8 @@ import {RouteRegistry} from '../route_registry';
  * Also wraps an AsyncRoute's loader function to add the loaded component's route config to the
  * `RouteRegistry`.
  */
-export function normalizeRouteConfig(config: RouteDefinition,
-                                     registry: RouteRegistry): RouteDefinition {
+export function normalizeRouteConfig(
+    config: RouteDefinition, registry: RouteRegistry): RouteDefinition {
   if (config instanceof AsyncRoute) {
     var wrappedLoader = wrapLoaderToReconfigureRegistry(config.loader, registry);
     return new AsyncRoute({
@@ -49,7 +49,7 @@ export function normalizeRouteConfig(config: RouteDefinition,
     });
   }
   if (config.aux) {
-    return new AuxRoute({path: config.aux, component:<Type>config.component, name: config.name});
+    return new AuxRoute({path: config.aux, component: <Type>config.component, name: config.name});
   }
   if (config.component) {
     if (typeof config.component == 'object') {
@@ -57,7 +57,7 @@ export function normalizeRouteConfig(config: RouteDefinition,
       if (componentDefinitionObject.type == 'constructor') {
         return new Route({
           path: config.path,
-          component:<Type>componentDefinitionObject.constructor,
+          component: <Type>componentDefinitionObject.constructor,
           name: config.name,
           data: config.data,
           useAsDefault: config.useAsDefault

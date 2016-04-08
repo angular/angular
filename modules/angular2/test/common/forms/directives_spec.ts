@@ -1,41 +1,10 @@
-import {
-  ddescribe,
-  describe,
-  fakeAsync,
-  flushMicrotasks,
-  it,
-  iit,
-  xit,
-  expect,
-  beforeEach,
-  afterEach,
-  el,
-  AsyncTestCompleter,
-  inject,
-  tick
-} from 'angular2/testing_internal';
+import {ddescribe, describe, fakeAsync, flushMicrotasks, it, iit, xit, expect, beforeEach, afterEach, el, AsyncTestCompleter, inject, tick} from 'angular2/testing_internal';
 
 import {SpyNgControl, SpyValueAccessor} from '../spies';
 
 import {QueryList} from 'angular2/core';
 
-import {
-  ControlGroup,
-  Control,
-  NgControlName,
-  NgControlGroup,
-  NgFormModel,
-  ControlValueAccessor,
-  Validators,
-  NgForm,
-  NgModel,
-  NgFormControl,
-  NgControl,
-  DefaultValueAccessor,
-  CheckboxControlValueAccessor,
-  SelectControlValueAccessor,
-  Validator
-} from 'angular2/common';
+import {ControlGroup, Control, NgControlName, NgControlGroup, NgFormModel, ControlValueAccessor, Validators, NgForm, NgModel, NgFormControl, NgControl, DefaultValueAccessor, CheckboxControlValueAccessor, SelectControlValueAccessor, Validator} from 'angular2/common';
 
 
 import {selectValueAccessor, composeValidators} from 'angular2/src/common/forms/directives/shared';
@@ -53,13 +22,13 @@ class DummyControlValueAccessor implements ControlValueAccessor {
 }
 
 class CustomValidatorDirective implements Validator {
-  validate(c: Control): {[key: string]: any} { return {"custom": true}; }
+  validate(c: Control): {[key: string]: any} { return {'custom': true}; }
 }
 
 function asyncValidator(expected, timeout = 0) {
   return (c) => {
     var completer = PromiseWrapper.completer();
-    var res = c.value != expected ? {"async": true} : null;
+    var res = c.value != expected ? {'async': true} : null;
     if (timeout == 0) {
       completer.resolve(res);
     } else {
@@ -70,71 +39,74 @@ function asyncValidator(expected, timeout = 0) {
 }
 
 export function main() {
-  describe("Form Directives", () => {
+  describe('Form Directives', () => {
     var defaultAccessor;
 
     beforeEach(() => { defaultAccessor = new DefaultValueAccessor(null, null); });
 
-    describe("shared", () => {
-      describe("selectValueAccessor", () => {
+    describe('shared', () => {
+      describe('selectValueAccessor', () => {
         var dir: NgControl;
 
         beforeEach(() => { dir = <any>new SpyNgControl(); });
 
-        it("should throw when given an empty array",
+        it('should throw when given an empty array',
            () => { expect(() => selectValueAccessor(dir, [])).toThrowError(); });
 
-        it("should return the default value accessor when no other provided",
+        it('should return the default value accessor when no other provided',
            () => { expect(selectValueAccessor(dir, [defaultAccessor])).toEqual(defaultAccessor); });
 
-        it("should return checkbox accessor when provided", () => {
+        it('should return checkbox accessor when provided', () => {
           var checkboxAccessor = new CheckboxControlValueAccessor(null, null);
-          expect(selectValueAccessor(dir, [defaultAccessor, checkboxAccessor]))
-              .toEqual(checkboxAccessor);
+          expect(selectValueAccessor(dir, [
+            defaultAccessor, checkboxAccessor
+          ])).toEqual(checkboxAccessor);
         });
 
-        it("should return select accessor when provided", () => {
+        it('should return select accessor when provided', () => {
           var selectAccessor = new SelectControlValueAccessor(null, null);
-          expect(selectValueAccessor(dir, [defaultAccessor, selectAccessor]))
-              .toEqual(selectAccessor);
+          expect(selectValueAccessor(dir, [
+            defaultAccessor, selectAccessor
+          ])).toEqual(selectAccessor);
         });
 
-        it("should throw when more than one build-in accessor is provided", () => {
+        it('should throw when more than one build-in accessor is provided', () => {
           var checkboxAccessor = new CheckboxControlValueAccessor(null, null);
           var selectAccessor = new SelectControlValueAccessor(null, null);
           expect(() => selectValueAccessor(dir, [checkboxAccessor, selectAccessor])).toThrowError();
         });
 
-        it("should return custom accessor when provided", () => {
+        it('should return custom accessor when provided', () => {
           var customAccessor = new SpyValueAccessor();
           var checkboxAccessor = new CheckboxControlValueAccessor(null, null);
-          expect(selectValueAccessor(dir, [defaultAccessor, customAccessor, checkboxAccessor]))
-              .toEqual(customAccessor);
+          expect(selectValueAccessor(dir, [
+            defaultAccessor, customAccessor, checkboxAccessor
+          ])).toEqual(customAccessor);
         });
 
-        it("should throw when more than one custom accessor is provided", () => {
+        it('should throw when more than one custom accessor is provided', () => {
           var customAccessor: ControlValueAccessor = <any>new SpyValueAccessor();
           expect(() => selectValueAccessor(dir, [customAccessor, customAccessor])).toThrowError();
         });
       });
 
-      describe("composeValidators", () => {
-        it("should compose functions", () => {
-          var dummy1 = (_) => ({"dummy1": true});
-          var dummy2 = (_) => ({"dummy2": true});
+      describe('composeValidators', () => {
+        it('should compose functions', () => {
+          var dummy1 = (_) => ({'dummy1': true});
+          var dummy2 = (_) => ({'dummy2': true});
           var v = composeValidators([dummy1, dummy2]);
-          expect(v(new Control(""))).toEqual({"dummy1": true, "dummy2": true});
+          expect(v(new Control(''))).toEqual({'dummy1': true, 'dummy2': true});
         });
 
-        it("should compose validator directives", () => {
-          var dummy1 = (_) => ({"dummy1": true});
+        it('should compose validator directives', () => {
+          var dummy1 = (_) => ({'dummy1': true});
           var v = composeValidators([dummy1, new CustomValidatorDirective()]);
-          expect(v(new Control(""))).toEqual({"dummy1": true, "custom": true});
+          expect(v(new Control(''))).toEqual({'dummy1': true, 'custom': true});
         });
       });
     });
 
-    describe("NgFormModel", () => {
+    describe('NgFormModel', () => {
       var form;
       var formModel: ControlGroup;
       var loginControlDir;
@@ -142,19 +114,19 @@ export function main() {
       beforeEach(() => {
         form = new NgFormModel([], []);
         formModel = new ControlGroup({
-          "login": new Control(),
-          "passwords":
-              new ControlGroup({"password": new Control(), "passwordConfirm": new Control()})
+          'login': new Control(),
+          'passwords':
+              new ControlGroup({'password': new Control(), 'passwordConfirm': new Control()})
         });
         form.form = formModel;
 
-        loginControlDir = new NgControlName(form, [Validators.required],
-                                            [asyncValidator("expected")], [defaultAccessor]);
-        loginControlDir.name = "login";
+        loginControlDir = new NgControlName(
+            form, [Validators.required], [asyncValidator('expected')], [defaultAccessor]);
+        loginControlDir.name = 'login';
         loginControlDir.valueAccessor = new DummyControlValueAccessor();
       });
 
-      it("should reexport control properties", () => {
+      it('should reexport control properties', () => {
         expect(form.control).toBe(formModel);
         expect(form.value).toBe(formModel.value);
         expect(form.valid).toBe(formModel.valid);
@@ -165,130 +137,132 @@ export function main() {
         expect(form.untouched).toBe(formModel.untouched);
       });
 
-      describe("addControl", () => {
-        it("should throw when no control found", () => {
+      describe('addControl', () => {
+        it('should throw when no control found', () => {
           var dir = new NgControlName(form, null, null, [defaultAccessor]);
-          dir.name = "invalidName";
+          dir.name = 'invalidName';
 
           expect(() => form.addControl(dir))
-              .toThrowError(new RegExp("Cannot find control 'invalidName'"));
+              .toThrowError(new RegExp('Cannot find control \'invalidName\''));
         });
 
-        it("should throw when no value accessor", () => {
+        it('should throw when no value accessor', () => {
           var dir = new NgControlName(form, null, null, null);
-          dir.name = "login";
+          dir.name = 'login';
 
           expect(() => form.addControl(dir))
-              .toThrowError(new RegExp("No value accessor for 'login'"));
+              .toThrowError(new RegExp('No value accessor for \'login\''));
         });
 
-        it("should set up validators", fakeAsync(() => {
+        it('should set up validators', fakeAsync(() => {
              form.addControl(loginControlDir);
 
              // sync validators are set
-             expect(formModel.hasError("required", ["login"])).toBe(true);
-             expect(formModel.hasError("async", ["login"])).toBe(false);
+             expect(formModel.hasError('required', ['login'])).toBe(true);
+             expect(formModel.hasError('async', ['login'])).toBe(false);
 
-             (<Control>formModel.find(["login"])).updateValue("invalid value");
+             (<Control>formModel.find(['login'])).updateValue('invalid value');
 
              // sync validator passes, running async validators
              expect(formModel.pending).toBe(true);
 
              tick();
 
-             expect(formModel.hasError("required", ["login"])).toBe(false);
-             expect(formModel.hasError("async", ["login"])).toBe(true);
+             expect(formModel.hasError('required', ['login'])).toBe(false);
+             expect(formModel.hasError('async', ['login'])).toBe(true);
            }));
 
-        it("should write value to the DOM", () => {
-          (<Control>formModel.find(["login"])).updateValue("initValue");
+        it('should write value to the DOM', () => {
+          (<Control>formModel.find(['login'])).updateValue('initValue');
 
           form.addControl(loginControlDir);
 
-          expect((<any>loginControlDir.valueAccessor).writtenValue).toEqual("initValue");
+          expect((<any>loginControlDir.valueAccessor).writtenValue).toEqual('initValue');
         });
 
-        it("should add the directive to the list of directives included in the form", () => {
+        it('should add the directive to the list of directives included in the form', () => {
           form.addControl(loginControlDir);
           expect(form.directives).toEqual([loginControlDir]);
         });
       });
 
-      describe("addControlGroup", () => {
+      describe('addControlGroup', () => {
         var matchingPasswordsValidator = (g) => {
-          if (g.controls["password"].value != g.controls["passwordConfirm"].value) {
-            return {"differentPasswords": true};
+          if (g.controls['password'].value != g.controls['passwordConfirm'].value) {
+            return {'differentPasswords': true};
           } else {
             return null;
           }
         };
 
-        it("should set up validator", fakeAsync(() => {
-             var group = new NgControlGroup(form, [matchingPasswordsValidator],
-                                            [asyncValidator('expected')]);
-             group.name = "passwords";
+        it('should set up validator', fakeAsync(() => {
+             var group = new NgControlGroup(
+                 form, [matchingPasswordsValidator], [asyncValidator('expected')]);
+             group.name = 'passwords';
              form.addControlGroup(group);
 
-             (<Control>formModel.find(["passwords", "password"])).updateValue("somePassword");
-             (<Control>formModel.find(["passwords", "passwordConfirm"]))
-                 .updateValue("someOtherPassword");
+             (<Control>formModel.find(['passwords', 'password'])).updateValue('somePassword');
+             (<Control>formModel.find([
+               'passwords', 'passwordConfirm'
+             ])).updateValue('someOtherPassword');
 
              // sync validators are set
-             expect(formModel.hasError("differentPasswords", ["passwords"])).toEqual(true);
+             expect(formModel.hasError('differentPasswords', ['passwords'])).toEqual(true);
 
-             (<Control>formModel.find(["passwords", "passwordConfirm"]))
-                 .updateValue("somePassword");
+             (<Control>formModel.find([
+               'passwords', 'passwordConfirm'
+             ])).updateValue('somePassword');
 
              // sync validators pass, running async validators
              expect(formModel.pending).toBe(true);
 
              tick();
 
-             expect(formModel.hasError("async", ["passwords"])).toBe(true);
+             expect(formModel.hasError('async', ['passwords'])).toBe(true);
            }));
       });
 
-      describe("removeControl", () => {
-        it("should remove the directive to the list of directives included in the form", () => {
+      describe('removeControl', () => {
+        it('should remove the directive to the list of directives included in the form', () => {
           form.addControl(loginControlDir);
           form.removeControl(loginControlDir);
           expect(form.directives).toEqual([]);
         });
       });
 
-      describe("ngOnChanges", () => {
-        it("should update dom values of all the directives", () => {
+      describe('ngOnChanges', () => {
+        it('should update dom values of all the directives', () => {
           form.addControl(loginControlDir);
 
-          (<Control>formModel.find(["login"])).updateValue("new value");
+          (<Control>formModel.find(['login'])).updateValue('new value');
 
           form.ngOnChanges({});
 
-          expect((<any>loginControlDir.valueAccessor).writtenValue).toEqual("new value");
+          expect((<any>loginControlDir.valueAccessor).writtenValue).toEqual('new value');
         });
 
-        it("should set up a sync validator", () => {
-          var formValidator = (c) => ({"custom": true});
+        it('should set up a sync validator', () => {
+          var formValidator = (c) => ({'custom': true});
           var f = new NgFormModel([formValidator], []);
           f.form = formModel;
-          f.ngOnChanges({"form": new SimpleChange(null, null)});
+          f.ngOnChanges({'form': new SimpleChange(null, null)});
 
-          expect(formModel.errors).toEqual({"custom": true});
+          expect(formModel.errors).toEqual({'custom': true});
         });
 
-        it("should set up an async validator", fakeAsync(() => {
-             var f = new NgFormModel([], [asyncValidator("expected")]);
+        it('should set up an async validator', fakeAsync(() => {
+             var f = new NgFormModel([], [asyncValidator('expected')]);
              f.form = formModel;
-             f.ngOnChanges({"form": new SimpleChange(null, null)});
+             f.ngOnChanges({'form': new SimpleChange(null, null)});
 
              tick();
 
-             expect(formModel.errors).toEqual({"async": true});
+             expect(formModel.errors).toEqual({'async': true});
            }));
       });
     });
 
-    describe("NgForm", () => {
+    describe('NgForm', () => {
       var form;
       var formModel: ControlGroup;
       var loginControlDir;
@@ -299,14 +273,14 @@ export function main() {
         formModel = form.form;
 
         personControlGroupDir = new NgControlGroup(form, [], []);
-        personControlGroupDir.name = "person";
+        personControlGroupDir.name = 'person';
 
         loginControlDir = new NgControlName(personControlGroupDir, null, null, [defaultAccessor]);
-        loginControlDir.name = "login";
+        loginControlDir.name = 'login';
         loginControlDir.valueAccessor = new DummyControlValueAccessor();
       });
 
-      it("should reexport control properties", () => {
+      it('should reexport control properties', () => {
         expect(form.control).toBe(formModel);
         expect(form.value).toBe(formModel.value);
         expect(form.valid).toBe(formModel.valid);
@@ -317,21 +291,21 @@ export function main() {
         expect(form.untouched).toBe(formModel.untouched);
       });
 
-      describe("addControl & addControlGroup", () => {
-        it("should create a control with the given name", fakeAsync(() => {
+      describe('addControl & addControlGroup', () => {
+        it('should create a control with the given name', fakeAsync(() => {
              form.addControlGroup(personControlGroupDir);
              form.addControl(loginControlDir);
 
              flushMicrotasks();
 
-             expect(formModel.find(["person", "login"])).not.toBeNull;
+             expect(formModel.find(['person', 'login'])).not.toBeNull;
            }));
 
         // should update the form's value and validity
       });
 
-      describe("removeControl & removeControlGroup", () => {
-        it("should remove control", fakeAsync(() => {
+      describe('removeControl & removeControlGroup', () => {
+        it('should remove control', fakeAsync(() => {
              form.addControlGroup(personControlGroupDir);
              form.addControl(loginControlDir);
 
@@ -340,45 +314,45 @@ export function main() {
 
              flushMicrotasks();
 
-             expect(formModel.find(["person"])).toBeNull();
-             expect(formModel.find(["person", "login"])).toBeNull();
+             expect(formModel.find(['person'])).toBeNull();
+             expect(formModel.find(['person', 'login'])).toBeNull();
            }));
 
         // should update the form's value and validity
       });
 
-      it("should set up sync validator", fakeAsync(() => {
-           var formValidator = (c) => ({"custom": true});
+      it('should set up sync validator', fakeAsync(() => {
+           var formValidator = (c) => ({'custom': true});
            var f = new NgForm([formValidator], []);
 
            tick();
 
-           expect(f.form.errors).toEqual({"custom": true});
+           expect(f.form.errors).toEqual({'custom': true});
          }));
 
-      it("should set up async validator", fakeAsync(() => {
-           var f = new NgForm([], [asyncValidator("expected")]);
+      it('should set up async validator', fakeAsync(() => {
+           var f = new NgForm([], [asyncValidator('expected')]);
 
            tick();
 
-           expect(f.form.errors).toEqual({"async": true});
+           expect(f.form.errors).toEqual({'async': true});
          }));
     });
 
-    describe("NgControlGroup", () => {
+    describe('NgControlGroup', () => {
       var formModel;
       var controlGroupDir;
 
       beforeEach(() => {
-        formModel = new ControlGroup({"login": new Control(null)});
+        formModel = new ControlGroup({'login': new Control(null)});
 
         var parent = new NgFormModel([], []);
-        parent.form = new ControlGroup({"group": formModel});
+        parent.form = new ControlGroup({'group': formModel});
         controlGroupDir = new NgControlGroup(parent, [], []);
-        controlGroupDir.name = "group";
+        controlGroupDir.name = 'group';
       });
 
-      it("should reexport control properties", () => {
+      it('should reexport control properties', () => {
         expect(controlGroupDir.control).toBe(formModel);
         expect(controlGroupDir.value).toBe(formModel.value);
         expect(controlGroupDir.valid).toBe(formModel.valid);
@@ -390,7 +364,7 @@ export function main() {
       });
     });
 
-    describe("NgFormControl", () => {
+    describe('NgFormControl', () => {
       var controlDir;
       var control;
       var checkProperties = function(control) {
@@ -412,36 +386,36 @@ export function main() {
         controlDir.form = control;
       });
 
-      it("should reexport control properties", () => { checkProperties(control); });
+      it('should reexport control properties', () => { checkProperties(control); });
 
-      it("should reexport new control properties", () => {
+      it('should reexport new control properties', () => {
         var newControl = new Control(null);
         controlDir.form = newControl;
-        controlDir.ngOnChanges({"form": new SimpleChange(control, newControl)});
+        controlDir.ngOnChanges({'form': new SimpleChange(control, newControl)});
 
         checkProperties(newControl);
       });
 
-      it("should set up validator", () => {
+      it('should set up validator', () => {
         expect(control.valid).toBe(true);
 
         // this will add the required validator and recalculate the validity
-        controlDir.ngOnChanges({"form": new SimpleChange(null, control)});
+        controlDir.ngOnChanges({'form': new SimpleChange(null, control)});
 
         expect(control.valid).toBe(false);
       });
     });
 
-    describe("NgModel", () => {
+    describe('NgModel', () => {
       var ngModel;
 
       beforeEach(() => {
         ngModel =
-            new NgModel([Validators.required], [asyncValidator("expected")], [defaultAccessor]);
+            new NgModel([Validators.required], [asyncValidator('expected')], [defaultAccessor]);
         ngModel.valueAccessor = new DummyControlValueAccessor();
       });
 
-      it("should reexport control properties", () => {
+      it('should reexport control properties', () => {
         var control = ngModel.control;
         expect(ngModel.control).toBe(control);
         expect(ngModel.value).toBe(control.value);
@@ -453,34 +427,34 @@ export function main() {
         expect(ngModel.untouched).toBe(control.untouched);
       });
 
-      it("should set up validator", fakeAsync(() => {
+      it('should set up validator', fakeAsync(() => {
            // this will add the required validator and recalculate the validity
            ngModel.ngOnChanges({});
            tick();
 
-           expect(ngModel.control.errors).toEqual({"required": true});
+           expect(ngModel.control.errors).toEqual({'required': true});
 
-           ngModel.control.updateValue("someValue");
+           ngModel.control.updateValue('someValue');
            tick();
 
-           expect(ngModel.control.errors).toEqual({"async": true});
+           expect(ngModel.control.errors).toEqual({'async': true});
          }));
     });
 
-    describe("NgControlName", () => {
+    describe('NgControlName', () => {
       var formModel;
       var controlNameDir;
 
       beforeEach(() => {
-        formModel = new Control("name");
+        formModel = new Control('name');
 
         var parent = new NgFormModel([], []);
-        parent.form = new ControlGroup({"name": formModel});
+        parent.form = new ControlGroup({'name': formModel});
         controlNameDir = new NgControlName(parent, [], [], [defaultAccessor]);
-        controlNameDir.name = "name";
+        controlNameDir.name = 'name';
       });
 
-      it("should reexport control properties", () => {
+      it('should reexport control properties', () => {
         expect(controlNameDir.control).toBe(formModel);
         expect(controlNameDir.value).toBe(formModel.value);
         expect(controlNameDir.valid).toBe(formModel.valid);

@@ -1,30 +1,10 @@
-import {
-  ComponentFixture,
-  AsyncTestCompleter,
-  TestComponentBuilder,
-  beforeEach,
-  ddescribe,
-  xdescribe,
-  describe,
-  el,
-  expect,
-  iit,
-  inject,
-  beforeEachProviders,
-  it,
-  xit
-} from 'angular2/testing_internal';
+import {ComponentFixture, AsyncTestCompleter, TestComponentBuilder, beforeEach, ddescribe, xdescribe, describe, el, expect, iit, inject, beforeEachProviders, it, xit} from 'angular2/testing_internal';
 
 import {By} from 'angular2/platform/common_dom';
 import {provide, Component, Injector, Inject} from 'angular2/core';
 
 import {Router, ROUTER_DIRECTIVES, RouteParams, RouteData, Location} from 'angular2/router';
-import {
-  RouteConfig,
-  Route,
-  AuxRoute,
-  Redirect
-} from 'angular2/src/router/route_config/route_config_decorator';
+import {RouteConfig, Route, AuxRoute, Redirect} from 'angular2/src/router/route_config/route_config_decorator';
 
 import {specs, compile, clickOnElement, getHref} from '../util';
 import {BaseException} from 'angular2/src/facade/exceptions';
@@ -238,7 +218,7 @@ class ModalCmp {
 @Component({
   selector: 'aux-cmp',
   template: 'main {<router-outlet></router-outlet>} | ' +
-                'aux {<router-outlet name="modal"></router-outlet>}',
+      'aux {<router-outlet name="modal"></router-outlet>}',
   directives: [ROUTER_DIRECTIVES],
 })
 @RouteConfig([

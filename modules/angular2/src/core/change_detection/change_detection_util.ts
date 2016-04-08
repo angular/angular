@@ -1,20 +1,6 @@
-import {
-  CONST_EXPR,
-  isPresent,
-  isBlank,
-  Type,
-  StringWrapper,
-  looseIdentical,
-  isPrimitive
-} from 'angular2/src/facade/lang';
+import {CONST_EXPR, isPresent, isBlank, Type, StringWrapper, looseIdentical, isPrimitive} from 'angular2/src/facade/lang';
 import {BaseException} from 'angular2/src/facade/exceptions';
-import {
-  ListWrapper,
-  MapWrapper,
-  StringMapWrapper,
-  isListLikeIterable,
-  areIterablesEqual
-} from 'angular2/src/facade/collection';
+import {ListWrapper, MapWrapper, StringMapWrapper, isListLikeIterable, areIterablesEqual} from 'angular2/src/facade/collection';
 import {ProtoRecord} from './proto_record';
 import {ChangeDetectionStrategy, isDefaultChangeDetectionStrategy} from './constants';
 import {implementsOnDestroy} from './pipe_lifecycle_reflector';
@@ -52,10 +38,7 @@ export class WrappedValue {
 }
 
 var _wrappedValues = [
-  new WrappedValue(null),
-  new WrappedValue(null),
-  new WrappedValue(null),
-  new WrappedValue(null),
+  new WrappedValue(null), new WrappedValue(null), new WrappedValue(null), new WrappedValue(null),
   new WrappedValue(null)
 ];
 
@@ -173,8 +156,8 @@ export class ChangeDetectionUtil {
 
   static protoByIndex(protos: ProtoRecord[], selfIndex: number): ProtoRecord {
     return selfIndex < 1 ?
-               null :
-               protos[selfIndex - 1];  // self index is shifted by one because of context
+        null :
+        protos[selfIndex - 1];  // self index is shifted by one because of context
   }
 
   static callPipeOnDestroy(selectedPipe: SelectedPipe): void {
@@ -183,8 +166,9 @@ export class ChangeDetectionUtil {
     }
   }
 
-  static bindingTarget(mode: string, elementIndex: number, name: string, unit: string,
-                       debug: string): BindingTarget {
+  static bindingTarget(
+      mode: string, elementIndex: number, name: string, unit: string,
+      debug: string): BindingTarget {
     return new BindingTarget(mode, elementIndex, name, unit, debug);
   }
 
@@ -198,8 +182,8 @@ export class ChangeDetectionUtil {
     if (isListLikeIterable(a) && isListLikeIterable(b)) {
       return areIterablesEqual(a, b, ChangeDetectionUtil.devModeEqual);
 
-    } else if (!isListLikeIterable(a) && !isPrimitive(a) && !isListLikeIterable(b) &&
-               !isPrimitive(b)) {
+    } else if (
+        !isListLikeIterable(a) && !isPrimitive(a) && !isListLikeIterable(b) && !isPrimitive(b)) {
       return true;
 
     } else {

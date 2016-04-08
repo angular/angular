@@ -1,16 +1,4 @@
-import {
-  AsyncTestCompleter,
-  TestComponentBuilder,
-  beforeEach,
-  ddescribe,
-  describe,
-  el,
-  expect,
-  iit,
-  inject,
-  it,
-  xit,
-} from 'angular2/testing_internal';
+import {AsyncTestCompleter, TestComponentBuilder, beforeEach, ddescribe, describe, el, expect, iit, inject, it, xit,} from 'angular2/testing_internal';
 
 import {Component} from 'angular2/core';
 
@@ -22,10 +10,10 @@ export function main() {
       it('should switch amongst when values',
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            var template = '<div>' +
-                          '<ul [ngSwitch]="switchValue">' +
-                          '<template ngSwitchWhen="a"><li>when a</li></template>' +
-                          '<template ngSwitchWhen="b"><li>when b</li></template>' +
-                          '</ul></div>';
+               '<ul [ngSwitch]="switchValue">' +
+               '<template ngSwitchWhen="a"><li>when a</li></template>' +
+               '<template ngSwitchWhen="b"><li>when b</li></template>' +
+               '</ul></div>';
 
            tcb.overrideTemplate(TestComponent, template)
                .createAsync(TestComponent)
@@ -48,10 +36,10 @@ export function main() {
       it('should switch amongst when values with fallback to default',
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            var template = '<div>' +
-                          '<ul [ngSwitch]="switchValue">' +
-                          '<li template="ngSwitchWhen \'a\'">when a</li>' +
-                          '<li template="ngSwitchDefault">when default</li>' +
-                          '</ul></div>';
+               '<ul [ngSwitch]="switchValue">' +
+               '<li template="ngSwitchWhen \'a\'">when a</li>' +
+               '<li template="ngSwitchDefault">when default</li>' +
+               '</ul></div>';
 
            tcb.overrideTemplate(TestComponent, template)
                .createAsync(TestComponent)
@@ -74,14 +62,14 @@ export function main() {
       it('should support multiple whens with the same value',
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            var template = '<div>' +
-                          '<ul [ngSwitch]="switchValue">' +
-                          '<template ngSwitchWhen="a"><li>when a1;</li></template>' +
-                          '<template ngSwitchWhen="b"><li>when b1;</li></template>' +
-                          '<template ngSwitchWhen="a"><li>when a2;</li></template>' +
-                          '<template ngSwitchWhen="b"><li>when b2;</li></template>' +
-                          '<template ngSwitchDefault><li>when default1;</li></template>' +
-                          '<template ngSwitchDefault><li>when default2;</li></template>' +
-                          '</ul></div>';
+               '<ul [ngSwitch]="switchValue">' +
+               '<template ngSwitchWhen="a"><li>when a1;</li></template>' +
+               '<template ngSwitchWhen="b"><li>when b1;</li></template>' +
+               '<template ngSwitchWhen="a"><li>when a2;</li></template>' +
+               '<template ngSwitchWhen="b"><li>when b2;</li></template>' +
+               '<template ngSwitchDefault><li>when default1;</li></template>' +
+               '<template ngSwitchDefault><li>when default2;</li></template>' +
+               '</ul></div>';
 
            tcb.overrideTemplate(TestComponent, template)
                .createAsync(TestComponent)
@@ -107,11 +95,11 @@ export function main() {
       it('should switch amongst when values',
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            var template = '<div>' +
-                          '<ul [ngSwitch]="switchValue">' +
-                          '<template [ngSwitchWhen]="when1"><li>when 1;</li></template>' +
-                          '<template [ngSwitchWhen]="when2"><li>when 2;</li></template>' +
-                          '<template ngSwitchDefault><li>when default;</li></template>' +
-                          '</ul></div>';
+               '<ul [ngSwitch]="switchValue">' +
+               '<template [ngSwitchWhen]="when1"><li>when 1;</li></template>' +
+               '<template [ngSwitchWhen]="when2"><li>when 2;</li></template>' +
+               '<template ngSwitchDefault><li>when default;</li></template>' +
+               '</ul></div>';
 
            tcb.overrideTemplate(TestComponent, template)
                .createAsync(TestComponent)

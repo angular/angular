@@ -17,6 +17,7 @@ describe('http', function() {
 });
 
 function getComponentText(selector, innerSelector) {
-  return browser.executeScript('return document.querySelector("' + selector + '").querySelector("' +
-                               innerSelector + '").textContent.trim()');
+  return browser.executeScript(
+      'return document.querySelector("' + selector + '").querySelector("' + innerSelector +
+      '").textContent.trim()');
 }
