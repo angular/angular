@@ -37,7 +37,7 @@ import {
 } from 'angular2/src/platform/dom/events/hammer_gestures';
 import {ELEMENT_PROBE_PROVIDERS} from 'angular2/platform/common_dom';
 import {TitleImpl} from 'angular2/src/platform/browser/title_impl';
-import {Title, Global} from 'angular2/src/platform/tokens';
+import {Title, Location, Global} from 'angular2/src/platform/tokens';
 export {DOCUMENT} from 'angular2/src/platform/dom/dom_tokens';
 export {
   ELEMENT_PROBE_PROVIDERS,
@@ -69,6 +69,10 @@ function _document(): any {
   return DOM.defaultDoc();
 }
 
+function _location(): any {
+  return DOM.getLocation();
+}
+
 function _global(): any {
   return global;
 }
@@ -93,6 +97,7 @@ export const BROWSER_APP_COMMON_PROVIDERS: Array<any /*Type | Provider | any[]*/
   new Provider(RootRenderer, {useExisting: DomRootRenderer}),
   new Provider(SharedStylesHost, {useExisting: DomSharedStylesHost}),
   new Provider(Title, {useClass: TitleImpl}),
+  new Provider(Location, {useFactory: _location}),
   new Provider(Global, {useFactory: _global}),
   DomSharedStylesHost,
   Testability,
