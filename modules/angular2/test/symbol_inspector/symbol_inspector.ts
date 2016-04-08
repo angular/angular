@@ -4,6 +4,7 @@ import * as ngCompiler from 'angular2/compiler';
 import * as ngCore from 'angular2/core';
 import * as ngInstrumentation from 'angular2/instrumentation';
 import * as ngPlatformBrowser from 'angular2/platform/browser';
+import * as ngPlatformCommon from 'angular2/platform/common';
 import * as ngUpgrade from 'angular2/upgrade';
 
 const LIB_MAP = {
@@ -13,6 +14,7 @@ const LIB_MAP = {
   ngCore,
   ngInstrumentation,
   ngPlatformBrowser,
+  ngPlatformCommon,
   ngUpgrade
 };
 

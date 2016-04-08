@@ -5,11 +5,11 @@ import {
   RouteConfig,
   ComponentInstruction,
   ROUTER_DIRECTIVES,
-  APP_BASE_HREF,
   CanReuse,
   RouteParams,
   OnReuse
 } from 'angular2/router';
+import {APP_BASE_HREF} from 'angular2/platform/common';
 
 
 // #docregion reuseCmp

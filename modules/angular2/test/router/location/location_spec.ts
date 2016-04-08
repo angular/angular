@@ -15,8 +15,7 @@ import {
 import {Injector, provide} from 'angular2/core';
 import {CONST_EXPR} from 'angular2/src/facade/lang';
 
-import {Location} from 'angular2/src/router/location/location';
-import {LocationStrategy, APP_BASE_HREF} from 'angular2/src/router/location/location_strategy';
+import {Location, LocationStrategy, APP_BASE_HREF} from 'angular2/platform/common';
 import {MockLocationStrategy} from 'angular2/src/mock/mock_location_strategy';
 
 export function main() {

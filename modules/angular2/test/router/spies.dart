@@ -1,5 +1,6 @@
 library router.spies;
 
+import 'package:angular2/platform/common.dart' show PlatformLocation, Location;
 import 'package:angular2/router.dart';
 import 'package:angular2/testing_internal.dart';
 

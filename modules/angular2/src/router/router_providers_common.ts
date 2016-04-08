@@ -1,8 +1,6 @@
-import {LocationStrategy} from 'angular2/src/router/location/location_strategy';
-import {PathLocationStrategy} from 'angular2/src/router/location/path_location_strategy';
+import {LocationStrategy, PathLocationStrategy, Location} from 'angular2/platform/common';
 import {Router, RootRouter} from 'angular2/src/router/router';
 import {RouteRegistry, ROUTER_PRIMARY_COMPONENT} from 'angular2/src/router/route_registry';
-import {Location} from 'angular2/src/router/location/location';
 import {CONST_EXPR, Type} from 'angular2/src/facade/lang';
 import {ApplicationRef, OpaqueToken, Provider} from 'angular2/core';
 import {BaseException} from 'angular2/src/facade/exceptions';
