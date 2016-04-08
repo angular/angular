@@ -4,7 +4,7 @@ import {isPresent} from '../../src/facade/lang';
 
 export class XHRImpl extends XHR {
   get(url: string): Promise<string> {
-    var completer: PromiseCompleter < string >= PromiseWrapper.completer();
+    var completer: PromiseCompleter <string> = PromiseWrapper.completer();
     var xhr = new XMLHttpRequest();
     xhr.open('GET', url, true);
     xhr.responseType = 'text';
