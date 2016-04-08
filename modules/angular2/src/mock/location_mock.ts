@@ -24,6 +24,14 @@ export class SpyLocation implements Location {
 
   path(): string { return this._path; }
 
+  isCurrentPathEqualTo(path: string, query: string = ''): boolean {
+    var givenPath = path.endsWith('/') ? path.substring(0, path.length - 1) : path;
+    var currPath =
+        this.path().endsWith('/') ? this.path().substring(0, this.path().length - 1) : this.path();
+
+    return currPath == givenPath + (query.length > 0 ? ('?' + query) : '');
+  }
+
   simulateUrlPop(pathname: string) {
     ObservableWrapper.callEmit(this._subject, {'url': pathname, 'pop': true});
   }
@@ -56,6 +64,9 @@ export class SpyLocation implements Location {
 
   replaceState(path: string, query: string = '') {
     path = this.prepareExternalUrl(path);
+    if (this._path == path && this._query == query) {
+      return;
+    }
     this._path = path;
     this._query = query;
 
