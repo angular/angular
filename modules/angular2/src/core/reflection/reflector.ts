@@ -1,13 +1,6 @@
 import {Type, isPresent, stringify} from 'angular2/src/facade/lang';
 import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
-import {
-  ListWrapper,
-  Map,
-  MapWrapper,
-  Set,
-  SetWrapper,
-  StringMapWrapper
-} from 'angular2/src/facade/collection';
+import {ListWrapper, Map, MapWrapper, Set, SetWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
 import {SetterFn, GetterFn, MethodFn} from './types';
 import {ReflectorReader} from './reflector_reader';
 import {PlatformReflectionCapabilities} from './platform_reflection_capabilities';
@@ -18,8 +11,9 @@ export {PlatformReflectionCapabilities} from './platform_reflection_capabilities
  * Reflective information about a symbol, including annotations, interfaces, and other metadata.
  */
 export class ReflectionInfo {
-  constructor(public annotations?: any[], public parameters?: any[][], public factory?: Function,
-              public interfaces?: any[], public propMetadata?: {[key: string]: any[]}) {}
+  constructor(
+      public annotations?: any[], public parameters?: any[][], public factory?: Function,
+      public interfaces?: any[], public propMetadata?: {[key: string]: any[]}) {}
 }
 
 /**

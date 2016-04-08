@@ -16,12 +16,7 @@ import {BaseResponseOptions, ResponseOptions} from './src/http/base_response_opt
 export {Request} from './src/http/static_request';
 export {Response} from './src/http/static_response';
 
-export {
-  RequestOptionsArgs,
-  ResponseOptionsArgs,
-  Connection,
-  ConnectionBackend
-} from './src/http/interfaces';
+export {RequestOptionsArgs, ResponseOptionsArgs, Connection, ConnectionBackend} from './src/http/interfaces';
 
 export {BrowserXhr} from './src/http/backends/browser_xhr';
 export {BaseRequestOptions, RequestOptions} from './src/http/base_request_options';
@@ -155,16 +150,13 @@ export {URLSearchParams} from './src/http/url_search_params';
 export const HTTP_PROVIDERS: any[] = [
   // TODO(pascal): use factory type annotations once supported in DI
   // issue: https://github.com/angular/angular/issues/3183
-  provide(Http,
-          {
-            useFactory: (xhrBackend: XHRBackend, requestOptions: RequestOptions) =>
-                            new Http(xhrBackend, requestOptions),
-            deps: [XHRBackend, RequestOptions]
-          }),
-  BrowserXhr,
-  provide(RequestOptions, {useClass: BaseRequestOptions}),
-  provide(ResponseOptions, {useClass: BaseResponseOptions}),
-  XHRBackend
+  provide(Http, {
+    useFactory: (xhrBackend: XHRBackend, requestOptions: RequestOptions) =>
+                    new Http(xhrBackend, requestOptions),
+    deps: [XHRBackend, RequestOptions]
+  }),
+  BrowserXhr, provide(RequestOptions, {useClass: BaseRequestOptions}),
+  provide(ResponseOptions, {useClass: BaseResponseOptions}), XHRBackend
 ];
 
 /**
@@ -284,14 +276,12 @@ export const HTTP_BINDINGS = HTTP_PROVIDERS;
 export const JSONP_PROVIDERS: any[] = [
   // TODO(pascal): use factory type annotations once supported in DI
   // issue: https://github.com/angular/angular/issues/3183
-  provide(Jsonp,
-          {
-            useFactory: (jsonpBackend: JSONPBackend, requestOptions: RequestOptions) =>
-                            new Jsonp(jsonpBackend, requestOptions),
-            deps: [JSONPBackend, RequestOptions]
-          }),
-  BrowserJsonp,
-  provide(RequestOptions, {useClass: BaseRequestOptions}),
+  provide(Jsonp, {
+    useFactory: (jsonpBackend: JSONPBackend, requestOptions: RequestOptions) =>
+                    new Jsonp(jsonpBackend, requestOptions),
+    deps: [JSONPBackend, RequestOptions]
+  }),
+  BrowserJsonp, provide(RequestOptions, {useClass: BaseRequestOptions}),
   provide(ResponseOptions, {useClass: BaseResponseOptions}),
   provide(JSONPBackend, {useClass: JSONPBackend_})
 ];

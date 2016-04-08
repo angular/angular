@@ -1,9 +1,9 @@
-import {Type, isArray, isPresent, serializeEnum, deserializeEnum} from "angular2/src/facade/lang";
+import {Type, isArray, isPresent, serializeEnum, deserializeEnum} from 'angular2/src/facade/lang';
 import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
 
-import {Map, StringMapWrapper, MapWrapper} from "angular2/src/facade/collection";
-import {RenderComponentType} from "angular2/src/core/render/api";
-import {Injectable} from "angular2/src/core/di";
+import {Map, StringMapWrapper, MapWrapper} from 'angular2/src/facade/collection';
+import {RenderComponentType} from 'angular2/src/core/render/api';
+import {Injectable} from 'angular2/src/core/di';
 import {RenderStore} from 'angular2/src/web_workers/shared/render_store';
 import {ViewEncapsulation, VIEW_ENCAPSULATION_VALUES} from 'angular2/src/core/metadata/view';
 import {LocationType} from './serialized_types';
@@ -35,7 +35,7 @@ export class Serializer {
     } else if (type === LocationType) {
       return this._serializeLocation(obj);
     } else {
-      throw new BaseException("No serializer for " + type.toString());
+      throw new BaseException('No serializer for ' + type.toString());
     }
   }
 
@@ -61,7 +61,7 @@ export class Serializer {
     } else if (type === LocationType) {
       return this._deserializeLocation(map);
     } else {
-      throw new BaseException("No deserializer for " + type.toString());
+      throw new BaseException('No deserializer for ' + type.toString());
     }
   }
 
@@ -87,8 +87,8 @@ export class Serializer {
   objectToMap(obj: {[key: string]: any}, type?: Type, data?: any): Map<string, any> {
     if (isPresent(type)) {
       var map = new Map<string, any>();
-      StringMapWrapper.forEach(obj,
-                               (val, key) => { map.set(key, this.deserialize(val, type, data)); });
+      StringMapWrapper.forEach(
+          obj, (val, key) => { map.set(key, this.deserialize(val, type, data)); });
       return map;
     } else {
       return MapWrapper.createFromStringMap(obj);
@@ -110,8 +110,9 @@ export class Serializer {
   }
 
   private _deserializeLocation(loc: {[key: string]: any}): LocationType {
-    return new LocationType(loc['href'], loc['protocol'], loc['host'], loc['hostname'], loc['port'],
-                            loc['pathname'], loc['search'], loc['hash'], loc['origin']);
+    return new LocationType(
+        loc['href'], loc['protocol'], loc['host'], loc['hostname'], loc['port'], loc['pathname'],
+        loc['search'], loc['hash'], loc['origin']);
   }
 
   private _serializeRenderComponentType(obj: RenderComponentType): Object {
@@ -123,9 +124,9 @@ export class Serializer {
   }
 
   private _deserializeRenderComponentType(map: {[key: string]: any}): RenderComponentType {
-    return new RenderComponentType(map['id'],
-                                   this.deserialize(map['encapsulation'], ViewEncapsulation),
-                                   this.deserialize(map['styles'], PRIMITIVE));
+    return new RenderComponentType(
+        map['id'], this.deserialize(map['encapsulation'], ViewEncapsulation),
+        this.deserialize(map['styles'], PRIMITIVE));
   }
 }
 

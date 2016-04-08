@@ -3,7 +3,7 @@ import {AnimationBuilder} from 'angular2/src/animate/animation_builder';
 import {DOM} from 'angular2/src/platform/dom/dom_adapter';
 
 export function main() {
-  describe("AnimationBuilder", () => {
+  describe('AnimationBuilder', () => {
 
     it('should have data object', inject([AnimationBuilder], animate => {
          var animateCss = animate.css();

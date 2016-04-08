@@ -1,16 +1,4 @@
-import {
-  AsyncTestCompleter,
-  describe,
-  proxy,
-  it,
-  iit,
-  ddescribe,
-  expect,
-  inject,
-  beforeEach,
-  beforeEachProviders,
-  SpyObject
-} from 'angular2/testing_internal';
+import {AsyncTestCompleter, describe, proxy, it, iit, ddescribe, expect, inject, beforeEach, beforeEachProviders, SpyObject} from 'angular2/testing_internal';
 
 import {Injector, provide} from 'angular2/core';
 import {CONST_EXPR} from 'angular2/src/facade/lang';
@@ -81,8 +69,8 @@ export function main() {
       var locationStrategy = new MockLocationStrategy();
       var location = new Location(locationStrategy);
 
-      location.go('/home', "key=value");
-      expect(location.path()).toEqual("/home?key=value");
+      location.go('/home', 'key=value');
+      expect(location.path()).toEqual('/home?key=value');
     });
   });
 }

@@ -1,40 +1,10 @@
-import {
-  ParseSourceSpan,
-  ParseSourceFile,
-  ParseLocation,
-  ParseError
-} from "angular2/src/compiler/parse_util";
+import {ParseSourceSpan, ParseSourceFile, ParseLocation, ParseError} from 'angular2/src/compiler/parse_util';
 
-import {
-  bitWiseOr,
-  bitWiseAnd,
-  NumberWrapper,
-  StringWrapper,
-  isPresent
-} from "angular2/src/facade/lang";
+import {bitWiseOr, bitWiseAnd, NumberWrapper, StringWrapper, isPresent} from 'angular2/src/facade/lang';
 
-import {
-  CssLexerMode,
-  CssToken,
-  CssTokenType,
-  CssScanner,
-  CssScannerError,
-  generateErrorMessage,
-  $AT,
-  $EOF,
-  $RBRACE,
-  $LBRACE,
-  $LBRACKET,
-  $RBRACKET,
-  $LPAREN,
-  $RPAREN,
-  $COMMA,
-  $COLON,
-  $SEMICOLON,
-  isNewline
-} from "angular2/src/compiler/css/lexer";
+import {CssLexerMode, CssToken, CssTokenType, CssScanner, CssScannerError, generateErrorMessage, $AT, $EOF, $RBRACE, $LBRACE, $LBRACKET, $RBRACKET, $LPAREN, $RPAREN, $COMMA, $COLON, $SEMICOLON, isNewline} from 'angular2/src/compiler/css/lexer';
 
-export {CssToken} from "angular2/src/compiler/css/lexer";
+export {CssToken} from 'angular2/src/compiler/css/lexer';
 
 export enum BlockType {
   Import,
@@ -60,7 +30,7 @@ const SEMICOLON_DELIM = 32;
 const NEWLINE_DELIM = 64;
 const RPAREN_DELIM = 128;
 
-function mergeTokens(tokens: CssToken[], separator: string = ""): CssToken {
+function mergeTokens(tokens: CssToken[], separator: string = ''): CssToken {
   var mainToken = tokens[0];
   var str = mainToken.strValue;
   for (var i = 1; i < tokens.length; i++) {
@@ -205,8 +175,9 @@ export class CssParser {
 
     var token = this._scan();
 
-    this._assertCondition(token.type == CssTokenType.AtKeyword,
-                          `The CSS Rule ${token.strValue} is not a valid [@] rule.`, token);
+    this._assertCondition(
+        token.type == CssTokenType.AtKeyword,
+        `The CSS Rule ${token.strValue} is not a valid [@] rule.`, token);
 
     var block, type = this._resolveBlockType(token);
     switch (type) {
@@ -245,11 +216,12 @@ export class CssParser {
       default:
         var listOfTokens = [];
         this._scanner.setMode(CssLexerMode.ALL);
-        this._error(generateErrorMessage(
-                        this._scanner.input,
-                        `The CSS "at" rule "${token.strValue}" is not allowed to used here`,
-                        token.strValue, token.index, token.line, token.column),
-                    token);
+        this._error(
+            generateErrorMessage(
+                this._scanner.input,
+                `The CSS "at" rule "${token.strValue}" is not allowed to used here`, token.strValue,
+                token.index, token.line, token.column),
+            token);
 
         this._collectUntilDelim(bitWiseOr([delimiters, LBRACE_DELIM, SEMICOLON_DELIM]))
             .forEach((token) => { listOfTokens.push(token); });
@@ -403,7 +375,7 @@ export class CssParser {
       // contains an inner selector that needs to be parsed
       // in isolation
       if (this._scanner.getMode() == CssLexerMode.PSEUDO_SELECTOR && isPresent(previousToken) &&
-          previousToken.numValue == $COLON && token.strValue == "not" &&
+          previousToken.numValue == $COLON && token.strValue == 'not' &&
           this._scanner.peek == $LPAREN) {
         selectorCssTokens.push(token);
         selectorCssTokens.push(this._consume(CssTokenType.Character, '('));
@@ -453,7 +425,7 @@ export class CssParser {
 
     this._scanner.setMode(CssLexerMode.STYLE_VALUE);
 
-    var strValue = "";
+    var strValue = '';
     var tokens = [];
     var previous: CssToken;
     while (!characterContainsDelimiter(this._scanner.peek, delimiters)) {
@@ -493,9 +465,9 @@ export class CssParser {
       this._consume(CssTokenType.Character, ';');
     } else if (code != $RBRACE) {
       this._error(
-          generateErrorMessage(this._scanner.input,
-                               `The CSS key/value definition did not end with a semicolon`,
-                               previous.strValue, previous.index, previous.line, previous.column),
+          generateErrorMessage(
+              this._scanner.input, `The CSS key/value definition did not end with a semicolon`,
+              previous.strValue, previous.index, previous.line, previous.column),
           previous);
     }
 
@@ -592,7 +564,7 @@ export class CssParser {
             remainingTokens.forEach((token) => { propStr.push(token.strValue); });
           }
 
-          prop = new CssToken(prop.index, prop.column, prop.line, prop.type, propStr.join(" "));
+          prop = new CssToken(prop.index, prop.column, prop.line, prop.type, propStr.join(' '));
         }
 
         // this means we've reached the end of the definition and/or block
@@ -608,10 +580,11 @@ export class CssParser {
     if (parseValue) {
       value = this._parseValue(delimiters);
     } else {
-      this._error(generateErrorMessage(this._scanner.input,
-                                       `The CSS property was not paired with a style value`,
-                                       prop.strValue, prop.index, prop.line, prop.column),
-                  prop);
+      this._error(
+          generateErrorMessage(
+              this._scanner.input, `The CSS property was not paired with a style value`,
+              prop.strValue, prop.index, prop.line, prop.column),
+          prop);
     }
 
     return new CssDefinitionAST(prop, value);
@@ -629,8 +602,8 @@ export class CssParser {
   /** @internal */
   _error(message: string, problemToken: CssToken) {
     var length = problemToken.strValue.length;
-    var error = CssParseError.create(this._file, 0, problemToken.line, problemToken.column, length,
-                                     message);
+    var error = CssParseError.create(
+        this._file, 0, problemToken.line, problemToken.column, length, message);
     this._errors.push(error);
   }
 }
@@ -657,7 +630,7 @@ export class CssKeyframeRuleAST extends CssBlockRuleAST {
 export class CssKeyframeDefinitionAST extends CssBlockRuleAST {
   public steps;
   constructor(_steps: CssToken[], block: CssBlockAST) {
-    super(BlockType.Keyframes, block, mergeTokens(_steps, ","));
+    super(BlockType.Keyframes, block, mergeTokens(_steps, ','));
     this.steps = _steps;
   }
   visit(visitor: CssASTVisitor, context?: any) {
@@ -669,10 +642,11 @@ export class CssBlockDefinitionRuleAST extends CssBlockRuleAST {
   public strValue: string;
   constructor(type: BlockType, public query: CssToken[], block: CssBlockAST) {
     super(type, block);
-    this.strValue = query.map(token => token.strValue).join("");
+    this.strValue = query.map(token => token.strValue).join('');
     var firstCssToken: CssToken = query[0];
-    this.name = new CssToken(firstCssToken.index, firstCssToken.column, firstCssToken.line,
-                             CssTokenType.Identifier, this.strValue);
+    this.name = new CssToken(
+        firstCssToken.index, firstCssToken.column, firstCssToken.line, CssTokenType.Identifier,
+        this.strValue);
   }
   visit(visitor: CssASTVisitor, context?: any) { visitor.visitCssBlock(this.block, context); }
 }
@@ -692,7 +666,7 @@ export class CssSelectorRuleAST extends CssBlockRuleAST {
 
   constructor(public selectors: CssSelectorAST[], block: CssBlockAST) {
     super(BlockType.Selector, block);
-    this.strValue = selectors.map(selector => selector.strValue).join(",");
+    this.strValue = selectors.map(selector => selector.strValue).join(',');
   }
 
   visit(visitor: CssASTVisitor, context?: any) { visitor.visitCssSelectorRule(this, context); }
@@ -707,7 +681,7 @@ export class CssSelectorAST extends CssAST {
   public strValue;
   constructor(public tokens: CssToken[], public isComplex: boolean = false) {
     super();
-    this.strValue = tokens.map(token => token.strValue).join("");
+    this.strValue = tokens.map(token => token.strValue).join('');
   }
   visit(visitor: CssASTVisitor, context?: any) { visitor.visitCssSelector(this, context); }
 }
@@ -723,12 +697,13 @@ export class CssStyleSheetAST extends CssAST {
 }
 
 export class CssParseError extends ParseError {
-  static create(file: ParseSourceFile, offset: number, line: number, col: number, length: number,
-                errMsg: string): CssParseError {
+  static create(
+      file: ParseSourceFile, offset: number, line: number, col: number, length: number,
+      errMsg: string): CssParseError {
     var start = new ParseLocation(file, offset, line, col);
     var end = new ParseLocation(file, offset, line, col + length);
     var span = new ParseSourceSpan(start, end);
-    return new CssParseError(span, "CSS Parse Error: " + errMsg);
+    return new CssParseError(span, 'CSS Parse Error: ' + errMsg);
   }
 
   constructor(span: ParseSourceSpan, message: string) { super(span, message); }

@@ -1,20 +1,5 @@
-import {
-  Directive,
-  DoCheck,
-  ElementRef,
-  EventEmitter,
-  Inject,
-  OnChanges,
-  SimpleChange,
-  Type
-} from 'angular2/core';
-import {
-  NG1_COMPILE,
-  NG1_SCOPE,
-  NG1_HTTP_BACKEND,
-  NG1_TEMPLATE_CACHE,
-  NG1_CONTROLLER
-} from './constants';
+import {Directive, DoCheck, ElementRef, EventEmitter, Inject, OnChanges, SimpleChange, Type} from 'angular2/core';
+import {NG1_COMPILE, NG1_SCOPE, NG1_HTTP_BACKEND, NG1_TEMPLATE_CACHE, NG1_CONTROLLER} from './constants';
 import {controllerKey} from './util';
 import * as angular from './angular_js';
 
@@ -45,8 +30,7 @@ export class UpgradeNg1ComponentAdapterBuilder {
         Directive({selector: selector, inputs: this.inputsRename, outputs: this.outputsRename})
             .Class({
               constructor: [
-                new Inject(NG1_SCOPE),
-                ElementRef,
+                new Inject(NG1_SCOPE), ElementRef,
                 function(scope: angular.IScope, elementRef: ElementRef) {
                   return new UpgradeNg1ComponentAdapter(
                       self.linkFn, scope, self.directive, elementRef, self.$controller, self.inputs,
@@ -128,8 +112,9 @@ export class UpgradeNg1ComponentAdapterBuilder {
     }
   }
 
-  compileTemplate(compile: angular.ICompileService, templateCache: angular.ITemplateCacheService,
-                  httpBackend: angular.IHttpBackendService): Promise<any> {
+  compileTemplate(
+      compile: angular.ICompileService, templateCache: angular.ITemplateCacheService,
+      httpBackend: angular.IHttpBackendService): Promise<any> {
     if (this.directive.template !== undefined) {
       this.linkFn = compileHtml(this.directive.template);
     } else if (this.directive.templateUrl) {
@@ -159,8 +144,9 @@ export class UpgradeNg1ComponentAdapterBuilder {
     }
   }
 
-  static resolve(exportedComponents: {[name: string]: UpgradeNg1ComponentAdapterBuilder},
-                 injector: angular.IInjectorService): Promise<any> {
+  static resolve(
+      exportedComponents: {[name: string]: UpgradeNg1ComponentAdapterBuilder},
+      injector: angular.IInjectorService): Promise<any> {
     var promises = [];
     var compile: angular.ICompileService = injector.get(NG1_COMPILE);
     var templateCache: angular.ITemplateCacheService = injector.get(NG1_TEMPLATE_CACHE);
@@ -184,10 +170,11 @@ class UpgradeNg1ComponentAdapter implements OnChanges, DoCheck {
   destinationObj: any = null;
   checkLastValues: any[] = [];
 
-  constructor(linkFn: angular.ILinkFn, scope: angular.IScope, private directive: angular.IDirective,
-              elementRef: ElementRef, $controller: angular.IControllerService,
-              private inputs: string[], private outputs: string[], private propOuts: string[],
-              private checkProperties: string[], private propertyMap: {[key: string]: string}) {
+  constructor(
+      linkFn: angular.ILinkFn, scope: angular.IScope, private directive: angular.IDirective,
+      elementRef: ElementRef, $controller: angular.IControllerService, private inputs: string[],
+      private outputs: string[], private propOuts: string[], private checkProperties: string[],
+      private propertyMap: {[key: string]: string}) {
     var element: Element = elementRef.nativeElement;
     var childNodes: Node[] = [];
     var childNode;
@@ -210,8 +197,8 @@ class UpgradeNg1ComponentAdapter implements OnChanges, DoCheck {
       var attrs: angular.IAttributes = NOT_SUPPORTED;
       var transcludeFn: angular.ITranscludeFunction = NOT_SUPPORTED;
       var linkController = this.resolveRequired($element, directive.require);
-      (<angular.IDirectiveLinkFn>directive.link)(componentScope, $element, attrs, linkController,
-                                                 transcludeFn);
+      (<angular.IDirectiveLinkFn>directive.link)(
+          componentScope, $element, attrs, linkController, transcludeFn);
     }
     this.destinationObj = directive.bindToController && controller ? controller : componentScope;
 
@@ -274,7 +261,7 @@ class UpgradeNg1ComponentAdapter implements OnChanges, DoCheck {
     this.destinationObj[this.propertyMap[name]] = value;
   }
 
-  private resolveRequired($element: angular.IAugmentedJQuery, require: string | string[]): any {
+  private resolveRequired($element: angular.IAugmentedJQuery, require: string|string[]): any {
     if (!require) {
       return undefined;
     } else if (typeof require == 'string') {

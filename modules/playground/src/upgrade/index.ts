@@ -2,8 +2,7 @@ import {Component, Input, Output, EventEmitter} from 'angular2/core';
 import {UpgradeAdapter} from 'angular2/upgrade';
 import * as angular from '../../../angular2/src/upgrade/angular_js';
 
-var styles = [
-  `
+var styles = [`
     .border {
       border: solid 2px DodgerBlue;
     }
@@ -15,8 +14,7 @@ var styles = [
     .content {
       padding: 1em;
     }
-  `
-];
+  `];
 
 var adapter: UpgradeAdapter = new UpgradeAdapter();
 

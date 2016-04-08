@@ -1,65 +1,18 @@
-import {
-  isPresent,
-  isBlank,
-  Type,
-  isString,
-  StringWrapper,
-  IS_DART,
-  CONST_EXPR
-} from 'angular2/src/facade/lang';
+import {isPresent, isBlank, Type, isString, StringWrapper, IS_DART, CONST_EXPR} from 'angular2/src/facade/lang';
 import {SetWrapper, StringMapWrapper, ListWrapper} from 'angular2/src/facade/collection';
-import {
-  TemplateAst,
-  TemplateAstVisitor,
-  NgContentAst,
-  EmbeddedTemplateAst,
-  ElementAst,
-  VariableAst,
-  BoundEventAst,
-  BoundElementPropertyAst,
-  AttrAst,
-  BoundTextAst,
-  TextAst,
-  DirectiveAst,
-  BoundDirectivePropertyAst,
-  templateVisitAll
-} from './template_ast';
+import {TemplateAst, TemplateAstVisitor, NgContentAst, EmbeddedTemplateAst, ElementAst, VariableAst, BoundEventAst, BoundElementPropertyAst, AttrAst, BoundTextAst, TextAst, DirectiveAst, BoundDirectivePropertyAst, templateVisitAll} from './template_ast';
 import {CompileTypeMetadata, CompileDirectiveMetadata} from './directive_metadata';
 import {SourceExpressions, SourceExpression, moduleRef} from './source_module';
-import {
-  AppProtoView,
-  AppView,
-  flattenNestedViewRenderNodes,
-  checkSlotCount
-} from 'angular2/src/core/linker/view';
+import {AppProtoView, AppView, flattenNestedViewRenderNodes, checkSlotCount} from 'angular2/src/core/linker/view';
 import {ViewType} from 'angular2/src/core/linker/view_type';
 import {AppViewManager_} from 'angular2/src/core/linker/view_manager';
 import {AppProtoElement, AppElement} from 'angular2/src/core/linker/element';
 import {Renderer, ParentRenderer} from 'angular2/src/core/render/api';
 import {ViewEncapsulation} from 'angular2/src/core/metadata/view';
-import {
-  escapeSingleQuoteString,
-  codeGenConstConstructorCall,
-  codeGenValueFn,
-  codeGenFnHeader,
-  MODULE_SUFFIX,
-  Statement,
-  escapeValue,
-  codeGenArray,
-  codeGenFlatArray,
-  Expression,
-  flattenArray,
-  CONST_VAR
-} from './util';
+import {escapeSingleQuoteString, codeGenConstConstructorCall, codeGenValueFn, codeGenFnHeader, MODULE_SUFFIX, Statement, escapeValue, codeGenArray, codeGenFlatArray, Expression, flattenArray, CONST_VAR} from './util';
 import {ResolvedProvider, Injectable, Injector} from 'angular2/src/core/di';
 
-import {
-  APP_VIEW_MODULE_REF,
-  APP_EL_MODULE_REF,
-  METADATA_MODULE_REF,
-  CompileProtoView,
-  CompileProtoElement
-} from './proto_view_compiler';
+import {APP_VIEW_MODULE_REF, APP_EL_MODULE_REF, METADATA_MODULE_REF, CompileProtoView, CompileProtoElement} from './proto_view_compiler';
 
 export const VIEW_JIT_IMPORTS = CONST_EXPR({
   'AppView': AppView,
@@ -73,74 +26,77 @@ export const VIEW_JIT_IMPORTS = CONST_EXPR({
 export class ViewCompiler {
   constructor() {}
 
-  compileComponentRuntime(component: CompileDirectiveMetadata, template: TemplateAst[],
-                          styles: Array<string | any[]>,
-                          protoViews: CompileProtoView<AppProtoView, AppProtoElement>[],
-                          changeDetectorFactories: Function[],
-                          componentViewFactory: Function): Function {
-    var viewFactory = new RuntimeViewFactory(component, styles, protoViews, changeDetectorFactories,
-                                             componentViewFactory);
+  compileComponentRuntime(
+      component: CompileDirectiveMetadata, template: TemplateAst[], styles: Array<string|any[]>,
+      protoViews: CompileProtoView<AppProtoView, AppProtoElement>[],
+      changeDetectorFactories: Function[], componentViewFactory: Function): Function {
+    var viewFactory = new RuntimeViewFactory(
+        component, styles, protoViews, changeDetectorFactories, componentViewFactory);
     return viewFactory.createViewFactory(template, 0, []);
   }
 
-  compileComponentCodeGen(component: CompileDirectiveMetadata, template: TemplateAst[],
-                          styles: SourceExpression,
-                          protoViews: CompileProtoView<Expression, Expression>[],
-                          changeDetectorFactoryExpressions: SourceExpressions,
-                          componentViewFactory: Function): SourceExpression {
+  compileComponentCodeGen(
+      component: CompileDirectiveMetadata, template: TemplateAst[], styles: SourceExpression,
+      protoViews: CompileProtoView<Expression, Expression>[],
+      changeDetectorFactoryExpressions: SourceExpressions,
+      componentViewFactory: Function): SourceExpression {
     var viewFactory = new CodeGenViewFactory(
         component, styles, protoViews, changeDetectorFactoryExpressions, componentViewFactory);
     var targetStatements: Statement[] = [];
     var viewFactoryExpression = viewFactory.createViewFactory(template, 0, targetStatements);
-    return new SourceExpression(targetStatements.map(stmt => stmt.statement),
-                                viewFactoryExpression.expression);
+    return new SourceExpression(
+        targetStatements.map(stmt => stmt.statement), viewFactoryExpression.expression);
   }
 }
 
 interface ViewFactory<EXPRESSION, STATEMENT> {
-  createText(renderer: EXPRESSION, parent: EXPRESSION, text: string,
-             targetStatements: STATEMENT[]): EXPRESSION;
+  createText(renderer: EXPRESSION, parent: EXPRESSION, text: string, targetStatements: STATEMENT[]):
+      EXPRESSION;
 
-  createElement(renderer: EXPRESSION, parent: EXPRESSION, name: string, rootSelector: EXPRESSION,
-                targetStatements: STATEMENT[]): EXPRESSION;
+  createElement(
+      renderer: EXPRESSION, parent: EXPRESSION, name: string, rootSelector: EXPRESSION,
+      targetStatements: STATEMENT[]): EXPRESSION;
 
-  createTemplateAnchor(renderer: EXPRESSION, parent: EXPRESSION,
-                       targetStatements: STATEMENT[]): EXPRESSION;
+  createTemplateAnchor(renderer: EXPRESSION, parent: EXPRESSION, targetStatements: STATEMENT[]):
+      EXPRESSION;
 
-  createGlobalEventListener(renderer: EXPRESSION, view: EXPRESSION, boundElementIndex: number,
-                            eventAst: BoundEventAst, targetStatements: STATEMENT[]): EXPRESSION;
+  createGlobalEventListener(
+      renderer: EXPRESSION, view: EXPRESSION, boundElementIndex: number, eventAst: BoundEventAst,
+      targetStatements: STATEMENT[]): EXPRESSION;
 
-  createElementEventListener(renderer: EXPRESSION, view: EXPRESSION, boundElementIndex: number,
-                             renderNode: EXPRESSION, eventAst: BoundEventAst,
-                             targetStatements: STATEMENT[]): EXPRESSION;
+  createElementEventListener(
+      renderer: EXPRESSION, view: EXPRESSION, boundElementIndex: number, renderNode: EXPRESSION,
+      eventAst: BoundEventAst, targetStatements: STATEMENT[]): EXPRESSION;
 
-  setElementAttribute(renderer: EXPRESSION, renderNode: EXPRESSION, attrName: string,
-                      attrValue: string, targetStatements: STATEMENT[]);
+  setElementAttribute(
+      renderer: EXPRESSION, renderNode: EXPRESSION, attrName: string, attrValue: string,
+      targetStatements: STATEMENT[]);
 
-  createAppElement(appProtoEl: EXPRESSION, view: EXPRESSION, renderNode: EXPRESSION,
-                   parentAppEl: EXPRESSION, embeddedViewFactory: EXPRESSION,
-                   targetStatements: STATEMENT[]): EXPRESSION;
+  createAppElement(
+      appProtoEl: EXPRESSION, view: EXPRESSION, renderNode: EXPRESSION, parentAppEl: EXPRESSION,
+      embeddedViewFactory: EXPRESSION, targetStatements: STATEMENT[]): EXPRESSION;
 
-  createAndSetComponentView(renderer: EXPRESSION, viewManager: EXPRESSION, view: EXPRESSION,
-                            appEl: EXPRESSION, component: CompileDirectiveMetadata,
-                            contentNodesByNgContentIndex: EXPRESSION[][],
-                            targetStatements: STATEMENT[]);
+  createAndSetComponentView(
+      renderer: EXPRESSION, viewManager: EXPRESSION, view: EXPRESSION, appEl: EXPRESSION,
+      component: CompileDirectiveMetadata, contentNodesByNgContentIndex: EXPRESSION[][],
+      targetStatements: STATEMENT[]);
 
   getProjectedNodes(projectableNodes: EXPRESSION, ngContentIndex: number): EXPRESSION;
 
-  appendProjectedNodes(renderer: EXPRESSION, parent: EXPRESSION, nodes: EXPRESSION,
-                       targetStatements: STATEMENT[]);
+  appendProjectedNodes(
+      renderer: EXPRESSION, parent: EXPRESSION, nodes: EXPRESSION, targetStatements: STATEMENT[]);
 
-  createViewFactory(asts: TemplateAst[], embeddedTemplateIndex: number,
-                    targetStatements: STATEMENT[]): EXPRESSION;
+  createViewFactory(
+      asts: TemplateAst[], embeddedTemplateIndex: number,
+      targetStatements: STATEMENT[]): EXPRESSION;
 }
 
 class CodeGenViewFactory implements ViewFactory<Expression, Statement> {
   private _nextVarId: number = 0;
-  constructor(public component: CompileDirectiveMetadata, public styles: SourceExpression,
-              public protoViews: CompileProtoView<Expression, Expression>[],
-              public changeDetectorExpressions: SourceExpressions,
-              public componentViewFactory: Function) {}
+  constructor(
+      public component: CompileDirectiveMetadata, public styles: SourceExpression,
+      public protoViews: CompileProtoView<Expression, Expression>[],
+      public changeDetectorExpressions: SourceExpressions, public componentViewFactory: Function) {}
 
   private _nextVar(prefix: string): string {
     return `${prefix}${this._nextVarId++}_${this.component.type.name}`;
@@ -154,8 +110,8 @@ class CodeGenViewFactory implements ViewFactory<Expression, Statement> {
     return `disposable${this._nextVarId++}_${this.component.type.name}`;
   }
 
-  createText(renderer: Expression, parent: Expression, text: string,
-             targetStatements: Statement[]): Expression {
+  createText(renderer: Expression, parent: Expression, text: string, targetStatements: Statement[]):
+      Expression {
     var varName = this._nextRenderVar();
     var statement =
         `var ${varName} = ${renderer.expression}.createText(${isPresent(parent) ? parent.expression : null}, ${escapeSingleQuoteString(text)});`;
@@ -163,8 +119,9 @@ class CodeGenViewFactory implements ViewFactory<Expression, Statement> {
     return new Expression(varName);
   }
 
-  createElement(renderer: Expression, parentRenderNode: Expression, name: string,
-                rootSelector: Expression, targetStatements: Statement[]): Expression {
+  createElement(
+      renderer: Expression, parentRenderNode: Expression, name: string, rootSelector: Expression,
+      targetStatements: Statement[]): Expression {
     var varName = this._nextRenderVar();
     var valueExpr;
     if (isPresent(rootSelector)) {
@@ -180,8 +137,9 @@ class CodeGenViewFactory implements ViewFactory<Expression, Statement> {
     return new Expression(varName);
   }
 
-  createTemplateAnchor(renderer: Expression, parentRenderNode: Expression,
-                       targetStatements: Statement[]): Expression {
+  createTemplateAnchor(
+      renderer: Expression, parentRenderNode: Expression,
+      targetStatements: Statement[]): Expression {
     var varName = this._nextRenderVar();
     var valueExpr =
         `${renderer.expression}.createTemplateAnchor(${isPresent(parentRenderNode) ? parentRenderNode.expression : null});`;
@@ -189,8 +147,9 @@ class CodeGenViewFactory implements ViewFactory<Expression, Statement> {
     return new Expression(varName);
   }
 
-  createGlobalEventListener(renderer: Expression, appView: Expression, boundElementIndex: number,
-                            eventAst: BoundEventAst, targetStatements: Statement[]): Expression {
+  createGlobalEventListener(
+      renderer: Expression, appView: Expression, boundElementIndex: number, eventAst: BoundEventAst,
+      targetStatements: Statement[]): Expression {
     var disposableVar = this._nextDisposableVar();
     var eventHandlerExpr = codeGenEventHandler(appView, boundElementIndex, eventAst.fullName);
     targetStatements.push(new Statement(
@@ -198,9 +157,9 @@ class CodeGenViewFactory implements ViewFactory<Expression, Statement> {
     return new Expression(disposableVar);
   }
 
-  createElementEventListener(renderer: Expression, appView: Expression, boundElementIndex: number,
-                             renderNode: Expression, eventAst: BoundEventAst,
-                             targetStatements: Statement[]): Expression {
+  createElementEventListener(
+      renderer: Expression, appView: Expression, boundElementIndex: number, renderNode: Expression,
+      eventAst: BoundEventAst, targetStatements: Statement[]): Expression {
     var disposableVar = this._nextDisposableVar();
     var eventHandlerExpr = codeGenEventHandler(appView, boundElementIndex, eventAst.fullName);
     targetStatements.push(new Statement(
@@ -208,15 +167,16 @@ class CodeGenViewFactory implements ViewFactory<Expression, Statement> {
     return new Expression(disposableVar);
   }
 
-  setElementAttribute(renderer: Expression, renderNode: Expression, attrName: string,
-                      attrValue: string, targetStatements: Statement[]) {
+  setElementAttribute(
+      renderer: Expression, renderNode: Expression, attrName: string, attrValue: string,
+      targetStatements: Statement[]) {
     targetStatements.push(new Statement(
         `${renderer.expression}.setElementAttribute(${renderNode.expression}, ${escapeSingleQuoteString(attrName)}, ${escapeSingleQuoteString(attrValue)});`));
   }
 
-  createAppElement(appProtoEl: Expression, appView: Expression, renderNode: Expression,
-                   parentAppEl: Expression, embeddedViewFactory: Expression,
-                   targetStatements: Statement[]): Expression {
+  createAppElement(
+      appProtoEl: Expression, appView: Expression, renderNode: Expression, parentAppEl: Expression,
+      embeddedViewFactory: Expression, targetStatements: Statement[]): Expression {
     var appVar = this._nextAppVar();
     var varValue =
         `new ${APP_EL_MODULE_REF}AppElement(${appProtoEl.expression}, ${appView.expression},
@@ -225,10 +185,10 @@ class CodeGenViewFactory implements ViewFactory<Expression, Statement> {
     return new Expression(appVar);
   }
 
-  createAndSetComponentView(renderer: Expression, viewManager: Expression, view: Expression,
-                            appEl: Expression, component: CompileDirectiveMetadata,
-                            contentNodesByNgContentIndex: Expression[][],
-                            targetStatements: Statement[]) {
+  createAndSetComponentView(
+      renderer: Expression, viewManager: Expression, view: Expression, appEl: Expression,
+      component: CompileDirectiveMetadata, contentNodesByNgContentIndex: Expression[][],
+      targetStatements: Statement[]) {
     var codeGenContentNodes;
     if (this.component.type.isHost) {
       codeGenContentNodes = `${view.expression}.projectableNodes`;
@@ -244,14 +204,15 @@ class CodeGenViewFactory implements ViewFactory<Expression, Statement> {
     return new Expression(`${projectableNodes.expression}[${ngContentIndex}]`, true);
   }
 
-  appendProjectedNodes(renderer: Expression, parent: Expression, nodes: Expression,
-                       targetStatements: Statement[]) {
+  appendProjectedNodes(
+      renderer: Expression, parent: Expression, nodes: Expression, targetStatements: Statement[]) {
     targetStatements.push(new Statement(
         `${renderer.expression}.projectNodes(${parent.expression}, ${APP_VIEW_MODULE_REF}flattenNestedViewRenderNodes(${nodes.expression}));`));
   }
 
-  createViewFactory(asts: TemplateAst[], embeddedTemplateIndex: number,
-                    targetStatements: Statement[]): Expression {
+  createViewFactory(
+      asts: TemplateAst[], embeddedTemplateIndex: number,
+      targetStatements: Statement[]): Expression {
     var compileProtoView = this.protoViews[embeddedTemplateIndex];
     var isHostView = this.component.type.isHost;
     var isComponentView = embeddedTemplateIndex === 0 && !isHostView;
@@ -268,13 +229,8 @@ class CodeGenViewFactory implements ViewFactory<Expression, Statement> {
     var viewFactoryName = codeGenViewFactoryName(this.component, embeddedTemplateIndex);
     var changeDetectorFactory = this.changeDetectorExpressions.expressions[embeddedTemplateIndex];
     var factoryArgs = [
-      'parentRenderer',
-      'viewManager',
-      'containerEl',
-      'projectableNodes',
-      'rootSelector',
-      'dynamicallyCreatedProviders',
-      'rootInjector'
+      'parentRenderer', 'viewManager', 'containerEl', 'projectableNodes', 'rootSelector',
+      'dynamicallyCreatedProviders', 'rootInjector'
     ];
     var initRendererStmts = [];
     var rendererExpr = `parentRenderer`;
@@ -316,16 +272,18 @@ ${codeGenFnHeader(factoryArgs, viewFactoryName)}{
 }
 
 class RuntimeViewFactory implements ViewFactory<any, any> {
-  constructor(public component: CompileDirectiveMetadata, public styles: Array<string | any[]>,
-              public protoViews: CompileProtoView<AppProtoView, AppProtoElement>[],
-              public changeDetectorFactories: Function[], public componentViewFactory: Function) {}
+  constructor(
+      public component: CompileDirectiveMetadata, public styles: Array<string|any[]>,
+      public protoViews: CompileProtoView<AppProtoView, AppProtoElement>[],
+      public changeDetectorFactories: Function[], public componentViewFactory: Function) {}
 
   createText(renderer: Renderer, parent: any, text: string, targetStatements: any[]): any {
     return renderer.createText(parent, text);
   }
 
-  createElement(renderer: Renderer, parent: any, name: string, rootSelector: string,
-                targetStatements: any[]): any {
+  createElement(
+      renderer: Renderer, parent: any, name: string, rootSelector: string,
+      targetStatements: any[]): any {
     var el;
     if (isPresent(rootSelector)) {
       el = renderer.selectRootElement(rootSelector);
@@ -339,36 +297,38 @@ class RuntimeViewFactory implements ViewFactory<any, any> {
     return renderer.createTemplateAnchor(parent);
   }
 
-  createGlobalEventListener(renderer: Renderer, appView: AppView, boundElementIndex: number,
-                            eventAst: BoundEventAst, targetStatements: any[]): any {
+  createGlobalEventListener(
+      renderer: Renderer, appView: AppView, boundElementIndex: number, eventAst: BoundEventAst,
+      targetStatements: any[]): any {
     return renderer.listenGlobal(
         eventAst.target, eventAst.name,
         (event) => appView.triggerEventHandlers(eventAst.fullName, event, boundElementIndex));
   }
 
-  createElementEventListener(renderer: Renderer, appView: AppView, boundElementIndex: number,
-                             renderNode: any, eventAst: BoundEventAst,
-                             targetStatements: any[]): any {
+  createElementEventListener(
+      renderer: Renderer, appView: AppView, boundElementIndex: number, renderNode: any,
+      eventAst: BoundEventAst, targetStatements: any[]): any {
     return renderer.listen(
         renderNode, eventAst.name,
         (event) => appView.triggerEventHandlers(eventAst.fullName, event, boundElementIndex));
   }
 
-  setElementAttribute(renderer: Renderer, renderNode: any, attrName: string, attrValue: string,
-                      targetStatements: any[]) {
+  setElementAttribute(
+      renderer: Renderer, renderNode: any, attrName: string, attrValue: string,
+      targetStatements: any[]) {
     renderer.setElementAttribute(renderNode, attrName, attrValue);
   }
 
-  createAppElement(appProtoEl: AppProtoElement, appView: AppView, renderNode: any,
-                   parentAppEl: AppElement, embeddedViewFactory: Function,
-                   targetStatements: any[]): any {
+  createAppElement(
+      appProtoEl: AppProtoElement, appView: AppView, renderNode: any, parentAppEl: AppElement,
+      embeddedViewFactory: Function, targetStatements: any[]): any {
     return new AppElement(appProtoEl, appView, parentAppEl, renderNode, embeddedViewFactory);
   }
 
-  createAndSetComponentView(renderer: Renderer, viewManager: AppViewManager_, appView: AppView,
-                            appEl: AppElement, component: CompileDirectiveMetadata,
-                            contentNodesByNgContentIndex: Array<Array<any | any[]>>,
-                            targetStatements: any[]) {
+  createAndSetComponentView(
+      renderer: Renderer, viewManager: AppViewManager_, appView: AppView, appEl: AppElement,
+      component: CompileDirectiveMetadata, contentNodesByNgContentIndex: Array<Array<any|any[]>>,
+      targetStatements: any[]) {
     var flattenedContentNodes;
     if (this.component.type.isHost) {
       flattenedContentNodes = appView.projectableNodes;
@@ -389,8 +349,8 @@ class RuntimeViewFactory implements ViewFactory<any, any> {
     renderer.projectNodes(parent, flattenNestedViewRenderNodes(nodes));
   }
 
-  createViewFactory(asts: TemplateAst[], embeddedTemplateIndex: number,
-                    targetStatements: any[]): Function {
+  createViewFactory(asts: TemplateAst[], embeddedTemplateIndex: number, targetStatements: any[]):
+      Function {
     var compileProtoView = this.protoViews[embeddedTemplateIndex];
     var isComponentView = compileProtoView.protoView.type === ViewType.COMPONENT;
     var renderComponentType = null;
@@ -398,8 +358,9 @@ class RuntimeViewFactory implements ViewFactory<any, any> {
             projectableNodes: any[][], rootSelector: string = null,
             dynamicallyCreatedProviders: ResolvedProvider[] = null,
             rootInjector: Injector = null) => {
-      checkSlotCount(this.component.type.name, this.component.template.ngContentSelectors.length,
-                     projectableNodes);
+      checkSlotCount(
+          this.component.type.name, this.component.template.ngContentSelectors.length,
+          projectableNodes);
       var renderer;
       if (embeddedTemplateIndex === 0) {
         if (isBlank(renderComponentType)) {
@@ -411,16 +372,17 @@ class RuntimeViewFactory implements ViewFactory<any, any> {
         renderer = <Renderer>parentRenderer;
       }
       var changeDetector = this.changeDetectorFactories[embeddedTemplateIndex]();
-      var view =
-          new AppView(compileProtoView.protoView, renderer, viewManager, projectableNodes,
-                      containerEl, dynamicallyCreatedProviders, rootInjector, changeDetector);
+      var view = new AppView(
+          compileProtoView.protoView, renderer, viewManager, projectableNodes, containerEl,
+          dynamicallyCreatedProviders, rootInjector, changeDetector);
       var visitor = new ViewBuilderVisitor<any, any>(
           renderer, viewManager, projectableNodes, rootSelector, view, compileProtoView, [], this);
       var parentRenderNode =
           isComponentView ? renderer.createViewRoot(containerEl.nativeElement) : null;
       templateVisitAll(visitor, asts, new ParentElement(parentRenderNode, null, null));
-      view.init(flattenArray(visitor.rootNodesOrAppElements, []), visitor.renderNodes,
-                visitor.appDisposables, visitor.appElements);
+      view.init(
+          flattenArray(visitor.rootNodesOrAppElements, []), visitor.renderNodes,
+          visitor.appDisposables, visitor.appElements);
       return view;
     };
   }
@@ -429,8 +391,9 @@ class RuntimeViewFactory implements ViewFactory<any, any> {
 class ParentElement<EXPRESSION> {
   public contentNodesByNgContentIndex: Array<EXPRESSION>[];
 
-  constructor(public renderNode: EXPRESSION, public appEl: EXPRESSION,
-              public component: CompileDirectiveMetadata) {
+  constructor(
+      public renderNode: EXPRESSION, public appEl: EXPRESSION,
+      public component: CompileDirectiveMetadata) {
     if (isPresent(component)) {
       this.contentNodesByNgContentIndex =
           ListWrapper.createFixedSize(component.template.ngContentSelectors.length);
@@ -458,14 +421,15 @@ class ViewBuilderVisitor<EXPRESSION, STATEMENT> implements TemplateAstVisitor {
 
   elementCount: number = 0;
 
-  constructor(public renderer: EXPRESSION, public viewManager: EXPRESSION,
-              public projectableNodes: EXPRESSION, public rootSelector: EXPRESSION,
-              public view: EXPRESSION, public protoView: CompileProtoView<EXPRESSION, EXPRESSION>,
-              public targetStatements: STATEMENT[],
-              public factory: ViewFactory<EXPRESSION, STATEMENT>) {}
+  constructor(
+      public renderer: EXPRESSION, public viewManager: EXPRESSION,
+      public projectableNodes: EXPRESSION, public rootSelector: EXPRESSION, public view: EXPRESSION,
+      public protoView: CompileProtoView<EXPRESSION, EXPRESSION>,
+      public targetStatements: STATEMENT[], public factory: ViewFactory<EXPRESSION, STATEMENT>) {}
 
-  private _addRenderNode(renderNode: EXPRESSION, appEl: EXPRESSION, ngContentIndex: number,
-                         parent: ParentElement<EXPRESSION>) {
+  private _addRenderNode(
+      renderNode: EXPRESSION, appEl: EXPRESSION, ngContentIndex: number,
+      parent: ParentElement<EXPRESSION>) {
     this.renderNodes.push(renderNode);
     if (isPresent(parent.component)) {
       if (isPresent(ngContentIndex)) {
@@ -476,12 +440,12 @@ class ViewBuilderVisitor<EXPRESSION, STATEMENT> implements TemplateAstVisitor {
     }
   }
 
-  private _getParentRenderNode(ngContentIndex: number,
-                               parent: ParentElement<EXPRESSION>): EXPRESSION {
+  private _getParentRenderNode(ngContentIndex: number, parent: ParentElement<EXPRESSION>):
+      EXPRESSION {
     return isPresent(parent.component) &&
-                   parent.component.template.encapsulation !== ViewEncapsulation.Native ?
-               null :
-               parent.renderNode;
+            parent.component.template.encapsulation !== ViewEncapsulation.Native ?
+        null :
+        parent.renderNode;
   }
 
   visitBoundText(ast: BoundTextAst, parent: ParentElement<EXPRESSION>): any {
@@ -505,8 +469,8 @@ class ViewBuilderVisitor<EXPRESSION, STATEMENT> implements TemplateAstVisitor {
       }
     } else {
       if (isPresent(parent.renderNode)) {
-        this.factory.appendProjectedNodes(this.renderer, parent.renderNode, nodesExpression,
-                                          this.renderStmts);
+        this.factory.appendProjectedNodes(
+            this.renderer, parent.renderNode, nodesExpression, this.renderStmts);
       } else {
         this.rootNodesOrAppElements.push(nodesExpression);
       }
@@ -529,22 +493,22 @@ class ViewBuilderVisitor<EXPRESSION, STATEMENT> implements TemplateAstVisitor {
         disposable = this.factory.createGlobalEventListener(
             this.renderer, this.view, protoEl.boundElementIndex, eventAst, this.renderStmts);
       } else {
-        disposable = this.factory.createElementEventListener(this.renderer, this.view,
-                                                             protoEl.boundElementIndex, renderNode,
-                                                             eventAst, this.renderStmts);
+        disposable = this.factory.createElementEventListener(
+            this.renderer, this.view, protoEl.boundElementIndex, renderNode, eventAst,
+            this.renderStmts);
       }
       this.appDisposables.push(disposable);
     });
     for (var i = 0; i < protoEl.attrNameAndValues.length; i++) {
       var attrName = protoEl.attrNameAndValues[i][0];
       var attrValue = protoEl.attrNameAndValues[i][1];
-      this.factory.setElementAttribute(this.renderer, renderNode, attrName, attrValue,
-                                       this.renderStmts);
+      this.factory.setElementAttribute(
+          this.renderer, renderNode, attrName, attrValue, this.renderStmts);
     }
     var appEl = null;
     if (isPresent(protoEl.appProtoEl)) {
-      appEl = this.factory.createAppElement(protoEl.appProtoEl, this.view, renderNode, parent.appEl,
-                                            null, this.appStmts);
+      appEl = this.factory.createAppElement(
+          protoEl.appProtoEl, this.view, renderNode, parent.appEl, null, this.appStmts);
       this.appElements.push(appEl);
     }
     this._addRenderNode(renderNode, appEl, ast.ngContentIndex, parent);
@@ -553,9 +517,9 @@ class ViewBuilderVisitor<EXPRESSION, STATEMENT> implements TemplateAstVisitor {
         renderNode, isPresent(appEl) ? appEl : parent.appEl, component);
     templateVisitAll(this, ast.children, newParent);
     if (isPresent(appEl) && isPresent(component)) {
-      this.factory.createAndSetComponentView(this.renderer, this.viewManager, this.view, appEl,
-                                             component, newParent.contentNodesByNgContentIndex,
-                                             this.appStmts);
+      this.factory.createAndSetComponentView(
+          this.renderer, this.viewManager, this.view, appEl, component,
+          newParent.contentNodesByNgContentIndex, this.appStmts);
     }
     return null;
   }
@@ -569,8 +533,9 @@ class ViewBuilderVisitor<EXPRESSION, STATEMENT> implements TemplateAstVisitor {
     var embeddedViewFactory = this.factory.createViewFactory(
         ast.children, protoEl.embeddedTemplateIndex, this.targetStatements);
 
-    var appEl = this.factory.createAppElement(protoEl.appProtoEl, this.view, renderNode,
-                                              parent.appEl, embeddedViewFactory, this.appStmts);
+    var appEl = this.factory.createAppElement(
+        protoEl.appProtoEl, this.view, renderNode, parent.appEl, embeddedViewFactory,
+        this.appStmts);
     this._addRenderNode(renderNode, appEl, ast.ngContentIndex, parent);
     this.appElements.push(appEl);
     return null;
@@ -585,15 +550,15 @@ class ViewBuilderVisitor<EXPRESSION, STATEMENT> implements TemplateAstVisitor {
 }
 
 
-function codeGenEventHandler(view: Expression, boundElementIndex: number,
-                             eventName: string): string {
+function codeGenEventHandler(
+    view: Expression, boundElementIndex: number, eventName: string): string {
   return codeGenValueFn(
       ['event'],
       `${view.expression}.triggerEventHandlers(${escapeValue(eventName)}, event, ${boundElementIndex})`);
 }
 
-function codeGenViewFactoryName(component: CompileDirectiveMetadata,
-                                embeddedTemplateIndex: number): string {
+function codeGenViewFactoryName(
+    component: CompileDirectiveMetadata, embeddedTemplateIndex: number): string {
   return `viewFactory_${component.type.name}${embeddedTemplateIndex}`;
 }
 

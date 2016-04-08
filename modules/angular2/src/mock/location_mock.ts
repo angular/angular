@@ -71,8 +71,9 @@ export class SpyLocation implements Location {
     // TODO
   }
 
-  subscribe(onNext: (value: any) => void, onThrow: (error: any) => void = null,
-            onReturn: () => void = null): Object {
+  subscribe(
+      onNext: (value: any) => void, onThrow: (error: any) => void = null,
+      onReturn: () => void = null): Object {
     return ObservableWrapper.subscribe(this._subject, onNext, onThrow, onReturn);
   }
 

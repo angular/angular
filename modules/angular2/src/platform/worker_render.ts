@@ -1,19 +1,10 @@
-import {
-  PostMessageBus,
-  PostMessageBusSink,
-  PostMessageBusSource
-} from 'angular2/src/web_workers/shared/post_message_bus';
+import {PostMessageBus, PostMessageBusSink, PostMessageBusSource} from 'angular2/src/web_workers/shared/post_message_bus';
 import {MessageBus} from 'angular2/src/web_workers/shared/message_bus';
 import {APP_INITIALIZER} from 'angular2/core';
 import {Injector, Injectable, Provider} from 'angular2/src/core/di';
 import {MessageBasedRenderer} from 'angular2/src/web_workers/ui/renderer';
 import {MessageBasedXHRImpl} from 'angular2/src/web_workers/ui/xhr_impl';
-import {
-  WORKER_RENDER_APPLICATION_COMMON,
-  WORKER_RENDER_MESSAGING_PROVIDERS,
-  WORKER_SCRIPT,
-  initializeGenericWorkerRenderer
-} from 'angular2/src/platform/worker_render_common';
+import {WORKER_RENDER_APPLICATION_COMMON, WORKER_RENDER_MESSAGING_PROVIDERS, WORKER_SCRIPT, initializeGenericWorkerRenderer} from 'angular2/src/platform/worker_render_common';
 import {BaseException} from 'angular2/src/facade/exceptions';
 import {CONST_EXPR} from 'angular2/src/facade/lang';
 
@@ -37,14 +28,11 @@ export class WebWorkerInstance {
  * An array of providers that should be passed into `application()` when initializing a new Worker.
  */
 export const WORKER_RENDER_APPLICATION: Array<any /*Type | Provider | any[]*/> = CONST_EXPR([
-  WORKER_RENDER_APPLICATION_COMMON,
-  WebWorkerInstance,
-  new Provider(APP_INITIALIZER,
-               {
-                 useFactory: (injector) => () => initWebWorkerApplication(injector),
-                 multi: true,
-                 deps: [Injector]
-               }),
+  WORKER_RENDER_APPLICATION_COMMON, WebWorkerInstance, new Provider(APP_INITIALIZER, {
+    useFactory: (injector) => () => initWebWorkerApplication(injector),
+    multi: true,
+    deps: [Injector]
+  }),
   new Provider(MessageBus, {useFactory: (instance) => instance.bus, deps: [WebWorkerInstance]})
 ]);
 
@@ -54,7 +42,7 @@ function initWebWorkerApplication(injector: Injector): void {
     scriptUri = injector.get(WORKER_SCRIPT);
   } catch (e) {
     throw new BaseException(
-        "You must provide your WebWorker's initialization script with the WORKER_SCRIPT token");
+        'You must provide your WebWorker\'s initialization script with the WORKER_SCRIPT token');
   }
 
   let instance = injector.get(WebWorkerInstance);

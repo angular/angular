@@ -1,16 +1,11 @@
-import {MessageBus} from "angular2/src/web_workers/shared/message_bus";
-import {print, isPresent, DateWrapper, stringify} from "angular2/src/facade/lang";
-import {
-  PromiseCompleter,
-  PromiseWrapper,
-  ObservableWrapper,
-  EventEmitter
-} from "angular2/src/facade/async";
-import {StringMapWrapper, MapWrapper} from "angular2/src/facade/collection";
-import {Serializer} from "angular2/src/web_workers/shared/serializer";
-import {Injectable} from "angular2/src/core/di";
-import {Type, StringWrapper} from "angular2/src/facade/lang";
-export {Type} from "angular2/src/facade/lang";
+import {MessageBus} from 'angular2/src/web_workers/shared/message_bus';
+import {print, isPresent, DateWrapper, stringify} from 'angular2/src/facade/lang';
+import {PromiseCompleter, PromiseWrapper, ObservableWrapper, EventEmitter} from 'angular2/src/facade/async';
+import {StringMapWrapper, MapWrapper} from 'angular2/src/facade/collection';
+import {Serializer} from 'angular2/src/web_workers/shared/serializer';
+import {Injectable} from 'angular2/src/core/di';
+import {Type, StringWrapper} from 'angular2/src/facade/lang';
+export {Type} from 'angular2/src/facade/lang';
 
 export abstract class ClientMessageBrokerFactory {
   /**
@@ -52,8 +47,8 @@ export class ClientMessageBroker_ extends ClientMessageBroker {
     this._sink = messageBus.to(channel);
     this._serializer = _serializer;
     var source = messageBus.from(channel);
-    ObservableWrapper.subscribe(source,
-                                (message: {[key: string]: any}) => this._handleMessage(message));
+    ObservableWrapper.subscribe(
+        source, (message: {[key: string]: any}) => this._handleMessage(message));
   }
 
   private _generateMessageId(name: string): string {
@@ -114,10 +109,10 @@ export class ClientMessageBroker_ extends ClientMessageBroker {
   private _handleMessage(message: {[key: string]: any}): void {
     var data = new MessageData(message);
     // TODO(jteplitz602): replace these strings with messaging constants #3685
-    if (StringWrapper.equals(data.type, "result") || StringWrapper.equals(data.type, "error")) {
+    if (StringWrapper.equals(data.type, 'result') || StringWrapper.equals(data.type, 'error')) {
       var id = data.id;
       if (this._pending.has(id)) {
-        if (StringWrapper.equals(data.type, "result")) {
+        if (StringWrapper.equals(data.type, 'result')) {
           this._pending.get(id).resolve(data.value);
         } else {
           this._pending.get(id).reject(data.value, null);
@@ -134,9 +129,9 @@ class MessageData {
   id: string;
 
   constructor(data: {[key: string]: any}) {
-    this.type = StringMapWrapper.get(data, "type");
-    this.id = this._getValueIfPresent(data, "id");
-    this.value = this._getValueIfPresent(data, "value");
+    this.type = StringMapWrapper.get(data, 'type');
+    this.id = this._getValueIfPresent(data, 'id');
+    this.value = this._getValueIfPresent(data, 'value');
   }
 
   /**

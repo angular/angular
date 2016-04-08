@@ -4,5 +4,5 @@ declare class Bitmap {
   subsample(n: number): void;
   dataURL(): string;
 
-  pixel:[any];
+  pixel: [any];
 }

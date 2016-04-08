@@ -1,10 +1,4 @@
-import {
-  DateWrapper,
-  StringWrapper,
-  RegExpWrapper,
-  NumberWrapper,
-  isPresent
-} from 'angular2/src/facade/lang';
+import {DateWrapper, StringWrapper, RegExpWrapper, NumberWrapper, isPresent} from 'angular2/src/facade/lang';
 import {Math} from 'angular2/src/facade/math';
 import {camelCaseToDashCase} from 'angular2/src/platform/dom/util';
 import {StringMapWrapper} from 'angular2/src/facade/collection';
@@ -47,8 +41,9 @@ export class Animation {
    * @param data
    * @param browserDetails
    */
-  constructor(public element: HTMLElement, public data: CssAnimationOptions,
-              public browserDetails: BrowserDetails) {
+  constructor(
+      public element: HTMLElement, public data: CssAnimationOptions,
+      public browserDetails: BrowserDetails) {
     this.startTime = DateWrapper.toMillis(DateWrapper.now());
     this._stringPrefix = DOM.getAnimationPrefix();
     this.setup();
@@ -80,15 +75,16 @@ export class Animation {
     this.removeClasses(this.data.classesToRemove);
     if (this.data.toStyles != null) this.applyStyles(this.data.toStyles);
     var computedStyles = DOM.getComputedStyle(this.element);
-    this.computedDelay =
-        Math.max(this.parseDurationString(
-                     computedStyles.getPropertyValue(this._stringPrefix + 'transition-delay')),
-                 this.parseDurationString(
-                     this.element.style.getPropertyValue(this._stringPrefix + 'transition-delay')));
-    this.computedDuration = Math.max(this.parseDurationString(computedStyles.getPropertyValue(
-                                         this._stringPrefix + 'transition-duration')),
-                                     this.parseDurationString(this.element.style.getPropertyValue(
-                                         this._stringPrefix + 'transition-duration')));
+    this.computedDelay = Math.max(
+        this.parseDurationString(
+            computedStyles.getPropertyValue(this._stringPrefix + 'transition-delay')),
+        this.parseDurationString(
+            this.element.style.getPropertyValue(this._stringPrefix + 'transition-delay')));
+    this.computedDuration = Math.max(
+        this.parseDurationString(
+            computedStyles.getPropertyValue(this._stringPrefix + 'transition-duration')),
+        this.parseDurationString(
+            this.element.style.getPropertyValue(this._stringPrefix + 'transition-duration')));
     this.addEvents();
   }
 

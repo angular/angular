@@ -62,8 +62,8 @@ describe('routing inbox-app', () => {
       waitForElement('#item-10');
       element(by.css('#item-10')).click();
       waitForElement('#record-id');
-      var recordId = element(by.css("#record-id"));
-      browser.wait(protractor.until.elementTextIs(recordId, "ID: 10"), 5000);
+      var recordId = element(by.css('#record-id'));
+      browser.wait(protractor.until.elementTextIs(recordId, 'ID: 10'), 5000);
       expect(recordId.getText()).toEqual('ID: 10');
     });
 
@@ -85,7 +85,7 @@ describe('routing inbox-app', () => {
          element(by.css('.sort-button')).click();
          expect(browser.getCurrentUrl()).toMatch(/\/#\?sort=date$/);
          waitForElement('.inbox-item-record');
-         expect(element(by.css(".inbox-item-record > a")).getAttribute("id")).toEqual("item-137");
+         expect(element(by.css('.inbox-item-record > a')).getAttribute('id')).toEqual('item-137');
        });
   })
 });

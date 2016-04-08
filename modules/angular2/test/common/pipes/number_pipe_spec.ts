@@ -1,14 +1,4 @@
-import {
-  ddescribe,
-  describe,
-  it,
-  iit,
-  xit,
-  expect,
-  beforeEach,
-  afterEach,
-  browserDetection
-} from 'angular2/testing_internal';
+import {ddescribe, describe, it, iit, xit, expect, beforeEach, afterEach, browserDetection} from 'angular2/testing_internal';
 
 import {DecimalPipe, PercentPipe, CurrencyPipe} from 'angular2/common';
 
@@ -17,12 +7,12 @@ export function main() {
     // TODO(mlaval): enable tests when Intl API is no longer used, see
     // https://github.com/angular/angular/issues/3333
     if (browserDetection.supportsIntlApi) {
-      describe("DecimalPipe", () => {
+      describe('DecimalPipe', () => {
         var pipe;
 
         beforeEach(() => { pipe = new DecimalPipe(); });
 
-        describe("transform", () => {
+        describe('transform', () => {
           it('should return correct value for numbers', () => {
             expect(pipe.transform(12345, [])).toEqual('12,345');
             expect(pipe.transform(123, ['.2'])).toEqual('123.00');
@@ -33,39 +23,39 @@ export function main() {
             expect(pipe.transform(1.1234, [])).toEqual('1.123');
           });
 
-          it("should not support other objects",
+          it('should not support other objects',
              () => { expect(() => pipe.transform(new Object(), [])).toThrowError(); });
         });
       });
 
-      describe("PercentPipe", () => {
+      describe('PercentPipe', () => {
         var pipe;
 
         beforeEach(() => { pipe = new PercentPipe(); });
 
-        describe("transform", () => {
+        describe('transform', () => {
           it('should return correct value for numbers', () => {
             expect(pipe.transform(1.23, [])).toEqual('123%');
             expect(pipe.transform(1.2, ['.2'])).toEqual('120.00%');
           });
 
-          it("should not support other objects",
+          it('should not support other objects',
              () => { expect(() => pipe.transform(new Object(), [])).toThrowError(); });
         });
       });
 
-      describe("CurrencyPipe", () => {
+      describe('CurrencyPipe', () => {
         var pipe;
 
         beforeEach(() => { pipe = new CurrencyPipe(); });
 
-        describe("transform", () => {
+        describe('transform', () => {
           it('should return correct value for numbers', () => {
             expect(pipe.transform(123, [])).toEqual('USD123');
             expect(pipe.transform(12, ['EUR', false, '.2'])).toEqual('EUR12.00');
           });
 
-          it("should not support other objects",
+          it('should not support other objects',
              () => { expect(() => pipe.transform(new Object(), [])).toThrowError(); });
         });
       });

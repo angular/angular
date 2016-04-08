@@ -24,7 +24,7 @@ class TypedefWalker extends RuleWalker {
   private hasInternalAnnotation(range: ts.CommentRange): boolean {
     let text = this.getSourceFile().text;
     let comment = text.substring(range.pos, range.end);
-    return comment.indexOf("@internal") >= 0;
+    return comment.indexOf('@internal') >= 0;
   }
 
   private assertInternalAnnotationPresent(node: ts.Declaration) {

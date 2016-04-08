@@ -25,12 +25,12 @@ export enum RecordType {
 }
 
 export class ProtoRecord {
-  constructor(public mode: RecordType, public name: string, public funcOrValue, public args: any[],
-              public fixedArgs: any[], public contextIndex: number,
-              public directiveIndex: DirectiveIndex, public selfIndex: number,
-              public bindingRecord: BindingRecord, public lastInBinding: boolean,
-              public lastInDirective: boolean, public argumentToPureFunction: boolean,
-              public referencedBySelf: boolean, public propertyBindingIndex: number) {}
+  constructor(
+      public mode: RecordType, public name: string, public funcOrValue, public args: any[],
+      public fixedArgs: any[], public contextIndex: number, public directiveIndex: DirectiveIndex,
+      public selfIndex: number, public bindingRecord: BindingRecord, public lastInBinding: boolean,
+      public lastInDirective: boolean, public argumentToPureFunction: boolean,
+      public referencedBySelf: boolean, public propertyBindingIndex: number) {}
 
   isPureFunction(): boolean {
     return this.mode === RecordType.Interpolate || this.mode === RecordType.CollectionLiteral;
@@ -40,7 +40,7 @@ export class ProtoRecord {
 
   shouldBeChecked(): boolean {
     return this.argumentToPureFunction || this.lastInBinding || this.isPureFunction() ||
-           this.isPipeRecord();
+        this.isPipeRecord();
   }
 
   isPipeRecord(): boolean { return this.mode === RecordType.Pipe; }

@@ -17,37 +17,36 @@ class DiffingReplace implements DiffingBroccoliPlugin {
     var patterns = this.options.patterns;
     var files = this.options.files;
 
-    treeDiff.addedPaths.concat(treeDiff.changedPaths)
-        .forEach((changedFilePath) => {
-          var sourceFilePath = path.join(this.inputPath, changedFilePath);
-          var destFilePath = path.join(this.cachePath, changedFilePath);
-          var destDirPath = path.dirname(destFilePath);
+    treeDiff.addedPaths.concat(treeDiff.changedPaths).forEach((changedFilePath) => {
+      var sourceFilePath = path.join(this.inputPath, changedFilePath);
+      var destFilePath = path.join(this.cachePath, changedFilePath);
+      var destDirPath = path.dirname(destFilePath);
 
-          if (!fs.existsSync(destDirPath)) {
-            fse.mkdirpSync(destDirPath);
-          }
+      if (!fs.existsSync(destDirPath)) {
+        fse.mkdirpSync(destDirPath);
+      }
 
-          var fileMatches = files.some((filePath) => minimatch(changedFilePath, filePath));
-          if (fileMatches) {
-            var content = fs.readFileSync(sourceFilePath, FILE_ENCODING);
-            patterns.forEach((pattern) => {
-              var replacement = pattern.replacement;
-              if (typeof replacement === 'function') {
-                replacement = function(content) {
-                  return pattern.replacement(content, changedFilePath);
-                };
-              }
-              content = content.replace(pattern.match, replacement);
-            });
-            fs.writeFileSync(destFilePath, content, FILE_ENCODING);
-          } else if (!fs.existsSync(destFilePath)) {
-            try {
-              fs.symlinkSync(sourceFilePath, destFilePath);
-            } catch (e) {
-              fs.writeFileSync(destFilePath, fs.readFileSync(sourceFilePath));
-            }
+      var fileMatches = files.some((filePath) => minimatch(changedFilePath, filePath));
+      if (fileMatches) {
+        var content = fs.readFileSync(sourceFilePath, FILE_ENCODING);
+        patterns.forEach((pattern) => {
+          var replacement = pattern.replacement;
+          if (typeof replacement === 'function') {
+            replacement = function(content) {
+              return pattern.replacement(content, changedFilePath);
+            };
           }
+          content = content.replace(pattern.match, replacement);
         });
+        fs.writeFileSync(destFilePath, content, FILE_ENCODING);
+      } else if (!fs.existsSync(destFilePath)) {
+        try {
+          fs.symlinkSync(sourceFilePath, destFilePath);
+        } catch (e) {
+          fs.writeFileSync(destFilePath, fs.readFileSync(sourceFilePath));
+        }
+      }
+    });
 
     treeDiff.removedPaths.forEach((removedFilePath) => {
       var destFilePath = path.join(this.cachePath, removedFilePath);

@@ -29,7 +29,7 @@ describe('Collector', () => {
     expect(metadata).toBeUndefined();
   });
 
-  it("should be able to collect a simple component's metadata", () => {
+  it('should be able to collect a simple component\'s metadata', () => {
     const sourceFile = program.getSourceFile('app/hero-detail.component.ts');
     const metadata = collector.getMetadata(sourceFile, typeChecker);
     expect(metadata).toEqual({
@@ -38,14 +38,12 @@ describe('Collector', () => {
       metadata: {
         HeroDetailComponent: {
           __symbolic: 'class',
-          decorators: [
-            {
-              __symbolic: 'call',
-              expression: {__symbolic: 'reference', name: 'Component', module: 'angular2/core'},
-              arguments: [
-                {
-                  selector: 'my-hero-detail',
-                  template: `
+          decorators: [{
+            __symbolic: 'call',
+            expression: {__symbolic: 'reference', name: 'Component', module: 'angular2/core'},
+            arguments: [{
+              selector: 'my-hero-detail',
+              template: `
         <div *ngIf="hero">
           <h2>{{hero.name}} details!</h2>
           <div><label>id: </label>{{hero.id}}</div>
@@ -55,30 +53,24 @@ describe('Collector', () => {
           </div>
         </div>
       `
-                }
-              ]
-            }
-          ],
+            }]
+          }],
           members: {
-            hero: [
-              {
-                __symbolic: 'property',
-                decorators: [
-                  {
-                    __symbolic: 'call',
-                    expression:
-                        {__symbolic: 'reference', name: 'Input', module: 'angular2/core'}
-                  }
-                ]
-              }
-            ]
+            hero: [{
+              __symbolic: 'property',
+              decorators: [{
+                __symbolic: 'call',
+                expression:
+                    {__symbolic: 'reference', name: 'Input', module: 'angular2/core'}
+              }]
+            }]
           }
         }
       }
     });
   });
 
-  it("should be able to get a more complicated component's metadata", () => {
+  it('should be able to get a more complicated component\'s metadata', () => {
     const sourceFile = program.getSourceFile('/app/app.component.ts');
     const metadata = collector.getMetadata(sourceFile, typeChecker);
     expect(metadata).toEqual({
@@ -87,14 +79,12 @@ describe('Collector', () => {
       metadata: {
         AppComponent: {
           __symbolic: 'class',
-          decorators: [
-            {
-              __symbolic: 'call',
-              expression: {__symbolic: 'reference', name: 'Component', module: 'angular2/core'},
-              arguments: [
-                {
-                  selector: 'my-app',
-                  template: `
+          decorators: [{
+            __symbolic: 'call',
+            expression: {__symbolic: 'reference', name: 'Component', module: 'angular2/core'},
+            arguments: [{
+              selector: 'my-app',
+              template: `
         <h2>My Heroes</h2>
         <ul class="heroes">
           <li *ngFor="#hero of heroes"
@@ -105,37 +95,27 @@ describe('Collector', () => {
         </ul>
         <my-hero-detail [hero]="selectedHero"></my-hero-detail>
         `,
-                  directives: [
-                    {
-                      __symbolic: 'reference',
-                      name: 'HeroDetailComponent',
-                      module: './hero-detail.component'
-                    },
-                    {__symbolic: 'reference', name: 'NgFor', module: 'angular2/common'}
-                  ],
-                  providers:
-                      [{__symbolic: 'reference', name: 'HeroService', module: './hero.service'}],
-                  pipes: [
-                    {__symbolic: 'reference', name: 'LowerCasePipe', module: 'angular2/common'},
-                    {
-                      __symbolic: 'reference',
-                      name: 'UpperCasePipe',
-                      module: 'angular2/common'
-                    }
-                  ]
-                }
+              directives: [
+                {
+                  __symbolic: 'reference',
+                  name: 'HeroDetailComponent',
+                  module: './hero-detail.component'
+                },
+                {__symbolic: 'reference', name: 'NgFor', module: 'angular2/common'}
+              ],
+              providers: [{__symbolic: 'reference', name: 'HeroService', module: './hero.service'}],
+              pipes: [
+                {__symbolic: 'reference', name: 'LowerCasePipe', module: 'angular2/common'},
+                {__symbolic: 'reference', name: 'UpperCasePipe', module: 'angular2/common'}
               ]
-            }
-          ],
+            }]
+          }],
           members: {
-            __ctor__: [
-              {
-                __symbolic: 'constructor',
-                parameters: [
-                  {__symbolic: 'reference', module: './hero.service', name: 'HeroService'}
-                ]
-              }
-            ]
+            __ctor__: [{
+              __symbolic: 'constructor',
+              parameters:
+                  [{__symbolic: 'reference', module: './hero.service', name: 'HeroService'}]
+            }]
           }
         }
       }
@@ -150,16 +130,11 @@ describe('Collector', () => {
       module: './mock-heroes',
       metadata: {
         HEROES: [
-          {"id": 11, "name": "Mr. Nice"},
-          {"id": 12, "name": "Narco"},
-          {"id": 13, "name": "Bombasto"},
-          {"id": 14, "name": "Celeritas"},
-          {"id": 15, "name": "Magneta"},
-          {"id": 16, "name": "RubberMan"},
-          {"id": 17, "name": "Dynama"},
-          {"id": 18, "name": "Dr IQ"},
-          {"id": 19, "name": "Magma"},
-          {"id": 20, "name": "Tornado"}
+          {'id': 11, 'name': 'Mr. Nice'}, {'id': 12, 'name': 'Narco'},
+          {'id': 13, 'name': 'Bombasto'}, {'id': 14, 'name': 'Celeritas'},
+          {'id': 15, 'name': 'Magneta'}, {'id': 16, 'name': 'RubberMan'},
+          {'id': 17, 'name': 'Dynama'}, {'id': 18, 'name': 'Dr IQ'}, {'id': 19, 'name': 'Magma'},
+          {'id': 20, 'name': 'Tornado'}
         ]
       }
     });
@@ -189,18 +164,14 @@ describe('Collector', () => {
 
   it('should record annotations on set and get declartions', () => {
     const propertyData = {
-      name: [
-        {
-          __symbolic: 'property',
-          decorators: [
-            {
-              __symbolic: 'call',
-              expression: {__symbolic: 'reference', module: 'angular2/core', name: 'Input'},
-              arguments: ['firstName']
-            }
-          ]
-        }
-      ]
+      name: [{
+        __symbolic: 'property',
+        decorators: [{
+          __symbolic: 'call',
+          expression: {__symbolic: 'reference', module: 'angular2/core', name: 'Input'},
+          arguments: ['firstName']
+        }]
+      }]
     };
     const caseGetProp = <ClassMetadata>casesMetadata.metadata['GetProp'];
     expect(caseGetProp.members).toEqual(propertyData);
@@ -223,7 +194,8 @@ const FILES: Directory = {
 
       @Component({
         selector: 'my-app',
-        template:` + "`" + `
+        template:` +
+        '`' + `
         <h2>My Heroes</h2>
         <ul class="heroes">
           <li *ngFor="#hero of heroes"
@@ -234,7 +206,7 @@ const FILES: Directory = {
         </ul>
         <my-hero-detail [hero]="selectedHero"></my-hero-detail>
         ` +
-                            "`" + `,
+        '`' + `,
         directives: [HeroDetailComponent, NgFor],
         providers: [HeroService],
         pipes: [LowerCasePipe, UpperCasePipe]
@@ -267,7 +239,8 @@ const FILES: Directory = {
 
       @Component({
         selector: 'my-hero-detail',
-        template: ` + "`" + `
+        template: ` +
+        '`' + `
         <div *ngIf="hero">
           <h2>{{hero.name}} details!</h2>
           <div><label>id: </label>{{hero.id}}</div>
@@ -276,7 +249,8 @@ const FILES: Directory = {
             <input [(ngModel)]="hero.name" placeholder="name"/>
           </div>
         </div>
-      ` + "`" + `,
+      ` +
+        '`' + `,
       })
       export class HeroDetailComponent {
         @Input() public hero: Hero;

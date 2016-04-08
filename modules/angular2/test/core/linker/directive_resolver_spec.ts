@@ -1,21 +1,6 @@
 import {ddescribe, describe, it, iit, expect, beforeEach} from 'angular2/testing_internal';
 import {DirectiveResolver} from 'angular2/src/core/linker/directive_resolver';
-import {
-  DirectiveMetadata,
-  Directive,
-  Input,
-  Output,
-  HostBinding,
-  HostListener,
-  ContentChildren,
-  ContentChildrenMetadata,
-  ViewChildren,
-  ViewChildrenMetadata,
-  ContentChild,
-  ContentChildMetadata,
-  ViewChild,
-  ViewChildMetadata
-} from 'angular2/src/core/metadata';
+import {DirectiveMetadata, Directive, Input, Output, HostBinding, HostListener, ContentChildren, ContentChildrenMetadata, ViewChildren, ViewChildrenMetadata, ContentChild, ContentChildMetadata, ViewChild, ViewChildMetadata} from 'angular2/src/core/metadata';
 
 @Directive({selector: 'someDirective'})
 class SomeDirective {
@@ -28,14 +13,14 @@ class SomeChildDirective extends SomeDirective {
 @Directive({selector: 'someDirective', inputs: ['c']})
 class SomeDirectiveWithInputs {
   @Input() a;
-  @Input("renamed") b;
+  @Input('renamed') b;
   c;
 }
 
 @Directive({selector: 'someDirective', outputs: ['c']})
 class SomeDirectiveWithOutputs {
   @Output() a;
-  @Output("renamed") b;
+  @Output('renamed') b;
   c;
 }
 
@@ -55,64 +40,59 @@ class SomeDirectiveWithEvents {
 
 @Directive({selector: 'someDirective'})
 class SomeDirectiveWithSetterProps {
-  @Input("renamed")
-  set a(value) {
-  }
+  @Input('renamed')
+  set a(value) {}
 }
 
 @Directive({selector: 'someDirective'})
 class SomeDirectiveWithGetterOutputs {
-  @Output("renamed")
-  get a() {
-    return null;
-  }
+  @Output('renamed')
+  get a() { return null; }
 }
 
 @Directive({selector: 'someDirective', host: {'[c]': 'c'}})
 class SomeDirectiveWithHostBindings {
   @HostBinding() a;
-  @HostBinding("renamed") b;
+  @HostBinding('renamed') b;
   c;
 }
 
 @Directive({selector: 'someDirective', host: {'(c)': 'onC()'}})
 class SomeDirectiveWithHostListeners {
   @HostListener('a')
-  onA() {
-  }
+  onA() {}
   @HostListener('b', ['$event.value'])
-  onB(value) {
-  }
+  onB(value) {}
 }
 
-@Directive({selector: 'someDirective', queries: {"cs": new ContentChildren("c")}})
+@Directive({selector: 'someDirective', queries: {'cs': new ContentChildren('c')}})
 class SomeDirectiveWithContentChildren {
-  @ContentChildren("a") as: any;
+  @ContentChildren('a') as: any;
   c;
 }
 
-@Directive({selector: 'someDirective', queries: {"cs": new ViewChildren("c")}})
+@Directive({selector: 'someDirective', queries: {'cs': new ViewChildren('c')}})
 class SomeDirectiveWithViewChildren {
-  @ViewChildren("a") as: any;
+  @ViewChildren('a') as: any;
   c;
 }
 
-@Directive({selector: 'someDirective', queries: {"c": new ContentChild("c")}})
+@Directive({selector: 'someDirective', queries: {'c': new ContentChild('c')}})
 class SomeDirectiveWithContentChild {
-  @ContentChild("a") a: any;
+  @ContentChild('a') a: any;
   c;
 }
 
-@Directive({selector: 'someDirective', queries: {"c": new ViewChild("c")}})
+@Directive({selector: 'someDirective', queries: {'c': new ViewChild('c')}})
 class SomeDirectiveWithViewChild {
-  @ViewChild("a") a: any;
+  @ViewChild('a') a: any;
   c;
 }
 
 class SomeDirectiveWithoutMetadata {}
 
 export function main() {
-  describe("DirectiveResolver", () => {
+  describe('DirectiveResolver', () => {
     var resolver: DirectiveResolver;
 
     beforeEach(() => { resolver = new DirectiveResolver(); });
@@ -125,8 +105,9 @@ export function main() {
     });
 
     it('should throw if not matching metadata is found', () => {
-      expect(() => { resolver.resolve(SomeDirectiveWithoutMetadata); })
-          .toThrowError('No Directive annotation found on SomeDirectiveWithoutMetadata');
+      expect(() => {
+        resolver.resolve(SomeDirectiveWithoutMetadata);
+      }).toThrowError('No Directive annotation found on SomeDirectiveWithoutMetadata');
     });
 
     it('should not read parent class Directive metadata', function() {
@@ -184,25 +165,25 @@ export function main() {
       it('should append ContentChildren', () => {
         var directiveMetadata = resolver.resolve(SomeDirectiveWithContentChildren);
         expect(directiveMetadata.queries)
-            .toEqual({"cs": new ContentChildren("c"), "as": new ContentChildren("a")});
+            .toEqual({'cs': new ContentChildren('c'), 'as': new ContentChildren('a')});
       });
 
       it('should append ViewChildren', () => {
         var directiveMetadata = resolver.resolve(SomeDirectiveWithViewChildren);
         expect(directiveMetadata.queries)
-            .toEqual({"cs": new ViewChildren("c"), "as": new ViewChildren("a")});
+            .toEqual({'cs': new ViewChildren('c'), 'as': new ViewChildren('a')});
       });
 
       it('should append ContentChild', () => {
         var directiveMetadata = resolver.resolve(SomeDirectiveWithContentChild);
         expect(directiveMetadata.queries)
-            .toEqual({"c": new ContentChild("c"), "a": new ContentChild("a")});
+            .toEqual({'c': new ContentChild('c'), 'a': new ContentChild('a')});
       });
 
       it('should append ViewChild', () => {
         var directiveMetadata = resolver.resolve(SomeDirectiveWithViewChild);
         expect(directiveMetadata.queries)
-            .toEqual({"c": new ViewChild("c"), "a": new ViewChild("a")});
+            .toEqual({'c': new ViewChild('c'), 'a': new ViewChild('a')});
       });
     });
   });

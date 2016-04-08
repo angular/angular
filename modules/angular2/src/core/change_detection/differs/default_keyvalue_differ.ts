@@ -24,7 +24,7 @@ export class DefaultKeyValueDiffer implements KeyValueDiffer {
 
   get isDirty(): boolean {
     return this._additionsHead !== null || this._changesHead !== null ||
-           this._removalsHead !== null;
+        this._removalsHead !== null;
   }
 
   forEachItem(fn: Function) {
@@ -206,7 +206,7 @@ export class DefaultKeyValueDiffer implements KeyValueDiffer {
   /** @internal */
   _isInRemovals(record: KeyValueChangeRecord) {
     return record === this._removalsHead || record._nextRemoved !== null ||
-           record._prevRemoved !== null;
+        record._prevRemoved !== null;
   }
 
   /** @internal */
@@ -318,9 +318,11 @@ export class DefaultKeyValueDiffer implements KeyValueDiffer {
       removals.push(stringify(record));
     }
 
-    return "map: " + items.join(', ') + "\n" + "previous: " + previous.join(', ') + "\n" +
-           "additions: " + additions.join(', ') + "\n" + "changes: " + changes.join(', ') + "\n" +
-           "removals: " + removals.join(', ') + "\n";
+    return 'map: ' + items.join(', ') + '\n' +
+        'previous: ' + previous.join(', ') + '\n' +
+        'additions: ' + additions.join(', ') + '\n' +
+        'changes: ' + changes.join(', ') + '\n' +
+        'removals: ' + removals.join(', ') + '\n';
   }
 
   /** @internal */
@@ -355,8 +357,8 @@ export class KeyValueChangeRecord {
 
   toString(): string {
     return looseIdentical(this.previousValue, this.currentValue) ?
-               stringify(this.key) :
-               (stringify(this.key) + '[' + stringify(this.previousValue) + '->' +
-                stringify(this.currentValue) + ']');
+        stringify(this.key) :
+        (stringify(this.key) + '[' + stringify(this.previousValue) + '->' +
+         stringify(this.currentValue) + ']');
   }
 }

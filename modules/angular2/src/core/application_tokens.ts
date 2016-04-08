@@ -53,15 +53,15 @@ function _randomChar(): string {
  * A function that will be executed when a platform is initialized.
  */
 export const PLATFORM_INITIALIZER: OpaqueToken =
-    CONST_EXPR(new OpaqueToken("Platform Initializer"));
+    CONST_EXPR(new OpaqueToken('Platform Initializer'));
 
 /**
  * A function that will be executed when an application is initialized.
  */
-export const APP_INITIALIZER: OpaqueToken = CONST_EXPR(new OpaqueToken("Application Initializer"));
+export const APP_INITIALIZER: OpaqueToken = CONST_EXPR(new OpaqueToken('Application Initializer'));
 
 /**
  * A token which indicates the root directory of the application
  */
 export const PACKAGE_ROOT_URL: OpaqueToken =
-    CONST_EXPR(new OpaqueToken("Application Packages Root URL"));
+    CONST_EXPR(new OpaqueToken('Application Packages Root URL'));

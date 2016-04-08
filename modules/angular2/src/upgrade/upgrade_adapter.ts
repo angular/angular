@@ -1,38 +1,11 @@
-import {
-  provide,
-  platform,
-  ApplicationRef,
-  AppViewManager,
-  Compiler,
-  Injector,
-  NgZone,
-  PlatformRef,
-  HostViewFactoryRef,
-  Provider,
-  Type,
-  Testability,
-  APPLICATION_COMMON_PROVIDERS
-} from 'angular2/core';
+import {provide, platform, ApplicationRef, AppViewManager, Compiler, Injector, NgZone, PlatformRef, HostViewFactoryRef, Provider, Type, Testability, APPLICATION_COMMON_PROVIDERS} from 'angular2/core';
 import {global} from 'angular2/src/facade/lang';
 import {ObservableWrapper} from 'angular2/src/facade/async';
 import {BROWSER_PROVIDERS, BROWSER_APP_PROVIDERS} from 'angular2/platform/browser';
 
 import {getComponentInfo, ComponentInfo} from './metadata';
 import {onError, controllerKey} from './util';
-import {
-  NG1_COMPILE,
-  NG1_INJECTOR,
-  NG1_PARSE,
-  NG1_ROOT_SCOPE,
-  NG1_SCOPE,
-  NG1_TESTABILITY,
-  NG2_APP_VIEW_MANAGER,
-  NG2_COMPILER,
-  NG2_INJECTOR,
-  NG2_HOST_VIEW_FACTORY_REF_MAP,
-  NG2_ZONE,
-  REQUIRE_INJECTOR
-} from './constants';
+import {NG1_COMPILE, NG1_INJECTOR, NG1_PARSE, NG1_ROOT_SCOPE, NG1_SCOPE, NG1_TESTABILITY, NG2_APP_VIEW_MANAGER, NG2_COMPILER, NG2_INJECTOR, NG2_HOST_VIEW_FACTORY_REF_MAP, NG2_ZONE, REQUIRE_INJECTOR} from './constants';
 import {DowngradeNg2ComponentAdapter} from './downgrade_ng2_adapter';
 import {UpgradeNg1ComponentAdapterBuilder} from './upgrade_ng1_adapter';
 import * as angular from './angular_js';
@@ -116,7 +89,7 @@ export class UpgradeAdapter {
   /* @internal */
   private downgradedComponents: {[name: string]: UpgradeNg1ComponentAdapterBuilder} = {};
   /* @internal */
-  private providers: Array<Type | Provider | any[]> = [];
+  private providers: Array<Type|Provider|any[]> = [];
 
   /**
    * Allows Angular v2 Component to be used from AngularJS v1.
@@ -292,16 +265,14 @@ export class UpgradeAdapter {
    * });
    * ```
    */
-  bootstrap(element: Element, modules?: any[],
-            config?: angular.IAngularBootstrapConfig): UpgradeAdapterRef {
+  bootstrap(element: Element, modules?: any[], config?: angular.IAngularBootstrapConfig):
+      UpgradeAdapterRef {
     var upgrade = new UpgradeAdapterRef();
     var ng1Injector: angular.IInjectorService = null;
     var platformRef: PlatformRef = platform(BROWSER_PROVIDERS);
     var applicationRef: ApplicationRef = platformRef.application([
-      BROWSER_APP_PROVIDERS,
-      provide(NG1_INJECTOR, {useFactory: () => ng1Injector}),
-      provide(NG1_COMPILE, {useFactory: () => ng1Injector.get(NG1_COMPILE)}),
-      this.providers
+      BROWSER_APP_PROVIDERS, provide(NG1_INJECTOR, {useFactory: () => ng1Injector}),
+      provide(NG1_COMPILE, {useFactory: () => ng1Injector.get(NG1_COMPILE)}), this.providers
     ]);
     var injector: Injector = applicationRef.injector;
     var ngZone: NgZone = injector.get(NgZone);
@@ -330,7 +301,7 @@ export class UpgradeAdapter {
                   original$applyFn = rootScopePrototype.$apply;
                   rootScopePrototype.$apply = (exp) => delayApplyExps.push(exp);
                 } else {
-                  throw new Error("Failed to find '$apply' on '$rootScope'!");
+                  throw new Error('Failed to find \'$apply\' on \'$rootScope\'!');
                 }
                 return rootScope = rootScopeDelegate;
               }
@@ -361,12 +332,11 @@ export class UpgradeAdapter {
 
     ng1compilePromise = new Promise((resolve, reject) => {
       ng1Module.run([
-        '$injector',
-        '$rootScope',
+        '$injector', '$rootScope',
         (injector: angular.IInjectorService, rootScope: angular.IRootScopeService) => {
           ng1Injector = injector;
-          ObservableWrapper.subscribe(ngZone.onMicrotaskEmpty,
-                                      (_) => ngZone.runOutsideAngular(() => rootScope.$apply()));
+          ObservableWrapper.subscribe(
+              ngZone.onMicrotaskEmpty, (_) => ngZone.runOutsideAngular(() => rootScope.$apply()));
           UpgradeNg1ComponentAdapterBuilder.resolve(this.downgradedComponents, injector)
               .then(resolve, reject);
         }
@@ -392,11 +362,11 @@ export class UpgradeAdapter {
       }
     });
 
-    Promise.all([
-             this.compileNg2Components(compiler, hostViewFactoryRefMap),
-             ng1BootstrapPromise,
-             ng1compilePromise
-           ])
+    Promise
+        .all([
+          this.compileNg2Components(compiler, hostViewFactoryRefMap), ng1BootstrapPromise,
+          ng1compilePromise
+        ])
         .then(() => {
           ngZone.run(() => {
             if (rootScopePrototype) {
@@ -448,7 +418,7 @@ export class UpgradeAdapter {
    * adapter.bootstrap(document.body, ['myExample']);
    *```
    */
-  public addProvider(provider: Type | Provider | any[]): void { this.providers.push(provider); }
+  public addProvider(provider: Type|Provider|any[]): void { this.providers.push(provider); }
 
   /**
    * Allows AngularJS v1 service to be accessible from Angular v2.
@@ -543,9 +513,9 @@ interface HostViewFactoryRefMap {
 function ng1ComponentDirective(info: ComponentInfo, idPrefix: string): Function {
   (<any>directiveFactory).$inject =
       [NG2_HOST_VIEW_FACTORY_REF_MAP, NG2_APP_VIEW_MANAGER, NG1_PARSE];
-  function directiveFactory(hostViewFactoryRefMap: HostViewFactoryRefMap,
-                            viewManager: AppViewManager,
-                            parse: angular.IParseService): angular.IDirective {
+  function directiveFactory(
+      hostViewFactoryRefMap: HostViewFactoryRefMap, viewManager: AppViewManager,
+      parse: angular.IParseService): angular.IDirective {
     var hostViewFactory: HostViewFactoryRef = hostViewFactoryRefMap[info.selector];
     if (!hostViewFactory) throw new Error('Expecting HostViewFactoryRef for: ' + info.selector);
     var idCount = 0;
@@ -556,9 +526,9 @@ function ng1ComponentDirective(info: ComponentInfo, idPrefix: string): Function 
         post: (scope: angular.IScope, element: angular.IAugmentedJQuery, attrs: angular.IAttributes,
                parentInjector: any, transclude: angular.ITranscludeFunction): void => {
           var domElement = <any>element[0];
-          var facade = new DowngradeNg2ComponentAdapter(idPrefix + (idCount++), info, element,
-                                                        attrs, scope, <Injector>parentInjector,
-                                                        parse, viewManager, hostViewFactory);
+          var facade = new DowngradeNg2ComponentAdapter(
+              idPrefix + (idCount++), info, element, attrs, scope, <Injector>parentInjector, parse,
+              viewManager, hostViewFactory);
           facade.setupInputs();
           facade.bootstrapNg2();
           facade.projectContent();

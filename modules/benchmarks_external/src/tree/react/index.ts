@@ -11,18 +11,18 @@ var TreeComponent = React.createClass({
     var left = null;
     if (treeNode.left) {
       left = React.createElement(
-          "span", {}, [React.createElement(TreeComponent, {treeNode: treeNode.left}, "")])
+          'span', {}, [React.createElement(TreeComponent, {treeNode: treeNode.left}, '')])
     }
 
     var right = null;
     if (treeNode.right) {
       right = React.createElement(
-          "span", {}, [React.createElement(TreeComponent, {treeNode: treeNode.right}, "")])
+          'span', {}, [React.createElement(TreeComponent, {treeNode: treeNode.right}, '')])
     }
 
-    var span = React.createElement("span", {}, [" " + treeNode.value, left, right]);
+    var span = React.createElement('span', {}, [' ' + treeNode.value, left, right]);
 
-    return (React.createElement("tree", {}, [span]));
+    return (React.createElement('tree', {}, [span]));
   }
 });
 
@@ -34,8 +34,9 @@ export function main() {
   bindAction('#createDom', createDom);
 
   var empty = new TreeNode(0, null, null);
-  var rootComponent = React.render(React.createElement(TreeComponent, {treeNode: empty}, ""),
-                                   document.getElementById('rootTree'));
+  var rootComponent = React.render(
+      React.createElement(TreeComponent, {treeNode: empty}, ''),
+      document.getElementById('rootTree'));
 
   function destroyDom() { rootComponent.setProps({treeNode: empty}); }
 
@@ -60,6 +61,7 @@ class TreeNode {
 
 function buildTree(maxDepth, values, curDepth) {
   if (maxDepth === curDepth) return new TreeNode('', null, null);
-  return new TreeNode(values[curDepth], buildTree(maxDepth, values, curDepth + 1),
-                      buildTree(maxDepth, values, curDepth + 1));
+  return new TreeNode(
+      values[curDepth], buildTree(maxDepth, values, curDepth + 1),
+      buildTree(maxDepth, values, curDepth + 1));
 }

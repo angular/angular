@@ -1,9 +1,4 @@
-import {
-  PromiseWrapper,
-  ObservableWrapper,
-  EventEmitter,
-  PromiseCompleter
-} from 'angular2/src/facade/async';
+import {PromiseWrapper, ObservableWrapper, EventEmitter, PromiseCompleter} from 'angular2/src/facade/async';
 import {StringMapWrapper, ListWrapper} from 'angular2/src/facade/collection';
 import {isPresent, isBlank, CONST_EXPR} from 'angular2/src/facade/lang';
 import {Directive, forwardRef, Provider, Optional, Inject, Self} from 'angular2/core';
@@ -90,11 +85,12 @@ export class NgForm extends ControlContainer implements Form {
   form: ControlGroup;
   ngSubmit = new EventEmitter();
 
-  constructor(@Optional() @Self() @Inject(NG_VALIDATORS) validators: any[],
-              @Optional() @Self() @Inject(NG_ASYNC_VALIDATORS) asyncValidators: any[]) {
+  constructor(
+      @Optional() @Self() @Inject(NG_VALIDATORS) validators: any[],
+      @Optional() @Self() @Inject(NG_ASYNC_VALIDATORS) asyncValidators: any[]) {
     super();
-    this.form = new ControlGroup({}, null, composeValidators(validators),
-                                 composeAsyncValidators(asyncValidators));
+    this.form = new ControlGroup(
+        {}, null, composeValidators(validators), composeAsyncValidators(asyncValidators));
   }
 
   get formDirective(): Form { return this; }

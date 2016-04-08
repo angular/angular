@@ -20,13 +20,13 @@ export interface ClassDefinition {
    *
    * See {@link Class} for example of usage.
    */
-  constructor: Function | any[];
+  constructor: Function|any[];
 
   /**
    * Other methods on the class. Note that values should have type 'Function' but TS requires
    * all properties to have a narrower type than the index signature.
    */
-  [x: string]: Type | Function | any[];
+  [x: string]: Type|Function|any[];
 }
 
 /**
@@ -61,7 +61,7 @@ export interface TypeDecorator {
   // ParameterDecorator is declared in lib.d.ts as a `declare type`
   // so we cannot declare this interface as a subtype.
   // see https://github.com/angular/angular/issues/3379#issuecomment-126169417
-  (target: Object, propertyKey?: string | symbol, parameterIndex?: number): void;
+  (target: Object, propertyKey?: string|symbol, parameterIndex?: number): void;
 
   /**
    * Storage for the accumulated annotations so far used by the DSL syntax.

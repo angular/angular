@@ -1,16 +1,4 @@
-import {
-  AsyncTestCompleter,
-  beforeEach,
-  ddescribe,
-  describe,
-  el,
-  expect,
-  iit,
-  inject,
-  it,
-  xit,
-  TestComponentBuilder
-} from 'angular2/testing_internal';
+import {AsyncTestCompleter, beforeEach, ddescribe, describe, el, expect, iit, inject, it, xit, TestComponentBuilder} from 'angular2/testing_internal';
 
 import {IS_DART} from 'angular2/src/facade/lang';
 import {escapeSingleQuoteString, escapeDoubleQuoteString} from 'angular2/src/compiler/util';

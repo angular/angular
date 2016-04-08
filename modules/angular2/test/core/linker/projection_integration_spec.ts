@@ -1,42 +1,9 @@
-import {
-  AsyncTestCompleter,
-  beforeEach,
-  ddescribe,
-  xdescribe,
-  describe,
-  el,
-  dispatchEvent,
-  expect,
-  iit,
-  inject,
-  beforeEachProviders,
-  it,
-  xit,
-  containsRegexp,
-  stringifyElement,
-  TestComponentBuilder,
-  ComponentFixture,
-  fakeAsync,
-  tick
-} from 'angular2/testing_internal';
+import {AsyncTestCompleter, beforeEach, ddescribe, xdescribe, describe, el, dispatchEvent, expect, iit, inject, beforeEachProviders, it, xit, containsRegexp, stringifyElement, TestComponentBuilder, ComponentFixture, fakeAsync, tick} from 'angular2/testing_internal';
 
 import {DOM} from 'angular2/src/platform/dom/dom_adapter';
 
-import {
-  bind,
-  provide,
-  forwardRef,
-  Component,
-  Directive,
-  ElementRef,
-  TemplateRef,
-  ViewContainerRef,
-  ViewEncapsulation,
-  ViewMetadata
-} from 'angular2/core';
-import {
-  By,
-} from 'angular2/platform/common_dom';
+import {bind, provide, forwardRef, Component, Directive, ElementRef, TemplateRef, ViewContainerRef, ViewEncapsulation, ViewMetadata} from 'angular2/core';
+import {By,} from 'angular2/platform/common_dom';
 import {getAllDebugNodes} from 'angular2/src/core/debug/debug_node';
 
 export function main() {
@@ -45,8 +12,8 @@ export function main() {
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
          tcb.overrideView(MainComp, new ViewMetadata({
                             template: '<simple>' +
-                                          '<div>A</div>' +
-                                          '</simple>',
+                                '<div>A</div>' +
+                                '</simple>',
                             directives: [Simple]
                           }))
              .createAsync(MainComp)
@@ -60,8 +27,8 @@ export function main() {
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
          tcb.overrideView(MainComp, new ViewMetadata({
                             template: '{{\'START(\'}}<simple>' +
-                                          '{{text}}' +
-                                          '</simple>{{\')END\'}}',
+                                '{{text}}' +
+                                '</simple>{{\')END\'}}',
                             directives: [Simple]
                           }))
              .createAsync(MainComp)
@@ -137,8 +104,8 @@ export function main() {
 
     it('should not show the light dom even if there is no content tag',
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-         tcb.overrideView(MainComp,
-                          new ViewMetadata({template: '<empty>A</empty>', directives: [Empty]}))
+         tcb.overrideView(
+                MainComp, new ViewMetadata({template: '<empty>A</empty>', directives: [Empty]}))
              .createAsync(MainComp)
              .then((main) => {
 
@@ -151,10 +118,10 @@ export function main() {
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
          tcb.overrideView(MainComp, new ViewMetadata({
                             template: '<multiple-content-tags>' +
-                                          '<div>B</div>' +
-                                          '<div>C</div>' +
-                                          '<div class="left">A</div>' +
-                                          '</multiple-content-tags>',
+                                '<div>B</div>' +
+                                '<div>C</div>' +
+                                '<div class="left">A</div>' +
+                                '</multiple-content-tags>',
                             directives: [MultipleContentTagsComponent]
                           }))
              .createAsync(MainComp)
@@ -169,9 +136,9 @@ export function main() {
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
          tcb.overrideView(MainComp, new ViewMetadata({
                             template: '<multiple-content-tags>' +
-                                          '<div>B<div class="left">A</div></div>' +
-                                          '<div>C</div>' +
-                                          '</multiple-content-tags>',
+                                '<div>B<div class="left">A</div></div>' +
+                                '<div>C</div>' +
+                                '</multiple-content-tags>',
                             directives: [MultipleContentTagsComponent]
                           }))
              .createAsync(MainComp)
@@ -182,13 +149,13 @@ export function main() {
              });
        }));
 
-    it("should redistribute direct child viewcontainers when the light dom changes",
+    it('should redistribute direct child viewcontainers when the light dom changes',
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
          tcb.overrideView(MainComp, new ViewMetadata({
                             template: '<multiple-content-tags>' +
-                                          '<template manual class="left"><div>A1</div></template>' +
-                                          '<div>B</div>' +
-                                          '</multiple-content-tags>',
+                                '<template manual class="left"><div>A1</div></template>' +
+                                '<div>B</div>' +
+                                '</multiple-content-tags>',
                             directives: [MultipleContentTagsComponent, ManualViewportDirective]
                           }))
              .createAsync(MainComp)
@@ -210,13 +177,13 @@ export function main() {
              });
        }));
 
-    it("should support nested components",
+    it('should support nested components',
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
          tcb.overrideView(MainComp, new ViewMetadata({
                             template: '<outer-with-indirect-nested>' +
-                                          '<div>A</div>' +
-                                          '<div>B</div>' +
-                                          '</outer-with-indirect-nested>',
+                                '<div>A</div>' +
+                                '<div>B</div>' +
+                                '</outer-with-indirect-nested>',
                             directives: [OuterWithIndirectNestedComponent]
                           }))
              .createAsync(MainComp)
@@ -227,14 +194,14 @@ export function main() {
              });
        }));
 
-    it("should support nesting with content being direct child of a nested component",
+    it('should support nesting with content being direct child of a nested component',
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
          tcb.overrideView(MainComp, new ViewMetadata({
                             template: '<outer>' +
-                                          '<template manual class="left"><div>A</div></template>' +
-                                          '<div>B</div>' +
-                                          '<div>C</div>' +
-                                          '</outer>',
+                                '<template manual class="left"><div>A</div></template>' +
+                                '<div>B</div>' +
+                                '<div>C</div>' +
+                                '</outer>',
                             directives: [OuterComponent, ManualViewportDirective],
                           }))
              .createAsync(MainComp)
@@ -256,10 +223,10 @@ export function main() {
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
          tcb.overrideView(MainComp, new ViewMetadata({
                             template: '<conditional-content>' +
-                                          '<div class="left">A</div>' +
-                                          '<div>B</div>' +
-                                          '<div>C</div>' +
-                                          '</conditional-content>',
+                                '<div class="left">A</div>' +
+                                '<div>B</div>' +
+                                '<div>C</div>' +
+                                '</conditional-content>',
                             directives: [ConditionalContentComponent]
                           }))
              .createAsync(MainComp)
@@ -326,9 +293,9 @@ export function main() {
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
          tcb.overrideView(MainComp, new ViewMetadata({
                             template: '<empty>' +
-                                          '  <template manual><div>A</div></template>' +
-                                          '</empty>' +
-                                          'START(<div project></div>)END',
+                                '  <template manual><div>A</div></template>' +
+                                '</empty>' +
+                                'START(<div project></div>)END',
                             directives: [Empty, ProjectDirective, ManualViewportDirective],
                           }))
              .createAsync(MainComp)
@@ -359,7 +326,7 @@ export function main() {
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
          tcb.overrideView(MainComp, new ViewMetadata({
                             template: '<simple><template manual><div>A</div></template></simple>' +
-                                          'START(<div project></div>)END',
+                                'START(<div project></div>)END',
                             directives: [Simple, ProjectDirective, ManualViewportDirective],
                           }))
              .createAsync(MainComp)
@@ -384,10 +351,10 @@ export function main() {
          tcb.overrideView(
                 MainComp, new ViewMetadata({
                   template: '<conditional-content>' +
-                                '<div class="left">A</div>' +
-                                '<div>B</div>' +
-                                '</conditional-content>' +
-                                'START(<div project></div>)END',
+                      '<div class="left">A</div>' +
+                      '<div>B</div>' +
+                      '</conditional-content>' +
+                      'START(<div project></div>)END',
                   directives:
                       [ConditionalContentComponent, ProjectDirective, ManualViewportDirective]
                 }))
@@ -419,8 +386,8 @@ export function main() {
     // the presence of ng-content elements!
     it('should still allow to implement a recursive trees',
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-         tcb.overrideView(MainComp,
-                          new ViewMetadata({template: '<tree></tree>', directives: [Tree]}))
+         tcb.overrideView(
+                MainComp, new ViewMetadata({template: '<tree></tree>', directives: [Tree]}))
              .createAsync(MainComp)
              .then((main) => {
 
@@ -441,7 +408,7 @@ export function main() {
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            tcb.overrideView(MainComp, new ViewMetadata({
                               template: '<simple-native1><div>A</div></simple-native1>' +
-                                            '<simple-native2><div>B</div></simple-native2>',
+                                  '<simple-native2><div>B</div></simple-native2>',
                               directives: [SimpleNative1, SimpleNative2]
                             }))
                .createAsync(MainComp)
@@ -510,8 +477,9 @@ export function main() {
              .then((main) => {
                main.detectChanges();
                expect(DOM.getInnerHTML(main.debugElement.nativeElement))
-                   .toEqual('<cmp-a><cmp-b><cmp-d><d>cmp-d</d></cmp-d></cmp-b>' +
-                            '<cmp-c><c>cmp-c</c></cmp-c></cmp-a>');
+                   .toEqual(
+                       '<cmp-a><cmp-b><cmp-d><d>cmp-d</d></cmp-d></cmp-b>' +
+                       '<cmp-c><c>cmp-c</c></cmp-c></cmp-a>');
                async.done();
              });
        }));
@@ -526,8 +494,9 @@ export function main() {
              .then((main) => {
                main.detectChanges();
                expect(DOM.getInnerHTML(main.debugElement.nativeElement))
-                   .toEqual('<cmp-a1>a1<cmp-b11>b11</cmp-b11><cmp-b12>b12</cmp-b12></cmp-a1>' +
-                            '<cmp-a2>a2<cmp-b21>b21</cmp-b21><cmp-b22>b22</cmp-b22></cmp-a2>');
+                   .toEqual(
+                       '<cmp-a1>a1<cmp-b11>b11</cmp-b11><cmp-b12>b12</cmp-b12></cmp-a1>' +
+                       '<cmp-a2>a2<cmp-b21>b21</cmp-b21><cmp-b22>b22</cmp-b22></cmp-a2>');
                async.done();
              });
        }));
@@ -536,11 +505,11 @@ export function main() {
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
          tcb.overrideView(MainComp, new ViewMetadata({
                             template: '<conditional-content>' +
-                                          '<div class="left">A</div>' +
-                                          '<template manual class="left">B</template>' +
-                                          '<div class="left">C</div>' +
-                                          '<div>D</div>' +
-                                          '</conditional-content>',
+                                '<div class="left">A</div>' +
+                                '<template manual class="left">B</template>' +
+                                '<div class="left">C</div>' +
+                                '<div>D</div>' +
+                                '</conditional-content>',
                             directives: [ConditionalContentComponent, ManualViewportDirective]
                           }))
              .createAsync(MainComp)

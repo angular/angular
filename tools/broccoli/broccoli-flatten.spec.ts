@@ -12,9 +12,9 @@ describe('Flatten', () => {
 
   function flatten(inputPaths) { return new DiffingFlatten(inputPaths, 'output', null); }
 
-  function read(path) { return fs.readFileSync(path, {encoding: "utf-8"}); }
+  function read(path) { return fs.readFileSync(path, {encoding: 'utf-8'}); }
   function rm(path) { return fs.unlinkSync(path); }
-  function write(path, content) { fs.writeFileSync(path, content, {encoding: "utf-8"}); }
+  function write(path, content) { fs.writeFileSync(path, content, {encoding: 'utf-8'}); }
 
 
   it('should flatten files and be incremental', () => {
@@ -70,7 +70,8 @@ describe('Flatten', () => {
     let differ = new TreeDiffer('testLabel', 'input');
     let flattenedTree = flatten('input');
     expect(() => flattenedTree.rebuild(differ.diffTree()))
-        .toThrowError("Duplicate file 'file-1.txt' found in path 'dir1" + path.sep + "subdir-1" +
-                      path.sep + "file-1.txt'");
+        .toThrowError(
+            'Duplicate file \'file-1.txt\' found in path \'dir1' + path.sep + 'subdir-1' +
+            path.sep + 'file-1.txt\'');
   });
 });

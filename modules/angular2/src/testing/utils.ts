@@ -19,7 +19,7 @@ export class Log {
 
   clear(): void { this.logItems = []; }
 
-  result(): string { return this.logItems.join("; "); }
+  result(): string { return this.logItems.join('; '); }
 }
 
 export var browserDetection: BrowserDetection = null;
@@ -41,7 +41,7 @@ export class BrowserDetection {
 
   get isAndroid(): boolean {
     return this._ua.indexOf('Mozilla/5.0') > -1 && this._ua.indexOf('Android') > -1 &&
-           this._ua.indexOf('AppleWebKit') > -1 && this._ua.indexOf('Chrome') == -1;
+        this._ua.indexOf('AppleWebKit') > -1 && this._ua.indexOf('Chrome') == -1;
   }
 
   get isEdge(): boolean { return this._ua.indexOf('Edge') > -1; }
@@ -87,10 +87,10 @@ export function normalizeCSS(css: string): string {
   css = StringWrapper.replaceAll(css, /:\s/g, ':');
   css = StringWrapper.replaceAll(css, /'/g, '"');
   css = StringWrapper.replaceAll(css, / }/g, '}');
-  css = StringWrapper.replaceAllMapped(css, /url\((\"|\s)(.+)(\"|\s)\)(\s*)/g,
-                                       (match) => `url("${match[2]}")`);
-  css = StringWrapper.replaceAllMapped(css, /\[(.+)=([^"\]]+)\]/g,
-                                       (match) => `[${match[1]}="${match[2]}"]`);
+  css = StringWrapper.replaceAllMapped(
+      css, /url\((\"|\s)(.+)(\"|\s)\)(\s*)/g, (match) => `url("${match[2]}")`);
+  css = StringWrapper.replaceAllMapped(
+      css, /\[(.+)=([^"\]]+)\]/g, (match) => `[${match[1]}="${match[2]}"]`);
   return css;
 }
 

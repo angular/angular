@@ -2,34 +2,10 @@ import {ListWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
 import {isPresent, isBlank} from 'angular2/src/facade/lang';
 import {reflector} from 'angular2/src/core/reflection/reflection';
 
-import {
-  DirectiveIndex,
-  BindingRecord,
-  DirectiveRecord,
-  ChangeDetectionStrategy,
-  ChangeDetectorDefinition,
-  ChangeDetectorGenConfig,
-  ASTWithSource
-} from 'angular2/src/core/change_detection/change_detection';
+import {DirectiveIndex, BindingRecord, DirectiveRecord, ChangeDetectionStrategy, ChangeDetectorDefinition, ChangeDetectorGenConfig, ASTWithSource} from 'angular2/src/core/change_detection/change_detection';
 
 import {CompileDirectiveMetadata, CompileTypeMetadata} from './directive_metadata';
-import {
-  TemplateAst,
-  ElementAst,
-  BoundTextAst,
-  PropertyBindingType,
-  DirectiveAst,
-  TemplateAstVisitor,
-  templateVisitAll,
-  NgContentAst,
-  EmbeddedTemplateAst,
-  VariableAst,
-  BoundElementPropertyAst,
-  BoundEventAst,
-  BoundDirectivePropertyAst,
-  AttrAst,
-  TextAst
-} from './template_ast';
+import {TemplateAst, ElementAst, BoundTextAst, PropertyBindingType, DirectiveAst, TemplateAstVisitor, templateVisitAll, NgContentAst, EmbeddedTemplateAst, VariableAst, BoundElementPropertyAst, BoundEventAst, BoundDirectivePropertyAst, AttrAst, TextAst} from './template_ast';
 import {LifecycleHooks} from 'angular2/src/core/linker/interfaces';
 
 export function createChangeDetectorDefinitions(
@@ -50,8 +26,9 @@ class ProtoViewVisitor implements TemplateAstVisitor {
   eventRecords: BindingRecord[] = [];
   directiveRecords: DirectiveRecord[] = [];
 
-  constructor(public parent: ProtoViewVisitor, public allVisitors: ProtoViewVisitor[],
-              public strategy: ChangeDetectionStrategy) {
+  constructor(
+      public parent: ProtoViewVisitor, public allVisitors: ProtoViewVisitor[],
+      public strategy: ChangeDetectionStrategy) {
     this.viewIndex = allVisitors.length;
     allVisitors.push(this);
   }
@@ -96,10 +73,9 @@ class ProtoViewVisitor implements TemplateAstVisitor {
   }
 
   visitEvent(ast: BoundEventAst, directiveRecord: DirectiveRecord): any {
-    var bindingRecord =
-        isPresent(directiveRecord) ?
-            BindingRecord.createForHostEvent(ast.handler, ast.fullName, directiveRecord) :
-            BindingRecord.createForEvent(ast.handler, ast.fullName, this.boundElementCount - 1);
+    var bindingRecord = isPresent(directiveRecord) ?
+        BindingRecord.createForHostEvent(ast.handler, ast.fullName, directiveRecord) :
+        BindingRecord.createForEvent(ast.handler, ast.fullName, this.boundElementCount - 1);
     this.eventRecords.push(bindingRecord);
     return null;
   }
@@ -109,25 +85,21 @@ class ProtoViewVisitor implements TemplateAstVisitor {
     var dirIndex = isPresent(directiveRecord) ? directiveRecord.directiveIndex : null;
     var bindingRecord;
     if (ast.type === PropertyBindingType.Property) {
-      bindingRecord =
-          isPresent(dirIndex) ?
-              BindingRecord.createForHostProperty(dirIndex, ast.value, ast.name) :
-              BindingRecord.createForElementProperty(ast.value, boundElementIndex, ast.name);
+      bindingRecord = isPresent(dirIndex) ?
+          BindingRecord.createForHostProperty(dirIndex, ast.value, ast.name) :
+          BindingRecord.createForElementProperty(ast.value, boundElementIndex, ast.name);
     } else if (ast.type === PropertyBindingType.Attribute) {
-      bindingRecord =
-          isPresent(dirIndex) ?
-              BindingRecord.createForHostAttribute(dirIndex, ast.value, ast.name) :
-              BindingRecord.createForElementAttribute(ast.value, boundElementIndex, ast.name);
+      bindingRecord = isPresent(dirIndex) ?
+          BindingRecord.createForHostAttribute(dirIndex, ast.value, ast.name) :
+          BindingRecord.createForElementAttribute(ast.value, boundElementIndex, ast.name);
     } else if (ast.type === PropertyBindingType.Class) {
-      bindingRecord =
-          isPresent(dirIndex) ?
-              BindingRecord.createForHostClass(dirIndex, ast.value, ast.name) :
-              BindingRecord.createForElementClass(ast.value, boundElementIndex, ast.name);
+      bindingRecord = isPresent(dirIndex) ?
+          BindingRecord.createForHostClass(dirIndex, ast.value, ast.name) :
+          BindingRecord.createForElementClass(ast.value, boundElementIndex, ast.name);
     } else if (ast.type === PropertyBindingType.Style) {
-      bindingRecord =
-          isPresent(dirIndex) ?
-              BindingRecord.createForHostStyle(dirIndex, ast.value, ast.name, ast.unit) :
-              BindingRecord.createForElementStyle(ast.value, boundElementIndex, ast.name, ast.unit);
+      bindingRecord = isPresent(dirIndex) ?
+          BindingRecord.createForHostStyle(dirIndex, ast.value, ast.name, ast.unit) :
+          BindingRecord.createForElementStyle(ast.value, boundElementIndex, ast.name, ast.unit);
     }
     this.bindingRecords.push(bindingRecord);
     return null;
@@ -195,8 +167,9 @@ class ProtoViewVisitor implements TemplateAstVisitor {
 }
 
 
-function createChangeDefinitions(pvVisitors: ProtoViewVisitor[], componentType: CompileTypeMetadata,
-                                 genConfig: ChangeDetectorGenConfig): ChangeDetectorDefinition[] {
+function createChangeDefinitions(
+    pvVisitors: ProtoViewVisitor[], componentType: CompileTypeMetadata,
+    genConfig: ChangeDetectorGenConfig): ChangeDetectorDefinition[] {
   var pvVariableNames = _collectNestedProtoViewsVariableNames(pvVisitors);
   return pvVisitors.map(pvVisitor => {
     var id = `${componentType.name}_${pvVisitor.viewIndex}`;

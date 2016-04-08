@@ -1,32 +1,11 @@
-import {
-  AsyncTestCompleter,
-  TestComponentBuilder,
-  beforeEach,
-  ddescribe,
-  describe,
-  expect,
-  iit,
-  inject,
-  it,
-  xit
-} from 'angular2/testing_internal';
-import {
-  bind,
-  provide,
-  forwardRef,
-  resolveForwardRef,
-  Component,
-  Directive,
-  Inject,
-  Query,
-  QueryList
-} from 'angular2/core';
+import {AsyncTestCompleter, TestComponentBuilder, beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from 'angular2/testing_internal';
+import {bind, provide, forwardRef, resolveForwardRef, Component, Directive, Inject, Query, QueryList} from 'angular2/core';
 import {NgFor} from 'angular2/common';
 import {Type} from 'angular2/src/facade/lang';
 import {asNativeElements} from 'angular2/core';
 
 export function main() {
-  describe("forwardRef integration", function() {
+  describe('forwardRef integration', function() {
     it('should instantiate components which are declared using forwardRef',
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
          tcb.createAsync(App).then((tc) => {
@@ -56,8 +35,9 @@ class Door {
   locks: QueryList<Lock>;
   frame: Frame;
 
-  constructor(@Query(forwardRef(() => Lock)) locks: QueryList<Lock>,
-              @Inject(forwardRef(() => Frame)) frame: Frame) {
+  constructor(
+      @Query(forwardRef(() => Lock)) locks: QueryList<Lock>,
+      @Inject(forwardRef(() => Frame)) frame: Frame) {
     this.frame = frame;
     this.locks = locks;
   }

@@ -22,10 +22,10 @@ var module = angular.module('app', []);
 for (var depth = 0; depth < MAX_DEPTH; depth++) {
   addTreeDirective(module, depth);
 }
-module.config([
-        '$compileProvider',
-        function($compileProvider) { $compileProvider.debugInfoEnabled(false); }
-      ])
+module
+    .config([
+      '$compileProvider', function($compileProvider) { $compileProvider.debugInfoEnabled(false); }
+    ])
     .run([
       '$rootScope',
       function($rootScope) {
@@ -64,6 +64,7 @@ class TreeNode {
 
 function buildTree(maxDepth, values, curDepth) {
   if (maxDepth === curDepth) return new TreeNode('', null, null);
-  return new TreeNode(values[curDepth], buildTree(maxDepth, values, curDepth + 1),
-                      buildTree(maxDepth, values, curDepth + 1));
+  return new TreeNode(
+      values[curDepth], buildTree(maxDepth, values, curDepth + 1),
+      buildTree(maxDepth, values, curDepth + 1));
 }

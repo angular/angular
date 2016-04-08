@@ -1,11 +1,6 @@
 import {Injectable} from 'angular2/src/core/di';
 import {XHR} from 'angular2/src/compiler/xhr';
-import {
-  FnArg,
-  UiArguments,
-  ClientMessageBroker,
-  ClientMessageBrokerFactory
-} from 'angular2/src/web_workers/shared/client_message_broker';
+import {FnArg, UiArguments, ClientMessageBroker, ClientMessageBrokerFactory} from 'angular2/src/web_workers/shared/client_message_broker';
 import {XHR_CHANNEL} from 'angular2/src/web_workers/shared/messaging_api';
 
 /**
@@ -23,7 +18,7 @@ export class WebWorkerXHRImpl extends XHR {
 
   get(url: string): Promise<string> {
     var fnArgs: FnArg[] = [new FnArg(url, null)];
-    var args: UiArguments = new UiArguments("get", fnArgs);
+    var args: UiArguments = new UiArguments('get', fnArgs);
     return this._messageBroker.runOnService(args, String);
   }
 }

@@ -11,10 +11,7 @@ export type ProjectMap = {
 };
 
 export type Options = {
-  projects: ProjectMap;
-  noTypeChecks: boolean;
-  generateEs6: boolean;
-  useBundles: boolean;
+  projects: ProjectMap; noTypeChecks: boolean; generateEs6: boolean; useBundles: boolean;
 };
 
 export interface AngularBuilderOptions {
@@ -158,16 +155,17 @@ function writeBuildLog(result: BuildResult, name: string) {
 function broccoliNodeToBuildNode(broccoliNode) {
   let tree = broccoliNode.tree.newStyleTree || broccoliNode.tree;
 
-  return new BuildNode(tree.description || tree.constructor.name,
-                       tree.inputPath ? [tree.inputPath] : tree.inputPaths, tree.cachePath,
-                       tree.outputPath, broccoliNode.selfTime / (1000 * 1000 * 1000),
-                       broccoliNode.totalTime / (1000 * 1000 * 1000),
-                       broccoliNode.subtrees.map(broccoliNodeToBuildNode));
+  return new BuildNode(
+      tree.description || tree.constructor.name,
+      tree.inputPath ? [tree.inputPath] : tree.inputPaths, tree.cachePath, tree.outputPath,
+      broccoliNode.selfTime / (1000 * 1000 * 1000), broccoliNode.totalTime / (1000 * 1000 * 1000),
+      broccoliNode.subtrees.map(broccoliNodeToBuildNode));
 }
 
 
 class BuildNode {
-  constructor(public pluginName: string, public inputPaths: string[], public cachePath: string,
-              public outputPath: string, public selfTime: number, public totalTime: number,
-              public inputNodes: BroccoliNode[]) {}
+  constructor(
+      public pluginName: string, public inputPaths: string[], public cachePath: string,
+      public outputPath: string, public selfTime: number, public totalTime: number,
+      public inputNodes: BroccoliNode[]) {}
 }

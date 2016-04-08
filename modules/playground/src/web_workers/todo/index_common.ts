@@ -19,7 +19,7 @@ export class TodoApp {
 
   enterTodo(): void {
     this.addTodo(this.inputValue);
-    this.inputValue = "";
+    this.inputValue = '';
   }
 
   doneEditing($event, todo: Todo): void {

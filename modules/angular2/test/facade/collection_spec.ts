@@ -47,16 +47,19 @@ export function main() {
     describe('slice', () => {
       beforeEach(() => { l = [1, 2, 3, 4]; });
 
-      it('should return the whole list if neither start nor end are specified',
-         () => { expect(ListWrapper.slice(l)).toEqual([1, 2, 3, 4]); });
+      it('should return the whole list if neither start nor end are specified', () => {
+        expect(ListWrapper.slice(l)).toEqual([1, 2, 3, 4]);
+      });
 
-      it('should return up to the end if end is not specified',
-         () => { expect(ListWrapper.slice(l, 1)).toEqual([2, 3, 4]); });
+      it('should return up to the end if end is not specified', () => {
+        expect(ListWrapper.slice(l, 1)).toEqual([2, 3, 4]);
+      });
 
       it('should support negative start', () => { expect(ListWrapper.slice(l, -1)).toEqual([4]); });
 
-      it('should support negative end',
-         () => { expect(ListWrapper.slice(l, -3, -1)).toEqual([2, 3]); });
+      it('should support negative end', () => {
+        expect(ListWrapper.slice(l, -3, -1)).toEqual([2, 3]);
+      });
 
       it('should return empty list if start is greater than end', () => {
         expect(ListWrapper.slice(l, 4, 2)).toEqual([]);
@@ -77,14 +80,17 @@ export function main() {
     });
 
     describe('maximum', () => {
-      it('should return the maximal element',
-         () => { expect(ListWrapper.maximum([1, 2, 3, 4], x => x)).toEqual(4); });
+      it('should return the maximal element', () => {
+        expect(ListWrapper.maximum([1, 2, 3, 4], x => x)).toEqual(4);
+      });
 
-      it('should ignore null values',
-         () => { expect(ListWrapper.maximum([null, 2, 3, null], x => x)).toEqual(3); });
+      it('should ignore null values', () => {
+        expect(ListWrapper.maximum([null, 2, 3, null], x => x)).toEqual(3);
+      });
 
-      it('should use the provided function to determine maximum',
-         () => { expect(ListWrapper.maximum([1, 2, 3, 4], x => -x)).toEqual(1); });
+      it('should use the provided function to determine maximum', () => {
+        expect(ListWrapper.maximum([1, 2, 3, 4], x => -x)).toEqual(1);
+      });
 
       it('should return null for an empty list',
          () => { expect(ListWrapper.maximum([], x => x)).toEqual(null); });
@@ -93,12 +99,12 @@ export function main() {
     describe('forEachWithIndex', () => {
       var l;
 
-      beforeEach(() => { l = ["a", "b"]; });
+      beforeEach(() => { l = ['a', 'b']; });
 
       it('should iterate over an array passing values and indices', () => {
         var record = [];
         ListWrapper.forEachWithIndex(l, (value, index) => record.push([value, index]));
-        expect(record).toEqual([["a", 0], ["b", 1]]);
+        expect(record).toEqual([['a', 0], ['b', 1]]);
       });
     });
   });

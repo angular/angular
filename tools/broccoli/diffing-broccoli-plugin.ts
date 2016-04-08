@@ -28,8 +28,8 @@ export function wrapDiffingPlugin(pluginClass): DiffingPluginWrapperFactory {
 
 
 export interface DiffingBroccoliPlugin {
-  rebuild(diff: (DiffResult | DiffResult[])): (Promise<DiffResult | void>| DiffResult | void);
-  cleanup ? () : void;
+  rebuild(diff: (DiffResult|DiffResult[])): (Promise<DiffResult|void>|DiffResult|void);
+  cleanup?(): void;
 }
 
 
@@ -64,7 +64,7 @@ class DiffingPluginWrapper implements BroccoliTree {
     this.description = this.pluginClass.name;
   }
 
-  private getDiffResult(): (DiffResult | DiffResult[]) {
+  private getDiffResult(): (DiffResult|DiffResult[]) {
     let returnOrCalculateDiffResult = (tree, index) => {
       // returnOrCalculateDiffResult will do one of two things:
       //
@@ -85,16 +85,16 @@ class DiffingPluginWrapper implements BroccoliTree {
     } else if (this.inputTree) {
       return returnOrCalculateDiffResult(this.inputTree, false);
     } else {
-      throw new Error("Missing TreeDiffer");
+      throw new Error('Missing TreeDiffer');
     }
   }
 
-  private maybeStoreDiffResult(value: (DiffResult | void)) {
+  private maybeStoreDiffResult(value: (DiffResult|void)) {
     if (!(value instanceof DiffResult)) value = null;
     this.diffResult = <DiffResult>(value);
   }
 
-  rebuild(): (Promise<any>| void) {
+  rebuild(): (Promise<any>|void) {
     try {
       let firstRun = !this.initialized;
       this.init();
@@ -104,7 +104,7 @@ class DiffingPluginWrapper implements BroccoliTree {
       let result = this.wrappedPlugin.rebuild(diffResult);
 
       if (result) {
-        let resultPromise = <Promise<DiffResult | void>>(result);
+        let resultPromise = <Promise<DiffResult|void>>(result);
         if (resultPromise.then) {
           // rebuild() -> Promise<>
           return resultPromise.then((result: (DiffResult | void)) => {
@@ -144,15 +144,15 @@ class DiffingPluginWrapper implements BroccoliTree {
       let description = this.description;
       this.initialized = true;
       if (this.inputPaths) {
-        this.treeDiffers =
-            this.inputPaths.map((inputPath) => new TreeDiffer(
-                                    description, inputPath, includeExtensions, excludeExtensions));
+        this.treeDiffers = this.inputPaths.map(
+            (inputPath) =>
+                new TreeDiffer(description, inputPath, includeExtensions, excludeExtensions));
       } else if (this.inputPath) {
         this.treeDiffer =
             new TreeDiffer(description, this.inputPath, includeExtensions, excludeExtensions);
       }
-      this.wrappedPlugin = new this.pluginClass(this.inputPaths || this.inputPath, this.cachePath,
-                                                this.wrappedPluginArguments[1]);
+      this.wrappedPlugin = new this.pluginClass(
+          this.inputPaths || this.inputPath, this.cachePath, this.wrappedPluginArguments[1]);
     }
   }
 
@@ -182,8 +182,9 @@ class DiffingPluginWrapper implements BroccoliTree {
     // Since it's not safe to use instanceof operator in node, we are checking the constructor.name.
     //
     // New-style/rebuild trees should always be stable.
-    let isNewStyleTree = !!(tree['newStyleTree'] || typeof tree.rebuild === 'function' ||
-                            tree['isReadAPICompatTree'] || tree.constructor['name'] === 'Funnel');
+    let isNewStyleTree =
+        !!(tree['newStyleTree'] || typeof tree.rebuild === 'function' ||
+           tree['isReadAPICompatTree'] || tree.constructor['name'] === 'Funnel');
 
     return isNewStyleTree ? tree : stabilizeTree(tree);
   }

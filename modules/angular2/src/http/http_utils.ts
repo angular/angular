@@ -7,8 +7,9 @@ export function normalizeMethodName(method: string | RequestMethod): RequestMeth
   if (isString(method)) {
     var originalMethod = method;
     method = (<string>method)
-                 .replace(/(\w)(\w*)/g, (g0: string, g1: string, g2: string) =>
-                                            g1.toUpperCase() + g2.toLowerCase());
+                 .replace(
+                     /(\w)(\w*)/g,
+                     (g0: string, g1: string, g2: string) => g1.toUpperCase() + g2.toLowerCase());
     method = <number>(<{[key: string]: any}>RequestMethod)[method];
     if (typeof method !== 'number')
       throw makeTypeError(

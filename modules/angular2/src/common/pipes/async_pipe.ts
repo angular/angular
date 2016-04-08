@@ -1,13 +1,6 @@
 import {isBlank, isPresent, isPromise, CONST} from 'angular2/src/facade/lang';
 import {ObservableWrapper, Observable, EventEmitter} from 'angular2/src/facade/async';
-import {
-  Pipe,
-  Injectable,
-  ChangeDetectorRef,
-  OnDestroy,
-  PipeTransform,
-  WrappedValue
-} from 'angular2/core';
+import {Pipe, Injectable, ChangeDetectorRef, OnDestroy, PipeTransform, WrappedValue} from 'angular2/core';
 
 import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
 
@@ -64,7 +57,7 @@ export class AsyncPipe implements PipeTransform, OnDestroy {
   /** @internal */
   _subscription: Object = null;
   /** @internal */
-  _obj: Observable<any>| Promise<any>| EventEmitter<any> = null;
+  _obj: Observable<any>|Promise<any>|EventEmitter<any> = null;
   private _strategy: any = null;
   /** @internal */
   public _ref: ChangeDetectorRef;
@@ -76,7 +69,7 @@ export class AsyncPipe implements PipeTransform, OnDestroy {
     }
   }
 
-  transform(obj: Observable<any>| Promise<any>| EventEmitter<any>, args?: any[]): any {
+  transform(obj: Observable<any>|Promise<any>|EventEmitter<any>, args?: any[]): any {
     if (isBlank(this._obj)) {
       if (isPresent(obj)) {
         this._subscribe(obj);
@@ -99,7 +92,7 @@ export class AsyncPipe implements PipeTransform, OnDestroy {
   }
 
   /** @internal */
-  _subscribe(obj: Observable<any>| Promise<any>| EventEmitter<any>): void {
+  _subscribe(obj: Observable<any>|Promise<any>|EventEmitter<any>): void {
     this._obj = obj;
     this._strategy = this._selectStrategy(obj);
     this._subscription = this._strategy.createSubscription(
@@ -107,7 +100,7 @@ export class AsyncPipe implements PipeTransform, OnDestroy {
   }
 
   /** @internal */
-  _selectStrategy(obj: Observable<any>| Promise<any>| EventEmitter<any>): any {
+  _selectStrategy(obj: Observable<any>|Promise<any>|EventEmitter<any>): any {
     if (isPromise(obj)) {
       return _promiseStrategy;
     } else if (ObservableWrapper.isObservable(obj)) {

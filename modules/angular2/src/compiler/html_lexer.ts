@@ -1,11 +1,4 @@
-import {
-  StringWrapper,
-  NumberWrapper,
-  isPresent,
-  isBlank,
-  CONST_EXPR,
-  serializeEnum
-} from 'angular2/src/facade/lang';
+import {StringWrapper, NumberWrapper, isPresent, isBlank, CONST_EXPR, serializeEnum} from 'angular2/src/facade/lang';
 import {ListWrapper} from 'angular2/src/facade/collection';
 import {ParseLocation, ParseError, ParseSourceFile, ParseSourceSpan} from './parse_util';
 import {getHtmlTagDefinition, HtmlTagContentType, NAMED_ENTITIES} from './html_tags';
@@ -29,8 +22,8 @@ export enum HtmlTokenType {
 }
 
 export class HtmlToken {
-  constructor(public type: HtmlTokenType, public parts: string[],
-              public sourceSpan: ParseSourceSpan) {}
+  constructor(
+      public type: HtmlTokenType, public parts: string[], public sourceSpan: ParseSourceSpan) {}
 }
 
 export class HtmlTokenError extends ParseError {
@@ -191,8 +184,8 @@ class _HtmlTokenizer {
     if (isBlank(end)) {
       end = this._getLocation();
     }
-    var token = new HtmlToken(this.currentTokenType, parts,
-                              new ParseSourceSpan(this.currentTokenStart, end));
+    var token = new HtmlToken(
+        this.currentTokenType, parts, new ParseSourceSpan(this.currentTokenStart, end));
     this.tokens.push(token);
     this.currentTokenStart = null;
     this.currentTokenType = null;
@@ -239,8 +232,8 @@ class _HtmlTokenizer {
   private _requireCharCode(charCode: number) {
     var location = this._getLocation();
     if (!this._attemptCharCode(charCode)) {
-      throw this._createError(unexpectedCharacterErrorMsg(this.peek),
-                              this._getSpan(location, location));
+      throw this._createError(
+          unexpectedCharacterErrorMsg(this.peek), this._getSpan(location, location));
     }
   }
 
@@ -335,12 +328,12 @@ class _HtmlTokenizer {
     }
   }
 
-  private _consumeRawText(decodeEntities: boolean, firstCharOfEnd: number,
-                          attemptEndRest: Function): HtmlToken {
+  private _consumeRawText(
+      decodeEntities: boolean, firstCharOfEnd: number, attemptEndRest: Function): HtmlToken {
     var tagCloseStart;
     var textStart = this._getLocation();
-    this._beginToken(decodeEntities ? HtmlTokenType.ESCAPABLE_RAW_TEXT : HtmlTokenType.RAW_TEXT,
-                     textStart);
+    this._beginToken(
+        decodeEntities ? HtmlTokenType.ESCAPABLE_RAW_TEXT : HtmlTokenType.RAW_TEXT, textStart);
     var parts = [];
     while (true) {
       tagCloseStart = this._getLocation();
@@ -543,7 +536,7 @@ function isWhitespace(code: number): boolean {
 
 function isNameEnd(code: number): boolean {
   return isWhitespace(code) || code === $GT || code === $SLASH || code === $SQ || code === $DQ ||
-         code === $EQ;
+      code === $EQ;
 }
 
 function isPrefixEnd(code: number): boolean {

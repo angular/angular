@@ -1,16 +1,4 @@
-import {
-  AsyncTestCompleter,
-  beforeEach,
-  ddescribe,
-  describe,
-  el,
-  expect,
-  iit,
-  inject,
-  it,
-  xit,
-  TestComponentBuilder
-} from 'angular2/testing_internal';
+import {AsyncTestCompleter, beforeEach, ddescribe, describe, el, expect, iit, inject, it, xit, TestComponentBuilder} from 'angular2/testing_internal';
 
 import {SourceModule, moduleRef} from 'angular2/src/compiler/source_module';
 

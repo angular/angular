@@ -1,14 +1,4 @@
-import {
-  AsyncTestCompleter,
-  beforeEach,
-  ddescribe,
-  describe,
-  expect,
-  iit,
-  inject,
-  it,
-  xit
-} from 'angular2/testing_internal';
+import {AsyncTestCompleter, beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from 'angular2/testing_internal';
 
 import {XHRImpl} from 'angular2/src/platform/browser/xhr_impl';
 import {PromiseWrapper} from 'angular2/src/facade/async';

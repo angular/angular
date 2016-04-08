@@ -2,13 +2,15 @@ import {ViewEncapsulation} from 'angular2/src/core/metadata/view';
 import {Injector, Injectable} from 'angular2/src/core/di';
 
 export class RenderComponentType {
-  constructor(public id: string, public encapsulation: ViewEncapsulation,
-              public styles: Array<string | any[]>) {}
+  constructor(
+      public id: string, public encapsulation: ViewEncapsulation,
+      public styles: Array<string|any[]>) {}
 }
 
 export class RenderDebugInfo {
-  constructor(public injector: Injector, public component: any, public providerTokens: any[],
-              public locals: Map<string, any>) {}
+  constructor(
+      public injector: Injector, public component: any, public providerTokens: any[],
+      public locals: Map<string, any>) {}
 }
 
 export interface ParentRenderer { renderComponent(componentType: RenderComponentType): Renderer; }
@@ -40,15 +42,15 @@ export abstract class Renderer implements ParentRenderer {
 
   abstract setElementProperty(renderElement: any, propertyName: string, propertyValue: any): void;
 
-  abstract setElementAttribute(renderElement: any, attributeName: string,
-                               attributeValue: string): void;
+  abstract setElementAttribute(renderElement: any, attributeName: string, attributeValue: string):
+      void;
 
   /**
    * Used only in debug mode to serialize property changes to comment nodes,
    * such as <template> placeholders.
    */
-  abstract setBindingDebugInfo(renderElement: any, propertyName: string,
-                               propertyValue: string): void;
+  abstract setBindingDebugInfo(renderElement: any, propertyName: string, propertyValue: string):
+      void;
 
   abstract setElementDebugInfo(renderElement: any, info: RenderDebugInfo);
 

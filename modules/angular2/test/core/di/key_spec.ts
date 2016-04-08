@@ -2,7 +2,7 @@ import {describe, iit, it, expect, beforeEach} from 'angular2/testing_internal';
 import {Key, KeyRegistry} from 'angular2/src/core/di/key';
 
 export function main() {
-  describe("key", function() {
+  describe('key', function() {
     var registry: KeyRegistry;
 
     beforeEach(function() { registry = new KeyRegistry(); });

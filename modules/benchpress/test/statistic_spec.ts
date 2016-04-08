@@ -1,13 +1,4 @@
-import {
-  describe,
-  ddescribe,
-  it,
-  iit,
-  xit,
-  expect,
-  beforeEach,
-  afterEach
-} from 'angular2/testing_internal';
+import {describe, ddescribe, it, iit, xit, expect, beforeEach, afterEach} from 'angular2/testing_internal';
 
 import {Statistic} from 'benchpress/src/statistic';
 

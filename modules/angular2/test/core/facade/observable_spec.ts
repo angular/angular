@@ -1,24 +1,12 @@
-import {
-  describe,
-  it,
-  expect,
-  beforeEach,
-  ddescribe,
-  iit,
-  xit,
-  el,
-  SpyObject,
-  AsyncTestCompleter,
-  inject
-} from 'angular2/testing_internal';
+import {describe, it, expect, beforeEach, ddescribe, iit, xit, el, SpyObject, AsyncTestCompleter, inject} from 'angular2/testing_internal';
 
 import {Observable, Subject, EventEmitter, PromiseWrapper} from 'angular2/src/facade/async';
 
 export function main() {
-  describe("Observable", () => {
-    describe("#core", () => {
+  describe('Observable', () => {
+    describe('#core', () => {
 
-      it("should call next with values", inject([AsyncTestCompleter], (async) => {
+      it('should call next with values', inject([AsyncTestCompleter], (async) => {
 
            let o = new Observable(sink => { sink.next(1); });
 
@@ -29,7 +17,7 @@ export function main() {
 
          }));
 
-      it("should call next and then complete", inject([AsyncTestCompleter], (async) => {
+      it('should call next and then complete', inject([AsyncTestCompleter], (async) => {
 
            let o = new Observable(sink => {
              sink.next(1);
@@ -37,14 +25,16 @@ export function main() {
            });
            let nexted = false;
 
-           o.subscribe(v => { nexted = true; }, null, () => {
-             expect(nexted).toBe(true);
-             async.done();
-           });
+           o.subscribe(
+               v => { nexted = true; }, null,
+               () => {
+                 expect(nexted).toBe(true);
+                 async.done();
+               });
 
          }));
 
-      it("should call error with errors", inject([AsyncTestCompleter], (async) => {
+      it('should call error with errors', inject([AsyncTestCompleter], (async) => {
 
            let o = new Observable(sink => { sink.error('oh noes!'); });
 

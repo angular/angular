@@ -7,9 +7,8 @@ import {Metric} from '../metric';
 export class MultiMetric extends Metric {
   static createBindings(childTokens: any[]): Provider[] {
     return [
-      bind(_CHILDREN)
-          .toFactory((injector: Injector) => childTokens.map(token => injector.get(token)),
-                     [Injector]),
+      bind(_CHILDREN).toFactory(
+          (injector: Injector) => childTokens.map(token => injector.get(token)), [Injector]),
       bind(MultiMetric).toFactory(children => new MultiMetric(children), [_CHILDREN])
     ];
   }
@@ -42,7 +41,7 @@ export class MultiMetric extends Metric {
   }
 }
 
-function mergeStringMaps(maps: { [key: string]: string }[]): Object {
+function mergeStringMaps(maps: {[key: string]: string}[]): Object {
   var result = {};
   maps.forEach(
       map => { StringMapWrapper.forEach(map, (value, prop) => { result[prop] = value; }); });

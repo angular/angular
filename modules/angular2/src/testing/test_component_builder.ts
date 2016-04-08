@@ -1,15 +1,4 @@
-import {
-  ComponentRef,
-  DirectiveResolver,
-  DynamicComponentLoader,
-  Injector,
-  Injectable,
-  ViewMetadata,
-  ElementRef,
-  EmbeddedViewRef,
-  ViewResolver,
-  provide
-} from 'angular2/core';
+import {ComponentRef, DirectiveResolver, DynamicComponentLoader, Injector, Injectable, ViewMetadata, ElementRef, EmbeddedViewRef, ViewResolver, provide} from 'angular2/core';
 
 import {Type, isPresent, isBlank} from 'angular2/src/facade/lang';
 import {ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
@@ -230,15 +219,15 @@ export class TestComponentBuilder {
     var mockDirectiveResolver = this._injector.get(DirectiveResolver);
     var mockViewResolver = this._injector.get(ViewResolver);
     this._viewOverrides.forEach((view, type) => mockViewResolver.setView(type, view));
-    this._templateOverrides.forEach((template, type) =>
-                                        mockViewResolver.setInlineTemplate(type, template));
+    this._templateOverrides.forEach(
+        (template, type) => mockViewResolver.setInlineTemplate(type, template));
     this._directiveOverrides.forEach((overrides, component) => {
       overrides.forEach(
           (to, from) => { mockViewResolver.overrideViewDirective(component, from, to); });
     });
 
-    this._bindingsOverrides.forEach((bindings, type) =>
-                                        mockDirectiveResolver.setBindingsOverride(type, bindings));
+    this._bindingsOverrides.forEach(
+        (bindings, type) => mockDirectiveResolver.setBindingsOverride(type, bindings));
     this._viewBindingsOverrides.forEach(
         (bindings, type) => mockDirectiveResolver.setViewBindingsOverride(type, bindings));
 

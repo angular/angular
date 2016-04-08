@@ -1,4 +1,4 @@
-import {BaseException, WrappedException} from "angular2/src/facade/exceptions";
+import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
 
 /**
  * An error thrown if application changes model breaking the top-down data flow.
@@ -35,8 +35,9 @@ import {BaseException, WrappedException} from "angular2/src/facade/exceptions";
  */
 export class ExpressionChangedAfterItHasBeenCheckedException extends BaseException {
   constructor(exp: string, oldValue: any, currValue: any, context: any) {
-    super(`Expression '${exp}' has changed after it was checked. ` +
-          `Previous value: '${oldValue}'. Current value: '${currValue}'`);
+    super(
+        `Expression '${exp}' has changed after it was checked. ` +
+        `Previous value: '${oldValue}'. Current value: '${currValue}'`);
   }
 }
 
@@ -107,6 +108,7 @@ export class EventEvaluationError extends WrappedException {
  * Error context included when an event handler throws an exception.
  */
 export class EventEvaluationErrorContext {
-  constructor(public element: any, public componentElement: any, public context: any,
-              public locals: any, public injector: any) {}
+  constructor(
+      public element: any, public componentElement: any, public context: any, public locals: any,
+      public injector: any) {}
 }

@@ -1,17 +1,7 @@
 import {Headers} from 'angular2/src/http/headers';
 import {Json} from 'angular2/src/facade/lang';
 import {Map, StringMapWrapper} from 'angular2/src/facade/collection';
-import {
-  AsyncTestCompleter,
-  beforeEach,
-  ddescribe,
-  describe,
-  expect,
-  iit,
-  inject,
-  it,
-  xit
-} from 'angular2/testing_internal';
+import {AsyncTestCompleter, beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from 'angular2/testing_internal';
 
 export function main() {
   describe('Headers', () => {

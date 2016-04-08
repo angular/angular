@@ -78,7 +78,7 @@ function ngOutletDirective($animate, $q: ng.IQService, $rootRouter) {
           result = this.currentController.$routerCanReuse(nextInstruction, this.currentInstruction);
         } else {
           result = nextInstruction === this.currentInstruction ||
-                   angular.equals(nextInstruction.params, this.currentInstruction.params);
+              angular.equals(nextInstruction.params, this.currentInstruction.params);
         }
         return $q.when(result);
       }
@@ -110,7 +110,7 @@ function ngOutletDirective($animate, $q: ng.IQService, $rootRouter) {
         }
 
         this.controller.$$template = '<' + dashCase(componentName) + ' $router="::$$router"></' +
-                                     dashCase(componentName) + '>';
+            dashCase(componentName) + '>';
         this.controller.$$router = this.router.childRouter(instruction.componentType);
         this.controller.$$outlet = this;
 
@@ -165,8 +165,8 @@ function routerTriggerDirective($q) {
       var currentComponent = outlet.currentController =
           element.controller(ngOutletCtrl.$$componentName);
       if (currentComponent.$routerOnActivate) {
-        promise = $q.when(currentComponent.$routerOnActivate(outlet.currentInstruction,
-                                                             outlet.previousInstruction));
+        promise = $q.when(currentComponent.$routerOnActivate(
+            outlet.currentInstruction, outlet.previousInstruction));
       }
       promise.then(outlet.deferredActivation.resolve, outlet.deferredActivation.reject);
     }
@@ -213,14 +213,15 @@ function ngLinkDirective($rootRouter, $parse) {
     function getLink(params) {
       navigationInstruction = router.generate(params);
 
-      scope.$watch(function() { return router.isRouteActive(navigationInstruction); },
-                   function(active) {
-                     if (active) {
-                       element.addClass('ng-link-active');
-                     } else {
-                       element.removeClass('ng-link-active');
-                     }
-                   });
+      scope.$watch(
+          function() { return router.isRouteActive(navigationInstruction); },
+          function(active) {
+            if (active) {
+              element.addClass('ng-link-active');
+            } else {
+              element.removeClass('ng-link-active');
+            }
+          });
 
       const navigationHref = navigationInstruction.toLinkUrl();
       return $rootRouter._location.prepareExternalUrl(navigationHref);
@@ -232,8 +233,8 @@ function ngLinkDirective($rootRouter, $parse) {
       let params = routeParamsGetter();
       element.attr('href', getLink(params));
     } else {
-      scope.$watch(() => routeParamsGetter(scope), params => element.attr('href', getLink(params)),
-                   true);
+      scope.$watch(
+          () => routeParamsGetter(scope), params => element.attr('href', getLink(params)), true);
     }
 
     element.on('click', event => {

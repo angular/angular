@@ -21,21 +21,22 @@ export class DirectiveRecord {
   // array of [emitter property name, eventName]
   outputs: string[][];
 
-  constructor({directiveIndex, callAfterContentInit, callAfterContentChecked, callAfterViewInit,
-               callAfterViewChecked, callOnChanges, callDoCheck, callOnInit, callOnDestroy,
-               changeDetection, outputs}: {
-    directiveIndex?: DirectiveIndex,
-    callAfterContentInit?: boolean,
-    callAfterContentChecked?: boolean,
-    callAfterViewInit?: boolean,
-    callAfterViewChecked?: boolean,
-    callOnChanges?: boolean,
-    callDoCheck?: boolean,
-    callOnInit?: boolean,
-    callOnDestroy?: boolean,
-    changeDetection?: ChangeDetectionStrategy,
-    outputs?: string[][]
-  } = {}) {
+  constructor(
+      {directiveIndex, callAfterContentInit, callAfterContentChecked, callAfterViewInit,
+       callAfterViewChecked, callOnChanges, callDoCheck, callOnInit, callOnDestroy, changeDetection,
+       outputs}: {
+        directiveIndex?: DirectiveIndex,
+        callAfterContentInit?: boolean,
+        callAfterContentChecked?: boolean,
+        callAfterViewInit?: boolean,
+        callAfterViewChecked?: boolean,
+        callOnChanges?: boolean,
+        callDoCheck?: boolean,
+        callOnInit?: boolean,
+        callOnDestroy?: boolean,
+        changeDetection?: ChangeDetectionStrategy,
+        outputs?: string[][]
+      } = {}) {
     this.directiveIndex = directiveIndex;
     this.callAfterContentInit = normalizeBool(callAfterContentInit);
     this.callAfterContentChecked = normalizeBool(callAfterContentChecked);

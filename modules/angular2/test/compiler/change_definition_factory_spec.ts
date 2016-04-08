@@ -1,36 +1,8 @@
-import {
-  AsyncTestCompleter,
-  beforeEach,
-  ddescribe,
-  describe,
-  el,
-  expect,
-  iit,
-  inject,
-  it,
-  xit,
-  TestComponentBuilder,
-  beforeEachProviders
-} from 'angular2/testing_internal';
+import {AsyncTestCompleter, beforeEach, ddescribe, describe, el, expect, iit, inject, it, xit, TestComponentBuilder, beforeEachProviders} from 'angular2/testing_internal';
 import {MapWrapper} from 'angular2/src/facade/collection';
-import {
-  CompileDirectiveMetadata,
-  CompileTypeMetadata
-} from 'angular2/src/compiler/directive_metadata';
+import {CompileDirectiveMetadata, CompileTypeMetadata} from 'angular2/src/compiler/directive_metadata';
 import {TemplateParser} from 'angular2/src/compiler/template_parser';
-import {
-  Parser,
-  Lexer,
-  ChangeDetectorDefinition,
-  ChangeDetectorGenConfig,
-  DynamicProtoChangeDetector,
-  ChangeDetectionStrategy,
-  ChangeDispatcher,
-  DirectiveIndex,
-  Locals,
-  BindingTarget,
-  ChangeDetector
-} from 'angular2/src/core/change_detection/change_detection';
+import {Parser, Lexer, ChangeDetectorDefinition, ChangeDetectorGenConfig, DynamicProtoChangeDetector, ChangeDetectionStrategy, ChangeDispatcher, DirectiveIndex, Locals, BindingTarget, ChangeDetector} from 'angular2/src/core/change_detection/change_detection';
 import {Pipes} from 'angular2/src/core/change_detection/pipes';
 import {createChangeDetectorDefinitions} from 'angular2/src/compiler/change_definition_factory';
 import {TestDirective, TestDispatcher, TestPipes} from './change_detector_mocks';
@@ -57,13 +29,14 @@ export function main() {
       pipes = new TestPipes();
     }));
 
-    function createChangeDetector(template: string, directives: CompileDirectiveMetadata[],
-                                  protoViewIndex: number = 0): ChangeDetector {
+    function createChangeDetector(
+        template: string, directives: CompileDirectiveMetadata[],
+        protoViewIndex: number = 0): ChangeDetector {
       var protoChangeDetectors =
-          createChangeDetectorDefinitions(new CompileTypeMetadata({name: 'SomeComp'}),
-                                          ChangeDetectionStrategy.Default,
-                                          new ChangeDetectorGenConfig(true, false, false),
-                                          parser.parse(template, directives, [], 'TestComp'))
+          createChangeDetectorDefinitions(
+              new CompileTypeMetadata({name: 'SomeComp'}), ChangeDetectionStrategy.Default,
+              new ChangeDetectorGenConfig(true, false, false),
+              parser.parse(template, directives, [], 'TestComp'))
               .map(definition => new DynamicProtoChangeDetector(definition));
       var changeDetector = protoChangeDetectors[protoViewIndex].instantiate();
       changeDetector.hydrate(context, locals, dispatcher, pipes);

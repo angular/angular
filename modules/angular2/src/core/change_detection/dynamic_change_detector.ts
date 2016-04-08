@@ -20,11 +20,11 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
   localPipes: any[];
   prevContexts: any[];
 
-  constructor(id: string, numberOfPropertyProtoRecords: number,
-              propertyBindingTargets: BindingTarget[], directiveIndices: DirectiveIndex[],
-              strategy: ChangeDetectionStrategy, private _records: ProtoRecord[],
-              private _eventBindings: EventBinding[], private _directiveRecords: DirectiveRecord[],
-              private _genConfig: ChangeDetectorGenConfig) {
+  constructor(
+      id: string, numberOfPropertyProtoRecords: number, propertyBindingTargets: BindingTarget[],
+      directiveIndices: DirectiveIndex[], strategy: ChangeDetectionStrategy,
+      private _records: ProtoRecord[], private _eventBindings: EventBinding[],
+      private _directiveRecords: DirectiveRecord[], private _genConfig: ChangeDetectorGenConfig) {
     super(id, numberOfPropertyProtoRecords, propertyBindingTargets, directiveIndices, strategy);
     var len = _records.length + 1;
     this.values = ListWrapper.createFixedSize(len);
@@ -38,13 +38,12 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
   handleEventInternal(eventName: string, elIndex: number, locals: Locals): boolean {
     var preventDefault = false;
 
-    this._matchingEventBindings(eventName, elIndex)
-        .forEach(rec => {
-          var res = this._processEventBinding(rec, locals);
-          if (res === false) {
-            preventDefault = true;
-          }
-        });
+    this._matchingEventBindings(eventName, elIndex).forEach(rec => {
+      var res = this._processEventBinding(rec, locals);
+      if (res === false) {
+        preventDefault = true;
+      }
+    });
 
     return preventDefault;
   }
@@ -72,7 +71,7 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
       }
     }
 
-    throw new BaseException("Cannot be reached");
+    throw new BaseException('Cannot be reached');
   }
 
   private _computeSkipLength(protoIndex: number, proto: ProtoRecord, values: any[]): number {
@@ -90,7 +89,7 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
       return condition ? 0 : proto.fixedArgs[0] - protoIndex - 1;
     }
 
-    throw new BaseException("Cannot be reached");
+    throw new BaseException('Cannot be reached');
   }
 
   /** @internal */
@@ -179,12 +178,13 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
       }
 
       if (proto.isLifeCycleRecord()) {
-        if (proto.name === "DoCheck" && !throwOnChange) {
+        if (proto.name === 'DoCheck' && !throwOnChange) {
           this._getDirectiveFor(directiveRecord.directiveIndex).ngDoCheck();
-        } else if (proto.name === "OnInit" && !throwOnChange &&
-                   this.state == ChangeDetectorState.NeverChecked) {
+        } else if (
+            proto.name === 'OnInit' && !throwOnChange &&
+            this.state == ChangeDetectorState.NeverChecked) {
           this._getDirectiveFor(directiveRecord.directiveIndex).ngOnInit();
-        } else if (proto.name === "OnChanges" && isPresent(changes) && !throwOnChange) {
+        } else if (proto.name === 'OnChanges' && isPresent(changes) && !throwOnChange) {
           this._getDirectiveFor(directiveRecord.directiveIndex).ngOnChanges(changes);
         }
       } else if (proto.isSkipRecord()) {
@@ -276,8 +276,8 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
   }
 
   /** @internal */
-  private _check(proto: ProtoRecord, throwOnChange: boolean, values: any[],
-                 locals: Locals): SimpleChange {
+  private _check(proto: ProtoRecord, throwOnChange: boolean, values: any[], locals: Locals):
+      SimpleChange {
     if (proto.isPipeRecord()) {
       return this._pipeCheck(proto, throwOnChange, values);
     } else {
@@ -286,8 +286,8 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
   }
 
   /** @internal */
-  private _referenceCheck(proto: ProtoRecord, throwOnChange: boolean, values: any[],
-                          locals: Locals) {
+  private _referenceCheck(
+      proto: ProtoRecord, throwOnChange: boolean, values: any[], locals: Locals) {
     if (this._pureFuncAndArgsDidNotChange(proto)) {
       this._setChanged(proto, false);
       return null;
@@ -298,8 +298,8 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
     if (proto.shouldBeChecked()) {
       var prevValue = this._readSelf(proto, values);
       var detectedChange = throwOnChange ?
-                               !ChangeDetectionUtil.devModeEqual(prevValue, currValue) :
-                               ChangeDetectionUtil.looseNotIdentical(prevValue, currValue);
+          !ChangeDetectionUtil.devModeEqual(prevValue, currValue) :
+          ChangeDetectionUtil.looseNotIdentical(prevValue, currValue);
       if (detectedChange) {
         if (proto.lastInBinding) {
           var change = ChangeDetectionUtil.simpleChange(prevValue, currValue);
@@ -379,8 +379,8 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
         return args[args.length - 1];
 
       case RecordType.InvokeClosure:
-        return FunctionWrapper.apply(this._readContext(proto, values),
-                                     this._readArgs(proto, values));
+        return FunctionWrapper.apply(
+            this._readContext(proto, values), this._readArgs(proto, values));
 
       case RecordType.Interpolate:
       case RecordType.PrimitiveOp:
@@ -402,8 +402,8 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
       if (proto.shouldBeChecked()) {
         var prevValue = this._readSelf(proto, values);
         var detectedChange = throwOnChange ?
-                                 !ChangeDetectionUtil.devModeEqual(prevValue, currValue) :
-                                 ChangeDetectionUtil.looseNotIdentical(prevValue, currValue);
+            !ChangeDetectionUtil.devModeEqual(prevValue, currValue) :
+            ChangeDetectionUtil.looseNotIdentical(prevValue, currValue);
         if (detectedChange) {
           currValue = ChangeDetectionUtil.unwrapValue(currValue);
 

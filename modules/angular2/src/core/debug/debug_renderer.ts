@@ -1,18 +1,6 @@
 import {isPresent} from 'angular2/src/facade/lang';
-import {
-  Renderer,
-  RootRenderer,
-  RenderComponentType,
-  RenderDebugInfo
-} from 'angular2/src/core/render/api';
-import {
-  DebugNode,
-  DebugElement,
-  EventListener,
-  getDebugNode,
-  indexDebugNode,
-  removeDebugNodeFromIndex
-} from 'angular2/src/core/debug/debug_node';
+import {Renderer, RootRenderer, RenderComponentType, RenderDebugInfo} from 'angular2/src/core/render/api';
+import {DebugNode, DebugElement, EventListener, getDebugNode, indexDebugNode, removeDebugNodeFromIndex} from 'angular2/src/core/debug/debug_node';
 
 export class DebugDomRootRenderer implements RootRenderer {
   constructor(private _delegate: RootRenderer) {}

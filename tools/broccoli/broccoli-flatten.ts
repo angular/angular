@@ -36,8 +36,9 @@ export class DiffingFlatten implements DiffingBroccoliPlugin {
       if (!fs.existsSync(destFilePath)) {
         symlinkOrCopy(sourceFilePath, destFilePath);
       } else {
-        throw new Error(`Duplicate file '${path.basename(changedFilePath)}' ` +
-                        `found in path '${changedFilePath}'`);
+        throw new Error(
+            `Duplicate file '${path.basename(changedFilePath)}' ` +
+            `found in path '${changedFilePath}'`);
       }
     });
 

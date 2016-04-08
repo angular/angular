@@ -14,7 +14,7 @@ export class MockApplicationRef extends ApplicationRef {
 
   registerDisposeListener(dispose: () => void): void {}
 
-  bootstrap(componentType: Type, bindings?: Array<Type | Provider | any[]>): Promise<ComponentRef> {
+  bootstrap(componentType: Type, bindings?: Array<Type|Provider|any[]>): Promise<ComponentRef> {
     return null;
   }
 

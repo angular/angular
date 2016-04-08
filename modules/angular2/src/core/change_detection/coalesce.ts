@@ -90,8 +90,9 @@ function _optimizeSkips(srcRecords: ProtoRecord[]): ProtoRecord[] {
 /**
  * Add a new record or re-use one of the existing records.
  */
-function _mayBeAddRecord(record: ProtoRecord, dstRecords: ProtoRecord[], excludedIdxs: number[],
-                         excluded: boolean): ProtoRecord {
+function _mayBeAddRecord(
+    record: ProtoRecord, dstRecords: ProtoRecord[], excludedIdxs: number[],
+    excluded: boolean): ProtoRecord {
   let match = _findFirstMatch(record, dstRecords, excludedIdxs);
 
   if (isPresent(match)) {
@@ -118,15 +119,15 @@ function _mayBeAddRecord(record: ProtoRecord, dstRecords: ProtoRecord[], exclude
 /**
  * Returns the first `ProtoRecord` that matches the record.
  */
-function _findFirstMatch(record: ProtoRecord, dstRecords: ProtoRecord[],
-                         excludedIdxs: number[]): ProtoRecord {
+function _findFirstMatch(
+    record: ProtoRecord, dstRecords: ProtoRecord[], excludedIdxs: number[]): ProtoRecord {
   return dstRecords.find(
       // TODO(vicb): optimize excludedIdxs.indexOf (sorted array)
       rr => excludedIdxs.indexOf(rr.selfIndex) == -1 && rr.mode !== RecordType.DirectiveLifecycle &&
-            _haveSameDirIndex(rr, record) && rr.mode === record.mode &&
-            looseIdentical(rr.funcOrValue, record.funcOrValue) &&
-            rr.contextIndex === record.contextIndex && looseIdentical(rr.name, record.name) &&
-            ListWrapper.equals(rr.args, record.args));
+          _haveSameDirIndex(rr, record) && rr.mode === record.mode &&
+          looseIdentical(rr.funcOrValue, record.funcOrValue) &&
+          rr.contextIndex === record.contextIndex && looseIdentical(rr.name, record.name) &&
+          ListWrapper.equals(rr.args, record.args));
 }
 
 /**
@@ -135,17 +136,17 @@ function _findFirstMatch(record: ProtoRecord, dstRecords: ProtoRecord[],
  * - the context,
  * - self
  */
-function _cloneAndUpdateIndexes(record: ProtoRecord, dstRecords: ProtoRecord[],
-                                indexMap: Map<number, number>): ProtoRecord {
+function _cloneAndUpdateIndexes(
+    record: ProtoRecord, dstRecords: ProtoRecord[], indexMap: Map<number, number>): ProtoRecord {
   let args = record.args.map(src => _srcToDstSelfIndex(indexMap, src));
   let contextIndex = _srcToDstSelfIndex(indexMap, record.contextIndex);
   let selfIndex = dstRecords.length + 1;
 
-  return new ProtoRecord(record.mode, record.name, record.funcOrValue, args, record.fixedArgs,
-                         contextIndex, record.directiveIndex, selfIndex, record.bindingRecord,
-                         record.lastInBinding, record.lastInDirective,
-                         record.argumentToPureFunction, record.referencedBySelf,
-                         record.propertyBindingIndex);
+  return new ProtoRecord(
+      record.mode, record.name, record.funcOrValue, args, record.fixedArgs, contextIndex,
+      record.directiveIndex, selfIndex, record.bindingRecord, record.lastInBinding,
+      record.lastInDirective, record.argumentToPureFunction, record.referencedBySelf,
+      record.propertyBindingIndex);
 }
 
 /**
@@ -158,9 +159,9 @@ function _srcToDstSelfIndex(indexMap: Map<number, number>, srcIdx: number): numb
 }
 
 function _createSelfRecord(r: ProtoRecord, contextIndex: number, selfIndex: number): ProtoRecord {
-  return new ProtoRecord(RecordType.Self, "self", null, [], r.fixedArgs, contextIndex,
-                         r.directiveIndex, selfIndex, r.bindingRecord, r.lastInBinding,
-                         r.lastInDirective, false, false, r.propertyBindingIndex);
+  return new ProtoRecord(
+      RecordType.Self, 'self', null, [], r.fixedArgs, contextIndex, r.directiveIndex, selfIndex,
+      r.bindingRecord, r.lastInBinding, r.lastInDirective, false, false, r.propertyBindingIndex);
 }
 
 function _haveSameDirIndex(a: ProtoRecord, b: ProtoRecord): boolean {

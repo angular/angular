@@ -175,8 +175,8 @@ export class NgSwitchWhen {
   _view: SwitchView;
   private _switch: NgSwitch;
 
-  constructor(viewContainer: ViewContainerRef, templateRef: TemplateRef,
-              @Host() ngSwitch: NgSwitch) {
+  constructor(
+      viewContainer: ViewContainerRef, templateRef: TemplateRef, @Host() ngSwitch: NgSwitch) {
     this._switch = ngSwitch;
     this._view = new SwitchView(viewContainer, templateRef);
   }
@@ -195,8 +195,8 @@ export class NgSwitchWhen {
  */
 @Directive({selector: '[ngSwitchDefault]'})
 export class NgSwitchDefault {
-  constructor(viewContainer: ViewContainerRef, templateRef: TemplateRef,
-              @Host() sswitch: NgSwitch) {
+  constructor(
+      viewContainer: ViewContainerRef, templateRef: TemplateRef, @Host() sswitch: NgSwitch) {
     sswitch._registerView(_WHEN_DEFAULT, new SwitchView(viewContainer, templateRef));
   }
 }

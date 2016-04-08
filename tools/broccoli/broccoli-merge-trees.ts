@@ -24,8 +24,8 @@ export class MergeTrees implements DiffingBroccoliPlugin {
   public options: MergeTreesOptions;
   private firstBuild: boolean = true;
 
-  constructor(public inputPaths: string[], public cachePath: string,
-              options: MergeTreesOptions = {}) {
+  constructor(
+      public inputPaths: string[], public cachePath: string, options: MergeTreesOptions = {}) {
     this.options = options || {};
   }
 

@@ -16,51 +16,27 @@ import checkImports from '../broccoli-check-imports';
 
 const kServedPaths = [
   // Relative (to /modules) paths to benchmark directories
-  'benchmarks/src',
-  'benchmarks/src/change_detection',
-  'benchmarks/src/compiler',
-  'benchmarks/src/costs',
-  'benchmarks/src/di',
-  'benchmarks/src/element_injector',
-  'benchmarks/src/largetable',
-  'benchmarks/src/naive_infinite_scroll',
-  'benchmarks/src/tree',
+  'benchmarks/src', 'benchmarks/src/change_detection', 'benchmarks/src/compiler',
+  'benchmarks/src/costs', 'benchmarks/src/di', 'benchmarks/src/element_injector',
+  'benchmarks/src/largetable', 'benchmarks/src/naive_infinite_scroll', 'benchmarks/src/tree',
   'benchmarks/src/static_tree',
 
   // Relative (to /modules) paths to external benchmark directories
-  'benchmarks_external/src',
-  'benchmarks_external/src/compiler',
-  'benchmarks_external/src/largetable',
-  'benchmarks_external/src/naive_infinite_scroll',
-  'benchmarks_external/src/tree',
-  'benchmarks_external/src/tree/react',
+  'benchmarks_external/src', 'benchmarks_external/src/compiler',
+  'benchmarks_external/src/largetable', 'benchmarks_external/src/naive_infinite_scroll',
+  'benchmarks_external/src/tree', 'benchmarks_external/src/tree/react',
   'benchmarks_external/src/static_tree',
 
   // Relative (to /modules) paths to example directories
-  'playground/src/animate',
-  'playground/src/benchpress',
-  'playground/src/model_driven_forms',
-  'playground/src/template_driven_forms',
-  'playground/src/person_management',
-  'playground/src/order_management',
-  'playground/src/gestures',
-  'playground/src/hash_routing',
-  'playground/src/hello_world',
-  'playground/src/http',
-  'playground/src/jsonp',
-  'playground/src/key_events',
-  'playground/src/relative_assets',
-  'playground/src/routing',
-  'playground/src/sourcemap',
-  'playground/src/svg',
-  'playground/src/todo',
-  'playground/src/upgrade',
-  'playground/src/zippy_component',
-  'playground/src/async',
-  'playground/src/web_workers/kitchen_sink',
-  'playground/src/web_workers/todo',
-  'playground/src/web_workers/images',
-  'playground/src/web_workers/message_broker',
+  'playground/src/animate', 'playground/src/benchpress', 'playground/src/model_driven_forms',
+  'playground/src/template_driven_forms', 'playground/src/person_management',
+  'playground/src/order_management', 'playground/src/gestures', 'playground/src/hash_routing',
+  'playground/src/hello_world', 'playground/src/http', 'playground/src/jsonp',
+  'playground/src/key_events', 'playground/src/relative_assets', 'playground/src/routing',
+  'playground/src/sourcemap', 'playground/src/svg', 'playground/src/todo', 'playground/src/upgrade',
+  'playground/src/zippy_component', 'playground/src/async',
+  'playground/src/web_workers/kitchen_sink', 'playground/src/web_workers/todo',
+  'playground/src/web_workers/images', 'playground/src/web_workers/message_broker',
   'playground/src/web_workers/router'
 ];
 
@@ -84,9 +60,9 @@ module.exports = function makeBrowserTree(options, destinationPath) {
   }
 
   if (modules.benchmarks) {
-    var benchmarksTree =
-        new Funnel('modules/benchmarks',
-                   {include: ['**/**'], exclude: ['e2e_test/**'], destDir: '/benchmarks/'});
+    var benchmarksTree = new Funnel(
+        'modules/benchmarks',
+        {include: ['**/**'], exclude: ['e2e_test/**'], destDir: '/benchmarks/'});
   }
 
   if (modules.benchmarks_external) {
@@ -96,21 +72,21 @@ module.exports = function makeBrowserTree(options, destinationPath) {
   }
 
   if (modules.payload_tests) {
-    var payloadTestsTree =
-        new Funnel('modules/payload_tests',
-                   {include: ['**/ts/**'], exclude: ['e2e_test/**'], destDir: '/payload_tests/'});
+    var payloadTestsTree = new Funnel(
+        'modules/payload_tests',
+        {include: ['**/ts/**'], exclude: ['e2e_test/**'], destDir: '/payload_tests/'});
   }
 
   if (modules.playground) {
-    var playgroundTree =
-        new Funnel('modules/playground',
-                   {include: ['**/**'], exclude: ['e2e_test/**'], destDir: '/playground/'});
+    var playgroundTree = new Funnel(
+        'modules/playground',
+        {include: ['**/**'], exclude: ['e2e_test/**'], destDir: '/playground/'});
   }
 
   if (modules.benchpress) {
-    var benchpressTree =
-        new Funnel('modules/benchpress',
-                   {include: ['**/**'], exclude: ['e2e_test/**'], destDir: '/benchpress/'});
+    var benchpressTree = new Funnel(
+        'modules/benchpress',
+        {include: ['**/**'], exclude: ['e2e_test/**'], destDir: '/benchpress/'});
   }
 
   let externalTypings =
@@ -157,15 +133,13 @@ module.exports = function makeBrowserTree(options, destinationPath) {
   modulesTree = checkImports(modulesTree);
 
   modulesTree = replace(modulesTree, {
-    files: ["playground*/**/*.js"],
+    files: ['playground*/**/*.js'],
     patterns: [{match: /\$SCRIPTS\$/, replacement: jsReplace('SCRIPTS')}]
   });
 
   let ambientTypings = [
-    'angular2/typings/hammerjs/hammerjs.d.ts',
-    'angular2/typings/node/node.d.ts',
-    'node_modules/zone.js/dist/zone.js.d.ts',
-    'angular2/manual_typings/globals.d.ts',
+    'angular2/typings/hammerjs/hammerjs.d.ts', 'angular2/typings/node/node.d.ts',
+    'node_modules/zone.js/dist/zone.js.d.ts', 'angular2/manual_typings/globals.d.ts',
     'angular2/typings/es6-collections/es6-collections.d.ts',
     'angular2/typings/es6-promise/es6-promise.d.ts'
   ];
@@ -187,11 +161,9 @@ module.exports = function makeBrowserTree(options, destinationPath) {
 
   var vendorScriptsTree = flatten(new Funnel('.', {
     files: [
-      'node_modules/es6-shim/es6-shim.js',
-      'node_modules/zone.js/dist/zone.js',
+      'node_modules/es6-shim/es6-shim.js', 'node_modules/zone.js/dist/zone.js',
       'node_modules/zone.js/dist/long-stack-trace-zone.js',
-      'node_modules/systemjs/dist/system.src.js',
-      'node_modules/base64-js/lib/b64.js',
+      'node_modules/systemjs/dist/system.src.js', 'node_modules/base64-js/lib/b64.js',
       'node_modules/reflect-metadata/Reflect.js'
     ]
   }));
@@ -230,10 +202,8 @@ module.exports = function makeBrowserTree(options, destinationPath) {
     htmlTree = replace(htmlTree, {
       files: ['playground*/**/*.html'],
       patterns: [
-        {match: /\$SCRIPTS\$/, replacement: htmlReplace('SCRIPTS')},
-        scriptPathPatternReplacement,
-        scriptFilePatternReplacement,
-        useBundlesPatternReplacement
+        {match: /\$SCRIPTS\$/, replacement: htmlReplace('SCRIPTS')}, scriptPathPatternReplacement,
+        scriptFilePatternReplacement, useBundlesPatternReplacement
       ]
     });
   }
@@ -243,9 +213,7 @@ module.exports = function makeBrowserTree(options, destinationPath) {
       files: ['benchmarks/**'],
       patterns: [
         {match: /\$SCRIPTS\$/, replacement: htmlReplace('SCRIPTS_benchmarks')},
-        scriptPathPatternReplacement,
-        scriptFilePatternReplacement,
-        useBundlesPatternReplacement
+        scriptPathPatternReplacement, scriptFilePatternReplacement, useBundlesPatternReplacement
       ]
     });
   }
@@ -255,9 +223,7 @@ module.exports = function makeBrowserTree(options, destinationPath) {
       files: ['benchmarks_external/**'],
       patterns: [
         {match: /\$SCRIPTS\$/, replacement: htmlReplace('SCRIPTS_benchmarks_external')},
-        scriptPathPatternReplacement,
-        scriptFilePatternReplacement,
-        useBundlesPatternReplacement
+        scriptPathPatternReplacement, scriptFilePatternReplacement, useBundlesPatternReplacement
       ]
     });
   }
@@ -267,7 +233,7 @@ module.exports = function makeBrowserTree(options, destinationPath) {
     // for web-worker e2e tests.
     htmlTree = replace(htmlTree, {
       files: ['playground*/**/web_workers/**/*.html'],
-      patterns: [{match: "/bundle/angular2.dev.js", replacement: "/bundle/web_worker/ui.dev.js"}]
+      patterns: [{match: '/bundle/angular2.dev.js', replacement: '/bundle/web_worker/ui.dev.js'}]
     });
   }
 
@@ -278,10 +244,8 @@ module.exports = function makeBrowserTree(options, destinationPath) {
   if (modules.benchmarks_external) {
     var polymerFiles = new Funnel('.', {
       files: [
-        'bower_components/polymer/polymer.html',
-        'bower_components/polymer/polymer-micro.html',
-        'bower_components/polymer/polymer-mini.html',
-        'tools/build/snippets/url_params_to_form.js'
+        'bower_components/polymer/polymer.html', 'bower_components/polymer/polymer-micro.html',
+        'bower_components/polymer/polymer-mini.html', 'tools/build/snippets/url_params_to_form.js'
       ]
     });
     var polymer = stew.mv(flatten(polymerFiles), 'benchmarks_external/src/tree/polymer');

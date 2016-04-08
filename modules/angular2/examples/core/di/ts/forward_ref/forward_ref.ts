@@ -20,7 +20,7 @@ expect(door.lock instanceof Lock).toBe(true);
 // #enddocregion
 
 // #docregion resolve_forward_ref
-var ref = forwardRef(() => "refValue");
-expect(resolveForwardRef(ref)).toEqual("refValue");
-expect(resolveForwardRef("regularValue")).toEqual("regularValue");
+var ref = forwardRef(() => 'refValue');
+expect(resolveForwardRef(ref)).toEqual('refValue');
+expect(resolveForwardRef('regularValue')).toEqual('regularValue');
 // #enddocregion

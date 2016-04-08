@@ -7,14 +7,7 @@ import {AppElement} from './element';
 
 import {ElementRef, ElementRef_} from './element_ref';
 import {TemplateRef, TemplateRef_} from './template_ref';
-import {
-  EmbeddedViewRef,
-  HostViewRef,
-  HostViewFactoryRef,
-  HostViewFactoryRef_,
-  ViewRef,
-  ViewRef_
-} from './view_ref';
+import {EmbeddedViewRef, HostViewRef, HostViewFactoryRef, HostViewFactoryRef_, ViewRef, ViewRef_} from './view_ref';
 
 /**
  * Represents a container where one or more Views can be attached.
@@ -86,9 +79,9 @@ export abstract class ViewContainerRef {
    *
    * Returns the {@link HostViewRef} of the Host View created for the newly instantiated Component.
    */
-  abstract createHostView(hostViewFactoryRef: HostViewFactoryRef, index?: number,
-                          dynamicallyCreatedProviders?: ResolvedProvider[],
-                          projectableNodes?: any[][]): HostViewRef;
+  abstract createHostView(
+      hostViewFactoryRef: HostViewFactoryRef, index?: number,
+      dynamicallyCreatedProviders?: ResolvedProvider[], projectableNodes?: any[][]): HostViewRef;
 
   /**
    * Inserts a View identified by a {@link ViewRef} into the container at the specified `index`.
@@ -139,13 +132,15 @@ export class ViewContainerRef_ extends ViewContainerRef {
     return vm.createEmbeddedViewInContainer(this._element.ref, index, templateRef);
   }
 
-  createHostView(hostViewFactoryRef: HostViewFactoryRef, index: number = -1,
-                 dynamicallyCreatedProviders: ResolvedProvider[] = null,
-                 projectableNodes: any[][] = null): HostViewRef {
+  createHostView(
+      hostViewFactoryRef: HostViewFactoryRef, index: number = -1,
+      dynamicallyCreatedProviders: ResolvedProvider[] = null,
+      projectableNodes: any[][] = null): HostViewRef {
     if (index == -1) index = this.length;
     var vm = this._element.parentView.viewManager;
-    return vm.createHostViewInContainer(this._element.ref, index, hostViewFactoryRef,
-                                        dynamicallyCreatedProviders, projectableNodes);
+    return vm.createHostViewInContainer(
+        this._element.ref, index, hostViewFactoryRef, dynamicallyCreatedProviders,
+        projectableNodes);
   }
 
   // TODO(i): refactor insert+remove into move

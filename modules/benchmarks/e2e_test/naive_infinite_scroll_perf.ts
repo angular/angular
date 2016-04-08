@@ -12,15 +12,14 @@ describe('ng2 naive infinite scroll benchmark', function() {
         url: URL,
         id: 'ng2.naive_infinite_scroll',
         work: function() {
-          browser.wait(protractor.until.elementLocated(protractor.By.css('body /deep/ #scrollDiv')),
-                       5000);
+          browser.wait(
+              protractor.until.elementLocated(protractor.By.css('body /deep/ #scrollDiv')), 5000);
           $('#reset-btn').click();
           $('#run-btn').click();
           browser.wait(protractor.until.elementLocated(protractor.By.css('#done')), 10000);
         },
         params: [
-          {name: 'appSize', value: appSize},
-          {name: 'iterationCount', value: 20, scale: 'linear'},
+          {name: 'appSize', value: appSize}, {name: 'iterationCount', value: 20, scale: 'linear'},
           {name: 'scrollIncrement', value: 40}
         ]
       }).then(done, done.fail);

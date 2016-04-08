@@ -1,14 +1,4 @@
-import {
-  afterEach,
-  beforeEach,
-  ddescribe,
-  describe,
-  expect,
-  iit,
-  inject,
-  it,
-  xit
-} from 'angular2/testing_internal';
+import {afterEach, beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from 'angular2/testing_internal';
 
 import {enableDebugTools, disableDebugTools} from 'angular2/platform/browser';
 import {SpyComponentRef, callNgProfilerTimeChangeDetection} from './spies';

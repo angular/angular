@@ -1,14 +1,7 @@
 import {isBlank, isPresent, CONST, Type} from 'angular2/src/facade/lang';
 import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
 import {StringMapWrapper} from 'angular2/src/facade/collection';
-import {
-  Injectable,
-  OptionalMetadata,
-  SkipSelfMetadata,
-  Provider,
-  Injector,
-  bind
-} from 'angular2/src/core/di';
+import {Injectable, OptionalMetadata, SkipSelfMetadata, Provider, Injector, bind} from 'angular2/src/core/di';
 import {PipeProvider} from './pipe_provider';
 import * as cd from 'angular2/src/core/change_detection/pipes';
 

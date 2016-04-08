@@ -21,9 +21,9 @@ export function serializeParams(urlParams: {[key: string]: any}, joiner = '&'): 
  * This class represents a parsed URL
  */
 export class Url {
-  constructor(public path: string, public child: Url = null,
-              public auxiliary: Url[] = CONST_EXPR([]),
-              public params: {[key: string]: any} = CONST_EXPR({})) {}
+  constructor(
+      public path: string, public child: Url = null, public auxiliary: Url[] = CONST_EXPR([]),
+      public params: {[key: string]: any} = CONST_EXPR({})) {}
 
   toString(): string {
     return this.path + this._matrixParamsToString() + this._auxToString() + this._childString();
@@ -34,8 +34,8 @@ export class Url {
   /** @internal */
   _auxToString(): string {
     return this.auxiliary.length > 0 ?
-               ('(' + this.auxiliary.map(sibling => sibling.toString()).join('//') + ')') :
-               '';
+        ('(' + this.auxiliary.map(sibling => sibling.toString()).join('//') + ')') :
+        '';
   }
 
   private _matrixParamsToString(): string {
@@ -51,8 +51,9 @@ export class Url {
 }
 
 export class RootUrl extends Url {
-  constructor(path: string, child: Url = null, auxiliary: Url[] = CONST_EXPR([]),
-              params: {[key: string]: any} = null) {
+  constructor(
+      path: string, child: Url = null, auxiliary: Url[] = CONST_EXPR([]),
+      params: {[key: string]: any} = null) {
     super(path, child, auxiliary, params);
   }
 

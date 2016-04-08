@@ -1,12 +1,7 @@
 import {isBlank} from 'angular2/src/facade/lang';
 import {Pipes} from 'angular2/src/core/change_detection/pipes';
 import {EventEmitter} from 'angular2/src/facade/async';
-import {
-  ChangeDetector,
-  ChangeDispatcher,
-  DirectiveIndex,
-  BindingTarget
-} from 'angular2/src/core/change_detection/change_detection';
+import {ChangeDetector, ChangeDispatcher, DirectiveIndex, BindingTarget} from 'angular2/src/core/change_detection/change_detection';
 
 export class TestDirective {
   eventLog: string[] = [];

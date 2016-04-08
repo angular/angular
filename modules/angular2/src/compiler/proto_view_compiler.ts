@@ -1,54 +1,13 @@
-import {
-  isPresent,
-  isBlank,
-  Type,
-  isString,
-  StringWrapper,
-  IS_DART,
-  CONST_EXPR
-} from 'angular2/src/facade/lang';
-import {
-  SetWrapper,
-  StringMapWrapper,
-  ListWrapper,
-  MapWrapper
-} from 'angular2/src/facade/collection';
-import {
-  TemplateAst,
-  TemplateAstVisitor,
-  NgContentAst,
-  EmbeddedTemplateAst,
-  ElementAst,
-  VariableAst,
-  BoundEventAst,
-  BoundElementPropertyAst,
-  AttrAst,
-  BoundTextAst,
-  TextAst,
-  DirectiveAst,
-  BoundDirectivePropertyAst,
-  templateVisitAll
-} from './template_ast';
-import {
-  CompileTypeMetadata,
-  CompileDirectiveMetadata,
-  CompilePipeMetadata
-} from './directive_metadata';
+import {isPresent, isBlank, Type, isString, StringWrapper, IS_DART, CONST_EXPR} from 'angular2/src/facade/lang';
+import {SetWrapper, StringMapWrapper, ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
+import {TemplateAst, TemplateAstVisitor, NgContentAst, EmbeddedTemplateAst, ElementAst, VariableAst, BoundEventAst, BoundElementPropertyAst, AttrAst, BoundTextAst, TextAst, DirectiveAst, BoundDirectivePropertyAst, templateVisitAll} from './template_ast';
+import {CompileTypeMetadata, CompileDirectiveMetadata, CompilePipeMetadata} from './directive_metadata';
 import {SourceExpressions, SourceExpression, moduleRef} from './source_module';
 import {AppProtoView, AppView} from 'angular2/src/core/linker/view';
 import {ViewType} from 'angular2/src/core/linker/view_type';
 import {AppProtoElement, AppElement} from 'angular2/src/core/linker/element';
 import {ResolvedMetadataCache} from 'angular2/src/core/linker/resolved_metadata_cache';
-import {
-  escapeSingleQuoteString,
-  codeGenConstConstructorCall,
-  codeGenValueFn,
-  codeGenFnHeader,
-  MODULE_SUFFIX,
-  codeGenStringMap,
-  Expression,
-  Statement
-} from './util';
+import {escapeSingleQuoteString, codeGenConstConstructorCall, codeGenValueFn, codeGenFnHeader, MODULE_SUFFIX, codeGenStringMap, Expression, Statement} from './util';
 import {Injectable} from 'angular2/src/core/di';
 
 export const PROTO_VIEW_JIT_IMPORTS = CONST_EXPR(
@@ -74,19 +33,20 @@ const STYLE_ATTR = 'style';
 export class ProtoViewCompiler {
   constructor() {}
 
-  compileProtoViewRuntime(metadataCache: ResolvedMetadataCache, component: CompileDirectiveMetadata,
-                          template: TemplateAst[], pipes: CompilePipeMetadata[]):
-      CompileProtoViews<AppProtoView, AppProtoElement, any> {
+  compileProtoViewRuntime(
+      metadataCache: ResolvedMetadataCache, component: CompileDirectiveMetadata,
+      template: TemplateAst[],
+      pipes: CompilePipeMetadata[]): CompileProtoViews<AppProtoView, AppProtoElement, any> {
     var protoViewFactory = new RuntimeProtoViewFactory(metadataCache, component, pipes);
     var allProtoViews = [];
     protoViewFactory.createCompileProtoView(template, [], [], allProtoViews);
     return new CompileProtoViews<AppProtoView, AppProtoElement, any>([], allProtoViews);
   }
 
-  compileProtoViewCodeGen(resolvedMetadataCacheExpr: Expression,
-                          component: CompileDirectiveMetadata, template: TemplateAst[],
-                          pipes: CompilePipeMetadata[]):
-      CompileProtoViews<Expression, Expression, string> {
+  compileProtoViewCodeGen(
+      resolvedMetadataCacheExpr: Expression, component: CompileDirectiveMetadata,
+      template: TemplateAst[],
+      pipes: CompilePipeMetadata[]): CompileProtoViews<Expression, Expression, string> {
     var protoViewFactory = new CodeGenProtoViewFactory(resolvedMetadataCacheExpr, component, pipes);
     var allProtoViews = [];
     var allStatements = [];
@@ -97,26 +57,29 @@ export class ProtoViewCompiler {
 }
 
 export class CompileProtoViews<APP_PROTO_VIEW, APP_PROTO_EL, STATEMENT> {
-  constructor(public declarations: STATEMENT[],
-              public protoViews: CompileProtoView<APP_PROTO_VIEW, APP_PROTO_EL>[]) {}
+  constructor(
+      public declarations: STATEMENT[],
+      public protoViews: CompileProtoView<APP_PROTO_VIEW, APP_PROTO_EL>[]) {}
 }
 
 
 export class CompileProtoView<APP_PROTO_VIEW, APP_PROTO_EL> {
-  constructor(public embeddedTemplateIndex: number,
-              public protoElements: CompileProtoElement<APP_PROTO_EL>[],
-              public protoView: APP_PROTO_VIEW) {}
+  constructor(
+      public embeddedTemplateIndex: number,
+      public protoElements: CompileProtoElement<APP_PROTO_EL>[], public protoView: APP_PROTO_VIEW) {
+  }
 }
 
 export class CompileProtoElement<APP_PROTO_EL> {
-  constructor(public boundElementIndex, public attrNameAndValues: string[][],
-              public variableNameAndValues: string[][], public renderEvents: BoundEventAst[],
-              public directives: CompileDirectiveMetadata[], public embeddedTemplateIndex: number,
-              public appProtoEl: APP_PROTO_EL) {}
+  constructor(
+      public boundElementIndex, public attrNameAndValues: string[][],
+      public variableNameAndValues: string[][], public renderEvents: BoundEventAst[],
+      public directives: CompileDirectiveMetadata[], public embeddedTemplateIndex: number,
+      public appProtoEl: APP_PROTO_EL) {}
 }
 
-function visitAndReturnContext(visitor: TemplateAstVisitor, asts: TemplateAst[],
-                               context: any): any {
+function visitAndReturnContext(
+    visitor: TemplateAstVisitor, asts: TemplateAst[], context: any): any {
   templateVisitAll(visitor, asts, context);
   return context;
 }
@@ -124,18 +87,17 @@ function visitAndReturnContext(visitor: TemplateAstVisitor, asts: TemplateAst[],
 abstract class ProtoViewFactory<APP_PROTO_VIEW, APP_PROTO_EL, STATEMENT> {
   constructor(public component: CompileDirectiveMetadata) {}
 
-  abstract createAppProtoView(embeddedTemplateIndex: number, viewType: ViewType,
-                              templateVariableBindings: string[][],
-                              targetStatements: STATEMENT[]): APP_PROTO_VIEW;
+  abstract createAppProtoView(
+      embeddedTemplateIndex: number, viewType: ViewType, templateVariableBindings: string[][],
+      targetStatements: STATEMENT[]): APP_PROTO_VIEW;
 
-  abstract createAppProtoElement(boundElementIndex: number, attrNameAndValues: string[][],
-                                 variableNameAndValues: string[][],
-                                 directives: CompileDirectiveMetadata[],
-                                 targetStatements: STATEMENT[]): APP_PROTO_EL;
+  abstract createAppProtoElement(
+      boundElementIndex: number, attrNameAndValues: string[][], variableNameAndValues: string[][],
+      directives: CompileDirectiveMetadata[], targetStatements: STATEMENT[]): APP_PROTO_EL;
 
-  createCompileProtoView(template: TemplateAst[], templateVariableBindings: string[][],
-                         targetStatements: STATEMENT[],
-                         targetProtoViews: CompileProtoView<APP_PROTO_VIEW, APP_PROTO_EL>[]):
+  createCompileProtoView(
+      template: TemplateAst[], templateVariableBindings: string[][], targetStatements: STATEMENT[],
+      targetProtoViews: CompileProtoView<APP_PROTO_VIEW, APP_PROTO_EL>[]):
       CompileProtoView<APP_PROTO_VIEW, APP_PROTO_EL> {
     var embeddedTemplateIndex = targetProtoViews.length;
     // Note: targetProtoViews needs to be in depth first order.
@@ -145,8 +107,8 @@ abstract class ProtoViewFactory<APP_PROTO_VIEW, APP_PROTO_EL, STATEMENT> {
         this, targetStatements, targetProtoViews);
     templateVisitAll(builder, template);
     var viewType = getViewType(this.component, embeddedTemplateIndex);
-    var appProtoView = this.createAppProtoView(embeddedTemplateIndex, viewType,
-                                               templateVariableBindings, targetStatements);
+    var appProtoView = this.createAppProtoView(
+        embeddedTemplateIndex, viewType, templateVariableBindings, targetStatements);
     var cpv = new CompileProtoView<APP_PROTO_VIEW, APP_PROTO_EL>(
         embeddedTemplateIndex, builder.protoElements, appProtoView);
     targetProtoViews[embeddedTemplateIndex] = cpv;
@@ -157,8 +119,9 @@ abstract class ProtoViewFactory<APP_PROTO_VIEW, APP_PROTO_EL, STATEMENT> {
 class CodeGenProtoViewFactory extends ProtoViewFactory<Expression, Expression, Statement> {
   private _nextVarId: number = 0;
 
-  constructor(public resolvedMetadataCacheExpr: Expression, component: CompileDirectiveMetadata,
-              public pipes: CompilePipeMetadata[]) {
+  constructor(
+      public resolvedMetadataCacheExpr: Expression, component: CompileDirectiveMetadata,
+      public pipes: CompilePipeMetadata[]) {
     super(component);
   }
 
@@ -166,23 +129,23 @@ class CodeGenProtoViewFactory extends ProtoViewFactory<Expression, Expression, S
     return `appProtoView${this._nextVarId++}_${this.component.type.name}${embeddedTemplateIndex}`;
   }
 
-  createAppProtoView(embeddedTemplateIndex: number, viewType: ViewType,
-                     templateVariableBindings: string[][],
-                     targetStatements: Statement[]): Expression {
+  createAppProtoView(
+      embeddedTemplateIndex: number, viewType: ViewType, templateVariableBindings: string[][],
+      targetStatements: Statement[]): Expression {
     var protoViewVarName = this._nextProtoViewVar(embeddedTemplateIndex);
     var viewTypeExpr = codeGenViewType(viewType);
     var pipesExpr = embeddedTemplateIndex === 0 ?
-                        codeGenTypesArray(this.pipes.map(pipeMeta => pipeMeta.type)) :
-                        null;
+        codeGenTypesArray(this.pipes.map(pipeMeta => pipeMeta.type)) :
+        null;
     var statement =
         `var ${protoViewVarName} = ${APP_VIEW_MODULE_REF}AppProtoView.create(${this.resolvedMetadataCacheExpr.expression}, ${viewTypeExpr}, ${pipesExpr}, ${codeGenStringMap(templateVariableBindings)});`;
     targetStatements.push(new Statement(statement));
     return new Expression(protoViewVarName);
   }
 
-  createAppProtoElement(boundElementIndex: number, attrNameAndValues: string[][],
-                        variableNameAndValues: string[][], directives: CompileDirectiveMetadata[],
-                        targetStatements: Statement[]): Expression {
+  createAppProtoElement(
+      boundElementIndex: number, attrNameAndValues: string[][], variableNameAndValues: string[][],
+      directives: CompileDirectiveMetadata[], targetStatements: Statement[]): Expression {
     var varName = `appProtoEl${this._nextVarId++}_${this.component.type.name}`;
     var value = `${APP_EL_MODULE_REF}AppProtoElement.create(
         ${this.resolvedMetadataCacheExpr.expression},
@@ -198,26 +161,29 @@ class CodeGenProtoViewFactory extends ProtoViewFactory<Expression, Expression, S
 }
 
 class RuntimeProtoViewFactory extends ProtoViewFactory<AppProtoView, AppProtoElement, any> {
-  constructor(public metadataCache: ResolvedMetadataCache, component: CompileDirectiveMetadata,
-              public pipes: CompilePipeMetadata[]) {
+  constructor(
+      public metadataCache: ResolvedMetadataCache, component: CompileDirectiveMetadata,
+      public pipes: CompilePipeMetadata[]) {
     super(component);
   }
 
-  createAppProtoView(embeddedTemplateIndex: number, viewType: ViewType,
-                     templateVariableBindings: string[][], targetStatements: any[]): AppProtoView {
+  createAppProtoView(
+      embeddedTemplateIndex: number, viewType: ViewType, templateVariableBindings: string[][],
+      targetStatements: any[]): AppProtoView {
     var pipes =
         embeddedTemplateIndex === 0 ? this.pipes.map(pipeMeta => pipeMeta.type.runtime) : [];
     var templateVars = keyValueArrayToStringMap(templateVariableBindings);
     return AppProtoView.create(this.metadataCache, viewType, pipes, templateVars);
   }
 
-  createAppProtoElement(boundElementIndex: number, attrNameAndValues: string[][],
-                        variableNameAndValues: string[][], directives: CompileDirectiveMetadata[],
-                        targetStatements: any[]): AppProtoElement {
+  createAppProtoElement(
+      boundElementIndex: number, attrNameAndValues: string[][], variableNameAndValues: string[][],
+      directives: CompileDirectiveMetadata[], targetStatements: any[]): AppProtoElement {
     var attrs = keyValueArrayToStringMap(attrNameAndValues);
-    return AppProtoElement.create(this.metadataCache, boundElementIndex, attrs,
-                                  directives.map(dirMeta => dirMeta.type.runtime),
-                                  keyValueArrayToStringMap(variableNameAndValues));
+    return AppProtoElement.create(
+        this.metadataCache, boundElementIndex, attrs,
+        directives.map(dirMeta => dirMeta.type.runtime),
+        keyValueArrayToStringMap(variableNameAndValues));
   }
 }
 
@@ -226,12 +192,13 @@ class ProtoViewBuilderVisitor<APP_PROTO_VIEW, APP_PROTO_EL, STATEMENT> implement
   protoElements: CompileProtoElement<APP_PROTO_EL>[] = [];
   boundElementCount: number = 0;
 
-  constructor(public factory: ProtoViewFactory<APP_PROTO_VIEW, APP_PROTO_EL, STATEMENT>,
-              public allStatements: STATEMENT[],
-              public allProtoViews: CompileProtoView<APP_PROTO_VIEW, APP_PROTO_EL>[]) {}
+  constructor(
+      public factory: ProtoViewFactory<APP_PROTO_VIEW, APP_PROTO_EL, STATEMENT>,
+      public allStatements: STATEMENT[],
+      public allProtoViews: CompileProtoView<APP_PROTO_VIEW, APP_PROTO_EL>[]) {}
 
-  private _readAttrNameAndValues(directives: CompileDirectiveMetadata[],
-                                 attrAsts: TemplateAst[]): string[][] {
+  private _readAttrNameAndValues(directives: CompileDirectiveMetadata[], attrAsts: TemplateAst[]):
+      string[][] {
     var attrs = visitAndReturnContext(this, attrAsts, {});
     directives.forEach(directiveMeta => {
       StringMapWrapper.forEach(directiveMeta.hostAttributes, (value: string, name: string) => {
@@ -262,15 +229,17 @@ class ProtoViewBuilderVisitor<APP_PROTO_VIEW, APP_PROTO_EL, STATEMENT> implement
     var renderEvents: Map<string, BoundEventAst> =
         visitAndReturnContext(this, ast.outputs, new Map<string, BoundEventAst>());
     ListWrapper.forEachWithIndex(ast.directives, (directiveAst: DirectiveAst, index: number) => {
-      directiveAst.visit(this, new DirectiveContext(index, boundElementIndex, renderEvents,
-                                                    variableNameAndValues, directives));
+      directiveAst.visit(
+          this, new DirectiveContext(
+                    index, boundElementIndex, renderEvents, variableNameAndValues, directives));
     });
     var renderEventArray = [];
     renderEvents.forEach((eventAst, _) => renderEventArray.push(eventAst));
 
     var attrNameAndValues = this._readAttrNameAndValues(directives, ast.attrs);
-    this._addProtoElement(ast.isBound(), boundElementIndex, attrNameAndValues,
-                          variableNameAndValues, renderEventArray, directives, null);
+    this._addProtoElement(
+        ast.isBound(), boundElementIndex, attrNameAndValues, variableNameAndValues,
+        renderEventArray, directives, null);
     templateVisitAll(this, ast.children);
     return null;
   }
@@ -280,8 +249,8 @@ class ProtoViewBuilderVisitor<APP_PROTO_VIEW, APP_PROTO_EL, STATEMENT> implement
     var directives: CompileDirectiveMetadata[] = [];
     ListWrapper.forEachWithIndex(ast.directives, (directiveAst: DirectiveAst, index: number) => {
       directiveAst.visit(
-          this, new DirectiveContext(index, boundElementIndex, new Map<string, BoundEventAst>(), [],
-                                     directives));
+          this, new DirectiveContext(
+                    index, boundElementIndex, new Map<string, BoundEventAst>(), [], directives));
     });
 
     var attrNameAndValues = this._readAttrNameAndValues(directives, ast.attrs);
@@ -289,19 +258,21 @@ class ProtoViewBuilderVisitor<APP_PROTO_VIEW, APP_PROTO_EL, STATEMENT> implement
         varAst => [varAst.value.length > 0 ? varAst.value : IMPLICIT_TEMPLATE_VAR, varAst.name]);
     var nestedProtoView = this.factory.createCompileProtoView(
         ast.children, templateVariableBindings, this.allStatements, this.allProtoViews);
-    this._addProtoElement(true, boundElementIndex, attrNameAndValues, [], [], directives,
-                          nestedProtoView.embeddedTemplateIndex);
+    this._addProtoElement(
+        true, boundElementIndex, attrNameAndValues, [], [], directives,
+        nestedProtoView.embeddedTemplateIndex);
     return null;
   }
 
-  private _addProtoElement(isBound: boolean, boundElementIndex, attrNameAndValues: string[][],
-                           variableNameAndValues: string[][], renderEvents: BoundEventAst[],
-                           directives: CompileDirectiveMetadata[], embeddedTemplateIndex: number) {
+  private _addProtoElement(
+      isBound: boolean, boundElementIndex, attrNameAndValues: string[][],
+      variableNameAndValues: string[][], renderEvents: BoundEventAst[],
+      directives: CompileDirectiveMetadata[], embeddedTemplateIndex: number) {
     var appProtoEl = null;
     if (isBound) {
-      appProtoEl =
-          this.factory.createAppProtoElement(boundElementIndex, attrNameAndValues,
-                                             variableNameAndValues, directives, this.allStatements);
+      appProtoEl = this.factory.createAppProtoElement(
+          boundElementIndex, attrNameAndValues, variableNameAndValues, directives,
+          this.allStatements);
     }
     var compileProtoEl = new CompileProtoElement<APP_PROTO_EL>(
         boundElementIndex, attrNameAndValues, variableNameAndValues, renderEvents, directives,
@@ -317,8 +288,9 @@ class ProtoViewBuilderVisitor<APP_PROTO_VIEW, APP_PROTO_EL, STATEMENT> implement
   visitDirective(ast: DirectiveAst, ctx: DirectiveContext): any {
     ctx.targetDirectives.push(ast.directive);
     templateVisitAll(this, ast.hostEvents, ctx.hostEventTargetAndNames);
-    ast.exportAsVars.forEach(
-        varAst => { ctx.targetVariableNameAndValues.push([varAst.name, ctx.index]); });
+    ast.exportAsVars.forEach(varAst => {
+      ctx.targetVariableNameAndValues.push([varAst.name, ctx.index]);
+    });
     return null;
   }
   visitEvent(ast: BoundEventAst, eventTargetAndNames: Map<string, BoundEventAst>): any {
@@ -331,12 +303,14 @@ class ProtoViewBuilderVisitor<APP_PROTO_VIEW, APP_PROTO_EL, STATEMENT> implement
 
 function mapToKeyValueArray(data: {[key: string]: string}): string[][] {
   var entryArray: string[][] = [];
-  StringMapWrapper.forEach(data,
-                           (value: string, name: string) => { entryArray.push([name, value]); });
+  StringMapWrapper.forEach(data, (value: string, name: string) => {
+    entryArray.push([name, value]);
+  });
   // We need to sort to get a defined output order
   // for tests and for caching generated artifacts...
-  ListWrapper.sort<string[]>(entryArray, (entry1: string[], entry2: string[]) =>
-                                             StringWrapper.compare(entry1[0], entry2[0]));
+  ListWrapper.sort<string[]>(
+      entryArray,
+      (entry1: string[], entry2: string[]) => StringWrapper.compare(entry1[0], entry2[0]));
   var keyValueArray: string[][] = [];
   entryArray.forEach((entry) => { keyValueArray.push([entry[0], entry[1]]); });
   return keyValueArray;
@@ -351,10 +325,11 @@ function mergeAttributeValue(attrName: string, attrValue1: string, attrValue2: s
 }
 
 class DirectiveContext {
-  constructor(public index: number, public boundElementIndex: number,
-              public hostEventTargetAndNames: Map<string, BoundEventAst>,
-              public targetVariableNameAndValues: any[][],
-              public targetDirectives: CompileDirectiveMetadata[]) {}
+  constructor(
+      public index: number, public boundElementIndex: number,
+      public hostEventTargetAndNames: Map<string, BoundEventAst>,
+      public targetVariableNameAndValues: any[][],
+      public targetDirectives: CompileDirectiveMetadata[]) {}
 }
 
 function keyValueArrayToStringMap(keyValueArray: any[][]): {[key: string]: any} {
