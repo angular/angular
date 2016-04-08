@@ -36,8 +36,9 @@ import {
   HammerGestureConfig
 } from 'angular2/src/platform/dom/events/hammer_gestures';
 import {ELEMENT_PROBE_PROVIDERS} from 'angular2/platform/common_dom';
+import {TitleImpl} from 'angular2/src/platform/browser/title_impl';
+import {Title} from 'angular2/src/platform/tokens';
 export {DOCUMENT} from 'angular2/src/platform/dom/dom_tokens';
-export {Title} from 'angular2/src/platform/browser/title';
 export {
   ELEMENT_PROBE_PROVIDERS,
   ELEMENT_PROBE_PROVIDERS_PROD_MODE,
@@ -87,6 +88,7 @@ export const BROWSER_APP_COMMON_PROVIDERS: Array<any /*Type | Provider | any[]*/
   new Provider(DomRootRenderer, {useClass: DomRootRenderer_}),
   new Provider(RootRenderer, {useExisting: DomRootRenderer}),
   new Provider(SharedStylesHost, {useExisting: DomSharedStylesHost}),
+  new Provider(Title, {useClass: TitleImpl}),
   DomSharedStylesHost,
   Testability,
   BrowserDetails,
