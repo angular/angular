@@ -35,13 +35,13 @@ env:
     - DART_STABLE_VERSION=latest
     - DART_CHANNEL=stable
     - DART_VERSION=$DART_STABLE_VERSION
-    # Token for tsd to increase github rate limit
-    # See https://github.com/DefinitelyTyped/tsd#tsdrc
+    # Token for typings to increase github rate limit
+    # See https://github.com/typings/typings/blob/master/docs/faq.md#configuration
     # This does not use http://docs.travis-ci.com/user/environment-variables/#Secure-Variables
     # because those are not visible for pull requests, and those should also be reliable.
     # This SSO token belongs to github account angular-github-ratelimit-token which has no access
     # (password is in Valentine)
-    - TSDRC='{"token":"ef474500309daea53d5991b3079159a29520a40b"}'
+    - TYPINGSRC='{"githubToken":"ef474500309daea53d5991b3079159a29520a40b"}'
     # GITHUB_TOKEN_ANGULAR
     - secure: "fq/U7VDMWO8O8SnAQkdbkoSe2X92PVqg4d044HmRYVmcf6YbO48+xeGJ8yOk0pCBwl3ISO4Q2ot0x546kxfiYBuHkZetlngZxZCtQiFT9kyId8ZKcYdXaIW9OVdw3Gh3tQyUwDucfkVhqcs52D6NZjyE2aWZ4/d1V4kWRO/LMgo="
   matrix:
@@ -78,7 +78,7 @@ addons:
 before_install:
   - node tools/analytics/build-analytics start ci job
   - node tools/analytics/build-analytics start ci before_install
-  - echo ${TSDRC} > .tsdrc
+  - echo ${TYPINGSRC} > .typingsrc
   - export CHROME_BIN=$HOME/.chrome/chromium/chrome-linux/chrome
   - export DISPLAY=:99.0
   - export GIT_SHA=$(git rev-parse HEAD)

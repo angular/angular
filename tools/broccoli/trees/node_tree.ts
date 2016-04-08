@@ -36,11 +36,11 @@ module.exports = function makeNodeTree(projects, destinationPath) {
   });
 
   let externalTypings = [
-    'angular2/typings/hammerjs/hammerjs.d.ts',
-    'angular2/typings/node/node.d.ts',
+    'angular2/typings/browser/ambient/hammerjs/index.d.ts',
+    'angular2/typings/browser/ambient/node/index.d.ts',
     'angular2/manual_typings/globals.d.ts',
-    'angular2/typings/es6-collections/es6-collections.d.ts',
-    'angular2/typings/es6-promise/es6-promise.d.ts'
+    'angular2/typings/browser/ambient/es6-collections/index.d.ts',
+    'angular2/typings/browser/ambient/es6-promise/index.d.ts'
   ];
 
   let externalTypingsTree = new Funnel('modules', {files: externalTypings});
@@ -55,9 +55,6 @@ module.exports = function makeNodeTree(projects, destinationPath) {
 
   var testTree = new Funnel('modules', {
     include: [
-      'angular2/manual_typings/**',
-      'angular2/typings/**',
-
       'angular2/test/**',
       'benchpress/**',
       '**/e2e_test/**',
@@ -79,8 +76,6 @@ module.exports = function makeNodeTree(projects, destinationPath) {
       'angular2/test/platform/xhr_impl_spec.ts',
       'angular2/test/platform/browser/**/*.ts',
       'angular2/test/common/forms/**',
-      'angular2/manual_typings/**',
-      'angular2/typings/**',
 
       // we call browser's bootstrap
       'angular2/test/router/route_config/route_config_spec.ts',
@@ -103,9 +98,9 @@ module.exports = function makeNodeTree(projects, destinationPath) {
       new Funnel(compiledSrcTreeWithInternals, {srcDir: INTERNAL_TYPINGS_PATH});
 
   let testAmbients = [
-    'angular2/typings/jasmine/jasmine.d.ts',
-    'angular2/typings/angular-protractor/angular-protractor.d.ts',
-    'angular2/typings/selenium-webdriver/selenium-webdriver.d.ts'
+    'angular2/typings/browser/ambient/jasmine/index.d.ts',
+    'angular2/typings/browser/ambient/angular-protractor/index.d.ts',
+    'angular2/typings/browser/ambient/selenium-webdriver/index.d.ts'
   ];
   let testAmbientsTree = new Funnel('modules', {files: testAmbients});
 
@@ -140,17 +135,14 @@ module.exports = function makeNodeTree(projects, destinationPath) {
     new Funnel('modules',
                {
                  include: [
-                   'angular2/typings/es6-collections/es6-collections.d.ts',
-                   'angular2/typings/es6-promise/es6-promise.d.ts',
+                   'angular2/typings/browser/ambient/es6-collections/index.d.ts',
+                   'angular2/typings/browser/ambient/es6-promise/index.d.ts',
                  ]
                }),
     writeFile('angular2/typings/browser.d.ts',
               '// Typings needed for compilation with --target=es5\n' +
-                  '///<reference path="./es6-collections/es6-collections.d.ts"/>\n' +
-                  '///<reference path="./es6-promise/es6-promise.d.ts"/>\n' +
-                  '// Workaround for https://github.com/ReactiveX/RxJS/issues/1270\n' +
-                  '// to be removed when angular2 upgrades to rxjs beta.2\n' +
-                  'declare type PromiseConstructor = typeof Promise;\n')
+                  '///<reference path="./browser/ambient/es6-collections/index.d.ts"/>\n' +
+                  '///<reference path="./browser/ambient/es6-promise/index.d.ts"/>\n')
   ]);
 
   var nodeTree =

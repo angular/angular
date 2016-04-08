@@ -1,6 +1,3 @@
-/// <reference path="broccoli.d.ts" />
-/// <reference path="../typings/node/node.d.ts" />
-
 import fs = require('fs');
 let symlinkOrCopy = require('symlink-or-copy');
 

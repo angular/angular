@@ -26,8 +26,9 @@
     "url": "https://github.com/angular/angular.git"
   },
   "scripts": {
+    "typings": "rimraf modules/angular2/typings modules/angular1_router/typings tools/typings && cd modules/angular2 && typings install && cd ../../ && cd tools/ && typings install && cd ../ && cd modules/angular1_router/ && typings install && cd ../../",
     "preinstall": "node tools/analytics/build-analytics start install npm3-install && node tools/analytics/build-analytics start install npm-preinstall && node tools/npm/check-node-modules && node tools/analytics/build-analytics success install npm-preinstall && node tools/analytics/build-analytics start install npm-install-net",
-    "postinstall": "node tools/analytics/build-analytics success install npm-install-net && node tools/analytics/build-analytics start install npm-postinstall && node tools/npm/copy-npm-shrinkwrap && node tools/chromedriverpatch.js && webdriver-manager update && bower install && gulp pubget.dart && tsd reinstall --overwrite --clean --config modules/angular2/tsd.json && tsd reinstall --overwrite --clean --config tools/tsd.json && tsd reinstall --overwrite --config modules/angular1_router/tsd.json && node tools/analytics/build-analytics success install npm-postinstall && node tools/analytics/build-analytics success install npm3-install",
+    "postinstall": "node tools/analytics/build-analytics success install npm-install-net && node tools/analytics/build-analytics start install npm-postinstall && node tools/npm/copy-npm-shrinkwrap && node tools/chromedriverpatch.js && webdriver-manager update && bower install && gulp pubget.dart && npm run typings && node tools/analytics/build-analytics success install npm-postinstall && node tools/analytics/build-analytics success install npm3-install",
     "build": "node --max-old-space-size=2048 ./node_modules/.bin/gulp build.js",
     "test": "gulp test.all.js && gulp test.all.dart"
   },
@@ -112,9 +113,9 @@
     "through2": "^0.6.5",
     "ts-api-guardian": "0.0.2",
     "ts2dart": "^0.7.31",
-    "tsd": "^0.6.5-beta",
     "tslint": "^3.2.1",
     "typescript": "^1.7.3",
+    "typings": "^0.7.12",
     "universal-analytics": "^0.3.9",
     "webpack": "^1.12.6",
     "which": "~1",

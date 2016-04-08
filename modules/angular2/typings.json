@@ -1,0 +1,12 @@
+{
+  "version": false,
+  "ambientDependencies": {
+    "es6-promise": "github:DefinitelyTyped/DefinitelyTyped/es6-promise/es6-promise.d.ts#6eebd5e90a1cbd6b47b0705ba72dbcd5baf846f3",
+    "es6-collections": "github:DefinitelyTyped/DefinitelyTyped/es6-collections/es6-collections.d.ts#6eebd5e90a1cbd6b47b0705ba72dbcd5baf846f3",
+    "hammerjs": "github:DefinitelyTyped/DefinitelyTyped/hammerjs/hammerjs.d.ts#6eebd5e90a1cbd6b47b0705ba72dbcd5baf846f3",
+    "jasmine": "github:DefinitelyTyped/DefinitelyTyped/jasmine/jasmine.d.ts#6eebd5e90a1cbd6b47b0705ba72dbcd5baf846f3",
+    "node": "github:DefinitelyTyped/DefinitelyTyped/node/node.d.ts#6eebd5e90a1cbd6b47b0705ba72dbcd5baf846f3",
+    "selenium-webdriver": "github:DefinitelyTyped/DefinitelyTyped/selenium-webdriver/selenium-webdriver.d.ts#6eebd5e90a1cbd6b47b0705ba72dbcd5baf846f3",
+    "angular-protractor": "github:DefinitelyTyped/DefinitelyTyped/angular-protractor/angular-protractor.d.ts#6eebd5e90a1cbd6b47b0705ba72dbcd5baf846f3"
+  }
+}

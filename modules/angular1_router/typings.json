@@ -1,0 +1,6 @@
+{
+  "version": false,
+  "ambientDependencies": {
+    "angular": "github:DefinitelyTyped/DefinitelyTyped/angularjs/angular.d.ts#6eebd5e90a1cbd6b47b0705ba72dbcd5baf846f3"
+  }
+}

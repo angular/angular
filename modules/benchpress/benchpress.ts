@@ -1,5 +1,3 @@
-/// <reference path="../angular2/typings/node/node.d.ts" />
-
 import {bind, provide} from 'angular2/src/core/di';
 import {Options} from './common';
 

@@ -1,4 +1,3 @@
-/// <reference path="../bitmap.d.ts" /> /// <reference path="../b64.d.ts" />
 import {Injectable} from 'angular2/core';
 declare var base64js;
 
