@@ -378,6 +378,30 @@ export function main() {
                     });
                   }));
 
+        it("with basic selection and value bindings",
+           inject([TestComponentBuilder, AsyncTestCompleter],
+                  (tcb: TestComponentBuilder, async) => {
+                    var t = `<select>
+                      <option *ngFor="#city of list" [value]="city['id']">
+                        {{ city['name'] }}
+                      </option>
+                    </select>`;
+
+                    tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((fixture) => {
+                      var testComp = fixture.debugElement.componentInstance;
+                      testComp.list = [{"id": "0", "name": "SF"}, {"id": "1", "name": "NYC"}];
+                      fixture.detectChanges();
+
+                      var sfOption = fixture.debugElement.query(By.css("option"));
+                      expect(sfOption.nativeElement.value).toEqual('0');
+
+                      testComp.list[0]['id'] = '2';
+                      fixture.detectChanges();
+                      expect(sfOption.nativeElement.value).toEqual('2');
+                      async.done();
+                    });
+                  }));
+
         it("with ngControl",
            inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder,
                                                                async) => {
