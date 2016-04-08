@@ -1,4 +1,4 @@
-import {CONST_EXPR, IS_DART} from 'angular2/src/facade/lang';
+import {CONST_EXPR, IS_DART, global} from 'angular2/src/facade/lang';
 import {provide, Provider, Injector, OpaqueToken} from 'angular2/src/core/di';
 import {XHR} from 'angular2/src/compiler/xhr';
 import {
@@ -37,7 +37,7 @@ import {
 } from 'angular2/src/platform/dom/events/hammer_gestures';
 import {ELEMENT_PROBE_PROVIDERS} from 'angular2/platform/common_dom';
 import {TitleImpl} from 'angular2/src/platform/browser/title_impl';
-import {Title} from 'angular2/src/platform/tokens';
+import {Title, Global} from 'angular2/src/platform/tokens';
 export {DOCUMENT} from 'angular2/src/platform/dom/dom_tokens';
 export {
   ELEMENT_PROBE_PROVIDERS,
@@ -69,6 +69,10 @@ function _document(): any {
   return DOM.defaultDoc();
 }
 
+function _global(): any {
+  return global;
+}
+
 /**
  * A set of providers to initialize an Angular application in a web browser.
  *
@@ -89,6 +93,7 @@ export const BROWSER_APP_COMMON_PROVIDERS: Array<any /*Type | Provider | any[]*/
   new Provider(RootRenderer, {useExisting: DomRootRenderer}),
   new Provider(SharedStylesHost, {useExisting: DomSharedStylesHost}),
   new Provider(Title, {useClass: TitleImpl}),
+  new Provider(Global, {useFactory: _global}),
   DomSharedStylesHost,
   Testability,
   BrowserDetails,
