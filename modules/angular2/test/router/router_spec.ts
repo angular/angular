@@ -18,7 +18,7 @@ import {ListWrapper} from 'angular2/src/facade/collection';
 
 import {Router, RootRouter} from 'angular2/src/router/router';
 import {SpyLocation} from 'angular2/src/mock/location_mock';
-import {Location} from 'angular2/src/router/location/location';
+import {Location} from 'angular2/platform/common';
 
 import {RouteRegistry, ROUTER_PRIMARY_COMPONENT} from 'angular2/src/router/route_registry';
 import {

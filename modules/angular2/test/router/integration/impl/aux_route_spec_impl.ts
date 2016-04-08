@@ -16,9 +16,10 @@ import {
 } from 'angular2/testing_internal';
 
 import {By} from 'angular2/platform/common_dom';
+import {Location} from 'angular2/platform/common';
 import {provide, Component, Injector, Inject} from 'angular2/core';
 
-import {Router, ROUTER_DIRECTIVES, RouteParams, RouteData, Location} from 'angular2/router';
+import {Router, ROUTER_DIRECTIVES, RouteParams, RouteData} from 'angular2/router';
 import {
   RouteConfig,
   Route,

@@ -4,8 +4,8 @@ import "index_common.dart" show App;
 import "dart:isolate";
 import "package:angular2/platform/worker_app.dart";
 import "package:angular2/core.dart";
+import "package:angular2/platform/common.dart" show LocationStrategy, HashLocationStrategy;
 import "package:angular2/src/web_workers/worker/router_providers.dart";
-import "package:angular2/router.dart";
 
 @AngularEntrypoint()
 main(List<String> args, SendPort replyTo) {

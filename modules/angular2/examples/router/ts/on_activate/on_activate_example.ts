@@ -1,12 +1,7 @@
 import {Component, provide} from 'angular2/core';
 import {bootstrap} from 'angular2/platform/browser';
-import {
-  OnActivate,
-  ComponentInstruction,
-  RouteConfig,
-  ROUTER_DIRECTIVES,
-  APP_BASE_HREF
-} from 'angular2/router';
+import {OnActivate, ComponentInstruction, RouteConfig, ROUTER_DIRECTIVES} from 'angular2/router';
+import {APP_BASE_HREF} from 'angular2/platform/common';
 
 // #docregion routerOnActivate
 @Component({template: `Child`})

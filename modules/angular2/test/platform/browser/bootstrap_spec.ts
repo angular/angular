@@ -13,11 +13,10 @@ import {
   xit
 } from 'angular2/testing_internal';
 import {IS_DART, isPresent, stringify} from 'angular2/src/facade/lang';
-import {bootstrap} from 'angular2/platform/browser';
+import {bootstrap, BROWSER_PROVIDERS, BROWSER_APP_PROVIDERS} from 'angular2/platform/browser';
 import {ApplicationRef} from 'angular2/src/core/application_ref';
 import {Console} from 'angular2/src/core/console';
 import {Component, Directive, OnDestroy, platform} from 'angular2/core';
-import {BROWSER_PROVIDERS, BROWSER_APP_PROVIDERS} from 'angular2/platform/browser';
 import {DOM} from 'angular2/src/platform/dom/dom_adapter';
 import {DOCUMENT} from 'angular2/src/platform/dom/dom_tokens';
 import {PromiseWrapper, TimerWrapper} from 'angular2/src/facade/async';

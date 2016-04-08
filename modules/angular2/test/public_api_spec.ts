@@ -311,6 +311,17 @@ var NG_PLATFORM_BROWSER = [
   'inspectNativeElement'
 ];
 
+var NG_PLATFORM_COMMON = [
+  'APP_BASE_HREF',
+  'HashLocationStrategy',
+  'Location',
+  'LocationStrategy',
+  'PathLocationStrategy',
+  'PlatformLocation',
+  'UrlChangeEvent:dart',
+  'UrlChangeListener:dart'
+];
+
 var NG_UPGRADE = [
   'UpgradeAdapter',
   'UpgradeAdapterRef',
@@ -322,6 +333,7 @@ var NG_API = {
   ngCore: NG_CORE,
   ngInstrumentation: NG_INSTRUMENTATION,
   ngPlatformBrowser: NG_PLATFORM_BROWSER,
+  ngPlatformCommon: NG_PLATFORM_COMMON,
   ngUpgrade: NG_UPGRADE
 };
 
@@ -336,8 +348,15 @@ export function main() {
    */
 
   describe('public API', () => {
-    var barrelList =
-        ['ngCommon', 'ngCompiler', 'ngCore', 'ngInstrumentation', 'ngPlatformBrowser', 'ngUpgrade'];
+    var barrelList = [
+      'ngCommon',
+      'ngCompiler',
+      'ngCore',
+      'ngInstrumentation',
+      'ngPlatformBrowser',
+      'ngPlatformCommon',
+      'ngUpgrade'
+    ];
 
     if (IS_DART) {
       barrelList = barrelList.filter(b => b !== 'ngUpgrade');
