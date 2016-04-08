@@ -106,7 +106,7 @@ class DiffingTSCompiler implements DiffingBroccoliPlugin {
             this.fileRegistry[tsFilePath].version++;
           }
 
-          pathsToEmit.push(tsFilePath);
+          pathsToEmit.push(path.join(this.inputPath, tsFilePath));
         });
 
     treeDiff.removedPaths.forEach((tsFilePath) => {
@@ -332,7 +332,10 @@ class CustomLanguageServiceHost implements ts.LanguageServiceHost {
 
 
   getScriptVersion(fileName: string): string {
-    return this.fileRegistry[fileName] && this.fileRegistry[fileName].version.toString();
+    if (startsWith(fileName, this.treeInputPath)) {
+      const key = fileName.substr(this.treeInputPath.length + 1);
+      return this.fileRegistry[key] && this.fileRegistry[key].version.toString();
+    }
   }
 
 
