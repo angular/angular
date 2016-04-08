@@ -204,6 +204,13 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   classList(element): any[] { return <any[]>Array.prototype.slice.call(element.classList, 0); }
   addClass(element, className: string) { element.classList.add(className); }
   removeClass(element, className: string) { element.classList.remove(className); }
+  toggleClass(element: Element, className: string, force?: boolean) {
+    if (isPresent(force)) {
+      element.classList.toggle(className, force);
+    } else {
+      element.classList.toggle(className);
+    }
+  }
   hasClass(element, className: string): boolean { return element.classList.contains(className); }
   setStyle(element, styleName: string, styleValue: string) {
     element.style[styleName] = styleValue;

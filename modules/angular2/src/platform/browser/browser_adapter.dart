@@ -329,6 +329,14 @@ class BrowserDomAdapter extends GenericBrowserDomAdapter {
     element.classes.remove(className);
   }
 
+  void toggleClass(Element element, String className, [bool force = null]) {
+    if (isPresent(force)) {
+      element.classes.toggle(className, force);
+    } else {
+      element.classes.toggle(className);
+    }
+  }
+
   bool hasClass(Element element, String className) =>
       element.classes.contains(className);
 
