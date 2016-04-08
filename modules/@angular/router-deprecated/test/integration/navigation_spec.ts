@@ -130,6 +130,22 @@ export function main() {
              });
        }));
 
+
+    it('should replace state when normalized paths are equal',
+       inject([AsyncTestCompleter, Location], (async, location) => {
+         compile(tcb)
+             .then((rtc) => {fixture = rtc})
+             .then((_) => location.setInitialPath("/test/"))
+             .then((_) => rtr.config([new Route({path: '/test', component: HelloCmp})]))
+             .then((_) => rtr.navigateByUrl('/test'))
+             .then((_) => {
+               fixture.detectChanges();
+               expect(fixture.debugElement.nativeElement).toHaveText('hello');
+               expect(location.urlChanges).toEqual(['replace: /test']);
+               async.done();
+             });
+       }));
+
     it('should reuse common parent components', inject([AsyncTestCompleter], (async) => {
          compile(tcb)
              .then((rtc) => {fixture = rtc})

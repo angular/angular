@@ -23,6 +23,14 @@ export class SpyLocation implements Location {
 
   path(): string { return this._history[this._historyIndex].path; }
 
+  isCurrentPathEqualTo(path: string, query: string = ''): boolean {
+    var givenPath = path.endsWith('/') ? path.substring(0, path.length - 1) : path;
+    var currPath =
+        this.path().endsWith('/') ? this.path().substring(0, this.path().length - 1) : this.path();
+
+    return currPath == givenPath + (query.length > 0 ? ('?' + query) : '');
+  }
+
   simulateUrlPop(pathname: string) {
     ObservableWrapper.callEmit(this._subject, {'url': pathname, 'pop': true});
   }
@@ -62,8 +70,13 @@ export class SpyLocation implements Location {
   replaceState(path: string, query: string = '') {
     path = this.prepareExternalUrl(path);
 
-    this._history[this._historyIndex].path = path;
-    this._history[this._historyIndex].query = query;
+    var history = this._history[this._historyIndex];
+    if (history.path == path && history.query == query) {
+      return;
+    }
+
+    history.path = path;
+    history.query = query;
 
     var url = path + (query.length > 0 ? ('?' + query) : '');
     this.urlChanges.push('replace: ' + url);

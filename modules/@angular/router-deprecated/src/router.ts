@@ -526,7 +526,11 @@ export class RootRouter extends Router {
     }
     var promise = super.commit(instruction);
     if (!_skipLocationChange) {
-      promise = promise.then((_) => { this._location.go(emitPath, emitQuery); });
+      if (this._location.isCurrentPathEqualTo(emitPath, emitQuery)) {
+        promise = promise.then((_) => { this._location.replaceState(emitPath, emitQuery); });
+      } else {
+        promise = promise.then((_) => { this._location.go(emitPath, emitQuery); });
+      }
     }
     return promise;
   }

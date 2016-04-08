@@ -313,8 +313,17 @@ Location.prototype.subscribe = function () {
 Location.prototype.path = function () {
   return $location.url();
 };
+Location.prototype.isCurrentPathEqualTo = function (path, query) {
+  if (query === void 0) { query = ''; }
+  return this.path() === (path + query);
+};
 Location.prototype.go = function (path, query) {
   return $location.url(path + query);
+};
+Location.prototype.replaceState = function (path, query) {
+  if (query === void 0) { query = ''; }
+  $location.url(path + query);
+  $location.replace();
 };
 Location.prototype.prepareExternalUrl = function(url) {
   if (url.length > 0 && !url.startsWith('/')) {
