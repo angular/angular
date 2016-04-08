@@ -15,6 +15,7 @@ import {
 } from 'angular2/testing_internal';
 
 import {bootstrap} from 'angular2/platform/browser';
+import {APP_BASE_HREF, LocationStrategy} from 'angular2/platform/common';
 import {Component, Directive} from 'angular2/src/core/metadata';
 import {DOM} from 'angular2/src/platform/dom/dom_adapter';
 import {Console} from 'angular2/src/core/console';
@@ -33,9 +34,7 @@ import {
   ROUTER_PRIMARY_COMPONENT,
   RouteParams,
   Router,
-  APP_BASE_HREF,
-  ROUTER_DIRECTIVES,
-  LocationStrategy
+  ROUTER_DIRECTIVES
 } from 'angular2/router';
 
 import {MockLocationStrategy} from 'angular2/src/mock/mock_location_strategy';

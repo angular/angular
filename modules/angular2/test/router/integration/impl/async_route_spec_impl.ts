@@ -12,12 +12,12 @@ import {
   xit,
 } from 'angular2/testing_internal';
 
-
 import {By} from 'angular2/platform/common_dom';
+import {Location} from 'angular2/platform/common';
 
 import {specs, compile, TEST_ROUTER_PROVIDERS, clickOnElement, getHref} from '../util';
 
-import {Router, AsyncRoute, Route, Location} from 'angular2/router';
+import {Router, AsyncRoute, Route} from 'angular2/router';
 
 import {
   HelloCmp,

@@ -1,14 +1,7 @@
 import {Component, Injectable} from 'angular2/core';
-import {
-  RouterLink,
-  RouteConfig,
-  Router,
-  Route,
-  RouterOutlet,
-  Location,
-  RouteParams
-} from 'angular2/router';
+import {RouterLink, RouteConfig, Router, Route, RouterOutlet, RouteParams} from 'angular2/router';
 import * as db from './data';
+import {Location} from 'angular2/platform/common';
 import {PromiseWrapper} from 'angular2/src/facade/async';
 import {isPresent, DateWrapper} from 'angular2/src/facade/lang';
 import {PromiseCompleter} from 'angular2/src/facade/promise';

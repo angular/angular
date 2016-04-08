@@ -1,6 +1,6 @@
-import {LocationStrategy} from './location_strategy';
 import {EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
 import {Injectable, Inject} from 'angular2/core';
+import {LocationStrategy} from './location_strategy';
 
 /**
  * `Location` is a service that applications can use to interact with a browser's URL.
@@ -22,11 +22,11 @@ import {Injectable, Inject} from 'angular2/core';
  *
  * ```
  * import {Component} from 'angular2/core';
+ * import {Location} from 'angular2/platform/common';
  * import {
  *   ROUTER_DIRECTIVES,
  *   ROUTER_PROVIDERS,
- *   RouteConfig,
- *   Location
+ *   RouteConfig
  * } from 'angular2/router';
  *
  * @Component({directives: [ROUTER_DIRECTIVES]})
@@ -51,7 +51,7 @@ export class Location {
 
   constructor(public platformStrategy: LocationStrategy) {
     var browserBaseHref = this.platformStrategy.getBaseHref();
-    this._baseHref = stripTrailingSlash(stripIndexHtml(browserBaseHref));
+    this._baseHref = Location.stripTrailingSlash(_stripIndexHtml(browserBaseHref));
     this.platformStrategy.onPopState((ev) => {
       ObservableWrapper.callEmit(this._subject, {'url': this.path(), 'pop': true, 'type': ev.type});
     });
@@ -67,7 +67,7 @@ export class Location {
    * trailing slashes
    */
   normalize(url: string): string {
-    return stripTrailingSlash(_stripBaseHref(this._baseHref, stripIndexHtml(url)));
+    return Location.stripTrailingSlash(_stripBaseHref(this._baseHref, _stripIndexHtml(url)));
   }
 
   /**
@@ -117,6 +117,50 @@ export class Location {
             onReturn: () => void = null): Object {
     return ObservableWrapper.subscribe(this._subject, onNext, onThrow, onReturn);
   }
+
+  /**
+   * Given a string of url parameters, prepend with '?' if needed, otherwise return parameters as
+   * is.
+   */
+  public static normalizeQueryParams(params: string): string {
+    return (params.length > 0 && params.substring(0, 1) != '?') ? ('?' + params) : params;
+  }
+
+  /**
+   * Given 2 parts of a url, join them with a slash if needed.
+   */
+  public static joinWithSlash(start: string, end: string): string {
+    if (start.length == 0) {
+      return end;
+    }
+    if (end.length == 0) {
+      return start;
+    }
+    var slashes = 0;
+    if (start.endsWith('/')) {
+      slashes++;
+    }
+    if (end.startsWith('/')) {
+      slashes++;
+    }
+    if (slashes == 2) {
+      return start + end.substring(1);
+    }
+    if (slashes == 1) {
+      return start + end;
+    }
+    return start + '/' + end;
+  }
+
+  /**
+   * If url has a trailing slash, remove it, otherwise return url as is.
+   */
+  public static stripTrailingSlash(url: string): string {
+    if (/\/$/g.test(url)) {
+      url = url.substring(0, url.length - 1);
+    }
+    return url;
+  }
 }
 
 function _stripBaseHref(baseHref: string, url: string): string {
@@ -126,17 +170,10 @@ function _stripBaseHref(baseHref: string, url: string): string {
   return url;
 }
 
-function stripIndexHtml(url: string): string {
+function _stripIndexHtml(url: string): string {
   if (/\/index.html$/g.test(url)) {
     // '/index.html'.length == 11
     return url.substring(0, url.length - 11);
-  }
-  return url;
-}
-
-function stripTrailingSlash(url: string): string {
-  if (/\/$/g.test(url)) {
-    url = url.substring(0, url.length - 1);
   }
   return url;
 }

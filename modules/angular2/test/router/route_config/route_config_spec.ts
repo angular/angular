@@ -12,6 +12,7 @@ import {
 } from 'angular2/testing_internal';
 
 import {bootstrap} from 'angular2/platform/browser';
+import {APP_BASE_HREF, LocationStrategy} from 'angular2/platform/common';
 import {Component, Directive} from 'angular2/src/core/metadata';
 import {DOM} from 'angular2/src/platform/dom/dom_adapter';
 import {Console} from 'angular2/src/core/console';
@@ -19,16 +20,9 @@ import {provide} from 'angular2/core';
 import {DOCUMENT} from 'angular2/src/platform/dom/dom_tokens';
 import {Type, IS_DART} from 'angular2/src/facade/lang';
 
-import {
-  ROUTER_PROVIDERS,
-  Router,
-  RouteConfig,
-  APP_BASE_HREF,
-  ROUTER_DIRECTIVES
-} from 'angular2/router';
+import {ROUTER_PROVIDERS, Router, RouteConfig, ROUTER_DIRECTIVES} from 'angular2/router';
 
 import {ExceptionHandler} from 'angular2/src/facade/exceptions';
-import {LocationStrategy} from 'angular2/src/router/location/location_strategy';
 import {MockLocationStrategy} from 'angular2/src/mock/mock_location_strategy';
 
 class _ArrayLogger {

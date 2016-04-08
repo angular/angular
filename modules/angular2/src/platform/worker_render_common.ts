@@ -36,7 +36,6 @@ import {BrowserDomAdapter} from './browser/browser_adapter';
 import {wtfInit} from 'angular2/src/core/profile/wtf_init';
 import {MessageBasedRenderer} from 'angular2/src/web_workers/ui/renderer';
 import {MessageBasedXHRImpl} from 'angular2/src/web_workers/ui/xhr_impl';
-import {BrowserPlatformLocation} from 'angular2/src/router/location/browser_platform_location';
 import {
   ServiceMessageBrokerFactory,
   ServiceMessageBrokerFactory_
@@ -45,6 +44,9 @@ import {
   ClientMessageBrokerFactory,
   ClientMessageBrokerFactory_
 } from 'angular2/src/web_workers/shared/client_message_broker';
+import {
+  BrowserPlatformLocation
+} from 'angular2/src/platform/browser/location/browser_platform_location';
 import {Serializer} from 'angular2/src/web_workers/shared/serializer';
 import {ON_WEB_WORKER} from 'angular2/src/web_workers/shared/api';
 import {RenderStore} from 'angular2/src/web_workers/shared/render_store';

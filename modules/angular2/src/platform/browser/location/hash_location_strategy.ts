@@ -1,13 +1,8 @@
 import {Injectable, Inject, Optional} from 'angular2/core';
-import {
-  LocationStrategy,
-  joinWithSlash,
-  APP_BASE_HREF,
-  normalizeQueryParams
-} from './location_strategy';
-import {UrlChangeListener} from './platform_location';
+import {LocationStrategy, APP_BASE_HREF} from './location_strategy';
+import {Location} from './location';
+import {UrlChangeListener, PlatformLocation} from './platform_location';
 import {isPresent} from 'angular2/src/facade/lang';
-import {PlatformLocation} from './platform_location';
 
 /**
  * `HashLocationStrategy` is a {@link LocationStrategy} used to configure the
@@ -23,12 +18,14 @@ import {PlatformLocation} from './platform_location';
  * ```
  * import {Component, provide} from 'angular2/core';
  * import {
- *   ROUTER_DIRECTIVES,
- *   ROUTER_PROVIDERS,
- *   RouteConfig,
  *   Location,
  *   LocationStrategy,
  *   HashLocationStrategy
+ * } from 'angular2/platform/common';
+ * import {
+ *   ROUTER_DIRECTIVES,
+ *   ROUTER_PROVIDERS,
+ *   RouteConfig
  * } from 'angular2/router';
  *
  * @Component({directives: [ROUTER_DIRECTIVES]})
@@ -78,12 +75,12 @@ export class HashLocationStrategy extends LocationStrategy {
   }
 
   prepareExternalUrl(internal: string): string {
-    var url = joinWithSlash(this._baseHref, internal);
+    var url = Location.joinWithSlash(this._baseHref, internal);
     return url.length > 0 ? ('#' + url) : url;
   }
 
   pushState(state: any, title: string, path: string, queryParams: string) {
-    var url = this.prepareExternalUrl(path + normalizeQueryParams(queryParams));
+    var url = this.prepareExternalUrl(path + Location.normalizeQueryParams(queryParams));
     if (url.length == 0) {
       url = this._platformLocation.pathname;
     }
@@ -91,7 +88,7 @@ export class HashLocationStrategy extends LocationStrategy {
   }
 
   replaceState(state: any, title: string, path: string, queryParams: string) {
-    var url = this.prepareExternalUrl(path + normalizeQueryParams(queryParams));
+    var url = this.prepareExternalUrl(path + Location.normalizeQueryParams(queryParams));
     if (url.length == 0) {
       url = this._platformLocation.pathname;
     }

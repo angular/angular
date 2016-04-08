@@ -1,8 +1,8 @@
 import {Directive} from 'angular2/core';
+import {Location} from 'angular2/platform/common';
 import {isString} from 'angular2/src/facade/lang';
 
 import {Router} from '../router';
-import {Location} from '../location/location';
 import {Instruction} from '../instruction';
 
 /**

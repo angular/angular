@@ -18,9 +18,9 @@ import {SpyRouter, SpyLocation} from '../spies';
 
 import {provide, Component} from 'angular2/core';
 import {By} from 'angular2/platform/common_dom';
+import {Location} from 'angular2/platform/common';
 
 import {
-  Location,
   Router,
   RouteRegistry,
   RouterLink,

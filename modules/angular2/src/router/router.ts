@@ -2,6 +2,7 @@ import {PromiseWrapper, EventEmitter, ObservableWrapper} from 'angular2/src/faca
 import {Map, StringMapWrapper, MapWrapper, ListWrapper} from 'angular2/src/facade/collection';
 import {isBlank, isString, isPresent, Type, isArray} from 'angular2/src/facade/lang';
 import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
+import {Location} from 'angular2/platform/common';
 import {Inject, Injectable} from 'angular2/core';
 
 import {RouteRegistry, ROUTER_PRIMARY_COMPONENT} from './route_registry';
@@ -10,7 +11,6 @@ import {
   Instruction,
 } from './instruction';
 import {RouterOutlet} from './directives/router_outlet';
-import {Location} from './location/location';
 import {getCanActivateHook} from './lifecycle/route_lifecycle_reflector';
 import {RouteDefinition} from './route_config/route_config_impl';
 

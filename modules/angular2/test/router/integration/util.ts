@@ -21,7 +21,7 @@ import {RootRouter} from 'angular2/src/router/router';
 import {Router, ROUTER_DIRECTIVES, ROUTER_PRIMARY_COMPONENT} from 'angular2/router';
 
 import {SpyLocation} from 'angular2/src/mock/location_mock';
-import {Location} from 'angular2/src/router/location/location';
+import {Location} from 'angular2/platform/common';
 import {RouteRegistry} from 'angular2/src/router/route_registry';
 import {DOM} from 'angular2/src/platform/dom/dom_adapter';
 export {ComponentFixture} from 'angular2/testing_internal';
