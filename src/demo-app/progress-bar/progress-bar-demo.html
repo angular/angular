@@ -1,0 +1,37 @@
+<h1>Determinate</h1>
+<div class="demo-progress-bar-container">
+  <md-progress-bar mode="determinate"
+                   [value]="determinateProgressValue"
+                   color="primary"
+                   class="demo-progress-bar-margins"></md-progress-bar>
+</div>
+<span>Value: {{determinateProgressValue}}</span>
+<button md-raised-button (click)="stepDeterminateProgressVal(10)">Increase</button>
+<button md-raised-button (click)="stepDeterminateProgressVal(-10)">Decrease</button>
+<h1>Buffer</h1>
+<div class="demo-progress-bar-container">
+  <md-progress-bar [value]="bufferProgressValue"
+                   [bufferValue]="bufferBufferValue"
+                   mode="buffer"
+                   color="warn"
+                   class="demo-progress-bar-margins"></md-progress-bar>
+</div>
+<span>Value: {{bufferProgressValue}}</span>
+<button md-raised-button (click)="stepBufferProgressVal(10)">Increase</button>
+<button md-raised-button (click)="stepBufferProgressVal(-10)">Decrease</button>
+<span class="demo-progress-bar-spacer"></span>
+<span>Buffer Value: {{bufferBufferValue}}</span>
+<button md-raised-button (click)="stepBufferBufferVal(10)">Increase</button>
+<button md-raised-button (click)="stepBufferBufferVal(-10)">Decrease</button>
+
+<h1>Indeterminate</h1>
+<div class="demo-progress-bar-container">
+  <md-progress-bar mode="indeterminate"
+                   class="demo-progress-bar-margins"></md-progress-bar>
+</div>
+
+<h1>Query</h1>
+<div class="demo-progress-bar-container">
+  <md-progress-bar mode="query"
+                   class="demo-progress-bar-margins"></md-progress-bar>
+</div>

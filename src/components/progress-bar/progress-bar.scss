@@ -1,0 +1,297 @@
+@import "variables";
+@import "default-theme";
+
+$md-progress-bar-height: 5px !default;
+$md-progress-bar-full-animation-duration: 2s !default;
+$md-progress-bar-piece-animation-duration: 250ms !default;
+
+// TODO(josephperrott): Find better way to inline svgs.
+/** In buffer mode a repeated SVG object is used as a background.  Each of the following defines the SVG object for each
+    of the class defined colors.
+
+    Each string is a URL encoded version of:
+
+    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+         version="1.1" x="0px" y="0px" enable-background="new 0 0 5 2"
+         xml:space="preserve" viewBox="0 0 5 2" preserveAspectRatio="none slice">
+      <circle cx="1" cy="1" r="1" fill="{INJECTED_COLOR}"/>
+    </svg>
+
+    */
+$md-buffer-bubbles-primary: (
+  "data:image/svg+xml;charset=UTF-8,%3Csvg%20version%3D%271.1%27%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27" +
+  "%20xmlns%3Axlink%3D%27http%3A%2F%2Fwww.w3.org%2F1999%2Fxlink%27%20x%3D%270px%27%20y%3D%270px%27%20enable-backgroun" +
+  "d%3D%27new%200%200%205%202%27%20xml%3Aspace%3D%27preserve%27%20viewBox%3D%270%200%205%202%27%20preserveAspectRatio" +
+  "%3D%27none%20slice%27%3E%3Ccircle%20cx%3D%271%27%20cy%3D%271%27%20r%3D%271%27%20fill%3D%27" +
+  md-color($md-primary, 100) + "%27%2F%3E%3C%2Fsvg%3E") !default;
+$md-buffer-bubbles-accent: (
+  "data:image/svg+xml;charset=UTF-8,%3Csvg%20version%3D%271.1%27%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27" +
+  "%20xmlns%3Axlink%3D%27http%3A%2F%2Fwww.w3.org%2F1999%2Fxlink%27%20x%3D%270px%27%20y%3D%270px%27%20enable-backgroun" +
+  "d%3D%27new%200%200%205%202%27%20xml%3Aspace%3D%27preserve%27%20viewBox%3D%270%200%205%202%27%20preserveAspectRatio" +
+  "%3D%27none%20slice%27%3E%3Ccircle%20cx%3D%271%27%20cy%3D%271%27%20r%3D%271%27%20fill%3D%27" +
+  md-color($md-accent, 100) + "%27%2F%3E%3C%2Fsvg%3E") !default;
+$md-buffer-bubbles-warn: (
+  "data:image/svg+xml;charset=UTF-8,%3Csvg%20version%3D%271.1%27%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27" +
+  "%20xmlns%3Axlink%3D%27http%3A%2F%2Fwww.w3.org%2F1999%2Fxlink%27%20x%3D%270px%27%20y%3D%270px%27%20enable-backgroun" +
+  "d%3D%27new%200%200%205%202%27%20xml%3Aspace%3D%27preserve%27%20viewBox%3D%270%200%205%202%27%20preserveAspectRatio" +
+  "%3D%27none%20slice%27%3E%3Ccircle%20cx%3D%271%27%20cy%3D%271%27%20r%3D%271%27%20fill%3D%27" +
+  md-color($md-warn, 100) + "%27%2F%3E%3C%2Fsvg%3E") !default;
+
+:host {
+  display: block;
+  // Height is provided for md-progress-bar to act as a default.
+  height: $md-progress-bar-height;
+  overflow: hidden;
+  position: relative;
+  // translateZ is added to force the md-progress-bar into its own GPU layer.
+  transform: translateZ(0);
+  transition: opacity $md-progress-bar-piece-animation-duration linear;
+  width: 100%;
+
+  // The progress bar background is used to show the bubble animation scrolling behind a buffering progress bar.
+  .md-progress-bar-background {
+    background: url($md-buffer-bubbles-primary);
+    background-repeat: repeat-x;
+    background-size: 10px 4px;
+    height: 100%;
+    position: absolute;
+    visibility: hidden;
+    width: 100%;
+  }
+
+  /**
+   * The progress bar buffer is the bar indicator showing the buffer value and is only visible beyond the current value
+   * of the primary progress bar.
+   */
+  .md-progress-bar-buffer {
+    background-color: md-color($md-primary, 100);
+    height: 100%;
+    position: absolute;
+    transform-origin: top left;
+    transition: transform $md-progress-bar-piece-animation-duration ease;
+    width: 100%;
+  }
+
+  /**
+   * The secondary progress bar is only used in the indeterminate animation, because of this it is hidden in other uses.
+   */
+  .md-progress-bar-secondary {
+    visibility: hidden;
+  }
+
+  /**
+  * The progress bar fill fills the progress bar with the indicator color.
+  */
+  .md-progress-bar-fill {
+    animation: none;
+    height: 100%;
+    position: absolute;
+    transform-origin: top left;
+    transition: transform $md-progress-bar-piece-animation-duration ease;
+    width: 100%;
+  }
+
+  /**
+  * A pseudo element is created for each progress bar bar that fills with the indicator color.
+  */
+  .md-progress-bar-fill::after {
+    animation: none;
+    background-color: md-color($md-primary, 600);
+    content: '';
+    display: inline-block;
+    height: 100%;
+    position: absolute;
+    width: 100%;
+  }
+
+  &[color="accent"] {
+    .md-progress-bar-background {
+      background: url($md-buffer-bubbles-accent);
+      background-repeat: repeat-x;
+      background-size: 10px 4px;
+    }
+    .md-progress-bar-buffer {
+      background-color: md-color($md-accent, 100);
+    }
+    .md-progress-bar-fill::after {
+      background-color: md-color($md-accent, 600);
+    }
+  }
+
+  &[color="warn"] {
+    .md-progress-bar-background {
+      background: url($md-buffer-bubbles-warn);
+      background-repeat: repeat-x;
+      background-size: 10px 4px;
+    }
+    .md-progress-bar-buffer {
+      background-color: md-color($md-warn, 100);
+    }
+    .md-progress-bar-fill::after {
+      background-color: md-color($md-warn, 600);
+    }
+  }
+
+  &[mode="query"] {
+    transform: rotateZ(180deg);
+  }
+
+  &[mode="indeterminate"],
+  &[mode="query"] {
+    .md-progress-bar-fill {
+      transition: none;
+    }
+    .md-progress-bar-primary {
+      animation: md-progress-bar-primary-indeterminate-translate $md-progress-bar-full-animation-duration infinite linear;
+      left: -145.166611%;
+    }
+    .md-progress-bar-primary.md-progress-bar-fill::after {
+      animation: md-progress-bar-primary-indeterminate-scale $md-progress-bar-full-animation-duration infinite linear;
+    }
+    .md-progress-bar-secondary {
+      animation: md-progress-bar-secondary-indeterminate-translate $md-progress-bar-full-animation-duration infinite linear;
+      left: -54.888891%;
+      visibility: visible;
+    }
+    .md-progress-bar-secondary.md-progress-bar-fill::after {
+      animation: md-progress-bar-secondary-indeterminate-scale $md-progress-bar-full-animation-duration infinite linear;
+    }
+  }
+
+  &[mode="buffer"] {
+    .md-progress-bar-background {
+      animation: md-progress-bar-background-scroll $md-progress-bar-piece-animation-duration infinite linear;
+      visibility: visible;
+    }
+  }
+}
+
+
+// Reverse the apparent directionality of progress vars for rtl.
+:host-context([dir="rtl"]) {
+  transform: rotateY(180deg);
+}
+
+
+/** The values used for animations in md-progress-bar, both timing and transformation, can be considered magic values.
+    They are sourced from the Material Design example spec and duplicate the values of the original designers
+    definitions.
+
+
+    The indeterminate state is essentially made up of two progress bars, one primary (the one that is shown in both the
+    determinate and indeterminate states) and one secondary, which essentially mirrors the primary progress bar in
+    appearance but is only shown to assist with the indeterminate animations.
+
+
+    KEYFRAME BLOCK	                    DESCRIPTION
+    primary-indeterminate-translate     Translation of the primary progressbar across the screen
+    primary-indeterminate-scale         Scaling of the primary progressbar as it's being translated across the screen
+    secondary-indeterminate-translate   Translation of the secondary progressbar across the screen
+    secondary-indeterminate-scale       Scaling of the secondary progressbar as it's being translated across the screen
+
+    Because two different transform animations need to be applied at once, the translation is applied to the outer
+    element and the scaling is applied to the inner element, which provides the illusion necessary to make the animation
+    work.
+*/
+
+// Progress Bar Timing functions:
+// $md-progress-bar-primary-indeterminate-translate-step-1 has no timing function.
+$md-progress-bar-primary-indeterminate-translate-step-2: cubic-bezier(.5, 0, .701732, .495819) !default;
+$md-progress-bar-primary-indeterminate-translate-step-3: cubic-bezier(.302435, .381352, .55, .956352) !default;
+// $md-progress-bar-primary-indeterminate-translate-step-4 has no timing function.
+
+// $md-progress-bar-primary-indeterminate-scale-step-1 has no timing function
+$md-progress-bar-primary-indeterminate-scale-step-2: cubic-bezier(.334731, .124820, .785844, 1) !default;
+$md-progress-bar-primary-indeterminate-scale-step-3: cubic-bezier(.06, .11, .6, 1) !default;
+// $md-progress-bar-primary-indeterminate-scale-step-4 has no timing function
+
+$md-progress-bar-secondary-indeterminate-translate-step-1: cubic-bezier(.15, 0, .515058, .409685) !default;
+$md-progress-bar-secondary-indeterminate-translate-step-2: cubic-bezier(.310330, .284058, .8, .733712) !default;
+$md-progress-bar-secondary-indeterminate-translate-step-3: cubic-bezier(.4, .627035, .6, .902026) !default;
+// $md-progress-bar-secondary-indeterminate-translate-step-4 has no timing function
+
+$md-progress-bar-secondary-indeterminate-scale-step-1: cubic-bezier(.15, 0, .515058, .409685) !default;
+$md-progress-bar-secondary-indeterminate-scale-step-2: cubic-bezier(.310330, .284058, .8, .733712) !default;
+$md-progress-bar-secondary-indeterminate-scale-step-3: cubic-bezier(.4, .627035, .6, .902026) !default;
+// $md-progress-bar-secondary-indeterminate-scale-step-4 has no timing function
+
+/** Animations for indeterminate and query mode. */
+// Primary indicator.
+@keyframes md-progress-bar-primary-indeterminate-translate {
+  0% {
+    transform: translateX(0px);
+  }
+  20% {
+    animation-timing-function: $md-progress-bar-primary-indeterminate-translate-step-2;
+    transform: translateX(0px);
+  }
+  59.15% {
+    animation-timing-function: $md-progress-bar-primary-indeterminate-translate-step-3;
+    transform: translateX(83.67142%);
+  }
+  100% {
+    transform: translateX(200.611057%);
+  }
+}
+
+@keyframes md-progress-bar-primary-indeterminate-scale {
+  0% {
+    transform: scaleX(.08);
+  }
+  36.65% {
+    animation-timing-function: $md-progress-bar-primary-indeterminate-scale-step-2;
+    transform: scaleX(.08);
+  }
+  69.15% {
+    animation-timing-function: $md-progress-bar-primary-indeterminate-scale-step-3;
+    transform: scaleX(.661479);
+  }
+  100% {
+    transform: scaleX(.08);
+  }
+}
+
+// Secondary indicator.
+@keyframes md-progress-bar-secondary-indeterminate-translate {
+  0% {
+    animation-timing-function: $md-progress-bar-secondary-indeterminate-translate-step-1;
+    transform: translateX(0px);
+  }
+  25% {
+    animation-timing-function: $md-progress-bar-secondary-indeterminate-translate-step-2;
+
+    transform: translateX(37.651913%);
+  }
+  48.35% {
+    animation-timing-function: $md-progress-bar-secondary-indeterminate-translate-step-3;
+    transform: translateX(84.386165%);
+  }
+  100%    {
+    transform: translateX(160.277782%);
+  }
+}
+
+@keyframes md-progress-bar-secondary-indeterminate-scale {
+  0% {
+    animation-timing-function: $md-progress-bar-secondary-indeterminate-scale-step-1;
+    transform: scaleX(.08);
+  }
+  19.15% {
+    animation-timing-function: $md-progress-bar-secondary-indeterminate-scale-step-2;
+    transform: scaleX(.457104);
+  }
+  44.15% {
+    animation-timing-function: $md-progress-bar-secondary-indeterminate-scale-step-3;
+    transform: scaleX(.727960);
+  }
+  100% {
+    transform: scaleX(.08);
+  }
+}
+
+/** Animation for buffer mode. */
+@keyframes md-progress-bar-background-scroll {
+  to {
+    transform: translateX(-10px);
+  }
+}
