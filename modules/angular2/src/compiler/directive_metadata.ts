@@ -51,11 +51,13 @@ export class CompileIdentifierMetadata implements CompileMetadataWithIdentifier 
   name: string;
   prefix: string;
   moduleUrl: string;
+  genericTypes: CompileIdentifierMetadata[];
   constConstructor: boolean;
-  constructor({runtime, name, moduleUrl, prefix, constConstructor}: {
+  constructor({runtime, name, moduleUrl, genericTypes, prefix, constConstructor}: {
     runtime?: any,
     name?: string,
     moduleUrl?: string,
+    genericTypes?: CompileIdentifierMetadata[],
     prefix?: string,
     constConstructor?: boolean
   } = {}) {
@@ -63,6 +65,7 @@ export class CompileIdentifierMetadata implements CompileMetadataWithIdentifier 
     this.name = name;
     this.prefix = prefix;
     this.moduleUrl = moduleUrl;
+    this.genericTypes = genericTypes;
     this.constConstructor = constConstructor;
   }
 
@@ -71,6 +74,7 @@ export class CompileIdentifierMetadata implements CompileMetadataWithIdentifier 
       name: data['name'],
       prefix: data['prefix'],
       moduleUrl: data['moduleUrl'],
+      genericTypes: arrayFromJson(data['genericTypes'], CompileIdentifierMetadata.fromJson),
       constConstructor: data['constConstructor']
     });
   }
@@ -81,6 +85,7 @@ export class CompileIdentifierMetadata implements CompileMetadataWithIdentifier 
       'class': 'Identifier',
       'name': this.name,
       'moduleUrl': this.moduleUrl,
+      'genericTypes': arrayToJson(this.genericTypes),
       'prefix': this.prefix,
       'constConstructor': this.constConstructor
     };
@@ -212,6 +217,8 @@ export class CompileFactoryMetadata implements CompileIdentifierMetadata {
     this.constConstructor = constConstructor;
   }
 
+  get genericTypes(): CompileIdentifierMetadata[] { return []; }
+
   get identifier(): CompileIdentifierMetadata { return this; }
 
   toJson(): {[key: string]: any} { return null; }
@@ -225,14 +232,16 @@ export class CompileTypeMetadata implements CompileIdentifierMetadata, CompileMe
   name: string;
   prefix: string;
   moduleUrl: string;
+  genericTypes: CompileIdentifierMetadata[];
   isHost: boolean;
   constConstructor: boolean;
   diDeps: CompileDiDependencyMetadata[];
 
-  constructor({runtime, name, moduleUrl, prefix, isHost, constConstructor, diDeps}: {
+  constructor({runtime, name, moduleUrl, genericTypes, prefix, isHost, constConstructor, diDeps}: {
     runtime?: Type,
     name?: string,
     moduleUrl?: string,
+    genericTypes?: CompileIdentifierMetadata[],
     prefix?: string,
     isHost?: boolean,
     constConstructor?: boolean,
@@ -241,6 +250,7 @@ export class CompileTypeMetadata implements CompileIdentifierMetadata, CompileMe
     this.runtime = runtime;
     this.name = name;
     this.moduleUrl = moduleUrl;
+    this.genericTypes = genericTypes;
     this.prefix = prefix;
     this.isHost = normalizeBool(isHost);
     this.constConstructor = constConstructor;
@@ -251,6 +261,7 @@ export class CompileTypeMetadata implements CompileIdentifierMetadata, CompileMe
     return new CompileTypeMetadata({
       name: data['name'],
       moduleUrl: data['moduleUrl'],
+      genericTypes: arrayFromJson(data['genericTypes'], CompileIdentifierMetadata.fromJson),
       prefix: data['prefix'],
       isHost: data['isHost'],
       constConstructor: data['constConstructor'],
@@ -267,6 +278,7 @@ export class CompileTypeMetadata implements CompileIdentifierMetadata, CompileMe
       'class': 'Type',
       'name': this.name,
       'moduleUrl': this.moduleUrl,
+      'genericTypes': arrayToJson(this.genericTypes),
       'prefix': this.prefix,
       'isHost': this.isHost,
       'constConstructor': this.constConstructor,

@@ -15,6 +15,7 @@ import {
 import {
   CompileDirectiveMetadata,
   CompileTypeMetadata,
+  CompileIdentifierMetadata,
   CompileTemplateMetadata,
   CompileProviderMetadata,
   CompileDiDependencyMetadata,
@@ -34,6 +35,8 @@ export function main() {
       fullTypeMeta = new CompileTypeMetadata({
         name: 'SomeType',
         moduleUrl: 'someUrl',
+        genericTypes:
+            [new CompileIdentifierMetadata({name: 'SomeGeneric', moduleUrl: 'SomeGenericUrl'})],
         isHost: true,
         diDeps: [
           new CompileDiDependencyMetadata({
