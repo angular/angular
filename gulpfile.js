@@ -1203,7 +1203,8 @@ gulp.task('!bundle.js.prod', ['build.js.prod'], function() {
 // minified production build
 gulp.task('!bundle.js.min', ['build.js.prod'], function() {
   var bundler = require('./tools/build/bundle');
-  var bundlerConfig = {sourceMaps: true, minify: true};
+  var bundlerConfig =
+      {sourceMaps: true, minify: true, mangle: false, uglify: {compress: {keep_fnames: true}}};
 
   return bundler.bundle(bundleConfig, NG2_BUNDLE_CONTENT, './dist/build/angular2.min.js',
                         bundlerConfig)
