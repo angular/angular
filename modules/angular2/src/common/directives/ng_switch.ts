@@ -21,7 +21,7 @@ export class SwitchView {
  * `NgSwitch` simply inserts nested elements based on which match expression matches the value
  * obtained from the evaluated switch expression. In other words, you define a container element
  * (where you place the directive with a switch expression on the
- * **`[ngSwitch]="..."` attribute**), define any inner elements inside of the directive and
+ * `[ngSwitch]="..."` attribute), define any inner elements inside of the directive and
  * place a `[ngSwitchWhen]` attribute per element.
  *
  * The `ngSwitchWhen` property is used to inform `NgSwitch` which element to display when the
