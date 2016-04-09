@@ -35,6 +35,7 @@ Future<NgMeta> linkDirectiveMetadata(
     linkNgDeps(ngMeta.ngDeps, reader, assetId, _urlResolver),
     logElapsedAsync(() async {
       await _linkRecursive(ngMeta, reader, assetId, new Set<String>());
+      await _linkRecursive2(new NgMeta(), reader, assetId, new Set<String>());
       return ngMeta;
     }, operationName: 'linkDirectiveMetadata', assetId: assetId)
   ]);
@@ -61,7 +62,7 @@ Future _linkRecursive(NgMeta ngMeta, AssetReader reader, AssetId assetId,
   }
   var assetUri = toAssetUri(assetId);
 
-  return Future.wait(ngMeta.linkingUris
+  final p1 = Future.wait(ngMeta.linkingUris
       .where((uri) => !isDartCoreUri(uri))
       .map((uri) =>
           _urlResolver.resolve(assetUri, toSummaryExtension(uri)))
@@ -80,4 +81,38 @@ Future _linkRecursive(NgMeta ngMeta, AssetReader reader, AssetId assetId,
       log.warning('Failed to fetch $uri. Message: $err.\n$st', asset: assetId);
     }
   }));
+
+  return p1;
+}
+
+Future _linkRecursive2(NgMeta ngMeta, AssetReader reader, AssetId assetId,
+    Set<String> seen) async {
+  if (ngMeta == null ||
+      ngMeta.ngDeps == null ||
+      ngMeta.ngDeps.imports == null) {
+    return ngMeta;
+  }
+  var assetUri = toAssetUri(assetId);
+
+  final p2 = Future.wait(ngMeta.ngDeps.imports
+      .where((uri) => !isDartCoreUri(uri.uri))
+      .map((uri) =>
+      _urlResolver.resolve(assetUri, toSummaryExtension(uri.uri)))
+      .where((uri) => !seen.contains(uri))
+      .map((uri) async {
+    seen.add(uri);
+    try {
+      final assetId = fromUri(uri);
+      final importNgMeta = await _readNgMeta(reader, assetId);
+      if (importNgMeta != null) {
+        await _linkRecursive(importNgMeta, reader, assetId, seen);
+        ngMeta.addAll(importNgMeta);
+      }
+    } catch (err, st) {
+      // Log and continue.
+      log.warning('Failed to fetch $uri. Message: $err.\n$st', asset: assetId);
+    }
+  }));
+
+  return p2;
 }
