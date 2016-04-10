@@ -5,9 +5,8 @@ import {
   APP_BASE_HREF,
   normalizeQueryParams
 } from './location_strategy';
-import {UrlChangeListener} from './platform_location';
+import {PlatformLocation, UrlChangeListener} from './platform_location';
 import {isPresent} from 'angular2/src/facade/lang';
-import {PlatformLocation} from './platform_location';
 
 /**
  * `HashLocationStrategy` is a {@link LocationStrategy} used to configure the

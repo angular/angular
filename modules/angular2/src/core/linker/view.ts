@@ -29,11 +29,10 @@ import {
 import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
 import {Renderer, RootRenderer, RenderDebugInfo} from 'angular2/src/core/render/api';
 import {ViewRef_, HostViewFactoryRef} from './view_ref';
-import {ProtoPipes} from 'angular2/src/core/pipes/pipes';
 import {camelCaseToDashCase} from 'angular2/src/core/render/util';
 
 export {DebugContext} from 'angular2/src/core/change_detection/interfaces';
-import {Pipes} from 'angular2/src/core/pipes/pipes';
+import {Pipes, ProtoPipes} from 'angular2/src/core/pipes/pipes';
 import {AppViewManager_, AppViewManager} from './view_manager';
 import {ResolvedMetadataCache} from './resolved_metadata_cache';
 import {ViewType} from './view_type';

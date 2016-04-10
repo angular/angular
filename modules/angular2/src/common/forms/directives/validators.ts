@@ -1,9 +1,7 @@
 import {forwardRef, Provider, Attribute, Directive} from 'angular2/core';
-import {CONST_EXPR} from 'angular2/src/facade/lang';
+import {CONST_EXPR, NumberWrapper} from 'angular2/src/facade/lang';
 import {Validators, NG_VALIDATORS} from '../validators';
-import {AbstractControl} from '../model';
 import * as modelModule from '../model';
-import {NumberWrapper} from "angular2/src/facade/lang";
 
 
 
@@ -48,9 +46,10 @@ const REQUIRED_VALIDATOR =
 export class RequiredValidator {
 }
 
-export interface ValidatorFn { (c: AbstractControl): {[key: string]: any}; }
+export interface ValidatorFn { (c: modelModule.AbstractControl): {[key: string]: any}; }
 export interface AsyncValidatorFn {
-  (c: AbstractControl): any /*Promise<{[key: string]: any}>|Observable<{[key: string]: any}>*/;
+  (c: modelModule.AbstractControl):
+      any /*Promise<{[key: string]: any}>|Observable<{[key: string]: any}>*/;
 }
 
 /**

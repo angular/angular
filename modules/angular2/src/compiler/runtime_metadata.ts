@@ -1,4 +1,3 @@
-import {resolveForwardRef} from 'angular2/src/core/di';
 import {
   Type,
   isBlank,
@@ -17,7 +16,7 @@ import {ViewMetadata} from 'angular2/src/core/metadata/view';
 import {hasLifecycleHook} from 'angular2/src/core/linker/directive_lifecycle_reflector';
 import {LifecycleHooks, LIFECYCLE_HOOKS_VALUES} from 'angular2/src/core/linker/interfaces';
 import {reflector} from 'angular2/src/core/reflection/reflection';
-import {Injectable, Inject, Optional} from 'angular2/src/core/di';
+import {Injectable, Inject, Optional, resolveForwardRef} from 'angular2/src/core/di';
 import {PLATFORM_DIRECTIVES, PLATFORM_PIPES} from 'angular2/src/core/platform_directives_and_pipes';
 import {MODULE_SUFFIX} from './util';
 import {assertArrayOfStrings} from './assertions';
