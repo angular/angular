@@ -64,8 +64,6 @@ matrix:
   allow_failures:
     - env: "MODE=saucelabs_optional"
     - env: "MODE=browserstack_optional"
-    # Tracked in https://github.com/angular/angular/issues/7050
-    - env: "MODE=typescript_next"
 
 addons:
   firefox: "38.0"
