@@ -35,7 +35,7 @@ export class MockConnection implements Connection {
   response: ReplaySubject<Response>;
 
   constructor(req: Request) {
-    this.response = take.call(new ReplaySubject(1), 1);
+    this.response = <any>take.call(new ReplaySubject(1), 1);
     this.readyState = ReadyState.Open;
     this.request = req;
   }
