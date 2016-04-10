@@ -2,13 +2,28 @@ import {StringMapWrapper} from 'angular2/src/facade/collection';
 import {isPresent, isBlank, RegExpWrapper, CONST_EXPR} from 'angular2/src/facade/lang';
 import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
 
+export function convertUrlParamsToArray(urlParams: {[key: string]: any}): string[] {
+  var paramsArray = [];
+  if (isBlank(urlParams)) {
+    return [];
+  }
+  StringMapWrapper.forEach(
+      urlParams, (value, key) => { paramsArray.push((value === true) ? key : key + '=' + value); });
+  return paramsArray;
+}
+
+// Convert an object of url parameters into a string that can be used in an URL
+export function serializeParams(urlParams: {[key: string]: any}, joiner = '&'): string {
+  return convertUrlParamsToArray(urlParams).join(joiner);
+}
+
 /**
  * This class represents a parsed URL
  */
 export class Url {
   constructor(public path: string, public child: Url = null,
               public auxiliary: Url[] = CONST_EXPR([]),
-              public params: {[key: string]: any} = null) {}
+              public params: {[key: string]: any} = CONST_EXPR({})) {}
 
   toString(): string {
     return this.path + this._matrixParamsToString() + this._auxToString() + this._childString();
@@ -24,11 +39,11 @@ export class Url {
   }
 
   private _matrixParamsToString(): string {
-    if (isBlank(this.params)) {
-      return '';
+    var paramString = serializeParams(this.params, ';');
+    if (paramString.length > 0) {
+      return ';' + paramString;
     }
-
-    return ';' + serializeParams(this.params).join(';');
+    return '';
   }
 
   /** @internal */
@@ -52,7 +67,7 @@ export class RootUrl extends Url {
       return '';
     }
 
-    return '?' + serializeParams(this.params).join('&');
+    return '?' + serializeParams(this.params);
   }
 }
 
@@ -67,6 +82,11 @@ export function pathSegmentsToUrl(pathSegments: string[]): Url {
 var SEGMENT_RE = RegExpWrapper.create('^[^\\/\\(\\)\\?;=&#]+');
 function matchUrlSegment(str: string): string {
   var match = RegExpWrapper.firstMatch(SEGMENT_RE, str);
+  return isPresent(match) ? match[0] : '';
+}
+var QUERY_PARAM_VALUE_RE = RegExpWrapper.create('^[^\\(\\)\\?;&#]+');
+function matchUrlQueryParamValue(str: string): string {
+  var match = RegExpWrapper.firstMatch(QUERY_PARAM_VALUE_RE, str);
   return isPresent(match) ? match[0] : '';
 }
 
@@ -91,14 +111,14 @@ export class UrlParser {
   }
 
   // segment + (aux segments) + (query params)
-  parseRoot(): Url {
+  parseRoot(): RootUrl {
     if (this.peekStartsWith('/')) {
       this.capture('/');
     }
     var path = matchUrlSegment(this._remaining);
     this.capture(path);
 
-    var aux = [];
+    var aux: Url[] = [];
     if (this.peekStartsWith('(')) {
       aux = this.parseAuxiliaryRoutes();
     }
@@ -111,7 +131,7 @@ export class UrlParser {
       this.capture('/');
       child = this.parseSegment();
     }
-    var queryParams = null;
+    var queryParams: {[key: string]: any} = null;
     if (this.peekStartsWith('?')) {
       queryParams = this.parseQueryParams();
     }
@@ -129,15 +149,15 @@ export class UrlParser {
     var path = matchUrlSegment(this._remaining);
     this.capture(path);
 
-    var matrixParams = null;
+    var matrixParams: {[key: string]: any} = null;
     if (this.peekStartsWith(';')) {
       matrixParams = this.parseMatrixParams();
     }
-    var aux = [];
+    var aux: Url[] = [];
     if (this.peekStartsWith('(')) {
       aux = this.parseAuxiliaryRoutes();
     }
-    var child = null;
+    var child: Url = null;
     if (this.peekStartsWith('/') && !this.peekStartsWith('//')) {
       this.capture('/');
       child = this.parseSegment();
@@ -146,18 +166,18 @@ export class UrlParser {
   }
 
   parseQueryParams(): {[key: string]: any} {
-    var params = {};
+    var params: {[key: string]: any} = {};
     this.capture('?');
-    this.parseParam(params);
+    this.parseQueryParam(params);
     while (this._remaining.length > 0 && this.peekStartsWith('&')) {
       this.capture('&');
-      this.parseParam(params);
+      this.parseQueryParam(params);
     }
     return params;
   }
 
   parseMatrixParams(): {[key: string]: any} {
-    var params = {};
+    var params: {[key: string]: any} = {};
     while (this._remaining.length > 0 && this.peekStartsWith(';')) {
       this.capture(';');
       this.parseParam(params);
@@ -184,8 +204,27 @@ export class UrlParser {
     params[key] = value;
   }
 
+  parseQueryParam(params: {[key: string]: any}): void {
+    var key = matchUrlSegment(this._remaining);
+    if (isBlank(key)) {
+      return;
+    }
+    this.capture(key);
+    var value: any = true;
+    if (this.peekStartsWith('=')) {
+      this.capture('=');
+      var valueMatch = matchUrlQueryParamValue(this._remaining);
+      if (isPresent(valueMatch)) {
+        value = valueMatch;
+        this.capture(value);
+      }
+    }
+
+    params[key] = value;
+  }
+
   parseAuxiliaryRoutes(): Url[] {
-    var routes = [];
+    var routes: Url[] = [];
     this.capture('(');
 
     while (!this.peekStartsWith(')') && this._remaining.length > 0) {
@@ -201,17 +240,3 @@ export class UrlParser {
 }
 
 export var parser = new UrlParser();
-
-export function serializeParams(paramMap: {[key: string]: any}): string[] {
-  var params = [];
-  if (isPresent(paramMap)) {
-    StringMapWrapper.forEach(paramMap, (value, key) => {
-      if (value == true) {
-        params.push(key);
-      } else {
-        params.push(key + '=' + value);
-      }
-    });
-  }
-  return params;
-}

@@ -26,7 +26,7 @@ export function main() {
     beforeEach(inject([HtmlParser], (_htmlParser: HtmlParser) => { htmlParser = _htmlParser; }));
 
     function preparse(html: string): PreparsedElement {
-      return preparseElement(htmlParser.parse(html, '').rootNodes[0]);
+      return preparseElement(htmlParser.parse(html, 'TestComp').rootNodes[0]);
     }
 
     it('should detect script elements', inject([HtmlParser], (htmlParser: HtmlParser) => {
@@ -54,5 +54,8 @@ export function main() {
          expect(preparse('<ng-content select="*">').selectAttr).toEqual('*');
        }));
 
+    it('should extract ngProjectAs value', () => {
+      expect(preparse('<p ngProjectAs="el[attr].class"></p>').projectAs).toEqual('el[attr].class');
+    });
   });
 }

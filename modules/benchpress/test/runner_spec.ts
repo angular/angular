@@ -24,14 +24,14 @@ import {
   SampleState
 } from 'benchpress/common';
 import {isBlank} from 'angular2/src/facade/lang';
-import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
+import {PromiseWrapper} from 'angular2/src/facade/async';
 
 export function main() {
   describe('runner', () => {
     var injector: Injector;
     var runner;
 
-    function createRunner(defaultBindings = null) {
+    function createRunner(defaultBindings = null): Runner {
       if (isBlank(defaultBindings)) {
         defaultBindings = [];
       }

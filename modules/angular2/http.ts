@@ -141,7 +141,8 @@ export {URLSearchParams} from './src/http/url_search_params';
  *       // Send a response to the request
  *       connection.mockRespond(response);
  *     });
- *   });
+ *   }
+ * });
  *
  * http.get('people.json').observer({
  *   next: res => {
@@ -156,7 +157,8 @@ export const HTTP_PROVIDERS: any[] = [
   // issue: https://github.com/angular/angular/issues/3183
   provide(Http,
           {
-            useFactory: (xhrBackend, requestOptions) => new Http(xhrBackend, requestOptions),
+            useFactory: (xhrBackend: XHRBackend, requestOptions: RequestOptions) =>
+                            new Http(xhrBackend, requestOptions),
             deps: [XHRBackend, RequestOptions]
           }),
   BrowserXhr,
@@ -268,7 +270,8 @@ export const HTTP_BINDINGS = HTTP_PROVIDERS;
  *       // Send a response to the request
  *       connection.mockRespond(response);
  *     });
- *   });
+ *   }
+ * });
 
  * jsonp.get('people.json').observer({
  *   next: res => {
@@ -283,7 +286,8 @@ export const JSONP_PROVIDERS: any[] = [
   // issue: https://github.com/angular/angular/issues/3183
   provide(Jsonp,
           {
-            useFactory: (jsonpBackend, requestOptions) => new Jsonp(jsonpBackend, requestOptions),
+            useFactory: (jsonpBackend: JSONPBackend, requestOptions: RequestOptions) =>
+                            new Jsonp(jsonpBackend, requestOptions),
             deps: [JSONPBackend, RequestOptions]
           }),
   BrowserJsonp,

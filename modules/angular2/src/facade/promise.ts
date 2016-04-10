@@ -1,11 +1,15 @@
-// Promises are put into their own facade file so that they can be used without
-// introducing a dependency on rxjs. They are re-exported through facade/async.
-export {Promise};
 
-export interface PromiseCompleter<R> {
+export class PromiseCompleter<R> {
   promise: Promise<R>;
   resolve: (value?: R | PromiseLike<R>) => void;
   reject: (error?: any, stackTrace?: string) => void;
+
+  constructor() {
+    this.promise = new Promise((res, rej) => {
+      this.resolve = res;
+      this.reject = rej;
+    });
+  }
 }
 
 export class PromiseWrapper {
@@ -20,7 +24,7 @@ export class PromiseWrapper {
     return promise.catch(onError);
   }
 
-  static all(promises: any[]): Promise<any> {
+  static all<T>(promises: (T | Promise<T>)[]): Promise<T[]> {
     if (promises.length == 0) return Promise.resolve([]);
     return Promise.all(promises);
   }
@@ -46,15 +50,5 @@ export class PromiseWrapper {
 
   static isPromise(obj: any): boolean { return obj instanceof Promise; }
 
-  static completer(): PromiseCompleter<any> {
-    var resolve;
-    var reject;
-
-    var p = new Promise(function(res, rej) {
-      resolve = res;
-      reject = rej;
-    });
-
-    return {promise: p, resolve: resolve, reject: reject};
-  }
+  static completer<T>(): PromiseCompleter<T> { return new PromiseCompleter<T>(); }
 }

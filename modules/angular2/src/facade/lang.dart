@@ -1,11 +1,11 @@
 library angular.core.facade.lang;
 
-export 'dart:core' show Type, RegExp, print, DateTime;
+export 'dart:core' show Type, RegExp, print, DateTime, Uri;
 import 'dart:math' as math;
 import 'dart:convert' as convert;
-import 'dart:async' show Future;
+import 'dart:async' show Future, Zone;
 
-String getTypeNameForDebugging(Type type) => type.toString();
+String getTypeNameForDebugging(Object type) => type.toString();
 
 class Math {
   static final _random = new math.Random();
@@ -20,16 +20,20 @@ class CONST {
 
 const IS_DART = true;
 
-bool isPresent(obj) => obj != null;
-bool isBlank(obj) => obj == null;
-bool isString(obj) => obj is String;
-bool isFunction(obj) => obj is Function;
-bool isType(obj) => obj is Type;
-bool isStringMap(obj) => obj is Map;
-bool isArray(obj) => obj is List;
-bool isPromise(obj) => obj is Future;
-bool isNumber(obj) => obj is num;
-bool isDate(obj) => obj is DateTime;
+scheduleMicroTask(Function fn) {
+  Zone.current.scheduleMicrotask(fn);
+}
+
+bool isPresent(Object obj) => obj != null;
+bool isBlank(Object obj) => obj == null;
+bool isString(Object obj) => obj is String;
+bool isFunction(Object obj) => obj is Function;
+bool isType(Object obj) => obj is Type;
+bool isStringMap(Object obj) => obj is Map;
+bool isArray(Object obj) => obj is List;
+bool isPromise(Object obj) => obj is Future;
+bool isNumber(Object obj) => obj is num;
+bool isDate(Object obj) => obj is DateTime;
 
 String stringify(obj) {
   final exp = new RegExp(r"from Function '(\w+)'");
@@ -52,6 +56,11 @@ int serializeEnum(val) {
  */
 dynamic deserializeEnum(num val, Map<num, dynamic> values) {
   return values[val];
+}
+
+String resolveEnumToken(enumValue, val) {
+  // turn Enum.Token -> Token
+  return val.toString().replaceFirst(new RegExp('^.+\\.'),'');
 }
 
 class StringWrapper {
@@ -206,6 +215,20 @@ class RegExpWrapper {
   static Iterator<Match> matcher(RegExp regExp, String input) {
     return regExp.allMatches(input).iterator;
   }
+
+  static String replaceAll(RegExp regExp, String input, Function replace) {
+    final m = RegExpWrapper.matcher(regExp, input);
+    var res = "";
+    var prev = 0;
+    while(m.moveNext()) {
+      var c = m.current;
+      res += input.substring(prev, c.start);
+      res += replace(c);
+      prev = c.start + c[0].length;
+    }
+    res += input.substring(prev);
+    return res;
+  }
 }
 
 class RegExpMatcherWrapper {
@@ -345,9 +368,29 @@ class DateWrapper {
   }
 }
 
+bool isPrimitive(Object obj) => obj is num || obj is bool || obj == null || obj is String;
+
 // needed to match the exports from lang.js
 var global = null;
 
 dynamic evalExpression(String sourceUrl, String expr, String declarations, Map<String, String> vars) {
   throw "Dart does not support evaluating expression during runtime!";
+}
+
+bool hasConstructor(Object value, Type type) {
+  return value.runtimeType == type;
+}
+
+num bitWiseOr(List values) {
+  var val = values.reduce((num a, num b) => (a as int) | (b as int));
+  return val as num;
+}
+
+num bitWiseAnd(List values) {
+  var val = values.reduce((num a, num b) => (a as int) & (b as int));
+  return val as num;
+}
+
+String escape(String s) {
+  return Uri.encodeComponent(s);
 }

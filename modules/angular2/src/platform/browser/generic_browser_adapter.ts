@@ -31,7 +31,7 @@ export abstract class GenericBrowserDomAdapter extends DomAdapter {
         OTransition: 'oTransitionEnd otransitionend',
         transition: 'transitionend'
       };
-      StringMapWrapper.forEach(transEndEventNames, (value, key) => {
+      StringMapWrapper.forEach(transEndEventNames, (value: string, key: string) => {
         if (isPresent(this.getStyle(element, key))) {
           this._transitionEnd = value;
         }

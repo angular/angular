@@ -17,16 +17,19 @@ dependencies:
   intl: '^0.12.4'
   logging: '>=0.9.0 <0.12.0'
   observe: '^0.13.1'
+  path: '^1.0.0'
   protobuf: '^0.5.0'
-  quiver: '^0.21.4'
   source_span: '^1.0.0'
   stack_trace: '^1.1.1'
+  build: '>=0.0.1'
 dev_dependencies:
-  code_transformers: '>=0.2.9+4 <0.4.0'
+  transformer_test: '^0.2.0'
   guinness: '^0.1.18'
+  guinness2: '0.0.5'
+  quiver: '^0.21.4'
   test: '^0.12.6'
 transformers:
-- angular2
+- angular2/transform/codegen
 - $dart2js:
     commandLineOptions:
     - --show-package-warnings

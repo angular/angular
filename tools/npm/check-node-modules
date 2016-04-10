@@ -2,6 +2,9 @@
 
 var checkNpm = require('./check-node-modules.js');
 
-var purgeIfStale = (process.argv.indexOf('--purge') !== -1)
+var purgeIfStale = (process.argv.indexOf('--purge') !== -1);
 
-checkNpm(true, purgeIfStale);
+// check-node-modules will exit(1) if we don't need to install to short-circuit `npm install`
+// see .travis.yml's `install` block to see the reason for this
+process.exit(checkNpm(true, purgeIfStale) ? 1 : 0);
+

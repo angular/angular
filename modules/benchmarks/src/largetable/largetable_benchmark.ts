@@ -7,8 +7,8 @@ import {
   windowProfile,
   windowProfileEnd
 } from 'angular2/src/testing/benchmark_util';
-import {bootstrap} from 'angular2/bootstrap';
-import {Component, Directive, View, bind, provide} from 'angular2/core';
+import {bootstrap} from 'angular2/platform/browser';
+import {Component, Directive, bind, provide} from 'angular2/core';
 import {NgFor, NgSwitch, NgSwitchWhen, NgSwitchDefault} from 'angular2/common';
 import {ApplicationRef} from 'angular2/src/core/application_ref';
 import {BrowserDomAdapter} from 'angular2/src/platform/browser/browser_adapter';
@@ -207,8 +207,9 @@ class CellData {
   iFn() { return this.i; }
 }
 
-@Component({selector: 'largetable', inputs: ['data', 'benchmarkType']})
-@View({
+@Component({
+  selector: 'largetable',
+  inputs: ['data', 'benchmarkType'],
   directives: [NgFor, NgSwitch, NgSwitchWhen, NgSwitchDefault],
   template: `
       <table [ngSwitch]="benchmarkType">
@@ -255,8 +256,8 @@ class LargetableComponent {
   }
 }
 
-@Component({selector: 'app'})
-@View({
+@Component({
+  selector: 'app',
   directives: [LargetableComponent],
   template: `<largetable [data]='data' [benchmarkType]='benchmarkType'></largetable>`
 })

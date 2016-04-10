@@ -2,7 +2,7 @@ import {XHR} from 'angular2/src/compiler/xhr';
 import {ListWrapper, Map, MapWrapper} from 'angular2/src/facade/collection';
 import {isBlank, isPresent, normalizeBlank} from 'angular2/src/facade/lang';
 import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
-import {PromiseCompleter, PromiseWrapper, Promise} from 'angular2/src/facade/async';
+import {PromiseCompleter, PromiseWrapper} from 'angular2/src/facade/async';
 
 /**
  * A mock implementation of {@link XHR} that allows outgoing requests to be mocked

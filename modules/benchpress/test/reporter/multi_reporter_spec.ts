@@ -11,7 +11,7 @@ import {
   xit,
 } from 'angular2/testing_internal';
 
-import {PromiseWrapper, Promise} from 'angular2/src/facade/async';
+import {PromiseWrapper} from 'angular2/src/facade/async';
 import {DateWrapper} from 'angular2/src/facade/lang';
 
 import {Reporter, MultiReporter, bind, provide, Injector, MeasureValues} from 'benchpress/common';

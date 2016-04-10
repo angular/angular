@@ -16,47 +16,42 @@ import {IS_DART, isPresent, stringify} from 'angular2/src/facade/lang';
 import {bootstrap} from 'angular2/platform/browser';
 import {ApplicationRef} from 'angular2/src/core/application_ref';
 import {Console} from 'angular2/src/core/console';
-import {Component, Directive, View, OnDestroy, platform} from 'angular2/core';
+import {Component, Directive, OnDestroy, platform} from 'angular2/core';
 import {BROWSER_PROVIDERS, BROWSER_APP_PROVIDERS} from 'angular2/platform/browser';
 import {DOM} from 'angular2/src/platform/dom/dom_adapter';
 import {DOCUMENT} from 'angular2/src/platform/dom/dom_tokens';
-import {PromiseWrapper} from 'angular2/src/facade/async';
+import {PromiseWrapper, TimerWrapper} from 'angular2/src/facade/async';
 import {provide, Inject, Injector, PLATFORM_INITIALIZER, APP_INITIALIZER} from 'angular2/core';
 import {disposePlatform} from 'angular2/src/core/application_ref';
-import {ExceptionHandler} from 'angular2/src/facade/exceptions';
+import {ExceptionHandler, BaseException} from 'angular2/src/facade/exceptions';
 import {Testability, TestabilityRegistry} from 'angular2/src/core/testability/testability';
-import {ComponentRef_} from "angular2/src/core/linker/dynamic_component_loader";
+import {ComponentRef_, ComponentRef} from "angular2/src/core/linker/dynamic_component_loader";
 
-@Component({selector: 'hello-app'})
-@View({template: '{{greeting}} world!'})
+@Component({selector: 'hello-app', template: '{{greeting}} world!'})
 class HelloRootCmp {
   greeting: string;
   constructor() { this.greeting = 'hello'; }
 }
 
-@Component({selector: 'hello-app'})
-@View({template: 'before: <ng-content></ng-content> after: done'})
+@Component({selector: 'hello-app', template: 'before: <ng-content></ng-content> after: done'})
 class HelloRootCmpContent {
   constructor() {}
 }
 
-@Component({selector: 'hello-app-2'})
-@View({template: '{{greeting}} world, again!'})
+@Component({selector: 'hello-app-2', template: '{{greeting}} world, again!'})
 class HelloRootCmp2 {
   greeting: string;
   constructor() { this.greeting = 'hello'; }
 }
 
-@Component({selector: 'hello-app'})
-@View({template: ''})
+@Component({selector: 'hello-app', template: ''})
 class HelloRootCmp3 {
   appBinding;
 
   constructor(@Inject("appBinding") appBinding) { this.appBinding = appBinding; }
 }
 
-@Component({selector: 'hello-app'})
-@View({template: ''})
+@Component({selector: 'hello-app', template: ''})
 class HelloRootCmp4 {
   appRef;
 
@@ -71,8 +66,7 @@ class HelloRootMissingTemplate {
 class HelloRootDirectiveIsNotCmp {
 }
 
-@Component({selector: 'hello-app'})
-@View({template: ''})
+@Component({selector: 'hello-app', template: ''})
 class HelloOnDestroyTickCmp implements OnDestroy {
   appRef: ApplicationRef;
   constructor(@Inject(ApplicationRef) appRef) { this.appRef = appRef; }
@@ -125,13 +119,12 @@ export function main() {
                `Could not compile '${stringify(HelloRootDirectiveIsNotCmp)}' because it is not a component.`);
            expect(logger.res.join("")).toContain("Could not compile");
            async.done();
-           return null;
          });
        }));
 
     it('should throw if no element is found', inject([AsyncTestCompleter], (async) => {
          var logger = new _ArrayLogger();
-         var exceptionHandler = new ExceptionHandler(logger, !IS_DART);
+         var exceptionHandler = new ExceptionHandler(logger, false);
 
          var refPromise =
              bootstrap(HelloRootCmp, [provide(ExceptionHandler, {useValue: exceptionHandler})]);
@@ -143,10 +136,25 @@ export function main() {
        }));
 
     if (DOM.supportsDOMEvents()) {
+      it('should forward the error to promise when bootstrap fails',
+         inject([AsyncTestCompleter], (async) => {
+           // Skip for dart since it causes a confusing error message in console when test passes.
+           var logger = new _ArrayLogger();
+           var exceptionHandler = new ExceptionHandler(logger, false);
+
+           var refPromise =
+               bootstrap(HelloRootCmp, [provide(ExceptionHandler, {useValue: exceptionHandler})]);
+           PromiseWrapper.then(refPromise, null, (reason: BaseException) => {
+             expect(reason.message)
+                 .toContain('The selector "hello-app" did not match any elements');
+             async.done();
+           });
+         }));
+
       it('should invoke the default exception handler when bootstrap fails',
          inject([AsyncTestCompleter], (async) => {
            var logger = new _ArrayLogger();
-           var exceptionHandler = new ExceptionHandler(logger, !IS_DART);
+           var exceptionHandler = new ExceptionHandler(logger, false);
 
            var refPromise =
                bootstrap(HelloRootCmp, [provide(ExceptionHandler, {useValue: exceptionHandler})]);
@@ -243,11 +251,11 @@ export function main() {
 
     it('should register each application with the testability registry',
        inject([AsyncTestCompleter], (async) => {
-         var refPromise1 = bootstrap(HelloRootCmp, testProviders);
-         var refPromise2 = bootstrap(HelloRootCmp2, testProviders);
+         var refPromise1: Promise<ComponentRef> = bootstrap(HelloRootCmp, testProviders);
+         var refPromise2: Promise<ComponentRef> = bootstrap(HelloRootCmp2, testProviders);
 
          PromiseWrapper.all([refPromise1, refPromise2])
-             .then((refs: ApplicationRef[]) => {
+             .then((refs: ComponentRef[]) => {
                var registry = refs[0].injector.get(TestabilityRegistry);
                var testabilities =
                    [refs[0].injector.get(Testability), refs[1].injector.get(Testability)];

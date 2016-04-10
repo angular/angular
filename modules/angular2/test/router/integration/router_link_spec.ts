@@ -17,11 +17,12 @@ import {
   SpyObject
 } from 'angular2/testing_internal';
 
+import {By} from 'angular2/platform/common_dom';
 import {NumberWrapper} from 'angular2/src/facade/lang';
 import {PromiseWrapper} from 'angular2/src/facade/async';
 import {ListWrapper} from 'angular2/src/facade/collection';
 
-import {provide, Component, View, DirectiveResolver} from 'angular2/core';
+import {provide, Component, DirectiveResolver} from 'angular2/core';
 
 import {SpyLocation} from 'angular2/src/mock/location_mock';
 import {
@@ -42,13 +43,14 @@ import {RootRouter} from 'angular2/src/router/router';
 
 import {DOM} from 'angular2/src/platform/dom/dom_adapter';
 import {TEMPLATE_TRANSFORMS} from 'angular2/compiler';
-import {RouterLinkTransform} from 'angular2/src/router/router_link_transform';
+import {RouterLinkTransform} from 'angular2/src/router/directives/router_link_transform';
 
 export function main() {
   describe('routerLink directive', function() {
     var tcb: TestComponentBuilder;
     var fixture: ComponentFixture;
-    var router, location;
+    var router: Router;
+    var location: Location;
 
     beforeEachProviders(() => [
       RouteRegistry,
@@ -59,24 +61,22 @@ export function main() {
       provide(TEMPLATE_TRANSFORMS, {useClass: RouterLinkTransform, multi: true})
     ]);
 
-    beforeEach(inject([TestComponentBuilder, Router, Location], (tcBuilder, rtr, loc) => {
-      tcb = tcBuilder;
-      router = rtr;
-      location = loc;
-    }));
+    beforeEach(inject([TestComponentBuilder, Router, Location],
+                      (tcBuilder, rtr: Router, loc: Location) => {
+                        tcb = tcBuilder;
+                        router = rtr;
+                        location = loc;
+                      }));
 
     function compile(template: string = "<router-outlet></router-outlet>") {
-      return tcb.overrideView(MyComp, new View({
-                                template: ('<div>' + template + '</div>'),
-                                directives: [RouterOutlet, RouterLink]
-                              }))
+      return tcb.overrideTemplate(MyComp, ('<div>' + template + '</div>'))
           .createAsync(MyComp)
           .then((tc) => { fixture = tc; });
     }
 
     it('should generate absolute hrefs that include the base href',
        inject([AsyncTestCompleter], (async) => {
-         location.setBaseHref('/my/base');
+         (<SpyLocation>location).setBaseHref('/my/base');
          compile('<a href="hello" [routerLink]="[\'./User\']"></a>')
              .then((_) => router.config(
                        [new Route({path: '/user', component: UserCmp, name: 'User'})]))
@@ -111,9 +111,7 @@ export function main() {
                fixture.debugElement.componentInstance.name = 'brian';
                fixture.detectChanges();
                expect(fixture.debugElement.nativeElement).toHaveText('brian');
-               expect(DOM.getAttribute(fixture.debugElement.componentViewChildren[0].nativeElement,
-                                       'href'))
-                   .toEqual('/user/brian');
+               expect(getHref(fixture)).toEqual('/user/brian');
                async.done();
              });
        }));
@@ -127,11 +125,7 @@ export function main() {
              .then((_) => router.navigateByUrl('/page/1'))
              .then((_) => {
                fixture.detectChanges();
-               expect(DOM.getAttribute(fixture.debugElement.componentViewChildren[1]
-                                           .componentViewChildren[0]
-                                           .nativeElement,
-                                       'href'))
-                   .toEqual('/page/2');
+               expect(getHref(fixture)).toEqual('/page/2');
                async.done();
              });
        }));
@@ -146,11 +140,7 @@ export function main() {
              .then((_) => router.navigateByUrl('/page/1'))
              .then((_) => {
                fixture.detectChanges();
-               expect(DOM.getAttribute(fixture.debugElement.componentViewChildren[1]
-                                           .componentViewChildren[0]
-                                           .nativeElement,
-                                       'href'))
-                   .toEqual('/page/2');
+               expect(getHref(fixture)).toEqual('/page/2');
                async.done();
              });
        }));
@@ -164,11 +154,7 @@ export function main() {
              .then((_) => router.navigateByUrl('/book/1984/page/1'))
              .then((_) => {
                fixture.detectChanges();
-               expect(DOM.getAttribute(fixture.debugElement.componentViewChildren[1]
-                                           .componentViewChildren[0]
-                                           .nativeElement,
-                                       'href'))
-                   .toEqual('/book/1984/page/100');
+               expect(getHref(fixture)).toEqual('/book/1984/page/100');
                async.done();
              });
        }));
@@ -202,11 +188,7 @@ export function main() {
              .then((_) => router.navigateByUrl('/child-with-grandchild/grandchild'))
              .then((_) => {
                fixture.detectChanges();
-               expect(DOM.getAttribute(fixture.debugElement.componentViewChildren[1]
-                                           .componentViewChildren[0]
-                                           .nativeElement,
-                                       'href'))
-                   .toEqual('/child-with-grandchild/grandchild');
+               expect(getHref(fixture)).toEqual('/child-with-grandchild/grandchild');
                async.done();
              });
        }));
@@ -219,15 +201,17 @@ export function main() {
              .then((_) => router.navigateByUrl('/book/1984/page/1'))
              .then((_) => {
                fixture.detectChanges();
-               expect(DOM.getAttribute(fixture.debugElement.componentViewChildren[1]
-                                           .componentViewChildren[0]
+               // TODO(juliemr): This should be one By.css('book-cmp a') query, but the parse5
+               // adapter
+               // can't handle css child selectors.
+               expect(DOM.getAttribute(fixture.debugElement.query(By.css('book-cmp'))
+                                           .query(By.css('a'))
                                            .nativeElement,
                                        'href'))
                    .toEqual('/book/1984/page/100');
 
-               expect(DOM.getAttribute(fixture.debugElement.componentViewChildren[1]
-                                           .componentViewChildren[2]
-                                           .componentViewChildren[0]
+               expect(DOM.getAttribute(fixture.debugElement.query(By.css('page-cmp'))
+                                           .query(By.css('a'))
                                            .nativeElement,
                                        'href'))
                    .toEqual('/book/1984/page/2');
@@ -241,11 +225,7 @@ export function main() {
              .then((_) => router.navigateByUrl('/'))
              .then((_) => {
                fixture.detectChanges();
-               expect(DOM.getAttribute(fixture.debugElement.componentViewChildren[1]
-                                           .componentViewChildren[0]
-                                           .nativeElement,
-                                       'href'))
-                   .toEqual('/(aside)');
+               expect(getHref(fixture)).toEqual('/(aside)');
                async.done();
              });
        }));
@@ -279,7 +259,7 @@ export function main() {
 
                    async.done();
                  });
-                 router.navigateByUrl('/better-child');
+                 router.navigateByUrl('/better-child?extra=0');
                });
          }));
 
@@ -320,7 +300,7 @@ export function main() {
 
                    async.done();
                  });
-                 router.navigateByUrl('/child-with-grandchild/grandchild');
+                 router.navigateByUrl('/child-with-grandchild/grandchild?extra=0');
                });
          }));
 
@@ -335,9 +315,7 @@ export function main() {
                    fixture.debugElement.componentInstance.name = 'brian';
                    fixture.detectChanges();
                    expect(fixture.debugElement.nativeElement).toHaveText('brian');
-                   expect(DOM.getAttribute(
-                              fixture.debugElement.componentViewChildren[0].nativeElement, 'href'))
-                       .toEqual('/user/brian');
+                   expect(getHref(fixture)).toEqual('/user/brian');
                    async.done();
                  });
            }));
@@ -347,7 +325,7 @@ export function main() {
     describe('when clicked', () => {
 
       var clickOnElement = function(view) {
-        var anchorEl = fixture.debugElement.componentViewChildren[0].nativeElement;
+        var anchorEl = fixture.debugElement.query(By.css('a')).nativeElement;
         var dispatchedEvent = DOM.createMouseEvent('click');
         DOM.dispatchEvent(anchorEl, dispatchedEvent);
         return dispatchedEvent;
@@ -366,7 +344,7 @@ export function main() {
 
                  // router navigation is async.
                  router.subscribe((_) => {
-                   expect(location.urlChanges).toEqual(['/user']);
+                   expect((<SpyLocation>location).urlChanges).toEqual(['/user']);
                    async.done();
                  });
                });
@@ -374,7 +352,7 @@ export function main() {
 
       it('should navigate to link hrefs in presence of base href',
          inject([AsyncTestCompleter], (async) => {
-           location.setBaseHref('/base');
+           (<SpyLocation>location).setBaseHref('/base');
            compile('<a href="hello" [routerLink]="[\'./User\']"></a>')
                .then((_) => router.config(
                          [new Route({path: '/user', component: UserCmp, name: 'User'})]))
@@ -388,7 +366,7 @@ export function main() {
 
                  // router navigation is async.
                  router.subscribe((_) => {
-                   expect(location.urlChanges).toEqual(['/base/user']);
+                   expect((<SpyLocation>location).urlChanges).toEqual(['/base/user']);
                    async.done();
                  });
                });
@@ -398,10 +376,10 @@ export function main() {
 }
 
 function getHref(tc: ComponentFixture) {
-  return DOM.getAttribute(tc.debugElement.componentViewChildren[0].nativeElement, 'href');
+  return DOM.getAttribute(tc.debugElement.query(By.css('a')).nativeElement, 'href');
 }
 
-@Component({selector: 'my-comp'})
+@Component({selector: 'my-comp', template: '', directives: [ROUTER_DIRECTIVES]})
 class MyComp {
   name;
 }

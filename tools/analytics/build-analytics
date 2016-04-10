@@ -1,5 +1,10 @@
 #!/usr/bin/env node
 
+// Usage:
+//
+// build analytics start|success|error|<exitCode> <actionCategory> <actionName>
+
+
 'use strict';
 
 
@@ -14,6 +19,11 @@ var actionName = process.argv[4];
 
 if (!analytics[actionCategory + 'Start']) {
   throw new Error('Unknown build-analytics actionCategory "' + actionCategory + '"');
+}
+
+var exitCode = Number.parseInt(eventType, 10);
+if (!Number.isNaN(exitCode)) {
+  eventType = (exitCode === 0) ? 'success' : 'error';
 }
 
 if (eventType != 'start' && eventType != 'success' && eventType != 'error') {
@@ -40,9 +50,13 @@ switch (eventType) {
     fs.writeFileSync(startTimestampFilePath, Date.now(), 'utf-8');
     break;
   case 'success':
-    var startTime = fs.readFileSync(startTimestampFilePath, 'utf-8');
-    analytics[actionCategory + 'Success'](actionName, Date.now() - startTime);
-    fs.unlinkSync(startTimestampFilePath);
+    try {
+      var startTime = fs.readFileSync(startTimestampFilePath, 'utf-8');
+      analytics[actionCategory + 'Success'](actionName, Date.now() - startTime);
+      fs.unlinkSync(startTimestampFilePath);
+    } catch(e) {
+      console.log('No start timestamp file "' + startTimestampFilePath + '" found, skipping analytics.');
+    }
     break;
   case 'error':
     var startTime = fs.readFileSync(startTimestampFilePath, 'utf-8');

@@ -1,12 +1,11 @@
-import {DOM} from 'angular2/src/platform/dom/dom_adapter';
 import {StringMapWrapper} from 'angular2/src/facade/collection';
 import {global, isFunction, Math} from 'angular2/src/facade/lang';
-import {NgZoneZone} from 'angular2/src/core/zone/ng_zone';
 
 import {provide} from 'angular2/core';
 
-import {TestInjector, getTestInjector, FunctionWithParamTokens, inject} from './test_injector';
+import {getTestInjector, FunctionWithParamTokens, inject} from './test_injector';
 import {browserDetection} from './utils';
+import {NgZone} from 'angular2/src/core/zone/ng_zone';
 
 export {inject} from './test_injector';
 
@@ -14,7 +13,7 @@ export {expect, NgMatchers} from './matchers';
 
 export var proxy: ClassDecorator = (t) => t;
 
-var _global: jasmine.GlobalPolluter = <any>(typeof window === 'undefined' ? global : window);
+var _global = <any>(typeof window === 'undefined' ? global : window);
 
 export var afterEach: Function = _global.afterEach;
 
@@ -136,6 +135,7 @@ function _it(jsmFn: Function, name: string, testFn: FunctionWithParamTokens | An
   if (testFn instanceof FunctionWithParamTokens) {
     // The test case uses inject(). ie `it('test', inject([AsyncTestCompleter], (async) => { ...
     // }));`
+    let testFnT = testFn;
 
     if (testFn.hasToken(AsyncTestCompleter)) {
       jsmFn(name, (done) => {
@@ -151,13 +151,13 @@ function _it(jsmFn: Function, name: string, testFn: FunctionWithParamTokens | An
         runner.run();
 
         inIt = true;
-        testInjector.execute(testFn);
+        testInjector.execute(testFnT);
         inIt = false;
       }, timeOut);
     } else {
       jsmFn(name, () => {
         runner.run();
-        testInjector.execute(testFn);
+        testInjector.execute(testFnT);
       }, timeOut);
     }
 
@@ -255,8 +255,4 @@ export class SpyObject {
     newSpy.and.returnValue(null);
     return newSpy;
   }
-}
-
-export function isInInnerZone(): boolean {
-  return (<NgZoneZone>global.zone)._innerZone === true;
 }

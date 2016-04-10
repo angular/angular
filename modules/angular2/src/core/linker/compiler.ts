@@ -3,7 +3,7 @@ import {HostViewFactoryRef} from 'angular2/src/core/linker/view_ref';
 import {Injectable} from 'angular2/src/core/di';
 import {Type, isBlank, stringify} from 'angular2/src/facade/lang';
 import {BaseException} from 'angular2/src/facade/exceptions';
-import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
+import {PromiseWrapper} from 'angular2/src/facade/async';
 import {reflector} from 'angular2/src/core/reflection/reflection';
 import {HostViewFactory} from 'angular2/src/core/linker/view';
 import {HostViewFactoryRef_} from 'angular2/src/core/linker/view_ref';

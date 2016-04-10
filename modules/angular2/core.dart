@@ -15,9 +15,8 @@ export './src/core/application_tokens.dart' show APP_ID,
 export './src/core/zone.dart';
 export './src/core/render.dart';
 export './src/core/linker.dart';
-export './src/core/debug/debug_element.dart' show DebugElement,
-  Scope,
-  inspectElement,
+export './src/core/debug/debug_node.dart' show DebugElement,
+  DebugNode,
   asNativeElements;
 export './src/core/testability/testability.dart';
 export './src/core/change_detection.dart';

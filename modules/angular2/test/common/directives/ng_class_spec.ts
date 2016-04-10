@@ -15,14 +15,13 @@ import {
   xit,
 } from 'angular2/testing_internal';
 import {ListWrapper, StringMapWrapper, SetWrapper} from 'angular2/src/facade/collection';
-import {Component, View, provide} from 'angular2/core';
+import {Component, provide} from 'angular2/core';
 import {NgFor} from 'angular2/common';
 import {NgClass} from 'angular2/src/common/directives/ng_class';
 
-function detectChangesAndCheck(fixture: ComponentFixture, classes: string, elIndex: number = 0) {
+function detectChangesAndCheck(fixture: ComponentFixture, classes: string) {
   fixture.detectChanges();
-  expect(fixture.debugElement.componentViewChildren[elIndex].nativeElement.className)
-      .toEqual(classes);
+  expect(fixture.debugElement.children[0].nativeElement.className).toEqual(classes);
 }
 
 export function main() {
@@ -39,7 +38,7 @@ export function main() {
                  fixture.detectChanges();
                  fixture.debugElement.componentInstance.items = [['1']];
 
-                 detectChangesAndCheck(fixture, '1', 1);
+                 detectChangesAndCheck(fixture, '1');
 
                  async.done();
                });
@@ -529,8 +528,7 @@ export function main() {
   })
 }
 
-@Component({selector: 'test-cmp'})
-@View({directives: [NgClass, NgFor]})
+@Component({selector: 'test-cmp', directives: [NgClass, NgFor], template: ''})
 class TestComponent {
   condition: boolean = true;
   items: any[];

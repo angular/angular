@@ -19,8 +19,7 @@ import {
   Directive,
   Inject,
   Query,
-  QueryList,
-  View
+  QueryList
 } from 'angular2/core';
 import {NgFor} from 'angular2/common';
 import {Type} from 'angular2/src/facade/lang';
@@ -32,24 +31,24 @@ export function main() {
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
          tcb.createAsync(App).then((tc) => {
            tc.detectChanges();
-           expect(asNativeElements(tc.debugElement.componentViewChildren))
-               .toHaveText('frame(lock)');
+           expect(asNativeElements(tc.debugElement.children)).toHaveText('frame(lock)');
            async.done();
          });
        }));
   });
 }
 
-@Component({selector: 'app', viewProviders: [forwardRef(() => Frame)]})
-@View({
+@Component({
+  selector: 'app',
+  viewProviders: [forwardRef(() => Frame)],
   template: `<door><lock></lock></door>`,
   directives: [forwardRef(() => Door), forwardRef(() => Lock)],
 })
 class App {
 }
 
-@Component({selector: 'lock'})
-@View({
+@Component({
+  selector: 'lock',
   directives: [NgFor],
   template: `{{frame.name}}(<span *ngFor="var lock of locks">{{lock.name}}</span>)`,
 })

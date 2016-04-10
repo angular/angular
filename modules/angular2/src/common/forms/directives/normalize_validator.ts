@@ -1,9 +1,18 @@
-import {Validator} from './validators';
+import {AbstractControl} from "../model";
+import {Validator, ValidatorFn, AsyncValidatorFn} from './validators';
 
-export function normalizeValidator(validator: Function | Validator): Function {
+export function normalizeValidator(validator: ValidatorFn | Validator): ValidatorFn {
   if ((<Validator>validator).validate !== undefined) {
-    return (c) => (<Validator>validator).validate(c);
+    return (c: AbstractControl) => (<Validator>validator).validate(c);
   } else {
-    return <Function>validator;
+    return <ValidatorFn>validator;
+  }
+}
+
+export function normalizeAsyncValidator(validator: AsyncValidatorFn | Validator): AsyncValidatorFn {
+  if ((<Validator>validator).validate !== undefined) {
+    return (c: AbstractControl) => Promise.resolve((<Validator>validator).validate(c));
+  } else {
+    return <AsyncValidatorFn>validator;
   }
 }

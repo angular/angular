@@ -2,7 +2,7 @@ import {ListWrapper, Map} from 'angular2/src/facade/collection';
 import {Company, Opportunity, Offering, Account, CustomDate, STATUS_LIST} from './common';
 import {NgFor} from 'angular2/common';
 
-import {Component, Directive, View} from 'angular2/core';
+import {Component, Directive} from 'angular2/core';
 
 export class HasStyle {
   cellWidth: number;
@@ -12,20 +12,32 @@ export class HasStyle {
   set width(w: number) { this.cellWidth = w; }
 }
 
-@Component({selector: 'company-name', inputs: ['width: cell-width', 'company']})
-@View({directives: [], template: `<div [style.width.px]="cellWidth">{{company.name}}</div>`})
+@Component({
+  selector: 'company-name',
+  inputs: ['width: cell-width', 'company'],
+  directives: [],
+  template: `<div [style.width.px]="cellWidth">{{company.name}}</div>`
+})
 export class CompanyNameComponent extends HasStyle {
   company: Company;
 }
 
-@Component({selector: 'opportunity-name', inputs: ['width: cell-width', 'opportunity']})
-@View({directives: [], template: `<div [style.width.px]="cellWidth">{{opportunity.name}}</div>`})
+@Component({
+  selector: 'opportunity-name',
+  inputs: ['width: cell-width', 'opportunity'],
+  directives: [],
+  template: `<div [style.width.px]="cellWidth">{{opportunity.name}}</div>`
+})
 export class OpportunityNameComponent extends HasStyle {
   opportunity: Opportunity;
 }
 
-@Component({selector: 'offering-name', inputs: ['width: cell-width', 'offering']})
-@View({directives: [], template: `<div [style.width.px]="cellWidth">{{offering.name}}</div>`})
+@Component({
+  selector: 'offering-name',
+  inputs: ['width: cell-width', 'offering'],
+  directives: [],
+  template: `<div [style.width.px]="cellWidth">{{offering.name}}</div>`
+})
 export class OfferingNameComponent extends HasStyle {
   offering: Offering;
 }
@@ -37,8 +49,9 @@ export class Stage {
   apply: Function;
 }
 
-@Component({selector: 'stage-buttons', inputs: ['width: cell-width', 'offering']})
-@View({
+@Component({
+  selector: 'stage-buttons',
+  inputs: ['width: cell-width', 'offering'],
   directives: [NgFor],
   template: `
       <div [style.width.px]="cellWidth">
@@ -82,8 +95,9 @@ export class StageButtonsComponent extends HasStyle {
   }
 }
 
-@Component({selector: 'account-cell', inputs: ['width: cell-width', 'account']})
-@View({
+@Component({
+  selector: 'account-cell',
+  inputs: ['width: cell-width', 'account'],
   directives: [],
   template: `
       <div [style.width.px]="cellWidth">
@@ -96,8 +110,12 @@ export class AccountCellComponent extends HasStyle {
   account: Account;
 }
 
-@Component({selector: 'formatted-cell', inputs: ['width: cell-width', 'value']})
-@View({directives: [], template: `<div [style.width.px]="cellWidth">{{formattedValue}}</div>`})
+@Component({
+  selector: 'formatted-cell',
+  inputs: ['width: cell-width', 'value'],
+  directives: [],
+  template: `<div [style.width.px]="cellWidth">{{formattedValue}}</div>`
+})
 export class FormattedCellComponent extends HasStyle {
   formattedValue: string;
 

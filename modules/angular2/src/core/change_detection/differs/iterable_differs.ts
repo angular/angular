@@ -1,4 +1,4 @@
-import {isBlank, isPresent, CONST} from 'angular2/src/facade/lang';
+import {isBlank, isPresent, CONST, getTypeNameForDebugging} from 'angular2/src/facade/lang';
 import {BaseException} from 'angular2/src/facade/exceptions';
 import {ListWrapper} from 'angular2/src/facade/collection';
 import {ChangeDetectorRef} from '../change_detector_ref';
@@ -9,22 +9,28 @@ import {Provider, SkipSelfMetadata, OptionalMetadata, Injectable} from 'angular2
  * respond to changes in an iterable by effecting equivalent changes in the DOM.
  */
 export interface IterableDiffer {
-  diff(object: Object): any;
+  diff(object: any): any;
   onDestroy();
 }
+
+/**
+  * An optional function passed into {@link NgFor} that defines how to track
+  * items in an iterable (e.g. by index or id)
+ */
+export interface TrackByFn { (index: number, item: any): any; }
+
 
 /**
  * Provides a factory for {@link IterableDiffer}.
  */
 export interface IterableDifferFactory {
-  supports(objects: Object): boolean;
-  create(cdRef: ChangeDetectorRef): IterableDiffer;
+  supports(objects: any): boolean;
+  create(cdRef: ChangeDetectorRef, trackByFn?: TrackByFn): IterableDiffer;
 }
 
 /**
  * A repository of different iterable diffing strategies used by NgFor, NgClass, and others.
  */
-@Injectable()
 @CONST()
 export class IterableDiffers {
   constructor(public factories: IterableDifferFactory[]) {}
@@ -74,12 +80,13 @@ export class IterableDiffers {
     });
   }
 
-  find(iterable: Object): IterableDifferFactory {
+  find(iterable: any): IterableDifferFactory {
     var factory = this.factories.find(f => f.supports(iterable));
     if (isPresent(factory)) {
       return factory;
     } else {
-      throw new BaseException(`Cannot find a differ supporting object '${iterable}'`);
+      throw new BaseException(
+          `Cannot find a differ supporting object '${iterable}' of type '${getTypeNameForDebugging(iterable)}'`);
     }
   }
 }

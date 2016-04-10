@@ -173,6 +173,10 @@ var StringMapWrapper = {
 
 var List = Array;
 var ListWrapper = {
+  toJSON: function(l) {
+    return JSON.stringify(l);
+  },
+
   clear: function (l) {
     l.length = 0;
   },
@@ -247,6 +251,10 @@ var ListWrapper = {
 };
 
 var StringWrapper = {
+  charCodeAt: function(s, i) {
+    return s.charCodeAt(i);
+  },
+
   equals: function (s1, s2) {
     return s1 === s2;
   },
@@ -303,8 +311,14 @@ Location.prototype.subscribe = function () {
   //TODO: implement
 };
 Location.prototype.path = function () {
-  return $location.path();
+  return $location.url();
 };
-Location.prototype.go = function (url) {
-  return $location.path(url);
+Location.prototype.go = function (path, query) {
+  return $location.url(path + query);
+};
+Location.prototype.prepareExternalUrl = function(url) {
+  if (url.length > 0 && !url.startsWith('/')) {
+    url = '/' + url;
+  }
+  return $location.$$html5 ? '.' + url : '#' + $locationHashPrefix + url;
 };

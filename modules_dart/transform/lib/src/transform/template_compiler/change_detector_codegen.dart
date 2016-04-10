@@ -37,7 +37,7 @@ class Codegen {
 
   /// Generates a change detector class with name `changeDetectorTypeName`,
   /// which must not conflict with other generated classes in the same
-  /// `.ng_deps.dart` file.  The change detector is used to detect changes in
+  /// `.template.dart` file.  The change detector is used to detect changes in
   /// Objects of type `typeName`.
   void generate(String typeName, String changeDetectorTypeName,
       ChangeDetectorDefinition def) {
@@ -124,7 +124,7 @@ class _CodegenState {
     var names = new CodegenNameUtil(
         protoRecords, eventBindings, def.directiveRecords, '$genPrefix$_UTIL');
     var logic = new CodegenLogicUtil(
-        names, '$genPrefix$_UTIL', '$genPrefix$_STATE', def.strategy);
+        names, '$genPrefix$_UTIL', '$genPrefix$_STATE');
     return new _CodegenState._(
         genPrefix,
         def.id,
@@ -225,7 +225,7 @@ class _CodegenState {
     List<String> codes = [];
     _endOfBlockIdxs.clear();
 
-    ListWrapper.forEachWithIndex(eb.records, (_, i) {
+    ListWrapper.forEachWithIndex(eb.records, (ProtoRecord _, int i) {
       var code;
       var r = eb.records[i];
 
@@ -253,7 +253,7 @@ class _CodegenState {
       var evalRecord = _logic.genEventBindingEvalValue(eb, r);
       var markPath = _genMarkPathToRootAsCheckOnce(r);
       var prevDefault = _genUpdatePreventDefault(eb, r);
-      return "${evalRecord}\n${markPath}\n${prevDefault}";
+      return "${markPath}\n${evalRecord}\n${prevDefault}";
     } else {
       return _logic.genEventBindingEvalValue(eb, r);
     }
@@ -433,6 +433,7 @@ class _CodegenState {
     var condition = '''!${pipe}.pure || (${contexOrArgCheck.join(" || ")})''';
 
     var check = '''
+      ${_genThrowOnChangeCheck(oldValue, newValue)}
       if (${_genPrefix}$_UTIL.looseNotIdentical($oldValue, $newValue)) {
         $newValue = ${_genPrefix}$_UTIL.unwrapValue($newValue);
         ${_genChangeMarker(r)}
@@ -459,6 +460,7 @@ class _CodegenState {
     ''';
 
     var check = '''
+      ${_genThrowOnChangeCheck(oldValue, newValue)}
       if (${_genPrefix}$_UTIL.looseNotIdentical($newValue, $oldValue)) {
         ${_genChangeMarker(r)}
         ${_genUpdateDirectiveOrElement(r)}
@@ -492,7 +494,6 @@ class _CodegenState {
     if (!r.lastInBinding) return '';
 
     var newValue = _names.getLocalName(r.selfIndex);
-    var oldValue = _names.getFieldName(r.selfIndex);
     var notifyDebug = _genConfig.logBindingUpdate
         ? "this.logBindingUpdate(${newValue});"
         : "";
@@ -502,14 +503,12 @@ class _CodegenState {
       var directiveProperty =
           '${_names.getDirectiveName(br.directiveRecord.directiveIndex)}.${br.target.name}';
       return '''
-      ${_genThrowOnChangeCheck(oldValue, newValue)}
       $directiveProperty = $newValue;
       ${notifyDebug}
       $_IS_CHANGED_LOCAL = true;
     ''';
     } else {
       return '''
-      ${_genThrowOnChangeCheck(oldValue, newValue)}
       this.notifyDispatcher(${newValue});
       ${notifyDebug}
     ''';
@@ -518,7 +517,7 @@ class _CodegenState {
 
   String _genThrowOnChangeCheck(String oldValue, String newValue) {
     return '''
-      if(${_genPrefix}assertionsEnabled() && throwOnChange) {
+      if(${_genPrefix}assertionsEnabled() && throwOnChange && !${_genPrefix}${_UTIL}.devModeEqual(${oldValue}, ${newValue})) {
         this.throwOnChangeError(${oldValue}, ${newValue});
       }
     ''';

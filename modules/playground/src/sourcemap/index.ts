@@ -1,11 +1,9 @@
 import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
-import {bootstrap} from 'angular2/bootstrap';
-import {Component, View} from 'angular2/core';
+import {bootstrap} from 'angular2/platform/browser';
+import {Component} from 'angular2/core';
 
 @Component({
   selector: 'error-app',
-})
-@View({
   template: `
            <button class="errorButton" (click)="createError()">create error</button>`
 })

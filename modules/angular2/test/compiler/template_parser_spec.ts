@@ -50,49 +50,57 @@ import {Unparser} from '../core/change_detection/parser/unparser';
 
 var expressionUnparser = new Unparser();
 
+var MOCK_SCHEMA_REGISTRY = [
+  provide(
+      ElementSchemaRegistry,
+      {useValue: new MockSchemaRegistry({'invalidProp': false}, {'mappedAttr': 'mappedProp'})})
+];
+
 export function main() {
-  describe('TemplateParser', () => {
-    beforeEachProviders(() => [
-      TEST_PROVIDERS,
-      provide(ElementSchemaRegistry,
-              {
-                useValue: new MockSchemaRegistry({'invalidProp': false},
-                                                 {'mappedAttr': 'mappedProp'})
-              })
-    ]);
+  var ngIf;
+  var parse;
 
-    var parser: TemplateParser;
-    var ngIf;
-
-    beforeEach(inject([TemplateParser], (_parser) => {
-      parser = _parser;
+  function commonBeforeEach() {
+    beforeEach(inject([TemplateParser], (parser) => {
       ngIf = CompileDirectiveMetadata.create(
           {selector: '[ngIf]', type: new CompileTypeMetadata({name: 'NgIf'}), inputs: ['ngIf']});
+
+      parse = (template: string, directives: CompileDirectiveMetadata[],
+               pipes: CompilePipeMetadata[] = null): TemplateAst[] => {
+        if (pipes === null) {
+          pipes = [];
+        }
+        return parser.parse(template, directives, pipes, 'TestComp');
+      };
     }));
+  }
 
-    function parse(template: string, directives: CompileDirectiveMetadata[],
-                   pipes: CompilePipeMetadata[] = null): TemplateAst[] {
-      if (pipes === null) {
-        pipes = [];
-      }
-      return parser.parse(template, directives, pipes, 'TestComp');
-    }
+  describe('TemplateParser template transform', () => {
+    beforeEachProviders(() => [TEST_PROVIDERS, MOCK_SCHEMA_REGISTRY]);
 
-    describe('template transform', () => {
-      beforeEachProviders(
-          () => [provide(TEMPLATE_TRANSFORMS, {useValue: new FooAstTransformer(), multi: true})]);
+    beforeEachProviders(
+        () => [provide(TEMPLATE_TRANSFORMS, {useValue: new FooAstTransformer(), multi: true})]);
 
+    describe('single', () => {
+      commonBeforeEach();
       it('should transform TemplateAST',
          () => { expect(humanizeTplAst(parse('<div>', []))).toEqual([[ElementAst, 'foo']]); });
-
-      describe('multiple', () => {
-        beforeEachProviders(
-            () => [provide(TEMPLATE_TRANSFORMS, {useValue: new BarAstTransformer(), multi: true})]);
-
-        it('should compose transformers',
-           () => { expect(humanizeTplAst(parse('<div>', []))).toEqual([[ElementAst, 'bar']]); });
-      });
     });
+
+    describe('multiple', () => {
+      beforeEachProviders(
+          () => [provide(TEMPLATE_TRANSFORMS, {useValue: new BarAstTransformer(), multi: true})]);
+
+      commonBeforeEach();
+      it('should compose transformers',
+         () => { expect(humanizeTplAst(parse('<div>', []))).toEqual([[ElementAst, 'bar']]); });
+    });
+  });
+
+  describe('TemplateParser', () => {
+    beforeEachProviders(() => [TEST_PROVIDERS, MOCK_SCHEMA_REGISTRY]);
+
+    commonBeforeEach();
 
     describe('parse', () => {
       describe('nodes without bindings', () => {
@@ -325,6 +333,15 @@ export function main() {
                 [BoundElementPropertyAst, PropertyBindingType.Property, 'a', 'b', null],
                 [DirectiveAst, dirA]
               ]);
+        });
+
+        it('should locate directives in event bindings', () => {
+          var dirA = CompileDirectiveMetadata.create(
+              {selector: '[a]', type: new CompileTypeMetadata({name: 'DirB'})});
+
+          expect(humanizeTplAst(parse('<div (a)="b">', [dirA])))
+              .toEqual(
+                  [[ElementAst, 'div'], [BoundEventAst, 'a', null, 'b'], [DirectiveAst, dirA]]);
         });
 
         it('should parse directive host properties', () => {
@@ -668,6 +685,39 @@ There is no directive with "exportAs" set to "dirA" ("<div [ERROR ->]#a="dirA"><
         expect(humanizeContentProjection(parse('<div ngNonBindable>{{hello}}<span></span></div>',
                                                [createComp('div', ['*'])])))
             .toEqual([['div', null], ['#text({{hello}})', 0], ['span', 0]]);
+      });
+
+      it('should match the element when there is an inline template', () => {
+        expect(humanizeContentProjection(
+                   parse('<div><b *ngIf="cond"></b></div>', [createComp('div', ['a', 'b']), ngIf])))
+            .toEqual([['div', null], ['template', 1], ['b', null]]);
+      });
+
+      describe('ngProjectAs', () => {
+        it('should override elements', () => {
+          expect(humanizeContentProjection(
+                     parse('<div><a ngProjectAs="b"></a></div>', [createComp('div', ['a', 'b'])])))
+              .toEqual([['div', null], ['a', 1]]);
+        });
+
+        it('should override <ng-content>', () => {
+          expect(humanizeContentProjection(
+                     parse('<div><ng-content ngProjectAs="b"></ng-content></div>',
+                           [createComp('div', ['ng-content', 'b'])])))
+              .toEqual([['div', null], ['ng-content', 1]]);
+        });
+
+        it('should override <template>', () => {
+          expect(humanizeContentProjection(parse('<div><template ngProjectAs="b"></template></div>',
+                                                 [createComp('div', ['template', 'b'])])))
+              .toEqual([['div', null], ['template', 1]]);
+        });
+
+        it('should override inline templates', () => {
+          expect(humanizeContentProjection(parse('<div><a *ngIf="cond" ngProjectAs="b"></a></div>',
+                                                 [createComp('div', ['a', 'b']), ngIf])))
+              .toEqual([['div', null], ['template', 1], ['a', null]]);
+        });
       });
     });
 

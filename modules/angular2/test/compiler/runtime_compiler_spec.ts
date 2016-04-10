@@ -13,7 +13,7 @@ import {
   beforeEachProviders
 } from 'angular2/testing_internal';
 
-import {Component, View, provide} from 'angular2/core';
+import {Component, provide} from 'angular2/core';
 import {PromiseWrapper} from 'angular2/src/facade/async';
 import {SpyTemplateCompiler} from './spies';
 import {TemplateCompiler} from 'angular2/src/compiler/compiler';
@@ -52,7 +52,6 @@ export function main() {
   });
 }
 
-@Component({selector: 'some-comp'})
-@View({template: ''})
+@Component({selector: 'some-comp', template: ''})
 class SomeComponent {
 }

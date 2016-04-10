@@ -1,5 +1,5 @@
 import {isPresent, isBlank, print} from 'angular2/src/facade/lang';
-import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
+import {BaseWrappedException} from 'angular2/src/facade/base_wrapped_exception';
 import {ListWrapper, isListLikeIterable} from 'angular2/src/facade/collection';
 
 class _ArrayLogger {
@@ -80,7 +80,8 @@ export class ExceptionHandler {
 
   /** @internal */
   _extractMessage(exception: any): string {
-    return exception instanceof WrappedException ? exception.wrapperMessage : exception.toString();
+    return exception instanceof BaseWrappedException ? exception.wrapperMessage :
+                                                       exception.toString();
   }
 
   /** @internal */
@@ -92,7 +93,7 @@ export class ExceptionHandler {
   /** @internal */
   _findContext(exception: any): any {
     try {
-      if (!(exception instanceof WrappedException)) return null;
+      if (!(exception instanceof BaseWrappedException)) return null;
       return isPresent(exception.context) ? exception.context :
                                             this._findContext(exception.originalException);
     } catch (e) {
@@ -103,10 +104,10 @@ export class ExceptionHandler {
 
   /** @internal */
   _findOriginalException(exception: any): any {
-    if (!(exception instanceof WrappedException)) return null;
+    if (!(exception instanceof BaseWrappedException)) return null;
 
     var e = exception.originalException;
-    while (e instanceof WrappedException && isPresent(e.originalException)) {
+    while (e instanceof BaseWrappedException && isPresent(e.originalException)) {
       e = e.originalException;
     }
 
@@ -115,13 +116,13 @@ export class ExceptionHandler {
 
   /** @internal */
   _findOriginalStack(exception: any): any {
-    if (!(exception instanceof WrappedException)) return null;
+    if (!(exception instanceof BaseWrappedException)) return null;
 
     var e = exception;
     var stack = exception.originalStack;
-    while (e instanceof WrappedException && isPresent(e.originalException)) {
+    while (e instanceof BaseWrappedException && isPresent(e.originalException)) {
       e = e.originalException;
-      if (e instanceof WrappedException && isPresent(e.originalException)) {
+      if (e instanceof BaseWrappedException && isPresent(e.originalException)) {
         stack = e.originalStack;
       }
     }

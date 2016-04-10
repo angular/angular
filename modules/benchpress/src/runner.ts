@@ -1,6 +1,6 @@
 import {Injector, bind, provide, Provider} from 'angular2/src/core/di';
 import {isPresent, isBlank} from 'angular2/src/facade/lang';
-import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
+import {PromiseWrapper} from 'angular2/src/facade/async';
 
 import {Sampler, SampleState} from './sampler';
 import {ConsoleReporter} from './reporter/console_reporter';
@@ -33,7 +33,9 @@ export class Runner {
     this._defaultBindings = defaultBindings;
   }
 
-  sample({id, execute, prepare, microMetrics, bindings}): Promise<SampleState> {
+  sample({id, execute, prepare, microMetrics, bindings}:
+             {id: string, execute?: any, prepare?: any, microMetrics?: any, bindings?: any}):
+      Promise<SampleState> {
     var sampleBindings = [
       _DEFAULT_PROVIDERS,
       this._defaultBindings,

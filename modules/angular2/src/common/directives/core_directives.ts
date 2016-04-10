@@ -4,13 +4,14 @@ import {NgFor} from './ng_for';
 import {NgIf} from './ng_if';
 import {NgStyle} from './ng_style';
 import {NgSwitch, NgSwitchWhen, NgSwitchDefault} from './ng_switch';
+import {NgPlural, NgPluralCase} from './ng_plural';
 
 /**
  * A collection of Angular core directives that are likely to be used in each and every Angular
  * application.
  *
  * This collection can be used to quickly enumerate all the built-in directives in the `directives`
- * property of the `@View` annotation.
+ * property of the `@Component` annotation.
  *
  * ### Example ([live demo](http://plnkr.co/edit/yakGwpCdUkg0qfzX5m8g?p=preview))
  *
@@ -45,5 +46,14 @@ import {NgSwitch, NgSwitchWhen, NgSwitchDefault} from './ng_switch';
  * }
  * ```
  */
-export const CORE_DIRECTIVES: Type[] =
-    CONST_EXPR([NgClass, NgFor, NgIf, NgStyle, NgSwitch, NgSwitchWhen, NgSwitchDefault]);
+export const CORE_DIRECTIVES: Type[] = CONST_EXPR([
+  NgClass,
+  NgFor,
+  NgIf,
+  NgStyle,
+  NgSwitch,
+  NgSwitchWhen,
+  NgSwitchDefault,
+  NgPlural,
+  NgPluralCase
+]);

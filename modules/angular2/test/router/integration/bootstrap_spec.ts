@@ -15,12 +15,17 @@ import {
 } from 'angular2/testing_internal';
 
 import {bootstrap} from 'angular2/platform/browser';
-import {Component, Directive, View} from 'angular2/src/core/metadata';
+import {Component, Directive} from 'angular2/src/core/metadata';
 import {DOM} from 'angular2/src/platform/dom/dom_adapter';
 import {Console} from 'angular2/src/core/console';
 import {provide, ViewChild, AfterViewInit} from 'angular2/core';
 import {DOCUMENT} from 'angular2/src/platform/dom/dom_tokens';
-import {RouteConfig, Route, Redirect, AuxRoute} from 'angular2/src/router/route_config_decorator';
+import {
+  RouteConfig,
+  Route,
+  Redirect,
+  AuxRoute
+} from 'angular2/src/router/route_config/route_config_decorator';
 import {PromiseWrapper} from 'angular2/src/facade/async';
 import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
 import {
@@ -233,7 +238,9 @@ export function main() {
                    async.done();
                  });
 
-                 router.navigateByUrl('/rainbow(pony)');
+                 // TODO(juliemr): This isn't necessary for the test to pass - figure
+                 // out what's going on.
+                 // router.navigateByUrl('/rainbow(pony)');
                });
          }));
     });

@@ -1,9 +1,9 @@
-import {bootstrap} from 'angular2/bootstrap';
-import {Component, View} from 'angular2/core';
+import {bootstrap} from 'angular2/platform/browser';
+import {Component} from 'angular2/core';
 import {Zippy} from './zippy';
 
-@Component({selector: 'zippy-app'})
-@View({
+@Component({
+  selector: 'zippy-app',
   template: `
     <zippy (open)="pushLog('open')" (close)="pushLog('close')" title="Details">
       This is some content.

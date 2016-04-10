@@ -16,7 +16,8 @@ import {ControlContainer} from './control_container';
 import {controlPath, composeValidators, composeAsyncValidators} from './shared';
 import {ControlGroup} from '../model';
 import {Form} from './form_interface';
-import {Validators, NG_VALIDATORS, NG_ASYNC_VALIDATORS} from '../validators';
+import {NG_VALIDATORS, NG_ASYNC_VALIDATORS} from '../validators';
+import {AsyncValidatorFn, ValidatorFn} from './validators';
 
 const controlGroupProvider =
     CONST_EXPR(new Provider(ControlContainer, {useExisting: forwardRef(() => NgControlGroup)}));
@@ -32,8 +33,6 @@ const controlGroupProvider =
  * @Component({
  *   selector: 'my-app',
  *   directives: [FORM_DIRECTIVES],
- * })
- * @View({
  *   template: `
  *     <div>
  *       <h2>Angular2 Control &amp; ControlGroup Example</h2>
@@ -106,7 +105,7 @@ export class NgControlGroup extends ControlContainer implements OnInit,
    */
   get formDirective(): Form { return this._parent.formDirective; }
 
-  get validator(): Function { return composeValidators(this._validators); }
+  get validator(): ValidatorFn { return composeValidators(this._validators); }
 
-  get asyncValidator(): Function { return composeAsyncValidators(this._asyncValidators); }
+  get asyncValidator(): AsyncValidatorFn { return composeAsyncValidators(this._asyncValidators); }
 }

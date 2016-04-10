@@ -8,7 +8,7 @@ import {Provider, SkipSelfMetadata, OptionalMetadata, Injectable} from 'angular2
  * A differ that tracks changes made to an object over time.
  */
 export interface KeyValueDiffer {
-  diff(object: Object);
+  diff(object: any);
   onDestroy();
 }
 
@@ -16,14 +16,13 @@ export interface KeyValueDiffer {
  * Provides a factory for {@link KeyValueDiffer}.
  */
 export interface KeyValueDifferFactory {
-  supports(objects: Object): boolean;
+  supports(objects: any): boolean;
   create(cdRef: ChangeDetectorRef): KeyValueDiffer;
 }
 
 /**
  * A repository of different Map diffing strategies used by NgClass, NgStyle, and others.
  */
-@Injectable()
 @CONST()
 export class KeyValueDiffers {
   constructor(public factories: KeyValueDifferFactory[]) {}

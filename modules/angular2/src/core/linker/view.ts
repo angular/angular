@@ -27,7 +27,7 @@ import {
   CONST_EXPR
 } from 'angular2/src/facade/lang';
 import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
-import {Renderer, RootRenderer} from 'angular2/src/core/render/api';
+import {Renderer, RootRenderer, RenderDebugInfo} from 'angular2/src/core/render/api';
 import {ViewRef_, HostViewFactoryRef} from './view_ref';
 import {ProtoPipes} from 'angular2/src/core/pipes/pipes';
 import {camelCaseToDashCase} from 'angular2/src/core/render/util';
@@ -115,17 +115,28 @@ export class AppView implements ChangeDispatcher {
     this.disposables = disposables;
     this.appElements = appElements;
     var localsMap = new Map<string, any>();
-    StringMapWrapper.forEach(this.proto.templateVariableBindings,
-                             (templateName, _) => { localsMap.set(templateName, null); });
+    StringMapWrapper.forEach(
+        this.proto.templateVariableBindings,
+        (templateName: string, _: string) => { localsMap.set(templateName, null); });
     for (var i = 0; i < appElements.length; i++) {
       var appEl = appElements[i];
-      StringMapWrapper.forEach(appEl.proto.directiveVariableBindings, (directiveIndex, name) => {
-        if (isBlank(directiveIndex)) {
-          localsMap.set(name, appEl.nativeElement);
-        } else {
-          localsMap.set(name, appEl.getDirectiveAtIndex(directiveIndex));
+      var providerTokens = [];
+      if (isPresent(appEl.proto.protoInjector)) {
+        for (var j = 0; j < appEl.proto.protoInjector.numberOfProviders; j++) {
+          providerTokens.push(appEl.proto.protoInjector.getProviderAtIndex(j).key.token);
         }
-      });
+      }
+      StringMapWrapper.forEach(appEl.proto.directiveVariableBindings,
+                               (directiveIndex: number, name: string) => {
+                                 if (isBlank(directiveIndex)) {
+                                   localsMap.set(name, appEl.nativeElement);
+                                 } else {
+                                   localsMap.set(name, appEl.getDirectiveAtIndex(directiveIndex));
+                                 }
+                               });
+      this.renderer.setElementDebugInfo(
+          appEl.nativeElement, new RenderDebugInfo(appEl.getInjector(), appEl.getComponent(),
+                                                   providerTokens, localsMap));
     }
     var parentLocals = null;
     if (this.proto.type !== ViewType.COMPONENT) {
@@ -250,7 +261,7 @@ export class AppView implements ChangeDispatcher {
     return this.appElements[directive.elementIndex].getDirectiveAtIndex(directive.directiveIndex);
   }
 
-  getDetectorFor(directive: DirectiveIndex): any {
+  getDetectorFor(directive: DirectiveIndex): ChangeDetector {
     var componentView = this.appElements[directive.elementIndex].componentView;
     return isPresent(componentView) ? componentView.changeDetector : null;
   }
@@ -327,6 +338,27 @@ function _flattenNestedViewRenderNodes(nodes: any[], renderNodes: any[]): any[] 
     }
   }
   return renderNodes;
+}
+
+export function findLastRenderNode(node: any): any {
+  var lastNode;
+  if (node instanceof AppElement) {
+    var appEl = <AppElement>node;
+    lastNode = appEl.nativeElement;
+    if (isPresent(appEl.nestedViews)) {
+      // Note: Views might have no root nodes at all!
+      for (var i = appEl.nestedViews.length - 1; i >= 0; i--) {
+        var nestedView = appEl.nestedViews[i];
+        if (nestedView.rootNodesOrAppElements.length > 0) {
+          lastNode = findLastRenderNode(
+              nestedView.rootNodesOrAppElements[nestedView.rootNodesOrAppElements.length - 1]);
+        }
+      }
+    }
+  } else {
+    lastNode = node;
+  }
+  return lastNode;
 }
 
 export function checkSlotCount(componentName: string, expectedSlotCount: number,

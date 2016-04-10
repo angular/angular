@@ -9,28 +9,8 @@ import {StringMapWrapper} from 'angular2/src/facade/collection';
 import {Injectable} from "angular2/src/core/di";
 import {NgZone} from 'angular2/src/core/zone/ng_zone';
 
-/**
- * A TypeScript implementation of {@link MessageBus} for communicating via JavaScript's
- * postMessage API.
- */
-@Injectable()
-export class PostMessageBus implements MessageBus {
-  constructor(public sink: PostMessageBusSink, public source: PostMessageBusSource) {}
-
-  attachToZone(zone: NgZone): void {
-    this.source.attachToZone(zone);
-    this.sink.attachToZone(zone);
-  }
-
-  initChannel(channel: string, runInZone: boolean = true): void {
-    this.source.initChannel(channel, runInZone);
-    this.sink.initChannel(channel, runInZone);
-  }
-
-  from(channel: string): EventEmitter<any> { return this.source.from(channel); }
-
-  to(channel: string): EventEmitter<any> { return this.sink.to(channel); }
-}
+// TODO(jteplitz602) Replace this with the definition in lib.webworker.d.ts(#3492)
+export interface PostMessageTarget { postMessage: (message: any, transfer?:[ArrayBuffer]) => void; }
 
 export class PostMessageBusSink implements MessageBusSink {
   private _zone: NgZone;
@@ -42,7 +22,7 @@ export class PostMessageBusSink implements MessageBusSink {
   attachToZone(zone: NgZone): void {
     this._zone = zone;
     this._zone.runOutsideAngular(() => {
-      ObservableWrapper.subscribe(this._zone.onEventDone, (_) => { this._handleOnEventDone(); });
+      ObservableWrapper.subscribe(this._zone.onStable, (_) => { this._handleOnEventDone(); });
     });
   }
 
@@ -51,7 +31,7 @@ export class PostMessageBusSink implements MessageBusSink {
       throw new BaseException(`${channel} has already been initialized`);
     }
 
-    var emitter = new EventEmitter();
+    var emitter = new EventEmitter(false);
     var channelInfo = new _Channel(emitter, runInZone);
     this._channels[channel] = channelInfo;
     emitter.subscribe((data: Object) => {
@@ -102,7 +82,7 @@ export class PostMessageBusSource implements MessageBusSource {
       throw new BaseException(`${channel} has already been initialized`);
     }
 
-    var emitter = new EventEmitter();
+    var emitter = new EventEmitter(false);
     var channelInfo = new _Channel(emitter, runInZone);
     this._channels[channel] = channelInfo;
   }
@@ -136,12 +116,32 @@ export class PostMessageBusSource implements MessageBusSource {
 }
 
 /**
+ * A TypeScript implementation of {@link MessageBus} for communicating via JavaScript's
+ * postMessage API.
+ */
+@Injectable()
+export class PostMessageBus implements MessageBus {
+  constructor(public sink: PostMessageBusSink, public source: PostMessageBusSource) {}
+
+  attachToZone(zone: NgZone): void {
+    this.source.attachToZone(zone);
+    this.sink.attachToZone(zone);
+  }
+
+  initChannel(channel: string, runInZone: boolean = true): void {
+    this.source.initChannel(channel, runInZone);
+    this.sink.initChannel(channel, runInZone);
+  }
+
+  from(channel: string): EventEmitter<any> { return this.source.from(channel); }
+
+  to(channel: string): EventEmitter<any> { return this.sink.to(channel); }
+}
+
+/**
  * Helper class that wraps a channel's {@link EventEmitter} and
  * keeps track of if it should run in the zone.
  */
 class _Channel {
   constructor(public emitter: EventEmitter<any>, public runInZone: boolean) {}
 }
-
-// TODO(jteplitz602) Replace this with the definition in lib.webworker.d.ts(#3492)
-export interface PostMessageTarget { postMessage: (message: any, transfer?:[ArrayBuffer]) => void; }

@@ -113,7 +113,7 @@ class SomeDirectiveWithoutMetadata {}
 
 export function main() {
   describe("DirectiveResolver", () => {
-    var resolver;
+    var resolver: DirectiveResolver;
 
     beforeEach(() => { resolver = new DirectiveResolver(); });
 

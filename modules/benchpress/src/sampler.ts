@@ -1,5 +1,5 @@
 import {isPresent, isBlank, Date, DateWrapper} from 'angular2/src/facade/lang';
-import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
+import {PromiseWrapper} from 'angular2/src/facade/async';
 import {bind, provide, Provider, OpaqueToken} from 'angular2/src/core/di';
 
 import {Metric} from './metric';
@@ -62,8 +62,8 @@ export class Sampler {
     return loop(new SampleState([], null));
   }
 
-  _iterate(lastState) {
-    var resultPromise;
+  _iterate(lastState): Promise<SampleState> {
+    var resultPromise: Promise<any>;
     if (isPresent(this._prepare)) {
       resultPromise = this._driver.waitFor(this._prepare);
     } else {

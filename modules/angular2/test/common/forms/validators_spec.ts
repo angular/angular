@@ -35,6 +35,9 @@ export function main() {
 
       it("should not error on a non-empty string",
          () => { expect(Validators.required(new Control("not empty"))).toEqual(null); });
+
+      it("should accept zero as valid",
+         () => { expect(Validators.required(new Control(0))).toEqual(null); });
     });
 
     describe("minLength", () => {
@@ -63,9 +66,25 @@ export function main() {
       it("should not error on valid strings",
          () => { expect(Validators.maxLength(2)(new Control("aa"))).toEqual(null); });
 
-      it("should error on short strings", () => {
+      it("should error on long strings", () => {
         expect(Validators.maxLength(2)(new Control("aaa")))
             .toEqual({"maxlength": {"requiredLength": 2, "actualLength": 3}});
+      });
+    });
+
+    describe("pattern", () => {
+      it("should not error on an empty string",
+         () => { expect(Validators.pattern("[a-zA-Z ]*")(new Control(""))).toEqual(null); });
+
+      it("should not error on null",
+         () => { expect(Validators.pattern("[a-zA-Z ]*")(new Control(null))).toEqual(null); });
+
+      it("should not error on valid strings",
+         () => { expect(Validators.pattern("[a-zA-Z ]*")(new Control("aaAA"))).toEqual(null); });
+
+      it("should error on failure to match string", () => {
+        expect(Validators.pattern("[a-zA-Z ]*")(new Control("aaa0")))
+            .toEqual({"pattern": {"requiredPattern": "^[a-zA-Z ]*$", "actualValue": "aaa0"}});
       });
     });
 
@@ -121,7 +140,7 @@ export function main() {
            ]);
 
            var value = null;
-           c(new Control("invalid")).then(v => value = v);
+           (<Promise<any>>c(new Control("invalid"))).then(v => value = v);
 
            tick(1);
 
@@ -132,7 +151,7 @@ export function main() {
            var c = Validators.composeAsync([asyncValidator("expected", {"one": true})]);
 
            var value = null;
-           c(new Control("expected")).then(v => value = v);
+           (<Promise<any>>c(new Control("expected"))).then(v => value = v);
 
            tick(1);
 
@@ -143,7 +162,7 @@ export function main() {
            var c = Validators.composeAsync([asyncValidator("expected", {"one": true}), null]);
 
            var value = null;
-           c(new Control("invalid")).then(v => value = v);
+           (<Promise<any>>c(new Control("invalid"))).then(v => value = v);
 
            tick(1);
 

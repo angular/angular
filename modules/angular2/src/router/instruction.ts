@@ -1,6 +1,6 @@
 import {Map, MapWrapper, StringMapWrapper, ListWrapper} from 'angular2/src/facade/collection';
 import {isPresent, isBlank, normalizeBlank, Type, CONST_EXPR} from 'angular2/src/facade/lang';
-import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
+import {PromiseWrapper} from 'angular2/src/facade/async';
 
 
 /**
@@ -14,11 +14,12 @@ import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
  * ```
  * import {Component} from 'angular2/core';
  * import {bootstrap} from 'angular2/platform/browser';
- * import {Router, ROUTER_DIRECTIVES, ROUTER_PROVIDERS, RouteConfig} from 'angular2/router';
+ * import {Router, ROUTER_DIRECTIVES, ROUTER_PROVIDERS, RouteConfig, RouteParams} from
+ * 'angular2/router';
  *
  * @Component({directives: [ROUTER_DIRECTIVES]})
  * @RouteConfig([
- *  {path: '/user/:id', component: UserCmp, as: 'UserCmp'},
+ *  {path: '/user/:id', component: UserCmp, name: 'UserCmp'},
  * ])
  * class AppCmp {}
  *
@@ -47,19 +48,21 @@ export class RouteParams {
  * ### Example
  *
  * ```
- * import {Component, View} from 'angular2/core';
+ * import {Component} from 'angular2/core';
  * import {bootstrap} from 'angular2/platform/browser';
- * import {Router, ROUTER_DIRECTIVES, routerBindings, RouteConfig} from 'angular2/router';
+ * import {Router, ROUTER_DIRECTIVES, ROUTER_PROVIDERS, RouteConfig, RouteData} from
+ * 'angular2/router';
  *
- * @Component({...})
- * @View({directives: [ROUTER_DIRECTIVES]})
+ * @Component({directives: [ROUTER_DIRECTIVES]})
  * @RouteConfig([
- *  {path: '/user/:id', component: UserCmp, as: 'UserCmp', data: {isAdmin: true}},
+ *  {path: '/user/:id', component: UserCmp, name: 'UserCmp', data: {isAdmin: true}},
  * ])
  * class AppCmp {}
  *
- * @Component({...})
- * @View({ template: 'user: {{isAdmin}}' })
+ * @Component({
+ *   ...,
+ *   template: 'user: {{isAdmin}}'
+ * })
  * class UserCmp {
  *   string: isAdmin;
  *   constructor(data: RouteData) {
@@ -67,7 +70,7 @@ export class RouteParams {
  *   }
  * }
  *
- * bootstrap(AppCmp, routerBindings(AppCmp));
+ * bootstrap(AppCmp, ROUTER_PROVIDERS);
  * ```
  */
 export class RouteData {
@@ -107,9 +110,8 @@ export var BLANK_ROUTE_DATA = new RouteData();
  * ```
  */
 export abstract class Instruction {
-  public component: ComponentInstruction;
-  public child: Instruction;
-  public auxInstruction: {[key: string]: Instruction} = {};
+  constructor(public component: ComponentInstruction, public child: Instruction,
+              public auxInstruction: {[key: string]: Instruction}) {}
 
   get urlPath(): string { return isPresent(this.component) ? this.component.urlPath : ''; }
 
@@ -160,7 +162,7 @@ export abstract class Instruction {
   // default instructions override these
   toLinkUrl(): string {
     return this.urlPath + this._stringifyAux() +
-           (isPresent(this.child) ? this.child._toLinkUrl() : '');
+           (isPresent(this.child) ? this.child._toLinkUrl() : '') + this.toUrlQuery();
   }
 
   // this is the non-root version (called recursively)
@@ -195,7 +197,7 @@ export abstract class Instruction {
   /** @internal */
   _stringifyAux(): string {
     var routes = [];
-    StringMapWrapper.forEach(this.auxInstruction, (auxInstruction, _) => {
+    StringMapWrapper.forEach(this.auxInstruction, (auxInstruction: Instruction, _: string) => {
       routes.push(auxInstruction._stringifyPathMatrixAux());
     });
     if (routes.length > 0) {
@@ -210,9 +212,9 @@ export abstract class Instruction {
  * a resolved instruction has an outlet instruction for itself, but maybe not for...
  */
 export class ResolvedInstruction extends Instruction {
-  constructor(public component: ComponentInstruction, public child: Instruction,
-              public auxInstruction: {[key: string]: Instruction}) {
-    super();
+  constructor(component: ComponentInstruction, child: Instruction,
+              auxInstruction: {[key: string]: Instruction}) {
+    super(component, child, auxInstruction);
   }
 
   resolveComponent(): Promise<ComponentInstruction> {
@@ -224,11 +226,9 @@ export class ResolvedInstruction extends Instruction {
 /**
  * Represents a resolved default route
  */
-export class DefaultInstruction extends Instruction {
-  constructor(public component: ComponentInstruction, public child: DefaultInstruction) { super(); }
-
-  resolveComponent(): Promise<ComponentInstruction> {
-    return PromiseWrapper.resolve(this.component);
+export class DefaultInstruction extends ResolvedInstruction {
+  constructor(component: ComponentInstruction, child: DefaultInstruction) {
+    super(component, child, {});
   }
 
   toLinkUrl(): string { return ''; }
@@ -244,7 +244,7 @@ export class DefaultInstruction extends Instruction {
 export class UnresolvedInstruction extends Instruction {
   constructor(private _resolver: () => Promise<Instruction>, private _urlPath: string = '',
               private _urlParams: string[] = CONST_EXPR([])) {
-    super();
+    super(null, null, {});
   }
 
   get urlPath(): string {
@@ -271,9 +271,9 @@ export class UnresolvedInstruction extends Instruction {
     if (isPresent(this.component)) {
       return PromiseWrapper.resolve(this.component);
     }
-    return this._resolver().then((resolution: Instruction) => {
-      this.child = resolution.child;
-      return this.component = resolution.component;
+    return this._resolver().then((instruction: Instruction) => {
+      this.child = isPresent(instruction) ? instruction.child : null;
+      return this.component = isPresent(instruction) ? instruction.component : null;
     });
   }
 }
@@ -290,13 +290,12 @@ export class RedirectInstruction extends ResolvedInstruction {
 
 
 /**
- * A `ComponentInstruction` represents the route state for a single component. An `Instruction` is
- * composed of a tree of these `ComponentInstruction`s.
+ * A `ComponentInstruction` represents the route state for a single component.
  *
  * `ComponentInstructions` is a public API. Instances of `ComponentInstruction` are passed
  * to route lifecycle hooks, like {@link CanActivate}.
  *
- * `ComponentInstruction`s are [https://en.wikipedia.org/wiki/Hash_consing](hash consed). You should
+ * `ComponentInstruction`s are [hash consed](https://en.wikipedia.org/wiki/Hash_consing). You should
  * never construct one yourself with "new." Instead, rely on {@link Router/RouteRecognizer} to
  * construct `ComponentInstruction`s.
  *
@@ -306,9 +305,12 @@ export class ComponentInstruction {
   reuse: boolean = false;
   public routeData: RouteData;
 
+  /**
+   * @internal
+   */
   constructor(public urlPath: string, public urlParams: string[], data: RouteData,
               public componentType, public terminal: boolean, public specificity: string,
-              public params: {[key: string]: any} = null) {
+              public params: {[key: string]: string} = null, public routeName: string) {
     this.routeData = isPresent(data) ? data : BLANK_ROUTE_DATA;
   }
 }

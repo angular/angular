@@ -67,7 +67,7 @@ export class AttributeMetadata extends DependencyMetadata {
  *    <ul>
  *      <li *ngFor="#pane of panes">{{pane.title}}</li>
  *    </ul>
- *    <content></content>
+ *    <ng-content></ng-content>
  *  `
  * })
  * class Tabs {
@@ -242,8 +242,8 @@ export class ContentChildMetadata extends QueryMetadata {
  * ### Example ([live demo](http://plnkr.co/edit/eNsFHDf7YjyM6IzKxM1j?p=preview))
  *
  * ```javascript
- * @Component({...})
- * @View({
+ * @Component({
+ *   ...,
  *   template: `
  *     <item> a </item>
  *     <item> b </item>
@@ -254,7 +254,7 @@ export class ContentChildMetadata extends QueryMetadata {
  *   shown: boolean;
  *
  *   constructor(private @Query(Item) items:QueryList<Item>) {
- *     items.onChange(() => console.log(items.length));
+ *     items.changes.subscribe(() => console.log(items.length));
  *   }
  * }
  * ```

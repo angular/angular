@@ -1,8 +1,8 @@
 import {provide} from 'angular2/core';
-import {bootstrap} from 'angular2/bootstrap';
+import {bootstrap} from 'angular2/platform/browser';
 import {UrlResolver} from 'angular2/compiler';
 
-var MyApp;
+var MyApp: any;
 
 // #docregion url_resolver
 class MyUrlResolver extends UrlResolver {

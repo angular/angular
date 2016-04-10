@@ -22,6 +22,7 @@ tmp
 *.js.map
 
 # Or type definitions we mirror from github
+# (NB: these lines are removed in publish-build-artifacts.sh)
 **/typings/**/*.d.ts
 **/typings/tsd.cached.json
 

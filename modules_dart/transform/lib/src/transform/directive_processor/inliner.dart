@@ -35,7 +35,7 @@ Future<String> inlineParts(AssetReader reader, AssetId assetId) async {
       .accept(directivesVisitor);
 
   // If this is part of another library, its contents will be processed by its
-  // parent, so it does not need its own `.ng_deps.dart` file.
+  // parent, so it does not need its own generated file.
   if (directivesVisitor.isPart) return null;
 
   return logElapsedAsync(() {

@@ -1,5 +1,5 @@
-import {bootstrap} from 'angular2/bootstrap';
-import {Component, Directive, View, Host, forwardRef, Provider} from 'angular2/core';
+import {bootstrap} from 'angular2/platform/browser';
+import {Component, Directive, Host, forwardRef, Provider} from 'angular2/core';
 import {
   ControlGroup,
   NgIf,
@@ -61,8 +61,9 @@ class CreditCardValidator {
  * actual error message.
  * To make it simple, we are using a simple map here.
  */
-@Component({selector: 'show-error', inputs: ['controlPath: control', 'errorTypes: errors']})
-@View({
+@Component({
+  selector: 'show-error',
+  inputs: ['controlPath: control', 'errorTypes: errors'],
   template: `
     <span *ngIf="errorMessage !== null">{{errorMessage}}</span>
   `,
@@ -95,8 +96,8 @@ class ShowError {
 }
 
 
-@Component({selector: 'template-driven-forms'})
-@View({
+@Component({
+  selector: 'template-driven-forms',
   template: `
     <h1>Checkout Form</h1>
 

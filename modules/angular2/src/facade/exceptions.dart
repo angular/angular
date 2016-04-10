@@ -1,5 +1,6 @@
 library angular.core.facade.exceptions;
 
+import 'base_wrapped_exception.dart';
 import 'exception_handler.dart';
 export 'exception_handler.dart';
 
@@ -15,7 +16,7 @@ class BaseException extends Error {
   }
 }
 
-class WrappedException extends Error {
+class WrappedException extends BaseWrappedException {
   final dynamic _context;
   final String _wrapperMessage;
   final originalException;
@@ -27,7 +28,7 @@ class WrappedException extends Error {
       this.originalStack,
       this._context]);
 
-  get message {
+  String get message {
     return ExceptionHandler.exceptionToString(this);
   }
 

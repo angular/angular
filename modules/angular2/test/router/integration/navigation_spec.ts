@@ -15,8 +15,8 @@ import {
   xit
 } from 'angular2/testing_internal';
 
-import {provide, Component, View, Injector, Inject} from 'angular2/core';
-import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
+import {provide, Component, Injector, Inject} from 'angular2/core';
+import {PromiseWrapper} from 'angular2/src/facade/async';
 
 import {Router, RouterOutlet, RouterLink, RouteParams, RouteData, Location} from 'angular2/router';
 import {
@@ -25,7 +25,7 @@ import {
   AuxRoute,
   AsyncRoute,
   Redirect
-} from 'angular2/src/router/route_config_decorator';
+} from 'angular2/src/router/route_config/route_config_decorator';
 
 import {TEST_ROUTER_PROVIDERS, RootCmp, compile} from './util';
 
@@ -101,6 +101,20 @@ export function main() {
              .then((_) => {
                fixture.detectChanges();
                expect(fixture.debugElement.nativeElement).toHaveText('outer { inner { hello } }');
+               async.done();
+             });
+       }));
+
+    it('should navigate to child routes when the root component has an empty path',
+       inject([AsyncTestCompleter, Location], (async, location) => {
+         compile(tcb, 'outer { <router-outlet></router-outlet> }')
+             .then((rtc) => {fixture = rtc})
+             .then((_) => rtr.config([new Route({path: '/...', component: ParentCmp})]))
+             .then((_) => rtr.navigateByUrl('/b'))
+             .then((_) => {
+               fixture.detectChanges();
+               expect(fixture.debugElement.nativeElement).toHaveText('outer { inner { hello } }');
+               expect(location.urlChanges).toEqual(['/b']);
                async.done();
              });
        }));

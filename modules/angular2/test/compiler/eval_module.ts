@@ -1,4 +1,4 @@
-import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
+import {PromiseWrapper} from 'angular2/src/facade/async';
 import {isPresent, global, StringWrapper} from 'angular2/src/facade/lang';
 
 var evalCounter = 0;

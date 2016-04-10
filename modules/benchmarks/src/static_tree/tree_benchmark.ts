@@ -1,10 +1,9 @@
-import {bootstrap} from 'angular2/bootstrap';
+import {bootstrap} from 'angular2/platform/browser';
 import {NgIf} from 'angular2/common';
 import {
   Compiler,
   Component,
   Directive,
-  View,
   ViewContainerRef,
   bind,
   provide,
@@ -225,21 +224,23 @@ class StaticTreeComponentBase {
   get data() { return this._value; }
 }
 
-@Component({selector: 'tree', inputs: ['data']})
-@View({directives: [], template: '<span>{{data.value}} </span>'})
+@Component(
+    {selector: 'tree', inputs: ['data'], directives: [], template: '<span>{{data.value}} </span>'})
 class StaticTreeComponent0 extends StaticTreeComponentBase {
 }
 
-@Component({selector: 'tree', inputs: ['data']})
-@View({
+@Component({
+  selector: 'tree',
+  inputs: ['data'],
   directives: [StaticTreeComponent0],
   template: `<span> {{data.value}} <tree [data]='data.right'></tree><tree [data]='data.left'></tree></span>`
 })
 class StaticTreeComponent1 extends StaticTreeComponentBase {
 }
 
-@Component({selector: 'tree', inputs: ['data']})
-@View({
+@Component({
+  selector: 'tree',
+  inputs: ['data'],
   directives: [StaticTreeComponent1],
   template: `<span> {{data.value}} <tree [data]='data.right'></tree><tree [data]='data.left'></tree></span>`
 })
@@ -247,64 +248,71 @@ class StaticTreeComponent2 extends StaticTreeComponentBase {
   data: TreeNode;
 }
 
-@Component({selector: 'tree', inputs: ['data']})
-@View({
+@Component({
+  selector: 'tree',
+  inputs: ['data'],
   directives: [StaticTreeComponent2],
   template: `<span> {{data.value}} <tree [data]='data.right'></tree><tree [data]='data.left'></tree></span>`
 })
 class StaticTreeComponent3 extends StaticTreeComponentBase {
 }
 
-@Component({selector: 'tree', inputs: ['data']})
-@View({
+@Component({
+  selector: 'tree',
+  inputs: ['data'],
   directives: [StaticTreeComponent3],
   template: `<span> {{data.value}} <tree [data]='data.right'></tree><tree [data]='data.left'></tree></span>`
 })
 class StaticTreeComponent4 extends StaticTreeComponentBase {
 }
 
-@Component({selector: 'tree', inputs: ['data']})
-@View({
+@Component({
+  selector: 'tree',
+  inputs: ['data'],
   directives: [StaticTreeComponent4],
   template: `<span> {{data.value}} <tree [data]='data.right'></tree><tree [data]='data.left'></tree></span>`
 })
 class StaticTreeComponent5 extends StaticTreeComponentBase {
 }
 
-@Component({selector: 'tree', inputs: ['data']})
-@View({
+@Component({
+  selector: 'tree',
+  inputs: ['data'],
   directives: [StaticTreeComponent5],
   template: `<span> {{data.value}} <tree [data]='data.right'></tree><tree [data]='data.left'></tree></span>`
 })
 class StaticTreeComponent6 extends StaticTreeComponentBase {
 }
 
-@Component({selector: 'tree', inputs: ['data']})
-@View({
+@Component({
+  selector: 'tree',
+  inputs: ['data'],
   directives: [StaticTreeComponent6],
   template: `<span> {{data.value}} <tree [data]='data.right'></tree><tree [data]='data.left'></tree></span>`
 })
 class StaticTreeComponent7 extends StaticTreeComponentBase {
 }
 
-@Component({selector: 'tree', inputs: ['data']})
-@View({
+@Component({
+  selector: 'tree',
+  inputs: ['data'],
   directives: [StaticTreeComponent7],
   template: `<span> {{data.value}} <tree [data]='data.right'></tree><tree [data]='data.left'></tree></span>`
 })
 class StaticTreeComponent8 extends StaticTreeComponentBase {
 }
 
-@Component({selector: 'tree', inputs: ['data']})
-@View({
+@Component({
+  selector: 'tree',
+  inputs: ['data'],
   directives: [StaticTreeComponent8],
   template: `<span> {{data.value}} <tree [data]='data.right'></tree><tree [data]='data.left'></tree></span>`
 })
 class StaticTreeComponent9 extends StaticTreeComponentBase {
 }
 
-@Component({selector: 'app'})
-@View({
+@Component({
+  selector: 'app',
   directives: [StaticTreeComponent9, NgIf],
   template: `<tree *ngIf="initData != null" [data]='initData'></tree>`
 })

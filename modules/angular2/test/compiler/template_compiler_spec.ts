@@ -13,8 +13,8 @@ import {
   beforeEachProviders
 } from 'angular2/testing_internal';
 
-import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
-import {Type, isPresent, isBlank, stringify, isString} from 'angular2/src/facade/lang';
+import {PromiseWrapper} from 'angular2/src/facade/async';
+import {Type, isPresent, isBlank, stringify, isString, IS_DART} from 'angular2/src/facade/lang';
 import {
   MapWrapper,
   SetWrapper,
@@ -37,7 +37,7 @@ import {AppView, AppProtoView} from 'angular2/src/core/linker/view';
 import {AppElement} from 'angular2/src/core/linker/element';
 import {Locals, ChangeDetectorGenConfig} from 'angular2/src/core/change_detection/change_detection';
 
-import {Component, View, Directive, provide, RenderComponentType} from 'angular2/core';
+import {Component, Directive, provide, RenderComponentType} from 'angular2/core';
 
 import {TEST_PROVIDERS} from './test_bindings';
 import {
@@ -58,6 +58,11 @@ var REFLECTION_CAPS_MODULE_REF =
     moduleRef(`package:angular2/src/core/reflection/reflection_capabilities${MODULE_SUFFIX}`);
 
 export function main() {
+  // Dart's isolate support is broken, and these tests will be obsolote soon with
+  // https://github.com/angular/angular/issues/6270
+  if (IS_DART) {
+    return;
+  }
   describe('TemplateCompiler', () => {
     var compiler: TemplateCompiler;
     var runtimeMetadataResolver: RuntimeMetadataResolver;
@@ -71,14 +76,15 @@ export function main() {
 
     describe('compile templates', () => {
 
-      function runTests(compile) {
+      function runTests(compile: (components: Type[]) => Promise<any[]>) {
         it('should throw for non components', inject([AsyncTestCompleter], (async) => {
-             PromiseWrapper.catchError(PromiseWrapper.wrap(() => compile([NonComponent])), (error) => {
-               expect(error.message)
-                   .toEqual(
-                       `Could not compile '${stringify(NonComponent)}' because it is not a component.`);
-               async.done();
-             });
+             PromiseWrapper.catchError(
+                 PromiseWrapper.wrap(() => compile([NonComponent])), (error): any => {
+                   expect(error.message)
+                       .toEqual(
+                           `Could not compile '${stringify(NonComponent)}' because it is not a component.`);
+                   async.done();
+                 });
            }));
 
         it('should compile host components', inject([AsyncTestCompleter], (async) => {
@@ -332,9 +338,7 @@ export class UpperCasePipe implements PipeTransform {
   selector: 'comp-a',
   host: {'[title]': '\'someHostValue\''},
   moduleId: THIS_MODULE_ID,
-  exportAs: 'someExportAs'
-})
-@View({
+  exportAs: 'someExportAs',
   template: '<a [href]="\'someCtxValue\' | uppercase"></a>',
   styles: ['div {color: red}'],
   encapsulation: ViewEncapsulation.None,
@@ -343,8 +347,9 @@ export class UpperCasePipe implements PipeTransform {
 export class CompWithBindingsAndStylesAndPipes {
 }
 
-@Component({selector: 'tree', moduleId: THIS_MODULE_ID})
-@View({
+@Component({
+  selector: 'tree',
+  moduleId: THIS_MODULE_ID,
   template: '<template><tree></tree></template>',
   directives: [TreeComp],
   encapsulation: ViewEncapsulation.None
@@ -352,8 +357,9 @@ export class CompWithBindingsAndStylesAndPipes {
 export class TreeComp {
 }
 
-@Component({selector: 'comp-wit-dup-tpl', moduleId: THIS_MODULE_ID})
-@View({
+@Component({
+  selector: 'comp-wit-dup-tpl',
+  moduleId: THIS_MODULE_ID,
   template: '<tree></tree>',
   directives: [TreeComp, TreeComp],
   encapsulation: ViewEncapsulation.None
@@ -361,13 +367,18 @@ export class TreeComp {
 export class CompWithDupDirectives {
 }
 
-@Component({selector: 'comp-url', moduleId: THIS_MODULE_ID})
-@View({templateUrl: 'compUrl.html', encapsulation: ViewEncapsulation.None})
+@Component({
+  selector: 'comp-url',
+  moduleId: THIS_MODULE_ID,
+  templateUrl: 'compUrl.html',
+  encapsulation: ViewEncapsulation.None
+})
 export class CompWithTemplateUrl {
 }
 
-@Component({selector: 'comp-tpl', moduleId: THIS_MODULE_ID})
-@View({
+@Component({
+  selector: 'comp-tpl',
+  moduleId: THIS_MODULE_ID,
   template: '<template><a [href]="\'someEmbeddedValue\'"></a></template>',
   encapsulation: ViewEncapsulation.None
 })
@@ -376,18 +387,22 @@ export class CompWithEmbeddedTemplate {
 
 
 @Directive({selector: 'plain'})
-@View({template: ''})
 export class NonComponent {
 }
 
 
-@Component({selector: 'comp2', moduleId: THIS_MODULE_ID})
-@View({template: '<b></b>', encapsulation: ViewEncapsulation.None})
+@Component({
+  selector: 'comp2',
+  moduleId: THIS_MODULE_ID,
+  template: '<b></b>',
+  encapsulation: ViewEncapsulation.None
+})
 export class Comp2 {
 }
 
-@Component({selector: 'comp1', moduleId: THIS_MODULE_ID})
-@View({
+@Component({
+  selector: 'comp1',
+  moduleId: THIS_MODULE_ID,
   template: '<a></a>, <comp2></comp2>',
   encapsulation: ViewEncapsulation.None,
   directives: [Comp2]
@@ -395,8 +410,9 @@ export class Comp2 {
 export class Comp1 {
 }
 
-@Component({selector: 'comp-with-2nested', moduleId: THIS_MODULE_ID})
-@View({
+@Component({
+  selector: 'comp-with-2nested',
+  moduleId: THIS_MODULE_ID,
   template: '<comp1></comp1>, <comp2></comp2>',
   encapsulation: ViewEncapsulation.None,
   directives: [Comp1, Comp2]

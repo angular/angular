@@ -1,3 +1,25 @@
+export interface BrowserNodeGlobal {
+  Object: typeof Object;
+  Array: typeof Array;
+  Map: typeof Map;
+  Set: typeof Set;
+  Date: DateConstructor;
+  RegExp: RegExpConstructor;
+  JSON: typeof JSON;
+  Math: any;  // typeof Math;
+  assert(condition: any): void;
+  Reflect: any;
+  getAngularTestability: Function;
+  getAllAngularTestabilities: Function;
+  getAllAngularRootElements: Function;
+  frameworkStabilizers: Array<Function>;
+  setTimeout: Function;
+  clearTimeout: Function;
+  setInterval: Function;
+  clearInterval: Function;
+  encodeURI: Function;
+}
+
 // TODO(jteplitz602): Load WorkerGlobalScope from lib.webworker.d.ts file #3492
 declare var WorkerGlobalScope;
 var globalScope: BrowserNodeGlobal;
@@ -10,7 +32,11 @@ if (typeof window === 'undefined') {
   }
 } else {
   globalScope = <any>window;
-};
+}
+
+export function scheduleMicroTask(fn: Function) {
+  Zone.current.scheduleMicroTask('scheduleMicrotask', fn);
+}
 
 export const IS_DART = false;
 
@@ -36,7 +62,10 @@ export interface Type extends Function {}
 export interface ConcreteType extends Type { new (...args): any; }
 
 export function getTypeNameForDebugging(type: Type): string {
-  return type['name'];
+  if (type['name']) {
+    return type['name'];
+  }
+  return typeof type;
 }
 
 
@@ -159,6 +188,10 @@ export function serializeEnum(val): number {
 
 export function deserializeEnum(val, values: Map<number, any>): any {
   return val;
+}
+
+export function resolveEnumToken(enumValue, val): string {
+  return enumValue[val];
 }
 
 export class StringWrapper {
@@ -314,6 +347,21 @@ export class RegExpWrapper {
     regExp.lastIndex = 0;
     return {re: regExp, input: input};
   }
+  static replaceAll(regExp: RegExp, input: string, replace: Function): string {
+    let c = regExp.exec(input);
+    let res = '';
+    regExp.lastIndex = 0;
+    let prev = 0;
+    while (c) {
+      res += input.substring(prev, c.index);
+      res += replace(c);
+      prev = c.index + c[0].length;
+      regExp.lastIndex = prev;
+      c = regExp.exec(input);
+    }
+    res += input.substring(prev);
+    return res;
+  }
 }
 
 export class RegExpMatcherWrapper {
@@ -426,4 +474,24 @@ export function evalExpression(sourceUrl: string, expr: string, declarations: st
     fnArgValues.push(vars[argName]);
   }
   return new Function(...fnArgNames.concat(fnBody))(...fnArgValues);
+}
+
+export function isPrimitive(obj: any): boolean {
+  return !isJsObject(obj);
+}
+
+export function hasConstructor(value: Object, type: Type): boolean {
+  return value.constructor === type;
+}
+
+export function bitWiseOr(values: number[]): number {
+  return values.reduce((a, b) => { return a | b; });
+}
+
+export function bitWiseAnd(values: number[]): number {
+  return values.reduce((a, b) => { return a & b; });
+}
+
+export function escape(s: string): string {
+  return _global.encodeURI(s);
 }

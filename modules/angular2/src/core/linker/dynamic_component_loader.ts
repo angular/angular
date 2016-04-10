@@ -1,7 +1,6 @@
 import {Key, Injector, ResolvedProvider, Provider, provide, Injectable} from 'angular2/src/core/di';
 import {Compiler} from './compiler';
 import {isType, Type, stringify, isPresent} from 'angular2/src/facade/lang';
-import {Promise} from 'angular2/src/facade/async';
 import {AppViewManager} from 'angular2/src/core/linker/view_manager';
 import {ElementRef, ElementRef_} from './element_ref';
 import {HostViewRef} from './view_ref';
@@ -60,7 +59,7 @@ export abstract class ComponentRef {
    *
    * TODO(i): rename to destroy to be consistent with AppViewManager and ViewContainerRef
    */
-  abstract dispose();
+  abstract dispose(): void;
 }
 
 export class ComponentRef_ extends ComponentRef {
@@ -85,7 +84,7 @@ export class ComponentRef_ extends ComponentRef {
    */
   get hostComponentType(): Type { return this.componentType; }
 
-  dispose() { this._dispose(); }
+  dispose(): void { this._dispose(); }
 }
 
 /**

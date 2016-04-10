@@ -19,14 +19,21 @@ export class HtmlAttrAst implements HtmlAst {
 
 export class HtmlElementAst implements HtmlAst {
   constructor(public name: string, public attrs: HtmlAttrAst[], public children: HtmlAst[],
-              public sourceSpan: ParseSourceSpan) {}
+              public sourceSpan: ParseSourceSpan, public startSourceSpan: ParseSourceSpan,
+              public endSourceSpan: ParseSourceSpan) {}
   visit(visitor: HtmlAstVisitor, context: any): any { return visitor.visitElement(this, context); }
+}
+
+export class HtmlCommentAst implements HtmlAst {
+  constructor(public value: string, public sourceSpan: ParseSourceSpan) {}
+  visit(visitor: HtmlAstVisitor, context: any): any { return visitor.visitComment(this, context); }
 }
 
 export interface HtmlAstVisitor {
   visitElement(ast: HtmlElementAst, context: any): any;
   visitAttr(ast: HtmlAttrAst, context: any): any;
   visitText(ast: HtmlTextAst, context: any): any;
+  visitComment(ast: HtmlCommentAst, context: any): any;
 }
 
 export function htmlVisitAll(visitor: HtmlAstVisitor, asts: HtmlAst[], context: any = null): any[] {

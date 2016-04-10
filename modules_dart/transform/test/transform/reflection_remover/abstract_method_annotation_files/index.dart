@@ -1,6 +1,6 @@
 library web_foo;
 
-import 'package:angular2/bootstrap.dart';
+import 'package:angular2/platform/browser.dart';
 
 abstract class TestBootstrapper {
   @AngularEntrypoint()

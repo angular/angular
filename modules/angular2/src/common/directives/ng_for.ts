@@ -6,9 +6,15 @@ import {
   IterableDiffers,
   ViewContainerRef,
   TemplateRef,
-  EmbeddedViewRef
+  EmbeddedViewRef,
+  TrackByFn
 } from 'angular2/core';
-import {isPresent, isBlank} from 'angular2/src/facade/lang';
+import {isPresent, isBlank, stringify, getTypeNameForDebugging} from 'angular2/src/facade/lang';
+import {
+  DefaultIterableDiffer,
+  CollectionChangeRecord
+} from "../../core/change_detection/differs/default_iterable_differ";
+import {BaseException} from "../../facade/exceptions";
 
 /**
  * The `NgFor` directive instantiates a template once per item from an iterable. The context for
@@ -59,10 +65,12 @@ import {isPresent, isBlank} from 'angular2/src/facade/lang';
  * See a [live demo](http://plnkr.co/edit/KVuXxDp0qinGDyo307QW?p=preview) for a more detailed
  * example.
  */
-@Directive({selector: '[ngFor][ngForOf]', inputs: ['ngForOf', 'ngForTemplate']})
+@Directive({selector: '[ngFor][ngForOf]', inputs: ['ngForTrackBy', 'ngForOf', 'ngForTemplate']})
 export class NgFor implements DoCheck {
   /** @internal */
   _ngForOf: any;
+  /** @internal */
+  _ngForTrackBy: TrackByFn;
   private _differ: IterableDiffer;
 
   constructor(private _viewContainer: ViewContainerRef, private _templateRef: TemplateRef,
@@ -71,7 +79,12 @@ export class NgFor implements DoCheck {
   set ngForOf(value: any) {
     this._ngForOf = value;
     if (isBlank(this._differ) && isPresent(value)) {
-      this._differ = this._iterableDiffers.find(value).create(this._cdr);
+      try {
+        this._differ = this._iterableDiffers.find(value).create(this._cdr, this._ngForTrackBy);
+      } catch (e) {
+        throw new BaseException(
+            `Cannot find a differ supporting object '${value}' of type '${getTypeNameForDebugging(value)}'. NgFor only supports binding to Iterables such as Arrays.`);
+      }
     }
   }
 
@@ -81,6 +94,8 @@ export class NgFor implements DoCheck {
     }
   }
 
+  set ngForTrackBy(value: TrackByFn) { this._ngForTrackBy = value; }
+
   ngDoCheck() {
     if (isPresent(this._differ)) {
       var changes = this._differ.diff(this._ngForOf);
@@ -88,19 +103,19 @@ export class NgFor implements DoCheck {
     }
   }
 
-  private _applyChanges(changes) {
+  private _applyChanges(changes: DefaultIterableDiffer) {
     // TODO(rado): check if change detection can produce a change record that is
     // easier to consume than current.
-    var recordViewTuples = [];
-    changes.forEachRemovedItem((removedRecord) =>
+    var recordViewTuples: RecordViewTuple[] = [];
+    changes.forEachRemovedItem((removedRecord: CollectionChangeRecord) =>
                                    recordViewTuples.push(new RecordViewTuple(removedRecord, null)));
 
-    changes.forEachMovedItem((movedRecord) =>
+    changes.forEachMovedItem((movedRecord: CollectionChangeRecord) =>
                                  recordViewTuples.push(new RecordViewTuple(movedRecord, null)));
 
     var insertTuples = this._bulkRemove(recordViewTuples);
 
-    changes.forEachAddedItem((addedRecord) =>
+    changes.forEachAddedItem((addedRecord: CollectionChangeRecord) =>
                                  insertTuples.push(new RecordViewTuple(addedRecord, null)));
 
     this._bulkInsert(insertTuples);
@@ -113,9 +128,14 @@ export class NgFor implements DoCheck {
       var viewRef = <EmbeddedViewRef>this._viewContainer.get(i);
       viewRef.setLocal('last', i === ilen - 1);
     }
+
+    changes.forEachIdentityChange((record) => {
+      var viewRef = <EmbeddedViewRef>this._viewContainer.get(record.currentIndex);
+      viewRef.setLocal('\$implicit', record.item);
+    });
   }
 
-  private _perViewChange(view, record) {
+  private _perViewChange(view: EmbeddedViewRef, record: CollectionChangeRecord) {
     view.setLocal('\$implicit', record.item);
     view.setLocal('index', record.currentIndex);
     view.setLocal('even', (record.currentIndex % 2 == 0));
@@ -123,8 +143,9 @@ export class NgFor implements DoCheck {
   }
 
   private _bulkRemove(tuples: RecordViewTuple[]): RecordViewTuple[] {
-    tuples.sort((a, b) => a.record.previousIndex - b.record.previousIndex);
-    var movedTuples = [];
+    tuples.sort((a: RecordViewTuple, b: RecordViewTuple) =>
+                    a.record.previousIndex - b.record.previousIndex);
+    var movedTuples: RecordViewTuple[] = [];
     for (var i = tuples.length - 1; i >= 0; i--) {
       var tuple = tuples[i];
       // separate moved views from removed views.
@@ -156,7 +177,7 @@ export class NgFor implements DoCheck {
 class RecordViewTuple {
   view: EmbeddedViewRef;
   record: any;
-  constructor(record, view) {
+  constructor(record: any, view: EmbeddedViewRef) {
     this.record = record;
     this.view = view;
   }

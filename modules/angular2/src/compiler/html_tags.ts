@@ -327,6 +327,8 @@ export class HtmlTagDefinition {
 // see http://www.w3.org/TR/html51/syntax.html#optional-tags
 // This implementation does not fully conform to the HTML5 spec.
 var TAG_DEFINITIONS: {[key: string]: HtmlTagDefinition} = {
+  'base': new HtmlTagDefinition({isVoid: true}),
+  'meta': new HtmlTagDefinition({isVoid: true}),
   'area': new HtmlTagDefinition({isVoid: true}),
   'embed': new HtmlTagDefinition({isVoid: true}),
   'link': new HtmlTagDefinition({isVoid: true}),
@@ -419,4 +421,8 @@ export function splitNsName(elementName: string): string[] {
 
 export function getNsPrefix(elementName: string): string {
   return splitNsName(elementName)[0];
+}
+
+export function mergeNsAndName(prefix: string, localName: string): string {
+  return isPresent(prefix) ? `@${prefix}:${localName}` : localName;
 }

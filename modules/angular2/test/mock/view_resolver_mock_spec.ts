@@ -12,13 +12,13 @@ import {stringify} from 'angular2/src/facade/lang';
 
 import {MockViewResolver} from 'angular2/src/mock/view_resolver_mock';
 
-import {Component, View, ViewMetadata} from 'angular2/src/core/metadata';
+import {Component, ViewMetadata} from 'angular2/src/core/metadata';
 
 import {isBlank} from 'angular2/src/facade/lang';
 
 export function main() {
   describe('MockViewResolver', () => {
-    var viewResolver;
+    var viewResolver: MockViewResolver;
 
     beforeEach(() => { viewResolver = new MockViewResolver(); });
 
@@ -108,8 +108,8 @@ export function main() {
 
 class SomeDirective {}
 
-@Component({selector: 'cmp'})
-@View({
+@Component({
+  selector: 'cmp',
   template: 'template',
   directives: [SomeDirective],
 })

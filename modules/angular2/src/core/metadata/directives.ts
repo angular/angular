@@ -504,7 +504,7 @@ export class DirectiveMetadata extends InjectableMetadata {
    * @Component({
    *   selector: 'app',
    *   template: `
-   *     <interval-dir (every-second)="everySecond()" (every-five-seconds)="everyFiveSeconds()">
+   *     <interval-dir (everySecond)="everySecond()" (everyFiveSeconds)="everyFiveSeconds()">
    *     </interval-dir>
    *   `,
    *   directives: [IntervalDir]
@@ -1001,7 +1001,7 @@ export class PipeMetadata extends InjectableMetadata {
 export class InputMetadata {
   constructor(
       /**
-       * Name used when instantiating a component in the temlate.
+       * Name used when instantiating a component in the template.
        */
       public bindingPropertyName?: string) {}
 }
@@ -1035,7 +1035,7 @@ export class InputMetadata {
  * @Component({
  *   selector: 'app',
  *   template: `
- *     <interval-dir (every-second)="everySecond()" (every-five-seconds)="everyFiveSeconds()">
+ *     <interval-dir (everySecond)="everySecond()" (everyFiveSeconds)="everyFiveSeconds()">
  *     </interval-dir>
  *   `,
  *   directives: [IntervalDir]
@@ -1071,8 +1071,8 @@ export class OutputMetadata {
  * @Directive({selector: '[ngModel]'})
  * class NgModelStatus {
  *   constructor(public control:NgModel) {}
- *   @HostBinding('[class.valid]') get valid { return this.control.valid; }
- *   @HostBinding('[class.invalid]') get invalid { return this.control.invalid; }
+ *   @HostBinding('class.valid') get valid { return this.control.valid; }
+ *   @HostBinding('class.invalid') get invalid { return this.control.invalid; }
  * }
  *
  * @Component({

@@ -4,8 +4,18 @@ import {
   RegExpWrapper,
   RegExpMatcherWrapper,
   StringWrapper,
-  CONST_EXPR
+  CONST_EXPR,
+  hasConstructor,
+  resolveEnumToken
 } from 'angular2/src/facade/lang';
+
+enum UsefulEnum {
+  MyToken,
+  MyOtherToken
+}
+
+class MySuperclass {}
+class MySubclass extends MySuperclass {}
 
 export function main() {
   describe('RegExp', () => {
@@ -31,6 +41,12 @@ export function main() {
       expect(RegExpWrapper.test(re, str)).toEqual(true);
       // If not reset, the second attempt to test results in false
       expect(RegExpWrapper.test(re, str)).toEqual(true);
+    });
+
+    it("should implement replace all", () => {
+      let re = /(\d)+/g;
+      let m = RegExpWrapper.replaceAll(re, 'a1b2c', (match) => `!${match[1]}!`);
+      expect(m).toEqual('a!1!b!2!c');
     });
   });
 
@@ -118,6 +134,24 @@ export function main() {
         expect(StringWrapper.stripRight("", "S")).toEqual("");
         expect(StringWrapper.stripRight(null, "S")).toEqual(null);
       });
+    });
+
+    describe('resolveEnumToken', () => {
+      it("should resolve a token given an enum and index values", () => {
+        var token = UsefulEnum.MyToken;
+        expect(resolveEnumToken(UsefulEnum, token)).toEqual('MyToken');
+
+        token = UsefulEnum.MyOtherToken;
+        expect(resolveEnumToken(UsefulEnum, token)).toEqual('MyOtherToken');
+      });
+    });
+
+    describe('hasConstructor', () => {
+      it("should be true when the type matches",
+         () => { expect(hasConstructor(new MySuperclass(), MySuperclass)).toEqual(true); });
+
+      it("should be false for subtypes",
+         () => { expect(hasConstructor(new MySubclass(), MySuperclass)).toEqual(false); });
     });
   });
 }

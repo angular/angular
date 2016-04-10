@@ -1,5 +1,4 @@
 /// <reference path="../../typings/node/node.d.ts" />
-/// <reference path="../angular_builder.d.ts" />
 'use strict';
 
 import {MultiCopy} from './../multi_copy';
@@ -12,6 +11,7 @@ var stew = require('broccoli-stew');
 import ts2dart from '../broccoli-ts2dart';
 import dartfmt from '../broccoli-dartfmt';
 import replace from '../broccoli-replace';
+import {AngularBuilderOptions} from '../angular_builder';
 
 var global_excludes = [
   'angular2/examples/**/ts/**/*',

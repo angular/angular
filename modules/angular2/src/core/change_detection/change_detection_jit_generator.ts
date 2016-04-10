@@ -57,9 +57,8 @@ export class ChangeDetectorJITGenerator {
     this.directiveRecords = definition.directiveRecords;
     this._names = new CodegenNameUtil(this.records, this.eventBindings, this.directiveRecords,
                                       this.changeDetectionUtilVarName);
-    this._logic =
-        new CodegenLogicUtil(this._names, this.changeDetectionUtilVarName,
-                             this.changeDetectorStateVarName, this.changeDetectionStrategy);
+    this._logic = new CodegenLogicUtil(this._names, this.changeDetectionUtilVarName,
+                                       this.changeDetectorStateVarName);
     this.typeName = sanitizeName(`ChangeDetector_${this.id}`);
   }
 
@@ -174,7 +173,7 @@ export class ChangeDetectorJITGenerator {
       var evalRecord = this._logic.genEventBindingEvalValue(eb, r);
       var markPath = this._genMarkPathToRootAsCheckOnce(r);
       var prevDefault = this._genUpdatePreventDefault(eb, r);
-      return `${evalRecord}\n${markPath}\n${prevDefault}`;
+      return `${markPath}\n${evalRecord}\n${prevDefault}`;
     } else {
       return this._logic.genEventBindingEvalValue(eb, r);
     }
@@ -350,6 +349,7 @@ export class ChangeDetectorJITGenerator {
     var condition = `!${pipe}.pure || (${contexOrArgCheck.join(" || ")})`;
 
     var check = `
+      ${this._genThrowOnChangeCheck(oldValue, newValue)}
       if (${this.changeDetectionUtilVarName}.looseNotIdentical(${oldValue}, ${newValue})) {
         ${newValue} = ${this.changeDetectionUtilVarName}.unwrapValue(${newValue})
         ${this._genChangeMarker(r)}
@@ -377,6 +377,7 @@ export class ChangeDetectorJITGenerator {
     `;
 
     var check = `
+      ${this._genThrowOnChangeCheck(oldValue, newValue)}
       if (${this.changeDetectionUtilVarName}.looseNotIdentical(${oldValue}, ${newValue})) {
         ${this._genChangeMarker(r)}
         ${this._genUpdateDirectiveOrElement(r)}
@@ -409,7 +410,6 @@ export class ChangeDetectorJITGenerator {
     if (!r.lastInBinding) return "";
 
     var newValue = this._names.getLocalName(r.selfIndex);
-    var oldValue = this._names.getFieldName(r.selfIndex);
     var notifyDebug = this.genConfig.logBindingUpdate ? `this.logBindingUpdate(${newValue});` : "";
 
     var br = r.bindingRecord;
@@ -417,14 +417,12 @@ export class ChangeDetectorJITGenerator {
       var directiveProperty =
           `${this._names.getDirectiveName(br.directiveRecord.directiveIndex)}.${br.target.name}`;
       return `
-        ${this._genThrowOnChangeCheck(oldValue, newValue)}
         ${directiveProperty} = ${newValue};
         ${notifyDebug}
         ${IS_CHANGED_LOCAL} = true;
       `;
     } else {
       return `
-        ${this._genThrowOnChangeCheck(oldValue, newValue)}
         this.notifyDispatcher(${newValue});
         ${notifyDebug}
       `;
@@ -435,7 +433,7 @@ export class ChangeDetectorJITGenerator {
   _genThrowOnChangeCheck(oldValue: string, newValue: string): string {
     if (assertionsEnabled()) {
       return `
-        if(throwOnChange) {
+        if (throwOnChange && !${this.changeDetectionUtilVarName}.devModeEqual(${oldValue}, ${newValue})) {
           this.throwOnChangeError(${oldValue}, ${newValue});
         }
         `;

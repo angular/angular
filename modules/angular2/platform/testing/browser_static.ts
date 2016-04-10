@@ -15,7 +15,7 @@ import {MockAnimationBuilder} from 'angular2/src/mock/animation_builder_mock';
 import {MockDirectiveResolver} from 'angular2/src/mock/directive_resolver_mock';
 import {MockViewResolver} from 'angular2/src/mock/view_resolver_mock';
 import {MockLocationStrategy} from 'angular2/src/mock/mock_location_strategy';
-import {LocationStrategy} from 'angular2/src/router/location_strategy';
+import {LocationStrategy} from 'angular2/src/router/location/location_strategy';
 import {MockNgZone} from 'angular2/src/mock/ng_zone_mock';
 
 import {XHRImpl} from "angular2/src/platform/browser/xhr_impl";

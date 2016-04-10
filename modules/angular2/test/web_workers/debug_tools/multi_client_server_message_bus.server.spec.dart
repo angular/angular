@@ -2,7 +2,7 @@ library angular2.test.web_workers.debug_tools.multi_client_server_message_bus;
 
 import "dart:io";
 import "dart:async";
-import "package:angular2/testing_internal.dart"
+import "package:angular2/src/testing/testing_internal_core.dart"
     show
         AsyncTestCompleter,
         SpyObject,
@@ -217,7 +217,9 @@ SpySocketWrapper createSocket({Function messageHandler}) {
   var socket = new SpyWebSocket();
   if (messageHandler != null) {
     socket.spy("add").andCallFake(messageHandler);
-    socket.spy("addStream").andCallFake((Stream stream) => stream.listen(messageHandler));
+    socket
+        .spy("addStream")
+        .andCallFake((Stream stream) => stream.listen(messageHandler));
   }
 
   var controller = new StreamController<String>.broadcast();

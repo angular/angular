@@ -3,7 +3,7 @@ import {ListWrapper, Map, MapWrapper} from 'angular2/src/facade/collection';
 import {Serializer} from "angular2/src/web_workers/shared/serializer";
 import {isPresent, Type, FunctionWrapper} from "angular2/src/facade/lang";
 import {MessageBus} from "angular2/src/web_workers/shared/message_bus";
-import {EventEmitter, Promise, PromiseWrapper, ObservableWrapper} from 'angular2/src/facade/async';
+import {EventEmitter, PromiseWrapper, ObservableWrapper} from 'angular2/src/facade/async';
 
 export abstract class ServiceMessageBrokerFactory {
   /**
@@ -50,11 +50,13 @@ export class ServiceMessageBroker_ extends ServiceMessageBroker {
     ObservableWrapper.subscribe(source, (message) => this._handleMessage(message));
   }
 
-  registerMethod(methodName: string, signature: Type[], method: Function, returnType?: Type): void {
+  registerMethod(methodName: string, signature: Type[], method: (..._: any[]) => Promise<any>| void,
+                 returnType?: Type): void {
     this._methods.set(methodName, (message: ReceivedMessage) => {
       var serializedArgs = message.args;
-      var deserializedArgs: any[] = ListWrapper.createFixedSize(signature.length);
-      for (var i = 0; i < signature.length; i++) {
+      let numArgs = signature === null ? 0 : signature.length;
+      var deserializedArgs: any[] = ListWrapper.createFixedSize(numArgs);
+      for (var i = 0; i < numArgs; i++) {
         var serializedArg = serializedArgs[i];
         deserializedArgs[i] = this._serializer.deserialize(serializedArg, signature[i]);
       }

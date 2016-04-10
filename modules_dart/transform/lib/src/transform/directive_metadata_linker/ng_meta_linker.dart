@@ -61,10 +61,10 @@ Future _linkRecursive(NgMeta ngMeta, AssetReader reader, AssetId assetId,
   }
   var assetUri = toAssetUri(assetId);
 
-  return Future.wait(ngMeta.ngDeps.exports
-      .where((export) => !isDartCoreUri(export.uri))
-      .map((export) =>
-          _urlResolver.resolve(assetUri, toSummaryExtension(export.uri)))
+  return Future.wait(ngMeta.linkingUris
+      .where((uri) => !isDartCoreUri(uri))
+      .map((uri) =>
+          _urlResolver.resolve(assetUri, toSummaryExtension(uri)))
       .where((uri) => !seen.contains(uri))
       .map((uri) async {
     seen.add(uri);

@@ -24,3 +24,4 @@ import {WORKER_RENDER_APPLICATION} from 'angular2/src/platform/worker_render';
  * @deprecated Use WORKER_RENDER_APPLICATION
  */
 export const WORKER_RENDER_APP = WORKER_RENDER_APPLICATION;
+export {WORKER_RENDER_ROUTER} from 'angular2/src/web_workers/ui/router_providers';

@@ -116,6 +116,12 @@ export class StringMapWrapper {
   }
   static set<V>(map: {[key: string]: V}, key: string, value: V) { map[key] = value; }
   static keys(map: {[key: string]: any}): string[] { return Object.keys(map); }
+  static values<T>(map: {[key: string]: T}): T[] {
+    return Object.keys(map).reduce((r, a) => {
+      r.push(map[a]);
+      return r;
+    }, []);
+  }
   static isEmpty(map: {[key: string]: any}): boolean {
     for (var prop in map) {
       return false;
@@ -178,6 +184,11 @@ export class ListWrapper {
   static createFixedSize(size: number): any[] { return new Array(size); }
   static createGrowableSize(size: number): any[] { return new Array(size); }
   static clone<T>(array: T[]): T[] { return array.slice(0); }
+  static createImmutable<T>(array: T[]): T[] {
+    var result = ListWrapper.clone(array);
+    Object.seal(result);
+    return result;
+  }
   static forEachWithIndex<T>(array: T[], fn: (t: T, n: number) => void) {
     for (var i = 0; i < array.length; i++) {
       fn(array[i], i);
@@ -265,6 +276,13 @@ export class ListWrapper {
     }
     return solution;
   }
+
+  static isImmutable(list: any[]): boolean { return Object.isSealed(list); }
+  static flatten<T>(array: T[][]): T[] {
+    let res = [];
+    array.forEach((a) => res = res.concat(a));
+    return res;
+  }
 }
 
 export function isListLikeIterable(obj: any): boolean {
@@ -272,6 +290,19 @@ export function isListLikeIterable(obj: any): boolean {
   return isArray(obj) ||
          (!(obj instanceof Map) &&      // JS Map are iterables but return entries as [k, v]
           getSymbolIterator() in obj);  // JS Iterable have a Symbol.iterator prop
+}
+
+export function areIterablesEqual(a: any, b: any, comparator: Function): boolean {
+  var iterator1 = a[getSymbolIterator()]();
+  var iterator2 = b[getSymbolIterator()]();
+
+  while (true) {
+    let item1 = iterator1.next();
+    let item2 = iterator2.next();
+    if (item1.done && item2.done) return true;
+    if (item1.done || item2.done) return false;
+    if (!comparator(item1.value, item2.value)) return false;
+  }
 }
 
 export function iterateListLike(obj: any, fn: Function) {

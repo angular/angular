@@ -6,58 +6,64 @@ import {
   ddescribe,
   xdescribe,
   expect,
+  fakeAsync,
   tick,
   beforeEach,
   inject,
   injectAsync,
+  withProviders,
   beforeEachProviders,
   TestComponentBuilder
 } from 'angular2/testing';
 
 import {Injectable, bind} from 'angular2/core';
 import {NgIf} from 'angular2/common';
-import {Directive, Component, View, ViewMetadata} from 'angular2/core';
+import {Directive, Component, ViewMetadata} from 'angular2/core';
 import {PromiseWrapper} from 'angular2/src/facade/promise';
 import {XHR} from 'angular2/src/compiler/xhr';
 import {XHRImpl} from 'angular2/src/platform/browser/xhr_impl';
 
 // Services, and components for the tests.
 
-@Component({selector: 'child-comp'})
-@View({template: `<span>Original {{childBinding}}</span>`, directives: []})
+@Component(
+    {selector: 'child-comp', template: `<span>Original {{childBinding}}</span>`, directives: []})
 @Injectable()
 class ChildComp {
   childBinding: string;
   constructor() { this.childBinding = 'Child'; }
 }
 
-@Component({selector: 'child-comp'})
-@View({template: `<span>Mock</span>`})
+@Component({selector: 'child-comp', template: `<span>Mock</span>`})
 @Injectable()
 class MockChildComp {
 }
 
-@Component({selector: 'parent-comp'})
-@View({template: `Parent(<child-comp></child-comp>)`, directives: [ChildComp]})
+@Component({
+  selector: 'parent-comp',
+  template: `Parent(<child-comp></child-comp>)`,
+  directives: [ChildComp]
+})
 @Injectable()
 class ParentComp {
 }
 
-@Component({selector: 'my-if-comp'})
-@View({template: `MyIf(<span *ngIf="showMore">More</span>)`, directives: [NgIf]})
+@Component({
+  selector: 'my-if-comp',
+  template: `MyIf(<span *ngIf="showMore">More</span>)`,
+  directives: [NgIf]
+})
 @Injectable()
 class MyIfComp {
   showMore: boolean = false;
 }
 
-@Component({selector: 'child-child-comp'})
-@View({template: `<span>ChildChild</span>`})
+@Component({selector: 'child-child-comp', template: `<span>ChildChild</span>`})
 @Injectable()
 class ChildChildComp {
 }
 
-@Component({selector: 'child-comp'})
-@View({
+@Component({
+  selector: 'child-comp',
   template: `<span>Original {{childBinding}}(<child-child-comp></child-child-comp>)</span>`,
   directives: [ChildChildComp]
 })
@@ -67,8 +73,7 @@ class ChildWithChildComp {
   constructor() { this.childBinding = 'Child'; }
 }
 
-@Component({selector: 'child-child-comp'})
-@View({template: `<span>ChildChild Mock</span>`})
+@Component({selector: 'child-child-comp', template: `<span>ChildChild Mock</span>`})
 @Injectable()
 class MockChildChildComp {
 }
@@ -82,18 +87,34 @@ class MockFancyService extends FancyService {
   value: string = 'mocked out value';
 }
 
-@Component({selector: 'my-service-comp', providers: [FancyService]})
-@View({template: `injected value: {{fancyService.value}}`})
+@Component({
+  selector: 'my-service-comp',
+  providers: [FancyService],
+  template: `injected value: {{fancyService.value}}`
+})
 class TestProvidersComp {
   constructor(private fancyService: FancyService) {}
 }
 
-@Component({selector: 'my-service-comp', viewProviders: [FancyService]})
-@View({template: `injected value: {{fancyService.value}}`})
+@Component({
+  selector: 'my-service-comp',
+  viewProviders: [FancyService],
+  template: `injected value: {{fancyService.value}}`
+})
 class TestViewProvidersComp {
   constructor(private fancyService: FancyService) {}
 }
 
+@Component({
+  selector: 'external-template-comp',
+  templateUrl: '/base/modules/angular2/test/testing/static_assets/test.html'
+})
+class ExternalTemplateComp {
+}
+
+@Component({selector: 'bad-template-comp', templateUrl: 'non-existant.html'})
+class BadTemplateUrl {
+}
 
 export function main() {
   describe('angular2 jasmine matchers', () => {
@@ -159,6 +180,14 @@ export function main() {
                (value) => { expect(value).toEqual('async value'); });
          }));
 
+      it('should allow the use of fakeAsync',
+         inject([FancyService], fakeAsync((service) => {
+                  var value;
+                  service.getAsyncValue().then(function(val) { value = val; });
+                  tick();
+                  expect(value).toEqual('async value');
+                })));
+
       describe('using beforeEach', () => {
         beforeEach(inject([FancyService],
                           (service) => { service.value = 'value modified in beforeEach'; }));
@@ -176,6 +205,13 @@ export function main() {
         it('should use asynchronously modified value',
            inject([FancyService], (service) => { expect(service.value).toEqual('async value'); }));
       });
+    });
+
+    describe('per test providers', () => {
+      it('should allow per test providers',
+         withProviders(() => [bind(FancyService).toValue(new FancyService())])
+             .inject([FancyService],
+                     (service) => { expect(service.value).toEqual('real value'); }));
     });
   });
 
@@ -273,11 +309,12 @@ export function main() {
       restoreJasmineIt();
     });
 
-    it('should fail when an asynchronous error is thrown', (done) => {
+    // TODO(juliemr): reenable this test when we are using a test zone and can capture this error.
+    xit('should fail when an asynchronous error is thrown', (done) => {
       var itPromise = patchJasmineIt();
 
       it('throws an async error',
-         inject([], () => { setTimeout(() => { throw new Error('bar'); }, 0); }));
+         injectAsync([], () => { setTimeout(() => { throw new Error('bar'); }, 0); }));
 
       itPromise.then(() => { done.fail('Expected test to fail, but it did not'); }, (err) => {
         expect(err.message).toEqual('bar');
@@ -303,6 +340,19 @@ export function main() {
       });
       restoreJasmineIt();
     });
+
+    it('should fail when an XHR fails', (done) => {
+      var itPromise = patchJasmineIt();
+
+      it('should fail with an error from a promise',
+         injectAsync([TestComponentBuilder], (tcb) => { return tcb.createAsync(BadTemplateUrl); }));
+
+      itPromise.then(() => { done.fail('Expected test to fail, but it did not'); }, (err) => {
+        expect(err).toEqual('Failed to load non-existant.html');
+        done();
+      });
+      restoreJasmineIt();
+    }, 10000);
 
     describe('using beforeEachProviders', () => {
       beforeEachProviders(() => [bind(FancyService).toValue(new FancyService())]);
@@ -428,5 +478,16 @@ export function main() {
                    .toHaveText('injected value: mocked out value');
              });
        }));
+
+    it('should allow an external templateUrl',
+       injectAsync([TestComponentBuilder], (tcb: TestComponentBuilder) => {
+
+         return tcb.createAsync(ExternalTemplateComp)
+             .then((componentFixture) => {
+               componentFixture.detectChanges();
+               expect(componentFixture.debugElement.nativeElement)
+                   .toHaveText('from external template\n');
+             });
+       }), 10000);  // Long timeout here because this test makes an actual XHR, and is slow on Edge.
   });
 }

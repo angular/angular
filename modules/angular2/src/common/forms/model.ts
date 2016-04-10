@@ -1,7 +1,8 @@
-import {StringWrapper, isPresent, isBlank, normalizeBool} from 'angular2/src/facade/lang';
+import {isPresent, isBlank, normalizeBool} from 'angular2/src/facade/lang';
 import {Observable, EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
 import {PromiseWrapper} from 'angular2/src/facade/promise';
 import {StringMapWrapper, ListWrapper} from 'angular2/src/facade/collection';
+import {ValidatorFn, AsyncValidatorFn} from './directives/validators';
 
 /**
  * Indicates that a Control is valid, i.e. that no errors exist in the input value.
@@ -62,9 +63,9 @@ export abstract class AbstractControl {
   private _pristine: boolean = true;
   private _touched: boolean = false;
   private _parent: ControlGroup | ControlArray;
-  private _asyncValidationSubscription;
+  private _asyncValidationSubscription: any;
 
-  constructor(public validator: Function, public asyncValidator: Function) {}
+  constructor(public validator: ValidatorFn, public asyncValidator: AsyncValidatorFn) {}
 
   get value(): any { return this._value; }
 
@@ -137,15 +138,17 @@ export abstract class AbstractControl {
     }
   }
 
-  private _runValidator() { return isPresent(this.validator) ? this.validator(this) : null; }
+  private _runValidator(): {[key: string]: any} {
+    return isPresent(this.validator) ? this.validator(this) : null;
+  }
 
   private _runAsyncValidator(emitEvent: boolean): void {
     if (isPresent(this.asyncValidator)) {
       this._status = PENDING;
       this._cancelExistingSubscription();
       var obs = toObservable(this.asyncValidator(this));
-      this._asyncValidationSubscription =
-          ObservableWrapper.subscribe(obs, res => this.setErrors(res, {emitEvent: emitEvent}));
+      this._asyncValidationSubscription = ObservableWrapper.subscribe(
+          obs, (res: {[key: string]: any}) => this.setErrors(res, {emitEvent: emitEvent}));
     }
   }
 
@@ -208,6 +211,16 @@ export abstract class AbstractControl {
     return isPresent(this.getError(errorCode, path));
   }
 
+  get root(): AbstractControl {
+    let x: AbstractControl = this;
+
+    while (isPresent(x._parent)) {
+      x = x._parent;
+    }
+
+    return x;
+  }
+
   /** @internal */
   _updateControlsErrors(): void {
     this._status = this._calculateStatus();
@@ -258,7 +271,8 @@ export class Control extends AbstractControl {
   /** @internal */
   _onChange: Function;
 
-  constructor(value: any = null, validator: Function = null, asyncValidator: Function = null) {
+  constructor(value: any = null, validator: ValidatorFn = null,
+              asyncValidator: AsyncValidatorFn = null) {
     super(validator, asyncValidator);
     this._value = value;
     this.updateValueAndValidity({onlySelf: true, emitEvent: false});
@@ -307,9 +321,10 @@ export class Control extends AbstractControl {
 /**
  * Defines a part of a form, of fixed length, that can contain other controls.
  *
- * A `ControlGroup` aggregates the values and errors of each {@link Control} in the group. Thus, if
- * one of the controls in a group is invalid, the entire group is invalid. Similarly, if a control
- * changes its value, the entire group changes as well.
+ * A `ControlGroup` aggregates the values of each {@link Control} in the group.
+ * The status of a `ControlGroup` depends on the status of its children.
+ * If one of the controls in a group is invalid, the entire group is invalid.
+ * Similarly, if a control changes its value, the entire group changes as well.
  *
  * `ControlGroup` is one of the three fundamental building blocks used to define forms in Angular,
  * along with {@link Control} and {@link ControlArray}. {@link ControlArray} can also contain other
@@ -321,8 +336,8 @@ export class ControlGroup extends AbstractControl {
   private _optionals: {[key: string]: boolean};
 
   constructor(public controls: {[key: string]: AbstractControl},
-              optionals: {[key: string]: boolean} = null, validator: Function = null,
-              asyncValidator: Function = null) {
+              optionals: {[key: string]: boolean} = null, validator: ValidatorFn = null,
+              asyncValidator: AsyncValidatorFn = null) {
     super(validator, asyncValidator);
     this._optionals = isPresent(optionals) ? optionals : {};
     this._initObservables();
@@ -369,7 +384,8 @@ export class ControlGroup extends AbstractControl {
 
   /** @internal */
   _setParentForControls() {
-    StringMapWrapper.forEach(this.controls, (control, name) => { control.setParent(this); });
+    StringMapWrapper.forEach(
+        this.controls, (control: AbstractControl, name: string) => { control.setParent(this); });
   }
 
   /** @internal */
@@ -378,7 +394,7 @@ export class ControlGroup extends AbstractControl {
   /** @internal */
   _anyControlsHaveStatus(status: string): boolean {
     var res = false;
-    StringMapWrapper.forEach(this.controls, (control, name) => {
+    StringMapWrapper.forEach(this.controls, (control: AbstractControl, name: string) => {
       res = res || (this.contains(name) && control.status == status);
     });
     return res;
@@ -386,16 +402,17 @@ export class ControlGroup extends AbstractControl {
 
   /** @internal */
   _reduceValue() {
-    return this._reduceChildren({}, (acc, control, name) => {
-      acc[name] = control.value;
-      return acc;
-    });
+    return this._reduceChildren(
+        {}, (acc: {[k: string]: AbstractControl}, control: AbstractControl, name: string) => {
+          acc[name] = control.value;
+          return acc;
+        });
   }
 
   /** @internal */
   _reduceChildren(initValue: any, fn: Function) {
     var res = initValue;
-    StringMapWrapper.forEach(this.controls, (control, name) => {
+    StringMapWrapper.forEach(this.controls, (control: AbstractControl, name: string) => {
       if (this._included(name)) {
         res = fn(res, control, name);
       }
@@ -413,9 +430,10 @@ export class ControlGroup extends AbstractControl {
 /**
  * Defines a part of a form, of variable length, that can contain other controls.
  *
- * A `ControlArray` aggregates the values and errors of each {@link Control} in the group. Thus, if
- * one of the controls in a group is invalid, the entire group is invalid. Similarly, if a control
- * changes its value, the entire group changes as well.
+ * A `ControlArray` aggregates the values of each {@link Control} in the group.
+ * The status of a `ControlArray` depends on the status of its children.
+ * If one of the controls in a group is invalid, the entire array is invalid.
+ * Similarly, if a control changes its value, the entire array changes as well.
  *
  * `ControlArray` is one of the three fundamental building blocks used to define forms in Angular,
  * along with {@link Control} and {@link ControlGroup}. {@link ControlGroup} can also contain
@@ -432,8 +450,8 @@ export class ControlGroup extends AbstractControl {
  * ### Example ([live demo](http://plnkr.co/edit/23DESOpbNnBpBHZt1BR4?p=preview))
  */
 export class ControlArray extends AbstractControl {
-  constructor(public controls: AbstractControl[], validator: Function = null,
-              asyncValidator: Function = null) {
+  constructor(public controls: AbstractControl[], validator: ValidatorFn = null,
+              asyncValidator: AsyncValidatorFn = null) {
     super(validator, asyncValidator);
     this._initObservables();
     this._setParentForControls();

@@ -11,21 +11,19 @@ import {
 
 import {ListWrapper} from 'angular2/src/facade/collection';
 
-import {HtmlAst, HtmlAttrAst, HtmlTextAst, HtmlElementAst} from './html_ast';
+import {HtmlAst, HtmlAttrAst, HtmlTextAst, HtmlCommentAst, HtmlElementAst} from './html_ast';
 
 import {Injectable} from 'angular2/src/core/di';
 import {HtmlToken, HtmlTokenType, tokenizeHtml} from './html_lexer';
 import {ParseError, ParseLocation, ParseSourceSpan} from './parse_util';
-import {HtmlTagDefinition, getHtmlTagDefinition, getNsPrefix} from './html_tags';
+import {HtmlTagDefinition, getHtmlTagDefinition, getNsPrefix, mergeNsAndName} from './html_tags';
 
 export class HtmlTreeError extends ParseError {
-  static create(elementName: string, location: ParseLocation, msg: string): HtmlTreeError {
-    return new HtmlTreeError(elementName, location, msg);
+  static create(elementName: string, span: ParseSourceSpan, msg: string): HtmlTreeError {
+    return new HtmlTreeError(elementName, span, msg);
   }
 
-  constructor(public elementName: string, location: ParseLocation, msg: string) {
-    super(location, msg);
-  }
+  constructor(public elementName: string, span: ParseSourceSpan, msg: string) { super(span, msg); }
 }
 
 export class HtmlParseTreeResult {
@@ -100,9 +98,11 @@ class TreeBuilder {
     this._advanceIf(HtmlTokenType.CDATA_END);
   }
 
-  private _consumeComment(startToken: HtmlToken) {
-    this._advanceIf(HtmlTokenType.RAW_TEXT);
+  private _consumeComment(token: HtmlToken) {
+    var text = this._advanceIf(HtmlTokenType.RAW_TEXT);
     this._advanceIf(HtmlTokenType.COMMENT_END);
+    var value = isPresent(text) ? text.parts[0].trim() : null;
+    this._addToParent(new HtmlCommentAst(value, token.sourceSpan));
   }
 
   private _consumeText(token: HtmlToken) {
@@ -146,7 +146,7 @@ class TreeBuilder {
       selfClosing = true;
       if (getNsPrefix(fullName) == null && !getHtmlTagDefinition(fullName).isVoid) {
         this.errors.push(HtmlTreeError.create(
-            fullName, startTagToken.sourceSpan.start,
+            fullName, startTagToken.sourceSpan,
             `Only void and foreign elements can be self closed "${startTagToken.parts[1]}"`));
       }
     } else if (this.peek.type === HtmlTokenType.TAG_OPEN_END) {
@@ -154,11 +154,12 @@ class TreeBuilder {
       selfClosing = false;
     }
     var end = this.peek.sourceSpan.start;
-    var el = new HtmlElementAst(fullName, attrs, [],
-                                new ParseSourceSpan(startTagToken.sourceSpan.start, end));
+    let span = new ParseSourceSpan(startTagToken.sourceSpan.start, end);
+    var el = new HtmlElementAst(fullName, attrs, [], span, span, null);
     this._pushElement(el);
     if (selfClosing) {
       this._popElement(fullName);
+      el.endSourceSpan = span;
     }
   }
 
@@ -173,7 +174,8 @@ class TreeBuilder {
     var tagDef = getHtmlTagDefinition(el.name);
     var parentEl = this._getParentElement();
     if (tagDef.requireExtraParent(isPresent(parentEl) ? parentEl.name : null)) {
-      var newParent = new HtmlElementAst(tagDef.parentToAdd, [], [el], el.sourceSpan);
+      var newParent = new HtmlElementAst(tagDef.parentToAdd, [], [el], el.sourceSpan,
+                                         el.startSourceSpan, el.endSourceSpan);
       this._addToParent(newParent);
       this.elementStack.push(newParent);
       this.elementStack.push(el);
@@ -187,12 +189,14 @@ class TreeBuilder {
     var fullName =
         getElementFullName(endTagToken.parts[0], endTagToken.parts[1], this._getParentElement());
 
+    this._getParentElement().endSourceSpan = endTagToken.sourceSpan;
+
     if (getHtmlTagDefinition(fullName).isVoid) {
       this.errors.push(
-          HtmlTreeError.create(fullName, endTagToken.sourceSpan.start,
+          HtmlTreeError.create(fullName, endTagToken.sourceSpan,
                                `Void elements do not have end tags "${endTagToken.parts[1]}"`));
     } else if (!this._popElement(fullName)) {
-      this.errors.push(HtmlTreeError.create(fullName, endTagToken.sourceSpan.start,
+      this.errors.push(HtmlTreeError.create(fullName, endTagToken.sourceSpan,
                                             `Unexpected closing tag "${endTagToken.parts[1]}"`));
     }
   }
@@ -236,10 +240,6 @@ class TreeBuilder {
       this.rootNodes.push(node);
     }
   }
-}
-
-function mergeNsAndName(prefix: string, localName: string): string {
-  return isPresent(prefix) ? `@${prefix}:${localName}` : localName;
 }
 
 function getElementFullName(prefix: string, localName: string,

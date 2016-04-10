@@ -1,4 +1,4 @@
-import {bootstrap} from 'angular2/bootstrap';
+import {bootstrap} from 'angular2/platform/browser';
 import {
   FORM_DIRECTIVES,
   ControlGroup,
@@ -9,14 +9,15 @@ import {
   NgIf,
   NgFor
 } from 'angular2/common';
-import {Component, Directive, View, Host} from 'angular2/core';
+import {Component, Directive, Host} from 'angular2/core';
 
 import {RegExpWrapper, print, isPresent} from 'angular2/src/facade/lang';
+import {AbstractControl} from 'angular2/common';
 
 /**
  * Custom validator.
  */
-function creditCardValidator(c): {[key: string]: boolean} {
+function creditCardValidator(c: AbstractControl): {[key: string]: boolean} {
   if (isPresent(c.value) && RegExpWrapper.test(/^\d{16}$/g, c.value)) {
     return null;
   } else {
@@ -39,8 +40,9 @@ function creditCardValidator(c): {[key: string]: boolean} {
  * actual error message.
  * To make it simple, we are using a simple map here.
  */
-@Component({selector: 'show-error', inputs: ['controlPath: control', 'errorTypes: errors']})
-@View({
+@Component({
+  selector: 'show-error',
+  inputs: ['controlPath: control', 'errorTypes: errors'],
   template: `
     <span *ngIf="errorMessage !== null">{{errorMessage}}</span>
   `,
@@ -73,8 +75,9 @@ class ShowError {
 }
 
 
-@Component({selector: 'model-driven-forms', viewProviders: [FormBuilder]})
-@View({
+@Component({
+  selector: 'model-driven-forms',
+  viewProviders: [FormBuilder],
   template: `
     <h1>Checkout Form (Model Driven)</h1>
 

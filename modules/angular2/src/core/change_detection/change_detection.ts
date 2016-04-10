@@ -1,9 +1,20 @@
 import {IterableDiffers, IterableDifferFactory} from './differs/iterable_differs';
 import {DefaultIterableDifferFactory} from './differs/default_iterable_differ';
 import {KeyValueDiffers, KeyValueDifferFactory} from './differs/keyvalue_differs';
-import {DefaultKeyValueDifferFactory} from './differs/default_keyvalue_differ';
-import {CONST, CONST_EXPR, isPresent} from 'angular2/src/facade/lang';
+import {
+  DefaultKeyValueDifferFactory,
+  KeyValueChangeRecord
+} from './differs/default_keyvalue_differ';
+import {CONST_EXPR} from 'angular2/src/facade/lang';
 
+export {
+  DefaultKeyValueDifferFactory,
+  KeyValueChangeRecord
+} from './differs/default_keyvalue_differ';
+export {
+  DefaultIterableDifferFactory,
+  CollectionChangeRecord
+} from './differs/default_iterable_differ';
 export {
   ASTWithSource,
   AST,
@@ -37,7 +48,12 @@ export {BindingRecord, BindingTarget} from './binding_record';
 export {DirectiveIndex, DirectiveRecord} from './directive_record';
 export {DynamicChangeDetector} from './dynamic_change_detector';
 export {ChangeDetectorRef} from './change_detector_ref';
-export {IterableDiffers, IterableDiffer, IterableDifferFactory} from './differs/iterable_differs';
+export {
+  IterableDiffers,
+  IterableDiffer,
+  IterableDifferFactory,
+  TrackByFn
+} from './differs/iterable_differs';
 export {KeyValueDiffers, KeyValueDiffer, KeyValueDifferFactory} from './differs/keyvalue_differs';
 export {PipeTransform} from './pipe_transform';
 export {WrappedValue, SimpleChange} from './change_detection_util';

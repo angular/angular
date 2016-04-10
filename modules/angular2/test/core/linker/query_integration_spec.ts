@@ -23,7 +23,6 @@ import {
   TemplateRef,
   Query,
   QueryList,
-  View,
   ViewQuery,
   ContentChildren,
   ViewChildren,
@@ -53,8 +52,7 @@ export function main() {
                .then((view) => {
                  view.detectChanges();
 
-                 expect(asNativeElements(view.debugElement.componentViewChildren))
-                     .toHaveText('2|3|');
+                 expect(asNativeElements(view.debugElement.children)).toHaveText('2|3|');
 
                  async.done();
                });
@@ -70,7 +68,7 @@ export function main() {
                .then((view) => {
                  view.detectChanges();
 
-                 var q = view.debugElement.componentViewChildren[0].getLocal('q');
+                 var q = view.debugElement.children[0].getLocal('q');
 
                  view.detectChanges();
 
@@ -92,7 +90,7 @@ export function main() {
                  view.debugElement.componentInstance.shouldShow = true;
                  view.detectChanges();
 
-                 var q = view.debugElement.componentViewChildren[0].getLocal('q');
+                 var q = view.debugElement.children[0].getLocal('q');
 
                  expect(q.log).toEqual([["setter", "foo"], ["init", "foo"], ["check", "foo"]]);
 
@@ -121,7 +119,36 @@ export function main() {
                .createAsync(MyComp)
                .then((view) => {
                  view.detectChanges();
-                 var q = view.debugElement.componentViewChildren[0].getLocal('q');
+                 var q = view.debugElement.children[0].getLocal('q');
+
+                 expect(q.log).toEqual([["setter", "foo"], ["init", "foo"], ["check", "foo"]]);
+
+                 q.shouldShow = false;
+                 view.detectChanges();
+
+                 expect(q.log).toEqual([
+                   ["setter", "foo"],
+                   ["init", "foo"],
+                   ["check", "foo"],
+                   ["setter", null],
+                   ["check", null]
+                 ]);
+
+                 async.done();
+               });
+         }));
+
+      it('should contain the first view child accross embedded views',
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+           var template = '<needs-view-child #q></needs-view-child>';
+           tcb.overrideTemplate(MyComp, template)
+               .overrideTemplate(
+                   NeedsViewChild,
+                   '<div *ngIf="true"><div *ngIf="shouldShow" text="foo"></div></div>')
+               .createAsync(MyComp)
+               .then((view) => {
+                 view.detectChanges();
+                 var q = view.debugElement.children[0].getLocal('q');
 
                  expect(q.log).toEqual([["setter", "foo"], ["init", "foo"], ["check", "foo"]]);
 
@@ -152,8 +179,7 @@ export function main() {
                .createAsync(MyComp)
                .then((view) => {
                  view.detectChanges();
-                 expect(asNativeElements(view.debugElement.componentViewChildren))
-                     .toHaveText('2|3|4|');
+                 expect(asNativeElements(view.debugElement.children)).toHaveText('2|3|4|');
 
                  async.done();
                });
@@ -169,8 +195,7 @@ export function main() {
                .createAsync(MyComp)
                .then((view) => {
                  view.detectChanges();
-                 expect(asNativeElements(view.debugElement.componentViewChildren))
-                     .toHaveText('2|3|');
+                 expect(asNativeElements(view.debugElement.children)).toHaveText('2|3|');
 
                  async.done();
                });
@@ -188,12 +213,11 @@ export function main() {
                .then((view) => {
 
                  view.detectChanges();
-                 expect(asNativeElements(view.debugElement.componentViewChildren)).toHaveText('2|');
+                 expect(asNativeElements(view.debugElement.children)).toHaveText('2|');
 
                  view.debugElement.componentInstance.shouldShow = true;
                  view.detectChanges();
-                 expect(asNativeElements(view.debugElement.componentViewChildren))
-                     .toHaveText('2|3|');
+                 expect(asNativeElements(view.debugElement.children)).toHaveText('2|3|');
 
                  async.done();
                });
@@ -229,13 +253,11 @@ export function main() {
                .then((view) => {
                  view.detectChanges();
 
-                 expect(asNativeElements(view.debugElement.componentViewChildren))
-                     .toHaveText('2|1d|2d|3d|');
+                 expect(asNativeElements(view.debugElement.children)).toHaveText('2|1d|2d|3d|');
 
                  view.debugElement.componentInstance.list = ['3d', '2d'];
                  view.detectChanges();
-                 expect(asNativeElements(view.debugElement.componentViewChildren))
-                     .toHaveText('2|3d|2d|');
+                 expect(asNativeElements(view.debugElement.children)).toHaveText('2|3d|2d|');
 
                  async.done();
                });
@@ -250,8 +272,7 @@ export function main() {
                .createAsync(MyComp)
                .then((view) => {
                  view.detectChanges();
-                 var needsTpl: NeedsTpl =
-                     view.debugElement.componentViewChildren[0].inject(NeedsTpl);
+                 var needsTpl: NeedsTpl = view.debugElement.children[0].inject(NeedsTpl);
 
                  expect(needsTpl.vc.createEmbeddedView(needsTpl.query.first).hasLocal('light'))
                      .toBe(true);
@@ -275,7 +296,7 @@ export function main() {
            tcb.overrideTemplate(MyComp, template)
                .createAsync(MyComp)
                .then((view) => {
-                 var q = view.debugElement.componentViewChildren[0].getLocal("q");
+                 var q = view.debugElement.children[0].getLocal("q");
                  view.detectChanges();
 
                  ObservableWrapper.subscribe(q.query.changes, (_) => {
@@ -300,8 +321,8 @@ export function main() {
            tcb.overrideTemplate(MyComp, template)
                .createAsync(MyComp)
                .then((view) => {
-                 var q1 = view.debugElement.componentViewChildren[0].getLocal("q1");
-                 var q2 = view.debugElement.componentViewChildren[0].getLocal("q2");
+                 var q1 = view.debugElement.children[0].getLocal("q1");
+                 var q2 = view.debugElement.children[0].getLocal("q2");
 
                  var firedQ2 = false;
 
@@ -325,7 +346,8 @@ export function main() {
                  view.debugElement.componentInstance.shouldShow = true;
                  view.detectChanges();
 
-                 var q: NeedsQuery = view.debugElement.componentViewChildren[1].getLocal('q');
+                 var q: NeedsQuery = view.debugElement.children[0].getLocal('q');
+
                  expect(q.query.length).toEqual(1);
 
                  view.debugElement.componentInstance.shouldShow = false;
@@ -334,7 +356,7 @@ export function main() {
                  view.debugElement.componentInstance.shouldShow = true;
                  view.detectChanges();
 
-                 var q2: NeedsQuery = view.debugElement.componentViewChildren[1].getLocal('q');
+                 var q2: NeedsQuery = view.debugElement.children[0].getLocal('q');
 
                  expect(q2.query.length).toEqual(1);
 
@@ -353,7 +375,7 @@ export function main() {
            tcb.overrideTemplate(MyComp, template)
                .createAsync(MyComp)
                .then((view) => {
-                 var q = view.debugElement.componentViewChildren[0].getLocal("q");
+                 var q = view.debugElement.children[0].getLocal("q");
 
                  view.debugElement.componentInstance.list = ['1d', '2d'];
 
@@ -376,7 +398,7 @@ export function main() {
            tcb.overrideTemplate(MyComp, template)
                .createAsync(MyComp)
                .then((view) => {
-                 var q = view.debugElement.componentViewChildren[0].getLocal("q");
+                 var q = view.debugElement.children[0].getLocal("q");
                  view.detectChanges();
 
                  expect(q.query.first.text).toEqual("one");
@@ -395,7 +417,7 @@ export function main() {
            tcb.overrideTemplate(MyComp, template)
                .createAsync(MyComp)
                .then((view) => {
-                 var q = view.debugElement.componentViewChildren[0].getLocal("q");
+                 var q = view.debugElement.children[0].getLocal("q");
 
                  view.debugElement.componentInstance.list = ['1d', '2d'];
 
@@ -422,7 +444,7 @@ export function main() {
            tcb.overrideTemplate(MyComp, template)
                .createAsync(MyComp)
                .then((view) => {
-                 var q = view.debugElement.componentViewChildren[0].getLocal("q");
+                 var q = view.debugElement.children[0].getLocal("q");
 
                  view.debugElement.componentInstance.list = ['1d', '2d'];
 
@@ -446,8 +468,7 @@ export function main() {
                .then((view) => {
                  view.detectChanges();
 
-                 expect(asNativeElements(view.debugElement.componentViewChildren))
-                     .toHaveText('hello|world|');
+                 expect(asNativeElements(view.debugElement.children)).toHaveText('hello|world|');
 
                  async.done();
                });
@@ -460,8 +481,7 @@ export function main() {
            tcb.overrideTemplate(MyComp, template)
                .createAsync(MyComp)
                .then((view) => {
-                 var q: NeedsViewQueryByLabel =
-                     view.debugElement.componentViewChildren[0].getLocal("q");
+                 var q: NeedsViewQueryByLabel = view.debugElement.children[0].getLocal("q");
                  view.detectChanges();
 
                  expect(q.query.first.nativeElement).toHaveText("text");
@@ -479,7 +499,7 @@ export function main() {
                .then((view) => {
                  view.detectChanges();
 
-                 var q = view.debugElement.componentViewChildren[0].getLocal('q');
+                 var q = view.debugElement.children[0].getLocal('q');
 
                  view.detectChanges();
 
@@ -500,7 +520,7 @@ export function main() {
            tcb.overrideTemplate(MyComp, template)
                .createAsync(MyComp)
                .then((view) => {
-                 var q: NeedsViewQuery = view.debugElement.componentViewChildren[0].getLocal("q");
+                 var q: NeedsViewQuery = view.debugElement.children[0].getLocal("q");
 
                  view.detectChanges();
 
@@ -517,7 +537,7 @@ export function main() {
            tcb.overrideTemplate(MyComp, template)
                .createAsync(MyComp)
                .then((view) => {
-                 var q: NeedsViewQuery = view.debugElement.componentViewChildren[0].getLocal("q");
+                 var q: NeedsViewQuery = view.debugElement.children[0].getLocal("q");
 
                  view.detectChanges();
 
@@ -534,7 +554,7 @@ export function main() {
            tcb.overrideTemplate(MyComp, template)
                .createAsync(MyComp)
                .then((view) => {
-                 var q: NeedsViewQueryIf = view.debugElement.componentViewChildren[0].getLocal("q");
+                 var q: NeedsViewQueryIf = view.debugElement.children[0].getLocal("q");
 
                  view.detectChanges();
 
@@ -557,8 +577,7 @@ export function main() {
            tcb.overrideTemplate(MyComp, template)
                .createAsync(MyComp)
                .then((view) => {
-                 var q: NeedsViewQueryNestedIf =
-                     view.debugElement.componentViewChildren[0].getLocal("q");
+                 var q: NeedsViewQueryNestedIf = view.debugElement.children[0].getLocal("q");
 
                  view.detectChanges();
 
@@ -583,8 +602,7 @@ export function main() {
            tcb.overrideTemplate(MyComp, template)
                .createAsync(MyComp)
                .then((view) => {
-                 var q: NeedsViewQueryOrder =
-                     view.debugElement.componentViewChildren[0].getLocal("q");
+                 var q: NeedsViewQueryOrder = view.debugElement.children[0].getLocal("q");
 
                  view.detectChanges();
 
@@ -607,8 +625,7 @@ export function main() {
            tcb.overrideTemplate(MyComp, template)
                .createAsync(MyComp)
                .then((view) => {
-                 var q: NeedsViewQueryOrderWithParent =
-                     view.debugElement.componentViewChildren[0].getLocal("q");
+                 var q: NeedsViewQueryOrderWithParent = view.debugElement.children[0].getLocal("q");
 
                  view.detectChanges();
 
@@ -631,8 +648,7 @@ export function main() {
            tcb.overrideTemplate(MyComp, template)
                .createAsync(MyComp)
                .then((view) => {
-                 var q: NeedsViewQueryOrder =
-                     view.debugElement.componentViewChildren[0].getLocal('q');
+                 var q: NeedsViewQueryOrder = view.debugElement.children[0].getLocal('q');
 
                  // no significance to 50, just a reasonably large cycle.
                  for (var i = 0; i < 50; i++) {
@@ -656,7 +672,7 @@ export function main() {
                .then((view) => {
                  view.detectChanges();
 
-                 var q = view.debugElement.componentViewChildren[0].getLocal('q');
+                 var q = view.debugElement.children[0].getLocal('q');
                  expect(q.query1).toBeDefined();
                  expect(q.query2).toBeDefined();
                  expect(q.query3).toBeDefined();
@@ -676,8 +692,7 @@ class TextDirective {
   constructor() {}
 }
 
-@Component({selector: 'needs-content-children'})
-@View({template: ''})
+@Component({selector: 'needs-content-children', template: ''})
 class NeedsContentChildren implements AfterContentInit {
   @ContentChildren(TextDirective) textDirChildren: QueryList<TextDirective>;
   numberOfChildrenAfterContentInit: number;
@@ -685,8 +700,8 @@ class NeedsContentChildren implements AfterContentInit {
   ngAfterContentInit() { this.numberOfChildrenAfterContentInit = this.textDirChildren.length; }
 }
 
-@Component({selector: 'needs-view-children'})
-@View({template: '<div text></div>', directives: [TextDirective]})
+@Component(
+    {selector: 'needs-view-children', template: '<div text></div>', directives: [TextDirective]})
 class NeedsViewChildren implements AfterViewInit {
   @ViewChildren(TextDirective) textDirChildren: QueryList<TextDirective>;
   numberOfChildrenAfterViewInit: number;
@@ -694,8 +709,7 @@ class NeedsViewChildren implements AfterViewInit {
   ngAfterViewInit() { this.numberOfChildrenAfterViewInit = this.textDirChildren.length; }
 }
 
-@Component({selector: 'needs-content-child'})
-@View({template: ''})
+@Component({selector: 'needs-content-child', template: ''})
 class NeedsContentChild implements AfterContentInit, AfterContentChecked {
   _child: TextDirective;
 
@@ -715,8 +729,8 @@ class NeedsContentChild implements AfterContentInit, AfterContentChecked {
   }
 }
 
-@Component({selector: 'needs-view-child'})
-@View({
+@Component({
+  selector: 'needs-view-child',
   template: `
     <div *ngIf="shouldShow" text="foo"></div>
   `,
@@ -741,15 +755,14 @@ class NeedsViewChild implements AfterViewInit,
   ngAfterViewChecked() { this.log.push(["check", isPresent(this.child) ? this.child.text : null]); }
 }
 
-
 @Directive({selector: '[dir]'})
 @Injectable()
 class InertDirective {
   constructor() {}
 }
 
-@Component({selector: 'needs-query'})
-@View({
+@Component({
+  selector: 'needs-query',
   directives: [NgFor, TextDirective],
   template: '<div text="ignoreme"></div><b *ngFor="var dir of query">{{dir.text}}|</b>'
 })
@@ -759,8 +772,7 @@ class NeedsQuery {
   constructor(@Query(TextDirective) query: QueryList<TextDirective>) { this.query = query; }
 }
 
-@Component({selector: 'needs-four-queries'})
-@View({template: ''})
+@Component({selector: 'needs-four-queries', template: ''})
 class NeedsFourQueries {
   @ContentChild(TextDirective) query1: TextDirective;
   @ContentChild(TextDirective) query2: TextDirective;
@@ -768,8 +780,11 @@ class NeedsFourQueries {
   @ContentChild(TextDirective) query4: TextDirective;
 }
 
-@Component({selector: 'needs-query-desc'})
-@View({directives: [NgFor], template: '<div *ngFor="var dir of query">{{dir.text}}|</div>'})
+@Component({
+  selector: 'needs-query-desc',
+  directives: [NgFor],
+  template: '<div *ngFor="var dir of query">{{dir.text}}|</div>'
+})
 @Injectable()
 class NeedsQueryDesc {
   query: QueryList<TextDirective>;
@@ -778,8 +793,7 @@ class NeedsQueryDesc {
   }
 }
 
-@Component({selector: 'needs-query-by-var-binding'})
-@View({directives: [], template: '<ng-content>'})
+@Component({selector: 'needs-query-by-var-binding', directives: [], template: '<ng-content>'})
 @Injectable()
 class NeedsQueryByLabel {
   query: QueryList<any>;
@@ -788,16 +802,18 @@ class NeedsQueryByLabel {
   }
 }
 
-@Component({selector: 'needs-view-query-by-var-binding'})
-@View({directives: [], template: '<div #textLabel>text</div>'})
+@Component({
+  selector: 'needs-view-query-by-var-binding',
+  directives: [],
+  template: '<div #textLabel>text</div>'
+})
 @Injectable()
 class NeedsViewQueryByLabel {
   query: QueryList<any>;
   constructor(@ViewQuery("textLabel") query: QueryList<any>) { this.query = query; }
 }
 
-@Component({selector: 'needs-query-by-var-bindings'})
-@View({directives: [], template: '<ng-content>'})
+@Component({selector: 'needs-query-by-var-bindings', directives: [], template: '<ng-content>'})
 @Injectable()
 class NeedsQueryByTwoLabels {
   query: QueryList<any>;
@@ -806,8 +822,8 @@ class NeedsQueryByTwoLabels {
   }
 }
 
-@Component({selector: 'needs-query-and-project'})
-@View({
+@Component({
+  selector: 'needs-query-and-project',
   directives: [NgFor],
   template: '<div *ngFor="var dir of query">{{dir.text}}|</div><ng-content></ng-content>'
 })
@@ -817,8 +833,8 @@ class NeedsQueryAndProject {
   constructor(@Query(TextDirective) query: QueryList<TextDirective>) { this.query = query; }
 }
 
-@Component({selector: 'needs-view-query'})
-@View({
+@Component({
+  selector: 'needs-view-query',
   directives: [TextDirective],
   template: '<div text="1"><div text="2"></div></div>' +
                 '<div text="3"></div><div text="4"></div>'
@@ -829,8 +845,11 @@ class NeedsViewQuery {
   constructor(@ViewQuery(TextDirective) query: QueryList<TextDirective>) { this.query = query; }
 }
 
-@Component({selector: 'needs-view-query-if'})
-@View({directives: [NgIf, TextDirective], template: '<div *ngIf="show" text="1"></div>'})
+@Component({
+  selector: 'needs-view-query-if',
+  directives: [NgIf, TextDirective],
+  template: '<div *ngIf="show" text="1"></div>'
+})
 @Injectable()
 class NeedsViewQueryIf {
   show: boolean;
@@ -842,8 +861,8 @@ class NeedsViewQueryIf {
 }
 
 
-@Component({selector: 'needs-view-query-nested-if'})
-@View({
+@Component({
+  selector: 'needs-view-query-nested-if',
   directives: [NgIf, InertDirective, TextDirective],
   template: '<div text="1"><div *ngIf="show"><div dir></div></div></div>'
 })
@@ -857,8 +876,8 @@ class NeedsViewQueryNestedIf {
   }
 }
 
-@Component({selector: 'needs-view-query-order'})
-@View({
+@Component({
+  selector: 'needs-view-query-order',
   directives: [NgFor, TextDirective, InertDirective],
   template: '<div text="1"></div>' +
                 '<div *ngFor="var i of list" [text]="i"></div>' +
@@ -874,8 +893,8 @@ class NeedsViewQueryOrder {
   }
 }
 
-@Component({selector: 'needs-view-query-order-with-p'})
-@View({
+@Component({
+  selector: 'needs-view-query-order-with-p',
   directives: [NgFor, TextDirective, InertDirective],
   template: '<div dir><div text="1"></div>' +
                 '<div *ngFor="var i of list" [text]="i"></div>' +
@@ -891,8 +910,7 @@ class NeedsViewQueryOrderWithParent {
   }
 }
 
-@Component({selector: 'needs-tpl'})
-@View({template: '<template var-x="shadow"></template>'})
+@Component({selector: 'needs-tpl', template: '<template var-x="shadow"></template>'})
 class NeedsTpl {
   viewQuery: QueryList<TemplateRef>;
   query: QueryList<TemplateRef>;
@@ -903,8 +921,8 @@ class NeedsTpl {
   }
 }
 
-@Component({selector: 'my-comp'})
-@View({
+@Component({
+  selector: 'my-comp',
   directives: [
     NeedsQuery,
     NeedsQueryDesc,
@@ -927,7 +945,8 @@ class NeedsTpl {
     NgIf,
     NgFor,
     NeedsFourQueries
-  ]
+  ],
+  template: ''
 })
 @Injectable()
 class MyComp {

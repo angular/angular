@@ -5,7 +5,7 @@ import {
 } from './directive_metadata';
 import {isPresent, isBlank} from 'angular2/src/facade/lang';
 import {BaseException} from 'angular2/src/facade/exceptions';
-import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
+import {PromiseWrapper} from 'angular2/src/facade/async';
 
 import {XHR} from 'angular2/src/compiler/xhr';
 import {UrlResolver} from 'angular2/src/compiler/url_resolver';
@@ -20,6 +20,7 @@ import {
   HtmlTextAst,
   HtmlAttrAst,
   HtmlAst,
+  HtmlCommentAst,
   htmlVisitAll
 } from './html_ast';
 import {HtmlParser} from './html_parser';
@@ -112,6 +113,10 @@ class TemplatePreparseVisitor implements HtmlAstVisitor {
       case PreparsedElementType.STYLESHEET:
         this.styleUrls.push(preparsedElement.hrefAttr);
         break;
+      default:
+        // DDC reports this as error. See:
+        // https://github.com/dart-lang/dev_compiler/issues/428
+        break;
     }
     if (preparsedElement.nonBindable) {
       this.ngNonBindableStackCount++;
@@ -122,6 +127,7 @@ class TemplatePreparseVisitor implements HtmlAstVisitor {
     }
     return null;
   }
+  visitComment(ast: HtmlCommentAst, context: any): any { return null; }
   visitAttr(ast: HtmlAttrAst, context: any): any { return null; }
   visitText(ast: HtmlTextAst, context: any): any { return null; }
 }

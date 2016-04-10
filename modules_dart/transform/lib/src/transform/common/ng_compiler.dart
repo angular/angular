@@ -14,18 +14,20 @@ import 'package:angular2/src/core/change_detection/interfaces.dart';
 import 'package:angular2/src/compiler/change_detector_compiler.dart';
 import 'package:angular2/router/router_link_dsl.dart';
 import 'package:angular2/src/compiler/proto_view_compiler.dart';
+import 'package:angular2/i18n.dart';
 
 import 'xhr_impl.dart';
 import 'url_resolver.dart';
 
 TemplateCompiler createTemplateCompiler(AssetReader reader,
-    {ChangeDetectorGenConfig changeDetectionConfig}) {
+    {ChangeDetectorGenConfig changeDetectionConfig, XmbDeserializationResult translations}) {
   var _xhr = new XhrImpl(reader);
-  var _htmlParser = new HtmlParser();
   var _urlResolver = const TransformerUrlResolver();
 
   // TODO(yjbanov): add router AST transformer when ready
   var parser = new ng.Parser(new ng.Lexer());
+  var _htmlParser = _createHtmlParser(translations, parser);
+
   var templateParser = new TemplateParser(
       parser,
       new DomElementSchemaRegistry(),
@@ -46,4 +48,12 @@ TemplateCompiler createTemplateCompiler(AssetReader reader,
       new ViewCompiler(),
       null /* ResolvedMetadataCache */,
       changeDetectionConfig);
+}
+
+HtmlParser _createHtmlParser(XmbDeserializationResult translations, ng.Parser parser) {
+  if (translations != null) {
+    return new I18nHtmlParser(new HtmlParser(), parser, translations.content, translations.messages);
+  } else {
+    return new HtmlParser();
+  }
 }

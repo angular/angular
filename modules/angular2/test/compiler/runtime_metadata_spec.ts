@@ -18,7 +18,6 @@ import {RuntimeMetadataResolver} from 'angular2/src/compiler/runtime_metadata';
 import {LifecycleHooks, LIFECYCLE_HOOKS_VALUES} from 'angular2/src/core/linker/interfaces';
 import {
   Component,
-  View,
   Directive,
   ViewEncapsulation,
   ChangeDetectionStrategy,
@@ -38,6 +37,7 @@ import {TEST_PROVIDERS} from './test_bindings';
 import {MODULE_SUFFIX} from 'angular2/src/compiler/util';
 import {IS_DART} from 'angular2/src/facade/lang';
 import {PLATFORM_DIRECTIVES} from 'angular2/src/core/platform_directives_and_pipes';
+import {MalformedStylesComponent} from './runtime_metadata_fixture';
 
 export function main() {
   describe('RuntimeMetadataResolver', () => {
@@ -72,9 +72,16 @@ export function main() {
          inject([RuntimeMetadataResolver], (resolver: RuntimeMetadataResolver) => {
            var value: string =
                resolver.getDirectiveMetadata(ComponentWithoutModuleId).type.moduleUrl;
-           var expectedEndValue =
-               IS_DART ? 'base/dist/dart/angular2/test/compiler/runtime_metadata_spec.dart' : './';
+           var expectedEndValue = IS_DART ? 'test/compiler/runtime_metadata_spec.dart' : './';
            expect(value.endsWith(expectedEndValue)).toBe(true);
+         }));
+
+      it('should throw when metadata is incorrectly typed',
+         inject([RuntimeMetadataResolver], (resolver: RuntimeMetadataResolver) => {
+           if (!IS_DART) {
+             expect(() => resolver.getDirectiveMetadata(MalformedStylesComponent))
+                 .toThrowError(`Expected 'styles' to be an array of strings.`);
+           }
          }));
     });
 
@@ -126,9 +133,7 @@ class ComponentWithoutModuleId {
   },
   exportAs: 'someExportAs',
   moduleId: 'someModuleId',
-  changeDetection: ChangeDetectionStrategy.CheckAlways
-})
-@View({
+  changeDetection: ChangeDetectionStrategy.CheckAlways,
   template: 'someTemplate',
   templateUrl: 'someTemplateUrl',
   encapsulation: ViewEncapsulation.Emulated,

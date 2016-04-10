@@ -1,10 +1,10 @@
-import {bootstrap} from 'angular2/bootstrap';
-import {Component, View} from 'angular2/core';
+import {bootstrap} from 'angular2/platform/browser';
+import {Component} from 'angular2/core';
 import {NgIf} from 'angular2/common';
 import {TimerWrapper} from 'angular2/src/facade/async';
 
-@Component({selector: 'async-app'})
-@View({
+@Component({
+  selector: 'async-app',
   template: `
     <div id='increment'>
       <span class='val'>{{val1}}</span>

@@ -1,5 +1,5 @@
-import {bootstrap} from 'angular2/bootstrap';
-import {Component, Directive, DynamicComponentLoader, ElementRef, View} from 'angular2/core';
+import {bootstrap} from 'angular2/platform/browser';
+import {Component, Directive, DynamicComponentLoader, ElementRef} from 'angular2/core';
 import {NgIf, NgFor} from 'angular2/common';
 import {ApplicationRef} from 'angular2/src/core/application_ref';
 import {ListWrapper} from 'angular2/src/facade/collection';
@@ -43,8 +43,7 @@ export function main() {
 }
 
 
-@Component({selector: 'dummy'})
-@View({template: `<div></div>`})
+@Component({selector: 'dummy', template: `<div></div>`})
 class DummyComponent {
 }
 
@@ -59,8 +58,8 @@ class DynamicDummy {
   }
 }
 
-@Component({selector: 'app'})
-@View({
+@Component({
+  selector: 'app',
   directives: [NgIf, NgFor, DummyComponent, DummyDirective, DynamicDummy],
   template: `
     <div *ngIf="testingPlainComponents">

@@ -1,15 +1,58 @@
 import {global} from 'angular2/src/facade/lang';
-import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
+import {BaseException} from 'angular2/src/facade/exceptions';
 import {ListWrapper} from 'angular2/src/facade/collection';
-import {NgZoneZone} from 'angular2/src/core/zone/ng_zone';
 
 var _scheduler;
 var _microtasks: Function[] = [];
 var _pendingPeriodicTimers: number[] = [];
 var _pendingTimers: number[] = [];
 
-interface FakeAsyncZone extends NgZoneZone {
-  _inFakeAsyncZone: boolean;
+class FakeAsyncZoneSpec implements ZoneSpec {
+  static assertInZone(): void {
+    if (!Zone.current.get('inFakeAsyncZone')) {
+      throw new Error('The code should be running in the fakeAsync zone to call this function');
+    }
+  }
+
+  name: string = 'fakeAsync';
+
+  properties: {[key: string]: any} = {'inFakeAsyncZone': true};
+
+  onScheduleTask(delegate: ZoneDelegate, current: Zone, target: Zone, task: Task): Task {
+    switch (task.type) {
+      case 'microTask':
+        _microtasks.push(task.invoke);
+        break;
+      case 'macroTask':
+        switch (task.source) {
+          case 'setTimeout':
+            task.data['handleId'] = _setTimeout(task.invoke, task.data['delay'], task.data['args']);
+            break;
+          case 'setInterval':
+            task.data['handleId'] =
+                _setInterval(task.invoke, task.data['delay'], task.data['args']);
+            break;
+          default:
+            task = delegate.scheduleTask(target, task);
+        }
+        break;
+      case 'eventTask':
+        task = delegate.scheduleTask(target, task);
+        break;
+    }
+    return task;
+  }
+
+  onCancelTask(delegate: ZoneDelegate, current: Zone, target: Zone, task: Task): any {
+    switch (task.source) {
+      case 'setTimeout':
+        return _clearTimeout(task.data['handleId']);
+      case 'setInterval':
+        return _clearInterval(task.data['handleId']);
+      default:
+        return delegate.scheduleTask(target, task);
+    }
+  }
 }
 
 /**
@@ -27,18 +70,11 @@ interface FakeAsyncZone extends NgZoneZone {
  * @returns {Function} The function wrapped to be executed in the fakeAsync zone
  */
 export function fakeAsync(fn: Function): Function {
-  if ((<FakeAsyncZone>global.zone)._inFakeAsyncZone) {
+  if (Zone.current.get('inFakeAsyncZone')) {
     throw new Error('fakeAsync() calls can not be nested');
   }
 
-  var fakeAsyncZone = <FakeAsyncZone>global.zone.fork({
-    setTimeout: _setTimeout,
-    clearTimeout: _clearTimeout,
-    setInterval: _setInterval,
-    clearInterval: _clearInterval,
-    scheduleMicrotask: _scheduleMicrotask,
-    _inFakeAsyncZone: true
-  });
+  var fakeAsyncZone = Zone.current.fork(new FakeAsyncZoneSpec());
 
   return function(...args) {
     // TODO(tbosch): This class should already be part of the jasmine typings but it is not...
@@ -97,7 +133,7 @@ export function clearPendingTimers(): void {
  * @param {number} millis Number of millisecond, defaults to 0
  */
 export function tick(millis: number = 0): void {
-  _assertInFakeAsyncZone();
+  FakeAsyncZoneSpec.assertInZone();
   flushMicrotasks();
   _scheduler.tick(millis);
 }
@@ -106,14 +142,14 @@ export function tick(millis: number = 0): void {
  * Flush any pending microtasks.
  */
 export function flushMicrotasks(): void {
-  _assertInFakeAsyncZone();
+  FakeAsyncZoneSpec.assertInZone();
   while (_microtasks.length > 0) {
     var microtask = ListWrapper.removeAt(_microtasks, 0);
     microtask();
   }
 }
 
-function _setTimeout(fn: Function, delay: number, ...args): number {
+function _setTimeout(fn: Function, delay: number, args: any[]): number {
   var cb = _fnAndFlush(fn);
   var id = _scheduler.scheduleFunction(cb, delay, args);
   _pendingTimers.push(id);
@@ -145,16 +181,6 @@ function _fnAndFlush(fn: Function): Function {
   }
 }
 
-function _scheduleMicrotask(microtask: Function): void {
-  _microtasks.push(microtask);
-}
-
 function _dequeueTimer(id: number): Function {
   return function() { ListWrapper.remove(_pendingTimers, id); }
-}
-
-function _assertInFakeAsyncZone(): void {
-  if (!global.zone || !(<FakeAsyncZone>global.zone)._inFakeAsyncZone) {
-    throw new Error('The code should be running in the fakeAsync zone to call this function');
-  }
 }

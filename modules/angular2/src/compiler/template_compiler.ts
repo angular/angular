@@ -14,7 +14,7 @@ import {
   MapWrapper,
   StringMapWrapper
 } from 'angular2/src/facade/collection';
-import {PromiseWrapper, Promise} from 'angular2/src/facade/async';
+import {PromiseWrapper} from 'angular2/src/facade/async';
 import {
   createHostComponentMeta,
   CompileDirectiveMetadata,
@@ -109,6 +109,7 @@ export class TemplateCompiler {
                 hostProperties: directive.hostProperties,
                 hostAttributes: directive.hostAttributes,
                 lifecycleHooks: directive.lifecycleHooks,
+                providers: directive.providers,
                 template: normalizedTemplate
               }));
   }

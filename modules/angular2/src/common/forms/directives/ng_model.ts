@@ -3,7 +3,6 @@ import {EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
 import {
   OnChanges,
   SimpleChange,
-  Query,
   Directive,
   forwardRef,
   Provider,
@@ -14,7 +13,7 @@ import {
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
 import {NgControl} from './ng_control';
 import {Control} from '../model';
-import {Validators, NG_VALIDATORS, NG_ASYNC_VALIDATORS} from '../validators';
+import {NG_VALIDATORS, NG_ASYNC_VALIDATORS} from '../validators';
 import {
   setUpControl,
   isPropertyUpdated,
@@ -22,6 +21,7 @@ import {
   composeValidators,
   composeAsyncValidators
 } from './shared';
+import {ValidatorFn, AsyncValidatorFn} from './validators';
 
 const formControlBinding =
     CONST_EXPR(new Provider(NgControl, {useExisting: forwardRef(() => NgModel)}));
@@ -88,9 +88,9 @@ export class NgModel extends NgControl implements OnChanges {
 
   get path(): string[] { return []; }
 
-  get validator(): Function { return composeValidators(this._validators); }
+  get validator(): ValidatorFn { return composeValidators(this._validators); }
 
-  get asyncValidator(): Function { return composeAsyncValidators(this._asyncValidators); }
+  get asyncValidator(): AsyncValidatorFn { return composeAsyncValidators(this._asyncValidators); }
 
   viewToModelUpdate(newValue: any): void {
     this.viewModel = newValue;

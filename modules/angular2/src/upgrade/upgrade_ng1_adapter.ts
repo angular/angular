@@ -53,6 +53,7 @@ export class UpgradeNg1ComponentAdapterBuilder {
                       self.outputs, self.propertyOutputs, self.checkProperties, self.propertyMap);
                 }
               ],
+              ngOnInit: function() { /* needs to be here for ng2 to properly detect it */ },
               ngOnChanges: function() { /* needs to be here for ng2 to properly detect it */ },
               ngDoCheck: function() { /* needs to be here for ng2 to properly detect it */ }
             });
@@ -78,11 +79,18 @@ export class UpgradeNg1ComponentAdapterBuilder {
   }
 
   extractBindings() {
-    var scope = this.directive.scope;
-    if (typeof scope == 'object') {
-      for (var name in scope) {
-        if ((<any>scope).hasOwnProperty(name)) {
-          var localName = scope[name];
+    var btcIsObject = typeof this.directive.bindToController === 'object';
+    if (btcIsObject && Object.keys(this.directive.scope).length) {
+      throw new Error(
+          `Binding definitions on scope and controller at the same time are not supported.`);
+    }
+
+    var context = (btcIsObject) ? this.directive.bindToController : this.directive.scope;
+
+    if (typeof context == 'object') {
+      for (var name in context) {
+        if ((<any>context).hasOwnProperty(name)) {
+          var localName = context[name];
           var type = localName.charAt(0);
           localName = localName.substr(1) || name;
           var outputName = 'output_' + name;
@@ -99,6 +107,8 @@ export class UpgradeNg1ComponentAdapterBuilder {
               this.propertyMap[outputName] = localName;
             // don't break; let it fall through to '@'
             case '@':
+            // handle the '<' binding of angular 1.5 components
+            case '<':
               this.inputs.push(inputName);
               this.inputsRename.push(inputNameRename);
               this.propertyMap[inputName] = localName;
@@ -109,7 +119,7 @@ export class UpgradeNg1ComponentAdapterBuilder {
               this.propertyMap[outputName] = localName;
               break;
             default:
-              var json = JSON.stringify(scope);
+              var json = JSON.stringify(context);
               throw new Error(
                   `Unexpected mapping '${type}' in '${json}' in '${this.name}' directive.`);
           }
@@ -221,6 +231,13 @@ class UpgradeNg1ComponentAdapter implements OnChanges, DoCheck {
     for (var k = 0; k < propOuts.length; k++) {
       this[propOuts[k]] = new EventEmitter();
       this.checkLastValues.push(INITIAL_VALUE);
+    }
+  }
+
+
+  ngOnInit() {
+    if (this.destinationObj.$onInit) {
+      this.destinationObj.$onInit();
     }
   }
 

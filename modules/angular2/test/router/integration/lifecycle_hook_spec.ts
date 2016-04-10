@@ -15,10 +15,9 @@ import {
   xit
 } from 'angular2/testing_internal';
 
-import {provide, Component, Injector, Inject, View} from 'angular2/core';
+import {provide, Component, Injector, Inject} from 'angular2/core';
 import {isPresent} from 'angular2/src/facade/lang';
 import {
-  Promise,
   PromiseWrapper,
   PromiseCompleter,
   EventEmitter,
@@ -32,7 +31,7 @@ import {
   AuxRoute,
   AsyncRoute,
   Redirect
-} from 'angular2/src/router/route_config_decorator';
+} from 'angular2/src/router/route_config/route_config_decorator';
 
 import {
   OnActivate,
@@ -41,7 +40,7 @@ import {
   CanDeactivate,
   CanReuse
 } from 'angular2/src/router/interfaces';
-import {CanActivate} from 'angular2/src/router/lifecycle_annotations';
+import {CanActivate} from 'angular2/src/router/lifecycle/lifecycle_annotations';
 import {ComponentInstruction} from 'angular2/src/router/instruction';
 
 
@@ -57,17 +56,18 @@ export function main() {
 
     var tcb: TestComponentBuilder;
     var fixture: ComponentFixture;
-    var rtr;
+    var rtr: Router;
 
     beforeEachProviders(() => TEST_ROUTER_PROVIDERS);
 
-    beforeEach(inject([TestComponentBuilder, Router], (tcBuilder, router) => {
-      tcb = tcBuilder;
-      rtr = router;
-      cmpInstanceCount = 0;
-      log = [];
-      eventBus = new EventEmitter();
-    }));
+    beforeEach(inject([TestComponentBuilder, Router],
+                      (tcBuilder: TestComponentBuilder, router: Router) => {
+                        tcb = tcBuilder;
+                        rtr = router;
+                        cmpInstanceCount = 0;
+                        log = [];
+                        eventBus = new EventEmitter();
+                      }));
 
     it('should call the routerOnActivate hook', inject([AsyncTestCompleter], (async) => {
          compile(tcb)

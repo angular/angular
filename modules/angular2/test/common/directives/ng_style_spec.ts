@@ -16,7 +16,7 @@ import {
 
 import {StringMapWrapper} from 'angular2/src/facade/collection';
 
-import {Component, View} from 'angular2/core';
+import {Component} from 'angular2/core';
 
 import {DOM} from 'angular2/src/platform/dom/dom_adapter';
 import {NgStyle} from 'angular2/src/common/directives/ng_style';
@@ -32,8 +32,7 @@ export function main() {
              .createAsync(TestComponent)
              .then((fixture) => {
                fixture.detectChanges();
-               expect(DOM.getStyle(fixture.debugElement.componentViewChildren[0].nativeElement,
-                                   'max-width'))
+               expect(DOM.getStyle(fixture.debugElement.children[0].nativeElement, 'max-width'))
                    .toEqual('40px');
 
                async.done();
@@ -51,15 +50,13 @@ export function main() {
 
                fixture.debugElement.componentInstance.expr = {'max-width': '40px'};
                fixture.detectChanges();
-               expect(DOM.getStyle(fixture.debugElement.componentViewChildren[0].nativeElement,
-                                   'max-width'))
+               expect(DOM.getStyle(fixture.debugElement.children[0].nativeElement, 'max-width'))
                    .toEqual('40px');
 
                expr = fixture.debugElement.componentInstance.expr;
                expr['max-width'] = '30%';
                fixture.detectChanges();
-               expect(DOM.getStyle(fixture.debugElement.componentViewChildren[0].nativeElement,
-                                   'max-width'))
+               expect(DOM.getStyle(fixture.debugElement.children[0].nativeElement, 'max-width'))
                    .toEqual('30%');
 
                async.done();
@@ -75,14 +72,12 @@ export function main() {
              .then((fixture) => {
                fixture.debugElement.componentInstance.expr = {'max-width': '40px'};
                fixture.detectChanges();
-               expect(DOM.getStyle(fixture.debugElement.componentViewChildren[0].nativeElement,
-                                   'max-width'))
+               expect(DOM.getStyle(fixture.debugElement.children[0].nativeElement, 'max-width'))
                    .toEqual('40px');
 
                StringMapWrapper.delete(fixture.debugElement.componentInstance.expr, 'max-width');
                fixture.detectChanges();
-               expect(DOM.getStyle(fixture.debugElement.componentViewChildren[0].nativeElement,
-                                   'max-width'))
+               expect(DOM.getStyle(fixture.debugElement.children[0].nativeElement, 'max-width'))
                    .toEqual('');
 
                async.done();
@@ -98,20 +93,16 @@ export function main() {
              .then((fixture) => {
                fixture.debugElement.componentInstance.expr = {'max-width': '40px'};
                fixture.detectChanges();
-               expect(DOM.getStyle(fixture.debugElement.componentViewChildren[0].nativeElement,
-                                   'max-width'))
+               expect(DOM.getStyle(fixture.debugElement.children[0].nativeElement, 'max-width'))
                    .toEqual('40px');
-               expect(DOM.getStyle(fixture.debugElement.componentViewChildren[0].nativeElement,
-                                   'font-size'))
+               expect(DOM.getStyle(fixture.debugElement.children[0].nativeElement, 'font-size'))
                    .toEqual('12px');
 
                StringMapWrapper.delete(fixture.debugElement.componentInstance.expr, 'max-width');
                fixture.detectChanges();
-               expect(DOM.getStyle(fixture.debugElement.componentViewChildren[0].nativeElement,
-                                   'max-width'))
+               expect(DOM.getStyle(fixture.debugElement.children[0].nativeElement, 'max-width'))
                    .toEqual('');
-               expect(DOM.getStyle(fixture.debugElement.componentViewChildren[0].nativeElement,
-                                   'font-size'))
+               expect(DOM.getStyle(fixture.debugElement.children[0].nativeElement, 'font-size'))
                    .toEqual('12px');
 
                async.done();
@@ -127,21 +118,17 @@ export function main() {
              .then((fixture) => {
                fixture.debugElement.componentInstance.expr = {'max-width': '40px'};
                fixture.detectChanges();
-               expect(DOM.getStyle(fixture.debugElement.componentViewChildren[0].nativeElement,
-                                   'max-width'))
+               expect(DOM.getStyle(fixture.debugElement.children[0].nativeElement, 'max-width'))
                    .toEqual('40px');
-               expect(DOM.getStyle(fixture.debugElement.componentViewChildren[0].nativeElement,
-                                   'font-size'))
+               expect(DOM.getStyle(fixture.debugElement.children[0].nativeElement, 'font-size'))
                    .toEqual('12px');
 
                StringMapWrapper.delete(fixture.debugElement.componentInstance.expr, 'max-width');
-               expect(DOM.getStyle(fixture.debugElement.componentViewChildren[0].nativeElement,
-                                   'font-size'))
+               expect(DOM.getStyle(fixture.debugElement.children[0].nativeElement, 'font-size'))
                    .toEqual('12px');
 
                fixture.detectChanges();
-               expect(DOM.getStyle(fixture.debugElement.componentViewChildren[0].nativeElement,
-                                   'max-width'))
+               expect(DOM.getStyle(fixture.debugElement.children[0].nativeElement, 'max-width'))
                    .toEqual('');
 
                async.done();
@@ -150,8 +137,7 @@ export function main() {
   })
 }
 
-@Component({selector: 'test-cmp'})
-@View({directives: [NgStyle]})
+@Component({selector: 'test-cmp', directives: [NgStyle], template: ''})
 class TestComponent {
   expr;
 }

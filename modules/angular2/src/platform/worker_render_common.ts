@@ -36,6 +36,7 @@ import {BrowserDomAdapter} from './browser/browser_adapter';
 import {wtfInit} from 'angular2/src/core/profile/wtf_init';
 import {MessageBasedRenderer} from 'angular2/src/web_workers/ui/renderer';
 import {MessageBasedXHRImpl} from 'angular2/src/web_workers/ui/xhr_impl';
+import {BrowserPlatformLocation} from 'angular2/src/router/location/browser_platform_location';
 import {
   ServiceMessageBrokerFactory,
   ServiceMessageBrokerFactory_
@@ -47,6 +48,7 @@ import {
 import {Serializer} from 'angular2/src/web_workers/shared/serializer';
 import {ON_WEB_WORKER} from 'angular2/src/web_workers/shared/api';
 import {RenderStore} from 'angular2/src/web_workers/shared/render_store';
+import {HAMMER_GESTURE_CONFIG, HammerGestureConfig} from './dom/events/hammer_gestures';
 
 export const WORKER_SCRIPT: OpaqueToken = CONST_EXPR(new OpaqueToken("WebWorkerScript"));
 
@@ -59,6 +61,13 @@ export const WORKER_RENDER_PLATFORM: Array<any /*Type | Provider | any[]*/> = CO
   new Provider(PLATFORM_INITIALIZER, {useValue: initWebWorkerRenderPlatform, multi: true})
 ]);
 
+/**
+ * A list of {@link Provider}s. To use the router in a Worker enabled application you must
+ * include these providers when setting up the render thread.
+ */
+export const WORKER_RENDER_ROUTER: Array<any /*Type | Provider | any[]*/> =
+    CONST_EXPR([BrowserPlatformLocation]);
+
 export const WORKER_RENDER_APPLICATION_COMMON: Array<any /*Type | Provider | any[]*/> = CONST_EXPR([
   APPLICATION_COMMON_PROVIDERS,
   WORKER_RENDER_MESSAGING_PROVIDERS,
@@ -69,6 +78,7 @@ export const WORKER_RENDER_APPLICATION_COMMON: Array<any /*Type | Provider | any
   new Provider(EVENT_MANAGER_PLUGINS, {useClass: DomEventsPlugin, multi: true}),
   new Provider(EVENT_MANAGER_PLUGINS, {useClass: KeyEventsPlugin, multi: true}),
   new Provider(EVENT_MANAGER_PLUGINS, {useClass: HammerGesturesPlugin, multi: true}),
+  new Provider(HAMMER_GESTURE_CONFIG, {useClass: HammerGestureConfig}),
   new Provider(DomRootRenderer, {useClass: DomRootRenderer_}),
   new Provider(RootRenderer, {useExisting: DomRootRenderer}),
   new Provider(SharedStylesHost, {useExisting: DomSharedStylesHost}),
