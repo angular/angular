@@ -981,9 +981,9 @@ gulp.task('static-checks', ['!build.tools'], function(done) {
 // distributed in our npm package, and loaded from node_modules by
 // the typescript compiler.
 
-// Make sure the two typings tests are isolated, by running this one in a tempdir
+// Make sure the typings tests are isolated, by running in a tempdir
 var tmpdir = path.join(os.tmpdir(), 'test.typings', new Date().getTime().toString());
-gulp.task('!pre.test.typings.layoutNodeModule', ['build.js.cjs'], function() {
+gulp.task('!pre.test.typings.layoutNodeModule', function() {
   return gulp.src(['dist/js/cjs/angular2/**/*', 'node_modules/rxjs/**/*'], {base: 'dist/js/cjs'})
       .pipe(gulp.dest(path.join(tmpdir, 'node_modules')));
 });
@@ -1003,7 +1003,7 @@ gulp.task('!pre.test.typings.copyTypingsSpec', function() {
   return gulp.src(['modules/angular2/examples/**/*.ts']).pipe(gulp.dest(tmpdir));
 });
 
-gulp.task('test.typings',
+gulp.task('!test.typings',
           [
             '!pre.test.typings.layoutNodeModule',
             '!pre.test.typings.copyTypingsSpec',
@@ -1022,6 +1022,9 @@ gulp.task('test.typings',
                   typescript: require('typescript')
                 }));
           });
+
+gulp.task('test.typings', ['build.js.cjs'],
+          function(done) { runSequence('!test.typings', sequenceComplete(done)); });
 
 // -----------------
 // orchestrated targets
