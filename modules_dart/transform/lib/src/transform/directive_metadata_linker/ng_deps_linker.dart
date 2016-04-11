@@ -64,20 +64,20 @@ Future<Map<String, String>> _processNgImports(NgDepsModel model,
   return Future
       .wait(
           importsAndExports.where(_isNotDartDirective).map((dynamic directive) {
-    // Check whether the import or export generated summary NgMeta information.
-    final summaryJsonUri =
-        resolver.resolve(assetUri, toSummaryExtension(directive.uri));
-    return reader.hasInput(fromUri(summaryJsonUri)).then((hasInput) {
-      if (hasInput) {
-        retVal[directive.uri] = summaryJsonUri;
-      }
-    }, onError: (err, stack) {
-      log.warning(
-          'Error while looking for $summaryJsonUri. '
-          'Message: $err\n'
-          'Stack: $stack',
-          asset: assetId);
-    });
-  }))
+        // Check whether the import or export generated summary NgMeta information.
+        final summaryJsonUri =
+            resolver.resolve(assetUri, toSummaryExtension(directive.uri));
+        return reader.hasInput(fromUri(summaryJsonUri)).then((hasInput) {
+          if (hasInput) {
+            retVal[directive.uri] = summaryJsonUri;
+          }
+        }, onError: (err, stack) {
+          log.warning(
+              'Error while looking for $summaryJsonUri. '
+              'Message: $err\n'
+              'Stack: $stack',
+              asset: assetId);
+        });
+      }))
       .then((_) => retVal);
 }

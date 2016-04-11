@@ -19,6 +19,7 @@ TransformerOptions parseBarbackSettings(BarbackSettings settings) {
   var platformDirectives = _readStringList(config, PLATFORM_DIRECTIVES);
   var platformPipes = _readStringList(config, PLATFORM_PIPES);
   var resolvedIdentifiers = config[RESOLVED_IDENTIFIERS];
+  var errorOnMissingIdentifiers = _readBool(config, ERROR_ON_MISSING_IDENTIFIERS, defaultValue: true);
   var formatCode = _readBool(config, FORMAT_CODE_PARAM, defaultValue: false);
   String mirrorModeVal =
       config.containsKey(MIRROR_MODE_PARAM) ? config[MIRROR_MODE_PARAM] : '';
@@ -44,6 +45,7 @@ TransformerOptions parseBarbackSettings(BarbackSettings settings) {
       platformDirectives: platformDirectives,
       platformPipes: platformPipes,
       resolvedIdentifiers: resolvedIdentifiers,
+      errorOnMissingIdentifiers: errorOnMissingIdentifiers,
       inlineViews: _readBool(config, INLINE_VIEWS_PARAM, defaultValue: false),
       lazyTransformers:
           _readBool(config, LAZY_TRANSFORMERS, defaultValue: false),

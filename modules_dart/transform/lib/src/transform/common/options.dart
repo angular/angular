@@ -13,6 +13,7 @@ const REFLECT_PROPERTIES_AS_ATTRIBUTES = 'reflect_properties_as_attributes';
 const PLATFORM_DIRECTIVES = 'platform_directives';
 const PLATFORM_PIPES = 'platform_pipes';
 const RESOLVED_IDENTIFIERS = 'resolved_identifiers';
+const ERROR_ON_MISSING_IDENTIFIERS = 'error_on_missing_identifiers';
 const INIT_REFLECTOR_PARAM = 'init_reflector';
 const INLINE_VIEWS_PARAM = 'inline_views';
 const MIRROR_MODE_PARAM = 'mirror_mode';
@@ -59,6 +60,9 @@ class TransformerOptions {
 
   /// A map of identifier/asset pairs used when resolving identifiers.
   final Map<String, String> resolvedIdentifiers;
+
+  /// when set ot false, the transformer will warn about missing identifiers but not error
+  final bool errorOnMissingIdentifiers;
 
   /// Whether to format generated code.
   /// Code that is only modified will never be formatted because doing so may
@@ -108,6 +112,7 @@ class TransformerOptions {
       this.platformDirectives,
       this.platformPipes,
       this.resolvedIdentifiers,
+      this.errorOnMissingIdentifiers,
       this.translations,
       this.reflectPropertiesAsAttributes});
 
@@ -120,6 +125,7 @@ class TransformerOptions {
       bool genChangeDetectionDebugInfo: false,
       bool genCompiledTemplates: true,
       bool reflectPropertiesAsAttributes: false,
+      bool errorOnMissingIdentifiers: true,
       List<String> platformDirectives,
       List<String> platformPipes,
       Map<String, String> resolvedIdentifiers,
@@ -139,6 +145,7 @@ class TransformerOptions {
         platformDirectives: platformDirectives,
         platformPipes: platformPipes,
         resolvedIdentifiers: resolvedIdentifiers,
+        errorOnMissingIdentifiers: errorOnMissingIdentifiers,
         inlineViews: inlineViews,
         lazyTransformers: lazyTransformers,
         translations: translations,

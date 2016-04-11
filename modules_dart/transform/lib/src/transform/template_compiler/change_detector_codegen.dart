@@ -123,8 +123,8 @@ class _CodegenState {
 
     var names = new CodegenNameUtil(
         protoRecords, eventBindings, def.directiveRecords, '$genPrefix$_UTIL');
-    var logic = new CodegenLogicUtil(
-        names, '$genPrefix$_UTIL', '$genPrefix$_STATE');
+    var logic =
+        new CodegenLogicUtil(names, '$genPrefix$_UTIL', '$genPrefix$_STATE');
     return new _CodegenState._(
         genPrefix,
         def.id,
