@@ -77,7 +77,9 @@ module.exports = function makeBrowserTree(options, destinationPath) {
       include: ['**/**'],
       exclude: [
         // Exclude ES6 polyfill typings when tsc target=ES6
-        'typings/es6-*/**',
+        'typings/browser/ambient/es6-*/**',
+        'typings/main.d.ts',
+        'typings/main/**'
       ],
       destDir: '/angular2/'
     });
@@ -128,7 +130,7 @@ module.exports = function makeBrowserTree(options, destinationPath) {
   ]);
 
   var es6PolyfillTypings =
-      new Funnel('modules', {include: ['angular2/typings/es6-*/**'], destDir: '/'});
+      new Funnel('modules', {include: ['angular2/typings/browser/ambient/es6-*/**'], destDir: '/'});
 
   var es5ModulesTree = mergeTrees([modulesTree, es6PolyfillTypings]);
 
@@ -162,12 +164,12 @@ module.exports = function makeBrowserTree(options, destinationPath) {
   });
 
   let ambientTypings = [
-    'angular2/typings/hammerjs/hammerjs.d.ts',
-    'angular2/typings/node/node.d.ts',
+    'angular2/typings/browser/ambient/hammerjs/index.d.ts',
+    'angular2/typings/browser/ambient/node/index.d.ts',
     'node_modules/zone.js/dist/zone.js.d.ts',
     'angular2/manual_typings/globals.d.ts',
-    'angular2/typings/es6-collections/es6-collections.d.ts',
-    'angular2/typings/es6-promise/es6-promise.d.ts'
+    'angular2/typings/browser/ambient/es6-collections/index.d.ts',
+    'angular2/typings/browser/ambient/es6-promise/index.d.ts'
   ];
 
   // Use TypeScript to transpile the *.ts files to ES5
@@ -310,9 +312,9 @@ module.exports = function makeBrowserTree(options, destinationPath) {
       noEmitOnError: false,
       rootDir: './',
       rootFilePaths: [
-        'angular2/typings/zone.js/zone.js.d.ts',
-        'angular2/typings/hammerjs/hammerjs.d.ts',
-        'angular2/typings/node/node.d.ts',
+        'angular2/typings/browser/ambient/zone.js/zone.js.d.ts',
+        'angular2/typings/browser/ambient/hammerjs/hammerjs.d.ts',
+        'angular2/typings/browser/ambient/node/node.d.ts',
       ],
       inlineSourceMap: sourceMaps,
       inlineSources: sourceMaps,
