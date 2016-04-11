@@ -3,6 +3,7 @@
     "declaration": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
+    "inlineSources": true,
     "mapRoot": "",
     "module": "commonjs",
     "moduleResolution": "node",
@@ -11,10 +12,10 @@
     "outDir": "../dist/e2e/",
     "rootDir": ".",
     "sourceMap": true,
-    "sourceRoot": "/",
     "target": "es5"
   },
   "files": [
+    "index.e2e.ts",
     "e2e.d.ts"
   ]
 }
