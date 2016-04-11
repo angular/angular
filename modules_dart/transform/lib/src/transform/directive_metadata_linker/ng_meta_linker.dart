@@ -377,6 +377,8 @@ class _NgMetaIdentifierResolver {
       // these are so common that we special case them in the transformer
     } else if (id.name == "Window" || id.name == "Document") {
       return new CompileIdentifierMetadata(name: id.name, moduleUrl: 'dart:html');
+    } else if (id.name == "Profiler") {
+      return new CompileIdentifierMetadata(name: id.name, moduleUrl: 'asset:perf_api/lib/perf_api.dart');
     } else if (id.name == "Logger") {
       return new CompileIdentifierMetadata(name: id.name, moduleUrl: 'asset:logging/lib/logging.dart');
     } else if (id.name == "Clock") {
