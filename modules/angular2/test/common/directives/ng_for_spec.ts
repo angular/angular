@@ -298,6 +298,25 @@ export function main() {
              });
        }));
 
+    it('should display first item correctly',
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+         var template =
+             '<div><copy-me template="ngFor: var item of items; var isFirst=first">{{isFirst.toString()}}</copy-me></div>';
+
+         tcb.overrideTemplate(TestComponent, template)
+             .createAsync(TestComponent)
+             .then((fixture) => {
+               fixture.debugElement.componentInstance.items = [0, 1, 2];
+               fixture.detectChanges();
+               expect(fixture.debugElement.nativeElement).toHaveText('truefalsefalse');
+
+               fixture.debugElement.componentInstance.items = [2, 1];
+               fixture.detectChanges();
+               expect(fixture.debugElement.nativeElement).toHaveText('truefalse');
+               async.done();
+             });
+       }));
+
     it('should display last item correctly',
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
          var template =
