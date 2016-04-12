@@ -42,6 +42,8 @@ import {
   HtmlAttrAst,
   HtmlTextAst,
   HtmlCommentAst,
+  HtmlExpansionAst,
+  HtmlExpansionCaseAst,
   htmlVisitAll
 } from './html_ast';
 
@@ -711,6 +713,9 @@ class NonBindableVisitor implements HtmlAstVisitor {
     var ngContentIndex = component.findNgContentIndex(TEXT_CSS_SELECTOR);
     return new TextAst(ast.value, ngContentIndex, ast.sourceSpan);
   }
+  visitExpansion(ast: HtmlExpansionAst, context: any): any { return ast; }
+
+  visitExpansionCase(ast: HtmlExpansionCaseAst, context: any): any { return ast; }
 }
 
 class BoundElementOrDirectiveProperty {
