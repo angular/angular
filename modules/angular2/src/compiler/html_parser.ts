@@ -150,7 +150,7 @@ class TreeBuilder {
       // parse everything in between { and }
       let parsedExp = new TreeBuilder(exp).build();
       if (parsedExp.errors.length > 0) {
-        this.errors = this.errors.concat(parsedExp.errors);
+        this.errors = this.errors.concat(<HtmlTreeError[]>parsedExp.errors);
         return;
       }
 
