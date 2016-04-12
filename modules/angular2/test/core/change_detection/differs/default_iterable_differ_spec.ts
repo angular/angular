@@ -31,6 +31,7 @@ class ComplexItem {
   toString() { return `{id: ${this.id}, color: ${this.color}}` }
 }
 
+// todo(vicb): UnmodifiableListView / frozen object when implemented
 export function main() {
   describe('iterable differ', function() {
     describe('DefaultIterableDiffer', function() {
@@ -311,36 +312,6 @@ export function main() {
               previous: ['a[0->1]', 'b[1->0]', 'c'],
               moves: ['b[1->0]', 'a[0->1]']
             }));
-      });
-
-      it('should not diff immutable collections if they are the same', () => {
-        // Note: Use trackBy to know if diffing happened
-        var trackByCount = 0;
-        var trackBy = (index: number, item: any): any => {
-          trackByCount++;
-          return item;
-        };
-        var differ = new DefaultIterableDiffer(trackBy);
-        var l1 = ListWrapper.createImmutable([1]);
-
-        differ.check(l1);
-        expect(trackByCount).toBe(1);
-        expect(differ.toString())
-            .toEqual(
-                iterableChangesAsString({collection: ['1[null->0]'], additions: ['1[null->0]']}));
-
-
-        trackByCount = 0;
-        differ.check(l1);
-        expect(trackByCount).toBe(0);
-        expect(differ.toString())
-            .toEqual(iterableChangesAsString({collection: ['1'], previous: ['1']}));
-
-        trackByCount = 0;
-        differ.check(l1);
-        expect(trackByCount).toBe(0);
-        expect(differ.toString())
-            .toEqual(iterableChangesAsString({collection: ['1'], previous: ['1']}));
       });
 
       describe('diff', () => {
