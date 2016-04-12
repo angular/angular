@@ -64,6 +64,8 @@ import {
   HtmlAttrAst,
   HtmlTextAst,
   HtmlCommentAst,
+  HtmlExpansionAst,
+  HtmlExpansionCaseAst,
   htmlVisitAll
 } from './html_ast';
 
@@ -268,7 +270,7 @@ class TemplateParseVisitor implements HtmlAstVisitor {
 
   visitComment(ast: HtmlCommentAst, context: any): any { return null; }
 
-  visitElement(element: HtmlElementAst, parent: ElementContext): any {
+  visitElement(element: HtmlElementAst, component: ElementContext): any {
     var nodeName = element.name;
     var preparsedElement = preparseElement(element);
     if (preparsedElement.type === PreparsedElementType.SCRIPT ||
@@ -770,6 +772,9 @@ class NonBindableVisitor implements HtmlAstVisitor {
     var ngContentIndex = parent.findNgContentIndex(TEXT_CSS_SELECTOR);
     return new TextAst(ast.value, ngContentIndex, ast.sourceSpan);
   }
+  visitExpansion(ast: HtmlExpansionAst, context: any): any { return ast; }
+
+  visitExpansionCase(ast: HtmlExpansionCaseAst, context: any): any { return ast; }
 }
 
 class BoundElementOrDirectiveProperty {

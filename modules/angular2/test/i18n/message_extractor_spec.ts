@@ -176,6 +176,24 @@ export function main() {
           ]);
     });
 
+    it("should extract messages from special forms", () => {
+      let res = extractor.extract(`
+        <div>
+          {messages.length, plural,
+             =0 {You have <b>no</b> messages}
+             =1 {You have one message}
+          }
+        </div>
+      `,
+                                  "someurl");
+
+      expect(res.messages)
+          .toEqual([
+            new Message('You have <ph name="e1">no</ph> messages', "plural_0", null),
+            new Message('You have one message', "plural_1", null)
+          ]);
+    });
+
     it("should remove duplicate messages", () => {
       let res = extractor.extract(`
          <!-- i18n: meaning|desc1 -->message<!-- /i18n -->
