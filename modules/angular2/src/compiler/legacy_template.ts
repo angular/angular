@@ -88,7 +88,8 @@ export class LegacyHtmlAstTransformer implements HtmlAstVisitor {
 
   visitExpansion(ast: HtmlExpansionAst, context: any): any {
     let cases = ast.cases.map(c => c.visit(this, null));
-    return new HtmlExpansionAst(ast.switchValue, ast.type, cases, ast.sourceSpan);
+    return new HtmlExpansionAst(ast.switchValue, ast.type, cases, ast.sourceSpan,
+                                ast.switchValueSourceSpan);
   }
 
   visitExpansionCase(ast: HtmlExpansionCaseAst, context: any): any { return ast; }
