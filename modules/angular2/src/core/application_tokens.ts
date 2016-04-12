@@ -7,7 +7,7 @@ import {CONST_EXPR, Math, StringWrapper} from 'angular2/src/facade/lang';
 export const APP_COMPONENT_REF_PROMISE = CONST_EXPR(new OpaqueToken('Promise<ComponentRef>'));
 
 /**
- * An {@link angular2/di/OpaqueToken} representing the application root type in the {@link
+ * An {@link OpaqueToken-class.html} representing the application root type in the {@link
  * Injector}.
  *
  * ```
