@@ -120,6 +120,15 @@ module.exports = function makeNodeTree(projects, destinationPath) {
 
   let compiledTree = mergeTrees([compiledSrcTree, compiledTestTree]);
 
+  // Down-level .d.ts files to be TS 1.8 compatible
+  compiledTree = replace(compiledTree, {
+    files: ['**/*.d.ts'],
+    patterns: [
+      //{match: /^(\s*)readonly\s+/mg, replacement: "$1"},
+    ]
+  });
+
+
   // Now we add the LICENSE file into all the folders that will become npm packages
   outputPackages.forEach(function(destDir) {
     var license = new Funnel('.', {files: ['LICENSE'], destDir: destDir});
