@@ -1,6 +1,6 @@
 {
   "name": "angular-srcs",
-  "version": "2.0.0-beta.14",
+  "version": "2.0.0-beta.12",
   "dependencies": {
     "abbrev": {
       "version": "1.0.7",
@@ -2547,21 +2547,9 @@
       "resolved": "https://registry.npmjs.org/cipher-base/-/cipher-base-1.0.2.tgz"
     },
     "clang-format": {
-      "version": "1.0.37",
-      "from": "clang-format@1.0.37",
-      "resolved": "https://registry.npmjs.org/clang-format/-/clang-format-1.0.37.tgz",
-      "dependencies": {
-        "async": {
-          "version": "1.5.2",
-          "from": "async@>=1.5.2 <2.0.0",
-          "resolved": "https://registry.npmjs.org/async/-/async-1.5.2.tgz"
-        },
-        "glob": {
-          "version": "7.0.3",
-          "from": "glob@>=7.0.0 <8.0.0",
-          "resolved": "https://registry.npmjs.org/glob/-/glob-7.0.3.tgz"
-        }
-      }
+      "version": "1.0.32",
+      "from": "clang-format@1.0.32",
+      "resolved": "https://registry.npmjs.org/clang-format/-/clang-format-1.0.32.tgz"
     },
     "cli-color": {
       "version": "1.1.0",
@@ -8703,9 +8691,9 @@
       "resolved": "https://registry.npmjs.org/typedarray/-/typedarray-0.0.6.tgz"
     },
     "typescript": {
-      "version": "1.7.3",
-      "from": "typescript@1.7.3",
-      "resolved": "https://registry.npmjs.org/typescript/-/typescript-1.7.3.tgz"
+      "version": "1.7.5",
+      "from": "typescript@1.7.5",
+      "resolved": "https://registry.npmjs.org/typescript/-/typescript-1.7.5.tgz"
     },
     "ua-parser-js": {
       "version": "0.7.10",

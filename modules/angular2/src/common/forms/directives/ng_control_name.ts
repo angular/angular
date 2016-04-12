@@ -1,12 +1,31 @@
 import {CONST_EXPR} from 'angular2/src/facade/lang';
 import {EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
 
-import {OnChanges, OnDestroy, SimpleChange, Query, Directive, forwardRef, Host, SkipSelf, Provider, Inject, Optional, Self} from 'angular2/core';
+import {
+  OnChanges,
+  OnDestroy,
+  SimpleChange,
+  Query,
+  Directive,
+  forwardRef,
+  Host,
+  SkipSelf,
+  Provider,
+  Inject,
+  Optional,
+  Self
+} from 'angular2/core';
 
 import {ControlContainer} from './control_container';
 import {NgControl} from './ng_control';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
-import {controlPath, composeValidators, composeAsyncValidators, isPropertyUpdated, selectValueAccessor} from './shared';
+import {
+  controlPath,
+  composeValidators,
+  composeAsyncValidators,
+  isPropertyUpdated,
+  selectValueAccessor
+} from './shared';
 import {Control} from '../model';
 import {NG_VALIDATORS, NG_ASYNC_VALIDATORS} from '../validators';
 import {ValidatorFn, AsyncValidatorFn} from './validators';
@@ -92,37 +111,35 @@ export class NgControlName extends NgControl implements OnChanges,
                   /* Array<Validator|Function> */ any[],
               @Optional() @Self() @Inject(NG_VALUE_ACCESSOR)
               valueAccessors: ControlValueAccessor[]) {
-                super();
-                this.valueAccessor = selectValueAccessor(this, valueAccessors);
-              }
+    super();
+    this.valueAccessor = selectValueAccessor(this, valueAccessors);
+  }
 
-              ngOnChanges(changes: {[key: string]: SimpleChange}) {
-                if (!this._added) {
-                  this.formDirective.addControl(this);
-                  this._added = true;
-                }
-                if (isPropertyUpdated(changes, this.viewModel)) {
-                  this.viewModel = this.model;
-                  this.formDirective.updateModel(this, this.model);
-                }
-              }
+  ngOnChanges(changes: {[key: string]: SimpleChange}) {
+    if (!this._added) {
+      this.formDirective.addControl(this);
+      this._added = true;
+    }
+    if (isPropertyUpdated(changes, this.viewModel)) {
+      this.viewModel = this.model;
+      this.formDirective.updateModel(this, this.model);
+    }
+  }
 
-              ngOnDestroy(): void { this.formDirective.removeControl(this); }
+  ngOnDestroy(): void { this.formDirective.removeControl(this); }
 
-              viewToModelUpdate(newValue: any): void {
-                this.viewModel = newValue;
-                ObservableWrapper.callEmit(this.update, newValue);
-              }
+  viewToModelUpdate(newValue: any): void {
+    this.viewModel = newValue;
+    ObservableWrapper.callEmit(this.update, newValue);
+  }
 
-              get path(): string[] { return controlPath(this.name, this._parent); }
+  get path(): string[] { return controlPath(this.name, this._parent); }
 
-              get formDirective(): any { return this._parent.formDirective; }
+  get formDirective(): any { return this._parent.formDirective; }
 
-              get validator(): ValidatorFn { return composeValidators(this._validators); }
+  get validator(): ValidatorFn { return composeValidators(this._validators); }
 
-              get asyncValidator(): AsyncValidatorFn {
-                return composeAsyncValidators(this._asyncValidators);
-              }
+  get asyncValidator(): AsyncValidatorFn { return composeAsyncValidators(this._asyncValidators); }
 
-              get control(): Control { return this.formDirective.getControl(this); }
+  get control(): Control { return this.formDirective.getControl(this); }
 }

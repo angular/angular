@@ -150,9 +150,8 @@ export class QueryMetadata extends DependencyMetadata {
   descendants: boolean;
   first: boolean;
 
-  constructor(
-      private _selector: Type|string,
-      {descendants = false, first = false}: {descendants?: boolean, first?: boolean} = {}) {
+  constructor(private _selector: Type | string,
+              {descendants = false, first = false}: {descendants?: boolean, first?: boolean} = {}) {
     super();
     this.descendants = descendants;
     this.first = first;
@@ -205,7 +204,7 @@ export class QueryMetadata extends DependencyMetadata {
  */
 @CONST()
 export class ContentChildrenMetadata extends QueryMetadata {
-  constructor(_selector: Type|string, {descendants = false}: {descendants?: boolean} = {}) {
+  constructor(_selector: Type | string, {descendants = false}: {descendants?: boolean} = {}) {
     super(_selector, {descendants: descendants});
   }
 }
@@ -233,7 +232,7 @@ export class ContentChildrenMetadata extends QueryMetadata {
  */
 @CONST()
 export class ContentChildMetadata extends QueryMetadata {
-  constructor(_selector: Type|string) { super(_selector, {descendants: true, first: true}); }
+  constructor(_selector: Type | string) { super(_selector, {descendants: true, first: true}); }
 }
 
 /**
@@ -273,9 +272,8 @@ export class ContentChildMetadata extends QueryMetadata {
  */
 @CONST()
 export class ViewQueryMetadata extends QueryMetadata {
-  constructor(
-      _selector: Type|string,
-      {descendants = false, first = false}: {descendants?: boolean, first?: boolean} = {}) {
+  constructor(_selector: Type | string,
+              {descendants = false, first = false}: {descendants?: boolean, first?: boolean} = {}) {
     super(_selector, {descendants: descendants, first: first});
   }
 
@@ -310,7 +308,7 @@ export class ViewQueryMetadata extends QueryMetadata {
  */
 @CONST()
 export class ViewChildrenMetadata extends ViewQueryMetadata {
-  constructor(_selector: Type|string) { super(_selector, {descendants: true}); }
+  constructor(_selector: Type | string) { super(_selector, {descendants: true}); }
 }
 
 /**
@@ -337,5 +335,5 @@ export class ViewChildrenMetadata extends ViewQueryMetadata {
  */
 @CONST()
 export class ViewChildMetadata extends ViewQueryMetadata {
-  constructor(_selector: Type|string) { super(_selector, {descendants: true, first: true}); }
+  constructor(_selector: Type | string) { super(_selector, {descendants: true, first: true}); }
 }

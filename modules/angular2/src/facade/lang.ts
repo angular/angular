@@ -112,7 +112,7 @@ export function CONST_EXPR<T>(expr: T): T {
   return expr;
 }
 
-export function CONST(): ClassDecorator&PropertyDecorator {
+export function CONST(): ClassDecorator & PropertyDecorator {
   return (target) => target;
 }
 
@@ -125,19 +125,19 @@ export function isBlank(obj: any): boolean {
 }
 
 export function isBoolean(obj: any): boolean {
-  return typeof obj === 'boolean';
+  return typeof obj === "boolean";
 }
 
 export function isNumber(obj: any): boolean {
-  return typeof obj === 'number';
+  return typeof obj === "number";
 }
 
 export function isString(obj: any): boolean {
-  return typeof obj === 'string';
+  return typeof obj === "string";
 }
 
 export function isFunction(obj: any): boolean {
-  return typeof obj === 'function';
+  return typeof obj === "function";
 }
 
 export function isType(obj: any): boolean {
@@ -179,7 +179,7 @@ export function stringify(token): string {
   }
 
   var res = token.toString();
-  var newLineIndex = res.indexOf('\n');
+  var newLineIndex = res.indexOf("\n");
   return (newLineIndex === -1) ? res : res.substring(0, newLineIndex);
 }
 
@@ -270,7 +270,7 @@ export class StringJoiner {
 
   add(part: string): void { this.parts.push(part); }
 
-  toString(): string { return this.parts.join(''); }
+  toString(): string { return this.parts.join(""); }
 }
 
 export class NumberParseError extends Error {
@@ -290,7 +290,7 @@ export class NumberWrapper {
   static parseIntAutoRadix(text: string): number {
     var result: number = parseInt(text);
     if (isNaN(result)) {
-      throw new NumberParseError('Invalid integer literal when parsing ' + text);
+      throw new NumberParseError("Invalid integer literal when parsing " + text);
     }
     return result;
   }
@@ -310,8 +310,8 @@ export class NumberWrapper {
         return result;
       }
     }
-    throw new NumberParseError(
-        'Invalid integer literal when parsing ' + text + ' in base ' + radix);
+    throw new NumberParseError("Invalid integer literal when parsing " + text + " in base " +
+                               radix);
   }
 
   // TODO: NaN is a valid literal but is returned by parseFloat to indicate an error.
@@ -340,7 +340,11 @@ export class RegExpWrapper {
     regExp.lastIndex = 0;
     return regExp.test(input);
   }
-  static matcher(regExp: RegExp, input: string): {re: RegExp; input: string} {
+  static matcher(regExp: RegExp, input: string): {
+    re: RegExp;
+    input: string
+  }
+  {
     // Reset regex state for the case
     // someone did not loop over all matches
     // last time.
@@ -365,7 +369,10 @@ export class RegExpWrapper {
 }
 
 export class RegExpMatcherWrapper {
-  static next(matcher: {re: RegExp; input: string}): RegExpExecArray {
+  static next(matcher: {
+    re: RegExp;
+    input: string
+  }): RegExpExecArray {
     return matcher.re.exec(matcher.input);
   }
 }
@@ -376,7 +383,7 @@ export class FunctionWrapper {
 
 // JS has NaN !== NaN
 export function looseIdentical(a, b): boolean {
-  return a === b || typeof a === 'number' && typeof b === 'number' && isNaN(a) && isNaN(b);
+  return a === b || typeof a === "number" && typeof b === "number" && isNaN(a) && isNaN(b);
 }
 
 // JS considers NaN is the same as NaN for map Key (while NaN !== NaN otherwise)
@@ -394,7 +401,7 @@ export function normalizeBool(obj: boolean): boolean {
 }
 
 export function isJsObject(o: any): boolean {
-  return o !== null && (typeof o === 'function' || typeof o === 'object');
+  return o !== null && (typeof o === "function" || typeof o === "object");
 }
 
 export function print(obj: Error | Object) {
@@ -411,9 +418,8 @@ export class Json {
 }
 
 export class DateWrapper {
-  static create(
-      year: number, month: number = 1, day: number = 1, hour: number = 0, minutes: number = 0,
-      seconds: number = 0, milliseconds: number = 0): Date {
+  static create(year: number, month: number = 1, day: number = 1, hour: number = 0,
+                minutes: number = 0, seconds: number = 0, milliseconds: number = 0): Date {
     return new Date(year, month - 1, day, hour, minutes, seconds, milliseconds);
   }
   static fromISOString(str: string): Date { return new Date(str); }
@@ -443,7 +449,7 @@ export function setValueOnPath(global: any, path: string, value: any) {
 // When Symbol.iterator doesn't exist, retrieves the key used in es6-shim
 declare var Symbol;
 var _symbolIterator = null;
-export function getSymbolIterator(): string|symbol {
+export function getSymbolIterator(): string | symbol {
   if (isBlank(_symbolIterator)) {
     if (isPresent(Symbol) && isPresent(Symbol.iterator)) {
       _symbolIterator = Symbol.iterator;
@@ -462,8 +468,8 @@ export function getSymbolIterator(): string|symbol {
   return _symbolIterator;
 }
 
-export function evalExpression(
-    sourceUrl: string, expr: string, declarations: string, vars: {[key: string]: any}): any {
+export function evalExpression(sourceUrl: string, expr: string, declarations: string,
+                               vars: {[key: string]: any}): any {
   var fnBody = `${declarations}\nreturn ${expr}\n//# sourceURL=${sourceUrl}`;
   var fnArgNames = [];
   var fnArgValues = [];

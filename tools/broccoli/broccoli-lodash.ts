@@ -23,9 +23,8 @@ const kDefaultOptions: LodashRendererOptions = {
  * the associated changes.
  */
 export class LodashRenderer implements DiffingBroccoliPlugin {
-  constructor(
-      private inputPath, private cachePath,
-      private options: LodashRendererOptions = kDefaultOptions) {}
+  constructor(private inputPath, private cachePath,
+              private options: LodashRendererOptions = kDefaultOptions) {}
 
   rebuild(treeDiff: DiffResult) {
     let {encoding = 'utf-8', context = {}} = this.options;

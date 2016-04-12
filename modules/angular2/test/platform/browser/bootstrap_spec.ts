@@ -1,4 +1,17 @@
-import {AsyncTestCompleter, beforeEach, afterEach, ddescribe, describe, expect, iit, inject, it, xdescribe, Log, xit} from 'angular2/testing_internal';
+import {
+  AsyncTestCompleter,
+  beforeEach,
+  afterEach,
+  ddescribe,
+  describe,
+  expect,
+  iit,
+  inject,
+  it,
+  xdescribe,
+  Log,
+  xit
+} from 'angular2/testing_internal';
 import {IS_DART, isPresent, stringify} from 'angular2/src/facade/lang';
 import {bootstrap} from 'angular2/platform/browser';
 import {ApplicationRef} from 'angular2/src/core/application_ref';
@@ -12,7 +25,7 @@ import {provide, Inject, Injector, PLATFORM_INITIALIZER, APP_INITIALIZER} from '
 import {disposePlatform} from 'angular2/src/core/application_ref';
 import {ExceptionHandler, BaseException} from 'angular2/src/facade/exceptions';
 import {Testability, TestabilityRegistry} from 'angular2/src/core/testability/testability';
-import {ComponentRef_, ComponentRef} from 'angular2/src/core/linker/dynamic_component_loader';
+import {ComponentRef_, ComponentRef} from "angular2/src/core/linker/dynamic_component_loader";
 
 @Component({selector: 'hello-app', template: '{{greeting}} world!'})
 class HelloRootCmp {
@@ -35,7 +48,7 @@ class HelloRootCmp2 {
 class HelloRootCmp3 {
   appBinding;
 
-  constructor(@Inject('appBinding') appBinding) { this.appBinding = appBinding; }
+  constructor(@Inject("appBinding") appBinding) { this.appBinding = appBinding; }
 }
 
 @Component({selector: 'hello-app', template: ''})
@@ -97,14 +110,14 @@ export function main() {
        inject([AsyncTestCompleter], (async) => {
          var logger = new _ArrayLogger();
          var exceptionHandler = new ExceptionHandler(logger, false);
-         var refPromise = bootstrap(
-             HelloRootDirectiveIsNotCmp,
-             [testProviders, provide(ExceptionHandler, {useValue: exceptionHandler})]);
+         var refPromise =
+             bootstrap(HelloRootDirectiveIsNotCmp,
+                       [testProviders, provide(ExceptionHandler, {useValue: exceptionHandler})]);
 
          PromiseWrapper.then(refPromise, null, (exception) => {
            expect(exception).toContainError(
                `Could not compile '${stringify(HelloRootDirectiveIsNotCmp)}' because it is not a component.`);
-           expect(logger.res.join('')).toContain('Could not compile');
+           expect(logger.res.join("")).toContain("Could not compile");
            async.done();
          });
        }));
@@ -146,7 +159,7 @@ export function main() {
            var refPromise =
                bootstrap(HelloRootCmp, [provide(ExceptionHandler, {useValue: exceptionHandler})]);
            PromiseWrapper.then(refPromise, null, (reason) => {
-             expect(logger.res.join(''))
+             expect(logger.res.join(""))
                  .toContain('The selector "hello-app" did not match any elements');
              async.done();
              return null;
@@ -170,43 +183,46 @@ export function main() {
     it('should support multiple calls to bootstrap', inject([AsyncTestCompleter], (async) => {
          var refPromise1 = bootstrap(HelloRootCmp, testProviders);
          var refPromise2 = bootstrap(HelloRootCmp2, testProviders);
-         PromiseWrapper.all([refPromise1, refPromise2]).then((refs) => {
-           expect(el).toHaveText('hello world!');
-           expect(el2).toHaveText('hello world, again!');
-           async.done();
-         });
+         PromiseWrapper.all([refPromise1, refPromise2])
+             .then((refs) => {
+               expect(el).toHaveText('hello world!');
+               expect(el2).toHaveText('hello world, again!');
+               async.done();
+             });
        }));
 
     it('should not crash if change detection is invoked when the root component is disposed',
        inject([AsyncTestCompleter], (async) => {
-         bootstrap(HelloOnDestroyTickCmp, testProviders).then((ref) => {
-           expect(() => ref.dispose()).not.toThrow();
-           async.done();
-         });
+         bootstrap(HelloOnDestroyTickCmp, testProviders)
+             .then((ref) => {
+               expect(() => ref.dispose()).not.toThrow();
+               async.done();
+             });
        }));
 
     it('should unregister change detectors when components are disposed',
        inject([AsyncTestCompleter], (async) => {
          var app = platform(BROWSER_PROVIDERS).application([BROWSER_APP_PROVIDERS, testProviders]);
-         app.bootstrap(HelloRootCmp).then((ref) => {
-           ref.dispose();
-           expect(() => app.tick()).not.toThrow();
-           async.done();
-         });
+         app.bootstrap(HelloRootCmp)
+             .then((ref) => {
+               ref.dispose();
+               expect(() => app.tick()).not.toThrow();
+               async.done();
+             });
        }));
 
-    it('should make the provided bindings available to the application component',
+    it("should make the provided bindings available to the application component",
        inject([AsyncTestCompleter], (async) => {
          var refPromise = bootstrap(
-             HelloRootCmp3, [testProviders, provide('appBinding', {useValue: 'BoundValue'})]);
+             HelloRootCmp3, [testProviders, provide("appBinding", {useValue: "BoundValue"})]);
 
          refPromise.then((ref) => {
-           expect(ref.hostComponent.appBinding).toEqual('BoundValue');
+           expect(ref.hostComponent.appBinding).toEqual("BoundValue");
            async.done();
          });
        }));
 
-    it('should avoid cyclic dependencies when root component requires Lifecycle through DI',
+    it("should avoid cyclic dependencies when root component requires Lifecycle through DI",
        inject([AsyncTestCompleter], (async) => {
          var refPromise = bootstrap(HelloRootCmp4, testProviders);
 
@@ -216,21 +232,21 @@ export function main() {
          });
        }));
 
-    it('should run platform initializers', inject([Log], (log: Log) => {
+    it("should run platform initializers", inject([Log], (log: Log) => {
          let p = platform([
            BROWSER_PROVIDERS,
-           provide(PLATFORM_INITIALIZER, {useValue: log.fn('platform_init1'), multi: true}),
-           provide(PLATFORM_INITIALIZER, {useValue: log.fn('platform_init2'), multi: true})
+           provide(PLATFORM_INITIALIZER, {useValue: log.fn("platform_init1"), multi: true}),
+           provide(PLATFORM_INITIALIZER, {useValue: log.fn("platform_init2"), multi: true})
          ]);
-         expect(log.result()).toEqual('platform_init1; platform_init2');
+         expect(log.result()).toEqual("platform_init1; platform_init2");
          log.clear();
          p.application([
            BROWSER_APP_PROVIDERS,
-           provide(APP_INITIALIZER, {useValue: log.fn('app_init1'), multi: true}),
-           provide(APP_INITIALIZER, {useValue: log.fn('app_init2'), multi: true})
+           provide(APP_INITIALIZER, {useValue: log.fn("app_init1"), multi: true}),
+           provide(APP_INITIALIZER, {useValue: log.fn("app_init2"), multi: true})
          ]);
 
-         expect(log.result()).toEqual('app_init1; app_init2');
+         expect(log.result()).toEqual("app_init1; app_init2");
        }));
 
     it('should register each application with the testability registry',
@@ -238,16 +254,18 @@ export function main() {
          var refPromise1: Promise<ComponentRef> = bootstrap(HelloRootCmp, testProviders);
          var refPromise2: Promise<ComponentRef> = bootstrap(HelloRootCmp2, testProviders);
 
-         PromiseWrapper.all([refPromise1, refPromise2]).then((refs: ComponentRef[]) => {
-           var registry = refs[0].injector.get(TestabilityRegistry);
-           var testabilities =
-               [refs[0].injector.get(Testability), refs[1].injector.get(Testability)];
-           PromiseWrapper.all(testabilities).then((testabilities: Testability[]) => {
-             expect(registry.findTestabilityInTree(el)).toEqual(testabilities[0]);
-             expect(registry.findTestabilityInTree(el2)).toEqual(testabilities[1]);
-             async.done();
-           });
-         });
+         PromiseWrapper.all([refPromise1, refPromise2])
+             .then((refs: ComponentRef[]) => {
+               var registry = refs[0].injector.get(TestabilityRegistry);
+               var testabilities =
+                   [refs[0].injector.get(Testability), refs[1].injector.get(Testability)];
+               PromiseWrapper.all(testabilities)
+                   .then((testabilities: Testability[]) => {
+                     expect(registry.findTestabilityInTree(el)).toEqual(testabilities[0]);
+                     expect(registry.findTestabilityInTree(el2)).toEqual(testabilities[1]);
+                     async.done();
+                   });
+             });
        }));
   });
 }

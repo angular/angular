@@ -11,34 +11,35 @@ export function main() {
   var size = getIntParameter('size');
   testList = ListWrapper.createFixedSize(size);
 
-  bootstrap(AppComponent).then((ref) => {
-    var injector = ref.injector;
-    var app: AppComponent = ref.hostComponent;
-    var appRef = injector.get(ApplicationRef);
+  bootstrap(AppComponent)
+      .then((ref) => {
+        var injector = ref.injector;
+        var app: AppComponent = ref.hostComponent;
+        var appRef = injector.get(ApplicationRef);
 
-    bindAction('#reset', function() {
-      app.reset();
-      appRef.tick();
-    });
+        bindAction('#reset', function() {
+          app.reset();
+          appRef.tick();
+        });
 
-    // Baseline (plain components)
-    bindAction('#createPlainComponents', function() {
-      app.createPlainComponents();
-      appRef.tick();
-    });
+        // Baseline (plain components)
+        bindAction('#createPlainComponents', function() {
+          app.createPlainComponents();
+          appRef.tick();
+        });
 
-    // Components with decorators
-    bindAction('#createComponentsWithDirectives', function() {
-      app.createComponentsWithDirectives();
-      appRef.tick();
-    });
+        // Components with decorators
+        bindAction('#createComponentsWithDirectives', function() {
+          app.createComponentsWithDirectives();
+          appRef.tick();
+        });
 
-    // Components with decorators
-    bindAction('#createDynamicComponents', function() {
-      app.createDynamicComponents();
-      appRef.tick();
-    });
-  });
+        // Components with decorators
+        bindAction('#createDynamicComponents', function() {
+          app.createDynamicComponents();
+          appRef.tick();
+        });
+      });
 }
 
 

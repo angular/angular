@@ -1,4 +1,11 @@
-import {InjectMetadata, OptionalMetadata, InjectableMetadata, SelfMetadata, HostMetadata, SkipSelfMetadata} from './metadata';
+import {
+  InjectMetadata,
+  OptionalMetadata,
+  InjectableMetadata,
+  SelfMetadata,
+  HostMetadata,
+  SkipSelfMetadata
+} from './metadata';
 import {makeDecorator, makeParamDecorator} from '../util/decorators';
 
 /**

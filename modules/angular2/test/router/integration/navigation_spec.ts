@@ -1,10 +1,31 @@
-import {ComponentFixture, AsyncTestCompleter, TestComponentBuilder, beforeEach, ddescribe, xdescribe, describe, el, expect, iit, inject, beforeEachProviders, it, xit} from 'angular2/testing_internal';
+import {
+  ComponentFixture,
+  AsyncTestCompleter,
+  TestComponentBuilder,
+  beforeEach,
+  ddescribe,
+  xdescribe,
+  describe,
+  el,
+  expect,
+  iit,
+  inject,
+  beforeEachProviders,
+  it,
+  xit
+} from 'angular2/testing_internal';
 
 import {provide, Component, Injector, Inject} from 'angular2/core';
 import {PromiseWrapper} from 'angular2/src/facade/async';
 
 import {Router, RouterOutlet, RouterLink, RouteParams, RouteData, Location} from 'angular2/router';
-import {RouteConfig, Route, AuxRoute, AsyncRoute, Redirect} from 'angular2/src/router/route_config/route_config_decorator';
+import {
+  RouteConfig,
+  Route,
+  AuxRoute,
+  AsyncRoute,
+  Redirect
+} from 'angular2/src/router/route_config/route_config_decorator';
 
 import {TEST_ROUTER_PROVIDERS, RootCmp, compile} from './util';
 
@@ -155,8 +176,9 @@ export function main() {
     it('should inject route data into component', inject([AsyncTestCompleter], (async) => {
          compile(tcb)
              .then((rtc) => {fixture = rtc})
-             .then((_) => rtr.config([new Route(
-                       {path: '/route-data', component: RouteDataCmp, data: {isAdmin: true}})]))
+             .then((_) => rtr.config([
+               new Route({path: '/route-data', component: RouteDataCmp, data: {isAdmin: true}})
+             ]))
              .then((_) => rtr.navigateByUrl('/route-data'))
              .then((_) => {
                fixture.detectChanges();
@@ -169,8 +191,10 @@ export function main() {
        inject([AsyncTestCompleter], (async) => {
          compile(tcb)
              .then((rtc) => {fixture = rtc})
-             .then((_) => rtr.config([new AsyncRoute(
-                       {path: '/route-data', loader: asyncRouteDataCmp, data: {isAdmin: true}})]))
+             .then((_) => rtr.config([
+               new AsyncRoute(
+                   {path: '/route-data', loader: asyncRouteDataCmp, data: {isAdmin: true}})
+             ]))
              .then((_) => rtr.navigateByUrl('/route-data'))
              .then((_) => {
                fixture.detectChanges();
@@ -183,8 +207,8 @@ export function main() {
        inject([AsyncTestCompleter], (async) => {
          compile(tcb)
              .then((rtc) => {fixture = rtc})
-             .then((_) => rtr.config([new Route(
-                       {path: '/route-data-default', component: RouteDataCmp})]))
+             .then((_) => rtr.config(
+                       [new Route({path: '/route-data-default', component: RouteDataCmp})]))
              .then((_) => rtr.navigateByUrl('/route-data-default'))
              .then((_) => {
                fixture.detectChanges();

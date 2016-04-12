@@ -1,12 +1,28 @@
 import {CONST_EXPR} from 'angular2/src/facade/lang';
 import {StringMapWrapper} from 'angular2/src/facade/collection';
 import {EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
-import {OnChanges, SimpleChange, Query, Directive, forwardRef, Provider, Inject, Optional, Self} from 'angular2/core';
+import {
+  OnChanges,
+  SimpleChange,
+  Query,
+  Directive,
+  forwardRef,
+  Provider,
+  Inject,
+  Optional,
+  Self
+} from 'angular2/core';
 import {NgControl} from './ng_control';
 import {Control} from '../model';
 import {Validators, NG_VALIDATORS, NG_ASYNC_VALIDATORS} from '../validators';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
-import {setUpControl, composeValidators, composeAsyncValidators, isPropertyUpdated, selectValueAccessor} from './shared';
+import {
+  setUpControl,
+  composeValidators,
+  composeAsyncValidators,
+  isPropertyUpdated,
+  selectValueAccessor
+} from './shared';
 import {ValidatorFn, AsyncValidatorFn} from './validators';
 
 const formControlBinding =
@@ -78,37 +94,35 @@ export class NgFormControl extends NgControl implements OnChanges {
                   /* Array<Validator|Function> */ any[],
               @Optional() @Self() @Inject(NG_VALUE_ACCESSOR)
               valueAccessors: ControlValueAccessor[]) {
-                super();
-                this.valueAccessor = selectValueAccessor(this, valueAccessors);
-              }
+    super();
+    this.valueAccessor = selectValueAccessor(this, valueAccessors);
+  }
 
-              ngOnChanges(changes: {[key: string]: SimpleChange}): void {
-                if (this._isControlChanged(changes)) {
-                  setUpControl(this.form, this);
-                  this.form.updateValueAndValidity({emitEvent: false});
-                }
-                if (isPropertyUpdated(changes, this.viewModel)) {
-                  this.form.updateValue(this.model);
-                  this.viewModel = this.model;
-                }
-              }
+  ngOnChanges(changes: {[key: string]: SimpleChange}): void {
+    if (this._isControlChanged(changes)) {
+      setUpControl(this.form, this);
+      this.form.updateValueAndValidity({emitEvent: false});
+    }
+    if (isPropertyUpdated(changes, this.viewModel)) {
+      this.form.updateValue(this.model);
+      this.viewModel = this.model;
+    }
+  }
 
-              get path(): string[] { return []; }
+  get path(): string[] { return []; }
 
-              get validator(): ValidatorFn { return composeValidators(this._validators); }
+  get validator(): ValidatorFn { return composeValidators(this._validators); }
 
-              get asyncValidator(): AsyncValidatorFn {
-                return composeAsyncValidators(this._asyncValidators);
-              }
+  get asyncValidator(): AsyncValidatorFn { return composeAsyncValidators(this._asyncValidators); }
 
-              get control(): Control { return this.form; }
+  get control(): Control { return this.form; }
 
-              viewToModelUpdate(newValue: any): void {
-                this.viewModel = newValue;
-                ObservableWrapper.callEmit(this.update, newValue);
-              }
+  viewToModelUpdate(newValue: any): void {
+    this.viewModel = newValue;
+    ObservableWrapper.callEmit(this.update, newValue);
+  }
 
-              private _isControlChanged(changes: {[key: string]: any}): boolean {
-                return StringMapWrapper.contains(changes, 'form');
-              }
+  private _isControlChanged(changes: {[key: string]: any}): boolean {
+    return StringMapWrapper.contains(changes, "form");
+  }
 }

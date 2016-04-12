@@ -1,4 +1,14 @@
-import {describe, ddescribe, it, iit, xit, xdescribe, expect, beforeEach, el} from 'angular2/testing_internal';
+import {
+  describe,
+  ddescribe,
+  it,
+  iit,
+  xit,
+  xdescribe,
+  expect,
+  beforeEach,
+  el
+} from 'angular2/testing_internal';
 import {EventManager, EventManagerPlugin} from 'angular2/platform/common_dom';
 import {DomEventsPlugin} from 'angular2/src/platform/dom/events/dom_events';
 import {NgZone} from 'angular2/src/core/zone/ng_zone';
@@ -69,7 +79,7 @@ export function main() {
       var handler = (e) => { receivedEvent = e; };
       var manager = new EventManager([domEventPlugin], new FakeNgZone());
 
-      var remover = manager.addGlobalEventListener('document', 'click', handler);
+      var remover = manager.addGlobalEventListener("document", 'click', handler);
       DOM.dispatchEvent(element, dispatchedEvent);
       expect(receivedEvent).toBe(dispatchedEvent);
 

@@ -7,8 +7,9 @@ import {Reporter} from '../reporter';
 export class MultiReporter extends Reporter {
   static createBindings(childTokens: any[]): Provider[] {
     return [
-      bind(_CHILDREN).toFactory(
-          (injector: Injector) => childTokens.map(token => injector.get(token)), [Injector]),
+      bind(_CHILDREN)
+          .toFactory((injector: Injector) => childTokens.map(token => injector.get(token)),
+                     [Injector]),
       bind(MultiReporter).toFactory(children => new MultiReporter(children), [_CHILDREN])
     ];
   }

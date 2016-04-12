@@ -1,10 +1,23 @@
-import {ddescribe, describe, it, iit, xit, expect, beforeEach, afterEach, browserDetection, inject, TestComponentBuilder, AsyncTestCompleter} from 'angular2/testing_internal';
+import {
+  ddescribe,
+  describe,
+  it,
+  iit,
+  xit,
+  expect,
+  beforeEach,
+  afterEach,
+  browserDetection,
+  inject,
+  TestComponentBuilder,
+  AsyncTestCompleter
+} from 'angular2/testing_internal';
 
 import {Component} from 'angular2/core';
 import {SlicePipe} from 'angular2/common';
 
 export function main() {
-  describe('SlicePipe', () => {
+  describe("SlicePipe", () => {
     var list: number[];
     var str;
     var pipe;
@@ -15,17 +28,17 @@ export function main() {
       pipe = new SlicePipe();
     });
 
-    describe('supports', () => {
-      it('should support strings', () => { expect(pipe.supports(str)).toBe(true); });
-      it('should support lists', () => { expect(pipe.supports(list)).toBe(true); });
+    describe("supports", () => {
+      it("should support strings", () => { expect(pipe.supports(str)).toBe(true); });
+      it("should support lists", () => { expect(pipe.supports(list)).toBe(true); });
 
-      it('should not support other objects', () => {
+      it("should not support other objects", () => {
         expect(pipe.supports(new Object())).toBe(false);
         expect(pipe.supports(null)).toBe(false);
       });
     });
 
-    describe('transform', () => {
+    describe("transform", () => {
 
       it('should return all items after START index when START is positive and END is omitted',
          () => {

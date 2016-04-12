@@ -1,4 +1,14 @@
-import {APP_ID, DirectiveResolver, NgZone, Provider, ViewResolver, PLATFORM_COMMON_PROVIDERS, PLATFORM_INITIALIZER, APPLICATION_COMMON_PROVIDERS, Renderer} from 'angular2/core';
+import {
+  APP_ID,
+  DirectiveResolver,
+  NgZone,
+  Provider,
+  ViewResolver,
+  PLATFORM_COMMON_PROVIDERS,
+  PLATFORM_INITIALIZER,
+  APPLICATION_COMMON_PROVIDERS,
+  Renderer
+} from 'angular2/core';
 import {Parse5DomAdapter} from 'angular2/src/platform/server/parse5_adapter';
 
 import {AnimationBuilder} from 'angular2/src/animate/animation_builder';
@@ -20,7 +30,11 @@ import {RootRenderer} from 'angular2/src/core/render/api';
 import {DomRootRenderer, DomRootRenderer_} from 'angular2/src/platform/dom/dom_renderer';
 import {DomSharedStylesHost} from 'angular2/src/platform/dom/shared_styles_host';
 
-import {EventManager, EVENT_MANAGER_PLUGINS, ELEMENT_PROBE_PROVIDERS} from 'angular2/platform/common_dom';
+import {
+  EventManager,
+  EVENT_MANAGER_PLUGINS,
+  ELEMENT_PROBE_PROVIDERS
+} from 'angular2/platform/common_dom';
 import {DomEventsPlugin} from 'angular2/src/platform/dom/events/dom_events';
 
 import {CONST_EXPR} from 'angular2/src/facade/lang';

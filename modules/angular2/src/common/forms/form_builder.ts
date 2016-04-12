@@ -54,21 +54,21 @@ export class FormBuilder {
    *
    * See the {@link ControlGroup} constructor for more details.
    */
-  group(controlsConfig: {[key: string]: any}, extra: {[key: string]: any} = null):
-      modelModule.ControlGroup {
+  group(controlsConfig: {[key: string]: any},
+        extra: {[key: string]: any} = null): modelModule.ControlGroup {
     var controls = this._reduceControls(controlsConfig);
     var optionals = <{[key: string]: boolean}>(
-        isPresent(extra) ? StringMapWrapper.get(extra, 'optionals') : null);
-    var validator: ValidatorFn = isPresent(extra) ? StringMapWrapper.get(extra, 'validator') : null;
+        isPresent(extra) ? StringMapWrapper.get(extra, "optionals") : null);
+    var validator: ValidatorFn = isPresent(extra) ? StringMapWrapper.get(extra, "validator") : null;
     var asyncValidator: AsyncValidatorFn =
-        isPresent(extra) ? StringMapWrapper.get(extra, 'asyncValidator') : null;
+        isPresent(extra) ? StringMapWrapper.get(extra, "asyncValidator") : null;
     return new modelModule.ControlGroup(controls, optionals, validator, asyncValidator);
   }
   /**
    * Construct a new {@link Control} with the given `value`,`validator`, and `asyncValidator`.
    */
-  control(value: Object, validator: ValidatorFn = null, asyncValidator: AsyncValidatorFn = null):
-      modelModule.Control {
+  control(value: Object, validator: ValidatorFn = null,
+          asyncValidator: AsyncValidatorFn = null): modelModule.Control {
     return new modelModule.Control(value, validator, asyncValidator);
   }
 
@@ -76,16 +76,15 @@ export class FormBuilder {
    * Construct an array of {@link Control}s from the given `controlsConfig` array of
    * configuration, with the given optional `validator` and `asyncValidator`.
    */
-  array(
-      controlsConfig: any[], validator: ValidatorFn = null,
-      asyncValidator: AsyncValidatorFn = null): modelModule.ControlArray {
+  array(controlsConfig: any[], validator: ValidatorFn = null,
+        asyncValidator: AsyncValidatorFn = null): modelModule.ControlArray {
     var controls = controlsConfig.map(c => this._createControl(c));
     return new modelModule.ControlArray(controls, validator, asyncValidator);
   }
 
   /** @internal */
-  _reduceControls(controlsConfig: {[k: string]: any}):
-      {[key: string]: modelModule.AbstractControl} {
+  _reduceControls(controlsConfig: {[k: string]:
+                                       any}): {[key: string]: modelModule.AbstractControl} {
     var controls: {[key: string]: modelModule.AbstractControl} = {};
     StringMapWrapper.forEach(controlsConfig, (controlConfig: any, controlName: string) => {
       controls[controlName] = this._createControl(controlConfig);

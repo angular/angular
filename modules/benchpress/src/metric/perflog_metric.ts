@@ -1,5 +1,12 @@
 import {PromiseWrapper, TimerWrapper} from 'angular2/src/facade/async';
-import {isPresent, isBlank, StringWrapper, Math, RegExpWrapper, NumberWrapper} from 'angular2/src/facade/lang';
+import {
+  isPresent,
+  isBlank,
+  StringWrapper,
+  Math,
+  RegExpWrapper,
+  NumberWrapper
+} from 'angular2/src/facade/lang';
 import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
 import {ListWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
 import {bind, provide, Provider, OpaqueToken} from 'angular2/src/core/di';
@@ -27,11 +34,10 @@ export class PerflogMetric extends Metric {
    * @param setTimeout
    * @param microMetrics Name and description of metrics provided via console.time / console.timeEnd
    **/
-  constructor(
-      private _driverExtension: WebDriverExtension, private _setTimeout: Function,
-      private _microMetrics: {[key: string]: any}, private _forceGc: boolean,
-      private _captureFrames: boolean, private _receivedData: boolean,
-      private _requestCount: boolean) {
+  constructor(private _driverExtension: WebDriverExtension, private _setTimeout: Function,
+              private _microMetrics: {[key: string]: any}, private _forceGc: boolean,
+              private _captureFrames: boolean, private _receivedData: boolean,
+              private _requestCount: boolean) {
     super();
 
     this._remainingEvents = [];
@@ -82,8 +88,8 @@ export class PerflogMetric extends Metric {
         res['frameTime.smooth'] = 'percentage of frames that hit 60fps';
       }
     }
-    StringMapWrapper.forEach(
-        this._microMetrics, (desc, name) => { StringMapWrapper.set(res, name, desc); });
+    StringMapWrapper.forEach(this._microMetrics,
+                             (desc, name) => { StringMapWrapper.set(res, name, desc); });
     return res;
   }
 
@@ -142,13 +148,13 @@ export class PerflogMetric extends Metric {
         return result;
       }
       var completer = PromiseWrapper.completer();
-      this._setTimeout(
-          () => completer.resolve(this._readUntilEndMark(markName, loopCount + 1)), 100);
+      this._setTimeout(() => completer.resolve(this._readUntilEndMark(markName, loopCount + 1)),
+                       100);
       return completer.promise;
     });
   }
 
-  _addEvents(events: {[key: string]: string}[]) {
+  _addEvents(events: { [key: string]: string }[]) {
     var needSort = false;
     events.forEach(event => {
       if (StringWrapper.equals(event['ph'], 'X')) {
@@ -256,8 +262,8 @@ export class PerflogMetric extends Metric {
                 'found start event for frame capture, but frame capture was not requested in benchpress')
           }
           frameCaptureStartEvent = event;
-        } else if (
-            StringWrapper.equals(ph, 'e') && StringWrapper.equals(name, _MARK_NAME_FRAME_CAPUTRE)) {
+        } else if (StringWrapper.equals(ph, 'e') &&
+                   StringWrapper.equals(name, _MARK_NAME_FRAME_CAPUTRE)) {
           if (isBlank(frameCaptureStartEvent)) {
             throw new BaseException('missing start event for frame capture');
           }
@@ -269,9 +275,8 @@ export class PerflogMetric extends Metric {
               StringWrapper.equals(name, 'frame')) {
             frameTimestamps.push(event['ts']);
             if (frameTimestamps.length >= 2) {
-              frameTimes.push(
-                  frameTimestamps[frameTimestamps.length - 1] -
-                  frameTimestamps[frameTimestamps.length - 2]);
+              frameTimes.push(frameTimestamps[frameTimestamps.length - 1] -
+                              frameTimestamps[frameTimestamps.length - 2]);
             }
           }
         }
@@ -283,9 +288,8 @@ export class PerflogMetric extends Metric {
           } else {
             intervalStartCount[name]++;
           }
-        } else if (
-            (StringWrapper.equals(ph, 'E') || StringWrapper.equals(ph, 'e')) &&
-            isPresent(intervalStarts[name])) {
+        } else if ((StringWrapper.equals(ph, 'E') || StringWrapper.equals(ph, 'e')) &&
+                   isPresent(intervalStarts[name])) {
           intervalStartCount[name]--;
           if (intervalStartCount[name] === 0) {
             var startEvent = intervalStarts[name];
@@ -363,13 +367,16 @@ var _PROVIDERS = [
   bind(PerflogMetric)
       .toFactory(
           (driverExtension, setTimeout, microMetrics, forceGc, captureFrames, receivedData,
-           requestCount) =>
-              new PerflogMetric(
-                  driverExtension, setTimeout, microMetrics, forceGc, captureFrames, receivedData,
-                  requestCount),
+           requestCount) => new PerflogMetric(driverExtension, setTimeout, microMetrics, forceGc,
+                                              captureFrames, receivedData, requestCount),
           [
-            WebDriverExtension, _SET_TIMEOUT, Options.MICRO_METRICS, Options.FORCE_GC,
-            Options.CAPTURE_FRAMES, Options.RECEIVED_DATA, Options.REQUEST_COUNT
+            WebDriverExtension,
+            _SET_TIMEOUT,
+            Options.MICRO_METRICS,
+            Options.FORCE_GC,
+            Options.CAPTURE_FRAMES,
+            Options.RECEIVED_DATA,
+            Options.REQUEST_COUNT
           ]),
   provide(_SET_TIMEOUT, {useValue: (fn, millis) => TimerWrapper.setTimeout(fn, millis)})
 ];

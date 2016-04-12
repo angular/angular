@@ -1,4 +1,14 @@
-import {describe, ddescribe, it, iit, xit, xdescribe, expect, beforeEach, el} from 'angular2/testing_internal';
+import {
+  describe,
+  ddescribe,
+  it,
+  iit,
+  xit,
+  xdescribe,
+  expect,
+  beforeEach,
+  el
+} from 'angular2/testing_internal';
 import {KeyEventsPlugin} from 'angular2/src/platform/dom/events/key_events';
 
 export function main() {

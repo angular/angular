@@ -1,11 +1,21 @@
-import {ddescribe, describe, it, iit, xit, expect, beforeEach, afterEach, browserDetection} from 'angular2/testing_internal';
+import {
+  ddescribe,
+  describe,
+  it,
+  iit,
+  xit,
+  expect,
+  beforeEach,
+  afterEach,
+  browserDetection
+} from 'angular2/testing_internal';
 
 import {DatePipe} from 'angular2/common';
 import {DateWrapper} from 'angular2/src/facade/lang';
 import {PipeResolver} from 'angular2/src/core/linker/pipe_resolver';
 
 export function main() {
-  describe('DatePipe', () => {
+  describe("DatePipe", () => {
     var date;
     var pipe;
 
@@ -17,11 +27,11 @@ export function main() {
     it('should be marked as pure',
        () => { expect(new PipeResolver().resolve(DatePipe).pure).toEqual(true); });
 
-    describe('supports', () => {
-      it('should support date', () => { expect(pipe.supports(date)).toBe(true); });
-      it('should support int', () => { expect(pipe.supports(123456789)).toBe(true); });
+    describe("supports", () => {
+      it("should support date", () => { expect(pipe.supports(date)).toBe(true); });
+      it("should support int", () => { expect(pipe.supports(123456789)).toBe(true); });
 
-      it('should not support other objects', () => {
+      it("should not support other objects", () => {
         expect(pipe.supports(new Object())).toBe(false);
         expect(pipe.supports(null)).toBe(false);
       });
@@ -30,7 +40,7 @@ export function main() {
     // TODO(mlaval): enable tests when Intl API is no longer used, see
     // https://github.com/angular/angular/issues/3333
     if (browserDetection.supportsIntlApi) {
-      describe('transform', () => {
+      describe("transform", () => {
         it('should format each component correctly', () => {
           expect(pipe.transform(date, ['y'])).toEqual('2015');
           expect(pipe.transform(date, ['yy'])).toEqual('15');

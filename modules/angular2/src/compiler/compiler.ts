@@ -1,6 +1,10 @@
-import {RuntimeCompiler_} from './runtime_compiler';
+import {RuntimeCompiler_} from "./runtime_compiler";
 export {TemplateCompiler} from './template_compiler';
-export {CompileDirectiveMetadata, CompileTypeMetadata, CompileTemplateMetadata} from './directive_metadata';
+export {
+  CompileDirectiveMetadata,
+  CompileTypeMetadata,
+  CompileTemplateMetadata
+} from './directive_metadata';
 export {SourceModule, SourceWithImports} from './source_module';
 export {PLATFORM_DIRECTIVES, PLATFORM_PIPES} from 'angular2/src/core/platform_directives_and_pipes';
 export * from 'angular2/src/compiler/template_ast';
@@ -32,12 +36,23 @@ function _createChangeDetectorGenConfig() {
  * A set of providers that provide `RuntimeCompiler` and its dependencies to use for
  * template compilation.
  */
-export const COMPILER_PROVIDERS: Array<Type|Provider|any[]> = CONST_EXPR([
-  Lexer, Parser, HtmlParser, TemplateParser, TemplateNormalizer, RuntimeMetadataResolver,
-  DEFAULT_PACKAGE_URL_PROVIDER, StyleCompiler, ProtoViewCompiler, ViewCompiler,
+export const COMPILER_PROVIDERS: Array<Type | Provider | any[]> = CONST_EXPR([
+  Lexer,
+  Parser,
+  HtmlParser,
+  TemplateParser,
+  TemplateNormalizer,
+  RuntimeMetadataResolver,
+  DEFAULT_PACKAGE_URL_PROVIDER,
+  StyleCompiler,
+  ProtoViewCompiler,
+  ViewCompiler,
   ChangeDetectionCompiler,
   new Provider(ChangeDetectorGenConfig, {useFactory: _createChangeDetectorGenConfig, deps: []}),
-  TemplateCompiler, new Provider(RuntimeCompiler, {useClass: RuntimeCompiler_}),
-  new Provider(Compiler, {useExisting: RuntimeCompiler}), DomElementSchemaRegistry,
-  new Provider(ElementSchemaRegistry, {useExisting: DomElementSchemaRegistry}), UrlResolver
+  TemplateCompiler,
+  new Provider(RuntimeCompiler, {useClass: RuntimeCompiler_}),
+  new Provider(Compiler, {useExisting: RuntimeCompiler}),
+  DomElementSchemaRegistry,
+  new Provider(ElementSchemaRegistry, {useExisting: DomElementSchemaRegistry}),
+  UrlResolver
 ]);

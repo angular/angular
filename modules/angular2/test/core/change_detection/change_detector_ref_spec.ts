@@ -1,6 +1,20 @@
-import {ddescribe, describe, it, iit, xit, expect, beforeEach, afterEach, tick, fakeAsync} from 'angular2/testing_internal';
+import {
+  ddescribe,
+  describe,
+  it,
+  iit,
+  xit,
+  expect,
+  beforeEach,
+  afterEach,
+  tick,
+  fakeAsync
+} from 'angular2/testing_internal';
 
-import {ChangeDetectorRef, ChangeDetectorRef_} from 'angular2/src/core/change_detection/change_detector_ref';
+import {
+  ChangeDetectorRef,
+  ChangeDetectorRef_
+} from 'angular2/src/core/change_detection/change_detector_ref';
 import {SpyChangeDetector} from '../spies';
 
 

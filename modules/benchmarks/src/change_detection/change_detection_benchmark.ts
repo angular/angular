@@ -3,7 +3,19 @@ import {isPresent} from 'angular2/src/facade/lang';
 import {getIntParameter, bindAction, microBenchmark} from 'angular2/src/testing/benchmark_util';
 import {BrowserDomAdapter} from 'angular2/src/platform/browser/browser_adapter';
 
-import {Lexer, Parser, ChangeDispatcher, DebugContext, DynamicProtoChangeDetector, JitProtoChangeDetector, ChangeDetectorDefinition, ChangeDetectorGenConfig, BindingRecord, DirectiveRecord, DirectiveIndex} from 'angular2/src/core/change_detection/change_detection';
+import {
+  Lexer,
+  Parser,
+  ChangeDispatcher,
+  DebugContext,
+  DynamicProtoChangeDetector,
+  JitProtoChangeDetector,
+  ChangeDetectorDefinition,
+  ChangeDetectorGenConfig,
+  BindingRecord,
+  DirectiveRecord,
+  DirectiveIndex
+} from 'angular2/src/core/change_detection/change_detection';
 
 
 // ---- SHARED
@@ -242,30 +254,30 @@ function setUpChangeDetection(protoChangeDetectorFactory: Function, iterations, 
 
   var directiveRecord = new DirectiveRecord({directiveIndex: new DirectiveIndex(0, 0)});
   var bindings = [
-    BindingRecord.createForDirective(
-        parser.parseBinding('field0', null), 'field0', reflector.setter('field0'), directiveRecord),
-    BindingRecord.createForDirective(
-        parser.parseBinding('field1', null), 'field1', reflector.setter('field1'), directiveRecord),
-    BindingRecord.createForDirective(
-        parser.parseBinding('field2', null), 'field2', reflector.setter('field2'), directiveRecord),
-    BindingRecord.createForDirective(
-        parser.parseBinding('field3', null), 'field3', reflector.setter('field3'), directiveRecord),
-    BindingRecord.createForDirective(
-        parser.parseBinding('field4', null), 'field4', reflector.setter('field4'), directiveRecord),
-    BindingRecord.createForDirective(
-        parser.parseBinding('field5', null), 'field5', reflector.setter('field5'), directiveRecord),
-    BindingRecord.createForDirective(
-        parser.parseBinding('field6', null), 'field6', reflector.setter('field6'), directiveRecord),
-    BindingRecord.createForDirective(
-        parser.parseBinding('field7', null), 'field7', reflector.setter('field7'), directiveRecord),
-    BindingRecord.createForDirective(
-        parser.parseBinding('field8', null), 'field8', reflector.setter('field8'), directiveRecord),
-    BindingRecord.createForDirective(
-        parser.parseBinding('field9', null), 'field9', reflector.setter('field9'), directiveRecord)
+    BindingRecord.createForDirective(parser.parseBinding('field0', null), "field0",
+                                     reflector.setter("field0"), directiveRecord),
+    BindingRecord.createForDirective(parser.parseBinding('field1', null), "field1",
+                                     reflector.setter("field1"), directiveRecord),
+    BindingRecord.createForDirective(parser.parseBinding('field2', null), "field2",
+                                     reflector.setter("field2"), directiveRecord),
+    BindingRecord.createForDirective(parser.parseBinding('field3', null), "field3",
+                                     reflector.setter("field3"), directiveRecord),
+    BindingRecord.createForDirective(parser.parseBinding('field4', null), "field4",
+                                     reflector.setter("field4"), directiveRecord),
+    BindingRecord.createForDirective(parser.parseBinding('field5', null), "field5",
+                                     reflector.setter("field5"), directiveRecord),
+    BindingRecord.createForDirective(parser.parseBinding('field6', null), "field6",
+                                     reflector.setter("field6"), directiveRecord),
+    BindingRecord.createForDirective(parser.parseBinding('field7', null), "field7",
+                                     reflector.setter("field7"), directiveRecord),
+    BindingRecord.createForDirective(parser.parseBinding('field8', null), "field8",
+                                     reflector.setter("field8"), directiveRecord),
+    BindingRecord.createForDirective(parser.parseBinding('field9', null), "field9",
+                                     reflector.setter("field9"), directiveRecord)
   ];
 
   var proto = protoChangeDetectorFactory(
-      new ChangeDetectorDefinition('proto', null, [], bindings, [], [directiveRecord], genConfig));
+      new ChangeDetectorDefinition("proto", null, [], bindings, [], [directiveRecord], genConfig));
 
   var targetObj = new Obj();
   parentCd.hydrate(object, null, new DummyDispatcher(targetObj), null);
@@ -308,16 +320,13 @@ export function main() {
 
   runBaselineReads(baselineHead, 1);  // warmup
 
-  bindAction(
-      '#baselineChangeDetectionReads',
-      () => microBenchmark(
-          'detectChangesAvg', numberOfRuns, () => runBaselineReads(baselineHead, numberOfRuns)));
+  bindAction('#baselineChangeDetectionReads',
+             () => microBenchmark('detectChangesAvg', numberOfRuns,
+                                  () => runBaselineReads(baselineHead, numberOfRuns)));
 
-  bindAction(
-      '#baselineChangeDetectionWrites',
-      () => microBenchmark(
-          'detectChangesAvg', numberOfRuns,
-          () => runBaselineWrites(baselineHead, numberOfRuns, object)));
+  bindAction('#baselineChangeDetectionWrites',
+             () => microBenchmark('detectChangesAvg', numberOfRuns,
+                                  () => runBaselineWrites(baselineHead, numberOfRuns, object)));
 
 
 
@@ -330,15 +339,13 @@ export function main() {
 
   bindAction(
       '#ng2ChangeDetectionDynamicReads',
-      () => microBenchmark(
-          'detectChangesAvg', numberOfRuns,
-          () => runChangeDetectionReads(ng2DynamicChangeDetector, numberOfRuns)));
+      () => microBenchmark('detectChangesAvg', numberOfRuns,
+                           () => runChangeDetectionReads(ng2DynamicChangeDetector, numberOfRuns)));
 
-  bindAction(
-      '#ng2ChangeDetectionDynamicWrites',
-      () => microBenchmark(
-          'detectChangesAvg', numberOfRuns,
-          () => runChangeDetectionWrites(ng2DynamicChangeDetector, numberOfRuns, object)));
+  bindAction('#ng2ChangeDetectionDynamicWrites',
+             () => microBenchmark(
+                 'detectChangesAvg', numberOfRuns,
+                 () => runChangeDetectionWrites(ng2DynamicChangeDetector, numberOfRuns, object)));
 
 
 
@@ -353,15 +360,13 @@ export function main() {
 
     bindAction(
         '#ng2ChangeDetectionJitReads',
-        () => microBenchmark(
-            'detectChangesAvg', numberOfRuns,
-            () => runChangeDetectionReads(ng2JitChangeDetector, numberOfRuns)));
+        () => microBenchmark('detectChangesAvg', numberOfRuns,
+                             () => runChangeDetectionReads(ng2JitChangeDetector, numberOfRuns)));
 
-    bindAction(
-        '#ng2ChangeDetectionJitWrites',
-        () => microBenchmark(
-            'detectChangesAvg', numberOfRuns,
-            () => runChangeDetectionWrites(ng2JitChangeDetector, numberOfRuns, object)));
+    bindAction('#ng2ChangeDetectionJitWrites',
+               () => microBenchmark(
+                   'detectChangesAvg', numberOfRuns,
+                   () => runChangeDetectionWrites(ng2JitChangeDetector, numberOfRuns, object)));
   } else {
     bindAction('#ng2ChangeDetectionJitReads', () => {});
     bindAction('#ng2ChangeDetectionJitWrites', () => {});
@@ -372,13 +377,13 @@ class DummyDispatcher implements ChangeDispatcher {
   targetObj: Obj;
   constructor(targetObj) { this.targetObj = targetObj; }
   getDebugContext(appElement: any, elementIndex: number, directiveIndex: number): DebugContext {
-    throw 'getDebugContext not implemented.';
+    throw "getDebugContext not implemented.";
   }
-  notifyOnBinding(bindingTarget, newValue) { throw 'Should not be used'; }
-  logBindingUpdate(bindingTarget, newValue) { throw 'Should not be used'; }
+  notifyOnBinding(bindingTarget, newValue) { throw "Should not be used"; }
+  logBindingUpdate(bindingTarget, newValue) { throw "Should not be used"; }
   notifyAfterContentChecked() {}
   notifyAfterViewChecked() {}
   notifyOnDestroy() {}
-  getDetectorFor(directiveIndex: DirectiveIndex): any { throw 'getDetectorFor not implemented.'; }
+  getDetectorFor(directiveIndex: DirectiveIndex): any { throw "getDetectorFor not implemented."; }
   getDirectiveFor(record) { return this.targetObj; }
 }

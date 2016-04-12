@@ -53,13 +53,12 @@ mod.PageMod({
   include: ['*'],
   contentScriptFile: data.url('installed_script.js'),
   onAttach: worker => {
-    worker.port.on(
-        'startProfiler',
-        (timeStarted) => profiler.start(
-            /* = profiler memory */ 3000000, 0.1, ['leaf', 'js', 'stackwalk', 'gc'], timeStarted));
+    worker.port.on('startProfiler',
+                   (timeStarted) => profiler.start(/* = profiler memory */ 3000000, 0.1,
+                                                   ['leaf', 'js', 'stackwalk', 'gc'], timeStarted));
     worker.port.on('stopProfiler', () => profiler.stop());
-    worker.port.on(
-        'getProfile', () => worker.port.emit('perfProfile', profiler.getProfilePerfEvents()));
+    worker.port.on('getProfile',
+                   () => worker.port.emit('perfProfile', profiler.getProfilePerfEvents()));
     worker.port.on('forceGC', forceGC);
     worker.port.on('markStart', (name, timeStarted) => profiler.addStartEvent(name, timeStarted));
     worker.port.on('markEnd', (name, timeEnded) => profiler.addEndEvent(name, timeEnded));

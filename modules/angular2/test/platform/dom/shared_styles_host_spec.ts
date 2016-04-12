@@ -1,4 +1,20 @@
-import {AsyncTestCompleter, beforeEach, ddescribe, xdescribe, describe, el, dispatchEvent, expect, iit, inject, beforeEachProviders, it, xit, SpyObject, proxy} from 'angular2/testing_internal';
+import {
+  AsyncTestCompleter,
+  beforeEach,
+  ddescribe,
+  xdescribe,
+  describe,
+  el,
+  dispatchEvent,
+  expect,
+  iit,
+  inject,
+  beforeEachProviders,
+  it,
+  xit,
+  SpyObject,
+  proxy
+} from 'angular2/testing_internal';
 
 import {DOM} from 'angular2/src/platform/dom/dom_adapter';
 import {DomSharedStylesHost} from 'angular2/src/platform/dom/shared_styles_host';

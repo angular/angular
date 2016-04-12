@@ -19,7 +19,7 @@ describe('MergeTrees', () => {
     return treeDiffers;
   }
 
-  function read(path) { return fs.readFileSync(path, 'utf-8'); }
+  function read(path) { return fs.readFileSync(path, "utf-8"); }
 
   it('should copy the file from the right-most inputTree with overwrite=true', () => {
     let testDir: any = {

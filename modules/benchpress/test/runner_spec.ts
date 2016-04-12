@@ -1,5 +1,28 @@
-import {afterEach, AsyncTestCompleter, beforeEach, ddescribe, describe, expect, iit, inject, it, xit,} from 'angular2/testing_internal';
-import {Runner, Sampler, SampleDescription, Validator, bind, provide, Injector, Metric, Options, WebDriverAdapter, SampleState} from 'benchpress/common';
+import {
+  afterEach,
+  AsyncTestCompleter,
+  beforeEach,
+  ddescribe,
+  describe,
+  expect,
+  iit,
+  inject,
+  it,
+  xit,
+} from 'angular2/testing_internal';
+import {
+  Runner,
+  Sampler,
+  SampleDescription,
+  Validator,
+  bind,
+  provide,
+  Injector,
+  Metric,
+  Options,
+  WebDriverAdapter,
+  SampleState
+} from 'benchpress/common';
 import {isBlank} from 'angular2/src/facade/lang';
 import {PromiseWrapper} from 'angular2/src/facade/async';
 
@@ -13,12 +36,13 @@ export function main() {
         defaultBindings = [];
       }
       runner = new Runner([
-        defaultBindings, bind(Sampler).toFactory(
-                             (_injector) => {
-                               injector = _injector;
-                               return new MockSampler();
-                             },
-                             [Injector]),
+        defaultBindings,
+        bind(Sampler).toFactory(
+            (_injector) => {
+              injector = _injector;
+              return new MockSampler();
+            },
+            [Injector]),
         bind(Metric).toFactory(() => new MockMetric(), []),
         bind(Validator).toFactory(() => new MockValidator(), []),
         bind(WebDriverAdapter).toFactory(() => new MockWebDriverAdapter(), [])
@@ -62,35 +86,43 @@ export function main() {
 
     it('should bind Options.EXECUTE', inject([AsyncTestCompleter], (async) => {
          var execute = () => {};
-         createRunner().sample({id: 'someId', execute: execute}).then((_) => {
-           expect(injector.get(Options.EXECUTE)).toEqual(execute);
-           async.done();
-         });
+         createRunner()
+             .sample({id: 'someId', execute: execute})
+             .then((_) => {
+               expect(injector.get(Options.EXECUTE)).toEqual(execute);
+               async.done();
+             });
        }));
 
     it('should bind Options.PREPARE', inject([AsyncTestCompleter], (async) => {
          var prepare = () => {};
-         createRunner().sample({id: 'someId', prepare: prepare}).then((_) => {
-           expect(injector.get(Options.PREPARE)).toEqual(prepare);
-           async.done();
-         });
+         createRunner()
+             .sample({id: 'someId', prepare: prepare})
+             .then((_) => {
+               expect(injector.get(Options.PREPARE)).toEqual(prepare);
+               async.done();
+             });
        }));
 
     it('should bind Options.MICRO_METRICS', inject([AsyncTestCompleter], (async) => {
-         createRunner().sample({id: 'someId', microMetrics: {'a': 'b'}}).then((_) => {
-           expect(injector.get(Options.MICRO_METRICS)).toEqual({'a': 'b'});
-           async.done();
-         });
+         createRunner()
+             .sample({id: 'someId', microMetrics: {'a': 'b'}})
+             .then((_) => {
+               expect(injector.get(Options.MICRO_METRICS)).toEqual({'a': 'b'});
+               async.done();
+             });
        }));
 
     it('should overwrite bindings per sample call', inject([AsyncTestCompleter], (async) => {
          createRunner([
-           bind(Options.DEFAULT_DESCRIPTION).toValue({'a': 1}),
+           bind(Options.DEFAULT_DESCRIPTION)
+               .toValue({'a': 1}),
          ])
              .sample({
                id: 'someId',
                bindings: [
-                 bind(Options.DEFAULT_DESCRIPTION).toValue({'a': 2}),
+                 bind(Options.DEFAULT_DESCRIPTION)
+                     .toValue({'a': 2}),
                ]
              })
              .then((_) => injector.get(SampleDescription))

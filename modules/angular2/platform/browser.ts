@@ -1,12 +1,27 @@
 export {AngularEntrypoint} from 'angular2/src/core/angular_entrypoint';
-export {BROWSER_PROVIDERS, CACHED_TEMPLATE_PROVIDER, ELEMENT_PROBE_PROVIDERS, ELEMENT_PROBE_PROVIDERS_PROD_MODE, inspectNativeElement, BrowserDomAdapter, By, Title, DOCUMENT, enableDebugTools, disableDebugTools} from 'angular2/src/platform/browser_common';
+export {
+  BROWSER_PROVIDERS,
+  CACHED_TEMPLATE_PROVIDER,
+  ELEMENT_PROBE_PROVIDERS,
+  ELEMENT_PROBE_PROVIDERS_PROD_MODE,
+  inspectNativeElement,
+  BrowserDomAdapter,
+  By,
+  Title,
+  DOCUMENT,
+  enableDebugTools,
+  disableDebugTools
+} from 'angular2/src/platform/browser_common';
 
 import {Type, isPresent, CONST_EXPR} from 'angular2/src/facade/lang';
-import {BROWSER_PROVIDERS, BROWSER_APP_COMMON_PROVIDERS} from 'angular2/src/platform/browser_common';
+import {
+  BROWSER_PROVIDERS,
+  BROWSER_APP_COMMON_PROVIDERS
+} from 'angular2/src/platform/browser_common';
 import {COMPILER_PROVIDERS} from 'angular2/compiler';
 import {ComponentRef, platform, reflector} from 'angular2/core';
 import {ReflectionCapabilities} from 'angular2/src/core/reflection/reflection_capabilities';
-import {XHRImpl} from 'angular2/src/platform/browser/xhr_impl';
+import {XHRImpl} from "angular2/src/platform/browser/xhr_impl";
 import {XHR} from 'angular2/compiler';
 import {Provider} from 'angular2/src/core/di';
 

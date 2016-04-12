@@ -8,16 +8,16 @@ import {EventBinding} from './event_binding';
 
 // The names of these fields must be kept in sync with abstract_change_detector.ts or change
 // detection will fail.
-const _STATE_ACCESSOR = 'state';
-const _CONTEXT_ACCESSOR = 'context';
-const _PROP_BINDING_INDEX = 'propertyBindingIndex';
-const _DIRECTIVES_ACCESSOR = 'directiveIndices';
-const _DISPATCHER_ACCESSOR = 'dispatcher';
-const _LOCALS_ACCESSOR = 'locals';
-const _MODE_ACCESSOR = 'mode';
-const _PIPES_ACCESSOR = 'pipes';
-const _PROTOS_ACCESSOR = 'protos';
-export const CONTEXT_ACCESSOR = 'context';
+const _STATE_ACCESSOR = "state";
+const _CONTEXT_ACCESSOR = "context";
+const _PROP_BINDING_INDEX = "propertyBindingIndex";
+const _DIRECTIVES_ACCESSOR = "directiveIndices";
+const _DISPATCHER_ACCESSOR = "dispatcher";
+const _LOCALS_ACCESSOR = "locals";
+const _MODE_ACCESSOR = "mode";
+const _PIPES_ACCESSOR = "pipes";
+const _PROTOS_ACCESSOR = "protos";
+export const CONTEXT_ACCESSOR = "context";
 
 // `context` is always first.
 export const CONTEXT_INDEX = 0;
@@ -47,9 +47,8 @@ export class CodegenNameUtil {
   /** @internal */
   _sanitizedEventNames = new Map<EventBinding, string[]>();
 
-  constructor(
-      private _records: ProtoRecord[], private _eventBindings: EventBinding[],
-      private _directiveRecords: any[], private _utilName: string) {
+  constructor(private _records: ProtoRecord[], private _eventBindings: EventBinding[],
+              private _directiveRecords: any[], private _utilName: string) {
     this._sanitizedNames = ListWrapper.createFixedSize(this._records.length + 1);
     this._sanitizedNames[CONTEXT_INDEX] = CONTEXT_ACCESSOR;
     for (var i = 0, iLen = this._records.length; i < iLen; ++i) {
@@ -133,7 +132,7 @@ export class CodegenNameUtil {
     return res.length > 1 ? `var ${res.join(',')};` : '';
   }
 
-  getPreventDefaultAccesor(): string { return 'preventDefault'; }
+  getPreventDefaultAccesor(): string { return "preventDefault"; }
 
   getFieldCount(): number { return this._sanitizedNames.length; }
 

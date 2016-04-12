@@ -1,4 +1,15 @@
-import {AsyncTestCompleter, beforeEach, ddescribe, describe, expect, iit, inject, it, xdescribe, xit,} from 'angular2/testing_internal';
+import {
+  AsyncTestCompleter,
+  beforeEach,
+  ddescribe,
+  describe,
+  expect,
+  iit,
+  inject,
+  it,
+  xdescribe,
+  xit,
+} from 'angular2/testing_internal';
 
 import {Component} from 'angular2/core';
 import {getComponentInfo, parseFields} from 'angular2/src/upgrade/metadata';
@@ -15,12 +26,12 @@ export function main() {
       it('should throw on missing selector', () => {
         expect(() => getComponentInfo(AttributeNameComponent))
             .toThrowErrorWith(
-                'Only selectors matching element names are supported, got: [attr-name]');
+                "Only selectors matching element names are supported, got: [attr-name]");
       });
 
       it('should throw on non element names', () => {
         expect(() => getComponentInfo(NoAnnotationComponent))
-            .toThrowErrorWith('No Directive annotation found on NoAnnotationComponent');
+            .toThrowErrorWith("No Directive annotation found on NoAnnotationComponent");
       });
     });
 
@@ -28,28 +39,29 @@ export function main() {
       it('should process nulls', () => { expect(parseFields(null)).toEqual([]); });
 
       it('should process values', () => {
-        expect(parseFields([' name ', ' prop :  attr '])).toEqual([
-          {
-            prop: 'name',
-            attr: 'name',
-            bracketAttr: '[name]',
-            parenAttr: '(name)',
-            bracketParenAttr: '[(name)]',
-            onAttr: 'onName',
-            bindAttr: 'bindName',
-            bindonAttr: 'bindonName'
-          },
-          {
-            prop: 'prop',
-            attr: 'attr',
-            bracketAttr: '[attr]',
-            parenAttr: '(attr)',
-            bracketParenAttr: '[(attr)]',
-            onAttr: 'onAttr',
-            bindAttr: 'bindAttr',
-            bindonAttr: 'bindonAttr'
-          }
-        ]);
+        expect(parseFields([' name ', ' prop :  attr ']))
+            .toEqual([
+              {
+                prop: 'name',
+                attr: 'name',
+                bracketAttr: '[name]',
+                parenAttr: '(name)',
+                bracketParenAttr: '[(name)]',
+                onAttr: 'onName',
+                bindAttr: 'bindName',
+                bindonAttr: 'bindonName'
+              },
+              {
+                prop: 'prop',
+                attr: 'attr',
+                bracketAttr: '[attr]',
+                parenAttr: '(attr)',
+                bracketParenAttr: '[(attr)]',
+                onAttr: 'onAttr',
+                bindAttr: 'bindAttr',
+                bindonAttr: 'bindonAttr'
+              }
+            ]);
       });
     })
   });

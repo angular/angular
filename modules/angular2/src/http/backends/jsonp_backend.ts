@@ -45,8 +45,8 @@ export class JSONPConnection_ extends JSONPConnection {
   private _responseData: any;
   private _finished: boolean = false;
 
-  constructor(
-      req: Request, private _dom: BrowserJsonp, private baseResponseOptions?: ResponseOptions) {
+  constructor(req: Request, private _dom: BrowserJsonp,
+              private baseResponseOptions?: ResponseOptions) {
     super();
     if (req.method !== RequestMethod.Get) {
       throw makeTypeError(JSONP_ERR_WRONG_METHOD);

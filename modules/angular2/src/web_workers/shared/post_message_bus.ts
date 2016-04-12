@@ -1,14 +1,16 @@
-import {MessageBus, MessageBusSource, MessageBusSink} from 'angular2/src/web_workers/shared/message_bus';
+import {
+  MessageBus,
+  MessageBusSource,
+  MessageBusSink
+} from "angular2/src/web_workers/shared/message_bus";
 import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
 import {EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
 import {StringMapWrapper} from 'angular2/src/facade/collection';
-import {Injectable} from 'angular2/src/core/di';
+import {Injectable} from "angular2/src/core/di";
 import {NgZone} from 'angular2/src/core/zone/ng_zone';
 
 // TODO(jteplitz602) Replace this with the definition in lib.webworker.d.ts(#3492)
-export interface PostMessageTarget {
-  postMessage: (message: any, transfer?: [ArrayBuffer]) => void;
-}
+export interface PostMessageTarget { postMessage: (message: any, transfer?:[ArrayBuffer]) => void; }
 
 export class PostMessageBusSink implements MessageBusSink {
   private _zone: NgZone;
@@ -66,10 +68,10 @@ export class PostMessageBusSource implements MessageBusSource {
 
   constructor(eventTarget?: EventTarget) {
     if (eventTarget) {
-      eventTarget.addEventListener('message', (ev: MessageEvent) => this._handleMessages(ev));
+      eventTarget.addEventListener("message", (ev: MessageEvent) => this._handleMessages(ev));
     } else {
       // if no eventTarget is given we assume we're in a WebWorker and listen on the global scope
-      addEventListener('message', (ev: MessageEvent) => this._handleMessages(ev));
+      addEventListener("message", (ev: MessageEvent) => this._handleMessages(ev));
     }
   }
 

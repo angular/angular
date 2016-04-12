@@ -2,7 +2,20 @@ import {provide, Provider, Component} from 'angular2/core';
 import {Type, isBlank} from 'angular2/src/facade/lang';
 import {BaseException} from 'angular2/src/facade/exceptions';
 
-import {ComponentFixture, AsyncTestCompleter, TestComponentBuilder, beforeEach, ddescribe, xdescribe, describe, el, inject, beforeEachProviders, it, xit} from 'angular2/testing_internal';
+import {
+  ComponentFixture,
+  AsyncTestCompleter,
+  TestComponentBuilder,
+  beforeEach,
+  ddescribe,
+  xdescribe,
+  describe,
+  el,
+  inject,
+  beforeEachProviders,
+  it,
+  xit
+} from 'angular2/testing_internal';
 
 import {RootRouter} from 'angular2/src/router/router';
 import {Router, ROUTER_DIRECTIVES, ROUTER_PRIMARY_COMPONENT} from 'angular2/router';
@@ -28,14 +41,17 @@ export class RootCmp {
   name: string;
 }
 
-export function compile(
-    tcb: TestComponentBuilder, template: string = '<router-outlet></router-outlet>') {
+export function compile(tcb: TestComponentBuilder,
+                        template: string = "<router-outlet></router-outlet>") {
   return tcb.overrideTemplate(RootCmp, ('<div>' + template + '</div>')).createAsync(RootCmp);
 }
 
 export var TEST_ROUTER_PROVIDERS = [
-  RouteRegistry, DirectiveResolver, provide(Location, {useClass: SpyLocation}),
-  provide(ROUTER_PRIMARY_COMPONENT, {useValue: RootCmp}), provide(Router, {useClass: RootRouter})
+  RouteRegistry,
+  DirectiveResolver,
+  provide(Location, {useClass: SpyLocation}),
+  provide(ROUTER_PRIMARY_COMPONENT, {useValue: RootCmp}),
+  provide(Router, {useClass: RootRouter})
 ];
 
 export function clickOnElement(anchorEl) {

@@ -15,7 +15,7 @@ export class Message {
  * Computes the id of a message
  */
 export function id(m: Message): string {
-  let meaning = isPresent(m.meaning) ? m.meaning : '';
-  let content = isPresent(m.content) ? m.content : '';
+  let meaning = isPresent(m.meaning) ? m.meaning : "";
+  let content = isPresent(m.content) ? m.content : "";
   return escape(`$ng|${meaning}|${content}`);
 }

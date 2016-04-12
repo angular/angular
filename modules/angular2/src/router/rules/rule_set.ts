@@ -4,7 +4,13 @@ import {Map, MapWrapper, ListWrapper, StringMapWrapper} from 'angular2/src/facad
 import {PromiseWrapper} from 'angular2/src/facade/async';
 
 import {AbstractRule, RouteRule, RedirectRule, RouteMatch, PathMatch} from './rules';
-import {Route, AsyncRoute, AuxRoute, Redirect, RouteDefinition} from '../route_config/route_config_impl';
+import {
+  Route,
+  AsyncRoute,
+  AuxRoute,
+  Redirect,
+  RouteDefinition
+} from '../route_config/route_config_impl';
 
 import {AsyncRouteHandler} from './route_handlers/async_route_handler';
 import {SyncRouteHandler} from './route_handlers/sync_route_handler';
@@ -176,8 +182,8 @@ export class RuleSet {
     if (isPresent(config.path)) {
       // Auxiliary routes do not have a slash at the start
       let path = (config instanceof AuxRoute && config.path.startsWith('/')) ?
-          config.path.substring(1) :
-          config.path;
+                     config.path.substring(1) :
+                     config.path;
       return new ParamRoutePath(path);
     }
     throw new BaseException('Route must provide either a path or regex property');

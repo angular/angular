@@ -36,8 +36,10 @@ function _createRootRenderer(rootRenderer) {
 /**
  * Providers which support debugging Angular applications (e.g. via `ng.probe`).
  */
-export const ELEMENT_PROBE_PROVIDERS: any[] = CONST_EXPR([new Provider(
-    RootRenderer, {useFactory: _createConditionalRootRenderer, deps: [DomRootRenderer]})]);
+export const ELEMENT_PROBE_PROVIDERS: any[] = CONST_EXPR([
+  new Provider(RootRenderer,
+               {useFactory: _createConditionalRootRenderer, deps: [DomRootRenderer]})
+]);
 
 export const ELEMENT_PROBE_PROVIDERS_PROD_MODE: any[] = CONST_EXPR(
     [new Provider(RootRenderer, {useFactory: _createRootRenderer, deps: [DomRootRenderer]})]);

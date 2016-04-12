@@ -1,13 +1,45 @@
-import {ComponentFixture, AsyncTestCompleter, TestComponentBuilder, beforeEach, ddescribe, xdescribe, describe, el, expect, iit, inject, beforeEachProviders, it, xit} from 'angular2/testing_internal';
+import {
+  ComponentFixture,
+  AsyncTestCompleter,
+  TestComponentBuilder,
+  beforeEach,
+  ddescribe,
+  xdescribe,
+  describe,
+  el,
+  expect,
+  iit,
+  inject,
+  beforeEachProviders,
+  it,
+  xit
+} from 'angular2/testing_internal';
 
 import {provide, Component, Injector, Inject} from 'angular2/core';
 import {isPresent} from 'angular2/src/facade/lang';
-import {PromiseWrapper, PromiseCompleter, EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
+import {
+  PromiseWrapper,
+  PromiseCompleter,
+  EventEmitter,
+  ObservableWrapper
+} from 'angular2/src/facade/async';
 
 import {Router, RouterOutlet, RouterLink, RouteParams} from 'angular2/router';
-import {RouteConfig, Route, AuxRoute, AsyncRoute, Redirect} from 'angular2/src/router/route_config/route_config_decorator';
+import {
+  RouteConfig,
+  Route,
+  AuxRoute,
+  AsyncRoute,
+  Redirect
+} from 'angular2/src/router/route_config/route_config_decorator';
 
-import {OnActivate, OnDeactivate, OnReuse, CanDeactivate, CanReuse} from 'angular2/src/router/interfaces';
+import {
+  OnActivate,
+  OnDeactivate,
+  OnReuse,
+  CanDeactivate,
+  CanReuse
+} from 'angular2/src/router/interfaces';
 import {CanActivate} from 'angular2/src/router/lifecycle/lifecycle_annotations';
 import {ComponentInstruction} from 'angular2/src/router/instruction';
 
@@ -28,14 +60,14 @@ export function main() {
 
     beforeEachProviders(() => TEST_ROUTER_PROVIDERS);
 
-    beforeEach(inject(
-        [TestComponentBuilder, Router], (tcBuilder: TestComponentBuilder, router: Router) => {
-          tcb = tcBuilder;
-          rtr = router;
-          cmpInstanceCount = 0;
-          log = [];
-          eventBus = new EventEmitter();
-        }));
+    beforeEach(inject([TestComponentBuilder, Router],
+                      (tcBuilder: TestComponentBuilder, router: Router) => {
+                        tcb = tcBuilder;
+                        rtr = router;
+                        cmpInstanceCount = 0;
+                        log = [];
+                        eventBus = new EventEmitter();
+                      }));
 
     it('should call the routerOnActivate hook', inject([AsyncTestCompleter], (async) => {
          compile(tcb)
@@ -61,14 +93,16 @@ export function main() {
                    completer.resolve(true);
                  }
                });
-               rtr.navigateByUrl('/parent-activate/child-activate').then((_) => {
-                 fixture.detectChanges();
-                 expect(fixture.debugElement.nativeElement).toHaveText('parent {activate cmp}');
-                 expect(log).toEqual([
-                   'parent activate: null -> /parent-activate', 'activate: null -> /child-activate'
-                 ]);
-                 async.done();
-               });
+               rtr.navigateByUrl('/parent-activate/child-activate')
+                   .then((_) => {
+                     fixture.detectChanges();
+                     expect(fixture.debugElement.nativeElement).toHaveText('parent {activate cmp}');
+                     expect(log).toEqual([
+                       'parent activate: null -> /parent-activate',
+                       'activate: null -> /child-activate'
+                     ]);
+                     async.done();
+                   });
              });
        }));
 
@@ -169,12 +203,13 @@ export function main() {
                    completer.resolve(true);
                  }
                });
-               rtr.navigateByUrl('/can-activate/a').then((_) => {
-                 fixture.detectChanges();
-                 expect(fixture.debugElement.nativeElement).toHaveText('routerCanActivate {A}');
-                 expect(log).toEqual(['routerCanActivate: null -> /can-activate']);
-                 async.done();
-               });
+               rtr.navigateByUrl('/can-activate/a')
+                   .then((_) => {
+                     fixture.detectChanges();
+                     expect(fixture.debugElement.nativeElement).toHaveText('routerCanActivate {A}');
+                     expect(log).toEqual(['routerCanActivate: null -> /can-activate']);
+                     async.done();
+                   });
              });
        }));
 
@@ -189,12 +224,13 @@ export function main() {
                    completer.resolve(false);
                  }
                });
-               rtr.navigateByUrl('/can-activate/a').then((_) => {
-                 fixture.detectChanges();
-                 expect(fixture.debugElement.nativeElement).toHaveText('');
-                 expect(log).toEqual(['routerCanActivate: null -> /can-activate']);
-                 async.done();
-               });
+               rtr.navigateByUrl('/can-activate/a')
+                   .then((_) => {
+                     fixture.detectChanges();
+                     expect(fixture.debugElement.nativeElement).toHaveText('');
+                     expect(log).toEqual(['routerCanActivate: null -> /can-activate']);
+                     async.done();
+                   });
              });
        }));
 
@@ -343,19 +379,19 @@ export function main() {
 }
 
 
-@Component({selector: 'a-cmp', template: 'A'})
+@Component({selector: 'a-cmp', template: "A"})
 class A {
 }
 
 
-@Component({selector: 'b-cmp', template: 'B'})
+@Component({selector: 'b-cmp', template: "B"})
 class B {
 }
 
 
 function logHook(name: string, next: ComponentInstruction, prev: ComponentInstruction) {
   var message = name + ': ' + (isPresent(prev) ? ('/' + prev.urlPath) : 'null') + ' -> ' +
-      (isPresent(next) ? ('/' + next.urlPath) : 'null');
+                (isPresent(next) ? ('/' + next.urlPath) : 'null');
   log.push(message);
   ObservableWrapper.callEmit(eventBus, message);
 }
@@ -447,8 +483,8 @@ class NeverReuseCmp implements OnReuse,
 @RouteConfig([new Route({path: '/a', component: A}), new Route({path: '/b', component: B})])
 @CanActivate(CanActivateCmp.routerCanActivate)
 class CanActivateCmp {
-  static routerCanActivate(next: ComponentInstruction, prev: ComponentInstruction):
-      Promise<boolean> {
+  static routerCanActivate(next: ComponentInstruction,
+                           prev: ComponentInstruction): Promise<boolean> {
     completer = PromiseWrapper.completer();
     logHook('routerCanActivate', next, prev);
     return completer.promise;
@@ -557,7 +593,8 @@ class ReuseHooksCmp implements OnActivate, OnReuse, OnDeactivate, CanReuse, CanD
   directives: [RouterOutlet]
 })
 @RouteConfig([
-  new Route({path: '/a', component: A}), new Route({path: '/on-activate', component: ActivateCmp}),
+  new Route({path: '/a', component: A}),
+  new Route({path: '/on-activate', component: ActivateCmp}),
   new Route({path: '/parent-activate/...', component: ParentActivateCmp}),
   new Route({path: '/on-deactivate', component: DeactivateCmp}),
   new Route({path: '/parent-deactivate/...', component: ParentDeactivateCmp}),

@@ -1,5 +1,12 @@
 import {resolveForwardRef} from 'angular2/src/core/di';
-import {Type, isBlank, isPresent, isArray, stringify, RegExpWrapper} from 'angular2/src/facade/lang';
+import {
+  Type,
+  isBlank,
+  isPresent,
+  isArray,
+  stringify,
+  RegExpWrapper
+} from 'angular2/src/facade/lang';
 import {BaseException} from 'angular2/src/facade/exceptions';
 import * as cpl from './directive_metadata';
 import * as md from 'angular2/src/core/metadata/directives';
@@ -23,11 +30,10 @@ export class RuntimeMetadataResolver {
   private _anonymousTypes = new Map<Object, number>();
   private _anonymousTypeIndex = 0;
 
-  constructor(
-      private _directiveResolver: DirectiveResolver, private _pipeResolver: PipeResolver,
-      private _viewResolver: ViewResolver,
-      @Optional() @Inject(PLATFORM_DIRECTIVES) private _platformDirectives: Type[],
-      @Optional() @Inject(PLATFORM_PIPES) private _platformPipes: Type[]) {}
+  constructor(private _directiveResolver: DirectiveResolver, private _pipeResolver: PipeResolver,
+              private _viewResolver: ViewResolver,
+              @Optional() @Inject(PLATFORM_DIRECTIVES) private _platformDirectives: Type[],
+              @Optional() @Inject(PLATFORM_PIPES) private _platformPipes: Type[]) {}
 
   /**
    * Wrap the stringify method to avoid naming things `function (arg1...) {`
@@ -151,7 +157,7 @@ function flattenPipes(view: ViewMetadata, platformPipes: any[]): Type[] {
   return pipes;
 }
 
-function flattenArray(tree: any[], out: Array<Type|any[]>): void {
+function flattenArray(tree: any[], out: Array<Type | any[]>): void {
   for (var i = 0; i < tree.length; i++) {
     var item = resolveForwardRef(tree[i]);
     if (isArray(item)) {

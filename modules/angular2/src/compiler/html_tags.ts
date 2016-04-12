@@ -1,4 +1,10 @@
-import {isPresent, isBlank, normalizeBool, RegExpWrapper, CONST_EXPR} from 'angular2/src/facade/lang';
+import {
+  isPresent,
+  isBlank,
+  normalizeBool,
+  RegExpWrapper,
+  CONST_EXPR
+} from 'angular2/src/facade/lang';
 
 // see http://www.w3.org/TR/html51/syntax.html#named-character-references
 // see https://html.spec.whatwg.org/multipage/entities.json
@@ -275,17 +281,16 @@ export class HtmlTagDefinition {
   public isVoid: boolean;
   public ignoreFirstLf: boolean;
 
-  constructor(
-      {closedByChildren, requiredParents, implicitNamespacePrefix, contentType, closedByParent,
-       isVoid, ignoreFirstLf}: {
-        closedByChildren?: string[],
-        closedByParent?: boolean,
-        requiredParents?: string[],
-        implicitNamespacePrefix?: string,
-        contentType?: HtmlTagContentType,
-        isVoid?: boolean,
-        ignoreFirstLf?: boolean
-      } = {}) {
+  constructor({closedByChildren, requiredParents, implicitNamespacePrefix, contentType,
+               closedByParent, isVoid, ignoreFirstLf}: {
+    closedByChildren?: string[],
+    closedByParent?: boolean,
+    requiredParents?: string[],
+    implicitNamespacePrefix?: string,
+    contentType?: HtmlTagContentType,
+    isVoid?: boolean,
+    ignoreFirstLf?: boolean
+  } = {}) {
     if (isPresent(closedByChildren) && closedByChildren.length > 0) {
       closedByChildren.forEach(tagName => this.closedByChildren[tagName] = true);
     }
@@ -337,9 +342,32 @@ var TAG_DEFINITIONS: {[key: string]: HtmlTagDefinition} = {
   'wbr': new HtmlTagDefinition({isVoid: true}),
   'p': new HtmlTagDefinition({
     closedByChildren: [
-      'address', 'article', 'aside', 'blockquote', 'div', 'dl',      'fieldset', 'footer', 'form',
-      'h1',      'h2',      'h3',    'h4',         'h5',  'h6',      'header',   'hgroup', 'hr',
-      'main',    'nav',     'ol',    'p',          'pre', 'section', 'table',    'ul'
+      'address',
+      'article',
+      'aside',
+      'blockquote',
+      'div',
+      'dl',
+      'fieldset',
+      'footer',
+      'form',
+      'h1',
+      'h2',
+      'h3',
+      'h4',
+      'h5',
+      'h6',
+      'header',
+      'hgroup',
+      'hr',
+      'main',
+      'nav',
+      'ol',
+      'p',
+      'pre',
+      'section',
+      'table',
+      'ul'
     ],
     closedByParent: true
   }),

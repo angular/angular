@@ -1,7 +1,12 @@
 import * as ts from 'typescript';
 import {Symbols} from './symbols';
 
-import {MetadataValue, MetadataObject, MetadataSymbolicCallExpression, MetadataSymbolicReferenceExpression} from './schema';
+import {
+  MetadataValue,
+  MetadataObject,
+  MetadataSymbolicCallExpression,
+  MetadataSymbolicReferenceExpression
+} from './schema';
 
 // TOOD: Remove when tools directory is upgraded to support es6 target
 interface Map<K, V> {
@@ -58,9 +63,8 @@ function isDefined(obj: any): boolean {
  * possible.
  */
 export class Evaluator {
-  constructor(
-      private typeChecker: ts.TypeChecker, private symbols: Symbols,
-      private moduleNameOf: (fileName: string) => string) {}
+  constructor(private typeChecker: ts.TypeChecker, private symbols: Symbols,
+              private moduleNameOf: (fileName: string) => string) {}
 
   // TODO: Determine if the first declaration is deterministic.
   private symbolFileName(symbol: ts.Symbol): string {
@@ -83,7 +87,7 @@ export class Evaluator {
     if (symbol) {
       const name = symbol.name;
       const module = this.moduleNameOf(this.symbolFileName(symbol));
-      return {__symbolic: 'reference', name, module};
+      return {__symbolic: "reference", name, module};
     }
   }
 
@@ -134,7 +138,7 @@ export class Evaluator {
         case ts.SyntaxKind.CallExpression:
           const callExpression = <ts.CallExpression>node;
           // We can fold a <array>.concat(<v>).
-          if (isMethodCallOf(callExpression, 'concat') && callExpression.arguments.length === 1) {
+          if (isMethodCallOf(callExpression, "concat") && callExpression.arguments.length === 1) {
             const arrayNode = (<ts.PropertyAccessExpression>callExpression.expression).expression;
             if (this.isFoldableWorker(arrayNode, folding) &&
                 this.isFoldableWorker(callExpression.arguments[0], folding)) {
@@ -146,7 +150,7 @@ export class Evaluator {
             }
           }
           // We can fold a call to CONST_EXPR
-          if (isCallOf(callExpression, 'CONST_EXPR') && callExpression.arguments.length === 1)
+          if (isCallOf(callExpression, "CONST_EXPR") && callExpression.arguments.length === 1)
             return this.isFoldableWorker(callExpression.arguments[0], folding);
           return false;
         case ts.SyntaxKind.NoSubstitutionTemplateLiteral:
@@ -170,7 +174,7 @@ export class Evaluator {
             case ts.SyntaxKind.AmpersandAmpersandToken:
             case ts.SyntaxKind.BarBarToken:
               return this.isFoldableWorker(binaryExpression.left, folding) &&
-                  this.isFoldableWorker(binaryExpression.right, folding);
+                     this.isFoldableWorker(binaryExpression.right, folding);
           }
         case ts.SyntaxKind.PropertyAccessExpression:
           const propertyAccessExpression = <ts.PropertyAccessExpression>node;
@@ -178,7 +182,7 @@ export class Evaluator {
         case ts.SyntaxKind.ElementAccessExpression:
           const elementAccessExpression = <ts.ElementAccessExpression>node;
           return this.isFoldableWorker(elementAccessExpression.expression, folding) &&
-              this.isFoldableWorker(elementAccessExpression.argumentExpression, folding);
+                 this.isFoldableWorker(elementAccessExpression.argumentExpression, folding);
         case ts.SyntaxKind.Identifier:
           let symbol = this.typeChecker.getSymbolAtLocation(node);
           if (symbol.flags & ts.SymbolFlags.Alias) {
@@ -241,20 +245,20 @@ export class Evaluator {
         const callExpression = <ts.CallExpression>node;
         const args = callExpression.arguments.map(arg => this.evaluateNode(arg));
         if (this.isFoldable(callExpression)) {
-          if (isMethodCallOf(callExpression, 'concat')) {
+          if (isMethodCallOf(callExpression, "concat")) {
             const arrayValue = <MetadataValue[]>this.evaluateNode(
                 (<ts.PropertyAccessExpression>callExpression.expression).expression);
             return arrayValue.concat(args[0]);
           }
         }
         // Always fold a CONST_EXPR even if the argument is not foldable.
-        if (isCallOf(callExpression, 'CONST_EXPR') && callExpression.arguments.length === 1) {
+        if (isCallOf(callExpression, "CONST_EXPR") && callExpression.arguments.length === 1) {
           return args[0];
         }
         const expression = this.evaluateNode(callExpression.expression);
         if (isDefined(expression) && args.every(isDefined)) {
           const result: MetadataSymbolicCallExpression = {
-            __symbolic: 'call',
+            __symbolic: "call",
             expression: this.evaluateNode(callExpression.expression)
           };
           if (args && args.length) {
@@ -269,7 +273,7 @@ export class Evaluator {
         const member = this.nameOf(propertyAccessExpression.name);
         if (this.isFoldable(propertyAccessExpression.expression)) return expression[member];
         if (isDefined(expression)) {
-          return {__symbolic: 'select', expression, member};
+          return {__symbolic: "select", expression, member};
         }
         break;
       }
@@ -279,9 +283,9 @@ export class Evaluator {
         const index = this.evaluateNode(elementAccessExpression.argumentExpression);
         if (this.isFoldable(elementAccessExpression.expression) &&
             this.isFoldable(elementAccessExpression.argumentExpression))
-          return expression[<string|number>index];
+          return expression[<string | number>index];
         if (isDefined(expression) && isDefined(index)) {
-          return {__symbolic: 'index', expression, index};
+          return {__symbolic: "index", expression, index};
         }
         break;
       }
@@ -348,7 +352,7 @@ export class Evaluator {
           default:
             return undefined;
         }
-        return {__symbolic: 'pre', operator: operatorText, operand: operand};
+        return {__symbolic: "pre", operator: operatorText, operand: operand };
       case ts.SyntaxKind.BinaryExpression:
         const binaryExpression = <ts.BinaryExpression>node;
         const left = this.evaluateNode(binaryExpression.left);
@@ -400,7 +404,7 @@ export class Evaluator {
                 return <any>left % <any>right;
             }
           return {
-            __symbolic: 'binop',
+            __symbolic: "binop",
             operator: binaryExpression.operatorToken.getText(),
             left: left,
             right: right

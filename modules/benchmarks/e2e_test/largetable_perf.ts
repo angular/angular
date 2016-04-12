@@ -21,7 +21,8 @@ describe('ng2 largetable benchmark', function() {
         buttons: ['#ng2DestroyDom', '#ng2CreateDom'],
         id: 'ng2.largetable.' + benchmarkType,
         params: [
-          {name: 'rows', value: 20, scale: 'sqrt'}, {name: 'columns', value: 20, scale: 'sqrt'},
+          {name: 'rows', value: 20, scale: 'sqrt'},
+          {name: 'columns', value: 20, scale: 'sqrt'},
           {name: 'benchmarkType', value: benchmarkType}
         ]
       }).then(done, done.fail);
@@ -34,7 +35,8 @@ describe('ng2 largetable benchmark', function() {
       buttons: ['#baselineDestroyDom', '#baselineCreateDom'],
       id: 'baseline.largetable',
       params: [
-        {name: 'rows', value: 100, scale: 'sqrt'}, {name: 'columns', value: 20, scale: 'sqrt'},
+        {name: 'rows', value: 100, scale: 'sqrt'},
+        {name: 'columns', value: 20, scale: 'sqrt'},
         {name: 'benchmarkType', value: 'baseline'}
       ]
     }).then(done, done.fail);

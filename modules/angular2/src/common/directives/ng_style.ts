@@ -1,6 +1,13 @@
-import {DoCheck, KeyValueDiffer, KeyValueDiffers, ElementRef, Directive, Renderer} from 'angular2/core';
+import {
+  DoCheck,
+  KeyValueDiffer,
+  KeyValueDiffers,
+  ElementRef,
+  Directive,
+  Renderer
+} from 'angular2/core';
 import {isPresent, isBlank, print} from 'angular2/src/facade/lang';
-import {KeyValueChangeRecord} from '../../core/change_detection/differs/default_keyvalue_differ';
+import {KeyValueChangeRecord} from "../../core/change_detection/differs/default_keyvalue_differ";
 
 /**
  * The `NgStyle` directive changes styles based on a result of expression evaluation.
@@ -60,8 +67,8 @@ export class NgStyle implements DoCheck {
   /** @internal */
   _differ: KeyValueDiffer;
 
-  constructor(
-      private _differs: KeyValueDiffers, private _ngEl: ElementRef, private _renderer: Renderer) {}
+  constructor(private _differs: KeyValueDiffers, private _ngEl: ElementRef,
+              private _renderer: Renderer) {}
 
   set rawStyle(v: {[key: string]: string}) {
     this._rawStyle = v;

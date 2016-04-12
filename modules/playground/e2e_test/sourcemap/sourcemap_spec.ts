@@ -30,19 +30,19 @@ describe('sourcemaps', function() {
 
 
       const content =
-          fs.readFileSync('dist/js/dev/es5/playground/src/sourcemap/index.js').toString('utf8');
-      const marker = '//# sourceMappingURL=data:application/json;base64,';
+          fs.readFileSync('dist/js/dev/es5/playground/src/sourcemap/index.js').toString("utf8");
+      const marker = "//# sourceMappingURL=data:application/json;base64,";
       const index = content.indexOf(marker);
       const sourceMapData =
-          new Buffer(content.substring(index + marker.length), 'base64').toString('utf8');
+          new Buffer(content.substring(index + marker.length), 'base64').toString("utf8");
 
       var decoder = new sourceMap.SourceMapConsumer(JSON.parse(sourceMapData));
 
       var originalPosition = decoder.originalPositionFor({line: errorLine, column: errorColumn});
 
-      var sourceCodeLines = fs.readFileSync('modules/playground/src/sourcemap/index.ts', {
-                                encoding: 'UTF-8'
-                              }).split('\n');
+      var sourceCodeLines =
+          fs.readFileSync('modules/playground/src/sourcemap/index.ts', {encoding: 'UTF-8'})
+              .split('\n');
       expect(sourceCodeLines[originalPosition.line - 1])
           .toMatch(/throw new BaseException\(\'Sourcemap test\'\)/);
     });

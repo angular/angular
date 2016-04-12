@@ -1,6 +1,24 @@
-import {AsyncTestCompleter, beforeEach, ddescribe, describe, expect, iit, inject, it, xdescribe, xit, Log, browserDetection} from 'angular2/testing_internal';
+import {
+  AsyncTestCompleter,
+  beforeEach,
+  ddescribe,
+  describe,
+  expect,
+  iit,
+  inject,
+  it,
+  xdescribe,
+  xit,
+  Log,
+  browserDetection
+} from 'angular2/testing_internal';
 
-import {PromiseCompleter, PromiseWrapper, TimerWrapper, ObservableWrapper} from 'angular2/src/facade/async';
+import {
+  PromiseCompleter,
+  PromiseWrapper,
+  TimerWrapper,
+  ObservableWrapper
+} from 'angular2/src/facade/async';
 import {BaseException} from 'angular2/src/facade/exceptions';
 import {IS_DART, scheduleMicroTask, isPresent} from 'angular2/src/facade/lang';
 
@@ -50,7 +68,7 @@ function runNgZoneNoLog(fn: () => any) {
 }
 
 export function main() {
-  describe('NgZone', () => {
+  describe("NgZone", () => {
 
     function createZone(enableLongStackTrace) {
       return new NgZone({enableLongStackTrace: enableLongStackTrace});
@@ -103,7 +121,7 @@ export function main() {
                scheduleMicroTask(() => {
                  scheduleMicroTask(() => {
                    c.resolve(null);
-                   throw new BaseException('ddd');
+                   throw new BaseException("ddd");
                  });
                });
              });
@@ -228,9 +246,8 @@ function commonTests() {
 
          macroTask(() => {
            expect(_log.result())
-               .toEqual(
-                   'onUnstable; run; onMicrotaskEmpty; onMicrotaskEmpty 1; ' +
-                   'onMicrotaskEmpty; onMicrotaskEmpty 2; onStable');
+               .toEqual('onUnstable; run; onMicrotaskEmpty; onMicrotaskEmpty 1; ' +
+                        'onMicrotaskEmpty; onMicrotaskEmpty 2; onStable');
            async.done();
          }, resultTimer);
        }), testTimeout);
@@ -297,9 +314,8 @@ function commonTests() {
 
          macroTask(() => {
            expect(_log.result())
-               .toEqual(
-                   'onUnstable; run; onMicrotaskEmpty; onMyMicrotaskEmpty; ' +
-                   'onMicrotaskEmpty; onMyMicrotaskEmpty; onStable');
+               .toEqual('onUnstable; run; onMicrotaskEmpty; onMyMicrotaskEmpty; ' +
+                        'onMicrotaskEmpty; onMyMicrotaskEmpty; onStable');
            async.done();
          }, resultTimer);
        }), testTimeout);
@@ -661,9 +677,8 @@ function commonTests() {
 
          macroTask(() => {
            expect(_log.result())
-               .toEqual(
-                   'onUnstable; zone run; onMicrotaskEmpty; onStable; ' +
-                   'onUnstable; promise then; onMicrotaskEmpty; onStable');
+               .toEqual('onUnstable; zone run; onMicrotaskEmpty; onStable; ' +
+                        'onUnstable; promise then; onMicrotaskEmpty; onStable');
            async.done();
          }, resultTimer);
        }), testTimeout);

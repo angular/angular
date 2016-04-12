@@ -1,6 +1,23 @@
-import {Directive, Renderer, forwardRef, Provider, ElementRef, Input, Host, OnDestroy, Optional} from 'angular2/core';
+import {
+  Directive,
+  Renderer,
+  forwardRef,
+  Provider,
+  ElementRef,
+  Input,
+  Host,
+  OnDestroy,
+  Optional
+} from 'angular2/core';
 import {NG_VALUE_ACCESSOR, ControlValueAccessor} from './control_value_accessor';
-import {CONST_EXPR, StringWrapper, isPrimitive, isPresent, isBlank, looseIdentical} from 'angular2/src/facade/lang';
+import {
+  CONST_EXPR,
+  StringWrapper,
+  isPrimitive,
+  isPresent,
+  isBlank,
+  looseIdentical
+} from 'angular2/src/facade/lang';
 
 import {MapWrapper} from 'angular2/src/facade/collection';
 
@@ -9,12 +26,12 @@ const SELECT_VALUE_ACCESSOR = CONST_EXPR(new Provider(
 
 function _buildValueString(id: string, value: any): string {
   if (isBlank(id)) return `${value}`;
-  if (!isPrimitive(value)) value = 'Object';
+  if (!isPrimitive(value)) value = "Object";
   return StringWrapper.slice(`${id}: ${value}`, 0, 50);
 }
 
 function _extractId(valueString: string): string {
-  return valueString.split(':')[0];
+  return valueString.split(":")[0];
 }
 
 /**
@@ -81,9 +98,8 @@ export class SelectControlValueAccessor implements ControlValueAccessor {
 export class NgSelectOption implements OnDestroy {
   id: string;
 
-  constructor(
-      private _element: ElementRef, private _renderer: Renderer,
-      @Optional() @Host() private _select: SelectControlValueAccessor) {
+  constructor(private _element: ElementRef, private _renderer: Renderer,
+              @Optional() @Host() private _select: SelectControlValueAccessor) {
     if (isPresent(this._select)) this.id = this._select._registerOption();
   }
 

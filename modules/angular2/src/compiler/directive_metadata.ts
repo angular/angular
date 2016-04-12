@@ -1,7 +1,23 @@
-import {isPresent, isBlank, isNumber, isBoolean, normalizeBool, normalizeBlank, serializeEnum, Type, isString, RegExpWrapper, StringWrapper, isArray} from 'angular2/src/facade/lang';
+import {
+  isPresent,
+  isBlank,
+  isNumber,
+  isBoolean,
+  normalizeBool,
+  normalizeBlank,
+  serializeEnum,
+  Type,
+  isString,
+  RegExpWrapper,
+  StringWrapper,
+  isArray
+} from 'angular2/src/facade/lang';
 import {unimplemented} from 'angular2/src/facade/exceptions';
 import {StringMapWrapper} from 'angular2/src/facade/collection';
-import {ChangeDetectionStrategy, CHANGE_DETECTION_STRATEGY_VALUES} from 'angular2/src/core/change_detection/change_detection';
+import {
+  ChangeDetectionStrategy,
+  CHANGE_DETECTION_STRATEGY_VALUES
+} from 'angular2/src/core/change_detection/change_detection';
 import {ViewEncapsulation, VIEW_ENCAPSULATION_VALUES} from 'angular2/src/core/metadata/view';
 import {CssSelector} from 'angular2/src/compiler/selector';
 import {splitAtColon} from './util';
@@ -89,7 +105,7 @@ export class CompileDiDependencyMetadata {
   isOptional: boolean;
   query: CompileQueryMetadata;
   viewQuery: CompileQueryMetadata;
-  token: CompileIdentifierMetadata|string;
+  token: CompileIdentifierMetadata | string;
 
   constructor({isAttribute, isSelf, isHost, isSkipSelf, isOptional, query, viewQuery, token}: {
     isAttribute?: boolean,
@@ -99,7 +115,7 @@ export class CompileDiDependencyMetadata {
     isOptional?: boolean,
     query?: CompileQueryMetadata,
     viewQuery?: CompileQueryMetadata,
-    token?: CompileIdentifierMetadata|string
+    token?: CompileIdentifierMetadata | string
   } = {}) {
     this.isAttribute = normalizeBool(isAttribute);
     this.isSelf = normalizeBool(isSelf);
@@ -140,10 +156,10 @@ export class CompileDiDependencyMetadata {
 }
 
 export class CompileProviderMetadata {
-  token: CompileIdentifierMetadata|string;
+  token: CompileIdentifierMetadata | string;
   useClass: CompileTypeMetadata;
   useValue: any;
-  useExisting: CompileIdentifierMetadata|string;
+  useExisting: CompileIdentifierMetadata | string;
   useFactory: CompileFactoryMetadata;
   deps: CompileDiDependencyMetadata[];
   multi: boolean;
@@ -152,7 +168,7 @@ export class CompileProviderMetadata {
     token?: CompileIdentifierMetadata | string,
     useClass?: CompileTypeMetadata,
     useValue?: any,
-    useExisting?: CompileIdentifierMetadata|string,
+    useExisting?: CompileIdentifierMetadata | string,
     useFactory?: CompileFactoryMetadata,
     deps?: CompileDiDependencyMetadata[],
     multi?: boolean
@@ -307,13 +323,13 @@ export class CompileTypeMetadata implements CompileIdentifierMetadata, CompileMe
 }
 
 export class CompileQueryMetadata {
-  selectors: Array<CompileIdentifierMetadata|string>;
+  selectors: Array<CompileIdentifierMetadata | string>;
   descendants: boolean;
   first: boolean;
   propertyName: string;
 
   constructor({selectors, descendants, first, propertyName}: {
-    selectors?: Array<CompileIdentifierMetadata|string>,
+    selectors?: Array<CompileIdentifierMetadata | string>,
     descendants?: boolean,
     first?: boolean,
     propertyName?: string
@@ -373,8 +389,8 @@ export class CompileTemplateMetadata {
   static fromJson(data: {[key: string]: any}): CompileTemplateMetadata {
     return new CompileTemplateMetadata({
       encapsulation: isPresent(data['encapsulation']) ?
-          VIEW_ENCAPSULATION_VALUES[data['encapsulation']] :
-          data['encapsulation'],
+                         VIEW_ENCAPSULATION_VALUES[data['encapsulation']] :
+                         data['encapsulation'],
       template: data['template'],
       templateUrl: data['templateUrl'],
       styles: data['styles'],
@@ -385,8 +401,8 @@ export class CompileTemplateMetadata {
 
   toJson(): {[key: string]: any} {
     return {
-      'encapsulation': isPresent(this.encapsulation) ? serializeEnum(this.encapsulation) :
-                                                       this.encapsulation,
+      'encapsulation':
+          isPresent(this.encapsulation) ? serializeEnum(this.encapsulation) : this.encapsulation,
       'template': this.template,
       'templateUrl': this.templateUrl,
       'styles': this.styles,
@@ -400,27 +416,27 @@ export class CompileTemplateMetadata {
  * Metadata regarding compilation of a directive.
  */
 export class CompileDirectiveMetadata implements CompileMetadataWithType {
-  static create(
-      {type, isComponent, dynamicLoadable, selector, exportAs, changeDetection, inputs, outputs,
-       host, lifecycleHooks, providers, viewProviders, queries, viewQueries, template}: {
-        type?: CompileTypeMetadata,
-        isComponent?: boolean,
-        dynamicLoadable?: boolean,
-        selector?: string,
-        exportAs?: string,
-        changeDetection?: ChangeDetectionStrategy,
-        inputs?: string[],
-        outputs?: string[],
-        host?: {[key: string]: string},
-        lifecycleHooks?: LifecycleHooks[],
-        providers?:
-            Array<CompileProviderMetadata|CompileTypeMetadata|CompileIdentifierMetadata|any[]>,
-        viewProviders?:
-            Array<CompileProviderMetadata|CompileTypeMetadata|CompileIdentifierMetadata|any[]>,
-        queries?: CompileQueryMetadata[],
-        viewQueries?: CompileQueryMetadata[],
-        template?: CompileTemplateMetadata
-      } = {}): CompileDirectiveMetadata {
+  static create({type, isComponent, dynamicLoadable, selector, exportAs, changeDetection, inputs,
+                 outputs, host, lifecycleHooks, providers, viewProviders, queries, viewQueries,
+                 template}: {
+    type?: CompileTypeMetadata,
+    isComponent?: boolean,
+    dynamicLoadable?: boolean,
+    selector?: string,
+    exportAs?: string,
+    changeDetection?: ChangeDetectionStrategy,
+    inputs?: string[],
+    outputs?: string[],
+    host?: {[key: string]: string},
+    lifecycleHooks?: LifecycleHooks[],
+    providers?:
+        Array<CompileProviderMetadata | CompileTypeMetadata | CompileIdentifierMetadata | any[]>,
+    viewProviders?:
+        Array<CompileProviderMetadata | CompileTypeMetadata | CompileIdentifierMetadata | any[]>,
+    queries?: CompileQueryMetadata[],
+    viewQueries?: CompileQueryMetadata[],
+    template?: CompileTemplateMetadata
+  } = {}): CompileDirectiveMetadata {
     var hostListeners: {[key: string]: string} = {};
     var hostProperties: {[key: string]: string} = {};
     var hostAttributes: {[key: string]: string} = {};
@@ -487,35 +503,34 @@ export class CompileDirectiveMetadata implements CompileMetadataWithType {
   hostProperties: {[key: string]: string};
   hostAttributes: {[key: string]: string};
   lifecycleHooks: LifecycleHooks[];
-  providers: Array<CompileProviderMetadata|CompileTypeMetadata|any[]>;
-  viewProviders: Array<CompileProviderMetadata|CompileTypeMetadata|any[]>;
+  providers: Array<CompileProviderMetadata | CompileTypeMetadata | any[]>;
+  viewProviders: Array<CompileProviderMetadata | CompileTypeMetadata | any[]>;
   queries: CompileQueryMetadata[];
   viewQueries: CompileQueryMetadata[];
   template: CompileTemplateMetadata;
-  constructor(
-      {type, isComponent, dynamicLoadable, selector, exportAs, changeDetection, inputs, outputs,
-       hostListeners, hostProperties, hostAttributes, lifecycleHooks, providers, viewProviders,
-       queries, viewQueries, template}: {
-        type?: CompileTypeMetadata,
-        isComponent?: boolean,
-        dynamicLoadable?: boolean,
-        selector?: string,
-        exportAs?: string,
-        changeDetection?: ChangeDetectionStrategy,
-        inputs?: {[key: string]: string},
-        outputs?: {[key: string]: string},
-        hostListeners?: {[key: string]: string},
-        hostProperties?: {[key: string]: string},
-        hostAttributes?: {[key: string]: string},
-        lifecycleHooks?: LifecycleHooks[],
-        providers?:
-            Array<CompileProviderMetadata|CompileTypeMetadata|CompileIdentifierMetadata|any[]>,
-        viewProviders?:
-            Array<CompileProviderMetadata|CompileTypeMetadata|CompileIdentifierMetadata|any[]>,
-        queries?: CompileQueryMetadata[],
-        viewQueries?: CompileQueryMetadata[],
-        template?: CompileTemplateMetadata
-      } = {}) {
+  constructor({type, isComponent, dynamicLoadable, selector, exportAs, changeDetection, inputs,
+               outputs, hostListeners, hostProperties, hostAttributes, lifecycleHooks, providers,
+               viewProviders, queries, viewQueries, template}: {
+    type?: CompileTypeMetadata,
+    isComponent?: boolean,
+    dynamicLoadable?: boolean,
+    selector?: string,
+    exportAs?: string,
+    changeDetection?: ChangeDetectionStrategy,
+    inputs?: {[key: string]: string},
+    outputs?: {[key: string]: string},
+    hostListeners?: {[key: string]: string},
+    hostProperties?: {[key: string]: string},
+    hostAttributes?: {[key: string]: string},
+    lifecycleHooks?: LifecycleHooks[],
+    providers?:
+        Array<CompileProviderMetadata | CompileTypeMetadata | CompileIdentifierMetadata | any[]>,
+    viewProviders?:
+        Array<CompileProviderMetadata | CompileTypeMetadata | CompileIdentifierMetadata | any[]>,
+    queries?: CompileQueryMetadata[],
+    viewQueries?: CompileQueryMetadata[],
+    template?: CompileTemplateMetadata
+  } = {}) {
     this.type = type;
     this.isComponent = isComponent;
     this.dynamicLoadable = dynamicLoadable;
@@ -545,8 +560,8 @@ export class CompileDirectiveMetadata implements CompileMetadataWithType {
       exportAs: data['exportAs'],
       type: isPresent(data['type']) ? CompileTypeMetadata.fromJson(data['type']) : data['type'],
       changeDetection: isPresent(data['changeDetection']) ?
-          CHANGE_DETECTION_STRATEGY_VALUES[data['changeDetection']] :
-          data['changeDetection'],
+                           CHANGE_DETECTION_STRATEGY_VALUES[data['changeDetection']] :
+                           data['changeDetection'],
       inputs: data['inputs'],
       outputs: data['outputs'],
       hostListeners: data['hostListeners'],
@@ -591,8 +606,8 @@ export class CompileDirectiveMetadata implements CompileMetadataWithType {
 /**
  * Construct {@link CompileDirectiveMetadata} from {@link ComponentTypeMetadata} and a selector.
  */
-export function createHostComponentMeta(
-    componentType: CompileTypeMetadata, componentSelector: string): CompileDirectiveMetadata {
+export function createHostComponentMeta(componentType: CompileTypeMetadata,
+                                        componentSelector: string): CompileDirectiveMetadata {
   var template = CssSelector.parse(componentSelector)[0].getMatchingElementTemplate();
   return CompileDirectiveMetadata.create({
     type: new CompileTypeMetadata({
@@ -623,9 +638,8 @@ export class CompilePipeMetadata implements CompileMetadataWithType {
   type: CompileTypeMetadata;
   name: string;
   pure: boolean;
-  constructor({type, name, pure}: {type?: CompileTypeMetadata,
-                                   name?: string,
-                                   pure?: boolean} = {}) {
+  constructor({type, name,
+               pure}: {type?: CompileTypeMetadata, name?: string, pure?: boolean} = {}) {
     this.type = type;
     this.name = name;
     this.pure = normalizeBool(pure);
@@ -663,7 +677,7 @@ function arrayFromJson(obj: any[], fn: (a: {[key: string]: any}) => any): any {
   return isBlank(obj) ? null : obj.map(o => objFromJson(o, fn));
 }
 
-function arrayToJson(obj: any[]): string|{[key: string]: any} {
+function arrayToJson(obj: any[]): string | {[key: string]: any} {
   return isBlank(obj) ? null : obj.map(objToJson);
 }
 
@@ -673,7 +687,7 @@ function objFromJson(obj: any, fn: (a: {[key: string]: any}) => any): any {
   return fn(obj);
 }
 
-function objToJson(obj: any): string|{[key: string]: any} {
+function objToJson(obj: any): string | {[key: string]: any} {
   if (isArray(obj)) return arrayToJson(obj);
   if (isString(obj) || isBlank(obj) || isBoolean(obj) || isNumber(obj)) return obj;
   return obj.toJson();

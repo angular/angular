@@ -14,8 +14,8 @@ import {GeneratedUrl} from './route_paths/route_path';
 export abstract class RouteMatch {}
 
 export class PathMatch extends RouteMatch {
-  constructor(
-      public instruction: ComponentInstruction, public remaining: Url, public remainingAux: Url[]) {
+  constructor(public instruction: ComponentInstruction, public remaining: Url,
+              public remainingAux: Url[]) {
     super();
   }
 }
@@ -69,8 +69,8 @@ export class RouteRule implements AbstractRule {
 
   // TODO: cache component instruction instances by params and by ParsedUrl instance
 
-  constructor(
-      private _routePath: RoutePath, public handler: RouteHandler, private _routeName: string) {
+  constructor(private _routePath: RoutePath, public handler: RouteHandler,
+              private _routeName: string) {
     this.specificity = this._routePath.specificity;
     this.hash = this._routePath.hash;
     this.terminal = this._routePath.terminal;
@@ -102,8 +102,8 @@ export class RouteRule implements AbstractRule {
     return this._routePath.generateUrl(params);
   }
 
-  private _getInstruction(urlPath: string, urlParams: string[], params: {[key: string]: any}):
-      ComponentInstruction {
+  private _getInstruction(urlPath: string, urlParams: string[],
+                          params: {[key: string]: any}): ComponentInstruction {
     if (isBlank(this.handler.componentType)) {
       throw new BaseException(`Tried to get instruction before the type was loaded.`);
     }
@@ -111,9 +111,9 @@ export class RouteRule implements AbstractRule {
     if (this._cache.has(hashKey)) {
       return this._cache.get(hashKey);
     }
-    var instruction = new ComponentInstruction(
-        urlPath, urlParams, this.handler.data, this.handler.componentType, this.terminal,
-        this.specificity, params, this._routeName);
+    var instruction =
+        new ComponentInstruction(urlPath, urlParams, this.handler.data, this.handler.componentType,
+                                 this.terminal, this.specificity, params, this._routeName);
     this._cache.set(hashKey, instruction);
 
     return instruction;

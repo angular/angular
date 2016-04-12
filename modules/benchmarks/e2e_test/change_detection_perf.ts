@@ -12,7 +12,8 @@ describe('ng2 change detection benchmark', function() {
       buttons: ['#ng2ChangeDetectionDynamicReads'],
       id: 'ng2.changeDetection.dynamic.reads',
       params: [
-        {name: 'numberOfChecks', value: 900000}, {name: 'iterations', value: 20, scale: 'linear'}
+        {name: 'numberOfChecks', value: 900000},
+        {name: 'iterations', value: 20, scale: 'linear'}
       ],
       microMetrics: {'detectChangesAvg': 'avg time to detect changes (ms)'},
       waitForAngular2: false
@@ -25,7 +26,8 @@ describe('ng2 change detection benchmark', function() {
       buttons: ['#ng2ChangeDetectionDynamicWrites'],
       id: 'ng2.changeDetection.dynamic.writes',
       params: [
-        {name: 'numberOfChecks', value: 900000}, {name: 'iterations', value: 20, scale: 'linear'}
+        {name: 'numberOfChecks', value: 900000},
+        {name: 'iterations', value: 20, scale: 'linear'}
       ],
       microMetrics: {'detectChangesAvg': 'avg time to detect changes (ms)'},
       waitForAngular2: false
@@ -38,7 +40,8 @@ describe('ng2 change detection benchmark', function() {
       buttons: ['#ng2ChangeDetectionJitReads'],
       id: 'ng2.changeDetection.jit.reads',
       params: [
-        {name: 'numberOfChecks', value: 900000}, {name: 'iterations', value: 20, scale: 'linear'}
+        {name: 'numberOfChecks', value: 900000},
+        {name: 'iterations', value: 20, scale: 'linear'}
       ],
       microMetrics: {'detectChangesAvg': 'avg time to detect changes (ms)'},
       waitForAngular2: false
@@ -51,7 +54,8 @@ describe('ng2 change detection benchmark', function() {
       buttons: ['#ng2ChangeDetectionJitWrites'],
       id: 'ng2.changeDetection.jit.writes',
       params: [
-        {name: 'numberOfChecks', value: 900000}, {name: 'iterations', value: 20, scale: 'linear'}
+        {name: 'numberOfChecks', value: 900000},
+        {name: 'iterations', value: 20, scale: 'linear'}
       ],
       microMetrics: {'detectChangesAvg': 'avg time to detect changes (ms)'},
       waitForAngular2: false
@@ -64,7 +68,8 @@ describe('ng2 change detection benchmark', function() {
       buttons: ['#baselineChangeDetectionReads'],
       id: 'baseline.changeDetection.reads',
       params: [
-        {name: 'numberOfChecks', value: 900000}, {name: 'iterations', value: 20, scale: 'linear'}
+        {name: 'numberOfChecks', value: 900000},
+        {name: 'iterations', value: 20, scale: 'linear'}
       ],
       microMetrics: {'detectChangesAvg': 'avg time to detect changes (ms)'},
       waitForAngular2: false
@@ -77,7 +82,8 @@ describe('ng2 change detection benchmark', function() {
       buttons: ['#baselineChangeDetectionWrites'],
       id: 'baseline.changeDetection.writes',
       params: [
-        {name: 'numberOfChecks', value: 900000}, {name: 'iterations', value: 20, scale: 'linear'}
+        {name: 'numberOfChecks', value: 900000},
+        {name: 'iterations', value: 20, scale: 'linear'}
       ],
       microMetrics: {'detectChangesAvg': 'avg time to detect changes (ms)'},
       waitForAngular2: false

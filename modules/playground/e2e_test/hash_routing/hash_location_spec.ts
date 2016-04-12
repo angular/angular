@@ -35,9 +35,9 @@ describe('hash routing example app', function() {
     element(by.css('#goodbye-link-blank')).click();
     expect(browser.driver.getCurrentUrl()).not.toContain('#/bye');
     browser.getAllWindowHandles().then(function(windows) {
-      browser.switchTo().window(windows[1]).then(function() {
-        expect(browser.driver.getCurrentUrl()).toContain('#/bye');
-      });
+      browser.switchTo()
+          .window(windows[1])
+          .then(function() { expect(browser.driver.getCurrentUrl()).toContain("#/bye"); });
     });
   });
 });

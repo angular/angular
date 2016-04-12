@@ -3,7 +3,18 @@ import {Type, isPresent, isBlank, stringify} from 'angular2/src/facade/lang';
 import {BaseException} from 'angular2/src/facade/exceptions';
 import {ListWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
 
-import {DirectiveMetadata, ComponentMetadata, InputMetadata, OutputMetadata, HostBindingMetadata, HostListenerMetadata, ContentChildrenMetadata, ViewChildrenMetadata, ContentChildMetadata, ViewChildMetadata} from 'angular2/src/core/metadata';
+import {
+  DirectiveMetadata,
+  ComponentMetadata,
+  InputMetadata,
+  OutputMetadata,
+  HostBindingMetadata,
+  HostListenerMetadata,
+  ContentChildrenMetadata,
+  ViewChildrenMetadata,
+  ContentChildMetadata,
+  ViewChildMetadata
+} from 'angular2/src/core/metadata';
 import {reflector} from 'angular2/src/core/reflection/reflection';
 import {ReflectorReader} from 'angular2/src/core/reflection/reflector_reader';
 
@@ -46,9 +57,9 @@ export class DirectiveResolver {
     throw new BaseException(`No Directive annotation found on ${stringify(type)}`);
   }
 
-  private _mergeWithPropertyMetadata(
-      dm: DirectiveMetadata, propertyMetadata: {[key: string]: any[]},
-      directiveType: Type): DirectiveMetadata {
+  private _mergeWithPropertyMetadata(dm: DirectiveMetadata,
+                                     propertyMetadata: {[key: string]: any[]},
+                                     directiveType: Type): DirectiveMetadata {
     var inputs = [];
     var outputs = [];
     var host: {[key: string]: string} = {};
@@ -105,9 +116,9 @@ export class DirectiveResolver {
     return this._merge(dm, inputs, outputs, host, queries, directiveType);
   }
 
-  private _merge(
-      dm: DirectiveMetadata, inputs: string[], outputs: string[], host: {[key: string]: string},
-      queries: {[key: string]: any}, directiveType: Type): DirectiveMetadata {
+  private _merge(dm: DirectiveMetadata, inputs: string[], outputs: string[],
+                 host: {[key: string]: string}, queries: {[key: string]: any},
+                 directiveType: Type): DirectiveMetadata {
     var mergedInputs = isPresent(dm.inputs) ? ListWrapper.concat(dm.inputs, inputs) : inputs;
 
     var mergedOutputs;

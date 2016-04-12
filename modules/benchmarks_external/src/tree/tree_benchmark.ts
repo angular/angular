@@ -7,57 +7,57 @@ export function main() {
 }
 
 angular.module('app', [])
-    .directive(
-        'tree',
-        function() {
-          return {
-            scope: {data: '='},
-            template: '<span> {{data.value}}' +
-                '  <span tree-if="data.left"></span>' +
-                '  <span tree-if="data.right"></span>' +
-                '</span>'
-          };
-        })
+    .directive('tree',
+               function() {
+                 return {
+                   scope: {data: '='},
+                   template: '<span> {{data.value}}' +
+                                 '  <span tree-if="data.left"></span>' +
+                                 '  <span tree-if="data.right"></span>' +
+                                 '</span>'
+                 };
+               })
     // special directive for "if" as angular 1.3 does not support
     // recursive components.
-    .directive(
-        'treeIf',
-        [
-          '$compile', '$parse',
-          function($compile, $parse) {
-            var transcludeFn;
-            return {
-              compile: function(element, attrs) {
-                var expr = $parse('!!' + attrs.treeIf);
-                var template = '<tree data="' + attrs.treeIf + '"></tree>';
-                var transclude;
-                return function($scope, $element, $attrs) {
-                  if (!transclude) {
-                    transclude = $compile(template);
-                  }
-                  var childScope;
-                  var childElement;
-                  $scope.$watch(expr, function(newValue) {
-                    if (childScope) {
-                      childScope.$destroy();
-                      childElement.remove();
-                      childScope = null;
-                      childElement = null;
-                    }
-                    if (newValue) {
-                      childScope = $scope.$new();
-                      childElement =
-                          transclude(childScope, function(clone) { $element.append(clone); });
-                    }
-                  });
-                }
+    .directive('treeIf',
+               [
+                 '$compile',
+                 '$parse',
+                 function($compile, $parse) {
+                   var transcludeFn;
+                   return {
+                     compile: function(element, attrs) {
+                       var expr = $parse('!!' + attrs.treeIf);
+                       var template = '<tree data="' + attrs.treeIf + '"></tree>';
+                       var transclude;
+                       return function($scope, $element, $attrs) {
+                         if (!transclude) {
+                           transclude = $compile(template);
+                         }
+                         var childScope;
+                         var childElement;
+                         $scope.$watch(expr, function(newValue) {
+                           if (childScope) {
+                             childScope.$destroy();
+                             childElement.remove();
+                             childScope = null;
+                             childElement = null;
+                           }
+                           if (newValue) {
+                             childScope = $scope.$new();
+                             childElement = transclude(childScope,
+                                                       function(clone) { $element.append(clone); });
+                           }
+                         });
+                       }
 
-              }
-            }
-          }
-        ])
+                     }
+                   }
+                 }
+               ])
     .config([
-      '$compileProvider', function($compileProvider) { $compileProvider.debugInfoEnabled(false); }
+      '$compileProvider',
+      function($compileProvider) { $compileProvider.debugInfoEnabled(false); }
     ])
     .run([
       '$rootScope',
@@ -94,7 +94,6 @@ class TreeNode {
 
 function buildTree(maxDepth, values, curDepth) {
   if (maxDepth === curDepth) return new TreeNode('', null, null);
-  return new TreeNode(
-      values[curDepth], buildTree(maxDepth, values, curDepth + 1),
-      buildTree(maxDepth, values, curDepth + 1));
+  return new TreeNode(values[curDepth], buildTree(maxDepth, values, curDepth + 1),
+                      buildTree(maxDepth, values, curDepth + 1));
 }

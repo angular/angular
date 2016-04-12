@@ -51,11 +51,11 @@ var testInjector = getTestInjector();
  * Note: Jasmine own `beforeEach` is used by this library to handle DI providers.
  */
 class BeforeEachRunner {
-  private _fns: Array<FunctionWithParamTokens|SyncTestFn> = [];
+  private _fns: Array<FunctionWithParamTokens | SyncTestFn> = [];
 
   constructor(private _parent: BeforeEachRunner) {}
 
-  beforeEach(fn: FunctionWithParamTokens|SyncTestFn): void { this._fns.push(fn); }
+  beforeEach(fn: FunctionWithParamTokens | SyncTestFn): void { this._fns.push(fn); }
 
   run(): void {
     if (this._parent) this._parent.run();
@@ -127,9 +127,8 @@ export function beforeEachBindings(fn): void {
   beforeEachProviders(fn);
 }
 
-function _it(
-    jsmFn: Function, name: string, testFn: FunctionWithParamTokens | AnyTestFn,
-    testTimeOut: number): void {
+function _it(jsmFn: Function, name: string, testFn: FunctionWithParamTokens | AnyTestFn,
+             testTimeOut: number): void {
   var runner = runnerStack[runnerStack.length - 1];
   var timeOut = Math.max(globalTimeOut, testTimeOut);
 

@@ -62,11 +62,11 @@ export class IOsDriverExtension extends WebDriverExtension {
         events.push(createMarkStartEvent(data['message'], startTime));
       } else if (StringWrapper.equals(type, 'TimeEnd')) {
         events.push(createMarkEndEvent(data['message'], startTime));
-      } else if (
-          StringWrapper.equals(type, 'RecalculateStyles') || StringWrapper.equals(type, 'Layout') ||
-          StringWrapper.equals(type, 'UpdateLayerTree') || StringWrapper.equals(type, 'Paint') ||
-          StringWrapper.equals(type, 'Rasterize') ||
-          StringWrapper.equals(type, 'CompositeLayers')) {
+      } else if (StringWrapper.equals(type, 'RecalculateStyles') ||
+                 StringWrapper.equals(type, 'Layout') ||
+                 StringWrapper.equals(type, 'UpdateLayerTree') ||
+                 StringWrapper.equals(type, 'Paint') || StringWrapper.equals(type, 'Rasterize') ||
+                 StringWrapper.equals(type, 'CompositeLayers')) {
         events.push(createStartEvent('render', startTime));
         endEvent = createEndEvent('render', endTime);
       }
@@ -121,5 +121,6 @@ function createMarkEndEvent(name, time) {
 }
 
 var _PROVIDERS = [
-  bind(IOsDriverExtension).toFactory((driver) => new IOsDriverExtension(driver), [WebDriverAdapter])
+  bind(IOsDriverExtension)
+      .toFactory((driver) => new IOsDriverExtension(driver), [WebDriverAdapter])
 ];

@@ -1,5 +1,19 @@
-import {TemplateAstVisitor, ElementAst, BoundDirectivePropertyAst, DirectiveAst, BoundElementPropertyAst} from 'angular2/compiler';
-import {AstTransformer, Quote, AST, EmptyExpr, LiteralArray, LiteralPrimitive, ASTWithSource} from 'angular2/src/core/change_detection/parser/ast';
+import {
+  TemplateAstVisitor,
+  ElementAst,
+  BoundDirectivePropertyAst,
+  DirectiveAst,
+  BoundElementPropertyAst
+} from 'angular2/compiler';
+import {
+  AstTransformer,
+  Quote,
+  AST,
+  EmptyExpr,
+  LiteralArray,
+  LiteralPrimitive,
+  ASTWithSource
+} from 'angular2/src/core/change_detection/parser/ast';
 import {BaseException} from 'angular2/src/facade/exceptions';
 import {Injectable} from 'angular2/core';
 import {Parser} from 'angular2/src/core/change_detection/parser/parser';
@@ -37,7 +51,7 @@ class RouterLinkLexer {
 
   constructor(private parser: Parser, private exp: string) {}
 
-  tokenize(): Array<FixedPart|AuxiliaryStart|AuxiliaryEnd|Params> {
+  tokenize(): Array<FixedPart | AuxiliaryStart | AuxiliaryEnd | Params> {
     let tokens = [];
     while (this.index < this.exp.length) {
       tokens.push(this._parseToken());
@@ -77,7 +91,7 @@ class RouterLinkLexer {
         return new Params(this.parser.parseBinding(`{${paramsContent}}`, null).ast);
       }
     }
-    throw new BaseException('Cannot find \')\'');
+    throw new BaseException("Cannot find ')'");
   }
 
   private _parseFixedPart() {
@@ -100,7 +114,7 @@ class RouterLinkLexer {
     let fixed = this.exp.substring(start, this.index);
 
     if (start === this.index || !sawNonSlash || fixed.startsWith('//')) {
-      throw new BaseException('Invalid router link');
+      throw new BaseException("Invalid router link");
     }
 
     return new FixedPart(fixed);
@@ -141,7 +155,7 @@ class RouterLinkAstTransformer extends AstTransformer {
   constructor(private parser: Parser) { super(); }
 
   visitQuote(ast: Quote): AST {
-    if (ast.prefix == 'route') {
+    if (ast.prefix == "route") {
       return parseRouterLinkExpression(this.parser, ast.uninterpretedExpression);
     } else {
       return super.visitQuote(ast);
@@ -171,9 +185,8 @@ export class RouterLinkTransform implements TemplateAstVisitor {
     let updatedChildren = ast.children.map(c => c.visit(this, context));
     let updatedInputs = ast.inputs.map(c => c.visit(this, context));
     let updatedDirectives = ast.directives.map(c => c.visit(this, context));
-    return new ElementAst(
-        ast.name, ast.attrs, updatedInputs, ast.outputs, ast.exportAsVars, updatedDirectives,
-        updatedChildren, ast.ngContentIndex, ast.sourceSpan);
+    return new ElementAst(ast.name, ast.attrs, updatedInputs, ast.outputs, ast.exportAsVars,
+                          updatedDirectives, updatedChildren, ast.ngContentIndex, ast.sourceSpan);
   }
 
   visitVariable(ast: any, context: any): any { return ast; }
@@ -190,14 +203,13 @@ export class RouterLinkTransform implements TemplateAstVisitor {
 
   visitDirective(ast: DirectiveAst, context: any): any {
     let updatedInputs = ast.inputs.map(c => c.visit(this, context));
-    return new DirectiveAst(
-        ast.directive, updatedInputs, ast.hostProperties, ast.hostEvents, ast.exportAsVars,
-        ast.sourceSpan);
+    return new DirectiveAst(ast.directive, updatedInputs, ast.hostProperties, ast.hostEvents,
+                            ast.exportAsVars, ast.sourceSpan);
   }
 
   visitDirectiveProperty(ast: BoundDirectivePropertyAst, context: any): any {
     let transformedValue = ast.value.visit(this.astTransformer);
-    return new BoundDirectivePropertyAst(
-        ast.directiveName, ast.templateName, transformedValue, ast.sourceSpan);
+    return new BoundDirectivePropertyAst(ast.directiveName, ast.templateName, transformedValue,
+                                         ast.sourceSpan);
   }
 }

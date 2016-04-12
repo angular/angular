@@ -1,7 +1,6 @@
 export class ParseLocation {
-  constructor(
-      public file: ParseSourceFile, public offset: number, public line: number,
-      public col: number) {}
+  constructor(public file: ParseSourceFile, public offset: number, public line: number,
+              public col: number) {}
 
   toString(): string { return `${this.file.url}@${this.line}:${this.col}`; }
 }
@@ -34,7 +33,7 @@ export abstract class ParseError {
     while (ctxLen < 100 && ctxStart > 0) {
       ctxStart--;
       ctxLen++;
-      if (source[ctxStart] == '\n') {
+      if (source[ctxStart] == "\n") {
         if (++ctxLines == 3) {
           break;
         }
@@ -46,7 +45,7 @@ export abstract class ParseError {
     while (ctxLen < 100 && ctxEnd < source.length - 1) {
       ctxEnd++;
       ctxLen++;
-      if (source[ctxEnd] == '\n') {
+      if (source[ctxEnd] == "\n") {
         if (++ctxLines == 3) {
           break;
         }
@@ -54,7 +53,7 @@ export abstract class ParseError {
     }
 
     let context = source.substring(ctxStart, this.span.start.offset) + '[ERROR ->]' +
-        source.substring(this.span.start.offset, ctxEnd + 1);
+                  source.substring(this.span.start.offset, ctxEnd + 1);
 
     return `${this.msg} ("${context}"): ${this.span.start}`;
   }

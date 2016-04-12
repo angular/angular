@@ -72,20 +72,20 @@ export function main() {
       expect(matched).toEqual([s1[0], 1, s2[0], 2]);
 
       reset();
-      expect(matcher.match(
-                 CssSelector.parse('[someAttr=someValue][someAttr2]')[0], selectableCollector))
+      expect(matcher.match(CssSelector.parse('[someAttr=someValue][someAttr2]')[0],
+                           selectableCollector))
           .toEqual(true);
       expect(matched).toEqual([s1[0], 1, s2[0], 2]);
 
       reset();
-      expect(matcher.match(
-                 CssSelector.parse('[someAttr2][someAttr=someValue]')[0], selectableCollector))
+      expect(matcher.match(CssSelector.parse('[someAttr2][someAttr=someValue]')[0],
+                           selectableCollector))
           .toEqual(true);
       expect(matched).toEqual([s1[0], 1, s2[0], 2]);
 
       reset();
-      expect(matcher.match(
-                 CssSelector.parse('[someAttr2=someValue][someAttr]')[0], selectableCollector))
+      expect(matcher.match(CssSelector.parse('[someAttr2=someValue][someAttr]')[0],
+                           selectableCollector))
           .toEqual(true);
       expect(matched).toEqual([s1[0], 1, s2[0], 2]);
     });
@@ -120,20 +120,18 @@ export function main() {
     it('should select by element name, class name and attribute name with value', () => {
       matcher.addSelectables(s1 = CssSelector.parse('someTag.someClass[someAttr=someValue]'), 1);
 
-      expect(matcher.match(
-                 CssSelector.parse('someOtherTag.someOtherClass[someOtherAttr]')[0],
-                 selectableCollector))
+      expect(matcher.match(CssSelector.parse('someOtherTag.someOtherClass[someOtherAttr]')[0],
+                           selectableCollector))
           .toEqual(false);
       expect(matched).toEqual([]);
 
-      expect(
-          matcher.match(
-              CssSelector.parse('someTag.someOtherClass[someOtherAttr]')[0], selectableCollector))
+      expect(matcher.match(CssSelector.parse('someTag.someOtherClass[someOtherAttr]')[0],
+                           selectableCollector))
           .toEqual(false);
       expect(matched).toEqual([]);
 
-      expect(matcher.match(
-                 CssSelector.parse('someTag.someClass[someOtherAttr]')[0], selectableCollector))
+      expect(matcher.match(CssSelector.parse('someTag.someClass[someOtherAttr]')[0],
+                           selectableCollector))
           .toEqual(false);
       expect(matched).toEqual([]);
 
@@ -142,9 +140,8 @@ export function main() {
           .toEqual(false);
       expect(matched).toEqual([]);
 
-      expect(
-          matcher.match(
-              CssSelector.parse('someTag.someClass[someAttr=someValue]')[0], selectableCollector))
+      expect(matcher.match(CssSelector.parse('someTag.someClass[someAttr=someValue]')[0],
+                           selectableCollector))
           .toEqual(true);
       expect(matched).toEqual([s1[0], 1]);
     });
@@ -205,8 +202,8 @@ export function main() {
       matcher.addSelectables(s3 = CssSelector.parse(':not(.someClass)'), 3);
       matcher.addSelectables(s4 = CssSelector.parse(':not(.someOtherClass[someAttr])'), 4);
 
-      expect(matcher.match(
-                 CssSelector.parse('p[someOtherAttr].someOtherClass')[0], selectableCollector))
+      expect(matcher.match(CssSelector.parse('p[someOtherAttr].someOtherClass')[0],
+                           selectableCollector))
           .toEqual(true);
       expect(matched).toEqual([s1[0], 1, s2[0], 2, s3[0], 3, s4[0], 4]);
     });
@@ -300,7 +297,7 @@ export function main() {
 
     it('should detect :not without truthy', () => {
       var cssSelector = CssSelector.parse(':not([attrname=attrvalue].someclass)')[0];
-      expect(cssSelector.element).toEqual('*');
+      expect(cssSelector.element).toEqual("*");
 
       var notSelector = cssSelector.notSelectors[0];
       expect(notSelector.attrs).toEqual(['attrname', 'attrvalue']);
@@ -310,15 +307,13 @@ export function main() {
     });
 
     it('should throw when nested :not', () => {
-      expect(() => {
-        CssSelector.parse('sometag:not(:not([attrname=attrvalue].someclass))')[0];
-      }).toThrowError('Nesting :not is not allowed in a selector');
+      expect(() => { CssSelector.parse('sometag:not(:not([attrname=attrvalue].someclass))')[0]; })
+          .toThrowError('Nesting :not is not allowed in a selector');
     });
 
     it('should throw when multiple selectors in :not', () => {
-      expect(() => {
-        CssSelector.parse('sometag:not(a,b)');
-      }).toThrowError('Multiple selectors in :not are not supported');
+      expect(() => { CssSelector.parse('sometag:not(a,b)'); })
+          .toThrowError('Multiple selectors in :not are not supported');
     });
 
     it('should detect lists of selectors', () => {

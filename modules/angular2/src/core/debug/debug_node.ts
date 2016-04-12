@@ -125,8 +125,8 @@ export function asNativeElements(debugEls: DebugElement[]): any {
   return debugEls.map((el) => el.nativeElement);
 }
 
-function _queryElementChildren(
-    element: DebugElement, predicate: Predicate<DebugElement>, matches: DebugElement[]) {
+function _queryElementChildren(element: DebugElement, predicate: Predicate<DebugElement>,
+                               matches: DebugElement[]) {
   element.childNodes.forEach(node => {
     if (node instanceof DebugElement) {
       if (predicate(node)) {
@@ -137,8 +137,8 @@ function _queryElementChildren(
   });
 }
 
-function _queryNodeChildren(
-    parentNode: DebugNode, predicate: Predicate<DebugNode>, matches: DebugNode[]) {
+function _queryNodeChildren(parentNode: DebugNode, predicate: Predicate<DebugNode>,
+                            matches: DebugNode[]) {
   if (parentNode instanceof DebugElement) {
     parentNode.childNodes.forEach(node => {
       if (predicate(node)) {

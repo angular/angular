@@ -1,9 +1,31 @@
-import {afterEach, AsyncTestCompleter, beforeEach, ddescribe, describe, expect, iit, inject, it, xit,} from 'angular2/testing_internal';
+import {
+  afterEach,
+  AsyncTestCompleter,
+  beforeEach,
+  ddescribe,
+  describe,
+  expect,
+  iit,
+  inject,
+  it,
+  xit,
+} from 'angular2/testing_internal';
 
 import {isBlank, isPresent, stringify, Date, DateWrapper} from 'angular2/src/facade/lang';
 import {PromiseWrapper} from 'angular2/src/facade/async';
 
-import {Sampler, WebDriverAdapter, Validator, Metric, Reporter, bind, provide, Injector, Options, MeasureValues} from 'benchpress/common';
+import {
+  Sampler,
+  WebDriverAdapter,
+  Validator,
+  Metric,
+  Reporter,
+  bind,
+  provide,
+  Injector,
+  Options,
+  MeasureValues
+} from 'benchpress/common';
 
 export function main() {
   var EMPTY_EXECUTE = () => {};
@@ -30,9 +52,13 @@ export function main() {
         driver = new MockDriverAdapter([]);
       }
       var bindings = [
-        Options.DEFAULT_PROVIDERS, Sampler.BINDINGS, provide(Metric, {useValue: metric}),
-        provide(Reporter, {useValue: reporter}), provide(WebDriverAdapter, {useValue: driver}),
-        bind(Options.EXECUTE).toValue(execute), provide(Validator, {useValue: validator}),
+        Options.DEFAULT_PROVIDERS,
+        Sampler.BINDINGS,
+        provide(Metric, {useValue: metric}),
+        provide(Reporter, {useValue: reporter}),
+        provide(WebDriverAdapter, {useValue: driver}),
+        bind(Options.EXECUTE).toValue(execute),
+        provide(Validator, {useValue: validator}),
         bind(Options.NOW).toValue(() => DateWrapper.fromMillis(time++))
       ];
       if (isPresent(prepare)) {
@@ -118,13 +144,12 @@ export function main() {
          var iterationCount = 1;
          createSampler({
            validator: createCountingValidator(2),
-           metric: new MockMetric(
-               [],
-               () => {
-                 var result = PromiseWrapper.resolve({'script': scriptTime});
-                 scriptTime = 0;
-                 return result;
-               }),
+           metric: new MockMetric([],
+                                  () => {
+                                    var result = PromiseWrapper.resolve({'script': scriptTime});
+                                    scriptTime = 0;
+                                    return result;
+                                  }),
            prepare: () => { scriptTime = 1 * iterationCount; },
            execute: () => {
              scriptTime = 10 * iterationCount;
@@ -186,7 +211,9 @@ export function main() {
            expect(log[0]).toEqual(['reportMeasureValues', mv(0, 1000, {'script': 0})]);
            expect(log[1]).toEqual(['reportMeasureValues', mv(1, 1001, {'script': 1})]);
            expect(log[2]).toEqual([
-             'reportSample', [mv(0, 1000, {'script': 0}), mv(1, 1001, {'script': 1})], validSample
+             'reportSample',
+             [mv(0, 1000, {'script': 0}), mv(1, 1001, {'script': 1})],
+             validSample
            ]);
 
            async.done();

@@ -1,6 +1,27 @@
-import {AsyncTestCompleter, beforeEach, ddescribe, describe, el, expect, iit, inject, it, xit, TestComponentBuilder} from 'angular2/testing_internal';
+import {
+  AsyncTestCompleter,
+  beforeEach,
+  ddescribe,
+  describe,
+  el,
+  expect,
+  iit,
+  inject,
+  it,
+  xit,
+  TestComponentBuilder
+} from 'angular2/testing_internal';
 
-import {CompileDirectiveMetadata, CompileTypeMetadata, CompileTemplateMetadata, CompileProviderMetadata, CompileDiDependencyMetadata, CompileQueryMetadata, CompileIdentifierMetadata, CompileFactoryMetadata} from 'angular2/src/compiler/directive_metadata';
+import {
+  CompileDirectiveMetadata,
+  CompileTypeMetadata,
+  CompileTemplateMetadata,
+  CompileProviderMetadata,
+  CompileDiDependencyMetadata,
+  CompileQueryMetadata,
+  CompileIdentifierMetadata,
+  CompileFactoryMetadata
+} from 'angular2/src/compiler/directive_metadata';
 import {ViewEncapsulation} from 'angular2/src/core/metadata/view';
 import {ChangeDetectionStrategy} from 'angular2/src/core/change_detection';
 import {LifecycleHooks} from 'angular2/src/core/linker/interfaces';
@@ -46,24 +67,32 @@ export function main() {
         outputs: ['someEvent'],
         host: {'(event1)': 'handler1', '[prop1]': 'expr1', 'attr1': 'attrValue2'},
         lifecycleHooks: [LifecycleHooks.OnChanges],
-        providers: [new CompileProviderMetadata({
-          token: 'token',
-          useClass: fullTypeMeta,
-          useExisting: new CompileIdentifierMetadata({name: 'someName'}),
-          useFactory: new CompileFactoryMetadata({name: 'someName', diDeps: [diDep]}),
-          useValue: 'someValue',
-        })],
-        viewProviders: [new CompileProviderMetadata({
-          token: 'token',
-          useClass: fullTypeMeta,
-          useExisting: new CompileIdentifierMetadata({name: 'someName'}),
-          useFactory: new CompileFactoryMetadata({name: 'someName', diDeps: [diDep]}),
-          useValue: 'someValue',
-        })],
-        queries: [new CompileQueryMetadata(
-            {selectors: ['selector'], descendants: true, first: false, propertyName: 'prop'})],
-        viewQueries: [new CompileQueryMetadata(
-            {selectors: ['selector'], descendants: true, first: false, propertyName: 'prop'})]
+        providers: [
+          new CompileProviderMetadata({
+            token: 'token',
+            useClass: fullTypeMeta,
+            useExisting: new CompileIdentifierMetadata({name: 'someName'}),
+            useFactory: new CompileFactoryMetadata({name: 'someName', diDeps: [diDep]}),
+            useValue: 'someValue',
+          })
+        ],
+        viewProviders: [
+          new CompileProviderMetadata({
+            token: 'token',
+            useClass: fullTypeMeta,
+            useExisting: new CompileIdentifierMetadata({name: 'someName'}),
+            useFactory: new CompileFactoryMetadata({name: 'someName', diDeps: [diDep]}),
+            useValue: 'someValue',
+          })
+        ],
+        queries: [
+          new CompileQueryMetadata(
+              {selectors: ['selector'], descendants: true, first: false, propertyName: 'prop'})
+        ],
+        viewQueries: [
+          new CompileQueryMetadata(
+              {selectors: ['selector'], descendants: true, first: false, propertyName: 'prop'})
+        ]
       });
 
     });

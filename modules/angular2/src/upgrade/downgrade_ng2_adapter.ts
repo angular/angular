@@ -1,4 +1,13 @@
-import {provide, AppViewManager, ChangeDetectorRef, HostViewRef, Injector, OnChanges, HostViewFactoryRef, SimpleChange} from 'angular2/core';
+import {
+  provide,
+  AppViewManager,
+  ChangeDetectorRef,
+  HostViewRef,
+  Injector,
+  OnChanges,
+  HostViewFactoryRef,
+  SimpleChange
+} from 'angular2/core';
 import {NG1_SCOPE} from './constants';
 import {ComponentInfo} from './metadata';
 import Element = protractor.Element;
@@ -18,11 +27,11 @@ export class DowngradeNg2ComponentAdapter {
   childNodes: Node[];
   contentInsertionPoint: Node = null;
 
-  constructor(
-      private id: string, private info: ComponentInfo, private element: angular.IAugmentedJQuery,
-      private attrs: angular.IAttributes, private scope: angular.IScope,
-      private parentInjector: Injector, private parse: angular.IParseService,
-      private viewManager: AppViewManager, private hostViewFactory: HostViewFactoryRef) {
+  constructor(private id: string, private info: ComponentInfo,
+              private element: angular.IAugmentedJQuery, private attrs: angular.IAttributes,
+              private scope: angular.IScope, private parentInjector: Injector,
+              private parse: angular.IParseService, private viewManager: AppViewManager,
+              private hostViewFactory: HostViewFactoryRef) {
     (<any>this.element[0]).id = id;
     this.componentScope = scope.$new();
     this.childNodes = <Node[]><any>element.contents();
@@ -114,9 +123,10 @@ export class DowngradeNg2ComponentAdapter {
 
       var bindonAttr =
           output.bindonAttr ? output.bindonAttr.substring(0, output.bindonAttr.length - 6) : null;
-      var bracketParenAttr = output.bracketParenAttr ?
-          `[(${output.bracketParenAttr.substring(2, output.bracketParenAttr.length - 8)})]` :
-          null;
+      var bracketParenAttr =
+          output.bracketParenAttr ?
+              `[(${output.bracketParenAttr.substring(2, output.bracketParenAttr.length - 8)})]` :
+              null;
 
       if (attrs.hasOwnProperty(output.onAttr)) {
         expr = attrs[output.onAttr];

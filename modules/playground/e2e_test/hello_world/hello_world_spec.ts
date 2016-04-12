@@ -24,13 +24,11 @@ describe('hello world', function() {
 });
 
 function getComponentText(selector, innerSelector) {
-  return browser.executeScript(
-      'return document.querySelector("' + selector + '").querySelector("' + innerSelector +
-      '").textContent');
+  return browser.executeScript('return document.querySelector("' + selector + '").querySelector("' +
+                               innerSelector + '").textContent');
 }
 
 function clickComponentButton(selector, innerSelector) {
-  return browser.executeScript(
-      'return document.querySelector("' + selector + '").querySelector("' + innerSelector +
-      '").click()');
+  return browser.executeScript('return document.querySelector("' + selector + '").querySelector("' +
+                               innerSelector + '").click()');
 }

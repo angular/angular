@@ -1,6 +1,6 @@
 import {Injectable} from 'angular2/src/core/di/decorators';
-import {ListWrapper, SetWrapper} from 'angular2/src/facade/collection';
-import {NumberWrapper, StringJoiner, StringWrapper, isPresent} from 'angular2/src/facade/lang';
+import {ListWrapper, SetWrapper} from "angular2/src/facade/collection";
+import {NumberWrapper, StringJoiner, StringWrapper, isPresent} from "angular2/src/facade/lang";
 import {BaseException} from 'angular2/src/facade/exceptions';
 
 export enum TokenType {
@@ -27,9 +27,8 @@ export class Lexer {
 }
 
 export class Token {
-  constructor(
-      public index: number, public type: TokenType, public numValue: number,
-      public strValue: string) {}
+  constructor(public index: number, public type: TokenType, public numValue: number,
+              public strValue: string) {}
 
   isCharacter(code: number): boolean {
     return (this.type == TokenType.Character && this.numValue == code);
@@ -47,17 +46,17 @@ export class Token {
 
   isKeyword(): boolean { return (this.type == TokenType.Keyword); }
 
-  isKeywordVar(): boolean { return (this.type == TokenType.Keyword && this.strValue == 'var'); }
+  isKeywordVar(): boolean { return (this.type == TokenType.Keyword && this.strValue == "var"); }
 
-  isKeywordNull(): boolean { return (this.type == TokenType.Keyword && this.strValue == 'null'); }
+  isKeywordNull(): boolean { return (this.type == TokenType.Keyword && this.strValue == "null"); }
 
   isKeywordUndefined(): boolean {
-    return (this.type == TokenType.Keyword && this.strValue == 'undefined');
+    return (this.type == TokenType.Keyword && this.strValue == "undefined");
   }
 
-  isKeywordTrue(): boolean { return (this.type == TokenType.Keyword && this.strValue == 'true'); }
+  isKeywordTrue(): boolean { return (this.type == TokenType.Keyword && this.strValue == "true"); }
 
-  isKeywordFalse(): boolean { return (this.type == TokenType.Keyword && this.strValue == 'false'); }
+  isKeywordFalse(): boolean { return (this.type == TokenType.Keyword && this.strValue == "false"); }
 
   toNumber(): number {
     // -1 instead of NULL ok?
@@ -101,11 +100,11 @@ function newStringToken(index: number, text: string): Token {
 }
 
 function newNumberToken(index: number, n: number): Token {
-  return new Token(index, TokenType.Number, n, '');
+  return new Token(index, TokenType.Number, n, "");
 }
 
 
-export var EOF: Token = new Token(-1, TokenType.Character, 0, '');
+export var EOF: Token = new Token(-1, TokenType.Character, 0, "");
 
 export const $EOF = 0;
 export const $TAB = 9;
@@ -232,8 +231,8 @@ class _Scanner {
         return this.scanComplexOperator(start, StringWrapper.fromCharCode(peek), $EQ, '=');
       case $BANG:
       case $EQ:
-        return this.scanComplexOperator(
-            start, StringWrapper.fromCharCode(peek), $EQ, '=', $EQ, '=');
+        return this.scanComplexOperator(start, StringWrapper.fromCharCode(peek), $EQ, '=', $EQ,
+                                        '=');
       case $AMPERSAND:
         return this.scanComplexOperator(start, '&', $AMPERSAND, '&');
       case $BAR:
@@ -269,9 +268,8 @@ class _Scanner {
    * @param three third symbol (part of the operator when provided and matches source expression)
    * @returns {Token}
    */
-  scanComplexOperator(
-      start: number, one: string, twoCode: number, two: string, threeCode?: number,
-      three?: string): Token {
+  scanComplexOperator(start: number, one: string, twoCode: number, two: string, threeCode?: number,
+                      three?: string): Token {
     this.advance();
     var str: string = one;
     if (this.peek == twoCode) {
@@ -402,7 +400,7 @@ export function isIdentifier(input: string): boolean {
 
 function isIdentifierPart(code: number): boolean {
   return ($a <= code && code <= $z) || ($A <= code && code <= $Z) || ($0 <= code && code <= $9) ||
-      (code == $_) || (code == $$);
+         (code == $_) || (code == $$);
 }
 
 function isDigit(code: number): boolean {
@@ -435,8 +433,29 @@ function unescape(code: number): number {
 }
 
 var OPERATORS = SetWrapper.createFromList([
-  '+', '-',  '*',  '/',  '%',  '^', '=', '==', '!=', '===', '!==', '<',
-  '>', '<=', '>=', '&&', '||', '&', '|', '!',  '?',  '#',   '?.'
+  '+',
+  '-',
+  '*',
+  '/',
+  '%',
+  '^',
+  '=',
+  '==',
+  '!=',
+  '===',
+  '!==',
+  '<',
+  '>',
+  '<=',
+  '>=',
+  '&&',
+  '||',
+  '&',
+  '|',
+  '!',
+  '?',
+  '#',
+  '?.'
 ]);
 
 

@@ -17,7 +17,7 @@ export interface RouteDefinition {
   aux?: string;
   regex?: string;
   serializer?: RegexSerializer;
-  component?: Type|ComponentDefinition;
+  component?: Type | ComponentDefinition;
   loader?: () => Promise<Type>;
   redirectTo?: any[];
   as?: string;

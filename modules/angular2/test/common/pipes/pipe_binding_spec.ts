@@ -1,4 +1,14 @@
-import {ddescribe, xdescribe, describe, it, iit, xit, expect, beforeEach, afterEach} from 'angular2/testing_internal';
+import {
+  ddescribe,
+  xdescribe,
+  describe,
+  it,
+  iit,
+  xit,
+  expect,
+  beforeEach,
+  afterEach
+} from 'angular2/testing_internal';
 
 import {PipeProvider} from 'angular2/src/core/pipes/pipe_provider';
 import {Pipe} from 'angular2/src/core/metadata';
@@ -6,7 +16,7 @@ import {Pipe} from 'angular2/src/core/metadata';
 class MyPipe {}
 
 export function main() {
-  describe('PipeProvider', () => {
+  describe("PipeProvider", () => {
     it('should create a provider out of a type', () => {
       var provider = PipeProvider.createFromType(MyPipe, new Pipe({name: 'my-pipe'}));
       expect(provider.name).toEqual('my-pipe');

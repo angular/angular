@@ -1,6 +1,12 @@
 import {Component, Injectable, provide} from 'angular2/core';
 import {bootstrap} from 'angular2/platform/browser';
-import {OnDeactivate, ComponentInstruction, RouteConfig, ROUTER_DIRECTIVES, APP_BASE_HREF} from 'angular2/router';
+import {
+  OnDeactivate,
+  ComponentInstruction,
+  RouteConfig,
+  ROUTER_DIRECTIVES,
+  APP_BASE_HREF
+} from 'angular2/router';
 
 
 @Injectable()
@@ -51,6 +57,7 @@ class AppCmp {
 
 export function main() {
   return bootstrap(AppCmp, [
-    provide(APP_BASE_HREF, {useValue: '/angular2/examples/router/ts/on_deactivate'}), LogService
+    provide(APP_BASE_HREF, {useValue: '/angular2/examples/router/ts/on_deactivate'}),
+    LogService
   ]);
 }

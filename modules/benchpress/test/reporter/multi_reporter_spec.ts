@@ -1,4 +1,15 @@
-import {afterEach, AsyncTestCompleter, beforeEach, ddescribe, describe, expect, iit, inject, it, xit,} from 'angular2/testing_internal';
+import {
+  afterEach,
+  AsyncTestCompleter,
+  beforeEach,
+  ddescribe,
+  describe,
+  expect,
+  iit,
+  inject,
+  it,
+  xit,
+} from 'angular2/testing_internal';
 
 import {PromiseWrapper} from 'angular2/src/facade/async';
 import {DateWrapper} from 'angular2/src/facade/lang';
@@ -7,11 +18,10 @@ import {Reporter, MultiReporter, bind, provide, Injector, MeasureValues} from 'b
 
 export function main() {
   function createReporters(ids: any[]) {
-    var r = Injector
-                .resolveAndCreate([
-                  ids.map(id => provide(id, {useValue: new MockReporter(id)})),
-                  MultiReporter.createBindings(ids)
-                ])
+    var r = Injector.resolveAndCreate([
+                      ids.map(id => provide(id, {useValue: new MockReporter(id)})),
+                      MultiReporter.createBindings(ids)
+                    ])
                 .get(MultiReporter);
     return PromiseWrapper.resolve(r);
   }
@@ -20,16 +30,19 @@ export function main() {
 
     it('should reportMeasureValues to all', inject([AsyncTestCompleter], (async) => {
          var mv = new MeasureValues(0, DateWrapper.now(), {});
-         createReporters(['m1', 'm2']).then((r) => r.reportMeasureValues(mv)).then((values) => {
+         createReporters(['m1', 'm2'])
+             .then((r) => r.reportMeasureValues(mv))
+             .then((values) => {
 
-           expect(values).toEqual([{'id': 'm1', 'values': mv}, {'id': 'm2', 'values': mv}]);
-           async.done();
-         });
+               expect(values).toEqual([{'id': 'm1', 'values': mv}, {'id': 'm2', 'values': mv}]);
+               async.done();
+             });
        }));
 
     it('should reportSample to call', inject([AsyncTestCompleter], (async) => {
          var completeSample = [
-           new MeasureValues(0, DateWrapper.now(), {}), new MeasureValues(1, DateWrapper.now(), {})
+           new MeasureValues(0, DateWrapper.now(), {}),
+           new MeasureValues(1, DateWrapper.now(), {})
          ];
          var validSample = [completeSample[1]];
 
@@ -55,8 +68,8 @@ class MockReporter extends Reporter {
     return PromiseWrapper.resolve({'id': this._id, 'values': values});
   }
 
-  reportSample(completeSample: MeasureValues[], validSample: MeasureValues[]):
-      Promise<{[key: string]: any}> {
+  reportSample(completeSample: MeasureValues[],
+               validSample: MeasureValues[]): Promise<{[key: string]: any}> {
     return PromiseWrapper.resolve(
         {'id': this._id, 'completeSample': completeSample, 'validSample': validSample});
   }

@@ -45,11 +45,16 @@ class DataService {
 
   constructor() {
     this.persons = [
-      new Person('Victor', 'Savkin', 1930), new Person('Igor', 'Minar', 1920),
-      new Person('John', 'Papa', 1910), new Person('Nancy', 'Duarte', 1910),
-      new Person('Jack', 'Papa', 1910), new Person('Jill', 'Papa', 1910),
-      new Person('Ward', 'Bell', 1910), new Person('Robert', 'Bell', 1910),
-      new Person('Tracy', 'Ward', 1910), new Person('Dan', 'Wahlin', 1910)
+      new Person('Victor', 'Savkin', 1930),
+      new Person('Igor', 'Minar', 1920),
+      new Person('John', 'Papa', 1910),
+      new Person('Nancy', 'Duarte', 1910),
+      new Person('Jack', 'Papa', 1910),
+      new Person('Jill', 'Papa', 1910),
+      new Person('Ward', 'Bell', 1910),
+      new Person('Robert', 'Bell', 1910),
+      new Person('Tracy', 'Ward', 1910),
+      new Person('Dan', 'Wahlin', 1910)
     ];
 
     this.persons[0].friends = [0, 1, 2, 6, 9].map(_ => this.persons[_]);

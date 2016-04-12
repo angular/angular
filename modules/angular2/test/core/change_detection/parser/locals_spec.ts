@@ -13,7 +13,7 @@ export function main() {
 
     it('should support getting values', () => {
       expect(locals.get('key')).toBe('value');
-      expect(() => locals.get('notPresent')).toThrowError(new RegExp('Cannot find'));
+      expect(() => locals.get('notPresent')).toThrowError(new RegExp("Cannot find"));
     });
 
     it('should support checking if key is present', () => {

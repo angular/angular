@@ -21,8 +21,8 @@ export class Statistic {
     return deviation;
   }
 
-  static calculateRegressionSlope(
-      xValues: number[], xMean: number, yValues: number[], yMean: number) {
+  static calculateRegressionSlope(xValues: number[], xMean: number, yValues: number[],
+                                  yMean: number) {
     // See http://en.wikipedia.org/wiki/Simple_linear_regression
     var dividendSum = 0;
     var divisorSum = 0;

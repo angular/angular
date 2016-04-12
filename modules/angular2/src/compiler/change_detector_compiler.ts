@@ -1,6 +1,8 @@
 import {CompileTypeMetadata} from './directive_metadata';
 import {SourceExpressions, moduleRef} from './source_module';
-import {ChangeDetectorJITGenerator} from 'angular2/src/core/change_detection/change_detection_jit_generator';
+import {
+  ChangeDetectorJITGenerator
+} from 'angular2/src/core/change_detection/change_detection_jit_generator';
 import {AbstractChangeDetector} from 'angular2/src/core/change_detection/abstract_change_detector';
 import {ChangeDetectionUtil} from 'angular2/src/core/change_detection/change_detection_util';
 import {ChangeDetectorState} from 'angular2/src/core/change_detection/constants';
@@ -8,16 +10,21 @@ import {ChangeDetectorState} from 'angular2/src/core/change_detection/constants'
 import {createChangeDetectorDefinitions} from './change_definition_factory';
 import {IS_DART, isJsObject, CONST_EXPR} from 'angular2/src/facade/lang';
 
-import {ChangeDetectorGenConfig, ChangeDetectorDefinition, DynamicProtoChangeDetector, ChangeDetectionStrategy} from 'angular2/src/core/change_detection/change_detection';
+import {
+  ChangeDetectorGenConfig,
+  ChangeDetectorDefinition,
+  DynamicProtoChangeDetector,
+  ChangeDetectionStrategy
+} from 'angular2/src/core/change_detection/change_detection';
 
 import {TemplateAst} from './template_ast';
 import {Codegen} from 'angular2/src/transform/template_compiler/change_detector_codegen';
 import {MODULE_SUFFIX} from './util';
 import {Injectable} from 'angular2/src/core/di';
 
-const ABSTRACT_CHANGE_DETECTOR = 'AbstractChangeDetector';
-const UTIL = 'ChangeDetectionUtil';
-const CHANGE_DETECTOR_STATE = 'ChangeDetectorState';
+const ABSTRACT_CHANGE_DETECTOR = "AbstractChangeDetector";
+const UTIL = "ChangeDetectionUtil";
+const CHANGE_DETECTOR_STATE = "ChangeDetectorState";
 
 export const CHANGE_DETECTION_JIT_IMPORTS = CONST_EXPR({
   'AbstractChangeDetector': AbstractChangeDetector,
@@ -38,13 +45,12 @@ var CONSTANTS_MODULE =
 export class ChangeDetectionCompiler {
   constructor(private _genConfig: ChangeDetectorGenConfig) {}
 
-  compileComponentRuntime(
-      componentType: CompileTypeMetadata, strategy: ChangeDetectionStrategy,
-      parsedTemplate: TemplateAst[]): Function[] {
+  compileComponentRuntime(componentType: CompileTypeMetadata, strategy: ChangeDetectionStrategy,
+                          parsedTemplate: TemplateAst[]): Function[] {
     var changeDetectorDefinitions =
         createChangeDetectorDefinitions(componentType, strategy, this._genConfig, parsedTemplate);
-    return changeDetectorDefinitions.map(
-        definition => this._createChangeDetectorFactory(definition));
+    return changeDetectorDefinitions.map(definition =>
+                                             this._createChangeDetectorFactory(definition));
   }
 
   private _createChangeDetectorFactory(definition: ChangeDetectorDefinition): Function {
@@ -52,9 +58,8 @@ export class ChangeDetectionCompiler {
     return () => proto.instantiate();
   }
 
-  compileComponentCodeGen(
-      componentType: CompileTypeMetadata, strategy: ChangeDetectionStrategy,
-      parsedTemplate: TemplateAst[]): SourceExpressions {
+  compileComponentCodeGen(componentType: CompileTypeMetadata, strategy: ChangeDetectionStrategy,
+                          parsedTemplate: TemplateAst[]): SourceExpressions {
     var changeDetectorDefinitions =
         createChangeDetectorDefinitions(componentType, strategy, this._genConfig, parsedTemplate);
     var factories = [];
@@ -69,8 +74,8 @@ export class ChangeDetectionCompiler {
         codegen = new Codegen(PREGEN_PROTO_CHANGE_DETECTOR_MODULE);
         var className = `_${definition.id}`;
         var typeRef = (index === 0 && componentType.isHost) ?
-            'dynamic' :
-            `${moduleRef(componentType.moduleUrl)}${componentType.name}`;
+                          'dynamic' :
+                          `${moduleRef(componentType.moduleUrl)}${componentType.name}`;
         codegen.generate(typeRef, className, definition);
         factories.push(`${className}.newChangeDetector`);
         sourcePart = codegen.toString();

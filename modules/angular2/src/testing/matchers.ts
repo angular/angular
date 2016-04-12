@@ -236,7 +236,7 @@ _global.beforeEach(function() {
             actual();
             return {
               pass: false,
-              get message() { return 'Was expected to throw, but did not throw'; }
+              get message() { return "Was expected to throw, but did not throw"; }
             };
           } catch (e) {
             var errorMessage = e.toString();
@@ -279,7 +279,7 @@ _global.beforeEach(function() {
             pass: missedMethods.length == 0,
             get message() {
               return 'Expected ' + actualObject + ' to have the following methods: ' +
-                  missedMethods.join(', ');
+                     missedMethods.join(", ");
             }
           };
         }
@@ -295,7 +295,7 @@ function elementText(n) {
   };
 
   if (n instanceof Array) {
-    return n.map(elementText).join('');
+    return n.map(elementText).join("");
   }
 
   if (DOM.isCommentNode(n)) {

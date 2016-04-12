@@ -85,8 +85,8 @@ class DiffingTSCompiler implements DiffingBroccoliPlugin {
     this.tsOpts.rootDir = inputPath;
     this.tsOpts.outDir = this.cachePath;
 
-    this.tsServiceHost = new CustomLanguageServiceHost(
-        this.tsOpts, this.rootFilePaths, this.fileRegistry, this.inputPath);
+    this.tsServiceHost = new CustomLanguageServiceHost(this.tsOpts, this.rootFilePaths,
+                                                       this.fileRegistry, this.inputPath);
     this.tsService = ts.createLanguageService(this.tsServiceHost, ts.createDocumentRegistry());
     this.metadataCollector = new MetadataCollector();
   }
@@ -97,16 +97,17 @@ class DiffingTSCompiler implements DiffingBroccoliPlugin {
     let pathsWithErrors = [];
     let errorMessages = [];
 
-    treeDiff.addedPaths.concat(treeDiff.changedPaths).forEach((tsFilePath) => {
-      if (!this.fileRegistry[tsFilePath]) {
-        this.fileRegistry[tsFilePath] = {version: 0};
-        this.rootFilePaths.push(tsFilePath);
-      } else {
-        this.fileRegistry[tsFilePath].version++;
-      }
+    treeDiff.addedPaths.concat(treeDiff.changedPaths)
+        .forEach((tsFilePath) => {
+          if (!this.fileRegistry[tsFilePath]) {
+            this.fileRegistry[tsFilePath] = {version: 0};
+            this.rootFilePaths.push(tsFilePath);
+          } else {
+            this.fileRegistry[tsFilePath].version++;
+          }
 
-      pathsToEmit.push(path.join(this.inputPath, tsFilePath));
-    });
+          pathsToEmit.push(path.join(this.inputPath, tsFilePath));
+        });
 
     treeDiff.removedPaths.forEach((tsFilePath) => {
       console.log('removing outputs for', tsFilePath);
@@ -180,7 +181,7 @@ class DiffingTSCompiler implements DiffingBroccoliPlugin {
     let errors = [];
 
     allDiagnostics.forEach(diagnostic => {
-      let message = ts.flattenDiagnosticMessageText(diagnostic.messageText, '\n');
+      let message = ts.flattenDiagnosticMessageText(diagnostic.messageText, "\n");
       if (diagnostic.file) {
         let {line, character} = diagnostic.file.getLineAndCharacterOfPosition(diagnostic.start);
         errors.push(`  ${diagnostic.file.fileName} (${line + 1},${character + 1}): ${message}`);
@@ -256,8 +257,8 @@ class DiffingTSCompiler implements DiffingBroccoliPlugin {
    * Emit a .metadata.json file to correspond to the .d.ts file if the module contains classes that
    * use decorators or exported constants.
    */
-  private emitMetadata(
-      dtsFileName: string, sourceFile: ts.SourceFile, typeChecker: ts.TypeChecker) {
+  private emitMetadata(dtsFileName: string, sourceFile: ts.SourceFile,
+                       typeChecker: ts.TypeChecker) {
     if (sourceFile) {
       const metadata = this.metadataCollector.getMetadata(sourceFile, typeChecker);
       if (metadata && metadata.metadata) {
@@ -280,16 +281,16 @@ class DiffingTSCompiler implements DiffingBroccoliPlugin {
    */
   private fixSourceMapSources(content: string): string {
     try {
-      const marker = '//# sourceMappingURL=data:application/json;base64,';
+      const marker = "//# sourceMappingURL=data:application/json;base64,";
       const index = content.indexOf(marker);
       if (index == -1) return content;
 
       const base = content.substring(0, index + marker.length);
       const sourceMapBit =
-          new Buffer(content.substring(index + marker.length), 'base64').toString('utf8');
+          new Buffer(content.substring(index + marker.length), 'base64').toString("utf8");
       const sourceMaps = JSON.parse(sourceMapBit);
       const source = sourceMaps.sources[0];
-      sourceMaps.sources = [source.substring(source.lastIndexOf('../') + 3)];
+      sourceMaps.sources = [source.substring(source.lastIndexOf("../") + 3)];
       return `${base}${new Buffer(JSON.stringify(sourceMaps)).toString('base64')}`;
     } catch (e) {
       return content;
@@ -318,9 +319,8 @@ class CustomLanguageServiceHost implements ts.LanguageServiceHost {
   private defaultLibFilePath: string;
 
 
-  constructor(
-      private compilerOptions: ts.CompilerOptions, private fileNames: string[],
-      private fileRegistry: FileRegistry, private treeInputPath: string) {
+  constructor(private compilerOptions: ts.CompilerOptions, private fileNames: string[],
+              private fileRegistry: FileRegistry, private treeInputPath: string) {
     this.currentDirectory = process.cwd();
     this.defaultLibFilePath = ts.getDefaultLibFilePath(compilerOptions).replace(/\\/g, '/');
   }

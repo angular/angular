@@ -31,4 +31,4 @@ export interface ControlValueAccessor {
  *
  * See {@link DefaultValueAccessor} for how to implement one.
  */
-export const NG_VALUE_ACCESSOR: OpaqueToken = CONST_EXPR(new OpaqueToken('NgValueAccessor'));
+export const NG_VALUE_ACCESSOR: OpaqueToken = CONST_EXPR(new OpaqueToken("NgValueAccessor"));

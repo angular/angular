@@ -1,10 +1,31 @@
-import {ListWrapper, MapWrapper, Map, StringMapWrapper,} from 'angular2/src/facade/collection';
-import {ChangeDetector, ChangeDispatcher, DirectiveIndex, BindingTarget, Locals, ProtoChangeDetector, ChangeDetectorRef} from 'angular2/src/core/change_detection/change_detection';
+import {
+  ListWrapper,
+  MapWrapper,
+  Map,
+  StringMapWrapper,
+} from 'angular2/src/facade/collection';
+import {
+  ChangeDetector,
+  ChangeDispatcher,
+  DirectiveIndex,
+  BindingTarget,
+  Locals,
+  ProtoChangeDetector,
+  ChangeDetectorRef
+} from 'angular2/src/core/change_detection/change_detection';
 import {ResolvedProvider, Injectable, Injector} from 'angular2/src/core/di';
 import {DebugContext} from 'angular2/src/core/change_detection/interfaces';
 
 import {AppProtoElement, AppElement, DirectiveProvider} from './element';
-import {isPresent, isBlank, Type, isArray, isNumber, CONST, CONST_EXPR} from 'angular2/src/facade/lang';
+import {
+  isPresent,
+  isBlank,
+  Type,
+  isArray,
+  isNumber,
+  CONST,
+  CONST_EXPR
+} from 'angular2/src/facade/lang';
 import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
 import {Renderer, RootRenderer, RenderDebugInfo} from 'angular2/src/core/render/api';
 import {ViewRef_, HostViewFactoryRef} from './view_ref';
@@ -57,11 +78,11 @@ export class AppView implements ChangeDispatcher {
 
   destroyed: boolean = false;
 
-  constructor(
-      public proto: AppProtoView, public renderer: Renderer, public viewManager: AppViewManager_,
-      public projectableNodes: Array<any|any[]>, public containerAppElement: AppElement,
-      imperativelyCreatedProviders: ResolvedProvider[], rootInjector: Injector,
-      public changeDetector: ChangeDetector) {
+  constructor(public proto: AppProtoView, public renderer: Renderer,
+              public viewManager: AppViewManager_, public projectableNodes: Array<any | any[]>,
+              public containerAppElement: AppElement,
+              imperativelyCreatedProviders: ResolvedProvider[], rootInjector: Injector,
+              public changeDetector: ChangeDetector) {
     this.ref = new ViewRef_(this);
     var injectorWithHostBoundary = AppElement.getViewParentInjector(
         this.proto.type, containerAppElement, imperativelyCreatedProviders, rootInjector);
@@ -87,9 +108,8 @@ export class AppView implements ChangeDispatcher {
     this.context = context;
   }
 
-  init(
-      rootNodesOrAppElements: any[], allNodes: any[], disposables: Function[],
-      appElements: AppElement[]) {
+  init(rootNodesOrAppElements: any[], allNodes: any[], disposables: Function[],
+       appElements: AppElement[]) {
     this.rootNodesOrAppElements = rootNodesOrAppElements;
     this.allNodes = allNodes;
     this.disposables = disposables;
@@ -106,18 +126,17 @@ export class AppView implements ChangeDispatcher {
           providerTokens.push(appEl.proto.protoInjector.getProviderAtIndex(j).key.token);
         }
       }
-      StringMapWrapper.forEach(
-          appEl.proto.directiveVariableBindings, (directiveIndex: number, name: string) => {
-            if (isBlank(directiveIndex)) {
-              localsMap.set(name, appEl.nativeElement);
-            } else {
-              localsMap.set(name, appEl.getDirectiveAtIndex(directiveIndex));
-            }
-          });
+      StringMapWrapper.forEach(appEl.proto.directiveVariableBindings,
+                               (directiveIndex: number, name: string) => {
+                                 if (isBlank(directiveIndex)) {
+                                   localsMap.set(name, appEl.nativeElement);
+                                 } else {
+                                   localsMap.set(name, appEl.getDirectiveAtIndex(directiveIndex));
+                                 }
+                               });
       this.renderer.setElementDebugInfo(
-          appEl.nativeElement,
-          new RenderDebugInfo(
-              appEl.getInjector(), appEl.getComponent(), providerTokens, localsMap));
+          appEl.nativeElement, new RenderDebugInfo(appEl.getInjector(), appEl.getComponent(),
+                                                   providerTokens, localsMap));
     }
     var parentLocals = null;
     if (this.proto.type !== ViewType.COMPONENT) {
@@ -178,14 +197,14 @@ export class AppView implements ChangeDispatcher {
       if (b.isElementProperty()) {
         this.renderer.setElementProperty(nativeElement, b.name, currentValue);
       } else if (b.isElementAttribute()) {
-        this.renderer.setElementAttribute(
-            nativeElement, b.name, isPresent(currentValue) ? `${currentValue}` : null);
+        this.renderer.setElementAttribute(nativeElement, b.name,
+                                          isPresent(currentValue) ? `${currentValue}` : null);
       } else if (b.isElementClass()) {
         this.renderer.setElementClass(nativeElement, b.name, currentValue);
       } else if (b.isElementStyle()) {
         var unit = isPresent(b.unit) ? b.unit : '';
-        this.renderer.setElementStyle(
-            nativeElement, b.name, isPresent(currentValue) ? `${currentValue}${unit}` : null);
+        this.renderer.setElementStyle(nativeElement, b.name,
+                                      isPresent(currentValue) ? `${currentValue}${unit}` : null);
       } else {
         throw new BaseException('Unsupported directive record');
       }
@@ -214,8 +233,8 @@ export class AppView implements ChangeDispatcher {
     }
   }
 
-  getDebugContext(appElement: AppElement, elementIndex: number, directiveIndex: number):
-      DebugContext {
+  getDebugContext(appElement: AppElement, elementIndex: number,
+                  directiveIndex: number): DebugContext {
     try {
       if (isBlank(appElement) && elementIndex < this.appElements.length) {
         appElement = this.appElements[elementIndex];
@@ -228,9 +247,8 @@ export class AppView implements ChangeDispatcher {
           isPresent(directiveIndex) ? appElement.getDirectiveAtIndex(directiveIndex) : null;
       var injector = isPresent(appElement) ? appElement.getInjector() : null;
 
-      return new DebugContext(
-          element, componentElement, directive, this.context, _localsToStringMap(this.locals),
-          injector);
+      return new DebugContext(element, componentElement, directive, this.context,
+                              _localsToStringMap(this.locals), injector);
 
     } catch (e) {
       // TODO: vsavkin log the exception once we have a good way to log errors and warnings
@@ -277,9 +295,8 @@ function _localsToStringMap(locals: Locals): {[key: string]: any} {
  *
  */
 export class AppProtoView {
-  static create(
-      metadataCache: ResolvedMetadataCache, type: ViewType, pipes: Type[],
-      templateVariableBindings: {[key: string]: string}): AppProtoView {
+  static create(metadataCache: ResolvedMetadataCache, type: ViewType, pipes: Type[],
+                templateVariableBindings: {[key: string]: string}): AppProtoView {
     var protoPipes = null;
     if (isPresent(pipes) && pipes.length > 0) {
       var boundPipes = ListWrapper.createFixedSize(pipes.length);
@@ -291,9 +308,8 @@ export class AppProtoView {
     return new AppProtoView(type, protoPipes, templateVariableBindings);
   }
 
-  constructor(
-      public type: ViewType, public protoPipes: ProtoPipes,
-      public templateVariableBindings: {[key: string]: string}) {}
+  constructor(public type: ViewType, public protoPipes: ProtoPipes,
+              public templateVariableBindings: {[key: string]: string}) {}
 }
 
 
@@ -345,8 +361,8 @@ export function findLastRenderNode(node: any): any {
   return lastNode;
 }
 
-export function checkSlotCount(
-    componentName: string, expectedSlotCount: number, projectableNodes: any[][]): void {
+export function checkSlotCount(componentName: string, expectedSlotCount: number,
+                               projectableNodes: any[][]): void {
   var givenSlotCount = isPresent(projectableNodes) ? projectableNodes.length : 0;
   if (givenSlotCount < expectedSlotCount) {
     throw new BaseException(

@@ -1,10 +1,33 @@
-import {Type, isBlank, isPresent, CONST, CONST_EXPR, stringify, isArray, isType, isFunction, normalizeBool} from 'angular2/src/facade/lang';
+import {
+  Type,
+  isBlank,
+  isPresent,
+  CONST,
+  CONST_EXPR,
+  stringify,
+  isArray,
+  isType,
+  isFunction,
+  normalizeBool
+} from 'angular2/src/facade/lang';
 import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
 import {MapWrapper, ListWrapper} from 'angular2/src/facade/collection';
 import {reflector} from 'angular2/src/core/reflection/reflection';
 import {Key} from './key';
-import {InjectMetadata, InjectableMetadata, OptionalMetadata, SelfMetadata, HostMetadata, SkipSelfMetadata, DependencyMetadata} from './metadata';
-import {NoAnnotationError, MixingMultiProvidersWithRegularProvidersError, InvalidProviderError} from './exceptions';
+import {
+  InjectMetadata,
+  InjectableMetadata,
+  OptionalMetadata,
+  SelfMetadata,
+  HostMetadata,
+  SkipSelfMetadata,
+  DependencyMetadata
+} from './metadata';
+import {
+  NoAnnotationError,
+  MixingMultiProvidersWithRegularProvidersError,
+  InvalidProviderError
+} from './exceptions';
 import {resolveForwardRef} from './forward_ref';
 
 /**
@@ -12,9 +35,8 @@ import {resolveForwardRef} from './forward_ref';
  * This is internal to Angular and should not be used directly.
  */
 export class Dependency {
-  constructor(
-      public key: Key, public optional: boolean, public lowerBoundVisibility: any,
-      public upperBoundVisibility: any, public properties: any[]) {}
+  constructor(public key: Key, public optional: boolean, public lowerBoundVisibility: any,
+              public upperBoundVisibility: any, public properties: any[]) {}
 
   static fromKey(key: Key): Dependency { return new Dependency(key, false, null, null, []); }
 }
@@ -302,9 +324,8 @@ export interface ResolvedProvider {
 export interface ResolvedBinding extends ResolvedProvider {}
 
 export class ResolvedProvider_ implements ResolvedBinding {
-  constructor(
-      public key: Key, public resolvedFactories: ResolvedFactory[], public multiProvider: boolean) {
-  }
+  constructor(public key: Key, public resolvedFactories: ResolvedFactory[],
+              public multiProvider: boolean) {}
 
   get resolvedFactory(): ResolvedFactory { return this.resolvedFactories[0]; }
 }
@@ -523,7 +544,7 @@ export function resolveProvider(provider: Provider): ResolvedProvider {
 /**
  * Resolve a list of Providers.
  */
-export function resolveProviders(providers: Array<Type|Provider|any[]>): ResolvedProvider[] {
+export function resolveProviders(providers: Array<Type | Provider | any[]>): ResolvedProvider[] {
   var normalized = _normalizeProviders(providers, []);
   var resolved = normalized.map(resolveProvider);
   return MapWrapper.values(mergeResolvedProviders(resolved, new Map<number, ResolvedProvider>()));
@@ -565,8 +586,8 @@ export function mergeResolvedProviders(
   return normalizedProvidersMap;
 }
 
-function _normalizeProviders(
-    providers: Array<Type|Provider|ProviderBuilder|any[]>, res: Provider[]): Provider[] {
+function _normalizeProviders(providers: Array<Type | Provider | ProviderBuilder | any[]>,
+                             res: Provider[]): Provider[] {
   providers.forEach(b => {
     if (b instanceof Type) {
       res.push(provide(b, {useClass: b}));
@@ -660,8 +681,8 @@ function _extractToken(typeOrFunc, metadata /*any[] | any*/, params: any[][]): D
   }
 }
 
-function _createDependency(
-    token, optional, lowerBoundVisibility, upperBoundVisibility, depProps): Dependency {
-  return new Dependency(
-      Key.get(token), optional, lowerBoundVisibility, upperBoundVisibility, depProps);
+function _createDependency(token, optional, lowerBoundVisibility, upperBoundVisibility,
+                           depProps): Dependency {
+  return new Dependency(Key.get(token), optional, lowerBoundVisibility, upperBoundVisibility,
+                        depProps);
 }

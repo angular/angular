@@ -1,5 +1,11 @@
 import {DOM} from 'angular2/src/platform/dom/dom_adapter';
-import {isPresent, isBlank, StringWrapper, RegExpWrapper, NumberWrapper} from 'angular2/src/facade/lang';
+import {
+  isPresent,
+  isBlank,
+  StringWrapper,
+  RegExpWrapper,
+  NumberWrapper
+} from 'angular2/src/facade/lang';
 import {StringMapWrapper, ListWrapper} from 'angular2/src/facade/collection';
 import {EventManagerPlugin} from './event_manager';
 import {NgZone} from 'angular2/src/core/zone/ng_zone';
@@ -28,8 +34,8 @@ export class KeyEventsPlugin extends EventManagerPlugin {
         element, StringMapWrapper.get(parsedEvent, 'fullKey'), handler, this.manager.getZone());
 
     return this.manager.getZone().runOutsideAngular(() => {
-      return DOM.onAndCancel(
-          element, StringMapWrapper.get(parsedEvent, 'domEventName'), outsideHandler);
+      return DOM.onAndCancel(element, StringMapWrapper.get(parsedEvent, 'domEventName'),
+                             outsideHandler);
     });
   }
 
@@ -85,8 +91,8 @@ export class KeyEventsPlugin extends EventManagerPlugin {
     return fullKey;
   }
 
-  static eventCallback(element: HTMLElement, fullKey: any, handler: Function, zone: NgZone):
-      Function {
+  static eventCallback(element: HTMLElement, fullKey: any, handler: Function,
+                       zone: NgZone): Function {
     return (event) => {
       if (StringWrapper.equals(KeyEventsPlugin.getEventFullKey(event), fullKey)) {
         zone.run(() => handler(event));

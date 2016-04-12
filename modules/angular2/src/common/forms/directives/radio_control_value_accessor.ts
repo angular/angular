@@ -1,5 +1,21 @@
-import {Directive, ElementRef, Renderer, Self, forwardRef, Provider, Attribute, Input, OnInit, OnDestroy, Injector, Injectable} from 'angular2/core';
-import {NG_VALUE_ACCESSOR, ControlValueAccessor} from 'angular2/src/common/forms/directives/control_value_accessor';
+import {
+  Directive,
+  ElementRef,
+  Renderer,
+  Self,
+  forwardRef,
+  Provider,
+  Attribute,
+  Input,
+  OnInit,
+  OnDestroy,
+  Injector,
+  Injectable
+} from 'angular2/core';
+import {
+  NG_VALUE_ACCESSOR,
+  ControlValueAccessor
+} from 'angular2/src/common/forms/directives/control_value_accessor';
 import {NgControl} from 'angular2/src/common/forms/directives/ng_control';
 import {CONST_EXPR, looseIdentical, isPresent} from 'angular2/src/facade/lang';
 import {ListWrapper} from 'angular2/src/facade/collection';
@@ -82,9 +98,8 @@ export class RadioControlValueAccessor implements ControlValueAccessor,
   onChange = () => {};
   onTouched = () => {};
 
-  constructor(
-      private _renderer: Renderer, private _elementRef: ElementRef,
-      private _registry: RadioControlRegistry, private _injector: Injector) {}
+  constructor(private _renderer: Renderer, private _elementRef: ElementRef,
+              private _registry: RadioControlRegistry, private _injector: Injector) {}
 
   ngOnInit(): void {
     this._control = this._injector.get(NgControl);

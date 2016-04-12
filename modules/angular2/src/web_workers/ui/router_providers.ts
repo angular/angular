@@ -4,10 +4,11 @@ import {BrowserPlatformLocation} from 'angular2/src/router/location/browser_plat
 import {APP_INITIALIZER, Provider, Injector, NgZone} from 'angular2/core';
 
 export const WORKER_RENDER_ROUTER = CONST_EXPR([
-  MessageBasedPlatformLocation, BrowserPlatformLocation,
-  CONST_EXPR(new Provider(
-      APP_INITIALIZER,
-      {useFactory: initRouterListeners, multi: true, deps: CONST_EXPR([Injector])}))
+  MessageBasedPlatformLocation,
+  BrowserPlatformLocation,
+  CONST_EXPR(
+      new Provider(APP_INITIALIZER,
+                   {useFactory: initRouterListeners, multi: true, deps: CONST_EXPR([Injector])}))
 ]);
 
 function initRouterListeners(injector: Injector): () => void {

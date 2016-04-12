@@ -1,15 +1,40 @@
-import {CompanyNameComponent, OpportunityNameComponent, OfferingNameComponent, StageButtonsComponent, AccountCellComponent, FormattedCellComponent} from './cells';
+import {
+  CompanyNameComponent,
+  OpportunityNameComponent,
+  OfferingNameComponent,
+  StageButtonsComponent,
+  AccountCellComponent,
+  FormattedCellComponent
+} from './cells';
 
 import {Component, Directive} from 'angular2/core';
 
-import {Offering, ITEM_HEIGHT, COMPANY_NAME_WIDTH, OPPORTUNITY_NAME_WIDTH, OFFERING_NAME_WIDTH, ACCOUNT_CELL_WIDTH, BASE_POINTS_WIDTH, KICKER_POINTS_WIDTH, STAGE_BUTTONS_WIDTH, BUNDLES_WIDTH, DUE_DATE_WIDTH, END_DATE_WIDTH, AAT_STATUS_WIDTH} from './common';
+import {
+  Offering,
+  ITEM_HEIGHT,
+  COMPANY_NAME_WIDTH,
+  OPPORTUNITY_NAME_WIDTH,
+  OFFERING_NAME_WIDTH,
+  ACCOUNT_CELL_WIDTH,
+  BASE_POINTS_WIDTH,
+  KICKER_POINTS_WIDTH,
+  STAGE_BUTTONS_WIDTH,
+  BUNDLES_WIDTH,
+  DUE_DATE_WIDTH,
+  END_DATE_WIDTH,
+  AAT_STATUS_WIDTH
+} from './common';
 
 @Component({
   selector: 'scroll-item',
   inputs: ['offering'],
   directives: [
-    CompanyNameComponent, OpportunityNameComponent, OfferingNameComponent, StageButtonsComponent,
-    AccountCellComponent, FormattedCellComponent
+    CompanyNameComponent,
+    OpportunityNameComponent,
+    OfferingNameComponent,
+    StageButtonsComponent,
+    AccountCellComponent,
+    FormattedCellComponent
   ],
   template: `
     <div class="row"

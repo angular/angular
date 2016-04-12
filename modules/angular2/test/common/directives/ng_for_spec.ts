@@ -1,4 +1,17 @@
-import {AsyncTestCompleter, TestComponentBuilder, beforeEach, beforeEachProviders, ddescribe, describe, el, expect, iit, inject, it, xit,} from 'angular2/testing_internal';
+import {
+  AsyncTestCompleter,
+  TestComponentBuilder,
+  beforeEach,
+  beforeEachProviders,
+  ddescribe,
+  describe,
+  el,
+  expect,
+  iit,
+  inject,
+  it,
+  xit,
+} from 'angular2/testing_internal';
 
 import {ListWrapper} from 'angular2/src/facade/collection';
 import {IS_DART} from 'angular2/src/facade/lang';
@@ -149,16 +162,18 @@ export function main() {
     if (!IS_DART) {
       it('should throw on non-iterable ref and suggest using an array',
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-           tcb.overrideTemplate(TestComponent, TEMPLATE).createAsync(TestComponent).then((fixture) => {
-             fixture.debugElement.componentInstance.items = 'whaaa';
-             try {
-               fixture.detectChanges()
-             } catch (e) {
-               expect(e.message).toContain(
-                   `Cannot find a differ supporting object 'whaaa' of type 'string'. NgFor only supports binding to Iterables such as Arrays.`);
-               async.done();
-             }
-           });
+           tcb.overrideTemplate(TestComponent, TEMPLATE)
+               .createAsync(TestComponent)
+               .then((fixture) => {
+                 fixture.debugElement.componentInstance.items = 'whaaa';
+                 try {
+                   fixture.detectChanges()
+                 } catch (e) {
+                   expect(e.message).toContain(
+                       `Cannot find a differ supporting object 'whaaa' of type 'string'. NgFor only supports binding to Iterables such as Arrays.`);
+                   async.done();
+                 }
+               });
          }));
     }
 
@@ -192,12 +207,12 @@ export function main() {
     it('should repeat over nested arrays',
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
          var template = '<div>' +
-             '<div template="ngFor #item of items">' +
-             '<div template="ngFor #subitem of item">' +
-             '{{subitem}}-{{item.length}};' +
-             '</div>|' +
-             '</div>' +
-             '</div>';
+                        '<div template="ngFor #item of items">' +
+                        '<div template="ngFor #subitem of item">' +
+                        '{{subitem}}-{{item.length}};' +
+                        '</div>|' +
+                        '</div>' +
+                        '</div>';
 
          tcb.overrideTemplate(TestComponent, template)
              .createAsync(TestComponent)
@@ -219,9 +234,9 @@ export function main() {
     it('should repeat over nested arrays with no intermediate element',
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
          var template = '<div><template ngFor #item [ngForOf]="items">' +
-             '<div template="ngFor #subitem of item">' +
-             '{{subitem}}-{{item.length}};' +
-             '</div></template></div>';
+                        '<div template="ngFor #subitem of item">' +
+                        '{{subitem}}-{{item.length}};' +
+                        '</div></template></div>';
 
          tcb.overrideTemplate(TestComponent, template)
              .createAsync(TestComponent)

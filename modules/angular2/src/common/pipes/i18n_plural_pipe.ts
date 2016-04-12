@@ -1,4 +1,10 @@
-import {CONST, isStringMap, StringWrapper, isPresent, RegExpWrapper} from 'angular2/src/facade/lang';
+import {
+  CONST,
+  isStringMap,
+  StringWrapper,
+  isPresent,
+  RegExpWrapper
+} from 'angular2/src/facade/lang';
 import {Injectable, PipeTransform, Pipe} from 'angular2/core';
 import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
 

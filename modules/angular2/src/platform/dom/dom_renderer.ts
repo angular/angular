@@ -1,11 +1,25 @@
 import {Inject, Injectable, OpaqueToken} from 'angular2/src/core/di';
 import {AnimationBuilder} from 'angular2/src/animate/animation_builder';
-import {isPresent, isBlank, Json, RegExpWrapper, CONST_EXPR, stringify, StringWrapper, isArray} from 'angular2/src/facade/lang';
+import {
+  isPresent,
+  isBlank,
+  Json,
+  RegExpWrapper,
+  CONST_EXPR,
+  stringify,
+  StringWrapper,
+  isArray
+} from 'angular2/src/facade/lang';
 
 import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
 import {DomSharedStylesHost} from './shared_styles_host';
 
-import {Renderer, RootRenderer, RenderComponentType, RenderDebugInfo} from 'angular2/src/core/render/api';
+import {
+  Renderer,
+  RootRenderer,
+  RenderComponentType,
+  RenderDebugInfo
+} from 'angular2/src/core/render/api';
 
 import {EventManager} from './events/event_manager';
 
@@ -22,9 +36,8 @@ var TEMPLATE_BINDINGS_EXP = /^template bindings=(.*)$/g;
 export abstract class DomRootRenderer implements RootRenderer {
   private _registeredComponents: Map<string, DomRenderer> = new Map<string, DomRenderer>();
 
-  constructor(
-      public document: any, public eventManager: EventManager,
-      public sharedStylesHost: DomSharedStylesHost, public animate: AnimationBuilder) {}
+  constructor(public document: any, public eventManager: EventManager,
+              public sharedStylesHost: DomSharedStylesHost, public animate: AnimationBuilder) {}
 
   renderComponent(componentProto: RenderComponentType): Renderer {
     var renderer = this._registeredComponents.get(componentProto.id);
@@ -38,9 +51,8 @@ export abstract class DomRootRenderer implements RootRenderer {
 
 @Injectable()
 export class DomRootRenderer_ extends DomRootRenderer {
-  constructor(
-      @Inject(DOCUMENT) _document: any, _eventManager: EventManager,
-      sharedStylesHost: DomSharedStylesHost, animate: AnimationBuilder) {
+  constructor(@Inject(DOCUMENT) _document: any, _eventManager: EventManager,
+              sharedStylesHost: DomSharedStylesHost, animate: AnimationBuilder) {
     super(_document, _eventManager, sharedStylesHost, animate);
   }
 }
@@ -80,8 +92,8 @@ export class DomRenderer implements Renderer {
   createElement(parent: Element, name: string): Node {
     var nsAndName = splitNamespace(name);
     var el = isPresent(nsAndName[0]) ?
-        DOM.createElementNS(NAMESPACE_URIS[nsAndName[0]], nsAndName[1]) :
-        DOM.createElement(nsAndName[1]);
+                 DOM.createElementNS(NAMESPACE_URIS[nsAndName[0]], nsAndName[1]) :
+                 DOM.createElement(nsAndName[1]);
     if (isPresent(this._contentAttr)) {
       DOM.setAttribute(el, this._contentAttr, '');
     }
@@ -149,13 +161,13 @@ export class DomRenderer implements Renderer {
   }
 
   listen(renderElement: any, name: string, callback: Function): Function {
-    return this._rootRenderer.eventManager.addEventListener(
-        renderElement, name, decoratePreventDefault(callback));
+    return this._rootRenderer.eventManager.addEventListener(renderElement, name,
+                                                            decoratePreventDefault(callback));
   }
 
   listenGlobal(target: string, name: string, callback: Function): Function {
-    return this._rootRenderer.eventManager.addGlobalEventListener(
-        target, name, decoratePreventDefault(callback));
+    return this._rootRenderer.eventManager.addGlobalEventListener(target, name,
+                                                                  decoratePreventDefault(callback));
   }
 
   setElementProperty(renderElement: any, propertyName: string, propertyValue: any): void {
@@ -191,9 +203,8 @@ export class DomRenderer implements Renderer {
           TEMPLATE_BINDINGS_EXP, StringWrapper.replaceAll(DOM.getText(renderElement), /\n/g, ''));
       var parsedBindings = Json.parse(existingBindings[1]);
       parsedBindings[dashCasedPropertyName] = propertyValue;
-      DOM.setText(
-          renderElement,
-          StringWrapper.replace(TEMPLATE_COMMENT_TEXT, '{}', Json.stringify(parsedBindings)));
+      DOM.setText(renderElement, StringWrapper.replace(TEMPLATE_COMMENT_TEXT, '{}',
+                                                       Json.stringify(parsedBindings)));
     } else {
       this.setElementAttribute(renderElement, propertyName, propertyValue);
     }
@@ -304,7 +315,7 @@ function _shimHostAttribute(componentShortId: string): string {
   return StringWrapper.replaceAll(HOST_ATTR, COMPONENT_REGEX, componentShortId);
 }
 
-function _flattenStyles(compId: string, styles: Array<any|any[]>, target: string[]): string[] {
+function _flattenStyles(compId: string, styles: Array<any | any[]>, target: string[]): string[] {
   for (var i = 0; i < styles.length; i++) {
     var style = styles[i];
     if (isArray(style)) {

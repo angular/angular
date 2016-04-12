@@ -1,8 +1,8 @@
-import {ListWrapper} from 'angular2/src/facade/collection';
+import {ListWrapper} from "angular2/src/facade/collection";
 
 export class AST {
   visit(visitor: AstVisitor): any { return null; }
-  toString(): string { return 'AST'; }
+  toString(): string { return "AST"; }
 }
 
 /**
@@ -23,7 +23,7 @@ export class Quote extends AST {
     super();
   }
   visit(visitor: AstVisitor): any { return visitor.visitQuote(this); }
-  toString(): string { return 'Quote'; }
+  toString(): string { return "Quote"; }
 }
 
 export class EmptyExpr extends AST {
@@ -55,8 +55,8 @@ export class PropertyRead extends AST {
 }
 
 export class PropertyWrite extends AST {
-  constructor(
-      public receiver: AST, public name: string, public setter: Function, public value: AST) {
+  constructor(public receiver: AST, public name: string, public setter: Function,
+              public value: AST) {
     super();
   }
   visit(visitor: AstVisitor): any { return visitor.visitPropertyWrite(this); }
@@ -138,9 +138,8 @@ export class ASTWithSource extends AST {
 }
 
 export class TemplateBinding {
-  constructor(
-      public key: string, public keyIsVar: boolean, public name: string,
-      public expression: ASTWithSource) {}
+  constructor(public key: string, public keyIsVar: boolean, public name: string,
+              public expression: ASTWithSource) {}
 }
 
 export interface AstVisitor {
@@ -284,8 +283,8 @@ export class AstTransformer implements AstVisitor {
   visitPrefixNot(ast: PrefixNot): AST { return new PrefixNot(ast.expression.visit(this)); }
 
   visitConditional(ast: Conditional): AST {
-    return new Conditional(
-        ast.condition.visit(this), ast.trueExp.visit(this), ast.falseExp.visit(this));
+    return new Conditional(ast.condition.visit(this), ast.trueExp.visit(this),
+                           ast.falseExp.visit(this));
   }
 
   visitPipe(ast: BindingPipe): AST {

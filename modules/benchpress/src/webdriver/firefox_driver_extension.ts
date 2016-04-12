@@ -42,7 +42,7 @@ export class FirefoxDriverExtension extends WebDriverExtension {
   }
 }
 
-var _PROVIDERS =
-    [bind(FirefoxDriverExtension).toFactory((driver) => new FirefoxDriverExtension(driver), [
-      WebDriverAdapter
-    ])];
+var _PROVIDERS = [
+  bind(FirefoxDriverExtension)
+      .toFactory((driver) => new FirefoxDriverExtension(driver), [WebDriverAdapter])
+];

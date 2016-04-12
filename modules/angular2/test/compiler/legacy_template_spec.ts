@@ -1,6 +1,26 @@
-import {TestComponentBuilder, AsyncTestCompleter, ddescribe, describe, it, iit, xit, expect, beforeEach, afterEach, beforeEachProviders, inject} from 'angular2/testing_internal';
+import {
+  TestComponentBuilder,
+  AsyncTestCompleter,
+  ddescribe,
+  describe,
+  it,
+  iit,
+  xit,
+  expect,
+  beforeEach,
+  afterEach,
+  beforeEachProviders,
+  inject
+} from 'angular2/testing_internal';
 
-import {HtmlAst, HtmlAstVisitor, HtmlElementAst, HtmlAttrAst, HtmlTextAst, htmlVisitAll} from 'angular2/src/compiler/html_ast';
+import {
+  HtmlAst,
+  HtmlAstVisitor,
+  HtmlElementAst,
+  HtmlAttrAst,
+  HtmlTextAst,
+  htmlVisitAll
+} from 'angular2/src/compiler/html_ast';
 
 import {LegacyHtmlAstTransformer} from 'angular2/src/compiler/legacy_template';
 

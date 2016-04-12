@@ -1,4 +1,18 @@
-import {AsyncTestCompleter, beforeEach, ddescribe, xdescribe, describe, dispatchEvent, expect, iit, inject, beforeEachProviders, it, xit, TestComponentBuilder} from 'angular2/testing_internal';
+import {
+  AsyncTestCompleter,
+  beforeEach,
+  ddescribe,
+  xdescribe,
+  describe,
+  dispatchEvent,
+  expect,
+  iit,
+  inject,
+  beforeEachProviders,
+  it,
+  xit,
+  TestComponentBuilder
+} from 'angular2/testing_internal';
 
 import {Injectable, provide} from 'angular2/core';
 import {NgIf} from 'angular2/common';
@@ -130,8 +144,8 @@ export function main() {
     it('should override a view',
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
 
-         tcb.overrideView(
-                ChildComp, new ViewMetadata({template: '<span>Modified {{childBinding}}</span>'}))
+         tcb.overrideView(ChildComp,
+                          new ViewMetadata({template: '<span>Modified {{childBinding}}</span>'}))
              .createAsync(ChildComp)
              .then((componentFixture) => {
                componentFixture.detectChanges();
@@ -155,7 +169,7 @@ export function main() {
        }));
 
 
-    it('should override child component\'s dependencies',
+    it("should override child component's dependencies",
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
 
          tcb.overrideDirective(ParentComp, ChildComp, ChildWithChildComp)
@@ -173,8 +187,8 @@ export function main() {
     it('should override a provider',
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
 
-         tcb.overrideProviders(
-                TestBindingsComp, [provide(FancyService, {useClass: MockFancyService})])
+         tcb.overrideProviders(TestBindingsComp,
+                               [provide(FancyService, {useClass: MockFancyService})])
              .createAsync(TestBindingsComp)
              .then((componentFixture) => {
                componentFixture.detectChanges();
@@ -188,8 +202,8 @@ export function main() {
     it('should override a viewBinding',
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
 
-         tcb.overrideViewProviders(
-                TestViewBindingsComp, [provide(FancyService, {useClass: MockFancyService})])
+         tcb.overrideViewProviders(TestViewBindingsComp,
+                                   [provide(FancyService, {useClass: MockFancyService})])
              .createAsync(TestViewBindingsComp)
              .then((componentFixture) => {
                componentFixture.detectChanges();

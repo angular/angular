@@ -72,7 +72,7 @@ export class Response {
    */
   headers: Headers;
   // TODO: Support ArrayBuffer, JSON, FormData, Blob
-  private _body: string|Object;
+  private _body: string | Object;
   constructor(responseOptions: ResponseOptions) {
     this._body = responseOptions.body;
     this.status = responseOptions.status;
@@ -92,7 +92,7 @@ export class Response {
    * Attempts to return body as parsed `JSON` object, or raises an exception.
    */
   json(): any {
-    var jsonResponse: string|Object;
+    var jsonResponse: string | Object;
     if (isJsObject(this._body)) {
       jsonResponse = this._body;
     } else if (isString(this._body)) {

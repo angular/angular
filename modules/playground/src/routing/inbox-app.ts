@@ -1,5 +1,13 @@
 import {Component, Injectable} from 'angular2/core';
-import {RouterLink, RouteConfig, Router, Route, RouterOutlet, Location, RouteParams} from 'angular2/router';
+import {
+  RouterLink,
+  RouteConfig,
+  Router,
+  Route,
+  RouterOutlet,
+  Location,
+  RouteParams
+} from 'angular2/router';
 import * as db from './data';
 import {PromiseWrapper} from 'angular2/src/facade/async';
 import {isPresent, DateWrapper} from 'angular2/src/facade/lang';
@@ -64,8 +72,8 @@ class DbService {
   }
 
   emails(): Promise<any[]> {
-    return this.getData().then(
-        (data: any[]): any[] => data.filter(record => !isPresent(record['draft'])));
+    return this.getData().then((data: any[]): any[] =>
+                                   data.filter(record => !isPresent(record['draft'])));
   }
 
   email(id): Promise<any> {
@@ -99,19 +107,18 @@ class InboxCmp {
 
   constructor(public router: Router, db: DbService, params: RouteParams) {
     var sortType = params.get('sort');
-    var sortEmailsByDate = isPresent(sortType) && sortType == 'date';
+    var sortEmailsByDate = isPresent(sortType) && sortType == "date";
 
     PromiseWrapper.then(db.emails(), (emails: any[]) => {
       this.ready = true;
       this.items = emails.map(data => new InboxRecord(data));
 
       if (sortEmailsByDate) {
-        this.items.sort(
-            (a: InboxRecord, b: InboxRecord) =>
-                DateWrapper.toMillis(DateWrapper.fromISOString(a.date)) <
-                    DateWrapper.toMillis(DateWrapper.fromISOString(b.date)) ?
-                -1 :
-                1);
+        this.items.sort((a: InboxRecord, b: InboxRecord) =>
+                            DateWrapper.toMillis(DateWrapper.fromISOString(a.date)) <
+                                    DateWrapper.toMillis(DateWrapper.fromISOString(b.date)) ?
+                                -1 :
+                                1);
       }
     });
   }

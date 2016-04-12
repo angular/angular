@@ -66,9 +66,8 @@ export class ComponentRef_ extends ComponentRef {
   /**
    * TODO(i): refactor into public/private fields
    */
-  constructor(
-      location: ElementRef, instance: any, componentType: Type, injector: Injector,
-      private _dispose: () => void) {
+  constructor(location: ElementRef, instance: any, componentType: Type, injector: Injector,
+              private _dispose: () => void) {
     super();
     this.location = location;
     this.instance = instance;
@@ -141,9 +140,8 @@ export abstract class DynamicComponentLoader {
    * </my-app>
    * ```
    */
-  abstract loadAsRoot(
-      type: Type, overrideSelector: string, injector: Injector, onDispose?: () => void,
-      projectableNodes?: any[][]): Promise<ComponentRef>;
+  abstract loadAsRoot(type: Type, overrideSelector: string, injector: Injector,
+                      onDispose?: () => void, projectableNodes?: any[][]): Promise<ComponentRef>;
 
   /**
    * Creates an instance of a Component and attaches it to a View Container located inside of the
@@ -192,9 +190,9 @@ export abstract class DynamicComponentLoader {
    * </my-app>
    * ```
    */
-  abstract loadIntoLocation(
-      type: Type, hostLocation: ElementRef, anchorName: string, providers?: ResolvedProvider[],
-      projectableNodes?: any[][]): Promise<ComponentRef>;
+  abstract loadIntoLocation(type: Type, hostLocation: ElementRef, anchorName: string,
+                            providers?: ResolvedProvider[],
+                            projectableNodes?: any[][]): Promise<ComponentRef>;
 
   /**
    * Creates an instance of a Component and attaches it to the View Container found at the
@@ -236,21 +234,19 @@ export abstract class DynamicComponentLoader {
    * <child-component>Child</child-component>
    * ```
    */
-  abstract loadNextToLocation(
-      type: Type, location: ElementRef, providers?: ResolvedProvider[],
-      projectableNodes?: any[][]): Promise<ComponentRef>;
+  abstract loadNextToLocation(type: Type, location: ElementRef, providers?: ResolvedProvider[],
+                              projectableNodes?: any[][]): Promise<ComponentRef>;
 }
 
 @Injectable()
 export class DynamicComponentLoader_ extends DynamicComponentLoader {
   constructor(private _compiler: Compiler, private _viewManager: AppViewManager) { super(); }
 
-  loadAsRoot(
-      type: Type, overrideSelector: string, injector: Injector, onDispose?: () => void,
-      projectableNodes?: any[][]): Promise<ComponentRef> {
+  loadAsRoot(type: Type, overrideSelector: string, injector: Injector, onDispose?: () => void,
+             projectableNodes?: any[][]): Promise<ComponentRef> {
     return this._compiler.compileInHost(type).then(hostProtoViewRef => {
-      var hostViewRef = this._viewManager.createRootHostView(
-          hostProtoViewRef, overrideSelector, injector, projectableNodes);
+      var hostViewRef = this._viewManager.createRootHostView(hostProtoViewRef, overrideSelector,
+                                                             injector, projectableNodes);
       var newLocation = this._viewManager.getHostElement(hostViewRef);
       var component = this._viewManager.getComponent(newLocation);
 
@@ -264,22 +260,20 @@ export class DynamicComponentLoader_ extends DynamicComponentLoader {
     });
   }
 
-  loadIntoLocation(
-      type: Type, hostLocation: ElementRef, anchorName: string,
-      providers: ResolvedProvider[] = null,
-      projectableNodes: any[][] = null): Promise<ComponentRef> {
+  loadIntoLocation(type: Type, hostLocation: ElementRef, anchorName: string,
+                   providers: ResolvedProvider[] = null,
+                   projectableNodes: any[][] = null): Promise<ComponentRef> {
     return this.loadNextToLocation(
         type, this._viewManager.getNamedElementInComponentView(hostLocation, anchorName), providers,
         projectableNodes);
   }
 
-  loadNextToLocation(
-      type: Type, location: ElementRef, providers: ResolvedProvider[] = null,
-      projectableNodes: any[][] = null): Promise<ComponentRef> {
+  loadNextToLocation(type: Type, location: ElementRef, providers: ResolvedProvider[] = null,
+                     projectableNodes: any[][] = null): Promise<ComponentRef> {
     return this._compiler.compileInHost(type).then(hostProtoViewRef => {
       var viewContainer = this._viewManager.getViewContainer(location);
-      var hostViewRef = viewContainer.createHostView(
-          hostProtoViewRef, viewContainer.length, providers, projectableNodes);
+      var hostViewRef = viewContainer.createHostView(hostProtoViewRef, viewContainer.length,
+                                                     providers, projectableNodes);
       var newLocation = this._viewManager.getHostElement(hostViewRef);
       var component = this._viewManager.getComponent(newLocation);
 

@@ -1,4 +1,8 @@
-import {PostMessageBusSource, PostMessageBusSink, PostMessageBus} from 'angular2/src/web_workers/shared/post_message_bus';
+import {
+  PostMessageBusSource,
+  PostMessageBusSink,
+  PostMessageBus
+} from 'angular2/src/web_workers/shared/post_message_bus';
 import {MessageBus} from 'angular2/src/web_workers/shared/message_bus';
 
 /*
@@ -17,10 +21,10 @@ class MockPostMessage {
   private _listener: EventListener;
 
   addEventListener(type: string, listener: EventListener, useCapture?: boolean): void {
-    if (type === 'message') {
+    if (type === "message") {
       this._listener = listener;
     }
   }
 
-  postMessage(data: any, transfer?: [ArrayBuffer]): void { this._listener(<any>{data: data}); }
+  postMessage(data: any, transfer?:[ArrayBuffer]): void { this._listener(<any>{data: data}); }
 }

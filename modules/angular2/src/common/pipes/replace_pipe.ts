@@ -1,4 +1,11 @@
-import {isBlank, isString, isNumber, isFunction, RegExpWrapper, StringWrapper} from 'angular2/src/facade/lang';
+import {
+  isBlank,
+  isString,
+  isNumber,
+  isFunction,
+  RegExpWrapper,
+  StringWrapper
+} from 'angular2/src/facade/lang';
 import {BaseException} from 'angular2/src/facade/exceptions';
 import {Injectable, PipeTransform, Pipe} from 'angular2/core';
 import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';

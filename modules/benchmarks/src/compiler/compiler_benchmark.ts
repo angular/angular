@@ -5,7 +5,16 @@ import {PromiseWrapper} from 'angular2/src/facade/async';
 import {ListWrapper, Map, MapWrapper} from 'angular2/src/facade/collection';
 import {DateWrapper, Type, print, isPresent} from 'angular2/src/facade/lang';
 
-import {Compiler, Component, Directive, ViewContainerRef, bind, provide, Provider, ViewMetadata} from 'angular2/core';
+import {
+  Compiler,
+  Component,
+  Directive,
+  ViewContainerRef,
+  bind,
+  provide,
+  Provider,
+  ViewMetadata
+} from 'angular2/core';
 
 import {ChangeDetectorGenConfig} from 'angular2/src/core/change_detection/change_detection';
 import {ViewResolver} from 'angular2/src/core/linker/view_resolver';
@@ -15,12 +24,13 @@ import {getIntParameter, bindAction} from 'angular2/src/testing/benchmark_util';
 function _createBindings(): Provider[] {
   var multiplyTemplatesBy = getIntParameter('elements');
   return [
-    provide(ViewResolver, {
-      useFactory:
-          () => new MultiplyViewResolver(
-              multiplyTemplatesBy, [BenchmarkComponentNoBindings, BenchmarkComponentWithBindings]),
-      deps: []
-    }),
+    provide(ViewResolver,
+            {
+              useFactory: () => new MultiplyViewResolver(
+                              multiplyTemplatesBy,
+                              [BenchmarkComponentNoBindings, BenchmarkComponentWithBindings]),
+              deps: []
+            }),
     // Use DynamicChangeDetector as that is the only one that Dart supports as well
     // so that we can compare the numbers between JS and Dart
     provide(ChangeDetectorGenConfig, {useValue: new ChangeDetectorGenConfig(false, false, false)})
@@ -29,12 +39,14 @@ function _createBindings(): Provider[] {
 
 export function main() {
   BrowserDomAdapter.makeCurrent();
-  bootstrap(CompilerAppComponent, _createBindings()).then((ref) => {
-    var app = ref.hostComponent;
-    bindAction('#compileNoBindings', measureWrapper(() => app.compileNoBindings(), 'No Bindings'));
-    bindAction(
-        '#compileWithBindings', measureWrapper(() => app.compileWithBindings(), 'With Bindings'));
-  });
+  bootstrap(CompilerAppComponent, _createBindings())
+      .then((ref) => {
+        var app = ref.hostComponent;
+        bindAction('#compileNoBindings',
+                   measureWrapper(() => app.compileNoBindings(), 'No Bindings'));
+        bindAction('#compileWithBindings',
+                   measureWrapper(() => app.compileWithBindings(), 'With Bindings'));
+      });
 }
 
 function measureWrapper(func, desc) {

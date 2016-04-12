@@ -1,5 +1,10 @@
 import {Injectable, Inject, Optional} from 'angular2/core';
-import {LocationStrategy, joinWithSlash, APP_BASE_HREF, normalizeQueryParams} from './location_strategy';
+import {
+  LocationStrategy,
+  joinWithSlash,
+  APP_BASE_HREF,
+  normalizeQueryParams
+} from './location_strategy';
 import {UrlChangeListener} from './platform_location';
 import {isPresent} from 'angular2/src/facade/lang';
 import {PlatformLocation} from './platform_location';
@@ -45,9 +50,8 @@ import {PlatformLocation} from './platform_location';
 @Injectable()
 export class HashLocationStrategy extends LocationStrategy {
   private _baseHref: string = '';
-  constructor(
-      private _platformLocation: PlatformLocation,
-      @Optional() @Inject(APP_BASE_HREF) _baseHref?: string) {
+  constructor(private _platformLocation: PlatformLocation,
+              @Optional() @Inject(APP_BASE_HREF) _baseHref?: string) {
     super();
     if (isPresent(_baseHref)) {
       this._baseHref = _baseHref;

@@ -1,6 +1,13 @@
 import {provide, Component} from 'angular2/core';
 import {bootstrap} from 'angular2/platform/browser';
-import {CanDeactivate, RouteConfig, RouteParams, ComponentInstruction, ROUTER_DIRECTIVES, APP_BASE_HREF} from 'angular2/router';
+import {
+  CanDeactivate,
+  RouteConfig,
+  RouteParams,
+  ComponentInstruction,
+  ROUTER_DIRECTIVES,
+  APP_BASE_HREF
+} from 'angular2/router';
 
 // #docregion routerCanDeactivate
 @Component({

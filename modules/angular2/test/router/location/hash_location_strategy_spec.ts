@@ -1,4 +1,16 @@
-import {AsyncTestCompleter, describe, proxy, it, iit, ddescribe, expect, inject, beforeEach, beforeEachProviders, SpyObject} from 'angular2/testing_internal';
+import {
+  AsyncTestCompleter,
+  describe,
+  proxy,
+  it,
+  iit,
+  ddescribe,
+  expect,
+  inject,
+  beforeEach,
+  beforeEachProviders,
+  SpyObject
+} from 'angular2/testing_internal';
 
 import {Injector, provide} from 'angular2/core';
 

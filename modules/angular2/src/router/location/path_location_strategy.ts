@@ -1,7 +1,12 @@
 import {Injectable, Inject, Optional} from 'angular2/core';
 import {isBlank} from 'angular2/src/facade/lang';
 import {BaseException} from 'angular2/src/facade/exceptions';
-import {LocationStrategy, APP_BASE_HREF, normalizeQueryParams, joinWithSlash} from './location_strategy';
+import {
+  LocationStrategy,
+  APP_BASE_HREF,
+  normalizeQueryParams,
+  joinWithSlash
+} from './location_strategy';
 import {PlatformLocation, UrlChangeListener} from './platform_location';
 
 /**
@@ -53,9 +58,8 @@ import {PlatformLocation, UrlChangeListener} from './platform_location';
 export class PathLocationStrategy extends LocationStrategy {
   private _baseHref: string;
 
-  constructor(
-      private _platformLocation: PlatformLocation,
-      @Optional() @Inject(APP_BASE_HREF) href?: string) {
+  constructor(private _platformLocation: PlatformLocation,
+              @Optional() @Inject(APP_BASE_HREF) href?: string) {
     super();
 
     if (isBlank(href)) {

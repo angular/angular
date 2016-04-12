@@ -1,8 +1,16 @@
-import {AsyncTestCompleter, inject, describe, ddescribe, beforeEach, it, expect} from 'angular2/testing_internal';
-import {RenderStore} from 'angular2/src/web_workers/shared/render_store';
+import {
+  AsyncTestCompleter,
+  inject,
+  describe,
+  ddescribe,
+  beforeEach,
+  it,
+  expect
+} from "angular2/testing_internal";
+import {RenderStore} from "angular2/src/web_workers/shared/render_store";
 
 export function main() {
-  describe('RenderStoreSpec', () => {
+  describe("RenderStoreSpec", () => {
     var store: RenderStore;
     beforeEach(() => { store = new RenderStore(); });
 

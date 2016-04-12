@@ -18,10 +18,9 @@ export class HtmlAttrAst implements HtmlAst {
 }
 
 export class HtmlElementAst implements HtmlAst {
-  constructor(
-      public name: string, public attrs: HtmlAttrAst[], public children: HtmlAst[],
-      public sourceSpan: ParseSourceSpan, public startSourceSpan: ParseSourceSpan,
-      public endSourceSpan: ParseSourceSpan) {}
+  constructor(public name: string, public attrs: HtmlAttrAst[], public children: HtmlAst[],
+              public sourceSpan: ParseSourceSpan, public startSourceSpan: ParseSourceSpan,
+              public endSourceSpan: ParseSourceSpan) {}
   visit(visitor: HtmlAstVisitor, context: any): any { return visitor.visitElement(this, context); }
 }
 

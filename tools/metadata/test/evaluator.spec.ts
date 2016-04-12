@@ -73,13 +73,13 @@ describe('Evaluator', () => {
     expect(evaluator.evaluateNode(findVar(expressions, 'bBAnd').initializer)).toEqual(0x11 & 0x03);
     expect(evaluator.evaluateNode(findVar(expressions, 'bXor').initializer)).toEqual(0x11 ^ 0x21);
     expect(evaluator.evaluateNode(findVar(expressions, 'bEqual').initializer))
-        .toEqual(1 == <any>'1');
+        .toEqual(1 == <any>"1");
     expect(evaluator.evaluateNode(findVar(expressions, 'bNotEqual').initializer))
-        .toEqual(1 != <any>'1');
+        .toEqual(1 != <any>"1");
     expect(evaluator.evaluateNode(findVar(expressions, 'bIdentical').initializer))
-        .toEqual(1 === <any>'1');
+        .toEqual(1 === <any>"1");
     expect(evaluator.evaluateNode(findVar(expressions, 'bNotIdentical').initializer))
-        .toEqual(1 !== <any>'1');
+        .toEqual(1 !== <any>"1");
     expect(evaluator.evaluateNode(findVar(expressions, 'bLessThan').initializer)).toEqual(1 < 2);
     expect(evaluator.evaluateNode(findVar(expressions, 'bGreaterThan').initializer)).toEqual(1 > 2);
     expect(evaluator.evaluateNode(findVar(expressions, 'bLessThanEqual').initializer))
@@ -97,9 +97,9 @@ describe('Evaluator', () => {
   it('should report recursive references as symbolic', () => {
     var expressions = program.getSourceFile('expressions.ts');
     expect(evaluator.evaluateNode(findVar(expressions, 'recursiveA').initializer))
-        .toEqual({__symbolic: 'reference', name: 'recursiveB', module: 'expressions.ts'});
+        .toEqual({__symbolic: "reference", name: "recursiveB", module: "expressions.ts"});
     expect(evaluator.evaluateNode(findVar(expressions, 'recursiveB').initializer))
-        .toEqual({__symbolic: 'reference', name: 'recursiveA', module: 'expressions.ts'});
+        .toEqual({__symbolic: "reference", name: "recursiveA", module: "expressions.ts"});
   });
 });
 

@@ -1,6 +1,12 @@
 import {DOM} from 'angular2/src/platform/dom/dom_adapter';
 import {window, document, gc} from 'angular2/src/facade/browser';
-import {getIntParameter, getStringParameter, bindAction, windowProfile, windowProfileEnd} from 'angular2/src/testing/benchmark_util';
+import {
+  getIntParameter,
+  getStringParameter,
+  bindAction,
+  windowProfile,
+  windowProfileEnd
+} from 'angular2/src/testing/benchmark_util';
 import {bootstrap} from 'angular2/platform/browser';
 import {Component, Directive, bind, provide} from 'angular2/core';
 import {NgFor, NgSwitch, NgSwitchWhen, NgSwitchDefault} from 'angular2/common';
@@ -104,15 +110,16 @@ export function main() {
   function noop() {}
 
   function initNg2() {
-    bootstrap(AppComponent, _createBindings()).then((ref) => {
-      var injector = ref.injector;
-      app = ref.hostComponent;
-      appRef = injector.get(ApplicationRef);
-      bindAction('#ng2DestroyDom', ng2DestroyDom);
-      bindAction('#ng2CreateDom', ng2CreateDom);
-      bindAction('#ng2UpdateDomProfile', profile(ng2CreateDom, noop, 'ng2-update'));
-      bindAction('#ng2CreateDomProfile', profile(ng2CreateDom, ng2DestroyDom, 'ng2-create'));
-    });
+    bootstrap(AppComponent, _createBindings())
+        .then((ref) => {
+          var injector = ref.injector;
+          app = ref.hostComponent;
+          appRef = injector.get(ApplicationRef);
+          bindAction('#ng2DestroyDom', ng2DestroyDom);
+          bindAction('#ng2CreateDom', ng2CreateDom);
+          bindAction('#ng2UpdateDomProfile', profile(ng2CreateDom, noop, 'ng2-update'));
+          bindAction('#ng2CreateDomProfile', profile(ng2CreateDom, ng2DestroyDom, 'ng2-create'));
+        });
     setupReflector();
   }
 
@@ -131,9 +138,8 @@ export function main() {
     bindAction('#baselineCreateDom', baselineCreateDom);
 
     bindAction('#baselineUpdateDomProfile', profile(baselineCreateDom, noop, 'baseline-update'));
-    bindAction(
-        '#baselineCreateDomProfile',
-        profile(baselineCreateDom, baselineDestroyDom, 'baseline-create'));
+    bindAction('#baselineCreateDomProfile',
+               profile(baselineCreateDom, baselineDestroyDom, 'baseline-create'));
   }
 
   initNg2();
@@ -242,9 +248,8 @@ class LargetableComponent {
   benchmarkType: string;
   rows: number;
   columns: number;
-  constructor(
-      @Inject(BENCHMARK_TYPE) benchmarkType, @Inject(LARGETABLE_ROWS) rows,
-      @Inject(LARGETABLE_COLS) columns) {
+  constructor(@Inject(BENCHMARK_TYPE) benchmarkType, @Inject(LARGETABLE_ROWS) rows,
+              @Inject(LARGETABLE_COLS) columns) {
     this.benchmarkType = benchmarkType;
     this.rows = rows;
     this.columns = columns;

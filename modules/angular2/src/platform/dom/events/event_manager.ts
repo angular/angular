@@ -5,7 +5,7 @@ import {NgZone} from 'angular2/src/core/zone/ng_zone';
 import {ListWrapper} from 'angular2/src/facade/collection';
 
 export const EVENT_MANAGER_PLUGINS: OpaqueToken =
-    CONST_EXPR(new OpaqueToken('EventManagerPlugins'));
+    CONST_EXPR(new OpaqueToken("EventManagerPlugins"));
 
 @Injectable()
 export class EventManager {
@@ -48,10 +48,10 @@ export class EventManagerPlugin {
   supports(eventName: string): boolean { return false; }
 
   addEventListener(element: HTMLElement, eventName: string, handler: Function): Function {
-    throw 'not implemented';
+    throw "not implemented";
   }
 
   addGlobalEventListener(element: string, eventName: string, handler: Function): Function {
-    throw 'not implemented';
+    throw "not implemented";
   }
 }

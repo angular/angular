@@ -1,6 +1,21 @@
 import {Component, provide} from 'angular2/core';
 import {UrlResolver, XHR} from 'angular2/compiler';
-import {AsyncTestCompleter, beforeEach, beforeEachProviders, ComponentFixture, ddescribe, describe, expect, fakeAsync, iit, inject, it, TestComponentBuilder, tick, xit} from 'angular2/testing_internal';
+import {
+  AsyncTestCompleter,
+  beforeEach,
+  beforeEachProviders,
+  ComponentFixture,
+  ddescribe,
+  describe,
+  expect,
+  fakeAsync,
+  iit,
+  inject,
+  it,
+  TestComponentBuilder,
+  tick,
+  xit
+} from 'angular2/testing_internal';
 import {BaseException} from 'angular2/src/facade/exceptions';
 import {CachedXHR} from 'angular2/src/platform/browser/xhr_cache';
 import {setTemplateCache} from './xhr_cache_setter';
@@ -13,25 +28,26 @@ export function main() {
       setTemplateCache({'test.html': '<div>Hello</div>'});
       return new CachedXHR();
     }
-    beforeEachProviders(() => [provide(UrlResolver, {useClass: TestUrlResolver}), provide(XHR, {
-                                 useFactory: createCachedXHR
-                               })]);
+    beforeEachProviders(() => [
+      provide(UrlResolver, {useClass: TestUrlResolver}),
+      provide(XHR, {useFactory: createCachedXHR})
+    ]);
 
     it('should throw exception if $templateCache is not found', () => {
       setTemplateCache(null);
-      expect(() => {
-        xhr = new CachedXHR();
-      }).toThrowErrorWith('CachedXHR: Template cache was not found in $templateCache.');
+      expect(() => { xhr = new CachedXHR(); })
+          .toThrowErrorWith('CachedXHR: Template cache was not found in $templateCache.');
     });
 
     it('should resolve the Promise with the cached file content on success',
        inject([AsyncTestCompleter], (async) => {
          setTemplateCache({'test.html': '<div>Hello</div>'});
          xhr = new CachedXHR();
-         xhr.get('test.html').then((text) => {
-           expect(text).toEqual('<div>Hello</div>');
-           async.done();
-         });
+         xhr.get('test.html')
+             .then((text) => {
+               expect(text).toEqual('<div>Hello</div>');
+               async.done();
+             });
        }));
 
     it('should reject the Promise on failure', inject([AsyncTestCompleter], (async) => {

@@ -1,4 +1,18 @@
-import {AsyncTestCompleter, beforeEach, ddescribe, describe, expect, fakeAsync, flushMicrotasks, iit, inject, it, Log, tick, xit} from 'angular2/testing_internal';
+import {
+  AsyncTestCompleter,
+  beforeEach,
+  ddescribe,
+  describe,
+  expect,
+  fakeAsync,
+  flushMicrotasks,
+  iit,
+  inject,
+  it,
+  Log,
+  tick,
+  xit
+} from 'angular2/testing_internal';
 import {TimerWrapper, PromiseWrapper} from 'angular2/src/facade/async';
 import {BaseException} from 'angular2/src/facade/exceptions';
 import {Parser} from 'angular2/src/core/change_detection/change_detection';
@@ -23,9 +37,8 @@ export function main() {
        inject([Parser], fakeAsync((parser) => { expect(parser).toBeAnInstanceOf(Parser); })));
 
     it('should throw on nested calls', () => {
-      expect(() => {
-        fakeAsync(() => { fakeAsync(() => null)(); })();
-      }).toThrowError('fakeAsync() calls can not be nested');
+      expect(() => { fakeAsync(() => { fakeAsync(() => null)(); })(); })
+          .toThrowError('fakeAsync() calls can not be nested');
     });
 
     it('should flush microtasks before returning', () => {
@@ -87,9 +100,8 @@ export function main() {
       });
 
       it('should complain if a test throws an exception', () => {
-        expect(() => {
-          fakeAsync(() => { throw new BaseException('sync'); })();
-        }).toThrowError('sync');
+        expect(() => { fakeAsync(() => { throw new BaseException('sync'); })(); })
+            .toThrowError('sync');
       });
 
     });
@@ -141,15 +153,13 @@ export function main() {
          }));
 
       it('should throw an error on dangling timers', () => {
-        expect(() => {
-          fakeAsync(() => { TimerWrapper.setTimeout(() => {}, 10); })();
-        }).toThrowError('1 timer(s) still in the queue.');
+        expect(() => { fakeAsync(() => { TimerWrapper.setTimeout(() => {}, 10); })(); })
+            .toThrowError('1 timer(s) still in the queue.');
       });
 
       it('should throw an error on dangling periodic timers', () => {
-        expect(() => {
-          fakeAsync(() => { TimerWrapper.setInterval(() => {}, 10); })();
-        }).toThrowError('1 periodic timer(s) still in the queue.');
+        expect(() => { fakeAsync(() => { TimerWrapper.setInterval(() => {}, 10); })(); })
+            .toThrowError('1 periodic timer(s) still in the queue.');
       });
 
       it('should run periodic timers', fakeAsync(() => {
@@ -240,15 +250,13 @@ export function main() {
 
     describe('outside of the fakeAsync zone', () => {
       it('calling flushMicrotasks should throw', () => {
-        expect(() => {
-          flushMicrotasks();
-        }).toThrowError('The code should be running in the fakeAsync zone to call this function');
+        expect(() => { flushMicrotasks(); })
+            .toThrowError('The code should be running in the fakeAsync zone to call this function');
       });
 
       it('calling tick should throw', () => {
-        expect(() => {
-          tick();
-        }).toThrowError('The code should be running in the fakeAsync zone to call this function');
+        expect(() => { tick(); })
+            .toThrowError('The code should be running in the fakeAsync zone to call this function');
       });
     });
 

@@ -1,20 +1,53 @@
-import {AsyncTestCompleter, inject, ddescribe, describe, dispatchEvent, it, iit, expect, beforeEach, beforeEachProviders, TestInjector, TestComponentBuilder} from 'angular2/testing_internal';
+import {
+  AsyncTestCompleter,
+  inject,
+  ddescribe,
+  describe,
+  dispatchEvent,
+  it,
+  iit,
+  expect,
+  beforeEach,
+  beforeEachProviders,
+  TestInjector,
+  TestComponentBuilder
+} from "angular2/testing_internal";
 import {DOM} from 'angular2/src/platform/dom/dom_adapter';
-import {bind, provide, Provider, Injector, ViewMetadata, Component, Injectable, ElementRef} from 'angular2/core';
+import {
+  bind,
+  provide,
+  Provider,
+  Injector,
+  ViewMetadata,
+  Component,
+  Injectable,
+  ElementRef
+} from 'angular2/core';
 import {NgIf} from 'angular2/common';
-import {WebWorkerRootRenderer} from 'angular2/src/web_workers/worker/renderer';
-import {ClientMessageBrokerFactory, ClientMessageBrokerFactory_, UiArguments, FnArg} from 'angular2/src/web_workers/shared/client_message_broker';
-import {Serializer} from 'angular2/src/web_workers/shared/serializer';
-import {RootRenderer} from 'angular2/src/core/render/api';
+import {WebWorkerRootRenderer} from "angular2/src/web_workers/worker/renderer";
+import {
+  ClientMessageBrokerFactory,
+  ClientMessageBrokerFactory_,
+  UiArguments,
+  FnArg
+} from "angular2/src/web_workers/shared/client_message_broker";
+import {Serializer} from "angular2/src/web_workers/shared/serializer";
+import {RootRenderer} from "angular2/src/core/render/api";
 import {DomRootRenderer, DomRootRenderer_} from 'angular2/src/platform/dom/dom_renderer';
 import {DebugDomRootRenderer} from 'angular2/src/core/debug/debug_renderer';
-import {RenderStore} from 'angular2/src/web_workers/shared/render_store';
+import {RenderStore} from "angular2/src/web_workers/shared/render_store";
 import {MessageBasedRenderer} from 'angular2/src/web_workers/ui/renderer';
 import {createPairedMessageBuses, PairedMessageBuses} from '../shared/web_worker_test_util';
-import {ServiceMessageBrokerFactory, ServiceMessageBrokerFactory_} from 'angular2/src/web_workers/shared/service_message_broker';
+import {
+  ServiceMessageBrokerFactory,
+  ServiceMessageBrokerFactory_
+} from 'angular2/src/web_workers/shared/service_message_broker';
 import {ChangeDetectorGenConfig} from 'angular2/src/core/change_detection/change_detection';
 import {ElementRef_} from 'angular2/src/core/linker/element_ref';
-import {TEST_BROWSER_PLATFORM_PROVIDERS, TEST_BROWSER_APPLICATION_PROVIDERS} from 'angular2/platform/testing/browser';
+import {
+  TEST_BROWSER_PLATFORM_PROVIDERS,
+  TEST_BROWSER_APPLICATION_PROVIDERS
+} from 'angular2/platform/testing/browser';
 
 export function main() {
   function createWebWorkerBrokerFactory(
@@ -29,25 +62,25 @@ export function main() {
 
     // set up the ui side
     var uiMessageBrokerFactory = new ServiceMessageBrokerFactory_(uiMessageBus, uiSerializer);
-    var renderer = new MessageBasedRenderer(
-        uiMessageBrokerFactory, uiMessageBus, uiSerializer, uiRenderStore, domRootRenderer);
+    var renderer = new MessageBasedRenderer(uiMessageBrokerFactory, uiMessageBus, uiSerializer,
+                                            uiRenderStore, domRootRenderer);
     renderer.start();
 
     return webWorkerBrokerFactory;
   }
 
-  function createWorkerRenderer(
-      workerSerializer: Serializer, uiSerializer: Serializer, domRootRenderer: DomRootRenderer,
-      uiRenderStore: RenderStore, workerRenderStore: RenderStore): RootRenderer {
+  function createWorkerRenderer(workerSerializer: Serializer, uiSerializer: Serializer,
+                                domRootRenderer: DomRootRenderer, uiRenderStore: RenderStore,
+                                workerRenderStore: RenderStore): RootRenderer {
     var messageBuses = createPairedMessageBuses();
-    var brokerFactory = createWebWorkerBrokerFactory(
-        messageBuses, workerSerializer, uiSerializer, domRootRenderer, uiRenderStore);
-    var workerRootRenderer = new WebWorkerRootRenderer(
-        brokerFactory, messageBuses.worker, workerSerializer, workerRenderStore);
+    var brokerFactory = createWebWorkerBrokerFactory(messageBuses, workerSerializer, uiSerializer,
+                                                     domRootRenderer, uiRenderStore);
+    var workerRootRenderer = new WebWorkerRootRenderer(brokerFactory, messageBuses.worker,
+                                                       workerSerializer, workerRenderStore);
     return new DebugDomRootRenderer(workerRootRenderer);
   }
 
-  describe('Web Worker Renderer', () => {
+  describe("Web Worker Renderer", () => {
     var uiInjector: Injector;
     var uiRenderStore: RenderStore;
     var workerRenderStore: RenderStore;
@@ -58,7 +91,8 @@ export function main() {
       testUiInjector.platformProviders = TEST_BROWSER_PLATFORM_PROVIDERS;
       testUiInjector.applicationProviders = TEST_BROWSER_APPLICATION_PROVIDERS;
       testUiInjector.addProviders([
-        Serializer, provide(RenderStore, {useValue: uiRenderStore}),
+        Serializer,
+        provide(RenderStore, {useValue: uiRenderStore}),
         provide(DomRootRenderer, {useClass: DomRootRenderer_}),
         provide(RootRenderer, {useExisting: DomRootRenderer})
       ]);
@@ -68,15 +102,17 @@ export function main() {
       workerRenderStore = new RenderStore();
       return [
         Serializer,
-        provide(
-            ChangeDetectorGenConfig, {useValue: new ChangeDetectorGenConfig(true, true, false)}),
-        provide(RenderStore, {useValue: workerRenderStore}), provide(RootRenderer, {
-          useFactory: (workerSerializer) => {
-            return createWorkerRenderer(
-                workerSerializer, uiSerializer, domRootRenderer, uiRenderStore, workerRenderStore);
-          },
-          deps: [Serializer]
-        })
+        provide(ChangeDetectorGenConfig,
+                {useValue: new ChangeDetectorGenConfig(true, true, false)}),
+        provide(RenderStore, {useValue: workerRenderStore}),
+        provide(RootRenderer,
+                {
+                  useFactory: (workerSerializer) => {
+                    return createWorkerRenderer(workerSerializer, uiSerializer, domRootRenderer,
+                                                uiRenderStore, workerRenderStore);
+                  },
+                  deps: [Serializer]
+                })
       ];
     });
 
@@ -107,9 +143,8 @@ export function main() {
 
     it('should update any element property/attributes/class/style independent of the compilation on the root element and other elements',
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-         tcb.overrideView(
-                MyComp,
-                new ViewMetadata({template: '<input [title]="y" style="position:absolute">'}))
+         tcb.overrideView(MyComp, new ViewMetadata(
+                                      {template: '<input [title]="y" style="position:absolute">'}))
              .createAsync(MyComp)
              .then((fixture) => {
                var checkSetters = (elr) => {
@@ -191,8 +226,8 @@ export function main() {
                  var elRef = (<ElementRef_>fixture.elementRef)
                                  .internalElement.componentView.appElements[0]
                                  .ref;
-                 getRenderer(elRef).invokeElementMethod(
-                     elRef.nativeElement, 'setAttribute', ['a', 'b']);
+                 getRenderer(elRef)
+                     .invokeElementMethod(elRef.nativeElement, 'setAttribute', ['a', 'b']);
 
                  expect(DOM.getAttribute(getRenderElement(elRef), 'a')).toEqual('b');
                  async.done();
@@ -201,8 +236,8 @@ export function main() {
 
       it('should listen to events',
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-           tcb.overrideView(
-                  MyComp, new ViewMetadata({template: '<input (change)="ctxNumProp = 1">'}))
+           tcb.overrideView(MyComp,
+                            new ViewMetadata({template: '<input (change)="ctxNumProp = 1">'}))
                .createAsync(MyComp)
                .then((fixture) => {
                  var elRef = (<ElementRef_>fixture.elementRef)

@@ -1,7 +1,24 @@
-import {ddescribe, describe, xdescribe, it, iit, xit, expect, beforeEach, afterEach, AsyncTestCompleter, inject, beforeEachProviders} from 'angular2/testing_internal';
+import {
+  ddescribe,
+  describe,
+  xdescribe,
+  it,
+  iit,
+  xit,
+  expect,
+  beforeEach,
+  afterEach,
+  AsyncTestCompleter,
+  inject,
+  beforeEachProviders
+} from 'angular2/testing_internal';
 
 import {HtmlParser} from 'angular2/src/compiler/html_parser';
-import {preparseElement, PreparsedElementType, PreparsedElement} from 'angular2/src/compiler/template_preparser';
+import {
+  preparseElement,
+  PreparsedElementType,
+  PreparsedElement
+} from 'angular2/src/compiler/template_preparser';
 
 export function main() {
   describe('preparseElement', () => {

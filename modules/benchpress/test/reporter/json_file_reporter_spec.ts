@@ -1,9 +1,27 @@
-import {afterEach, AsyncTestCompleter, beforeEach, ddescribe, describe, expect, iit, inject, it, xit,} from 'angular2/testing_internal';
+import {
+  afterEach,
+  AsyncTestCompleter,
+  beforeEach,
+  ddescribe,
+  describe,
+  expect,
+  iit,
+  inject,
+  it,
+  xit,
+} from 'angular2/testing_internal';
 
 import {DateWrapper, Json, RegExpWrapper, isPresent} from 'angular2/src/facade/lang';
 import {PromiseWrapper} from 'angular2/src/facade/async';
 
-import {bind, provide, Injector, SampleDescription, MeasureValues, Options} from 'benchpress/common';
+import {
+  bind,
+  provide,
+  Injector,
+  SampleDescription,
+  MeasureValues,
+  Options
+} from 'benchpress/common';
 
 
 import {JsonFileReporter} from 'benchpress/src/reporter/json_file_reporter';
@@ -15,14 +33,15 @@ export function main() {
     function createReporter({sampleId, descriptions, metrics, path}) {
       var bindings = [
         JsonFileReporter.BINDINGS,
-        provide(
-            SampleDescription, {useValue: new SampleDescription(sampleId, descriptions, metrics)}),
+        provide(SampleDescription,
+                {useValue: new SampleDescription(sampleId, descriptions, metrics)}),
         bind(JsonFileReporter.PATH).toValue(path),
         bind(Options.NOW).toValue(() => DateWrapper.fromMillis(1234)),
-        bind(Options.WRITE_FILE).toValue((filename, content) => {
-          loggedFile = {'filename': filename, 'content': content};
-          return PromiseWrapper.resolve(null);
-        })
+        bind(Options.WRITE_FILE)
+            .toValue((filename, content) => {
+              loggedFile = {'filename': filename, 'content': content};
+              return PromiseWrapper.resolve(null);
+            })
       ];
       return Injector.resolveAndCreate(bindings).get(JsonFileReporter);
     }
@@ -34,26 +53,35 @@ export function main() {
            path: 'somePath',
            metrics: {'script': 'script time'}
          })
-             .reportSample(
-                 [mv(0, 0, {'a': 3, 'b': 6})],
-                 [mv(0, 0, {'a': 3, 'b': 6}), mv(1, 1, {'a': 5, 'b': 9})]);
+             .reportSample([mv(0, 0, {'a': 3, 'b': 6})],
+                           [mv(0, 0, {'a': 3, 'b': 6}), mv(1, 1, {'a': 5, 'b': 9})]);
          var regExp = /somePath\/someId_\d+\.json/g;
          expect(isPresent(RegExpWrapper.firstMatch(regExp, loggedFile['filename']))).toBe(true);
          var parsedContent = Json.parse(loggedFile['content']);
-         expect(parsedContent).toEqual({
-           'description':
-               {'id': 'someId', 'description': {'a': 2}, 'metrics': {'script': 'script time'}},
-           'completeSample': [
-             {'timeStamp': '1970-01-01T00:00:00.000Z', 'runIndex': 0, 'values': {'a': 3, 'b': 6}}
-           ],
-           'validSample': [
-             {'timeStamp': '1970-01-01T00:00:00.000Z', 'runIndex': 0, 'values': {'a': 3, 'b': 6}}, {
-               'timeStamp': '1970-01-01T00:00:00.001Z',
-               'runIndex': 1,
-               'values': {'a': 5, 'b': 9}
-             }
-           ]
-         });
+         expect(parsedContent)
+             .toEqual({
+               "description":
+                   {"id": "someId", "description": {"a": 2}, "metrics": {"script": "script time"}},
+               "completeSample": [
+                 {
+                   "timeStamp": "1970-01-01T00:00:00.000Z",
+                   "runIndex": 0,
+                   "values": {"a": 3, "b": 6}
+                 }
+               ],
+               "validSample": [
+                 {
+                   "timeStamp": "1970-01-01T00:00:00.000Z",
+                   "runIndex": 0,
+                   "values": {"a": 3, "b": 6}
+                 },
+                 {
+                   "timeStamp": "1970-01-01T00:00:00.001Z",
+                   "runIndex": 1,
+                   "values": {"a": 5, "b": 9}
+                 }
+               ]
+             });
          async.done();
        }));
 

@@ -1,4 +1,18 @@
-import {AsyncTestCompleter, TestComponentBuilder, beforeEach, beforeEachProviders, ddescribe, xdescribe, describe, el, expect, iit, inject, it, xit,} from 'angular2/testing_internal';
+import {
+  AsyncTestCompleter,
+  TestComponentBuilder,
+  beforeEach,
+  beforeEachProviders,
+  ddescribe,
+  xdescribe,
+  describe,
+  el,
+  expect,
+  iit,
+  inject,
+  it,
+  xit,
+} from 'angular2/testing_internal';
 
 import {StringMapWrapper} from 'angular2/src/facade/collection';
 

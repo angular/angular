@@ -31,9 +31,8 @@ describe('TreeDiffer', () => {
 
       let diffResult = differ.diffTree();
 
-      expect(diffResult.addedPaths).toEqual([
-        'file-1.txt', 'file-2.txt', 'subdir-1' + path.sep + 'file-1.1.txt'
-      ]);
+      expect(diffResult.addedPaths)
+          .toEqual(['file-1.txt', 'file-2.txt', 'subdir-1' + path.sep + 'file-1.1.txt']);
 
       expect(diffResult.changedPaths).toEqual([]);
       expect(diffResult.removedPaths).toEqual([]);
@@ -85,9 +84,8 @@ describe('TreeDiffer', () => {
 
       let diffResult = differ.diffTree();
 
-      expect(diffResult.addedPaths).toEqual([
-        'file-1.txt', 'file-2.txt', 'subdir-1' + path.sep + 'file-1.1.txt'
-      ]);
+      expect(diffResult.addedPaths)
+          .toEqual(['file-1.txt', 'file-2.txt', 'subdir-1' + path.sep + 'file-1.1.txt']);
 
       // change two files
       testDir['dir1']['file-1.txt'] = mockfs.file({content: 'new content', mtime: new Date(1000)});
@@ -97,9 +95,8 @@ describe('TreeDiffer', () => {
 
       diffResult = differ.diffTree();
 
-      expect(diffResult.changedPaths).toEqual([
-        'file-1.txt', 'subdir-1' + path.sep + 'file-1.1.txt'
-      ]);
+      expect(diffResult.changedPaths)
+          .toEqual(['file-1.txt', 'subdir-1' + path.sep + 'file-1.1.txt']);
 
       expect(diffResult.removedPaths).toEqual([]);
 
@@ -134,9 +131,8 @@ describe('TreeDiffer', () => {
 
       let diffResult = differ.diffTree();
 
-      expect(diffResult.addedPaths).toEqual([
-        'file-1.txt', 'file-2.txt', 'subdir-1' + path.sep + 'file-1.1.txt'
-      ]);
+      expect(diffResult.addedPaths)
+          .toEqual(['file-1.txt', 'file-2.txt', 'subdir-1' + path.sep + 'file-1.1.txt']);
 
       // change two files
       testDir['orig_path']['file-1.txt'] =
@@ -148,9 +144,8 @@ describe('TreeDiffer', () => {
       diffResult = differ.diffTree();
 
       expect(diffResult.addedPaths).toEqual([]);
-      expect(diffResult.changedPaths).toEqual([
-        'file-1.txt', 'subdir-1' + path.sep + 'file-1.1.txt'
-      ]);
+      expect(diffResult.changedPaths)
+          .toEqual(['file-1.txt', 'subdir-1' + path.sep + 'file-1.1.txt']);
       expect(diffResult.removedPaths).toEqual([]);
 
       // change one file
@@ -189,14 +184,14 @@ describe('TreeDiffer', () => {
     });
 
 
-    it('should throw an error if an extension isn\'t prefixed with doc', () => {
+    it("should throw an error if an extension isn't prefixed with doc", () => {
       // includeExtensions
       expect(() => new TreeDiffer('testLabel', 'dir1', ['js']))
-          .toThrowError('Extension must begin with \'.\'. Was: \'js\'');
+          .toThrowError("Extension must begin with '.'. Was: 'js'");
 
       // excludeExtentions
       expect(() => new TreeDiffer('testLabel', 'dir1', [], ['js']))
-          .toThrowError('Extension must begin with \'.\'. Was: \'js\'');
+          .toThrowError("Extension must begin with '.'. Was: 'js'");
     });
 
 

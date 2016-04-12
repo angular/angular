@@ -1,7 +1,28 @@
-import {ComponentFixture, AsyncTestCompleter, TestComponentBuilder, beforeEach, ddescribe, xdescribe, describe, el, expect, iit, inject, beforeEachProviders, it, xit} from 'angular2/testing_internal';
+import {
+  ComponentFixture,
+  AsyncTestCompleter,
+  TestComponentBuilder,
+  beforeEach,
+  ddescribe,
+  xdescribe,
+  describe,
+  el,
+  expect,
+  iit,
+  inject,
+  beforeEachProviders,
+  it,
+  xit
+} from 'angular2/testing_internal';
 
 import {Router, RouterOutlet, RouterLink, RouteParams, RouteData, Location} from 'angular2/router';
-import {RouteConfig, Route, AuxRoute, AsyncRoute, Redirect} from 'angular2/src/router/route_config/route_config_decorator';
+import {
+  RouteConfig,
+  Route,
+  AuxRoute,
+  AsyncRoute,
+  Redirect
+} from 'angular2/src/router/route_config/route_config_decorator';
 
 import {TEST_ROUTER_PROVIDERS, RootCmp, compile} from './util';
 import {HelloCmp, GoodbyeCmp, RedirectToParentCmp} from './impl/fixture_components';

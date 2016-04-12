@@ -5,7 +5,14 @@ var treeAdapter = parser.treeAdapter;
 
 import {MapWrapper, ListWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
 import {DomAdapter, setRootDomAdapter} from 'angular2/platform/common_dom';
-import {isPresent, isBlank, global, Type, setValueOnPath, DateWrapper} from 'angular2/src/facade/lang';
+import {
+  isPresent,
+  isBlank,
+  global,
+  Type,
+  setValueOnPath,
+  DateWrapper
+} from 'angular2/src/facade/lang';
 import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
 import {SelectorMatcher, CssSelector} from 'angular2/src/compiler/selector';
 import {XHR} from 'angular2/src/compiler/xhr';
@@ -37,7 +44,7 @@ export class Parse5DomAdapter extends DomAdapter {
     if (name === 'innerHTML') {
       this.setInnerHTML(el, value);
     } else if (name === 'className') {
-      el.attribs['class'] = el.className = value;
+      el.attribs["class"] = el.className = value;
     } else {
       el[name] = value;
     }
@@ -84,7 +91,7 @@ export class Parse5DomAdapter extends DomAdapter {
       return true;
     }
     var result = false;
-    if (selector && selector.charAt(0) == '#') {
+    if (selector && selector.charAt(0) == "#") {
       result = this.getAttribute(node, 'id') == selector.substring(1);
     } else if (selector) {
       var result = false;
@@ -240,9 +247,9 @@ export class Parse5DomAdapter extends DomAdapter {
       // However, comment node instances return the comment content for textContent getter
       return isRecursive ? '' : el.data;
     } else if (isBlank(el.childNodes) || el.childNodes.length == 0) {
-      return '';
+      return "";
     } else {
-      var textContent = '';
+      var textContent = "";
       for (var i = 0; i < el.childNodes.length; i++) {
         textContent += this.getText(el.childNodes[i], true);
       }
@@ -263,7 +270,7 @@ export class Parse5DomAdapter extends DomAdapter {
   setChecked(el, value: boolean) { el.checked = value; }
   createComment(text: string): Comment { return treeAdapter.createCommentNode(text); }
   createTemplate(html): HTMLElement {
-    var template = treeAdapter.createElement('template', 'http://www.w3.org/1999/xhtml', []);
+    var template = treeAdapter.createElement("template", 'http://www.w3.org/1999/xhtml', []);
     var content = parser.parseFragment(html);
     treeAdapter.appendChild(template, content);
     return template;
@@ -278,8 +285,8 @@ export class Parse5DomAdapter extends DomAdapter {
     return t;
   }
   createScriptTag(attrName: string, attrValue: string): HTMLElement {
-    return treeAdapter.createElement(
-        'script', 'http://www.w3.org/1999/xhtml', [{name: attrName, value: attrValue}]);
+    return treeAdapter.createElement("script", 'http://www.w3.org/1999/xhtml',
+                                     [{name: attrName, value: attrValue}]);
   }
   createStyleElement(css: string): HTMLStyleElement {
     var style = this.createElement('style');
@@ -336,7 +343,7 @@ export class Parse5DomAdapter extends DomAdapter {
     return _recursive(node);
   }
   getElementsByClassName(element, name: string): HTMLElement[] {
-    return this.querySelectorAll(element, '.' + name);
+    return this.querySelectorAll(element, "." + name);
   }
   getElementsByTagName(element: any, name: string): HTMLElement[] {
     throw _notImplemented('getElementsByTagName');
@@ -344,8 +351,8 @@ export class Parse5DomAdapter extends DomAdapter {
   classList(element): string[] {
     var classAttrValue = null;
     var attributes = element.attribs;
-    if (attributes && attributes.hasOwnProperty('class')) {
-      classAttrValue = attributes['class'];
+    if (attributes && attributes.hasOwnProperty("class")) {
+      classAttrValue = attributes["class"];
     }
     return classAttrValue ? classAttrValue.trim().split(/\s+/g) : [];
   }
@@ -354,7 +361,7 @@ export class Parse5DomAdapter extends DomAdapter {
     var index = classList.indexOf(className);
     if (index == -1) {
       classList.push(className);
-      element.attribs['class'] = element.className = classList.join(' ');
+      element.attribs["class"] = element.className = classList.join(" ");
     }
   }
   removeClass(element, className: string) {
@@ -362,7 +369,7 @@ export class Parse5DomAdapter extends DomAdapter {
     var index = classList.indexOf(className);
     if (index > -1) {
       classList.splice(index, 1);
-      element.attribs['class'] = element.className = classList.join(' ');
+      element.attribs["class"] = element.className = classList.join(" ");
     }
   }
   hasClass(element, className: string): boolean {
@@ -376,8 +383,8 @@ export class Parse5DomAdapter extends DomAdapter {
   _readStyleAttribute(element) {
     var styleMap = {};
     var attributes = element.attribs;
-    if (attributes && attributes.hasOwnProperty('style')) {
-      var styleAttrValue = attributes['style'];
+    if (attributes && attributes.hasOwnProperty("style")) {
+      var styleAttrValue = attributes["style"];
       var styleList = styleAttrValue.split(/;+/g);
       for (var i = 0; i < styleList.length; i++) {
         if (styleList[i].length > 0) {
@@ -390,14 +397,14 @@ export class Parse5DomAdapter extends DomAdapter {
   }
   /** @internal */
   _writeStyleAttribute(element, styleMap) {
-    var styleAttrValue = '';
+    var styleAttrValue = "";
     for (var key in styleMap) {
       var newValue = styleMap[key];
       if (newValue && newValue.length > 0) {
-        styleAttrValue += key + ':' + styleMap[key] + ';';
+        styleAttrValue += key + ":" + styleMap[key] + ";";
       }
     }
-    element.attribs['style'] = styleAttrValue;
+    element.attribs["style"] = styleAttrValue;
   }
   setStyle(element, styleName: string, styleValue: string) {
     var styleMap = this._readStyleAttribute(element);
@@ -407,9 +414,9 @@ export class Parse5DomAdapter extends DomAdapter {
   removeStyle(element, styleName: string) { this.setStyle(element, styleName, null); }
   getStyle(element, styleName: string): string {
     var styleMap = this._readStyleAttribute(element);
-    return styleMap.hasOwnProperty(styleName) ? styleMap[styleName] : '';
+    return styleMap.hasOwnProperty(styleName) ? styleMap[styleName] : "";
   }
-  tagName(element): string { return element.tagName == 'style' ? 'STYLE' : element.tagName; }
+  tagName(element): string { return element.tagName == "style" ? "STYLE" : element.tagName; }
   attributeMap(element): Map<string, string> {
     var res = new Map<string, string>();
     var elAttrs = treeAdapter.getAttrList(element);
@@ -425,8 +432,8 @@ export class Parse5DomAdapter extends DomAdapter {
   hasAttributeNS(element, ns: string, attribute: string): boolean { throw 'not implemented'; }
   getAttribute(element, attribute: string): string {
     return element.attribs && element.attribs.hasOwnProperty(attribute) ?
-        element.attribs[attribute] :
-        null;
+               element.attribs[attribute] :
+               null;
   }
   getAttributeNS(element, ns: string, attribute: string): string { throw 'not implemented'; }
   setAttribute(element, attribute: string, value: string) {
@@ -447,14 +454,14 @@ export class Parse5DomAdapter extends DomAdapter {
   templateAwareRoot(el): any { return this.isTemplateElement(el) ? this.content(el) : el; }
   createHtmlDocument(): Document {
     var newDoc = treeAdapter.createDocument();
-    newDoc.title = 'fake title';
-    var head = treeAdapter.createElement('head', null, []);
-    var body = treeAdapter.createElement('body', 'http://www.w3.org/1999/xhtml', []);
+    newDoc.title = "fake title";
+    var head = treeAdapter.createElement("head", null, []);
+    var body = treeAdapter.createElement("body", 'http://www.w3.org/1999/xhtml', []);
     this.appendChild(newDoc, head);
     this.appendChild(newDoc, body);
-    StringMapWrapper.set(newDoc, 'head', head);
-    StringMapWrapper.set(newDoc, 'body', body);
-    StringMapWrapper.set(newDoc, '_window', StringMapWrapper.create());
+    StringMapWrapper.set(newDoc, "head", head);
+    StringMapWrapper.set(newDoc, "body", body);
+    StringMapWrapper.set(newDoc, "_window", StringMapWrapper.create());
     return newDoc;
   }
   defaultDoc(): Document {
@@ -464,10 +471,10 @@ export class Parse5DomAdapter extends DomAdapter {
     return defDoc;
   }
   getBoundingClientRect(el): any { return {left: 0, top: 0, width: 0, height: 0}; }
-  getTitle(): string { return this.defaultDoc().title || ''; }
+  getTitle(): string { return this.defaultDoc().title || ""; }
   setTitle(newTitle: string) { this.defaultDoc().title = newTitle; }
   isTemplateElement(el: any): boolean {
-    return this.isElementNode(el) && this.tagName(el) === 'template';
+    return this.isElementNode(el) && this.tagName(el) === "template";
   }
   isTextNode(node): boolean { return treeAdapter.isTextNode(node); }
   isCommentNode(node): boolean { return treeAdapter.isCommentNode(node); }
@@ -490,32 +497,31 @@ export class Parse5DomAdapter extends DomAdapter {
     for (var i = 0; i < parsedRules.length; i++) {
       var parsedRule = parsedRules[i];
       var rule: {[key: string]: any} = StringMapWrapper.create();
-      StringMapWrapper.set(rule, 'cssText', css);
-      StringMapWrapper.set(rule, 'style', {content: '', cssText: ''});
-      if (parsedRule.type == 'rule') {
-        StringMapWrapper.set(rule, 'type', 1);
-        StringMapWrapper.set(
-            rule, 'selectorText', parsedRule.selectors.join(', ')
-                                      .replace(/\s{2,}/g, ' ')
-                                      .replace(/\s*~\s*/g, ' ~ ')
-                                      .replace(/\s*\+\s*/g, ' + ')
-                                      .replace(/\s*>\s*/g, ' > ')
-                                      .replace(/\[(\w+)=(\w+)\]/g, '[$1="$2"]'));
+      StringMapWrapper.set(rule, "cssText", css);
+      StringMapWrapper.set(rule, "style", {content: "", cssText: ""});
+      if (parsedRule.type == "rule") {
+        StringMapWrapper.set(rule, "type", 1);
+        StringMapWrapper.set(rule, "selectorText", parsedRule.selectors.join(", ")
+                                                       .replace(/\s{2,}/g, " ")
+                                                       .replace(/\s*~\s*/g, " ~ ")
+                                                       .replace(/\s*\+\s*/g, " + ")
+                                                       .replace(/\s*>\s*/g, " > ")
+                                                       .replace(/\[(\w+)=(\w+)\]/g, '[$1="$2"]'));
         if (isBlank(parsedRule.declarations)) {
           continue;
         }
         for (var j = 0; j < parsedRule.declarations.length; j++) {
           var declaration = parsedRule.declarations[j];
-          StringMapWrapper.set(
-              StringMapWrapper.get(rule, 'style'), declaration.property, declaration.value);
-          StringMapWrapper.get(rule, 'style').cssText +=
-              declaration.property + ': ' + declaration.value + ';';
+          StringMapWrapper.set(StringMapWrapper.get(rule, "style"), declaration.property,
+                               declaration.value);
+          StringMapWrapper.get(rule, "style").cssText +=
+              declaration.property + ": " + declaration.value + ";";
         }
-      } else if (parsedRule.type == 'media') {
-        StringMapWrapper.set(rule, 'type', 4);
-        StringMapWrapper.set(rule, 'media', {mediaText: parsedRule.media});
+      } else if (parsedRule.type == "media") {
+        StringMapWrapper.set(rule, "type", 4);
+        StringMapWrapper.set(rule, "media", {mediaText: parsedRule.media});
         if (parsedRule.rules) {
-          StringMapWrapper.set(rule, 'cssRules', this._buildRules(parsedRule.rules));
+          StringMapWrapper.set(rule, "cssRules", this._buildRules(parsedRule.rules));
         }
       }
       rules.push(rule);
@@ -525,11 +531,11 @@ export class Parse5DomAdapter extends DomAdapter {
   supportsDOMEvents(): boolean { return false; }
   supportsNativeShadowDOM(): boolean { return false; }
   getGlobalEventTarget(target: string): any {
-    if (target == 'window') {
+    if (target == "window") {
       return (<any>this.defaultDoc())._window;
-    } else if (target == 'document') {
+    } else if (target == "document") {
       return this.defaultDoc();
-    } else if (target == 'body') {
+    } else if (target == "body") {
       return this.defaultDoc().body;
     }
   }
@@ -537,7 +543,7 @@ export class Parse5DomAdapter extends DomAdapter {
   resetBaseElement(): void { throw 'not implemented'; }
   getHistory(): History { throw 'not implemented'; }
   getLocation(): Location { throw 'not implemented'; }
-  getUserAgent(): string { return 'Fake user agent'; }
+  getUserAgent(): string { return "Fake user agent"; }
   getData(el, name: string): string { return this.getAttribute(el, 'data-' + name); }
   getComputedStyle(el): any { throw 'not implemented'; }
   setData(el, name: string, value: string) { this.setAttribute(el, 'data-' + name, value); }
@@ -558,186 +564,186 @@ export class Parse5DomAdapter extends DomAdapter {
 
 // TODO: build a proper list, this one is all the keys of a HTMLInputElement
 var _HTMLElementPropertyList = [
-  'webkitEntries',
-  'incremental',
-  'webkitdirectory',
-  'selectionDirection',
-  'selectionEnd',
-  'selectionStart',
-  'labels',
-  'validationMessage',
-  'validity',
-  'willValidate',
-  'width',
-  'valueAsNumber',
-  'valueAsDate',
-  'value',
-  'useMap',
-  'defaultValue',
-  'type',
-  'step',
-  'src',
-  'size',
-  'required',
-  'readOnly',
-  'placeholder',
-  'pattern',
-  'name',
-  'multiple',
-  'min',
-  'minLength',
-  'maxLength',
-  'max',
-  'list',
-  'indeterminate',
-  'height',
-  'formTarget',
-  'formNoValidate',
-  'formMethod',
-  'formEnctype',
-  'formAction',
-  'files',
-  'form',
-  'disabled',
-  'dirName',
-  'checked',
-  'defaultChecked',
-  'autofocus',
-  'autocomplete',
-  'alt',
-  'align',
-  'accept',
-  'onautocompleteerror',
-  'onautocomplete',
-  'onwaiting',
-  'onvolumechange',
-  'ontoggle',
-  'ontimeupdate',
-  'onsuspend',
-  'onsubmit',
-  'onstalled',
-  'onshow',
-  'onselect',
-  'onseeking',
-  'onseeked',
-  'onscroll',
-  'onresize',
-  'onreset',
-  'onratechange',
-  'onprogress',
-  'onplaying',
-  'onplay',
-  'onpause',
-  'onmousewheel',
-  'onmouseup',
-  'onmouseover',
-  'onmouseout',
-  'onmousemove',
-  'onmouseleave',
-  'onmouseenter',
-  'onmousedown',
-  'onloadstart',
-  'onloadedmetadata',
-  'onloadeddata',
-  'onload',
-  'onkeyup',
-  'onkeypress',
-  'onkeydown',
-  'oninvalid',
-  'oninput',
-  'onfocus',
-  'onerror',
-  'onended',
-  'onemptied',
-  'ondurationchange',
-  'ondrop',
-  'ondragstart',
-  'ondragover',
-  'ondragleave',
-  'ondragenter',
-  'ondragend',
-  'ondrag',
-  'ondblclick',
-  'oncuechange',
-  'oncontextmenu',
-  'onclose',
-  'onclick',
-  'onchange',
-  'oncanplaythrough',
-  'oncanplay',
-  'oncancel',
-  'onblur',
-  'onabort',
-  'spellcheck',
-  'isContentEditable',
-  'contentEditable',
-  'outerText',
-  'innerText',
-  'accessKey',
-  'hidden',
-  'webkitdropzone',
-  'draggable',
-  'tabIndex',
-  'dir',
-  'translate',
-  'lang',
-  'title',
-  'childElementCount',
-  'lastElementChild',
-  'firstElementChild',
-  'children',
-  'onwebkitfullscreenerror',
-  'onwebkitfullscreenchange',
-  'nextElementSibling',
-  'previousElementSibling',
-  'onwheel',
-  'onselectstart',
-  'onsearch',
-  'onpaste',
-  'oncut',
-  'oncopy',
-  'onbeforepaste',
-  'onbeforecut',
-  'onbeforecopy',
-  'shadowRoot',
-  'dataset',
-  'classList',
-  'className',
-  'outerHTML',
-  'innerHTML',
-  'scrollHeight',
-  'scrollWidth',
-  'scrollTop',
-  'scrollLeft',
-  'clientHeight',
-  'clientWidth',
-  'clientTop',
-  'clientLeft',
-  'offsetParent',
-  'offsetHeight',
-  'offsetWidth',
-  'offsetTop',
-  'offsetLeft',
-  'localName',
-  'prefix',
-  'namespaceURI',
-  'id',
-  'style',
-  'attributes',
-  'tagName',
-  'parentElement',
-  'textContent',
-  'baseURI',
-  'ownerDocument',
-  'nextSibling',
-  'previousSibling',
-  'lastChild',
-  'firstChild',
-  'childNodes',
-  'parentNode',
-  'nodeType',
-  'nodeValue',
-  'nodeName',
-  'closure_lm_714617',
-  '__jsaction'
+  "webkitEntries",
+  "incremental",
+  "webkitdirectory",
+  "selectionDirection",
+  "selectionEnd",
+  "selectionStart",
+  "labels",
+  "validationMessage",
+  "validity",
+  "willValidate",
+  "width",
+  "valueAsNumber",
+  "valueAsDate",
+  "value",
+  "useMap",
+  "defaultValue",
+  "type",
+  "step",
+  "src",
+  "size",
+  "required",
+  "readOnly",
+  "placeholder",
+  "pattern",
+  "name",
+  "multiple",
+  "min",
+  "minLength",
+  "maxLength",
+  "max",
+  "list",
+  "indeterminate",
+  "height",
+  "formTarget",
+  "formNoValidate",
+  "formMethod",
+  "formEnctype",
+  "formAction",
+  "files",
+  "form",
+  "disabled",
+  "dirName",
+  "checked",
+  "defaultChecked",
+  "autofocus",
+  "autocomplete",
+  "alt",
+  "align",
+  "accept",
+  "onautocompleteerror",
+  "onautocomplete",
+  "onwaiting",
+  "onvolumechange",
+  "ontoggle",
+  "ontimeupdate",
+  "onsuspend",
+  "onsubmit",
+  "onstalled",
+  "onshow",
+  "onselect",
+  "onseeking",
+  "onseeked",
+  "onscroll",
+  "onresize",
+  "onreset",
+  "onratechange",
+  "onprogress",
+  "onplaying",
+  "onplay",
+  "onpause",
+  "onmousewheel",
+  "onmouseup",
+  "onmouseover",
+  "onmouseout",
+  "onmousemove",
+  "onmouseleave",
+  "onmouseenter",
+  "onmousedown",
+  "onloadstart",
+  "onloadedmetadata",
+  "onloadeddata",
+  "onload",
+  "onkeyup",
+  "onkeypress",
+  "onkeydown",
+  "oninvalid",
+  "oninput",
+  "onfocus",
+  "onerror",
+  "onended",
+  "onemptied",
+  "ondurationchange",
+  "ondrop",
+  "ondragstart",
+  "ondragover",
+  "ondragleave",
+  "ondragenter",
+  "ondragend",
+  "ondrag",
+  "ondblclick",
+  "oncuechange",
+  "oncontextmenu",
+  "onclose",
+  "onclick",
+  "onchange",
+  "oncanplaythrough",
+  "oncanplay",
+  "oncancel",
+  "onblur",
+  "onabort",
+  "spellcheck",
+  "isContentEditable",
+  "contentEditable",
+  "outerText",
+  "innerText",
+  "accessKey",
+  "hidden",
+  "webkitdropzone",
+  "draggable",
+  "tabIndex",
+  "dir",
+  "translate",
+  "lang",
+  "title",
+  "childElementCount",
+  "lastElementChild",
+  "firstElementChild",
+  "children",
+  "onwebkitfullscreenerror",
+  "onwebkitfullscreenchange",
+  "nextElementSibling",
+  "previousElementSibling",
+  "onwheel",
+  "onselectstart",
+  "onsearch",
+  "onpaste",
+  "oncut",
+  "oncopy",
+  "onbeforepaste",
+  "onbeforecut",
+  "onbeforecopy",
+  "shadowRoot",
+  "dataset",
+  "classList",
+  "className",
+  "outerHTML",
+  "innerHTML",
+  "scrollHeight",
+  "scrollWidth",
+  "scrollTop",
+  "scrollLeft",
+  "clientHeight",
+  "clientWidth",
+  "clientTop",
+  "clientLeft",
+  "offsetParent",
+  "offsetHeight",
+  "offsetWidth",
+  "offsetTop",
+  "offsetLeft",
+  "localName",
+  "prefix",
+  "namespaceURI",
+  "id",
+  "style",
+  "attributes",
+  "tagName",
+  "parentElement",
+  "textContent",
+  "baseURI",
+  "ownerDocument",
+  "nextSibling",
+  "previousSibling",
+  "lastChild",
+  "firstChild",
+  "childNodes",
+  "parentNode",
+  "nodeType",
+  "nodeValue",
+  "nodeName",
+  "closure_lm_714617",
+  "__jsaction"
 ];

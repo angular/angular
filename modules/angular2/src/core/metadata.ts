@@ -3,20 +3,58 @@
  * to be used by the decorator versions of these annotations.
  */
 
-export {QueryMetadata, ContentChildrenMetadata, ContentChildMetadata, ViewChildrenMetadata, ViewQueryMetadata, ViewChildMetadata, AttributeMetadata} from './metadata/di';
+export {
+  QueryMetadata,
+  ContentChildrenMetadata,
+  ContentChildMetadata,
+  ViewChildrenMetadata,
+  ViewQueryMetadata,
+  ViewChildMetadata,
+  AttributeMetadata
+} from './metadata/di';
 
-export {ComponentMetadata, DirectiveMetadata, PipeMetadata, InputMetadata, OutputMetadata, HostBindingMetadata, HostListenerMetadata} from './metadata/directives';
+export {
+  ComponentMetadata,
+  DirectiveMetadata,
+  PipeMetadata,
+  InputMetadata,
+  OutputMetadata,
+  HostBindingMetadata,
+  HostListenerMetadata
+} from './metadata/directives';
 
 export {ViewMetadata, ViewEncapsulation} from './metadata/view';
 
-import {QueryMetadata, ContentChildrenMetadata, ContentChildMetadata, ViewChildrenMetadata, ViewChildMetadata, ViewQueryMetadata, AttributeMetadata} from './metadata/di';
+import {
+  QueryMetadata,
+  ContentChildrenMetadata,
+  ContentChildMetadata,
+  ViewChildrenMetadata,
+  ViewChildMetadata,
+  ViewQueryMetadata,
+  AttributeMetadata
+} from './metadata/di';
 
-import {ComponentMetadata, DirectiveMetadata, PipeMetadata, InputMetadata, OutputMetadata, HostBindingMetadata, HostListenerMetadata} from './metadata/directives';
+import {
+  ComponentMetadata,
+  DirectiveMetadata,
+  PipeMetadata,
+  InputMetadata,
+  OutputMetadata,
+  HostBindingMetadata,
+  HostListenerMetadata
+} from './metadata/directives';
 
 import {ViewMetadata, ViewEncapsulation} from './metadata/view';
 import {ChangeDetectionStrategy} from 'angular2/src/core/change_detection/change_detection';
 
-import {makeDecorator, makeParamDecorator, makePropDecorator, TypeDecorator, Class} from './util/decorators';
+import {
+  makeDecorator,
+  makeParamDecorator,
+  makePropDecorator,
+  TypeDecorator,
+  Class
+} from './util/decorators';
 import {Type} from 'angular2/src/facade/lang';
 
 /**
@@ -38,8 +76,8 @@ export interface ComponentDecorator extends TypeDecorator {
   View(obj: {
     templateUrl?: string,
     template?: string,
-    directives?: Array<Type|any[]>,
-    pipes?: Array<Type|any[]>,
+    directives?: Array<Type | any[]>,
+    pipes?: Array<Type | any[]>,
     renderer?: string,
     styles?: string[],
     styleUrls?: string[],
@@ -58,8 +96,8 @@ export interface ViewDecorator extends TypeDecorator {
   View(obj: {
     templateUrl?: string,
     template?: string,
-    directives?: Array<Type|any[]>,
-    pipes?: Array<Type|any[]>,
+    directives?: Array<Type | any[]>,
+    pipes?: Array<Type | any[]>,
     renderer?: string,
     styles?: string[],
     styleUrls?: string[],
@@ -176,8 +214,8 @@ export interface ComponentFactory {
     template?: string,
     styleUrls?: string[],
     styles?: string[],
-    directives?: Array<Type|any[]>,
-    pipes?: Array<Type|any[]>,
+    directives?: Array<Type | any[]>,
+    pipes?: Array<Type | any[]>,
     encapsulation?: ViewEncapsulation
   }): ComponentDecorator;
   new (obj: {
@@ -201,8 +239,8 @@ export interface ComponentFactory {
     template?: string,
     styleUrls?: string[],
     styles?: string[],
-    directives?: Array<Type|any[]>,
-    pipes?: Array<Type|any[]>,
+    directives?: Array<Type | any[]>,
+    pipes?: Array<Type | any[]>,
     encapsulation?: ViewEncapsulation
   }): ComponentMetadata;
 }
@@ -253,8 +291,8 @@ export interface ViewFactory {
   (obj: {
     templateUrl?: string,
     template?: string,
-    directives?: Array<Type|any[]>,
-    pipes?: Array<Type|any[]>,
+    directives?: Array<Type | any[]>,
+    pipes?: Array<Type | any[]>,
     encapsulation?: ViewEncapsulation,
     styles?: string[],
     styleUrls?: string[],
@@ -262,8 +300,8 @@ export interface ViewFactory {
   new (obj: {
     templateUrl?: string,
     template?: string,
-    directives?: Array<Type|any[]>,
-    pipes?: Array<Type|any[]>,
+    directives?: Array<Type | any[]>,
+    pipes?: Array<Type | any[]>,
     encapsulation?: ViewEncapsulation,
     styles?: string[],
     styleUrls?: string[],
@@ -353,40 +391,40 @@ export interface AttributeFactory {
  * ```
  */
 export interface QueryFactory {
-  (selector: Type|string, {descendants}?: {descendants?: boolean}): ParameterDecorator;
-  new (selector: Type|string, {descendants}?: {descendants?: boolean}): QueryMetadata;
+  (selector: Type | string, {descendants}?: {descendants?: boolean}): ParameterDecorator;
+  new (selector: Type | string, {descendants}?: {descendants?: boolean}): QueryMetadata;
 }
 
 /**
  * Factory for {@link ContentChildren}.
  */
 export interface ContentChildrenFactory {
-  (selector: Type|string, {descendants}?: {descendants?: boolean}): any;
-  new (selector: Type|string, {descendants}?: {descendants?: boolean}): ContentChildrenMetadata;
+  (selector: Type | string, {descendants}?: {descendants?: boolean}): any;
+  new (selector: Type | string, {descendants}?: {descendants?: boolean}): ContentChildrenMetadata;
 }
 
 /**
  * Factory for {@link ContentChild}.
  */
 export interface ContentChildFactory {
-  (selector: Type|string): any;
-  new (selector: Type|string): ContentChildFactory;
+  (selector: Type | string): any;
+  new (selector: Type | string): ContentChildFactory;
 }
 
 /**
  * Factory for {@link ViewChildren}.
  */
 export interface ViewChildrenFactory {
-  (selector: Type|string): any;
-  new (selector: Type|string): ViewChildrenMetadata;
+  (selector: Type | string): any;
+  new (selector: Type | string): ViewChildrenMetadata;
 }
 
 /**
  * Factory for {@link ViewChild}.
  */
 export interface ViewChildFactory {
-  (selector: Type|string): any;
-  new (selector: Type|string): ViewChildFactory;
+  (selector: Type | string): any;
+  new (selector: Type | string): ViewChildFactory;
 }
 
 

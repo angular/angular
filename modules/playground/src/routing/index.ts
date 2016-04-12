@@ -4,6 +4,6 @@ import {bootstrap} from 'angular2/platform/browser';
 import {ROUTER_PROVIDERS, HashLocationStrategy, LocationStrategy} from 'angular2/router';
 
 export function main() {
-  bootstrap(
-      InboxApp, [ROUTER_PROVIDERS, provide(LocationStrategy, {useClass: HashLocationStrategy})]);
+  bootstrap(InboxApp,
+            [ROUTER_PROVIDERS, provide(LocationStrategy, {useClass: HashLocationStrategy})]);
 }

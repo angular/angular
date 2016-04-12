@@ -731,20 +731,19 @@ export class DirectiveMetadata extends InjectableMetadata {
    */
   queries: {[key: string]: any};
 
-  constructor(
-      {selector, inputs, outputs, properties, events, host, bindings, providers, exportAs,
-       queries}: {
-        selector?: string,
-        inputs?: string[],
-        outputs?: string[],
-        properties?: string[],
-        events?: string[],
-        host?: {[key: string]: string},
-        providers?: any[],
-        /** @deprecated */ bindings?: any[],
-        exportAs?: string,
-        queries?: {[key: string]: any}
-      } = {}) {
+  constructor({selector, inputs, outputs, properties, events, host, bindings, providers, exportAs,
+               queries}: {
+    selector?: string,
+    inputs?: string[],
+    outputs?: string[],
+    properties?: string[],
+    events?: string[],
+    host?: {[key: string]: string},
+    providers?: any[],
+    /** @deprecated */ bindings?: any[],
+    exportAs?: string,
+    queries?: {[key: string]: any}
+  } = {}) {
     super();
     this.selector = selector;
     this._inputs = inputs;
@@ -872,33 +871,16 @@ export class ComponentMetadata extends DirectiveMetadata {
 
   styles: string[];
 
-  directives: Array<Type|any[]>;
+  directives: Array<Type | any[]>;
 
-  pipes: Array<Type|any[]>;
+  pipes: Array<Type | any[]>;
 
   encapsulation: ViewEncapsulation;
 
-  constructor({selector,
-               inputs,
-               outputs,
-               properties,
-               events,
-               host,
-               exportAs,
-               moduleId,
-               bindings,
-               providers,
-               viewBindings,
-               viewProviders,
-               changeDetection = ChangeDetectionStrategy.Default,
-               queries,
-               templateUrl,
-               template,
-               styleUrls,
-               styles,
-               directives,
-               pipes,
-               encapsulation}: {
+  constructor({selector, inputs, outputs, properties, events, host, exportAs, moduleId, bindings,
+               providers, viewBindings, viewProviders,
+               changeDetection = ChangeDetectionStrategy.Default, queries, templateUrl, template,
+               styleUrls, styles, directives, pipes, encapsulation}: {
     selector?: string,
     inputs?: string[],
     outputs?: string[],
@@ -917,8 +899,8 @@ export class ComponentMetadata extends DirectiveMetadata {
     template?: string,
     styleUrls?: string[],
     styles?: string[],
-    directives?: Array<Type|any[]>,
-    pipes?: Array<Type|any[]>,
+    directives?: Array<Type | any[]>,
+    pipes?: Array<Type | any[]>,
     encapsulation?: ViewEncapsulation
   } = {}) {
     super({

@@ -111,9 +111,9 @@ export class ViewMetadata {
    * }
    * ```
    */
-  directives: Array<Type|any[]>;
+  directives: Array<Type | any[]>;
 
-  pipes: Array<Type|any[]>;
+  pipes: Array<Type | any[]>;
 
   /**
    * Specify how the template and the styles should be encapsulated.
@@ -126,8 +126,8 @@ export class ViewMetadata {
   constructor({templateUrl, template, directives, pipes, encapsulation, styles, styleUrls}: {
     templateUrl?: string,
     template?: string,
-    directives?: Array<Type|any[]>,
-    pipes?: Array<Type|any[]>,
+    directives?: Array<Type | any[]>,
+    pipes?: Array<Type | any[]>,
     encapsulation?: ViewEncapsulation,
     styles?: string[],
     styleUrls?: string[],

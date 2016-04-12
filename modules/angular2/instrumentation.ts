@@ -1,1 +1,7 @@
-export {wtfCreateScope, wtfLeave, wtfStartTimeRange, wtfEndTimeRange, WtfScopeFn} from './src/core/profile/profile';
+export {
+  wtfCreateScope,
+  wtfLeave,
+  wtfStartTimeRange,
+  wtfEndTimeRange,
+  WtfScopeFn
+} from './src/core/profile/profile';

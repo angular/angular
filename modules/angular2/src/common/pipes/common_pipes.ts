@@ -23,6 +23,16 @@ import {CONST_EXPR} from 'angular2/src/facade/lang';
  * property of the `@Component` decorator.
  */
 export const COMMON_PIPES = CONST_EXPR([
-  AsyncPipe, UpperCasePipe, LowerCasePipe, JsonPipe, SlicePipe, DecimalPipe, PercentPipe,
-  CurrencyPipe, DatePipe, ReplacePipe, I18nPluralPipe, I18nSelectPipe
+  AsyncPipe,
+  UpperCasePipe,
+  LowerCasePipe,
+  JsonPipe,
+  SlicePipe,
+  DecimalPipe,
+  PercentPipe,
+  CurrencyPipe,
+  DatePipe,
+  ReplacePipe,
+  I18nPluralPipe,
+  I18nSelectPipe
 ]);

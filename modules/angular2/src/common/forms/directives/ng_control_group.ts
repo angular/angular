@@ -1,4 +1,15 @@
-import {OnInit, OnDestroy, Directive, Optional, Inject, Host, SkipSelf, forwardRef, Provider, Self} from 'angular2/core';
+import {
+  OnInit,
+  OnDestroy,
+  Directive,
+  Optional,
+  Inject,
+  Host,
+  SkipSelf,
+  forwardRef,
+  Provider,
+  Self
+} from 'angular2/core';
 import {CONST_EXPR} from 'angular2/src/facade/lang';
 
 import {ControlContainer} from './control_container';
@@ -67,10 +78,9 @@ export class NgControlGroup extends ControlContainer implements OnInit,
   /** @internal */
   _parent: ControlContainer;
 
-  constructor(
-      @Host() @SkipSelf() parent: ControlContainer,
-      @Optional() @Self() @Inject(NG_VALIDATORS) private _validators: any[],
-      @Optional() @Self() @Inject(NG_ASYNC_VALIDATORS) private _asyncValidators: any[]) {
+  constructor(@Host() @SkipSelf() parent: ControlContainer,
+              @Optional() @Self() @Inject(NG_VALIDATORS) private _validators: any[],
+              @Optional() @Self() @Inject(NG_ASYNC_VALIDATORS) private _asyncValidators: any[]) {
     super();
     this._parent = parent;
   }

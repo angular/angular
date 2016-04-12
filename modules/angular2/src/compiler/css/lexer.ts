@@ -1,9 +1,65 @@
-import {NumberWrapper, StringWrapper, isPresent, resolveEnumToken} from 'angular2/src/facade/lang';
+import {NumberWrapper, StringWrapper, isPresent, resolveEnumToken} from "angular2/src/facade/lang";
 import {BaseException} from 'angular2/src/facade/exceptions';
 
-import {isWhitespace, $EOF, $HASH, $TILDA, $CARET, $PERCENT, $$, $_, $COLON, $SQ, $DQ, $EQ, $SLASH, $BACKSLASH, $PERIOD, $STAR, $PLUS, $LPAREN, $RPAREN, $LBRACE, $RBRACE, $LBRACKET, $RBRACKET, $PIPE, $COMMA, $SEMICOLON, $MINUS, $BANG, $QUESTION, $AT, $AMPERSAND, $GT, $a, $A, $z, $Z, $0, $9, $FF, $CR, $LF, $VTAB} from 'angular2/src/compiler/chars';
+import {
+  isWhitespace,
+  $EOF,
+  $HASH,
+  $TILDA,
+  $CARET,
+  $PERCENT,
+  $$,
+  $_,
+  $COLON,
+  $SQ,
+  $DQ,
+  $EQ,
+  $SLASH,
+  $BACKSLASH,
+  $PERIOD,
+  $STAR,
+  $PLUS,
+  $LPAREN,
+  $RPAREN,
+  $LBRACE,
+  $RBRACE,
+  $LBRACKET,
+  $RBRACKET,
+  $PIPE,
+  $COMMA,
+  $SEMICOLON,
+  $MINUS,
+  $BANG,
+  $QUESTION,
+  $AT,
+  $AMPERSAND,
+  $GT,
+  $a,
+  $A,
+  $z,
+  $Z,
+  $0,
+  $9,
+  $FF,
+  $CR,
+  $LF,
+  $VTAB
+} from "angular2/src/compiler/chars";
 
-export {$EOF, $AT, $RBRACE, $LBRACE, $LBRACKET, $RBRACKET, $LPAREN, $RPAREN, $COMMA, $COLON, $SEMICOLON, isWhitespace} from 'angular2/src/compiler/chars';
+export {
+  $EOF,
+  $AT,
+  $RBRACE,
+  $LBRACE,
+  $LBRACKET,
+  $RBRACKET,
+  $LPAREN,
+  $RPAREN,
+  $COMMA,
+  $COLON,
+  $SEMICOLON,
+  isWhitespace
+} from "angular2/src/compiler/chars";
 
 export enum CssTokenType {
   EOF,
@@ -38,37 +94,35 @@ export class LexedCssResult {
   constructor(public error: CssScannerError, public token: CssToken) {}
 }
 
-export function generateErrorMessage(
-    input: string, message: string, errorValue: string, index: number, row: number,
-    column: number): string {
+export function generateErrorMessage(input: string, message: string, errorValue: string,
+                                     index: number, row: number, column: number): string {
   return `${message} at column ${row}:${column} in expression [` +
-      findProblemCode(input, errorValue, index, column) + ']';
+         findProblemCode(input, errorValue, index, column) + ']';
 }
 
-export function findProblemCode(
-    input: string, errorValue: string, index: number, column: number): string {
+export function findProblemCode(input: string, errorValue: string, index: number,
+                                column: number): string {
   var endOfProblemLine = index;
   var current = charCode(input, index);
   while (current > 0 && !isNewline(current)) {
     current = charCode(input, ++endOfProblemLine);
   }
   var choppedString = input.substring(0, endOfProblemLine);
-  var pointerPadding = '';
+  var pointerPadding = "";
   for (var i = 0; i < column; i++) {
-    pointerPadding += ' ';
+    pointerPadding += " ";
   }
-  var pointerString = '';
+  var pointerString = "";
   for (var i = 0; i < errorValue.length; i++) {
-    pointerString += '^';
+    pointerString += "^";
   }
-  return choppedString + '\n' + pointerPadding + pointerString + '\n';
+  return choppedString + "\n" + pointerPadding + pointerString + "\n";
 }
 
 export class CssToken {
   numValue: number;
-  constructor(
-      public index: number, public column: number, public line: number, public type: CssTokenType,
-      public strValue: string) {
+  constructor(public index: number, public column: number, public line: number,
+              public type: CssTokenType, public strValue: string) {
     this.numValue = charCode(strValue, 0);
   }
 }
@@ -194,7 +248,7 @@ export class CssScanner {
 
     var next = output.token;
     if (!isPresent(next)) {
-      next = new CssToken(0, 0, 0, CssTokenType.EOF, 'end of file');
+      next = new CssToken(0, 0, 0, CssTokenType.EOF, "end of file");
     }
 
     var isMatchingType;
@@ -211,17 +265,16 @@ export class CssScanner {
 
     var error = null;
     if (!isMatchingType || (isPresent(value) && value != next.strValue)) {
-      var errorMessage = resolveEnumToken(CssTokenType, next.type) + ' does not match expected ' +
-          resolveEnumToken(CssTokenType, type) + ' value';
+      var errorMessage = resolveEnumToken(CssTokenType, next.type) + " does not match expected " +
+                         resolveEnumToken(CssTokenType, type) + " value";
 
       if (isPresent(value)) {
         errorMessage += ' ("' + next.strValue + '" should match "' + value + '")';
       }
 
       error = new CssScannerError(
-          next, generateErrorMessage(
-                    this.input, errorMessage, next.strValue, previousIndex, previousLine,
-                    previousColumn));
+          next, generateErrorMessage(this.input, errorMessage, next.strValue, previousIndex,
+                                     previousLine, previousColumn));
     }
 
     return new LexedCssResult(error, next);
@@ -301,8 +354,8 @@ export class CssScanner {
   }
 
   scanComment(): CssToken {
-    if (this.assertCondition(
-            isCommentStart(this.peek, this.peekPeek), 'Expected comment start value')) {
+    if (this.assertCondition(isCommentStart(this.peek, this.peekPeek),
+                             "Expected comment start value")) {
       return null;
     }
 
@@ -339,8 +392,8 @@ export class CssScanner {
   }
 
   scanString(): CssToken {
-    if (this.assertCondition(
-            isStringStart(this.peek, this.peekPeek), 'Unexpected non-string starting value')) {
+    if (this.assertCondition(isStringStart(this.peek, this.peekPeek),
+                             "Unexpected non-string starting value")) {
       return null;
     }
 
@@ -359,7 +412,7 @@ export class CssScanner {
       this.advance();
     }
 
-    if (this.assertCondition(this.peek == target, 'Unterminated quote')) {
+    if (this.assertCondition(this.peek == target, "Unterminated quote")) {
       return null;
     }
     this.advance();
@@ -389,8 +442,8 @@ export class CssScanner {
   }
 
   scanIdentifier(): CssToken {
-    if (this.assertCondition(
-            isIdentifierStart(this.peek, this.peekPeek), 'Expected identifier starting value')) {
+    if (this.assertCondition(isIdentifierStart(this.peek, this.peekPeek),
+                             'Expected identifier starting value')) {
       return null;
     }
 
@@ -416,9 +469,8 @@ export class CssScanner {
   scanCharacter(): CssToken {
     var start = this.index;
     var startingColumn = this.column;
-    if (this.assertCondition(
-            isValidCssCharacter(this.peek, this._currentMode),
-            charStr(this.peek) + ' is not a valid CSS character')) {
+    if (this.assertCondition(isValidCssCharacter(this.peek, this._currentMode),
+                             charStr(this.peek) + ' is not a valid CSS character')) {
       return null;
     }
 
@@ -505,12 +557,12 @@ function isIdentifierStart(code: number, next: number): boolean {
   }
 
   return ($a <= target && target <= $z) || ($A <= target && target <= $Z) || target == $BACKSLASH ||
-      target == $MINUS || target == $_;
+         target == $MINUS || target == $_;
 }
 
 function isIdentifierPart(target: number): boolean {
   return ($a <= target && target <= $z) || ($A <= target && target <= $Z) || target == $BACKSLASH ||
-      target == $MINUS || target == $_ || isDigit(target);
+         target == $MINUS || target == $_ || isDigit(target);
 }
 
 function isValidPseudoSelectorCharacter(code: number): boolean {

@@ -1,4 +1,14 @@
-import {beforeEach, ddescribe, xdescribe, describe, expect, iit, inject, it, xit} from 'angular2/testing_internal';
+import {
+  beforeEach,
+  ddescribe,
+  xdescribe,
+  describe,
+  expect,
+  iit,
+  inject,
+  it,
+  xit
+} from 'angular2/testing_internal';
 import {IS_DART} from 'angular2/src/facade/lang';
 
 import {DomElementSchemaRegistry} from 'angular2/src/compiler/schema/dom_element_schema_registry';

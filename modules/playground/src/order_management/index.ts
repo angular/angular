@@ -1,5 +1,15 @@
 import {bootstrap} from 'angular2/platform/browser';
-import {Component, Directive, Host, forwardRef, Provider, EventEmitter, Injectable, Input, Output} from 'angular2/core';
+import {
+  Component,
+  Directive,
+  Host,
+  forwardRef,
+  Provider,
+  EventEmitter,
+  Injectable,
+  Input,
+  Output
+} from 'angular2/core';
 import {NgIf, NgFor, FORM_DIRECTIVES} from 'angular2/common';
 
 import {ListWrapper} from 'angular2/src/facade/collection';
@@ -12,17 +22,15 @@ import {ListWrapper} from 'angular2/src/facade/collection';
 // ---- model
 
 class OrderItem {
-  constructor(
-      public orderItemId: number, public orderId: number, public productName: string,
-      public qty: number, public unitPrice: number) {}
+  constructor(public orderItemId: number, public orderId: number, public productName: string,
+              public qty: number, public unitPrice: number) {}
 
   get total(): number { return this.qty * this.unitPrice; }
 }
 
 class Order {
-  constructor(
-      public orderId: number, public customerName: string, public limit: number,
-      private _dataService: DataService) {}
+  constructor(public orderId: number, public customerName: string, public limit: number,
+              private _dataService: DataService) {}
 
   get items(): OrderItem[] { return this._dataService.itemsFor(this); }
   get total(): number { return this.items.map(i => i.total).reduce((a, b) => a + b, 0); }
@@ -41,16 +49,17 @@ class DataService {
 
   constructor() {
     this.orders = [
-      new Order(_nextId++, 'J. Coltrane', 100, this), new Order(_nextId++, 'B. Evans', 200, this)
+      new Order(_nextId++, "J. Coltrane", 100, this),
+      new Order(_nextId++, "B. Evans", 200, this)
     ];
 
     this.orderItems = [
-      new OrderItem(_nextId++, this.orders[0].orderId, 'Bread', 5, 1),
-      new OrderItem(_nextId++, this.orders[0].orderId, 'Brie', 5, 2),
-      new OrderItem(_nextId++, this.orders[0].orderId, 'IPA', 5, 3),
+      new OrderItem(_nextId++, this.orders[0].orderId, "Bread", 5, 1),
+      new OrderItem(_nextId++, this.orders[0].orderId, "Brie", 5, 2),
+      new OrderItem(_nextId++, this.orders[0].orderId, "IPA", 5, 3),
 
-      new OrderItem(_nextId++, this.orders[1].orderId, 'Mozzarella', 5, 2),
-      new OrderItem(_nextId++, this.orders[1].orderId, 'Wine', 5, 3)
+      new OrderItem(_nextId++, this.orders[1].orderId, "Mozzarella", 5, 2),
+      new OrderItem(_nextId++, this.orders[1].orderId, "Wine", 5, 3)
     ];
   }
 
@@ -59,7 +68,7 @@ class DataService {
   }
 
   addItemForOrder(order: Order): void {
-    this.orderItems.push(new OrderItem(_nextId++, order.orderId, '', 0, 0));
+    this.orderItems.push(new OrderItem(_nextId++, order.orderId, "", 0, 0));
   }
 
   deleteItem(item: OrderItem): void { ListWrapper.remove(this.orderItems, item); }

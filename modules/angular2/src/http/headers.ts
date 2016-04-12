@@ -1,6 +1,20 @@
-import {isPresent, isBlank, isJsObject, isType, StringWrapper, Json} from 'angular2/src/facade/lang';
+import {
+  isPresent,
+  isBlank,
+  isJsObject,
+  isType,
+  StringWrapper,
+  Json
+} from 'angular2/src/facade/lang';
 import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
-import {isListLikeIterable, iterateListLike, Map, MapWrapper, StringMapWrapper, ListWrapper,} from 'angular2/src/facade/collection';
+import {
+  isListLikeIterable,
+  iterateListLike,
+  Map,
+  MapWrapper,
+  StringMapWrapper,
+  ListWrapper,
+} from 'angular2/src/facade/collection';
 
 /**
  * Polyfill for [Headers](https://developer.mozilla.org/en-US/docs/Web/API/Headers/Headers), as
@@ -31,7 +45,7 @@ import {isListLikeIterable, iterateListLike, Map, MapWrapper, StringMapWrapper, 
 export class Headers {
   /** @internal */
   _headersMap: Map<string, string[]>;
-  constructor(headers?: Headers|{[key: string]: any}) {
+  constructor(headers?: Headers | {[key: string]: any}) {
     if (headers instanceof Headers) {
       this._headersMap = (<Headers>headers)._headersMap;
       return;
@@ -97,7 +111,7 @@ export class Headers {
   /**
    * Sets or overrides header value for given name.
    */
-  set(header: string, value: string|string[]): void {
+  set(header: string, value: string | string[]): void {
     var list: string[] = [];
 
     if (isListLikeIterable(value)) {

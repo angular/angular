@@ -5,9 +5,8 @@ import {ChangeDetectionStrategy} from './constants';
 import {ChangeDetectorRef} from './change_detector_ref';
 
 export class DebugContext {
-  constructor(
-      public element: any, public componentElement: any, public directive: any, public context: any,
-      public locals: any, public injector: any) {}
+  constructor(public element: any, public componentElement: any, public directive: any,
+              public context: any, public locals: any, public injector: any) {}
 }
 
 export interface ChangeDispatcher {
@@ -45,13 +44,13 @@ export interface ChangeDetector {
 export interface ProtoChangeDetector { instantiate(): ChangeDetector; }
 
 export class ChangeDetectorGenConfig {
-  constructor(
-      public genDebugInfo: boolean, public logBindingUpdate: boolean, public useJit: boolean) {}
+  constructor(public genDebugInfo: boolean, public logBindingUpdate: boolean,
+              public useJit: boolean) {}
 }
 
 export class ChangeDetectorDefinition {
-  constructor(
-      public id: string, public strategy: ChangeDetectionStrategy, public variableNames: string[],
-      public bindingRecords: BindingRecord[], public eventRecords: BindingRecord[],
-      public directiveRecords: DirectiveRecord[], public genConfig: ChangeDetectorGenConfig) {}
+  constructor(public id: string, public strategy: ChangeDetectionStrategy,
+              public variableNames: string[], public bindingRecords: BindingRecord[],
+              public eventRecords: BindingRecord[], public directiveRecords: DirectiveRecord[],
+              public genConfig: ChangeDetectorGenConfig) {}
 }

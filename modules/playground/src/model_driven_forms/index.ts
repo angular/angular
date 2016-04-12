@@ -1,5 +1,14 @@
 import {bootstrap} from 'angular2/platform/browser';
-import {FORM_DIRECTIVES, ControlGroup, NgControl, Validators, NgFormModel, FormBuilder, NgIf, NgFor} from 'angular2/common';
+import {
+  FORM_DIRECTIVES,
+  ControlGroup,
+  NgControl,
+  Validators,
+  NgFormModel,
+  FormBuilder,
+  NgIf,
+  NgFor
+} from 'angular2/common';
 import {Component, Directive, Host} from 'angular2/core';
 
 import {RegExpWrapper, print, isPresent} from 'angular2/src/facade/lang';
@@ -12,7 +21,7 @@ function creditCardValidator(c: AbstractControl): {[key: string]: boolean} {
   if (isPresent(c.value) && RegExpWrapper.test(/^\d{16}$/g, c.value)) {
     return null;
   } else {
-    return {'invalidCreditCard': true};
+    return {"invalidCreditCard": true};
   }
 }
 
@@ -132,19 +141,19 @@ class ModelDrivenForms {
 
   constructor(fb: FormBuilder) {
     this.form = fb.group({
-      'firstName': ['', Validators.required],
-      'middleName': [''],
-      'lastName': ['', Validators.required],
-      'country': ['Canada', Validators.required],
-      'creditCard': ['', Validators.compose([Validators.required, creditCardValidator])],
-      'amount': [0, Validators.required],
-      'email': ['', Validators.required],
-      'comments': ['']
+      "firstName": ["", Validators.required],
+      "middleName": [""],
+      "lastName": ["", Validators.required],
+      "country": ["Canada", Validators.required],
+      "creditCard": ["", Validators.compose([Validators.required, creditCardValidator])],
+      "amount": [0, Validators.required],
+      "email": ["", Validators.required],
+      "comments": [""]
     });
   }
 
   onSubmit(): void {
-    print('Submitting:');
+    print("Submitting:");
     print(this.form.value);
   }
 }

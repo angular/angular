@@ -24,7 +24,7 @@ class DartFormatter implements DiffingBroccoliPlugin {
   private firstBuild: boolean = true;
 
   constructor(public inputPath: string, public cachePath: string, options) {
-    if (!options.dartSDK) throw new Error('Missing Dart SDK');
+    if (!options.dartSDK) throw new Error("Missing Dart SDK");
     this.DARTFMT = options.dartSDK.DARTFMT;
     this.verbose = options.logs.dartfmt;
   }
@@ -34,21 +34,22 @@ class DartFormatter implements DiffingBroccoliPlugin {
     let argsLength = 2;
     let argPackages = [];
     let firstBuild = this.firstBuild;
-    treeDiff.addedPaths.concat(treeDiff.changedPaths).forEach((changedFile) => {
-      let sourcePath = path.join(this.inputPath, changedFile);
-      let destPath = path.join(this.cachePath, changedFile);
-      if (!firstBuild && /\.dart$/.test(changedFile)) {
-        if ((argsLength + destPath.length + 2) >= 0x2000) {
-          // Win32 command line arguments length
-          argPackages.push(args);
-          args = ['-w'];
-          argsLength = 2;
-        }
-        args.push(destPath);
-        argsLength += destPath.length + 2;
-      }
-      fse.copySync(sourcePath, destPath);
-    });
+    treeDiff.addedPaths.concat(treeDiff.changedPaths)
+        .forEach((changedFile) => {
+          let sourcePath = path.join(this.inputPath, changedFile);
+          let destPath = path.join(this.cachePath, changedFile);
+          if (!firstBuild && /\.dart$/.test(changedFile)) {
+            if ((argsLength + destPath.length + 2) >= 0x2000) {
+              // Win32 command line arguments length
+              argPackages.push(args);
+              args = ['-w'];
+              argsLength = 2;
+            }
+            args.push(destPath);
+            argsLength += destPath.length + 2;
+          }
+          fse.copySync(sourcePath, destPath);
+        });
     treeDiff.removedPaths.forEach((removedFile) => {
       let destPath = path.join(this.cachePath, removedFile);
       fse.removeSync(destPath);

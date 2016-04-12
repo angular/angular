@@ -192,7 +192,7 @@ export class ParamRoutePath implements RoutePath {
   private _parsePathString(routePath: string) {
     // normalize route as not starting with a "/". Recognition will
     // also normalize.
-    if (routePath.startsWith('/')) {
+    if (routePath.startsWith("/")) {
       routePath = routePath.substring(1);
     }
 

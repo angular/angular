@@ -10,17 +10,16 @@ import {BaseException} from 'angular2/src/facade/exceptions';
  * Class responsible for providing change detection logic for change detector classes.
  */
 export class CodegenLogicUtil {
-  constructor(
-      private _names: CodegenNameUtil, private _utilName: string,
-      private _changeDetectorStateName: string) {}
+  constructor(private _names: CodegenNameUtil, private _utilName: string,
+              private _changeDetectorStateName: string) {}
 
   /**
    * Generates a statement which updates the local variable representing `protoRec` with the current
    * value of the record. Used by property bindings.
    */
   genPropertyBindingEvalValue(protoRec: ProtoRecord): string {
-    return this._genEvalValue(
-        protoRec, idx => this._names.getLocalName(idx), this._names.getLocalsAccessorName());
+    return this._genEvalValue(protoRec, idx => this._names.getLocalName(idx),
+                              this._names.getLocalsAccessorName());
   }
 
   /**
@@ -28,16 +27,16 @@ export class CodegenLogicUtil {
    * value of the record. Used by event bindings.
    */
   genEventBindingEvalValue(eventRecord: any, protoRec: ProtoRecord): string {
-    return this._genEvalValue(
-        protoRec, idx => this._names.getEventLocalName(eventRecord, idx), 'locals');
+    return this._genEvalValue(protoRec, idx => this._names.getEventLocalName(eventRecord, idx),
+                              "locals");
   }
 
-  private _genEvalValue(protoRec: ProtoRecord, getLocalName: Function, localsAccessor: string):
-      string {
+  private _genEvalValue(protoRec: ProtoRecord, getLocalName: Function,
+                        localsAccessor: string): string {
     var context = (protoRec.contextIndex == -1) ?
-        this._names.getDirectiveName(protoRec.directiveIndex) :
-        getLocalName(protoRec.contextIndex);
-    var argString = protoRec.args.map(arg => getLocalName(arg)).join(', ');
+                      this._names.getDirectiveName(protoRec.directiveIndex) :
+                      getLocalName(protoRec.contextIndex);
+    var argString = protoRec.args.map(arg => getLocalName(arg)).join(", ");
 
     var rhs: string;
     switch (protoRec.mode) {
@@ -109,12 +108,12 @@ export class CodegenLogicUtil {
     return `${getLocalName(protoRec.selfIndex)} = ${rhs};`;
   }
 
-  genPropertyBindingTargets(propertyBindingTargets: BindingTarget[], genDebugInfo: boolean):
-      string {
+  genPropertyBindingTargets(propertyBindingTargets: BindingTarget[],
+                            genDebugInfo: boolean): string {
     var bs = propertyBindingTargets.map(b => {
-      if (isBlank(b)) return 'null';
+      if (isBlank(b)) return "null";
 
-      var debug = genDebugInfo ? codify(b.debug) : 'null';
+      var debug = genDebugInfo ? codify(b.debug) : "null";
       return `${this._utilName}.bindingTarget(${codify(b.mode)}, ${b.elementIndex}, ${codify(b.name)}, ${codify(b.unit)}, ${debug})`;
     });
     return `[${bs.join(", ")}]`;
@@ -166,7 +165,7 @@ export class CodegenLogicUtil {
         res.unshift(`${statementStart} = new Array(${outputCount});`);
       }
     }
-    return res.join('\n');
+    return res.join("\n");
   }
 
   genDirectivesOnDestroy(directiveRecords: DirectiveRecord[]): string {
@@ -178,7 +177,7 @@ export class CodegenLogicUtil {
         res.push(`${dirVarName}.ngOnDestroy();`);
       }
     }
-    return res.join('\n');
+    return res.join("\n");
   }
 
   private _genEventHandler(boundElementIndex: number, eventName: string): string {
@@ -200,7 +199,7 @@ export class CodegenLogicUtil {
             `${this._names.getDetectorName(r.directiveIndex)} = this.getDetectorFor(directives, ${i});`);
       }
     }
-    return res.join('\n');
+    return res.join("\n");
   }
 
   genContentLifecycleCallbacks(directiveRecords: DirectiveRecord[]): string[] {

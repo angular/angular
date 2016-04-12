@@ -8,7 +8,7 @@ export class TestInjector {
 
   private _injector: Injector = null;
 
-  private _providers: Array<Type|Provider|any[]> = [];
+  private _providers: Array<Type | Provider | any[]> = [];
 
   reset() {
     this._injector = null;
@@ -16,11 +16,11 @@ export class TestInjector {
     this._instantiated = false;
   }
 
-  platformProviders: Array<Type|Provider|any[]> = [];
+  platformProviders: Array<Type | Provider | any[]> = [];
 
-  applicationProviders: Array<Type|Provider|any[]> = [];
+  applicationProviders: Array<Type | Provider | any[]> = [];
 
-  addProviders(providers: Array<Type|Provider|any[]>) {
+  addProviders(providers: Array<Type | Provider | any[]>) {
     if (this._instantiated) {
       throw new BaseException('Cannot add providers after test injector is instantiated');
     }
@@ -67,9 +67,8 @@ export function getTestInjector() {
  * Test Providers for individual platforms are available from
  * 'angular2/platform/testing/<platform_name>'.
  */
-export function setBaseTestProviders(
-    platformProviders: Array<Type|Provider|any[]>,
-    applicationProviders: Array<Type|Provider|any[]>) {
+export function setBaseTestProviders(platformProviders: Array<Type | Provider | any[]>,
+                                     applicationProviders: Array<Type | Provider | any[]>) {
   var testInjector = getTestInjector();
   if (testInjector.platformProviders.length > 0 || testInjector.applicationProviders.length > 0) {
     throw new BaseException('Cannot set base providers because it has already been called');
@@ -167,9 +166,8 @@ function emptyArray(): Array<any> {
 }
 
 export class FunctionWithParamTokens {
-  constructor(
-      private _tokens: any[], private _fn: Function, public isAsync: boolean,
-      public additionalProviders: () => any = emptyArray) {}
+  constructor(private _tokens: any[], private _fn: Function, public isAsync: boolean,
+              public additionalProviders: () => any = emptyArray) {}
 
   /**
    * Returns the value of the executed function.

@@ -1,4 +1,16 @@
-import {AsyncTestCompleter, describe, proxy, it, iit, ddescribe, expect, inject, beforeEach, beforeEachProviders, SpyObject} from 'angular2/testing_internal';
+import {
+  AsyncTestCompleter,
+  describe,
+  proxy,
+  it,
+  iit,
+  ddescribe,
+  expect,
+  inject,
+  beforeEach,
+  beforeEachProviders,
+  SpyObject
+} from 'angular2/testing_internal';
 
 import {Injector, provide} from 'angular2/core';
 import {CONST_EXPR} from 'angular2/src/facade/lang';
@@ -12,9 +24,10 @@ export function main() {
   describe('PathLocationStrategy', () => {
     var platformLocation, locationStrategy;
 
-    beforeEachProviders(() => [PathLocationStrategy, provide(PlatformLocation, {
-                                 useFactory: makeSpyPlatformLocation
-                               })]);
+    beforeEachProviders(() => [
+      PathLocationStrategy,
+      provide(PlatformLocation, {useFactory: makeSpyPlatformLocation})
+    ]);
 
     it('should throw without a base element or APP_BASE_HREF', () => {
       platformLocation = new SpyPlatformLocation();

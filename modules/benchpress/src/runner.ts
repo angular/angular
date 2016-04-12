@@ -37,7 +37,9 @@ export class Runner {
              {id: string, execute?: any, prepare?: any, microMetrics?: any, bindings?: any}):
       Promise<SampleState> {
     var sampleBindings = [
-      _DEFAULT_PROVIDERS, this._defaultBindings, bind(Options.SAMPLE_ID).toValue(id),
+      _DEFAULT_PROVIDERS,
+      this._defaultBindings,
+      bind(Options.SAMPLE_ID).toValue(id),
       bind(Options.EXECUTE).toValue(execute)
     ];
     if (isPresent(prepare)) {
@@ -65,7 +67,8 @@ export class Runner {
           // TODO vsavkin consider changing it when toAsyncFactory is added back or when child
           // injectors are handled better.
           var injector = Injector.resolveAndCreate([
-            sampleBindings, bind(Options.CAPABILITIES).toValue(capabilities),
+            sampleBindings,
+            bind(Options.CAPABILITIES).toValue(capabilities),
             bind(Options.USER_AGENT).toValue(userAgent),
             provide(WebDriverAdapter, {useValue: adapter})
           ]);

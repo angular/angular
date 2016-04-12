@@ -18,8 +18,8 @@ export class DomElementSchemaRegistry extends ElementSchemaRegistry {
     if (isBlank(element)) {
       var nsAndName = splitNsName(tagName);
       element = isPresent(nsAndName[0]) ?
-          DOM.createElementNS(NAMESPACE_URIS[nsAndName[0]], nsAndName[1]) :
-          DOM.createElement(nsAndName[1]);
+                    DOM.createElementNS(NAMESPACE_URIS[nsAndName[0]], nsAndName[1]) :
+                    DOM.createElement(nsAndName[1]);
       this._protoElements.set(tagName, element);
     }
     return element;

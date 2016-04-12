@@ -1,4 +1,4 @@
-import {Injectable} from 'angular2/src/core/di';
+import {Injectable} from "angular2/src/core/di";
 
 @Injectable()
 export class RenderStore {

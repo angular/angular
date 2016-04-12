@@ -1,4 +1,13 @@
-import {ddescribe, describe, it, iit, xit, expect, beforeEach, afterEach} from 'angular2/testing_internal';
+import {
+  ddescribe,
+  describe,
+  it,
+  iit,
+  xit,
+  expect,
+  beforeEach,
+  afterEach
+} from 'angular2/testing_internal';
 import {isBlank} from 'angular2/src/facade/lang';
 
 import {RecordType, ProtoRecord} from 'angular2/src/core/change_detection/proto_record';
@@ -15,17 +24,16 @@ export function main() {
       } = {}) {
     if (isBlank(lastInBinding)) lastInBinding = false;
     if (isBlank(mode)) mode = RecordType.PropertyRead;
-    if (isBlank(name)) name = 'name';
+    if (isBlank(name)) name = "name";
     if (isBlank(directiveIndex)) directiveIndex = null;
     if (isBlank(argumentToPureFunction)) argumentToPureFunction = false;
     if (isBlank(referencedBySelf)) referencedBySelf = false;
 
-    return new ProtoRecord(
-        mode, name, null, [], null, 0, directiveIndex, 0, null, lastInBinding, false,
-        argumentToPureFunction, referencedBySelf, 0);
+    return new ProtoRecord(mode, name, null, [], null, 0, directiveIndex, 0, null, lastInBinding,
+                           false, argumentToPureFunction, referencedBySelf, 0);
   }
 
-  describe('ProtoRecord', () => {
+  describe("ProtoRecord", () => {
     describe('shouldBeChecked', () => {
       it('should be true for pure functions',
          () => { expect(r({mode: RecordType.CollectionLiteral}).shouldBeChecked()).toBeTruthy(); });

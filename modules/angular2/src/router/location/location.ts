@@ -113,9 +113,8 @@ export class Location {
   /**
    * Subscribe to the platform's `popState` events.
    */
-  subscribe(
-      onNext: (value: any) => void, onThrow: (exception: any) => void = null,
-      onReturn: () => void = null): Object {
+  subscribe(onNext: (value: any) => void, onThrow: (exception: any) => void = null,
+            onReturn: () => void = null): Object {
     return ObservableWrapper.subscribe(this._subject, onNext, onThrow, onReturn);
   }
 }

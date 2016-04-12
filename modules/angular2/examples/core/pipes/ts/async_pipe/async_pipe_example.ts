@@ -27,7 +27,7 @@ export class AsyncPipeExample {
     if (this.arrived) {
       this.reset();
     } else {
-      this.resolve('hi there!');
+      this.resolve("hi there!");
       this.arrived = true;
     }
   }
@@ -35,7 +35,7 @@ export class AsyncPipeExample {
 // #enddocregion
 
 // #docregion AsyncPipeObservable
-@Component({selector: 'task-cmp', template: 'Time: {{ time | async }}'})
+@Component({selector: "task-cmp", template: "Time: {{ time | async }}"})
 class Task {
   time = new Observable<number>((observer: Subscriber<number>) => {
     setInterval(() => observer.next(new Date().getTime()), 500);

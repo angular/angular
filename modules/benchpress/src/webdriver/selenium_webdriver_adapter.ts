@@ -57,5 +57,6 @@ function convertToLocalProcess(data): Object {
 }
 
 var _PROTRACTOR_BINDINGS = [
-  bind(WebDriverAdapter).toFactory(() => new SeleniumWebDriverAdapter((<any>global).browser), [])
+  bind(WebDriverAdapter)
+      .toFactory(() => new SeleniumWebDriverAdapter((<any>global).browser), [])
 ];

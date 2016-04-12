@@ -16,16 +16,16 @@ const LIB_MAP = {
   ngUpgrade
 };
 
-const IGNORE = {
-  captureStackTrace: true,
-  stackTraceLimit: true,
-  toString: true,
-  originalException: true,
-  originalStack: true,
-  wrapperMessage: true,
-  wrapperStack: true,
-  '@@observable': true
-}
+const IGNORE =
+    {
+      captureStackTrace: true,
+      stackTraceLimit: true,
+      toString: true,
+      originalException: true,
+      originalStack: true,
+      wrapperMessage: true,
+      wrapperStack: true, '@@observable': true
+    }
 
 function collectTopLevelSymbols(prefix: string, lib: any):
     string[] {

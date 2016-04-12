@@ -1,6 +1,15 @@
 import {bootstrap} from 'angular2/platform/browser';
 import {Component, Directive, Host, forwardRef, Provider} from 'angular2/core';
-import {ControlGroup, NgIf, NgFor, NG_VALIDATORS, FORM_DIRECTIVES, NgControl, Validators, NgForm} from 'angular2/common';
+import {
+  ControlGroup,
+  NgIf,
+  NgFor,
+  NG_VALIDATORS,
+  FORM_DIRECTIVES,
+  NgControl,
+  Validators,
+  NgForm
+} from 'angular2/common';
 
 import {RegExpWrapper, print, isPresent, CONST_EXPR} from 'angular2/src/facade/lang';
 
@@ -11,7 +20,7 @@ class CheckoutModel {
   firstName: string;
   middleName: string;
   lastName: string;
-  country: string = 'Canada';
+  country: string = "Canada";
 
   creditCard: string;
   amount: number;
@@ -26,7 +35,7 @@ function creditCardValidator(c): {[key: string]: boolean} {
   if (isPresent(c.value) && RegExpWrapper.test(/^\d{16}$/g, c.value)) {
     return null;
   } else {
-    return {'invalidCreditCard': true};
+    return {"invalidCreditCard": true};
   }
 }
 
@@ -151,7 +160,7 @@ class TemplateDrivenForms {
   countries = ['US', 'Canada'];
 
   onSubmit(): void {
-    print('Submitting:');
+    print("Submitting:");
     print(this.model);
   }
 }

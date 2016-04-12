@@ -1,5 +1,11 @@
 import {Injectable, Inject} from 'angular2/src/core/di';
-import {StringWrapper, isPresent, isBlank, RegExpWrapper, normalizeBlank} from 'angular2/src/facade/lang';
+import {
+  StringWrapper,
+  isPresent,
+  isBlank,
+  RegExpWrapper,
+  normalizeBlank
+} from 'angular2/src/facade/lang';
 import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
 import {ListWrapper} from 'angular2/src/facade/collection';
 import {PACKAGE_ROOT_URL} from 'angular2/src/core/application_tokens';
@@ -15,7 +21,7 @@ export function createWithoutPackagePrefix(): UrlResolver {
 /**
  * A default provider for {@link PACKAGE_ROOT_URL} that maps to '/'.
  */
-export var DEFAULT_PACKAGE_URL_PROVIDER = new Provider(PACKAGE_ROOT_URL, {useValue: '/'});
+export var DEFAULT_PACKAGE_URL_PROVIDER = new Provider(PACKAGE_ROOT_URL, {useValue: "/"});
 
 /**
  * Used by the {@link Compiler} when resolving HTML and CSS template URLs.
@@ -34,7 +40,7 @@ export class UrlResolver {
 
   constructor(@Inject(PACKAGE_ROOT_URL) packagePrefix: string = null) {
     if (isPresent(packagePrefix)) {
-      this._packagePrefix = StringWrapper.stripRight(packagePrefix, '/') + '/';
+      this._packagePrefix = StringWrapper.stripRight(packagePrefix, "/") + "/";
     }
   }
 
@@ -55,8 +61,8 @@ export class UrlResolver {
     if (isPresent(baseUrl) && baseUrl.length > 0) {
       resolvedUrl = _resolveUrl(baseUrl, resolvedUrl);
     }
-    if (isPresent(this._packagePrefix) && getUrlScheme(resolvedUrl) == 'package') {
-      resolvedUrl = resolvedUrl.replace('package:', this._packagePrefix);
+    if (isPresent(this._packagePrefix) && getUrlScheme(resolvedUrl) == "package") {
+      resolvedUrl = resolvedUrl.replace("package:", this._packagePrefix);
     }
     return resolvedUrl;
   }
@@ -67,7 +73,7 @@ export class UrlResolver {
  */
 export function getUrlScheme(url: string): string {
   var match = _split(url);
-  return (match && match[_ComponentIndex.Scheme]) || '';
+  return (match && match[_ComponentIndex.Scheme]) || "";
 }
 
 // The code below is adapted from Traceur:
@@ -90,9 +96,9 @@ export function getUrlScheme(url: string): string {
  * @param {?string=} opt_fragment The URI-encoded fragment identifier.
  * @return {string} The fully combined URI.
  */
-function _buildFromEncodedParts(
-    opt_scheme?: string, opt_userInfo?: string, opt_domain?: string, opt_port?: string,
-    opt_path?: string, opt_queryData?: string, opt_fragment?: string): string {
+function _buildFromEncodedParts(opt_scheme?: string, opt_userInfo?: string, opt_domain?: string,
+                                opt_port?: string, opt_path?: string, opt_queryData?: string,
+                                opt_fragment?: string): string {
   var out = [];
 
   if (isPresent(opt_scheme)) {
@@ -190,24 +196,24 @@ function _buildFromEncodedParts(
  * @type {!RegExp}
  * @internal
  */
-var _splitRe = RegExpWrapper.create(
-    '^' +
-    '(?:' +
-    '([^:/?#.]+)' +  // scheme - ignore special characters
-                     // used by other URL parts such as :,
-                     // ?, /, #, and .
-    ':)?' +
-    '(?://' +
-    '(?:([^/?#]*)@)?' +                  // userInfo
-    '([\\w\\d\\-\\u0100-\\uffff.%]*)' +  // domain - restrict to letters,
-                                         // digits, dashes, dots, percent
-                                         // escapes, and unicode characters.
-    '(?::([0-9]+))?' +                   // port
-    ')?' +
-    '([^?#]+)?' +        // path
-    '(?:\\?([^#]*))?' +  // query
-    '(?:#(.*))?' +       // fragment
-    '$');
+var _splitRe =
+    RegExpWrapper.create('^' +
+                         '(?:' +
+                         '([^:/?#.]+)' +  // scheme - ignore special characters
+                                          // used by other URL parts such as :,
+                                          // ?, /, #, and .
+                         ':)?' +
+                         '(?://' +
+                         '(?:([^/?#]*)@)?' +                  // userInfo
+                         '([\\w\\d\\-\\u0100-\\uffff.%]*)' +  // domain - restrict to letters,
+                                                              // digits, dashes, dots, percent
+                                                              // escapes, and unicode characters.
+                         '(?::([0-9]+))?' +                   // port
+                         ')?' +
+                         '([^?#]+)?' +        // path
+                         '(?:\\?([^#]*))?' +  // query
+                         '(?:#(.*))?' +       // fragment
+                         '$');
 
 /**
  * The index of each URI component in the return value of goog.uri.utils.split.
@@ -238,7 +244,7 @@ enum _ComponentIndex {
  *     on the browser's regular expression implementation.  Never null, since
  *     arbitrary strings may still look like path names.
  */
-function _split(uri: string): Array<string|any> {
+function _split(uri: string): Array<string | any> {
   return RegExpWrapper.firstMatch(_splitRe, uri);
 }
 
@@ -298,10 +304,9 @@ function _joinAndCanonicalizePath(parts: any[]): string {
   path = isBlank(path) ? '' : _removeDotSegments(path);
   parts[_ComponentIndex.Path] = path;
 
-  return _buildFromEncodedParts(
-      parts[_ComponentIndex.Scheme], parts[_ComponentIndex.UserInfo], parts[_ComponentIndex.Domain],
-      parts[_ComponentIndex.Port], path, parts[_ComponentIndex.QueryData],
-      parts[_ComponentIndex.Fragment]);
+  return _buildFromEncodedParts(parts[_ComponentIndex.Scheme], parts[_ComponentIndex.UserInfo],
+                                parts[_ComponentIndex.Domain], parts[_ComponentIndex.Port], path,
+                                parts[_ComponentIndex.QueryData], parts[_ComponentIndex.Fragment]);
 }
 
 /**

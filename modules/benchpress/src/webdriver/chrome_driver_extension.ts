@@ -1,6 +1,13 @@
 import {bind, provide, Provider} from 'angular2/src/core/di';
 import {ListWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
-import {Json, isPresent, isBlank, RegExpWrapper, StringWrapper, NumberWrapper} from 'angular2/src/facade/lang';
+import {
+  Json,
+  isPresent,
+  isBlank,
+  RegExpWrapper,
+  StringWrapper,
+  NumberWrapper
+} from 'angular2/src/facade/lang';
 import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
 
 import {WebDriverExtension, PerfLogFeatures} from '../web_driver_extension';
@@ -76,9 +83,8 @@ export class ChromeDriverExtension extends WebDriverExtension {
         });
   }
 
-  private _convertPerfRecordsToEvents(
-      chromeEvents: Array<{[key: string]: any}>,
-      normalizedEvents: Array<{[key: string]: any}> = null) {
+  private _convertPerfRecordsToEvents(chromeEvents: Array<{[key: string]: any}>,
+                                      normalizedEvents: Array<{[key: string]: any}> = null) {
     if (isBlank(normalizedEvents)) {
       normalizedEvents = [];
     }
@@ -88,9 +94,8 @@ export class ChromeDriverExtension extends WebDriverExtension {
       var name = event['name'];
       if (this._isEvent(categories, name, ['blink.console'])) {
         normalizedEvents.push(normalizeEvent(event, {'name': name}));
-      } else if (this._isEvent(
-                     categories, name, ['benchmark'],
-                     'BenchmarkInstrumentation::ImplThreadRenderingStats')) {
+      } else if (this._isEvent(categories, name, ['benchmark'],
+                               'BenchmarkInstrumentation::ImplThreadRenderingStats')) {
         // TODO(goderbauer): Instead of BenchmarkInstrumentation::ImplThreadRenderingStats the
         // following events should be used (if available) for more accurate measurments:
         //   1st choice: vsync_before - ground truth on Android
@@ -105,10 +110,10 @@ export class ChromeDriverExtension extends WebDriverExtension {
         if (frameCount == 1) {
           normalizedEvents.push(normalizeEvent(event, {'name': 'frame'}));
         }
-      } else if (
-          this._isEvent(categories, name, ['disabled-by-default-devtools.timeline'], 'Rasterize') ||
-          this._isEvent(
-              categories, name, ['disabled-by-default-devtools.timeline'], 'CompositeLayers')) {
+      } else if (this._isEvent(categories, name, ['disabled-by-default-devtools.timeline'],
+                               'Rasterize') ||
+                 this._isEvent(categories, name, ['disabled-by-default-devtools.timeline'],
+                               'CompositeLayers')) {
         normalizedEvents.push(normalizeEvent(event, {'name': 'render'}));
       } else if (this._majorChromeVersion < 45) {
         var normalizedEvent = this._processAsPreChrome45Event(event, categories, majorGCPids);
@@ -126,21 +131,22 @@ export class ChromeDriverExtension extends WebDriverExtension {
     var args = event['args'];
     var pid = event['pid'];
     var ph = event['ph'];
-    if (this._isEvent(
-            categories, name, ['disabled-by-default-devtools.timeline'], 'FunctionCall') &&
+    if (this._isEvent(categories, name, ['disabled-by-default-devtools.timeline'],
+                      'FunctionCall') &&
         (isBlank(args) || isBlank(args['data']) ||
          !StringWrapper.equals(args['data']['scriptName'], 'InjectedScript'))) {
       return normalizeEvent(event, {'name': 'script'});
-    } else if (
-        this._isEvent(
-            categories, name, ['disabled-by-default-devtools.timeline'], 'RecalculateStyles') ||
-        this._isEvent(categories, name, ['disabled-by-default-devtools.timeline'], 'Layout') ||
-        this._isEvent(
-            categories, name, ['disabled-by-default-devtools.timeline'], 'UpdateLayerTree') ||
-        this._isEvent(categories, name, ['disabled-by-default-devtools.timeline'], 'Paint')) {
+    } else if (this._isEvent(categories, name, ['disabled-by-default-devtools.timeline'],
+                             'RecalculateStyles') ||
+               this._isEvent(categories, name, ['disabled-by-default-devtools.timeline'],
+                             'Layout') ||
+               this._isEvent(categories, name, ['disabled-by-default-devtools.timeline'],
+                             'UpdateLayerTree') ||
+               this._isEvent(categories, name, ['disabled-by-default-devtools.timeline'],
+                             'Paint')) {
       return normalizeEvent(event, {'name': 'render'});
-    } else if (this._isEvent(
-                   categories, name, ['disabled-by-default-devtools.timeline'], 'GCEvent')) {
+    } else if (this._isEvent(categories, name, ['disabled-by-default-devtools.timeline'],
+                             'GCEvent')) {
       var normArgs = {
         'usedHeapSize': isPresent(args['usedHeapSizeAfter']) ? args['usedHeapSizeAfter'] :
                                                                args['usedHeapSizeBefore']
@@ -150,8 +156,8 @@ export class ChromeDriverExtension extends WebDriverExtension {
       }
       majorGCPids[pid] = false;
       return normalizeEvent(event, {'name': 'gc', 'args': normArgs});
-    } else if (
-        this._isEvent(categories, name, ['v8'], 'majorGC') && StringWrapper.equals(ph, 'B')) {
+    } else if (this._isEvent(categories, name, ['v8'], 'majorGC') &&
+               StringWrapper.equals(ph, 'B')) {
       majorGCPids[pid] = true;
     }
     return null;  // nothing useful in this event
@@ -174,19 +180,17 @@ export class ChromeDriverExtension extends WebDriverExtension {
                                                                args['usedHeapSizeBefore']
       };
       return normalizeEvent(event, {'name': 'gc', 'args': normArgs});
-    } else if (
-        this._isEvent(categories, name, ['devtools.timeline', 'v8'], 'FunctionCall') &&
-        (isBlank(args) || isBlank(args['data']) ||
-         (!StringWrapper.equals(args['data']['scriptName'], 'InjectedScript') &&
-          !StringWrapper.equals(args['data']['scriptName'], '')))) {
+    } else if (this._isEvent(categories, name, ['devtools.timeline', 'v8'], 'FunctionCall') &&
+               (isBlank(args) || isBlank(args['data']) ||
+                (!StringWrapper.equals(args['data']['scriptName'], 'InjectedScript') &&
+                 !StringWrapper.equals(args['data']['scriptName'], '')))) {
       return normalizeEvent(event, {'name': 'script'});
-    } else if (this._isEvent(
-                   categories, name, ['devtools.timeline', 'blink'], 'UpdateLayoutTree')) {
+    } else if (this._isEvent(categories, name, ['devtools.timeline', 'blink'],
+                             'UpdateLayoutTree')) {
       return normalizeEvent(event, {'name': 'render'});
-    } else if (
-        this._isEvent(categories, name, ['devtools.timeline'], 'UpdateLayerTree') ||
-        this._isEvent(categories, name, ['devtools.timeline'], 'Layout') ||
-        this._isEvent(categories, name, ['devtools.timeline'], 'Paint')) {
+    } else if (this._isEvent(categories, name, ['devtools.timeline'], 'UpdateLayerTree') ||
+               this._isEvent(categories, name, ['devtools.timeline'], 'Layout') ||
+               this._isEvent(categories, name, ['devtools.timeline'], 'Paint')) {
       return normalizeEvent(event, {'name': 'render'});
     } else if (this._isEvent(categories, name, ['devtools.timeline'], 'ResourceReceivedData')) {
       let normArgs = {'encodedDataLength': args['data']['encodedDataLength']};
@@ -203,9 +207,8 @@ export class ChromeDriverExtension extends WebDriverExtension {
 
   private _parseCategories(categories: string): string[] { return categories.split(','); }
 
-  private _isEvent(
-      eventCategories: string[], eventName: string, expectedCategories: string[],
-      expectedName: string = null): boolean {
+  private _isEvent(eventCategories: string[], eventName: string, expectedCategories: string[],
+                   expectedName: string = null): boolean {
     var hasCategories = expectedCategories.reduce(
         (value, cat) => { return value && ListWrapper.contains(eventCategories, cat); }, true);
     return isBlank(expectedName) ? hasCategories :
@@ -218,12 +221,12 @@ export class ChromeDriverExtension extends WebDriverExtension {
 
   supports(capabilities: {[key: string]: any}): boolean {
     return this._majorChromeVersion != -1 &&
-        StringWrapper.equals(capabilities['browserName'].toLowerCase(), 'chrome');
+           StringWrapper.equals(capabilities['browserName'].toLowerCase(), 'chrome');
   }
 }
 
-function normalizeEvent(
-    chromeEvent: {[key: string]: any}, data: {[key: string]: any}): {[key: string]: any} {
+function normalizeEvent(chromeEvent: {[key: string]: any},
+                        data: {[key: string]: any}): {[key: string]: any} {
   var ph = chromeEvent['ph'];
   if (StringWrapper.equals(ph, 'S')) {
     ph = 'b';
@@ -243,7 +246,8 @@ function normalizeEvent(
   return result;
 }
 
-var _PROVIDERS = [bind(ChromeDriverExtension)
-                      .toFactory(
-                          (driver, userAgent) => new ChromeDriverExtension(driver, userAgent),
-                          [WebDriverAdapter, Options.USER_AGENT])];
+var _PROVIDERS = [
+  bind(ChromeDriverExtension)
+      .toFactory((driver, userAgent) => new ChromeDriverExtension(driver, userAgent),
+                 [WebDriverAdapter, Options.USER_AGENT])
+];

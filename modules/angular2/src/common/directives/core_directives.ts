@@ -47,5 +47,13 @@ import {NgPlural, NgPluralCase} from './ng_plural';
  * ```
  */
 export const CORE_DIRECTIVES: Type[] = CONST_EXPR([
-  NgClass, NgFor, NgIf, NgStyle, NgSwitch, NgSwitchWhen, NgSwitchDefault, NgPlural, NgPluralCase
+  NgClass,
+  NgFor,
+  NgIf,
+  NgStyle,
+  NgSwitch,
+  NgSwitchWhen,
+  NgSwitchDefault,
+  NgPlural,
+  NgPluralCase
 ]);
