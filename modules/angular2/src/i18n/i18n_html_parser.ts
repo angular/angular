@@ -7,6 +7,8 @@ import {
   HtmlAttrAst,
   HtmlTextAst,
   HtmlCommentAst,
+  HtmlExpansionAst,
+  HtmlExpansionCaseAst,
   htmlVisitAll
 } from 'angular2/src/compiler/html_ast';
 import {ListWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
@@ -14,6 +16,7 @@ import {RegExpWrapper, NumberWrapper, isPresent} from 'angular2/src/facade/lang'
 import {BaseException} from 'angular2/src/facade/exceptions';
 import {Parser} from 'angular2/src/compiler/expression_parser/parser';
 import {Message, id} from './message';
+import {Expander} from './expander';
 import {
   messageFromAttribute,
   I18nError,
@@ -119,17 +122,23 @@ export class I18nHtmlParser implements HtmlParser {
   constructor(private _htmlParser: HtmlParser, private _parser: Parser,
               private _messagesContent: string, private _messages: {[key: string]: HtmlAst[]}) {}
 
-  parse(sourceContent: string, sourceUrl: string): HtmlParseTreeResult {
+  parse(sourceContent: string, sourceUrl: string,
+        parseExpansionForms: boolean = false): HtmlParseTreeResult {
     this.errors = [];
 
-    let res = this._htmlParser.parse(sourceContent, sourceUrl);
+    let res = this._htmlParser.parse(sourceContent, sourceUrl, parseExpansionForms);
     if (res.errors.length > 0) {
       return res;
     } else {
-      let nodes = this._recurse(res.rootNodes);
+      let nodes = this._recurse(this._expandNodes(res.rootNodes));
       return this.errors.length > 0 ? new HtmlParseTreeResult([], this.errors) :
                                       new HtmlParseTreeResult(nodes, []);
     }
+  }
+
+  private _expandNodes(nodes: HtmlAst[]): HtmlAst[] {
+    let e = new Expander();
+    return htmlVisitAll(e, nodes);
   }
 
   private _processI18nPart(p: Part): HtmlAst[] {
@@ -359,6 +368,10 @@ class _CreateNodeMapping implements HtmlAstVisitor {
     this.mapping.push(ast);
     return null;
   }
+
+  visitExpansion(ast: HtmlExpansionAst, context: any): any { return null; }
+
+  visitExpansionCase(ast: HtmlExpansionCaseAst, context: any): any { return null; }
 
   visitComment(ast: HtmlCommentAst, context: any): any { return ""; }
 }

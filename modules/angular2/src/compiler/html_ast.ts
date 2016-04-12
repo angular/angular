@@ -12,6 +12,24 @@ export class HtmlTextAst implements HtmlAst {
   visit(visitor: HtmlAstVisitor, context: any): any { return visitor.visitText(this, context); }
 }
 
+export class HtmlExpansionAst implements HtmlAst {
+  constructor(public switchValue: string, public type: string, public cases: HtmlExpansionCaseAst[],
+              public sourceSpan: ParseSourceSpan, public switchValueSourceSpan: ParseSourceSpan) {}
+  visit(visitor: HtmlAstVisitor, context: any): any {
+    return visitor.visitExpansion(this, context);
+  }
+}
+
+export class HtmlExpansionCaseAst implements HtmlAst {
+  constructor(public value: string, public expression: HtmlAst[],
+              public sourceSpan: ParseSourceSpan, public valueSourceSpan: ParseSourceSpan,
+              public expSourceSpan: ParseSourceSpan) {}
+
+  visit(visitor: HtmlAstVisitor, context: any): any {
+    return visitor.visitExpansionCase(this, context);
+  }
+}
+
 export class HtmlAttrAst implements HtmlAst {
   constructor(public name: string, public value: string, public sourceSpan: ParseSourceSpan) {}
   visit(visitor: HtmlAstVisitor, context: any): any { return visitor.visitAttr(this, context); }
@@ -34,6 +52,8 @@ export interface HtmlAstVisitor {
   visitAttr(ast: HtmlAttrAst, context: any): any;
   visitText(ast: HtmlTextAst, context: any): any;
   visitComment(ast: HtmlCommentAst, context: any): any;
+  visitExpansion(ast: HtmlExpansionAst, context: any): any;
+  visitExpansionCase(ast: HtmlExpansionCaseAst, context: any): any;
 }
 
 export function htmlVisitAll(visitor: HtmlAstVisitor, asts: HtmlAst[], context: any = null): any[] {
