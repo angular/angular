@@ -115,7 +115,7 @@ export class DatePipe implements PipeTransform {
     if (isNumber(value)) {
       value = DateWrapper.fromMillis(value);
     }
-    if (DatePipe._ISO8601_STR.test(value)) {
+    if (isString(value) && DatePipe._ISO8601_STR.test(value)) {
       value = DateWrapper.fromISOString(value);
     }
     if (StringMapWrapper.contains(DatePipe._ALIASES, pattern)) {
