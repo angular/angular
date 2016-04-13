@@ -1106,14 +1106,15 @@ export var ContentChild: ContentChildFactory = makePropDecorator(ContentChildMet
 /**
  * Declares a list of child element references.
  *
- * Angular automatically updates the list when the DOM was updated.
+ * Angular automatically updates the list when the DOM is updated.
  *
  * `ViewChildren` takes a argument to select elements.
  *
  * - If the argument is a type, directives or components with the type will be bound.
  *
- * - If the argument is a string, the string behaviors as comma-separated selectors. For each
- * selector, an element matched template variables (e.g. `#child`) will be bound.
+ * - If the argument is a string, the string is interpreted as a list of comma-separated selectors.
+ * For each selector, an element containing the matching template variable (e.g. `#child`) will be
+ * bound.
  *
  * View children are set before the `ngAfterViewInit` callback is called.
  *
@@ -1185,17 +1186,17 @@ export var ViewChildren: ViewChildrenFactory = makePropDecorator(ViewChildrenMet
 
 // TODO(alexeagle): remove the duplication of this doc. It is copied from ViewChildMetadata.
 /**
- * Declares a reference of child element.
+ * Declares a reference to a child element.
  *
  * `ViewChildren` takes a argument to select elements.
  *
  * - If the argument is a type, a directive or a component with the type will be bound.
  *
- * - If the argument is a string, the string behaviors as a selectors. An element matched template
- * variables (e.g. `#child`) will be bound.
+ * - If the argument is a string, the string is interpreted as a selector. An element containing the
+ * matching template variable (e.g. `#child`) will be bound.
  *
- * In either case, `@ViewChild()` assigns the first (looking from above) element if the result is
- * multiple.
+ * In either case, `@ViewChild()` assigns the first (looking from above) element if there are
+ * multiple matches.
  *
  * View child is set before the `ngAfterViewInit` callback is called.
  *
