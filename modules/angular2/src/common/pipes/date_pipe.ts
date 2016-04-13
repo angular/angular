@@ -101,7 +101,7 @@ export class DatePipe implements PipeTransform {
     'shortTime': 'jm'
   };
   /** @internal */
-  static _DATE_FORMAT: RegExp = new RegExp("((?:[^yMLdHhmsaZEwG']+)|(?:'(?:[^']|'')*')|(?:E+|y+|M+|L+|d+|H+|h+|m+|s+|a|Z|G+|w+))(.*)");
+  static _DATE_FORMAT: RegExp = new RegExp("^(\d{4})-?(\d\d)-?(\d\d)(?:T(\d\d)(?::?(\d\d)(?::?(\d\d)(?:\.(\d+))?)?)?(Z|([+-])(\d\d):?(\d\d))?)?$");
 
   transform(value: any, args: any[]): string {
     if (isBlank(value)) return null;
