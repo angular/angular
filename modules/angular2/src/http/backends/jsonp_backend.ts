@@ -52,7 +52,7 @@ export class JSONPConnection_ extends JSONPConnection {
       throw makeTypeError(JSONP_ERR_WRONG_METHOD);
     }
     this.request = req;
-    this.response = new Observable((responseObserver: Observer<Response>) => {
+    this.response = new Observable<Response>((responseObserver: Observer<Response>) => {
 
       this.readyState = ReadyState.Loading;
       let id = this._id = _dom.nextRequestID();

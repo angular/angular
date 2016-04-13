@@ -451,7 +451,7 @@ declare var Symbol;
 var _symbolIterator = null;
 export function getSymbolIterator(): string | symbol {
   if (isBlank(_symbolIterator)) {
-    if (isPresent(Symbol) && isPresent(Symbol.iterator)) {
+    if (isPresent((<any>globalScope).Symbol) && isPresent(Symbol.iterator)) {
       _symbolIterator = Symbol.iterator;
     } else {
       // es6-shim specific logic
