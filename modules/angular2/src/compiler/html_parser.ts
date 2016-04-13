@@ -124,40 +124,9 @@ class TreeBuilder {
 
     // read =
     while (this.peek.type === HtmlTokenType.EXPANSION_CASE_VALUE) {
-      let value = this._advance();
-
-      // read {
-      let exp = [];
-      if (this.peek.type !== HtmlTokenType.EXPANSION_CASE_EXP_START) {
-        this.errors.push(HtmlTreeError.create(null, this.peek.sourceSpan,
-                                              `Invalid expansion form. Missing '{'.,`));
-        return;
-      }
-
-      // read until }
-      let start = this._advance();
-      while (this.peek.type !== HtmlTokenType.EXPANSION_CASE_EXP_END) {
-        exp.push(this._advance());
-        if (this.peek.type === HtmlTokenType.EOF) {
-          this.errors.push(
-              HtmlTreeError.create(null, start.sourceSpan, `Invalid expansion form. Missing '}'.`));
-          return;
-        }
-      }
-      let end = this._advance();
-      exp.push(new HtmlToken(HtmlTokenType.EOF, [], end.sourceSpan));
-
-      // parse everything in between { and }
-      let parsedExp = new TreeBuilder(exp).build();
-      if (parsedExp.errors.length > 0) {
-        this.errors = this.errors.concat(<HtmlTreeError[]>parsedExp.errors);
-        return;
-      }
-
-      let sourceSpan = new ParseSourceSpan(value.sourceSpan.start, end.sourceSpan.end);
-      let expSourceSpan = new ParseSourceSpan(start.sourceSpan.start, end.sourceSpan.end);
-      cases.push(new HtmlExpansionCaseAst(value.parts[0], parsedExp.rootNodes, sourceSpan,
-                                          value.sourceSpan, expSourceSpan));
+      let expCase = this._parseExpansionCase();
+      if (isBlank(expCase)) return;  // error
+      cases.push(expCase);
     }
 
     // read the final }
@@ -171,6 +140,80 @@ class TreeBuilder {
     let mainSourceSpan = new ParseSourceSpan(token.sourceSpan.start, this.peek.sourceSpan.end);
     this._addToParent(new HtmlExpansionAst(switchValue.parts[0], type.parts[0], cases,
                                            mainSourceSpan, switchValue.sourceSpan));
+  }
+
+  private _parseExpansionCase(): HtmlExpansionCaseAst {
+    let value = this._advance();
+
+    // read {
+    if (this.peek.type !== HtmlTokenType.EXPANSION_CASE_EXP_START) {
+      this.errors.push(HtmlTreeError.create(null, this.peek.sourceSpan,
+                                            `Invalid expansion form. Missing '{'.,`));
+      return null;
+    }
+
+    // read until }
+    let start = this._advance();
+
+    let exp = this._collectExpansionExpTokens(start);
+    if (isBlank(exp)) return null;
+
+    let end = this._advance();
+    exp.push(new HtmlToken(HtmlTokenType.EOF, [], end.sourceSpan));
+
+    // parse everything in between { and }
+    let parsedExp = new TreeBuilder(exp).build();
+    if (parsedExp.errors.length > 0) {
+      this.errors = this.errors.concat(<HtmlTreeError[]>parsedExp.errors);
+      return null;
+    }
+
+    let sourceSpan = new ParseSourceSpan(value.sourceSpan.start, end.sourceSpan.end);
+    let expSourceSpan = new ParseSourceSpan(start.sourceSpan.start, end.sourceSpan.end);
+    return new HtmlExpansionCaseAst(value.parts[0], parsedExp.rootNodes, sourceSpan,
+                                    value.sourceSpan, expSourceSpan);
+  }
+
+  private _collectExpansionExpTokens(start: HtmlToken): HtmlToken[] {
+    let exp = [];
+    let expansionFormStack = [HtmlTokenType.EXPANSION_CASE_EXP_START];
+
+    while (true) {
+      if (this.peek.type === HtmlTokenType.EXPANSION_FORM_START ||
+          this.peek.type === HtmlTokenType.EXPANSION_CASE_EXP_START) {
+        expansionFormStack.push(this.peek.type);
+      }
+
+      if (this.peek.type === HtmlTokenType.EXPANSION_CASE_EXP_END) {
+        if (lastOnStack(expansionFormStack, HtmlTokenType.EXPANSION_CASE_EXP_START)) {
+          expansionFormStack.pop();
+          if (expansionFormStack.length == 0) return exp;
+
+        } else {
+          this.errors.push(
+              HtmlTreeError.create(null, start.sourceSpan, `Invalid expansion form. Missing '}'.`));
+          return null;
+        }
+      }
+
+      if (this.peek.type === HtmlTokenType.EXPANSION_FORM_END) {
+        if (lastOnStack(expansionFormStack, HtmlTokenType.EXPANSION_FORM_START)) {
+          expansionFormStack.pop();
+        } else {
+          this.errors.push(
+              HtmlTreeError.create(null, start.sourceSpan, `Invalid expansion form. Missing '}'.`));
+          return null;
+        }
+      }
+
+      if (this.peek.type === HtmlTokenType.EOF) {
+        this.errors.push(
+            HtmlTreeError.create(null, start.sourceSpan, `Invalid expansion form. Missing '}'.`));
+        return null;
+      }
+
+      exp.push(this._advance());
+    }
   }
 
   private _consumeText(token: HtmlToken) {
@@ -320,4 +363,8 @@ function getElementFullName(prefix: string, localName: string,
   }
 
   return mergeNsAndName(prefix, localName);
+}
+
+function lastOnStack(stack: any[], element: any): boolean {
+  return stack.length > 0 && stack[stack.length - 1] === element;
 }

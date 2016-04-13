@@ -211,8 +211,13 @@ class TemplateParseVisitor implements HtmlAstVisitor {
     }
   }
 
+  visitExpansion(ast: HtmlExpansionAst, context: any): any { return null; }
+
+  visitExpansionCase(ast: HtmlExpansionCaseAst, context: any): any { return null; }
+
   visitText(ast: HtmlTextAst, component: Component): any {
     var ngContentIndex = component.findNgContentIndex(TEXT_CSS_SELECTOR);
+
     var expr = this._parseInterpolation(ast.value, ast.sourceSpan);
     if (isPresent(expr)) {
       return new BoundTextAst(expr, ngContentIndex, ast.sourceSpan);
@@ -714,7 +719,6 @@ class NonBindableVisitor implements HtmlAstVisitor {
     return new TextAst(ast.value, ngContentIndex, ast.sourceSpan);
   }
   visitExpansion(ast: HtmlExpansionAst, context: any): any { return ast; }
-
   visitExpansionCase(ast: HtmlExpansionCaseAst, context: any): any { return ast; }
 }
 
