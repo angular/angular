@@ -1,0 +1,9 @@
+<div class="demo-gestures">
+    <div (longpress)="pressCount = pressCount + 1" (drag)="dragCount = dragCount + 1"
+         (swipe)="swipeCount = swipeCount + 1">
+        Drag or press me.
+    </div>
+    drag: {{dragCount}}
+    swipe: {{swipeCount}}
+    longpress: {{pressCount}}
+</div>
