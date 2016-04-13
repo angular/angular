@@ -1,7 +1,3 @@
-/// <reference path="../../../angular2/typings/node/node.d.ts" />
-/// <reference path="../../../angular2/typings/angular-protractor/angular-protractor.d.ts" />
-/// <reference path="../../../angular2/typings/jasmine/jasmine.d.ts" />
-
 var assertEventsContainsName = function(events, eventName) {
   var found = false;
   for (var i = 0; i < events.length; ++i) {
