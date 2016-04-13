@@ -33,7 +33,7 @@ var defaultLocale: string = 'en-US';
  *
  *     expression | date[:format]
  *
- * where `expression` is a date object or a number (milliseconds since UTC epoch) or ISO stribg and
+ * where `expression` is a date object or a number (milliseconds since UTC epoch) or ISO string and
  * `format` indicates which date/time components to include:
  *
  *  | Component | Symbol | Short Form   | Long Form         | Numeric   | 2-digit   |
