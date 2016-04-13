@@ -188,7 +188,7 @@ export function main() {
       expect(res[1].sourceSpan.start.offset).toEqual(10);
     });
 
-    it("should handle the plural special form", () => {
+    it("should handle the plural expansion form", () => {
       let translations: {[key: string]: string} = {};
       translations[id(new Message('zero<ph name="e1">bold</ph>', "plural_0", null))] =
           'ZERO<ph name="e1">BOLD</ph>';
@@ -200,11 +200,36 @@ export function main() {
             [HtmlElementAst, 'ul', 0],
             [HtmlAttrAst, '[ngPlural]', 'messages.length'],
             [HtmlElementAst, 'template', 1],
-            [HtmlAttrAst, '[ngPluralCase]', '0'],
+            [HtmlAttrAst, 'ngPluralCase', '0'],
             [HtmlElementAst, 'li', 2],
             [HtmlTextAst, 'ZERO', 3],
             [HtmlElementAst, 'b', 3],
             [HtmlTextAst, 'BOLD', 4]
+          ]);
+    });
+
+    it("should handle nested expansion forms", () => {
+      let translations: {[key: string]: string} = {};
+      translations[id(new Message('m', "gender_m", null))] = 'M';
+
+      let res = parse(`{messages.length, plural, =0 { {p.gender, gender, =m {m}} }}`, translations);
+
+      expect(humanizeDom(res))
+          .toEqual([
+            [HtmlElementAst, 'ul', 0],
+            [HtmlAttrAst, '[ngPlural]', 'messages.length'],
+            [HtmlElementAst, 'template', 1],
+            [HtmlAttrAst, 'ngPluralCase', '0'],
+            [HtmlElementAst, 'li', 2],
+
+            [HtmlElementAst, 'ul', 3],
+            [HtmlAttrAst, '[ngSwitch]', 'p.gender'],
+            [HtmlElementAst, 'template', 4],
+            [HtmlAttrAst, 'ngSwitchWhen', 'm'],
+            [HtmlElementAst, 'li', 5],
+            [HtmlTextAst, 'M', 6],
+
+            [HtmlTextAst, ' ', 3]
           ]);
     });
 
@@ -258,7 +283,7 @@ export function main() {
             [HtmlElementAst, 'ul', 0],
             [HtmlAttrAst, '[ngSwitch]', 'person.gender'],
             [HtmlElementAst, 'template', 1],
-            [HtmlAttrAst, '[ngSwitchWhen]', 'male'],
+            [HtmlAttrAst, 'ngSwitchWhen', 'male'],
             [HtmlElementAst, 'li', 2],
             [HtmlTextAst, 'M', 3],
           ]);
@@ -273,13 +298,13 @@ export function main() {
       it("should error when no matching message (attr)", () => {
         let mid = id(new Message("some message", null, null));
         expect(humanizeErrors(parse("<div value='some message' i18n-value></div>", {}).errors))
-            .toEqual([`Cannot find message for id '${mid}'`]);
+            .toEqual([`Cannot find message for id '${mid}', content 'some message'.`]);
       });
 
       it("should error when no matching message (text)", () => {
         let mid = id(new Message("some message", null, null));
         expect(humanizeErrors(parse("<div i18n>some message</div>", {}).errors))
-            .toEqual([`Cannot find message for id '${mid}'`]);
+            .toEqual([`Cannot find message for id '${mid}', content 'some message'.`]);
       });
 
       it("should error when a non-placeholder element appears in translation", () => {

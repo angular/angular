@@ -254,6 +254,10 @@ class TemplateParseVisitor implements HtmlAstVisitor {
     }
   }
 
+  visitExpansion(ast: HtmlExpansionAst, context: any): any { return null; }
+
+  visitExpansionCase(ast: HtmlExpansionCaseAst, context: any): any { return null; }
+
   visitText(ast: HtmlTextAst, parent: ElementContext): any {
     var ngContentIndex = parent.findNgContentIndex(TEXT_CSS_SELECTOR);
     var expr = this._parseInterpolation(ast.value, ast.sourceSpan);
@@ -270,7 +274,7 @@ class TemplateParseVisitor implements HtmlAstVisitor {
 
   visitComment(ast: HtmlCommentAst, context: any): any { return null; }
 
-  visitElement(element: HtmlElementAst, component: ElementContext): any {
+  visitElement(element: HtmlElementAst, parent: ElementContext): any {
     var nodeName = element.name;
     var preparsedElement = preparseElement(element);
     if (preparsedElement.type === PreparsedElementType.SCRIPT ||
@@ -773,7 +777,6 @@ class NonBindableVisitor implements HtmlAstVisitor {
     return new TextAst(ast.value, ngContentIndex, ast.sourceSpan);
   }
   visitExpansion(ast: HtmlExpansionAst, context: any): any { return ast; }
-
   visitExpansionCase(ast: HtmlExpansionCaseAst, context: any): any { return ast; }
 }
 

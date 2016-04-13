@@ -16,7 +16,7 @@ import {RegExpWrapper, NumberWrapper, isPresent} from 'angular2/src/facade/lang'
 import {BaseException} from 'angular2/src/facade/exceptions';
 import {Parser} from 'angular2/src/compiler/expression_parser/parser';
 import {Message, id} from './message';
-import {Expander} from './expander';
+import {expandNodes} from './expander';
 import {
   messageFromAttribute,
   I18nError,
@@ -126,19 +126,14 @@ export class I18nHtmlParser implements HtmlParser {
         parseExpansionForms: boolean = false): HtmlParseTreeResult {
     this.errors = [];
 
-    let res = this._htmlParser.parse(sourceContent, sourceUrl, parseExpansionForms);
+    let res = this._htmlParser.parse(sourceContent, sourceUrl, true);
     if (res.errors.length > 0) {
       return res;
     } else {
-      let nodes = this._recurse(this._expandNodes(res.rootNodes));
+      let nodes = this._recurse(expandNodes(res.rootNodes).nodes);
       return this.errors.length > 0 ? new HtmlParseTreeResult([], this.errors) :
                                       new HtmlParseTreeResult(nodes, []);
     }
-  }
-
-  private _expandNodes(nodes: HtmlAst[]): HtmlAst[] {
-    let e = new Expander();
-    return htmlVisitAll(e, nodes);
   }
 
   private _processI18nPart(p: Part): HtmlAst[] {
@@ -155,9 +150,11 @@ export class I18nHtmlParser implements HtmlParser {
   }
 
   private _mergeI18Part(p: Part): HtmlAst[] {
-    let messageId = id(p.createMessage(this._parser));
+    let message = p.createMessage(this._parser);
+    let messageId = id(message);
     if (!StringMapWrapper.contains(this._messages, messageId)) {
-      throw new I18nError(p.sourceSpan, `Cannot find message for id '${messageId}'`);
+      throw new I18nError(
+          p.sourceSpan, `Cannot find message for id '${messageId}', content '${message.content}'.`);
     }
 
     let parsedMessage = this._messages[messageId];
@@ -294,14 +291,17 @@ export class I18nHtmlParser implements HtmlParser {
       }
 
       let i18n = i18ns[0];
-      let messageId = id(messageFromAttribute(this._parser, el, i18n));
+      let message = messageFromAttribute(this._parser, el, i18n);
+      let messageId = id(message);
 
       if (StringMapWrapper.contains(this._messages, messageId)) {
         let updatedMessage = this._replaceInterpolationInAttr(attr, this._messages[messageId]);
         res.push(new HtmlAttrAst(attr.name, updatedMessage, attr.sourceSpan));
 
       } else {
-        throw new I18nError(attr.sourceSpan, `Cannot find message for id '${messageId}'`);
+        throw new I18nError(
+            attr.sourceSpan,
+            `Cannot find message for id '${messageId}', content '${message.content}'.`);
       }
     });
     return res;

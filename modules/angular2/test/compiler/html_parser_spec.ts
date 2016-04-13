@@ -271,6 +271,27 @@ export function main() {
               .toEqual([[HtmlTextAst, 'One {{message}}', 0]]);
         });
 
+        it("should parse out nested expansion forms", () => {
+          let parsed = parser.parse(`{messages.length, plural, =0 { {p.gender, gender, =m {m}} }}`,
+                                    'TestComp', true);
+
+
+          expect(humanizeDom(parsed))
+              .toEqual([
+                [HtmlExpansionAst, 'messages.length', 'plural'],
+                [HtmlExpansionCaseAst, '0'],
+              ]);
+
+          let firstCase = (<any>parsed.rootNodes[0]).cases[0];
+
+          expect(humanizeDom(new HtmlParseTreeResult(firstCase.expression, [])))
+              .toEqual([
+                [HtmlExpansionAst, 'p.gender', 'gender'],
+                [HtmlExpansionCaseAst, 'm'],
+                [HtmlTextAst, ' ', 0],
+              ]);
+        });
+
         it("should error when expansion form is not closed", () => {
           let p = parser.parse(`{messages.length, plural, =0 {one}`, 'TestComp', true);
           expect(humanizeErrors(p.errors))
