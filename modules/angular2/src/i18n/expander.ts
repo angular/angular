@@ -12,6 +12,7 @@ import {
 
 import {BaseException} from 'angular2/src/facade/exceptions';
 
+
 /**
  * Expands special forms into elements.
  *
@@ -35,7 +36,18 @@ import {BaseException} from 'angular2/src/facade/exceptions';
  * </ul>
  * ```
  */
-export class Expander implements HtmlAstVisitor {
+export function expandNodes(nodes: HtmlAst[]): ExpansionResult {
+  let e = new _Expander();
+  let n = htmlVisitAll(e, nodes);
+  return new ExpansionResult(n, e.expanded);
+}
+
+export class ExpansionResult {
+  constructor(public nodes: HtmlAst[], public expanded: boolean) {}
+}
+
+class _Expander implements HtmlAstVisitor {
+  expanded: boolean = false;
   constructor() {}
 
   visitElement(ast: HtmlElementAst, context: any): any {
@@ -50,6 +62,7 @@ export class Expander implements HtmlAstVisitor {
   visitComment(ast: HtmlCommentAst, context: any): any { return ast; }
 
   visitExpansion(ast: HtmlExpansionAst, context: any): any {
+    this.expanded = true;
     return ast.type == "plural" ? _expandPluralForm(ast) : _expandDefaultForm(ast);
   }
 
@@ -59,36 +72,44 @@ export class Expander implements HtmlAstVisitor {
 }
 
 function _expandPluralForm(ast: HtmlExpansionAst): HtmlElementAst {
-  let children = ast.cases.map(
-      c => new HtmlElementAst(
-          `template`,
-          [
-            new HtmlAttrAst("[ngPluralCase]", c.value, c.valueSourceSpan),
-          ],
-          [
-            new HtmlElementAst(
-                `li`, [new HtmlAttrAst("i18n", `${ast.type}_${c.value}`, c.valueSourceSpan)],
-                c.expression, c.sourceSpan, c.sourceSpan, c.sourceSpan)
-          ],
-          c.sourceSpan, c.sourceSpan, c.sourceSpan));
+  let children = ast.cases.map(c => {
+    let expansionResult = expandNodes(c.expression);
+    let i18nAttrs = expansionResult.expanded ?
+                        [] :
+                        [new HtmlAttrAst("i18n", `${ast.type}_${c.value}`, c.valueSourceSpan)];
+
+    return new HtmlElementAst(`template`,
+                              [
+                                new HtmlAttrAst("ngPluralCase", c.value, c.valueSourceSpan),
+                              ],
+                              [
+                                new HtmlElementAst(`li`, i18nAttrs, expansionResult.nodes,
+                                                   c.sourceSpan, c.sourceSpan, c.sourceSpan)
+                              ],
+                              c.sourceSpan, c.sourceSpan, c.sourceSpan);
+  });
   let switchAttr = new HtmlAttrAst("[ngPlural]", ast.switchValue, ast.switchValueSourceSpan);
   return new HtmlElementAst("ul", [switchAttr], children, ast.sourceSpan, ast.sourceSpan,
                             ast.sourceSpan);
 }
 
 function _expandDefaultForm(ast: HtmlExpansionAst): HtmlElementAst {
-  let children = ast.cases.map(
-      c => new HtmlElementAst(
-          `template`,
-          [
-            new HtmlAttrAst("[ngSwitchWhen]", c.value, c.valueSourceSpan),
-          ],
-          [
-            new HtmlElementAst(
-                `li`, [new HtmlAttrAst("i18n", `${ast.type}_${c.value}`, c.valueSourceSpan)],
-                c.expression, c.sourceSpan, c.sourceSpan, c.sourceSpan)
-          ],
-          c.sourceSpan, c.sourceSpan, c.sourceSpan));
+  let children = ast.cases.map(c => {
+    let expansionResult = expandNodes(c.expression);
+    let i18nAttrs = expansionResult.expanded ?
+                        [] :
+                        [new HtmlAttrAst("i18n", `${ast.type}_${c.value}`, c.valueSourceSpan)];
+
+    return new HtmlElementAst(`template`,
+                              [
+                                new HtmlAttrAst("ngSwitchWhen", c.value, c.valueSourceSpan),
+                              ],
+                              [
+                                new HtmlElementAst(`li`, i18nAttrs, expansionResult.nodes,
+                                                   c.sourceSpan, c.sourceSpan, c.sourceSpan)
+                              ],
+                              c.sourceSpan, c.sourceSpan, c.sourceSpan);
+  });
   let switchAttr = new HtmlAttrAst("[ngSwitch]", ast.switchValue, ast.switchValueSourceSpan);
   return new HtmlElementAst("ul", [switchAttr], children, ast.sourceSpan, ast.sourceSpan,
                             ast.sourceSpan);

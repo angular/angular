@@ -646,6 +646,31 @@ export function main() {
               [HtmlTokenType.EOF]
             ]);
       });
+
+      it("should parse nested expansion forms", () => {
+        expect(tokenizeAndHumanizeParts(`{one.two, three, =4 { {xx, yy, =x {one}} }}`, true))
+            .toEqual([
+              [HtmlTokenType.EXPANSION_FORM_START],
+              [HtmlTokenType.RAW_TEXT, 'one.two'],
+              [HtmlTokenType.RAW_TEXT, 'three'],
+              [HtmlTokenType.EXPANSION_CASE_VALUE, '4'],
+              [HtmlTokenType.EXPANSION_CASE_EXP_START],
+
+              [HtmlTokenType.EXPANSION_FORM_START],
+              [HtmlTokenType.RAW_TEXT, 'xx'],
+              [HtmlTokenType.RAW_TEXT, 'yy'],
+              [HtmlTokenType.EXPANSION_CASE_VALUE, 'x'],
+              [HtmlTokenType.EXPANSION_CASE_EXP_START],
+              [HtmlTokenType.TEXT, 'one'],
+              [HtmlTokenType.EXPANSION_CASE_EXP_END],
+              [HtmlTokenType.EXPANSION_FORM_END],
+              [HtmlTokenType.TEXT, ' '],
+
+              [HtmlTokenType.EXPANSION_CASE_EXP_END],
+              [HtmlTokenType.EXPANSION_FORM_END],
+              [HtmlTokenType.EOF]
+            ]);
+      });
     });
 
     describe('errors', () => {
