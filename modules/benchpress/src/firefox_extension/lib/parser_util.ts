@@ -1,5 +1,3 @@
-/// <reference path="../../../../angular2/typings/node/node.d.ts" />
-
 /**
  * @param {Object} perfProfile The perf profile JSON object.
  * @return {Object[]} An array of recognized events that are captured
