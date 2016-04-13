@@ -7336,14 +7336,7 @@
     "rc": {
       "version": "1.1.6",
       "from": "rc@>=1.0.1 <2.0.0",
-      "resolved": "https://registry.npmjs.org/rc/-/rc-1.1.6.tgz",
-      "dependencies": {
-        "minimist": {
-          "version": "1.2.0",
-          "from": "minimist@>=1.2.0 <2.0.0",
-          "resolved": "https://registry.npmjs.org/minimist/-/minimist-1.2.0.tgz"
-        }
-      }
+      "resolved": "https://registry.npmjs.org/rc/-/rc-1.1.6.tgz"
     },
     "rcfinder": {
       "version": "0.1.8",
@@ -7665,9 +7658,9 @@
       "resolved": "https://registry.npmjs.org/run-sequence/-/run-sequence-1.1.5.tgz"
     },
     "rxjs": {
-      "version": "5.0.0-beta.2",
-      "from": "rxjs@5.0.0-beta.2",
-      "resolved": "https://registry.npmjs.org/rxjs/-/rxjs-5.0.0-beta.2.tgz"
+      "version": "5.0.0-beta.6",
+      "from": "rxjs@5.0.0-beta.6",
+      "resolved": "https://registry.npmjs.org/rxjs/-/rxjs-5.0.0-beta.6.tgz"
     },
     "sass-graph": {
       "version": "2.0.1",
@@ -7768,14 +7761,7 @@
     "semver-diff": {
       "version": "2.1.0",
       "from": "semver-diff@>=2.0.0 <3.0.0",
-      "resolved": "https://registry.npmjs.org/semver-diff/-/semver-diff-2.1.0.tgz",
-      "dependencies": {
-        "semver": {
-          "version": "5.1.0",
-          "from": "semver@>=5.0.3 <6.0.0",
-          "resolved": "https://registry.npmjs.org/semver/-/semver-5.1.0.tgz"
-        }
-      }
+      "resolved": "https://registry.npmjs.org/semver-diff/-/semver-diff-2.1.0.tgz"
     },
     "semver-utils": {
       "version": "1.1.1",
