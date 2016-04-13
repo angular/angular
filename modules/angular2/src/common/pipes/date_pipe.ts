@@ -2,6 +2,7 @@ import {
   isDate,
   isNumber,
   isPresent,
+  isString,
   Date,
   DateWrapper,
   CONST,
@@ -99,6 +100,7 @@ export class DatePipe implements PipeTransform {
     'mediumTime': 'jms',
     'shortTime': 'jm'
   };
+  /** @internal */
   static _DATE_FORMAT: RegExp = new RegExp("((?:[^yMLdHhmsaZEwG']+)|(?:'(?:[^']|'')*')|(?:E+|y+|M+|L+|d+|H+|h+|m+|s+|a|Z|G+|w+))(.*)");
 
   transform(value: any, args: any[]): string {
@@ -112,7 +114,7 @@ export class DatePipe implements PipeTransform {
     if (isNumber(value)) {
       value = DateWrapper.fromMillis(value);
     }
-    if(DatePipe._DATE_FORMAT.test(value)){
+    if (DatePipe._DATE_FORMAT.test(value)) {
       value = DateWrapper.fromISOString(value);
     }
     if (StringMapWrapper.contains(DatePipe._ALIASES, pattern)) {
@@ -121,5 +123,5 @@ export class DatePipe implements PipeTransform {
     return DateFormatter.format(value, defaultLocale, pattern);
   }
 
-  supports(obj: any): boolean { return isDate(obj) || isNumber(obj) || DatePipe._DATE_FORMAT.test(obj); }
+  supports(obj: any): boolean { return isDate(obj) || isNumber(obj) || (isString(obj) && DatePipe._DATE_FORMAT.test(obj)); }
 }
