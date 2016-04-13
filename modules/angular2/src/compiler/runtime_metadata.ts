@@ -22,6 +22,7 @@ import {PLATFORM_DIRECTIVES, PLATFORM_PIPES} from 'angular2/src/core/platform_di
 import {MODULE_SUFFIX} from './util';
 import {assertArrayOfStrings} from './assertions';
 import {getUrlScheme} from 'angular2/src/compiler/url_resolver';
+import {StaticType} from './static_reflector';
 
 @Injectable()
 export class RuntimeMetadataResolver {
@@ -169,7 +170,7 @@ function flattenArray(tree: any[], out: Array<Type | any[]>): void {
 }
 
 function isValidType(value: Type): boolean {
-  return isPresent(value) && (value instanceof Type);
+  return isPresent(value) && ((value instanceof Type) || (value instanceof StaticType));
 }
 
 function calcModuleUrl(type: Type, cmpMetadata: md.ComponentMetadata): string {
