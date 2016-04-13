@@ -33,7 +33,7 @@ var defaultLocale: string = 'en-US';
  *
  *     expression | date[:format]
  *
- * where `expression` is a date object or a number (milliseconds since UTC epoch) and
+ * where `expression` is a date object or a number (milliseconds since UTC epoch) or ISO stribg and
  * `format` indicates which date/time components to include:
  *
  *  | Component | Symbol | Short Form   | Long Form         | Numeric   | 2-digit   |
@@ -99,7 +99,7 @@ export class DatePipe implements PipeTransform {
     'mediumTime': 'jms',
     'shortTime': 'jm'
   };
-
+  static _DATE_FORMAT: RegExp = new RegExp("((?:[^yMLdHhmsaZEwG']+)|(?:'(?:[^']|'')*')|(?:E+|y+|M+|L+|d+|H+|h+|m+|s+|a|Z|G+|w+))(.*)");
 
   transform(value: any, args: any[]): string {
     if (isBlank(value)) return null;
@@ -112,11 +112,14 @@ export class DatePipe implements PipeTransform {
     if (isNumber(value)) {
       value = DateWrapper.fromMillis(value);
     }
+    if(DatePipe._DATE_FORMAT.test(value)){
+      value = DateWrapper.fromISOString(value);
+    }
     if (StringMapWrapper.contains(DatePipe._ALIASES, pattern)) {
       pattern = <string>StringMapWrapper.get(DatePipe._ALIASES, pattern);
     }
     return DateFormatter.format(value, defaultLocale, pattern);
   }
 
-  supports(obj: any): boolean { return isDate(obj) || isNumber(obj); }
+  supports(obj: any): boolean { return isDate(obj) || isNumber(obj) || DatePipe._DATE_FORMAT.test(obj); }
 }
