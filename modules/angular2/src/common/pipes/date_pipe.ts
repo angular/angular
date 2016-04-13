@@ -2,6 +2,7 @@ import {
   isDate,
   isNumber,
   isPresent,
+  isString,
   Date,
   DateWrapper,
   CONST,
@@ -33,7 +34,7 @@ var defaultLocale: string = 'en-US';
  *
  *     expression | date[:format]
  *
- * where `expression` is a date object or a number (milliseconds since UTC epoch) and
+ * where `expression` is a date object or a number (milliseconds since UTC epoch) or ISO string and
  * `format` indicates which date/time components to include:
  *
  *  | Component | Symbol | Short Form   | Long Form         | Numeric   | 2-digit   |
@@ -99,7 +100,9 @@ export class DatePipe implements PipeTransform {
     'mediumTime': 'jms',
     'shortTime': 'jm'
   };
-
+  /** @internal */
+  static _ISO8601_STR: RegExp =
+      /(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d\.\d+([+-][0-2]\d:[0-5]\d|Z))|(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d([+-][0-2]\d:[0-5]\d|Z))|(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d([+-][0-2]\d:[0-5]\d|Z))/g;
 
   transform(value: any, args: any[]): string {
     if (isBlank(value)) return null;
@@ -112,11 +115,16 @@ export class DatePipe implements PipeTransform {
     if (isNumber(value)) {
       value = DateWrapper.fromMillis(value);
     }
+    if (DatePipe._ISO8601_STR.test(value)) {
+      value = DateWrapper.fromISOString(value);
+    }
     if (StringMapWrapper.contains(DatePipe._ALIASES, pattern)) {
       pattern = <string>StringMapWrapper.get(DatePipe._ALIASES, pattern);
     }
     return DateFormatter.format(value, defaultLocale, pattern);
   }
 
-  supports(obj: any): boolean { return isDate(obj) || isNumber(obj); }
+  supports(obj: any): boolean {
+    return isDate(obj) || isNumber(obj) || (isString(obj) && DatePipe._ISO8601_STR.test(obj));
+  }
 }
