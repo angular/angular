@@ -9,7 +9,7 @@ import {Options} from './common_options';
  */
 export class SampleDescription {
   // TODO(tbosch): use static values when our transpiler supports them
-  static get BINDINGS(): Provider[] { return _PROVIDERS; }
+  static get PROVIDERS(): Provider[] { return _PROVIDERS; }
   description: {[key: string]: any};
 
   constructor(public id: string, descriptions: Array<{[key: string]: any}>,

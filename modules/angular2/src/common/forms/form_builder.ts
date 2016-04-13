@@ -13,7 +13,7 @@ import {ValidatorFn, AsyncValidatorFn} from './directives/validators';
  * ```typescript
  * @Component({
  *   selector: 'my-app',
- *   viewBindings: [FORM_BINDINGS]
+ *   viewProviders: [FORM_BINDINGS]
  *   template: `
  *     <form [ngFormModel]="loginForm">
  *       <p>Login <input ngControl="login"></p>

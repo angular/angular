@@ -24,7 +24,7 @@ var inj = Injector.resolveAndCreate([
 var engine = inj.get(ENGINE_KEY);  // no mapping
 ```
 
-Every key has an id, which we utilize to store bindings and instances. So Injector uses keys internally for performance reasons.
+Every key has an id, which we utilize to store providers and instances. So Injector uses keys internally for performance reasons.
 
 ### ProtoInjector and Injector
 
@@ -33,15 +33,15 @@ Often there is a need to create multiple instances of essentially the same injec
 Doing the following would be very inefficient.
 
 ```
-function createComponetInjector(parent, bindings: Binding[]) {
-  return parent.resolveAndCreateChild(bindings);
+function createComponetInjector(parent, providers: Binding[]) {
+  return parent.resolveAndCreateChild(providers);
 }
 ```
 
-This would require us to resolve and store bindings for every single component instance. Instead, we want to resolve and store the bindings for every component type, and create a set of instances for every component. To enable that DI separates the meta information about injectables (Bindings and their dependencies), which are stored in `ProtoInjector`, and injectables themselves, which are stored in `Injector`.
+This would require us to resolve and store providers for every single component instance. Instead, we want to resolve and store the providers for every component type, and create a set of instances for every component. To enable that DI separates the meta information about injectables (providers and their dependencies), which are stored in `ProtoInjector`, and injectables themselves, which are stored in `Injector`.
 
 ```
-var proto = new ProtoInjector(bindings); // done once
+var proto = new ProtoInjector(providers); // done once
 function createComponentInjector(parent, proto) {
   return new Injector(proto, parent);
 }
@@ -74,7 +74,7 @@ Imagine the following scenario:
    Child1    Child2
 ```
 
-Here both Child1 and Child2 are children of ParentInjector. Child2 marks this relationship as host. ParentInjector might want to expose two different sets of bindings for its "regular" children and its "host" children. Bindings visible to "regular" children are called "public" and bindings visible to "host" children are called "private". This is an advanced use case used by Angular, where components can provide different sets of bindings for their children and their view.
+Here both Child1 and Child2 are children of ParentInjector. Child2 marks this relationship as host. ParentInjector might want to expose two different sets of providers for its "regular" children and its "host" children. providers visible to "regular" children are called "public" and providers visible to "host" children are called "private". This is an advanced use case used by Angular, where components can provide different sets of providers for their children and their view.
 
 Let's look at this example.
 
@@ -154,12 +154,12 @@ Now let's see how Angular 2 uses DI behind the scenes.
 
 The right mental model is to think that every DOM element has an Injector. (In practice, only interesting elements containing directives will have an injector, but this is a performance optimization)
 
-There are two properties that can be used to configure DI: bindings and viewBindings.
+There are two properties that can be used to configure DI: providers and viewProviders.
 
-- `bindings` affects the element and its children.
-- `viewBindings` affects the component's view.
+- `providers` affects the element and its children.
+- `viewProviders` affects the component's view.
 
-Every directive can declare injectables via `bindings`, but only components can declare `viewBindings`.
+Every directive can declare injectables via `providers`, but only components can declare `viewProviders`.
 
 Let's look at a complex example that shows how the injector tree gets created.
 
@@ -174,10 +174,10 @@ Both `MyComponent` and `MyDirective` are created on the same element.
 ```
 @Component({
   selector: 'my-component',
-  bindings: [
+  providers: [
     bind('componentService').toValue('Host_MyComponentService')
   ],
-  viewBindings: [
+  viewProviders: [
     bind('viewService').toValue('View_MyComponentService')
   ],
   template: `<needs-view-service></needs-view-service>`,
@@ -187,7 +187,7 @@ class MyComponent {}
 
 @Directive({
   selector: '[my-directive]',
-  bindings: [
+  providers: [
     bind('directiveService').toValue('MyDirectiveService')
   ]
 })
@@ -231,5 +231,5 @@ Injector2 [                                                 Injector3 [
 ]                                                           ]
 ```
 
-As you can see the component and its bindings can be seen by its children and its view. The view bindings can be seen only by the view. And the bindings of other directives can be seen only their children.
+As you can see the component and its providers can be seen by its children and its view. The view providers can be seen only by the view. And the providers of other directives can be seen only their children.
 

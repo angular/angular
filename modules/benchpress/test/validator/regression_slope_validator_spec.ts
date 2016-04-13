@@ -26,7 +26,7 @@ export function main() {
 
     function createValidator({size, metric}) {
       validator = Injector.resolveAndCreate([
-                            RegressionSlopeValidator.BINDINGS,
+                            RegressionSlopeValidator.PROVIDERS,
                             bind(RegressionSlopeValidator.METRIC).toValue(metric),
                             bind(RegressionSlopeValidator.SAMPLE_SIZE).toValue(size)
                           ])

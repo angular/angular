@@ -37,7 +37,7 @@ export function main() {
         sampleId = 'null';
       }
       var bindings = [
-        ConsoleReporter.BINDINGS,
+        ConsoleReporter.PROVIDERS,
         provide(SampleDescription,
                 {useValue: new SampleDescription(sampleId, descriptions, metrics)}),
         bind(ConsoleReporter.PRINT).toValue((line) => log.push(line))

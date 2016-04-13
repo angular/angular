@@ -1,7 +1,7 @@
 import {AsyncRoute, AuxRoute, Route, Redirect, RouteDefinition} from './route_config_decorator';
 import {ComponentDefinition} from '../route_definition';
 import {isType, Type} from 'angular2/src/facade/lang';
-import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
+import {BaseException} from 'angular2/src/facade/exceptions';
 import {RouteRegistry} from '../route_registry';
 
 
@@ -32,12 +32,7 @@ export function normalizeRouteConfig(config: RouteDefinition,
     throw new BaseException(
         `Route config should contain exactly one "component", "loader", or "redirectTo" property.`);
   }
-  if (config.as && config.name) {
-    throw new BaseException(`Route config should contain exactly one "as" or "name" property.`);
-  }
-  if (config.as) {
-    config.name = config.as;
-  }
+
   if (config.loader) {
     var wrappedLoader = wrapLoaderToReconfigureRegistry(config.loader, registry);
     return new AsyncRoute({

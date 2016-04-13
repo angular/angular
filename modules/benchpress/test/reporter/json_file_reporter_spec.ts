@@ -32,7 +32,7 @@ export function main() {
 
     function createReporter({sampleId, descriptions, metrics, path}) {
       var bindings = [
-        JsonFileReporter.BINDINGS,
+        JsonFileReporter.PROVIDERS,
         provide(SampleDescription,
                 {useValue: new SampleDescription(sampleId, descriptions, metrics)}),
         bind(JsonFileReporter.PATH).toValue(path),

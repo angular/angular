@@ -31,7 +31,7 @@ export function runBenchmark(config) {
             execute: config.work,
             prepare: config.prepare,
             microMetrics: config.microMetrics,
-            bindings: [bind(Options.SAMPLE_DESCRIPTION).toValue(description)]
+            providers: [bind(Options.SAMPLE_DESCRIPTION).toValue(description)]
           });
         });
       });

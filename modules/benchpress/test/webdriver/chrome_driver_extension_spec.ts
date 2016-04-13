@@ -58,7 +58,7 @@ export function main() {
       }
       log = [];
       extension = Injector.resolveAndCreate([
-                            ChromeDriverExtension.BINDINGS,
+                            ChromeDriverExtension.PROVIDERS,
                             bind(WebDriverAdapter)
                                 .toValue(new MockDriverAdapter(log, perfRecords, messageMethod)),
                             bind(Options.USER_AGENT).toValue(userAgent)

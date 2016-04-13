@@ -4,7 +4,7 @@ import {WebDriverExtension, PerfLogFeatures} from '../web_driver_extension';
 import {WebDriverAdapter} from '../web_driver_adapter';
 
 export class FirefoxDriverExtension extends WebDriverExtension {
-  static get BINDINGS(): Provider[] { return _PROVIDERS; }
+  static get PROVIDERS(): Provider[] { return _PROVIDERS; }
 
   private _profilerStarted: boolean;
 

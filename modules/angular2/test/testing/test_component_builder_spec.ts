@@ -83,7 +83,7 @@ class MockFancyService extends FancyService {
 
 @Component({
   selector: 'my-service-comp',
-  bindings: [FancyService],
+  providers: [FancyService],
   template: `injected value: {{fancyService.value}}`
 })
 class TestBindingsComp {
@@ -95,7 +95,7 @@ class TestBindingsComp {
   viewProviders: [FancyService],
   template: `injected value: {{fancyService.value}}`
 })
-class TestViewBindingsComp {
+class TestViewProvidersComp {
   constructor(private fancyService: FancyService) {}
 }
 
@@ -199,12 +199,12 @@ export function main() {
        }));
 
 
-    it('should override a viewBinding',
+    it('should override a viewProvider',
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
 
-         tcb.overrideViewProviders(TestViewBindingsComp,
+         tcb.overrideViewProviders(TestViewProvidersComp,
                                    [provide(FancyService, {useClass: MockFancyService})])
-             .createAsync(TestViewBindingsComp)
+             .createAsync(TestViewProvidersComp)
              .then((componentFixture) => {
                componentFixture.detectChanges();
                expect(componentFixture.nativeElement)
