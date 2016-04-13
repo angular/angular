@@ -199,6 +199,12 @@ _AnalyzerOutputLine.prototype = {
     if (this.isHint && this.sourcePath.match(/generated/i)) {
       return true;
     }
+
+    if (this.errorCode.match(/UNUSED_SHOWN_NAME/i)) {
+      // TODO: Narrow this ignore down to test code only.
+      // See https://github.com/angular/angular/issues/8044
+      return true;
+    }
     return false;
   },
 
