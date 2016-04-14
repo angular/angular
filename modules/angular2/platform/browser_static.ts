@@ -11,12 +11,21 @@ export {
   disableDebugTools
 } from 'angular2/src/platform/browser_common';
 
-import {Type, isPresent} from 'angular2/src/facade/lang';
+import {Type, isPresent, isBlank} from 'angular2/src/facade/lang';
 import {
   BROWSER_PROVIDERS,
-  BROWSER_APP_COMMON_PROVIDERS
+  BROWSER_APP_COMMON_PROVIDERS,
+  BROWSER_PLATFORM_MARKER
 } from 'angular2/src/platform/browser_common';
-import {ComponentRef, platform} from 'angular2/core';
+import {
+  ComponentRef,
+  coreLoadAndBootstrap,
+  ReflectiveInjector,
+  PlatformRef,
+  getPlatform,
+  createPlatform,
+  assertPlatform
+} from 'angular2/core';
 
 /**
  * An array of providers that should be passed into `application()` when bootstrapping a component
@@ -25,6 +34,13 @@ import {ComponentRef, platform} from 'angular2/core';
  */
 export const BROWSER_APP_PROVIDERS: Array<any /*Type | Provider | any[]*/> =
     BROWSER_APP_COMMON_PROVIDERS;
+
+export function browserStaticPlatform(): PlatformRef {
+  if (isBlank(getPlatform())) {
+    createPlatform(ReflectiveInjector.resolveAndCreate(BROWSER_PROVIDERS));
+  }
+  return assertPlatform(BROWSER_PLATFORM_MARKER);
+}
 
 /**
  * See {@link bootstrap} for more information.
@@ -38,5 +54,7 @@ export function bootstrapStatic(appComponentType: Type,
 
   let appProviders =
       isPresent(customProviders) ? [BROWSER_APP_PROVIDERS, customProviders] : BROWSER_APP_PROVIDERS;
-  return platform(BROWSER_PROVIDERS).application(appProviders).bootstrap(appComponentType);
+  var appInjector =
+      ReflectiveInjector.resolveAndCreate(appProviders, browserStaticPlatform().injector);
+  return coreLoadAndBootstrap(appInjector, appComponentType);
 }

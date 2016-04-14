@@ -1,6 +1,3 @@
-import {unimplemented} from 'angular2/src/facade/exceptions';
-import {AppElement} from './element';
-
 /**
  * A wrapper around a native element inside of a View.
  *

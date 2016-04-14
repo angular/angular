@@ -18,7 +18,6 @@ import {
 
 import {Predicate} from 'angular2/src/facade/collection';
 import {Injector, OnDestroy, DebugElement, Type, ViewContainerRef, ViewChild} from 'angular2/core';
-import {NgIf} from 'angular2/common';
 import {Component, ViewMetadata} from 'angular2/src/core/metadata';
 import {DynamicComponentLoader} from 'angular2/src/core/linker/dynamic_component_loader';
 import {ElementRef} from 'angular2/src/core/linker/element_ref';

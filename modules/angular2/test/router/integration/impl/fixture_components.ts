@@ -153,7 +153,8 @@ export class DynamicLoaderCmp {
       this._componentRef.destroy();
       this._componentRef = null;
     }
-    return this._dynamicComponentLoader.loadNextToLocation(DynamicallyLoadedComponent, viewport)
+    return this._dynamicComponentLoader.loadNextToLocation(DynamicallyLoadedComponent,
+                                                           this.viewport)
         .then((cmp) => { this._componentRef = cmp; });
   }
 }

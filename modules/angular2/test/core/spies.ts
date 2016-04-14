@@ -8,7 +8,11 @@ import {DomAdapter} from 'angular2/src/platform/dom/dom_adapter';
 import {SpyObject, proxy} from 'angular2/testing_internal';
 
 export class SpyChangeDetectorRef extends SpyObject {
-  constructor() { super(ChangeDetectorRef); }
+  constructor() {
+    super(ChangeDetectorRef);
+    this.spy('detectChanges');
+    this.spy('checkNoChanges');
+  }
 }
 
 export class SpyIterableDifferFactory extends SpyObject {}

@@ -10,13 +10,15 @@ main() {
   var webSocket = new WebSocket("ws://127.0.0.1:1337/ws");
   webSocket.onOpen.listen((e) {
     var bus = new WebSocketMessageBus.fromWebSocket(webSocket);
-    platform([WORKER_RENDER_PLATFORM])
-    .application([WORKER_RENDER_APPLICATION_COMMON, new Provider(MessageBus, useValue: bus),
-      new Provider(APP_INITIALIZER, 
+    var platform = createPlatform(ReflectiveInjector.resolveAndCreate(WORKER_RENDER_PLATFORM));
+    var appInjector = ReflectiveInjector.resolveAndCreate([
+      WORKER_RENDER_APPLICATION_COMMON, new Provider(MessageBus, useValue: bus),
+      new Provider(APP_INITIALIZER,
         useFactory: (injector) => () => initializeGenericWorkerRenderer(injector),
         deps: [Injector],
         multi: true
       )
-    ]);
+    ], platform.injector);
+    appInjector.get(ApplicationRef);
   });
 }

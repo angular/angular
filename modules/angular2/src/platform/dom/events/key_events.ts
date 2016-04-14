@@ -95,7 +95,7 @@ export class KeyEventsPlugin extends EventManagerPlugin {
                        zone: NgZone): Function {
     return (event) => {
       if (StringWrapper.equals(KeyEventsPlugin.getEventFullKey(event), fullKey)) {
-        zone.run(() => handler(event));
+        zone.runGuarded(() => handler(event));
       }
     };
   }

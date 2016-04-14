@@ -6,9 +6,10 @@ export './src/core/util.dart';
 export 'package:angular2/src/facade/lang.dart' show enableProdMode;
 export './src/core/di.dart' hide ForwardRefFn, resolveForwardRef, forwardRef;
 export './src/facade/facade.dart';
-export './src/core/application_ref.dart' show platform, createNgZone, PlatformRef, ApplicationRef;
+export './src/core/application_ref.dart' show createPlatform, assertPlatform,
+    disposePlatform, getPlatform,
+    coreLoadAndBootstrap, coreBootstrap, createNgZone, PlatformRef, ApplicationRef;
 export './src/core/application_tokens.dart' show APP_ID,
-  APP_COMPONENT,
   APP_INITIALIZER,
   PACKAGE_ROOT_URL,
   PLATFORM_INITIALIZER;
