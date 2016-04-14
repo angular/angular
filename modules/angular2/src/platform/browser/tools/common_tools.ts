@@ -4,6 +4,10 @@ import {isPresent, NumberWrapper} from 'angular2/src/facade/lang';
 import {window} from 'angular2/src/facade/browser';
 import {DOM} from 'angular2/src/platform/dom/dom_adapter';
 
+export class ChangeDetectionPerfRecord {
+  constructor(public msPerTick: number, public numTicks: number) {}
+}
+
 /**
  * Entry point for all Angular debug tools. This object corresponds to the `ng`
  * global variable accessible in the dev console.
@@ -41,7 +45,7 @@ export class AngularProfiler {
    * ng.profiler.timeChangeDetection({record: true})
    * ```
    */
-  timeChangeDetection(config: any) {
+  timeChangeDetection(config: any): ChangeDetectionPerfRecord {
     var record = isPresent(config) && config['record'];
     var profileName = 'Change Detection';
     // Profiler is not available in Android browsers, nor in IE 9 without dev tools opened
@@ -66,5 +70,7 @@ export class AngularProfiler {
     var msPerTick = (end - start) / numTicks;
     window.console.log(`ran ${numTicks} change detection cycles`);
     window.console.log(`${NumberWrapper.toFixed(msPerTick, 2)} ms per check`);
+
+    return new ChangeDetectionPerfRecord(msPerTick, numTicks);
   }
 }
