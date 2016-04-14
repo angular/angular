@@ -50,7 +50,6 @@ import {
 var _implicitReceiver = new ImplicitReceiver();
 // TODO(tbosch): Cannot make this const/final right now because of the transpiler...
 var INTERPOLATION_REGEXP = /\{\{([\s\S]*?)\}\}/g;
-var COMMENT_REGEX = /\/\//g;
 
 class ParseException extends BaseException {
   constructor(message: string, input: string, errLocation: string, ctxLocation?: any) {
@@ -74,7 +73,7 @@ export class Parser {
 
   parseAction(input: string, location: any): ASTWithSource {
     this._checkNoInterpolation(input, location);
-    var tokens = this._lexer.tokenize(this._stripComments(input));
+    var tokens = this._lexer.tokenize(input);
     var ast = new _ParseAST(input, location, tokens, this._reflector, true).parseChain();
     return new ASTWithSource(ast, input, location);
   }
@@ -103,7 +102,7 @@ export class Parser {
     }
 
     this._checkNoInterpolation(input, location);
-    var tokens = this._lexer.tokenize(this._stripComments(input));
+    var tokens = this._lexer.tokenize(input);
     return new _ParseAST(input, location, tokens, this._reflector, false).parseChain();
   }
 
@@ -129,7 +128,7 @@ export class Parser {
     let expressions = [];
 
     for (let i = 0; i < split.expressions.length; ++i) {
-      var tokens = this._lexer.tokenize(this._stripComments(split.expressions[i]));
+      var tokens = this._lexer.tokenize(split.expressions[i]);
       var ast = new _ParseAST(input, location, tokens, this._reflector, false).parseChain();
       expressions.push(ast);
     }
@@ -163,10 +162,6 @@ export class Parser {
 
   wrapLiteralPrimitive(input: string, location: any): ASTWithSource {
     return new ASTWithSource(new LiteralPrimitive(input), input, location);
-  }
-
-  private _stripComments(input: string): string {
-    return StringWrapper.split(input, COMMENT_REGEX)[0].trim();
   }
 
   private _checkNoInterpolation(input: string, location: any): void {

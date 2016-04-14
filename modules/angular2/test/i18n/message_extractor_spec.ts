@@ -93,47 +93,6 @@ export function main() {
           .toEqual([new Message('Hi <ph name="0"/> and <ph name="1"/>', null, null)]);
     });
 
-    it('should replace interpolation with named placeholders if provided (text nodes)', () => {
-      let res = extractor.extract(`
-        <div i18n>Hi {{one //i18n(ph="FIRST")}} and {{two //i18n(ph="SECOND")}}</div>`,
-                                  'someurl');
-      expect(res.messages)
-          .toEqual([
-            new Message('<ph name="t0">Hi <ph name="FIRST"/> and <ph name="SECOND"/></ph>', null,
-                        null)
-          ]);
-    });
-
-    it('should replace interpolation with named placeholders if provided (attributes)', () => {
-      let res = extractor.extract(`
-      <div title='Hi {{one //i18n(ph="FIRST")}} and {{two //i18n(ph="SECOND")}}'
-        i18n-title></div>`,
-                                  'someurl');
-      expect(res.messages)
-          .toEqual([new Message('Hi <ph name="FIRST"/> and <ph name="SECOND"/>', null, null)]);
-    });
-
-    it('should match named placeholders with extra spacing', () => {
-      let res = extractor.extract(`
-      <div title='Hi {{one // i18n ( ph = "FIRST" )}} and {{two // i18n ( ph = "SECOND" )}}'
-        i18n-title></div>`,
-                                  'someurl');
-      expect(res.messages)
-          .toEqual([new Message('Hi <ph name="FIRST"/> and <ph name="SECOND"/>', null, null)]);
-    });
-
-    it('should suffix duplicate placeholder names with numbers', () => {
-      let res = extractor.extract(`
-      <div title='Hi {{one //i18n(ph="FIRST")}} and {{two //i18n(ph="FIRST")}} and {{three //i18n(ph="FIRST")}}'
-        i18n-title></div>`,
-                                  'someurl');
-      expect(res.messages)
-          .toEqual([
-            new Message('Hi <ph name="FIRST"/> and <ph name="FIRST_1"/> and <ph name="FIRST_2"/>',
-                        null, null)
-          ]);
-    });
-
     it("should handle html content", () => {
       let res = extractor.extract(
           '<div i18n><div attr="value">zero<div>one</div></div><div>two</div></div>', "someurl");
