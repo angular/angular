@@ -103,8 +103,6 @@ export function main() {
 
       it('should parse grouped expressions', () => { checkAction("(1 + 2) * 3", "1 + 2 * 3"); });
 
-      it('should ignore comments in expressions', () => { checkAction('a //comment', 'a'); });
-
       it('should parse an empty string', () => { checkAction(''); });
 
       describe("literals", () => {
@@ -271,8 +269,6 @@ export function main() {
       });
 
       it('should parse conditional expression', () => { checkBinding('a < b ? a : b'); });
-
-      it('should ignore comments in bindings', () => { checkBinding('a //comment', 'a'); });
     });
 
     describe('parseTemplateBindings', () => {
@@ -428,9 +424,6 @@ export function main() {
       it('should parse expression with newline characters', () => {
         checkInterpolation(`{{ 'foo' +\n 'bar' +\r 'baz' }}`, `{{ "foo" + "bar" + "baz" }}`);
       });
-
-      it('should ignore comments in interpolation expressions',
-         () => { checkInterpolation('{{a //comment}}', '{{ a }}'); });
     });
 
     describe("parseSimpleBinding", () => {
