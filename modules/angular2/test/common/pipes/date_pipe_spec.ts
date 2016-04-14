@@ -21,11 +21,14 @@ export function main() {
     var dateString;
     var pipe;
 
-    let pad = (number): string => (number < 10) ? ('0' + number) : number;
-
     beforeEach(() => {
       date = DateWrapper.create(2015, 6, 15, 21, 43, 11);
-      dateString = `2015-06-15T${pad(15 - date.getTimezoneOffset() / 60)}:43:11.000Z`;
+      if (new Date().toISOString) {
+        dateString = date.toISOString();
+      } else {
+        dateString = date.toIso8601String();
+      }
+
       dateNumber = DateWrapper.toMillis(date);
       pipe = new DatePipe();
     });
