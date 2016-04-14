@@ -10,7 +10,7 @@ export 'package:angular2/common.dart';
 export 'package:angular2/instrumentation.dart';
 export 'package:angular2/src/core/angular_entrypoint.dart' show AngularEntrypoint;
 export 'package:angular2/src/core/application_tokens.dart'
-    hide APP_COMPONENT_REF_PROMISE, APP_ID_RANDOM_PROVIDER;
+    hide APP_ID_RANDOM_PROVIDER;
 export 'package:angular2/src/platform/dom/dom_tokens.dart';
 export 'package:angular2/src/platform/dom/dom_adapter.dart';
 export 'package:angular2/src/platform/dom/events/event_manager.dart';

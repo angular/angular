@@ -7,7 +7,5 @@ import "package:angular2/core.dart";
 
 @AngularEntrypoint()
 main(List<String> args, SendPort replyTo) {
-  platform([WORKER_APP_PLATFORM, new Provider(RENDER_SEND_PORT, useValue: replyTo)])
-      .application([WORKER_APP_APPLICATION])
-      .bootstrap(HelloCmp);
+  bootstrapApp(replyTo, HelloCmp);
 }

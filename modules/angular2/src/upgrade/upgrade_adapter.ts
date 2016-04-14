@@ -1,11 +1,11 @@
 import {
   provide,
-  platform,
   ApplicationRef,
   ComponentResolver,
   Injector,
   NgZone,
   PlatformRef,
+  ReflectiveInjector,
   ComponentFactory,
   Provider,
   Type,
@@ -14,7 +14,7 @@ import {
 } from 'angular2/core';
 import {global} from 'angular2/src/facade/lang';
 import {ObservableWrapper} from 'angular2/src/facade/async';
-import {BROWSER_PROVIDERS, BROWSER_APP_PROVIDERS} from 'angular2/platform/browser';
+import {BROWSER_PROVIDERS, BROWSER_APP_PROVIDERS, browserPlatform} from 'angular2/platform/browser';
 
 import {getComponentInfo, ComponentInfo} from './metadata';
 import {onError, controllerKey} from './util';
@@ -294,13 +294,18 @@ export class UpgradeAdapter {
             config?: angular.IAngularBootstrapConfig): UpgradeAdapterRef {
     var upgrade = new UpgradeAdapterRef();
     var ng1Injector: angular.IInjectorService = null;
-    var platformRef: PlatformRef = platform(BROWSER_PROVIDERS);
-    var applicationRef: ApplicationRef = platformRef.application([
-      BROWSER_APP_PROVIDERS,
-      provide(NG1_INJECTOR, {useFactory: () => ng1Injector}),
-      provide(NG1_COMPILE, {useFactory: () => ng1Injector.get(NG1_COMPILE)}),
-      this.providers
-    ]);
+    var platformRef: PlatformRef = browserPlatform();
+    var applicationRef: ApplicationRef =
+        ReflectiveInjector.resolveAndCreate(
+                              [
+                                BROWSER_APP_PROVIDERS,
+                                provide(NG1_INJECTOR, {useFactory: () => ng1Injector}),
+                                provide(NG1_COMPILE,
+                                        {useFactory: () => ng1Injector.get(NG1_COMPILE)}),
+                                this.providers
+                              ],
+                              platformRef.injector)
+            .get(ApplicationRef);
     var injector: Injector = applicationRef.injector;
     var ngZone: NgZone = injector.get(NgZone);
     var compiler: ComponentResolver = injector.get(ComponentResolver);

@@ -140,7 +140,6 @@ var NG_COMPILER = [
 ];
 
 var NG_CORE = [
-  'APP_COMPONENT',
   'APP_INITIALIZER',
   'APP_ID',
   'AngularEntrypoint:dart',
@@ -261,7 +260,12 @@ var NG_CORE = [
   'provide',
   'createNgZone',
   'forwardRef:js',
-  'platform',
+  'coreBootstrap',
+  'coreLoadAndBootstrap',
+  'createPlatform',
+  'disposePlatform',
+  'getPlatform',
+  'assertPlatform',
   'resolveForwardRef:js',
   'PLATFORM_COMMON_PROVIDERS',
   'PLATFORM_INITIALIZER',
@@ -306,6 +310,7 @@ var NG_PLATFORM_BROWSER = [
   'ELEMENT_PROBE_PROVIDERS_PROD_MODE',
   'Title',
   'bootstrap',
+  'browserPlatform',
   'disableDebugTools',
   'enableDebugTools',
   'inspectNativeElement'

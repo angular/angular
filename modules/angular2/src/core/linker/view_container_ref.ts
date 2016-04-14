@@ -1,8 +1,6 @@
 import {ListWrapper} from 'angular2/src/facade/collection';
 import {unimplemented} from 'angular2/src/facade/exceptions';
 import {Injector} from 'angular2/src/core/di/injector';
-import {ReflectiveInjector} from 'angular2/src/core/di/reflective_injector';
-import {ResolvedReflectiveProvider} from 'angular2/src/core/di/reflective_provider';
 import {isPresent, isBlank} from 'angular2/src/facade/lang';
 import {wtfCreateScope, wtfLeave, WtfScopeFn} from '../profile/profile';
 
@@ -75,8 +73,7 @@ export abstract class ViewContainerRef {
    *
    * If `index` is not specified, the new View will be inserted as the last View in the container.
    *
-   * You can optionally specify the {@link Injector}
-   * that will be used for the component.
+   * You can optionally specify the {@link Injector} that will be used as parent for the Component.
    *
    * Returns the {@link ComponentRef} of the Host View created for the newly instantiated Component.
    */
