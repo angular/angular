@@ -6,7 +6,7 @@ import {ListWrapper, Map, MapWrapper} from 'angular2/src/facade/collection';
 import {DateWrapper, Type, print, isPresent} from 'angular2/src/facade/lang';
 
 import {
-  Compiler,
+  ComponentResolver,
   Component,
   Directive,
   ViewContainerRef,
@@ -40,7 +40,7 @@ export function main() {
   BrowserDomAdapter.makeCurrent();
   bootstrap(CompilerAppComponent, _createBindings())
       .then((ref) => {
-        var app = ref.hostComponent;
+        var app = ref.instance;
         bindAction('#compileNoBindings',
                    measureWrapper(() => app.compileNoBindings(), 'No Bindings'));
         bindAction('#compileWithBindings',
@@ -91,15 +91,15 @@ class MultiplyViewResolver extends ViewResolver {
 
 @Component({selector: 'app', directives: [], template: ``})
 class CompilerAppComponent {
-  constructor(private _compiler: Compiler) {}
+  constructor(private _compiler: ComponentResolver) {}
   compileNoBindings() {
     this._compiler.clearCache();
-    return this._compiler.compileInHost(BenchmarkComponentNoBindings);
+    return this._compiler.resolveComponent(BenchmarkComponentNoBindings);
   }
 
   compileWithBindings() {
     this._compiler.clearCache();
-    return this._compiler.compileInHost(BenchmarkComponentWithBindings);
+    return this._compiler.resolveComponent(BenchmarkComponentWithBindings);
   }
 }
 

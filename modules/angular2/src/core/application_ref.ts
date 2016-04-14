@@ -18,10 +18,8 @@ import {
 import {PromiseWrapper, PromiseCompleter, ObservableWrapper} from 'angular2/src/facade/async';
 import {ListWrapper} from 'angular2/src/facade/collection';
 import {TestabilityRegistry, Testability} from 'angular2/src/core/testability/testability';
-import {
-  ComponentRef,
-  DynamicComponentLoader
-} from 'angular2/src/core/linker/dynamic_component_loader';
+import {DynamicComponentLoader} from 'angular2/src/core/linker/dynamic_component_loader';
+import {ComponentRef} from 'angular2/src/core/linker/component_factory';
 import {
   BaseException,
   WrappedException,
@@ -32,7 +30,6 @@ import {Console} from 'angular2/src/core/console';
 import {wtfLeave, wtfCreateScope, WtfScopeFn} from './profile/profile';
 import {ChangeDetectorRef} from 'angular2/src/core/change_detection/change_detector_ref';
 import {lockMode} from 'angular2/src/facade/lang';
-import {ElementRef_} from 'angular2/src/core/linker/element_ref';
 
 /**
  * Construct providers specific to an individual root component.
@@ -457,8 +454,7 @@ export class ApplicationRef_ extends ApplicationRef {
 
   /** @internal */
   _loadComponent(componentRef: ComponentRef): void {
-    var appChangeDetector = (<ElementRef_>componentRef.location).internalElement.parentView;
-    this._changeDetectorRefs.push(appChangeDetector.ref);
+    this._changeDetectorRefs.push(componentRef.changeDetectorRef);
     this.tick();
     this._rootComponents.push(componentRef);
     this._bootstrapListeners.forEach((listener) => listener(componentRef));
@@ -469,8 +465,7 @@ export class ApplicationRef_ extends ApplicationRef {
     if (!ListWrapper.contains(this._rootComponents, componentRef)) {
       return;
     }
-    this.unregisterChangeDetector(
-        (<ElementRef_>componentRef.location).internalElement.parentView.ref);
+    this.unregisterChangeDetector(componentRef.changeDetectorRef);
     ListWrapper.remove(this._rootComponents, componentRef);
   }
 
@@ -498,7 +493,7 @@ export class ApplicationRef_ extends ApplicationRef {
 
   dispose(): void {
     // TODO(alxhub): Dispose of the NgZone.
-    ListWrapper.clone(this._rootComponents).forEach((ref) => ref.dispose());
+    ListWrapper.clone(this._rootComponents).forEach((ref) => ref.destroy());
     this._disposeListeners.forEach((dispose) => dispose());
     this._platform._applicationDisposed(this);
   }

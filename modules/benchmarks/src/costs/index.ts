@@ -14,7 +14,7 @@ export function main() {
   bootstrap(AppComponent)
       .then((ref) => {
         var injector = ref.injector;
-        var app: AppComponent = ref.hostComponent;
+        var app: AppComponent = ref.instance;
         var appRef = injector.get(ApplicationRef);
 
         bindAction('#reset', function() {

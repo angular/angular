@@ -66,7 +66,7 @@ Future<Outputs> processTemplates(AssetReader reader, AssetId assetId,
     for (var reflectable in viewDefResults.viewDefinitions.keys) {
       // TODO(kegluneq): Avoid duplicating naming logic for generated classes.
       reflectable.annotations.add(new AnnotationModel()
-        ..name = 'hostViewFactory_${reflectable.name}'
+        ..name = '${reflectable.name}NgFactory'
         ..isConstObject = true);
     }
   }

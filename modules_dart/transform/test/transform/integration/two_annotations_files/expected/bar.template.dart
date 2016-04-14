@@ -16,7 +16,7 @@ void initReflector() {
         new _ngRef.ReflectionInfo(const [
           const Annotation1(prop1: 'value1'),
           const Annotation2(prop2: 'value2'),
-          hostViewFactory_MyComponent
+          MyComponentNgFactory
         ], const [], () => new MyComponent()));
   i0.initReflector();
 }

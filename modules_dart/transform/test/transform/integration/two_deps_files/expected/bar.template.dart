@@ -16,7 +16,7 @@ void initReflector() {
     ..registerType(
         MyComponent,
         new _ngRef.ReflectionInfo(
-            const [hostViewFactory_MyComponent],
+            const [MyComponentNgFactory],
             const [
               const [prefix.MyContext],
               const [prefix.MyDep]

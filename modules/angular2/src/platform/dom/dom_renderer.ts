@@ -8,7 +8,8 @@ import {
   CONST_EXPR,
   stringify,
   StringWrapper,
-  isArray
+  isArray,
+  isString
 } from 'angular2/src/facade/lang';
 
 import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
@@ -76,10 +77,15 @@ export class DomRenderer implements Renderer {
     }
   }
 
-  selectRootElement(selector: string, debugInfo: RenderDebugInfo): Element {
-    var el = DOM.querySelector(this._rootRenderer.document, selector);
-    if (isBlank(el)) {
-      throw new BaseException(`The selector "${selector}" did not match any elements`);
+  selectRootElement(selectorOrNode: string | any, debugInfo: RenderDebugInfo): Element {
+    var el;
+    if (isString(selectorOrNode)) {
+      el = DOM.querySelector(this._rootRenderer.document, selectorOrNode);
+      if (isBlank(el)) {
+        throw new BaseException(`The selector "${selectorOrNode}" did not match any elements`);
+      }
+    } else {
+      el = selectorOrNode;
     }
     DOM.clearNodes(el);
     return el;

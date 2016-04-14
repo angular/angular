@@ -43,7 +43,6 @@ import {getViewFactoryName, createFlatArray, createDiTokenExpression} from './ut
 
 import {ViewType} from 'angular2/src/core/linker/view_type';
 import {ViewEncapsulation} from 'angular2/src/core/metadata/view';
-import {HOST_VIEW_ELEMENT_NAME} from 'angular2/src/core/linker/view';
 
 import {
   CompileIdentifierMetadata,
@@ -185,17 +184,13 @@ class ViewBuilderVisitor implements TemplateAstVisitor {
     var nodeIndex = this.view.nodes.length;
     var createRenderNodeExpr;
     var debugContextExpr = this.view.createMethod.resetDebugInfoExpr(nodeIndex, ast);
-    var createElementExpr = ViewProperties.renderer.callMethod(
-        'createElement',
-        [this._getParentRenderNode(parent), o.literal(ast.name), debugContextExpr]);
     if (nodeIndex === 0 && this.view.viewType === ViewType.HOST) {
-      createRenderNodeExpr =
-          rootSelectorVar.identical(o.NULL_EXPR)
-              .conditional(createElementExpr,
-                           ViewProperties.renderer.callMethod('selectRootElement',
-                                                              [rootSelectorVar, debugContextExpr]));
+      createRenderNodeExpr = o.THIS_EXPR.callMethod(
+          'selectOrCreateHostElement', [o.literal(ast.name), rootSelectorVar, debugContextExpr]);
     } else {
-      createRenderNodeExpr = createElementExpr;
+      createRenderNodeExpr = ViewProperties.renderer.callMethod(
+          'createElement',
+          [this._getParentRenderNode(parent), o.literal(ast.name), debugContextExpr]);
     }
     var fieldName = `_el_${nodeIndex}`;
     this.view.fields.push(
@@ -342,9 +337,6 @@ function _readHtmlAndDirectiveVariables(elementExportAsVars: VariableAst[],
   elementExportAsVars.forEach((varAst) => {
     variables[varAst.name] = isPresent(component) ? identifierToken(component.type) : null;
   });
-  if (viewType === ViewType.HOST) {
-    variables[HOST_VIEW_ELEMENT_NAME] = null;
-  }
   return variables;
 }
 
@@ -444,7 +436,7 @@ function createViewClass(view: CompileView, renderCompTypeVar: o.ReadVarExpr,
 
   var viewMethods = [
     new o.ClassMethod('createInternal', [new o.FnParam(rootSelectorVar.name, o.STRING_TYPE)],
-                      generateCreateMethod(view)),
+                      generateCreateMethod(view), o.importType(Identifiers.AppElement)),
     new o.ClassMethod(
         'injectorGetInternal',
         [
@@ -519,6 +511,12 @@ function generateCreateMethod(view: CompileView): o.Statement[] {
           .toDeclStmt(o.importType(view.genConfig.renderTypes.renderNode), [o.StmtModifier.Final])
     ];
   }
+  var resultExpr: o.Expression;
+  if (view.viewType === ViewType.HOST) {
+    resultExpr = (<CompileElement>view.nodes[0]).getOrCreateAppElement();
+  } else {
+    resultExpr = o.NULL_EXPR;
+  }
   return parentRenderNodeStmts.concat(view.createMethod.finish())
       .concat([
         o.THIS_EXPR.callMethod('init',
@@ -529,7 +527,8 @@ function generateCreateMethod(view: CompileView): o.Statement[] {
                                  o.literalArr(view.disposables),
                                  o.literalArr(view.subscriptions)
                                ])
-            .toStmt()
+            .toStmt(),
+        new o.ReturnStatement(resultExpr)
       ]);
 }
 

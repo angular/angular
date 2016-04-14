@@ -2,10 +2,10 @@ import {
   provide,
   AppViewManager,
   ChangeDetectorRef,
-  HostViewRef,
   Injector,
   OnChanges,
-  HostViewFactoryRef,
+  ComponentFactory,
+  ComponentRef,
   SimpleChange
 } from 'angular2/core';
 import {NG1_SCOPE} from './constants';
@@ -21,7 +21,7 @@ export class DowngradeNg2ComponentAdapter {
   component: any = null;
   inputChangeCount: number = 0;
   inputChanges: {[key: string]: SimpleChange} = null;
-  hostViewRef: HostViewRef = null;
+  componentRef: ComponentRef = null;
   changeDetector: ChangeDetectorRef = null;
   componentScope: angular.IScope;
   childNodes: Node[];
@@ -31,7 +31,7 @@ export class DowngradeNg2ComponentAdapter {
               private element: angular.IAugmentedJQuery, private attrs: angular.IAttributes,
               private scope: angular.IScope, private parentInjector: Injector,
               private parse: angular.IParseService, private viewManager: AppViewManager,
-              private hostViewFactory: HostViewFactoryRef) {
+              private componentFactory: ComponentFactory) {
     (<any>this.element[0]).id = id;
     this.componentScope = scope.$new();
     this.childNodes = <Node[]><any>element.contents();
@@ -42,11 +42,10 @@ export class DowngradeNg2ComponentAdapter {
         [provide(NG1_SCOPE, {useValue: this.componentScope})]);
     this.contentInsertionPoint = document.createComment('ng1 insertion point');
 
-    this.hostViewRef = this.viewManager.createRootHostView(
-        this.hostViewFactory, '#' + this.id, childInjector, [[this.contentInsertionPoint]]);
-    var hostElement = this.viewManager.getHostElement(this.hostViewRef);
-    this.changeDetector = this.hostViewRef.changeDetectorRef;
-    this.component = this.viewManager.getComponent(hostElement);
+    this.componentRef =
+        this.componentFactory.create(childInjector, [[this.contentInsertionPoint]], '#' + this.id);
+    this.changeDetector = this.componentRef.changeDetectorRef;
+    this.component = this.componentRef.instance;
   }
 
   setupInputs(): void {
@@ -162,7 +161,7 @@ export class DowngradeNg2ComponentAdapter {
   registerCleanup() {
     this.element.bind('$destroy', () => {
       this.componentScope.$destroy();
-      this.viewManager.destroyRootHostView(this.hostViewRef);
+      this.componentRef.destroy();
     });
   }
 }

@@ -1,4 +1,4 @@
-import {Component} from 'angular2/core';
+import {Component, ComponentRef} from 'angular2/core';
 import {
   AsyncRoute,
   Route,
@@ -10,10 +10,7 @@ import {
 } from 'angular2/router';
 import {PromiseWrapper} from 'angular2/src/facade/async';
 import {isPresent} from 'angular2/src/facade/lang';
-import {
-  DynamicComponentLoader,
-  ComponentRef
-} from 'angular2/src/core/linker/dynamic_component_loader';
+import {DynamicComponentLoader} from 'angular2/src/core/linker/dynamic_component_loader';
 import {ElementRef} from 'angular2/src/core/linker/element_ref';
 
 @Component({selector: 'goodbye-cmp', template: `{{farewell}}`})
@@ -152,7 +149,7 @@ export class DynamicLoaderCmp {
 
   onSomeAction(): Promise<any> {
     if (isPresent(this._componentRef)) {
-      this._componentRef.dispose();
+      this._componentRef.destroy();
       this._componentRef = null;
     }
     return this._dynamicComponentLoader.loadIntoLocation(DynamicallyLoadedComponent,

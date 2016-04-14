@@ -19,12 +19,13 @@ import {
   CONST,
   CONST_EXPR,
   stringify,
-  isPrimitive
+  isPrimitive,
+  isString
 } from 'angular2/src/facade/lang';
 
 import {ObservableWrapper} from 'angular2/src/facade/async';
 import {Renderer, RootRenderer, RenderComponentType} from 'angular2/src/core/render/api';
-import {ViewRef_, HostViewFactoryRef} from './view_ref';
+import {ViewRef_} from './view_ref';
 
 import {AppViewManager_, AppViewManager} from './view_manager';
 import {ViewType} from './view_type';
@@ -50,8 +51,6 @@ import {
 import {StaticNodeDebugInfo, DebugContext} from './debug_context';
 import {ElementInjector} from './element_injector';
 
-export const HOST_VIEW_ELEMENT_NAME = '$hostViewEl';
-
 const EMPTY_CONTEXT = CONST_EXPR(new Object());
 
 var _scope_check: WtfScopeFn = wtfCreateScope(`AppView#check(ascii id)`);
@@ -70,6 +69,7 @@ export abstract class AppView<T> {
   contentChildren: AppView<any>[] = [];
   viewChildren: AppView<any>[] = [];
   renderParent: AppView<any>;
+  viewContainerElement: AppElement = null;
 
   private _literalArrayCache: any[][];
   private _literalMapCache: Array<{[key: string]: any}>;
@@ -92,6 +92,8 @@ export abstract class AppView<T> {
 
   private _currentDebugContext: DebugContext = null;
 
+  private _hasExternalHostElement: boolean;
+
   constructor(public clazz: any, public componentType: RenderComponentType, public type: ViewType,
               public locals: {[key: string]: any}, public viewManager: AppViewManager_,
               public parentInjector: Injector, public declarationAppElement: AppElement,
@@ -107,7 +109,7 @@ export abstract class AppView<T> {
     this._literalMapCache = ListWrapper.createFixedSize(literalMapCacheSize);
   }
 
-  create(givenProjectableNodes: Array<any | any[]>, rootSelector: string) {
+  create(givenProjectableNodes: Array<any | any[]>, rootSelectorOrNode: string | any): AppElement {
     var context;
     var projectableNodes;
     switch (this.type) {
@@ -126,25 +128,26 @@ export abstract class AppView<T> {
         projectableNodes = givenProjectableNodes;
         break;
     }
+    this._hasExternalHostElement = isPresent(rootSelectorOrNode);
     this.context = context;
     this.projectableNodes = projectableNodes;
     if (this.debugMode) {
       this._resetDebug();
       try {
-        this.createInternal(rootSelector);
+        return this.createInternal(rootSelectorOrNode);
       } catch (e) {
         this._rethrowWithContext(e, e.stack);
         throw e;
       }
     } else {
-      this.createInternal(rootSelector);
+      return this.createInternal(rootSelectorOrNode);
     }
   }
 
   /**
    * Overwritten by implementations
    */
-  createInternal(rootSelector: string): void {}
+  createInternal(rootSelectorOrNode: string | any): AppElement { return null; }
 
   init(rootNodesOrAppElements: any[], allNodes: any[], appElements: {[key: string]: AppElement},
        disposables: Function[], subscriptions: any[]) {
@@ -162,7 +165,16 @@ export abstract class AppView<T> {
     }
   }
 
-  getHostViewElement(): AppElement { return this.namedAppElements[HOST_VIEW_ELEMENT_NAME]; }
+  selectOrCreateHostElement(elementName: string, rootSelectorOrNode: string | any,
+                            debugCtx: DebugContext): any {
+    var hostElement;
+    if (isPresent(rootSelectorOrNode)) {
+      hostElement = this.renderer.selectRootElement(rootSelectorOrNode, debugCtx);
+    } else {
+      hostElement = this.renderer.createElement(null, elementName, debugCtx);
+    }
+    return hostElement;
+  }
 
   injectorGet(token: any, nodeIndex: number, notFoundResult: any): any {
     if (this.debugMode) {
@@ -194,16 +206,25 @@ export abstract class AppView<T> {
   }
 
   destroy() {
+    if (this._hasExternalHostElement) {
+      this.renderer.detachView(this.flatRootNodes);
+    } else if (isPresent(this.viewContainerElement)) {
+      this.viewContainerElement.detachView(this.viewContainerElement.nestedViews.indexOf(this));
+    }
+    this._destroyRecurse();
+  }
+
+  private _destroyRecurse() {
     if (this.destroyed) {
       return;
     }
     var children = this.contentChildren;
     for (var i = 0; i < children.length; i++) {
-      children[i].destroy();
+      children[i]._destroyRecurse();
     }
     children = this.viewChildren;
     for (var i = 0; i < children.length; i++) {
-      children[i].destroy();
+      children[i]._destroyRecurse();
     }
     if (this.debugMode) {
       this._resetDebug();
@@ -223,7 +244,6 @@ export abstract class AppView<T> {
   private _destroyLocal() {
     var hostElement =
         this.type === ViewType.COMPONENT ? this.declarationAppElement.nativeElement : null;
-    this.renderer.destroyView(hostElement, this.allNodes);
     for (var i = 0; i < this.disposables.length; i++) {
       this.disposables[i]();
     }
@@ -231,8 +251,14 @@ export abstract class AppView<T> {
       ObservableWrapper.dispose(this.subscriptions[i]);
     }
     this.destroyInternal();
-
-    this.dirtyParentQueriesInternal();
+    if (this._hasExternalHostElement) {
+      this.renderer.detachView(this.flatRootNodes);
+    } else if (isPresent(this.viewContainerElement)) {
+      this.viewContainerElement.detachView(this.viewContainerElement.nestedViews.indexOf(this));
+    } else {
+      this.dirtyParentQueriesInternal();
+    }
+    this.renderer.destroyView(hostElement, this.allNodes);
   }
 
   /**
@@ -323,6 +349,18 @@ export abstract class AppView<T> {
     }
   }
 
+  addToContentChildren(renderAppElement: AppElement): void {
+    renderAppElement.parentView.contentChildren.push(this);
+    this.viewContainerElement = renderAppElement;
+    this.dirtyParentQueriesInternal();
+  }
+
+  removeFromContentChildren(renderAppElement: AppElement): void {
+    ListWrapper.remove(renderAppElement.parentView.contentChildren, this);
+    this.dirtyParentQueriesInternal();
+    this.viewContainerElement = null;
+  }
+
   literalArray(id: number, value: any[]): any[] {
     var prevValue = this._literalArrayCache[id];
     if (isBlank(value)) {
@@ -391,11 +429,6 @@ export abstract class AppView<T> {
   }
 
   throwDestroyedError(details: string): void { throw new ViewDestroyedException(details); }
-}
-
-@CONST()
-export class HostViewFactory {
-  constructor(public selector: string, public viewFactory: Function) {}
 }
 
 function _findLastRenderNode(node: any): any {

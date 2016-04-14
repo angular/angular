@@ -87,7 +87,7 @@ import {QueryList} from 'angular2/src/core/linker/query_list';
 import {ViewContainerRef} from 'angular2/src/core/linker/view_container_ref';
 import {EmbeddedViewRef} from 'angular2/src/core/linker/view_ref';
 
-import {Compiler} from 'angular2/src/core/linker/compiler';
+import {ComponentResolver} from 'angular2/src/core/linker/component_resolver';
 import {ElementRef} from 'angular2/src/core/linker/element_ref';
 import {TemplateRef} from 'angular2/src/core/linker/template_ref';
 
@@ -1167,7 +1167,7 @@ function declareTests(isJit: boolean) {
 
       describe('dynamic ViewContainers', () => {
         it('should allow to create a ViewContainerRef at any bound location',
-           inject([TestComponentBuilder, AsyncTestCompleter, Compiler],
+           inject([TestComponentBuilder, AsyncTestCompleter, ComponentResolver],
                   (tcb: TestComponentBuilder, async, compiler) => {
                     tcb.overrideView(MyComp, new ViewMetadata({
                                        template: '<div><dynamic-vp #dynamic></dynamic-vp></div>',
@@ -1946,13 +1946,13 @@ class SimpleImperativeViewComponent {
 @Injectable()
 class DynamicViewport {
   done: Promise<any>;
-  constructor(vc: ViewContainerRef, compiler: Compiler) {
+  constructor(vc: ViewContainerRef, compiler: ComponentResolver) {
     var myService = new MyService();
     myService.greeting = 'dynamic greet';
 
     var bindings = Injector.resolve([provide(MyService, {useValue: myService})]);
-    this.done = compiler.compileInHost(ChildCompUsingService)
-                    .then((hostPv) => {vc.createHostView(hostPv, 0, bindings)});
+    this.done = compiler.resolveComponent(ChildCompUsingService)
+                    .then((compFactory) => {vc.createComponent(compFactory, 0, bindings)});
   }
 }
 

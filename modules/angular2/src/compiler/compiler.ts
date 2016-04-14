@@ -4,6 +4,7 @@ export {TEMPLATE_TRANSFORMS} from 'angular2/src/compiler/template_parser';
 export {CompilerConfig, RenderTypes} from './config';
 export * from './compile_metadata';
 export * from './offline_compiler';
+export {RuntimeCompiler} from './runtime_compiler';
 export * from 'angular2/src/compiler/url_resolver';
 export * from 'angular2/src/compiler/xhr';
 
@@ -20,7 +21,7 @@ import {RuntimeMetadataResolver} from 'angular2/src/compiler/runtime_metadata';
 import {StyleCompiler} from 'angular2/src/compiler/style_compiler';
 import {ViewCompiler} from 'angular2/src/compiler/view_compiler/view_compiler';
 import {CompilerConfig} from './config';
-import {Compiler} from 'angular2/src/core/linker/compiler';
+import {ComponentResolver} from 'angular2/src/core/linker/component_resolver';
 import {RuntimeCompiler} from 'angular2/src/compiler/runtime_compiler';
 import {ElementSchemaRegistry} from 'angular2/src/compiler/schema/element_schema_registry';
 import {DomElementSchemaRegistry} from 'angular2/src/compiler/schema/dom_element_schema_registry';
@@ -51,7 +52,7 @@ export const COMPILER_PROVIDERS: Array<Type | Provider | any[]> = CONST_EXPR([
   ViewCompiler,
   new Provider(CompilerConfig, {useFactory: _createCompilerConfig, deps: []}),
   RuntimeCompiler,
-  new Provider(Compiler, {useExisting: RuntimeCompiler}),
+  new Provider(ComponentResolver, {useExisting: RuntimeCompiler}),
   DomElementSchemaRegistry,
   new Provider(ElementSchemaRegistry, {useExisting: DomElementSchemaRegistry}),
   UrlResolver,
