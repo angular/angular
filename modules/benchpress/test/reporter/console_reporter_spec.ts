@@ -16,7 +16,7 @@ import {
   Reporter,
   bind,
   provide,
-  Injector,
+  ReflectiveInjector,
   ConsoleReporter,
   SampleDescription,
   MeasureValues
@@ -45,7 +45,7 @@ export function main() {
       if (isPresent(columnWidth)) {
         bindings.push(bind(ConsoleReporter.COLUMN_WIDTH).toValue(columnWidth));
       }
-      reporter = Injector.resolveAndCreate(bindings).get(ConsoleReporter);
+      reporter = ReflectiveInjector.resolveAndCreate(bindings).get(ConsoleReporter);
     }
 
     it('should print the sample id, description and table header', () => {

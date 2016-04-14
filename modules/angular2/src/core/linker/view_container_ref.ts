@@ -1,7 +1,8 @@
 import {ListWrapper} from 'angular2/src/facade/collection';
 import {unimplemented} from 'angular2/src/facade/exceptions';
-import {Injector, Injector_, ProtoInjector} from 'angular2/src/core/di/injector';
-import {ResolvedProvider} from 'angular2/src/core/di/provider';
+import {Injector} from 'angular2/src/core/di/injector';
+import {ReflectiveInjector} from 'angular2/src/core/di/reflective_injector';
+import {ResolvedReflectiveProvider} from 'angular2/src/core/di/reflective_provider';
 import {isPresent, isBlank} from 'angular2/src/facade/lang';
 import {wtfCreateScope, wtfLeave, WtfScopeFn} from '../profile/profile';
 
@@ -36,6 +37,10 @@ export abstract class ViewContainerRef {
    */
   get element(): ElementRef { return <ElementRef>unimplemented(); }
 
+  get injector(): Injector { return <Injector>unimplemented(); }
+
+  get parentInjector(): Injector { return <Injector>unimplemented(); }
+
   /**
    * Destroys all Views in this container.
    */
@@ -65,18 +70,17 @@ export abstract class ViewContainerRef {
    * Instantiates a single {@link Component} and inserts its Host View into this container at the
    * specified `index`.
    *
-   * The component is instantiated using its {@link ProtoViewRef `protoView`} which can be
-   * obtained via {@link Compiler#compileInHost}.
+   * The component is instantiated using its {@link ComponentFactory} which can be
+   * obtained via {@link ComponentResolver#resolveComponent}.
    *
    * If `index` is not specified, the new View will be inserted as the last View in the container.
    *
-   * You can optionally specify `dynamicallyCreatedProviders`, which configure the {@link Injector}
-   * that will be created for the Host View.
+   * You can optionally specify the {@link Injector}
+   * that will be used for the component.
    *
    * Returns the {@link ComponentRef} of the Host View created for the newly instantiated Component.
    */
-  abstract createComponent(componentFactory: ComponentFactory, index?: number,
-                           dynamicallyCreatedProviders?: ResolvedProvider[],
+  abstract createComponent(componentFactory: ComponentFactory, index?: number, injector?: Injector,
                            projectableNodes?: any[][]): ComponentRef;
 
   /**
@@ -120,6 +124,10 @@ export class ViewContainerRef_ implements ViewContainerRef {
 
   get element(): ElementRef { return this._element.elementRef; }
 
+  get injector(): Injector { return this._element.injector; }
+
+  get parentInjector(): Injector { return this._element.parentInjector; }
+
   // TODO(rado): profile and decide whether bounds checks should be added
   // to the methods below.
   createEmbeddedView(templateRef: TemplateRef, index: number = -1): EmbeddedViewRef {
@@ -132,18 +140,11 @@ export class ViewContainerRef_ implements ViewContainerRef {
   _createComponentInContainerScope: WtfScopeFn =
       wtfCreateScope('ViewContainerRef#createComponent()');
 
-  createComponent(componentFactory: ComponentFactory, index: number = -1,
-                  dynamicallyCreatedProviders: ResolvedProvider[] = null,
+  createComponent(componentFactory: ComponentFactory, index: number = -1, injector: Injector = null,
                   projectableNodes: any[][] = null): ComponentRef {
     var s = this._createComponentInContainerScope();
-    var contextInjector = this._element.parentInjector;
-
-    var childInjector =
-        isPresent(dynamicallyCreatedProviders) && dynamicallyCreatedProviders.length > 0 ?
-            new Injector_(ProtoInjector.fromResolvedProviders(dynamicallyCreatedProviders),
-                          contextInjector) :
-            contextInjector;
-    var componentRef = componentFactory.create(childInjector, projectableNodes);
+    var contextInjector = isPresent(injector) ? injector : this._element.parentInjector;
+    var componentRef = componentFactory.create(contextInjector, projectableNodes);
     this.insert(componentRef.hostView, index);
     return wtfLeave(s, componentRef);
   }

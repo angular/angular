@@ -5,7 +5,8 @@ import {
   OnChanges,
   ComponentFactory,
   ComponentRef,
-  SimpleChange
+  SimpleChange,
+  ReflectiveInjector
 } from 'angular2/core';
 import {NG1_SCOPE} from './constants';
 import {ComponentInfo} from './metadata';
@@ -36,8 +37,8 @@ export class DowngradeNg2ComponentAdapter {
   }
 
   bootstrapNg2() {
-    var childInjector = this.parentInjector.resolveAndCreateChild(
-        [provide(NG1_SCOPE, {useValue: this.componentScope})]);
+    var childInjector = ReflectiveInjector.resolveAndCreate(
+        [provide(NG1_SCOPE, {useValue: this.componentScope})], this.parentInjector);
     this.contentInsertionPoint = document.createComment('ng1 insertion point');
 
     this.componentRef =

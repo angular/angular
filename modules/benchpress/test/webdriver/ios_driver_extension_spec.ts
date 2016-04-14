@@ -18,7 +18,7 @@ import {
   WebDriverExtension,
   IOsDriverExtension,
   WebDriverAdapter,
-  Injector,
+  ReflectiveInjector,
   bind,
   provide
 } from 'benchpress/common';
@@ -37,12 +37,12 @@ export function main() {
         perfRecords = [];
       }
       log = [];
-      extension =
-          Injector.resolveAndCreate([
-                    IOsDriverExtension.BINDINGS,
-                    provide(WebDriverAdapter, {useValue: new MockDriverAdapter(log, perfRecords)})
-                  ])
-              .get(IOsDriverExtension);
+      extension = ReflectiveInjector.resolveAndCreate([
+                                      IOsDriverExtension.BINDINGS,
+                                      provide(WebDriverAdapter,
+                                              {useValue: new MockDriverAdapter(log, perfRecords)})
+                                    ])
+                      .get(IOsDriverExtension);
       return extension;
     }
 

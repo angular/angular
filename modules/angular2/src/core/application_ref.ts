@@ -7,7 +7,7 @@ import {
   print,
   IS_DART
 } from 'angular2/src/facade/lang';
-import {provide, Provider, Injector, OpaqueToken} from 'angular2/src/core/di';
+import {provide, Provider, Injector, ReflectiveInjector, OpaqueToken} from 'angular2/src/core/di';
 import {
   APP_COMPONENT_REF_PROMISE,
   APP_COMPONENT,
@@ -35,38 +35,34 @@ import {lockMode} from 'angular2/src/facade/lang';
  * Construct providers specific to an individual root component.
  */
 function _componentProviders(appComponentType: Type): Array<Type | Provider | any[]> {
-  return <any[]>[provide(APP_COMPONENT, {useValue: appComponentType}),
-                 provide(APP_COMPONENT_REF_PROMISE,
-                         {
-                           useFactory: (dynamicComponentLoader: DynamicComponentLoader,
-                                        appRef: ApplicationRef_, injector: Injector) => {
-                             // Save the ComponentRef for disposal later.
-                             var ref: ComponentRef;
-                             // TODO(rado): investigate whether to support providers on root
-                             // component.
-                             return dynamicComponentLoader.loadAsRoot(
-                                                              appComponentType, null, injector,
-                                                              () => {
-                                                                appRef._unloadComponent(ref);
-                                                              })
-                                 .then((componentRef) => {
-                                   ref = componentRef;
-                                   var testability = injector.getOptional(Testability);
-                                   if (isPresent(testability)) {
-                                     injector.get(TestabilityRegistry)
-                                         .registerApplication(componentRef.location.nativeElement,
-                                                              testability);
-                                   }
-                                   return componentRef;
-                                 });
-                           },
-                           deps: [DynamicComponentLoader, ApplicationRef, Injector]
-                         }),
-                 provide(appComponentType,
-                         {
-                           useFactory: (p: Promise<any>) => p.then(ref => ref.instance),
-                           deps: [APP_COMPONENT_REF_PROMISE]
-                         }),
+  return <any[]>[
+    provide(APP_COMPONENT, {useValue: appComponentType}),
+    provide(APP_COMPONENT_REF_PROMISE,
+            {
+              useFactory: (dynamicComponentLoader: DynamicComponentLoader, appRef: ApplicationRef_,
+                           injector: Injector) => {
+                // Save the ComponentRef for disposal later.
+                var ref: ComponentRef;
+                // TODO(rado): investigate whether to support providers on root component.
+                return dynamicComponentLoader.loadAsRoot(appComponentType, null, injector,
+                                                         () => { appRef._unloadComponent(ref); })
+                    .then((componentRef) => {
+                      ref = componentRef;
+                      var testability = injector.get(Testability, null);
+                      if (isPresent(testability)) {
+                        injector.get(TestabilityRegistry)
+                            .registerApplication(componentRef.location.nativeElement, testability);
+                      }
+                      return componentRef;
+                    });
+              },
+              deps: [DynamicComponentLoader, ApplicationRef, Injector]
+            }),
+    provide(appComponentType,
+            {
+              useFactory: (p: Promise<any>) => p.then(ref => ref.instance),
+              deps: [APP_COMPONENT_REF_PROMISE]
+            }),
   ];
 }
 
@@ -119,7 +115,7 @@ export function disposePlatform(): void {
 
 function _createPlatform(providers?: Array<Type | Provider | any[]>): PlatformRef {
   _platformProviders = providers;
-  let injector = Injector.resolveAndCreate(providers);
+  let injector = ReflectiveInjector.resolveAndCreate(providers);
   _platform = new PlatformRef_(injector, () => {
     _platform = null;
     _platformProviders = null;
@@ -129,7 +125,7 @@ function _createPlatform(providers?: Array<Type | Provider | any[]>): PlatformRe
 }
 
 function _runPlatformInitializers(injector: Injector): void {
-  let inits: Function[] = <Function[]>injector.getOptional(PLATFORM_INITIALIZER);
+  let inits: Function[] = <Function[]>injector.get(PLATFORM_INITIALIZER, null);
   if (isPresent(inits)) inits.forEach(init => init());
 }
 
@@ -205,11 +201,11 @@ export class PlatformRef_ extends PlatformRef {
   /** @internal */
   _disposeListeners: Function[] = [];
 
-  constructor(private _injector: Injector, private _dispose: () => void) { super(); }
+  constructor(private _injector: ReflectiveInjector, private _dispose: () => void) { super(); }
 
   registerDisposeListener(dispose: () => void): void { this._disposeListeners.push(dispose); }
 
-  get injector(): Injector { return this._injector; }
+  get injector(): ReflectiveInjector { return this._injector; }
 
   application(providers: Array<Type | Provider | any[]>): ApplicationRef {
     var app = this._initApp(createNgZone(), providers);
@@ -243,7 +239,7 @@ export class PlatformRef_ extends PlatformRef {
   private _initApp(zone: NgZone,
                    providers: Array<Type | Provider | any[]>): Promise<ApplicationRef>|
       ApplicationRef {
-    var injector: Injector;
+    var injector: ReflectiveInjector;
     var app: ApplicationRef;
     zone.run(() => {
       providers = ListWrapper.concat(providers, [
@@ -287,7 +283,7 @@ export class PlatformRef_ extends PlatformRef {
 }
 
 function _runAppInitializers(injector: Injector): Promise<any> {
-  let inits: Function[] = injector.getOptional(APP_INITIALIZER);
+  let inits: Function[] = injector.get(APP_INITIALIZER, null);
   let promises: Promise<any>[] = [];
   if (isPresent(inits)) {
     inits.forEach(init => {
@@ -394,7 +390,8 @@ export class ApplicationRef_ extends ApplicationRef {
   /** @internal */
   private _enforceNoNewChanges: boolean = false;
 
-  constructor(private _platform: PlatformRef_, private _zone: NgZone, private _injector: Injector) {
+  constructor(private _platform: PlatformRef_, private _zone: NgZone,
+              private _injector: ReflectiveInjector) {
     super();
     if (isPresent(this._zone)) {
       ObservableWrapper.subscribe(this._zone.onMicrotaskEmpty,
