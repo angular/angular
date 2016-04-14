@@ -23,7 +23,7 @@ export function main() {
 
     beforeEach(() => {
       date = DateWrapper.create(2015, 6, 15, 21, 43, 11);
-      dateString = "2015-06-15T15:43:11.000";
+      dateString = "2015-06-15T15:43:11.000Z";
       dateNumber = DateWrapper.toMillis(date);
       pipe = new DatePipe();
     });
