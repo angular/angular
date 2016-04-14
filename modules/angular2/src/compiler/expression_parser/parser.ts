@@ -6,6 +6,7 @@ import {
   Lexer,
   EOF,
   isIdentifier,
+  isQuote,
   Token,
   $PERIOD,
   $COLON,
@@ -16,7 +17,8 @@ import {
   $LBRACE,
   $RBRACE,
   $LPAREN,
-  $RPAREN
+  $RPAREN,
+  $SLASH
 } from './lexer';
 import {
   AST,
@@ -67,7 +69,7 @@ export class Parser {
 
   parseAction(input: string, location: any): ASTWithSource {
     this._checkNoInterpolation(input, location);
-    var tokens = this._lexer.tokenize(input);
+    var tokens = this._lexer.tokenize(this._stripComments(input));
     var ast = new _ParseAST(input, location, tokens, true).parseChain();
     return new ASTWithSource(ast, input, location);
   }
@@ -96,7 +98,7 @@ export class Parser {
     }
 
     this._checkNoInterpolation(input, location);
-    var tokens = this._lexer.tokenize(input);
+    var tokens = this._lexer.tokenize(this._stripComments(input));
     return new _ParseAST(input, location, tokens, false).parseChain();
   }
 
@@ -122,7 +124,7 @@ export class Parser {
     let expressions = [];
 
     for (let i = 0; i < split.expressions.length; ++i) {
-      var tokens = this._lexer.tokenize(split.expressions[i]);
+      var tokens = this._lexer.tokenize(this._stripComments(split.expressions[i]));
       var ast = new _ParseAST(input, location, tokens, false).parseChain();
       expressions.push(ast);
     }
@@ -156,6 +158,28 @@ export class Parser {
 
   wrapLiteralPrimitive(input: string, location: any): ASTWithSource {
     return new ASTWithSource(new LiteralPrimitive(input), input, location);
+  }
+
+  private _stripComments(input: string): string {
+    let i = this._commentStart(input);
+    return isPresent(i) ? input.substring(0, i).trim() : input;
+  }
+
+  private _commentStart(input: string): number {
+    var outerQuote = null;
+    for (var i = 0; i < input.length - 1; i++) {
+      let char = StringWrapper.charCodeAt(input, i);
+      let nextChar = StringWrapper.charCodeAt(input, i + 1);
+
+      if (char === $SLASH && nextChar == $SLASH && isBlank(outerQuote)) return i;
+
+      if (outerQuote === char) {
+        outerQuote = null;
+      } else if (isBlank(outerQuote) && isQuote(char)) {
+        outerQuote = char;
+      }
+    }
+    return null;
   }
 
   private _checkNoInterpolation(input: string, location: any): void {

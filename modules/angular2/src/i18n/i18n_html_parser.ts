@@ -22,14 +22,16 @@ import {
   partition,
   Part,
   stringifyNodes,
-  meaning
+  meaning,
+  getPhNameFromBinding,
+  dedupePhName
 } from './shared';
 
 const _I18N_ATTR = "i18n";
 const _PLACEHOLDER_ELEMENT = "ph";
 const _NAME_ATTR = "name";
 const _I18N_ATTR_PREFIX = "i18n-";
-let _PLACEHOLDER_EXPANDED_REGEXP = RegExpWrapper.create(`\\<ph(\\s)+name=("(\\d)+")\\>\\<\\/ph\\>`);
+let _PLACEHOLDER_EXPANDED_REGEXP = RegExpWrapper.create(`\\<ph(\\s)+name=("(\\w)+")\\>\\<\\/ph\\>`);
 
 /**
  * Creates an i18n-ed version of the parsed template.
@@ -313,19 +315,31 @@ export class I18nHtmlParser implements HtmlParser {
 
   private _replacePlaceholdersWithExpressions(message: string, exps: string[],
                                               sourceSpan: ParseSourceSpan): string {
+    let expMap = this._buildExprMap(exps);
     return RegExpWrapper.replaceAll(_PLACEHOLDER_EXPANDED_REGEXP, message, (match) => {
       let nameWithQuotes = match[2];
       let name = nameWithQuotes.substring(1, nameWithQuotes.length - 1);
-      let index = NumberWrapper.parseInt(name, 10);
-      return this._convertIntoExpression(index, exps, sourceSpan);
+      return this._convertIntoExpression(name, expMap, sourceSpan);
     });
   }
 
-  private _convertIntoExpression(index: number, exps: string[], sourceSpan: ParseSourceSpan) {
-    if (index >= 0 && index < exps.length) {
-      return `{{${exps[index]}}}`;
+  private _buildExprMap(exps: string[]): Map<string, string> {
+    let expMap = new Map<string, string>();
+    let usedNames = new Map<string, number>();
+
+    for (var i = 0; i < exps.length; i++) {
+      let phName = getPhNameFromBinding(exps[i], i);
+      expMap.set(dedupePhName(usedNames, phName), exps[i]);
+    }
+    return expMap;
+  }
+
+  private _convertIntoExpression(name: string, expMap: Map<string, string>,
+                                 sourceSpan: ParseSourceSpan) {
+    if (expMap.has(name)) {
+      return `{{${expMap.get(name)}}}`;
     } else {
-      throw new I18nError(sourceSpan, `Invalid interpolation index '${index}'`);
+      throw new I18nError(sourceSpan, `Invalid interpolation name '${name}'`);
     }
   }
 }
