@@ -250,7 +250,7 @@ export class PlatformRef_ extends PlatformRef {
         provide(ApplicationRef, {useFactory: (): ApplicationRef => app, deps: []})
       ]);
 
-      var exceptionHandler: Function;
+      var exceptionHandler: ExceptionHandler;
       try {
         injector = this.injector.resolveAndCreateChild(providers);
         exceptionHandler = injector.get(ExceptionHandler);
@@ -457,8 +457,7 @@ export class ApplicationRef_ extends ApplicationRef {
 
   /** @internal */
   _loadComponent(componentRef: ComponentRef): void {
-    var appChangeDetector =
-        (<ElementRef_>componentRef.location).internalElement.parentView.changeDetector;
+    var appChangeDetector = (<ElementRef_>componentRef.location).internalElement.parentView;
     this._changeDetectorRefs.push(appChangeDetector.ref);
     this.tick();
     this._rootComponents.push(componentRef);
@@ -471,7 +470,7 @@ export class ApplicationRef_ extends ApplicationRef {
       return;
     }
     this.unregisterChangeDetector(
-        (<ElementRef_>componentRef.location).internalElement.parentView.changeDetector.ref);
+        (<ElementRef_>componentRef.location).internalElement.parentView.ref);
     ListWrapper.remove(this._rootComponents, componentRef);
   }
 

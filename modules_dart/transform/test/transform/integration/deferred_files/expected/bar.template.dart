@@ -13,10 +13,7 @@ void initReflector() {
   _ngRef.reflector
     ..registerType(
         MyComponent,
-        new _ngRef.ReflectionInfo(const [
-          const Component(selector: '[soup]'),
-          const View(template: ''),
-          hostViewFactory_MyComponent
-        ], const [], () => new MyComponent()));
+        new _ngRef.ReflectionInfo(const [hostViewFactory_MyComponent], const [],
+            () => new MyComponent()));
   i0.initReflector();
 }

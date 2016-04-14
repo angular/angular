@@ -4,7 +4,7 @@ Dependency injection configuration
 @description
 {@target ts}`import {provide} from 'angular2/core';`{@endtarget}
 {@target js}Available from the `ng.core` namespace{@endtarget}
-{@target dart}`import 'package:angular2/angular2.dart';`{@endtarget}
+{@target dart}`import 'package:angular2/core.dart';`{@endtarget}
 
 @cheatsheetItem
 syntax(ts dart):

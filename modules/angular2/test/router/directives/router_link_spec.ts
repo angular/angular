@@ -34,7 +34,7 @@ import {DOM} from 'angular2/src/platform/dom/dom_adapter';
 import {ResolvedInstruction} from 'angular2/src/router/instruction';
 
 let dummyInstruction = new ResolvedInstruction(
-    new ComponentInstruction('detail', [], null, null, true, '0'), null, {});
+    new ComponentInstruction('detail', [], null, null, true, '0', null, 'Detail'), null, {});
 
 export function main() {
   describe('routerLink directive', function() {

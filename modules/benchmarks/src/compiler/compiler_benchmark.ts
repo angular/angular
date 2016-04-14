@@ -16,8 +16,7 @@ import {
   ViewMetadata
 } from 'angular2/core';
 
-import {ChangeDetectorGenConfig} from 'angular2/src/core/change_detection/change_detection';
-import {ViewResolver} from 'angular2/src/core/linker/view_resolver';
+import {CompilerConfig, ViewResolver} from 'angular2/compiler';
 
 import {getIntParameter, bindAction} from 'angular2/src/testing/benchmark_util';
 
@@ -31,9 +30,9 @@ function _createBindings(): Provider[] {
                               [BenchmarkComponentNoBindings, BenchmarkComponentWithBindings]),
               deps: []
             }),
-    // Use DynamicChangeDetector as that is the only one that Dart supports as well
-    // so that we can compare the numbers between JS and Dart
-    provide(ChangeDetectorGenConfig, {useValue: new ChangeDetectorGenConfig(false, false, false)})
+    // Use interpretative mode as Dart does not support JIT and
+    // we want to be able to compare the numbers between JS and Dart
+    provide(CompilerConfig, {useValue: new CompilerConfig(false, false, false)})
   ];
 }
 
@@ -106,25 +105,30 @@ class CompilerAppComponent {
 
 @Directive({selector: '[dir0]', inputs: ['prop: attr0']})
 class Dir0 {
+  prop: any;
 }
 
 @Directive({selector: '[dir1]', inputs: ['prop: attr1']})
 class Dir1 {
+  prop: any;
   constructor(dir0: Dir0) {}
 }
 
 @Directive({selector: '[dir2]', inputs: ['prop: attr2']})
 class Dir2 {
+  prop: any;
   constructor(dir1: Dir1) {}
 }
 
 @Directive({selector: '[dir3]', inputs: ['prop: attr3']})
 class Dir3 {
+  prop: any;
   constructor(dir2: Dir2) {}
 }
 
 @Directive({selector: '[dir4]', inputs: ['prop: attr4']})
 class Dir4 {
+  prop: any;
   constructor(dir3: Dir3) {}
 }
 
@@ -168,4 +172,15 @@ class BenchmarkComponentNoBindings {
 </div>`
 })
 class BenchmarkComponentWithBindings {
+  value0: any;
+  value1: any;
+  value2: any;
+  value3: any;
+  value4: any;
+
+  inter0: any;
+  inter1: any;
+  inter2: any;
+  inter3: any;
+  inter4: any;
 }

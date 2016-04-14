@@ -11,15 +11,15 @@ import {
 } from 'angular2/src/compiler/html_ast';
 import {isPresent, isBlank} from 'angular2/src/facade/lang';
 import {StringMapWrapper} from 'angular2/src/facade/collection';
-import {Parser} from 'angular2/src/core/change_detection/parser/parser';
+import {Parser} from 'angular2/src/compiler/expression_parser/parser';
 import {Message, id} from './message';
 import {
   I18nError,
   Part,
+  I18N_ATTR_PREFIX,
   partition,
   meaning,
   description,
-  isI18nAttr,
   stringifyNodes,
   messageFromAttribute
 } from './shared';
@@ -161,7 +161,7 @@ export class MessageExtractor {
 
   private _extractMessagesFromAttributes(p: HtmlElementAst): void {
     p.attrs.forEach(attr => {
-      if (isI18nAttr(attr.name)) {
+      if (attr.name.startsWith(I18N_ATTR_PREFIX)) {
         try {
           this.messages.push(messageFromAttribute(this._parser, p, attr));
         } catch (e) {

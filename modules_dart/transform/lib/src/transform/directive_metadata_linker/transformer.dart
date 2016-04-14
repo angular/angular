@@ -8,6 +8,8 @@ import 'package:barback/barback.dart';
 import 'package:angular2/src/transform/common/asset_reader.dart';
 import 'package:angular2/src/transform/common/names.dart';
 import 'package:angular2/src/transform/common/zone.dart' as zone;
+import 'package:angular2/src/transform/common/options.dart';
+import 'package:angular2/src/transform/common/logging.dart';
 
 import 'ng_meta_linker.dart';
 
@@ -33,6 +35,12 @@ import 'ng_meta_linker.dart';
 class DirectiveMetadataLinker extends Transformer implements LazyTransformer {
   final _encoder = const JsonEncoder.withIndent('  ');
 
+  final TransformerOptions options;
+  final Map ngMetasCache = {};
+  final Set<String> errorMessages = new Set<String>();
+
+  DirectiveMetadataLinker(this.options);
+
   @override
   bool isPrimary(AssetId id) => id.path.endsWith(SUMMARY_META_EXTENSION);
 
@@ -47,7 +55,12 @@ class DirectiveMetadataLinker extends Transformer implements LazyTransformer {
       var primaryId = transform.primaryInput.id;
 
       return linkDirectiveMetadata(
-          new AssetReader.fromTransform(transform), primaryId).then((ngMeta) {
+          new AssetReader.fromTransform(transform),
+          primaryId,
+          _ngLinkedAssetId(primaryId),
+          options.resolvedIdentifiers,
+          options.errorOnMissingIdentifiers,
+          ngMetasCache).then((ngMeta) {
         if (ngMeta != null) {
           final outputId = _ngLinkedAssetId(primaryId);
           // Not outputting an asset could confuse barback.
@@ -55,7 +68,7 @@ class DirectiveMetadataLinker extends Transformer implements LazyTransformer {
           transform.addOutput(new Asset.fromString(outputId, output));
         }
       });
-    }, log: transform.logger);
+    }, log: new DeduppingLogger(transform.logger, errorMessages));
   }
 }
 

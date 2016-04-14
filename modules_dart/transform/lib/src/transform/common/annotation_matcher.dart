@@ -15,7 +15,6 @@ const _INJECTABLES = const [
   const ClassDescriptor('Injectable', 'package:angular2/core.dart'),
   const ClassDescriptor('Injectable', 'package:angular2/src/core/di.dart'),
   const ClassDescriptor('Injectable', 'package:angular2/angular2.dart'),
-  const ClassDescriptor('Injectable', 'package:angular2/bootstrap_static.dart'),
   const ClassDescriptor(
       'Injectable', 'package:angular2/web_worker/worker.dart'),
 ];
@@ -65,7 +64,6 @@ const _PIPES = const [
 const _VIEWS = const [
   const ClassDescriptor('View', 'package:angular2/angular2.dart'),
   const ClassDescriptor('View', 'package:angular2/web_worker/worker.dart'),
-  const ClassDescriptor('View', 'package:angular2/bootstrap_static.dart'),
   const ClassDescriptor('View', 'package:angular2/core.dart'),
   const ClassDescriptor('View', 'package:angular2/src/core/metadata/view.dart'),
   const ClassDescriptor('View', 'package:angular2/src/core/metadata.dart'),
@@ -74,9 +72,6 @@ const _VIEWS = const [
 const _ENTRYPOINTS = const [
   const ClassDescriptor('AngularEntrypoint', 'package:angular2/angular2.dart'),
   const ClassDescriptor('AngularEntrypoint', 'package:angular2/core.dart'),
-  const ClassDescriptor('AngularEntrypoint', 'package:angular2/bootstrap.dart'),
-  const ClassDescriptor(
-      'AngularEntrypoint', 'package:angular2/bootstrap_static.dart'),
   const ClassDescriptor(
       'AngularEntrypoint', 'package:angular2/platform/browser.dart'),
   const ClassDescriptor(

@@ -50,6 +50,33 @@ export function main() {
          });
     });
 
+    describe('dynamic segments', () => {
+      it('should parse parameters', () => {
+        var rec = new ParamRoutePath('/test/:id');
+        var url = new Url('test', new Url('abc'));
+        var match = rec.matchUrl(url);
+        expect(match.allParams).toEqual({'id': 'abc'});
+      });
+
+      it('should decode special characters when parsing', () => {
+        var rec = new ParamRoutePath('/test/:id');
+        var url = new Url('test', new Url('abc%25%2F%2f%28%29%3B'));
+        var match = rec.matchUrl(url);
+        expect(match.allParams).toEqual({'id': 'abc%//();'});
+      });
+
+      it('should generate url', () => {
+        var rec = new ParamRoutePath('/test/:id');
+        expect(rec.generateUrl({'id': 'abc'}).urlPath).toEqual('test/abc');
+      });
+
+      it('should encode special characters when generating', () => {
+        var rec = new ParamRoutePath('/test/:id');
+        expect(rec.generateUrl({'id': 'abc/def/%();'}).urlPath)
+            .toEqual('test/abc%2Fdef%2F%25%28%29%3B');
+      });
+    });
+
     describe('matrix params', () => {
       it('should be parsed along with dynamic paths', () => {
         var rec = new ParamRoutePath('/hello/:id');

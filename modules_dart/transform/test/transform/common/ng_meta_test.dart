@@ -3,7 +3,7 @@ library angular2.test.transform.common.annotation_matcher_test;
 import 'package:test/test.dart';
 
 import 'package:angular2/src/core/render/api.dart';
-import 'package:angular2/src/compiler/directive_metadata.dart';
+import 'package:angular2/src/compiler/compile_metadata.dart';
 import 'package:angular2/src/transform/common/ng_meta.dart';
 
 main() => allTests();
@@ -55,7 +55,8 @@ void allTests() {
       a.aliases['a3'] = ['T3', 'a2'];
       a.aliases['a4'] = ['a3', 'T0'];
 
-      expect(a.flatten('a4'), equals([mockDirMetadata[3], mockDirMetadata[1], mockDirMetadata[0]]));
+      expect(a.flatten('a4'),
+          equals([mockDirMetadata[3], mockDirMetadata[1], mockDirMetadata[0]]));
     });
 
     test('should detect cycles.', () {
@@ -64,7 +65,10 @@ void allTests() {
       a.aliases['a1'] = ['T0', 'a2'];
       a.aliases['a2'] = ['a1'];
 
-      expect(() => a.flatten('a1'), throwsA(predicate((ex) => new RegExp('Cycle: a1 -> a2 -> a1.').hasMatch(ex.message))));
+      expect(
+          () => a.flatten('a1'),
+          throwsA(predicate((ex) =>
+              new RegExp('Cycle: a1 -> a2 -> a1.').hasMatch(ex.message))));
     });
 
     test('should allow duplicates.', () {
@@ -96,6 +100,44 @@ void allTests() {
       a.addAll(b);
       expect(a.aliases, contains('b'));
       expect(a.aliases['b'], equals(['y']));
+    });
+  });
+
+  group('needsResolution', () {
+    test('should be true if there is a provider', () {
+      var a = new NgMeta.empty();
+      a.identifiers["MyIdentifier"] = new CompileIdentifierMetadata(name: 'MyIdentifier', value: new CompileProviderMetadata());
+      expect(a.needsResolution, isTrue);
+    });
+
+    test('should be true if there is an injectable service', () {
+      var a = new NgMeta.empty();
+      a.identifiers["MyIdentifier"] = new CompileTypeMetadata();
+      expect(a.needsResolution, isTrue);
+    });
+
+    test('should be true if there is an directive', () {
+      var a = new NgMeta.empty();
+      a.identifiers["MyIdentifier"] = new CompileDirectiveMetadata();
+      expect(a.needsResolution, isTrue);
+    });
+
+    test('should be true if there is a pipe', () {
+      var a = new NgMeta.empty();
+      a.identifiers["MyIdentifier"] = new CompilePipeMetadata();
+      expect(a.needsResolution, isTrue);
+    });
+
+    test('should be true if there is a factory', () {
+      var a = new NgMeta.empty();
+      a.identifiers["MyIdentifier"] = new CompileFactoryMetadata();
+      expect(a.needsResolution, isTrue);
+    });
+
+    test('should be false otherwise', () {
+      var a = new NgMeta.empty();
+      a.identifiers["MyIdentifier"] = "some value";
+      expect(a.needsResolution, isFalse);
     });
   });
 }

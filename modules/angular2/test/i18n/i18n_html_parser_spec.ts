@@ -13,9 +13,10 @@ import {
 
 import {I18nHtmlParser} from 'angular2/src/i18n/i18n_html_parser';
 import {Message, id} from 'angular2/src/i18n/message';
-import {Parser} from 'angular2/src/core/change_detection/parser/parser';
-import {Lexer} from 'angular2/src/core/change_detection/parser/lexer';
+import {Parser} from 'angular2/src/compiler/expression_parser/parser';
+import {Lexer} from 'angular2/src/compiler/expression_parser/lexer';
 
+import {StringMapWrapper} from 'angular2/src/facade/collection';
 import {HtmlParser, HtmlParseTreeResult} from 'angular2/src/compiler/html_parser';
 import {
   HtmlAst,
@@ -26,6 +27,7 @@ import {
   HtmlCommentAst,
   htmlVisitAll
 } from 'angular2/src/compiler/html_ast';
+import {serializeXmb, deserializeXmb} from 'angular2/src/i18n/xmb_serializer';
 import {ParseError, ParseLocation} from 'angular2/src/compiler/parse_util';
 import {humanizeDom} from '../../test/compiler/html_ast_spec_utils';
 
@@ -34,7 +36,13 @@ export function main() {
     function parse(template: string, messages: {[key: string]: string}): HtmlParseTreeResult {
       var parser = new Parser(new Lexer());
       let htmlParser = new HtmlParser();
-      return new I18nHtmlParser(htmlParser, parser, messages).parse(template, "someurl");
+
+      let msgs = '';
+      StringMapWrapper.forEach(messages, (v, k) => msgs += `<msg id="${k}">${v}</msg>`);
+      let res = deserializeXmb(`<message-bundle>${msgs}</message-bundle>`, 'someUrl');
+
+      return new I18nHtmlParser(htmlParser, parser, res.content, res.messages)
+          .parse(template, "someurl");
     }
 
     it("should delegate to the provided parser when no i18n", () => {
@@ -66,6 +74,36 @@ export function main() {
 
       expect(humanizeDom(parse("<div value='{{a}} and {{b}}' i18n-value></div>", translations)))
           .toEqual([[HtmlElementAst, 'div', 0], [HtmlAttrAst, 'value', '{{b}} or {{a}}']]);
+    });
+
+    it('should handle interpolation with custom placeholder names', () => {
+      let translations: {[key: string]: string} = {};
+      translations[id(new Message('<ph name="FIRST"/> and <ph name="SECOND"/>', null, null))] =
+          '<ph name="SECOND"/> or <ph name="FIRST"/>';
+
+      expect(
+          humanizeDom(parse(
+              `<div value='{{a //i18n(ph="FIRST")}} and {{b //i18n(ph="SECOND")}}' i18n-value></div>`,
+              translations)))
+          .toEqual([
+            [HtmlElementAst, 'div', 0],
+            [HtmlAttrAst, 'value', '{{b //i18n(ph="SECOND")}} or {{a //i18n(ph="FIRST")}}']
+          ]);
+    });
+
+    it('should handle interpolation with duplicate placeholder names', () => {
+      let translations: {[key: string]: string} = {};
+      translations[id(new Message('<ph name="FIRST"/> and <ph name="FIRST_1"/>', null, null))] =
+          '<ph name="FIRST_1"/> or <ph name="FIRST"/>';
+
+      expect(
+          humanizeDom(parse(
+              `<div value='{{a //i18n(ph="FIRST")}} and {{b //i18n(ph="FIRST")}}' i18n-value></div>`,
+              translations)))
+          .toEqual([
+            [HtmlElementAst, 'div', 0],
+            [HtmlAttrAst, 'value', '{{b //i18n(ph="FIRST")}} or {{a //i18n(ph="FIRST")}}']
+          ]);
     });
 
     it("should handle nested html", () => {
@@ -109,6 +147,18 @@ export function main() {
             [HtmlElementAst, 'a', 1],
             [HtmlAttrAst, 'value', "B"],
             [HtmlTextAst, 'A', 2],
+          ]);
+    });
+
+    it("should preserve non-i18n attributes", () => {
+      let translations: {[key: string]: string} = {};
+      translations[id(new Message('message', null, null))] = 'another message';
+
+      expect(humanizeDom(parse('<div i18n value="b">message</div>', translations)))
+          .toEqual([
+            [HtmlElementAst, 'div', 0],
+            [HtmlAttrAst, 'value', "b"],
+            [HtmlTextAst, 'another message', 1]
           ]);
     });
 
@@ -156,14 +206,6 @@ export function main() {
             .toEqual([`Cannot find message for id '${mid}'`]);
       });
 
-      it("should error when message cannot be parsed", () => {
-        let translations: {[key: string]: string} = {};
-        translations[id(new Message("some message", null, null))] = "<a>a</b>";
-
-        expect(humanizeErrors(parse("<div i18n>some message</div>", translations).errors))
-            .toEqual([`Unexpected closing tag "b"`]);
-      });
-
       it("should error when a non-placeholder element appears in translation", () => {
         let translations: {[key: string]: string} = {};
         translations[id(new Message("some message", null, null))] = "<a>a</a>";
@@ -180,18 +222,13 @@ export function main() {
             .toEqual([`Missing "name" attribute.`]);
       });
 
-      it("should error when no matching attribute", () => {
-        expect(humanizeErrors(parse("<div i18n-value></div>", {}).errors))
-            .toEqual([`Missing attribute 'value'.`]);
-      });
-
       it("should error when the translation refers to an invalid expression", () => {
         let translations: {[key: string]: string} = {};
         translations[id(new Message('hi <ph name="0"/>', null, null))] = 'hi <ph name="99"/>';
 
         expect(
             humanizeErrors(parse("<div value='hi {{a}}' i18n-value></div>", translations).errors))
-            .toEqual(["Invalid interpolation index '99'"]);
+            .toEqual(["Invalid interpolation name '99'"]);
       });
 
     });

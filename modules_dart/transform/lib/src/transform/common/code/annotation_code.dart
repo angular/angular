@@ -2,7 +2,6 @@ library angular2.transform.common.code.annotation_code;
 
 import 'package:analyzer/analyzer.dart';
 import 'package:analyzer/src/generated/ast.dart';
-import 'package:angular2/src/transform/common/annotation_matcher.dart';
 import 'package:angular2/src/transform/common/model/annotation_model.pb.dart';
 import 'package:barback/barback.dart' show AssetId;
 
@@ -13,11 +12,7 @@ class AnnotationVisitor extends SimpleAstVisitor<AnnotationModel> {
   /// The file we are processing.
   final AssetId assetId;
 
-  /// Responsible for testing whether [Annotation]s are those recognized by
-  /// Angular 2, for example `@Component`.
-  final AnnotationMatcher _annotationMatcher;
-
-  AnnotationVisitor(this.assetId, this._annotationMatcher);
+  AnnotationVisitor(this.assetId);
 
   @override
   AnnotationModel visitAnnotation(Annotation node) {
@@ -25,18 +20,8 @@ class AnnotationVisitor extends SimpleAstVisitor<AnnotationModel> {
     if (node.constructorName != null) {
       name += '.${constify(node.constructorName)}';
     }
-    var isComponent = _annotationMatcher.isComponent(node, assetId);
-    var isDirective =
-        isComponent || _annotationMatcher.isDirective(node, assetId);
-    var isInjectable =
-        isDirective || _annotationMatcher.isInjectable(node, assetId);
-    var isView = _annotationMatcher.isView(node, assetId);
     var model = new AnnotationModel()
       ..name = name
-      ..isComponent = isComponent
-      ..isDirective = isDirective
-      ..isInjectable = isInjectable
-      ..isView = isView
       ..isConstObject = node.arguments == null;
 
     // This annotation is a constant instance creation expression,

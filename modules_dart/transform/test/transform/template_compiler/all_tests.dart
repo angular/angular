@@ -8,14 +8,13 @@ import 'package:dart_style/dart_style.dart';
 import 'package:path/path.dart' as path;
 import 'package:guinness/guinness.dart';
 
-import 'package:angular2/src/core/change_detection/codegen_name_util.dart'
-    show CONTEXT_ACCESSOR;
 import 'package:angular2/src/platform/server/html_adapter.dart';
 import 'package:angular2/src/transform/common/code/ng_deps_code.dart';
 import 'package:angular2/src/transform/common/code/source_module.dart';
 import 'package:angular2/src/transform/common/zone.dart' as zone;
 import 'package:angular2/src/transform/template_compiler/generator.dart';
 import 'package:angular2/src/transform/template_compiler/compile_data_creator.dart';
+import 'package:angular2/i18n.dart';
 
 import 'package:angular2/src/transform/common/model/parameter_model.pb.dart';
 import '../common/compile_directive_metadata/ng_for.ng_meta.dart' as ngMeta;
@@ -26,6 +25,7 @@ import '../common/recording_logger.dart';
 var formatter = new DartFormatter();
 TestAssetReader reader;
 RecordingLogger logger;
+const CONTEXT_ACCESSOR = 'context';
 
 main() => allTests();
 
@@ -56,24 +56,31 @@ void allTests() {
     // lacking some details that would be created by DirectiveProcessor but
     // which are not used in the template compiler.
     fooComponentMeta = createFoo(moduleBase);
-    fooNgMeta = new NgMeta(ngDeps: new NgDepsModel()
-      ..libraryUri = 'test.foo'
-      ..reflectables.add(new ReflectionInfoModel()..name = fooComponentMeta.type.name));
+    fooNgMeta = new NgMeta(
+        ngDeps: new NgDepsModel()
+          ..libraryUri = 'test.foo'
+          ..reflectables.add(
+              new ReflectionInfoModel()..name = fooComponentMeta.type.name));
     fooNgMeta.identifiers[fooComponentMeta.type.name] = fooComponentMeta;
 
     barComponentMeta = createBar(moduleBase);
     barPipeMeta = createBarPipe(moduleBase);
-    barNgMeta = new NgMeta(ngDeps: new NgDepsModel()
-      ..libraryUri = 'test.bar'
-      ..reflectables.add(new ReflectionInfoModel()..name = barPipeMeta.type.name)
-      ..reflectables.add(new ReflectionInfoModel()..name = barComponentMeta.type.name));
+    barNgMeta = new NgMeta(
+        ngDeps: new NgDepsModel()
+          ..libraryUri = 'test.bar'
+          ..reflectables
+              .add(new ReflectionInfoModel()..name = barPipeMeta.type.name)
+          ..reflectables.add(
+              new ReflectionInfoModel()..name = barComponentMeta.type.name));
     barNgMeta.identifiers[barComponentMeta.type.name] = barComponentMeta;
     barNgMeta.identifiers[barPipeMeta.type.name] = barPipeMeta;
 
     bazComponentMeta = createBaz(moduleBase);
-    bazNgMeta = new NgMeta(ngDeps: new NgDepsModel()
-      ..libraryUri = 'test.baz'
-      ..reflectables.add(new ReflectionInfoModel()..name = bazComponentMeta.type.name));
+    bazNgMeta = new NgMeta(
+        ngDeps: new NgDepsModel()
+          ..libraryUri = 'test.baz'
+          ..reflectables.add(
+              new ReflectionInfoModel()..name = bazComponentMeta.type.name));
     barNgMeta.identifiers[bazComponentMeta.type.name] = bazComponentMeta;
 
     fooAssetId = new AssetId('a', 'lib/foo.ng_meta.json');
@@ -83,211 +90,18 @@ void allTests() {
   });
 
   Future<String> process(AssetId assetId,
-      {List<String> platformDirectives, List<String> platformPipes, Map<String,String> resolvedIdentifiers}) {
+      {List<String> platformDirectives, List<String> platformPipes, Map<String,String> resolvedIdentifiers,
+      XmbDeserializationResult translations}) {
     logger = new RecordingLogger();
     return zone.exec(
         () => processTemplates(reader, assetId,
             platformDirectives: platformDirectives,
             platformPipes: platformPipes,
-            resolvedIdentifiers: resolvedIdentifiers),
+            resolvedIdentifiers: resolvedIdentifiers,
+            translations: translations
+            ),
         log: logger);
   }
-
-  // TODO(tbosch): This is just a temporary test that makes sure that the dart
-  // server and dart browser is in sync.
-  it('should not contain notifyBinding', () async {
-    fooComponentMeta.template = new CompileTemplateMetadata(
-        template: '<li *ngFor="#thing of things"><div>test</div></li>');
-    final viewAnnotation = new AnnotationModel()
-      ..name = 'View'
-      ..isView = true;
-    fooNgMeta.ngDeps.reflectables.first.annotations.add(viewAnnotation);
-    fooNgMeta.ngDeps.reflectables.first.directives
-        .add(new PrefixedType()..name = 'NgFor');
-    fooNgMeta.ngDeps.imports.add(
-        new ImportModel()..uri = 'package:angular2/src/directives/ng_for.dart');
-
-    reader.addAsset(new AssetId('angular2', 'lib/src/directives/ng_for.dart'),
-        JSON.encode(ngMeta.ngFor));
-
-    updateReader();
-
-    final outputs = await process(fooAssetId);
-    // TODO(kegluenq): Does this next line need to be updated as well?
-    expect(_generatedCode(outputs)).not.toContain('notifyDispatcher');
-  });
-
-  it('should generate generate diDeps of injectable services.', () async {
-    bazNgMeta.identifiers['Service2'] = new CompileTypeMetadata(
-        name: 'Service2',
-        moduleUrl: 'moduleUrl');
-
-    barNgMeta.identifiers['Service'] = new CompileTypeMetadata(
-        name: 'Service',
-        moduleUrl: 'moduleUrl',
-        diDeps: [new CompileDiDependencyMetadata(token: new CompileIdentifierMetadata(name: 'Service2'))]);
-    barNgMeta.ngDeps.imports.add(new ImportModel()..uri = 'package:a/baz.dart');
-
-    fooComponentMeta.template = new CompileTemplateMetadata(template: "import 'bar.dart';");
-    fooComponentMeta.providers = [
-      new CompileProviderMetadata(
-          token: new CompileIdentifierMetadata(name: 'Service'),
-          useClass: new CompileTypeMetadata(name: 'Service')
-      )
-    ];
-
-    final viewAnnotation = new AnnotationModel()..name = 'View'..isView = true;
-    final reflectable = fooNgMeta.ngDeps.reflectables.first;
-    reflectable.annotations.add(viewAnnotation);
-    fooNgMeta.ngDeps.imports.add(new ImportModel()..uri = 'package:a/bar.dart');
-
-    updateReader();
-
-    final viewDefResults = await createCompileData(reader, fooAssetId, [], [], {});
-    final cmp = viewDefResults.viewDefinitions.values.first.component;
-
-    expect(cmp.providers.length).toEqual(1);
-
-    expect(cmp.providers[0].useClass.name).toEqual("Service");
-    expect(cmp.providers[0].useClass.diDeps.first.token.name).toEqual("Service2");
-  });
-
-  it('should generate providers from types.', () async {
-    barNgMeta.identifiers['Service'] = new CompileTypeMetadata(name: 'Service', moduleUrl: 'moduleUrl');
-
-    fooComponentMeta.template = new CompileTemplateMetadata(template: "import 'bar.dart';");
-    fooComponentMeta.providers = [new CompileProviderMetadata(token: new CompileIdentifierMetadata(name: 'Service'))];
-    fooComponentMeta.type.diDeps = [new CompileDiDependencyMetadata(token: new CompileIdentifierMetadata(name: 'Service'))];
-
-    final viewAnnotation = new AnnotationModel()..name = 'View'..isView = true;
-    final reflectable = fooNgMeta.ngDeps.reflectables.first;
-    reflectable.annotations.add(viewAnnotation);
-    fooNgMeta.ngDeps.imports.add(new ImportModel()..uri = 'package:a/bar.dart');
-
-    updateReader();
-
-    final viewDefResults = await createCompileData(reader, fooAssetId, [], [], {});
-    final cmp = viewDefResults.viewDefinitions.values.first.component;
-
-    expect(cmp.providers.length).toEqual(1);
-
-    expect(cmp.providers[0].token.name).toEqual("Service");
-    expect(cmp.providers[0].token.moduleUrl).toEqual("moduleUrl");
-
-    expect(cmp.type.diDeps.length).toEqual(1);
-    expect(cmp.type.diDeps[0].token.name).toEqual("Service");
-    expect(cmp.type.diDeps[0].token.moduleUrl).toEqual("moduleUrl");
-  });
-
-  it('should resolve queries and viewQueries.', () async {
-    barNgMeta.identifiers['Service'] = new CompileTypeMetadata(name: 'Service', moduleUrl: 'moduleUrl');
-
-    fooComponentMeta.template = new CompileTemplateMetadata(template: "import 'bar.dart';");
-    fooComponentMeta.type.diDeps = [
-      new CompileDiDependencyMetadata(
-          token: 'someToken',
-          query: new CompileQueryMetadata(selectors: [new CompileIdentifierMetadata(name: 'Service')])
-      ),
-      new CompileDiDependencyMetadata(
-          token: 'someToken',
-          viewQuery: new CompileQueryMetadata(selectors: [new CompileIdentifierMetadata(name: 'Service')])
-      )
-    ];
-
-    final viewAnnotation = new AnnotationModel()..name = 'View'..isView = true;
-    final reflectable = fooNgMeta.ngDeps.reflectables.first;
-    reflectable.annotations.add(viewAnnotation);
-    fooNgMeta.ngDeps.imports.add(new ImportModel()..uri = 'package:a/bar.dart');
-
-    updateReader();
-
-    final viewDefResults = await createCompileData(reader, fooAssetId, [], [], {});
-    final cmp = viewDefResults.viewDefinitions.values.first.component;
-
-    expect(cmp.type.diDeps.length).toEqual(2);
-
-    expect(cmp.type.diDeps[0].query.selectors[0].name).toEqual("Service");
-    expect(cmp.type.diDeps[0].query.selectors[0].moduleUrl).toEqual("moduleUrl");
-    expect(cmp.type.diDeps[1].viewQuery.selectors[0].name).toEqual("Service");
-    expect(cmp.type.diDeps[1].viewQuery.selectors[0].moduleUrl).toEqual("moduleUrl");
-  });
-
-  it('should generate providers from Provider objects (references).', () async {
-    barNgMeta.identifiers['Service1'] = new CompileTypeMetadata(name: 'Service1', moduleUrl: 'moduleUrl');
-    barNgMeta.identifiers['Service2'] = new CompileTypeMetadata(name: 'Service2', moduleUrl: 'moduleUrl');
-
-    fooComponentMeta.template = new CompileTemplateMetadata(template: "import 'bar.dart';");
-    fooComponentMeta.providers = [new CompileProviderMetadata(token: new CompileIdentifierMetadata(name: 'Service1'), useClass:
-    new CompileTypeMetadata(name: 'Service2'))];
-
-    final viewAnnotation = new AnnotationModel()..name = 'View'..isView = true;
-    final reflectable = fooNgMeta.ngDeps.reflectables.first;
-    reflectable.annotations.add(viewAnnotation);
-    fooNgMeta.ngDeps.imports.add(new ImportModel()..uri = 'package:a/bar.dart');
-
-    updateReader();
-
-    final viewDefResults = await createCompileData(reader, fooAssetId, [], [], {});
-    final cmp = viewDefResults.viewDefinitions.values.first.component;
-
-    expect(cmp.providers.length).toEqual(1);
-
-    expect(cmp.providers[0].token.name).toEqual("Service1");
-    expect(cmp.providers[0].token.moduleUrl).toEqual("moduleUrl");
-    expect(cmp.providers[0].useClass.name).toEqual("Service2");
-    expect(cmp.providers[0].useClass.moduleUrl).toEqual("moduleUrl");
-  });
-
-  it('should generate providers from Provider objects (literals).', () async {
-    barNgMeta.identifiers['Service'] = new CompileTypeMetadata(name: 'Service', moduleUrl: 'moduleUrl');
-
-    fooComponentMeta.template = new CompileTemplateMetadata(template: "import 'bar.dart';");
-    fooComponentMeta.providers = [new CompileProviderMetadata(token: "StrService", useClass:
-    new CompileTypeMetadata(name: 'Service'))];
-    fooComponentMeta.type.diDeps = [new CompileDiDependencyMetadata(token: "StrService")];
-
-    final viewAnnotation = new AnnotationModel()..name = 'View'..isView = true;
-    final reflectable = fooNgMeta.ngDeps.reflectables.first;
-    reflectable.annotations.add(viewAnnotation);
-    fooNgMeta.ngDeps.imports.add(new ImportModel()..uri = 'package:a/bar.dart');
-
-    updateReader();
-
-    final viewDefResults = await createCompileData(reader, fooAssetId, [], [], {});
-    final cmp = viewDefResults.viewDefinitions.values.first.component;
-
-    expect(cmp.providers.length).toEqual(1);
-
-    expect(cmp.providers[0].token).toEqual("StrService");
-    expect(cmp.providers[0].useClass.name).toEqual("Service");
-    expect(cmp.providers[0].useClass.moduleUrl).toEqual("moduleUrl");
-
-    expect(cmp.type.diDeps.length).toEqual(1);
-    expect(cmp.type.diDeps[0].token).toEqual("StrService");
-  });
-
-  it('should include providers mentioned in aliases.', () async {
-    barNgMeta.identifiers['Service'] = new CompileTypeMetadata(name: 'Service', moduleUrl: 'moduleUrl');
-
-    fooComponentMeta.template = new CompileTemplateMetadata(template: "import 'bar.dart';");
-
-    fooNgMeta.aliases['providerAlias'] = ['Service'];
-
-    fooComponentMeta.providers = [new CompileProviderMetadata(token: new CompileIdentifierMetadata(name: 'providerAlias'))];
-
-    final viewAnnotation = new AnnotationModel()..name = 'View'..isView = true;
-    final reflectable = fooNgMeta.ngDeps.reflectables.first;
-    reflectable.annotations.add(viewAnnotation);
-    fooNgMeta.ngDeps.imports.add(new ImportModel()..uri = 'package:a/bar.dart');
-
-    updateReader();
-
-    final viewDefResults = await createCompileData(reader, fooAssetId, [], [], {});
-    final cmp = viewDefResults.viewDefinitions.values.first.component;
-
-    expect(cmp.providers.length).toEqual(1);
-    expect(cmp.providers[0].token.name).toEqual("Service");
-  });
 
   it('should parse simple expressions in inline templates.', () async {
     fooComponentMeta.template = new CompileTemplateMetadata(
@@ -327,8 +141,7 @@ void allTests() {
     fooComponentMeta.template =
         new CompileTemplateMetadata(template: '<${barComponentMeta.selector}>');
     final viewAnnotation = new AnnotationModel()
-      ..name = 'View'
-      ..isView = true;
+      ..name = 'View';
     viewAnnotation.namedParameters.add(new NamedParameter()
       ..name = 'directives'
       ..value = 'const [${barComponentMeta.type.name}]');
@@ -358,8 +171,7 @@ void allTests() {
     fooComponentMeta.template =
         new CompileTemplateMetadata(template: '<${barComponentMeta.selector}>');
     final componentAnnotation = new AnnotationModel()
-      ..name = 'View'
-      ..isView = true;
+      ..name = 'View';
     fooNgMeta.ngDeps.reflectables.first.annotations.add(componentAnnotation);
     fooNgMeta.ngDeps.reflectables.first.directives.add(new PrefixedType()
       ..name = barComponentMeta.type.name
@@ -388,8 +200,7 @@ void allTests() {
     fooComponentMeta.template =
         new CompileTemplateMetadata(template: '<${barComponentMeta.selector}>');
     final componentAnnotation = new AnnotationModel()
-      ..name = 'View'
-      ..isView = true;
+      ..name = 'View';
     fooNgMeta.ngDeps.reflectables.first.annotations.add(componentAnnotation);
     fooNgMeta.ngDeps.reflectables.first.directives
         .add(new PrefixedType()..name = 'directiveAlias');
@@ -425,71 +236,6 @@ void allTests() {
     expect(_generatedCode(firstOutputs)).toEqual(_generatedCode(secondOutputs));
   });
 
-  it('should generate getters for Component#outputs.', () async {
-    fooComponentMeta.template = new CompileTemplateMetadata(
-        template: '<div>{{greeting}}</div>', templateUrl: 'template.html');
-    fooComponentMeta.outputs = {'eventName': 'eventName'};
-    updateReader();
-
-    final outputs = await process(fooAssetId);
-    final ngDeps = outputs.ngDeps;
-    expect(ngDeps.getters).toContain('eventName');
-  });
-
-  it('should generate getters for Directive#outputs.', () async {
-    fooComponentMeta
-      ..template = null
-      ..isComponent = false;
-    fooComponentMeta.outputs = {'eventName': 'eventName'};
-    updateReader();
-
-    final outputs = await process(fooAssetId);
-    final ngDeps = outputs.ngDeps;
-    expect(ngDeps.getters).toContain('eventName');
-  });
-
-  it('should generate setters for Component#inputs.', () async {
-    fooComponentMeta.template = new CompileTemplateMetadata(
-        template: '<div>{{greeting}}</div>', templateUrl: 'template.html');
-    fooComponentMeta.inputs = {'text': 'tool-tip'};
-    updateReader();
-
-    final outputs = await process(fooAssetId);
-    final ngDeps = outputs.ngDeps;
-    expect(ngDeps.setters).toContain('text');
-  });
-
-  it('should generate setters for Directive#inputs.', () async {
-    fooComponentMeta
-      ..template = null
-      ..isComponent = false;
-    fooComponentMeta.inputs = {'text': 'tool-tip'};
-    updateReader();
-
-    final outputs = await process(fooAssetId);
-    final ngDeps = outputs.ngDeps;
-    expect(ngDeps.setters).toContain('text');
-  });
-
-  it(
-      'should generate a single setter for two `Directive`s '
-      'with the same inputs.', () async {
-    fooComponentMeta
-      ..template = null
-      ..isComponent = false;
-    fooComponentMeta.inputs = {'text': 'tool-tip'};
-    barComponentMeta
-      ..template = null
-      ..isComponent = false;
-    barComponentMeta.inputs = {'text': 'tool-tip'};
-    updateReader();
-
-    final outputs = await process(fooAssetId);
-    final ngDeps = outputs.ngDeps;
-    expect(ngDeps.setters).toContain('text');
-    expect(ngDeps.setters.length).toEqual(1);
-  });
-
   it('should gracefully handle null .ng_meta.json files', () async {
     final dne =
         new AssetId('package', 'lib/file_that_does_not_exist.ng_meta.json');
@@ -522,8 +268,7 @@ void allTests() {
     fooComponentMeta.template =
         new CompileTemplateMetadata(template: '<bar></bar>');
     final viewAnnotation = new AnnotationModel()
-      ..name = 'View'
-      ..isView = true;
+      ..name = 'View';
 
     barNgMeta.aliases['PLATFORM'] = [barComponentMeta.type.name];
     updateReader();
@@ -541,8 +286,7 @@ void allTests() {
     fooComponentMeta.template =
         new CompileTemplateMetadata(template: '<bar></bar>');
     final viewAnnotation = new AnnotationModel()
-      ..name = 'View'
-      ..isView = true;
+      ..name = 'View';
 
     barNgMeta.identifiers['PLATFORM'] = barComponentMeta;
     updateReader();
@@ -589,8 +333,7 @@ void allTests() {
     fooComponentMeta.template =
         new CompileTemplateMetadata(template: '{{1 | bar}}');
     final viewAnnotation = new AnnotationModel()
-      ..name = 'View'
-      ..isView = true;
+      ..name = 'View';
     viewAnnotation.namedParameters.add(new NamedParameter()
       ..name = 'pipes'
       ..value = 'const [${barPipeMeta.type.name}]');
@@ -622,29 +365,21 @@ void allTests() {
       ..toContain(barPipeMeta.name);
   });
 
-  it('should fallback to the list of resolved identifiers.', () async {
-    barNgMeta.identifiers['Service2'] = new CompileTypeMetadata(name: 'Service2', moduleUrl: 'moduleUrl');
-
-    fooComponentMeta.template = new CompileTemplateMetadata(template: "import 'bar.dart';");
-    fooComponentMeta.providers = [new CompileProviderMetadata(token: new CompileIdentifierMetadata(name: 'Service1'), useClass:
-    new CompileTypeMetadata(name: 'Service2'))];
-
-    final viewAnnotation = new AnnotationModel()..name = 'View'..isView = true;
-    final reflectable = fooNgMeta.ngDeps.reflectables.first;
-    reflectable.annotations.add(viewAnnotation);
-    fooNgMeta.ngDeps.imports.add(new ImportModel()..uri = 'package:a/bar.dart');
-
+  it('should use i18n parser when translations are provided.', () async {
+    fooComponentMeta.template = new CompileTemplateMetadata(
+        template: '<div i18n>content</div>',
+        templateUrl: 'template.html');
     updateReader();
 
-    final viewDefResults = await createCompileData(reader, fooAssetId, [], [], {"Service1": "someModuleUrl", "Service2": "someModuleUrl"});
-    final cmp = viewDefResults.viewDefinitions.values.first.component;
+    final translations = deserializeXmb("""
+      <message-bundle>
+        <msg id="${id(new Message("content", null))}">another</msg>
+      </message-bundle>
+    """, "someUrl");
 
-    expect(cmp.providers.length).toEqual(1);
-
-    expect(cmp.providers[0].token.name).toEqual("Service1");
-    expect(cmp.providers[0].token.moduleUrl).toEqual("someModuleUrl");
-    expect(cmp.providers[0].useClass.name).toEqual("Service2");
-    expect(cmp.providers[0].useClass.moduleUrl).toEqual("moduleUrl");
+    final outputs = await process(fooAssetId, translations: translations);
+    expect(_generatedCode(outputs)).toContain('another');
+    expect(_generatedCode(outputs)).not.toContain('content');
   });
 }
 

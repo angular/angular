@@ -25,6 +25,17 @@ export {
 
 export {ViewMetadata, ViewEncapsulation} from './metadata/view';
 
+export {
+  AfterContentInit,
+  AfterContentChecked,
+  AfterViewInit,
+  AfterViewChecked,
+  OnChanges,
+  OnDestroy,
+  OnInit,
+  DoCheck
+} from './metadata/lifecycle_hooks';
+
 import {
   QueryMetadata,
   ContentChildrenMetadata,
@@ -988,7 +999,7 @@ export var Attribute: AttributeFactory = makeParamDecorator(AttributeMetadata);
  *   <div #findme>...</div>
  * </seeker>
  *
- * @Component({ selector: 'foo' })
+ * @Component({ selector: 'seeker' })
  * class seeker {
  *   constructor(@Query('findme') elList: QueryList<ElementRef>) {...}
  * }
@@ -1006,7 +1017,7 @@ export var Attribute: AttributeFactory = makeParamDecorator(AttributeMetadata);
  * </seeker>
  *
  *  @Component({
- *   selector: 'foo'
+ *   selector: 'seeker'
  * })
  * class Seeker {
  *   constructor(@Query('findMe, findMeToo') elList: QueryList<ElementRef>) {...}
@@ -1093,51 +1104,155 @@ export var ContentChild: ContentChildFactory = makePropDecorator(ContentChildMet
 
 // TODO(alexeagle): remove the duplication of this doc. It is copied from ViewChildrenMetadata.
 /**
- * Configures a view query.
+ * Declares a list of child element references.
  *
- * View queries are set before the `ngAfterViewInit` callback is called.
+ * Angular automatically updates the list when the DOM was updated.
+ *
+ * `ViewChildren` takes a argument to select elements.
+ *
+ * - If the argument is a type, directives or components with the type will be bound.
+ *
+ * - If the argument is a string, the string behaviors as comma-separated selectors. For each
+ * selector, an element matched template variables (e.g. `#child`) will be bound.
+ *
+ * View children are set before the `ngAfterViewInit` callback is called.
  *
  * ### Example
  *
+ * With type selector:
+ *
  * ```
  * @Component({
- *   selector: 'someDir',
- *   templateUrl: 'someTemplate',
- *   directives: [ItemDirective]
+ *   selector: 'child-cmp',
+ *   template: '<p>child</p>'
  * })
- * class SomeDir {
- *   @ViewChildren(ItemDirective) viewChildren: QueryList<ItemDirective>;
+ * class ChildCmp {
+ *   doSomething() {}
+ * }
+ *
+ * @Component({
+ *   selector: 'some-cmp',
+ *   template: `
+ *     <child-cmp></child-cmp>
+ *     <child-cmp></child-cmp>
+ *     <child-cmp></child-cmp>
+ *   `,
+ *   directives: [ChildCmp]
+ * })
+ * class SomeCmp {
+ *   @ViewChildren(ChildCmp) children:QueryList<ChildCmp>;
  *
  *   ngAfterViewInit() {
- *     // viewChildren is set
+ *     // children are set
+ *     this.children.toArray().forEach((child)=>child.doSomething());
  *   }
  * }
  * ```
+ *
+ * With string selector:
+ *
+ * ```
+ * @Component({
+ *   selector: 'child-cmp',
+ *   template: '<p>child</p>'
+ * })
+ * class ChildCmp {
+ *   doSomething() {}
+ * }
+ *
+ * @Component({
+ *   selector: 'some-cmp',
+ *   template: `
+ *     <child-cmp #child1></child-cmp>
+ *     <child-cmp #child2></child-cmp>
+ *     <child-cmp #child3></child-cmp>
+ *   `,
+ *   directives: [ChildCmp]
+ * })
+ * class SomeCmp {
+ *   @ViewChildren('child1,child2,child3') children:QueryList<ChildCmp>;
+ *
+ *   ngAfterViewInit() {
+ *     // children are set
+ *     this.children.toArray().forEach((child)=>child.doSomething());
+ *   }
+ * }
+ * ```
+ *
+ * See also: [ViewChildrenMetadata]
  */
 export var ViewChildren: ViewChildrenFactory = makePropDecorator(ViewChildrenMetadata);
 
 // TODO(alexeagle): remove the duplication of this doc. It is copied from ViewChildMetadata.
 /**
- * Configures a view query.
+ * Declares a reference of child element.
  *
- * View queries are set before the `ngAfterViewInit` callback is called.
+ * `ViewChildren` takes a argument to select elements.
+ *
+ * - If the argument is a type, a directive or a component with the type will be bound.
+ *
+ * - If the argument is a string, the string behaviors as a selectors. An element matched template
+ * variables (e.g. `#child`) will be bound.
+ *
+ * In either case, `@ViewChild()` assigns the first (looking from above) element if the result is
+ * multiple.
+ *
+ * View child is set before the `ngAfterViewInit` callback is called.
  *
  * ### Example
  *
+ * With type selector:
+ *
  * ```
  * @Component({
- *   selector: 'someDir',
- *   templateUrl: 'someTemplate',
- *   directives: [ItemDirective]
+ *   selector: 'child-cmp',
+ *   template: '<p>child</p>'
  * })
- * class SomeDir {
- *   @ViewChild(ItemDirective) viewChild:ItemDirective;
+ * class ChildCmp {
+ *   doSomething() {}
+ * }
+ *
+ * @Component({
+ *   selector: 'some-cmp',
+ *   template: '<child-cmp></child-cmp>',
+ *   directives: [ChildCmp]
+ * })
+ * class SomeCmp {
+ *   @ViewChild(ChildCmp) child:ChildCmp;
  *
  *   ngAfterViewInit() {
- *     // viewChild is set
+ *     // child is set
+ *     this.child.doSomething();
  *   }
  * }
  * ```
+ *
+ * With string selector:
+ *
+ * ```
+ * @Component({
+ *   selector: 'child-cmp',
+ *   template: '<p>child</p>'
+ * })
+ * class ChildCmp {
+ *   doSomething() {}
+ * }
+ *
+ * @Component({
+ *   selector: 'some-cmp',
+ *   template: '<child-cmp #child></child-cmp>',
+ *   directives: [ChildCmp]
+ * })
+ * class SomeCmp {
+ *   @ViewChild('child') child:ChildCmp;
+ *
+ *   ngAfterViewInit() {
+ *     // child is set
+ *     this.child.doSomething();
+ *   }
+ * }
+ * ```
+ * See also: [ViewChildMetadata]
  */
 export var ViewChild: ViewChildFactory = makePropDecorator(ViewChildMetadata);
 

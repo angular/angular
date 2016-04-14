@@ -16,17 +16,13 @@ void initReflector() {
     ..registerType(
         MyComponent,
         new _ngRef.ReflectionInfo(
-            const [
-              const Component(selector: 'soup'),
-              const View(template: ''),
-              hostViewFactory_MyComponent
-            ],
+            const [hostViewFactory_MyComponent],
             const [
               const [prefix.MyContext],
               const [prefix.MyDep]
             ],
             (prefix.MyContext c, prefix.MyDep inValue) =>
-        new MyComponent(c, inValue)));
+                new MyComponent(c, inValue)));
   i0.initReflector();
   i1.initReflector();
 }

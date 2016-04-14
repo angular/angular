@@ -17,8 +17,6 @@ import {
 
 import {SpyNgControl, SpyValueAccessor} from '../spies';
 
-import {QueryList} from 'angular2/core';
-
 import {
   ControlGroup,
   Control,
@@ -94,14 +92,14 @@ export function main() {
         });
 
         it("should return select accessor when provided", () => {
-          var selectAccessor = new SelectControlValueAccessor(null, null, new QueryList<any>());
+          var selectAccessor = new SelectControlValueAccessor(null, null);
           expect(selectValueAccessor(dir, [defaultAccessor, selectAccessor]))
               .toEqual(selectAccessor);
         });
 
         it("should throw when more than one build-in accessor is provided", () => {
           var checkboxAccessor = new CheckboxControlValueAccessor(null, null);
-          var selectAccessor = new SelectControlValueAccessor(null, null, new QueryList<any>());
+          var selectAccessor = new SelectControlValueAccessor(null, null);
           expect(() => selectValueAccessor(dir, [checkboxAccessor, selectAccessor])).toThrowError();
         });
 

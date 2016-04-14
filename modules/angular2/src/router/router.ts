@@ -135,12 +135,33 @@ export class Router {
    */
   isRouteActive(instruction: Instruction): boolean {
     var router: Router = this;
+
+    if (isBlank(this.currentInstruction)) {
+      return false;
+    }
+
+    // `instruction` corresponds to the root router
     while (isPresent(router.parent) && isPresent(instruction.child)) {
       router = router.parent;
       instruction = instruction.child;
     }
-    return isPresent(this.currentInstruction) &&
-           this.currentInstruction.component == instruction.component;
+
+    if (isBlank(instruction.component) || isBlank(this.currentInstruction.component) ||
+        this.currentInstruction.component.routeName != instruction.component.routeName) {
+      return false;
+    }
+
+    let paramEquals = true;
+
+    if (isPresent(this.currentInstruction.component.params)) {
+      StringMapWrapper.forEach(instruction.component.params, (value, key) => {
+        if (this.currentInstruction.component.params[key] !== value) {
+          paramEquals = false;
+        }
+      });
+    }
+
+    return paramEquals;
   }
 
 
@@ -260,6 +281,7 @@ export class Router {
   }
 
   private _emitNavigationFinish(url): void { ObservableWrapper.callEmit(this._subject, url); }
+  /** @internal */
   _emitNavigationFail(url): void { ObservableWrapper.callError(this._subject, url); }
 
   private _afterPromiseFinishNavigating(promise: Promise<any>): Promise<any> {
@@ -317,7 +339,9 @@ export class Router {
         return false;
       }
       if (isPresent(this._childRouter)) {
-        return this._childRouter._routerCanDeactivate(childInstruction);
+        // TODO: ideally, this closure would map to async-await in Dart.
+        // For now, casting to any to suppress an error.
+        return <any>this._childRouter._routerCanDeactivate(childInstruction);
       }
       return true;
     });
@@ -465,9 +489,11 @@ export class RootRouter extends Router {
                       emitPath = '/' + emitPath;
                     }
 
-                    // Because we've opted to use All hashchange events occur outside Angular.
+                    // We've opted to use pushstate and popState APIs regardless of whether you
+                    // an app uses HashLocationStrategy or PathLocationStrategy.
                     // However, apps that are migrating might have hash links that operate outside
                     // angular to which routing must respond.
+                    // Therefore we know that all hashchange events occur outside Angular.
                     // To support these cases where we respond to hashchanges and redirect as a
                     // result, we need to replace the top item on the stack.
                     if (change['type'] == 'hashchange') {

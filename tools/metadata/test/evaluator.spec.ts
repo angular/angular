@@ -18,7 +18,7 @@ describe('Evaluator', () => {
     program = service.getProgram();
     typeChecker = program.getTypeChecker();
     symbols = new Symbols();
-    evaluator = new Evaluator(service, typeChecker, symbols, f => f);
+    evaluator = new Evaluator(typeChecker, symbols, f => f);
   });
 
   it('should not have typescript errors in test data', () => {

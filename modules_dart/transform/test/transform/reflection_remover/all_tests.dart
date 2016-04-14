@@ -71,17 +71,6 @@ void allTests() {
   });
 
   describe('`bootstrap` import and call', () {
-    // TODO(kegluneq): Remove when we remove angular2/bootstrap.dart
-    it('deprecated import should be rewritten to `bootstrapStatic`.', () {
-      final bootstrapCode =
-          readFile('reflection_remover/deprecated_bootstrap_files/index.dart')
-              .replaceAll('\r\n', '\n');
-      var output = new Rewriter(bootstrapCode, codegen, entrypointMatcher,
-              writeStaticInit: true)
-          .rewrite(parseCompilationUnit(bootstrapCode));
-      expect(output).toEqual(bootstrap_expected.code);
-    });
-
     it('should be rewritten to `bootstrapStatic`.', () {
       final bootstrapCode =
           readFile('reflection_remover/bootstrap_files/index.dart')

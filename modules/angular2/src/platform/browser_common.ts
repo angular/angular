@@ -1,6 +1,6 @@
 import {CONST_EXPR, IS_DART} from 'angular2/src/facade/lang';
 import {provide, Provider, Injector, OpaqueToken} from 'angular2/src/core/di';
-
+import {XHR} from 'angular2/src/compiler/xhr';
 import {
   PLATFORM_INITIALIZER,
   PLATFORM_DIRECTIVES,
@@ -28,8 +28,13 @@ import {BrowserDetails} from "angular2/src/animate/browser_details";
 import {AnimationBuilder} from "angular2/src/animate/animation_builder";
 import {BrowserDomAdapter} from './browser/browser_adapter';
 import {BrowserGetTestability} from 'angular2/src/platform/browser/testability';
+import {CachedXHR} from 'angular2/src/platform/browser/xhr_cache';
 import {wtfInit} from 'angular2/src/core/profile/wtf_init';
 import {EventManager, EVENT_MANAGER_PLUGINS} from "angular2/src/platform/dom/events/event_manager";
+import {
+  HAMMER_GESTURE_CONFIG,
+  HammerGestureConfig
+} from 'angular2/src/platform/dom/events/hammer_gestures';
 import {ELEMENT_PROBE_PROVIDERS} from 'angular2/platform/common_dom';
 export {DOCUMENT} from 'angular2/src/platform/dom/dom_tokens';
 export {Title} from 'angular2/src/platform/browser/title';
@@ -41,6 +46,7 @@ export {
 } from 'angular2/platform/common_dom';
 export {BrowserDomAdapter} from './browser/browser_adapter';
 export {enableDebugTools, disableDebugTools} from 'angular2/src/platform/browser/tools/tools';
+export {HAMMER_GESTURE_CONFIG, HammerGestureConfig} from './dom/events/hammer_gestures';
 
 /**
  * A set of providers to initialize the Angular platform in a web browser.
@@ -77,6 +83,7 @@ export const BROWSER_APP_COMMON_PROVIDERS: Array<any /*Type | Provider | any[]*/
   new Provider(EVENT_MANAGER_PLUGINS, {useClass: DomEventsPlugin, multi: true}),
   new Provider(EVENT_MANAGER_PLUGINS, {useClass: KeyEventsPlugin, multi: true}),
   new Provider(EVENT_MANAGER_PLUGINS, {useClass: HammerGesturesPlugin, multi: true}),
+  new Provider(HAMMER_GESTURE_CONFIG, {useClass: HammerGestureConfig}),
   new Provider(DomRootRenderer, {useClass: DomRootRenderer_}),
   new Provider(RootRenderer, {useExisting: DomRootRenderer}),
   new Provider(SharedStylesHost, {useExisting: DomSharedStylesHost}),
@@ -87,6 +94,9 @@ export const BROWSER_APP_COMMON_PROVIDERS: Array<any /*Type | Provider | any[]*/
   EventManager,
   ELEMENT_PROBE_PROVIDERS
 ]);
+
+export const CACHED_TEMPLATE_PROVIDER: Array<any /*Type | Provider | any[]*/> =
+    CONST_EXPR([new Provider(XHR, {useClass: CachedXHR})]);
 
 export function initDomAdapter() {
   BrowserDomAdapter.makeCurrent();

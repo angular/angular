@@ -16,7 +16,7 @@ import {
 } from 'angular2/testing_internal';
 
 import {provide, Component, Injector, Inject} from 'angular2/core';
-import {PromiseWrapper} from 'angular2/src/facade/async';
+import {PromiseWrapper, TimerWrapper} from 'angular2/src/facade/async';
 
 import {Router, RouterOutlet, RouterLink, RouteParams, RouteData, Location} from 'angular2/router';
 import {
@@ -213,6 +213,24 @@ export function main() {
              .then((_) => {
                fixture.detectChanges();
                expect(fixture.debugElement.nativeElement).toHaveText('');
+               async.done();
+             });
+       }));
+
+    it('should fire an event for each activated component',
+       inject([AsyncTestCompleter], (async) => {
+         compile(tcb, '<router-outlet (activate)="activatedCmp = $event"></router-outlet>')
+             .then((rtc) => {fixture = rtc})
+             .then((_) => rtr.config([new Route({path: '/test', component: HelloCmp})]))
+             .then((_) => rtr.navigateByUrl('/test'))
+             .then((_) => {
+               // Note: need a timeout so that all promises are flushed
+               var completer = PromiseWrapper.completer();
+               TimerWrapper.setTimeout(() => { completer.resolve(null); }, 0);
+               return completer.promise;
+             })
+             .then((_) => {
+               expect(fixture.componentInstance.activatedCmp).toBeAnInstanceOf(HelloCmp);
                async.done();
              });
        }));

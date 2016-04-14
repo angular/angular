@@ -44,18 +44,18 @@ class TypedefWalker extends RuleWalker {
   private handleCallSignature(node: ts.SignatureDeclaration) {
     // set accessors can't have a return type.
     if (node.kind !== ts.SyntaxKind.SetAccessor) {
-      this.checkTypeAnnotation(node.type, node.name);
+      this.checkTypeAnnotation(node.type, node.name, node.getStart());
     }
   }
 
-  private checkTypeAnnotation(typeAnnotation: ts.TypeNode, name?: ts.Node) {
+  private checkTypeAnnotation(typeAnnotation: ts.TypeNode, name: ts.Node, start: number) {
     if (typeAnnotation == null) {
       let ns = "<name missing>";
       if (name != null && name.kind === ts.SyntaxKind.Identifier) {
         ns = (<ts.Identifier>name).text;
       }
       if (ns.charAt(0) === '_') return;
-      let failure = this.createFailure(null, 1, "expected " + ns + " to have a return type");
+      let failure = this.createFailure(start, 1, "expected " + ns + " to have a return type");
       this.addFailure(failure);
     }
   }

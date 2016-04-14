@@ -4,6 +4,7 @@ import {
   ElementRef,
   EventEmitter,
   Inject,
+  OnInit,
   OnChanges,
   SimpleChange,
   Type
@@ -53,6 +54,7 @@ export class UpgradeNg1ComponentAdapterBuilder {
                       self.outputs, self.propertyOutputs, self.checkProperties, self.propertyMap);
                 }
               ],
+              ngOnInit: function() { /* needs to be here for ng2 to properly detect it */ },
               ngOnChanges: function() { /* needs to be here for ng2 to properly detect it */ },
               ngDoCheck: function() { /* needs to be here for ng2 to properly detect it */ }
             });
@@ -106,6 +108,8 @@ export class UpgradeNg1ComponentAdapterBuilder {
               this.propertyMap[outputName] = localName;
             // don't break; let it fall through to '@'
             case '@':
+            // handle the '<' binding of angular 1.5 components
+            case '<':
               this.inputs.push(inputName);
               this.inputsRename.push(inputNameRename);
               this.propertyMap[inputName] = localName;
@@ -177,27 +181,24 @@ export class UpgradeNg1ComponentAdapterBuilder {
   }
 }
 
-class UpgradeNg1ComponentAdapter implements OnChanges, DoCheck {
+class UpgradeNg1ComponentAdapter implements OnInit, OnChanges, DoCheck {
   destinationObj: any = null;
   checkLastValues: any[] = [];
+  componentScope: angular.IScope;
+  element: Element;
 
-  constructor(linkFn: angular.ILinkFn, scope: angular.IScope, private directive: angular.IDirective,
-              elementRef: ElementRef, $controller: angular.IControllerService,
-              private inputs: string[], private outputs: string[], private propOuts: string[],
+  constructor(private linkFn: angular.ILinkFn, scope: angular.IScope,
+              private directive: angular.IDirective, elementRef: ElementRef,
+              $controller: angular.IControllerService, private inputs: string[],
+              private outputs: string[], private propOuts: string[],
               private checkProperties: string[], private propertyMap: {[key: string]: string}) {
-    var element: Element = elementRef.nativeElement;
-    var childNodes: Node[] = [];
-    var childNode;
-    while (childNode = element.firstChild) {
-      element.removeChild(childNode);
-      childNodes.push(childNode);
-    }
-    var componentScope = scope.$new(!!directive.scope);
-    var $element = angular.element(element);
+    this.element = elementRef.nativeElement;
+    this.componentScope = scope.$new(!!directive.scope);
+    var $element = angular.element(this.element);
     var controllerType = directive.controller;
     var controller: any = null;
     if (controllerType) {
-      var locals = {$scope: componentScope, $element: $element};
+      var locals = {$scope: this.componentScope, $element: $element};
       controller = $controller(controllerType, locals, null, directive.controllerAs);
       $element.data(controllerKey(directive.name), controller);
     }
@@ -207,16 +208,11 @@ class UpgradeNg1ComponentAdapter implements OnChanges, DoCheck {
       var attrs: angular.IAttributes = NOT_SUPPORTED;
       var transcludeFn: angular.ITranscludeFunction = NOT_SUPPORTED;
       var linkController = this.resolveRequired($element, directive.require);
-      (<angular.IDirectiveLinkFn>directive.link)(componentScope, $element, attrs, linkController,
-                                                 transcludeFn);
+      (<angular.IDirectiveLinkFn>directive.link)(this.componentScope, $element, attrs,
+                                                 linkController, transcludeFn);
     }
-    this.destinationObj = directive.bindToController && controller ? controller : componentScope;
-
-    linkFn(componentScope, (clonedElement: Node[], scope: angular.IScope) => {
-      for (var i = 0, ii = clonedElement.length; i < ii; i++) {
-        element.appendChild(clonedElement[i]);
-      }
-    }, {parentBoundTranscludeFn: (scope, cloneAttach) => { cloneAttach(childNodes); }});
+    this.destinationObj =
+        directive.bindToController && controller ? controller : this.componentScope;
 
     for (var i = 0; i < inputs.length; i++) {
       this[inputs[i]] = null;
@@ -228,6 +224,23 @@ class UpgradeNg1ComponentAdapter implements OnChanges, DoCheck {
     for (var k = 0; k < propOuts.length; k++) {
       this[propOuts[k]] = new EventEmitter();
       this.checkLastValues.push(INITIAL_VALUE);
+    }
+  }
+
+  ngOnInit() {
+    var childNodes: Node[] = [];
+    var childNode;
+    while (childNode = this.element.firstChild) {
+      this.element.removeChild(childNode);
+      childNodes.push(childNode);
+    }
+    this.linkFn(this.componentScope, (clonedElement: Node[], scope: angular.IScope) => {
+      for (var i = 0, ii = clonedElement.length; i < ii; i++) {
+        this.element.appendChild(clonedElement[i]);
+      }
+    }, {parentBoundTranscludeFn: (scope, cloneAttach) => { cloneAttach(childNodes); }});
+    if (this.destinationObj.$onInit) {
+      this.destinationObj.$onInit();
     }
   }
 

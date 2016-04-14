@@ -15,11 +15,7 @@ void initReflector() {
   _ngRef.reflector
     ..registerType(
         MyComponent,
-        new _ngRef.ReflectionInfo(const [
-          const Component(componentServices: const [MyContext]),
-          const View(template: ''),
-          hostViewFactory_MyComponent
-        ], const [
+        new _ngRef.ReflectionInfo(const [hostViewFactory_MyComponent], const [
           const [MyContext]
         ], (MyContext c) => new MyComponent(c)));
   i0.initReflector();

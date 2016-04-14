@@ -4,10 +4,9 @@ import 'dart:async';
 
 import 'package:barback/barback.dart';
 
-import 'package:angular2/src/compiler/source_module.dart';
-import 'package:angular2/src/core/change_detection/interfaces.dart';
+import 'package:angular2/src/compiler/offline_compiler.dart';
+import 'package:angular2/src/compiler/config.dart';
 import 'package:angular2/src/facade/lang.dart';
-import 'package:angular2/src/core/reflection/reflection.dart';
 import 'package:angular2/src/transform/common/asset_reader.dart';
 import 'package:angular2/src/transform/common/logging.dart';
 import 'package:angular2/src/transform/common/model/annotation_model.pb.dart';
@@ -15,18 +14,15 @@ import 'package:angular2/src/transform/common/model/ng_deps_model.pb.dart';
 import 'package:angular2/src/transform/common/names.dart';
 import 'package:angular2/src/transform/common/ng_compiler.dart';
 import 'package:angular2/src/transform/common/zone.dart' as zone;
+import 'package:angular2/i18n.dart';
+import 'package:angular2/src/transform/common/options.dart' show CODEGEN_DEBUG_MODE;
 
-import 'reflection/processor.dart' as reg;
-import 'reflection/reflection_capabilities.dart';
 import 'compile_data_creator.dart';
 
 /// Generates `.template.dart` files to initialize the Angular2 system.
 ///
 /// - Processes the `.ng_meta.json` file represented by `assetId` using
 ///   `createCompileData`.
-/// - Uses the resulting `NgMeta` object to register `getter`s, `setter`s, and
-///   `method`s that would otherwise need to be reflectively accessed with the
-///   `NgDeps` object.
 /// - Passes the resulting `NormalizedComponentWithViewDirectives` instance(s)
 ///   to the `TemplateCompiler` to generate compiled template(s) as a
 ///   `SourceModule`.
@@ -35,33 +31,22 @@ import 'compile_data_creator.dart';
 ///
 /// This method assumes a {@link DomAdapter} has been registered.
 Future<Outputs> processTemplates(AssetReader reader, AssetId assetId,
-    {bool genChangeDetectionDebugInfo: false,
+    {String codegenMode: '',
     bool reflectPropertiesAsAttributes: false,
     List<String> platformDirectives,
     List<String> platformPipes,
+    XmbDeserializationResult translations,
     Map<String, String> resolvedIdentifiers
     }) async {
   var viewDefResults = await createCompileData(
-      reader, assetId, platformDirectives, platformPipes, resolvedIdentifiers);
+      reader, assetId, platformDirectives, platformPipes);
   if (viewDefResults == null) return null;
-  final compileTypeMetadatas = viewDefResults.ngMeta.identifiers.values;
-  if (compileTypeMetadatas.isNotEmpty) {
-    var processor = new reg.Processor();
-    compileTypeMetadatas.forEach(processor.process);
-    if (viewDefResults.ngMeta.ngDeps != null) {
-      viewDefResults.ngMeta.ngDeps.getters
-          .addAll(processor.getterNames.map((e) => e.sanitizedName));
-      viewDefResults.ngMeta.ngDeps.setters
-          .addAll(processor.setterNames.map((e) => e.sanitizedName));
-      viewDefResults.ngMeta.ngDeps.methods
-          .addAll(processor.methodNames.map((e) => e.sanitizedName));
-    }
-  }
   var templateCompiler = zone.templateCompiler;
   if (templateCompiler == null) {
     templateCompiler = createTemplateCompiler(reader,
-        changeDetectionConfig: new ChangeDetectorGenConfig(
-            genChangeDetectionDebugInfo, reflectPropertiesAsAttributes, false));
+        compilerConfig: new CompilerConfig(
+            codegenMode == CODEGEN_DEBUG_MODE, reflectPropertiesAsAttributes, false),
+            translations: translations);
   }
 
   final compileData =
@@ -70,14 +55,9 @@ Future<Outputs> processTemplates(AssetReader reader, AssetId assetId,
     return new Outputs._(viewDefResults.ngMeta.ngDeps, null);
   }
 
-  var savedReflectionCapabilities = reflector.reflectionCapabilities;
-  reflector.reflectionCapabilities = const NullReflectionCapabilities();
-  // Since we need global state to remain consistent here, make sure not to do
-  // any asynchronous operations here.
   final compiledTemplates = logElapsedSync(() {
-    return templateCompiler.compileTemplatesCodeGen(compileData);
-  }, operationName: 'compileTemplatesCodegen', assetId: assetId);
-  reflector.reflectionCapabilities = savedReflectionCapabilities;
+    return templateCompiler.compileTemplates(compileData);
+  }, operationName: 'compileTemplates', assetId: assetId);
 
   if (compiledTemplates != null) {
     // We successfully compiled templates!
