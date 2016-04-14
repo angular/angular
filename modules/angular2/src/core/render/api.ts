@@ -16,7 +16,7 @@ export abstract class RenderDebugInfo {
 }
 
 export abstract class Renderer {
-  abstract selectRootElement(selector: string, debugInfo: RenderDebugInfo): any;
+  abstract selectRootElement(selectorOrNode: string | any, debugInfo: RenderDebugInfo): any;
 
   abstract createElement(parentElement: any, name: string, debugInfo: RenderDebugInfo): any;
 

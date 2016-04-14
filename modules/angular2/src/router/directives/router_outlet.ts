@@ -118,7 +118,7 @@ export class RouterOutlet implements OnDestroy {
     }
     return next.then((_) => {
       if (isPresent(this._componentRef)) {
-        var onDispose = this._componentRef.then((ref: ComponentRef) => ref.dispose());
+        var onDispose = this._componentRef.then((ref: ComponentRef) => ref.destroy());
         this._componentRef = null;
         return onDispose;
       }

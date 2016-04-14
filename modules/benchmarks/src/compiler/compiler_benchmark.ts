@@ -40,7 +40,7 @@ export function main() {
   BrowserDomAdapter.makeCurrent();
   bootstrap(CompilerAppComponent, _createBindings())
       .then((ref) => {
-        var app = ref.hostComponent;
+        var app = ref.instance;
         bindAction('#compileNoBindings',
                    measureWrapper(() => app.compileNoBindings(), 'No Bindings'));
         bindAction('#compileWithBindings',
@@ -94,12 +94,12 @@ class CompilerAppComponent {
   constructor(private _compiler: Compiler) {}
   compileNoBindings() {
     this._compiler.clearCache();
-    return this._compiler.compileInHost(BenchmarkComponentNoBindings);
+    return this._compiler.compileComponent(BenchmarkComponentNoBindings);
   }
 
   compileWithBindings() {
     this._compiler.clearCache();
-    return this._compiler.compileInHost(BenchmarkComponentWithBindings);
+    return this._compiler.compileComponent(BenchmarkComponentWithBindings);
   }
 }
 

@@ -90,7 +90,7 @@ export class ComponentFixture_ extends ComponentFixture {
 
   checkNoChanges(): void { this._componentParentView.detectChanges(true); }
 
-  destroy(): void { this._componentRef.dispose(); }
+  destroy(): void { this._componentRef.destroy(); }
 }
 
 var _nextRootElementId = 0;
@@ -262,9 +262,8 @@ export class TestComponentBuilder {
     DOM.appendChild(doc.body, rootEl);
 
 
-    var promise: Promise<ComponentRef> =
-        this._injector.get(DynamicComponentLoader)
-            .loadAsRoot(rootComponentType, `#${rootElId}`, this._injector);
+    var promise: Promise<ComponentRef> = this._injector.get(DynamicComponentLoader)
+                                             .loadAsRoot(rootComponentType, rootEl, this._injector);
     return promise.then((componentRef) => { return new ComponentFixture_(componentRef); });
   }
 

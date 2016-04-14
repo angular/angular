@@ -95,10 +95,10 @@ export class WebWorkerRenderer implements Renderer, RenderStoreObject {
     this._rootRenderer.runOnService(fnName, fnArgsWithRenderer);
   }
 
-  selectRootElement(selector: string, debugInfo: RenderDebugInfo): any {
+  selectRootElement(selectorOrNode: string, debugInfo: RenderDebugInfo): any {
     var node = this._rootRenderer.allocateNode();
     this._runOnService('selectRootElement',
-                       [new FnArg(selector, null), new FnArg(node, RenderStoreObject)]);
+                       [new FnArg(selectorOrNode, null), new FnArg(node, RenderStoreObject)]);
     return node;
   }
 

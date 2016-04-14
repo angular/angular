@@ -18,10 +18,8 @@ import {
 import {PromiseWrapper, PromiseCompleter, ObservableWrapper} from 'angular2/src/facade/async';
 import {ListWrapper} from 'angular2/src/facade/collection';
 import {TestabilityRegistry, Testability} from 'angular2/src/core/testability/testability';
-import {
-  ComponentRef,
-  DynamicComponentLoader
-} from 'angular2/src/core/linker/dynamic_component_loader';
+import {DynamicComponentLoader} from 'angular2/src/core/linker/dynamic_component_loader';
+import {ComponentRef} from 'angular2/src/core/linker/component_factory';
 import {
   BaseException,
   WrappedException,
@@ -498,7 +496,7 @@ export class ApplicationRef_ extends ApplicationRef {
 
   dispose(): void {
     // TODO(alxhub): Dispose of the NgZone.
-    ListWrapper.clone(this._rootComponents).forEach((ref) => ref.dispose());
+    ListWrapper.clone(this._rootComponents).forEach((ref) => ref.destroy());
     this._disposeListeners.forEach((dispose) => dispose());
     this._platform._applicationDisposed(this);
   }

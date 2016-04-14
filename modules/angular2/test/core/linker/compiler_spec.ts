@@ -17,25 +17,24 @@ import {provide} from 'angular2/core';
 import {Compiler} from 'angular2/src/core/linker/compiler';
 import {reflector, ReflectionInfo} from 'angular2/src/core/reflection/reflection';
 import {Compiler_} from "angular2/src/core/linker/compiler";
-import {HostViewFactory} from 'angular2/src/core/linker/view';
-import {HostViewFactoryRef_} from 'angular2/src/core/linker/view_ref';
+import {ComponentFactory} from 'angular2/src/core/linker/component_factory';
 
 export function main() {
   describe('Compiler', () => {
-    var someHostViewFactory;
+    var someCompFactory;
 
     beforeEachProviders(() => [provide(Compiler, {useClass: Compiler_})]);
 
     beforeEach(inject([Compiler], (_compiler) => {
-      someHostViewFactory = new HostViewFactory(null, null);
-      reflector.registerType(SomeComponent, new ReflectionInfo([someHostViewFactory]));
+      someCompFactory = new ComponentFactory(null, null, null);
+      reflector.registerType(SomeComponent, new ReflectionInfo([someCompFactory]));
     }));
 
     it('should read the template from an annotation',
        inject([AsyncTestCompleter, Compiler], (async, compiler: Compiler) => {
-         compiler.compileInHost(SomeComponent)
-             .then((hostViewFactoryRef: HostViewFactoryRef_) => {
-               expect(hostViewFactoryRef.internalHostViewFactory).toBe(someHostViewFactory);
+         compiler.compileComponent(SomeComponent)
+             .then((compFactory: ComponentFactory) => {
+               expect(compFactory).toBe(someCompFactory);
                async.done();
                return null;
              });

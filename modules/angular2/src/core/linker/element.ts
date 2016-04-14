@@ -81,7 +81,7 @@ export class AppElement {
     if (isPresent(refRenderNode)) {
       view.renderer.attachViewAfter(refRenderNode, view.flatRootNodes);
     }
-    this.parentView.addRenderContentChild(view);
+    view.addToContentChildren(this);
   }
 
   detachView(viewIndex: number): AppView<any> {
@@ -92,7 +92,7 @@ export class AppElement {
 
     view.renderer.detachView(view.flatRootNodes);
 
-    view.renderParent.removeContentChild(view);
+    view.removeFromContentChildren(this);
     return view;
   }
 }

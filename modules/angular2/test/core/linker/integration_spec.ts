@@ -1951,8 +1951,8 @@ class DynamicViewport {
     myService.greeting = 'dynamic greet';
 
     var bindings = Injector.resolve([provide(MyService, {useValue: myService})]);
-    this.done = compiler.compileInHost(ChildCompUsingService)
-                    .then((hostPv) => {vc.createHostView(hostPv, 0, bindings)});
+    this.done = compiler.compileComponent(ChildCompUsingService)
+                    .then((compFactory) => {vc.createComponent(compFactory, 0, bindings)});
   }
 }
 

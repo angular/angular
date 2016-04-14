@@ -25,8 +25,8 @@ export class DebugDomRootRenderer implements RootRenderer {
 export class DebugDomRenderer implements Renderer {
   constructor(private _delegate: Renderer) {}
 
-  selectRootElement(selector: string, debugInfo: RenderDebugInfo): any {
-    var nativeEl = this._delegate.selectRootElement(selector, debugInfo);
+  selectRootElement(selectorOrNode: string | any, debugInfo: RenderDebugInfo): any {
+    var nativeEl = this._delegate.selectRootElement(selectorOrNode, debugInfo);
     var debugEl = new DebugElement(nativeEl, null, debugInfo);
     indexDebugNode(debugEl);
     return nativeEl;

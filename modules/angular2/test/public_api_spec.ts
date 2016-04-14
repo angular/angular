@@ -188,7 +188,7 @@ var NG_CORE = [
   'HostListener',
   'HostListenerMetadata',
   'HostMetadata',
-  'HostViewFactoryRef',
+  'ComponentFactory',
   'Inject',
   'InjectMetadata',
   'Injectable',

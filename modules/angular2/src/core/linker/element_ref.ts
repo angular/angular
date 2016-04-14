@@ -1,5 +1,6 @@
 import {unimplemented} from 'angular2/src/facade/exceptions';
 import {AppElement} from './element';
+import {Injector} from 'angular2/src/core/di/injector';
 
 /**
  * Represents a location in a View that has an injection, change-detection and render context
@@ -32,6 +33,16 @@ export abstract class ElementRef {
    * </div>
    */
   get nativeElement(): any { return unimplemented(); }
+  /**
+   * The injector at this element.
+   */
+  get injector(): Injector { return unimplemented(); }
+
+  /**
+   * The parent injector of the element.
+   * Used for creating embedded views and host views.
+   */
+  get parentInjector(): Injector { return <Injector>unimplemented(); }
 }
 
 export class ElementRef_ implements ElementRef {
@@ -40,4 +51,8 @@ export class ElementRef_ implements ElementRef {
   get internalElement(): AppElement { return this._element; }
 
   get nativeElement() { return this._element.nativeElement; }
+
+  get injector(): Injector { return this._element.injector; }
+
+  get parentInjector(): Injector { return this._element.parentInjector; }
 }

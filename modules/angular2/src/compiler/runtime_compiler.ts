@@ -46,8 +46,7 @@ import {ViewCompiler} from './view_compiler/view_compiler';
 import {TemplateParser} from './template_parser';
 import {DirectiveNormalizer} from './directive_normalizer';
 import {RuntimeMetadataResolver} from './runtime_metadata';
-import {HostViewFactory} from 'angular2/src/core/linker/view';
-import {HostViewFactoryRef, HostViewFactoryRef_} from 'angular2/src/core/linker/view_ref';
+import {ComponentFactory} from 'angular2/src/core/linker/component_factory';
 import {Compiler, Compiler_} from 'angular2/src/core/linker/compiler';
 
 import {CompilerConfig} from './config';
@@ -78,7 +77,7 @@ export class RuntimeCompiler extends Compiler_ {
     super();
   }
 
-  compileInHost(componentType: Type): Promise<HostViewFactoryRef_> {
+  compileComponent(componentType: Type): Promise<ComponentFactory> {
     var compMeta: CompileDirectiveMetadata =
         this._runtimeMetadataResolver.getDirectiveMetadata(componentType);
     var hostCacheKey = this._hostCacheKeys.get(componentType);
@@ -92,8 +91,8 @@ export class RuntimeCompiler extends Compiler_ {
       this._loadAndCompileComponent(hostCacheKey, hostMeta, [compMeta], [], []);
     }
     return this._compiledTemplateDone.get(hostCacheKey)
-        .then((compiledTemplate: CompiledTemplate) => new HostViewFactoryRef_(
-                  new HostViewFactory(compMeta.selector, compiledTemplate.viewFactory)));
+        .then((compiledTemplate: CompiledTemplate) => new ComponentFactory(
+                  compMeta.selector, compiledTemplate.viewFactory, componentType));
   }
 
   clearCache() {

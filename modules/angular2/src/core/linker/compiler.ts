@@ -1,12 +1,9 @@
-import {HostViewFactoryRef} from 'angular2/src/core/linker/view_ref';
-
 import {Injectable} from 'angular2/src/core/di';
 import {Type, isBlank, stringify} from 'angular2/src/facade/lang';
 import {BaseException} from 'angular2/src/facade/exceptions';
 import {PromiseWrapper} from 'angular2/src/facade/async';
 import {reflector} from 'angular2/src/core/reflection/reflection';
-import {HostViewFactory} from 'angular2/src/core/linker/view';
-import {HostViewFactoryRef_} from 'angular2/src/core/linker/view_ref';
+import {ComponentFactory} from './component_factory';
 
 /**
  * Low-level service for compiling {@link Component}s into {@link ProtoViewRef ProtoViews}s, which
@@ -16,24 +13,24 @@ import {HostViewFactoryRef_} from 'angular2/src/core/linker/view_ref';
  * both compiles and instantiates a Component.
  */
 export abstract class Compiler {
-  abstract compileInHost(componentType: Type): Promise<HostViewFactoryRef>;
+  abstract compileComponent(componentType: Type): Promise<ComponentFactory>;
   abstract clearCache();
 }
 
-function isHostViewFactory(type: any): boolean {
-  return type instanceof HostViewFactory;
+function _isComponentFactory(type: any): boolean {
+  return type instanceof ComponentFactory;
 }
 
 @Injectable()
 export class Compiler_ extends Compiler {
-  compileInHost(componentType: Type): Promise<HostViewFactoryRef_> {
+  compileComponent(componentType: Type): Promise<ComponentFactory> {
     var metadatas = reflector.annotations(componentType);
-    var hostViewFactory = metadatas.find(isHostViewFactory);
+    var componentFactory = metadatas.find(_isComponentFactory);
 
-    if (isBlank(hostViewFactory)) {
+    if (isBlank(componentFactory)) {
       throw new BaseException(`No precompiled component ${stringify(componentType)} found`);
     }
-    return PromiseWrapper.resolve(new HostViewFactoryRef_(hostViewFactory));
+    return PromiseWrapper.resolve(componentFactory);
   }
 
   clearCache() {}
