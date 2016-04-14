@@ -8,12 +8,13 @@ import {
   HtmlCommentAst,
   htmlVisitAll
 } from 'angular2/src/compiler/html_ast';
-import {isPresent, isBlank} from 'angular2/src/facade/lang';
+import {isPresent, isBlank, StringWrapper} from 'angular2/src/facade/lang';
 import {Message} from './message';
 import {Parser} from 'angular2/src/compiler/expression_parser/parser';
 
 export const I18N_ATTR = "i18n";
 export const I18N_ATTR_PREFIX = "i18n-";
+var CUSTOM_PH_EXP = /\/\/[\s\S]*i18n[\s\S]*\([\s\S]*ph[\s\S]*=[\s\S]*"([\s\S]*?)"[\s\S]*\)/g;
 
 /**
  * An i18n error.
@@ -113,12 +114,15 @@ export function removeInterpolation(value: string, source: ParseSourceSpan,
                                     parser: Parser): string {
   try {
     let parsed = parser.splitInterpolation(value, source.toString());
+    let usedNames = new Map<string, number>();
     if (isPresent(parsed)) {
       let res = "";
       for (let i = 0; i < parsed.strings.length; ++i) {
         res += parsed.strings[i];
         if (i != parsed.strings.length - 1) {
-          res += `<ph name="${i}"/>`;
+          let customPhName = getPhNameFromBinding(parsed.expressions[i], i);
+          customPhName = dedupePhName(usedNames, customPhName);
+          res += `<ph name="${customPhName}"/>`;
         }
       }
       return res;
@@ -127,6 +131,22 @@ export function removeInterpolation(value: string, source: ParseSourceSpan,
     }
   } catch (e) {
     return value;
+  }
+}
+
+export function getPhNameFromBinding(input: string, index: number): string {
+  let customPhMatch = StringWrapper.split(input, CUSTOM_PH_EXP);
+  return customPhMatch.length > 1 ? customPhMatch[1] : `${index}`;
+}
+
+export function dedupePhName(usedNames: Map<string, number>, name: string): string {
+  let duplicateNameCount = usedNames.get(name);
+  if (isPresent(duplicateNameCount)) {
+    usedNames.set(name, duplicateNameCount + 1);
+    return `${name}_${duplicateNameCount}`;
+  } else {
+    usedNames.set(name, 1);
+    return name;
   }
 }
 
