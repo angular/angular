@@ -114,7 +114,7 @@ void allTests() {
     expect(ngDeps).toBeNotNull();
     expect(ngDeps.reflectables.first.annotations)
         .toContain(new AnnotationModel()
-          ..name = 'hostViewFactory_FooComponent'
+          ..name = 'FooComponentNgFactory'
           ..isConstObject = true);
     expect(_generatedCode(outputs))
       ..toContain('$CONTEXT_ACCESSOR.greeting')
@@ -132,7 +132,7 @@ void allTests() {
     expect(ngDeps).toBeNotNull();
     expect(ngDeps.reflectables.first.annotations)
         .toContain(new AnnotationModel()
-          ..name = 'hostViewFactory_FooComponent'
+          ..name = 'FooComponentNgFactory'
           ..isConstObject = true);
     expect(_generatedCode(outputs))..toContain('$CONTEXT_ACCESSOR.action()');
   });
@@ -158,7 +158,7 @@ void allTests() {
     expect(ngDeps).toBeNotNull();
     expect(ngDeps.reflectables.first.annotations)
         .toContain(new AnnotationModel()
-          ..name = 'hostViewFactory_FooComponent'
+          ..name = 'FooComponentNgFactory'
           ..isConstObject = true);
 
     expect(_generatedCode(outputs))
@@ -188,7 +188,7 @@ void allTests() {
     expect(ngDeps).toBeNotNull();
     expect(ngDeps.reflectables.first.annotations)
         .toContain(new AnnotationModel()
-          ..name = 'hostViewFactory_FooComponent'
+          ..name = 'FooComponentNgFactory'
           ..isConstObject = true);
 
     expect(_generatedCode(outputs))
@@ -216,7 +216,7 @@ void allTests() {
     expect(ngDeps).toBeNotNull();
     expect(ngDeps.reflectables.first.annotations)
         .toContain(new AnnotationModel()
-          ..name = 'hostViewFactory_FooComponent'
+          ..name = 'FooComponentNgFactory'
           ..isConstObject = true);
 
     expect(_generatedCode(outputs))

@@ -24,7 +24,7 @@ import {provide, Inject, Injector, PLATFORM_INITIALIZER, APP_INITIALIZER} from '
 import {disposePlatform} from 'angular2/src/core/application_ref';
 import {ExceptionHandler, BaseException} from 'angular2/src/facade/exceptions';
 import {Testability, TestabilityRegistry} from 'angular2/src/core/testability/testability';
-import {ComponentRef_, ComponentRef} from "angular2/src/core/linker/dynamic_component_loader";
+import {ComponentRef} from "angular2/src/core/linker/component_factory";
 
 @Component({selector: 'hello-app', template: '{{greeting}} world!'})
 class HelloRootCmp {
@@ -194,7 +194,7 @@ export function main() {
        inject([AsyncTestCompleter], (async) => {
          bootstrap(HelloOnDestroyTickCmp, testProviders)
              .then((ref) => {
-               expect(() => ref.dispose()).not.toThrow();
+               expect(() => ref.destroy()).not.toThrow();
                async.done();
              });
        }));
@@ -204,7 +204,7 @@ export function main() {
          var app = platform(BROWSER_PROVIDERS).application([BROWSER_APP_PROVIDERS, testProviders]);
          app.bootstrap(HelloRootCmp)
              .then((ref) => {
-               ref.dispose();
+               ref.destroy();
                expect(() => app.tick()).not.toThrow();
                async.done();
              });
@@ -216,7 +216,7 @@ export function main() {
              HelloRootCmp3, [testProviders, provide("appBinding", {useValue: "BoundValue"})]);
 
          refPromise.then((ref) => {
-           expect(ref.hostComponent.appBinding).toEqual("BoundValue");
+           expect(ref.instance.appBinding).toEqual("BoundValue");
            async.done();
          });
        }));
@@ -226,7 +226,7 @@ export function main() {
          var refPromise = bootstrap(HelloRootCmp4, testProviders);
 
          refPromise.then((ref) => {
-           expect(ref.hostComponent.appRef).toBe((<ComponentRef_>ref).injector.get(ApplicationRef));
+           expect(ref.instance.appRef).toBe(ref.injector.get(ApplicationRef));
            async.done();
          });
        }));

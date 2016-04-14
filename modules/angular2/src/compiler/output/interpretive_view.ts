@@ -1,5 +1,6 @@
 import {isPresent} from 'angular2/src/facade/lang';
 import {AppView, DebugAppView} from 'angular2/src/core/linker/view';
+import {AppElement} from 'angular2/src/core/linker/element';
 import {BaseException} from 'angular2/src/facade/exceptions';
 import {InstanceFactory, DynamicInstance} from './output_interpreter';
 
@@ -25,12 +26,12 @@ class _InterpretiveAppView extends DebugAppView<any> implements DynamicInstance 
     super(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8], args[9],
           args[10]);
   }
-  createInternal(rootSelector: string): void {
+  createInternal(rootSelector: string | any): AppElement {
     var m = this.methods.get('createInternal');
     if (isPresent(m)) {
-      m(rootSelector);
+      return m(rootSelector);
     } else {
-      super.createInternal(rootSelector);
+      return super.createInternal(rootSelector);
     }
   }
   injectorGetInternal(token: any, nodeIndex: number, notFoundResult: any): any {

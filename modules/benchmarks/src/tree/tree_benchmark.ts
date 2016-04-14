@@ -1,6 +1,5 @@
 import {bootstrap} from 'angular2/platform/browser';
 import {
-  Compiler,
   Component,
   Directive,
   ViewContainerRef,
@@ -96,7 +95,7 @@ export function main() {
           var injector = ref.injector;
           appRef = injector.get(ApplicationRef);
 
-          app = ref.hostComponent;
+          app = ref.instance;
           bindAction('#ng2DestroyDom', ng2DestroyDom);
           bindAction('#ng2CreateDom', ng2CreateDom);
           bindAction('#ng2UpdateDomProfile', profile(ng2CreateDom, noop, 'ng2-update'));

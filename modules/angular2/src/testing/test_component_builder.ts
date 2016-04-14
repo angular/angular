@@ -6,6 +6,7 @@ import {
   ViewMetadata,
   ElementRef,
   EmbeddedViewRef,
+  ChangeDetectorRef,
   provide
 } from 'angular2/core';
 import {DirectiveResolver, ViewResolver} from 'angular2/compiler';
@@ -13,9 +14,6 @@ import {DirectiveResolver, ViewResolver} from 'angular2/compiler';
 import {Type, isPresent, isBlank} from 'angular2/src/facade/lang';
 import {PromiseWrapper} from 'angular2/src/facade/async';
 import {ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
-
-import {ViewRef_} from 'angular2/src/core/linker/view_ref';
-import {AppView} from 'angular2/src/core/linker/view';
 
 import {el} from './utils';
 
@@ -29,7 +27,7 @@ import {tick} from './fake_async';
 /**
  * Fixture for debugging and testing a component.
  */
-export abstract class ComponentFixture {
+export class ComponentFixture {
   /**
    * The DebugElement associated with the root element of this component.
    */
@@ -51,46 +49,40 @@ export abstract class ComponentFixture {
   elementRef: ElementRef;
 
   /**
-   * Trigger a change detection cycle for the component.
+   * The ComponentRef for the component
    */
-  abstract detectChanges(checkNoChanges?: boolean): void;
-
-  abstract checkNoChanges(): void;
+  componentRef: ComponentRef;
 
   /**
-   * Trigger component destruction.
+   * The ChangeDetectorRef for the component
    */
-  abstract destroy(): void;
-}
-
-
-export class ComponentFixture_ extends ComponentFixture {
-  /** @internal */
-  _componentRef: ComponentRef;
-  /** @internal */
-  _componentParentView: AppView<any>;
+  changeDetectorRef: ChangeDetectorRef;
 
   constructor(componentRef: ComponentRef) {
-    super();
-    this._componentParentView = (<ViewRef_>componentRef.hostView).internalView;
-    var hostAppElement = this._componentParentView.getHostViewElement();
-    this.elementRef = hostAppElement.ref;
-    this.debugElement = <DebugElement>getDebugNode(hostAppElement.nativeElement);
-    this.componentInstance = hostAppElement.component;
-    this.nativeElement = hostAppElement.nativeElement;
-    this._componentRef = componentRef;
+    this.changeDetectorRef = componentRef.changeDetectorRef;
+    this.elementRef = componentRef.location;
+    this.debugElement = <DebugElement>getDebugNode(this.elementRef.nativeElement);
+    this.componentInstance = componentRef.instance;
+    this.nativeElement = this.elementRef.nativeElement;
+    this.componentRef = componentRef;
   }
 
+  /**
+   * Trigger a change detection cycle for the component.
+   */
   detectChanges(checkNoChanges: boolean = true): void {
-    this._componentParentView.detectChanges(false);
+    this.changeDetectorRef.detectChanges();
     if (checkNoChanges) {
       this.checkNoChanges();
     }
   }
 
-  checkNoChanges(): void { this._componentParentView.detectChanges(true); }
+  checkNoChanges(): void { this.changeDetectorRef.checkNoChanges(); }
 
-  destroy(): void { this._componentRef.dispose(); }
+  /**
+   * Trigger component destruction.
+   */
+  destroy(): void { this.componentRef.destroy(); }
 }
 
 var _nextRootElementId = 0;
@@ -261,11 +253,10 @@ export class TestComponentBuilder {
     }
     DOM.appendChild(doc.body, rootEl);
 
-
     var promise: Promise<ComponentRef> =
         this._injector.get(DynamicComponentLoader)
             .loadAsRoot(rootComponentType, `#${rootElId}`, this._injector);
-    return promise.then((componentRef) => { return new ComponentFixture_(componentRef); });
+    return promise.then((componentRef) => { return new ComponentFixture(componentRef); });
   }
 
   createFakeAsync(rootComponentType: Type): ComponentFixture {
