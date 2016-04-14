@@ -22,6 +22,11 @@
 * **transformers:** special case Profiler ([83b8f59](https://github.com/angular/angular/commit/83b8f59))
 * **typescript:** update to 1.9 nightly. ([3412aba](https://github.com/angular/angular/commit/3412aba)), closes [#8003](https://github.com/angular/angular/issues/8003)
 
+### BREAKING CHANGES
+
+* In Dart files, `import 'package:angular2/bootstrap.dart'` no longer works.
+  Instead, use `import 'package:angular2/platform/browser.dart'`.
+
 ### Reverts
 
 * Revert "chore(format): update to latest formatter" ([60727c4](https://github.com/angular/angular/commit/60727c4))
