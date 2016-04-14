@@ -22,7 +22,7 @@ import {
   PerfLogFeatures,
   bind,
   provide,
-  Injector,
+  ReflectiveInjector,
   Options
 } from 'benchpress/common';
 
@@ -72,7 +72,7 @@ export function main() {
     if (isPresent(requestCount)) {
       bindings.push(bind(Options.REQUEST_COUNT).toValue(requestCount));
     }
-    return Injector.resolveAndCreate(bindings).get(PerflogMetric);
+    return ReflectiveInjector.resolveAndCreate(bindings).get(PerflogMetric);
   }
 
   describe('perflog metric', () => {

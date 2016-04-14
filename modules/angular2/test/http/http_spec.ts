@@ -10,7 +10,7 @@ import {
   it,
   xit
 } from 'angular2/testing_internal';
-import {Injector, provide} from 'angular2/core';
+import {Injector, provide, ReflectiveInjector} from 'angular2/core';
 import {MockBackend, MockConnection} from 'angular2/src/http/backends/mock_backend';
 import {
   BaseRequestOptions,
@@ -35,15 +35,15 @@ export function main() {
   describe('injectables', () => {
     var url = 'http://foo.bar';
     var http: Http;
-    var parentInjector: Injector;
-    var childInjector: Injector;
+    var parentInjector: ReflectiveInjector;
+    var childInjector: ReflectiveInjector;
     var jsonpBackend: MockBackend;
     var xhrBackend: MockBackend;
     var jsonp: Jsonp;
 
     it('should allow using jsonpInjectables and httpInjectables in same injector',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-         parentInjector = Injector.resolveAndCreate([
+         parentInjector = ReflectiveInjector.resolveAndCreate([
            provide(XHRBackend, {useClass: MockBackend}),
            provide(JSONPBackend, {useClass: MockBackend})
          ]);
@@ -94,7 +94,7 @@ export function main() {
     var baseResponse: Response;
     var jsonp: Jsonp;
     beforeEach(() => {
-      injector = Injector.resolveAndCreate([
+      injector = ReflectiveInjector.resolveAndCreate([
         BaseRequestOptions,
         MockBackend,
         provide(

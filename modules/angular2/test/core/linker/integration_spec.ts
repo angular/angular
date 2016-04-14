@@ -54,7 +54,8 @@ import {
   Host,
   SkipSelf,
   SkipSelfMetadata,
-  OnDestroy
+  OnDestroy,
+  ReflectiveInjector
 } from 'angular2/core';
 
 import {NgIf, NgFor} from 'angular2/common';
@@ -1409,7 +1410,7 @@ function declareTests(isJit: boolean) {
            PromiseWrapper.catchError(tcb.createAsync(MyComp), (e) => {
              var c = e.context;
              expect(DOM.nodeName(c.componentRenderElement).toUpperCase()).toEqual("DIV");
-             expect(c.injector.getOptional).toBeTruthy();
+             expect((<Injector>c.injector).get).toBeTruthy();
              async.done();
              return null;
            });
@@ -1429,7 +1430,7 @@ function declareTests(isJit: boolean) {
                var c = e.context;
                expect(DOM.nodeName(c.renderNode).toUpperCase()).toEqual("INPUT");
                expect(DOM.nodeName(c.componentRenderElement).toUpperCase()).toEqual("DIV");
-               expect(c.injector.getOptional).toBeTruthy();
+               expect((<Injector>c.injector).get).toBeTruthy();
                expect(c.source).toContain(":0:7");
                expect(c.context).toBe(fixture.debugElement.componentInstance);
                expect(c.locals["local"]).toBeDefined();
@@ -1485,7 +1486,7 @@ function declareTests(isJit: boolean) {
                       var c = e.context;
                       expect(DOM.nodeName(c.renderNode).toUpperCase()).toEqual("SPAN");
                       expect(DOM.nodeName(c.componentRenderElement).toUpperCase()).toEqual("DIV");
-                      expect(c.injector.getOptional).toBeTruthy();
+                      expect((<Injector>c.injector).get).toBeTruthy();
                       expect(c.context).toBe(fixture.debugElement.componentInstance);
                       expect(c.locals["local"]).toBeDefined();
                     }
@@ -1950,9 +1951,10 @@ class DynamicViewport {
     var myService = new MyService();
     myService.greeting = 'dynamic greet';
 
-    var bindings = Injector.resolve([provide(MyService, {useValue: myService})]);
+    var injector = ReflectiveInjector.resolveAndCreate([provide(MyService, {useValue: myService})],
+                                                       vc.injector);
     this.done = compiler.resolveComponent(ChildCompUsingService)
-                    .then((compFactory) => {vc.createComponent(compFactory, 0, bindings)});
+                    .then((componentFactory) => vc.createComponent(componentFactory, 0, injector));
   }
 }
 

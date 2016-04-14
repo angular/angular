@@ -11,7 +11,7 @@ import {
 } from 'angular2/src/facade/lang';
 import {StringMapWrapper} from 'angular2/src/facade/collection';
 import {BaseException} from 'angular2/src/facade/exceptions';
-import {NoAnnotationError} from 'angular2/src/core/di/exceptions';
+import {NoAnnotationError} from 'angular2/src/core/di/reflective_exceptions';
 import * as cpl from './compile_metadata';
 import * as md from 'angular2/src/core/metadata/directives';
 import * as dimd from 'angular2/src/core/metadata/di';
@@ -27,7 +27,11 @@ import {PLATFORM_DIRECTIVES, PLATFORM_PIPES} from 'angular2/src/core/platform_di
 import {MODULE_SUFFIX} from './util';
 import {assertArrayOfStrings} from './assertions';
 import {getUrlScheme} from 'angular2/src/compiler/url_resolver';
-import {Provider, constructDependencies, Dependency} from 'angular2/src/core/di/provider';
+import {Provider} from 'angular2/src/core/di/provider';
+import {
+  constructDependencies,
+  ReflectiveDependency
+} from 'angular2/src/core/di/reflective_provider';
 import {
   OptionalMetadata,
   SelfMetadata,
@@ -185,7 +189,7 @@ export class RuntimeMetadataResolver {
 
   getDependenciesMetadata(typeOrFunc: Type | Function,
                           dependencies: any[]): cpl.CompileDiDependencyMetadata[] {
-    var deps: Dependency[];
+    var deps: ReflectiveDependency[];
     try {
       deps = constructDependencies(typeOrFunc, dependencies);
     } catch (e) {
