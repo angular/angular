@@ -13,7 +13,7 @@ void initReflector() {
   _ngRef.reflector
     ..registerType(
         MyComponent,
-        new _ngRef.ReflectionInfo(const [MyComponentNg2Factory], const [],
-            () => new MyComponent()));
+        new _ngRef.ReflectionInfo(
+            const [MyComponentNg2Factory], const [], () => new MyComponent()));
   i0.initReflector();
 }

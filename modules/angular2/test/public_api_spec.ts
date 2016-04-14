@@ -261,7 +261,8 @@ var NG_CORE = [
   'provide',
   'createNgZone',
   'forwardRef:js',
-  'platform',
+  'basicBootstrap',
+  'basicLoadAndBootstrap',
   'resolveForwardRef:js',
   'PLATFORM_COMMON_PROVIDERS',
   'PLATFORM_INITIALIZER',
@@ -307,6 +308,7 @@ var NG_PLATFORM_BROWSER = [
   'ELEMENT_PROBE_PROVIDERS_PROD_MODE',
   'Title',
   'bootstrap',
+  'browserPlatform',
   'disableDebugTools',
   'enableDebugTools',
   'inspectNativeElement'

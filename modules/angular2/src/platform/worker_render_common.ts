@@ -5,7 +5,6 @@ import {
   PLATFORM_DIRECTIVES,
   PLATFORM_PIPES,
   ComponentRef,
-  platform,
   ExceptionHandler,
   Reflector,
   reflector,
@@ -101,7 +100,7 @@ export function initializeGenericWorkerRenderer(injector: Injector) {
   let zone = injector.get(NgZone);
   bus.attachToZone(zone);
 
-  zone.run(() => {
+  zone.runGuarded(() => {
     WORKER_RENDER_MESSAGING_PROVIDERS.forEach((token) => { injector.get(token).start(); });
   });
 }

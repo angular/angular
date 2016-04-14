@@ -1951,9 +1951,10 @@ class DynamicViewport {
     var myService = new MyService();
     myService.greeting = 'dynamic greet';
 
-    var bindings = ReflectiveInjector.resolve([provide(MyService, {useValue: myService})]);
+    var injector = ReflectiveInjector.resolveAndCreate([provide(MyService, {useValue: myService})],
+                                                       vc.element.parentInjector);
     this.done = compiler.compileComponent(ChildCompUsingService)
-                    .then((compFactory) => {vc.createComponent(compFactory, 0, bindings)});
+                    .then((compFactory) => {vc.createComponent(compFactory, 0, injector)});
   }
 }
 

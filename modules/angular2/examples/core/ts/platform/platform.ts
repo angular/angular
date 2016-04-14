@@ -1,4 +1,4 @@
-import {Component, platform} from 'angular2/core';
+import {Component, basicLoadAndBootstrap, ReflectiveInjector} from 'angular2/core';
 import {BROWSER_PROVIDERS, BROWSER_APP_PROVIDERS} from 'angular2/platform/browser';
 
 var appProviders: any[] = [];
@@ -8,6 +8,7 @@ var appProviders: any[] = [];
 class MyApp {
 }
 
-var app = platform(BROWSER_PROVIDERS).application([BROWSER_APP_PROVIDERS, appProviders]);
-app.bootstrap(MyApp);
+var platformInjector = ReflectiveInjector.resolveAndCreate(BROWSER_PROVIDERS);
+var appInjector = platformInjector.resolveAndCreateChild([BROWSER_APP_PROVIDERS, appProviders]);
+basicLoadAndBootstrap(appInjector, MyApp);
 // #enddocregion

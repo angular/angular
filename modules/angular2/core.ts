@@ -9,7 +9,13 @@ export * from './src/core/prod_mode';
 export * from './src/core/di';
 export * from './src/facade/facade';
 export {enableProdMode} from 'angular2/src/facade/lang';
-export {platform, createNgZone, PlatformRef, ApplicationRef} from './src/core/application_ref';
+export {
+  basicBootstrap,
+  basicLoadAndBootstrap,
+  createNgZone,
+  PlatformRef,
+  ApplicationRef
+} from './src/core/application_ref';
 export {
   APP_ID,
   APP_COMPONENT,

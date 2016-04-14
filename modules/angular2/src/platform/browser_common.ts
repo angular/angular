@@ -6,7 +6,6 @@ import {
   PLATFORM_DIRECTIVES,
   PLATFORM_PIPES,
   ComponentRef,
-  platform,
   ExceptionHandler,
   Reflector,
   RootRenderer,

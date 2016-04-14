@@ -2,6 +2,7 @@ import {
   Key,
   Injector,
   ResolvedReflectiveProvider,
+  ReflectiveInjector,
   Provider,
   provide,
   Injectable
@@ -194,7 +195,11 @@ export class DynamicComponentLoader_ extends DynamicComponentLoader {
                      projectableNodes: any[][] = null): Promise<ComponentRef> {
     return this._compiler.compileComponent(type).then(componentFactory => {
       var viewContainer = this._viewManager.getViewContainer(location);
-      return viewContainer.createComponent(componentFactory, viewContainer.length, providers,
+      var parentInjector =
+          isPresent(providers) ?
+              ReflectiveInjector.fromResolvedProviders(providers, location.parentInjector) :
+              null;
+      return viewContainer.createComponent(componentFactory, viewContainer.length, parentInjector,
                                            projectableNodes);
     });
   }

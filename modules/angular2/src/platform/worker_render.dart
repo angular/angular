@@ -10,26 +10,23 @@ import 'package:angular2/src/web_workers/shared/isolate_message_bus.dart';
 import 'package:angular2/src/web_workers/shared/message_bus.dart';
 import 'package:angular2/core.dart';
 import 'package:angular2/src/core/di.dart';
-import 'package:angular2/src/core/zone/ng_zone.dart';
 import 'dart:isolate';
 import 'dart:async';
 
 const WORKER_RENDER_APP = WORKER_RENDER_APPLICATION_COMMON;
 
-initIsolate(String scriptUri) {
-  return (NgZone zone) async {
-    var instance = await spawnIsolate(Uri.parse(scriptUri));
+Future<List> initIsolate(String scriptUri) async {
+  var instance = await spawnIsolate(Uri.parse(scriptUri));
 
-    return [
-      WORKER_RENDER_APPLICATION_COMMON,
-      new Provider(WebWorkerInstance, useValue: instance),
-      new Provider(APP_INITIALIZER,
-          useFactory: (injector) => () => initializeGenericWorkerRenderer(injector),
-          multi: true,
-          deps: [Injector]),
-      new Provider(MessageBus, useValue: instance.bus)
-    ];
-  };
+  return [
+    WORKER_RENDER_APPLICATION_COMMON,
+    new Provider(WebWorkerInstance, useValue: instance),
+    new Provider(APP_INITIALIZER,
+        useFactory: (injector) => () => initializeGenericWorkerRenderer(injector),
+        multi: true,
+        deps: [Injector]),
+    new Provider(MessageBus, useValue: instance.bus)
+  ];
 }
 
 /**

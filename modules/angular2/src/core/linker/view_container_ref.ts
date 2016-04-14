@@ -1,8 +1,6 @@
 import {ListWrapper} from 'angular2/src/facade/collection';
 import {unimplemented} from 'angular2/src/facade/exceptions';
 import {Injector} from 'angular2/src/core/di/injector';
-import {ReflectiveInjector} from 'angular2/src/core/di/reflective_injector';
-import {ResolvedReflectiveProvider} from 'angular2/src/core/di/reflective_provider';
 import {isPresent, isBlank} from 'angular2/src/facade/lang';
 import {wtfCreateScope, wtfLeave, WtfScopeFn} from '../profile/profile';
 
@@ -74,13 +72,11 @@ export abstract class ViewContainerRef {
    *
    * If `index` is not specified, the new View will be inserted as the last View in the container.
    *
-   * You can optionally specify `dynamicallyCreatedProviders`, which configure the {@link Injector}
-   * that will be created for the Host View.
+   * You can optionally specifythe {@link Injector} that will be used as parent for the Component.
    *
    * Returns the {@link ComponentRef} of the Host View created for the newly instantiated Component.
    */
-  abstract createComponent(componentFactory: ComponentFactory, index?: number,
-                           dynamicallyCreatedProviders?: ResolvedReflectiveProvider[],
+  abstract createComponent(componentFactory: ComponentFactory, index?: number, injector?: Injector,
                            projectableNodes?: any[][]): ComponentRef;
 
   /**
@@ -136,18 +132,13 @@ export class ViewContainerRef_ implements ViewContainerRef {
   _createComponentInContainerScope: WtfScopeFn =
       wtfCreateScope('ViewContainerRef#createComponent()');
 
-  createComponent(componentFactory: ComponentFactory, index: number = -1,
-                  dynamicallyCreatedProviders: ResolvedReflectiveProvider[] = null,
+  createComponent(componentFactory: ComponentFactory, index: number = -1, injector: Injector = null,
                   projectableNodes: any[][] = null): ComponentRef {
     var s = this._createComponentInContainerScope();
-    var contextEl = this._element;
-    var contextInjector = this._element.parentInjector;
-
-    var childInjector =
-        isPresent(dynamicallyCreatedProviders) && dynamicallyCreatedProviders.length > 0 ?
-            ReflectiveInjector.fromResolvedProviders(dynamicallyCreatedProviders, contextInjector) :
-            contextInjector;
-    var componentRef = componentFactory.create(childInjector, projectableNodes);
+    if (isBlank(injector)) {
+      injector = this.element.parentInjector;
+    }
+    var componentRef = componentFactory.create(injector, projectableNodes);
     this.insert(componentRef.hostView, index);
     return wtfLeave(s, componentRef);
   }

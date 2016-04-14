@@ -5,6 +5,7 @@ import {
   APP_COMPONENT,
   APP_ID_RANDOM_PROVIDER
 } from './application_tokens';
+import {APPLICATION_BASIC_PROVIDERS} from './application_ref';
 import {
   IterableDiffers,
   defaultIterableDiffers,
@@ -25,6 +26,7 @@ var __unused: Type;  // avoid unused import when Type union types are erased
  * application, regardless of the platform it runs onto.
  */
 export const APPLICATION_COMMON_PROVIDERS: Array<Type | Provider | any[]> = CONST_EXPR([
+  APPLICATION_BASIC_PROVIDERS,
   new Provider(Compiler, {useClass: Compiler_}),
   APP_ID_RANDOM_PROVIDER,
   new Provider(AppViewManager, {useClass: AppViewManager_}),
