@@ -96,7 +96,7 @@ function routerFactory($q, $location, $browser, $rootScope, $injector, $routerRo
         controller.$routeConfig.forEach(function (config) {
           var loader = config.loader;
           if (isPresent(loader)) {
-            config = angular.extend({}, config, { loader: () => $injector.invoke(loader) });
+            config = angular.extend({}, config, { loader: function() { return $injector.invoke(loader); } });
           }
           that.config(component, config);
         });
