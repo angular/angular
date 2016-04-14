@@ -14,7 +14,7 @@ import {ListWrapper} from 'angular2/src/facade/collection';
 import {
   Validator,
   RegressionSlopeValidator,
-  Injector,
+  ReflectiveInjector,
   bind,
   provide,
   MeasureValues
@@ -25,11 +25,11 @@ export function main() {
     var validator;
 
     function createValidator({size, metric}) {
-      validator = Injector.resolveAndCreate([
-                            RegressionSlopeValidator.BINDINGS,
-                            bind(RegressionSlopeValidator.METRIC).toValue(metric),
-                            bind(RegressionSlopeValidator.SAMPLE_SIZE).toValue(size)
-                          ])
+      validator = ReflectiveInjector.resolveAndCreate([
+                                      RegressionSlopeValidator.BINDINGS,
+                                      bind(RegressionSlopeValidator.METRIC).toValue(metric),
+                                      bind(RegressionSlopeValidator.SAMPLE_SIZE).toValue(size)
+                                    ])
                       .get(RegressionSlopeValidator);
     }
 

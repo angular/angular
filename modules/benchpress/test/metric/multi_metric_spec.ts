@@ -14,14 +14,14 @@ import {
 import {ListWrapper} from 'angular2/src/facade/collection';
 import {PromiseWrapper} from 'angular2/src/facade/async';
 
-import {Metric, MultiMetric, bind, provide, Injector} from 'benchpress/common';
+import {Metric, MultiMetric, bind, provide, ReflectiveInjector} from 'benchpress/common';
 
 export function main() {
   function createMetric(ids: any[]) {
-    var m = Injector.resolveAndCreate([
-                      ids.map(id => provide(id, {useValue: new MockMetric(id)})),
-                      MultiMetric.createBindings(ids)
-                    ])
+    var m = ReflectiveInjector.resolveAndCreate([
+                                ids.map(id => provide(id, {useValue: new MockMetric(id)})),
+                                MultiMetric.createBindings(ids)
+                              ])
                 .get(MultiMetric);
     return PromiseWrapper.resolve(m);
   }

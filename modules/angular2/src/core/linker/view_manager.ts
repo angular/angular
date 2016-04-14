@@ -1,11 +1,4 @@
-import {
-  Injector,
-  Inject,
-  Provider,
-  Injectable,
-  ResolvedProvider,
-  forwardRef
-} from 'angular2/src/core/di';
+import {Injector, Inject, Provider, Injectable, forwardRef} from 'angular2/src/core/di';
 import {isPresent, isBlank, isArray, Type} from 'angular2/src/facade/lang';
 import {BaseException} from 'angular2/src/facade/exceptions';
 import {ElementRef, ElementRef_} from './element_ref';

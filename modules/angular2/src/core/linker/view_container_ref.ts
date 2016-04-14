@@ -1,7 +1,8 @@
 import {ListWrapper} from 'angular2/src/facade/collection';
 import {unimplemented} from 'angular2/src/facade/exceptions';
-import {Injector, Injector_, ProtoInjector} from 'angular2/src/core/di/injector';
-import {ResolvedProvider} from 'angular2/src/core/di/provider';
+import {Injector} from 'angular2/src/core/di/injector';
+import {ReflectiveInjector} from 'angular2/src/core/di/reflective_injector';
+import {ResolvedReflectiveProvider} from 'angular2/src/core/di/reflective_provider';
 import {isPresent, isBlank} from 'angular2/src/facade/lang';
 import {wtfCreateScope, wtfLeave, WtfScopeFn} from '../profile/profile';
 
@@ -79,7 +80,7 @@ export abstract class ViewContainerRef {
    * Returns the {@link ComponentRef} of the Host View created for the newly instantiated Component.
    */
   abstract createComponent(componentFactory: ComponentFactory, index?: number,
-                           dynamicallyCreatedProviders?: ResolvedProvider[],
+                           dynamicallyCreatedProviders?: ResolvedReflectiveProvider[],
                            projectableNodes?: any[][]): ComponentRef;
 
   /**
@@ -136,7 +137,7 @@ export class ViewContainerRef_ implements ViewContainerRef {
       wtfCreateScope('ViewContainerRef#createComponent()');
 
   createComponent(componentFactory: ComponentFactory, index: number = -1,
-                  dynamicallyCreatedProviders: ResolvedProvider[] = null,
+                  dynamicallyCreatedProviders: ResolvedReflectiveProvider[] = null,
                   projectableNodes: any[][] = null): ComponentRef {
     var s = this._createComponentInContainerScope();
     var contextEl = this._element;
@@ -144,8 +145,7 @@ export class ViewContainerRef_ implements ViewContainerRef {
 
     var childInjector =
         isPresent(dynamicallyCreatedProviders) && dynamicallyCreatedProviders.length > 0 ?
-            new Injector_(ProtoInjector.fromResolvedProviders(dynamicallyCreatedProviders),
-                          contextInjector) :
+            ReflectiveInjector.fromResolvedProviders(dynamicallyCreatedProviders, contextInjector) :
             contextInjector;
     var componentRef = componentFactory.create(childInjector, projectableNodes);
     this.insert(componentRef.hostView, index);
