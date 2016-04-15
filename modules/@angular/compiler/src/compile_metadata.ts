@@ -17,6 +17,8 @@ import {
   Type,
   isString,
   RegExpWrapper,
+  StringWrapper,
+  NumberWrapper,
   isArray
 } from '../src/facade/lang';
 import {unimplemented, BaseException} from '../src/facade/exceptions';
@@ -27,7 +29,6 @@ import {CssSelector} from './selector';
 import {splitAtColon, sanitizeIdentifier} from './util';
 import {getUrlScheme} from './url_resolver';
 
-// group 1: "property" from "[property]"
 // group 2: "event" from "(event)"
 var HOST_REG_EXP = /^(?:(?:\[([^\]]+)\])|(?:\(([^\)]+)\)))$/g;
 
@@ -47,6 +48,155 @@ export abstract class CompileMetadataWithType extends CompileMetadataWithIdentif
 
 export function metadataFromJson(data: {[key: string]: any}): any {
   return _COMPILE_METADATA_FROM_JSON[data['class']](data);
+}
+
+export class CompileAnimationEntryMetadata {
+  static fromJson(data: {[key: string]: any}): CompileAnimationEntryMetadata {
+    var value = data['value'];
+    var defs = _arrayFromJson(value['definitions'], metadataFromJson);
+    return new CompileAnimationEntryMetadata(value['name'], defs);
+  }
+
+  constructor(public name: string = null, public definitions: CompileAnimationStateMetadata[] = null) {}
+
+  toJson(): {[key: string]: any} {
+    return {
+      'class': 'AnimationEntryMetadata',
+      'value': {
+        'name' : this.name,
+        'definitions': _arrayToJson(this.definitions)
+      }
+    };
+  }
+}
+
+export abstract class CompileAnimationStateMetadata {}
+
+export class CompileAnimationStateDeclarationMetadata extends CompileAnimationStateMetadata {
+  static fromJson(data: {[key: string]: any}): CompileAnimationStateDeclarationMetadata {
+    var value = data['value'];
+    var styles = _objFromJson(value['styles'], metadataFromJson);
+    return new CompileAnimationStateDeclarationMetadata(value['stateName'], styles);
+  }
+
+  constructor(public stateName: string, public styles: CompileAnimationStyleMetadata) { super(); }
+
+  toJson(): {[key: string]: any} {
+    return {
+      'class': 'AnimationStateDeclarationMetadata',
+      'value': {
+        'stateName': this.stateName,
+        'styles': this.styles.toJson()
+      }
+    };
+  }
+}
+
+export class CompileAnimationStateTransitionMetadata extends CompileAnimationStateMetadata {
+  static fromJson(data: {[key: string]: any}): CompileAnimationStateTransitionMetadata {
+    var value = data['value'];
+    var animation = _objFromJson(value['animation'], metadataFromJson);
+    return new CompileAnimationStateTransitionMetadata(value['stateChangeExpr'], animation);
+  }
+
+  constructor(public stateChangeExpr: string, public animation: CompileAnimationMetadata) { super(); }
+
+  toJson(): {[key: string]: any} {
+    return {
+      'class': 'AnimationStateTransitionMetadata',
+      'value': {
+        'stateChangeExpr': this.stateChangeExpr,
+        'animation': this.animation.toJson()
+      }
+    };
+  }
+}
+
+export abstract class CompileAnimationMetadata {
+  abstract toJson(): {[key: string]: any};
+}
+
+export class CompileAnimationStyleMetadata extends CompileAnimationMetadata {
+  static fromJson(data: {[key: string]: any}): CompileAnimationStyleMetadata {
+    var value = data['value'];
+    var offsetVal = value['offset'];
+    var offset = isPresent(offsetVal) ? NumberWrapper.parseFloat(offsetVal) : null;
+    var styles = <Array<string|{[key: string]: string | number}>>value['styles'];
+    return new CompileAnimationStyleMetadata(offset, styles);
+  }
+
+  constructor(public offset: number, public styles: Array<string|{[key: string]: string | number}> = null) { super(); }
+
+  toJson(): {[key: string]: any} {
+    return {
+      'class': 'AnimationStyleMetadata',
+      'value': {
+        'offset': this.offset,
+        'styles': this.styles
+      }
+    };
+  }
+}
+
+export class CompileAnimationAnimateMetadata extends CompileAnimationMetadata {
+  static fromJson(data: {[key: string]: any}): CompileAnimationAnimateMetadata {
+    var value = data['value'];
+    var timings = <string|number>value['timings'];
+    var styles = _arrayFromJson(value['styles'], metadataFromJson);
+    return new CompileAnimationAnimateMetadata(timings, styles);
+  }
+
+  constructor(public timings: string|number = 0, public styles: CompileAnimationStyleMetadata[] = null) { super(); }
+
+  toJson(): {[key: string]: any} {
+    return {
+      'class': 'AnimationAnimateMetadata',
+      'value': {
+        'timings': this.timings,
+        'styles': _arrayToJson(this.styles)
+      }
+    };
+  }
+}
+
+export abstract class CompileAnimationWithStepsMetadata extends CompileAnimationMetadata {
+  constructor(public steps: CompileAnimationMetadata[] = null) { super(); }
+}
+
+export class CompileAnimationSequenceMetadata extends CompileAnimationWithStepsMetadata {
+  static fromJson(data: {[key: string]: any}): CompileAnimationSequenceMetadata {
+    var steps = _arrayFromJson(data['value'], metadataFromJson);
+    return new CompileAnimationSequenceMetadata(steps);
+  }
+
+  constructor(steps: CompileAnimationMetadata[] = null) {
+    super(steps);
+  }
+
+  toJson(): {[key: string]: any} {
+    return {
+      'class': 'AnimationSequenceMetadata',
+      'value': _arrayToJson(this.steps)
+    };
+  }
+}
+
+export class CompileAnimationGroupMetadata extends CompileAnimationWithStepsMetadata {
+  static fromJson(data: {[key: string]: any}): CompileAnimationGroupMetadata {
+    var steps = _arrayFromJson(data["value"], metadataFromJson);
+    return new CompileAnimationGroupMetadata(steps);
+  }
+
+  constructor(steps: CompileAnimationMetadata[] = null) {
+    super(steps);
+  }
+
+  toJson(): {[key: string]: any} {
+    return {
+      'class': 'AnimationGroupMetadata',
+      'value': _arrayToJson(this.steps)
+    };
+  }
 }
 
 export class CompileIdentifierMetadata implements CompileMetadataWithIdentifier {
@@ -465,9 +615,10 @@ export class CompileTemplateMetadata {
   templateUrl: string;
   styles: string[];
   styleUrls: string[];
+  animations: CompileAnimationEntryMetadata[];
   ngContentSelectors: string[];
   baseUrl: string;
-  constructor({encapsulation, template, templateUrl, styles, styleUrls, ngContentSelectors,
+  constructor({encapsulation, template, templateUrl, styles, styleUrls, animations, ngContentSelectors,
                baseUrl}: {
     encapsulation?: ViewEncapsulation,
     template?: string,
@@ -475,6 +626,7 @@ export class CompileTemplateMetadata {
     styles?: string[],
     styleUrls?: string[],
     ngContentSelectors?: string[],
+    animations?: CompileAnimationEntryMetadata[],
     baseUrl?: string
   } = {}) {
     this.encapsulation = isPresent(encapsulation) ? encapsulation : ViewEncapsulation.Emulated;
@@ -482,11 +634,13 @@ export class CompileTemplateMetadata {
     this.templateUrl = templateUrl;
     this.styles = isPresent(styles) ? styles : [];
     this.styleUrls = isPresent(styleUrls) ? styleUrls : [];
+    this.animations = isPresent(animations) ? ListWrapper.flatten(animations) : [];
     this.ngContentSelectors = isPresent(ngContentSelectors) ? ngContentSelectors : [];
     this.baseUrl = baseUrl;
   }
 
   static fromJson(data: {[key: string]: any}): CompileTemplateMetadata {
+    var animations = <CompileAnimationEntryMetadata[]>_arrayFromJson(data['animations'], metadataFromJson);
     return new CompileTemplateMetadata({
       encapsulation: isPresent(data['encapsulation']) ?
                          VIEW_ENCAPSULATION_VALUES[data['encapsulation']] :
@@ -495,6 +649,7 @@ export class CompileTemplateMetadata {
       templateUrl: data['templateUrl'],
       styles: data['styles'],
       styleUrls: data['styleUrls'],
+      animations: animations,
       ngContentSelectors: data['ngContentSelectors'],
       baseUrl: data['baseUrl']
     });
@@ -508,6 +663,7 @@ export class CompileTemplateMetadata {
       'templateUrl': this.templateUrl,
       'styles': this.styles,
       'styleUrls': this.styleUrls,
+      'animations': _objToJson(this.animations),
       'ngContentSelectors': this.ngContentSelectors,
       'baseUrl': this.baseUrl
     };
@@ -771,7 +927,14 @@ var _COMPILE_METADATA_FROM_JSON = {
   'Type': CompileTypeMetadata.fromJson,
   'Provider': CompileProviderMetadata.fromJson,
   'Identifier': CompileIdentifierMetadata.fromJson,
-  'Factory': CompileFactoryMetadata.fromJson
+  'Factory': CompileFactoryMetadata.fromJson,
+  'AnimationEntryMetadata': CompileAnimationEntryMetadata.fromJson,
+  'AnimationStateDeclarationMetadata': CompileAnimationStateDeclarationMetadata.fromJson,
+  'AnimationStateTransitionMetadata': CompileAnimationStateTransitionMetadata.fromJson,
+  'AnimationSequenceMetadata': CompileAnimationSequenceMetadata.fromJson,
+  'AnimationGroupMetadata': CompileAnimationGroupMetadata.fromJson,
+  'AnimationAnimateMetadata': CompileAnimationAnimateMetadata.fromJson,
+  'AnimationStyleMetadata': CompileAnimationStyleMetadata.fromJson
 };
 
 function _arrayFromJson(obj: any[], fn: (a: {[key: string]: any}) => any): any {

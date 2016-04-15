@@ -211,7 +211,12 @@ export enum PropertyBindingType {
   /**
    * A binding to a style rule (e.g. `[style.rule]="expression"`).
    */
-  Style
+  Style,
+
+  /**
+   * A binding to an animation reference (e.g. `[animation.key]="expression"`).
+   */
+  Animation
 }
 
 /**

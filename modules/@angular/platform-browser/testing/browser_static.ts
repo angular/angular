@@ -52,9 +52,7 @@ export const ADDITIONAL_TEST_BROWSER_PROVIDERS: Array<any /*Type | Provider | an
       Log,
       TestComponentBuilder,
       /*@ts2dart_Provider*/ {provide: NgZone, useFactory: createNgZone},
-      /*@ts2dart_Provider*/ {provide: LocationStrategy, useClass: MockLocationStrategy},
-      /*@ts2dart_Provider*/ {provide: AnimationBuilder, useClass: MockAnimationBuilder},
-      /*@ts2dart_Provider*/ {provide: TestComponentRenderer, useClass: DOMTestComponentRenderer}
+      /*@ts2dart_Provider*/ {provide: LocationStrategy, useClass: MockLocationStrategy}
     ];
 
 /**

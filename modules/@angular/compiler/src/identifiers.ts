@@ -46,6 +46,15 @@ import {
 import {CompileIdentifierMetadata, CompileTokenMetadata} from './compile_metadata';
 import {assetUrl} from './util';
 
+import {
+  AnimationKeyframe,
+  AnimationStyles,
+  NoOpAnimationPlayer,
+  AnimationGroupPlayer,
+  AnimationSequencePlayer,
+  AnimationStyleUtil
+} from '@angular/animate';
+
 var APP_VIEW_MODULE_URL = assetUrl('core', 'linker/view');
 var VIEW_UTILS_MODULE_URL = assetUrl('core', 'linker/view_utils');
 var CD_MODULE_URL = assetUrl('core', 'change_detection/change_detection');
@@ -82,6 +91,12 @@ var impCheckBinding = checkBinding;
 var impCastByValue = castByValue;
 var impEMPTY_ARRAY = EMPTY_ARRAY;
 var impEMPTY_MAP = EMPTY_MAP;
+var impAnimationGroupPlayer = AnimationGroupPlayer;
+var impAnimationSequencePlayer = AnimationSequencePlayer;
+var impAnimationKeyframe = AnimationKeyframe;
+var impAnimationStyles = AnimationStyles;
+var impAnimationStyleUtil = AnimationStyleUtil;
+var impNoOpAnimationPlayer = NoOpAnimationPlayer;
 
 export class Identifiers {
   static ViewUtils = new CompileIdentifierMetadata(
@@ -199,6 +214,36 @@ export class Identifiers {
     new CompileIdentifierMetadata(
         {name: 'pureProxy10', moduleUrl: VIEW_UTILS_MODULE_URL, runtime: pureProxy10}),
   ];
+  static AnimationKeyframe = new CompileIdentifierMetadata({
+    name: 'AnimationKeyframe',
+    moduleUrl: 'asset:angular2/src/core/animation/animation_keyframe' + MODULE_SUFFIX,
+    runtime: impAnimationKeyframe
+  });
+  static AnimationStyles = new CompileIdentifierMetadata({
+    name: 'AnimationStyles',
+    moduleUrl: 'asset:angular2/src/core/animation/animation_styles' + MODULE_SUFFIX,
+    runtime: impAnimationStyles
+  });
+  static NoOpAnimationPlayer = new CompileIdentifierMetadata({
+    name: 'NoOpAnimationPlayer',
+    moduleUrl: 'asset:angular2/src/core/animation/animation_player' + MODULE_SUFFIX,
+    runtime: impNoOpAnimationPlayer
+  });
+  static AnimationGroupPlayer = new CompileIdentifierMetadata({
+    name: 'AnimationGroupPlayer',
+    moduleUrl: 'asset:angular2/src/core/animation/animation_group_player' + MODULE_SUFFIX,
+    runtime: impAnimationGroupPlayer
+  });
+  static AnimationSequencePlayer = new CompileIdentifierMetadata({
+    name: 'AnimationSequencePlayer',
+    moduleUrl: 'asset:angular2/src/core/animation/animation_sequence_player' + MODULE_SUFFIX,
+    runtime: impAnimationSequencePlayer
+  });
+  static AnimationStyleUtil = new CompileIdentifierMetadata({
+    name: 'AnimationStyleUtil',
+    moduleUrl: 'asset:angular2/src/core/animation/animation_style_util' + MODULE_SUFFIX,
+    runtime: impAnimationStyleUtil
+  });
 }
 
 export function identifierToken(identifier: CompileIdentifierMetadata): CompileTokenMetadata {

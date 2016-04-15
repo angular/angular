@@ -42,6 +42,7 @@ import {
 import {StaticNodeDebugInfo, DebugContext} from './debug_context';
 import {ElementInjector} from './element_injector';
 import {Injector} from '../di/injector';
+import {AnimationPlayer} from '../src/animation/animation_player';
 
 var _scope_check: WtfScopeFn = wtfCreateScope(`AppView#check(ascii id)`);
 
@@ -71,6 +72,8 @@ export abstract class AppView<T> {
 
   private _hasExternalHostElement: boolean;
 
+  public activeAnimations: {[key: string]: AnimationPlayer} = {};
+
   public context: T;
 
   constructor(public clazz: any, public componentType: RenderComponentType, public type: ViewType,
@@ -82,6 +85,14 @@ export abstract class AppView<T> {
     } else {
       this.renderer = declarationAppElement.parentView.renderer;
     }
+  }
+
+  registerActiveAnimation(animationName: string, player: AnimationPlayer): void {
+    var existingPlayer = this.activeAnimations[animationName];
+    if (isPresent(existingPlayer)) {
+      existingPlayer.destroy();
+    }
+    this.activeAnimations[animationName] = player;
   }
 
   create(context: T, givenProjectableNodes: Array<any | any[]>,

@@ -14,6 +14,9 @@ import {wtfInit} from '../core_private';
 import {COMMON_DIRECTIVES, COMMON_PIPES, FORM_PROVIDERS} from '@angular/common';
 
 import {IS_DART} from './facade/lang';
+import {WebAnimationsDriver} from 'angular2/src/platform/dom/animation/web_animations_driver';
+import {AnimationDriver, NoOpAnimationDriver} from 'angular2/src/core/render/animation_driver';
+import {AnimationQueue} from 'angular2/src/core/animation/animation_queue';
 import {BrowserDomAdapter} from './browser/browser_adapter';
 import {BrowserGetTestability} from './browser/testability';
 import {getDOM} from './dom/dom_adapter';
@@ -30,8 +33,6 @@ import {
   HammerGesturesPlugin
 } from './dom/events/hammer_gestures';
 import {DomSharedStylesHost} from './dom/shared_styles_host';
-import {AnimationBuilder} from './animate/animation_builder';
-import {BrowserDetails} from './animate/browser_details';
 
 export {Title} from './browser/title';
 export {BrowserDomAdapter} from './browser/browser_adapter';
@@ -62,6 +63,13 @@ function _document(): any {
   return getDOM().defaultDoc();
 }
 
+function _resolveDefaultAnimationDriver(): AnimationDriver {
+  if (getDom().supportsWebAnimation()) {
+    return new WebAnimationsDriver();
+  }
+  return new NoOpAnimationDriver();
+}
+
 /**
  * A set of providers to initialize an Angular application in a web browser.
  *
@@ -82,10 +90,10 @@ export const BROWSER_APP_COMMON_PROVIDERS: Array<any /*Type | Provider | any[]*/
       /* @ts2dart_Provider */ {provide: DomRootRenderer, useClass: DomRootRenderer_},
       /* @ts2dart_Provider */ {provide: RootRenderer, useExisting: DomRootRenderer},
       /* @ts2dart_Provider */ {provide: SharedStylesHost, useExisting: DomSharedStylesHost},
+      /* @ts2dart_Provider */ {provide: AnimationDriver, useFactory: _resolveDefaultAnimationDriver},
+      /* @ts2dart_Provider */ {provide: AnimationQueue, useClass: AnimationQueue},
       DomSharedStylesHost,
       Testability,
-      BrowserDetails,
-      AnimationBuilder,
       EventManager,
       ELEMENT_PROBE_PROVIDERS
     ];

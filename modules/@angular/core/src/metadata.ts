@@ -57,7 +57,8 @@ import {
 } from './metadata/directives';
 
 import {ViewMetadata, ViewEncapsulation} from './metadata/view';
-import {ChangeDetectionStrategy} from './change_detection/change_detection';
+import {AnimationEntryMetadata} from '../src/metadata/animations';
+import {ChangeDetectionStrategy} from '../src/change_detection/change_detection';
 
 import {
   makeDecorator,
@@ -91,6 +92,7 @@ export interface ComponentDecorator extends TypeDecorator {
     renderer?: string,
     styles?: string[],
     styleUrls?: string[],
+    animations?: AnimationEntryMetadata[]
   }): ViewDecorator;
 }
 
@@ -111,6 +113,7 @@ export interface ViewDecorator extends TypeDecorator {
     renderer?: string,
     styles?: string[],
     styleUrls?: string[],
+    animations?: AnimationEntryMetadata[]
   }): ViewDecorator;
 }
 
@@ -224,6 +227,7 @@ export interface ComponentMetadataFactory {
     template?: string,
     styleUrls?: string[],
     styles?: string[],
+    animations?: AnimationEntryMetadata[],
     directives?: Array<Type | any[]>,
     pipes?: Array<Type | any[]>,
     encapsulation?: ViewEncapsulation
@@ -249,6 +253,7 @@ export interface ComponentMetadataFactory {
     template?: string,
     styleUrls?: string[],
     styles?: string[],
+    animations?: AnimationEntryMetadata[],
     directives?: Array<Type | any[]>,
     pipes?: Array<Type | any[]>,
     encapsulation?: ViewEncapsulation
@@ -306,6 +311,7 @@ export interface ViewMetadataFactory {
     encapsulation?: ViewEncapsulation,
     styles?: string[],
     styleUrls?: string[],
+    animations?: AnimationEntryMetadata[]
   }): ViewDecorator;
   new (obj: {
     templateUrl?: string,
@@ -315,6 +321,7 @@ export interface ViewMetadataFactory {
     encapsulation?: ViewEncapsulation,
     styles?: string[],
     styleUrls?: string[],
+    animations?: AnimationEntryMetadata[]
   }): ViewMetadata;
 }
 

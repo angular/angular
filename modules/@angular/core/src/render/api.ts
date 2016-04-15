@@ -1,6 +1,9 @@
 import {unimplemented} from '../../src/facade/exceptions';
 import {ViewEncapsulation} from '../metadata/view';
 import {Injector} from '../di/injector';
+import {AnimationKeyframe} from '../../src/animation/animation_keyframe';
+import {AnimationPlayer} from '../../src/animation/animation_player';
+import {AnimationStyles} from '../../src/animation/animation_styles';
 
 export class RenderComponentType {
   constructor(public id: string, public templateUrl: string, public slotCount: number,
@@ -59,6 +62,8 @@ export abstract class Renderer {
   abstract invokeElementMethod(renderElement: any, methodName: string, args: any[]);
 
   abstract setText(renderNode: any, text: string);
+
+  abstract animate(element: any, startingStyles: AnimationStyles, keyframes: AnimationKeyframe[], duration: number, delay: number, easing: string): AnimationPlayer;
 }
 
 /**

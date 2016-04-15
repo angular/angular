@@ -19,8 +19,6 @@ import {
   DomSharedStylesHost,
   SharedStylesHost
 } from '@angular/platform-browser/src/dom/shared_styles_host';
-import {BrowserDetails} from '../animate/browser_details';
-import {AnimationBuilder} from '../animate/animation_builder';
 import {Testability} from '@angular/core/src/testability/testability';
 import {BrowserGetTestability} from '@angular/platform-browser/src/browser/testability';
 import {BrowserDomAdapter} from '../browser/browser_adapter';
@@ -93,8 +91,6 @@ export const WORKER_RENDER_APPLICATION_COMMON: Array<any /*Type | Provider | any
       RenderStore,
       DomSharedStylesHost,
       Testability,
-      BrowserDetails,
-      AnimationBuilder,
       EventManager
     ];
 

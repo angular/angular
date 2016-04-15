@@ -27,6 +27,8 @@ import {
   DomSharedStylesHost,
   SharedStylesHost
 } from '../../platform-browser/src/dom/shared_styles_host';
+
+import {AnimationDriver, NoOpAnimationDriver} from '../../core/src/render/animation_driver';
 import {
   EventManager,
   EVENT_MANAGER_PLUGINS,
@@ -78,6 +80,7 @@ export const TEST_SERVER_APPLICATION_PROVIDERS: Array<any /*Type | Provider | an
       /* @ts2dart_Provider */ {provide: DOCUMENT, useFactory: appDoc},
       /* @ts2dart_Provider */ {provide: DomRootRenderer, useClass: DomRootRenderer_},
       /* @ts2dart_Provider */ {provide: RootRenderer, useExisting: DomRootRenderer},
+      /* @ts2dart_Provider */ {provide: AnimationDriver, useClass: NoOpAnimationDriver},
       EventManager,
       /* @ts2dart_Provider */ {provide: EVENT_MANAGER_PLUGINS, useClass: DomEventsPlugin, multi: true},
       /* @ts2dart_Provider */ {provide: XHR, useClass: XHR},
@@ -91,6 +94,5 @@ export const TEST_SERVER_APPLICATION_PROVIDERS: Array<any /*Type | Provider | an
       /* @ts2dart_Provider */ {provide: TestComponentRenderer, useClass: DOMTestComponentRenderer},
       TestComponentBuilder,
       /* @ts2dart_Provider */ {provide: NgZone, useFactory: createNgZone},
-      /* @ts2dart_Provider */ {provide: LocationStrategy, useClass: MockLocationStrategy},
-      /* @ts2dart_Provider */ {provide: AnimationBuilder, useClass: MockAnimationBuilder},
+      /* @ts2dart_Provider */ {provide: LocationStrategy, useClass: MockLocationStrategy}
     ];
