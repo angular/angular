@@ -18,7 +18,7 @@ import {bootstrap} from 'angular2/platform/browser';
 import {Component, Directive} from 'angular2/src/core/metadata';
 import {DOM} from 'angular2/src/platform/dom/dom_adapter';
 import {Console} from 'angular2/src/core/console';
-import {provide, ViewChild, AfterViewInit} from 'angular2/core';
+import {provide} from 'angular2/core';
 import {DOCUMENT} from 'angular2/src/platform/dom/dom_tokens';
 import {
   RouteConfig,
@@ -214,7 +214,7 @@ export function main() {
          }));
     });
 
-    describe('retrieving components loaded via outlet via @ViewChild', () => {
+    describe('activate event on outlet', () => {
       let tcb: TestComponentBuilder = null;
 
       beforeEachProviders(() => [provide(ROUTER_PRIMARY_COMPONENT, {useValue: AppCmp})]);
@@ -224,7 +224,7 @@ export function main() {
 
       it('should get a reference and pass data to components loaded inside of outlets',
          inject([AsyncTestCompleter], (async) => {
-           tcb.createAsync(AppWithViewChildren)
+           tcb.createAsync(AppWithOutletListeners)
                .then(fixture => {
                  let appInstance = fixture.debugElement.componentInstance;
                  let router = appInstance.router;
@@ -272,21 +272,26 @@ class AppCmp {
   selector: 'app-cmp',
   template: `
     Hello routing!
-    <router-outlet></router-outlet>
-    <router-outlet name="pony"></router-outlet>`,
+    <router-outlet (activate)="activateHello($event)"></router-outlet>
+    <router-outlet (activate)="activateHello2($event)" name="pony"></router-outlet>`,
   directives: ROUTER_DIRECTIVES
 })
 @RouteConfig([
   new Route({path: '/rainbow', component: HelloCmp}),
   new AuxRoute({name: 'pony', path: 'pony', component: Hello2Cmp})
 ])
-class AppWithViewChildren implements AfterViewInit {
-  @ViewChild(HelloCmp) helloCmp: HelloCmp;
-  @ViewChild(Hello2Cmp) hello2Cmp: Hello2Cmp;
+class AppWithOutletListeners {
+  helloCmp: HelloCmp;
+  hello2Cmp: Hello2Cmp;
 
   constructor(public router: Router, public location: LocationStrategy) {}
 
-  ngAfterViewInit() { this.helloCmp.message = 'Ahoy'; }
+  activateHello(cmp: HelloCmp) {
+    this.helloCmp = cmp;
+    this.helloCmp.message = 'Ahoy';
+  }
+
+  activateHello2(cmp: Hello2Cmp) { this.hello2Cmp = cmp; }
 }
 
 @Component({

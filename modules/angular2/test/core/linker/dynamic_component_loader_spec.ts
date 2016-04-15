@@ -16,8 +16,8 @@ import {
   ComponentFixture
 } from 'angular2/testing_internal';
 
-import {OnDestroy} from 'angular2/core';
-import {Injector} from 'angular2/core';
+import {Predicate} from 'angular2/src/facade/collection';
+import {Injector, OnDestroy, DebugElement, Type} from 'angular2/core';
 import {NgIf} from 'angular2/common';
 import {Component, ViewMetadata} from 'angular2/src/core/metadata';
 import {DynamicComponentLoader} from 'angular2/src/core/linker/dynamic_component_loader';
@@ -27,7 +27,6 @@ import {DOM} from 'angular2/src/platform/dom/dom_adapter';
 import {ComponentFixture_} from "angular2/src/testing/test_component_builder";
 import {BaseException} from 'angular2/src/facade/exceptions';
 import {PromiseWrapper} from 'angular2/src/facade/promise';
-import {stringify} from 'angular2/src/facade/lang';
 
 export function main() {
   describe('DynamicComponentLoader', function() {
@@ -70,41 +69,38 @@ export function main() {
                 }));
 
       it('should allow to dispose even if the location has been removed',
-         inject(
-             [DynamicComponentLoader, TestComponentBuilder, AsyncTestCompleter],
-             (loader: DynamicComponentLoader, tcb: TestComponentBuilder, async) => {
-               tcb.overrideView(MyComp, new ViewMetadata({
-                                  template: '<child-cmp *ngIf="ctxBoolProp"></child-cmp>',
-                                  directives: [NgIf, ChildComp]
-                                }))
-                   .overrideView(
-                       ChildComp,
-                       new ViewMetadata(
-                           {template: '<location #loc></location>', directives: [Location]}))
-                   .createAsync(MyComp)
-                   .then((tc) => {
-                     tc.debugElement.componentInstance.ctxBoolProp = true;
-                     tc.detectChanges();
-                     var childCompEl = (<ElementRef_>tc.elementRef).internalElement;
-                     // TODO(juliemr): This is hideous, see if there's a better way to handle
-                     // child element refs now.
-                     var childElementRef =
-                         childCompEl.componentView.appElements[0].nestedViews[0].appElements[0].ref;
-                     loader.loadIntoLocation(DynamicallyLoaded, childElementRef, 'loc')
-                         .then(ref => {
-                           expect(tc.debugElement.nativeElement)
-                               .toHaveText("Location;DynamicallyLoaded;");
+         inject([DynamicComponentLoader, TestComponentBuilder, AsyncTestCompleter],
+                (loader: DynamicComponentLoader, tcb: TestComponentBuilder, async) => {
+                  tcb.overrideView(MyComp, new ViewMetadata({
+                                     template: '<child-cmp *ngIf="ctxBoolProp"></child-cmp>',
+                                     directives: [NgIf, ChildComp]
+                                   }))
+                      .overrideView(
+                          ChildComp,
+                          new ViewMetadata(
+                              {template: '<location #loc></location>', directives: [Location]}))
+                      .createAsync(MyComp)
+                      .then((tc) => {
+                        tc.debugElement.componentInstance.ctxBoolProp = true;
+                        tc.detectChanges();
+                        var childElementRef = tc.debugElement.query(filterByDirective(ChildComp))
+                                                  .inject(ChildComp)
+                                                  .elementRef;
+                        loader.loadIntoLocation(DynamicallyLoaded, childElementRef, 'loc')
+                            .then(ref => {
+                              expect(tc.debugElement.nativeElement)
+                                  .toHaveText("Location;DynamicallyLoaded;");
 
-                           tc.debugElement.componentInstance.ctxBoolProp = false;
-                           tc.detectChanges();
-                           expect(tc.debugElement.nativeElement).toHaveText("");
+                              tc.debugElement.componentInstance.ctxBoolProp = false;
+                              tc.detectChanges();
+                              expect(tc.debugElement.nativeElement).toHaveText("");
 
-                           ref.dispose();
-                           expect(tc.debugElement.nativeElement).toHaveText("");
-                           async.done();
-                         });
-                   });
-             }));
+                              ref.dispose();
+                              expect(tc.debugElement.nativeElement).toHaveText("");
+                              async.done();
+                            });
+                      });
+                }));
 
       it('should update host properties',
          inject(
@@ -138,17 +134,14 @@ export function main() {
                                    }))
                       .createAsync(MyComp)
                       .then((tc: ComponentFixture) => {
-                        tc.debugElement
-
-                            PromiseWrapper.catchError(
-                                loader.loadIntoLocation(DynamicallyLoadedThrows, tc.elementRef,
-                                                        'loc'),
-                                error => {
-                                  expect(error.message).toContain("ThrownInConstructor");
-                                  expect(() => tc.detectChanges()).not.toThrow();
-                                  async.done();
-                                  return null;
-                                });
+                        PromiseWrapper.catchError(
+                            loader.loadIntoLocation(DynamicallyLoadedThrows, tc.elementRef, 'loc'),
+                            (error) => {
+                              expect(error.message).toContain("ThrownInConstructor");
+                              expect(() => tc.detectChanges()).not.toThrow();
+                              async.done();
+                              return null;
+                            });
                       });
                 }));
 
@@ -185,25 +178,18 @@ export function main() {
                       });
                 }));
 
-      it('should throw if not enough projectable nodes are passed in',
-         inject(
-             [DynamicComponentLoader, TestComponentBuilder, AsyncTestCompleter],
-             (loader: DynamicComponentLoader, tcb: TestComponentBuilder, async) => {
-               tcb.overrideView(MyComp,
-                                new ViewMetadata({template: '<div #loc></div>', directives: []}))
-                   .createAsync(MyComp)
-                   .then((tc) => {
-                     PromiseWrapper.catchError(
-                         loader.loadIntoLocation(DynamicallyLoadedWithNgContent, tc.elementRef,
-                                                 'loc', null, []),
-                         (e) => {
-                           expect(e.message).toContain(
-                               `The component ${stringify(DynamicallyLoadedWithNgContent)} has 1 <ng-content> elements, but only 0 slots were provided`);
-                           async.done();
-                           return null;
-                         });
-                   });
-             }));
+      it('should not throw if not enough projectable nodes are passed in',
+         inject([DynamicComponentLoader, TestComponentBuilder, AsyncTestCompleter],
+                (loader: DynamicComponentLoader, tcb: TestComponentBuilder, async) => {
+                  tcb.overrideView(MyComp,
+                                   new ViewMetadata({template: '<div #loc></div>', directives: []}))
+                      .createAsync(MyComp)
+                      .then((tc) => {
+                        loader.loadIntoLocation(DynamicallyLoadedWithNgContent, tc.elementRef,
+                                                'loc', null, [])
+                            .then((_) => { async.done(); });
+                      });
+                }));
 
     });
 
@@ -311,8 +297,7 @@ export function main() {
     describe('loadAsRoot', () => {
       it('should allow to create, update and destroy components',
          inject([AsyncTestCompleter, DynamicComponentLoader, DOCUMENT, Injector],
-                (async: AsyncTestCompleter, loader: DynamicComponentLoader, doc,
-                 injector: Injector) => {
+                (async, loader: DynamicComponentLoader, doc, injector: Injector) => {
                   var rootEl = createRootElement(doc, 'child-cmp');
                   DOM.appendChild(doc.body, rootEl);
                   loader.loadAsRoot(ChildComp, null, injector)
@@ -341,8 +326,7 @@ export function main() {
 
       it('should allow to pass projectable nodes',
          inject([AsyncTestCompleter, DynamicComponentLoader, DOCUMENT, Injector],
-                (async: AsyncTestCompleter, loader: DynamicComponentLoader, doc,
-                 injector: Injector) => {
+                (async, loader: DynamicComponentLoader, doc, injector: Injector) => {
                   var rootEl = createRootElement(doc, 'dummy');
                   DOM.appendChild(doc.body, rootEl);
                   loader.loadAsRoot(DynamicallyLoadedWithNgContent, null, injector, null,
@@ -369,10 +353,14 @@ function createRootElement(doc: any, name: string): any {
   return rootEl;
 }
 
+function filterByDirective(type: Type): Predicate<DebugElement> {
+  return (debugElement) => { return debugElement.providerTokens.indexOf(type) !== -1; };
+}
+
 @Component({selector: 'child-cmp', template: '{{ctxProp}}'})
 class ChildComp {
   ctxProp: string;
-  constructor() { this.ctxProp = 'hello'; }
+  constructor(public elementRef: ElementRef) { this.ctxProp = 'hello'; }
 }
 
 

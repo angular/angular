@@ -43,6 +43,8 @@ transformers:
         - web/src/web_workers/todo/server_index.dart
         - web/src/web_workers/router/index.dart
         - web/src/web_workers/router/background_index.dart
+        - web/src/web_workers/input/index.dart
+        - web/src/web_workers/input/background_index.dart
         - web/src/zippy_component/index.dart
 - angular2/transform/deferred_rewriter:
     # No playground apps use deferred imports, but in general

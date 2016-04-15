@@ -19,6 +19,5 @@ void initReflector(reflector) {
           _templates.HostHelloCmpTemplate
         ], const [
           const []
-        ], () => new HelloCmp()))
-    ..registerGetters({'eventName': (o) => o.eventName});
+        ], () => new HelloCmp()));
 }

@@ -13,10 +13,10 @@ import {
   LiteralArray,
   LiteralPrimitive,
   ASTWithSource
-} from 'angular2/src/core/change_detection/parser/ast';
+} from 'angular2/src/compiler/expression_parser/ast';
 import {BaseException} from 'angular2/src/facade/exceptions';
 import {Injectable} from 'angular2/core';
-import {Parser} from 'angular2/src/core/change_detection/parser/parser';
+import {Parser} from 'angular2/src/compiler/expression_parser/parser';
 
 /**
  * e.g., './User', 'Modal' in ./User[Modal(param: value)]
@@ -154,11 +154,11 @@ class RouterLinkAstGenerator {
 class RouterLinkAstTransformer extends AstTransformer {
   constructor(private parser: Parser) { super(); }
 
-  visitQuote(ast: Quote): AST {
+  visitQuote(ast: Quote, context: any): AST {
     if (ast.prefix == "route") {
       return parseRouterLinkExpression(this.parser, ast.uninterpretedExpression);
     } else {
-      return super.visitQuote(ast);
+      return super.visitQuote(ast, context);
     }
   }
 }
@@ -186,7 +186,8 @@ export class RouterLinkTransform implements TemplateAstVisitor {
     let updatedInputs = ast.inputs.map(c => c.visit(this, context));
     let updatedDirectives = ast.directives.map(c => c.visit(this, context));
     return new ElementAst(ast.name, ast.attrs, updatedInputs, ast.outputs, ast.exportAsVars,
-                          updatedDirectives, updatedChildren, ast.ngContentIndex, ast.sourceSpan);
+                          updatedDirectives, ast.providers, updatedChildren, ast.ngContentIndex,
+                          ast.sourceSpan);
   }
 
   visitVariable(ast: any, context: any): any { return ast; }

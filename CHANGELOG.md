@@ -1,3 +1,33 @@
+<a name="2.0.0-beta.15"></a>
+# 2.0.0-beta.15 (2016-04-13)
+
+
+### Bug Fixes
+
+* **7837:** MetadataCollector takes no parameters for the constructor. ([c17dc1c](https://github.com/angular/angular/commit/c17dc1c)), closes [#7838](https://github.com/angular/angular/issues/7838)
+* **7987:** Incremental build works with new trees ([08b2956](https://github.com/angular/angular/commit/08b2956)), closes [#7989](https://github.com/angular/angular/issues/7989)
+* **build:** ignore dart warnings `The name … is shown, but not used` ([01e6b8c](https://github.com/angular/angular/commit/01e6b8c)), closes [#8045](https://github.com/angular/angular/issues/8045)
+* **payload:** increase payload size limit temporarily ([28e657d](https://github.com/angular/angular/commit/28e657d))
+* **RouterLink:** ignore optional parameters when checking for active routes ([5e2bc5c](https://github.com/angular/angular/commit/5e2bc5c)), closes [#6459](https://github.com/angular/angular/issues/6459) [#7834](https://github.com/angular/angular/issues/7834)
+* **select:** set value individually from ngModel ([e1e44a9](https://github.com/angular/angular/commit/e1e44a9)), closes [#7975](https://github.com/angular/angular/issues/7975) [#7978](https://github.com/angular/angular/issues/7978)
+* **upgrade:** make upgradeAdapter upgrade angular 1 components correctly ([247964a](https://github.com/angular/angular/commit/247964a)), closes [#7951](https://github.com/angular/angular/issues/7951)
+
+### Features
+
+* **compiler:** Add an implementation for XHR that uses a template cache to load template files. ([a596b88](https://github.com/angular/angular/commit/a596b88)), closes [#7940](https://github.com/angular/angular/issues/7940)
+* **gestures:** allow override of Hammer default configuration ([6cbf990](https://github.com/angular/angular/commit/6cbf990)), closes [#7924](https://github.com/angular/angular/issues/7924)
+* **ngFor:** Support convenience  view local in ngFor ([ccff175](https://github.com/angular/angular/commit/ccff175)), closes [#8013](https://github.com/angular/angular/issues/8013)
+* **parser:** TemplateParser.tryParse() returns both the AST and errors ([226e662](https://github.com/angular/angular/commit/226e662)), closes [#7858](https://github.com/angular/angular/issues/7858)
+* **transformers:** changes transformers to collect information about providers and resolve identifi ([3b60503](https://github.com/angular/angular/commit/3b60503))
+* **transformers:** special case Profiler ([83b8f59](https://github.com/angular/angular/commit/83b8f59))
+* **typescript:** update to 1.9 nightly. ([3412aba](https://github.com/angular/angular/commit/3412aba)), closes [#8003](https://github.com/angular/angular/issues/8003)
+
+### Reverts
+
+* Revert "chore(format): update to latest formatter" ([60727c4](https://github.com/angular/angular/commit/60727c4))
+
+
+
 <a name="2.0.0-beta.14"></a>
 # 2.0.0-beta.14 (2016-04-07)
 

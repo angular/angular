@@ -1,5 +1,3 @@
-/// <reference path="../../../angular2/typings/jasmine/jasmine.d.ts" />
-
 import {verifyNoBrowserErrors} from 'angular2/src/testing/e2e_util';
 
 describe('jsonp', function() {

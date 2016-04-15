@@ -13,7 +13,8 @@ final Set<String> NODES_WITH_VALUE = new Set<String>.from([
   "li",
   "meter",
   "progress",
-  "param"
+  "param",
+  "textarea"
 ]);
 
 Map<String, dynamic> serializeGenericEvent(dynamic e) {

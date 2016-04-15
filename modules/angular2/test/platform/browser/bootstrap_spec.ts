@@ -144,7 +144,7 @@ export function main() {
 
            var refPromise =
                bootstrap(HelloRootCmp, [provide(ExceptionHandler, {useValue: exceptionHandler})]);
-           PromiseWrapper.then(refPromise, null, (reason: BaseException) => {
+           PromiseWrapper.then(refPromise, null, (reason: any) => {
              expect(reason.message)
                  .toContain('The selector "hello-app" did not match any elements');
              async.done();

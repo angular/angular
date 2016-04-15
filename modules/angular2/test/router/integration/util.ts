@@ -23,7 +23,6 @@ import {Router, ROUTER_DIRECTIVES, ROUTER_PRIMARY_COMPONENT} from 'angular2/rout
 import {SpyLocation} from 'angular2/src/mock/location_mock';
 import {Location} from 'angular2/src/router/location/location';
 import {RouteRegistry} from 'angular2/src/router/route_registry';
-import {DirectiveResolver} from 'angular2/src/core/linker/directive_resolver';
 import {DOM} from 'angular2/src/platform/dom/dom_adapter';
 export {ComponentFixture} from 'angular2/testing_internal';
 
@@ -39,6 +38,7 @@ export {ComponentFixture} from 'angular2/testing_internal';
 })
 export class RootCmp {
   name: string;
+  activatedCmp: any;
 }
 
 export function compile(tcb: TestComponentBuilder,
@@ -48,7 +48,6 @@ export function compile(tcb: TestComponentBuilder,
 
 export var TEST_ROUTER_PROVIDERS = [
   RouteRegistry,
-  DirectiveResolver,
   provide(Location, {useClass: SpyLocation}),
   provide(ROUTER_PRIMARY_COMPONENT, {useValue: RootCmp}),
   provide(Router, {useClass: RootRouter})

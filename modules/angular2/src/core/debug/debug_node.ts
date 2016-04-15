@@ -1,4 +1,4 @@
-import {isPresent} from 'angular2/src/facade/lang';
+import {isPresent, Type} from 'angular2/src/facade/lang';
 import {Predicate} from 'angular2/src/facade/collection';
 import {Injector} from 'angular2/src/core/di';
 import {ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
@@ -10,12 +10,8 @@ export class DebugNode {
   nativeNode: any;
   listeners: EventListener[];
   parent: DebugElement;
-  providerTokens: any[];
-  locals: Map<string, any>;
-  injector: Injector;
-  componentInstance: any;
 
-  constructor(nativeNode: any, parent: DebugNode) {
+  constructor(nativeNode: any, parent: DebugNode, private _debugInfo: RenderDebugInfo) {
     this.nativeNode = nativeNode;
     if (isPresent(parent) && parent instanceof DebugElement) {
       parent.addChild(this);
@@ -23,32 +19,40 @@ export class DebugNode {
       this.parent = null;
     }
     this.listeners = [];
-    this.providerTokens = [];
   }
 
-  setDebugInfo(info: RenderDebugInfo) {
-    this.injector = info.injector;
-    this.providerTokens = info.providerTokens;
-    this.locals = info.locals;
-    this.componentInstance = info.component;
+  get injector(): Injector { return isPresent(this._debugInfo) ? this._debugInfo.injector : null; }
+
+  get componentInstance(): any {
+    return isPresent(this._debugInfo) ? this._debugInfo.component : null;
   }
+
+  get locals(): {[key: string]: any} {
+    return isPresent(this._debugInfo) ? this._debugInfo.locals : null;
+  }
+
+  get providerTokens(): any[] {
+    return isPresent(this._debugInfo) ? this._debugInfo.providerTokens : null;
+  }
+
+  get source(): string { return isPresent(this._debugInfo) ? this._debugInfo.source : null; }
 
   inject(token: any): any { return this.injector.get(token); }
 
-  getLocal(name: string): any { return this.locals.get(name); }
+  getLocal(name: string): any { return this.locals[name]; }
 }
 
 export class DebugElement extends DebugNode {
   name: string;
-  properties: Map<string, any>;
-  attributes: Map<string, any>;
+  properties: {[key: string]: string};
+  attributes: {[key: string]: string};
   childNodes: DebugNode[];
   nativeElement: any;
 
-  constructor(nativeNode: any, parent: any) {
-    super(nativeNode, parent);
-    this.properties = new Map<string, any>();
-    this.attributes = new Map<string, any>();
+  constructor(nativeNode: any, parent: any, _debugInfo: RenderDebugInfo) {
+    super(nativeNode, parent, _debugInfo);
+    this.properties = {};
+    this.attributes = {};
     this.childNodes = [];
     this.nativeElement = nativeNode;
   }
@@ -112,7 +116,7 @@ export class DebugElement extends DebugNode {
     return children;
   }
 
-  triggerEventHandler(eventName: string, eventObj: Event) {
+  triggerEventHandler(eventName: string, eventObj: any) {
     this.listeners.forEach((listener) => {
       if (listener.name == eventName) {
         listener.callback(eventObj);
