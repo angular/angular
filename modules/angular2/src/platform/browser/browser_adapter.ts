@@ -1,5 +1,12 @@
 import {MapWrapper, ListWrapper} from 'angular2/src/facade/collection';
-import {isBlank, isPresent, global, setValueOnPath, DateWrapper} from 'angular2/src/facade/lang';
+import {
+  isBlank,
+  isPresent,
+  isFunction,
+  global,
+  setValueOnPath,
+  DateWrapper
+} from 'angular2/src/facade/lang';
 import {setRootDomAdapter} from 'angular2/src/platform/dom/dom_adapter';
 import {GenericBrowserDomAdapter} from './generic_browser_adapter';
 
@@ -337,6 +344,7 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   setGlobalVar(path: string, value: any) { setValueOnPath(global, path, value); }
   requestAnimationFrame(callback): number { return window.requestAnimationFrame(callback); }
   cancelAnimationFrame(id: number) { window.cancelAnimationFrame(id); }
+  supportsWebAnimation(): boolean { return isFunction(document.body['animate']); }
   performanceNow(): number {
     // performance.now() is not available in all browsers, see
     // http://caniuse.com/#search=performance.now

@@ -2,6 +2,7 @@ import {isPresent, CONST, CONST_EXPR, Type} from 'angular2/src/facade/lang';
 import {InjectableMetadata} from 'angular2/src/core/di/metadata';
 import {ChangeDetectionStrategy} from 'angular2/src/core/change_detection';
 import {ViewEncapsulation} from 'angular2/src/core/metadata/view';
+import {AnimationEntryMetadata} from 'angular2/src/core/metadata/animations';
 
 /**
  * Directives allow you to attach behavior to elements in the DOM.
@@ -871,6 +872,8 @@ export class ComponentMetadata extends DirectiveMetadata {
 
   styles: string[];
 
+  animations: AnimationEntryMetadata[];
+
   directives: Array<Type | any[]>;
 
   pipes: Array<Type | any[]>;
@@ -880,7 +883,7 @@ export class ComponentMetadata extends DirectiveMetadata {
   constructor({selector, inputs, outputs, properties, events, host, exportAs, moduleId, bindings,
                providers, viewBindings, viewProviders,
                changeDetection = ChangeDetectionStrategy.Default, queries, templateUrl, template,
-               styleUrls, styles, directives, pipes, encapsulation}: {
+               styleUrls, styles, animations, directives, pipes, encapsulation}: {
     selector?: string,
     inputs?: string[],
     outputs?: string[],
@@ -899,6 +902,7 @@ export class ComponentMetadata extends DirectiveMetadata {
     template?: string,
     styleUrls?: string[],
     styles?: string[],
+    animations?: AnimationEntryMetadata[],
     directives?: Array<Type | any[]>,
     pipes?: Array<Type | any[]>,
     encapsulation?: ViewEncapsulation
@@ -927,6 +931,7 @@ export class ComponentMetadata extends DirectiveMetadata {
     this.pipes = pipes;
     this.encapsulation = encapsulation;
     this.moduleId = moduleId;
+    this.animations = animations;
   }
 }
 

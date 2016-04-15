@@ -77,12 +77,13 @@ import {ProviderElementContext, ProviderViewContext} from './provider_parser';
 // Group 2 = "var-" or "#"
 // Group 3 = "on-"
 // Group 4 = "bindon-"
-// Group 5 = the identifier after "bind-", "var-/#", or "on-"
-// Group 6 = identifier inside [()]
-// Group 7 = identifier inside []
-// Group 8 = identifier inside ()
+// Group 5 = "animate-"
+// Group 6 = the identifier after "bind-", "var-/#", or "on-"
+// Group 7 = identifier inside [()]
+// Group 8 = identifier inside []
+// Group 9 = identifier inside ()
 var BIND_NAME_REGEXP =
-    /^(?:(?:(?:(bind-)|(var-|#)|(on-)|(bindon-))(.+))|\[\(([^\)]+)\)\]|\[([^\]]+)\]|\(([^\)]+)\))$/g;
+    /^(?:(?:(?:(bind-)|(var-|#)|(on-)|(bindon-)|(animate-|@))(.+))|\[\(([^\)]+)\)\]|\[([^\]]+)\]|\(([^\)]+)\))$/g;
 
 const TEMPLATE_ELEMENT = 'template';
 const TEMPLATE_ATTR = 'template';
@@ -91,6 +92,7 @@ const CLASS_ATTR = 'class';
 
 var PROPERTY_PARTS_SEPARATOR = '.';
 const ATTRIBUTE_PREFIX = 'attr';
+const ANIMATION_PREFIX = '@';
 const CLASS_PREFIX = 'class';
 const STYLE_PREFIX = 'style';
 
@@ -293,6 +295,7 @@ class TemplateParseVisitor implements HtmlAstVisitor {
 
     var matchableAttrs: string[][] = [];
     var elementOrDirectiveProps: BoundElementOrDirectiveProperty[] = [];
+    var animationProps: BoundElementPropertyAst[] = [];
     var vars: VariableAst[] = [];
     var events: BoundEventAst[] = [];
 
@@ -303,7 +306,7 @@ class TemplateParseVisitor implements HtmlAstVisitor {
     var attrs = [];
 
     element.attrs.forEach(attr => {
-      var hasBinding = this._parseAttr(attr, matchableAttrs, elementOrDirectiveProps, events, vars);
+      var hasBinding = this._parseAttr(attr, matchableAttrs, elementOrDirectiveProps, animationProps, events, vars);
       var hasTemplateBinding = this._parseInlineTemplateBinding(
           attr, templateMatchableAttrs, templateElementOrDirectiveProps, templateVars);
       if (!hasBinding && !hasTemplateBinding) {
@@ -324,7 +327,7 @@ class TemplateParseVisitor implements HtmlAstVisitor {
         this._createDirectiveAsts(element.name, directiveMetas, elementOrDirectiveProps,
                                   isTemplateElement ? [] : vars, element.sourceSpan);
     var elementProps: BoundElementPropertyAst[] =
-        this._createElementPropertyAsts(element.name, elementOrDirectiveProps, directiveAsts);
+      this._createElementPropertyAsts(element.name, elementOrDirectiveProps, directiveAsts).concat(animationProps);
     var isViewRoot = parent.isTemplateElement || hasInlineTemplates;
     var providerContext =
         new ProviderElementContext(this.providerViewContext, parent.providerContext, isViewRoot,
@@ -426,7 +429,9 @@ class TemplateParseVisitor implements HtmlAstVisitor {
   }
 
   private _parseAttr(attr: HtmlAttrAst, targetMatchableAttrs: string[][],
-                     targetProps: BoundElementOrDirectiveProperty[], targetEvents: BoundEventAst[],
+                     targetProps: BoundElementOrDirectiveProperty[],
+                     targetAnimationProps: BoundElementPropertyAst[],
+                     targetEvents: BoundEventAst[],
                      targetVars: VariableAst[]): boolean {
     var attrName = this._normalizeAttributeName(attr.name);
     var attrValue = attr.value;
@@ -435,36 +440,40 @@ class TemplateParseVisitor implements HtmlAstVisitor {
     if (isPresent(bindParts)) {
       hasBinding = true;
       if (isPresent(bindParts[1])) {  // match: bind-prop
-        this._parseProperty(bindParts[5], attrValue, attr.sourceSpan, targetMatchableAttrs,
+        this._parseProperty(bindParts[6], attrValue, attr.sourceSpan, targetMatchableAttrs,
                             targetProps);
 
       } else if (isPresent(
                      bindParts[2])) {  // match: var-name / var-name="iden" / #name / #name="iden"
-        var identifier = bindParts[5];
+        var identifier = bindParts[6];
         this._parseVariable(identifier, attrValue, attr.sourceSpan, targetVars);
 
       } else if (isPresent(bindParts[3])) {  // match: on-event
-        this._parseEvent(bindParts[5], attrValue, attr.sourceSpan, targetMatchableAttrs,
+        this._parseEvent(bindParts[6], attrValue, attr.sourceSpan, targetMatchableAttrs,
                          targetEvents);
 
       } else if (isPresent(bindParts[4])) {  // match: bindon-prop
-        this._parseProperty(bindParts[5], attrValue, attr.sourceSpan, targetMatchableAttrs,
-                            targetProps);
-        this._parseAssignmentEvent(bindParts[5], attrValue, attr.sourceSpan, targetMatchableAttrs,
-                                   targetEvents);
-
-      } else if (isPresent(bindParts[6])) {  // match: [(expr)]
         this._parseProperty(bindParts[6], attrValue, attr.sourceSpan, targetMatchableAttrs,
                             targetProps);
         this._parseAssignmentEvent(bindParts[6], attrValue, attr.sourceSpan, targetMatchableAttrs,
                                    targetEvents);
 
-      } else if (isPresent(bindParts[7])) {  // match: [expr]
+      } else if (isPresent(bindParts[5])) {  // match: animate-name
+        this._parseAnimation(bindParts[6], attrValue, attr.sourceSpan, targetMatchableAttrs,
+          targetAnimationProps);
+
+      } else if (isPresent(bindParts[7])) {  // match: [(expr)]
         this._parseProperty(bindParts[7], attrValue, attr.sourceSpan, targetMatchableAttrs,
                             targetProps);
+        this._parseAssignmentEvent(bindParts[7], attrValue, attr.sourceSpan, targetMatchableAttrs,
+                                   targetEvents);
 
-      } else if (isPresent(bindParts[8])) {  // match: (event)
-        this._parseEvent(bindParts[8], attrValue, attr.sourceSpan, targetMatchableAttrs,
+      } else if (isPresent(bindParts[8])) {  // match: [expr]
+        this._parseProperty(bindParts[8], attrValue, attr.sourceSpan, targetMatchableAttrs,
+                            targetProps);
+
+      } else if (isPresent(bindParts[9])) {  // match: (event)
+        this._parseEvent(bindParts[9], attrValue, attr.sourceSpan, targetMatchableAttrs,
                          targetEvents);
       }
     } else {
@@ -494,6 +503,14 @@ class TemplateParseVisitor implements HtmlAstVisitor {
                          targetProps: BoundElementOrDirectiveProperty[]) {
     this._parsePropertyAst(name, this._parseBinding(expression, sourceSpan), sourceSpan,
                            targetMatchableAttrs, targetProps);
+  }
+
+  private _parseAnimation(name: string, expression: string, sourceSpan: ParseSourceSpan,
+                          targetMatchableAttrs: string[][],
+                          targetAnimationProps: BoundElementPropertyAst[]) {
+    var ast = this._parseBinding(expression, sourceSpan);
+    targetMatchableAttrs.push([name, ast.source]);
+    targetAnimationProps.push(new BoundElementPropertyAst(name, PropertyBindingType.Animation, ast, null, sourceSpan));
   }
 
   private _parsePropertyInterpolation(name: string, value: string, sourceSpan: ParseSourceSpan,
@@ -671,8 +688,8 @@ class TemplateParseVisitor implements HtmlAstVisitor {
       bindingType = PropertyBindingType.Property;
       if (!this._schemaRegistry.hasProperty(elementName, boundPropertyName)) {
         this._reportError(
-            `Can't bind to '${boundPropertyName}' since it isn't a known native property`,
-            sourceSpan);
+          `Can't bind to '${boundPropertyName}' since it isn't a known native property`,
+          sourceSpan);
       }
     } else {
       if (parts[0] == ATTRIBUTE_PREFIX) {
@@ -696,7 +713,6 @@ class TemplateParseVisitor implements HtmlAstVisitor {
         bindingType = null;
       }
     }
-
     return new BoundElementPropertyAst(boundPropertyName, bindingType, ast, unit, sourceSpan);
   }
 
@@ -833,7 +849,10 @@ function createElementCssSelector(elementName: string, matchableAttrs: string[][
 
   for (var i = 0; i < matchableAttrs.length; i++) {
     let attrName = matchableAttrs[i][0];
-    let attrNameNoNs = splitNsName(attrName)[1];
+    let attrNameNoNs = attrName[0] == '@'
+        ? attrName
+        : splitNsName(attrName)[1];
+
     let attrValue = matchableAttrs[i][1];
 
     cssSelector.addAttribute(attrNameNoNs, attrValue);

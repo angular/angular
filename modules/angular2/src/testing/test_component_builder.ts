@@ -99,6 +99,8 @@ export class TestComponentBuilder {
   /** @internal */
   _templateOverrides = new Map<Type, string>();
   /** @internal */
+  _animationOverrides = new Map<Type, {[key: string]: any | any[]}>();
+  /** @internal */
   _viewBindingsOverrides = new Map<Type, any[]>();
   /** @internal */
   _viewOverrides = new Map<Type, ViewMetadata>();
@@ -129,6 +131,13 @@ export class TestComponentBuilder {
   overrideTemplate(componentType: Type, template: string): TestComponentBuilder {
     var clone = this._clone();
     clone._templateOverrides.set(componentType, template);
+    return clone;
+  }
+
+  overrideAnimations(componentType: Type,
+                     animations: {[key: string]: any | any[]}): TestComponentBuilder {
+    var clone = this._clone();
+    clone._animationOverrides.set(componentType, animations);
     return clone;
   }
 
@@ -233,6 +242,8 @@ export class TestComponentBuilder {
     this._viewOverrides.forEach((view, type) => mockViewResolver.setView(type, view));
     this._templateOverrides.forEach((template, type) =>
                                         mockViewResolver.setInlineTemplate(type, template));
+    this._animationOverrides.forEach((animationsEntry, type) =>
+                                         mockViewResolver.setAnimations(type, animationsEntry));
     this._directiveOverrides.forEach((overrides, component) => {
       overrides.forEach(
           (to, from) => { mockViewResolver.overrideViewDirective(component, from, to); });
