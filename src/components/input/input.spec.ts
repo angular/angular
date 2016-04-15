@@ -1,4 +1,5 @@
 import {
+  describe,
   it,
   expect,
   beforeEach,
@@ -215,7 +216,46 @@ export function main() {
           })();
         });
     }));
+
+    it('supports number types and conserved its value type from Angular', injectAsync([], () => {
+      return builder.createAsync(MdInputNumberTypeConservedTestComponent)
+        .then((fixture: ComponentFixture) => {
+          fixture.detectChanges();
+
+          const inputEl = fixture.debugElement.query(By.css('input')).nativeElement;
+          inputEl.value = '3';
+
+          // Manually trigger an onchange event.
+          var evt = document.createEvent('HTMLEvents');
+          evt.initEvent('change', true, true);
+          inputEl.dispatchEvent(evt);
+
+          fixture.detectChanges();
+
+          // Something along the chain of events is asynchronous but does not use Zones, therefore
+          // we need to wait for that something to propagate. Using fakeAsync fails, just returning
+          // Promise.resolve(fixture) fails as well, but this passes.
+          return new Promise((resolve) => {
+            window.setTimeout(() => resolve(fixture), 0);
+          });
+        }).then((fixture: any) => {
+          expect(fixture.componentInstance.value).toBe(3);
+          expect(typeof fixture.componentInstance.value).toBe('number');
+        });
+    }));
   });
+}
+
+@Component({
+  selector: 'test-input-controller',
+  template: `
+    <md-input type="number" [(ngModel)]="value">
+    </md-input>
+  `,
+  directives: [MD_INPUT_DIRECTIVES]
+})
+class MdInputNumberTypeConservedTestComponent {
+  value: number = 0;
 }
 
 @Component({

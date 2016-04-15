@@ -20,7 +20,8 @@
              [type]="type"
              (focus)="onFocus()"
              (blur)="onBlur()"
-             [(ngModel)]="value">
+             [(ngModel)]="value"
+             (change)="onChange($event)">
 
       <label class="md-input-placeholder"
              [attr.for]="id"

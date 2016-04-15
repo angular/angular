@@ -143,6 +143,7 @@ export class MdInput implements ControlValueAccessor, AfterContentInit, OnChange
 
   get value(): any { return this._value; };
   @Input() set value(v: any) {
+    v = this._convertValueForInputType(v);
     if (v !== this._value) {
       this._value = v;
       this._onChangeCallback(v);
@@ -161,6 +162,11 @@ export class MdInput implements ControlValueAccessor, AfterContentInit, OnChange
   /** @internal */
   onBlur() {
     this._focused = false;
+    this._onTouchedCallback();
+  }
+  /** @internal */
+  onChange(ev: Event) {
+    this.value = (<HTMLInputElement>ev.target).value;
     this._onTouchedCallback();
   }
 
@@ -195,6 +201,19 @@ export class MdInput implements ControlValueAccessor, AfterContentInit, OnChange
 
   ngOnChanges(changes: {[key: string]: SimpleChange}) {
     this._validateConstraints();
+  }
+
+  /**
+   * Convert the value passed in to a value that is expected from the type of the md-input.
+   * This is normally performed by the *_VALUE_ACCESSOR in forms, but since the type is bound
+   * on our internal input it won't work locally.
+   * @private
+   */
+  private _convertValueForInputType(v: any): any {
+    switch (this.type) {
+      case 'number': return parseFloat(v);
+      default: return v;
+    }
   }
 
   /**
