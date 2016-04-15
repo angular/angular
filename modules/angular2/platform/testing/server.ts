@@ -47,7 +47,7 @@ function initServerTests() {
 }
 
 /**
- * Default patform providers for testing.
+ * Default platform providers for testing.
  */
 export const TEST_SERVER_PLATFORM_PROVIDERS: Array<any /*Type | Provider | any[]*/> = CONST_EXPR([
   PLATFORM_COMMON_PROVIDERS,
