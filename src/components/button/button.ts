@@ -14,8 +14,8 @@ import {
 
 
 @Component({
-  selector: '[md-button]:not(a), [md-raised-button]:not(a), [md-icon-button]:not(a), ' +
-            '[md-fab]:not(a), [md-mini-fab]:not(a)',
+  selector: 'button[md-button], button[md-raised-button], button[md-icon-button], ' +
+            'button[md-fab], button[md-mini-fab]',
   inputs: ['color'],
   host: {
     '[class.md-button-focus]': 'isKeyboardFocused',
