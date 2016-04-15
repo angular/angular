@@ -136,18 +136,3 @@ Output:
 Secondary text styling will be part of a broader typography module to 
 [come later](https://github.com/angular/material2/issues/205), and won’t be implemented as part of this component 
 specifically. Gray text in the examples above comes from a "demo-2" class added manually by the demo.
-
-### Lists with `*ngIf`
-
-If you'd like to use `*ngIf` on one of your list item lines, make sure to use `<template [ngIf]>` syntax rather than 
-the `*ngIf` shortcut (see example below).  There is currently an [issue in the main Angular repo](https://github.com/angular/angular/issues/6303) 
-that will project the line into the wrong content container if the shortcut is used.   
-
-```html
-<md-list-item>
-  <h3 md-line> Some heading </h3>
-  <template [ngIf]="showLine">
-    <p md-line> Some text </p>
-  </template>
-</md-list-item>
-```
