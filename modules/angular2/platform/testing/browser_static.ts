@@ -36,7 +36,7 @@ function initBrowserTests() {
 }
 
 /**
- * Default patform providers for testing without a compiler.
+ * Default platform providers for testing without a compiler.
  */
 export const TEST_BROWSER_STATIC_PLATFORM_PROVIDERS: Array<any /*Type | Provider | any[]*/> =
     CONST_EXPR([
