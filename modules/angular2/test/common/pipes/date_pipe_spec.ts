@@ -11,7 +11,7 @@ import {
 } from 'angular2/testing_internal';
 
 import {DatePipe} from 'angular2/common';
-import {DateWrapper} from 'angular2/src/facade/lang';
+import {DateWrapper, IS_DART} from 'angular2/src/facade/lang';
 import {PipeResolver} from 'angular2/src/core/linker/pipe_resolver';
 
 export function main() {
@@ -23,10 +23,10 @@ export function main() {
 
     beforeEach(() => {
       date = DateWrapper.create(2015, 6, 15, 21, 43, 11);
-      if (new Date().toISOString) {
-        dateString = date.toISOString();
-      } else {
+      if (IS_DART) {
         dateString = date.toIso8601String();
+      } else {
+        dateString = date.toISOString();
       }
 
       dateNumber = DateWrapper.toMillis(date);
