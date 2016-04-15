@@ -14,6 +14,8 @@ Individual components can be installed with `npm`:
 npm install --save @angular2-material/core @angular2-material/checkbox
 ```
 
+You can see our [list of published packages on npm](https://www.npmjs.com/~angular2-material).
+
 If you're using SystemJS as your module loader, your configuration for the angular-material
 packages should look like:
 ```js
