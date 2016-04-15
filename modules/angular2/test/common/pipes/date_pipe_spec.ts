@@ -23,12 +23,7 @@ export function main() {
 
     beforeEach(() => {
       date = DateWrapper.create(2015, 6, 15, 21, 43, 11);
-      if (IS_DART) {
-        dateString = date.toIso8601String();
-      } else {
-        dateString = date.toISOString();
-      }
-
+      dateString = DateWrapper.toJson(date);
       dateNumber = DateWrapper.toMillis(date);
       pipe = new DatePipe();
     });
