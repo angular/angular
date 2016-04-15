@@ -379,12 +379,14 @@ class _NgMetaIdentifierResolver {
       // these are so common that we special case them in the transformer
     } else if (id.name == "Window" || id.name == "Document") {
       return new CompileIdentifierMetadata(name: id.name, moduleUrl: 'dart:html');
+    } else if (id.name == "Random") {
+      return new CompileIdentifierMetadata(name: id.name, moduleUrl: 'dart:math');
     } else if (id.name == "Profiler") {
       return new CompileIdentifierMetadata(name: id.name, moduleUrl: 'asset:perf_api/lib/perf_api.dart');
     } else if (id.name == "Logger") {
       return new CompileIdentifierMetadata(name: id.name, moduleUrl: 'asset:logging/lib/logging.dart');
     } else if (id.name == "Clock") {
-      return new CompileIdentifierMetadata(name: id.name, moduleUrl: 'asset:quiver/lib/src/time/clock.dart');
+      return new CompileIdentifierMetadata(name: id.name, moduleUrl: 'asset:quiver/lib/time.dart');
     } else if (id.name == "Log") {
       return new CompileIdentifierMetadata(name: id.name, moduleUrl: 'asset:angular2/lib/src/testing/utils.dart');
     } else if (id.name == "TestComponentBuilder") {
@@ -407,6 +409,20 @@ class _NgMetaIdentifierResolver {
       return new CompileIdentifierMetadata(name: id.name, moduleUrl: 'asset:streamy/lib/src/extra/request_handler/proxy.dart');
     } else if (id.name == "StreamyHttpService") {
       return new CompileIdentifierMetadata(name: id.name, moduleUrl: 'asset:streamy/lib/src/toolbox/http.dart');
+    } else if (id.name == "BrowserClient") {
+      return new CompileIdentifierMetadata(name: id.name, moduleUrl: 'package:http/browser_client.dart');
+    } else if (id.name == "FeApi") {
+      return new CompileIdentifierMetadata(name: id.name, moduleUrl: 'package:ads.ds3.frontend.api/feapi.dart');
+    } else if (id.name == "ActivityController") {
+      return new CompileIdentifierMetadata(name: id.name, moduleUrl: 'package:ads.acx.tracking.activity/activity.dart');
+    } else if (id.name == "DataService") {
+      return new CompileIdentifierMetadata(name: id.name, moduleUrl: 'package:ads.ds3.frontend.common.service.column_data/data_service.dart');
+    } else if (id.name == "EssCell") {
+      return new CompileIdentifierMetadata(name: id.name, moduleUrl: 'package:ads.acx.ess.framework/framework.dart');
+    } else if (id.name == "Publishing") {
+      return new CompileIdentifierMetadata(name: id.name, moduleUrl: 'package:ads.cms.admin.api/publishing.dart');
+    } else if (id.name == "RepositoryImportStatusStore") {
+      return new CompileIdentifierMetadata(name: id.name, moduleUrl: 'package:ads.cms.admin.stores/import_status_store.dart');
     } else {
       return null;
     }
