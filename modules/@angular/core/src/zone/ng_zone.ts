@@ -176,6 +176,11 @@ export class NgZone {
    * Notify that an error has been delivered.
    */
   get onError(): EventEmitter<any> { return this._onErrorEvents; }
+  
+  /**
+   * Whether there are no outstanding microtasks or microtasks.
+   */
+  get isStable(): boolean { return this._isStable; }
 
   /**
    * Whether there are any outstanding microtasks.
