@@ -1304,10 +1304,10 @@ gulp.task('!bundles.js.umd', ['build.js.dev'], function() {
       externals: {
         'rxjs/Observable': 'umd Rx',
         'rxjs/Subject': 'umd Rx',
-        'rxjs/subject/ReplaySubject': {
-          commonjs: 'rxjs/subject/ReplaySubject',
-          commonjs2: 'rxjs/subject/ReplaySubject',
-          amd: 'rxjs/subject/ReplaySubject',
+        'rxjs/ReplaySubject': {
+          commonjs: 'rxjs/ReplaySubject',
+          commonjs2: 'rxjs/ReplaySubject',
+          amd: 'rxjs/ReplaySubject',
           root: ['Rx']
         },
         'rxjs/operator/take': {
