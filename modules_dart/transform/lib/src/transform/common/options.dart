@@ -148,7 +148,8 @@ class TransformerOptions {
         platformDirectives: platformDirectives,
         platformPipes: platformPipes,
         resolvedIdentifiers: resolvedIdentifiers,
-        errorOnMissingIdentifiers: errorOnMissingIdentifiers,
+        // TODO(tbosch): Remove this field from all BUILD rules...
+        errorOnMissingIdentifiers: true,
         inlineViews: inlineViews,
         lazyTransformers: lazyTransformers,
         translations: translations,
