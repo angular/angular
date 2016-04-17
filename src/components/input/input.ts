@@ -138,6 +138,7 @@ export class MdInput implements ControlValueAccessor, AfterContentInit, OnChange
   @Input() maxLength: number = -1;
   @Input() placeholder: string;
   @Input() @BooleanFieldValue() required: boolean = false;
+  @Input() @BooleanFieldValue() spellcheck: boolean = false;
   @Input() type: string = 'text';
 
   get value(): any { return this._value; };
