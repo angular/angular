@@ -34,7 +34,14 @@ export class Home {}
   providers: [],
   templateUrl: 'demo-app/demo-app.html',
   styleUrls: ['demo-app/demo-app.css'],
-  directives: [ROUTER_DIRECTIVES, Dir, MdButton, MD_SIDENAV_DIRECTIVES, MD_LIST_DIRECTIVES, MdToolbar],
+  directives: [
+    ROUTER_DIRECTIVES,
+    Dir,
+    MdButton,
+    MD_SIDENAV_DIRECTIVES,
+    MD_LIST_DIRECTIVES,
+    MdToolbar,
+  ],
   pipes: []
 })
 @RouteConfig([
