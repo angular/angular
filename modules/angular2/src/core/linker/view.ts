@@ -27,9 +27,9 @@ import {ObservableWrapper} from 'angular2/src/facade/async';
 import {Renderer, RootRenderer, RenderComponentType} from 'angular2/src/core/render/api';
 import {ViewRef_} from './view_ref';
 
-import {AppViewManager_, AppViewManager} from './view_manager';
 import {ViewType} from './view_type';
 import {
+  ViewUtils,
   flattenNestedViewRenderNodes,
   ensureSlotCount,
   arrayLooseIdentical,
@@ -65,7 +65,6 @@ export abstract class AppView<T> {
   allNodes: any[];
   disposables: Function[];
   subscriptions: any[];
-  namedAppElements: {[key: string]: AppElement};
   contentChildren: AppView<any>[] = [];
   viewChildren: AppView<any>[] = [];
   renderParent: AppView<any>;
@@ -93,13 +92,13 @@ export abstract class AppView<T> {
   private _hasExternalHostElement: boolean;
 
   constructor(public clazz: any, public componentType: RenderComponentType, public type: ViewType,
-              public locals: {[key: string]: any}, public viewManager: AppViewManager_,
+              public locals: {[key: string]: any}, public viewUtils: ViewUtils,
               public parentInjector: Injector, public declarationAppElement: AppElement,
               public cdMode: ChangeDetectionStrategy, literalArrayCacheSize: number,
               literalMapCacheSize: number) {
     this.ref = new ViewRef_(this);
     if (type === ViewType.COMPONENT || type === ViewType.HOST) {
-      this.renderer = viewManager.renderComponent(componentType);
+      this.renderer = viewUtils.renderComponent(componentType);
     } else {
       this.renderer = declarationAppElement.parentView.renderer;
     }
@@ -133,15 +132,15 @@ export abstract class AppView<T> {
   }
 
   /**
-   * Overwritten by implementations
+   * Overwritten by implementations.
+   * Returns the AppElement for the host element for ViewType.HOST.
    */
   createInternal(rootSelectorOrNode: string | any): AppElement { return null; }
 
-  init(rootNodesOrAppElements: any[], allNodes: any[], appElements: {[key: string]: AppElement},
-       disposables: Function[], subscriptions: any[]) {
+  init(rootNodesOrAppElements: any[], allNodes: any[], disposables: Function[],
+       subscriptions: any[]) {
     this.rootNodesOrAppElements = rootNodesOrAppElements;
     this.allNodes = allNodes;
-    this.namedAppElements = appElements;
     this.disposables = disposables;
     this.subscriptions = subscriptions;
     if (this.type === ViewType.COMPONENT) {
@@ -343,11 +342,11 @@ export class DebugAppView<T> extends AppView<T> {
   private _currentDebugContext: DebugContext = null;
 
   constructor(clazz: any, componentType: RenderComponentType, type: ViewType,
-              locals: {[key: string]: any}, viewManager: AppViewManager_, parentInjector: Injector,
+              locals: {[key: string]: any}, viewUtils: ViewUtils, parentInjector: Injector,
               declarationAppElement: AppElement, cdMode: ChangeDetectionStrategy,
               literalArrayCacheSize: number, literalMapCacheSize: number,
               public staticNodeDebugInfos: StaticNodeDebugInfo[]) {
-    super(clazz, componentType, type, locals, viewManager, parentInjector, declarationAppElement,
+    super(clazz, componentType, type, locals, viewUtils, parentInjector, declarationAppElement,
           cdMode, literalArrayCacheSize, literalMapCacheSize);
   }
 

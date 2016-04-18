@@ -145,7 +145,6 @@ var NG_CORE = [
   'APP_ID',
   'AngularEntrypoint:dart',
   'AbstractProviderError',
-  'AppViewManager',
   'ApplicationRef',
   'APPLICATION_COMMON_PROVIDERS',
   'Attribute',

@@ -1,6 +1,5 @@
 import {
   provide,
-  AppViewManager,
   ChangeDetectorRef,
   Injector,
   OnChanges,
@@ -30,8 +29,7 @@ export class DowngradeNg2ComponentAdapter {
   constructor(private id: string, private info: ComponentInfo,
               private element: angular.IAugmentedJQuery, private attrs: angular.IAttributes,
               private scope: angular.IScope, private parentInjector: Injector,
-              private parse: angular.IParseService, private viewManager: AppViewManager,
-              private componentFactory: ComponentFactory) {
+              private parse: angular.IParseService, private componentFactory: ComponentFactory) {
     (<any>this.element[0]).id = id;
     this.componentScope = scope.$new();
     this.childNodes = <Node[]><any>element.contents();

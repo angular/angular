@@ -225,8 +225,8 @@ class CompiledTemplate {
   viewFactory: Function = null;
   proxyViewFactory: Function;
   constructor() {
-    this.proxyViewFactory = (viewManager, childInjector, contextEl) =>
-        this.viewFactory(viewManager, childInjector, contextEl);
+    this.proxyViewFactory = (viewUtils, childInjector, contextEl) =>
+        this.viewFactory(viewUtils, childInjector, contextEl);
   }
 
   init(viewFactory: Function) { this.viewFactory = viewFactory; }

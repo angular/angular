@@ -145,8 +145,9 @@ class Attribute extends AttributeMetadata {
  */
 @Deprecated("Use ContentChildren/ContentChild instead")
 class Query extends QueryMetadata {
-  const Query(dynamic /*Type | string*/ selector, {bool descendants: false})
-      : super(selector, descendants: descendants);
+  const Query(dynamic /*Type | string*/ selector,
+      {bool descendants: false, dynamic read: null})
+      : super(selector, descendants: descendants, read: read);
 }
 
 /**
@@ -154,15 +155,15 @@ class Query extends QueryMetadata {
  */
 class ContentChildren extends ContentChildrenMetadata {
   const ContentChildren(dynamic /*Type | string*/ selector,
-      {bool descendants: false})
-      : super(selector, descendants: descendants);
+      {bool descendants: false, dynamic read: null})
+      : super(selector, descendants: descendants, read: read);
 }
 
 /**
  * See: [ContentChildMetadata] for docs.
  */
 class ContentChild extends ContentChildMetadata {
-  const ContentChild(dynamic /*Type | string*/ selector) : super(selector);
+  const ContentChild(dynamic /*Type | string*/ selector, {dynamic read: null}) : super(selector, read: read);
 }
 
 /**
@@ -170,22 +171,22 @@ class ContentChild extends ContentChildMetadata {
  */
 @Deprecated("Use ViewChildren/ViewChild instead")
 class ViewQuery extends ViewQueryMetadata {
-  const ViewQuery(dynamic /*Type | string*/ selector)
-      : super(selector, descendants: true);
+  const ViewQuery(dynamic /*Type | string*/ selector, {dynamic read: null})
+      : super(selector, descendants: true, read: read);
 }
 
 /**
  * See: [ViewChildrenMetadata] for docs.
  */
 class ViewChildren extends ViewChildrenMetadata {
-  const ViewChildren(dynamic /*Type | string*/ selector) : super(selector);
+  const ViewChildren(dynamic /*Type | string*/ selector, {dynamic read: null}) : super(selector, read: read);
 }
 
 /**
  * See: [ViewChildMetadata] for docs.
  */
 class ViewChild extends ViewChildMetadata {
-  const ViewChild(dynamic /*Type | string*/ selector) : super(selector);
+  const ViewChild(dynamic /*Type | string*/ selector, {dynamic read: null}) : super(selector, read: read);
 }
 
 /**

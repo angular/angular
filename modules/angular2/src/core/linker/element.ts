@@ -6,37 +6,30 @@ import {Injector} from 'angular2/src/core/di';
 
 import {AppView} from './view';
 import {ViewType} from './view_type';
-import {ElementRef_} from './element_ref';
+import {ElementRef} from './element_ref';
 
 import {ViewContainerRef, ViewContainerRef_} from './view_container_ref';
 
 import {QueryList} from './query_list';
 
+/**
+ * An AppElement is created for elements that have a ViewContainerRef,
+ * a nested component or a <template> element to keep data around
+ * that is needed for later instantiations.
+ */
 export class AppElement {
   public nestedViews: AppView<any>[] = null;
   public componentView: AppView<any> = null;
 
-  private _ref: ElementRef_;
-  private _vcRef: ViewContainerRef_;
   public component: any;
   public componentConstructorViewQueries: QueryList<any>[];
 
   constructor(public index: number, public parentIndex: number, public parentView: AppView<any>,
               public nativeElement: any) {}
 
-  get ref(): ElementRef_ {
-    if (isBlank(this._ref)) {
-      this._ref = new ElementRef_(this);
-    }
-    return this._ref;
-  }
+  get elementRef(): ElementRef { return new ElementRef(this.nativeElement); }
 
-  get vcRef(): ViewContainerRef_ {
-    if (isBlank(this._vcRef)) {
-      this._vcRef = new ViewContainerRef_(this);
-    }
-    return this._vcRef;
-  }
+  get vcRef(): ViewContainerRef_ { return new ViewContainerRef_(this); }
 
   initComponent(component: any, componentConstructorViewQueries: QueryList<any>[],
                 view: AppView<any>) {

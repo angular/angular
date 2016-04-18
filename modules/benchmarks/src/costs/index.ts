@@ -1,5 +1,5 @@
 import {bootstrap} from 'angular2/platform/browser';
-import {Component, Directive, DynamicComponentLoader, ElementRef} from 'angular2/core';
+import {Component, Directive, DynamicComponentLoader, ViewContainerRef} from 'angular2/core';
 import {NgIf, NgFor} from 'angular2/common';
 import {ApplicationRef} from 'angular2/src/core/application_ref';
 import {ListWrapper} from 'angular2/src/facade/collection';
@@ -53,7 +53,7 @@ class DummyDirective {
 
 @Directive({selector: 'dynamic-dummy'})
 class DynamicDummy {
-  constructor(loader: DynamicComponentLoader, location: ElementRef) {
+  constructor(loader: DynamicComponentLoader, location: ViewContainerRef) {
     loader.loadNextToLocation(DummyComponent, location);
   }
 }

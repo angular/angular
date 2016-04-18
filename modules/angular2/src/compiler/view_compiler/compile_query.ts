@@ -77,7 +77,7 @@ export class CompileQuery {
 function createQueryValues(viewValues: ViewQueryValues): o.Expression[] {
   return ListWrapper.flatten(viewValues.values.map((entry) => {
     if (entry instanceof ViewQueryValues) {
-      return mapNestedViews(entry.view.declarationElement.getOrCreateAppElement(), entry.view,
+      return mapNestedViews(entry.view.declarationElement.appElement, entry.view,
                             createQueryValues(entry));
     } else {
       return <o.Expression>entry;

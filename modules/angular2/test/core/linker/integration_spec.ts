@@ -498,7 +498,7 @@ function declareTests(isJit: boolean) {
                   MyComp, new ViewMetadata({
                     template:
                         '<div *ngIf="ctxBoolProp"><template some-viewport var-greeting="someTmpl"><span>{{greeting}}</span></template></div>',
-                    directives: [SomeViewport]
+                    directives: [SomeViewport, NgIf]
                   }))
 
                .createAsync(MyComp)

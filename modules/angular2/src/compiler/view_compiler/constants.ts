@@ -59,7 +59,7 @@ export class ChangeDetectionStrategyEnum {
 }
 
 export class ViewConstructorVars {
-  static viewManager = o.variable('viewManager');
+  static viewUtils = o.variable('viewUtils');
   static parentInjector = o.variable('parentInjector');
   static declarationEl = o.variable('declarationEl');
 }
@@ -67,7 +67,7 @@ export class ViewConstructorVars {
 export class ViewProperties {
   static renderer = o.THIS_EXPR.prop('renderer');
   static projectableNodes = o.THIS_EXPR.prop('projectableNodes');
-  static viewManager = o.THIS_EXPR.prop('viewManager');
+  static viewUtils = o.THIS_EXPR.prop('viewUtils');
 }
 
 export class EventHandlerVars { static event = o.variable('$event'); }

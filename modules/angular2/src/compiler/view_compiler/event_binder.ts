@@ -67,10 +67,9 @@ export class CompileEventListener {
   }
 
   finishMethod() {
-    var markPathToRootStart =
-        this._hasComponentHostListener ?
-            this.compileElement.getOrCreateAppElement().prop('componentView') :
-            o.THIS_EXPR;
+    var markPathToRootStart = this._hasComponentHostListener ?
+                                  this.compileElement.appElement.prop('componentView') :
+                                  o.THIS_EXPR;
     var resultExpr: o.Expression = o.literal(true);
     this._actionResultExprs.forEach((expr) => { resultExpr = resultExpr.and(expr); });
     var stmts =
