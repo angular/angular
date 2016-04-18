@@ -186,8 +186,8 @@ export class RouterLinkTransform implements TemplateAstVisitor {
     let updatedInputs = ast.inputs.map(c => c.visit(this, context));
     let updatedDirectives = ast.directives.map(c => c.visit(this, context));
     return new ElementAst(ast.name, ast.attrs, updatedInputs, ast.outputs, ast.exportAsVars,
-                          updatedDirectives, ast.providers, updatedChildren, ast.ngContentIndex,
-                          ast.sourceSpan);
+                          updatedDirectives, ast.providers, ast.hasViewContainer, updatedChildren,
+                          ast.ngContentIndex, ast.sourceSpan);
   }
 
   visitVariable(ast: any, context: any): any { return ast; }

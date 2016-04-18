@@ -98,8 +98,9 @@ export class ElementAst implements TemplateAst {
   constructor(public name: string, public attrs: AttrAst[],
               public inputs: BoundElementPropertyAst[], public outputs: BoundEventAst[],
               public exportAsVars: VariableAst[], public directives: DirectiveAst[],
-              public providers: ProviderAst[], public children: TemplateAst[],
-              public ngContentIndex: number, public sourceSpan: ParseSourceSpan) {}
+              public providers: ProviderAst[], public hasViewContainer: boolean,
+              public children: TemplateAst[], public ngContentIndex: number,
+              public sourceSpan: ParseSourceSpan) {}
 
   visit(visitor: TemplateAstVisitor, context: any): any {
     return visitor.visitElement(this, context);
@@ -129,8 +130,8 @@ export class ElementAst implements TemplateAst {
 export class EmbeddedTemplateAst implements TemplateAst {
   constructor(public attrs: AttrAst[], public outputs: BoundEventAst[], public vars: VariableAst[],
               public directives: DirectiveAst[], public providers: ProviderAst[],
-              public children: TemplateAst[], public ngContentIndex: number,
-              public sourceSpan: ParseSourceSpan) {}
+              public hasViewContainer: boolean, public children: TemplateAst[],
+              public ngContentIndex: number, public sourceSpan: ParseSourceSpan) {}
 
   visit(visitor: TemplateAstVisitor, context: any): any {
     return visitor.visitEmbeddedTemplate(this, context);

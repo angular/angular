@@ -2,7 +2,6 @@ import {
   provide,
   platform,
   ApplicationRef,
-  AppViewManager,
   ComponentResolver,
   Injector,
   NgZone,
@@ -26,7 +25,6 @@ import {
   NG1_ROOT_SCOPE,
   NG1_SCOPE,
   NG1_TESTABILITY,
-  NG2_APP_VIEW_MANAGER,
   NG2_COMPILER,
   NG2_INJECTOR,
   NG2_COMPONENT_FACTORY_REF_MAP,
@@ -318,7 +316,6 @@ export class UpgradeAdapter {
         .value(NG2_ZONE, ngZone)
         .value(NG2_COMPILER, compiler)
         .value(NG2_COMPONENT_FACTORY_REF_MAP, componentFactoryRefMap)
-        .value(NG2_APP_VIEW_MANAGER, injector.get(AppViewManager))
         .config([
           '$provide',
           (provide) => {
@@ -542,10 +539,8 @@ interface ComponentFactoryRefMap {
 }
 
 function ng1ComponentDirective(info: ComponentInfo, idPrefix: string): Function {
-  (<any>directiveFactory).$inject =
-      [NG2_COMPONENT_FACTORY_REF_MAP, NG2_APP_VIEW_MANAGER, NG1_PARSE];
+  (<any>directiveFactory).$inject = [NG2_COMPONENT_FACTORY_REF_MAP, NG1_PARSE];
   function directiveFactory(componentFactoryRefMap: ComponentFactoryRefMap,
-                            viewManager: AppViewManager,
                             parse: angular.IParseService): angular.IDirective {
     var componentFactory: ComponentFactory = componentFactoryRefMap[info.selector];
     if (!componentFactory) throw new Error('Expecting ComponentFactory for: ' + info.selector);
@@ -557,9 +552,9 @@ function ng1ComponentDirective(info: ComponentInfo, idPrefix: string): Function 
         post: (scope: angular.IScope, element: angular.IAugmentedJQuery, attrs: angular.IAttributes,
                parentInjector: any, transclude: angular.ITranscludeFunction): void => {
           var domElement = <any>element[0];
-          var facade = new DowngradeNg2ComponentAdapter(idPrefix + (idCount++), info, element,
-                                                        attrs, scope, <Injector>parentInjector,
-                                                        parse, viewManager, componentFactory);
+          var facade =
+              new DowngradeNg2ComponentAdapter(idPrefix + (idCount++), info, element, attrs, scope,
+                                               <Injector>parentInjector, parse, componentFactory);
           facade.setupInputs();
           facade.bootstrapNg2();
           facade.projectContent();

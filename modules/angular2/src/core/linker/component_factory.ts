@@ -1,10 +1,10 @@
 import {Injector} from 'angular2/src/core/di';
 import {Type, CONST, isPresent, isBlank} from 'angular2/src/facade/lang';
 import {unimplemented} from 'angular2/src/facade/exceptions';
-import {ElementRef, ElementRef_} from './element_ref';
+import {ElementRef} from './element_ref';
 import {ViewRef, ViewRef_} from './view_ref';
 import {AppElement} from './element';
-import {AppViewManager} from './view_manager';
+import {ViewUtils} from './view_utils';
 import {ChangeDetectorRef} from '../change_detection/change_detection';
 
 /**
@@ -38,7 +38,7 @@ export abstract class ComponentRef {
   /**
    * The {@link ChangeDetectorRef} of the Component instance.
    */
-  get changeDetectorRef(): ChangeDetectorRef { return unimplemented(); };
+  get changeDetectorRef(): ChangeDetectorRef { return unimplemented(); }
 
   /**
    * The component type.
@@ -57,15 +57,15 @@ export abstract class ComponentRef {
 }
 
 export class ComponentRef_ extends ComponentRef {
-  constructor(private _location: AppElement, private _componentType: Type) { super(); }
-  get location(): ElementRef { return this._location.ref; }
-  get injector(): Injector { return this._location.injector; }
-  get instance(): any { return this._location.component; };
-  get hostView(): ViewRef { return this._location.parentView.ref; };
+  constructor(private _hostElement: AppElement, private _componentType: Type) { super(); }
+  get location(): ElementRef { return this._hostElement.elementRef; }
+  get injector(): Injector { return this._hostElement.injector; }
+  get instance(): any { return this._hostElement.component; };
+  get hostView(): ViewRef { return this._hostElement.parentView.ref; };
   get changeDetectorRef(): ChangeDetectorRef { return this.hostView; };
   get componentType(): Type { return this._componentType; }
 
-  destroy(): void { this._location.parentView.destroy(); }
+  destroy(): void { this._hostElement.parentView.destroy(); }
   onDestroy(callback: Function): void { this.hostView.onDestroy(callback); }
 }
 
@@ -81,12 +81,12 @@ export class ComponentFactory {
    */
   create(injector: Injector, projectableNodes: any[][] = null,
          rootSelectorOrNode: string | any = null): ComponentRef {
-    var vm: AppViewManager = injector.get(AppViewManager);
+    var vu: ViewUtils = injector.get(ViewUtils);
     if (isBlank(projectableNodes)) {
       projectableNodes = [];
     }
     // Note: Host views don't need a declarationAppElement!
-    var hostView = this._viewFactory(vm, injector, null);
+    var hostView = this._viewFactory(vu, injector, null);
     var hostElement = hostView.create(projectableNodes, rootSelectorOrNode);
     return new ComponentRef_(hostElement, this._componentType);
   }

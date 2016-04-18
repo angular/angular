@@ -7,7 +7,7 @@ import {wtfCreateScope, wtfLeave, WtfScopeFn} from '../profile/profile';
 
 import {AppElement} from './element';
 
-import {ElementRef, ElementRef_} from './element_ref';
+import {ElementRef} from './element_ref';
 import {TemplateRef, TemplateRef_} from './template_ref';
 import {EmbeddedViewRef, ViewRef, ViewRef_} from './view_ref';
 import {ComponentFactory, ComponentRef} from './component_factory';
@@ -27,10 +27,7 @@ import {ComponentFactory, ComponentRef} from './component_factory';
  * the Rendered View.
  *
  * To access a `ViewContainerRef` of an Element, you can either place a {@link Directive} injected
- * with `ViewContainerRef` on the Element, or you obtain it via
- * {@link AppViewManager#getViewContainer}.
- *
- * <!-- TODO(i): we are also considering ElementRef#viewContainer api -->
+ * with `ViewContainerRef` on the Element, or you obtain it via a {@link ViewChild} query.
  */
 export abstract class ViewContainerRef {
   /**
@@ -121,7 +118,7 @@ export class ViewContainerRef_ implements ViewContainerRef {
     return isPresent(views) ? views.length : 0;
   }
 
-  get element(): ElementRef { return this._element.ref; }
+  get element(): ElementRef { return this._element.elementRef; }
 
   // TODO(rado): profile and decide whether bounds checks should be added
   // to the methods below.

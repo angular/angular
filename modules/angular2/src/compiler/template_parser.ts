@@ -328,7 +328,7 @@ class TemplateParseVisitor implements HtmlAstVisitor {
     var isViewRoot = parent.isTemplateElement || hasInlineTemplates;
     var providerContext =
         new ProviderElementContext(this.providerViewContext, parent.providerContext, isViewRoot,
-                                   directiveAsts, attrs, element.sourceSpan);
+                                   directiveAsts, attrs, vars, element.sourceSpan);
     var children = htmlVisitAll(
         preparsedElement.nonBindable ? NON_BINDABLE_VISITOR : this, element.children,
         ElementContext.create(isTemplateElement, directiveAsts,
@@ -355,10 +355,10 @@ class TemplateParseVisitor implements HtmlAstVisitor {
       this._assertNoComponentsNorElementBindingsOnTemplate(directiveAsts, elementProps,
                                                            element.sourceSpan);
 
-      parsedElement =
-          new EmbeddedTemplateAst(attrs, events, vars, providerContext.transformedDirectiveAsts,
-                                  providerContext.transformProviders, children,
-                                  hasInlineTemplates ? null : ngContentIndex, element.sourceSpan);
+      parsedElement = new EmbeddedTemplateAst(
+          attrs, events, vars, providerContext.transformedDirectiveAsts,
+          providerContext.transformProviders, providerContext.transformedHasViewContainer, children,
+          hasInlineTemplates ? null : ngContentIndex, element.sourceSpan);
     } else {
       this._assertOnlyOneComponent(directiveAsts, element.sourceSpan);
       var elementExportAsVars = vars.filter(varAst => varAst.value.length === 0);
@@ -367,7 +367,8 @@ class TemplateParseVisitor implements HtmlAstVisitor {
 
       parsedElement = new ElementAst(
           nodeName, attrs, elementProps, events, elementExportAsVars,
-          providerContext.transformedDirectiveAsts, providerContext.transformProviders, children,
+          providerContext.transformedDirectiveAsts, providerContext.transformProviders,
+          providerContext.transformedHasViewContainer, children,
           hasInlineTemplates ? null : ngContentIndex, element.sourceSpan);
     }
     if (hasInlineTemplates) {
@@ -382,12 +383,13 @@ class TemplateParseVisitor implements HtmlAstVisitor {
           templateDirectiveAsts, templateElementProps, element.sourceSpan);
       var templateProviderContext = new ProviderElementContext(
           this.providerViewContext, parent.providerContext, parent.isTemplateElement,
-          templateDirectiveAsts, [], element.sourceSpan);
+          templateDirectiveAsts, [], templateVars, element.sourceSpan);
       templateProviderContext.afterElement();
 
       parsedElement = new EmbeddedTemplateAst([], [], templateVars,
                                               templateProviderContext.transformedDirectiveAsts,
                                               templateProviderContext.transformProviders,
+                                              templateProviderContext.transformedHasViewContainer,
                                               [parsedElement], ngContentIndex, element.sourceSpan);
     }
     return parsedElement;
@@ -765,8 +767,8 @@ class NonBindableVisitor implements HtmlAstVisitor {
     var selector = createElementCssSelector(ast.name, attrNameAndValues);
     var ngContentIndex = parent.findNgContentIndex(selector);
     var children = htmlVisitAll(this, ast.children, EMPTY_ELEMENT_CONTEXT);
-    return new ElementAst(ast.name, htmlVisitAll(this, ast.attrs), [], [], [], [], [], children,
-                          ngContentIndex, ast.sourceSpan);
+    return new ElementAst(ast.name, htmlVisitAll(this, ast.attrs), [], [], [], [], [], false,
+                          children, ngContentIndex, ast.sourceSpan);
   }
   visitComment(ast: HtmlCommentAst, context: any): any { return null; }
   visitAttr(ast: HtmlAttrAst, context: any): AttrAst {

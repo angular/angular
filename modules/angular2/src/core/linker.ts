@@ -1,6 +1,5 @@
 // Public API for compiler
 export {ComponentResolver} from './linker/component_resolver';
-export {AppViewManager} from './linker/view_manager';
 export {QueryList} from './linker/query_list';
 export {DynamicComponentLoader} from './linker/dynamic_component_loader';
 export {ElementRef} from './linker/element_ref';

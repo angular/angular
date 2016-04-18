@@ -402,40 +402,43 @@ export interface AttributeMetadataFactory {
  * ```
  */
 export interface QueryMetadataFactory {
-  (selector: Type | string, {descendants}?: {descendants?: boolean}): ParameterDecorator;
-  new (selector: Type | string, {descendants}?: {descendants?: boolean}): QueryMetadata;
+  (selector: Type | string,
+   {descendants, read}?: {descendants?: boolean, read?: any}): ParameterDecorator;
+  new (selector: Type | string,
+       {descendants, read}?: {descendants?: boolean, read?: any}): QueryMetadata;
 }
 
 /**
  * Factory for {@link ContentChildren}.
  */
 export interface ContentChildrenMetadataFactory {
-  (selector: Type | string, {descendants}?: {descendants?: boolean}): any;
-  new (selector: Type | string, {descendants}?: {descendants?: boolean}): ContentChildrenMetadata;
+  (selector: Type | string, {descendants, read}?: {descendants?: boolean, read?: any}): any;
+  new (selector: Type | string,
+       {descendants, read}?: {descendants?: boolean, read?: any}): ContentChildrenMetadata;
 }
 
 /**
  * Factory for {@link ContentChild}.
  */
 export interface ContentChildMetadataFactory {
-  (selector: Type | string): any;
-  new (selector: Type | string): ContentChildMetadataFactory;
+  (selector: Type | string, {read}?: {read?: any}): any;
+  new (selector: Type | string, {read}?: {read?: any}): ContentChildMetadataFactory;
 }
 
 /**
  * Factory for {@link ViewChildren}.
  */
 export interface ViewChildrenMetadataFactory {
-  (selector: Type | string): any;
-  new (selector: Type | string): ViewChildrenMetadata;
+  (selector: Type | string, {read}?: {read?: any}): any;
+  new (selector: Type | string, {read}?: {read?: any}): ViewChildrenMetadata;
 }
 
 /**
  * Factory for {@link ViewChild}.
  */
 export interface ViewChildMetadataFactory {
-  (selector: Type | string): any;
-  new (selector: Type | string): ViewChildMetadataFactory;
+  (selector: Type | string, {read}?: {read?: any}): any;
+  new (selector: Type | string, {read}?: {read?: any}): ViewChildMetadataFactory;
 }
 
 

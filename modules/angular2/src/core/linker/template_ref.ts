@@ -1,4 +1,4 @@
-import {ElementRef, ElementRef_} from './element_ref';
+import {ElementRef} from './element_ref';
 import {AppElement} from './element';
 import {AppView} from './view';
 import {EmbeddedViewRef} from './view_ref';
@@ -37,11 +37,11 @@ export class TemplateRef_ extends TemplateRef {
   constructor(private _appElement: AppElement, private _viewFactory: Function) { super(); }
 
   createEmbeddedView(): EmbeddedViewRef {
-    var view: AppView<any> = this._viewFactory(this._appElement.parentView.viewManager,
+    var view: AppView<any> = this._viewFactory(this._appElement.parentView.viewUtils,
                                                this._appElement.parentInjector, this._appElement);
     view.create(null, null);
     return view.ref;
   }
 
-  get elementRef(): ElementRef { return this._appElement.ref; }
+  get elementRef(): ElementRef { return this._appElement.elementRef; }
 }

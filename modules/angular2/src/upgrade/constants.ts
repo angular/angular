@@ -1,4 +1,3 @@
-export const NG2_APP_VIEW_MANAGER = 'ng2.AppViewManager';
 export const NG2_COMPILER = 'ng2.Compiler';
 export const NG2_INJECTOR = 'ng2.Injector';
 export const NG2_COMPONENT_FACTORY_REF_MAP = 'ng2.ComponentFactoryRefMap';

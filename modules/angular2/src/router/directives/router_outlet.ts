@@ -7,7 +7,7 @@ import {
   Attribute,
   DynamicComponentLoader,
   ComponentRef,
-  ElementRef,
+  ViewContainerRef,
   Injector,
   provide,
   Dependency,
@@ -40,7 +40,7 @@ export class RouterOutlet implements OnDestroy {
 
   @Output('activate') public activateEvents = new EventEmitter<any>();
 
-  constructor(private _elementRef: ElementRef, private _loader: DynamicComponentLoader,
+  constructor(private _viewContainerRef: ViewContainerRef, private _loader: DynamicComponentLoader,
               private _parentRouter: routerMod.Router, @Attribute('name') nameAttr: string) {
     if (isPresent(nameAttr)) {
       this.name = nameAttr;
@@ -66,7 +66,7 @@ export class RouterOutlet implements OnDestroy {
       provide(routerMod.Router, {useValue: childRouter})
     ]);
     this._componentRef =
-        this._loader.loadNextToLocation(componentType, this._elementRef, providers);
+        this._loader.loadNextToLocation(componentType, this._viewContainerRef, providers);
     return this._componentRef.then((componentRef) => {
       this.activateEvents.emit(componentRef.instance);
       if (hasLifecycleHook(hookMod.routerOnActivate, componentType)) {
