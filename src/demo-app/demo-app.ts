@@ -22,7 +22,10 @@ import {GesturesDemo} from './gestures/gestures-demo';
 
 @Component({
   selector: 'home',
-  template: ''
+  template: `
+    <p>Welcome to the development demos for Angular Material 2!</p>
+    <p>Open the sidenav to select a demo. </p>
+  `
 })
 export class Home {}
 

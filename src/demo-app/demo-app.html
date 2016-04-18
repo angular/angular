@@ -24,12 +24,11 @@
       <i class="material-icons" (click)="start.open()">menu</i>
       <div class="demo-toolbar">
         <h1>Angular Material 2 Demos</h1>
-        <button md-raised-button (click)="root.dir = (root.dir == 'rtl' ? 'ltr' : 'rtl')">
+        <button md-button (click)="root.dir = (root.dir == 'rtl' ? 'ltr' : 'rtl')" title="Toggle between RTL and LTR">
           {{root.dir.toUpperCase()}}
         </button>
       </div>
     </md-toolbar>
-
 
     <div #root="$implicit" dir="ltr" class="demo-content">
       <router-outlet></router-outlet>

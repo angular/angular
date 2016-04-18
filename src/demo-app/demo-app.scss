@@ -11,7 +11,6 @@
   }
 
   md-toolbar {
-
     i {
       padding: 20px;
       cursor: pointer;
@@ -21,6 +20,10 @@
       display: flex;
       justify-content: space-between;
       width: 100%;
+    }
+
+    button {
+      color: white;
     }
   }
 
