@@ -58,7 +58,6 @@ env:
     - MODE=build_only
     - MODE=typescript_next
     - MODE=lint
-    - MODE=payload
 
 matrix:
   allow_failures:
