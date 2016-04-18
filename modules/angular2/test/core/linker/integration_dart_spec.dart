@@ -140,8 +140,8 @@ main() {
   describe("ObservableListDiff", () {
     it(
         'should be notified of changes',
-        inject([TestComponentBuilder, Log],
-            fakeAsync((TestComponentBuilder tcb, Log log) {
+        fakeAsync(inject([TestComponentBuilder, Log],
+                         (TestComponentBuilder tcb, Log log) {
           tcb
               .overrideView(
                   Dummy,
