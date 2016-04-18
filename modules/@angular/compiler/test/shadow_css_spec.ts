@@ -60,6 +60,12 @@ export function main() {
       expect(s(css, 'a')).toEqual(expected);
     });
 
+    it('should handle support rules', () => {
+      var css = '@supports (display: flex) {section {display: flex;}}';
+      var expected = '@supports (display:flex) {section[a] {display:flex;}}';
+      expect(s(css, 'a')).toEqual(expected);
+    });
+
     // Check that the browser supports unprefixed CSS animation
     it('should handle keyframes rules', () => {
       var css = '@keyframes foo {0% {transform:translate(-50%) scaleX(0);}}';

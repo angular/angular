@@ -332,7 +332,7 @@ export class ShadowCss {
       if (rule.selector[0] != '@' || rule.selector.startsWith('@page')) {
         selector =
             this._scopeSelector(rule.selector, scopeSelector, hostSelector, this.strictStyling);
-      } else if (rule.selector.startsWith('@media')) {
+      } else if (rule.selector.startsWith('@media') || rule.selector.startsWith('@supports')) {
         content = this._scopeSelectors(rule.content, scopeSelector, hostSelector);
       }
       return new CssRule(selector, content);
