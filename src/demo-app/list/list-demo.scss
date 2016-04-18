@@ -3,7 +3,7 @@
   width: 350px;
   display: flex;
 
-  md-list {
+  md-list, md-nav-list {
     border: 1px solid rgba(0,0,0,0.12);
     width: 350px;
     margin: 20px;
@@ -11,6 +11,10 @@
   }
   h2 {
     margin: 0 20px;
+  }
+
+  i {
+    color: rgba(0,0,0,0.12);
   }
 }
 

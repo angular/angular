@@ -39,6 +39,17 @@
         <p md-line class="demo-secondary-text">{{message.message}} </p>
       </md-list-item>
     </md-list>
+    <div *ngIf="infoClicked">
+      More info!
+    </div>
+    <md-nav-list>
+      <md-list-item *ngFor="#link of links">
+        <a md-line href="http://www.google.com">{{ link.name }}</a>
+        <button md-icon-button (click)="infoClicked=!infoClicked">
+          <i class="material-icons">info</i>
+        </button>
+      </md-list-item>
+    </md-nav-list>
   </div>
 
   <div>
@@ -66,5 +77,13 @@
         <p md-line class="demo-secondary-text">{{message.message}} </p>
       </md-list-item>
     </md-list>
+    <md-nav-list dense>
+      <md-list-item *ngFor="#link of links">
+        <a md-line href="http://www.google.com">{{ link.name }}</a>
+        <button md-icon-button (click)="infoClicked=!infoClicked">
+          <i class="material-icons">info</i>
+        </button>
+      </md-list-item>
+    </md-nav-list>
   </div>
 </div>

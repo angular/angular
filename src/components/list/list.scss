@@ -125,7 +125,7 @@ based on whether the list is in dense mode.
   }
 }
 
-md-list {
+md-list, md-nav-list  {
   padding-top: $md-list-top-padding;
   display: block;
 
@@ -152,7 +152,7 @@ md-list {
 }
 
 
-md-list[dense] {
+md-list[dense], md-nav-list[dense] {
   padding-top: $md-dense-top-padding;
   display: block;
 
@@ -182,4 +182,19 @@ md-divider {
   display: block;
   border-top: 1px solid md-color($md-foreground, divider);
   margin: 0;
+}
+
+md-nav-list {
+  a {
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .md-list-item {
+    cursor: pointer;
+
+    &:hover {
+      background: md-color($md-background, 'hover');
+    }
+  }
 }

@@ -42,6 +42,14 @@ export class ListDemo {
     }
   ];
 
-  thirdLine: boolean = false;
+  links: any[] = [
+    {name: 'Inbox'},
+    {name: 'Outbox'},
+    {name: 'Spam'},
+    {name: 'Trash'}
 
+  ];
+
+  thirdLine: boolean = false;
+  infoClicked: boolean = false;
 }
