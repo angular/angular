@@ -106,13 +106,12 @@ export function main() {
         it('provides a real XHR instance',
            inject([XHR], (xhr) => { expect(xhr).toBeAnInstanceOf(XHRImpl); }));
 
-        it('should allow the use of fakeAsync',
-           inject([FancyService], fakeAsync((service) => {
-                    var value;
-                    service.getAsyncValue().then(function(val) { value = val; });
-                    tick();
-                    expect(value).toEqual('async value');
-                  })));
+        it('should allow the use of fakeAsync', fakeAsync(inject([FancyService], (service) => {
+             var value;
+             service.getAsyncValue().then(function(val) { value = val; });
+             tick();
+             expect(value).toEqual('async value');
+           })));
       });
     });
 

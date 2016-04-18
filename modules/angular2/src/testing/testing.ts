@@ -87,7 +87,7 @@ export type AsyncTestFn = (done: () => void) => void;
 /**
  * Signature for any simple testing function.
  */
-export type AnyTestFn = SyncTestFn | AsyncTestFn;
+export type AnyTestFn = SyncTestFn | AsyncTestFn | Function;
 
 var jsmBeforeEach = _global.beforeEach;
 var jsmIt = _global.it;

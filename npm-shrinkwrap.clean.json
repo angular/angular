@@ -2231,6 +2231,9 @@
         "glob": {
           "version": "4.3.5",
           "dependencies": {
+            "inflight": {
+              "version": "1.0.4"
+            },
             "minimatch": {
               "version": "2.0.10"
             }
@@ -5819,7 +5822,7 @@
       }
     },
     "zone.js": {
-      "version": "0.6.11"
+      "version": "0.6.12"
     }
   },
   "name": "angular-srcs",

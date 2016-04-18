@@ -7,6 +7,7 @@ var path = require('path');
 require('zone.js/dist/zone-node.js');
 require('zone.js/dist/long-stack-trace-zone.js');
 require('zone.js/dist/async-test.js');
+require('zone.js/dist/fake-async-test.js');
 require('reflect-metadata/Reflect');
 
 var jrunner = new JasmineRunner();

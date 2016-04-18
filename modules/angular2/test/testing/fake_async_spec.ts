@@ -34,7 +34,7 @@ export function main() {
     });
 
     it('should work with inject()',
-       inject([Parser], fakeAsync((parser) => { expect(parser).toBeAnInstanceOf(Parser); })));
+       fakeAsync(inject([Parser], (parser) => { expect(parser).toBeAnInstanceOf(Parser); })));
 
     it('should throw on nested calls', () => {
       expect(() => { fakeAsync(() => { fakeAsync(() => null)(); })(); })
@@ -259,6 +259,5 @@ export function main() {
             .toThrowError('The code should be running in the fakeAsync zone to call this function');
       });
     });
-
   });
 }

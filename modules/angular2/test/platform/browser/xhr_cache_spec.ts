@@ -58,15 +58,15 @@ export function main() {
        }));
 
     it('should allow fakeAsync Tests to load components with templateUrl synchronously',
-       inject([TestComponentBuilder], fakeAsync((tcb: TestComponentBuilder) => {
-                let fixture: ComponentFixture;
-                tcb.createAsync(TestComponent).then((f) => { fixture = f; });
+       fakeAsync(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
+         let fixture: ComponentFixture;
+         tcb.createAsync(TestComponent).then((f) => { fixture = f; });
 
-                // This should initialize the fixture.
-                tick();
+         // This should initialize the fixture.
+         tick();
 
-                expect(fixture.debugElement.children[0].nativeElement).toHaveText('Hello');
-              })));
+         expect(fixture.debugElement.children[0].nativeElement).toHaveText('Hello');
+       })));
   });
 }
 
