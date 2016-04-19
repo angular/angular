@@ -11,7 +11,7 @@ import {
 } from 'angular2/testing_internal';
 
 import {DatePipe} from 'angular2/common';
-import {DateWrapper, IS_DART} from 'angular2/src/facade/lang';
+import {DateWrapper} from 'angular2/src/facade/lang';
 import {PipeResolver} from 'angular2/src/compiler/pipe_resolver';
 
 export function main() {

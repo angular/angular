@@ -6,6 +6,7 @@ import {
   Date,
   DateWrapper,
   CONST,
+  CONST_EXPR,
   isBlank,
   FunctionWrapper,
   RegExpWrapper
@@ -20,8 +21,8 @@ import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
 // TODO: move to a global configurable location along with other i18n components.
 var defaultLocale: string = 'en-US';
 
-const ISO8601_STR: RegExp = RegExpWrapper.create(
-    '/(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d\.\d+([+-][0-2]\d:[0-5]\d|Z))|(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d([+-][0-2]\d:[0-5]\d|Z))|(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d([+-][0-2]\d:[0-5]\d|Z))/');
+const ISO8601_STR: RegExp = CONST_EXPR(RegExpWrapper.create(
+    '/(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d\.\d+([+-][0-2]\d:[0-5]\d|Z))|(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d([+-][0-2]\d:[0-5]\d|Z))|(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d([+-][0-2]\d:[0-5]\d|Z))/'));
 
 /**
  * Formats a date value to a string based on the requested format.
@@ -115,8 +116,7 @@ export class DatePipe implements PipeTransform {
     var pattern: string = isPresent(args) && args.length > 0 ? args[0] : 'mediumDate';
     if (isNumber(value)) {
       value = DateWrapper.fromMillis(value);
-    }
-    if (isString(value) && RegExpWrapper.test(ISO8601_STR, value)) {
+    } else if (isString(value)) {
       value = DateWrapper.fromISOString(value);
     }
     if (StringMapWrapper.contains(DatePipe._ALIASES, pattern)) {
