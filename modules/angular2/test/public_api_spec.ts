@@ -70,7 +70,7 @@ var NG_COMMON = [
   'NgSelectOption',
   'NgStyle',
   'NgSwitch',
-  'NgSwitchWhen',
+  'NgSwitchCase',
   'NgSwitchDefault',
   'NumberPipe',
   'ObservableListDiff:dart',

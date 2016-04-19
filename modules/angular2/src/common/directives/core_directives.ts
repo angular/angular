@@ -3,7 +3,7 @@ import {NgClass} from './ng_class';
 import {NgFor} from './ng_for';
 import {NgIf} from './ng_if';
 import {NgStyle} from './ng_style';
-import {NgSwitch, NgSwitchWhen, NgSwitchDefault} from './ng_switch';
+import {NgSwitch, NgSwitchCase, NgSwitchDefault} from './ng_switch';
 import {NgPlural, NgPluralCase} from './ng_plural';
 
 /**
@@ -18,13 +18,13 @@ import {NgPlural, NgPluralCase} from './ng_plural';
  * Instead of writing:
  *
  * ```typescript
- * import {NgClass, NgIf, NgFor, NgSwitch, NgSwitchWhen, NgSwitchDefault} from 'angular2/common';
+ * import {NgClass, NgIf, NgFor, NgSwitch, NgSwitchCase, NgSwitchDefault} from 'angular2/common';
  * import {OtherDirective} from './myDirectives';
  *
  * @Component({
  *   selector: 'my-component',
  *   templateUrl: 'myComponent.html',
- *   directives: [NgClass, NgIf, NgFor, NgSwitch, NgSwitchWhen, NgSwitchDefault, OtherDirective]
+ *   directives: [NgClass, NgIf, NgFor, NgSwitch, NgSwitchCase, NgSwitchDefault, OtherDirective]
  * })
  * export class MyComponent {
  *   ...
@@ -52,7 +52,7 @@ export const CORE_DIRECTIVES: Type[] = CONST_EXPR([
   NgIf,
   NgStyle,
   NgSwitch,
-  NgSwitchWhen,
+  NgSwitchCase,
   NgSwitchDefault,
   NgPlural,
   NgPluralCase
