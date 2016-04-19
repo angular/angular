@@ -1,25 +1,21 @@
 
 .demo {
-  width: 350px;
   display: flex;
+  flex-flow: row wrap;
 
   md-list, md-nav-list {
     border: 1px solid rgba(0,0,0,0.12);
     width: 350px;
-    margin: 20px;
+    margin: 20px 20px 0 0;
 
   }
   h2 {
-    margin: 0 20px;
+    margin-top: 20px;
   }
 
   i {
     color: rgba(0,0,0,0.12);
   }
-}
-
-.demo-button {
-  margin: 20px;
 }
 
 .demo-secondary-text {

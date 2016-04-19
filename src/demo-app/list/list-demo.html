@@ -39,22 +39,6 @@
         <p md-line class="demo-secondary-text">{{message.message}} </p>
       </md-list-item>
     </md-list>
-    <div *ngIf="infoClicked">
-      More info!
-    </div>
-    <md-nav-list>
-      <md-list-item *ngFor="#link of links">
-        <a md-line href="http://www.google.com">{{ link.name }}</a>
-        <button md-icon-button (click)="infoClicked=!infoClicked">
-          <i class="material-icons">info</i>
-        </button>
-      </md-list-item>
-    </md-nav-list>
-    <md-nav-list>
-      <a md-list-item *ngFor="#link of links" href="http://www.google.com">
-        {{ link.name }}
-      </a>
-    </md-nav-list>
   </div>
 
   <div>
@@ -82,7 +66,18 @@
         <p md-line class="demo-secondary-text">{{message.message}} </p>
       </md-list-item>
     </md-list>
-    <md-nav-list dense>
+  </div>
+  <div>
+    <h2>Nav lists</h2>
+    <md-nav-list>
+      <a md-list-item *ngFor="#link of links" href="http://www.google.com">
+        {{ link.name }}
+      </a>
+    </md-nav-list>
+    <div *ngIf="infoClicked">
+      More info!
+    </div>
+    <md-nav-list>
       <md-list-item *ngFor="#link of links">
         <a md-line href="http://www.google.com">{{ link.name }}</a>
         <button md-icon-button (click)="infoClicked=!infoClicked">
@@ -90,10 +85,19 @@
         </button>
       </md-list-item>
     </md-nav-list>
-    <md-nav-list dense>
+    <md-nav-list>
       <a md-list-item *ngFor="#link of links" href="http://www.google.com">
-        {{ link.name }}
+        <span md-line>{{ link.name }}</span>
+        <span md-line class="demo-secondary-text"> Description </span>
       </a>
+    </md-nav-list>
+    <md-nav-list dense>
+      <md-list-item *ngFor="#link of links">
+        <a md-line href="http://www.google.com">{{ link.name }}</a>
+        <button md-icon-button (click)="infoClicked=!infoClicked">
+          <i class="material-icons">info</i>
+        </button>
+      </md-list-item>
     </md-nav-list>
   </div>
 </div>
