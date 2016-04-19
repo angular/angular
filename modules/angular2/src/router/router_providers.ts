@@ -14,11 +14,11 @@ import {PlatformLocation} from './location/platform_location';
  * import {
  *   ROUTER_DIRECTIVES,
  *   ROUTER_PROVIDERS,
- *   RouteConfig
+ *   Routes
  * } from 'angular2/router';
  *
  * @Component({directives: [ROUTER_DIRECTIVES]})
- * @RouteConfig([
+ * @Routes([
  *  {...},
  * ])
  * class AppCmp {

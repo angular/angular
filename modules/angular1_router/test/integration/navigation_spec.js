@@ -100,7 +100,7 @@ describe('navigation', function () {
     }
     registerDirective('parentCmp', {
       template: 'parent { <ng-outlet></ng-outlet> }',
-      $routeConfig: [
+      $routes: [
         { path: '/user/:name', component: 'userCmp' }
       ],
       controller: ParentController
@@ -126,7 +126,7 @@ describe('navigation', function () {
   it('should work with nested outlets', function () {
     registerDirective('childCmp', {
       template: '<div>inner { <div ng-outlet></div> }</div>',
-      $routeConfig: [
+      $routes: [
         { path: '/b', component: 'oneCmp' }
       ]
     });
@@ -145,7 +145,7 @@ describe('navigation', function () {
   it('should work when parent route has empty path', inject(function ($location) {
     registerComponent('childCmp', {
       template: '<div>inner { <div ng-outlet></div> }</div>',
-      $routeConfig: [
+      $routes: [
         { path: '/b', component: 'oneCmp' }
       ]
     });
@@ -166,7 +166,7 @@ describe('navigation', function () {
   it('should work with recursive nested outlets', function () {
     registerDirective('recurCmp', {
       template: '<div>recur { <div ng-outlet></div> }</div>',
-      $routeConfig: [
+      $routes: [
         { path: '/recur', component: 'recurCmp' },
         { path: '/end', component: 'oneCmp' }
       ]});
@@ -230,7 +230,7 @@ describe('navigation', function () {
   it('should change location to the canonical route with nested components', inject(function ($location) {
     registerDirective('childRouter', {
       template: '<div>inner { <div ng-outlet></div> }</div>',
-      $routeConfig: [
+      $routes: [
         { path: '/new-child', component: 'oneCmp', name: 'NewChild'},
         { path: '/new-child-two', component: 'twoCmp', name: 'NewChildTwo'}
       ]
@@ -349,7 +349,7 @@ describe('navigation', function () {
   }
 
   function applyStaticProperties(target, options) {
-    ['$canActivate', '$routeConfig'].forEach(function(property) {
+    ['$canActivate', '$routes'].forEach(function(property) {
       if (options[property]) {
         target[property] = options[property];
       }

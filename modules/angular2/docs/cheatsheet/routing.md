@@ -2,31 +2,31 @@
 Routing and navigation
 @cheatsheetIndex 10
 @description
-{@target ts}`import {RouteConfig, ROUTER_DIRECTIVES, ROUTER_PROVIDERS, ...} from 'angular2/router';`{@endtarget}
+{@target ts}`import {Routes, ROUTER_DIRECTIVES, ROUTER_PROVIDERS, ...} from 'angular2/router';`{@endtarget}
 {@target js}Available from the `ng.router` namespace{@endtarget}
 {@target dart}`import 'package:angular2/router.dart';`{@endtarget}
 
 
 @cheatsheetItem
 syntax(ts):
-`@RouteConfig([
+`@Routes([
   { path: '/:myParam', component: MyComponent, name: 'MyCmp' },
   { path: '/staticPath', component: ..., name: ...},
   { path: '/*wildCardParam', component: ..., name: ...}
 ])
-class MyComponent() {}`|`@RouteConfig`
+class MyComponent() {}`|`@Routes`
 syntax(js):
-`var MyComponent = ng.router.RouteConfig([
+`var MyComponent = ng.router.Routes([
   { path: '/:myParam', component: MyComponent, name: 'MyCmp' },
   { path: '/staticPath', component: ..., name: ...},
   { path: '/*wildCardParam', component: ..., name: ...}
 ]).Class({
   constructor: function() {}
-});`|`ng.router.RouteConfig`
+});`|`ng.router.Routes`
 syntax(dart):
-`@RouteConfig(const [
+`@Routes(const [
   const Route(path: '/:myParam', component: MyComponent, name: 'MyCmp' ),
-])`|`@RouteConfig`
+])`|`@Routes`
 description:
 Configures routes for the decorated component. Supports static, parameterized, and wildcard routes.
 

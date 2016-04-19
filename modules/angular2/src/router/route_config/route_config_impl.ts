@@ -7,12 +7,12 @@ export {RouteDefinition} from '../route_definition';
 var __make_dart_analyzer_happy: Promise<any> = null;
 
 /**
- * The `RouteConfig` decorator defines routes for a given component.
+ * The `Routes` decorator defines routes for a given component.
  *
  * It takes an array of {@link RouteDefinition}s.
  */
 @CONST()
-export class RouteConfig {
+export class Routes {
   constructor(public configs: RouteDefinition[]) {}
 }
 
@@ -49,9 +49,9 @@ export abstract class AbstractRoute implements RouteDefinition {
  *
  * ### Example
  * ```
- * import {RouteConfig, Route} from 'angular2/router';
+ * import {Routes, Route} from 'angular2/router';
  *
- * @RouteConfig([
+ * @Routes([
  *   new Route({path: '/home', component: HomeCmp, name: 'HomeCmp' })
  * ])
  * class MyApp {}
@@ -87,9 +87,9 @@ export class Route extends AbstractRoute {
  *
  * ### Example
  * ```
- * import {RouteConfig, AuxRoute} from 'angular2/router';
+ * import {Routes, AuxRoute} from 'angular2/router';
  *
- * @RouteConfig([
+ * @Routes([
  *   new AuxRoute({path: '/home', component: HomeCmp})
  * ])
  * class MyApp {}
@@ -127,9 +127,9 @@ export class AuxRoute extends AbstractRoute {
  *
  * ### Example
  * ```
- * import {RouteConfig, AsyncRoute} from 'angular2/router';
+ * import {Routes, AsyncRoute} from 'angular2/router';
  *
- * @RouteConfig([
+ * @Routes([
  *   new AsyncRoute({path: '/home', loader: () => Promise.resolve(MyLoadedCmp), name:
  * 'MyLoadedCmp'})
  * ])
@@ -166,9 +166,9 @@ export class AsyncRoute extends AbstractRoute {
  *
  * ### Example
  * ```
- * import {RouteConfig, Route, Redirect} from 'angular2/router';
+ * import {Routes, Route, Redirect} from 'angular2/router';
  *
- * @RouteConfig([
+ * @Routes([
  *   new Redirect({path: '/', redirectTo: ['/Home'] }),
  *   new Route({path: '/home', component: HomeCmp, name: 'Home'})
  * ])

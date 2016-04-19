@@ -22,7 +22,7 @@ import {Location} from 'angular2/src/router/location/location';
 
 import {RouteRegistry, ROUTER_PRIMARY_COMPONENT} from 'angular2/src/router/route_registry';
 import {
-  RouteConfig,
+  Routes,
   AsyncRoute,
   Route,
   Redirect
@@ -322,7 +322,7 @@ function loader(): Promise<Type> {
 
 class DummyComponent {}
 
-@RouteConfig([new Route({path: '/second', component: DummyComponent, name: 'SecondCmp'})])
+@Routes([new Route({path: '/second', component: DummyComponent, name: 'SecondCmp'})])
 class DummyParentComp {
 }
 

@@ -20,7 +20,7 @@ import {PromiseWrapper, TimerWrapper} from 'angular2/src/facade/async';
 
 import {Router, RouterOutlet, RouterLink, RouteParams, RouteData, Location} from 'angular2/router';
 import {
-  RouteConfig,
+  Routes,
   Route,
   AuxRoute,
   AsyncRoute,
@@ -274,7 +274,7 @@ function parentLoader() {
   template: `inner { <router-outlet></router-outlet> }`,
   directives: [RouterOutlet],
 })
-@RouteConfig([
+@Routes([
   new Route({path: '/b', component: HelloCmp}),
   new Route({path: '/', component: HelloCmp}),
 ])
@@ -287,7 +287,7 @@ class ParentCmp {
   template: `team {{id}} { <router-outlet></router-outlet> }`,
   directives: [RouterOutlet],
 })
-@RouteConfig([new Route({path: '/user/:name', component: UserCmp})])
+@Routes([new Route({path: '/user/:name', component: UserCmp})])
 class TeamCmp {
   id: string;
   constructor(params: RouteParams) {

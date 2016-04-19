@@ -190,7 +190,7 @@ describe('Navigation lifecycle', function () {
 
     registerComponent('reuseCmp', {
       template: 'reuse {<ng-outlet></ng-outlet>}',
-      $routeConfig: [
+      $routes: [
         {path: '/a', component: 'oneCmp'},
         {path: '/b', component: 'twoCmp'}
       ],
@@ -232,7 +232,7 @@ describe('Navigation lifecycle', function () {
     }
     registerComponent('reuseCmp', {
       template: 'reuse {<ng-outlet></ng-outlet>}',
-      $routeConfig: [
+      $routes: [
         {path: '/a', component: 'oneCmp'},
         {path: '/b', component: 'twoCmp'}
       ],
@@ -468,8 +468,8 @@ describe('Navigation lifecycle', function () {
     if (options.$canActivate) {
       controller.$canActivate = options.$canActivate;
     }
-    if (options.$routeConfig) {
-      controller.$routeConfig = options.$routeConfig;
+    if (options.$routes) {
+      controller.$routes = options.$routes;
     }
 
     $compileProvider.directive(name, factory);

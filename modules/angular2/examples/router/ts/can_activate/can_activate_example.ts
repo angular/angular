@@ -2,7 +2,7 @@ import {provide, Component} from 'angular2/core';
 import {bootstrap} from 'angular2/platform/browser';
 import {
   CanActivate,
-  RouteConfig,
+  Routes,
   ComponentInstruction,
   APP_BASE_HREF,
   ROUTER_DIRECTIVES
@@ -43,7 +43,7 @@ class HomeCmp {
   `,
   directives: [ROUTER_DIRECTIVES]
 })
-@RouteConfig([
+@Routes([
   {path: '/user-settings/:id', component: ControlPanelCmp, name: 'ControlPanelCmp'},
   {path: '/', component: HomeCmp, name: 'HomeCmp'}
 ])

@@ -2,7 +2,7 @@ import {Component, provide} from 'angular2/core';
 import {bootstrap} from 'angular2/platform/browser';
 import {
   CanActivate,
-  RouteConfig,
+  Routes,
   ComponentInstruction,
   ROUTER_DIRECTIVES,
   APP_BASE_HREF,
@@ -44,7 +44,7 @@ class MyCmp implements CanReuse,
   `,
   directives: [ROUTER_DIRECTIVES]
 })
-@RouteConfig([
+@Routes([
   {path: '/', component: MyCmp, name: 'HomeCmp'},
   {path: '/:name', component: MyCmp, name: 'HomeCmp'}
 ])

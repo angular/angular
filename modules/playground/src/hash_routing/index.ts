@@ -1,7 +1,7 @@
 import {Component, provide} from 'angular2/core';
 import {bootstrap} from 'angular2/platform/browser';
 import {
-  RouteConfig,
+  Routes,
   Route,
   ROUTER_PROVIDERS,
   ROUTER_DIRECTIVES,
@@ -35,7 +35,7 @@ class GoodByeCmp {
   `,
   directives: [ROUTER_DIRECTIVES]
 })
-@RouteConfig([
+@Routes([
   new Route({path: '/', component: HelloCmp, name: 'HelloCmp'}),
   new Route({path: '/bye', component: GoodByeCmp, name: 'GoodbyeCmp'})
 ])

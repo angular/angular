@@ -24,7 +24,7 @@ function $locationHashPrefixProvider($locationProvider) {
       hashPrefix = prefix;
     }
     return hashPrefixFn(prefix);
-  }
+  };
 
   // Return the final hashPrefix as the value of this service
   this.$get = function() { return hashPrefix; };
@@ -92,8 +92,15 @@ function routerFactory($q, $location, $browser, $rootScope, $injector, $routerRo
         return;
       }
       var controller = getComponentConstructor(component);
-      if (angular.isArray(controller.$routeConfig)) {
-        controller.$routeConfig.forEach(function (config) {
+      var routes;
+      if (angular.isArray(controller.$routes)) {
+        routes = controller.$routes;
+      } else if (angular.isArray(controller.$routeConfig)) {
+        routes = controller.$routeConfig;
+        console.log('$routeConfig is deprecated. Use $routes instead');
+      }
+      if (routes) {
+        routes.forEach(function (config) {
           var loader = config.loader;
           if (isPresent(loader)) {
             config = angular.extend({}, config, { loader: function() { return $injector.invoke(loader); } });

@@ -3,7 +3,7 @@ import {bootstrap} from 'angular2/platform/browser';
 import {
   OnDeactivate,
   ComponentInstruction,
-  RouteConfig,
+  Routes,
   ROUTER_DIRECTIVES,
   APP_BASE_HREF
 } from 'angular2/router';
@@ -46,7 +46,7 @@ class MyCmp implements OnDeactivate {
   `,
   directives: [ROUTER_DIRECTIVES]
 })
-@RouteConfig([
+@Routes([
   {path: '/', component: MyCmp, name: 'HomeCmp'},
   {path: '/:param', component: MyCmp, name: 'ParamCmp'}
 ])

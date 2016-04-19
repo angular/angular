@@ -25,12 +25,12 @@ import {Injectable, Inject} from 'angular2/core';
  * import {
  *   ROUTER_DIRECTIVES,
  *   ROUTER_PROVIDERS,
- *   RouteConfig,
+ *   Routes,
  *   Location
  * } from 'angular2/router';
  *
  * @Component({directives: [ROUTER_DIRECTIVES]})
- * @RouteConfig([
+ * @Routes([
  *  {...},
  * ])
  * class AppCmp {

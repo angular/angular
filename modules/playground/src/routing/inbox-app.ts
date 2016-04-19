@@ -1,7 +1,7 @@
 import {Component, Injectable} from 'angular2/core';
 import {
   RouterLink,
-  RouteConfig,
+  Routes,
   Router,
   Route,
   RouterOutlet,
@@ -144,7 +144,7 @@ class DraftsCmp {
   templateUrl: 'inbox-app.html',
   directives: [RouterOutlet, RouterLink]
 })
-@RouteConfig([
+@Routes([
   new Route({path: '/', component: InboxCmp, name: 'Inbox'}),
   new Route({path: '/drafts', component: DraftsCmp, name: 'Drafts'}),
   new Route({path: '/detail/:id', component: InboxDetailCmp, name: 'DetailPage'})

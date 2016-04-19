@@ -48,7 +48,7 @@ function provideHelpers(fn, preInject) {
         ctrl = function () {};
       } else if (angular.isArray(config)) {
         ctrl = function () {};
-        ctrl.$routeConfig = config;
+        ctrl.$routes = config;
       } else if (typeof config === 'function') {
         ctrl = config;
       } else {

@@ -2,7 +2,7 @@ import {CONST, Type} from 'angular2/src/facade/lang';
 import {RegexSerializer} from './rules/route_paths/regex_route_path';
 
 /**
- * `RouteDefinition` defines a route within a {@link RouteConfig} decorator.
+ * `RouteDefinition` defines a route within a {@link Routes} decorator.
  *
  * Supported keys:
  * - `path` or `aux` (requires exactly one of these)
