@@ -19,7 +19,7 @@ import 'package:angular2/src/transform/common/options.dart' show CODEGEN_DEBUG_M
 
 import 'compile_data_creator.dart';
 
-/// Generates `.template.dart` files to initialize the Angular2 system.
+/// Generates `.ngfactory.dart` files to initialize the Angular2 system.
 ///
 /// - Processes the `.ng_meta.json` file represented by `assetId` using
 ///   `createCompileData`.

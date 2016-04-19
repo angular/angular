@@ -126,7 +126,7 @@ function _resolveStyleStatements(compileResult: StylesCompileResult): o.Statemen
 function _templateModuleUrl(comp: CompileDirectiveMetadata): string {
   var moduleUrl = comp.type.moduleUrl;
   var urlWithoutSuffix = moduleUrl.substring(0, moduleUrl.length - MODULE_SUFFIX.length);
-  return `${urlWithoutSuffix}.template${MODULE_SUFFIX}`;
+  return `${urlWithoutSuffix}.ngfactory${MODULE_SUFFIX}`;
 }
 
 function _stylesModuleUrl(stylesheetUrl: string, shim: boolean): string {

@@ -22,8 +22,8 @@ import 'ng_meta_linker.dart';
 /// Said another way, after this step there should be an entry in this `NgMeta`
 /// object for all `Directives` visible from its associated `.dart` file.
 ///
-/// This step also ensures that, if `a.dart` imports `b.dart`, `a.template.dart`
-/// imports `b.template.dart` (if it exists) and we note that this is a
+/// This step also ensures that, if `a.dart` imports `b.dart`, `a.ngfactory.dart`
+/// imports `b.ngfactory.dart` (if it exists) and we note that this is a
 /// ngDeps dependency, ensuring that a's `initReflector` function calls b's
 /// `initReflector' function.
 ///

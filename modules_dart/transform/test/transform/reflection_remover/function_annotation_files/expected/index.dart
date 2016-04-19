@@ -11,7 +11,7 @@ library angular2.test.transform.reflection_remover.function_annotation_files;
 const code = """
 library web_foo;
 
-import 'package:angular2/platform/browser_static.dart';import 'index.template.dart' as ngStaticInit;
+import 'package:angular2/platform/browser_static.dart';import 'index.ngfactory.dart' as ngStaticInit;
 import 'package:angular2/src/core/reflection/reflection.dart';
 /*import 'package:angular2/src/core/reflection/reflection_capabilities.dart';*/
 
