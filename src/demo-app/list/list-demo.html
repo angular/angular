@@ -50,6 +50,11 @@
         </button>
       </md-list-item>
     </md-nav-list>
+    <md-nav-list>
+      <a md-list-item *ngFor="#link of links" href="http://www.google.com">
+        {{ link.name }}
+      </a>
+    </md-nav-list>
   </div>
 
   <div>
@@ -84,6 +89,11 @@
           <i class="material-icons">info</i>
         </button>
       </md-list-item>
+    </md-nav-list>
+    <md-nav-list dense>
+      <a md-list-item *ngFor="#link of links" href="http://www.google.com">
+        {{ link.name }}
+      </a>
     </md-nav-list>
   </div>
 </div>

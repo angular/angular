@@ -19,7 +19,7 @@ export class MdLine {}
 export class MdListAvatar {}
 
 @Component({
-  selector: 'md-list-item',
+  selector: 'md-list-item, a[md-list-item]',
   host: {'role': 'listitem'},
   templateUrl: './components/list/list-item.html',
   encapsulation: ViewEncapsulation.None

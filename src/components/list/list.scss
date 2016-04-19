@@ -138,7 +138,7 @@ md-list, md-nav-list  {
   }
 
 
-  md-list-item {
+  md-list-item, a[md-list-item] {
     @include md-list-item-base(
       $md-list-font-size,
       $md-list-base-height,
@@ -164,7 +164,7 @@ md-list[dense], md-nav-list[dense] {
     );
   }
 
-  md-list-item {
+  md-list-item, a[md-list-item] {
     @include md-list-item-base(
       $md-dense-font-size,
       $md-dense-base-height,
