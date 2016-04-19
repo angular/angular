@@ -19,4 +19,4 @@ export {MeasureValues} from './src/measure_values';
 export {MultiMetric} from './src/metric/multi_metric';
 export {MultiReporter} from './src/reporter/multi_reporter';
 
-export {bind, provide, Injector, OpaqueToken} from 'angular2/src/core/di';
+export {bind, provide, Injector, ReflectiveInjector, OpaqueToken} from 'angular2/src/core/di';

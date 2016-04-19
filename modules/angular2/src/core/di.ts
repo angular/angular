@@ -20,18 +20,22 @@ export * from './di/decorators';
 export {forwardRef, resolveForwardRef, ForwardRefFn} from './di/forward_ref';
 
 export {Injector} from './di/injector';
+export {ReflectiveInjector} from './di/reflective_injector';
 export {
   Binding,
   ProviderBuilder,
-  ResolvedBinding,
-  ResolvedFactory,
-  Dependency,
   bind,
 
   Provider,
-  ResolvedProvider,
   provide
 } from './di/provider';
+export {
+  ResolvedReflectiveBinding,
+  ResolvedReflectiveFactory,
+  ReflectiveDependency,
+
+  ResolvedReflectiveProvider
+} from './di/reflective_provider';
 export {Key} from './di/key';
 export {
   NoProviderError,
@@ -41,5 +45,5 @@ export {
   InvalidProviderError,
   NoAnnotationError,
   OutOfBoundsError
-} from './di/exceptions';
+} from './di/reflective_exceptions';
 export {OpaqueToken} from './di/opaque_token';

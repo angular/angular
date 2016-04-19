@@ -185,17 +185,13 @@ class ViewBuilderVisitor implements TemplateAstVisitor {
     var nodeIndex = this.view.nodes.length;
     var createRenderNodeExpr;
     var debugContextExpr = this.view.createMethod.resetDebugInfoExpr(nodeIndex, ast);
-    var createElementExpr = ViewProperties.renderer.callMethod(
-        'createElement',
-        [this._getParentRenderNode(parent), o.literal(ast.name), debugContextExpr]);
     if (nodeIndex === 0 && this.view.viewType === ViewType.HOST) {
-      createRenderNodeExpr =
-          rootSelectorVar.identical(o.NULL_EXPR)
-              .conditional(createElementExpr,
-                           ViewProperties.renderer.callMethod('selectRootElement',
-                                                              [rootSelectorVar, debugContextExpr]));
+      createRenderNodeExpr = o.THIS_EXPR.callMethod(
+          'selectOrCreateHostElement', [o.literal(ast.name), rootSelectorVar, debugContextExpr]);
     } else {
-      createRenderNodeExpr = createElementExpr;
+      createRenderNodeExpr = ViewProperties.renderer.callMethod(
+          'createElement',
+          [this._getParentRenderNode(parent), o.literal(ast.name), debugContextExpr]);
     }
     var fieldName = `_el_${nodeIndex}`;
     this.view.fields.push(

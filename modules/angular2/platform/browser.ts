@@ -13,13 +13,20 @@ export {
   disableDebugTools
 } from 'angular2/src/platform/browser_common';
 
-import {Type, isPresent, CONST_EXPR} from 'angular2/src/facade/lang';
+import {Type, isPresent, isBlank, CONST_EXPR} from 'angular2/src/facade/lang';
 import {
   BROWSER_PROVIDERS,
   BROWSER_APP_COMMON_PROVIDERS
 } from 'angular2/src/platform/browser_common';
 import {COMPILER_PROVIDERS} from 'angular2/compiler';
-import {ComponentRef, platform, reflector} from 'angular2/core';
+import {
+  ComponentRef,
+  basicLoadAndBootstrap,
+  reflector,
+  ReflectiveInjector,
+  Compiler,
+  PlatformRef
+} from 'angular2/core';
 import {ReflectionCapabilities} from 'angular2/src/core/reflection/reflection_capabilities';
 import {XHRImpl} from "angular2/src/platform/browser/xhr_impl";
 import {XHR} from 'angular2/compiler';
@@ -33,6 +40,15 @@ export const BROWSER_APP_PROVIDERS: Array<any /*Type | Provider | any[]*/> = CON
   COMPILER_PROVIDERS,
   new Provider(XHR, {useClass: XHRImpl}),
 ]);
+
+var _platform: PlatformRef = null;
+
+export function browserPlatform(): PlatformRef {
+  if (isBlank(_platform) || _platform.disposed) {
+    _platform = ReflectiveInjector.resolveAndCreate(BROWSER_PROVIDERS).get(PlatformRef);
+  }
+  return _platform;
+}
 
 /**
  * Bootstrapping for Angular applications.
@@ -106,7 +122,8 @@ export function bootstrap(
     appComponentType: Type,
     customProviders?: Array<any /*Type | Provider | any[]*/>): Promise<ComponentRef> {
   reflector.reflectionCapabilities = new ReflectionCapabilities();
-  let appProviders =
-      isPresent(customProviders) ? [BROWSER_APP_PROVIDERS, customProviders] : BROWSER_APP_PROVIDERS;
-  return platform(BROWSER_PROVIDERS).application(appProviders).bootstrap(appComponentType);
+  var appInjector = ReflectiveInjector.resolveAndCreate(
+      [BROWSER_APP_PROVIDERS, isPresent(customProviders) ? customProviders : []],
+      browserPlatform().injector);
+  return basicLoadAndBootstrap(appInjector, appComponentType);
 }

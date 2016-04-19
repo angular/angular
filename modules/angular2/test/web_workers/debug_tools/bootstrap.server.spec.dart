@@ -19,8 +19,9 @@ main() {
     it("should be able to load in a Dart VM", () {
       reflector.reflectionCapabilities = new ReflectionCapabilities();
       var buses = createPairedMessageBuses();
-      platform([WORKER_APP_PLATFORM])
-          .application([WORKER_APP_APPLICATION_COMMON]);
+      var platformInjector = ReflectiveInjector.resolveAndCreate(WORKER_APP_PLATFORM);
+      var appInjector = platformInjector.resolveAndCreateChild(WORKER_APP_APPLICATION_COMMON);
+      appInjector.get(ApplicationRef);
     });
   });
 }

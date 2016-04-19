@@ -16,5 +16,5 @@ export var WORKER_APP_ROUTER = [
 ];
 
 function initRouter(platformLocation: WebWorkerPlatformLocation, zone: NgZone): Promise<boolean> {
-  return zone.run(() => { return platformLocation.init(); });
+  return zone.runGuarded(() => { return platformLocation.init(); });
 }

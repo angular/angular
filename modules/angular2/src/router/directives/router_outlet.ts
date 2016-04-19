@@ -8,9 +8,8 @@ import {
   DynamicComponentLoader,
   ComponentRef,
   ElementRef,
-  Injector,
   provide,
-  Dependency,
+  ReflectiveInjector,
   OnDestroy,
   Output
 } from 'angular2/core';
@@ -60,7 +59,7 @@ export class RouterOutlet implements OnDestroy {
     var componentType = nextInstruction.componentType;
     var childRouter = this._parentRouter.childRouter(componentType);
 
-    var providers = Injector.resolve([
+    var providers = ReflectiveInjector.resolve([
       provide(RouteData, {useValue: nextInstruction.routeData}),
       provide(RouteParams, {useValue: new RouteParams(nextInstruction.params)}),
       provide(routerMod.Router, {useValue: childRouter})
@@ -118,7 +117,7 @@ export class RouterOutlet implements OnDestroy {
     }
     return next.then((_) => {
       if (isPresent(this._componentRef)) {
-        var onDispose = this._componentRef.then((ref: ComponentRef) => ref.dispose());
+        var onDispose = this._componentRef.then((ref: ComponentRef) => ref.destroy());
         this._componentRef = null;
         return onDispose;
       }

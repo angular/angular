@@ -90,7 +90,7 @@ export class ComponentFixture_ extends ComponentFixture {
 
   checkNoChanges(): void { this._componentParentView.detectChanges(true); }
 
-  destroy(): void { this._componentRef.dispose(); }
+  destroy(): void { this._componentRef.destroy(); }
 }
 
 var _nextRootElementId = 0;

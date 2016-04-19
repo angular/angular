@@ -1,91 +1,17 @@
-import {Key, Injector, ResolvedProvider, Provider, provide, Injectable} from 'angular2/src/core/di';
+import {
+  Key,
+  Injector,
+  ResolvedReflectiveProvider,
+  ReflectiveInjector,
+  Provider,
+  provide,
+  Injectable
+} from 'angular2/src/core/di';
 import {Compiler} from './compiler';
 import {isType, Type, stringify, isPresent} from 'angular2/src/facade/lang';
 import {AppViewManager} from 'angular2/src/core/linker/view_manager';
 import {ElementRef, ElementRef_} from './element_ref';
-import {HostViewRef} from './view_ref';
-
-/**
- * Represents an instance of a Component created via {@link DynamicComponentLoader}.
- *
- * `ComponentRef` provides access to the Component Instance as well other objects related to this
- * Component Instance and allows you to destroy the Component Instance via the {@link #dispose}
- * method.
- */
-export abstract class ComponentRef {
-  /**
-   * The injector provided {@link DynamicComponentLoader#loadAsRoot}.
-   *
-   * TODO(i): this api is useless and should be replaced by an injector retrieved from
-   *     the HostElementRef, which is currently not possible.
-   */
-  injector: Injector;
-
-  /**
-   * Location of the Host Element of this Component Instance.
-   */
-  location: ElementRef;
-
-  /**
-   * The instance of the Component.
-   */
-  instance: any;
-
-  /**
-   * The user defined component type, represented via the constructor function.
-   *
-   * <!-- TODO: customize wording for Dart docs -->
-   */
-  componentType: Type;
-
-  /**
-   * The {@link ViewRef} of the Host View of this Component instance.
-   */
-  get hostView(): HostViewRef {
-    return (<ElementRef_>this.location).internalElement.parentView.ref;
-  }
-
-  /**
-   * @internal
-   *
-   * The instance of the component.
-   *
-   * TODO(i): this api should be removed
-   */
-  get hostComponent(): any { return this.instance; }
-
-  /**
-   * Destroys the component instance and all of the data structures associated with it.
-   *
-   * TODO(i): rename to destroy to be consistent with AppViewManager and ViewContainerRef
-   */
-  abstract dispose(): void;
-}
-
-export class ComponentRef_ extends ComponentRef {
-  /**
-   * TODO(i): refactor into public/private fields
-   */
-  constructor(location: ElementRef, instance: any, componentType: Type, injector: Injector,
-              private _dispose: () => void) {
-    super();
-    this.location = location;
-    this.instance = instance;
-    this.componentType = componentType;
-    this.injector = injector;
-  }
-
-  /**
-   * @internal
-   *
-   * Returns the type of this Component instance.
-   *
-   * TODO(i): this api should be removed
-   */
-  get hostComponentType(): Type { return this.componentType; }
-
-  dispose(): void { this._dispose(); }
-}
+import {ComponentRef} from './component_factory';
 
 /**
  * Service for instantiating a Component and attaching it to a View at a specified location.
@@ -140,7 +66,7 @@ export abstract class DynamicComponentLoader {
    * </my-app>
    * ```
    */
-  abstract loadAsRoot(type: Type, overrideSelector: string, injector: Injector,
+  abstract loadAsRoot(type: Type, overrideSelectorOrNode: string, injector: Injector,
                       onDispose?: () => void, projectableNodes?: any[][]): Promise<ComponentRef>;
 
   /**
@@ -191,7 +117,7 @@ export abstract class DynamicComponentLoader {
    * ```
    */
   abstract loadIntoLocation(type: Type, hostLocation: ElementRef, anchorName: string,
-                            providers?: ResolvedProvider[],
+                            providers?: ResolvedReflectiveProvider[],
                             projectableNodes?: any[][]): Promise<ComponentRef>;
 
   /**
@@ -234,7 +160,8 @@ export abstract class DynamicComponentLoader {
    * <child-component>Child</child-component>
    * ```
    */
-  abstract loadNextToLocation(type: Type, location: ElementRef, providers?: ResolvedProvider[],
+  abstract loadNextToLocation(type: Type, location: ElementRef,
+                              providers?: ResolvedReflectiveProvider[],
                               projectableNodes?: any[][]): Promise<ComponentRef>;
 }
 
@@ -242,48 +169,38 @@ export abstract class DynamicComponentLoader {
 export class DynamicComponentLoader_ extends DynamicComponentLoader {
   constructor(private _compiler: Compiler, private _viewManager: AppViewManager) { super(); }
 
-  loadAsRoot(type: Type, overrideSelector: string, injector: Injector, onDispose?: () => void,
-             projectableNodes?: any[][]): Promise<ComponentRef> {
-    return this._compiler.compileInHost(type).then(hostProtoViewRef => {
-      var hostViewRef = this._viewManager.createRootHostView(hostProtoViewRef, overrideSelector,
-                                                             injector, projectableNodes);
-      var newLocation = this._viewManager.getHostElement(hostViewRef);
-      var component = this._viewManager.getComponent(newLocation);
-
-      var dispose = () => {
-        if (isPresent(onDispose)) {
-          onDispose();
-        }
-        this._viewManager.destroyRootHostView(hostViewRef);
-      };
-      return new ComponentRef_(newLocation, component, type, injector, dispose);
+  loadAsRoot(type: Type, overrideSelectorOrNode: string | any, injector: Injector,
+             onDispose?: () => void, projectableNodes?: any[][]): Promise<ComponentRef> {
+    return this._compiler.compileComponent(type).then(componentFactory => {
+      var componentRef = componentFactory.create(
+          injector, projectableNodes,
+          isPresent(overrideSelectorOrNode) ? overrideSelectorOrNode : componentFactory.selector);
+      if (isPresent(onDispose)) {
+        componentRef.onDestroy(onDispose);
+      }
+      return componentRef;
     });
   }
 
   loadIntoLocation(type: Type, hostLocation: ElementRef, anchorName: string,
-                   providers: ResolvedProvider[] = null,
+                   providers: ResolvedReflectiveProvider[] = null,
                    projectableNodes: any[][] = null): Promise<ComponentRef> {
     return this.loadNextToLocation(
         type, this._viewManager.getNamedElementInComponentView(hostLocation, anchorName), providers,
         projectableNodes);
   }
 
-  loadNextToLocation(type: Type, location: ElementRef, providers: ResolvedProvider[] = null,
+  loadNextToLocation(type: Type, location: ElementRef,
+                     providers: ResolvedReflectiveProvider[] = null,
                      projectableNodes: any[][] = null): Promise<ComponentRef> {
-    return this._compiler.compileInHost(type).then(hostProtoViewRef => {
+    return this._compiler.compileComponent(type).then(componentFactory => {
       var viewContainer = this._viewManager.getViewContainer(location);
-      var hostViewRef = viewContainer.createHostView(hostProtoViewRef, viewContainer.length,
-                                                     providers, projectableNodes);
-      var newLocation = this._viewManager.getHostElement(hostViewRef);
-      var component = this._viewManager.getComponent(newLocation);
-
-      var dispose = () => {
-        var index = viewContainer.indexOf(hostViewRef);
-        if (!hostViewRef.destroyed && index !== -1) {
-          viewContainer.remove(index);
-        }
-      };
-      return new ComponentRef_(newLocation, component, type, null, dispose);
+      var parentInjector =
+          isPresent(providers) ?
+              ReflectiveInjector.fromResolvedProviders(providers, location.parentInjector) :
+              null;
+      return viewContainer.createComponent(componentFactory, viewContainer.length, parentInjector,
+                                           projectableNodes);
     });
   }
 }

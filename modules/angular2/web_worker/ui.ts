@@ -1,6 +1,6 @@
 export * from 'angular2/src/facade/facade';
 export * from '../src/core/di';
-export {platform, PlatformRef, ApplicationRef} from '../src/core/application_ref';
+export {PlatformRef, ApplicationRef} from '../src/core/application_ref';
 export {
   APP_ID,
   APP_COMPONENT,

@@ -64,10 +64,10 @@ export function main() {
     it('should bootstrap an app with a hierarchy', inject([AsyncTestCompleter], (async) => {
          bootstrap(HierarchyAppCmp, testBindings)
              .then((applicationRef) => {
-               var router = applicationRef.hostComponent.router;
+               var router = applicationRef.instance.router;
                router.subscribe((_) => {
                  expect(el).toHaveText('root { parent { hello } }');
-                 expect(applicationRef.hostComponent.location.path()).toEqual('/parent/child');
+                 expect(applicationRef.instance.location.path()).toEqual('/parent/child');
                  async.done();
                });
                router.navigateByUrl('/parent/child');
@@ -78,10 +78,10 @@ export function main() {
     it('should work in an app with redirects', inject([AsyncTestCompleter], (async) => {
          bootstrap(RedirectAppCmp, testBindings)
              .then((applicationRef) => {
-               var router = applicationRef.hostComponent.router;
+               var router = applicationRef.instance.router;
                router.subscribe((_) => {
                  expect(el).toHaveText('root { hello }');
-                 expect(applicationRef.hostComponent.location.path()).toEqual('/after');
+                 expect(applicationRef.instance.location.path()).toEqual('/after');
                  async.done();
                });
                router.navigateByUrl('/before');
@@ -92,10 +92,10 @@ export function main() {
     it('should work in an app with async components', inject([AsyncTestCompleter], (async) => {
          bootstrap(AsyncAppCmp, testBindings)
              .then((applicationRef) => {
-               var router = applicationRef.hostComponent.router;
+               var router = applicationRef.instance.router;
                router.subscribe((_) => {
                  expect(el).toHaveText('root { hello }');
-                 expect(applicationRef.hostComponent.location.path()).toEqual('/hello');
+                 expect(applicationRef.instance.location.path()).toEqual('/hello');
                  async.done();
                });
                router.navigateByUrl('/hello');
@@ -106,10 +106,10 @@ export function main() {
     it('should work in an app with aux routes', inject([AsyncTestCompleter], (async) => {
          bootstrap(AuxAppCmp, testBindings)
              .then((applicationRef) => {
-               var router = applicationRef.hostComponent.router;
+               var router = applicationRef.instance.router;
                router.subscribe((_) => {
                  expect(el).toHaveText('root { hello } aside { hello }');
-                 expect(applicationRef.hostComponent.location.path()).toEqual('/hello(aside)');
+                 expect(applicationRef.instance.location.path()).toEqual('/hello(aside)');
                  async.done();
                });
                router.navigateByUrl('/hello(aside)');
@@ -121,10 +121,10 @@ export function main() {
        inject([AsyncTestCompleter], (async) => {
          bootstrap(ConciseAsyncAppCmp, testBindings)
              .then((applicationRef) => {
-               var router = applicationRef.hostComponent.router;
+               var router = applicationRef.instance.router;
                router.subscribe((_) => {
                  expect(el).toHaveText('root { hello }');
-                 expect(applicationRef.hostComponent.location.path()).toEqual('/hello');
+                 expect(applicationRef.instance.location.path()).toEqual('/hello');
                  async.done();
                });
                router.navigateByUrl('/hello');
@@ -136,10 +136,10 @@ export function main() {
        inject([AsyncTestCompleter], (async) => {
          bootstrap(ExplicitConstructorAppCmp, testBindings)
              .then((applicationRef) => {
-               var router = applicationRef.hostComponent.router;
+               var router = applicationRef.instance.router;
                router.subscribe((_) => {
                  expect(el).toHaveText('root { hello }');
-                 expect(applicationRef.hostComponent.location.path()).toEqual('/hello');
+                 expect(applicationRef.instance.location.path()).toEqual('/hello');
                  async.done();
                });
                router.navigateByUrl('/hello');

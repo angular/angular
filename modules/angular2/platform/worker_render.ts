@@ -18,10 +18,41 @@ export {
 } from '../src/web_workers/shared/service_message_broker';
 export {PRIMITIVE} from '../src/web_workers/shared/serializer';
 export * from '../src/web_workers/shared/message_bus';
-import {WORKER_RENDER_APPLICATION} from 'angular2/src/platform/worker_render';
 
 /**
  * @deprecated Use WORKER_RENDER_APPLICATION
  */
 export const WORKER_RENDER_APP = WORKER_RENDER_APPLICATION;
 export {WORKER_RENDER_ROUTER} from 'angular2/src/web_workers/ui/router_providers';
+
+import {isPresent, isBlank} from 'angular2/src/facade/lang';
+import {PromiseWrapper} from 'angular2/src/facade/async';
+import {ApplicationRef, PlatformRef, ReflectiveInjector, Provider} from 'angular2/core';
+import {WORKER_RENDER_APPLICATION} from 'angular2/src/platform/worker_render';
+import {WORKER_SCRIPT, WORKER_RENDER_PLATFORM} from 'angular2/src/platform/worker_render_common';
+
+var _platform: PlatformRef = null;
+
+export function workerRenderPlatform(): PlatformRef {
+  if (isBlank(_platform) || _platform.disposed) {
+    _platform = ReflectiveInjector.resolveAndCreate(WORKER_RENDER_PLATFORM).get(PlatformRef);
+  }
+  return _platform;
+}
+
+export function bootstrapRender(
+    workerScriptUri: string,
+    customProviders?: Array<any /*Type | Provider | any[]*/>): Promise<ApplicationRef> {
+  var pf = ReflectiveInjector.resolveAndCreate(WORKER_RENDER_PLATFORM);
+  var app = ReflectiveInjector.resolveAndCreate(
+      [
+        WORKER_RENDER_APPLICATION,
+        new Provider(WORKER_SCRIPT, {useValue: workerScriptUri}),
+        isPresent(customProviders) ? customProviders : []
+      ],
+      workerRenderPlatform().injector);
+  // Return a promise so that we keep the same semantics as Dart,
+  // and we might want to wait for the app side to come up
+  // in the future...
+  return PromiseWrapper.resolve(app.get(ApplicationRef));
+}

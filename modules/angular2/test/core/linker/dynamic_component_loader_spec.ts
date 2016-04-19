@@ -61,14 +61,14 @@ export function main() {
 
                         loader.loadIntoLocation(DynamicallyLoaded, tc.elementRef, 'loc')
                             .then(ref => {
-                              ref.dispose();
+                              ref.destroy();
                               expect(tc.debugElement.nativeElement).toHaveText("Location;");
                               async.done();
                             });
                       });
                 }));
 
-      it('should allow to dispose even if the location has been removed',
+      it('should allow to destroy even if the location has been removed',
          inject([DynamicComponentLoader, TestComponentBuilder, AsyncTestCompleter],
                 (loader: DynamicComponentLoader, tcb: TestComponentBuilder, async) => {
                   tcb.overrideView(MyComp, new ViewMetadata({
@@ -95,7 +95,7 @@ export function main() {
                               tc.detectChanges();
                               expect(tc.debugElement.nativeElement).toHaveText("");
 
-                              ref.dispose();
+                              ref.destroy();
                               expect(tc.debugElement.nativeElement).toHaveText("");
                               async.done();
                             });
@@ -236,7 +236,7 @@ export function main() {
                                     expect(firstSibling).toHaveText("DynamicallyLoaded;");
                                     expect(secondSibling).toHaveText("DynamicallyLoaded2;");
 
-                                    ref2.dispose();
+                                    ref2.destroy();
 
                                     firstSibling = DOM.nextSibling(tc.debugElement.nativeElement);
                                     secondSibling = DOM.nextSibling(firstSibling);
@@ -316,7 +316,7 @@ export function main() {
 
                         expect(rootEl).toHaveText('new');
 
-                        componentRef.dispose();
+                        componentRef.destroy();
 
                         expect(rootEl.parentNode).toBeFalsy();
 

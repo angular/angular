@@ -18,7 +18,7 @@ import {
   WebDriverExtension,
   ChromeDriverExtension,
   WebDriverAdapter,
-  Injector,
+  ReflectiveInjector,
   bind,
   provide,
   Options
@@ -57,13 +57,14 @@ export function main() {
         userAgent = CHROME44_USER_AGENT;
       }
       log = [];
-      extension = Injector.resolveAndCreate([
-                            ChromeDriverExtension.BINDINGS,
-                            bind(WebDriverAdapter)
-                                .toValue(new MockDriverAdapter(log, perfRecords, messageMethod)),
-                            bind(Options.USER_AGENT).toValue(userAgent)
-                          ])
-                      .get(ChromeDriverExtension);
+      extension =
+          ReflectiveInjector.resolveAndCreate([
+                              ChromeDriverExtension.BINDINGS,
+                              bind(WebDriverAdapter)
+                                  .toValue(new MockDriverAdapter(log, perfRecords, messageMethod)),
+                              bind(Options.USER_AGENT).toValue(userAgent)
+                            ])
+              .get(ChromeDriverExtension);
       return extension;
     }
 

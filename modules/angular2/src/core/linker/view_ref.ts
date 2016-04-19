@@ -1,7 +1,9 @@
 import {unimplemented} from 'angular2/src/facade/exceptions';
+import {isPresent} from 'angular2/src/facade/lang';
 import {ChangeDetectorRef} from '../change_detection/change_detector_ref';
-import {AppView, HostViewFactory} from './view';
+import {AppView} from './view';
 import {ChangeDetectionStrategy} from 'angular2/src/core/change_detection/constants';
+import {ComponentRef_, ComponentRef} from './component_factory';
 
 export abstract class ViewRef extends ChangeDetectorRef {
   /**
@@ -10,6 +12,8 @@ export abstract class ViewRef extends ChangeDetectorRef {
   get changeDetectorRef(): ChangeDetectorRef { return <ChangeDetectorRef>unimplemented(); };
 
   get destroyed(): boolean { return <boolean>unimplemented(); }
+
+  abstract onDestroy(callback: Function);
 }
 
 /**
@@ -23,6 +27,13 @@ export abstract class ViewRef extends ChangeDetectorRef {
  */
 export abstract class HostViewRef extends ViewRef {
   get rootNodes(): any[] { return <any[]>unimplemented(); };
+
+  /**
+   * Destroys the view and all of the data structures associated with it.
+   */
+  abstract destroy();
+
+  get component(): ComponentRef { return <any>unimplemented(); }
 }
 
 /**
@@ -90,6 +101,11 @@ export abstract class EmbeddedViewRef extends ViewRef {
   abstract hasLocal(variableName: string): boolean;
 
   get rootNodes(): any[] { return <any[]>unimplemented(); };
+
+  /**
+   * Destroys the view and all of the data structures associated with it.
+   */
+  abstract destroy();
 }
 
 export class ViewRef_ implements EmbeddedViewRef, HostViewRef {
@@ -118,12 +134,13 @@ export class ViewRef_ implements EmbeddedViewRef, HostViewRef {
     this._view.cdMode = ChangeDetectionStrategy.CheckAlways;
     this.markForCheck();
   }
-}
 
-export abstract class HostViewFactoryRef {}
+  onDestroy(callback: Function) { this._view.disposables.push(callback); }
 
-export class HostViewFactoryRef_ implements HostViewFactoryRef {
-  constructor(private _hostViewFactory: HostViewFactory) {}
+  destroy() { this._view.destroy(); }
 
-  get internalHostViewFactory(): HostViewFactory { return this._hostViewFactory; }
+  get component(): ComponentRef {
+    var el = this._view.getHostViewElement();
+    return isPresent(el) ? new ComponentRef_(el) : null;
+  }
 }

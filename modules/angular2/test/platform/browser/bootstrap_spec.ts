@@ -14,18 +14,26 @@ import {
 } from 'angular2/testing_internal';
 import {IS_DART, isPresent, stringify} from 'angular2/src/facade/lang';
 import {bootstrap} from 'angular2/platform/browser';
-import {ApplicationRef} from 'angular2/src/core/application_ref';
+import {ApplicationRef, PlatformRef} from 'angular2/src/core/application_ref';
 import {Console} from 'angular2/src/core/console';
-import {Component, Directive, OnDestroy, platform} from 'angular2/core';
+import {Component, Directive, OnDestroy} from 'angular2/core';
 import {BROWSER_PROVIDERS, BROWSER_APP_PROVIDERS} from 'angular2/platform/browser';
 import {DOM} from 'angular2/src/platform/dom/dom_adapter';
 import {DOCUMENT} from 'angular2/src/platform/dom/dom_tokens';
 import {PromiseWrapper, TimerWrapper} from 'angular2/src/facade/async';
-import {provide, Inject, Injector, PLATFORM_INITIALIZER, APP_INITIALIZER} from 'angular2/core';
+import {
+  provide,
+  Inject,
+  Injector,
+  PLATFORM_INITIALIZER,
+  APP_INITIALIZER,
+  basicLoadAndBootstrap,
+  ReflectiveInjector
+} from 'angular2/core';
 import {disposePlatform} from 'angular2/src/core/application_ref';
 import {ExceptionHandler, BaseException} from 'angular2/src/facade/exceptions';
 import {Testability, TestabilityRegistry} from 'angular2/src/core/testability/testability';
-import {ComponentRef_, ComponentRef} from "angular2/src/core/linker/dynamic_component_loader";
+import {ComponentRef} from "angular2/src/core/linker/component_factory";
 
 @Component({selector: 'hello-app', template: '{{greeting}} world!'})
 class HelloRootCmp {
@@ -195,17 +203,19 @@ export function main() {
        inject([AsyncTestCompleter], (async) => {
          bootstrap(HelloOnDestroyTickCmp, testProviders)
              .then((ref) => {
-               expect(() => ref.dispose()).not.toThrow();
+               expect(() => ref.destroy()).not.toThrow();
                async.done();
              });
        }));
 
     it('should unregister change detectors when components are disposed',
        inject([AsyncTestCompleter], (async) => {
-         var app = platform(BROWSER_PROVIDERS).application([BROWSER_APP_PROVIDERS, testProviders]);
-         app.bootstrap(HelloRootCmp)
+         var platform = ReflectiveInjector.resolveAndCreate(BROWSER_PROVIDERS);
+         var app = platform.resolveAndCreateChild([BROWSER_APP_PROVIDERS, testProviders])
+                       .get(ApplicationRef);
+         basicLoadAndBootstrap(app.injector, HelloRootCmp)
              .then((ref) => {
-               ref.dispose();
+               ref.destroy();
                expect(() => app.tick()).not.toThrow();
                async.done();
              });
@@ -217,7 +227,7 @@ export function main() {
              HelloRootCmp3, [testProviders, provide("appBinding", {useValue: "BoundValue"})]);
 
          refPromise.then((ref) => {
-           expect(ref.hostComponent.appBinding).toEqual("BoundValue");
+           expect(ref.instance.appBinding).toEqual("BoundValue");
            async.done();
          });
        }));
@@ -227,24 +237,26 @@ export function main() {
          var refPromise = bootstrap(HelloRootCmp4, testProviders);
 
          refPromise.then((ref) => {
-           expect(ref.hostComponent.appRef).toBe((<ComponentRef_>ref).injector.get(ApplicationRef));
+           expect(ref.instance.appRef).toBe(ref.injector.get(ApplicationRef));
            async.done();
          });
        }));
 
     it("should run platform initializers", inject([Log], (log: Log) => {
-         let p = platform([
+         let p = ReflectiveInjector.resolveAndCreate([
            BROWSER_PROVIDERS,
            provide(PLATFORM_INITIALIZER, {useValue: log.fn("platform_init1"), multi: true}),
            provide(PLATFORM_INITIALIZER, {useValue: log.fn("platform_init2"), multi: true})
          ]);
+         p.get(PlatformRef);
          expect(log.result()).toEqual("platform_init1; platform_init2");
          log.clear();
-         p.application([
+         var a = p.resolveAndCreateChild([
            BROWSER_APP_PROVIDERS,
            provide(APP_INITIALIZER, {useValue: log.fn("app_init1"), multi: true}),
            provide(APP_INITIALIZER, {useValue: log.fn("app_init2"), multi: true})
          ]);
+         a.get(ApplicationRef);
 
          expect(log.result()).toEqual("app_init1; app_init2");
        }));
