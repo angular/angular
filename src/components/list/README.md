@@ -116,14 +116,14 @@ use `<md-divider>` tags.
    <md-list-item *ngFor="#folder of folders">
       <i md-list-avatar class="material-icons">folder</i>
       <h4 md-line>{{folder.name}}</h4>
-      <p md-line class="demo-secondary-text"> {{folder.updated}} </p>
+      <p md-line class="demo-2"> {{folder.updated}} </p>
    </md-list-item>
    <md-divider></md-divider>
    <h3 md-subheader>Notes</h3>
    <md-list-item *ngFor="#note of notes">
       <i md-list-avatar class="material-icons">note</i>
       <h4 md-line>{{note.name}}</h4>
-      <p md-line class="demo-secondary-text"> {{note.updated}} </p>
+      <p md-line class="demo-2"> {{note.updated}} </p>
    </md-list-item>   
 </md-list>
 ```
@@ -131,6 +131,31 @@ use `<md-divider>` tags.
 Output:
 
 <img src="https://material.angularjs.org/material2_assets/list/subheader-list.png">
+
+### Navigation lists
+
+Use `md-nav-list` tags for navigation lists (i.e. lists that have anchor tags).
+
+Simple nav lists can tack an `md-list-item` attribute onto the anchor tag itself:
+
+```html
+<md-nav-list>
+   <a md-list-item href="..." *ngFor="#link of links"> {{ link }} </a>
+</md-nav-list>
+```
+
+If you require a more complex nav list (e.g. with more than one target per item), wrap your anchor tag in an `md-list-item` element.
+
+```html
+<md-nav-list>
+  <md-list-item *ngFor="#link of links">
+     <a md-line href="...">{{ link }}</a>
+     <button md-icon-button (click)="showInfo(link)">
+        <i class="material-icons">info</i>
+     </button>
+  </md-list-item>
+</md-nav-list>
+```
 
 ### Lists with secondary text
 Secondary text styling will be part of a broader typography module to 
