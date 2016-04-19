@@ -5,7 +5,6 @@ import {
   OnChanges,
   OnDestroy,
   SimpleChange,
-  Query,
   Directive,
   forwardRef,
   Host,
@@ -91,7 +90,7 @@ const controlNameBinding =
  */
 @Directive({
   selector: '[ngControl]',
-  bindings: [controlNameBinding],
+  providers: [controlNameBinding],
   inputs: ['name: ngControl', 'model: ngModel'],
   outputs: ['update: ngModelChange'],
   exportAs: 'ngForm'

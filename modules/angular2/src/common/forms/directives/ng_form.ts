@@ -1,11 +1,10 @@
 import {
   PromiseWrapper,
   ObservableWrapper,
-  EventEmitter,
-  PromiseCompleter
+  EventEmitter
 } from 'angular2/src/facade/async';
-import {StringMapWrapper, ListWrapper} from 'angular2/src/facade/collection';
-import {isPresent, isBlank, CONST_EXPR} from 'angular2/src/facade/lang';
+import {ListWrapper} from 'angular2/src/facade/collection';
+import {isPresent, CONST_EXPR} from 'angular2/src/facade/lang';
 import {Directive, forwardRef, Provider, Optional, Inject, Self} from 'angular2/core';
 import {NgControl} from './ng_control';
 import {Form} from './form_interface';
@@ -13,7 +12,7 @@ import {NgControlGroup} from './ng_control_group';
 import {ControlContainer} from './control_container';
 import {AbstractControl, ControlGroup, Control} from '../model';
 import {setUpControl, setUpControlGroup, composeValidators, composeAsyncValidators} from './shared';
-import {Validators, NG_VALIDATORS, NG_ASYNC_VALIDATORS} from '../validators';
+import {NG_VALIDATORS, NG_ASYNC_VALIDATORS} from '../validators';
 
 const formDirectiveProvider =
     CONST_EXPR(new Provider(ControlContainer, {useExisting: forwardRef(() => NgForm)}));
@@ -79,7 +78,7 @@ const formDirectiveProvider =
  */
 @Directive({
   selector: 'form:not([ngNoForm]):not([ngFormModel]),ngForm,[ngForm]',
-  bindings: [formDirectiveProvider],
+  providers: [formDirectiveProvider],
   host: {
     '(submit)': 'onSubmit()',
   },
