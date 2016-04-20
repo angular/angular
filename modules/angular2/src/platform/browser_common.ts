@@ -6,7 +6,6 @@ import {
   PLATFORM_DIRECTIVES,
   PLATFORM_PIPES,
   ComponentRef,
-  platform,
   ExceptionHandler,
   Reflector,
   RootRenderer,
@@ -48,12 +47,15 @@ export {BrowserDomAdapter} from './browser/browser_adapter';
 export {enableDebugTools, disableDebugTools} from 'angular2/src/platform/browser/tools/tools';
 export {HAMMER_GESTURE_CONFIG, HammerGestureConfig} from './dom/events/hammer_gestures';
 
+export const BROWSER_PLATFORM_MARKER = CONST_EXPR(new OpaqueToken('BrowserPlatformMarker'));
+
 /**
  * A set of providers to initialize the Angular platform in a web browser.
  *
  * Used automatically by `bootstrap`, or can be passed to {@link platform}.
  */
 export const BROWSER_PROVIDERS: Array<any /*Type | Provider | any[]*/> = CONST_EXPR([
+  new Provider(BROWSER_PLATFORM_MARKER, {useValue: true}),
   PLATFORM_COMMON_PROVIDERS,
   new Provider(PLATFORM_INITIALIZER, {useValue: initDomAdapter, multi: true}),
 ]);

@@ -1,17 +1,13 @@
-import {unimplemented} from 'angular2/src/facade/exceptions';
-import {AppElement} from './element';
-
 /**
- * Represents a location in a View that has an injection, change-detection and render context
- * associated with it.
- *
- * An `ElementRef` is created for each element in the Template that contains a Directive, Component
- * or data-binding.
+ * A wrapper around a native element inside of a View.
  *
  * An `ElementRef` is backed by a render-specific element. In the browser, this is usually a DOM
  * element.
  */
-export abstract class ElementRef {
+// Note: We don't expose things like `Injector`, `ViewContainer`, ... here,
+// i.e. users have to ask for what they need. With that, we can build better analysis tools
+// and could do better codegen in the future.
+export class ElementRef {
   /**
    * The underlying native element or `null` if direct access to native elements is not supported
    * (e.g. when the application runs in a web worker).
@@ -31,13 +27,7 @@ export abstract class ElementRef {
    *   </p>
    * </div>
    */
-  get nativeElement(): any { return unimplemented(); }
-}
+  public nativeElement: any;
 
-export class ElementRef_ implements ElementRef {
-  constructor(private _element: AppElement) {}
-
-  get internalElement(): AppElement { return this._element; }
-
-  get nativeElement() { return this._element.nativeElement; }
+  constructor(nativeElement: any) { this.nativeElement = nativeElement; }
 }

@@ -114,7 +114,7 @@ void allTests() {
     expect(ngDeps).toBeNotNull();
     expect(ngDeps.reflectables.first.annotations)
         .toContain(new AnnotationModel()
-          ..name = 'hostViewFactory_FooComponent'
+          ..name = 'FooComponentNgFactory'
           ..isConstObject = true);
     expect(_generatedCode(outputs))
       ..toContain('$CONTEXT_ACCESSOR.greeting')
@@ -132,7 +132,7 @@ void allTests() {
     expect(ngDeps).toBeNotNull();
     expect(ngDeps.reflectables.first.annotations)
         .toContain(new AnnotationModel()
-          ..name = 'hostViewFactory_FooComponent'
+          ..name = 'FooComponentNgFactory'
           ..isConstObject = true);
     expect(_generatedCode(outputs))..toContain('$CONTEXT_ACCESSOR.action()');
   });
@@ -158,12 +158,12 @@ void allTests() {
     expect(ngDeps).toBeNotNull();
     expect(ngDeps.reflectables.first.annotations)
         .toContain(new AnnotationModel()
-          ..name = 'hostViewFactory_FooComponent'
+          ..name = 'FooComponentNgFactory'
           ..isConstObject = true);
 
     expect(_generatedCode(outputs))
       ..toContain("import 'bar.dart'")
-      ..toContain("import 'bar.template.dart'");
+      ..toContain("import 'bar.ngfactory.dart'");
   });
 
   it('should parse `View` directives with a single prefixed dependency.',
@@ -188,12 +188,12 @@ void allTests() {
     expect(ngDeps).toBeNotNull();
     expect(ngDeps.reflectables.first.annotations)
         .toContain(new AnnotationModel()
-          ..name = 'hostViewFactory_FooComponent'
+          ..name = 'FooComponentNgFactory'
           ..isConstObject = true);
 
     expect(_generatedCode(outputs))
       ..toContain("import 'bar.dart'")
-      ..toContain("import 'bar.template.dart'");
+      ..toContain("import 'bar.ngfactory.dart'");
   });
 
   it('should include directives mentioned in directive aliases.', () async {
@@ -216,12 +216,12 @@ void allTests() {
     expect(ngDeps).toBeNotNull();
     expect(ngDeps.reflectables.first.annotations)
         .toContain(new AnnotationModel()
-          ..name = 'hostViewFactory_FooComponent'
+          ..name = 'FooComponentNgFactory'
           ..isConstObject = true);
 
     expect(_generatedCode(outputs))
       ..toContain("import 'bar.dart'")
-      ..toContain("import 'bar.template.dart'");
+      ..toContain("import 'bar.ngfactory.dart'");
   });
 
   it('should create the same output for multiple calls.', () async {

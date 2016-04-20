@@ -54,7 +54,8 @@ import {
   Host,
   SkipSelf,
   SkipSelfMetadata,
-  OnDestroy
+  OnDestroy,
+  ReflectiveInjector
 } from 'angular2/core';
 
 import {NgIf, NgFor} from 'angular2/common';
@@ -87,7 +88,7 @@ import {QueryList} from 'angular2/src/core/linker/query_list';
 import {ViewContainerRef} from 'angular2/src/core/linker/view_container_ref';
 import {EmbeddedViewRef} from 'angular2/src/core/linker/view_ref';
 
-import {Compiler} from 'angular2/src/core/linker/compiler';
+import {ComponentResolver} from 'angular2/src/core/linker/component_resolver';
 import {ElementRef} from 'angular2/src/core/linker/element_ref';
 import {TemplateRef} from 'angular2/src/core/linker/template_ref';
 
@@ -1167,7 +1168,7 @@ function declareTests(isJit: boolean) {
 
       describe('dynamic ViewContainers', () => {
         it('should allow to create a ViewContainerRef at any bound location',
-           inject([TestComponentBuilder, AsyncTestCompleter, Compiler],
+           inject([TestComponentBuilder, AsyncTestCompleter, ComponentResolver],
                   (tcb: TestComponentBuilder, async, compiler) => {
                     tcb.overrideView(MyComp, new ViewMetadata({
                                        template: '<div><dynamic-vp #dynamic></dynamic-vp></div>',
@@ -1409,7 +1410,7 @@ function declareTests(isJit: boolean) {
            PromiseWrapper.catchError(tcb.createAsync(MyComp), (e) => {
              var c = e.context;
              expect(DOM.nodeName(c.componentRenderElement).toUpperCase()).toEqual("DIV");
-             expect(c.injector.getOptional).toBeTruthy();
+             expect((<Injector>c.injector).get).toBeTruthy();
              async.done();
              return null;
            });
@@ -1429,7 +1430,7 @@ function declareTests(isJit: boolean) {
                var c = e.context;
                expect(DOM.nodeName(c.renderNode).toUpperCase()).toEqual("INPUT");
                expect(DOM.nodeName(c.componentRenderElement).toUpperCase()).toEqual("DIV");
-               expect(c.injector.getOptional).toBeTruthy();
+               expect((<Injector>c.injector).get).toBeTruthy();
                expect(c.source).toContain(":0:7");
                expect(c.context).toBe(fixture.debugElement.componentInstance);
                expect(c.locals["local"]).toBeDefined();
@@ -1485,7 +1486,7 @@ function declareTests(isJit: boolean) {
                       var c = e.context;
                       expect(DOM.nodeName(c.renderNode).toUpperCase()).toEqual("SPAN");
                       expect(DOM.nodeName(c.componentRenderElement).toUpperCase()).toEqual("DIV");
-                      expect(c.injector.getOptional).toBeTruthy();
+                      expect((<Injector>c.injector).get).toBeTruthy();
                       expect(c.context).toBe(fixture.debugElement.componentInstance);
                       expect(c.locals["local"]).toBeDefined();
                     }
@@ -1946,13 +1947,14 @@ class SimpleImperativeViewComponent {
 @Injectable()
 class DynamicViewport {
   done: Promise<any>;
-  constructor(vc: ViewContainerRef, compiler: Compiler) {
+  constructor(vc: ViewContainerRef, compiler: ComponentResolver) {
     var myService = new MyService();
     myService.greeting = 'dynamic greet';
 
-    var bindings = Injector.resolve([provide(MyService, {useValue: myService})]);
-    this.done = compiler.compileInHost(ChildCompUsingService)
-                    .then((hostPv) => {vc.createHostView(hostPv, 0, bindings)});
+    var injector = ReflectiveInjector.resolveAndCreate([provide(MyService, {useValue: myService})],
+                                                       vc.injector);
+    this.done = compiler.resolveComponent(ChildCompUsingService)
+                    .then((componentFactory) => vc.createComponent(componentFactory, 0, injector));
   }
 }
 

@@ -66,6 +66,7 @@ var NG_COMMON = [
   'NgFormControl',
   'NgFormModel',
   'NgIf',
+  'NgTemplateOutlet',
   'NgModel',
   'NgSelectOption',
   'NgStyle',
@@ -139,12 +140,10 @@ var NG_COMPILER = [
 ];
 
 var NG_CORE = [
-  'APP_COMPONENT',
   'APP_INITIALIZER',
   'APP_ID',
   'AngularEntrypoint:dart',
   'AbstractProviderError',
-  'AppViewManager',
   'ApplicationRef',
   'APPLICATION_COMMON_PROVIDERS',
   'Attribute',
@@ -157,7 +156,7 @@ var NG_CORE = [
   'ChangeDetectionStrategy',
   'ChangeDetectorRef',
   'Class:js',
-  'Compiler',
+  'ComponentResolver',
   'Component',
   'ComponentMetadata',
   'ComponentRef',
@@ -169,7 +168,7 @@ var NG_CORE = [
   'PLATFORM_PIPES',
   'DebugNode',
   'DebugElement',
-  'Dependency',
+  'ReflectiveDependency',
   'DependencyMetadata',
   'Directive',
   'DirectiveMetadata',
@@ -188,16 +187,17 @@ var NG_CORE = [
   'HostListener',
   'HostListenerMetadata',
   'HostMetadata',
-  'HostViewFactoryRef',
+  'ComponentFactory',
   'Inject',
   'InjectMetadata',
   'Injectable',
   'InjectableMetadata',
   'Injector',
+  'ReflectiveInjector',
   'InstantiationError',
   'InvalidProviderError',
   'IterableDiffers',
-  'Key',
+  'ReflectiveKey',
   'KeyValueChangeRecord',
   'KeyValueDiffers',
   'NgZone',
@@ -219,9 +219,9 @@ var NG_CORE = [
   'Renderer',
   'RootRenderer',
   'RenderComponentType',
-  'ResolvedBinding:dart',
-  'ResolvedProvider:dart',
-  'ResolvedFactory',
+  'ResolvedReflectiveBinding:dart',
+  'ResolvedReflectiveProvider:dart',
+  'ResolvedReflectiveFactory',
   'Self',
   'SelfMetadata',
   'SkipSelf',
@@ -260,7 +260,12 @@ var NG_CORE = [
   'provide',
   'createNgZone',
   'forwardRef:js',
-  'platform',
+  'coreBootstrap',
+  'coreLoadAndBootstrap',
+  'createPlatform',
+  'disposePlatform',
+  'getPlatform',
+  'assertPlatform',
   'resolveForwardRef:js',
   'PLATFORM_COMMON_PROVIDERS',
   'PLATFORM_INITIALIZER',
@@ -269,7 +274,6 @@ var NG_CORE = [
   'AfterViewChecked:dart',
   'AfterViewInit:dart',
   'DoCheck:dart',
-  'HostViewRef',
   'IterableDifferFactory:dart',
   'IterableDiffer:dart',
   'KeyValueDifferFactory:dart',
@@ -306,9 +310,21 @@ var NG_PLATFORM_BROWSER = [
   'ELEMENT_PROBE_PROVIDERS_PROD_MODE',
   'Title',
   'bootstrap',
+  'browserPlatform',
   'disableDebugTools',
   'enableDebugTools',
   'inspectNativeElement'
+];
+
+var NG_PLATFORM_COMMON = [
+  'APP_BASE_HREF',
+  'HashLocationStrategy',
+  'Location',
+  'LocationStrategy',
+  'PathLocationStrategy',
+  'PlatformLocation',
+  'UrlChangeEvent:dart',
+  'UrlChangeListener:dart'
 ];
 
 var NG_UPGRADE = [
@@ -322,6 +338,7 @@ var NG_API = {
   ngCore: NG_CORE,
   ngInstrumentation: NG_INSTRUMENTATION,
   ngPlatformBrowser: NG_PLATFORM_BROWSER,
+  ngPlatformCommon: NG_PLATFORM_COMMON,
   ngUpgrade: NG_UPGRADE
 };
 
@@ -336,8 +353,15 @@ export function main() {
    */
 
   describe('public API', () => {
-    var barrelList =
-        ['ngCommon', 'ngCompiler', 'ngCore', 'ngInstrumentation', 'ngPlatformBrowser', 'ngUpgrade'];
+    var barrelList = [
+      'ngCommon',
+      'ngCompiler',
+      'ngCore',
+      'ngInstrumentation',
+      'ngPlatformBrowser',
+      'ngPlatformCommon',
+      'ngUpgrade'
+    ];
 
     if (IS_DART) {
       barrelList = barrelList.filter(b => b !== 'ngUpgrade');

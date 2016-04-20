@@ -13,16 +13,16 @@ import {TemplateParser} from './template_parser';
 import {DirectiveNormalizer} from './directive_normalizer';
 import {OutputEmitter} from './output/abstract_emitter';
 import * as o from './output/output_ast';
-import {HostViewFactory} from 'angular2/src/core/linker/view';
+import {ComponentFactory} from 'angular2/src/core/linker/component_factory';
 
 import {
   MODULE_SUFFIX,
 } from './util';
 
-var _HOST_VIEW_FACTORY_IDENTIFIER = new CompileIdentifierMetadata({
-  name: 'HostViewFactory',
-  runtime: HostViewFactory,
-  moduleUrl: `asset:angular2/lib/src/core/linker/view${MODULE_SUFFIX}`
+var _COMPONENT_FACTORY_IDENTIFIER = new CompileIdentifierMetadata({
+  name: 'ComponentFactory',
+  runtime: ComponentFactory,
+  moduleUrl: `asset:angular2/lib/src/core/linker/component_factory${MODULE_SUFFIX}`
 });
 
 export class SourceModule {
@@ -59,17 +59,20 @@ export class OfflineCompiler {
       exportedVars.push(compViewFactoryVar);
 
       var hostMeta = createHostComponentMeta(compMeta.type, compMeta.selector);
-      var compHostViewFactoryVar = this._compileComponent(hostMeta, [compMeta], [], statements);
-      var hostViewFactoryVar = `hostViewFactory_${compMeta.type.name}`;
-      statements.push(
-          o.variable(hostViewFactoryVar)
-              .set(o.importExpr(_HOST_VIEW_FACTORY_IDENTIFIER)
-                       .instantiate(
-                           [o.literal(compMeta.selector), o.variable(compHostViewFactoryVar)],
-                           o.importType(_HOST_VIEW_FACTORY_IDENTIFIER, null,
-                                        [o.TypeModifier.Const])))
-              .toDeclStmt(null, [o.StmtModifier.Final]));
-      exportedVars.push(hostViewFactoryVar);
+      var hostViewFactoryVar = this._compileComponent(hostMeta, [compMeta], [], statements);
+      var compFactoryVar = `${compMeta.type.name}NgFactory`;
+      statements.push(o.variable(compFactoryVar)
+                          .set(o.importExpr(_COMPONENT_FACTORY_IDENTIFIER)
+                                   .instantiate(
+                                       [
+                                         o.literal(compMeta.selector),
+                                         o.variable(hostViewFactoryVar),
+                                         o.importExpr(compMeta.type)
+                                       ],
+                                       o.importType(_COMPONENT_FACTORY_IDENTIFIER, null,
+                                                    [o.TypeModifier.Const])))
+                          .toDeclStmt(null, [o.StmtModifier.Final]));
+      exportedVars.push(compFactoryVar);
     });
     return this._codegenSourceModule(moduleUrl, statements, exportedVars);
   }
@@ -123,7 +126,7 @@ function _resolveStyleStatements(compileResult: StylesCompileResult): o.Statemen
 function _templateModuleUrl(comp: CompileDirectiveMetadata): string {
   var moduleUrl = comp.type.moduleUrl;
   var urlWithoutSuffix = moduleUrl.substring(0, moduleUrl.length - MODULE_SUFFIX.length);
-  return `${urlWithoutSuffix}.template${MODULE_SUFFIX}`;
+  return `${urlWithoutSuffix}.ngfactory${MODULE_SUFFIX}`;
 }
 
 function _stylesModuleUrl(stylesheetUrl: string, shim: boolean): string {

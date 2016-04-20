@@ -19,7 +19,7 @@ import 'package:angular2/src/transform/common/options.dart' show CODEGEN_DEBUG_M
 
 import 'compile_data_creator.dart';
 
-/// Generates `.template.dart` files to initialize the Angular2 system.
+/// Generates `.ngfactory.dart` files to initialize the Angular2 system.
 ///
 /// - Processes the `.ng_meta.json` file represented by `assetId` using
 ///   `createCompileData`.
@@ -66,7 +66,7 @@ Future<Outputs> processTemplates(AssetReader reader, AssetId assetId,
     for (var reflectable in viewDefResults.viewDefinitions.keys) {
       // TODO(kegluneq): Avoid duplicating naming logic for generated classes.
       reflectable.annotations.add(new AnnotationModel()
-        ..name = 'hostViewFactory_${reflectable.name}'
+        ..name = '${reflectable.name}NgFactory'
         ..isConstObject = true);
     }
   }

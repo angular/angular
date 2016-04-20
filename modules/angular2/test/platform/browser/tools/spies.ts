@@ -1,6 +1,5 @@
 import {SpyObject} from 'angular2/testing_internal';
-import {Injector, provide} from 'angular2/core';
-import {ComponentRef} from 'angular2/src/core/linker/dynamic_component_loader';
+import {ReflectiveInjector, provide} from 'angular2/core';
 import {global} from 'angular2/src/facade/lang';
 import {ApplicationRef, ApplicationRef_} from 'angular2/src/core/application_ref';
 
@@ -12,8 +11,8 @@ export class SpyComponentRef extends SpyObject {
   injector;
   constructor() {
     super();
-    this.injector =
-        Injector.resolveAndCreate([provide(ApplicationRef, {useClass: SpyApplicationRef})]);
+    this.injector = ReflectiveInjector.resolveAndCreate(
+        [provide(ApplicationRef, {useClass: SpyApplicationRef})]);
   }
 }
 

@@ -189,8 +189,7 @@ export function bindDirectiveInputs(directiveAst: DirectiveAst, directiveInstanc
   });
   if (isOnPushComp) {
     detectChangesInInputsMethod.addStmt(new o.IfStmt(DetectChangesVars.changed, [
-      compileElement.getOrCreateAppElement()
-          .prop('componentView')
+      compileElement.appElement.prop('componentView')
           .callMethod('markAsCheckOnce', [])
           .toStmt()
     ]));

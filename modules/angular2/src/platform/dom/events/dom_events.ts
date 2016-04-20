@@ -10,7 +10,7 @@ export class DomEventsPlugin extends EventManagerPlugin {
 
   addEventListener(element: HTMLElement, eventName: string, handler: Function): Function {
     var zone = this.manager.getZone();
-    var outsideHandler = (event) => zone.run(() => handler(event));
+    var outsideHandler = (event) => zone.runGuarded(() => handler(event));
     return this.manager.getZone().runOutsideAngular(
         () => DOM.onAndCancel(element, eventName, outsideHandler));
   }
@@ -18,7 +18,7 @@ export class DomEventsPlugin extends EventManagerPlugin {
   addGlobalEventListener(target: string, eventName: string, handler: Function): Function {
     var element = DOM.getGlobalEventTarget(target);
     var zone = this.manager.getZone();
-    var outsideHandler = (event) => zone.run(() => handler(event));
+    var outsideHandler = (event) => zone.runGuarded(() => handler(event));
     return this.manager.getZone().runOutsideAngular(
         () => DOM.onAndCancel(element, eventName, outsideHandler));
   }

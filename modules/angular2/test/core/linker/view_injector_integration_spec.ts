@@ -604,7 +604,7 @@ export function main() {
       it("should inject TemplateRef", fakeAsync(() => {
            var el = createComp('<template needsViewContainerRef needsTemplateRef></template>', tcb);
            expect(el.childNodes[0].inject(NeedsTemplateRef).templateRef.elementRef)
-               .toBe(el.childNodes[0].inject(NeedsViewContainerRef).viewContainer.element);
+               .toEqual(el.childNodes[0].inject(NeedsViewContainerRef).viewContainer.element);
          }));
 
       it("should throw if there is no TemplateRef", fakeAsync(() => {

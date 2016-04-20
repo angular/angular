@@ -11,6 +11,32 @@ import {BaseException} from 'angular2/src/facade/exceptions';
 import {AppElement} from './element';
 import {ExpressionChangedAfterItHasBeenCheckedException} from './exceptions';
 import {devModeEqual} from 'angular2/src/core/change_detection/change_detection';
+import {Inject, Injectable} from 'angular2/src/core/di';
+import {RootRenderer, RenderComponentType, Renderer} from 'angular2/src/core/render/api';
+import {APP_ID} from 'angular2/src/core/application_tokens';
+import {ViewEncapsulation} from 'angular2/src/core/metadata/view';
+
+@Injectable()
+export class ViewUtils {
+  private _nextCompTypeId: number = 0;
+
+  constructor(private _renderer: RootRenderer, @Inject(APP_ID) private _appId: string) {}
+
+  /**
+   * Used by the generated code
+   */
+  createRenderComponentType(templateUrl: string, slotCount: number,
+                            encapsulation: ViewEncapsulation,
+                            styles: Array<string | any[]>): RenderComponentType {
+    return new RenderComponentType(`${this._appId}-${this._nextCompTypeId++}`, templateUrl,
+                                   slotCount, encapsulation, styles);
+  }
+
+  /** @internal */
+  renderComponent(renderComponentType: RenderComponentType): Renderer {
+    return this._renderer.renderComponent(renderComponentType);
+  }
+}
 
 export function flattenNestedViewRenderNodes(nodes: any[]): any[] {
   return _flattenNestedViewRenderNodes(nodes, []);

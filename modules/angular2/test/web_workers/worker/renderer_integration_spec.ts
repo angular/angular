@@ -21,7 +21,8 @@ import {
   ViewMetadata,
   Component,
   Injectable,
-  ElementRef
+  ElementRef,
+  ComponentRef
 } from 'angular2/core';
 import {NgIf} from 'angular2/common';
 import {WebWorkerRootRenderer} from "angular2/src/web_workers/worker/renderer";
@@ -119,8 +120,8 @@ export function main() {
       return uiRenderStore.deserialize(id);
     }
 
-    function getRenderer(elementRef: ElementRef) {
-      return (<any>elementRef).internalElement.parentView.renderer;
+    function getRenderer(componentRef: ComponentRef) {
+      return (<any>componentRef.hostView).internalView.renderer;
     }
 
     it('should update text nodes',
@@ -145,8 +146,8 @@ export function main() {
                                       {template: '<input [title]="y" style="position:absolute">'}))
              .createAsync(MyComp)
              .then((fixture) => {
-               var checkSetters = (componentElRef, workerEl) => {
-                 var renderer = getRenderer(componentElRef);
+               var checkSetters = (componentRef, workerEl) => {
+                 var renderer = getRenderer(componentRef);
                  var el = getRenderElement(workerEl);
                  renderer.setElementProperty(workerEl, 'tabIndex', 1);
                  expect((<HTMLInputElement>el).tabIndex).toEqual(1);
@@ -166,9 +167,9 @@ export function main() {
                };
 
                // root element
-               checkSetters(fixture.elementRef, fixture.debugElement.nativeElement);
+               checkSetters(fixture.componentRef, fixture.debugElement.nativeElement);
                // nested elements
-               checkSetters(fixture.elementRef, fixture.debugElement.children[0].nativeElement);
+               checkSetters(fixture.componentRef, fixture.debugElement.children[0].nativeElement);
 
                async.done();
              });
@@ -220,7 +221,7 @@ export function main() {
                .createAsync(MyComp)
                .then((fixture) => {
                  var el = fixture.debugElement.children[0];
-                 getRenderer(fixture.elementRef)
+                 getRenderer(fixture.componentRef)
                      .invokeElementMethod(el.nativeElement, 'setAttribute', ['a', 'b']);
 
                  expect(DOM.getAttribute(getRenderElement(el.nativeElement), 'a')).toEqual('b');

@@ -15,6 +15,7 @@ import {
 } from 'angular2/testing_internal';
 
 import {bootstrap} from 'angular2/platform/browser';
+import {APP_BASE_HREF, LocationStrategy} from 'angular2/platform/common';
 import {Component, Directive} from 'angular2/src/core/metadata';
 import {DOM} from 'angular2/src/platform/dom/dom_adapter';
 import {Console} from 'angular2/src/core/console';
@@ -33,9 +34,7 @@ import {
   ROUTER_PRIMARY_COMPONENT,
   RouteParams,
   Router,
-  APP_BASE_HREF,
-  ROUTER_DIRECTIVES,
-  LocationStrategy
+  ROUTER_DIRECTIVES
 } from 'angular2/router';
 
 import {MockLocationStrategy} from 'angular2/src/mock/mock_location_strategy';
@@ -55,7 +54,7 @@ export function main() {
     ]);
 
     // do not refactor out the `bootstrap` functionality. We still want to
-    // keep this test around so we can ensure that bootstrapping a router works
+    // keep this test around so we can ensure that bootstrap a router works
     it('should bootstrap a simple app', inject([AsyncTestCompleter], (async) => {
          var fakeDoc = DOM.createHtmlDocument();
          var el = DOM.createElement('app-cmp', fakeDoc);
@@ -70,10 +69,10 @@ export function main() {
                      provide(Console, {useClass: DummyConsole})
                    ])
              .then((applicationRef) => {
-               var router = applicationRef.hostComponent.router;
+               var router = applicationRef.instance.router;
                router.subscribe((_) => {
                  expect(el).toHaveText('outer { hello }');
-                 expect(applicationRef.hostComponent.location.path()).toEqual('');
+                 expect(applicationRef.instance.location.path()).toEqual('');
                  async.done();
                });
              });

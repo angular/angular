@@ -12,11 +12,10 @@ import {
   SpyObject
 } from 'angular2/testing_internal';
 
-import {Injector, provide} from 'angular2/core';
+import {Injector, provide, ReflectiveInjector} from 'angular2/core';
 import {CONST_EXPR} from 'angular2/src/facade/lang';
 
-import {Location} from 'angular2/src/router/location/location';
-import {LocationStrategy, APP_BASE_HREF} from 'angular2/src/router/location/location_strategy';
+import {Location, LocationStrategy, APP_BASE_HREF} from 'angular2/platform/common';
 import {MockLocationStrategy} from 'angular2/src/mock/mock_location_strategy';
 
 export function main() {
@@ -27,7 +26,7 @@ export function main() {
     function makeLocation(baseHref: string = '/my/app', provider: any = CONST_EXPR([])): Location {
       locationStrategy = new MockLocationStrategy();
       locationStrategy.internalBaseHref = baseHref;
-      let injector = Injector.resolveAndCreate(
+      let injector = ReflectiveInjector.resolveAndCreate(
           [Location, provide(LocationStrategy, {useValue: locationStrategy}), provider]);
       return location = injector.get(Location);
     }

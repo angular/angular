@@ -7,7 +7,5 @@ import "dart:isolate";
 
 @AngularEntrypoint()
 main(List<String> args, SendPort replyTo) {
-  platform([WORKER_APP_PLATFORM, new Provider(RENDER_SEND_PORT, useValue: replyTo)])
-    .application([WORKER_APP_APPLICATION])
-    .bootstrap(App);
+  bootstrapApp(replyTo, App);
 }

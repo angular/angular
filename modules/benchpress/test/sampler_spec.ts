@@ -22,7 +22,7 @@ import {
   Reporter,
   bind,
   provide,
-  Injector,
+  ReflectiveInjector,
   Options,
   MeasureValues
 } from 'benchpress/common';
@@ -65,7 +65,7 @@ export function main() {
         bindings.push(bind(Options.PREPARE).toValue(prepare));
       }
 
-      sampler = Injector.resolveAndCreate(bindings).get(Sampler);
+      sampler = ReflectiveInjector.resolveAndCreate(bindings).get(Sampler);
     }
 
     it('should call the prepare and execute callbacks using WebDriverAdapter.waitFor',

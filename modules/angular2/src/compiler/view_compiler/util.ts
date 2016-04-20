@@ -31,8 +31,11 @@ export function getPropertyInView(property: o.Expression, viewPath: CompileView[
 
 export function injectFromViewParentInjector(token: CompileTokenMetadata,
                                              optional: boolean): o.Expression {
-  var method = optional ? 'getOptional' : 'get';
-  return o.THIS_EXPR.prop('parentInjector').callMethod(method, [createDiTokenExpression(token)]);
+  var args = [createDiTokenExpression(token)];
+  if (optional) {
+    args.push(o.NULL_EXPR);
+  }
+  return o.THIS_EXPR.prop('parentInjector').callMethod('get', args);
 }
 
 export function getViewFactoryName(component: CompileDirectiveMetadata,

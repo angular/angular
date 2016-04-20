@@ -1,6 +1,8 @@
 import {MessageBasedPlatformLocation} from './platform_location';
 import {CONST_EXPR} from 'angular2/src/facade/lang';
-import {BrowserPlatformLocation} from 'angular2/src/router/location/browser_platform_location';
+import {
+  BrowserPlatformLocation
+} from 'angular2/src/platform/browser/location/browser_platform_location';
 import {APP_INITIALIZER, Provider, Injector, NgZone} from 'angular2/core';
 
 export const WORKER_RENDER_ROUTER = CONST_EXPR([
@@ -15,6 +17,6 @@ function initRouterListeners(injector: Injector): () => void {
   return () => {
     let zone = injector.get(NgZone);
 
-    zone.run(() => injector.get(MessageBasedPlatformLocation).start());
+    zone.runGuarded(() => injector.get(MessageBasedPlatformLocation).start());
   };
 }

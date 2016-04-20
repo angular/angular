@@ -1,6 +1,7 @@
 import {unimplemented} from 'angular2/src/facade/exceptions';
+import {isPresent} from 'angular2/src/facade/lang';
 import {ChangeDetectorRef} from '../change_detection/change_detector_ref';
-import {AppView, HostViewFactory} from './view';
+import {AppView} from './view';
 import {ChangeDetectionStrategy} from 'angular2/src/core/change_detection/constants';
 
 export abstract class ViewRef extends ChangeDetectorRef {
@@ -10,19 +11,8 @@ export abstract class ViewRef extends ChangeDetectorRef {
   get changeDetectorRef(): ChangeDetectorRef { return <ChangeDetectorRef>unimplemented(); };
 
   get destroyed(): boolean { return <boolean>unimplemented(); }
-}
 
-/**
- * Represents a View containing a single Element that is the Host Element of a {@link Component}
- * instance.
- *
- * A Host View is created for every dynamically created Component that was compiled on its own (as
- * opposed to as a part of another Component's Template) via {@link Compiler#compileInHost} or one
- * of the higher-level APIs: {@link AppViewManager#createRootHostView},
- * {@link AppViewManager#createHostViewInContainer}, {@link ViewContainerRef#createHostView}.
- */
-export abstract class HostViewRef extends ViewRef {
-  get rootNodes(): any[] { return <any[]>unimplemented(); };
+  abstract onDestroy(callback: Function);
 }
 
 /**
@@ -90,9 +80,14 @@ export abstract class EmbeddedViewRef extends ViewRef {
   abstract hasLocal(variableName: string): boolean;
 
   get rootNodes(): any[] { return <any[]>unimplemented(); };
+
+  /**
+   * Destroys the view and all of the data structures associated with it.
+   */
+  abstract destroy();
 }
 
-export class ViewRef_ implements EmbeddedViewRef, HostViewRef {
+export class ViewRef_ implements EmbeddedViewRef {
   constructor(private _view: AppView<any>) { this._view = _view; }
 
   get internalView(): AppView<any> { return this._view; }
@@ -118,12 +113,8 @@ export class ViewRef_ implements EmbeddedViewRef, HostViewRef {
     this._view.cdMode = ChangeDetectionStrategy.CheckAlways;
     this.markForCheck();
   }
-}
 
-export abstract class HostViewFactoryRef {}
+  onDestroy(callback: Function) { this._view.disposables.push(callback); }
 
-export class HostViewFactoryRef_ implements HostViewFactoryRef {
-  constructor(private _hostViewFactory: HostViewFactory) {}
-
-  get internalHostViewFactory(): HostViewFactory { return this._hostViewFactory; }
+  destroy() { this._view.destroy(); }
 }

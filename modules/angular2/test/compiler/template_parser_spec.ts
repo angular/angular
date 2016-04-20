@@ -1506,7 +1506,8 @@ class FooAstTransformer implements TemplateAstVisitor {
   visitEmbeddedTemplate(ast: EmbeddedTemplateAst, context: any): any { throw 'not implemented'; }
   visitElement(ast: ElementAst, context: any): any {
     if (ast.name != 'div') return ast;
-    return new ElementAst('foo', [], [], [], [], [], [], [], ast.ngContentIndex, ast.sourceSpan);
+    return new ElementAst('foo', [], [], [], [], [], [], false, [], ast.ngContentIndex,
+                          ast.sourceSpan);
   }
   visitVariable(ast: VariableAst, context: any): any { throw 'not implemented'; }
   visitEvent(ast: BoundEventAst, context: any): any { throw 'not implemented'; }
@@ -1523,6 +1524,7 @@ class FooAstTransformer implements TemplateAstVisitor {
 class BarAstTransformer extends FooAstTransformer {
   visitElement(ast: ElementAst, context: any): any {
     if (ast.name != 'foo') return ast;
-    return new ElementAst('bar', [], [], [], [], [], [], [], ast.ngContentIndex, ast.sourceSpan);
+    return new ElementAst('bar', [], [], [], [], [], [], false, [], ast.ngContentIndex,
+                          ast.sourceSpan);
   }
 }

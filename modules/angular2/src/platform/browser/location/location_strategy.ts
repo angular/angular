@@ -43,6 +43,7 @@ export abstract class LocationStrategy {
  * ```
  * import {Component} from 'angular2/core';
  * import {ROUTER_DIRECTIVES, ROUTER_PROVIDERS, RouteConfig} from 'angular2/router';
+ * import {APP_BASE_HREF} from 'angular2/platform/common';
  *
  * @Component({directives: [ROUTER_DIRECTIVES]})
  * @RouteConfig([
@@ -59,30 +60,3 @@ export abstract class LocationStrategy {
  * ```
  */
 export const APP_BASE_HREF: OpaqueToken = CONST_EXPR(new OpaqueToken('appBaseHref'));
-
-export function normalizeQueryParams(params: string): string {
-  return (params.length > 0 && params.substring(0, 1) != '?') ? ('?' + params) : params;
-}
-
-export function joinWithSlash(start: string, end: string): string {
-  if (start.length == 0) {
-    return end;
-  }
-  if (end.length == 0) {
-    return start;
-  }
-  var slashes = 0;
-  if (start.endsWith('/')) {
-    slashes++;
-  }
-  if (end.startsWith('/')) {
-    slashes++;
-  }
-  if (slashes == 2) {
-    return start + end.substring(1);
-  }
-  if (slashes == 1) {
-    return start + end;
-  }
-  return start + '/' + end;
-}

@@ -5,7 +5,6 @@ import {
   PLATFORM_DIRECTIVES,
   PLATFORM_PIPES,
   ComponentRef,
-  platform,
   ExceptionHandler,
   Reflector,
   reflector,
@@ -36,7 +35,6 @@ import {BrowserDomAdapter} from './browser/browser_adapter';
 import {wtfInit} from 'angular2/src/core/profile/wtf_init';
 import {MessageBasedRenderer} from 'angular2/src/web_workers/ui/renderer';
 import {MessageBasedXHRImpl} from 'angular2/src/web_workers/ui/xhr_impl';
-import {BrowserPlatformLocation} from 'angular2/src/router/location/browser_platform_location';
 import {
   ServiceMessageBrokerFactory,
   ServiceMessageBrokerFactory_
@@ -45,6 +43,9 @@ import {
   ClientMessageBrokerFactory,
   ClientMessageBrokerFactory_
 } from 'angular2/src/web_workers/shared/client_message_broker';
+import {
+  BrowserPlatformLocation
+} from 'angular2/src/platform/browser/location/browser_platform_location';
 import {Serializer} from 'angular2/src/web_workers/shared/serializer';
 import {ON_WEB_WORKER} from 'angular2/src/web_workers/shared/api';
 import {RenderStore} from 'angular2/src/web_workers/shared/render_store';
@@ -56,8 +57,12 @@ export const WORKER_SCRIPT: OpaqueToken = CONST_EXPR(new OpaqueToken("WebWorkerS
 export const WORKER_RENDER_MESSAGING_PROVIDERS: Array<any /*Type | Provider | any[]*/> =
     CONST_EXPR([MessageBasedRenderer, MessageBasedXHRImpl]);
 
+export const WORKER_RENDER_PLATFORM_MARKER =
+    CONST_EXPR(new OpaqueToken('WorkerRenderPlatformMarker'));
+
 export const WORKER_RENDER_PLATFORM: Array<any /*Type | Provider | any[]*/> = CONST_EXPR([
   PLATFORM_COMMON_PROVIDERS,
+  CONST_EXPR(new Provider(WORKER_RENDER_PLATFORM_MARKER, {useValue: true})),
   new Provider(PLATFORM_INITIALIZER, {useValue: initWebWorkerRenderPlatform, multi: true})
 ]);
 
@@ -101,7 +106,7 @@ export function initializeGenericWorkerRenderer(injector: Injector) {
   let zone = injector.get(NgZone);
   bus.attachToZone(zone);
 
-  zone.run(() => {
+  zone.runGuarded(() => {
     WORKER_RENDER_MESSAGING_PROVIDERS.forEach((token) => { injector.get(token).start(); });
   });
 }
