@@ -60,7 +60,7 @@ main() {
           var sink = new SingleClientServerMessageBusSink();
           sink.initChannel(CHANNEL, false);
 
-          sink.to(CHANNEL).add(MESSAGE);
+
 
           var socket = new SpyWebSocket();
           sink.setConnection(socket);
@@ -77,6 +77,7 @@ main() {
             }
           });
 
+          sink.to(CHANNEL).add(MESSAGE);
           sink.removeConnection();
           sink.to(CHANNEL).add(SECOND_MESSAGE);
           sink.setConnection(socket);

@@ -213,20 +213,11 @@ export function main() {
            adapter.bootstrap(element, ['ng1'])
                .ready((ref) => {
                  expect(multiTrim(document.body.textContent))
-                     .toEqual(
-                         "ignore: -; " + "literal: Text; interpolate: Hello world; " +
-                         "oneWayA: A; oneWayB: B; twoWayA: initModelA; twoWayB: initModelB; (1) | " +
-                         "modelA: initModelA; modelB: initModelB; eventA: ?; eventB: ?;");
-                 setTimeout(() => {
-                   // we need to do setTimeout, because the EventEmitter uses setTimeout to schedule
-                   // events, and so without this we would not see the events processed.
-                   expect(multiTrim(document.body.textContent))
-                       .toEqual("ignore: -; " + "literal: Text; interpolate: Hello world; " +
-                                "oneWayA: A; oneWayB: B; twoWayA: newA; twoWayB: newB; (3) | " +
-                                "modelA: newA; modelB: newB; eventA: aFired; eventB: bFired;");
-                   ref.dispose();
-                   async.done();
-                 });
+                     .toEqual("ignore: -; " + "literal: Text; interpolate: Hello world; " +
+                              "oneWayA: A; oneWayB: B; twoWayA: newA; twoWayB: newB; (2) | " +
+                              "modelA: newA; modelB: newB; eventA: aFired; eventB: bFired;");
+                 ref.dispose();
+                 async.done();
                });
 
          }));
@@ -305,15 +296,11 @@ export function main() {
            var element = html(`<div><ng2></ng2></div>`);
            adapter.bootstrap(element, ['ng1'])
                .ready((ref) => {
-                 // we need to do setTimeout, because the EventEmitter uses setTimeout to schedule
-                 // events, and so without this we would not see the events processed.
-                 setTimeout(() => {
-                   expect(multiTrim(document.body.textContent))
-                       .toEqual(
-                           "Hello SAVKIN, Victor; A: VICTOR; B: SAVKIN; | Hello TEST; A: First; B: Last; | WORKS-SAVKIN, Victor");
-                   ref.dispose();
-                   async.done();
-                 }, 0);
+                 expect(multiTrim(document.body.textContent))
+                     .toEqual(
+                         "Hello SAVKIN, Victor; A: VICTOR; B: SAVKIN; | Hello TEST; A: First; B: Last; | WORKS-SAVKIN, Victor");
+                 ref.dispose();
+                 async.done();
                });
          }));
 

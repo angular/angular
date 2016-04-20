@@ -55,59 +55,16 @@ export function main() {
          ObservableWrapper.callComplete(emitter);
        }));
 
-    it("should subscribe to the wrapper asynchronously", () => {
+    it("should subscribe to the wrapper synchronously", () => {
       var called = false;
       ObservableWrapper.subscribe(emitter, (value) => { called = true; });
 
       ObservableWrapper.callEmit(emitter, 99);
-      expect(called).toBe(false);
+      expect(called).toBe(true);
     });
 
-    // Makes Edge to disconnect when running the full unit test campaign
-    // TODO: remove when issue is solved: https://github.com/angular/angular/issues/4756
-    if (!browserDetection.isEdge) {
-      it("delivers next and error events asynchronously", inject([AsyncTestCompleter], (async) => {
-           let log = [];
-           ObservableWrapper.subscribe(emitter,
-                                       (x) => {
-                                         log.push(x);
-                                         expect(log).toEqual([1, 3, 5, 2]);
-                                       },
-                                       (err) => {
-                                         log.push(err);
-                                         expect(log).toEqual([1, 3, 5, 2, 4]);
-                                         async.done();
-                                       });
-           log.push(1);
-           ObservableWrapper.callEmit(emitter, 2);
-           log.push(3);
-           ObservableWrapper.callError(emitter, 4);
-           log.push(5);
-         }));
-
-      it("delivers next and complete events asynchronously",
-         inject([AsyncTestCompleter], (async) => {
-           let log = [];
-           ObservableWrapper.subscribe(emitter,
-                                       (x) => {
-                                         log.push(x);
-                                         expect(log).toEqual([1, 3, 5, 2]);
-                                       },
-                                       null, () => {
-                                         log.push(4);
-                                         expect(log).toEqual([1, 3, 5, 2, 4]);
-                                         async.done();
-                                       });
-           log.push(1);
-           ObservableWrapper.callEmit(emitter, 2);
-           log.push(3);
-           ObservableWrapper.callComplete(emitter);
-           log.push(5);
-         }));
-    }
-
     it('delivers events synchronously', () => {
-      var e = new EventEmitter(false);
+      var e = new EventEmitter();
       var log = [];
       ObservableWrapper.subscribe(e, (x) => { log.push(x); });
       log.push(1);
@@ -117,7 +74,7 @@ export function main() {
     });
 
     it('reports whether it has subscribers', () => {
-      var e = new EventEmitter(false);
+      var e = new EventEmitter();
       expect(ObservableWrapper.hasSubscribers(e)).toBe(false);
       ObservableWrapper.subscribe(e, (_) => {});
       expect(ObservableWrapper.hasSubscribers(e)).toBe(true);
@@ -132,7 +89,7 @@ export function main() {
   describe("ObservableWrapper", () => {
 
     it('should correctly check isObservable for EventEmitter', () => {
-      var e = new EventEmitter(false);
+      var e = new EventEmitter();
       expect(ObservableWrapper.isObservable(e)).toBe(true);
     });
 
@@ -142,7 +99,7 @@ export function main() {
     });
 
     it('should subscribe to EventEmitters', () => {
-      let e = new EventEmitter(false);
+      let e = new EventEmitter();
 
       ObservableWrapper.subscribe(e, (val) => {});
 
