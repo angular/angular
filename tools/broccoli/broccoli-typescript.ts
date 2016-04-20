@@ -88,7 +88,16 @@ class DiffingTSCompiler implements DiffingBroccoliPlugin {
     this.tsServiceHost = new CustomLanguageServiceHost(this.tsOpts, this.rootFilePaths,
                                                        this.fileRegistry, this.inputPath);
     this.tsService = ts.createLanguageService(this.tsServiceHost, ts.createDocumentRegistry());
-    this.metadataCollector = new MetadataCollector();
+    this.metadataCollector = new MetadataCollector({
+      // Since our code isn't under a node_modules directory, we need to reverse the module
+      // resolution to get metadata rooted at 'angular2'.
+      // see https://github.com/angular/angular/issues/8144
+      reverseModuleResolution(fileName: string) {
+        if (/\.tmp\/angular2/.test(fileName)) {
+          return fileName.substr(fileName.lastIndexOf('.tmp/angular2/') + 5).replace(/\.ts$/, '');
+        }
+      }
+    });
   }
 
 
