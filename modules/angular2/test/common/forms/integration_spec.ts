@@ -343,6 +343,53 @@ export function main() {
            });
          }));
 
+      it("should support <type=number> when value is cleared in the UI",
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+           var t = `<div [ngFormModel]="form">
+                  <input type="number" ngControl="num" required>
+                </div>`;
+
+           tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((fixture) => {
+             fixture.debugElement.componentInstance.form =
+                 new ControlGroup({"num": new Control(10)});
+             fixture.detectChanges();
+
+             var input = fixture.debugElement.query(By.css("input"));
+             input.nativeElement.value = "";
+             dispatchEvent(input.nativeElement, "input");
+
+             expect(fixture.debugElement.componentInstance.form.valid).toBe(false);
+             expect(fixture.debugElement.componentInstance.form.value).toEqual({"num": null});
+
+             input.nativeElement.value = "0";
+             dispatchEvent(input.nativeElement, "input");
+
+             expect(fixture.debugElement.componentInstance.form.valid).toBe(true);
+             expect(fixture.debugElement.componentInstance.form.value).toEqual({"num": 0});
+             async.done();
+           });
+         }));
+
+
+      it("should support <type=number> when value is cleared programmatically",
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+           var form = new ControlGroup({"num": new Control(10)});
+           var t = `<div [ngFormModel]="form">
+                  <input type="number" ngControl="num" [(ngModel)]="data">
+                </div>`;
+
+           tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((fixture) => {
+             fixture.debugElement.componentInstance.form = form;
+             fixture.debugElement.componentInstance.data = null;
+             fixture.detectChanges();
+
+             var input = fixture.debugElement.query(By.css("input"));
+             expect(input.nativeElement.value).toEqual("");
+
+             async.done();
+           });
+         }));
+
       it("should support <type=radio>",
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            var t = `<form [ngFormModel]="form">
