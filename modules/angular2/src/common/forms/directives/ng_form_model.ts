@@ -1,5 +1,6 @@
-import {CONST_EXPR} from 'angular2/src/facade/lang';
+import {CONST_EXPR, isBlank} from 'angular2/src/facade/lang';
 import {ListWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
+import {BaseException} from 'angular2/src/facade/exceptions';
 import {ObservableWrapper, EventEmitter} from 'angular2/src/facade/async';
 import {
   SimpleChange,
@@ -114,6 +115,7 @@ export class NgFormModel extends ControlContainer implements Form,
   }
 
   ngOnChanges(changes: {[key: string]: SimpleChange}): void {
+    this._checkFormPresent();
     if (StringMapWrapper.contains(changes, "form")) {
       var sync = composeValidators(this._validators);
       this.form.validator = Validators.compose([this.form.validator, sync]);
@@ -172,5 +174,12 @@ export class NgFormModel extends ControlContainer implements Form,
       var ctrl: any = this.form.find(dir.path);
       dir.valueAccessor.writeValue(ctrl.value);
     });
+  }
+
+  private _checkFormPresent() {
+    if (isBlank(this.form)) {
+      throw new BaseException(
+          `ngFormModel expects a form. Please pass one in. Example: <form [ngFormModel]="myCoolForm">`);
+    }
   }
 }
