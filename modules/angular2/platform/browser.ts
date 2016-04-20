@@ -1,4 +1,4 @@
-export {AngularEntrypoint} from 'angular2/src/core/angular_entrypoint';
+export * from 'angular2/src/core/angular_entrypoint';
 export {
   BROWSER_PROVIDERS,
   CACHED_TEMPLATE_PROVIDER,

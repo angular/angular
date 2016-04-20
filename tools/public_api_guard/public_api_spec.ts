@@ -1091,8 +1091,6 @@ const UPGRADE = [
 ];
 
 const BROWSER = [
-  'AngularEntrypoint',
-  'AngularEntrypoint.constructor(name:String)',
   'BrowserDomAdapter',
   'BrowserDomAdapter.addClass(element:any, className:string):any',
   'BrowserDomAdapter.adoptNode(node:Node):any',

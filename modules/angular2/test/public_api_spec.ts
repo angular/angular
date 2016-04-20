@@ -299,7 +299,7 @@ var NG_INSTRUMENTATION =
     ['wtfCreateScope', 'wtfEndTimeRange', 'wtfLeave', 'WtfScopeFn:dart', 'wtfStartTimeRange'];
 
 var NG_PLATFORM_BROWSER = [
-  'AngularEntrypoint',
+  'AngularEntrypoint:dart',
   'BROWSER_APP_PROVIDERS',
   'BROWSER_PROVIDERS',
   'BrowserDomAdapter',
