@@ -4,7 +4,7 @@
  */
 import {global} from 'angular2/src/facade/lang';
 import {ListWrapper} from 'angular2/src/facade/collection';
-import {bind} from 'angular2/core';
+import {provide} from 'angular2/core';
 
 import {
   FunctionWithParamTokens,
@@ -89,6 +89,15 @@ export type AsyncTestFn = (done: () => void) => void;
  */
 export type AnyTestFn = SyncTestFn | AsyncTestFn;
 
+/**
+ * Injectable completer that allows injection of the Jasmine 'done' function.
+ *
+ * ## Example:
+ *
+ * {@example testing/ts/testing.ts region='Done'}
+ */
+export class Done {}
+
 var jsmBeforeEach = _global.beforeEach;
 var jsmIt = _global.it;
 var jsmIIt = _global.fit;
@@ -144,8 +153,14 @@ function _it(jsmFn: Function, name: string, testFn: FunctionWithParamTokens | An
       if (testFnT.isAsync) {
         runInAsyncTestZone(() => testInjector.execute(testFnT), done, done.fail, name);
       } else {
-        testInjector.execute(testFnT);
-        done();
+        if (testFnT.hasToken(Done)) {
+          testInjector.addProviders([provide(Done, {useValue: done})]);
+
+          testInjector.execute(testFnT);
+        } else {
+          testInjector.execute(testFnT);
+          done();
+        }
       }
     }, timeOut);
   } else {

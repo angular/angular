@@ -11,7 +11,8 @@ import {
   async,
   withProviders,
   beforeEachProviders,
-  TestComponentBuilder
+  TestComponentBuilder,
+  Done
 } from 'angular2/testing';
 
 import {Injectable, bind} from 'angular2/core';
@@ -136,6 +137,13 @@ export function main() {
 
       it('should use set up providers',
          inject([FancyService], (service) => { expect(service.value).toEqual('real value'); }));
+
+      it('should allow manual use of the done fn', inject([FancyService, Done], (service, done) => {
+           service.getTimeoutValue().then((value) => {
+             expect(value).toEqual('timeout value');
+             done();
+           });
+         }));
 
       it('should wait until returned promises', async(inject([FancyService], (service) => {
            service.getAsyncValue().then((value) => { expect(value).toEqual('async value'); });

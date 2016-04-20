@@ -8,6 +8,7 @@ import {
   beforeEach,
   afterEach,
   beforeEachProviders,
+  Done,
   inject
 } from 'angular2/testing';
 import {provide} from 'angular2/core';
@@ -86,5 +87,18 @@ describe('some component', () => {
                         // This test can leave the database in a dirty state.
                         // The afterEach will ensure it gets reset.
                     });
+});
+// #enddocregion
+
+// #docregion Done
+describe('some component', () => {
+  it('uses a periodic timer',
+     inject([MyService, Done],
+            (service: MyService, done: any) => {
+                // This test can call 'done' or 'done.fail' like a normal Jasmine test.
+                // service.startPeriodicTimer();
+                // service.onThirdIteration(done);
+                // service.onError(done.fail);
+            }));
 });
 // #enddocregion
