@@ -62,6 +62,19 @@ export function main() {
          });
        }));
 
+    it("should throw if a form isn't passed into ngFormModel",
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+         var t = `<div [ngFormModel]="form">
+                <input type="text" ngControl="login">
+               </div>`;
+
+         tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((fixture) => {
+           expect(() => fixture.detectChanges())
+               .toThrowError(new RegExp(`ngFormModel expects a form. Please pass one in.`));
+           async.done();
+         });
+       }));
+
     it("should update the control group values on DOM change",
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
          var form = new ControlGroup({"login": new Control("oldValue")});
