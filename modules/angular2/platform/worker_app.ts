@@ -16,5 +16,4 @@ export {
 } from 'angular2/src/web_workers/shared/service_message_broker';
 export {PRIMITIVE} from 'angular2/src/web_workers/shared/serializer';
 export * from 'angular2/src/web_workers/shared/message_bus';
-export {AngularEntrypoint} from 'angular2/src/core/angular_entrypoint';
 export {WORKER_APP_ROUTER} from 'angular2/src/web_workers/worker/router_providers';
