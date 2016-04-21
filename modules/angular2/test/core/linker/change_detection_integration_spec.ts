@@ -491,6 +491,42 @@ export function main() {
 
              expect(renderLog.log).toEqual(['someProp=Megatron']);
            }));
+
+        it('should call pure pipes only if the arguments change', fakeAsync(() => {
+             var ctx = _bindSimpleValue('name | countingPipe', Person);
+             // change from undefined -> null
+             ctx.componentInstance.name = null;
+             ctx.detectChanges(false);
+             expect(renderLog.loggedValues).toEqual(['null state:0']);
+             ctx.detectChanges(false);
+             expect(renderLog.loggedValues).toEqual(['null state:0']);
+
+             // change from null -> some value
+             ctx.componentInstance.name = 'bob';
+             ctx.detectChanges(false);
+             expect(renderLog.loggedValues).toEqual(['null state:0', 'bob state:1']);
+             ctx.detectChanges(false);
+             expect(renderLog.loggedValues).toEqual(['null state:0', 'bob state:1']);
+
+             // change from some value -> some other value
+             ctx.componentInstance.name = 'bart';
+             ctx.detectChanges(false);
+             expect(renderLog.loggedValues)
+                 .toEqual(['null state:0', 'bob state:1', 'bart state:2']);
+             ctx.detectChanges(false);
+             expect(renderLog.loggedValues)
+                 .toEqual(['null state:0', 'bob state:1', 'bart state:2']);
+
+           }));
+
+        it('should call impure pipes on each change detection run', fakeAsync(() => {
+             var ctx = _bindSimpleValue('name | countingImpurePipe', Person);
+             ctx.componentInstance.name = 'bob';
+             ctx.detectChanges(false);
+             expect(renderLog.loggedValues).toEqual(['bob state:0']);
+             ctx.detectChanges(false);
+             expect(renderLog.loggedValues).toEqual(['bob state:0', 'bob state:1']);
+           }));
       });
 
       describe('event expressions', () => {
@@ -1014,6 +1050,7 @@ const ALL_DIRECTIVES = CONST_EXPR([
 
 const ALL_PIPES = CONST_EXPR([
   forwardRef(() => CountingPipe),
+  forwardRef(() => CountingImpurePipe),
   forwardRef(() => MultiArgPipe),
   forwardRef(() => PipeWithOnDestroy),
   forwardRef(() => IdentityPipe),
@@ -1085,6 +1122,12 @@ class DirectiveLog {
 
 @Pipe({name: 'countingPipe'})
 class CountingPipe implements PipeTransform {
+  state: number = 0;
+  transform(value, args = null) { return `${value} state:${this.state ++}`; }
+}
+
+@Pipe({name: 'countingImpurePipe', pure: false})
+class CountingImpurePipe implements PipeTransform {
   state: number = 0;
   transform(value, args = null) { return `${value} state:${this.state ++}`; }
 }

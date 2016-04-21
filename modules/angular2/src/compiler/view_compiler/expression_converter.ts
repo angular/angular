@@ -8,7 +8,7 @@ import {isBlank, isPresent, isArray, CONST_EXPR} from 'angular2/src/facade/lang'
 var IMPLICIT_RECEIVER = o.variable('#implicit');
 
 export interface NameResolver {
-  createPipe(name: string): o.Expression;
+  callPipe(name: string, input: o.Expression, args: o.Expression[]): o.Expression;
   getVariable(name: string): o.Expression;
   createLiteralArray(values: o.Expression[]): o.Expression;
   createLiteralMap(values: Array<Array<string | o.Expression>>): o.Expression;
@@ -132,13 +132,12 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
                                 ast.falseExp.visit(this, _Mode.Expression)));
   }
   visitPipe(ast: cdAst.BindingPipe, mode: _Mode): any {
-    var pipeInstance = this._nameResolver.createPipe(ast.name);
     var input = ast.exp.visit(this, _Mode.Expression);
     var args = this.visitAll(ast.args, _Mode.Expression);
+    var pipeResult = this._nameResolver.callPipe(ast.name, input, args);
     this.needsValueUnwrapper = true;
-    return convertToStatementIfNeeded(
-        mode, this._valueUnwrapper.callMethod(
-                  'unwrap', [pipeInstance.callMethod('transform', [input, o.literalArr(args)])]));
+    return convertToStatementIfNeeded(mode,
+                                      this._valueUnwrapper.callMethod('unwrap', [pipeResult]));
   }
   visitFunctionCall(ast: cdAst.FunctionCall, mode: _Mode): any {
     return convertToStatementIfNeeded(mode, ast.target.visit(this, _Mode.Expression)
