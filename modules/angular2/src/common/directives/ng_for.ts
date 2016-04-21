@@ -9,12 +9,12 @@ import {
   EmbeddedViewRef,
   TrackByFn
 } from 'angular2/core';
-import {isPresent, isBlank, stringify, getTypeNameForDebugging} from 'angular2/src/facade/lang';
+import {isPresent, isBlank, getTypeNameForDebugging} from 'angular2/src/facade/lang';
 import {
   DefaultIterableDiffer,
   CollectionChangeRecord
-} from "../../core/change_detection/differs/default_iterable_differ";
-import {BaseException} from "../../facade/exceptions";
+} from "angular2/core";
+import {BaseException} from "angular2/src/facade/exceptions";
 
 /**
  * The `NgFor` directive instantiates a template once per item from an iterable. The context for

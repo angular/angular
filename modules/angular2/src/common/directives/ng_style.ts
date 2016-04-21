@@ -6,8 +6,8 @@ import {
   Directive,
   Renderer
 } from 'angular2/core';
-import {isPresent, isBlank, print} from 'angular2/src/facade/lang';
-import {KeyValueChangeRecord} from "../../core/change_detection/differs/default_keyvalue_differ";
+import {isPresent, isBlank} from 'angular2/src/facade/lang';
+import {KeyValueChangeRecord} from "angular2/core";
 
 /**
  * The `NgStyle` directive changes styles based on a result of expression evaluation.

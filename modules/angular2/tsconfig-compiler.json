@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "declaration": true,
+    "module": "commonjs",
+    "rootDir": ".",
+    "sourceMap": true,
+    "sourceRoot": ".",
+    "target": "es5",
+    "outDir": "../../dist/js/cjs/compiler",
+    "moduleResolution": "node",
+    "baseUrl": ".",
+    "paths": {
+      "angular2/src/core/*": ""
+      "angular2/src/compiler/*": "./src/compiler/*",
+
+    }
+  },
+  "files": [
+    "./compiler.ts",
+    "./ambient_typings.d.ts"
+  ]
+}

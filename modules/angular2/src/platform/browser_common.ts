@@ -1,17 +1,15 @@
 import {CONST_EXPR, IS_DART} from 'angular2/src/facade/lang';
-import {provide, Provider, Injector, OpaqueToken} from 'angular2/src/core/di';
+import {Provider} from 'angular2/src/core/di';
 import {XHR} from 'angular2/src/compiler/xhr';
 import {
   PLATFORM_INITIALIZER,
   PLATFORM_DIRECTIVES,
   PLATFORM_PIPES,
-  ComponentRef,
   ExceptionHandler,
-  Reflector,
   RootRenderer,
-  reflector,
   APPLICATION_COMMON_PROVIDERS,
-  PLATFORM_COMMON_PROVIDERS
+  PLATFORM_COMMON_PROVIDERS,
+  OpaqueToken
 } from "angular2/core";
 import {COMMON_DIRECTIVES, COMMON_PIPES, FORM_PROVIDERS} from "angular2/common";
 import {Testability} from 'angular2/src/core/testability/testability';
