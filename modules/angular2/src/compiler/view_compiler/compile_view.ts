@@ -1,5 +1,6 @@
 import {isPresent, isBlank} from 'angular2/src/facade/lang';
 import {ListWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
+import {BaseException} from 'angular2/src/facade/exceptions';
 
 import * as o from '../output/output_ast';
 import {Identifiers, identifierToken} from '../identifiers';
@@ -47,7 +48,7 @@ export class CompileView implements NameResolver {
   public dirtyParentQueriesMethod: CompileMethod;
   public updateViewQueriesMethod: CompileMethod;
   public detectChangesInInputsMethod: CompileMethod;
-  public detectChangesHostPropertiesMethod: CompileMethod;
+  public detectChangesRenderPropertiesMethod: CompileMethod;
   public afterContentLifecycleCallbacksMethod: CompileMethod;
   public afterViewLifecycleCallbacksMethod: CompileMethod;
   public destroyMethod: CompileMethod;
@@ -78,7 +79,7 @@ export class CompileView implements NameResolver {
     this.dirtyParentQueriesMethod = new CompileMethod(this);
     this.updateViewQueriesMethod = new CompileMethod(this);
     this.detectChangesInInputsMethod = new CompileMethod(this);
-    this.detectChangesHostPropertiesMethod = new CompileMethod(this);
+    this.detectChangesRenderPropertiesMethod = new CompileMethod(this);
 
     this.afterContentLifecycleCallbacksMethod = new CompileMethod(this);
     this.afterViewLifecycleCallbacksMethod = new CompileMethod(this);
@@ -124,7 +125,18 @@ export class CompileView implements NameResolver {
   }
 
   createPipe(name: string): o.Expression {
-    var pipeMeta: CompilePipeMetadata = this.pipeMetas.find((pipeMeta) => pipeMeta.name == name);
+    var pipeMeta: CompilePipeMetadata = null;
+    for (var i = this.pipeMetas.length - 1; i >= 0; i--) {
+      var localPipeMeta = this.pipeMetas[i];
+      if (localPipeMeta.name == name) {
+        pipeMeta = localPipeMeta;
+        break;
+      }
+    }
+    if (isBlank(pipeMeta)) {
+      throw new BaseException(
+          `Illegal state: Could not find pipe ${name} although the parser should have detected this error!`);
+    }
     var pipeFieldName = pipeMeta.pure ? `_pipe_${name}` : `_pipe_${name}_${this.pipes.size}`;
     var pipeExpr = this.pipes.get(pipeFieldName);
     if (isBlank(pipeExpr)) {
