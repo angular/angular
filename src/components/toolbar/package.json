@@ -1,6 +1,6 @@
 {
   "name": "@angular2-material/toolbar",
-  "version": "2.0.0-alpha.2",
+  "version": "2.0.0-alpha.3",
   "description": "Angular 2 Material toolbar",
   "main": "./toolbar.js",
   "typings": "./toolbar.d.ts",

@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 'use strict';
 /**
  * Creates a conventional changelog from the current git repository / metadata.
