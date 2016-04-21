@@ -160,6 +160,43 @@ runner.sample({
 When looking into the DevTools Timeline, we see a marker as well:
 ![Marked Timeline](marked_timeline.png)
 
+### Custom Metrics Without Using `console.time`
+
+It's also possible to measure any "user metric" within the browser
+by setting a numeric value on the `window` object. For example:
+
+```js
+bootstrap(App)
+  .then(() => {
+    window.timeToBootstrap = Date.now() - performance.timing.navigationStart;
+  });
+```
+
+A test driver for this user metric could be written as follows:
+
+```js
+
+describe('home page load', function() {
+  it('should log load time for a 2G connection', done => {
+    runner.sample({
+      execute: () => {
+        browser.get(`http://localhost:8080`);
+      },
+      userMetrics: {
+        timeToBootstrap: 'The time in milliseconds to bootstrap'
+      },
+      bindings: [
+        bind(RegressionSlopeValidator.METRIC).toValue('timeToBootstrap')
+      ]
+    }).then(done);
+  });
+});
+```
+
+Using this strategy, benchpress will wait until the specified property name,
+`timeToBootstrap` in this case, is defined as a number on the `window` object
+inside the application under test.
+
 # Smoothness Metrics
 
 Benchpress can also measure the "smoothness" of scrolling and animations. In order to do that, the following set of metrics can be collected by benchpress:

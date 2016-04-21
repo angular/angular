@@ -26,6 +26,8 @@ export class Options {
   // TODO(tbosch): use static values when our transpiler supports them
   static get MICRO_METRICS() { return _MICRO_METRICS; }
   // TODO(tbosch): use static values when our transpiler supports them
+  static get USER_METRICS() { return _USER_METRICS; }
+  // TODO(tbosch): use static values when our transpiler supports them
   static get RECEIVED_DATA() { return _RECEIVED_DATA; }
   // TODO(tbosch): use static values when our transpiler supports them
   static get REQUEST_COUNT() { return _REQUEST_COUNT; }
@@ -42,6 +44,7 @@ var _EXECUTE = new OpaqueToken('Options.execute');
 var _CAPABILITIES = new OpaqueToken('Options.capabilities');
 var _USER_AGENT = new OpaqueToken('Options.userAgent');
 var _MICRO_METRICS = new OpaqueToken('Options.microMetrics');
+var _USER_METRICS = new OpaqueToken('Options.userMetrics');
 var _NOW = new OpaqueToken('Options.now');
 var _WRITE_FILE = new OpaqueToken('Options.writeFile');
 var _RECEIVED_DATA = new OpaqueToken('Options.receivedData');
@@ -54,6 +57,7 @@ var _DEFAULT_PROVIDERS = [
   {provide: _FORCE_GC, useValue: false},
   {provide: _PREPARE, useValue: false},
   {provide: _MICRO_METRICS, useValue: {}},
+  {provide: _USER_METRICS, useValue: {}},
   {provide: _NOW, useValue: () => DateWrapper.now()},
   {provide: _RECEIVED_DATA, useValue: false},
   {provide: _REQUEST_COUNT, useValue: false},

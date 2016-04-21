@@ -10,6 +10,7 @@ import {SizeValidator} from './validator/size_validator';
 import {Validator} from './validator';
 import {PerflogMetric} from './metric/perflog_metric';
 import {MultiMetric} from './metric/multi_metric';
+import {UserMetric} from './metric/user_metric';
 import {ChromeDriverExtension} from './webdriver/chrome_driver_extension';
 import {FirefoxDriverExtension} from './webdriver/firefox_driver_extension';
 import {IOsDriverExtension} from './webdriver/ios_driver_extension';
@@ -33,8 +34,8 @@ export class Runner {
     this._defaultProviders = defaultProviders;
   }
 
-  sample({id, execute, prepare, microMetrics, providers}:
-             {id: string, execute?: any, prepare?: any, microMetrics?: any, providers?: any}):
+  sample({id, execute, prepare, microMetrics, providers, userMetrics}:
+             {id: string, execute?: any, prepare?: any, microMetrics?: any, providers?: any, userMetrics?: any}):
       Promise<SampleState> {
     var sampleProviders = [
       _DEFAULT_PROVIDERS,
@@ -47,6 +48,9 @@ export class Runner {
     }
     if (isPresent(microMetrics)) {
       sampleProviders.push({provide: Options.MICRO_METRICS, useValue: microMetrics});
+    }
+    if (isPresent(userMetrics)) {
+      sampleProviders.push({provide: Options.USER_METRICS, useValue: userMetrics});
     }
     if (isPresent(providers)) {
       sampleProviders.push(providers);
@@ -89,10 +93,10 @@ var _DEFAULT_PROVIDERS = [
   FirefoxDriverExtension.PROVIDERS,
   IOsDriverExtension.PROVIDERS,
   PerflogMetric.PROVIDERS,
+  UserMetric.BINDINGS,
   SampleDescription.PROVIDERS,
   MultiReporter.createBindings([ConsoleReporter]),
-  MultiMetric.createBindings([PerflogMetric]),
-
+  MultiMetric.createBindings([PerflogMetric, UserMetric]),
   Reporter.bindTo(MultiReporter),
   Validator.bindTo(RegressionSlopeValidator),
   WebDriverExtension.bindTo([ChromeDriverExtension, FirefoxDriverExtension, IOsDriverExtension]),
