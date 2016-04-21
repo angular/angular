@@ -13,6 +13,7 @@ import {
 import {RouterOutlet} from './directives/router_outlet';
 import {getCanActivateHook} from './lifecycle/route_lifecycle_reflector';
 import {RouteDefinition} from './route_config/route_config_impl';
+import {DefaultInstruction} from "./instruction";
 
 let _resolveToTrue = PromiseWrapper.resolve(true);
 let _resolveToFalse = PromiseWrapper.resolve(false);
@@ -133,10 +134,11 @@ export class Router {
    * Given an instruction, returns `true` if the instruction is currently active,
    * otherwise `false`.
    */
-  isRouteActive(instruction: Instruction): boolean {
-    var router: Router = this;
+  isRouteActive(instruction:Instruction):boolean {
+    var router:Router = this;
+    var currentInstruction = this.currentInstruction;
 
-    if (isBlank(this.currentInstruction)) {
+    if (isBlank(currentInstruction)) {
       return false;
     }
 
@@ -146,22 +148,25 @@ export class Router {
       instruction = instruction.child;
     }
 
-    if (isBlank(instruction.component) || isBlank(this.currentInstruction.component) ||
-        this.currentInstruction.component.routeName != instruction.component.routeName) {
-      return false;
-    }
+    // check the instructions in depth
+    do {
+      if (isBlank(instruction.component) || isBlank(currentInstruction.component) ||
+          currentInstruction.component != instruction.component) {
+        return false;
+      }
+      if (isPresent(instruction.component.params)) {
+        StringMapWrapper.forEach(instruction.component.params, (value, key) => {
+          if (currentInstruction.component.params[key] !== value) {
+            return false;
+          }
+        });
+      }
+      currentInstruction = currentInstruction.child;
+      instruction = instruction.child;
+    } while (isPresent(currentInstruction) && isPresent(instruction) && !(instruction instanceof DefaultInstruction));
 
-    let paramEquals = true;
-
-    if (isPresent(this.currentInstruction.component.params)) {
-      StringMapWrapper.forEach(instruction.component.params, (value, key) => {
-        if (this.currentInstruction.component.params[key] !== value) {
-          paramEquals = false;
-        }
-      });
-    }
-
-    return paramEquals;
+    // ignore DefaultInstruction
+    return isBlank(instruction) || instruction instanceof DefaultInstruction;
   }
 
 
