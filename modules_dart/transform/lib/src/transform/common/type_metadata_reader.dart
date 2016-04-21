@@ -1010,16 +1010,24 @@ List<CompileDiDependencyMetadata> _readDeps(ListLiteral deps) {
 _createQueryMetadata(Annotation a, bool defaultDescendantsValue, bool first, String propertyName) {
   final selector = _readToken(a.arguments.arguments.first);
   var descendants = defaultDescendantsValue;
+  var read = null;
   a.arguments.arguments.skip(0).forEach((arg) {
-    if (arg is NamedExpression && arg.name.toString() == "descendants:")
-      descendants = naiveEval(arg.expression);
+    if (arg is NamedExpression) {
+      var name = arg.name.toString();
+      if (name == "descendants:") {
+        descendants = naiveEval(arg.expression);
+      } else if (name == "read:") {
+        read = _readToken(arg.expression);
+      }
+    }
   });
 
   final selectors = selector.value is String ?
       selector.value.split(",").map( (value) => new CompileTokenMetadata(value: value) ).toList() :
       [selector];
   return new CompileQueryMetadata(
-      selectors: selectors, descendants: descendants, first: first, propertyName: propertyName);
+      selectors: selectors, descendants: descendants, first: first,
+      read: read, propertyName: propertyName);
 }
 
 List<CompileDiDependencyMetadata> _getCompileDiDependencyMetadata(
