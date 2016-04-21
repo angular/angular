@@ -88,6 +88,8 @@ const ALL_PIPES = CONST_EXPR([
   forwardRef(() => PipeNeedsService),
   forwardRef(() => PurePipe),
   forwardRef(() => ImpurePipe),
+  forwardRef(() => DuplicatePipe1),
+  forwardRef(() => DuplicatePipe2),
 ]);
 
 @Directive({selector: '[simpleDirective]'})
@@ -254,6 +256,15 @@ export class PipeNeedsService implements PipeTransform {
   transform(value: any, args: any[] = null): any { return this; }
 }
 
+@Pipe({name: 'duplicatePipe'})
+export class DuplicatePipe1 implements PipeTransform {
+  transform(value: any, args: any[] = null): any { return this; }
+}
+
+@Pipe({name: 'duplicatePipe'})
+export class DuplicatePipe2 implements PipeTransform {
+  transform(value: any, args: any[] = null): any { return this; }
+}
 
 @Component({selector: 'root'})
 class TestComp {
@@ -626,6 +637,11 @@ export function main() {
                '<div [simpleDirective]="true | pipeNeedsService"></div>',
                tcb.overrideProviders(TestComp, [provide('service', {useValue: 'pipeService'})]));
            expect(el.children[0].inject(SimpleDirective).value.service).toEqual('pipeService');
+         }));
+
+      it('should overwrite pipes with later entry in the pipes array', fakeAsync(() => {
+           var el = createComp('<div [simpleDirective]="true | duplicatePipe"></div>', tcb);
+           expect(el.children[0].inject(SimpleDirective).value).toBeAnInstanceOf(DuplicatePipe2);
          }));
 
       it('should inject ChangeDetectorRef into pipes', fakeAsync(() => {

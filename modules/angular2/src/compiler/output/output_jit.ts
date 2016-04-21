@@ -9,6 +9,7 @@ import {
 import * as o from './output_ast';
 import {EmitterVisitorContext} from './abstract_emitter';
 import {AbstractJsEmitterVisitor} from './abstract_js_emitter';
+import {sanitizeIdentifier} from '../util';
 
 export function jitStatements(sourceUrl: string, statements: o.Statement[],
                               resultVar: string): any {
@@ -36,13 +37,10 @@ class JitEmitterVisitor extends AbstractJsEmitterVisitor {
     if (id === -1) {
       id = this._evalArgValues.length;
       this._evalArgValues.push(value);
-      this._evalArgNames.push(sanitizeJitArgName(`jit_${ast.value.name}${id}`));
+      var name = isPresent(ast.value.name) ? sanitizeIdentifier(ast.value.name) : 'val';
+      this._evalArgNames.push(sanitizeIdentifier(`jit_${name}${id}`));
     }
     ctx.print(this._evalArgNames[id]);
     return null;
   }
-}
-
-function sanitizeJitArgName(name: string): string {
-  return StringWrapper.replaceAll(name, /[\.\/]/g, '_');
 }
