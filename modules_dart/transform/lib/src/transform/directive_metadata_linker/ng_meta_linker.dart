@@ -260,6 +260,9 @@ class _NgMetaIdentifierResolver {
   void _resolveQueries(Map<String, NgMeta> ngMetaMap, List queries, String neededBy) {
     queries.forEach((q) {
       q.selectors.forEach((s) => s.identifier = _resolveIdentifier(ngMetaMap, neededBy, s.identifier));
+      if (q.read != null) {
+        q.read.identifier = _resolveIdentifier(ngMetaMap, neededBy, q.read.identifier);
+      }
     });
   }
 
