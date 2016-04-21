@@ -25,7 +25,7 @@ import {
 } from 'angular2/src/core/change_detection/change_detection';
 import {ViewEncapsulation, VIEW_ENCAPSULATION_VALUES} from 'angular2/src/core/metadata/view';
 import {CssSelector} from 'angular2/src/compiler/selector';
-import {splitAtColon} from './util';
+import {splitAtColon, sanitizeIdentifier} from './util';
 import {LifecycleHooks, LIFECYCLE_HOOKS_VALUES} from 'angular2/src/core/metadata/lifecycle_hooks';
 import {getUrlScheme} from './url_resolver';
 
@@ -318,7 +318,9 @@ export class CompileTokenMetadata implements CompileMetadataWithIdentifier {
            (isPresent(ak) && ak == token2.assetCacheKey);
   }
 
-  get name(): string { return isPresent(this.value) ? this.value : this.identifier.name; }
+  get name(): string {
+    return isPresent(this.value) ? sanitizeIdentifier(this.value) : this.identifier.name;
+  }
 }
 
 export class CompileTokenMap<VALUE> {
