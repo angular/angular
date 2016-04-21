@@ -32,6 +32,6 @@ export {
   CompileTemplateMetadata,
   CompileDirectiveMetadata,
   CompilePipeMetadata
-} from 'angular2/src/compiler/compiler';
+} from './src/compiler/compiler';
 
-export * from 'angular2/src/compiler/template_ast';
+export * from './src/compiler/template_ast';

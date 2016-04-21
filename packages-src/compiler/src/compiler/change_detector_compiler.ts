@@ -1,8 +1,5 @@
 import {CompileTypeMetadata} from './directive_metadata';
 import {SourceExpressions, moduleRef} from './source_module';
-import {
-  ChangeDetectorJITGenerator
-} from 'angular2/src/core/change_detection/change_detection_jit_generator';
 import {AbstractChangeDetector} from 'angular2/src/core/change_detection/abstract_change_detector';
 import {ChangeDetectionUtil} from 'angular2/src/core/change_detection/change_detection_util';
 import {ChangeDetectorState} from 'angular2/src/core/change_detection/constants';

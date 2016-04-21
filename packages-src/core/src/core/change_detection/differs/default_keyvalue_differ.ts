@@ -1,6 +1,6 @@
-import {MapWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
-import {stringify, looseIdentical, isJsObject, CONST, isBlank} from 'angular2/src/facade/lang';
-import {BaseException} from 'angular2/src/facade/exceptions';
+import {MapWrapper, StringMapWrapper} from '../../../facade/collection';
+import {stringify, looseIdentical, isJsObject, CONST, isBlank} from '../../../facade/lang';
+import {BaseException} from '../../../facade/exceptions';
 import {ChangeDetectorRef} from '../change_detector_ref';
 import {KeyValueDiffer, KeyValueDifferFactory} from '../differs/keyvalue_differs';
 

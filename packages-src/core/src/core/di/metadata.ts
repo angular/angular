@@ -1,4 +1,4 @@
-import {CONST, CONST_EXPR, stringify, isBlank, isPresent} from "angular2/src/facade/lang";
+import {CONST, stringify} from "../../facade/lang";
 
 /**
  * A parameter metadata that specifies a dependency.

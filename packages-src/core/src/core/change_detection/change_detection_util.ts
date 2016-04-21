@@ -1,11 +1,10 @@
-import {CONST_EXPR, isBlank, looseIdentical, isPrimitive} from 'angular2/src/facade/lang';
+import {CONST_EXPR, looseIdentical, isPrimitive} from '../../facade/lang';
 import {
-  StringMapWrapper,
   isListLikeIterable,
   areIterablesEqual
-} from 'angular2/src/facade/collection';
+} from '../../facade/collection';
 
-export {looseIdentical} from 'angular2/src/facade/lang';
+export {looseIdentical} from '../../facade/lang';
 export var uninitialized: Object = CONST_EXPR<Object>(new Object());
 
 export function devModeEqual(a: any, b: any): boolean {

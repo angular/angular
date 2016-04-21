@@ -1,14 +1,14 @@
-import {isPresent, isBlank, Type} from 'angular2/src/facade/lang';
-import {ListWrapper} from 'angular2/src/facade/collection';
-import {BaseException} from 'angular2/src/facade/exceptions';
+import {isPresent} from '../../facade/lang';
+import {ListWrapper} from '../../facade/collection';
+import {BaseException} from '../../facade/exceptions';
 
-import {Injector} from 'angular2/src/core/di';
+import {Injector} from '../di';
 
 import {AppView} from './view';
 import {ViewType} from './view_type';
 import {ElementRef} from './element_ref';
 
-import {ViewContainerRef, ViewContainerRef_} from './view_container_ref';
+import {ViewContainerRef_} from './view_container_ref';
 
 import {QueryList} from './query_list';
 

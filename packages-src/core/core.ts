@@ -8,7 +8,7 @@ export * from './src/core/util';
 export * from './src/core/prod_mode';
 export * from './src/core/di';
 export * from './src/facade/facade';
-export {enableProdMode} from 'angular2/src/facade/lang';
+export {enableProdMode} from './src/facade/lang';
 export {
   createPlatform,
   assertPlatform,
@@ -37,3 +37,5 @@ export * from './src/core/platform_directives_and_pipes';
 export * from './src/core/platform_common_providers';
 export * from './src/core/application_common_providers';
 export * from './src/core/reflection/reflection';
+
+export * from './private';

@@ -5,7 +5,7 @@ import {
   DefaultKeyValueDifferFactory,
   KeyValueChangeRecord
 } from './differs/default_keyvalue_differ';
-import {CONST_EXPR} from 'angular2/src/facade/lang';
+import {CONST_EXPR} from '../../facade/lang';
 
 export {
   DefaultKeyValueDifferFactory,

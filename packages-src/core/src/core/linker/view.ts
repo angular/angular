@@ -1,13 +1,9 @@
 import {
   ListWrapper,
-  MapWrapper,
-  Map,
   StringMapWrapper,
-  isListLikeIterable,
-  areIterablesEqual
-} from 'angular2/src/facade/collection';
+} from '../../facade/collection';
 
-import {Injector} from 'angular2/src/core/di';
+import {Injector} from '../di';
 import {AppElement} from './element';
 import {
   assertionsEnabled,
@@ -21,10 +17,10 @@ import {
   stringify,
   isPrimitive,
   isString
-} from 'angular2/src/facade/lang';
+} from '../../facade/lang';
 
-import {ObservableWrapper} from 'angular2/src/facade/async';
-import {Renderer, RootRenderer, RenderComponentType} from 'angular2/src/core/render/api';
+import {ObservableWrapper} from '../../facade/async';
+import {Renderer, RenderComponentType} from '../render/api';
 import {ViewRef_} from './view_ref';
 
 import {ViewType} from './view_type';
@@ -39,9 +35,7 @@ import {
   ChangeDetectorRef,
   ChangeDetectionStrategy,
   ChangeDetectorState,
-  isDefaultChangeDetectionStrategy,
-  devModeEqual
-} from 'angular2/src/core/change_detection/change_detection';
+} from '../change_detection/change_detection';
 import {wtfCreateScope, wtfLeave, WtfScopeFn} from '../profile/profile';
 import {
   ExpressionChangedAfterItHasBeenCheckedException,

@@ -57,16 +57,15 @@ import {
 } from './metadata/directives';
 
 import {ViewMetadata, ViewEncapsulation} from './metadata/view';
-import {ChangeDetectionStrategy} from 'angular2/src/core/change_detection/change_detection';
+import {ChangeDetectionStrategy} from './change_detection/change_detection';
 
 import {
   makeDecorator,
   makeParamDecorator,
   makePropDecorator,
   TypeDecorator,
-  Class
 } from './util/decorators';
-import {Type} from 'angular2/src/facade/lang';
+import {Type} from '../facade/lang';
 
 /**
  * Interface for the {@link DirectiveMetadata} decorator function.

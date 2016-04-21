@@ -1,4 +1,4 @@
-import {SimpleChange} from 'angular2/src/core/change_detection/change_detection_util';
+import {SimpleChange} from '../change_detection/change_detection_util';
 
 export enum LifecycleHooks {
   OnInit,

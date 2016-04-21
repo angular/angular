@@ -1,8 +1,8 @@
-import {Injectable} from 'angular2/src/core/di';
-import {Type, isBlank, stringify} from 'angular2/src/facade/lang';
-import {BaseException} from 'angular2/src/facade/exceptions';
-import {PromiseWrapper} from 'angular2/src/facade/async';
-import {reflector} from 'angular2/src/core/reflection/reflection';
+import {Injectable} from '../di';
+import {Type, isBlank, stringify} from '../../facade/lang';
+import {BaseException} from '../../facade/exceptions';
+import {PromiseWrapper} from '../../facade/async';
+import {reflector} from '../reflection/reflection';
 import {ComponentFactory} from './component_factory';
 
 /**

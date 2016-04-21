@@ -1,5 +1,5 @@
-import {Injectable} from 'angular2/src/core/di';
-import {print} from 'angular2/src/facade/lang';
+import {Injectable} from './di';
+import {print} from '../facade/lang';
 
 @Injectable()
 export class Console {

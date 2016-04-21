@@ -1,8 +1,8 @@
-import {isPresent} from 'angular2/src/facade/lang';
-import {Predicate} from 'angular2/src/facade/collection';
-import {Injector} from 'angular2/src/core/di';
-import {ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
-import {RenderDebugInfo} from 'angular2/src/core/render/api';
+import {isPresent} from '../../facade/lang';
+import {Predicate} from '../../facade/collection';
+import {Injector} from '../di';
+import {ListWrapper, MapWrapper} from '../../facade/collection';
+import {RenderDebugInfo} from '../render/api';
 
 export class EventListener { constructor(public name: string, public callback: Function){}; }
 

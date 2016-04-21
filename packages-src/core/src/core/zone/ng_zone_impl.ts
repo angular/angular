@@ -1,5 +1,3 @@
-import {global} from 'angular2/src/facade/lang';
-
 /**
  * Stores error information; delivered via [NgZone.onError] stream.
  */

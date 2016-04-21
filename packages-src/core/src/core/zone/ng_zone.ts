@@ -1,4 +1,4 @@
-import {EventEmitter} from 'angular2/src/facade/async';
+import {EventEmitter} from '../../facade/async';
 import {NgZoneImpl, NgZoneError} from './ng_zone_impl';
 import {BaseException} from '../../facade/exceptions';
 export {NgZoneError} from './ng_zone_impl';

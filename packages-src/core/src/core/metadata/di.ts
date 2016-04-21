@@ -1,6 +1,6 @@
-import {CONST, Type, stringify, isPresent, isString} from 'angular2/src/facade/lang';
-import {resolveForwardRef} from 'angular2/src/core/di';
-import {DependencyMetadata} from 'angular2/src/core/di/metadata';
+import {CONST, stringify, isString, Type} from '../../facade/lang';
+import {resolveForwardRef} from '../di';
+import {DependencyMetadata} from '../di/metadata';
 
 /**
  * Specifies that a constant attribute value should be injected.

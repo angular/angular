@@ -1,9 +1,9 @@
-import {isPresent, isBlank, CONST} from 'angular2/src/facade/lang';
-import {ListWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
-import {Injector} from 'angular2/src/core/di';
-import {RenderDebugInfo} from 'angular2/src/core/render/api';
-import {AppView} from './view';
-import {ViewType} from './view_type';
+import {isPresent, isBlank, CONST} from "../../facade/lang";
+import {ListWrapper, StringMapWrapper} from "../../facade/collection";
+import {Injector} from "../../core/di";
+import {AppView} from "./view";
+import {ViewType} from "./view_type";
+import {RenderDebugInfo} from "../render/api";
 
 @CONST()
 export class StaticNodeDebugInfo {
