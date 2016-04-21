@@ -295,6 +295,51 @@ export function main() {
                  router.navigateByUrl('/child-with-grandchild/grandchild?extra=0');
                });
          }));
+
+      it('should not be added to links in other child routes',
+         inject([AsyncTestCompleter], (async) => {
+           router.config([
+                   new Route({path: '/child', component: HelloCmp, name: 'Child'}),
+                   new Route({
+                     path: '/child-with-grandchild/...',
+                     component: ParentCmp,
+                     name: 'ChildWithGrandchild'
+                   }),
+                   new Route({
+                     path: '/child-with-other-grandchild/...',
+                     component: ParentCmp,
+                     name: 'ChildWithOtherGrandchild'
+                   })
+                 ])
+               .then((_) => compile(`<a [routerLink]="['./Child']" class="child-link">Child</a>
+                    <a [routerLink]="['./ChildWithGrandchild/Grandchild']" class="child-with-grandchild-link">Better Child</a>
+                    <a [routerLink]="['./ChildWithOtherGrandchild/Grandchild']" class="child-with-other-grandchild-link">Better Child</a>
+                    <router-outlet></router-outlet>`))
+               .then((_) => {
+                 var element = fixture.debugElement.nativeElement;
+
+                 fixture.detectChanges();
+
+                 var link1 = getDOM().querySelector(element, '.child-link');
+                 var link2 = getDOM().querySelector(element, '.child-with-grandchild-link');
+                 var link3 = getDOM().querySelector(element, '.child-with-other-grandchild-link');
+
+                 expect(link1).not.toHaveCssClass('router-link-active');
+                 expect(link2).not.toHaveCssClass('router-link-active');
+                 expect(link3).not.toHaveCssClass('router-link-active');
+
+                 router.subscribe((_) => {
+                   fixture.detectChanges();
+
+                   expect(link1).not.toHaveCssClass('router-link-active');
+                   expect(link2).toHaveCssClass('router-link-active');
+                   expect(link3).not.toHaveCssClass('router-link-active');
+
+                   async.done();
+                 });
+                 router.navigateByUrl('/child-with-grandchild/grandchild?extra=0');
+               });
+         }));
     });
 
     describe('when clicked', () => {
