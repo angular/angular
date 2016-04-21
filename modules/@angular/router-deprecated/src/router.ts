@@ -4,7 +4,7 @@ import {isBlank, isPresent, Type} from '../src/facade/lang';
 import {BaseException} from '../src/facade/exceptions';
 import {Location} from '@angular/common';
 import {RouteRegistry, ROUTER_PRIMARY_COMPONENT} from './route_registry';
-import {ComponentInstruction, Instruction} from './instruction';
+import {ComponentInstruction, Instruction, DefaultInstruction} from './instruction';
 import {RouterOutlet} from './directives/router_outlet';
 import {getCanActivateHook} from './lifecycle/route_lifecycle_reflector';
 import {RouteDefinition} from './route_config/route_config_impl';
@@ -131,8 +131,9 @@ export class Router {
    */
   isRouteActive(instruction: Instruction): boolean {
     var router: Router = this;
+    var currentInstruction = this.currentInstruction;
 
-    if (isBlank(this.currentInstruction)) {
+    if (isBlank(currentInstruction)) {
       return false;
     }
 
@@ -142,22 +143,28 @@ export class Router {
       instruction = instruction.child;
     }
 
-    if (isBlank(instruction.component) || isBlank(this.currentInstruction.component) ||
-        this.currentInstruction.component.routeName != instruction.component.routeName) {
-      return false;
-    }
+    let reason = true;
 
-    let paramEquals = true;
+    // check the instructions in depth
+    do {
+      if (isBlank(instruction.component) || isBlank(currentInstruction.component) ||
+          currentInstruction.component.routeName != instruction.component.routeName) {
+        return false;
+      }
+      if (isPresent(instruction.component.params)) {
+        StringMapWrapper.forEach(instruction.component.params, (value, key) => {
+          if (currentInstruction.component.params[key] !== value) {
+            reason = false;
+          }
+        });
+      }
+      currentInstruction = currentInstruction.child;
+      instruction = instruction.child;
+    } while (isPresent(currentInstruction) && isPresent(instruction) &&
+             !(instruction instanceof DefaultInstruction) && reason);
 
-    if (isPresent(this.currentInstruction.component.params)) {
-      StringMapWrapper.forEach(instruction.component.params, (value, key) => {
-        if (this.currentInstruction.component.params[key] !== value) {
-          paramEquals = false;
-        }
-      });
-    }
-
-    return paramEquals;
+    // ignore DefaultInstruction
+    return reason && (isBlank(instruction) || instruction instanceof DefaultInstruction);
   }
 
 
