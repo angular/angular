@@ -17,6 +17,7 @@ export {Runner} from './src/runner';
 export {Options} from './src/common_options';
 export {MeasureValues} from './src/measure_values';
 export {MultiMetric} from './src/metric/multi_metric';
+export {UserMetric} from './src/metric/user_metric';
 export {MultiReporter} from './src/reporter/multi_reporter';
 
 export {bind, provide, Injector, ReflectiveInjector, OpaqueToken} from '@angular/core/src/di';

@@ -24,6 +24,7 @@ const kServedPaths = [
   'benchmarks/src/element_injector',
   'benchmarks/src/largetable',
   'benchmarks/src/naive_infinite_scroll',
+  'benchmarks/src/page_load',
   'benchmarks/src/tree',
   'benchmarks/src/static_tree',
 
