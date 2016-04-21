@@ -23,3 +23,7 @@ export function splitAtColon(input: string, defaultValues: string[]): string[] {
     return defaultValues;
   }
 }
+
+export function sanitizeIdentifier(name: string): string {
+  return StringWrapper.replaceAll(name, /\W/g, '_');
+}

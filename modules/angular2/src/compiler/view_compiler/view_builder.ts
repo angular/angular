@@ -538,8 +538,8 @@ function generateDetectChangesMethod(view: CompileView): o.Statement[] {
   var stmts = [];
   if (view.detectChangesInInputsMethod.isEmpty() && view.updateContentQueriesMethod.isEmpty() &&
       view.afterContentLifecycleCallbacksMethod.isEmpty() &&
-      view.detectChangesHostPropertiesMethod.isEmpty() && view.updateViewQueriesMethod.isEmpty() &&
-      view.afterViewLifecycleCallbacksMethod.isEmpty()) {
+      view.detectChangesRenderPropertiesMethod.isEmpty() &&
+      view.updateViewQueriesMethod.isEmpty() && view.afterViewLifecycleCallbacksMethod.isEmpty()) {
     return stmts;
   }
   ListWrapper.addAll(stmts, view.detectChangesInInputsMethod.finish());
@@ -551,7 +551,7 @@ function generateDetectChangesMethod(view: CompileView): o.Statement[] {
   if (afterContentStmts.length > 0) {
     stmts.push(new o.IfStmt(o.not(DetectChangesVars.throwOnChange), afterContentStmts));
   }
-  ListWrapper.addAll(stmts, view.detectChangesHostPropertiesMethod.finish());
+  ListWrapper.addAll(stmts, view.detectChangesRenderPropertiesMethod.finish());
   stmts.push(o.THIS_EXPR.callMethod('detectViewChildrenChanges', [DetectChangesVars.throwOnChange])
                  .toStmt());
   var afterViewStmts =
