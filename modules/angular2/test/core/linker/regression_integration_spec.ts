@@ -92,6 +92,17 @@ function declareTests(isJit: boolean) {
                });
          }));
 
+      it('should support providers with string token with a `.` in it',
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+           var token = 'a.b';
+           var tokenValue = 1;
+           createInjector(tcb, [provide(token, {useValue: tokenValue})])
+               .then((injector: Injector) => {
+                 expect(injector.get(token)).toEqual(tokenValue);
+                 async.done();
+               });
+         }));
+
       it('should support providers with an anonymous function',
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            var token = () => true;
