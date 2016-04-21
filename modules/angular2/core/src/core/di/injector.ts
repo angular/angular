@@ -1,5 +1,5 @@
-import {CONST_EXPR} from 'angular2/src/facade/lang';
-import {unimplemented} from 'angular2/src/facade/exceptions';
+import {CONST_EXPR} from '../../facade/lang';
+import {unimplemented} from '../../facade/exceptions';
 
 const _THROW_IF_NOT_FOUND = CONST_EXPR(new Object());
 export const THROW_IF_NOT_FOUND = _THROW_IF_NOT_FOUND;

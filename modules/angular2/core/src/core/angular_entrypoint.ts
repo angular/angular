@@ -1,4 +1,4 @@
-import {CONST} from 'angular2/src/facade/lang';
+import {CONST} from '../facade/lang';
 
 /**
  * Marks a function or method as an Angular 2 entrypoint. Only necessary in Dart code.

@@ -1,5 +1,5 @@
-import {isBlank, stringify, CONST_EXPR} from 'angular2/src/facade/lang';
-import {Injector, THROW_IF_NOT_FOUND} from 'angular2/src/core/di/injector';
+import {CONST_EXPR} from '../../facade/lang';
+import {Injector, THROW_IF_NOT_FOUND} from '../di/injector';
 import {AppView} from './view';
 
 const _UNDEFINED = CONST_EXPR(new Object());

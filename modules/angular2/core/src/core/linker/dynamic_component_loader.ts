@@ -3,9 +3,9 @@ import {
   ResolvedReflectiveProvider,
   Injectable,
   ReflectiveInjector
-} from 'angular2/src/core/di';
+} from '../di';
 import {ComponentResolver} from './component_resolver';
-import {isType, Type, stringify, isPresent} from 'angular2/src/facade/lang';
+import {Type, isPresent} from '../../facade/lang';
 import {ComponentRef} from './component_factory';
 import {ViewContainerRef} from './view_container_ref';
 

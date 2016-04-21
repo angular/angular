@@ -1,5 +1,5 @@
-import {Type, CONST_EXPR} from 'angular2/src/facade/lang';
-import {provide, Provider, Injector, OpaqueToken} from 'angular2/src/core/di';
+import {Type, CONST_EXPR} from '../facade/lang';
+import {provide, Provider, Injector, OpaqueToken} from './di';
 import {APP_ID_RANDOM_PROVIDER} from './application_tokens';
 import {APPLICATION_CORE_PROVIDERS} from './application_ref';
 import {

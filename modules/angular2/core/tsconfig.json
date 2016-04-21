@@ -6,19 +6,17 @@
     "experimentalDecorators": true,
     "module": "commonjs",
     "moduleResolution": "node",
-    "outDir": "../../../../dist/js/cjs/angular2/",
+    "outDir": "../../../dist/packages-dist/core/",
     "paths": {
-      "angular2/src/core/*": ["./*"],
-      "angular2/src/facade/*": ["../facade/*"],
-      "rxjs/*": ["../../../../node_modules/rxjs/*"]
+      "rxjs/*": ["../../../node_modules/rxjs/*"]
     },
-    "rootDir": "../../",
+    "rootDir": ".",
     "sourceMap": true,
     "sourceRoot": ".",
     "target": "es5"
   },
   "files": [
-    "../../core.ts",
-    "../../ambient_typings.d.ts"
+    "core.ts",
+    "ambient_typings.d.ts"
   ]
 }
