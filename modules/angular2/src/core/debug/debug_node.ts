@@ -1,4 +1,4 @@
-import {isPresent, Type} from 'angular2/src/facade/lang';
+import {isPresent} from 'angular2/src/facade/lang';
 import {Predicate} from 'angular2/src/facade/collection';
 import {Injector} from 'angular2/src/core/di';
 import {ListWrapper, MapWrapper} from 'angular2/src/facade/collection';

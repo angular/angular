@@ -2,10 +2,8 @@ import {
   Directive,
   ElementRef,
   Renderer,
-  Self,
   forwardRef,
   Provider,
-  Attribute,
   Input,
   OnInit,
   OnDestroy,
@@ -15,9 +13,9 @@ import {
 import {
   NG_VALUE_ACCESSOR,
   ControlValueAccessor
-} from 'angular2/src/common/forms/directives/control_value_accessor';
-import {NgControl} from 'angular2/src/common/forms/directives/ng_control';
-import {CONST_EXPR, looseIdentical, isPresent} from 'angular2/src/facade/lang';
+} from './control_value_accessor';
+import {NgControl} from './ng_control';
+import {CONST_EXPR, isPresent} from 'angular2/src/facade/lang';
 import {ListWrapper} from 'angular2/src/facade/collection';
 
 const RADIO_VALUE_ACCESSOR = CONST_EXPR(new Provider(

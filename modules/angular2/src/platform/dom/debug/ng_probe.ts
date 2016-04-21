@@ -1,10 +1,7 @@
-import {CONST_EXPR, assertionsEnabled, isPresent} from 'angular2/src/facade/lang';
-import {Injectable, provide, Provider} from 'angular2/src/core/di';
+import {CONST_EXPR, assertionsEnabled} from 'angular2/src/facade/lang';
 import {DOM} from 'angular2/src/platform/dom/dom_adapter';
-import {DebugNode, getDebugNode} from 'angular2/src/core/debug/debug_node';
 import {DomRootRenderer} from 'angular2/src/platform/dom/dom_renderer';
-import {RootRenderer, NgZone, ApplicationRef} from 'angular2/core';
-import {DebugDomRootRenderer} from 'angular2/src/core/debug/debug_renderer';
+import {DebugNode, getDebugNode, DebugDomRootRenderer, Provider, RootRenderer, NgZone, ApplicationRef} from 'angular2/core';
 
 const CORE_TOKENS = CONST_EXPR({'ApplicationRef': ApplicationRef, 'NgZone': NgZone});
 

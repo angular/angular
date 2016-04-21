@@ -29,7 +29,8 @@ export {
 export * from './src/core/zone';
 export * from './src/core/render';
 export * from './src/core/linker';
-export {DebugElement, DebugNode, asNativeElements} from './src/core/debug/debug_node';
+export {DebugElement, DebugNode, asNativeElements, getDebugNode} from './src/core/debug/debug_node';
+export {DebugDomRootRenderer} from './src/core/debug/debug_renderer';
 export * from './src/core/testability/testability';
 export * from './src/core/change_detection';
 export * from './src/core/platform_directives_and_pipes';

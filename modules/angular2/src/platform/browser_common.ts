@@ -21,8 +21,6 @@ import {DOCUMENT} from 'angular2/src/platform/dom/dom_tokens';
 import {DomRootRenderer, DomRootRenderer_} from 'angular2/src/platform/dom/dom_renderer';
 import {DomSharedStylesHost} from 'angular2/src/platform/dom/shared_styles_host';
 import {SharedStylesHost} from "angular2/src/platform/dom/shared_styles_host";
-import {BrowserDetails} from "angular2/src/animate/browser_details";
-import {AnimationBuilder} from "angular2/src/animate/animation_builder";
 import {BrowserDomAdapter} from './browser/browser_adapter';
 import {BrowserGetTestability} from 'angular2/src/platform/browser/testability';
 import {CachedXHR} from 'angular2/src/platform/browser/xhr_cache';
@@ -89,8 +87,6 @@ export const BROWSER_APP_COMMON_PROVIDERS: Array<any /*Type | Provider | any[]*/
   new Provider(SharedStylesHost, {useExisting: DomSharedStylesHost}),
   DomSharedStylesHost,
   Testability,
-  BrowserDetails,
-  AnimationBuilder,
   EventManager,
   ELEMENT_PROBE_PROVIDERS
 ]);
