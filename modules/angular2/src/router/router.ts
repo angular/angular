@@ -148,6 +148,8 @@ export class Router {
       instruction = instruction.child;
     }
 
+    let reason = true;
+    
     // check the instructions in depth
     do {
       if (isBlank(instruction.component) || isBlank(currentInstruction.component) ||
@@ -157,16 +159,16 @@ export class Router {
       if (isPresent(instruction.component.params)) {
         StringMapWrapper.forEach(instruction.component.params, (value, key) => {
           if (currentInstruction.component.params[key] !== value) {
-            return false;
+            reason = false;
           }
         });
       }
       currentInstruction = currentInstruction.child;
       instruction = instruction.child;
-    } while (isPresent(currentInstruction) && isPresent(instruction) && !(instruction instanceof DefaultInstruction));
+    } while (isPresent(currentInstruction) && isPresent(instruction) && !(instruction instanceof DefaultInstruction) && reason);
 
     // ignore DefaultInstruction
-    return isBlank(instruction) || instruction instanceof DefaultInstruction;
+    return reason && (isBlank(instruction) || instruction instanceof DefaultInstruction);
   }
 
 
