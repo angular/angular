@@ -19,7 +19,7 @@ import {ListDemo} from './list/list-demo';
 import {InputDemo} from './input/input-demo';
 import {LiveAnnouncerDemo} from './live-announcer/live-announcer-demo';
 import {GesturesDemo} from './gestures/gestures-demo';
-import {GridListDemo} from "./grid-list/grid-list-demo";
+import {GridListDemo} from './grid-list/grid-list-demo';
 
 @Component({
   selector: 'home',

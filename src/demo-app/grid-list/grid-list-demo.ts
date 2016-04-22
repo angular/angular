@@ -1,5 +1,5 @@
 import {Component} from 'angular2/core';
-import {MdGridList} from "../../components/grid-list/grid-list";
+import {MdGridList} from '../../components/grid-list/grid-list';
 
 @Component({
   selector: 'grid-list-demo',
