@@ -1,21 +1,9 @@
-import {isPresent, isBlank, isArray, normalizeBlank} from 'angular2/src/facade/lang';
-import {ListWrapper} from 'angular2/src/facade/collection';
+import {isPresent, isBlank, isArray, normalizeBlank} from '../facade/lang';
+import {ListWrapper} from '../facade/collection';
 import {
-  TemplateAst,
-  TemplateAstVisitor,
-  NgContentAst,
-  EmbeddedTemplateAst,
-  ElementAst,
   VariableAst,
-  BoundEventAst,
-  BoundElementPropertyAst,
   AttrAst,
-  BoundTextAst,
-  TextAst,
   DirectiveAst,
-  BoundDirectivePropertyAst,
-  templateVisitAll,
-  PropertyBindingType,
   ProviderAst,
   ProviderAstType
 } from './template_ast';
@@ -29,7 +17,7 @@ import {
   CompileDiDependencyMetadata
 } from './compile_metadata';
 import {Identifiers, identifierToken} from './identifiers';
-import {ParseSourceSpan, ParseError, ParseLocation} from './parse_util';
+import {ParseSourceSpan, ParseError} from './parse_util';
 
 export class ProviderError extends ParseError {
   constructor(message: string, span: ParseSourceSpan) { super(span, message); }

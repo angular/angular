@@ -1,9 +1,9 @@
+import {BaseException} from '../../facade/exceptions';
+import {isBlank, isPresent, isArray} from '../../facade/lang';
+
 import * as cdAst from '../expression_parser/ast';
 import * as o from '../output/output_ast';
 import {Identifiers} from '../identifiers';
-
-import {BaseException} from 'angular2/src/facade/exceptions';
-import {isBlank, isPresent, isArray, CONST_EXPR} from 'angular2/src/facade/lang';
 
 var IMPLICIT_RECEIVER = o.variable('#implicit');
 

@@ -1,10 +1,9 @@
-import {isPresent, isBlank} from 'angular2/src/facade/lang';
+import {isPresent} from '../../facade/lang';
 
 import * as o from '../output/output_ast';
 import {
   CompileTokenMetadata,
   CompileDirectiveMetadata,
-  CompileIdentifierMetadata
 } from '../compile_metadata';
 import {CompileView} from './compile_view';
 

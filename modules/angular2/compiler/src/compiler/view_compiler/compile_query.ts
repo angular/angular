@@ -1,12 +1,11 @@
-import {isPresent, isBlank} from 'angular2/src/facade/lang';
-import {ListWrapper} from 'angular2/src/facade/collection';
+import {isPresent, isBlank} from '../../facade/lang';
+import {ListWrapper} from '../../facade/collection';
 
 import * as o from '../output/output_ast';
 import {Identifiers} from '../identifiers';
 
 import {
   CompileQueryMetadata,
-  CompileIdentifierMetadata,
   CompileTokenMap
 } from '../compile_metadata';
 

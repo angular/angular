@@ -3,6 +3,8 @@ import {
   _isDefaultChangeDetectionStrategy as isDefaultChangeDetectionStrategy
 } from 'angular2/core';
 
+import {isBlank, isPresent} from '../../facade/lang';
+
 import * as cdAst from '../expression_parser/ast';
 import * as o from '../output/output_ast';
 import {Identifiers} from '../identifiers';
@@ -14,8 +16,6 @@ import {
   DirectiveAst,
   PropertyBindingType,
 } from '../template_ast';
-
-import {isBlank, isPresent} from 'angular2/src/facade/lang';
 
 import {CompileView} from './compile_view';
 import {CompileElement, CompileNode} from './compile_element';

@@ -1,5 +1,5 @@
-import {isPresent, isBlank} from 'angular2/src/facade/lang';
-import {MapWrapper, ListWrapper} from 'angular2/src/facade/collection';
+import {isPresent} from '../../facade/lang';
+import {ListWrapper} from '../../facade/collection';
 
 import * as o from '../output/output_ast';
 import {TemplateAst} from '../template_ast';

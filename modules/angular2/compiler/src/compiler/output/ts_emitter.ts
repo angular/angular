@@ -2,14 +2,10 @@ import * as o from './output_ast';
 import {
   isPresent,
   isBlank,
-  isString,
-  evalExpression,
-  RegExpWrapper,
-  StringWrapper,
   isArray
-} from 'angular2/src/facade/lang';
+} from '../../facade/lang';
+import {BaseException} from '../../facade/exceptions';
 import {CompileIdentifierMetadata} from '../compile_metadata';
-import {BaseException} from 'angular2/src/facade/exceptions';
 import {
   OutputEmitter,
   EmitterVisitorContext,

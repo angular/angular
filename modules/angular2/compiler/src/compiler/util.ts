@@ -1,4 +1,4 @@
-import {IS_DART, StringWrapper, Math, isBlank} from 'angular2/src/facade/lang';
+import {IS_DART, StringWrapper} from '../facade/lang';
 
 export var MODULE_SUFFIX = IS_DART ? '.dart' : '';
 

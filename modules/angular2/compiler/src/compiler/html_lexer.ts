@@ -3,10 +3,8 @@ import {
   NumberWrapper,
   isPresent,
   isBlank,
-  CONST_EXPR,
-  serializeEnum
-} from 'angular2/src/facade/lang';
-import {ListWrapper} from 'angular2/src/facade/collection';
+} from '../facade/lang';
+import {ListWrapper} from '../facade/collection';
 import {ParseLocation, ParseError, ParseSourceFile, ParseSourceSpan} from './parse_util';
 import {getHtmlTagDefinition, HtmlTagContentType, NAMED_ENTITIES} from './html_tags';
 
