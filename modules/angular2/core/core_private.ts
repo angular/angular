@@ -33,4 +33,5 @@ export {
 } from './src/core/change_detection/change_detection_util';
 export {RenderDebugInfo as _RenderDebugInfo} from './src/core/render/api';
 export {TemplateRef_ as _TemplateRef_} from './src/core/linker/template_ref';
-export {}
+export {wtfInit as _wtfInit} from './src/core/profile/wtf_init';
+export {ReflectionCapabilities as _ReflectionCapabilities} from './src/core/reflection/reflection_capabilities';
