@@ -134,8 +134,8 @@ export class Router {
    * Given an instruction, returns `true` if the instruction is currently active,
    * otherwise `false`.
    */
-  isRouteActive(instruction:Instruction):boolean {
-    var router:Router = this;
+  isRouteActive(instruction: Instruction): boolean {
+    var router: Router = this;
     var currentInstruction = this.currentInstruction;
 
     if (isBlank(currentInstruction)) {
@@ -149,7 +149,7 @@ export class Router {
     }
 
     let reason = true;
-    
+
     // check the instructions in depth
     do {
       if (isBlank(instruction.component) || isBlank(currentInstruction.component) ||
@@ -165,7 +165,8 @@ export class Router {
       }
       currentInstruction = currentInstruction.child;
       instruction = instruction.child;
-    } while (isPresent(currentInstruction) && isPresent(instruction) && !(instruction instanceof DefaultInstruction) && reason);
+    } while (isPresent(currentInstruction) && isPresent(instruction) &&
+             !(instruction instanceof DefaultInstruction) && reason);
 
     // ignore DefaultInstruction
     return reason && (isBlank(instruction) || instruction instanceof DefaultInstruction);
