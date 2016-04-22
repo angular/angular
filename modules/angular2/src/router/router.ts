@@ -153,7 +153,7 @@ export class Router {
     // check the instructions in depth
     do {
       if (isBlank(instruction.component) || isBlank(currentInstruction.component) ||
-          currentInstruction.component != instruction.component) {
+          currentInstruction.component.routeName != instruction.component.routeName) {
         return false;
       }
       if (isPresent(instruction.component.params)) {
