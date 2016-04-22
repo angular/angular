@@ -166,6 +166,7 @@ class TemplateParseVisitor implements HtmlAstVisitor {
   directivesIndex = new Map<CompileDirectiveMetadata, number>();
   ngContentCount: number = 0;
   pipesByName: Map<string, CompilePipeMetadata>;
+  parsedVariables: string[] = [];
 
   constructor(public providerViewContext: ProviderViewContext,
               directives: CompileDirectiveMetadata[], pipes: CompilePipeMetadata[],
@@ -486,6 +487,12 @@ class TemplateParseVisitor implements HtmlAstVisitor {
     if (identifier.indexOf('-') > -1) {
       this._reportError(`"-" is not allowed in variable names`, sourceSpan);
     }
+
+    if (this.parsedVariables.indexOf(identifier) > -1) {
+      this._reportError(`Variable "#${identifier}" is defined multiple times`, sourceSpan);
+    }
+    this.parsedVariables.push(identifier);
+
     targetVars.push(new VariableAst(identifier, value, sourceSpan));
   }
 
