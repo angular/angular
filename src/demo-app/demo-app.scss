@@ -1,13 +1,31 @@
 .demo-root {
   font-family: Roboto, 'Helvetica Neue', sans-serif;
-  padding: 20px;
-  min-height: 1000px;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
 
   // Helps fonts on OSX looks more consistent with other systems
   // Isn't currently in button styles due to performance concerns
   * {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+  }
+
+  md-sidenav {
+    width: 15%;
+
+    [md-button] {
+      width: 100%;
+      position: absolute;
+      bottom: 0;
+      margin-bottom: 24px;
+    }
+  }
+
+  .demo-content {
+    padding: 32px;
   }
 
   md-toolbar {
@@ -30,9 +48,5 @@
   h1 {
     font-size: 20px;
   }
-
 }
 
-.demo-content {
-  padding: 15px;
-}
