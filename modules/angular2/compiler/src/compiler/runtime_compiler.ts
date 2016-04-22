@@ -1,64 +1,35 @@
+import {Injectable, ComponentFactory, ComponentResolver, _ReflectorComponentResolver as ReflectorComponentResolver} from 'angular2/core';
+
 import {
   IS_DART,
   Type,
-  Json,
   isBlank,
-  isPresent,
-  stringify,
-  evalExpression
-} from 'angular2/src/facade/lang';
-import {BaseException} from 'angular2/src/facade/exceptions';
+} from '../facade/lang';
+import {BaseException} from '../facade/exceptions';
 import {
   ListWrapper,
-  SetWrapper,
-  MapWrapper,
-  StringMapWrapper
-} from 'angular2/src/facade/collection';
-import {PromiseWrapper} from 'angular2/src/facade/async';
+} from '../facade/collection';
+import {PromiseWrapper} from '../facade/async';
 import {
   createHostComponentMeta,
   CompileDirectiveMetadata,
-  CompileTypeMetadata,
-  CompileTemplateMetadata,
   CompilePipeMetadata,
-  CompileMetadataWithType,
   CompileIdentifierMetadata
 } from './compile_metadata';
 import {
   TemplateAst,
-  TemplateAstVisitor,
-  NgContentAst,
-  EmbeddedTemplateAst,
-  ElementAst,
-  VariableAst,
-  BoundEventAst,
-  BoundElementPropertyAst,
-  AttrAst,
-  BoundTextAst,
-  TextAst,
-  DirectiveAst,
-  BoundDirectivePropertyAst,
-  templateVisitAll
 } from './template_ast';
-import {Injectable} from 'angular2/src/core/di';
 import {StyleCompiler, StylesCompileDependency, StylesCompileResult} from './style_compiler';
 import {ViewCompiler} from './view_compiler/view_compiler';
 import {TemplateParser} from './template_parser';
 import {DirectiveNormalizer} from './directive_normalizer';
 import {RuntimeMetadataResolver} from './runtime_metadata';
-import {ComponentFactory} from 'angular2/src/core/linker/component_factory';
-import {
-  ComponentResolver,
-  ReflectorComponentResolver
-} from 'angular2/src/core/linker/component_resolver';
-
 import {CompilerConfig} from './config';
 import * as ir from './output/output_ast';
 import {jitStatements} from './output/output_jit';
 import {interpretStatements} from './output/output_interpreter';
 import {InterpretiveAppViewInstanceFactory} from './output/interpretive_view';
-
-import {XHR} from 'angular2/src/compiler/xhr';
+import {XHR} from './xhr';
 
 /**
  * An internal module of the Angular compiler that begins with component types,

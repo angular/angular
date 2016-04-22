@@ -1,9 +1,6 @@
-import {resolveForwardRef, Injectable} from 'angular2/src/core/di';
-import {Type, isPresent, isBlank, stringify} from 'angular2/src/facade/lang';
-import {BaseException} from 'angular2/src/facade/exceptions';
-import {ListWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
-
 import {
+  resolveForwardRef,
+  Injectable,
   DirectiveMetadata,
   ComponentMetadata,
   InputMetadata,
@@ -13,10 +10,15 @@ import {
   ContentChildrenMetadata,
   ViewChildrenMetadata,
   ContentChildMetadata,
-  ViewChildMetadata
-} from 'angular2/src/core/metadata';
-import {reflector} from 'angular2/src/core/reflection/reflection';
-import {ReflectorReader} from 'angular2/src/core/reflection/reflector_reader';
+  ViewChildMetadata,
+  reflector,
+  _ReflectorReader as ReflectorReader
+  } from 'angular2/core';
+
+import {Type, isPresent, stringify} from '../facade/lang';
+import {BaseException} from '../facade/exceptions';
+import {ListWrapper, StringMapWrapper} from '../facade/collection';
+
 
 function _isDirectiveMetadata(type: any): boolean {
   return type instanceof DirectiveMetadata;

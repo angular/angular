@@ -1,3 +1,5 @@
+import {ComponentFactory} from 'angular2/core';
+
 import {
   CompileDirectiveMetadata,
   CompileIdentifierMetadata,
@@ -5,15 +7,14 @@ import {
   createHostComponentMeta
 } from './compile_metadata';
 
-import {BaseException, unimplemented} from 'angular2/src/facade/exceptions';
-import {ListWrapper} from 'angular2/src/facade/collection';
-import {StyleCompiler, StylesCompileDependency, StylesCompileResult} from './style_compiler';
+import {BaseException} from '../facade/exceptions';
+import {ListWrapper} from '../facade/collection';
+import {StyleCompiler, StylesCompileResult} from './style_compiler';
 import {ViewCompiler, ViewCompileResult} from './view_compiler/view_compiler';
 import {TemplateParser} from './template_parser';
 import {DirectiveNormalizer} from './directive_normalizer';
 import {OutputEmitter} from './output/abstract_emitter';
 import * as o from './output/output_ast';
-import {ComponentFactory} from 'angular2/src/core/linker/component_factory';
 
 import {
   MODULE_SUFFIX,

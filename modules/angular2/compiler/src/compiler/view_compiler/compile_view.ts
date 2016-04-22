@@ -1,6 +1,8 @@
-import {isPresent, isBlank} from 'angular2/src/facade/lang';
-import {ListWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
-import {BaseException} from 'angular2/src/facade/exceptions';
+import {_ViewType as ViewType} from 'angular2/core';
+
+import {isPresent, isBlank} from '../../facade/lang';
+import {ListWrapper} from '../../facade/collection';
+import {BaseException} from '../../facade/exceptions';
 
 import * as o from '../output/output_ast';
 import {Identifiers, identifierToken} from '../identifiers';
@@ -9,7 +11,6 @@ import {CompileQuery, createQueryList, addQueryToTokenMap} from './compile_query
 import {NameResolver} from './expression_converter';
 import {CompileElement, CompileNode} from './compile_element';
 import {CompileMethod} from './compile_method';
-import {ViewType} from 'angular2/src/core/linker/view_type';
 import {
   CompileDirectiveMetadata,
   CompilePipeMetadata,
@@ -19,13 +20,12 @@ import {
 import {
   getViewFactoryName,
   injectFromViewParentInjector,
-  createDiTokenExpression,
   getPropertyInView
 } from './util';
 import {CompilerConfig} from '../config';
 import {CompileBinding} from './compile_binding';
-
 import {bindPipeDestroyLifecycleCallbacks} from './lifecycle_binder';
+
 
 export class CompilePipe {
   constructor() {}

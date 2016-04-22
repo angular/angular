@@ -1,15 +1,11 @@
+import {Injectable} from 'angular2/core';
+
 import {
   isPresent,
   isBlank,
-  StringWrapper,
-  stringify,
-  assertionsEnabled,
-  StringJoiner,
-  serializeEnum,
-  CONST_EXPR
-} from 'angular2/src/facade/lang';
+} from '../facade/lang';
 
-import {ListWrapper} from 'angular2/src/facade/collection';
+import {ListWrapper} from '../facade/collection';
 
 import {
   HtmlAst,
@@ -21,10 +17,9 @@ import {
   HtmlExpansionCaseAst
 } from './html_ast';
 
-import {Injectable} from 'angular2/src/core/di';
 import {HtmlToken, HtmlTokenType, tokenizeHtml} from './html_lexer';
-import {ParseError, ParseLocation, ParseSourceSpan} from './parse_util';
-import {HtmlTagDefinition, getHtmlTagDefinition, getNsPrefix, mergeNsAndName} from './html_tags';
+import {ParseError, ParseSourceSpan} from './parse_util';
+import {getHtmlTagDefinition, getNsPrefix, mergeNsAndName} from './html_tags';
 
 export class HtmlTreeError extends ParseError {
   static create(elementName: string, span: ParseSourceSpan, msg: string): HtmlTreeError {

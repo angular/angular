@@ -1,7 +1,7 @@
-import {Injectable} from 'angular2/src/core/di/decorators';
-import {isBlank, isPresent, StringWrapper} from 'angular2/src/facade/lang';
-import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
-import {ListWrapper} from 'angular2/src/facade/collection';
+import {Injectable} from 'angular2/core';
+import {isBlank, isPresent, StringWrapper} from '../../facade/lang';
+import {BaseException} from '../../facade/exceptions';
+import {ListWrapper} from '../../facade/collection';
 import {
   Lexer,
   EOF,

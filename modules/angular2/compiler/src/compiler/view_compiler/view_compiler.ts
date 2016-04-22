@@ -1,4 +1,4 @@
-import {Injectable} from 'angular2/src/core/di';
+import {Injectable} from 'angular2/core';
 
 import * as o from '../output/output_ast';
 import {CompileElement} from './compile_element';

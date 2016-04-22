@@ -1,7 +1,7 @@
-import {isPresent} from 'angular2/src/facade/lang';
-import {AppView} from 'angular2/src/core/linker/view';
-import {AppElement} from 'angular2/src/core/linker/element';
-import {BaseException} from 'angular2/src/facade/exceptions';
+import {_AppElement as AppElement, _AppView as AppView} from 'angular2/core';
+
+import {isPresent} from '../../facade/lang';
+import {BaseException} from '../../facade/exceptions';
 import {InstanceFactory, DynamicInstance} from './output_interpreter';
 
 export class InterpretiveAppViewInstanceFactory implements InstanceFactory {

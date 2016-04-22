@@ -1,5 +1,9 @@
-import {Type} from 'angular2/src/facade/lang';
-import {LifecycleHooks} from 'angular2/src/core/metadata/lifecycle_hooks';
+import {
+  _LifecycleHooks as LifecycleHooks
+} from 'angular2/core';
+
+import {Type} from '../facade/lang';
+
 
 export function hasLifecycleHook(lcInterface: LifecycleHooks, token): boolean {
   if (!(token instanceof Type)) return false;

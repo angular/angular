@@ -1,3 +1,8 @@
+import {
+  _LifecycleHooks as LifecycleHooks,
+  _isDefaultChangeDetectionStrategy as isDefaultChangeDetectionStrategy
+} from 'angular2/core';
+
 import * as cdAst from '../expression_parser/ast';
 import * as o from '../output/output_ast';
 import {Identifiers} from '../identifiers';
@@ -8,22 +13,20 @@ import {
   BoundElementPropertyAst,
   DirectiveAst,
   PropertyBindingType,
-  TemplateAst
 } from '../template_ast';
 
-import {isBlank, isPresent, isArray, CONST_EXPR} from 'angular2/src/facade/lang';
+import {isBlank, isPresent} from 'angular2/src/facade/lang';
 
 import {CompileView} from './compile_view';
 import {CompileElement, CompileNode} from './compile_element';
 import {CompileMethod} from './compile_method';
 
-import {LifecycleHooks} from 'angular2/src/core/metadata/lifecycle_hooks';
-import {isDefaultChangeDetectionStrategy} from 'angular2/src/core/change_detection/constants';
 import {camelCaseToDashCase} from '../util';
 
 import {convertCdExpressionToIr} from './expression_converter';
 
 import {CompileBinding} from './compile_binding';
+
 
 function createBindFieldExpr(exprIndex: number): o.ReadPropExpr {
   return o.THIS_EXPR.prop(`_expr_${exprIndex}`);

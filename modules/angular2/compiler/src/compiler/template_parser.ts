@@ -1,13 +1,12 @@
+import {Injectable, Inject, OpaqueToken, Optional, _MAX_INTERPOLATION_VALUES as MAX_INTERPOLATION_VALUES} from 'angular2/core';
+
 import {
   ListWrapper,
   StringMapWrapper,
   SetWrapper,
-  MapWrapper
-} from 'angular2/src/facade/collection';
-import {RegExpWrapper, isPresent, StringWrapper, isBlank, isArray} from 'angular2/src/facade/lang';
-import {Injectable, Inject, OpaqueToken, Optional} from 'angular2/core';
-import {CONST_EXPR} from 'angular2/src/facade/lang';
-import {BaseException} from 'angular2/src/facade/exceptions';
+} from '../facade/collection';
+import {RegExpWrapper, isPresent, StringWrapper, isBlank, CONST_EXPR} from '../facade/lang';
+import {BaseException} from '../facade/exceptions';
 import {
   AST,
   Interpolation,
@@ -18,18 +17,13 @@ import {
 } from './expression_parser/ast';
 import {Parser} from './expression_parser/parser';
 import {
-  CompileTokenMap,
   CompileDirectiveMetadata,
   CompilePipeMetadata,
   CompileMetadataWithType,
-  CompileProviderMetadata,
-  CompileTokenMetadata,
-  CompileTypeMetadata
 } from './compile_metadata';
 import {HtmlParser} from './html_parser';
 import {splitNsName, mergeNsAndName} from './html_tags';
-import {ParseSourceSpan, ParseError, ParseLocation} from './parse_util';
-import {MAX_INTERPOLATION_VALUES} from 'angular2/src/core/linker/view_utils';
+import {ParseSourceSpan, ParseError} from './parse_util';
 
 import {
   ElementAst,
@@ -47,19 +41,16 @@ import {
   PropertyBindingType,
   DirectiveAst,
   BoundDirectivePropertyAst,
-  ProviderAst,
-  ProviderAstType
 } from './template_ast';
-import {CssSelector, SelectorMatcher} from 'angular2/src/compiler/selector';
+import {CssSelector, SelectorMatcher} from './selector';
 
-import {ElementSchemaRegistry} from 'angular2/src/compiler/schema/element_schema_registry';
-import {preparseElement, PreparsedElement, PreparsedElementType} from './template_preparser';
+import {ElementSchemaRegistry} from './schema/element_schema_registry';
+import {preparseElement, PreparsedElementType} from './template_preparser';
 
 import {isStyleUrlResolvable} from './style_url_resolver';
 
 import {
   HtmlAstVisitor,
-  HtmlAst,
   HtmlElementAst,
   HtmlAttrAst,
   HtmlTextAst,

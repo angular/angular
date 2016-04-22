@@ -1,4 +1,13 @@
 import {
+  ChangeDetectionStrategy,
+  ViewEncapsulation,
+  _CHANGE_DETECTION_STRATEGY_VALUES as CHANGE_DETECTION_STRATEGY_VALUES,
+  _VIEW_ENCAPSULATION_VALUES as VIEW_ENCAPSULATION_VALUES,
+  _LifecycleHooks as LifecycleHooks,
+  _LIFECYCLE_HOOKS_VALUES as LIFECYCLE_HOOKS_VALUES
+} from 'angular2/core';
+
+import {
   isPresent,
   isBlank,
   isNumber,
@@ -9,24 +18,14 @@ import {
   Type,
   isString,
   RegExpWrapper,
-  StringWrapper,
   isArray
-} from 'angular2/src/facade/lang';
-import {unimplemented, BaseException} from 'angular2/src/facade/exceptions';
+} from '../facade/lang';
+import {unimplemented, BaseException} from '../facade/exceptions';
 import {
   StringMapWrapper,
-  MapWrapper,
-  SetWrapper,
-  ListWrapper
-} from 'angular2/src/facade/collection';
-import {
-  ChangeDetectionStrategy,
-  CHANGE_DETECTION_STRATEGY_VALUES
-} from 'angular2/src/core/change_detection/change_detection';
-import {ViewEncapsulation, VIEW_ENCAPSULATION_VALUES} from 'angular2/src/core/metadata/view';
-import {CssSelector} from 'angular2/src/compiler/selector';
-import {splitAtColon, sanitizeIdentifier} from './util';
-import {LifecycleHooks, LIFECYCLE_HOOKS_VALUES} from 'angular2/src/core/metadata/lifecycle_hooks';
+} from '../facade/collection';
+import {CssSelector} from './selector';
+import {splitAtColon} from './util';
 import {getUrlScheme} from './url_resolver';
 
 // group 1: "property" from "[property]"
@@ -318,9 +317,7 @@ export class CompileTokenMetadata implements CompileMetadataWithIdentifier {
            (isPresent(ak) && ak == token2.assetCacheKey);
   }
 
-  get name(): string {
-    return isPresent(this.value) ? sanitizeIdentifier(this.value) : this.identifier.name;
-  }
+  get name(): string { return isPresent(this.value) ? this.value : this.identifier.name; }
 }
 
 export class CompileTokenMap<VALUE> {

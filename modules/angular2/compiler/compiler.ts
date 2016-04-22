@@ -4,8 +4,6 @@
  * Starting point to import all compiler APIs.
  */
 export {
-  PLATFORM_DIRECTIVES,
-  PLATFORM_PIPES,
   COMPILER_PROVIDERS,
   TEMPLATE_TRANSFORMS,
   CompilerConfig,
@@ -32,6 +30,6 @@ export {
   CompileTemplateMetadata,
   CompileDirectiveMetadata,
   CompilePipeMetadata
-} from 'angular2/src/compiler/compiler';
+} from './src/compiler/compiler';
 
-export * from 'angular2/src/compiler/template_ast';
+export * from './src/compiler/template_ast';

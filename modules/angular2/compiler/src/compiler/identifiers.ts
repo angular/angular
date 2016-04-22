@@ -1,30 +1,33 @@
-import {CompileIdentifierMetadata, CompileTokenMetadata} from './compile_metadata';
-import {AppView} from 'angular2/src/core/linker/view';
-import {StaticNodeDebugInfo, DebugContext} from 'angular2/src/core/linker/debug_context';
 import {
-  ViewUtils,
-  flattenNestedViewRenderNodes,
-  interpolate,
-  checkBinding
-} from 'angular2/src/core/linker/view_utils';
-import {
-  uninitialized,
-  devModeEqual,
   SimpleChange,
-  ValueUnwrapper,
   ChangeDetectorRef,
-  ChangeDetectorState,
-  ChangeDetectionStrategy
-} from 'angular2/src/core/change_detection/change_detection';
-import {AppElement} from 'angular2/src/core/linker/element';
-import {ElementRef} from 'angular2/src/core/linker/element_ref';
-import {ViewContainerRef} from 'angular2/src/core/linker/view_container_ref';
-import {Renderer, RenderComponentType, RenderDebugInfo} from 'angular2/src/core/render/api';
-import {ViewEncapsulation} from 'angular2/src/core/metadata/view';
-import {ViewType} from 'angular2/src/core/linker/view_type';
-import {QueryList} from 'angular2/src/core/linker';
-import {Injector} from 'angular2/src/core/di/injector';
-import {TemplateRef, TemplateRef_} from 'angular2/src/core/linker/template_ref';
+  ChangeDetectionStrategy,
+  ElementRef,
+  ViewContainerRef,
+  Renderer,
+  RenderComponentType,
+  Injector,
+  QueryList,
+  ViewEncapsulation,
+  TemplateRef,
+  _AppElement as AppElement,
+  _AppView as AppView,
+  _ChangeDetectorState as ChangeDetectorState,
+  _checkBinding as checkBinding,
+  _DebugContext as DebugContext,
+  _devModeEqual as devModeEqual,
+  _flattenNestedViewRenderNodes as flattenNestedViewRenderNodes,
+  _interpolate as interpolate,
+  _RenderDebugInfo as RenderDebugInfo,
+  _StaticNodeDebugInfo as StaticNodeDebugInfo,
+  _TemplateRef_ as TemplateRef_,
+  _uninitialized as uninitialized,
+  _ValueUnwrapper as ValueUnwrapper,
+  _ViewType as ViewType,
+  _ViewUtils as ViewUtils,
+} from 'angular2/core';
+
+import {CompileIdentifierMetadata, CompileTokenMetadata} from './compile_metadata';
 import {MODULE_SUFFIX} from './util';
 
 var APP_VIEW_MODULE_URL = 'asset:angular2/lib/src/core/linker/view' + MODULE_SUFFIX;

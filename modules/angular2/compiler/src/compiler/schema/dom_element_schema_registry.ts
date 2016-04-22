@@ -1,9 +1,8 @@
-import {Injectable} from 'angular2/src/core/di';
-import {isPresent, isBlank, CONST_EXPR} from 'angular2/src/facade/lang';
-import {StringMapWrapper} from 'angular2/src/facade/collection';
+import {Injectable} from 'angular2/core';
 import {DOM} from 'angular2/src/platform/dom/dom_adapter';
-import {splitNsName} from 'angular2/src/compiler/html_tags';
-
+import {isPresent, isBlank, CONST_EXPR} from '../../facade/lang';
+import {StringMapWrapper} from '../../facade/collection';
+import {splitNsName} from '../html_tags';
 import {ElementSchemaRegistry} from './element_schema_registry';
 
 const NAMESPACE_URIS =

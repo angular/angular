@@ -1,5 +1,12 @@
-import {isPresent, StringWrapper} from 'angular2/src/facade/lang';
-import {ListWrapper, StringMapWrapper, SetWrapper} from 'angular2/src/facade/collection';
+import {
+  ChangeDetectionStrategy,
+  ViewEncapsulation,
+  _isDefaultChangeDetectionStrategy as isDefaultChangeDetectionStrategy,
+  _ViewType as ViewType
+} from 'angular2/core';
+
+import {isPresent, StringWrapper} from '../../facade/lang';
+import {ListWrapper, StringMapWrapper, SetWrapper} from '../../facade/collection';
 
 import * as o from '../output/output_ast';
 import {Identifiers, identifierToken} from '../identifiers';
@@ -12,10 +19,6 @@ import {
   ChangeDetectionStrategyEnum,
   ViewProperties
 } from './constants';
-import {
-  ChangeDetectionStrategy,
-  isDefaultChangeDetectionStrategy
-} from 'angular2/src/core/change_detection/change_detection';
 
 import {CompileView} from './compile_view';
 import {CompileElement, CompileNode} from './compile_element';
@@ -35,14 +38,9 @@ import {
   DirectiveAst,
   BoundDirectivePropertyAst,
   templateVisitAll,
-  PropertyBindingType,
-  ProviderAst
 } from '../template_ast';
 
 import {getViewFactoryName, createFlatArray, createDiTokenExpression} from './util';
-
-import {ViewType} from 'angular2/src/core/linker/view_type';
-import {ViewEncapsulation} from 'angular2/src/core/metadata/view';
 
 import {
   CompileIdentifierMetadata,

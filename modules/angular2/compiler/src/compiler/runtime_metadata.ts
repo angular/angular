@@ -1,4 +1,23 @@
-import {resolveForwardRef} from 'angular2/src/core/di';
+import {
+  AttributeMetadata,
+  ReflectiveDependency,
+  OptionalMetadata,
+  ComponentMetadata,
+  SelfMetadata,
+  HostMetadata,
+  SkipSelfMetadata,
+  Provider,
+  PLATFORM_DIRECTIVES, PLATFORM_PIPES,
+  reflector,
+  Injectable, Inject, Optional,
+  ViewMetadata,
+  NoAnnotationError,
+  QueryMetadata,
+  resolveForwardRef,
+  _constructDependencies as constructDependencies,
+  _LIFECYCLE_HOOKS_VALUES as LIFECYCLE_HOOKS_VALUES
+} from 'angular2/core';
+
 import {
   Type,
   isBlank,
@@ -6,39 +25,18 @@ import {
   isArray,
   stringify,
   isString,
-  RegExpWrapper,
-  StringWrapper
-} from 'angular2/src/facade/lang';
-import {StringMapWrapper} from 'angular2/src/facade/collection';
-import {BaseException} from 'angular2/src/facade/exceptions';
-import {NoAnnotationError} from 'angular2/src/core/di/reflective_exceptions';
+} from '../facade/lang';
+import {StringMapWrapper} from '../facade/collection';
+import {BaseException} from '../facade/exceptions';
 import * as cpl from './compile_metadata';
-import * as md from 'angular2/src/core/metadata/directives';
-import * as dimd from 'angular2/src/core/metadata/di';
 import {DirectiveResolver} from './directive_resolver';
 import {PipeResolver} from './pipe_resolver';
 import {ViewResolver} from './view_resolver';
-import {ViewMetadata} from 'angular2/src/core/metadata/view';
 import {hasLifecycleHook} from './directive_lifecycle_reflector';
-import {LifecycleHooks, LIFECYCLE_HOOKS_VALUES} from 'angular2/src/core/metadata/lifecycle_hooks';
-import {reflector} from 'angular2/src/core/reflection/reflection';
-import {Injectable, Inject, Optional} from 'angular2/src/core/di';
-import {PLATFORM_DIRECTIVES, PLATFORM_PIPES} from 'angular2/src/core/platform_directives_and_pipes';
 import {MODULE_SUFFIX, sanitizeIdentifier} from './util';
 import {assertArrayOfStrings} from './assertions';
-import {getUrlScheme} from 'angular2/src/compiler/url_resolver';
-import {Provider} from 'angular2/src/core/di/provider';
-import {
-  constructDependencies,
-  ReflectiveDependency
-} from 'angular2/src/core/di/reflective_provider';
-import {
-  OptionalMetadata,
-  SelfMetadata,
-  HostMetadata,
-  SkipSelfMetadata
-} from 'angular2/src/core/di/metadata';
-import {AttributeMetadata} from 'angular2/src/core/metadata/di';
+import {getUrlScheme} from './url_resolver';
+
 
 @Injectable()
 export class RuntimeMetadataResolver {
@@ -75,9 +73,9 @@ export class RuntimeMetadataResolver {
       var changeDetectionStrategy = null;
       var viewProviders = [];
 
-      if (dirMeta instanceof md.ComponentMetadata) {
+      if (dirMeta instanceof ComponentMetadata) {
         assertArrayOfStrings('styles', dirMeta.styles);
-        var cmpMeta = <md.ComponentMetadata>dirMeta;
+        var cmpMeta = <ComponentMetadata>dirMeta;
         moduleUrl = calcModuleUrl(directiveType, cmpMeta);
         var viewMeta = this._viewResolver.resolve(directiveType);
         assertArrayOfStrings('styles', viewMeta.styles);
@@ -208,7 +206,7 @@ export class RuntimeMetadataResolver {
         compileToken = this.getTokenMetadata(dep.key.token);
       }
       var compileQuery = null;
-      var q = <dimd.QueryMetadata>dep.properties.find(p => p instanceof dimd.QueryMetadata);
+      var q = <QueryMetadata>dep.properties.find(p => p instanceof QueryMetadata);
       if (isPresent(q)) {
         compileQuery = this.getQueryMetadata(q, null);
       }
@@ -276,7 +274,7 @@ export class RuntimeMetadataResolver {
     });
   }
 
-  getQueriesMetadata(queries: {[key: string]: dimd.QueryMetadata},
+  getQueriesMetadata(queries: {[key: string]: QueryMetadata},
                      isViewQuery: boolean): cpl.CompileQueryMetadata[] {
     var compileQueries = [];
     StringMapWrapper.forEach(queries, (query, propertyName) => {
@@ -287,7 +285,7 @@ export class RuntimeMetadataResolver {
     return compileQueries;
   }
 
-  getQueryMetadata(q: dimd.QueryMetadata, propertyName: string): cpl.CompileQueryMetadata {
+  getQueryMetadata(q: QueryMetadata, propertyName: string): cpl.CompileQueryMetadata {
     var selectors;
     if (q.isVarBindingQuery) {
       selectors = q.varBindings.map(varName => this.getTokenMetadata(varName));
@@ -341,7 +339,7 @@ function isValidType(value: Type): boolean {
   return isPresent(value) && (value instanceof Type);
 }
 
-function calcModuleUrl(type: Type, cmpMetadata: md.ComponentMetadata): string {
+function calcModuleUrl(type: Type, cmpMetadata: ComponentMetadata): string {
   var moduleId = cmpMetadata.moduleId;
   if (isPresent(moduleId)) {
     var scheme = getUrlScheme(moduleId);

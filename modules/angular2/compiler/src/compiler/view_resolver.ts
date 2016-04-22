@@ -1,13 +1,14 @@
-import {Injectable} from 'angular2/src/core/di';
-import {ViewMetadata} from 'angular2/src/core/metadata/view';
-import {ComponentMetadata} from 'angular2/src/core/metadata/directives';
+import {
+  Injectable,
+  ViewMetadata,
+  ComponentMetadata,
+  reflector,
+  _ReflectorReader as ReflectorReader
+} from 'angular2/core';
 
-import {Type, stringify, isBlank, isPresent} from 'angular2/src/facade/lang';
-import {BaseException} from 'angular2/src/facade/exceptions';
-import {Map} from 'angular2/src/facade/collection';
-
-import {ReflectorReader} from 'angular2/src/core/reflection/reflector_reader';
-import {reflector} from 'angular2/src/core/reflection/reflection';
+import {Type, stringify, isBlank, isPresent} from '../facade/lang';
+import {BaseException} from '../facade/exceptions';
+import {Map} from '../facade/collection';
 
 /**
  * Resolves types to {@link ViewMetadata}.
