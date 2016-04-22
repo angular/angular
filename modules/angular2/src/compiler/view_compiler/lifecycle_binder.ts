@@ -78,10 +78,10 @@ export function bindDirectiveDestroyLifecycleCallbacks(directiveMeta: CompileDir
   }
 }
 
-export function bindPipeDestroyLifecycleCallbacks(
-    pipeMeta: CompilePipeMetadata, directiveInstance: o.Expression, view: CompileView) {
+export function bindPipeDestroyLifecycleCallbacks(pipeMeta: CompilePipeMetadata,
+                                                  pipeInstance: o.Expression, view: CompileView) {
   var onDestroyMethod = view.destroyMethod;
   if (pipeMeta.lifecycleHooks.indexOf(LifecycleHooks.OnDestroy) !== -1) {
-    onDestroyMethod.addStmt(directiveInstance.callMethod('ngOnDestroy', []).toStmt());
+    onDestroyMethod.addStmt(pipeInstance.callMethod('ngOnDestroy', []).toStmt());
   }
 }

@@ -26,4 +26,8 @@
  * Invoking `{{ 'ok' | repeat:3 }}` in a template produces `okokok`.
  *
  */
-export interface PipeTransform { transform(value: any, ...args: any[]): any; }
+abstract class PipeTransform {
+  // Note: Dart does not support varargs,
+  // so we can't type the `transform` method...
+  // dynamic transform(dynamic value, List<dynamic> ...args): any;
+}

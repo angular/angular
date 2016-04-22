@@ -6,7 +6,6 @@ import {
   RegExpWrapper,
   StringWrapper
 } from 'angular2/src/facade/lang';
-import {BaseException} from 'angular2/src/facade/exceptions';
 import {Injectable, PipeTransform, Pipe} from 'angular2/core';
 import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
 
@@ -39,11 +38,7 @@ import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
 @Pipe({name: 'replace'})
 @Injectable()
 export class ReplacePipe implements PipeTransform {
-  transform(value: any, args: any[]): any {
-    if (isBlank(args) || args.length !== 2) {
-      throw new BaseException('ReplacePipe requires two arguments');
-    }
-
+  transform(value: any, pattern: string | RegExp, replacement: Function | string): any {
     if (isBlank(value)) {
       return value;
     }
@@ -53,9 +48,6 @@ export class ReplacePipe implements PipeTransform {
     }
 
     var input = value.toString();
-    var pattern = args[0];
-    var replacement = args[1];
-
 
     if (!this._supportedPattern(pattern)) {
       throw new InvalidPipeArgumentException(ReplacePipe, pattern);
@@ -67,16 +59,16 @@ export class ReplacePipe implements PipeTransform {
     // var rgx = pattern instanceof RegExp ? pattern : RegExpWrapper.create(pattern);
 
     if (isFunction(replacement)) {
-      var rgxPattern = isString(pattern) ? RegExpWrapper.create(pattern) : pattern;
+      var rgxPattern = isString(pattern) ? RegExpWrapper.create(<string>pattern) : <RegExp>pattern;
 
-      return StringWrapper.replaceAllMapped(input, rgxPattern, replacement);
+      return StringWrapper.replaceAllMapped(input, rgxPattern, <Function>replacement);
     }
     if (pattern instanceof RegExp) {
       // use the replaceAll variant
-      return StringWrapper.replaceAll(input, pattern, replacement);
+      return StringWrapper.replaceAll(input, pattern, <string>replacement);
     }
 
-    return StringWrapper.replace(input, pattern, replacement);
+    return StringWrapper.replace(input, <string>pattern, <string>replacement);
   }
 
   private _supportedInput(input: any): boolean { return isString(input) || isNumber(input); }

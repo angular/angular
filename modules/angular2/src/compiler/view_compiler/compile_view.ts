@@ -1,14 +1,13 @@
 import {isPresent, isBlank} from 'angular2/src/facade/lang';
-import {ListWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
-import {BaseException} from 'angular2/src/facade/exceptions';
+import {ListWrapper, StringMapWrapper, MapWrapper} from 'angular2/src/facade/collection';
 
 import * as o from '../output/output_ast';
-import {Identifiers, identifierToken} from '../identifiers';
 import {EventHandlerVars} from './constants';
 import {CompileQuery, createQueryList, addQueryToTokenMap} from './compile_query';
 import {NameResolver} from './expression_converter';
 import {CompileElement, CompileNode} from './compile_element';
 import {CompileMethod} from './compile_method';
+import {CompilePipe} from './compile_pipe';
 import {ViewType} from 'angular2/src/core/linker/view_type';
 import {
   CompileDirectiveMetadata,
@@ -20,16 +19,11 @@ import {
   getViewFactoryName,
   injectFromViewParentInjector,
   createDiTokenExpression,
-  getPropertyInView
+  getPropertyInView,
+  createPureProxy
 } from './util';
 import {CompilerConfig} from '../config';
 import {CompileBinding} from './compile_binding';
-
-import {bindPipeDestroyLifecycleCallbacks} from './lifecycle_binder';
-
-export class CompilePipe {
-  constructor() {}
-}
 
 export class CompileView implements NameResolver {
   public viewType: ViewType;
@@ -60,7 +54,8 @@ export class CompileView implements NameResolver {
   public subscriptions: o.Expression[] = [];
 
   public componentView: CompileView;
-  public pipes = new Map<string, o.Expression>();
+  public purePipes = new Map<string, CompilePipe>();
+  public pipes: CompilePipe[] = [];
   public variables = new Map<string, o.Expression>();
   public className: string;
   public classType: o.Type;
@@ -68,6 +63,7 @@ export class CompileView implements NameResolver {
 
   public literalArrayCount = 0;
   public literalMapCount = 0;
+  public pipeCount = 0;
 
   constructor(public component: CompileDirectiveMetadata, public genConfig: CompilerConfig,
               public pipeMetas: CompilePipeMetadata[], public styles: o.Expression,
@@ -124,39 +120,17 @@ export class CompileView implements NameResolver {
     }
   }
 
-  createPipe(name: string): o.Expression {
-    var pipeMeta: CompilePipeMetadata = null;
-    for (var i = this.pipeMetas.length - 1; i >= 0; i--) {
-      var localPipeMeta = this.pipeMetas[i];
-      if (localPipeMeta.name == name) {
-        pipeMeta = localPipeMeta;
-        break;
+  callPipe(name: string, input: o.Expression, args: o.Expression[]): o.Expression {
+    var compView = this.componentView;
+    var pipe = compView.purePipes.get(name);
+    if (isBlank(pipe)) {
+      pipe = new CompilePipe(compView, name);
+      if (pipe.pure) {
+        compView.purePipes.set(name, pipe);
       }
+      compView.pipes.push(pipe);
     }
-    if (isBlank(pipeMeta)) {
-      throw new BaseException(
-          `Illegal state: Could not find pipe ${name} although the parser should have detected this error!`);
-    }
-    var pipeFieldName = pipeMeta.pure ? `_pipe_${name}` : `_pipe_${name}_${this.pipes.size}`;
-    var pipeExpr = this.pipes.get(pipeFieldName);
-    if (isBlank(pipeExpr)) {
-      var deps = pipeMeta.type.diDeps.map((diDep) => {
-        if (diDep.token.equalsTo(identifierToken(Identifiers.ChangeDetectorRef))) {
-          return o.THIS_EXPR.prop('ref');
-        }
-        return injectFromViewParentInjector(diDep.token, false);
-      });
-      this.fields.push(
-          new o.ClassField(pipeFieldName, o.importType(pipeMeta.type), [o.StmtModifier.Private]));
-      this.createMethod.resetDebugInfo(null, null);
-      this.createMethod.addStmt(o.THIS_EXPR.prop(pipeFieldName)
-                                    .set(o.importExpr(pipeMeta.type).instantiate(deps))
-                                    .toStmt());
-      pipeExpr = o.THIS_EXPR.prop(pipeFieldName);
-      this.pipes.set(pipeFieldName, pipeExpr);
-      bindPipeDestroyLifecycleCallbacks(pipeMeta, pipeExpr, this);
-    }
-    return pipeExpr;
+    return pipe.call(this, [input].concat(args));
   }
 
   getVariable(name: string): o.Expression {
@@ -165,29 +139,49 @@ export class CompileView implements NameResolver {
     }
     var currView: CompileView = this;
     var result = currView.variables.get(name);
-    var viewPath = [];
     while (isBlank(result) && isPresent(currView.declarationElement.view)) {
       currView = currView.declarationElement.view;
       result = currView.variables.get(name);
-      viewPath.push(currView);
     }
     if (isPresent(result)) {
-      return getPropertyInView(result, viewPath);
+      return getPropertyInView(result, this, currView);
     } else {
       return null;
     }
   }
 
   createLiteralArray(values: o.Expression[]): o.Expression {
-    return o.THIS_EXPR.callMethod('literalArray',
-                                  [o.literal(this.literalArrayCount++), o.literalArr(values)]);
+    var proxyExpr = o.THIS_EXPR.prop(`_arr_${this.literalArrayCount++}`);
+    var proxyParams: o.FnParam[] = [];
+    var proxyReturnEntries: o.Expression[] = [];
+    for (var i = 0; i < values.length; i++) {
+      var paramName = `p${i}`;
+      proxyParams.push(new o.FnParam(paramName));
+      proxyReturnEntries.push(o.variable(paramName));
+    }
+    createPureProxy(o.fn(proxyParams, [new o.ReturnStatement(o.literalArr(proxyReturnEntries))]),
+                    values.length, proxyExpr, this);
+    return proxyExpr.callFn(values);
   }
-  createLiteralMap(values: Array<Array<string | o.Expression>>): o.Expression {
-    return o.THIS_EXPR.callMethod('literalMap',
-                                  [o.literal(this.literalMapCount++), o.literalMap(values)]);
+
+  createLiteralMap(entries: Array<Array<string | o.Expression>>): o.Expression {
+    var proxyExpr = o.THIS_EXPR.prop(`_map_${this.literalMapCount++}`);
+    var proxyParams: o.FnParam[] = [];
+    var proxyReturnEntries: Array<Array<string | o.Expression>> = [];
+    var values: o.Expression[] = [];
+    for (var i = 0; i < entries.length; i++) {
+      var paramName = `p${i}`;
+      proxyParams.push(new o.FnParam(paramName));
+      proxyReturnEntries.push([entries[i][0], o.variable(paramName)]);
+      values.push(<o.Expression>entries[i][1]);
+    }
+    createPureProxy(o.fn(proxyParams, [new o.ReturnStatement(o.literalMap(proxyReturnEntries))]),
+                    entries.length, proxyExpr, this);
+    return proxyExpr.callFn(values);
   }
 
   afterNodes() {
+    this.pipes.forEach((pipe) => pipe.create());
     this.viewQueries.values().forEach(
         (queries) => queries.forEach((query) => query.afterChildren(this.updateViewQueriesMethod)));
   }

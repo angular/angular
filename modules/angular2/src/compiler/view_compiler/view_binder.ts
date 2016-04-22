@@ -39,6 +39,8 @@ import {CompileElement, CompileNode} from './compile_element';
 export function bindView(view: CompileView, parsedTemplate: TemplateAst[]): void {
   var visitor = new ViewBinderVisitor(view);
   templateVisitAll(visitor, parsedTemplate);
+  view.pipes.forEach(
+      (pipe) => { bindPipeDestroyLifecycleCallbacks(pipe.meta, pipe.instance, pipe.view); });
 }
 
 class ViewBinderVisitor implements TemplateAstVisitor {
