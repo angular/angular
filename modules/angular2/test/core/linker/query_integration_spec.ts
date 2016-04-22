@@ -290,7 +290,7 @@ export function main() {
       it('should contain all content children',
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            var template =
-               '<needs-content-children-read #q text="ca"><div #q text="cb"></div></needs-content-children-read>';
+               '<needs-content-children-read #q text="ca"><div #w text="cb"></div></needs-content-children-read>';
 
            tcb.overrideTemplate(MyComp, template)
                .createAsync(MyComp)
@@ -1018,7 +1018,7 @@ class NeedsTpl {
 
 @Component({selector: 'needs-content-children-read', template: ''})
 class NeedsContentChildrenWithRead {
-  @ContentChildren('q', {read: TextDirective}) textDirChildren: QueryList<TextDirective>;
+  @ContentChildren('q,w', {read: TextDirective}) textDirChildren: QueryList<TextDirective>;
   @ContentChildren('nonExisting', {read: TextDirective}) nonExistingVar: QueryList<TextDirective>;
 }
 
@@ -1030,11 +1030,11 @@ class NeedsContentChildWithRead {
 
 @Component({
   selector: 'needs-view-children-read',
-  template: '<div #q text="va"></div><div #q text="vb"></div>',
+  template: '<div #q text="va"></div><div #w text="vb"></div>',
   directives: [TextDirective]
 })
 class NeedsViewChildrenWithRead {
-  @ViewChildren('q', {read: TextDirective}) textDirChildren: QueryList<TextDirective>;
+  @ViewChildren('q,w', {read: TextDirective}) textDirChildren: QueryList<TextDirective>;
   @ViewChildren('nonExisting', {read: TextDirective}) nonExistingVar: QueryList<TextDirective>;
 }
 
