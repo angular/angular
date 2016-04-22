@@ -1,4 +1,4 @@
-import {isPresent, StringWrapper} from 'angular2/src/facade/lang';
+import {isPresent, isBlank, StringWrapper} from 'angular2/src/facade/lang';
 import {ListWrapper, StringMapWrapper, SetWrapper} from 'angular2/src/facade/collection';
 
 import * as o from '../output/output_ast';
@@ -425,8 +425,6 @@ function createViewClass(view: CompileView, renderCompTypeVar: o.ReadVarExpr,
     ViewConstructorVars.parentInjector,
     ViewConstructorVars.declarationEl,
     ChangeDetectionStrategyEnum.fromValue(getChangeDetectionMode(view)),
-    o.literal(view.literalArrayCount),
-    o.literal(view.literalMapCount),
   ];
   if (view.genConfig.genDebugInfo) {
     superConstructorArgs.push(nodeDebugInfosVar);

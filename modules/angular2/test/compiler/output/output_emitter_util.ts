@@ -117,8 +117,22 @@ var _getExpressionsStmts: o.Statement[] = [
       o.variable('externalInstance').callMethod('someMethod', [o.literal('someParam')])
     ],
     [
+      'invokeMethodExternalInstanceViaBind',
+      o.variable('externalInstance')
+          .prop('someMethod')
+          .callMethod(o.BuiltinMethod.bind, [o.variable('externalInstance')])
+          .callFn([o.literal('someParam')])
+    ],
+    [
       'invokeMethodDynamicInstance',
       o.variable('dynamicInstance').callMethod('dynamicMethod', [o.literal('someParam')])
+    ],
+    [
+      'invokeMethodDynamicInstanceViaBind',
+      o.variable('dynamicInstance')
+          .prop('dynamicMethod')
+          .callMethod(o.BuiltinMethod.bind, [o.variable('dynamicInstance')])
+          .callFn([o.literal('someParam')])
     ],
     [
       'concatedArray',

@@ -103,6 +103,11 @@ export function main() {
                           .callMethod(o.BuiltinMethod.SubscribeObservable, [o.variable('listener')])
                           .toStmt()))
           .toEqual('observable.listen(listener);');
+
+      expect(
+          emitStmt(
+              o.variable('fn').callMethod(o.BuiltinMethod.bind, [o.variable('someObj')]).toStmt()))
+          .toEqual('fn;');
     });
 
     it('should support literals', () => {

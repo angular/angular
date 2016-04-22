@@ -245,7 +245,8 @@ export class WritePropExpr extends Expression {
 
 export enum BuiltinMethod {
   ConcatArray,
-  SubscribeObservable
+  SubscribeObservable,
+  bind
 }
 
 export class InvokeMethodExpr extends Expression {

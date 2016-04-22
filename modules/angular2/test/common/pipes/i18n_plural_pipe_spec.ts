@@ -26,33 +26,33 @@ export function main() {
 
     describe("transform", () => {
       it("should return 0 text if value is 0", () => {
-        var val = pipe.transform(0, [mapping]);
+        var val = pipe.transform(0, mapping);
         expect(val).toEqual('No messages.');
       });
 
       it("should return 1 text if value is 1", () => {
-        var val = pipe.transform(1, [mapping]);
+        var val = pipe.transform(1, mapping);
         expect(val).toEqual('One message.');
       });
 
       it("should return other text if value is anything other than 0 or 1", () => {
-        var val = pipe.transform(6, [mapping]);
+        var val = pipe.transform(6, mapping);
         expect(val).toEqual('There are some messages.');
       });
 
       it("should interpolate the value into the text where indicated", () => {
-        var val = pipe.transform(6, [interpolatedMapping]);
+        var val = pipe.transform(6, interpolatedMapping);
         expect(val).toEqual('There are 6 messages, that is 6.');
       });
 
       it("should use 'other' if value is undefined", () => {
         var messageLength;
-        var val = pipe.transform(messageLength, [interpolatedMapping]);
+        var val = pipe.transform(messageLength, interpolatedMapping);
         expect(val).toEqual('There are  messages, that is .');
       });
 
       it("should not support bad arguments",
-         () => { expect(() => pipe.transform(0, ['hey'])).toThrowError(); });
+         () => { expect(() => pipe.transform(0, 'hey')).toThrowError(); });
     });
 
   });

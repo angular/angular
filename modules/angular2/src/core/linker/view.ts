@@ -70,9 +70,6 @@ export abstract class AppView<T> {
   renderParent: AppView<any>;
   viewContainerElement: AppElement = null;
 
-  private _literalArrayCache: any[][];
-  private _literalMapCache: Array<{[key: string]: any}>;
-
   // The names of the below fields must be kept in sync with codegen_name_util.ts or
   // change detection will fail.
   cdState: ChangeDetectorState = ChangeDetectorState.NeverChecked;
@@ -94,16 +91,13 @@ export abstract class AppView<T> {
   constructor(public clazz: any, public componentType: RenderComponentType, public type: ViewType,
               public locals: {[key: string]: any}, public viewUtils: ViewUtils,
               public parentInjector: Injector, public declarationAppElement: AppElement,
-              public cdMode: ChangeDetectionStrategy, literalArrayCacheSize: number,
-              literalMapCacheSize: number) {
+              public cdMode: ChangeDetectionStrategy) {
     this.ref = new ViewRef_(this);
     if (type === ViewType.COMPONENT || type === ViewType.HOST) {
       this.renderer = viewUtils.renderComponent(componentType);
     } else {
       this.renderer = declarationAppElement.parentView.renderer;
     }
-    this._literalArrayCache = ListWrapper.createFixedSize(literalArrayCacheSize);
-    this._literalMapCache = ListWrapper.createFixedSize(literalMapCacheSize);
   }
 
   create(givenProjectableNodes: Array<any | any[]>, rootSelectorOrNode: string | any): AppElement {
@@ -228,6 +222,10 @@ export abstract class AppView<T> {
 
   get changeDetectorRef(): ChangeDetectorRef { return this.ref; }
 
+  get parent(): AppView<any> {
+    return isPresent(this.declarationAppElement) ? this.declarationAppElement.parentView : null;
+  }
+
   get flatRootNodes(): any[] { return flattenNestedViewRenderNodes(this.rootNodesOrAppElements); }
 
   get lastRootNode(): any {
@@ -297,28 +295,6 @@ export abstract class AppView<T> {
     this.viewContainerElement = null;
   }
 
-  literalArray(id: number, value: any[]): any[] {
-    var prevValue = this._literalArrayCache[id];
-    if (isBlank(value)) {
-      return value;
-    }
-    if (isBlank(prevValue) || !arrayLooseIdentical(prevValue, value)) {
-      prevValue = this._literalArrayCache[id] = value;
-    }
-    return prevValue;
-  }
-
-  literalMap(id: number, value: {[key: string]: any}): {[key: string]: any} {
-    var prevValue = this._literalMapCache[id];
-    if (isBlank(value)) {
-      return value;
-    }
-    if (isBlank(prevValue) || !mapLooseIdentical(prevValue, value)) {
-      prevValue = this._literalMapCache[id] = value;
-    }
-    return prevValue;
-  }
-
   markAsCheckOnce(): void { this.cdMode = ChangeDetectionStrategy.CheckOnce; }
 
   markPathToRootAsCheckOnce(): void {
@@ -344,10 +320,9 @@ export class DebugAppView<T> extends AppView<T> {
   constructor(clazz: any, componentType: RenderComponentType, type: ViewType,
               locals: {[key: string]: any}, viewUtils: ViewUtils, parentInjector: Injector,
               declarationAppElement: AppElement, cdMode: ChangeDetectionStrategy,
-              literalArrayCacheSize: number, literalMapCacheSize: number,
               public staticNodeDebugInfos: StaticNodeDebugInfo[]) {
     super(clazz, componentType, type, locals, viewUtils, parentInjector, declarationAppElement,
-          cdMode, literalArrayCacheSize, literalMapCacheSize);
+          cdMode);
   }
 
   create(givenProjectableNodes: Array<any | any[]>, rootSelector: string): AppElement {
