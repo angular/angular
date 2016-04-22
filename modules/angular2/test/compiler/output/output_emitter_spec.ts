@@ -88,7 +88,11 @@ export function main() {
           expect(expressions['concatedArray']).toEqual([0, 1]);
           expect(expressions['invokeMethodExternalInstance'])
               .toEqual({'data': 'someValue', 'param': 'someParam'});
+          expect(expressions['invokeMethodExternalInstanceViaBind'])
+              .toEqual({'data': 'someValue', 'param': 'someParam'});
           expect(expressions['invokeMethodDynamicInstance'])
+              .toEqual({'data': 'someValue', 'dynamicProp': 'dynamicValue', 'param': 'someParam'});
+          expect(expressions['invokeMethodDynamicInstanceViaBind'])
               .toEqual({'data': 'someValue', 'dynamicProp': 'dynamicValue', 'param': 'someParam'});
         });
 
