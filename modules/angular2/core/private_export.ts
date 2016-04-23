@@ -14,6 +14,7 @@ import * as api from './src/render/api';
 import * as template_ref from './src/linker/template_ref';
 import * as wtf_init from './src/profile/wtf_init';
 import * as reflection_capabilities from './src/reflection/reflection_capabilities';
+import * as decorators from './src/util/decorators';
 
 export namespace __core_private__ {
   export var isDefaultChangeDetectionStrategy = constants.isDefaultChangeDetectionStrategy;
@@ -48,4 +49,5 @@ export namespace __core_private__ {
   export var TemplateRef_ = template_ref.TemplateRef_;
   export var wtfInit = wtf_init.wtfInit;
   export var ReflectionCapabilities = reflection_capabilities.ReflectionCapabilities;
+  export var makeDecorator = decorators.makeDecorator;
 }

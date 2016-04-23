@@ -16,20 +16,20 @@ import {Type} from '../../facade/lang';
 import {PromiseWrapper, ObservableWrapper} from '../../facade/async';
 import {ListWrapper} from '../../facade/collection';
 
-import {Router, RootRouter} from 'angular2/src/router/router';
+import {Router, RootRouter} from '../../router/src/router';
 import {SpyLocation} from 'angular2/src/mock/location_mock';
 import {Location} from 'angular2/platform/common';
 
-import {RouteRegistry, ROUTER_PRIMARY_COMPONENT} from 'angular2/src/router/route_registry';
+import {RouteRegistry, ROUTER_PRIMARY_COMPONENT} from '../../router/src/route_registry';
 import {
   RouteConfig,
   AsyncRoute,
   Route,
   Redirect
-} from 'angular2/src/router/route_config/route_config_decorator';
+} from '../../router/src/route_config/route_config_decorator';
 
 import {provide} from 'angular2/core';
-import {RouterOutlet} from 'angular2/src/router/directives/router_outlet';
+import {RouterOutlet} from '../../router/src/directives/router_outlet';
 
 export function main() {
   describe('Router', () => {

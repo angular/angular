@@ -13,14 +13,14 @@ import {
 import {PromiseWrapper} from '../../facade/async';
 import {Type, IS_DART} from '../../facade/lang';
 
-import {RouteRegistry} from 'angular2/src/router/route_registry';
+import {RouteRegistry} from '../../router/src/route_registry';
 import {
   RouteConfig,
   Route,
   Redirect,
   AuxRoute,
   AsyncRoute
-} from 'angular2/src/router/route_config/route_config_decorator';
+} from '../../router/src/route_config/route_config_decorator';
 
 
 export function main() {

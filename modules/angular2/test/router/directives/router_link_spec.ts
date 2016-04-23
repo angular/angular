@@ -31,7 +31,7 @@ import {
 } from 'angular2/router';
 
 import {DOM} from 'angular2/src/platform/dom/dom_adapter';
-import {ResolvedInstruction} from 'angular2/src/router/instruction';
+import {ResolvedInstruction} from '../../../router/src/instruction';
 
 let dummyInstruction = new ResolvedInstruction(
     new ComponentInstruction('detail', [], null, null, true, '0', null, 'Detail'), null, {});

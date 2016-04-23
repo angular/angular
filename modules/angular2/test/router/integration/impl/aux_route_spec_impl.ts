@@ -25,7 +25,7 @@ import {
   Route,
   AuxRoute,
   Redirect
-} from 'angular2/src/router/route_config/route_config_decorator';
+} from '../../../../router/src/route_config/route_config_decorator';
 
 import {specs, compile, clickOnElement, getHref} from '../util';
 import {BaseException} from '../../../../facade/exceptions';

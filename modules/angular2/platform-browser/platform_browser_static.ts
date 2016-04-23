@@ -10,6 +10,7 @@ import {
 
 import {Type, isPresent, isBlank} from './src/facade/lang';
 import {BROWSER_APP_COMMON_PROVIDERS, BROWSER_PROVIDERS, BROWSER_PLATFORM_MARKER} from './browser_common';
+export {BrowserPlatformLocation} from './src/browser/location/browser_platform_location';
 
 export {
   BROWSER_PROVIDERS,

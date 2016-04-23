@@ -1,7 +1,7 @@
 import {ApplicationRef, Provider, NgZone, APP_INITIALIZER} from 'angular2/core';
 import {PlatformLocation} from 'angular2/platform/common';
 import {WebWorkerPlatformLocation} from './platform_location';
-import {ROUTER_PROVIDERS_COMMON} from 'angular2/src/router/router_providers_common';
+import {ROUTER_PROVIDERS_COMMON} from '../../../router/src/router_providers_common';
 
 export var WORKER_APP_ROUTER = [
   ROUTER_PROVIDERS_COMMON,

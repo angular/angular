@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
-import {DOM} from '@angular/platform-dom';
 import {History, Location} from '../../facade/browser';
-import {UrlChangeListener, PlatformLocation} from './platform_location';
+import {UrlChangeListener, PlatformLocation} from 'angular2/common';
+import {DOM} from '../../dom/dom_adapter';
 
 
 

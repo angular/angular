@@ -12,12 +12,12 @@ import {
 
 import {Map, StringMapWrapper} from '../../../facade/collection';
 
-import {RouteMatch, PathMatch, RedirectMatch} from 'angular2/src/router/rules/rules';
-import {RuleSet} from 'angular2/src/router/rules/rule_set';
-import {GeneratedUrl} from 'angular2/src/router/rules/route_paths/route_path';
+import {RouteMatch, PathMatch, RedirectMatch} from '../../../router/src/rules/rules';
+import {RuleSet} from '../../../router/src/rules/rule_set';
+import {GeneratedUrl} from '../../../router/src/rules/route_paths/route_path';
 
-import {Route, Redirect} from 'angular2/src/router/route_config/route_config_decorator';
-import {parser} from 'angular2/src/router/url_parser';
+import {Route, Redirect} from '../../../router/src/route_config/route_config_decorator';
+import {parser} from '../../../router/src/url_parser';
 import {PromiseWrapper} from '../../../facade/promise';
 
 

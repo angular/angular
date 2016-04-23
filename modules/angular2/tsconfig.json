@@ -20,6 +20,7 @@
     "core/index.ts",
     "compiler/index.ts",
     "common/index.ts",
+    "router/index.ts",
     "platform-browser/index.ts",
     "platform-server/index.ts",
 

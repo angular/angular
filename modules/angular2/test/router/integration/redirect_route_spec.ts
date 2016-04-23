@@ -22,7 +22,7 @@ import {
   AuxRoute,
   AsyncRoute,
   Redirect
-} from 'angular2/src/router/route_config/route_config_decorator';
+} from '../../../router/src/route_config/route_config_decorator';
 import {Location} from 'angular2/platform/common';
 
 import {TEST_ROUTER_PROVIDERS, RootCmp, compile} from './util';

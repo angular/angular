@@ -17,7 +17,6 @@ import {Type, isPresent, isBlank, CONST_EXPR} from './src/facade/lang';
 import {BROWSER_APP_COMMON_PROVIDERS, BROWSER_PROVIDERS, BROWSER_PLATFORM_MARKER} from './browser_common';
 import {XHRImpl} from "./src/browser/xhr_impl";
 
-
 export {
   BROWSER_PROVIDERS,
   CACHED_TEMPLATE_PROVIDER,
@@ -126,5 +125,6 @@ export function bootstrap(
 export {
   bootstrapStatic,
   browserStaticPlatform,
-  BROWSER_APP_PROVIDERS
+  BROWSER_APP_PROVIDERS,
+  BrowserPlatformLocation
 } from './platform_browser_static';

@@ -39,11 +39,11 @@ import {
   ROUTER_DIRECTIVES,
   ROUTER_PRIMARY_COMPONENT
 } from 'angular2/router';
-import {RootRouter} from 'angular2/src/router/router';
+import {RootRouter} from '../../../router/src/router';
 
 import {DOM} from 'angular2/src/platform/dom/dom_adapter';
 import {TEMPLATE_TRANSFORMS} from 'angular2/compiler';
-import {RouterLinkTransform} from 'angular2/src/router/directives/router_link_transform';
+import {RouterLinkTransform} from '../../../router/src/directives/router_link_transform';
 
 export function main() {
   describe('routerLink directive', function() {
