@@ -1,5 +1,5 @@
-import {HtmlParser} from 'angular2/src/compiler/html_parser';
-import {ParseSourceSpan, ParseError} from 'angular2/src/compiler/parse_util';
+import {HtmlParser} from '../compiler/html_parser';
+import {ParseSourceSpan, ParseError} from '../compiler/parse_util';
 import {
   HtmlAst,
   HtmlAstVisitor,
@@ -8,10 +8,10 @@ import {
   HtmlTextAst,
   HtmlCommentAst,
   htmlVisitAll
-} from 'angular2/src/compiler/html_ast';
-import {isPresent, isBlank} from '../../facade/lang';
-import {StringMapWrapper} from '../../facade/collection';
-import {Parser} from 'angular2/src/compiler/expression_parser/parser';
+} from '../compiler/html_ast';
+import {isPresent} from '../facade/lang';
+import {StringMapWrapper} from '../facade/collection';
+import {Parser} from '../compiler/expression_parser/parser';
 import {Message, id} from './message';
 import {expandNodes} from './expander';
 import {

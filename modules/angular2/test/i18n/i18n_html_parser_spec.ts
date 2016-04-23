@@ -11,8 +11,8 @@ import {
   xit
 } from 'angular2/testing_internal';
 
-import {I18nHtmlParser} from 'angular2/src/i18n/i18n_html_parser';
-import {Message, id} from 'angular2/src/i18n/message';
+import {I18nHtmlParser} from '../../compiler/src/i18n/i18n_html_parser';
+import {Message, id} from '../../compiler/src/i18n/message';
 import {Parser} from 'angular2/src/compiler/expression_parser/parser';
 import {Lexer} from 'angular2/src/compiler/expression_parser/lexer';
 
@@ -27,7 +27,7 @@ import {
   HtmlCommentAst,
   htmlVisitAll
 } from 'angular2/src/compiler/html_ast';
-import {serializeXmb, deserializeXmb} from 'angular2/src/i18n/xmb_serializer';
+import {serializeXmb, deserializeXmb} from '../../compiler/src/i18n/xmb_serializer';
 import {ParseError, ParseLocation} from 'angular2/src/compiler/parse_util';
 import {humanizeDom} from '../../test/compiler/html_ast_spec_utils';
 

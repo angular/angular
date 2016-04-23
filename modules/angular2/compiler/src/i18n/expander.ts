@@ -8,9 +8,9 @@ import {
   HtmlExpansionAst,
   HtmlExpansionCaseAst,
   htmlVisitAll
-} from 'angular2/src/compiler/html_ast';
+} from '../compiler/html_ast';
 
-import {BaseException} from '../../facade/exceptions';
+import {BaseException} from '../facade/exceptions';
 
 
 /**

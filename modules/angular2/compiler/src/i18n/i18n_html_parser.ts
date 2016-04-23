@@ -1,5 +1,5 @@
-import {HtmlParser, HtmlParseTreeResult} from 'angular2/src/compiler/html_parser';
-import {ParseSourceSpan, ParseError} from 'angular2/src/compiler/parse_util';
+import {HtmlParser, HtmlParseTreeResult} from '../compiler/html_parser';
+import {ParseSourceSpan, ParseError} from '../compiler/parse_util';
 import {
   HtmlAst,
   HtmlAstVisitor,
@@ -10,12 +10,12 @@ import {
   HtmlExpansionAst,
   HtmlExpansionCaseAst,
   htmlVisitAll
-} from 'angular2/src/compiler/html_ast';
-import {ListWrapper, StringMapWrapper} from '../../facade/collection';
-import {RegExpWrapper, NumberWrapper, isPresent} from '../../facade/lang';
-import {BaseException} from '../../facade/exceptions';
-import {Parser} from 'angular2/src/compiler/expression_parser/parser';
-import {Message, id} from './message';
+} from '../compiler/html_ast';
+import {ListWrapper, StringMapWrapper} from '../facade/collection';
+import {RegExpWrapper, NumberWrapper, isPresent} from '../facade/lang';
+import {BaseException} from '../facade/exceptions';
+import {Parser} from '../compiler/expression_parser/parser';
+import {id} from './message';
 import {expandNodes} from './expander';
 import {
   messageFromAttribute,

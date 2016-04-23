@@ -12,8 +12,8 @@ import {
 } from 'angular2/testing_internal';
 
 import {HtmlAst} from 'angular2/src/compiler/html_ast';
-import {Message, id} from 'angular2/src/i18n/message';
-import {serializeXmb, deserializeXmb} from 'angular2/src/i18n/xmb_serializer';
+import {Message, id} from '../../compiler/src/i18n/message';
+import {serializeXmb, deserializeXmb} from '../../compiler/src/i18n/xmb_serializer';
 import {ParseSourceSpan, ParseError} from 'angular2/src/compiler/parse_util';
 
 export function main() {
