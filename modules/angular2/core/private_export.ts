@@ -1,19 +1,19 @@
-import * as constants from './src/core/change_detection/constants';
-import * as reflective_provider from './src/core/di/reflective_provider';
-import * as lifecycle_hooks from './src/core/metadata/lifecycle_hooks';
-import * as reflector_reader from './src/core/reflection/reflector_reader';
-import * as component_resolver from './src/core/linker/component_resolver';
-import * as element from './src/core/linker/element';
-import * as view from './src/core/linker/view';
-import * as view_type from './src/core/linker/view_type';
-import * as view_utils from './src/core/linker/view_utils';
-import * as metadata_view from './src/core/metadata/view';
-import * as debug_context from './src/core/linker/debug_context';
-import * as change_detection_util from './src/core/change_detection/change_detection_util';
-import * as api from './src/core/render/api';
-import * as template_ref from './src/core/linker/template_ref';
-import * as wtf_init from './src/core/profile/wtf_init';
-import * as reflection_capabilities from './src/core/reflection/reflection_capabilities';
+import * as constants from './src/change_detection/constants';
+import * as reflective_provider from './src/di/reflective_provider';
+import * as lifecycle_hooks from './src/metadata/lifecycle_hooks';
+import * as reflector_reader from './src/reflection/reflector_reader';
+import * as component_resolver from './src/linker/component_resolver';
+import * as element from './src/linker/element';
+import * as view from './src/linker/view';
+import * as view_type from './src/linker/view_type';
+import * as view_utils from './src/linker/view_utils';
+import * as metadata_view from './src/metadata/view';
+import * as debug_context from './src/linker/debug_context';
+import * as change_detection_util from './src/change_detection/change_detection_util';
+import * as api from './src/render/api';
+import * as template_ref from './src/linker/template_ref';
+import * as wtf_init from './src/profile/wtf_init';
+import * as reflection_capabilities from './src/reflection/reflection_capabilities';
 
 export namespace __core_private__ {
   export var isDefaultChangeDetectionStrategy = constants.isDefaultChangeDetectionStrategy;

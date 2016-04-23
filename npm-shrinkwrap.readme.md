@@ -16,7 +16,7 @@ To add a new dependency do the following:
    to get good performance from file watching.
 2. make sure you are in sync with `upstream/master`
 3. ensure that your `node_modules` directory is not stale by running `npm install`
-4. add a new dependency via `npm install --save-dev <packagename>`
+4. add a new dependency via `npm install --save-dev <packagename>`bx
 5. run `./tools/npm/reshrinkwrap`
 6. these steps should change 3 files: `package.json`, `npm-shrinkwrap.json` and `npm-shrinkwrap.clean.json`
 7. commit changes to these three files and you are done

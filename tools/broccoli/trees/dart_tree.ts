@@ -63,11 +63,12 @@ function stripModulePrefix(relativePath: string): string {
 }
 
 function getSourceTree(options: AngularBuilderOptions) {
-  var tsInputTree = modulesFunnel(['**/*.js', '**/*.ts', '**/*.dart'], ['angular1_router/**/*']);
+  var tsInputTree = modulesFunnel(['angular2/tsconfig.json', '**/*.js', '**/*.ts', '**/*.dart'], ['angular1_router/**/*']);
   var transpiled = ts2dart(tsInputTree, {
     generateLibraryName: true,
     generateSourceMap: false,
     translateBuiltins: true,
+    tsconfig: 'angular2/tsconfig.json'
   });
 
   // Native sources, dart only examples, etc.
