@@ -5,10 +5,10 @@ import {
   GetTestability,
   setTestabilityGetter
 } from 'angular2/core';
-import {DOM} from 'angular2/platform-dom';
 
 import {ListWrapper} from '../facade/collection';
 import {global, isPresent} from '../facade/lang';
+import {DOM} from "../dom/dom_adapter";
 
 
 

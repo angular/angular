@@ -9,16 +9,14 @@ import {
 } from 'angular2/core';
 
 import {Type, isPresent, isBlank} from './src/facade/lang';
+import {BROWSER_APP_COMMON_PROVIDERS, BROWSER_PROVIDERS, BROWSER_PLATFORM_MARKER} from './browser_common';
 
 export {
   BROWSER_PROVIDERS,
-  BrowserDomAdapter,
   By,
   Title,
   enableDebugTools,
   disableDebugTools,
-  BROWSER_APP_COMMON_PROVIDERS,
-  BROWSER_PLATFORM_MARKER
 } from './browser_common';
 
 /**

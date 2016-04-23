@@ -14,23 +14,6 @@ import {
 import {XHR} from 'angular2/compiler';
 import {COMMON_DIRECTIVES, COMMON_PIPES, FORM_PROVIDERS} from "angular2/common";
 
-// import {
-//   DOM,
-//   DomEventsPlugin,
-//   KeyEventsPlugin,
-//   HammerGesturesPlugin,
-//   DOCUMENT,
-//   DomRootRenderer,
-//   DomSharedStylesHost,
-//   SharedStylesHost,
-//   EventManager,
-//   EVENT_MANAGER_PLUGINS,
-//   HAMMER_GESTURE_CONFIG,
-//   HammerGestureConfig,
-//   ELEMENT_PROBE_PROVIDERS,
-//   DomRootRenderer_,
-// } from 'angular2/platform-dom';
-
 import {CONST_EXPR, IS_DART} from './src/facade/lang';
 
 import {BrowserDomAdapter} from './src/browser/browser_adapter';
@@ -54,6 +37,7 @@ import {DomSharedStylesHost} from './src/dom/shared_styles_host';
 export {Title} from './src/browser/title';
 export {BrowserDomAdapter} from './src/browser/browser_adapter';
 export {enableDebugTools, disableDebugTools} from './src/browser/tools/tools';
+export {By} from './src/dom/debug/by';
 
 export const BROWSER_PLATFORM_MARKER = CONST_EXPR(new OpaqueToken('BrowserPlatformMarker'));
 

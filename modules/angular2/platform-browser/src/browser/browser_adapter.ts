@@ -1,8 +1,8 @@
-import {setRootDomAdapter} from 'angular2/platform-dom';
 import {ListWrapper} from '../facade/collection';
 import {isBlank, isPresent, global, setValueOnPath, DateWrapper} from '../facade/lang';
 
 import {GenericBrowserDomAdapter} from './generic_browser_adapter';
+import {setRootDomAdapter} from "../dom/dom_adapter";
 
 var _attrToPropMap = {
   'class': 'className',

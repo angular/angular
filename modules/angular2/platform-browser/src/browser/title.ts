@@ -1,5 +1,4 @@
-import {DOM} from 'angular2/platform-dom';
-
+import {DOM} from "../dom/dom_adapter";
 /**
  * A service that can be used to get and set the title of a current HTML document.
  *

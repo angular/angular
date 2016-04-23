@@ -12,7 +12,7 @@
     },
     "rootDir": ".",
     "sourceMap": true,
-    "sourceRoot": ".",
+    "sourceRoot": "",
     "target": "es2015"
   },
   "files": [

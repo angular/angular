@@ -1,8 +1,7 @@
-import {DomAdapter} from 'angular2/platform-dom';
-
 import {StringMapWrapper} from '../facade/collection';
 import {isPresent, isFunction, Type} from '../facade/lang';
 import {XHRImpl} from './xhr_impl';
+import {DomAdapter} from "../dom/dom_adapter";
 
 
 /**

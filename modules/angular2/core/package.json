@@ -1,0 +1,15 @@
+{
+  "name": "@igorminar/core",
+  "version": "0.0.0",
+  "description": "",
+  "main": "core.js",
+  "jsnext:main": "esm/core.js",
+  "author": "angular",
+  "license": "MIT",
+
+  "peerDependencies": {
+    "reflect-metadata": "^0.1.2",
+    "rxjs": "5.0.0-beta.2",
+    "zone.js": "^0.6.6"
+  }
+}

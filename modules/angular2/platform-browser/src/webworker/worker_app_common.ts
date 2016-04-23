@@ -1,7 +1,7 @@
-import {XHR} from 'angular2/src/compiler/xhr';
+import {XHR} from 'angular2/compiler';
 import {WebWorkerXHRImpl} from 'angular2/src/web_workers/worker/xhr_impl';
 import {WebWorkerRootRenderer} from 'angular2/src/web_workers/worker/renderer';
-import {print, Type, CONST_EXPR, isPresent} from 'angular2/src/facade/lang';
+import {print, CONST_EXPR} from 'angular2/src/facade/lang';
 import {RootRenderer} from 'angular2/src/core/render/api';
 import {
   PLATFORM_DIRECTIVES,

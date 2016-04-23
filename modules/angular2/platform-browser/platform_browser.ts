@@ -14,24 +14,23 @@ import {COMPILER_PROVIDERS, XHR} from 'angular2/compiler';
 
 import {Type, isPresent, isBlank, CONST_EXPR} from './src/facade/lang';
 
+import {BROWSER_APP_COMMON_PROVIDERS, BROWSER_PROVIDERS, BROWSER_PLATFORM_MARKER} from './browser_common';
+import {XHRImpl} from "./src/browser/xhr_impl";
+
+
 export {
   BROWSER_PROVIDERS,
   CACHED_TEMPLATE_PROVIDER,
-  BrowserDomAdapter,
   Title,
   enableDebugTools,
-  disableDebugTools,
-  BROWSER_APP_COMMON_PROVIDERS,
-  BROWSER_PLATFORM_MARKER
+  disableDebugTools
 } from './browser_common';
-import {XHRImpl} from "./src/browser/xhr_impl";
-
 
 
 /**
  * An array of providers that should be passed into `application()` when bootstrapping a component.
  */
-export const BROWSER_APP_PROVIDERS: Array<any /*Type | Provider | any[]*/> = CONST_EXPR([
+export const BROWSER_APP_PROVIDERS_WITH_COMPILER: Array<any /*Type | Provider | any[]*/> = CONST_EXPR([
   BROWSER_APP_COMMON_PROVIDERS,
   COMPILER_PROVIDERS,
   new Provider(XHR, {useClass: XHRImpl}),
@@ -117,10 +116,14 @@ export function bootstrap(
     customProviders?: Array<any /*Type | Provider | any[]*/>): Promise<ComponentRef> {
   reflector.reflectionCapabilities = new ReflectionCapabilities();
   var appInjector = ReflectiveInjector.resolveAndCreate(
-      [BROWSER_APP_PROVIDERS, isPresent(customProviders) ? customProviders : []],
+      [BROWSER_APP_PROVIDERS_WITH_COMPILER, isPresent(customProviders) ? customProviders : []],
       browserPlatform().injector);
   return coreLoadAndBootstrap(appInjector, appComponentType);
 }
 
 
-export {bootstrapStatic} from './platform_browser_offline_compile';
+export {
+  bootstrapStatic,
+  browserStaticPlatform,
+  BROWSER_APP_PROVIDERS
+} from './platform_browser_static';
