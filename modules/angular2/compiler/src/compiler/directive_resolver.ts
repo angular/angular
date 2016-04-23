@@ -11,9 +11,9 @@ import {
   ViewChildrenMetadata,
   ContentChildMetadata,
   ViewChildMetadata,
-  reflector,
-  _ReflectorReader as ReflectorReader
+  reflector
   } from 'angular2/core';
+import {ReflectorReader} from "../../core_private";
 
 import {Type, isPresent, stringify} from '../facade/lang';
 import {BaseException} from '../facade/exceptions';

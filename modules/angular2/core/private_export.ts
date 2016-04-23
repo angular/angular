@@ -17,15 +17,20 @@ import * as reflection_capabilities from './src/core/reflection/reflection_capab
 
 export namespace __core_private__ {
   export var isDefaultChangeDetectionStrategy = constants.isDefaultChangeDetectionStrategy;
+  export type ChangeDetectorState = constants.ChangeDetectorState;
   export var ChangeDetectorState = constants.ChangeDetectorState;
   export var CHANGE_DETECTION_STRATEGY_VALUES = constants.CHANGE_DETECTION_STRATEGY_VALUES;
   export var constructDependencies = reflective_provider.constructDependencies;
+  export type LifecycleHooks = lifecycle_hooks.LifecycleHooks;
   export var LifecycleHooks = lifecycle_hooks.LifecycleHooks;
   export var LIFECYCLE_HOOKS_VALUES = lifecycle_hooks.LIFECYCLE_HOOKS_VALUES;
+  export type ReflectorReader = reflector_reader.ReflectorReader;
   export var ReflectorReader = reflector_reader.ReflectorReader;
   export var ReflectorComponentResolver = component_resolver.ReflectorComponentResolver;
+  export type AppElement = element.AppElement;
   export var AppElement = element.AppElement;
   export var AppView = view.AppView;
+  export type ViewType = view_type.ViewType;
   export var ViewType = view_type.ViewType;
   export var MAX_INTERPOLATION_VALUES = view_utils.MAX_INTERPOLATION_VALUES;
   export var checkBinding = view_utils.checkBinding;
@@ -38,6 +43,7 @@ export namespace __core_private__ {
   export var devModeEqual = change_detection_util.devModeEqual;
   export var uninitialized = change_detection_util.uninitialized;
   export var ValueUnwrapper = change_detection_util.ValueUnwrapper;
+  export type RenderDebugInfo = api.RenderDebugInfo;
   export var RenderDebugInfo = api.RenderDebugInfo;
   export var TemplateRef_ = template_ref.TemplateRef_;
   export var wtfInit = wtf_init.wtfInit;

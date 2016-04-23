@@ -1,15 +1,20 @@
 import {__core_private__} from 'angular2/core';
 
 export var isDefaultChangeDetectionStrategy: typeof __core_private__.isDefaultChangeDetectionStrategy = __core_private__.isDefaultChangeDetectionStrategy;
+export type ChangeDetectorState = __core_private__.ChangeDetectorState;
 export var ChangeDetectorState: typeof __core_private__.ChangeDetectorState = __core_private__.ChangeDetectorState;
 export var CHANGE_DETECTION_STRATEGY_VALUES: typeof __core_private__.CHANGE_DETECTION_STRATEGY_VALUES = __core_private__.CHANGE_DETECTION_STRATEGY_VALUES;
 export var constructDependencies: typeof __core_private__.constructDependencies = __core_private__.constructDependencies;
+export type LifecycleHooks = __core_private__.LifecycleHooks;
 export var LifecycleHooks: typeof __core_private__.LifecycleHooks = __core_private__.LifecycleHooks;
 export var LIFECYCLE_HOOKS_VALUES: typeof __core_private__.LIFECYCLE_HOOKS_VALUES = __core_private__.LIFECYCLE_HOOKS_VALUES;
+export type ReflectorReader = __core_private__.ReflectorReader;
 export var ReflectorReader: typeof __core_private__.ReflectorReader = __core_private__.ReflectorReader;
 export var ReflectorComponentResolver: typeof __core_private__.ReflectorComponentResolver = __core_private__.ReflectorComponentResolver;
+export type AppElement = __core_private__.AppElement;
 export var AppElement: typeof __core_private__.AppElement = __core_private__.AppElement;
 export var AppView: typeof __core_private__.AppView = __core_private__.AppView;
+export type ViewType = __core_private__.ViewType;
 export var ViewType: typeof __core_private__.ViewType = __core_private__.ViewType;
 export var MAX_INTERPOLATION_VALUES: typeof __core_private__.MAX_INTERPOLATION_VALUES = __core_private__.MAX_INTERPOLATION_VALUES;
 export var checkBinding: typeof __core_private__.checkBinding = __core_private__.checkBinding;
@@ -23,4 +28,5 @@ export var devModeEqual: typeof __core_private__.devModeEqual = __core_private__
 export var uninitialized: typeof __core_private__.uninitialized = __core_private__.uninitialized;
 export var ValueUnwrapper: typeof __core_private__.ValueUnwrapper = __core_private__.ValueUnwrapper;
 export var TemplateRef_: typeof __core_private__.TemplateRef_ = __core_private__.TemplateRef_;
+export type RenderDebugInfo = __core_private__.RenderDebugInfo;
 export var RenderDebugInfo: typeof __core_private__.RenderDebugInfo = __core_private__.RenderDebugInfo;
