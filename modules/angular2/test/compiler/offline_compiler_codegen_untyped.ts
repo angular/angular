@@ -1,5 +1,5 @@
 // ATTENTION: This file will be overwritten with generated code by main()
-import {print} from 'angular2/src/facade/lang';
+import {print} from '../../facade/lang';
 import {JavaScriptEmitter} from 'angular2/src/compiler/output/js_emitter';
 import {compileComp, compAMetadata} from './offline_compiler_util';
 import {ComponentFactory} from 'angular2/src/core/linker/component_factory';

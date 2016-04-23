@@ -1,5 +1,5 @@
 import {Injectable} from 'angular2/src/core/di';
-import {EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
+import {EventEmitter, ObservableWrapper} from '../../facade/async';
 import {LocationStrategy} from 'angular2/platform/common';
 
 

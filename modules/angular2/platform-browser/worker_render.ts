@@ -1,5 +1,5 @@
-import {isPresent, isBlank} from 'angular2/src/facade/lang';
-import {PromiseWrapper} from 'angular2/src/facade/async';
+import {isPresent, isBlank} from '../facade/lang';
+import {PromiseWrapper} from '../facade/async';
 import {
   ApplicationRef,
   PlatformRef,

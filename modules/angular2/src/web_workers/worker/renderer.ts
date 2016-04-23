@@ -10,15 +10,15 @@ import {
   FnArg,
   UiArguments
 } from "angular2/src/web_workers/shared/client_message_broker";
-import {isPresent, isBlank, print} from "angular2/src/facade/lang";
-import {ListWrapper} from 'angular2/src/facade/collection';
+import {isPresent, isBlank, print} from "../../../facade/lang";
+import {ListWrapper} from '../../../facade/collection';
 import {Injectable} from "angular2/src/core/di";
 import {RenderStore} from 'angular2/src/web_workers/shared/render_store';
 import {RENDERER_CHANNEL} from 'angular2/src/web_workers/shared/messaging_api';
 import {Serializer, RenderStoreObject} from 'angular2/src/web_workers/shared/serializer';
 import {EVENT_CHANNEL} from 'angular2/src/web_workers/shared/messaging_api';
 import {MessageBus} from 'angular2/src/web_workers/shared/message_bus';
-import {EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
+import {EventEmitter, ObservableWrapper} from '../../../facade/async';
 import {ViewEncapsulation} from 'angular2/src/core/metadata/view';
 import {deserializeGenericEvent} from './event_deserializer';
 

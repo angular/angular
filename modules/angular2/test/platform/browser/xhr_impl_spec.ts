@@ -11,8 +11,8 @@ import {
 } from 'angular2/testing_internal';
 
 import {XHRImpl} from 'angular2/src/platform/browser/xhr_impl';
-import {PromiseWrapper} from 'angular2/src/facade/async';
-import {IS_DART} from 'angular2/src/facade/lang';
+import {PromiseWrapper} from '../../../facade/async';
+import {IS_DART} from '../../../facade/lang';
 
 export function main() {
   describe('XHRImpl', () => {

@@ -28,7 +28,7 @@ import {
 } from 'angular2/src/router/route_config/route_config_decorator';
 
 import {specs, compile, clickOnElement, getHref} from '../util';
-import {BaseException} from 'angular2/src/facade/exceptions';
+import {BaseException} from '../../../../facade/exceptions';
 
 function getLinkElement(rtc: ComponentFixture, linkIndex: number = 0) {
   return rtc.debugElement.queryAll(By.css('a'))[linkIndex].nativeElement;

@@ -1,7 +1,7 @@
 import {Injectable} from 'angular2/core';
-import {ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
+import {ListWrapper, MapWrapper} from '../../facade/collection';
 import {DOM} from 'angular2/src/platform/dom/dom_adapter';
-import {isPresent, isString, RegExpWrapper, StringWrapper, RegExp} from 'angular2/src/facade/lang';
+import {isPresent, isString, RegExpWrapper, StringWrapper, RegExp} from '../../facade/lang';
 
 @Injectable()
 export class Log {

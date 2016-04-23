@@ -14,7 +14,7 @@ import {
   el
 } from 'angular2/testing_internal';
 
-import {IS_DART} from 'angular2/src/facade/lang';
+import {IS_DART} from '../../facade/lang';
 import {Injector} from 'angular2/core';
 import {DebugNode, DebugElement, getDebugNode} from 'angular2/src/core/debug/debug_node';
 

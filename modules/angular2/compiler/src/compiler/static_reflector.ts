@@ -1,4 +1,4 @@
-import {ListWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
+import {ListWrapper, StringMapWrapper} from '../../../facade/collection';
 import {
   isArray,
   isBlank,
@@ -7,7 +7,7 @@ import {
   isPrimitive,
   isString,
   Type
-} from 'angular2/src/facade/lang';
+} from '../../../facade/lang';
 import {
   AttributeMetadata,
   DirectiveMetadata,

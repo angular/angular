@@ -11,7 +11,7 @@ import {
   xit
 } from 'angular2/testing_internal';
 
-import {IS_DART} from 'angular2/src/facade/lang';
+import {IS_DART} from '../../facade/lang';
 import {getSymbolsFromLibrary} from './symbol_inspector';
 
 export function main() {

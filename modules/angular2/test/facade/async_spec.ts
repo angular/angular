@@ -19,7 +19,7 @@ import {
   Subject,
   EventEmitter,
   PromiseWrapper
-} from 'angular2/src/facade/async';
+} from '../../facade/async';
 
 export function main() {
   describe('EventEmitter', () => {

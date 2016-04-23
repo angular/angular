@@ -11,9 +11,9 @@ import {
 } from 'angular2/core';
 import {DirectiveResolver, ViewResolver} from 'angular2/compiler';
 
-import {Type, isPresent, isBlank} from 'angular2/src/facade/lang';
-import {PromiseWrapper} from 'angular2/src/facade/async';
-import {ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
+import {Type, isPresent, isBlank} from '../../facade/lang';
+import {PromiseWrapper} from '../../facade/async';
+import {ListWrapper, MapWrapper} from '../../facade/collection';
 
 import {el} from './utils';
 

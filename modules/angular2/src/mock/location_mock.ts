@@ -1,6 +1,6 @@
 import {Injectable} from 'angular2/src/core/di';
-import {EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
-import {ListWrapper} from 'angular2/src/facade/collection';
+import {EventEmitter, ObservableWrapper} from '../../facade/async';
+import {ListWrapper} from '../../facade/collection';
 import {Location} from 'angular2/platform/common';
 
 /**

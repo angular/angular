@@ -8,12 +8,12 @@ import {
 import {PlatformLocation, UrlChangeEvent, UrlChangeListener} from 'angular2/platform/common';
 import {ROUTER_CHANNEL} from 'angular2/src/web_workers/shared/messaging_api';
 import {LocationType} from 'angular2/src/web_workers/shared/serialized_types';
-import {PromiseWrapper, EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
-import {BaseException} from 'angular2/src/facade/exceptions';
+import {PromiseWrapper, EventEmitter, ObservableWrapper} from '../../../facade/async';
+import {BaseException} from '../../../facade/exceptions';
 import {PRIMITIVE, Serializer} from 'angular2/src/web_workers/shared/serializer';
 import {MessageBus} from 'angular2/src/web_workers/shared/message_bus';
-import {StringMapWrapper} from 'angular2/src/facade/collection';
-import {StringWrapper} from 'angular2/src/facade/lang';
+import {StringMapWrapper} from '../../../facade/collection';
+import {StringWrapper} from '../../../facade/lang';
 import {deserializeGenericEvent} from './event_deserializer';
 
 @Injectable()

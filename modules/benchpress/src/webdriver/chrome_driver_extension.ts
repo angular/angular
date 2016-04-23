@@ -1,5 +1,5 @@
 import {bind, provide, Provider} from 'angular2/src/core/di';
-import {ListWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
+import {ListWrapper, StringMapWrapper} from '../../../angular2/facade/collection';
 import {
   Json,
   isPresent,
@@ -7,8 +7,8 @@ import {
   RegExpWrapper,
   StringWrapper,
   NumberWrapper
-} from 'angular2/src/facade/lang';
-import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
+} from '../../../angular2/facade/lang';
+import {BaseException, WrappedException} from '../../../angular2/facade/exceptions';
 
 import {WebDriverExtension, PerfLogFeatures} from '../web_driver_extension';
 import {WebDriverAdapter} from '../web_driver_adapter';

@@ -9,7 +9,7 @@ import {
   el,
   inject
 } from 'angular2/testing_internal';
-import {IS_DART} from 'angular2/src/facade/lang';
+import {IS_DART} from '../../facade/lang';
 import {UrlResolver, createOfflineCompileUrlResolver} from 'angular2/src/compiler/url_resolver';
 
 export function main() {

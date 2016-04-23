@@ -4,7 +4,7 @@ import {
   BrowserPlatformLocation
 } from 'angular2/src/platform/browser/location/browser_platform_location';
 import {PlatformLocation} from 'angular2/platform/common';
-import {CONST_EXPR} from 'angular2/src/facade/lang';
+import {CONST_EXPR} from '../../facade/lang';
 
 /**
  * A list of {@link Provider}s. To use the router, you must add this to your application.

@@ -1,9 +1,9 @@
 import {Injectable} from 'angular2/src/core/di';
-import {ListWrapper, Map, MapWrapper} from 'angular2/src/facade/collection';
+import {ListWrapper, Map, MapWrapper} from '../../../facade/collection';
 import {Serializer} from "angular2/src/web_workers/shared/serializer";
-import {isPresent, Type, FunctionWrapper} from "angular2/src/facade/lang";
+import {isPresent, Type, FunctionWrapper} from "../../../facade/lang";
 import {MessageBus} from "angular2/src/web_workers/shared/message_bus";
-import {EventEmitter, PromiseWrapper, ObservableWrapper} from 'angular2/src/facade/async';
+import {EventEmitter, PromiseWrapper, ObservableWrapper} from '../../../facade/async';
 
 export abstract class ServiceMessageBrokerFactory {
   /**

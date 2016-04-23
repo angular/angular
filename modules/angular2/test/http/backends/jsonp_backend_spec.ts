@@ -11,23 +11,23 @@ import {
   xit,
   SpyObject
 } from 'angular2/testing_internal';
-import {ObservableWrapper} from 'angular2/src/facade/async';
-import {BrowserJsonp} from 'angular2/src/http/backends/browser_jsonp';
+import {ObservableWrapper} from '../../../facade/async';
+import {BrowserJsonp} from '../../../http/src/backends/browser_jsonp';
 import {
   JSONPConnection,
   JSONPConnection_,
   JSONPBackend,
   JSONPBackend_
-} from 'angular2/src/http/backends/jsonp_backend';
+} from '../../../http/src/backends/jsonp_backend';
 import {provide, Injector, ReflectiveInjector} from 'angular2/core';
-import {isPresent, StringWrapper} from 'angular2/src/facade/lang';
-import {TimerWrapper} from 'angular2/src/facade/async';
-import {Request} from 'angular2/src/http/static_request';
-import {Response} from 'angular2/src/http/static_response';
-import {Map} from 'angular2/src/facade/collection';
-import {RequestOptions, BaseRequestOptions} from 'angular2/src/http/base_request_options';
-import {BaseResponseOptions, ResponseOptions} from 'angular2/src/http/base_response_options';
-import {ResponseType, ReadyState, RequestMethod} from 'angular2/src/http/enums';
+import {isPresent, StringWrapper} from '../../../facade/lang';
+import {TimerWrapper} from '../../../facade/async';
+import {Request} from '../../../http/src/static_request';
+import {Response} from '../../../http/src/static_response';
+import {Map} from '../../../facade/collection';
+import {RequestOptions, BaseRequestOptions} from '../../../http/src/base_request_options';
+import {BaseResponseOptions, ResponseOptions} from '../../../http/src/base_response_options';
+import {ResponseType, ReadyState, RequestMethod} from '../../../http/src/enums';
 
 var addEventListenerSpy: any;
 var existingScripts: MockBrowserJsonp[] = [];

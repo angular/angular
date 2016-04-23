@@ -33,14 +33,14 @@ import {
   isBlank,
   CONST,
   CONST_EXPR
-} from 'angular2/src/facade/lang';
-import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
+} from '../../../facade/lang';
+import {BaseException, WrappedException} from '../../../facade/exceptions';
 import {
   PromiseWrapper,
   EventEmitter,
   ObservableWrapper,
   PromiseCompleter,
-} from 'angular2/src/facade/async';
+} from '../../../facade/async';
 
 import {
   Injector,
@@ -93,7 +93,7 @@ import {ElementRef} from 'angular2/src/core/linker/element_ref';
 import {TemplateRef} from 'angular2/src/core/linker/template_ref';
 
 import {Renderer} from 'angular2/src/core/render';
-import {IS_DART} from 'angular2/src/facade/lang';
+import {IS_DART} from '../../../facade/lang';
 
 const ANCHOR_ELEMENT = CONST_EXPR(new OpaqueToken('AnchorElement'));
 

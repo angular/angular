@@ -11,8 +11,8 @@ import {
   xit,
 } from 'angular2/testing_internal';
 
-import {DateWrapper, Json, RegExpWrapper, isPresent} from 'angular2/src/facade/lang';
-import {PromiseWrapper} from 'angular2/src/facade/async';
+import {DateWrapper, Json, RegExpWrapper, isPresent} from '../../../angular2/facade/lang';
+import {PromiseWrapper} from '../../../angular2/facade/async';
 
 import {
   bind,

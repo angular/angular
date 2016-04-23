@@ -11,7 +11,7 @@ import {
 } from 'angular2/common';
 import {Component, Directive, Host} from 'angular2/core';
 
-import {RegExpWrapper, print, isPresent} from 'angular2/src/facade/lang';
+import {RegExpWrapper, print, isPresent} from '../../../angular2/facade/lang';
 import {AbstractControl} from 'angular2/common';
 
 /**

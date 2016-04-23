@@ -1,6 +1,6 @@
-import {Map, MapWrapper, StringMapWrapper, ListWrapper} from 'angular2/src/facade/collection';
-import {isPresent, isBlank, normalizeBlank, Type, CONST_EXPR} from 'angular2/src/facade/lang';
-import {PromiseWrapper} from 'angular2/src/facade/async';
+import {Map, MapWrapper, StringMapWrapper, ListWrapper} from '../../facade/collection';
+import {isPresent, isBlank, normalizeBlank, Type, CONST_EXPR} from '../../facade/lang';
+import {PromiseWrapper} from '../../facade/async';
 
 
 /**

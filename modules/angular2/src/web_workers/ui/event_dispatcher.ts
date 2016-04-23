@@ -6,9 +6,9 @@ import {
   serializeEventWithTarget,
   serializeTransitionEvent
 } from 'angular2/src/web_workers/ui/event_serializer';
-import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
-import {StringMapWrapper} from 'angular2/src/facade/collection';
-import {EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
+import {BaseException, WrappedException} from '../../../facade/exceptions';
+import {StringMapWrapper} from '../../../facade/collection';
+import {EventEmitter, ObservableWrapper} from '../../../facade/async';
 
 export class EventDispatcher {
   constructor(private _sink: EventEmitter<any>, private _serializer: Serializer) {}

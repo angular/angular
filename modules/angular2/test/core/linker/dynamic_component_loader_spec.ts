@@ -16,15 +16,15 @@ import {
   ComponentFixture
 } from 'angular2/testing_internal';
 
-import {Predicate} from 'angular2/src/facade/collection';
+import {Predicate} from '../../../facade/collection';
 import {Injector, OnDestroy, DebugElement, Type, ViewContainerRef, ViewChild} from 'angular2/core';
 import {Component, ViewMetadata} from 'angular2/src/core/metadata';
 import {DynamicComponentLoader} from 'angular2/src/core/linker/dynamic_component_loader';
 import {ElementRef} from 'angular2/src/core/linker/element_ref';
 import {DOCUMENT} from 'angular2/src/platform/dom/dom_tokens';
 import {DOM} from 'angular2/src/platform/dom/dom_adapter';
-import {BaseException} from 'angular2/src/facade/exceptions';
-import {PromiseWrapper} from 'angular2/src/facade/promise';
+import {BaseException} from '../../../facade/exceptions';
+import {PromiseWrapper} from '../../../facade/promise';
 
 export function main() {
   describe('DynamicComponentLoader', function() {

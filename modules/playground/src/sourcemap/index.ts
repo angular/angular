@@ -1,4 +1,4 @@
-import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
+import {BaseException, WrappedException} from '../../../angular2/facade/exceptions';
 import {bootstrap} from 'angular2/platform/browser';
 import {Component} from 'angular2/core';
 

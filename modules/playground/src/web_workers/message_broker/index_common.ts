@@ -1,4 +1,4 @@
-import {PromiseWrapper} from "angular2/src/facade/async";
+import {PromiseWrapper} from "../../../../angular2/facade/async";
 import {Component} from "angular2/core";
 import {ServiceMessageBrokerFactory, PRIMITIVE} from "angular2/platform/worker_app";
 

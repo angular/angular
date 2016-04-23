@@ -1,6 +1,6 @@
 import {Injectable} from 'angular2/src/core/di';
-import {Map, MapWrapper, ListWrapper} from 'angular2/src/facade/collection';
-import {Type, isPresent, stringify, isBlank, print} from 'angular2/src/facade/lang';
+import {Map, MapWrapper, ListWrapper} from '../../facade/collection';
+import {Type, isPresent, stringify, isBlank, print} from '../../facade/lang';
 import {DirectiveMetadata, ComponentMetadata} from '../core/metadata';
 import {DirectiveResolver} from 'angular2/src/compiler/directive_resolver';
 

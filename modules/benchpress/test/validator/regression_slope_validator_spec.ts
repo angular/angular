@@ -8,8 +8,8 @@ import {
   beforeEach,
   afterEach
 } from 'angular2/testing_internal';
-import {Date, DateWrapper} from 'angular2/src/facade/lang';
-import {ListWrapper} from 'angular2/src/facade/collection';
+import {Date, DateWrapper} from '../../../angular2/facade/lang';
+import {ListWrapper} from '../../../angular2/facade/collection';
 
 import {
   Validator,

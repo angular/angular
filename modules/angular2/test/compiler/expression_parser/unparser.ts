@@ -24,7 +24,7 @@ import {
 } from 'angular2/src/compiler/expression_parser/ast';
 
 
-import {StringWrapper, isPresent, isString} from 'angular2/src/facade/lang';
+import {StringWrapper, isPresent, isString} from '../../../facade/lang';
 
 export class Unparser implements AstVisitor {
   private static _quoteRegExp = /"/g;

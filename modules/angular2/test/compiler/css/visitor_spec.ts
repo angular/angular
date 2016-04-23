@@ -9,8 +9,8 @@ import {
   afterEach
 } from 'angular2/testing_internal';
 
-import {NumberWrapper, StringWrapper, isPresent} from "angular2/src/facade/lang";
-import {BaseException} from 'angular2/src/facade/exceptions';
+import {NumberWrapper, StringWrapper, isPresent} from "../../../facade/lang";
+import {BaseException} from '../../../facade/exceptions';
 
 import {
   CssToken,

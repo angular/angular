@@ -1,5 +1,5 @@
 import {bind, provide, Provider} from 'angular2/src/core/di';
-import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
+import {BaseException, WrappedException} from '../../angular2/facade/exceptions';
 
 import {MeasureValues} from './measure_values';
 

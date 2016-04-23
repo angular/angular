@@ -9,7 +9,7 @@ import {
 } from 'angular2/testing_internal';
 import {SpyMessageBroker} from './spies';
 import {WebWorkerXHRImpl} from "angular2/src/web_workers/worker/xhr_impl";
-import {PromiseWrapper} from "angular2/src/facade/async";
+import {PromiseWrapper} from "../../../facade/async";
 import {MockMessageBrokerFactory, expectBrokerCall} from "../shared/web_worker_test_util";
 
 export function main() {

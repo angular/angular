@@ -13,7 +13,7 @@ import {
 } from 'angular2/testing_internal';
 import {SpyChangeDetectorRef} from '../spies';
 
-import {isBlank} from 'angular2/src/facade/lang';
+import {isBlank} from '../../../facade/lang';
 import {AsyncPipe} from 'angular2/common';
 import {WrappedValue} from 'angular2/core';
 import {
@@ -21,9 +21,9 @@ import {
   ObservableWrapper,
   PromiseWrapper,
   TimerWrapper
-} from 'angular2/src/facade/async';
+} from '../../../facade/async';
 import {DOM} from 'angular2/src/platform/dom/dom_adapter';
-import {PromiseCompleter} from 'angular2/src/facade/promise';
+import {PromiseCompleter} from '../../../facade/promise';
 
 export function main() {
   describe("AsyncPipe", () => {

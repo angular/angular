@@ -1,7 +1,7 @@
 import {bootstrap} from 'angular2/platform/browser';
 import {Component} from 'angular2/core';
 import {NgIf} from 'angular2/common';
-import {TimerWrapper} from 'angular2/src/facade/async';
+import {TimerWrapper} from '../../../angular2/facade/async';
 
 @Component({
   selector: 'async-app',

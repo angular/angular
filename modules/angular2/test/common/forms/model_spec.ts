@@ -14,9 +14,9 @@ import {
   inject
 } from 'angular2/testing_internal';
 import {ControlGroup, Control, ControlArray, Validators} from 'angular2/common';
-import {IS_DART, isPresent, CONST_EXPR} from 'angular2/src/facade/lang';
-import {PromiseWrapper} from 'angular2/src/facade/promise';
-import {TimerWrapper, ObservableWrapper, EventEmitter} from 'angular2/src/facade/async';
+import {IS_DART, isPresent, CONST_EXPR} from '../../../facade/lang';
+import {PromiseWrapper} from '../../../facade/promise';
+import {TimerWrapper, ObservableWrapper, EventEmitter} from '../../../facade/async';
 
 export function main() {
   function asyncValidator(expected, timeouts = CONST_EXPR({})) {

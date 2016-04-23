@@ -16,7 +16,7 @@ import {
   tick,
   xit
 } from 'angular2/testing_internal';
-import {BaseException} from 'angular2/src/facade/exceptions';
+import {BaseException} from '../../../facade/exceptions';
 import {CachedXHR} from 'angular2/src/platform/browser/xhr_cache';
 import {setTemplateCache} from './xhr_cache_setter';
 

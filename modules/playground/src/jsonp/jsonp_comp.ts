@@ -1,6 +1,6 @@
 import {Component} from 'angular2/core';
-import {Jsonp, Response} from 'angular2/http';
-import {ObservableWrapper} from 'angular2/src/facade/async';
+import {Jsonp, Response} from '../../../angular2/http/http';
+import {ObservableWrapper} from '../../../angular2/facade/async';
 
 @Component({
   selector: 'jsonp-app',

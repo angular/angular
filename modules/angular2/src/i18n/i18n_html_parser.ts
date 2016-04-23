@@ -11,9 +11,9 @@ import {
   HtmlExpansionCaseAst,
   htmlVisitAll
 } from 'angular2/src/compiler/html_ast';
-import {ListWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
-import {RegExpWrapper, NumberWrapper, isPresent} from 'angular2/src/facade/lang';
-import {BaseException} from 'angular2/src/facade/exceptions';
+import {ListWrapper, StringMapWrapper} from '../../facade/collection';
+import {RegExpWrapper, NumberWrapper, isPresent} from '../../facade/lang';
+import {BaseException} from '../../facade/exceptions';
 import {Parser} from 'angular2/src/compiler/expression_parser/parser';
 import {Message, id} from './message';
 import {expandNodes} from './expander';

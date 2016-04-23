@@ -6,7 +6,7 @@ import {
   CONST_EXPR,
   isBlank,
   isPresent
-} from 'angular2/src/facade/lang';
+} from '../../../facade/lang';
 
 import {
   HtmlAstVisitor,

@@ -1,16 +1,16 @@
 import {MessageBus} from "angular2/src/web_workers/shared/message_bus";
-import {print, isPresent, DateWrapper, stringify} from "angular2/src/facade/lang";
+import {print, isPresent, DateWrapper, stringify} from "../../../facade/lang";
 import {
   PromiseCompleter,
   PromiseWrapper,
   ObservableWrapper,
   EventEmitter
-} from "angular2/src/facade/async";
-import {StringMapWrapper, MapWrapper} from "angular2/src/facade/collection";
+} from "../../../facade/async";
+import {StringMapWrapper, MapWrapper} from "../../../facade/collection";
 import {Serializer} from "angular2/src/web_workers/shared/serializer";
 import {Injectable} from "angular2/src/core/di";
-import {Type, StringWrapper} from "angular2/src/facade/lang";
-export {Type} from "angular2/src/facade/lang";
+import {Type, StringWrapper} from "../../../facade/lang";
+export {Type} from "../../../facade/lang";
 
 export abstract class ClientMessageBrokerFactory {
   /**

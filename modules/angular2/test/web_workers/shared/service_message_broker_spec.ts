@@ -17,7 +17,7 @@ import {
   ServiceMessageBroker,
   ServiceMessageBroker_
 } from 'angular2/src/web_workers/shared/service_message_broker';
-import {ObservableWrapper, PromiseWrapper} from 'angular2/src/facade/async';
+import {ObservableWrapper, PromiseWrapper} from '../../../facade/async';
 import {provide} from 'angular2/core';
 import {ON_WEB_WORKER} from 'angular2/src/web_workers/shared/api';
 import {RenderStore} from 'angular2/src/web_workers/shared/render_store';

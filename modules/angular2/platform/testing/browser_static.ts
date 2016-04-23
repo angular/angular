@@ -26,7 +26,7 @@ import {BrowserDetection} from 'angular2/src/testing/utils';
 
 import {ELEMENT_PROBE_PROVIDERS} from 'angular2/platform/common_dom';
 
-import {CONST_EXPR} from 'angular2/src/facade/lang';
+import {CONST_EXPR} from '../../facade/lang';
 
 import {Log} from 'angular2/src/testing/utils';
 

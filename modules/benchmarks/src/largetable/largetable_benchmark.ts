@@ -1,5 +1,5 @@
 import {DOM} from 'angular2/src/platform/dom/dom_adapter';
-import {window, document, gc} from 'angular2/src/facade/browser';
+import {window, document, gc} from '../../../angular2/facade/browser';
 import {
   getIntParameter,
   getStringParameter,
@@ -13,7 +13,7 @@ import {NgFor, NgSwitch, NgSwitchWhen, NgSwitchDefault} from 'angular2/common';
 import {ApplicationRef} from 'angular2/src/core/application_ref';
 import {BrowserDomAdapter} from 'angular2/src/platform/browser/browser_adapter';
 
-import {ListWrapper} from 'angular2/src/facade/collection';
+import {ListWrapper} from '../../../angular2/facade/collection';
 
 import {Inject} from 'angular2/src/core/di/decorators';
 import {reflector} from 'angular2/src/core/reflection/reflection';

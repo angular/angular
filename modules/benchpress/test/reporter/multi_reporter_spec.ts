@@ -11,8 +11,8 @@ import {
   xit,
 } from 'angular2/testing_internal';
 
-import {PromiseWrapper} from 'angular2/src/facade/async';
-import {DateWrapper} from 'angular2/src/facade/lang';
+import {PromiseWrapper} from '../../../angular2/facade/async';
+import {DateWrapper} from '../../../angular2/facade/lang';
 
 import {
   Reporter,

@@ -12,7 +12,7 @@ import {
   TestComponentBuilder
 } from 'angular2/testing_internal';
 
-import {isBlank} from 'angular2/src/facade/lang';
+import {isBlank} from '../../../facade/lang';
 import {DartEmitter} from 'angular2/src/compiler/output/dart_emitter';
 import {CompileIdentifierMetadata} from 'angular2/src/compiler/compile_metadata';
 import * as o from 'angular2/src/compiler/output/output_ast';

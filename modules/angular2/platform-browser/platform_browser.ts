@@ -26,6 +26,7 @@ export {
   disableDebugTools
 } from './browser_common';
 
+export * from './private_export';
 
 /**
  * An array of providers that should be passed into `application()` when bootstrapping a component.

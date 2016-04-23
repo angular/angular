@@ -17,9 +17,9 @@ import {
   expectBrokerCall
 } from '../shared/web_worker_test_util';
 import {UiArguments} from 'angular2/src/web_workers/shared/client_message_broker';
-import {Type} from 'angular2/src/facade/lang';
-import {PromiseWrapper} from "angular2/src/facade/async";
-import {CONST_EXPR} from 'angular2/src/facade/lang';
+import {Type} from '../../../facade/lang';
+import {PromiseWrapper} from "../../../facade/async";
+import {CONST_EXPR} from '../../../facade/lang';
 
 export function main() {
   describe("WebWorkerPlatformLocation", () => {

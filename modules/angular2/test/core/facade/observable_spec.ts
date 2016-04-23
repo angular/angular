@@ -12,7 +12,7 @@ import {
   inject
 } from 'angular2/testing_internal';
 
-import {Observable, Subject, EventEmitter, PromiseWrapper} from 'angular2/src/facade/async';
+import {Observable, Subject, EventEmitter, PromiseWrapper} from '../../../facade/async';
 
 export function main() {
   describe("Observable", () => {

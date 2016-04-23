@@ -13,7 +13,7 @@ import {
 import {provide} from 'angular2/src/core/di';
 
 import {TEST_PROVIDERS} from './test_bindings';
-import {isPresent, CONST_EXPR} from 'angular2/src/facade/lang';
+import {isPresent, CONST_EXPR} from '../../facade/lang';
 import {
   TemplateParser,
   splitClasses,

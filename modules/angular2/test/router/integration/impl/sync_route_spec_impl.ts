@@ -27,7 +27,7 @@ import {
   DynamicLoaderCmp
 } from './fixture_components';
 
-import {PromiseWrapper} from 'angular2/src/facade/async';
+import {PromiseWrapper} from '../../../../facade/async';
 
 
 function getLinkElement(rtc: ComponentFixture) {

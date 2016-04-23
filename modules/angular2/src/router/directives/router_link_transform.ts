@@ -14,7 +14,7 @@ import {
   LiteralPrimitive,
   ASTWithSource
 } from 'angular2/src/compiler/expression_parser/ast';
-import {BaseException} from 'angular2/src/facade/exceptions';
+import {BaseException} from '../../../facade/exceptions';
 import {Injectable} from 'angular2/core';
 import {Parser} from 'angular2/src/compiler/expression_parser/parser';
 

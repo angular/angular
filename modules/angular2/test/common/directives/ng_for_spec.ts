@@ -13,8 +13,8 @@ import {
   xit,
 } from 'angular2/testing_internal';
 
-import {ListWrapper} from 'angular2/src/facade/collection';
-import {IS_DART} from 'angular2/src/facade/lang';
+import {ListWrapper} from '../../../facade/collection';
+import {IS_DART} from '../../../facade/lang';
 import {Component, TemplateRef, ContentChild} from 'angular2/core';
 import {NgFor} from 'angular2/src/common/directives/ng_for';
 import {NgIf} from 'angular2/src/common/directives/ng_if';

@@ -9,8 +9,8 @@ import {
   HtmlCommentAst,
   htmlVisitAll
 } from 'angular2/src/compiler/html_ast';
-import {isPresent, isBlank} from 'angular2/src/facade/lang';
-import {StringMapWrapper} from 'angular2/src/facade/collection';
+import {isPresent, isBlank} from '../../facade/lang';
+import {StringMapWrapper} from '../../facade/collection';
 import {Parser} from 'angular2/src/compiler/expression_parser/parser';
 import {Message, id} from './message';
 import {expandNodes} from './expander';

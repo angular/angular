@@ -16,7 +16,7 @@ import {
 
 import {DOM} from 'angular2/src/platform/dom/dom_adapter';
 
-import {PromiseWrapper, EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
+import {PromiseWrapper, EventEmitter, ObservableWrapper} from '../../../facade/async';
 
 import {Injectable} from 'angular2/core';
 import {NgFor, NgIf} from 'angular2/common';

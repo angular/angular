@@ -14,7 +14,7 @@ import {
   inject,
   SpyObject
 } from 'angular2/testing_internal';
-import {Type} from 'angular2/src/facade/lang';
+import {Type} from '../../facade/lang';
 import {SpyChangeDetectorRef} from './spies';
 import {
   ApplicationRef_,
@@ -37,14 +37,14 @@ import {
   ChangeDetectorRef
 } from "angular2/core";
 import {Console} from 'angular2/src/core/console';
-import {BaseException} from 'angular2/src/facade/exceptions';
-import {PromiseWrapper, PromiseCompleter, TimerWrapper} from "angular2/src/facade/async";
+import {BaseException} from '../../facade/exceptions';
+import {PromiseWrapper, PromiseCompleter, TimerWrapper} from "../../facade/async";
 import {
   ComponentFactory,
   ComponentRef_,
   ComponentRef
 } from 'angular2/src/core/linker/component_factory';
-import {ExceptionHandler} from 'angular2/src/facade/exception_handler';
+import {ExceptionHandler} from '../../facade/exception_handler';
 
 export function main() {
   describe("bootstrap", () => {

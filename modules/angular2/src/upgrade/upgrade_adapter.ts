@@ -12,8 +12,8 @@ import {
   Testability,
   APPLICATION_COMMON_PROVIDERS
 } from 'angular2/core';
-import {global} from 'angular2/src/facade/lang';
-import {ObservableWrapper} from 'angular2/src/facade/async';
+import {global} from '../../facade/lang';
+import {ObservableWrapper} from '../../facade/async';
 import {BROWSER_PROVIDERS, BROWSER_APP_PROVIDERS, browserPlatform} from 'angular2/platform/browser';
 
 import {getComponentInfo, ComponentInfo} from './metadata';

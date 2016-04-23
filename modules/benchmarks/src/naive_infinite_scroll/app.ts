@@ -1,10 +1,10 @@
-import {isPresent} from 'angular2/src/facade/lang';
+import {isPresent} from '../../../angular2/facade/lang';
 import {getIntParameter, bindAction} from 'angular2/src/testing/benchmark_util';
-import {TimerWrapper} from 'angular2/src/facade/async';
+import {TimerWrapper} from '../../../angular2/facade/async';
 import {ScrollAreaComponent} from './scroll_area';
 import {NgIf, NgFor} from 'angular2/common';
 import {DOM} from 'angular2/src/platform/dom/dom_adapter';
-import {document} from 'angular2/src/facade/browser';
+import {document} from '../../../angular2/facade/browser';
 
 import {Component, Directive} from 'angular2/core';
 

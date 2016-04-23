@@ -19,9 +19,9 @@ import {
 
 import {By} from 'angular2/platform/common_dom';
 import {Location} from 'angular2/platform/common';
-import {NumberWrapper} from 'angular2/src/facade/lang';
-import {PromiseWrapper} from 'angular2/src/facade/async';
-import {ListWrapper} from 'angular2/src/facade/collection';
+import {NumberWrapper} from '../../../facade/lang';
+import {PromiseWrapper} from '../../../facade/async';
+import {ListWrapper} from '../../../facade/collection';
 
 import {provide, Component} from 'angular2/core';
 

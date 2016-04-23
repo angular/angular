@@ -1,6 +1,6 @@
 // ATTENTION: This file will be overwritten with generated code by main()
-import {print} from 'angular2/src/facade/lang';
-import {unimplemented} from 'angular2/src/facade/exceptions';
+import {print} from '../../../facade/lang';
+import {unimplemented} from '../../../facade/exceptions';
 import {codegenExportsVars, codegenStmts} from './output_emitter_util';
 import {JavaScriptEmitter} from 'angular2/src/compiler/output/js_emitter';
 

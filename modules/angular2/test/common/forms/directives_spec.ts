@@ -37,8 +37,8 @@ import {
 
 
 import {selectValueAccessor, composeValidators} from 'angular2/src/common/forms/directives/shared';
-import {TimerWrapper} from 'angular2/src/facade/async';
-import {PromiseWrapper} from 'angular2/src/facade/promise';
+import {TimerWrapper} from '../../../facade/async';
+import {PromiseWrapper} from '../../../facade/promise';
 import {SimpleChange} from 'angular2/src/core/change_detection';
 
 class DummyControlValueAccessor implements ControlValueAccessor {

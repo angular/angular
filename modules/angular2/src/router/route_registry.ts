@@ -1,5 +1,5 @@
-import {ListWrapper, Map, MapWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
-import {PromiseWrapper} from 'angular2/src/facade/async';
+import {ListWrapper, Map, MapWrapper, StringMapWrapper} from '../../facade/collection';
+import {PromiseWrapper} from '../../facade/async';
 import {
   isPresent,
   isArray,
@@ -12,8 +12,8 @@ import {
   Math,
   getTypeNameForDebugging,
   CONST_EXPR
-} from 'angular2/src/facade/lang';
-import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
+} from '../../facade/lang';
+import {BaseException, WrappedException} from '../../facade/exceptions';
 import {reflector} from 'angular2/src/core/reflection/reflection';
 import {Injectable, Inject, OpaqueToken} from 'angular2/core';
 

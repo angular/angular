@@ -1,6 +1,6 @@
-import {Headers} from 'angular2/src/http/headers';
-import {Json} from 'angular2/src/facade/lang';
-import {Map, StringMapWrapper} from 'angular2/src/facade/collection';
+import {Headers} from '../../http/src/headers';
+import {Json} from '../../facade/lang';
+import {Map, StringMapWrapper} from '../../facade/collection';
 import {
   AsyncTestCompleter,
   beforeEach,

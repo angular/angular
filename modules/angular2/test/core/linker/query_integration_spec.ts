@@ -12,8 +12,8 @@ import {
   TestComponentBuilder,
 } from 'angular2/testing_internal';
 
-import {isPresent} from 'angular2/src/facade/lang';
-import {ObservableWrapper} from 'angular2/src/facade/async';
+import {isPresent} from '../../../facade/lang';
+import {ObservableWrapper} from '../../../facade/async';
 
 import {
   Component,

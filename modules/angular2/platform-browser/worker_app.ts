@@ -1,4 +1,4 @@
-import {isPresent, isBlank} from 'angular2/src/facade/lang';
+import {isPresent, isBlank} from '../facade/lang';
 import {
   WORKER_APP_PLATFORM,
   WORKER_APP_PLATFORM_MARKER

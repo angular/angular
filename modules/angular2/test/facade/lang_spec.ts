@@ -7,7 +7,7 @@ import {
   CONST_EXPR,
   hasConstructor,
   resolveEnumToken
-} from 'angular2/src/facade/lang';
+} from '../../facade/lang';
 
 enum UsefulEnum {
   MyToken,

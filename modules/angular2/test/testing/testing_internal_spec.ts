@@ -12,8 +12,8 @@ import {
 } from 'angular2/testing_internal';
 
 import {DOM} from 'angular2/src/platform/dom/dom_adapter';
-import {MapWrapper} from 'angular2/src/facade/collection';
-import {RegExpWrapper} from 'angular2/src/facade/lang';
+import {MapWrapper} from '../../facade/collection';
+import {RegExpWrapper} from '../../facade/lang';
 
 class TestObj {
   prop;

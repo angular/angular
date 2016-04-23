@@ -12,7 +12,7 @@ import {
 } from 'angular2/testing_internal';
 import {DOM} from 'angular2/src/platform/dom/dom_adapter';
 
-import {global} from 'angular2/src/facade/lang';
+import {global} from '../../facade/lang';
 import {
   Component,
   Class,

@@ -11,8 +11,8 @@ import {
   xit,
 } from 'angular2/testing_internal';
 
-import {isPresent, StringWrapper} from 'angular2/src/facade/lang';
-import {PromiseWrapper} from 'angular2/src/facade/async';
+import {isPresent, StringWrapper} from '../../angular2/facade/lang';
+import {PromiseWrapper} from '../../angular2/facade/async';
 
 import {WebDriverExtension, bind, provide, ReflectiveInjector, Options} from 'benchpress/common';
 

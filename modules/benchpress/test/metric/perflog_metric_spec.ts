@@ -11,9 +11,9 @@ import {
   xit,
 } from 'angular2/testing_internal';
 
-import {StringMapWrapper} from 'angular2/src/facade/collection';
-import {PromiseWrapper} from 'angular2/src/facade/async';
-import {isPresent, isBlank} from 'angular2/src/facade/lang';
+import {StringMapWrapper} from '../../../angular2/facade/collection';
+import {PromiseWrapper} from '../../../angular2/facade/async';
+import {isPresent, isBlank} from '../../../angular2/facade/lang';
 
 import {
   Metric,

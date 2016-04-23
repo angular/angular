@@ -1,7 +1,7 @@
-import {PromiseWrapper, EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
-import {Map, StringMapWrapper, MapWrapper, ListWrapper} from 'angular2/src/facade/collection';
-import {isBlank, isString, isPresent, Type, isArray} from 'angular2/src/facade/lang';
-import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
+import {PromiseWrapper, EventEmitter, ObservableWrapper} from '../../facade/async';
+import {Map, StringMapWrapper, MapWrapper, ListWrapper} from '../../facade/collection';
+import {isBlank, isString, isPresent, Type, isArray} from '../../facade/lang';
+import {BaseException, WrappedException} from '../../facade/exceptions';
 import {Location} from 'angular2/platform/common';
 import {Inject, Injectable} from 'angular2/core';
 

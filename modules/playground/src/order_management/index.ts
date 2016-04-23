@@ -12,7 +12,7 @@ import {
 } from 'angular2/core';
 import {NgIf, NgFor, FORM_DIRECTIVES} from 'angular2/common';
 
-import {ListWrapper} from 'angular2/src/facade/collection';
+import {ListWrapper} from '../../../angular2/facade/collection';
 
 /**
  * You can find the Angular 1 implementation of this example here:

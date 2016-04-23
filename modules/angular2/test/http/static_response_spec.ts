@@ -4,8 +4,8 @@ import {
   it,
 } from 'angular2/testing_internal';
 
-import {ResponseOptions} from 'angular2/src/http/base_response_options';
-import {Response} from 'angular2/src/http/static_response';
+import {ResponseOptions} from '../../http/src/base_response_options';
+import {Response} from '../../http/src/static_response';
 
 
 

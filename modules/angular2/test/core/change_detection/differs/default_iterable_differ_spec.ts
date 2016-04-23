@@ -13,8 +13,8 @@ import {
   DefaultIterableDifferFactory
 } from 'angular2/src/core/change_detection/differs/default_iterable_differ';
 
-import {NumberWrapper} from 'angular2/src/facade/lang';
-import {ListWrapper} from 'angular2/src/facade/collection';
+import {NumberWrapper} from '../../../../facade/lang';
+import {ListWrapper} from '../../../../facade/collection';
 
 import {TestIterable} from '../../../core/change_detection/iterable';
 import {iterableChangesAsString} from '../../../core/change_detection/util';

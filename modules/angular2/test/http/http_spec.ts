@@ -11,7 +11,7 @@ import {
   xit
 } from 'angular2/testing_internal';
 import {Injector, provide, ReflectiveInjector} from 'angular2/core';
-import {MockBackend, MockConnection} from 'angular2/src/http/backends/mock_backend';
+import {MockBackend, MockConnection} from '../../http/src/backends/mock_backend';
 import {
   BaseRequestOptions,
   ConnectionBackend,
@@ -27,7 +27,7 @@ import {
   JSONPBackend,
   Http,
   Jsonp
-} from 'angular2/http';
+} from '../../http/http';
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
 

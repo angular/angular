@@ -1,4 +1,4 @@
-import {isPresent, escape} from 'angular2/src/facade/lang';
+import {isPresent, escape} from '../../facade/lang';
 
 /**
  * A message extracted from a template.

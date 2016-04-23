@@ -27,8 +27,8 @@ import {
   Redirect,
   AuxRoute
 } from 'angular2/src/router/route_config/route_config_decorator';
-import {PromiseWrapper} from 'angular2/src/facade/async';
-import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
+import {PromiseWrapper} from '../../../facade/async';
+import {BaseException, WrappedException} from '../../../facade/exceptions';
 import {
   ROUTER_PROVIDERS,
   ROUTER_PRIMARY_COMPONENT,

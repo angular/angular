@@ -1,9 +1,9 @@
 import {LocationStrategy, PathLocationStrategy, Location} from 'angular2/platform/common';
 import {Router, RootRouter} from 'angular2/src/router/router';
 import {RouteRegistry, ROUTER_PRIMARY_COMPONENT} from 'angular2/src/router/route_registry';
-import {CONST_EXPR, Type} from 'angular2/src/facade/lang';
+import {CONST_EXPR, Type} from '../../facade/lang';
 import {ApplicationRef, OpaqueToken, Provider} from 'angular2/core';
-import {BaseException} from 'angular2/src/facade/exceptions';
+import {BaseException} from '../../facade/exceptions';
 
 /**
  * The Platform agnostic ROUTER PROVIDERS

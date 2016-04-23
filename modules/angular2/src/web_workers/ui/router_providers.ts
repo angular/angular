@@ -1,5 +1,5 @@
 import {MessageBasedPlatformLocation} from './platform_location';
-import {CONST_EXPR} from 'angular2/src/facade/lang';
+import {CONST_EXPR} from '../../../facade/lang';
 import {
   BrowserPlatformLocation
 } from 'angular2/src/platform/browser/location/browser_platform_location';

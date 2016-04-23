@@ -33,3 +33,4 @@ export {
 } from './src/compiler/compiler';
 
 export * from './src/compiler/template_ast';
+export * from './private_export';

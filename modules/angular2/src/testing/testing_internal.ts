@@ -1,5 +1,5 @@
-import {StringMapWrapper} from 'angular2/src/facade/collection';
-import {global, isFunction, Math} from 'angular2/src/facade/lang';
+import {StringMapWrapper} from '../../facade/collection';
+import {global, isFunction, Math} from '../../facade/lang';
 
 import {provide} from 'angular2/core';
 

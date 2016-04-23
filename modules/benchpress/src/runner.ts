@@ -1,6 +1,6 @@
 import {Injector, bind, provide, Provider, ReflectiveInjector} from 'angular2/src/core/di';
-import {isPresent, isBlank} from 'angular2/src/facade/lang';
-import {PromiseWrapper} from 'angular2/src/facade/async';
+import {isPresent, isBlank} from '../../angular2/facade/lang';
+import {PromiseWrapper} from '../../angular2/facade/async';
 
 import {Sampler, SampleState} from './sampler';
 import {ConsoleReporter} from './reporter/console_reporter';

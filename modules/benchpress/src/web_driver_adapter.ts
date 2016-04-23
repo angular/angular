@@ -1,6 +1,6 @@
 import {bind, provide, Provider} from 'angular2/src/core/di';
-import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
-import {Map} from 'angular2/src/facade/collection';
+import {BaseException, WrappedException} from '../../angular2/facade/exceptions';
+import {Map} from '../../angular2/facade/collection';
 
 /**
  * A WebDriverAdapter bridges API differences between different WebDriver clients,

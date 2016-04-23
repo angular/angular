@@ -11,8 +11,8 @@ import {
   xit,
 } from 'angular2/testing_internal';
 
-import {ListWrapper} from 'angular2/src/facade/collection';
-import {PromiseWrapper} from 'angular2/src/facade/async';
+import {ListWrapper} from '../../../angular2/facade/collection';
+import {PromiseWrapper} from '../../../angular2/facade/async';
 
 import {Metric, MultiMetric, bind, provide, ReflectiveInjector} from 'benchpress/common';
 

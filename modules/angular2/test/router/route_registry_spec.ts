@@ -10,8 +10,8 @@ import {
   SpyObject
 } from 'angular2/testing_internal';
 
-import {PromiseWrapper} from 'angular2/src/facade/async';
-import {Type, IS_DART} from 'angular2/src/facade/lang';
+import {PromiseWrapper} from '../../facade/async';
+import {Type, IS_DART} from '../../facade/lang';
 
 import {RouteRegistry} from 'angular2/src/router/route_registry';
 import {

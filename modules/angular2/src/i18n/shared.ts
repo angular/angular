@@ -10,7 +10,7 @@ import {
   HtmlExpansionCaseAst,
   htmlVisitAll
 } from 'angular2/src/compiler/html_ast';
-import {isPresent, isBlank, StringWrapper} from 'angular2/src/facade/lang';
+import {isPresent, isBlank, StringWrapper} from '../../facade/lang';
 import {Message} from './message';
 import {Parser} from 'angular2/src/compiler/expression_parser/parser';
 

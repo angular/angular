@@ -1,4 +1,4 @@
-import {CONST_EXPR, IS_DART} from 'angular2/src/facade/lang';
+import {CONST_EXPR, IS_DART} from '../../../facade/lang';
 import {MessageBus} from 'angular2/src/web_workers/shared/message_bus';
 import {NgZone} from 'angular2/src/core/zone/ng_zone';
 import {

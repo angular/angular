@@ -17,7 +17,7 @@ import {
   fakeAsync,
   tick
 } from 'angular2/testing_internal';
-import {isBlank, isPresent, stringify, Type, CONST_EXPR} from 'angular2/src/facade/lang';
+import {isBlank, isPresent, stringify, Type, CONST_EXPR} from '../../../facade/lang';
 import {
   ViewContainerRef,
   TemplateRef,

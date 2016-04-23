@@ -6,12 +6,10 @@
     "experimentalDecorators": true,
     "module": "commonjs",
     "moduleResolution": "node",
-    "outDir": "../../dist/packages-all/compiler/",
+    "outDir": "../../dist/packages-all/",
     "paths": {
       "rxjs/*": ["../../node_modules/rxjs/*"],
-      "angular2/core": ["core/core.ts"],
-      "angular2/compiler": ["compiler/compiler.ts"],
-      "angular2/common": ["common/common.ts"]
+      "angular2/*": ["*"]
     },
     "rootDir": ".",
     "sourceMap": true,
@@ -19,10 +17,12 @@
     "target": "es5"
   },
   "files": [
-    "core/core.ts",
-    "compiler/compiler.ts",
-    "common/common.ts",
-    "platform-browser/platform_browser.ts",
+    "core/index.ts",
+    "compiler/index.ts",
+    "common/index.ts",
+    "platform-browser/index.ts",
+    "platform-server/index.ts",
+
     "typings/es6-collections/es6-collections.d.ts",
     "typings/es6-promise/es6-promise.d.ts",
     "typings/hammerjs/hammerjs.d.ts",

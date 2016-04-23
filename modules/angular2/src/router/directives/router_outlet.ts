@@ -1,6 +1,6 @@
-import {PromiseWrapper, EventEmitter} from 'angular2/src/facade/async';
-import {StringMapWrapper} from 'angular2/src/facade/collection';
-import {isBlank, isPresent} from 'angular2/src/facade/lang';
+import {PromiseWrapper, EventEmitter} from '../../../facade/async';
+import {StringMapWrapper} from '../../../facade/collection';
+import {isBlank, isPresent} from '../../../facade/lang';
 
 import {
   Directive,

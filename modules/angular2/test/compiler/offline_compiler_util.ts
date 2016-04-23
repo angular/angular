@@ -1,4 +1,4 @@
-import {print, IS_DART} from 'angular2/src/facade/lang';
+import {print, IS_DART} from '../../facade/lang';
 import {OutputEmitter} from 'angular2/src/compiler/output/abstract_emitter';
 
 import {

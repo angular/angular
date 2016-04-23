@@ -2,7 +2,7 @@ import {describe, it, expect, beforeEach, ddescribe, iit, xit, el} from 'angular
 import {DOM} from 'angular2/src/platform/dom/dom_adapter';
 import {SelectorMatcher} from 'angular2/src/compiler/selector';
 import {CssSelector} from 'angular2/src/compiler/selector';
-import {ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
+import {ListWrapper, MapWrapper} from '../../facade/collection';
 
 export function main() {
   describe('SelectorMatcher', () => {

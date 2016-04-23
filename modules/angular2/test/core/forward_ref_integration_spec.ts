@@ -22,7 +22,7 @@ import {
   QueryList
 } from 'angular2/core';
 import {NgFor} from 'angular2/common';
-import {Type} from 'angular2/src/facade/lang';
+import {Type} from '../../facade/lang';
 import {asNativeElements} from 'angular2/core';
 
 export function main() {

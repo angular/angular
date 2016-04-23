@@ -13,8 +13,8 @@ import {
   tick,
   xit
 } from 'angular2/testing_internal';
-import {TimerWrapper, PromiseWrapper} from 'angular2/src/facade/async';
-import {BaseException} from 'angular2/src/facade/exceptions';
+import {TimerWrapper, PromiseWrapper} from '../../facade/async';
+import {BaseException} from '../../facade/exceptions';
 import {Parser} from 'angular2/src/compiler/expression_parser/parser';
 
 export function main() {

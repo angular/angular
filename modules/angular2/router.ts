@@ -20,7 +20,7 @@ export {ROUTER_PROVIDERS, ROUTER_BINDINGS} from 'angular2/src/router/router_prov
 
 import {RouterOutlet} from './src/router/directives/router_outlet';
 import {RouterLink} from './src/router/directives/router_link';
-import {CONST_EXPR} from './src/facade/lang';
+import {CONST_EXPR} from './facade/lang';
 
 /**
  * A list of directives. To use the router directives like {@link RouterOutlet} and

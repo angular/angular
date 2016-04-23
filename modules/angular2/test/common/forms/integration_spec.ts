@@ -37,10 +37,10 @@ import {
 } from 'angular2/common';
 import {Provider, forwardRef, Input} from 'angular2/core';
 import {By} from 'angular2/platform/browser';
-import {ListWrapper} from 'angular2/src/facade/collection';
-import {ObservableWrapper, TimerWrapper} from 'angular2/src/facade/async';
-import {CONST_EXPR} from 'angular2/src/facade/lang';
-import {PromiseWrapper} from "angular2/src/facade/promise";
+import {ListWrapper} from '../../../facade/collection';
+import {ObservableWrapper, TimerWrapper} from '../../../facade/async';
+import {CONST_EXPR} from '../../../facade/lang';
+import {PromiseWrapper} from "../../../facade/promise";
 
 export function main() {
   describe("integration tests", () => {

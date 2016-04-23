@@ -1,4 +1,4 @@
-import {PromiseWrapper} from 'angular2/src/facade/async';
+import {PromiseWrapper} from '../../../angular2/facade/async';
 import {bind, provide, Provider} from 'angular2/src/core/di';
 import {WebDriverAdapter} from '../web_driver_adapter';
 

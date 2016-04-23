@@ -11,7 +11,7 @@ import {
   NumberWrapper,
   StringWrapper,
   isPresent
-} from "angular2/src/facade/lang";
+} from "../../../../facade/lang";
 
 import {
   CssLexerMode,

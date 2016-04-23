@@ -1,7 +1,7 @@
-import {Type, isArray, isPresent, serializeEnum, deserializeEnum} from "angular2/src/facade/lang";
-import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
+import {Type, isArray, isPresent, serializeEnum, deserializeEnum} from "../../../facade/lang";
+import {BaseException, WrappedException} from '../../../facade/exceptions';
 
-import {Map, StringMapWrapper, MapWrapper} from "angular2/src/facade/collection";
+import {Map, StringMapWrapper, MapWrapper} from "../../../facade/collection";
 import {RenderComponentType} from "angular2/src/core/render/api";
 import {Injectable} from "angular2/src/core/di";
 import {RenderStore} from 'angular2/src/web_workers/shared/render_store';
