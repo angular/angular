@@ -1,5 +1,4 @@
-import {_LifecycleHooks as LifecycleHooks} from 'angular2/core';
-
+import {LifecycleHooks} from '../../../core_private';
 import * as o from '../output/output_ast';
 import {DetectChangesVars, ChangeDetectorStateEnum} from './constants';
 import {CompileDirectiveMetadata, CompilePipeMetadata} from '../compile_metadata';

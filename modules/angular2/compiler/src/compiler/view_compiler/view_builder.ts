@@ -1,9 +1,5 @@
-import {
-  ChangeDetectionStrategy,
-  ViewEncapsulation,
-  _isDefaultChangeDetectionStrategy as isDefaultChangeDetectionStrategy,
-  _ViewType as ViewType
-} from 'angular2/core';
+import {ChangeDetectionStrategy, ViewEncapsulation} from 'angular2/core';
+import {isDefaultChangeDetectionStrategy, ViewType} from '../../../core_private';
 
 import {isPresent, StringWrapper} from '../../facade/lang';
 import {ListWrapper, StringMapWrapper, SetWrapper} from '../../facade/collection';

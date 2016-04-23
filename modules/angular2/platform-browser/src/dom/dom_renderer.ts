@@ -5,9 +5,9 @@ import {
   Renderer,
   RootRenderer,
   RenderComponentType,
-  ViewEncapsulation,
-  _RenderDebugInfo as RenderDebugInfo,
+  ViewEncapsulation
 } from 'angular2/core';
+import {RenderDebugInfo} from '../../core_private'
 import {AnimationBuilder} from '../animate/animation_builder';
 import {
   isPresent,

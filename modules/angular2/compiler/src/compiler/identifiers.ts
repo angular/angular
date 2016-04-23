@@ -9,23 +9,25 @@ import {
   Injector,
   QueryList,
   ViewEncapsulation,
-  TemplateRef,
-  _AppElement as AppElement,
-  _AppView as AppView,
-  _ChangeDetectorState as ChangeDetectorState,
-  _checkBinding as checkBinding,
-  _DebugContext as DebugContext,
-  _devModeEqual as devModeEqual,
-  _flattenNestedViewRenderNodes as flattenNestedViewRenderNodes,
-  _interpolate as interpolate,
-  _RenderDebugInfo as RenderDebugInfo,
-  _StaticNodeDebugInfo as StaticNodeDebugInfo,
-  _TemplateRef_ as TemplateRef_,
-  _uninitialized as uninitialized,
-  _ValueUnwrapper as ValueUnwrapper,
-  _ViewType as ViewType,
-  _ViewUtils as ViewUtils,
+  TemplateRef
 } from 'angular2/core';
+import {
+  AppElement,
+  AppView,
+  ChangeDetectorState,
+  checkBinding,
+  DebugContext,
+  devModeEqual,
+  flattenNestedViewRenderNodes,
+  interpolate,
+  RenderDebugInfo,
+  StaticNodeDebugInfo,
+  TemplateRef_,
+  uninitialized,
+  ValueUnwrapper,
+  ViewType,
+  ViewUtils,
+} from '../../core_private';
 
 import {CompileIdentifierMetadata, CompileTokenMetadata} from './compile_metadata';
 import {MODULE_SUFFIX} from './util';

@@ -7,9 +7,9 @@ import {
   getPlatform,
   createPlatform,
   assertPlatform,
-  Provider,
-  _ReflectionCapabilities as ReflectionCapabilities,
+  Provider
 } from 'angular2/core';
+import {ReflectionCapabilities} from './core_private';
 import {COMPILER_PROVIDERS, XHR} from 'angular2/compiler';
 
 import {Type, isPresent, isBlank, CONST_EXPR} from './src/facade/lang';

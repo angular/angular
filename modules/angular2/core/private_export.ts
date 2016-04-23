@@ -1,0 +1,45 @@
+import * as constants from './src/core/change_detection/constants';
+import * as reflective_provider from './src/core/di/reflective_provider';
+import * as lifecycle_hooks from './src/core/metadata/lifecycle_hooks';
+import * as reflector_reader from './src/core/reflection/reflector_reader';
+import * as component_resolver from './src/core/linker/component_resolver';
+import * as element from './src/core/linker/element';
+import * as view from './src/core/linker/view';
+import * as view_type from './src/core/linker/view_type';
+import * as view_utils from './src/core/linker/view_utils';
+import * as metadata_view from './src/core/metadata/view';
+import * as debug_context from './src/core/linker/debug_context';
+import * as change_detection_util from './src/core/change_detection/change_detection_util';
+import * as api from './src/core/render/api';
+import * as template_ref from './src/core/linker/template_ref';
+import * as wtf_init from './src/core/profile/wtf_init';
+import * as reflection_capabilities from './src/core/reflection/reflection_capabilities';
+
+export namespace __core_private__ {
+  export var isDefaultChangeDetectionStrategy = constants.isDefaultChangeDetectionStrategy;
+  export var ChangeDetectorState = constants.ChangeDetectorState;
+  export var CHANGE_DETECTION_STRATEGY_VALUES = constants.CHANGE_DETECTION_STRATEGY_VALUES;
+  export var constructDependencies = reflective_provider.constructDependencies;
+  export var LifecycleHooks = lifecycle_hooks.LifecycleHooks;
+  export var LIFECYCLE_HOOKS_VALUES = lifecycle_hooks.LIFECYCLE_HOOKS_VALUES;
+  export var ReflectorReader = reflector_reader.ReflectorReader;
+  export var ReflectorComponentResolver = component_resolver.ReflectorComponentResolver;
+  export var AppElement = element.AppElement;
+  export var AppView = view.AppView;
+  export var ViewType = view_type.ViewType;
+  export var MAX_INTERPOLATION_VALUES = view_utils.MAX_INTERPOLATION_VALUES;
+  export var checkBinding = view_utils.checkBinding;
+  export var flattenNestedViewRenderNodes = view_utils.flattenNestedViewRenderNodes;
+  export var interpolate = view_utils.interpolate;
+  export var ViewUtils = view_utils.ViewUtils;
+  export var VIEW_ENCAPSULATION_VALUES = metadata_view.VIEW_ENCAPSULATION_VALUES;
+  export var DebugContext = debug_context.DebugContext;
+  export var StaticNodeDebugInfo = debug_context.StaticNodeDebugInfo;
+  export var devModeEqual = change_detection_util.devModeEqual;
+  export var uninitialized = change_detection_util.uninitialized;
+  export var ValueUnwrapper = change_detection_util.ValueUnwrapper;
+  export var RenderDebugInfo = api.RenderDebugInfo;
+  export var TemplateRef_ = template_ref.TemplateRef_;
+  export var wtfInit = wtf_init.wtfInit;
+  export var ReflectionCapabilities = reflection_capabilities.ReflectionCapabilities;
+}

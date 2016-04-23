@@ -1,11 +1,10 @@
-import {
-  ChangeDetectionStrategy,
-  ViewEncapsulation,
-  _CHANGE_DETECTION_STRATEGY_VALUES as CHANGE_DETECTION_STRATEGY_VALUES,
-  _VIEW_ENCAPSULATION_VALUES as VIEW_ENCAPSULATION_VALUES,
-  _LifecycleHooks as LifecycleHooks,
-  _LIFECYCLE_HOOKS_VALUES as LIFECYCLE_HOOKS_VALUES
-} from 'angular2/core';
+import {ChangeDetectionStrategy, ViewEncapsulation} from 'angular2/core';
+import {  
+  CHANGE_DETECTION_STRATEGY_VALUES,
+  VIEW_ENCAPSULATION_VALUES,
+  LifecycleHooks,
+  LIFECYCLE_HOOKS_VALUES
+} from '../../core_private';
 
 import {
   isPresent,

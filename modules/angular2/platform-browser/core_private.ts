@@ -1,0 +1,5 @@
+import {__core_private__} from 'angular2/core';
+
+export var RenderDebugInfo: typeof __core_private__.RenderDebugInfo = __core_private__.RenderDebugInfo;
+export var wtfInit: typeof __core_private__.wtfInit = __core_private__.wtfInit;
+export var ReflectionCapabilities: typeof __core_private__.ReflectionCapabilities = __core_private__.ReflectionCapabilities;

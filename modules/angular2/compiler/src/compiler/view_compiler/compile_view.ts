@@ -1,4 +1,4 @@
-import {_ViewType as ViewType} from 'angular2/core';
+import {ViewType} from '../../../core_private';
 
 import {isPresent, isBlank} from '../../facade/lang';
 import {ListWrapper} from '../../facade/collection';

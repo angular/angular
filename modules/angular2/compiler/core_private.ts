@@ -1,0 +1,25 @@
+import {__core_private__} from 'angular2/core';
+
+export var isDefaultChangeDetectionStrategy: typeof __core_private__.isDefaultChangeDetectionStrategy = __core_private__.isDefaultChangeDetectionStrategy;
+export var ChangeDetectorState: typeof __core_private__.ChangeDetectorState = __core_private__.ChangeDetectorState;
+export var CHANGE_DETECTION_STRATEGY_VALUES: typeof __core_private__.CHANGE_DETECTION_STRATEGY_VALUES = __core_private__.CHANGE_DETECTION_STRATEGY_VALUES;
+export var constructDependencies: typeof __core_private__.constructDependencies = __core_private__.constructDependencies;
+export var LifecycleHooks: typeof __core_private__.LifecycleHooks = __core_private__.LifecycleHooks;
+export var LIFECYCLE_HOOKS_VALUES: typeof __core_private__.LIFECYCLE_HOOKS_VALUES = __core_private__.LIFECYCLE_HOOKS_VALUES;
+export var ReflectorReader: typeof __core_private__.ReflectorReader = __core_private__.ReflectorReader;
+export var ReflectorComponentResolver: typeof __core_private__.ReflectorComponentResolver = __core_private__.ReflectorComponentResolver;
+export var AppElement: typeof __core_private__.AppElement = __core_private__.AppElement;
+export var AppView: typeof __core_private__.AppView = __core_private__.AppView;
+export var ViewType: typeof __core_private__.ViewType = __core_private__.ViewType;
+export var MAX_INTERPOLATION_VALUES: typeof __core_private__.MAX_INTERPOLATION_VALUES = __core_private__.MAX_INTERPOLATION_VALUES;
+export var checkBinding: typeof __core_private__.checkBinding = __core_private__.checkBinding;
+export var flattenNestedViewRenderNodes: typeof __core_private__.flattenNestedViewRenderNodes = __core_private__.flattenNestedViewRenderNodes;
+export var interpolate: typeof __core_private__.interpolate = __core_private__.interpolate;
+export var ViewUtils: typeof __core_private__.ViewUtils = __core_private__.ViewUtils;
+export var VIEW_ENCAPSULATION_VALUES: typeof __core_private__.VIEW_ENCAPSULATION_VALUES = __core_private__.VIEW_ENCAPSULATION_VALUES;
+export var DebugContext: typeof __core_private__.DebugContext = __core_private__.DebugContext;
+export var StaticNodeDebugInfo: typeof __core_private__.StaticNodeDebugInfo = __core_private__.StaticNodeDebugInfo;
+export var devModeEqual: typeof __core_private__.devModeEqual = __core_private__.devModeEqual;
+export var uninitialized: typeof __core_private__.uninitialized = __core_private__.uninitialized;
+export var ValueUnwrapper: typeof __core_private__.ValueUnwrapper = __core_private__.ValueUnwrapper;
+export var TemplateRef_: typeof __core_private__.TemplateRef_ = __core_private__.TemplateRef_;

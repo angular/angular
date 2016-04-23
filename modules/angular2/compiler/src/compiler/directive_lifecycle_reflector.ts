@@ -1,6 +1,4 @@
-import {
-  _LifecycleHooks as LifecycleHooks
-} from 'angular2/core';
+import {LifecycleHooks} from '../../core_private';
 
 import {Type} from '../facade/lang';
 

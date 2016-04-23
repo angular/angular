@@ -13,11 +13,12 @@ import {
   ViewMetadata,
   NoAnnotationError,
   QueryMetadata,
-  resolveForwardRef,
-  _constructDependencies as constructDependencies,
-  _LIFECYCLE_HOOKS_VALUES as LIFECYCLE_HOOKS_VALUES
+  resolveForwardRef
 } from 'angular2/core';
-
+import {
+  constructDependencies,
+  LIFECYCLE_HOOKS_VALUES
+} from '../../core_private';
 import {
   Type,
   isBlank,

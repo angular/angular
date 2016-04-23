@@ -1,7 +1,4 @@
-import {
-  _LifecycleHooks as LifecycleHooks,
-  _isDefaultChangeDetectionStrategy as isDefaultChangeDetectionStrategy
-} from 'angular2/core';
+import {LifecycleHooks, isDefaultChangeDetectionStrategy} from '../../../core_private';
 
 import {isBlank, isPresent} from '../../facade/lang';
 

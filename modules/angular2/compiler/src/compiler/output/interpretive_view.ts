@@ -1,4 +1,4 @@
-import {_AppElement as AppElement, _AppView as AppView} from 'angular2/core';
+import {AppElement, AppView} from '../../../core_private';
 
 import {isPresent} from '../../facade/lang';
 import {BaseException} from '../../facade/exceptions';

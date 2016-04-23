@@ -8,9 +8,9 @@ import {
   APPLICATION_COMMON_PROVIDERS,
   PLATFORM_COMMON_PROVIDERS,
   OpaqueToken,
-  Testability,
-  _wtfInit as wtfInit
+  Testability
 } from "angular2/core";
+import {wtfInit} from './core_private';
 import {XHR} from 'angular2/compiler';
 import {COMMON_DIRECTIVES, COMMON_PIPES, FORM_PROVIDERS} from "angular2/common";
 

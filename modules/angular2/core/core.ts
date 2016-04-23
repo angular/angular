@@ -38,4 +38,4 @@ export * from './src/core/platform_common_providers';
 export * from './src/core/application_common_providers';
 export * from './src/core/reflection/reflection';
 
-export * from './core_private';
+export * from './private_export';
