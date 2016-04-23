@@ -26,6 +26,7 @@
     "typings/es6-collections/es6-collections.d.ts",
     "typings/es6-promise/es6-promise.d.ts",
     "typings/hammerjs/hammerjs.d.ts",
+    "typings/node/node.d.ts",
     "manual_typings/globals.d.ts",
     "../../node_modules/zone.js/dist/zone.js.d.ts"
 

@@ -11,7 +11,7 @@
       "angular2/core": ["../../../dist/packages-dist/core/core.d.ts"],
       "angular2/common": ["../../../dist/packages-dist/common/common.d.ts"],
       "angular2/compiler": ["../../../dist/packages-dist/compiler/compiler.d.ts"],
-      "angular2/platform-browser": ["../../../dist/packages-dist/platform-browser/platform-browser.d.ts"]
+      "angular2/platform-browser": ["../../../dist/packages-dist/platform-browser/platform_browser.d.ts"]
     },
     "rootDir": ".",
     "sourceMap": true,
@@ -22,9 +22,8 @@
     "index.ts",
     "../typings/es6-collections/es6-collections.d.ts",
     "../typings/es6-promise/es6-promise.d.ts",
-//    "../typings/node/node.d.ts",
+    "../typings/node/node.d.ts",
     "../manual_typings/globals.d.ts",
-    "../typings/hammerjs/hammerjs.d.ts",
     "../../../node_modules/zone.js/dist/zone.js.d.ts"
   ]
 }

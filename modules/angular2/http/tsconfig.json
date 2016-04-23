@@ -4,19 +4,23 @@
     "declaration": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "module": "es2015",
+    "module": "commonjs",
     "moduleResolution": "node",
     "outDir": "../../../dist/packages-dist/http/",
     "paths": {
-      "angular2/core": ["../../../dist/packages-dist/core/core.d.ts"]
+      "angular2/core": ["../../../dist/packages-dist/core/core.d.ts"],
+      "angular2/common": ["../../../dist/packages-dist/common/common.d.ts"]
     },
     "rootDir": ".",
     "sourceMap": true,
     "sourceRoot": ".",
-    "target": "es2015"
+    "target": "es5"
   },
   "files": [
     "index.ts",
+    "../typings/es6-collections/es6-collections.d.ts",
+    "../typings/es6-promise/es6-promise.d.ts",
+    "../manual_typings/globals.d.ts",
     "../../../node_modules/zone.js/dist/zone.js.d.ts"
   ]
 }
