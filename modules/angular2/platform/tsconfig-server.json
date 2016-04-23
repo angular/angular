@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "declaration": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "outDir": "../../../../dist/js/cjs/angular2/x",
+    "paths": {
+      "angular2/src/compiler/*": ["./*"],
+      "angular2/src/core/*": ["../../../../dist/js/cjs/angular2/src/core/*"],
+      "angular2/src/facade/*": ["../../../../dist/js/cjs/angular2/src/facade/*"]
+    },
+    "rootDir": "../../",
+    "sourceMap": true,
+    "sourceRoot": ".",
+    "target": "es5"
+  },
+  "files": [
+    "../../compiler.ts",
+    "../../ambient_typings.d.ts"
+  ]
+}

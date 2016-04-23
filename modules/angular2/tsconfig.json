@@ -1,14 +1,33 @@
 {
-    "compilerOptions": {
-        "emitDecoratorMetadata": true,
-        "experimentalDecorators": true,
-        "declaration": true,
-        "module": "commonjs",
-        "rootDir": ".",
-        "sourceMap": true,
-        "sourceRoot": ".",
-        "target": "es5",
-        "outDir": "../../dist/js/cjs",
-        "moduleResolution": "classic"
-    }
+  "compilerOptions": {
+    "baseUrl": ".",
+    "declaration": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "outDir": "../../dist/packages-all/compiler/",
+    "paths": {
+      "rxjs/*": ["../../node_modules/rxjs/*"],
+      "angular2/core": ["core/core.ts"],
+      "angular2/compiler": ["compiler/compiler.ts"],
+      "angular2/common": ["common/common.ts"]
+    },
+    "rootDir": ".",
+    "sourceMap": true,
+    "sourceRoot": ".",
+    "target": "es5"
+  },
+  "files": [
+    "core/core.ts",
+    "compiler/compiler.ts",
+    "common/common.ts",
+    "platform-browser/platform_browser.ts",
+    "typings/es6-collections/es6-collections.d.ts",
+    "typings/es6-promise/es6-promise.d.ts",
+    "typings/hammerjs/hammerjs.d.ts",
+    "manual_typings/globals.d.ts",
+    "../../node_modules/zone.js/dist/zone.js.d.ts"
+
+  ]
 }

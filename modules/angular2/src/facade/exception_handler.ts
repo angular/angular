@@ -1,6 +1,6 @@
-import {isPresent, isBlank, print} from 'angular2/src/facade/lang';
-import {BaseWrappedException} from 'angular2/src/facade/base_wrapped_exception';
-import {ListWrapper, isListLikeIterable} from 'angular2/src/facade/collection';
+import {isPresent, isBlank} from '../facade/lang';
+import {BaseWrappedException} from '../facade/base_wrapped_exception';
+import {isListLikeIterable} from '../facade/collection';
 
 class _ArrayLogger {
   res: any[] = [];

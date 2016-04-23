@@ -1,0 +1,28 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "declaration": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "outDir": "../../../dist/packages-dist/platform-browser/",
+    "paths": {
+      "angular2/core": ["../../../dist/packages-dist/core/core.d.ts"],
+      "angular2/common": ["../../../dist/packages-dist/common/common.d.ts"],
+      "angular2/compiler": ["../../../dist/packages-dist/compiler/compiler.d.ts"]
+    },
+    "rootDir": ".",
+    "sourceMap": true,
+    "sourceRoot": ".",
+    "target": "es5"
+  },
+  "files": [
+    "platform_browser.ts",
+    "../typings/es6-collections/es6-collections.d.ts",
+    "../typings/es6-promise/es6-promise.d.ts",
+    "../manual_typings/globals.d.ts",
+    "../typings/hammerjs/hammerjs.d.ts",
+    "../../../node_modules/zone.js/dist/zone.js.d.ts"
+  ]
+}

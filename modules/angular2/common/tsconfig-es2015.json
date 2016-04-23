@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "declaration": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "module": "es2015",
+    "moduleResolution": "node",
+    "outDir": "../../../dist/packages-dist/common/esm",
+    "paths": {
+      "angular2/core": ["../../../dist/packages-dist/core/core.d.ts"]
+    },
+    "rootDir": ".",
+    "sourceMap": true,
+    "sourceRoot": ".",
+    "target": "es2015"
+  },
+  "files": [
+    "common.ts",
+    "../../../node_modules/zone.js/dist/zone.js.d.ts"
+  ]
+}
