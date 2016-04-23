@@ -30,6 +30,7 @@ export function config(config) {
       {pattern: 'node_modules/rxjs/bundles/Rx.js', included: true, watched: false},
       'node_modules/reflect-metadata/Reflect.js',
       {pattern: 'node_modules/angular2/bundles/angular2.dev.js', included: true, watched: false},
+      {pattern: 'node_modules/angular2/bundles/http.dev.js', included: true, watched: false},
       {pattern: 'node_modules/angular2/bundles/testing.dev.js', included: true, watched: false},
 
       {pattern: 'test/karma-test-shim.js', included: true, watched: true},

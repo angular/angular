@@ -6,6 +6,7 @@
       <a md-list-item [routerLink]="['CheckboxDemo']">Checkbox</a>
       <a md-list-item [routerLink]="['GesturesDemo']">Gestures</a>
       <a md-list-item [routerLink]="['GridListDemo']">Grid List</a>
+      <a md-list-item [routerLink]="['IconDemo']">Icon</a>
       <a md-list-item [routerLink]="['InputDemo']">Input</a>
       <a md-list-item [routerLink]="['ListDemo']">List</a>
       <a md-list-item [routerLink]="['LiveAnnouncerDemo']">Live Announcer</a>
@@ -22,7 +23,7 @@
   <div>
 
     <md-toolbar color="primary">
-      <i class="material-icons" (click)="start.open()">menu</i>
+      <md-icon (click)="start.open()">menu</md-icon>
       <div class="demo-toolbar">
         <h1>Angular Material 2 Demos</h1>
         <button md-button (click)="root.dir = (root.dir == 'rtl' ? 'ltr' : 'rtl')" title="Toggle between RTL and LTR">

@@ -1,0 +1,19 @@
+@import "variables";
+@import "default-theme";
+
+/** The width/height of the icon element. */
+$md-icon-size: 24px !default;
+
+/**
+This works because we're using ViewEncapsulation.None. If we used the default
+encapsulation, the selector would need to be ":host".
+*/
+md-icon {
+  background-repeat: no-repeat;
+  display: inline-block;
+  fill: currentColor;
+  height: $md-icon-size;
+  margin: auto;
+  vertical-align: middle;
+  width: $md-icon-size;
+}
