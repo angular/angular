@@ -14,3 +14,4 @@ export './src/core/render/api.dart' show RenderDebugInfo;
 export './src/core/linker/template_ref.dart' show TemplateRef_;
 export './src/core/profile/wtf_init.dart' show wtfInit;
 export './src/core/reflection/reflection_capabilities.dart' show ReflectionCapabilities;
+export './src/util/decorators' show makeDecorator;

@@ -12,7 +12,7 @@ import {
 import {ObservableWrapper, TimerWrapper} from '../../../facade/async';
 import {MessageBus} from 'angular2/src/web_workers/shared/message_bus';
 import {createConnectedMessageBus} from './message_bus_util';
-import {MockNgZone} from 'angular2/src/mock/ng_zone_mock';
+import {MockNgZone} from '../../../mock/mock/ng_zone_mock';
 import {NgZone} from 'angular2/src/core/zone/ng_zone';
 
 export function main() {

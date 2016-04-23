@@ -11,7 +11,7 @@ import {
   ReflectiveInjector,
   OnDestroy,
   Output
-} from 'angular2/core';
+} from '@angular/core';
 import * as routerMod from '../router';
 import {ComponentInstruction, RouteParams, RouteData} from '../instruction';
 import * as hookMod from '../lifecycle/lifecycle_annotations';

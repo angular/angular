@@ -23,7 +23,7 @@ import {Type, IS_DART} from '../../../facade/lang';
 import {ROUTER_PROVIDERS, Router, RouteConfig, ROUTER_DIRECTIVES} from 'angular2/router';
 
 import {ExceptionHandler} from '../../../facade/exceptions';
-import {MockLocationStrategy} from 'angular2/src/mock/mock_location_strategy';
+import {MockLocationStrategy} from '../../../mock/mock/mock_location_strategy';
 
 class _ArrayLogger {
   res: any[] = [];

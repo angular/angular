@@ -10,12 +10,12 @@ import {BROWSER_APP_COMMON_PROVIDERS} from 'angular2/src/platform/browser_common
 import {BrowserDomAdapter} from 'angular2/src/platform/browser/browser_adapter';
 
 import {AnimationBuilder} from 'angular2/src/animate/animation_builder';
-import {MockAnimationBuilder} from 'angular2/src/mock/animation_builder_mock';
-import {MockDirectiveResolver} from 'angular2/src/mock/directive_resolver_mock';
-import {MockViewResolver} from 'angular2/src/mock/view_resolver_mock';
-import {MockLocationStrategy} from 'angular2/src/mock/mock_location_strategy';
+import {MockAnimationBuilder} from '../../mock/mock/animation_builder_mock';
+import {MockDirectiveResolver} from '../../mock/mock/directive_resolver_mock';
+import {MockViewResolver} from '../../mock/mock/view_resolver_mock';
+import {MockLocationStrategy} from '../../mock/mock/mock_location_strategy';
 import {LocationStrategy} from 'angular2/platform/common';
-import {MockNgZone} from 'angular2/src/mock/ng_zone_mock';
+import {MockNgZone} from '../../mock/mock/ng_zone_mock';
 
 import {XHRImpl} from "angular2/src/platform/browser/xhr_impl";
 import {XHR} from 'angular2/compiler';

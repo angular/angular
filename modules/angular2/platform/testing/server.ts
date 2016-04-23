@@ -12,11 +12,11 @@ import {DirectiveResolver, ViewResolver} from 'angular2/compiler';
 import {Parse5DomAdapter} from 'angular2/src/platform/server/parse5_adapter';
 
 import {AnimationBuilder} from 'angular2/src/animate/animation_builder';
-import {MockAnimationBuilder} from 'angular2/src/mock/animation_builder_mock';
-import {MockDirectiveResolver} from 'angular2/src/mock/directive_resolver_mock';
-import {MockViewResolver} from 'angular2/src/mock/view_resolver_mock';
-import {MockLocationStrategy} from 'angular2/src/mock/mock_location_strategy';
-import {MockNgZone} from 'angular2/src/mock/ng_zone_mock';
+import {MockAnimationBuilder} from '../../mock/mock/animation_builder_mock';
+import {MockDirectiveResolver} from '../../mock/mock/directive_resolver_mock';
+import {MockViewResolver} from '../../mock/mock/view_resolver_mock';
+import {MockLocationStrategy} from '../../mock/mock/mock_location_strategy';
+import {MockNgZone} from '../../mock/mock/ng_zone_mock';
 
 import {TestComponentBuilder} from 'angular2/src/testing/test_component_builder';
 import {XHR} from 'angular2/src/compiler/xhr';

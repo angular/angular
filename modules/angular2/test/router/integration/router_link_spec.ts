@@ -25,7 +25,7 @@ import {ListWrapper} from '../../../facade/collection';
 
 import {provide, Component} from 'angular2/core';
 
-import {SpyLocation} from 'angular2/src/mock/location_mock';
+import {SpyLocation} from '../../../mock/mock/location_mock';
 import {
   Router,
   RouteRegistry,

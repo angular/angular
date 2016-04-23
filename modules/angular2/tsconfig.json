@@ -23,6 +23,9 @@
     "router/index.ts",
     "platform-browser/index.ts",
     "platform-server/index.ts",
+    "router/index.ts",
+    "http/index.ts",
+    "mock/index.ts",
 
     "typings/es6-collections/es6-collections.d.ts",
     "typings/es6-promise/es6-promise.d.ts",

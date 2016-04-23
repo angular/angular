@@ -6,7 +6,7 @@
     "experimentalDecorators": true,
     "module": "es2015",
     "moduleResolution": "node",
-    "outDir": "../../../dist/packages-dist/router/",
+    "outDir": "../../../dist/packages-dist/router/esm",
     "paths": {
       "@angular/core": ["../../../dist/packages-dist/core/core.d.ts"],
       "@angular/common": ["../../../dist/packages-dist/common/common.d.ts"]

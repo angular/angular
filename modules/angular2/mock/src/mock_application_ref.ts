@@ -1,9 +1,12 @@
-import {ApplicationRef} from 'angular2/src/core/application_ref';
-import {Injectable} from 'angular2/src/core/di';
-import {Type} from '../../facade/lang';
-import {ComponentRef, ComponentFactory} from 'angular2/src/core/linker/component_factory';
-import {Injector} from 'angular2/src/core/di';
-import {NgZone} from 'angular2/src/core/zone/ng_zone';
+import {
+  ApplicationRef,
+  Injectable,
+  ComponentRef,
+  ComponentFactory,
+  Injector,
+  NgZone
+} from '@angular/core';
+import {Type} from './facade/lang';
 
 /**
  * A no-op implementation of {@link ApplicationRef}, useful for testing.

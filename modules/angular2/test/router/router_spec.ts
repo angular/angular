@@ -17,7 +17,7 @@ import {PromiseWrapper, ObservableWrapper} from '../../facade/async';
 import {ListWrapper} from '../../facade/collection';
 
 import {Router, RootRouter} from '../../router/src/router';
-import {SpyLocation} from 'angular2/src/mock/location_mock';
+import {SpyLocation} from '../../mock/mock/location_mock';
 import {Location} from 'angular2/platform/common';
 
 import {RouteRegistry, ROUTER_PRIMARY_COMPONENT} from '../../router/src/route_registry';

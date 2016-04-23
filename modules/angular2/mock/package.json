@@ -1,0 +1,18 @@
+{
+  "name": "@angular/mock",
+  "version": "0.0.0",
+  "description": "",
+  "main": "mock.js",
+  "jsnext:main": "esm/mock.js",
+  "author": "angular",
+  "license": "MIT",
+
+  "dependencies": {
+    "reflect-metadata": "^0.1.2",
+    "rxjs": "5.0.0-beta.2",
+    "zone.js": "^0.6.6",
+    "@angular/core": "*",
+    "@angular/common": "*",
+    "@angular/compiler": "*"
+  }
+}

@@ -10,7 +10,7 @@ import {
 
 import {stringify} from '../../facade/lang';
 
-import {MockViewResolver} from 'angular2/src/mock/view_resolver_mock';
+import {MockViewResolver} from '../../mock/mock/view_resolver_mock';
 
 import {Component, ViewMetadata} from 'angular2/src/core/metadata';
 

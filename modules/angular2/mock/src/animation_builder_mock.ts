@@ -1,9 +1,11 @@
-import {Injectable} from 'angular2/src/core/di';
-import {AnimationBuilder} from 'angular2/src/animate/animation_builder';
-import {CssAnimationBuilder} from 'angular2/src/animate/css_animation_builder';
-import {CssAnimationOptions} from 'angular2/src/animate/css_animation_options';
-import {Animation} from 'angular2/src/animate/animation';
-import {BrowserDetails} from 'angular2/src/animate/browser_details';
+import {Injectable} from '@angular/core';
+import {
+  AnimationBuilder,
+  CssAnimationBuilder,
+  Animation,
+  BrowserDetails,
+  CssAnimationOptions
+} from '../platform_browser_private';
 
 @Injectable()
 export class MockAnimationBuilder extends AnimationBuilder {

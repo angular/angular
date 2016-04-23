@@ -2,13 +2,13 @@ import {PromiseWrapper, EventEmitter, ObservableWrapper} from './facade/async';
 import {Map, StringMapWrapper} from './facade/collection';
 import {isBlank, isPresent, Type} from './facade/lang';
 import {BaseException} from './facade/exceptions';
-import {Location} from 'angular2/common';
+import {Location} from '@angular/common';
 import {RouteRegistry, ROUTER_PRIMARY_COMPONENT} from './route_registry';
 import {ComponentInstruction, Instruction} from './instruction';
 import {RouterOutlet} from './directives/router_outlet';
 import {getCanActivateHook} from './lifecycle/route_lifecycle_reflector';
 import {RouteDefinition} from './route_config/route_config_impl';
-import {Injectable, Inject} from 'angular2/core';
+import {Injectable, Inject} from '@angular/core';
 
 let _resolveToTrue = PromiseWrapper.resolve(true);
 let _resolveToFalse = PromiseWrapper.resolve(false);

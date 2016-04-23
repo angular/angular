@@ -14,7 +14,7 @@ import {
   CONST_EXPR
 } from './facade/lang';
 import {BaseException} from './facade/exceptions';
-import {Injectable, Inject, OpaqueToken, reflector} from 'angular2/core';
+import {Injectable, Inject, OpaqueToken, reflector} from '@angular/core';
 import {RouteConfig, Route, AuxRoute, RouteDefinition} from './route_config/route_config_impl';
 import {PathMatch, RedirectMatch, RouteMatch} from './rules/rules';
 import {RuleSet} from './rules/rule_set';

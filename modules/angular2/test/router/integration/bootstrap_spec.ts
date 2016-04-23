@@ -37,9 +37,9 @@ import {
   ROUTER_DIRECTIVES
 } from 'angular2/router';
 
-import {MockLocationStrategy} from 'angular2/src/mock/mock_location_strategy';
+import {MockLocationStrategy} from '../../../mock/mock/mock_location_strategy';
 import {ApplicationRef} from 'angular2/src/core/application_ref';
-import {MockApplicationRef} from 'angular2/src/mock/mock_application_ref';
+import {MockApplicationRef} from '../../../mock/mock/mock_application_ref';
 
 class DummyConsole implements Console {
   log(message) {}

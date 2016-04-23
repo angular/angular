@@ -1,2 +1,2 @@
-export * from 'angular2/src/mock/mock_location_strategy';
-export * from 'angular2/src/mock/location_mock';
+export * from '../mock/mock/mock_location_strategy';
+export * from '../mock/mock/location_mock';
