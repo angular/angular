@@ -23,3 +23,4 @@ export var devModeEqual: typeof __core_private__.devModeEqual = __core_private__
 export var uninitialized: typeof __core_private__.uninitialized = __core_private__.uninitialized;
 export var ValueUnwrapper: typeof __core_private__.ValueUnwrapper = __core_private__.ValueUnwrapper;
 export var TemplateRef_: typeof __core_private__.TemplateRef_ = __core_private__.TemplateRef_;
+export var RenderDebugInfo: typeof __core_private__.RenderDebugInfo = __core_private__.RenderDebugInfo;

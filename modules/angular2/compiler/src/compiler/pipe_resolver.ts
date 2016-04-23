@@ -1,4 +1,8 @@
-import {resolveForwardRef, Injectable, PipeMetadata, reflector, _ReflectorReader as ReflectorReader} from 'angular2/core';
+import {resolveForwardRef, Injectable, PipeMetadata, reflector} from 'angular2/core';
+
+import {
+  ReflectorReader
+} from '../../core_private';
 
 import {Type, isPresent, stringify} from '../facade/lang';
 import {BaseException} from '../facade/exceptions';

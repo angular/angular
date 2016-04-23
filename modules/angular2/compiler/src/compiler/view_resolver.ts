@@ -3,8 +3,11 @@ import {
   ViewMetadata,
   ComponentMetadata,
   reflector,
-  _ReflectorReader as ReflectorReader
 } from 'angular2/core';
+
+import {
+  ReflectorReader
+} from '../../core_private';
 
 import {Type, stringify, isBlank, isPresent} from '../facade/lang';
 import {BaseException} from '../facade/exceptions';
