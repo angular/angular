@@ -1,9 +1,12 @@
 library reflection.reflection_capabilities;
 
-import 'package:angular2/src/facade/lang.dart';
-import 'types.dart';
 import 'dart:mirrors';
+
+import 'package:angular2/src/core/metadata/lifecycle_hooks.dart';
+import 'package:angular2/src/facade/lang.dart';
+
 import 'platform_reflection_capabilities.dart';
+import 'types.dart';
 
 var DOT_REGEX = new RegExp('\\.');
 
@@ -243,8 +246,8 @@ class ReflectionCapabilities implements PlatformReflectionCapabilities {
   List _convertParameter(ParameterMirror p) {
     var t = p.type;
     var res = (!t.hasReflectedType || t.reflectedType == dynamic)
-        ? []
-        : [t.reflectedType];
+        ? <Object>[]
+        : <Object>[t.reflectedType];
     res.addAll(p.metadata.map((m) => m.reflectee));
     return res;
   }
@@ -272,7 +275,9 @@ class ReflectionCapabilities implements PlatformReflectionCapabilities {
   }
 
   List interfaces(type) {
-    return _interfacesFromMirror(reflectType(type));
+    final clazz = reflectType(type);
+    _assertDeclaresLifecycleHooks(clazz);
+    return _interfacesFromMirror(clazz);
   }
 
   List _interfacesFromMirror(classMirror) {
@@ -322,5 +327,105 @@ class ReflectionCapabilities implements PlatformReflectionCapabilities {
 
   String importUri(Type type) {
     return '${(reflectClass(type).owner as LibraryMirror).uri}';
+  }
+}
+
+final _lifecycleHookMirrors = <ClassMirror>[
+  reflectType(AfterContentChecked),
+  reflectType(AfterContentInit),
+  reflectType(AfterViewChecked),
+  reflectType(AfterViewInit),
+  reflectType(DoCheck),
+  reflectType(OnChanges),
+  reflectType(OnDestroy),
+  reflectType(OnInit),
+];
+
+/// Checks whether [clazz] implements lifecycle ifaces without declaring them.
+///
+/// Due to Dart implementation details, lifecycle hooks are only called when a
+/// class explicitly declares that it implements the associated interface.
+/// See https://goo.gl/b07Kii for details.
+void _assertDeclaresLifecycleHooks(ClassMirror clazz) {
+  final missingDeclarations = <ClassMirror>[];
+  for (var iface in _lifecycleHookMirrors) {
+    if (!_checkDeclares(clazz, iface: iface) &&
+        _checkImplements(clazz, iface: iface)) {
+      missingDeclarations.add(iface);
+    }
+  }
+  if (missingDeclarations.isNotEmpty) {
+    throw new MissingInterfaceError(clazz, missingDeclarations);
+  }
+}
+
+/// Returns whether [clazz] declares that it implements [iface].
+///
+/// Returns `false` if [clazz] implements [iface] but does not declare it.
+/// Returns `false` if [clazz]'s superclass declares that it
+/// implements [iface].
+bool _checkDeclares(ClassMirror clazz, {ClassMirror iface: null}) {
+  if (iface == null) {
+    throw new ArgumentError.notNull('iface');
+  }
+  return clazz.superinterfaces.contains(iface);
+}
+
+/// Returns whether [clazz] implements [iface].
+///
+/// Returns `true` if [clazz] implements [iface] and does not declare it.
+/// Returns `true` if [clazz]'s superclass implements [iface].
+///
+/// This is an approximation of a JavaScript feature check:
+/// ```js
+/// var matches = true;
+/// for (var prop in iface) {
+///   if (iface.hasOwnProperty(prop)) {
+///     matches = matches && clazz.hasOwnProperty(prop);
+///   }
+/// }
+/// return matches;
+/// ```
+bool _checkImplements(ClassMirror clazz, {ClassMirror iface: null}) {
+  if (iface == null) {
+    throw new ArgumentError.notNull('iface');
+  }
+
+  var matches = true;
+  iface.declarations.forEach((symbol, declarationMirror) {
+    if (!matches) return;
+    if (declarationMirror.isConstructor || declarationMirror.isPrivate) return;
+    matches = clazz.declarations.keys.contains(symbol);
+  });
+  if (!matches && clazz.superclass != null) {
+    matches = _checkImplements(clazz.superclass, iface: iface);
+  }
+  if (!matches && clazz.mixin != clazz) {
+    matches = _checkImplements(clazz.mixin, iface: iface);
+  }
+
+  return matches;
+}
+
+/// Error thrown when a class implements a lifecycle iface it does not declare.
+class MissingInterfaceError extends Error {
+  final ClassMirror clazz;
+  final List<ClassMirror> missingDeclarations;
+
+  MissingInterfaceError(this.clazz, this.missingDeclarations);
+
+  @override
+  String toString() {
+    final buf = new StringBuffer();
+    buf.write('${clazz.simpleName} implements ');
+    if (missingDeclarations.length == 1) {
+      buf.write('an interface but does not declare it: ');
+    } else {
+      buf.write('interfaces but does not declare them: ');
+    }
+    buf.write(
+        missingDeclarations.map((d) => d.simpleName.toString()).join(', '));
+    buf.write('. See https://goo.gl/b07Kii for more info.');
+    return buf.toString();
   }
 }

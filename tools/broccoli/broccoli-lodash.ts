@@ -4,7 +4,7 @@ import path = require('path');
 var _ = require('lodash');
 import {wrapDiffingPlugin, DiffingBroccoliPlugin, DiffResult} from './diffing-broccoli-plugin';
 
-interface LodashRendererOptions {
+export interface LodashRendererOptions {
   encoding?: string;
   context?: any;
   // files option unsupported --- use Funnel on inputTree instead.

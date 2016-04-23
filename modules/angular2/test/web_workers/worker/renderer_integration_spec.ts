@@ -21,7 +21,8 @@ import {
   ViewMetadata,
   Component,
   Injectable,
-  ElementRef
+  ElementRef,
+  ComponentRef
 } from 'angular2/core';
 import {NgIf} from 'angular2/common';
 import {WebWorkerRootRenderer} from "angular2/src/web_workers/worker/renderer";
@@ -42,8 +43,7 @@ import {
   ServiceMessageBrokerFactory,
   ServiceMessageBrokerFactory_
 } from 'angular2/src/web_workers/shared/service_message_broker';
-import {ChangeDetectorGenConfig} from 'angular2/src/core/change_detection/change_detection';
-import {ElementRef_} from 'angular2/src/core/linker/element_ref';
+import {CompilerConfig} from 'angular2/compiler';
 import {
   TEST_BROWSER_PLATFORM_PROVIDERS,
   TEST_BROWSER_APPLICATION_PROVIDERS
@@ -102,8 +102,7 @@ export function main() {
       workerRenderStore = new RenderStore();
       return [
         Serializer,
-        provide(ChangeDetectorGenConfig,
-                {useValue: new ChangeDetectorGenConfig(true, true, false)}),
+        provide(CompilerConfig, {useValue: new CompilerConfig(true, true, false)}),
         provide(RenderStore, {useValue: workerRenderStore}),
         provide(RootRenderer,
                 {
@@ -116,13 +115,13 @@ export function main() {
       ];
     });
 
-    function getRenderElement(elementRef: ElementRef) {
-      var id = workerRenderStore.serialize(elementRef.nativeElement);
+    function getRenderElement(workerEl: any) {
+      var id = workerRenderStore.serialize(workerEl);
       return uiRenderStore.deserialize(id);
     }
 
-    function getRenderer(elementRef: ElementRef) {
-      return (<any>elementRef).internalElement.parentView.renderer;
+    function getRenderer(componentRef: ComponentRef) {
+      return (<any>componentRef.hostView).internalView.renderer;
     }
 
     it('should update text nodes',
@@ -130,7 +129,7 @@ export function main() {
          tcb.overrideView(MyComp, new ViewMetadata({template: '<div>{{ctxProp}}</div>'}))
              .createAsync(MyComp)
              .then((fixture) => {
-               var renderEl = getRenderElement(fixture.elementRef);
+               var renderEl = getRenderElement(fixture.debugElement.nativeElement);
                expect(renderEl).toHaveText('');
 
                fixture.debugElement.componentInstance.ctxProp = 'Hello World!';
@@ -147,32 +146,30 @@ export function main() {
                                       {template: '<input [title]="y" style="position:absolute">'}))
              .createAsync(MyComp)
              .then((fixture) => {
-               var checkSetters = (elr) => {
-                 var renderer = getRenderer(elr);
-                 var el = getRenderElement(elr);
-                 renderer.setElementProperty(elr.nativeElement, 'tabIndex', 1);
+               var checkSetters = (componentRef, workerEl) => {
+                 var renderer = getRenderer(componentRef);
+                 var el = getRenderElement(workerEl);
+                 renderer.setElementProperty(workerEl, 'tabIndex', 1);
                  expect((<HTMLInputElement>el).tabIndex).toEqual(1);
 
-                 renderer.setElementClass(elr.nativeElement, 'a', true);
+                 renderer.setElementClass(workerEl, 'a', true);
                  expect(DOM.hasClass(el, 'a')).toBe(true);
-                 renderer.setElementClass(elr.nativeElement, 'a', false);
+                 renderer.setElementClass(workerEl, 'a', false);
                  expect(DOM.hasClass(el, 'a')).toBe(false);
 
-                 renderer.setElementStyle(elr.nativeElement, 'width', '10px');
+                 renderer.setElementStyle(workerEl, 'width', '10px');
                  expect(DOM.getStyle(el, 'width')).toEqual('10px');
-                 renderer.setElementStyle(elr.nativeElement, 'width', null);
+                 renderer.setElementStyle(workerEl, 'width', null);
                  expect(DOM.getStyle(el, 'width')).toEqual('');
 
-                 renderer.setElementAttribute(elr.nativeElement, 'someattr', 'someValue');
+                 renderer.setElementAttribute(workerEl, 'someattr', 'someValue');
                  expect(DOM.getAttribute(el, 'someattr')).toEqual('someValue');
                };
 
                // root element
-               checkSetters(fixture.elementRef);
+               checkSetters(fixture.componentRef, fixture.debugElement.nativeElement);
                // nested elements
-               checkSetters((<ElementRef_>fixture.elementRef)
-                                .internalElement.componentView.appElements[0]
-                                .ref);
+               checkSetters(fixture.componentRef, fixture.debugElement.children[0].nativeElement);
 
                async.done();
              });
@@ -187,7 +184,7 @@ export function main() {
              .then((fixture) => {
                (<MyComp>fixture.debugElement.componentInstance).ctxBoolProp = true;
                fixture.detectChanges();
-               var el = getRenderElement(fixture.elementRef);
+               var el = getRenderElement(fixture.debugElement.nativeElement);
                expect(DOM.getInnerHTML(el)).toContain('"ng-reflect-ng-if": "true"');
                async.done();
              });
@@ -202,7 +199,7 @@ export function main() {
              .createAsync(MyComp)
              .then((fixture) => {
 
-               var rootEl = getRenderElement(fixture.elementRef);
+               var rootEl = getRenderElement(fixture.debugElement.nativeElement);
                expect(rootEl).toHaveText('');
 
                fixture.debugElement.componentInstance.ctxBoolProp = true;
@@ -223,13 +220,11 @@ export function main() {
            tcb.overrideView(MyComp, new ViewMetadata({template: '<input [title]="y">'}))
                .createAsync(MyComp)
                .then((fixture) => {
-                 var elRef = (<ElementRef_>fixture.elementRef)
-                                 .internalElement.componentView.appElements[0]
-                                 .ref;
-                 getRenderer(elRef)
-                     .invokeElementMethod(elRef.nativeElement, 'setAttribute', ['a', 'b']);
+                 var el = fixture.debugElement.children[0];
+                 getRenderer(fixture.componentRef)
+                     .invokeElementMethod(el.nativeElement, 'setAttribute', ['a', 'b']);
 
-                 expect(DOM.getAttribute(getRenderElement(elRef), 'a')).toEqual('b');
+                 expect(DOM.getAttribute(getRenderElement(el.nativeElement), 'a')).toEqual('b');
                  async.done();
                });
          }));
@@ -240,10 +235,8 @@ export function main() {
                             new ViewMetadata({template: '<input (change)="ctxNumProp = 1">'}))
                .createAsync(MyComp)
                .then((fixture) => {
-                 var elRef = (<ElementRef_>fixture.elementRef)
-                                 .internalElement.componentView.appElements[0]
-                                 .ref;
-                 dispatchEvent(getRenderElement(elRef), 'change');
+                 var el = fixture.debugElement.children[0];
+                 dispatchEvent(getRenderElement(el.nativeElement), 'change');
                  expect(fixture.componentInstance.ctxNumProp).toBe(1);
 
                  fixture.destroy();

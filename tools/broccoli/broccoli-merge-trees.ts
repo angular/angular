@@ -6,9 +6,7 @@ import {wrapDiffingPlugin, DiffingBroccoliPlugin, DiffResult} from './diffing-br
 
 var isWindows = process.platform === 'win32';
 
-interface MergeTreesOptions {
-  overwrite?: boolean;
-}
+export interface MergeTreesOptions { overwrite?: boolean; }
 
 function outputFileSync(sourcePath, destPath) {
   let dirname = path.dirname(destPath);

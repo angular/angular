@@ -2,29 +2,6 @@ import {OpaqueToken, Provider} from 'angular2/src/core/di';
 import {CONST_EXPR, Math, StringWrapper} from 'angular2/src/facade/lang';
 
 /**
- *  @internal
- */
-export const APP_COMPONENT_REF_PROMISE = CONST_EXPR(new OpaqueToken('Promise<ComponentRef>'));
-
-/**
- * An {@link angular2/di/OpaqueToken} representing the application root type in the {@link
- * Injector}.
- *
- * ```
- * @Component(...)
- * class MyApp {
- *   ...
- * }
- *
- * bootstrap(MyApp).then((appRef:ApplicationRef) {
- *   expect(appRef.injector.get(appComponentTypeToken)).toEqual(MyApp);
- * });
- *
- * ```
- */
-export const APP_COMPONENT: OpaqueToken = CONST_EXPR(new OpaqueToken('AppComponent'));
-
-/**
  * A DI Token representing a unique string id assigned to the application by Angular and used
  * primarily for prefixing application attributes and CSS styles when
  * {@link ViewEncapsulation#Emulated} is being used.

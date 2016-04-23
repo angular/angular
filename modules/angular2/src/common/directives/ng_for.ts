@@ -21,17 +21,19 @@ import {BaseException} from "../../facade/exceptions";
  * each instantiated template inherits from the outer context with the given loop variable set
  * to the current item from the iterable.
  *
- * # Local Variables
+ * ### Local Variables
  *
  * `NgFor` provides several exported values that can be aliased to local variables:
  *
  * * `index` will be set to the current loop iteration for each template context.
+ * * `first` will be set to a boolean value indicating whether the item is the first one in the
+ *   iteration.
  * * `last` will be set to a boolean value indicating whether the item is the last one in the
  *   iteration.
  * * `even` will be set to a boolean value indicating whether this item has an even index.
  * * `odd` will be set to a boolean value indicating whether this item has an odd index.
  *
- * # Change Propagation
+ * ### Change Propagation
  *
  * When the contents of the iterator changes, `NgFor` makes the corresponding changes to the DOM:
  *
@@ -54,7 +56,7 @@ import {BaseException} from "../../facade/exceptions";
  * elements were deleted and all new elements inserted). This is an expensive operation and should
  * be avoided if possible.
  *
- * # Syntax
+ * ### Syntax
  *
  * - `<li *ngFor="#item of items; #i = index">...</li>`
  * - `<li template="ngFor #item of items; #i = index">...</li>`
@@ -69,6 +71,7 @@ import {BaseException} from "../../facade/exceptions";
 export class NgFor implements DoCheck {
   /** @internal */
   _ngForOf: any;
+  /** @internal */
   _ngForTrackBy: TrackByFn;
   private _differ: IterableDiffer;
 
@@ -125,6 +128,7 @@ export class NgFor implements DoCheck {
 
     for (var i = 0, ilen = this._viewContainer.length; i < ilen; i++) {
       var viewRef = <EmbeddedViewRef>this._viewContainer.get(i);
+      viewRef.setLocal('first', i === 0);
       viewRef.setLocal('last', i === ilen - 1);
     }
 
@@ -149,7 +153,7 @@ export class NgFor implements DoCheck {
       var tuple = tuples[i];
       // separate moved views from removed views.
       if (isPresent(tuple.record.currentIndex)) {
-        tuple.view = this._viewContainer.detach(tuple.record.previousIndex);
+        tuple.view = <EmbeddedViewRef>this._viewContainer.detach(tuple.record.previousIndex);
         movedTuples.push(tuple);
       } else {
         this._viewContainer.remove(tuple.record.previousIndex);

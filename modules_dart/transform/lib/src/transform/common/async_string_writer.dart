@@ -1,6 +1,7 @@
 library angular2.transform.common.async_string_writer;
 
 import 'dart:async';
+
 import 'package:analyzer/src/generated/java_core.dart';
 
 /// [PrintWriter] implementation that allows asynchronous printing via
@@ -18,6 +19,7 @@ class AsyncStringWriter extends PrintWriter {
 
   AsyncStringWriter([Object content = ""]) : this._(new StringBuffer(content));
 
+  @override
   void print(x) {
     _curr.write(x);
   }
@@ -54,6 +56,7 @@ class AsyncStringWriter extends PrintWriter {
     }).whenComplete(_semaphoreDecrementAndCleanup);
   }
 
+  @override
   String toString() => _bufs.map((buf) => '$buf').join('(async gap)');
 
   void _semaphoreIncrement() {

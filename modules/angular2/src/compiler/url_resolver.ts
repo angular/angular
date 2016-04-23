@@ -11,11 +11,17 @@ import {ListWrapper} from 'angular2/src/facade/collection';
 import {PACKAGE_ROOT_URL} from 'angular2/src/core/application_tokens';
 import {Provider} from 'angular2/src/core/di';
 
+const _ASSET_SCHEME = 'asset:';
+
 /**
  * Create a {@link UrlResolver} with no package prefix.
  */
-export function createWithoutPackagePrefix(): UrlResolver {
+export function createUrlResolverWithoutPackagePrefix(): UrlResolver {
   return new UrlResolver();
+}
+
+export function createOfflineCompileUrlResolver(): UrlResolver {
+  return new UrlResolver(_ASSET_SCHEME);
 }
 
 /**
@@ -36,13 +42,7 @@ export var DEFAULT_PACKAGE_URL_PROVIDER = new Provider(PACKAGE_ROOT_URL, {useVal
  */
 @Injectable()
 export class UrlResolver {
-  private _packagePrefix: string;
-
-  constructor(@Inject(PACKAGE_ROOT_URL) packagePrefix: string = null) {
-    if (isPresent(packagePrefix)) {
-      this._packagePrefix = StringWrapper.stripRight(packagePrefix, "/") + "/";
-    }
-  }
+  constructor(@Inject(PACKAGE_ROOT_URL) private _packagePrefix: string = null) {}
 
   /**
    * Resolves the `url` given the `baseUrl`:
@@ -61,8 +61,19 @@ export class UrlResolver {
     if (isPresent(baseUrl) && baseUrl.length > 0) {
       resolvedUrl = _resolveUrl(baseUrl, resolvedUrl);
     }
-    if (isPresent(this._packagePrefix) && getUrlScheme(resolvedUrl) == "package") {
-      resolvedUrl = resolvedUrl.replace("package:", this._packagePrefix);
+    var resolvedParts = _split(resolvedUrl);
+    var prefix = this._packagePrefix;
+    if (isPresent(prefix) && isPresent(resolvedParts) &&
+        resolvedParts[_ComponentIndex.Scheme] == "package") {
+      var path = resolvedParts[_ComponentIndex.Path];
+      if (this._packagePrefix === _ASSET_SCHEME) {
+        var pathSegements = path.split(/\//);
+        resolvedUrl = `asset:${pathSegements[0]}/lib/${pathSegements.slice(1).join('/')}`;
+      } else {
+        prefix = StringWrapper.stripRight(prefix, '/');
+        path = StringWrapper.stripLeft(path, '/');
+        return `${prefix}/${path}`;
+      }
     }
     return resolvedUrl;
   }

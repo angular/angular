@@ -1,26 +1,8 @@
 library angular2.transform.template_compiler.url_resolver;
 
-import 'package:angular2/compiler.dart';
 import 'package:barback/barback.dart';
 
-class TransformerUrlResolver implements UrlResolver {
-  const TransformerUrlResolver();
-
-  @override
-  String resolve(String baseUrl, String url) {
-    if (url == null) throw new ArgumentError.notNull('url');
-    Uri uri = Uri.parse(url);
-
-    if (!uri.isAbsolute) {
-      if (baseUrl == null) throw new ArgumentError.notNull('baseUrl');
-      if (baseUrl.isEmpty) throw new ArgumentError.value(
-          '(empty string)', 'baseUrl');
-      uri = Uri.parse(baseUrl).resolveUri(uri);
-    }
-
-    return toAssetScheme(uri).toString();
-  }
-}
+export 'package:angular2/src/compiler/url_resolver.dart' show createOfflineCompileUrlResolver;
 
 String toAssetUri(AssetId assetId) {
   if (assetId == null) throw new ArgumentError.notNull('assetId');
@@ -29,8 +11,8 @@ String toAssetUri(AssetId assetId) {
 
 AssetId fromUri(String assetUri) {
   if (assetUri == null) throw new ArgumentError.notNull('assetUri');
-  if (assetUri.isEmpty) throw new ArgumentError.value(
-      '(empty string)', 'assetUri');
+  if (assetUri.isEmpty)
+    throw new ArgumentError.value('(empty string)', 'assetUri');
   var uri = toAssetScheme(Uri.parse(assetUri));
   return new AssetId(
       uri.pathSegments.first, uri.pathSegments.skip(1).join('/'));

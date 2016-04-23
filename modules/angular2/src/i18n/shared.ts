@@ -6,14 +6,17 @@ import {
   HtmlAttrAst,
   HtmlTextAst,
   HtmlCommentAst,
+  HtmlExpansionAst,
+  HtmlExpansionCaseAst,
   htmlVisitAll
 } from 'angular2/src/compiler/html_ast';
-import {isPresent, isBlank} from 'angular2/src/facade/lang';
+import {isPresent, isBlank, StringWrapper} from 'angular2/src/facade/lang';
 import {Message} from './message';
-import {Parser} from 'angular2/src/core/change_detection/parser/parser';
+import {Parser} from 'angular2/src/compiler/expression_parser/parser';
 
-const I18N_ATTR = "i18n";
-const I18N_ATTR_PREFIX = "i18n-";
+export const I18N_ATTR = "i18n";
+export const I18N_ATTR_PREFIX = "i18n-";
+var CUSTOM_PH_EXP = /\/\/[\s\S]*i18n[\s\S]*\([\s\S]*ph[\s\S]*=[\s\S]*"([\s\S]*?)"[\s\S]*\)/g;
 
 /**
  * An i18n error.
@@ -80,10 +83,6 @@ function _isClosingComment(n: HtmlAst): boolean {
   return n instanceof HtmlCommentAst && isPresent(n.value) && n.value == "/i18n";
 }
 
-export function isI18nAttr(n: string): boolean {
-  return n.startsWith(I18N_ATTR_PREFIX);
-}
-
 function _findI18nAttr(p: HtmlElementAst): HtmlAttrAst {
   let i18n = p.attrs.filter(a => a.name == I18N_ATTR);
   return i18n.length == 0 ? null : i18n[0];
@@ -117,12 +116,15 @@ export function removeInterpolation(value: string, source: ParseSourceSpan,
                                     parser: Parser): string {
   try {
     let parsed = parser.splitInterpolation(value, source.toString());
+    let usedNames = new Map<string, number>();
     if (isPresent(parsed)) {
       let res = "";
       for (let i = 0; i < parsed.strings.length; ++i) {
         res += parsed.strings[i];
         if (i != parsed.strings.length - 1) {
-          res += `<ph name="${i}"/>`;
+          let customPhName = getPhNameFromBinding(parsed.expressions[i], i);
+          customPhName = dedupePhName(usedNames, customPhName);
+          res += `<ph name="${customPhName}"/>`;
         }
       }
       return res;
@@ -134,7 +136,23 @@ export function removeInterpolation(value: string, source: ParseSourceSpan,
   }
 }
 
-export function stringifyNodes(nodes: HtmlAst[], parser: Parser) {
+export function getPhNameFromBinding(input: string, index: number): string {
+  let customPhMatch = StringWrapper.split(input, CUSTOM_PH_EXP);
+  return customPhMatch.length > 1 ? customPhMatch[1] : `${index}`;
+}
+
+export function dedupePhName(usedNames: Map<string, number>, name: string): string {
+  let duplicateNameCount = usedNames.get(name);
+  if (isPresent(duplicateNameCount)) {
+    usedNames.set(name, duplicateNameCount + 1);
+    return `${name}_${duplicateNameCount}`;
+  } else {
+    usedNames.set(name, 1);
+    return name;
+  }
+}
+
+export function stringifyNodes(nodes: HtmlAst[], parser: Parser): string {
   let visitor = new _StringifyVisitor(parser);
   return htmlVisitAll(visitor, nodes).join("");
 }
@@ -162,6 +180,10 @@ class _StringifyVisitor implements HtmlAstVisitor {
   }
 
   visitComment(ast: HtmlCommentAst, context: any): any { return ""; }
+
+  visitExpansion(ast: HtmlExpansionAst, context: any): any { return null; }
+
+  visitExpansionCase(ast: HtmlExpansionCaseAst, context: any): any { return null; }
 
   private _join(strs: string[], str: string): string {
     return strs.filter(s => s.length > 0).join(str);

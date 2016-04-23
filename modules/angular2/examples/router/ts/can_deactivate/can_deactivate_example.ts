@@ -5,9 +5,9 @@ import {
   RouteConfig,
   RouteParams,
   ComponentInstruction,
-  ROUTER_DIRECTIVES,
-  APP_BASE_HREF
+  ROUTER_DIRECTIVES
 } from 'angular2/router';
+import {APP_BASE_HREF} from 'angular2/platform/common';
 
 // #docregion routerCanDeactivate
 @Component({

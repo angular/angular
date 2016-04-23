@@ -1,4 +1,7 @@
-import {ElementRef, ElementRef_} from './element_ref';
+import {ElementRef} from './element_ref';
+import {AppElement} from './element';
+import {AppView} from './view';
+import {EmbeddedViewRef} from './view_ref';
 
 /**
  * Represents an Embedded Template that can be used to instantiate Embedded Views.
@@ -26,10 +29,19 @@ export abstract class TemplateRef {
    */
   // TODO(i): rename to anchor or location
   get elementRef(): ElementRef { return null; }
+
+  abstract createEmbeddedView(): EmbeddedViewRef;
 }
 
 export class TemplateRef_ extends TemplateRef {
-  constructor(private _elementRef: ElementRef_) { super(); }
+  constructor(private _appElement: AppElement, private _viewFactory: Function) { super(); }
 
-  get elementRef(): ElementRef_ { return this._elementRef; }
+  createEmbeddedView(): EmbeddedViewRef {
+    var view: AppView<any> = this._viewFactory(this._appElement.parentView.viewUtils,
+                                               this._appElement.parentInjector, this._appElement);
+    view.create(null, null);
+    return view.ref;
+  }
+
+  get elementRef(): ElementRef { return this._appElement.elementRef; }
 }

@@ -84,6 +84,11 @@ function matchUrlSegment(str: string): string {
   var match = RegExpWrapper.firstMatch(SEGMENT_RE, str);
   return isPresent(match) ? match[0] : '';
 }
+var QUERY_PARAM_VALUE_RE = RegExpWrapper.create('^[^\\(\\)\\?;&#]+');
+function matchUrlQueryParamValue(str: string): string {
+  var match = RegExpWrapper.firstMatch(QUERY_PARAM_VALUE_RE, str);
+  return isPresent(match) ? match[0] : '';
+}
 
 export class UrlParser {
   private _remaining: string;
@@ -163,10 +168,10 @@ export class UrlParser {
   parseQueryParams(): {[key: string]: any} {
     var params: {[key: string]: any} = {};
     this.capture('?');
-    this.parseParam(params);
+    this.parseQueryParam(params);
     while (this._remaining.length > 0 && this.peekStartsWith('&')) {
       this.capture('&');
-      this.parseParam(params);
+      this.parseQueryParam(params);
     }
     return params;
   }
@@ -190,6 +195,25 @@ export class UrlParser {
     if (this.peekStartsWith('=')) {
       this.capture('=');
       var valueMatch = matchUrlSegment(this._remaining);
+      if (isPresent(valueMatch)) {
+        value = valueMatch;
+        this.capture(value);
+      }
+    }
+
+    params[key] = value;
+  }
+
+  parseQueryParam(params: {[key: string]: any}): void {
+    var key = matchUrlSegment(this._remaining);
+    if (isBlank(key)) {
+      return;
+    }
+    this.capture(key);
+    var value: any = true;
+    if (this.peekStartsWith('=')) {
+      this.capture('=');
+      var valueMatch = matchUrlQueryParamValue(this._remaining);
       if (isPresent(valueMatch)) {
         value = valueMatch;
         this.capture(value);

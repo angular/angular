@@ -9,6 +9,7 @@ import {
   ExceptionHandler,
   APPLICATION_COMMON_PROVIDERS,
   PLATFORM_COMMON_PROVIDERS,
+  OpaqueToken
 } from 'angular2/core';
 import {COMMON_DIRECTIVES, COMMON_PIPES, FORM_PROVIDERS} from "angular2/common";
 import {
@@ -31,8 +32,12 @@ class PrintLogger {
   logGroupEnd() {}
 }
 
-export const WORKER_APP_PLATFORM: Array<any /*Type | Provider | any[]*/> =
-    CONST_EXPR([PLATFORM_COMMON_PROVIDERS]);
+export const WORKER_APP_PLATFORM_MARKER = CONST_EXPR(new OpaqueToken('WorkerAppPlatformMarker'));
+
+export const WORKER_APP_PLATFORM: Array<any /*Type | Provider | any[]*/> = CONST_EXPR([
+  PLATFORM_COMMON_PROVIDERS,
+  CONST_EXPR(new Provider(WORKER_APP_PLATFORM_MARKER, {useValue: true}))
+]);
 
 export const WORKER_APP_APPLICATION_COMMON: Array<any /*Type | Provider | any[]*/> = CONST_EXPR([
   APPLICATION_COMMON_PROVIDERS,

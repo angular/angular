@@ -18,9 +18,9 @@ import {SpyRouter, SpyLocation} from '../spies';
 
 import {provide, Component} from 'angular2/core';
 import {By} from 'angular2/platform/common_dom';
+import {Location} from 'angular2/platform/common';
 
 import {
-  Location,
   Router,
   RouteRegistry,
   RouterLink,
@@ -34,7 +34,7 @@ import {DOM} from 'angular2/src/platform/dom/dom_adapter';
 import {ResolvedInstruction} from 'angular2/src/router/instruction';
 
 let dummyInstruction = new ResolvedInstruction(
-    new ComponentInstruction('detail', [], null, null, true, '0'), null, {});
+    new ComponentInstruction('detail', [], null, null, true, '0', null, 'Detail'), null, {});
 
 export function main() {
   describe('routerLink directive', function() {

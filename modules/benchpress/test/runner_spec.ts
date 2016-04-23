@@ -17,6 +17,7 @@ import {
   Validator,
   bind,
   provide,
+  ReflectiveInjector,
   Injector,
   Metric,
   Options,
@@ -28,7 +29,7 @@ import {PromiseWrapper} from 'angular2/src/facade/async';
 
 export function main() {
   describe('runner', () => {
-    var injector: Injector;
+    var injector: ReflectiveInjector;
     var runner;
 
     function createRunner(defaultBindings = null): Runner {

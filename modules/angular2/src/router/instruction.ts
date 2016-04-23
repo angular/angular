@@ -296,7 +296,7 @@ export class RedirectInstruction extends ResolvedInstruction {
  * to route lifecycle hooks, like {@link CanActivate}.
  *
  * `ComponentInstruction`s are [hash consed](https://en.wikipedia.org/wiki/Hash_consing). You should
- * never construct one yourself with "new." Instead, rely on {@link Router/RouteRecognizer} to
+ * never construct one yourself with "new." Instead, rely on router's internal recognizer to
  * construct `ComponentInstruction`s.
  *
  * You should not modify this object. It should be treated as immutable.
@@ -310,7 +310,7 @@ export class ComponentInstruction {
    */
   constructor(public urlPath: string, public urlParams: string[], data: RouteData,
               public componentType, public terminal: boolean, public specificity: string,
-              public params: {[key: string]: string} = null) {
+              public params: {[key: string]: string} = null, public routeName: string) {
     this.routeData = isPresent(data) ? data : BLANK_ROUTE_DATA;
   }
 }

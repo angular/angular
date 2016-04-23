@@ -14,8 +14,8 @@ import {
 import {HtmlParser} from 'angular2/src/compiler/html_parser';
 import {MessageExtractor, removeDuplicates} from 'angular2/src/i18n/message_extractor';
 import {Message} from 'angular2/src/i18n/message';
-import {Parser} from 'angular2/src/core/change_detection/parser/parser';
-import {Lexer} from 'angular2/src/core/change_detection/parser/lexer';
+import {Parser} from 'angular2/src/compiler/expression_parser/parser';
+import {Lexer} from 'angular2/src/compiler/expression_parser/lexer';
 
 export function main() {
   describe('MessageExtractor', () => {
@@ -93,6 +93,47 @@ export function main() {
           .toEqual([new Message('Hi <ph name="0"/> and <ph name="1"/>', null, null)]);
     });
 
+    it('should replace interpolation with named placeholders if provided (text nodes)', () => {
+      let res = extractor.extract(`
+        <div i18n>Hi {{one //i18n(ph="FIRST")}} and {{two //i18n(ph="SECOND")}}</div>`,
+                                  'someurl');
+      expect(res.messages)
+          .toEqual([
+            new Message('<ph name="t0">Hi <ph name="FIRST"/> and <ph name="SECOND"/></ph>', null,
+                        null)
+          ]);
+    });
+
+    it('should replace interpolation with named placeholders if provided (attributes)', () => {
+      let res = extractor.extract(`
+      <div title='Hi {{one //i18n(ph="FIRST")}} and {{two //i18n(ph="SECOND")}}'
+        i18n-title></div>`,
+                                  'someurl');
+      expect(res.messages)
+          .toEqual([new Message('Hi <ph name="FIRST"/> and <ph name="SECOND"/>', null, null)]);
+    });
+
+    it('should match named placeholders with extra spacing', () => {
+      let res = extractor.extract(`
+      <div title='Hi {{one // i18n ( ph = "FIRST" )}} and {{two // i18n ( ph = "SECOND" )}}'
+        i18n-title></div>`,
+                                  'someurl');
+      expect(res.messages)
+          .toEqual([new Message('Hi <ph name="FIRST"/> and <ph name="SECOND"/>', null, null)]);
+    });
+
+    it('should suffix duplicate placeholder names with numbers', () => {
+      let res = extractor.extract(`
+      <div title='Hi {{one //i18n(ph="FIRST")}} and {{two //i18n(ph="FIRST")}} and {{three //i18n(ph="FIRST")}}'
+        i18n-title></div>`,
+                                  'someurl');
+      expect(res.messages)
+          .toEqual([
+            new Message('Hi <ph name="FIRST"/> and <ph name="FIRST_1"/> and <ph name="FIRST_2"/>',
+                        null, null)
+          ]);
+    });
+
     it("should handle html content", () => {
       let res = extractor.extract(
           '<div i18n><div attr="value">zero<div>one</div></div><div>two</div></div>', "someurl");
@@ -132,6 +173,24 @@ export function main() {
           .toEqual([
             new Message('<ph name="e0">message</ph>', null, null),
             new Message('value', "meaning", "desc")
+          ]);
+    });
+
+    it("should extract messages from special forms", () => {
+      let res = extractor.extract(`
+        <div>
+          {messages.length, plural,
+             =0 {You have <b>no</b> messages}
+             =1 {You have one message}
+          }
+        </div>
+      `,
+                                  "someurl");
+
+      expect(res.messages)
+          .toEqual([
+            new Message('You have <ph name="e1">no</ph> messages', "plural_0", null),
+            new Message('You have one message', "plural_1", null)
           ]);
     });
 

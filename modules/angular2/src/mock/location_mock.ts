@@ -1,7 +1,7 @@
 import {Injectable} from 'angular2/src/core/di';
 import {EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
 import {ListWrapper} from 'angular2/src/facade/collection';
-import {Location} from 'angular2/src/router/location/location';
+import {Location} from 'angular2/platform/common';
 
 /**
  * A spy for {@link Location} that allows tests to fire simulated location events.

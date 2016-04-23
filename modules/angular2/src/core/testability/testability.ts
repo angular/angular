@@ -15,6 +15,7 @@ import {ObservableWrapper} from 'angular2/src/facade/async';
 export class Testability {
   /** @internal */
   _pendingCount: number = 0;
+  /** @internal */
   _isZoneStable: boolean = true;
   /**
    * Whether any work was done since the last 'whenStable' callback. This is

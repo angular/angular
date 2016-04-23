@@ -35,7 +35,7 @@ export class NumberValueAccessor implements ControlValueAccessor {
   }
 
   registerOnChange(fn: (_: number) => void): void {
-    this.onChange = (value) => { fn(NumberWrapper.parseFloat(value)); };
+    this.onChange = (value) => { fn(value == '' ? null : NumberWrapper.parseFloat(value)); };
   }
   registerOnTouched(fn: () => void): void { this.onTouched = fn; }
 }

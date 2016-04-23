@@ -83,26 +83,6 @@ void initReflector(reflector) {
               directives: const [NgFor])
         ], const [
           const []
-        ], () => new RecursiveCmp()))
-    ..registerGetters({
-      'eventName': (o) => o.eventName,
-      'hprop': (o) => o.hprop,
-      'propValue': (o) => o.propValue,
-      'textBindings': (o) => o.textBindings,
-      'thing': (o) => o.thing,
-      'things': (o) => o.things
-    })
-    ..registerSetters({
-      'field': (o, v) => o.field = v,
-      'hprop': (o, v) => o.hprop = v,
-      'ngForOf': (o, v) => o.ngForOf = v,
-      'prop': (o, v) => o.prop = v,
-      'propName': (o, v) => o.propName = v,
-      'recursiveProp': (o, v) => o.recursiveProp = v
-    })
-    ..registerMethods({
-      'doAThing': (o, List args) => Function.apply(o.doAThing, args),
-      'onMouseOver': (o, List args) => Function.apply(o.onMouseOver, args)
-    });
+        ], () => new RecursiveCmp()));
   i0.initReflector();
 }

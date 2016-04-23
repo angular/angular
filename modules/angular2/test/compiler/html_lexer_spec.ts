@@ -576,6 +576,103 @@ export function main() {
 
     });
 
+    describe("expansion forms", () => {
+      it("should parse an expansion form", () => {
+        expect(tokenizeAndHumanizeParts('{one.two, three, =4 {four} =5 {five} }', true))
+            .toEqual([
+              [HtmlTokenType.EXPANSION_FORM_START],
+              [HtmlTokenType.RAW_TEXT, 'one.two'],
+              [HtmlTokenType.RAW_TEXT, 'three'],
+              [HtmlTokenType.EXPANSION_CASE_VALUE, '4'],
+              [HtmlTokenType.EXPANSION_CASE_EXP_START],
+              [HtmlTokenType.TEXT, 'four'],
+              [HtmlTokenType.EXPANSION_CASE_EXP_END],
+              [HtmlTokenType.EXPANSION_CASE_VALUE, '5'],
+              [HtmlTokenType.EXPANSION_CASE_EXP_START],
+              [HtmlTokenType.TEXT, 'five'],
+              [HtmlTokenType.EXPANSION_CASE_EXP_END],
+              [HtmlTokenType.EXPANSION_FORM_END],
+              [HtmlTokenType.EOF]
+            ]);
+      });
+
+      it("should parse an expansion form with text elements surrounding it", () => {
+        expect(tokenizeAndHumanizeParts('before{one.two, three, =4 {four}}after', true))
+            .toEqual([
+              [HtmlTokenType.TEXT, "before"],
+              [HtmlTokenType.EXPANSION_FORM_START],
+              [HtmlTokenType.RAW_TEXT, 'one.two'],
+              [HtmlTokenType.RAW_TEXT, 'three'],
+              [HtmlTokenType.EXPANSION_CASE_VALUE, '4'],
+              [HtmlTokenType.EXPANSION_CASE_EXP_START],
+              [HtmlTokenType.TEXT, 'four'],
+              [HtmlTokenType.EXPANSION_CASE_EXP_END],
+              [HtmlTokenType.EXPANSION_FORM_END],
+              [HtmlTokenType.TEXT, "after"],
+              [HtmlTokenType.EOF]
+            ]);
+      });
+
+      it("should parse an expansion forms with elements in it", () => {
+        expect(tokenizeAndHumanizeParts('{one.two, three, =4 {four <b>a</b>}}', true))
+            .toEqual([
+              [HtmlTokenType.EXPANSION_FORM_START],
+              [HtmlTokenType.RAW_TEXT, 'one.two'],
+              [HtmlTokenType.RAW_TEXT, 'three'],
+              [HtmlTokenType.EXPANSION_CASE_VALUE, '4'],
+              [HtmlTokenType.EXPANSION_CASE_EXP_START],
+              [HtmlTokenType.TEXT, 'four '],
+              [HtmlTokenType.TAG_OPEN_START, null, 'b'],
+              [HtmlTokenType.TAG_OPEN_END],
+              [HtmlTokenType.TEXT, 'a'],
+              [HtmlTokenType.TAG_CLOSE, null, 'b'],
+              [HtmlTokenType.EXPANSION_CASE_EXP_END],
+              [HtmlTokenType.EXPANSION_FORM_END],
+              [HtmlTokenType.EOF]
+            ]);
+      });
+
+      it("should parse an expansion forms with interpolation in it", () => {
+        expect(tokenizeAndHumanizeParts('{one.two, three, =4 {four {{a}}}}', true))
+            .toEqual([
+              [HtmlTokenType.EXPANSION_FORM_START],
+              [HtmlTokenType.RAW_TEXT, 'one.two'],
+              [HtmlTokenType.RAW_TEXT, 'three'],
+              [HtmlTokenType.EXPANSION_CASE_VALUE, '4'],
+              [HtmlTokenType.EXPANSION_CASE_EXP_START],
+              [HtmlTokenType.TEXT, 'four {{a}}'],
+              [HtmlTokenType.EXPANSION_CASE_EXP_END],
+              [HtmlTokenType.EXPANSION_FORM_END],
+              [HtmlTokenType.EOF]
+            ]);
+      });
+
+      it("should parse nested expansion forms", () => {
+        expect(tokenizeAndHumanizeParts(`{one.two, three, =4 { {xx, yy, =x {one}} }}`, true))
+            .toEqual([
+              [HtmlTokenType.EXPANSION_FORM_START],
+              [HtmlTokenType.RAW_TEXT, 'one.two'],
+              [HtmlTokenType.RAW_TEXT, 'three'],
+              [HtmlTokenType.EXPANSION_CASE_VALUE, '4'],
+              [HtmlTokenType.EXPANSION_CASE_EXP_START],
+
+              [HtmlTokenType.EXPANSION_FORM_START],
+              [HtmlTokenType.RAW_TEXT, 'xx'],
+              [HtmlTokenType.RAW_TEXT, 'yy'],
+              [HtmlTokenType.EXPANSION_CASE_VALUE, 'x'],
+              [HtmlTokenType.EXPANSION_CASE_EXP_START],
+              [HtmlTokenType.TEXT, 'one'],
+              [HtmlTokenType.EXPANSION_CASE_EXP_END],
+              [HtmlTokenType.EXPANSION_FORM_END],
+              [HtmlTokenType.TEXT, ' '],
+
+              [HtmlTokenType.EXPANSION_CASE_EXP_END],
+              [HtmlTokenType.EXPANSION_FORM_END],
+              [HtmlTokenType.EOF]
+            ]);
+      });
+    });
+
     describe('errors', () => {
       it('should include 2 lines of context in message', () => {
         let src = "111\n222\n333\nE\n444\n555\n666\n";
@@ -604,8 +701,9 @@ export function main() {
   });
 }
 
-function tokenizeWithoutErrors(input: string): HtmlToken[] {
-  var tokenizeResult = tokenizeHtml(input, 'someUrl');
+function tokenizeWithoutErrors(input: string,
+                               tokenizeExpansionForms: boolean = false): HtmlToken[] {
+  var tokenizeResult = tokenizeHtml(input, 'someUrl', tokenizeExpansionForms);
   if (tokenizeResult.errors.length > 0) {
     var errorString = tokenizeResult.errors.join('\n');
     throw new BaseException(`Unexpected parse errors:\n${errorString}`);
@@ -613,8 +711,9 @@ function tokenizeWithoutErrors(input: string): HtmlToken[] {
   return tokenizeResult.tokens;
 }
 
-function tokenizeAndHumanizeParts(input: string): any[] {
-  return tokenizeWithoutErrors(input).map(token => [<any>token.type].concat(token.parts));
+function tokenizeAndHumanizeParts(input: string, tokenizeExpansionForms: boolean = false): any[] {
+  return tokenizeWithoutErrors(input, tokenizeExpansionForms)
+      .map(token => [<any>token.type].concat(token.parts));
 }
 
 function tokenizeAndHumanizeSourceSpans(input: string): any[] {

@@ -1,12 +1,11 @@
 import {
   APP_ID,
-  DirectiveResolver,
   NgZone,
   Provider,
-  ViewResolver,
   PLATFORM_COMMON_PROVIDERS,
   PLATFORM_INITIALIZER
 } from 'angular2/core';
+import {DirectiveResolver, ViewResolver} from 'angular2/compiler';
 import {BROWSER_APP_COMMON_PROVIDERS} from 'angular2/src/platform/browser_common';
 import {BrowserDomAdapter} from 'angular2/src/platform/browser/browser_adapter';
 
@@ -15,7 +14,7 @@ import {MockAnimationBuilder} from 'angular2/src/mock/animation_builder_mock';
 import {MockDirectiveResolver} from 'angular2/src/mock/directive_resolver_mock';
 import {MockViewResolver} from 'angular2/src/mock/view_resolver_mock';
 import {MockLocationStrategy} from 'angular2/src/mock/mock_location_strategy';
-import {LocationStrategy} from 'angular2/src/router/location/location_strategy';
+import {LocationStrategy} from 'angular2/platform/common';
 import {MockNgZone} from 'angular2/src/mock/ng_zone_mock';
 
 import {XHRImpl} from "angular2/src/platform/browser/xhr_impl";
@@ -37,7 +36,7 @@ function initBrowserTests() {
 }
 
 /**
- * Default patform providers for testing without a compiler.
+ * Default platform providers for testing without a compiler.
  */
 export const TEST_BROWSER_STATIC_PLATFORM_PROVIDERS: Array<any /*Type | Provider | any[]*/> =
     CONST_EXPR([

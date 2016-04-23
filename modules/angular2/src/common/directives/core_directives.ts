@@ -2,6 +2,7 @@ import {CONST_EXPR, Type} from 'angular2/src/facade/lang';
 import {NgClass} from './ng_class';
 import {NgFor} from './ng_for';
 import {NgIf} from './ng_if';
+import {NgTemplateOutlet} from './ng_template_outlet';
 import {NgStyle} from './ng_style';
 import {NgSwitch, NgSwitchWhen, NgSwitchDefault} from './ng_switch';
 import {NgPlural, NgPluralCase} from './ng_plural';
@@ -50,6 +51,7 @@ export const CORE_DIRECTIVES: Type[] = CONST_EXPR([
   NgClass,
   NgFor,
   NgIf,
+  NgTemplateOutlet,
   NgStyle,
   NgSwitch,
   NgSwitchWhen,

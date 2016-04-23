@@ -63,8 +63,8 @@ function isDefined(obj: any): boolean {
  * possible.
  */
 export class Evaluator {
-  constructor(private service: ts.LanguageService, private typeChecker: ts.TypeChecker,
-              private symbols: Symbols, private moduleNameOf: (fileName: string) => string) {}
+  constructor(private typeChecker: ts.TypeChecker, private symbols: Symbols,
+              private moduleNameOf: (fileName: string) => string) {}
 
   // TODO: Determine if the first declaration is deterministic.
   private symbolFileName(symbol: ts.Symbol): string {

@@ -1,5 +1,4 @@
 /// <reference path="../../typings/node/node.d.ts" />
-/// <reference path="../angular_builder.d.ts" />
 'use strict';
 
 import {MultiCopy} from './../multi_copy';
@@ -12,6 +11,8 @@ var stew = require('broccoli-stew');
 import ts2dart from '../broccoli-ts2dart';
 import dartfmt from '../broccoli-dartfmt';
 import replace from '../broccoli-replace';
+import {AngularBuilderOptions} from '../angular_builder';
+import generateForTest from '../broccoli-generate-for-test';
 
 var global_excludes = [
   'angular2/examples/**/ts/**/*',
@@ -61,17 +62,26 @@ function stripModulePrefix(relativePath: string): string {
   return relativePath.replace(/^modules\//, '');
 }
 
-function getSourceTree() {
+function getSourceTree(options: AngularBuilderOptions) {
   var tsInputTree = modulesFunnel(['**/*.js', '**/*.ts', '**/*.dart'], ['angular1_router/**/*']);
   var transpiled = ts2dart(tsInputTree, {
     generateLibraryName: true,
     generateSourceMap: false,
     translateBuiltins: true,
   });
+
   // Native sources, dart only examples, etc.
   var dartSrcs = modulesFunnel(
       ['**/*.dart', '**/*.ng_meta.json', '**/*.aliases.json', '**/css/**', '**/*.css']);
-  return mergeTrees([transpiled, dartSrcs]);
+
+  var compiledTree = mergeTrees([transpiled, dartSrcs]);
+
+  // Generate test files
+  let generatedDartTestFiles = generateForTest(
+      mergeTrees([compiledTree, new Funnel('packages', {include: ['path/**', 'stack_trace/**']})]),
+      {files: ['*/test/**/*_codegen_typed.dart'], dartPath: options.dartSDK.VM});
+
+  return mergeTrees([compiledTree, generatedDartTestFiles], {overwrite: true});
 }
 
 function fixDartFolderLayout(sourceTree) {
@@ -169,7 +179,7 @@ function getDocsTree() {
 }
 
 module.exports = function makeDartTree(options: AngularBuilderOptions) {
-  var dartSources = dartfmt(getSourceTree(), {dartSDK: options.dartSDK, logs: options.logs});
+  var dartSources = dartfmt(getSourceTree(options), {dartSDK: options.dartSDK, logs: options.logs});
   var sourceTree = mergeTrees([dartSources, getHtmlSourcesTree(), getExamplesJsonTree()]);
   sourceTree = fixDartFolderLayout(sourceTree);
 

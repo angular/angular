@@ -15,7 +15,7 @@ import {
 } from 'angular2/testing_internal';
 import {TimerWrapper, PromiseWrapper} from 'angular2/src/facade/async';
 import {BaseException} from 'angular2/src/facade/exceptions';
-import {Parser} from 'angular2/src/core/change_detection/change_detection';
+import {Parser} from 'angular2/src/compiler/expression_parser/parser';
 
 export function main() {
   describe('fake async', () => {
@@ -34,7 +34,7 @@ export function main() {
     });
 
     it('should work with inject()',
-       inject([Parser], fakeAsync((parser) => { expect(parser).toBeAnInstanceOf(Parser); })));
+       fakeAsync(inject([Parser], (parser) => { expect(parser).toBeAnInstanceOf(Parser); })));
 
     it('should throw on nested calls', () => {
       expect(() => { fakeAsync(() => { fakeAsync(() => null)(); })(); })
@@ -259,6 +259,5 @@ export function main() {
             .toThrowError('The code should be running in the fakeAsync zone to call this function');
       });
     });
-
   });
 }

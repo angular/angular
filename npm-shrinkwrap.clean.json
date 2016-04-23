@@ -2231,6 +2231,9 @@
         "glob": {
           "version": "4.3.5",
           "dependencies": {
+            "inflight": {
+              "version": "1.0.4"
+            },
             "minimatch": {
               "version": "2.0.10"
             }
@@ -3038,15 +3041,7 @@
       }
     },
     "gulp-tslint": {
-      "version": "3.6.0",
-      "dependencies": {
-        "tslint": {
-          "version": "2.5.1"
-        },
-        "underscore.string": {
-          "version": "3.1.1"
-        }
-      }
+      "version": "4.3.5"
     },
     "gulp-typescript": {
       "version": "2.10.0",
@@ -4623,12 +4618,7 @@
       }
     },
     "rcloader": {
-      "version": "0.1.4",
-      "dependencies": {
-        "lodash": {
-          "version": "3.10.1"
-        }
-      }
+      "version": "0.2.0"
     },
     "react": {
       "version": "0.14.5"
@@ -5428,10 +5418,10 @@
       }
     },
     "tslint": {
-      "version": "3.2.1",
+      "version": "3.7.0-dev.2",
       "dependencies": {
         "glob": {
-          "version": "6.0.3"
+          "version": "6.0.4"
         },
         "underscore.string": {
           "version": "3.1.1"
@@ -5465,7 +5455,7 @@
       "version": "0.0.6"
     },
     "typescript": {
-      "version": "1.7.5"
+      "version": "1.9.0-dev.20160409"
     },
     "ua-parser-js": {
       "version": "0.7.10"
@@ -5832,9 +5822,9 @@
       }
     },
     "zone.js": {
-      "version": "0.6.6"
+      "version": "0.6.12"
     }
   },
   "name": "angular-srcs",
-  "version": "2.0.0-beta.11"
+  "version": "2.0.0-beta.15"
 }

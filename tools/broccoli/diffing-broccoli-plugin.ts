@@ -33,7 +33,7 @@ export interface DiffingBroccoliPlugin {
 }
 
 
-type DiffingPluginWrapperFactory = (inputTrees: (BroccoliTree | BroccoliTree[]), options?) =>
+export type DiffingPluginWrapperFactory = (inputTrees: (BroccoliTree | BroccoliTree[]), options?) =>
     BroccoliTree;
 
 

@@ -11,7 +11,7 @@ import {makeDecorator, makeParamDecorator} from '../util/decorators';
 /**
  * Factory for creating {@link InjectMetadata}.
  */
-export interface InjectFactory {
+export interface InjectMetadataFactory {
   (token: any): any;
   new (token: any): InjectMetadata;
 }
@@ -19,7 +19,7 @@ export interface InjectFactory {
 /**
  * Factory for creating {@link OptionalMetadata}.
  */
-export interface OptionalFactory {
+export interface OptionalMetadataFactory {
   (): any;
   new (): OptionalMetadata;
 }
@@ -27,7 +27,7 @@ export interface OptionalFactory {
 /**
  * Factory for creating {@link InjectableMetadata}.
  */
-export interface InjectableFactory {
+export interface InjectableMetadataFactory {
   (): any;
   new (): InjectableMetadata;
 }
@@ -35,7 +35,7 @@ export interface InjectableFactory {
 /**
  * Factory for creating {@link SelfMetadata}.
  */
-export interface SelfFactory {
+export interface SelfMetadataFactory {
   (): any;
   new (): SelfMetadata;
 }
@@ -43,7 +43,7 @@ export interface SelfFactory {
 /**
  * Factory for creating {@link HostMetadata}.
  */
-export interface HostFactory {
+export interface HostMetadataFactory {
   (): any;
   new (): HostMetadata;
 }
@@ -51,7 +51,7 @@ export interface HostFactory {
 /**
  * Factory for creating {@link SkipSelfMetadata}.
  */
-export interface SkipSelfFactory {
+export interface SkipSelfMetadataFactory {
   (): any;
   new (): SkipSelfMetadata;
 }
@@ -59,29 +59,30 @@ export interface SkipSelfFactory {
 /**
  * Factory for creating {@link InjectMetadata}.
  */
-export var Inject: InjectFactory = makeParamDecorator(InjectMetadata);
+export var Inject: InjectMetadataFactory = makeParamDecorator(InjectMetadata);
 
 /**
  * Factory for creating {@link OptionalMetadata}.
  */
-export var Optional: OptionalFactory = makeParamDecorator(OptionalMetadata);
+export var Optional: OptionalMetadataFactory = makeParamDecorator(OptionalMetadata);
 
 /**
  * Factory for creating {@link InjectableMetadata}.
  */
-export var Injectable: InjectableFactory = <InjectableFactory>makeDecorator(InjectableMetadata);
+export var Injectable: InjectableMetadataFactory =
+    <InjectableMetadataFactory>makeDecorator(InjectableMetadata);
 
 /**
  * Factory for creating {@link SelfMetadata}.
  */
-export var Self: SelfFactory = makeParamDecorator(SelfMetadata);
+export var Self: SelfMetadataFactory = makeParamDecorator(SelfMetadata);
 
 /**
  * Factory for creating {@link HostMetadata}.
  */
-export var Host: HostFactory = makeParamDecorator(HostMetadata);
+export var Host: HostMetadataFactory = makeParamDecorator(HostMetadata);
 
 /**
  * Factory for creating {@link SkipSelfMetadata}.
  */
-export var SkipSelf: SkipSelfFactory = makeParamDecorator(SkipSelfMetadata);
+export var SkipSelf: SkipSelfMetadataFactory = makeParamDecorator(SkipSelfMetadata);
