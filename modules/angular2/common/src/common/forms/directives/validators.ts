@@ -1,4 +1,4 @@
-import {forwardRef, Provider, Attribute, Directive} from 'angular2/core';
+import {forwardRef, Provider, Attribute, Directive} from '@angular/core';
 import {CONST_EXPR, NumberWrapper} from '../../../facade/lang';
 import {Validators, NG_VALIDATORS} from '../validators';
 import {AbstractControl} from '../model';

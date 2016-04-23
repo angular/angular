@@ -1,4 +1,4 @@
-import {XHR} from 'angular2/compiler';
+import {XHR} from '@angular/compiler';
 import {PromiseWrapper, PromiseCompleter} from '../facade/promise';
 import {isPresent} from '../facade/lang';
 

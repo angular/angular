@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, ViewEncapsulation} from 'angular2/core';
+import {ChangeDetectionStrategy, ViewEncapsulation} from '@angular/core';
 import {isDefaultChangeDetectionStrategy, ViewType} from '../../../core_private';
 
 import {isPresent, StringWrapper} from '../../facade/lang';

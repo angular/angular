@@ -1,4 +1,4 @@
-import {Directive, Host, ViewContainerRef, TemplateRef} from 'angular2/core';
+import {Directive, Host, ViewContainerRef, TemplateRef} from '@angular/core';
 import {isPresent, isBlank, normalizeBlank, CONST_EXPR} from '../../facade/lang';
 import {ListWrapper, Map} from '../../facade/collection';
 

@@ -1,4 +1,4 @@
-import {reflector} from 'angular2/core';
+import {reflector} from '@angular/core';
 import {
   isPresent,
   IS_DART,

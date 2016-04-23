@@ -1,4 +1,4 @@
-import {__core_private__} from 'angular2/core';
+import {__core_private__} from '@angular/core';
 
 export var isDefaultChangeDetectionStrategy: typeof __core_private__.isDefaultChangeDetectionStrategy = __core_private__.isDefaultChangeDetectionStrategy;
 export type ChangeDetectorState = __core_private__.ChangeDetectorState;

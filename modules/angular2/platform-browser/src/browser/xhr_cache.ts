@@ -1,4 +1,4 @@
-import {XHR} from 'angular2/compiler';
+import {XHR} from '@angular/compiler';
 import {BaseException} from '../facade/exceptions';
 import {global} from '../facade/lang';
 import {PromiseWrapper} from '../facade/promise';

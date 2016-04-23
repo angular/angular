@@ -14,7 +14,7 @@ import {
   NoAnnotationError,
   QueryMetadata,
   resolveForwardRef
-} from 'angular2/core';
+} from '@angular/core';
 import {
   constructDependencies,
   LIFECYCLE_HOOKS_VALUES

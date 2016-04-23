@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, ViewEncapsulation} from 'angular2/core';
+import {ChangeDetectionStrategy, ViewEncapsulation} from '@angular/core';
 import {  
   CHANGE_DETECTION_STRATEGY_VALUES,
   VIEW_ENCAPSULATION_VALUES,

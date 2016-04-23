@@ -1,4 +1,4 @@
-import {Injectable, PipeTransform, WrappedValue, Pipe} from 'angular2/core';
+import {Injectable, PipeTransform, WrappedValue, Pipe} from '@angular/core';
 
 import {
   isNumber,

@@ -7,7 +7,7 @@ import {
   Inject,
   Optional,
   Self
-} from 'angular2/core';
+} from '@angular/core';
 import {CONST_EXPR, isBlank} from '../../../facade/lang';
 import {ListWrapper, StringMapWrapper} from '../../../facade/collection';
 import {BaseException} from '../../../facade/exceptions';

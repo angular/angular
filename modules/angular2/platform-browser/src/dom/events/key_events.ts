@@ -1,4 +1,4 @@
-import {NgZone, Injectable} from 'angular2/core';
+import {NgZone, Injectable} from '@angular/core';
 import {
   isPresent,
   StringWrapper,

@@ -1,4 +1,4 @@
-import {Injectable, PipeTransform, Pipe} from 'angular2/core';
+import {Injectable, PipeTransform, Pipe} from '@angular/core';
 import {CONST, isStringMap} from '../../facade/lang';
 import {StringMapWrapper} from '../../facade/collection';
 

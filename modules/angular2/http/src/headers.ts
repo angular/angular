@@ -19,7 +19,7 @@ import {
  * ### Example ([live demo](http://plnkr.co/edit/MTdwT6?p=preview))
  *
  * ```
- * import {Headers} from 'angular2/http';
+ * import {Headers} from '@angular/http';
  *
  * var firstHeaders = new Headers();
  * firstHeaders.append('Content-Type', 'image/jpeg');

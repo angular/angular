@@ -1,4 +1,4 @@
-import {resolveForwardRef, Injectable, PipeMetadata, reflector} from 'angular2/core';
+import {resolveForwardRef, Injectable, PipeMetadata, reflector} from '@angular/core';
 
 import {
   ReflectorReader

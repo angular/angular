@@ -7,7 +7,7 @@ import {
   Attribute,
   AfterContentInit,
   Input
-} from 'angular2/core';
+} from '@angular/core';
 import {isPresent, NumberWrapper} from '../../facade/lang';
 import {Map} from '../../facade/collection';
 

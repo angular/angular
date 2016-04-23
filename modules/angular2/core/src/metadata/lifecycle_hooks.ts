@@ -242,7 +242,7 @@ export interface DoCheck { ngDoCheck(); }
  * the interval when the binding is destroyed or the countdown completes.
  *
  * ```
- * import {OnDestroy, Pipe, PipeTransform} from 'angular2/core'
+ * import {OnDestroy, Pipe, PipeTransform} from '@angular/core'
  * @Pipe({name: 'countdown', pure: false})
  * class CountDown implements PipeTransform, OnDestroy {
  *   remainingTime:Number;

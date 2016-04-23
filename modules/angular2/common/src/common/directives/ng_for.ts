@@ -10,7 +10,7 @@ import {
   TrackByFn,
   DefaultIterableDiffer,
   CollectionChangeRecord
-} from 'angular2/core';
+} from '@angular/core';
 import {isPresent, isBlank, getTypeNameForDebugging} from '../../facade/lang';
 import {BaseException} from "../../facade/exceptions";
 

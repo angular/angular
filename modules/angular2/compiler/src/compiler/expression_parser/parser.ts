@@ -1,4 +1,4 @@
-import {Injectable} from 'angular2/core';
+import {Injectable} from '@angular/core';
 import {isBlank, isPresent, StringWrapper} from '../../facade/lang';
 import {BaseException} from '../../facade/exceptions';
 import {ListWrapper} from '../../facade/collection';

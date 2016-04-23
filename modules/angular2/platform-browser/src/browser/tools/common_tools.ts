@@ -1,4 +1,4 @@
-import {ApplicationRef, ComponentRef} from 'angular2/core';
+import {ApplicationRef, ComponentRef} from '@angular/core';
 import {isPresent, NumberWrapper} from '../../facade/lang';
 import {window} from '../../facade/browser';
 import {DOM} from "../../dom/dom_adapter";

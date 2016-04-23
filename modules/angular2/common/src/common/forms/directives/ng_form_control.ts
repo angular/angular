@@ -8,7 +8,7 @@ import {
   Inject,
   Optional,
   Self
-} from 'angular2/core';
+} from '@angular/core';
 
 import {CONST_EXPR} from '../../../facade/lang';
 import {StringMapWrapper} from '../../../facade/collection';

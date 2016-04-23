@@ -3,7 +3,7 @@ import {
   ParseSourceFile,
   ParseLocation,
   ParseError
-} from "angular2/src/compiler/parse_util";
+} from "@angular/src/compiler/parse_util";
 
 import {
   bitWiseOr,
@@ -32,9 +32,9 @@ import {
   $COLON,
   $SEMICOLON,
   isNewline
-} from "angular2/src/compiler/css/lexer";
+} from "@angular/src/compiler/css/lexer";
 
-export {CssToken} from "angular2/src/compiler/css/lexer";
+export {CssToken} from "@angular/src/compiler/css/lexer";
 
 export enum BlockType {
   Import,

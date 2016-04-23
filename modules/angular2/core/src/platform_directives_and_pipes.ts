@@ -8,7 +8,7 @@ import {CONST_EXPR} from "./facade/lang";
  * ### Example
  *
  * ```typescript
- * import {PLATFORM_DIRECTIVES} from 'angular2/core';
+ * import {PLATFORM_DIRECTIVES} from '@angular/core';
  * import {OtherDirective} from './myDirectives';
  *
  * @Component({
@@ -34,7 +34,7 @@ export const PLATFORM_DIRECTIVES: OpaqueToken = CONST_EXPR(new OpaqueToken("Plat
  * ### Example
  *
  * ```typescript
- * import {PLATFORM_PIPES} from 'angular2/core';
+ * import {PLATFORM_PIPES} from '@angular/core';
  * import {OtherPipe} from './myPipe';
  *
  * @Component({

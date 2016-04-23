@@ -1,4 +1,4 @@
-import {Injectable, Inject, Optional} from 'angular2/core';
+import {Injectable, Inject, Optional} from '@angular/core';
 import {isBlank} from '../../facade/lang';
 import {BaseException} from '../../facade/exceptions';
 
@@ -26,17 +26,17 @@ import {Location} from './location';
  * ### Example
  *
  * ```
- * import {Component, provide} from 'angular2/core';
- * import {bootstrap} from 'angular2/platform/browser';
+ * import {Component, provide} from '@angular/core';
+ * import {bootstrap} from '@angular/platform/browser';
  * import {
  *   Location,
  *   APP_BASE_HREF
- * } from 'angular2/platform/common';
+ * } from '@angular/platform/common';
  * import {
  *   ROUTER_DIRECTIVES,
  *   ROUTER_PROVIDERS,
  *   RouteConfig
- * } from 'angular2/router';
+ * } from '@angular/router';
  *
  * @Component({directives: [ROUTER_DIRECTIVES]})
  * @RouteConfig([

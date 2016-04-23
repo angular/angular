@@ -8,7 +8,7 @@ import {
   Host,
   OnDestroy,
   Optional
-} from 'angular2/core';
+} from '@angular/core';
 import {
   CONST_EXPR,
   StringWrapper,

@@ -4,7 +4,7 @@ import {Request} from '../static_request';
 import {Response} from '../static_response';
 import {Headers} from '../headers';
 import {ResponseOptions} from '../base_response_options';
-import {Injectable} from 'angular2/core';
+import {Injectable} from '@angular/core';
 import {BrowserXhr} from './browser_xhr';
 import {isPresent} from '../facade/lang';
 import {Observable} from 'rxjs/Observable';
@@ -102,7 +102,7 @@ export class XHRConnection implements Connection {
  * ### Example
  *
  * ```
- * import {Http, MyNodeBackend, HTTP_PROVIDERS, BaseRequestOptions} from 'angular2/http';
+ * import {Http, MyNodeBackend, HTTP_PROVIDERS, BaseRequestOptions} from '@angular/http';
  * @Component({
  *   viewProviders: [
  *     HTTP_PROVIDERS,

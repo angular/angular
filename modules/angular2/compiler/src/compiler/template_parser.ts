@@ -1,4 +1,4 @@
-import {Injectable, Inject, OpaqueToken, Optional} from 'angular2/core';
+import {Injectable, Inject, OpaqueToken, Optional} from '@angular/core';
 import {MAX_INTERPOLATION_VALUES} from '../../core_private';
 
 import {

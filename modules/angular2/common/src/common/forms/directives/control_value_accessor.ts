@@ -1,4 +1,4 @@
-import {OpaqueToken} from 'angular2/core';
+import {OpaqueToken} from '@angular/core';
 import {CONST_EXPR} from '../../../facade/lang';
 
 /**

@@ -1,4 +1,4 @@
-import {__compiler_private__} from 'angular2/compiler';
+import {__compiler_private__} from '@angular/compiler';
 
 export type SelectorMatcher = typeof __compiler_private__.SelectorMatcher;
 export var SelectorMatcher: typeof __compiler_private__.SelectorMatcher = __compiler_private__.SelectorMatcher;

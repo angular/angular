@@ -1,4 +1,4 @@
-import {KeyValueChangeRecord} from "angular2/core";
+import {KeyValueChangeRecord} from "@angular/core";
 import {
   DoCheck,
   KeyValueDiffer,
@@ -6,7 +6,7 @@ import {
   ElementRef,
   Directive,
   Renderer
-} from 'angular2/core';
+} from '@angular/core';
 import {isPresent, isBlank} from '../../facade/lang';
 
 /**
@@ -24,8 +24,8 @@ import {isPresent, isBlank} from '../../facade/lang';
  * ### Example ([live demo](http://plnkr.co/edit/YamGS6GkUh9GqWNQhCyM?p=preview)):
  *
  * ```
- * import {Component} from 'angular2/core';
- * import {NgStyle} from 'angular2/common';
+ * import {Component} from '@angular/core';
+ * import {NgStyle} from '@angular/common';
  *
  * @Component({
  *  selector: 'ngStyle-example',

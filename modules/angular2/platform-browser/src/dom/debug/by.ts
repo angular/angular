@@ -1,4 +1,4 @@
-import {DebugElement} from 'angular2/core';
+import {DebugElement} from '@angular/core';
 import {Type, isPresent} from '../../facade/lang';
 import {Predicate} from '../../facade/collection';
 import {DOM} from '../../dom/dom_adapter';

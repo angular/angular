@@ -1,4 +1,4 @@
-import {Injectable, ComponentFactory, ComponentResolver} from 'angular2/core';
+import {Injectable, ComponentFactory, ComponentResolver} from '@angular/core';
 
 import {
   IS_DART,

@@ -1,4 +1,4 @@
-import {Injectable} from 'angular2/core';
+import {Injectable} from '@angular/core';
 import {SetWrapper} from "../../facade/collection";
 import {NumberWrapper, StringJoiner, StringWrapper, isPresent} from "../../facade/lang";
 import {BaseException} from '../../facade/exceptions';

@@ -1,4 +1,4 @@
-import {Directive, Self} from 'angular2/core';
+import {Directive, Self} from '@angular/core';
 import {NgControl} from './ng_control';
 import {isPresent} from '../../../facade/lang';
 

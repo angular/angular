@@ -1,4 +1,4 @@
-import {PipeTransform, WrappedValue, Injectable, Pipe} from 'angular2/core';
+import {PipeTransform, WrappedValue, Injectable, Pipe} from '@angular/core';
 import {isString, CONST, isBlank} from '../../facade/lang';
 import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
 

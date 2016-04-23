@@ -3,7 +3,7 @@ import {
   ViewMetadata,
   ComponentMetadata,
   reflector,
-} from 'angular2/core';
+} from '@angular/core';
 
 import {
   ReflectorReader

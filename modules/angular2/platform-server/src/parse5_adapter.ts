@@ -15,7 +15,7 @@ import {
 } from './facade/lang';
 import {BaseException} from './facade/exceptions';
 import {SelectorMatcher, CssSelector} from '../compiler_private';
-import {XHR} from 'angular2/compiler';
+import {XHR} from '@angular/compiler';
 
 var _attrToPropMap: {[key: string]: string} = {
   'class': 'className',

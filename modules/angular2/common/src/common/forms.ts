@@ -7,9 +7,7 @@
  * to read information
  * from the form DOM elements.
  *
- * This module is not included in the `angular2` module; you must import the forms module
- * explicitly.
- *
+ * Forms providers are not included in default providers; you must import these providers explicitly.
  */
 export {AbstractControl, Control, ControlGroup, ControlArray} from './forms/model';
 

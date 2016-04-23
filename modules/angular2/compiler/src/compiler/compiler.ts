@@ -1,4 +1,4 @@
-import {provide, Provider, ComponentResolver} from 'angular2/core';
+import {provide, Provider, ComponentResolver} from '@angular/core';
 import {assertionsEnabled, Type, CONST_EXPR} from '../facade/lang';
 
 export * from './template_ast';

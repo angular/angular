@@ -8,7 +8,7 @@
     "moduleResolution": "node",
     "outDir": "../../../dist/packages-dist/http/esm",
     "paths": {
-      "angular2/core": ["../../../dist/packages-dist/core/core.d.ts"]
+      "@angular/core": ["../../../dist/packages-dist/core/core.d.ts"]
     },
     "rootDir": ".",
     "sourceMap": true,

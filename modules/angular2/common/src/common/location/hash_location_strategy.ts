@@ -1,4 +1,4 @@
-import {Injectable, Inject, Optional} from 'angular2/core';
+import {Injectable, Inject, Optional} from '@angular/core';
 import {isPresent} from '../../facade/lang';
 
 import {LocationStrategy, APP_BASE_HREF} from './location_strategy';
@@ -18,17 +18,17 @@ import {UrlChangeListener, PlatformLocation} from './platform_location';
  * ### Example
  *
  * ```
- * import {Component, provide} from 'angular2/core';
+ * import {Component, provide} from '@angular/core';
  * import {
  *   Location,
  *   LocationStrategy,
  *   HashLocationStrategy
- * } from 'angular2/platform/common';
+ * } from '@angular/platform/common';
  * import {
  *   ROUTER_DIRECTIVES,
  *   ROUTER_PROVIDERS,
  *   RouteConfig
- * } from 'angular2/router';
+ * } from '@angular/router';
  *
  * @Component({directives: [ROUTER_DIRECTIVES]})
  * @RouteConfig([

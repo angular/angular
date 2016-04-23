@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, ViewEncapsulation} from 'angular2/core';
+import {ChangeDetectionStrategy, ViewEncapsulation} from '@angular/core';
 import {ChangeDetectorState, ViewType} from '../../../core_private';
 
 import {isBlank, resolveEnumToken} from '../../facade/lang';

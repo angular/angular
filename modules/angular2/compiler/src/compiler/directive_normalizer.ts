@@ -1,4 +1,4 @@
-import {Injectable, ViewEncapsulation} from 'angular2/core';
+import {Injectable, ViewEncapsulation} from '@angular/core';
 
 import {isPresent} from '../facade/lang';
 import {BaseException} from '../facade/exceptions';

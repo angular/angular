@@ -1,4 +1,4 @@
-import {Directive, ViewContainerRef, TemplateRef} from 'angular2/core';
+import {Directive, ViewContainerRef, TemplateRef} from '@angular/core';
 import {isBlank} from '../../facade/lang';
 
 /**

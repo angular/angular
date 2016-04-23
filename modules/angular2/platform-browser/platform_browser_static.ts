@@ -6,7 +6,7 @@ import {
   getPlatform,
   createPlatform,
   assertPlatform
-} from 'angular2/core';
+} from '@angular/core';
 
 import {Type, isPresent, isBlank} from './src/facade/lang';
 import {BROWSER_APP_COMMON_PROVIDERS, BROWSER_PROVIDERS, BROWSER_PLATFORM_MARKER} from './browser_common';

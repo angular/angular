@@ -10,7 +10,7 @@ import {
   KeyValueDiffer,
   CollectionChangeRecord,
   KeyValueChangeRecord
-} from 'angular2/core';
+} from '@angular/core';
 import {isPresent, isString, isArray} from '../../facade/lang';
 import {StringMapWrapper, isListLikeIterable} from '../../facade/collection';
 
@@ -33,8 +33,8 @@ import {StringMapWrapper, isListLikeIterable} from '../../facade/collection';
  * ### Example ([live demo](http://plnkr.co/edit/a4YdtmWywhJ33uqfpPPn?p=preview)):
  *
  * ```
- * import {Component} from 'angular2/core';
- * import {NgClass} from 'angular2/common';
+ * import {Component} from '@angular/core';
+ * import {NgClass} from '@angular/common';
  *
  * @Component({
  *   selector: 'toggle-button',

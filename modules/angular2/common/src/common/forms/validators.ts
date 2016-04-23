@@ -1,4 +1,4 @@
-import {OpaqueToken} from 'angular2/core';
+import {OpaqueToken} from '@angular/core';
 
 import {isBlank, isPresent, CONST_EXPR, isString} from '../../facade/lang';
 import {PromiseWrapper} from '../../facade/promise';

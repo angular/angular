@@ -3,7 +3,7 @@ import {ReadyState, RequestMethod, ResponseType} from '../enums';
 import {Request} from '../static_request';
 import {Response} from '../static_response';
 import {ResponseOptions, BaseResponseOptions} from '../base_response_options';
-import {Injectable} from 'angular2/core';
+import {Injectable} from '@angular/core';
 import {BrowserJsonp} from './browser_jsonp';
 import {makeTypeError} from '../facade/exceptions';
 import {StringWrapper, isPresent} from '../facade/lang';

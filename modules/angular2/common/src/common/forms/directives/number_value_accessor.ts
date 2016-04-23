@@ -1,4 +1,4 @@
-import {Directive, ElementRef, Renderer, Self, forwardRef, Provider} from 'angular2/core';
+import {Directive, ElementRef, Renderer, Self, forwardRef, Provider} from '@angular/core';
 import {CONST_EXPR, NumberWrapper} from '../../../facade/lang';
 import {NG_VALUE_ACCESSOR, ControlValueAccessor} from './control_value_accessor';
 

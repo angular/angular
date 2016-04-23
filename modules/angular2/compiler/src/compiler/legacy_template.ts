@@ -1,4 +1,4 @@
-import {Injectable, Provider, provide} from 'angular2/src/core/di';
+import {Injectable, Provider, provide} from '@angular/src/core/di';
 
 import {
   StringWrapper,

@@ -1,12 +1,9 @@
 import {ListWrapper, StringMapWrapper} from '../../../facade/collection';
 import {
   isArray,
-  isBlank,
-  isNumber,
   isPresent,
   isPrimitive,
-  isString,
-  Type
+  IS_DART,
 } from '../../../facade/lang';
 import {
   AttributeMetadata,
@@ -24,7 +21,7 @@ import {
   ViewChildrenMetadata,
   ViewQueryMetadata,
   QueryMetadata,
-} from 'angular2/src/core/metadata';
+} from '@angular/src/core/metadata';
 
 /**
  * The host of the static resolver is expected to be able to provide module metadata in the form of
@@ -135,7 +132,8 @@ export class StaticReflector {
 
   private conversionMap = new Map<StaticType, (moduleContext: string, expression: any) => any>();
   private initializeConversionMap(): any {
-    let core_metadata = 'angular2/src/core/metadata';
+
+    let core_metadata = IS_DART ? 'angular2/src/core/metadata' : '@angular';
     let conversionMap = this.conversionMap;
     conversionMap.set(this.getStaticType(core_metadata, 'Directive'),
                       (moduleContext, expression) => {

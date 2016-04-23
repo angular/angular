@@ -1,4 +1,4 @@
-import {ComponentFactory} from 'angular2/core';
+import {ComponentFactory} from '@angular/core';
 
 import {
   CompileDirectiveMetadata,

@@ -1,4 +1,4 @@
-import {Inject, Injectable} from 'angular2/core';
+import {Inject, Injectable} from '@angular/core';
 import {SetWrapper} from '../facade/collection';
 
 import {DOM} from './dom_adapter';

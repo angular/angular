@@ -10,7 +10,7 @@ import {
   QueryList,
   ViewEncapsulation,
   TemplateRef
-} from 'angular2/core';
+} from '@angular/core';
 import {
   AppElement,
   AppView,

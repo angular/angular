@@ -9,7 +9,7 @@ import {
   OnDestroy,
   Injector,
   Injectable
-} from 'angular2/core';
+} from '@angular/core';
 import {CONST_EXPR, isPresent} from '../../../facade/lang';
 import {ListWrapper} from '../../../facade/collection';
 import {

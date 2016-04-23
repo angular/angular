@@ -4,7 +4,7 @@ import {
   Testability,
   GetTestability,
   setTestabilityGetter
-} from 'angular2/core';
+} from '@angular/core';
 
 import {ListWrapper} from '../facade/collection';
 import {global, isPresent} from '../facade/lang';

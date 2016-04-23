@@ -1,4 +1,4 @@
-import {ViewEncapsulation, Injectable} from 'angular2/core';
+import {ViewEncapsulation, Injectable} from '@angular/core';
 import {
   CompileIdentifierMetadata,
   CompileDirectiveMetadata

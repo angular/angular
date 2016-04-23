@@ -1,4 +1,4 @@
-import {Injectable} from 'angular2/core';
+import {Injectable} from '@angular/core';
 import {Math} from '../facade/math';
 import {DOM} from '../dom/dom_adapter';
 

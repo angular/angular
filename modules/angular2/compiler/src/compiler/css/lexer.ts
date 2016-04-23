@@ -44,7 +44,7 @@ import {
   $CR,
   $LF,
   $VTAB
-} from "angular2/src/compiler/chars";
+} from "@angular/src/compiler/chars";
 
 export {
   $EOF,
@@ -59,7 +59,7 @@ export {
   $COLON,
   $SEMICOLON,
   isWhitespace
-} from "angular2/src/compiler/chars";
+} from "@angular/src/compiler/chars";
 
 export enum CssTokenType {
   EOF,

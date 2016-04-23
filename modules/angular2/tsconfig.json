@@ -9,7 +9,7 @@
     "outDir": "../../dist/packages-all/",
     "paths": {
       "rxjs/*": ["../../node_modules/rxjs/*"],
-      "angular2/*": ["*"]
+      "@angular/*": ["*"]
     },
     "rootDir": ".",
     "sourceMap": true,

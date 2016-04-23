@@ -1,4 +1,4 @@
-import {Directive, forwardRef, Provider, Optional, Inject, Self} from 'angular2/core';
+import {Directive, forwardRef, Provider, Optional, Inject, Self} from '@angular/core';
 import {
   PromiseWrapper,
   ObservableWrapper,

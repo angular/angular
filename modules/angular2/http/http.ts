@@ -4,7 +4,7 @@
  * The http module provides services to perform http requests. To get started, see the {@link Http}
  * class.
  */
-import {provide} from 'angular2/core';
+import {provide} from '@angular/core';
 import {Http, Jsonp} from './src/http';
 import {XHRBackend, XHRConnection} from './src/backends/xhr_backend';
 import {JSONPBackend, JSONPBackend_, JSONPConnection} from './src/backends/jsonp_backend';
@@ -44,10 +44,10 @@ export {URLSearchParams} from './src/url_search_params';
  * ### Example ([live demo](http://plnkr.co/edit/snj7Nv?p=preview))
  *
  * ```
- * import {Component} from 'angular2/core';
- * import {bootstrap} from 'angular2/platform/browser';
- * import {NgFor} from 'angular2/common';
- * import {HTTP_PROVIDERS, Http} from 'angular2/http';
+ * import {Component} from '@angular/core';
+ * import {bootstrap} from '@angular/platform/browser';
+ * import {NgFor} from '@angular/common';
+ * import {HTTP_PROVIDERS, Http} from '@angular/http';
  *
  * @Component({
  *   selector: 'app',
@@ -100,9 +100,9 @@ export {URLSearchParams} from './src/url_search_params';
  * ### Example ([live demo](http://plnkr.co/edit/aCMEXi?p=preview))
  *
  * ```
- * import {provide} from 'angular2/core';
- * import {bootstrap} from 'angular2/platform/browser';
- * import {HTTP_PROVIDERS, BaseRequestOptions, RequestOptions} from 'angular2/http';
+ * import {provide} from '@angular/core';
+ * import {bootstrap} from '@angular/platform/browser';
+ * import {HTTP_PROVIDERS, BaseRequestOptions, RequestOptions} from '@angular/http';
  *
  * class MyOptions extends BaseRequestOptions {
  *   search: string = 'coreTeam=true';
@@ -118,10 +118,10 @@ export {URLSearchParams} from './src/url_search_params';
  * ### Example ([live demo](http://plnkr.co/edit/7LWALD?p=preview))
  *
  * ```
- * import {provide} from 'angular2/core';
- * import {bootstrap} from 'angular2/platform/browser';
- * import {HTTP_PROVIDERS, Http, Response, XHRBackend} from 'angular2/http';
- * import {MockBackend} from 'angular2/http/testing';
+ * import {provide} from '@angular/core';
+ * import {bootstrap} from '@angular/platform/browser';
+ * import {HTTP_PROVIDERS, Http, Response, XHRBackend} from '@angular/http';
+ * import {MockBackend} from '@angular/http/testing';
  *
  * var people = [{name: 'Jeff'}, {name: 'Tobias'}];
  *
@@ -183,9 +183,9 @@ export const HTTP_BINDINGS = HTTP_PROVIDERS;
  * ### Example ([live demo](http://plnkr.co/edit/vmeN4F?p=preview))
  *
  * ```
- * import {Component} from 'angular2/core';
- * import {NgFor} from 'angular2/common';
- * import {JSONP_PROVIDERS, Jsonp} from 'angular2/http';
+ * import {Component} from '@angular/core';
+ * import {NgFor} from '@angular/common';
+ * import {JSONP_PROVIDERS, Jsonp} from '@angular/http';
  *
  * @Component({
  *   selector: 'app',
@@ -231,9 +231,9 @@ export const HTTP_BINDINGS = HTTP_PROVIDERS;
  * ### Example ([live demo](http://plnkr.co/edit/TFug7x?p=preview))
  *
  * ```
- * import {provide} from 'angular2/core';
- * import {bootstrap} from 'angular2/platform/browser';
- * import {JSONP_PROVIDERS, BaseRequestOptions, RequestOptions} from 'angular2/http';
+ * import {provide} from '@angular/core';
+ * import {bootstrap} from '@angular/platform/browser';
+ * import {JSONP_PROVIDERS, BaseRequestOptions, RequestOptions} from '@angular/http';
  *
  * class MyOptions extends BaseRequestOptions {
  *   search: string = 'coreTeam=true';
@@ -249,9 +249,9 @@ export const HTTP_BINDINGS = HTTP_PROVIDERS;
  * ### Example ([live demo](http://plnkr.co/edit/HDqZWL?p=preview))
  *
  * ```
- * import {provide, Injector} from 'angular2/core';
- * import {JSONP_PROVIDERS, Jsonp, Response, JSONPBackend} from 'angular2/http';
- * import {MockBackend} from 'angular2/http/testing';
+ * import {provide, Injector} from '@angular/core';
+ * import {JSONP_PROVIDERS, Jsonp, Response, JSONPBackend} from '@angular/http';
+ * import {MockBackend} from '@angular/http/testing';
  *
  * var people = [{name: 'Jeff'}, {name: 'Tobias'}];
  * var injector = Injector.resolveAndCreate([

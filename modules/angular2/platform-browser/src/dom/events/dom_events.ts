@@ -1,4 +1,4 @@
-import {Injectable} from 'angular2/core';
+import {Injectable} from '@angular/core';
 
 import {DOM} from '../dom_adapter';
 import {EventManagerPlugin} from './event_manager';

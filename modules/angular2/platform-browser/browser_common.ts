@@ -9,10 +9,10 @@ import {
   PLATFORM_COMMON_PROVIDERS,
   OpaqueToken,
   Testability
-} from "angular2/core";
+} from "@angular/core";
 import {wtfInit} from './core_private';
-import {XHR} from 'angular2/compiler';
-import {COMMON_DIRECTIVES, COMMON_PIPES, FORM_PROVIDERS} from "angular2/common";
+import {XHR} from '@angular/compiler';
+import {COMMON_DIRECTIVES, COMMON_PIPES, FORM_PROVIDERS} from "@angular/common";
 
 import {CONST_EXPR, IS_DART} from './src/facade/lang';
 

@@ -1,4 +1,4 @@
-import {__core_private__} from 'angular2/core';
+import {__core_private__} from '@angular/core';
 
 export type RenderDebugInfo = __core_private__.RenderDebugInfo;
 export var RenderDebugInfo: typeof __core_private__.RenderDebugInfo = __core_private__.RenderDebugInfo;

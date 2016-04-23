@@ -1,4 +1,4 @@
-import {Injectable, Inject, OpaqueToken, NgZone} from 'angular2/core';
+import {Injectable, Inject, OpaqueToken, NgZone} from '@angular/core';
 
 import {CONST_EXPR} from '../../facade/lang';
 import {BaseException} from '../../facade/exceptions';

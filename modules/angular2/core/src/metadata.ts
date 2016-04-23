@@ -261,7 +261,7 @@ export interface ComponentMetadataFactory {
  * ### Example as TypeScript Decorator
  *
  * ```
- * import {Component, View} from "angular2/core";
+ * import {Component, View} from "@angular/core";
  *
  * @Component({...})
  * class MyComponent {
@@ -363,7 +363,7 @@ export interface AttributeMetadataFactory {
  * ### Example as TypeScript Decorator
  *
  * ```
- * import {Query, QueryList, Component} from "angular2/core";
+ * import {Query, QueryList, Component} from "@angular/core";
  *
  * @Component({...})
  * class MyComponent {

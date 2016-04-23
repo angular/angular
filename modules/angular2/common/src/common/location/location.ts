@@ -1,4 +1,4 @@
-import {Injectable, Inject} from 'angular2/core';
+import {Injectable, Inject} from '@angular/core';
 import {EventEmitter, ObservableWrapper} from '../../facade/async';
 
 import {LocationStrategy} from './location_strategy';
@@ -22,13 +22,13 @@ import {LocationStrategy} from './location_strategy';
  * ### Example
  *
  * ```
- * import {Component} from 'angular2/core';
- * import {Location} from 'angular2/platform/common';
+ * import {Component} from '@angular/core';
+ * import {Location} from '@angular/platform/common';
  * import {
  *   ROUTER_DIRECTIVES,
  *   ROUTER_PROVIDERS,
  *   RouteConfig
- * } from 'angular2/router';
+ * } from '@angular/router';
  *
  * @Component({directives: [ROUTER_DIRECTIVES]})
  * @RouteConfig([

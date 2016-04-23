@@ -12,7 +12,7 @@ import {
   ContentChildMetadata,
   ViewChildMetadata,
   reflector
-  } from 'angular2/core';
+  } from '@angular/core';
 import {ReflectorReader} from "../../core_private";
 
 import {Type, isPresent, stringify} from '../facade/lang';

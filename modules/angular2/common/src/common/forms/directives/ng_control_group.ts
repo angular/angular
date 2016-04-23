@@ -9,7 +9,7 @@ import {
   forwardRef,
   Provider,
   Self
-} from 'angular2/core';
+} from '@angular/core';
 import {CONST_EXPR} from '../../../facade/lang';
 
 import {ControlContainer} from './control_container';
@@ -35,7 +35,7 @@ const controlGroupProvider =
  *   directives: [FORM_DIRECTIVES],
  *   template: `
  *     <div>
- *       <h2>Angular2 Control &amp; ControlGroup Example</h2>
+ *       <h2>Angular Control &amp; ControlGroup Example</h2>
  *       <form #f="ngForm">
  *         <div ngControlGroup="name" #cg-name="form">
  *           <h3>Enter your name:</h3>

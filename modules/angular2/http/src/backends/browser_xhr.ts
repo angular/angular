@@ -1,4 +1,4 @@
-import {Injectable} from 'angular2/core';
+import {Injectable} from '@angular/core';
 
 /**
  * A backend for http that uses the `XMLHttpRequest` browser API.
