@@ -8,8 +8,7 @@
     "moduleResolution": "node",
     "outDir": "../../../dist/packages-dist/http/",
     "paths": {
-      "@angular/core": ["../../../dist/packages-dist/core/core.d.ts"],
-      "@angular/common": ["../../../dist/packages-dist/common/common.d.ts"]
+      "@angular/core": ["../../../dist/packages-dist/core/core.d.ts"]
     },
     "rootDir": ".",
     "sourceMap": true,

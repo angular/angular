@@ -1,7 +1,6 @@
 import {Component, provide} from '@angular/core';
 import {bootstrap} from '@angular/platform-browser';
 import {
-  CanActivate,
   RouteConfig,
   ComponentInstruction,
   ROUTER_DIRECTIVES,
@@ -9,7 +8,7 @@ import {
   RouteParams,
   OnReuse
 } from '@angular/router';
-import {APP_BASE_HREF} from '@angular/platform/common';
+import {APP_BASE_HREF} from '@angular/common';
 
 
 // #docregion reuseCmp

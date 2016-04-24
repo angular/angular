@@ -8,7 +8,10 @@ for PACKAGE in \
   common \
   http \
   platform-browser \
-  platform-server
+  platform-server \
+  router \
+  testing \
+  upgrade
 do
   DESTDIR=./dist/packages-dist/${PACKAGE}
   echo "====== PUBLISHING: ${DESTDIR} ====="

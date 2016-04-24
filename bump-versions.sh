@@ -8,7 +8,10 @@ for PACKAGE in \
   common \
   http \
   platform-browser \
-  platform-server
+  platform-server \
+  router \
+  testing \
+  upgrade
 do
   SRCDIR=./modules/angular2/${PACKAGE}
   echo "====== BUMPING version for: ${SRCDIR} ====="
