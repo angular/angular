@@ -1,4 +1,12 @@
-import {Component, Directive, Output, EventEmitter} from 'angular2/core';
+import {
+  Component,
+  Directive,
+  Output,
+  EventEmitter,
+  Provider,
+  forwardRef,
+  Input
+} from 'angular2/core';
 import {
   ComponentFixture,
   afterEach,
@@ -35,7 +43,6 @@ import {
   Validator,
   RadioButtonState
 } from 'angular2/common';
-import {Provider, forwardRef, Input} from 'angular2/core';
 import {By} from 'angular2/platform/browser';
 import {ListWrapper} from 'angular2/src/facade/collection';
 import {ObservableWrapper, TimerWrapper} from 'angular2/src/facade/async';

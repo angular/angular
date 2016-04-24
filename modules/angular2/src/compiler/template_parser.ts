@@ -4,9 +4,15 @@ import {
   SetWrapper,
   MapWrapper
 } from 'angular2/src/facade/collection';
-import {RegExpWrapper, isPresent, StringWrapper, isBlank, isArray} from 'angular2/src/facade/lang';
+import {
+  CONST_EXPR,
+  RegExpWrapper,
+  isPresent,
+  StringWrapper,
+  isBlank,
+  isArray
+} from 'angular2/src/facade/lang';
 import {Injectable, Inject, OpaqueToken, Optional} from 'angular2/core';
-import {CONST_EXPR} from 'angular2/src/facade/lang';
 import {BaseException} from 'angular2/src/facade/exceptions';
 import {
   AST,

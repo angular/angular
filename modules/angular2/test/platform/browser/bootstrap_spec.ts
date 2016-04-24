@@ -14,7 +14,7 @@ import {
 } from 'angular2/testing_internal';
 import {IS_DART, isPresent, stringify} from 'angular2/src/facade/lang';
 import {bootstrap, BROWSER_PROVIDERS, BROWSER_APP_PROVIDERS} from 'angular2/platform/browser';
-import {ApplicationRef, PlatformRef} from 'angular2/src/core/application_ref';
+import {ApplicationRef, PlatformRef, disposePlatform} from 'angular2/src/core/application_ref';
 import {Console} from 'angular2/src/core/console';
 import {Component, Directive, OnDestroy} from 'angular2/core';
 import {DOM} from 'angular2/src/platform/dom/dom_adapter';
@@ -30,7 +30,6 @@ import {
   createPlatform,
   ReflectiveInjector
 } from 'angular2/core';
-import {disposePlatform} from 'angular2/src/core/application_ref';
 import {ExceptionHandler, BaseException} from 'angular2/src/facade/exceptions';
 import {Testability, TestabilityRegistry} from 'angular2/src/core/testability/testability';
 import {ComponentRef} from "angular2/src/core/linker/component_factory";

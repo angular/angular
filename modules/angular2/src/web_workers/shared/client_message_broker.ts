@@ -1,5 +1,12 @@
 import {MessageBus} from "angular2/src/web_workers/shared/message_bus";
-import {print, isPresent, DateWrapper, stringify} from "angular2/src/facade/lang";
+import {
+  print,
+  isPresent,
+  DateWrapper,
+  stringify,
+  Type,
+  StringWrapper
+} from "angular2/src/facade/lang";
 import {
   PromiseCompleter,
   PromiseWrapper,
@@ -9,7 +16,6 @@ import {
 import {StringMapWrapper, MapWrapper} from "angular2/src/facade/collection";
 import {Serializer} from "angular2/src/web_workers/shared/serializer";
 import {Injectable} from "angular2/src/core/di";
-import {Type, StringWrapper} from "angular2/src/facade/lang";
 export {Type} from "angular2/src/facade/lang";
 
 export abstract class ClientMessageBrokerFactory {

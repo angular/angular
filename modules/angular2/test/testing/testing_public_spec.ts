@@ -16,9 +16,8 @@ import {
   TestComponentBuilder
 } from 'angular2/testing';
 
-import {Injectable, bind} from 'angular2/core';
+import {Injectable, bind, Directive, Component, ViewMetadata} from 'angular2/core';
 import {NgIf} from 'angular2/common';
-import {Directive, Component, ViewMetadata} from 'angular2/core';
 import {PromiseWrapper} from 'angular2/src/facade/promise';
 
 // Services, and components for the tests.

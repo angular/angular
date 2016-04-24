@@ -32,7 +32,8 @@ import {
   stringify,
   isBlank,
   CONST,
-  CONST_EXPR
+  CONST_EXPR,
+  IS_DART
 } from 'angular2/src/facade/lang';
 import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
 import {
@@ -58,9 +59,7 @@ import {
   ReflectiveInjector
 } from 'angular2/core';
 
-import {NgIf, NgFor} from 'angular2/common';
-
-import {AsyncPipe} from 'angular2/common';
+import {NgIf, NgFor, AsyncPipe} from 'angular2/common';
 
 import {
   PipeTransform,
@@ -93,7 +92,6 @@ import {ElementRef} from 'angular2/src/core/linker/element_ref';
 import {TemplateRef} from 'angular2/src/core/linker/template_ref';
 
 import {Renderer} from 'angular2/src/core/render';
-import {IS_DART} from 'angular2/src/facade/lang';
 
 const ANCHOR_ELEMENT = CONST_EXPR(new OpaqueToken('AnchorElement'));
 
