@@ -1,8 +1,8 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 cd `dirname $0`
 
-for package in \
+for PACKAGE in \
   core \
   compiler \
   common \
@@ -10,13 +10,15 @@ for package in \
   platform-browser \
   platform-server
 do
-  TSCONFIG=./modules/angular2/${package}/tsconfig.json
-  echo "====== COMPILING: ${TSCONFIG} ====="
-  rm -rf ./dist/packages-dist/${package}
-  $(npm bin)/tsc -p ${TSCONFIG}
-  TSCONFIG=./modules/angular2/${package}/tsconfig-es2015.json
-  echo "====== COMPILING: ${TSCONFIG} ====="
-  $(npm bin)/tsc -p ${TSCONFIG}
+  SRCDIR=./modules/angular2/${PACKAGE}
+  DESTDIR=./dist/packages-dist/${PACKAGE}
+  echo "====== COMPILING: ${SRCDIR}/tsconfig.json ====="
+  rm -rf ${DESTDIR}
+  $(npm bin)/tsc -p ${SRCDIR}/tsconfig.json
+  cp ${SRCDIR}/package.json ${DESTDIR}/
+
+  echo "====== COMPILING: ${SRCDIR}/tsconfig-es2015.json ====="
+  $(npm bin)/tsc -p ${SRCDIR}/tsconfig-es2015.json
 done
 
 TSCONFIG=./modules/angular2/tsconfig.json

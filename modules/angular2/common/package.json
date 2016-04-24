@@ -1,0 +1,13 @@
+{
+  "name": "@angular/common",
+  "version": "0.0.0",
+  "description": "",
+  "main": "common.js",
+  "jsnext:main": "esm/common.js",
+  "author": "angular",
+  "license": "MIT",
+
+  "peerDependencies": {
+    "@angular/core": "*"
+  }
+}
