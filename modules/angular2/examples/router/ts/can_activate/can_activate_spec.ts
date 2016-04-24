@@ -1,5 +1,5 @@
-import {verifyNoBrowserErrors, browser} from 'angular2/src/testing/e2e_util';
-import {expect} from 'angular2/testing';
+import {verifyNoBrowserErrors, browser} from '@angular/src/testing/e2e_util';
+import {expect} from '@angular/testing';
 
 function waitForElement(selector: string) {
   var EC = (<any>protractor).ExpectedConditions;
@@ -11,7 +11,7 @@ describe('reuse example app', function() {
 
   afterEach(verifyNoBrowserErrors);
 
-  var URL = 'angular2/examples/router/ts/can_activate/';
+  var URL = '@angular/examples/router/ts/can_activate/';
 
   it('should navigate to user 1', function() {
     browser.get(URL);

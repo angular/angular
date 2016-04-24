@@ -17,7 +17,6 @@ class TSToDartTranspiler implements DiffingBroccoliPlugin {
     options.tsconfig = path.join(inputPath, options.tsconfig);
     // Workaround for https://github.com/dart-lang/dart_style/issues/493
     var ts2dart = require('ts2dart');
-    console.log('>>>>', JSON.stringify(options));
     this.transpiler = new ts2dart.Transpiler(options);
   }
 

@@ -4,7 +4,7 @@ import {
   forwardRef,
   resolveForwardRef,
   ForwardRefFn
-} from 'angular2/core';
+} from '@angular/core';
 
 // #docregion forward_ref_fn
 var ref = forwardRef(() => Lock);

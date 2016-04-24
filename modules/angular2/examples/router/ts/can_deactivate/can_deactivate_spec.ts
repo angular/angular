@@ -1,5 +1,5 @@
-import {verifyNoBrowserErrors, browser} from 'angular2/src/testing/e2e_util';
-import {expect} from 'angular2/testing';
+import {verifyNoBrowserErrors, browser} from '@angular/src/testing/e2e_util';
+import {expect} from '@angular/testing';
 
 function waitForElement(selector: string) {
   var EC = (<any>protractor).ExpectedConditions;
@@ -16,7 +16,7 @@ describe('can deactivate example app', function() {
 
   afterEach(verifyNoBrowserErrors);
 
-  var URL = 'angular2/examples/router/ts/can_deactivate/';
+  var URL = '@angular/examples/router/ts/can_deactivate/';
 
   it('should not navigate away when prompt is cancelled', function() {
     browser.get(URL);

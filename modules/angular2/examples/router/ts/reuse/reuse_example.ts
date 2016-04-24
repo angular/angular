@@ -1,5 +1,5 @@
-import {Component, provide} from 'angular2/core';
-import {bootstrap} from 'angular2/platform/browser';
+import {Component, provide} from '@angular/core';
+import {bootstrap} from '@angular/platform-browser';
 import {
   CanActivate,
   RouteConfig,
@@ -8,8 +8,8 @@ import {
   CanReuse,
   RouteParams,
   OnReuse
-} from 'angular2/router';
-import {APP_BASE_HREF} from 'angular2/platform/common';
+} from '@angular/router';
+import {APP_BASE_HREF} from '@angular/platform/common';
 
 
 // #docregion reuseCmp
@@ -54,5 +54,5 @@ class AppCmp {
 
 export function main() {
   return bootstrap(AppCmp,
-                   [provide(APP_BASE_HREF, {useValue: '/angular2/examples/router/ts/reuse'})]);
+                   [provide(APP_BASE_HREF, {useValue: '/@angular/examples/router/ts/reuse'})]);
 }

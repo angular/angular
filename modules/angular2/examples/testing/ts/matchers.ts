@@ -1,4 +1,4 @@
-import {expect} from 'angular2/testing';
+import {expect} from '@angular/testing';
 
 var value: any;
 var element: any;
