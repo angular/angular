@@ -1,6 +1,6 @@
 {
   "name": "@angular/platform-browser",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "description": "",
   "main": "platform_browser.js",
   "jsnext:main": "esm/platform_browser.js",

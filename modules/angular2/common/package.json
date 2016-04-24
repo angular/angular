@@ -1,6 +1,6 @@
 {
   "name": "@angular/common",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "description": "",
   "main": "common.js",
   "jsnext:main": "esm/common.js",

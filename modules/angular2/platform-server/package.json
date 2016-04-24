@@ -1,6 +1,6 @@
 {
   "name": "@angular/platform-server",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "description": "",
   "main": "platform_server.js",
   "jsnext:main": "esm/platform_server.js",

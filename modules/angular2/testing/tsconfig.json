@@ -8,7 +8,10 @@
     "moduleResolution": "node",
     "outDir": "../../../dist/packages-dist/testing/",
     "paths": {
-      "@angular/core": ["../../../dist/packages-dist/core/core.d.ts"]
+      "@angular/core": ["../../../dist/packages-dist/core/core.d.ts"],
+      "@angular/common": ["../../../dist/packages-dist/common/common.d.ts"],
+      "@angular/compiler": ["../../../dist/packages-dist/compiler/compiler.d.ts"],
+      "@angular/platform-browser": ["../../../dist/packages-dist/platform-browser/platform_browser.d.ts"]
     },
     "rootDir": ".",
     "sourceMap": true,
@@ -20,6 +23,7 @@
     "../typings/es6-collections/es6-collections.d.ts",
     "../typings/es6-promise/es6-promise.d.ts",
     "../manual_typings/globals.d.ts",
+    "../typings/jasmine/jasmine.d.ts",
     "../../../node_modules/zone.js/dist/zone.js.d.ts"
   ]
 }

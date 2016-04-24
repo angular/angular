@@ -1,12 +1,11 @@
 {
   "name": "@angular/router",
-  "version": "0.0.0",
+  "version": "0.0.3",
   "description": "",
   "main": "router.js",
   "jsnext:main": "esm/router.js",
   "author": "angular",
   "license": "MIT",
-
   "peerDependencies": {
     "@angular/core": "*",
     "@angular/common": "*",
