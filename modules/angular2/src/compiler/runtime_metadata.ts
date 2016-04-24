@@ -38,7 +38,6 @@ import {
   HostMetadata,
   SkipSelfMetadata
 } from 'angular2/src/core/di/metadata';
-import {AttributeMetadata} from 'angular2/src/core/metadata/di';
 import {ReflectorReader} from 'angular2/src/core/reflection/reflector_reader';
 
 @Injectable()
@@ -208,7 +207,7 @@ export class RuntimeMetadataResolver {
     }
     return deps.map((dep) => {
       var compileToken;
-      var p = <AttributeMetadata>dep.properties.find(p => p instanceof AttributeMetadata);
+      var p = <dimd.AttributeMetadata>dep.properties.find(p => p instanceof dimd.AttributeMetadata);
       var isAttribute = false;
       if (isPresent(p)) {
         compileToken = this.getTokenMetadata(p.attributeName);

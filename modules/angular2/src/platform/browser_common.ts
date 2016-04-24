@@ -18,11 +18,9 @@ import {Testability} from 'angular2/src/core/testability/testability';
 import {DOM} from 'angular2/src/platform/dom/dom_adapter';
 import {DomEventsPlugin} from 'angular2/src/platform/dom/events/dom_events';
 import {KeyEventsPlugin} from 'angular2/src/platform/dom/events/key_events';
-import {HammerGesturesPlugin} from 'angular2/src/platform/dom/events/hammer_gestures';
 import {DOCUMENT} from 'angular2/src/platform/dom/dom_tokens';
 import {DomRootRenderer, DomRootRenderer_} from 'angular2/src/platform/dom/dom_renderer';
-import {DomSharedStylesHost} from 'angular2/src/platform/dom/shared_styles_host';
-import {SharedStylesHost} from "angular2/src/platform/dom/shared_styles_host";
+import {DomSharedStylesHost, SharedStylesHost} from 'angular2/src/platform/dom/shared_styles_host';
 import {BrowserDetails} from "angular2/src/animate/browser_details";
 import {AnimationBuilder} from "angular2/src/animate/animation_builder";
 import {BrowserDomAdapter} from './browser/browser_adapter';
@@ -32,7 +30,8 @@ import {wtfInit} from 'angular2/src/core/profile/wtf_init';
 import {EventManager, EVENT_MANAGER_PLUGINS} from "angular2/src/platform/dom/events/event_manager";
 import {
   HAMMER_GESTURE_CONFIG,
-  HammerGestureConfig
+  HammerGestureConfig,
+  HammerGesturesPlugin
 } from 'angular2/src/platform/dom/events/hammer_gestures';
 import {ELEMENT_PROBE_PROVIDERS} from 'angular2/platform/common_dom';
 export {DOCUMENT} from 'angular2/src/platform/dom/dom_tokens';

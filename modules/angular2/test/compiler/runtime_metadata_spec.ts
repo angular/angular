@@ -13,7 +13,7 @@ import {
   beforeEachProviders
 } from 'angular2/testing_internal';
 
-import {stringify} from 'angular2/src/facade/lang';
+import {IS_DART, stringify} from 'angular2/src/facade/lang';
 import {RuntimeMetadataResolver} from 'angular2/src/compiler/runtime_metadata';
 import {LifecycleHooks, LIFECYCLE_HOOKS_VALUES} from 'angular2/src/core/metadata/lifecycle_hooks';
 import {
@@ -35,7 +35,6 @@ import {
 
 import {TEST_PROVIDERS} from './test_bindings';
 import {MODULE_SUFFIX} from 'angular2/src/compiler/util';
-import {IS_DART} from 'angular2/src/facade/lang';
 import {PLATFORM_DIRECTIVES} from 'angular2/src/core/platform_directives_and_pipes';
 import {MalformedStylesComponent} from './runtime_metadata_fixture';
 

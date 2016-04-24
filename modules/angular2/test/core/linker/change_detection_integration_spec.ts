@@ -16,7 +16,9 @@ import {
 } from 'angular2/testing_internal';
 
 import {
+  IS_DART,
   CONST_EXPR,
+  Type,
   isPresent,
   isBlank,
   isNumber,
@@ -37,7 +39,6 @@ import {
 
 import {OnDestroy} from 'angular2/src/core/metadata/lifecycle_hooks';
 
-import {IS_DART, Type} from 'angular2/src/facade/lang';
 import {EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
 
 

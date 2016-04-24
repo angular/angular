@@ -1,9 +1,8 @@
 import {forwardRef, Provider, Attribute, Directive} from 'angular2/core';
-import {CONST_EXPR} from 'angular2/src/facade/lang';
+import {CONST_EXPR, NumberWrapper} from 'angular2/src/facade/lang';
 import {Validators, NG_VALIDATORS} from '../validators';
 import {AbstractControl} from '../model';
 import * as modelModule from '../model';
-import {NumberWrapper} from "angular2/src/facade/lang";
 
 
 
