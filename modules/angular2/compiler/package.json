@@ -4,6 +4,7 @@
   "description": "",
   "main": "compiler.js",
   "jsnext:main": "esm/compiler.js",
+  "typings": "compiler.d.ts",
   "author": "angular",
   "license": "MIT",
 

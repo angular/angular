@@ -4,6 +4,7 @@
   "description": "",
   "main": "http.js",
   "jsnext:main": "esm/http.js",
+  "typings": "http.d.ts",
   "author": "angular",
   "license": "MIT",
 

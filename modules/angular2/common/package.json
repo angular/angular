@@ -4,6 +4,7 @@
   "description": "",
   "main": "common.js",
   "jsnext:main": "esm/common.js",
+  "typings": "common.d.ts",
   "author": "angular",
   "license": "MIT",
 

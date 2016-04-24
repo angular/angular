@@ -4,6 +4,7 @@
   "description": "",
   "main": "core.js",
   "jsnext:main": "esm/core.js",
+  "typings": "core.d.ts",
   "author": "angular",
   "license": "MIT",
 

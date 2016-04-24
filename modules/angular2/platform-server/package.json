@@ -4,6 +4,7 @@
   "description": "",
   "main": "platform_server.js",
   "jsnext:main": "esm/platform_server.js",
+  "typings": "platform_server.d.ts",
   "author": "angular",
   "license": "MIT",
 

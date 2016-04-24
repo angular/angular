@@ -4,6 +4,7 @@
   "description": "",
   "main": "platform_browser.js",
   "jsnext:main": "esm/platform_browser.js",
+  "typings": "platform_browser.d.ts",
   "author": "angular",
   "license": "MIT",
 

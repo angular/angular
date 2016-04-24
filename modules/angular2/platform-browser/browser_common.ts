@@ -33,6 +33,8 @@ import {
   HammerGesturesPlugin
 } from './src/dom/events/hammer_gestures'
 import {DomSharedStylesHost} from './src/dom/shared_styles_host';
+import {AnimationBuilder} from "./src/animate/animation_builder";
+import {BrowserDetails} from "./src/animate/browser_details";
 
 export {Title} from './src/browser/title';
 export {BrowserDomAdapter} from './src/browser/browser_adapter';
@@ -81,6 +83,8 @@ export const BROWSER_APP_COMMON_PROVIDERS: Array<any /*Type | Provider | any[]*/
   new Provider(DomRootRenderer, {useClass: DomRootRenderer_}),
   new Provider(RootRenderer, {useExisting: DomRootRenderer}),
   new Provider(SharedStylesHost, {useExisting: DomSharedStylesHost}),
+  BrowserDetails,
+  AnimationBuilder,
   DomSharedStylesHost,
   Testability,
   EventManager,
