@@ -25,11 +25,13 @@
     "platform-server/index.ts",
     "router/index.ts",
     "http/index.ts",
-    "mock/index.ts",
+    "upgrade/index.ts",
+    "testing/index.ts",
 
     "typings/es6-collections/es6-collections.d.ts",
     "typings/es6-promise/es6-promise.d.ts",
     "typings/hammerjs/hammerjs.d.ts",
+    "typings/jasmine/jasmine.d.ts",
     "typings/node/node.d.ts",
     "manual_typings/globals.d.ts",
     "../../node_modules/zone.js/dist/zone.js.d.ts"

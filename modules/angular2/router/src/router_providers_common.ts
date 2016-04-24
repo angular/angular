@@ -1,8 +1,8 @@
-import {LocationStrategy, PathLocationStrategy, Location} from 'angular2/common';
-import {Router, RootRouter} from 'router';
-import {RouteRegistry, ROUTER_PRIMARY_COMPONENT} from 'route_registry';
+import {ApplicationRef, Provider} from '@angular/core';
+import {LocationStrategy, PathLocationStrategy, Location} from '@angular/common';
+import {Router, RootRouter} from './router';
+import {RouteRegistry, ROUTER_PRIMARY_COMPONENT} from './route_registry';
 import {CONST_EXPR, Type} from './facade/lang';
-import {ApplicationRef, Provider} from 'angular2/core';
 import {BaseException} from './facade/exceptions';
 
 /**

@@ -35,6 +35,7 @@ export const BROWSER_APP_PROVIDERS_WITH_COMPILER: Array<any /*Type | Provider | 
   COMPILER_PROVIDERS,
   new Provider(XHR, {useClass: XHRImpl}),
 ]);
+export {DOCUMENT} from './src/dom/dom_tokens';
 
 export function browserPlatform(): PlatformRef {
   if (isBlank(getPlatform())) {

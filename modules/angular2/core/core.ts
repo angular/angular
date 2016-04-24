@@ -37,5 +37,6 @@ export * from './src/platform_directives_and_pipes';
 export * from './src/platform_common_providers';
 export * from './src/application_common_providers';
 export * from './src/reflection/reflection';
+export * from './instrumentation';
 
 export * from './private_export';

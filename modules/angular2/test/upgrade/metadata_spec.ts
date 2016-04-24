@@ -11,8 +11,8 @@ import {
   xit,
 } from 'angular2/testing_internal';
 
-import {Component} from 'angular2/core';
-import {getComponentInfo, parseFields} from 'angular2/src/upgrade/metadata';
+import {Component} from '@angular/core';
+import {getComponentInfo, parseFields} from '../metadata';
 import {DOM} from 'angular2/src/platform/dom/dom_adapter';
 
 export function main() {

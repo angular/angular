@@ -1,7 +1,7 @@
 import {ROUTER_PROVIDERS_COMMON} from './router_providers_common';
-import {Provider} from 'angular2/core';
-import {BrowserPlatformLocation} from 'angular2/platform-browser';
-import {PlatformLocation} from 'angular2/common';
+import {Provider} from '@angular/core';
+import {BrowserPlatformLocation} from '@angular/platform-browser';
+import {PlatformLocation} from '@angular/common';
 import {CONST_EXPR} from './facade/lang';
 
 /**
@@ -10,12 +10,12 @@ import {CONST_EXPR} from './facade/lang';
  * ### Example ([live demo](http://plnkr.co/edit/iRUP8B5OUbxCWQ3AcIDm))
  *
  * ```
- * import {Component} from 'angular2/core';
+ * import {Component} from '@angular/core';
  * import {
  *   ROUTER_DIRECTIVES,
  *   ROUTER_PROVIDERS,
  *   RouteConfig
- * } from 'angular2/router';
+ * } from '@angular/router';
  *
  * @Component({directives: [ROUTER_DIRECTIVES]})
  * @RouteConfig([
