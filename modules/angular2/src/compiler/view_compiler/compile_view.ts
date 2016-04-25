@@ -124,7 +124,7 @@ export class CompileView implements NameResolver {
     }
   }
 
-  callPipe(name: string, input: o.Expression, args: o.Expression[]): o.Expression {
+  createPipe(name: string): o.Expression {
     var pipeMeta: CompilePipeMetadata = null;
     for (var i = this.pipeMetas.length - 1; i >= 0; i--) {
       var localPipeMeta = this.pipeMetas[i];
@@ -139,7 +139,6 @@ export class CompileView implements NameResolver {
     }
     var pipeFieldName = pipeMeta.pure ? `_pipe_${name}` : `_pipe_${name}_${this.pipes.size}`;
     var pipeExpr = this.pipes.get(pipeFieldName);
-    var pipeFieldCacheProp = o.THIS_EXPR.prop(`${pipeFieldName}_cache`);
     if (isBlank(pipeExpr)) {
       var deps = pipeMeta.type.diDeps.map((diDep) => {
         if (diDep.token.equalsTo(identifierToken(Identifiers.ChangeDetectorRef))) {
@@ -149,12 +148,6 @@ export class CompileView implements NameResolver {
       });
       this.fields.push(
           new o.ClassField(pipeFieldName, o.importType(pipeMeta.type), [o.StmtModifier.Private]));
-      if (pipeMeta.pure) {
-        this.fields.push(new o.ClassField(pipeFieldCacheProp.name, null, [o.StmtModifier.Private]));
-        this.createMethod.addStmt(o.THIS_EXPR.prop(pipeFieldCacheProp.name)
-                                      .set(o.importExpr(Identifiers.uninitialized))
-                                      .toStmt());
-      }
       this.createMethod.resetDebugInfo(null, null);
       this.createMethod.addStmt(o.THIS_EXPR.prop(pipeFieldName)
                                     .set(o.importExpr(pipeMeta.type).instantiate(deps))
@@ -163,15 +156,7 @@ export class CompileView implements NameResolver {
       this.pipes.set(pipeFieldName, pipeExpr);
       bindPipeDestroyLifecycleCallbacks(pipeMeta, pipeExpr, this);
     }
-    var callPipeExpr: o.Expression = pipeExpr.callMethod('transform', [input, o.literalArr(args)]);
-    if (pipeMeta.pure) {
-      callPipeExpr =
-          o.THIS_EXPR.callMethod(
-                         'checkPurePipe',
-                         [o.literal(this.literalArrayCount++), o.literalArr([input].concat(args))])
-              .conditional(pipeFieldCacheProp.set(callPipeExpr), pipeFieldCacheProp);
-    }
-    return callPipeExpr;
+    return pipeExpr;
   }
 
   getVariable(name: string): o.Expression {

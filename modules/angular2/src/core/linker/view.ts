@@ -360,23 +360,11 @@ export abstract class AppView<T> {
     this.viewContainerElement = null;
   }
 
-  checkPurePipe(id: number, newArgs: any[]): boolean {
-    var prevArgs = this._literalArrayCache[id];
-    var newPresent = isPresent(newArgs);
-    var prevPresent = isPresent(prevArgs);
-    if (newPresent !== prevPresent || (newPresent && !arrayLooseIdentical(prevArgs, newArgs))) {
-      this._literalArrayCache[id] = newArgs;
-      return true;
-    } else {
-      return false;
-    }
-  }
-
   literalArray(id: number, value: any[]): any[] {
+    var prevValue = this._literalArrayCache[id];
     if (isBlank(value)) {
       return value;
     }
-    var prevValue = this._literalArrayCache[id];
     if (isBlank(prevValue) || !arrayLooseIdentical(prevValue, value)) {
       prevValue = this._literalArrayCache[id] = value;
     }
@@ -384,10 +372,10 @@ export abstract class AppView<T> {
   }
 
   literalMap(id: number, value: {[key: string]: any}): {[key: string]: any} {
+    var prevValue = this._literalMapCache[id];
     if (isBlank(value)) {
       return value;
     }
-    var prevValue = this._literalMapCache[id];
     if (isBlank(prevValue) || !mapLooseIdentical(prevValue, value)) {
       prevValue = this._literalMapCache[id] = value;
     }
