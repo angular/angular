@@ -1,5 +1,5 @@
-import {bind, provide, Provider, Injector, OpaqueToken} from 'angular2/src/core/di';
-import {PromiseWrapper} from 'angular2/src/facade/async';
+import {bind, provide, Provider, Injector, OpaqueToken} from '@angular/core/src/di';
+import {PromiseWrapper} from '@angular/facade';
 
 import {MeasureValues} from '../measure_values';
 import {Reporter} from '../reporter';

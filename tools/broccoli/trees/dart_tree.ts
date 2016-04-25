@@ -15,14 +15,14 @@ import {AngularBuilderOptions} from '../angular_builder';
 import generateForTest from '../broccoli-generate-for-test';
 
 var global_excludes = [
-  'angular2/examples/**/ts/**/*',
-  'angular2/http*',
-  'angular2/http/**/*',
-  'angular2/src/http/**/*',
-  'angular2/src/upgrade/**/*',
-  'angular2/test/http/**/*',
-  'angular2/test/upgrade/**/*',
-  'angular2/upgrade*',
+  '@angular/examples/**/ts/**/*',
+  '@angular/http*',
+  '@angular/http/**/*',
+  '@angular/src/http/**/*',
+  '@angular/src/upgrade/**/*',
+  '@angular/test/http/**/*',
+  '@angular/test/upgrade/**/*',
+  '@angular/upgrade*',
   'payload_tests/**/ts/**/*',
   'playground/src/http/**/*',
   'playground/src/jsonp/**/*',
@@ -63,11 +63,30 @@ function stripModulePrefix(relativePath: string): string {
 }
 
 function getSourceTree(options: AngularBuilderOptions) {
-  var tsInputTree = modulesFunnel(['**/*.js', '**/*.ts', '**/*.dart'], ['angular1_router/**/*']);
+  var tsInputTree = modulesFunnel(
+    [
+      'tsconfig-ts2dart.json',
+      'upgrade-ts2dart.d.ts',
+      'zone-ts2dart.d.ts',
+      '**/*.js',
+      '**/*.ts',
+      '**/*.dart'
+    ], [
+      'rollup-test/**/*',
+      'angular1_router/**/*',
+      '@angular/upgrade/**/*',
+      '@angular/core/test/typings.d.ts',
+      '@angular/manual_typings/globals.d.ts',
+      '@angular/typings/es6-collections/es6-collections.d.ts',
+      '@angular/typings/es6-promise/es6-promise.d.ts',
+      '@angular/typings/tsd.d.ts',
+      '@angular/typings.d.ts',
+    ]);
   var transpiled = ts2dart(tsInputTree, {
     generateLibraryName: true,
     generateSourceMap: false,
     translateBuiltins: true,
+    tsconfig: 'tsconfig-ts2dart.json'
   });
 
   // Native sources, dart only examples, etc.
@@ -158,7 +177,7 @@ function getDocsTree() {
     targetPatterns: ['modules/*'],
     exclude: [
       '*/angular1_router',
-      '*/angular2/src/http',
+      '*/@angular/src/http',
       '*/payload_tests',
       '*/upgrade'
     ]  // Not in dart.

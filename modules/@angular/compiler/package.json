@@ -1,0 +1,14 @@
+{
+  "name": "@angular/compiler",
+  "version": "$$ANGULAR_VERSION$$",
+  "description": "",
+  "main": "compiler.js",
+  "jsnext:main": "esm/compiler.js",
+  "typings": "compiler.d.ts",
+  "author": "angular",
+  "license": "MIT",
+  "peerDependencies": {
+    "@angular/core": "$$ANGULAR_VERSION$$",
+    "@angular/facade": "$$ANGULAR_VERSION$$"
+  }
+}

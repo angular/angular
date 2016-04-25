@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "declaration": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "module": "es2015",
+    "moduleResolution": "node",
+    "outDir": "../../../dist/packages-dist/platform-browser/esm",
+    "paths": {
+      "@angular/common": ["../../../dist/packages-dist/common/"],
+      "@angular/compiler": ["../../../dist/packages-dist/compiler/"],
+      "@angular/core": ["../../../dist/packages-dist/core/"],
+      "@angular/facade": ["../../../dist/packages-dist/facade/"]
+    },
+    "rootDir": ".",
+    "sourceMap": true,
+    "sourceRoot": ".",
+    "target": "es2015"
+  },
+  "files": [
+    "platform_browser.ts",
+    "../typings/hammerjs/hammerjs.d.ts",
+    "../../../node_modules/zone.js/dist/zone.js.d.ts"
+  ]
+}

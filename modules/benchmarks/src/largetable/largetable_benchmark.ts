@@ -1,22 +1,22 @@
-import {DOM} from 'angular2/src/platform/dom/dom_adapter';
-import {window, document, gc} from 'angular2/src/facade/browser';
+import {DOM} from '@angular/platform-browser/src/dom/dom_adapter';
+import {window, document, gc} from '@angular/facade';
 import {
   getIntParameter,
   getStringParameter,
   bindAction,
   windowProfile,
   windowProfileEnd
-} from 'angular2/src/testing/benchmark_util';
-import {bootstrap} from 'angular2/platform/browser';
-import {Component, Directive, bind, provide} from 'angular2/core';
-import {NgFor, NgSwitch, NgSwitchWhen, NgSwitchDefault} from 'angular2/common';
-import {ApplicationRef} from 'angular2/src/core/application_ref';
-import {BrowserDomAdapter} from 'angular2/src/platform/browser/browser_adapter';
+} from '@angular/testing/src/benchmark_util';
+import {bootstrap} from '@angular/platform-browser';
+import {Component, Directive, bind, provide} from '@angular/core';
+import {NgFor, NgSwitch, NgSwitchWhen, NgSwitchDefault} from '@angular/common';
+import {ApplicationRef} from '@angular/core/src/application_ref';
+import {BrowserDomAdapter} from '@angular/platform-browser/src/browser/browser_adapter';
 
-import {ListWrapper} from 'angular2/src/facade/collection';
+import {ListWrapper} from '@angular/facade';
 
-import {Inject} from 'angular2/src/core/di/decorators';
-import {reflector} from 'angular2/src/core/reflection/reflection';
+import {Inject} from '@angular/core/src/di/decorators';
+import {reflector} from '@angular/core/src/reflection/reflection';
 
 export const BENCHMARK_TYPE = 'LargetableComponent.benchmarkType';
 export const LARGETABLE_ROWS = 'LargetableComponent.rows';

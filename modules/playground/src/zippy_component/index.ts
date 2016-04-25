@@ -1,5 +1,5 @@
-import {bootstrap} from 'angular2/platform/browser';
-import {Component} from 'angular2/core';
+import {bootstrap} from '@angular/platform-browser';
+import {Component} from '@angular/core';
 import {Zippy} from './zippy';
 
 @Component({

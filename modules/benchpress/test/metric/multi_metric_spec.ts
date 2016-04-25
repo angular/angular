@@ -9,10 +9,10 @@ import {
   inject,
   it,
   xit,
-} from 'angular2/testing_internal';
+} from '@angular/testing/testing_internal';
 
-import {ListWrapper} from 'angular2/src/facade/collection';
-import {PromiseWrapper} from 'angular2/src/facade/async';
+import {ListWrapper} from '@angular/facade';
+import {PromiseWrapper} from '@angular/facade';
 
 import {Metric, MultiMetric, bind, provide, ReflectiveInjector} from 'benchpress/common';
 

@@ -1,0 +1,16 @@
+{
+  "name": "@angular/tesing",
+  "version": "$$ANGULAR_VERSION$$",
+  "description": "",
+  "main": "tesing.js",
+  "jsnext:main": "esm/tesing.js",
+  "author": "angular",
+  "license": "MIT",
+  "peerDependencies": {
+    "zone.js": "^0.6.6",
+    "@angular/core": "$$ANGULAR_VERSION$$",
+    "@angular/common": "$$ANGULAR_VERSION$$",
+    "@angular/compiler": "$$ANGULAR_VERSION$$",
+    "@angular/facade": "$$ANGULAR_VERSION$$"
+  }
+}

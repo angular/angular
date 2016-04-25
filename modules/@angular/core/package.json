@@ -1,0 +1,18 @@
+{
+  "name": "@angular/core",
+  "version": "$$ANGULAR_VERSION$$",
+  "description": "",
+  "main": "core.js",
+  "jsnext:main": "esm/core.js",
+  "typings": "core.d.ts",
+  "author": "angular",
+  "license": "MIT",
+  "peerDependencies": {
+    "reflect-metadata": "^0.1.2",
+    "rxjs": "5.0.0-beta.2",
+    "zone.js": "^0.6.6"
+  },
+  "dependencies": {
+    "@angular/facade": "$$ANGULAR_VERSION$$"
+  }
+}

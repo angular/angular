@@ -2231,9 +2231,6 @@
         "glob": {
           "version": "4.3.5",
           "dependencies": {
-            "inflight": {
-              "version": "1.0.4"
-            },
             "minimatch": {
               "version": "2.0.10"
             }
@@ -5343,7 +5340,7 @@
       }
     },
     "ts2dart": {
-      "version": "0.7.31",
+      "version": "0.9.3",
       "dependencies": {
         "source-map": {
           "version": "0.4.4"
@@ -5355,9 +5352,6 @@
               "version": "0.1.32"
             }
           }
-        },
-        "typescript": {
-          "version": "1.7.3"
         }
       }
     },

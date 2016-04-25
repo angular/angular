@@ -16,32 +16,32 @@ var projectRootDir = path.normalize(path.join(__dirname, '..', '..', '..', '..')
 
 module.exports = function makeNodeTree(projects, destinationPath) {
   // list of npm packages that this build will create
-  var outputPackages = ['angular2', 'benchpress'];
+  var outputPackages = ['@angular', 'benchpress'];
 
   let srcTree = new Funnel('modules', {
-    include: ['angular2/**'],
+    include: ['@angular/**'],
     exclude: [
       '**/e2e_test/**',
-      'angular2/test/**',
-      'angular2/examples/**',
+      '@angular/test/**',
+      '@angular/examples/**',
 
-      'angular2/src/testing/**',
-      'angular2/testing.ts',
-      'angular2/testing_internal.ts',
-      'angular2/src/upgrade/**',
-      'angular2/upgrade.ts',
-      'angular2/platform/testing/**',
-      'angular2/manual_typings/**',
-      'angular2/typings/**'
+      '@angular/src/testing/**',
+      '@angular/testing.ts',
+      '@angular/testing_internal.ts',
+      '@angular/src/upgrade/**',
+      '@angular/upgrade.ts',
+      '@angular/platform/testing/**',
+      '@angular/manual_typings/**',
+      '@angular/typings/**'
     ]
   });
 
   let externalTypings = [
-    'angular2/typings/hammerjs/hammerjs.d.ts',
-    'angular2/typings/node/node.d.ts',
-    'angular2/manual_typings/globals.d.ts',
-    'angular2/typings/es6-collections/es6-collections.d.ts',
-    'angular2/typings/es6-promise/es6-promise.d.ts'
+    '@angular/typings/hammerjs/hammerjs.d.ts',
+    '@angular/typings/node/node.d.ts',
+    '@angular/manual_typings/globals.d.ts',
+    '@angular/typings/es6-collections/es6-collections.d.ts',
+    '@angular/typings/es6-promise/es6-promise.d.ts'
   ];
 
   let externalTypingsTree = new Funnel('modules', {files: externalTypings});
@@ -56,44 +56,44 @@ module.exports = function makeNodeTree(projects, destinationPath) {
 
   var testTree = new Funnel('modules', {
     include: [
-      'angular2/manual_typings/**',
-      'angular2/typings/**',
+      '@angular/manual_typings/**',
+      '@angular/typings/**',
 
-      'angular2/test/**',
+      '@angular/test/**',
       'benchpress/**',
       '**/e2e_test/**',
-      'angular2/examples/**/*_spec.ts',
+      '@angular/examples/**/*_spec.ts',
 
-      'angular2/src/testing/**',
-      'angular2/testing.ts',
-      'angular2/testing_internal.ts',
-      'angular2/src/upgrade/**',
-      'angular2/upgrade.ts',
-      'angular2/platform/testing/**',
+      '@angular/src/testing/**',
+      '@angular/testing.ts',
+      '@angular/testing_internal.ts',
+      '@angular/src/upgrade/**',
+      '@angular/upgrade.ts',
+      '@angular/platform/testing/**',
     ],
     exclude: [
       // the following code and tests are not compatible with CJS/node environment
-      'angular2/test/animate/**',
-      'angular2/test/core/zone/**',
-      'angular2/test/testing/fake_async_spec.ts',
-      'angular2/test/testing/testing_public_browser_spec.ts',
-      'angular2/test/platform/xhr_impl_spec.ts',
-      'angular2/test/platform/browser/**/*.ts',
-      'angular2/test/common/forms/**',
-      'angular2/manual_typings/**',
-      'angular2/typings/**',
+      '@angular/test/animate/**',
+      '@angular/test/core/zone/**',
+      '@angular/test/testing/fake_async_spec.ts',
+      '@angular/test/testing/testing_public_browser_spec.ts',
+      '@angular/test/platform/xhr_impl_spec.ts',
+      '@angular/test/platform/browser/**/*.ts',
+      '@angular/test/common/forms/**',
+      '@angular/manual_typings/**',
+      '@angular/typings/**',
 
       // we call browser's bootstrap
-      'angular2/test/router/route_config/route_config_spec.ts',
-      'angular2/test/router/integration/bootstrap_spec.ts',
+      '@angular/test/router/route_config/route_config_spec.ts',
+      '@angular/test/router/integration/bootstrap_spec.ts',
 
       // we check the public api by importing angular2/angular2
-      'angular2/test/symbol_inspector/**/*.ts',
-      'angular2/test/public_api_spec.ts',
+      '@angular/test/symbol_inspector/**/*.ts',
+      '@angular/test/public_api_spec.ts',
 
-      'angular2/test/web_workers/worker/renderer_integration_spec.ts',
+      '@angular/test/web_workers/worker/renderer_integration_spec.ts',
 
-      'angular2/test/upgrade/**/*.ts',
+      '@angular/test/upgrade/**/*.ts',
       'angular1_router/**',
       'payload_tests/**'
     ]
@@ -104,9 +104,9 @@ module.exports = function makeNodeTree(projects, destinationPath) {
       new Funnel(compiledSrcTreeWithInternals, {srcDir: INTERNAL_TYPINGS_PATH});
 
   let testAmbients = [
-    'angular2/typings/jasmine/jasmine.d.ts',
-    'angular2/typings/angular-protractor/angular-protractor.d.ts',
-    'angular2/typings/selenium-webdriver/selenium-webdriver.d.ts'
+    '@angular/typings/jasmine/jasmine.d.ts',
+    '@angular/typings/angular-protractor/angular-protractor.d.ts',
+    '@angular/typings/selenium-webdriver/selenium-webdriver.d.ts'
   ];
   let testAmbientsTree = new Funnel('modules', {files: testAmbients});
 
@@ -137,12 +137,12 @@ module.exports = function makeNodeTree(projects, destinationPath) {
                 mergeTrees([
                   packageTypings,
                   new Funnel('modules',
-                             {include: ['angular2/manual_typings/**', 'angular2/typings/**']}),
+                             {include: ['@angular/manual_typings/**', '@angular/typings/**']}),
                   generatedTsTestFiles,
                   srcPrivateDeclarations,
                   compiledTestTree
                 ]),
-                {include: ['angular2/**', 'rxjs/**', 'zone.js/**']}),
+                {include: ['@angular/**', 'rxjs/**', 'zone.js/**']}),
             false, [])
       ],
       {overwrite: true});
@@ -176,16 +176,16 @@ module.exports = function makeNodeTree(projects, destinationPath) {
     new Funnel('modules',
                {
                  include: [
-                   'angular2/typings/es6-collections/es6-collections.d.ts',
-                   'angular2/typings/es6-promise/es6-promise.d.ts',
+                   '@angular/typings/es6-collections/es6-collections.d.ts',
+                   '@angular/typings/es6-promise/es6-promise.d.ts',
                  ]
                }),
-    writeFile('angular2/typings/browser.d.ts',
+    writeFile('@angular/typings/browser.d.ts',
               '// Typings needed for compilation with --target=es5\n' +
                   '///<reference path="./es6-collections/es6-collections.d.ts"/>\n' +
                   '///<reference path="./es6-promise/es6-promise.d.ts"/>\n' +
                   '// Workaround for https://github.com/ReactiveX/RxJS/issues/1270\n' +
-                  '// to be removed when angular2 upgrades to rxjs beta.2\n' +
+                  '// to be removed when @angular upgrades to rxjs beta.2\n' +
                   'declare type PromiseConstructor = typeof Promise;\n')
   ]);
 
@@ -200,7 +200,7 @@ module.exports = function makeNodeTree(projects, destinationPath) {
         match: /^/,
         replacement:
             () =>
-                `var parse5Adapter = require('angular2/src/platform/server/parse5_adapter');\r\n` +
+                `var parse5Adapter = require('@angular/src/platform/server/parse5_adapter');\r\n` +
                 `parse5Adapter.Parse5DomAdapter.makeCurrent();`
       },
       {match: /$/, replacement: (_, relativePath) => "\r\n main(); \r\n"}

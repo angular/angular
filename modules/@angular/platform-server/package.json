@@ -1,0 +1,16 @@
+{
+  "name": "@angular/platform-server",
+  "version": "$$ANGULAR_VERSION$$",
+  "description": "",
+  "main": "platform_server.js",
+  "jsnext:main": "esm/platform_server.js",
+  "typings": "platform_server.d.ts",
+  "author": "angular",
+  "license": "MIT",
+  "dependencies": {
+    "reflect-metadata": "^0.1.2",
+    "rxjs": "5.0.0-beta.2",
+    "zone.js": "^0.6.6",
+    "@angular/platform-browser": "$$ANGULAR_VERSION$$"
+  }
+}

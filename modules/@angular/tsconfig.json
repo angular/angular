@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "declaration": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "outDir": "../../dist/packages-all/",
+    "paths": {
+      "selenium-webdriver": ["./typings/selenium-webdriver/selenium-webdriver.d.ts"],
+      "rxjs/*": ["../../node_modules/rxjs/*"],
+      "@angular/facade": ["./facade/facade"],
+      "@angular/*": ["./*"]
+    },
+    "rootDir": ".",
+    "sourceMap": true,
+    "sourceRoot": ".",
+    "target": "es5"
+  },
+  "exclude": [
+    "typings"
+  ]
+}

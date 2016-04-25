@@ -1,9 +1,9 @@
-import {bootstrap} from 'angular2/platform/browser';
-import {BrowserDomAdapter} from 'angular2/src/platform/browser/browser_adapter';
-import {DOM} from 'angular2/src/platform/dom/dom_adapter';
-import {PromiseWrapper} from 'angular2/src/facade/async';
-import {ListWrapper, Map, MapWrapper} from 'angular2/src/facade/collection';
-import {DateWrapper, Type, print, isPresent} from 'angular2/src/facade/lang';
+import {bootstrap} from '@angular/platform-browser';
+import {BrowserDomAdapter} from '@angular/platform-browser/src/browser/browser_adapter';
+import {DOM} from '@angular/platform-browser/src/dom/dom_adapter';
+import {PromiseWrapper} from '@angular/facade';
+import {ListWrapper, Map, MapWrapper} from '@angular/facade';
+import {DateWrapper, Type, print, isPresent} from '@angular/facade';
 
 import {
   ComponentResolver,
@@ -14,11 +14,11 @@ import {
   provide,
   Provider,
   ViewMetadata
-} from 'angular2/core';
+} from '@angular/core';
 
-import {CompilerConfig, ViewResolver} from 'angular2/compiler';
+import {CompilerConfig, ViewResolver} from '@angular/compiler';
 
-import {getIntParameter, bindAction} from 'angular2/src/testing/benchmark_util';
+import {getIntParameter, bindAction} from '@angular/testing/src/benchmark_util';
 
 function _createBindings(): Provider[] {
   var multiplyTemplatesBy = getIntParameter('elements');

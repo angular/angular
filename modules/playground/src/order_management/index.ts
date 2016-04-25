@@ -1,4 +1,4 @@
-import {bootstrap} from 'angular2/platform/browser';
+import {bootstrap} from '@angular/platform-browser';
 import {
   Component,
   Directive,
@@ -9,10 +9,10 @@ import {
   Injectable,
   Input,
   Output
-} from 'angular2/core';
-import {NgIf, NgFor, FORM_DIRECTIVES} from 'angular2/common';
+} from '@angular/core';
+import {NgIf, NgFor, FORM_DIRECTIVES} from '@angular/common';
 
-import {ListWrapper} from 'angular2/src/facade/collection';
+import {ListWrapper} from '@angular/facade';
 
 /**
  * You can find the Angular 1 implementation of this example here:

@@ -1,7 +1,7 @@
-import {bind, provide, Provider, Injector, OpaqueToken} from 'angular2/src/core/di';
+import {bind, provide, Provider, Injector, OpaqueToken} from '@angular/core/src/di';
 
-import {isBlank, isPresent} from 'angular2/src/facade/lang';
-import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
+import {isBlank, isPresent} from '@angular/facade';
+import {BaseException, WrappedException} from '@angular/facade';
 
 import {Options} from './common_options';
 

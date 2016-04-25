@@ -1,8 +1,8 @@
 import {InboxApp} from './inbox-app';
-import {provide} from 'angular2/core';
-import {bootstrap} from 'angular2/platform/browser';
-import {HashLocationStrategy, LocationStrategy} from 'angular2/platform/common';
-import {ROUTER_PROVIDERS} from 'angular2/router';
+import {provide} from '@angular/core';
+import {bootstrap} from '@angular/platform-browser';
+import {HashLocationStrategy, LocationStrategy} from '@angular/common';
+import {ROUTER_PROVIDERS} from '@angular/router';
 
 export function main() {
   bootstrap(InboxApp,
