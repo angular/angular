@@ -118,9 +118,13 @@ export class ElementAst implements TemplateAst {
    * Get the component associated with this element, if any.
    */
   getComponent(): CompileDirectiveMetadata {
-    return this.directives.length > 0 && this.directives[0].directive.isComponent ?
-               this.directives[0].directive :
-               null;
+    for (var i = 0; i < this.directives.length; i++) {
+      var dirAst = this.directives[i];
+      if (dirAst.directive.isComponent) {
+        return dirAst.directive;
+      }
+    }
+    return null;
   }
 }
 

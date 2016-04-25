@@ -195,7 +195,7 @@ function emptyArray(): Array<any> {
 }
 
 export class FunctionWithParamTokens {
-  constructor(private _tokens: any[], private _fn: Function, public isAsync: boolean,
+  constructor(private _tokens: any[], public fn: Function, public isAsync: boolean,
               public additionalProviders: () => any = emptyArray) {}
 
   /**
@@ -203,7 +203,7 @@ export class FunctionWithParamTokens {
    */
   execute(injector: ReflectiveInjector): any {
     var params = this._tokens.map(t => injector.get(t));
-    return FunctionWrapper.apply(this._fn, params);
+    return FunctionWrapper.apply(this.fn, params);
   }
 
   hasToken(token: any): boolean { return this._tokens.indexOf(token) > -1; }

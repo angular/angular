@@ -1,4 +1,4 @@
-import {isPresent, StringWrapper} from 'angular2/src/facade/lang';
+import {isPresent, isBlank, StringWrapper} from 'angular2/src/facade/lang';
 import {ListWrapper, StringMapWrapper, SetWrapper} from 'angular2/src/facade/collection';
 
 import * as o from '../output/output_ast';
@@ -429,8 +429,6 @@ function createViewClass(view: CompileView, renderCompTypeVar: o.ReadVarExpr,
                   ViewConstructorVars.parentInjector,
                   ViewConstructorVars.declarationEl,
                   ChangeDetectionStrategyEnum.fromValue(getChangeDetectionMode(view)),
-                  o.literal(view.literalArrayCount),
-                  o.literal(view.literalMapCount),
                   nodeDebugInfosVar
                 ])
         .toStmt()
@@ -538,8 +536,8 @@ function generateDetectChangesMethod(view: CompileView): o.Statement[] {
   var stmts = [];
   if (view.detectChangesInInputsMethod.isEmpty() && view.updateContentQueriesMethod.isEmpty() &&
       view.afterContentLifecycleCallbacksMethod.isEmpty() &&
-      view.detectChangesHostPropertiesMethod.isEmpty() && view.updateViewQueriesMethod.isEmpty() &&
-      view.afterViewLifecycleCallbacksMethod.isEmpty()) {
+      view.detectChangesRenderPropertiesMethod.isEmpty() &&
+      view.updateViewQueriesMethod.isEmpty() && view.afterViewLifecycleCallbacksMethod.isEmpty()) {
     return stmts;
   }
   ListWrapper.addAll(stmts, view.detectChangesInInputsMethod.finish());
@@ -551,7 +549,7 @@ function generateDetectChangesMethod(view: CompileView): o.Statement[] {
   if (afterContentStmts.length > 0) {
     stmts.push(new o.IfStmt(o.not(DetectChangesVars.throwOnChange), afterContentStmts));
   }
-  ListWrapper.addAll(stmts, view.detectChangesHostPropertiesMethod.finish());
+  ListWrapper.addAll(stmts, view.detectChangesRenderPropertiesMethod.finish());
   stmts.push(o.THIS_EXPR.callMethod('detectViewChildrenChanges', [DetectChangesVars.throwOnChange])
                  .toStmt());
   var afterViewStmts =

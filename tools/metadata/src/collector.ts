@@ -27,28 +27,32 @@ function pathTo(from: string, to: string): string {
   return result;
 }
 
-function moduleNameFromBaseName(moduleFileName: string, baseFileName: string): string {
-  // Remove the extension
-  moduleFileName = moduleFileName.replace(EXT_REGEX, '');
-
-  // Check for node_modules
-  const nodeModulesIndex = moduleFileName.lastIndexOf(NODE_MODULES);
-  if (nodeModulesIndex >= 0) {
-    return moduleFileName.substr(nodeModulesIndex + NODE_MODULES.length);
-  }
-  if (moduleFileName.lastIndexOf(NODE_MODULES_PREFIX, NODE_MODULES_PREFIX.length) !== -1) {
-    return moduleFileName.substr(NODE_MODULES_PREFIX.length);
-  }
-
-  // Construct a simplified path from the file to the module
-  return pathTo(baseFileName, moduleFileName);
+export interface MetadataCollectorHost {
+  reverseModuleResolution: (moduleFileName: string) => string;
 }
+
+const nodeModuleResolutionHost: MetadataCollectorHost = {
+  // Reverse moduleResolution=node for packages resolved in node_modules
+  reverseModuleResolution(fileName: string) {
+    // Remove the extension
+    const moduleFileName = fileName.replace(EXT_REGEX, '');
+    // Check for node_modules
+    const nodeModulesIndex = moduleFileName.lastIndexOf(NODE_MODULES);
+    if (nodeModulesIndex >= 0) {
+      return moduleFileName.substr(nodeModulesIndex + NODE_MODULES.length);
+    }
+    if (moduleFileName.lastIndexOf(NODE_MODULES_PREFIX, NODE_MODULES_PREFIX.length) !== -1) {
+      return moduleFileName.substr(NODE_MODULES_PREFIX.length);
+    }
+    return null;
+  }
+};
 
 /**
  * Collect decorator metadata from a TypeScript module.
  */
 export class MetadataCollector {
-  constructor() {}
+  constructor(private host: MetadataCollectorHost = nodeModuleResolutionHost) {}
 
   /**
    * Returns a JSON.stringify friendly form describing the decorators of the exported classes from
@@ -56,8 +60,16 @@ export class MetadataCollector {
    */
   public getMetadata(sourceFile: ts.SourceFile, typeChecker: ts.TypeChecker): ModuleMetadata {
     const locals = new Symbols();
-    const moduleNameOf = (fileName: string) =>
-        moduleNameFromBaseName(fileName, sourceFile.fileName);
+    const moduleNameOf = (fileName: string) => {
+      // If the module was resolved with TS moduleResolution, reverse that mapping
+      const hostResolved = this.host.reverseModuleResolution(fileName);
+      if (hostResolved) {
+        return hostResolved;
+      }
+      // Construct a simplified path from the file to the module
+      return pathTo(sourceFile.fileName, fileName).replace(EXT_REGEX, '');
+    };
+
     const evaluator = new Evaluator(typeChecker, locals, moduleNameOf);
 
     function objFromDecorator(decoratorNode: ts.Decorator): MetadataSymbolicExpression {
@@ -85,15 +97,13 @@ export class MetadataCollector {
     }
 
     function classMetadataOf(classDeclaration: ts.ClassDeclaration): ClassMetadata {
-      let result: ClassMetadata =
-      { __symbolic: "class" }
+      let result: ClassMetadata = {__symbolic: "class"};
 
-      function getDecorators(decorators: ts.Decorator[]):
-          MetadataSymbolicExpression[] {
-            if (decorators && decorators.length)
-              return decorators.map(decorator => objFromDecorator(decorator));
-            return undefined;
-          }
+      function getDecorators(decorators: ts.Decorator[]): MetadataSymbolicExpression[] {
+        if (decorators && decorators.length)
+          return decorators.map(decorator => objFromDecorator(decorator));
+        return undefined;
+      }
 
       // Add class decorators
       if (classDeclaration.decorators) {
@@ -175,7 +185,7 @@ export class MetadataCollector {
             const classDeclaration = <ts.ClassDeclaration>declaration;
             if (classDeclaration.decorators) {
               if (!metadata) metadata = {};
-              metadata[classDeclaration.name.text] = classMetadataOf(classDeclaration)
+              metadata[classDeclaration.name.text] = classMetadataOf(classDeclaration);
             }
             break;
           case ts.SyntaxKind.VariableDeclaration:

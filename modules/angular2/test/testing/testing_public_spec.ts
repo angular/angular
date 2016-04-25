@@ -9,6 +9,8 @@ import {
   beforeEach,
   inject,
   async,
+  fakeAsync,
+  tick,
   withProviders,
   beforeEachProviders,
   TestComponentBuilder
@@ -140,6 +142,13 @@ export function main() {
       it('should wait until returned promises', async(inject([FancyService], (service) => {
            service.getAsyncValue().then((value) => { expect(value).toEqual('async value'); });
            service.getTimeoutValue().then((value) => { expect(value).toEqual('timeout value'); });
+         })));
+
+      it('should allow the use of fakeAsync', fakeAsync(inject([FancyService], (service) => {
+           var value;
+           service.getAsyncValue().then(function(val) { value = val; });
+           tick();
+           expect(value).toEqual('async value');
          })));
 
       describe('using beforeEach', () => {

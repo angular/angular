@@ -460,6 +460,13 @@ export function main() {
            }));
 
         it('should associate pipes right-to-left', fakeAsync(() => {
+             var ctx = _bindSimpleValue('name | multiArgPipe:"a":"b" | multiArgPipe:0:1', Person);
+             ctx.componentInstance.name = 'value';
+             ctx.detectChanges(false);
+             expect(renderLog.loggedValues).toEqual(['value a b default 0 1 default']);
+           }));
+
+        it('should support calling pure pipes with different number of arguments', fakeAsync(() => {
              var ctx = _bindSimpleValue('name | multiArgPipe:"a":"b" | multiArgPipe:0:1:2', Person);
              ctx.componentInstance.name = 'value';
              ctx.detectChanges(false);
@@ -490,6 +497,56 @@ export function main() {
              ctx.detectChanges(false);
 
              expect(renderLog.log).toEqual(['someProp=Megatron']);
+           }));
+
+        it('should call pure pipes only if the arguments change', fakeAsync(() => {
+             var ctx = _bindSimpleValue('name | countingPipe', Person);
+             // change from undefined -> null
+             ctx.componentInstance.name = null;
+             ctx.detectChanges(false);
+             expect(renderLog.loggedValues).toEqual(['null state:0']);
+             ctx.detectChanges(false);
+             expect(renderLog.loggedValues).toEqual(['null state:0']);
+
+             // change from null -> some value
+             ctx.componentInstance.name = 'bob';
+             ctx.detectChanges(false);
+             expect(renderLog.loggedValues).toEqual(['null state:0', 'bob state:1']);
+             ctx.detectChanges(false);
+             expect(renderLog.loggedValues).toEqual(['null state:0', 'bob state:1']);
+
+             // change from some value -> some other value
+             ctx.componentInstance.name = 'bart';
+             ctx.detectChanges(false);
+             expect(renderLog.loggedValues)
+                 .toEqual(['null state:0', 'bob state:1', 'bart state:2']);
+             ctx.detectChanges(false);
+             expect(renderLog.loggedValues)
+                 .toEqual(['null state:0', 'bob state:1', 'bart state:2']);
+
+           }));
+
+        it('should call pure pipes that are used multiple times only when the arguments change',
+           fakeAsync(() => {
+             var ctx = createCompFixture(`<div [someProp]="name | countingPipe"></div><div [someProp]="age | countingPipe"></div>`, Person);
+             ctx.componentInstance.name = 'a';
+             ctx.componentInstance.age = 10;
+             ctx.detectChanges(false);
+             expect(renderLog.loggedValues).toEqual(['a state:0', '10 state:1']);
+             ctx.detectChanges(false);
+             expect(renderLog.loggedValues).toEqual(['a state:0', '10 state:1']);
+             ctx.componentInstance.age = 11;
+             ctx.detectChanges(false);
+             expect(renderLog.loggedValues).toEqual(['a state:0', '10 state:1', '11 state:2']);
+           }));
+
+        it('should call impure pipes on each change detection run', fakeAsync(() => {
+             var ctx = _bindSimpleValue('name | countingImpurePipe', Person);
+             ctx.componentInstance.name = 'bob';
+             ctx.detectChanges(false);
+             expect(renderLog.loggedValues).toEqual(['bob state:0']);
+             ctx.detectChanges(false);
+             expect(renderLog.loggedValues).toEqual(['bob state:0', 'bob state:1']);
            }));
       });
 
@@ -999,6 +1056,18 @@ export function main() {
            expect(renderLog.log).toEqual([]);
          }));
     });
+
+    describe('multi directive order', () => {
+      it('should follow the DI order for the same element', fakeAsync(() => {
+           var ctx =
+               createCompFixture('<div orderCheck2="2" orderCheck0="0" orderCheck1="1"></div>');
+
+           ctx.detectChanges(false);
+           ctx.destroy();
+
+           expect(directiveLog.filter(['set'])).toEqual(['0.set', '1.set', '2.set']);
+         }));
+    });
   });
 }
 
@@ -1009,11 +1078,15 @@ const ALL_DIRECTIVES = CONST_EXPR([
   forwardRef(() => TestLocals),
   forwardRef(() => CompWithRef),
   forwardRef(() => EmitterDirective),
-  forwardRef(() => PushComp)
+  forwardRef(() => PushComp),
+  forwardRef(() => OrderCheckDirective2),
+  forwardRef(() => OrderCheckDirective0),
+  forwardRef(() => OrderCheckDirective1),
 ]);
 
 const ALL_PIPES = CONST_EXPR([
   forwardRef(() => CountingPipe),
+  forwardRef(() => CountingImpurePipe),
   forwardRef(() => MultiArgPipe),
   forwardRef(() => PipeWithOnDestroy),
   forwardRef(() => IdentityPipe),
@@ -1086,7 +1159,13 @@ class DirectiveLog {
 @Pipe({name: 'countingPipe'})
 class CountingPipe implements PipeTransform {
   state: number = 0;
-  transform(value, args = null) { return `${value} state:${this.state ++}`; }
+  transform(value) { return `${value} state:${this.state ++}`; }
+}
+
+@Pipe({name: 'countingImpurePipe', pure: false})
+class CountingImpurePipe implements PipeTransform {
+  state: number = 0;
+  transform(value) { return `${value} state:${this.state ++}`; }
 }
 
 @Pipe({name: 'pipeWithOnDestroy'})
@@ -1095,27 +1174,22 @@ class PipeWithOnDestroy implements PipeTransform, OnDestroy {
 
   ngOnDestroy() { this.directiveLog.add('pipeWithOnDestroy', 'ngOnDestroy'); }
 
-  transform(value, args = null) { return null; }
+  transform(value) { return null; }
 }
 
 @Pipe({name: 'identityPipe'})
 class IdentityPipe implements PipeTransform {
-  transform(value, args = null) { return value; }
+  transform(value) { return value; }
 }
 
 @Pipe({name: 'wrappedPipe'})
 class WrappedPipe implements PipeTransform {
-  transform(value, args = null) { return WrappedValue.wrap(value); }
+  transform(value) { return WrappedValue.wrap(value); }
 }
 
 @Pipe({name: 'multiArgPipe'})
 class MultiArgPipe implements PipeTransform {
-  transform(value, args = null) {
-    var arg1 = args[0];
-    var arg2 = args[1];
-    var arg3 = args.length > 2 ? args[2] : 'default';
-    return `${value} ${arg1} ${arg2} ${arg3}`;
-  }
+  transform(value, arg1, arg2, arg3 = 'default') { return `${value} ${arg1} ${arg2} ${arg3}`; }
 }
 
 @Component({selector: 'test-cmp', template: '', directives: ALL_DIRECTIVES, pipes: ALL_PIPES})
@@ -1235,6 +1309,45 @@ class TestDirective implements OnInit, DoCheck, OnChanges, AfterContentInit, Aft
       throw new BaseException('Boom!');
     }
   }
+}
+
+@Directive({selector: '[orderCheck0]'})
+class OrderCheckDirective0 {
+  private _name: string;
+
+  @Input('orderCheck0')
+  set name(value: string) {
+    this._name = value;
+    this.log.add(this._name, 'set');
+  }
+
+  constructor(public log: DirectiveLog) {}
+}
+
+@Directive({selector: '[orderCheck1]'})
+class OrderCheckDirective1 {
+  private _name: string;
+
+  @Input('orderCheck1')
+  set name(value: string) {
+    this._name = value;
+    this.log.add(this._name, 'set');
+  }
+
+  constructor(public log: DirectiveLog, _check0: OrderCheckDirective0) {}
+}
+
+@Directive({selector: '[orderCheck2]'})
+class OrderCheckDirective2 {
+  private _name: string;
+
+  @Input('orderCheck2')
+  set name(value: string) {
+    this._name = value;
+    this.log.add(this._name, 'set');
+  }
+
+  constructor(public log: DirectiveLog, _check1: OrderCheckDirective1) {}
 }
 
 @Directive({selector: '[testLocals]'})

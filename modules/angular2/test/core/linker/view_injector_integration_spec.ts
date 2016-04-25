@@ -88,6 +88,8 @@ const ALL_PIPES = CONST_EXPR([
   forwardRef(() => PipeNeedsService),
   forwardRef(() => PurePipe),
   forwardRef(() => ImpurePipe),
+  forwardRef(() => DuplicatePipe1),
+  forwardRef(() => DuplicatePipe2),
 ]);
 
 @Directive({selector: '[simpleDirective]'})
@@ -230,30 +232,39 @@ class PushComponentNeedsChangeDetectorRef {
 }
 
 @Pipe({name: 'purePipe', pure: true})
-class PurePipe {
+class PurePipe implements PipeTransform {
   constructor() {}
-  transform(value: any, args: any[] = null): any { return this; }
+  transform(value: any): any { return this; }
 }
 
 @Pipe({name: 'impurePipe', pure: false})
-class ImpurePipe {
+class ImpurePipe implements PipeTransform {
   constructor() {}
-  transform(value: any, args: any[] = null): any { return this; }
+  transform(value: any): any { return this; }
 }
 
 @Pipe({name: 'pipeNeedsChangeDetectorRef'})
 class PipeNeedsChangeDetectorRef {
   constructor(public changeDetectorRef: ChangeDetectorRef) {}
-  transform(value: any, args: any[] = null): any { return this; }
+  transform(value: any): any { return this; }
 }
 
 @Pipe({name: 'pipeNeedsService'})
 export class PipeNeedsService implements PipeTransform {
   service: any;
   constructor(@Inject("service") service) { this.service = service; }
-  transform(value: any, args: any[] = null): any { return this; }
+  transform(value: any): any { return this; }
 }
 
+@Pipe({name: 'duplicatePipe'})
+export class DuplicatePipe1 implements PipeTransform {
+  transform(value: any): any { return this; }
+}
+
+@Pipe({name: 'duplicatePipe'})
+export class DuplicatePipe2 implements PipeTransform {
+  transform(value: any): any { return this; }
+}
 
 @Component({selector: 'root'})
 class TestComp {
@@ -628,6 +639,11 @@ export function main() {
            expect(el.children[0].inject(SimpleDirective).value.service).toEqual('pipeService');
          }));
 
+      it('should overwrite pipes with later entry in the pipes array', fakeAsync(() => {
+           var el = createComp('<div [simpleDirective]="true | duplicatePipe"></div>', tcb);
+           expect(el.children[0].inject(SimpleDirective).value).toBeAnInstanceOf(DuplicatePipe2);
+         }));
+
       it('should inject ChangeDetectorRef into pipes', fakeAsync(() => {
            var el = createComp(
                '<div [simpleDirective]="true | pipeNeedsChangeDetectorRef" directiveNeedsChangeDetectorRef></div>',
@@ -638,7 +654,7 @@ export function main() {
 
       it('should cache pure pipes', fakeAsync(() => {
            var el = createComp(
-               '<div [simpleDirective]="true | purePipe"></div><div [simpleDirective]="true | purePipe"></div>',
+               '<div [simpleDirective]="true | purePipe"></div><div *ngIf="true" [simpleDirective]="true | purePipe"></div>',
                tcb);
            var purePipe1 = el.children[0].inject(SimpleDirective).value;
            var purePipe2 = el.children[1].inject(SimpleDirective).value;

@@ -3519,6 +3519,11 @@
           "from": "glob@>=4.3.0 <4.4.0",
           "resolved": "https://registry.npmjs.org/glob/-/glob-4.3.5.tgz",
           "dependencies": {
+            "inflight": {
+              "version": "1.0.4",
+              "from": "inflight@>=1.0.4 <2.0.0",
+              "resolved": "https://registry.npmjs.org/inflight/-/inflight-1.0.4.tgz"
+            },
             "minimatch": {
               "version": "2.0.10",
               "from": "minimatch@>=2.0.1 <3.0.0",
@@ -9285,8 +9290,9 @@
       }
     },
     "zone.js": {
-      "version": "0.6.11",
-      "from": "zone.js@0.6.11"
+      "version": "0.6.12",
+      "from": "zone.js@0.6.12",
+      "resolved": "https://registry.npmjs.org/zone.js/-/zone.js-0.6.12.tgz"
     }
   }
 }

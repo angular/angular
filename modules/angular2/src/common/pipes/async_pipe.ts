@@ -1,13 +1,6 @@
 import {isBlank, isPresent, isPromise, CONST} from 'angular2/src/facade/lang';
 import {ObservableWrapper, Observable, EventEmitter} from 'angular2/src/facade/async';
-import {
-  Pipe,
-  Injectable,
-  ChangeDetectorRef,
-  OnDestroy,
-  PipeTransform,
-  WrappedValue
-} from 'angular2/core';
+import {Pipe, Injectable, ChangeDetectorRef, OnDestroy, WrappedValue} from 'angular2/core';
 
 import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
 
@@ -55,7 +48,7 @@ var __unused: Promise<any>;  // avoid unused import when Promise union types are
  */
 @Pipe({name: 'async', pure: false})
 @Injectable()
-export class AsyncPipe implements PipeTransform, OnDestroy {
+export class AsyncPipe implements OnDestroy {
   /** @internal */
   _latestValue: Object = null;
   /** @internal */
@@ -76,7 +69,7 @@ export class AsyncPipe implements PipeTransform, OnDestroy {
     }
   }
 
-  transform(obj: Observable<any>| Promise<any>| EventEmitter<any>, args?: any[]): any {
+  transform(obj: Observable<any>| Promise<any>| EventEmitter<any>): any {
     if (isBlank(this._obj)) {
       if (isPresent(obj)) {
         this._subscribe(obj);
