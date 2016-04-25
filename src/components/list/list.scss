@@ -3,6 +3,7 @@
 
 $md-list-side-padding: 16px;
 $md-list-avatar-size: 40px;
+$md-list-icon-size: 24px;
 
 /*  Normal list variables */
 $md-list-top-padding: 8px;
@@ -82,6 +83,13 @@ based on whether the list is in dense mode.
     width: $md-list-avatar-size;
     height: $md-list-avatar-size;
     border-radius: 50%;
+  }
+
+  [md-list-icon] {
+    width: $md-list-icon-size;
+    height: $md-list-icon-size;
+    border-radius: 50%;
+    padding: 4px;
   }
 }
 
