@@ -13,7 +13,7 @@ $md-checkbox-border-color: if($md-is-dark-theme, rgba(white, 0.7), rgba(black, 0
 /** The color of the checkbox's checkmark / mixedmark. */
 $md-checkbox-mark-color: md-color($md-background, background);
 /** The color that is used as the checkbox background when it is checked. */
-$md-checkbox-background-color: md-color($md-primary, 500);
+$md-checkbox-background-color: md-color($md-accent, 500);
 /** The base duration used for the majority of transitions for the checkbox. */
 $md-checkbox-transition-duration: 90ms;
 /** The amount of spacing between the checkbox and its label. */

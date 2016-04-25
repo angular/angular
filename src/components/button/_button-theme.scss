@@ -1,6 +1,6 @@
 
 // Applies specified coloring to three supported palettes
-@mixin md-button-theme ($property, $color:500, $opacity: 1) {
+@mixin md-button-theme ($property, $color: 'default', $opacity: 1) {
   &.md-primary {
     #{$property}: md-color($md-primary, $color, $opacity);
   }
