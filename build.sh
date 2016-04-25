@@ -5,6 +5,7 @@ cd `dirname $0`
 rm -rf ./dist/packages-dist
 
 for PACKAGE in \
+  facade \
   core \
   compiler \
   common \
@@ -15,7 +16,7 @@ for PACKAGE in \
   upgrade \
   testing
 do
-  SRCDIR=./modules/angular2/${PACKAGE}
+  SRCDIR=./modules/@angular/${PACKAGE}
   DESTDIR=./dist/packages-dist/${PACKAGE}
 
   echo "======      COMPILING: \$(npm bin)/tsc -p ${SRCDIR}/tsconfig.json        ====="
@@ -26,7 +27,7 @@ do
   $(npm bin)/tsc -p ${SRCDIR}/tsconfig-es2015.json
 done
 
-TSCONFIG=./modules/angular2/tsconfig.json
+TSCONFIG=./modules/@angular/tsconfig.json
 echo "====== (all)COMPILING: \$(npm bin)/tsc -p ${TSCONFIG} ====="
 rm -rf ./dist/packages-all/
 $(npm bin)/tsc -p ${TSCONFIG}

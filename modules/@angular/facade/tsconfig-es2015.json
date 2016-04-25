@@ -1,0 +1,33 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "declaration": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "module": "es2015",
+    "moduleResolution": "node",
+    "outDir": "../../../dist/packages-dist/facade/esm",
+    "paths": {
+      "rxjs/*": ["../../../node_modules/rxjs/*"]
+    },
+    "rootDir": ".",
+    "sourceMap": true,
+    "sourceRoot": "",
+    "target": "es2015"
+  },
+  "files": [
+    "async.ts",
+    "base_wrapped_exception.ts",
+    "browser.ts",
+    "collection.ts",
+    "exception_handler.ts",
+    "exceptions.ts",
+    "facade.ts",
+    "intl.ts",
+    "lang.ts",
+    "math.ts",
+    "promise.ts",
+
+    "../../../node_modules/zone.js/dist/zone.js.d.ts"
+  ]
+}
