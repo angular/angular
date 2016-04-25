@@ -1,6 +1,6 @@
 {
   "name": "@angular/platform-server",
-  "version": "0.0.3",
+  "version": "$$ANGULAR_VERSION$$",
   "description": "",
   "main": "platform_server.js",
   "jsnext:main": "esm/platform_server.js",
@@ -11,8 +11,6 @@
     "reflect-metadata": "^0.1.2",
     "rxjs": "5.0.0-beta.2",
     "zone.js": "^0.6.6",
-    "@angular/core": "*",
-    "@angular/common": "*",
-    "@angular/compiler": "*"
+    "@angular/platform-browser": "$$ANGULAR_VERSION$$"
   }
 }

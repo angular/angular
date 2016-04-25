@@ -1,6 +1,6 @@
 {
   "name": "@angular/core",
-  "version": "0.0.3",
+  "version": "$$ANGULAR_VERSION$$",
   "description": "",
   "main": "core.js",
   "jsnext:main": "esm/core.js",
@@ -11,5 +11,8 @@
     "reflect-metadata": "^0.1.2",
     "rxjs": "5.0.0-beta.2",
     "zone.js": "^0.6.6"
+  },
+  "dependencies": {
+    "@angular/facade": "$$ANGULAR_VERSION$$"
   }
 }

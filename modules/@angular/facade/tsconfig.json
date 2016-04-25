@@ -16,18 +16,7 @@
     "target": "es5"
   },
   "files": [
-    "async.ts",
-    "base_wrapped_exception.ts",
-    "browser.ts",
-    "collection.ts",
-    "exception_handler.ts",
-    "exceptions.ts",
     "facade.ts",
-    "intl.ts",
-    "lang.ts",
-    "math.ts",
-    "promise.ts",
-
     "../typings/es6-collections/es6-collections.d.ts",
     "../typings/es6-promise/es6-promise.d.ts",
     "../manual_typings/globals.d.ts",

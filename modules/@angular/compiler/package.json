@@ -1,6 +1,6 @@
 {
   "name": "@angular/compiler",
-  "version": "0.0.3",
+  "version": "$$ANGULAR_VERSION$$",
   "description": "",
   "main": "compiler.js",
   "jsnext:main": "esm/compiler.js",
@@ -8,6 +8,7 @@
   "author": "angular",
   "license": "MIT",
   "peerDependencies": {
-    "@angular/core": "*"
+    "@angular/core": "$$ANGULAR_VERSION$$",
+    "@angular/facade": "$$ANGULAR_VERSION$$"
   }
 }

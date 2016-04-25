@@ -39,4 +39,7 @@ export * from './src/application_common_providers';
 export * from './src/reflection/reflection';
 export * from './instrumentation';
 
+export {ConcreteType, Type, EventEmitter, WrappedException, ExceptionHandler} from '@angular/facade';
+
+
 export * from './private_export';

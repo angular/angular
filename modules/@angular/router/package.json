@@ -1,14 +1,15 @@
 {
   "name": "@angular/router",
-  "version": "0.0.3",
+  "version": "$$ANGULAR_VERSION$$",
   "description": "",
   "main": "router.js",
   "jsnext:main": "esm/router.js",
   "author": "angular",
   "license": "MIT",
   "peerDependencies": {
-    "@angular/core": "*",
-    "@angular/common": "*",
-    "@angular/platform-browser": "*"
+    "@angular/core": "$$ANGULAR_VERSION$$",
+    "@angular/common": "$$ANGULAR_VERSION$$",
+    "@angular/facade": "$$ANGULAR_VERSION$$",
+    "@angular/platform-browser": "$$ANGULAR_VERSION$$"
   }
 }
