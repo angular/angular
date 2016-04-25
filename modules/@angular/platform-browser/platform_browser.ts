@@ -28,8 +28,16 @@ export {
 } from './browser_common';
 
 export * from './private_export';
+export {DOCUMENT} from './src/dom/dom_tokens';
 
 import {CachedXHR} from './src/browser/xhr_cache';
+
+export {
+  bootstrapStatic,
+  browserStaticPlatform,
+  BROWSER_APP_PROVIDERS,
+  BrowserPlatformLocation
+} from './platform_browser_static';
 
 export const CACHED_TEMPLATE_PROVIDER: Array<any /*Type | Provider | any[]*/> =
   CONST_EXPR([new Provider(XHR, {useClass: CachedXHR})]);
@@ -43,7 +51,6 @@ export const BROWSER_APP_PROVIDERS_WITH_COMPILER: Array<any /*Type | Provider | 
   COMPILER_PROVIDERS,
   new Provider(XHR, {useClass: XHRImpl}),
 ]);
-export {DOCUMENT} from './src/dom/dom_tokens';
 
 export function browserPlatform(): PlatformRef {
   if (isBlank(getPlatform())) {
@@ -131,9 +138,3 @@ export function bootstrap(
 }
 
 
-export {
-  bootstrapStatic,
-  browserStaticPlatform,
-  BROWSER_APP_PROVIDERS,
-  BrowserPlatformLocation
-} from './platform_browser_static';

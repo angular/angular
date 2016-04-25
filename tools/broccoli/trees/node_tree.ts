@@ -38,6 +38,7 @@ module.exports = function makeNodeTree(projects, destinationPath) {
 
   let externalTypings = [
     '@angular/typings/hammerjs/hammerjs.d.ts',
+    '@angular/typings/jasmine/jasmine.d.ts',
     '@angular/typings/node/node.d.ts',
     '@angular/manual_typings/globals.d.ts',
     '@angular/typings/es6-collections/es6-collections.d.ts',
@@ -58,42 +59,42 @@ module.exports = function makeNodeTree(projects, destinationPath) {
     include: [
       '@angular/manual_typings/**',
       '@angular/typings/**',
-
       '@angular/test/**',
-      'benchpress/**',
-      '**/e2e_test/**',
       '@angular/examples/**/*_spec.ts',
-
       '@angular/src/testing/**',
       '@angular/testing.ts',
       '@angular/testing_internal.ts',
       '@angular/src/upgrade/**',
       '@angular/upgrade.ts',
       '@angular/platform/testing/**',
+
+      'benchpress/**',
+      '**/e2e_test/**',
     ],
     exclude: [
+      '@angular/core/test/typings.d.ts',
       // the following code and tests are not compatible with CJS/node environment
-      '@angular/test/animate/**',
-      '@angular/test/core/zone/**',
-      '@angular/test/testing/fake_async_spec.ts',
-      '@angular/test/testing/testing_public_browser_spec.ts',
-      '@angular/test/platform/xhr_impl_spec.ts',
-      '@angular/test/platform/browser/**/*.ts',
-      '@angular/test/common/forms/**',
+      '@angular/platform-browser/test/animate/**',
+      '@angular/core/test/zone/**',
+      '@angular/testing/test/fake_async_spec.ts',
+      '@angular/testing/test/testing_public_browser_spec.ts',
+      '@angular/platform/test/xhr_impl_spec.ts',
+      '@angular/platform/test/browser/**/*.ts',
+      '@angular/common/test/forms/**',
       '@angular/manual_typings/**',
       '@angular/typings/**',
 
       // we call browser's bootstrap
-      '@angular/test/router/route_config/route_config_spec.ts',
-      '@angular/test/router/integration/bootstrap_spec.ts',
+      '@angular/router/test/route_config/route_config_spec.ts',
+      '@angular/router/test/integration/bootstrap_spec.ts',
 
       // we check the public api by importing angular2/angular2
-      '@angular/test/symbol_inspector/**/*.ts',
+      '@angular/symbol_inspector/test/**/*.ts',
       '@angular/test/public_api_spec.ts',
 
-      '@angular/test/web_workers/worker/renderer_integration_spec.ts',
+      '@angular/web_workers/test/worker/renderer_integration_spec.ts',
 
-      '@angular/test/upgrade/**/*.ts',
+      '@angular/upgrade/test/**/*.ts',
       'angular1_router/**',
       'payload_tests/**'
     ]
@@ -226,12 +227,18 @@ function compileTree(tree, genInternalTypings, rootFilePaths: string[] = []) {
     "declaration": true,
     "stripInternal": true,
     "module": "commonjs",
-    "moduleResolution": "classic",
+    "moduleResolution": "node",
     "noEmitOnError": true,
     "rootDir": ".",
     "inlineSourceMap": true,
     "inlineSources": true,
-    "target": "es5"
+    "target": "es5",
+    // "traceResolution": true,
+    "baseUrl": ".",
+    "paths": {
+      "rxjs/*": ["./rxjs/*"],
+      "@angular/*": ["./@angular/*"]
+    }
   });
 }
 

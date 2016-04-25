@@ -83,6 +83,7 @@ class DiffingTSCompiler implements DiffingBroccoliPlugin {
     }
 
     this.tsOpts.rootDir = inputPath;
+    this.tsOpts.baseUrl = inputPath;
     this.tsOpts.outDir = this.cachePath;
 
     this.tsServiceHost = new CustomLanguageServiceHost(this.tsOpts, this.rootFilePaths,
@@ -337,6 +338,10 @@ class CustomLanguageServiceHost implements ts.LanguageServiceHost {
 
   getScriptFileNames(): string[] {
     return this.fileNames.map(f => path.join(this.treeInputPath, f));
+  }
+
+  trace(message) {
+    console.log('TS:', message);
   }
 
 

@@ -59,3 +59,9 @@ export const COMPILER_PROVIDERS: Array<Type | Provider | any[]> = CONST_EXPR([
   DirectiveResolver,
   PipeResolver
 ]);
+
+//  CONST_EXPR
+// /* @const */
+
+//   /* @Provider */ ({provide: CompilerConfig, useFactory: _createCompilerConfig, deps: []}),
+//   const Provider(CompilerConfig, {useFactory: _createCompilerConfig, deps: []}),
