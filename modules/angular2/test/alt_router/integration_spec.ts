@@ -49,7 +49,51 @@ export function main() {
              .then((_) => router.navigateByUrl('/team/22/user/victor'))
              .then((_) => {
                fixture.detectChanges();
-               expect(fixture.debugElement.nativeElement).toHaveText('team 22 { hello victor }');
+               expect(fixture.debugElement.nativeElement)
+                   .toHaveText('team 22 { hello victor, aux:  }');
+               async.done();
+             });
+       }));
+
+    it('should support aux routes',
+       inject([AsyncTestCompleter, Router, TestComponentBuilder], (async, router, tcb) => {
+         let fixture;
+         compileRoot(tcb)
+             .then((rtc) => {fixture = rtc})
+             .then((_) => router.navigateByUrl('/team/22/user/victor(/simple)'))
+             .then((_) => {
+               fixture.detectChanges();
+               expect(fixture.debugElement.nativeElement)
+                   .toHaveText('team 22 { hello victor, aux: simple }');
+               async.done();
+             });
+       }));
+
+    it('should unload outlets',
+       inject([AsyncTestCompleter, Router, TestComponentBuilder], (async, router, tcb) => {
+         let fixture;
+         compileRoot(tcb)
+             .then((rtc) => {fixture = rtc})
+             .then((_) => router.navigateByUrl('/team/22/user/victor(/simple)'))
+             .then((_) => router.navigateByUrl('/team/22/user/victor'))
+             .then((_) => {
+               fixture.detectChanges();
+               expect(fixture.debugElement.nativeElement)
+                   .toHaveText('team 22 { hello victor, aux:  }');
+               async.done();
+             });
+       }));
+
+    it('should unload nested outlets',
+       inject([AsyncTestCompleter, Router, TestComponentBuilder], (async, router, tcb) => {
+         let fixture;
+         compileRoot(tcb)
+             .then((rtc) => {fixture = rtc})
+             .then((_) => router.navigateByUrl('/team/22/user/victor(/simple)'))
+             .then((_) => router.navigateByUrl('/'))
+             .then((_) => {
+               fixture.detectChanges();
+               expect(fixture.debugElement.nativeElement).toHaveText('');
                async.done();
              });
        }));
@@ -68,10 +112,13 @@ export function main() {
              .then((_) => {
                fixture.detectChanges();
                expect(team1).toBe(team2);
-               expect(fixture.debugElement.nativeElement).toHaveText('team 22 { hello fedor }');
+               expect(fixture.debugElement.nativeElement)
+                   .toHaveText('team 22 { hello fedor, aux:  }');
                async.done();
              });
        }));
+
+    // unload unused nodes
   });
 }
 
@@ -85,12 +132,19 @@ class UserCmp implements OnActivate {
   routerOnActivate(s: RouteSegment, a?, b?, c?) { this.user = s.getParam('name'); }
 }
 
+@Component({selector: 'simple-cmp', template: `simple`})
+class SimpleCmp {
+}
+
 @Component({
   selector: 'team-cmp',
-  template: `team {{id}} { <router-outlet></router-outlet> }`,
+  template: `team {{id}} { <router-outlet></router-outlet>, aux: <router-outlet name="aux"></router-outlet> }`,
   directives: [ROUTER_DIRECTIVES]
 })
-@Routes([new Route({path: 'user/:name', component: UserCmp})])
+@Routes([
+  new Route({path: 'user/:name', component: UserCmp}),
+  new Route({path: 'simple', component: SimpleCmp})
+])
 class TeamCmp implements OnActivate {
   id: string;
   routerOnActivate(s: RouteSegment, a?, b?, c?) { this.id = s.getParam('id'); }
