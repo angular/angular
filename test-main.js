@@ -12,15 +12,44 @@ System.config({
   defaultJSExtensions: true,
   paths: {
     'benchpress/*': 'dist/js/dev/es5/benchpress/*.js',
-    'angular2/*': 'dist/js/dev/es5/angular2/*.js',
+    '@angular/*': 'dist/@angular/*.js',
     'rxjs/*': 'node_modules/rxjs/*.js'
+  },
+  packages: {
+    '@angular/facade': {
+      main: 'index'
+    },
+    '@angular/core': {
+      main: 'index'
+    },
+    '@angular/compiler': {
+      main: 'index'
+    },
+    '@angular/common': {
+      main: 'index'
+    },
+    '@angular/testing': {
+      main: 'index'
+    },
+    '@angular/router': {
+      main: 'index'
+    },
+    '@angular/upgrade': {
+      main: 'index'
+    },
+    '@angular/platform-browser': {
+      main: 'index'
+    },
+    // '@angular/platform-browser/testing': {
+    //   main: 'index'
+    // }
   }
 });
 
 // Set up the test injector, then import all the specs, execute their `main()`
 // method and kick off Karma (Jasmine).
-System.import('angular2/testing').then(function(testing) {
-  return System.import('angular2/platform/testing/browser').then(function(testing_platform_browser) {
+System.import('@angular/testing').then(function(testing) {
+  return System.import('@angular/testing/browser').then(function(testing_platform_browser) {
     testing.setBaseTestProviders(testing_platform_browser.TEST_BROWSER_PLATFORM_PROVIDERS,
                                  testing_platform_browser.TEST_BROWSER_APPLICATION_PROVIDERS);
   });
@@ -30,6 +59,7 @@ System.import('angular2/testing').then(function(testing) {
     .filter(onlySpecFiles)
     .map(window.file2moduleName)        // Normalize paths to module names.
     .map(function(path) {
+      console.log(path)
       return System.import(path).then(function(module) {
         if (module.hasOwnProperty('main')) {
           module.main();
