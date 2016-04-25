@@ -42,7 +42,7 @@ $md-sidenav-push-background-color: md-color($md-background, dialog) !default;
   }
 }
 
-/* This mixin ensures a sidenav element spans the whole viewport. */
+/* This mixin ensures a sidenav element spans the whole viewport.*/
 @mixin md-sidenav-fullscreen {
   position: absolute;
   top: 0;
@@ -61,6 +61,7 @@ $md-sidenav-push-background-color: md-color($md-background, dialog) !default;
 
   box-sizing: border-box;
 
+  // TODO(hansl): Update this with a more robust solution.
   &[fullscreen] {
     @include md-sidenav-fullscreen();
   }
