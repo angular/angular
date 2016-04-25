@@ -109,7 +109,7 @@ export class ProviderElementContext {
     var sortedProviderTypes =
         this._transformedProviders.values().map(provider => provider.token.identifier);
     var sortedDirectives = ListWrapper.clone(this._directiveAsts);
-    ListWrapper.sort(this._directiveAsts,
+    ListWrapper.sort(sortedDirectives,
                      (dir1, dir2) => sortedProviderTypes.indexOf(dir1.directive.type) -
                                      sortedProviderTypes.indexOf(dir2.directive.type));
     return sortedDirectives;

@@ -1056,6 +1056,18 @@ export function main() {
            expect(renderLog.log).toEqual([]);
          }));
     });
+
+    describe('multi directive order', () => {
+      it('should follow the DI order for the same element', fakeAsync(() => {
+           var ctx =
+               createCompFixture('<div orderCheck2="2" orderCheck0="0" orderCheck1="1"></div>');
+
+           ctx.detectChanges(false);
+           ctx.destroy();
+
+           expect(directiveLog.filter(['set'])).toEqual(['0.set', '1.set', '2.set']);
+         }));
+    });
   });
 }
 
@@ -1066,7 +1078,10 @@ const ALL_DIRECTIVES = CONST_EXPR([
   forwardRef(() => TestLocals),
   forwardRef(() => CompWithRef),
   forwardRef(() => EmitterDirective),
-  forwardRef(() => PushComp)
+  forwardRef(() => PushComp),
+  forwardRef(() => OrderCheckDirective2),
+  forwardRef(() => OrderCheckDirective0),
+  forwardRef(() => OrderCheckDirective1),
 ]);
 
 const ALL_PIPES = CONST_EXPR([
@@ -1294,6 +1309,45 @@ class TestDirective implements OnInit, DoCheck, OnChanges, AfterContentInit, Aft
       throw new BaseException('Boom!');
     }
   }
+}
+
+@Directive({selector: '[orderCheck0]'})
+class OrderCheckDirective0 {
+  private _name: string;
+
+  @Input('orderCheck0')
+  set name(value: string) {
+    this._name = value;
+    this.log.add(this._name, 'set');
+  }
+
+  constructor(public log: DirectiveLog) {}
+}
+
+@Directive({selector: '[orderCheck1]'})
+class OrderCheckDirective1 {
+  private _name: string;
+
+  @Input('orderCheck1')
+  set name(value: string) {
+    this._name = value;
+    this.log.add(this._name, 'set');
+  }
+
+  constructor(public log: DirectiveLog, _check0: OrderCheckDirective0) {}
+}
+
+@Directive({selector: '[orderCheck2]'})
+class OrderCheckDirective2 {
+  private _name: string;
+
+  @Input('orderCheck2')
+  set name(value: string) {
+    this._name = value;
+    this.log.add(this._name, 'set');
+  }
+
+  constructor(public log: DirectiveLog, _check1: OrderCheckDirective1) {}
 }
 
 @Directive({selector: '[testLocals]'})
