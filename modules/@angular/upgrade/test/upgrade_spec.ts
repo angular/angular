@@ -10,7 +10,7 @@ import {
   xdescribe,
   xit,
 } from '@angular/testing/testing_internal';
-import {DOM} from '@angular/platform-browser/src/dom/dom_adapter';
+import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
 import {global} from '@angular/facade';
 import {

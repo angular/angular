@@ -12,7 +12,7 @@ import {
   TestInjector,
   TestComponentBuilder
 } from '@angular/testing/testing_internal';
-import {DOM} from '@angular/platform-browser/src/dom/dom_adapter';
+import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {
   bind,
   provide,
@@ -153,17 +153,17 @@ export function main() {
                  expect((<HTMLInputElement>el).tabIndex).toEqual(1);
 
                  renderer.setElementClass(workerEl, 'a', true);
-                 expect(DOM.hasClass(el, 'a')).toBe(true);
+                 expect(getDOM().hasClass(el, 'a')).toBe(true);
                  renderer.setElementClass(workerEl, 'a', false);
-                 expect(DOM.hasClass(el, 'a')).toBe(false);
+                 expect(getDOM().hasClass(el, 'a')).toBe(false);
 
                  renderer.setElementStyle(workerEl, 'width', '10px');
-                 expect(DOM.getStyle(el, 'width')).toEqual('10px');
+                 expect(getDOM().getStyle(el, 'width')).toEqual('10px');
                  renderer.setElementStyle(workerEl, 'width', null);
-                 expect(DOM.getStyle(el, 'width')).toEqual('');
+                 expect(getDOM().getStyle(el, 'width')).toEqual('');
 
                  renderer.setElementAttribute(workerEl, 'someattr', 'someValue');
-                 expect(DOM.getAttribute(el, 'someattr')).toEqual('someValue');
+                 expect(getDOM().getAttribute(el, 'someattr')).toEqual('someValue');
                };
 
                // root element
@@ -185,7 +185,7 @@ export function main() {
                (<MyComp>fixture.debugElement.componentInstance).ctxBoolProp = true;
                fixture.detectChanges();
                var el = getRenderElement(fixture.debugElement.nativeElement);
-               expect(DOM.getInnerHTML(el)).toContain('"ng-reflect-ng-if": "true"');
+               expect(getDOM().getInnerHTML(el)).toContain('"ng-reflect-ng-if": "true"');
                async.done();
              });
        }));
@@ -214,7 +214,7 @@ export function main() {
              });
        }));
 
-    if (DOM.supportsDOMEvents()) {
+    if (getDOM().supportsDOMEvents()) {
       it('should call actions on the element',
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            tcb.overrideView(MyComp, new ViewMetadata({template: '<input [title]="y">'}))
@@ -224,7 +224,7 @@ export function main() {
                  getRenderer(fixture.componentRef)
                      .invokeElementMethod(el.nativeElement, 'setAttribute', ['a', 'b']);
 
-                 expect(DOM.getAttribute(getRenderElement(el.nativeElement), 'a')).toEqual('b');
+                 expect(getDOM().getAttribute(getRenderElement(el.nativeElement), 'a')).toEqual('b');
                  async.done();
                });
          }));

@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 
-import {DOM} from '../dom_adapter';
+import {getDOM} from '../dom_adapter';
 import {EventManagerPlugin} from './event_manager';
 
 @Injectable()
@@ -13,14 +13,14 @@ export class DomEventsPlugin extends EventManagerPlugin {
     var zone = this.manager.getZone();
     var outsideHandler = (event) => zone.runGuarded(() => handler(event));
     return this.manager.getZone().runOutsideAngular(
-        () => DOM.onAndCancel(element, eventName, outsideHandler));
+        () => getDOM().onAndCancel(element, eventName, outsideHandler));
   }
 
   addGlobalEventListener(target: string, eventName: string, handler: Function): Function {
-    var element = DOM.getGlobalEventTarget(target);
+    var element = getDOM().getGlobalEventTarget(target);
     var zone = this.manager.getZone();
     var outsideHandler = (event) => zone.runGuarded(() => handler(event));
     return this.manager.getZone().runOutsideAngular(
-        () => DOM.onAndCancel(element, eventName, outsideHandler));
+        () => getDOM().onAndCancel(element, eventName, outsideHandler));
   }
 }

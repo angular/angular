@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {History, Location} from '@angular/facade';
 import {UrlChangeListener, PlatformLocation} from '@angular/common';
-import {DOM} from '../../dom/dom_adapter';
+import {getDOM} from '../../dom/dom_adapter';
 
 
 
@@ -23,21 +23,21 @@ export class BrowserPlatformLocation extends PlatformLocation {
   // This is moved to its own method so that `MockPlatformLocationStrategy` can overwrite it
   /** @internal */
   _init() {
-    this._location = DOM.getLocation();
-    this._history = DOM.getHistory();
+    this._location = getDOM().getLocation();
+    this._history = getDOM().getHistory();
   }
 
   /** @internal */
   get location(): Location { return this._location; }
 
-  getBaseHrefFromDOM(): string { return DOM.getBaseHref(); }
+  getBaseHrefFromDOM(): string { return getDOM().getBaseHref(); }
 
   onPopState(fn: UrlChangeListener): void {
-    DOM.getGlobalEventTarget('window').addEventListener('popstate', fn, false);
+    getDOM().getGlobalEventTarget('window').addEventListener('popstate', fn, false);
   }
 
   onHashChange(fn: UrlChangeListener): void {
-    DOM.getGlobalEventTarget('window').addEventListener('hashchange', fn, false);
+    getDOM().getGlobalEventTarget('window').addEventListener('hashchange', fn, false);
   }
 
   get pathname(): string { return this._location.pathname; }

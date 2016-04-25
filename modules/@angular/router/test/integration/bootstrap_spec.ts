@@ -17,7 +17,7 @@ import {
 import {bootstrap} from '@angular/platform-browser-dynamic';
 import {APP_BASE_HREF, LocationStrategy} from '@angular/common';
 import {Component, Directive} from '@angular/core/src/metadata';
-import {DOM} from '@angular/platform-browser/src/dom/dom_adapter';
+import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {Console} from '@angular/core/src/console';
 import {provide} from '@angular/core';
 import {DOCUMENT} from '@angular/platform-browser/src/dom/dom_tokens';
@@ -56,9 +56,9 @@ export function main() {
     // do not refactor out the `bootstrap` functionality. We still want to
     // keep this test around so we can ensure that bootstrap a router works
     it('should bootstrap a simple app', inject([AsyncTestCompleter], (async) => {
-         var fakeDoc = DOM.createHtmlDocument();
-         var el = DOM.createElement('app-cmp', fakeDoc);
-         DOM.appendChild(fakeDoc.body, el);
+         var fakeDoc = getDOM().createHtmlDocument();
+         var el = getDOM().createElement('app-cmp', fakeDoc);
+         getDOM().appendChild(fakeDoc.body, el);
 
          bootstrap(AppCmp,
                    [

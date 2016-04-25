@@ -11,7 +11,7 @@ import {
   it,
   xit,
 } from '@angular/testing/testing_internal';
-import {DOM} from '@angular/platform-browser/src/dom/dom_adapter';
+import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {Component, Directive} from '@angular/core';
 import {ElementRef} from '@angular/core/src/linker/element_ref';
 
@@ -37,10 +37,10 @@ export function main() {
              .then((fixture) => {
                fixture.detectChanges();
 
-               // We must use DOM.querySelector instead of fixture.query here
+               // We must use getDOM().querySelector instead of fixture.query here
                // since the elements inside are not compiled.
-               var span = DOM.querySelector(fixture.debugElement.nativeElement, '#child');
-               expect(DOM.hasClass(span, 'compiled')).toBeFalsy();
+               var span = getDOM().querySelector(fixture.debugElement.nativeElement, '#child');
+               expect(getDOM().hasClass(span, 'compiled')).toBeFalsy();
                async.done();
              });
        }));
@@ -52,8 +52,8 @@ export function main() {
              .createAsync(TestComponent)
              .then((fixture) => {
                fixture.detectChanges();
-               var span = DOM.querySelector(fixture.debugElement.nativeElement, '#child');
-               expect(DOM.hasClass(span, 'compiled')).toBeTruthy();
+               var span = getDOM().querySelector(fixture.debugElement.nativeElement, '#child');
+               expect(getDOM().hasClass(span, 'compiled')).toBeTruthy();
                async.done();
              });
        }));
@@ -62,7 +62,7 @@ export function main() {
 
 @Directive({selector: '[test-dec]'})
 class TestDirective {
-  constructor(el: ElementRef) { DOM.addClass(el.nativeElement, 'compiled'); }
+  constructor(el: ElementRef) { getDOM().addClass(el.nativeElement, 'compiled'); }
 }
 
 @Component({selector: 'test-cmp', directives: [TestDirective], template: ''})

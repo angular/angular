@@ -1,7 +1,7 @@
 import {Inject, Injectable} from '@angular/core';
 import {SetWrapper} from '@angular/facade';
 
-import {DOM} from './dom_adapter';
+import {getDOM} from './dom_adapter';
 import {DOCUMENT} from './dom_tokens';
 
 @Injectable()
@@ -41,7 +41,7 @@ export class DomSharedStylesHost extends SharedStylesHost {
   _addStylesToHost(styles: string[], host: Node) {
     for (var i = 0; i < styles.length; i++) {
       var style = styles[i];
-      DOM.appendChild(host, DOM.createStyleElement(style));
+      getDOM().appendChild(host, getDOM().createStyleElement(style));
     }
   }
   addHost(hostNode: Node) {

@@ -22,7 +22,7 @@ import {Component, ViewMetadata} from '@angular/core/src/metadata';
 import {DynamicComponentLoader} from '@angular/core/src/linker/dynamic_component_loader';
 import {ElementRef} from '@angular/core/src/linker/element_ref';
 import {DOCUMENT} from '@angular/platform-browser/src/dom/dom_tokens';
-import {DOM} from '@angular/platform-browser/src/dom/dom_adapter';
+import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {BaseException} from '@angular/facade';
 import {PromiseWrapper} from '@angular/facade';
 
@@ -115,7 +115,7 @@ export function main() {
                     tc.detectChanges();
                     loader.loadNextToLocation(DynamicallyLoadedWithNgContent,
                                               tc.componentInstance.viewContainerRef, null,
-                                              [[DOM.createTextNode('hello')]])
+                                              [[getDOM().createTextNode('hello')]])
                         .then(ref => {
                           tc.detectChanges();
                           var newlyInsertedElement = tc.debugElement.childNodes[1].nativeNode;
@@ -143,7 +143,7 @@ export function main() {
          inject([AsyncTestCompleter, DynamicComponentLoader, DOCUMENT, Injector],
                 (async, loader: DynamicComponentLoader, doc, injector: Injector) => {
                   var rootEl = createRootElement(doc, 'child-cmp');
-                  DOM.appendChild(doc.body, rootEl);
+                  getDOM().appendChild(doc.body, rootEl);
                   loader.loadAsRoot(ChildComp, null, injector)
                       .then((componentRef) => {
                         var el = new ComponentFixture(componentRef);
@@ -172,9 +172,9 @@ export function main() {
          inject([AsyncTestCompleter, DynamicComponentLoader, DOCUMENT, Injector],
                 (async, loader: DynamicComponentLoader, doc, injector: Injector) => {
                   var rootEl = createRootElement(doc, 'dummy');
-                  DOM.appendChild(doc.body, rootEl);
+                  getDOM().appendChild(doc.body, rootEl);
                   loader.loadAsRoot(DynamicallyLoadedWithNgContent, null, injector, null,
-                                    [[DOM.createTextNode('hello')]])
+                                    [[getDOM().createTextNode('hello')]])
                       .then((_) => {
                         expect(rootEl).toHaveText('dynamic(hello)');
 
@@ -188,12 +188,12 @@ export function main() {
 }
 
 function createRootElement(doc: any, name: string): any {
-  var nodes = DOM.querySelectorAll(doc, name);
+  var nodes = getDOM().querySelectorAll(doc, name);
   for (var i = 0; i < nodes.length; i++) {
-    DOM.remove(nodes[i]);
+    getDOM().remove(nodes[i]);
   }
   var rootEl = el(`<${name}></${name}>`);
-  DOM.appendChild(doc.body, rootEl);
+  getDOM().appendChild(doc.body, rootEl);
   return rootEl;
 }
 

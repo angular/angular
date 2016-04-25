@@ -22,7 +22,7 @@ import {
   PromiseWrapper,
   TimerWrapper
 } from '@angular/facade';
-import {DOM} from '@angular/platform-browser/src/dom/dom_adapter';
+import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {PromiseCompleter} from '@angular/facade';
 
 export function main() {
@@ -121,7 +121,7 @@ export function main() {
       var completer: PromiseCompleter<any>;
       var ref: SpyChangeDetectorRef;
       // adds longer timers for passing tests in IE
-      var timer = (!isBlank(DOM) && browserDetection.isIE) ? 50 : 10;
+      var timer = (!isBlank(getDOM()) && browserDetection.isIE) ? 50 : 10;
 
       beforeEach(() => {
         completer = PromiseWrapper.completer();

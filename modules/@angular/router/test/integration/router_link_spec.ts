@@ -39,7 +39,7 @@ import {
 } from '@angular/router';
 import {RootRouter} from '@angular/router/src/router';
 
-import {DOM} from '@angular/platform-browser/src/dom/dom_adapter';
+import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {SpyLocation} from '@angular/testing/src/mock/location_mock';
 
@@ -200,13 +200,13 @@ export function main() {
                // TODO(juliemr): This should be one By.css('book-cmp a') query, but the parse5
                // adapter
                // can't handle css child selectors.
-               expect(DOM.getAttribute(fixture.debugElement.query(By.css('book-cmp'))
+               expect(getDOM().getAttribute(fixture.debugElement.query(By.css('book-cmp'))
                                            .query(By.css('a'))
                                            .nativeElement,
                                        'href'))
                    .toEqual('/book/1984/page/100');
 
-               expect(DOM.getAttribute(fixture.debugElement.query(By.css('page-cmp'))
+               expect(getDOM().getAttribute(fixture.debugElement.query(By.css('page-cmp'))
                                            .query(By.css('a'))
                                            .nativeElement,
                                        'href'))
@@ -241,8 +241,8 @@ export function main() {
 
                  fixture.detectChanges();
 
-                 var link1 = DOM.querySelector(element, '.child-link');
-                 var link2 = DOM.querySelector(element, '.better-child-link');
+                 var link1 = getDOM().querySelector(element, '.child-link');
+                 var link2 = getDOM().querySelector(element, '.better-child-link');
 
                  expect(link1).not.toHaveCssClass('router-link-active');
                  expect(link2).not.toHaveCssClass('router-link-active');
@@ -276,8 +276,8 @@ export function main() {
 
                  fixture.detectChanges();
 
-                 var link1 = DOM.querySelector(element, '.child-link');
-                 var link2 = DOM.querySelector(element, '.child-with-grandchild-link');
+                 var link1 = getDOM().querySelector(element, '.child-link');
+                 var link2 = getDOM().querySelector(element, '.child-with-grandchild-link');
 
                  expect(link1).not.toHaveCssClass('router-link-active');
                  expect(link2).not.toHaveCssClass('router-link-active');
@@ -288,8 +288,8 @@ export function main() {
                    expect(link1).not.toHaveCssClass('router-link-active');
                    expect(link2).toHaveCssClass('router-link-active');
 
-                   var link3 = DOM.querySelector(element, '.grandchild-link');
-                   var link4 = DOM.querySelector(element, '.better-grandchild-link');
+                   var link3 = getDOM().querySelector(element, '.grandchild-link');
+                   var link4 = getDOM().querySelector(element, '.better-grandchild-link');
 
                    expect(link3).toHaveCssClass('router-link-active');
                    expect(link4).not.toHaveCssClass('router-link-active');
@@ -322,8 +322,8 @@ export function main() {
 
       var clickOnElement = function(view) {
         var anchorEl = fixture.debugElement.query(By.css('a')).nativeElement;
-        var dispatchedEvent = DOM.createMouseEvent('click');
-        DOM.dispatchEvent(anchorEl, dispatchedEvent);
+        var dispatchedEvent = getDOM().createMouseEvent('click');
+        getDOM().dispatchEvent(anchorEl, dispatchedEvent);
         return dispatchedEvent;
       };
 
@@ -336,7 +336,7 @@ export function main() {
                  fixture.detectChanges();
 
                  var dispatchedEvent = clickOnElement(fixture);
-                 expect(DOM.isPrevented(dispatchedEvent)).toBe(true);
+                 expect(getDOM().isPrevented(dispatchedEvent)).toBe(true);
 
                  // router navigation is async.
                  router.subscribe((_) => {
@@ -358,7 +358,7 @@ export function main() {
 
 
                  var dispatchedEvent = clickOnElement(fixture);
-                 expect(DOM.isPrevented(dispatchedEvent)).toBe(true);
+                 expect(getDOM().isPrevented(dispatchedEvent)).toBe(true);
 
                  // router navigation is async.
                  router.subscribe((_) => {
@@ -372,7 +372,7 @@ export function main() {
 }
 
 function getHref(tc: ComponentFixture) {
-  return DOM.getAttribute(tc.debugElement.query(By.css('a')).nativeElement, 'href');
+  return getDOM().getAttribute(tc.debugElement.query(By.css('a')).nativeElement, 'href');
 }
 
 @Component({selector: 'my-comp', template: '', directives: [ROUTER_DIRECTIVES]})

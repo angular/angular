@@ -22,7 +22,7 @@ import {ComponentFactory} from '@angular/core/src/linker/component_factory';
 import * as typed from './offline_compiler_codegen_typed';
 import * as untyped from './offline_compiler_codegen_untyped';
 
-import {DOM} from '@angular/platform-browser/src/dom/dom_adapter';
+import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {SharedStylesHost} from '@angular/platform-browser/src/dom/shared_styles_host';
 
 import {CompA} from './offline_compiler_util';
@@ -32,13 +32,13 @@ export function main() {
   var typedComponentFactory = typed.CompANgFactory;
   var untypedComponentFactory = untyped.CompANgFactory;
 
-  if (IS_DART || !DOM.supportsDOMEvents()) {
+  if (IS_DART || !getDOM().supportsDOMEvents()) {
     // Our generator only works on node.js and Dart...
     outputDefs.push({'compAHostComponentFactory': typedComponentFactory, 'name': 'typed'});
   }
   if (!IS_DART) {
     // Our generator only works on node.js and Dart...
-    if (!DOM.supportsDOMEvents()) {
+    if (!getDOM().supportsDOMEvents()) {
       outputDefs.push({'compAHostComponentFactory': untypedComponentFactory, 'name': 'untyped'});
     }
   }

@@ -18,7 +18,7 @@ import {bootstrap} from '@angular/platform-browser-dynamic';
 import {ApplicationRef, PlatformRef} from '@angular/core/src/application_ref';
 import {Console} from '@angular/core/src/console';
 import {Component, Directive, OnDestroy} from '@angular/core';
-import {DOM} from '@angular/platform-browser/src/dom/dom_adapter';
+import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {DOCUMENT} from '@angular/platform-browser/src/dom/dom_tokens';
 import {PromiseWrapper, TimerWrapper} from '@angular/facade';
 import {
@@ -103,14 +103,14 @@ export function main() {
     beforeEach(() => {
       disposePlatform();
 
-      fakeDoc = DOM.createHtmlDocument();
-      el = DOM.createElement('hello-app', fakeDoc);
-      el2 = DOM.createElement('hello-app-2', fakeDoc);
-      lightDom = DOM.createElement('light-dom-el', fakeDoc);
-      DOM.appendChild(fakeDoc.body, el);
-      DOM.appendChild(fakeDoc.body, el2);
-      DOM.appendChild(el, lightDom);
-      DOM.setText(lightDom, 'loading');
+      fakeDoc = getDOM().createHtmlDocument();
+      el = getDOM().createElement('hello-app', fakeDoc);
+      el2 = getDOM().createElement('hello-app-2', fakeDoc);
+      lightDom = getDOM().createElement('light-dom-el', fakeDoc);
+      getDOM().appendChild(fakeDoc.body, el);
+      getDOM().appendChild(fakeDoc.body, el2);
+      getDOM().appendChild(el, lightDom);
+      getDOM().setText(lightDom, 'loading');
       testProviders =
           [provide(DOCUMENT, {useValue: fakeDoc}), provide(Console, {useClass: DummyConsole})];
     });
@@ -141,7 +141,7 @@ export function main() {
          });
        }));
 
-    if (DOM.supportsDOMEvents()) {
+    if (getDOM().supportsDOMEvents()) {
       it('should forward the error to promise when bootstrap fails',
          inject([AsyncTestCompleter], (async) => {
            // Skip for dart since it causes a confusing error message in console when test passes.

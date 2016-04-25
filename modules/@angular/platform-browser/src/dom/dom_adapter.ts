@@ -1,10 +1,18 @@
 import {isBlank, Type} from '@angular/facade';
 
-export var DOM: DomAdapter = null;
+var _DOM: DomAdapter = null;
+
+export function getDOM(){
+  return _DOM;
+}
+
+export function setDOM(adapter:DomAdapter){
+  _DOM = adapter;
+}
 
 export function setRootDomAdapter(adapter: DomAdapter) {
-  if (isBlank(DOM)) {
-    DOM = adapter;
+  if (isBlank(_DOM)) {
+    _DOM = adapter;
   }
 }
 

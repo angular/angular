@@ -14,7 +14,7 @@ import {
 import {bootstrap} from '@angular/platform-browser-dynamic';
 import {APP_BASE_HREF, LocationStrategy} from '@angular/common';
 import {Component, Directive} from '@angular/core/src/metadata';
-import {DOM} from '@angular/platform-browser/src/dom/dom_adapter';
+import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {Console} from '@angular/core/src/console';
 import {provide} from '@angular/core';
 import {DOCUMENT} from '@angular/platform-browser/src/dom/dom_tokens';
@@ -41,9 +41,9 @@ export function main() {
   describe('RouteConfig with POJO arguments', () => {
     var fakeDoc, el, testBindings;
     beforeEach(() => {
-      fakeDoc = DOM.createHtmlDocument();
-      el = DOM.createElement('app-cmp', fakeDoc);
-      DOM.appendChild(fakeDoc.body, el);
+      fakeDoc = getDOM().createHtmlDocument();
+      el = getDOM().createElement('app-cmp', fakeDoc);
+      getDOM().appendChild(fakeDoc.body, el);
       var logger = new _ArrayLogger();
       var exceptionHandler = new ExceptionHandler(logger, false);
       testBindings = [

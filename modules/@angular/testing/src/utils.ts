@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {ListWrapper} from '@angular/facade';
-import {DOM} from '../platform_browser_private';
+import {getDOM} from '../platform_browser_private';
 import {isPresent, isString, RegExpWrapper, StringWrapper, RegExp} from '@angular/facade';
 
 @Injectable()
@@ -33,7 +33,7 @@ export class BrowserDetection {
     if (isPresent(ua)) {
       this._ua = ua;
     } else {
-      this._ua = isPresent(DOM) ? DOM.getUserAgent() : '';
+      this._ua = isPresent(getDOM()) ? getDOM().getUserAgent() : '';
     }
   }
 
@@ -67,11 +67,11 @@ export class BrowserDetection {
 }
 
 export function dispatchEvent(element, eventType): void {
-  DOM.dispatchEvent(element, DOM.createEvent(eventType));
+  getDOM().dispatchEvent(element, getDOM().createEvent(eventType));
 }
 
 export function el(html: string): HTMLElement {
-  return <HTMLElement>DOM.firstChild(DOM.content(DOM.createTemplate(html)));
+  return <HTMLElement>getDOM().firstChild(getDOM().content(getDOM().createTemplate(html)));
 }
 
 var _RE_SPECIAL_CHARS =
@@ -97,14 +97,14 @@ export function normalizeCSS(css: string): string {
 var _singleTagWhitelist = ['br', 'hr', 'input'];
 export function stringifyElement(el): string {
   var result = '';
-  if (DOM.isElementNode(el)) {
-    var tagName = DOM.tagName(el).toLowerCase();
+  if (getDOM().isElementNode(el)) {
+    var tagName = getDOM().tagName(el).toLowerCase();
 
     // Opening tag
     result += `<${tagName}`;
 
     // Attributes in an ordered way
-    var attributeMap = DOM.attributeMap(el);
+    var attributeMap = getDOM().attributeMap(el);
     var keys = [];
     attributeMap.forEach((v, k) => keys.push(k));
     ListWrapper.sort(keys);
@@ -120,8 +120,8 @@ export function stringifyElement(el): string {
     result += '>';
 
     // Children
-    var childrenRoot = DOM.templateAwareRoot(el);
-    var children = isPresent(childrenRoot) ? DOM.childNodes(childrenRoot) : [];
+    var childrenRoot = getDOM().templateAwareRoot(el);
+    var children = isPresent(childrenRoot) ? getDOM().childNodes(childrenRoot) : [];
     for (let j = 0; j < children.length; j++) {
       result += stringifyElement(children[j]);
     }
@@ -130,10 +130,10 @@ export function stringifyElement(el): string {
     if (!ListWrapper.contains(_singleTagWhitelist, tagName)) {
       result += `</${tagName}>`;
     }
-  } else if (DOM.isCommentNode(el)) {
-    result += `<!--${DOM.nodeValue(el)}-->`;
+  } else if (getDOM().isCommentNode(el)) {
+    result += `<!--${getDOM().nodeValue(el)}-->`;
   } else {
-    result += DOM.getText(el);
+    result += getDOM().getText(el);
   }
 
   return result;

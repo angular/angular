@@ -59,7 +59,6 @@ System.import('@angular/testing').then(function(testing) {
     .filter(onlySpecFiles)
     .map(window.file2moduleName)        // Normalize paths to module names.
     .map(function(path) {
-      console.log(path)
       return System.import(path).then(function(module) {
         if (module.hasOwnProperty('main')) {
           module.main();
@@ -72,6 +71,7 @@ System.import('@angular/testing').then(function(testing) {
 .then(function() {
   __karma__.start();
 }, function(error) {
+  console.log(error)
   __karma__.error(error.stack || error);
 });
 

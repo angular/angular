@@ -9,7 +9,7 @@ import {
   PLATFORM_INITIALIZER
 } from '@angular/core';
 import {Provider, Injector, OpaqueToken} from '@angular/core/src/di';
-import {DOM} from '@angular/platform-browser/src/dom/dom_adapter';
+import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {DomEventsPlugin} from '@angular/platform-browser/src/dom/events/dom_events';
 import {KeyEventsPlugin} from '@angular/platform-browser/src/dom/events/key_events';
 import {HammerGesturesPlugin} from '@angular/platform-browser/src/dom/events/hammer_gestures';
@@ -108,9 +108,9 @@ export function initWebWorkerRenderPlatform(): void {
 }
 
 function _exceptionHandler(): ExceptionHandler {
-  return new ExceptionHandler(DOM, !IS_DART);
+  return new ExceptionHandler(getDOM(), !IS_DART);
 }
 
 function _document(): any {
-  return DOM.defaultDoc();
+  return getDOM().defaultDoc();
 }

@@ -11,7 +11,7 @@ import {
   containsRegexp
 } from '@angular/testing/testing_internal';
 
-import {DOM} from '@angular/platform-browser/src/dom/dom_adapter';
+import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {MapWrapper} from '@angular/facade';
 import {RegExpWrapper} from '@angular/facade';
 
@@ -42,14 +42,14 @@ export function main() {
 
     describe("toHaveCssClass", () => {
       it("should assert that the CSS class is present", () => {
-        var el = DOM.createElement('div');
-        DOM.addClass(el, 'matias');
+        var el = getDOM().createElement('div');
+        getDOM().addClass(el, 'matias');
         expect(el).toHaveCssClass('matias');
       });
 
       it("should assert that the CSS class is not present", () => {
-        var el = DOM.createElement('div');
-        DOM.addClass(el, 'matias');
+        var el = getDOM().createElement('div');
+        getDOM().addClass(el, 'matias');
         expect(el).not.toHaveCssClass('fatias');
       });
     });

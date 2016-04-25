@@ -15,7 +15,7 @@ import {PromiseWrapper} from '@angular/facade';
 import {MapWrapper} from '@angular/facade';
 import {el} from './utils';
 import {DOCUMENT} from '@angular/platform-browser';
-import {DOM} from '../platform_browser_private';
+import {getDOM} from '../platform_browser_private';
 import {tick} from './fake_async';
 
 /**
@@ -241,11 +241,11 @@ export class TestComponentBuilder {
     var doc = this._injector.get(DOCUMENT);
 
     // TODO(juliemr): can/should this be optional?
-    var oldRoots = DOM.querySelectorAll(doc, '[id^=root]');
+    var oldRoots = getDOM().querySelectorAll(doc, '[id^=root]');
     for (var i = 0; i < oldRoots.length; i++) {
-      DOM.remove(oldRoots[i]);
+      getDOM().remove(oldRoots[i]);
     }
-    DOM.appendChild(doc.body, rootEl);
+    getDOM().appendChild(doc.body, rootEl);
 
     var promise: Promise<ComponentRef> =
         this._injector.get(DynamicComponentLoader)

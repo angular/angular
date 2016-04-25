@@ -5,7 +5,7 @@ import {
 } from '@angular/facade';
 import {StringMapWrapper, ListWrapper} from '@angular/facade';
 
-import {DOM} from '../dom_adapter';
+import {getDOM} from '../dom_adapter';
 import {EventManagerPlugin} from './event_manager';
 
 
@@ -32,7 +32,7 @@ export class KeyEventsPlugin extends EventManagerPlugin {
         element, StringMapWrapper.get(parsedEvent, 'fullKey'), handler, this.manager.getZone());
 
     return this.manager.getZone().runOutsideAngular(() => {
-      return DOM.onAndCancel(element, StringMapWrapper.get(parsedEvent, 'domEventName'),
+      return getDOM().onAndCancel(element, StringMapWrapper.get(parsedEvent, 'domEventName'),
                              outsideHandler);
     });
   }
@@ -70,7 +70,7 @@ export class KeyEventsPlugin extends EventManagerPlugin {
 
   static getEventFullKey(event: KeyboardEvent): string {
     var fullKey = '';
-    var key = DOM.getEventKey(event);
+    var key = getDOM().getEventKey(event);
     key = key.toLowerCase();
     if (StringWrapper.equals(key, ' ')) {
       key = 'space';  // for readability

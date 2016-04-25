@@ -26,7 +26,7 @@ import {
   RouteParams,
   ComponentInstruction
 } from '@angular/router';
-import {DOM} from '@angular/platform-browser/src/dom/dom_adapter';
+import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {ResolvedInstruction} from '@angular/router/src/instruction';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 
@@ -51,7 +51,7 @@ export function main() {
                testComponent.detectChanges();
                let anchorElement =
                    testComponent.debugElement.query(By.css('a.detail-view')).nativeElement;
-               expect(DOM.getAttribute(anchorElement, 'href')).toEqual('detail');
+               expect(getDOM().getAttribute(anchorElement, 'href')).toEqual('detail');
                async.done();
              });
        }));

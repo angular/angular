@@ -19,7 +19,7 @@ import {RootRouter} from '@angular/router/src/router';
 import {Router, ROUTER_DIRECTIVES, ROUTER_PRIMARY_COMPONENT} from '@angular/router';
 import {Location} from '@angular/common';
 import {RouteRegistry} from '@angular/router/src/route_registry';
-import {DOM} from '@angular/platform-browser/src/dom/dom_adapter';
+import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {SpyLocation} from '@angular/testing';
 export {ComponentFixture} from '@angular/testing/testing_internal';
 
@@ -51,13 +51,13 @@ export var TEST_ROUTER_PROVIDERS: any[] = [
 ];
 
 export function clickOnElement(anchorEl) {
-  var dispatchedEvent = DOM.createMouseEvent('click');
-  DOM.dispatchEvent(anchorEl, dispatchedEvent);
+  var dispatchedEvent = getDOM().createMouseEvent('click');
+  getDOM().dispatchEvent(anchorEl, dispatchedEvent);
   return dispatchedEvent;
 }
 
 export function getHref(elt) {
-  return DOM.getAttribute(elt, 'href');
+  return getDOM().getAttribute(elt, 'href');
 }
 
 

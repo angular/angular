@@ -12,7 +12,7 @@ import {
 import {DomEventsPlugin} from '@angular/platform-browser/src/dom/events/dom_events';
 import {NgZone} from '@angular/core/src/zone/ng_zone';
 import {ListWrapper, Map} from '@angular/facade';
-import {DOM} from '@angular/platform-browser/src/dom/dom_adapter';
+import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {EventManager, EventManagerPlugin} from '@angular/platform-browser/src/dom/events/event_manager';
 
 export function main() {
@@ -58,34 +58,34 @@ export function main() {
     it('events are caught when fired from a child', () => {
       var element = el('<div><div></div></div>');
       // Workaround for https://bugs.webkit.org/show_bug.cgi?id=122755
-      DOM.appendChild(DOM.defaultDoc().body, element);
+      getDOM().appendChild(getDOM().defaultDoc().body, element);
 
-      var child = DOM.firstChild(element);
-      var dispatchedEvent = DOM.createMouseEvent('click');
+      var child = getDOM().firstChild(element);
+      var dispatchedEvent = getDOM().createMouseEvent('click');
       var receivedEvent = null;
       var handler = (e) => { receivedEvent = e; };
       var manager = new EventManager([domEventPlugin], new FakeNgZone());
       manager.addEventListener(element, 'click', handler);
-      DOM.dispatchEvent(child, dispatchedEvent);
+      getDOM().dispatchEvent(child, dispatchedEvent);
 
       expect(receivedEvent).toBe(dispatchedEvent);
     });
 
     it('should add and remove global event listeners', () => {
       var element = el('<div><div></div></div>');
-      DOM.appendChild(DOM.defaultDoc().body, element);
-      var dispatchedEvent = DOM.createMouseEvent('click');
+      getDOM().appendChild(getDOM().defaultDoc().body, element);
+      var dispatchedEvent = getDOM().createMouseEvent('click');
       var receivedEvent = null;
       var handler = (e) => { receivedEvent = e; };
       var manager = new EventManager([domEventPlugin], new FakeNgZone());
 
       var remover = manager.addGlobalEventListener("document", 'click', handler);
-      DOM.dispatchEvent(element, dispatchedEvent);
+      getDOM().dispatchEvent(element, dispatchedEvent);
       expect(receivedEvent).toBe(dispatchedEvent);
 
       receivedEvent = null;
       remover();
-      DOM.dispatchEvent(element, dispatchedEvent);
+      getDOM().dispatchEvent(element, dispatchedEvent);
       expect(receivedEvent).toBe(null);
     });
   });

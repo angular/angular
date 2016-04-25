@@ -1,7 +1,7 @@
 import {ApplicationRef, ComponentRef} from '@angular/core';
 import {isPresent, NumberWrapper} from '@angular/facade';
 import {window} from '@angular/facade';
-import {DOM} from '../../dom/dom_adapter';
+import {getDOM} from '../../dom/dom_adapter';
 
 
 export class ChangeDetectionPerfRecord {
@@ -51,13 +51,13 @@ export class AngularProfiler {
     if (record && isProfilerAvailable) {
       window.console.profile(profileName);
     }
-    var start = DOM.performanceNow();
+    var start = getDOM().performanceNow();
     var numTicks = 0;
-    while (numTicks < 5 || (DOM.performanceNow() - start) < 500) {
+    while (numTicks < 5 || (getDOM().performanceNow() - start) < 500) {
       this.appRef.tick();
       numTicks++;
     }
-    var end = DOM.performanceNow();
+    var end = getDOM().performanceNow();
     if (record && isProfilerAvailable) {
       // need to cast to <any> because type checker thinks there's no argument
       // while in fact there is:

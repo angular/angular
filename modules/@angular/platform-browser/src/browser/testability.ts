@@ -8,7 +8,7 @@ import {
 
 import {ListWrapper} from '@angular/facade';
 import {global, isPresent} from '@angular/facade';
-import {DOM} from '../dom/dom_adapter';
+import {getDOM} from '../dom/dom_adapter';
 
 
 
@@ -81,9 +81,9 @@ export class BrowserGetTestability implements GetTestability {
     } else if (!findInAncestors) {
       return null;
     }
-    if (DOM.isShadowRoot(elem)) {
-      return this.findTestabilityInTree(registry, DOM.getHost(elem), true);
+    if (getDOM().isShadowRoot(elem)) {
+      return this.findTestabilityInTree(registry, getDOM().getHost(elem), true);
     }
-    return this.findTestabilityInTree(registry, DOM.parentElement(elem), true);
+    return this.findTestabilityInTree(registry, getDOM().parentElement(elem), true);
   }
 }

@@ -26,7 +26,7 @@ import {
 } from '@angular/facade';
 import {BaseException, WrappedException} from '@angular/facade';
 import {MapWrapper, StringMapWrapper} from '@angular/facade';
-import {DOM} from '@angular/platform-browser/src/dom/dom_adapter';
+import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
 import {
   PipeTransform,
@@ -114,7 +114,7 @@ export function main() {
 
   describe(`ChangeDetection`, () => {
     // On CJS fakeAsync is not supported...
-    if (!DOM.supportsDOMEvents()) return;
+    if (!getDOM().supportsDOMEvents()) return;
 
     beforeEachProviders(() => [
       RenderLog,

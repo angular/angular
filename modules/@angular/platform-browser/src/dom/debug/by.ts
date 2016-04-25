@@ -1,7 +1,7 @@
 import {DebugElement} from '@angular/core';
 import {Type, isPresent} from '@angular/facade';
 import {Predicate} from '@angular/facade';
-import {DOM} from '../../dom/dom_adapter';
+import {getDOM} from '../../dom/dom_adapter';
 
 
 /**
@@ -27,7 +27,7 @@ export class By {
   static css(selector: string): Predicate<DebugElement> {
     return (debugElement) => {
       return isPresent(debugElement.nativeElement) ?
-                 DOM.elementMatches(debugElement.nativeElement, selector) :
+                 getDOM().elementMatches(debugElement.nativeElement, selector) :
                  false;
     };
   }

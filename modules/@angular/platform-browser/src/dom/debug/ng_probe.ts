@@ -1,6 +1,6 @@
 import {DebugNode, getDebugNode, DebugDomRootRenderer, Provider, RootRenderer, NgZone, ApplicationRef} from '@angular/core';
 import {assertionsEnabled} from '@angular/facade';
-import {DOM} from '../dom_adapter';
+import {getDOM} from '../dom_adapter';
 import {DomRootRenderer} from '../dom_renderer';
 
 
@@ -26,8 +26,8 @@ function _createConditionalRootRenderer(rootRenderer) {
 }
 
 function _createRootRenderer(rootRenderer) {
-  DOM.setGlobalVar(INSPECT_GLOBAL_NAME, inspectNativeElement);
-  DOM.setGlobalVar(CORE_TOKENS_GLOBAL_NAME, CORE_TOKENS);
+  getDOM().setGlobalVar(INSPECT_GLOBAL_NAME, inspectNativeElement);
+  getDOM().setGlobalVar(CORE_TOKENS_GLOBAL_NAME, CORE_TOKENS);
   return new DebugDomRootRenderer(rootRenderer);
 }
 

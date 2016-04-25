@@ -23,8 +23,8 @@ export function main() {
     // will be relative to here, so url200 should look like
     // static_assets/200.html.
     // We currently have no way of detecting this.
-    var urlBase = IS_DART ? '' : '/base/modules/angular2/';
-    var url200 = urlBase + 'test/platform/browser/static_assets/200.html';
+    var urlBase = IS_DART ? '' : '/base/modules/@angular/';
+    var url200 = urlBase + 'platform-browser/static_assets/200.html';
     var url404 = '/bad/path/404.html';
 
     beforeEach(() => { xhr = new XHRImpl(); });

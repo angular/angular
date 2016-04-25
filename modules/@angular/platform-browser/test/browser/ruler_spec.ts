@@ -6,7 +6,7 @@ import {
   expect,
   SpyObject
 } from '@angular/testing/testing_internal';
-import {DOM} from '@angular/platform-browser/src/dom/dom_adapter';
+import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {Ruler, Rectangle} from '@angular/platform-browser/src/browser/ruler';
 import {createRectangle} from './rectangle_mock';
 import {SpyDomAdapter, SpyElementRef} from '@angular/core/test/spies';
@@ -36,9 +36,9 @@ export function main() {
 
     it('should return 0 for all rectangle values while measuring elements in a document fragment',
        inject([AsyncTestCompleter], (async) => {
-         var ruler = new Ruler(DOM);
+         var ruler = new Ruler(getDOM());
          var elRef = <any>new SpyElementRef();
-         elRef.prop("nativeElement", DOM.createElement('div'));
+         elRef.prop("nativeElement", getDOM().createElement('div'));
          ruler.measure(elRef).then((rect) => {
            // here we are using an element created in a doc fragment so all the measures will come
            // back as 0

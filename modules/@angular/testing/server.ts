@@ -24,7 +24,7 @@ import {BrowserDetection} from '@angular/testing/src/utils';
 
 import {COMPILER_PROVIDERS} from '@angular/compiler/src/compiler';
 import {DOCUMENT} from '@angular/platform-browser/src/dom/dom_tokens';
-import {DOM} from '@angular/platform-browser/src/dom/dom_adapter';
+import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {RootRenderer} from '@angular/core/src/render/api';
 import {DomRootRenderer, DomRootRenderer_} from '@angular/platform-browser/src/dom/dom_renderer';
 import {DomSharedStylesHost, SharedStylesHost} from '@angular/platform-browser/src/dom/shared_styles_host';
@@ -54,7 +54,7 @@ export const TEST_SERVER_PLATFORM_PROVIDERS: Array<any /*Type | Provider | any[]
 
 function appDoc() {
   try {
-    return DOM.defaultDoc();
+    return getDOM().defaultDoc();
   } catch (e) {
     return null;
   }

@@ -17,7 +17,7 @@ import {IS_DART} from '@angular/facade';
 
 import {BrowserDomAdapter} from './src/browser/browser_adapter';
 import {BrowserGetTestability} from './src/browser/testability';
-import {DOM} from './src/dom/dom_adapter';
+import {getDOM} from './src/dom/dom_adapter';
 import {DOCUMENT} from './src/dom/dom_tokens';
 import {EVENT_MANAGER_PLUGINS, EventManager} from './src/dom/events/event_manager';
 import {DomRootRenderer, DomRootRenderer_} from './src/dom/dom_renderer';
@@ -55,11 +55,11 @@ export const BROWSER_PROVIDERS: Array<any /*Type | Provider | any[]*/> = /*@ts2d
 function _exceptionHandler(): ExceptionHandler {
   // !IS_DART is required because we must rethrow exceptions in JS,
   // but must not rethrow exceptions in Dart
-  return new ExceptionHandler(DOM, !IS_DART);
+  return new ExceptionHandler(getDOM(), !IS_DART);
 }
 
 function _document(): any {
-  return DOM.defaultDoc();
+  return getDOM().defaultDoc();
 }
 
 /**

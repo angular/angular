@@ -6,7 +6,7 @@
     "experimentalDecorators": true,
     "module": "commonjs",
     "moduleResolution": "node",
-    "outDir": "../../dist/packages-all/",
+    "outDir": "../../dist/@angular/",
     "paths": {
       "selenium-webdriver": ["./typings/selenium-webdriver/selenium-webdriver.d.ts"],
       "rxjs/*": ["../../node_modules/rxjs/*"],

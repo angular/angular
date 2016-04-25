@@ -32,7 +32,7 @@ class FancyService {
 
 @Component({
   selector: 'external-template-comp',
-  templateUrl: '/base/modules/angular2/test/testing/static_assets/test.html'
+  templateUrl: '/base/modules/@angular/testing/test/static_assets/test.html'
 })
 class ExternalTemplateComp {
 }
@@ -47,7 +47,7 @@ export function main() {
   describe('test APIs for the browser', () => {
     describe('angular2 jasmine matchers', () => {
       describe('toHaveCssClass', () => {
-        it('should assert that the CSS class is present', () => {
+       it('should assert that the CSS class is present', () => {
           var el = document.createElement('div');
           el.classList.add('matias');
           expect(el).toHaveCssClass('matias');
@@ -93,7 +93,7 @@ export function main() {
 
       it('should run async tests with XHRs', async(() => {
            var xhr = new XHRImpl();
-           xhr.get('/base/modules/angular2/test/testing/static_assets/test.html')
+           xhr.get('/base/modules/@angular/testing/test/static_assets/test.html')
                .then(() => { actuallyDone = true; });
          }),
          10000);  // Long timeout here because this test makes an actual XHR.

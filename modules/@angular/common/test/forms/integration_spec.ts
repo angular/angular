@@ -19,7 +19,7 @@ import {
   browserDetection
 } from '@angular/testing/testing_internal';
 
-import {DOM} from '@angular/platform-browser/src/dom/dom_adapter';
+import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {
   Control,
   ControlGroup,
@@ -1250,8 +1250,8 @@ export function main() {
            // In Firefox, effective text selection in the real DOM requires an actual focus
            // of the field. This is not an issue in a new HTML document.
            if (browserDetection.isFirefox) {
-             var fakeDoc = DOM.createHtmlDocument();
-             DOM.appendChild(fakeDoc.body, fixture.debugElement.nativeElement);
+             var fakeDoc = getDOM().createHtmlDocument();
+             getDOM().appendChild(fakeDoc.body, fixture.debugElement.nativeElement);
            }
 
            var input = fixture.debugElement.query(By.css("input")).nativeElement;
@@ -1405,7 +1405,7 @@ class MyComp {
 }
 
 function sortedClassList(el) {
-  var l = DOM.classList(el);
+  var l = getDOM().classList(el);
   ListWrapper.sort(l);
   return l;
 }

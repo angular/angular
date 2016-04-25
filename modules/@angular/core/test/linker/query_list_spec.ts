@@ -14,7 +14,7 @@ import {MapWrapper, ListWrapper, iterateListLike} from '@angular/facade';
 import {IS_DART, StringWrapper} from '@angular/facade';
 import {ObservableWrapper} from '@angular/facade';
 import {QueryList} from '@angular/core/src/linker/query_list';
-import {DOM} from '@angular/platform-browser/src/dom/dom_adapter';
+import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
 interface _JsQueryList {
   filter(c: any): any;
@@ -92,7 +92,7 @@ export function main() {
       expect(queryList.last).toEqual('three');
     });
 
-    if (DOM.supportsDOMEvents()) {
+    if (getDOM().supportsDOMEvents()) {
       describe('simple observable interface', () => {
         it('should fire callbacks on change', fakeAsync(() => {
              var fires = 0;

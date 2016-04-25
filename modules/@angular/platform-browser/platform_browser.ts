@@ -42,5 +42,3 @@ export function browserPlatform(): PlatformRef {
   }
   return assertPlatform(BROWSER_PLATFORM_MARKER);
 }
-
-

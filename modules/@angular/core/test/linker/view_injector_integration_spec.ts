@@ -43,7 +43,7 @@ import {
   SkipSelfMetadata
 } from '@angular/core';
 import {NgIf} from '@angular/common';
-import {DOM} from '@angular/platform-browser/src/dom/dom_adapter';
+import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
 const ALL_DIRECTIVES = /*@ts2dart_const*/ ([
   forwardRef(() => SimpleDirective),
@@ -289,7 +289,7 @@ export function main() {
 
   describe("View Injector", () => {
     // On CJS fakeAsync is not supported...
-    if (!DOM.supportsDOMEvents()) return;
+    if (!getDOM().supportsDOMEvents()) return;
 
     beforeEachProviders(() => [provide("appService", {useValue: 'appService'})]);
 

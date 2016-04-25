@@ -16,7 +16,7 @@ import {
   proxy
 } from '@angular/testing/testing_internal';
 
-import {DOM} from '@angular/platform-browser/src/dom/dom_adapter';
+import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {DomSharedStylesHost} from '@angular/platform-browser/src/dom/shared_styles_host';
 
 export function main() {
@@ -25,29 +25,29 @@ export function main() {
     var ssh: DomSharedStylesHost;
     var someHost: Element;
     beforeEach(() => {
-      doc = DOM.createHtmlDocument();
+      doc = getDOM().createHtmlDocument();
       doc.title = '';
       ssh = new DomSharedStylesHost(doc);
-      someHost = DOM.createElement('div');
+      someHost = getDOM().createElement('div');
     });
 
     it('should add existing styles to new hosts', () => {
       ssh.addStyles(['a {};']);
       ssh.addHost(someHost);
-      expect(DOM.getInnerHTML(someHost)).toEqual('<style>a {};</style>');
+      expect(getDOM().getInnerHTML(someHost)).toEqual('<style>a {};</style>');
     });
 
     it('should add new styles to hosts', () => {
       ssh.addHost(someHost);
       ssh.addStyles(['a {};']);
-      expect(DOM.getInnerHTML(someHost)).toEqual('<style>a {};</style>');
+      expect(getDOM().getInnerHTML(someHost)).toEqual('<style>a {};</style>');
     });
 
     it('should add styles only once to hosts', () => {
       ssh.addStyles(['a {};']);
       ssh.addHost(someHost);
       ssh.addStyles(['a {};']);
-      expect(DOM.getInnerHTML(someHost)).toEqual('<style>a {};</style>');
+      expect(getDOM().getInnerHTML(someHost)).toEqual('<style>a {};</style>');
     });
 
     it('should use the document head as default host', () => {

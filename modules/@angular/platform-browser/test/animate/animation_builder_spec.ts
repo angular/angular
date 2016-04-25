@@ -1,6 +1,6 @@
 import {el, describe, it, iit, expect, inject, SpyObject} from '@angular/testing/testing_internal';
 import {AnimationBuilder} from '../../src/animate/animation_builder';
-import {DOM} from '../../src/dom/dom_adapter';
+import {getDOM} from '../../src/dom/dom_adapter';
 
 export function main() {
   describe("AnimationBuilder", () => {
@@ -55,7 +55,7 @@ export function main() {
          var runner = animateCss.start(element);
          runner.flush();
 
-         if (DOM.supportsAnimation()) {
+         if (getDOM().supportsAnimation()) {
            expect(runner.computedDelay).toBe(100);
            expect(runner.computedDuration).toBe(200);
          } else {
@@ -78,11 +78,11 @@ export function main() {
     it('should support duration and delay defined in CSS', inject([AnimationBuilder], (animate) => {
          var animateCss = animate.css();
          var element =
-             el(`<div style="${DOM.getAnimationPrefix()}transition: 0.5s ease 250ms;"></div>`);
+             el(`<div style="${getDOM().getAnimationPrefix()}transition: 0.5s ease 250ms;"></div>`);
          var runner = animateCss.start(element);
          runner.flush();
 
-         if (DOM.supportsAnimation()) {
+         if (getDOM().supportsAnimation()) {
            expect(runner.computedDelay).toBe(250);
            expect(runner.computedDuration).toBe(500);
          } else {
@@ -120,7 +120,7 @@ export function main() {
 
          runner.flush();
 
-         if (DOM.supportsAnimation()) {
+         if (getDOM().supportsAnimation()) {
            expect(callback).not.toHaveBeenCalled();
 
            runner.handleAnimationCompleted();

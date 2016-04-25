@@ -23,7 +23,7 @@ import {codegenStmts, ExternalClass, DynamicClassInstanceFactory} from './output
 import {EventEmitter} from '@angular/facade';
 import {ViewType} from '@angular/core/src/linker/view_type';
 import {BaseException} from '@angular/facade';
-import {DOM} from '@angular/platform-browser/src/dom/dom_adapter';
+import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
 export function main() {
   var outputDefs = [];
@@ -32,13 +32,13 @@ export function main() {
                                                 new DynamicClassInstanceFactory()),
     'name': 'interpreted'
   });
-  if (IS_DART || !DOM.supportsDOMEvents()) {
+  if (IS_DART || !getDOM().supportsDOMEvents()) {
     // Our generator only works on node.js and Dart...
     outputDefs.push({'getExpressions': () => typed.getExpressions, 'name': 'typed'});
   }
   if (!IS_DART) {
     // Our generator only works on node.js and Dart...
-    if (!DOM.supportsDOMEvents()) {
+    if (!getDOM().supportsDOMEvents()) {
       outputDefs.push({'getExpressions': () => untyped.getExpressions, 'name': 'untyped'});
     }
     outputDefs.push({

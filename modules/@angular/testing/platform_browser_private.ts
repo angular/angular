@@ -1,6 +1,13 @@
 import {__platform_browser_private__ as _} from '@angular/platform-browser';
 
-export var DOM: _.DomAdapter = _.DOM;
+export function getDOM(): _.DomAdapter {
+  return _.getDOM();
+}
+
+export function setDOM(adapter:_.DomAdapter){
+  _.setDOM(adapter)
+}
+
 
 export type BrowserDomAdapter = _.BrowserDomAdapter;
 export var BrowserDomAdapter: typeof _.BrowserDomAdapter = _.BrowserDomAdapter;

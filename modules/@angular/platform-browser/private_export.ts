@@ -11,7 +11,13 @@ export namespace __platform_browser_private__ {
   export type DomAdapter = dom_adapter.DomAdapter;
   export var DomAdapter = dom_adapter.DomAdapter;
 
-  export var DOM = dom_adapter.DOM;
+  export function getDOM():DomAdapter{
+    return dom_adapter.getDOM();
+  }
+
+  export function setDOM(adapter:DomAdapter){
+    return dom_adapter.setDOM(adapter);
+  }
 
   export var setRootDomAdapter = dom_adapter.setRootDomAdapter;
 
@@ -33,4 +39,3 @@ export namespace __platform_browser_private__ {
   export type BrowserDetails = browser_details.BrowserDetails;
   export var BrowserDetails = browser_details.BrowserDetails;
 }
-
