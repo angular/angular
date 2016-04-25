@@ -42,6 +42,6 @@ export class NgControlStatus {
     return isPresent(this._cd.control) ? !this._cd.control.valid : false;
   }
   get ngClassEmptyValue(): boolean {
-    return isPresent(this._cd.control) ? isEmptyValue(this._cd.control.value) : true;
+    return isPresent(this._cd.control) ? this._cd.control.empty : true;
   }
 }
