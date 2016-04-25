@@ -42,6 +42,15 @@ $md-sidenav-push-background-color: md-color($md-background, dialog) !default;
   }
 }
 
+/* This mixin ensures a sidenav element spans the whole viewport. */
+@mixin md-sidenav-fullscreen {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
 
 :host {
   // We need a stacking context here so that the backdrop and drawers are clipped to the
@@ -52,6 +61,10 @@ $md-sidenav-push-background-color: md-color($md-background, dialog) !default;
 
   box-sizing: border-box;
 
+  &[fullscreen] {
+    @include md-sidenav-fullscreen();
+  }
+
   // Need this to take up space in the layout.
   display: block;
 
@@ -59,11 +72,7 @@ $md-sidenav-push-background-color: md-color($md-background, dialog) !default;
   overflow-x: hidden;
 
   & > .md-sidenav-backdrop {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    @include md-sidenav-fullscreen();
 
     display: block;
 
