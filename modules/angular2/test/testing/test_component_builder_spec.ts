@@ -14,6 +14,7 @@ import {
   TestComponentBuilder
 } from 'angular2/testing_internal';
 
+import {CONST_EXPR} from 'angular2/src/facade/lang';
 import {Injectable, provide} from 'angular2/core';
 import {NgIf} from 'angular2/common';
 import {Directive, Component, ViewMetadata} from 'angular2/src/core/metadata';
@@ -99,6 +100,25 @@ class TestViewBindingsComp {
   constructor(private fancyService: FancyService) {}
 }
 
+@Component({selector: 'li1', template: `<span>One</span>`})
+class ListDir1 {
+}
+
+@Component({selector: 'li1', template: `<span>Alternate One</span>`})
+class ListDir1Alt {
+}
+
+@Component({selector: 'li2', template: `<span>Two</span>`})
+class ListDir2 {
+}
+
+const LIST_CHILDREN = CONST_EXPR([ListDir1, ListDir2]);
+
+@Component(
+    {selector: 'directive-list-comp', template: `(<li1></li1>)(<li2></li2>)`, directives: [LIST_CHILDREN]})
+class DirectiveListComp {
+}
+
 
 export function main() {
   describe('test component builder', function() {
@@ -168,6 +188,18 @@ export function main() {
              });
        }));
 
+    it('should override items from a list',
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+
+         tcb.overrideDirective(DirectiveListComp, ListDir1, ListDir1Alt)
+             .createAsync(DirectiveListComp)
+             .then((componentFixture) => {
+               componentFixture.detectChanges();
+               expect(componentFixture.nativeElement).toHaveText('(Alternate One)(Two)');
+
+               async.done();
+             });
+       }));
 
     it("should override child component's dependencies",
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
