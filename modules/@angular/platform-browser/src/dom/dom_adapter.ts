@@ -1,4 +1,4 @@
-import {isBlank, Type} from '@angular/facade/lang';
+import {isBlank, Type} from '@angular/facade';
 
 export var DOM: DomAdapter = null;
 

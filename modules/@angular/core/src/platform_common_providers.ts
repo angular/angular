@@ -1,4 +1,4 @@
-import {Type, isBlank, isPresent, assertionsEnabled, CONST_EXPR} from '@angular/facade/lang';
+import {Type, isBlank, isPresent, assertionsEnabled, CONST_EXPR} from '@angular/facade';
 import {provide, Provider, Injector, OpaqueToken} from './di';
 import {Console} from './console';
 import {Reflector, reflector} from './reflection/reflection';

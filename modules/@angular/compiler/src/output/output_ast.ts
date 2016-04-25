@@ -1,4 +1,4 @@
-import {CONST_EXPR, isString, isPresent, isBlank} from '@angular/facade/lang';
+import {CONST_EXPR, isString, isPresent, isBlank} from '@angular/facade';
 import {CompileIdentifierMetadata} from '../compile_metadata';
 
 //// Types

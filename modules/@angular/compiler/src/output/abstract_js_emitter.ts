@@ -1,5 +1,5 @@
-import {isPresent} from '@angular/facade/lang';
-import {BaseException} from '@angular/facade/exceptions';
+import {isPresent} from '@angular/facade';
+import {BaseException} from '@angular/facade';
 import * as o from './output_ast';
 import {
   EmitterVisitorContext,

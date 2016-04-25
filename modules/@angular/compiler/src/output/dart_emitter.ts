@@ -2,8 +2,8 @@ import {
   isPresent,
   isBlank,
   isArray
-} from '@angular/facade/lang';
-import {BaseException} from '@angular/facade/exceptions';
+} from '@angular/facade';
+import {BaseException} from '@angular/facade';
 import {CompileIdentifierMetadata} from '../compile_metadata';
 import * as o from './output_ast';
 import {

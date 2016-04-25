@@ -1,4 +1,4 @@
-import {isPresent, isBlank, RegExpWrapper} from '@angular/facade/lang';
+import {isPresent, isBlank, RegExpWrapper} from '@angular/facade';
 import {HtmlAst, HtmlElementAst} from '../html_ast';
 import {Message, id} from './message';
 import {HtmlParser} from '../html_parser';

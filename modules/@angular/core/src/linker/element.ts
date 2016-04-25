@@ -1,6 +1,6 @@
-import {isPresent} from '@angular/facade/lang';
-import {ListWrapper} from '@angular/facade/collection';
-import {BaseException} from '@angular/facade/exceptions';
+import {isPresent} from '@angular/facade';
+import {ListWrapper} from '@angular/facade';
+import {BaseException} from '@angular/facade';
 
 import {AppView} from './view';
 import {ViewType} from './view_type';

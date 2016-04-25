@@ -1,6 +1,6 @@
 import {Headers} from '../src/headers';
-import {Json} from '@angular/facade/lang';
-import {Map, StringMapWrapper} from '@angular/facade/collection';
+import {Json} from '@angular/facade';
+import {Map, StringMapWrapper} from '@angular/facade';
 import {
   AsyncTestCompleter,
   beforeEach,

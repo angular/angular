@@ -10,7 +10,7 @@ import {
   Provider,
   Self
 } from '@angular/core';
-import {CONST_EXPR} from '@angular/facade/lang';
+import {CONST_EXPR} from '@angular/facade';
 
 import {ControlContainer} from './control_container';
 import {controlPath, composeValidators, composeAsyncValidators} from './shared';

@@ -3,9 +3,9 @@ import {
   PromiseWrapper,
   ObservableWrapper,
   EventEmitter,
-} from '@angular/facade/async';
-import {ListWrapper} from '@angular/facade/collection';
-import {isPresent, CONST_EXPR} from '@angular/facade/lang';
+} from '@angular/facade';
+import {ListWrapper} from '@angular/facade';
+import {isPresent, CONST_EXPR} from '@angular/facade';
 
 import {NgControl} from './ng_control';
 import {Form} from './form_interface';

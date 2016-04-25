@@ -10,9 +10,9 @@ import {
   Self
 } from '@angular/core';
 
-import {CONST_EXPR} from '@angular/facade/lang';
-import {StringMapWrapper} from '@angular/facade/collection';
-import {EventEmitter, ObservableWrapper} from '@angular/facade/async';
+import {CONST_EXPR} from '@angular/facade';
+import {StringMapWrapper} from '@angular/facade';
+import {EventEmitter, ObservableWrapper} from '@angular/facade';
 
 import {NgControl} from './ng_control';
 import {Control} from '../model';

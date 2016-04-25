@@ -2,7 +2,7 @@ import {ROUTER_PROVIDERS_COMMON} from './router_providers_common';
 import {Provider} from '@angular/core';
 import {BrowserPlatformLocation} from '@angular/platform-browser';
 import {PlatformLocation} from '@angular/common';
-import {CONST_EXPR} from '@angular/facade/lang';
+import {CONST_EXPR} from '@angular/facade';
 
 /**
  * A list of {@link Provider}s. To use the router, you must add this to your application.

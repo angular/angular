@@ -1,4 +1,4 @@
-import {CONST_EXPR} from '@angular/facade/lang';
+import {CONST_EXPR} from '@angular/facade';
 import {Injector, THROW_IF_NOT_FOUND} from '../di/injector';
 import {AppView} from './view';
 

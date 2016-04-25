@@ -41,7 +41,7 @@ export {
 export {FormBuilder} from './forms/form_builder';
 import {FormBuilder} from './forms/form_builder';
 import {RadioControlRegistry} from './forms/directives/radio_control_value_accessor';
-import {Type, CONST_EXPR} from '@angular/facade/lang';
+import {Type, CONST_EXPR} from '@angular/facade';
 
 /**
  * Shorthand set of providers used for building Angular forms.

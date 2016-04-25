@@ -1,5 +1,5 @@
 import {OpaqueToken} from '@angular/core';
-import {CONST_EXPR} from '@angular/facade/lang';
+import {CONST_EXPR} from '@angular/facade';
 
 import {UrlChangeListener} from './platform_location';
 

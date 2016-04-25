@@ -3,8 +3,8 @@ import {
   isBlank,
   isString,
   StringWrapper
-} from '@angular/facade/lang';
-import {BaseException} from '@angular/facade/exceptions';
+} from '@angular/facade';
+import {BaseException} from '@angular/facade';
 import * as o from './output_ast';
 
 var _SINGLE_QUOTE_ESCAPE_STRING_RE = /'|\\|\n|\r|\$/g;

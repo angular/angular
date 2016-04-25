@@ -7,7 +7,7 @@ import {
   CONST_EXPR,
   hasConstructor,
   resolveEnumToken
-} from '../lang';
+} from '../src/lang';
 
 enum UsefulEnum {
   MyToken,

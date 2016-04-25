@@ -1,5 +1,5 @@
-import {isPresent, isBlank} from '@angular/facade/lang';
-import {StringMapWrapper} from '@angular/facade/collection';
+import {isPresent, isBlank} from '@angular/facade';
+import {StringMapWrapper} from '@angular/facade';
 
 export class TouchMap {
   map: {[key: string]: string} = {};

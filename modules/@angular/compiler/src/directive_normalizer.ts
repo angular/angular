@@ -1,8 +1,8 @@
 import {Injectable, ViewEncapsulation} from '@angular/core';
 
-import {isPresent} from '@angular/facade/lang';
-import {BaseException} from '@angular/facade/exceptions';
-import {PromiseWrapper} from '@angular/facade/async';
+import {isPresent} from '@angular/facade';
+import {BaseException} from '@angular/facade';
+import {PromiseWrapper} from '@angular/facade';
 
 import {
   CompileTypeMetadata,

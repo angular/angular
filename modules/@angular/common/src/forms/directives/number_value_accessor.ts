@@ -1,5 +1,5 @@
 import {Directive, ElementRef, Renderer, Self, forwardRef, Provider} from '@angular/core';
-import {CONST_EXPR, NumberWrapper} from '@angular/facade/lang';
+import {CONST_EXPR, NumberWrapper} from '@angular/facade';
 import {NG_VALUE_ACCESSOR, ControlValueAccessor} from './control_value_accessor';
 
 

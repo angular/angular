@@ -3,10 +3,10 @@ import {
   isPresent,
   IS_DART,
   FunctionWrapper
-} from '@angular/facade/lang';
-import {ObservableWrapper} from '@angular/facade/async';
-import {BaseException, unimplemented} from '@angular/facade/exceptions';
-import {ListWrapper} from '@angular/facade/collection';
+} from '@angular/facade';
+import {ObservableWrapper} from '@angular/facade';
+import {BaseException, unimplemented} from '@angular/facade';
+import {ListWrapper} from '@angular/facade';
 
 import * as o from './output_ast';
 import {debugOutputAstAsDart} from './dart_emitter';

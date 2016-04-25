@@ -6,9 +6,9 @@ import {
   DateWrapper,
   CONST,
   isBlank,
-} from '@angular/facade/lang';
-import {DateFormatter} from '@angular/facade/intl';
-import {StringMapWrapper} from '@angular/facade/collection';
+} from '@angular/facade';
+import {DateFormatter} from '@angular/facade';
+import {StringMapWrapper} from '@angular/facade';
 
 import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
 

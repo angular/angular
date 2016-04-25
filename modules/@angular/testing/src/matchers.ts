@@ -1,6 +1,6 @@
 import {DOM} from '../platform_browser_private';
-import {global, isString} from '@angular/facade/lang';
-import {StringMapWrapper} from '@angular/facade/collection';
+import {global, isString} from '@angular/facade';
+import {StringMapWrapper} from '@angular/facade';
 
 /**
  * Jasmine matchers that check Angular specific conditions.

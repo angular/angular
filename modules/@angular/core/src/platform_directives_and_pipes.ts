@@ -1,5 +1,5 @@
 import {OpaqueToken} from './di';
-import {CONST_EXPR} from '@angular/facade/lang';
+import {CONST_EXPR} from '@angular/facade';
 
 /**
  * A token that can be provided when bootstraping an application to make an array of directives

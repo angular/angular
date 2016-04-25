@@ -1,4 +1,4 @@
-import {isPresent} from '@angular/facade/lang';
+import {isPresent} from '@angular/facade';
 import {
   Renderer,
   RootRenderer,

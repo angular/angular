@@ -7,10 +7,10 @@ import {
   NumberWrapper,
   RegExpWrapper,
   CONST,
-} from '@angular/facade/lang';
-import {BaseException} from '@angular/facade/exceptions';
-import {NumberFormatter, NumberFormatStyle} from '@angular/facade/intl';
-import {ListWrapper} from '@angular/facade/collection';
+} from '@angular/facade';
+import {BaseException} from '@angular/facade';
+import {NumberFormatter, NumberFormatStyle} from '@angular/facade';
+import {ListWrapper} from '@angular/facade';
 
 import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
 

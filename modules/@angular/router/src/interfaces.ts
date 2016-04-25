@@ -1,5 +1,5 @@
 import {ComponentInstruction} from './instruction';
-import {global} from '@angular/facade/lang';
+import {global} from '@angular/facade';
 
 // This is here only so that after TS transpilation the file is not empty.
 // TODO(rado): find a better way to fix this, or remove if likely culprit

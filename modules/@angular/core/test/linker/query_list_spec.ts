@@ -10,9 +10,9 @@ import {
   fakeAsync,
   tick
 } from '@angular/testing/testing_internal';
-import {MapWrapper, ListWrapper, iterateListLike} from '@angular/facade/collection';
-import {IS_DART, StringWrapper} from '@angular/facade/lang';
-import {ObservableWrapper} from '@angular/facade/async';
+import {MapWrapper, ListWrapper, iterateListLike} from '@angular/facade';
+import {IS_DART, StringWrapper} from '@angular/facade';
+import {ObservableWrapper} from '@angular/facade';
 import {QueryList} from '@angular/core/src/linker/query_list';
 import {DOM} from '@angular/platform-browser/src/dom/dom_adapter';
 

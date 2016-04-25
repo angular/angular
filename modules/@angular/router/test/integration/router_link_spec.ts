@@ -18,9 +18,9 @@ import {
 } from '@angular/testing/testing_internal';
 
 import {Location} from '@angular/common';
-import {NumberWrapper} from '@angular/facade/lang';
-import {PromiseWrapper} from '@angular/facade/async';
-import {ListWrapper} from '@angular/facade/collection';
+import {NumberWrapper} from '@angular/facade';
+import {PromiseWrapper} from '@angular/facade';
+import {ListWrapper} from '@angular/facade';
 
 import {provide, Component} from '@angular/core';
 

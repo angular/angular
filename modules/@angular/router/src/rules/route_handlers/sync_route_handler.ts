@@ -1,5 +1,5 @@
-import {PromiseWrapper} from '@angular/facade/async';
-import {isPresent, Type} from '@angular/facade/lang';
+import {PromiseWrapper} from '@angular/facade';
+import {isPresent, Type} from '@angular/facade';
 import {RouteHandler} from './route_handler';
 import {RouteData, BLANK_ROUTE_DATA} from '../../instruction';
 

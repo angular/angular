@@ -13,7 +13,7 @@ import {
 } from '@angular/testing/testing_internal';
 
 import {Injector, provide, ReflectiveInjector} from '@angular/core';
-import {CONST_EXPR} from '@angular/facade/lang';
+import {CONST_EXPR} from '@angular/facade';
 
 import {Location, LocationStrategy, APP_BASE_HREF} from '@angular/common';
 import {MockLocationStrategy} from '@angular/testing';

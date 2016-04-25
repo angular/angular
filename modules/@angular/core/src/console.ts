@@ -1,4 +1,4 @@
-import {print} from '@angular/facade/lang';
+import {print} from '@angular/facade';
 import {Injectable} from './di/decorators';
 
 @Injectable()

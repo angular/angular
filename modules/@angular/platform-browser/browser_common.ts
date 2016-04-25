@@ -14,7 +14,7 @@ import {wtfInit} from './core_private';
 import {XHR} from '@angular/compiler';
 import {COMMON_DIRECTIVES, COMMON_PIPES, FORM_PROVIDERS} from '@angular/common';
 
-import {CONST_EXPR, IS_DART} from '@angular/facade/lang';
+import {CONST_EXPR, IS_DART} from '@angular/facade';
 
 import {BrowserDomAdapter} from './src/browser/browser_adapter';
 import {BrowserGetTestability} from './src/browser/testability';

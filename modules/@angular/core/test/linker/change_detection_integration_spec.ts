@@ -24,9 +24,9 @@ import {
   FunctionWrapper,
   NumberWrapper,
   normalizeBool
-} from '@angular/facade/lang';
-import {BaseException, WrappedException} from '@angular/facade/exceptions';
-import {MapWrapper, StringMapWrapper} from '@angular/facade/collection';
+} from '@angular/facade';
+import {BaseException, WrappedException} from '@angular/facade';
+import {MapWrapper, StringMapWrapper} from '@angular/facade';
 import {DOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
 import {
@@ -37,8 +37,8 @@ import {
 
 import {OnDestroy} from '@angular/core/src/metadata/lifecycle_hooks';
 
-import {IS_DART, Type} from '@angular/facade/lang';
-import {EventEmitter, ObservableWrapper} from '@angular/facade/async';
+import {IS_DART, Type} from '@angular/facade';
+import {EventEmitter, ObservableWrapper} from '@angular/facade';
 
 
 import {

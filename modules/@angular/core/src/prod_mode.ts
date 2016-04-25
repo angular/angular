@@ -1,1 +1,1 @@
-export {enableProdMode} from '@angular/facade/lang';
+export {enableProdMode} from '@angular/facade';

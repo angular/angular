@@ -1,4 +1,4 @@
-import {CONST, Type} from '@angular/facade/lang';
+import {CONST, Type} from '@angular/facade';
 import {RouteDefinition} from '../route_definition';
 import {RegexSerializer} from '../rules/route_paths/regex_route_path';
 

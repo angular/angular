@@ -1,4 +1,4 @@
-import {isPresent, Type} from '@angular/facade/lang';
+import {isPresent, Type} from '@angular/facade';
 import {RouteHandler} from './route_handler';
 import {RouteData, BLANK_ROUTE_DATA} from '../../instruction';
 

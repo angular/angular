@@ -13,8 +13,8 @@ import {
   Self
 } from '@angular/core';
 
-import {CONST_EXPR} from '@angular/facade/lang';
-import {EventEmitter, ObservableWrapper} from '@angular/facade/async';
+import {CONST_EXPR} from '@angular/facade';
+import {EventEmitter, ObservableWrapper} from '@angular/facade';
 
 import {ControlContainer} from './control_container';
 import {NgControl} from './ng_control';

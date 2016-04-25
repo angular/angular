@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {EventEmitter, ObservableWrapper} from '@angular/facade/async';
+import {EventEmitter, ObservableWrapper} from '@angular/facade';
 import {Location} from '@angular/common';
 
 /**

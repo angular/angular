@@ -26,9 +26,9 @@ import {
   isArray,
   stringify,
   isString,
-} from '@angular/facade/lang';
-import {StringMapWrapper} from '@angular/facade/collection';
-import {BaseException} from '@angular/facade/exceptions';
+} from '@angular/facade';
+import {StringMapWrapper} from '@angular/facade';
+import {BaseException} from '@angular/facade';
 import * as cpl from './compile_metadata';
 import {DirectiveResolver} from './directive_resolver';
 import {PipeResolver} from './pipe_resolver';

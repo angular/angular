@@ -1,6 +1,6 @@
-import {StringMapWrapper} from '@angular/facade/collection';
-import {isPresent, isBlank, normalizeBlank, CONST_EXPR} from '@angular/facade/lang';
-import {PromiseWrapper} from '@angular/facade/async';
+import {StringMapWrapper} from '@angular/facade';
+import {isPresent, isBlank, normalizeBlank, CONST_EXPR} from '@angular/facade';
+import {PromiseWrapper} from '@angular/facade';
 
 
 /**

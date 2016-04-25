@@ -1,6 +1,6 @@
-import {ListWrapper} from '@angular/facade/collection';
-import {getSymbolIterator} from '@angular/facade/lang';
-import {Observable, EventEmitter} from '@angular/facade/async';
+import {ListWrapper} from '@angular/facade';
+import {getSymbolIterator} from '@angular/facade';
+import {Observable, EventEmitter} from '@angular/facade';
 
 
 /**

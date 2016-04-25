@@ -12,7 +12,7 @@ import {
 import {ReflectionCapabilities} from './core_private';
 import {COMPILER_PROVIDERS, XHR} from '@angular/compiler';
 
-import {Type, isPresent, isBlank, CONST_EXPR} from '@angular/facade/lang';
+import {Type, isPresent, isBlank, CONST_EXPR} from '@angular/facade';
 
 import {BROWSER_APP_COMMON_PROVIDERS, BROWSER_PROVIDERS, BROWSER_PLATFORM_MARKER} from './browser_common';
 import {XHRImpl} from './src/browser/xhr_impl';

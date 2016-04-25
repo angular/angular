@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
-import {SetWrapper} from '@angular/facade/collection';
-import {NumberWrapper, StringJoiner, StringWrapper, isPresent} from '@angular/facade/lang';
-import {BaseException} from '@angular/facade/exceptions';
+import {SetWrapper} from '@angular/facade';
+import {NumberWrapper, StringJoiner, StringWrapper, isPresent} from '@angular/facade';
+import {BaseException} from '@angular/facade';
 
 export enum TokenType {
   Character,

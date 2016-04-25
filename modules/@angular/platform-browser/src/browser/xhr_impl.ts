@@ -1,6 +1,6 @@
 import {XHR} from '@angular/compiler';
-import {PromiseWrapper, PromiseCompleter} from '@angular/facade/promise';
-import {isPresent} from '@angular/facade/lang';
+import {PromiseWrapper, PromiseCompleter} from '@angular/facade';
+import {isPresent} from '@angular/facade';
 
 export class XHRImpl extends XHR {
   get(url: string): Promise<string> {

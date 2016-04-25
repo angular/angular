@@ -1,5 +1,5 @@
-import {ListWrapper, Map, StringMapWrapper} from '@angular/facade/collection';
-import {PromiseWrapper} from '@angular/facade/async';
+import {ListWrapper, Map, StringMapWrapper} from '@angular/facade';
+import {PromiseWrapper} from '@angular/facade';
 import {
   isPresent,
   isArray,
@@ -12,8 +12,8 @@ import {
   Math,
   getTypeNameForDebugging,
   CONST_EXPR
-} from '@angular/facade/lang';
-import {BaseException} from '@angular/facade/exceptions';
+} from '@angular/facade';
+import {BaseException} from '@angular/facade';
 import {Injectable, Inject, OpaqueToken, reflector} from '@angular/core';
 import {RouteConfig, Route, AuxRoute, RouteDefinition} from './route_config/route_config_impl';
 import {PathMatch, RedirectMatch, RouteMatch} from './rules/rules';

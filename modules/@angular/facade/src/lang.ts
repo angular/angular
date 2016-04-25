@@ -74,7 +74,6 @@ export function getTypeNameForDebugging(type: Type): string {
 }
 
 
-export var Math = _global.Math;
 export var Date = _global.Date;
 
 var _devMode: boolean = true;

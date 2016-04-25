@@ -11,8 +11,8 @@ import {
   WORKER_SCRIPT,
   initializeGenericWorkerRenderer
 } from './worker_render_common';
-import {BaseException} from '@angular/facade/exceptions';
-import {CONST_EXPR} from '@angular/facade/lang';
+import {BaseException} from '@angular/facade';
+import {CONST_EXPR} from '@angular/facade';
 
 /**
  * Wrapper class that exposes the Worker

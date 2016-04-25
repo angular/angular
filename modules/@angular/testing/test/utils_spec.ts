@@ -1,5 +1,5 @@
 import {describe, it, iit, ddescribe, expect, BrowserDetection} from '@angular/testing/testing_internal';
-import {StringMapWrapper} from '@angular/facade/collection';
+import {StringMapWrapper} from '@angular/facade';
 
 export function main() {
   describe('BrowserDetection', () => {

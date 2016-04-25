@@ -37,7 +37,7 @@ import {
 import {DomEventsPlugin} from '@angular/platform-browser/src/dom/events/dom_events';
 import {LocationStrategy} from '@angular/common';
 
-import {CONST_EXPR} from '@angular/facade/lang';
+import {CONST_EXPR} from '@angular/facade';
 
 import {Log} from '@angular/testing/src/utils';
 

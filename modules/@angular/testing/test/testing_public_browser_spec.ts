@@ -17,7 +17,7 @@ import {
 
 import {Injectable, bind} from '@angular/core';
 import {Directive, Component, ViewMetadata} from '@angular/core';
-import {PromiseWrapper} from '@angular/facade/promise';
+import {PromiseWrapper} from '@angular/facade';
 import {XHR} from '@angular/compiler/src/xhr';
 import {XHRImpl} from '@angular/platform-browser/src/browser/xhr_impl';
 

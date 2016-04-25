@@ -1,5 +1,5 @@
 import {OpaqueToken} from '@angular/core';
-import {CONST_EXPR} from '@angular/facade/lang';
+import {CONST_EXPR} from '@angular/facade';
 
 /**
  * A DI Token representing the main rendering context. In a browser this is the DOM Document.

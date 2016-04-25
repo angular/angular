@@ -10,7 +10,7 @@ import {
   el
 } from '@angular/testing/testing_internal';
 import {Control, FormBuilder} from '@angular/common';
-import {PromiseWrapper} from '@angular/facade/promise';
+import {PromiseWrapper} from '@angular/facade';
 
 export function main() {
   function syncValidator(_) { return null; }

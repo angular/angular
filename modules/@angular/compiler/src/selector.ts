@@ -1,12 +1,12 @@
-import {Map, ListWrapper} from '@angular/facade/collection';
+import {Map, ListWrapper} from '@angular/facade';
 import {
   isPresent,
   isBlank,
   RegExpWrapper,
   RegExpMatcherWrapper,
   StringWrapper
-} from '@angular/facade/lang';
-import {BaseException} from '@angular/facade/exceptions';
+} from '@angular/facade';
+import {BaseException} from '@angular/facade';
 
 const _EMPTY_ATTR_VALUE = '';
 

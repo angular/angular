@@ -1,5 +1,5 @@
 import {forwardRef, Provider, Attribute, Directive} from '@angular/core';
-import {CONST_EXPR, NumberWrapper} from '@angular/facade/lang';
+import {CONST_EXPR, NumberWrapper} from '@angular/facade';
 import {Validators, NG_VALIDATORS} from '../validators';
 import {AbstractControl} from '../model';
 import * as modelModule from '../model';

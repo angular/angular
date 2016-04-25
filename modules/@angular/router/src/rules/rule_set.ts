@@ -1,7 +1,7 @@
-import {isBlank, isPresent, isFunction} from '@angular/facade/lang';
-import {BaseException} from '@angular/facade/exceptions';
-import {Map} from '@angular/facade/collection';
-import {PromiseWrapper} from '@angular/facade/async';
+import {isBlank, isPresent, isFunction} from '@angular/facade';
+import {BaseException} from '@angular/facade';
+import {Map} from '@angular/facade';
+import {PromiseWrapper} from '@angular/facade';
 import {AbstractRule, RouteRule, RedirectRule, RouteMatch, PathMatch} from './rules';
 import {
   Route,

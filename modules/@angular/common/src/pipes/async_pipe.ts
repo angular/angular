@@ -8,8 +8,8 @@ import {
 } from '@angular/core';
 
 
-import {isBlank, isPresent, isPromise} from '@angular/facade/lang';
-import {ObservableWrapper, Observable, EventEmitter} from '@angular/facade/async';
+import {isBlank, isPresent, isPromise} from '@angular/facade';
+import {ObservableWrapper, Observable, EventEmitter} from '@angular/facade';
 
 import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
 

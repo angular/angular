@@ -12,14 +12,14 @@ import {
   Log,
   xit
 } from '@angular/testing/testing_internal';
-import {IS_DART, isPresent, stringify} from '@angular/facade/lang';
+import {IS_DART, isPresent, stringify} from '@angular/facade';
 import {bootstrap, BROWSER_PROVIDERS, BROWSER_APP_PROVIDERS} from '@angular/platform-browser';
 import {ApplicationRef, PlatformRef} from '@angular/core/src/application_ref';
 import {Console} from '@angular/core/src/console';
 import {Component, Directive, OnDestroy} from '@angular/core';
 import {DOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {DOCUMENT} from '@angular/platform-browser/src/dom/dom_tokens';
-import {PromiseWrapper, TimerWrapper} from '@angular/facade/async';
+import {PromiseWrapper, TimerWrapper} from '@angular/facade';
 import {
   provide,
   Inject,
@@ -31,7 +31,7 @@ import {
   ReflectiveInjector
 } from '@angular/core';
 import {disposePlatform} from '@angular/core/src/application_ref';
-import {ExceptionHandler, BaseException} from '@angular/facade/exceptions';
+import {ExceptionHandler, BaseException} from '@angular/facade';
 import {Testability, TestabilityRegistry} from '@angular/core/src/testability/testability';
 import {ComponentRef} from '@angular/core/src/linker/component_factory';
 

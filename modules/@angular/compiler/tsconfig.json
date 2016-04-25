@@ -8,8 +8,8 @@
     "moduleResolution": "node",
     "outDir": "../../../dist/packages-dist/compiler/",
     "paths": {
-      "@angular/core": ["../../../dist/packages-dist/core/core.d.ts"],
-      "@angular/facade/*": ["../../../dist/packages-dist/facade/*"]
+      "@angular/core": ["../../../dist/packages-dist/core/"],
+      "@angular/facade": ["../../../dist/packages-dist/facade/"]
     },
     "rootDir": ".",
     "sourceMap": true,

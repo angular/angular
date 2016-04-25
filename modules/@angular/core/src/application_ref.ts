@@ -7,11 +7,11 @@ import {
   CONST_EXPR,
   lockMode,
   isPromise
-} from '@angular/facade/lang';
+} from '@angular/facade';
 import {Provider, Injector} from './di';
 import {PLATFORM_INITIALIZER, APP_INITIALIZER} from './application_tokens';
-import {PromiseWrapper, ObservableWrapper} from '@angular/facade/async';
-import {ListWrapper} from '@angular/facade/collection';
+import {PromiseWrapper, ObservableWrapper} from '@angular/facade';
+import {ListWrapper} from '@angular/facade';
 import {TestabilityRegistry, Testability} from './testability/testability';
 import {ComponentResolver} from './linker/component_resolver';
 import {ComponentRef} from './linker/component_factory';
@@ -19,7 +19,7 @@ import {
   BaseException,
   ExceptionHandler,
   unimplemented
-} from '@angular/facade/exceptions';
+} from '@angular/facade';
 import {Console} from './console';
 import {wtfLeave, wtfCreateScope, WtfScopeFn} from './profile/profile';
 import {ChangeDetectorRef} from './change_detection/change_detector_ref';

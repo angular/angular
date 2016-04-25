@@ -1,4 +1,4 @@
-import {unimplemented} from '@angular/facade/exceptions';
+import {unimplemented} from '@angular/facade';
 import {ChangeDetectorRef} from '../change_detection/change_detector_ref';
 import {AppView} from './view';
 import {ChangeDetectionStrategy} from '../change_detection/constants';

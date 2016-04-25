@@ -6,7 +6,7 @@ import {
   evalExpression,
   RegExpWrapper,
   StringWrapper
-} from '@angular/facade/lang';
+} from '@angular/facade';
 import {OutputEmitter, EmitterVisitorContext} from './abstract_emitter';
 import {AbstractJsEmitterVisitor} from './abstract_js_emitter';
 import {getImportModulePath, ImportEnv} from './path_util';

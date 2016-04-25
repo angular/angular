@@ -1,4 +1,4 @@
-import {CONST, stringify} from '@angular/facade/lang';
+import {CONST, stringify} from '@angular/facade';
 
 /**
  * A parameter metadata that specifies a dependency.

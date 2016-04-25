@@ -1,6 +1,6 @@
 import {describe, it, expect, beforeEach, ddescribe, iit, xit} from '@angular/testing/testing_internal';
 
-import {ListWrapper, StringMapWrapper, MapWrapper} from '../collection';
+import {ListWrapper, StringMapWrapper, MapWrapper} from '../src/collection';
 
 export function main() {
   describe('ListWrapper', () => {

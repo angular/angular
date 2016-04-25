@@ -12,7 +12,7 @@ import {
   proxy,
   TestComponentBuilder
 } from '@angular/testing/testing_internal';
-import {Json, RegExp, NumberWrapper, StringWrapper} from '@angular/facade/lang';
+import {Json, RegExp, NumberWrapper, StringWrapper} from '@angular/facade';
 
 import {Component} from '@angular/core';
 import {JsonPipe} from '@angular/common';

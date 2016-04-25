@@ -1,4 +1,4 @@
-import {CONST, stringify, isString, Type} from '@angular/facade/lang';
+import {CONST, stringify, isString, Type} from '@angular/facade';
 import {DependencyMetadata} from '../di/metadata';
 import {resolveForwardRef} from '../di/forward_ref';
 

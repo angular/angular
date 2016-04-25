@@ -5,7 +5,7 @@ import {
   StringWrapper,
   isPresent,
   RegExpWrapper
-} from '@angular/facade/lang';
+} from '@angular/facade';
 
 import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
 

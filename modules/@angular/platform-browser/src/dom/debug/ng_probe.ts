@@ -1,5 +1,5 @@
 import {DebugNode, getDebugNode, DebugDomRootRenderer, Provider, RootRenderer, NgZone, ApplicationRef} from '@angular/core';
-import {CONST_EXPR, assertionsEnabled} from '@angular/facade/lang';
+import {CONST_EXPR, assertionsEnabled} from '@angular/facade';
 import {DOM} from '../dom_adapter';
 import {DomRootRenderer} from '../dom_renderer';
 

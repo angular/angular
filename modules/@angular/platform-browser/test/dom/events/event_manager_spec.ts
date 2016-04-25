@@ -11,7 +11,7 @@ import {
 } from '@angular/testing/testing_internal';
 import {DomEventsPlugin} from '@angular/platform-browser/src/dom/events/dom_events';
 import {NgZone} from '@angular/core/src/zone/ng_zone';
-import {ListWrapper, Map} from '@angular/facade/collection';
+import {ListWrapper, Map} from '@angular/facade';
 import {DOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {EventManager, EventManagerPlugin} from '@angular/platform-browser/src/dom/events/event_manager';
 

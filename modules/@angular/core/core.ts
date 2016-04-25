@@ -7,8 +7,8 @@ export * from './src/metadata';
 export * from './src/util';
 export * from './src/prod_mode';
 export * from './src/di';
-export * from '@angular/facade/facade';
-export {enableProdMode} from '@angular/facade/lang';
+export * from '@angular/facade';
+export {enableProdMode} from '@angular/facade';
 export {
   createPlatform,
   assertPlatform,

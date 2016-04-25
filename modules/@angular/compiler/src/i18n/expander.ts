@@ -10,7 +10,7 @@ import {
   htmlVisitAll
 } from '../html_ast';
 
-import {BaseException} from '@angular/facade/exceptions';
+import {BaseException} from '@angular/facade';
 
 
 /**

@@ -8,10 +8,10 @@ import {
   Optional,
   Self
 } from '@angular/core';
-import {CONST_EXPR, isBlank} from '@angular/facade/lang';
-import {ListWrapper, StringMapWrapper} from '@angular/facade/collection';
-import {BaseException} from '@angular/facade/exceptions';
-import {ObservableWrapper, EventEmitter} from '@angular/facade/async';
+import {CONST_EXPR, isBlank} from '@angular/facade';
+import {ListWrapper, StringMapWrapper} from '@angular/facade';
+import {BaseException} from '@angular/facade';
+import {ObservableWrapper, EventEmitter} from '@angular/facade';
 
 import {NgControl} from './ng_control';
 import {NgControlGroup} from './ng_control_group';

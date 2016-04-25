@@ -1,4 +1,4 @@
-import {unimplemented} from '@angular/facade/exceptions';
+import {unimplemented} from '@angular/facade';
 import {ViewEncapsulation} from '../metadata/view';
 import {Injector} from '../di/injector';
 

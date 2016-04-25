@@ -1,4 +1,4 @@
-import {Type} from '@angular/facade/lang';
+import {Type} from '@angular/facade';
 import {GetterFn, SetterFn, MethodFn} from './types';
 
 export interface PlatformReflectionCapabilities {

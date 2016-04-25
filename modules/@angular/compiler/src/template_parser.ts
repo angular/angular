@@ -5,9 +5,9 @@ import {
   ListWrapper,
   StringMapWrapper,
   SetWrapper,
-} from '@angular/facade/collection';
-import {RegExpWrapper, isPresent, StringWrapper, isBlank, CONST_EXPR} from '@angular/facade/lang';
-import {BaseException} from '@angular/facade/exceptions';
+} from '@angular/facade';
+import {RegExpWrapper, isPresent, StringWrapper, isBlank, CONST_EXPR} from '@angular/facade';
+import {BaseException} from '@angular/facade';
 import {
   AST,
   Interpolation,

@@ -1,4 +1,4 @@
-import {CONST_EXPR, Type} from '@angular/facade/lang';
+import {CONST_EXPR, Type} from '@angular/facade';
 
 import {FORM_DIRECTIVES} from './forms';
 import {CORE_DIRECTIVES} from './directives';

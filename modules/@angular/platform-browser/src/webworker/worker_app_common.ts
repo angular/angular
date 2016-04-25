@@ -1,7 +1,7 @@
 import {XHR} from '@angular/compiler';
 import {WebWorkerXHRImpl} from '../web_workers/worker/xhr_impl';
 import {WebWorkerRootRenderer} from '../web_workers/worker/renderer';
-import {print, CONST_EXPR} from '@angular/facade/lang';
+import {print, CONST_EXPR} from '@angular/facade';
 import {RootRenderer} from '@angular/core/src/render/api';
 import {
   PLATFORM_DIRECTIVES,

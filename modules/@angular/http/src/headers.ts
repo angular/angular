@@ -1,5 +1,5 @@
-import {isBlank} from '@angular/facade/lang';
-import {BaseException} from '@angular/facade/exceptions';
+import {isBlank} from '@angular/facade';
+import {BaseException} from '@angular/facade';
 import {
   isListLikeIterable,
   iterateListLike,
@@ -7,7 +7,7 @@ import {
   MapWrapper,
   StringMapWrapper,
   ListWrapper,
-} from '@angular/facade/collection';
+} from '@angular/facade';
 
 /**
  * Polyfill for [Headers](https://developer.mozilla.org/en-US/docs/Web/API/Headers/Headers), as

@@ -4,8 +4,8 @@ import {
   isPresent,
   CONST_EXPR,
   isArray,
-} from '@angular/facade/lang';
-import {MapWrapper, ListWrapper} from '@angular/facade/collection';
+} from '@angular/facade';
+import {MapWrapper, ListWrapper} from '@angular/facade';
 import {reflector} from '../reflection/reflection';
 import {ReflectiveKey} from './reflective_key';
 import {

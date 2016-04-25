@@ -1,5 +1,5 @@
-import {StringMapWrapper} from '@angular/facade/collection';
-import {global, isFunction, Math} from '@angular/facade/lang';
+import {StringMapWrapper} from '@angular/facade';
+import {global, isFunction, Math} from '@angular/facade';
 import {provide} from '@angular/core';
 import {getTestInjector, FunctionWithParamTokens, inject} from './test_injector';
 import {browserDetection} from './utils';

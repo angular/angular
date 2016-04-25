@@ -11,7 +11,7 @@ import {
   xit,
   SpyObject
 } from '@angular/testing/testing_internal';
-import {ObservableWrapper} from '@angular/facade/async';
+import {ObservableWrapper} from '@angular/facade';
 import {BrowserJsonp} from '../../src/backends/browser_jsonp';
 import {
   JSONPConnection,
@@ -20,11 +20,11 @@ import {
   JSONPBackend_
 } from '../../src/backends/jsonp_backend';
 import {provide, Injector, ReflectiveInjector} from '@angular/core';
-import {isPresent, StringWrapper} from '@angular/facade/lang';
-import {TimerWrapper} from '@angular/facade/async';
+import {isPresent, StringWrapper} from '@angular/facade';
+import {TimerWrapper} from '@angular/facade';
 import {Request} from '../../src/static_request';
 import {Response} from '../../src/static_response';
-import {Map} from '@angular/facade/collection';
+import {Map} from '@angular/facade';
 import {RequestOptions, BaseRequestOptions} from '../../src/base_request_options';
 import {BaseResponseOptions, ResponseOptions} from '../../src/base_response_options';
 import {ResponseType, ReadyState, RequestMethod} from '../../src/enums';

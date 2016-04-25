@@ -4,6 +4,7 @@
   "description": "",
   "main": "facade.js",
   "jsnext:main": "esm/facade.js",
+  "typings": "facade.d.ts",
   "author": "angular",
   "license": "MIT",
 

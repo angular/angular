@@ -11,7 +11,7 @@ import {
 } from '@angular/testing/testing_internal';
 
 import {DatePipe} from '@angular/common';
-import {DateWrapper} from '@angular/facade/lang';
+import {DateWrapper} from '@angular/facade';
 import {PipeResolver} from '@angular/compiler/src/pipe_resolver';
 
 export function main() {

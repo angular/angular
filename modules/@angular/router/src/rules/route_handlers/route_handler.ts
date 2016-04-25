@@ -1,4 +1,4 @@
-import {Type} from '@angular/facade/lang';
+import {Type} from '@angular/facade';
 import {RouteData} from '../../instruction';
 
 export interface RouteHandler {

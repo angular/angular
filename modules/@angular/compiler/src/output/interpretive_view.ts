@@ -1,7 +1,7 @@
 import {AppElement, AppView} from '../../core_private';
 
-import {isPresent} from '@angular/facade/lang';
-import {BaseException} from '@angular/facade/exceptions';
+import {isPresent} from '@angular/facade';
+import {BaseException} from '@angular/facade';
 import {InstanceFactory, DynamicInstance} from './output_interpreter';
 
 export class InterpretiveAppViewInstanceFactory implements InstanceFactory {

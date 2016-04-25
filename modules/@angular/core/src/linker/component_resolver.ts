@@ -1,6 +1,6 @@
-import {Type, isBlank, stringify} from '@angular/facade/lang';
-import {BaseException} from '@angular/facade/exceptions';
-import {PromiseWrapper} from '@angular/facade/async';
+import {Type, isBlank, stringify} from '@angular/facade';
+import {BaseException} from '@angular/facade';
+import {PromiseWrapper} from '@angular/facade';
 import {reflector} from '../reflection/reflection';
 import {ComponentFactory} from './component_factory';
 import {Injectable} from '../di/decorators';

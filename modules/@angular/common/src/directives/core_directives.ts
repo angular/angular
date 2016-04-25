@@ -1,4 +1,4 @@
-import {CONST_EXPR, Type} from '@angular/facade/lang';
+import {CONST_EXPR, Type} from '@angular/facade';
 import {NgClass} from './ng_class';
 import {NgFor} from './ng_for';
 import {NgIf} from './ng_if';

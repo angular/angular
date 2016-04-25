@@ -4,7 +4,7 @@ import {
   normalizeBool,
   RegExpWrapper,
   CONST_EXPR
-} from '@angular/facade/lang';
+} from '@angular/facade';
 
 // see http://www.w3.org/TR/html51/syntax.html#named-character-references
 // see https://html.spec.whatwg.org/multipage/entities.json

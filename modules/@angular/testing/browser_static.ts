@@ -19,7 +19,7 @@ import {XHRImpl} from '@angular/platform-browser/src/browser/xhr_impl';
 import {XHR} from '@angular/compiler';
 import {TestComponentBuilder} from '@angular/testing/src/test_component_builder';
 import {BrowserDetection} from '@angular/testing/src/utils';
-import {CONST_EXPR} from '@angular/facade/lang';
+import {CONST_EXPR} from '@angular/facade';
 import {Log} from '@angular/testing/src/utils';
 import {ELEMENT_PROBE_PROVIDERS} from '@angular/platform-browser/src/dom/debug/ng_probe';
 

@@ -3,7 +3,7 @@
  * @description
  * This module provides a set of common Pipes.
  */
-import {CONST_EXPR} from '@angular/facade/lang';
+import {CONST_EXPR} from '@angular/facade';
 import {AsyncPipe} from './async_pipe';
 import {UpperCasePipe} from './uppercase_pipe';
 import {LowerCasePipe} from './lowercase_pipe';

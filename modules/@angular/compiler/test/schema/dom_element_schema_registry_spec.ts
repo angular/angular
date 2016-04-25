@@ -9,7 +9,7 @@ import {
   it,
   xit
 } from '@angular/testing/testing_internal';
-import {IS_DART} from '@angular/facade/lang';
+import {IS_DART} from '@angular/facade';
 
 import {DomElementSchemaRegistry} from '@angular/compiler/src/schema/dom_element_schema_registry';
 

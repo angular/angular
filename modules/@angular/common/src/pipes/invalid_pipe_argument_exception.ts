@@ -1,5 +1,5 @@
-import {Type, stringify} from '@angular/facade/lang';
-import {BaseException} from '@angular/facade/exceptions';
+import {Type, stringify} from '@angular/facade';
+import {BaseException} from '@angular/facade';
 
 export class InvalidPipeArgumentException extends BaseException {
   constructor(type: Type, value: Object) {

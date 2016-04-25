@@ -4,12 +4,12 @@ import {
   IS_DART,
   Type,
   isBlank,
-} from '@angular/facade/lang';
-import {BaseException} from '@angular/facade/exceptions';
+} from '@angular/facade';
+import {BaseException} from '@angular/facade';
 import {
   ListWrapper,
-} from '@angular/facade/collection';
-import {PromiseWrapper} from '@angular/facade/async';
+} from '@angular/facade';
+import {PromiseWrapper} from '@angular/facade';
 import {
   createHostComponentMeta,
   CompileDirectiveMetadata,

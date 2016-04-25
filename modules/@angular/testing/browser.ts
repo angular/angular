@@ -3,7 +3,7 @@ import {
   ADDITIONAL_TEST_BROWSER_PROVIDERS
 } from './browser_static';
 import {BROWSER_APP_PROVIDERS} from '@angular/platform-browser';
-import {CONST_EXPR} from '@angular/facade/lang';
+import {CONST_EXPR} from '@angular/facade';
 
 /**
  * Providers for using template cache to avoid actual XHR.

@@ -7,7 +7,7 @@ import * as o from './output/output_ast';
 import {ShadowCss} from './shadow_css';
 import {UrlResolver} from './url_resolver';
 import {extractStyleUrls} from './style_url_resolver';
-import {isPresent} from '@angular/facade/lang';
+import {isPresent} from '@angular/facade';
 
 const COMPONENT_VARIABLE = '%COMP%';
 const HOST_ATTR = `_nghost-${COMPONENT_VARIABLE}`;
