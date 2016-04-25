@@ -14,7 +14,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@igorminar/platform-browser": "0.0.0"
+    "@igorminar/platform-browser": "^0.1.0"
   },
   "devDependencies": {
     "rollup": "^0.26.0",
