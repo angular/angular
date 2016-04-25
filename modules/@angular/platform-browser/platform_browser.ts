@@ -21,7 +21,6 @@ export {ELEMENT_PROBE_PROVIDERS} from './src/dom/debug/ng_probe';
 export {
   BROWSER_APP_COMMON_PROVIDERS,
   BROWSER_PROVIDERS,
-  CACHED_TEMPLATE_PROVIDER,
   By,
   Title,
   enableDebugTools,
@@ -29,6 +28,14 @@ export {
 } from './browser_common';
 
 export * from './private_export';
+
+import {XHRImpl} from "./src/browser/xhr_impl";
+import {XHR} from '@angular/compiler';
+import {CachedXHR} from './src/browser/xhr_cache';
+
+export const CACHED_TEMPLATE_PROVIDER: Array<any /*Type | Provider | any[]*/> =
+  CONST_EXPR([new Provider(XHR, {useClass: CachedXHR})]);
+
 
 /**
  * An array of providers that should be passed into `application()` when bootstrapping a component.

@@ -11,14 +11,12 @@ import {
   Testability
 } from '@angular/core';
 import {wtfInit} from './core_private';
-import {XHR} from '@angular/compiler';
 import {COMMON_DIRECTIVES, COMMON_PIPES, FORM_PROVIDERS} from '@angular/common';
 
 import {CONST_EXPR, IS_DART} from '@angular/facade';
 
 import {BrowserDomAdapter} from './src/browser/browser_adapter';
 import {BrowserGetTestability} from './src/browser/testability';
-import {CachedXHR} from './src/browser/xhr_cache';
 import {DOM} from './src/dom/dom_adapter';
 import {DOCUMENT} from './src/dom/dom_tokens';
 import {EVENT_MANAGER_PLUGINS, EventManager} from './src/dom/events/event_manager';
@@ -91,8 +89,6 @@ export const BROWSER_APP_COMMON_PROVIDERS: Array<any /*Type | Provider | any[]*/
   ELEMENT_PROBE_PROVIDERS
 ]);
 
-export const CACHED_TEMPLATE_PROVIDER: Array<any /*Type | Provider | any[]*/> =
-    CONST_EXPR([new Provider(XHR, {useClass: CachedXHR})]);
 
 export function initDomAdapter() {
   BrowserDomAdapter.makeCurrent();

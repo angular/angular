@@ -7,13 +7,14 @@
     "compile": "tsc -p tsconfig.json",
     "bundle": "rollup -f iife -c rollup.config.js -o dist/bundle.es2015.js",
     "es5": "tsc --out dist/bundle.js --target es5  --allowJs dist/bundle.es2015.js",
-    "minify": "uglifyjs --screw-ie8 --compress --mangle --in-source-map ./dist/bundle.js.map --source-map ./dist/bindle.min.js.map--source-map-include-sources --output ./dist/bundle.min.js ./dist/bundle.js",
+    "minify": "uglifyjs --screw-ie8 --compress --mangle --in-source-map ./dist/bundle.js.map --source-map ./dist/bindle.min.js.map --source-map-include-sources --output ./dist/bundle.min.js ./dist/bundle.js",
     "build": "npm run compile && npm run bundle && npm run es5 && npm run minify",
     "serve": "python -m SimpleHTTPServer 8000"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@igorminar/md-button": "^1.1.0",
     "@igorminar/platform-browser": "^0.1.0"
   },
   "devDependencies": {

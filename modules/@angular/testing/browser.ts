@@ -5,11 +5,6 @@ import {
 import {BROWSER_APP_PROVIDERS} from '@angular/platform-browser';
 import {CONST_EXPR} from '@angular/facade';
 
-/**
- * Providers for using template cache to avoid actual XHR.
- * Re-exported here so that tests import from a single place.
- */
-export {CACHED_TEMPLATE_PROVIDER} from '@angular/platform-browser';
 
 /**
  * Default platform providers for testing.

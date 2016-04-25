@@ -8,6 +8,7 @@ class RollupNG2 {
         this.options = options;
     }
     resolveId(id, from){
+        //console.log(id, from);
         // if(id.startsWith('angular2/')){
         //     return `${__dirname}/vendor/angular2/${id.split('angular2/').pop()}.js`;
         // }
