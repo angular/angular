@@ -1,4 +1,4 @@
-import {isPresent} from '../../angular2/facade/lang';
+import {isPresent} from '@angular/facade';
 
 export class TraceEventFactory {
   private _cat: string;

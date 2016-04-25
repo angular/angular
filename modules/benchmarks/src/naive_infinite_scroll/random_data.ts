@@ -1,4 +1,4 @@
-import {StringWrapper} from '../../../angular2/facade/lang';
+import {StringWrapper} from '@angular/facade';
 import {
   CustomDate,
   Offering,

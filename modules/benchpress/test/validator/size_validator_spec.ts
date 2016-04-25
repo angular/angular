@@ -7,9 +7,9 @@ import {
   expect,
   beforeEach,
   afterEach
-} from 'angular2/testing_internal';
-import {Date, DateWrapper} from '../../../angular2/facade/lang';
-import {ListWrapper} from '../../../angular2/facade/collection';
+} from '@angular/testing/testing_internal';
+import {Date, DateWrapper} from '@angular/facade';
+import {ListWrapper} from '@angular/facade';
 
 import {
   Validator,

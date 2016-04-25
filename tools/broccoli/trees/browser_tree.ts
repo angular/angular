@@ -74,13 +74,13 @@ module.exports = function makeBrowserTree(options, destinationPath) {
   const useBundles = options.useBundles;
 
   if (modules.angular2) {
-    var angular2Tree = new Funnel('modules/angular2', {
+    var angular2Tree = new Funnel('modules/@angular', {
       include: ['**/**'],
       exclude: [
         // Exclude ES6 polyfill typings when tsc target=ES6
         'typings/es6-*/**',
       ],
-      destDir: '/angular2/'
+      destDir: '/@angular/'
     });
   }
 
@@ -129,7 +129,7 @@ module.exports = function makeBrowserTree(options, destinationPath) {
   ]);
 
   var es6PolyfillTypings =
-      new Funnel('modules', {include: ['angular2/typings/es6-*/**'], destDir: '/'});
+      new Funnel('modules', {include: ['@angular/typings/es6-*/**'], destDir: '/'});
 
   var es5ModulesTree = mergeTrees([modulesTree, es6PolyfillTypings]);
 
@@ -163,12 +163,12 @@ module.exports = function makeBrowserTree(options, destinationPath) {
   });
 
   let ambientTypings = [
-    'angular2/typings/hammerjs/hammerjs.d.ts',
-    'angular2/typings/node/node.d.ts',
+    '@angular/typings/hammerjs/hammerjs.d.ts',
+    '@angular/typings/node/node.d.ts',
     'node_modules/zone.js/dist/zone.js.d.ts',
-    'angular2/manual_typings/globals.d.ts',
-    'angular2/typings/es6-collections/es6-collections.d.ts',
-    'angular2/typings/es6-promise/es6-promise.d.ts'
+    '@angular/manual_typings/globals.d.ts',
+    '@angular/typings/es6-collections/es6-collections.d.ts',
+    '@angular/typings/es6-promise/es6-promise.d.ts'
   ];
 
   // Use TypeScript to transpile the *.ts files to ES5
@@ -268,7 +268,7 @@ module.exports = function makeBrowserTree(options, destinationPath) {
     // for web-worker e2e tests.
     htmlTree = replace(htmlTree, {
       files: ['playground*/**/web_workers/**/*.html'],
-      patterns: [{match: "/bundle/angular2.dev.js", replacement: "/bundle/web_worker/ui.dev.js"}]
+      patterns: [{match: "/bundle/@angular.dev.js", replacement: "/bundle/web_worker/ui.dev.js"}]
     });
   }
 
@@ -311,9 +311,9 @@ module.exports = function makeBrowserTree(options, destinationPath) {
       noEmitOnError: false,
       rootDir: './',
       rootFilePaths: [
-        'angular2/typings/zone.js/zone.js.d.ts',
-        'angular2/typings/hammerjs/hammerjs.d.ts',
-        'angular2/typings/node/node.d.ts',
+        '@angular/typings/zone.js/zone.js.d.ts',
+        '@angular/typings/hammerjs/hammerjs.d.ts',
+        '@angular/typings/node/node.d.ts',
       ],
       inlineSourceMap: sourceMaps,
       inlineSources: sourceMaps,

@@ -1,8 +1,8 @@
-import {Injectable, ReflectiveInjector, ReflectiveKey, bind, provide} from "angular2/core";
-import {reflector} from 'angular2/src/core/reflection/reflection';
-import {ReflectionCapabilities} from 'angular2/src/core/reflection/reflection_capabilities';
-import {getIntParameter, bindAction, microBenchmark} from 'angular2/src/testing/benchmark_util';
-import {BrowserDomAdapter} from 'angular2/src/platform/browser/browser_adapter';
+import {Injectable, ReflectiveInjector, ReflectiveKey, bind, provide} from '@angular/core';
+import {reflector} from '@angular/core/src/reflection/reflection';
+import {ReflectionCapabilities} from '@angular/core/src/reflection/reflection_capabilities';
+import {getIntParameter, bindAction, microBenchmark} from '@angular/testing/src/benchmark_util';
+import {BrowserDomAdapter} from '@angular/platform-browser/src/browser/browser_adapter';
 
 var count = 0;
 

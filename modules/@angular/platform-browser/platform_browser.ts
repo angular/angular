@@ -29,8 +29,6 @@ export {
 
 export * from './private_export';
 
-import {XHRImpl} from "./src/browser/xhr_impl";
-import {XHR} from '@angular/compiler';
 import {CachedXHR} from './src/browser/xhr_cache';
 
 export const CACHED_TEMPLATE_PROVIDER: Array<any /*Type | Provider | any[]*/> =

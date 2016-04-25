@@ -92,12 +92,12 @@ export function main() {
 
                  var q = view.debugElement.children[0].getLocal('q');
 
-                 expect(q.log).toEqual([["setter", "foo"], ["init", "foo"], ["check", "foo"]]);
+                 expect(q.logs).toEqual([["setter", "foo"], ["init", "foo"], ["check", "foo"]]);
 
                  view.debugElement.componentInstance.shouldShow = false;
                  view.detectChanges();
 
-                 expect(q.log).toEqual([
+                 expect(q.logs).toEqual([
                    ["setter", "foo"],
                    ["init", "foo"],
                    ["check", "foo"],
@@ -119,12 +119,12 @@ export function main() {
                  view.detectChanges();
                  var q = view.debugElement.children[0].getLocal('q');
 
-                 expect(q.log).toEqual([["setter", "foo"], ["init", "foo"], ["check", "foo"]]);
+                 expect(q.logs).toEqual([["setter", "foo"], ["init", "foo"], ["check", "foo"]]);
 
                  q.shouldShow = false;
                  view.detectChanges();
 
-                 expect(q.log).toEqual([
+                 expect(q.logs).toEqual([
                    ["setter", "foo"],
                    ["init", "foo"],
                    ["check", "foo"],
@@ -148,21 +148,21 @@ export function main() {
                  view.detectChanges();
                  var q = view.debugElement.children[0].getLocal('q');
 
-                 expect(q.log).toEqual([["setter", "foo"], ["init", "foo"], ["check", "foo"]]);
+                 expect(q.logs).toEqual([["setter", "foo"], ["init", "foo"], ["check", "foo"]]);
 
                  q.shouldShow = false;
                  q.shouldShow2 = true;
-                 q.log = [];
+                 q.logs = [];
                  view.detectChanges();
 
-                 expect(q.log).toEqual([["setter", "bar"], ["check", "bar"]]);
+                 expect(q.logs).toEqual([["setter", "bar"], ["check", "bar"]]);
 
                  q.shouldShow = false;
                  q.shouldShow2 = false;
-                 q.log = [];
+                 q.logs = [];
                  view.detectChanges();
 
-                 expect(q.log).toEqual([["setter", null], ["check", null]]);
+                 expect(q.logs).toEqual([["setter", null], ["check", null]]);
 
                  async.done();
                });
@@ -810,16 +810,16 @@ class NeedsContentChild implements AfterContentInit, AfterContentChecked {
   @ContentChild(TextDirective)
   set child(value) {
     this._child = value;
-    this.log.push(['setter', isPresent(value) ? value.text : null]);
+    this.logs.push(['setter', isPresent(value) ? value.text : null]);
   }
 
   get child() { return this._child; }
-  log = [];
+  logs = [];
 
-  ngAfterContentInit() { this.log.push(["init", isPresent(this.child) ? this.child.text : null]); }
+  ngAfterContentInit() { this.logs.push(["init", isPresent(this.child) ? this.child.text : null]); }
 
   ngAfterContentChecked() {
-    this.log.push(["check", isPresent(this.child) ? this.child.text : null]);
+    this.logs.push(["check", isPresent(this.child) ? this.child.text : null]);
   }
 }
 
@@ -839,15 +839,15 @@ class NeedsViewChild implements AfterViewInit,
   @ViewChild(TextDirective)
   set child(value) {
     this._child = value;
-    this.log.push(['setter', isPresent(value) ? value.text : null]);
+    this.logs.push(['setter', isPresent(value) ? value.text : null]);
   }
 
   get child() { return this._child; }
-  log = [];
+  logs = [];
 
-  ngAfterViewInit() { this.log.push(["init", isPresent(this.child) ? this.child.text : null]); }
+  ngAfterViewInit() { this.logs.push(["init", isPresent(this.child) ? this.child.text : null]); }
 
-  ngAfterViewChecked() { this.log.push(["check", isPresent(this.child) ? this.child.text : null]); }
+  ngAfterViewChecked() { this.logs.push(["check", isPresent(this.child) ? this.child.text : null]); }
 }
 
 @Directive({selector: '[dir]'})

@@ -26,11 +26,11 @@ import {Directive, Component, Input} from '@angular/core/src/metadata';
 
 @Injectable()
 class Logger {
-  log: string[];
+  logs: string[];
 
-  constructor() { this.log = []; }
+  constructor() { this.logs = []; }
 
-  add(thing: string) { this.log.push(thing); }
+  add(thing: string) { this.logs.push(thing); }
 }
 
 @Directive({selector: '[message]', inputs: ['message']})
@@ -351,7 +351,7 @@ export function main() {
              .then((fixture) => {
                fixture.detectChanges();
 
-               expect(fixture.debugElement.children[0].inject(Logger).log)
+               expect(fixture.debugElement.children[0].inject(Logger).logs)
                    .toEqual(['parent', 'nestedparent', 'child', 'nestedchild']);
 
                async.done();

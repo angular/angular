@@ -9,10 +9,10 @@ import {
   inject,
   it,
   xit,
-} from 'angular2/testing_internal';
+} from '@angular/testing/testing_internal';
 
-import {PromiseWrapper} from '../../../angular2/facade/async';
-import {Json, isBlank} from '../../../angular2/facade/lang';
+import {PromiseWrapper} from '@angular/facade';
+import {Json, isBlank} from '@angular/facade';
 
 import {
   WebDriverExtension,

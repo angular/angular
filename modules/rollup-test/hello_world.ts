@@ -1,5 +1,5 @@
-import {Component} from "@igorminar/core";
-import {bootstrap} from "@igorminar/platform-browser";
+import {Component} from '@igorminar/core';
+import {bootstrap} from '@igorminar/platform-browser';
 
 @Component({
   selector: 'hello-world',
