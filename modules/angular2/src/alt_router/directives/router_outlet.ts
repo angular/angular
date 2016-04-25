@@ -3,28 +3,35 @@ import {
   Directive,
   DynamicComponentLoader,
   ViewContainerRef,
-  Input,
+  Attribute,
   ComponentRef,
   ComponentFactory,
-  ReflectiveInjector
+  ReflectiveInjector,
+  OnInit
 } from 'angular2/core';
 import {RouterOutletMap} from '../router';
-import {isPresent} from 'angular2/src/facade/lang';
+import {DEFAULT_OUTLET_NAME} from '../constants';
+import {isPresent, isBlank} from 'angular2/src/facade/lang';
 
 @Directive({selector: 'router-outlet'})
 export class RouterOutlet {
   private _loaded: ComponentRef;
   public outletMap: RouterOutletMap;
-  @Input() name: string = "";
 
-  constructor(parentOutletMap: RouterOutletMap, private _location: ViewContainerRef) {
-    parentOutletMap.registerOutlet("", this);
+  constructor(parentOutletMap: RouterOutletMap, private _location: ViewContainerRef,
+              @Attribute('name') name: string) {
+    parentOutletMap.registerOutlet(isBlank(name) ? DEFAULT_OUTLET_NAME : name, this);
+  }
+
+  unload(): void {
+    this._loaded.destroy();
+    this._loaded = null;
   }
 
   load(factory: ComponentFactory, providers: ResolvedReflectiveProvider[],
        outletMap: RouterOutletMap): ComponentRef {
     if (isPresent(this._loaded)) {
-      this._loaded.destroy();
+      this.unload();
     }
     this.outletMap = outletMap;
     let inj = ReflectiveInjector.fromResolvedProviders(providers, this._location.parentInjector);
