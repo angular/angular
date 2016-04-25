@@ -1,36 +1,77 @@
 import {ComponentFactory} from 'angular2/core';
 import {StringMapWrapper, ListWrapper} from 'angular2/src/facade/collection';
-import {Type, isBlank} from 'angular2/src/facade/lang';
+import {Type, isBlank, isPresent} from 'angular2/src/facade/lang';
+import {DEFAULT_OUTLET_NAME} from './constants';
 
 export class Tree<T> {
-  constructor(private _nodes: T[]) {}
+  /** @internal */
+  _root: TreeNode<T>;
 
-  get root(): T { return this._nodes[0]; }
+  constructor(root: TreeNode<T>) { this._root = root; }
+
+  get root(): T { return this._root.value; }
 
   parent(t: T): T {
-    let index = this._nodes.indexOf(t);
-    return index > 0 ? this._nodes[index - 1] : null;
+    let p = this.pathFromRoot(t);
+    return p.length > 1 ? p[p.length - 2] : null;
   }
 
   children(t: T): T[] {
-    let index = this._nodes.indexOf(t);
-    return index > -1 && index < this._nodes.length - 1 ? [this._nodes[index + 1]] : [];
+    let n = _findNode(t, this._root);
+    return isPresent(n) ? n.children.map(t => t.value) : null;
   }
 
   firstChild(t: T): T {
-    let index = this._nodes.indexOf(t);
-    return index > -1 && index < this._nodes.length - 1 ? this._nodes[index + 1] : null;
+    let n = _findNode(t, this._root);
+    return isPresent(n) && n.children.length > 0 ? n.children[0].value : null;
   }
 
-  pathToRoot(t: T): T[] {
-    let index = this._nodes.indexOf(t);
-    return index > -1 ? this._nodes.slice(0, index + 1) : null;
+  pathFromRoot(t: T): T[] { return _findPath(t, this._root, []).map(s => s.value); }
+}
+
+export function rootNode<T>(tree: Tree<T>): TreeNode<T> {
+  return tree._root;
+}
+
+function _findNode<T>(expected: T, c: TreeNode<T>): TreeNode<T> {
+  if (expected === c.value) return c;
+  for (let cc of c.children) {
+    let r = _findNode(expected, cc);
+    if (isPresent(r)) return r;
   }
+  return null;
+}
+
+function _findPath<T>(expected: T, c: TreeNode<T>, collected: TreeNode<T>[]): TreeNode<T>[] {
+  collected.push(c);
+
+  if (expected === c.value) return collected;
+  for (let cc of c.children) {
+    let r = _findPath(expected, cc, ListWrapper.clone(collected));
+    if (isPresent(r)) return r;
+  }
+
+  return null;
+}
+
+export class TreeNode<T> {
+  constructor(public value: T, public children: TreeNode<T>[]) {}
 }
 
 export class UrlSegment {
   constructor(public segment: string, public parameters: {[key: string]: string},
               public outlet: string) {}
+
+  toString(): string {
+    let outletPrefix = this.outlet == DEFAULT_OUTLET_NAME ? "" : `${this.outlet}:`;
+    return `${outletPrefix}${this.segment}${_serializeParams(this.parameters)}`;
+  }
+}
+
+function _serializeParams(params: {[key: string]: string}): string {
+  let res = "";
+  StringMapWrapper.forEach(params, (v, k) => res += `;${k}=${v}`);
+  return res;
 }
 
 export class RouteSegment {
@@ -40,25 +81,23 @@ export class RouteSegment {
   /** @internal */
   _componentFactory: ComponentFactory;
 
-  /** @internal */
-  _parameters: {[key: string]: string};
-
-  constructor(public urlSegments: UrlSegment[], parameters: {[key: string]: string},
+  constructor(public urlSegments: UrlSegment[], public parameters: {[key: string]: string},
               public outlet: string, type: Type, componentFactory: ComponentFactory) {
     this._type = type;
     this._componentFactory = componentFactory;
-    this._parameters = parameters;
   }
 
-  getParam(param: string): string { return this._parameters[param]; }
+  getParam(param: string): string { return this.parameters[param]; }
 
   get type(): Type { return this._type; }
+
+  get stringifiedUrlSegments(): string { return this.urlSegments.map(s => s.toString()).join("/"); }
 }
 
 export function equalSegments(a: RouteSegment, b: RouteSegment): boolean {
   if (isBlank(a) && !isBlank(b)) return false;
   if (!isBlank(a) && isBlank(b)) return false;
-  return a._type === b._type && StringMapWrapper.equals(a._parameters, b._parameters);
+  return a._type === b._type && StringMapWrapper.equals(a.parameters, b.parameters);
 }
 
 export function routeSegmentComponentFactory(a: RouteSegment): ComponentFactory {
