@@ -51,6 +51,11 @@ Output:
 
 <img src="https://material.angularjs.org/material2_assets/cards/sections-card-min.png">
 
+#### Preset shortcuts
+
+`md-card-actions` has a few layout shortcuts. You can add `align="end"` to align the buttons at the end of
+the main axis (flex-end). The default is `align="start"` (flex-start).
+
 ### Preset layouts
 
 You can also leverage preset layouts that format some of the sections together.

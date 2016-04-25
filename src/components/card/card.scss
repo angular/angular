@@ -55,6 +55,11 @@ md-card-actions {
   margin-left: -16px;
   margin-right: -16px;
   padding: 8px 0;
+
+  &[align='end'] {
+    display: flex;
+    justify-content: flex-end;
+  }
 }
 
 [md-card-image] {
