@@ -6,7 +6,7 @@
     "experimentalDecorators": true,
     "module": "es2015",
     "moduleResolution": "node",
-    "outDir": "../../../dist/packages-dist/platform-server/",
+    "outDir": "../../../dist/packages-dist/platform-server/esm",
     "paths": {
       "@angular/common": ["../../../dist/packages-dist/common/"],
       "@angular/compiler": ["../../../dist/packages-dist/compiler/"],
