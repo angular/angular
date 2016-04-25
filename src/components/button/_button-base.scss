@@ -51,7 +51,7 @@ $md-mini-fab-padding: 8px !default;
   font-size: $md-body-font-size-base;
   font-family: $md-font-family;
   font-weight: 500;
-  color: md-color($md-foreground, text);
+  color: currentColor;
 
   // Sizing.
   margin: $md-button-margin;
@@ -69,7 +69,7 @@ $md-mini-fab-padding: 8px !default;
 %md-raised-button {
   @extend %md-button-base;
 
-  @include md-elevation(1);
+  @include md-elevation(2);
   @include md-button-theme('color', default-contrast);
   @include md-button-theme('background-color');
 
@@ -82,7 +82,7 @@ $md-mini-fab-padding: 8px !default;
               md-elevation-transition-property-value();
 
   &:active {
-    @include md-elevation(2);
+    @include md-elevation(8);
   }
 
   &.md-button-focus {
@@ -102,9 +102,14 @@ $md-mini-fab-padding: 8px !default;
   min-width: 0;
   border-radius: $md-fab-border-radius;
   background-color: md-color($md-accent);
+  color: md-color($md-accent, default-contrast);
   width: $size;
   height: $size;
-  padding: $padding;
+  padding: 0;
+
+  i {
+    padding: $padding 0;
+  }
 
   &.md-button-focus {
     background-color: md-color($md-accent, 600);
