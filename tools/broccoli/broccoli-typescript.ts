@@ -83,6 +83,7 @@ class DiffingTSCompiler implements DiffingBroccoliPlugin {
     }
 
     this.tsOpts.rootDir = inputPath;
+    this.tsOpts.baseUrl = inputPath;
     this.tsOpts.outDir = this.cachePath;
 
     this.tsServiceHost = new CustomLanguageServiceHost(this.tsOpts, this.rootFilePaths,

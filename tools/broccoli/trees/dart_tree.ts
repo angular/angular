@@ -63,11 +63,30 @@ function stripModulePrefix(relativePath: string): string {
 }
 
 function getSourceTree(options: AngularBuilderOptions) {
-  var tsInputTree = modulesFunnel(['**/*.js', '**/*.ts', '**/*.dart'], ['angular1_router/**/*']);
+  var tsInputTree = modulesFunnel(
+    [
+      'tsconfig-ts2dart.json',
+      'upgrade-ts2dart.d.ts',
+      'zone-ts2dart.d.ts',
+      '**/*.js',
+      '**/*.ts',
+      '**/*.dart'
+    ], [
+      'rollup-test/**/*',
+      'angular1_router/**/*',
+      'angular2/upgrade/**/*',
+      'angular2/core/test/typings.d.ts',
+      'angular2/manual_typings/globals.d.ts',
+      'angular2/typings/es6-collections/es6-collections.d.ts',
+      'angular2/typings/es6-promise/es6-promise.d.ts',
+      'angular2/typings/tsd.d.ts',
+      'angular2/typings.d.ts',
+    ]);
   var transpiled = ts2dart(tsInputTree, {
     generateLibraryName: true,
     generateSourceMap: false,
     translateBuiltins: true,
+    tsconfig: 'tsconfig-ts2dart.json'
   });
 
   // Native sources, dart only examples, etc.
@@ -157,6 +176,8 @@ function getDocsTree() {
     srcPath: 'LICENSE',
     targetPatterns: ['modules/*'],
     exclude: [
+      '*/@angular',
+      '*/angular2',
       '*/angular1_router',
       '*/angular2/src/http',
       '*/payload_tests',
