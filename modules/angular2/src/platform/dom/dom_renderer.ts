@@ -1,5 +1,4 @@
 import {Inject, Injectable, OpaqueToken} from 'angular2/src/core/di';
-import {AnimationBuilder} from 'angular2/src/animate/animation_builder';
 import {
   isPresent,
   isBlank,
@@ -22,6 +21,11 @@ import {
   RenderDebugInfo
 } from 'angular2/src/core/render/api';
 
+import {AnimationKeyframe} from 'angular2/src/core/animation/animation_keyframe';
+import {AnimationStyles} from 'angular2/src/core/animation/animation_styles';
+import {AnimationPlayer} from 'angular2/src/core/animation/animation_player';
+import {AnimationDriver} from 'angular2/src/core/render/animation_driver';
+
 import {EventManager} from './events/event_manager';
 
 import {DOCUMENT} from './dom_tokens';
@@ -38,12 +42,13 @@ export abstract class DomRootRenderer implements RootRenderer {
   private _registeredComponents: Map<string, DomRenderer> = new Map<string, DomRenderer>();
 
   constructor(public document: any, public eventManager: EventManager,
-              public sharedStylesHost: DomSharedStylesHost, public animate: AnimationBuilder) {}
+              public sharedStylesHost: DomSharedStylesHost,
+              public animationDriver: AnimationDriver) {}
 
   renderComponent(componentProto: RenderComponentType): Renderer {
     var renderer = this._registeredComponents.get(componentProto.id);
     if (isBlank(renderer)) {
-      renderer = new DomRenderer(this, componentProto);
+      renderer = new DomRenderer(this, componentProto, this.animationDriver);
       this._registeredComponents.set(componentProto.id, renderer);
     }
     return renderer;
@@ -53,8 +58,9 @@ export abstract class DomRootRenderer implements RootRenderer {
 @Injectable()
 export class DomRootRenderer_ extends DomRootRenderer {
   constructor(@Inject(DOCUMENT) _document: any, _eventManager: EventManager,
-              sharedStylesHost: DomSharedStylesHost, animate: AnimationBuilder) {
-    super(_document, _eventManager, sharedStylesHost, animate);
+              sharedStylesHost: DomSharedStylesHost,
+              animationDriver: AnimationDriver) {
+    super(_document, _eventManager, sharedStylesHost, animationDriver);
   }
 }
 
@@ -63,7 +69,8 @@ export class DomRenderer implements Renderer {
   private _hostAttr: string;
   private _styles: string[];
 
-  constructor(private _rootRenderer: DomRootRenderer, private componentProto: RenderComponentType) {
+  constructor(private _rootRenderer: DomRootRenderer, private componentProto: RenderComponentType,
+              private _animationDriver: AnimationDriver) {
     this._styles = _flattenStyles(componentProto.id, componentProto.styles, []);
     if (componentProto.encapsulation !== ViewEncapsulation.Native) {
       this._rootRenderer.sharedStylesHost.addStyles(this._styles);
@@ -145,14 +152,11 @@ export class DomRenderer implements Renderer {
 
   attachViewAfter(node: any, viewRootNodes: any[]) {
     moveNodesAfterSibling(node, viewRootNodes);
-    for (let i = 0; i < viewRootNodes.length; i++) this.animateNodeEnter(viewRootNodes[i]);
   }
 
   detachView(viewRootNodes: any[]) {
     for (var i = 0; i < viewRootNodes.length; i++) {
-      var node = viewRootNodes[i];
-      DOM.remove(node);
-      this.animateNodeLeave(node);
+      DOM.remove(viewRootNodes[i]);
     }
   }
 
@@ -234,39 +238,11 @@ export class DomRenderer implements Renderer {
 
   setText(renderNode: any, text: string): void { DOM.setText(renderNode, text); }
 
-  /**
-   * Performs animations if necessary
-   * @param node
-   */
-  animateNodeEnter(node: Node) {
-    if (DOM.isElementNode(node) && DOM.hasClass(node, 'ng-animate')) {
-      DOM.addClass(node, 'ng-enter');
-      this._rootRenderer.animate.css()
-          .addAnimationClass('ng-enter-active')
-          .start(<HTMLElement>node)
-          .onComplete(() => { DOM.removeClass(node, 'ng-enter'); });
-    }
-  }
-
-
-  /**
-   * If animations are necessary, performs animations then removes the element; otherwise, it just
-   * removes the element.
-   * @param node
-   */
-  animateNodeLeave(node: Node) {
-    if (DOM.isElementNode(node) && DOM.hasClass(node, 'ng-animate')) {
-      DOM.addClass(node, 'ng-leave');
-      this._rootRenderer.animate.css()
-          .addAnimationClass('ng-leave-active')
-          .start(<HTMLElement>node)
-          .onComplete(() => {
-            DOM.removeClass(node, 'ng-leave');
-            DOM.remove(node);
-          });
-    } else {
-      DOM.remove(node);
-    }
+  animate(element: any,
+          startingStyles: AnimationStyles[],
+          keyframes: AnimationKeyframe[], duration: number, delay: number,
+          easing: string): AnimationPlayer {
+    return this._animationDriver.animate(element, startingStyles, keyframes, duration, delay, easing);
   }
 }
 

@@ -1,6 +1,9 @@
 import {unimplemented} from 'angular2/src/facade/exceptions';
 import {ViewEncapsulation} from 'angular2/src/core/metadata/view';
 import {Injector, Injectable} from 'angular2/src/core/di';
+import {AnimationKeyframe} from 'angular2/src/core/animation/animation_keyframe';
+import {AnimationPlayer} from 'angular2/src/core/animation/animation_player';
+import {AnimationStyles} from 'angular2/src/core/animation/animation_styles';
 
 export class RenderComponentType {
   constructor(public id: string, public templateUrl: string, public slotCount: number,
@@ -56,6 +59,8 @@ export abstract class Renderer {
   abstract invokeElementMethod(renderElement: any, methodName: string, args: any[]);
 
   abstract setText(renderNode: any, text: string);
+
+  abstract animate(element: any, startingStyles: AnimationStyles[], keyframes: AnimationKeyframe[], duration: number, delay: number, easing: string): AnimationPlayer;
 }
 
 /**

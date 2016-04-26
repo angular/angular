@@ -94,8 +94,7 @@ export class OfflineCompiler {
     var styleResult = this._styleCompiler.compileComponent(compMeta);
     var parsedTemplate = this._templateParser.parse(compMeta, compMeta.template.template,
                                                     directives, pipes, compMeta.type.name);
-    var viewResult = this._viewCompiler.compileComponent(compMeta, parsedTemplate,
-                                                         o.variable(styleResult.stylesVar), pipes);
+    var viewResult = this._viewCompiler.compileComponent(compMeta, parsedTemplate, o.variable(styleResult.stylesVar), pipes);
     ListWrapper.addAll(targetStatements, _resolveStyleStatements(styleResult));
     ListWrapper.addAll(targetStatements, _resolveViewStatements(viewResult));
     return viewResult.viewFactoryVar;

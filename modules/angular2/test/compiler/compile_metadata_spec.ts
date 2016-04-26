@@ -21,7 +21,12 @@ import {
   CompileQueryMetadata,
   CompileIdentifierMetadata,
   CompileFactoryMetadata,
-  CompileTokenMetadata
+  CompileTokenMetadata,
+  CompileAnimationEntryMetadata,
+  CompileAnimationStyleMetadata,
+  CompileAnimationAnimateMetadata,
+  CompileAnimationSequenceMetadata,
+  CompileAnimationGroupMetadata
 } from 'angular2/src/compiler/compile_metadata';
 import {ViewEncapsulation} from 'angular2/src/core/metadata/view';
 import {ChangeDetectionStrategy} from 'angular2/src/core/change_detection';
@@ -63,6 +68,12 @@ export function main() {
         templateUrl: 'someTemplateUrl',
         styles: ['someStyle'],
         styleUrls: ['someStyleUrl'],
+        animations: [
+          new CompileAnimationEntryMetadata('animation', new CompileAnimationSequenceMetadata([
+            new CompileAnimationStyleMetadata({ 'opacity': 0 }),
+            new CompileAnimationAnimateMetadata([{ 'opacity': 1 }], 1000)
+          ]))
+        ],
         ngContentSelectors: ['*']
       });
       fullDirectiveMeta = CompileDirectiveMetadata.create({
@@ -170,6 +181,76 @@ export function main() {
       it('should serialize with no data', () => {
         var empty = new CompileTemplateMetadata();
         expect(CompileTemplateMetadata.fromJson(empty.toJson())).toEqual(empty);
+      });
+    });
+
+    describe('CompileAnimationStyleMetadata', () => {
+      it('should serialize with full data', () => {
+        let full = new CompileAnimationStyleMetadata({ "opacity": 0, "color": "red" });
+        expect(CompileAnimationStyleMetadata.fromJson(full.toJson())).toEqual(full);
+      });
+
+      it('should serialize with no data', () => {
+        let empty = new CompileAnimationStyleMetadata();
+        expect(CompileAnimationStyleMetadata.fromJson(empty.toJson())).toEqual(empty);
+      });
+    });
+
+    describe('CompileAnimationAnimateMetadata', () => {
+      it('should serialize with full data', () => {
+        let full = new CompileAnimationAnimateMetadata([{ "opacity": 0.5, "color": "blue" }], "1s linear");
+        expect(CompileAnimationAnimateMetadata.fromJson(full.toJson())).toEqual(full);
+      });
+
+      it('should serialize with no data', () => {
+        let empty = new CompileAnimationAnimateMetadata();
+        expect(CompileAnimationAnimateMetadata.fromJson(empty.toJson())).toEqual(empty);
+      });
+    });
+
+    describe('CompileAnimationSequenceMetadata', () => {
+      it('should serialize with full data', () => {
+        let full = new CompileAnimationSequenceMetadata([
+          new CompileAnimationStyleMetadata({ "opacity": 0.5, "width": 100 }),
+          new CompileAnimationAnimateMetadata([{ "opacity": 1, "width": 0 }], 1000)
+        ]);
+        expect(CompileAnimationSequenceMetadata.fromJson(full.toJson())).toEqual(full);
+      });
+
+      it('should serialize with no data', () => {
+        let empty = new CompileAnimationSequenceMetadata();
+        expect(CompileAnimationSequenceMetadata.fromJson(empty.toJson())).toEqual(empty);
+      });
+    });
+
+    describe('CompileAnimationGroupMetadata', () => {
+      it('should serialize with full data', () => {
+        let full = new CompileAnimationGroupMetadata([
+          new CompileAnimationStyleMetadata({ "width": 100, "border": "1px solid red" }),
+          new CompileAnimationAnimateMetadata([{ "width": 900, "border": "10px solid blue" }], 1000)
+        ]);
+        expect(CompileAnimationGroupMetadata.fromJson(full.toJson())).toEqual(full);
+      });
+
+      it('should serialize with no data', () => {
+        let empty = new CompileAnimationGroupMetadata();
+        expect(CompileAnimationGroupMetadata.fromJson(empty.toJson())).toEqual(empty);
+      });
+    });
+
+    describe('CompileAnimationEntryMetadata', () => {
+      it('should serialize with full data', () => {
+        let full = new CompileAnimationEntryMetadata('name(key => value)',
+          new CompileAnimationSequenceMetadata([
+            new CompileAnimationStyleMetadata({ "color": "red" }),
+            new CompileAnimationAnimateMetadata([{ "color": "blue" }], 1000),
+          ]));
+        expect(CompileAnimationEntryMetadata.fromJson(full.toJson())).toEqual(full);
+      });
+
+      it('should serialize with no data', () => {
+        let empty = new CompileAnimationEntryMetadata();
+        expect(CompileAnimationEntryMetadata.fromJson(empty.toJson())).toEqual(empty);
       });
     });
   });

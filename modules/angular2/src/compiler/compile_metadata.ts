@@ -29,7 +29,6 @@ import {splitAtColon, sanitizeIdentifier} from './util';
 import {LifecycleHooks, LIFECYCLE_HOOKS_VALUES} from 'angular2/src/core/metadata/lifecycle_hooks';
 import {getUrlScheme} from './url_resolver';
 
-// group 1: "property" from "[property]"
 // group 2: "event" from "(event)"
 var HOST_REG_EXP = /^(?:(?:\[([^\]]+)\])|(?:\(([^\)]+)\)))$/g;
 
@@ -49,6 +48,113 @@ export abstract class CompileMetadataWithType extends CompileMetadataWithIdentif
 
 export function metadataFromJson(data: {[key: string]: any}): any {
   return _COMPILE_METADATA_FROM_JSON[data['class']](data);
+}
+
+export class CompileAnimationEntryMetadata {
+  static fromJson(data: {[key: string]: any}): CompileAnimationEntryMetadata {
+    var name = <string>data['value']['name'];
+    var animation = _objFromJson(data['value']['animation'], metadataFromJson);
+    return new CompileAnimationEntryMetadata(name, animation);
+  }
+
+  constructor(public name: string = null, public animation: CompileAnimationMetadata = null) {}
+
+  toJson(): {[key: string]: any} {
+    return {
+      'class': 'AnimationEntryMetadata',
+      'value': {
+        'name' : this.name,
+        'animation': _objToJson(this.animation)
+      }
+    };
+  }
+}
+
+export abstract class CompileAnimationMetadata {}
+
+export class CompileAnimationStyleMetadata extends CompileAnimationMetadata {
+  static fromJson(data: {[key: string]: any}): CompileAnimationStyleMetadata {
+    var styles = <{[key: string]: string | number}>data['value'];
+    return new CompileAnimationStyleMetadata(styles);
+  }
+
+  constructor(public styles: {[key: string]: string | number} = null) { super(); }
+
+  toJson(): {[key: string]: any} {
+    return {
+      'class': 'AnimationStyleMetadata',
+      'value': this.styles
+    };
+  }
+}
+
+export class CompileAnimationAnimateMetadata extends CompileAnimationMetadata {
+  static fromJson(data: {[key: string]: any}): CompileAnimationAnimateMetadata {
+    var value = data['value'];
+    var styles = <Array<{[key: string]: string | number}>>value['styles'];
+    var timings = <string|number>value['timings'];
+    return new CompileAnimationAnimateMetadata(styles, timings);
+  }
+
+  constructor(public styles: Array<{[key: string]: string | number}> = null, public timings: string|number = 0) { super(); }
+
+  toJson(): {[key: string]: any} {
+    return {
+      'class': 'AnimationAnimateMetadata',
+      'value': {
+        'styles': this.styles,
+        'timings': this.timings
+      }
+    };
+  }
+}
+
+export abstract class CompileAnimationWithStepsMetadata extends CompileAnimationMetadata {
+  constructor(public steps: CompileAnimationMetadata[] = null) { super(); }
+}
+
+export class CompileAnimationSequenceMetadata extends CompileAnimationWithStepsMetadata {
+  static fromJson(data: {[key: string]: any}): CompileAnimationSequenceMetadata {
+    var steps = _arrayFromJson(data['value'], metadataFromJson);
+    return new CompileAnimationSequenceMetadata(steps);
+  }
+
+  constructor(steps: CompileAnimationMetadata[] = null) {
+    super(steps);
+  }
+
+  toJson(): {[key: string]: any} {
+    var steps: any[] = null;
+    if (isPresent(this.steps)) {
+      steps = this.steps.map(step => _objToJson(step));
+    }
+    return {
+      'class': 'AnimationSequenceMetadata',
+      'value': steps
+    };
+  }
+}
+
+export class CompileAnimationGroupMetadata extends CompileAnimationWithStepsMetadata {
+  static fromJson(data: {[key: string]: any}): CompileAnimationGroupMetadata {
+    var steps = _arrayFromJson(data["value"], metadataFromJson);
+    return new CompileAnimationGroupMetadata(steps);
+  }
+
+  constructor(steps: CompileAnimationMetadata[] = null) {
+    super(steps);
+  }
+
+  toJson(): {[key: string]: any} {
+    var steps: any[] = null;
+    if (isPresent(this.steps)) {
+      steps = this.steps.map(step => _objToJson(step));
+    }
+    return {
+      'class': 'AnimationGroupMetadata',
+      'value': steps
+    };
+  }
 }
 
 export class CompileIdentifierMetadata implements CompileMetadataWithIdentifier {
@@ -467,13 +573,16 @@ export class CompileTemplateMetadata {
   templateUrl: string;
   styles: string[];
   styleUrls: string[];
+  animations: CompileAnimationEntryMetadata[];
   ngContentSelectors: string[];
-  constructor({encapsulation, template, templateUrl, styles, styleUrls, ngContentSelectors}: {
+  constructor({encapsulation, template, templateUrl, styles, styleUrls, animations,
+               ngContentSelectors}: {
     encapsulation?: ViewEncapsulation,
     template?: string,
     templateUrl?: string,
     styles?: string[],
     styleUrls?: string[],
+    animations?: CompileAnimationEntryMetadata[],
     ngContentSelectors?: string[]
   } = {}) {
     this.encapsulation = isPresent(encapsulation) ? encapsulation : ViewEncapsulation.Emulated;
@@ -481,10 +590,12 @@ export class CompileTemplateMetadata {
     this.templateUrl = templateUrl;
     this.styles = isPresent(styles) ? styles : [];
     this.styleUrls = isPresent(styleUrls) ? styleUrls : [];
+    this.animations = isPresent(animations) ? ListWrapper.flatten(animations) : [];
     this.ngContentSelectors = isPresent(ngContentSelectors) ? ngContentSelectors : [];
   }
 
   static fromJson(data: {[key: string]: any}): CompileTemplateMetadata {
+    var animations = <CompileAnimationEntryMetadata[]>_arrayFromJson(data['animations'], metadataFromJson);
     return new CompileTemplateMetadata({
       encapsulation: isPresent(data['encapsulation']) ?
                          VIEW_ENCAPSULATION_VALUES[data['encapsulation']] :
@@ -493,6 +604,7 @@ export class CompileTemplateMetadata {
       templateUrl: data['templateUrl'],
       styles: data['styles'],
       styleUrls: data['styleUrls'],
+      animations: animations,
       ngContentSelectors: data['ngContentSelectors']
     });
   }
@@ -505,6 +617,7 @@ export class CompileTemplateMetadata {
       'templateUrl': this.templateUrl,
       'styles': this.styles,
       'styleUrls': this.styleUrls,
+      'animations': _objToJson(this.animations),
       'ngContentSelectors': this.ngContentSelectors
     };
   }
@@ -767,7 +880,12 @@ var _COMPILE_METADATA_FROM_JSON = {
   'Type': CompileTypeMetadata.fromJson,
   'Provider': CompileProviderMetadata.fromJson,
   'Identifier': CompileIdentifierMetadata.fromJson,
-  'Factory': CompileFactoryMetadata.fromJson
+  'Factory': CompileFactoryMetadata.fromJson,
+  'AnimationEntryMetadata': CompileAnimationEntryMetadata.fromJson,
+  'AnimationSequenceMetadata': CompileAnimationSequenceMetadata.fromJson,
+  'AnimationGroupMetadata': CompileAnimationGroupMetadata.fromJson,
+  'AnimationAnimateMetadata': CompileAnimationAnimateMetadata.fromJson,
+  'AnimationStyleMetadata': CompileAnimationStyleMetadata.fromJson
 };
 
 function _arrayFromJson(obj: any[], fn: (a: {[key: string]: any}) => any): any {

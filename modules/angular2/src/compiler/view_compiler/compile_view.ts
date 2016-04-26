@@ -25,6 +25,8 @@ import {
 import {CompilerConfig} from '../config';
 import {CompileBinding} from './compile_binding';
 
+import {CompileAnimation} from '../animation_compiler';
+
 export class CompileView implements NameResolver {
   public viewType: ViewType;
   public viewQueries: CompileTokenMap<CompileQuery[]>;
@@ -64,11 +66,22 @@ export class CompileView implements NameResolver {
   public literalArrayCount = 0;
   public literalMapCount = 0;
   public pipeCount = 0;
+  public animations = new Map<string, CompileAnimation[]>();
 
   constructor(public component: CompileDirectiveMetadata, public genConfig: CompilerConfig,
-              public pipeMetas: CompilePipeMetadata[], public styles: o.Expression,
+              public pipeMetas: CompilePipeMetadata[],
+              public styles: o.Expression,
+              animations: CompileAnimation[],
               public viewIndex: number, public declarationElement: CompileElement,
               public templateVariableBindings: string[][]) {
+    animations.forEach(entry => {
+      var id = entry.event.id;
+      var list = this.animations.get(id);
+      if (!isPresent(list)) {
+        this.animations.set(id, list = []);
+      }
+      list.push(entry);
+    });
     this.createMethod = new CompileMethod(this);
     this.injectorGetMethod = new CompileMethod(this);
     this.updateContentQueriesMethod = new CompileMethod(this);

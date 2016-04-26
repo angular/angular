@@ -15,7 +15,6 @@ import {extractStyleUrls, isStyleUrlResolvable} from './style_url_resolver';
 import {Injectable} from 'angular2/src/core/di';
 import {ViewEncapsulation} from 'angular2/src/core/metadata/view';
 
-
 import {
   HtmlAstVisitor,
   HtmlElementAst,
@@ -112,6 +111,7 @@ export class DirectiveNormalizer {
       templateUrl: templateAbsUrl,
       styles: allResolvedStyles,
       styleUrls: allStyleAbsUrls,
+      animations: templateMeta.animations,
       ngContentSelectors: visitor.ngContentSelectors
     });
   }

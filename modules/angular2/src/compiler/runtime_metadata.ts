@@ -15,6 +15,7 @@ import {NoAnnotationError} from 'angular2/src/core/di/reflective_exceptions';
 import * as cpl from './compile_metadata';
 import * as md from 'angular2/src/core/metadata/directives';
 import * as dimd from 'angular2/src/core/metadata/di';
+import * as anmd from 'angular2/src/core/metadata/animations';
 import {DirectiveResolver} from './directive_resolver';
 import {PipeResolver} from './pipe_resolver';
 import {ViewResolver} from './view_resolver';
@@ -75,6 +76,30 @@ export class RuntimeMetadataResolver {
     return sanitizeIdentifier(identifier);
   }
 
+  getAnimationEntryMetadata(animations: anmd.AnimationEntryMetadata[]): cpl.CompileAnimationEntryMetadata[] {
+    if (isPresent(animations)) {
+      return animations.map(entry =>
+        new cpl.CompileAnimationEntryMetadata(entry.name, this.getAnimationMetadata(entry.animation)));
+    }
+    return null;
+  }
+
+  getAnimationMetadata(value: anmd.AnimationMetadata): cpl.CompileAnimationMetadata {
+    if (value instanceof anmd.AnimationStyleMetadata) {
+      return new cpl.CompileAnimationStyleMetadata(value.styles);
+    } else if (value instanceof anmd.AnimationAnimateMetadata) {
+      return new cpl.CompileAnimationAnimateMetadata(value.styles, value.timings);
+    } else if (value instanceof anmd.AnimationWithStepsMetadata) {
+      var steps = value.steps.map(step => this.getAnimationMetadata(step));
+      if (value instanceof anmd.AnimationGroupMetadata) {
+        return new cpl.CompileAnimationGroupMetadata(steps);
+      } else {
+        return new cpl.CompileAnimationSequenceMetadata(steps);
+      }
+    }
+    return null;
+  }
+
   getDirectiveMetadata(directiveType: Type): cpl.CompileDirectiveMetadata {
     var meta = this._directiveCache.get(directiveType);
     if (isBlank(meta)) {
@@ -95,7 +120,8 @@ export class RuntimeMetadataResolver {
           template: viewMeta.template,
           templateUrl: viewMeta.templateUrl,
           styles: viewMeta.styles,
-          styleUrls: viewMeta.styleUrls
+          styleUrls: viewMeta.styleUrls,
+          animations: this.getAnimationEntryMetadata(viewMeta.animations)
         });
         changeDetectionStrategy = cmpMeta.changeDetection;
         if (isPresent(dirMeta.viewProviders)) {

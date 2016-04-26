@@ -24,6 +24,9 @@ import {camelCaseToDashCase} from '../util';
 import {convertCdExpressionToIr} from './expression_converter';
 
 import {CompileBinding} from './compile_binding';
+import {BaseException} from 'angular2/src/facade/exceptions';
+import {CompileAnimation} from '../animation_compiler';
+import {EMPTY_STATE, ANY_STATE} from 'angular2/src/core/animation/animation_state_event';
 
 function createBindFieldExpr(exprIndex: number): o.ReadPropExpr {
   return o.THIS_EXPR.prop(`_expr_${exprIndex}`);
@@ -92,41 +95,93 @@ function bindAndWriteToRenderer(boundProps: BoundElementPropertyAst[], context: 
     view.detectChangesRenderPropertiesMethod.resetDebugInfo(compileElement.nodeIndex, boundProp);
     var fieldExpr = createBindFieldExpr(bindingIndex);
     var currValExpr = createCurrValueExpr(bindingIndex);
-    var renderMethod: string;
-    var renderValue: o.Expression = currValExpr;
     var updateStmts = [];
+    var renderValue;
     switch (boundProp.type) {
       case PropertyBindingType.Property:
-        renderMethod = 'setElementProperty';
         if (view.genConfig.logBindingUpdate) {
           updateStmts.push(logBindingUpdateStmt(renderNode, boundProp.name, currValExpr));
         }
+        updateStmts.push(
+            o.THIS_EXPR.prop('renderer')
+                .callMethod('setElementProperty', [renderNode, o.literal(boundProp.name), currValExpr])
+                .toStmt()
+        );
         break;
       case PropertyBindingType.Attribute:
-        renderMethod = 'setElementAttribute';
-        renderValue =
-            renderValue.isBlank().conditional(o.NULL_EXPR, renderValue.callMethod('toString', []));
+        renderValue = currValExpr.isBlank().conditional(o.NULL_EXPR, currValExpr.callMethod('toString', []));
+        updateStmts.push(
+            o.THIS_EXPR.prop('renderer')
+                .callMethod('setElementAttribute', [renderNode, o.literal(boundProp.name), renderValue])
+                .toStmt()
+        );
         break;
       case PropertyBindingType.Class:
-        renderMethod = 'setElementClass';
+        updateStmts.push(
+            o.THIS_EXPR.prop('renderer')
+                .callMethod('setElementClass', [renderNode, o.literal(boundProp.name), currValExpr])
+                .toStmt()
+        );
         break;
       case PropertyBindingType.Style:
-        renderMethod = 'setElementStyle';
-        var strValue: o.Expression = renderValue.callMethod('toString', []);
+        var strValue: o.Expression = currValExpr.callMethod('toString', []);
         if (isPresent(boundProp.unit)) {
           strValue = strValue.plus(o.literal(boundProp.unit));
         }
-        renderValue = renderValue.isBlank().conditional(o.NULL_EXPR, strValue);
+        renderValue = currValExpr.isBlank().conditional(o.NULL_EXPR, strValue);
+        updateStmts.push(
+            o.THIS_EXPR.prop('renderer')
+                .callMethod('setElementStyle', [renderNode, o.literal(boundProp.name), renderValue])
+                .toStmt()
+        );
+        break;
+      case PropertyBindingType.Animation:
+        var animations = view.componentView.animations.get(boundProp.name);
+        if (isBlank(animations)) {
+          throw new BaseException(`Internal Error: couldn't find animations for ${boundProp.name}`);
+        }
+
+        var PLAYER_VAR = o.variable('player');
+        updateStmts.push(PLAYER_VAR.set(o.NULL_EXPR).toDeclStmt());
+        animations.forEach((animation: CompileAnimation) => {
+          updateStmts.push(
+            new o.IfStmt(
+                  PLAYER_VAR.equals(o.NULL_EXPR)
+                  .and(_compareToAnimationStateExpr(fieldExpr, animation.event.fromState))
+                  .and(_compareToAnimationStateExpr(currValExpr, animation.event.toState)), [
+                    PLAYER_VAR.set(
+                      animation.animationFactory.callFn([
+                        o.THIS_EXPR.prop('renderer'),
+                        renderNode
+                      ])
+                    ).toStmt()
+                ])
+          );
+        });
+        updateStmts.push(new o.IfStmt(o.not(PLAYER_VAR.equals(o.NULL_EXPR)), [
+          PLAYER_VAR.callMethod('onDone', [
+            o.fn([], [
+              PLAYER_VAR.callMethod('destroy', []).toStmt()
+            ])
+          ]).toStmt(),
+          PLAYER_VAR.callMethod('play', []).toStmt()
+        ]));
         break;
     }
-    updateStmts.push(
-        o.THIS_EXPR.prop('renderer')
-            .callMethod(renderMethod, [renderNode, o.literal(boundProp.name), renderValue])
-            .toStmt());
 
     bind(view, currValExpr, fieldExpr, boundProp.value, context, updateStmts,
          view.detectChangesRenderPropertiesMethod);
   });
+}
+
+function _compareToAnimationStateExpr(value: o.Expression, animationState: string): o.Expression {
+  if (animationState == EMPTY_STATE) {
+    return value.equals(o.importExpr(Identifiers.uninitialized));
+  } else if (animationState == ANY_STATE) {
+    return o.not(value.equals(o.importExpr(Identifiers.uninitialized)));
+  } else {
+    return value.equals(o.literal(animationState));
+  }
 }
 
 export function bindRenderInputs(boundProps: BoundElementPropertyAst[],

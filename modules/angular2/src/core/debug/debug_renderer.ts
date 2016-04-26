@@ -14,6 +14,10 @@ import {
   removeDebugNodeFromIndex
 } from 'angular2/src/core/debug/debug_node';
 
+import {AnimationKeyframe} from 'angular2/src/core/animation/animation_keyframe';
+import {AnimationPlayer} from 'angular2/src/core/animation/animation_player';
+import {AnimationStyles} from 'angular2/src/core/animation/animation_styles';
+
 export class DebugDomRootRenderer implements RootRenderer {
   constructor(private _delegate: RootRenderer) {}
 
@@ -138,4 +142,8 @@ export class DebugDomRenderer implements Renderer {
   }
 
   setText(renderNode: any, text: string) { this._delegate.setText(renderNode, text); }
+
+  animate(element: any, startingStyles: AnimationStyles[], keyframes: AnimationKeyframe[], duration: number, delay: number, easing: string): AnimationPlayer {
+    return this._delegate.animate(element, startingStyles, keyframes, duration, delay, easing);
+  }
 }
