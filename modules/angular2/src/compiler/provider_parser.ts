@@ -6,7 +6,7 @@ import {
   NgContentAst,
   EmbeddedTemplateAst,
   ElementAst,
-  VariableAst,
+  ReferenceAst,
   BoundEventAst,
   BoundElementPropertyAst,
   AttrAst,
@@ -69,7 +69,7 @@ export class ProviderElementContext {
 
   constructor(private _viewContext: ProviderViewContext, private _parent: ProviderElementContext,
               private _isViewRoot: boolean, private _directiveAsts: DirectiveAst[],
-              attrs: AttrAst[], vars: VariableAst[], private _sourceSpan: ParseSourceSpan) {
+              attrs: AttrAst[], refs: ReferenceAst[], private _sourceSpan: ParseSourceSpan) {
     this._attrs = {};
     attrs.forEach((attrAst) => this._attrs[attrAst.name] = attrAst.value);
     var directivesMeta = _directiveAsts.map(directiveAst => directiveAst.directive);
@@ -79,9 +79,8 @@ export class ProviderElementContext {
     var queriedTokens = new CompileTokenMap<boolean>();
     this._allProviders.values().forEach(
         (provider) => { this._addQueryReadsTo(provider.token, queriedTokens); });
-    vars.forEach((varAst) => {
-      var varToken = new CompileTokenMetadata({value: varAst.name});
-      this._addQueryReadsTo(varToken, queriedTokens);
+    refs.forEach((refAst) => {
+      this._addQueryReadsTo(new CompileTokenMetadata({value: refAst.name}), queriedTokens);
     });
     if (isPresent(queriedTokens.get(identifierToken(Identifiers.ViewContainerRef)))) {
       this._hasViewContainer = true;

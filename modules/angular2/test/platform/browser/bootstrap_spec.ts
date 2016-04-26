@@ -93,6 +93,7 @@ class _ArrayLogger {
 
 class DummyConsole implements Console {
   log(message) {}
+  warn(message) {}
 }
 
 export function main() {

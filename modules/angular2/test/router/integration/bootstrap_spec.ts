@@ -43,6 +43,7 @@ import {MockApplicationRef} from 'angular2/src/mock/mock_application_ref';
 
 class DummyConsole implements Console {
   log(message) {}
+  warn(message) {}
 }
 
 export function main() {

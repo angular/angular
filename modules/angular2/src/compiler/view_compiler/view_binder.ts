@@ -7,6 +7,7 @@ import {
   NgContentAst,
   EmbeddedTemplateAst,
   ElementAst,
+  ReferenceAst,
   VariableAst,
   BoundEventAst,
   BoundElementPropertyAst,
@@ -113,6 +114,7 @@ class ViewBinderVisitor implements TemplateAstVisitor {
     return null;
   }
 
+  visitReference(ast: ReferenceAst, ctx: any): any { return null; }
   visitVariable(ast: VariableAst, ctx: any): any { return null; }
   visitDirectiveProperty(ast: BoundDirectivePropertyAst, context: any): any { return null; }
   visitElementProperty(ast: BoundElementPropertyAst, context: any): any { return null; }

@@ -11,7 +11,7 @@ import {Observable, EventEmitter} from 'angular2/src/facade/async';
  *
  * Implements an iterable interface, therefore it can be used in both ES6
  * javascript `for (var i of items)` loops as well as in Angular templates with
- * `*ngFor="#i of myList"`.
+ * `*ngFor="let i of myList"`.
  *
  * Changes can be observed by subscribing to the changes `Observable`.
  *

@@ -36,7 +36,7 @@ class ExternalTemplateComponent {
 class MyToken {}
 
 const TEMPLATE =
-    '<div><copy-me template=\'ngFor #item of items\'>{{item.toString()}};</copy-me></div>';
+    '<div><copy-me template=\'ngFor let item of items\'>{{item.toString()}};</copy-me></div>';
 
 void main() {
   initAngularTests();

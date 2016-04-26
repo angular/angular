@@ -161,7 +161,7 @@ class PersonsDetailComponent {
     <h1>FullName Demo</h1>
     <div>
       <ul>
-  		  <li *ngFor="#person of persons">
+  		  <li *ngFor="let person of persons">
   			  <label (click)="select(person)">{{person.fullName}}</label>
   			</li>
   	 </ul>

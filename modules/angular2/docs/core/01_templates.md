@@ -433,7 +433,7 @@ Finally, we can move the `ngFor` keyword to the left hand side and prefix it wit
 
 ```
 <ul>
-  <li *ngFor="var person of people; var i=index">{{i}}. {{person}}<li>
+  <li *ngFor="let  person of people; var i=index">{{i}}. {{person}}<li>
 </ul>
 ```
 

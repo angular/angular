@@ -14,7 +14,7 @@ Removes or recreates a portion of the DOM tree based on the showSection expressi
 
 @cheatsheetItem
 syntax:
-`<li *ngFor="#item of list">`|`*ngFor`
+`<li *ngFor="let item of list">`|`*ngFor`
 description:
 Turns the li element and its contents into a template, and uses that to instantiate a view for each item in list.
 
