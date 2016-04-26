@@ -1,7 +1,7 @@
 import {COMPILER_PROVIDERS, XHR} from '@angular/compiler';
 import {CachedXHR} from './src/xhr/xhr_cache';
 import {Provider, Type, ComponentRef} from '@angular/core';
-import {CONST_EXPR, isPresent} from '@angular/facade';
+import {isPresent} from '@angular/facade';
 import {XHRImpl} from './src/xhr/xhr_impl';
 import {BROWSER_APP_COMMON_PROVIDERS, browserPlatform} from '@angular/platform-browser';
 import {reflector, ReflectiveInjector, coreLoadAndBootstrap} from '@angular/core';
@@ -9,12 +9,12 @@ import {DOM} from './platform_browser_private';
 import {ReflectionCapabilities} from './core_private';
 
 export const CACHED_TEMPLATE_PROVIDER: Array<any /*Type | Provider | any[]*/> =
-  CONST_EXPR([new Provider(XHR, {useClass: CachedXHR})]);
+  /*@ts2dart_const*/([new Provider(XHR, {useClass: CachedXHR})]);
 
 /**
  * An array of providers that should be passed into `application()` when bootstrapping a component.
  */
-export const BROWSER_APP_PROVIDERS: Array<any /*Type | Provider | any[]*/> = CONST_EXPR([
+export const BROWSER_APP_PROVIDERS: Array<any /*Type | Provider | any[]*/> = /*@ts2dart_const*/ ([
   BROWSER_APP_COMMON_PROVIDERS,
   COMPILER_PROVIDERS,
   new Provider(XHR, {useClass: XHRImpl}),

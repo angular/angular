@@ -14,7 +14,6 @@ import {
   isBlank,
   Json,
   RegExpWrapper,
-  CONST_EXPR,
   stringify,
   StringWrapper,
   isArray,
@@ -29,7 +28,8 @@ import {DOM} from './dom_adapter';
 import {camelCaseToDashCase} from './util';
 
 const NAMESPACE_URIS =
-    CONST_EXPR({'xlink': 'http://www.w3.org/1999/xlink', 'svg': 'http://www.w3.org/2000/svg'});
+    /*@ts2dart_const*/ (
+        {'xlink': 'http://www.w3.org/1999/xlink', 'svg': 'http://www.w3.org/2000/svg'});
 const TEMPLATE_COMMENT_TEXT = 'template bindings={}';
 var TEMPLATE_BINDINGS_EXP = /^template bindings=(.*)$/g;
 

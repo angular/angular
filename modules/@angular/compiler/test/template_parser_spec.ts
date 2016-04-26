@@ -12,8 +12,7 @@ import {
 } from '@angular/testing/testing_internal';
 import {provide} from '@angular/core/src/di';
 
-import {TEST_PROVIDERS} from './test_bindings';
-import {isPresent, CONST_EXPR} from '@angular/facade';
+import {isPresent} from '@angular/facade';
 import {
   TemplateParser,
   splitClasses,
@@ -52,6 +51,7 @@ import {ElementSchemaRegistry} from '@angular/compiler/src/schema/element_schema
 import {MockSchemaRegistry} from '../../testing/src/mock/schema_registry_mock';
 
 import {Unparser} from './expression_parser/unparser';
+import {TEST_PROVIDERS} from './test_bindings';
 
 var expressionUnparser = new Unparser();
 
@@ -503,7 +503,7 @@ export function main() {
         }
 
         function createProvider(
-            token: string, {multi = false, deps = CONST_EXPR([])}:
+            token: string, {multi = false, deps = /*@ts2dart_const*/ ([])}:
                                {multi?: boolean, deps?: string[]} = {}): CompileProviderMetadata {
           return new CompileProviderMetadata({
             token: createToken(token),
@@ -513,13 +513,14 @@ export function main() {
           });
         }
 
-        function createDir(selector: string, {providers = null, viewProviders = null,
-                                              deps = CONST_EXPR([]), queries = CONST_EXPR([])}: {
-          providers?: CompileProviderMetadata[],
-          viewProviders?: CompileProviderMetadata[],
-          deps?: string[],
-          queries?: string[]
-        } = {}): CompileDirectiveMetadata {
+        function createDir(selector: string,
+                           {providers = null, viewProviders = null, deps = /*@ts2dart_const*/ ([]),
+                            queries = /*@ts2dart_const*/ ([])}: {
+                             providers?: CompileProviderMetadata[],
+                             viewProviders?: CompileProviderMetadata[],
+                             deps?: string[],
+                             queries?: string[]
+                           } = {}): CompileDirectiveMetadata {
           var isComponent = !selector.startsWith('[');
           return CompileDirectiveMetadata.create({
             selector: selector,

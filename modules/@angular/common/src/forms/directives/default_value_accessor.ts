@@ -1,8 +1,8 @@
 import {Directive, ElementRef, Renderer, Self, forwardRef, Provider} from '@angular/core';
-import {isBlank, CONST_EXPR} from '@angular/facade';
+import {isBlank} from '@angular/facade';
 import {NG_VALUE_ACCESSOR, ControlValueAccessor} from './control_value_accessor';
 
-const DEFAULT_VALUE_ACCESSOR = CONST_EXPR(new Provider(
+const DEFAULT_VALUE_ACCESSOR = /*@ts2dart_const*/ (new Provider(
     NG_VALUE_ACCESSOR, {useExisting: forwardRef(() => DefaultValueAccessor), multi: true}));
 
 /**

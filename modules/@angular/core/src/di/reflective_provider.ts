@@ -2,7 +2,6 @@ import {
   Type,
   isBlank,
   isPresent,
-  CONST_EXPR,
   isArray,
   MapWrapper,
   ListWrapper
@@ -39,7 +38,7 @@ export class ReflectiveDependency {
   }
 }
 
-const _EMPTY_LIST = CONST_EXPR([]);
+const _EMPTY_LIST = /*@ts2dart_const*/ ([]);
 
 /**
  * An internal resolved representation of a {@link Provider} used by the {@link Injector}.

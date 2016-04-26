@@ -1,5 +1,5 @@
 import {StringMapWrapper} from '@angular/facade';
-import {isPresent, isBlank, RegExpWrapper, CONST_EXPR} from '@angular/facade';
+import {isPresent, isBlank, RegExpWrapper} from '@angular/facade';
 import {BaseException} from '@angular/facade';
 
 export function convertUrlParamsToArray(urlParams: {[key: string]: any}): string[] {
@@ -22,8 +22,8 @@ export function serializeParams(urlParams: {[key: string]: any}, joiner = '&'): 
  */
 export class Url {
   constructor(public path: string, public child: Url = null,
-              public auxiliary: Url[] = CONST_EXPR([]),
-              public params: {[key: string]: any} = CONST_EXPR({})) {}
+              public auxiliary: Url[] = /*@ts2dart_const*/ ([]),
+              public params: {[key: string]: any} = /*@ts2dart_const*/ ({})) {}
 
   toString(): string {
     return this.path + this._matrixParamsToString() + this._auxToString() + this._childString();
@@ -51,7 +51,7 @@ export class Url {
 }
 
 export class RootUrl extends Url {
-  constructor(path: string, child: Url = null, auxiliary: Url[] = CONST_EXPR([]),
+  constructor(path: string, child: Url = null, auxiliary: Url[] = /*@ts2dart_const*/ ([]),
               params: {[key: string]: any} = null) {
     super(path, child, auxiliary, params);
   }

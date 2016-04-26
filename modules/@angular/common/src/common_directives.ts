@@ -1,5 +1,4 @@
-import {CONST_EXPR, Type} from '@angular/facade';
-
+import {Type} from '@angular/facade';
 import {FORM_DIRECTIVES} from './forms';
 import {CORE_DIRECTIVES} from './directives';
 
@@ -46,4 +45,4 @@ import {CORE_DIRECTIVES} from './directives';
  * }
  * ```
  */
-export const COMMON_DIRECTIVES: Type[][] = CONST_EXPR([CORE_DIRECTIVES, FORM_DIRECTIVES]);
+export const COMMON_DIRECTIVES: Type[][] = /*@ts2dart_const*/ ([CORE_DIRECTIVES, FORM_DIRECTIVES]);

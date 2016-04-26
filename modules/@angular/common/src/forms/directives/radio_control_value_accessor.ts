@@ -10,8 +10,7 @@ import {
   Injector,
   Injectable
 } from '@angular/core';
-import {CONST_EXPR, isPresent} from '@angular/facade';
-import {ListWrapper} from '@angular/facade';
+import {isPresent, ListWrapper} from '@angular/facade';
 import {
   NG_VALUE_ACCESSOR,
   ControlValueAccessor
@@ -19,7 +18,7 @@ import {
 import {NgControl} from './ng_control';
 
 
-const RADIO_VALUE_ACCESSOR = CONST_EXPR(new Provider(
+const RADIO_VALUE_ACCESSOR = /*@ts2dart_const*/ (new Provider(
     NG_VALUE_ACCESSOR, {useExisting: forwardRef(() => RadioControlValueAccessor), multi: true}));
 
 

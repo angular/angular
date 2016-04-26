@@ -1,7 +1,6 @@
 import {
   isBlank,
   isPresent,
-  CONST_EXPR,
   looseIdentical
 } from '@angular/facade';
 import {ListWrapper, StringMapWrapper} from '@angular/facade';
@@ -58,7 +57,7 @@ function _flattenNestedViewRenderNodes(nodes: any[], renderNodes: any[]): any[] 
   return renderNodes;
 }
 
-const EMPTY_ARR = CONST_EXPR([]);
+const EMPTY_ARR = /*@ts2dart_const*/([]);
 
 export function ensureSlotCount(projectableNodes: any[][], expectedSlotCount: number): any[][] {
   var res;

@@ -13,7 +13,7 @@ import {
 import {wtfInit} from './core_private';
 import {COMMON_DIRECTIVES, COMMON_PIPES, FORM_PROVIDERS} from '@angular/common';
 
-import {CONST_EXPR, IS_DART} from '@angular/facade';
+import {IS_DART} from '@angular/facade';
 
 import {BrowserDomAdapter} from './src/browser/browser_adapter';
 import {BrowserGetTestability} from './src/browser/testability';
@@ -39,14 +39,14 @@ export {BrowserDomAdapter} from './src/browser/browser_adapter';
 export {enableDebugTools, disableDebugTools} from './src/browser/tools/tools';
 export {By} from './src/dom/debug/by';
 
-export const BROWSER_PLATFORM_MARKER = CONST_EXPR(new OpaqueToken('BrowserPlatformMarker'));
+export const BROWSER_PLATFORM_MARKER = /*@ts2dart_const*/(new OpaqueToken('BrowserPlatformMarker'));
 
 /**
  * A set of providers to initialize the Angular platform in a web browser.
  *
  * Used automatically by `bootstrap`, or can be passed to {@link platform}.
  */
-export const BROWSER_PROVIDERS: Array<any /*Type | Provider | any[]*/> = CONST_EXPR([
+export const BROWSER_PROVIDERS: Array<any /*Type | Provider | any[]*/> = /*@ts2dart_const*/([
   new Provider(BROWSER_PLATFORM_MARKER, {useValue: true}),
   PLATFORM_COMMON_PROVIDERS,
   new Provider(PLATFORM_INITIALIZER, {useValue: initDomAdapter, multi: true}),
@@ -67,7 +67,7 @@ function _document(): any {
  *
  * Used automatically by `bootstrap`, or can be passed to {@link PlatformRef.application}.
  */
-export const BROWSER_APP_COMMON_PROVIDERS: Array<any /*Type | Provider | any[]*/> = CONST_EXPR([
+export const BROWSER_APP_COMMON_PROVIDERS: Array<any /*Type | Provider | any[]*/> = /*@ts2dart_const*/([
   APPLICATION_COMMON_PROVIDERS,
   FORM_PROVIDERS,
   new Provider(PLATFORM_PIPES, {useValue: COMMON_PIPES, multi: true}),

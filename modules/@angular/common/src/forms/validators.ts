@@ -1,11 +1,9 @@
 import {OpaqueToken} from '@angular/core';
 
-import {isBlank, isPresent, CONST_EXPR, isString} from '@angular/facade';
+import {isBlank, isPresent, isString} from '@angular/facade';
 import {PromiseWrapper} from '@angular/facade';
 import {ObservableWrapper} from '@angular/facade';
 import {StringMapWrapper} from '@angular/facade';
-
-
 import * as modelModule from './model';
 import {ValidatorFn, AsyncValidatorFn} from './directives/validators';
 
@@ -18,7 +16,7 @@ import {ValidatorFn, AsyncValidatorFn} from './directives/validators';
  *
  * {@example core/forms/ts/ng_validators/ng_validators.ts region='ng_validators'}
  */
-export const NG_VALIDATORS: OpaqueToken = CONST_EXPR(new OpaqueToken("NgValidators"));
+export const NG_VALIDATORS: OpaqueToken = /*@ts2dart_const*/ (new OpaqueToken("NgValidators"));
 
 /**
  * Providers for asynchronous validators to be used for {@link Control}s
@@ -28,7 +26,8 @@ export const NG_VALIDATORS: OpaqueToken = CONST_EXPR(new OpaqueToken("NgValidato
  *
  * See {@link NG_VALIDATORS} for more details.
  */
-export const NG_ASYNC_VALIDATORS: OpaqueToken = CONST_EXPR(new OpaqueToken("NgAsyncValidators"));
+export const NG_ASYNC_VALIDATORS: OpaqueToken =
+    /*@ts2dart_const*/ (new OpaqueToken("NgAsyncValidators"));
 
 /**
  * Provides a set of validators used by form controls.

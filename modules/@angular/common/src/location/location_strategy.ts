@@ -1,6 +1,4 @@
 import {OpaqueToken} from '@angular/core';
-import {CONST_EXPR} from '@angular/facade';
-
 import {UrlChangeListener} from './platform_location';
 
 /**
@@ -60,4 +58,4 @@ export abstract class LocationStrategy {
  * ]);
  * ```
  */
-export const APP_BASE_HREF: OpaqueToken = CONST_EXPR(new OpaqueToken('appBaseHref'));
+export const APP_BASE_HREF: OpaqueToken = /*@ts2dart_const*/ (new OpaqueToken('appBaseHref'));

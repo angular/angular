@@ -3,7 +3,6 @@
  * @description
  * This module provides a set of common Pipes.
  */
-import {CONST_EXPR} from '@angular/facade';
 import {AsyncPipe} from './async_pipe';
 import {UpperCasePipe} from './uppercase_pipe';
 import {LowerCasePipe} from './lowercase_pipe';
@@ -22,7 +21,7 @@ import {I18nSelectPipe} from './i18n_select_pipe';
  * This collection can be used to quickly enumerate all the built-in pipes in the `pipes`
  * property of the `@Component` decorator.
  */
-export const COMMON_PIPES = CONST_EXPR([
+export const COMMON_PIPES = /*@ts2dart_const*/ ([
   AsyncPipe,
   UpperCasePipe,
   LowerCasePipe,

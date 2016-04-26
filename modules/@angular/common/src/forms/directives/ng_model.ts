@@ -8,7 +8,6 @@ import {
   Optional,
   Self
 } from '@angular/core';
-import {CONST_EXPR} from '@angular/facade';
 import {EventEmitter, ObservableWrapper} from '@angular/facade';
 
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
@@ -25,7 +24,7 @@ import {
 import {ValidatorFn, AsyncValidatorFn} from './validators';
 
 const formControlBinding =
-    CONST_EXPR(new Provider(NgControl, {useExisting: forwardRef(() => NgModel)}));
+    /*@ts2dart_const*/ (new Provider(NgControl, {useExisting: forwardRef(() => NgModel)}));
 
 /**
  * Binds a domain model to a form control.

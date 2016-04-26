@@ -4,7 +4,6 @@ import {
   isBlank,
   isPresent,
   assertionsEnabled,
-  CONST_EXPR,
   lockMode,
   isPromise
 } from '@angular/facade';
@@ -435,13 +434,17 @@ export class ApplicationRef_ extends ApplicationRef {
  * @internal
  */
 export const PLATFORM_CORE_PROVIDERS =
-    CONST_EXPR([PlatformRef_, CONST_EXPR(new Provider(PlatformRef, {useExisting: PlatformRef_}))]);
+    /*@ts2dart_const*/ ([
+      PlatformRef_,
+      /*@ts2dart_const*/ (new Provider(PlatformRef, {useExisting: PlatformRef_}))
+    ]);
 
 /**
  * @internal
  */
-export const APPLICATION_CORE_PROVIDERS = CONST_EXPR([
-  CONST_EXPR(new Provider(NgZone, {useFactory: createNgZone, deps: CONST_EXPR([])})),
+export const APPLICATION_CORE_PROVIDERS = /*@ts2dart_const*/ ([
+  /*@ts2dart_const*/ (
+      new Provider(NgZone, {useFactory: createNgZone, deps: /*@ts2dart_const*/ ([])})),
   ApplicationRef_,
-  CONST_EXPR(new Provider(ApplicationRef, {useExisting: ApplicationRef_}))
+  /*@ts2dart_const*/ (new Provider(ApplicationRef, {useExisting: ApplicationRef_}))
 ]);

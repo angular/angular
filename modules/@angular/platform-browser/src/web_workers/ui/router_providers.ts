@@ -1,16 +1,15 @@
 import {MessageBasedPlatformLocation} from './platform_location';
-import {CONST_EXPR} from '@angular/facade';
 import {
   BrowserPlatformLocation
 } from '@angular/platform-browser/src/browser/location/browser_platform_location';
 import {APP_INITIALIZER, Provider, Injector, NgZone} from '@angular/core';
 
-export const WORKER_RENDER_ROUTER = CONST_EXPR([
+export const WORKER_RENDER_ROUTER = /*@ts2dart_const*/ ([
   MessageBasedPlatformLocation,
   BrowserPlatformLocation,
-  CONST_EXPR(
-      new Provider(APP_INITIALIZER,
-                   {useFactory: initRouterListeners, multi: true, deps: CONST_EXPR([Injector])}))
+  /*@ts2dart_const*/ (new Provider(
+      APP_INITIALIZER,
+      {useFactory: initRouterListeners, multi: true, deps: /*@ts2dart_const*/ ([Injector])}))
 ]);
 
 function initRouterListeners(injector: Injector): () => void {

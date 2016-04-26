@@ -1,5 +1,4 @@
-import {Type, CONST_EXPR} from '@angular/facade';
-
+import {Type} from '@angular/core';
 import {NgControlName} from './directives/ng_control_name';
 import {NgFormControl} from './directives/ng_form_control';
 import {NgModel} from './directives/ng_model';
@@ -65,7 +64,7 @@ export {ControlValueAccessor} from './directives/control_value_accessor';
  * class MyApp {}
  * ```
  */
-export const FORM_DIRECTIVES: Type[] = CONST_EXPR([
+export const FORM_DIRECTIVES: Type[] = /*@ts2dart_const*/ ([
   NgControlName,
   NgControlGroup,
 

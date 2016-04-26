@@ -2,9 +2,6 @@ import {bootstrap} from '@angular/platform-browser';
 import {Component, Directive, Host, forwardRef, Provider, Injectable} from '@angular/core';
 import {NgIf, NgFor, FORM_DIRECTIVES} from '@angular/common';
 
-import {CONST_EXPR} from '@angular/facade';
-
-
 /**
  * You can find the Angular 1 implementation of this example here:
  * https://github.com/wardbell/ng1DataBinding

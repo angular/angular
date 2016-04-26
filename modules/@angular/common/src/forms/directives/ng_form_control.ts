@@ -10,7 +10,6 @@ import {
   Self
 } from '@angular/core';
 
-import {CONST_EXPR} from '@angular/facade';
 import {StringMapWrapper} from '@angular/facade';
 import {EventEmitter, ObservableWrapper} from '@angular/facade';
 
@@ -28,7 +27,7 @@ import {
 import {ValidatorFn, AsyncValidatorFn} from './validators';
 
 const formControlBinding =
-    CONST_EXPR(new Provider(NgControl, {useExisting: forwardRef(() => NgFormControl)}));
+    /*@ts2dart_const*/ (new Provider(NgControl, {useExisting: forwardRef(() => NgFormControl)}));
 
 /**
  * Binds an existing {@link Control} to a DOM element.

@@ -1,5 +1,5 @@
-import {provide, Provider, ComponentResolver} from '@angular/core';
-import {assertionsEnabled, Type, CONST_EXPR} from '@angular/facade';
+import {provide, Provider, ComponentResolver, Type} from '@angular/core';
+import {assertionsEnabled} from '@angular/facade';
 
 export * from './template_ast';
 export {TEMPLATE_TRANSFORMS} from './template_parser';
@@ -39,7 +39,7 @@ function _createCompilerConfig() {
  * A set of providers that provide `RuntimeCompiler` and its dependencies to use for
  * template compilation.
  */
-export const COMPILER_PROVIDERS: Array<Type | Provider | any[]> = CONST_EXPR([
+export const COMPILER_PROVIDERS: Array<Type | Provider | any[]> = /*@ts2dart_const*/ ([
   Lexer,
   Parser,
   HtmlParser,

@@ -1,10 +1,10 @@
 import {DebugNode, getDebugNode, DebugDomRootRenderer, Provider, RootRenderer, NgZone, ApplicationRef} from '@angular/core';
-import {CONST_EXPR, assertionsEnabled} from '@angular/facade';
+import {assertionsEnabled} from '@angular/facade';
 import {DOM} from '../dom_adapter';
 import {DomRootRenderer} from '../dom_renderer';
 
 
-const CORE_TOKENS = CONST_EXPR({'ApplicationRef': ApplicationRef, 'NgZone': NgZone});
+const CORE_TOKENS = /*@ts2dart_const*/ ({'ApplicationRef': ApplicationRef, 'NgZone': NgZone});
 
 const INSPECT_GLOBAL_NAME = 'ng.probe';
 const CORE_TOKENS_GLOBAL_NAME = 'ng.coreTokens';
@@ -34,10 +34,10 @@ function _createRootRenderer(rootRenderer) {
 /**
  * Providers which support debugging Angular applications (e.g. via `ng.probe`).
  */
-export const ELEMENT_PROBE_PROVIDERS: any[] = CONST_EXPR([
+export const ELEMENT_PROBE_PROVIDERS: any[] = /*@ts2dart_const*/ ([
   new Provider(RootRenderer,
                {useFactory: _createConditionalRootRenderer, deps: [DomRootRenderer]})
 ]);
 
-export const ELEMENT_PROBE_PROVIDERS_PROD_MODE: any[] = CONST_EXPR(
+export const ELEMENT_PROBE_PROVIDERS_PROD_MODE: any[] = /*@ts2dart_const*/ (
     [new Provider(RootRenderer, {useFactory: _createRootRenderer, deps: [DomRootRenderer]})]);

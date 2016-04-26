@@ -13,8 +13,6 @@ import {
 } from '@angular/testing/testing_internal';
 
 import {Injector, provide, ReflectiveInjector} from '@angular/core';
-import {CONST_EXPR} from '@angular/facade';
-
 import {Location, LocationStrategy, APP_BASE_HREF} from '@angular/common';
 import {MockLocationStrategy} from '@angular/testing';
 
@@ -23,7 +21,8 @@ export function main() {
 
     var locationStrategy, location;
 
-    function makeLocation(baseHref: string = '/my/app', provider: any = CONST_EXPR([])): Location {
+    function makeLocation(baseHref: string = '/my/app',
+                          provider: any = /*@ts2dart_const*/ ([])): Location {
       locationStrategy = new MockLocationStrategy();
       locationStrategy.internalBaseHref = baseHref;
       let injector = ReflectiveInjector.resolveAndCreate(

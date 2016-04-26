@@ -39,7 +39,6 @@ import {Provider, forwardRef, Input} from '@angular/core';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {ListWrapper} from '@angular/facade';
 import {ObservableWrapper, TimerWrapper} from '@angular/facade';
-import {CONST_EXPR} from '@angular/facade';
 import {PromiseWrapper} from '@angular/facade';
 
 export function main() {

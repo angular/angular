@@ -1,4 +1,4 @@
-import {CONST_EXPR, IS_DART} from '@angular/facade';
+import {IS_DART} from '@angular/facade';
 import {MessageBus} from '../web_workers/shared/message_bus';
 import {NgZone} from '@angular/core/src/zone/ng_zone';
 import {
@@ -42,18 +42,18 @@ import {HAMMER_GESTURE_CONFIG, HammerGestureConfig} from '../dom/events/hammer_g
 import {EventManager, EVENT_MANAGER_PLUGINS} from '../dom/events/event_manager';
 // TODO change these imports once dom_adapter is moved out of core
 
-export const WORKER_SCRIPT: OpaqueToken = CONST_EXPR(new OpaqueToken("WebWorkerScript"));
+export const WORKER_SCRIPT: OpaqueToken = /*@ts2dart_const*/ (new OpaqueToken("WebWorkerScript"));
 
 // Message based Worker classes that listen on the MessageBus
 export const WORKER_RENDER_MESSAGING_PROVIDERS: Array<any /*Type | Provider | any[]*/> =
-    CONST_EXPR([MessageBasedRenderer]);
+    /*@ts2dart_const*/ ([MessageBasedRenderer]);
 
 export const WORKER_RENDER_PLATFORM_MARKER =
-    CONST_EXPR(new OpaqueToken('WorkerRenderPlatformMarker'));
+    /*@ts2dart_const*/ (new OpaqueToken('WorkerRenderPlatformMarker'));
 
-export const WORKER_RENDER_PLATFORM: Array<any /*Type | Provider | any[]*/> = CONST_EXPR([
+export const WORKER_RENDER_PLATFORM: Array<any /*Type | Provider | any[]*/> = /*@ts2dart_const*/ ([
   PLATFORM_COMMON_PROVIDERS,
-  CONST_EXPR(new Provider(WORKER_RENDER_PLATFORM_MARKER, {useValue: true})),
+  /*@ts2dart_const*/ (new Provider(WORKER_RENDER_PLATFORM_MARKER, {useValue: true})),
   new Provider(PLATFORM_INITIALIZER, {useValue: initWebWorkerRenderPlatform, multi: true})
 ]);
 
@@ -62,33 +62,34 @@ export const WORKER_RENDER_PLATFORM: Array<any /*Type | Provider | any[]*/> = CO
  * include these providers when setting up the render thread.
  */
 export const WORKER_RENDER_ROUTER: Array<any /*Type | Provider | any[]*/> =
-    CONST_EXPR([BrowserPlatformLocation]);
+    /*@ts2dart_const*/ ([BrowserPlatformLocation]);
 
-export const WORKER_RENDER_APPLICATION_COMMON: Array<any /*Type | Provider | any[]*/> = CONST_EXPR([
-  APPLICATION_COMMON_PROVIDERS,
-  WORKER_RENDER_MESSAGING_PROVIDERS,
-  new Provider(ExceptionHandler, {useFactory: _exceptionHandler, deps: []}),
-  new Provider(DOCUMENT, {useFactory: _document, deps: []}),
-  // TODO(jteplitz602): Investigate if we definitely need EVENT_MANAGER on the render thread
-  // #5298
-  new Provider(EVENT_MANAGER_PLUGINS, {useClass: DomEventsPlugin, multi: true}),
-  new Provider(EVENT_MANAGER_PLUGINS, {useClass: KeyEventsPlugin, multi: true}),
-  new Provider(EVENT_MANAGER_PLUGINS, {useClass: HammerGesturesPlugin, multi: true}),
-  new Provider(HAMMER_GESTURE_CONFIG, {useClass: HammerGestureConfig}),
-  new Provider(DomRootRenderer, {useClass: DomRootRenderer_}),
-  new Provider(RootRenderer, {useExisting: DomRootRenderer}),
-  new Provider(SharedStylesHost, {useExisting: DomSharedStylesHost}),
-  new Provider(ServiceMessageBrokerFactory, {useClass: ServiceMessageBrokerFactory_}),
-  new Provider(ClientMessageBrokerFactory, {useClass: ClientMessageBrokerFactory_}),
-  Serializer,
-  new Provider(ON_WEB_WORKER, {useValue: false}),
-  RenderStore,
-  DomSharedStylesHost,
-  Testability,
-  BrowserDetails,
-  AnimationBuilder,
-  EventManager
-]);
+export const WORKER_RENDER_APPLICATION_COMMON: Array<any /*Type | Provider | any[]*/> =
+    /*@ts2dart_const*/ ([
+      APPLICATION_COMMON_PROVIDERS,
+      WORKER_RENDER_MESSAGING_PROVIDERS,
+      new Provider(ExceptionHandler, {useFactory: _exceptionHandler, deps: []}),
+      new Provider(DOCUMENT, {useFactory: _document, deps: []}),
+      // TODO(jteplitz602): Investigate if we definitely need EVENT_MANAGER on the render thread
+      // #5298
+      new Provider(EVENT_MANAGER_PLUGINS, {useClass: DomEventsPlugin, multi: true}),
+      new Provider(EVENT_MANAGER_PLUGINS, {useClass: KeyEventsPlugin, multi: true}),
+      new Provider(EVENT_MANAGER_PLUGINS, {useClass: HammerGesturesPlugin, multi: true}),
+      new Provider(HAMMER_GESTURE_CONFIG, {useClass: HammerGestureConfig}),
+      new Provider(DomRootRenderer, {useClass: DomRootRenderer_}),
+      new Provider(RootRenderer, {useExisting: DomRootRenderer}),
+      new Provider(SharedStylesHost, {useExisting: DomSharedStylesHost}),
+      new Provider(ServiceMessageBrokerFactory, {useClass: ServiceMessageBrokerFactory_}),
+      new Provider(ClientMessageBrokerFactory, {useClass: ClientMessageBrokerFactory_}),
+      Serializer,
+      new Provider(ON_WEB_WORKER, {useValue: false}),
+      RenderStore,
+      DomSharedStylesHost,
+      Testability,
+      BrowserDetails,
+      AnimationBuilder,
+      EventManager
+    ]);
 
 export function initializeGenericWorkerRenderer(injector: Injector) {
   var bus = injector.get(MessageBus);

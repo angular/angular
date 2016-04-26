@@ -1,5 +1,5 @@
 import {Map, MapWrapper} from '@angular/facade';
-import {CONST, CONST_EXPR, scheduleMicroTask} from '@angular/facade';
+import {CONST, scheduleMicroTask} from '@angular/facade';
 import {BaseException} from '@angular/facade';
 import {NgZone} from '../zone/ng_zone';
 import {ObservableWrapper} from '@angular/facade';
@@ -150,4 +150,4 @@ export function setTestabilityGetter(getter: GetTestability): void {
   _testabilityGetter = getter;
 }
 
-var _testabilityGetter: GetTestability = CONST_EXPR(new _NoopGetTestability());
+var _testabilityGetter: GetTestability = /*@ts2dart_const*/ (new _NoopGetTestability());

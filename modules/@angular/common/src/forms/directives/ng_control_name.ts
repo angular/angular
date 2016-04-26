@@ -13,7 +13,6 @@ import {
   Self
 } from '@angular/core';
 
-import {CONST_EXPR} from '@angular/facade';
 import {EventEmitter, ObservableWrapper} from '@angular/facade';
 
 import {ControlContainer} from './control_container';
@@ -32,7 +31,7 @@ import {ValidatorFn, AsyncValidatorFn} from './validators';
 
 
 const controlNameBinding =
-    CONST_EXPR(new Provider(NgControl, {useExisting: forwardRef(() => NgControlName)}));
+    /*@ts2dart_const*/ (new Provider(NgControl, {useExisting: forwardRef(() => NgControlName)}));
 
 /**
  * Creates and binds a control with a specified name to a DOM element.

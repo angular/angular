@@ -36,9 +36,6 @@ import {
 } from '@angular/platform-browser';
 import {DomEventsPlugin} from '@angular/platform-browser/src/dom/events/dom_events';
 import {LocationStrategy} from '@angular/common';
-
-import {CONST_EXPR} from '@angular/facade';
-
 import {Log} from '@angular/testing/src/utils';
 
 function initServerTests() {
@@ -49,10 +46,11 @@ function initServerTests() {
 /**
  * Default platform providers for testing.
  */
-export const TEST_SERVER_PLATFORM_PROVIDERS: Array<any /*Type | Provider | any[]*/> = CONST_EXPR([
-  PLATFORM_COMMON_PROVIDERS,
-  new Provider(PLATFORM_INITIALIZER, {useValue: initServerTests, multi: true})
-]);
+export const TEST_SERVER_PLATFORM_PROVIDERS: Array<any /*Type | Provider | any[]*/> =
+    /*@ts2dart_const*/ ([
+      PLATFORM_COMMON_PROVIDERS,
+      new Provider(PLATFORM_INITIALIZER, {useValue: initServerTests, multi: true})
+    ]);
 
 function appDoc() {
   try {
@@ -66,7 +64,7 @@ function appDoc() {
  * Default application providers for testing.
  */
 export const TEST_SERVER_APPLICATION_PROVIDERS: Array<any /*Type | Provider | any[]*/> =
-    CONST_EXPR([
+    /*@ts2dart_const*/ ([
       // TODO(julie): when angular2/platform/server is available, use that instead of making our own
       // list here.
       APPLICATION_COMMON_PROVIDERS,

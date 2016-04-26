@@ -3,7 +3,6 @@ import {Injectable, Provider, provide} from '@angular/core';
 import {
   StringWrapper,
   RegExpWrapper,
-  CONST_EXPR,
   isBlank,
   isPresent
 } from '@angular/facade';
@@ -29,7 +28,7 @@ var TEMPLATE_SELECTOR_REGEXP = /^(\S+)/g;
 var SPECIAL_PREFIXES_REGEXP = /^(class|style|attr)\./ig;
 var INTERPOLATION_REGEXP = /\{\{.*?\}\}/g;
 
-const SPECIAL_CASES = CONST_EXPR([
+const SPECIAL_CASES = /*@ts2dart_const*/ ([
   'ng-non-bindable',
   'ng-default-control',
   'ng-no-form',

@@ -17,8 +17,9 @@ import {
   fakeAsync,
   tick
 } from '@angular/testing/testing_internal';
-import {isBlank, isPresent, stringify, Type, CONST_EXPR} from '@angular/facade';
+import {isBlank} from '@angular/facade';
 import {
+  Type,
   ViewContainerRef,
   TemplateRef,
   ElementRef,
@@ -33,23 +34,18 @@ import {
   Attribute,
   ViewMetadata,
   provide,
-  Injector,
-  Provider,
   Optional,
   Inject,
-  Injectable,
   Self,
-  SkipSelf,
   InjectMetadata,
   Pipe,
   Host,
-  HostMetadata,
   SkipSelfMetadata
 } from '@angular/core';
 import {NgIf} from '@angular/common';
 import {DOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
-const ALL_DIRECTIVES = CONST_EXPR([
+const ALL_DIRECTIVES = /*@ts2dart_const*/ ([
   forwardRef(() => SimpleDirective),
   forwardRef(() => CycleDirective),
   forwardRef(() => SimpleComponent),
@@ -83,7 +79,7 @@ const ALL_DIRECTIVES = CONST_EXPR([
   NgIf
 ]);
 
-const ALL_PIPES = CONST_EXPR([
+const ALL_PIPES = /*@ts2dart_const*/ ([
   forwardRef(() => PipeNeedsChangeDetectorRef),
   forwardRef(() => PipeNeedsService),
   forwardRef(() => PurePipe),

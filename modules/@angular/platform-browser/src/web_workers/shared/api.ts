@@ -1,4 +1,3 @@
-import {CONST_EXPR} from '@angular/facade';
 import {OpaqueToken} from '@angular/core/src/di';
 
-export const ON_WEB_WORKER = CONST_EXPR(new OpaqueToken('WebWorker.onWebWorker'));
+export const ON_WEB_WORKER = /*@ts2dart_const*/(new OpaqueToken('WebWorker.onWebWorker'));

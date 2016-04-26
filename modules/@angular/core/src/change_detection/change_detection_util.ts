@@ -1,11 +1,11 @@
-import {CONST_EXPR, looseIdentical, isPrimitive} from '@angular/facade';
+import {looseIdentical, isPrimitive} from '@angular/facade';
 import {
   isListLikeIterable,
   areIterablesEqual
 } from '@angular/facade';
 
 export {looseIdentical} from '@angular/facade';
-export var uninitialized: Object = CONST_EXPR<Object>(new Object());
+export var uninitialized: Object = /*@ts2dart_const*/<Object>(new Object());
 
 export function devModeEqual(a: any, b: any): boolean {
   if (isListLikeIterable(a) && isListLikeIterable(b)) {

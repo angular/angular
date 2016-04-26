@@ -4,9 +4,7 @@ import {
   ObservableWrapper,
   EventEmitter,
 } from '@angular/facade';
-import {ListWrapper} from '@angular/facade';
-import {isPresent, CONST_EXPR} from '@angular/facade';
-
+import {ListWrapper, isPresent} from '@angular/facade';
 import {NgControl} from './ng_control';
 import {Form} from './form_interface';
 import {NgControlGroup} from './ng_control_group';
@@ -16,7 +14,7 @@ import {setUpControl, setUpControlGroup, composeValidators, composeAsyncValidato
 import {NG_VALIDATORS, NG_ASYNC_VALIDATORS} from '../validators';
 
 const formDirectiveProvider =
-    CONST_EXPR(new Provider(ControlContainer, {useExisting: forwardRef(() => NgForm)}));
+    /*@ts2dart_const*/ (new Provider(ControlContainer, {useExisting: forwardRef(() => NgForm)}));
 
 /**
  * If `NgForm` is bound in a component, `<form>` elements in that component will be

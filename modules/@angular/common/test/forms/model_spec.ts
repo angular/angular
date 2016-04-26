@@ -14,12 +14,12 @@ import {
   inject
 } from '@angular/testing/testing_internal';
 import {ControlGroup, Control, ControlArray, Validators} from '@angular/common';
-import {IS_DART, isPresent, CONST_EXPR} from '@angular/facade';
+import {IS_DART, isPresent} from '@angular/facade';
 import {PromiseWrapper} from '@angular/facade';
 import {TimerWrapper, ObservableWrapper, EventEmitter} from '@angular/facade';
 
 export function main() {
-  function asyncValidator(expected, timeouts = CONST_EXPR({})) {
+  function asyncValidator(expected, timeouts = /*@ts2dart_const*/ ({})) {
     return (c) => {
       var completer = PromiseWrapper.completer();
       var t = isPresent(timeouts[c.value]) ? timeouts[c.value] : 0;

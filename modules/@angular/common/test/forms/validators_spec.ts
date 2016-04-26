@@ -14,7 +14,6 @@ import {
 import {ControlGroup, Control, Validators, AbstractControl, ControlArray} from '@angular/common';
 import {PromiseWrapper} from '@angular/facade';
 import {EventEmitter, ObservableWrapper, TimerWrapper} from '@angular/facade';
-import {CONST_EXPR} from '@angular/facade';
 
 export function main() {
   function validator(key: string, error: any) {

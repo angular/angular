@@ -11,7 +11,6 @@ import {
   StringWrapper,
   Math,
   getTypeNameForDebugging,
-  CONST_EXPR
 } from '@angular/facade';
 import {BaseException} from '@angular/facade';
 import {Injectable, Inject, OpaqueToken, reflector} from '@angular/core';
@@ -67,7 +66,7 @@ var _resolveToNull = PromiseWrapper.resolve<Instruction>(null);
  * ```
  */
 export const ROUTER_PRIMARY_COMPONENT: OpaqueToken =
-    CONST_EXPR(new OpaqueToken('RouterPrimaryComponent'));
+    /*@ts2dart_const*/ (new OpaqueToken('RouterPrimaryComponent'));
 
 
 /**

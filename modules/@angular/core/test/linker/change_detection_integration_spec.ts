@@ -16,7 +16,6 @@ import {
 } from '@angular/testing/testing_internal';
 
 import {
-  CONST_EXPR,
   isPresent,
   isBlank,
   isNumber,
@@ -1038,7 +1037,7 @@ export function main() {
   });
 }
 
-const ALL_DIRECTIVES = CONST_EXPR([
+const ALL_DIRECTIVES = /*@ts2dart_const*/ ([
   forwardRef(() => TestDirective),
   forwardRef(() => TestComponent),
   forwardRef(() => AnotherComponent),
@@ -1048,7 +1047,7 @@ const ALL_DIRECTIVES = CONST_EXPR([
   forwardRef(() => PushComp)
 ]);
 
-const ALL_PIPES = CONST_EXPR([
+const ALL_PIPES = /*@ts2dart_const*/ ([
   forwardRef(() => CountingPipe),
   forwardRef(() => CountingImpurePipe),
   forwardRef(() => MultiArgPipe),

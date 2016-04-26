@@ -19,10 +19,8 @@ import {XHRImpl} from '../platform-browser-dynamic/src/xhr/xhr_impl';
 import {XHR} from '@angular/compiler';
 import {TestComponentBuilder} from '@angular/testing/src/test_component_builder';
 import {BrowserDetection} from '@angular/testing/src/utils';
-import {CONST_EXPR} from '@angular/facade';
 import {Log} from '@angular/testing/src/utils';
 import {ELEMENT_PROBE_PROVIDERS} from '@angular/platform-browser/src/dom/debug/ng_probe';
-
 function initBrowserTests() {
   BrowserDomAdapter.makeCurrent();
   BrowserDetection.setup();
@@ -32,13 +30,13 @@ function initBrowserTests() {
  * Default platform providers for testing without a compiler.
  */
 export const TEST_BROWSER_STATIC_PLATFORM_PROVIDERS: Array<any /*Type | Provider | any[]*/> =
-    CONST_EXPR([
+    /*@ts2dart_const*/ ([
       PLATFORM_COMMON_PROVIDERS,
       new Provider(PLATFORM_INITIALIZER, {useValue: initBrowserTests, multi: true})
     ]);
 
 export const ADDITIONAL_TEST_BROWSER_PROVIDERS: Array<any /*Type | Provider | any[]*/> =
-    CONST_EXPR([
+    /*@ts2dart_const*/ ([
       new Provider(APP_ID, {useValue: 'a'}),
       ELEMENT_PROBE_PROVIDERS,
       new Provider(DirectiveResolver, {useClass: MockDirectiveResolver}),
@@ -54,7 +52,7 @@ export const ADDITIONAL_TEST_BROWSER_PROVIDERS: Array<any /*Type | Provider | an
  * Default application providers for testing without a compiler.
  */
 export const TEST_BROWSER_STATIC_APPLICATION_PROVIDERS: Array<any /*Type | Provider | any[]*/> =
-    CONST_EXPR([
+    /*@ts2dart_const*/ ([
       BROWSER_APP_COMMON_PROVIDERS,
       new Provider(XHR, {useClass: XHRImpl}),
       ADDITIONAL_TEST_BROWSER_PROVIDERS
