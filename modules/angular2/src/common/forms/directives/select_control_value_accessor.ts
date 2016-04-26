@@ -11,7 +11,6 @@ import {
 } from 'angular2/core';
 import {NG_VALUE_ACCESSOR, ControlValueAccessor} from './control_value_accessor';
 import {
-  CONST_EXPR,
   StringWrapper,
   isPrimitive,
   isPresent,
@@ -21,8 +20,8 @@ import {
 
 import {MapWrapper} from 'angular2/src/facade/collection';
 
-export const SELECT_VALUE_ACCESSOR = CONST_EXPR(new Provider(
-    NG_VALUE_ACCESSOR, {useExisting: forwardRef(() => SelectControlValueAccessor), multi: true}));
+export const SELECT_VALUE_ACCESSOR = /*@ts2dart_const*/ new Provider(
+    NG_VALUE_ACCESSOR, {useExisting: forwardRef(( => SelectControlValueAccessor), multi: true}));
 
 function _buildValueString(id: string, value: any): string {
   if (isBlank(id)) return `${value}`;

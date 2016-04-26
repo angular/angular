@@ -1,4 +1,4 @@
-import {CONST_EXPR, isBlank} from 'angular2/src/facade/lang';
+import {isBlank} from 'angular2/src/facade/lang';
 import {ListWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
 import {BaseException} from 'angular2/src/facade/exceptions';
 import {ObservableWrapper, EventEmitter} from 'angular2/src/facade/async';
@@ -21,7 +21,8 @@ import {setUpControl, setUpControlGroup, composeValidators, composeAsyncValidato
 import {Validators, NG_VALIDATORS, NG_ASYNC_VALIDATORS} from '../validators';
 
 export const formDirectiveProvider =
-    CONST_EXPR(new Provider(ControlContainer, {useExisting: forwardRef(() => NgFormModel)}));
+    /*@ts2dart_const*/
+    new Provider(ControlContainer, {useExisting: forwardRef(() => NgFormModel)});
 
 /**
  * Binds an existing control group to a DOM element.

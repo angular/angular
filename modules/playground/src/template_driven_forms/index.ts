@@ -11,7 +11,7 @@ import {
   NgForm
 } from 'angular2/common';
 
-import {RegExpWrapper, print, isPresent, CONST_EXPR} from 'angular2/src/facade/lang';
+import {RegExpWrapper, print, isPresent} from 'angular2/src/facade/lang';
 
 /**
  * A domain model we are binding the form controls to.

@@ -1,8 +1,8 @@
 import {Directive, Host, ViewContainerRef, TemplateRef} from 'angular2/core';
-import {isPresent, isBlank, normalizeBlank, CONST_EXPR} from 'angular2/src/facade/lang';
+import {isPresent, isBlank, normalizeBlank} from 'angular2/src/facade/lang';
 import {ListWrapper, Map} from 'angular2/src/facade/collection';
 
-const _WHEN_DEFAULT = CONST_EXPR(new Object());
+const _WHEN_DEFAULT = /*@ts2dart_const*/ new Object();
 
 export class SwitchView {
   constructor(private _viewContainerRef: ViewContainerRef,

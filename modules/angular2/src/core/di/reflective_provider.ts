@@ -1,12 +1,4 @@
-import {
-  Type,
-  isBlank,
-  isPresent,
-  CONST,
-  CONST_EXPR,
-  isArray,
-  isType
-} from 'angular2/src/facade/lang';
+import {Type, isBlank, isPresent, CONST, isArray, isType} from 'angular2/src/facade/lang';
 import {MapWrapper, ListWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
 import {reflector} from 'angular2/src/core/reflection/reflection';
 import {ReflectiveKey} from './reflective_key';
@@ -41,7 +33,7 @@ export class ReflectiveDependency {
   }
 }
 
-const _EMPTY_LIST = CONST_EXPR([]);
+const _EMPTY_LIST = /*@ts2dart_const*/[];
 
 /**
  * An internal resolved representation of a {@link Provider} used by the {@link Injector}.

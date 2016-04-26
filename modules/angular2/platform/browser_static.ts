@@ -33,7 +33,7 @@ import {
  * have been precompiled offline.
  */
 export const BROWSER_APP_PROVIDERS: Array<any /*Type | Provider | any[]*/> =
-    BROWSER_APP_COMMON_PROVIDERS;
+    /*@ts2dart_const*/ BROWSER_APP_COMMON_PROVIDERS;
 
 export function browserStaticPlatform(): PlatformRef {
   if (isBlank(getPlatform())) {

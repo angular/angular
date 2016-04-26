@@ -1,4 +1,4 @@
-import {Type, CONST_EXPR} from 'angular2/src/facade/lang';
+import {Type} from 'angular2/src/facade/lang';
 import {NgControlName} from './directives/ng_control_name';
 import {NgFormControl} from './directives/ng_form_control';
 import {NgModel} from './directives/ng_model';
@@ -64,7 +64,7 @@ export {ControlValueAccessor} from './directives/control_value_accessor';
  * class MyApp {}
  * ```
  */
-export const FORM_DIRECTIVES: Type[] = CONST_EXPR([
+export const FORM_DIRECTIVES: Type[] = /*@ts2dart_const*/[
   NgControlName,
   NgControlGroup,
 
@@ -85,4 +85,4 @@ export const FORM_DIRECTIVES: Type[] = CONST_EXPR([
   MinLengthValidator,
   MaxLengthValidator,
   PatternValidator
-]);
+];

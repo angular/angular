@@ -1,5 +1,5 @@
 import {Map, MapWrapper, StringMapWrapper, ListWrapper} from 'angular2/src/facade/collection';
-import {isPresent, isBlank, normalizeBlank, Type, CONST_EXPR} from 'angular2/src/facade/lang';
+import {isPresent, isBlank, normalizeBlank, Type} from 'angular2/src/facade/lang';
 import {PromiseWrapper} from 'angular2/src/facade/async';
 
 
@@ -74,7 +74,7 @@ export class RouteParams {
  * ```
  */
 export class RouteData {
-  constructor(public data: {[key: string]: any} = CONST_EXPR({})) {}
+  constructor(public data: {[key: string]: any} = /*@ts2dart_const*/ {}) {}
 
   get(key: string): any { return normalizeBlank(StringMapWrapper.get(this.data, key)); }
 }
@@ -243,7 +243,7 @@ export class DefaultInstruction extends ResolvedInstruction {
  */
 export class UnresolvedInstruction extends Instruction {
   constructor(private _resolver: () => Promise<Instruction>, private _urlPath: string = '',
-              private _urlParams: string[] = CONST_EXPR([])) {
+              private _urlParams: string[] = /*@ts2dart_const*/[]) {
     super(null, null, {});
   }
 

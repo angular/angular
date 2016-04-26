@@ -5,7 +5,7 @@ import {
   PromiseCompleter
 } from 'angular2/src/facade/async';
 import {StringMapWrapper, ListWrapper} from 'angular2/src/facade/collection';
-import {isPresent, isBlank, CONST_EXPR} from 'angular2/src/facade/lang';
+import {isPresent, isBlank} from 'angular2/src/facade/lang';
 import {Directive, forwardRef, Provider, Optional, Inject, Self} from 'angular2/core';
 import {NgControl} from './ng_control';
 import {Form} from './form_interface';
@@ -15,8 +15,8 @@ import {AbstractControl, ControlGroup, Control} from '../model';
 import {setUpControl, setUpControlGroup, composeValidators, composeAsyncValidators} from './shared';
 import {Validators, NG_VALIDATORS, NG_ASYNC_VALIDATORS} from '../validators';
 
-export const formDirectiveProvider =
-    CONST_EXPR(new Provider(ControlContainer, {useExisting: forwardRef(() => NgForm)}));
+const formDirectiveProvider =
+    /*@ts2dart_const*/ new Provider(ControlContainer, {useExisting: forwardRef(() => NgForm)});
 
 /**
  * If `NgForm` is bound in a component, `<form>` elements in that component will be

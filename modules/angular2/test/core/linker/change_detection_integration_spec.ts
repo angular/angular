@@ -17,7 +17,6 @@ import {
 
 import {
   IS_DART,
-  CONST_EXPR,
   Type,
   isPresent,
   isBlank,
@@ -1072,8 +1071,8 @@ export function main() {
   });
 }
 
-const ALL_DIRECTIVES = CONST_EXPR([
-  forwardRef(() => TestDirective),
+const ALL_DIRECTIVES = /*@ts2dart_const*/ [
+  forwardRef(( => TestDirective),
   forwardRef(() => TestComponent),
   forwardRef(() => AnotherComponent),
   forwardRef(() => TestLocals),
@@ -1085,8 +1084,8 @@ const ALL_DIRECTIVES = CONST_EXPR([
   forwardRef(() => OrderCheckDirective1),
 ]);
 
-const ALL_PIPES = CONST_EXPR([
-  forwardRef(() => CountingPipe),
+const ALL_PIPES = /*@ts2dart_const*/ [
+  forwardRef(( => CountingPipe),
   forwardRef(() => CountingImpurePipe),
   forwardRef(() => MultiArgPipe),
   forwardRef(() => PipeWithOnDestroy),

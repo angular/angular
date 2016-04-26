@@ -12,8 +12,8 @@ import {Injectable} from 'angular2/src/core/di';
 import {isPresent} from 'angular2/src/facade/lang';
 
 const COMPONENT_VARIABLE = '%COMP%';
-const HOST_ATTR = `_nghost-${COMPONENT_VARIABLE}`;
-const CONTENT_ATTR = `_ngcontent-${COMPONENT_VARIABLE}`;
+const HOST_ATTR = /*@ts2dart_const*/ `_nghost-${COMPONENT_VARIABLE}`;
+const CONTENT_ATTR = /*@ts2dart_const*/ `_ngcontent-${COMPONENT_VARIABLE}`;
 
 export class StylesCompileDependency {
   constructor(public sourceUrl: string, public isShimmed: boolean,

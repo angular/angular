@@ -1,10 +1,9 @@
 import {Directive, Renderer, ElementRef, Self, forwardRef, Provider} from 'angular2/core';
 
 import {NG_VALUE_ACCESSOR, ControlValueAccessor} from './control_value_accessor';
-import {CONST_EXPR} from 'angular2/src/facade/lang';
 
-export const CHECKBOX_VALUE_ACCESSOR = CONST_EXPR(new Provider(
-    NG_VALUE_ACCESSOR, {useExisting: forwardRef(() => CheckboxControlValueAccessor), multi: true}));
+export const CHECKBOX_VALUE_ACCESSOR = /*@ts2dart_const*/ new Provider(
+    NG_VALUE_ACCESSOR, {useExisting: forwardRef(() => CheckboxControlValueAccessor), multi: true});
 
 /**
  * The accessor for writing a value and listening to changes on a checkbox input element.

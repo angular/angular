@@ -10,7 +10,6 @@ import {
   Provider,
   Self
 } from 'angular2/core';
-import {CONST_EXPR} from 'angular2/src/facade/lang';
 
 import {ControlContainer} from './control_container';
 import {controlPath, composeValidators, composeAsyncValidators} from './shared';
@@ -20,7 +19,8 @@ import {NG_VALIDATORS, NG_ASYNC_VALIDATORS} from '../validators';
 import {AsyncValidatorFn, ValidatorFn} from './validators';
 
 export const controlGroupProvider =
-    CONST_EXPR(new Provider(ControlContainer, {useExisting: forwardRef(() => NgControlGroup)}));
+    /*@ts2dart_const*/
+    new Provider(ControlContainer, {useExisting: forwardRef(() => NgControlGroup)});
 
 /**
  * Creates and binds a control group to a DOM element.

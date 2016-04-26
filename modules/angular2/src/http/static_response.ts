@@ -1,5 +1,5 @@
 import {ResponseType} from './enums';
-import {CONST_EXPR, isString, isPresent, Json} from 'angular2/src/facade/lang';
+import {isString, isPresent, Json} from 'angular2/src/facade/lang';
 import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
 import {Headers} from './headers';
 import {ResponseOptions} from './base_response_options';

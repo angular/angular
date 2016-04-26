@@ -1,4 +1,3 @@
-import {CONST_EXPR} from 'angular2/src/facade/lang';
 import {EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
 import {
   OnChanges,
@@ -24,7 +23,7 @@ import {
 import {ValidatorFn, AsyncValidatorFn} from './validators';
 
 export const formControlBinding =
-    CONST_EXPR(new Provider(NgControl, {useExisting: forwardRef(() => NgModel)}));
+    /*@ts2dart_const*/ new Provider(NgControl, {useExisting: forwardRef(() => NgModel)});
 
 /**
  * Binds a domain model to a form control.

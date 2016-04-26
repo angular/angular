@@ -12,7 +12,6 @@ import {
 } from 'angular2/testing_internal';
 
 import {Injector, provide} from 'angular2/core';
-import {CONST_EXPR} from 'angular2/src/facade/lang';
 
 import {parseRouterLinkExpression} from 'angular2/src/router/directives/router_link_transform';
 import {Unparser} from '../../compiler/expression_parser/unparser';

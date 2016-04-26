@@ -1,5 +1,5 @@
 import {forwardRef, Provider, Attribute, Directive} from 'angular2/core';
-import {CONST_EXPR, NumberWrapper} from 'angular2/src/facade/lang';
+import {NumberWrapper} from 'angular2/src/facade/lang';
 import {Validators, NG_VALIDATORS} from '../validators';
 import {AbstractControl} from '../model';
 import * as modelModule from '../model';
@@ -25,10 +25,10 @@ import * as modelModule from '../model';
  */
 export interface Validator { validate(c: modelModule.AbstractControl): {[key: string]: any}; }
 
-const REQUIRED = /*@ts2dart_const*/(Validators.required);
+const REQUIRED = /*@ts2dart_const*/ Validators.required;
 
 export const REQUIRED_VALIDATOR =
-    CONST_EXPR(new Provider(NG_VALIDATORS, {useValue: REQUIRED, multi: true}));
+    /*@ts2dart_const*/ new Provider(NG_VALIDATORS, {useValue: REQUIRED, multi: true});
 
 /**
  * A Directive that adds the `required` validator to any controls marked with the
@@ -59,8 +59,8 @@ export interface AsyncValidatorFn {
  *
  * {@example common/forms/ts/validators/validators.ts region='min'}
  */
-export const MIN_LENGTH_VALIDATOR = CONST_EXPR(
-    new Provider(NG_VALIDATORS, {useExisting: forwardRef(() => MinLengthValidator), multi: true}));
+export const MIN_LENGTH_VALIDATOR = /*@ts2dart_const*/
+    new Provider(NG_VALIDATORS, {useExisting: forwardRef(( => MinLengthValidator), multi: true}));
 
 /**
  * A directive which installs the {@link MinLengthValidator} for any `ngControl`,
@@ -87,8 +87,8 @@ export class MinLengthValidator implements Validator {
  *
  * {@example common/forms/ts/validators/validators.ts region='max'}
  */
-export const MAX_LENGTH_VALIDATOR = CONST_EXPR(
-    new Provider(NG_VALIDATORS, {useExisting: forwardRef(() => MaxLengthValidator), multi: true}));
+export const MAX_LENGTH_VALIDATOR = /*@ts2dart_const*/
+    new Provider(NG_VALIDATORS, {useExisting: forwardRef(( => MaxLengthValidator), multi: true}));
 
 /**
  * A directive which installs the {@link MaxLengthValidator} for any `ngControl, `ngFormControl`,
@@ -121,8 +121,8 @@ export class MaxLengthValidator implements Validator {
  * <input [ngControl]="fullName" pattern="[a-zA-Z ]*">
  * ```
  */
-export const PATTERN_VALIDATOR = CONST_EXPR(
-    new Provider(NG_VALIDATORS, {useExisting: forwardRef(() => PatternValidator), multi: true}));
+export const PATTERN_VALIDATOR = /*@ts2dart_const*/
+    new Provider(NG_VALIDATORS, {useExisting: forwardRef(( => PatternValidator), multi: true}));
 @Directive({
   selector: '[pattern][ngControl],[pattern][ngFormControl],[pattern][ngModel]',
   providers: [PATTERN_VALIDATOR]
