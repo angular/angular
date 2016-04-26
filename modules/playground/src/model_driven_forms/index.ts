@@ -102,7 +102,7 @@ class ShowError {
       <p>
         <label for="country">Country</label>
         <select id="country" ngControl="country">
-          <option *ngFor="#c of countries" [value]="c">{{c}}</option>
+          <option *ngFor="let c of countries" [value]="c">{{c}}</option>
         </select>
       </p>
 

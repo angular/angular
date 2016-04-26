@@ -449,7 +449,7 @@ export function main() {
 
       it('should read locals', fakeAsync(() => {
            var ctx =
-               createCompFixture('<template testLocals var-local="someLocal">{{local}}</template>');
+               createCompFixture('<template testLocals let-local="someLocal">{{local}}</template>');
            ctx.detectChanges(false);
 
            expect(renderLog.log).toEqual(['{{someLocalValue}}']);
@@ -599,7 +599,7 @@ export function main() {
 
         it('should throw when trying to assign to a local', fakeAsync(() => {
              expect(() => {_bindSimpleProp('(event)="$event=1"')})
-                 .toThrowError(new RegExp("Cannot reassign a variable binding"));
+                 .toThrowError(new RegExp("Cannot assign to a reference or variable!"));
            }));
 
         it('should support short-circuiting', fakeAsync(() => {
@@ -627,7 +627,7 @@ export function main() {
         it('should read directive properties', fakeAsync(() => {
              var ctx =
                  createCompFixture(
-                     '<div testDirective [a]="42" var-dir="testDirective" [someProp]="dir.a"></div>')
+                     '<div testDirective [a]="42" ref-dir="testDirective" [someProp]="dir.a"></div>')
                      ctx.detectChanges(false);
              expect(renderLog.loggedValues).toEqual([42]);
            }));
@@ -1001,7 +1001,7 @@ export function main() {
 
         it('should be called after processing the content and view children', fakeAsync(() => {
              var ctx = createCompFixture(
-                 '<div testDirective="parent"><div *ngFor="var x of [0,1]" testDirective="contentChild{{x}}"></div>' +
+                 '<div testDirective="parent"><div *ngFor="let x of [0,1]" testDirective="contentChild{{x}}"></div>' +
                      '<other-cmp></other-cmp></div>',
                  TestComponent,
                  tcb.overrideTemplate(AnotherComponent, '<div testDirective="viewChild"></div>'));

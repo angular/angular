@@ -36,7 +36,7 @@ class MyCmp implements OnDeactivate {
     <router-outlet></router-outlet>
     <div id="log">
       <h2>Log:</h2>
-      <p *ngFor="#logItem of logService.logs">{{ logItem }}</p>
+      <p *ngFor="let logItem of logService.logs">{{ logItem }}</p>
     </div>
   `,
   directives: [ROUTER_DIRECTIVES]

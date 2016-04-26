@@ -185,4 +185,5 @@ class _MockComponentRef extends ComponentRef_ {
 
 class _MockConsole implements Console {
   log(message) {}
+  warn(message) {}
 }

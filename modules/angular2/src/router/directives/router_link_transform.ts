@@ -185,10 +185,12 @@ export class RouterLinkTransform implements TemplateAstVisitor {
     let updatedChildren = ast.children.map(c => c.visit(this, context));
     let updatedInputs = ast.inputs.map(c => c.visit(this, context));
     let updatedDirectives = ast.directives.map(c => c.visit(this, context));
-    return new ElementAst(ast.name, ast.attrs, updatedInputs, ast.outputs, ast.exportAsVars,
+    return new ElementAst(ast.name, ast.attrs, updatedInputs, ast.outputs, ast.references,
                           updatedDirectives, ast.providers, ast.hasViewContainer, updatedChildren,
                           ast.ngContentIndex, ast.sourceSpan);
   }
+
+  visitReference(ast: any, context: any): any { return ast; }
 
   visitVariable(ast: any, context: any): any { return ast; }
 
@@ -205,7 +207,7 @@ export class RouterLinkTransform implements TemplateAstVisitor {
   visitDirective(ast: DirectiveAst, context: any): any {
     let updatedInputs = ast.inputs.map(c => c.visit(this, context));
     return new DirectiveAst(ast.directive, updatedInputs, ast.hostProperties, ast.hostEvents,
-                            ast.exportAsVars, ast.sourceSpan);
+                            ast.sourceSpan);
   }
 
   visitDirectiveProperty(ast: BoundDirectivePropertyAst, context: any): any {

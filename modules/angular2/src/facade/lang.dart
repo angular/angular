@@ -298,6 +298,10 @@ bool isJsObject(o) {
   return false;
 }
 
+warn(o) {
+  print(o);
+}
+
 // Functions below are noop in Dart. Imperatively controlling dev mode kills
 // tree shaking. We should only rely on `assertionsEnabled`.
 @Deprecated('Do not use this function. It is for JS only. There is no alternative.')
