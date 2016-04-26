@@ -116,6 +116,7 @@ var NG_COMPILER = [
   "TEMPLATE_TRANSFORMS",
   "TextAst",
   "VariableAst",
+  "ReferenceAst",
   "XHR",
   "templateVisitAll",
   "CompileDiDependencyMetadata",

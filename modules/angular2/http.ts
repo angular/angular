@@ -56,7 +56,7 @@ export {URLSearchParams} from './src/http/url_search_params';
  *     <div>
  *       <h1>People</h1>
  *       <ul>
- *         <li *ngFor="#person of people">
+ *         <li *ngFor="let person of people">
  *           {{person.name}}
  *         </li>
  *       </ul>
@@ -194,7 +194,7 @@ export const HTTP_BINDINGS = HTTP_PROVIDERS;
  *     <div>
  *       <h1>People</h1>
  *       <ul>
- *         <li *ngFor="#person of people">
+ *         <li *ngFor="let person of people">
  *           {{person.name}}
  *         </li>
  *       </ul>

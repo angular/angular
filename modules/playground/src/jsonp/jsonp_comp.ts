@@ -7,7 +7,7 @@ import {ObservableWrapper} from 'angular2/src/facade/async';
   template: `
     <h1>people</h1>
     <ul class="people">
-      <li *ngFor="#person of people">
+      <li *ngFor="let person of people">
         hello, {{person['name']}}
       </li>
     </ul>

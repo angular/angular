@@ -89,7 +89,7 @@ import {EmbeddedViewRef} from 'angular2/src/core/linker/view_ref';
 
 import {ComponentResolver} from 'angular2/src/core/linker/component_resolver';
 import {ElementRef} from 'angular2/src/core/linker/element_ref';
-import {TemplateRef} from 'angular2/src/core/linker/template_ref';
+import {TemplateRef_, TemplateRef} from 'angular2/src/core/linker/template_ref';
 
 import {Renderer} from 'angular2/src/core/render';
 
@@ -473,7 +473,7 @@ function declareTests(isJit: boolean) {
            tcb.overrideView(
                   MyComp, new ViewMetadata({
                     template:
-                        '<template some-viewport var-greeting="some-tmpl"><copy-me>{{greeting}}</copy-me></template>',
+                        '<template some-viewport let-greeting="some-tmpl"><copy-me>{{greeting}}</copy-me></template>',
                     directives: [SomeViewport]
                   }))
 
@@ -509,7 +509,7 @@ function declareTests(isJit: boolean) {
            tcb.overrideView(
                   MyComp, new ViewMetadata({
                     template:
-                        '<copy-me template="some-viewport: var greeting=some-tmpl">{{greeting}}</copy-me>',
+                        '<copy-me template="some-viewport: let greeting=some-tmpl">{{greeting}}</copy-me>',
                     directives: [SomeViewport]
                   }))
 
@@ -531,7 +531,7 @@ function declareTests(isJit: boolean) {
            tcb.overrideView(
                   MyComp, new ViewMetadata({
                     template:
-                        '<some-directive><toolbar><template toolbarpart var-toolbarProp="toolbarProp">{{ctxProp}},{{toolbarProp}},<cmp-with-host></cmp-with-host></template></toolbar></some-directive>',
+                        '<some-directive><toolbar><template toolbarpart let-toolbarProp="toolbarProp">{{ctxProp}},{{toolbarProp}},<cmp-with-host></cmp-with-host></template></toolbar></some-directive>',
                     directives: [SomeDirective, CompWithHost, ToolbarComponent, ToolbarPart]
                   }))
                .createAsync(MyComp)
@@ -547,12 +547,12 @@ function declareTests(isJit: boolean) {
                });
          }));
 
-      describe("variable bindings", () => {
-        it('should assign a component to a var-',
+      describe("reference bindings", () => {
+        it('should assign a component to a ref-',
            inject([TestComponentBuilder, AsyncTestCompleter],
                   (tcb: TestComponentBuilder, async) => {
                       tcb.overrideView(MyComp, new ViewMetadata({
-                                         template: '<p><child-cmp var-alice></child-cmp></p>',
+                                         template: '<p><child-cmp ref-alice></child-cmp></p>',
                                          directives: [ChildComp]
                                        }))
 
@@ -564,7 +564,7 @@ function declareTests(isJit: boolean) {
                             async.done();
                           })}));
 
-        it('should assign a directive to a var-',
+        it('should assign a directive to a ref-',
            inject(
                [TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
                  tcb.overrideView(MyComp, new ViewMetadata({
@@ -588,7 +588,7 @@ function declareTests(isJit: boolean) {
                    tcb.overrideView(
                           MyComp, new ViewMetadata({
                             template:
-                                '<template [ngIf]="true">{{alice.ctxProp}}</template>|{{alice.ctxProp}}|<child-cmp var-alice></child-cmp>',
+                                '<template [ngIf]="true">{{alice.ctxProp}}</template>|{{alice.ctxProp}}|<child-cmp ref-alice></child-cmp>',
                             directives: [ChildComp, NgIf]
                           }))
 
@@ -600,14 +600,14 @@ function declareTests(isJit: boolean) {
                          async.done();
                        })}));
 
-        it('should assign two component instances each with a var-',
+        it('should assign two component instances each with a ref-',
            inject(
                [TestComponentBuilder, AsyncTestCompleter],
                (tcb: TestComponentBuilder, async) => {
                    tcb.overrideView(
                           MyComp, new ViewMetadata({
                             template:
-                                '<p><child-cmp var-alice></child-cmp><child-cmp var-bob></child-cmp></p>',
+                                '<p><child-cmp ref-alice></child-cmp><child-cmp ref-bob></child-cmp></p>',
                             directives: [ChildComp]
                           }))
 
@@ -622,7 +622,7 @@ function declareTests(isJit: boolean) {
                          async.done();
                        })}));
 
-        it('should assign the component instance to a var- with shorthand syntax',
+        it('should assign the component instance to a ref- with shorthand syntax',
            inject([TestComponentBuilder, AsyncTestCompleter],
                   (tcb: TestComponentBuilder,
                    async) => {tcb.overrideView(MyComp, new ViewMetadata({
@@ -643,7 +643,7 @@ function declareTests(isJit: boolean) {
            inject([TestComponentBuilder, AsyncTestCompleter],
                   (tcb: TestComponentBuilder, async) => {
                       tcb.overrideView(MyComp, new ViewMetadata({
-                                         template: '<div><div var-alice><i>Hello</i></div></div>'
+                                         template: '<div><div ref-alice><i>Hello</i></div></div>'
                                        }))
 
                           .createAsync(MyComp)
@@ -657,11 +657,26 @@ function declareTests(isJit: boolean) {
                             async.done();
                           })}));
 
+        it('should assign the TemplateRef to a user-defined variable',
+           inject([TestComponentBuilder, AsyncTestCompleter],
+                  (tcb: TestComponentBuilder, async) => {
+                      tcb.overrideView(MyComp, new ViewMetadata(
+                                                   {template: '<template ref-alice></template>'}))
+
+                          .createAsync(MyComp)
+                          .then((fixture) => {
+
+                            var value = fixture.debugElement.childNodes[0].getLocal('alice');
+                            expect(value).toBeAnInstanceOf(TemplateRef_);
+
+                            async.done();
+                          })}));
+
         it('should preserve case',
            inject(
                [TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
                  tcb.overrideView(MyComp, new ViewMetadata({
-                                    template: '<p><child-cmp var-superAlice></child-cmp></p>',
+                                    template: '<p><child-cmp ref-superAlice></child-cmp></p>',
                                     directives: [ChildComp]
                                   }))
 
@@ -673,14 +688,16 @@ function declareTests(isJit: boolean) {
                        async.done();
                      });
                }));
+      });
 
+      describe('variables', () => {
         it('should allow to use variables in a for loop',
            inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder,
                                                                async) => {
              tcb.overrideView(
                     MyComp, new ViewMetadata({
                       template:
-                          '<template ngFor [ngForOf]="[1]" var-i><child-cmp-no-template #cmp></child-cmp-no-template>{{i}}-{{cmp.ctxProp}}</template>',
+                          '<template ngFor [ngForOf]="[1]" let-i><child-cmp-no-template #cmp></child-cmp-no-template>{{i}}-{{cmp.ctxProp}}</template>',
                       directives: [ChildCompNoTemplate, NgFor]
                     }))
 
@@ -2281,7 +2298,7 @@ class ToolbarViewContainer {
 
 @Component({
   selector: 'toolbar',
-  template: 'TOOLBAR(<div *ngFor="var part of query" [toolbarVc]="part"></div>)',
+  template: 'TOOLBAR(<div *ngFor="let  part of query" [toolbarVc]="part"></div>)',
   directives: [ToolbarViewContainer, NgFor]
 })
 @Injectable()
@@ -2489,7 +2506,7 @@ class DirectiveThrowingAnError {
 @Component({
   selector: 'component-with-template',
   directives: [NgFor],
-  template: `No View Decorator: <div *ngFor="#item of items">{{item}}</div>`
+  template: `No View Decorator: <div *ngFor="let item of items">{{item}}</div>`
 })
 class ComponentWithTemplate {
   items = [1, 2, 3];

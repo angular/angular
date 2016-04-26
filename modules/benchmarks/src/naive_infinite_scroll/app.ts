@@ -19,7 +19,7 @@ import {Component, Directive} from 'angular2/core';
     </div>
     <div template="ngIf scrollAreas.length > 0">
       <p>Following tables are only here to add weight to the UI:</p>
-      <scroll-area template="ngFor #scrollArea of scrollAreas"></scroll-area>
+      <scroll-area template="ngFor let scrollArea of scrollAreas"></scroll-area>
     </div>
   </div>`
 })

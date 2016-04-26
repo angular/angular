@@ -17,8 +17,14 @@ export class ParseSourceSpan {
   }
 }
 
+export enum ParseErrorLevel {
+  WARNING,
+  FATAL
+}
+
 export abstract class ParseError {
-  constructor(public span: ParseSourceSpan, public msg: string) {}
+  constructor(public span: ParseSourceSpan, public msg: string,
+              public level: ParseErrorLevel = ParseErrorLevel.FATAL) {}
 
   toString(): string {
     var source = this.span.start.file.content;
