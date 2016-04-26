@@ -74,6 +74,12 @@ fakeAsync(inject([...], (...) => {...}))
 
 * - pipes now take a variable number of arguments, and not an array that contains all arguments.
 
+* `DynamicComponentLoader.loadIntoLocation` has been removed. Use `@ViewChild(‘myVar’, read: ViewContainerRef)` to get hold of a `ViewContainerRef` at an element with variable `myVar`.
+
+* `DynamicComponentLoader.loadNextToLocation` now takes a `ViewContainerRef` instead of an `ElementRef`.
+
+* `AppViewManager` is renamed into `ViewUtils` and is a mere private utility service.
+
 
 <a name="2.0.0-beta.15"></a>
 # 2.0.0-beta.15 (2016-04-13)
