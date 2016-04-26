@@ -107,6 +107,7 @@ $md-sidenav-push-background-color: md-color($md-background, dialog) !default;
     top: 0;
     bottom: 0;
     z-index: 3;
+    min-width: 5%;
 
     background-color: $md-sidenav-background-color;
 
