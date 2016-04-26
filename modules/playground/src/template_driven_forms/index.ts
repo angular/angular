@@ -39,8 +39,11 @@ function creditCardValidator(c): {[key: string]: boolean} {
   }
 }
 
-const creditCardValidatorBinding =
-    CONST_EXPR(new Provider(NG_VALIDATORS, {useValue: creditCardValidator, multi: true}));
+const creditCardValidatorBinding = /** @ts2dart_const */ /** @ts2dart_Provider */ {
+  provide: NG_VALIDATORS,
+  useValue: creditCardValidator,
+  multi: true
+};
 
 @Directive({selector: '[credit-card]', providers: [creditCardValidatorBinding]})
 class CreditCardValidator {

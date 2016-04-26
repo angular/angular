@@ -25,7 +25,7 @@ import * as modelModule from '../model';
  */
 export interface Validator { validate(c: modelModule.AbstractControl): {[key: string]: any}; }
 
-const REQUIRED = Validators.required;
+const REQUIRED = /*@ts2dart_const*/(Validators.required);
 
 export const REQUIRED_VALIDATOR =
     CONST_EXPR(new Provider(NG_VALIDATORS, {useValue: REQUIRED, multi: true}));

@@ -69,9 +69,13 @@ export class ComponentRef_ extends ComponentRef {
   onDestroy(callback: Function): void { this.hostView.onDestroy(callback); }
 }
 
+<<<<<<< HEAD
 const EMPTY_CONTEXT = CONST_EXPR(new Object());
 
 @CONST()
+=======
+/* @ts2dart_const */
+>>>>>>> 176ffd8... chore: upgrade to ts2dart@0.9.9
 export class ComponentFactory {
   constructor(public selector: string, private _viewFactory: Function,
               private _componentType: Type) {}
