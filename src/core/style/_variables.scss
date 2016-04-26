@@ -15,6 +15,11 @@ $z-index-drawer: 100 !default;
 // Global constants
 $pi: 3.14159265;
 
+// Padding between input toggles and their labels
+$md-toggle-padding: 8px !default;
+// Width and height of input toggles
+$md-toggle-size: 20px !default;
+
 // Easing Curves
 // TODO(jelbourn): all of these need to be revisited
 

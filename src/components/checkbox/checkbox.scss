@@ -3,7 +3,7 @@
 @import "variables";
 
 /** The width/height of the checkbox element. */
-$md-checkbox-size: 18px !default;
+$md-checkbox-size: $md-toggle-size !default;
 /** The width of the line used to draw the checkmark / mixedmark. */
 $md-checkbox-mark-stroke-size: 2/15 * $md-checkbox-size !default;
 /** The width of the checkbox border shown when the checkbox is unchecked. */
@@ -17,7 +17,7 @@ $md-checkbox-background-color: md-color($md-accent, 500);
 /** The base duration used for the majority of transitions for the checkbox. */
 $md-checkbox-transition-duration: 90ms;
 /** The amount of spacing between the checkbox and its label. */
-$md-checkbox-item-spacing: 4px;
+$md-checkbox-item-spacing: $md-toggle-padding;
 
 // Manual calculation done on SVG
 $_md-checkbox-mark-path-length: 22.910259;
@@ -248,6 +248,11 @@ $_md-checkbox-indeterminate-checked-easing-function: cubic-bezier(0.14, 0, 0, 1)
       right: auto;
     }
   }
+}
+
+// TODO(kara): Remove this style when fixing vertical baseline
+.md-checkbox-layout label {
+  line-height: 24px;
 }
 
 .md-checkbox-frame {

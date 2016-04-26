@@ -1,6 +1,7 @@
 @import "default-theme";
+@import "variables";
 
-$md-radio-width: 20px !default;
+$md-radio-size: $md-toggle-size !default;
 
 // Top-level host container.
 md-radio-button {
@@ -12,7 +13,6 @@ md-radio-button {
 .md-radio-label {
   cursor: pointer;
   display: block;
-  padding: 8px;
   white-space: nowrap;
 }
 
@@ -20,10 +20,10 @@ md-radio-button {
 .md-radio-container {
   box-sizing: border-box;
   display: inline-block;
-  height: $md-radio-width;
+  height: $md-radio-size;
   position: relative;
   top: 2px;
-  width: $md-radio-width;
+  width: $md-radio-size;
 }
 
 // TODO(mtlin): Replace when ink ripple component is implemented.
@@ -60,12 +60,12 @@ md-radio-button {
   border: solid 2px;
   border-radius: 50%;
   box-sizing: border-box;
-  height: $md-radio-width;
+  height: $md-radio-size;
   left: 0;
   position: absolute;
   top: 0;
   transition: border-color ease 0.28s;
-  width: $md-radio-width;
+  width: $md-radio-size;
 
   .md-radio-checked & {
     border-color: md-color($md-accent);
@@ -81,13 +81,13 @@ md-radio-button {
   background-color: md-color($md-accent);
   border-radius: 50%;
   box-sizing: border-box;
-  height: $md-radio-width;
+  height: $md-radio-size;
   left: 0;
   position: absolute;
   top: 0;
   transition: transform ease 0.28s, background-color ease 0.28s;
   transform: scale(0);
-  width: $md-radio-width;
+  width: $md-radio-size;
 
   .md-radio-checked & {
     transform: scale(0.5);
@@ -103,11 +103,15 @@ md-radio-button {
   display: inline-block;
   float: right;
   line-height: 24px;
-  // Equal padding on both sides, for RTL.
-  padding-left: 8px;
-  padding-right: 8px;
+  padding-left: $md-toggle-padding;
   position: relative;
   vertical-align: top;
+
+  [dir='rtl'] & {
+    float: left;
+    padding-right: $md-toggle-padding;
+    padding-left: 0;
+  }
 }
 
 // Underlying native input element.
