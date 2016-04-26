@@ -99,6 +99,37 @@ export abstract class DynamicComponentLoader {
    * bootstrap(MyApp);
    * ```
    *
+   * You can also use an element from the view
+   *
+   * ### Example
+   *
+   * ```
+   * @Component({
+   *   selector: 'child-component',
+   *   template: 'Child'
+   * })
+   * class ChildComponent {
+   * }
+   *
+   * @Component({
+   *   selector: 'my-app',
+   *   template: '<div #container></div>'
+   * })
+   * class MyApp implements AfterViewInit {
+   *
+   *   @ViewChild('container', {read : ViewContainerRef}) container: ViewContainerRef;
+   *
+   *   constructor(private dcl: DynamicComponentLoader) {
+   *   }
+   *
+   *   ngAfterViewInit() {
+   *     this.dcl.loadNextToLocation(ChildComponent, this.container);
+   *   }
+   * }
+   *
+   * bootstrap(MyApp);
+   * ```
+   *
    * Resulting DOM:
    *
    * ```
