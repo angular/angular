@@ -532,6 +532,18 @@ export function main() {
         expect(provider.resolvedFactories.length).toEqual(2);
       });
 
+
+      it("should support providers as hash", () => {
+        var provider = ReflectiveInjector.resolve([
+          {provide: Engine, useClass: BrokenEngine, multi: true},
+          {provide: Engine, useClass: TurboEngine, multi: true}
+        ])[0];
+
+        expect(provider.key.token).toBe(Engine);
+        expect(provider.multiProvider).toEqual(true);
+        expect(provider.resolvedFactories.length).toEqual(2);
+      });
+
       it("should support multi providers with only one provider", () => {
         var provider = ReflectiveInjector.resolve(
             [new Provider(Engine, {useClass: BrokenEngine, multi: true})])[0];
