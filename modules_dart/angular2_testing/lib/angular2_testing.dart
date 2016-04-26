@@ -79,8 +79,7 @@ dynamic _runInjectableFunction(Function fn) {
     tokens.add(token);
   }
 
-  var injectFn = new FunctionWithParamTokens(tokens, fn, false);
-  return _testInjector.execute(injectFn);
+  return _testInjector.execute(tokens, fn);
 }
 
 /// Use the test injector to get bindings and run a function.

@@ -150,6 +150,19 @@ export function main() {
            expect(value).toEqual('async value');
          })));
 
+      it('should allow use of "done"', (done) => {
+        inject([FancyService], (service) => {
+          let count = 0;
+          let id = setInterval(() => {
+            count++;
+            if (count > 2) {
+              clearInterval(id);
+              done();
+            }
+          }, 5);
+        })();  // inject needs to be invoked explicitly with ().
+      });
+
       describe('using beforeEach', () => {
         beforeEach(inject([FancyService],
                           (service) => { service.value = 'value modified in beforeEach'; }));
@@ -174,6 +187,15 @@ export function main() {
          withProviders(() => [bind(FancyService).toValue(new FancyService())])
              .inject([FancyService],
                      (service) => { expect(service.value).toEqual('real value'); }));
+
+      it('should return value from inject', () => {
+        let retval = withProviders(() => [bind(FancyService).toValue(new FancyService())])
+                         .inject([FancyService], (service) => {
+                           expect(service.value).toEqual('real value');
+                           return 10;
+                         })();
+        expect(retval).toBe(10);
+      });
     });
   });
 
