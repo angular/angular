@@ -1,5 +1,6 @@
 import {
   AsyncTestCompleter,
+  withProviders,
   inject,
   describe,
   it,
@@ -8,6 +9,7 @@ import {
   beforeEachProviders,
   SpyObject
 } from 'angular2/testing_internal';
+import {provide} from 'angular2/src/core/di';
 import {ObservableWrapper, TimerWrapper} from 'angular2/src/facade/async';
 import {MessageBus} from 'angular2/src/web_workers/shared/message_bus';
 import {createConnectedMessageBus} from './message_bus_util';
@@ -111,30 +113,34 @@ export function main() {
     // TODO(mlaval): timeout is fragile, test to be rewritten
     function flushMessages(fn: () => void) { TimerWrapper.setTimeout(fn, 50); }
 
-    beforeEach(() => { bus = createConnectedMessageBus(); });
-
     it("should buffer messages and wait for the zone to exit before sending",
-       inject([AsyncTestCompleter, NgZone], (async, zone: MockNgZone) => {
-         setup(true, zone);
+       withProviders(() => [provide(NgZone, {useClass: MockNgZone})])
+           .inject([AsyncTestCompleter, NgZone],
+                   (async, zone: MockNgZone) => {
+                     bus = createConnectedMessageBus();
+                     setup(true, zone);
 
-         var wasCalled = false;
-         ObservableWrapper.subscribe(bus.from(CHANNEL), (message) => { wasCalled = true; });
-         ObservableWrapper.callEmit(bus.to(CHANNEL), "hi");
+                     var wasCalled = false;
+                     ObservableWrapper.subscribe(bus.from(CHANNEL),
+                                                 (message) => { wasCalled = true; });
+                     ObservableWrapper.callEmit(bus.to(CHANNEL), "hi");
 
 
-         flushMessages(() => {
-           expect(wasCalled).toBeFalsy();
+                     flushMessages(() => {
+                       expect(wasCalled).toBeFalsy();
 
-           zone.simulateZoneExit();
-           flushMessages(() => {
-             expect(wasCalled).toBeTruthy();
-             async.done();
-           });
-         });
-       }), 500);
+                       zone.simulateZoneExit();
+                       flushMessages(() => {
+                         expect(wasCalled).toBeTruthy();
+                         async.done();
+                       });
+                     });
+                   }),
+       500);
 
     it("should send messages immediatly when run outside the zone",
        inject([AsyncTestCompleter, NgZone], (async, zone: MockNgZone) => {
+         bus = createConnectedMessageBus();
          setup(false, zone);
 
          var wasCalled = false;
