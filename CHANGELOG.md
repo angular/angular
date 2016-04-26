@@ -72,7 +72,23 @@ After:
 fakeAsync(inject([...], (...) => {...}))
 ```
 
-* - pipes now take a variable number of arguments, and not an array that contains all arguments.
+* pipes now take a variable number of arguments, and not an array that contains all arguments.
+* `Compiler` is renamed to `ComponentResolver`,
+  `Compiler.compileInHost` has been renamed to `ComponentResolver.resolveComponent`. ([0c600cf6](https://github.com/angular/angular/commit/0c600cf6))
+* `ComponentRef.dispose` is renamed to `ComponentRef.destroy` ([0c600cf6](https://github.com/angular/angular/commit/0c600cf6))
+* `ViewContainerRef.createHostView` is renamed to `ViewContainerRef.createComponent` ([0c600cf6](https://github.com/angular/angular/commit/0c600cf6))
+* `ComponentFixture_` has been removed, the class `ComponentFixture`
+  can now be created directly as it is no more using private APIs. ([0c600cf6](https://github.com/angular/angular/commit/0c600cf6))
+* `Injector` renamed to `ReflectiveInjector` as `Injector` is only an abstract class with one method on it ([0a7d10b](https://github.com/angular/angular/commit/0a7d10ba))
+* `Injector.getOptional()` was changed into `Injector.get(token, notFoundValue)`
+  to make implementing injectors simpler ([0a7d10b](https://github.com/angular/angular/commit/0a7d10ba))
+* `ViewContainerRef.createComponent` now takes an `Injector`
+  instead of `ResolvedProviders`. If a reflective injector
+  should be used, create one before calling this method.
+  (e.g. via `ReflectiveInjector.resolveAndCreate(…)`. ([0a7d10b](https://github.com/angular/angular/commit/0a7d10ba))
+* `DynamicComponentLoader.loadIntoLocation` has been removed ([efbd446](https://github.com/angular/angular/commit/efbd446))
+* `DynamicComponentLoader.loadNextToLocation` now takes a `ViewContainerRef` instead of an `ElementRef` ([efbd446](https://github.com/angular/angular/commit/efbd446))
+* `AppViewManager` is renamed into `ViewUtils` and is a mere private utility service. ([efbd446](https://github.com/angular/angular/commit/efbd446))
 
 
 <a name="2.0.0-beta.15"></a>
