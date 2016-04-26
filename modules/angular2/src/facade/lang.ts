@@ -106,10 +106,6 @@ _global.assert = function assert(condition) {
   // TODO: to be fixed properly via #2830, noop for now
 };
 
-export function CONST(): ClassDecorator & PropertyDecorator {
-  return (target) => target;
-}
-
 export function isPresent(obj: any): boolean {
   return obj !== undefined && obj !== null;
 }

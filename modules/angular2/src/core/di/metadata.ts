@@ -1,4 +1,4 @@
-import {CONST, stringify, isBlank, isPresent} from "angular2/src/facade/lang";
+import {stringify, isBlank, isPresent} from "angular2/src/facade/lang";
 
 /**
  * A parameter metadata that specifies a dependency.
@@ -40,7 +40,7 @@ import {CONST, stringify, isBlank, isPresent} from "angular2/src/facade/lang";
  * expect(injector.get(Car).engine instanceof Engine).toBe(true);
  * ```
  */
-@CONST()
+/* @ts2dart_const */
 export class InjectMetadata {
   constructor(public token) {}
   toString(): string { return `@Inject(${stringify(this.token)})`; }
@@ -67,7 +67,7 @@ export class InjectMetadata {
  * expect(injector.get(Car).engine).toBeNull();
  * ```
  */
-@CONST()
+/* @ts2dart_const */
 export class OptionalMetadata {
   toString(): string { return `@Optional()`; }
 }
@@ -76,7 +76,7 @@ export class OptionalMetadata {
  * `DependencyMetadata` is used by the framework to extend DI.
  * This is internal to Angular and should not be used directly.
  */
-@CONST()
+/* @ts2dart_const */
 export class DependencyMetadata {
   get token() { return null; }
 }
@@ -112,7 +112,7 @@ export class DependencyMetadata {
  * expect(() => injector.get(NeedsService)).toThrowError();
  * ```
  */
-@CONST()
+/* @ts2dart_const */
 export class InjectableMetadata {
   constructor() {}
 }
@@ -144,7 +144,7 @@ export class InjectableMetadata {
  * expect(() => child.get(NeedsDependency)).toThrowError();
  * ```
  */
-@CONST()
+/* @ts2dart_const */
 export class SelfMetadata {
   toString(): string { return `@Self()`; }
 }
@@ -174,7 +174,7 @@ export class SelfMetadata {
  * expect(() => inj.get(NeedsDependency)).toThrowError();
  * ```
  */
-@CONST()
+/* @ts2dart_const */
 export class SkipSelfMetadata {
   toString(): string { return `@SkipSelf()`; }
 }
@@ -233,7 +233,7 @@ export class SkipSelfMetadata {
  * bootstrap(App);
  *```
  */
-@CONST()
+/* @ts2dart_const */
 export class HostMetadata {
   toString(): string { return `@Host()`; }
 }

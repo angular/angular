@@ -1,4 +1,4 @@
-import {CONST, Type} from 'angular2/src/facade/lang';
+import {Type} from 'angular2/src/facade/lang';
 
 /**
  * Defines template and style encapsulation options available for Component's {@link View}.
@@ -61,7 +61,7 @@ export var VIEW_ENCAPSULATION_VALUES =
  * }
  * ```
  */
-@CONST()
+/* @ts2dart_const */
 export class ViewMetadata {
   /**
    * Specifies a template URL for an Angular component.

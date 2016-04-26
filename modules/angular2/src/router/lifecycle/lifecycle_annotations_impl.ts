@@ -1,11 +1,10 @@
-import {CONST} from 'angular2/src/facade/lang';
 
-@CONST()
+/* @ts2dart_const */
 export class RouteLifecycleHook {
   constructor(public name: string) {}
 }
 
-@CONST()
+/* @ts2dart_const */
 export class CanActivate {
   constructor(public fn: Function) {}
 }

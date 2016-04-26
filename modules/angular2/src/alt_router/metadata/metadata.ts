@@ -1,11 +1,11 @@
-import {CONST, Type, stringify} from "angular2/src/facade/lang";
+import {Type, stringify} from "angular2/src/facade/lang";
 
 export abstract class RouteMetadata {
   abstract get path(): string;
   abstract get component(): Type;
 }
 
-@CONST()
+/* @ts2dart_const */
 export class Route implements RouteMetadata {
   path: string;
   component: Type;
@@ -16,7 +16,7 @@ export class Route implements RouteMetadata {
   toString(): string { return `@Route(${this.path}, ${stringify(this.component)})`; }
 }
 
-@CONST()
+/* @ts2dart_const */
 export class RoutesMetadata {
   constructor(public routes: RouteMetadata[]) {}
   toString(): string { return `@Routes(${this.routes})`; }
