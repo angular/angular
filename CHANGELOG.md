@@ -73,6 +73,7 @@ fakeAsync(inject([...], (...) => {...}))
 ```
 
 * - pipes now take a variable number of arguments, and not an array that contains all arguments.
+* - In upgrade, `HostViewFactoryRefMap` was renamed to `ComponentFactoryRefMap`
 
 
 <a name="2.0.0-beta.15"></a>
