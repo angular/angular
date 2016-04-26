@@ -1,5 +1,5 @@
 import {Injector} from 'angular2/src/core/di';
-import {Type, CONST, isPresent, isBlank} from 'angular2/src/facade/lang';
+import {Type, isPresent, isBlank} from 'angular2/src/facade/lang';
 import {unimplemented} from 'angular2/src/facade/exceptions';
 import {ElementRef} from './element_ref';
 import {ViewRef, ViewRef_} from './view_ref';
