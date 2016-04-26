@@ -625,7 +625,7 @@ export class ReflectiveInjector_ implements ReflectiveInjector {
    */
   debugContext(): any { return this._debugContext(); }
 
-  get(token: any, notFoundValue: any = THROW_IF_NOT_FOUND): any {
+  get(token: any, notFoundValue: any = /*@ts2dart_const*/ THROW_IF_NOT_FOUND): any {
     return this._getByKey(ReflectiveKey.get(token), null, null, notFoundValue);
   }
 

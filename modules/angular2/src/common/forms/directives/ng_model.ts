@@ -22,8 +22,11 @@ import {
 } from './shared';
 import {ValidatorFn, AsyncValidatorFn} from './validators';
 
-export const formControlBinding =
-    /*@ts2dart_const*/ new Provider(NgControl, {useExisting: forwardRef(() => NgModel)});
+export const formControlBinding: any =
+    /*@ts2dart_const*/ /* @ts2dart_Provider */ {
+      provide: NgControl,
+      useExisting: forwardRef(() => NgModel)
+    };
 
 /**
  * Binds a domain model to a form control.

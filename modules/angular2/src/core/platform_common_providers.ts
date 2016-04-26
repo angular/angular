@@ -1,5 +1,5 @@
-import {Type, isBlank, isPresent, assertionsEnabled} from 'angular2/src/facade/lang';
-import {provide, Provider, Injector, OpaqueToken} from 'angular2/src/core/di';
+import {Type} from 'angular2/src/facade/lang';
+import {Provider} from 'angular2/src/core/di';
 import {Console} from 'angular2/src/core/console';
 import {Reflector, reflector} from './reflection/reflection';
 import {ReflectorReader} from './reflection/reflector_reader';

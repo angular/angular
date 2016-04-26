@@ -24,8 +24,8 @@ export interface KeyValueDifferFactory {
  * A repository of different Map diffing strategies used by NgClass, NgStyle, and others.
  * @ts2dart_const
  */
-/* @ts2dart_const */
 export class KeyValueDiffers {
+  /*@ts2dart_const*/
   constructor(public factories: KeyValueDifferFactory[]) {}
 
   static create(factories: KeyValueDifferFactory[], parent?: KeyValueDiffers): KeyValueDiffers {

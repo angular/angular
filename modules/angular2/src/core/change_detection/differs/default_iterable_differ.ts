@@ -15,6 +15,7 @@ import {IterableDiffer, IterableDifferFactory, TrackByFn} from '../differs/itera
 
 /* @ts2dart_const */
 export class DefaultIterableDifferFactory implements IterableDifferFactory {
+  constructor() {}
   supports(obj: Object): boolean { return isListLikeIterable(obj); }
   create(cdRef: ChangeDetectorRef, trackByFn?: TrackByFn): DefaultIterableDiffer {
     return new DefaultIterableDiffer(trackByFn);

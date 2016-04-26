@@ -1,5 +1,4 @@
 import {TEMPLATE_TRANSFORMS} from 'angular2/compiler';
-import {Provider} from 'angular2/core';
 import {RouterLinkTransform} from 'angular2/src/router/directives/router_link_transform';
 
 export {RouterLinkTransform} from 'angular2/src/router/directives/router_link_transform';
@@ -31,5 +30,8 @@ export {RouterLinkTransform} from 'angular2/src/router/directives/router_link_tr
  * ```
  */
 export const ROUTER_LINK_DSL_PROVIDER =
-    /*@ts2dart_const*/
-    new Provider(TEMPLATE_TRANSFORMS, {useClass: RouterLinkTransform, multi: true});
+    /*@ts2dart_const*/ /* @ts2dart_Provider */ {
+      provide: TEMPLATE_TRANSFORMS,
+      useClass: RouterLinkTransform,
+      multi: true
+    };

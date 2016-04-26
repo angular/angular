@@ -47,7 +47,7 @@ function createNgZone(): NgZone {
  * Default platform providers for testing without a compiler.
  */
 export const TEST_BROWSER_STATIC_PLATFORM_PROVIDERS: Array<any /*Type | Provider | any[]*/> =
-    /*@ts2dart_const*/ [
+    /*@ts2dart_const*/[
       PLATFORM_COMMON_PROVIDERS,
       /*@ts2dart_Provider*/{provide: PLATFORM_INITIALIZER, useValue: initBrowserTests, multi: true}
     ];

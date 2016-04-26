@@ -37,6 +37,7 @@ import {
 } from 'angular2/src/core/di/metadata';
 import {AttributeMetadata, QueryMetadata} from 'angular2/src/core/metadata/di';
 import {ReflectorReader} from 'angular2/src/core/reflection/reflector_reader';
+import {isProviderLiteral, createProvider} from '../core/di/provider_util';
 
 @Injectable()
 export class CompileMetadataResolver {
@@ -292,6 +293,8 @@ export class CompileMetadataResolver {
         return this.getProvidersMetadata(provider);
       } else if (provider instanceof Provider) {
         return this.getProviderMetadata(provider);
+      } else if (isProviderLiteral(provider)) {
+        return this.getProviderMetadata(createProvider(provider));
       } else {
         return this.getTypeMetadata(provider, staticTypeModuleUrl(provider));
       }

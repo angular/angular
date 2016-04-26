@@ -7,7 +7,7 @@ import {APP_INITIALIZER, Provider, Injector, NgZone} from 'angular2/core';
 export const WORKER_RENDER_ROUTER = /*@ts2dart_const*/[
   MessageBasedPlatformLocation,
   BrowserPlatformLocation,
-  new Provider(APP_INITIALIZER, {useFactory: initRouterListeners, multi: true, deps: [Injector]})
+  /* @ts2dart_Provider */ {provide: APP_INITIALIZER, useFactory: initRouterListeners, multi: true, deps: [Injector]}
 ];
 
 function initRouterListeners(injector: Injector): () => void {

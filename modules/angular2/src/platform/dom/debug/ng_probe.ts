@@ -1,5 +1,4 @@
-import {assertionsEnabled, isPresent} from 'angular2/src/facade/lang';
-import {Injectable, provide} from 'angular2/src/core/di';
+import {assertionsEnabled} from 'angular2/src/facade/lang';
 import {DOM} from 'angular2/src/platform/dom/dom_adapter';
 import {DebugNode, getDebugNode} from 'angular2/src/core/debug/debug_node';
 import {DomRootRenderer} from 'angular2/src/platform/dom/dom_renderer';

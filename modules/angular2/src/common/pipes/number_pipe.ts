@@ -19,7 +19,6 @@ var _re = RegExpWrapper.create('^(\\d+)?\\.((\\d+)(\\-(\\d+))?)?$');
 /**
  * Internal base class for numeric pipes.
  */
-/* @ts2dart_const */
 @Injectable()
 export class NumberPipe {
   /** @internal */
@@ -81,7 +80,6 @@ export class NumberPipe {
  *
  * {@example core/pipes/ts/number_pipe/number_pipe_example.ts region='NumberPipe'}
  */
-/* @ts2dart_const */
 @Pipe({name: 'number'})
 @Injectable()
 export class DecimalPipe extends NumberPipe implements PipeTransform {
@@ -106,7 +104,6 @@ export class DecimalPipe extends NumberPipe implements PipeTransform {
  *
  * {@example core/pipes/ts/number_pipe/number_pipe_example.ts region='PercentPipe'}
  */
-/* @ts2dart_const */
 @Pipe({name: 'percent'})
 @Injectable()
 export class PercentPipe extends NumberPipe implements PipeTransform {
@@ -135,7 +132,6 @@ export class PercentPipe extends NumberPipe implements PipeTransform {
  *
  * {@example core/pipes/ts/number_pipe/number_pipe_example.ts region='CurrencyPipe'}
  */
-/* @ts2dart_const */
 @Pipe({name: 'currency'})
 @Injectable()
 export class CurrencyPipe extends NumberPipe implements PipeTransform {

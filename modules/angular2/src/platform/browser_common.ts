@@ -76,20 +76,20 @@ function _document(): any {
  * Used automatically by `bootstrap`, or can be passed to {@link PlatformRef.application}.
  */
 export const BROWSER_APP_COMMON_PROVIDERS: Array<any /*Type | Provider | any[]*/> =
-    /*@ts2dart_const*/ [
+    /*@ts2dart_const*/[
       APPLICATION_COMMON_PROVIDERS,
       FORM_PROVIDERS,
-      /*@ts2dart_Provider*/{provide: PLATFORM_PIPES, useValue: COMMON_PIPES, multi: true},
-      /*@ts2dart_Provider*/{provide: PLATFORM_DIRECTIVES, useValue: COMMON_DIRECTIVES, multi: true},
-      /*@ts2dart_Provider*/{provide: ExceptionHandler, useFactory: _exceptionHandler, deps: []},
-      /*@ts2dart_Provider*/{provide: DOCUMENT, useFactory: _document, deps: []},
-      /*@ts2dart_Provider*/{provide: EVENT_MANAGER_PLUGINS, useClass: DomEventsPlugin, multi: true},
-      /*@ts2dart_Provider*/{provide: EVENT_MANAGER_PLUGINS, useClass: KeyEventsPlugin, multi: true},
-      /*@ts2dart_Provider*/{provide: EVENT_MANAGER_PLUGINS, useClass: HammerGesturesPlugin, multi: true},
-      /*@ts2dart_Provider*/{provide: HAMMER_GESTURE_CONFIG, useClass: HammerGestureConfig},
-      /*@ts2dart_Provider*/{provide: DomRootRenderer, useClass: DomRootRenderer_},
-      /*@ts2dart_Provider*/{provide: RootRenderer, useExisting: DomRootRenderer},
-      /*@ts2dart_Provider*/{provide: SharedStylesHost, useExisting: DomSharedStylesHost},
+      /* @ts2dart_Provider */ {provide: PLATFORM_PIPES, useValue: COMMON_PIPES, multi: true},
+      /* @ts2dart_Provider */ {provide: PLATFORM_DIRECTIVES, useValue: COMMON_DIRECTIVES, multi: true},
+      /* @ts2dart_Provider */ {provide: ExceptionHandler, useFactory: _exceptionHandler, deps: []},
+      /* @ts2dart_Provider */ {provide: DOCUMENT, useFactory: _document, deps: []},
+      /* @ts2dart_Provider */ {provide: EVENT_MANAGER_PLUGINS, useClass: DomEventsPlugin, multi: true},
+      /* @ts2dart_Provider */ {provide: EVENT_MANAGER_PLUGINS, useClass: KeyEventsPlugin, multi: true},
+      /* @ts2dart_Provider */ {provide: EVENT_MANAGER_PLUGINS, useClass: HammerGesturesPlugin, multi: true},
+      /* @ts2dart_Provider */ {provide: HAMMER_GESTURE_CONFIG, useClass: HammerGestureConfig},
+      /* @ts2dart_Provider */ {provide: DomRootRenderer, useClass: DomRootRenderer_},
+      /* @ts2dart_Provider */ {provide: RootRenderer, useExisting: DomRootRenderer},
+      /* @ts2dart_Provider */ {provide: SharedStylesHost, useExisting: DomSharedStylesHost},
       DomSharedStylesHost,
       Testability,
       BrowserDetails,

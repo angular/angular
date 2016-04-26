@@ -10,7 +10,7 @@ import {Math, StringWrapper} from 'angular2/src/facade/lang';
  * a custom value via a DI provider <!-- TODO: provider --> configuring the root {@link Injector}
  * using this token.
  */
-export const APP_ID: OpaqueToken = /*@ts2dart_const*/ new OpaqueToken('AppId');
+export const APP_ID: any = /*@ts2dart_const*/ new OpaqueToken('AppId');
 
 function _appIdRandomProviderFactory() {
   return `${_randomChar()}${_randomChar()}${_randomChar()}`;
@@ -19,8 +19,12 @@ function _appIdRandomProviderFactory() {
 /**
  * Providers that will generate a random APP_ID_TOKEN.
  */
-export const APP_ID_RANDOM_PROVIDER: Provider =
-    /*@ts2dart_const*/ new Provider(APP_ID, {useFactory: _appIdRandomProviderFactory, deps: []});
+export const APP_ID_RANDOM_PROVIDER =
+    /*@ts2dart_const*/ /* @ts2dart_Provider */ {
+      provide: APP_ID,
+      useFactory: _appIdRandomProviderFactory,
+      deps: []
+    };
 
 function _randomChar(): string {
   return StringWrapper.fromCharCode(97 + Math.floor(Math.random() * 25));
@@ -29,17 +33,17 @@ function _randomChar(): string {
 /**
  * A function that will be executed when a platform is initialized.
  */
-export const PLATFORM_INITIALIZER: OpaqueToken =
+export const PLATFORM_INITIALIZER: any =
     /*@ts2dart_const*/ new OpaqueToken("Platform Initializer");
 
 /**
  * A function that will be executed when an application is initialized.
  */
-export const APP_INITIALIZER: OpaqueToken =
+export const APP_INITIALIZER: any =
     /*@ts2dart_const*/ new OpaqueToken("Application Initializer");
 
 /**
  * A token which indicates the root directory of the application
  */
-export const PACKAGE_ROOT_URL: OpaqueToken =
+export const PACKAGE_ROOT_URL: any =
     /*@ts2dart_const*/ new OpaqueToken("Application Packages Root URL");

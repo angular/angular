@@ -49,9 +49,9 @@ function initServerTests() {
  * Default platform providers for testing.
  */
 export const TEST_SERVER_PLATFORM_PROVIDERS: Array<any /*Type | Provider | any[]*/> =
-    /*@ts2dart_const*/ [
+    /*@ts2dart_const*/[
       PLATFORM_COMMON_PROVIDERS,
-      /*@ts2dart_Provider*/{provide: PLATFORM_INITIALIZER, useValue: initServerTests, multi: true}
+      /*@ts2dart_Provider*/ {provide: PLATFORM_INITIALIZER, useValue: initServerTests, multi: true}
     ];
 
 function appDoc() {
@@ -66,26 +66,26 @@ function appDoc() {
  * Default application providers for testing.
  */
 export const TEST_SERVER_APPLICATION_PROVIDERS: Array<any /*Type | Provider | any[]*/> =
-    /*@ts2dart_const*/ [
+    /*@ts2dart_const*/[
       // TODO(julie: when angular2/platform/server is available, use that instead of making our own
       // list here.
       APPLICATION_COMMON_PROVIDERS,
       COMPILER_PROVIDERS,
-      /*@ts2dart_Provider*/{provide: DOCUMENT, useFactory: appDoc},
-      /*@ts2dart_Provider*/{provide: DomRootRenderer, useClass: DomRootRenderer_},
-      /*@ts2dart_Provider*/{provide: RootRenderer, useExisting: DomRootRenderer},
+      /* @ts2dart_Provider */ {provide: DOCUMENT, useFactory: appDoc},
+      /* @ts2dart_Provider */ {provide: DomRootRenderer, useClass: DomRootRenderer_},
+      /* @ts2dart_Provider */ {provide: RootRenderer, useExisting: DomRootRenderer},
       EventManager,
-      /*@ts2dart_Provider*/{provide: EVENT_MANAGER_PLUGINS, useClass: DomEventsPlugin, multi: true},
-      /*@ts2dart_Provider*/{provide: XHR, useClass: XHR},
-      /*@ts2dart_Provider*/{provide: APP_ID, useValue: 'a'},
-      /*@ts2dart_Provider*/{provide: SharedStylesHost, useExisting: DomSharedStylesHost},
+      /* @ts2dart_Provider */ {provide: EVENT_MANAGER_PLUGINS, useClass: DomEventsPlugin, multi: true},
+      /* @ts2dart_Provider */ {provide: XHR, useClass: XHR},
+      /* @ts2dart_Provider */ {provide: APP_ID, useValue: 'a'},
+      /* @ts2dart_Provider */ {provide: SharedStylesHost, useExisting: DomSharedStylesHost},
       DomSharedStylesHost,
       ELEMENT_PROBE_PROVIDERS,
-      /*@ts2dart_Provider*/{provide: DirectiveResolver, useClass: MockDirectiveResolver},
-      /*@ts2dart_Provider*/{provide: ViewResolver, useClass: MockViewResolver},
+      /* @ts2dart_Provider */ {provide: DirectiveResolver, useClass: MockDirectiveResolver},
+      /* @ts2dart_Provider */ {provide: ViewResolver, useClass: MockViewResolver},
       Log,
       TestComponentBuilder,
-      /*@ts2dart_Provider*/{provide: NgZone, useFactory: createNgZone},
-      /*@ts2dart_Provider*/{provide: LocationStrategy, useClass: MockLocationStrategy},
-      /*@ts2dart_Provider*/{provide: AnimationBuilder, useClass: MockAnimationBuilder},
+      /* @ts2dart_Provider */ {provide: NgZone, useFactory: createNgZone},
+      /* @ts2dart_Provider */ {provide: LocationStrategy, useClass: MockLocationStrategy},
+      /* @ts2dart_Provider */ {provide: AnimationBuilder, useClass: MockAnimationBuilder},
     ];

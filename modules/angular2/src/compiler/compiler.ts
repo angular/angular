@@ -13,7 +13,6 @@ export {DirectiveResolver} from './directive_resolver';
 export {PipeResolver} from './pipe_resolver';
 
 import {assertionsEnabled, Type} from 'angular2/src/facade/lang';
-import {provide, Provider} from 'angular2/src/core/di';
 import {TemplateParser} from 'angular2/src/compiler/template_parser';
 import {HtmlParser} from 'angular2/src/compiler/html_parser';
 import {DirectiveNormalizer} from 'angular2/src/compiler/directive_normalizer';
@@ -40,7 +39,7 @@ function _createCompilerConfig() {
  * A set of providers that provide `RuntimeCompiler` and its dependencies to use for
  * template compilation.
  */
-export const COMPILER_PROVIDERS: Array<any | Type | Provider | any[]> = /*@ts2dart_const*/ [
+export const COMPILER_PROVIDERS: Array<any | Type | {[k: string]: any} | any[]> = /*@ts2dart_const*/ [
   Lexer,
   Parser,
   HtmlParser,

@@ -64,8 +64,8 @@ export const WORKER_RENDER_PLATFORM_MARKER =
 
 export const WORKER_RENDER_PLATFORM: Array<any /*Type | Provider | any[]*/> = /*@ts2dart_const*/[
   PLATFORM_COMMON_PROVIDERS,
-  new Provider(WORKER_RENDER_PLATFORM_MARKER, {useValue: true}),
-  new Provider(PLATFORM_INITIALIZER, {useValue: initWebWorkerRenderPlatform, multi: true})
+  /*@ts2dart_const*/ (/* @ts2dart_Provider */ {provide: WORKER_RENDER_PLATFORM_MARKER, useValue: true}),
+  /* @ts2dart_Provider */ {provide: PLATFORM_INITIALIZER, useValue: initWebWorkerRenderPlatform, multi: true}
 ];
 
 /**
@@ -79,23 +79,23 @@ export const WORKER_RENDER_APPLICATION_COMMON: Array<any /*Type | Provider | any
     /*@ts2dart_const*/[
       APPLICATION_COMMON_PROVIDERS,
       WORKER_RENDER_MESSAGING_PROVIDERS,
-      new Provider(ExceptionHandler, {useFactory: _exceptionHandler, deps: []}),
-      new Provider(DOCUMENT, {useFactory: _document, deps: []}),
+      /* @ts2dart_Provider */ {provide: ExceptionHandler, useFactory: _exceptionHandler, deps: []},
+      /* @ts2dart_Provider */ {provide: DOCUMENT, useFactory: _document, deps: []},
       // TODO(jteplitz602): Investigate if we definitely need EVENT_MANAGER on the render thread
       // #5298
-      new Provider(EVENT_MANAGER_PLUGINS, {useClass: DomEventsPlugin, multi: true}),
-      new Provider(EVENT_MANAGER_PLUGINS, {useClass: KeyEventsPlugin, multi: true}),
-      new Provider(EVENT_MANAGER_PLUGINS, {useClass: HammerGesturesPlugin, multi: true}),
-      new Provider(HAMMER_GESTURE_CONFIG, {useClass: HammerGestureConfig}),
-      new Provider(DomRootRenderer, {useClass: DomRootRenderer_}),
-      new Provider(RootRenderer, {useExisting: DomRootRenderer}),
-      new Provider(SharedStylesHost, {useExisting: DomSharedStylesHost}),
-      new Provider(XHR, {useClass: XHRImpl}),
+      /* @ts2dart_Provider */ {provide: EVENT_MANAGER_PLUGINS, useClass: DomEventsPlugin, multi: true},
+      /* @ts2dart_Provider */ {provide: EVENT_MANAGER_PLUGINS, useClass: KeyEventsPlugin, multi: true},
+      /* @ts2dart_Provider */ {provide: EVENT_MANAGER_PLUGINS, useClass: HammerGesturesPlugin, multi: true},
+      /* @ts2dart_Provider */ {provide: HAMMER_GESTURE_CONFIG, useClass: HammerGestureConfig},
+      /* @ts2dart_Provider */ {provide: DomRootRenderer, useClass: DomRootRenderer_},
+      /* @ts2dart_Provider */ {provide: RootRenderer, useExisting: DomRootRenderer},
+      /* @ts2dart_Provider */ {provide: SharedStylesHost, useExisting: DomSharedStylesHost},
+      /* @ts2dart_Provider */ {provide: XHR, useClass: XHRImpl},
       MessageBasedXHRImpl,
-      new Provider(ServiceMessageBrokerFactory, {useClass: ServiceMessageBrokerFactory_}),
-      new Provider(ClientMessageBrokerFactory, {useClass: ClientMessageBrokerFactory_}),
+      /* @ts2dart_Provider */ {provide: ServiceMessageBrokerFactory, useClass: ServiceMessageBrokerFactory_},
+      /* @ts2dart_Provider */ {provide: ClientMessageBrokerFactory, useClass: ClientMessageBrokerFactory_},
       Serializer,
-      new Provider(ON_WEB_WORKER, {useValue: false}),
+      /* @ts2dart_Provider */ {provide: ON_WEB_WORKER, useValue: false},
       RenderStore,
       DomSharedStylesHost,
       Testability,

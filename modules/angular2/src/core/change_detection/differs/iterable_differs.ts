@@ -32,8 +32,8 @@ export interface IterableDifferFactory {
  * A repository of different iterable diffing strategies used by NgFor, NgClass, and others.
  * @ts2dart_const
  */
-/* @ts2dart_const */
 export class IterableDiffers {
+  /*@ts2dart_const*/
   constructor(public factories: IterableDifferFactory[]) {}
 
   static create(factories: IterableDifferFactory[], parent?: IterableDiffers): IterableDiffers {

@@ -1,5 +1,4 @@
 import {Type} from 'angular2/src/facade/lang';
-import {provide, Provider, Injector, OpaqueToken} from 'angular2/src/core/di';
 import {APP_ID_RANDOM_PROVIDER} from './application_tokens';
 import {APPLICATION_CORE_PROVIDERS} from './application_ref';
 import {
@@ -18,13 +17,13 @@ let __unused: Type;  // avoid unused import when Type union types are erased
  * A default set of providers which should be included in any Angular
  * application, regardless of the platform it runs onto.
  */
-export const APPLICATION_COMMON_PROVIDERS: Array<any | Type | Provider | any[]> =
+export const APPLICATION_COMMON_PROVIDERS: Array<Type | {[k: string]: any} | any[]> =
     /*@ts2dart_const*/[
       APPLICATION_CORE_PROVIDERS,
-      /*@ts2dart_const*/ {provide: ComponentResolver, useClass: ReflectorComponentResolver},
+      /* @ts2dart_Provider */ {provide: ComponentResolver, useClass: ReflectorComponentResolver},
       APP_ID_RANDOM_PROVIDER,
       ViewUtils,
-      /*@ts2dart_const*/ {provide: IterableDiffers, useValue: defaultIterableDiffers},
-      /*@ts2dart_const*/ {provide: KeyValueDiffers, useValue: defaultKeyValueDiffers},
-      /*@ts2dart_const*/ {provide: DynamicComponentLoader, useClass: DynamicComponentLoader_},
+      /* @ts2dart_Provider */ {provide: IterableDiffers, useValue: defaultIterableDiffers},
+      /* @ts2dart_Provider */ {provide: KeyValueDiffers, useValue: defaultKeyValueDiffers},
+      /* @ts2dart_Provider */ {provide: DynamicComponentLoader, useClass: DynamicComponentLoader_}
     ];

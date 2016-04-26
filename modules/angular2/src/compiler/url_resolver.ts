@@ -26,7 +26,10 @@ export function createOfflineCompileUrlResolver(): UrlResolver {
 /**
  * A default provider for {@link PACKAGE_ROOT_URL} that maps to '/'.
  */
-export var DEFAULT_PACKAGE_URL_PROVIDER = new Provider(PACKAGE_ROOT_URL, {useValue: "/"});
+export var DEFAULT_PACKAGE_URL_PROVIDER = {
+  provide: PACKAGE_ROOT_URL,
+  useValue: "/"
+};
 
 /**
  * Used by the {@link Compiler} when resolving HTML and CSS template URLs.

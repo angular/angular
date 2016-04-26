@@ -21,7 +21,7 @@ import {looseIdentical, isPresent} from 'angular2/src/facade/lang';
 import {ListWrapper} from 'angular2/src/facade/collection';
 
 export const RADIO_VALUE_ACCESSOR: any = /*@ts2dart_const*/ /*@ts2dart_Provider*/ {
-  povide: NG_VALUE_ACCESSOR,
+  provide: NG_VALUE_ACCESSOR,
   useExisting: forwardRef(() => RadioControlValueAccessor),
   multi: true
 };
