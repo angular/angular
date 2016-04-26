@@ -28,7 +28,7 @@ export interface Validator { validate(c: modelModule.AbstractControl): {[key: st
 const REQUIRED = /*@ts2dart_const*/ Validators.required;
 
 const REQUIRED_VALIDATOR =
-    /*@ts2dart_const*/ new Provider(NG_VALIDATORS, {useValue: REQUIRED, multi: true});
+    /*@ts2dart_const*/ {provide: NG_VALIDATORS, useValue: REQUIRED, multi: true};
 
 /**
  * A Directive that adds the `required` validator to any controls marked with the
@@ -59,8 +59,8 @@ export interface AsyncValidatorFn {
  *
  * {@example common/forms/ts/validators/validators.ts region='min'}
  */
-const MIN_LENGTH_VALIDATOR = /*@ts2dart_const*/ 
-    new Provider(NG_VALIDATORS, {useExisting: forwardRef(( => MinLengthValidator), multi: true}));
+const MIN_LENGTH_VALIDATOR = /*@ts2dart_const*/
+    {provide: NG_VALIDATORS, useExisting: forwardRef(() => MinLengthValidator), multi: true};
 
 /**
  * A directive which installs the {@link MinLengthValidator} for any `ngControl`,
@@ -87,8 +87,8 @@ export class MinLengthValidator implements Validator {
  *
  * {@example common/forms/ts/validators/validators.ts region='max'}
  */
-const MAX_LENGTH_VALIDATOR = /*@ts2dart_const*/ 
-    new Provider(NG_VALIDATORS, {useExisting: forwardRef(( => MaxLengthValidator), multi: true}));
+const MAX_LENGTH_VALIDATOR = /*@ts2dart_const*/
+    {provide: NG_VALIDATORS, useExisting: forwardRef(() => MaxLengthValidator), multi: true};
 
 /**
  * A directive which installs the {@link MaxLengthValidator} for any `ngControl, `ngFormControl`,
@@ -121,8 +121,8 @@ export class MaxLengthValidator implements Validator {
  * <input [ngControl]="fullName" pattern="[a-zA-Z ]*">
  * ```
  */
-const PATTERN_VALIDATOR = /*@ts2dart_const*/ 
-    new Provider(NG_VALIDATORS, {useExisting: forwardRef(( => PatternValidator), multi: true}));
+const PATTERN_VALIDATOR = /*@ts2dart_const*/
+    {provide: NG_VALIDATORS, useExisting: forwardRef(() => PatternValidator), multi: true};
 @Directive({
   selector: '[pattern][ngControl],[pattern][ngFormControl],[pattern][ngModel]',
   providers: [PATTERN_VALIDATOR]

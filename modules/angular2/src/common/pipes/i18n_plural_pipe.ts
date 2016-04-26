@@ -35,7 +35,6 @@ var interpolationExp: RegExp = RegExpWrapper.create('#');
  *  ```
  *
  */
-/* @ts2dart_const */
 @Pipe({name: 'i18nPlural', pure: true})
 @Injectable()
 export class I18nPluralPipe implements PipeTransform {

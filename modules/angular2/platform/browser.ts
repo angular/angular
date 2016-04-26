@@ -34,16 +34,12 @@ import {
 import {ReflectionCapabilities} from 'angular2/src/core/reflection/reflection_capabilities';
 import {XHRImpl} from "angular2/src/platform/browser/xhr_impl";
 import {XHR} from 'angular2/compiler';
-import {Provider} from 'angular2/src/core/di';
 
 /**
  * An array of providers that should be passed into `application()` when bootstrapping a component.
  */
-export const BROWSER_APP_PROVIDERS: Array<any /*Type | Provider | any[]*/> = /*@ts2dart_const*/ [
-  BROWSER_APP_COMMON_PROVIDERS,
-  COMPILER_PROVIDERS,
-  new Provider(XHR, {useClass: XHRImpl},
-]);
+export const BROWSER_APP_PROVIDERS: Array<any /*Type | Provider | any[]*/> = /*@ts2dart_const*/
+    [BROWSER_APP_COMMON_PROVIDERS, COMPILER_PROVIDERS, {provide: XHR, useClass: XHRImpl}];
 
 export function browserPlatform(): PlatformRef {
   if (isBlank(getPlatform())) {

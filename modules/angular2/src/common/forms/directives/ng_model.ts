@@ -23,7 +23,7 @@ import {
 import {ValidatorFn, AsyncValidatorFn} from './validators';
 
 const formControlBinding =
-    /*@ts2dart_const*/ new Provider(NgControl, {useExisting: forwardRef(( => NgModel)}));
+    /*@ts2dart_const*/ {provide: NgControl, useExisting: forwardRef(() => NgModel)};
 
 /**
  * Binds a domain model to a form control.

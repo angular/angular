@@ -2248,7 +2248,7 @@ class PublicApi {
 
 @Directive({
   selector: '[public-api]',
-  providers: [new Provider(PublicApi, {useExisting: PrivateImpl, deps: []})]
+  providers: [{provide: PublicApi, useExisting: PrivateImpl, deps: []}]
 })
 @Injectable()
 class PrivateImpl extends PublicApi {
@@ -2315,9 +2315,8 @@ function createInjectableWithLogging(inj: Injector) {
 
 @Component({
   selector: 'component-providing-logging-injectable',
-  providers: [
-    new Provider(InjectableService, {useFactory: createInjectableWithLogging, deps: [Injector]})
-  ],
+  providers:
+      [{provide: InjectableService, useFactory: createInjectableWithLogging, deps: [Injector]}],
   template: ''
 })
 @Injectable()
@@ -2342,8 +2341,8 @@ class DirectiveProvidingInjectableInView {
 
 @Component({
   selector: 'directive-providing-injectable',
-  providers: [new Provider(InjectableService, {useValue: 'host'})],
-  viewProviders: [new Provider(InjectableService, {useValue: 'view'})],
+  providers: [{provide: InjectableService, useValue: 'host'}],
+  viewProviders: [{provide: InjectableService, useValue: 'view'}],
   template: ''
 })
 @Injectable()
@@ -2393,7 +2392,7 @@ class EventBus {
 
 @Directive({
   selector: 'grand-parent-providing-event-bus',
-  providers: [new Provider(EventBus, {useValue: new EventBus(null, "grandparent")})]
+  providers: [{provide: EventBus, useValue: new EventBus(null, "grandparent")}]
 })
 class GrandParentProvidingEventBus {
   bus: EventBus;

@@ -6,7 +6,7 @@ import {
 } from 'angular2/src/facade/collection';
 
 export {looseIdentical} from 'angular2/src/facade/lang';
-export var uninitialized: Object = /*@ts2dart_const*/<Object>(new Object());
+export var uninitialized: Object = /*@ts2dart_const*/ new Object();
 
 export function devModeEqual(a: any, b: any): boolean {
   if (isListLikeIterable(a) && isListLikeIterable(b)) {

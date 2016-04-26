@@ -1,4 +1,3 @@
-import {isBlank, stringify} from 'angular2/src/facade/lang';
 import {Injector, THROW_IF_NOT_FOUND} from 'angular2/src/core/di/injector';
 import {AppView} from './view';
 

@@ -31,7 +31,7 @@ import {PlatformLocation} from 'angular2/platform/common';
  */
 export const ROUTER_PROVIDERS: any[] = /*@ts2dart_const*/[
   ROUTER_PROVIDERS_COMMON,
-  new Provider(PlatformLocation, {useClass: BrowserPlatformLocation}),
+  /*@ts2dart_const*/ ({provide: PlatformLocation, useClass: BrowserPlatformLocation}),
 ];
 
 /**

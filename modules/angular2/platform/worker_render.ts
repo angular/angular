@@ -57,7 +57,7 @@ export function bootstrapRender(
   var app = ReflectiveInjector.resolveAndCreate(
       [
         WORKER_RENDER_APPLICATION,
-        new Provider(WORKER_SCRIPT, {useValue: workerScriptUri}),
+        {provide: WORKER_SCRIPT, useValue: workerScriptUri},
         isPresent(customProviders) ? customProviders : []
       ],
       workerRenderPlatform().injector);

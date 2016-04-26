@@ -22,8 +22,8 @@ import {BaseException} from 'angular2/src/facade/exceptions';
  *
  * expect(injector.get("message")).toEqual('Hello');
  * ```
+ * @ts2dart_const
  */
-/* @ts2dart_const */
 export class Provider {
   /**
    * Token used when retrieving this provider. Usually, it is a type {@link Type}.
@@ -45,11 +45,11 @@ export class Provider {
    *
    * var injectorClass = Injector.resolveAndCreate([
    *   Car,
-   *   new Provider(Vehicle, { useClass: Car })
+   *   {provide: Vehicle,  useClass: Car }
    * ]);
    * var injectorAlias = Injector.resolveAndCreate([
    *   Car,
-   *   new Provider(Vehicle, { useExisting: Car })
+   *   {provide: Vehicle,  useExisting: Car }
    * ]);
    *
    * expect(injectorClass.get(Vehicle)).not.toBe(injectorClass.get(Car));
@@ -94,11 +94,11 @@ export class Provider {
    *
    * var injectorAlias = Injector.resolveAndCreate([
    *   Car,
-   *   new Provider(Vehicle, { useExisting: Car })
+   *   {provide: Vehicle,  useExisting: Car }
    * ]);
    * var injectorClass = Injector.resolveAndCreate([
    *   Car,
-   *   new Provider(Vehicle, { useClass: Car })
+   *   {provide: Vehicle,  useClass: Car }
    * ]);
    *
    * expect(injectorAlias.get(Vehicle)).toBe(injectorAlias.get(Car));
@@ -117,7 +117,7 @@ export class Provider {
    *
    * ```typescript
    * var injector = Injector.resolveAndCreate([
-   *   new Provider(Number, { useFactory: () => { return 1+2; }}),
+   *   {provide: Number,  useFactory: () => { return 1+2; }},
    *   new Provider(String, { useFactory: (value) => { return "Value: " + value; },
    *                       deps: [Number] })
    * ]);
@@ -138,7 +138,7 @@ export class Provider {
    *
    * ```typescript
    * var injector = Injector.resolveAndCreate([
-   *   new Provider(Number, { useFactory: () => { return 1+2; }}),
+   *   {provide: Number,  useFactory: () => { return 1+2; }},
    *   new Provider(String, { useFactory: (value) => { return "Value: " + value; },
    *                       deps: [Number] })
    * ]);
@@ -208,8 +208,8 @@ export class Provider {
  * See {@link Provider} instead.
  *
  * @deprecated
+ * @ts2dart_const
  */
-/* @ts2dart_const */
 export class Binding extends Provider {
   constructor(token, {toClass, toValue, toAlias, toFactory, deps, multi}: {
     toClass?: Type,

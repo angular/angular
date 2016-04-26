@@ -60,8 +60,8 @@ export var VIEW_ENCAPSULATION_VALUES =
  *   }
  * }
  * ```
+ * @ts2dart_const
  */
-/* @ts2dart_const */
 export class ViewMetadata {
   /**
    * Specifies a template URL for an Angular component.

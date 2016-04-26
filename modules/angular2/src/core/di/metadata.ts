@@ -39,8 +39,8 @@ import {stringify, isBlank, isPresent} from "angular2/src/facade/lang";
  * var injector = Injector.resolveAndCreate([Engine, Car]);
  * expect(injector.get(Car).engine instanceof Engine).toBe(true);
  * ```
+ * @ts2dart_const
  */
-/* @ts2dart_const */
 export class InjectMetadata {
   constructor(public token) {}
   toString(): string { return `@Inject(${stringify(this.token)})`; }
@@ -66,8 +66,8 @@ export class InjectMetadata {
  * var injector = Injector.resolveAndCreate([Car]);
  * expect(injector.get(Car).engine).toBeNull();
  * ```
+ * @ts2dart_const
  */
-/* @ts2dart_const */
 export class OptionalMetadata {
   toString(): string { return `@Optional()`; }
 }
@@ -75,8 +75,8 @@ export class OptionalMetadata {
 /**
  * `DependencyMetadata` is used by the framework to extend DI.
  * This is internal to Angular and should not be used directly.
+ * @ts2dart_const
  */
-/* @ts2dart_const */
 export class DependencyMetadata {
   get token() { return null; }
 }
@@ -111,8 +111,8 @@ export class DependencyMetadata {
  * var injector = Injector.resolveAndCreate([NeedsService, UsefulService]);
  * expect(() => injector.get(NeedsService)).toThrowError();
  * ```
+ * @ts2dart_const
  */
-/* @ts2dart_const */
 export class InjectableMetadata {
   constructor() {}
 }
@@ -143,8 +143,8 @@ export class InjectableMetadata {
  * var child = inj.resolveAndCreateChild([NeedsDependency]);
  * expect(() => child.get(NeedsDependency)).toThrowError();
  * ```
+ * @ts2dart_const
  */
-/* @ts2dart_const */
 export class SelfMetadata {
   toString(): string { return `@Self()`; }
 }
@@ -173,8 +173,8 @@ export class SelfMetadata {
  * var inj = Injector.resolveAndCreate([Dependency, NeedsDependency]);
  * expect(() => inj.get(NeedsDependency)).toThrowError();
  * ```
+ * @ts2dart_const
  */
-/* @ts2dart_const */
 export class SkipSelfMetadata {
   toString(): string { return `@SkipSelf()`; }
 }
@@ -232,8 +232,8 @@ export class SkipSelfMetadata {
  *
  * bootstrap(App);
  *```
+ * @ts2dart_const
  */
-/* @ts2dart_const */
 export class HostMetadata {
   toString(): string { return `@Host()`; }
 }

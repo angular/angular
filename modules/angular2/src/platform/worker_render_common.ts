@@ -64,8 +64,8 @@ export const WORKER_RENDER_PLATFORM_MARKER =
 
 export const WORKER_RENDER_PLATFORM: Array<any /*Type | Provider | any[]*/> = /*@ts2dart_const*/[
   PLATFORM_COMMON_PROVIDERS,
-  new Provider(WORKER_RENDER_PLATFORM_MARKER, {useValue: true}),
-  new Provider(PLATFORM_INITIALIZER, {useValue: initWebWorkerRenderPlatform, multi: true})
+  /*@ts2dart_const*/ ({provide: WORKER_RENDER_PLATFORM_MARKER, useValue: true}),
+  {provide: PLATFORM_INITIALIZER, useValue: initWebWorkerRenderPlatform, multi: true}
 ];
 
 /**
@@ -79,23 +79,23 @@ export const WORKER_RENDER_APPLICATION_COMMON: Array<any /*Type | Provider | any
     /*@ts2dart_const*/[
       APPLICATION_COMMON_PROVIDERS,
       WORKER_RENDER_MESSAGING_PROVIDERS,
-      new Provider(ExceptionHandler, {useFactory: _exceptionHandler, deps: []}),
-      new Provider(DOCUMENT, {useFactory: _document, deps: []}),
+      {provide: ExceptionHandler, useFactory: _exceptionHandler, deps: []},
+      {provide: DOCUMENT, useFactory: _document, deps: []},
       // TODO(jteplitz602): Investigate if we definitely need EVENT_MANAGER on the render thread
       // #5298
-      new Provider(EVENT_MANAGER_PLUGINS, {useClass: DomEventsPlugin, multi: true}),
-      new Provider(EVENT_MANAGER_PLUGINS, {useClass: KeyEventsPlugin, multi: true}),
-      new Provider(EVENT_MANAGER_PLUGINS, {useClass: HammerGesturesPlugin, multi: true}),
-      new Provider(HAMMER_GESTURE_CONFIG, {useClass: HammerGestureConfig}),
-      new Provider(DomRootRenderer, {useClass: DomRootRenderer_}),
-      new Provider(RootRenderer, {useExisting: DomRootRenderer}),
-      new Provider(SharedStylesHost, {useExisting: DomSharedStylesHost}),
-      new Provider(XHR, {useClass: XHRImpl}),
+      {provide: EVENT_MANAGER_PLUGINS, useClass: DomEventsPlugin, multi: true},
+      {provide: EVENT_MANAGER_PLUGINS, useClass: KeyEventsPlugin, multi: true},
+      {provide: EVENT_MANAGER_PLUGINS, useClass: HammerGesturesPlugin, multi: true},
+      {provide: HAMMER_GESTURE_CONFIG, useClass: HammerGestureConfig},
+      {provide: DomRootRenderer, useClass: DomRootRenderer_},
+      {provide: RootRenderer, useExisting: DomRootRenderer},
+      {provide: SharedStylesHost, useExisting: DomSharedStylesHost},
+      {provide: XHR, useClass: XHRImpl},
       MessageBasedXHRImpl,
-      new Provider(ServiceMessageBrokerFactory, {useClass: ServiceMessageBrokerFactory_}),
-      new Provider(ClientMessageBrokerFactory, {useClass: ClientMessageBrokerFactory_}),
+      {provide: ServiceMessageBrokerFactory, useClass: ServiceMessageBrokerFactory_},
+      {provide: ClientMessageBrokerFactory, useClass: ClientMessageBrokerFactory_},
       Serializer,
-      new Provider(ON_WEB_WORKER, {useValue: false}),
+      {provide: ON_WEB_WORKER, useValue: false},
       RenderStore,
       DomSharedStylesHost,
       Testability,

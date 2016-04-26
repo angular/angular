@@ -69,8 +69,8 @@ export class ComponentRef_ extends ComponentRef {
   onDestroy(callback: Function): void { this.hostView.onDestroy(callback); }
 }
 
-/* @ts2dart_const */
 export class ComponentFactory {
+  /* @ts2dart_const */
   constructor(public selector: string, private _viewFactory: Function,
               private _componentType: Type) {}
 
