@@ -391,7 +391,8 @@ export abstract class ReflectiveInjector implements Injector {
    *
    * See {@link ReflectiveInjector#fromResolvedProviders} for more info.
    */
-  static resolve(providers: Array<Type | Provider | any[]>): ResolvedReflectiveProvider[] {
+  static resolve(providers: Array<Type | Provider | {[k: string]: any} | any[]>):
+      ResolvedReflectiveProvider[] {
     return resolveReflectiveProviders(providers);
   }
 
@@ -421,7 +422,7 @@ export abstract class ReflectiveInjector implements Injector {
    * because it needs to resolve the passed-in providers first.
    * See {@link Injector#resolve} and {@link Injector#fromResolvedProviders}.
    */
-  static resolveAndCreate(providers: Array<Type | Provider | any[]>,
+  static resolveAndCreate(providers: Array<Type | Provider | {[k: string]: any} | any[]>,
                           parent: Injector = null): ReflectiveInjector {
     var ResolvedReflectiveProviders = ReflectiveInjector.resolve(providers);
     return ReflectiveInjector.fromResolvedProviders(ResolvedReflectiveProviders, parent);
@@ -512,7 +513,8 @@ export abstract class ReflectiveInjector implements Injector {
    * because it needs to resolve the passed-in providers first.
    * See {@link Injector#resolve} and {@link Injector#createChildFromResolved}.
    */
-  resolveAndCreateChild(providers: Array<Type | Provider | any[]>): ReflectiveInjector {
+  resolveAndCreateChild(
+      providers: Array<Type | Provider | {[k: string]: any} | any[]>): ReflectiveInjector {
     return unimplemented();
   }
 
