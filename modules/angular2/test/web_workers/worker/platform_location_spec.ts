@@ -19,7 +19,6 @@ import {
 import {UiArguments} from 'angular2/src/web_workers/shared/client_message_broker';
 import {Type} from 'angular2/src/facade/lang';
 import {PromiseWrapper} from "angular2/src/facade/async";
-import {CONST_EXPR} from 'angular2/src/facade/lang';
 
 export function main() {
   describe("WebWorkerPlatformLocation", () => {

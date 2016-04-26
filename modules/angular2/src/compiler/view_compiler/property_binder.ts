@@ -11,7 +11,7 @@ import {
   TemplateAst
 } from '../template_ast';
 
-import {isBlank, isPresent, isArray, CONST_EXPR} from 'angular2/src/facade/lang';
+import {isBlank, isPresent, isArray} from 'angular2/src/facade/lang';
 
 import {CompileView} from './compile_view';
 import {CompileElement, CompileNode} from './compile_element';

@@ -1,5 +1,5 @@
 import {NgZone} from 'angular2/src/core/zone/ng_zone';
-import {Type, CONST_EXPR, isPresent} from 'angular2/src/facade/lang';
+import {Type, isPresent} from 'angular2/src/facade/lang';
 import {Provider} from 'angular2/src/core/di';
 import {Parse5DomAdapter} from 'angular2/src/platform/server/parse5_adapter';
 import {

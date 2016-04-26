@@ -17,7 +17,6 @@ import {
   isArray,
   isNumber,
   CONST,
-  CONST_EXPR,
   stringify,
   isPrimitive,
   isString
@@ -51,7 +50,7 @@ import {
 import {StaticNodeDebugInfo, DebugContext} from './debug_context';
 import {ElementInjector} from './element_injector';
 
-const EMPTY_CONTEXT = CONST_EXPR(new Object());
+const EMPTY_CONTEXT = /*@ts2dart_const*/ new Object();
 
 var _scope_check: WtfScopeFn = wtfCreateScope(`AppView#check(ascii id)`);
 

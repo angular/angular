@@ -32,7 +32,6 @@ import {
   stringify,
   isBlank,
   CONST,
-  CONST_EXPR,
   IS_DART
 } from 'angular2/src/facade/lang';
 import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
@@ -93,7 +92,7 @@ import {TemplateRef_, TemplateRef} from 'angular2/src/core/linker/template_ref';
 
 import {Renderer} from 'angular2/src/core/render';
 
-const ANCHOR_ELEMENT = CONST_EXPR(new OpaqueToken('AnchorElement'));
+const ANCHOR_ELEMENT = /*@ts2dart_const*/ new OpaqueToken('AnchorElement');
 
 export function main() {
   if (IS_DART) {

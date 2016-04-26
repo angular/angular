@@ -6,7 +6,6 @@ import {
   assertionsEnabled,
   print,
   IS_DART,
-  CONST_EXPR,
   lockMode,
   isPromise
 } from 'angular2/src/facade/lang';
@@ -436,13 +435,13 @@ export class ApplicationRef_ extends ApplicationRef {
  * @internal
  */
 export const PLATFORM_CORE_PROVIDERS =
-    CONST_EXPR([PlatformRef_, CONST_EXPR(new Provider(PlatformRef, {useExisting: PlatformRef_}))]);
+    /*@ts2dart_const*/[PlatformRef_, new Provider(PlatformRef, {useExisting: PlatformRef_})];
 
 /**
  * @internal
  */
-export const APPLICATION_CORE_PROVIDERS = CONST_EXPR([
-  CONST_EXPR(new Provider(NgZone, {useFactory: createNgZone, deps: CONST_EXPR([])})),
+export const APPLICATION_CORE_PROVIDERS = /*@ts2dart_const*/[
+  new Provider(NgZone, {useFactory: createNgZone, deps: []}),
   ApplicationRef_,
-  CONST_EXPR(new Provider(ApplicationRef, {useExisting: ApplicationRef_}))
-]);
+  new Provider(ApplicationRef, {useExisting: ApplicationRef_})
+];

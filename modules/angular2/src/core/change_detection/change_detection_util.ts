@@ -1,4 +1,4 @@
-import {CONST_EXPR, isBlank, looseIdentical, isPrimitive} from 'angular2/src/facade/lang';
+import {isBlank, looseIdentical, isPrimitive} from 'angular2/src/facade/lang';
 import {
   StringMapWrapper,
   isListLikeIterable,
@@ -6,7 +6,7 @@ import {
 } from 'angular2/src/facade/collection';
 
 export {looseIdentical} from 'angular2/src/facade/lang';
-export var uninitialized: Object = CONST_EXPR<Object>(new Object());
+export var uninitialized: Object = /*@ts2dart_const*/<Object>(new Object());
 
 export function devModeEqual(a: any, b: any): boolean {
   if (isListLikeIterable(a) && isListLikeIterable(b)) {

@@ -1,10 +1,10 @@
 import {HammerGesturesPluginCommon} from './hammer_common';
-import {isPresent, CONST_EXPR} from 'angular2/src/facade/lang';
+import {isPresent} from 'angular2/src/facade/lang';
 import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
 import {Injectable, Inject, OpaqueToken} from 'angular2/core';
 
 export const HAMMER_GESTURE_CONFIG: OpaqueToken =
-    CONST_EXPR(new OpaqueToken("HammerGestureConfig"));
+    /*@ts2dart_const*/ new OpaqueToken("HammerGestureConfig");
 
 export interface HammerInstance {
   on(eventName: string, callback: Function): void;

@@ -1,8 +1,8 @@
-import {isBlank, stringify, CONST_EXPR} from 'angular2/src/facade/lang';
+import {isBlank, stringify} from 'angular2/src/facade/lang';
 import {Injector, THROW_IF_NOT_FOUND} from 'angular2/src/core/di/injector';
 import {AppView} from './view';
 
-const _UNDEFINED = CONST_EXPR(new Object());
+const _UNDEFINED = /*@ts2dart_const*/ new Object();
 
 export class ElementInjector extends Injector {
   constructor(private _view: AppView<any>, private _nodeIndex: number) { super(); }
