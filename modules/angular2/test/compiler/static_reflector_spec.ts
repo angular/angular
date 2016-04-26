@@ -1,27 +1,20 @@
 import {
-  ddescribe,
   describe,
-  xdescribe,
   it,
-  iit,
-  xit,
   expect,
-  beforeEach,
-  afterEach,
-  AsyncTestCompleter,
-  inject,
-  beforeEachProviders
 } from 'angular2/testing_internal';
+import {ListWrapper} from 'angular2/src/facade/collection';
 
 import {StaticReflector, StaticReflectorHost} from 'angular2/src/compiler/static_reflector';
 
 export function main() {
-  describe('StaticRefelector', () => {
+  describe('StaticReflector', () => {
     it('should get annotations for NgFor', () => {
       let host = new MockReflectorHost();
       let reflector = new StaticReflector(host);
 
-      let NgFor = reflector.getStaticType('angular2/src/common/directives/ng_for', 'NgFor');
+      let NgFor = reflector.getStaticType(
+          host.resolveModule('angular2/src/common/directives/ng_for'), 'NgFor');
       let annotations = reflector.annotations(NgFor);
       expect(annotations.length).toEqual(1);
       let annotation = annotations[0];
@@ -33,15 +26,18 @@ export function main() {
       let host = new MockReflectorHost();
       let reflector = new StaticReflector(host);
 
-      let NgFor = reflector.getStaticType('angular2/src/common/directives/ng_for', 'NgFor');
-      let ViewContainerRef = reflector.getStaticType('angular2/src/core/linker/view_container_ref',
-                                                     'ViewContainerRef');
-      let TemplateRef =
-          reflector.getStaticType('angular2/src/core/linker/template_ref', 'TemplateRef');
+      let NgFor = reflector.getStaticType(
+          host.resolveModule('angular2/src/common/directives/ng_for'), 'NgFor');
+      let ViewContainerRef = reflector.getStaticType(
+          host.resolveModule('angular2/src/core/linker/view_container_ref'), 'ViewContainerRef');
+      let TemplateRef = reflector.getStaticType(
+          host.resolveModule('angular2/src/core/linker/template_ref'), 'TemplateRef');
       let IterableDiffers = reflector.getStaticType(
-          'angular2/src/core/change_detection/differs/iterable_differs', 'IterableDiffers');
+          host.resolveModule('angular2/src/core/change_detection/differs/iterable_differs'),
+          'IterableDiffers');
       let ChangeDetectorRef = reflector.getStaticType(
-          'angular2/src/core/change_detection/change_detector_ref', 'ChangeDetectorRef');
+          host.resolveModule('angular2/src/core/change_detection/change_detector_ref'),
+          'ChangeDetectorRef');
 
       let parameters = reflector.parameters(NgFor);
       expect(parameters)
@@ -53,7 +49,7 @@ export function main() {
       let reflector = new StaticReflector(host);
 
       let HeroDetailComponent =
-          reflector.getStaticType('./app/hero-detail.component', 'HeroDetailComponent');
+          reflector.getStaticType('/src/app/hero-detail.component.ts', 'HeroDetailComponent');
       let annotations = reflector.annotations(HeroDetailComponent);
       expect(annotations.length).toEqual(1);
       let annotation = annotations[0];
@@ -64,7 +60,7 @@ export function main() {
       let host = new MockReflectorHost();
       let reflector = new StaticReflector(host);
 
-      let UnknownClass = reflector.getStaticType('./app/app.component', 'UnknownClass');
+      let UnknownClass = reflector.getStaticType('/src/app/app.component.ts', 'UnknownClass');
       let annotations = reflector.annotations(UnknownClass);
       expect(annotations).toEqual([]);
     });
@@ -74,7 +70,7 @@ export function main() {
       let reflector = new StaticReflector(host);
 
       let HeroDetailComponent =
-          reflector.getStaticType('./app/hero-detail.component', 'HeroDetailComponent');
+          reflector.getStaticType('/src/app/hero-detail.component.ts', 'HeroDetailComponent');
       let props = reflector.propMetadata(HeroDetailComponent);
       expect(props['hero']).toBeTruthy();
     });
@@ -83,7 +79,7 @@ export function main() {
       let host = new MockReflectorHost();
       let reflector = new StaticReflector(host);
 
-      let UnknownClass = reflector.getStaticType('./app/app.component', 'UnknownClass');
+      let UnknownClass = reflector.getStaticType('/src/app/app.component.ts', 'UnknownClass');
       let properties = reflector.propMetadata(UnknownClass);
       expect(properties).toEqual({});
     });
@@ -92,7 +88,7 @@ export function main() {
       let host = new MockReflectorHost();
       let reflector = new StaticReflector(host);
 
-      let UnknownClass = reflector.getStaticType('./app/app.component', 'UnknownClass');
+      let UnknownClass = reflector.getStaticType('/src/app/app.component.ts', 'UnknownClass');
       let parameters = reflector.parameters(UnknownClass);
       expect(parameters).toEqual([]);
     });
@@ -301,7 +297,7 @@ export function main() {
       expect(reflector.simplify('', ({ __symbolic: 'pre', operator: '!', operand: false}))).toBe(!false);
     });
 
-    it('should simpify an array index', () => {
+    it('should simplify an array index', () => {
       let host = new MockReflectorHost();
       let reflector = new StaticReflector(host);
 
@@ -320,20 +316,56 @@ export function main() {
       let host = new MockReflectorHost();
       let reflector = new StaticReflector(host);
 
-      expect(
-          reflector.simplify('./cases', ({__symbolic: "reference", module: "./extern", name: "s"})))
+      expect(reflector.simplify('/src/cases',
+                                ({__symbolic: "reference", module: "./extern", name: "s"})))
           .toEqual("s");
     });
   });
 }
 
 class MockReflectorHost implements StaticReflectorHost {
+  resolveModule(moduleName: string, containingFile?: string): string {
+    function splitPath(path: string): string[] { return path.split(/\/|\\/g); }
+
+    function resolvePath(pathParts: string[]): string {
+      let result = [];
+      ListWrapper.forEachWithIndex(pathParts, (part, index) => {
+        switch (part) {
+          case '':
+          case '.':
+            if (index > 0) return;
+            break;
+          case '..':
+            if (index > 0 && result.length != 0) result.pop();
+            return;
+        }
+        result.push(part);
+      });
+      return result.join('/');
+    }
+
+    function pathTo(from: string, to: string): string {
+      let result = to;
+      if (to.startsWith('.')) {
+        let fromParts = splitPath(from);
+        fromParts.pop();  // remove the file name.
+        let toParts = splitPath(to);
+        result = resolvePath(fromParts.concat(toParts));
+      }
+      return result;
+    }
+
+    if (moduleName.indexOf('.') === 0) {
+      return pathTo(containingFile, moduleName) + '.d.ts';
+    }
+    return '/tmp/' + moduleName + '.d.ts';
+  }
+
   getMetadataFor(moduleId: string): any {
     return {
-      'angular2/src/common/directives/ng_for':
+      '/tmp/angular2/src/common/directives/ng_for.d.ts':
           {
             "__symbolic": "module",
-            "module": "./ng_for",
             "metadata":
                 {
                   "NgFor":
@@ -393,27 +425,17 @@ class MockReflectorHost implements StaticReflectorHost {
                       }
                 }
           },
-          'angular2/src/core/linker/view_container_ref':
-              {
-                "module": "./view_container_ref",
-                "metadata": {"ViewContainerRef": {"__symbolic": "class"}}
-              },
-          'angular2/src/core/linker/template_ref':
+          '/tmp/angular2/src/core/linker/view_container_ref.d.ts':
+              {"metadata": {"ViewContainerRef": {"__symbolic": "class"}}},
+          '/tmp/angular2/src/core/linker/template_ref.d.ts':
               {"module": "./template_ref", "metadata": {"TemplateRef": {"__symbolic": "class"}}},
-          'angular2/src/core/change_detection/differs/iterable_differs':
-              {
-                "module": "./iterable_differs",
-                "metadata": {"IterableDiffers": {"__symbolic": "class"}}
-              },
-          'angular2/src/core/change_detection/change_detector_ref':
-              {
-                "module": "./change_detector_ref",
-                "metadata": {"ChangeDetectorRef": {"__symbolic": "class"}}
-              },
-          './app/hero-detail.component':
+          '/tmp/angular2/src/core/change_detection/differs/iterable_differs.d.ts':
+              {"metadata": {"IterableDiffers": {"__symbolic": "class"}}},
+          '/tmp/angular2/src/core/change_detection/change_detector_ref.d.ts':
+              {"metadata": {"ChangeDetectorRef": {"__symbolic": "class"}}},
+          '/src/app/hero-detail.component.ts':
               {
                 "__symbolic": "module",
-                "module": "./hero-detail.component",
                 "metadata":
                     {
                       "HeroDetailComponent":
@@ -459,8 +481,8 @@ class MockReflectorHost implements StaticReflectorHost {
                           }
                     }
               },
-          './extern': {
-        "__symbolic": "module", module: './extern', metadata: { s: "s" }
+          '/src/extern.d.ts': {
+        "__symbolic": "module", metadata: { s: "s" }
       }
     }
     [moduleId];
