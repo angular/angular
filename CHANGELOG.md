@@ -74,6 +74,36 @@ fakeAsync(inject([...], (...) => {...}))
 
 * - pipes now take a variable number of arguments, and not an array that contains all arguments.
 
+* `Location` and other related providers have been moved out of `router` and into `platform/common`. `BrowserPlatformLocation` is not meant to be used directly however advanced configurations may use it via the following import change.
+
+Before:
+
+```
+import {
+  PlatformLocation,
+  Location,
+  LocationStrategy,
+  HashLocationStrategy,
+  PathLocationStrategy,
+  APP_BASE_HREF}
+from 'angular2/router';
+
+import {BrowserPlatformLocation} from 'angular2/src/router/location/browser_platform_location';
+```
+
+After:
+
+```
+import {
+  PlatformLocation,
+  Location,
+  LocationStrategy,
+  HashLocationStrategy,
+  PathLocationStrategy,
+  APP_BASE_HREF}
+from 'angular2/platform/common';
+
+import {BrowserPlatformLocation} from 'angular2/src/platform/browser/location/browser_platform_location';
 
 <a name="2.0.0-beta.15"></a>
 # 2.0.0-beta.15 (2016-04-13)
