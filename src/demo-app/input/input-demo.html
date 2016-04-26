@@ -85,10 +85,10 @@
     <p>
       <md-input>
         <md-placeholder>
-          I <i class="material-icons demo-icons">favorite</i> <b>bold</b> placeholder
+          I <md-icon class="demo-icons">favorite</md-icon> <b>bold</b> placeholder
         </md-placeholder>
         <md-hint>
-          I also <i class="material-icons demo-icons">home</i> <i>italic</i> hint labels
+          I also <md-icon class="demo-icons">home</md-icon> <i>italic</i> hint labels
         </md-hint>
       </md-input>
     </p>
@@ -122,7 +122,7 @@
       <br/>
       Both:
       <md-input #email placeholder="Email Address" value="angular-core" align="end">
-        <span md-prefix><i [class.primary]="email.focused" class="material-icons demo-icons demo-transform">email</i>&nbsp;</span>
+        <span md-prefix><md-icon [class.primary]="email.focused" class="demo-icons demo-transform">email</md-icon>&nbsp;</span>
         <span md-suffix class="demo-transform" [class.primary]="email.focused">&nbsp;@gmail.com</span>
       </md-input>
     </p>

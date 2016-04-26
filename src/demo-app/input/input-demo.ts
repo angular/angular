@@ -3,6 +3,7 @@ import {MD_INPUT_DIRECTIVES} from '../../components/input/input';
 import {MdButton} from '../../components/button/button';
 import {MdCard} from '../../components/card/card';
 import {MdCheckbox} from '../../components/checkbox/checkbox';
+import {MdIcon} from '../../components/icon/icon';
 import {MdToolbar} from '../../components/toolbar/toolbar';
 
 
@@ -12,7 +13,7 @@ let max = 5;
   selector: 'input-demo',
   templateUrl: 'demo-app/input/input-demo.html',
   styleUrls: ['demo-app/input/input-demo.css'],
-  directives: [MdCard, MdCheckbox, MdButton, MdToolbar, MD_INPUT_DIRECTIVES]
+  directives: [MdCard, MdCheckbox, MdButton, MdIcon, MdToolbar, MD_INPUT_DIRECTIVES]
 })
 export class InputDemo {
   dividerColor: boolean;

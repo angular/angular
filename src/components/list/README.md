@@ -32,8 +32,8 @@ Output:
 
 ### Multi-line lists
 
-If your list requires multiple lines per list item, annotate each line with an `md-line` attribute. 
-You can use whichever heading tag is appropriate for your DOM hierarchy (doesn't have to be `h3`), 
+If your list requires multiple lines per list item, annotate each line with an `md-line` attribute.
+You can use whichever heading tag is appropriate for your DOM hierarchy (doesn't have to be `h3`),
 as long as the `md-line` attribute is included.
 
 ```html
@@ -62,13 +62,13 @@ Two line list output:
 
 <img src="https://material.angularjs.org/material2_assets/list/two-line-list.png">
 
-Three line list output: 
+Three line list output:
 
 <img src="https://material.angularjs.org/material2_assets/list/three-line-list.png">
 
 ### Lists with avatars
 
-To include an avatar, add an image tag with an `md-list-avatar` attribute. 
+To include an avatar, add an image tag with an `md-list-avatar` attribute.
 
 ```html
 <md-list>
@@ -86,11 +86,11 @@ To include an avatar, add an image tag with an `md-list-avatar` attribute.
 Output:
 
 <img src="https://material.angularjs.org/material2_assets/list/list-with-avatar-2.png">
-    
+
 ### Dense lists
-Lists are also available in "dense layout" mode, which shrinks the font size and height of the list 
-to suit UIs that may need to display more information.  To enable this mode, add a `dense` attribute 
-to the main `md-list` tag.  
+Lists are also available in "dense layout" mode, which shrinks the font size and height of the list
+to suit UIs that may need to display more information.  To enable this mode, add a `dense` attribute
+to the main `md-list` tag.
 
 
 ```html
@@ -114,17 +114,17 @@ use `<md-divider>` tags.
 <md-list>
    <h3 md-subheader>Folders</h3>
    <md-list-item *ngFor="#folder of folders">
-      <i md-list-avatar class="material-icons">folder</i>
+      <md-icon md-list-avatar>folder</md-icon>
       <h4 md-line>{{folder.name}}</h4>
       <p md-line class="demo-2"> {{folder.updated}} </p>
    </md-list-item>
    <md-divider></md-divider>
    <h3 md-subheader>Notes</h3>
    <md-list-item *ngFor="#note of notes">
-      <i md-list-avatar class="material-icons">note</i>
+      <md-icon md-list-avatar>note</md-icon>
       <h4 md-line>{{note.name}}</h4>
       <p md-line class="demo-2"> {{note.updated}} </p>
-   </md-list-item>   
+   </md-list-item>
 </md-list>
 ```
 
@@ -151,13 +151,13 @@ If you require a more complex nav list (e.g. with more than one target per item)
   <md-list-item *ngFor="#link of links">
      <a md-line href="...">{{ link }}</a>
      <button md-icon-button (click)="showInfo(link)">
-        <i class="material-icons">info</i>
+        <md-icon>info</md-icon>
      </button>
   </md-list-item>
 </md-nav-list>
 ```
 
 ### Lists with secondary text
-Secondary text styling will be part of a broader typography module to 
-[come later](https://github.com/angular/material2/issues/205), and won’t be implemented as part of this component 
+Secondary text styling will be part of a broader typography module to
+[come later](https://github.com/angular/material2/issues/205), and won’t be implemented as part of this component
 specifically. Gray text in the examples above comes from a "demo-2" class added manually by the demo.

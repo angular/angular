@@ -27,23 +27,23 @@ There are five types of buttons:
     * Defaults background to "accent" palette defined in theme
     * Box shadow applied
     * 40 by 40 px
- 
+
 Each is an attribute directive that you can add to a `button` or `a` tag.  You can provide custom content to the button by inserting it
 between the tags, as you would with a normal button.
- 
+
 Example:
- 
+
  ```html
 <button md-button>FLAT</button>
 <button md-raised-button>RAISED</button>
 <button md-icon-button>
-    <i class="material-icons md-24">favorite</i>
+    <md-icon class="md-24">favorite</md-icon>
 </button>
 <button md-fab>
-    <i class="material-icons md-24">add</i>
+    <md-icon class="md-24">add</md-icon>
 </button>
 <button md-mini-fab>
-    <i class="material-icons md-24">add</i>
+    <md-icon class="md-24">add</md-icon>
 </button>
  ```
 
@@ -53,13 +53,13 @@ Output:
 
 ### Theming
 
-All button types can be themed to match your "primary" palette, your "accent" palette, or your "warn" palette using the `color` attribute. 
+All button types can be themed to match your "primary" palette, your "accent" palette, or your "warn" palette using the `color` attribute.
 Simply pass in the palette name.
 
-In flat buttons, the palette chosen will affect the text color, while in other buttons, it affects the background. 
+In flat buttons, the palette chosen will affect the text color, while in other buttons, it affects the background.
 
 Example:
- 
+
  ```html
 <button md-raised-button color="primary">PRIMARY</button>
 <button md-raised-button color="accent">ACCENT</button>
@@ -90,8 +90,8 @@ Output:
  * In high contrast mode, a strong border is added to the button to make it easier to see.
  * Button focus events originating from the keyboard will retain focus styles, while button focus events from the mouse will not.
  * As `md-button` is added to an existing `button` or `a` tag, it enjoys all the accessibility natively built into these elements.
- 
- 
+
+
 ### Upcoming work
 
 We will also be adding ink ripples to buttons in an upcoming milestone.
