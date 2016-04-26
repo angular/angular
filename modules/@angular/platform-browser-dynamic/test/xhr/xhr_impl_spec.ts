@@ -8,11 +8,10 @@ import {
   inject,
   it,
   xit
-} from '@angular/testing/testing_internal';
+} from '../../../testing/testing_internal';
 
-import {XHRImpl} from '@angular/platform-browser/src/browser/xhr_impl';
-import {PromiseWrapper} from '@angular/facade';
-import {IS_DART} from '@angular/facade';
+import {XHRImpl} from '../../src/xhr/xhr_impl';
+import {PromiseWrapper, IS_DART} from '@angular/facade';
 
 export function main() {
   describe('XHRImpl', () => {

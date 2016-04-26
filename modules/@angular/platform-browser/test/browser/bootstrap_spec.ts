@@ -13,7 +13,8 @@ import {
   xit
 } from '@angular/testing/testing_internal';
 import {IS_DART, isPresent, stringify} from '@angular/facade';
-import {bootstrap, BROWSER_PROVIDERS, BROWSER_APP_PROVIDERS} from '@angular/platform-browser';
+import {BROWSER_PROVIDERS, BROWSER_APP_PROVIDERS} from '@angular/platform-browser';
+import {bootstrap} from '@angular/platform-browser-dynamic';
 import {ApplicationRef, PlatformRef} from '@angular/core/src/application_ref';
 import {Console} from '@angular/core/src/console';
 import {Component, Directive, OnDestroy} from '@angular/core';

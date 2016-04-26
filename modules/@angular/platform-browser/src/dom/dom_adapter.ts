@@ -13,6 +13,7 @@ export function setRootDomAdapter(adapter: DomAdapter) {
  * Provides DOM operations in an environment-agnostic way.
  */
 export abstract class DomAdapter {
+  public xhrType: Type = null;
   abstract hasProperty(element, name: string): boolean;
   abstract setProperty(el: Element, name: string, value: any);
   abstract getProperty(el: Element, name: string): any;
@@ -24,7 +25,7 @@ export abstract class DomAdapter {
   abstract logGroupEnd();
 
   /** @deprecated */
-  abstract getXHR(): Type;
+  getXHR(): Type { return this.xhrType; }
 
   /**
    * Maps attribute names to their corresponding property names for cases

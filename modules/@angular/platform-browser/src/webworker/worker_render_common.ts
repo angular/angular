@@ -21,14 +21,11 @@ import {
 } from '@angular/platform-browser/src/dom/shared_styles_host';
 import {BrowserDetails} from '../animate/browser_details';
 import {AnimationBuilder} from '../animate/animation_builder';
-import {XHR} from '@angular/compiler';
-import {XHRImpl} from '@angular/platform-browser/src/browser/xhr_impl';
 import {Testability} from '@angular/core/src/testability/testability';
 import {BrowserGetTestability} from '@angular/platform-browser/src/browser/testability';
 import {BrowserDomAdapter} from '../browser/browser_adapter';
 import {wtfInit} from '@angular/core/src/profile/wtf_init';
 import {MessageBasedRenderer} from '../web_workers/ui/renderer';
-import {MessageBasedXHRImpl} from '../web_workers/ui/xhr_impl';
 import {
   ServiceMessageBrokerFactory,
   ServiceMessageBrokerFactory_
@@ -49,7 +46,7 @@ export const WORKER_SCRIPT: OpaqueToken = CONST_EXPR(new OpaqueToken("WebWorkerS
 
 // Message based Worker classes that listen on the MessageBus
 export const WORKER_RENDER_MESSAGING_PROVIDERS: Array<any /*Type | Provider | any[]*/> =
-    CONST_EXPR([MessageBasedRenderer, MessageBasedXHRImpl]);
+    CONST_EXPR([MessageBasedRenderer]);
 
 export const WORKER_RENDER_PLATFORM_MARKER =
     CONST_EXPR(new OpaqueToken('WorkerRenderPlatformMarker'));
@@ -81,8 +78,6 @@ export const WORKER_RENDER_APPLICATION_COMMON: Array<any /*Type | Provider | any
   new Provider(DomRootRenderer, {useClass: DomRootRenderer_}),
   new Provider(RootRenderer, {useExisting: DomRootRenderer}),
   new Provider(SharedStylesHost, {useExisting: DomSharedStylesHost}),
-  new Provider(XHR, {useClass: XHRImpl}),
-  MessageBasedXHRImpl,
   new Provider(ServiceMessageBrokerFactory, {useClass: ServiceMessageBrokerFactory_}),
   new Provider(ClientMessageBrokerFactory, {useClass: ClientMessageBrokerFactory_}),
   Serializer,

@@ -15,7 +15,7 @@ import {MockViewResolver} from './src/mock/view_resolver_mock';
 import {MockLocationStrategy} from './src/mock/mock_location_strategy';
 import {LocationStrategy} from '@angular/common';
 import {MockNgZone} from './src/mock/ng_zone_mock';
-import {XHRImpl} from '@angular/platform-browser/src/browser/xhr_impl';
+import {XHRImpl} from '../platform-browser-dynamic/src/xhr/xhr_impl';
 import {XHR} from '@angular/compiler';
 import {TestComponentBuilder} from '@angular/testing/src/test_component_builder';
 import {BrowserDetection} from '@angular/testing/src/utils';

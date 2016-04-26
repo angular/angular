@@ -1,7 +1,5 @@
+import {BaseException, global, PromiseWrapper} from '@angular/facade';
 import {XHR} from '@angular/compiler';
-import {BaseException} from '@angular/facade';
-import {global} from '@angular/facade';
-import {PromiseWrapper} from '@angular/facade';
 
 /**
  * An implementation of XHR that uses a template cache to avoid doing an actual

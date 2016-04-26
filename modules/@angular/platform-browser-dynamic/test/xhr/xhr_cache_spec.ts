@@ -17,7 +17,7 @@ import {
   xit
 } from '@angular/testing/testing_internal';
 import {BaseException} from '@angular/facade';
-import {CachedXHR} from '@angular/platform-browser/src/browser/xhr_cache';
+import {CachedXHR} from '../../src/xhr/xhr_cache';
 import {setTemplateCache} from './xhr_cache_setter';
 
 export function main() {

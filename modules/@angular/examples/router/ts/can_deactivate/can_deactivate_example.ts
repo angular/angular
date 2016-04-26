@@ -1,5 +1,5 @@
 import {provide, Component, ComponentRef} from '@angular/core';
-import {bootstrap} from '@angular/platform-browser';
+import {bootstrap} from '@angular/platform-browser-dynamic';
 import {
   CanDeactivate,
   RouteConfig,

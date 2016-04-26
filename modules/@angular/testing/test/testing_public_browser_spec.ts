@@ -19,7 +19,7 @@ import {Injectable, bind} from '@angular/core';
 import {Directive, Component, ViewMetadata} from '@angular/core';
 import {PromiseWrapper} from '@angular/facade';
 import {XHR} from '@angular/compiler/src/xhr';
-import {XHRImpl} from '@angular/platform-browser/src/browser/xhr_impl';
+import {XHRImpl} from '../../platform-browser-dynamic/src/xhr/xhr_impl';
 
 // Components for the tests.
 class FancyService {

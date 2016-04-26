@@ -1,4 +1,4 @@
-import {bootstrap} from '@angular/platform-browser';
+import {bootstrap} from '@angular/platform-browser-dynamic';
 import {NG_VALIDATORS} from '@angular/common';
 import {Provider} from '@angular/core';
 

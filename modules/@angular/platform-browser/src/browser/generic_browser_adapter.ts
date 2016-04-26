@@ -1,6 +1,5 @@
 import {StringMapWrapper} from '@angular/facade';
 import {isPresent, isFunction, Type} from '@angular/facade';
-import {XHRImpl} from './xhr_impl';
 import {DomAdapter} from '../dom/dom_adapter';
 
 
@@ -42,7 +41,6 @@ export abstract class GenericBrowserDomAdapter extends DomAdapter {
     }
   }
 
-  getXHR(): Type { return XHRImpl; }
   getDistributedNodes(el: HTMLElement): Node[] { return (<any>el).getDistributedNodes(); }
   resolveAndSetHref(el: HTMLAnchorElement, baseUrl: string, href: string) {
     el.href = href == null ? baseUrl : baseUrl + '/../' + href;

@@ -14,7 +14,7 @@ import {
   xit,
 } from '@angular/testing/testing_internal';
 
-import {bootstrap} from '@angular/platform-browser';
+import {bootstrap} from '@angular/platform-browser-dynamic';
 import {APP_BASE_HREF, LocationStrategy} from '@angular/common';
 import {Component, Directive} from '@angular/core/src/metadata';
 import {DOM} from '@angular/platform-browser/src/dom/dom_adapter';

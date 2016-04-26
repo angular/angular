@@ -44,12 +44,12 @@ export declare namespace __core_private_types__ {
   export var devModeEqual: typeof change_detection_util.devModeEqual;
   export var uninitialized: typeof change_detection_util.uninitialized;
   export var ValueUnwrapper: typeof change_detection_util.ValueUnwrapper;
-  export type RenderDebugInfo = api.RenderDebugInfo;
-  export var RenderDebugInfo: typeof api.RenderDebugInfo;
-  export var TemplateRef_: typeof template_ref.TemplateRef_;
-  export var wtfInit: typeof wtf_init.wtfInit;
-  export var ReflectionCapabilities: typeof reflection_capabilities.ReflectionCapabilities;
-  export var makeDecorator: typeof decorators.makeDecorator;
+  export type RenderDebugInfo: api.RenderDebugInfo;
+  export var RenderDebugInfo: api.RenderDebugInfo;
+  export var TemplateRef_: template_ref.TemplateRef_;
+  export var wtfInit: wtf_init.wtfInit;
+  export type ReflectionCapabilities: reflection_capabilities.ReflectionCapabilities;
+  export var makeDecorator: decorators.makeDecorator;
 }
 
 export var __core_private__ = {
