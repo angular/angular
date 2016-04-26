@@ -146,7 +146,7 @@ export function main() {
                   DOM.appendChild(doc.body, rootEl);
                   loader.loadAsRoot(ChildComp, null, injector)
                       .then((componentRef) => {
-                        var el = new ComponentFixture(componentRef);
+                        var el = new ComponentFixture(componentRef, null, false);
 
                         expect(rootEl.parentNode).toBe(doc.body);
 

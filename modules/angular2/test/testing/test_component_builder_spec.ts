@@ -9,15 +9,20 @@ import {
   iit,
   inject,
   beforeEachProviders,
+  withProviders,
   it,
   xit,
-  TestComponentBuilder
+  TestComponentBuilder,
+  ComponentFixtureAutoDetect,
+  ComponentFixtureNoNgZone
 } from 'angular2/testing_internal';
 
 import {CONST_EXPR} from 'angular2/src/facade/lang';
 import {Injectable, provide} from 'angular2/core';
 import {NgIf} from 'angular2/common';
-import {Directive, Component, ViewMetadata} from 'angular2/src/core/metadata';
+import {Directive, Component, ViewMetadata, Input} from 'angular2/src/core/metadata';
+import {IS_DART} from 'angular2/src/facade/lang';
+import {PromiseWrapper} from 'angular2/src/facade/promise';
 
 @Component(
     {selector: 'child-comp', template: `<span>Original {{childBinding}}</span>`, directives: []})
@@ -72,7 +77,42 @@ class ChildWithChildComp {
 class MockChildChildComp {
 }
 
+@Component({selector: 'autodetect-comp', template: `<span (click)='click()'>{{text}}</span>`})
+class AutoDetectComp {
+  text: string = '1';
 
+  click() { this.text += '1'; }
+}
+
+@Component({selector: 'async-comp', template: `<span (click)='click()'>{{text}}</span>`})
+class AsyncComp {
+  text: string = '1';
+
+  click() {
+    PromiseWrapper.resolve(null).then((_) => { this.text += '1'; });
+  }
+}
+
+@Component({selector: 'async-child-comp', template: '<span>{{localText}}</span>'})
+class AsyncChildComp {
+  localText: string = '';
+
+  @Input()
+  set text(value: string) {
+    PromiseWrapper.resolve(null).then((_) => { this.localText = value; });
+  }
+}
+
+@Component({
+  selector: 'async-change-comp',
+  template: `<async-child-comp (click)='click()' [text]="text"></async-child-comp>`,
+  directives: [AsyncChildComp]
+})
+class AsyncChangeComp {
+  text: string = '1';
+
+  click() { this.text += '1'; }
+}
 
 class FancyService {
   value: string = 'real value';
@@ -244,5 +284,184 @@ export function main() {
                async.done();
              });
        }));
+
+    if (!IS_DART) {
+      describe('ComponentFixture', () => {
+        it('should auto detect changes if autoDetectChanges is called',
+           inject([TestComponentBuilder, AsyncTestCompleter],
+                  (tcb: TestComponentBuilder, async) => {
+
+                    tcb.createAsync(AutoDetectComp)
+                        .then((componentFixture) => {
+                          expect(componentFixture.ngZone).not.toBeNull();
+                          componentFixture.autoDetectChanges();
+                          expect(componentFixture.nativeElement).toHaveText('1');
+
+                          let element = componentFixture.debugElement.children[0];
+                          dispatchEvent(element.nativeElement, 'click');
+
+                          expect(componentFixture.isStable()).toBe(true);
+                          expect(componentFixture.nativeElement).toHaveText('11');
+                          async.done();
+                        });
+                  }));
+
+        it('should auto detect changes if ComponentFixtureAutoDetect is provided as true',
+           withProviders(() => [provide(ComponentFixtureAutoDetect, {useValue: true})])
+               .inject([TestComponentBuilder, AsyncTestCompleter],
+                       (tcb: TestComponentBuilder, async) => {
+
+                         tcb.createAsync(AutoDetectComp)
+                             .then((componentFixture) => {
+                               expect(componentFixture.nativeElement).toHaveText('1');
+
+                               let element = componentFixture.debugElement.children[0];
+                               dispatchEvent(element.nativeElement, 'click');
+
+                               expect(componentFixture.nativeElement).toHaveText('11');
+                               async.done();
+                             });
+                       }));
+
+        it('should signal through whenStable when the fixture is stable (autoDetectChanges)',
+           inject([TestComponentBuilder, AsyncTestCompleter],
+                  (tcb: TestComponentBuilder, async) => {
+
+                    tcb.createAsync(AsyncComp).then((componentFixture) => {
+                      componentFixture.autoDetectChanges();
+                      expect(componentFixture.nativeElement).toHaveText('1');
+
+                      let element = componentFixture.debugElement.children[0];
+                      dispatchEvent(element.nativeElement, 'click');
+                      expect(componentFixture.nativeElement).toHaveText('1');
+
+                      // Component is updated asynchronously. Wait for the fixture to become stable
+                      // before checking for new value.
+                      expect(componentFixture.isStable()).toBe(false);
+                      componentFixture.whenStable().then((waited) => {
+                        expect(waited).toBe(true);
+                        expect(componentFixture.nativeElement).toHaveText('11');
+                        async.done();
+                      });
+                    });
+                  }));
+
+        it('should signal through isStable when the fixture is stable (no autoDetectChanges)',
+           inject([TestComponentBuilder, AsyncTestCompleter],
+                  (tcb: TestComponentBuilder, async) => {
+
+                    tcb.createAsync(AsyncComp).then((componentFixture) => {
+                      componentFixture.detectChanges();
+                      expect(componentFixture.nativeElement).toHaveText('1');
+
+                      let element = componentFixture.debugElement.children[0];
+                      dispatchEvent(element.nativeElement, 'click');
+                      expect(componentFixture.nativeElement).toHaveText('1');
+
+                      // Component is updated asynchronously. Wait for the fixture to become stable
+                      // before checking.
+                      componentFixture.whenStable().then((waited) => {
+                        expect(waited).toBe(true);
+                        componentFixture.detectChanges();
+                        expect(componentFixture.nativeElement).toHaveText('11');
+                        async.done();
+                      });
+                    });
+                  }));
+
+        it('should stabilize after async task in change detection (autoDetectChanges)',
+           inject([TestComponentBuilder, AsyncTestCompleter],
+                  (tcb: TestComponentBuilder, async) => {
+
+                    tcb.createAsync(AsyncChangeComp)
+                        .then((componentFixture) => {
+                          componentFixture.autoDetectChanges();
+                          componentFixture.whenStable().then((_) => {
+                            expect(componentFixture.nativeElement).toHaveText('1');
+
+                            let element = componentFixture.debugElement.children[0];
+                            dispatchEvent(element.nativeElement, 'click');
+
+                            componentFixture.whenStable().then((_) => {
+                              expect(componentFixture.nativeElement).toHaveText('11');
+                              async.done();
+                            });
+                          });
+                        });
+                  }));
+
+        it('should stabilize after async task in change detection(no autoDetectChanges)',
+           inject([TestComponentBuilder, AsyncTestCompleter],
+                  (tcb: TestComponentBuilder, async) => {
+
+                    tcb.createAsync(AsyncChangeComp)
+                        .then((componentFixture) => {
+                          componentFixture.detectChanges();
+                          componentFixture.whenStable().then((_) => {
+                            // Run detectChanges again so that stabilized value is reflected in the
+                            // DOM.
+                            componentFixture.detectChanges();
+                            expect(componentFixture.nativeElement).toHaveText('1');
+
+                            let element = componentFixture.debugElement.children[0];
+                            dispatchEvent(element.nativeElement, 'click');
+                            componentFixture.detectChanges();
+
+                            componentFixture.whenStable().then((_) => {
+                              // Run detectChanges again so that stabilized value is reflected in
+                              // the DOM.
+                              componentFixture.detectChanges();
+                              expect(componentFixture.nativeElement).toHaveText('11');
+                              async.done();
+                            });
+                          });
+                        });
+                  }));
+
+        describe('No NgZone', () => {
+          beforeEachProviders(() => [provide(ComponentFixtureNoNgZone, {useValue: true})]);
+
+          it('calling autoDetectChanges raises an error', () => {
+            inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder,
+                                                                async) => {
+              tcb.createAsync(ChildComp).then((componentFixture) => {
+                expect(() => {
+                  componentFixture.autoDetectChanges();
+                }).toThrow('Cannot call autoDetectChanges when ComponentFixtureNoNgZone is set!!');
+                async.done();
+              });
+            });
+          });
+
+          it('should instantiate a component with valid DOM',
+             inject([TestComponentBuilder, AsyncTestCompleter],
+                    (tcb: TestComponentBuilder, async) => {
+
+                      tcb.createAsync(ChildComp).then((componentFixture) => {
+                        expect(componentFixture.ngZone).toBeNull();
+                        componentFixture.detectChanges();
+                        expect(componentFixture.nativeElement).toHaveText('Original Child');
+                        async.done();
+                      });
+                    }));
+
+          it('should allow changing members of the component',
+             inject([TestComponentBuilder, AsyncTestCompleter],
+                    (tcb: TestComponentBuilder, async) => {
+
+                      tcb.createAsync(MyIfComp).then((componentFixture) => {
+                        componentFixture.detectChanges();
+                        expect(componentFixture.nativeElement).toHaveText('MyIf()');
+
+                        componentFixture.componentInstance.showMore = true;
+                        componentFixture.detectChanges();
+                        expect(componentFixture.nativeElement).toHaveText('MyIf(More)');
+
+                        async.done();
+                      });
+                    }));
+        });
+      });
+    }
   });
 }
