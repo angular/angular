@@ -29,7 +29,7 @@ export function main() {
 
     it('should clean up when the directive is destroyed',
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-         var template = '<div *ngFor="var item of items" [ngClass]="item"></div>';
+         var template = '<div *ngFor="let item of items" [ngClass]="item"></div>';
          tcb.overrideTemplate(TestComponent, template)
              .createAsync(TestComponent)
              .then((fixture) => {

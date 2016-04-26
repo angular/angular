@@ -50,7 +50,7 @@ class App {
 @Component({
   selector: 'lock',
   directives: [NgFor],
-  template: `{{frame.name}}(<span *ngFor="var lock of locks">{{lock.name}}</span>)`,
+  template: `{{frame.name}}(<span *ngFor="let  lock of locks">{{lock.name}}</span>)`,
 })
 class Door {
   locks: QueryList<Lock>;

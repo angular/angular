@@ -8,7 +8,7 @@ import {ViewType} from './view_type';
 @CONST()
 export class StaticNodeDebugInfo {
   constructor(public providerTokens: any[], public componentToken: any,
-              public varTokens: {[key: string]: any}) {}
+              public refTokens: {[key: string]: any}) {}
 }
 
 export class DebugContext implements RenderDebugInfo {
@@ -61,15 +61,15 @@ export class DebugContext implements RenderDebugInfo {
     ListWrapper.forEachWithIndex(
         this._view.staticNodeDebugInfos,
         (staticNodeInfo: StaticNodeDebugInfo, nodeIndex: number) => {
-          var vars = staticNodeInfo.varTokens;
-          StringMapWrapper.forEach(vars, (varToken, varName) => {
+          var refs = staticNodeInfo.refTokens;
+          StringMapWrapper.forEach(refs, (refToken, refName) => {
             var varValue;
-            if (isBlank(varToken)) {
+            if (isBlank(refToken)) {
               varValue = isPresent(this._view.allNodes) ? this._view.allNodes[nodeIndex] : null;
             } else {
-              varValue = this._view.injectorGet(varToken, nodeIndex, null);
+              varValue = this._view.injectorGet(refToken, nodeIndex, null);
             }
-            varValues[varName] = varValue;
+            varValues[refName] = varValue;
           });
         });
     StringMapWrapper.forEach(this._view.locals,

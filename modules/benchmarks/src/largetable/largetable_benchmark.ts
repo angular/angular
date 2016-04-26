@@ -214,22 +214,22 @@ class CellData {
   template: `
       <table [ngSwitch]="benchmarkType">
         <tbody template="ngSwitchWhen 'interpolation'">
-          <tr template="ngFor #row of data">
-            <td template="ngFor #column of row">
+          <tr template="ngFor let row of data">
+            <td template="ngFor let column of row">
               {{column.i}}:{{column.j}}|
             </td>
           </tr>
         </tbody>
         <tbody template="ngSwitchWhen 'interpolationAttr'">
-          <tr template="ngFor #row of data">
-            <td template="ngFor #column of row" attr.i="{{column.i}}" attr.j="{{column.j}}">
+          <tr template="ngFor let row of data">
+            <td template="ngFor let column of row" attr.i="{{column.i}}" attr.j="{{column.j}}">
               i,j attrs
             </td>
           </tr>
         </tbody>
         <tbody template="ngSwitchWhen 'interpolationFn'">
-          <tr template="ngFor #row of data">
-            <td template="ngFor #column of row">
+          <tr template="ngFor let row of data">
+            <td template="ngFor let column of row">
               {{column.iFn()}}:{{column.jFn()}}|
             </td>
           </tr>

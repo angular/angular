@@ -259,7 +259,7 @@ class OnChangeComponent implements OnChanges {
     ])
 @View(
     template:
-        '<span *ngFor="#item of list">{{item}}</span><directive-logging-checks></directive-logging-checks>',
+        '<span *ngFor="let item of list">{{item}}</span><directive-logging-checks></directive-logging-checks>',
     directives: const [NgFor, DirectiveLoggingChecks])
 class ComponentWithObservableList {
   Iterable list;

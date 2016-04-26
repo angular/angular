@@ -82,7 +82,7 @@ class DataService {
   selector: 'order-list-cmp',
   template: `
     <h1>Orders</h1>
-  	<div *ngFor="#order of orders" [class.warning]="order.total > order.limit">
+  	<div *ngFor="let order of orders" [class.warning]="order.total > order.limit">
       <div>
         <label>Customer name:</label>
         {{order.customerName}}
@@ -173,7 +173,7 @@ class OrderItemComponent {
 
       <h2>Items</h2>
       <button (click)="addItem()">Add Item</button>
-      <order-item-cmp *ngFor="#item of order.items" [item]="item" (delete)="deleteItem(item)"></order-item-cmp>
+      <order-item-cmp *ngFor="let item of order.items" [item]="item" (delete)="deleteItem(item)"></order-item-cmp>
     </div>
   `,
   directives: [FORM_DIRECTIVES, OrderItemComponent, NgFor, NgIf]
