@@ -1,6 +1,6 @@
 import {Injectable} from 'angular2/src/core/di';
 import {Map, MapWrapper, ListWrapper} from 'angular2/src/facade/collection';
-import {CONST, CONST_EXPR, scheduleMicroTask} from 'angular2/src/facade/lang';
+import {CONST, scheduleMicroTask} from 'angular2/src/facade/lang';
 import {BaseException} from 'angular2/src/facade/exceptions';
 import {NgZone} from '../zone/ng_zone';
 import {ObservableWrapper} from 'angular2/src/facade/async';
@@ -150,4 +150,4 @@ export function setTestabilityGetter(getter: GetTestability): void {
   _testabilityGetter = getter;
 }
 
-var _testabilityGetter: GetTestability = CONST_EXPR(new _NoopGetTestability());
+var _testabilityGetter: GetTestability = /*@ts2dart_const*/ new _NoopGetTestability();

@@ -5,7 +5,6 @@ import {
   DefaultKeyValueDifferFactory,
   KeyValueChangeRecord
 } from './differs/default_keyvalue_differ';
-import {CONST_EXPR} from 'angular2/src/facade/lang';
 
 export {
   DefaultKeyValueDifferFactory,
@@ -46,14 +45,14 @@ export {
  * Structural diffing for `Object`s and `Map`s.
  */
 export const keyValDiff: KeyValueDifferFactory[] =
-    CONST_EXPR([CONST_EXPR(new DefaultKeyValueDifferFactory())]);
+    /*@ts2dart_const*/[new DefaultKeyValueDifferFactory()];
 
 /**
  * Structural diffing for `Iterable` types such as `Array`s.
  */
 export const iterableDiff: IterableDifferFactory[] =
-    CONST_EXPR([CONST_EXPR(new DefaultIterableDifferFactory())]);
+    /*@ts2dart_const*/[new DefaultIterableDifferFactory()];
 
-export const defaultIterableDiffers = CONST_EXPR(new IterableDiffers(iterableDiff));
+export const defaultIterableDiffers = /*@ts2dart_const*/ new IterableDiffers(iterableDiff);
 
-export const defaultKeyValueDiffers = CONST_EXPR(new KeyValueDiffers(keyValDiff));
+export const defaultKeyValueDiffers = /*@ts2dart_const*/ new KeyValueDiffers(keyValDiff);

@@ -6,7 +6,6 @@ import {
   assertionsEnabled,
   StringJoiner,
   serializeEnum,
-  CONST_EXPR
 } from 'angular2/src/facade/lang';
 
 import {ListWrapper} from 'angular2/src/facade/collection';

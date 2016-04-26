@@ -1,4 +1,4 @@
-import {Type, isBlank, isPresent, assertionsEnabled, CONST_EXPR} from 'angular2/src/facade/lang';
+import {Type, isBlank, isPresent, assertionsEnabled} from 'angular2/src/facade/lang';
 import {provide, Provider, Injector, OpaqueToken} from 'angular2/src/core/di';
 import {Console} from 'angular2/src/core/console';
 import {Reflector, reflector} from './reflection/reflection';
@@ -13,9 +13,9 @@ function _reflector(): Reflector {
 /**
  * A default set of providers which should be included in any Angular platform.
  */
-export const PLATFORM_COMMON_PROVIDERS: Array<Type | Provider | any[]> = CONST_EXPR([
+export const PLATFORM_COMMON_PROVIDERS: Array<Type | Provider | any[]> = /*@ts2dart_const*/ [
   PLATFORM_CORE_PROVIDERS,
-  new Provider(Reflector, {useFactory: _reflector, deps: []}),
+  new Provider(Reflector, {useFactory: _reflector, deps: []},
   new Provider(ReflectorReader, {useExisting: Reflector}),
   TestabilityRegistry,
   Console

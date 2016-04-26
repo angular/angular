@@ -13,7 +13,7 @@ export {
   disableDebugTools
 } from 'angular2/src/platform/browser_common';
 
-import {Type, isPresent, isBlank, CONST_EXPR} from 'angular2/src/facade/lang';
+import {Type, isPresent, isBlank} from 'angular2/src/facade/lang';
 import {
   BROWSER_PROVIDERS,
   BROWSER_APP_COMMON_PROVIDERS,
@@ -39,10 +39,10 @@ import {Provider} from 'angular2/src/core/di';
 /**
  * An array of providers that should be passed into `application()` when bootstrapping a component.
  */
-export const BROWSER_APP_PROVIDERS: Array<any /*Type | Provider | any[]*/> = CONST_EXPR([
+export const BROWSER_APP_PROVIDERS: Array<any /*Type | Provider | any[]*/> = /*@ts2dart_const*/ [
   BROWSER_APP_COMMON_PROVIDERS,
   COMPILER_PROVIDERS,
-  new Provider(XHR, {useClass: XHRImpl}),
+  new Provider(XHR, {useClass: XHRImpl},
 ]);
 
 export function browserPlatform(): PlatformRef {

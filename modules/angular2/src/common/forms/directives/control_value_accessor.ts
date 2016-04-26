@@ -1,5 +1,4 @@
 import {OpaqueToken} from 'angular2/core';
-import {CONST_EXPR} from 'angular2/src/facade/lang';
 
 /**
  * A bridge between a control and a native element.
@@ -31,4 +30,5 @@ export interface ControlValueAccessor {
  *
  * See {@link DefaultValueAccessor} for how to implement one.
  */
-export const NG_VALUE_ACCESSOR: OpaqueToken = CONST_EXPR(new OpaqueToken("NgValueAccessor"));
+export const NG_VALUE_ACCESSOR: OpaqueToken =
+    /*@ts2dart_const*/ new OpaqueToken("NgValueAccessor");

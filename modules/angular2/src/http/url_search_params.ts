@@ -1,4 +1,4 @@
-import {CONST_EXPR, isPresent, isBlank} from 'angular2/src/facade/lang';
+import {isPresent, isBlank} from 'angular2/src/facade/lang';
 import {Map, MapWrapper, ListWrapper, isListLikeIterable} from 'angular2/src/facade/collection';
 
 function paramParser(rawParams: string = ''): Map<string, string[]> {

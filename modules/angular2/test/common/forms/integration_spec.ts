@@ -46,7 +46,6 @@ import {
 import {By} from 'angular2/platform/browser';
 import {ListWrapper} from 'angular2/src/facade/collection';
 import {ObservableWrapper, TimerWrapper} from 'angular2/src/facade/async';
-import {CONST_EXPR} from 'angular2/src/facade/lang';
 import {PromiseWrapper} from "angular2/src/facade/promise";
 
 export function main() {

@@ -12,6 +12,5 @@ export {RouterUrlParser, DefaultRouterUrlParser} from './src/alt_router/router_u
 export {OnActivate} from './src/alt_router/interfaces';
 
 import {RouterOutlet} from './src/alt_router/directives/router_outlet';
-import {CONST_EXPR} from './src/facade/lang';
 
-export const ROUTER_DIRECTIVES: any[] = CONST_EXPR([RouterOutlet]);
+export const ROUTER_DIRECTIVES: any[] = /*@ts2dart_const*/[RouterOutlet];

@@ -14,7 +14,7 @@ import {
   InvalidProviderError,
   OutOfBoundsError
 } from './reflective_exceptions';
-import {Type, CONST_EXPR, isPresent} from 'angular2/src/facade/lang';
+import {Type, isPresent} from 'angular2/src/facade/lang';
 import {BaseException, unimplemented} from 'angular2/src/facade/exceptions';
 import {ReflectiveKey} from './reflective_key';
 import {SelfMetadata, HostMetadata, SkipSelfMetadata} from './metadata';
@@ -24,7 +24,7 @@ var __unused: Type;  // avoid unused import when Type union types are erased
 
 // Threshold for the dynamic version
 const _MAX_CONSTRUCTION_COUNTER = 10;
-const UNDEFINED = CONST_EXPR(new Object());
+const UNDEFINED = /*@ts2dart_const*/ new Object();
 
 export interface ReflectiveProtoInjectorStrategy {
   getProviderAtIndex(index: number): ResolvedReflectiveProvider;
