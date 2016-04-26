@@ -23,11 +23,18 @@
 
 ### Features
 
+* **codegen:** produce `.ngfactory.dart/ts` files instead of `.template.dart/ts` files. ([c06b0a2](https://github.com/angular/angular/commit/c06b0a2))
+* **core:** add `Query.read` and remove `DynamicComponentLoader.loadIntoLocation`. ([efbd446](https://github.com/angular/angular/commit/efbd446))
+* **core:** introduce ComponentFactory. ([0c600cf](https://github.com/angular/angular/commit/0c600cf))
+* **core:** separate reflective injector from Injector interface ([0a7d10b](https://github.com/angular/angular/commit/0a7d10b))
+* **core:** support importUri in StaticReflector ([3e11422](https://github.com/angular/angular/commit/3e11422)), closes [#8195](https://github.com/angular/angular/issues/8195)
+* **core:** support non reflective bootstrap. ([9092ac7](https://github.com/angular/angular/commit/9092ac7))
 * **html_lexer:** support special forms used by i18n { exp, plural, =0 {} } ([7f29766](https://github.com/angular/angular/commit/7f29766))
 * **html_parser:** support special forms used by i18n { exp, plural, =0 {} } ([7c9717b](https://github.com/angular/angular/commit/7c9717b))
 * **i18n:** add custom placeholder names ([bb9fb21](https://github.com/angular/angular/commit/bb9fb21)), closes [#7799](https://github.com/angular/angular/issues/7799) [#8057](https://github.com/angular/angular/issues/8057)
 * **i18n:** add support for nested expansion forms ([c6244d1](https://github.com/angular/angular/commit/c6244d1)), closes [#7977](https://github.com/angular/angular/issues/7977)
 * **i18n:** support plural and gender special forms ([88b0a23](https://github.com/angular/angular/commit/88b0a23))
+* **Location:** out of router and into platform/common ([b602bd8](https://github.com/angular/angular/commit/b602bd8)), closes [#7962](https://github.com/angular/angular/issues/7962)
 * **NgTemplateOutlet:** add NgTemplateOutlet directive ([f4e6994](https://github.com/angular/angular/commit/f4e6994)), closes [#7615](https://github.com/angular/angular/issues/7615) [#8021](https://github.com/angular/angular/issues/8021)
 * **router:** add Router and RouterOutlet ([5a897cf](https://github.com/angular/angular/commit/5a897cf)), closes [#8173](https://github.com/angular/angular/issues/8173)
 * **router:** add router metadata ([ef67a0c](https://github.com/angular/angular/commit/ef67a0c))
@@ -36,9 +43,71 @@
 * **router:** implement RouterUrlParser ([f698567](https://github.com/angular/angular/commit/f698567))
 * **test:** Implement fakeAsync using the FakeAsyncTestZoneSpec from zone.js. ([bab81a9](https://github.com/angular/angular/commit/bab81a9)), closes [#8142](https://github.com/angular/angular/issues/8142)
 * **tests:** manage asynchronous tests using zones ([8490921](https://github.com/angular/angular/commit/8490921)), closes [#7735](https://github.com/angular/angular/issues/7735)
+* **view_compiler:** codegen DI and Queries ([2b34c88](https://github.com/angular/angular/commit/2b34c88)), closes [#6301](https://github.com/angular/angular/issues/6301) [#6567](https://github.com/angular/angular/issues/6567)
 
 
 ### BREAKING CHANGES
+
+* - pipes now take a variable number of arguments, and not an array that contains all arguments.
+
+* inject can no longer wrap fakeAsync while fakeAsync can wrap inject. So the order in existing tests with inject and fakeAsync has to be switched as follows:
+Before:
+```
+inject([...], fakeAsync((...) => {...}))
+```
+After:
+```
+fakeAsync(inject([...], (...) => {...}))
+```
+You will also need to add the dependency
+`'node_modules/zone.js/dist/fake-async-test.js'`
+as a served file in your Karma or other test configuration.
+
+* - Injector was renamed into `ReflectiveInjector`,
+  as `Injector` is only an abstract class with one method on it
+- `Injector.getOptional()` was changed into `Injector.get(token, notFoundValue)`
+  to make implementing injectors simpler
+- `ViewContainerRef.createComponent` now takes an `Injector`
+  instead of `ResolvedProviders`. If a reflective injector
+  should be used, create one before calling this method.
+  (e.g. via `ReflectiveInjector.resolveAndCreate(…)`.
+
+* - `DynamicComponentLoader.loadIntoLocation` has been removed. Use `@ViewChild(‘myVar’, read: ViewContainerRef)` to get hold of a `ViewContainerRef` at an element with variable `myVar`. Then call `DynamicComponentLoader.loadNextToLocation`.
+- `DynamicComponentLoader.loadNextToLocation` now takes a `ViewContainerRef` instead of an `ElementRef`.
+- `AppViewManager` is renamed into `ViewUtils` and is a mere private utility service.
+
+* - `Compiler` is renamed to `ComponentResolver`,
+  `Compiler.compileInHost` has been renamed to `ComponentResolver.resolveComponent`.
+- `ComponentRef.dispose` is renamed to `ComponentRef.destroy`
+- `ViewContainerRef.createHostView` is renamed to `ViewContainerRef.createComponent`
+- `ComponentFixture_` has been removed, the class `ComponentFixture`
+  can now be created directly as it is no more using private APIs.
+
+* `Location` and other related providers have been moved out of `router` and into `platform/common`. `BrowserPlatformLocation` is not meant to be used directly however advanced configurations may use it via the following import change.
+Before:
+```
+import {
+  PlatformLocation,
+  Location,
+  LocationStrategy,
+  HashLocationStrategy,
+  PathLocationStrategy,
+  APP_BASE_HREF}
+from 'angular2/router';
+import {BrowserPlatformLocation} from 'angular2/src/router/location/browser_platform_location';
+```
+After:
+```
+import {
+  PlatformLocation,
+  Location,
+  LocationStrategy,
+  HashLocationStrategy,
+  PathLocationStrategy,
+  APP_BASE_HREF}
+from 'angular2/platform/common';
+import {BrowserPlatformLocation} from 'angular2/src/platform/browser/location/browser_platform_location';
+```
 
 * `injectAsync` is now deprecated. Instead, use the `async` function
 to wrap any asynchronous tests.
@@ -67,21 +136,24 @@ it('should wait for returned promises', async(() => {
 }));
 ```
 
-* inject can no longer wrap fakeAsync while fakeAsync can wrap inject. So the order in existing tests with inject and fakeAsync has to be switched as follows:
-Before:
-```
-inject([...], fakeAsync((...) => {...}))
-```
-After:
-```
-fakeAsync(inject([...], (...) => {...}))
-```
+* - Renderer:
+  * renderComponent method is removed form `Renderer`, only present on `RootRenderer`
+  * Renderer.setDebugInfo is removed. Renderer.createElement / createText / createTemplateAnchor
+    now take the DebugInfo directly.
+- Query semantics:
+  * Queries don't work with dynamically loaded components.
+  * e.g. for router-outlet: loaded components can't be queries via @ViewQuery,
+    but router-outlet emits an event `activate` now that emits the activated component
+- Exception classes and the context inside changed (renamed fields)
+- DebugElement.attributes is an Object and not a Map in JS any more
+- ChangeDetectorGenConfig was renamed into CompilerConfig
+- AppViewManager.createEmbeddedViewInContainer / AppViewManager.createHostViewInContainer
+  are removed, use the methods in ViewContainerRef instead
+- Change detection order changed:
+  * 1. dirty check component inputs
+  * 2. dirty check content children
+  * 3. update render nodes
 
-You will also need to add the dependency
-`'node_modules/zone.js/dist/fake-async-test.js'`
-as a served file in your Karma or other test configuration.
-
-* - pipes now take a variable number of arguments, and not an array that contains all arguments.
 
 
 <a name="2.0.0-beta.15"></a>
@@ -2621,4 +2693,3 @@ After
     })
 
 * no longer cache ref
-
