@@ -42,6 +42,11 @@
 
 * `injectAsync` is now deprecated. Instead, use the `async` function
 to wrap any asynchronous tests.
+
+You will also need to add the dependency
+`'node_modules/zone.js/dist/async-test.js'`
+as a served file in your Karma or other test configuration.
+
 Before:
 ```
 it('should wait for returned promises', injectAsync([FancyService], (service) => {
@@ -71,6 +76,10 @@ After:
 ```
 fakeAsync(inject([...], (...) => {...}))
 ```
+
+You will also need to add the dependency
+`'node_modules/zone.js/dist/fake-async-test.js'`
+as a served file in your Karma or other test configuration.
 
 * - pipes now take a variable number of arguments, and not an array that contains all arguments.
 
