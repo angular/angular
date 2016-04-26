@@ -5,6 +5,7 @@ import 'package:angular2/src/core/change_detection/change_detection.dart';
 import './metadata/di.dart';
 import './metadata/directives.dart';
 import './metadata/view.dart';
+import './metadata/animations.dart' show AnimationEntryMetadata;
 
 export './metadata/di.dart';
 export './metadata/directives.dart';
@@ -80,7 +81,7 @@ class Component extends ComponentMetadata {
       ViewEncapsulation encapsulation,
       List<String> styles,
       List<String> styleUrls,
-      List<dynamic> animations)
+      List<AnimationEntryMetadata> animations})
       : super(
             selector: selector,
             inputs: inputs,
@@ -118,7 +119,7 @@ class View extends ViewMetadata {
       ViewEncapsulation encapsulation,
       List<String> styles,
       List<String> styleUrls,
-      List<dynamic> animations)
+      List<AnimationEntryMetadata> animations})
       : super(
             templateUrl: templateUrl,
             template: template,

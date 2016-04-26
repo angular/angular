@@ -1,26 +1,34 @@
 import 'package:angular2/core.dart' show Component;
-import 'package:angular2/animate.dart' show AnimationStyleMetadata, AnimationAnimateMetadata, AnimationSequenceMetadata, AnimationGroupMetadata;
+import 'package:angular2/animate.dart' show
+  AnimationEntryMetadata,
+  AnimationStyleMetadata,
+  AnimationAnimateMetadata,
+  AnimationSequenceMetadata,
+  AnimationGroupMetadata;
 
 @Component(
   selector: 'animate-app',
   styleUrls: const ['css/animate-app.css'],
   templateUrl: './animate-app.html',
-  animations: const {
-    "ngEnter": const [
-      const AnimateStyleMetadata(const {"height": 0, "opacity": 0}),
-      const AnimateStyleMetadata(const {"background": "gold"}),
-      const AnimateGroupMetadata(const [
-        const AnimateAnimateMetadata(const {"height": 100, "opacity": 1}, 500),
-        const AnimateAnimateMetadata(const {"background": "red"}, "2s")
-      ]),
-      const AnimateAnimateMetadata(const {"background": "white"}, "500ms")
-    ],
-    "ngLeave": const AnimateSequenceMetadata(const [
-      const AnimateStyleMetadata(const {"opacity": 1, "width": "200px"}),
-      const AnimateStyleMetadata(const {"background": "white"}),
-      const AnimateStyleMetadata(const {"background": "blue", "opacity": 0, "width": 0}, "1000ms ease-out")
-    ])
-  }
+  animations: const [
+    const AnimationEntryMetadata("boxAnimation(void => start)", const AnimationSequenceMetadata(const [
+      const AnimationStyleMetadata(const {"height": 0, "opacity": 0}),
+      const AnimationStyleMetadata(const {"background": "gold"}),
+      const AnimationAnimateMetadata(const [const {"height": 100, "opacity": 1, "background":"red"}], 500)
+    ])),
+    const AnimationEntryMetadata("boxAnimation(start => active)", const AnimationSequenceMetadata(const [
+      const AnimationStyleMetadata(const {"background": "red"}),
+      const AnimationAnimateMetadata(const [const {"background": "green"}], 1000)
+    ])),
+    const AnimationEntryMetadata("boxAnimation(active => start)", const AnimationSequenceMetadata(const [
+      const AnimationStyleMetadata(const {"background": "green"}),
+      const AnimationAnimateMetadata(const [const {"background": "red"}], 1000)
+    ])),
+    const AnimationEntryMetadata("boxAnimation(* => void)", const AnimationSequenceMetadata(const [
+      const AnimationStyleMetadata(const {"height": 100, "opacity": 1}),
+      const AnimationAnimateMetadata(const [const {"height": 0, "opacity": 0}], 500)
+    ]))
+  ]
 )
 class AnimateApp {
   bool _visible = false;

@@ -1,6 +1,6 @@
 <button (click)="state='start'">Start State</button>
 <button (click)="state='active'">Active State</button>
 <hr />
-<div *ngFor="#item of items" class="box" @boxAnimation="state">
+<div *ngFor="#item of items" class="box" animate-boxAnimation="state">
   {{ item }}
 </div>

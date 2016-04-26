@@ -413,14 +413,14 @@ function declareTests() {
                             expect(enterCompleted).toEqual(true);
                           });
                     })));
+    */
 
       it('should destroy all animation players once the animation is complete',
          inject([TestComponentBuilder, AnimationDriver, NgZone],
                 fakeAsync(
                     (tcb: TestComponentBuilder, driver: MockAnimationDriver, zone: MockNgZone) => {
-                      tcb.overrideAnimations(DummyIfCmp,
-                                             {
-                                               "ngEnter": [
+                      tcb.overrideAnimations(DummyIfCmp, [
+                        animation("myAnimation(void => *)", [
                                                  style({'background': 'red', 'opacity': 0.5}),
                                                  animate({'background': 'black'}, 500),
                                                  group([
@@ -431,9 +431,8 @@ function declareTests() {
                                                    animate({'opacity': '1'}, 500),
                                                    animate({'background': 'white'}, 1000)
                                                  ])
-                                               ]
-                                             })
-                          .createAsync(DummyIfCmp)
+                                               ])
+                      ]).createAsync(DummyIfCmp)
                           .then((fixture) => {
                             tick();
 
@@ -444,7 +443,7 @@ function declareTests() {
                             flushMicrotasks();
                             zone.simulateMicrotaskEmpty();
 
-                            expect(driver.log.length).toEqual(6);
+                            expect(driver.log.length).toEqual(5);
 
                             driver.log.forEach(entry => entry['player'].finish());
                             driver.log.forEach(entry => {
@@ -454,8 +453,6 @@ function declareTests() {
                             });
                           });
                     })));
-    });
-    */
 
     it('should use first matched animation when multiple animations are registered',
        inject(

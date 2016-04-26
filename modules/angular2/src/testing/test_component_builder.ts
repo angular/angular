@@ -24,6 +24,8 @@ import {DebugNode, DebugElement, getDebugNode} from 'angular2/src/core/debug/deb
 
 import {tick} from './fake_async';
 
+import {AnimationEntryMetadata} from 'angular2/animate';
+
 /**
  * Fixture for debugging and testing a component.
  */
@@ -99,7 +101,7 @@ export class TestComponentBuilder {
   /** @internal */
   _templateOverrides = new Map<Type, string>();
   /** @internal */
-  _animationOverrides = new Map<Type, {[key: string]: any | any[]}>();
+  _animationOverrides = new Map<Type, AnimationEntryMetadata[]>();
   /** @internal */
   _viewBindingsOverrides = new Map<Type, any[]>();
   /** @internal */
@@ -134,8 +136,7 @@ export class TestComponentBuilder {
     return clone;
   }
 
-  overrideAnimations(componentType: Type,
-                     animations: {[key: string]: any | any[]}): TestComponentBuilder {
+  overrideAnimations(componentType: Type, animations: AnimationEntryMetadata[]): TestComponentBuilder {
     var clone = this._clone();
     clone._animationOverrides.set(componentType, animations);
     return clone;

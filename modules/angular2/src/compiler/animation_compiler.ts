@@ -3,7 +3,6 @@ import {BaseException} from 'angular2/src/facade/exceptions';
 import {Identifiers} from './identifiers';
 import * as o from './output/output_ast';
 
-import {AnimationMetadata} from 'angular2/src/core/metadata/animations';
 import {ListWrapper, Map, StringMapWrapper} from 'angular2/src/facade/collection';
 
 import {AnimationStateEvent} from 'angular2/src/core/animation/animation_state_event';
@@ -32,7 +31,6 @@ export class CompileAnimation {
 
 export class AnimationCompiler {
   compileComponent(component: CompileDirectiveMetadata): CompileAnimation[] {
-    var animationDetails = component.template.animations;
     var compiledAnimations: CompileAnimation[] = [];
     var index = 0;
     component.template.animations.forEach(metadata => {
@@ -45,7 +43,7 @@ export class AnimationCompiler {
         errors.forEach((error: AnimationParseError) => { errorMessage += "\n- " + error.msg; });
         // todo (matsko): include the component name when throwing
         throw new BaseException(
-          `Unable to parse the animation sequence for "${event}" due to the following errors: ` +
+          `Unable to parse the animation sequence for "${metadata.name}" due to the following errors: ` +
           errorMessage);
       }
       var ast = animationResults.ast;

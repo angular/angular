@@ -1,5 +1,4 @@
 import {isArray, isString, isStringMap} from 'angular2/src/facade/lang';
-import {StringMapWrapper} from 'angular2/src/facade/collection';
 import {BaseException} from 'angular2/src/facade/exceptions';
 import {CONST} from 'angular2/src/facade/lang';
 
@@ -8,15 +7,7 @@ export abstract class AnimationMetadata {}
 
 @CONST()
 export class AnimationEntryMetadata extends AnimationMetadata {
-  public animation: AnimationMetadata;
-  constructor(public name: string, animation: AnimationMetadata|AnimationMetadata[]) {
-    super();
-    if (isArray(animation)) {
-      this.animation = new AnimationSequenceMetadata(<AnimationMetadata[]>animation);
-    } else {
-      this.animation = <AnimationMetadata>animation;
-    }
-  }
+  constructor(public name: string, public animation: AnimationMetadata) { super(); }
 }
 
 @CONST()
@@ -75,5 +66,8 @@ export function style(token: {[key: string]: string | number}): AnimationStyleMe
 }
 
 export function animation(name: string, animation: AnimationMetadata|AnimationMetadata[]): AnimationEntryMetadata {
-  return new AnimationEntryMetadata(name, animation);
+  var entry = isArray(animation)
+    ? new AnimationSequenceMetadata(<AnimationMetadata[]>animation)
+    : <AnimationMetadata>animation;
+  return new AnimationEntryMetadata(name, entry);
 }

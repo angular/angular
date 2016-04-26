@@ -69,10 +69,10 @@ export function main() {
         styles: ['someStyle'],
         styleUrls: ['someStyleUrl'],
         animations: [
-          new CompileAnimationEntryMetadata('animation', [
+          new CompileAnimationEntryMetadata('animation', new CompileAnimationSequenceMetadata([
             new CompileAnimationStyleMetadata({ 'opacity': 0 }),
             new CompileAnimationAnimateMetadata([{ 'opacity': 1 }], 1000)
-          ])
+          ]))
         ],
         ngContentSelectors: ['*']
       });
@@ -244,8 +244,7 @@ export function main() {
           new CompileAnimationSequenceMetadata([
             new CompileAnimationStyleMetadata({ "color": "red" }),
             new CompileAnimationAnimateMetadata([{ "color": "blue" }], 1000),
-          ])
-        );
+          ]));
         expect(CompileAnimationEntryMetadata.fromJson(full.toJson())).toEqual(full);
       });
 

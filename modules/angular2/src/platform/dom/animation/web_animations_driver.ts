@@ -13,13 +13,13 @@ export class WebAnimationsDriver implements AnimationDriver {
           easing: string): AnimationPlayer {
 
     var formattedSteps = [];
-    if (!StringMapWrapper.isEmpty(startingStyles)) {
+    if (startingStyles.length > 0) {
       let data = _populateStyles(startingStyles);
       data['offset'] = 0;
       formattedSteps.push(data);
     }
 
-    keyframes.forEach((keyframe) => {
+    keyframes.forEach((keyframe: AnimationKeyframe) => {
       let data = _populateStyles(keyframe.styles);
       data['offset'] = keyframe.position / 100;
       formattedSteps.push(data);
@@ -44,7 +44,7 @@ export class WebAnimationsDriver implements AnimationDriver {
   }
 }
 
-function _populateStyles(styles) {
+function _populateStyles(styles: AnimationStyles[]) {
   var data = {};
   styles.forEach((entry) => {
     StringMapWrapper.forEach(entry.styles, (val, prop) => {

@@ -57,7 +57,7 @@ export class CompileAnimationEntryMetadata {
     return new CompileAnimationEntryMetadata(name, animation);
   }
 
-  constructor(public name: string = null, public animation: CompileAnimationMetadata = []) {}
+  constructor(public name: string = null, public animation: CompileAnimationMetadata = null) {}
 
   toJson(): {[key: string]: any} {
     return {
@@ -78,7 +78,7 @@ export class CompileAnimationStyleMetadata extends CompileAnimationMetadata {
     return new CompileAnimationStyleMetadata(styles);
   }
 
-  constructor(public styles: {[key: string]: string | number} = {}) { super(); }
+  constructor(public styles: {[key: string]: string | number} = null) { super(); }
 
   toJson(): {[key: string]: any} {
     return {
@@ -96,7 +96,7 @@ export class CompileAnimationAnimateMetadata extends CompileAnimationMetadata {
     return new CompileAnimationAnimateMetadata(styles, timings);
   }
 
-  constructor(public styles: Array<{[key: string]: string | number}> = [], public timings: string|number = 0) { super(); }
+  constructor(public styles: Array<{[key: string]: string | number}> = null, public timings: string|number = 0) { super(); }
 
   toJson(): {[key: string]: any} {
     return {
@@ -110,7 +110,7 @@ export class CompileAnimationAnimateMetadata extends CompileAnimationMetadata {
 }
 
 export abstract class CompileAnimationWithStepsMetadata extends CompileAnimationMetadata {
-  constructor(public steps: CompileAnimationMetadata[] = []) { super(); }
+  constructor(public steps: CompileAnimationMetadata[] = null) { super(); }
 }
 
 export class CompileAnimationSequenceMetadata extends CompileAnimationWithStepsMetadata {
@@ -119,14 +119,18 @@ export class CompileAnimationSequenceMetadata extends CompileAnimationWithStepsM
     return new CompileAnimationSequenceMetadata(steps);
   }
 
-  constructor(steps: CompileAnimationMetadata[] = []) {
+  constructor(steps: CompileAnimationMetadata[] = null) {
     super(steps);
   }
 
   toJson(): {[key: string]: any} {
+    var steps: any[] = null;
+    if (isPresent(this.steps)) {
+      steps = this.steps.map(step => _objToJson(step));
+    }
     return {
       'class': 'AnimationSequenceMetadata',
-      'value': this.steps.map(step => _objToJson(step))
+      'value': steps
     };
   }
 }
@@ -137,14 +141,18 @@ export class CompileAnimationGroupMetadata extends CompileAnimationWithStepsMeta
     return new CompileAnimationGroupMetadata(steps);
   }
 
-  constructor(steps: CompileAnimationMetadata[] = []) {
+  constructor(steps: CompileAnimationMetadata[] = null) {
     super(steps);
   }
 
   toJson(): {[key: string]: any} {
+    var steps: any[] = null;
+    if (isPresent(this.steps)) {
+      steps = this.steps.map(step => _objToJson(step));
+    }
     return {
       'class': 'AnimationGroupMetadata',
-      'value': this.steps.map(step => _objToJson(step))
+      'value': steps
     };
   }
 }

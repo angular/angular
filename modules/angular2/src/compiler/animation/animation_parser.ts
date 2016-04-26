@@ -73,7 +73,7 @@ export function parseAnimationEvent(eventStr: string): ParsedEventResult {
   var matches = RegExpWrapper.firstMatch(eventRegex, eventStr);
   var key, from, to;
   if (!isPresent(matches)) {
-    errors.push(new AnimationParseError(`the provided ${event} is not of a supported format`));
+    errors.push(new AnimationParseError(`the provided ${eventStr} is not of a supported format`));
     key = 'default';
     from = ANY_STATE;
     to = EMPTY_STATE;
@@ -90,22 +90,6 @@ export function parseAnimationEvent(eventStr: string): ParsedEventResult {
   }
   var animationEvent = new AnimationStateEvent(key, from, to);
   return new ParsedEventResult(animationEvent, errors);
-}
-
-function _checkAndStripQuotes(value: string, errors: AnimationParseError[]): string {
-  var DQ = '"';
-  var SQ = "'";
-  var firstVal = value[0];
-  if (firstVal == DQ || firstVal == SQ) {
-    var lastVal = value[value.length - 1];
-    if (lastVal == firstVal) {
-      value = value.substring(1, value.length - 1);
-    } else {
-      errors.push(new AnimationParseError(`Unbalanced string value " ${value} " detected`));
-      value = value.substring(1);
-    }
-  }
-  return value;
 }
 
 function _squashSiblingStyles(entry: CompileAnimationMetadata | CompileAnimationMetadata[],

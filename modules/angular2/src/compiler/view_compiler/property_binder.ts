@@ -141,24 +141,31 @@ function bindAndWriteToRenderer(boundProps: BoundElementPropertyAst[], context: 
           throw new BaseException(`Internal Error: couldn't find animations for ${boundProp.name}`);
         }
 
-        var ANIMATION_FIRED_VAL = o.variable('animationFired');
-        var TRUE_VAL = o.literal(true);
-        var FALSE_VAL = o.literal(false);
-        updateStmts.push(ANIMATION_FIRED_VAL.set(FALSE_VAL).toDeclStmt());
+        var PLAYER_VAR = o.variable('player');
+        updateStmts.push(PLAYER_VAR.set(o.NULL_EXPR).toDeclStmt());
         animations.forEach((animation: CompileAnimation) => {
           updateStmts.push(
             new o.IfStmt(
-                  ANIMATION_FIRED_VAL.equals(FALSE_VAL)
+                  PLAYER_VAR.equals(o.NULL_EXPR)
                   .and(_compareToAnimationStateExpr(fieldExpr, animation.event.fromState))
                   .and(_compareToAnimationStateExpr(currValExpr, animation.event.toState)), [
-                    animation.animationFactory.callFn([
-                      o.THIS_EXPR.prop('renderer'),
-                      renderNode
-                    ]).callMethod('play', []).toStmt(),
-                    ANIMATION_FIRED_VAL.set(TRUE_VAL).toStmt()
+                    PLAYER_VAR.set(
+                      animation.animationFactory.callFn([
+                        o.THIS_EXPR.prop('renderer'),
+                        renderNode
+                      ])
+                    ).toStmt()
                 ])
           );
         });
+        updateStmts.push(new o.IfStmt(o.not(PLAYER_VAR.equals(o.NULL_EXPR)), [
+          PLAYER_VAR.callMethod('onDone', [
+            o.fn([], [
+              PLAYER_VAR.callMethod('destroy', []).toStmt()
+            ])
+          ]).toStmt(),
+          PLAYER_VAR.callMethod('play', []).toStmt()
+        ]));
         break;
     }
 
