@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "compile": "tsc -p tsconfig.json",
+    "compile-system": "tsc -p tsconfig-system.json",
     "bundle": "rollup -f iife -c rollup.config.js -o dist/bundle.es2015.js",
     "es5": "tsc --out dist/bundle.js --target es5  --allowJs dist/bundle.es2015.js",
     "minify": "uglifyjs --screw-ie8 --compress --mangle --in-source-map ./dist/bundle.js.map --source-map ./dist/bindle.min.js.map --source-map-include-sources --output ./dist/bundle.min.js ./dist/bundle.js",

@@ -7,8 +7,6 @@ export * from './src/metadata';
 export * from './src/util';
 export * from './src/prod_mode';
 export * from './src/di';
-export * from '@angular/facade';
-export {enableProdMode} from '@angular/facade';
 export {
   createPlatform,
   assertPlatform,
@@ -39,7 +37,17 @@ export * from './src/application_common_providers';
 export * from './src/reflection/reflection';
 export * from './instrumentation';
 
-export {ConcreteType, Type, EventEmitter, WrappedException, ExceptionHandler} from '@angular/facade';
 
+// reexport a few things from facades under core
+import * as facade from '@angular/facade';
+export type Type = facade.Type;
+export var Type: typeof facade.Type = facade.Type;
+export type EventEmitter<T> = facade.EventEmitter<T>;
+export var EventEmitter: typeof facade.EventEmitter = facade.EventEmitter;
+export type WrappedException = facade.WrappedException;
+export var WrappedException: typeof facade.WrappedException = facade.WrappedException;
+export type ExceptionHandler = facade.ExceptionHandler;
+export var ExceptionHandler: typeof facade.ExceptionHandler = facade.ExceptionHandler;
+export var enableProdMode: typeof facade.enableProdMode = facade.enableProdMode;
 
 export * from './private_export';

@@ -1,7 +1,7 @@
-import {__core_private__ as _} from '@angular/core';
+import {__core_private__ as r, __core_private_types__ as t} from '@angular/core';
 
-export type RenderDebugInfo = _.RenderDebugInfo;
-export var RenderDebugInfo: typeof _.RenderDebugInfo = _.RenderDebugInfo;
-export var wtfInit: typeof _.wtfInit = _.wtfInit;
-export var ReflectionCapabilities: typeof _.ReflectionCapabilities = _.ReflectionCapabilities;
-export var VIEW_ENCAPSULATION_VALUES: typeof _.VIEW_ENCAPSULATION_VALUES = _.VIEW_ENCAPSULATION_VALUES;
+export type RenderDebugInfo = t.RenderDebugInfo;
+export var RenderDebugInfo: typeof t.RenderDebugInfo = r.RenderDebugInfo;
+export var wtfInit: typeof t.wtfInit = r.wtfInit;
+export var ReflectionCapabilities: typeof t.ReflectionCapabilities = r.ReflectionCapabilities;
+export var VIEW_ENCAPSULATION_VALUES: typeof t.VIEW_ENCAPSULATION_VALUES = r.VIEW_ENCAPSULATION_VALUES;
