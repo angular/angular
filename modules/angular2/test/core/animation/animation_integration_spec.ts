@@ -98,7 +98,7 @@ function declareTests() {
          inject([TestComponentBuilder, AnimationDriver, NgZone],
                 fakeAsync(
                     (tcb: TestComponentBuilder, driver: MockAnimationDriver, zone: MockNgZone) => {
-                      makeAnimationCmp(tcb, '<div *ngIf="exp" @myAnimation="exp"></div>',
+                      makeAnimationCmp(tcb, '<div *ngIf="exp" animate-myAnimation="exp"></div>',
                         animation('myAnimation(void => *)', [style({'opacity': 0}), animate({'opacity': 1}, 500)]),
                                        (fixture) => {
                                          var cmp = fixture.debugElement.componentInstance;
@@ -462,8 +462,8 @@ function declareTests() {
            [TestComponentBuilder, AnimationDriver, NgZone],
            fakeAsync((tcb: TestComponentBuilder, driver: MockAnimationDriver, zone: MockNgZone) => {
              tcb = tcb.overrideTemplate(DummyIfCmp, `
-                      <div @rotate="exp"></div>
-                      <div @rotate="exp2"></div>
+                      <div animate-rotate="exp"></div>
+                      <div animate-rotate="exp2"></div>
                     `);
              tcb.overrideAnimations(DummyIfCmp, [
                animation("rotate(start => *)", [style({'color': 'white'}), animate({'color': 'red'}, 500)]),
@@ -513,7 +513,7 @@ function declareTests() {
 @Component({
   selector: 'if-cmp',
   template: `
-    <div *ngIf="exp" @myAnimation="exp"></div>
+    <div *ngIf="exp" animate-myAnimation="exp"></div>
   `
 })
 class DummyIfCmp {

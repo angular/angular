@@ -83,7 +83,7 @@ import {ProviderElementContext, ProviderViewContext} from './provider_parser';
 // Group 8 = identifier inside []
 // Group 9 = identifier inside ()
 var BIND_NAME_REGEXP =
-    /^(?:(?:(?:(bind-)|(var-|#)|(on-)|(bindon-)|(animate-|@))(.+))|\[\(([^\)]+)\)\]|\[([^\]]+)\]|\(([^\)]+)\))$/g;
+    /^(?:(?:(?:(bind-)|(var-|#)|(on-)|(bindon-)|(animate-))(.+))|\[\(([^\)]+)\)\]|\[([^\]]+)\]|\(([^\)]+)\))$/g;
 
 const TEMPLATE_ELEMENT = 'template';
 const TEMPLATE_ATTR = 'template';
@@ -92,7 +92,6 @@ const CLASS_ATTR = 'class';
 
 var PROPERTY_PARTS_SEPARATOR = '.';
 const ATTRIBUTE_PREFIX = 'attr';
-const ANIMATION_PREFIX = '@';
 const CLASS_PREFIX = 'class';
 const STYLE_PREFIX = 'style';
 
@@ -849,10 +848,7 @@ function createElementCssSelector(elementName: string, matchableAttrs: string[][
 
   for (var i = 0; i < matchableAttrs.length; i++) {
     let attrName = matchableAttrs[i][0];
-    let attrNameNoNs = attrName[0] == '@'
-        ? attrName
-        : splitNsName(attrName)[1];
-
+    let attrNameNoNs = splitNsName(attrName)[1];
     let attrValue = matchableAttrs[i][1];
 
     cssSelector.addAttribute(attrNameNoNs, attrValue);
