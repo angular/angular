@@ -1,3 +1,80 @@
+<a name="2.0.0-beta.16"></a>
+# 2.0.0-beta.16 (2016-04-26)
+
+
+### Bug Fixes
+
+* **angular_1_router:** Removed arrow function from module template ([d094a85](https://github.com/angular/angular/commit/d094a85)), closes [#8076](https://github.com/angular/angular/issues/8076)
+* **build:** ignore Dart warnings for external code. ([4140405](https://github.com/angular/angular/commit/4140405))
+* **codegen:** add explicit any to class fields ([c8d00dc](https://github.com/angular/angular/commit/c8d00dc)), closes [#8204](https://github.com/angular/angular/issues/8204) [#8205](https://github.com/angular/angular/issues/8205)
+* **compiler:** only call pure pipes if their input changed. ([8db6215](https://github.com/angular/angular/commit/8db6215))
+* **compiler:** properly implement pure pipes and change pipe syntax ([152a117](https://github.com/angular/angular/commit/152a117))
+* **compiler:** support string tokens with `.` inside. ([cc86fee](https://github.com/angular/angular/commit/cc86fee))
+* **compiler:** use DI order for change detection order. ([67d05eb](https://github.com/angular/angular/commit/67d05eb)), closes [#8198](https://github.com/angular/angular/issues/8198)
+* **core:** various minor compiler fixes ([2f70457](https://github.com/angular/angular/commit/2f70457)), closes [#8162](https://github.com/angular/angular/issues/8162)
+* **forms:** ensure select model updates in firefox and ie ([c3daccd](https://github.com/angular/angular/commit/c3daccd)), closes [#6573](https://github.com/angular/angular/issues/6573) [#8148](https://github.com/angular/angular/issues/8148)
+* **forms:** improve error message when ngFormModel is missing a form ([12837e1](https://github.com/angular/angular/commit/12837e1)), closes [#8136](https://github.com/angular/angular/issues/8136) [#8143](https://github.com/angular/angular/issues/8143)
+* **forms:** number input should report null when blank ([e69cb40](https://github.com/angular/angular/commit/e69cb40)), closes [#6932](https://github.com/angular/angular/issues/6932) [#8141](https://github.com/angular/angular/issues/8141)
+* **metadata:** emit metadata rooted at 'angular2' ([9889c21](https://github.com/angular/angular/commit/9889c21)), closes [#8144](https://github.com/angular/angular/issues/8144) [#8147](https://github.com/angular/angular/issues/8147)
+* **release:** Fix the package.json zone.js requirement to 0.6.12 ([6103aa0](https://github.com/angular/angular/commit/6103aa0))
+* **tests:** remove payload size check ([22c05b0](https://github.com/angular/angular/commit/22c05b0))
+* **transformers:** support `query.read` ([386cc5d](https://github.com/angular/angular/commit/386cc5d)), closes [#8172](https://github.com/angular/angular/issues/8172)
+* **upgrade:** clean up scope when element is destroyed ([0fc9ec2](https://github.com/angular/angular/commit/0fc9ec2)), closes [#8102](https://github.com/angular/angular/issues/8102)
+
+### Features
+
+* **html_lexer:** support special forms used by i18n { exp, plural, =0 {} } ([7f29766](https://github.com/angular/angular/commit/7f29766))
+* **html_parser:** support special forms used by i18n { exp, plural, =0 {} } ([7c9717b](https://github.com/angular/angular/commit/7c9717b))
+* **i18n:** add custom placeholder names ([bb9fb21](https://github.com/angular/angular/commit/bb9fb21)), closes [#7799](https://github.com/angular/angular/issues/7799) [#8057](https://github.com/angular/angular/issues/8057)
+* **i18n:** add support for nested expansion forms ([c6244d1](https://github.com/angular/angular/commit/c6244d1)), closes [#7977](https://github.com/angular/angular/issues/7977)
+* **i18n:** support plural and gender special forms ([88b0a23](https://github.com/angular/angular/commit/88b0a23))
+* **NgTemplateOutlet:** add NgTemplateOutlet directive ([f4e6994](https://github.com/angular/angular/commit/f4e6994)), closes [#7615](https://github.com/angular/angular/issues/7615) [#8021](https://github.com/angular/angular/issues/8021)
+* **router:** add Router and RouterOutlet ([5a897cf](https://github.com/angular/angular/commit/5a897cf)), closes [#8173](https://github.com/angular/angular/issues/8173)
+* **router:** add router metadata ([ef67a0c](https://github.com/angular/angular/commit/ef67a0c))
+* **router:** add UrlSegment, RouteSegment, and Tree ([90a1f7d](https://github.com/angular/angular/commit/90a1f7d))
+* **router:** implement recognizer ([ef6163e](https://github.com/angular/angular/commit/ef6163e))
+* **router:** implement RouterUrlParser ([f698567](https://github.com/angular/angular/commit/f698567))
+* **test:** Implement fakeAsync using the FakeAsyncTestZoneSpec from zone.js. ([bab81a9](https://github.com/angular/angular/commit/bab81a9)), closes [#8142](https://github.com/angular/angular/issues/8142)
+* **tests:** manage asynchronous tests using zones ([8490921](https://github.com/angular/angular/commit/8490921)), closes [#7735](https://github.com/angular/angular/issues/7735)
+
+
+### BREAKING CHANGES
+
+* `injectAsync` is now deprecated. Instead, use the `async` function
+to wrap any asynchronous tests.
+Before:
+```
+it('should wait for returned promises', injectAsync([FancyService], (service) => {
+  return service.getAsyncValue().then((value) => { expect(value).toEqual('async value'); });
+}));
+it('should wait for returned promises', injectAsync([], () => {
+  return somePromise.then(() => { expect(true).toEqual(true); });
+}));
+```
+After:
+```
+it('should wait for returned promises', async(inject([FancyService], (service) => {
+  service.getAsyncValue().then((value) => { expect(value).toEqual('async value'); });
+})));
+// Note that if there is no injection, we no longer need `inject` OR `injectAsync`.
+it('should wait for returned promises', async(() => {
+  somePromise.then() => { expect(true).toEqual(true); });
+}));
+```
+
+* inject can no longer wrap fakeAsync while fakeAsync can wrap inject. So the order in existing tests with inject and fakeAsync has to be switched as follows:
+Before:
+```
+inject([...], fakeAsync((...) => {...}))
+```
+After:
+```
+fakeAsync(inject([...], (...) => {...}))
+```
+
+* - pipes now take a variable number of arguments, and not an array that contains all arguments.
+
+
 <a name="2.0.0-beta.15"></a>
 # 2.0.0-beta.15 (2016-04-13)
 
@@ -2535,3 +2612,4 @@ After
     })
 
 * no longer cache ref
+
