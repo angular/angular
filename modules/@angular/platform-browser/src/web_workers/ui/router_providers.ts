@@ -7,9 +7,12 @@ import {APP_INITIALIZER, Provider, Injector, NgZone} from '@angular/core';
 export const WORKER_RENDER_ROUTER = /*@ts2dart_const*/ ([
   MessageBasedPlatformLocation,
   BrowserPlatformLocation,
-  /*@ts2dart_const*/ (new Provider(
-      APP_INITIALIZER,
-      {useFactory: initRouterListeners, multi: true, deps: /*@ts2dart_const*/ ([Injector])}))
+  /*@ts2dart_const*/ ({
+    provide: APP_INITIALIZER,
+    useFactory: initRouterListeners,
+    multi: true,
+    deps: /*@ts2dart_const*/ ([Injector])
+  })
 ]);
 
 function initRouterListeners(injector: Injector): () => void {

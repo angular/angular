@@ -436,15 +436,14 @@ export class ApplicationRef_ extends ApplicationRef {
 export const PLATFORM_CORE_PROVIDERS =
     /*@ts2dart_const*/ ([
       PlatformRef_,
-      /*@ts2dart_const*/ (new Provider(PlatformRef, {useExisting: PlatformRef_}))
+      /*@ts2dart_const*/ ({provide: PlatformRef, useExisting: PlatformRef_})
     ]);
 
 /**
  * @internal
  */
 export const APPLICATION_CORE_PROVIDERS = /*@ts2dart_const*/ ([
-  /*@ts2dart_const*/ (
-      new Provider(NgZone, {useFactory: createNgZone, deps: /*@ts2dart_const*/ ([])})),
+  /*@ts2dart_const*/ ({provide: NgZone, useFactory: createNgZone, deps: /*@ts2dart_const*/ ([])}),
   ApplicationRef_,
-  /*@ts2dart_const*/ (new Provider(ApplicationRef, {useExisting: ApplicationRef_}))
+  /*@ts2dart_const*/ ({provide: ApplicationRef, useExisting: ApplicationRef_})
 ]);

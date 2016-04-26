@@ -39,7 +39,7 @@ function _createCompilerConfig() {
  * A set of providers that provide `RuntimeCompiler` and its dependencies to use for
  * template compilation.
  */
-export const COMPILER_PROVIDERS: Array<Type | Provider | any[]> = /*@ts2dart_const*/ ([
+export const COMPILER_PROVIDERS: Array<Type | {[k: string]: any} | any[]> = /*@ts2dart_const*/ ([
   Lexer,
   Parser,
   HtmlParser,
@@ -49,11 +49,11 @@ export const COMPILER_PROVIDERS: Array<Type | Provider | any[]> = /*@ts2dart_con
   DEFAULT_PACKAGE_URL_PROVIDER,
   StyleCompiler,
   ViewCompiler,
-  new Provider(CompilerConfig, {useFactory: _createCompilerConfig, deps: []}),
+  {provide: CompilerConfig, useFactory: _createCompilerConfig, deps: []},
   RuntimeCompiler,
-  new Provider(ComponentResolver, {useExisting: RuntimeCompiler}),
+  {provide: ComponentResolver, useExisting: RuntimeCompiler},
   DomElementSchemaRegistry,
-  new Provider(ElementSchemaRegistry, {useExisting: DomElementSchemaRegistry}),
+  {provide: ElementSchemaRegistry, useExisting: DomElementSchemaRegistry},
   UrlResolver,
   ViewResolver,
   DirectiveResolver,

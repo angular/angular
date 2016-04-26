@@ -2,8 +2,8 @@ import {Directive, ElementRef, Renderer, Self, forwardRef, Provider} from '@angu
 import {NumberWrapper} from '@angular/facade';
 import {NG_VALUE_ACCESSOR, ControlValueAccessor} from './control_value_accessor';
 
-const NUMBER_VALUE_ACCESSOR = /*@ts2dart_const*/ (new Provider(
-    NG_VALUE_ACCESSOR, {useExisting: forwardRef(() => NumberValueAccessor), multi: true}));
+const NUMBER_VALUE_ACCESSOR = /*@ts2dart_const*/ (
+    {provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => NumberValueAccessor), multi: true});
 
 /**
  * The accessor for writing a number value and listening to changes that is used by the

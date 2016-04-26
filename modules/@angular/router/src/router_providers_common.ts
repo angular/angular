@@ -10,18 +10,19 @@ import {BaseException} from '@angular/facade';
  */
 export const ROUTER_PROVIDERS_COMMON: any[] = /*@ts2dart_const*/ ([
   RouteRegistry,
-  /*@ts2dart_const*/ (new Provider(LocationStrategy, {useClass: PathLocationStrategy})),
+  /*@ts2dart_const*/ ({provide: LocationStrategy, useClass: PathLocationStrategy}),
   Location,
-  /*@ts2dart_const*/ (
-      new Provider(Router,
-                   {
-                     useFactory: routerFactory,
-                     deps: /*@ts2dart_const*/ (
-                         [RouteRegistry, Location, ROUTER_PRIMARY_COMPONENT, ApplicationRef])
-                   })),
-  /*@ts2dart_const*/ (new Provider(
-      ROUTER_PRIMARY_COMPONENT,
-      {useFactory: routerPrimaryComponentFactory, deps: /*@ts2dart_const*/ ([ApplicationRef])}))
+  /*@ts2dart_const*/ ({
+    provide: Router,
+    useFactory: routerFactory,
+    deps:
+        /*@ts2dart_const*/ ([RouteRegistry, Location, ROUTER_PRIMARY_COMPONENT, ApplicationRef])
+  }),
+  /*@ts2dart_const*/ ({
+    provide: ROUTER_PRIMARY_COMPONENT,
+    useFactory: routerPrimaryComponentFactory,
+    deps: /*@ts2dart_const*/ ([ApplicationRef])
+  })
 ]);
 
 function routerFactory(registry: RouteRegistry, location: Location, primaryComponent: Type,

@@ -37,7 +37,7 @@ export const WORKER_APP_PLATFORM_MARKER =
 
 export const WORKER_APP_PLATFORM: Array<any /*Type | Provider | any[]*/> = /*@ts2dart_const*/ ([
   PLATFORM_COMMON_PROVIDERS,
-  /*@ts2dart_const*/ (new Provider(WORKER_APP_PLATFORM_MARKER, {useValue: true}))
+  /*@ts2dart_const*/ ({provide: WORKER_APP_PLATFORM_MARKER, useValue: true})
 ]);
 
 export const WORKER_APP_APPLICATION_COMMON: Array<any /*Type | Provider | any[]*/> =
@@ -45,17 +45,17 @@ export const WORKER_APP_APPLICATION_COMMON: Array<any /*Type | Provider | any[]*
       APPLICATION_COMMON_PROVIDERS,
       FORM_PROVIDERS,
       Serializer,
-      new Provider(PLATFORM_PIPES, {useValue: COMMON_PIPES, multi: true}),
-      new Provider(PLATFORM_DIRECTIVES, {useValue: COMMON_DIRECTIVES, multi: true}),
-      new Provider(ClientMessageBrokerFactory, {useClass: ClientMessageBrokerFactory_}),
-      new Provider(ServiceMessageBrokerFactory, {useClass: ServiceMessageBrokerFactory_}),
+      {provide: PLATFORM_PIPES, useValue: COMMON_PIPES, multi: true},
+      {provide: PLATFORM_DIRECTIVES, useValue: COMMON_DIRECTIVES, multi: true},
+      {provide: ClientMessageBrokerFactory, useClass: ClientMessageBrokerFactory_},
+      {provide: ServiceMessageBrokerFactory, useClass: ServiceMessageBrokerFactory_},
       WebWorkerRootRenderer,
-      new Provider(RootRenderer, {useExisting: WebWorkerRootRenderer}),
-      new Provider(ON_WEB_WORKER, {useValue: true}),
+      {provide: RootRenderer, useExisting: WebWorkerRootRenderer},
+      {provide: ON_WEB_WORKER, useValue: true},
       RenderStore,
-      new Provider(ExceptionHandler, {useFactory: _exceptionHandler, deps: []}),
+      {provide: ExceptionHandler, useFactory: _exceptionHandler, deps: []},
       WebWorkerXHRImpl,
-      new Provider(XHR, {useExisting: WebWorkerXHRImpl})
+      {provide: XHR, useExisting: WebWorkerXHRImpl}
     ]);
 
 function _exceptionHandler(): ExceptionHandler {

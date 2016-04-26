@@ -17,7 +17,7 @@ export const CACHED_TEMPLATE_PROVIDER: Array<any /*Type | Provider | any[]*/> =
 export const BROWSER_APP_PROVIDERS: Array<any /*Type | Provider | any[]*/> = /*@ts2dart_const*/ ([
   BROWSER_APP_COMMON_PROVIDERS,
   COMPILER_PROVIDERS,
-  new Provider(XHR, {useClass: XHRImpl}),
+  {provide: XHR, useClass: XHRImpl},
 ]);
 
 

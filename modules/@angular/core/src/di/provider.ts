@@ -45,11 +45,11 @@ export class Provider {
    *
    * var injectorClass = Injector.resolveAndCreate([
    *   Car,
-   *   new Provider(Vehicle, { useClass: Car })
+   *   {provide: Vehicle,  useClass: Car }
    * ]);
    * var injectorAlias = Injector.resolveAndCreate([
    *   Car,
-   *   new Provider(Vehicle, { useExisting: Car })
+   *   {provide: Vehicle,  useExisting: Car }
    * ]);
    *
    * expect(injectorClass.get(Vehicle)).not.toBe(injectorClass.get(Car));
@@ -94,11 +94,11 @@ export class Provider {
    *
    * var injectorAlias = Injector.resolveAndCreate([
    *   Car,
-   *   new Provider(Vehicle, { useExisting: Car })
+   *   {provide: Vehicle,  useExisting: Car }
    * ]);
    * var injectorClass = Injector.resolveAndCreate([
    *   Car,
-   *   new Provider(Vehicle, { useClass: Car })
+   *   {provide: Vehicle,  useClass: Car }
    * ]);
    *
    * expect(injectorAlias.get(Vehicle)).toBe(injectorAlias.get(Car));
@@ -117,7 +117,7 @@ export class Provider {
    *
    * ```typescript
    * var injector = Injector.resolveAndCreate([
-   *   new Provider(Number, { useFactory: () => { return 1+2; }}),
+   *   {provide: Number,  useFactory: () => { return 1+2; }},
    *   new Provider(String, { useFactory: (value) => { return "Value: " + value; },
    *                       deps: [Number] })
    * ]);
@@ -138,7 +138,7 @@ export class Provider {
    *
    * ```typescript
    * var injector = Injector.resolveAndCreate([
-   *   new Provider(Number, { useFactory: () => { return 1+2; }}),
+   *   {provide: Number,  useFactory: () => { return 1+2; }},
    *   new Provider(String, { useFactory: (value) => { return "Value: " + value; },
    *                       deps: [Number] })
    * ]);

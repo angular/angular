@@ -13,10 +13,10 @@ function _reflector(): Reflector {
 /**
  * A default set of providers which should be included in any Angular platform.
  */
-export const PLATFORM_COMMON_PROVIDERS: Array<Type | Provider | any[]> = /*@ts2dart_const*/ ([
+export const PLATFORM_COMMON_PROVIDERS: Array<Type |  {[k: string]: any} | any[]> = /*@ts2dart_const*/ ([
   PLATFORM_CORE_PROVIDERS,
-  new Provider(Reflector, {useFactory: _reflector, deps: []}),
-  new Provider(ReflectorReader, {useExisting: Reflector}),
+  {provide: Reflector, useFactory: _reflector, deps: []},
+  {provide: ReflectorReader, useExisting: Reflector},
   TestabilityRegistry,
   Console
 ]);

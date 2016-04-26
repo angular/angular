@@ -1364,7 +1364,7 @@ function loginIsEmptyGroupValidator(c: ControlGroup) {
 
 @Directive({
   selector: '[login-is-empty-validator]',
-  providers: [new Provider(NG_VALIDATORS, {useValue: loginIsEmptyGroupValidator, multi: true})]
+  providers: [{provide: NG_VALIDATORS, useValue: loginIsEmptyGroupValidator, multi: true}]
 })
 class LoginIsEmptyValidator {
 }
