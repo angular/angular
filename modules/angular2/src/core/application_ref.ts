@@ -374,7 +374,7 @@ export class ApplicationRef_ extends ApplicationRef {
       }
 
       this._loadComponent(compRef);
-      let c = this._injector.get(Console);
+      let c: Console = this._injector.get(Console);
       if (assertionsEnabled()) {
         c.log(
             "Angular 2 is running in the development mode. Call enableProdMode() to enable the production mode.");
