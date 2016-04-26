@@ -1072,7 +1072,7 @@ export function main() {
 }
 
 const ALL_DIRECTIVES = /*@ts2dart_const*/ [
-  forwardRef(( => TestDirective),
+  forwardRef(() => TestDirective),
   forwardRef(() => TestComponent),
   forwardRef(() => AnotherComponent),
   forwardRef(() => TestLocals),
@@ -1082,17 +1082,17 @@ const ALL_DIRECTIVES = /*@ts2dart_const*/ [
   forwardRef(() => OrderCheckDirective2),
   forwardRef(() => OrderCheckDirective0),
   forwardRef(() => OrderCheckDirective1),
-]);
+];
 
 const ALL_PIPES = /*@ts2dart_const*/ [
-  forwardRef(( => CountingPipe),
+  forwardRef(() => CountingPipe),
   forwardRef(() => CountingImpurePipe),
   forwardRef(() => MultiArgPipe),
   forwardRef(() => PipeWithOnDestroy),
   forwardRef(() => IdentityPipe),
   forwardRef(() => WrappedPipe),
   AsyncPipe
-]);
+];
 
 @Injectable()
 class RenderLog {

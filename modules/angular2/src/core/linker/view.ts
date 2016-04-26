@@ -16,7 +16,6 @@ import {
   Type,
   isArray,
   isNumber,
-  CONST,
   stringify,
   isPrimitive,
   isString

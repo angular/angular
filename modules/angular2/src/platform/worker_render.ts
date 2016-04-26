@@ -35,19 +35,20 @@ export class WebWorkerInstance {
 /**
  * An array of providers that should be passed into `application()` when initializing a new Worker.
  */
-export const WORKER_RENDER_APPLICATION: Array<any /*Type | Provider | any[]*/> =
-    /*@ts2dart_const*/ [
-      WORKER_RENDER_APPLICATION_COMMON,
-      WebWorkerInstance,
-      new Provider(APP_INITIALIZER,
-                   {
-                     useFactory: (injector => () => initWebWorkerApplication(injector),
-                     multi: true,
-                     deps: [Injector]
-                   }),
-      new Provider(MessageBus,
-                   {useFactory: (instance) => instance.bus, deps: [WebWorkerInstance]})
-    ]);
+export const WORKER_RENDER_APPLICATION: Array<any /*Type | Provider | any[]*/> = /*@ts2dart_const*/[
+  WORKER_RENDER_APPLICATION_COMMON, WebWorkerInstance,
+  /*@ts2dart_Provider*/ {
+    provide: APP_INITIALIZER,
+    useFactory: (injector => () => initWebWorkerApplication(injector)),
+    multi: true,
+    deps: [Injector]
+  },
+  /*@ts2dart_Provider*/ {
+    provide: MessageBus,
+    useFactory: (instance) => instance.bus,
+    deps: [WebWorkerInstance]
+  }
+];
 
 function initWebWorkerApplication(injector: Injector): void {
   var scriptUri: string;

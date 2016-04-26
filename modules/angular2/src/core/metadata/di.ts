@@ -1,4 +1,4 @@
-import {CONST, Type, stringify, isPresent, isString} from 'angular2/src/facade/lang';
+import {Type, stringify, isPresent, isString} from 'angular2/src/facade/lang';
 import {resolveForwardRef} from 'angular2/src/core/di';
 import {DependencyMetadata} from 'angular2/src/core/di/metadata';
 
@@ -19,7 +19,7 @@ import {DependencyMetadata} from 'angular2/src/core/di/metadata';
  *
  * {@example core/ts/metadata/metadata.ts region='attributeMetadata'}
  */
-@CONST()
+/* @ts2dart_const */
 export class AttributeMetadata extends DependencyMetadata {
   constructor(public attributeName: string) { super(); }
 
@@ -141,7 +141,7 @@ export class AttributeMetadata extends DependencyMetadata {
  * The injected object is an unmodifiable live list.
  * See {@link QueryList} for more details.
  */
-@CONST()
+/* @ts2dart_const */
 export class QueryMetadata extends DependencyMetadata {
   /**
    * whether we want to query only direct children (false) or all
@@ -208,7 +208,7 @@ export class QueryMetadata extends DependencyMetadata {
  * }
  * ```
  */
-@CONST()
+/* @ts2dart_const */
 export class ContentChildrenMetadata extends QueryMetadata {
   constructor(_selector: Type | string,
               {descendants = false, read = null}: {descendants?: boolean, read?: any} = {}) {
@@ -237,7 +237,7 @@ export class ContentChildrenMetadata extends QueryMetadata {
  * }
  * ```
  */
-@CONST()
+/* @ts2dart_const */
 export class ContentChildMetadata extends QueryMetadata {
   constructor(_selector: Type | string, {read = null}: {read?: any} = {}) {
     super(_selector, {descendants: true, first: true, read: read});
@@ -279,7 +279,7 @@ export class ContentChildMetadata extends QueryMetadata {
  * The injected object is an iterable and observable live list.
  * See {@link QueryList} for more details.
  */
-@CONST()
+/* @ts2dart_const */
 export class ViewQueryMetadata extends QueryMetadata {
   constructor(_selector: Type | string,
               {descendants = false, first = false,
@@ -371,7 +371,7 @@ export class ViewQueryMetadata extends QueryMetadata {
  * }
  * ```
  */
-@CONST()
+/* @ts2dart_const */
 export class ViewChildrenMetadata extends ViewQueryMetadata {
   constructor(_selector: Type | string, {read = null}: {read?: any} = {}) {
     super(_selector, {descendants: true, read: read});
@@ -448,7 +448,7 @@ export class ViewChildrenMetadata extends ViewQueryMetadata {
  * }
  * ```
  */
-@CONST()
+/* @ts2dart_const */
 export class ViewChildMetadata extends ViewQueryMetadata {
   constructor(_selector: Type | string, {read = null}: {read?: any} = {}) {
     super(_selector, {descendants: true, first: true, read: read});

@@ -5,7 +5,6 @@ import {
   MapWrapper
 } from 'angular2/src/facade/collection';
 import {
-  CONST_EXPR,
   RegExpWrapper,
   isPresent,
   StringWrapper,

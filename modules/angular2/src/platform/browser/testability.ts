@@ -1,5 +1,5 @@
 import {Map, MapWrapper, ListWrapper} from 'angular2/src/facade/collection';
-import {CONST, global, isPresent} from 'angular2/src/facade/lang';
+import {global, isPresent} from 'angular2/src/facade/lang';
 import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
 import {PromiseWrapper, ObservableWrapper} from 'angular2/src/facade/async';
 

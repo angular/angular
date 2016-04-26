@@ -1,7 +1,6 @@
 import {
   normalizeBool,
   Type,
-  CONST,
   isType,
   isBlank,
   isFunction,
@@ -24,7 +23,7 @@ import {BaseException} from 'angular2/src/facade/exceptions';
  * expect(injector.get("message")).toEqual('Hello');
  * ```
  */
-@CONST()
+/* @ts2dart_const */
 export class Provider {
   /**
    * Token used when retrieving this provider. Usually, it is a type {@link Type}.
@@ -210,7 +209,7 @@ export class Provider {
  *
  * @deprecated
  */
-@CONST()
+/* @ts2dart_const */
 export class Binding extends Provider {
   constructor(token, {toClass, toValue, toAlias, toFactory, deps, multi}: {
     toClass?: Type,

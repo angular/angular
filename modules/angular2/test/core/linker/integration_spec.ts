@@ -31,7 +31,6 @@ import {
   global,
   stringify,
   isBlank,
-  CONST,
   IS_DART
 } from 'angular2/src/facade/lang';
 import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
@@ -2408,7 +2407,7 @@ class DirectiveConsumingInjectableUnbounded {
 }
 
 
-@CONST()
+/* @ts2dart_const */
 class EventBus {
   parentEventBus: EventBus;
   name: string;

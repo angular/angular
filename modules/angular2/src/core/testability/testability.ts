@@ -1,6 +1,6 @@
 import {Injectable} from 'angular2/src/core/di';
 import {Map, MapWrapper, ListWrapper} from 'angular2/src/facade/collection';
-import {CONST, scheduleMicroTask} from 'angular2/src/facade/lang';
+import {scheduleMicroTask} from 'angular2/src/facade/lang';
 import {BaseException} from 'angular2/src/facade/exceptions';
 import {NgZone} from '../zone/ng_zone';
 import {ObservableWrapper} from 'angular2/src/facade/async';
@@ -134,7 +134,7 @@ export interface GetTestability {
                         findInAncestors: boolean): Testability;
 }
 
-@CONST()
+/* @ts2dart_const */
 class _NoopGetTestability implements GetTestability {
   addToWindow(registry: TestabilityRegistry): void {}
   findTestabilityInTree(registry: TestabilityRegistry, elem: any,

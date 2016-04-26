@@ -20,9 +20,11 @@ import {NgControl} from 'angular2/src/common/forms/directives/ng_control';
 import {looseIdentical, isPresent} from 'angular2/src/facade/lang';
 import {ListWrapper} from 'angular2/src/facade/collection';
 
-export const RADIO_VALUE_ACCESSOR = /*@ts2dart_const*/ new Provider(
-    NG_VALUE_ACCESSOR, {useExisting: forwardRef(( => RadioControlValueAccessor), multi: true}));
-
+export const RADIO_VALUE_ACCESSOR: any = /*@ts2dart_const*/ /*@ts2dart_Provider*/ {
+  povide: NG_VALUE_ACCESSOR,
+  useExisting: forwardRef(() => RadioControlValueAccessor),
+  multi: true
+};
 
 /**
  * Internal class used by Angular to uncheck radio buttons with the matching name.

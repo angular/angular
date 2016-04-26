@@ -20,8 +20,11 @@ import {
 
 import {MapWrapper} from 'angular2/src/facade/collection';
 
-export const SELECT_VALUE_ACCESSOR = /*@ts2dart_const*/ new Provider(
-    NG_VALUE_ACCESSOR, {useExisting: forwardRef(( => SelectControlValueAccessor), multi: true}));
+export const SELECT_VALUE_ACCESSOR: any = /*@ts2dart_const*/ /*@ts2dart_Provider*/ {
+  provide: NG_VALUE_ACCESSOR,
+  useExisting: forwardRef(() => SelectControlValueAccessor),
+  multi: true
+};
 
 function _buildValueString(id: string, value: any): string {
   if (isBlank(id)) return `${value}`;

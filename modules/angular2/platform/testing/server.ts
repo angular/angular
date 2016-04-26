@@ -1,7 +1,6 @@
 import {
   APP_ID,
   NgZone,
-  Provider,
   PLATFORM_COMMON_PROVIDERS,
   PLATFORM_INITIALIZER,
   APPLICATION_COMMON_PROVIDERS,
@@ -52,8 +51,8 @@ function initServerTests() {
 export const TEST_SERVER_PLATFORM_PROVIDERS: Array<any /*Type | Provider | any[]*/> =
     /*@ts2dart_const*/ [
       PLATFORM_COMMON_PROVIDERS,
-      new Provider(PLATFORM_INITIALIZER, {useValue: initServerTests, multi: true}
-    ]);
+      /*@ts2dart_Provider*/{provide: PLATFORM_INITIALIZER, useValue: initServerTests, multi: true}
+    ];
 
 function appDoc() {
   try {
@@ -72,21 +71,21 @@ export const TEST_SERVER_APPLICATION_PROVIDERS: Array<any /*Type | Provider | an
       // list here.
       APPLICATION_COMMON_PROVIDERS,
       COMPILER_PROVIDERS,
-      new Provider(DOCUMENT, {useFactory: appDoc}),
-      new Provider(DomRootRenderer, {useClass: DomRootRenderer_}),
-      new Provider(RootRenderer, {useExisting: DomRootRenderer}),
+      /*@ts2dart_Provider*/{provide: DOCUMENT, useFactory: appDoc},
+      /*@ts2dart_Provider*/{provide: DomRootRenderer, useClass: DomRootRenderer_},
+      /*@ts2dart_Provider*/{provide: RootRenderer, useExisting: DomRootRenderer},
       EventManager,
-      new Provider(EVENT_MANAGER_PLUGINS, {useClass: DomEventsPlugin, multi: true}),
-      new Provider(XHR, {useClass: XHR}),
-      new Provider(APP_ID, {useValue: 'a'}),
-      new Provider(SharedStylesHost, {useExisting: DomSharedStylesHost}),
+      /*@ts2dart_Provider*/{provide: EVENT_MANAGER_PLUGINS, useClass: DomEventsPlugin, multi: true},
+      /*@ts2dart_Provider*/{provide: XHR, useClass: XHR},
+      /*@ts2dart_Provider*/{provide: APP_ID, useValue: 'a'},
+      /*@ts2dart_Provider*/{provide: SharedStylesHost, useExisting: DomSharedStylesHost},
       DomSharedStylesHost,
       ELEMENT_PROBE_PROVIDERS,
-      new Provider(DirectiveResolver, {useClass: MockDirectiveResolver}),
-      new Provider(ViewResolver, {useClass: MockViewResolver}),
+      /*@ts2dart_Provider*/{provide: DirectiveResolver, useClass: MockDirectiveResolver},
+      /*@ts2dart_Provider*/{provide: ViewResolver, useClass: MockViewResolver},
       Log,
       TestComponentBuilder,
-      new Provider(NgZone, {useFactory: createNgZone}),
-      new Provider(LocationStrategy, {useClass: MockLocationStrategy}),
-      new Provider(AnimationBuilder, {useClass: MockAnimationBuilder}),
-    ]);
+      /*@ts2dart_Provider*/{provide: NgZone, useFactory: createNgZone},
+      /*@ts2dart_Provider*/{provide: LocationStrategy, useClass: MockLocationStrategy},
+      /*@ts2dart_Provider*/{provide: AnimationBuilder, useClass: MockAnimationBuilder},
+    ];

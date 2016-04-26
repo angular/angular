@@ -14,10 +14,6 @@ class Math {
   static num min(num a, num b) => math.min(a, b);
 }
 
-class CONST {
-  const CONST();
-}
-
 const IS_DART = true;
 
 scheduleMicroTask(Function fn) {
