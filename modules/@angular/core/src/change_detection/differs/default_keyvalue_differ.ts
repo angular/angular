@@ -1,10 +1,10 @@
 import {MapWrapper, StringMapWrapper} from '@angular/facade';
-import {stringify, looseIdentical, isJsObject, CONST, isBlank} from '@angular/facade';
+import {stringify, looseIdentical, isJsObject, isBlank} from '@angular/facade';
 import {BaseException} from '@angular/facade';
 import {ChangeDetectorRef} from '../change_detector_ref';
 import {KeyValueDiffer, KeyValueDifferFactory} from './keyvalue_differs';
 
-@CONST()
+/* @ts2dart_const */
 export class DefaultKeyValueDifferFactory implements KeyValueDifferFactory {
   supports(obj: any): boolean { return obj instanceof Map || isJsObject(obj); }
 

@@ -1,5 +1,3 @@
-import {CONST} from '@angular/facade';
-
 /**
  * Creates a token that can be used in a DI Provider.
  *
@@ -21,7 +19,7 @@ import {CONST} from '@angular/facade';
  * Using an `OpaqueToken` is preferable to using an `Object` as tokens because it provides better
  * error messages.
  */
-@CONST()
+/* @ts2dart_const */
 export class OpaqueToken {
   constructor(private _desc: string) {}
 

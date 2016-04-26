@@ -8,13 +8,12 @@ import {
   getMapKey,
   looseIdentical,
   isArray,
-  CONST
 } from '@angular/facade';
 
 import {ChangeDetectorRef} from '../change_detector_ref';
 import {IterableDiffer, IterableDifferFactory, TrackByFn} from './iterable_differs';
 
-@CONST()
+/* @ts2dart_const */
 export class DefaultIterableDifferFactory implements IterableDifferFactory {
   supports(obj: Object): boolean { return isListLikeIterable(obj); }
   create(cdRef: ChangeDetectorRef, trackByFn?: TrackByFn): DefaultIterableDiffer {

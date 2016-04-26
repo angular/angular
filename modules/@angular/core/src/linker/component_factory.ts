@@ -1,4 +1,4 @@
-import {Type, CONST, isBlank} from '@angular/facade';
+import {Type, isBlank} from '@angular/facade';
 import {unimplemented} from '@angular/facade';
 import {ElementRef} from './element_ref';
 import {ViewRef, ViewRef_} from './view_ref';
@@ -69,7 +69,7 @@ export class ComponentRef_ extends ComponentRef {
   onDestroy(callback: Function): void { this.hostView.onDestroy(callback); }
 }
 
-@CONST()
+/* @ts2dart_const */
 export class ComponentFactory {
   constructor(public selector: string, private _viewFactory: Function,
               private _componentType: Type) {}

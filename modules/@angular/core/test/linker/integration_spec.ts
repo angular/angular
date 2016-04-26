@@ -31,7 +31,6 @@ import {
   global,
   stringify,
   isBlank,
-  CONST,
 } from '@angular/facade';
 import {BaseException, WrappedException} from '@angular/facade';
 import {
@@ -2383,7 +2382,7 @@ class DirectiveConsumingInjectableUnbounded {
 }
 
 
-@CONST()
+/* @ts2dart_const */
 class EventBus {
   parentEventBus: EventBus;
   name: string;

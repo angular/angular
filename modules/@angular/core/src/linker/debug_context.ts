@@ -1,11 +1,11 @@
-import {isPresent, isBlank, CONST} from '@angular/facade';
+import {isPresent, isBlank} from '@angular/facade';
 import {ListWrapper, StringMapWrapper} from '@angular/facade';
 import {Injector} from '../di';
 import {AppView} from './view';
 import {ViewType} from './view_type';
 import {RenderDebugInfo} from '../render/api';
 
-@CONST()
+/* @ts2dart_const */
 export class StaticNodeDebugInfo {
   constructor(public providerTokens: any[], public componentToken: any,
               public varTokens: {[key: string]: any}) {}

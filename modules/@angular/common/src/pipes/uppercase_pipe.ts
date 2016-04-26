@@ -1,5 +1,5 @@
 import {PipeTransform, WrappedValue, Injectable, Pipe} from '@angular/core';
-import {isString, CONST, isBlank} from '@angular/facade';
+import {isString, isBlank} from '@angular/facade';
 import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
 
 /**
@@ -9,7 +9,7 @@ import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
  *
  * {@example core/pipes/ts/lowerupper_pipe/lowerupper_pipe_example.ts region='LowerUpperPipe'}
  */
-@CONST()
+/* @ts2dart_const */
 @Pipe({name: 'uppercase'})
 @Injectable()
 export class UpperCasePipe implements PipeTransform {

@@ -1,7 +1,6 @@
 import {Injectable, PipeTransform, Pipe} from '@angular/core';
-import {CONST, isStringMap} from '@angular/facade';
+import {isStringMap} from '@angular/facade';
 import {StringMapWrapper} from '@angular/facade';
-
 import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
 
 /**
@@ -33,7 +32,7 @@ import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
  *  }
  *  ```
  */
-@CONST()
+/* @ts2dart_const */
 @Pipe({name: 'i18nSelect', pure: true})
 @Injectable()
 export class I18nSelectPipe implements PipeTransform {

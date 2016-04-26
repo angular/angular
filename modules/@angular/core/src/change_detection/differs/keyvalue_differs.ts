@@ -1,4 +1,4 @@
-import {isBlank, isPresent, CONST} from '@angular/facade';
+import {isBlank, isPresent} from '@angular/facade';
 import {BaseException} from '@angular/facade';
 import {ListWrapper} from '@angular/facade';
 import {ChangeDetectorRef} from '../change_detector_ref';
@@ -23,7 +23,7 @@ export interface KeyValueDifferFactory {
 /**
  * A repository of different Map diffing strategies used by NgClass, NgStyle, and others.
  */
-@CONST()
+/* @ts2dart_const */
 export class KeyValueDiffers {
   constructor(public factories: KeyValueDifferFactory[]) {}
 

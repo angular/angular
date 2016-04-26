@@ -1,5 +1,3 @@
-import {CONST} from '@angular/facade';
-
 /**
  * Marks a function or method as an Angular 2 entrypoint. Only necessary in Dart code.
  *
@@ -17,7 +15,7 @@ import {CONST} from '@angular/facade';
  * }
  * ```
  */
-@CONST()
+/*@ts2dart_const*/
 export class AngularEntrypoint {
   constructor(public name?: String) {}
 }

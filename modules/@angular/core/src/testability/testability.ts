@@ -1,5 +1,5 @@
 import {Map, MapWrapper} from '@angular/facade';
-import {CONST, scheduleMicroTask} from '@angular/facade';
+import {scheduleMicroTask} from '@angular/facade';
 import {BaseException} from '@angular/facade';
 import {NgZone} from '../zone/ng_zone';
 import {ObservableWrapper} from '@angular/facade';
@@ -134,7 +134,7 @@ export interface GetTestability {
                         findInAncestors: boolean): Testability;
 }
 
-@CONST()
+/* @ts2dart_const */
 class _NoopGetTestability implements GetTestability {
   addToWindow(registry: TestabilityRegistry): void {}
   findTestabilityInTree(registry: TestabilityRegistry, elem: any,

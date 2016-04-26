@@ -1,5 +1,5 @@
 import {Injectable, PipeTransform, WrappedValue, Pipe} from '@angular/core';
-import {Json, CONST} from '@angular/facade';
+import {Json} from '@angular/facade';
 
 
 /**
@@ -8,7 +8,7 @@ import {Json, CONST} from '@angular/facade';
  * ### Example
  * {@example core/pipes/ts/json_pipe/json_pipe_example.ts region='JsonPipe'}
  */
-@CONST()
+/* @ts2dart_const */
 @Pipe({name: 'json', pure: false})
 @Injectable()
 export class JsonPipe implements PipeTransform {
