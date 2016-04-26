@@ -83,6 +83,16 @@ as a served file in your Karma or other test configuration.
 
 * - pipes now take a variable number of arguments, and not an array that contains all arguments.
 
+* - Location related files were moved to angular2/platform/application
+
+Before:
+```
+import {LocationStrategy, HashLocationStrategy} from 'angular2/router';
+```
+After:
+```
+import {LocationStrategy, HashLocationStrategy} from 'angular2/platform/common';
+```
 
 <a name="2.0.0-beta.15"></a>
 # 2.0.0-beta.15 (2016-04-13)
