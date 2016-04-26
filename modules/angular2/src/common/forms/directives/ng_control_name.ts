@@ -31,7 +31,10 @@ import {ValidatorFn, AsyncValidatorFn} from './validators';
 
 
 const controlNameBinding =
-    /*@ts2dart_const*/ new Provider(NgControl, {useExisting: forwardRef(( => NgControlName)}));
+    /*@ts2dart_const*/ /* @ts2dart_Provider */ {
+      provide: NgControl,
+      useExisting: forwardRef(() => NgControlName)
+    };
 
 /**
  * Creates and binds a control with a specified name to a DOM element.

@@ -20,8 +20,11 @@ import {NgControl} from 'angular2/src/common/forms/directives/ng_control';
 import {looseIdentical, isPresent} from 'angular2/src/facade/lang';
 import {ListWrapper} from 'angular2/src/facade/collection';
 
-const RADIO_VALUE_ACCESSOR = /*@ts2dart_const*/ new Provider(
-    NG_VALUE_ACCESSOR, {useExisting: forwardRef(( => RadioControlValueAccessor), multi: true}));
+const RADIO_VALUE_ACCESSOR = /*@ts2dart_const*/ {
+  provide: NG_VALUE_ACCESSOR,
+  useExisting: forwardRef(() => RadioControlValueAccessor),
+  multi: true
+};
 
 
 /**

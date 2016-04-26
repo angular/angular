@@ -9,7 +9,6 @@ import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
  *
  * {@example core/pipes/ts/lowerupper_pipe/lowerupper_pipe_example.ts region='LowerUpperPipe'}
  */
-/* @ts2dart_const */
 @Pipe({name: 'uppercase'})
 @Injectable()
 export class UpperCasePipe implements PipeTransform {

@@ -10,8 +10,8 @@ var __make_dart_analyzer_happy: Promise<any> = null;
  * The `RouteConfig` decorator defines routes for a given component.
  *
  * It takes an array of {@link RouteDefinition}s.
+ * @ts2dart_const
  */
-/* @ts2dart_const */
 export class RouteConfig {
   constructor(public configs: RouteDefinition[]) {}
 }
@@ -56,8 +56,8 @@ export abstract class AbstractRoute implements RouteDefinition {
  * ])
  * class MyApp {}
  * ```
+ * @ts2dart_const
  */
-/* @ts2dart_const */
 export class Route extends AbstractRoute {
   component: any;
   aux: string = null;
@@ -94,8 +94,8 @@ export class Route extends AbstractRoute {
  * ])
  * class MyApp {}
  * ```
+ * @ts2dart_const
  */
-/* @ts2dart_const */
 export class AuxRoute extends AbstractRoute {
   component: any;
 
@@ -135,8 +135,8 @@ export class AuxRoute extends AbstractRoute {
  * ])
  * class MyApp {}
  * ```
+ * @ts2dart_const
  */
-/* @ts2dart_const */
 export class AsyncRoute extends AbstractRoute {
   loader: () => Promise<Type>;
   aux: string = null;
@@ -174,8 +174,8 @@ export class AsyncRoute extends AbstractRoute {
  * ])
  * class MyApp {}
  * ```
+ * @ts2dart_const
  */
-/* @ts2dart_const */
 export class Redirect extends AbstractRoute {
   redirectTo: any[];
 

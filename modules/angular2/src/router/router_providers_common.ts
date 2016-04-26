@@ -10,15 +10,18 @@ import {BaseException} from 'angular2/src/facade/exceptions';
  */
 export const ROUTER_PROVIDERS_COMMON: any[] = /*@ts2dart_const*/[
   RouteRegistry,
-  new Provider(LocationStrategy, {useClass: PathLocationStrategy}),
+  /* @ts2dart_Provider */ {provide: LocationStrategy, useClass: PathLocationStrategy},
   Location,
-  new Provider(Router,
-               {
-                 useFactory: routerFactory,
-                 deps: [RouteRegistry, Location, ROUTER_PRIMARY_COMPONENT, ApplicationRef]
-               }),
-  new Provider(ROUTER_PRIMARY_COMPONENT,
-               {useFactory: routerPrimaryComponentFactory, deps: [ApplicationRef]})
+  {
+    provide: Router,
+    useFactory: routerFactory,
+    deps: [RouteRegistry, Location, ROUTER_PRIMARY_COMPONENT, ApplicationRef]
+  },
+  {
+    provide: ROUTER_PRIMARY_COMPONENT,
+    useFactory: routerPrimaryComponentFactory,
+    deps: /*@ts2dart_const*/ ([ApplicationRef])
+  }
 ];
 
 function routerFactory(registry: RouteRegistry, location: Location, primaryComponent: Type,

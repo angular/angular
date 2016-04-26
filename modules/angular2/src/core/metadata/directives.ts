@@ -380,8 +380,8 @@ import {ViewEncapsulation} from 'angular2/src/core/metadata/view';
  * Note also that although the `<li></li>` template still exists inside the `<template></template>`,
  * the instantiated
  * view occurs on the second `<li></li>` which is a sibling to the `<template>` element.
+ * @ts2dart_const
  */
-/* @ts2dart_const */
 export class DirectiveMetadata extends InjectableMetadata {
   /**
    * The CSS selector that triggers the instantiation of a directive.
@@ -783,8 +783,8 @@ export class DirectiveMetadata extends InjectableMetadata {
  * ### Example
  *
  * {@example core/ts/metadata/metadata.ts region='component'}
+ * @ts2dart_const
  */
-/* @ts2dart_const */
 export class ComponentMetadata extends DirectiveMetadata {
   /**
    * Defines the used change detection strategy.
@@ -940,8 +940,8 @@ export class ComponentMetadata extends DirectiveMetadata {
  * ### Example
  *
  * {@example core/ts/metadata/metadata.ts region='pipe'}
+ * @ts2dart_const
  */
-/* @ts2dart_const */
 export class PipeMetadata extends InjectableMetadata {
   name: string;
   /** @internal */
@@ -996,8 +996,8 @@ export class PipeMetadata extends InjectableMetadata {
  *
  * bootstrap(App);
  * ```
+ * @ts2dart_const
  */
-/* @ts2dart_const */
 export class InputMetadata {
   constructor(
       /**
@@ -1046,8 +1046,8 @@ export class InputMetadata {
  * }
  * bootstrap(App);
  * ```
+ * @ts2dart_const
  */
-/* @ts2dart_const */
 export class OutputMetadata {
   constructor(public bindingPropertyName?: string) {}
 }
@@ -1086,8 +1086,8 @@ export class OutputMetadata {
  *
  * bootstrap(App);
  * ```
+ * @ts2dart_const
  */
-/* @ts2dart_const */
 export class HostBindingMetadata {
   constructor(public hostPropertyName?: string) {}
 }
@@ -1125,8 +1125,8 @@ export class HostBindingMetadata {
  *
  * bootstrap(App);
  * ```
+ * @ts2dart_const
  */
-/* @ts2dart_const */
 export class HostListenerMetadata {
   constructor(public eventName: string, public args?: string[]) {}
 }
