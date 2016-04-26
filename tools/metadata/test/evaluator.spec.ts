@@ -18,7 +18,7 @@ describe('Evaluator', () => {
     program = service.getProgram();
     typeChecker = program.getTypeChecker();
     symbols = new Symbols();
-    evaluator = new Evaluator(typeChecker, symbols, f => f);
+    evaluator = new Evaluator(typeChecker, symbols, []);
   });
 
   it('should not have typescript errors in test data', () => {
@@ -97,9 +97,9 @@ describe('Evaluator', () => {
   it('should report recursive references as symbolic', () => {
     var expressions = program.getSourceFile('expressions.ts');
     expect(evaluator.evaluateNode(findVar(expressions, 'recursiveA').initializer))
-        .toEqual({__symbolic: "reference", name: "recursiveB", module: "expressions.ts"});
+        .toEqual({__symbolic: "reference", name: "recursiveB", module: undefined});
     expect(evaluator.evaluateNode(findVar(expressions, 'recursiveB').initializer))
-        .toEqual({__symbolic: "reference", name: "recursiveA", module: "expressions.ts"});
+        .toEqual({__symbolic: "reference", name: "recursiveA", module: undefined});
   });
 });
 
@@ -160,4 +160,4 @@ const FILES: Directory = {
 
     @Pipe({name: someName, pure: someBool})
     export class B {}`
-}
+};
