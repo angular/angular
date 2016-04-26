@@ -8,8 +8,7 @@ export default {
   globals: {
     '@angular/facade': 'ng.facade',
     '@angular/core': 'ng.core',
-    '@angular/common': 'ng.common',
-    '@angular/compiler': 'ng.compiler'
+    '@angular/common': 'ng.common'
   },
   plugins: [
 //    nodeResolve({ jsnext: true, main: true }),

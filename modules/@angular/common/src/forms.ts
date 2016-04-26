@@ -59,4 +59,4 @@ export const FORM_PROVIDERS: Type[] = /*@ts2dart_const*/ ([FormBuilder, RadioCon
  *
  * @deprecated
  */
-export const FORM_BINDINGS = FORM_PROVIDERS;
+export const FORM_BINDINGS: Type[] = FORM_PROVIDERS;

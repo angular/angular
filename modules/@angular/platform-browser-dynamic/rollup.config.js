@@ -1,10 +1,10 @@
 
 export default {
-  entry: '../../../dist/packages-dist/upgrade/esm/upgrade.js',
-  dest: '../../../dist/packages-dist/upgrade/esm/upgrade.umd.js',
+  entry: '../../../dist/packages-dist/platform-browser-dynamic/esm/platform_browser_dynamic.js',
+  dest: '../../../dist/packages-dist/platform-browser-dynamic/esm/platform-browser-dynamic.umd.js',
   sourceMap: true,
   format: 'umd',
-  moduleName: 'ng.upgrade',
+  moduleName: 'ng.platformBrowserDynamic',
   globals: {
     '@angular/facade': 'ng.facade',
     '@angular/core': 'ng.core',

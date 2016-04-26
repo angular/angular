@@ -9,7 +9,6 @@
     "outDir": "../../../dist/packages-dist/platform-browser/esm",
     "paths": {
       "@angular/common": ["../../../dist/packages-dist/common/"],
-      "@angular/compiler": ["../../../dist/packages-dist/compiler/"],
       "@angular/core": ["../../../dist/packages-dist/core/"],
       "@angular/facade": ["../../../dist/packages-dist/facade/"]
     },
