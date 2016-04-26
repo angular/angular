@@ -633,7 +633,7 @@ export function main() {
                   `Mixing multi and non multi provider is not possible for token service0 ("[ERROR ->]<div dirA dirB>"): TestComp@0:0`);
         });
 
-        it('should sort providers and directives by their DI order', () => {
+        it('should sort providers by their DI order', () => {
           var provider0 = createProvider('service0', {deps: ['type:[dir2]']});
           var provider1 = createProvider('service1');
           var dir2 = createDir('[dir2]', {deps: ['service1']});
@@ -644,6 +644,20 @@ export function main() {
           expect(elAst.providers[1].providers).toEqual([provider1]);
           expect(elAst.providers[2].providers[0].useClass).toEqual(dir2.type);
           expect(elAst.providers[3].providers).toEqual([provider0]);
+        });
+
+        it('should sort directives by their DI order', () => {
+          var dir0 = createDir('[dir0]', {deps: ['type:my-comp']});
+          var dir1 = createDir('[dir1]', {deps: ['type:[dir0]']});
+          var dir2 = createDir('[dir2]', {deps: ['type:[dir1]']});
+          var comp = createDir('my-comp');
+          var elAst: ElementAst =
+              <ElementAst>parse('<my-comp dir2 dir0 dir1>', [comp, dir2, dir0, dir1])[0];
+          expect(elAst.providers.length).toBe(4);
+          expect(elAst.directives[0].directive).toBe(comp);
+          expect(elAst.directives[1].directive).toBe(dir0);
+          expect(elAst.directives[2].directive).toBe(dir1);
+          expect(elAst.directives[3].directive).toBe(dir2);
         });
 
         it('should mark directives and dependencies of directives as eager', () => {

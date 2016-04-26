@@ -13,7 +13,7 @@ import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
 @Pipe({name: 'uppercase'})
 @Injectable()
 export class UpperCasePipe implements PipeTransform {
-  transform(value: string, args: any[] = null): string {
+  transform(value: string): string {
     if (isBlank(value)) return value;
     if (!isString(value)) {
       throw new InvalidPipeArgumentException(UpperCasePipe, value);

@@ -152,10 +152,10 @@ class MyComp {
 
 @Pipe({name: 'somePipe', pure: true})
 class PlatformPipe implements PipeTransform {
-  transform(value: any, args: any[]): any { return 'somePlatformPipe'; }
+  transform(value: any): any { return 'somePlatformPipe'; }
 }
 
 @Pipe({name: 'somePipe', pure: true})
 class CustomPipe implements PipeTransform {
-  transform(value: any, args: any[]): any { return 'someCustomPipe'; }
+  transform(value: any): any { return 'someCustomPipe'; }
 }

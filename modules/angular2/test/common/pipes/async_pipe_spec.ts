@@ -208,14 +208,14 @@ export function main() {
     describe('null', () => {
       it('should return null when given null', () => {
         var pipe = new AsyncPipe(null);
-        expect(pipe.transform(null, [])).toEqual(null);
+        expect(pipe.transform(null)).toEqual(null);
       });
     });
 
     describe('other types', () => {
       it('should throw when given an invalid object', () => {
         var pipe = new AsyncPipe(null);
-        expect(() => pipe.transform(<any>"some bogus object", [])).toThrowError();
+        expect(() => pipe.transform(<any>"some bogus object")).toThrowError();
       });
     });
   });
