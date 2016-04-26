@@ -1,9 +1,9 @@
 import * as ts from 'typescript';
+import {relative} from 'path';
 import {Symbols} from './symbols';
 
 import {
   MetadataValue,
-  MetadataObject,
   MetadataSymbolicCallExpression,
   MetadataSymbolicReferenceExpression
 } from './schema';
@@ -58,13 +58,14 @@ function isDefined(obj: any): boolean {
   return obj !== undefined;
 }
 
+const EXT = /(\.d)?\.ts$/;
 /**
  * Produce a symbolic representation of an expression folding values into their final value when
  * possible.
  */
 export class Evaluator {
   constructor(private typeChecker: ts.TypeChecker, private symbols: Symbols,
-              private moduleNameOf: (fileName: string) => string) {}
+              private containingFile: string) {}
 
   // TODO: Determine if the first declaration is deterministic.
   private symbolFileName(symbol: ts.Symbol): string {
@@ -86,7 +87,7 @@ export class Evaluator {
   private symbolReference(symbol: ts.Symbol): MetadataSymbolicReferenceExpression {
     if (symbol) {
       const name = symbol.name;
-      const module = this.moduleNameOf(this.symbolFileName(symbol));
+      const module = relative(this.containingFile, this.symbolFileName(symbol)).replace(EXT, '');
       return {__symbolic: "reference", name, module};
     }
   }
@@ -129,7 +130,7 @@ export class Evaluator {
           return everyNodeChild(node, child => {
             if (child.kind === ts.SyntaxKind.PropertyAssignment) {
               const propertyAssignment = <ts.PropertyAssignment>child;
-              return this.isFoldableWorker(propertyAssignment.initializer, folding)
+              return this.isFoldableWorker(propertyAssignment.initializer, folding);
             }
             return false;
           });

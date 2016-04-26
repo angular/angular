@@ -1,4 +1,5 @@
 import * as ts from 'typescript';
+import {relative} from 'path';
 import {Evaluator} from './evaluator';
 import {Symbols} from './symbols';
 import {
@@ -13,46 +14,13 @@ import {
   MethodMetadata
 } from './schema';
 
-import * as path from 'path';
-
-const EXT_REGEX = /(\.ts|\.d\.ts|\.js|\.jsx|\.tsx)$/;
-const NODE_MODULES = '/node_modules/';
-const NODE_MODULES_PREFIX = 'node_modules/';
-
-function pathTo(from: string, to: string): string {
-  var result = path.relative(path.dirname(from), to);
-  if (path.dirname(result) === '.') {
-    result = '.' + path.sep + result;
-  }
-  return result;
-}
-
-export interface MetadataCollectorHost {
-  reverseModuleResolution: (moduleFileName: string) => string;
-}
-
-const nodeModuleResolutionHost: MetadataCollectorHost = {
-  // Reverse moduleResolution=node for packages resolved in node_modules
-  reverseModuleResolution(fileName: string) {
-    // Remove the extension
-    const moduleFileName = fileName.replace(EXT_REGEX, '');
-    // Check for node_modules
-    const nodeModulesIndex = moduleFileName.lastIndexOf(NODE_MODULES);
-    if (nodeModulesIndex >= 0) {
-      return moduleFileName.substr(nodeModulesIndex + NODE_MODULES.length);
-    }
-    if (moduleFileName.lastIndexOf(NODE_MODULES_PREFIX, NODE_MODULES_PREFIX.length) !== -1) {
-      return moduleFileName.substr(NODE_MODULES_PREFIX.length);
-    }
-    return null;
-  }
-};
+const EXT = /(\.d)?\.ts$/;
 
 /**
  * Collect decorator metadata from a TypeScript module.
  */
 export class MetadataCollector {
-  constructor(private host: MetadataCollectorHost = nodeModuleResolutionHost) {}
+  constructor() {}
 
   /**
    * Returns a JSON.stringify friendly form describing the decorators of the exported classes from
@@ -60,17 +28,7 @@ export class MetadataCollector {
    */
   public getMetadata(sourceFile: ts.SourceFile, typeChecker: ts.TypeChecker): ModuleMetadata {
     const locals = new Symbols();
-    const moduleNameOf = (fileName: string) => {
-      // If the module was resolved with TS moduleResolution, reverse that mapping
-      const hostResolved = this.host.reverseModuleResolution(fileName);
-      if (hostResolved) {
-        return hostResolved;
-      }
-      // Construct a simplified path from the file to the module
-      return pathTo(sourceFile.fileName, fileName).replace(EXT_REGEX, '');
-    };
-
-    const evaluator = new Evaluator(typeChecker, locals, moduleNameOf);
+    const evaluator = new Evaluator(typeChecker, locals, sourceFile.fileName);
 
     function objFromDecorator(decoratorNode: ts.Decorator): MetadataSymbolicExpression {
       return <MetadataSymbolicExpression>evaluator.evaluateNode(decoratorNode.expression);
@@ -85,10 +43,10 @@ export class MetadataCollector {
           }
           if (symbol.declarations.length) {
             const declaration = symbol.declarations[0];
-            const sourceFile = declaration.getSourceFile();
             return {
               __symbolic: "reference",
-              module: moduleNameOf(sourceFile.fileName),
+              module: relative(sourceFile.fileName, declaration.getSourceFile().fileName)
+                          .replace(EXT, ''),
               name: symbol.name
             };
           }
@@ -206,6 +164,6 @@ export class MetadataCollector {
         }
       }
     }
-    return metadata && {__symbolic: "module", module: moduleNameOf(sourceFile.fileName), metadata};
+    return metadata && {__symbolic: "module", metadata};
   }
 }
