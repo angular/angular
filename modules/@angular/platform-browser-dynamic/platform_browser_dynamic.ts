@@ -92,7 +92,6 @@ export const BROWSER_APP_PROVIDERS: Array<any /*Type | Provider | any[]*/> = /*@
 export function bootstrap(
   appComponentType: Type,
   customProviders?: Array<any /*Type | Provider | any[]*/>): Promise<ComponentRef> {
-  getDOM().xhrType = XHRImpl;
   reflector.reflectionCapabilities = new ReflectionCapabilities();
   var appInjector = ReflectiveInjector.resolveAndCreate(
     [BROWSER_APP_PROVIDERS, isPresent(customProviders) ? customProviders : []],
