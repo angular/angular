@@ -1386,7 +1386,7 @@ function declareTests(isJit: boolean) {
 
            PromiseWrapper.catchError(tcb.createAsync(MyComp), (e) => {
              expect(e.message).toEqual(
-                 `Unexpected directive value 'null' on the View of component '${stringify(MyComp)}'`);
+                 `Unexpected directive value 'null' on the directives property of component '${stringify(MyComp)}'`);
              async.done();
              return null;
            });
@@ -1498,7 +1498,7 @@ function declareTests(isJit: boolean) {
 
              PromiseWrapper.catchError(tcb.createAsync(MyComp), (e) => {
                expect(e.message).toEqual(
-                   `Unexpected directive value 'undefined' on the View of component '${stringify(MyComp)}'`);
+                   `Unexpected directive value 'undefined' on the directives property of component '${stringify(MyComp)}'`);
                async.done();
                return null;
              });
