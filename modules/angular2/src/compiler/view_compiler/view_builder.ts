@@ -51,8 +51,6 @@ import {
   CompileTokenMetadata
 } from '../compile_metadata';
 
-import {bindView} from './view_binder';
-
 const IMPLICIT_TEMPLATE_VAR = '\$implicit';
 const CLASS_ATTR = 'class';
 const STYLE_ATTR = 'style';
@@ -66,28 +64,28 @@ export class ViewCompileDependency {
 }
 
 export function buildView(view: CompileView, template: TemplateAst[],
-                          targetDependencies: ViewCompileDependency[],
-                          targetStatements: o.Statement[]): number {
-  var builderVisitor = new ViewBuilderVisitor(view, targetDependencies, targetStatements);
+                          targetDependencies: ViewCompileDependency[]): number {
+  var builderVisitor = new ViewBuilderVisitor(view, targetDependencies);
   templateVisitAll(builderVisitor, template, view.declarationElement.isNull() ?
                                                  view.declarationElement :
                                                  view.declarationElement.parent);
-  // Need to separate binding from creation to be able to refer to
-  // variables that have been declared after usage.
-  bindView(view, template);
-  view.afterNodes();
-
-  createViewTopLevelStmts(view, targetStatements);
-
   return builderVisitor.nestedViewCount;
 }
 
+export function finishView(view: CompileView, targetStatements: o.Statement[]) {
+  view.afterNodes();
+  createViewTopLevelStmts(view, targetStatements);
+  view.nodes.forEach((node) => {
+    if (node instanceof CompileElement && isPresent(node.embeddedView)) {
+      finishView(node.embeddedView, targetStatements);
+    }
+  });
+}
 
 class ViewBuilderVisitor implements TemplateAstVisitor {
   nestedViewCount: number = 0;
 
-  constructor(public view: CompileView, public targetDependencies: ViewCompileDependency[],
-              public targetStatements: o.Statement[]) {}
+  constructor(public view: CompileView, public targetDependencies: ViewCompileDependency[]) {}
 
   private _isRootNode(parent: CompileElement): boolean { return parent.view !== this.view; }
 
@@ -287,8 +285,7 @@ class ViewBuilderVisitor implements TemplateAstVisitor {
     var embeddedView = new CompileView(
         this.view.component, this.view.genConfig, this.view.pipeMetas, o.NULL_EXPR,
         this.view.viewIndex + this.nestedViewCount, compileElement, templateVariableBindings);
-    this.nestedViewCount +=
-        buildView(embeddedView, ast.children, this.targetDependencies, this.targetStatements);
+    this.nestedViewCount += buildView(embeddedView, ast.children, this.targetDependencies);
 
     compileElement.beforeChildren();
     this._addRootNodeAndProject(compileElement, ast.ngContentIndex, parent);
