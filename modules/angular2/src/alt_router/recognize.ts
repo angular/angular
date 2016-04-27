@@ -45,12 +45,13 @@ function _constructSegment(componentResolver: ComponentResolver,
                            matched: _MatchResult): Promise<TreeNode<RouteSegment>[]> {
   return componentResolver.resolveComponent(matched.route.component)
       .then(factory => {
+        let urlOutlet = matched.consumedUrlSegments[0].outlet;
         let segment = new RouteSegment(matched.consumedUrlSegments, matched.parameters,
-                                       matched.consumedUrlSegments[0].outlet,
+                                       isBlank(urlOutlet) ? DEFAULT_OUTLET_NAME : urlOutlet,
                                        matched.route.component, factory);
 
-        if (isPresent(matched.leftOverUrl)) {
-          return _recognize(componentResolver, matched.route.component, matched.leftOverUrl)
+        if (matched.leftOverUrl.length > 0) {
+          return _recognizeMany(componentResolver, matched.route.component, matched.leftOverUrl)
               .then(children => [new TreeNode<RouteSegment>(segment, children)]);
         } else {
           return [new TreeNode<RouteSegment>(segment, [])];
@@ -78,12 +79,13 @@ function _matchWithParts(route: RouteMetadata, url: TreeNode<UrlSegment>): _Matc
 
   let current = url;
   for (let i = 0; i < parts.length; ++i) {
+    if (isBlank(current)) return null;
+
     let p = parts[i];
     let isLastSegment = i === parts.length - 1;
     let isLastParent = i === parts.length - 2;
     let isPosParam = p.startsWith(":");
 
-    if (isBlank(current)) return null;
     if (!isPosParam && p != current.value.segment) return null;
     if (isLastSegment) {
       lastSegment = current;
@@ -101,10 +103,18 @@ function _matchWithParts(route: RouteMetadata, url: TreeNode<UrlSegment>): _Matc
     current = ListWrapper.first(current.children);
   }
 
-  let parameters = <{[key: string]: string}>StringMapWrapper.merge(lastSegment.value.parameters,
-                                                                   positionalParams);
+  if (isPresent(current) && isBlank(current.value.segment)) {
+    lastParent = lastSegment;
+    lastSegment = current;
+  }
+
+  let p = lastSegment.value.parameters;
+  let parameters =
+      <{[key: string]: string}>StringMapWrapper.merge(isBlank(p) ? {} : p, positionalParams);
   let axuUrlSubtrees = isPresent(lastParent) ? lastParent.children.slice(1) : [];
-  return new _MatchResult(route, consumedUrlSegments, parameters, current, axuUrlSubtrees);
+
+  return new _MatchResult(route, consumedUrlSegments, parameters, lastSegment.children,
+                          axuUrlSubtrees);
 }
 
 function _checkOutletNameUniqueness(nodes: TreeNode<RouteSegment>[]): TreeNode<RouteSegment>[] {
@@ -123,8 +133,8 @@ function _checkOutletNameUniqueness(nodes: TreeNode<RouteSegment>[]): TreeNode<R
 
 class _MatchResult {
   constructor(public route: RouteMetadata, public consumedUrlSegments: UrlSegment[],
-              public parameters: {[key: string]: string}, public leftOverUrl: TreeNode<UrlSegment>,
-              public aux: TreeNode<UrlSegment>[]) {}
+              public parameters: {[key: string]: string},
+              public leftOverUrl: TreeNode<UrlSegment>[], public aux: TreeNode<UrlSegment>[]) {}
 }
 
 function _readMetadata(componentType: Type) {
