@@ -1,17 +1,43 @@
-import {UrlSegment, Tree, TreeNode} from './segments';
+import {UrlSegment, Tree, TreeNode, rootNode} from './segments';
 import {BaseException} from 'angular2/src/facade/exceptions';
 import {isBlank, isPresent, RegExpWrapper} from 'angular2/src/facade/lang';
-import {DEFAULT_OUTLET_NAME} from './constants';
+import {ListWrapper} from 'angular2/src/facade/collection';
 
-export abstract class RouterUrlParser { abstract parse(url: string): Tree<UrlSegment>; }
+export abstract class RouterUrlSerializer {
+  abstract parse(url: string): Tree<UrlSegment>;
+  abstract serialize(tree: Tree<UrlSegment>): string;
+}
 
-export class DefaultRouterUrlParser extends RouterUrlParser {
+export class DefaultRouterUrlSerializer extends RouterUrlSerializer {
   parse(url: string): Tree<UrlSegment> {
     if (url.length === 0) {
       throw new BaseException(`Invalid url '${url}'`);
     }
     let root = new _UrlParser().parse(url);
     return new Tree<UrlSegment>(root);
+  }
+
+  serialize(tree: Tree<UrlSegment>): string { return _serializeUrlTreeNode(rootNode(tree)); }
+}
+
+function _serializeUrlTreeNode(node: TreeNode<UrlSegment>): string {
+  return `${node.value}${_serializeChildren(node)}`;
+}
+
+function _serializeUrlTreeNodes(nodes: TreeNode<UrlSegment>[]): string {
+  let main = nodes[0].value.toString();
+  let auxNodes = nodes.slice(1);
+  let aux = auxNodes.length > 0 ? `(${auxNodes.map(_serializeUrlTreeNode).join("//")})` : "";
+  let children = _serializeChildren(nodes[0]);
+  return `${main}${aux}${children}`;
+}
+
+function _serializeChildren(node: TreeNode<UrlSegment>): string {
+  if (node.children.length > 0) {
+    let slash = isBlank(node.children[0].value.segment) ? "" : "/";
+    return `${slash}${_serializeUrlTreeNodes(node.children)}`;
+  } else {
+    return "";
   }
 }
 
@@ -41,19 +67,19 @@ class _UrlParser {
   parse(url: string): TreeNode<UrlSegment> {
     this._remaining = url;
     if (url == '' || url == '/') {
-      return new TreeNode<UrlSegment>(new UrlSegment('', {}, DEFAULT_OUTLET_NAME), []);
+      return new TreeNode<UrlSegment>(new UrlSegment('', {}, null), []);
     } else {
       return this.parseRoot();
     }
   }
 
   parseRoot(): TreeNode<UrlSegment> {
-    let segments = this.parseSegments(DEFAULT_OUTLET_NAME);
+    let segments = this.parseSegments();
     let queryParams = this.peekStartsWith('?') ? this.parseQueryParams() : {};
-    return new TreeNode<UrlSegment>(new UrlSegment('', queryParams, DEFAULT_OUTLET_NAME), segments);
+    return new TreeNode<UrlSegment>(new UrlSegment('', queryParams, null), segments);
   }
 
-  parseSegments(outletName: string): TreeNode<UrlSegment>[] {
+  parseSegments(outletName: string = null): TreeNode<UrlSegment>[] {
     if (this._remaining.length == 0) {
       return [];
     }
@@ -70,7 +96,7 @@ class _UrlParser {
       path = parts[1];
     }
 
-    var matrixParams: {[key: string]: any} = {};
+    var matrixParams: {[key: string]: any} = null;
     if (this.peekStartsWith(';')) {
       matrixParams = this.parseMatrixParams();
     }
@@ -83,12 +109,19 @@ class _UrlParser {
     var children: TreeNode<UrlSegment>[] = [];
     if (this.peekStartsWith('/') && !this.peekStartsWith('//')) {
       this.capture('/');
-      children = this.parseSegments(DEFAULT_OUTLET_NAME);
+      children = this.parseSegments();
     }
 
-    let segment = new UrlSegment(path, matrixParams, outletName);
-    let node = new TreeNode<UrlSegment>(segment, children);
-    return [node].concat(aux);
+    if (isPresent(matrixParams)) {
+      let matrixParamsSegment = new UrlSegment(null, matrixParams, null);
+      let matrixParamsNode = new TreeNode<UrlSegment>(matrixParamsSegment, children);
+      let segment = new UrlSegment(path, null, outletName);
+      return [new TreeNode<UrlSegment>(segment, [matrixParamsNode].concat(aux))];
+    } else {
+      let segment = new UrlSegment(path, null, outletName);
+      let node = new TreeNode<UrlSegment>(segment, children);
+      return [node].concat(aux);
+    }
   }
 
   parseQueryParams(): {[key: string]: any} {
