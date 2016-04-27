@@ -8,7 +8,6 @@
   "author": "angular",
   "license": "MIT",
   "peerDependencies": {
-    "@angular/core": "$$ANGULAR_VERSION$$",
-    "@angular/facade": "$$ANGULAR_VERSION$$"
+    "@angular/core": "$$ANGULAR_VERSION$$"
   }
 }

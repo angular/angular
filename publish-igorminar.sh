@@ -24,9 +24,9 @@ for PACKAGE in \
   core \
   compiler \
   common \
-  facade \
   http \
   platform-browser \
+  platform-browser-dynamic \
   platform-server \
   router \
   testing \

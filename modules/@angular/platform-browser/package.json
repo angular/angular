@@ -7,13 +7,12 @@
   "typings": "platform_browser.d.ts",
   "author": "angular",
   "license": "MIT",
-  "dependencies": {
+  "peerDependencies": {
     "reflect-metadata": "^0.1.2",
     "rxjs": "5.0.0-beta.2",
     "zone.js": "^0.6.6",
     "@angular/core": "$$ANGULAR_VERSION$$",
     "@angular/common": "$$ANGULAR_VERSION$$",
-    "@angular/compiler": "$$ANGULAR_VERSION$$",
-    "@angular/facade": "$$ANGULAR_VERSION$$"
+    "@angular/compiler": "$$ANGULAR_VERSION$$"
   }
 }
