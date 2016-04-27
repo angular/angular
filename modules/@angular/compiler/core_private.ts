@@ -30,3 +30,5 @@ export var ValueUnwrapper: typeof t.ValueUnwrapper = r.ValueUnwrapper;
 export var TemplateRef_: typeof t.TemplateRef_ = r.TemplateRef_;
 export type RenderDebugInfo = t.RenderDebugInfo;
 export var RenderDebugInfo: typeof t.RenderDebugInfo = r.RenderDebugInfo;
+export var createProvider: typeof t.createProvider = r.createProvider;
+export var isProviderLiteral: typeof t.isProviderLiteral = r.isProviderLiteral;

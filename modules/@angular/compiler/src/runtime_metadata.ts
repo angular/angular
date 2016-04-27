@@ -37,7 +37,7 @@ import {hasLifecycleHook} from './directive_lifecycle_reflector';
 import {MODULE_SUFFIX, sanitizeIdentifier} from './util';
 import {assertArrayOfStrings} from './assertions';
 import {getUrlScheme} from './url_resolver';
-import {createProvider, isProviderLiteral} from "../../core/src/di/provider_util";
+import {createProvider, isProviderLiteral} from "../core_private";
 
 
 @Injectable()

@@ -16,6 +16,8 @@ import * as wtf_init from './src/profile/wtf_init';
 import * as reflection_capabilities from './src/reflection/reflection_capabilities';
 import * as decorators from './src/util/decorators';
 import * as debug from './src/debug/debug_renderer';
+import * as provider_util from './src/di/provider_util';
+import {Provider} from './src/di/provider';
 
 export declare namespace __core_private_types__ {
   export var isDefaultChangeDetectionStrategy: typeof constants.isDefaultChangeDetectionStrategy;
@@ -55,6 +57,8 @@ export declare namespace __core_private_types__ {
   export var makeDecorator: typeof decorators.makeDecorator;
   export type DebugDomRootRenderer = debug.DebugDomRootRenderer;
   export var DebugDomRootRenderer: typeof debug.DebugDomRootRenderer;
+  export var createProvider: typeof provider_util.createProvider;
+  export var isProviderLiteral: typeof provider_util.isProviderLiteral;
 }
 
 export var __core_private__ = {
@@ -85,5 +89,7 @@ export var __core_private__ = {
     wtfInit: wtf_init.wtfInit,
     ReflectionCapabilities: reflection_capabilities.ReflectionCapabilities,
     makeDecorator: decorators.makeDecorator,
-    DebugDomRootRenderer: debug.DebugDomRootRenderer
+    DebugDomRootRenderer: debug.DebugDomRootRenderer,
+    createProvider: provider_util.createProvider,
+    isProviderLiteral: provider_util.isProviderLiteral
 };

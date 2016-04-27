@@ -31,7 +31,7 @@ do
   echo "====== (esm)COMPILING: \$(npm bin)/tsc -p ${SRCDIR}/tsconfig-es2015.json ====="
   $(npm bin)/tsc -p ${SRCDIR}/tsconfig-es2015.json
 
-  if (false); then
+  if (true); then
     echo "======      BUNDLING: ${SRCDIR} ====="
     (
       cd  ${SRCDIR}

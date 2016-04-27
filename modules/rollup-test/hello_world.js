@@ -1,10 +1,11 @@
 var HelloWorldComponent = ng.core.Component({
   selector: 'hello-world',
-  template: 'hello world!!!'
+  //template: 'hello world!!!'
+  templateUrl: 'hello-world.html'
 }).Class({
   constructor: function() {}
 });
 
 
 
-ng.platformBrowser.bootstrap(HelloWorldComponent);
+ng.platformBrowserDynamic.bootstrap(HelloWorldComponent);
