@@ -4,7 +4,7 @@ import {ListWrapper} from '@angular/facade';
 
 
 export const EVENT_MANAGER_PLUGINS: OpaqueToken =
-    /*@ts2dart_const*/ (new OpaqueToken("EventManagerPlugins"));
+    /*@ts2dart_const*/ new OpaqueToken("EventManagerPlugins");
 
 @Injectable()
 export class EventManager {

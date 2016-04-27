@@ -14,7 +14,7 @@ import {setUpControl, setUpControlGroup, composeValidators, composeAsyncValidato
 import {NG_VALIDATORS, NG_ASYNC_VALIDATORS} from '../validators';
 
 const formDirectiveProvider =
-    /*@ts2dart_const*/ ({provide: ControlContainer, useExisting: forwardRef(() => NgForm)});
+    /*@ts2dart_const*/ {provide: ControlContainer, useExisting: forwardRef(() => NgForm)};
 
 /**
  * If `NgForm` is bound in a component, `<form>` elements in that component will be

@@ -1037,7 +1037,7 @@ export function main() {
   });
 }
 
-const ALL_DIRECTIVES = /*@ts2dart_const*/ ([
+const ALL_DIRECTIVES = /*@ts2dart_const*/ [
   forwardRef(() => TestDirective),
   forwardRef(() => TestComponent),
   forwardRef(() => AnotherComponent),
@@ -1045,9 +1045,9 @@ const ALL_DIRECTIVES = /*@ts2dart_const*/ ([
   forwardRef(() => CompWithRef),
   forwardRef(() => EmitterDirective),
   forwardRef(() => PushComp)
-]);
+];
 
-const ALL_PIPES = /*@ts2dart_const*/ ([
+const ALL_PIPES = /*@ts2dart_const*/ [
   forwardRef(() => CountingPipe),
   forwardRef(() => CountingImpurePipe),
   forwardRef(() => MultiArgPipe),
@@ -1055,7 +1055,7 @@ const ALL_PIPES = /*@ts2dart_const*/ ([
   forwardRef(() => IdentityPipe),
   forwardRef(() => WrappedPipe),
   AsyncPipe
-]);
+];
 
 @Injectable()
 class RenderLog {

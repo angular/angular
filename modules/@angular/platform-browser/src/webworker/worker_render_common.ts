@@ -42,35 +42,35 @@ import {HAMMER_GESTURE_CONFIG, HammerGestureConfig} from '../dom/events/hammer_g
 import {EventManager, EVENT_MANAGER_PLUGINS} from '../dom/events/event_manager';
 // TODO change these imports once dom_adapter is moved out of core
 
-export const WORKER_SCRIPT: OpaqueToken = /*@ts2dart_const*/ (new OpaqueToken("WebWorkerScript"));
+export const WORKER_SCRIPT: OpaqueToken = /*@ts2dart_const*/ new OpaqueToken("WebWorkerScript");
 
 // Message based Worker classes that listen on the MessageBus
 export const WORKER_RENDER_MESSAGING_PROVIDERS: Array<any /*Type | Provider | any[]*/> =
-    /*@ts2dart_const*/ ([MessageBasedRenderer]);
+    /*@ts2dart_const*/ [MessageBasedRenderer];
 
 export const WORKER_RENDER_PLATFORM_MARKER =
-    /*@ts2dart_const*/ (new OpaqueToken('WorkerRenderPlatformMarker'));
+    /*@ts2dart_const*/ new OpaqueToken('WorkerRenderPlatformMarker');
 
-export const WORKER_RENDER_PLATFORM: Array<any /*Type | Provider | any[]*/> = /*@ts2dart_const*/ ([
+export const WORKER_RENDER_PLATFORM: Array<any /*Type | Provider | any[]*/> = /*@ts2dart_const*/ [
   PLATFORM_COMMON_PROVIDERS,
-  /*@ts2dart_const*/ ({provide: WORKER_RENDER_PLATFORM_MARKER, useValue: true}),
+  {provide: WORKER_RENDER_PLATFORM_MARKER, useValue: true},
   {provide: PLATFORM_INITIALIZER, useValue: initWebWorkerRenderPlatform, multi: true}
-]);
+];
 
 /**
  * A list of {@link Provider}s. To use the router in a Worker enabled application you must
  * include these providers when setting up the render thread.
  */
 export const WORKER_RENDER_ROUTER: Array<any /*Type | Provider | any[]*/> =
-    /*@ts2dart_const*/ ([BrowserPlatformLocation]);
+    /*@ts2dart_const*/ [BrowserPlatformLocation];
 
 export const WORKER_RENDER_APPLICATION_COMMON: Array<any /*Type | Provider | any[]*/> =
-    /*@ts2dart_const*/ ([
+    /*@ts2dart_const*/ [
       APPLICATION_COMMON_PROVIDERS,
       WORKER_RENDER_MESSAGING_PROVIDERS,
       {provide: ExceptionHandler, useFactory: _exceptionHandler, deps: []},
       {provide: DOCUMENT, useFactory: _document, deps: []},
-      // TODO(jteplitz602): Investigate if we definitely need EVENT_MANAGER on the render thread
+      // TODO(jteplitz602: Investigate if we definitely need EVENT_MANAGER on the render thread
       // #5298
       {provide: EVENT_MANAGER_PLUGINS, useClass: DomEventsPlugin, multi: true},
       {provide: EVENT_MANAGER_PLUGINS, useClass: KeyEventsPlugin, multi: true},
@@ -89,7 +89,7 @@ export const WORKER_RENDER_APPLICATION_COMMON: Array<any /*Type | Provider | any
       BrowserDetails,
       AnimationBuilder,
       EventManager
-    ]);
+    ];
 
 export function initializeGenericWorkerRenderer(injector: Injector) {
   var bus = injector.get(MessageBus);

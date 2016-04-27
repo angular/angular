@@ -64,7 +64,7 @@ export {ControlValueAccessor} from './directives/control_value_accessor';
  * class MyApp {}
  * ```
  */
-export const FORM_DIRECTIVES: Type[] = /*@ts2dart_const*/ ([
+export const FORM_DIRECTIVES: Type[] = /*@ts2dart_const*/ [
   NgControlName,
   NgControlGroup,
 
@@ -85,4 +85,4 @@ export const FORM_DIRECTIVES: Type[] = /*@ts2dart_const*/ ([
   MinLengthValidator,
   MaxLengthValidator,
   PatternValidator
-]);
+];

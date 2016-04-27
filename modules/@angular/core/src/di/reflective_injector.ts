@@ -23,7 +23,7 @@ var __unused: Type;  // avoid unused import when Type union types are erased
 
 // Threshold for the dynamic version
 const _MAX_CONSTRUCTION_COUNTER = 10;
-const UNDEFINED = /*@ts2dart_const*/ (new Object());
+const UNDEFINED = /*@ts2dart_const*/ new Object();
 
 export interface ReflectiveProtoInjectorStrategy {
   getProviderAtIndex(index: number): ResolvedReflectiveProvider;

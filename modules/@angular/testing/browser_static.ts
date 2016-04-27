@@ -30,13 +30,13 @@ function initBrowserTests() {
  * Default platform providers for testing without a compiler.
  */
 export const TEST_BROWSER_STATIC_PLATFORM_PROVIDERS: Array<any /*Type | Provider | any[]*/> =
-    /*@ts2dart_const*/ ([
+    /*@ts2dart_const*/ [
       PLATFORM_COMMON_PROVIDERS,
       {provide: PLATFORM_INITIALIZER, useValue: initBrowserTests, multi: true}
-    ]);
+    ];
 
 export const ADDITIONAL_TEST_BROWSER_PROVIDERS: Array<any /*Type | Provider | any[]*/> =
-    /*@ts2dart_const*/ ([
+    /*@ts2dart_const*/ [
       {provide: APP_ID, useValue: 'a'},
       ELEMENT_PROBE_PROVIDERS,
       {provide: DirectiveResolver, useClass: MockDirectiveResolver},
@@ -46,14 +46,14 @@ export const ADDITIONAL_TEST_BROWSER_PROVIDERS: Array<any /*Type | Provider | an
       {provide: NgZone, useClass: MockNgZone},
       {provide: LocationStrategy, useClass: MockLocationStrategy},
       {provide: AnimationBuilder, useClass: MockAnimationBuilder},
-    ]);
+    ];
 
 /**
  * Default application providers for testing without a compiler.
  */
 export const TEST_BROWSER_STATIC_APPLICATION_PROVIDERS: Array<any /*Type | Provider | any[]*/> =
-    /*@ts2dart_const*/ ([
+    /*@ts2dart_const*/ [
       BROWSER_APP_COMMON_PROVIDERS,
       {provide: XHR, useClass: XHRImpl},
       ADDITIONAL_TEST_BROWSER_PROVIDERS
-    ]);
+    ];

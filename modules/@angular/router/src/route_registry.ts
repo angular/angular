@@ -66,7 +66,7 @@ var _resolveToNull = PromiseWrapper.resolve<Instruction>(null);
  * ```
  */
 export const ROUTER_PRIMARY_COMPONENT: OpaqueToken =
-    /*@ts2dart_const*/ (new OpaqueToken('RouterPrimaryComponent'));
+    /*@ts2dart_const*/ new OpaqueToken('RouterPrimaryComponent');
 
 
 /**

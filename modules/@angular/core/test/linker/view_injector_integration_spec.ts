@@ -45,7 +45,7 @@ import {
 import {NgIf} from '@angular/common';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
-const ALL_DIRECTIVES = /*@ts2dart_const*/ ([
+const ALL_DIRECTIVES = /*@ts2dart_const*/ [
   forwardRef(() => SimpleDirective),
   forwardRef(() => CycleDirective),
   forwardRef(() => SimpleComponent),
@@ -77,16 +77,16 @@ const ALL_DIRECTIVES = /*@ts2dart_const*/ ([
   forwardRef(() => PushComponentNeedsChangeDetectorRef),
   forwardRef(() => NeedsHostAppService),
   NgIf
-]);
+];
 
-const ALL_PIPES = /*@ts2dart_const*/ ([
+const ALL_PIPES = /*@ts2dart_const*/ [
   forwardRef(() => PipeNeedsChangeDetectorRef),
   forwardRef(() => PipeNeedsService),
   forwardRef(() => PurePipe),
   forwardRef(() => ImpurePipe),
   forwardRef(() => DuplicatePipe1),
   forwardRef(() => DuplicatePipe2),
-]);
+];
 
 @Directive({selector: '[simpleDirective]'})
 class SimpleDirective {

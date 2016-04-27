@@ -39,18 +39,18 @@ export {BrowserDomAdapter} from './src/browser/browser_adapter';
 export {enableDebugTools, disableDebugTools} from './src/browser/tools/tools';
 export {By} from './src/dom/debug/by';
 
-export const BROWSER_PLATFORM_MARKER = /*@ts2dart_const*/(new OpaqueToken('BrowserPlatformMarker'));
+export const BROWSER_PLATFORM_MARKER = /*@ts2dart_const*/ new OpaqueToken('BrowserPlatformMarker');
 
 /**
  * A set of providers to initialize the Angular platform in a web browser.
  *
  * Used automatically by `bootstrap`, or can be passed to {@link platform}.
  */
-export const BROWSER_PROVIDERS: Array<any /*Type | Provider | any[]*/> = /*@ts2dart_const*/([
-  new Provider(BROWSER_PLATFORM_MARKER, {useValue: true}),
+export const BROWSER_PROVIDERS: Array<any /*Type | Provider | any[]*/> = /*@ts2dart_const*/ [
+  {provide: BROWSER_PLATFORM_MARKER, useValue: true},
   PLATFORM_COMMON_PROVIDERS,
-  new Provider(PLATFORM_INITIALIZER, {useValue: initDomAdapter, multi: true}),
-]);
+  {provide: PLATFORM_INITIALIZER, useValue: initDomAdapter, multi: true},
+];
 
 function _exceptionHandler(): ExceptionHandler {
   // !IS_DART is required because we must rethrow exceptions in JS,
@@ -67,27 +67,27 @@ function _document(): any {
  *
  * Used automatically by `bootstrap`, or can be passed to {@link PlatformRef.application}.
  */
-export const BROWSER_APP_COMMON_PROVIDERS: Array<any /*Type | Provider | any[]*/> = /*@ts2dart_const*/([
+export const BROWSER_APP_COMMON_PROVIDERS: Array<any /*Type | Provider | any[]*/> = /*@ts2dart_const*/ [
   APPLICATION_COMMON_PROVIDERS,
   FORM_PROVIDERS,
-  new Provider(PLATFORM_PIPES, {useValue: COMMON_PIPES, multi: true}),
-  new Provider(PLATFORM_DIRECTIVES, {useValue: COMMON_DIRECTIVES, multi: true}),
-  new Provider(ExceptionHandler, {useFactory: _exceptionHandler, deps: []}),
-  new Provider(DOCUMENT, {useFactory: _document, deps: []}),
-  new Provider(EVENT_MANAGER_PLUGINS, {useClass: DomEventsPlugin, multi: true}),
-  new Provider(EVENT_MANAGER_PLUGINS, {useClass: KeyEventsPlugin, multi: true}),
-  new Provider(EVENT_MANAGER_PLUGINS, {useClass: HammerGesturesPlugin, multi: true}),
-  new Provider(HAMMER_GESTURE_CONFIG, {useClass: HammerGestureConfig}),
-  new Provider(DomRootRenderer, {useClass: DomRootRenderer_}),
-  new Provider(RootRenderer, {useExisting: DomRootRenderer}),
-  new Provider(SharedStylesHost, {useExisting: DomSharedStylesHost}),
+  {provide: PLATFORM_PIPES, useValue: COMMON_PIPES, multi: true},
+  {provide: PLATFORM_DIRECTIVES, useValue: COMMON_DIRECTIVES, multi: true},
+  {provide: ExceptionHandler, useFactory: _exceptionHandler, deps: []},
+  {provide: DOCUMENT, useFactory: _document, deps: []},
+  {provide: EVENT_MANAGER_PLUGINS, useClass: DomEventsPlugin, multi: true},
+  {provide: EVENT_MANAGER_PLUGINS, useClass: KeyEventsPlugin, multi: true},
+  {provide: EVENT_MANAGER_PLUGINS, useClass: HammerGesturesPlugin, multi: true},
+  {provide: HAMMER_GESTURE_CONFIG, useClass: HammerGestureConfig},
+  {provide: DomRootRenderer, useClass: DomRootRenderer_},
+  {provide: RootRenderer, useExisting: DomRootRenderer},
+  {provide: SharedStylesHost, useExisting: DomSharedStylesHost},
   BrowserDetails,
   AnimationBuilder,
   DomSharedStylesHost,
   Testability,
   EventManager,
   ELEMENT_PROBE_PROVIDERS
-]);
+];
 
 
 export function initDomAdapter() {

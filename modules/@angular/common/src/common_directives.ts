@@ -45,4 +45,4 @@ import {CORE_DIRECTIVES} from './directives';
  * }
  * ```
  */
-export const COMMON_DIRECTIVES: Type[][] = /*@ts2dart_const*/ ([CORE_DIRECTIVES, FORM_DIRECTIVES]);
+export const COMMON_DIRECTIVES: Type[][] = /*@ts2dart_const*/ [CORE_DIRECTIVES, FORM_DIRECTIVES];

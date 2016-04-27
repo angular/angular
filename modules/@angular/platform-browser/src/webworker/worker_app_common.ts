@@ -33,15 +33,15 @@ class PrintLogger {
 }
 
 export const WORKER_APP_PLATFORM_MARKER =
-    /*@ts2dart_const*/ (new OpaqueToken('WorkerAppPlatformMarker'));
+    /*@ts2dart_const*/ new OpaqueToken('WorkerAppPlatformMarker');
 
-export const WORKER_APP_PLATFORM: Array<any /*Type | Provider | any[]*/> = /*@ts2dart_const*/ ([
+export const WORKER_APP_PLATFORM: Array<any /*Type | Provider | any[]*/> = /*@ts2dart_const*/ [
   PLATFORM_COMMON_PROVIDERS,
-  /*@ts2dart_const*/ ({provide: WORKER_APP_PLATFORM_MARKER, useValue: true})
-]);
+  {provide: WORKER_APP_PLATFORM_MARKER, useValue: true}
+];
 
 export const WORKER_APP_APPLICATION_COMMON: Array<any /*Type | Provider | any[]*/> =
-    /*@ts2dart_const*/ ([
+    /*@ts2dart_const*/ [
       APPLICATION_COMMON_PROVIDERS,
       FORM_PROVIDERS,
       Serializer,
@@ -56,7 +56,7 @@ export const WORKER_APP_APPLICATION_COMMON: Array<any /*Type | Provider | any[]*
       {provide: ExceptionHandler, useFactory: _exceptionHandler, deps: []},
       WebWorkerXHRImpl,
       {provide: XHR, useExisting: WebWorkerXHRImpl}
-    ]);
+    ];
 
 function _exceptionHandler(): ExceptionHandler {
   return new ExceptionHandler(new PrintLogger());

@@ -22,7 +22,7 @@ export function main() {
     var locationStrategy, location;
 
     function makeLocation(baseHref: string = '/my/app',
-                          provider: any = /*@ts2dart_const*/ ([])): Location {
+                          provider: any = /*@ts2dart_const*/ []): Location {
       locationStrategy = new MockLocationStrategy();
       locationStrategy.internalBaseHref = baseHref;
       let injector = ReflectiveInjector.resolveAndCreate(

@@ -27,10 +27,10 @@ import {PlatformLocation} from '@angular/common';
  * bootstrap(AppCmp, [ROUTER_PROVIDERS]);
  * ```
  */
-export const ROUTER_PROVIDERS: any[] = /*@ts2dart_const*/ ([
+export const ROUTER_PROVIDERS: any[] = /*@ts2dart_const*/ [
   ROUTER_PROVIDERS_COMMON,
-  /*@ts2dart_const*/ ({provide: PlatformLocation, useClass: BrowserPlatformLocation}),
-]);
+  {provide: PlatformLocation, useClass: BrowserPlatformLocation},
+];
 
 /**
  * Use {@link ROUTER_PROVIDERS} instead.

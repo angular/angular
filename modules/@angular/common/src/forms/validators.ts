@@ -16,7 +16,7 @@ import {ValidatorFn, AsyncValidatorFn} from './directives/validators';
  *
  * {@example core/forms/ts/ng_validators/ng_validators.ts region='ng_validators'}
  */
-export const NG_VALIDATORS: OpaqueToken = /*@ts2dart_const*/ (new OpaqueToken("NgValidators"));
+export const NG_VALIDATORS: OpaqueToken = /*@ts2dart_const*/ new OpaqueToken("NgValidators");
 
 /**
  * Providers for asynchronous validators to be used for {@link Control}s
@@ -27,7 +27,7 @@ export const NG_VALIDATORS: OpaqueToken = /*@ts2dart_const*/ (new OpaqueToken("N
  * See {@link NG_VALIDATORS} for more details.
  */
 export const NG_ASYNC_VALIDATORS: OpaqueToken =
-    /*@ts2dart_const*/ (new OpaqueToken("NgAsyncValidators"));
+    /*@ts2dart_const*/ new OpaqueToken("NgAsyncValidators");
 
 /**
  * Provides a set of validators used by form controls.

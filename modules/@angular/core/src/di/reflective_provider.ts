@@ -38,7 +38,7 @@ export class ReflectiveDependency {
   }
 }
 
-const _EMPTY_LIST = /*@ts2dart_const*/ ([]);
+const _EMPTY_LIST = /*@ts2dart_const*/ [];
 
 /**
  * An internal resolved representation of a {@link Provider} used by the {@link Injector}.

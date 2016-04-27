@@ -39,7 +39,7 @@ function _createCompilerConfig() {
  * A set of providers that provide `RuntimeCompiler` and its dependencies to use for
  * template compilation.
  */
-export const COMPILER_PROVIDERS: Array<Type | {[k: string]: any} | any[]> = /*@ts2dart_const*/ ([
+export const COMPILER_PROVIDERS: Array<Type | {[k: string]: any} | any[]> = /*@ts2dart_const*/ [
   Lexer,
   Parser,
   HtmlParser,
@@ -58,7 +58,7 @@ export const COMPILER_PROVIDERS: Array<Type | {[k: string]: any} | any[]> = /*@t
   ViewResolver,
   DirectiveResolver,
   PipeResolver
-]);
+];
 
 //  CONST_EXPR
 // /* @const */

@@ -93,7 +93,7 @@ import {TemplateRef} from '@angular/core/src/linker/template_ref';
 import {Renderer} from '@angular/core/src/render';
 import {IS_DART} from '@angular/facade';
 
-const ANCHOR_ELEMENT = /*@ts2dart_const*/ (new OpaqueToken('AnchorElement'));
+const ANCHOR_ELEMENT = /*@ts2dart_const*/ new OpaqueToken('AnchorElement');
 
 export function main() {
   if (IS_DART) {

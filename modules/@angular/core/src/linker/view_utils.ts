@@ -57,7 +57,7 @@ function _flattenNestedViewRenderNodes(nodes: any[], renderNodes: any[]): any[] 
   return renderNodes;
 }
 
-const EMPTY_ARR = /*@ts2dart_const*/([]);
+const EMPTY_ARR = /*@ts2dart_const*/ [];
 
 export function ensureSlotCount(projectableNodes: any[][], expectedSlotCount: number): any[][] {
   var res;

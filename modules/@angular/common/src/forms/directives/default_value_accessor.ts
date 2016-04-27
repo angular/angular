@@ -2,8 +2,8 @@ import {Directive, ElementRef, Renderer, Self, forwardRef, Provider} from '@angu
 import {isBlank} from '@angular/facade';
 import {NG_VALUE_ACCESSOR, ControlValueAccessor} from './control_value_accessor';
 
-const DEFAULT_VALUE_ACCESSOR = /*@ts2dart_const*/ (
-    {provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => DefaultValueAccessor), multi: true});
+const DEFAULT_VALUE_ACCESSOR = /*@ts2dart_const*/ 
+    {provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => DefaultValueAccessor), multi: true};
 
 /**
  * The default accessor for writing a value and listening to changes that is used by the

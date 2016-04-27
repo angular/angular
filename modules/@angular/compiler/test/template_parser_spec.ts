@@ -503,7 +503,7 @@ export function main() {
         }
 
         function createProvider(
-            token: string, {multi = false, deps = /*@ts2dart_const*/ ([])}:
+            token: string, {multi = false, deps = /*@ts2dart_const*/ []}:
                                {multi?: boolean, deps?: string[]} = {}): CompileProviderMetadata {
           return new CompileProviderMetadata({
             token: createToken(token),
@@ -514,8 +514,8 @@ export function main() {
         }
 
         function createDir(selector: string,
-                           {providers = null, viewProviders = null, deps = /*@ts2dart_const*/ ([]),
-                            queries = /*@ts2dart_const*/ ([])}: {
+                           {providers = null, viewProviders = null, deps = /*@ts2dart_const*/ [],
+                            queries = /*@ts2dart_const*/ []}: {
                              providers?: CompileProviderMetadata[],
                              viewProviders?: CompileProviderMetadata[],
                              deps?: string[],

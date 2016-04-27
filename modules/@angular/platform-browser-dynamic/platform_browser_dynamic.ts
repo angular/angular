@@ -9,16 +9,16 @@ import {getDOM} from './platform_browser_private';
 import {ReflectionCapabilities} from './core_private';
 
 export const CACHED_TEMPLATE_PROVIDER: Array<any /*Type | Provider | any[]*/> =
-  /*@ts2dart_const*/([new Provider(XHR, {useClass: CachedXHR})]);
+  /*@ts2dart_const*/ [{provide: XHR, useClass: CachedXHR}];
 
 /**
  * An array of providers that should be passed into `application()` when bootstrapping a component.
  */
-export const BROWSER_APP_PROVIDERS: Array<any /*Type | Provider | any[]*/> = /*@ts2dart_const*/ ([
+export const BROWSER_APP_PROVIDERS: Array<any /*Type | Provider | any[]*/> = /*@ts2dart_const*/ [
   BROWSER_APP_COMMON_PROVIDERS,
   COMPILER_PROVIDERS,
   {provide: XHR, useClass: XHRImpl},
-]);
+];
 
 
 /**

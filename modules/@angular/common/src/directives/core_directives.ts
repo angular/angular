@@ -47,7 +47,7 @@ import {NgPlural, NgPluralCase} from './ng_plural';
  * }
  * ```
  */
-export const CORE_DIRECTIVES: Type[] = /*@ts2dart_const*/ ([
+export const CORE_DIRECTIVES: Type[] = /*@ts2dart_const*/ [
   NgClass,
   NgFor,
   NgIf,
@@ -58,4 +58,4 @@ export const CORE_DIRECTIVES: Type[] = /*@ts2dart_const*/ ([
   NgSwitchDefault,
   NgPlural,
   NgPluralCase
-]);
+];

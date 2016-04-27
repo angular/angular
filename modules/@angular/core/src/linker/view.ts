@@ -43,7 +43,7 @@ import {StaticNodeDebugInfo, DebugContext} from './debug_context';
 import {ElementInjector} from './element_injector';
 import {Injector} from '../di/injector';
 
-const EMPTY_CONTEXT = /*@ts2dart_const*/ (new Object());
+const EMPTY_CONTEXT = /*@ts2dart_const*/ new Object();
 
 var _scope_check: WtfScopeFn = wtfCreateScope(`AppView#check(ascii id)`);
 

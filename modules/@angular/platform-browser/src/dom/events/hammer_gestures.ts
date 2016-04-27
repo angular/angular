@@ -4,7 +4,7 @@ import {BaseException} from '@angular/facade';
 import {HammerGesturesPluginCommon} from './hammer_common';
 
 export const HAMMER_GESTURE_CONFIG: OpaqueToken =
-    /*@ts2dart_const*/ (new OpaqueToken("HammerGestureConfig"));
+    /*@ts2dart_const*/ new OpaqueToken("HammerGestureConfig");
 
 export interface HammerInstance {
   on(eventName: string, callback: Function): void;

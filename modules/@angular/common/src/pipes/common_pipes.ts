@@ -21,7 +21,7 @@ import {I18nSelectPipe} from './i18n_select_pipe';
  * This collection can be used to quickly enumerate all the built-in pipes in the `pipes`
  * property of the `@Component` decorator.
  */
-export const COMMON_PIPES = /*@ts2dart_const*/ ([
+export const COMMON_PIPES = /*@ts2dart_const*/ [
   AsyncPipe,
   UpperCasePipe,
   LowerCasePipe,
@@ -34,4 +34,4 @@ export const COMMON_PIPES = /*@ts2dart_const*/ ([
   ReplacePipe,
   I18nPluralPipe,
   I18nSelectPipe
-]);
+];

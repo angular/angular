@@ -19,7 +19,7 @@ import {PromiseWrapper} from '@angular/facade';
 import {TimerWrapper, ObservableWrapper, EventEmitter} from '@angular/facade';
 
 export function main() {
-  function asyncValidator(expected, timeouts = /*@ts2dart_const*/ ({})) {
+  function asyncValidator(expected, timeouts = /*@ts2dart_const*/ {}) {
     return (c) => {
       var completer = PromiseWrapper.completer();
       var t = isPresent(timeouts[c.value]) ? timeouts[c.value] : 0;

@@ -150,4 +150,4 @@ export function setTestabilityGetter(getter: GetTestability): void {
   _testabilityGetter = getter;
 }
 
-var _testabilityGetter: GetTestability = /*@ts2dart_const*/ (new _NoopGetTestability());
+var _testabilityGetter: GetTestability = /*@ts2dart_const*/ new _NoopGetTestability();

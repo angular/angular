@@ -22,8 +22,8 @@ export function serializeParams(urlParams: {[key: string]: any}, joiner = '&'): 
  */
 export class Url {
   constructor(public path: string, public child: Url = null,
-              public auxiliary: Url[] = /*@ts2dart_const*/ ([]),
-              public params: {[key: string]: any} = /*@ts2dart_const*/ ({})) {}
+              public auxiliary: Url[] = /*@ts2dart_const*/ [],
+              public params: {[key: string]: any} = /*@ts2dart_const*/ {}) {}
 
   toString(): string {
     return this.path + this._matrixParamsToString() + this._auxToString() + this._childString();
@@ -51,7 +51,7 @@ export class Url {
 }
 
 export class RootUrl extends Url {
-  constructor(path: string, child: Url = null, auxiliary: Url[] = /*@ts2dart_const*/ ([]),
+  constructor(path: string, child: Url = null, auxiliary: Url[] = /*@ts2dart_const*/ [],
               params: {[key: string]: any} = null) {
     super(path, child, auxiliary, params);
   }

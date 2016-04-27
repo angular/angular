@@ -17,11 +17,11 @@ import {
 } from './control_value_accessor';
 import {NgControl} from './ng_control';
 
-const RADIO_VALUE_ACCESSOR = /*@ts2dart_const*/ ({
+const RADIO_VALUE_ACCESSOR = /*@ts2dart_const*/ {
   provide: NG_VALUE_ACCESSOR,
   useExisting: forwardRef(() => RadioControlValueAccessor),
   multi: true
-});
+};
 
 
 /**
