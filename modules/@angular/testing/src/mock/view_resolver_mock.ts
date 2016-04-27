@@ -1,8 +1,8 @@
 import {Injectable, ViewMetadata} from '@angular/core';
 import {ViewResolver} from '@angular/compiler';
-import {Map, ListWrapper} from '@angular/facade/collection';
-import {Type, isPresent, stringify, isBlank} from '@angular/facade/lang';
-import {BaseException} from '@angular/facade/exceptions';
+import {Map, ListWrapper} from '../../src/facade/collection';
+import {Type, isPresent, stringify, isBlank} from '../../src/facade/lang';
+import {BaseException} from '../../src/facade/exceptions';
 
 @Injectable()
 export class MockViewResolver extends ViewResolver {

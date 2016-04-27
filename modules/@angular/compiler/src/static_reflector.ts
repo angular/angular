@@ -1,10 +1,10 @@
-import {ListWrapper, StringMapWrapper} from '@angular/facade/collection';
+import {ListWrapper, StringMapWrapper} from '../src/facade/collection';
 import {
   isArray,
   isPresent,
   isPrimitive,
   IS_DART,
-} from '@angular/facade/lang';
+} from '../src/facade/lang';
 import {
   AttributeMetadata,
   DirectiveMetadata,

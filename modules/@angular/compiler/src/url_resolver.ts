@@ -4,7 +4,7 @@ import {
   isPresent,
   isBlank,
   RegExpWrapper,
-} from '@angular/facade/lang';
+} from '../src/facade/lang';
 
 const _ASSET_SCHEME = 'asset:';
 

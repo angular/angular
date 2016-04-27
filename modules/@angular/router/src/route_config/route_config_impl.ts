@@ -1,4 +1,4 @@
-import {Type} from '@angular/facade/lang';
+import {Type} from '../../src/facade/lang';
 import {RouteDefinition} from '../route_definition';
 import {RegexSerializer} from '../rules/route_paths/regex_route_path';
 

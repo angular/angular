@@ -1,4 +1,4 @@
-import {global} from '@angular/facade/lang';
+import {global} from '../../src/facade/lang';
 
 /**
  * A scope function for the Web Tracing Framework (WTF).

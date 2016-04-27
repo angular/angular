@@ -2,8 +2,8 @@ import {NgZone, Injectable} from '@angular/core';
 import {
   isPresent,
   StringWrapper,
-} from '@angular/facade/lang';
-import {StringMapWrapper, ListWrapper} from '@angular/facade/collection';
+} from '../../../src/facade/lang';
+import {StringMapWrapper, ListWrapper} from '../../../src/facade/collection';
 
 import {getDOM} from '../dom_adapter';
 import {EventManagerPlugin} from './event_manager';

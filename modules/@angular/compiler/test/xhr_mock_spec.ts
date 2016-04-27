@@ -10,8 +10,8 @@ import {
   it,
 } from '@angular/testing/testing_internal';
 import {MockXHR} from '@angular/testing';
-import {PromiseWrapper} from '@angular/facade/async';
-import {isPresent} from '@angular/facade/lang';
+import {PromiseWrapper} from '../src/facade/async';
+import {isPresent} from '../src/facade/lang';
 
 export function main() {
   describe('MockXHR', () => {

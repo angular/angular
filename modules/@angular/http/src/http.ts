@@ -1,5 +1,5 @@
-import {isString, isPresent} from '@angular/facade/lang';
-import {makeTypeError} from '@angular/facade/exceptions';
+import {isString, isPresent} from '../src/facade/lang';
+import {makeTypeError} from '../src/facade/exceptions';
 import {Injectable} from '@angular/core';
 import {RequestOptionsArgs, ConnectionBackend} from './interfaces';
 import {Request} from './static_request';

@@ -12,7 +12,6 @@ import {
 } from '@angular/testing/testing_internal';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
-import {global} from '@angular/facade/lang';
 import {
   Component,
   Class,
@@ -674,7 +673,7 @@ export function main() {
 
            setTimeout(() => {
              bootstrapResumed = true;
-             (<any>global).angular.resumeBootstrap();
+             (<any>window).angular.resumeBootstrap();
            }, 100);
          }));
 

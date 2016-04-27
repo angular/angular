@@ -2,8 +2,8 @@ import {ApplicationRef, Provider} from '@angular/core';
 import {LocationStrategy, PathLocationStrategy, Location} from '@angular/common';
 import {Router, RootRouter} from './router';
 import {RouteRegistry, ROUTER_PRIMARY_COMPONENT} from './route_registry';
-import {Type} from '@angular/facade/lang';
-import {BaseException} from '@angular/facade/exceptions';
+import {Type} from '../src/facade/lang';
+import {BaseException} from '../src/facade/exceptions';
 
 /**
  * The Platform agnostic ROUTER PROVIDERS

@@ -14,9 +14,9 @@ import {
   inject
 } from '@angular/testing/testing_internal';
 import {ControlGroup, Control, ControlArray, Validators} from '@angular/common';
-import {IS_DART, isPresent} from '@angular/facade/lang';
-import {PromiseWrapper} from '@angular/facade/promise';
-import {TimerWrapper, ObservableWrapper, EventEmitter} from '@angular/facade/async';
+import {IS_DART, isPresent} from '../../src/facade/lang';
+import {PromiseWrapper} from '../../src/facade/promise';
+import {TimerWrapper, ObservableWrapper, EventEmitter} from '../../src/facade/async';
 
 export function main() {
   function asyncValidator(expected, timeouts = /*@ts2dart_const*/ {}) {

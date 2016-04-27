@@ -1,5 +1,5 @@
-import {Type, CONST, isBlank} from '@angular/facade/lang';
-import {unimplemented} from '@angular/facade/exceptions';
+import {Type, isBlank} from '../../src/facade/lang';
+import {unimplemented} from '../../src/facade/exceptions';
 import {ElementRef} from './element_ref';
 import {ViewRef, ViewRef_} from './view_ref';
 import {AppElement} from './element';

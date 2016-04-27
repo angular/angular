@@ -1,6 +1,6 @@
 import {LifecycleHooks, isDefaultChangeDetectionStrategy} from '../../core_private';
 
-import {isBlank, isPresent} from '@angular/facade/lang';
+import {isBlank, isPresent} from '../../src/facade/lang';
 
 import * as cdAst from '../expression_parser/ast';
 import * as o from '../output/output_ast';

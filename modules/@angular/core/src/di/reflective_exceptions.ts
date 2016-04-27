@@ -1,6 +1,6 @@
-import {ListWrapper} from '@angular/facade/collection';
-import {stringify, isBlank} from '@angular/facade/lang';
-import {BaseException, WrappedException} from '@angular/facade/exceptions';
+import {ListWrapper} from '../../src/facade/collection';
+import {stringify, isBlank} from '../../src/facade/lang';
+import {BaseException, WrappedException} from '../../src/facade/exceptions';
 import {ReflectiveKey} from './reflective_key';
 import {ReflectiveInjector} from './reflective_injector';
 

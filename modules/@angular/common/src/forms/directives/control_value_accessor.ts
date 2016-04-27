@@ -1,5 +1,4 @@
 import {OpaqueToken} from '@angular/core';
->>>>>>> parent of 8de21e3... WIP: facades with single entry point
 
 /**
  * A bridge between a control and a native element.

@@ -12,7 +12,7 @@ import {PRIMITIVE, Serializer} from '../shared/serializer';
 import {bind} from './bind';
 import {LocationType} from '../shared/serialized_types';
 import {MessageBus} from '../shared/message_bus';
-import {EventEmitter, ObservableWrapper, PromiseWrapper} from '@angular/facade/async';
+import {EventEmitter, ObservableWrapper, PromiseWrapper} from '../../../src/facade/async';
 
 @Injectable()
 export class MessageBasedPlatformLocation {

@@ -2,7 +2,7 @@ import {ddescribe, describe, it, expect} from '@angular/testing/testing_internal
 
 import {Lexer, Token} from '@angular/compiler/src/expression_parser/lexer';
 
-import {StringWrapper} from '@angular/facade/lang';
+import {StringWrapper} from '../../src/facade/lang';
 
 function lex(text: string): any[] {
   return new Lexer().tokenize(text);

@@ -8,12 +8,12 @@ import {
 import {PlatformLocation, UrlChangeEvent, UrlChangeListener} from '@angular/common';
 import {ROUTER_CHANNEL} from '../shared/messaging_api';
 import {LocationType} from '../shared/serialized_types';
-import {PromiseWrapper, EventEmitter, ObservableWrapper} from '@angular/facade/async';
-import {BaseException} from '@angular/facade/exceptions';
+import {PromiseWrapper, EventEmitter, ObservableWrapper} from '../../../src/facade/async';
+import {BaseException} from '../../../src/facade/exceptions';
 import {PRIMITIVE, Serializer} from '../shared/serializer';
 import {MessageBus} from '../shared/message_bus';
-import {StringMapWrapper} from '@angular/facade/collection';
-import {StringWrapper} from '@angular/facade/lang';
+import {StringMapWrapper} from '../../../src/facade/collection';
+import {StringWrapper} from '../../../src/facade/lang';
 import {deserializeGenericEvent} from './event_deserializer';
 
 @Injectable()

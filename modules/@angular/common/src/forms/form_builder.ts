@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
-import {StringMapWrapper} from '@angular/facade/collection';
-import {isPresent, isArray} from '@angular/facade/lang';
+import {StringMapWrapper} from '../../src/facade/collection';
+import {isPresent, isArray} from '../../src/facade/lang';
 import * as modelModule from './model';
 import {ValidatorFn, AsyncValidatorFn} from './directives/validators';
 

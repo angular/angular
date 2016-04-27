@@ -9,9 +9,9 @@ import {
   ReflectorReader
 } from '../core_private';
 
-import {Type, stringify, isBlank, isPresent} from '@angular/facade/lang';
-import {BaseException} from '@angular/facade/exceptions';
-import {Map} from '@angular/facade/collection';
+import {Type, stringify, isBlank, isPresent} from '../src/facade/lang';
+import {BaseException} from '../src/facade/exceptions';
+import {Map} from '../src/facade/collection';
 
 /**
  * Resolves types to {@link ViewMetadata}.

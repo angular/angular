@@ -2,7 +2,7 @@ import {RequestMethod} from './enums';
 import {RequestArgs} from './interfaces';
 import {Headers} from './headers';
 import {normalizeMethodName} from './http_utils';
-import {isPresent, StringWrapper} from '@angular/facade/lang';
+import {isPresent, StringWrapper} from '../src/facade/lang';
 
 // TODO(jeffbcross): properly implement body accessors
 /**

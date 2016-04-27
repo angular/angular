@@ -34,5 +34,7 @@ export * from './src/platform_common_providers';
 export * from './src/application_common_providers';
 export * from './src/reflection/reflection';
 export * from './instrumentation';
-export {Type, EventEmitter, ExceptionHandler, WrappedException, enableProdMode} from "@angular/facade";
+export {Type, enableProdMode} from "./src/facade/lang";
+export {EventEmitter} from "./src/facade/async";
+export {ExceptionHandler, WrappedException} from "./src/facade/exceptions";
 export * from './private_export';

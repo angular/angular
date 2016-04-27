@@ -21,7 +21,7 @@ import {
   ComponentFixture
 } from '@angular/testing/testing_internal';
 
-import {IS_DART} from '@angular/facade/lang';
+import {IS_DART} from '../../src/facade/lang';
 
 import {
   Component,

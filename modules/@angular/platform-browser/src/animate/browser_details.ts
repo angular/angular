@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {Math} from '@angular/facade/math';
+import {Math} from '../../src/facade/math';
 import {getDOM} from '../dom/dom_adapter';
 
 @Injectable()

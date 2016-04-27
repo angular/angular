@@ -15,6 +15,7 @@ import * as template_ref from './src/linker/template_ref';
 import * as wtf_init from './src/profile/wtf_init';
 import * as reflection_capabilities from './src/reflection/reflection_capabilities';
 import * as decorators from './src/util/decorators';
+import * as debug from './src/debug/debug_renderer';
 
 export declare namespace __core_private_types__ {
   export var isDefaultChangeDetectionStrategy: typeof constants.isDefaultChangeDetectionStrategy;
@@ -52,6 +53,8 @@ export declare namespace __core_private_types__ {
   export type ReflectionCapabilities = reflection_capabilities.ReflectionCapabilities;
   export var ReflectionCapabilities: typeof reflection_capabilities.ReflectionCapabilities;
   export var makeDecorator: typeof decorators.makeDecorator;
+  export type DebugDomRootRenderer = debug.DebugDomRootRenderer;
+  export var DebugDomRootRenderer: typeof debug.DebugDomRootRenderer;
 }
 
 export var __core_private__ = {
@@ -81,5 +84,6 @@ export var __core_private__ = {
     TemplateRef_: template_ref.TemplateRef_,
     wtfInit: wtf_init.wtfInit,
     ReflectionCapabilities: reflection_capabilities.ReflectionCapabilities,
-    makeDecorator: decorators.makeDecorator
+    makeDecorator: decorators.makeDecorator,
+    DebugDomRootRenderer: debug.DebugDomRootRenderer
 };

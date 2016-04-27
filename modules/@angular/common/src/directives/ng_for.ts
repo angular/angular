@@ -11,8 +11,8 @@ import {
   DefaultIterableDiffer,
   CollectionChangeRecord
 } from '@angular/core';
-import {isPresent, isBlank, getTypeNameForDebugging} from '@angular/facade/lang';
-import {BaseException} from '@angular/facade/exceptions';
+import {isPresent, isBlank, getTypeNameForDebugging} from '../../src/facade/lang';
+import {BaseException} from '../../src/facade/exceptions';
 
 /**
  * The `NgFor` directive instantiates a template once per item from an iterable. The context for

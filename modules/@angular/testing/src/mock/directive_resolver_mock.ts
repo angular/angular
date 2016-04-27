@@ -1,5 +1,5 @@
-import {Map} from '@angular/facade/collection';
-import {Type, isPresent} from '@angular/facade/lang';
+import {Map} from '../../src/facade/collection';
+import {Type, isPresent} from '../../src/facade/lang';
 import {DirectiveMetadata, ComponentMetadata, Injectable} from '@angular/core';
 import {DirectiveResolver} from '@angular/compiler';
 

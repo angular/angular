@@ -18,9 +18,9 @@ import {
   StringWrapper,
   isArray,
   isString
-} from '@angular/facade/lang';
+} from '../../src/facade/lang';
 
-import {BaseException} from '@angular/facade/exceptions';
+import {BaseException} from '../../src/facade/exceptions';
 import {DomSharedStylesHost} from './shared_styles_host';
 import {EventManager} from './events/event_manager';
 import {DOCUMENT} from './dom_tokens';

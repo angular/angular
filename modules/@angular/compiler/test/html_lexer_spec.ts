@@ -8,7 +8,7 @@ import {
   beforeEach,
   afterEach
 } from '@angular/testing/testing_internal';
-import {BaseException} from '@angular/facade/exceptions';
+import {BaseException} from '../src/facade/exceptions';
 
 import {
   tokenizeHtml,

@@ -9,7 +9,7 @@ import {
   afterEach
 } from '@angular/testing/testing_internal';
 
-import {isPresent} from '@angular/facade/lang';
+import {isPresent} from '../../src/facade/lang';
 
 import {
   CssToken,

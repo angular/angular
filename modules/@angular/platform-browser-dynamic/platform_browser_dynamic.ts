@@ -1,7 +1,7 @@
 import {COMPILER_PROVIDERS, XHR} from '@angular/compiler';
 import {CachedXHR} from './src/xhr/xhr_cache';
 import {Provider, Type, ComponentRef} from '@angular/core';
-import {isPresent} from '@angular/facade';
+import {isPresent} from './src/facade/lang';
 import {XHRImpl} from './src/xhr/xhr_impl';
 import {BROWSER_APP_COMMON_PROVIDERS, browserPlatform} from '@angular/platform-browser';
 import {reflector, ReflectiveInjector, coreLoadAndBootstrap} from '@angular/core';

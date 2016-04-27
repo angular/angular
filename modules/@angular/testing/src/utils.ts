@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
-import {ListWrapper} from '@angular/facade/collection';
+import {ListWrapper} from '../src/facade/collection';
 import {getDOM} from '../platform_browser_private';
-import {isPresent, isString, RegExpWrapper, StringWrapper, RegExp} from '@angular/facade/lang';
+import {isPresent, isString, RegExpWrapper, StringWrapper, RegExp} from '../src/facade/lang';
 
 @Injectable()
 export class Log {

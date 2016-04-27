@@ -1,4 +1,4 @@
-import {isPresent} from '@angular/facade/lang';
+import {isPresent} from '../../src/facade/lang';
 import {ElementSchemaRegistry} from '@angular/compiler';
 
 export class MockSchemaRegistry implements ElementSchemaRegistry {

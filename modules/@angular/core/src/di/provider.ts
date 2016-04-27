@@ -5,8 +5,8 @@ import {
   isBlank,
   isFunction,
   stringify
-} from '@angular/facade/lang';
-import {BaseException} from '@angular/facade/exceptions';
+} from '../../src/facade/lang';
+import {BaseException} from '../../src/facade/exceptions';
 
 /**
  * Describes how the {@link Injector} should instantiate a given token.

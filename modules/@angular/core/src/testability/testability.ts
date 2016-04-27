@@ -1,8 +1,8 @@
-import {Map, MapWrapper} from '@angular/facade/collection';
-import {CONST, CONST_EXPR, scheduleMicroTask} from '@angular/facade/lang';
-import {BaseException} from '@angular/facade/exceptions';
+import {Map, MapWrapper} from '../../src/facade/collection';
+import {scheduleMicroTask} from '../../src/facade/lang';
+import {BaseException} from '../../src/facade/exceptions';
 import {NgZone} from '../zone/ng_zone';
-import {ObservableWrapper} from '@angular/facade/async';
+import {ObservableWrapper} from '../../src/facade/async';
 import {Injectable} from '../di/decorators';
 
 

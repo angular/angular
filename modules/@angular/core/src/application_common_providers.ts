@@ -1,4 +1,4 @@
-import {Type} from '@angular/facade/lang';
+import {Type} from '../src/facade/lang';
 import {Provider} from './di';
 import {APP_ID_RANDOM_PROVIDER} from './application_tokens';
 import {APPLICATION_CORE_PROVIDERS} from './application_ref';

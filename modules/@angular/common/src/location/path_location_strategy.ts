@@ -1,6 +1,6 @@
 import {Injectable, Inject, Optional} from '@angular/core';
-import {isBlank} from '@angular/facade/lang';
-import {BaseException} from '@angular/facade/exceptions';
+import {isBlank} from '../../src/facade/lang';
+import {BaseException} from '../../src/facade/exceptions';
 
 import {PlatformLocation, UrlChangeListener} from './platform_location';
 import {LocationStrategy, APP_BASE_HREF} from './location_strategy';

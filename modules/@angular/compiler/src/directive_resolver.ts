@@ -15,9 +15,9 @@ import {
   } from '@angular/core';
 import {ReflectorReader} from '../core_private';
 
-import {Type, isPresent, stringify} from '@angular/facade/lang';
-import {BaseException} from '@angular/facade/exceptions';
-import {ListWrapper, StringMapWrapper} from '@angular/facade/collection';
+import {Type, isPresent, stringify} from '../src/facade/lang';
+import {BaseException} from '../src/facade/exceptions';
+import {ListWrapper, StringMapWrapper} from '../src/facade/collection';
 
 
 function _isDirectiveMetadata(type: any): boolean {

@@ -1,6 +1,6 @@
-import {StringMapWrapper} from '@angular/facade/collection';
-import {isPresent, isBlank, RegExpWrapper} from '@angular/facade/lang';
-import {BaseException} from '@angular/facade/exceptions';
+import {StringMapWrapper} from '../src/facade/collection';
+import {isPresent, isBlank, RegExpWrapper} from '../src/facade/lang';
+import {BaseException} from '../src/facade/exceptions';
 
 export function convertUrlParamsToArray(urlParams: {[key: string]: any}): string[] {
   var paramsArray = [];

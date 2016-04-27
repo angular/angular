@@ -65,7 +65,7 @@ import {
   makePropDecorator,
   TypeDecorator,
 } from './util/decorators';
-import {Type} from '@angular/facade/lang';
+import {Type} from '../src/facade/lang';
 
 /**
  * Interface for the {@link DirectiveMetadata} decorator function.

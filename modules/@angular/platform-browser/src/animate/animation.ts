@@ -4,9 +4,9 @@ import {
   RegExpWrapper,
   NumberWrapper,
   isPresent
-} from '@angular/facade/lang';
-import {Math} from '@angular/facade/math';
-import {StringMapWrapper} from '@angular/facade/collection';
+} from '../../src/facade/lang';
+import {Math} from '../../src/facade/math';
+import {StringMapWrapper} from '../../src/facade/collection';
 import {camelCaseToDashCase} from '../dom/util';
 import {getDOM} from '../dom/dom_adapter';
 

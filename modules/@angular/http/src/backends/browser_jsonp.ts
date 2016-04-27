@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {global} from '@angular/facade/lang';
+import {global} from '../../src/facade/lang';
 
 let _nextRequestId = 0;
 export const JSONP_HOME = '__ng_jsonp__';

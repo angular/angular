@@ -1,5 +1,5 @@
-import {Set} from '@angular/facade/collection';
-import {isPresent} from '@angular/facade/lang';
+import {Set} from '../../../src/facade/collection';
+import {isPresent} from '../../../src/facade/lang';
 
 const MOUSE_EVENT_PROPERTIES = [
   "altKey",

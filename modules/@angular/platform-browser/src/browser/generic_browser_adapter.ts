@@ -1,6 +1,5 @@
-import {StringMapWrapper} from '@angular/facade/collection';
-import {isPresent, isFunction, Type} from '@angular/facade/lang';
-import {XHRImpl} from './xhr_impl';
+import {StringMapWrapper} from '../../src/facade/collection';
+import {isPresent, isFunction, Type} from '../../src/facade/lang';
 import {DomAdapter} from '../dom/dom_adapter';
 
 

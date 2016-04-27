@@ -6,4 +6,4 @@ export * from './src/exception_handler';
 export * from './src/exceptions';
 export * from './src/intl';
 export * from './src/lang';
-export * from './src/math';
+export {NaN} from './src/math';

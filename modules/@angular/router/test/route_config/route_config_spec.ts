@@ -18,11 +18,11 @@ import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {Console} from '@angular/core/src/console';
 import {provide} from '@angular/core';
 import {DOCUMENT} from '@angular/platform-browser/src/dom/dom_tokens';
-import {Type, IS_DART} from '@angular/facade/lang';
+import {Type, IS_DART} from '../../src/facade/lang';
 
 import {ROUTER_PROVIDERS, Router, RouteConfig, ROUTER_DIRECTIVES} from '@angular/router';
 
-import {ExceptionHandler} from '@angular/facade/exceptions';
+import {ExceptionHandler} from '../../src/facade/exceptions';
 import {MockLocationStrategy} from '@angular/testing';
 
 class _ArrayLogger {

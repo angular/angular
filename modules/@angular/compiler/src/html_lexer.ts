@@ -3,8 +3,8 @@ import {
   NumberWrapper,
   isPresent,
   isBlank,
-} from '@angular/facade/lang';
-import {ListWrapper} from '@angular/facade/collection';
+} from '../src/facade/lang';
+import {ListWrapper} from '../src/facade/collection';
 import {ParseLocation, ParseError, ParseSourceFile, ParseSourceSpan} from './parse_util';
 import {getHtmlTagDefinition, HtmlTagContentType, NAMED_ENTITIES} from './html_tags';
 

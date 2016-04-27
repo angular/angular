@@ -10,9 +10,9 @@ import {
   getDebugNode
 } from '@angular/core';
 import {DirectiveResolver, ViewResolver} from '@angular/compiler';
-import {Type, isPresent} from '@angular/facade/lang';
-import {PromiseWrapper} from '@angular/facade/async';
-import {MapWrapper} from '@angular/facade/collection';
+import {Type, isPresent} from '../src/facade/lang';
+import {PromiseWrapper} from '../src/facade/async';
+import {MapWrapper} from '../src/facade/collection';
 import {el} from './utils';
 import {DOCUMENT} from '@angular/platform-browser';
 import {getDOM} from '../platform_browser_private';

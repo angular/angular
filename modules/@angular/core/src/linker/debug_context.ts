@@ -1,5 +1,5 @@
-import {isPresent, isBlank, CONST} from '@angular/facade/lang';
-import {ListWrapper, StringMapWrapper} from '@angular/facade/collection';
+import {isPresent, isBlank} from '../../src/facade/lang';
+import {ListWrapper, StringMapWrapper} from '../../src/facade/collection';
 import {Injector} from '../di';
 import {AppView} from './view';
 import {ViewType} from './view_type';

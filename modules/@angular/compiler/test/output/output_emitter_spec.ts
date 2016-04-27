@@ -13,16 +13,16 @@ import {
   browserDetection
 } from '@angular/testing/testing_internal';
 
-import {IS_DART} from '@angular/facade/lang';
+import {IS_DART} from '../../src/facade/lang';
 
 import * as typed from './output_emitter_codegen_typed';
 import * as untyped from './output_emitter_codegen_untyped';
 import {jitStatements} from '@angular/compiler/src/output/output_jit';
 import {interpretStatements} from '@angular/compiler/src/output/output_interpreter';
 import {codegenStmts, ExternalClass, DynamicClassInstanceFactory} from './output_emitter_util';
-import {EventEmitter} from '@angular/facade/async';
+import {EventEmitter} from '../../src/facade/async';
 import {ViewType} from '@angular/core/src/linker/view_type';
-import {BaseException} from '@angular/facade/exceptions';
+import {BaseException} from '../../src/facade/exceptions';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
 export function main() {

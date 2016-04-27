@@ -17,7 +17,7 @@ import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {Component} from '@angular/core';
 import {NgIf} from '@angular/common';
 
-import {IS_DART} from '@angular/facade/lang';
+import {IS_DART} from '../../src/facade/lang';
 
 export function main() {
   describe('ngIf directive', () => {

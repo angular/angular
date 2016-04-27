@@ -14,7 +14,7 @@ import {
   xit,
 } from '@angular/testing/testing_internal';
 
-import {StringMapWrapper} from '@angular/facade/collection';
+import {StringMapWrapper} from '../../src/facade/collection';
 
 import {Component} from '@angular/core';
 

@@ -16,13 +16,13 @@ import {
 } from '@angular/testing/testing_internal';
 
 import {provide, Component, Injector, Inject} from '@angular/core';
-import {isPresent} from '@angular/facade/lang';
+import {isPresent} from '../../src/facade/lang';
 import {
   PromiseWrapper,
   PromiseCompleter,
   EventEmitter,
   ObservableWrapper
-} from '@angular/facade/async';
+} from '../../src/facade/async';
 
 import {Router, RouterOutlet, RouterLink, RouteParams} from '@angular/router';
 import {

@@ -19,7 +19,7 @@ import {Location} from '@angular/common';
 import {Component} from '@angular/core';
 import {Router, ROUTER_DIRECTIVES, Route, AuxRoute, RouteConfig} from '@angular/router';
 import {specs, compile, clickOnElement, getHref} from '../util';
-import {BaseException} from '@angular/facade/exceptions';
+import {BaseException} from '../../../src/facade/exceptions';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 
 function getLinkElement(rtc: ComponentFixture, linkIndex: number = 0) {

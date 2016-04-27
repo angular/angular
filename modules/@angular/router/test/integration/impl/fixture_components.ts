@@ -8,8 +8,8 @@ import {
   RouteData,
   ROUTER_DIRECTIVES
 } from '@angular/router';
-import {PromiseWrapper} from '@angular/facade/async';
-import {isPresent} from '@angular/facade/lang';
+import {PromiseWrapper} from '../../../src/facade/async';
+import {isPresent} from '../../../src/facade/lang';
 import {DynamicComponentLoader} from '@angular/core/src/linker/dynamic_component_loader';
 
 @Component({selector: 'goodbye-cmp', template: `{{farewell}}`})

@@ -5,9 +5,8 @@ import {
   createPlatform,
   assertPlatform
 } from '@angular/core';
-import {ReflectionCapabilities} from './core_private';
-import {COMPILER_PROVIDERS, XHR} from '@angular/compiler';
-import {Type, isPresent, isBlank} from '@angular/facade/lang';
+import {isBlank} from './src/facade/lang';
+import {BROWSER_PROVIDERS, BROWSER_PLATFORM_MARKER} from './browser_common';
 
 export {EventManager, EVENT_MANAGER_PLUGINS} from './src/dom/events/event_manager';
 export {ELEMENT_PROBE_PROVIDERS} from './src/dom/debug/ng_probe';

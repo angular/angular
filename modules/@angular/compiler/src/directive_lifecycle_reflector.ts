@@ -1,6 +1,6 @@
 import {LifecycleHooks} from '../core_private';
 
-import {Type} from '@angular/facade/lang';
+import {Type} from '../src/facade/lang';
 
 
 export function hasLifecycleHook(lcInterface: LifecycleHooks, token): boolean {

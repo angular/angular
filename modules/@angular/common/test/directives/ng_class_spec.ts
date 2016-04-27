@@ -14,7 +14,7 @@ import {
   it,
   xit,
 } from '@angular/testing/testing_internal';
-import {ListWrapper, StringMapWrapper, SetWrapper} from '@angular/facade/collection';
+import {ListWrapper, StringMapWrapper, SetWrapper} from '../../src/facade/collection';
 import {Component, provide} from '@angular/core';
 import {NgFor, NgClass} from '@angular/common';
 

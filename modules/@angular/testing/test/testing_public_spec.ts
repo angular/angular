@@ -19,7 +19,7 @@ import {
 import {Injectable, bind} from '@angular/core';
 import {NgIf} from '@angular/common';
 import {Directive, Component, ViewMetadata} from '@angular/core';
-import {PromiseWrapper} from '@angular/facade/promise';
+import {PromiseWrapper} from '../src/facade/promise';
 
 // Services, and components for the tests.
 

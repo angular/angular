@@ -1,5 +1,5 @@
-import {isPresent, isBlank} from '@angular/facade/lang';
-import {ListWrapper} from '@angular/facade/collection';
+import {isPresent, isBlank} from '../../src/facade/lang';
+import {ListWrapper} from '../../src/facade/collection';
 
 import * as o from '../output/output_ast';
 import {Identifiers} from '../identifiers';

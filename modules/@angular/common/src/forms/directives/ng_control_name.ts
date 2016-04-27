@@ -13,7 +13,7 @@ import {
   Self
 } from '@angular/core';
 
-import {EventEmitter, ObservableWrapper} from '@angular/facade/async';
+import {EventEmitter, ObservableWrapper} from '../../../src/facade/async';
 import {ControlContainer} from './control_container';
 import {NgControl} from './ng_control';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';

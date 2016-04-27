@@ -7,8 +7,8 @@ import {
   createHostComponentMeta
 } from './compile_metadata';
 
-import {BaseException} from '@angular/facade/exceptions';
-import {ListWrapper} from '@angular/facade/collection';
+import {BaseException} from '../src/facade/exceptions';
+import {ListWrapper} from '../src/facade/collection';
 import {StyleCompiler, StylesCompileResult} from './style_compiler';
 import {ViewCompiler, ViewCompileResult} from './view_compiler/view_compiler';
 import {TemplateParser} from './template_parser';

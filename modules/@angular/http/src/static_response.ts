@@ -1,6 +1,6 @@
 import {ResponseType} from './enums';
-import {isString, Json} from '@angular/facade/lang';
-import {BaseException} from '@angular/facade/exceptions';
+import {isString, Json} from '../src/facade/lang';
+import {BaseException} from '../src/facade/exceptions';
 import {Headers} from './headers';
 import {ResponseOptions} from './base_response_options';
 import {isJsObject} from './http_utils';

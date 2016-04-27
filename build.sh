@@ -7,7 +7,6 @@ cd `dirname $0`
 rm -rf ./dist/packages-dist
 
 for PACKAGE in \
-  facade \
   core \
   compiler \
   common \
@@ -32,7 +31,7 @@ do
   echo "====== (esm)COMPILING: \$(npm bin)/tsc -p ${SRCDIR}/tsconfig-es2015.json ====="
   $(npm bin)/tsc -p ${SRCDIR}/tsconfig-es2015.json
 
-  if (true); then
+  if (false); then
     echo "======      BUNDLING: ${SRCDIR} ====="
     (
       cd  ${SRCDIR}

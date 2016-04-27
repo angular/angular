@@ -6,10 +6,10 @@ import {
   isBlank,
   NumberWrapper,
   RegExpWrapper,
-} from '@angular/facade/lang';
-import {BaseException} from '@angular/facade/exceptions';
-import {NumberFormatter, NumberFormatStyle} from '@angular/facade/intl';
-import {ListWrapper} from '@angular/facade/collection';
+} from '../../src/facade/lang';
+import {BaseException} from '../../src/facade/exceptions';
+import {NumberFormatter, NumberFormatStyle} from '../../src/facade/intl';
+import {ListWrapper} from '../../src/facade/collection';
 
 import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
 

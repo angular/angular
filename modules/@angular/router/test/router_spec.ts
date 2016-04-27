@@ -12,9 +12,9 @@ import {
   beforeEachProviders
 } from '@angular/testing/testing_internal';
 import {SpyRouterOutlet} from './spies';
-import {Type} from '@angular/facade/lang';
-import {PromiseWrapper, ObservableWrapper} from '@angular/facade/async';
-import {ListWrapper} from '@angular/facade/collection';
+import {Type} from '../src/facade/lang';
+import {PromiseWrapper, ObservableWrapper} from '../src/facade/async';
+import {ListWrapper} from '../src/facade/collection';
 import {Router, RootRouter} from '@angular/router/src/router';
 import {SpyLocation} from '@angular/testing';
 import {Location} from '@angular/common';

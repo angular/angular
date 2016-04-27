@@ -8,7 +8,7 @@ import {
   assertPlatform
 } from '@angular/core';
 
-import {Type, isPresent, isBlank} from '@angular/facade/lang';
+import {Type, isPresent, isBlank} from './src/facade/lang';
 import {BROWSER_APP_COMMON_PROVIDERS, BROWSER_PROVIDERS, BROWSER_PLATFORM_MARKER} from './browser_common';
 export {ELEMENT_PROBE_PROVIDERS} from './src/dom/debug/ng_probe';
 export {BrowserPlatformLocation} from './src/browser/location/browser_platform_location';

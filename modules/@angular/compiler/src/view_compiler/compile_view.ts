@@ -1,8 +1,8 @@
 import {ViewType} from '../../core_private';
 
-import {isPresent, isBlank} from '@angular/facade/lang';
-import {ListWrapper} from '@angular/facade/collection';
-import {BaseException} from '@angular/facade/exceptions';
+import {isPresent, isBlank} from '../../src/facade/lang';
+import {ListWrapper} from '../../src/facade/collection';
+import {BaseException} from '../../src/facade/exceptions';
 
 import * as o from '../output/output_ast';
 import {Identifiers, identifierToken} from '../identifiers';

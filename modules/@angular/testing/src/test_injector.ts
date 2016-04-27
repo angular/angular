@@ -1,7 +1,7 @@
 import {ReflectiveInjector, Provider, PLATFORM_INITIALIZER, Type} from '@angular/core';
-import {BaseException} from '@angular/facade/exceptions';
-import {ListWrapper} from '@angular/facade/collection';
-import {FunctionWrapper, isPresent} from '@angular/facade/lang';
+import {BaseException} from '../src/facade/exceptions';
+import {ListWrapper} from '../src/facade/collection';
+import {FunctionWrapper, isPresent} from '../src/facade/lang';
 
 export class TestInjector {
   private _instantiated: boolean = false;

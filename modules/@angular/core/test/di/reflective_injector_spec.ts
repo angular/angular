@@ -1,5 +1,5 @@
-import {isBlank, stringify, isPresent} from '@angular/facade/lang';
-import {BaseException, WrappedException} from '@angular/facade/exceptions';
+import {isBlank, stringify, isPresent} from '../../src/facade/lang';
+import {BaseException, WrappedException} from '../../src/facade/exceptions';
 import {describe, ddescribe, it, iit, expect, beforeEach} from '@angular/testing/testing_internal';
 import {
   provide,
