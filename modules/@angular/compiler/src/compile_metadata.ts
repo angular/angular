@@ -24,7 +24,7 @@ import {
   StringMapWrapper,
 } from '@angular/facade';
 import {CssSelector} from './selector';
-import {splitAtColon} from './util';
+import {splitAtColon, sanitizeIdentifier} from './util';
 import {getUrlScheme} from './url_resolver';
 
 // group 1: "property" from "[property]"
@@ -316,7 +316,7 @@ export class CompileTokenMetadata implements CompileMetadataWithIdentifier {
            (isPresent(ak) && ak == token2.assetCacheKey);
   }
 
-  get name(): string { return isPresent(this.value) ? this.value : this.identifier.name; }
+  get name(): string { return isPresent(this.value) ? sanitizeIdentifier(this.value) : this.identifier.name; }
 }
 
 export class CompileTokenMap<VALUE> {
