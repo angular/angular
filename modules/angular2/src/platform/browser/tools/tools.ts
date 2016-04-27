@@ -17,6 +17,7 @@ var context = <any>global;
  */
 export function enableDebugTools(ref: ComponentRef): void {
   context.ng = new AngularTools(ref);
+  return ref;
 }
 
 /**
