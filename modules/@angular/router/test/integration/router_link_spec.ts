@@ -299,23 +299,6 @@ export function main() {
                  router.navigateByUrl('/child-with-grandchild/grandchild?extra=0');
                });
          }));
-
-
-      describe('router link dsl', () => {
-        it('should generate link hrefs with params', inject([AsyncTestCompleter], (async) => {
-             compile('<a href="hello" [routerLink]="route:./User(name: name)">{{name}}</a>')
-                 .then((_) => router.config(
-                           [new Route({path: '/user/:name', component: UserCmp, name: 'User'})]))
-                 .then((_) => router.navigateByUrl('/a/b'))
-                 .then((_) => {
-                   fixture.debugElement.componentInstance.name = 'brian';
-                   fixture.detectChanges();
-                   expect(fixture.debugElement.nativeElement).toHaveText('brian');
-                   expect(getHref(fixture)).toEqual('/user/brian');
-                   async.done();
-                 });
-           }));
-      });
     });
 
     describe('when clicked', () => {
