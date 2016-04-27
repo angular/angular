@@ -40,6 +40,9 @@ System.config({
     '@angular/platform-browser': {
       main: 'index'
     },
+    '@angular/platform-browser-dynamic': {
+      main: 'index'
+    },
     // '@angular/platform-browser/testing': {
     //   main: 'index'
     // }
@@ -71,7 +74,6 @@ System.import('@angular/testing').then(function(testing) {
 .then(function() {
   __karma__.start();
 }, function(error) {
-  console.log(error)
   __karma__.error(error.stack || error);
 });
 

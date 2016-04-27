@@ -11,7 +11,8 @@ module.exports = function(config) {
     files: [
       // Sources and specs.
       // Loaded through the System loader, in `test-main.js`.
-      {pattern: 'dist/@angular/**/*.js', included: false, watched: false},
+      {pattern: 'dist/@angular/**/*.js', included: false, watched: true},
+      {pattern: 'dist/@angular/**/*.js.map', included: false, watched: false},
 
       'node_modules/es6-shim/es6-shim.js',
       // include Angular v1 for upgrade module testing
@@ -30,7 +31,8 @@ module.exports = function(config) {
       'node_modules/reflect-metadata/Reflect.js',
       'tools/build/file2modulename.js',
       'test-main.js',
-      {pattern: 'modules/@angular/testing/test/static_assets/**', included: false, watched: false}
+      {pattern: 'modules/@angular/testing/test/static_assets/**', included: false, watched: false},
+      {pattern: 'modules/@angular/platform-browser/static_assets/**', included: false, watched: false}
     ],
 
     exclude: ['dist/@angular/**/e2e_test/**', 'dist/@angular/examples/**', 'dist/angular1_router.js', 'dist/@angular/testing/src/e2e_util.js'],

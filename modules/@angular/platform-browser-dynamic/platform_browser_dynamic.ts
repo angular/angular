@@ -5,7 +5,7 @@ import {isPresent} from '@angular/facade';
 import {XHRImpl} from './src/xhr/xhr_impl';
 import {BROWSER_APP_COMMON_PROVIDERS, browserPlatform} from '@angular/platform-browser';
 import {reflector, ReflectiveInjector, coreLoadAndBootstrap} from '@angular/core';
-import {DOM} from './platform_browser_private';
+import {getDOM} from './platform_browser_private';
 import {ReflectionCapabilities} from './core_private';
 
 export const CACHED_TEMPLATE_PROVIDER: Array<any /*Type | Provider | any[]*/> =
@@ -92,7 +92,7 @@ export const BROWSER_APP_PROVIDERS: Array<any /*Type | Provider | any[]*/> = /*@
 export function bootstrap(
   appComponentType: Type,
   customProviders?: Array<any /*Type | Provider | any[]*/>): Promise<ComponentRef> {
-  DOM.xhrType = XHRImpl;
+  getDOM().xhrType = XHRImpl;
   reflector.reflectionCapabilities = new ReflectionCapabilities();
   var appInjector = ReflectiveInjector.resolveAndCreate(
     [BROWSER_APP_PROVIDERS, isPresent(customProviders) ? customProviders : []],
