@@ -1,7 +1,7 @@
-import {StringMapWrapper, ListWrapper} from '@angular/facade';
-import {PromiseWrapper} from '@angular/facade';
+import {StringMapWrapper, ListWrapper} from '@angular/facade/collection';
+import {PromiseWrapper} from '@angular/facade/async';
 import {UiArguments} from '@angular/platform-browser/src/web_workers/shared/client_message_broker';
-import {Type, isPresent} from '@angular/facade';
+import {Type, isPresent} from '@angular/facade/lang';
 import {SpyMessageBroker} from '../worker/spies';
 import {expect} from '@angular/testing/src/matchers';
 import {
@@ -14,7 +14,7 @@ import {
   ClientMessageBrokerFactory_
 } from '@angular/platform-browser/src/web_workers/shared/client_message_broker';
 import {MockEventEmitter} from './mock_event_emitter';
-import {BaseException, WrappedException} from '@angular/facade';
+import {BaseException, WrappedException} from '@angular/facade/exceptions';
 import {NgZone} from '@angular/core/src/zone/ng_zone';
 
 var __unused: Promise<any>;  // avoid unused import when Promise union types are erased

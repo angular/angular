@@ -3,8 +3,8 @@ import {
   isPresent,
   isBlank,
   isArray
-} from '@angular/facade';
-import {BaseException} from '@angular/facade';
+} from '@angular/facade/lang';
+import {BaseException} from '@angular/facade/exceptions';
 import {CompileIdentifierMetadata} from '../compile_metadata';
 import {
   OutputEmitter,

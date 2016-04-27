@@ -6,7 +6,7 @@ import {Headers} from '../headers';
 import {ResponseOptions} from '../base_response_options';
 import {Injectable} from '@angular/core';
 import {BrowserXhr} from './browser_xhr';
-import {isPresent} from '@angular/facade';
+import {isPresent} from '@angular/facade/lang';
 import {Observable} from 'rxjs/Observable';
 import {Observer} from 'rxjs/Observer';
 import {isSuccess, getResponseURL} from '../http_utils';

@@ -14,7 +14,7 @@ import {
 } from '@angular/testing/testing_internal';
 
 import {ReplacePipe} from '@angular/common';
-import {RegExpWrapper, StringJoiner} from '@angular/facade';
+import {RegExpWrapper, StringJoiner} from '@angular/facade/lang';
 
 export function main() {
   describe("ReplacePipe", () => {

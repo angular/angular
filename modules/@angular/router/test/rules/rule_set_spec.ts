@@ -10,7 +10,7 @@ import {
   SpyObject
 } from '@angular/testing/testing_internal';
 
-import {Map, StringMapWrapper} from '@angular/facade';
+import {Map, StringMapWrapper} from '@angular/facade/collection';
 
 import {RouteMatch, PathMatch, RedirectMatch} from '../../../router/src/rules/rules';
 import {RuleSet} from '../../../router/src/rules/rule_set';
@@ -18,7 +18,7 @@ import {GeneratedUrl} from '../../../router/src/rules/route_paths/route_path';
 
 import {Route, Redirect} from '../../../router/src/route_config/route_config_decorator';
 import {parser} from '../../../router/src/url_parser';
-import {PromiseWrapper} from '@angular/facade';
+import {PromiseWrapper} from '@angular/facade/promise';
 
 
 export function main() {

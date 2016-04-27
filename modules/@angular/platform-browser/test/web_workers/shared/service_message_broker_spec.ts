@@ -17,7 +17,7 @@ import {
   ServiceMessageBroker,
   ServiceMessageBroker_
 } from '@angular/platform-browser/src/web_workers/shared/service_message_broker';
-import {ObservableWrapper, PromiseWrapper} from '@angular/facade';
+import {ObservableWrapper, PromiseWrapper} from '@angular/facade/async';
 import {provide} from '@angular/core';
 import {ON_WEB_WORKER} from '@angular/platform-browser/src/web_workers/shared/api';
 import {RenderStore} from '@angular/platform-browser/src/web_workers/shared/render_store';

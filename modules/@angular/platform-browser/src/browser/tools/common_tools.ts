@@ -1,6 +1,6 @@
 import {ApplicationRef, ComponentRef} from '@angular/core';
-import {isPresent, NumberWrapper} from '@angular/facade';
-import {window} from '@angular/facade';
+import {isPresent, NumberWrapper} from '@angular/facade/lang';
+import {window} from '@angular/facade/browser';
 import {getDOM} from '../../dom/dom_adapter';
 
 

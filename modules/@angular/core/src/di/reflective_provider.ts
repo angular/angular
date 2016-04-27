@@ -3,9 +3,8 @@ import {
   isBlank,
   isPresent,
   isArray,
-  MapWrapper,
-  ListWrapper
-} from '@angular/facade';
+} from '@angular/facade/lang';
+import {MapWrapper, ListWrapper} from '@angular/facade/collection';
 import {reflector} from '../reflection/reflection';
 import {ReflectiveKey} from './reflective_key';
 import {

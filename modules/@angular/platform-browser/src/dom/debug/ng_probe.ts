@@ -1,5 +1,5 @@
 import {DebugNode, getDebugNode, DebugDomRootRenderer, Provider, RootRenderer, NgZone, ApplicationRef} from '@angular/core';
-import {assertionsEnabled} from '@angular/facade';
+import {assertionsEnabled} from '@angular/facade/lang';
 import {getDOM} from '../dom_adapter';
 import {DomRootRenderer} from '../dom_renderer';
 

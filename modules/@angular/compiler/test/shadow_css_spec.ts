@@ -11,7 +11,7 @@ import {
 } from '@angular/testing/testing_internal';
 import {ShadowCss, processRules, CssRule} from '@angular/compiler/src/shadow_css';
 
-import {RegExpWrapper, StringWrapper, isPresent} from '@angular/facade';
+import {RegExpWrapper, StringWrapper, isPresent} from '@angular/facade/lang';
 
 export function main() {
   describe('ShadowCss', function() {

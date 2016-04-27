@@ -1,7 +1,7 @@
-import {ListWrapper} from '@angular/facade';
-import {unimplemented} from '@angular/facade';
+import {ListWrapper} from '@angular/facade/collection';
+import {unimplemented} from '@angular/facade/exceptions';
 import {Injector} from '../di/injector';
-import {isPresent} from '@angular/facade';
+import {isPresent} from '@angular/facade/lang';
 import {wtfCreateScope, wtfLeave, WtfScopeFn} from '../profile/profile';
 
 import {AppElement} from './element';

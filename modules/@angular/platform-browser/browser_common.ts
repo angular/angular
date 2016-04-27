@@ -13,8 +13,7 @@ import {
 import {wtfInit} from './core_private';
 import {COMMON_DIRECTIVES, COMMON_PIPES, FORM_PROVIDERS} from '@angular/common';
 
-import {IS_DART} from '@angular/facade';
-
+import {IS_DART} from '@angular/facade/lang';
 import {BrowserDomAdapter} from './src/browser/browser_adapter';
 import {BrowserGetTestability} from './src/browser/testability';
 import {getDOM} from './src/dom/dom_adapter';

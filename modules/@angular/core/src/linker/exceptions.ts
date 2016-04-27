@@ -1,4 +1,4 @@
-import {BaseException, WrappedException} from '@angular/facade';
+import {BaseException, WrappedException} from '@angular/facade/exceptions';
 
 /**
  * An error thrown if application changes model breaking the top-down data flow.

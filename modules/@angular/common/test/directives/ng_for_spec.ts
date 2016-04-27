@@ -13,8 +13,8 @@ import {
   xit,
 } from '@angular/testing/testing_internal';
 
-import {ListWrapper} from '@angular/facade';
-import {IS_DART} from '@angular/facade';
+import {ListWrapper} from '@angular/facade/collection';
+import {IS_DART} from '@angular/facade/lang';
 import {Component, TemplateRef, ContentChild} from '@angular/core';
 import {NgFor} from '@angular/common';
 import {NgIf} from '@angular/common';

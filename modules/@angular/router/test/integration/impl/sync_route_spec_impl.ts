@@ -23,7 +23,7 @@ import {
   ParentWithDefaultCmp,
   DynamicLoaderCmp
 } from './fixture_components';
-import {PromiseWrapper} from '@angular/facade';
+import {PromiseWrapper} from '@angular/facade/async';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 
 

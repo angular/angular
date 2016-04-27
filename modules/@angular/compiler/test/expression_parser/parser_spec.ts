@@ -1,5 +1,5 @@
 import {ddescribe, describe, it, xit, iit, expect, beforeEach} from '@angular/testing/testing_internal';
-import {isBlank, isPresent} from '@angular/facade';
+import {isBlank, isPresent} from '@angular/facade/lang';
 import {Parser} from '@angular/compiler/src/expression_parser/parser';
 import {Unparser} from './unparser';
 import {Lexer} from '@angular/compiler/src/expression_parser/lexer';

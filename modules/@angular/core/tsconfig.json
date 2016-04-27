@@ -9,7 +9,7 @@
     "outDir": "../../../dist/packages-dist/core/",
     "paths": {
       "rxjs/*": ["../../../node_modules/rxjs/*"],
-      "@angular/facade": ["../../../dist/packages-dist/facade/"]
+      "@angular/facade/*": ["../../../dist/packages-dist/facade/*"]
     },
     "rootDir": ".",
     "sourceMap": true,

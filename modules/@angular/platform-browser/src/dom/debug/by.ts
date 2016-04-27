@@ -1,6 +1,6 @@
 import {DebugElement} from '@angular/core';
-import {Type, isPresent} from '@angular/facade';
-import {Predicate} from '@angular/facade';
+import {Type, isPresent} from '@angular/facade/lang';
+import {Predicate} from '@angular/facade/collection';
 import {getDOM} from '../../dom/dom_adapter';
 
 

@@ -4,7 +4,7 @@ import {
   StringWrapper,
   isPresent,
   RegExpWrapper
-} from '@angular/facade';
+} from '@angular/facade/lang';
 import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
 
 var interpolationExp: RegExp = RegExpWrapper.create('#');

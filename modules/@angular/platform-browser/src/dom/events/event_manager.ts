@@ -1,6 +1,7 @@
 import {Injectable, Inject, OpaqueToken, NgZone} from '@angular/core';
-import {BaseException} from '@angular/facade';
-import {ListWrapper} from '@angular/facade';
+
+import {BaseException} from '@angular/facade/exceptions';
+import {ListWrapper} from '@angular/facade/collection';
 
 
 export const EVENT_MANAGER_PLUGINS: OpaqueToken =

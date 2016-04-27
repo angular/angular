@@ -5,7 +5,7 @@ import {
   RegExpWrapper,
   isBlank,
   isPresent
-} from '@angular/facade';
+} from '@angular/facade/lang';
 
 import {
   HtmlAstVisitor,

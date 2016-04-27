@@ -12,8 +12,8 @@ import {
   el
 } from '@angular/testing/testing_internal';
 import {ControlGroup, Control, Validators, AbstractControl, ControlArray} from '@angular/common';
-import {PromiseWrapper} from '@angular/facade';
-import {EventEmitter, ObservableWrapper, TimerWrapper} from '@angular/facade';
+import {PromiseWrapper} from '@angular/facade/promise';
+import {EventEmitter, ObservableWrapper, TimerWrapper} from '@angular/facade/async';
 
 export function main() {
   function validator(key: string, error: any) {

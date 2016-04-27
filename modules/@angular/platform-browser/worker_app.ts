@@ -1,4 +1,4 @@
-import {isPresent, isBlank} from '@angular/facade';
+import {isPresent, isBlank} from '@angular/facade/lang';
 import {WORKER_APP_PLATFORM, WORKER_APP_PLATFORM_MARKER} from './src/webworker/worker_app_common';
 import {WORKER_APP_APPLICATION} from './src/webworker/worker_app';
 import {

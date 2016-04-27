@@ -8,8 +8,8 @@ import {
   Optional,
   Self
 } from '@angular/core';
-import {EventEmitter, ObservableWrapper} from '@angular/facade';
-
+import {CONST_EXPR} from '@angular/facade/lang';
+import {EventEmitter, ObservableWrapper} from '@angular/facade/async';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
 import {NgControl} from './ng_control';
 import {Control} from '../model';

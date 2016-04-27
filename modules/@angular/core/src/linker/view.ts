@@ -1,7 +1,7 @@
 import {
   ListWrapper,
   StringMapWrapper,
-} from '@angular/facade';
+} from '@angular/facade/collection';
 
 import {AppElement} from './element';
 import {
@@ -14,9 +14,9 @@ import {
   stringify,
   isPrimitive,
   isString
-} from '@angular/facade';
+} from '@angular/facade/lang';
 
-import {ObservableWrapper} from '@angular/facade';
+import {ObservableWrapper} from '@angular/facade/async';
 import {Renderer, RenderComponentType} from '../render/api';
 import {ViewRef_} from './view_ref';
 

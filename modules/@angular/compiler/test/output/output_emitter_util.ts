@@ -1,7 +1,7 @@
 import {CompileIdentifierMetadata} from '@angular/compiler/src/compile_metadata';
-import {EventEmitter} from '@angular/facade';
+import {EventEmitter} from '@angular/facade/async';
 import {ViewType} from '@angular/core/src/linker/view_type';
-import {BaseException} from '@angular/facade';
+import {BaseException} from '@angular/facade/exceptions';
 import {InstanceFactory, DynamicInstance} from '@angular/compiler/src/output/output_interpreter';
 import {MODULE_SUFFIX} from '@angular/compiler/src/util';
 

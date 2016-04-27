@@ -1,4 +1,4 @@
-import {isBlank} from '@angular/facade';
+import {isBlank} from '@angular/facade/lang';
 
 /**
  * Describes the current state of the change detector.

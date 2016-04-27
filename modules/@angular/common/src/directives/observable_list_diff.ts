@@ -1,7 +1,7 @@
 // TS does not have Observables
 
 // I need to be here to make TypeScript think this is a module.
-import {} from '@angular/facade';
+import {} from '@angular/facade/lang';
 
 /**
  * This module exists in Dart, but not in Typescript. This exported symbol

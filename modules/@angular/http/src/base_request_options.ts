@@ -1,4 +1,4 @@
-import {isPresent, isString} from '@angular/facade';
+import {isPresent, isString} from '@angular/facade/lang';
 import {Headers} from './headers';
 import {RequestMethod} from './enums';
 import {RequestOptionsArgs} from './interfaces';

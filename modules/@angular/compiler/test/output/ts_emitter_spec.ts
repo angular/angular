@@ -12,7 +12,7 @@ import {
   TestComponentBuilder
 } from '@angular/testing/testing_internal';
 
-import {isBlank} from '@angular/facade';
+import {isBlank} from '@angular/facade/lang';
 import {TypeScriptEmitter} from '@angular/compiler/src/output/ts_emitter';
 import {CompileIdentifierMetadata} from '@angular/compiler/src/compile_metadata';
 import * as o from '@angular/compiler/src/output/output_ast';

@@ -18,9 +18,9 @@ import {
   PromiseWrapper,
   TimerWrapper,
   ObservableWrapper
-} from '@angular/facade';
-import {BaseException} from '@angular/facade';
-import {IS_DART, scheduleMicroTask, isPresent} from '@angular/facade';
+} from '@angular/facade/async';
+import {BaseException} from '@angular/facade/exceptions';
+import {IS_DART, scheduleMicroTask, isPresent} from '@angular/facade/lang';
 
 import {NgZone, NgZoneError} from '@angular/core/src/zone/ng_zone';
 

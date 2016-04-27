@@ -1,5 +1,5 @@
 import {Inject, Injectable} from '@angular/core';
-import {SetWrapper} from '@angular/facade';
+import {SetWrapper} from '@angular/facade/collection';
 
 import {getDOM} from './dom_adapter';
 import {DOCUMENT} from './dom_tokens';

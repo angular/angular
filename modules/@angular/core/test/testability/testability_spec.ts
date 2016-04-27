@@ -14,8 +14,8 @@ import {
 } from '@angular/testing/testing_internal';
 import {Testability} from '@angular/core/src/testability/testability';
 import {NgZone} from '@angular/core/src/zone/ng_zone';
-import {normalizeBlank, scheduleMicroTask} from '@angular/facade';
-import {PromiseWrapper, EventEmitter, ObservableWrapper} from '@angular/facade';
+import {normalizeBlank, scheduleMicroTask} from '@angular/facade/lang';
+import {PromiseWrapper, EventEmitter, ObservableWrapper} from '@angular/facade/async';
 
 // Schedules a microtasks (using a resolved promise .then())
 function microTask(fn: Function): void {

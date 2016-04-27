@@ -1,5 +1,5 @@
 import {AST} from './expression_parser/ast';
-import {isPresent} from '@angular/facade';
+import {isPresent} from '@angular/facade/lang';
 import {
   CompileDirectiveMetadata,
   CompileTokenMetadata,

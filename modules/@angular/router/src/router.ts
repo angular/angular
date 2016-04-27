@@ -1,7 +1,7 @@
-import {PromiseWrapper, EventEmitter, ObservableWrapper} from '@angular/facade';
-import {Map, StringMapWrapper} from '@angular/facade';
-import {isBlank, isPresent, Type} from '@angular/facade';
-import {BaseException} from '@angular/facade';
+import {PromiseWrapper, EventEmitter, ObservableWrapper} from '@angular/facade/async';
+import {Map, StringMapWrapper} from '@angular/facade/collection';
+import {isBlank, isPresent, Type} from '@angular/facade/lang';
+import {BaseException} from '@angular/facade/exceptions';
 import {Location} from '@angular/common';
 import {RouteRegistry, ROUTER_PRIMARY_COMPONENT} from './route_registry';
 import {ComponentInstruction, Instruction} from './instruction';

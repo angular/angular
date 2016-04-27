@@ -7,8 +7,8 @@ import {
   isFunction,
   RegExpWrapper,
   StringWrapper
-} from '@angular/facade';
-import {BaseException} from '@angular/facade';
+} from '@angular/facade/lang';
+import {BaseException} from '@angular/facade/exceptions';
 
 import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
 

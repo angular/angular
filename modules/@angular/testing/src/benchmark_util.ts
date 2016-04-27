@@ -1,7 +1,7 @@
 import {BrowserDomAdapter} from '../platform_browser_private';
-import {document, window} from '@angular/facade';
-import {NumberWrapper, isBlank} from '@angular/facade';
-import {BaseException, WrappedException} from '@angular/facade';
+import {document, window} from '@angular/facade/browser';
+import {NumberWrapper, isBlank} from '@angular/facade/lang';
+import {BaseException, WrappedException} from '@angular/facade/exceptions';
 
 var DOM = new BrowserDomAdapter();
 

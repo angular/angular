@@ -1,6 +1,6 @@
-import {isBlank, isPresent, getTypeNameForDebugging} from '@angular/facade';
-import {BaseException} from '@angular/facade';
-import {ListWrapper} from '@angular/facade';
+import {isBlank, isPresent, CONST, getTypeNameForDebugging} from '@angular/facade/lang';
+import {BaseException} from '@angular/facade/exceptions';
+import {ListWrapper} from '@angular/facade/collection';
 import {ChangeDetectorRef} from '../change_detector_ref';
 import {Provider, SkipSelfMetadata, OptionalMetadata} from '../../di';
 

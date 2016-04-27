@@ -1,7 +1,7 @@
-import {isPresent, isBlank} from '@angular/facade';
-import {BaseException} from '@angular/facade';
-import {PromiseWrapper} from '@angular/facade';
-import {Map} from '@angular/facade';
+import {isPresent, isBlank} from '@angular/facade/lang';
+import {BaseException} from '@angular/facade/exceptions';
+import {PromiseWrapper} from '@angular/facade/promise';
+import {Map} from '@angular/facade/collection';
 import {RouteHandler} from './route_handlers/route_handler';
 import {Url, convertUrlParamsToArray} from '../url_parser';
 import {ComponentInstruction} from '../instruction';

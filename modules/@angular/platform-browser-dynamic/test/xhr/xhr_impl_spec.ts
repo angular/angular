@@ -10,8 +10,9 @@ import {
   xit
 } from '../../../testing/testing_internal';
 
-import {XHRImpl} from '../../src/xhr/xhr_impl';
-import {PromiseWrapper, IS_DART} from '@angular/facade';
+import {XHRImpl} from '@angular/platform-browser/src/browser/xhr_impl';
+import {PromiseWrapper} from '@angular/facade/async';
+import {IS_DART} from '@angular/facade/lang';
 
 export function main() {
   describe('XHRImpl', () => {

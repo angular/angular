@@ -19,7 +19,7 @@ import {
   propDecorator,
   HasGetterAndSetterDecorators
 } from './reflector_common';
-import {IS_DART} from '@angular/facade';
+import {IS_DART} from '@angular/facade/lang';
 
 class AType {
   value;

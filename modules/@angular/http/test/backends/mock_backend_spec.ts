@@ -11,14 +11,14 @@ import {
   xit,
   SpyObject
 } from '@angular/testing/testing_internal';
-import {ObservableWrapper} from '@angular/facade';
+import {ObservableWrapper} from '@angular/facade/async';
 import {BrowserXhr} from '../../src/backends/browser_xhr';
 import {MockConnection, MockBackend} from '../../src/backends/mock_backend';
 import {provide, Injector, ReflectiveInjector} from '@angular/core';
 import {Request} from '../../src/static_request';
 import {Response} from '../../src/static_response';
 import {Headers} from '../../src/headers';
-import {Map} from '@angular/facade';
+import {Map} from '@angular/facade/collection';
 import {RequestOptions, BaseRequestOptions} from '../../src/base_request_options';
 import {BaseResponseOptions, ResponseOptions} from '../../src/base_response_options';
 import {ResponseType} from '../../src/enums';

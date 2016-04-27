@@ -3,9 +3,9 @@ import {Injectable} from '@angular/core';
 import {
   isPresent,
   isBlank,
-} from '@angular/facade';
+} from '@angular/facade/lang';
 
-import {ListWrapper} from '@angular/facade';
+import {ListWrapper} from '@angular/facade/collection';
 
 import {
   HtmlAst,

@@ -1,4 +1,4 @@
-import {isPresent, Type} from '@angular/facade';
+import {isPresent, Type} from '@angular/facade/lang';
 import {InjectableMetadata} from '../di/metadata';
 import {ViewEncapsulation} from './view';
 import {ChangeDetectionStrategy} from '../change_detection/constants';

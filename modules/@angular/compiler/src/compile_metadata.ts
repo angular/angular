@@ -18,11 +18,11 @@ import {
   isString,
   RegExpWrapper,
   isArray
-} from '@angular/facade';
-import {unimplemented, BaseException} from '@angular/facade';
+} from '@angular/facade/lang';
+import {unimplemented, BaseException} from '@angular/facade/exceptions';
 import {
   StringMapWrapper,
-} from '@angular/facade';
+} from '@angular/facade/collection';
 import {CssSelector} from './selector';
 import {splitAtColon, sanitizeIdentifier} from './util';
 import {getUrlScheme} from './url_resolver';

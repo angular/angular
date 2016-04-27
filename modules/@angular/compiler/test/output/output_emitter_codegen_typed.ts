@@ -1,6 +1,6 @@
 // ATTENTION: This file will be overwritten with generated code by main()
-import {print, IS_DART} from '@angular/facade';
-import {unimplemented} from '@angular/facade';
+import {print, IS_DART} from '@angular/facade/lang';
+import {unimplemented} from '@angular/facade/exceptions';
 import {codegenExportsVars, codegenStmts} from './output_emitter_util';
 import {TypeScriptEmitter} from '@angular/compiler/src/output/ts_emitter';
 import {DartEmitter} from '@angular/compiler/src/output/dart_emitter';

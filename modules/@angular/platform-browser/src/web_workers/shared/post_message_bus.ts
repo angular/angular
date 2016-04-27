@@ -1,7 +1,7 @@
 import {MessageBus, MessageBusSource, MessageBusSink} from './message_bus';
-import {BaseException} from '@angular/facade';
-import {EventEmitter, ObservableWrapper} from '@angular/facade';
-import {StringMapWrapper} from '@angular/facade';
+import {BaseException} from '@angular/facade/exceptions';
+import {EventEmitter, ObservableWrapper} from '@angular/facade/async';
+import {StringMapWrapper} from '@angular/facade/collection';
 import {Injectable} from '@angular/core/src/di';
 import {NgZone} from '@angular/core/src/zone/ng_zone';
 

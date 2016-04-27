@@ -1,4 +1,4 @@
-import {IS_DART} from '@angular/facade';
+import {IS_DART} from '@angular/facade/lang';
 import {MessageBus} from '../web_workers/shared/message_bus';
 import {NgZone} from '@angular/core/src/zone/ng_zone';
 import {

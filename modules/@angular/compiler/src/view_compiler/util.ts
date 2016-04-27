@@ -1,4 +1,4 @@
-import {isPresent} from '@angular/facade';
+import {isPresent} from '@angular/facade/lang';
 
 import * as o from '../output/output_ast';
 import {

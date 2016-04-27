@@ -37,14 +37,14 @@ import {
   ChangeDetectorRef
 } from '@angular/core';
 import {Console} from '@angular/core/src/console';
-import {BaseException} from '@angular/facade';
-import {PromiseWrapper, PromiseCompleter, TimerWrapper} from '@angular/facade';
+import {BaseException} from '@angular/facade/exceptions';
+import {PromiseWrapper, PromiseCompleter, TimerWrapper} from '@angular/facade/async';
 import {
   ComponentFactory,
   ComponentRef_,
   ComponentRef
 } from '@angular/core/src/linker/component_factory';
-import {ExceptionHandler} from '@angular/facade';
+import {ExceptionHandler} from '@angular/facade/exception_handler';
 
 export function main() {
   describe("bootstrap", () => {

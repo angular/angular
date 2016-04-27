@@ -10,8 +10,8 @@ import {
   Self
 } from '@angular/core';
 
-import {StringMapWrapper} from '@angular/facade';
-import {EventEmitter, ObservableWrapper} from '@angular/facade';
+import {StringMapWrapper} from '@angular/facade/collection';
+import {EventEmitter, ObservableWrapper} from '@angular/facade/async';
 
 import {NgControl} from './ng_control';
 import {Control} from '../model';

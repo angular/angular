@@ -4,8 +4,8 @@ import {
   ReflectorReader
 } from '../core_private';
 
-import {Type, isPresent, stringify} from '@angular/facade';
-import {BaseException} from '@angular/facade';
+import {Type, isPresent, stringify} from '@angular/facade/lang';
+import {BaseException} from '@angular/facade/exceptions';
 
 function _isPipeMetadata(type: any): boolean {
   return type instanceof PipeMetadata;

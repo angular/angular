@@ -17,7 +17,7 @@ import {
 
 import {provide, Component, Injector, Inject} from '@angular/core';
 import {Location} from '@angular/common';
-import {PromiseWrapper, TimerWrapper} from '@angular/facade';
+import {PromiseWrapper, TimerWrapper} from '@angular/facade/async';
 
 import {Router, RouterOutlet, RouterLink, RouteParams, RouteData} from '@angular/router';
 import {

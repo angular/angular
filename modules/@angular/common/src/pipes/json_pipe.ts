@@ -1,5 +1,5 @@
 import {Injectable, PipeTransform, WrappedValue, Pipe} from '@angular/core';
-import {Json} from '@angular/facade';
+import {Json} from '@angular/facade/lang';
 
 
 /**

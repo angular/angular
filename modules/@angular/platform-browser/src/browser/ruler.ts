@@ -1,4 +1,4 @@
-import {PromiseWrapper} from '@angular/facade';
+import {PromiseWrapper} from '@angular/facade/async';
 import {DomAdapter} from '@angular/platform-browser/src/dom/dom_adapter';
 import {ElementRef} from '@angular/core/src/linker/element_ref';
 

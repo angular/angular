@@ -1,4 +1,4 @@
-import {ListWrapper} from '@angular/facade';
+import {ListWrapper} from '@angular/facade/collection';
 import {Provider} from './provider';
 import {
   ResolvedReflectiveProvider,
@@ -13,8 +13,8 @@ import {
   InstantiationError,
   OutOfBoundsError
 } from './reflective_exceptions';
-import {Type} from '@angular/facade';
-import {BaseException, unimplemented} from '@angular/facade';
+import {Type} from '@angular/facade/lang';
+import {BaseException, unimplemented} from '@angular/facade/exceptions';
 import {ReflectiveKey} from './reflective_key';
 import {SelfMetadata, SkipSelfMetadata} from './metadata';
 import {Injector, THROW_IF_NOT_FOUND} from './injector';

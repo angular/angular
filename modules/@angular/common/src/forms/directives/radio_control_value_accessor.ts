@@ -10,7 +10,8 @@ import {
   Injector,
   Injectable
 } from '@angular/core';
-import {isPresent, ListWrapper} from '@angular/facade';
+import {isPresent} from '@angular/facade/lang';
+import {ListWrapper} from '@angular/facade/collection';
 import {
   NG_VALUE_ACCESSOR,
   ControlValueAccessor

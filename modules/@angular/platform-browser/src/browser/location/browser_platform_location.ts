@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {History, Location} from '@angular/facade';
+import {History, Location} from '@angular/facade/browser';
 import {UrlChangeListener, PlatformLocation} from '@angular/common';
 import {getDOM} from '../../dom/dom_adapter';
 

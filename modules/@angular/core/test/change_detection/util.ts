@@ -1,4 +1,4 @@
-import {isBlank} from '@angular/facade';
+import {isBlank} from '@angular/facade/lang';
 
 export function iterableChangesAsString(
     {collection = /*@ts2dart_const*/ [], previous = /*@ts2dart_const*/ [],

@@ -6,7 +6,7 @@ import {
   StringWrapper,
   hasConstructor,
   resolveEnumToken
-} from '../src/lang';
+} from '../lang';
 
 enum UsefulEnum {
   MyToken,

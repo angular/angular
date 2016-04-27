@@ -1,4 +1,4 @@
-import {print, IS_DART} from '@angular/facade';
+import {print, IS_DART} from '@angular/facade/lang';
 import {OutputEmitter} from '@angular/compiler/src/output/abstract_emitter';
 
 import {

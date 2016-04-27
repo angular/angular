@@ -1,4 +1,4 @@
-import {isString, isPresent, isBlank} from '@angular/facade';
+import {isString, isPresent, isBlank} from '@angular/facade/lang';
 import {CompileIdentifierMetadata} from '../compile_metadata';
 
 //// Types

@@ -6,8 +6,8 @@ import {
   serializeEventWithTarget,
   serializeTransitionEvent
 } from './event_serializer';
-import {BaseException} from '@angular/facade';
-import {EventEmitter, ObservableWrapper} from '@angular/facade';
+import {BaseException} from '@angular/facade/exceptions';
+import {EventEmitter, ObservableWrapper} from '@angular/facade/async';
 
 export class EventDispatcher {
   constructor(private _sink: EventEmitter<any>, private _serializer: Serializer) {}

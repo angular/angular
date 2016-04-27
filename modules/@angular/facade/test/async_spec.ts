@@ -19,7 +19,7 @@ import {
   Subject,
   EventEmitter,
   PromiseWrapper
-} from '../src/async';
+} from '../async';
 
 export function main() {
   describe('EventEmitter', () => {

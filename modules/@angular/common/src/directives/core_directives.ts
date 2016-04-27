@@ -1,4 +1,4 @@
-import {Type} from '@angular/facade';
+import {Type} from '@angular/facade/lang';
 import {NgClass} from './ng_class';
 import {NgFor} from './ng_for';
 import {NgIf} from './ng_if';

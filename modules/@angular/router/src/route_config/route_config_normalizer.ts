@@ -1,7 +1,7 @@
 import {AsyncRoute, AuxRoute, Route, Redirect, RouteDefinition} from './route_config_decorator';
 import {ComponentDefinition} from '../route_definition';
-import {isType, Type} from '@angular/facade';
-import {BaseException} from '@angular/facade';
+import {isType, Type} from '@angular/facade/lang';
+import {BaseException} from '@angular/facade/exceptions';
 import {RouteRegistry} from '../route_registry';
 
 

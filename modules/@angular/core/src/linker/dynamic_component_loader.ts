@@ -1,5 +1,5 @@
 import {ComponentResolver} from './component_resolver';
-import {Type, isPresent} from '@angular/facade';
+import {Type, isPresent} from '@angular/facade/lang';
 import {ComponentRef} from './component_factory';
 import {ViewContainerRef} from './view_container_ref';
 import {ResolvedReflectiveProvider} from '../di/reflective_provider';

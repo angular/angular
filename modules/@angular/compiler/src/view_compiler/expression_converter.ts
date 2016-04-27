@@ -1,5 +1,5 @@
-import {BaseException} from '@angular/facade';
-import {isBlank, isPresent, isArray} from '@angular/facade';
+import {BaseException} from '@angular/facade/exceptions';
+import {isBlank, isPresent, isArray} from '@angular/facade/lang';
 
 import * as cdAst from '../expression_parser/ast';
 import * as o from '../output/output_ast';

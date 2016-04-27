@@ -1,5 +1,5 @@
-import {isPresent} from '@angular/facade';
-import {Map, ListWrapper, isListLikeIterable} from '@angular/facade';
+import {isPresent} from '@angular/facade/lang';
+import {Map, ListWrapper, isListLikeIterable} from '@angular/facade/collection';
 
 function paramParser(rawParams: string = ''): Map<string, string[]> {
   var map = new Map<string, string[]>();

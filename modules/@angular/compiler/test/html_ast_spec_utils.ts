@@ -11,7 +11,7 @@ import {
   htmlVisitAll
 } from '@angular/compiler/src/html_ast';
 import {ParseError, ParseLocation} from '@angular/compiler/src/parse_util';
-import {BaseException} from '@angular/facade';
+import {BaseException} from '@angular/facade/exceptions';
 
 export function humanizeDom(parseResult: HtmlParseTreeResult): any[] {
   if (parseResult.errors.length > 0) {

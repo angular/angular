@@ -13,8 +13,8 @@ import {
   xit
 } from '@angular/testing/testing_internal';
 import {provide, Component} from '@angular/core';
-import {isBlank} from '@angular/facade';
-import {BaseException} from '@angular/facade';
+import {isBlank} from '@angular/facade/lang';
+import {BaseException} from '@angular/facade/exceptions';
 import {RootRouter} from '@angular/router/src/router';
 import {Router, ROUTER_DIRECTIVES, ROUTER_PRIMARY_COMPONENT} from '@angular/router';
 import {Location} from '@angular/common';

@@ -11,7 +11,7 @@ import {
   xit
 } from '@angular/testing/testing_internal';
 
-import {assertionsEnabled, IS_DART} from '@angular/facade';
+import {assertionsEnabled, IS_DART} from '@angular/facade/lang';
 
 export function main() {
   describe('dev mode', () => {

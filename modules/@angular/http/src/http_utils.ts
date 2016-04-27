@@ -1,6 +1,6 @@
-import {isString} from '@angular/facade';
+import {isString} from '@angular/facade/lang';
 import {RequestMethod} from './enums';
-import {makeTypeError} from '@angular/facade';
+import {makeTypeError} from '@angular/facade/exceptions';
 
 export function normalizeMethodName(method: string | RequestMethod): RequestMethod {
   if (isString(method)) {
@@ -28,4 +28,4 @@ export function getResponseURL(xhr: any): string {
   return;
 }
 
-export {isJsObject} from '@angular/facade';
+export {isJsObject} from '@angular/facade/lang';

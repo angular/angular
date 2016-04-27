@@ -1,4 +1,4 @@
-import {unimplemented} from '@angular/facade';
+import {unimplemented} from '@angular/facade/exceptions';
 
 const _THROW_IF_NOT_FOUND = /*@ts2dart_const*/ new Object();
 export const THROW_IF_NOT_FOUND = _THROW_IF_NOT_FOUND;

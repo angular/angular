@@ -31,14 +31,14 @@ import {
   global,
   stringify,
   isBlank,
-} from '@angular/facade';
-import {BaseException, WrappedException} from '@angular/facade';
+} from '@angular/facade/lang';
+import {BaseException, WrappedException} from '@angular/facade/exceptions';
 import {
   PromiseWrapper,
   EventEmitter,
   ObservableWrapper,
   PromiseCompleter,
-} from '@angular/facade';
+} from '@angular/facade/async';
 
 import {
   Injector,
@@ -91,7 +91,7 @@ import {ElementRef} from '@angular/core/src/linker/element_ref';
 import {TemplateRef} from '@angular/core/src/linker/template_ref';
 
 import {Renderer} from '@angular/core/src/render';
-import {IS_DART} from '@angular/facade';
+import {IS_DART} from '@angular/facade/lang';
 
 const ANCHOR_ELEMENT = /*@ts2dart_const*/ new OpaqueToken('AnchorElement');
 

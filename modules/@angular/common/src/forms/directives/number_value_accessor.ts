@@ -1,5 +1,5 @@
 import {Directive, ElementRef, Renderer, Self, forwardRef, Provider} from '@angular/core';
-import {NumberWrapper} from '@angular/facade';
+import {NumberWrapper} from '@angular/facade/lang';
 import {NG_VALUE_ACCESSOR, ControlValueAccessor} from './control_value_accessor';
 
 const NUMBER_VALUE_ACCESSOR = /*@ts2dart_const*/ 

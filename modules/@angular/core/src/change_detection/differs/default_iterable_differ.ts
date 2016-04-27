@@ -1,5 +1,5 @@
-import {BaseException} from '@angular/facade';
-import {isListLikeIterable, iterateListLike} from '@angular/facade';
+import {BaseException} from '@angular/facade/exceptions';
+import {isListLikeIterable, iterateListLike} from '@angular/facade/collection';
 
 import {
   isBlank,
@@ -7,8 +7,8 @@ import {
   stringify,
   getMapKey,
   looseIdentical,
-  isArray,
-} from '@angular/facade';
+  isArray
+} from '@angular/facade/lang';
 
 import {ChangeDetectorRef} from '../change_detector_ref';
 import {IterableDiffer, IterableDifferFactory, TrackByFn} from './iterable_differs';

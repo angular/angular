@@ -12,7 +12,8 @@ import {
 } from '@angular/testing/testing_internal';
 import {provide} from '@angular/core/src/di';
 
-import {isPresent} from '@angular/facade';
+import {TEST_PROVIDERS} from './test_bindings';
+import {isPresent} from '@angular/facade/lang';
 import {
   TemplateParser,
   splitClasses,

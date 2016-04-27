@@ -21,8 +21,6 @@ export {ROUTER_PROVIDERS, ROUTER_BINDINGS} from './src/router_providers';
 import {RouterOutlet} from './src/directives/router_outlet';
 import {RouterLink} from './src/directives/router_link';
 
-
-
 /**
  * A list of directives. To use the router directives like {@link RouterOutlet} and
  * {@link RouterLink}, add this to your `directives` array in the {@link View} decorator of your

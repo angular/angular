@@ -10,9 +10,9 @@ import {
   xdescribe,
   xit
 } from '@angular/testing/testing_internal';
-import {IS_DART, RegExpWrapper, StringWrapper} from '@angular/facade';
+import {IS_DART, RegExpWrapper, StringWrapper} from '@angular/facade/lang';
 import {getSymbolsFromLibrary} from './symbol_inspector/symbol_inspector';
-import {ListWrapper} from '@angular/facade';
+import {ListWrapper} from '@angular/facade/collection';
 
 // =================================================================================================
 // =================================================================================================

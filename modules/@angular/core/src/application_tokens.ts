@@ -1,5 +1,5 @@
 import {OpaqueToken, Provider} from './di';
-import {Math, StringWrapper} from '@angular/facade';
+import {Math, StringWrapper} from '@angular/facade/lang';
 
 /**
  * A DI Token representing a unique string id assigned to the application by Angular and used

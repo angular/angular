@@ -16,7 +16,7 @@ import {
 
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
-import {PromiseWrapper, EventEmitter, ObservableWrapper} from '@angular/facade';
+import {PromiseWrapper, EventEmitter, ObservableWrapper} from '@angular/facade/async';
 
 import {Injectable} from '@angular/core';
 import {NgFor, NgIf} from '@angular/common';

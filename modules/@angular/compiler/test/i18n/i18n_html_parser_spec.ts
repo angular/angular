@@ -16,7 +16,7 @@ import {Message, id} from '@angular/compiler/src/i18n/message';
 import {Parser} from '@angular/compiler/src/expression_parser/parser';
 import {Lexer} from '@angular/compiler/src/expression_parser/lexer';
 
-import {StringMapWrapper} from '@angular/facade';
+import {StringMapWrapper} from '@angular/facade/collection';
 import {HtmlParser, HtmlParseTreeResult} from '@angular/compiler/src/html_parser';
 import {
   HtmlAst,

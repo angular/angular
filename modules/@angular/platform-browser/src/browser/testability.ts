@@ -6,8 +6,8 @@ import {
   setTestabilityGetter
 } from '@angular/core';
 
-import {ListWrapper} from '@angular/facade';
-import {global, isPresent} from '@angular/facade';
+import {ListWrapper} from '@angular/facade/collection';
+import {global, isPresent} from '@angular/facade/lang';
 import {getDOM} from '../dom/dom_adapter';
 
 

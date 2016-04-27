@@ -1,8 +1,8 @@
 import {Injectable, PipeTransform, WrappedValue, Pipe} from '@angular/core';
 
-import {isBlank, isString, isArray, StringWrapper} from '@angular/facade';
-import {BaseException} from '@angular/facade';
-import {ListWrapper} from '@angular/facade';
+import {isBlank, isString, isArray, StringWrapper} from '@angular/facade/lang';
+import {BaseException} from '@angular/facade/exceptions';
+import {ListWrapper} from '@angular/facade/collection';
 
 import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
 

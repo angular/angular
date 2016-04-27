@@ -1,5 +1,5 @@
-import {Type, isPresent, stringify} from '@angular/facade';
-import {BaseException, WrappedException} from '@angular/facade';
+import {Type, isPresent, stringify} from '@angular/facade/lang';
+import {BaseException, WrappedException} from '@angular/facade/exceptions';
 import {
   ListWrapper,
   Map,
@@ -7,7 +7,7 @@ import {
   Set,
   SetWrapper,
   StringMapWrapper
-} from '@angular/facade';
+} from '@angular/facade/collection';
 import {SetterFn, GetterFn, MethodFn} from './types';
 import {ReflectorReader} from './reflector_reader';
 import {PlatformReflectionCapabilities} from './platform_reflection_capabilities';

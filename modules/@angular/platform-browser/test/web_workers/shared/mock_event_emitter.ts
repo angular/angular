@@ -1,4 +1,4 @@
-import {EventEmitter} from '@angular/facade';
+import {EventEmitter} from '@angular/facade/async';
 
 export class MockEventEmitter<T> extends EventEmitter<T> {
   private _nextFns: Function[] = [];

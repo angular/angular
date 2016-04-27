@@ -12,7 +12,7 @@ import {
   DefaultKeyValueDiffer,
   DefaultKeyValueDifferFactory
 } from '@angular/core/src/change_detection/differs/default_keyvalue_differ';
-import {NumberWrapper, isJsObject} from '@angular/facade';
+import {NumberWrapper, isJsObject} from '@angular/facade/lang';
 import {kvChangesAsString} from '../../change_detection/util';
 
 // todo(vicb): Update the code & tests for object equality

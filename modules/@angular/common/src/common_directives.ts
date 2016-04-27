@@ -1,4 +1,4 @@
-import {Type} from '@angular/facade';
+import {Type} from '@angular/core';
 import {FORM_DIRECTIVES} from './forms';
 import {CORE_DIRECTIVES} from './directives';
 

@@ -2,9 +2,9 @@ import {
   isBlank,
   isPresent,
   looseIdentical
-} from '@angular/facade';
-import {ListWrapper, StringMapWrapper} from '@angular/facade';
-import {BaseException} from '@angular/facade';
+} from '@angular/facade/lang';
+import {ListWrapper, StringMapWrapper} from '@angular/facade/collection';
+import {BaseException} from '@angular/facade/exceptions';
 import {AppElement} from './element';
 import {ExpressionChangedAfterItHasBeenCheckedException} from './exceptions';
 import {devModeEqual} from '../change_detection/change_detection';

@@ -1,5 +1,5 @@
-import {isPresent, isBlank, isArray, normalizeBlank} from '@angular/facade';
-import {ListWrapper} from '@angular/facade';
+import {isPresent, isBlank, isArray, normalizeBlank} from '@angular/facade/lang';
+import {ListWrapper} from '@angular/facade/collection';
 import {
   VariableAst,
   AttrAst,

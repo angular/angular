@@ -1,4 +1,4 @@
-import {ConcreteType, global, Type, isFunction, stringify} from '@angular/facade';
+import {ConcreteType, global, Type, isFunction, stringify} from '@angular/facade/lang';
 
 var _nextClassId = 0;
 

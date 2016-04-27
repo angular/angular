@@ -1,10 +1,10 @@
-import {looseIdentical, isPrimitive} from '@angular/facade';
+import {looseIdentical, isPrimitive} from '@angular/facade/lang';
 import {
   isListLikeIterable,
   areIterablesEqual
-} from '@angular/facade';
+} from '@angular/facade/collection';
 
-export {looseIdentical} from '@angular/facade';
+export {looseIdentical} from '@angular/facade/lang';
 export var uninitialized: Object = /*@ts2dart_const*/<Object>(new Object());
 
 export function devModeEqual(a: any, b: any): boolean {

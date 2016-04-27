@@ -1,6 +1,6 @@
 import {Directive} from '@angular/core';
 import {Location} from '@angular/common';
-import {isString} from '@angular/facade';
+import {isString} from '@angular/facade/lang';
 import {Router} from '../router';
 import {Instruction} from '../instruction';
 

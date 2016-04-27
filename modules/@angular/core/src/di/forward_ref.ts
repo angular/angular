@@ -1,4 +1,4 @@
-import {Type, stringify, isFunction} from '@angular/facade';
+import {Type, stringify, isFunction} from '@angular/facade/lang';
 
 /**
  * An interface that a function passed into {@link forwardRef} has to implement.

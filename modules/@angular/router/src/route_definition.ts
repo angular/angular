@@ -1,4 +1,4 @@
-import {Type} from '@angular/facade';
+import {Type} from '@angular/facade/lang';
 import {RegexSerializer} from './rules/route_paths/regex_route_path';
 
 /**

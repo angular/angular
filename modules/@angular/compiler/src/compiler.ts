@@ -1,5 +1,5 @@
 import {provide, Provider, ComponentResolver, Type} from '@angular/core';
-import {assertionsEnabled} from '@angular/facade';
+import {assertionsEnabled} from '@angular/facade/lang';
 
 export * from './template_ast';
 export {TEMPLATE_TRANSFORMS} from './template_parser';

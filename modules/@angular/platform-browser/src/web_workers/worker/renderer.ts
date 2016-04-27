@@ -10,15 +10,15 @@ import {
   FnArg,
   UiArguments
 } from '../shared/client_message_broker';
-import {isPresent, isBlank, print} from '@angular/facade';
-import {ListWrapper} from '@angular/facade';
+import {isPresent, isBlank, print} from '@angular/facade/lang';
+import {ListWrapper} from '@angular/facade/collection';
 import {Injectable} from '@angular/core/src/di';
 import {RenderStore} from '../shared/render_store';
 import {RENDERER_CHANNEL} from '../shared/messaging_api';
 import {Serializer, RenderStoreObject} from '../shared/serializer';
 import {EVENT_CHANNEL} from '../shared/messaging_api';
 import {MessageBus} from '../shared/message_bus';
-import {ObservableWrapper} from '@angular/facade';
+import {ObservableWrapper} from '@angular/facade/async';
 import {ViewEncapsulation} from '@angular/core';
 import {deserializeGenericEvent} from './event_deserializer';
 

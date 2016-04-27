@@ -1,4 +1,4 @@
-import {isBlank} from '@angular/facade';
+import {isBlank} from '@angular/facade/lang';
 
 import {HtmlElementAst} from './html_ast';
 import {splitNsName} from './html_tags';

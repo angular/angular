@@ -11,7 +11,7 @@ import {
   xit,
   Log
 } from '@angular/testing/testing_internal';
-import {BaseException, WrappedException, ExceptionHandler} from '../src/exceptions';
+import {BaseException, WrappedException, ExceptionHandler} from '../exceptions';
 
 class _CustomException {
   context = "some context";

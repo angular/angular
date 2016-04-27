@@ -1,5 +1,5 @@
-import {Type} from '@angular/facade';
-import {Provider} from './di';
+import {Type, isBlank, isPresent, assertionsEnabled} from '@angular/facade/lang';
+import {provide, Provider, Injector, OpaqueToken} from './di';
 import {Console} from './console';
 import {Reflector, reflector} from './reflection/reflection';
 import {ReflectorReader} from './reflection/reflector_reader';
