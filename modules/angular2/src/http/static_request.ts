@@ -61,6 +61,8 @@ export class Request {
   url: string;
   // TODO: support URLSearchParams | FormData | Blob | ArrayBuffer
   private _body: string;
+  /** Enable use credentials */
+  withCredentials: boolean;
   constructor(requestOptions: RequestArgs) {
     // TODO: assert that url is present
     let url = requestOptions.url;
@@ -82,6 +84,7 @@ export class Request {
     // Defaults to 'omit', consistent with browser
     // TODO(jeffbcross): implement behavior
     this.headers = new Headers(requestOptions.headers);
+    this.withCredentials = requestOptions.withCredentials;
   }
 
 

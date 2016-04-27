@@ -42,6 +42,7 @@ class MockBrowserXHR extends BrowserXhr {
   status: number;
   responseHeaders: string;
   responseURL: string;
+  withCredentials: boolean;
   constructor() {
     super();
     var spy = new SpyObject();
@@ -105,6 +106,7 @@ export function main() {
     describe('XHRConnection', () => {
       it('should use the injected BaseResponseOptions to create the response',
          inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+           console.log('test1');
            var connection = new XHRConnection(sampleRequest, new MockBrowserXHR(),
                                               new ResponseOptions({type: ResponseType.Error}));
            connection.response.subscribe((res: Response) => {
@@ -326,6 +328,27 @@ export function main() {
 
                                  connection.response.subscribe((res: Response) => {
                                    expect(res.url).toEqual('http://somedomain.com');
+                                   async.done();
+                                 });
+
+           existingXHRs[0].setResponseHeaders(responseHeaders);
+           existingXHRs[0].setStatusCode(statusCode);
+           existingXHRs[0].dispatchEvent('load');
+         }));
+
+      it('should set withCredentials to true when defined in request options for CORS situations',
+         inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+           var statusCode = 200;
+           sampleRequest.withCredentials = true;
+           var mockXhr = new MockBrowserXHR();
+           var connection =
+               new XHRConnection(sampleRequest, mockXhr, new ResponseOptions({status: statusCode}));
+           var responseHeaders = `X-Request-URL: http://somedomain.com
+           Foo: Bar`
+
+                                 connection.response.subscribe((res: Response) => {
+                                   expect(res.url).toEqual('http://somedomain.com');
+                                   expect(existingXHRs[0].withCredentials).toBeTruthy();
                                    async.done();
                                  });
 
