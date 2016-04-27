@@ -19,7 +19,7 @@ import {recognize} from 'angular2/src/alt_router/recognize';
 import {Routes, Route} from 'angular2/alt_router';
 import {provide, Component, ComponentResolver} from 'angular2/core';
 import {UrlSegment, Tree} from 'angular2/src/alt_router/segments';
-import {DefaultRouterUrlParser} from 'angular2/src/alt_router/router_url_parser';
+import {DefaultRouterUrlSerializer} from 'angular2/src/alt_router/router_url_serializer';
 import {DEFAULT_OUTLET_NAME} from 'angular2/src/alt_router/constants';
 
 export function main() {
@@ -100,6 +100,23 @@ export function main() {
              });
        }));
 
+    it('should handle non top-level aux routes',
+       inject([AsyncTestCompleter, ComponentResolver], (async, resolver) => {
+         recognize(resolver, ComponentA, tree('b/paramB/d(e)'))
+             .then(r => {
+               let c = r.children(r.firstChild(r.root));
+               expect(stringifyUrl(c[0].urlSegments)).toEqual(["d"]);
+               expect(c[0].outlet).toEqual(DEFAULT_OUTLET_NAME);
+               expect(c[0].type).toBe(ComponentD);
+
+               expect(stringifyUrl(c[1].urlSegments)).toEqual(["e"]);
+               expect(c[1].outlet).toEqual("aux");
+               expect(c[1].type).toBe(ComponentE);
+
+               async.done();
+             });
+       }));
+
     it('should handle matrix parameters',
        inject([AsyncTestCompleter, ComponentResolver], (async, resolver) => {
          recognize(resolver, ComponentA, tree("b/paramB;b1=1;b2=2(/d;d1=1;d2=2)"))
@@ -143,7 +160,7 @@ export function main() {
 }
 
 function tree(url: string): Tree<UrlSegment> {
-  return new DefaultRouterUrlParser().parse(url);
+  return new DefaultRouterUrlSerializer().parse(url);
 }
 
 function stringifyUrl(segments: UrlSegment[]): string[] {
@@ -164,7 +181,11 @@ class ComponentC {
 }
 
 @Component({selector: 'b', template: 't'})
-@Routes([new Route({path: "c/:c", component: ComponentC})])
+@Routes([
+  new Route({path: "d", component: ComponentD}),
+  new Route({path: "e", component: ComponentE}),
+  new Route({path: "c/:c", component: ComponentC})
+])
 class ComponentB {
 }
 

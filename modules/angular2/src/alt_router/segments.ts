@@ -1,7 +1,6 @@
 import {ComponentFactory} from 'angular2/core';
 import {StringMapWrapper, ListWrapper} from 'angular2/src/facade/collection';
-import {Type, isBlank, isPresent} from 'angular2/src/facade/lang';
-import {DEFAULT_OUTLET_NAME} from './constants';
+import {Type, isBlank, isPresent, stringify} from 'angular2/src/facade/lang';
 
 export class Tree<T> {
   /** @internal */
@@ -59,18 +58,21 @@ export class TreeNode<T> {
 }
 
 export class UrlSegment {
-  constructor(public segment: string, public parameters: {[key: string]: string},
+  constructor(public segment: any, public parameters: {[key: string]: string},
               public outlet: string) {}
 
   toString(): string {
-    let outletPrefix = this.outlet == DEFAULT_OUTLET_NAME ? "" : `${this.outlet}:`;
-    return `${outletPrefix}${this.segment}${_serializeParams(this.parameters)}`;
+    let outletPrefix = isBlank(this.outlet) ? "" : `${this.outlet}:`;
+    let segmentPrefix = isBlank(this.segment) ? "" : this.segment;
+    return `${outletPrefix}${segmentPrefix}${_serializeParams(this.parameters)}`;
   }
 }
 
 function _serializeParams(params: {[key: string]: string}): string {
   let res = "";
-  StringMapWrapper.forEach(params, (v, k) => res += `;${k}=${v}`);
+  if (isPresent(params)) {
+    StringMapWrapper.forEach(params, (v, k) => res += `;${k}=${v}`);
+  }
   return res;
 }
 
@@ -94,10 +96,23 @@ export class RouteSegment {
   get stringifiedUrlSegments(): string { return this.urlSegments.map(s => s.toString()).join("/"); }
 }
 
+export function serializeRouteSegmentTree(tree: Tree<RouteSegment>): string {
+  return _serializeRouteSegmentTree(tree._root);
+}
+
+function _serializeRouteSegmentTree(node: TreeNode<RouteSegment>): string {
+  let v = node.value;
+  let children = node.children.map(c => _serializeRouteSegmentTree(c)).join(", ");
+  return `${v.outlet}:${v.stringifiedUrlSegments}(${stringify(v.type)}) [${children}]`;
+}
+
 export function equalSegments(a: RouteSegment, b: RouteSegment): boolean {
   if (isBlank(a) && !isBlank(b)) return false;
   if (!isBlank(a) && isBlank(b)) return false;
-  return a._type === b._type && StringMapWrapper.equals(a.parameters, b.parameters);
+  if (a._type !== b._type) return false;
+  if (isBlank(a.parameters) && !isBlank(b.parameters)) return false;
+  if (!isBlank(a.parameters) && isBlank(b.parameters)) return false;
+  return StringMapWrapper.equals(a.parameters, b.parameters);
 }
 
 export function routeSegmentComponentFactory(a: RouteSegment): ComponentFactory {
