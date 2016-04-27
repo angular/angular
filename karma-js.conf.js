@@ -32,7 +32,7 @@ module.exports = function(config) {
       'tools/build/file2modulename.js',
       'test-main.js',
       {pattern: 'modules/@angular/testing/test/static_assets/**', included: false, watched: false},
-      {pattern: 'modules/@angular/platform-browser/static_assets/**', included: false, watched: false}
+      {pattern: 'modules/@angular/platform-browser-dynamic/test/browser/static_assets/**', included: false, watched: false}
     ],
 
     exclude: ['dist/@angular/**/e2e_test/**', 'dist/@angular/examples/**', 'dist/angular1_router.js', 'dist/@angular/testing/src/e2e_util.js'],

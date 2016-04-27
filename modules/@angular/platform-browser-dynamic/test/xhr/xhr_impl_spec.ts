@@ -24,7 +24,7 @@ export function main() {
     // static_assets/200.html.
     // We currently have no way of detecting this.
     var urlBase = IS_DART ? '' : '/base/modules/@angular/';
-    var url200 = urlBase + 'platform-browser-dynamic/static_assets/200.html';
+    var url200 = urlBase + 'platform-browser-dynamic/test/browser/static_assets/200.html';
     var url404 = '/bad/path/404.html';
 
     beforeEach(() => { xhr = new XHRImpl(); });
