@@ -71,7 +71,35 @@ function declareTests(isJit: boolean) {
                  async.done();
                });
          }));
+    });
 
+    describe('expressions', () => {
+
+      it('should evaluate conditional and boolean operators with right precedence - #8244',
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+           tcb.overrideView(MyComp,
+                            new ViewMetadata({template: `{{'red' + (true ? ' border' : '')}}`}))
+               .createAsync(MyComp)
+               .then((fixture) => {
+                 fixture.detectChanges();
+                 expect(fixture.nativeElement).toHaveText('red border');
+                 async.done();
+               });
+         }));
+
+      if (!IS_DART) {
+        it('should evaluate conditional and unary operators with right precedence - #8235',
+           inject([TestComponentBuilder, AsyncTestCompleter],
+                  (tcb: TestComponentBuilder, async) => {
+                    tcb.overrideView(MyComp, new ViewMetadata({template: `{{!null?.length}}`}))
+                        .createAsync(MyComp)
+                        .then((fixture) => {
+                          fixture.detectChanges();
+                          expect(fixture.nativeElement).toHaveText('true');
+                          async.done();
+                        });
+                  }));
+      }
     });
 
     describe('providers', () => {
