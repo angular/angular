@@ -338,6 +338,26 @@ export function main() {
       expect(cssSelectors[2].element).toEqual('textbox');
       expect(cssSelectors[2].notSelectors[0].classNames).toEqual(['special']);
     });
+
+    it('should throw when unsupported selectors are used', () => {
+      const errorMessage = 'Unsupported selector'
+
+      expect(() => { CssSelector.parse('descendent selector'); })
+        .toThrowError(errorMessage);
+
+      expect(() => { CssSelector.parse('child > selector'); })
+        .toThrowError(errorMessage);
+
+      expect(() => { CssSelector.parse('sibling selector'); })
+        .toThrowError(errorMessage);
+
+      expect(() => { CssSelector.parse('[fancy^="attribute selectors"]'); })
+        .toThrowError(errorMessage);
+
+      expect(() => { CssSelector.parse('pseudo-classes:hover'); })
+        .toThrowError(errorMessage);
+    });
+
   });
 
   describe('CssSelector.getMatchingElementTemplate', () => {
