@@ -587,18 +587,16 @@ function declareTests(isJit: boolean) {
                (tcb: TestComponentBuilder, async) => {
                    tcb.overrideView(
                           MyComp, new ViewMetadata({
-                            template: '<p>{{alice.ctxProp}}<child-cmp var-alice></child-cmp></p>',
-                            directives: [ChildComp]
+                            template:
+                                '<template [ngIf]="true">{{alice.ctxProp}}</template>|{{alice.ctxProp}}|<child-cmp var-alice></child-cmp>',
+                            directives: [ChildComp, NgIf]
                           }))
 
                        .createAsync(MyComp)
                        .then((fixture) => {
                          fixture.detectChanges();
 
-                         expect(fixture.debugElement.nativeElement)
-                             .toHaveText('hellohello');  // this first one is the
-                                                         // component, the second one is
-                                                         // the text binding
+                         expect(fixture.debugElement.nativeElement).toHaveText('hello|hello|hello');
                          async.done();
                        })}));
 

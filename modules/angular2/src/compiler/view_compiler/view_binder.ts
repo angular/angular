@@ -103,6 +103,7 @@ class ViewBinderVisitor implements TemplateAstVisitor {
       bindDirectiveDestroyLifecycleCallbacks(directiveAst.directive, directiveInstance,
                                              compileElement);
     });
+    bindView(compileElement.embeddedView, ast.children);
     return null;
   }
 
