@@ -37,6 +37,7 @@ import {hasLifecycleHook} from './directive_lifecycle_reflector';
 import {MODULE_SUFFIX, sanitizeIdentifier} from './util';
 import {assertArrayOfStrings} from './assertions';
 import {getUrlScheme} from './url_resolver';
+import {createProvider, isProviderLiteral} from "../../core/src/di/provider_util";
 
 
 @Injectable()
@@ -246,6 +247,8 @@ export class RuntimeMetadataResolver {
         return this.getProvidersMetadata(provider);
       } else if (provider instanceof Provider) {
         return this.getProviderMetadata(provider);
+      } else if (isProviderLiteral(provider)) {
+        return this.getProviderMetadata(createProvider(provider));
       } else {
         return this.getTypeMetadata(provider, null);
       }
