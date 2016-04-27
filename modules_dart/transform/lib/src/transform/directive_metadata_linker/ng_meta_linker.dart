@@ -113,7 +113,7 @@ class _Linker {
     if (ngMeta.needsResolution) {
       final resolver = new _NgMetaIdentifierResolver(
           assetId, reader, ngMetas, resolvedIdentifiers, errorOnMissingIdentifiers);
-      return resolver.resolveNgMeta(ngMeta);
+      return resolver.resolveNgMeta(ngMeta, assetId);
     } else {
       return null;
     }
@@ -177,8 +177,8 @@ class _NgMetaIdentifierResolver {
 
   _NgMetaIdentifierResolver(this.entryPoint, this.reader, this.ngMetas, this.resolvedIdentifiers, this.errorOnMissingIdentifiers);
 
-  Future resolveNgMeta(NgMeta ngMeta) async {
-    final ngMetaMap = await _extractNgMetaMap(ngMeta);
+  Future resolveNgMeta(NgMeta ngMeta, AssetId assetId) async {
+    final ngMetaMap = await _extractNgMetaMap(ngMeta, assetId);
     ngMeta.identifiers.forEach((_, meta) {
       if (meta is CompileIdentifierMetadata && meta.value != null) {
         meta.value = _resolveProviders(ngMetaMap, meta.value, "root");
@@ -375,14 +375,10 @@ class _NgMetaIdentifierResolver {
           name: id.name, moduleUrl: resolvedIdentifiers[id.name]);
 
       // these are so common that we special case them in the transformer
-    } else if (id.name == "Window" || id.name == "Document") {
+    } else if (id.name == "Window" || id.name == "Document" || id.name == "Storage") {
       return new CompileIdentifierMetadata(name: id.name, moduleUrl: 'dart:html');
-    } else if (id.name == "Profiler") {
-      return new CompileIdentifierMetadata(name: id.name, moduleUrl: 'asset:perf_api/lib/perf_api.dart');
-    } else if (id.name == "Logger") {
-      return new CompileIdentifierMetadata(name: id.name, moduleUrl: 'asset:logging/lib/logging.dart');
-    } else if (id.name == "Clock") {
-      return new CompileIdentifierMetadata(name: id.name, moduleUrl: 'asset:quiver/lib/src/time/clock.dart');
+    } else if (id.name == "Random") {
+      return new CompileIdentifierMetadata(name: id.name, moduleUrl: 'dart:math');
     } else if (id.name == "Log") {
       return new CompileIdentifierMetadata(name: id.name, moduleUrl: 'asset:angular2/lib/src/testing/utils.dart');
     } else if (id.name == "TestComponentBuilder") {
@@ -391,20 +387,12 @@ class _NgMetaIdentifierResolver {
       return new CompileIdentifierMetadata(name: id.name, moduleUrl: 'dart:async');
     } else if (id.name == "StreamController") {
       return new CompileIdentifierMetadata(name: id.name, moduleUrl: 'dart:async');
+    } else if (id.name == "AudioContext") {
+      return new CompileIdentifierMetadata(name: id.name, moduleUrl: 'dart:web_audio');
+    } else if (id.name == "Stopwatch" || id.name == "Map") {
+      return new CompileIdentifierMetadata(name: id.name, moduleUrl: 'dart:core');
     } else if (id.name == "FakeAsync") {
       return new CompileIdentifierMetadata(name: id.name, moduleUrl: 'asset:angular2/lib/src/testing/fake_async.dart');
-    } else if (id.name == "StreamTracer") {
-      return new CompileIdentifierMetadata(name: id.name, moduleUrl: 'asset:streamy/lib/src/core/tracing.dart');
-    } else if (id.name == "Tracer") {
-      return new CompileIdentifierMetadata(name: id.name, moduleUrl: 'asset:streamy/lib/src/core/tracing.dart');
-    } else if (id.name == "RequestHandler") {
-      return new CompileIdentifierMetadata(name: id.name, moduleUrl: 'asset:streamy/lib/src/core/request_handler.dart');
-    } else if (id.name == "BatchingStrategy") {
-      return new CompileIdentifierMetadata(name: id.name, moduleUrl: 'asset:streamy/lib/src/extra/request_handler/batching.dart');
-    } else if (id.name == "ProxyClient") {
-      return new CompileIdentifierMetadata(name: id.name, moduleUrl: 'asset:streamy/lib/src/extra/request_handler/proxy.dart');
-    } else if (id.name == "StreamyHttpService") {
-      return new CompileIdentifierMetadata(name: id.name, moduleUrl: 'asset:streamy/lib/src/toolbox/http.dart');
     } else {
       return null;
     }
@@ -421,7 +409,7 @@ class _NgMetaIdentifierResolver {
 
   /// Walks all the imports and creates a map from prefixes to
   /// all the symbols available through those prefixes
-  Future<Map<String, NgMeta>> _extractNgMetaMap(NgMeta ngMeta) async {
+  Future<Map<String, NgMeta>> _extractNgMetaMap(NgMeta ngMeta, AssetId assetId) async {
     final res = {"": new NgMeta.empty()};
     res[""].addAll(ngMeta);
 
@@ -442,11 +430,34 @@ class _NgMetaIdentifierResolver {
       if (newMeta != null) {
         res[import.prefix].addAll(newMeta);
       } else {
-        final summaryAsset =
-        fromUri(_urlResolver.resolve(assetUri, toSummaryExtension(import.uri)));
+        final summaryUri = _urlResolver.resolve(
+          assetUri, toSummaryExtension(import.uri));
+        final summaryAsset = fromUri(summaryUri);
         final summary = await _readNgMeta(reader, summaryAsset, {});
         if (summary != null) {
-          res[import.prefix].addAll(summary);
+
+          // We get here if we are in an import/export cycle. To resolve this
+          // we load the summaries directly. This is sufficient for resolving
+          // which module the symbol is defined in, which is the purpose of the
+          // map we are building.
+          final prefixRes = res[import.prefix];
+          prefixRes.addAll(summary);
+          if (summary.ngDeps != null &&
+              summary.ngDeps.exports != null) {
+
+
+            // Re-exporting one level of exports is usually sufficient.
+            // Consider a recursively exporting exports.
+            for (var export in summary.ngDeps.exports) {
+              final exportAsset = fromUri(
+                _urlResolver.resolve(
+                  summaryUri, toSummaryExtension(export.uri)));
+              final exportSummary = await _readNgMeta(reader, exportAsset, {});
+              if (exportSummary != null) {
+                prefixRes.addAll(exportSummary);
+              }
+            }
+          }
         }
       }
     }
