@@ -59,9 +59,10 @@ After:
 ```
 fakeAsync(inject([...], (...) => {...}))
 ```
-You will also need to add the dependency
-`'node_modules/zone.js/dist/fake-async-test.js'`
-as a served file in your Karma or other test configuration.
+You will also need to add the following dependencies:
+* `'node_modules/zone.js/dist/async-test.js'`
+* `'node_modules/zone.js/dist/fake-async-test.js'`
+as a served files in your Karma or other test configuration.
 
 * - Injector was renamed into `ReflectiveInjector`,
   as `Injector` is only an abstract class with one method on it
