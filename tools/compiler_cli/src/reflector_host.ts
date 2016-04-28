@@ -8,14 +8,14 @@ const DTS = /\.d\.ts$/;
 
 export class NodeReflectorHost implements StaticReflectorHost {
   constructor(private program: ts.Program, private metadataCollector: MetadataCollector,
-              private compilerHost: ts.CompilerHost) {}
+              private compilerHost: ts.CompilerHost, private options: ts.CompilerOptions) {}
 
   resolveModule(moduleId: string, containingFile: string) {
     if (!containingFile || !containingFile.length) {
       containingFile = 'index.ts';
     }
     try {
-      return this.compilerHost.resolveModuleNames([moduleId], containingFile)[0].resolvedFileName;
+      return ts.resolveModuleName(moduleId, containingFile, this.options, this.compilerHost).resolvedModule.resolvedFileName;
     } catch (e) {
       console.error(`can't resolve module ${moduleId} from ${containingFile}`, e);
       throw e;

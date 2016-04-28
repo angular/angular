@@ -39,8 +39,8 @@ export interface AngularCompilerOptions {
 export class CodeGenerator {
   constructor(private ngOptions: AngularCompilerOptions, private basePath: string,
               public program: ts.Program, public host: CodeGeneratorHost,
-              private staticReflector: compiler.StaticReflector,
-              private resolver: compiler.RuntimeMetadataResolver,
+              private staticReflector: StaticReflector,
+              private resolver: RuntimeMetadataResolver,
               private compiler: compiler.OfflineCompiler) {}
 
   private generateSource(metadatas: compiler.CompileDirectiveMetadata[]) {
@@ -111,9 +111,8 @@ export class CodeGenerator {
   }
 
   static create(ngOptions: AngularCompilerOptions, parsed: ts.ParsedCommandLine, basePath: string,
-                originalHost: ts.CompilerHost):
+                compilerHost: ts.CompilerHost):
       {errors?: ts.Diagnostic[], generator?: CodeGenerator} {
-    const compilerHost = wrapCompilerHost(originalHost, parsed.options);
     const program = ts.createProgram(parsed.fileNames, parsed.options, compilerHost);
     const errors = program.getOptionsDiagnostics();
     if (errors && errors.length) {
@@ -121,24 +120,25 @@ export class CodeGenerator {
     }
 
     const metadataCollector = new MetadataCollector();
-    const reflectorHost = new NodeReflectorHost(program, metadataCollector, compilerHost);
+    const reflectorHost = new NodeReflectorHost(program, metadataCollector, compilerHost, parsed.options);
     const xhr: compiler.XHR = {get: (s: string) => Promise.resolve(compilerHost.readFile(s))};
     const urlResolver: compiler.UrlResolver = compiler.createOfflineCompileUrlResolver();
-    const staticReflector = new compiler.StaticReflector(reflectorHost);
-    const htmlParser = new compiler.HtmlParser();
-    const normalizer = new compiler.DirectiveNormalizer(xhr, urlResolver, htmlParser);
-    const parser = new compiler.Parser(new compiler.Lexer());
-    const tmplParser = new compiler.TemplateParser(parser, new compiler.DomElementSchemaRegistry(),
+    const staticReflector = new StaticReflector(reflectorHost);
+    const htmlParser = new HtmlParser();
+    const normalizer = new DirectiveNormalizer(xhr, urlResolver, htmlParser);
+    const parser = new Parser(new Lexer());
+    const tmplParser = new TemplateParser(parser, new DomElementSchemaRegistry(),
                                                    htmlParser, [new RouterLinkTransform(parser)]);
     const offlineCompiler = new compiler.OfflineCompiler(
-        normalizer, tmplParser, new compiler.StyleCompiler(urlResolver),
-        new compiler.ViewCompiler(new compiler.CompilerConfig(true, true, true)),
-        new compiler.TypeScriptEmitter());
-    const resolver = new compiler.RuntimeMetadataResolver(
+        normalizer, tmplParser, new StyleCompiler(urlResolver),
+        new ViewCompiler(new compiler.CompilerConfig(true, true, true)),
+        new TypeScriptEmitter());
+    const resolver = new RuntimeMetadataResolver(
         new compiler.DirectiveResolver(staticReflector), new compiler.PipeResolver(staticReflector),
         new compiler.ViewResolver(staticReflector), null, null, staticReflector);
+
     return {
-      generator: new CodeGenerator(ngOptions, basePath, program, compilerHost, staticReflector,
+      generator: new CodeGenerator(ngOptions, basePath, program, wrapCompilerHost(compilerHost, parsed.options), staticReflector,
                                    resolver, offlineCompiler)
     };
   }

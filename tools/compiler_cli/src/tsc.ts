@@ -72,7 +72,7 @@ export class Tsc implements CompilerInterface {
     return {parsed: this.parsed, ngOptions: this.ngOptions};
   }
 
-  typeCheckAndEmit(compilerHost: ts.CompilerHost, oldProgram?: ts.Program): number {
+  typeCheckAndEmit(compilerHost: CodeGeneratorHost, oldProgram?: ts.Program): number {
     const program =
         ts.createProgram(this.parsed.fileNames, this.parsed.options, compilerHost, oldProgram);
     debug("Checking global diagnostics...");
@@ -91,6 +91,7 @@ export class Tsc implements CompilerInterface {
 
     const {diagnostics, emitSkipped} = program.emit();
     check(diagnostics);
+    check(compilerHost.diagnostics);
     return emitSkipped ? 1 : 0;
   }
 }

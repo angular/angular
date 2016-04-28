@@ -1,18 +1,17 @@
 import * as ts from 'typescript';
 import * as path from 'path';
+import {convertDecorators} from 'tsickle';
 
 const DEBUG = false;
 function debug(msg: string, ...o: any[]) {
   if (DEBUG) console.log(msg, ...o);
 }
 
-export interface CodeGeneratorHost extends ts.CompilerHost {}
-
 /**
  * Implementation of CompilerHost that forwards all methods to another instance.
  * Useful for partial implementations to override only methods they care about.
  */
-abstract class DelegatingHost implements ts.CompilerHost {
+export abstract class DelegatingHost implements ts.CompilerHost {
   constructor(protected delegate: ts.CompilerHost) {}
   getSourceFile =
       (fileName: string, languageVersion: ts.ScriptTarget, onError?: (message: string) => void) =>
@@ -32,16 +31,32 @@ abstract class DelegatingHost implements ts.CompilerHost {
   trace = (s: string) => this.delegate.trace(s);
   directoryExists = (directoryName: string) => this.delegate.directoryExists(directoryName);
 }
-
-class ReverseModuleResolutionHost extends DelegatingHost implements CodeGeneratorHost {
+const TSICKLE_SUPPORT = `interface DecoratorInvocation {
+  type: Function;
+  args?: any[];
+}
+`;
+export class CodeGeneratorHost extends DelegatingHost {
+  // Additional diagnostics gathered by pre- and post-emit transformations.
+  public diagnostics: ts.Diagnostic[] = [];
   constructor(delegate: ts.CompilerHost, private options: ts.CompilerOptions) { super(delegate); }
 
-  resolveModuleNames(moduleNames: string[], containingFile: string): ts.ResolvedModule[] {
-    return moduleNames.map(moduleName => ts.resolveModuleName(moduleName, containingFile, this.options, this.delegate).resolvedModule);
+  getSourceFile = (fileName: string, languageVersion: ts.ScriptTarget, onError?: (message: string) => void) => {
+    const originalContent = this.delegate.readFile(fileName);
+    let newContent = originalContent;
+    if (!/\.d\.ts$/.test(fileName)) {
+      const converted = convertDecorators(fileName, originalContent);
+      if (converted.diagnostics) {
+        this.diagnostics.push(...converted.diagnostics);
+      }
+      newContent = TSICKLE_SUPPORT + converted.output;
+      debug(newContent);
+    }
+    return ts.createSourceFile(fileName, newContent, languageVersion, true);
   }
 }
 
 export function wrapCompilerHost(delegate: ts.CompilerHost,
                                  options: ts.CompilerOptions): CodeGeneratorHost {
-  return new ReverseModuleResolutionHost(delegate, options);
+  return new CodeGeneratorHost(delegate, options);
 }
