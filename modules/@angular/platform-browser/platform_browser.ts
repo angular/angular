@@ -16,7 +16,9 @@ export {
   By,
   Title,
   enableDebugTools,
-  disableDebugTools
+  disableDebugTools,
+  HAMMER_GESTURE_CONFIG,
+  HammerGestureConfig
 } from './browser_common';
 
 export * from './private_export';

@@ -89,6 +89,12 @@ export const BROWSER_APP_COMMON_PROVIDERS: Array<any /*Type | Provider | any[]*/
 ];
 
 
+export {
+  HAMMER_GESTURE_CONFIG,
+  HammerGestureConfig
+} from './src/dom/events/hammer_gestures'
+
+
 export function initDomAdapter() {
   BrowserDomAdapter.makeCurrent();
   wtfInit();
