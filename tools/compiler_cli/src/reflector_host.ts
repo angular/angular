@@ -5,19 +5,25 @@ import * as fs from 'fs';
 
 const EXTS = ['', '.ts', '.d.ts', '.js', '.jsx', '.tsx'];
 const DTS = /\.d\.ts$/;
+// We try to re-write imports to a shorter form
+const KNOWN_IMPORT_LOCATIONS = ['angular2/core', 'angular2/common'];
 
 export class NodeReflectorHost implements StaticReflectorHost {
   constructor(private program: ts.Program, private metadataCollector: MetadataCollector,
               private compilerHost: ts.CompilerHost, private options: ts.CompilerOptions) {}
 
-  resolveModule(moduleId: string, containingFile: string) {
+  resolveModule(module: string, containingFile: string) {
     if (!containingFile || !containingFile.length) {
       containingFile = 'index.ts';
     }
     try {
-      return ts.resolveModuleName(moduleId, containingFile, this.options, this.compilerHost).resolvedModule.resolvedFileName;
+      const filePath = ts.resolveModuleName(module, containingFile, this.options, this.compilerHost).resolvedModule.resolvedFileName;
+      
+      const moduleId = `asset:{entry point}/lib/{relative path}`;
+      console.log(`for module ${module}, moduleId ${moduleId} path ${filePath}`);
+      return {moduleId, filePath};
     } catch (e) {
-      console.error(`can't resolve module ${moduleId} from ${containingFile}`, e);
+      console.error(`can't resolve module ${module} from ${containingFile}`, e);
       throw e;
     }
   }
