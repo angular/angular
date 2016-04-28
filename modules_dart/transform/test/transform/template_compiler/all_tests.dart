@@ -105,7 +105,7 @@ void allTests() {
 
   it('should parse simple expressions in inline templates.', () async {
     fooComponentMeta.template = new CompileTemplateMetadata(
-        template: '<div [id]="b">{{greeting}}</div>',
+        template: '<div [a]="b">{{greeting}}</div>',
         templateUrl: 'template.html');
     updateReader();
 
@@ -226,7 +226,7 @@ void allTests() {
 
   it('should create the same output for multiple calls.', () async {
     fooComponentMeta.template = new CompileTemplateMetadata(
-        template: '<div [id]="b">{{greeting}}</div>',
+        template: '<div [a]="b">{{greeting}}</div>',
         templateUrl: 'template.html');
     updateReader();
 
