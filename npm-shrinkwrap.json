@@ -1,6 +1,6 @@
 {
   "name": "angular-srcs",
-  "version": "2.0.0-beta.15",
+  "version": "2.0.0-beta.17",
   "dependencies": {
     "abbrev": {
       "version": "1.0.7",
