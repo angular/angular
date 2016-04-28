@@ -2,33 +2,48 @@ import {StaticReflectorHost, StaticType} from 'angular2/src/compiler/static_refl
 import * as ts from 'typescript';
 import {MetadataCollector, ModuleMetadata} from 'ts-metadata-collector';
 import * as fs from 'fs';
+import * as path from 'path';
 
-const EXTS = ['', '.ts', '.d.ts', '.js', '.jsx', '.tsx'];
+const EXT = /(\.ts|\.d\.ts|\.js|\.jsx|\.tsx)$/;
 const DTS = /\.d\.ts$/;
-// We try to re-write imports to a shorter form
-const KNOWN_IMPORT_LOCATIONS = ['angular2/core', 'angular2/common'];
 
 export class NodeReflectorHost implements StaticReflectorHost {
   constructor(private program: ts.Program, private metadataCollector: MetadataCollector,
               private compilerHost: ts.CompilerHost, private options: ts.CompilerOptions) {}
 
-  resolveModule(module: string, containingFile: string) {
+  resolveModule(module: string, containingFile?: string) {
     if (!containingFile || !containingFile.length) {
       containingFile = 'index.ts';
     }
+    const resolve = (m:string) => {
+      const resolved = ts.resolveModuleName(m, containingFile, this.options, this.compilerHost).resolvedModule;
+      return resolved ? resolved.resolvedFileName : null
+    };
     try {
-      const filePath = ts.resolveModuleName(module, containingFile, this.options, this.compilerHost).resolvedModule.resolvedFileName;
-      
-      const moduleId = `asset:{entry point}/lib/{relative path}`;
+      const filePath = resolve(module);
+      let moduleId: string = null;
+
+      const parts = filePath.replace(EXT, '').split(path.sep);
+      for (let index = parts.length - 1; index >=0; index--) {
+        let candidate = parts.slice(index, parts.length).join(path.sep);
+        if (resolve(candidate) === filePath) {
+          moduleId = `asset:tmp/lib/${candidate}`;
+          break;
+        }
+        if (resolve(path.join('.', candidate)) === filePath) {
+          moduleId = `asset:app/lib/${candidate}`;
+          break;
+        }
+      }
       console.log(`for module ${module}, moduleId ${moduleId} path ${filePath}`);
       return {moduleId, filePath};
     } catch (e) {
-      console.error(`can't resolve module ${module} from ${containingFile}`, e);
+      console.error(`can't resolve module ${module} from ${containingFile}`);
       throw e;
     }
   }
 
-  findDeclaration(moduleName: string, symbolName: string): {declarationPath: string, declaredName: string} {
+  findDeclaration(moduleName: string, symbolName: string): StaticType {
     const tc = this.program.getTypeChecker();
     const sf = this.program.getSourceFile(moduleName);
 
@@ -40,7 +55,9 @@ export class NodeReflectorHost implements StaticReflectorHost {
       symbol = tc.getAliasedSymbol(symbol);
     }
     const declaration = symbol.getDeclarations()[0];
-    return {declarationPath: declaration.getSourceFile().fileName, declaredName: symbol.getName()};
+    const declarationFile = declaration.getSourceFile().fileName;
+    const {moduleId} = this.resolveModule(declarationFile);
+    return {moduleId, filePath: declarationFile, name: symbol.getName()};
   }
 
   getMetadataFor(filePath: string): ModuleMetadata {

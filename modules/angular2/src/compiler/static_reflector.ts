@@ -58,10 +58,10 @@ export interface StaticReflectorHost {
    * @param moduleName the location imported from
    * @param containingFile for relative imports, the path of the file containing the import
    */
-  resolveModule(moduleName: string, containingFile?: string): string;
+  resolveModule(moduleName: string, containingFile?: string): ModuleContext;
 
   findDeclaration(modulePath: string,
-                  symbolName: string): {declarationPath: string, declaredName: string};
+                  symbolName: string): StaticType;
 }
 
 /**
@@ -70,7 +70,7 @@ export interface StaticReflectorHost {
  * This token is unique for a moduleId and name and can be used as a hash table key.
  */
 export class StaticType {
-  constructor(public moduleId: string, public name: string) {}
+  constructor(public moduleId: string, public filePath: string, public name: string) {}
 }
 
 /**
@@ -96,11 +96,11 @@ export class StaticReflector implements ReflectorReader {
    * @param moduleId the module identifier as an absolute path.
    * @param name the name of the type.
    */
-  public getStaticType(moduleId: string, name: string): StaticType {
-    let key = `"${moduleId}".${name}`;
+  public getStaticType(context: string, name: string): StaticType {
+    let key = `"${context}".${name}`;
     let result = this.typeCache.get(key);
     if (!isPresent(result)) {
-      result = new StaticType(moduleId, name);
+      result = new StaticType(context, context, name);
       this.typeCache.set(key, result);
     }
     return result;

@@ -28,7 +28,7 @@ export function main() {
 
     it('should get annotations for NgFor', () => {
       let NgFor = reflector.getStaticType(
-          host.resolveModule('angular2/src/common/directives/ng_for'), 'NgFor');
+          host.resolveModule('angular2/src/common/directives/ng_for').filePath, 'NgFor');
       let annotations = reflector.annotations(NgFor);
       expect(annotations.length).toEqual(1);
       let annotation = annotations[0];
@@ -39,16 +39,16 @@ export function main() {
 
     it('should get constructor for NgFor', () => {
       let NgFor = reflector.getStaticType(
-          host.resolveModule('angular2/src/common/directives/ng_for'), 'NgFor');
+          host.resolveModule('angular2/src/common/directives/ng_for').filePath, 'NgFor');
       let ViewContainerRef = reflector.getStaticType(
-          host.resolveModule('angular2/src/core/linker/view_container_ref'), 'ViewContainerRef');
+          host.resolveModule('angular2/src/core/linker/view_container_ref').filePath, 'ViewContainerRef');
       let TemplateRef = reflector.getStaticType(
-          host.resolveModule('angular2/src/core/linker/template_ref'), 'TemplateRef');
+          host.resolveModule('angular2/src/core/linker/template_ref').filePath, 'TemplateRef');
       let IterableDiffers = reflector.getStaticType(
-          host.resolveModule('angular2/src/core/change_detection/differs/iterable_differs'),
+          host.resolveModule('angular2/src/core/change_detection/differs/iterable_differs').filePath,
           'IterableDiffers');
       let ChangeDetectorRef = reflector.getStaticType(
-          host.resolveModule('angular2/src/core/change_detection/change_detector_ref'),
+          host.resolveModule('angular2/src/core/change_detection/change_detector_ref').filePath,
           'ChangeDetectorRef');
 
       let parameters = reflector.parameters(NgFor);
@@ -66,7 +66,7 @@ export function main() {
       expect(annotation.directives)
           .toEqual([
             [
-              reflector.getStaticType(host.resolveModule('angular2/src/common/directives/ng_for'),
+              reflector.getStaticType(host.resolveModule('angular2/src/common/directives/ng_for').filePath,
                                       'NgFor')
             ]
           ]);
@@ -255,7 +255,7 @@ class MockReflectorHost implements StaticReflectorHost {
                   symbolName: string): StaticType {
     return {moduleId: 'UNKNOWN', filePath: modulePath, name: symbolName};
   }
-  resolveModule(moduleName: string, containingFile?: string): string {
+  resolveModule(moduleName: string, containingFile?: string): {moduleId: string, filePath: string} {
     function splitPath(path: string): string[] { return path.split(/\/|\\/g); }
 
     function resolvePath(pathParts: string[]): string {

@@ -7,7 +7,7 @@ import * as path from 'path';
 
 import * as compiler from 'angular2/compiler';
 import {StaticReflector} from 'angular2/src/compiler/static_reflector';
-import {RuntimeMetadataResolver} from 'angular2/src/compiler/runtime_metadata';
+import {CompileMetadataResolver} from 'angular2/src/compiler/metadata_resolver';
 import {HtmlParser} from 'angular2/src/compiler/html_parser';
 import {DirectiveNormalizer} from 'angular2/src/compiler/directive_normalizer';
 import {Lexer} from 'angular2/src/compiler/expression_parser/lexer';
@@ -40,7 +40,7 @@ export class CodeGenerator {
   constructor(private ngOptions: AngularCompilerOptions, private basePath: string,
               public program: ts.Program, public host: CodeGeneratorHost,
               private staticReflector: StaticReflector,
-              private resolver: RuntimeMetadataResolver,
+              private resolver: CompileMetadataResolver,
               private compiler: compiler.OfflineCompiler) {}
 
   private generateSource(metadatas: compiler.CompileDirectiveMetadata[]) {
@@ -128,12 +128,12 @@ export class CodeGenerator {
     const normalizer = new DirectiveNormalizer(xhr, urlResolver, htmlParser);
     const parser = new Parser(new Lexer());
     const tmplParser = new TemplateParser(parser, new DomElementSchemaRegistry(),
-                                                   htmlParser, [new RouterLinkTransform(parser)]);
+                                                   htmlParser, /*console*/null, [new RouterLinkTransform(parser)]);
     const offlineCompiler = new compiler.OfflineCompiler(
         normalizer, tmplParser, new StyleCompiler(urlResolver),
         new ViewCompiler(new compiler.CompilerConfig(true, true, true)),
         new TypeScriptEmitter());
-    const resolver = new RuntimeMetadataResolver(
+    const resolver = new CompileMetadataResolver(
         new compiler.DirectiveResolver(staticReflector), new compiler.PipeResolver(staticReflector),
         new compiler.ViewResolver(staticReflector), null, null, staticReflector);
 
