@@ -452,22 +452,40 @@ gulp.task('serve.e2e.dart', ['build.js.cjs'], function(neverDone) {
 // ------------------
 // CI tests suites
 
-function runKarma(configFile, done) {
+function execProcess(name, args, done) {
   var exec = require('child_process').exec;
 
-  var cmd = process.platform === 'win32' ? 'node_modules\\.bin\\karma run ' :
-                                           'node node_modules/.bin/karma run ';
-  cmd += configFile;
-  exec(cmd, function(e, stdout) {
+  var cmd = process.platform === 'win32' ? 'node_modules\\.bin\\' + name + ' ' :
+                                           'node node_modules/.bin/' + name + ' ';
+  cmd += args;
+  exec(cmd, done);
+}
+function runKarma(configFile, done) {
+  execProcess('karma', 'run ' + configFile, function(e, stdout) {
     // ignore errors, we don't want to fail the build in the interactive (non-ci) mode
     // karma server will print all test failures
     done();
   });
 }
 
+// Gulp-typescript doesn't work with typescript@next:
+// https://github.com/ivogabe/gulp-typescript/issues/331
+function runTsc(project, done) {
+  execProcess('tsc', '-p ' + project, function(e, stdout, stderr) {
+    if (e) {
+      console.log(stdout);
+      console.error(stderr);
+      done(e);
+    } else {
+      done();
+    }
+  });
+}
+
 gulp.task('test.js', function(done) {
   runSequence('test.unit.tools/ci', 'test.transpiler.unittest', 'test.unit.js/ci',
-              'test.unit.cjs/ci', 'test.typings', 'check-public-api', sequenceComplete(done));
+              'test.unit.cjs/ci', 'test.compiler_cli', 'test.typings', 'check-public-api',
+              sequenceComplete(done));
 });
 
 gulp.task('test.dart', function(done) {
@@ -768,7 +786,7 @@ gulp.task('!checkAndReport.payload.js', function() {
                       {
                         failConditions: PAYLOAD_TESTS_CONFIG.ts[packaging].sizeLimits,
                         prefix: caseName + '_' + packaging
-                      })
+                      });
   }
 
   return PAYLOAD_TESTS_CONFIG.ts.cases.reduce(function(sizeReportingStreams, caseName) {
@@ -1026,6 +1044,26 @@ gulp.task('!test.typings',
 gulp.task('test.typings', ['build.js.cjs'],
           function(done) { runSequence('!test.typings', sequenceComplete(done)); });
 
+gulp.task('!build.compiler_cli', ['build.js.cjs'],
+          function(done) { runTsc('tools/compiler_cli/src', done); });
+
+gulp.task('!test.compiler_cli.codegen', function(done) {
+  try {
+    require('./dist/js/cjs/compiler_cli')
+        .main("tools/compiler_cli/test")
+        .then(function() { done(); })
+        .catch(function(rej) { done(new Error(rej)); });
+  } catch (err) {
+    done(err);
+  }
+});
+
+// End-to-end test for compiler CLI.
+// Calls the compiler using its command-line interface, then compiles the app with the codegen.
+// TODO(alexeagle): wire up the playground tests with offline compilation, similar to dart.
+gulp.task('test.compiler_cli', ['!build.compiler_cli'],
+          function(done) { runSequence('!test.compiler_cli.codegen', sequenceComplete(done)); });
+
 // -----------------
 // orchestrated targets
 
@@ -1091,7 +1129,7 @@ gulp.task('!build.tools', function() {
   var sourcemaps = require('gulp-sourcemaps');
   var tsc = require('gulp-typescript');
 
-  var stream = gulp.src(['tools/**/*.ts'])
+  var stream = gulp.src(['tools/**/*.ts', '!tools/compiler_cli/**'])
                    .pipe(sourcemaps.init())
                    .pipe(tsc({
                      target: 'ES5',
@@ -1512,7 +1550,7 @@ gulp.on('task_start', (e) => {
     analytics.buildSuccess('gulp <startup>', process.uptime() * 1000);
   }
 
-  analytics.buildStart('gulp ' + e.task)
+  analytics.buildStart('gulp ' + e.task);
 });
-gulp.on('task_stop', (e) => {analytics.buildSuccess('gulp ' + e.task, e.duration * 1000)});
-gulp.on('task_err', (e) => {analytics.buildError('gulp ' + e.task, e.duration * 1000)});
+gulp.on('task_stop', (e) => { analytics.buildSuccess('gulp ' + e.task, e.duration * 1000); });
+gulp.on('task_err', (e) => { analytics.buildError('gulp ' + e.task, e.duration * 1000); });

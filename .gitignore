@@ -21,6 +21,9 @@ tmp
 *.js.deps
 *.js.map
 
+# Files created by the template compiler
+**/*.ngfactory.ts
+
 # Or type definitions we mirror from github
 # (NB: these lines are removed in publish-build-artifacts.sh)
 **/typings/**/*.d.ts

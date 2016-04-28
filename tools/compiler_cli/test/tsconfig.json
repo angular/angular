@@ -1,0 +1,27 @@
+{
+    "angularCompilerOptions": {
+      // For TypeScript 1.8, we have to lay out generated files
+      // in the same source directory with your code.
+      "genDir": "."
+    },
+
+    "compilerOptions": {
+        "target": "es6",
+        "experimentalDecorators": true,
+        "noImplicitAny": false,
+        "moduleResolution": "node",
+        "outDir": "../../../dist/tools/compiler_cli/test/built",
+        "rootDir": "src",
+
+        /**
+         * These options are only needed because the test depends
+         * on locally-built sources, not NPM distributions.
+         */
+        "baseUrl": "../../..",
+        "paths": {
+          "angular2/*": ["dist/js/cjs/angular2/*"],
+          "rxjs/*": ["node_modules/rxjs/*"],
+          "ts-metadata-collector": ["dist/tools/metadata"]
+        }
+    }
+}
