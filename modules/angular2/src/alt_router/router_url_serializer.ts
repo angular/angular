@@ -10,9 +10,6 @@ export abstract class RouterUrlSerializer {
 
 export class DefaultRouterUrlSerializer extends RouterUrlSerializer {
   parse(url: string): Tree<UrlSegment> {
-    if (url.length === 0) {
-      throw new BaseException(`Invalid url '${url}'`);
-    }
     let root = new _UrlParser().parse(url);
     return new Tree<UrlSegment>(root);
   }

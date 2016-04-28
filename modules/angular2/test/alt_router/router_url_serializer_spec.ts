@@ -19,10 +19,8 @@ import {DefaultRouterUrlSerializer} from 'angular2/src/alt_router/router_url_ser
 import {UrlSegment} from 'angular2/src/alt_router/segments';
 
 export function main() {
-  describe('url parsing', () => {
+  describe('url serializer', () => {
     let url = new DefaultRouterUrlSerializer();
-
-    it('should throw on an empty urls', () => { expect(() => url.parse("")).toThrow(); });
 
     it('should parse the root url', () => {
       let tree = url.parse("/");
