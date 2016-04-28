@@ -54,14 +54,12 @@ export interface StaticReflectorHost {
   getMetadataFor(modulePath: string): {[key: string]: any};
 
   /**
-   * Resolve a module from an import statement form to an absolute path.
-   * @param moduleName the location imported from
+   * Resolve a symbol from an import statement form, to the file where it is declared.
+   * @param module the location imported from
    * @param containingFile for relative imports, the path of the file containing the import
    */
-  resolveModule(moduleName: string, containingFile?: string): ModuleContext;
-
-  findDeclaration(modulePath: string,
-                  symbolName: string): StaticType;
+  findDeclaration(module: string,
+                  symbolName: string, containingFile?: string): StaticType;
 }
 
 /**
@@ -83,11 +81,11 @@ export class StaticReflector implements ReflectorReader {
   private propertyCache = new Map<StaticType, {[key: string]: any}>();
   private parameterCache = new Map<StaticType, any[]>();
   private metadataCache = new Map<string, {[key: string]: any}>();
-  private conversionMap = new Map<StaticType, (moduleContext: string, args: any[]) => any>();
+  private conversionMap = new Map<StaticType, (moduleContext: ModuleContext, args: any[]) => any>();
 
   constructor(private host: StaticReflectorHost) { this.initializeConversionMap(); }
 
-  importUri(typeOrFunc: any): string { return (<StaticType>typeOrFunc).moduleId; }
+  importUri(typeOrFunc: any): string { return (<StaticType>typeOrFunc).filePath; }
 
   /**
    * getStaticType produces a Type whose metadata is known but whose implementation is not loaded.
@@ -96,11 +94,11 @@ export class StaticReflector implements ReflectorReader {
    * @param moduleId the module identifier as an absolute path.
    * @param name the name of the type.
    */
-  public getStaticType(context: string, name: string): StaticType {
-    let key = `"${context}".${name}`;
+  public getStaticType(context: ModuleContext, name: string): StaticType {
+    let key = `"${context.filePath}".${name}`;
     let result = this.typeCache.get(key);
     if (!isPresent(result)) {
-      result = new StaticType(context, context, name);
+      result = new StaticType(context.moduleId, context.filePath, name);
       this.typeCache.set(key, result);
     }
     return result;
@@ -111,7 +109,7 @@ export class StaticReflector implements ReflectorReader {
     if (!isPresent(annotations)) {
       let classMetadata = this.getTypeMetadata(type);
       if (isPresent(classMetadata['decorators'])) {
-        annotations = this.simplify(type.moduleId, classMetadata['decorators'], false);
+        annotations = this.simplify(type, classMetadata['decorators'], false);
       } else {
         annotations = [];
       }
@@ -128,7 +126,7 @@ export class StaticReflector implements ReflectorReader {
       propMetadata = mapStringMap(members, (propData, propName) => {
         let prop = (<any[]>propData).find(a => a['__symbolic'] == 'property');
         if (isPresent(prop) && isPresent(prop['decorators'])) {
-          return this.simplify(type.moduleId, prop['decorators'], false);
+          return this.simplify(type, prop['decorators'], false);
         } else {
           return [];
         }
@@ -146,9 +144,9 @@ export class StaticReflector implements ReflectorReader {
       let ctorData = isPresent(members) ? members['__ctor__'] : null;
       if (isPresent(ctorData)) {
         let ctor = (<any[]>ctorData).find(a => a['__symbolic'] == 'constructor');
-        let parameterTypes = <any[]>this.simplify(type.moduleId, ctor['parameters'], false);
+        let parameterTypes = <any[]>this.simplify(type, ctor['parameters'], false);
         let parameterDecorators =
-            <any[]>this.simplify(type.moduleId, ctor['parameterDecorators'], false);
+            <any[]>this.simplify(type, ctor['parameterDecorators'], false);
 
         parameters = [];
         ListWrapper.forEachWithIndex(parameterTypes, (paramType, index) => {
@@ -173,7 +171,7 @@ export class StaticReflector implements ReflectorReader {
 
   private registerDecoratorOrConstructor(type: StaticType, ctor: any,
                                          crossModuleProps: any[] = CONST_EXPR([])): void {
-    this.conversionMap.set(type, (moduleContext: string, args: any[]) => {
+    this.conversionMap.set(type, (moduleContext: ModuleContext, args: any[]) => {
       let argValues = [];
       ListWrapper.forEachWithIndex(args, (arg, index) => {
         let argValue;
@@ -191,61 +189,61 @@ export class StaticReflector implements ReflectorReader {
   }
 
   private initializeConversionMap(): void {
-    let coreDecorators = this.host.resolveModule('angular2/src/core/metadata').filePath;
-    let diDecorators = this.host.resolveModule('angular2/src/core/di/decorators').filePath;
-    let diMetadata = this.host.resolveModule('angular2/src/core/di/metadata').filePath;
-    let provider = this.host.resolveModule('angular2/src/core/di/provider').filePath;
-    this.registerDecoratorOrConstructor(this.getStaticType(provider, 'Provider'), Provider);
+    let coreDecorators = 'angular2/src/core/metadata';
+    let diDecorators = 'angular2/src/core/di/decorators';
+    let diMetadata = 'angular2/src/core/di/metadata';
+    let provider = 'angular2/src/core/di/provider';
+    this.registerDecoratorOrConstructor(this.host.findDeclaration(provider, 'Provider'), Provider);
 
-    this.registerDecoratorOrConstructor(this.getStaticType(diDecorators, 'Host'), HostMetadata);
-    this.registerDecoratorOrConstructor(this.getStaticType(diDecorators, 'Injectable'),
+    this.registerDecoratorOrConstructor(this.host.findDeclaration(diDecorators, 'Host'), HostMetadata);
+    this.registerDecoratorOrConstructor(this.host.findDeclaration(diDecorators, 'Injectable'),
                                         InjectableMetadata);
-    this.registerDecoratorOrConstructor(this.getStaticType(diDecorators, 'Self'), SelfMetadata);
-    this.registerDecoratorOrConstructor(this.getStaticType(diDecorators, 'SkipSelf'),
+    this.registerDecoratorOrConstructor(this.host.findDeclaration(diDecorators, 'Self'), SelfMetadata);
+    this.registerDecoratorOrConstructor(this.host.findDeclaration(diDecorators, 'SkipSelf'),
                                         SkipSelfMetadata);
-    this.registerDecoratorOrConstructor(this.getStaticType(diDecorators, 'Inject'), InjectMetadata);
-    this.registerDecoratorOrConstructor(this.getStaticType(diDecorators, 'Optional'),
+    this.registerDecoratorOrConstructor(this.host.findDeclaration(diDecorators, 'Inject'), InjectMetadata);
+    this.registerDecoratorOrConstructor(this.host.findDeclaration(diDecorators, 'Optional'),
                                         OptionalMetadata);
-    this.registerDecoratorOrConstructor(this.getStaticType(coreDecorators, 'Attribute'),
+    this.registerDecoratorOrConstructor(this.host.findDeclaration(coreDecorators, 'Attribute'),
                                         AttributeMetadata);
-    this.registerDecoratorOrConstructor(this.getStaticType(coreDecorators, 'Query'), QueryMetadata);
-    this.registerDecoratorOrConstructor(this.getStaticType(coreDecorators, 'ViewQuery'),
+    this.registerDecoratorOrConstructor(this.host.findDeclaration(coreDecorators, 'Query'), QueryMetadata);
+    this.registerDecoratorOrConstructor(this.host.findDeclaration(coreDecorators, 'ViewQuery'),
                                         ViewQueryMetadata);
-    this.registerDecoratorOrConstructor(this.getStaticType(coreDecorators, 'ContentChild'),
+    this.registerDecoratorOrConstructor(this.host.findDeclaration(coreDecorators, 'ContentChild'),
                                         ContentChildMetadata);
-    this.registerDecoratorOrConstructor(this.getStaticType(coreDecorators, 'ContentChildren'),
+    this.registerDecoratorOrConstructor(this.host.findDeclaration(coreDecorators, 'ContentChildren'),
                                         ContentChildrenMetadata);
-    this.registerDecoratorOrConstructor(this.getStaticType(coreDecorators, 'ViewChild'),
+    this.registerDecoratorOrConstructor(this.host.findDeclaration(coreDecorators, 'ViewChild'),
                                         ViewChildMetadata);
-    this.registerDecoratorOrConstructor(this.getStaticType(coreDecorators, 'ViewChildren'),
+    this.registerDecoratorOrConstructor(this.host.findDeclaration(coreDecorators, 'ViewChildren'),
                                         ViewChildrenMetadata);
-    this.registerDecoratorOrConstructor(this.getStaticType(coreDecorators, 'Input'), InputMetadata);
-    this.registerDecoratorOrConstructor(this.getStaticType(coreDecorators, 'Output'),
+    this.registerDecoratorOrConstructor(this.host.findDeclaration(coreDecorators, 'Input'), InputMetadata);
+    this.registerDecoratorOrConstructor(this.host.findDeclaration(coreDecorators, 'Output'),
                                         OutputMetadata);
-    this.registerDecoratorOrConstructor(this.getStaticType(coreDecorators, 'Pipe'), PipeMetadata);
-    this.registerDecoratorOrConstructor(this.getStaticType(coreDecorators, 'HostBinding'),
+    this.registerDecoratorOrConstructor(this.host.findDeclaration(coreDecorators, 'Pipe'), PipeMetadata);
+    this.registerDecoratorOrConstructor(this.host.findDeclaration(coreDecorators, 'HostBinding'),
                                         HostBindingMetadata);
-    this.registerDecoratorOrConstructor(this.getStaticType(coreDecorators, 'HostListener'),
+    this.registerDecoratorOrConstructor(this.host.findDeclaration(coreDecorators, 'HostListener'),
                                         HostListenerMetadata);
-    this.registerDecoratorOrConstructor(this.getStaticType(coreDecorators, 'Directive'),
+    this.registerDecoratorOrConstructor(this.host.findDeclaration(coreDecorators, 'Directive'),
                                         DirectiveMetadata, ['bindings', 'providers']);
-    this.registerDecoratorOrConstructor(this.getStaticType(coreDecorators, 'Component'),
+    this.registerDecoratorOrConstructor(this.host.findDeclaration(coreDecorators, 'Component'),
                                         ComponentMetadata,
                                         ['bindings', 'providers', 'directives', 'pipes']);
 
     // Note: Some metadata classes can be used directly with Provider.deps.
-    this.registerDecoratorOrConstructor(this.getStaticType(diMetadata, 'HostMetadata'),
+    this.registerDecoratorOrConstructor(this.host.findDeclaration(diMetadata, 'HostMetadata'),
                                         HostMetadata);
-    this.registerDecoratorOrConstructor(this.getStaticType(diMetadata, 'SelfMetadata'),
+    this.registerDecoratorOrConstructor(this.host.findDeclaration(diMetadata, 'SelfMetadata'),
                                         SelfMetadata);
-    this.registerDecoratorOrConstructor(this.getStaticType(diMetadata, 'SkipSelfMetadata'),
+    this.registerDecoratorOrConstructor(this.host.findDeclaration(diMetadata, 'SkipSelfMetadata'),
                                         SkipSelfMetadata);
-    this.registerDecoratorOrConstructor(this.getStaticType(diMetadata, 'OptionalMetadata'),
+    this.registerDecoratorOrConstructor(this.host.findDeclaration(diMetadata, 'OptionalMetadata'),
                                         OptionalMetadata);
   }
 
   /** @internal */
-  public simplify(moduleContext: string, value: any, crossModules: boolean): any {
+  public simplify(moduleContext: ModuleContext, value: any, crossModules: boolean): any {
     let _this = this;
 
     function simplify(expression: any): any {
@@ -332,34 +330,29 @@ export class StaticReflector implements ReflectorReader {
               if (isPresent(selectTarget) && isPrimitive(member)) return selectTarget[member];
               return null;
             case "reference":
-              let referenceModuleName;
-              let declarationPath = moduleContext;
-              let declaredName = expression['name'];
+              let staticType;
               if (isPresent(expression['module'])) {
-                referenceModuleName = _this.host.resolveModule(expression['module'], moduleContext);
-                let decl = _this.host.findDeclaration(referenceModuleName, expression['name']);
-                declarationPath = decl['declarationPath'];
-                declaredName = decl['declaredName'];
+                staticType = _this.host.findDeclaration(expression['module'], expression['name'], moduleContext.filePath);
+              } else {
+                staticType = _this.host.findDeclaration(moduleContext.filePath, expression['name'], moduleContext.filePath);
               }
               let result;
               if (crossModules || isBlank(expression['module'])) {
-                let moduleMetadata = _this.getModuleMetadata(declarationPath);
-                let declarationValue = moduleMetadata['metadata'][declaredName];
+                let moduleMetadata = _this.getModuleMetadata(staticType.filePath);
+                let declarationValue = moduleMetadata['metadata'][staticType.name];
                 if (isClassMetadata(declarationValue)) {
-                  result = _this.getStaticType(declarationPath, declaredName);
+                  result = staticType;
                 } else {
-                  result = _this.simplify(declarationPath, declarationValue, crossModules);
+                  result = _this.simplify(moduleContext, declarationValue, crossModules);
                 }
               } else {
-                result = _this.getStaticType(declarationPath, declaredName);
+                result = staticType;
               }
               return result;
             case "new":
             case "call":
               let target = expression['expression'];
-              let moduleId = _this.host.resolveModule(target['module'], moduleContext).filePath;
-              let decl = _this.host.findDeclaration(moduleId, target['name']);
-              let staticType = _this.getStaticType(decl['declarationPath'], decl['declaredName']);
+              let staticType = _this.host.findDeclaration(target['module'], target['name'], moduleContext.filePath);
               let converter = _this.conversionMap.get(staticType);
               let args = expression['arguments'];
               if (isBlank(args)) {
@@ -393,7 +386,7 @@ export class StaticReflector implements ReflectorReader {
   }
 
   private getTypeMetadata(type: StaticType): {[key: string]: any} {
-    let moduleMetadata = this.getModuleMetadata(type.moduleId);
+    let moduleMetadata = this.getModuleMetadata(type.filePath);
     let result = moduleMetadata['metadata'][type.name];
     if (!isPresent(result)) {
       result = {__symbolic: "class"};

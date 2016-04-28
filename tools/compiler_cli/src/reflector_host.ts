@@ -11,55 +11,64 @@ export class NodeReflectorHost implements StaticReflectorHost {
   constructor(private program: ts.Program, private metadataCollector: MetadataCollector,
               private compilerHost: ts.CompilerHost, private options: ts.CompilerOptions) {}
 
-  resolveModule(module: string, containingFile?: string) {
+// rename to staticref or staticsymbol
+  findDeclaration(module: string, symbolName: string, containingFile: string): StaticType {
     if (!containingFile || !containingFile.length) {
+      if (module.indexOf(".") === 0) {
+        throw new Error("Resolution of relative paths requires a containing file.");
+      }
+      // Any containing file gives the same result for absolute imports
       containingFile = 'index.ts';
     }
+
     const resolve = (m:string) => {
       const resolved = ts.resolveModuleName(m, containingFile, this.options, this.compilerHost).resolvedModule;
       return resolved ? resolved.resolvedFileName : null
     };
+
     try {
       const filePath = resolve(module);
-      let moduleId: string = null;
+      if (!filePath) {
+        throw new Error(`Could not resolve module ${module} relative to ${containingFile}`);
+      }
 
-      const parts = filePath.replace(EXT, '').split(path.sep);
+      const tc = this.program.getTypeChecker();
+      const sf = this.program.getSourceFile(filePath);
+
+      let symbol =  tc.getExportsOfModule((<any>sf).symbol).find(m => m.name === symbolName);
+      if (!symbol) {
+        throw new Error(`can't find symbol ${symbolName} exported from module ${filePath}`);
+      }
+      while (symbol && symbol.flags & ts.SymbolFlags.Alias) {// This is an alias, follow what it aliases
+        symbol = tc.getAliasedSymbol(symbol);
+      }
+      const declaration = symbol.getDeclarations()[0];
+      const declarationFile = declaration.getSourceFile().fileName;
+
+      let moduleId: string;
+      const parts = declarationFile.replace(EXT, '').split(path.sep);
       for (let index = parts.length - 1; index >=0; index--) {
         let candidate = parts.slice(index, parts.length).join(path.sep);
-        if (resolve(candidate) === filePath) {
-          moduleId = `asset:tmp/lib/${candidate}`;
+        if (resolve(candidate) === declarationFile) {
+          let pkg = parts[index];
+          let pkgPath = parts.slice(index+1, parts.length).join(path.sep);
+          moduleId = `asset:${pkg}/lib/${pkgPath}`;
           break;
         }
-        if (resolve(path.join('.', candidate)) === filePath) {
-          moduleId = `asset:app/lib/${candidate}`;
+        if (resolve('.' + path.sep + candidate) === declarationFile) {
+          moduleId = `asset:./lib/${candidate}`;
           break;
         }
       }
-      console.log(`for module ${module}, moduleId ${moduleId} path ${filePath}`);
-      return {moduleId, filePath};
+      return new StaticType(moduleId, declarationFile, symbol.getName());
     } catch (e) {
       console.error(`can't resolve module ${module} from ${containingFile}`);
       throw e;
     }
+
   }
 
-  findDeclaration(moduleName: string, symbolName: string): StaticType {
-    const tc = this.program.getTypeChecker();
-    const sf = this.program.getSourceFile(moduleName);
-
-    let symbol =  tc.getExportsOfModule((<any>sf).symbol).find(m => m.name === symbolName);
-    if (!symbol) {
-      throw new Error(`can't find symbol ${symbolName} exported from module ${moduleName}`);
-    }
-    while (symbol && symbol.flags & ts.SymbolFlags.Alias) {// This is an alias, follow what it aliases
-      symbol = tc.getAliasedSymbol(symbol);
-    }
-    const declaration = symbol.getDeclarations()[0];
-    const declarationFile = declaration.getSourceFile().fileName;
-    const {moduleId} = this.resolveModule(declarationFile);
-    return {moduleId, filePath: declarationFile, name: symbol.getName()};
-  }
-
+// TODO take a statictype
   getMetadataFor(filePath: string): ModuleMetadata {
     if (!fs.existsSync(filePath)) {
       throw new Error(`No such file '${filePath}'`);

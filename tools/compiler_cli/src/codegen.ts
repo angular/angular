@@ -41,7 +41,8 @@ export class CodeGenerator {
               public program: ts.Program, public host: CodeGeneratorHost,
               private staticReflector: StaticReflector,
               private resolver: CompileMetadataResolver,
-              private compiler: compiler.OfflineCompiler) {}
+              private compiler: compiler.OfflineCompiler,
+              private reflectorHost: NodeReflectorHost) {}
 
   private generateSource(metadatas: compiler.CompileDirectiveMetadata[]) {
     const normalize = (metadata: compiler.CompileDirectiveMetadata) => {
@@ -56,8 +57,7 @@ export class CodeGenerator {
 
   private readComponents(absSourcePath: string) {
     const result: Promise<compiler.CompileDirectiveMetadata>[] = [];
-    let metadata = this.staticReflector.getModuleMetadata(absSourcePath);
-
+    const metadata = this.staticReflector.getModuleMetadata(absSourcePath);
     if (!metadata) {
       console.log(`WARNING: no metadata found for ${absSourcePath}`);
       return result;
@@ -68,19 +68,14 @@ export class CodeGenerator {
       return result;
     }
     for (const symbol of symbols) {
-      const staticType = this.staticReflector.getStaticType(absSourcePath, symbol);
-
+      const staticType = this.reflectorHost.findDeclaration(absSourcePath, symbol, absSourcePath).moduleId;
       let directive: compiler.CompileDirectiveMetadata;
       directive = this.resolver.maybeGetDirectiveMetadata(<any>staticType);
 
       if (!directive || !directive.isComponent) {
         continue;
       }
-      result.push(this.compiler.normalizeDirectiveMetadata(directive).then((m) => {
-        m.type.moduleUrl =
-            'asset:tmp/lib/' + path.basename(absSourcePath).replace(SOURCE_EXTENSION, '');
-        return m;
-      }));
+      result.push(this.compiler.normalizeDirectiveMetadata(directive));
     }
     return result;
   }
@@ -139,7 +134,7 @@ export class CodeGenerator {
 
     return {
       generator: new CodeGenerator(ngOptions, basePath, program, wrapCompilerHost(compilerHost, parsed.options), staticReflector,
-                                   resolver, offlineCompiler)
+                                   resolver, offlineCompiler, reflectorHost)
     };
   }
 }

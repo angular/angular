@@ -400,14 +400,18 @@ function staticTypeModuleUrl(value: any): string {
   return isStaticType(value) ? value['moduleId'] : null;
 }
 
-function calcModuleUrl(reflector: ReflectorReader, type: Type,
+function calcModuleUrl(reflector: ReflectorReader, type: any,
                        cmpMetadata: md.ComponentMetadata): string {
-  var moduleId = cmpMetadata.moduleId;
-  if (isPresent(moduleId)) {
-    var scheme = getUrlScheme(moduleId);
-    return isPresent(scheme) && scheme.length > 0 ? moduleId :
-                                                    `package:${moduleId}${MODULE_SUFFIX}`;
-  } else {
-    return reflector.importUri(type);
+  if (isStaticType(type)) {
+    return type['moduleId'];
   }
+throw new Error('calcModuleUrl');
+  // if (isPresent(cmpMetadata.moduleId)) {
+  //   var moduleId = cmpMetadata.moduleId;
+  //   var scheme = getUrlScheme(moduleId);
+  //   return isPresent(scheme) && scheme.length > 0 ? moduleId :
+  //                                                   `package:${moduleId}${MODULE_SUFFIX}`;
+  // }
+  //
+  // return reflector.importUri(type);
 }
