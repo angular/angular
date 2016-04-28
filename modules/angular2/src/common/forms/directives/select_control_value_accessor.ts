@@ -21,7 +21,7 @@ import {
 
 import {MapWrapper} from 'angular2/src/facade/collection';
 
-const SELECT_VALUE_ACCESSOR = CONST_EXPR(new Provider(
+export const SELECT_VALUE_ACCESSOR = CONST_EXPR(new Provider(
     NG_VALUE_ACCESSOR, {useExisting: forwardRef(() => SelectControlValueAccessor), multi: true}));
 
 function _buildValueString(id: string, value: any): string {

@@ -23,7 +23,7 @@ import {
 } from './shared';
 import {ValidatorFn, AsyncValidatorFn} from './validators';
 
-const formControlBinding =
+export const formControlBinding =
     CONST_EXPR(new Provider(NgControl, {useExisting: forwardRef(() => NgModel)}));
 
 /**
