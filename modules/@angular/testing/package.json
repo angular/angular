@@ -1,9 +1,9 @@
 {
-  "name": "@angular/tesing",
+  "name": "@angular/testing",
   "version": "$$ANGULAR_VERSION$$",
   "description": "",
-  "main": "tesing.js",
-  "jsnext:main": "esm/tesing.js",
+  "main": "testing.js",
+  "jsnext:main": "esm/testing.js",
   "author": "angular",
   "license": "MIT",
   "peerDependencies": {

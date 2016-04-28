@@ -28,8 +28,15 @@ do
   $(npm bin)/tsc -p ${SRCDIR}/tsconfig.json
   cp ${SRCDIR}/package.json ${DESTDIR}/
 
+
+  echo "======      TSC 1.8 d.ts compat for ${DESTDIR}   ====="
+  # safely strips 'readonly' specifier from d.ts files to make them compatible with tsc 1.8
+  find ${DESTDIR} -type f -name '*.d.ts' -print0 | xargs -0 sed -i '' -e 's/\(^ *(static |private )*\)*readonly  */\1/g'
+
+
   echo "====== (esm)COMPILING: \$(npm bin)/tsc -p ${SRCDIR}/tsconfig-es2015.json ====="
   $(npm bin)/tsc -p ${SRCDIR}/tsconfig-es2015.json
+
 
   if (true); then
     echo "======      BUNDLING: ${SRCDIR} ====="

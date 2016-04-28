@@ -1,4 +1,4 @@
-import {isString, isPresent} from '@angular/facade';
+import {isString, isPresent} from '../../src/facade/lang';
 
 const SVG_PREFIX = '@svg:';
 
