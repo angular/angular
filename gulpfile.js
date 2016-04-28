@@ -5,7 +5,6 @@
 require('./tools/check-environment')(
     {requiredNpmVersion: '>=3.5.3 <4.0.0', requiredNodeVersion: '>=5.4.1 <6.0.0'});
 
-
 var fse = require('fs-extra');
 var gulp = require('gulp');
 var gulpPlugins = require('gulp-load-plugins')();
@@ -30,7 +29,6 @@ var buildRouter = require('./modules/angular1_router/build');
 var shouldLog = require('./tools/build/logging');
 var dartSdk = require('./tools/build/dart');
 var browserProvidersConf = require('./browser-providers.conf.js');
-
 
 
 var cliArgs = minimist(process.argv.slice(2));
@@ -265,14 +263,12 @@ gulp.task('build/analyze.dart', () => {
   return dartanalyzer(gulp, gulpPlugins, {dest: CONFIG.dest.dart, command: DART_SDK.ANALYZER});
 });
 
-
 gulp.task('build/analyze.ddc.dart', () => {
   var dartanalyzer = require('./tools/build/dartanalyzer');
 
   return dartanalyzer(gulp, gulpPlugins,
                       {dest: CONFIG.dest.dart, command: DART_SDK.ANALYZER, use_ddc: true});
 });
-
 
 gulp.task('build/check.apidocs.dart', () => {
   var dartapidocs = require('./tools/build/dartapidocs');
