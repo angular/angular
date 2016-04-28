@@ -17,7 +17,7 @@ export class InterpretiveAppViewInstanceFactory implements InstanceFactory {
 class _InterpretiveAppView extends AppView<any> implements DynamicInstance {
   constructor(args: any[], public props: Map<string, any>, public getters: Map<string, Function>,
               public methods: Map<string, Function>) {
-    super(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8]);
+    super(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7]);
   }
   createInternal(rootSelector: string | any): AppElement {
     var m = this.methods.get('createInternal');

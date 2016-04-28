@@ -51,8 +51,6 @@ import {
 import {StaticNodeDebugInfo, DebugContext} from './debug_context';
 import {ElementInjector} from './element_injector';
 
-const EMPTY_CONTEXT = CONST_EXPR(new Object());
-
 var _scope_check: WtfScopeFn = wtfCreateScope(`AppView#check(ascii id)`);
 
 /**
@@ -60,7 +58,7 @@ var _scope_check: WtfScopeFn = wtfCreateScope(`AppView#check(ascii id)`);
  *
  */
 export abstract class AppView<T> {
-  ref: ViewRef_;
+  ref: ViewRef_<T>;
   rootNodesOrAppElements: any[];
   allNodes: any[];
   disposables: Function[];
@@ -74,12 +72,6 @@ export abstract class AppView<T> {
   // change detection will fail.
   cdState: ChangeDetectorState = ChangeDetectorState.NeverChecked;
 
-  /**
-   * The context against which data-binding expressions in this view are evaluated against.
-   * This is always a component instance.
-   */
-  context: T = null;
-
   projectableNodes: Array<any | any[]>;
 
   destroyed: boolean = false;
@@ -90,10 +82,11 @@ export abstract class AppView<T> {
 
   private _hasExternalHostElement: boolean;
 
+  public context: T;
+
   constructor(public clazz: any, public componentType: RenderComponentType, public type: ViewType,
-              public locals: {[key: string]: any}, public viewUtils: ViewUtils,
-              public parentInjector: Injector, public declarationAppElement: AppElement,
-              public cdMode: ChangeDetectionStrategy,
+              public viewUtils: ViewUtils, public parentInjector: Injector,
+              public declarationAppElement: AppElement, public cdMode: ChangeDetectionStrategy,
               public staticNodeDebugInfos: StaticNodeDebugInfo[]) {
     this.ref = new ViewRef_(this);
     if (type === ViewType.COMPONENT || type === ViewType.HOST) {
@@ -103,27 +96,24 @@ export abstract class AppView<T> {
     }
   }
 
-  create(givenProjectableNodes: Array<any | any[]>, rootSelectorOrNode: string | any): AppElement {
-    var context;
+  create(context: T, givenProjectableNodes: Array<any | any[]>,
+         rootSelectorOrNode: string | any): AppElement {
+    this.context = context;
     var projectableNodes;
     switch (this.type) {
       case ViewType.COMPONENT:
-        context = this.declarationAppElement.component;
         projectableNodes = ensureSlotCount(givenProjectableNodes, this.componentType.slotCount);
         break;
       case ViewType.EMBEDDED:
-        context = this.declarationAppElement.parentView.context;
         projectableNodes = this.declarationAppElement.parentView.projectableNodes;
         break;
       case ViewType.HOST:
-        context = EMPTY_CONTEXT;
         // Note: Don't ensure the slot count for the projectableNodes as we store
         // them only for the contained component view (which will later check the slot count...)
         projectableNodes = givenProjectableNodes;
         break;
     }
     this._hasExternalHostElement = isPresent(rootSelectorOrNode);
-    this.context = context;
     this.projectableNodes = projectableNodes;
     if (this.debugMode) {
       this._resetDebug();
@@ -276,12 +266,6 @@ export abstract class AppView<T> {
                        null;
     return _findLastRenderNode(lastNode);
   }
-
-  hasLocal(contextName: string): boolean {
-    return StringMapWrapper.contains(this.locals, contextName);
-  }
-
-  setLocal(contextName: string, value: any): void { this.locals[contextName] = value; }
 
   /**
    * Overwritten by implementations

@@ -5,7 +5,8 @@ import {ListWrapper, Map} from 'angular2/src/facade/collection';
 const _WHEN_DEFAULT = CONST_EXPR(new Object());
 
 export class SwitchView {
-  constructor(private _viewContainerRef: ViewContainerRef, private _templateRef: TemplateRef) {}
+  constructor(private _viewContainerRef: ViewContainerRef,
+              private _templateRef: TemplateRef<Object>) {}
 
   create(): void { this._viewContainerRef.createEmbeddedView(this._templateRef); }
 
@@ -175,7 +176,7 @@ export class NgSwitchWhen {
   _view: SwitchView;
   private _switch: NgSwitch;
 
-  constructor(viewContainer: ViewContainerRef, templateRef: TemplateRef,
+  constructor(viewContainer: ViewContainerRef, templateRef: TemplateRef<Object>,
               @Host() ngSwitch: NgSwitch) {
     this._switch = ngSwitch;
     this._view = new SwitchView(viewContainer, templateRef);
@@ -195,7 +196,7 @@ export class NgSwitchWhen {
  */
 @Directive({selector: '[ngSwitchDefault]'})
 export class NgSwitchDefault {
-  constructor(viewContainer: ViewContainerRef, templateRef: TemplateRef,
+  constructor(viewContainer: ViewContainerRef, templateRef: TemplateRef<Object>,
               @Host() sswitch: NgSwitch) {
     sswitch._registerView(_WHEN_DEFAULT, new SwitchView(viewContainer, templateRef));
   }

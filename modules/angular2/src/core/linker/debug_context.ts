@@ -52,28 +52,21 @@ export class DebugContext implements RenderDebugInfo {
   get source(): string {
     return `${this._view.componentType.templateUrl}:${this._tplRow}:${this._tplCol}`;
   }
-  get locals(): {[key: string]: string} {
+  get references(): {[key: string]: any} {
     var varValues: {[key: string]: string} = {};
-    // TODO(tbosch): right now, the semantics of debugNode.locals are
-    // that it contains the variables of all elements, not just
-    // the given one. We preserve this for now to not have a breaking
-    // change, but should change this later!
-    ListWrapper.forEachWithIndex(
-        this._view.staticNodeDebugInfos,
-        (staticNodeInfo: StaticNodeDebugInfo, nodeIndex: number) => {
-          var refs = staticNodeInfo.refTokens;
-          StringMapWrapper.forEach(refs, (refToken, refName) => {
-            var varValue;
-            if (isBlank(refToken)) {
-              varValue = isPresent(this._view.allNodes) ? this._view.allNodes[nodeIndex] : null;
-            } else {
-              varValue = this._view.injectorGet(refToken, nodeIndex, null);
-            }
-            varValues[refName] = varValue;
-          });
-        });
-    StringMapWrapper.forEach(this._view.locals,
-                             (localValue, localName) => { varValues[localName] = localValue; });
+    var staticNodeInfo = this._staticNodeInfo;
+    if (isPresent(staticNodeInfo)) {
+      var refs = staticNodeInfo.refTokens;
+      StringMapWrapper.forEach(refs, (refToken, refName) => {
+        var varValue;
+        if (isBlank(refToken)) {
+          varValue = isPresent(this._view.allNodes) ? this._view.allNodes[this._nodeIndex] : null;
+        } else {
+          varValue = this._view.injectorGet(refToken, this._nodeIndex, null);
+        }
+        varValues[refName] = varValue;
+      });
+    }
     return varValues;
   }
 }

@@ -26,8 +26,10 @@ export class DebugNode {
     return isPresent(this._debugInfo) ? this._debugInfo.component : null;
   }
 
-  get locals(): {[key: string]: any} {
-    return isPresent(this._debugInfo) ? this._debugInfo.locals : null;
+  get context(): any { return isPresent(this._debugInfo) ? this._debugInfo.context : null; }
+
+  get references(): {[key: string]: any} {
+    return isPresent(this._debugInfo) ? this._debugInfo.references : null;
   }
 
   get providerTokens(): any[] {
@@ -37,8 +39,6 @@ export class DebugNode {
   get source(): string { return isPresent(this._debugInfo) ? this._debugInfo.source : null; }
 
   inject(token: any): any { return this.injector.get(token); }
-
-  getLocal(name: string): any { return this.locals[name]; }
 }
 
 export class DebugElement extends DebugNode {

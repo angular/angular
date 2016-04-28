@@ -691,15 +691,15 @@ class MultipleContentTagsComponent {
 
 @Directive({selector: '[manual]'})
 class ManualViewportDirective {
-  constructor(public vc: ViewContainerRef, public templateRef: TemplateRef) {}
-  show() { this.vc.createEmbeddedView(this.templateRef, 0); }
+  constructor(public vc: ViewContainerRef, public templateRef: TemplateRef<Object>) {}
+  show() { this.vc.createEmbeddedView(this.templateRef); }
   hide() { this.vc.clear(); }
 }
 
 @Directive({selector: '[project]'})
 class ProjectDirective {
   constructor(public vc: ViewContainerRef) {}
-  show(templateRef: TemplateRef) { this.vc.createEmbeddedView(templateRef, 0); }
+  show(templateRef: TemplateRef<Object>) { this.vc.createEmbeddedView(templateRef); }
   hide() { this.vc.clear(); }
 }
 

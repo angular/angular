@@ -338,7 +338,7 @@ export function main() {
              .then((fixture) => {
                fixture.detectChanges();
 
-               expect(fixture.debugElement.children[0].getLocal('alice')).toBeAnInstanceOf(MyDir);
+               expect(fixture.debugElement.children[0].references['alice']).toBeAnInstanceOf(MyDir);
 
                async.done();
              });

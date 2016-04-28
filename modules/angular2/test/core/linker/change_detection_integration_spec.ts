@@ -1351,11 +1351,14 @@ class OrderCheckDirective2 {
   constructor(public log: DirectiveLog, _check1: OrderCheckDirective1) {}
 }
 
+class TestLocalsContext {
+  constructor(public someLocal: string) {}
+}
+
 @Directive({selector: '[testLocals]'})
 class TestLocals {
-  constructor(templateRef: TemplateRef, vcRef: ViewContainerRef) {
-    var viewRef = vcRef.createEmbeddedView(templateRef);
-    viewRef.setLocal('someLocal', 'someLocalValue');
+  constructor(templateRef: TemplateRef<TestLocalsContext>, vcRef: ViewContainerRef) {
+    vcRef.createEmbeddedView(templateRef, new TestLocalsContext('someLocalValue'));
   }
 }
 

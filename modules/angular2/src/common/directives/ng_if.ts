@@ -27,7 +27,8 @@ import {isBlank} from 'angular2/src/facade/lang';
 export class NgIf {
   private _prevCondition: boolean = null;
 
-  constructor(private _viewContainer: ViewContainerRef, private _templateRef: TemplateRef) {}
+  constructor(private _viewContainer: ViewContainerRef, private _templateRef: TemplateRef<Object>) {
+  }
 
   set ngIf(newCondition: any /* boolean */) {
     if (newCondition && (isBlank(this._prevCondition) || !this._prevCondition)) {

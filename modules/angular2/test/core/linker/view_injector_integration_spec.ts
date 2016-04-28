@@ -206,13 +206,13 @@ class NeedsViewContainerRef {
 @Directive({selector: '[needsTemplateRef]'})
 class NeedsTemplateRef {
   templateRef;
-  constructor(ref: TemplateRef) { this.templateRef = ref; }
+  constructor(ref: TemplateRef<Object>) { this.templateRef = ref; }
 }
 
 @Directive({selector: '[optionallyNeedsTemplateRef]'})
 class OptionallyNeedsTemplateRef {
   templateRef;
-  constructor(@Optional() ref: TemplateRef) { this.templateRef = ref; }
+  constructor(@Optional() ref: TemplateRef<Object>) { this.templateRef = ref; }
 }
 
 @Directive({selector: '[directiveNeedsChangeDetectorRef]'})
