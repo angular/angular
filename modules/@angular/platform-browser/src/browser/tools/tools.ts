@@ -16,7 +16,7 @@ var context = <any>global;
  * 1. Try the change detection profiler `ng.profiler.timeChangeDetection()`
  *    then hit Enter.
  */
-export function enableDebugTools(ref: ComponentRef<any>): void {
+export function enableDebugTools<T>(ref: ComponentRef<T>): ComponentRef<T> {
   context.ng = new AngularTools(ref);
   return ref;
 }
