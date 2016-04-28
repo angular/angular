@@ -246,7 +246,7 @@ export function main() {
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            var template =
                '<div text="1"></div>' +
-               '<needs-query text="2"><div *ngFor="var i of list" [text]="i"></div></needs-query>' +
+               '<needs-query text="2"><div *ngFor="let  i of list" [text]="i"></div></needs-query>' +
                '<div text="4"></div>';
 
            tcb.overrideTemplate(MyComp, template)
@@ -268,7 +268,7 @@ export function main() {
     describe('query for TemplateRef', () => {
       it('should find TemplateRefs in the light and shadow dom',
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-           var template = '<needs-tpl><template var-x="light"></template></needs-tpl>';
+           var template = '<needs-tpl><template let-x="light"></template></needs-tpl>';
            tcb.overrideTemplate(MyComp, template)
                .createAsync(MyComp)
                .then((view) => {
@@ -284,6 +284,23 @@ export function main() {
                });
          }));
 
+      it('should find named TemplateRefs',
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+           var template =
+               '<needs-named-tpl><template let-x="light" #tpl></template></needs-named-tpl>';
+           tcb.overrideTemplate(MyComp, template)
+               .createAsync(MyComp)
+               .then((view) => {
+                 view.detectChanges();
+                 var needsTpl: NeedsNamedTpl = view.debugElement.children[0].inject(NeedsNamedTpl);
+                 expect(needsTpl.vc.createEmbeddedView(needsTpl.contentTpl).hasLocal('light'))
+                     .toBe(true);
+                 expect(needsTpl.vc.createEmbeddedView(needsTpl.viewTpl).hasLocal('shadow'))
+                     .toBe(true);
+
+                 async.done();
+               });
+         }));
     });
 
     describe('read a different token', () => {
@@ -462,9 +479,10 @@ export function main() {
     describe("querying by var binding", () => {
       it('should contain all the child directives in the light dom with the given var binding',
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-           var template = '<needs-query-by-var-binding #q>' +
-                          '<div *ngFor="#item of list" [text]="item" #textLabel="textDir"></div>' +
-                          '</needs-query-by-var-binding>';
+           var template =
+               '<needs-query-by-ref-binding #q>' +
+               '<div *ngFor="let item of list" [text]="item" #textLabel="textDir"></div>' +
+               '</needs-query-by-ref-binding>';
 
            tcb.overrideTemplate(MyComp, template)
                .createAsync(MyComp)
@@ -484,10 +502,10 @@ export function main() {
 
       it('should support querying by multiple var bindings',
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-           var template = '<needs-query-by-var-bindings #q>' +
+           var template = '<needs-query-by-ref-bindings #q>' +
                           '<div text="one" #textLabel1="textDir"></div>' +
                           '<div text="two" #textLabel2="textDir"></div>' +
-                          '</needs-query-by-var-bindings>';
+                          '</needs-query-by-ref-bindings>';
 
            tcb.overrideTemplate(MyComp, template)
                .createAsync(MyComp)
@@ -504,9 +522,10 @@ export function main() {
 
       it('should support dynamically inserted directives',
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-           var template = '<needs-query-by-var-binding #q>' +
-                          '<div *ngFor="#item of list" [text]="item" #textLabel="textDir"></div>' +
-                          '</needs-query-by-var-binding>';
+           var template =
+               '<needs-query-by-ref-binding #q>' +
+               '<div *ngFor="let item of list" [text]="item" #textLabel="textDir"></div>' +
+               '</needs-query-by-ref-binding>';
 
            tcb.overrideTemplate(MyComp, template)
                .createAsync(MyComp)
@@ -529,11 +548,11 @@ export function main() {
 
       it('should contain all the elements in the light dom with the given var binding',
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-           var template = '<needs-query-by-var-binding #q>' +
-                          '<div template="ngFor: #item of list">' +
+           var template = '<needs-query-by-ref-binding #q>' +
+                          '<div template="ngFor: let item of list">' +
                           '<div #textLabel>{{item}}</div>' +
                           '</div>' +
-                          '</needs-query-by-var-binding>';
+                          '</needs-query-by-ref-binding>';
 
            tcb.overrideTemplate(MyComp, template)
                .createAsync(MyComp)
@@ -570,7 +589,7 @@ export function main() {
 
       it('should support querying the view by using a view query',
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-           var template = '<needs-view-query-by-var-binding #q></needs-view-query-by-var-binding>';
+           var template = '<needs-view-query-by-ref-binding #q></needs-view-query-by-ref-binding>';
 
            tcb.overrideTemplate(MyComp, template)
                .createAsync(MyComp)
@@ -859,7 +878,7 @@ class InertDirective {
 @Component({
   selector: 'needs-query',
   directives: [NgFor, TextDirective],
-  template: '<div text="ignoreme"></div><b *ngFor="var dir of query">{{dir.text}}|</b>'
+  template: '<div text="ignoreme"></div><b *ngFor="let  dir of query">{{dir.text}}|</b>'
 })
 @Injectable()
 class NeedsQuery {
@@ -878,7 +897,7 @@ class NeedsFourQueries {
 @Component({
   selector: 'needs-query-desc',
   directives: [NgFor],
-  template: '<div *ngFor="var dir of query">{{dir.text}}|</div>'
+  template: '<div *ngFor="let  dir of query">{{dir.text}}|</div>'
 })
 @Injectable()
 class NeedsQueryDesc {
@@ -888,7 +907,7 @@ class NeedsQueryDesc {
   }
 }
 
-@Component({selector: 'needs-query-by-var-binding', directives: [], template: '<ng-content>'})
+@Component({selector: 'needs-query-by-ref-binding', directives: [], template: '<ng-content>'})
 @Injectable()
 class NeedsQueryByLabel {
   query: QueryList<any>;
@@ -898,7 +917,7 @@ class NeedsQueryByLabel {
 }
 
 @Component({
-  selector: 'needs-view-query-by-var-binding',
+  selector: 'needs-view-query-by-ref-binding',
   directives: [],
   template: '<div #textLabel>text</div>'
 })
@@ -908,7 +927,7 @@ class NeedsViewQueryByLabel {
   constructor(@ViewQuery("textLabel") query: QueryList<any>) { this.query = query; }
 }
 
-@Component({selector: 'needs-query-by-var-bindings', directives: [], template: '<ng-content>'})
+@Component({selector: 'needs-query-by-ref-bindings', directives: [], template: '<ng-content>'})
 @Injectable()
 class NeedsQueryByTwoLabels {
   query: QueryList<any>;
@@ -920,7 +939,7 @@ class NeedsQueryByTwoLabels {
 @Component({
   selector: 'needs-query-and-project',
   directives: [NgFor],
-  template: '<div *ngFor="var dir of query">{{dir.text}}|</div><ng-content></ng-content>'
+  template: '<div *ngFor="let  dir of query">{{dir.text}}|</div><ng-content></ng-content>'
 })
 @Injectable()
 class NeedsQueryAndProject {
@@ -975,7 +994,7 @@ class NeedsViewQueryNestedIf {
   selector: 'needs-view-query-order',
   directives: [NgFor, TextDirective, InertDirective],
   template: '<div text="1"></div>' +
-                '<div *ngFor="var i of list" [text]="i"></div>' +
+                '<div *ngFor="let  i of list" [text]="i"></div>' +
                 '<div text="4"></div>'
 })
 @Injectable()
@@ -992,7 +1011,7 @@ class NeedsViewQueryOrder {
   selector: 'needs-view-query-order-with-p',
   directives: [NgFor, TextDirective, InertDirective],
   template: '<div dir><div text="1"></div>' +
-                '<div *ngFor="var i of list" [text]="i"></div>' +
+                '<div *ngFor="let  i of list" [text]="i"></div>' +
                 '<div text="4"></div></div>'
 })
 @Injectable()
@@ -1005,7 +1024,7 @@ class NeedsViewQueryOrderWithParent {
   }
 }
 
-@Component({selector: 'needs-tpl', template: '<template var-x="shadow"></template>'})
+@Component({selector: 'needs-tpl', template: '<template let-x="shadow"></template>'})
 class NeedsTpl {
   viewQuery: QueryList<TemplateRef>;
   query: QueryList<TemplateRef>;
@@ -1014,6 +1033,13 @@ class NeedsTpl {
     this.viewQuery = viewQuery;
     this.query = query;
   }
+}
+
+@Component({selector: 'needs-named-tpl', template: '<template #tpl let-x="shadow"></template>'})
+class NeedsNamedTpl {
+  @ViewChild('tpl') viewTpl: TemplateRef;
+  @ContentChild('tpl') contentTpl: TemplateRef;
+  constructor(public vc: ViewContainerRef) {}
 }
 
 @Component({selector: 'needs-content-children-read', template: ''})
@@ -1076,6 +1102,7 @@ class NeedsViewContainerWithRead {
     NeedsViewChild,
     NeedsContentChild,
     NeedsTpl,
+    NeedsNamedTpl,
     TextDirective,
     InertDirective,
     NgIf,

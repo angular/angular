@@ -3,7 +3,8 @@ import {Injectable} from 'angular2/src/core/di';
 import * as o from '../output/output_ast';
 import {CompileElement} from './compile_element';
 import {CompileView} from './compile_view';
-import {buildView, ViewCompileDependency} from './view_builder';
+import {buildView, finishView, ViewCompileDependency} from './view_builder';
+import {bindView} from './view_binder';
 
 import {CompileDirectiveMetadata, CompilePipeMetadata} from '../compile_metadata';
 
@@ -25,7 +26,12 @@ export class ViewCompiler {
     var dependencies = [];
     var view = new CompileView(component, this._genConfig, pipes, styles, 0,
                                CompileElement.createNull(), []);
-    buildView(view, template, dependencies, statements);
+    buildView(view, template, dependencies);
+    // Need to separate binding from creation to be able to refer to
+    // variables that have been declared after usage.
+    bindView(view, template);
+    finishView(view, statements);
+
     return new ViewCompileResult(statements, view.viewFactory.name, dependencies);
   }
 }

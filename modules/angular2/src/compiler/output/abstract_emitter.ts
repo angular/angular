@@ -264,11 +264,13 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
   abstract visitExternalExpr(ast: o.ExternalExpr, ctx: EmitterVisitorContext): any;
 
   visitConditionalExpr(ast: o.ConditionalExpr, ctx: EmitterVisitorContext): any {
+    ctx.print(`(`);
     ast.condition.visitExpression(this, ctx);
     ctx.print('? ');
     ast.trueCase.visitExpression(this, ctx);
     ctx.print(': ');
     ast.falseCase.visitExpression(this, ctx);
+    ctx.print(`)`);
     return null;
   }
   visitNotExpr(ast: o.NotExpr, ctx: EmitterVisitorContext): any {

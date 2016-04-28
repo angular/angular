@@ -2,6 +2,7 @@ library angular2.transform.template_compiler.ng_compiler;
 
 import 'package:angular2/src/compiler/config.dart';
 import 'package:angular2/src/compiler/view_compiler/view_compiler.dart';
+import 'package:angular2/src/core/console.dart';
 import 'package:angular2/src/compiler/html_parser.dart';
 import 'package:angular2/src/compiler/style_compiler.dart';
 import 'package:angular2/src/compiler/offline_compiler.dart';
@@ -31,6 +32,7 @@ OfflineCompiler createTemplateCompiler(AssetReader reader,
       parser,
       new DomElementSchemaRegistry(),
       _htmlParser,
+      new Console(),
       [new RouterLinkTransform(parser)]);
 
   return new OfflineCompiler(
