@@ -28,8 +28,10 @@ import {
   Routes,
   RouterUrlSerializer,
   DefaultRouterUrlSerializer,
-  OnActivate
+  OnActivate,
+  Location
 } from 'angular2/alt_router';
+import {SpyLocation} from 'angular2/src/mock/location_mock';
 import {DOM} from 'angular2/src/platform/dom/dom_adapter';
 
 export function main() {
@@ -37,13 +39,27 @@ export function main() {
     beforeEachProviders(() => [
       provide(RouterUrlSerializer, {useClass: DefaultRouterUrlSerializer}),
       RouterOutletMap,
+      provide(Location, {useClass: SpyLocation}),
       provide(Router,
               {
-                useFactory: (resolver, urlParser, outletMap) =>
-                                new Router(RootCmp, resolver, urlParser, outletMap),
-                deps: [ComponentResolver, RouterUrlSerializer, RouterOutletMap]
+                useFactory: (resolver, urlParser, outletMap, location) =>
+                                new Router(RootCmp, resolver, urlParser, outletMap, location),
+                deps: [ComponentResolver, RouterUrlSerializer, RouterOutletMap, Location]
               })
     ]);
+
+    it('should update location when navigating',
+       fakeAsync(inject([Router, TestComponentBuilder, Location], (router, tcb, location) => {
+         let fixture = tcb.createFakeAsync(RootCmp);
+
+         router.navigateByUrl('/team/22/user/victor');
+         advance(fixture);
+         expect(location.path()).toEqual('/team/22/user/victor');
+
+         router.navigateByUrl('/team/33/simple');
+         advance(fixture);
+         expect(location.path()).toEqual('/team/33/simple');
+       })));
 
     it('should support nested routes',
        fakeAsync(inject([Router, TestComponentBuilder], (router, tcb) => {
