@@ -65,6 +65,8 @@ export class CompileView implements NameResolver {
   public literalMapCount = 0;
   public pipeCount = 0;
 
+  public componentContext: o.Expression;
+
   constructor(public component: CompileDirectiveMetadata, public genConfig: CompilerConfig,
               public pipeMetas: CompilePipeMetadata[], public styles: o.Expression,
               public viewIndex: number, public declarationElement: CompileElement,
@@ -90,6 +92,9 @@ export class CompileView implements NameResolver {
     } else {
       this.componentView = this.declarationElement.view.componentView;
     }
+    this.componentContext =
+        getPropertyInView(o.THIS_EXPR.prop('context'), this, this.componentView);
+
     var viewQueries = new CompileTokenMap<CompileQuery[]>();
     if (this.viewType === ViewType.COMPONENT) {
       var directiveInstance = o.THIS_EXPR.prop('context');
@@ -111,9 +116,8 @@ export class CompileView implements NameResolver {
       });
     }
     this.viewQueries = viewQueries;
-    templateVariableBindings.forEach((entry) => {
-      this.locals.set(entry[1], o.THIS_EXPR.prop('locals').key(o.literal(entry[0])));
-    });
+    templateVariableBindings.forEach(
+        (entry) => { this.locals.set(entry[1], o.THIS_EXPR.prop('context').prop(entry[0])); });
 
     if (!this.declarationElement.isNull()) {
       this.declarationElement.setEmbeddedView(this);

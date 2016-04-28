@@ -68,7 +68,7 @@ export function main() {
                .then((view) => {
                  view.detectChanges();
 
-                 var q = view.debugElement.children[0].getLocal('q');
+                 var q = view.debugElement.children[0].references['q'];
 
                  view.detectChanges();
 
@@ -90,7 +90,7 @@ export function main() {
                  view.debugElement.componentInstance.shouldShow = true;
                  view.detectChanges();
 
-                 var q = view.debugElement.children[0].getLocal('q');
+                 var q = view.debugElement.children[0].references['q'];
 
                  expect(q.log).toEqual([["setter", "foo"], ["init", "foo"], ["check", "foo"]]);
 
@@ -117,7 +117,7 @@ export function main() {
                .createAsync(MyComp)
                .then((view) => {
                  view.detectChanges();
-                 var q = view.debugElement.children[0].getLocal('q');
+                 var q = view.debugElement.children[0].references['q'];
 
                  expect(q.log).toEqual([["setter", "foo"], ["init", "foo"], ["check", "foo"]]);
 
@@ -146,7 +146,7 @@ export function main() {
                .createAsync(MyComp)
                .then((view) => {
                  view.detectChanges();
-                 var q = view.debugElement.children[0].getLocal('q');
+                 var q = view.debugElement.children[0].references['q'];
 
                  expect(q.log).toEqual([["setter", "foo"], ["init", "foo"], ["check", "foo"]]);
 
@@ -268,17 +268,17 @@ export function main() {
     describe('query for TemplateRef', () => {
       it('should find TemplateRefs in the light and shadow dom',
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-           var template = '<needs-tpl><template let-x="light"></template></needs-tpl>';
+           var template = '<needs-tpl><template><div>light</div></template></needs-tpl>';
            tcb.overrideTemplate(MyComp, template)
                .createAsync(MyComp)
                .then((view) => {
                  view.detectChanges();
                  var needsTpl: NeedsTpl = view.debugElement.children[0].inject(NeedsTpl);
 
-                 expect(needsTpl.vc.createEmbeddedView(needsTpl.query.first).hasLocal('light'))
-                     .toBe(true);
-                 expect(needsTpl.vc.createEmbeddedView(needsTpl.viewQuery.first).hasLocal('shadow'))
-                     .toBe(true);
+                 expect(needsTpl.vc.createEmbeddedView(needsTpl.query.first).rootNodes[0])
+                     .toHaveText('light');
+                 expect(needsTpl.vc.createEmbeddedView(needsTpl.viewQuery.first).rootNodes[0])
+                     .toHaveText('shadow');
 
                  async.done();
                });
@@ -287,18 +287,18 @@ export function main() {
       it('should find named TemplateRefs',
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            var template =
-               '<needs-named-tpl><template let-x="light" #tpl></template></needs-named-tpl>';
+               '<needs-named-tpl><template #tpl><div>light</div></template></needs-named-tpl>';
            tcb.overrideTemplate(MyComp, template)
                .createAsync(MyComp)
                .then((view) => {
                  view.detectChanges();
                  var needsTpl: NeedsNamedTpl = view.debugElement.children[0].inject(NeedsNamedTpl);
-                 expect(needsTpl.vc.createEmbeddedView(needsTpl.contentTpl).hasLocal('light'))
-                     .toBe(true);
-                 expect(needsTpl.vc.createEmbeddedView(needsTpl.viewTpl).hasLocal('shadow'))
-                     .toBe(true);
+                 expect(needsTpl.vc.createEmbeddedView(needsTpl.contentTpl).rootNodes[0])
+                     .toHaveText('light');
+                 expect(needsTpl.vc.createEmbeddedView(needsTpl.viewTpl).rootNodes[0])
+                     .toHaveText('shadow')
 
-                 async.done();
+                         async.done();
                });
          }));
     });
@@ -407,7 +407,7 @@ export function main() {
            tcb.overrideTemplate(MyComp, template)
                .createAsync(MyComp)
                .then((view) => {
-                 var q = view.debugElement.children[0].getLocal("q");
+                 var q = view.debugElement.children[0].references["q"];
                  view.detectChanges();
 
                  ObservableWrapper.subscribe(q.query.changes, (_) => {
@@ -432,8 +432,8 @@ export function main() {
            tcb.overrideTemplate(MyComp, template)
                .createAsync(MyComp)
                .then((view) => {
-                 var q1 = view.debugElement.children[0].getLocal("q1");
-                 var q2 = view.debugElement.children[0].getLocal("q2");
+                 var q1 = view.debugElement.children[0].references["q1"];
+                 var q2 = view.debugElement.children[0].children[0].references["q2"];
 
                  var firedQ2 = false;
 
@@ -457,7 +457,7 @@ export function main() {
                  view.debugElement.componentInstance.shouldShow = true;
                  view.detectChanges();
 
-                 var q: NeedsQuery = view.debugElement.children[0].getLocal('q');
+                 var q: NeedsQuery = view.debugElement.children[0].references['q'];
 
                  expect(q.query.length).toEqual(1);
 
@@ -467,7 +467,7 @@ export function main() {
                  view.debugElement.componentInstance.shouldShow = true;
                  view.detectChanges();
 
-                 var q2: NeedsQuery = view.debugElement.children[0].getLocal('q');
+                 var q2: NeedsQuery = view.debugElement.children[0].references['q'];
 
                  expect(q2.query.length).toEqual(1);
 
@@ -487,7 +487,7 @@ export function main() {
            tcb.overrideTemplate(MyComp, template)
                .createAsync(MyComp)
                .then((view) => {
-                 var q = view.debugElement.children[0].getLocal("q");
+                 var q = view.debugElement.children[0].references["q"];
 
                  view.debugElement.componentInstance.list = ['1d', '2d'];
 
@@ -510,7 +510,7 @@ export function main() {
            tcb.overrideTemplate(MyComp, template)
                .createAsync(MyComp)
                .then((view) => {
-                 var q = view.debugElement.children[0].getLocal("q");
+                 var q = view.debugElement.children[0].references["q"];
                  view.detectChanges();
 
                  expect(q.query.first.text).toEqual("one");
@@ -530,7 +530,7 @@ export function main() {
            tcb.overrideTemplate(MyComp, template)
                .createAsync(MyComp)
                .then((view) => {
-                 var q = view.debugElement.children[0].getLocal("q");
+                 var q = view.debugElement.children[0].references["q"];
 
                  view.debugElement.componentInstance.list = ['1d', '2d'];
 
@@ -557,7 +557,7 @@ export function main() {
            tcb.overrideTemplate(MyComp, template)
                .createAsync(MyComp)
                .then((view) => {
-                 var q = view.debugElement.children[0].getLocal("q");
+                 var q = view.debugElement.children[0].references["q"];
 
                  view.debugElement.componentInstance.list = ['1d', '2d'];
 
@@ -594,7 +594,7 @@ export function main() {
            tcb.overrideTemplate(MyComp, template)
                .createAsync(MyComp)
                .then((view) => {
-                 var q: NeedsViewQueryByLabel = view.debugElement.children[0].getLocal("q");
+                 var q: NeedsViewQueryByLabel = view.debugElement.children[0].references["q"];
                  view.detectChanges();
 
                  expect(q.query.first.nativeElement).toHaveText("text");
@@ -612,7 +612,7 @@ export function main() {
                .then((view) => {
                  view.detectChanges();
 
-                 var q = view.debugElement.children[0].getLocal('q');
+                 var q = view.debugElement.children[0].references['q'];
 
                  view.detectChanges();
 
@@ -633,7 +633,7 @@ export function main() {
            tcb.overrideTemplate(MyComp, template)
                .createAsync(MyComp)
                .then((view) => {
-                 var q: NeedsViewQuery = view.debugElement.children[0].getLocal("q");
+                 var q: NeedsViewQuery = view.debugElement.children[0].references["q"];
 
                  view.detectChanges();
 
@@ -650,7 +650,7 @@ export function main() {
            tcb.overrideTemplate(MyComp, template)
                .createAsync(MyComp)
                .then((view) => {
-                 var q: NeedsViewQuery = view.debugElement.children[0].getLocal("q");
+                 var q: NeedsViewQuery = view.debugElement.children[0].references["q"];
 
                  view.detectChanges();
 
@@ -667,7 +667,7 @@ export function main() {
            tcb.overrideTemplate(MyComp, template)
                .createAsync(MyComp)
                .then((view) => {
-                 var q: NeedsViewQueryIf = view.debugElement.children[0].getLocal("q");
+                 var q: NeedsViewQueryIf = view.debugElement.children[0].references["q"];
 
                  view.detectChanges();
 
@@ -690,7 +690,7 @@ export function main() {
            tcb.overrideTemplate(MyComp, template)
                .createAsync(MyComp)
                .then((view) => {
-                 var q: NeedsViewQueryNestedIf = view.debugElement.children[0].getLocal("q");
+                 var q: NeedsViewQueryNestedIf = view.debugElement.children[0].references["q"];
 
                  view.detectChanges();
 
@@ -715,7 +715,7 @@ export function main() {
            tcb.overrideTemplate(MyComp, template)
                .createAsync(MyComp)
                .then((view) => {
-                 var q: NeedsViewQueryOrder = view.debugElement.children[0].getLocal("q");
+                 var q: NeedsViewQueryOrder = view.debugElement.children[0].references["q"];
 
                  view.detectChanges();
 
@@ -738,7 +738,8 @@ export function main() {
            tcb.overrideTemplate(MyComp, template)
                .createAsync(MyComp)
                .then((view) => {
-                 var q: NeedsViewQueryOrderWithParent = view.debugElement.children[0].getLocal("q");
+                 var q: NeedsViewQueryOrderWithParent =
+                     view.debugElement.children[0].references["q"];
 
                  view.detectChanges();
 
@@ -761,7 +762,7 @@ export function main() {
            tcb.overrideTemplate(MyComp, template)
                .createAsync(MyComp)
                .then((view) => {
-                 var q: NeedsViewQueryOrder = view.debugElement.children[0].getLocal('q');
+                 var q: NeedsViewQueryOrder = view.debugElement.children[0].references['q'];
 
                  // no significance to 50, just a reasonably large cycle.
                  for (var i = 0; i < 50; i++) {
@@ -785,7 +786,7 @@ export function main() {
                .then((view) => {
                  view.detectChanges();
 
-                 var q = view.debugElement.children[0].getLocal('q');
+                 var q = view.debugElement.children[0].references['q'];
                  expect(q.query1).toBeDefined();
                  expect(q.query2).toBeDefined();
                  expect(q.query3).toBeDefined();
@@ -897,7 +898,7 @@ class NeedsFourQueries {
 @Component({
   selector: 'needs-query-desc',
   directives: [NgFor],
-  template: '<div *ngFor="let  dir of query">{{dir.text}}|</div>'
+  template: '<ng-content></ng-content><div *ngFor="let  dir of query">{{dir.text}}|</div>'
 })
 @Injectable()
 class NeedsQueryDesc {
@@ -1024,21 +1025,22 @@ class NeedsViewQueryOrderWithParent {
   }
 }
 
-@Component({selector: 'needs-tpl', template: '<template let-x="shadow"></template>'})
+@Component({selector: 'needs-tpl', template: '<template><div>shadow</div></template>'})
 class NeedsTpl {
-  viewQuery: QueryList<TemplateRef>;
-  query: QueryList<TemplateRef>;
-  constructor(@ViewQuery(TemplateRef) viewQuery: QueryList<TemplateRef>,
-              @Query(TemplateRef) query: QueryList<TemplateRef>, public vc: ViewContainerRef) {
+  viewQuery: QueryList<TemplateRef<Object>>;
+  query: QueryList<TemplateRef<Object>>;
+  constructor(@ViewQuery(TemplateRef) viewQuery: QueryList<TemplateRef<Object>>,
+              @Query(TemplateRef) query: QueryList<TemplateRef<Object>>,
+              public vc: ViewContainerRef) {
     this.viewQuery = viewQuery;
     this.query = query;
   }
 }
 
-@Component({selector: 'needs-named-tpl', template: '<template #tpl let-x="shadow"></template>'})
+@Component({selector: 'needs-named-tpl', template: '<template #tpl><div>shadow</div></template>'})
 class NeedsNamedTpl {
-  @ViewChild('tpl') viewTpl: TemplateRef;
-  @ContentChild('tpl') contentTpl: TemplateRef;
+  @ViewChild('tpl') viewTpl: TemplateRef<Object>;
+  @ContentChild('tpl') contentTpl: TemplateRef<Object>;
   constructor(public vc: ViewContainerRef) {}
 }
 
@@ -1078,7 +1080,7 @@ class NeedsViewChildWithRead {
 class NeedsViewContainerWithRead {
   @ViewChild('q', {read: ViewContainerRef}) vc: ViewContainerRef;
   @ViewChild('nonExisting', {read: ViewContainerRef}) nonExistingVar: ViewContainerRef;
-  @ContentChild(TemplateRef) template: TemplateRef;
+  @ContentChild(TemplateRef) template: TemplateRef<Object>;
 
   createView() { this.vc.createEmbeddedView(this.template); }
 }

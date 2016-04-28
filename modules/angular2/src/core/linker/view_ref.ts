@@ -38,9 +38,9 @@ export abstract class ViewRef extends ChangeDetectorRef {
  * </ul>
  * ```
  *
- * ... we have two {@link ProtoViewRef}s:
+ * ... we have two {@link TemplateRef}s:
  *
- * Outer {@link ProtoViewRef}:
+ * Outer {@link TemplateRef}:
  * ```
  * Count: {{items.length}}
  * <ul>
@@ -48,14 +48,14 @@ export abstract class ViewRef extends ChangeDetectorRef {
  * </ul>
  * ```
  *
- * Inner {@link ProtoViewRef}:
+ * Inner {@link TemplateRef}:
  * ```
  *   <li>{{item}}</li>
  * ```
  *
- * Notice that the original template is broken down into two separate {@link ProtoViewRef}s.
+ * Notice that the original template is broken down into two separate {@link TemplateRef}s.
  *
- * The outer/inner {@link ProtoViewRef}s are then assembled into views like so:
+ * The outer/inner {@link TemplateRef}s are then assembled into views like so:
  *
  * ```
  * <!-- ViewRef: outer-0 -->
@@ -68,16 +68,8 @@ export abstract class ViewRef extends ChangeDetectorRef {
  * <!-- /ViewRef: outer-0 -->
  * ```
  */
-export abstract class EmbeddedViewRef extends ViewRef {
-  /**
-   * Sets `value` of local variable called `variableName` in this View.
-   */
-  abstract setLocal(variableName: string, value: any): void;
-
-  /**
-   * Checks whether this view has a local variable called `variableName`.
-   */
-  abstract hasLocal(variableName: string): boolean;
+export abstract class EmbeddedViewRef<C> extends ViewRef {
+  get context(): C { return unimplemented(); }
 
   get rootNodes(): any[] { return <any[]>unimplemented(); };
 
@@ -87,10 +79,10 @@ export abstract class EmbeddedViewRef extends ViewRef {
   abstract destroy();
 }
 
-export class ViewRef_ implements EmbeddedViewRef {
-  constructor(private _view: AppView<any>) { this._view = _view; }
+export class ViewRef_<C> implements EmbeddedViewRef<C> {
+  constructor(private _view: AppView<C>) { this._view = _view; }
 
-  get internalView(): AppView<any> { return this._view; }
+  get internalView(): AppView<C> { return this._view; }
 
   /**
    * Return `ChangeDetectorRef`
@@ -99,9 +91,7 @@ export class ViewRef_ implements EmbeddedViewRef {
 
   get rootNodes(): any[] { return this._view.flatRootNodes; }
 
-  setLocal(variableName: string, value: any): void { this._view.setLocal(variableName, value); }
-
-  hasLocal(variableName: string): boolean { return this._view.hasLocal(variableName); }
+  get context() { return this._view.context; }
 
   get destroyed(): boolean { return this._view.destroyed; }
 

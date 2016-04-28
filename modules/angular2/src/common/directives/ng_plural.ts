@@ -76,7 +76,7 @@ export abstract class NgLocalization { abstract getPluralCategory(value: any): s
 export class NgPluralCase {
   /** @internal */
   _view: SwitchView;
-  constructor(@Attribute('ngPluralCase') public value: string, template: TemplateRef,
+  constructor(@Attribute('ngPluralCase') public value: string, template: TemplateRef<Object>,
               viewContainer: ViewContainerRef) {
     this._view = new SwitchView(viewContainer, template);
   }

@@ -512,7 +512,7 @@ class Foo {
 
 @Component({selector: 'test-cmp', directives: [NgFor, NgIf], template: ''})
 class TestComponent {
-  @ContentChild(TemplateRef) contentTpl: TemplateRef;
+  @ContentChild(TemplateRef) contentTpl: TemplateRef<Object>;
   items: any;
   constructor() { this.items = [1, 2]; }
   trackById(index: number, item: any): string { return item['id']; }
