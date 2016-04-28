@@ -48,7 +48,8 @@ if (require.main === module) {
         .then(exitCode => process.exit(exitCode))
         .catch(r => { process.exit(1); });
   } catch (e) {
-    console.error('FATAL', e.message, e.stack);
+    console.error(e.stack);
+    console.error("Compilation failed");
     process.exit(1);
   }
 }

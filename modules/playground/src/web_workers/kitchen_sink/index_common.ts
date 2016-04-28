@@ -24,8 +24,6 @@ class RedDec {
 //   ShadowDom.(http://www.html5rocks.com/en/tutorials/webcomponents/shadowdom/)
 // - Directive - add behavior to existing elements.
 
-// @Component is AtScript syntax to annotate the HelloCmp class as an Angular
-// 2.0 component.
 @Component({
   // The Selector prop tells Angular on which elements to instantiate this
   // class. The syntax supported is a basic subset of CSS selectors, for example
