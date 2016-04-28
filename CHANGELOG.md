@@ -1,3 +1,31 @@
+<a name="2.0.0-beta.17"></a>
+# 2.0.0-beta.17 (2016-04-28)
+
+
+### Bug Fixes
+
+* **changelog:** fix changelog script. ([c209836](https://github.com/angular/angular/commit/c209836))
+* **compiler:** Allow templates to access variables that are declared afterwards. ([1e8864c](https://github.com/angular/angular/commit/1e8864c)), closes [#8261](https://github.com/angular/angular/issues/8261)
+* **core:** properly evaluate expressions with conditional and boolean operators ([1ad2a02](https://github.com/angular/angular/commit/1ad2a02)), closes [#8235](https://github.com/angular/angular/issues/8235) [#8244](https://github.com/angular/angular/issues/8244) [#8282](https://github.com/angular/angular/issues/8282)
+* **metadata:** Do not attach module names to metadata. ([d964888](https://github.com/angular/angular/commit/d964888)), closes [#8225](https://github.com/angular/angular/issues/8225) [#8082](https://github.com/angular/angular/issues/8082) [#8256](https://github.com/angular/angular/issues/8256)
+* **testing:** allow test component builder to override directives from lists ([ff2ae7a](https://github.com/angular/angular/commit/ff2ae7a)), closes [#7397](https://github.com/angular/angular/issues/7397) [#8217](https://github.com/angular/angular/issues/8217)
+
+### Features
+
+* **compiler:** ElementSchema now has explicit DOM schema information ([d327ac4](https://github.com/angular/angular/commit/d327ac4)), closes [#8179](https://github.com/angular/angular/issues/8179)
+* **core:** separate refs from vars. ([d2efac1](https://github.com/angular/angular/commit/d2efac1)), closes [#7158](https://github.com/angular/angular/issues/7158) [#8264](https://github.com/angular/angular/issues/8264)
+
+
+### BREAKING CHANGES
+
+* - `#...` now always means `ref-`.
+- `<template #abc>` now defines a reference to the TemplateRef, instead of an input variable used inside of the template.
+- `#...` inside of a *ngIf, … directives is deprecated.
+  Use `let …` instead.
+- `var-...` is deprecated. Replace with `let-...` for `<template>` elements and `ref-` for non `<template>` elements.
+
+
+
 <a name="2.0.0-beta.16"></a>
 # 2.0.0-beta.16 (2016-04-26)
 
