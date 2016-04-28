@@ -14,7 +14,7 @@ export 'package:angular2/src/platform/worker_render_common.dart'
         initializeGenericWorkerRenderer;
 
 export 'package:angular2/src/platform/worker_render.dart'
-    show WORKER_RENDER_APPLICATION, WebWorkerInstance;
+    show WebWorkerInstance;
 
 export '../src/web_workers/shared/client_message_broker.dart'
     show ClientMessageBroker, ClientMessageBrokerFactory, FnArg, UiArguments;

@@ -1,7 +1,6 @@
 import {
   AsyncTestCompleter,
   describe,
-  proxy,
   it,
   iit,
   ddescribe,

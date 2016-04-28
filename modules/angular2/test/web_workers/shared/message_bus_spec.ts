@@ -6,8 +6,7 @@ import {
   expect,
   beforeEach,
   beforeEachProviders,
-  SpyObject,
-  proxy
+  SpyObject
 } from 'angular2/testing_internal';
 import {ObservableWrapper, TimerWrapper} from 'angular2/src/facade/async';
 import {MessageBus} from 'angular2/src/web_workers/shared/message_bus';
