@@ -11,7 +11,6 @@
       "@angular/common": ["../../../dist/packages-dist/common/"],
       "@angular/compiler": ["../../../dist/packages-dist/compiler/"],
       "@angular/core": ["../../../dist/packages-dist/core/"],
-      "@angular/facade": ["../../../dist/packages-dist/facade/"],
       "@angular/platform-browser": ["../../../dist/packages-dist/platform-browser/"]
     },
     "rootDir": ".",
@@ -20,7 +19,7 @@
     "target": "es5"
   },
   "files": [
-    "platform_browser_dynamic.ts",
+    "index.ts",
     "../typings/es6-collections/es6-collections.d.ts",
     "../typings/es6-promise/es6-promise.d.ts",
     "../manual_typings/globals.d.ts",

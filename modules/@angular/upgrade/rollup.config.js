@@ -1,6 +1,6 @@
 
 export default {
-  entry: '../../../dist/packages-dist/upgrade/esm/upgrade.js',
+  entry: '../../../dist/packages-dist/upgrade/esm/index.js',
   dest: '../../../dist/packages-dist/upgrade/esm/upgrade.umd.js',
   sourceMap: true,
   format: 'umd',

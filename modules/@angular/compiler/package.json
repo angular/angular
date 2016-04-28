@@ -2,9 +2,9 @@
   "name": "@angular/compiler",
   "version": "$$ANGULAR_VERSION$$",
   "description": "",
-  "main": "compiler.js",
-  "jsnext:main": "esm/compiler.js",
-  "typings": "compiler.d.ts",
+  "main": "index.js",
+  "jsnext:main": "esm/index.js",
+  "typings": "index.d.ts",
   "author": "angular",
   "license": "MIT",
   "peerDependencies": {

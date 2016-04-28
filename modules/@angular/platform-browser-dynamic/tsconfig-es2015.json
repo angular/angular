@@ -11,7 +11,6 @@
       "@angular/common": ["../../../dist/packages-dist/common/"],
       "@angular/compiler": ["../../../dist/packages-dist/compiler/"],
       "@angular/core": ["../../../dist/packages-dist/core/"],
-      "@angular/facade": ["../../../dist/packages-dist/facade/"],
       "@angular/platform-browser": ["../../../dist/packages-dist/platform-browser/"]
     },
     "rootDir": ".",
@@ -20,7 +19,7 @@
     "target": "es2015"
   },
   "files": [
-    "platform_browser_dynamic.ts",
+    "index.ts",
     "../typings/hammerjs/hammerjs.d.ts",
     "../../../node_modules/zone.js/dist/zone.js.d.ts"
   ]

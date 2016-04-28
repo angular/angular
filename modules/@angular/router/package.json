@@ -2,8 +2,9 @@
   "name": "@angular/router",
   "version": "$$ANGULAR_VERSION$$",
   "description": "",
-  "main": "router.js",
-  "jsnext:main": "esm/router.js",
+  "main": "index.js",
+  "jsnext:main": "esm/index.js",
+  "typins": "index.d.ts",
   "author": "angular",
   "license": "MIT",
   "peerDependencies": {

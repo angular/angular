@@ -2,9 +2,9 @@
   "name": "@angular/http",
   "version": "$$ANGULAR_VERSION$$",
   "description": "",
-  "main": "http.js",
-  "jsnext:main": "esm/http.js",
-  "typings": "http.d.ts",
+  "main": "index.js",
+  "jsnext:main": "esm/index.js",
+  "typings": "index.d.ts",
   "author": "angular",
   "license": "MIT",
   "peerDependencies": {

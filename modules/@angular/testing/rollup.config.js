@@ -1,6 +1,6 @@
 
 export default {
-  entry: '../../../dist/packages-dist/testing/esm/testing.js',
+  entry: '../../../dist/packages-dist/testing/esm/index.js',
   dest: '../../../dist/packages-dist/testing/esm/testing.umd.js',
   sourceMap: true,
   format: 'umd',

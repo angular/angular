@@ -2,9 +2,9 @@
   "name": "@angular/core",
   "version": "$$ANGULAR_VERSION$$",
   "description": "",
-  "main": "core.js",
-  "jsnext:main": "esm/core.js",
-  "typings": "core.d.ts",
+  "main": "index.js",
+  "jsnext:main": "esm/index.js",
+  "typings": "index.d.ts",
   "author": "angular",
   "license": "MIT",
   "peerDependencies": {

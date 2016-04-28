@@ -2,9 +2,9 @@
   "name": "@angular/platform-browser-dynamic",
   "version": "$$ANGULAR_VERSION$$",
   "description": "",
-  "main": "platform_browser_dynamic.js",
-  "jsnext:main": "esm/platform_browser_dynamic.js",
-  "typings": "platform_browser_dynamic.d.ts",
+  "main": "index.js",
+  "jsnext:main": "esm/index.js",
+  "typings": "index.d.ts",
   "author": "angular",
   "license": "MIT",
   "peerDependencies": {

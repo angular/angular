@@ -8,9 +8,9 @@
     "moduleResolution": "node",
     "outDir": "../../../dist/packages-dist/platform-browser/esm",
     "paths": {
-      "@angular/core": ["../../../dist/packages-dist/core/core.d.ts"],
-      "@angular/common": ["../../../dist/packages-dist/common/common.d.ts"],
-      "@angular/compiler": ["../../../dist/packages-dist/compiler/compiler.d.ts"]
+      "@angular/core": ["../../../dist/packages-dist/core/"],
+      "@angular/common": ["../../../dist/packages-dist/common/"],
+      "@angular/compiler": ["../../../dist/packages-dist/compiler/"]
     },
     "rootDir": ".",
     "sourceMap": true,
@@ -18,7 +18,7 @@
     "target": "es2015"
   },
   "files": [
-    "platform_browser.ts",
+    "index.ts",
     "../typings/hammerjs/hammerjs.d.ts",
     "../../../node_modules/zone.js/dist/zone.js.d.ts"
   ]

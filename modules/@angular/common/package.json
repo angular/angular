@@ -2,9 +2,9 @@
   "name": "@angular/common",
   "version": "$$ANGULAR_VERSION$$",
   "description": "",
-  "main": "common.js",
-  "jsnext:main": "esm/common.js",
-  "typings": "common.d.ts",
+  "main": "index.js",
+  "jsnext:main": "esm/index.js",
+  "typings": "index.d.ts",
   "author": "angular",
   "license": "MIT",
   "peerDependencies": {
