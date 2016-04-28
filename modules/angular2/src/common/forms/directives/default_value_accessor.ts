@@ -2,7 +2,7 @@ import {Directive, ElementRef, Renderer, Self, forwardRef, Provider} from 'angul
 import {NG_VALUE_ACCESSOR, ControlValueAccessor} from './control_value_accessor';
 import {isBlank, CONST_EXPR} from 'angular2/src/facade/lang';
 
-const DEFAULT_VALUE_ACCESSOR = CONST_EXPR(new Provider(
+export const DEFAULT_VALUE_ACCESSOR = CONST_EXPR(new Provider(
     NG_VALUE_ACCESSOR, {useExisting: forwardRef(() => DefaultValueAccessor), multi: true}));
 
 /**
