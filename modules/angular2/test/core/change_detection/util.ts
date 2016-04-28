@@ -1,8 +1,9 @@
-import {isBlank, CONST_EXPR} from 'angular2/src/facade/lang';
+import {isBlank} from 'angular2/src/facade/lang';
 
 export function iterableChangesAsString(
-    {collection = CONST_EXPR([]), previous = CONST_EXPR([]), additions = CONST_EXPR([]),
-     moves = CONST_EXPR([]), removals = CONST_EXPR([]), identityChanges = CONST_EXPR([])}) {
+    {collection = /*@ts2dart_const*/[], previous = /*@ts2dart_const*/[],
+     additions = /*@ts2dart_const*/[], moves = /*@ts2dart_const*/[],
+     removals = /*@ts2dart_const*/[], identityChanges = /*@ts2dart_const*/[]}) {
   return "collection: " + collection.join(', ') + "\n" + "previous: " + previous.join(', ') + "\n" +
          "additions: " + additions.join(', ') + "\n" + "moves: " + moves.join(', ') + "\n" +
          "removals: " + removals.join(', ') + "\n" + "identityChanges: " +

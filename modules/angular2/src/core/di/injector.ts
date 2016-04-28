@@ -1,8 +1,7 @@
-import {CONST_EXPR} from 'angular2/src/facade/lang';
 import {unimplemented} from 'angular2/src/facade/exceptions';
 
-const _THROW_IF_NOT_FOUND = CONST_EXPR(new Object());
-export const THROW_IF_NOT_FOUND = _THROW_IF_NOT_FOUND;
+const _THROW_IF_NOT_FOUND = /*@ts2dart_const*/ new Object();
+export const THROW_IF_NOT_FOUND = /*@ts2dart_const*/ _THROW_IF_NOT_FOUND;
 
 export abstract class Injector {
   static THROW_IF_NOT_FOUND = _THROW_IF_NOT_FOUND;

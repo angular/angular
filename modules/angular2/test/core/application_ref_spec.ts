@@ -66,8 +66,8 @@ export function main() {
       var appInjector = ReflectiveInjector.resolveAndCreate(
           [
             APPLICATION_CORE_PROVIDERS,
-            new Provider(Console, {useValue: new _MockConsole()}),
-            new Provider(ExceptionHandler, {useValue: new ExceptionHandler(errorLogger, false)}),
+            {provide: Console, useValue: new _MockConsole()},
+            {provide: ExceptionHandler, useValue: new ExceptionHandler(errorLogger, false)},
             new Provider(ComponentResolver,
                          {useValue: new _MockComponentResolver(someCompFactory)}),
             providers
@@ -117,7 +117,7 @@ export function main() {
              initializerDone = true;
            }, 1);
            var app = createApplication(
-               [new Provider(APP_INITIALIZER, {useValue: () => completer.promise, multi: true})]);
+               [{provide: APP_INITIALIZER, useValue: () => completer.promise, multi: true}]);
            coreLoadAndBootstrap(app.injector, MyComp)
                .then((compRef) => {
                  expect(initializerDone).toBe(true);

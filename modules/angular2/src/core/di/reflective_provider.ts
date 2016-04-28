@@ -1,13 +1,5 @@
-import {
-  Type,
-  isBlank,
-  isPresent,
-  CONST,
-  CONST_EXPR,
-  isArray,
-  isType
-} from 'angular2/src/facade/lang';
-import {MapWrapper, ListWrapper} from 'angular2/src/facade/collection';
+import {Type, isBlank, isPresent, isArray, isType} from 'angular2/src/facade/lang';
+import {MapWrapper, ListWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
 import {reflector} from 'angular2/src/core/reflection/reflection';
 import {ReflectiveKey} from './reflective_key';
 import {
@@ -26,6 +18,7 @@ import {
 } from './reflective_exceptions';
 import {resolveForwardRef} from './forward_ref';
 import {Provider, ProviderBuilder, provide} from './provider';
+import {isProviderLiteral, createProvider} from './provider_util';
 
 /**
  * `Dependency` is used by the framework to extend DI.
@@ -40,7 +33,7 @@ export class ReflectiveDependency {
   }
 }
 
-const _EMPTY_LIST = CONST_EXPR([]);
+const _EMPTY_LIST = /*@ts2dart_const*/[];
 
 /**
  * An internal resolved representation of a {@link Provider} used by the {@link Injector}.
@@ -144,7 +137,7 @@ export function resolveReflectiveProvider(provider: Provider): ResolvedReflectiv
  * Resolve a list of Providers.
  */
 export function resolveReflectiveProviders(
-    providers: Array<Type | Provider | any[]>): ResolvedReflectiveProvider[] {
+    providers: Array<Type | Provider | {[k: string]: any} | any[]>): ResolvedReflectiveProvider[] {
   var normalized = _normalizeProviders(providers, []);
   var resolved = normalized.map(resolveReflectiveProvider);
   return MapWrapper.values(
@@ -188,14 +181,18 @@ export function mergeResolvedReflectiveProviders(
   return normalizedProvidersMap;
 }
 
-function _normalizeProviders(providers: Array<Type | Provider | ProviderBuilder | any[]>,
-                             res: Provider[]): Provider[] {
+function _normalizeProviders(
+    providers: Array<Type | Provider | {[k: string]: any} | ProviderBuilder | any[]>,
+    res: Provider[]): Provider[] {
   providers.forEach(b => {
     if (b instanceof Type) {
       res.push(provide(b, {useClass: b}));
 
     } else if (b instanceof Provider) {
       res.push(b);
+
+    } else if (isProviderLiteral(b)) {
+      res.push(createProvider(b));
 
     } else if (b instanceof Array) {
       _normalizeProviders(b, res);

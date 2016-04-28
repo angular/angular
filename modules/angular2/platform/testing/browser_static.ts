@@ -26,7 +26,6 @@ import {BrowserDetection} from 'angular2/src/testing/utils';
 
 import {ELEMENT_PROBE_PROVIDERS} from 'angular2/platform/common_dom';
 
-import {CONST_EXPR} from 'angular2/src/facade/lang';
 
 import {Log} from 'angular2/src/testing/utils';
 
@@ -39,30 +38,30 @@ function initBrowserTests() {
  * Default platform providers for testing without a compiler.
  */
 export const TEST_BROWSER_STATIC_PLATFORM_PROVIDERS: Array<any /*Type | Provider | any[]*/> =
-    CONST_EXPR([
+    /*@ts2dart_const*/[
       PLATFORM_COMMON_PROVIDERS,
-      new Provider(PLATFORM_INITIALIZER, {useValue: initBrowserTests, multi: true})
-    ]);
+      {provide: PLATFORM_INITIALIZER, useValue: initBrowserTests, multi: true}
+    ];
 
 export const ADDITIONAL_TEST_BROWSER_PROVIDERS: Array<any /*Type | Provider | any[]*/> =
-    CONST_EXPR([
-      new Provider(APP_ID, {useValue: 'a'}),
+    /*@ts2dart_const*/[
+      {provide: APP_ID, useValue: 'a'},
       ELEMENT_PROBE_PROVIDERS,
-      new Provider(DirectiveResolver, {useClass: MockDirectiveResolver}),
-      new Provider(ViewResolver, {useClass: MockViewResolver}),
+      {provide: DirectiveResolver, useClass: MockDirectiveResolver},
+      {provide: ViewResolver, useClass: MockViewResolver},
       Log,
       TestComponentBuilder,
-      new Provider(NgZone, {useClass: MockNgZone}),
-      new Provider(LocationStrategy, {useClass: MockLocationStrategy}),
-      new Provider(AnimationBuilder, {useClass: MockAnimationBuilder}),
-    ]);
+      {provide: NgZone, useClass: MockNgZone},
+      {provide: LocationStrategy, useClass: MockLocationStrategy},
+      {provide: AnimationBuilder, useClass: MockAnimationBuilder},
+    ];
 
 /**
  * Default application providers for testing without a compiler.
  */
 export const TEST_BROWSER_STATIC_APPLICATION_PROVIDERS: Array<any /*Type | Provider | any[]*/> =
-    CONST_EXPR([
+    /*@ts2dart_const*/[
       BROWSER_APP_COMMON_PROVIDERS,
-      new Provider(XHR, {useClass: XHRImpl}),
+      {provide: XHR, useClass: XHRImpl},
       ADDITIONAL_TEST_BROWSER_PROVIDERS
-    ]);
+    ];

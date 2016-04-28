@@ -2,8 +2,6 @@ import {bootstrap} from 'angular2/platform/browser';
 import {Component, Directive, Host, forwardRef, Provider, Injectable} from 'angular2/core';
 import {NgIf, NgFor, FORM_DIRECTIVES} from 'angular2/common';
 
-import {CONST_EXPR} from 'angular2/src/facade/lang';
-
 
 /**
  * You can find the Angular 1 implementation of this example here:

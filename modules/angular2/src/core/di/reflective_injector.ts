@@ -14,7 +14,7 @@ import {
   InvalidProviderError,
   OutOfBoundsError
 } from './reflective_exceptions';
-import {Type, CONST_EXPR, isPresent} from 'angular2/src/facade/lang';
+import {Type, isPresent} from 'angular2/src/facade/lang';
 import {BaseException, unimplemented} from 'angular2/src/facade/exceptions';
 import {ReflectiveKey} from './reflective_key';
 import {SelfMetadata, HostMetadata, SkipSelfMetadata} from './metadata';
@@ -24,7 +24,7 @@ var __unused: Type;  // avoid unused import when Type union types are erased
 
 // Threshold for the dynamic version
 const _MAX_CONSTRUCTION_COUNTER = 10;
-const UNDEFINED = CONST_EXPR(new Object());
+const UNDEFINED = /*@ts2dart_const*/ new Object();
 
 export interface ReflectiveProtoInjectorStrategy {
   getProviderAtIndex(index: number): ResolvedReflectiveProvider;
@@ -391,7 +391,8 @@ export abstract class ReflectiveInjector implements Injector {
    *
    * See {@link ReflectiveInjector#fromResolvedProviders} for more info.
    */
-  static resolve(providers: Array<Type | Provider | any[]>): ResolvedReflectiveProvider[] {
+  static resolve(providers: Array<Type | Provider | {[k: string]: any} | any[]>):
+      ResolvedReflectiveProvider[] {
     return resolveReflectiveProviders(providers);
   }
 
@@ -421,7 +422,7 @@ export abstract class ReflectiveInjector implements Injector {
    * because it needs to resolve the passed-in providers first.
    * See {@link Injector#resolve} and {@link Injector#fromResolvedProviders}.
    */
-  static resolveAndCreate(providers: Array<Type | Provider | any[]>,
+  static resolveAndCreate(providers: Array<Type | Provider | {[k: string]: any} | any[]>,
                           parent: Injector = null): ReflectiveInjector {
     var ResolvedReflectiveProviders = ReflectiveInjector.resolve(providers);
     return ReflectiveInjector.fromResolvedProviders(ResolvedReflectiveProviders, parent);
@@ -512,7 +513,8 @@ export abstract class ReflectiveInjector implements Injector {
    * because it needs to resolve the passed-in providers first.
    * See {@link Injector#resolve} and {@link Injector#createChildFromResolved}.
    */
-  resolveAndCreateChild(providers: Array<Type | Provider | any[]>): ReflectiveInjector {
+  resolveAndCreateChild(
+      providers: Array<Type | Provider | {[k: string]: any} | any[]>): ReflectiveInjector {
     return unimplemented();
   }
 
@@ -623,7 +625,7 @@ export class ReflectiveInjector_ implements ReflectiveInjector {
    */
   debugContext(): any { return this._debugContext(); }
 
-  get(token: any, notFoundValue: any = THROW_IF_NOT_FOUND): any {
+  get(token: any, notFoundValue: any = /*@ts2dart_const*/ THROW_IF_NOT_FOUND): any {
     return this._getByKey(ReflectiveKey.get(token), null, null, notFoundValue);
   }
 

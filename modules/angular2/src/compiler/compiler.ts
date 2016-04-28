@@ -12,8 +12,7 @@ export {ViewResolver} from './view_resolver';
 export {DirectiveResolver} from './directive_resolver';
 export {PipeResolver} from './pipe_resolver';
 
-import {assertionsEnabled, Type, CONST_EXPR} from 'angular2/src/facade/lang';
-import {provide, Provider} from 'angular2/src/core/di';
+import {assertionsEnabled, Type} from 'angular2/src/facade/lang';
 import {TemplateParser} from 'angular2/src/compiler/template_parser';
 import {HtmlParser} from 'angular2/src/compiler/html_parser';
 import {DirectiveNormalizer} from 'angular2/src/compiler/directive_normalizer';
@@ -40,7 +39,7 @@ function _createCompilerConfig() {
  * A set of providers that provide `RuntimeCompiler` and its dependencies to use for
  * template compilation.
  */
-export const COMPILER_PROVIDERS: Array<Type | Provider | any[]> = CONST_EXPR([
+export const COMPILER_PROVIDERS: Array<Type | {[k: string]: any} | any[]> = /*@ts2dart_const*/[
   Lexer,
   Parser,
   HtmlParser,
@@ -50,13 +49,13 @@ export const COMPILER_PROVIDERS: Array<Type | Provider | any[]> = CONST_EXPR([
   DEFAULT_PACKAGE_URL_PROVIDER,
   StyleCompiler,
   ViewCompiler,
-  new Provider(CompilerConfig, {useFactory: _createCompilerConfig, deps: []}),
+  {provide: CompilerConfig, useFactory: _createCompilerConfig, deps: []},
   RuntimeCompiler,
-  new Provider(ComponentResolver, {useExisting: RuntimeCompiler}),
+  {provide: ComponentResolver, useExisting: RuntimeCompiler},
   DomElementSchemaRegistry,
-  new Provider(ElementSchemaRegistry, {useExisting: DomElementSchemaRegistry}),
+  {provide: ElementSchemaRegistry, useExisting: DomElementSchemaRegistry},
   UrlResolver,
   ViewResolver,
   DirectiveResolver,
   PipeResolver
-]);
+];

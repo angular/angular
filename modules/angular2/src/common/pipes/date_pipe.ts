@@ -4,7 +4,6 @@ import {
   isPresent,
   Date,
   DateWrapper,
-  CONST,
   isBlank,
   FunctionWrapper
 } from 'angular2/src/facade/lang';
@@ -84,7 +83,6 @@ var defaultLocale: string = 'en-US';
  *
  * {@example core/pipes/ts/date_pipe/date_pipe_example.ts region='DatePipe'}
  */
-@CONST()
 @Pipe({name: 'date', pure: true})
 @Injectable()
 export class DatePipe implements PipeTransform {

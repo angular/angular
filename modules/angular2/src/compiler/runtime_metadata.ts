@@ -39,6 +39,7 @@ import {
   SkipSelfMetadata
 } from 'angular2/src/core/di/metadata';
 import {ReflectorReader} from 'angular2/src/core/reflection/reflector_reader';
+import {isProviderLiteral, createProvider} from '../core/di/provider_util';
 
 @Injectable()
 export class RuntimeMetadataResolver {
@@ -255,6 +256,8 @@ export class RuntimeMetadataResolver {
         return this.getProvidersMetadata(provider);
       } else if (provider instanceof Provider) {
         return this.getProviderMetadata(provider);
+      } else if (isProviderLiteral(provider)) {
+        return this.getProviderMetadata(createProvider(provider));
       } else {
         return this.getTypeMetadata(provider, null);
       }

@@ -6,7 +6,6 @@ import {
   assertionsEnabled,
   print,
   IS_DART,
-  CONST_EXPR,
   lockMode,
   isPromise
 } from 'angular2/src/facade/lang';
@@ -374,7 +373,7 @@ export class ApplicationRef_ extends ApplicationRef {
       }
 
       this._loadComponent(compRef);
-      let c = this._injector.get(Console);
+      let c: Console = this._injector.get(Console);
       if (assertionsEnabled()) {
         c.log(
             "Angular 2 is running in the development mode. Call enableProdMode() to enable the production mode.");
@@ -436,13 +435,16 @@ export class ApplicationRef_ extends ApplicationRef {
  * @internal
  */
 export const PLATFORM_CORE_PROVIDERS =
-    CONST_EXPR([PlatformRef_, CONST_EXPR(new Provider(PlatformRef, {useExisting: PlatformRef_}))]);
+    /*@ts2dart_const*/[
+      PlatformRef_,
+      /*@ts2dart_const*/ ({provide: PlatformRef, useExisting: PlatformRef_})
+    ];
 
 /**
  * @internal
  */
-export const APPLICATION_CORE_PROVIDERS = CONST_EXPR([
-  CONST_EXPR(new Provider(NgZone, {useFactory: createNgZone, deps: CONST_EXPR([])})),
+export const APPLICATION_CORE_PROVIDERS = /*@ts2dart_const*/[
+  {provide: NgZone, useFactory: createNgZone, deps: []},
   ApplicationRef_,
-  CONST_EXPR(new Provider(ApplicationRef, {useExisting: ApplicationRef_}))
-]);
+  {provide: ApplicationRef, useExisting: ApplicationRef_}
+];

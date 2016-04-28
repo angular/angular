@@ -37,7 +37,6 @@ import {
 import {DomEventsPlugin} from 'angular2/src/platform/dom/events/dom_events';
 import {LocationStrategy} from 'angular2/platform/common';
 
-import {CONST_EXPR} from 'angular2/src/facade/lang';
 
 import {Log} from 'angular2/src/testing/utils';
 
@@ -49,10 +48,12 @@ function initServerTests() {
 /**
  * Default platform providers for testing.
  */
-export const TEST_SERVER_PLATFORM_PROVIDERS: Array<any /*Type | Provider | any[]*/> = CONST_EXPR([
-  PLATFORM_COMMON_PROVIDERS,
-  new Provider(PLATFORM_INITIALIZER, {useValue: initServerTests, multi: true})
-]);
+export const TEST_SERVER_PLATFORM_PROVIDERS: Array<any /*Type | Provider | any[]*/> =
+    /*@ts2dart_const*/[
+      PLATFORM_COMMON_PROVIDERS,
+      {provide: PLATFORM_INITIALIZER, useValue: initServerTests, multi: true}
+
+    ];
 
 function appDoc() {
   try {
@@ -66,26 +67,26 @@ function appDoc() {
  * Default application providers for testing.
  */
 export const TEST_SERVER_APPLICATION_PROVIDERS: Array<any /*Type | Provider | any[]*/> =
-    CONST_EXPR([
-      // TODO(julie): when angular2/platform/server is available, use that instead of making our own
+    /*@ts2dart_const*/[
+      // TODO(julie: when angular2/platform/server is available, use that instead of making our own
       // list here.
       APPLICATION_COMMON_PROVIDERS,
       COMPILER_PROVIDERS,
-      new Provider(DOCUMENT, {useFactory: appDoc}),
-      new Provider(DomRootRenderer, {useClass: DomRootRenderer_}),
-      new Provider(RootRenderer, {useExisting: DomRootRenderer}),
+      {provide: DOCUMENT, useFactory: appDoc},
+      {provide: DomRootRenderer, useClass: DomRootRenderer_},
+      {provide: RootRenderer, useExisting: DomRootRenderer},
       EventManager,
-      new Provider(EVENT_MANAGER_PLUGINS, {useClass: DomEventsPlugin, multi: true}),
-      new Provider(XHR, {useClass: XHR}),
-      new Provider(APP_ID, {useValue: 'a'}),
-      new Provider(SharedStylesHost, {useExisting: DomSharedStylesHost}),
+      {provide: EVENT_MANAGER_PLUGINS, useClass: DomEventsPlugin, multi: true},
+      {provide: XHR, useClass: XHR},
+      {provide: APP_ID, useValue: 'a'},
+      {provide: SharedStylesHost, useExisting: DomSharedStylesHost},
       DomSharedStylesHost,
       ELEMENT_PROBE_PROVIDERS,
-      new Provider(DirectiveResolver, {useClass: MockDirectiveResolver}),
-      new Provider(ViewResolver, {useClass: MockViewResolver}),
+      {provide: DirectiveResolver, useClass: MockDirectiveResolver},
+      {provide: ViewResolver, useClass: MockViewResolver},
       Log,
       TestComponentBuilder,
-      new Provider(NgZone, {useClass: MockNgZone}),
-      new Provider(LocationStrategy, {useClass: MockLocationStrategy}),
-      new Provider(AnimationBuilder, {useClass: MockAnimationBuilder}),
-    ]);
+      {provide: NgZone, useClass: MockNgZone},
+      {provide: LocationStrategy, useClass: MockLocationStrategy},
+      {provide: AnimationBuilder, useClass: MockAnimationBuilder},
+    ];

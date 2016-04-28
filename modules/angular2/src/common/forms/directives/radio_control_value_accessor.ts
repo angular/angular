@@ -17,11 +17,14 @@ import {
   ControlValueAccessor
 } from 'angular2/src/common/forms/directives/control_value_accessor';
 import {NgControl} from 'angular2/src/common/forms/directives/ng_control';
-import {CONST_EXPR, looseIdentical, isPresent} from 'angular2/src/facade/lang';
+import {looseIdentical, isPresent} from 'angular2/src/facade/lang';
 import {ListWrapper} from 'angular2/src/facade/collection';
 
-const RADIO_VALUE_ACCESSOR = CONST_EXPR(new Provider(
-    NG_VALUE_ACCESSOR, {useExisting: forwardRef(() => RadioControlValueAccessor), multi: true}));
+const RADIO_VALUE_ACCESSOR = /*@ts2dart_const*/ {
+  provide: NG_VALUE_ACCESSOR,
+  useExisting: forwardRef(() => RadioControlValueAccessor),
+  multi: true
+};
 
 
 /**

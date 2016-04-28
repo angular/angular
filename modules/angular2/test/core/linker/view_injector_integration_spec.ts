@@ -17,7 +17,7 @@ import {
   fakeAsync,
   tick
 } from 'angular2/testing_internal';
-import {isBlank, isPresent, stringify, Type, CONST_EXPR} from 'angular2/src/facade/lang';
+import {isBlank, isPresent, stringify, Type} from 'angular2/src/facade/lang';
 import {
   ViewContainerRef,
   TemplateRef,
@@ -49,7 +49,7 @@ import {
 import {NgIf} from 'angular2/common';
 import {DOM} from 'angular2/src/platform/dom/dom_adapter';
 
-const ALL_DIRECTIVES = CONST_EXPR([
+const ALL_DIRECTIVES = /*@ts2dart_const*/[
   forwardRef(() => SimpleDirective),
   forwardRef(() => CycleDirective),
   forwardRef(() => SimpleComponent),
@@ -81,16 +81,16 @@ const ALL_DIRECTIVES = CONST_EXPR([
   forwardRef(() => PushComponentNeedsChangeDetectorRef),
   forwardRef(() => NeedsHostAppService),
   NgIf
-]);
+];
 
-const ALL_PIPES = CONST_EXPR([
+const ALL_PIPES = /*@ts2dart_const*/[
   forwardRef(() => PipeNeedsChangeDetectorRef),
   forwardRef(() => PipeNeedsService),
   forwardRef(() => PurePipe),
   forwardRef(() => ImpurePipe),
   forwardRef(() => DuplicatePipe1),
   forwardRef(() => DuplicatePipe2),
-]);
+];
 
 @Directive({selector: '[simpleDirective]'})
 class SimpleDirective {

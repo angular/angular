@@ -17,7 +17,6 @@ import {
 
 import {
   IS_DART,
-  CONST_EXPR,
   Type,
   isPresent,
   isBlank,
@@ -1072,7 +1071,7 @@ export function main() {
   });
 }
 
-const ALL_DIRECTIVES = CONST_EXPR([
+const ALL_DIRECTIVES = /*@ts2dart_const*/[
   forwardRef(() => TestDirective),
   forwardRef(() => TestComponent),
   forwardRef(() => AnotherComponent),
@@ -1083,9 +1082,9 @@ const ALL_DIRECTIVES = CONST_EXPR([
   forwardRef(() => OrderCheckDirective2),
   forwardRef(() => OrderCheckDirective0),
   forwardRef(() => OrderCheckDirective1),
-]);
+];
 
-const ALL_PIPES = CONST_EXPR([
+const ALL_PIPES = /*@ts2dart_const*/[
   forwardRef(() => CountingPipe),
   forwardRef(() => CountingImpurePipe),
   forwardRef(() => MultiArgPipe),
@@ -1093,7 +1092,7 @@ const ALL_PIPES = CONST_EXPR([
   forwardRef(() => IdentityPipe),
   forwardRef(() => WrappedPipe),
   AsyncPipe
-]);
+];
 
 @Injectable()
 class RenderLog {
