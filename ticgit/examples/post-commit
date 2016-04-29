@@ -1,0 +1,29 @@
+#!/usr/bin/env ruby
+
+require 'tempfile'
+
+
+commit_log   = `git log -1`.chomp
+m, commit_id = * commit_log.match(/commit\W*([A-Fa-f0-9]+)/)
+
+Tempfile.open('ticgit_comment') do |tmp|
+  tmp.write commit_log
+  actions = {}
+
+  # comment on any tickets this commit references
+  commit_log.scan(/\(\W*[Rr]efs?\W*:*\W*\#([a-fA-F0-9]+)\W*\)/).each do |ticked_id|
+    actions[ticket_id] = :ref
+  end
+
+  # close any tickets this commit solves
+  # overwrite any refs, as the commit log will still
+  # be added to the ticket as a comment, but will also be closed
+  commit_log.scan(/\(\W*[Cc]loses\W*:*\W*\#([a-fA-F0-9]+)\W*\)/).each do |ticket_id|
+    actions[ticket_id] = :close
+  end
+
+  actions.each do |ticket_id, action|
+    `ti comment #{ticket_id} --file #{tmp.path}` if action
+    `ti state #{ticket_id} resolved`             if action == :close
+  end
+end
