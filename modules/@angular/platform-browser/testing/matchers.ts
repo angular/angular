@@ -1,6 +1,6 @@
-import {DOM} from 'angular2/src/platform/dom/dom_adapter';
-import {global, isString} from 'angular2/src/facade/lang';
-import {StringMapWrapper} from 'angular2/src/facade/collection';
+import {getDOM} from '../src/dom/dom_adapter';
+import {global, isString} from '../src/facade/lang';
+import {StringMapWrapper} from '../src/facade/collection';
 
 /**
  * Jasmine matchers that check Angular specific conditions.
@@ -183,7 +183,7 @@ _global.beforeEach(function() {
       function buildError(isNot) {
         return function(actual, className) {
           return {
-            pass: DOM.hasClass(actual, className) == !isNot,
+            pass: getDOM().hasClass(actual, className) == !isNot,
             get message() {
               return `Expected ${actual.outerHTML} ${isNot ? 'not ' : ''}to contain the CSS class "${className}"`;
             }
@@ -197,11 +197,11 @@ _global.beforeEach(function() {
         compare: function(actual, styles) {
           var allPassed;
           if (isString(styles)) {
-            allPassed = DOM.hasStyle(actual, styles);
+            allPassed = getDOM().hasStyle(actual, styles);
           } else {
             allPassed = !StringMapWrapper.isEmpty(styles);
             StringMapWrapper.forEach(styles, (style, prop) => {
-              allPassed = allPassed && DOM.hasStyle(actual, prop, style);
+              allPassed = allPassed && getDOM().hasStyle(actual, prop, style);
             });
           }
 
@@ -290,7 +290,7 @@ _global.beforeEach(function() {
 
 function elementText(n) {
   var hasNodes = (n) => {
-    var children = DOM.childNodes(n);
+    var children = getDOM().childNodes(n);
     return children && children.length > 0;
   };
 
@@ -298,21 +298,21 @@ function elementText(n) {
     return n.map(elementText).join("");
   }
 
-  if (DOM.isCommentNode(n)) {
+  if (getDOM().isCommentNode(n)) {
     return '';
   }
 
-  if (DOM.isElementNode(n) && DOM.tagName(n) == 'CONTENT') {
-    return elementText(Array.prototype.slice.apply(DOM.getDistributedNodes(n)));
+  if (getDOM().isElementNode(n) && getDOM().tagName(n) == 'CONTENT') {
+    return elementText(Array.prototype.slice.apply(getDOM().getDistributedNodes(n)));
   }
 
-  if (DOM.hasShadowRoot(n)) {
-    return elementText(DOM.childNodesAsList(DOM.getShadowRoot(n)));
+  if (getDOM().hasShadowRoot(n)) {
+    return elementText(getDOM().childNodesAsList(getDOM().getShadowRoot(n)));
   }
 
   if (hasNodes(n)) {
-    return elementText(DOM.childNodesAsList(n));
+    return elementText(getDOM().childNodesAsList(n));
   }
 
-  return DOM.getText(n);
+  return getDOM().getText(n);
 }

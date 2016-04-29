@@ -1,11 +1,11 @@
-import {Component, Injectable, provide} from 'angular2/core';
-import {bootstrap} from 'angular2/platform/browser';
-import {OnDeactivate, ComponentInstruction, RouteConfig, ROUTER_DIRECTIVES} from 'angular2/router';
-import {APP_BASE_HREF} from 'angular2/platform/common';
+import {Component, Injectable, provide, ComponentRef} from '@angular/core';
+import {bootstrap} from '@angular/platform-browser-dynamic';
+import {OnDeactivate, ComponentInstruction, RouteConfig, ROUTER_DIRECTIVES} from '@angular/router';
+import {APP_BASE_HREF} from '@angular/common';
 
 
 @Injectable()
-class LogService {
+export class LogService {
   logs: string[] = [];
 
   addLog(message: string): void { this.logs.push(message); }
@@ -45,14 +45,14 @@ class MyCmp implements OnDeactivate {
   {path: '/', component: MyCmp, name: 'HomeCmp'},
   {path: '/:param', component: MyCmp, name: 'ParamCmp'}
 ])
-class AppCmp {
+export class AppCmp {
   constructor(public logService: LogService) {}
 }
 
 
-export function main() {
+export function main(): Promise<ComponentRef<AppCmp>> {
   return bootstrap(AppCmp, [
-    provide(APP_BASE_HREF, {useValue: '/angular2/examples/router/ts/on_deactivate'}),
+    provide(APP_BASE_HREF, {useValue: '/@angular/examples/router/ts/on_deactivate'}),
     LogService
   ]);
 }

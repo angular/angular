@@ -1,5 +1,4 @@
 import {
-  AsyncTestCompleter,
   beforeEach,
   ddescribe,
   describe,
@@ -9,20 +8,22 @@ import {
   it,
   xdescribe,
   xit,
-  Log,
-  browserDetection
-} from 'angular2/testing_internal';
+} from '@angular/core/testing/testing_internal';
+import {
+  Log
+} from '@angular/core/testing';
 
 import {
   PromiseCompleter,
   PromiseWrapper,
   TimerWrapper,
   ObservableWrapper
-} from 'angular2/src/facade/async';
-import {BaseException} from 'angular2/src/facade/exceptions';
-import {IS_DART, scheduleMicroTask, isPresent} from 'angular2/src/facade/lang';
-
-import {NgZone, NgZoneError} from 'angular2/src/core/zone/ng_zone';
+} from '../../src/facade/async';
+import {BaseException} from '../../src/facade/exceptions';
+import {IS_DART, scheduleMicroTask, isPresent} from '../../src/facade/lang';
+import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
+import {NgZone, NgZoneError} from '@angular/core/src/zone/ng_zone';
+import {browserDetection} from '@angular/platform-browser/testing';
 
 var needsLongerTimers = browserDetection.isSlow || browserDetection.isEdge;
 var resultTimer = 1000;

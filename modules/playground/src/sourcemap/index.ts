@@ -1,6 +1,6 @@
-import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
-import {bootstrap} from 'angular2/platform/browser';
-import {Component} from 'angular2/core';
+import {BaseException, WrappedException} from '@angular/facade';
+import {bootstrap} from '@angular/platform-browser';
+import {Component} from '@angular/core';
 
 @Component({
   selector: 'error-app',

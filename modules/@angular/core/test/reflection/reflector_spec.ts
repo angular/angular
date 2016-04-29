@@ -5,11 +5,10 @@ import {
   ddescribe,
   expect,
   beforeEach,
-  browserDetection
-} from 'angular2/testing_internal';
-import {OnInit} from 'angular2/core';
-import {Reflector, ReflectionInfo} from 'angular2/src/core/reflection/reflection';
-import {ReflectionCapabilities} from 'angular2/src/core/reflection/reflection_capabilities';
+} from '@angular/core/testing/testing_internal';
+import {OnInit} from '@angular/core';
+import {Reflector, ReflectionInfo} from '@angular/core/src/reflection/reflection';
+import {ReflectionCapabilities} from '@angular/core/src/reflection/reflection_capabilities';
 import {
   ClassDecorator,
   ParamDecorator,
@@ -19,7 +18,8 @@ import {
   propDecorator,
   HasGetterAndSetterDecorators
 } from './reflector_common';
-import {IS_DART} from 'angular2/src/facade/lang';
+import {IS_DART} from '../../src/facade/lang';
+import {browserDetection} from '@angular/platform-browser/testing'
 
 class AType {
   value;

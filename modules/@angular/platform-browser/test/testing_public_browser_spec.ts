@@ -9,20 +9,24 @@ import {
   beforeEach,
   beforeEachProviders,
   inject,
+} from '@angular/core/testing';
+import {
   async,
-  TestComponentBuilder,
   fakeAsync,
-  tick
-} from 'angular2/testing';
+  flushMicrotasks,
+  Log,
+  tick,
+} from '@angular/core/testing';
 
 import {ROUTER_FAKE_PROVIDERS} from 'angular2/src/alt_router/router_testing_providers';
 import {ROUTER_DIRECTIVES, Routes, Route} from 'angular2/alt_router';
 
 
-import {Injectable, bind, Directive, Component, ViewMetadata} from 'angular2/core';
-import {PromiseWrapper} from 'angular2/src/facade/promise';
-import {XHR} from 'angular2/src/compiler/xhr';
-import {XHRImpl} from 'angular2/src/platform/browser/xhr_impl';
+import {Component, bind} from '@angular/core';
+import {PromiseWrapper} from '../src/facade/promise';
+import {XHR} from '@angular/compiler';
+import {XHRImpl} from '../../platform-browser-dynamic/src/xhr/xhr_impl';
+import {TestComponentBuilder} from '@angular/compiler/testing';
 
 // Components for the tests.
 class FancyService {
@@ -35,7 +39,7 @@ class FancyService {
 
 @Component({
   selector: 'external-template-comp',
-  templateUrl: '/base/modules/angular2/test/testing/static_assets/test.html'
+  templateUrl: '/base/modules/@angular/platform-browser/test/static_assets/test.html'
 })
 class ExternalTemplateComp {
 }
@@ -62,7 +66,7 @@ export function main() {
   describe('test APIs for the browser', () => {
     describe('angular2 jasmine matchers', () => {
       describe('toHaveCssClass', () => {
-        it('should assert that the CSS class is present', () => {
+       it('should assert that the CSS class is present', () => {
           var el = document.createElement('div');
           el.classList.add('matias');
           expect(el).toHaveCssClass('matias');
@@ -108,7 +112,7 @@ export function main() {
 
       it('should run async tests with XHRs', async(() => {
            var xhr = new XHRImpl();
-           xhr.get('/base/modules/angular2/test/testing/static_assets/test.html')
+           xhr.get('/base/modules/@angular/platform-browser/test/static_assets/test.html')
                .then(() => { actuallyDone = true; });
          }),
          10000);  // Long timeout here because this test makes an actual XHR.

@@ -7,14 +7,15 @@ import {
   expect,
   beforeEach,
   afterEach,
-  browserDetection,
   inject,
-  TestComponentBuilder,
-  AsyncTestCompleter
-} from 'angular2/testing_internal';
+} from '@angular/core/testing/testing_internal';
+import {} from '@angular/core/testing/testing_internal';
+import {browserDetection} from '@angular/platform-browser/testing';
+import {TestComponentBuilder, ComponentFixture} from '@angular/compiler/testing';
+import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
 
-import {Component} from 'angular2/core';
-import {SlicePipe} from 'angular2/common';
+import {Component} from '@angular/core';
+import {SlicePipe} from '@angular/common';
 
 export function main() {
   describe("SlicePipe", () => {

@@ -1,13 +1,9 @@
-import {
-  MessageBus,
-  MessageBusSource,
-  MessageBusSink
-} from "angular2/src/web_workers/shared/message_bus";
-import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
-import {EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
-import {StringMapWrapper} from 'angular2/src/facade/collection';
-import {Injectable} from "angular2/src/core/di";
-import {NgZone} from 'angular2/src/core/zone/ng_zone';
+import {MessageBus, MessageBusSource, MessageBusSink} from './message_bus';
+import {BaseException} from '../../../src/facade/exceptions';
+import {EventEmitter, ObservableWrapper} from '../../../src/facade/async';
+import {StringMapWrapper} from '../../../src/facade/collection';
+import {Injectable} from '@angular/core/src/di';
+import {NgZone} from '@angular/core/src/zone/ng_zone';
 
 // TODO(jteplitz602) Replace this with the definition in lib.webworker.d.ts(#3492)
 export interface PostMessageTarget { postMessage: (message: any, transfer?:[ArrayBuffer]) => void; }

@@ -1,7 +1,6 @@
-import {ListWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
-import {isPresent, isFunction, Type} from 'angular2/src/facade/lang';
-import {DomAdapter} from 'angular2/src/platform/dom/dom_adapter';
-import {XHRImpl} from 'angular2/src/platform/browser/xhr_impl';
+import {StringMapWrapper} from '../../src/facade/collection';
+import {isPresent, isFunction, Type} from '../../src/facade/lang';
+import {DomAdapter} from '../dom/dom_adapter';
 
 
 /**
@@ -42,7 +41,6 @@ export abstract class GenericBrowserDomAdapter extends DomAdapter {
     }
   }
 
-  getXHR(): Type { return XHRImpl; }
   getDistributedNodes(el: HTMLElement): Node[] { return (<any>el).getDistributedNodes(); }
   resolveAndSetHref(el: HTMLAnchorElement, baseUrl: string, href: string) {
     el.href = href == null ? baseUrl : baseUrl + '/../' + href;

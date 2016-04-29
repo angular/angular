@@ -1,4 +1,4 @@
-import {PromiseCompleter} from 'angular2/src/facade/promise';
+import {PromiseCompleter} from '../src/facade/promise';
 
 /**
  * Injectable completer that allows signaling completion of an asynchronous test. Used internally.

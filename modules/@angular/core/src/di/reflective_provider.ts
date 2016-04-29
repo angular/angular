@@ -1,10 +1,14 @@
-import {Type, isBlank, isPresent, isArray, isType} from 'angular2/src/facade/lang';
-import {MapWrapper, ListWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
-import {reflector} from 'angular2/src/core/reflection/reflection';
+import {
+  Type,
+  isBlank,
+  isPresent,
+  isArray,
+} from '../../src/facade/lang';
+import {MapWrapper, ListWrapper} from '../../src/facade/collection';
+import {reflector} from '../reflection/reflection';
 import {ReflectiveKey} from './reflective_key';
 import {
   InjectMetadata,
-  InjectableMetadata,
   OptionalMetadata,
   SelfMetadata,
   HostMetadata,

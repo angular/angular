@@ -1,18 +1,18 @@
 import {
   BrowserPlatformLocation
-} from 'angular2/src/platform/browser/location/browser_platform_location';
-import {UrlChangeListener} from 'angular2/platform/common';
-import {Injectable} from 'angular2/src/core/di';
-import {ROUTER_CHANNEL} from 'angular2/src/web_workers/shared/messaging_api';
+} from '@angular/platform-browser/src/browser/location/browser_platform_location';
+import {UrlChangeListener} from '@angular/common';
+import {Injectable} from '@angular/core/src/di';
+import {ROUTER_CHANNEL} from '../shared/messaging_api';
 import {
   ServiceMessageBrokerFactory,
   ServiceMessageBroker
-} from 'angular2/src/web_workers/shared/service_message_broker';
-import {PRIMITIVE, Serializer} from 'angular2/src/web_workers/shared/serializer';
+} from '../shared/service_message_broker';
+import {PRIMITIVE, Serializer} from '../shared/serializer';
 import {bind} from './bind';
-import {LocationType} from 'angular2/src/web_workers/shared/serialized_types';
-import {MessageBus} from 'angular2/src/web_workers/shared/message_bus';
-import {EventEmitter, ObservableWrapper, PromiseWrapper} from 'angular2/src/facade/async';
+import {LocationType} from '../shared/serialized_types';
+import {MessageBus} from '../shared/message_bus';
+import {EventEmitter, ObservableWrapper, PromiseWrapper} from '../../../src/facade/async';
 
 @Injectable()
 export class MessageBasedPlatformLocation {

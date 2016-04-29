@@ -1,7 +1,7 @@
-import {ReflectiveInjector, Provider, PLATFORM_INITIALIZER} from 'angular2/core';
-import {BaseException, ExceptionHandler} from 'angular2/src/facade/exceptions';
-import {ListWrapper} from 'angular2/src/facade/collection';
-import {FunctionWrapper, isPresent, Type} from 'angular2/src/facade/lang';
+import {ReflectiveInjector, Provider, PLATFORM_INITIALIZER, Type} from '../index';
+import {BaseException} from '../src/facade/exceptions';
+import {ListWrapper} from '../src/facade/collection';
+import {FunctionWrapper, isPresent} from '../src/facade/lang';
 
 import {async} from './async';
 import {AsyncTestCompleter} from './async_test_completer';

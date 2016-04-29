@@ -1,6 +1,6 @@
-import {Directive, ElementRef, Renderer, Self, forwardRef} from 'angular2/core';
+import {Directive, ElementRef, Renderer, Self, forwardRef, Provider} from '@angular/core';
+import {NumberWrapper} from '../../../src/facade/lang';
 import {NG_VALUE_ACCESSOR, ControlValueAccessor} from './control_value_accessor';
-import {isBlank, NumberWrapper} from 'angular2/src/facade/lang';
 
 export const NUMBER_VALUE_ACCESSOR: any = /*@ts2dart_const*/ /*@ts2dart_Provider*/ {
   provide: NG_VALUE_ACCESSOR,

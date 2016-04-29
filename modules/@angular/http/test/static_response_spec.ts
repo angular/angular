@@ -2,10 +2,10 @@ import {
   describe,
   expect,
   it,
-} from 'angular2/testing_internal';
+} from '@angular/core/testing/testing_internal';
 
-import {ResponseOptions} from 'angular2/src/http/base_response_options';
-import {Response} from 'angular2/src/http/static_response';
+import {ResponseOptions} from '../src/base_response_options';
+import {Response} from '../src/static_response';
 
 
 

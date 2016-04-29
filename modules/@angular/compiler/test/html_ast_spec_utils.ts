@@ -1,4 +1,4 @@
-import {HtmlParser, HtmlParseTreeResult, HtmlTreeError} from 'angular2/src/compiler/html_parser';
+import {HtmlParser, HtmlParseTreeResult, HtmlTreeError} from '@angular/compiler/src/html_parser';
 import {
   HtmlAst,
   HtmlAstVisitor,
@@ -9,9 +9,9 @@ import {
   HtmlExpansionAst,
   HtmlExpansionCaseAst,
   htmlVisitAll
-} from 'angular2/src/compiler/html_ast';
-import {ParseError, ParseLocation} from 'angular2/src/compiler/parse_util';
-import {BaseException} from 'angular2/src/facade/exceptions';
+} from '@angular/compiler/src/html_ast';
+import {ParseError, ParseLocation} from '@angular/compiler/src/parse_util';
+import {BaseException} from '../src/facade/exceptions';
 
 export function humanizeDom(parseResult: HtmlParseTreeResult): any[] {
   if (parseResult.errors.length > 0) {

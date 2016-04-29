@@ -1,12 +1,12 @@
 import {RouteSegment, UrlSegment, Tree, TreeNode, rootNode, UrlTree, RouteTree} from './segments';
 import {RoutesMetadata, RouteMetadata} from './metadata/metadata';
-import {Type, isBlank, isPresent, stringify} from 'angular2/src/facade/lang';
-import {ListWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
-import {PromiseWrapper} from 'angular2/src/facade/promise';
-import {BaseException} from 'angular2/src/facade/exceptions';
-import {ComponentResolver} from 'angular2/core';
+import {Type, isBlank, isPresent, stringify} from '@angular/facade/src/lang';
+import {ListWrapper, StringMapWrapper} from '@angular/facade/src/collection';
+import {PromiseWrapper} from '@angular/facade/src/promise';
+import {BaseException} from '@angular/core';
+import {ComponentResolver} from '@angular/core';
 import {DEFAULT_OUTLET_NAME} from './constants';
-import {reflector} from 'angular2/src/core/reflection/reflection';
+import {reflector} from '@angular/core';
 
 // TODO: vsavkin: recognize should take the old tree and merge it
 export function recognize(componentResolver: ComponentResolver, type: Type,

@@ -1,5 +1,5 @@
 import {RoutesMetadata, RouteMetadata} from "./metadata";
-import {makeDecorator} from 'angular2/src/core/util/decorators';
+import {makeDecorator} from '../core_private';
 export interface RoutesFactory {
   (routes: RouteMetadata[]): any;
   new (routes: RouteMetadata[]): RoutesMetadata;

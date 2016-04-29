@@ -1,6 +1,6 @@
-import {Directive, Host, ViewContainerRef, TemplateRef} from 'angular2/core';
-import {isPresent, isBlank, normalizeBlank} from 'angular2/src/facade/lang';
-import {ListWrapper, Map} from 'angular2/src/facade/collection';
+import {Directive, Host, ViewContainerRef, TemplateRef} from '@angular/core';
+import {isPresent, isBlank, normalizeBlank} from '../../src/facade/lang';
+import {ListWrapper, Map} from '../../src/facade/collection';
 
 const _WHEN_DEFAULT = /*@ts2dart_const*/ new Object();
 

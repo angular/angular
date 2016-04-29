@@ -1,5 +1,4 @@
 import {
-  AsyncTestCompleter,
   beforeEach,
   ddescribe,
   describe,
@@ -9,15 +8,15 @@ import {
   it,
   xdescribe,
   xit
-} from 'angular2/testing_internal';
+} from '@angular/core/testing/testing_internal';
 
-import {I18nHtmlParser} from 'angular2/src/i18n/i18n_html_parser';
-import {Message, id} from 'angular2/src/i18n/message';
-import {Parser} from 'angular2/src/compiler/expression_parser/parser';
-import {Lexer} from 'angular2/src/compiler/expression_parser/lexer';
+import {I18nHtmlParser} from '@angular/compiler/src/i18n/i18n_html_parser';
+import {Message, id} from '@angular/compiler/src/i18n/message';
+import {Parser} from '@angular/compiler/src/expression_parser/parser';
+import {Lexer} from '@angular/compiler/src/expression_parser/lexer';
 
-import {StringMapWrapper} from 'angular2/src/facade/collection';
-import {HtmlParser, HtmlParseTreeResult} from 'angular2/src/compiler/html_parser';
+import {StringMapWrapper} from '../../src/facade/collection';
+import {HtmlParser, HtmlParseTreeResult} from '@angular/compiler/src/html_parser';
 import {
   HtmlAst,
   HtmlAstVisitor,
@@ -26,10 +25,10 @@ import {
   HtmlTextAst,
   HtmlCommentAst,
   htmlVisitAll
-} from 'angular2/src/compiler/html_ast';
-import {serializeXmb, deserializeXmb} from 'angular2/src/i18n/xmb_serializer';
-import {ParseError, ParseLocation} from 'angular2/src/compiler/parse_util';
-import {humanizeDom} from '../../test/compiler/html_ast_spec_utils';
+} from '@angular/compiler/src/html_ast';
+import {serializeXmb, deserializeXmb} from '@angular/compiler/src/i18n/xmb_serializer';
+import {ParseError, ParseLocation} from '@angular/compiler/src/parse_util';
+import {humanizeDom} from '@angular/compiler/test/html_ast_spec_utils';
 
 export function main() {
   describe('I18nHtmlParser', () => {

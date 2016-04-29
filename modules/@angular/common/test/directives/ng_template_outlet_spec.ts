@@ -1,20 +1,17 @@
 import {
-  AsyncTestCompleter,
-  TestComponentBuilder,
   beforeEach,
   ddescribe,
   describe,
-  el,
   expect,
   iit,
   inject,
   it,
   xit,
-} from 'angular2/testing_internal';
-
-import {Component, Directive, TemplateRef, ContentChildren, QueryList} from 'angular2/core';
-
-import {NgTemplateOutlet} from 'angular2/src/common/directives/ng_template_outlet';
+} from '@angular/core/testing/testing_internal';
+import {TestComponentBuilder, ComponentFixture} from '@angular/compiler/testing';
+import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
+import {Component, Directive, TemplateRef, ContentChildren, QueryList} from '@angular/core';
+import {NgTemplateOutlet} from '@angular/common';
 
 export function main() {
   describe('insert', () => {

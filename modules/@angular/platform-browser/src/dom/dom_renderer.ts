@@ -1,5 +1,14 @@
-import {Inject, Injectable, OpaqueToken} from 'angular2/src/core/di';
-import {AnimationBuilder} from 'angular2/src/animate/animation_builder';
+import {
+  Inject,
+  Injectable,
+  OpaqueToken,
+  Renderer,
+  RootRenderer,
+  RenderComponentType,
+  ViewEncapsulation
+} from '@angular/core';
+import {RenderDebugInfo} from '../../core_private'
+import {AnimationBuilder} from '../animate/animation_builder';
 import {
   isPresent,
   isBlank,
@@ -9,23 +18,13 @@ import {
   StringWrapper,
   isArray,
   isString
-} from 'angular2/src/facade/lang';
+} from '../../src/facade/lang';
 
-import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
+import {BaseException} from '../../src/facade/exceptions';
 import {DomSharedStylesHost} from './shared_styles_host';
-
-import {
-  Renderer,
-  RootRenderer,
-  RenderComponentType,
-  RenderDebugInfo
-} from 'angular2/src/core/render/api';
-
 import {EventManager} from './events/event_manager';
-
 import {DOCUMENT} from './dom_tokens';
-import {ViewEncapsulation} from 'angular2/src/core/metadata';
-import {DOM} from 'angular2/src/platform/dom/dom_adapter';
+import {getDOM} from './dom_adapter';
 import {camelCaseToDashCase} from './util';
 
 const NAMESPACE_URIS =
@@ -80,27 +79,27 @@ export class DomRenderer implements Renderer {
   selectRootElement(selectorOrNode: string | any, debugInfo: RenderDebugInfo): Element {
     var el;
     if (isString(selectorOrNode)) {
-      el = DOM.querySelector(this._rootRenderer.document, selectorOrNode);
+      el = getDOM().querySelector(this._rootRenderer.document, selectorOrNode);
       if (isBlank(el)) {
         throw new BaseException(`The selector "${selectorOrNode}" did not match any elements`);
       }
     } else {
       el = selectorOrNode;
     }
-    DOM.clearNodes(el);
+    getDOM().clearNodes(el);
     return el;
   }
 
   createElement(parent: Element, name: string, debugInfo: RenderDebugInfo): Node {
     var nsAndName = splitNamespace(name);
     var el = isPresent(nsAndName[0]) ?
-                 DOM.createElementNS(NAMESPACE_URIS[nsAndName[0]], nsAndName[1]) :
-                 DOM.createElement(nsAndName[1]);
+                 getDOM().createElementNS(NAMESPACE_URIS[nsAndName[0]], nsAndName[1]) :
+                 getDOM().createElement(nsAndName[1]);
     if (isPresent(this._contentAttr)) {
-      DOM.setAttribute(el, this._contentAttr, '');
+      getDOM().setAttribute(el, this._contentAttr, '');
     }
     if (isPresent(parent)) {
-      DOM.appendChild(parent, el);
+      getDOM().appendChild(parent, el);
     }
     return el;
   }
@@ -108,14 +107,14 @@ export class DomRenderer implements Renderer {
   createViewRoot(hostElement: any): any {
     var nodesParent;
     if (this.componentProto.encapsulation === ViewEncapsulation.Native) {
-      nodesParent = DOM.createShadowRoot(hostElement);
+      nodesParent = getDOM().createShadowRoot(hostElement);
       this._rootRenderer.sharedStylesHost.addHost(nodesParent);
       for (var i = 0; i < this._styles.length; i++) {
-        DOM.appendChild(nodesParent, DOM.createStyleElement(this._styles[i]));
+        getDOM().appendChild(nodesParent, getDOM().createStyleElement(this._styles[i]));
       }
     } else {
       if (isPresent(this._hostAttr)) {
-        DOM.setAttribute(hostElement, this._hostAttr, '');
+        getDOM().setAttribute(hostElement, this._hostAttr, '');
       }
       nodesParent = hostElement;
     }
@@ -123,17 +122,17 @@ export class DomRenderer implements Renderer {
   }
 
   createTemplateAnchor(parentElement: any, debugInfo: RenderDebugInfo): any {
-    var comment = DOM.createComment(TEMPLATE_COMMENT_TEXT);
+    var comment = getDOM().createComment(TEMPLATE_COMMENT_TEXT);
     if (isPresent(parentElement)) {
-      DOM.appendChild(parentElement, comment);
+      getDOM().appendChild(parentElement, comment);
     }
     return comment;
   }
 
   createText(parentElement: any, value: string, debugInfo: RenderDebugInfo): any {
-    var node = DOM.createTextNode(value);
+    var node = getDOM().createTextNode(value);
     if (isPresent(parentElement)) {
-      DOM.appendChild(parentElement, node);
+      getDOM().appendChild(parentElement, node);
     }
     return node;
   }
@@ -151,14 +150,14 @@ export class DomRenderer implements Renderer {
   detachView(viewRootNodes: any[]) {
     for (var i = 0; i < viewRootNodes.length; i++) {
       var node = viewRootNodes[i];
-      DOM.remove(node);
+      getDOM().remove(node);
       this.animateNodeLeave(node);
     }
   }
 
   destroyView(hostElement: any, viewAllNodes: any[]) {
     if (this.componentProto.encapsulation === ViewEncapsulation.Native && isPresent(hostElement)) {
-      this._rootRenderer.sharedStylesHost.removeHost(DOM.getShadowRoot(hostElement));
+      this._rootRenderer.sharedStylesHost.removeHost(getDOM().getShadowRoot(hostElement));
     }
   }
 
@@ -173,7 +172,7 @@ export class DomRenderer implements Renderer {
   }
 
   setElementProperty(renderElement: any, propertyName: string, propertyValue: any): void {
-    DOM.setProperty(renderElement, propertyName, propertyValue);
+    getDOM().setProperty(renderElement, propertyName, propertyValue);
   }
 
   setElementAttribute(renderElement: any, attributeName: string, attributeValue: string): void {
@@ -185,27 +184,27 @@ export class DomRenderer implements Renderer {
     }
     if (isPresent(attributeValue)) {
       if (isPresent(attrNs)) {
-        DOM.setAttributeNS(renderElement, attrNs, attributeName, attributeValue);
+        getDOM().setAttributeNS(renderElement, attrNs, attributeName, attributeValue);
       } else {
-        DOM.setAttribute(renderElement, attributeName, attributeValue);
+        getDOM().setAttribute(renderElement, attributeName, attributeValue);
       }
     } else {
       if (isPresent(attrNs)) {
-        DOM.removeAttributeNS(renderElement, attrNs, nsAndName[1]);
+        getDOM().removeAttributeNS(renderElement, attrNs, nsAndName[1]);
       } else {
-        DOM.removeAttribute(renderElement, attributeName);
+        getDOM().removeAttribute(renderElement, attributeName);
       }
     }
   }
 
   setBindingDebugInfo(renderElement: any, propertyName: string, propertyValue: string): void {
     var dashCasedPropertyName = camelCaseToDashCase(propertyName);
-    if (DOM.isCommentNode(renderElement)) {
+    if (getDOM().isCommentNode(renderElement)) {
       var existingBindings = RegExpWrapper.firstMatch(
-          TEMPLATE_BINDINGS_EXP, StringWrapper.replaceAll(DOM.getText(renderElement), /\n/g, ''));
+          TEMPLATE_BINDINGS_EXP, StringWrapper.replaceAll(getDOM().getText(renderElement), /\n/g, ''));
       var parsedBindings = Json.parse(existingBindings[1]);
       parsedBindings[dashCasedPropertyName] = propertyValue;
-      DOM.setText(renderElement, StringWrapper.replace(TEMPLATE_COMMENT_TEXT, '{}',
+      getDOM().setText(renderElement, StringWrapper.replace(TEMPLATE_COMMENT_TEXT, '{}',
                                                        Json.stringify(parsedBindings)));
     } else {
       this.setElementAttribute(renderElement, propertyName, propertyValue);
@@ -214,37 +213,37 @@ export class DomRenderer implements Renderer {
 
   setElementClass(renderElement: any, className: string, isAdd: boolean): void {
     if (isAdd) {
-      DOM.addClass(renderElement, className);
+      getDOM().addClass(renderElement, className);
     } else {
-      DOM.removeClass(renderElement, className);
+      getDOM().removeClass(renderElement, className);
     }
   }
 
   setElementStyle(renderElement: any, styleName: string, styleValue: string): void {
     if (isPresent(styleValue)) {
-      DOM.setStyle(renderElement, styleName, stringify(styleValue));
+      getDOM().setStyle(renderElement, styleName, stringify(styleValue));
     } else {
-      DOM.removeStyle(renderElement, styleName);
+      getDOM().removeStyle(renderElement, styleName);
     }
   }
 
   invokeElementMethod(renderElement: any, methodName: string, args: any[]): void {
-    DOM.invoke(renderElement, methodName, args);
+    getDOM().invoke(renderElement, methodName, args);
   }
 
-  setText(renderNode: any, text: string): void { DOM.setText(renderNode, text); }
+  setText(renderNode: any, text: string): void { getDOM().setText(renderNode, text); }
 
   /**
    * Performs animations if necessary
    * @param node
    */
   animateNodeEnter(node: Node) {
-    if (DOM.isElementNode(node) && DOM.hasClass(node, 'ng-animate')) {
-      DOM.addClass(node, 'ng-enter');
+    if (getDOM().isElementNode(node) && getDOM().hasClass(node, 'ng-animate')) {
+      getDOM().addClass(node, 'ng-enter');
       this._rootRenderer.animate.css()
           .addAnimationClass('ng-enter-active')
           .start(<HTMLElement>node)
-          .onComplete(() => { DOM.removeClass(node, 'ng-enter'); });
+          .onComplete(() => { getDOM().removeClass(node, 'ng-enter'); });
     }
   }
 
@@ -255,32 +254,32 @@ export class DomRenderer implements Renderer {
    * @param node
    */
   animateNodeLeave(node: Node) {
-    if (DOM.isElementNode(node) && DOM.hasClass(node, 'ng-animate')) {
-      DOM.addClass(node, 'ng-leave');
+    if (getDOM().isElementNode(node) && getDOM().hasClass(node, 'ng-animate')) {
+      getDOM().addClass(node, 'ng-leave');
       this._rootRenderer.animate.css()
           .addAnimationClass('ng-leave-active')
           .start(<HTMLElement>node)
           .onComplete(() => {
-            DOM.removeClass(node, 'ng-leave');
-            DOM.remove(node);
+            getDOM().removeClass(node, 'ng-leave');
+            getDOM().remove(node);
           });
     } else {
-      DOM.remove(node);
+      getDOM().remove(node);
     }
   }
 }
 
 function moveNodesAfterSibling(sibling, nodes) {
-  var parent = DOM.parentElement(sibling);
+  var parent = getDOM().parentElement(sibling);
   if (nodes.length > 0 && isPresent(parent)) {
-    var nextSibling = DOM.nextSibling(sibling);
+    var nextSibling = getDOM().nextSibling(sibling);
     if (isPresent(nextSibling)) {
       for (var i = 0; i < nodes.length; i++) {
-        DOM.insertBefore(nextSibling, nodes[i]);
+        getDOM().insertBefore(nextSibling, nodes[i]);
       }
     } else {
       for (var i = 0; i < nodes.length; i++) {
-        DOM.appendChild(parent, nodes[i]);
+        getDOM().appendChild(parent, nodes[i]);
       }
     }
   }
@@ -288,7 +287,7 @@ function moveNodesAfterSibling(sibling, nodes) {
 
 function appendNodes(parent, nodes) {
   for (var i = 0; i < nodes.length; i++) {
-    DOM.appendChild(parent, nodes[i]);
+    getDOM().appendChild(parent, nodes[i]);
   }
 }
 
@@ -297,7 +296,7 @@ function decoratePreventDefault(eventHandler: Function): Function {
     var allowDefaultBehavior = eventHandler(event);
     if (allowDefaultBehavior === false) {
       // TODO(tbosch): move preventDefault into event plugins...
-      DOM.preventDefault(event);
+      getDOM().preventDefault(event);
     }
   };
 }

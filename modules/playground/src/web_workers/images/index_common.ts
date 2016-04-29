@@ -1,8 +1,8 @@
-import {Component} from 'angular2/core';
+import {Component} from '@angular/core';
 import {BitmapService} from './services/bitmap';
-import {EventListener} from 'angular2/src/facade/browser';
+import {EventListener} from '@angular/facade';
 import {FileReader, Uint8ArrayWrapper} from './file_api';
-import {TimerWrapper} from 'angular2/src/facade/async';
+import {TimerWrapper} from '@angular/facade';
 
 @Component({selector: 'image-demo', viewProviders: [BitmapService], templateUrl: 'image_demo.html'})
 export class ImageDemo {

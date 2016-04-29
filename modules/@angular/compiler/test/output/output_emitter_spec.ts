@@ -1,29 +1,26 @@
 import {
-  AsyncTestCompleter,
   beforeEach,
   ddescribe,
   describe,
-  el,
   expect,
   iit,
   inject,
   it,
   xit,
-  TestComponentBuilder,
-  browserDetection
-} from 'angular2/testing_internal';
+} from '@angular/core/testing/testing_internal';
 
-import {IS_DART} from 'angular2/src/facade/lang';
+import {IS_DART} from '../../src/facade/lang';
 
 import * as typed from './output_emitter_codegen_typed';
 import * as untyped from './output_emitter_codegen_untyped';
-import {jitStatements} from 'angular2/src/compiler/output/output_jit';
-import {interpretStatements} from 'angular2/src/compiler/output/output_interpreter';
+import {jitStatements} from '@angular/compiler/src/output/output_jit';
+import {interpretStatements} from '@angular/compiler/src/output/output_interpreter';
 import {codegenStmts, ExternalClass, DynamicClassInstanceFactory} from './output_emitter_util';
-import {EventEmitter} from 'angular2/src/facade/async';
-import {ViewType} from 'angular2/src/core/linker/view_type';
-import {BaseException} from 'angular2/src/facade/exceptions';
-import {DOM} from 'angular2/src/platform/dom/dom_adapter';
+import {EventEmitter} from '@angular/core';
+import {ViewType} from '@angular/core/src/linker/view_type';
+import {BaseException} from '@angular/core';
+import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
+import {browserDetection} from '@angular/platform-browser/testing'
 
 export function main() {
   var outputDefs = [];
@@ -32,13 +29,13 @@ export function main() {
                                                 new DynamicClassInstanceFactory()),
     'name': 'interpreted'
   });
-  if (IS_DART || !DOM.supportsDOMEvents()) {
+  if (IS_DART || !getDOM().supportsDOMEvents()) {
     // Our generator only works on node.js and Dart...
     outputDefs.push({'getExpressions': () => typed.getExpressions, 'name': 'typed'});
   }
   if (!IS_DART) {
     // Our generator only works on node.js and Dart...
-    if (!DOM.supportsDOMEvents()) {
+    if (!getDOM().supportsDOMEvents()) {
       outputDefs.push({'getExpressions': () => untyped.getExpressions, 'name': 'untyped'});
     }
     outputDefs.push({

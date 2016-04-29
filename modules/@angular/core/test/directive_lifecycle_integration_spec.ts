@@ -1,5 +1,4 @@
 import {
-  AsyncTestCompleter,
   beforeEach,
   ddescribe,
   describe,
@@ -9,9 +8,10 @@ import {
   it,
   xdescribe,
   xit,
-  Log,
-  TestComponentBuilder
-} from 'angular2/testing_internal';
+} from '@angular/core/testing/testing_internal';
+import { Log } from '@angular/core/testing';
+import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
+import {TestComponentBuilder} from '@angular/compiler/testing';
 
 import {
   OnChanges,
@@ -21,8 +21,8 @@ import {
   AfterContentChecked,
   AfterViewInit,
   AfterViewChecked
-} from 'angular2/core';
-import {Directive, Component, ViewMetadata} from 'angular2/src/core/metadata';
+} from '@angular/core';
+import {Directive, Component, ViewMetadata} from '@angular/core/src/metadata';
 
 export function main() {
   describe('directive lifecycle integration spec', () => {
@@ -31,10 +31,10 @@ export function main() {
        inject([TestComponentBuilder, Log, AsyncTestCompleter], (tcb: TestComponentBuilder, log: Log,
                                                                 async) => {
          tcb.overrideView(
-                MyComp,
+                MyComp5,
                 new ViewMetadata(
                     {template: '<div [field]="123" lifecycle></div>', directives: [LifecycleCmp]}))
-             .createAsync(MyComp)
+             .createAsync(MyComp5)
              .then((tc) => {
                tc.detectChanges();
 
@@ -90,5 +90,5 @@ class LifecycleCmp implements OnChanges,
 }
 
 @Component({selector: 'my-comp', directives: []})
-class MyComp {
+class MyComp5 {
 }

@@ -1,4 +1,4 @@
-import {stringify, isBlank, isPresent} from "angular2/src/facade/lang";
+import {stringify} from '../../src/facade/lang';
 
 /**
  * A parameter metadata that specifies a dependency.

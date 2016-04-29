@@ -2,15 +2,23 @@
  * Public Test Library for unit testing Angular2 Applications. Uses the
  * Jasmine framework.
  */
-import {global, isPromise} from 'angular2/src/facade/lang';
+import {
+  inject,
+  async,
+  injectAsync,
+  TestInjector,
+  getTestInjector
+} from './test_injector';
 
-import {inject, async, injectAsync, TestInjector, getTestInjector} from './test_injector';
+import {isPromise} from '../src/facade/lang';
 
 export {inject, async, injectAsync} from './test_injector';
 
-export {expect, NgMatchers} from './matchers';
+declare var global;
 
 var _global = <any>(typeof window === 'undefined' ? global : window);
+
+export var expect: Function = _global.expect;
 
 /**
  * Run a function (with an optional asynchronous callback) after each test case.

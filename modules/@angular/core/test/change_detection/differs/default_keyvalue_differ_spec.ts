@@ -7,13 +7,13 @@ import {
   expect,
   beforeEach,
   afterEach
-} from 'angular2/testing_internal';
+} from '@angular/core/testing/testing_internal';
 import {
   DefaultKeyValueDiffer,
   DefaultKeyValueDifferFactory
-} from 'angular2/src/core/change_detection/differs/default_keyvalue_differ';
-import {NumberWrapper, isJsObject} from 'angular2/src/facade/lang';
-import {kvChangesAsString} from '../../../core/change_detection/util';
+} from '@angular/core/src/change_detection/differs/default_keyvalue_differ';
+import {NumberWrapper, isJsObject} from '../../../src/facade/lang';
+import {kvChangesAsString} from '../../change_detection/util';
 
 // todo(vicb): Update the code & tests for object equality
 export function main() {

@@ -3,7 +3,7 @@
  * to be used by the decorator versions of these annotations.
  */
 
-import {makeDecorator} from 'angular2/src/core/util/decorators';
+import {makeDecorator} from '../../core_private';
 import {CanActivate as CanActivateAnnotation} from './lifecycle_annotations_impl';
 import {ComponentInstruction} from '../instruction';
 

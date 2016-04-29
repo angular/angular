@@ -1,6 +1,6 @@
-import {bootstrap} from 'angular2/platform/browser';
-import {NG_VALIDATORS} from 'angular2/common';
-import {Provider} from 'angular2/core';
+import {bootstrap} from '@angular/platform-browser-dynamic';
+import {NG_VALIDATORS} from '@angular/common';
+import {Provider} from '@angular/core';
 
 let MyApp: Function = null;
 let myValidator: any = null;

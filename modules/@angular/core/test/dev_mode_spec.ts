@@ -1,5 +1,4 @@
 import {
-  AsyncTestCompleter,
   beforeEach,
   ddescribe,
   describe,
@@ -9,9 +8,9 @@ import {
   it,
   xdescribe,
   xit
-} from 'angular2/testing_internal';
+} from '../testing';
 
-import {assertionsEnabled, IS_DART} from 'angular2/src/facade/lang';
+import {assertionsEnabled, IS_DART} from '../../router/src/facade/lang';
 
 export function main() {
   describe('dev mode', () => {

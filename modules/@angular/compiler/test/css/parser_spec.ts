@@ -7,9 +7,9 @@ import {
   expect,
   beforeEach,
   afterEach
-} from 'angular2/testing_internal';
+} from '@angular/core/testing/testing_internal';
 
-import {BaseException} from 'angular2/src/facade/exceptions';
+import {BaseException} from '../../src/facade/exceptions';
 
 import {
   ParsedCssResult,
@@ -29,9 +29,9 @@ import {
   CssRuleAST,
   CssBlockAST,
   CssParseError
-} from 'angular2/src/compiler/css/parser';
+} from '@angular/compiler/src/css/parser';
 
-import {CssLexer} from 'angular2/src/compiler/css/lexer';
+import {CssLexer} from '@angular/compiler/src/css/lexer';
 
 export function assertTokens(tokens, valuesArr) {
   for (var i = 0; i < tokens.length; i++) {

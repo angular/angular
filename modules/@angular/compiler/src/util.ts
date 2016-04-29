@@ -6,8 +6,8 @@ import {
   isArray,
   isStrictStringMap,
   isPrimitive
-} from 'angular2/src/facade/lang';
-import {StringMapWrapper} from 'angular2/src/facade/collection';
+} from './facade/lang';
+import {StringMapWrapper} from './facade/collection';
 
 export var MODULE_SUFFIX = IS_DART ? '.dart' : '';
 
@@ -68,4 +68,20 @@ export class ValueTransformer implements ValueVisitor {
   }
   visitPrimitive(value: any, context: any): any { return value; }
   visitOther(value: any, context: any): any { return value; }
+}
+
+export function assetUrl(pkg: string, path: string = null, type:string = 'src'): string {
+  if (IS_DART) {
+    if (path == null) {
+      return `asset:angular2/${pkg}/${pkg}.dart`;
+    } else {
+      return `asset:angular2/lib/${pkg}/src/${path}.dart`;
+    }
+  } else {
+    if (path == null) {
+      return `asset:@angular/lib/${pkg}/index`;
+    } else {
+      return `asset:@angular/lib/${pkg}/src/${path}`;
+    }
+  }
 }

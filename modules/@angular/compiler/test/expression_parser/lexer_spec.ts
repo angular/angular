@@ -1,8 +1,8 @@
-import {ddescribe, describe, it, expect} from 'angular2/testing_internal';
+import {ddescribe, describe, it, expect} from '@angular/core/testing';
 
-import {Lexer, Token} from 'angular2/src/compiler/expression_parser/lexer';
+import {Lexer, Token} from '@angular/compiler/src/expression_parser/lexer';
 
-import {StringWrapper} from "angular2/src/facade/lang";
+import {StringWrapper} from '../../src/facade/lang';
 
 function lex(text: string): any[] {
   return new Lexer().tokenize(text);

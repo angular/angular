@@ -1,28 +1,6 @@
-import {Injectable} from 'angular2/core';
-import {ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
-import {DOM} from 'angular2/src/platform/dom/dom_adapter';
-import {isPresent, isString, RegExpWrapper, StringWrapper, RegExp} from 'angular2/src/facade/lang';
-
-@Injectable()
-export class Log {
-  logItems: any[];
-
-  constructor() { this.logItems = []; }
-
-  add(value): void { this.logItems.push(value); }
-
-  fn(value) {
-    return (a1: any = null, a2: any = null, a3: any = null, a4: any = null, a5: any = null) => {
-      this.logItems.push(value);
-    }
-  }
-
-  clear(): void { this.logItems = []; }
-
-  result(): string { return this.logItems.join("; "); }
-}
-
-export var browserDetection: BrowserDetection = null;
+import {ListWrapper} from '../src/facade/collection';
+import {getDOM} from '../src/dom/dom_adapter';
+import {isPresent, isString, RegExpWrapper, StringWrapper, RegExp} from '../src/facade/lang';
 
 export class BrowserDetection {
   private _ua: string;
@@ -33,7 +11,7 @@ export class BrowserDetection {
     if (isPresent(ua)) {
       this._ua = ua;
     } else {
-      this._ua = isPresent(DOM) ? DOM.getUserAgent() : '';
+      this._ua = isPresent(getDOM()) ? getDOM().getUserAgent() : '';
     }
   }
 
@@ -67,19 +45,11 @@ export class BrowserDetection {
 }
 
 export function dispatchEvent(element, eventType): void {
-  DOM.dispatchEvent(element, DOM.createEvent(eventType));
+  getDOM().dispatchEvent(element, getDOM().createEvent(eventType));
 }
 
 export function el(html: string): HTMLElement {
-  return <HTMLElement>DOM.firstChild(DOM.content(DOM.createTemplate(html)));
-}
-
-var _RE_SPECIAL_CHARS =
-    ['-', '[', ']', '/', '{', '}', '\\', '(', ')', '*', '+', '?', '.', '^', '$', '|'];
-var _ESCAPE_RE = RegExpWrapper.create(`[\\${_RE_SPECIAL_CHARS.join('\\')}]`);
-export function containsRegexp(input: string): RegExp {
-  return RegExpWrapper.create(
-      StringWrapper.replaceAllMapped(input, _ESCAPE_RE, (match) => `\\${match[0]}`));
+  return <HTMLElement>getDOM().firstChild(getDOM().content(getDOM().createTemplate(html)));
 }
 
 export function normalizeCSS(css: string): string {
@@ -97,14 +67,14 @@ export function normalizeCSS(css: string): string {
 var _singleTagWhitelist = ['br', 'hr', 'input'];
 export function stringifyElement(el): string {
   var result = '';
-  if (DOM.isElementNode(el)) {
-    var tagName = DOM.tagName(el).toLowerCase();
+  if (getDOM().isElementNode(el)) {
+    var tagName = getDOM().tagName(el).toLowerCase();
 
     // Opening tag
     result += `<${tagName}`;
 
     // Attributes in an ordered way
-    var attributeMap = DOM.attributeMap(el);
+    var attributeMap = getDOM().attributeMap(el);
     var keys = [];
     attributeMap.forEach((v, k) => keys.push(k));
     ListWrapper.sort(keys);
@@ -120,8 +90,8 @@ export function stringifyElement(el): string {
     result += '>';
 
     // Children
-    var childrenRoot = DOM.templateAwareRoot(el);
-    var children = isPresent(childrenRoot) ? DOM.childNodes(childrenRoot) : [];
+    var childrenRoot = getDOM().templateAwareRoot(el);
+    var children = isPresent(childrenRoot) ? getDOM().childNodes(childrenRoot) : [];
     for (let j = 0; j < children.length; j++) {
       result += stringifyElement(children[j]);
     }
@@ -130,11 +100,13 @@ export function stringifyElement(el): string {
     if (!ListWrapper.contains(_singleTagWhitelist, tagName)) {
       result += `</${tagName}>`;
     }
-  } else if (DOM.isCommentNode(el)) {
-    result += `<!--${DOM.nodeValue(el)}-->`;
+  } else if (getDOM().isCommentNode(el)) {
+    result += `<!--${getDOM().nodeValue(el)}-->`;
   } else {
-    result += DOM.getText(el);
+    result += getDOM().getText(el);
   }
 
   return result;
 }
+
+export var browserDetection: BrowserDetection = new BrowserDetection(null);

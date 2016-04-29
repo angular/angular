@@ -1,27 +1,19 @@
 import {
-  AsyncTestCompleter,
   beforeEach,
   ddescribe,
   xdescribe,
   describe,
-  el,
-  dispatchEvent,
   expect,
   iit,
   inject,
   beforeEachProviders,
   it,
   xit,
-  containsRegexp,
-  stringifyElement,
-  TestComponentBuilder,
-  fakeAsync,
-  tick,
-  clearPendingTimers,
-  ComponentFixture
-} from 'angular2/testing_internal';
+} from '@angular/core/testing/testing_internal';
+import {TestComponentBuilder} from '@angular/compiler/testing';
+import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
 
-import {IS_DART} from 'angular2/src/facade/lang';
+import {IS_DART} from '../../src/facade/lang';
 
 import {
   Component,
@@ -32,9 +24,9 @@ import {
   PLATFORM_PIPES,
   OpaqueToken,
   Injector
-} from 'angular2/core';
-import {NgIf, NgClass} from 'angular2/common';
-import {CompilerConfig} from 'angular2/compiler';
+} from '@angular/core';
+import {NgIf, NgClass} from '@angular/common';
+import {CompilerConfig} from '@angular/compiler';
 
 export function main() {
   if (IS_DART) {
@@ -64,8 +56,8 @@ function declareTests(isJit: boolean) {
       it('should overwrite them by custom pipes',
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            tcb.overrideView(
-                  MyComp, new ViewMetadata({template: '{{true | somePipe}}', pipes: [CustomPipe]}))
-               .createAsync(MyComp)
+                  MyComp1, new ViewMetadata({template: '{{true | somePipe}}', pipes: [CustomPipe]}))
+               .createAsync(MyComp1)
                .then((fixture) => {
                  fixture.detectChanges();
                  expect(fixture.nativeElement).toHaveText('someCustomPipe');
@@ -78,9 +70,9 @@ function declareTests(isJit: boolean) {
 
       it('should evaluate conditional and boolean operators with right precedence - #8244',
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-           tcb.overrideView(MyComp,
+           tcb.overrideView(MyComp1,
                             new ViewMetadata({template: `{{'red' + (true ? ' border' : '')}}`}))
-               .createAsync(MyComp)
+               .createAsync(MyComp1)
                .then((fixture) => {
                  fixture.detectChanges();
                  expect(fixture.nativeElement).toHaveText('red border');
@@ -92,8 +84,8 @@ function declareTests(isJit: boolean) {
         it('should evaluate conditional and unary operators with right precedence - #8235',
            inject([TestComponentBuilder, AsyncTestCompleter],
                   (tcb: TestComponentBuilder, async) => {
-                    tcb.overrideView(MyComp, new ViewMetadata({template: `{{!null?.length}}`}))
-                        .createAsync(MyComp)
+                    tcb.overrideView(MyComp1, new ViewMetadata({template: `{{!null?.length}}`}))
+                        .createAsync(MyComp1)
                         .then((fixture) => {
                           fixture.detectChanges();
                           expect(fixture.nativeElement).toHaveText('true');
@@ -105,8 +97,8 @@ function declareTests(isJit: boolean) {
 
     describe('providers', () => {
       function createInjector(tcb: TestComponentBuilder, proviers: any[]): Promise<Injector> {
-        return tcb.overrideProviders(MyComp, [proviers])
-            .createAsync(MyComp)
+        return tcb.overrideProviders(MyComp1, [proviers])
+            .createAsync(MyComp1)
             .then((fixture) => fixture.componentInstance.injector);
       }
 
@@ -162,8 +154,8 @@ function declareTests(isJit: boolean) {
 
     it('should allow logging a previous elements class binding via interpolation',
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-         tcb.overrideTemplate(MyComp, `<div [class.a]="true" #el>Class: {{el.className}}</div>`)
-             .createAsync(MyComp)
+         tcb.overrideTemplate(MyComp1, `<div [class.a]="true" #el>Class: {{el.className}}</div>`)
+             .createAsync(MyComp1)
              .then((fixture) => {
                fixture.detectChanges();
                expect(fixture.nativeElement).toHaveText('Class: a');
@@ -174,11 +166,11 @@ function declareTests(isJit: boolean) {
     it('should support ngClass before a component and content projection inside of an ngIf',
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
          tcb.overrideView(
-                MyComp, new ViewMetadata({
+                MyComp1, new ViewMetadata({
                   template: `A<cmp-content *ngIf="true" [ngClass]="'red'">B</cmp-content>C`,
                   directives: [NgClass, NgIf, CmpWithNgContent]
                 }))
-             .createAsync(MyComp)
+             .createAsync(MyComp1)
              .then((fixture) => {
                fixture.detectChanges();
                expect(fixture.nativeElement).toHaveText('ABC');
@@ -191,7 +183,7 @@ function declareTests(isJit: boolean) {
 }
 
 @Component({selector: 'my-comp', template: ''})
-class MyComp {
+class MyComp1 {
   constructor(public injector: Injector) {}
 }
 

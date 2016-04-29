@@ -5,40 +5,35 @@ import {
   PLATFORM_INITIALIZER,
   APPLICATION_COMMON_PROVIDERS,
   Renderer
-} from 'angular2/core';
-import {DirectiveResolver, ViewResolver} from 'angular2/compiler';
+} from '@angular/core';
+import {DirectiveResolver, ViewResolver} from '@angular/compiler';
+import {TestComponentBuilder} from '@angular/compiler/testing';
+import {Parse5DomAdapter} from '../index';
 
-import {Parse5DomAdapter} from 'angular2/src/platform/server/parse5_adapter';
+import {AnimationBuilder} from '../../platform-browser/src/animate/animation_builder';
+import {MockAnimationBuilder} from '../../platform-browser/testing/animation_builder_mock';
+import {MockDirectiveResolver, MockViewResolver} from '@angular/compiler/testing';
+import {MockLocationStrategy} from '../../common/testing/mock_location_strategy';
 
-import {AnimationBuilder} from 'angular2/src/animate/animation_builder';
-import {MockAnimationBuilder} from 'angular2/src/mock/animation_builder_mock';
-import {MockDirectiveResolver} from 'angular2/src/mock/directive_resolver_mock';
-import {MockViewResolver} from 'angular2/src/mock/view_resolver_mock';
-import {MockLocationStrategy} from 'angular2/src/mock/mock_location_strategy';
-import {MockNgZone} from 'angular2/src/mock/ng_zone_mock';
+import {XHR} from '@angular/compiler';
+import {BrowserDetection} from '@angular/platform-browser/testing';
 
-import {createNgZone} from 'angular2/src/core/application_ref';
-import {TestComponentBuilder} from 'angular2/src/testing/test_component_builder';
-import {XHR} from 'angular2/src/compiler/xhr';
-import {BrowserDetection} from 'angular2/src/testing/utils';
-
-import {COMPILER_PROVIDERS} from 'angular2/src/compiler/compiler';
-import {DOCUMENT} from 'angular2/src/platform/dom/dom_tokens';
-import {DOM} from 'angular2/src/platform/dom/dom_adapter';
-import {RootRenderer} from 'angular2/src/core/render/api';
-import {DomRootRenderer, DomRootRenderer_} from 'angular2/src/platform/dom/dom_renderer';
-import {DomSharedStylesHost, SharedStylesHost} from 'angular2/src/platform/dom/shared_styles_host';
-
+import {COMPILER_PROVIDERS} from '@angular/compiler';
+import {DOCUMENT} from '@angular/platform-browser';
+import {getDOM} from '../platform_browser_private';
+import {RootRenderer} from '@angular/core';
+import {DomRootRenderer, DomRootRenderer_} from '../../platform-browser/src/dom/dom_renderer';
+import {DomSharedStylesHost, SharedStylesHost} from '../../platform-browser/src/dom/shared_styles_host';
 import {
   EventManager,
   EVENT_MANAGER_PLUGINS,
   ELEMENT_PROBE_PROVIDERS
-} from 'angular2/platform/common_dom';
-import {DomEventsPlugin} from 'angular2/src/platform/dom/events/dom_events';
-import {LocationStrategy} from 'angular2/platform/common';
-
-
-import {Log} from 'angular2/src/testing/utils';
+} from '@angular/platform-browser';
+import {DomEventsPlugin} from '@angular/platform-browser';
+import {LocationStrategy} from '@angular/common';
+import {Log} from '@angular/core/testing';
+import {DOMTestComponentRenderer} from '@angular/platform-browser/testing';
+import {TestComponentRenderer} from '@angular/compiler/testing';
 
 function initServerTests() {
   Parse5DomAdapter.makeCurrent();
@@ -56,11 +51,17 @@ export const TEST_SERVER_PLATFORM_PROVIDERS: Array<any /*Type | Provider | any[]
 
 function appDoc() {
   try {
-    return DOM.defaultDoc();
+    return getDOM().defaultDoc();
   } catch (e) {
     return null;
   }
 }
+
+
+function createNgZone(): NgZone {
+  return new NgZone({enableLongStackTrace: true});
+}
+
 
 /**
  * Default application providers for testing.
@@ -84,6 +85,7 @@ export const TEST_SERVER_APPLICATION_PROVIDERS: Array<any /*Type | Provider | an
       /* @ts2dart_Provider */ {provide: DirectiveResolver, useClass: MockDirectiveResolver},
       /* @ts2dart_Provider */ {provide: ViewResolver, useClass: MockViewResolver},
       Log,
+      /* @ts2dart_Provider */ {provide: TestComponentRenderer, useClass: DOMTestComponentRenderer},
       TestComponentBuilder,
       /* @ts2dart_Provider */ {provide: NgZone, useFactory: createNgZone},
       /* @ts2dart_Provider */ {provide: LocationStrategy, useClass: MockLocationStrategy},

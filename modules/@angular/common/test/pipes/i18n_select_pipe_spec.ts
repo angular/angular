@@ -7,10 +7,10 @@ import {
   expect,
   beforeEach,
   afterEach
-} from 'angular2/testing_internal';
+} from '@angular/core/testing/testing_internal';
 
-import {I18nSelectPipe} from 'angular2/common';
-import {PipeResolver} from 'angular2/src/compiler/pipe_resolver';
+import {I18nSelectPipe} from '@angular/common';
+import {PipeResolver} from '@angular/compiler/src/pipe_resolver';
 
 export function main() {
   describe("I18nSelectPipe", () => {

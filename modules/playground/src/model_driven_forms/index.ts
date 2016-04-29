@@ -1,4 +1,4 @@
-import {bootstrap} from 'angular2/platform/browser';
+import {bootstrap} from '@angular/platform-browser';
 import {
   FORM_DIRECTIVES,
   ControlGroup,
@@ -8,11 +8,11 @@ import {
   FormBuilder,
   NgIf,
   NgFor
-} from 'angular2/common';
-import {Component, Directive, Host} from 'angular2/core';
+} from '@angular/common';
+import {Component, Directive, Host} from '@angular/core';
 
-import {RegExpWrapper, print, isPresent} from 'angular2/src/facade/lang';
-import {AbstractControl} from 'angular2/common';
+import {RegExpWrapper, print, isPresent} from '@angular/facade';
+import {AbstractControl} from '@angular/common';
 
 /**
  * Custom validator.

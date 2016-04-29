@@ -1,4 +1,4 @@
-import {AbstractControl} from "../model";
+import {AbstractControl} from '../model';
 import {Validator, ValidatorFn, AsyncValidatorFn} from './validators';
 
 export function normalizeValidator(validator: ValidatorFn | Validator): ValidatorFn {

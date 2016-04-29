@@ -1,10 +1,10 @@
-import {Injectable} from 'angular2/core';
-import {Request} from '../static_request';
-import {Response} from '../static_response';
-import {ReadyState} from '../enums';
-import {Connection, ConnectionBackend} from '../interfaces';
-import {isPresent} from 'angular2/src/facade/lang';
-import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
+import {Injectable} from '@angular/core';
+import {Request} from '../src/static_request';
+import {Response} from '../src/static_response';
+import {ReadyState} from '../src/enums';
+import {Connection, ConnectionBackend} from '../src/interfaces';
+import {isPresent} from '../src/facade/lang';
+import {BaseException} from '../src/facade/exceptions';
 import {Subject} from 'rxjs/Subject';
 import {ReplaySubject} from 'rxjs/ReplaySubject';
 import {take} from 'rxjs/operator/take';
@@ -98,8 +98,8 @@ export class MockConnection implements Connection {
  * ### Example
  *
  * ```
- * import {BaseRequestOptions, Http} from 'angular2/http';
- * import {MockBackend} from 'angular2/http/testing';
+ * import {BaseRequestOptions, Http} from '@angular/http';
+ * import {MockBackend} from '@angular/http/testing';
  * it('should get some data', inject([AsyncTestCompleter], (async) => {
  *   var connection;
  *   var injector = Injector.resolveAndCreate([
@@ -131,9 +131,9 @@ export class MockBackend implements ConnectionBackend {
    * ### Example
    *
    * ```
-   * import {Http, BaseRequestOptions} from 'angular2/http';
-   * import {MockBackend} from 'angular2/http/testing';
-   * import {Injector} from 'angular2/core';
+   * import {Http, BaseRequestOptions} from '@angular/http';
+   * import {MockBackend} from '@angular/http/testing';
+   * import {Injector} from '@angular/core';
    *
    * it('should get a response', () => {
    *   var connection; //this will be set when a new connection is emitted from the backend.

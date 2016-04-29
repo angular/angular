@@ -1,24 +1,24 @@
 import {
-  AsyncTestCompleter,
   inject,
   describe,
   it,
   expect,
   beforeEach,
   beforeEachProviders
-} from 'angular2/testing_internal';
+} from '@angular/core/testing/testing_internal';
+import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
 import {SpyMessageBroker} from './spies';
-import {WebWorkerPlatformLocation} from 'angular2/src/web_workers/worker/platform_location';
-import {LocationType} from 'angular2/src/web_workers/shared/serialized_types';
-import {MessageBus} from 'angular2/src/web_workers/shared/message_bus';
+import {WebWorkerPlatformLocation} from '@angular/platform-browser/src/web_workers/worker/platform_location';
+import {LocationType} from '@angular/platform-browser/src/web_workers/shared/serialized_types';
+import {MessageBus} from '@angular/platform-browser/src/web_workers/shared/message_bus';
 import {
   createPairedMessageBuses,
   MockMessageBrokerFactory,
   expectBrokerCall
 } from '../shared/web_worker_test_util';
-import {UiArguments} from 'angular2/src/web_workers/shared/client_message_broker';
-import {Type} from 'angular2/src/facade/lang';
-import {PromiseWrapper} from "angular2/src/facade/async";
+import {UiArguments} from '@angular/platform-browser/src/web_workers/shared/client_message_broker';
+import {Type} from '../../../src/facade/lang';
+import {PromiseWrapper} from '../../../src/facade/async';
 
 export function main() {
   describe("WebWorkerPlatformLocation", () => {

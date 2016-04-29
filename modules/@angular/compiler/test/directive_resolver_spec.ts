@@ -1,5 +1,5 @@
-import {ddescribe, describe, it, iit, expect, beforeEach} from 'angular2/testing_internal';
-import {DirectiveResolver} from 'angular2/src/compiler/directive_resolver';
+import {ddescribe, describe, it, iit, expect, beforeEach} from '@angular/core/testing';
+import {DirectiveResolver} from '@angular/compiler/src/directive_resolver';
 import {
   DirectiveMetadata,
   Directive,
@@ -15,7 +15,7 @@ import {
   ContentChildMetadata,
   ViewChild,
   ViewChildMetadata
-} from 'angular2/src/core/metadata';
+} from '@angular/core/src/metadata';
 
 @Directive({selector: 'someDirective'})
 class SomeDirective {

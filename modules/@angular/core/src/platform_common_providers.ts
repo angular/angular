@@ -1,9 +1,9 @@
-import {Type} from 'angular2/src/facade/lang';
-import {Provider} from 'angular2/src/core/di';
-import {Console} from 'angular2/src/core/console';
+import {Type, isBlank, isPresent, assertionsEnabled} from '../src/facade/lang';
+import {provide, Provider, Injector, OpaqueToken} from './di';
+import {Console} from './console';
 import {Reflector, reflector} from './reflection/reflection';
 import {ReflectorReader} from './reflection/reflector_reader';
-import {TestabilityRegistry} from 'angular2/src/core/testability/testability';
+import {TestabilityRegistry} from './testability/testability';
 import {PLATFORM_CORE_PROVIDERS} from './application_ref';
 
 function _reflector(): Reflector {

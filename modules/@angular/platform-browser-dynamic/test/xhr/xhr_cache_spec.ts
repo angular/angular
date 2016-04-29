@@ -1,23 +1,26 @@
-import {Component, provide} from 'angular2/core';
-import {UrlResolver, XHR} from 'angular2/compiler';
+import {Component, provide} from '@angular/core';
+import {UrlResolver, XHR} from '@angular/compiler';
 import {
-  AsyncTestCompleter,
   beforeEach,
   beforeEachProviders,
-  ComponentFixture,
   ddescribe,
   describe,
-  expect,
-  fakeAsync,
   iit,
   inject,
   it,
-  TestComponentBuilder,
-  tick,
   xit
-} from 'angular2/testing_internal';
-import {BaseException} from 'angular2/src/facade/exceptions';
-import {CachedXHR} from 'angular2/src/platform/browser/xhr_cache';
+} from '@angular/core/testing/testing_internal';
+import {expect} from '@angular/platform-browser/testing';
+import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
+import {
+  fakeAsync,
+  flushMicrotasks,
+  Log,
+  tick,
+} from '@angular/core/testing';
+import {TestComponentBuilder, ComponentFixture} from '@angular/compiler/testing';
+import {BaseException} from '../../src/facade/exceptions';
+import {CachedXHR} from '../../src/xhr/xhr_cache';
 import {setTemplateCache} from './xhr_cache_setter';
 
 export function main() {

@@ -6,14 +6,17 @@ import {
   xit,
   expect,
   beforeEach,
-  afterEach,
+  afterEach
+} from '@angular/core/testing/testing_internal';
+import {
   fakeAsync,
-  tick,
-  el
-} from 'angular2/testing_internal';
-import {ControlGroup, Control, Validators, AbstractControl, ControlArray} from 'angular2/common';
-import {PromiseWrapper} from 'angular2/src/facade/promise';
-import {EventEmitter, ObservableWrapper, TimerWrapper} from 'angular2/src/facade/async';
+  flushMicrotasks,
+  Log,
+  tick
+} from '@angular/core/testing';
+import {ControlGroup, Control, Validators, AbstractControl, ControlArray} from '@angular/common';
+import {PromiseWrapper} from '../../src/facade/promise';
+import {EventEmitter, ObservableWrapper, TimerWrapper} from '../../src/facade/async';
 
 export function main() {
   function validator(key: string, error: any) {

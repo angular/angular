@@ -4,11 +4,11 @@ import {
   RegExpWrapper,
   NumberWrapper,
   isPresent
-} from 'angular2/src/facade/lang';
-import {Math} from 'angular2/src/facade/math';
-import {camelCaseToDashCase} from 'angular2/src/platform/dom/util';
-import {StringMapWrapper} from 'angular2/src/facade/collection';
-import {DOM} from 'angular2/src/platform/dom/dom_adapter';
+} from '../../src/facade/lang';
+import {Math} from '../../src/facade/math';
+import {StringMapWrapper} from '../../src/facade/collection';
+import {camelCaseToDashCase} from '../dom/util';
+import {getDOM} from '../dom/dom_adapter';
 
 import {BrowserDetails} from './browser_details';
 import {CssAnimationOptions} from './css_animation_options';
@@ -50,7 +50,7 @@ export class Animation {
   constructor(public element: HTMLElement, public data: CssAnimationOptions,
               public browserDetails: BrowserDetails) {
     this.startTime = DateWrapper.toMillis(DateWrapper.now());
-    this._stringPrefix = DOM.getAnimationPrefix();
+    this._stringPrefix = getDOM().getAnimationPrefix();
     this.setup();
     this.wait((timestamp: any) => this.start());
   }
@@ -79,7 +79,7 @@ export class Animation {
     this.addClasses(this.data.animationClasses);
     this.removeClasses(this.data.classesToRemove);
     if (this.data.toStyles != null) this.applyStyles(this.data.toStyles);
-    var computedStyles = DOM.getComputedStyle(this.element);
+    var computedStyles = getDOM().getComputedStyle(this.element);
     this.computedDelay =
         Math.max(this.parseDurationString(
                      computedStyles.getPropertyValue(this._stringPrefix + 'transition-delay')),
@@ -99,10 +99,10 @@ export class Animation {
   applyStyles(styles: {[key: string]: any}): void {
     StringMapWrapper.forEach(styles, (value: any, key: string) => {
       var dashCaseKey = camelCaseToDashCase(key);
-      if (isPresent(DOM.getStyle(this.element, dashCaseKey))) {
-        DOM.setStyle(this.element, dashCaseKey, value.toString());
+      if (isPresent(getDOM().getStyle(this.element, dashCaseKey))) {
+        getDOM().setStyle(this.element, dashCaseKey, value.toString());
       } else {
-        DOM.setStyle(this.element, this._stringPrefix + dashCaseKey, value.toString());
+        getDOM().setStyle(this.element, this._stringPrefix + dashCaseKey, value.toString());
       }
     });
   }
@@ -112,7 +112,7 @@ export class Animation {
    * @param classes
    */
   addClasses(classes: string[]): void {
-    for (let i = 0, len = classes.length; i < len; i++) DOM.addClass(this.element, classes[i]);
+    for (let i = 0, len = classes.length; i < len; i++) getDOM().addClass(this.element, classes[i]);
   }
 
   /**
@@ -120,7 +120,7 @@ export class Animation {
    * @param classes
    */
   removeClasses(classes: string[]): void {
-    for (let i = 0, len = classes.length; i < len; i++) DOM.removeClass(this.element, classes[i]);
+    for (let i = 0, len = classes.length; i < len; i++) getDOM().removeClass(this.element, classes[i]);
   }
 
   /**
@@ -128,8 +128,8 @@ export class Animation {
    */
   addEvents(): void {
     if (this.totalTime > 0) {
-      this.eventClearFunctions.push(DOM.onAndCancel(
-          this.element, DOM.getTransitionEnd(), (event: any) => this.handleAnimationEvent(event)));
+      this.eventClearFunctions.push(getDOM().onAndCancel(
+          this.element, getDOM().getTransitionEnd(), (event: any) => this.handleAnimationEvent(event)));
     } else {
       this.handleAnimationCompleted();
     }

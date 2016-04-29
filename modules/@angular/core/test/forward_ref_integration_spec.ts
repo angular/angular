@@ -1,6 +1,4 @@
 import {
-  AsyncTestCompleter,
-  TestComponentBuilder,
   beforeEach,
   ddescribe,
   describe,
@@ -9,7 +7,7 @@ import {
   inject,
   it,
   xit
-} from 'angular2/testing_internal';
+} from '@angular/core/testing/testing_internal';
 import {
   bind,
   provide,
@@ -20,10 +18,12 @@ import {
   Inject,
   Query,
   QueryList
-} from 'angular2/core';
-import {NgFor} from 'angular2/common';
-import {Type} from 'angular2/src/facade/lang';
-import {asNativeElements} from 'angular2/core';
+} from '@angular/core';
+import {TestComponentBuilder} from '@angular/compiler/testing';
+import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
+import {NgFor} from '@angular/common';
+import {Type} from '../src/facade/lang';
+import {asNativeElements} from '@angular/core';
 
 export function main() {
   describe("forwardRef integration", function() {

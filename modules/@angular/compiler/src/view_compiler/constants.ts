@@ -1,11 +1,8 @@
-import {serializeEnum, isBlank, resolveEnumToken} from 'angular2/src/facade/lang';
-import {CompileIdentifierMetadata, CompileTokenMetadata} from '../compile_metadata';
-import {
-  ChangeDetectorState,
-  ChangeDetectionStrategy
-} from 'angular2/src/core/change_detection/change_detection';
-import {ViewEncapsulation} from 'angular2/src/core/metadata/view';
-import {ViewType} from 'angular2/src/core/linker/view_type';
+import {ChangeDetectionStrategy, ViewEncapsulation} from '@angular/core';
+import {ChangeDetectorState, ViewType} from '../../core_private';
+
+import {isBlank, resolveEnumToken} from '../../src/facade/lang';
+import {CompileIdentifierMetadata} from '../compile_metadata';
 import * as o from '../output/output_ast';
 import {Identifiers} from '../identifiers';
 

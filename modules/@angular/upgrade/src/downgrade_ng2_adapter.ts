@@ -7,10 +7,9 @@ import {
   ComponentRef,
   SimpleChange,
   ReflectiveInjector
-} from 'angular2/core';
+} from '@angular/core';
 import {NG1_SCOPE} from './constants';
 import {ComponentInfo} from './metadata';
-import Element = protractor.Element;
 import * as angular from './angular_js';
 
 const INITIAL_VALUE = {

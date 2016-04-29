@@ -1,15 +1,15 @@
+import {Injectable, PipeTransform, WrappedValue, Pipe} from '@angular/core';
+
 import {
   isNumber,
   isPresent,
   isBlank,
-  StringWrapper,
   NumberWrapper,
   RegExpWrapper,
-  FunctionWrapper
-} from 'angular2/src/facade/lang';
-import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
-import {NumberFormatter, NumberFormatStyle} from 'angular2/src/facade/intl';
-import {Injectable, PipeTransform, WrappedValue, Pipe} from 'angular2/core';
+} from '../../src/facade/lang';
+import {BaseException} from '../../src/facade/exceptions';
+import {NumberFormatter, NumberFormatStyle} from '../../src/facade/intl';
+import {ListWrapper} from '../../src/facade/collection';
 
 import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
 

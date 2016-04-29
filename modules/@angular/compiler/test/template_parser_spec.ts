@@ -9,17 +9,16 @@ import {
   afterEach,
   inject,
   beforeEachProviders
-} from 'angular2/testing_internal';
-import {provide} from 'angular2/src/core/di';
-import {Console} from 'angular2/src/core/console';
+} from '@angular/core/testing/testing_internal';
+import {provide} from '@angular/core';
 
-import {TEST_PROVIDERS} from './test_bindings';
-import {isPresent} from 'angular2/src/facade/lang';
+import {Console} from '@angular/core/src/console';
+
 import {
   TemplateParser,
   splitClasses,
   TEMPLATE_TRANSFORMS
-} from 'angular2/src/compiler/template_parser';
+} from '@angular/compiler/src/template_parser';
 import {
   CompileDirectiveMetadata,
   CompilePipeMetadata,
@@ -29,7 +28,7 @@ import {
   CompileTokenMetadata,
   CompileDiDependencyMetadata,
   CompileQueryMetadata
-} from 'angular2/src/compiler/compile_metadata';
+} from '@angular/compiler/src/compile_metadata';
 import {
   templateVisitAll,
   TemplateAstVisitor,
@@ -48,13 +47,14 @@ import {
   PropertyBindingType,
   DirectiveAst,
   ProviderAstType
-} from 'angular2/src/compiler/template_ast';
-import {identifierToken, Identifiers} from 'angular2/src/compiler/identifiers';
+} from '@angular/compiler/src/template_ast';
+import {identifierToken, Identifiers} from '../src/identifiers';
 
-import {ElementSchemaRegistry} from 'angular2/src/compiler/schema/element_schema_registry';
-import {MockSchemaRegistry} from './schema_registry_mock';
+import {ElementSchemaRegistry} from '@angular/compiler/src/schema/element_schema_registry';
+import {MockSchemaRegistry} from '@angular/compiler/testing';
 
 import {Unparser} from './expression_parser/unparser';
+import {TEST_PROVIDERS} from './test_bindings';
 
 var expressionUnparser = new Unparser();
 

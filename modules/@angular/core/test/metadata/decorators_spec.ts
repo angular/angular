@@ -1,5 +1,4 @@
 import {
-  AsyncTestCompleter,
   beforeEach,
   ddescribe,
   describe,
@@ -8,10 +7,10 @@ import {
   inject,
   it,
   xit,
-} from 'angular2/testing_internal';
+} from '@angular/core/testing/testing_internal';
 
-import {Component, Directive} from 'angular2/core';
-import {reflector} from 'angular2/src/core/reflection/reflection';
+import {Component, Directive} from '@angular/core';
+import {reflector} from '@angular/core/src/reflection/reflection';
 
 export function main() {
   describe('es5 decorators', () => {

@@ -1,5 +1,4 @@
 import {
-  AsyncTestCompleter,
   beforeEach,
   describe,
   ddescribe,
@@ -9,13 +8,13 @@ import {
   it,
   xdescribe,
   xit
-} from 'angular2/testing_internal';
+} from '@angular/core/testing/testing_internal';
 
-import {HtmlParser} from 'angular2/src/compiler/html_parser';
-import {MessageExtractor, removeDuplicates} from 'angular2/src/i18n/message_extractor';
-import {Message} from 'angular2/src/i18n/message';
-import {Parser} from 'angular2/src/compiler/expression_parser/parser';
-import {Lexer} from 'angular2/src/compiler/expression_parser/lexer';
+import {HtmlParser} from '@angular/compiler/src/html_parser';
+import {MessageExtractor, removeDuplicates} from '@angular/compiler/src/i18n/message_extractor';
+import {Message} from '@angular/compiler/src/i18n/message';
+import {Parser} from '@angular/compiler/src/expression_parser/parser';
+import {Lexer} from '@angular/compiler/src/expression_parser/lexer';
 
 export function main() {
   describe('MessageExtractor', () => {

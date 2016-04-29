@@ -1,8 +1,8 @@
-import {isPresent, isBlank, RegExpWrapper} from 'angular2/src/facade/lang';
-import {HtmlAst, HtmlElementAst} from 'angular2/src/compiler/html_ast';
+import {isPresent, isBlank, RegExpWrapper} from '../../src/facade/lang';
+import {HtmlAst, HtmlElementAst} from '../html_ast';
 import {Message, id} from './message';
-import {HtmlParser} from 'angular2/src/compiler/html_parser';
-import {ParseSourceSpan, ParseError} from 'angular2/src/compiler/parse_util';
+import {HtmlParser} from '../html_parser';
+import {ParseSourceSpan, ParseError} from '../parse_util';
 
 let _PLACEHOLDER_REGEXP = RegExpWrapper.create(`\\<ph(\\s)+name=("(\\w)+")\\/\\>`);
 const _ID_ATTR = "id";

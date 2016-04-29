@@ -5,14 +5,13 @@ import {
   ddescribe,
   expect,
   tick,
-  SpyObject,
   beforeEach,
   containsRegexp
-} from 'angular2/testing_internal';
+} from '../testing';
+import {SpyObject} from '@angular/core/testing/testing_internal';
 
-import {DOM} from 'angular2/src/platform/dom/dom_adapter';
-import {MapWrapper} from 'angular2/src/facade/collection';
-import {RegExpWrapper} from 'angular2/src/facade/lang';
+import {MapWrapper} from '../../platform-browser/src/facade/collection';
+import {RegExpWrapper} from '../../router/src/facade/lang';
 
 class TestObj {
   prop;
@@ -36,20 +35,6 @@ export function main() {
 
         expect(actual).toEqual(expected);
         expect(falseActual).not.toEqual(expected);
-      });
-    });
-
-    describe("toHaveCssClass", () => {
-      it("should assert that the CSS class is present", () => {
-        var el = DOM.createElement('div');
-        DOM.addClass(el, 'matias');
-        expect(el).toHaveCssClass('matias');
-      });
-
-      it("should assert that the CSS class is not present", () => {
-        var el = DOM.createElement('div');
-        DOM.addClass(el, 'matias');
-        expect(el).not.toHaveCssClass('fatias');
       });
     });
 

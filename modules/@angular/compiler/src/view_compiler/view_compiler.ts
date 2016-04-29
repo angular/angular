@@ -1,13 +1,10 @@
-import {Injectable} from 'angular2/src/core/di';
-
+import {Injectable} from '@angular/core';
 import * as o from '../output/output_ast';
 import {CompileElement} from './compile_element';
 import {CompileView} from './compile_view';
 import {buildView, finishView, ViewCompileDependency} from './view_builder';
 import {bindView} from './view_binder';
-
 import {CompileDirectiveMetadata, CompilePipeMetadata} from '../compile_metadata';
-
 import {TemplateAst} from '../template_ast';
 import {CompilerConfig} from '../config';
 

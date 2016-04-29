@@ -2,17 +2,15 @@ import {
   beforeEach,
   ddescribe,
   describe,
-  el,
   expect,
   iit,
   it,
-} from 'angular2/testing_internal';
+} from '@angular/core/testing/testing_internal';
 
-import {stringify, isBlank} from 'angular2/src/facade/lang';
-
-import {MockViewResolver} from 'angular2/src/mock/view_resolver_mock';
-
-import {Component, ViewMetadata} from 'angular2/src/core/metadata';
+import {stringify} from '../src/facade/lang';
+import {MockViewResolver} from '../testing';
+import {Component, ViewMetadata} from '@angular/core';
+import {isBlank} from '../src/facade/lang';
 
 export function main() {
   describe('MockViewResolver', () => {

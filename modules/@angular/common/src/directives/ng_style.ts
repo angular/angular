@@ -1,3 +1,4 @@
+import {KeyValueChangeRecord} from '@angular/core';
 import {
   DoCheck,
   KeyValueDiffer,
@@ -5,9 +6,8 @@ import {
   ElementRef,
   Directive,
   Renderer
-} from 'angular2/core';
-import {isPresent, isBlank, print} from 'angular2/src/facade/lang';
-import {KeyValueChangeRecord} from "../../core/change_detection/differs/default_keyvalue_differ";
+} from '@angular/core';
+import {isPresent, isBlank} from '../../src/facade/lang';
 
 /**
  * The `NgStyle` directive changes styles based on a result of expression evaluation.
@@ -24,8 +24,8 @@ import {KeyValueChangeRecord} from "../../core/change_detection/differs/default_
  * ### Example ([live demo](http://plnkr.co/edit/YamGS6GkUh9GqWNQhCyM?p=preview)):
  *
  * ```
- * import {Component} from 'angular2/core';
- * import {NgStyle} from 'angular2/common';
+ * import {Component} from '@angular/core';
+ * import {NgStyle} from '@angular/common';
  *
  * @Component({
  *  selector: 'ngStyle-example',

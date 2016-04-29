@@ -1,34 +1,24 @@
 import {
-  ComponentFixture,
-  AsyncTestCompleter,
-  TestComponentBuilder,
   beforeEach,
   ddescribe,
   xdescribe,
   describe,
-  el,
   expect,
   iit,
   inject,
   beforeEachProviders,
   it,
   xit
-} from 'angular2/testing_internal';
+} from '@angular/core/testing/testing_internal';
+import {TestComponentBuilder, ComponentFixture} from '@angular/compiler/testing';
+import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
 
-import {By} from 'angular2/platform/common_dom';
-import {Location} from 'angular2/platform/common';
-import {provide, Component, Injector, Inject} from 'angular2/core';
-
-import {Router, ROUTER_DIRECTIVES, RouteParams, RouteData} from 'angular2/router';
-import {
-  RouteConfig,
-  Route,
-  AuxRoute,
-  Redirect
-} from 'angular2/src/router/route_config/route_config_decorator';
-
+import {Location} from '@angular/common';
+import {Component} from '@angular/core';
+import {Router, ROUTER_DIRECTIVES, Route, AuxRoute, RouteConfig} from '@angular/router';
 import {specs, compile, clickOnElement, getHref} from '../util';
-import {BaseException} from 'angular2/src/facade/exceptions';
+import {BaseException} from '../../../src/facade/exceptions';
+import {By} from '@angular/platform-browser/src/dom/debug/by';
 
 function getLinkElement(rtc: ComponentFixture<any>, linkIndex: number = 0) {
   return rtc.debugElement.queryAll(By.css('a'))[linkIndex].nativeElement;

@@ -1,5 +1,5 @@
-import {verifyNoBrowserErrors, browser} from 'angular2/src/testing/e2e_util';
-import {expect} from 'angular2/testing';
+import {verifyNoBrowserErrors, browser} from '@angular/platform-browser/testing_e2e';
+import {expect} from '@angular/core/testing';
 
 function waitForElement(selector: string) {
   var EC = (<any>protractor).ExpectedConditions;
@@ -11,7 +11,7 @@ describe('reuse example app', function() {
 
   afterEach(verifyNoBrowserErrors);
 
-  var URL = 'angular2/examples/router/ts/reuse/';
+  var URL = '@angular/examples/router/ts/reuse/';
 
   it('should build a link which points to the detail page', function() {
     browser.get(URL);

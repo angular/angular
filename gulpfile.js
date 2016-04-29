@@ -923,7 +923,7 @@ gulp.task('test.unit.cjs/ci', function(done) {
   runJasmineTests(['dist/js/cjs/{angular2,benchpress}/test/**/*_spec.js'], done);
 });
 
-gulp.task('check-public-api',
+gulp.task('check-public-api', ['build.tools'],
           function(done) { runJasmineTests(['dist/tools/public_api_guard/**/*_spec.js'], done); });
 
 gulp.task('test.unit.cjs', ['build/clean.js', 'build.tools'], function(neverDone) {
@@ -1566,6 +1566,10 @@ process.on('beforeExit', function() {
 
 
 var firstTask = true;
+
+
+
+
 gulp.on('task_start', (e) => {
   if (firstTask) {
     firstTask = false;

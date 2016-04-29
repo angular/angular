@@ -1,5 +1,4 @@
-import {DOM} from 'angular2/src/platform/dom/dom_adapter';
-
+import {getDOM} from '../dom/dom_adapter';
 /**
  * A service that can be used to get and set the title of a current HTML document.
  *
@@ -13,11 +12,11 @@ export class Title {
    * Get the title of the current HTML document.
    * @returns {string}
    */
-  getTitle(): string { return DOM.getTitle(); }
+  getTitle(): string { return getDOM().getTitle(); }
 
   /**
    * Set the title of the current HTML document.
    * @param newTitle
    */
-  setTitle(newTitle: string) { DOM.setTitle(newTitle); }
+  setTitle(newTitle: string) { getDOM().setTitle(newTitle); }
 }

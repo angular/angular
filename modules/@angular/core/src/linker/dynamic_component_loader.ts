@@ -1,13 +1,11 @@
-import {
-  Injector,
-  ResolvedReflectiveProvider,
-  Injectable,
-  ReflectiveInjector
-} from 'angular2/src/core/di';
 import {ComponentResolver} from './component_resolver';
-import {isType, Type, stringify, isPresent} from 'angular2/src/facade/lang';
+import {Type, isPresent} from '../../src/facade/lang';
 import {ComponentRef} from './component_factory';
 import {ViewContainerRef} from './view_container_ref';
+import {ResolvedReflectiveProvider} from '../di/reflective_provider';
+import {ReflectiveInjector} from '../di/reflective_injector';
+import {Injectable} from '../di/decorators';
+import {Injector} from '../di/injector';
 
 /**
  * Use ComponentResolver and ViewContainerRef directly.

@@ -1,5 +1,5 @@
-import {NumberWrapper, StringWrapper, isPresent, resolveEnumToken} from "angular2/src/facade/lang";
-import {BaseException} from 'angular2/src/facade/exceptions';
+import {NumberWrapper, StringWrapper, isPresent, resolveEnumToken} from '../../src/facade/lang';
+import {BaseException} from '../../src/facade/exceptions';
 
 import {
   isWhitespace,
@@ -44,7 +44,7 @@ import {
   $CR,
   $LF,
   $VTAB
-} from "angular2/src/compiler/chars";
+} from '@angular/compiler/src/chars';
 
 export {
   $EOF,
@@ -59,7 +59,7 @@ export {
   $COLON,
   $SEMICOLON,
   isWhitespace
-} from "angular2/src/compiler/chars";
+} from '@angular/compiler/src/chars';
 
 export enum CssTokenType {
   EOF,

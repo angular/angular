@@ -4,8 +4,8 @@ import {
   isPresent,
   isBlank,
   serializeEnum
-} from 'angular2/src/facade/lang';
-import {ListWrapper} from 'angular2/src/facade/collection';
+} from '../src/facade/lang';
+import {ListWrapper} from '../src/facade/collection';
 import {ParseLocation, ParseError, ParseSourceFile, ParseSourceSpan} from './parse_util';
 import {getHtmlTagDefinition, HtmlTagContentType, NAMED_ENTITIES} from './html_tags';
 

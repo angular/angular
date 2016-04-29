@@ -1,18 +1,15 @@
 import {
-  AsyncTestCompleter,
   beforeEach,
   ddescribe,
   describe,
-  el,
   expect,
   iit,
   inject,
   it,
   xit,
-  TestComponentBuilder
-} from 'angular2/testing_internal';
+} from '@angular/core/testing/testing_internal';
 
-import {escapeSingleQuoteString} from 'angular2/src/compiler/output/abstract_emitter';
+import {escapeSingleQuoteString} from '@angular/compiler/src/output/abstract_emitter';
 
 export function main() {
   describe('AbstractEmitter', () => {

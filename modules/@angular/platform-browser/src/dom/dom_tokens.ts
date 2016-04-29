@@ -1,4 +1,4 @@
-import {OpaqueToken} from 'angular2/src/core/di';
+import {OpaqueToken} from '@angular/core';
 
 /**
  * A DI Token representing the main rendering context. In a browser this is the DOM Document.

@@ -19,7 +19,8 @@
          */
         "baseUrl": "../../..",
         "paths": {
-          "angular2/*": ["dist/js/cjs/angular2/*"],
+          "@angular/*": ["dist/all/@angular/*"],
+          "@angular/core": ["dist/all/@angular/core/"],
           "rxjs/*": ["node_modules/rxjs/*"],
           "ts-metadata-collector": ["dist/tools/metadata"]
         }

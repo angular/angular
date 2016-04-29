@@ -1,8 +1,8 @@
-import {SpyLocation} from 'angular2/src/mock/location_mock';
-import {Location} from 'angular2/platform/common';
+import {SpyLocation} from '@angular/common/testing';
+import {Location} from '@angular/common';
 import {Router, RouterOutletMap} from './router';
 import {RouterUrlSerializer, DefaultRouterUrlSerializer} from './router_url_serializer';
-import {Component, ComponentResolver} from 'angular2/core';
+import {Component, ComponentResolver} from '@angular/core';
 
 @Component({selector: 'fake-app-root-comp', template: `<span></span>`})
 class FakeAppRootCmp {

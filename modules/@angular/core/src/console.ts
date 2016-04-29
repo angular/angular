@@ -1,5 +1,5 @@
-import {Injectable} from 'angular2/src/core/di';
-import {print, warn} from 'angular2/src/facade/lang';
+import {print, warn} from './facade/lang';
+import {Injectable} from './di/decorators';
 
 // Note: Need to rename warn as in Dart
 // class members and imports can't use the same name.

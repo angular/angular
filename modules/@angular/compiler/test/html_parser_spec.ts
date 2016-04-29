@@ -7,10 +7,10 @@ import {
   expect,
   beforeEach,
   afterEach
-} from 'angular2/testing_internal';
+} from '@angular/core/testing/testing_internal';
 
-import {HtmlTokenType} from 'angular2/src/compiler/html_lexer';
-import {HtmlParser, HtmlParseTreeResult, HtmlTreeError} from 'angular2/src/compiler/html_parser';
+import {HtmlTokenType} from '@angular/compiler/src/html_lexer';
+import {HtmlParser, HtmlParseTreeResult, HtmlTreeError} from '@angular/compiler/src/html_parser';
 import {
   HtmlAst,
   HtmlAstVisitor,
@@ -21,8 +21,8 @@ import {
   htmlVisitAll,
   HtmlExpansionAst,
   HtmlExpansionCaseAst
-} from 'angular2/src/compiler/html_ast';
-import {ParseError, ParseLocation} from 'angular2/src/compiler/parse_util';
+} from '@angular/compiler/src/html_ast';
+import {ParseError, ParseLocation} from '@angular/compiler/src/parse_util';
 import {humanizeDom, humanizeDomSourceSpans, humanizeLineColumn} from './html_ast_spec_utils';
 
 export function main() {

@@ -1,6 +1,6 @@
-import {Type, isBlank} from 'angular2/src/facade/lang';
+import {Type} from '@angular/core';
 import {RouteLifecycleHook, CanActivate} from './lifecycle_annotations_impl';
-import {reflector} from 'angular2/src/core/reflection/reflection';
+import {reflector} from '@angular/core';
 
 export function hasLifecycleHook(e: RouteLifecycleHook, type): boolean {
   if (!(type instanceof Type)) return false;

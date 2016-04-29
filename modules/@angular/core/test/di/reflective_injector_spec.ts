@@ -1,6 +1,6 @@
-import {isBlank, stringify, isPresent} from 'angular2/src/facade/lang';
-import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
-import {describe, ddescribe, it, iit, expect, beforeEach} from 'angular2/testing_internal';
+import {isBlank, stringify, isPresent} from '../../src/facade/lang';
+import {BaseException, WrappedException} from '../../src/facade/exceptions';
+import {describe, ddescribe, it, iit, expect, beforeEach} from '@angular/core/testing';
 import {
   provide,
   ReflectiveKey,
@@ -14,15 +14,15 @@ import {
   Optional,
   Inject,
   Provider
-} from 'angular2/core';
+} from '@angular/core';
 import {
   ReflectiveInjector_,
   ReflectiveInjectorInlineStrategy,
   ReflectiveInjectorDynamicStrategy,
   ReflectiveProtoInjector
-} from 'angular2/src/core/di/reflective_injector';
-import {DependencyMetadata} from 'angular2/src/core/di/metadata';
-import {ResolvedReflectiveProvider_} from 'angular2/src/core/di/reflective_provider';
+} from '@angular/core/src/di/reflective_injector';
+import {DependencyMetadata} from '@angular/core/src/di/metadata';
+import {ResolvedReflectiveProvider_} from '@angular/core/src/di/reflective_provider';
 
 class CustomDependencyMetadata extends DependencyMetadata {}
 

@@ -1,12 +1,12 @@
-import {Map, ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
+import {Map, ListWrapper} from '../src/facade/collection';
 import {
   isPresent,
   isBlank,
   RegExpWrapper,
   RegExpMatcherWrapper,
   StringWrapper
-} from 'angular2/src/facade/lang';
-import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
+} from '../src/facade/lang';
+import {BaseException} from '../src/facade/exceptions';
 
 const _EMPTY_ATTR_VALUE = /*@ts2dart_const*/ '';
 

@@ -1,5 +1,4 @@
 import {
-  AsyncTestCompleter,
   beforeEach,
   ddescribe,
   describe,
@@ -9,12 +8,12 @@ import {
   it,
   xdescribe,
   xit
-} from 'angular2/testing_internal';
+} from '@angular/core/testing/testing_internal';
 
-import {HtmlAst} from 'angular2/src/compiler/html_ast';
-import {Message, id} from 'angular2/src/i18n/message';
-import {serializeXmb, deserializeXmb} from 'angular2/src/i18n/xmb_serializer';
-import {ParseSourceSpan, ParseError} from 'angular2/src/compiler/parse_util';
+import {HtmlAst} from '@angular/compiler/src/html_ast';
+import {Message, id} from '@angular/compiler/src/i18n/message';
+import {serializeXmb, deserializeXmb} from '@angular/compiler/src/i18n/xmb_serializer';
+import {ParseSourceSpan, ParseError} from '@angular/compiler/src/parse_util';
 
 export function main() {
   describe("Xmb", () => {

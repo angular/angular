@@ -1,5 +1,4 @@
 import {
-  AsyncTestCompleter,
   afterEach,
   beforeEach,
   ddescribe,
@@ -9,9 +8,10 @@ import {
   inject,
   it,
   xit
-} from 'angular2/testing_internal';
-import {Injector, provide, ReflectiveInjector} from 'angular2/core';
-import {MockBackend, MockConnection} from 'angular2/src/http/backends/mock_backend';
+} from '@angular/core/testing/testing_internal';
+import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
+import {Injector, provide, ReflectiveInjector} from '@angular/core';
+import {MockBackend, MockConnection} from '../testing/mock_backend';
 import {
   BaseRequestOptions,
   ConnectionBackend,
@@ -27,7 +27,7 @@ import {
   JSONPBackend,
   Http,
   Jsonp
-} from 'angular2/http';
+} from '../http';
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
 

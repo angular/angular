@@ -1,4 +1,4 @@
-import {Injectable} from 'angular2/src/core/di';
+import {Injectable} from '@angular/core';
 
 import {CssAnimationBuilder} from './css_animation_builder';
 import {BrowserDetails} from './browser_details';

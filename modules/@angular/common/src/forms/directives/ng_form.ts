@@ -1,25 +1,22 @@
+import {Directive, forwardRef, Provider, Optional, Inject, Self} from '@angular/core';
 import {
   PromiseWrapper,
   ObservableWrapper,
   EventEmitter,
   PromiseCompleter
-} from 'angular2/src/facade/async';
-import {StringMapWrapper, ListWrapper} from 'angular2/src/facade/collection';
-import {isPresent, isBlank} from 'angular2/src/facade/lang';
-import {Directive, forwardRef, Provider, Optional, Inject, Self} from 'angular2/core';
+} from '../../../src/facade/async';
+import {ListWrapper} from '../../../src/facade/collection';
+import {isPresent} from '../../../src/facade/lang';
 import {NgControl} from './ng_control';
 import {Form} from './form_interface';
 import {NgControlGroup} from './ng_control_group';
 import {ControlContainer} from './control_container';
 import {AbstractControl, ControlGroup, Control} from '../model';
 import {setUpControl, setUpControlGroup, composeValidators, composeAsyncValidators} from './shared';
-import {Validators, NG_VALIDATORS, NG_ASYNC_VALIDATORS} from '../validators';
+import {NG_VALIDATORS, NG_ASYNC_VALIDATORS} from '../validators';
 
 export const formDirectiveProvider: any =
-    /*@ts2dart_const*/ /* @ts2dart_Provider */ {
-      provide: ControlContainer,
-      useExisting: forwardRef(() => NgForm)
-    };
+    /*@ts2dart_const*/ {provide: ControlContainer, useExisting: forwardRef(() => NgForm)};
 
 /**
  * If `NgForm` is bound in a component, `<form>` elements in that component will be

@@ -1,37 +1,35 @@
 import {
-  ComponentFixture,
-  AsyncTestCompleter,
-  TestComponentBuilder,
   beforeEach,
   ddescribe,
   xdescribe,
   describe,
-  el,
   expect,
   iit,
   inject,
   beforeEachProviders,
   it,
   xit
-} from 'angular2/testing_internal';
+} from '@angular/core/testing/testing_internal';
+import {TestComponentBuilder, ComponentFixture} from '@angular/compiler/testing';
+import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
 
-import {provide, Component, Injector, Inject} from 'angular2/core';
-import {isPresent} from 'angular2/src/facade/lang';
+import {provide, Component, Injector, Inject} from '@angular/core';
+import {isPresent} from '../../src/facade/lang';
 import {
   PromiseWrapper,
   PromiseCompleter,
   EventEmitter,
   ObservableWrapper
-} from 'angular2/src/facade/async';
+} from '../../src/facade/async';
 
-import {Router, RouterOutlet, RouterLink, RouteParams} from 'angular2/router';
+import {Router, RouterOutlet, RouterLink, RouteParams} from '@angular/router';
 import {
   RouteConfig,
   Route,
   AuxRoute,
   AsyncRoute,
   Redirect
-} from 'angular2/src/router/route_config/route_config_decorator';
+} from '../../../router/src/route_config/route_config_decorator';
 
 import {
   OnActivate,
@@ -39,9 +37,9 @@ import {
   OnReuse,
   CanDeactivate,
   CanReuse
-} from 'angular2/src/router/interfaces';
-import {CanActivate} from 'angular2/src/router/lifecycle/lifecycle_annotations';
-import {ComponentInstruction} from 'angular2/src/router/instruction';
+} from '../../../router/src/interfaces';
+import {CanActivate} from '../../../router/src/lifecycle/lifecycle_annotations';
+import {ComponentInstruction} from '../../../router/src/instruction';
 
 
 import {TEST_ROUTER_PROVIDERS, RootCmp, compile} from './util';

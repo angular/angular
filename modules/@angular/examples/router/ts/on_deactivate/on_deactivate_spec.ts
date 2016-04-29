@@ -1,5 +1,5 @@
-import {verifyNoBrowserErrors, browser} from 'angular2/src/testing/e2e_util';
-import {expect} from 'angular2/testing';
+import {verifyNoBrowserErrors, browser} from '@angular/platform-browser/testing_e2e';
+import {expect} from '@angular/core/testing';
 
 function waitForElement(selector: string) {
   var EC = (<any>protractor).ExpectedConditions;
@@ -10,7 +10,7 @@ function waitForElement(selector: string) {
 describe('on activate example app', function() {
   afterEach(verifyNoBrowserErrors);
 
-  var URL = 'angular2/examples/router/ts/on_deactivate/';
+  var URL = '@angular/examples/router/ts/on_deactivate/';
 
   it('should update the text when navigating between routes', function() {
     browser.get(URL);
@@ -27,6 +27,6 @@ describe('on activate example app', function() {
     waitForElement('my-cmp');
 
     expect(element(by.css('#log')).getText())
-        .toEqual('Log:\nNavigating from "" to "1"\nNavigating from "1" to ""');
+        .toEqual('Log:\nNavigating from "" to "1"\nNavigating from "./1" to ""');
   });
 });

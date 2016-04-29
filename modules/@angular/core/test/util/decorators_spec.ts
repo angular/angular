@@ -1,5 +1,4 @@
 import {
-  AsyncTestCompleter,
   beforeEach,
   ddescribe,
   describe,
@@ -8,12 +7,12 @@ import {
   inject,
   it,
   xit,
-} from 'angular2/testing_internal';
+} from '@angular/core/testing/testing_internal';
 
-import {makeDecorator, makeParamDecorator, Class} from 'angular2/src/core/util/decorators';
-import {global} from 'angular2/src/facade/lang';
-import {Inject} from 'angular2/core';
-import {reflector} from 'angular2/src/core/reflection/reflection';
+import {makeDecorator, makeParamDecorator, Class} from '@angular/core/src/util/decorators';
+import {global} from '../../src/facade/lang';
+import {Inject} from '@angular/core';
+import {reflector} from '@angular/core/src/reflection/reflection';
 
 class TestAnnotation {
   constructor(public arg: any) {}

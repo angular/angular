@@ -1,5 +1,5 @@
-import {isArray, isString, isBlank, assertionsEnabled} from '../facade/lang';
-import {BaseException} from '../facade/exceptions';
+import {isArray, isString, isBlank, assertionsEnabled} from '../src/facade/lang';
+import {BaseException} from '../src/facade/exceptions';
 
 export function assertArrayOfStrings(identifier: string, value: any) {
   if (!assertionsEnabled() || isBlank(value)) {

@@ -7,16 +7,16 @@ import {
   expect,
   beforeEach,
   afterEach
-} from 'angular2/testing_internal';
-import {BaseException} from 'angular2/src/facade/exceptions';
+} from '@angular/core/testing/testing_internal';
+import {BaseException} from '../src/facade/exceptions';
 
 import {
   tokenizeHtml,
   HtmlToken,
   HtmlTokenType,
   HtmlTokenError
-} from 'angular2/src/compiler/html_lexer';
-import {ParseSourceSpan, ParseLocation, ParseSourceFile} from 'angular2/src/compiler/parse_util';
+} from '@angular/compiler/src/html_lexer';
+import {ParseSourceSpan, ParseLocation, ParseSourceFile} from '@angular/compiler/src/parse_util';
 
 export function main() {
   describe('HtmlLexer', () => {

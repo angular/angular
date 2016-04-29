@@ -1,46 +1,46 @@
 import {
-  AsyncTestCompleter,
   beforeEach,
   beforeEachProviders,
   ddescribe,
   describe,
   expect,
   iit,
-  flushMicrotasks,
   inject,
   it,
   xdescribe,
-  TestComponentBuilder,
   xit,
-} from 'angular2/testing_internal';
+} from '@angular/core/testing/testing_internal';
+import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
+import {TestComponentBuilder} from '@angular/compiler/testing';
 
-import {bootstrap} from 'angular2/platform/browser';
-import {APP_BASE_HREF, LocationStrategy} from 'angular2/platform/common';
-import {Component, Directive} from 'angular2/src/core/metadata';
-import {DOM} from 'angular2/src/platform/dom/dom_adapter';
-import {Console} from 'angular2/src/core/console';
-import {provide} from 'angular2/core';
-import {DOCUMENT} from 'angular2/src/platform/dom/dom_tokens';
+import {bootstrap} from '@angular/platform-browser-dynamic';
+import {APP_BASE_HREF, LocationStrategy} from '@angular/common';
+import {Component, Directive} from '@angular/core/src/metadata';
+import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
+import {Console} from '@angular/core/src/console';
+import {provide} from '@angular/core';
+import {DOCUMENT} from '@angular/platform-browser/src/dom/dom_tokens';
 import {
   RouteConfig,
   Route,
   Redirect,
   AuxRoute
-} from 'angular2/src/router/route_config/route_config_decorator';
-import {PromiseWrapper} from 'angular2/src/facade/async';
-import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
+} from '../../../router/src/route_config/route_config_decorator';
+import {PromiseWrapper} from '../../src/facade/async';
+import {BaseException, WrappedException} from '../../src/facade/exceptions';
 import {
   ROUTER_PROVIDERS,
   ROUTER_PRIMARY_COMPONENT,
   RouteParams,
   Router,
   ROUTER_DIRECTIVES
-} from 'angular2/router';
+} from '@angular/router';
 
-import {MockLocationStrategy} from 'angular2/src/mock/mock_location_strategy';
-import {ApplicationRef} from 'angular2/src/core/application_ref';
-import {MockApplicationRef} from 'angular2/src/mock/mock_application_ref';
+import {MockLocationStrategy} from '@angular/common/testing';
+import {ApplicationRef} from '@angular/core/src/application_ref';
+import {MockApplicationRef} from '@angular/core/testing';
 
+//noinspection JSAnnotator
 class DummyConsole implements Console {
   log(message) {}
   warn(message) {}
@@ -57,9 +57,9 @@ export function main() {
     // do not refactor out the `bootstrap` functionality. We still want to
     // keep this test around so we can ensure that bootstrap a router works
     it('should bootstrap a simple app', inject([AsyncTestCompleter], (async) => {
-         var fakeDoc = DOM.createHtmlDocument();
-         var el = DOM.createElement('app-cmp', fakeDoc);
-         DOM.appendChild(fakeDoc.body, el);
+         var fakeDoc = getDOM().createHtmlDocument();
+         var el = getDOM().createElement('app-cmp', fakeDoc);
+         getDOM().appendChild(fakeDoc.body, el);
 
          bootstrap(AppCmp,
                    [

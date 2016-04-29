@@ -1,4 +1,3 @@
-import {isPresent, isString, isArray} from 'angular2/src/facade/lang';
 import {
   DoCheck,
   OnDestroy,
@@ -11,8 +10,9 @@ import {
   KeyValueDiffer,
   CollectionChangeRecord,
   KeyValueChangeRecord
-} from 'angular2/core';
-import {StringMapWrapper, isListLikeIterable} from 'angular2/src/facade/collection';
+} from '@angular/core';
+import {isPresent, isString, isArray} from '../../src/facade/lang';
+import {StringMapWrapper, isListLikeIterable} from '../../src/facade/collection';
 
 /**
  * The `NgClass` directive conditionally adds and removes CSS classes on an HTML element based on
@@ -33,8 +33,8 @@ import {StringMapWrapper, isListLikeIterable} from 'angular2/src/facade/collecti
  * ### Example ([live demo](http://plnkr.co/edit/a4YdtmWywhJ33uqfpPPn?p=preview)):
  *
  * ```
- * import {Component} from 'angular2/core';
- * import {NgClass} from 'angular2/common';
+ * import {Component} from '@angular/core';
+ * import {NgClass} from '@angular/common';
  *
  * @Component({
  *   selector: 'toggle-button',

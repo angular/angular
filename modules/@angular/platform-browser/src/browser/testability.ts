@@ -1,17 +1,16 @@
-import {Map, MapWrapper, ListWrapper} from 'angular2/src/facade/collection';
-import {global, isPresent} from 'angular2/src/facade/lang';
-import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
-import {PromiseWrapper, ObservableWrapper} from 'angular2/src/facade/async';
-
-import {DOM} from 'angular2/src/platform/dom/dom_adapter';
-
 import {
   Injectable,
   TestabilityRegistry,
   Testability,
   GetTestability,
   setTestabilityGetter
-} from 'angular2/core';
+} from '@angular/core';
+
+import {ListWrapper} from '../../src/facade/collection';
+import {global, isPresent} from '../../src/facade/lang';
+import {getDOM} from '../dom/dom_adapter';
+
+
 
 class PublicTestability {
   /** @internal */
@@ -82,9 +81,9 @@ export class BrowserGetTestability implements GetTestability {
     } else if (!findInAncestors) {
       return null;
     }
-    if (DOM.isShadowRoot(elem)) {
-      return this.findTestabilityInTree(registry, DOM.getHost(elem), true);
+    if (getDOM().isShadowRoot(elem)) {
+      return this.findTestabilityInTree(registry, getDOM().getHost(elem), true);
     }
-    return this.findTestabilityInTree(registry, DOM.parentElement(elem), true);
+    return this.findTestabilityInTree(registry, getDOM().parentElement(elem), true);
   }
 }

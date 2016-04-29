@@ -1,5 +1,5 @@
-import {Component, provide} from 'angular2/core';
-import {bootstrap} from 'angular2/platform/browser';
+import {Component, provide} from '@angular/core';
+import {bootstrap} from '@angular/platform-browser-dynamic';
 
 // #docregion JsonPipe
 @Component({

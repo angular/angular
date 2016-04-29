@@ -7,17 +7,17 @@ import {
   expect,
   beforeEach,
   afterEach
-} from 'angular2/testing_internal';
+} from '@angular/core/testing/testing_internal';
 import {
   DefaultIterableDiffer,
   DefaultIterableDifferFactory
-} from 'angular2/src/core/change_detection/differs/default_iterable_differ';
+} from '@angular/core/src/change_detection/differs/default_iterable_differ';
 
-import {NumberWrapper} from 'angular2/src/facade/lang';
-import {ListWrapper} from 'angular2/src/facade/collection';
+import {NumberWrapper} from '../../../src/facade/lang';
+import {ListWrapper} from '../../../src/facade/collection';
 
-import {TestIterable} from '../../../core/change_detection/iterable';
-import {iterableChangesAsString} from '../../../core/change_detection/util';
+import {TestIterable} from '../../change_detection/iterable';
+import {iterableChangesAsString} from '../../change_detection/util';
 
 class ItemWithId {
   constructor(private id: string) {}

@@ -1,5 +1,5 @@
-import {Injectable} from 'angular2/core';
-import {isPresent, isJsObject} from 'angular2/src/facade/lang';
+import {Injectable} from '@angular/core';
+import {isPresent, isJsObject} from '../src/facade/lang';
 import {Headers} from './headers';
 import {ResponseType} from './enums';
 import {ResponseOptionsArgs} from './interfaces';
@@ -20,7 +20,7 @@ import {ResponseOptionsArgs} from './interfaces';
  * ### Example ([live demo](http://plnkr.co/edit/P9Jkk8e8cz6NVzbcxEsD?p=preview))
  *
  * ```typescript
- * import {ResponseOptions, Response} from 'angular2/http';
+ * import {ResponseOptions, Response} from '@angular/http';
  *
  * var options = new ResponseOptions({
  *   body: '{"name":"Jeff"}'
@@ -75,7 +75,7 @@ export class ResponseOptions {
    * ### Example ([live demo](http://plnkr.co/edit/1lXquqFfgduTFBWjNoRE?p=preview))
    *
    * ```typescript
-   * import {ResponseOptions, Response} from 'angular2/http';
+   * import {ResponseOptions, Response} from '@angular/http';
    *
    * var options = new ResponseOptions({
    *   body: {name: 'Jeff'}
@@ -115,10 +115,10 @@ export class ResponseOptions {
  * ### Example ([live demo](http://plnkr.co/edit/qv8DLT?p=preview))
  *
  * ```typescript
- * import {provide} from 'angular2/core';
- * import {bootstrap} from 'angular2/platform/browser';
+ * import {provide} from '@angular/core';
+ * import {bootstrap} from '@angular/platform-browser/browser';
  * import {HTTP_PROVIDERS, Headers, Http, BaseResponseOptions, ResponseOptions} from
- * 'angular2/http';
+ * '@angular/http';
  * import {App} from './myapp';
  *
  * class MyOptions extends BaseResponseOptions {
@@ -134,15 +134,15 @@ export class ResponseOptions {
  * ### Example ([live demo](http://plnkr.co/edit/VngosOWiaExEtbstDoix?p=preview))
  *
  * ```
- * import {BaseResponseOptions, Response} from 'angular2/http';
+ * import {BaseResponseOptions, Response} from '@angular/http';
  *
  * var options = new BaseResponseOptions();
  * var res = new Response(options.merge({
- *   body: 'Angular2',
+ *   body: 'Angular',
  *   headers: new Headers({framework: 'angular'})
  * }));
  * console.log('res.headers.get("framework"):', res.headers.get('framework')); // angular
- * console.log('res.text():', res.text()); // Angular2;
+ * console.log('res.text():', res.text()); // Angular;
  * ```
  */
 @Injectable()

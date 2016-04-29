@@ -1,21 +1,41 @@
 import * as simple_library from './simple_library';
-import * as ngCommon from 'angular2/common';
-import * as ngCompiler from 'angular2/compiler';
-import * as ngCore from 'angular2/core';
-import * as ngInstrumentation from 'angular2/instrumentation';
-import * as ngPlatformBrowser from 'angular2/platform/browser';
-import * as ngPlatformCommon from 'angular2/platform/common';
-import * as ngUpgrade from 'angular2/upgrade';
+import * as core from '@angular/core';
+import * as core_testing from '@angular/core/testing';
+import * as common from '@angular/common';
+import * as common_testing from '@angular/common/testing';
+import * as compiler from '@angular/compiler';
+import * as compiler_testing from '@angular/compiler/testing';
+import * as http from '@angular/http';
+import * as http_testing from '@angular/http/testing';
+import * as router from '@angular/router';
+import * as router_testing from '@angular/router/testing';
+import * as upgrade from '@angular/upgrade';
+import * as platformBrowser from '@angular/platform-browser';
+import * as platformBrowser_testing from '@angular/platform-browser/testing';
+import * as platformBrowserDynamic from '@angular/platform-browser-dynamic';
+import * as platformBrowserDynamic_testing from '@angular/platform-browser-dynamic/testing';
+import * as platformServer from '@angular/platform-server';
+import * as platformServer_testing from '@angular/platform-server/testing';
 
 const LIB_MAP = {
   'simple_library': simple_library,
-  ngCommon,
-  ngCompiler,
-  ngCore,
-  ngInstrumentation,
-  ngPlatformBrowser,
-  ngPlatformCommon,
-  ngUpgrade
+  'common': common,
+  'common/testing': common_testing,
+  'compiler': compiler,
+  'compiler/testing': compiler_testing,
+  'core': core,
+  'core/testing': core_testing,
+  'http': http,
+  'http/testing': http_testing,
+  'router': router,
+  'router/testing': router_testing,
+  'upgrade': upgrade,
+  'platform-browser': platformBrowser,
+  'platform-browser/testing': platformBrowser_testing,
+  'platform-browser-dynamic': platformBrowserDynamic,
+  'platform-browser-dynamic/testing': platformBrowserDynamic_testing,
+  'platform-server': platformServer,
+  'platform-server/testing': platformServer_testing
 };
 
 const IGNORE =

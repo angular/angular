@@ -1,8 +1,7 @@
-import {isBlank, isPresent, isFunction} from 'angular2/src/facade/lang';
-import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
-import {Map, MapWrapper, ListWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
-import {PromiseWrapper} from 'angular2/src/facade/async';
-
+import {isBlank, isPresent, isFunction} from '../../src/facade/lang';
+import {BaseException} from '../../src/facade/exceptions';
+import {Map} from '../../src/facade/collection';
+import {PromiseWrapper} from '../../src/facade/async';
 import {AbstractRule, RouteRule, RedirectRule, RouteMatch, PathMatch} from './rules';
 import {
   Route,
@@ -11,14 +10,11 @@ import {
   Redirect,
   RouteDefinition
 } from '../route_config/route_config_impl';
-
 import {AsyncRouteHandler} from './route_handlers/async_route_handler';
 import {SyncRouteHandler} from './route_handlers/sync_route_handler';
-
 import {RoutePath} from './route_paths/route_path';
 import {ParamRoutePath} from './route_paths/param_route_path';
 import {RegexRoutePath} from './route_paths/regex_route_path';
-
 import {Url} from '../url_parser';
 import {ComponentInstruction} from '../instruction';
 

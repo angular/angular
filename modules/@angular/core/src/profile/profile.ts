@@ -1,6 +1,6 @@
 export {WtfScopeFn} from './wtf_impl';
 
-import * as impl from "./wtf_impl";
+import * as impl from './wtf_impl';
 
 // Change exports to const once https://github.com/angular/ts2dart/issues/150
 

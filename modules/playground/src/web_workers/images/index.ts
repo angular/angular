@@ -1,6 +1,6 @@
-import {Provider} from 'angular2/core';
+import {Provider} from '@angular/core';
 import {
   bootstrapRender,
-} from 'angular2/platform/worker_render';
+} from '../../../../@angular/platform-browser/src/worker_render';
 
 bootstrapRender("loader.js");

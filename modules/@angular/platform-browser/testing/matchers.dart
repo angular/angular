@@ -19,10 +19,10 @@ const _u = const Object();
 bool elementContainsStyle(element, styles) {
   var allPassed = true;
   if (isString(styles)) {
-    allPassed = DOM.hasStyle(element, styles);
+    allPassed = getDOM().hasStyle(element, styles);
   } else {
     styles.forEach((prop, style) {
-      allPassed = allPassed && DOM.hasStyle(element, prop, style);
+      allPassed = allPassed && getDOM().hasStyle(element, prop, style);
     });
   }
   return allPassed;
@@ -51,7 +51,7 @@ class Expect extends gns.Expect {
   void toThrowErrorWith(message) => expectException(this.actual, message);
   void toBePromise() => gns.guinness.matchers.toBeTrue(actual is Future);
   void toHaveCssClass(className) =>
-      gns.guinness.matchers.toBeTrue(DOM.hasClass(actual, className));
+      gns.guinness.matchers.toBeTrue(getDOM().hasClass(actual, className));
   void toHaveCssStyle(styles) {
     gns.guinness.matchers.toBeTrue(elementContainsStyle(actual, styles));
   }
@@ -96,7 +96,7 @@ class NotExpect extends gns.NotExpect {
   void toEqual(expected) => toHaveSameProps(expected);
   void toBePromise() => gns.guinness.matchers.toBeFalse(actual is Future);
   void toHaveCssClass(className) =>
-      gns.guinness.matchers.toBeFalse(DOM.hasClass(actual, className));
+      gns.guinness.matchers.toBeFalse(getDOM().hasClass(actual, className));
   void toHaveCssStyle(styles) {
     gns.guinness.matchers.toBeFalse(elementContainsStyle(actual, styles));
   }
@@ -108,7 +108,7 @@ class NotExpect extends gns.NotExpect {
 
 String elementText(n) {
   hasNodes(n) {
-    var children = DOM.childNodes(n);
+    var children = getDOM().childNodes(n);
     return children != null && children.length > 0;
   }
 
@@ -116,21 +116,21 @@ String elementText(n) {
     return n.map(elementText).join("");
   }
 
-  if (DOM.isCommentNode(n)) {
+  if (getDOM().isCommentNode(n)) {
     return '';
   }
 
-  if (DOM.isElementNode(n) && DOM.tagName(n) == 'CONTENT') {
-    return elementText(DOM.getDistributedNodes(n));
+  if (getDOM().isElementNode(n) && getDOM().tagName(n) == 'CONTENT') {
+    return elementText(getDOM().getDistributedNodes(n));
   }
 
-  if (DOM.hasShadowRoot(n)) {
-    return elementText(DOM.childNodesAsList(DOM.getShadowRoot(n)));
+  if (getDOM().hasShadowRoot(n)) {
+    return elementText(getDOM().childNodesAsList(getDOM().getShadowRoot(n)));
   }
 
   if (hasNodes(n)) {
-    return elementText(DOM.childNodesAsList(n));
+    return elementText(getDOM().childNodesAsList(n));
   }
 
-  return DOM.getText(n);
+  return getDOM().getText(n);
 }

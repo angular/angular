@@ -8,21 +8,19 @@ import {
   expect,
   beforeEach,
   afterEach,
-  AsyncTestCompleter,
   inject,
   beforeEachProviders,
-  el
-} from 'angular2/testing_internal';
+} from '@angular/core/testing/testing_internal';
 
-import {IS_DART} from 'angular2/src/facade/lang';
-import {Injector} from 'angular2/core';
+import {IS_DART} from '../src/facade/lang';
+import {Injector} from '@angular/core';
 
-import {ComponentFactory} from 'angular2/src/core/linker/component_factory';
+import {ComponentFactory} from '@angular/core/src/linker/component_factory';
 import * as typed from './offline_compiler_codegen_typed';
 import * as untyped from './offline_compiler_codegen_untyped';
 
-import {DOM} from 'angular2/src/platform/dom/dom_adapter';
-import {SharedStylesHost} from "angular2/src/platform/dom/shared_styles_host";
+import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
+import {SharedStylesHost} from '@angular/platform-browser/src/dom/shared_styles_host';
 
 import {CompA} from './offline_compiler_util';
 
@@ -31,13 +29,13 @@ export function main() {
   var untypedComponentFactory = untyped.CompANgFactory;
   var fixtures: TestFixture[] = [];
 
-  if (IS_DART || !DOM.supportsDOMEvents()) {
+  if (IS_DART || !getDOM().supportsDOMEvents()) {
     // Our generator only works on node.js and Dart...
     fixtures.push(new TestFixture(typedComponentFactory, 'typed'));
   }
   if (!IS_DART) {
     // Our generator only works on node.js and Dart...
-    if (!DOM.supportsDOMEvents()) {
+    if (!getDOM().supportsDOMEvents()) {
       fixtures.push(new TestFixture(untypedComponentFactory, 'untyped'));
     }
   }

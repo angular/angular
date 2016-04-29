@@ -1,12 +1,5 @@
-import {
-  isPresent,
-  isBlank,
-  isJsObject,
-  isType,
-  StringWrapper,
-  Json
-} from 'angular2/src/facade/lang';
-import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
+import {isBlank} from '../src/facade/lang';
+import {BaseException} from '../src/facade/exceptions';
 import {
   isListLikeIterable,
   iterateListLike,
@@ -14,7 +7,7 @@ import {
   MapWrapper,
   StringMapWrapper,
   ListWrapper,
-} from 'angular2/src/facade/collection';
+} from '../src/facade/collection';
 
 /**
  * Polyfill for [Headers](https://developer.mozilla.org/en-US/docs/Web/API/Headers/Headers), as
@@ -26,7 +19,7 @@ import {
  * ### Example ([live demo](http://plnkr.co/edit/MTdwT6?p=preview))
  *
  * ```
- * import {Headers} from 'angular2/http';
+ * import {Headers} from '@angular/http';
  *
  * var firstHeaders = new Headers();
  * firstHeaders.append('Content-Type', 'image/jpeg');

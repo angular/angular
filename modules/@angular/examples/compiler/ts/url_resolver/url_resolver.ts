@@ -1,6 +1,6 @@
-import {provide} from 'angular2/core';
-import {bootstrap} from 'angular2/platform/browser';
-import {UrlResolver} from 'angular2/compiler';
+import {provide} from '@angular/core';
+import {bootstrap} from '@angular/platform-browser-dynamic';
+import {UrlResolver} from '@angular/compiler';
 
 var MyApp: any;
 

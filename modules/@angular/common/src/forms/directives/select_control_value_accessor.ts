@@ -8,17 +8,17 @@ import {
   Host,
   OnDestroy,
   Optional
-} from 'angular2/core';
-import {NG_VALUE_ACCESSOR, ControlValueAccessor} from './control_value_accessor';
+} from '@angular/core';
 import {
   StringWrapper,
   isPrimitive,
   isPresent,
   isBlank,
   looseIdentical
-} from 'angular2/src/facade/lang';
+} from '../../../src/facade/lang';
+import {MapWrapper} from '../../../src/facade/collection';
 
-import {MapWrapper} from 'angular2/src/facade/collection';
+import {NG_VALUE_ACCESSOR, ControlValueAccessor} from './control_value_accessor';
 
 export const SELECT_VALUE_ACCESSOR: any = /*@ts2dart_const*/ /*@ts2dart_Provider*/ {
   provide: NG_VALUE_ACCESSOR,

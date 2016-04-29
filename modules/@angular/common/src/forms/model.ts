@@ -1,7 +1,7 @@
-import {isPresent, isBlank, normalizeBool} from 'angular2/src/facade/lang';
-import {Observable, EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
-import {PromiseWrapper} from 'angular2/src/facade/promise';
-import {StringMapWrapper, ListWrapper} from 'angular2/src/facade/collection';
+import {isPresent, isBlank, normalizeBool} from '../../src/facade/lang';
+import {Observable, EventEmitter, ObservableWrapper} from '../../src/facade/async';
+import {PromiseWrapper} from '../../src/facade/promise';
+import {StringMapWrapper, ListWrapper} from '../../src/facade/collection';
 import {ValidatorFn, AsyncValidatorFn} from './directives/validators';
 
 /**

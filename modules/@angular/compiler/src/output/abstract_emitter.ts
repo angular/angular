@@ -2,12 +2,9 @@ import {
   isPresent,
   isBlank,
   isString,
-  evalExpression,
-  RegExpWrapper,
   StringWrapper
-} from 'angular2/src/facade/lang';
-import {ListWrapper} from 'angular2/src/facade/collection';
-import {BaseException, unimplemented} from 'angular2/src/facade/exceptions';
+} from '../../src/facade/lang';
+import {BaseException} from '../../src/facade/exceptions';
 import * as o from './output_ast';
 
 var _SINGLE_QUOTE_ESCAPE_STRING_RE = /'|\\|\n|\r|\$/g;
