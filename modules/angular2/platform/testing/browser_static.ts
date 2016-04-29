@@ -53,24 +53,24 @@ export const TEST_BROWSER_STATIC_PLATFORM_PROVIDERS: Array<any /*Type | Provider
     ];
 
 export const ADDITIONAL_TEST_BROWSER_PROVIDERS: Array<any /*Type | Provider | any[]*/> =
-    /*@ts2dart_const*/ [
-      /*@ts2dart_Provider*/{provide: APP_ID, useValue: 'a'},
+    /*@ts2dart_const*/[
+      /*@ts2dart_Provider*/ {provide: APP_ID, useValue: 'a'},
       ELEMENT_PROBE_PROVIDERS,
-      /*@ts2dart_Provider*/{provide: DirectiveResolver, useClass: MockDirectiveResolver},
-      /*@ts2dart_Provider*/{provide: ViewResolver, useClass: MockViewResolver},
+      /*@ts2dart_Provider*/ {provide: DirectiveResolver, useClass: MockDirectiveResolver},
+      /*@ts2dart_Provider*/ {provide: ViewResolver, useClass: MockViewResolver},
       Log,
       TestComponentBuilder,
-      /*@ts2dart_Provider*/{provide: NgZone, useFactory: createNgZone},
-      /*@ts2dart_Provider*/{provide: LocationStrategy, useClass: MockLocationStrategy},
-      /*@ts2dart_Provider*/{provide: AnimationBuilder, useClass: MockAnimationBuilder},
+      /*@ts2dart_Provider*/ {provide: NgZone, useFactory: createNgZone},
+      /*@ts2dart_Provider*/ {provide: LocationStrategy, useClass: MockLocationStrategy},
+      /*@ts2dart_Provider*/ {provide: AnimationBuilder, useClass: MockAnimationBuilder},
     ];
 
 /**
  * Default application providers for testing without a compiler.
  */
 export const TEST_BROWSER_STATIC_APPLICATION_PROVIDERS: Array<any /*Type | Provider | any[]*/> =
-    /*@ts2dart_const*/ [
+    /*@ts2dart_const*/[
       BROWSER_APP_COMMON_PROVIDERS,
-      /*@ts2dart_Provider*/{provide: XHR, useClass: XHRImpl},
+      /*@ts2dart_Provider*/ {provide: XHR, useClass: XHRImpl},
       ADDITIONAL_TEST_BROWSER_PROVIDERS
     ];

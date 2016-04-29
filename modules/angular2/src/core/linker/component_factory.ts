@@ -69,7 +69,7 @@ export class ComponentRef_ extends ComponentRef {
   onDestroy(callback: Function): void { this.hostView.onDestroy(callback); }
 }
 
-const EMPTY_CONTEXT = /*@ts2dart_const*/new Object();
+const EMPTY_CONTEXT = /*@ts2dart_const*/ new Object();
 
 /*@ts2dart_const*/
 export class ComponentFactory {

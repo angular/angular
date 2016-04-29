@@ -54,10 +54,10 @@ export const BROWSER_PLATFORM_MARKER =
  *
  * Used automatically by `bootstrap`, or can be passed to {@link platform}.
  */
-export const BROWSER_PROVIDERS: Array<any /*Type | Provider | any[]*/> = /*@ts2dart_const*/ [
-  /*@ts2dart_Provider*/{provide: BROWSER_PLATFORM_MARKER, useValue: true},
+export const BROWSER_PROVIDERS: Array<any /*Type | Provider | any[]*/> = /*@ts2dart_const*/[
+  /*@ts2dart_Provider*/ {provide: BROWSER_PLATFORM_MARKER, useValue: true},
   PLATFORM_COMMON_PROVIDERS,
-  /*@ts2dart_Provider*/{provide: PLATFORM_INITIALIZER, useValue: initDomAdapter, multi: true},
+  /*@ts2dart_Provider*/ {provide: PLATFORM_INITIALIZER, useValue: initDomAdapter, multi: true},
 ];
 
 function _exceptionHandler(): ExceptionHandler {
@@ -99,7 +99,7 @@ export const BROWSER_APP_COMMON_PROVIDERS: Array<any /*Type | Provider | any[]*/
     ];
 
 export const CACHED_TEMPLATE_PROVIDER: Array<any /*Type | Provider | any[]*/> =
-    /*@ts2dart_const*/ [/*@ts2dart_Provider*/{provide: XHR, useClass: CachedXHR}];
+    /*@ts2dart_const*/[/*@ts2dart_Provider*/ {provide: XHR, useClass: CachedXHR}];
 
 export function initDomAdapter() {
   BrowserDomAdapter.makeCurrent();

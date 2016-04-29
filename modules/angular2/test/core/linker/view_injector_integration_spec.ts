@@ -49,7 +49,7 @@ import {
 import {NgIf} from 'angular2/common';
 import {DOM} from 'angular2/src/platform/dom/dom_adapter';
 
-const ALL_DIRECTIVES = /*@ts2dart_const*/ [
+const ALL_DIRECTIVES = /*@ts2dart_const*/[
   forwardRef(() => SimpleDirective),
   forwardRef(() => CycleDirective),
   forwardRef(() => SimpleComponent),
@@ -83,7 +83,7 @@ const ALL_DIRECTIVES = /*@ts2dart_const*/ [
   NgIf
 ];
 
-const ALL_PIPES = /*@ts2dart_const*/ [
+const ALL_PIPES = /*@ts2dart_const*/[
   forwardRef(() => PipeNeedsChangeDetectorRef),
   forwardRef(() => PipeNeedsService),
   forwardRef(() => PurePipe),

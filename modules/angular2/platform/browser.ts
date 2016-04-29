@@ -38,10 +38,10 @@ import {XHR} from 'angular2/compiler';
 /**
  * An array of providers that should be passed into `application()` when bootstrapping a component.
  */
-export const BROWSER_APP_PROVIDERS: Array<any /*Type | Provider | any[]*/> = /*@ts2dart_const*/ [
+export const BROWSER_APP_PROVIDERS: Array<any /*Type | Provider | any[]*/> = /*@ts2dart_const*/[
   BROWSER_APP_COMMON_PROVIDERS,
   COMPILER_PROVIDERS,
-  /*@ts2dart_Provider*/{provide: XHR, useClass: XHRImpl},
+  /*@ts2dart_Provider*/ {provide: XHR, useClass: XHRImpl},
 ];
 
 export function browserPlatform(): PlatformRef {
