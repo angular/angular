@@ -190,6 +190,11 @@ export class WebWorkerRenderer implements Renderer, RenderStoreObject {
     ]);
   }
 
+  setElementStyles(renderElement: any, styles: {[key: string]: string}) {
+    this._runOnService('setElementStyles',
+                       [new FnArg(renderElement, RenderStoreObject), new FnArg(styles, null)]);
+  }
+
   setElementStyle(renderElement: any, styleName: string, styleValue: string) {
     this._runOnService('setElementStyle', [
       new FnArg(renderElement, RenderStoreObject),

@@ -20,6 +20,8 @@ import {
   isString
 } from '../../src/facade/lang';
 
+import {StringMapWrapper} from '../../src/facade/collection';
+
 import {BaseException} from '../../src/facade/exceptions';
 import {DomSharedStylesHost} from './shared_styles_host';
 import {EventManager} from './events/event_manager';
@@ -217,6 +219,11 @@ export class DomRenderer implements Renderer {
     } else {
       getDOM().removeClass(renderElement, className);
     }
+  }
+
+  setElementStyles(renderElement: any, styles: {[key: string]: string}) {
+    StringMapWrapper.forEach(styles,
+                             (value, prop) => this.setElementStyle(renderElement, prop, value));
   }
 
   setElementStyle(renderElement: any, styleName: string, styleValue: string): void {

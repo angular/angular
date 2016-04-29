@@ -124,6 +124,10 @@ export class DebugDomRenderer implements Renderer {
     this._delegate.setElementClass(renderElement, className, isAdd);
   }
 
+  setElementStyles(renderElement: any, styles: {[key: string]: string}) {
+    this._delegate.setElementStyles(renderElement, styles);
+  }
+
   setElementStyle(renderElement: any, styleName: string, styleValue: string) {
     this._delegate.setElementStyle(renderElement, styleName, styleValue);
   }
