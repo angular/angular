@@ -113,6 +113,7 @@
     "ts-api-guardian": "0.0.2",
     "ts2dart": "^0.7.31",
     "tsd": "^0.6.5-beta",
+    "tsickle": "^0.1.0",
     "tslint": "^3.7.0-dev.2",
     "typescript": "^1.9.0-dev.20160409",
     "universal-analytics": "^0.3.9",

@@ -5407,6 +5407,22 @@
         }
       }
     },
+    "tsickle": {
+      "version": "0.1.0",
+      "dependencies": {
+        "source-map": {
+          "version": "0.4.4"
+        },
+        "source-map-support": {
+          "version": "0.3.3",
+          "dependencies": {
+            "source-map": {
+              "version": "0.1.32"
+            }
+          }
+        }
+      }
+    },
     "tslint": {
       "version": "3.7.0-dev.2",
       "dependencies": {
@@ -5816,5 +5832,5 @@
     }
   },
   "name": "angular-srcs",
-  "version": "2.0.0-beta.15"
+  "version": "2.0.0-beta.17"
 }
