@@ -64,6 +64,10 @@ $md-sidenav-push-background-color: md-color($md-background, dialog) !default;
   // TODO(hansl): Update this with a more robust solution.
   &[fullscreen] {
     @include md-sidenav-fullscreen();
+
+    &.md-sidenav-opened {
+      overflow: hidden;
+    }
   }
 
   // Need this to take up space in the layout.
@@ -108,6 +112,9 @@ $md-sidenav-push-background-color: md-color($md-background, dialog) !default;
     bottom: 0;
     z-index: 3;
     min-width: 5%;
+
+    // TODO(kara): revisit scrolling behavior for sidenavs
+    overflow-y: auto;
 
     background-color: $md-sidenav-background-color;
 

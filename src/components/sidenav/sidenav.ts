@@ -13,6 +13,7 @@ import {
   Type,
   ChangeDetectionStrategy,
   EventEmitter,
+  Renderer
 } from 'angular2/core';
 import {BaseException} from 'angular2/src/facade/exceptions';
 import {Dir} from '../../core/rtl/dir';
@@ -49,7 +50,7 @@ export class MdSidenav {
   @Input() mode: 'over' | 'push' | 'side' = 'over';
 
   /** Whether the sidenav is opened. */
-  @Input('opened') private _opened: boolean;
+  @Input('opened') private _opened: boolean = false;
 
   /** Event emitted when the sidenav is being opened. Use this to synchronize animations. */
   @Output('open-start') onOpenStart = new EventEmitter<void>();
@@ -247,7 +248,8 @@ export class MdSidenavLayout implements AfterContentInit {
   get start() { return this._start; }
   get end() { return this._end; }
 
-  constructor(@Optional() @Host() private _dir: Dir) {
+  constructor(@Optional() @Host() private _dir: Dir, private _element: ElementRef,
+              private _renderer: Renderer) {
     // If a `Dir` directive exists up the tree, listen direction changes and update the left/right
     // properties to point to the proper start/end.
     if (_dir != null) {
@@ -258,7 +260,26 @@ export class MdSidenavLayout implements AfterContentInit {
   ngAfterContentInit() {
     // On changes, assert on consistency.
     this._sidenavs.changes.subscribe(() => this._validateDrawers());
+    this._sidenavs.forEach((sidenav: MdSidenav) => this._watchSidenavToggle(sidenav));
     this._validateDrawers();
+  }
+
+  /*
+  * Subscribes to sidenav events in order to set a class on the main layout element when the sidenav
+  * is open and the backdrop is visible. This ensures any overflow on the layout element is properly
+  * hidden.
+  * */
+  private _watchSidenavToggle(sidenav: MdSidenav): void {
+    if (!sidenav || sidenav.mode === 'side') { return; }
+    sidenav.onOpen.subscribe(() => this._setLayoutClass(sidenav, true));
+    sidenav.onClose.subscribe(() => this._setLayoutClass(sidenav, false));
+  }
+
+  /*
+  * Toggles the 'md-sidenav-opened' class on the main 'md-sidenav-layout' element.
+  * */
+  private _setLayoutClass(sidenav: MdSidenav, bool: boolean): void {
+    this._renderer.setElementClass(this._element.nativeElement, 'md-sidenav-opened', bool);
   }
 
 
@@ -318,9 +339,13 @@ export class MdSidenavLayout implements AfterContentInit {
     }
   }
 
-  private _isShowingBackdrop() {
-    return (this._start != null && this._start.mode != 'side' && this._start.opened)
-        || (this._end != null && this._end.mode != 'side' && this._end.opened);
+  private _isShowingBackdrop(): boolean {
+    return (this._isSidenavOpen(this._start) && this._start.mode != 'side')
+        || (this._isSidenavOpen(this._end) && this._end.mode != 'side');
+  }
+
+  private _isSidenavOpen(side: MdSidenav): boolean {
+    return side != null && side.opened;
   }
 
   /**
@@ -330,10 +355,7 @@ export class MdSidenavLayout implements AfterContentInit {
    * @private
    */
   private _getSidenavEffectiveWidth(sidenav: MdSidenav, mode: string): number {
-    if (sidenav != null && sidenav.mode == mode && sidenav.opened) {
-      return sidenav._width;
-    }
-    return 0;
+    return (this._isSidenavOpen(sidenav) && sidenav.mode == mode) ? sidenav._width : 0;
   }
 
   private _getMarginLeft() {
