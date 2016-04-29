@@ -437,10 +437,8 @@ export class ApplicationRef_ extends ApplicationRef {
 export const PLATFORM_CORE_PROVIDERS =
     /*@ts2dart_const*/[
       PlatformRef_,
-      /*@ts2dart_const*/ (/* @ts2dart_Provider */ {
-        provide: PlatformRef,
-        useExisting: PlatformRef_
-      })
+      /*@ts2dart_const*/ (
+          /* @ts2dart_Provider */ {provide: PlatformRef, useExisting: PlatformRef_})
     ];
 
 /**

@@ -2264,11 +2264,7 @@ class PublicApi {
 @Directive({
   selector: '[public-api]',
   providers: [
-    /* @ts2dart_Provider */ {
-      provide: PublicApi,
-      useExisting: PrivateImpl,
-      deps: []
-    }
+    /* @ts2dart_Provider */ {provide: PublicApi, useExisting: PrivateImpl, deps: []}
   ]
 })
 @Injectable()
@@ -2367,10 +2363,8 @@ class DirectiveProvidingInjectableInView {
 
 @Component({
   selector: 'directive-providing-injectable',
-  providers:
-      [/* @ts2dart_Provider */ {provide: InjectableService, useValue: 'host'}],
-  viewProviders:
-      [/* @ts2dart_Provider */ {provide: InjectableService, useValue: 'view'}],
+  providers: [/* @ts2dart_Provider */ {provide: InjectableService, useValue: 'host'}],
+  viewProviders: [/* @ts2dart_Provider */ {provide: InjectableService, useValue: 'view'}],
   template: ''
 })
 @Injectable()
@@ -2421,10 +2415,7 @@ class EventBus {
 @Directive({
   selector: 'grand-parent-providing-event-bus',
   providers: [
-    /* @ts2dart_Provider */ {
-      provide: EventBus,
-      useValue: new EventBus(null, "grandparent")
-    }
+    /* @ts2dart_Provider */ {provide: EventBus, useValue: new EventBus(null, "grandparent")}
   ]
 })
 class GrandParentProvidingEventBus {

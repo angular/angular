@@ -99,8 +99,7 @@ export const BROWSER_APP_COMMON_PROVIDERS: Array<any /*Type | Provider | any[]*/
     ];
 
 export const CACHED_TEMPLATE_PROVIDER: Array<any /*Type | Provider | any[]*/> =
-    /*@ts2dart_const*/ (
-        [/* @ts2dart_Provider */ {provide: XHR, useClass: CachedXHR}]);
+    /*@ts2dart_const*/ ([/* @ts2dart_Provider */ {provide: XHR, useClass: CachedXHR}]);
 
 export function initDomAdapter() {
   BrowserDomAdapter.makeCurrent();

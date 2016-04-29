@@ -37,10 +37,8 @@ export const WORKER_APP_PLATFORM_MARKER =
 export const WORKER_APP_PLATFORM: Array<any /*Type | Provider | any[]*/> =
     /*@ts2dart_const*/[
       PLATFORM_COMMON_PROVIDERS,
-      /*@ts2dart_const*/ (/* @ts2dart_Provider */ {
-        provide: WORKER_APP_PLATFORM_MARKER,
-        useValue: true
-      })
+      /*@ts2dart_const*/ (
+          /* @ts2dart_Provider */ {provide: WORKER_APP_PLATFORM_MARKER, useValue: true})
     ];
 
 export const WORKER_APP_APPLICATION_COMMON: Array<any /*Type | Provider | any[]*/> =
