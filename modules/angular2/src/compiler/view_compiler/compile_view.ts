@@ -24,6 +24,7 @@ import {
 } from './util';
 import {CompilerConfig} from '../config';
 import {CompileBinding} from './compile_binding';
+import {Identifiers} from '../identifiers';
 
 export class CompileView implements NameResolver {
   public viewType: ViewType;
@@ -155,6 +156,9 @@ export class CompileView implements NameResolver {
   }
 
   createLiteralArray(values: o.Expression[]): o.Expression {
+    if (values.length === 0) {
+      return o.importExpr(Identifiers.EMPTY_ARRAY);
+    }
     var proxyExpr = o.THIS_EXPR.prop(`_arr_${this.literalArrayCount++}`);
     var proxyParams: o.FnParam[] = [];
     var proxyReturnEntries: o.Expression[] = [];
@@ -169,6 +173,9 @@ export class CompileView implements NameResolver {
   }
 
   createLiteralMap(entries: Array<Array<string | o.Expression>>): o.Expression {
+    if (entries.length === 0) {
+      return o.importExpr(Identifiers.EMPTY_MAP);
+    }
     var proxyExpr = o.THIS_EXPR.prop(`_map_${this.literalMapCount++}`);
     var proxyParams: o.FnParam[] = [];
     var proxyReturnEntries: Array<Array<string | o.Expression>> = [];

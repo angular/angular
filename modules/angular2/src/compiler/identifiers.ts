@@ -7,6 +7,8 @@ import {
   interpolate,
   checkBinding,
   castByValue,
+  EMPTY_ARRAY,
+  EMPTY_MAP,
   pureProxy1,
   pureProxy2,
   pureProxy3,
@@ -72,6 +74,8 @@ var impDevModeEqual = devModeEqual;
 var impInterpolate = interpolate;
 var impCheckBinding = checkBinding;
 var impCastByValue = castByValue;
+var impEMPTY_ARRAY = EMPTY_ARRAY;
+var impEMPTY_MAP = EMPTY_MAP;
 
 export class Identifiers {
   static ViewUtils = new CompileIdentifierMetadata({
@@ -179,6 +183,11 @@ export class Identifiers {
       {name: 'interpolate', moduleUrl: VIEW_UTILS_MODULE_URL, runtime: impInterpolate});
   static castByValue = new CompileIdentifierMetadata(
       {name: 'castByValue', moduleUrl: VIEW_UTILS_MODULE_URL, runtime: impCastByValue});
+  static EMPTY_ARRAY = new CompileIdentifierMetadata(
+      {name: 'EMPTY_ARRAY', moduleUrl: VIEW_UTILS_MODULE_URL, runtime: impEMPTY_ARRAY});
+  static EMPTY_MAP = new CompileIdentifierMetadata(
+      {name: 'EMPTY_MAP', moduleUrl: VIEW_UTILS_MODULE_URL, runtime: impEMPTY_MAP});
+
   static pureProxies = [
     null,
     new CompileIdentifierMetadata(
