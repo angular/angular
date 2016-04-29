@@ -152,7 +152,10 @@ module.exports = function makeNodeTree(projects, destinationPath) {
   compiledTree = replace(compiledTree, {
     files: ['**/*.d.ts'],
     patterns: [
+      // all readonly keywords
       {match: /^(\s*(static\s+|private\s+)*)readonly\s+/mg, replacement: "$1"},
+      // abstract properties (but not methods or classes)
+      {match: /^(\s+)abstract\s+([^\(\n]*$)/mg, replacement: "$1$2"},
     ]
   });
 
