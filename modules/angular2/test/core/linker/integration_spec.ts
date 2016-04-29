@@ -800,15 +800,32 @@ function declareTests(isJit: boolean) {
 
                           .createAsync(MyComp)
                           .then((fixture) => {
-                            var cmp = fixture.debugElement.children[0].references['cmp'];
-
-                            fixture.debugElement.componentInstance.ctxProp = "one";
+                            var cmpEl = fixture.debugElement.children[0];
+                            var cmp = cmpEl.componentInstance;
+                            fixture.detectChanges();
                             fixture.detectChanges();
                             expect(cmp.numberOfChecks).toEqual(1);
 
-                            fixture.debugElement.componentInstance.ctxProp = "two";
+                            cmpEl.children[0].triggerEventHandler('click', <Event>{});
+
+                            // regular element
+                            fixture.detectChanges();
                             fixture.detectChanges();
                             expect(cmp.numberOfChecks).toEqual(2);
+
+                            // element inside of an *ngIf
+                            cmpEl.children[1].triggerEventHandler('click', <Event>{});
+
+                            fixture.detectChanges();
+                            fixture.detectChanges();
+                            expect(cmp.numberOfChecks).toEqual(3);
+
+                            // element inside a nested component
+                            cmpEl.children[2].children[0].triggerEventHandler('click', <Event>{});
+
+                            fixture.detectChanges();
+                            fixture.detectChanges();
+                            expect(cmp.numberOfChecks).toEqual(4);
 
                             async.done();
                           })}));
@@ -1987,11 +2004,18 @@ class DirectiveWithTitleAndHostProperty {
   title: string;
 }
 
+@Component({selector: 'event-cmp', template: '<div (click)="noop()"></div>'})
+class EventCmp {
+  noop() {}
+}
+
 @Component({
   selector: 'push-cmp',
   inputs: ['prop'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  template: '{{field}}'
+  template:
+      '{{field}}<div (click)="noop()"></div><div *ngIf="true" (click)="noop()"></div><event-cmp></event-cmp>',
+  directives: [EventCmp, NgIf]
 })
 @Injectable()
 class PushCmp {
@@ -1999,6 +2023,8 @@ class PushCmp {
   prop;
 
   constructor() { this.numberOfChecks = 0; }
+
+  noop() {}
 
   get field() {
     this.numberOfChecks++;
