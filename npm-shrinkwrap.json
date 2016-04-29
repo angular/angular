@@ -8623,6 +8623,30 @@
         }
       }
     },
+    "tsickle": {
+      "version": "0.1.0",
+      "from": "tsickle@latest",
+      "resolved": "https://registry.npmjs.org/tsickle/-/tsickle-0.1.0.tgz",
+      "dependencies": {
+        "source-map": {
+          "version": "0.4.4",
+          "from": "source-map@>=0.4.2 <0.5.0",
+          "resolved": "https://registry.npmjs.org/source-map/-/source-map-0.4.4.tgz"
+        },
+        "source-map-support": {
+          "version": "0.3.3",
+          "from": "source-map-support@>=0.3.1 <0.4.0",
+          "resolved": "https://registry.npmjs.org/source-map-support/-/source-map-support-0.3.3.tgz",
+          "dependencies": {
+            "source-map": {
+              "version": "0.1.32",
+              "from": "source-map@0.1.32",
+              "resolved": "https://registry.npmjs.org/source-map/-/source-map-0.1.32.tgz"
+            }
+          }
+        }
+      }
+    },
     "tslint": {
       "version": "3.7.0-dev.2",
       "from": "tslint@next",
