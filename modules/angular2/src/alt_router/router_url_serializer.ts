@@ -64,7 +64,7 @@ class _UrlParser {
   parse(url: string): TreeNode<UrlSegment> {
     this._remaining = url;
     if (url == '' || url == '/') {
-      return new TreeNode<UrlSegment>(new UrlSegment('', {}, null), []);
+      return new TreeNode<UrlSegment>(new UrlSegment('', null, null), []);
     } else {
       return this.parseRoot();
     }
@@ -72,7 +72,7 @@ class _UrlParser {
 
   parseRoot(): TreeNode<UrlSegment> {
     let segments = this.parseSegments();
-    let queryParams = this.peekStartsWith('?') ? this.parseQueryParams() : {};
+    let queryParams = this.peekStartsWith('?') ? this.parseQueryParams() : null;
     return new TreeNode<UrlSegment>(new UrlSegment('', queryParams, null), segments);
   }
 

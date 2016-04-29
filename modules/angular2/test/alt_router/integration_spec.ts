@@ -28,10 +28,10 @@ import {
   Routes,
   RouterUrlSerializer,
   DefaultRouterUrlSerializer,
-  OnActivate,
-  Location
+  OnActivate
 } from 'angular2/alt_router';
 import {SpyLocation} from 'angular2/src/mock/location_mock';
+import {Location} from 'angular2/platform/common';
 import {DOM} from 'angular2/src/platform/dom/dom_adapter';
 
 export function main() {
@@ -58,6 +58,7 @@ export function main() {
 
          router.navigateByUrl('/team/33/simple');
          advance(fixture);
+
          expect(location.path()).toEqual('/team/33/simple');
        })));
 
@@ -123,40 +124,43 @@ export function main() {
          expect(fixture.debugElement.nativeElement).toHaveText('team 22 { hello fedor, aux:  }');
        })));
 
-    it("should support router links",
-       fakeAsync(inject([Router, TestComponentBuilder], (router, tcb) => {
-         let fixture = tcb.createFakeAsync(RootCmp);
-         advance(fixture);
+    if (DOM.supportsDOMEvents()) {  // this is required to use fakeAsync
 
-         router.navigateByUrl('/team/22/link');
-         advance(fixture);
-         expect(fixture.debugElement.nativeElement).toHaveText('team 22 { link, aux:  }');
+      it("should support router links",
+         fakeAsync(inject([Router, TestComponentBuilder], (router, tcb) => {
+           let fixture = tcb.createFakeAsync(RootCmp);
+           advance(fixture);
 
-         let native = DOM.querySelector(fixture.debugElement.nativeElement, "a");
-         expect(DOM.getAttribute(native, "href")).toEqual("/team/33/simple");
-         DOM.dispatchEvent(native, DOM.createMouseEvent('click'));
-         advance(fixture);
+           router.navigateByUrl('/team/22/link');
+           advance(fixture);
+           expect(fixture.debugElement.nativeElement).toHaveText('team 22 { link, aux:  }');
 
-         expect(fixture.debugElement.nativeElement).toHaveText('team 33 { simple, aux:  }');
-       })));
+           let native = DOM.querySelector(fixture.debugElement.nativeElement, "a");
+           expect(DOM.getAttribute(native, "href")).toEqual("/team/33/simple");
+           DOM.dispatchEvent(native, DOM.createMouseEvent('click'));
+           advance(fixture);
 
-    it("should update router links when router changes",
-       fakeAsync(inject([Router, TestComponentBuilder], (router, tcb) => {
-         let fixture = tcb.createFakeAsync(RootCmp);
-         advance(fixture);
+           expect(fixture.debugElement.nativeElement).toHaveText('team 33 { simple, aux:  }');
+         })));
 
-         router.navigateByUrl('/team/22/link(simple)');
-         advance(fixture);
-         expect(fixture.debugElement.nativeElement).toHaveText('team 22 { link, aux: simple }');
+      it("should update router links when router changes",
+         fakeAsync(inject([Router, TestComponentBuilder], (router, tcb) => {
+           let fixture = tcb.createFakeAsync(RootCmp);
+           advance(fixture);
 
-         let native = DOM.querySelector(fixture.debugElement.nativeElement, "a");
-         expect(DOM.getAttribute(native, "href")).toEqual("/team/33/simple(aux:simple)");
+           router.navigateByUrl('/team/22/link(simple)');
+           advance(fixture);
+           expect(fixture.debugElement.nativeElement).toHaveText('team 22 { link, aux: simple }');
 
-         router.navigateByUrl('/team/22/link(simple2)');
-         advance(fixture);
+           let native = DOM.querySelector(fixture.debugElement.nativeElement, "a");
+           expect(DOM.getAttribute(native, "href")).toEqual("/team/33/simple(aux:simple)");
 
-         expect(DOM.getAttribute(native, "href")).toEqual("/team/33/simple(aux:simple2)");
-       })));
+           router.navigateByUrl('/team/22/link(simple2)');
+           advance(fixture);
+
+           expect(DOM.getAttribute(native, "href")).toEqual("/team/33/simple(aux:simple2)");
+         })));
+    }
   });
 }
 
