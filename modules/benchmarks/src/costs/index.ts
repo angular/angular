@@ -1,9 +1,9 @@
-import {bootstrap} from 'angular2/platform/browser';
-import {Component, Directive, DynamicComponentLoader, ViewContainerRef} from 'angular2/core';
-import {NgIf, NgFor} from 'angular2/common';
-import {ApplicationRef} from 'angular2/src/core/application_ref';
-import {ListWrapper} from 'angular2/src/facade/collection';
-import {getIntParameter, bindAction} from 'angular2/src/testing/benchmark_util';
+import {bootstrap} from '@angular/platform-browser';
+import {Component, Directive, DynamicComponentLoader, ViewContainerRef} from '@angular/core';
+import {NgIf, NgFor} from '@angular/common';
+import {ApplicationRef} from '@angular/core/src/application_ref';
+import {ListWrapper} from '@angular/facade';
+import {getIntParameter, bindAction} from '@angular/testing/src/benchmark_util';
 
 var testList = null;
 

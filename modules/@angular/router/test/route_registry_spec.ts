@@ -1,5 +1,4 @@
 import {
-  AsyncTestCompleter,
   describe,
   it,
   iit,
@@ -7,20 +6,20 @@ import {
   expect,
   inject,
   beforeEach,
-  SpyObject
-} from 'angular2/testing_internal';
+} from '@angular/core/testing/testing_internal';
+import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
 
-import {PromiseWrapper} from 'angular2/src/facade/async';
-import {Type, IS_DART} from 'angular2/src/facade/lang';
+import {PromiseWrapper} from '../src/facade/async';
+import {Type, IS_DART} from '../src/facade/lang';
 
-import {RouteRegistry} from 'angular2/src/router/route_registry';
+import {RouteRegistry} from '../../router/src/route_registry';
 import {
   RouteConfig,
   Route,
   Redirect,
   AuxRoute,
   AsyncRoute
-} from 'angular2/src/router/route_config/route_config_decorator';
+} from '../../router/src/route_config/route_config_decorator';
 
 
 export function main() {

@@ -1,5 +1,5 @@
-import {ListWrapper, Map, MapWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
-import {PromiseWrapper} from 'angular2/src/facade/async';
+import {ListWrapper, Map, StringMapWrapper} from '../src/facade/collection';
+import {PromiseWrapper} from '../src/facade/async';
 import {
   isPresent,
   isArray,
@@ -11,19 +11,10 @@ import {
   StringWrapper,
   Math,
   getTypeNameForDebugging,
-} from 'angular2/src/facade/lang';
-import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
-import {reflector} from 'angular2/src/core/reflection/reflection';
-import {Injectable, Inject, OpaqueToken} from 'angular2/core';
-
-import {
-  RouteConfig,
-  AsyncRoute,
-  Route,
-  AuxRoute,
-  Redirect,
-  RouteDefinition
-} from './route_config/route_config_impl';
+} from '../src/facade/lang';
+import {BaseException} from '../src/facade/exceptions';
+import {Injectable, Inject, OpaqueToken, reflector} from '@angular/core';
+import {RouteConfig, Route, AuxRoute, RouteDefinition} from './route_config/route_config_impl';
 import {PathMatch, RedirectMatch, RouteMatch} from './rules/rules';
 import {RuleSet} from './rules/rule_set';
 import {
@@ -33,9 +24,8 @@ import {
   UnresolvedInstruction,
   DefaultInstruction
 } from './instruction';
-
 import {normalizeRouteConfig, assertComponentExists} from './route_config/route_config_normalizer';
-import {parser, Url, convertUrlParamsToArray, pathSegmentsToUrl} from './url_parser';
+import {parser, Url, convertUrlParamsToArray} from './url_parser';
 import {GeneratedUrl} from './rules/route_paths/route_path';
 
 var _resolveToNull = PromiseWrapper.resolve<Instruction>(null);
@@ -57,12 +47,12 @@ var _resolveToNull = PromiseWrapper.resolve<Instruction>(null);
  * ### Example ([live demo](http://plnkr.co/edit/iRUP8B5OUbxCWQ3AcIDm))
  *
  * ```
- * import {Component} from 'angular2/core';
+ * import {Component} from '@angular/core';
  * import {
  *   ROUTER_DIRECTIVES,
  *   ROUTER_PROVIDERS,
  *   RouteConfig
- * } from 'angular2/router';
+ * } from '@angular/router';
  *
  * @Component({directives: [ROUTER_DIRECTIVES]})
  * @RouteConfig([

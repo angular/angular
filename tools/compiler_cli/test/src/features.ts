@@ -1,5 +1,5 @@
-import {Component, Inject, OpaqueToken} from 'angular2/core';
-import {NgIf} from 'angular2/common';
+import {Component, Inject, OpaqueToken} from '@angular/core';
+import {NgIf} from '@angular/common';
 
 export const SOME_OPAQUE_TOKEN = new OpaqueToken('opaqueToken');
 

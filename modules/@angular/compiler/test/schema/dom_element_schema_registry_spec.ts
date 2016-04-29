@@ -8,30 +8,46 @@ import {
   inject,
   it,
   xit
-} from 'angular2/testing_internal';
-import {IS_DART} from 'angular2/src/facade/lang';
+} from '@angular/core/testing/testing_internal';
 
-import {DomElementSchemaRegistry} from 'angular2/src/compiler/schema/dom_element_schema_registry';
+import {DomElementSchemaRegistry} from '@angular/compiler/src/schema/dom_element_schema_registry';
+import {extractSchema} from './schema_extractor';
 
 export function main() {
-  // DOMElementSchema can only be used on the JS side where we can safely
-  // use reflection for DOM elements
-  if (IS_DART) return;
-
-  var registry: DomElementSchemaRegistry;
-
-  beforeEach(() => { registry = new DomElementSchemaRegistry(); });
-
   describe('DOMElementSchema', () => {
+    var registry: DomElementSchemaRegistry;
+    beforeEach(() => { registry = new DomElementSchemaRegistry(); });
 
     it('should detect properties on regular elements', () => {
       expect(registry.hasProperty('div', 'id')).toBeTruthy();
       expect(registry.hasProperty('div', 'title')).toBeTruthy();
+      expect(registry.hasProperty('h1', 'align')).toBeTruthy();
+      expect(registry.hasProperty('h2', 'align')).toBeTruthy();
+      expect(registry.hasProperty('h3', 'align')).toBeTruthy();
+      expect(registry.hasProperty('h4', 'align')).toBeTruthy();
+      expect(registry.hasProperty('h5', 'align')).toBeTruthy();
+      expect(registry.hasProperty('h6', 'align')).toBeTruthy();
+      expect(registry.hasProperty('h7', 'align')).toBeFalsy();
+      expect(registry.hasProperty('textarea', 'disabled')).toBeTruthy();
+      expect(registry.hasProperty('input', 'disabled')).toBeTruthy();
       expect(registry.hasProperty('div', 'unknown')).toBeFalsy();
     });
 
-    it('should return true for custom-like elements',
-       () => { expect(registry.hasProperty('custom-like', 'unknown')).toBeTruthy(); });
+    it('should detect different kinds of types',
+       () => {
+         // inheritance: video => media => *
+         expect(registry.hasProperty('video', 'className')).toBeTruthy();   // from *
+         expect(registry.hasProperty('video', 'id')).toBeTruthy();          // string
+         expect(registry.hasProperty('video', 'scrollLeft')).toBeTruthy();  // number
+         expect(registry.hasProperty('video', 'height')).toBeTruthy();      // number
+         expect(registry.hasProperty('video', 'autoplay')).toBeTruthy();    // boolean
+         expect(registry.hasProperty('video', 'classList')).toBeTruthy();   // object
+         // from *; but events are not properties
+         expect(registry.hasProperty('video', 'click')).toBeFalsy();
+       })
+
+        it('should return true for custom-like elements',
+           () => { expect(registry.hasProperty('custom-like', 'unknown')).toBeTruthy(); });
 
     it('should re-map property names that are specified in DOM facade',
        () => { expect(registry.getMappedPropName('readonly')).toEqual('readOnly'); });
@@ -43,5 +59,15 @@ export function main() {
 
     it('should detect properties on namespaced elements',
        () => { expect(registry.hasProperty('@svg:g', 'id')).toBeTruthy(); });
+
+    it('generate a new schema', () => {
+      // console.log(JSON.stringify(registry.properties));
+      extractSchema(
+          (descriptors) => {
+              // Uncomment this line to see:
+              // the generated schema which can then be pasted to the DomElementSchemaRegistry
+              // console.log(descriptors);
+          });
+    });
   });
 }

@@ -1,6 +1,6 @@
-import {EventEmitter} from 'angular2/src/facade/async';
+import {EventEmitter} from '../../src/facade/async';
 import {NgZoneImpl, NgZoneError} from './ng_zone_impl';
-import {BaseException} from '../../facade/exceptions';
+import {BaseException} from '../../src/facade/exceptions';
 export {NgZoneError} from './ng_zone_impl';
 
 
@@ -19,8 +19,8 @@ export {NgZoneError} from './ng_zone_impl';
  *
  * ### Example ([live demo](http://plnkr.co/edit/lY9m8HLy7z06vDoUaSN2?p=preview))
  * ```
- * import {Component, View, NgZone} from 'angular2/core';
- * import {NgIf} from 'angular2/common';
+ * import {Component, View, NgZone} from '@angular/core';
+ * import {NgIf} from '@angular/common';
  *
  * @Component({
  *   selector: 'ng-zone-demo'.

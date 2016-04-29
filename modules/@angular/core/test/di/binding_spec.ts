@@ -1,5 +1,4 @@
 import {
-  AsyncTestCompleter,
   beforeEach,
   ddescribe,
   describe,
@@ -8,9 +7,9 @@ import {
   inject,
   it,
   xit,
-} from 'angular2/testing_internal';
+} from '@angular/core/testing/testing_internal';
 
-import {bind, provide} from 'angular2/core';
+import {bind, provide} from '@angular/core';
 
 export function main() {
   describe('provider', () => {

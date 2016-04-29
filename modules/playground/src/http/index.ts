@@ -1,5 +1,5 @@
-import {bootstrap} from 'angular2/platform/browser';
-import {HTTP_PROVIDERS} from 'angular2/http';
+import {bootstrap} from '@angular/platform-browser';
+import {HTTP_PROVIDERS} from '@angular/http/http';
 import {HttpCmp} from './http_comp';
 
 export function main() {

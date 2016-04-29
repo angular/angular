@@ -1,11 +1,10 @@
-import {isPresent, isBlank} from 'angular2/src/facade/lang';
-import {BaseException} from 'angular2/src/facade/exceptions';
+import {isPresent, isBlank} from '../../src/facade/lang';
+import {BaseException} from '../../src/facade/exceptions';
 
 import * as o from '../output/output_ast';
 import {
   CompileTokenMetadata,
   CompileDirectiveMetadata,
-  CompileIdentifierMetadata
 } from '../compile_metadata';
 import {CompileView} from './compile_view';
 import {Identifiers} from '../identifiers';

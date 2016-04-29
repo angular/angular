@@ -7,14 +7,12 @@ import {
   expect,
   beforeEach,
   afterEach,
-  browserDetection,
   inject,
-  TestComponentBuilder,
-  AsyncTestCompleter
-} from 'angular2/testing_internal';
+} from '@angular/core/testing/testing_internal';
+import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
 
-import {ReplacePipe} from 'angular2/common';
-import {RegExpWrapper, StringJoiner} from 'angular2/src/facade/lang';
+import {ReplacePipe} from '@angular/common';
+import {RegExpWrapper, StringJoiner} from '../../src/facade/lang';
 
 export function main() {
   describe("ReplacePipe", () => {

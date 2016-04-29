@@ -1,5 +1,4 @@
 import {
-  AsyncTestCompleter,
   afterEach,
   beforeEach,
   ddescribe,
@@ -9,24 +8,25 @@ import {
   inject,
   it,
   xit,
-  SpyObject
-} from 'angular2/testing_internal';
-import {ObservableWrapper, TimerWrapper} from 'angular2/src/facade/async';
-import {BrowserJsonp} from 'angular2/src/http/backends/browser_jsonp';
+} from '@angular/core/testing/testing_internal';
+import {AsyncTestCompleter, SpyObject} from '@angular/core/testing/testing_internal';
+import {ObservableWrapper} from '../../src/facade/async';
+import {BrowserJsonp} from '../../src/backends/browser_jsonp';
 import {
   JSONPConnection,
   JSONPConnection_,
   JSONPBackend,
   JSONPBackend_
-} from 'angular2/src/http/backends/jsonp_backend';
-import {provide, Injector, ReflectiveInjector} from 'angular2/core';
-import {isPresent, StringWrapper} from 'angular2/src/facade/lang';
-import {Request} from 'angular2/src/http/static_request';
-import {Response} from 'angular2/src/http/static_response';
-import {Map} from 'angular2/src/facade/collection';
-import {RequestOptions, BaseRequestOptions} from 'angular2/src/http/base_request_options';
-import {BaseResponseOptions, ResponseOptions} from 'angular2/src/http/base_response_options';
-import {ResponseType, ReadyState, RequestMethod} from 'angular2/src/http/enums';
+} from '../../src/backends/jsonp_backend';
+import {provide, Injector, ReflectiveInjector} from '@angular/core';
+import {isPresent, StringWrapper} from '../../src/facade/lang';
+import {TimerWrapper} from '../../src/facade/async';
+import {Request} from '../../src/static_request';
+import {Response} from '../../src/static_response';
+import {Map} from '../../src/facade/collection';
+import {RequestOptions, BaseRequestOptions} from '../../src/base_request_options';
+import {BaseResponseOptions, ResponseOptions} from '../../src/base_response_options';
+import {ResponseType, ReadyState, RequestMethod} from '../../src/enums';
 
 var addEventListenerSpy: any;
 var existingScripts: MockBrowserJsonp[] = [];

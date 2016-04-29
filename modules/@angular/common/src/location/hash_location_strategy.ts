@@ -1,8 +1,10 @@
-import {Injectable, Inject, Optional} from 'angular2/core';
+import {Injectable, Inject, Optional} from '@angular/core';
+import {isPresent} from '../../src/facade/lang';
+
 import {LocationStrategy, APP_BASE_HREF} from './location_strategy';
 import {Location} from './location';
 import {UrlChangeListener, PlatformLocation} from './platform_location';
-import {isPresent} from 'angular2/src/facade/lang';
+
 
 /**
  * `HashLocationStrategy` is a {@link LocationStrategy} used to configure the
@@ -16,17 +18,17 @@ import {isPresent} from 'angular2/src/facade/lang';
  * ### Example
  *
  * ```
- * import {Component, provide} from 'angular2/core';
+ * import {Component, provide} from '@angular/core';
  * import {
  *   Location,
  *   LocationStrategy,
  *   HashLocationStrategy
- * } from 'angular2/platform/common';
+ * } from '@angular/common';
  * import {
  *   ROUTER_DIRECTIVES,
  *   ROUTER_PROVIDERS,
  *   RouteConfig
- * } from 'angular2/router';
+ * } from '@angular/router';
  *
  * @Component({directives: [ROUTER_DIRECTIVES]})
  * @RouteConfig([

@@ -7,9 +7,10 @@ import {
   Attribute,
   AfterContentInit,
   Input
-} from 'angular2/core';
-import {isPresent, NumberWrapper} from 'angular2/src/facade/lang';
-import {Map} from 'angular2/src/facade/collection';
+} from '@angular/core';
+import {isPresent, NumberWrapper} from '../../src/facade/lang';
+import {Map} from '../../src/facade/collection';
+
 import {SwitchView} from './ng_switch';
 
 const _CATEGORY_DEFAULT = 'other';

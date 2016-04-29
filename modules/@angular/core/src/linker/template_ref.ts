@@ -1,4 +1,4 @@
-import {isBlank} from 'angular2/src/facade/lang';
+import {isBlank} from '../facade/lang';
 import {ElementRef} from './element_ref';
 import {AppElement} from './element';
 import {AppView} from './view';

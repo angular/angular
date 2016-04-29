@@ -1,7 +1,7 @@
-import {provide, Component} from 'angular2/core';
-import {bootstrap} from 'angular2/platform/browser';
-import {CanActivate, RouteConfig, ComponentInstruction, ROUTER_DIRECTIVES} from 'angular2/router';
-import {APP_BASE_HREF} from 'angular2/platform/common';
+import {provide, Component, ComponentRef} from '@angular/core';
+import {bootstrap} from '@angular/platform-browser-dynamic';
+import {CanActivate, RouteConfig, ComponentInstruction, ROUTER_DIRECTIVES} from '@angular/router';
+import {APP_BASE_HREF} from '@angular/common';
 
 function checkIfWeHavePermission(instruction: ComponentInstruction) {
   return instruction.params['id'] == '1';
@@ -42,11 +42,11 @@ class HomeCmp {
   {path: '/user-settings/:id', component: ControlPanelCmp, name: 'ControlPanelCmp'},
   {path: '/', component: HomeCmp, name: 'HomeCmp'}
 ])
-class AppCmp {
+export class AppCmp {
 }
 
 
-export function main() {
+export function main(): Promise<ComponentRef<AppCmp>> {
   return bootstrap(
-      AppCmp, [provide(APP_BASE_HREF, {useValue: '/angular2/examples/router/ts/can_activate'})]);
+      AppCmp, [provide(APP_BASE_HREF, {useValue: '/@angular/examples/router/ts/can_activate'})]);
 }

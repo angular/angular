@@ -1,6 +1,6 @@
-import {isPresent, isBlank, Date, DateWrapper} from 'angular2/src/facade/lang';
-import {PromiseWrapper} from 'angular2/src/facade/async';
-import {bind, provide, Provider, OpaqueToken} from 'angular2/src/core/di';
+import {isPresent, isBlank, Date, DateWrapper} from '@angular/facade';
+import {PromiseWrapper} from '@angular/facade';
+import {bind, provide, Provider, OpaqueToken} from '@angular/core/src/di';
 
 import {Metric} from './metric';
 import {Validator} from './validator';

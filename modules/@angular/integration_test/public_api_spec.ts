@@ -1,5 +1,4 @@
 import {
-  AsyncTestCompleter,
   beforeEach,
   ddescribe,
   describe,
@@ -9,10 +8,10 @@ import {
   it,
   xdescribe,
   xit
-} from 'angular2/testing_internal';
-import {IS_DART, RegExpWrapper, StringWrapper} from 'angular2/src/facade/lang';
+} from '@angular/core/testing/testing_internal';
+import {IS_DART, RegExpWrapper, StringWrapper} from '../facade/src/lang';
 import {getSymbolsFromLibrary} from './symbol_inspector/symbol_inspector';
-import {ListWrapper} from 'angular2/src/facade/collection';
+import {ListWrapper} from '../facade/src/collection';
 
 // =================================================================================================
 // =================================================================================================
@@ -25,7 +24,13 @@ import {ListWrapper} from 'angular2/src/facade/collection';
 // =================================================================================================
 // =================================================================================================
 
-var NG_COMMON = [
+var COMMON: string[] = [
+  'APP_BASE_HREF',
+  'HashLocationStrategy',
+  'Location',
+  'LocationStrategy',
+  'PathLocationStrategy',
+  'PlatformLocation',
   'AbstractControl',
   'AbstractControlDirective',
   'AsyncPipe',
@@ -91,7 +96,14 @@ var NG_COMMON = [
   'NgPluralCase'
 ];
 
-var NG_COMPILER = [
+var COMMON_TESTING: string[] = [
+  'MockLocationStrategy',
+  'SpyLocation'
+];
+
+var COMPILER: string[] = [
+  'ElementSchemaRegistry',
+  '__compiler_private__',
   "TemplateAst:dart",
   "TemplateAstVisitor:dart",
   "DEFAULT_PACKAGE_URL_PROVIDER",
@@ -109,8 +121,6 @@ var NG_COMPILER = [
   "ElementAst",
   "EmbeddedTemplateAst",
   "NgContentAst",
-  "PLATFORM_DIRECTIVES",
-  "PLATFORM_PIPES",
   "PropertyBindingType",
   "SourceModule",
   "TEMPLATE_TRANSFORMS",
@@ -140,7 +150,27 @@ var NG_COMPILER = [
   "createOfflineCompileUrlResolver"
 ];
 
-var NG_CORE = [
+var COMPILER_TESTING: string[] = [
+  'ComponentFixture',
+  'ComponentFixtureAutoDetect',
+  'ComponentFixtureNoNgZone',
+  'MockDirectiveResolver',
+  'MockSchemaRegistry',
+  'MockViewResolver',
+  'MockXHR',
+  'TestComponentBuilder',
+  'TestComponentRenderer'
+];
+
+var CORE: string[] = [
+  '__core_private__',
+  'BaseException',
+  'DefaultIterableDiffer',
+  'getDebugNode',
+  'wtfCreateScope',
+  'wtfEndTimeRange',
+  'wtfLeave',
+  'wtfStartTimeRange',
   'APP_INITIALIZER',
   'APP_ID',
   'AngularEntrypoint:dart',
@@ -296,51 +326,182 @@ var NG_CORE = [
   'TrackByFn:dart'
 ];
 
-var NG_INSTRUMENTATION =
-    ['wtfCreateScope', 'wtfEndTimeRange', 'wtfLeave', 'WtfScopeFn:dart', 'wtfStartTimeRange'];
-
-var NG_PLATFORM_BROWSER = [
-  'AngularEntrypoint:dart',
-  'BROWSER_APP_PROVIDERS',
-  'BROWSER_PROVIDERS',
-  'BrowserDomAdapter',
-  'By',
-  'CACHED_TEMPLATE_PROVIDER',
-  'DOCUMENT',
-  'ELEMENT_PROBE_PROVIDERS',
-  'ELEMENT_PROBE_PROVIDERS_PROD_MODE',
-  'Title',
-  'bootstrap',
-  'browserPlatform',
-  'disableDebugTools',
-  'enableDebugTools',
-  'inspectNativeElement'
+var CORE_TESTING: string[] = [
+  'InjectSetupWrapper',
+  'Log',
+  'MockApplicationRef',
+  'MockNgZone',
+  'TestInjector',
+  'afterEach',
+  'async',
+  'beforeEach',
+  'beforeEachProviders',
+  'clearPendingTimers',
+  'containsRegexp',
+  'ddescribe',
+  'describe',
+  'expect',
+  'fakeAsync',
+  'fdescribe',
+  'fit',
+  'flushMicrotasks',
+  'getTestInjector',
+  'getTypeOf',
+  'iit',
+  'inject',
+  'injectAsync',
+  'instantiateType',
+  'it',
+  'resetBaseTestProviders',
+  'setBaseTestProviders',
+  'tick',
+  'withProviders',
+  'xdescribe',
+  'xit'
 ];
 
-var NG_PLATFORM_COMMON = [
-  'APP_BASE_HREF',
-  'HashLocationStrategy',
-  'Location',
-  'LocationStrategy',
-  'PathLocationStrategy',
-  'PlatformLocation',
+var PLATFORM_BROWSER: string[] = [
+  '__platform_browser_private__',
+  'BROWSER_APP_STATIC_PROVIDERS',
+  'BROWSER_PROVIDERS',
+  'BROWSER_APP_COMMON_PROVIDERS',
+  'DOCUMENT',
+  'ELEMENT_PROBE_PROVIDERS',
+  'DomEventsPlugin',
+  'EVENT_MANAGER_PLUGINS',
+  'EventManager',
+  'HAMMER_GESTURE_CONFIG',
+  'HammerGestureConfig',
+  'bootstrapStatic',
+  'browserStaticPlatform',
+  'browserPlatform',
+  'BrowserPlatformLocation',
+  'AngularEntrypoint:dart',
+  'By',
+  'Title',
+  'disableDebugTools',
+  'enableDebugTools'
+];
+
+var PLATFORM_BROWSER_TESTING: string[] = [
+  'TEST_BROWSER_STATIC_APPLICATION_PROVIDERS',
+  'TEST_BROWSER_STATIC_PLATFORM_PROVIDERS',
+  'ADDITIONAL_TEST_BROWSER_PROVIDERS', // This should be made private
+  'BrowserDetection',
+  'DOMTestComponentRenderer',
+  'TestComponentRenderer',
+  'browserDetection',
+  'dispatchEvent',
+  'el',
+  'expect',
+  'normalizeCSS',
+  'stringifyElement'
+];
+
+var PLATFORM_BROWSER_DYNAMIC: string[] = [
+  'BROWSER_APP_DYNAMIC_PROVIDERS',
+  'CACHED_TEMPLATE_PROVIDER',
+  'bootstrap',
   'UrlChangeEvent:dart',
   'UrlChangeListener:dart'
 ];
 
-var NG_UPGRADE = [
+var PLATFORM_BROWSER_DYNAMIC_TESTING: string[] = [
+  'TEST_BROWSER_DYNAMIC_APPLICATION_PROVIDERS',
+  'TEST_BROWSER_DYNAMIC_PLATFORM_PROVIDERS'
+];
+
+var PLATFORM_SERVER: string[] = [
+  'Parse5DomAdapter'
+];
+
+var PLATFORM_SERVER_TESTING: string[] = [
+  'TEST_SERVER_APPLICATION_PROVIDERS',
+  'TEST_SERVER_PLATFORM_PROVIDERS'
+];
+
+var UPGRADE: string[] = [
   'UpgradeAdapter',
   'UpgradeAdapterRef',
 ];
 
-var NG_API = {
-  ngCommon: NG_COMMON,
-  ngCompiler: NG_COMPILER,
-  ngCore: NG_CORE,
-  ngInstrumentation: NG_INSTRUMENTATION,
-  ngPlatformBrowser: NG_PLATFORM_BROWSER,
-  ngPlatformCommon: NG_PLATFORM_COMMON,
-  ngUpgrade: NG_UPGRADE
+var HTTP: string[] = [
+  'BaseRequestOptions',
+  'BaseResponseOptions',
+  'BrowserXhr',
+  'Connection',
+  'ConnectionBackend',
+  'HTTP_BINDINGS',
+  'HTTP_PROVIDERS',
+  'Headers',
+  'Http',
+  'JSONPBackend',
+  'JSONPConnection',
+  'JSONP_PROVIDERS',
+  'JSON_BINDINGS',
+  'Jsonp',
+  'ReadyState',
+  'Request',
+  'RequestMethod',
+  'RequestOptions',
+  'Response',
+  'ResponseOptions',
+  'ResponseType',
+  'URLSearchParams',
+  'XHRBackend',
+  'XHRConnection'
+];
+
+var HTTP_TESTING: string[] = [
+  'MockBackend',
+  'MockConnection'
+];
+
+var ROUTER: string[] = [
+  'AsyncRoute',
+  'AuxRoute',
+  'CanActivate',
+  'ComponentInstruction',
+  'Instruction',
+  'OpaqueToken',
+  'ROUTER_BINDINGS',
+  'ROUTER_DIRECTIVES',
+  'ROUTER_PRIMARY_COMPONENT',
+  'ROUTER_PROVIDERS',
+  'ROUTER_PROVIDERS_COMMON',
+  'Redirect',
+  'Route',
+  'RouteConfig',
+  'RouteData',
+  'RouteParams',
+  'RouteRegistry',
+  'Router',
+  'RouterLink',
+  'RouterOutlet'
+];
+
+var ROUTER_TESTING: string[] = [
+];
+
+
+var API = {
+  'common': COMMON,
+  'common/testing': COMMON_TESTING,
+  'compiler': COMPILER,
+  'compiler/testing': COMPILER_TESTING,
+  'core': CORE,
+  'core/testing': CORE_TESTING,
+  'http': HTTP,
+  'http/testing': HTTP_TESTING,
+  'router': ROUTER,
+  'router/testing': ROUTER_TESTING,
+  'upgrade': UPGRADE,
+  'platform-browser': PLATFORM_BROWSER,
+  'platform-browser/testing': PLATFORM_BROWSER_TESTING,
+  'platform-browser-dynamic': PLATFORM_BROWSER_DYNAMIC,
+  'platform-browser-dynamic/testing': PLATFORM_BROWSER_DYNAMIC_TESTING,
+  'platform-server': PLATFORM_SERVER,
+  'platform-server/testing': PLATFORM_SERVER_TESTING
 };
 
 export function main() {
@@ -355,17 +516,27 @@ export function main() {
 
   describe('public API', () => {
     var barrelList = [
-      'ngCommon',
-      'ngCompiler',
-      'ngCore',
-      'ngInstrumentation',
-      'ngPlatformBrowser',
-      'ngPlatformCommon',
-      'ngUpgrade'
+      'common',
+      'common/testing',
+      'compiler',
+      'compiler/testing',
+      'core',
+      'core/testing',
+      'http',
+      'http/testing',
+      'router',
+      'router/testing',
+      'upgrade',
+      'platform-browser',
+      'platform-browser/testing',
+      'platform-browser-dynamic',
+      'platform-browser-dynamic/testing',
+      'platform-server',
+      'platform-server/testing'
     ];
 
     if (IS_DART) {
-      barrelList = barrelList.filter(b => b !== 'ngUpgrade');
+      barrelList = barrelList.filter(b => b !== 'upgrade');
     }
 
     barrelList.forEach(mod => {
@@ -373,7 +544,7 @@ export function main() {
       if (IS_DART && mod === 'ngPlatformDomEvent') return;
       it(`should fail if public API for ${mod} has changed`, () => {
         var symbols = getSymbolsFromLibrary(mod);
-        expect(diff(symbols, NG_API[mod])).toEqual([]);
+        expect(diff(symbols, API[mod])).toEqual([]);
       })
     });
   });

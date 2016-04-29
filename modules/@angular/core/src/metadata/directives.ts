@@ -1,7 +1,7 @@
-import {isPresent, Type} from 'angular2/src/facade/lang';
-import {InjectableMetadata} from 'angular2/src/core/di/metadata';
-import {ChangeDetectionStrategy} from 'angular2/src/core/change_detection';
-import {ViewEncapsulation} from 'angular2/src/core/metadata/view';
+import {isPresent, Type} from '../../src/facade/lang';
+import {InjectableMetadata} from '../di/metadata';
+import {ViewEncapsulation} from './view';
+import {ChangeDetectionStrategy} from '../change_detection/constants';
 
 /**
  * Directives allow you to attach behavior to elements in the DOM.

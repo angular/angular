@@ -1,5 +1,7 @@
 import * as webdriver from 'selenium-webdriver';
 
+declare var global;
+declare var expect: Function;
 export var browser: protractor.IBrowser = global['browser'];
 export var $: cssSelectorHelper = global['$'];
 

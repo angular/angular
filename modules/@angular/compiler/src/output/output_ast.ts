@@ -1,4 +1,4 @@
-import {isString, isPresent, isBlank} from 'angular2/src/facade/lang';
+import {isString, isPresent, isBlank} from '../../src/facade/lang';
 import {CompileIdentifierMetadata} from '../compile_metadata';
 
 //// Types
@@ -401,7 +401,6 @@ export class LiteralArrayExpr extends Expression {
 
 export class LiteralMapExpr extends Expression {
   public valueType: Type = null;
-  ;
   constructor(public entries: Array<Array<string | Expression>>, type: MapType = null) {
     super(type);
     if (isPresent(type)) {

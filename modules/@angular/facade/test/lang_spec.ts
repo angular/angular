@@ -1,4 +1,4 @@
-import {describe, it, expect, beforeEach, ddescribe, iit, xit, el} from 'angular2/testing_internal';
+import {describe, it, expect, beforeEach, ddescribe, iit, xit} from '@angular/core/testing';
 import {
   isPresent,
   RegExpWrapper,
@@ -6,7 +6,7 @@ import {
   StringWrapper,
   hasConstructor,
   resolveEnumToken
-} from 'angular2/src/facade/lang';
+} from '../src/lang';
 
 enum UsefulEnum {
   MyToken,

@@ -1,17 +1,16 @@
 import {
-  AsyncTestCompleter,
   beforeEach,
   ddescribe,
   describe,
-  el,
   expect,
   iit,
   inject,
   it,
-} from 'angular2/testing_internal';
-import {MockXHR} from 'angular2/src/compiler/xhr_mock';
-import {PromiseWrapper} from 'angular2/src/facade/async';
-import {isPresent} from 'angular2/src/facade/lang';
+} from '@angular/core/testing/testing_internal';
+import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
+import {MockXHR} from '@angular/compiler/testing';
+import {PromiseWrapper} from '../src/facade/async';
+import {isPresent} from '../src/facade/lang';
 
 export function main() {
   describe('MockXHR', () => {

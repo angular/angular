@@ -1,30 +1,23 @@
-import {provide, Provider, Component} from 'angular2/core';
-import {Type, isBlank} from 'angular2/src/facade/lang';
-import {BaseException} from 'angular2/src/facade/exceptions';
-
 import {
-  ComponentFixture,
-  AsyncTestCompleter,
-  TestComponentBuilder,
   beforeEach,
   ddescribe,
   xdescribe,
   describe,
-  el,
   inject,
   beforeEachProviders,
   it,
   xit
-} from 'angular2/testing_internal';
-
-import {RootRouter} from 'angular2/src/router/router';
-import {Router, ROUTER_DIRECTIVES, ROUTER_PRIMARY_COMPONENT} from 'angular2/router';
-
-import {SpyLocation} from 'angular2/src/mock/location_mock';
-import {Location} from 'angular2/platform/common';
-import {RouteRegistry} from 'angular2/src/router/route_registry';
-import {DOM} from 'angular2/src/platform/dom/dom_adapter';
-export {ComponentFixture} from 'angular2/testing_internal';
+} from '@angular/core/testing/testing_internal';
+import {provide, Component} from '@angular/core';
+import {isBlank} from '../../src/facade/lang';
+import {BaseException} from '../../src/facade/exceptions';
+import {RootRouter} from '@angular/router/src/router';
+import {Router, ROUTER_DIRECTIVES, ROUTER_PRIMARY_COMPONENT} from '@angular/router';
+import {Location} from '@angular/common';
+import {RouteRegistry} from '@angular/router/src/route_registry';
+import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
+import {SpyLocation} from '@angular/common/testing';
+import {TestComponentBuilder, ComponentFixture} from '@angular/compiler/testing';
 
 
 /**
@@ -42,11 +35,11 @@ export class RootCmp {
 }
 
 export function compile(tcb: TestComponentBuilder,
-                        template: string = "<router-outlet></router-outlet>") {
+                        template: string = "<router-outlet></router-outlet>"): Promise<ComponentFixture<RootCmp>> {
   return tcb.overrideTemplate(RootCmp, ('<div>' + template + '</div>')).createAsync(RootCmp);
 }
 
-export var TEST_ROUTER_PROVIDERS = [
+export var TEST_ROUTER_PROVIDERS: any[] = [
   RouteRegistry,
   provide(Location, {useClass: SpyLocation}),
   provide(ROUTER_PRIMARY_COMPONENT, {useValue: RootCmp}),
@@ -54,13 +47,13 @@ export var TEST_ROUTER_PROVIDERS = [
 ];
 
 export function clickOnElement(anchorEl) {
-  var dispatchedEvent = DOM.createMouseEvent('click');
-  DOM.dispatchEvent(anchorEl, dispatchedEvent);
+  var dispatchedEvent = getDOM().createMouseEvent('click');
+  getDOM().dispatchEvent(anchorEl, dispatchedEvent);
   return dispatchedEvent;
 }
 
 export function getHref(elt) {
-  return DOM.getAttribute(elt, 'href');
+  return getDOM().getAttribute(elt, 'href');
 }
 
 

@@ -1,11 +1,12 @@
+import {LifecycleHooks} from '../../core_private';
 import * as o from '../output/output_ast';
 import {DetectChangesVars, ChangeDetectorStateEnum} from './constants';
-import {LifecycleHooks} from 'angular2/src/core/metadata/lifecycle_hooks';
-
 import {CompileDirectiveMetadata, CompilePipeMetadata} from '../compile_metadata';
 import {DirectiveAst} from '../template_ast';
 import {CompileElement} from './compile_element';
 import {CompileView} from './compile_view';
+
+
 
 var STATE_IS_NEVER_CHECKED =
     o.THIS_EXPR.prop('cdState').identical(ChangeDetectorStateEnum.NeverChecked);

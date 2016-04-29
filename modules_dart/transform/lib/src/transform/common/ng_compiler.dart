@@ -13,7 +13,6 @@ import 'package:angular2/src/compiler/expression_parser/parser.dart' as ng;
 import 'package:angular2/src/compiler/schema/dom_element_schema_registry.dart';
 import 'package:angular2/src/compiler/output/dart_emitter.dart';
 import 'package:angular2/src/transform/common/asset_reader.dart';
-import 'package:angular2/router/router_link_dsl.dart';
 import 'package:angular2/i18n.dart';
 
 import 'xhr_impl.dart';

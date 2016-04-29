@@ -7,10 +7,10 @@ import {
   expect,
   beforeEach,
   afterEach,
-  browserDetection
-} from 'angular2/testing_internal';
+} from '@angular/core/testing/testing_internal';
+import {browserDetection} from '@angular/platform-browser/testing';
 
-import {DecimalPipe, PercentPipe, CurrencyPipe} from 'angular2/common';
+import {DecimalPipe, PercentPipe, CurrencyPipe} from '@angular/common';
 
 export function main() {
   describe('Number pipes', () => {

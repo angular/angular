@@ -1,15 +1,12 @@
+import {PipeTransform, Pipe, Injectable} from '@angular/core';
 import {
   isDate,
   isNumber,
-  isPresent,
-  Date,
   DateWrapper,
   isBlank,
-  FunctionWrapper
-} from 'angular2/src/facade/lang';
-import {DateFormatter} from 'angular2/src/facade/intl';
-import {PipeTransform, WrappedValue, Pipe, Injectable} from 'angular2/core';
-import {StringMapWrapper, ListWrapper} from 'angular2/src/facade/collection';
+} from '../../src/facade/lang';
+import {DateFormatter} from '../../src/facade/intl';
+import {StringMapWrapper} from '../../src/facade/collection';
 
 import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
 

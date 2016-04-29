@@ -1,5 +1,5 @@
-import {Directive, Input, ViewContainerRef, ViewRef, TemplateRef} from 'angular2/core';
-import {isPresent} from 'angular2/src/facade/lang';
+import {Directive, Input, ViewContainerRef, ViewRef, TemplateRef} from '@angular/core';
+import {isPresent} from '../../src/facade/lang';
 
 /**
  * Creates and inserts an embedded view based on a prepared `TemplateRef`.

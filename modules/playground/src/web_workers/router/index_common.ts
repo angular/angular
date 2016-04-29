@@ -1,8 +1,8 @@
-import {Component} from 'angular2/core';
+import {Component} from '@angular/core';
 import {Start} from './components/start';
 import {About} from './components/about';
 import {Contact} from './components/contact';
-import {ROUTER_DIRECTIVES, RouteConfig, Route} from 'angular2/router';
+import {ROUTER_DIRECTIVES, RouteConfig, Route} from '@angular/router';
 
 @Component({selector: 'app', directives: [ROUTER_DIRECTIVES], templateUrl: 'app.html'})
 @RouteConfig([

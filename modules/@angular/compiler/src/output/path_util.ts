@@ -1,5 +1,5 @@
-import {BaseException} from 'angular2/src/facade/exceptions';
-import {isPresent, isBlank, RegExpWrapper, Math} from 'angular2/src/facade/lang';
+import {BaseException} from '../../src/facade/exceptions';
+import {isPresent, isBlank, RegExpWrapper, Math} from '../../src/facade/lang';
 
 // asset:<package-name>/<realm>/<path-to-module>
 var _ASSET_URL_RE = /asset:([^\/]+)\/([^\/]+)\/(.+)/g;

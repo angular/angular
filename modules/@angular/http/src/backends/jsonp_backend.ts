@@ -3,10 +3,10 @@ import {ReadyState, RequestMethod, ResponseType} from '../enums';
 import {Request} from '../static_request';
 import {Response} from '../static_response';
 import {ResponseOptions, BaseResponseOptions} from '../base_response_options';
-import {Injectable} from 'angular2/core';
+import {Injectable} from '@angular/core';
 import {BrowserJsonp} from './browser_jsonp';
-import {makeTypeError} from 'angular2/src/facade/exceptions';
-import {StringWrapper, isPresent} from 'angular2/src/facade/lang';
+import {makeTypeError} from '../../src/facade/exceptions';
+import {StringWrapper, isPresent} from '../../src/facade/lang';
 import {Observable} from 'rxjs/Observable';
 import {Observer} from 'rxjs/Observer';
 

@@ -8,18 +8,18 @@ import {
   expect,
   beforeEach,
   afterEach,
-  AsyncTestCompleter,
   inject,
   beforeEachProviders
-} from 'angular2/testing_internal';
+} from '@angular/core/testing/testing_internal';
+import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
 
-import {provide} from 'angular2/core';
+import {provide} from '@angular/core';
 import {
   ComponentResolver,
   ReflectorComponentResolver
-} from 'angular2/src/core/linker/component_resolver';
-import {reflector, ReflectionInfo} from 'angular2/src/core/reflection/reflection';
-import {ComponentFactory} from 'angular2/src/core/linker/component_factory';
+} from '@angular/core/src/linker/component_resolver';
+import {reflector, ReflectionInfo} from '@angular/core/src/reflection/reflection';
+import {ComponentFactory} from '@angular/core/src/linker/component_factory';
 
 export function main() {
   describe('Compiler', () => {

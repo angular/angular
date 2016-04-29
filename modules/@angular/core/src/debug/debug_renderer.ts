@@ -1,10 +1,10 @@
-import {isPresent} from 'angular2/src/facade/lang';
+import {isPresent} from '../../src/facade/lang';
 import {
   Renderer,
   RootRenderer,
   RenderComponentType,
   RenderDebugInfo
-} from 'angular2/src/core/render/api';
+} from '../render/api';
 import {
   DebugNode,
   DebugElement,
@@ -12,7 +12,7 @@ import {
   getDebugNode,
   indexDebugNode,
   removeDebugNodeFromIndex
-} from 'angular2/src/core/debug/debug_node';
+} from './debug_node';
 
 export class DebugDomRootRenderer implements RootRenderer {
   constructor(private _delegate: RootRenderer) {}

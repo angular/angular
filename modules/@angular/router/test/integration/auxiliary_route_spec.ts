@@ -11,7 +11,7 @@ import {
 import {
   beforeEachProviders,
   describe,
-} from 'angular2/testing_internal';
+} from '@angular/core/testing/testing_internal';
 
 import {registerSpecs} from './impl/aux_route_spec_impl';
 

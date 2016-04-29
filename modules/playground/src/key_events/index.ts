@@ -1,6 +1,6 @@
-import {bootstrap} from 'angular2/platform/browser';
-import {Component} from 'angular2/core';
-import {KeyEventsPlugin} from 'angular2/src/platform/dom/events/key_events';
+import {bootstrap} from '@angular/platform-browser';
+import {Component} from '@angular/core';
+import {KeyEventsPlugin} from '@angular/platform-browser/src/dom/events/key_events';
 
 @Component({
   selector: 'key-events-app',

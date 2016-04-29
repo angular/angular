@@ -1,5 +1,5 @@
-import {isBlank, isPresent} from 'angular2/src/facade/lang';
-import {BaseException} from 'angular2/src/facade/exceptions';
+import {isBlank, isPresent} from '../facade/lang';
+import {BaseException} from '../facade/exceptions';
 import * as o from '../output/output_ast';
 import {CompileView} from './compile_view';
 import {CompilePipeMetadata} from '../compile_metadata';

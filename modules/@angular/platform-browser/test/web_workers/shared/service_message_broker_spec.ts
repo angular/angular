@@ -1,5 +1,4 @@
 import {
-  AsyncTestCompleter,
   inject,
   describe,
   it,
@@ -7,19 +6,18 @@ import {
   expect,
   beforeEach,
   beforeEachProviders,
-  SpyObject,
-  browserDetection
-} from 'angular2/testing_internal';
-import {createPairedMessageBuses} from '../shared/web_worker_test_util';
-import {Serializer, PRIMITIVE} from 'angular2/src/web_workers/shared/serializer';
+} from '@angular/core/testing/testing_internal';
+import {browserDetection} from '@angular/platform-browser/testing';
+import {createPairedMessageBuses} from './web_worker_test_util';
+import {Serializer, PRIMITIVE} from '@angular/platform-browser/src/web_workers/shared/serializer';
 import {
   ServiceMessageBroker,
   ServiceMessageBroker_
-} from 'angular2/src/web_workers/shared/service_message_broker';
-import {ObservableWrapper, PromiseWrapper} from 'angular2/src/facade/async';
-import {provide} from 'angular2/core';
-import {ON_WEB_WORKER} from 'angular2/src/web_workers/shared/api';
-import {RenderStore} from 'angular2/src/web_workers/shared/render_store';
+} from '@angular/platform-browser/src/web_workers/shared/service_message_broker';
+import {ObservableWrapper, PromiseWrapper} from '../../../src/facade/async';
+import {provide} from '@angular/core';
+import {ON_WEB_WORKER} from '@angular/platform-browser/src/web_workers/shared/api';
+import {RenderStore} from '@angular/platform-browser/src/web_workers/shared/render_store';
 
 export function main() {
   const CHANNEL = "UIMessageBroker Test Channel";

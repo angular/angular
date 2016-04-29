@@ -1,16 +1,14 @@
+import {reflector} from '@angular/core';
 import {
   isPresent,
-  isBlank,
-  isString,
-  evalExpression,
   IS_DART,
   FunctionWrapper
-} from 'angular2/src/facade/lang';
-import {ObservableWrapper} from 'angular2/src/facade/async';
+} from '../../src/facade/lang';
+import {ObservableWrapper} from '../../src/facade/async';
+import {BaseException, unimplemented} from '../../src/facade/exceptions';
+import {ListWrapper} from '../../src/facade/collection';
+
 import * as o from './output_ast';
-import {reflector} from 'angular2/src/core/reflection/reflection';
-import {BaseException, unimplemented} from 'angular2/src/facade/exceptions';
-import {MapWrapper, ListWrapper} from 'angular2/src/facade/collection';
 import {debugOutputAstAsDart} from './dart_emitter';
 import {debugOutputAstAsTypeScript} from './ts_emitter';
 

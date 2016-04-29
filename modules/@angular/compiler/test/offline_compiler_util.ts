@@ -1,30 +1,31 @@
-import {print, IS_DART} from 'angular2/src/facade/lang';
-import {OutputEmitter} from 'angular2/src/compiler/output/abstract_emitter';
-import {Console} from 'angular2/src/core/console';
+import {print, IS_DART} from '../src/facade/lang';
+import {OutputEmitter} from '@angular/compiler/src/output/abstract_emitter';
+import {Console} from '../core_private';
 
 import {
   OfflineCompiler,
   NormalizedComponentWithViewDirectives,
   SourceModule
-} from 'angular2/src/compiler/offline_compiler';
-import {TemplateParser} from 'angular2/src/compiler/template_parser';
-import {Parser} from 'angular2/src/compiler/expression_parser/parser';
-import {Lexer} from 'angular2/src/compiler/expression_parser/lexer';
-import {HtmlParser} from 'angular2/src/compiler/html_parser';
-import {StyleCompiler} from 'angular2/src/compiler/style_compiler';
-import {ViewCompiler} from 'angular2/src/compiler/view_compiler/view_compiler';
-import {DirectiveNormalizer} from 'angular2/src/compiler/directive_normalizer';
-import {CompilerConfig} from 'angular2/src/compiler/config';
-import {createOfflineCompileUrlResolver} from 'angular2/src/compiler/url_resolver';
-import {MockSchemaRegistry} from './schema_registry_mock';
-import {MODULE_SUFFIX} from 'angular2/src/compiler/util';
-import {MockXHR} from 'angular2/src/compiler/xhr_mock';
+} from '@angular/compiler/src/offline_compiler';
+import {TemplateParser} from '@angular/compiler/src/template_parser';
+import {Parser} from '@angular/compiler/src/expression_parser/parser';
+import {Lexer} from '@angular/compiler/src/expression_parser/lexer';
+import {HtmlParser} from '@angular/compiler/src/html_parser';
+import {StyleCompiler} from '@angular/compiler/src/style_compiler';
+import {ViewCompiler} from '@angular/compiler/src/view_compiler/view_compiler';
+import {DirectiveNormalizer} from '@angular/compiler/src/directive_normalizer';
+import {CompilerConfig} from '@angular/compiler/src/config';
+import {createOfflineCompileUrlResolver} from '@angular/compiler/src/url_resolver';
+import {MockSchemaRegistry} from '../testing/schema_registry_mock';
+import {MODULE_SUFFIX} from '@angular/compiler/src/util';
+import {MockXHR} from '../testing/xhr_mock';
 
 import {
   CompileDirectiveMetadata,
   CompileTypeMetadata,
   CompileTemplateMetadata
-} from 'angular2/src/compiler/compile_metadata';
+} from '@angular/compiler/src/compile_metadata';
+
 
 export class CompA { user: string; }
 

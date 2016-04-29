@@ -1,14 +1,11 @@
-import {Provider, Injectable, Inject} from 'angular2/src/core/di';
+import {Injectable, Inject, PACKAGE_ROOT_URL} from '@angular/core';
 import {
   StringWrapper,
   isPresent,
   isBlank,
   RegExpWrapper,
-  normalizeBlank
-} from 'angular2/src/facade/lang';
-import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
-import {ListWrapper} from 'angular2/src/facade/collection';
-import {PACKAGE_ROOT_URL} from 'angular2/src/core/application_tokens';
+} from '../src/facade/lang';
+
 
 const _ASSET_SCHEME = 'asset:';
 

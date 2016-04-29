@@ -1,8 +1,8 @@
-import {isBlank, isPresent, getTypeNameForDebugging} from 'angular2/src/facade/lang';
-import {BaseException} from 'angular2/src/facade/exceptions';
-import {ListWrapper} from 'angular2/src/facade/collection';
+import {isBlank, isPresent, getTypeNameForDebugging} from '../../../src/facade/lang';
+import {BaseException} from '../../../src/facade/exceptions';
+import {ListWrapper} from '../../../src/facade/collection';
 import {ChangeDetectorRef} from '../change_detector_ref';
-import {Provider, SkipSelfMetadata, OptionalMetadata, Injectable} from 'angular2/src/core/di';
+import {Provider, SkipSelfMetadata, OptionalMetadata} from '../../di';
 
 /**
  * A strategy for tracking changes over time to an iterable. Used for {@link NgFor} to

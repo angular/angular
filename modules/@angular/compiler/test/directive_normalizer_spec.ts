@@ -1,24 +1,21 @@
 import {
-  AsyncTestCompleter,
   beforeEach,
   ddescribe,
   describe,
-  el,
   expect,
   iit,
   inject,
   it,
   xit,
-  TestComponentBuilder,
   beforeEachProviders
-} from 'angular2/testing_internal';
+} from '@angular/core/testing/testing_internal';
+import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
+import {CompileTypeMetadata, CompileTemplateMetadata} from '@angular/compiler/src/compile_metadata';
+import {ViewEncapsulation} from '@angular/core/src/metadata/view';
 
-import {CompileTypeMetadata, CompileTemplateMetadata} from 'angular2/src/compiler/compile_metadata';
-import {ViewEncapsulation} from 'angular2/src/core/metadata/view';
-
-import {DirectiveNormalizer} from 'angular2/src/compiler/directive_normalizer';
-import {XHR} from 'angular2/src/compiler/xhr';
-import {MockXHR} from 'angular2/src/compiler/xhr_mock';
+import {DirectiveNormalizer} from '@angular/compiler/src/directive_normalizer';
+import {XHR} from '@angular/compiler/src/xhr';
+import {MockXHR} from '@angular/compiler/testing';
 import {TEST_PROVIDERS} from './test_bindings';
 
 export function main() {

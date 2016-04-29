@@ -1,11 +1,11 @@
-import {Injector} from 'angular2/src/core/di';
-import {Type, isPresent, isBlank} from 'angular2/src/facade/lang';
-import {unimplemented} from 'angular2/src/facade/exceptions';
+import {Type, isPresent, isBlank} from '../../src/facade/lang';
+import {unimplemented} from '../../src/facade/exceptions';
 import {ElementRef} from './element_ref';
 import {ViewRef, ViewRef_} from './view_ref';
 import {AppElement} from './element';
 import {ViewUtils} from './view_utils';
 import {ChangeDetectorRef} from '../change_detection/change_detection';
+import {Injector} from '../di/injector';
 
 /**
  * Represents an instance of a Component created via a {@link ComponentFactory}.

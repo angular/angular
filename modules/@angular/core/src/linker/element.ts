@@ -1,16 +1,15 @@
-import {isPresent, isBlank, Type} from 'angular2/src/facade/lang';
-import {ListWrapper} from 'angular2/src/facade/collection';
-import {BaseException} from 'angular2/src/facade/exceptions';
-
-import {Injector} from 'angular2/src/core/di';
+import {isPresent} from '../../src/facade/lang';
+import {ListWrapper} from '../../src/facade/collection';
+import {BaseException} from '../../src/facade/exceptions';
 
 import {AppView} from './view';
 import {ViewType} from './view_type';
 import {ElementRef} from './element_ref';
 
-import {ViewContainerRef, ViewContainerRef_} from './view_container_ref';
+import {ViewContainerRef_} from './view_container_ref';
 
 import {QueryList} from './query_list';
+import {Injector} from '../di/injector';
 
 /**
  * An AppElement is created for elements that have a ViewContainerRef,

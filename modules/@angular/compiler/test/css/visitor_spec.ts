@@ -7,10 +7,10 @@ import {
   expect,
   beforeEach,
   afterEach
-} from 'angular2/testing_internal';
+} from '@angular/core/testing/testing_internal';
 
-import {NumberWrapper, StringWrapper, isPresent} from "angular2/src/facade/lang";
-import {BaseException} from 'angular2/src/facade/exceptions';
+import {NumberWrapper, StringWrapper, isPresent} from '../../src/facade/lang';
+import {BaseException} from '../../src/facade/exceptions';
 
 import {
   CssToken,
@@ -33,9 +33,9 @@ import {
   CssBlockAST,
   CssASTVisitor,
   CssUnknownTokenListAST
-} from 'angular2/src/compiler/css/parser';
+} from '@angular/compiler/src/css/parser';
 
-import {CssLexer} from 'angular2/src/compiler/css/lexer';
+import {CssLexer} from '@angular/compiler/src/css/lexer';
 
 function _assertTokens(tokens, valuesArr) {
   for (var i = 0; i < tokens.length; i++) {

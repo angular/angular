@@ -1,28 +1,24 @@
 import {
-  AsyncTestCompleter,
   beforeEach,
   ddescribe,
   xdescribe,
   describe,
-  el,
-  dispatchEvent,
   expect,
   iit,
   inject,
   beforeEachProviders,
   it,
   xit,
+} from '@angular/core/testing/testing_internal';
+import {
   containsRegexp,
-  stringifyElement,
-  TestComponentBuilder,
   fakeAsync,
   tick,
-  clearPendingTimers,
-  ComponentFixture
-} from 'angular2/testing_internal';
-
-
-import {DOM} from 'angular2/src/platform/dom/dom_adapter';
+  clearPendingTimers
+} from '@angular/core/testing';
+import {TestComponentBuilder, ComponentFixture} from '@angular/compiler/testing';
+import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
+import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {
   Type,
   isPresent,
@@ -31,15 +27,14 @@ import {
   global,
   stringify,
   isBlank,
-  IS_DART
-} from 'angular2/src/facade/lang';
-import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
+} from '../../src/facade/lang';
+import {BaseException, WrappedException} from '../../src/facade/exceptions';
 import {
   PromiseWrapper,
   EventEmitter,
   ObservableWrapper,
   PromiseCompleter,
-} from 'angular2/src/facade/async';
+} from '../../src/facade/async';
 
 import {
   Injector,
@@ -55,17 +50,17 @@ import {
   SkipSelfMetadata,
   OnDestroy,
   ReflectiveInjector
-} from 'angular2/core';
+} from '@angular/core';
 
-import {NgIf, NgFor, AsyncPipe} from 'angular2/common';
+import {NgIf, NgFor, AsyncPipe} from '@angular/common';
 
 import {
   PipeTransform,
   ChangeDetectorRef,
   ChangeDetectionStrategy
-} from 'angular2/src/core/change_detection/change_detection';
+} from '@angular/core/src/change_detection/change_detection';
 
-import {CompilerConfig} from 'angular2/compiler';
+import {CompilerConfig} from '@angular/compiler';
 
 import {
   Directive,
@@ -78,18 +73,20 @@ import {
   Output,
   HostBinding,
   HostListener
-} from 'angular2/src/core/metadata';
+} from '@angular/core/src/metadata';
 
-import {QueryList} from 'angular2/src/core/linker/query_list';
+import {QueryList} from '@angular/core/src/linker/query_list';
 
-import {ViewContainerRef} from 'angular2/src/core/linker/view_container_ref';
-import {EmbeddedViewRef} from 'angular2/src/core/linker/view_ref';
+import {ViewContainerRef} from '@angular/core/src/linker/view_container_ref';
+import {EmbeddedViewRef} from '@angular/core/src/linker/view_ref';
 
-import {ComponentResolver} from 'angular2/src/core/linker/component_resolver';
-import {ElementRef} from 'angular2/src/core/linker/element_ref';
-import {TemplateRef_, TemplateRef} from 'angular2/src/core/linker/template_ref';
+import {ComponentResolver} from '@angular/core/src/linker/component_resolver';
+import {ElementRef} from '@angular/core/src/linker/element_ref';
+import {TemplateRef, TemplateRef_} from '@angular/core/src/linker/template_ref';
 
-import {Renderer} from 'angular2/src/core/render';
+import {Renderer} from '@angular/core/src/render';
+import {IS_DART} from '../../src/facade/lang';
+import {el, dispatchEvent} from '@angular/platform-browser/testing';
 
 const ANCHOR_ELEMENT = /*@ts2dart_const*/ new OpaqueToken('AnchorElement');
 
@@ -167,13 +164,13 @@ function declareTests(isJit: boolean) {
                  fixture.debugElement.componentInstance.ctxProp = 'Initial aria label';
                  fixture.detectChanges();
                  expect(
-                     DOM.getAttribute(fixture.debugElement.children[0].nativeElement, 'aria-label'))
+                     getDOM().getAttribute(fixture.debugElement.children[0].nativeElement, 'aria-label'))
                      .toEqual('Initial aria label');
 
                  fixture.debugElement.componentInstance.ctxProp = 'Changed aria label';
                  fixture.detectChanges();
                  expect(
-                     DOM.getAttribute(fixture.debugElement.children[0].nativeElement, 'aria-label'))
+                     getDOM().getAttribute(fixture.debugElement.children[0].nativeElement, 'aria-label'))
                      .toEqual('Changed aria label');
 
                  async.done();
@@ -190,12 +187,12 @@ function declareTests(isJit: boolean) {
 
                  fixture.debugElement.componentInstance.ctxProp = 'bar';
                  fixture.detectChanges();
-                 expect(DOM.getAttribute(fixture.debugElement.children[0].nativeElement, 'foo'))
+                 expect(getDOM().getAttribute(fixture.debugElement.children[0].nativeElement, 'foo'))
                      .toEqual('bar');
 
                  fixture.debugElement.componentInstance.ctxProp = null;
                  fixture.detectChanges();
-                 expect(DOM.hasAttribute(fixture.debugElement.children[0].nativeElement, 'foo'))
+                 expect(getDOM().hasAttribute(fixture.debugElement.children[0].nativeElement, 'foo'))
                      .toBeFalsy();
 
                  async.done();
@@ -212,12 +209,12 @@ function declareTests(isJit: boolean) {
 
                  fixture.debugElement.componentInstance.ctxProp = '10';
                  fixture.detectChanges();
-                 expect(DOM.getStyle(fixture.debugElement.children[0].nativeElement, 'height'))
+                 expect(getDOM().getStyle(fixture.debugElement.children[0].nativeElement, 'height'))
                      .toEqual('10px');
 
                  fixture.debugElement.componentInstance.ctxProp = null;
                  fixture.detectChanges();
-                 expect(DOM.getStyle(fixture.debugElement.children[0].nativeElement, 'height'))
+                 expect(getDOM().getStyle(fixture.debugElement.children[0].nativeElement, 'height'))
                      .toEqual('');
 
                  async.done();
@@ -272,12 +269,12 @@ function declareTests(isJit: boolean) {
 
                  fixture.debugElement.componentInstance.ctxProp = 'Some <span>HTML</span>';
                  fixture.detectChanges();
-                 expect(DOM.getInnerHTML(fixture.debugElement.children[0].nativeElement))
+                 expect(getDOM().getInnerHTML(fixture.debugElement.children[0].nativeElement))
                      .toEqual('Some <span>HTML</span>');
 
                  fixture.debugElement.componentInstance.ctxProp = 'Some other <div>HTML</div>';
                  fixture.detectChanges();
-                 expect(DOM.getInnerHTML(fixture.debugElement.children[0].nativeElement))
+                 expect(getDOM().getInnerHTML(fixture.debugElement.children[0].nativeElement))
                      .toEqual('Some other <div>HTML</div>');
 
                  async.done();
@@ -480,7 +477,7 @@ function declareTests(isJit: boolean) {
 
                  fixture.detectChanges();
 
-                 var childNodesOfWrapper = DOM.childNodes(fixture.debugElement.nativeElement);
+                 var childNodesOfWrapper = getDOM().childNodes(fixture.debugElement.nativeElement);
                  // 1 template + 2 copies.
                  expect(childNodesOfWrapper.length).toBe(3);
                  expect(childNodesOfWrapper[1]).toHaveText('hello');
@@ -495,9 +492,9 @@ function declareTests(isJit: boolean) {
 
                .createAsync(MyComp)
                .then((fixture) => {
-                 var childNodesOfWrapper = DOM.childNodes(fixture.debugElement.nativeElement);
+                 var childNodesOfWrapper = getDOM().childNodes(fixture.debugElement.nativeElement);
                  expect(childNodesOfWrapper.length).toBe(1);
-                 expect(DOM.isCommentNode(childNodesOfWrapper[0])).toBe(true);
+                 expect(getDOM().isCommentNode(childNodesOfWrapper[0])).toBe(true);
                  async.done();
                });
          }));
@@ -515,7 +512,7 @@ function declareTests(isJit: boolean) {
                .then((fixture) => {
                  fixture.detectChanges();
 
-                 var childNodesOfWrapper = DOM.childNodes(fixture.debugElement.nativeElement);
+                 var childNodesOfWrapper = getDOM().childNodes(fixture.debugElement.nativeElement);
                  // 1 template + 2 copies.
                  expect(childNodesOfWrapper.length).toBe(3);
                  expect(childNodesOfWrapper[1]).toHaveText('hello');
@@ -705,7 +702,7 @@ function declareTests(isJit: boolean) {
                  .then((fixture) => {
                    fixture.detectChanges();
                    // Get the element at index 2, since index 0 is the <template>.
-                   expect(DOM.childNodes(fixture.debugElement.nativeElement)[2])
+                   expect(getDOM().childNodes(fixture.debugElement.nativeElement)[2])
                        .toHaveText("1-hello");
 
                    async.done();
@@ -766,7 +763,7 @@ function declareTests(isJit: boolean) {
                             async.done();
                           })}));
 
-        if (DOM.supportsDOMEvents()) {
+        if (getDOM().supportsDOMEvents()) {
           it("should allow to destroy a component from within a host event handler",
              fakeAsync(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
 
@@ -855,7 +852,7 @@ function declareTests(isJit: boolean) {
                             async.done();
                           })}));
 
-        if (DOM.supportsDOMEvents()) {
+        if (getDOM().supportsDOMEvents()) {
           it('should be checked when an async pipe requests a check',
              fakeAsync(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
                tcb =
@@ -1063,16 +1060,16 @@ function declareTests(isJit: boolean) {
                .then((fixture) => {
                  var tc = fixture.debugElement.children[0];
                  var listener = tc.inject(DirectiveListeningDomEvent);
-                 dispatchEvent(DOM.getGlobalEventTarget("window"), 'domEvent');
+                 dispatchEvent(getDOM().getGlobalEventTarget("window"), 'domEvent');
                  expect(listener.eventTypes).toEqual(['window_domEvent']);
 
                  listener.eventTypes = [];
-                 dispatchEvent(DOM.getGlobalEventTarget("document"), 'domEvent');
+                 dispatchEvent(getDOM().getGlobalEventTarget("document"), 'domEvent');
                  expect(listener.eventTypes).toEqual(['document_domEvent', 'window_domEvent']);
 
                  fixture.destroy();
                  listener.eventTypes = [];
-                 dispatchEvent(DOM.getGlobalEventTarget("body"), 'domEvent');
+                 dispatchEvent(getDOM().getGlobalEventTarget("body"), 'domEvent');
                  expect(listener.eventTypes).toEqual([]);
 
                  async.done();
@@ -1090,7 +1087,7 @@ function declareTests(isJit: boolean) {
                .then((fixture) => {
                  fixture.detectChanges();
 
-                 expect(DOM.getAttribute(fixture.debugElement.children[0].nativeElement, "role"))
+                 expect(getDOM().getAttribute(fixture.debugElement.children[0].nativeElement, "role"))
                      .toEqual("button");
 
                  async.done();
@@ -1120,7 +1117,7 @@ function declareTests(isJit: boolean) {
          }));
 
 
-      if (DOM.supportsDOMEvents()) {
+      if (getDOM().supportsDOMEvents()) {
         it('should support preventing default on render events',
            inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder,
                                                                async) => {
@@ -1136,17 +1133,17 @@ function declareTests(isJit: boolean) {
 
                  .createAsync(MyComp)
                  .then((fixture) => {
-                   var dispatchedEvent = DOM.createMouseEvent('click');
-                   var dispatchedEvent2 = DOM.createMouseEvent('click');
-                   DOM.dispatchEvent(fixture.debugElement.children[0].nativeElement,
+                   var dispatchedEvent = getDOM().createMouseEvent('click');
+                   var dispatchedEvent2 = getDOM().createMouseEvent('click');
+                   getDOM().dispatchEvent(fixture.debugElement.children[0].nativeElement,
                                      dispatchedEvent);
-                   DOM.dispatchEvent(fixture.debugElement.children[1].nativeElement,
+                   getDOM().dispatchEvent(fixture.debugElement.children[1].nativeElement,
                                      dispatchedEvent2);
-                   expect(DOM.isPrevented(dispatchedEvent)).toBe(true);
-                   expect(DOM.isPrevented(dispatchedEvent2)).toBe(false);
-                   expect(DOM.getChecked(fixture.debugElement.children[0].nativeElement))
+                   expect(getDOM().isPrevented(dispatchedEvent)).toBe(true);
+                   expect(getDOM().isPrevented(dispatchedEvent2)).toBe(false);
+                   expect(getDOM().getChecked(fixture.debugElement.children[0].nativeElement))
                        .toBeFalsy();
-                   expect(DOM.getChecked(fixture.debugElement.children[1].nativeElement))
+                   expect(getDOM().getChecked(fixture.debugElement.children[1].nativeElement))
                        .toBeTruthy();
                    async.done();
                  });
@@ -1172,7 +1169,7 @@ function declareTests(isJit: boolean) {
 
                  var listener = tc.inject(DirectiveListeningDomEvent);
                  var listenerother = tc.inject(DirectiveListeningDomEventOther);
-                 dispatchEvent(DOM.getGlobalEventTarget("window"), 'domEvent');
+                 dispatchEvent(getDOM().getGlobalEventTarget("window"), 'domEvent');
                  expect(listener.eventTypes).toEqual(['window_domEvent']);
                  expect(listenerother.eventType).toEqual('other_domEvent');
                  expect(globalCounter).toEqual(1);
@@ -1180,12 +1177,12 @@ function declareTests(isJit: boolean) {
 
                  fixture.debugElement.componentInstance.ctxBoolProp = false;
                  fixture.detectChanges();
-                 dispatchEvent(DOM.getGlobalEventTarget("window"), 'domEvent');
+                 dispatchEvent(getDOM().getGlobalEventTarget("window"), 'domEvent');
                  expect(globalCounter).toEqual(1);
 
                  fixture.debugElement.componentInstance.ctxBoolProp = true;
                  fixture.detectChanges();
-                 dispatchEvent(DOM.getGlobalEventTarget("window"), 'domEvent');
+                 dispatchEvent(getDOM().getGlobalEventTarget("window"), 'domEvent');
                  expect(globalCounter).toEqual(2);
 
                  // need to destroy to release all remaining global event listeners
@@ -1382,7 +1379,7 @@ function declareTests(isJit: boolean) {
                             }))
                .createAsync(MyComp)
                .then((fixture) => {
-                 expect(DOM.querySelectorAll(fixture.debugElement.nativeElement, 'script').length)
+                 expect(getDOM().querySelectorAll(fixture.debugElement.nativeElement, 'script').length)
                      .toEqual(0);
                  async.done();
                });
@@ -1438,7 +1435,7 @@ function declareTests(isJit: boolean) {
 
            PromiseWrapper.catchError(tcb.createAsync(MyComp), (e) => {
              var c = e.context;
-             expect(DOM.nodeName(c.componentRenderElement).toUpperCase()).toEqual("DIV");
+             expect(getDOM().nodeName(c.componentRenderElement).toUpperCase()).toEqual("DIV");
              expect((<Injector>c.injector).get).toBeTruthy();
              async.done();
              return null;
@@ -1457,8 +1454,8 @@ function declareTests(isJit: boolean) {
                throw "Should throw";
              } catch (e) {
                var c = e.context;
-               expect(DOM.nodeName(c.renderNode).toUpperCase()).toEqual("INPUT");
-               expect(DOM.nodeName(c.componentRenderElement).toUpperCase()).toEqual("DIV");
+               expect(getDOM().nodeName(c.renderNode).toUpperCase()).toEqual("INPUT");
+               expect(getDOM().nodeName(c.componentRenderElement).toUpperCase()).toEqual("DIV");
                expect((<Injector>c.injector).get).toBeTruthy();
                expect(c.source).toContain(":0:7");
                expect(c.context).toBe(fixture.debugElement.componentInstance);
@@ -1489,7 +1486,7 @@ function declareTests(isJit: boolean) {
            });
          }));
 
-      if (DOM.supportsDOMEvents()) {  // this is required to use fakeAsync
+      if (getDOM().supportsDOMEvents()) {  // this is required to use fakeAsync
         it('should provide an error context when an error happens in an event handler',
            fakeAsync(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
              tcb = tcb.overrideView(
@@ -1511,8 +1508,8 @@ function declareTests(isJit: boolean) {
                clearPendingTimers();
 
                var c = e.context;
-               expect(DOM.nodeName(c.renderNode).toUpperCase()).toEqual("SPAN");
-               expect(DOM.nodeName(c.componentRenderElement).toUpperCase()).toEqual("DIV");
+               expect(getDOM().nodeName(c.renderNode).toUpperCase()).toEqual("SPAN");
+               expect(getDOM().nodeName(c.componentRenderElement).toUpperCase()).toEqual("DIV");
                expect((<Injector>c.injector).get).toBeTruthy();
                expect(c.context).toBe(fixture.debugElement.componentInstance);
                expect(c.references["local"]).toBeDefined();
@@ -1660,7 +1657,7 @@ function declareTests(isJit: boolean) {
                  fixture.debugElement.componentInstance.ctxProp = "TITLE";
                  fixture.detectChanges();
 
-                 var el = DOM.querySelector(fixture.debugElement.nativeElement, "span");
+                 var el = getDOM().querySelector(fixture.debugElement.nativeElement, "span");
                  expect(isBlank(el.title) || el.title == '').toBeTruthy();
 
                  async.done();
@@ -1679,7 +1676,7 @@ function declareTests(isJit: boolean) {
                  fixture.debugElement.componentInstance.ctxProp = "TITLE";
                  fixture.detectChanges();
 
-                 var el = DOM.querySelector(fixture.debugElement.nativeElement, "span");
+                 var el = getDOM().querySelector(fixture.debugElement.nativeElement, "span");
                  expect(el.title).toEqual("TITLE");
 
                  async.done();
@@ -1704,7 +1701,7 @@ function declareTests(isJit: boolean) {
                  fixture.debugElement.componentInstance.ctxProp = 'hello';
                  fixture.detectChanges();
 
-                 expect(DOM.getInnerHTML(fixture.debugElement.nativeElement))
+                 expect(getDOM().getInnerHTML(fixture.debugElement.nativeElement))
                      .toContain('ng-reflect-dir-prop="hello"');
                  async.done();
                });
@@ -1720,7 +1717,7 @@ function declareTests(isJit: boolean) {
                  fixture.debugElement.componentInstance.ctxBoolProp = true;
                  fixture.detectChanges();
 
-                 expect(DOM.getInnerHTML(fixture.debugElement.nativeElement))
+                 expect(getDOM().getInnerHTML(fixture.debugElement.nativeElement))
                      .toContain('"ng\-reflect\-ng\-if"\: "true"');
                  async.done();
                });
@@ -1810,13 +1807,13 @@ function declareTests(isJit: boolean) {
                  dir.myAttr = "aaa";
 
                  fixture.detectChanges();
-                 expect(DOM.getOuterHTML(fixture.debugElement.children[0].nativeElement))
+                 expect(getDOM().getOuterHTML(fixture.debugElement.children[0].nativeElement))
                      .toContain('my-attr="aaa"');
                  async.done();
                });
          }));
 
-      if (DOM.supportsDOMEvents()) {
+      if (getDOM().supportsDOMEvents()) {
         it('should support event decorators',
            fakeAsync(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
              tcb =
@@ -1849,7 +1846,7 @@ function declareTests(isJit: boolean) {
                    fixture.detectChanges();
                    var dir = fixture.debugElement.children[0].inject(DirectiveWithPropDecorators);
                    var native = fixture.debugElement.children[0].nativeElement;
-                   DOM.dispatchEvent(native, DOM.createMouseEvent('click'));
+                   getDOM().dispatchEvent(native, getDOM().createMouseEvent('click'));
 
                    expect(dir.target).toBe(native);
                    async.done();
@@ -1874,7 +1871,7 @@ function declareTests(isJit: boolean) {
     });
 
 
-    if (DOM.supportsDOMEvents()) {
+    if (getDOM().supportsDOMEvents()) {
       describe('svg', () => {
         it('should support svg elements',
            inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder,
@@ -1884,20 +1881,20 @@ function declareTests(isJit: boolean) {
                  .createAsync(MyComp)
                  .then((fixture) => {
                    var el = fixture.debugElement.nativeElement;
-                   var svg = DOM.childNodes(el)[0];
-                   var use = DOM.childNodes(svg)[0];
-                   expect(DOM.getProperty(<Element>svg, 'namespaceURI'))
+                   var svg = getDOM().childNodes(el)[0];
+                   var use = getDOM().childNodes(svg)[0];
+                   expect(getDOM().getProperty(<Element>svg, 'namespaceURI'))
                        .toEqual('http://www.w3.org/2000/svg');
-                   expect(DOM.getProperty(<Element>use, 'namespaceURI'))
+                   expect(getDOM().getProperty(<Element>use, 'namespaceURI'))
                        .toEqual('http://www.w3.org/2000/svg');
 
                    if (!IS_DART) {
-                     var firstAttribute = DOM.getProperty(<Element>use, 'attributes')[0];
+                     var firstAttribute = getDOM().getProperty(<Element>use, 'attributes')[0];
                      expect(firstAttribute.name).toEqual('xlink:href');
                      expect(firstAttribute.namespaceURI).toEqual('http://www.w3.org/1999/xlink');
                    } else {
                      // For Dart where '_Attr' has no instance getter 'namespaceURI'
-                     expect(DOM.getOuterHTML(<HTMLElement>use)).toContain('xmlns:xlink');
+                     expect(getDOM().getOuterHTML(<HTMLElement>use)).toContain('xmlns:xlink');
                    }
 
                    async.done();
@@ -1914,8 +1911,8 @@ function declareTests(isJit: boolean) {
              tcb.overrideView(SomeCmp, new ViewMetadata({template: '<svg:use xlink:href="#id" />'}))
                  .createAsync(SomeCmp)
                  .then((fixture) => {
-                   let useEl = DOM.firstChild(fixture.debugElement.nativeElement);
-                   expect(DOM.getAttributeNS(useEl, 'http://www.w3.org/1999/xlink', 'href'))
+                   let useEl = getDOM().firstChild(fixture.debugElement.nativeElement);
+                   expect(getDOM().getAttributeNS(useEl, 'http://www.w3.org/1999/xlink', 'href'))
                        .toEqual('#id');
                    async.done();
                  });
@@ -1929,18 +1926,18 @@ function declareTests(isJit: boolean) {
                  .createAsync(SomeCmp)
                  .then((fixture) => {
                    let cmp = fixture.debugElement.componentInstance;
-                   let useEl = DOM.firstChild(fixture.debugElement.nativeElement);
+                   let useEl = getDOM().firstChild(fixture.debugElement.nativeElement);
 
                    cmp.value = "#id";
                    fixture.detectChanges();
 
-                   expect(DOM.getAttributeNS(useEl, 'http://www.w3.org/1999/xlink', 'href'))
+                   expect(getDOM().getAttributeNS(useEl, 'http://www.w3.org/1999/xlink', 'href'))
                        .toEqual('#id');
 
                    cmp.value = null;
                    fixture.detectChanges();
 
-                   expect(DOM.hasAttributeNS(useEl, 'http://www.w3.org/1999/xlink', 'href'))
+                   expect(getDOM().hasAttributeNS(useEl, 'http://www.w3.org/1999/xlink', 'href'))
                        .toEqual(false);
 
                    async.done();
@@ -1964,7 +1961,7 @@ class SimpleImperativeViewComponent {
 
   constructor(self: ElementRef, renderer: Renderer) {
     var hostElement = self.nativeElement;
-    DOM.appendChild(hostElement, el('hello imp view'));
+    getDOM().appendChild(hostElement, el('hello imp view'));
   }
 }
 
@@ -2510,7 +2507,7 @@ class SomeImperativeViewport {
       this.view = this.vc.createEmbeddedView(this.templateRef);
       var nodes = this.view.rootNodes;
       for (var i = 0; i < nodes.length; i++) {
-        DOM.appendChild(this.anchor, nodes[i]);
+        getDOM().appendChild(this.anchor, nodes[i]);
       }
     }
   }
@@ -2527,14 +2524,14 @@ class ComponentWithoutView {
 @Directive({selector: '[no-duplicate]'})
 class DuplicateDir {
   constructor(elRef: ElementRef) {
-    DOM.setText(elRef.nativeElement, DOM.getText(elRef.nativeElement) + 'noduplicate');
+    getDOM().setText(elRef.nativeElement, getDOM().getText(elRef.nativeElement) + 'noduplicate');
   }
 }
 
 @Directive({selector: '[no-duplicate]'})
 class OtherDuplicateDir {
   constructor(elRef: ElementRef) {
-    DOM.setText(elRef.nativeElement, DOM.getText(elRef.nativeElement) + 'othernoduplicate');
+    getDOM().setText(elRef.nativeElement, getDOM().getText(elRef.nativeElement) + 'othernoduplicate');
   }
 }
 

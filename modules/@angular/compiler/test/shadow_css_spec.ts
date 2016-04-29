@@ -5,13 +5,11 @@ import {
   expect,
   ddescribe,
   iit,
-  SpyObject,
-  el,
-  normalizeCSS
-} from 'angular2/testing_internal';
-import {ShadowCss, processRules, CssRule} from 'angular2/src/compiler/shadow_css';
+} from '@angular/core/testing/testing_internal';
+import {ShadowCss, processRules, CssRule} from '@angular/compiler/src/shadow_css';
 
-import {RegExpWrapper, StringWrapper, isPresent} from 'angular2/src/facade/lang';
+import {RegExpWrapper, StringWrapper, isPresent} from '../src/facade/lang';
+import {normalizeCSS} from '@angular/platform-browser/testing';
 
 export function main() {
   describe('ShadowCss', function() {

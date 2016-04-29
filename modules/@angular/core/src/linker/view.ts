@@ -1,13 +1,8 @@
 import {
   ListWrapper,
-  MapWrapper,
-  Map,
   StringMapWrapper,
-  isListLikeIterable,
-  areIterablesEqual
-} from 'angular2/src/facade/collection';
+} from '../../src/facade/collection';
 
-import {Injector} from 'angular2/src/core/di';
 import {AppElement} from './element';
 import {
   assertionsEnabled,
@@ -19,15 +14,10 @@ import {
   stringify,
   isPrimitive,
   isString
-} from 'angular2/src/facade/lang';
+} from '../../src/facade/lang';
 
-import {ObservableWrapper} from 'angular2/src/facade/async';
-import {
-  Renderer,
-  RootRenderer,
-  RenderComponentType,
-  RenderDebugInfo
-} from 'angular2/src/core/render/api';
+import {ObservableWrapper} from '../../src/facade/async';
+import {Renderer, RootRenderer, RenderComponentType, RenderDebugInfo} from '../render/api';
 import {ViewRef_} from './view_ref';
 
 import {ViewType} from './view_type';
@@ -42,9 +32,7 @@ import {
   ChangeDetectorRef,
   ChangeDetectionStrategy,
   ChangeDetectorState,
-  isDefaultChangeDetectionStrategy,
-  devModeEqual
-} from 'angular2/src/core/change_detection/change_detection';
+} from '../change_detection/change_detection';
 import {wtfCreateScope, wtfLeave, WtfScopeFn} from '../profile/profile';
 import {
   ExpressionChangedAfterItHasBeenCheckedException,
@@ -53,6 +41,7 @@ import {
 } from './exceptions';
 import {StaticNodeDebugInfo, DebugContext} from './debug_context';
 import {ElementInjector} from './element_injector';
+import {Injector} from '../di/injector';
 
 var _scope_check: WtfScopeFn = wtfCreateScope(`AppView#check(ascii id)`);
 

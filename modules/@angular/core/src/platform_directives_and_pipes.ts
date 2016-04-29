@@ -1,4 +1,4 @@
-import {OpaqueToken} from "angular2/src/core/di";
+import {OpaqueToken} from './di';
 
 /**
  * A token that can be provided when bootstraping an application to make an array of directives
@@ -7,7 +7,7 @@ import {OpaqueToken} from "angular2/src/core/di";
  * ### Example
  *
  * ```typescript
- * import {PLATFORM_DIRECTIVES} from 'angular2/core';
+ * import {PLATFORM_DIRECTIVES} from '@angular/core';
  * import {OtherDirective} from './myDirectives';
  *
  * @Component({
@@ -34,7 +34,7 @@ export const PLATFORM_DIRECTIVES: OpaqueToken =
  * ### Example
  *
  * ```typescript
- * import {PLATFORM_PIPES} from 'angular2/core';
+ * import {PLATFORM_PIPES} from '@angular/core';
  * import {OtherPipe} from './myPipe';
  *
  * @Component({

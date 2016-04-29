@@ -1,5 +1,4 @@
 import {
-  AsyncTestCompleter,
   afterEach,
   beforeEach,
   ddescribe,
@@ -9,19 +8,18 @@ import {
   inject,
   it,
   xit,
-  SpyObject
-} from 'angular2/testing_internal';
-import {ObservableWrapper} from 'angular2/src/facade/async';
-import {BrowserXhr} from 'angular2/src/http/backends/browser_xhr';
-import {XHRConnection, XHRBackend} from 'angular2/src/http/backends/xhr_backend';
-import {provide, Injector, ReflectiveInjector} from 'angular2/core';
-import {Request} from 'angular2/src/http/static_request';
-import {Response} from 'angular2/src/http/static_response';
-import {Headers} from 'angular2/src/http/headers';
-import {Map} from 'angular2/src/facade/collection';
-import {RequestOptions, BaseRequestOptions} from 'angular2/src/http/base_request_options';
-import {BaseResponseOptions, ResponseOptions} from 'angular2/src/http/base_response_options';
-import {ResponseType} from 'angular2/src/http/enums';
+} from '@angular/core/testing/testing_internal';
+import {AsyncTestCompleter, SpyObject} from '@angular/core/testing/testing_internal';
+import {BrowserXhr} from '../../src/backends/browser_xhr';
+import {XHRConnection, XHRBackend} from '../../src/backends/xhr_backend';
+import {provide, Injector, ReflectiveInjector} from '@angular/core';
+import {Request} from '../../src/static_request';
+import {Response} from '../../src/static_response';
+import {Headers} from '../../src/headers';
+import {Map} from '../../src/facade/collection';
+import {RequestOptions, BaseRequestOptions} from '../../src/base_request_options';
+import {BaseResponseOptions, ResponseOptions} from '../../src/base_response_options';
+import {ResponseType} from '../../src/enums';
 
 var abortSpy: any;
 var sendSpy: any;

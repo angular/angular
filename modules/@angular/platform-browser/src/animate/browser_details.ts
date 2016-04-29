@@ -1,6 +1,6 @@
-import {Injectable} from 'angular2/src/core/di';
-import {Math} from 'angular2/src/facade/math';
-import {DOM} from 'angular2/src/platform/dom/dom_adapter';
+import {Injectable} from '@angular/core';
+import {Math} from '../../src/facade/math';
+import {getDOM} from '../dom/dom_adapter';
 
 @Injectable()
 export class BrowserDetails {
@@ -13,17 +13,17 @@ export class BrowserDetails {
    * time, Chrome and Opera seem to be the only browsers that include this.
    */
   doesElapsedTimeIncludesDelay(): void {
-    var div = DOM.createElement('div');
-    DOM.setAttribute(div, 'style', `position: absolute; top: -9999px; left: -9999px; width: 1px;
+    var div = getDOM().createElement('div');
+    getDOM().setAttribute(div, 'style', `position: absolute; top: -9999px; left: -9999px; width: 1px;
       height: 1px; transition: all 1ms linear 1ms;`);
     // Firefox requires that we wait for 2 frames for some reason
     this.raf((timestamp: any) => {
-      DOM.on(div, 'transitionend', (event: any) => {
+      getDOM().on(div, 'transitionend', (event: any) => {
         var elapsed = Math.round(event.elapsedTime * 1000);
         this.elapsedTimeIncludesDelay = elapsed == 2;
-        DOM.remove(div);
+        getDOM().remove(div);
       });
-      DOM.setStyle(div, 'width', '2px');
+      getDOM().setStyle(div, 'width', '2px');
     }, 2);
   }
 
@@ -38,7 +38,7 @@ class RafQueue {
   constructor(public callback: Function, public frames: number) { this._raf(); }
   private _raf() {
     this.currentFrameId =
-        DOM.requestAnimationFrame((timestamp: number) => this._nextFrame(timestamp));
+        getDOM().requestAnimationFrame((timestamp: number) => this._nextFrame(timestamp));
   }
   private _nextFrame(timestamp: number) {
     this.frames--;
@@ -49,7 +49,7 @@ class RafQueue {
     }
   }
   cancel() {
-    DOM.cancelAnimationFrame(this.currentFrameId);
+    getDOM().cancelAnimationFrame(this.currentFrameId);
     this.currentFrameId = null;
   }
 }

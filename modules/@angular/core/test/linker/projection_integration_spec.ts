@@ -1,26 +1,19 @@
 import {
-  AsyncTestCompleter,
   beforeEach,
   ddescribe,
   xdescribe,
   describe,
-  el,
-  dispatchEvent,
   expect,
   iit,
   inject,
   beforeEachProviders,
   it,
   xit,
-  containsRegexp,
-  stringifyElement,
-  TestComponentBuilder,
-  ComponentFixture,
-  fakeAsync,
-  tick
-} from 'angular2/testing_internal';
+} from '@angular/core/testing/testing_internal';
+import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
+import {TestComponentBuilder, ComponentFixture} from '@angular/compiler/testing';
 
-import {DOM} from 'angular2/src/platform/dom/dom_adapter';
+import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
 import {
   bind,
@@ -33,11 +26,11 @@ import {
   ViewContainerRef,
   ViewEncapsulation,
   ViewMetadata
-} from 'angular2/core';
+} from '@angular/core';
 import {
   By,
-} from 'angular2/platform/common_dom';
-import {getAllDebugNodes} from 'angular2/src/core/debug/debug_node';
+} from '@angular/platform-browser/src/dom/debug/by';
+import {getAllDebugNodes} from '@angular/core/src/debug/debug_node';
 
 export function main() {
   describe('projection', () => {
@@ -473,7 +466,7 @@ export function main() {
              });
        }));
 
-    if (DOM.supportsNativeShadowDOM()) {
+    if (getDOM().supportsNativeShadowDOM()) {
       it('should support native content projection and isolate styles per component',
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            tcb.overrideView(MainComp, new ViewMetadata({
@@ -483,7 +476,7 @@ export function main() {
                             }))
                .createAsync(MainComp)
                .then((main) => {
-                 var childNodes = DOM.childNodes(main.debugElement.nativeElement);
+                 var childNodes = getDOM().childNodes(main.debugElement.nativeElement);
                  expect(childNodes[0]).toHaveText('div {color: red}SIMPLE1(A)');
                  expect(childNodes[1]).toHaveText('div {color: blue}SIMPLE2(B)');
                  main.destroy();
@@ -492,7 +485,7 @@ export function main() {
          }));
     }
 
-    if (DOM.supportsDOMEvents()) {
+    if (getDOM().supportsDOMEvents()) {
       it('should support non emulated styles',
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            tcb.overrideView(MainComp, new ViewMetadata({
@@ -504,12 +497,12 @@ export function main() {
                .createAsync(MainComp)
                .then((main) => {
                  var mainEl = main.debugElement.nativeElement;
-                 var div1 = DOM.firstChild(mainEl);
-                 var div2 = DOM.createElement('div');
-                 DOM.setAttribute(div2, 'class', 'redStyle');
-                 DOM.appendChild(mainEl, div2);
-                 expect(DOM.getComputedStyle(div1).color).toEqual('rgb(255, 0, 0)');
-                 expect(DOM.getComputedStyle(div2).color).toEqual('rgb(255, 0, 0)');
+                 var div1 = getDOM().firstChild(mainEl);
+                 var div2 = getDOM().createElement('div');
+                 getDOM().setAttribute(div2, 'class', 'redStyle');
+                 getDOM().appendChild(mainEl, div2);
+                 expect(getDOM().getComputedStyle(div1).color).toEqual('rgb(255, 0, 0)');
+                 expect(getDOM().getComputedStyle(div2).color).toEqual('rgb(255, 0, 0)');
                  async.done();
                });
          }));
@@ -524,11 +517,11 @@ export function main() {
                .createAsync(MainComp)
                .then((main) => {
                  var mainEl = main.debugElement.nativeElement;
-                 var div1 = DOM.firstChild(mainEl);
-                 var div2 = DOM.createElement('div');
-                 DOM.appendChild(mainEl, div2);
-                 expect(DOM.getComputedStyle(div1).color).toEqual('rgb(255, 0, 0)');
-                 expect(DOM.getComputedStyle(div2).color).toEqual('rgb(0, 0, 0)');
+                 var div1 = getDOM().firstChild(mainEl);
+                 var div2 = getDOM().createElement('div');
+                 getDOM().appendChild(mainEl, div2);
+                 expect(getDOM().getComputedStyle(div1).color).toEqual('rgb(255, 0, 0)');
+                 expect(getDOM().getComputedStyle(div2).color).toEqual('rgb(0, 0, 0)');
                  async.done();
                });
          }));
@@ -567,7 +560,7 @@ export function main() {
              .createAsync(MainComp)
              .then((main) => {
                main.detectChanges();
-               expect(DOM.getInnerHTML(main.debugElement.nativeElement))
+               expect(getDOM().getInnerHTML(main.debugElement.nativeElement))
                    .toEqual('<cmp-a><cmp-b><cmp-d><d>cmp-d</d></cmp-d></cmp-b>' +
                             '<cmp-c><c>cmp-c</c></cmp-c></cmp-a>');
                async.done();
@@ -583,7 +576,7 @@ export function main() {
              .createAsync(MainComp)
              .then((main) => {
                main.detectChanges();
-               expect(DOM.getInnerHTML(main.debugElement.nativeElement))
+               expect(getDOM().getInnerHTML(main.debugElement.nativeElement))
                    .toEqual('<cmp-a1>a1<cmp-b11>b11</cmp-b11><cmp-b12>b12</cmp-b12></cmp-a1>' +
                             '<cmp-a2>a2<cmp-b21>b21</cmp-b21><cmp-b22>b22</cmp-b22></cmp-a2>');
                async.done();
@@ -788,7 +781,7 @@ class Tree {
 class CmpD {
   tagName: string;
   constructor(elementRef: ElementRef) {
-    this.tagName = DOM.tagName(elementRef.nativeElement).toLowerCase();
+    this.tagName = getDOM().tagName(elementRef.nativeElement).toLowerCase();
   }
 }
 
@@ -797,7 +790,7 @@ class CmpD {
 class CmpC {
   tagName: string;
   constructor(elementRef: ElementRef) {
-    this.tagName = DOM.tagName(elementRef.nativeElement).toLowerCase();
+    this.tagName = getDOM().tagName(elementRef.nativeElement).toLowerCase();
   }
 }
 

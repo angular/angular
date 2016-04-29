@@ -1,16 +1,13 @@
 import {
-  AsyncTestCompleter,
   beforeEach,
   ddescribe,
   describe,
-  el,
   expect,
   iit,
   inject,
   it,
   xit,
-  TestComponentBuilder
-} from 'angular2/testing_internal';
+} from '@angular/core/testing/testing_internal';
 
 import {
   CompileDirectiveMetadata,
@@ -22,10 +19,10 @@ import {
   CompileIdentifierMetadata,
   CompileFactoryMetadata,
   CompileTokenMetadata
-} from 'angular2/src/compiler/compile_metadata';
-import {ViewEncapsulation} from 'angular2/src/core/metadata/view';
-import {ChangeDetectionStrategy} from 'angular2/src/core/change_detection';
-import {LifecycleHooks} from 'angular2/src/core/metadata/lifecycle_hooks';
+} from '@angular/compiler/src/compile_metadata';
+import {ViewEncapsulation} from '@angular/core/src/metadata/view';
+import {ChangeDetectionStrategy} from '@angular/core/src/change_detection';
+import {LifecycleHooks} from '@angular/core/src/metadata/lifecycle_hooks';
 
 export function main() {
   describe('CompileMetadata', () => {

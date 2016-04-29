@@ -1,4 +1,4 @@
-import {Component, Attribute, Directive, Pipe} from 'angular2/core';
+import {Component, Attribute, Directive, Pipe} from '@angular/core';
 
 var CustomDirective: Function;
 

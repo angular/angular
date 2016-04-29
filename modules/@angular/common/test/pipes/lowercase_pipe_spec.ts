@@ -7,9 +7,9 @@ import {
   expect,
   beforeEach,
   afterEach
-} from 'angular2/testing_internal';
+} from '@angular/core/testing/testing_internal';
 
-import {LowerCasePipe} from 'angular2/common';
+import {LowerCasePipe} from '@angular/common';
 
 export function main() {
   describe("LowerCasePipe", () => {

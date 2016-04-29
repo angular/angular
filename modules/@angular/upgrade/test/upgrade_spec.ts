@@ -1,5 +1,4 @@
 import {
-  AsyncTestCompleter,
   beforeEach,
   ddescribe,
   describe,
@@ -9,10 +8,8 @@ import {
   it,
   xdescribe,
   xit,
-} from 'angular2/testing_internal';
-import {DOM} from 'angular2/src/platform/dom/dom_adapter';
-
-import {global} from 'angular2/src/facade/lang';
+} from '@angular/core/testing/testing_internal';
+import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
 import {
   Component,
   Class,
@@ -21,9 +18,9 @@ import {
   ApplicationRef,
   provide,
   Testability,
-} from 'angular2/core';
-import {UpgradeAdapter} from 'angular2/upgrade';
-import * as angular from 'angular2/src/upgrade/angular_js';
+} from '@angular/core';
+import {UpgradeAdapter} from '@angular/upgrade';
+import * as angular from '@angular/upgrade/src/angular_js';
 
 export function main() {
   describe('adapter: ng1 to ng2', () => {
@@ -674,7 +671,7 @@ export function main() {
 
            setTimeout(() => {
              bootstrapResumed = true;
-             (<any>global).angular.resumeBootstrap();
+             (<any>window).angular.resumeBootstrap();
            }, 100);
          }));
 

@@ -7,21 +7,17 @@ import {
   expect,
   beforeEach,
   afterEach,
-  el,
-  AsyncTestCompleter,
-  fakeAsync,
-  tick,
   inject,
-  SpyObject
-} from 'angular2/testing_internal';
-import {Type} from 'angular2/src/facade/lang';
+} from '@angular/core/testing/testing_internal';
+import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
+import {Type} from '@angular/core';
 import {SpyChangeDetectorRef} from './spies';
 import {
   ApplicationRef_,
   ApplicationRef,
   PLATFORM_CORE_PROVIDERS,
   APPLICATION_CORE_PROVIDERS
-} from "angular2/src/core/application_ref";
+} from '@angular/core/src/application_ref';
 import {
   Injector,
   Provider,
@@ -35,16 +31,16 @@ import {
   disposePlatform,
   ComponentResolver,
   ChangeDetectorRef
-} from "angular2/core";
-import {Console} from 'angular2/src/core/console';
-import {BaseException} from 'angular2/src/facade/exceptions';
-import {PromiseWrapper, PromiseCompleter, TimerWrapper} from "angular2/src/facade/async";
+} from '@angular/core';
+import {Console} from '@angular/core/src/console';
+import {BaseException} from '../src/facade/exceptions';
+import {PromiseWrapper, PromiseCompleter, TimerWrapper} from '../src/facade/async';
 import {
   ComponentFactory,
   ComponentRef_,
   ComponentRef
-} from 'angular2/src/core/linker/component_factory';
-import {ExceptionHandler} from 'angular2/src/facade/exception_handler';
+} from '@angular/core/src/linker/component_factory';
+import {ExceptionHandler} from '../src/facade/exception_handler';
 
 export function main() {
   describe("bootstrap", () => {
@@ -66,8 +62,8 @@ export function main() {
       var appInjector = ReflectiveInjector.resolveAndCreate(
           [
             APPLICATION_CORE_PROVIDERS,
-            new Provider(Console, {useValue: new _MockConsole()}),
-            new Provider(ExceptionHandler, {useValue: new ExceptionHandler(errorLogger, false)}),
+            {provide: Console, useValue: new _MockConsole()},
+            {provide: ExceptionHandler, useValue: new ExceptionHandler(errorLogger, false)},
             new Provider(ComponentResolver,
                          {useValue: new _MockComponentResolver(someCompFactory)}),
             providers
@@ -117,8 +113,8 @@ export function main() {
              initializerDone = true;
            }, 1);
            var app = createApplication(
-               [new Provider(APP_INITIALIZER, {useValue: () => completer.promise, multi: true})]);
-           coreLoadAndBootstrap(app.injector, MyComp)
+               [{provide: APP_INITIALIZER, useValue: () => completer.promise, multi: true}]);
+           coreLoadAndBootstrap(app.injector, MyComp6)
                .then((compRef) => {
                  expect(initializerDone).toBe(true);
                  async.done();
@@ -142,7 +138,7 @@ export function main() {
 }
 
 @Component({selector: 'my-comp', template: ''})
-class MyComp {
+class MyComp6 {
 }
 
 class _ArrayLogger {

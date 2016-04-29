@@ -1,4 +1,4 @@
-import {StringWrapper, normalizeBool, isBlank} from 'angular2/src/facade/lang';
+import {isBlank} from '../../src/facade/lang';
 
 /**
  * Describes the current state of the change detector.

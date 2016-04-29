@@ -1,10 +1,18 @@
-import {isBlank, Type} from 'angular2/src/facade/lang';
+import {isBlank, Type} from '../../src/facade/lang';
 
-export var DOM: DomAdapter = null;
+var _DOM: DomAdapter = null;
+
+export function getDOM(){
+  return _DOM;
+}
+
+export function setDOM(adapter:DomAdapter){
+  _DOM = adapter;
+}
 
 export function setRootDomAdapter(adapter: DomAdapter) {
-  if (isBlank(DOM)) {
-    DOM = adapter;
+  if (isBlank(_DOM)) {
+    _DOM = adapter;
   }
 }
 
@@ -13,6 +21,7 @@ export function setRootDomAdapter(adapter: DomAdapter) {
  * Provides DOM operations in an environment-agnostic way.
  */
 export abstract class DomAdapter {
+  public xhrType: Type = null;
   abstract hasProperty(element, name: string): boolean;
   abstract setProperty(el: Element, name: string, value: any);
   abstract getProperty(el: Element, name: string): any;
@@ -24,7 +33,7 @@ export abstract class DomAdapter {
   abstract logGroupEnd();
 
   /** @deprecated */
-  abstract getXHR(): Type;
+  getXHR(): Type { return this.xhrType; }
 
   /**
    * Maps attribute names to their corresponding property names for cases

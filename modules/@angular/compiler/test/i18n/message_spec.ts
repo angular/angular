@@ -1,5 +1,4 @@
 import {
-  AsyncTestCompleter,
   beforeEach,
   ddescribe,
   describe,
@@ -9,9 +8,9 @@ import {
   it,
   xdescribe,
   xit
-} from 'angular2/testing_internal';
+} from '@angular/core/testing/testing_internal';
 
-import {Message, id} from 'angular2/src/i18n/message';
+import {Message, id} from '@angular/compiler/src/i18n/message';
 
 export function main() {
   describe('Message', () => {

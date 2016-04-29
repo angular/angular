@@ -1,5 +1,6 @@
-import {isBlank, isPresent, StringWrapper} from 'angular2/src/facade/lang';
-import {ListWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
+import {isBlank, isPresent, StringWrapper} from '../../src/facade/lang';
+import {ListWrapper, StringMapWrapper} from '../../src/facade/collection';
+
 import {EventHandlerVars, ViewProperties} from './constants';
 
 import * as o from '../output/output_ast';

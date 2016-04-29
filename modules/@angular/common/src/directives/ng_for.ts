@@ -7,14 +7,12 @@ import {
   ViewContainerRef,
   TemplateRef,
   EmbeddedViewRef,
-  TrackByFn
-} from 'angular2/core';
-import {isPresent, isBlank, stringify, getTypeNameForDebugging} from 'angular2/src/facade/lang';
-import {
+  TrackByFn,
   DefaultIterableDiffer,
   CollectionChangeRecord
-} from "../../core/change_detection/differs/default_iterable_differ";
-import {BaseException} from "../../facade/exceptions";
+} from '@angular/core';
+import {isPresent, isBlank, getTypeNameForDebugging} from '../../src/facade/lang';
+import {BaseException} from '../../src/facade/exceptions';
 
 export class NgForRow {
   constructor(public $implicit: any, public index: number, public count: number) {}

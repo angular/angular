@@ -1,12 +1,12 @@
-import {Injectable} from 'angular2/src/core/di';
-import {XHR} from 'angular2/src/compiler/xhr';
+import {Injectable} from '@angular/core/src/di';
+import {XHR} from '@angular/compiler/src/xhr';
 import {
   FnArg,
   UiArguments,
   ClientMessageBroker,
   ClientMessageBrokerFactory
-} from 'angular2/src/web_workers/shared/client_message_broker';
-import {XHR_CHANNEL} from 'angular2/src/web_workers/shared/messaging_api';
+} from '../shared/client_message_broker';
+import {XHR_CHANNEL} from '../shared/messaging_api';
 
 /**
  * Implementation of compiler/xhr that relays XHR requests to the UI side where they are sent

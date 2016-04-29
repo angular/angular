@@ -1,8 +1,8 @@
-import {XHR} from 'angular2/src/compiler/xhr';
-import {WebWorkerXHRImpl} from 'angular2/src/web_workers/worker/xhr_impl';
-import {WebWorkerRootRenderer} from 'angular2/src/web_workers/worker/renderer';
-import {print} from 'angular2/src/facade/lang';
-import {RootRenderer} from 'angular2/src/core/render/api';
+import {XHR} from '@angular/compiler';
+import {WebWorkerXHRImpl} from '../web_workers/worker/xhr_impl';
+import {WebWorkerRootRenderer} from '../web_workers/worker/renderer';
+import {print} from '../../src/facade/lang';
+import {RootRenderer} from '@angular/core/src/render/api';
 import {
   PLATFORM_DIRECTIVES,
   PLATFORM_PIPES,
@@ -10,19 +10,20 @@ import {
   APPLICATION_COMMON_PROVIDERS,
   PLATFORM_COMMON_PROVIDERS,
   OpaqueToken
-} from 'angular2/core';
-import {COMMON_DIRECTIVES, COMMON_PIPES, FORM_PROVIDERS} from "angular2/common";
+} from '@angular/core';
+import {COMMON_DIRECTIVES, COMMON_PIPES, FORM_PROVIDERS} from '@angular/common';
 import {
   ClientMessageBrokerFactory,
   ClientMessageBrokerFactory_
-} from 'angular2/src/web_workers/shared/client_message_broker';
+} from '../web_workers/shared/client_message_broker';
 import {
   ServiceMessageBrokerFactory,
   ServiceMessageBrokerFactory_
-} from 'angular2/src/web_workers/shared/service_message_broker';
-import {Serializer} from "angular2/src/web_workers/shared/serializer";
-import {ON_WEB_WORKER} from "angular2/src/web_workers/shared/api";
-import {RenderStore} from 'angular2/src/web_workers/shared/render_store';
+} from '../web_workers/shared/service_message_broker';
+import {Serializer} from '../web_workers/shared/serializer';
+import {ON_WEB_WORKER} from '../web_workers/shared/api';
+import {Provider} from '@angular/core/src/di';
+import {RenderStore} from '../web_workers/shared/render_store';
 
 class PrintLogger {
   log = print;

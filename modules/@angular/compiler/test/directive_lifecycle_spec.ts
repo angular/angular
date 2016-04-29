@@ -1,20 +1,16 @@
 import {
-  AsyncTestCompleter,
   beforeEach,
   xdescribe,
   ddescribe,
   describe,
-  el,
   expect,
   iit,
   inject,
   it,
-  SpyObject,
-  proxy
-} from 'angular2/testing_internal';
+} from '@angular/core/testing/testing_internal';
 
-import {hasLifecycleHook} from 'angular2/src/compiler/directive_lifecycle_reflector';
-import {LifecycleHooks} from 'angular2/src/core/metadata/lifecycle_hooks';
+import {hasLifecycleHook} from '@angular/compiler/src/directive_lifecycle_reflector';
+import {LifecycleHooks} from '@angular/core/src/metadata/lifecycle_hooks';
 
 export function main() {
   describe('Create DirectiveMetadata', () => {

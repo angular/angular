@@ -2,6 +2,12 @@
 
 set -e -o pipefail
 
+# Setup environment
+cd `dirname $0`
+source ../ci-lite/env.sh
+
+
+
 # Setup and start Sauce Connect for your TravisCI build
 # This script requires your .travis.yml to include the following two private env variables:
 # SAUCE_USERNAME
@@ -12,7 +18,7 @@ set -e -o pipefail
 # before_script:
 #   - curl https://gist.github.com/santiycr/5139565/raw/sauce_connect_setup.sh | bash
 
-CONNECT_URL="https://saucelabs.com/downloads/sc-4.3.11-linux.tar.gz"
+CONNECT_URL="https://saucelabs.com/downloads/sc-${SAUCE_CONNECT_VERSION}-linux.tar.gz"
 CONNECT_DIR="/tmp/sauce-connect-$RANDOM"
 CONNECT_DOWNLOAD="sc-latest-linux.tar.gz"
 

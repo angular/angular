@@ -7,9 +7,7 @@
  * to read information
  * from the form DOM elements.
  *
- * This module is not included in the `angular2` module; you must import the forms module
- * explicitly.
- *
+ * Forms providers are not included in default providers; you must import these providers explicitly.
  */
 export {AbstractControl, Control, ControlGroup, ControlArray} from './forms/model';
 
@@ -43,7 +41,7 @@ export {
 export {FormBuilder} from './forms/form_builder';
 import {FormBuilder} from './forms/form_builder';
 import {RadioControlRegistry} from './forms/directives/radio_control_value_accessor';
-import {Type} from 'angular2/src/facade/lang';
+import {Type} from '@angular/core';
 
 /**
  * Shorthand set of providers used for building Angular forms.

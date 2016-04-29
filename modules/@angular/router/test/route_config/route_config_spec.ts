@@ -1,5 +1,4 @@
 import {
-  AsyncTestCompleter,
   beforeEach,
   ddescribe,
   describe,
@@ -9,21 +8,19 @@ import {
   it,
   xdescribe,
   xit,
-} from 'angular2/testing_internal';
+} from '@angular/core/testing/testing_internal';
 
-import {bootstrap} from 'angular2/platform/browser';
-import {APP_BASE_HREF, LocationStrategy} from 'angular2/platform/common';
-import {Component, Directive} from 'angular2/src/core/metadata';
-import {DOM} from 'angular2/src/platform/dom/dom_adapter';
-import {Console} from 'angular2/src/core/console';
-import {provide} from 'angular2/core';
-import {DOCUMENT} from 'angular2/src/platform/dom/dom_tokens';
-import {Type, IS_DART} from 'angular2/src/facade/lang';
-
-import {ROUTER_PROVIDERS, Router, RouteConfig, ROUTER_DIRECTIVES} from 'angular2/router';
-
-import {ExceptionHandler} from 'angular2/src/facade/exceptions';
-import {MockLocationStrategy} from 'angular2/src/mock/mock_location_strategy';
+import {bootstrap} from '@angular/platform-browser-dynamic';
+import {APP_BASE_HREF, LocationStrategy} from '@angular/common';
+import {Component, Directive} from '@angular/core/src/metadata';
+import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
+import {Console} from '@angular/core/src/console';
+import {provide} from '@angular/core';
+import {DOCUMENT} from '@angular/platform-browser/src/dom/dom_tokens';
+import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
+import {ROUTER_PROVIDERS, Router, RouteConfig, ROUTER_DIRECTIVES} from '@angular/router';
+import {ExceptionHandler} from '@angular/core';
+import {MockLocationStrategy} from '@angular/common/testing';
 
 class _ArrayLogger {
   res: any[] = [];
@@ -42,9 +39,9 @@ export function main() {
   describe('RouteConfig with POJO arguments', () => {
     var fakeDoc, el, testBindings;
     beforeEach(() => {
-      fakeDoc = DOM.createHtmlDocument();
-      el = DOM.createElement('app-cmp', fakeDoc);
-      DOM.appendChild(fakeDoc.body, el);
+      fakeDoc = getDOM().createHtmlDocument();
+      el = getDOM().createElement('app-cmp', fakeDoc);
+      getDOM().appendChild(fakeDoc.body, el);
       var logger = new _ArrayLogger();
       var exceptionHandler = new ExceptionHandler(logger, false);
       testBindings = [

@@ -1,5 +1,4 @@
 import {
-  AsyncTestCompleter,
   beforeEach,
   ddescribe,
   describe,
@@ -8,9 +7,9 @@ import {
   inject,
   it,
   xit
-} from 'angular2/testing_internal';
-import {BaseRequestOptions, RequestOptions} from 'angular2/src/http/base_request_options';
-import {RequestMethod} from 'angular2/src/http/enums';
+} from '@angular/core/testing/testing_internal';
+import {BaseRequestOptions, RequestOptions} from '../src/base_request_options';
+import {RequestMethod} from '../src/enums';
 
 export function main() {
   describe('BaseRequestOptions', () => {

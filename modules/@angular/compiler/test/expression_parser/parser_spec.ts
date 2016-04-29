@@ -1,9 +1,9 @@
-import {ddescribe, describe, it, xit, iit, expect, beforeEach} from 'angular2/testing_internal';
-import {isBlank, isPresent} from 'angular2/src/facade/lang';
-import {Parser} from 'angular2/src/compiler/expression_parser/parser';
+import {ddescribe, describe, it, xit, iit, expect, beforeEach} from '@angular/core/testing';
+import {isBlank, isPresent} from '../../src/facade/lang';
+import {Parser} from '@angular/compiler/src/expression_parser/parser';
 import {Unparser} from './unparser';
-import {Lexer} from 'angular2/src/compiler/expression_parser/lexer';
-import {BindingPipe, LiteralPrimitive, AST} from 'angular2/src/compiler/expression_parser/ast';
+import {Lexer} from '@angular/compiler/src/expression_parser/lexer';
+import {BindingPipe, LiteralPrimitive, AST} from '@angular/compiler/src/expression_parser/ast';
 
 export function main() {
   function createParser() { return new Parser(new Lexer()); }

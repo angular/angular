@@ -1,6 +1,11 @@
-import {Injectable, Provider, provide} from 'angular2/src/core/di';
+import {Injectable, Provider, provide} from '@angular/core';
 
-import {StringWrapper, RegExpWrapper, isBlank, isPresent} from 'angular2/src/facade/lang';
+import {
+  StringWrapper,
+  RegExpWrapper,
+  isBlank,
+  isPresent
+} from '../src/facade/lang';
 
 import {
   HtmlAstVisitor,

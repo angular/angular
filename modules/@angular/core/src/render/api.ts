@@ -1,6 +1,6 @@
-import {unimplemented} from 'angular2/src/facade/exceptions';
-import {ViewEncapsulation} from 'angular2/src/core/metadata/view';
-import {Injector, Injectable} from 'angular2/src/core/di';
+import {unimplemented} from '../../src/facade/exceptions';
+import {ViewEncapsulation} from '../metadata/view';
+import {Injector} from '../di/injector';
 
 export class RenderComponentType {
   constructor(public id: string, public templateUrl: string, public slotCount: number,

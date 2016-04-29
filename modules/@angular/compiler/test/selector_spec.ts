@@ -1,7 +1,8 @@
-import {describe, it, expect, beforeEach, ddescribe, iit, xit, el} from 'angular2/testing_internal';
-import {DOM} from 'angular2/src/platform/dom/dom_adapter';
-import {SelectorMatcher, CssSelector} from 'angular2/src/compiler/selector';
-import {ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
+import {describe, it, expect, beforeEach, ddescribe, iit, xit} from '@angular/core/testing';
+import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
+import {SelectorMatcher} from '@angular/compiler/src/selector';
+import {CssSelector} from '@angular/compiler/src/selector';
+import {el} from '@angular/platform-browser/testing';
 
 export function main() {
   describe('SelectorMatcher', () => {
@@ -94,7 +95,7 @@ export function main() {
 
       var elementSelector = new CssSelector();
       var element = el('<div attr></div>');
-      var empty = DOM.getAttribute(element, 'attr');
+      var empty = getDOM().getAttribute(element, 'attr');
       elementSelector.addAttribute('some-decor', empty);
       matcher.match(elementSelector, selectableCollector);
       expect(matched).toEqual([s1[0], 1]);

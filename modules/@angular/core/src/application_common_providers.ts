@@ -1,4 +1,4 @@
-import {Type} from 'angular2/src/facade/lang';
+import {Type} from '../src/facade/lang';
 import {APP_ID_RANDOM_PROVIDER} from './application_tokens';
 import {APPLICATION_CORE_PROVIDERS} from './application_ref';
 import {
@@ -7,7 +7,7 @@ import {
   KeyValueDiffers,
   defaultKeyValueDiffers
 } from './change_detection/change_detection';
-import {ViewUtils} from "./linker/view_utils";
+import {ViewUtils} from './linker/view_utils';
 import {ComponentResolver, ReflectorComponentResolver} from './linker/component_resolver';
 import {DynamicComponentLoader, DynamicComponentLoader_} from './linker/dynamic_component_loader';
 

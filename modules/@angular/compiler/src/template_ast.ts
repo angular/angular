@@ -1,11 +1,9 @@
 import {AST} from './expression_parser/ast';
-import {isPresent} from 'angular2/src/facade/lang';
+import {isPresent} from '../src/facade/lang';
 import {
   CompileDirectiveMetadata,
   CompileTokenMetadata,
   CompileProviderMetadata,
-  CompileTokenMap,
-  CompileQueryMetadata
 } from './compile_metadata';
 import {ParseSourceSpan} from './parse_util';
 

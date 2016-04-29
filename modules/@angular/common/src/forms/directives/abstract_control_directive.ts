@@ -1,6 +1,6 @@
 import {AbstractControl} from '../model';
-import {isPresent} from 'angular2/src/facade/lang';
-import {unimplemented} from 'angular2/src/facade/exceptions';
+import {isPresent} from '../../../src/facade/lang';
+import {unimplemented} from '../../../src/facade/exceptions';
 
 /**
  * Base class for control directives.

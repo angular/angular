@@ -1,5 +1,5 @@
-import {forwardRef, Attribute, Directive} from 'angular2/core';
-import {NumberWrapper} from 'angular2/src/facade/lang';
+import {forwardRef, Attribute, Directive} from '@angular/core';
+import {NumberWrapper} from '../../facade/lang';
 import {Validators, NG_VALIDATORS} from '../validators';
 import {AbstractControl} from '../model';
 import * as modelModule from '../model';

@@ -1,13 +1,18 @@
-import {isBlank, isPresent, Type, stringify, looseIdentical} from 'angular2/src/facade/lang';
-import {ListWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
-import {BaseException} from 'angular2/src/facade/exceptions';
+import {
+  isBlank,
+  isPresent,
+  looseIdentical
+} from '../../src/facade/lang';
+import {ListWrapper, StringMapWrapper} from '../../src/facade/collection';
+import {BaseException} from '../../src/facade/exceptions';
 import {AppElement} from './element';
 import {ExpressionChangedAfterItHasBeenCheckedException} from './exceptions';
-import {devModeEqual, uninitialized} from 'angular2/src/core/change_detection/change_detection';
-import {Inject, Injectable} from 'angular2/src/core/di';
-import {RootRenderer, RenderComponentType, Renderer} from 'angular2/src/core/render/api';
-import {APP_ID} from 'angular2/src/core/application_tokens';
-import {ViewEncapsulation} from 'angular2/src/core/metadata/view';
+import {devModeEqual} from '../change_detection/change_detection';
+import {RootRenderer, RenderComponentType, Renderer} from '../render/api';
+import {APP_ID} from '../application_tokens';
+import {ViewEncapsulation} from '../metadata/view';
+import {Injectable, Inject} from '../di/decorators';
+import {uninitialized} from "../change_detection/change_detection_util";
 
 @Injectable()
 export class ViewUtils {

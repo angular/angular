@@ -1,5 +1,6 @@
-import {isBlank, isPresent, Json} from 'angular2/src/facade/lang';
-import {Injectable, PipeTransform, WrappedValue, Pipe} from 'angular2/core';
+import {Injectable, PipeTransform, WrappedValue, Pipe} from '@angular/core';
+import {Json} from '../../src/facade/lang';
+
 
 /**
  * Transforms any input value using `JSON.stringify`. Useful for debugging.

@@ -1,5 +1,5 @@
-import {stringify, Type, isBlank} from 'angular2/src/facade/lang';
-import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
+import {stringify, isBlank} from '../../src/facade/lang';
+import {BaseException} from '../../src/facade/exceptions';
 import {resolveForwardRef} from './forward_ref';
 
 /**

@@ -1,5 +1,6 @@
-import {Component} from 'angular2/core';
-import {bootstrap, ELEMENT_PROBE_PROVIDERS} from 'angular2/platform/browser';
+import {Component} from '@angular/core';
+import {ELEMENT_PROBE_PROVIDERS} from '@angular/platform-browser';
+import {bootstrap} from '@angular/platform-browser-dynamic';
 
 @Component({selector: 'my-component'})
 class MyAppComponent {

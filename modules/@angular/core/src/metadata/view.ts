@@ -1,4 +1,4 @@
-import {Type} from 'angular2/src/facade/lang';
+import {Type} from '../../src/facade/lang';
 
 /**
  * Defines template and style encapsulation options available for Component's {@link View}.

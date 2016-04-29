@@ -1,9 +1,9 @@
-import {Injectable} from 'angular2/src/core/di';
-import {Type, isBlank, stringify} from 'angular2/src/facade/lang';
-import {BaseException} from 'angular2/src/facade/exceptions';
-import {PromiseWrapper} from 'angular2/src/facade/async';
-import {reflector} from 'angular2/src/core/reflection/reflection';
+import {Type, isBlank, stringify} from '../../src/facade/lang';
+import {BaseException} from '../../src/facade/exceptions';
+import {PromiseWrapper} from '../../src/facade/async';
+import {reflector} from '../reflection/reflection';
 import {ComponentFactory} from './component_factory';
+import {Injectable} from '../di/decorators';
 
 /**
  * Low-level service for loading {@link ComponentFactory}s, which

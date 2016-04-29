@@ -7,27 +7,26 @@ import {
   Injectable,
   ViewMetadata,
   ElementRef,
-  EmbeddedViewRef,
   ChangeDetectorRef,
-  provide,
   NgZone,
-  NgZoneError
-} from 'angular2/core';
-import {DirectiveResolver, ViewResolver} from 'angular2/compiler';
+  NgZoneError,
+  DebugElement,
+  getDebugNode
+} from '@angular/core';
+import {DirectiveResolver, ViewResolver} from '../index';
 
-import {BaseException} from 'angular2/src/facade/exceptions';
-import {Type, isPresent, isBlank, IS_DART} from 'angular2/src/facade/lang';
-import {PromiseWrapper, ObservableWrapper, PromiseCompleter} from 'angular2/src/facade/async';
-import {ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
+import {BaseException} from '../src/facade/exceptions';
+import {Type, isPresent, isBlank, IS_DART} from '../src/facade/lang';
+import {PromiseWrapper, ObservableWrapper, PromiseCompleter} from '../src/facade/async';
+import {ListWrapper, MapWrapper} from '../src/facade/collection';
 
-import {el} from './utils';
-
-import {DOCUMENT} from 'angular2/src/platform/dom/dom_tokens';
-import {DOM} from 'angular2/src/platform/dom/dom_adapter';
-
-import {DebugNode, DebugElement, getDebugNode} from 'angular2/src/core/debug/debug_node';
-
-import {tick} from './fake_async';
+import {tick} from '@angular/core/testing';
+/**
+ * An abstract class for inserting the root test component element in a platform independent way.
+ */
+export class TestComponentRenderer {
+  insertRootElement(rootElementId: string) {}
+}
 
 export var ComponentFixtureAutoDetect = new OpaqueToken("ComponentFixtureAutoDetect");
 export var ComponentFixtureNoNgZone = new OpaqueToken("ComponentFixtureNoNgZone");
@@ -337,15 +336,9 @@ export class TestComponentBuilder {
 
   private _create<C>(ngZone: NgZone, componentFactory: ComponentFactory<C>): ComponentFixture<C> {
     let rootElId = `root${_nextRootElementId++}`;
-    let rootEl = el(`<div id="${rootElId}"></div>`);
-    let doc = this._injector.get(DOCUMENT);
+    var testComponentRenderer: TestComponentRenderer = this._injector.get(TestComponentRenderer);
+    testComponentRenderer.insertRootElement(rootElId);
 
-    // TODO(juliemr): can/should this be optional?
-    let oldRoots = DOM.querySelectorAll(doc, '[id^=root]');
-    for (let i = 0; i < oldRoots.length; i++) {
-      DOM.remove(oldRoots[i]);
-    }
-    DOM.appendChild(doc.body, rootEl);
     var componentRef = componentFactory.create(this._injector, [], `#${rootElId}`);
     let autoDetect: boolean = this._injector.get(ComponentFixtureAutoDetect, false);
     return new ComponentFixture<any /*C*/>(componentRef, ngZone, autoDetect);

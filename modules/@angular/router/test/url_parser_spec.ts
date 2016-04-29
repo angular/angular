@@ -1,5 +1,4 @@
 import {
-  AsyncTestCompleter,
   describe,
   it,
   iit,
@@ -7,10 +6,9 @@ import {
   expect,
   inject,
   beforeEach,
-  SpyObject
-} from 'angular2/testing_internal';
+} from '@angular/core/testing/testing_internal';
 
-import {UrlParser, Url} from 'angular2/src/router/url_parser';
+import {UrlParser, Url} from '../../router/src/url_parser';
 
 
 export function main() {

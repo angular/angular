@@ -1,5 +1,4 @@
 import {
-  AsyncTestCompleter,
   beforeEach,
   ddescribe,
   describe,
@@ -8,8 +7,8 @@ import {
   inject,
   it,
   xit
-} from 'angular2/testing_internal';
-import {URLSearchParams} from 'angular2/src/http/url_search_params';
+} from '@angular/core/testing/testing_internal';
+import {URLSearchParams} from '../src/url_search_params';
 
 export function main() {
   describe('URLSearchParams', () => {

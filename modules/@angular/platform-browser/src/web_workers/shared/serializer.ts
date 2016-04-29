@@ -1,11 +1,9 @@
-import {Type, isArray, isPresent, serializeEnum, deserializeEnum} from "angular2/src/facade/lang";
-import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
-
-import {Map, StringMapWrapper, MapWrapper} from "angular2/src/facade/collection";
-import {RenderComponentType} from "angular2/src/core/render/api";
-import {Injectable} from "angular2/src/core/di";
-import {RenderStore} from 'angular2/src/web_workers/shared/render_store';
-import {ViewEncapsulation, VIEW_ENCAPSULATION_VALUES} from 'angular2/src/core/metadata/view';
+import {Type, isArray, isPresent, serializeEnum} from '../../../src/facade/lang';
+import {BaseException} from '../../../src/facade/exceptions';
+import {Map, StringMapWrapper, MapWrapper} from '../../../src/facade/collection';
+import {RenderComponentType, Injectable, ViewEncapsulation} from '@angular/core';
+import {VIEW_ENCAPSULATION_VALUES} from '../../../core_private';
+import {RenderStore} from './render_store';
 import {LocationType} from './serialized_types';
 
 // PRIMITIVE is any type that does not need to be serialized (string, number, boolean)

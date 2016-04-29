@@ -1,4 +1,5 @@
-import {runBenchmark, verifyNoBrowserErrors} from 'angular2/src/testing/perf_util';
+import {verifyNoBrowserErrors} from '@angular/testing/src/e2e_util';
+import {runBenchmark} from '@angular/testing/src/perf_util';
 
 describe('ng2 compiler benchmark', function() {
 

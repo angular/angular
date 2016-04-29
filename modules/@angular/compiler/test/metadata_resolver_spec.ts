@@ -8,14 +8,13 @@ import {
   expect,
   beforeEach,
   afterEach,
-  AsyncTestCompleter,
   inject,
   beforeEachProviders
-} from 'angular2/testing_internal';
+} from '@angular/core/testing/testing_internal';
 
-import {IS_DART, stringify} from 'angular2/src/facade/lang';
-import {CompileMetadataResolver} from 'angular2/src/compiler/metadata_resolver';
-import {LifecycleHooks, LIFECYCLE_HOOKS_VALUES} from 'angular2/src/core/metadata/lifecycle_hooks';
+import {IS_DART, stringify} from '../src/facade/lang';
+import {CompileMetadataResolver} from '../src/metadata_resolver';
+import {LifecycleHooks, LIFECYCLE_HOOKS_VALUES} from '@angular/core/src/metadata/lifecycle_hooks';
 import {
   Component,
   Directive,
@@ -31,11 +30,11 @@ import {
   AfterViewChecked,
   SimpleChange,
   provide
-} from 'angular2/core';
+} from '@angular/core';
 
 import {TEST_PROVIDERS} from './test_bindings';
-import {MODULE_SUFFIX} from 'angular2/src/compiler/util';
-import {PLATFORM_DIRECTIVES} from 'angular2/src/core/platform_directives_and_pipes';
+import {MODULE_SUFFIX} from '@angular/compiler/src/util';
+import {PLATFORM_DIRECTIVES} from '@angular/core/src/platform_directives_and_pipes';
 import {MalformedStylesComponent} from './metadata_resolver_fixture';
 
 export function main() {

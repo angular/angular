@@ -1,2 +1,2 @@
-export * from 'angular2/src/mock/mock_location_strategy';
-export * from 'angular2/src/mock/location_mock';
+// future location of testing for router.
+export var __nothing__;

@@ -8,10 +8,10 @@ import {
   ComponentFactory,
   ReflectiveInjector,
   OnInit
-} from 'angular2/core';
+} from '@angular/core';
 import {RouterOutletMap} from '../router';
 import {DEFAULT_OUTLET_NAME} from '../constants';
-import {isPresent, isBlank} from 'angular2/src/facade/lang';
+import {isPresent, isBlank} from '@angular/facade/src/lang';
 
 @Directive({selector: 'router-outlet'})
 export class RouterOutlet {

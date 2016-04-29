@@ -3,23 +3,23 @@ import {
   RootRenderer,
   RenderComponentType,
   RenderDebugInfo
-} from 'angular2/src/core/render/api';
+} from '@angular/core/src/render/api';
 import {
   ClientMessageBroker,
   ClientMessageBrokerFactory,
   FnArg,
   UiArguments
-} from "angular2/src/web_workers/shared/client_message_broker";
-import {isPresent, isBlank, print} from "angular2/src/facade/lang";
-import {ListWrapper} from 'angular2/src/facade/collection';
-import {Injectable} from "angular2/src/core/di";
-import {RenderStore} from 'angular2/src/web_workers/shared/render_store';
-import {RENDERER_CHANNEL} from 'angular2/src/web_workers/shared/messaging_api';
-import {Serializer, RenderStoreObject} from 'angular2/src/web_workers/shared/serializer';
-import {EVENT_CHANNEL} from 'angular2/src/web_workers/shared/messaging_api';
-import {MessageBus} from 'angular2/src/web_workers/shared/message_bus';
-import {EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
-import {ViewEncapsulation} from 'angular2/src/core/metadata/view';
+} from '../shared/client_message_broker';
+import {isPresent, isBlank, print} from '../../../src/facade/lang';
+import {ListWrapper} from '../../../src/facade/collection';
+import {Injectable} from '@angular/core/src/di';
+import {RenderStore} from '../shared/render_store';
+import {RENDERER_CHANNEL} from '../shared/messaging_api';
+import {Serializer, RenderStoreObject} from '../shared/serializer';
+import {EVENT_CHANNEL} from '../shared/messaging_api';
+import {MessageBus} from '../shared/message_bus';
+import {ObservableWrapper} from '../../../src/facade/async';
+import {ViewEncapsulation} from '@angular/core';
 import {deserializeGenericEvent} from './event_deserializer';
 
 @Injectable()

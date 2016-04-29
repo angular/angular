@@ -8,7 +8,7 @@ import {
   TEST_ROUTER_PROVIDERS
 } from './util';
 
-import {beforeEachProviders, describe} from 'angular2/testing_internal';
+import {beforeEachProviders, describe} from '@angular/core/testing/testing_internal';
 
 import {registerSpecs} from './impl/async_route_spec_impl';
 

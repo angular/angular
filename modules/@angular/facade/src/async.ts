@@ -1,5 +1,5 @@
-import {global, noop} from 'angular2/src/facade/lang';
-export {PromiseWrapper, PromiseCompleter} from 'angular2/src/facade/promise';
+import {global, noop} from './lang';
+export {PromiseWrapper, PromiseCompleter} from './promise';
 
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';

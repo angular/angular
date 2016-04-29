@@ -5,20 +5,19 @@
 import * as ts from 'typescript';
 import * as path from 'path';
 
-import * as compiler from 'angular2/compiler';
+import * as compiler from '@angular/compiler';
 import {StaticReflector} from './static_reflector';
-import {CompileMetadataResolver} from 'angular2/src/compiler/metadata_resolver';
-import {HtmlParser} from 'angular2/src/compiler/html_parser';
-import {DirectiveNormalizer} from 'angular2/src/compiler/directive_normalizer';
-import {Lexer} from 'angular2/src/compiler/expression_parser/lexer';
-import {Parser} from 'angular2/src/compiler/expression_parser/parser';
-import {TemplateParser} from 'angular2/src/compiler/template_parser';
-import {DomElementSchemaRegistry} from 'angular2/src/compiler/schema/dom_element_schema_registry';
-import {StyleCompiler} from 'angular2/src/compiler/style_compiler';
-import {ViewCompiler} from 'angular2/src/compiler/view_compiler/view_compiler';
-import {TypeScriptEmitter} from 'angular2/src/compiler/output/ts_emitter';
-import {RouterLinkTransform} from 'angular2/src/router/directives/router_link_transform';
-import {Parse5DomAdapter} from 'angular2/platform/server';
+import {CompileMetadataResolver} from '@angular/compiler/src/metadata_resolver';
+import {HtmlParser} from '@angular/compiler/src/html_parser';
+import {DirectiveNormalizer} from '@angular/compiler/src/directive_normalizer';
+import {Lexer} from '@angular/compiler/src/expression_parser/lexer';
+import {Parser} from '@angular/compiler/src/expression_parser/parser';
+import {TemplateParser} from '@angular/compiler/src/template_parser';
+import {DomElementSchemaRegistry} from '@angular/compiler/src/schema/dom_element_schema_registry';
+import {StyleCompiler} from '@angular/compiler/src/style_compiler';
+import {ViewCompiler} from '@angular/compiler/src/view_compiler/view_compiler';
+import {TypeScriptEmitter} from '@angular/compiler/src/output/ts_emitter';
+import {Parse5DomAdapter} from '@angular/platform-server';
 
 import {MetadataCollector} from 'ts-metadata-collector';
 import {NodeReflectorHost} from './reflector_host';
@@ -125,7 +124,7 @@ export class CodeGenerator {
     const normalizer = new DirectiveNormalizer(xhr, urlResolver, htmlParser);
     const parser = new Parser(new Lexer());
     const tmplParser = new TemplateParser(parser, new DomElementSchemaRegistry(), htmlParser,
-                                          /*console*/ null, [new RouterLinkTransform(parser)]);
+                                          /*console*/ null, []);
     const offlineCompiler = new compiler.OfflineCompiler(
         normalizer, tmplParser, new StyleCompiler(urlResolver),
         new ViewCompiler(new compiler.CompilerConfig(true, true, true)), new TypeScriptEmitter());

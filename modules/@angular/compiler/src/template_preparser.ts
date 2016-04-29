@@ -1,5 +1,6 @@
+import {isBlank} from '../src/facade/lang';
+
 import {HtmlElementAst} from './html_ast';
-import {isBlank, isPresent} from 'angular2/src/facade/lang';
 import {splitNsName} from './html_tags';
 
 const NG_CONTENT_SELECT_ATTR = 'select';

@@ -1,6 +1,6 @@
 import {
   ListWrapper,
-} from 'angular2/src/facade/collection';
+} from '../../src/facade/collection';
 import {
   TemplateAst,
   TemplateAstVisitor,
@@ -17,8 +17,6 @@ import {
   DirectiveAst,
   BoundDirectivePropertyAst,
   templateVisitAll,
-  PropertyBindingType,
-  ProviderAst
 } from '../template_ast';
 import {
   bindRenderText,

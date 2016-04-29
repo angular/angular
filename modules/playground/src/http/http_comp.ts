@@ -1,5 +1,5 @@
-import {Component} from 'angular2/core';
-import {Http, Response} from 'angular2/http';
+import {Component} from '@angular/core';
+import {Http, Response} from '@angular/http/http';
 import 'rxjs/add/operator/map';
 
 @Component({

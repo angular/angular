@@ -1,19 +1,18 @@
 import {
-  AsyncTestCompleter,
   beforeEach,
   ddescribe,
   describe,
-  el,
   expect,
   iit,
   inject,
   it,
   xit,
-  TestComponentBuilder,
-} from 'angular2/testing_internal';
+} from '@angular/core/testing/testing_internal';
+import {TestComponentBuilder} from '@angular/compiler/testing';
+import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
 
-import {isPresent} from 'angular2/src/facade/lang';
-import {ObservableWrapper} from 'angular2/src/facade/async';
+import {isPresent} from '../../src/facade/lang';
+import {ObservableWrapper} from '../../src/facade/async';
 
 import {
   Component,
@@ -32,9 +31,9 @@ import {
   AfterViewInit,
   AfterContentChecked,
   AfterViewChecked
-} from 'angular2/core';
-import {NgIf, NgFor} from 'angular2/common';
-import {asNativeElements, ViewContainerRef} from 'angular2/core';
+} from '@angular/core';
+import {NgIf, NgFor} from '@angular/common';
+import {asNativeElements, ViewContainerRef} from '@angular/core';
 
 export function main() {
   describe('Query API', () => {
@@ -47,8 +46,8 @@ export function main() {
                           '</div></needs-query>' +
                           '<div text="4"></div>';
 
-           tcb.overrideTemplate(MyComp, template)
-               .createAsync(MyComp)
+           tcb.overrideTemplate(MyComp0, template)
+               .createAsync(MyComp0)
                .then((view) => {
                  view.detectChanges();
 
@@ -63,8 +62,8 @@ export function main() {
            var template =
                '<needs-content-children #q><div text="foo"></div></needs-content-children>';
 
-           tcb.overrideTemplate(MyComp, template)
-               .createAsync(MyComp)
+           tcb.overrideTemplate(MyComp0, template)
+               .createAsync(MyComp0)
                .then((view) => {
                  view.detectChanges();
 
@@ -84,20 +83,20 @@ export function main() {
            var template =
                '<needs-content-child #q><div *ngIf="shouldShow" text="foo"></div></needs-content-child>';
 
-           tcb.overrideTemplate(MyComp, template)
-               .createAsync(MyComp)
+           tcb.overrideTemplate(MyComp0, template)
+               .createAsync(MyComp0)
                .then((view) => {
                  view.debugElement.componentInstance.shouldShow = true;
                  view.detectChanges();
 
                  var q: NeedsContentChild = view.debugElement.children[0].references['q'];
 
-                 expect(q.log).toEqual([["setter", "foo"], ["init", "foo"], ["check", "foo"]]);
+                 expect(q.logs).toEqual([["setter", "foo"], ["init", "foo"], ["check", "foo"]]);
 
                  view.debugElement.componentInstance.shouldShow = false;
                  view.detectChanges();
 
-                 expect(q.log).toEqual([
+                 expect(q.logs).toEqual([
                    ["setter", "foo"],
                    ["init", "foo"],
                    ["check", "foo"],
@@ -113,18 +112,18 @@ export function main() {
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            var template = '<needs-view-child #q></needs-view-child>';
 
-           tcb.overrideTemplate(MyComp, template)
-               .createAsync(MyComp)
+           tcb.overrideTemplate(MyComp0, template)
+               .createAsync(MyComp0)
                .then((view) => {
                  view.detectChanges();
                  var q: NeedsViewChild = view.debugElement.children[0].references['q'];
 
-                 expect(q.log).toEqual([["setter", "foo"], ["init", "foo"], ["check", "foo"]]);
+                 expect(q.logs).toEqual([["setter", "foo"], ["init", "foo"], ["check", "foo"]]);
 
                  q.shouldShow = false;
                  view.detectChanges();
 
-                 expect(q.log).toEqual([
+                 expect(q.logs).toEqual([
                    ["setter", "foo"],
                    ["init", "foo"],
                    ["check", "foo"],
@@ -139,30 +138,30 @@ export function main() {
       it('should contain the first view child accross embedded views',
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            var template = '<needs-view-child #q></needs-view-child>';
-           tcb.overrideTemplate(MyComp, template)
+           tcb.overrideTemplate(MyComp0, template)
                .overrideTemplate(
                    NeedsViewChild,
                    '<div *ngIf="true"><div *ngIf="shouldShow" text="foo"></div></div><div *ngIf="shouldShow2" text="bar"></div>')
-               .createAsync(MyComp)
+               .createAsync(MyComp0)
                .then((view) => {
                  view.detectChanges();
                  var q: NeedsViewChild = view.debugElement.children[0].references['q'];
 
-                 expect(q.log).toEqual([["setter", "foo"], ["init", "foo"], ["check", "foo"]]);
+                 expect(q.logs).toEqual([["setter", "foo"], ["init", "foo"], ["check", "foo"]]);
 
                  q.shouldShow = false;
                  q.shouldShow2 = true;
-                 q.log = [];
+                 q.logs = [];
                  view.detectChanges();
 
-                 expect(q.log).toEqual([["setter", "bar"], ["check", "bar"]]);
+                 expect(q.logs).toEqual([["setter", "bar"], ["check", "bar"]]);
 
                  q.shouldShow = false;
                  q.shouldShow2 = false;
-                 q.log = [];
+                 q.logs = [];
                  view.detectChanges();
 
-                 expect(q.log).toEqual([["setter", null], ["check", null]]);
+                 expect(q.logs).toEqual([["setter", null], ["check", null]]);
 
                  async.done();
                });
@@ -176,8 +175,8 @@ export function main() {
                           '</div></needs-query-desc>' +
                           '<div text="5"></div>';
 
-           tcb.overrideTemplate(MyComp, template)
-               .createAsync(MyComp)
+           tcb.overrideTemplate(MyComp0, template)
+               .createAsync(MyComp0)
                .then((view) => {
                  view.detectChanges();
                  expect(asNativeElements(view.debugElement.children)).toHaveText('2|3|4|');
@@ -192,8 +191,8 @@ export function main() {
                           '<needs-query text="2"><div text="3"></div></needs-query>' +
                           '<div text="4"></div>';
 
-           tcb.overrideTemplate(MyComp, template)
-               .createAsync(MyComp)
+           tcb.overrideTemplate(MyComp0, template)
+               .createAsync(MyComp0)
                .then((view) => {
                  view.detectChanges();
                  expect(asNativeElements(view.debugElement.children)).toHaveText('2|3|');
@@ -209,8 +208,8 @@ export function main() {
                '<needs-query text="2"><div *ngIf="shouldShow" [text]="\'3\'"></div></needs-query>' +
                '<div text="4"></div>';
 
-           tcb.overrideTemplate(MyComp, template)
-               .createAsync(MyComp)
+           tcb.overrideTemplate(MyComp0, template)
+               .createAsync(MyComp0)
                .then((view) => {
 
                  view.detectChanges();
@@ -231,8 +230,8 @@ export function main() {
                '<needs-query text="2"><div *ngIf="shouldShow" [text]="\'3\'"></div></needs-query>' +
                '<div text="4"></div>';
 
-           tcb.overrideTemplate(MyComp, template)
-               .createAsync(MyComp)
+           tcb.overrideTemplate(MyComp0, template)
+               .createAsync(MyComp0)
                .then((fixture) => {
                  fixture.debugElement.componentInstance.shouldShow = true;
                  fixture.detectChanges();
@@ -249,8 +248,8 @@ export function main() {
                '<needs-query text="2"><div *ngFor="let  i of list" [text]="i"></div></needs-query>' +
                '<div text="4"></div>';
 
-           tcb.overrideTemplate(MyComp, template)
-               .createAsync(MyComp)
+           tcb.overrideTemplate(MyComp0, template)
+               .createAsync(MyComp0)
                .then((view) => {
                  view.detectChanges();
 
@@ -269,27 +268,27 @@ export function main() {
       it('should find TemplateRefs in the light and shadow dom',
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            var template = '<needs-tpl><template><div>light</div></template></needs-tpl>';
-           tcb.overrideTemplate(MyComp, template)
-               .createAsync(MyComp)
-               .then((view) => {
-                 view.detectChanges();
-                 var needsTpl: NeedsTpl = view.debugElement.children[0].inject(NeedsTpl);
+           tcb.overrideTemplate(MyComp0, template)
+             .createAsync(MyComp0)
+             .then((view) => {
+               view.detectChanges();
+               var needsTpl: NeedsTpl = view.debugElement.children[0].inject(NeedsTpl);
 
-                 expect(needsTpl.vc.createEmbeddedView(needsTpl.query.first).rootNodes[0])
-                     .toHaveText('light');
-                 expect(needsTpl.vc.createEmbeddedView(needsTpl.viewQuery.first).rootNodes[0])
-                     .toHaveText('shadow');
+               expect(needsTpl.vc.createEmbeddedView(needsTpl.query.first).rootNodes[0])
+                 .toHaveText('light');
+               expect(needsTpl.vc.createEmbeddedView(needsTpl.viewQuery.first).rootNodes[0])
+                 .toHaveText('shadow');
 
-                 async.done();
-               });
+               async.done();
+             });
          }));
 
       it('should find named TemplateRefs',
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            var template =
                '<needs-named-tpl><template #tpl><div>light</div></template></needs-named-tpl>';
-           tcb.overrideTemplate(MyComp, template)
-               .createAsync(MyComp)
+           tcb.overrideTemplate(MyComp0, template)
+               .createAsync(MyComp0)
                .then((view) => {
                  view.detectChanges();
                  var needsTpl: NeedsNamedTpl = view.debugElement.children[0].inject(NeedsNamedTpl);
@@ -309,8 +308,8 @@ export function main() {
            var template =
                '<needs-content-children-read #q text="ca"><div #q text="cb"></div></needs-content-children-read>';
 
-           tcb.overrideTemplate(MyComp, template)
-               .createAsync(MyComp)
+           tcb.overrideTemplate(MyComp0, template)
+               .createAsync(MyComp0)
                .then((view) => {
                  view.detectChanges();
 
@@ -328,8 +327,8 @@ export function main() {
            var template =
                '<needs-content-child-read><div #q text="ca"></div></needs-content-child-read>';
 
-           tcb.overrideTemplate(MyComp, template)
-               .createAsync(MyComp)
+           tcb.overrideTemplate(MyComp0, template)
+               .createAsync(MyComp0)
                .then((view) => {
                  view.detectChanges();
 
@@ -345,8 +344,8 @@ export function main() {
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            var template = '<needs-view-child-read></needs-view-child-read>';
 
-           tcb.overrideTemplate(MyComp, template)
-               .createAsync(MyComp)
+           tcb.overrideTemplate(MyComp0, template)
+               .createAsync(MyComp0)
                .then((view) => {
                  view.detectChanges();
 
@@ -362,8 +361,8 @@ export function main() {
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            var template = '<needs-view-children-read></needs-view-children-read>';
 
-           tcb.overrideTemplate(MyComp, template)
-               .createAsync(MyComp)
+           tcb.overrideTemplate(MyComp0, template)
+               .createAsync(MyComp0)
                .then((view) => {
                  view.detectChanges();
 
@@ -381,8 +380,8 @@ export function main() {
            var template =
                '<needs-viewcontainer-read><template>hello</template></needs-viewcontainer-read>';
 
-           tcb.overrideTemplate(MyComp, template)
-               .createAsync(MyComp)
+           tcb.overrideTemplate(MyComp0, template)
+               .createAsync(MyComp0)
                .then((view) => {
                  view.detectChanges();
 
@@ -404,8 +403,8 @@ export function main() {
                           '<div *ngIf="shouldShow" text="2"></div>' +
                           '</needs-query>';
 
-           tcb.overrideTemplate(MyComp, template)
-               .createAsync(MyComp)
+           tcb.overrideTemplate(MyComp0, template)
+               .createAsync(MyComp0)
                .then((view) => {
                  var q = view.debugElement.children[0].references["q"];
                  view.detectChanges();
@@ -429,8 +428,8 @@ export function main() {
                           '</needs-query-desc>' +
                           '</needs-query-desc>';
 
-           tcb.overrideTemplate(MyComp, template)
-               .createAsync(MyComp)
+           tcb.overrideTemplate(MyComp0, template)
+               .createAsync(MyComp0)
                .then((view) => {
                  var q1 = view.debugElement.children[0].references["q1"];
                  var q2 = view.debugElement.children[0].children[0].references["q2"];
@@ -451,8 +450,8 @@ export function main() {
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            var template = '<needs-query #q *ngIf="shouldShow"><div text="foo"></div></needs-query>';
 
-           tcb.overrideTemplate(MyComp, template)
-               .createAsync(MyComp)
+           tcb.overrideTemplate(MyComp0, template)
+               .createAsync(MyComp0)
                .then((view) => {
                  view.debugElement.componentInstance.shouldShow = true;
                  view.detectChanges();
@@ -484,8 +483,8 @@ export function main() {
                '<div *ngFor="let item of list" [text]="item" #textLabel="textDir"></div>' +
                '</needs-query-by-ref-binding>';
 
-           tcb.overrideTemplate(MyComp, template)
-               .createAsync(MyComp)
+           tcb.overrideTemplate(MyComp0, template)
+               .createAsync(MyComp0)
                .then((view) => {
                  var q = view.debugElement.children[0].references["q"];
 
@@ -507,8 +506,8 @@ export function main() {
                           '<div text="two" #textLabel2="textDir"></div>' +
                           '</needs-query-by-ref-bindings>';
 
-           tcb.overrideTemplate(MyComp, template)
-               .createAsync(MyComp)
+           tcb.overrideTemplate(MyComp0, template)
+               .createAsync(MyComp0)
                .then((view) => {
                  var q = view.debugElement.children[0].references["q"];
                  view.detectChanges();
@@ -527,8 +526,8 @@ export function main() {
                '<div *ngFor="let item of list" [text]="item" #textLabel="textDir"></div>' +
                '</needs-query-by-ref-binding>';
 
-           tcb.overrideTemplate(MyComp, template)
-               .createAsync(MyComp)
+           tcb.overrideTemplate(MyComp0, template)
+               .createAsync(MyComp0)
                .then((view) => {
                  var q = view.debugElement.children[0].references["q"];
 
@@ -554,8 +553,8 @@ export function main() {
                           '</div>' +
                           '</needs-query-by-ref-binding>';
 
-           tcb.overrideTemplate(MyComp, template)
-               .createAsync(MyComp)
+           tcb.overrideTemplate(MyComp0, template)
+               .createAsync(MyComp0)
                .then((view) => {
                  var q = view.debugElement.children[0].references["q"];
 
@@ -576,8 +575,8 @@ export function main() {
                           '<div text="hello"></div><div text="world"></div>' +
                           '</needs-query-and-project>';
 
-           tcb.overrideTemplate(MyComp, template)
-               .createAsync(MyComp)
+           tcb.overrideTemplate(MyComp0, template)
+               .createAsync(MyComp0)
                .then((view) => {
                  view.detectChanges();
 
@@ -591,8 +590,8 @@ export function main() {
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            var template = '<needs-view-query-by-ref-binding #q></needs-view-query-by-ref-binding>';
 
-           tcb.overrideTemplate(MyComp, template)
-               .createAsync(MyComp)
+           tcb.overrideTemplate(MyComp0, template)
+               .createAsync(MyComp0)
                .then((view) => {
                  var q: NeedsViewQueryByLabel = view.debugElement.children[0].references["q"];
                  view.detectChanges();
@@ -607,8 +606,8 @@ export function main() {
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            var template = '<needs-view-children #q></needs-view-children>';
 
-           tcb.overrideTemplate(MyComp, template)
-               .createAsync(MyComp)
+           tcb.overrideTemplate(MyComp0, template)
+               .createAsync(MyComp0)
                .then((view) => {
                  view.detectChanges();
 
@@ -630,8 +629,8 @@ export function main() {
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            var template = '<needs-view-query #q><div text="ignoreme"></div></needs-view-query>';
 
-           tcb.overrideTemplate(MyComp, template)
-               .createAsync(MyComp)
+           tcb.overrideTemplate(MyComp0, template)
+               .createAsync(MyComp0)
                .then((view) => {
                  var q: NeedsViewQuery = view.debugElement.children[0].references["q"];
 
@@ -647,8 +646,8 @@ export function main() {
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            var template = '<needs-view-query #q text="self"></needs-view-query>';
 
-           tcb.overrideTemplate(MyComp, template)
-               .createAsync(MyComp)
+           tcb.overrideTemplate(MyComp0, template)
+               .createAsync(MyComp0)
                .then((view) => {
                  var q: NeedsViewQuery = view.debugElement.children[0].references["q"];
 
@@ -664,8 +663,8 @@ export function main() {
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            var template = '<needs-view-query-if #q></needs-view-query-if>';
 
-           tcb.overrideTemplate(MyComp, template)
-               .createAsync(MyComp)
+           tcb.overrideTemplate(MyComp0, template)
+               .createAsync(MyComp0)
                .then((view) => {
                  var q: NeedsViewQueryIf = view.debugElement.children[0].references["q"];
 
@@ -687,8 +686,8 @@ export function main() {
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            var template = '<needs-view-query-nested-if #q></needs-view-query-nested-if>';
 
-           tcb.overrideTemplate(MyComp, template)
-               .createAsync(MyComp)
+           tcb.overrideTemplate(MyComp0, template)
+               .createAsync(MyComp0)
                .then((view) => {
                  var q: NeedsViewQueryNestedIf = view.debugElement.children[0].references["q"];
 
@@ -712,8 +711,8 @@ export function main() {
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            var template = '<needs-view-query-order #q></needs-view-query-order>';
 
-           tcb.overrideTemplate(MyComp, template)
-               .createAsync(MyComp)
+           tcb.overrideTemplate(MyComp0, template)
+               .createAsync(MyComp0)
                .then((view) => {
                  var q: NeedsViewQueryOrder = view.debugElement.children[0].references["q"];
 
@@ -735,8 +734,8 @@ export function main() {
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            var template = '<needs-view-query-order-with-p #q></needs-view-query-order-with-p>';
 
-           tcb.overrideTemplate(MyComp, template)
-               .createAsync(MyComp)
+           tcb.overrideTemplate(MyComp0, template)
+               .createAsync(MyComp0)
                .then((view) => {
                  var q: NeedsViewQueryOrderWithParent =
                      view.debugElement.children[0].references["q"];
@@ -759,8 +758,8 @@ export function main() {
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            var template = '<needs-view-query-order #q></needs-view-query-order>';
 
-           tcb.overrideTemplate(MyComp, template)
-               .createAsync(MyComp)
+           tcb.overrideTemplate(MyComp0, template)
+               .createAsync(MyComp0)
                .then((view) => {
                  var q: NeedsViewQueryOrder = view.debugElement.children[0].references['q'];
 
@@ -781,8 +780,8 @@ export function main() {
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            var template = '<needs-four-queries #q><div text="1"></div></needs-four-queries>';
 
-           tcb.overrideTemplate(MyComp, template)
-               .createAsync(MyComp)
+           tcb.overrideTemplate(MyComp0, template)
+               .createAsync(MyComp0)
                .then((view) => {
                  view.detectChanges();
 
@@ -830,16 +829,16 @@ class NeedsContentChild implements AfterContentInit, AfterContentChecked {
   @ContentChild(TextDirective)
   set child(value) {
     this._child = value;
-    this.log.push(['setter', isPresent(value) ? value.text : null]);
+    this.logs.push(['setter', isPresent(value) ? value.text : null]);
   }
 
   get child() { return this._child; }
-  log = [];
+  logs = [];
 
-  ngAfterContentInit() { this.log.push(["init", isPresent(this.child) ? this.child.text : null]); }
+  ngAfterContentInit() { this.logs.push(["init", isPresent(this.child) ? this.child.text : null]); }
 
   ngAfterContentChecked() {
-    this.log.push(["check", isPresent(this.child) ? this.child.text : null]);
+    this.logs.push(["check", isPresent(this.child) ? this.child.text : null]);
   }
 }
 
@@ -859,15 +858,15 @@ class NeedsViewChild implements AfterViewInit,
   @ViewChild(TextDirective)
   set child(value) {
     this._child = value;
-    this.log.push(['setter', isPresent(value) ? value.text : null]);
+    this.logs.push(['setter', isPresent(value) ? value.text : null]);
   }
 
   get child() { return this._child; }
-  log = [];
+  logs = [];
 
-  ngAfterViewInit() { this.log.push(["init", isPresent(this.child) ? this.child.text : null]); }
+  ngAfterViewInit() { this.logs.push(["init", isPresent(this.child) ? this.child.text : null]); }
 
-  ngAfterViewChecked() { this.log.push(["check", isPresent(this.child) ? this.child.text : null]); }
+  ngAfterViewChecked() { this.logs.push(["check", isPresent(this.child) ? this.child.text : null]); }
 }
 
 @Directive({selector: '[dir]'})
@@ -1119,7 +1118,7 @@ class NeedsViewContainerWithRead {
   template: ''
 })
 @Injectable()
-class MyComp {
+class MyComp0 {
   shouldShow: boolean;
   list;
   constructor() {

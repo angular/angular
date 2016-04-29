@@ -1,6 +1,6 @@
-import {ddescribe, describe, it, iit, expect, beforeEach} from 'angular2/testing_internal';
-import {ViewResolver} from 'angular2/src/compiler/view_resolver';
-import {Component, ViewMetadata} from 'angular2/src/core/metadata';
+import {ddescribe, describe, it, iit, expect, beforeEach} from '@angular/core/testing';
+import {ViewResolver} from '@angular/compiler/src/view_resolver';
+import {Component, ViewMetadata} from '@angular/core/src/metadata';
 
 class SomeDir {}
 class SomePipe {}

@@ -1,5 +1,5 @@
-import {TodoApp} from "./index_common";
-import {bootstrapApp} from "angular2/platform/worker_app";
+import {TodoApp} from './index_common';
+import {bootstrapApp} from '../../../../@angular/platform-browser/src/worker_app';
 
 export function main() {
   bootstrapApp(TodoApp);

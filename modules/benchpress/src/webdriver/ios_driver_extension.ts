@@ -1,6 +1,6 @@
-import {bind, provide, Provider} from 'angular2/src/core/di';
-import {Json, isPresent, isBlank, RegExpWrapper, StringWrapper} from 'angular2/src/facade/lang';
-import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
+import {bind, provide, Provider} from '@angular/core/src/di';
+import {Json, isPresent, isBlank, RegExpWrapper, StringWrapper} from '@angular/facade';
+import {BaseException, WrappedException} from '@angular/facade';
 
 import {WebDriverExtension, PerfLogFeatures} from '../web_driver_extension';
 import {WebDriverAdapter} from '../web_driver_adapter';

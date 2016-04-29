@@ -2,6 +2,11 @@
 
 set -e -x
 
+# Setup environment
+cd `dirname $0`
+source ../ci-lite/env.sh
+
+
 # This script basically follows the instructions to download an old version of Chromium: https://www.chromium.org/getting-involved/download-chromium
 # 1) It retrieves the current stable version number from https://www.chromium.org/developers/calendar (via the https://omahaproxy.appspot.com/all file), e.g. 359700 for Chromium 48.
 # 2) It checks the Travis cache for this specific version
@@ -9,7 +14,8 @@ set -e -x
 
 #Build version read from the OmahaProxy CSV Viewer at https://www.chromium.org/developers/calendar
 #Let's use the following version of Chromium, and inform about availability of newer build from https://omahaproxy.appspot.com/all
-CHROMIUM_VERSION=369907
+#
+# CHROMIUM_VERSION <<< this variable is now set via env.sh
 
 PLATFORM="$(uname -s)"
 case "$PLATFORM" in

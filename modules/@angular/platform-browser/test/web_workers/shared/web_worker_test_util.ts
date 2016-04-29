@@ -1,21 +1,21 @@
-import {StringMapWrapper, ListWrapper} from 'angular2/src/facade/collection';
-import {PromiseWrapper} from 'angular2/src/facade/async';
-import {UiArguments} from 'angular2/src/web_workers/shared/client_message_broker';
-import {Type, isPresent} from 'angular2/src/facade/lang';
+import {StringMapWrapper, ListWrapper} from '../../../src/facade/collection';
+import {PromiseWrapper} from '../../../src/facade/async';
+import {UiArguments} from '@angular/platform-browser/src/web_workers/shared/client_message_broker';
+import {Type, isPresent} from '../../../src/facade/lang';
 import {SpyMessageBroker} from '../worker/spies';
-import {expect} from 'angular2/src/testing/matchers';
+import {expect} from '@angular/core/testing';
 import {
   MessageBusSink,
   MessageBusSource,
   MessageBus
-} from 'angular2/src/web_workers/shared/message_bus';
+} from '@angular/platform-browser/src/web_workers/shared/message_bus';
 import {
   ClientMessageBroker,
   ClientMessageBrokerFactory_
-} from 'angular2/src/web_workers/shared/client_message_broker';
+} from '@angular/platform-browser/src/web_workers/shared/client_message_broker';
 import {MockEventEmitter} from './mock_event_emitter';
-import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
-import {NgZone} from 'angular2/src/core/zone/ng_zone';
+import {BaseException, WrappedException} from '../../../src/facade/exceptions';
+import {NgZone} from '@angular/core/src/zone/ng_zone';
 
 var __unused: Promise<any>;  // avoid unused import when Promise union types are erased
 
