@@ -24,12 +24,8 @@ export function main() {
       reflector = new StaticReflector(host);
     });
 
-    function singleModuleSimplify(moduleContext: ModuleContext, value: any) {
-      return reflector.simplify(moduleContext, value, false);
-    }
-
-    function crossModuleSimplify(moduleContext: ModuleContext, value: any) {
-      return reflector.simplify(moduleContext, value, true);
+    function simplify(moduleContext: ModuleContext, value: any) {
+      return reflector.simplify(moduleContext, value);
     }
 
     it('should get annotations for NgFor', () => {
@@ -95,154 +91,154 @@ export function main() {
     });
 
     it('should simplify primitive into itself', () => {
-      expect(singleModuleSimplify(noContext, 1)).toBe(1);
-      expect(singleModuleSimplify(noContext, true)).toBe(true);
-      expect(singleModuleSimplify(noContext, "some value")).toBe("some value");
+      expect(simplify(noContext, 1)).toBe(1);
+      expect(simplify(noContext, true)).toBe(true);
+      expect(simplify(noContext, "some value")).toBe("some value");
     });
 
     it('should simplify an array into a copy of the array',
-       () => { expect(singleModuleSimplify(noContext, [1, 2, 3])).toEqual([1, 2, 3]); });
+       () => { expect(simplify(noContext, [1, 2, 3])).toEqual([1, 2, 3]); });
 
     it('should simplify an object to a copy of the object', () => {
       let expr = {a: 1, b: 2, c: 3};
-      expect(singleModuleSimplify(noContext, expr)).toEqual(expr);
+      expect(simplify(noContext, expr)).toEqual(expr);
     });
 
     it('should simplify &&', () => {
-      expect(singleModuleSimplify(noContext, ({ __symbolic: 'binop', operator: '&&', left: true, right: true}))).toBe(true);
-      expect(singleModuleSimplify(noContext, ({ __symbolic: 'binop', operator: '&&', left: true, right: false}))).toBe(false);
-      expect(singleModuleSimplify(noContext, ({ __symbolic: 'binop', operator: '&&', left: false, right: true}))).toBe(false);
-      expect(singleModuleSimplify(noContext, ({ __symbolic: 'binop', operator: '&&', left: false, right: false}))).toBe(false);
+      expect(simplify(noContext, ({ __symbolic: 'binop', operator: '&&', left: true, right: true}))).toBe(true);
+      expect(simplify(noContext, ({ __symbolic: 'binop', operator: '&&', left: true, right: false}))).toBe(false);
+      expect(simplify(noContext, ({ __symbolic: 'binop', operator: '&&', left: false, right: true}))).toBe(false);
+      expect(simplify(noContext, ({ __symbolic: 'binop', operator: '&&', left: false, right: false}))).toBe(false);
     });
 
     it('should simplify ||', () => {
-      expect(singleModuleSimplify(noContext, ({ __symbolic: 'binop', operator: '||', left: true, right: true}))).toBe(true);
-      expect(singleModuleSimplify(noContext, ({ __symbolic: 'binop', operator: '||', left: true, right: false}))).toBe(true);
-      expect(singleModuleSimplify(noContext, ({ __symbolic: 'binop', operator: '||', left: false, right: true}))).toBe(true);
-      expect(singleModuleSimplify(noContext, ({ __symbolic: 'binop', operator: '||', left: false, right: false}))).toBe(false);
+      expect(simplify(noContext, ({ __symbolic: 'binop', operator: '||', left: true, right: true}))).toBe(true);
+      expect(simplify(noContext, ({ __symbolic: 'binop', operator: '||', left: true, right: false}))).toBe(true);
+      expect(simplify(noContext, ({ __symbolic: 'binop', operator: '||', left: false, right: true}))).toBe(true);
+      expect(simplify(noContext, ({ __symbolic: 'binop', operator: '||', left: false, right: false}))).toBe(false);
     });
 
     it('should simplify &', () => {
-      expect(singleModuleSimplify(noContext, ({ __symbolic: 'binop', operator: '&', left: 0x22, right: 0x0F}))).toBe(0x22 & 0x0F);
-      expect(singleModuleSimplify(noContext, ({ __symbolic: 'binop', operator: '&', left: 0x22, right: 0xF0}))).toBe(0x22 & 0xF0);
+      expect(simplify(noContext, ({ __symbolic: 'binop', operator: '&', left: 0x22, right: 0x0F}))).toBe(0x22 & 0x0F);
+      expect(simplify(noContext, ({ __symbolic: 'binop', operator: '&', left: 0x22, right: 0xF0}))).toBe(0x22 & 0xF0);
     });
 
     it('should simplify |', () => {
-      expect(singleModuleSimplify(noContext, ({ __symbolic: 'binop', operator: '|', left: 0x22, right: 0x0F}))).toBe(0x22 | 0x0F);
-      expect(singleModuleSimplify(noContext, ({ __symbolic: 'binop', operator: '|', left: 0x22, right: 0xF0}))).toBe(0x22 | 0xF0);
+      expect(simplify(noContext, ({ __symbolic: 'binop', operator: '|', left: 0x22, right: 0x0F}))).toBe(0x22 | 0x0F);
+      expect(simplify(noContext, ({ __symbolic: 'binop', operator: '|', left: 0x22, right: 0xF0}))).toBe(0x22 | 0xF0);
     });
 
     it('should simplify ^', () => {
-      expect(singleModuleSimplify(noContext, ({ __symbolic: 'binop', operator: '|', left: 0x22, right: 0x0F}))).toBe(0x22 | 0x0F);
-      expect(singleModuleSimplify(noContext, ({ __symbolic: 'binop', operator: '|', left: 0x22, right: 0xF0}))).toBe(0x22 | 0xF0);
+      expect(simplify(noContext, ({ __symbolic: 'binop', operator: '|', left: 0x22, right: 0x0F}))).toBe(0x22 | 0x0F);
+      expect(simplify(noContext, ({ __symbolic: 'binop', operator: '|', left: 0x22, right: 0xF0}))).toBe(0x22 | 0xF0);
     });
 
     it('should simplify ==', () => {
-      expect(singleModuleSimplify(noContext, ({ __symbolic: 'binop', operator: '==', left: 0x22, right: 0x22}))).toBe(0x22 == 0x22);
-      expect(singleModuleSimplify(noContext, ({ __symbolic: 'binop', operator: '==', left: 0x22, right: 0xF0}))).toBe(0x22 == 0xF0);
+      expect(simplify(noContext, ({ __symbolic: 'binop', operator: '==', left: 0x22, right: 0x22}))).toBe(0x22 == 0x22);
+      expect(simplify(noContext, ({ __symbolic: 'binop', operator: '==', left: 0x22, right: 0xF0}))).toBe(0x22 == 0xF0);
     });
 
     it('should simplify !=', () => {
-      expect(singleModuleSimplify(noContext, ({ __symbolic: 'binop', operator: '!=', left: 0x22, right: 0x22}))).toBe(0x22 != 0x22);
-      expect(singleModuleSimplify(noContext, ({ __symbolic: 'binop', operator: '!=', left: 0x22, right: 0xF0}))).toBe(0x22 != 0xF0);
+      expect(simplify(noContext, ({ __symbolic: 'binop', operator: '!=', left: 0x22, right: 0x22}))).toBe(0x22 != 0x22);
+      expect(simplify(noContext, ({ __symbolic: 'binop', operator: '!=', left: 0x22, right: 0xF0}))).toBe(0x22 != 0xF0);
     });
 
     it('should simplify ===', () => {
-      expect(singleModuleSimplify(noContext, ({ __symbolic: 'binop', operator: '===', left: 0x22, right: 0x22}))).toBe(0x22 === 0x22);
-      expect(singleModuleSimplify(noContext, ({ __symbolic: 'binop', operator: '===', left: 0x22, right: 0xF0}))).toBe(0x22 === 0xF0);
+      expect(simplify(noContext, ({ __symbolic: 'binop', operator: '===', left: 0x22, right: 0x22}))).toBe(0x22 === 0x22);
+      expect(simplify(noContext, ({ __symbolic: 'binop', operator: '===', left: 0x22, right: 0xF0}))).toBe(0x22 === 0xF0);
     });
 
     it('should simplify !==', () => {
-      expect(singleModuleSimplify(noContext, ({ __symbolic: 'binop', operator: '!==', left: 0x22, right: 0x22}))).toBe(0x22 !== 0x22);
-      expect(singleModuleSimplify(noContext, ({ __symbolic: 'binop', operator: '!==', left: 0x22, right: 0xF0}))).toBe(0x22 !== 0xF0);
+      expect(simplify(noContext, ({ __symbolic: 'binop', operator: '!==', left: 0x22, right: 0x22}))).toBe(0x22 !== 0x22);
+      expect(simplify(noContext, ({ __symbolic: 'binop', operator: '!==', left: 0x22, right: 0xF0}))).toBe(0x22 !== 0xF0);
     });
 
     it('should simplify >', () => {
-      expect(singleModuleSimplify(noContext, ({ __symbolic: 'binop', operator: '>', left: 1, right: 1}))).toBe(1 > 1);
-      expect(singleModuleSimplify(noContext, ({ __symbolic: 'binop', operator: '>', left: 1, right: 0}))).toBe(1 > 0);
-      expect(singleModuleSimplify(noContext, ({ __symbolic: 'binop', operator: '>', left: 0, right: 1}))).toBe(0 > 1);
+      expect(simplify(noContext, ({ __symbolic: 'binop', operator: '>', left: 1, right: 1}))).toBe(1 > 1);
+      expect(simplify(noContext, ({ __symbolic: 'binop', operator: '>', left: 1, right: 0}))).toBe(1 > 0);
+      expect(simplify(noContext, ({ __symbolic: 'binop', operator: '>', left: 0, right: 1}))).toBe(0 > 1);
     });
 
     it('should simplify >=', () => {
-      expect(singleModuleSimplify(noContext, ({ __symbolic: 'binop', operator: '>=', left: 1, right: 1}))).toBe(1 >= 1);
-      expect(singleModuleSimplify(noContext, ({ __symbolic: 'binop', operator: '>=', left: 1, right: 0}))).toBe(1 >= 0);
-      expect(singleModuleSimplify(noContext, ({ __symbolic: 'binop', operator: '>=', left: 0, right: 1}))).toBe(0 >= 1);
+      expect(simplify(noContext, ({ __symbolic: 'binop', operator: '>=', left: 1, right: 1}))).toBe(1 >= 1);
+      expect(simplify(noContext, ({ __symbolic: 'binop', operator: '>=', left: 1, right: 0}))).toBe(1 >= 0);
+      expect(simplify(noContext, ({ __symbolic: 'binop', operator: '>=', left: 0, right: 1}))).toBe(0 >= 1);
     });
 
     it('should simplify <=', () => {
-      expect(singleModuleSimplify(noContext, ({ __symbolic: 'binop', operator: '<=', left: 1, right: 1}))).toBe(1 <= 1);
-      expect(singleModuleSimplify(noContext, ({ __symbolic: 'binop', operator: '<=', left: 1, right: 0}))).toBe(1 <= 0);
-      expect(singleModuleSimplify(noContext, ({ __symbolic: 'binop', operator: '<=', left: 0, right: 1}))).toBe(0 <= 1);
+      expect(simplify(noContext, ({ __symbolic: 'binop', operator: '<=', left: 1, right: 1}))).toBe(1 <= 1);
+      expect(simplify(noContext, ({ __symbolic: 'binop', operator: '<=', left: 1, right: 0}))).toBe(1 <= 0);
+      expect(simplify(noContext, ({ __symbolic: 'binop', operator: '<=', left: 0, right: 1}))).toBe(0 <= 1);
     });
 
     it('should simplify <', () => {
-      expect(singleModuleSimplify(noContext, ({ __symbolic: 'binop', operator: '<', left: 1, right: 1}))).toBe(1 < 1);
-      expect(singleModuleSimplify(noContext, ({ __symbolic: 'binop', operator: '<', left: 1, right: 0}))).toBe(1 < 0);
-      expect(singleModuleSimplify(noContext, ({ __symbolic: 'binop', operator: '<', left: 0, right: 1}))).toBe(0 < 1);
+      expect(simplify(noContext, ({ __symbolic: 'binop', operator: '<', left: 1, right: 1}))).toBe(1 < 1);
+      expect(simplify(noContext, ({ __symbolic: 'binop', operator: '<', left: 1, right: 0}))).toBe(1 < 0);
+      expect(simplify(noContext, ({ __symbolic: 'binop', operator: '<', left: 0, right: 1}))).toBe(0 < 1);
     });
 
     it('should simplify <<', () => {
-      expect(singleModuleSimplify(noContext, ({ __symbolic: 'binop', operator: '<<', left: 0x55, right: 2}))).toBe(0x55 << 2);
+      expect(simplify(noContext, ({ __symbolic: 'binop', operator: '<<', left: 0x55, right: 2}))).toBe(0x55 << 2);
     });
 
     it('should simplify >>', () => {
-      expect(singleModuleSimplify(noContext, ({ __symbolic: 'binop', operator: '>>', left: 0x55, right: 2}))).toBe(0x55 >> 2);
+      expect(simplify(noContext, ({ __symbolic: 'binop', operator: '>>', left: 0x55, right: 2}))).toBe(0x55 >> 2);
     });
 
     it('should simplify +', () => {
-      expect(singleModuleSimplify(noContext, ({ __symbolic: 'binop', operator: '+', left: 0x55, right: 2}))).toBe(0x55 + 2);
+      expect(simplify(noContext, ({ __symbolic: 'binop', operator: '+', left: 0x55, right: 2}))).toBe(0x55 + 2);
     });
 
     it('should simplify -', () => {
-      expect(singleModuleSimplify(noContext, ({ __symbolic: 'binop', operator: '-', left: 0x55, right: 2}))).toBe(0x55 - 2);
+      expect(simplify(noContext, ({ __symbolic: 'binop', operator: '-', left: 0x55, right: 2}))).toBe(0x55 - 2);
     });
 
     it('should simplify *', () => {
-      expect(singleModuleSimplify(noContext, ({ __symbolic: 'binop', operator: '*', left: 0x55, right: 2}))).toBe(0x55 * 2);
+      expect(simplify(noContext, ({ __symbolic: 'binop', operator: '*', left: 0x55, right: 2}))).toBe(0x55 * 2);
     });
 
     it('should simplify /', () => {
-      expect(singleModuleSimplify(noContext, ({ __symbolic: 'binop', operator: '/', left: 0x55, right: 2}))).toBe(0x55 / 2);
+      expect(simplify(noContext, ({ __symbolic: 'binop', operator: '/', left: 0x55, right: 2}))).toBe(0x55 / 2);
     });
 
     it('should simplify %', () => {
-      expect(singleModuleSimplify(noContext, ({ __symbolic: 'binop', operator: '%', left: 0x55, right: 2}))).toBe(0x55 % 2);
+      expect(simplify(noContext, ({ __symbolic: 'binop', operator: '%', left: 0x55, right: 2}))).toBe(0x55 % 2);
     });
 
     it('should simplify prefix -', () => {
-      expect(singleModuleSimplify(noContext, ({ __symbolic: 'pre', operator: '-', operand: 2}))).toBe(-2);
+      expect(simplify(noContext, ({ __symbolic: 'pre', operator: '-', operand: 2}))).toBe(-2);
     });
 
     it('should simplify prefix ~', () => {
-      expect(singleModuleSimplify(noContext, ({ __symbolic: 'pre', operator: '~', operand: 2}))).toBe(~2);
+      expect(simplify(noContext, ({ __symbolic: 'pre', operator: '~', operand: 2}))).toBe(~2);
     });
 
     it('should simplify prefix !', () => {
-      expect(singleModuleSimplify(noContext, ({ __symbolic: 'pre', operator: '!', operand: true}))).toBe(!true);
-      expect(singleModuleSimplify(noContext, ({ __symbolic: 'pre', operator: '!', operand: false}))).toBe(!false);
+      expect(simplify(noContext, ({ __symbolic: 'pre', operator: '!', operand: true}))).toBe(!true);
+      expect(simplify(noContext, ({ __symbolic: 'pre', operator: '!', operand: false}))).toBe(!false);
     });
 
     it('should simplify an array index', () => {
       expect(
-          singleModuleSimplify(noContext, ({__symbolic: "index", expression: [1, 2, 3], index: 2})))
+          simplify(noContext, ({__symbolic: "index", expression: [1, 2, 3], index: 2})))
           .toBe(3);
     });
 
     it('should simplify an object index', () => {
       let expr = {__symbolic: "select", expression: {a: 1, b: 2, c: 3}, member: "b"};
-      expect(singleModuleSimplify(noContext, expr)).toBe(2);
+      expect(simplify(noContext, expr)).toBe(2);
     });
 
-    it('should simplify a module reference across modules', () => {
-      expect(crossModuleSimplify(new ModuleContext('', '/src/cases'),
+    it('should simplify a module reference', () => {
+      expect(simplify(new ModuleContext('', '/src/cases'),
                                  ({__symbolic: "reference", module: "./extern", name: "s"})))
           .toEqual("s");
     });
 
-    it('should simplify a module reference without crossing modules', () => {
-      expect(singleModuleSimplify(new ModuleContext('', '/src/cases'),
-                                  ({__symbolic: "reference", module: "./extern", name: "s"})))
-          .toEqual(host.getStaticSymbol('', '/src/extern.d.ts', 's'));
+    it('should simplify a non existing reference as a static symbol', () => {
+      expect(simplify(new ModuleContext('', '/src/cases'),
+                                  ({__symbolic: "reference", module: "./extern", name: "nonExisting"})))
+          .toEqual(host.getStaticSymbol('', '/src/extern.d.ts', 'nonExisting'));
     });
   });
 }

@@ -7,6 +7,7 @@ import {
   isStringMap,
   FunctionWrapper
 } from 'angular2/src/facade/lang';
+import {BaseException} from 'angular2/src/facade/exceptions';
 import {
   AttributeMetadata,
   DirectiveMetadata,
@@ -32,8 +33,9 @@ import {
   InjectableMetadata,
   SelfMetadata,
   SkipSelfMetadata,
-  InjectMetadata
+  InjectMetadata,
 } from "angular2/src/core/di/metadata";
+import {OpaqueToken} from 'angular2/src/core/di/opaque_token';
 
 export class ModuleContext {
   constructor(public moduleId: string, public filePath: string) {}
@@ -94,7 +96,7 @@ export class StaticReflector implements ReflectorReader {
     if (!isPresent(annotations)) {
       let classMetadata = this.getTypeMetadata(type);
       if (isPresent(classMetadata['decorators'])) {
-        annotations = this.simplify(type, classMetadata['decorators'], false);
+        annotations = this.simplify(type, classMetadata['decorators']);
       } else {
         annotations = [];
       }
@@ -111,7 +113,7 @@ export class StaticReflector implements ReflectorReader {
       propMetadata = mapStringMap(members, (propData, propName) => {
         let prop = (<any[]>propData).find(a => a['__symbolic'] == 'property');
         if (isPresent(prop) && isPresent(prop['decorators'])) {
-          return this.simplify(type, prop['decorators'], false);
+          return this.simplify(type, prop['decorators']);
         } else {
           return [];
         }
@@ -122,39 +124,43 @@ export class StaticReflector implements ReflectorReader {
   }
 
   public parameters(type: StaticSymbol): any[] {
-    let parameters = this.parameterCache.get(type);
-    if (!isPresent(parameters)) {
-      let classMetadata = this.getTypeMetadata(type);
-      let members = isPresent(classMetadata) ? classMetadata['members'] : null;
-      let ctorData = isPresent(members) ? members['__ctor__'] : null;
-      if (isPresent(ctorData)) {
-        let ctor = (<any[]>ctorData).find(a => a['__symbolic'] == 'constructor');
-        let parameterTypes = <any[]>this.simplify(type, ctor['parameters'], false);
-        let parameterDecorators = <any[]>this.simplify(type, ctor['parameterDecorators'], false);
-
-        parameters = [];
-        ListWrapper.forEachWithIndex(parameterTypes, (paramType, index) => {
-          let nestedResult = [];
-          if (isPresent(paramType)) {
-            nestedResult.push(paramType);
-          }
-          let decorators = isPresent(parameterDecorators) ? parameterDecorators[index] : null;
-          if (isPresent(decorators)) {
-            ListWrapper.addAll(nestedResult, decorators);
-          }
-          parameters.push(nestedResult);
-        });
-      }
+    try {
+      let parameters = this.parameterCache.get(type);
       if (!isPresent(parameters)) {
-        parameters = [];
+        let classMetadata = this.getTypeMetadata(type);
+        let members = isPresent(classMetadata) ? classMetadata['members'] : null;
+        let ctorData = isPresent(members) ? members['__ctor__'] : null;
+        if (isPresent(ctorData)) {
+          let ctor = (<any[]>ctorData).find(a => a['__symbolic'] == 'constructor');
+          let parameterTypes = <any[]>this.simplify(type, ctor['parameters']);
+          let parameterDecorators = <any[]>this.simplify(type, ctor['parameterDecorators']);
+
+          parameters = [];
+          ListWrapper.forEachWithIndex(parameterTypes, (paramType, index) => {
+            let nestedResult = [];
+            if (isPresent(paramType)) {
+              nestedResult.push(paramType);
+            }
+            let decorators = isPresent(parameterDecorators) ? parameterDecorators[index] : null;
+            if (isPresent(decorators)) {
+              ListWrapper.addAll(nestedResult, decorators);
+            }
+            parameters.push(nestedResult);
+          });
+        }
+        if (!isPresent(parameters)) {
+          parameters = [];
+        }
+        this.parameterCache.set(type, parameters);
       }
-      this.parameterCache.set(type, parameters);
+      return parameters;
+    } catch (e) {
+      console.error('Failed on type', type, 'with error', e);
+      throw e;
     }
-    return parameters;
   }
 
-  private registerDecoratorOrConstructor(type: StaticSymbol, ctor: any,
-                                         crossModuleProps: any[] = []): void {
+  private registerDecoratorOrConstructor(type: StaticSymbol, ctor: any): void {
     this.conversionMap.set(type, (moduleContext: ModuleContext, args: any[]) => {
       let argValues = [];
       ListWrapper.forEachWithIndex(args, (arg, index) => {
@@ -162,9 +168,9 @@ export class StaticReflector implements ReflectorReader {
         if (isStringMap(arg) && isBlank(arg['__symbolic'])) {
           argValue =
               mapStringMap(arg, (value, key) => this.simplify(
-                                    moduleContext, value, crossModuleProps.indexOf(key) !== -1));
+                                    moduleContext, value) );
         } else {
-          argValue = this.simplify(moduleContext, arg, crossModuleProps.indexOf(index) !== -1);
+          argValue = this.simplify(moduleContext, arg);
         }
         argValues.push(argValue);
       });
@@ -177,6 +183,7 @@ export class StaticReflector implements ReflectorReader {
     let diDecorators = 'angular2/src/core/di/decorators';
     let diMetadata = 'angular2/src/core/di/metadata';
     let provider = 'angular2/src/core/di/provider';
+    let opaqueToken = 'angular2/src/core/di/opaque_token';
     this.registerDecoratorOrConstructor(this.host.findDeclaration(provider, 'Provider'), Provider);
 
     this.registerDecoratorOrConstructor(this.host.findDeclaration(diDecorators, 'Host'),
@@ -216,10 +223,9 @@ export class StaticReflector implements ReflectorReader {
     this.registerDecoratorOrConstructor(this.host.findDeclaration(coreDecorators, 'HostListener'),
                                         HostListenerMetadata);
     this.registerDecoratorOrConstructor(this.host.findDeclaration(coreDecorators, 'Directive'),
-                                        DirectiveMetadata, ['bindings', 'providers']);
+                                        DirectiveMetadata);
     this.registerDecoratorOrConstructor(this.host.findDeclaration(coreDecorators, 'Component'),
-                                        ComponentMetadata,
-                                        ['bindings', 'providers', 'directives', 'pipes']);
+                                        ComponentMetadata);
 
     // Note: Some metadata classes can be used directly with Provider.deps.
     this.registerDecoratorOrConstructor(this.host.findDeclaration(diMetadata, 'HostMetadata'),
@@ -230,10 +236,12 @@ export class StaticReflector implements ReflectorReader {
                                         SkipSelfMetadata);
     this.registerDecoratorOrConstructor(this.host.findDeclaration(diMetadata, 'OptionalMetadata'),
                                         OptionalMetadata);
+    this.registerDecoratorOrConstructor(this.host.findDeclaration(opaqueToken, 'OpaqueToken'),
+                                        OpaqueToken);
   }
 
   /** @internal */
-  public simplify(moduleContext: ModuleContext, value: any, crossModules: boolean): any {
+  public simplify(moduleContext: ModuleContext, value: any): any {
     let _this = this;
 
     function simplify(expression: any): any {
@@ -328,19 +336,17 @@ export class StaticReflector implements ReflectorReader {
                 staticSymbol = _this.host.getStaticSymbol(
                     moduleContext.moduleId, moduleContext.filePath, expression['name']);
               }
-              let result;
-              if (crossModules || isBlank(expression['module'])) {
-                let moduleMetadata = _this.getModuleMetadata(staticSymbol.filePath);
-                let declarationValue = moduleMetadata['metadata'][staticSymbol.name];
+              let result = staticSymbol;
+              let moduleMetadata = _this.getModuleMetadata(staticSymbol.filePath);
+              let declarationValue = isPresent(moduleMetadata) ? moduleMetadata['metadata'][staticSymbol.name] : null;
+              if (isPresent(declarationValue)) {
                 if (isClassMetadata(declarationValue)) {
                   result = staticSymbol;
                 } else {
                   let newModuleContext =
                       new ModuleContext(staticSymbol.moduleId, staticSymbol.filePath);
-                  result = _this.simplify(newModuleContext, declarationValue, crossModules);
+                  result = _this.simplify(newModuleContext, declarationValue);
                 }
-              } else {
-                result = staticSymbol;
               }
               return result;
             case "new":
@@ -349,11 +355,18 @@ export class StaticReflector implements ReflectorReader {
               staticSymbol = _this.host.findDeclaration(target['module'], target['name'],
                                                         moduleContext.filePath);
               let converter = _this.conversionMap.get(staticSymbol);
-              let args = expression['arguments'];
-              if (isBlank(args)) {
-                args = [];
+              if (isBlank(converter)) {
+                throw new BaseException(`Cannot convert call/new expression for ${target['name']} in ${moduleContext.filePath}`)
               }
-              return isPresent(converter) ? converter(moduleContext, args) : null;
+              if (isPresent(converter)) {
+                let args = expression['arguments'];
+                if (isBlank(args)) {
+                  args = [];
+                }
+                return converter(moduleContext, args);
+              } else {
+                return staticSymbol;
+              }
           }
           return null;
         }
