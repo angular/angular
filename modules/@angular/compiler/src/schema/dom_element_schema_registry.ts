@@ -3,11 +3,27 @@ import {isPresent} from '../facade/lang';
 import {StringMapWrapper} from '../facade/collection';
 import {ElementSchemaRegistry} from './element_schema_registry';
 
-const EVENT = 'event';
-const BOOLEAN = 'boolean';
-const NUMBER = 'number';
-const STRING = 'string';
-const OBJECT = 'object';
+enum PropertyType {
+  EVENT,
+  BOOLEAN,
+  NUMBER,
+  STRING,
+  OBJECT,
+}
+
+enum SecurityContext {
+  HTML,
+  CSS,
+  JS,
+  URL,
+  RESOURCE_URL,
+}
+
+interface Property {
+  type: PropertyType;
+  context: SecurityContext;
+}
+
 
 /**
  * This array represents the DOM schema. It encodes inheritance, properties, and events.
@@ -40,6 +56,13 @@ const OBJECT = 'object';
  * - `!`: property is a boolean.
  * - `#`: property is a number.
  * - `%`: property is an object.
+ *
+ * Each property must be suffixed with:
+ * =h
+ * =c
+ * =j
+ * =u
+ * =r
  *
  * ## Query
  *
@@ -208,7 +231,7 @@ var attrToPropMap: {[name: string]: string} = <any>{
 
 @Injectable()
 export class DomElementSchemaRegistry implements ElementSchemaRegistry {
-  schema = <{[element: string]: {[property: string]: string}}>{};
+  schema = <{[element: string]: {[property: string]: Property}}>{};
 
   constructor() {
     SCHEMA.forEach(encodedType => {
@@ -216,26 +239,49 @@ export class DomElementSchemaRegistry implements ElementSchemaRegistry {
       var properties = parts[1].split(',');
       var typeParts = (parts[0] + '^').split('^');
       var typeName = typeParts[0];
-      var type = <{[property: string]: string}>{};
-      typeName.split(',').forEach(tag => this.schema[tag] = type);
+      var elementProps = <{[property: string]: Property}>{};
+      typeName.split(',').forEach(tag => this.schema[tag] = elementProps);
       var superType = this.schema[typeParts[1]];
       if (isPresent(superType)) {
-        StringMapWrapper.forEach(superType, (v, k) => type[k] = v);
+        StringMapWrapper.forEach(superType, (v, k) => elementProps[k] = v);
       }
       properties.forEach((property: string) => {
-        if (property == '') {
-        } else if (property.startsWith('*')) {
-          // We don't yet support events.
-          // type[property.substring(1)] = EVENT;
-        } else if (property.startsWith('!')) {
-          type[property.substring(1)] = BOOLEAN;
-        } else if (property.startsWith('#')) {
-          type[property.substring(1)] = NUMBER;
-        } else if (property.startsWith('%')) {
-          type[property.substring(1)] = OBJECT;
-        } else {
-          type[property] = STRING;
+        if (property == '') return;
+        let name = property.substring(1);
+        let type: PropertyType;
+        let context: SecurityContext;
+        switch (property[0]) {
+          case '*':
+            // TODO(mhevery): support events.
+            // type = PropertyType.EVENT;
+            break;
+          case '!':
+            type = PropertyType.BOOLEAN;
+            break;
+          case '#':
+            type = PropertyType.NUMBER;
+            break;
+          case '%':
+            type = PropertyType.OBJECT;
+            break;
+          default:
+            name = property;  // no prefix.
+            type = PropertyType.STRING;
+            break;
         }
+        if (property.startsWith('*')) {
+          // We don't yet support events.
+          // type = EVENT;
+        } else if (property.startsWith('!')) {
+          property.substring(1)] = PropertyType.BOOLEAN;
+        } else if (property.startsWith('#')) {
+          type[property.substring(1)] = PropertyType.NUMBER;
+        } else if (property.startsWith('%')) {
+          type[property.substring(1)] = PropertyType.OBJECT;
+        } else {
+          type[property] = PropertyType.STRING;
+        }
+        elementProps[property] = {type, context};
       });
     });
   }
