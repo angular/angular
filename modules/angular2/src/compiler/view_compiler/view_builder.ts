@@ -422,22 +422,23 @@ function createViewClass(view: CompileView, renderCompTypeVar: o.ReadVarExpr,
     new o.FnParam(ViewConstructorVars.parentInjector.name, o.importType(Identifiers.Injector)),
     new o.FnParam(ViewConstructorVars.declarationEl.name, o.importType(Identifiers.AppElement))
   ];
-  var viewConstructor = new o.ClassMethod(null, viewConstructorArgs, [
-    o.SUPER_EXPR.callFn([
-                  o.variable(view.className),
-                  renderCompTypeVar,
-                  ViewTypeEnum.fromValue(view.viewType),
-                  o.literalMap(emptyTemplateVariableBindings),
-                  ViewConstructorVars.viewManager,
-                  ViewConstructorVars.parentInjector,
-                  ViewConstructorVars.declarationEl,
-                  ChangeDetectionStrategyEnum.fromValue(getChangeDetectionMode(view)),
-                  o.literal(view.literalArrayCount),
-                  o.literal(view.literalMapCount),
-                  nodeDebugInfosVar
-                ])
-        .toStmt()
-  ]);
+  var superConstructorArgs = [
+    o.variable(view.className),
+    renderCompTypeVar,
+    ViewTypeEnum.fromValue(view.viewType),
+    o.literalMap(emptyTemplateVariableBindings),
+    ViewConstructorVars.viewManager,
+    ViewConstructorVars.parentInjector,
+    ViewConstructorVars.declarationEl,
+    ChangeDetectionStrategyEnum.fromValue(getChangeDetectionMode(view)),
+    o.literal(view.literalArrayCount),
+    o.literal(view.literalMapCount),
+  ];
+  if (view.genConfig.genDebugInfo) {
+    superConstructorArgs.push(nodeDebugInfosVar);
+  }
+  var viewConstructor = new o.ClassMethod(null, viewConstructorArgs,
+                                          [o.SUPER_EXPR.callFn(superConstructorArgs).toStmt()]);
 
   var viewMethods = [
     new o.ClassMethod('createInternal', [new o.FnParam(rootSelectorVar.name, o.STRING_TYPE)],
@@ -458,9 +459,10 @@ function createViewClass(view: CompileView, renderCompTypeVar: o.ReadVarExpr,
     new o.ClassMethod('dirtyParentQueriesInternal', [], view.dirtyParentQueriesMethod.finish()),
     new o.ClassMethod('destroyInternal', [], view.destroyMethod.finish())
   ].concat(view.eventHandlerMethods);
-  var viewClass = new o.ClassStmt(
-      view.className, o.importExpr(Identifiers.AppView, [getContextType(view)]), view.fields,
-      view.getters, viewConstructor, viewMethods.filter((method) => method.body.length > 0));
+  var superClass = view.genConfig.genDebugInfo ? Identifiers.DebugAppView : Identifiers.AppView;
+  var viewClass = new o.ClassStmt(view.className, o.importExpr(superClass, [getContextType(view)]),
+                                  view.fields, view.getters, viewConstructor,
+                                  viewMethods.filter((method) => method.body.length > 0));
   return viewClass;
 }
 
