@@ -1,6 +1,6 @@
 import {AsyncRoute, AuxRoute, Route, Redirect, RouteDefinition} from './route_config_decorator';
 import {ComponentDefinition} from '../route_definition';
-import {isType, Type} from 'angular2/src/facade/lang';
+import {isType, Type, isPresent} from 'angular2/src/facade/lang';
 import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
 import {RouteRegistry} from '../route_registry';
 
@@ -26,6 +26,11 @@ export function normalizeRouteConfig(config: RouteDefinition,
   }
   if (config instanceof Route || config instanceof Redirect || config instanceof AuxRoute) {
     return <RouteDefinition>config;
+  }
+
+  if (config.hasOwnProperty('component') && !isPresent(config.component)) {
+    throw new BaseException(
+        `Route '${config.name}' expected a valid component, got ${config.component}.`);
   }
 
   if ((+!!config.component) + (+!!config.redirectTo) + (+!!config.loader) != 1) {
