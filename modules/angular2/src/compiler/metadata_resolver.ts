@@ -76,7 +76,6 @@ export class CompileMetadataResolver {
     var meta = this._directiveCache.get(directiveType);
     if (isBlank(meta)) {
       var dirMeta = this._directiveResolver.resolve(directiveType);
-      var moduleUrl = staticTypeModuleUrl(directiveType);
       var templateMeta = null;
       var changeDetectionStrategy = null;
       var viewProviders = [];
@@ -84,7 +83,6 @@ export class CompileMetadataResolver {
       if (dirMeta instanceof md.ComponentMetadata) {
         assertArrayOfStrings('styles', dirMeta.styles);
         var cmpMeta = <md.ComponentMetadata>dirMeta;
-        moduleUrl = calcModuleUrl(this._reflector, directiveType, cmpMeta);
         var viewMeta = this._viewResolver.resolve(directiveType);
         assertArrayOfStrings('styles', viewMeta.styles);
         templateMeta = new cpl.CompileTemplateMetadata({
@@ -92,7 +90,8 @@ export class CompileMetadataResolver {
           template: viewMeta.template,
           templateUrl: viewMeta.templateUrl,
           styles: viewMeta.styles,
-          styleUrls: viewMeta.styleUrls
+          styleUrls: viewMeta.styleUrls,
+          baseUrl: calcTemplateBaseUrl(this._reflector, directiveType, cmpMeta)
         });
         changeDetectionStrategy = cmpMeta.changeDetection;
         if (isPresent(dirMeta.viewProviders)) {
@@ -114,7 +113,7 @@ export class CompileMetadataResolver {
         selector: dirMeta.selector,
         exportAs: dirMeta.exportAs,
         isComponent: isPresent(templateMeta),
-        type: this.getTypeMetadata(directiveType, moduleUrl),
+        type: this.getTypeMetadata(directiveType, staticTypeModuleUrl(directiveType)),
         template: templateMeta,
         changeDetection: changeDetectionStrategy,
         inputs: dirMeta.inputs,
@@ -399,14 +398,19 @@ function staticTypeModuleUrl(value: any): string {
   return isStaticType(value) ? value['moduleId'] : null;
 }
 
-function calcModuleUrl(reflector: ReflectorReader, type: Type,
-                       cmpMetadata: md.ComponentMetadata): string {
-  var moduleId = cmpMetadata.moduleId;
-  if (isPresent(moduleId)) {
+
+function calcTemplateBaseUrl(reflector: ReflectorReader, type: any,
+                             cmpMetadata: md.ComponentMetadata): string {
+  if (isStaticType(type)) {
+    return type['filePath'];
+  }
+
+  if (isPresent(cmpMetadata.moduleId)) {
+    var moduleId = cmpMetadata.moduleId;
     var scheme = getUrlScheme(moduleId);
     return isPresent(scheme) && scheme.length > 0 ? moduleId :
                                                     `package:${moduleId}${MODULE_SUFFIX}`;
-  } else {
-    return reflector.importUri(type);
   }
+
+  return reflector.importUri(type);
 }

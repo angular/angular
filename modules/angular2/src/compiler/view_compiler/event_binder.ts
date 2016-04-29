@@ -87,7 +87,8 @@ export class CompileEventListener {
            [
              new o.ReturnStatement(
                  o.THIS_EXPR.callMethod(this._methodName, [EventHandlerVars.event]))
-           ], o.BOOL_TYPE)
+           ],
+           o.BOOL_TYPE)
     ]);
     if (isPresent(this.eventTarget)) {
       listenExpr = ViewProperties.renderer.callMethod(
