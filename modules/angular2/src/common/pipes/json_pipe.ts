@@ -6,8 +6,8 @@ import {Injectable, PipeTransform, WrappedValue, Pipe} from 'angular2/core';
  *
  * ### Example
  * {@example core/pipes/ts/json_pipe/json_pipe_example.ts region='JsonPipe'}
+ * @ts2dart_const
  */
-/* @ts2dart_const */
 @Pipe({name: 'json', pure: false})
 @Injectable()
 export class JsonPipe implements PipeTransform {

@@ -33,8 +33,8 @@ import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
  * --Note--: The 'pattern' parameter will be converted to a RegExp instance. Make sure to escape the
  * string properly if you are matching for regular expression special characters like parenthesis,
  * brackets etc.
+ * @ts2dart_const
  */
-
 @Pipe({name: 'replace'})
 @Injectable()
 export class ReplacePipe implements PipeTransform {

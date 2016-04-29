@@ -362,7 +362,7 @@ class _NgMetaIdentifierResolver {
         return resolved;
       } else {
         final message = 'Missing identifier "${id.name}" '
-            'needed by "${neededBy}" from metadata map';
+            'needed by "${neededBy}" from metadata map: ${ngMetaMap}';
         if (errorOnMissingIdentifiers) {
           log.error(message, asset: entryPoint);
         } else {

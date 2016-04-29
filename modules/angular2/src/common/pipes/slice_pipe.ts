@@ -53,8 +53,8 @@ import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
  * ## String Examples
  *
  * {@example core/pipes/ts/slice_pipe/slice_pipe_example.ts region='SlicePipe_string'}
+ * @ts2dart_const
  */
-
 @Pipe({name: 'slice', pure: false})
 @Injectable()
 export class SlicePipe implements PipeTransform {

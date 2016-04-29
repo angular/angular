@@ -25,7 +25,6 @@ export interface KeyValueDifferFactory {
  * @ts2dart_const
  */
 export class KeyValueDiffers {
-  /*@ts2dart_const*/
   constructor(public factories: KeyValueDifferFactory[]) {}
 
   static create(factories: KeyValueDifferFactory[], parent?: KeyValueDiffers): KeyValueDiffers {

@@ -31,6 +31,7 @@ import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
  *    ...
  *  }
  *  ```
+ * @ts2dart_const
  */
 @Pipe({name: 'i18nSelect', pure: true})
 @Injectable()

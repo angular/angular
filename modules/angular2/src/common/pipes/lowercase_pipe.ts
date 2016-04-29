@@ -8,6 +8,7 @@ import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
  * ### Example
  *
  * {@example core/pipes/ts/lowerupper_pipe/lowerupper_pipe_example.ts region='LowerUpperPipe'}
+ * @ts2dart_const
  */
 @Pipe({name: 'lowercase'})
 @Injectable()
