@@ -300,7 +300,14 @@ function doCheckFormat() {
   var clangFormat = require('clang-format');
   var gulpFormat = require('gulp-clang-format');
 
-  return gulp.src(['modules/**/*.ts', 'tools/**/*.ts', '!**/typings/**/*.d.ts', 'gulpfile.js'])
+  return gulp.src([
+               'modules/**/*.ts',
+               'tools/**/*.ts',
+               '!**/typings/**/*.d.ts',
+               // workaround https://github.com/angular/clang-format/issues/28
+               '!tools/compiler_cli/src/main.ts',
+               'gulpfile.js'
+             ])
       .pipe(gulpFormat.checkFormat('file', clangFormat));
 }
 
@@ -1051,7 +1058,7 @@ gulp.task('!build.compiler_cli', ['build.js.cjs'],
 
 gulp.task('!test.compiler_cli.codegen', function(done) {
   try {
-    require('./dist/js/cjs/compiler_cli')
+    require('./dist/js/cjs/compiler_cli/main')
         .main("tools/compiler_cli/test")
         .then(function() { runTsc('tools/compiler_cli/test', done); })
         .catch(function(rej) { done(new Error(rej)); });

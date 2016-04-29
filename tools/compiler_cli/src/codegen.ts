@@ -79,7 +79,7 @@ export class CodeGenerator {
     return result;
   }
 
-  codegen() {
+  codegen(): Promise<void[]> {
     Parse5DomAdapter.makeCurrent();
     const generateOneFile = (absSourcePath: string) =>
         Promise.all(this.readComponents(absSourcePath))
