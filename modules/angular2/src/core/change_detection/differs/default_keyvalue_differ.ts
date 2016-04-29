@@ -4,8 +4,8 @@ import {BaseException} from 'angular2/src/facade/exceptions';
 import {ChangeDetectorRef} from '../change_detector_ref';
 import {KeyValueDiffer, KeyValueDifferFactory} from '../differs/keyvalue_differs';
 
+/* @ts2dart_const */
 export class DefaultKeyValueDifferFactory implements KeyValueDifferFactory {
-  /* @ts2dart_const */
   constructor() {}
   supports(obj: any): boolean { return obj instanceof Map || isJsObject(obj); }
 
