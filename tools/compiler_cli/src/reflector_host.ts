@@ -68,8 +68,8 @@ export class NodeReflectorHost implements StaticReflectorHost {
       if (!symbol) {
         throw new Error(`can't find symbol ${symbolName} exported from module ${filePath}`);
       }
-      while (symbol &&
-             symbol.flags & ts.SymbolFlags.Alias) {  // This is an alias, follow what it aliases
+      if (symbol &&
+          symbol.flags & ts.SymbolFlags.Alias) {  // This is an alias, follow what it aliases
         symbol = tc.getAliasedSymbol(symbol);
       }
       const declaration = symbol.getDeclarations()[0];

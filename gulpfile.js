@@ -483,8 +483,8 @@ function runTsc(project, done) {
 }
 
 gulp.task('test.js', function(done) {
-  runSequence('test.unit.tools/ci', 'test.transpiler.unittest', 'test.unit.js/ci',
-              'test.unit.cjs/ci', 'test.compiler_cli', 'test.typings', 'check-public-api',
+  runSequence('test.compiler_cli', 'test.unit.tools/ci', 'test.transpiler.unittest',
+              'test.unit.js/ci', 'test.unit.cjs/ci', 'test.typings', 'check-public-api',
               sequenceComplete(done));
 });
 

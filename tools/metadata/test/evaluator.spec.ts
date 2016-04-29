@@ -117,18 +117,20 @@ describe('Evaluator', () => {
     expect(evaluator.evaluateNode(findVar(forwardRef, 'bFalse').initializer)).toEqual(false);
   });
 
-  it('should return new expressions', () => {
+  fit('should return new expressions', () => {
+    evaluator =
+        new Evaluator(typeChecker, symbols, [{from: './classes', namedImports: [{name: 'Value'}]}]);
     var newExpression = program.getSourceFile('newExpression.ts');
     expect(evaluator.evaluateNode(findVar(newExpression, 'someValue').initializer))
         .toEqual({
           __symbolic: "new",
-          expression: {__symbolic: "reference", name: "Value", module: "classes.ts"},
+          expression: {__symbolic: "reference", name: "Value", module: "./classes"},
           arguments: ["name", 12]
         });
     expect(evaluator.evaluateNode(findVar(newExpression, 'complex').initializer))
         .toEqual({
           __symbolic: "new",
-          expression: {__symbolic: "reference", name: "Value", module: "classes.ts"},
+          expression: {__symbolic: "reference", name: "Value", module: "./classes"},
           arguments: ["name", 12]
         });
   });

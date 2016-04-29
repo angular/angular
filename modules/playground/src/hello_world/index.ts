@@ -14,14 +14,14 @@ export function main() {
 
 // A service available to the Injector, used by the HelloCmp component.
 @Injectable()
-class GreetingService {
+export class GreetingService {
   greeting: string = 'hello';
 }
 
 // Directives are light-weight. They don't allow new
 // expression contexts (use @Component for those needs).
 @Directive({selector: '[red]'})
-class RedDec {
+export class RedDec {
   // ElementRef is always injectable and it wraps the element on which the
   // directive was found by the compiler.
   constructor(el: ElementRef, renderer: Renderer) {
@@ -34,8 +34,6 @@ class RedDec {
 //   ShadowDom.(http://www.html5rocks.com/en/tutorials/webcomponents/shadowdom/)
 // - Directive - add behavior to existing elements.
 
-// @Component is AtScript syntax to annotate the HelloCmp class as an Angular
-// 2.0 component.
 @Component({
   // The Selector prop tells Angular on which elements to instantiate this
   // class. The syntax supported is a basic subset of CSS selectors, for example

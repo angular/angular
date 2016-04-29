@@ -70,7 +70,7 @@ export interface StaticReflectorHost {
  *
  * This token is unique for a moduleId and name and can be used as a hash table key.
  */
-export class StaticSymbol {
+export class StaticSymbol implements ModuleContext {
   constructor(public moduleId: string, public filePath: string, public name: string) {}
 }
 
@@ -336,7 +336,7 @@ export class StaticReflector implements ReflectorReader {
                 if (isClassMetadata(declarationValue)) {
                   result = staticSymbol;
                 } else {
-                  const newModuleContext =
+                  let newModuleContext =
                       new ModuleContext(staticSymbol.moduleId, staticSymbol.filePath);
                   result = _this.simplify(newModuleContext, declarationValue, crossModules);
                 }
@@ -382,9 +382,6 @@ export class StaticReflector implements ReflectorReader {
   }
 
   private getTypeMetadata(type: StaticSymbol): {[key: string]: any} {
-    if (!(type instanceof StaticSymbol)) {
-      throw new Error('not static type');
-    }
     let moduleMetadata = this.getModuleMetadata(type.filePath);
     let result = moduleMetadata['metadata'][type.name];
     if (!isPresent(result)) {

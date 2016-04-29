@@ -234,13 +234,13 @@ export function main() {
     });
 
     it('should simplify a module reference across modules', () => {
-      expect(crossModuleSimplify({moduleId: '', filePath: '/src/cases'},
+      expect(crossModuleSimplify(new ModuleContext('', '/src/cases'),
                                  ({__symbolic: "reference", module: "./extern", name: "s"})))
           .toEqual("s");
     });
 
     it('should simplify a module reference without crossing modules', () => {
-      expect(singleModuleSimplify({moduleId: '', filePath: '/src/cases'},
+      expect(singleModuleSimplify(new ModuleContext('', '/src/cases'),
                                   ({__symbolic: "reference", module: "./extern", name: "s"})))
           .toEqual(host.getStaticSymbol('', '/src/extern.d.ts', 's'));
     });
@@ -261,7 +261,7 @@ class MockReflectorHost implements StaticReflectorHost {
   }
 
   // In tests, assume that symbols are not re-exported
-  findDeclaration(modulePath: string, symbolName: string, containingFile: string): StaticSymbol {
+  findDeclaration(modulePath: string, symbolName: string, containingFile?: string): StaticSymbol {
     function splitPath(path: string): string[] { return path.split(/\/|\\/g); }
 
     function resolvePath(pathParts: string[]): string {
@@ -294,7 +294,7 @@ class MockReflectorHost implements StaticReflectorHost {
 
     if (modulePath.indexOf('.') === 0) {
       return this.getStaticSymbol(`mod/${symbolName}`, pathTo(containingFile, modulePath) + '.d.ts',
-                                symbolName);
+                                  symbolName);
     }
     return this.getStaticSymbol(`mod/${symbolName}`, '/tmp/' + modulePath + '.d.ts', symbolName);
   }
