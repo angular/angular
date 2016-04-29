@@ -7,7 +7,6 @@ import {
   isStringMap,
   FunctionWrapper
 } from 'angular2/src/facade/lang';
-import {BaseException} from 'angular2/src/facade/exceptions';
 import {
   AttributeMetadata,
   DirectiveMetadata,
@@ -35,11 +34,6 @@ import {
   SkipSelfMetadata,
   InjectMetadata,
 } from "angular2/src/core/di/metadata";
-import {OpaqueToken} from 'angular2/src/core/di/opaque_token';
-
-export class ModuleContext {
-  constructor(public moduleId: string, public filePath: string) {}
-}
 
 /**
  * The host of the static resolver is expected to be able to provide module metadata in the form of
@@ -71,7 +65,7 @@ export interface StaticReflectorHost {
  *
  * This token is unique for a moduleId and name and can be used as a hash table key.
  */
-export class StaticSymbol implements ModuleContext {
+export class StaticSymbol {
   constructor(public moduleId: string, public filePath: string, public name: string) {}
 }
 
@@ -84,8 +78,7 @@ export class StaticReflector implements ReflectorReader {
   private propertyCache = new Map<StaticSymbol, {[key: string]: any}>();
   private parameterCache = new Map<StaticSymbol, any[]>();
   private metadataCache = new Map<string, {[key: string]: any}>();
-  private conversionMap =
-      new Map<StaticSymbol, (moduleContext: ModuleContext, args: any[]) => any>();
+  private conversionMap = new Map<StaticSymbol, (context: StaticSymbol, args: any[]) => any>();
 
   constructor(private host: StaticReflectorHost) { this.initializeConversionMap(); }
 
@@ -155,22 +148,20 @@ export class StaticReflector implements ReflectorReader {
       }
       return parameters;
     } catch (e) {
-      console.error('Failed on type', type, 'with error', e);
+      console.log(`Failed on type ${type} with error ${e}`);
       throw e;
     }
   }
 
   private registerDecoratorOrConstructor(type: StaticSymbol, ctor: any): void {
-    this.conversionMap.set(type, (moduleContext: ModuleContext, args: any[]) => {
+    this.conversionMap.set(type, (context: StaticSymbol, args: any[]) => {
       let argValues = [];
       ListWrapper.forEachWithIndex(args, (arg, index) => {
         let argValue;
         if (isStringMap(arg) && isBlank(arg['__symbolic'])) {
-          argValue =
-              mapStringMap(arg, (value, key) => this.simplify(
-                                    moduleContext, value) );
+          argValue = mapStringMap(arg, (value, key) => this.simplify(context, value));
         } else {
-          argValue = this.simplify(moduleContext, arg);
+          argValue = this.simplify(context, arg);
         }
         argValues.push(argValue);
       });
@@ -183,7 +174,6 @@ export class StaticReflector implements ReflectorReader {
     let diDecorators = 'angular2/src/core/di/decorators';
     let diMetadata = 'angular2/src/core/di/metadata';
     let provider = 'angular2/src/core/di/provider';
-    let opaqueToken = 'angular2/src/core/di/opaque_token';
     this.registerDecoratorOrConstructor(this.host.findDeclaration(provider, 'Provider'), Provider);
 
     this.registerDecoratorOrConstructor(this.host.findDeclaration(diDecorators, 'Host'),
@@ -236,12 +226,10 @@ export class StaticReflector implements ReflectorReader {
                                         SkipSelfMetadata);
     this.registerDecoratorOrConstructor(this.host.findDeclaration(diMetadata, 'OptionalMetadata'),
                                         OptionalMetadata);
-    this.registerDecoratorOrConstructor(this.host.findDeclaration(opaqueToken, 'OpaqueToken'),
-                                        OpaqueToken);
   }
 
   /** @internal */
-  public simplify(moduleContext: ModuleContext, value: any): any {
+  public simplify(context: StaticSymbol, value: any): any {
     let _this = this;
 
     function simplify(expression: any): any {
@@ -331,41 +319,39 @@ export class StaticReflector implements ReflectorReader {
             case "reference":
               if (isPresent(expression['module'])) {
                 staticSymbol = _this.host.findDeclaration(expression['module'], expression['name'],
-                                                          moduleContext.filePath);
+                                                          context.filePath);
               } else {
-                staticSymbol = _this.host.getStaticSymbol(
-                    moduleContext.moduleId, moduleContext.filePath, expression['name']);
+                staticSymbol = _this.host.getStaticSymbol(context.moduleId, context.filePath,
+                                                          expression['name']);
               }
               let result = staticSymbol;
               let moduleMetadata = _this.getModuleMetadata(staticSymbol.filePath);
-              let declarationValue = isPresent(moduleMetadata) ? moduleMetadata['metadata'][staticSymbol.name] : null;
+              let declarationValue =
+                  isPresent(moduleMetadata) ? moduleMetadata['metadata'][staticSymbol.name] : null;
               if (isPresent(declarationValue)) {
                 if (isClassMetadata(declarationValue)) {
                   result = staticSymbol;
                 } else {
-                  let newModuleContext =
-                      new ModuleContext(staticSymbol.moduleId, staticSymbol.filePath);
-                  result = _this.simplify(newModuleContext, declarationValue);
+                  result = _this.simplify(staticSymbol, declarationValue);
                 }
               }
               return result;
+            case "class":
+              return context;
             case "new":
             case "call":
               let target = expression['expression'];
-              staticSymbol = _this.host.findDeclaration(target['module'], target['name'],
-                                                        moduleContext.filePath);
+              staticSymbol =
+                  _this.host.findDeclaration(target['module'], target['name'], context.filePath);
               let converter = _this.conversionMap.get(staticSymbol);
-              if (isBlank(converter)) {
-                throw new BaseException(`Cannot convert call/new expression for ${target['name']} in ${moduleContext.filePath}`)
-              }
               if (isPresent(converter)) {
                 let args = expression['arguments'];
                 if (isBlank(args)) {
                   args = [];
                 }
-                return converter(moduleContext, args);
+                return converter(context, args);
               } else {
-                return staticSymbol;
+                return context;
               }
           }
           return null;

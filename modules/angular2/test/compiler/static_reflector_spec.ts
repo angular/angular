@@ -5,15 +5,14 @@ import {ListWrapper} from 'angular2/src/facade/collection';
 import {
   StaticReflector,
   StaticReflectorHost,
-  StaticSymbol,
-  ModuleContext
+  StaticSymbol
 } from 'angular2/src/compiler/static_reflector';
 
 export function main() {
   // Static reflector is not supported in Dart
   // as we use reflection to create objects.
   if (IS_DART) return;
-  let noContext = new ModuleContext('', '');
+  let noContext = new StaticSymbol('', '', '');
 
   describe('StaticReflector', () => {
     let host: StaticReflectorHost;
@@ -24,8 +23,8 @@ export function main() {
       reflector = new StaticReflector(host);
     });
 
-    function simplify(moduleContext: ModuleContext, value: any) {
-      return reflector.simplify(moduleContext, value);
+    function simplify(context: StaticSymbol, value: any) {
+      return reflector.simplify(context, value);
     }
 
     it('should get annotations for NgFor', () => {
@@ -219,9 +218,7 @@ export function main() {
     });
 
     it('should simplify an array index', () => {
-      expect(
-          simplify(noContext, ({__symbolic: "index", expression: [1, 2, 3], index: 2})))
-          .toBe(3);
+      expect(simplify(noContext, ({__symbolic: "index", expression: [1, 2, 3], index: 2}))).toBe(3);
     });
 
     it('should simplify an object index', () => {
@@ -230,14 +227,14 @@ export function main() {
     });
 
     it('should simplify a module reference', () => {
-      expect(simplify(new ModuleContext('', '/src/cases'),
-                                 ({__symbolic: "reference", module: "./extern", name: "s"})))
+      expect(simplify(new StaticSymbol('', '/src/cases', ''),
+                      ({__symbolic: "reference", module: "./extern", name: "s"})))
           .toEqual("s");
     });
 
     it('should simplify a non existing reference as a static symbol', () => {
-      expect(simplify(new ModuleContext('', '/src/cases'),
-                                  ({__symbolic: "reference", module: "./extern", name: "nonExisting"})))
+      expect(simplify(new StaticSymbol('', '/src/cases', ''),
+                      ({__symbolic: "reference", module: "./extern", name: "nonExisting"})))
           .toEqual(host.getStaticSymbol('', '/src/extern.d.ts', 'nonExisting'));
     });
   });
