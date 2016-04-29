@@ -1,5 +1,7 @@
-import {isPresent, isBlank} from 'angular2/src/facade/lang';
-import {ListWrapper, StringMapWrapper, MapWrapper} from 'angular2/src/facade/collection';
+import {ViewType} from '../../core_private';
+
+import {isPresent, isBlank} from '../../src/facade/lang';
+import {ListWrapper} from '../../src/facade/collection';
 
 import * as o from '../output/output_ast';
 import {EventHandlerVars} from './constants';
@@ -8,7 +10,6 @@ import {NameResolver} from './expression_converter';
 import {CompileElement, CompileNode} from './compile_element';
 import {CompileMethod} from './compile_method';
 import {CompilePipe} from './compile_pipe';
-import {ViewType} from 'angular2/src/core/linker/view_type';
 import {
   CompileDirectiveMetadata,
   CompilePipeMetadata,
@@ -19,8 +20,7 @@ import {
   getViewFactoryName,
   injectFromViewParentInjector,
   createDiTokenExpression,
-  getPropertyInView,
-  createPureProxy
+  getPropertyInView, createPureProxy
 } from './util';
 import {CompilerConfig} from '../config';
 import {CompileBinding} from './compile_binding';

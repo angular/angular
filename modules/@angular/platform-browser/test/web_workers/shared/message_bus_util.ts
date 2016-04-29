@@ -2,8 +2,8 @@ import {
   PostMessageBusSource,
   PostMessageBusSink,
   PostMessageBus
-} from 'angular2/src/web_workers/shared/post_message_bus';
-import {MessageBus} from 'angular2/src/web_workers/shared/message_bus';
+} from '@angular/platform-browser/src/web_workers/shared/post_message_bus';
+import {MessageBus} from '@angular/platform-browser/src/web_workers/shared/message_bus';
 
 /*
  * Returns a PostMessageBus thats sink is connected to its own source.

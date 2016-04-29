@@ -1,15 +1,13 @@
+import {ViewEncapsulation, Injectable} from '@angular/core';
 import {
-  CompileTemplateMetadata,
   CompileIdentifierMetadata,
   CompileDirectiveMetadata
 } from './compile_metadata';
 import * as o from './output/output_ast';
-import {ViewEncapsulation} from 'angular2/src/core/metadata/view';
-import {ShadowCss} from 'angular2/src/compiler/shadow_css';
-import {UrlResolver} from 'angular2/src/compiler/url_resolver';
+import {ShadowCss} from './shadow_css';
+import {UrlResolver} from './url_resolver';
 import {extractStyleUrls} from './style_url_resolver';
-import {Injectable} from 'angular2/src/core/di';
-import {isPresent} from 'angular2/src/facade/lang';
+import {isPresent} from '../src/facade/lang';
 
 const COMPONENT_VARIABLE = '%COMP%';
 const HOST_ATTR = /*@ts2dart_const*/ `_nghost-${COMPONENT_VARIABLE}`;

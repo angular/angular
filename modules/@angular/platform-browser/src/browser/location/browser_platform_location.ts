@@ -1,7 +1,9 @@
-import {Injectable} from 'angular2/src/core/di/decorators';
-import {UrlChangeListener, PlatformLocation} from './platform_location';
-import {History, Location} from 'angular2/src/facade/browser';
-import {DOM} from 'angular2/src/platform/dom/dom_adapter';
+import {Injectable} from '@angular/core';
+import {History, Location} from '../../../src/facade/browser';
+import {UrlChangeListener, PlatformLocation} from '@angular/common';
+import {getDOM} from '../../dom/dom_adapter';
+
+
 
 /**
  * `PlatformLocation` encapsulates all of the direct calls to platform APIs.
@@ -21,21 +23,21 @@ export class BrowserPlatformLocation extends PlatformLocation {
   // This is moved to its own method so that `MockPlatformLocationStrategy` can overwrite it
   /** @internal */
   _init() {
-    this._location = DOM.getLocation();
-    this._history = DOM.getHistory();
+    this._location = getDOM().getLocation();
+    this._history = getDOM().getHistory();
   }
 
   /** @internal */
   get location(): Location { return this._location; }
 
-  getBaseHrefFromDOM(): string { return DOM.getBaseHref(); }
+  getBaseHrefFromDOM(): string { return getDOM().getBaseHref(); }
 
   onPopState(fn: UrlChangeListener): void {
-    DOM.getGlobalEventTarget('window').addEventListener('popstate', fn, false);
+    getDOM().getGlobalEventTarget('window').addEventListener('popstate', fn, false);
   }
 
   onHashChange(fn: UrlChangeListener): void {
-    DOM.getGlobalEventTarget('window').addEventListener('hashchange', fn, false);
+    getDOM().getGlobalEventTarget('window').addEventListener('hashchange', fn, false);
   }
 
   get pathname(): string { return this._location.pathname; }

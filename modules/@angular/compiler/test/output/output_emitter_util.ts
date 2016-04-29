@@ -1,11 +1,11 @@
-import {CompileIdentifierMetadata} from 'angular2/src/compiler/compile_metadata';
-import {EventEmitter} from 'angular2/src/facade/async';
-import {ViewType} from 'angular2/src/core/linker/view_type';
-import {BaseException} from 'angular2/src/facade/exceptions';
-import {InstanceFactory, DynamicInstance} from 'angular2/src/compiler/output/output_interpreter';
-import {MODULE_SUFFIX} from 'angular2/src/compiler/util';
+import {CompileIdentifierMetadata} from '@angular/compiler/src/compile_metadata';
+import {EventEmitter} from '@angular/core';
+import {ViewType} from '@angular/core/src/linker/view_type';
+import {BaseException} from '../../src/facade/exceptions';
+import {InstanceFactory, DynamicInstance} from '@angular/compiler/src/output/output_interpreter';
+import {assetUrl} from '@angular/compiler/src/util';
 
-import * as o from 'angular2/src/compiler/output/output_ast';
+import * as o from '@angular/compiler/src/output/output_ast';
 
 export class ExternalClass {
   changeable: any;
@@ -15,25 +15,25 @@ export class ExternalClass {
 
 var testDataIdentifier = new CompileIdentifierMetadata({
   name: 'ExternalClass',
-  moduleUrl: `asset:angular2/test/compiler/output/output_emitter_util${MODULE_SUFFIX}`,
+  moduleUrl: assetUrl('compiler', 'output/output_emitter_util'),
   runtime: ExternalClass
 });
 
 var eventEmitterIdentifier = new CompileIdentifierMetadata({
   name: 'EventEmitter',
-  moduleUrl: `asset:angular2/lib/src/facade/async${MODULE_SUFFIX}`,
+  moduleUrl: assetUrl('core'),
   runtime: EventEmitter
 });
 
 var enumIdentifier = new CompileIdentifierMetadata({
   name: 'ViewType.HOST',
-  moduleUrl: `asset:angular2/lib/src/core/linker/view_type${MODULE_SUFFIX}`,
+  moduleUrl: assetUrl('core', 'linker/view_type'),
   runtime: ViewType.HOST
 });
 
 var baseExceptionIdentifier = new CompileIdentifierMetadata({
   name: 'BaseException',
-  moduleUrl: `asset:angular2/lib/src/facade/exceptions${MODULE_SUFFIX}`,
+  moduleUrl: assetUrl('core'),
   runtime: BaseException
 });
 

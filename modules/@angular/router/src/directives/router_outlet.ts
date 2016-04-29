@@ -1,7 +1,6 @@
-import {PromiseWrapper, EventEmitter} from 'angular2/src/facade/async';
-import {StringMapWrapper} from 'angular2/src/facade/collection';
-import {isBlank, isPresent} from 'angular2/src/facade/lang';
-
+import {PromiseWrapper, EventEmitter} from '../../src/facade/async';
+import {StringMapWrapper} from '../../src/facade/collection';
+import {isBlank, isPresent} from '../../src/facade/lang';
 import {
   Directive,
   Attribute,
@@ -12,8 +11,7 @@ import {
   ReflectiveInjector,
   OnDestroy,
   Output
-} from 'angular2/core';
-
+} from '@angular/core';
 import * as routerMod from '../router';
 import {ComponentInstruction, RouteParams, RouteData} from '../instruction';
 import * as hookMod from '../lifecycle/lifecycle_annotations';

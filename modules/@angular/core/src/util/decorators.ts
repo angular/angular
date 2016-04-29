@@ -1,4 +1,4 @@
-import {ConcreteType, global, Type, isFunction, stringify} from 'angular2/src/facade/lang';
+import {ConcreteType, global, Type, isFunction, stringify} from '../../src/facade/lang';
 
 var _nextClassId = 0;
 
@@ -222,7 +222,7 @@ export function Class(clsDef: ClassDefinition): ConcreteType {
   }
   for (var key in clsDef) {
     if (key != 'extends' && key != 'prototype' && clsDef.hasOwnProperty(key)) {
-      proto[key] = applyParams(clsDef[key], key);
+      proto[key] = applyParams(<any>clsDef[key], key);
     }
   }
 

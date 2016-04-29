@@ -2,19 +2,16 @@ import {
   PostMessageBus,
   PostMessageBusSink,
   PostMessageBusSource
-} from 'angular2/src/web_workers/shared/post_message_bus';
-import {MessageBus} from 'angular2/src/web_workers/shared/message_bus';
-import {APP_INITIALIZER} from 'angular2/core';
-import {Injector, Injectable, Provider} from 'angular2/src/core/di';
-import {MessageBasedRenderer} from 'angular2/src/web_workers/ui/renderer';
-import {MessageBasedXHRImpl} from 'angular2/src/web_workers/ui/xhr_impl';
+} from '../web_workers/shared/post_message_bus';
+import {MessageBus} from '../web_workers/shared/message_bus';
+import {APP_INITIALIZER} from '@angular/core';
+import {Injector, Injectable, Provider} from '@angular/core/src/di';
 import {
   WORKER_RENDER_APPLICATION_COMMON,
-  WORKER_RENDER_MESSAGING_PROVIDERS,
   WORKER_SCRIPT,
   initializeGenericWorkerRenderer
-} from 'angular2/src/platform/worker_render_common';
-import {BaseException} from 'angular2/src/facade/exceptions';
+} from './worker_render_common';
+import {BaseException} from '../../src/facade/exceptions';
 
 /**
  * Wrapper class that exposes the Worker

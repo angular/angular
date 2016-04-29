@@ -1,0 +1,27 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "declaration": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "outDir": "../../../dist/packages-dist/common/",
+    "paths": {
+      "@angular/core": ["../../../dist/packages-dist/core/"]
+    },
+    "rootDir": ".",
+    "sourceMap": true,
+    "sourceRoot": ".",
+    "target": "es5"
+  },
+  "files": [
+    "index.ts",
+    "testing.ts",
+    "../typings/es6-collections/es6-collections.d.ts",
+    "../typings/es6-promise/es6-promise.d.ts",
+    "../manual_typings/globals.d.ts",
+    "../../../node_modules/zone.js/dist/zone.js.d.ts"
+
+  ]
+}

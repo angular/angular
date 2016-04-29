@@ -1,4 +1,4 @@
-import {Injector, THROW_IF_NOT_FOUND} from 'angular2/src/core/di/injector';
+import {Injector, THROW_IF_NOT_FOUND} from '../di/injector';
 import {AppView} from './view';
 
 const _UNDEFINED = /*@ts2dart_const*/ new Object();

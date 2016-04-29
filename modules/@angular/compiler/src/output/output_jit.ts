@@ -1,11 +1,7 @@
 import {
   isPresent,
-  isBlank,
-  isString,
   evalExpression,
-  RegExpWrapper,
-  StringWrapper
-} from 'angular2/src/facade/lang';
+} from '../../src/facade/lang';
 import * as o from './output_ast';
 import {EmitterVisitorContext} from './abstract_emitter';
 import {AbstractJsEmitterVisitor} from './abstract_js_emitter';

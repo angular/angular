@@ -1,5 +1,4 @@
 import {
-  AsyncTestCompleter,
   beforeEach,
   ddescribe,
   describe,
@@ -8,11 +7,11 @@ import {
   inject,
   it,
   xit
-} from 'angular2/testing_internal';
-
-import {XHRImpl} from 'angular2/src/platform/browser/xhr_impl';
-import {PromiseWrapper} from 'angular2/src/facade/async';
-import {IS_DART} from 'angular2/src/facade/lang';
+} from '@angular/core/testing/testing_internal';
+import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
+import {XHRImpl} from '../../src/xhr/xhr_impl';
+import {PromiseWrapper} from '../../src/facade/async';
+import {IS_DART} from '../../src/facade/lang';
 
 export function main() {
   describe('XHRImpl', () => {
@@ -24,8 +23,8 @@ export function main() {
     // will be relative to here, so url200 should look like
     // static_assets/200.html.
     // We currently have no way of detecting this.
-    var urlBase = IS_DART ? '' : '/base/modules/angular2/';
-    var url200 = urlBase + 'test/platform/browser/static_assets/200.html';
+    var urlBase = IS_DART ? '' : '/base/modules/@angular/';
+    var url200 = urlBase + 'platform-browser-dynamic/test/browser/static_assets/200.html';
     var url404 = '/bad/path/404.html';
 
     beforeEach(() => { xhr = new XHRImpl(); });

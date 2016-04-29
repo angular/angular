@@ -6,11 +6,10 @@ import {
   xit,
   expect,
   beforeEach,
-  afterEach,
-  el
-} from 'angular2/testing_internal';
-import {Control, FormBuilder} from 'angular2/common';
-import {PromiseWrapper} from 'angular2/src/facade/promise';
+  afterEach
+} from '@angular/core/testing/testing_internal';
+import {Control, FormBuilder} from '@angular/common';
+import {PromiseWrapper} from '../../src/facade/promise';
 
 export function main() {
   function syncValidator(_) { return null; }

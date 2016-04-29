@@ -126,7 +126,7 @@ class BrowserGetTestability implements GetTestability {
         }
         return _jsify(result);
       };
-      js.context['getAllAngularTestabilities'] = 
+      js.context['getAllAngularTestabilities'] =
           _jsify(getAllAngularTestabilities);
 
       var whenAllStable = _jsify((callback) {
@@ -162,10 +162,10 @@ class BrowserGetTestability implements GetTestability {
     } else if (!findInAncestors) {
       return null;
     }
-    if (DOM.isShadowRoot(elem)) {
-      return this.findTestabilityInTree(registry, DOM.getHost(elem), true);
+    if (getDOM().isShadowRoot(elem)) {
+      return this.findTestabilityInTree(registry, getDOM().getHost(elem), true);
     }
-    return this.findTestabilityInTree(registry, DOM.parentElement(elem), true);
+    return this.findTestabilityInTree(registry, getDOM().parentElement(elem), true);
   }
 
   js.JsObject _createRegistry(TestabilityRegistry registry) {

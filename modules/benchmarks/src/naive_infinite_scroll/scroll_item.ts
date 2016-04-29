@@ -7,7 +7,7 @@ import {
   FormattedCellComponent
 } from './cells';
 
-import {Component, Directive} from 'angular2/core';
+import {Component, Directive} from '@angular/core';
 
 import {
   Offering,

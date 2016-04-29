@@ -1,24 +1,23 @@
 import {
-  AsyncTestCompleter,
-  TestComponentBuilder,
   beforeEach,
   beforeEachProviders,
   ddescribe,
   describe,
-  el,
-  expect,
   iit,
   inject,
   it,
   xit,
-} from 'angular2/testing_internal';
+} from '@angular/core/testing/testing_internal';
+import {expect} from '@angular/platform-browser/testing';
+import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
+import {TestComponentBuilder, ComponentFixture} from '@angular/compiler/testing';
 
-import {ListWrapper} from 'angular2/src/facade/collection';
-import {IS_DART} from 'angular2/src/facade/lang';
-import {Component, TemplateRef, ContentChild} from 'angular2/core';
-import {NgFor} from 'angular2/src/common/directives/ng_for';
-import {NgIf} from 'angular2/src/common/directives/ng_if';
-import {By} from 'angular2/platform/common_dom';
+import {ListWrapper} from '../../src/facade/collection';
+import {IS_DART} from '../../src/facade/lang';
+import {Component, TemplateRef, ContentChild} from '@angular/core';
+import {NgFor} from '@angular/common';
+import {NgIf} from '@angular/common';
+import {By} from '@angular/platform-browser/src/dom/debug/by';
 
 export function main() {
   describe('ngFor', () => {

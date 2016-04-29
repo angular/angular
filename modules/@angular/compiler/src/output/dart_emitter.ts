@@ -1,14 +1,9 @@
 import {
-  StringWrapper,
-  RegExpWrapper,
   isPresent,
   isBlank,
-  Math,
-  isString,
   isArray
-} from 'angular2/src/facade/lang';
-import {ListWrapper} from 'angular2/src/facade/collection';
-import {BaseException} from 'angular2/src/facade/exceptions';
+} from '../../src/facade/lang';
+import {BaseException} from '../../src/facade/exceptions';
 import {CompileIdentifierMetadata} from '../compile_metadata';
 import * as o from './output_ast';
 import {
@@ -17,7 +12,6 @@ import {
   AbstractEmitterVisitor,
   CATCH_ERROR_VAR,
   CATCH_STACK_VAR,
-  escapeSingleQuoteString
 } from './abstract_emitter';
 import {getImportModulePath, ImportEnv} from './path_util';
 

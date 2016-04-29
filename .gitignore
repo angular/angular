@@ -52,3 +52,6 @@ npm-debug.log
 
 # built dart payload tests
 /modules_dart/payload/**/build
+
+# rollup-test output
+/modules/rollup-test/dist/

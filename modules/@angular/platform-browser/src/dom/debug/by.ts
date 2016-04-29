@@ -1,7 +1,8 @@
-import {Type, isPresent, isBlank} from 'angular2/src/facade/lang';
-import {Predicate} from 'angular2/src/facade/collection';
-import {DOM} from 'angular2/src/platform/dom/dom_adapter';
-import {DebugElement} from 'angular2/core';
+import {DebugElement} from '@angular/core';
+import {Type, isPresent} from '../../../src/facade/lang';
+import {Predicate} from '../../../src/facade/collection';
+import {getDOM} from '../../dom/dom_adapter';
+
 
 /**
  * Predicates for use with {@link DebugElement}'s query functions.
@@ -26,7 +27,7 @@ export class By {
   static css(selector: string): Predicate<DebugElement> {
     return (debugElement) => {
       return isPresent(debugElement.nativeElement) ?
-                 DOM.elementMatches(debugElement.nativeElement, selector) :
+                 getDOM().elementMatches(debugElement.nativeElement, selector) :
                  false;
     };
   }

@@ -7,23 +7,22 @@ import {
   expect,
   beforeEach,
   afterEach,
-  AsyncTestCompleter,
   inject,
-  browserDetection
-} from 'angular2/testing_internal';
+} from '@angular/core/testing/testing_internal';
+import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
 import {SpyChangeDetectorRef} from '../spies';
-
-import {isBlank} from 'angular2/src/facade/lang';
-import {AsyncPipe} from 'angular2/common';
-import {WrappedValue} from 'angular2/core';
+import {isBlank} from '../../src/facade/lang';
+import {AsyncPipe} from '@angular/common';
+import {WrappedValue} from '@angular/core';
 import {
   EventEmitter,
   ObservableWrapper,
   PromiseWrapper,
   TimerWrapper
-} from 'angular2/src/facade/async';
-import {DOM} from 'angular2/src/platform/dom/dom_adapter';
-import {PromiseCompleter} from 'angular2/src/facade/promise';
+} from '../../src/facade/async';
+import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
+import {PromiseCompleter} from '../../src/facade/promise';
+import {browserDetection} from '@angular/platform-browser/testing';
 
 export function main() {
   describe("AsyncPipe", () => {
@@ -121,7 +120,7 @@ export function main() {
       var completer: PromiseCompleter<any>;
       var ref: SpyChangeDetectorRef;
       // adds longer timers for passing tests in IE
-      var timer = (!isBlank(DOM) && browserDetection.isIE) ? 50 : 10;
+      var timer = (!isBlank(getDOM()) && browserDetection.isIE) ? 50 : 10;
 
       beforeEach(() => {
         completer = PromiseWrapper.completer();

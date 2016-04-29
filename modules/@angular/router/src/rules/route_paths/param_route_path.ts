@@ -1,11 +1,9 @@
-import {RegExpWrapper, StringWrapper, isPresent, isBlank} from 'angular2/src/facade/lang';
-import {BaseException} from 'angular2/src/facade/exceptions';
-import {StringMapWrapper} from 'angular2/src/facade/collection';
-
+import {RegExpWrapper, StringWrapper, isPresent, isBlank} from '../../../src/facade/lang';
+import {BaseException} from '../../../src/facade/exceptions';
+import {StringMapWrapper} from '../../../src/facade/collection';
 import {TouchMap, normalizeString} from '../../utils';
 import {Url, RootUrl, convertUrlParamsToArray} from '../../url_parser';
 import {RoutePath, GeneratedUrl, MatchedUrl} from './route_path';
-
 
 
 /**

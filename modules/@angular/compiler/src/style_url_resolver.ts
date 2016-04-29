@@ -1,8 +1,8 @@
 // Some of the code comes from WebComponents.JS
 // https://github.com/webcomponents/webcomponentsjs/blob/master/src/HTMLImports/path.js
 
-import {RegExp, RegExpWrapper, StringWrapper, isPresent, isBlank} from 'angular2/src/facade/lang';
-import {UrlResolver} from 'angular2/src/compiler/url_resolver';
+import {RegExpWrapper, StringWrapper, isPresent, isBlank} from '../src/facade/lang';
+import {UrlResolver} from './url_resolver';
 
 export class StyleWithImports {
   constructor(public style: string, public styleUrls: string[]) {}

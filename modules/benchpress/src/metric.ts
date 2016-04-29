@@ -1,5 +1,5 @@
-import {bind, provide, Provider} from 'angular2/src/core/di';
-import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
+import {bind, provide, Provider} from '@angular/core/src/di';
+import {BaseException, WrappedException} from '@angular/facade';
 
 /**
  * A metric is measures values

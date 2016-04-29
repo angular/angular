@@ -1,27 +1,23 @@
+import {Injectable, ViewEncapsulation} from '@angular/core';
+
+import {isPresent} from '../src/facade/lang';
+import {BaseException} from '../src/facade/exceptions';
+import {PromiseWrapper} from '../src/facade/async';
+
 import {
   CompileTypeMetadata,
   CompileDirectiveMetadata,
   CompileTemplateMetadata,
-  CompileProviderMetadata,
-  CompileTokenMetadata
 } from './compile_metadata';
-import {isPresent, isBlank, isArray} from 'angular2/src/facade/lang';
-import {BaseException} from 'angular2/src/facade/exceptions';
-import {PromiseWrapper} from 'angular2/src/facade/async';
-
-import {XHR} from 'angular2/src/compiler/xhr';
-import {UrlResolver} from 'angular2/src/compiler/url_resolver';
+import {XHR} from './xhr';
+import {UrlResolver} from './url_resolver';
 import {extractStyleUrls, isStyleUrlResolvable} from './style_url_resolver';
-import {Injectable} from 'angular2/src/core/di';
-import {ViewEncapsulation} from 'angular2/src/core/metadata/view';
-
 
 import {
   HtmlAstVisitor,
   HtmlElementAst,
   HtmlTextAst,
   HtmlAttrAst,
-  HtmlAst,
   HtmlCommentAst,
   HtmlExpansionAst,
   HtmlExpansionCaseAst,
@@ -29,7 +25,8 @@ import {
 } from './html_ast';
 import {HtmlParser} from './html_parser';
 
-import {preparseElement, PreparsedElement, PreparsedElementType} from './template_preparser';
+import {preparseElement, PreparsedElementType} from './template_preparser';
+
 
 @Injectable()
 export class DirectiveNormalizer {

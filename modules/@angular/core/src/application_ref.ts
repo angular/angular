@@ -1,30 +1,27 @@
-import {NgZone, NgZoneError} from 'angular2/src/core/zone/ng_zone';
+import {NgZone, NgZoneError} from './zone/ng_zone';
 import {
   Type,
   isBlank,
   isPresent,
   assertionsEnabled,
-  print,
-  IS_DART,
   lockMode,
   isPromise
-} from 'angular2/src/facade/lang';
-import {provide, Provider, Injector, Injectable} from 'angular2/src/core/di';
-import {APP_ID_RANDOM_PROVIDER, PLATFORM_INITIALIZER, APP_INITIALIZER} from './application_tokens';
-import {PromiseWrapper, PromiseCompleter, ObservableWrapper} from 'angular2/src/facade/async';
-import {ListWrapper} from 'angular2/src/facade/collection';
-import {TestabilityRegistry, Testability} from 'angular2/src/core/testability/testability';
-import {ComponentResolver} from 'angular2/src/core/linker/component_resolver';
-import {ComponentRef, ComponentFactory} from 'angular2/src/core/linker/component_factory';
+} from '../src/facade/lang';
+import {Injector, Injectable} from './di';
+import {PLATFORM_INITIALIZER, APP_INITIALIZER} from './application_tokens';
+import {PromiseWrapper, ObservableWrapper} from '../src/facade/async';
+import {ListWrapper} from '../src/facade/collection';
+import {TestabilityRegistry, Testability} from './testability/testability';
+import {ComponentResolver} from './linker/component_resolver';
+import {ComponentRef, ComponentFactory} from './linker/component_factory';
 import {
   BaseException,
-  WrappedException,
   ExceptionHandler,
   unimplemented
-} from 'angular2/src/facade/exceptions';
-import {Console} from 'angular2/src/core/console';
+} from '../src/facade/exceptions';
+import {Console} from './console';
 import {wtfLeave, wtfCreateScope, WtfScopeFn} from './profile/profile';
-import {ChangeDetectorRef} from 'angular2/src/core/change_detection/change_detector_ref';
+import {ChangeDetectorRef} from './change_detection/change_detector_ref';
 
 /**
  * Create an Angular zone.

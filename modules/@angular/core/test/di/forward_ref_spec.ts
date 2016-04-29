@@ -1,5 +1,4 @@
 import {
-  AsyncTestCompleter,
   beforeEach,
   ddescribe,
   describe,
@@ -8,9 +7,9 @@ import {
   inject,
   it,
   xit,
-} from 'angular2/testing_internal';
-import {forwardRef, resolveForwardRef} from 'angular2/src/core/di';
-import {Type} from 'angular2/src/facade/lang';
+} from '@angular/core/testing/testing_internal';
+import {forwardRef, resolveForwardRef} from '@angular/core/src/di';
+import {Type} from '../../src/facade/lang';
 
 export function main() {
   describe("forwardRef", function() {

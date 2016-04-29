@@ -1,8 +1,8 @@
-import {isPresent, isString} from 'angular2/src/facade/lang';
+import {isPresent, isString} from '../src/facade/lang';
 import {Headers} from './headers';
 import {RequestMethod} from './enums';
 import {RequestOptionsArgs} from './interfaces';
-import {Injectable} from 'angular2/core';
+import {Injectable} from '@angular/core';
 import {URLSearchParams} from './url_search_params';
 import {normalizeMethodName} from './http_utils';
 
@@ -19,7 +19,7 @@ import {normalizeMethodName} from './http_utils';
  * ### Example ([live demo](http://plnkr.co/edit/7Wvi3lfLq41aQPKlxB4O?p=preview))
  *
  * ```typescript
- * import {RequestOptions, Request, RequestMethod} from 'angular2/http';
+ * import {RequestOptions, Request, RequestMethod} from '@angular/http';
  *
  * var options = new RequestOptions({
  *   method: RequestMethod.Post,
@@ -75,7 +75,7 @@ export class RequestOptions {
    * ### Example ([live demo](http://plnkr.co/edit/6w8XA8YTkDRcPYpdB9dk?p=preview))
    *
    * ```typescript
-   * import {RequestOptions, Request, RequestMethod} from 'angular2/http';
+   * import {RequestOptions, Request, RequestMethod} from '@angular/http';
    *
    * var options = new RequestOptions({
    *   method: RequestMethod.Post
@@ -117,9 +117,9 @@ export class RequestOptions {
  * ### Example ([live demo](http://plnkr.co/edit/LEKVSx?p=preview))
  *
  * ```typescript
- * import {provide} from 'angular2/core';
- * import {bootstrap} from 'angular2/platform/browser';
- * import {HTTP_PROVIDERS, Http, BaseRequestOptions, RequestOptions} from 'angular2/http';
+ * import {provide} from '@angular/core';
+ * import {bootstrap} from '@angular/platform-browser/browser';
+ * import {HTTP_PROVIDERS, Http, BaseRequestOptions, RequestOptions} from '@angular/http';
  * import {App} from './myapp';
  *
  * class MyOptions extends BaseRequestOptions {
@@ -135,7 +135,7 @@ export class RequestOptions {
  * ### Example ([live demo](http://plnkr.co/edit/oyBoEvNtDhOSfi9YxaVb?p=preview))
  *
  * ```
- * import {BaseRequestOptions, Request, RequestMethod} from 'angular2/http';
+ * import {BaseRequestOptions, Request, RequestMethod} from '@angular/http';
  *
  * var options = new BaseRequestOptions();
  * var req = new Request(options.merge({

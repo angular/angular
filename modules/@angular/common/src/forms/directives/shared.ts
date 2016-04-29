@@ -1,6 +1,6 @@
-import {ListWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
-import {isBlank, isPresent, looseIdentical, hasConstructor} from 'angular2/src/facade/lang';
-import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
+import {ListWrapper, StringMapWrapper} from '../../../src/facade/collection';
+import {isBlank, isPresent, looseIdentical, hasConstructor} from '../../../src/facade/lang';
+import {BaseException} from '../../../src/facade/exceptions';
 
 import {ControlContainer} from './control_container';
 import {NgControl} from './ng_control';

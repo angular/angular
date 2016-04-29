@@ -1,7 +1,8 @@
-import {MapWrapper, ListWrapper} from 'angular2/src/facade/collection';
-import {isBlank, isPresent, global, setValueOnPath, DateWrapper} from 'angular2/src/facade/lang';
-import {setRootDomAdapter} from 'angular2/src/platform/dom/dom_adapter';
+import {ListWrapper} from '../../src/facade/collection';
+import {isBlank, isPresent, global, setValueOnPath, DateWrapper} from '../../src/facade/lang';
+
 import {GenericBrowserDomAdapter} from './generic_browser_adapter';
+import {setRootDomAdapter} from '../dom/dom_adapter';
 
 var _attrToPropMap = {
   'class': 'className',

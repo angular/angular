@@ -1,21 +1,18 @@
 import {
-  AsyncTestCompleter,
   beforeEach,
   ddescribe,
   describe,
-  el,
   expect,
   iit,
   inject,
   it,
   xit,
-  TestComponentBuilder
-} from 'angular2/testing_internal';
+} from '@angular/core/testing/testing_internal';
 
-import {isBlank} from 'angular2/src/facade/lang';
-import {TypeScriptEmitter} from 'angular2/src/compiler/output/ts_emitter';
-import {CompileIdentifierMetadata} from 'angular2/src/compiler/compile_metadata';
-import * as o from 'angular2/src/compiler/output/output_ast';
+import {isBlank} from '../../src/facade/lang';
+import {TypeScriptEmitter} from '@angular/compiler/src/output/ts_emitter';
+import {CompileIdentifierMetadata} from '@angular/compiler/src/compile_metadata';
+import * as o from '@angular/compiler/src/output/output_ast';
 
 var someModuleUrl = 'asset:somePackage/lib/somePath';
 var anotherModuleUrl = 'asset:somePackage/lib/someOtherPath';

@@ -4,36 +4,36 @@
  * The http module provides services to perform http requests. To get started, see the {@link Http}
  * class.
  */
-import {provide, Provider} from 'angular2/core';
-import {Http, Jsonp} from './src/http/http';
-import {XHRBackend, XHRConnection} from './src/http/backends/xhr_backend';
-import {JSONPBackend, JSONPBackend_, JSONPConnection} from './src/http/backends/jsonp_backend';
-import {BrowserXhr} from './src/http/backends/browser_xhr';
-import {BrowserJsonp} from './src/http/backends/browser_jsonp';
-import {BaseRequestOptions, RequestOptions} from './src/http/base_request_options';
-import {ConnectionBackend} from './src/http/interfaces';
-import {BaseResponseOptions, ResponseOptions} from './src/http/base_response_options';
-export {Request} from './src/http/static_request';
-export {Response} from './src/http/static_response';
+import {provide} from '@angular/core';
+import {Http, Jsonp} from './src/http';
+import {XHRBackend, XHRConnection} from './src/backends/xhr_backend';
+import {JSONPBackend, JSONPBackend_, JSONPConnection} from './src/backends/jsonp_backend';
+import {BrowserXhr} from './src/backends/browser_xhr';
+import {BrowserJsonp} from './src/backends/browser_jsonp';
+import {BaseRequestOptions, RequestOptions} from './src/base_request_options';
+import {ConnectionBackend} from './src/interfaces';
+import {BaseResponseOptions, ResponseOptions} from './src/base_response_options';
+export {Request} from './src/static_request';
+export {Response} from './src/static_response';
 
 export {
   RequestOptionsArgs,
   ResponseOptionsArgs,
   Connection,
   ConnectionBackend
-} from './src/http/interfaces';
+} from './src/interfaces';
 
-export {BrowserXhr} from './src/http/backends/browser_xhr';
-export {BaseRequestOptions, RequestOptions} from './src/http/base_request_options';
-export {BaseResponseOptions, ResponseOptions} from './src/http/base_response_options';
-export {XHRBackend, XHRConnection} from './src/http/backends/xhr_backend';
-export {JSONPBackend, JSONPConnection} from './src/http/backends/jsonp_backend';
-export {Http, Jsonp} from './src/http/http';
+export {BrowserXhr} from './src/backends/browser_xhr';
+export {BaseRequestOptions, RequestOptions} from './src/base_request_options';
+export {BaseResponseOptions, ResponseOptions} from './src/base_response_options';
+export {XHRBackend, XHRConnection} from './src/backends/xhr_backend';
+export {JSONPBackend, JSONPConnection} from './src/backends/jsonp_backend';
+export {Http, Jsonp} from './src/http';
 
-export {Headers} from './src/http/headers';
+export {Headers} from './src/headers';
 
-export {ResponseType, ReadyState, RequestMethod} from './src/http/enums';
-export {URLSearchParams} from './src/http/url_search_params';
+export {ResponseType, ReadyState, RequestMethod} from './src/enums';
+export {URLSearchParams} from './src/url_search_params';
 
 /**
  * Provides a basic set of injectables to use the {@link Http} service in any application.
@@ -44,10 +44,10 @@ export {URLSearchParams} from './src/http/url_search_params';
  * ### Example ([live demo](http://plnkr.co/edit/snj7Nv?p=preview))
  *
  * ```
- * import {Component} from 'angular2/core';
- * import {bootstrap} from 'angular2/platform/browser';
- * import {NgFor} from 'angular2/common';
- * import {HTTP_PROVIDERS, Http} from 'angular2/http';
+ * import {Component} from '@angular/core';
+ * import {bootstrap} from '@angular/platform-browser/browser';
+ * import {NgFor} from '@angular/common';
+ * import {HTTP_PROVIDERS, Http} from '@angular/http';
  *
  * @Component({
  *   selector: 'app',
@@ -100,9 +100,9 @@ export {URLSearchParams} from './src/http/url_search_params';
  * ### Example ([live demo](http://plnkr.co/edit/aCMEXi?p=preview))
  *
  * ```
- * import {provide} from 'angular2/core';
- * import {bootstrap} from 'angular2/platform/browser';
- * import {HTTP_PROVIDERS, BaseRequestOptions, RequestOptions} from 'angular2/http';
+ * import {provide} from '@angular/core';
+ * import {bootstrap} from '@angular/platform-browser/browser';
+ * import {HTTP_PROVIDERS, BaseRequestOptions, RequestOptions} from '@angular/http';
  *
  * class MyOptions extends BaseRequestOptions {
  *   search: string = 'coreTeam=true';
@@ -118,10 +118,10 @@ export {URLSearchParams} from './src/http/url_search_params';
  * ### Example ([live demo](http://plnkr.co/edit/7LWALD?p=preview))
  *
  * ```
- * import {provide} from 'angular2/core';
- * import {bootstrap} from 'angular2/platform/browser';
- * import {HTTP_PROVIDERS, Http, Response, XHRBackend} from 'angular2/http';
- * import {MockBackend} from 'angular2/http/testing';
+ * import {provide} from '@angular/core';
+ * import {bootstrap} from '@angular/platform-browser/browser';
+ * import {HTTP_PROVIDERS, Http, Response, XHRBackend} from '@angular/http';
+ * import {MockBackend} from '@angular/http/testing';
  *
  * var people = [{name: 'Jeff'}, {name: 'Tobias'}];
  *
@@ -183,9 +183,9 @@ export const HTTP_BINDINGS = HTTP_PROVIDERS;
  * ### Example ([live demo](http://plnkr.co/edit/vmeN4F?p=preview))
  *
  * ```
- * import {Component} from 'angular2/core';
- * import {NgFor} from 'angular2/common';
- * import {JSONP_PROVIDERS, Jsonp} from 'angular2/http';
+ * import {Component} from '@angular/core';
+ * import {NgFor} from '@angular/common';
+ * import {JSONP_PROVIDERS, Jsonp} from '@angular/http';
  *
  * @Component({
  *   selector: 'app',
@@ -231,9 +231,9 @@ export const HTTP_BINDINGS = HTTP_PROVIDERS;
  * ### Example ([live demo](http://plnkr.co/edit/TFug7x?p=preview))
  *
  * ```
- * import {provide} from 'angular2/core';
- * import {bootstrap} from 'angular2/platform/browser';
- * import {JSONP_PROVIDERS, BaseRequestOptions, RequestOptions} from 'angular2/http';
+ * import {provide} from '@angular/core';
+ * import {bootstrap} from '@angular/platform-browser/browser';
+ * import {JSONP_PROVIDERS, BaseRequestOptions, RequestOptions} from '@angular/http';
  *
  * class MyOptions extends BaseRequestOptions {
  *   search: string = 'coreTeam=true';
@@ -249,9 +249,9 @@ export const HTTP_BINDINGS = HTTP_PROVIDERS;
  * ### Example ([live demo](http://plnkr.co/edit/HDqZWL?p=preview))
  *
  * ```
- * import {provide, Injector} from 'angular2/core';
- * import {JSONP_PROVIDERS, Jsonp, Response, JSONPBackend} from 'angular2/http';
- * import {MockBackend} from 'angular2/http/testing';
+ * import {provide, Injector} from '@angular/core';
+ * import {JSONP_PROVIDERS, Jsonp, Response, JSONPBackend} from '@angular/http';
+ * import {MockBackend} from '@angular/http/testing';
  *
  * var people = [{name: 'Jeff'}, {name: 'Tobias'}];
  * var injector = Injector.resolveAndCreate([

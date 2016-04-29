@@ -1,0 +1,15 @@
+{
+  "name": "@angular/platform-browser",
+  "version": "$$ANGULAR_VERSION$$",
+  "description": "",
+  "main": "index.js",
+  "jsnext:main": "esm/index.js",
+  "typings": "index.d.ts",
+  "author": "angular",
+  "license": "MIT",
+  "peerDependencies": {
+    "@angular/core": "$$ANGULAR_VERSION$$",
+    "@angular/common": "$$ANGULAR_VERSION$$",
+    "@angular/compiler": "$$ANGULAR_VERSION$$"
+  }
+}

@@ -1,36 +1,35 @@
 import {
-  AsyncTestCompleter,
   beforeEach,
   ddescribe,
   xdescribe,
   describe,
-  dispatchEvent,
   expect,
   iit,
   inject,
   beforeEachProviders,
   it,
   xit,
-  TestComponentBuilder
-} from 'angular2/testing_internal';
+} from '@angular/core/testing/testing_internal';
+import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
+import {TestComponentBuilder} from '@angular/compiler/testing';
 
-import {DOM} from 'angular2/src/platform/dom/dom_adapter';
+import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
-import {PromiseWrapper, EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
+import {PromiseWrapper, EventEmitter, ObservableWrapper} from '../../src/facade/async';
 
-import {Injectable} from 'angular2/core';
-import {NgFor, NgIf} from 'angular2/common';
-import {By} from 'angular2/platform/common_dom';
+import {Injectable} from '@angular/core';
+import {NgFor, NgIf} from '@angular/common';
+import {By} from '@angular/platform-browser/src/dom/debug/by';
 
-import {Directive, Component, Input} from 'angular2/src/core/metadata';
+import {Directive, Component, Input} from '@angular/core/src/metadata';
 
 @Injectable()
 class Logger {
-  log: string[];
+  logs: string[];
 
-  constructor() { this.log = []; }
+  constructor() { this.logs = []; }
 
-  add(thing: string) { this.log.push(thing); }
+  add(thing: string) { this.logs.push(thing); }
 }
 
 @Directive({selector: '[message]', inputs: ['message']})
@@ -208,24 +207,24 @@ export function main() {
 
                // The root component has 3 elements in its view.
                expect(childEls.length).toEqual(3);
-               expect(DOM.hasClass(childEls[0].nativeElement, 'parent')).toBe(true);
-               expect(DOM.hasClass(childEls[1].nativeElement, 'parent')).toBe(true);
-               expect(DOM.hasClass(childEls[2].nativeElement, 'child-comp-class')).toBe(true);
+               expect(getDOM().hasClass(childEls[0].nativeElement, 'parent')).toBe(true);
+               expect(getDOM().hasClass(childEls[1].nativeElement, 'parent')).toBe(true);
+               expect(getDOM().hasClass(childEls[2].nativeElement, 'child-comp-class')).toBe(true);
 
                var nested = childEls[0].children;
                expect(nested.length).toEqual(1);
-               expect(DOM.hasClass(nested[0].nativeElement, 'parentnested')).toBe(true);
+               expect(getDOM().hasClass(nested[0].nativeElement, 'parentnested')).toBe(true);
 
                var childComponent = childEls[2];
 
                var childCompChildren = childComponent.children;
                expect(childCompChildren.length).toEqual(2);
-               expect(DOM.hasClass(childCompChildren[0].nativeElement, 'child')).toBe(true);
-               expect(DOM.hasClass(childCompChildren[1].nativeElement, 'child')).toBe(true);
+               expect(getDOM().hasClass(childCompChildren[0].nativeElement, 'child')).toBe(true);
+               expect(getDOM().hasClass(childCompChildren[1].nativeElement, 'child')).toBe(true);
 
                var childNested = childCompChildren[0].children;
                expect(childNested.length).toEqual(1);
-               expect(DOM.hasClass(childNested[0].nativeElement, 'childnested')).toBe(true);
+               expect(getDOM().hasClass(childNested[0].nativeElement, 'childnested')).toBe(true);
 
                async.done();
              });
@@ -241,8 +240,8 @@ export function main() {
 
                // The root component has 2 elements in its view.
                expect(childEls.length).toEqual(2);
-               expect(DOM.hasClass(childEls[0].nativeElement, 'parent')).toBe(true);
-               expect(DOM.hasClass(childEls[1].nativeElement, 'cond-content-comp-class'))
+               expect(getDOM().hasClass(childEls[0].nativeElement, 'parent')).toBe(true);
+               expect(getDOM().hasClass(childEls[1].nativeElement, 'cond-content-comp-class'))
                    .toBe(true);
 
                var conditionalContentComp = childEls[1];
@@ -295,7 +294,7 @@ export function main() {
                var childTestEls = fixture.debugElement.queryAll(By.css('child-comp'));
 
                expect(childTestEls.length).toBe(1);
-               expect(DOM.hasClass(childTestEls[0].nativeElement, 'child-comp-class')).toBe(true);
+               expect(getDOM().hasClass(childTestEls[0].nativeElement, 'child-comp-class')).toBe(true);
 
                async.done();
              });
@@ -310,10 +309,10 @@ export function main() {
                var childTestEls = fixture.debugElement.queryAll(By.directive(MessageDir));
 
                expect(childTestEls.length).toBe(4);
-               expect(DOM.hasClass(childTestEls[0].nativeElement, 'parent')).toBe(true);
-               expect(DOM.hasClass(childTestEls[1].nativeElement, 'parentnested')).toBe(true);
-               expect(DOM.hasClass(childTestEls[2].nativeElement, 'child')).toBe(true);
-               expect(DOM.hasClass(childTestEls[3].nativeElement, 'childnested')).toBe(true);
+               expect(getDOM().hasClass(childTestEls[0].nativeElement, 'parent')).toBe(true);
+               expect(getDOM().hasClass(childTestEls[1].nativeElement, 'parentnested')).toBe(true);
+               expect(getDOM().hasClass(childTestEls[2].nativeElement, 'child')).toBe(true);
+               expect(getDOM().hasClass(childTestEls[3].nativeElement, 'childnested')).toBe(true);
 
                async.done();
              });
@@ -351,7 +350,7 @@ export function main() {
              .then((fixture) => {
                fixture.detectChanges();
 
-               expect((<Logger>(fixture.debugElement.children[0].inject(Logger))).log)
+               expect((<Logger>(fixture.debugElement.children[0].inject(Logger))).logs)
                    .toEqual(['parent', 'nestedparent', 'child', 'nestedchild']);
 
                async.done();

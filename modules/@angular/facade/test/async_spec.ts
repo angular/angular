@@ -6,20 +6,17 @@ import {
   ddescribe,
   iit,
   xit,
-  el,
-  SpyObject,
-  AsyncTestCompleter,
   inject,
-  browserDetection
-} from 'angular2/testing_internal';
-
+} from '@angular/core/testing/testing_internal';
+import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
+import {browserDetection} from '@angular/platform-browser/testing';
 import {
   ObservableWrapper,
   Observable,
   Subject,
   EventEmitter,
   PromiseWrapper
-} from 'angular2/src/facade/async';
+} from '../src/async';
 
 export function main() {
   describe('EventEmitter', () => {

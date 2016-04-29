@@ -1,15 +1,14 @@
-import {Component, provide} from 'angular2/core';
-import {bootstrap} from 'angular2/platform/browser';
+import {Component, provide, ComponentRef} from '@angular/core';
+import {bootstrap} from '@angular/platform-browser-dynamic';
 import {
-  CanActivate,
   RouteConfig,
   ComponentInstruction,
   ROUTER_DIRECTIVES,
   CanReuse,
   RouteParams,
   OnReuse
-} from 'angular2/router';
-import {APP_BASE_HREF} from 'angular2/platform/common';
+} from '@angular/router';
+import {APP_BASE_HREF} from '@angular/common';
 
 
 // #docregion reuseCmp
@@ -48,11 +47,11 @@ class MyCmp implements CanReuse,
   {path: '/', component: MyCmp, name: 'HomeCmp'},
   {path: '/:name', component: MyCmp, name: 'HomeCmp'}
 ])
-class AppCmp {
+export class AppCmp {
 }
 
 
-export function main() {
+export function main(): Promise<ComponentRef<AppCmp>> {
   return bootstrap(AppCmp,
-                   [provide(APP_BASE_HREF, {useValue: '/angular2/examples/router/ts/reuse'})]);
+                   [provide(APP_BASE_HREF, {useValue: '/@angular/examples/router/ts/reuse'})]);
 }

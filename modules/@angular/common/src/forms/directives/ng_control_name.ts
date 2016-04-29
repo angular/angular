@@ -1,5 +1,3 @@
-import {EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
-
 import {
   OnChanges,
   OnDestroy,
@@ -13,8 +11,9 @@ import {
   Inject,
   Optional,
   Self
-} from 'angular2/core';
+} from '@angular/core';
 
+import {EventEmitter, ObservableWrapper} from '../../../src/facade/async';
 import {ControlContainer} from './control_container';
 import {NgControl} from './ng_control';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';

@@ -1,6 +1,5 @@
-import {Type, DirectiveMetadata} from 'angular2/core';
-import {DirectiveResolver} from 'angular2/compiler';
-import {stringify} from './util';
+import {Type, DirectiveMetadata} from '@angular/core';
+import {DirectiveResolver} from '@angular/compiler';
 
 var COMPONENT_SELECTOR = /^[\w|-]*$/;
 var SKEWER_CASE = /-(\w)/g;

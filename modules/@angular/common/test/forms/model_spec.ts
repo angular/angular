@@ -7,16 +7,19 @@ import {
   expect,
   beforeEach,
   afterEach,
-  el,
-  AsyncTestCompleter,
+  inject,
+} from '@angular/core/testing/testing_internal';
+import {
   fakeAsync,
-  tick,
-  inject
-} from 'angular2/testing_internal';
-import {ControlGroup, Control, ControlArray, Validators} from 'angular2/common';
-import {IS_DART, isPresent} from 'angular2/src/facade/lang';
-import {PromiseWrapper} from 'angular2/src/facade/promise';
-import {TimerWrapper, ObservableWrapper, EventEmitter} from 'angular2/src/facade/async';
+  flushMicrotasks,
+  Log,
+  tick
+} from '@angular/core/testing';
+import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
+import {ControlGroup, Control, ControlArray, Validators} from '@angular/common';
+import {IS_DART, isPresent} from '../../src/facade/lang';
+import {PromiseWrapper} from '../../src/facade/promise';
+import {TimerWrapper, ObservableWrapper, EventEmitter} from '../../src/facade/async';
 
 export function main() {
   function asyncValidator(expected, timeouts = /*@ts2dart_const*/ {}) {

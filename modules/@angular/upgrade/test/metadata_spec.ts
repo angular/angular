@@ -1,5 +1,4 @@
 import {
-  AsyncTestCompleter,
   beforeEach,
   ddescribe,
   describe,
@@ -9,11 +8,10 @@ import {
   it,
   xdescribe,
   xit,
-} from 'angular2/testing_internal';
+} from '@angular/core/testing/testing_internal';
 
-import {Component} from 'angular2/core';
-import {getComponentInfo, parseFields} from 'angular2/src/upgrade/metadata';
-import {DOM} from 'angular2/src/platform/dom/dom_adapter';
+import {Component, Type} from '@angular/core';
+import {getComponentInfo, parseFields} from '@angular/upgrade/src/metadata';
 
 export function main() {
   describe('upgrade metadata', () => {

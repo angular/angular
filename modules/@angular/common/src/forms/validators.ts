@@ -1,9 +1,9 @@
-import {isBlank, isPresent, isString} from 'angular2/src/facade/lang';
-import {PromiseWrapper} from 'angular2/src/facade/promise';
-import {ObservableWrapper} from 'angular2/src/facade/async';
-import {ListWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
-import {OpaqueToken} from 'angular2/core';
+import {OpaqueToken} from '@angular/core';
 
+import {isBlank, isPresent, isString} from '../../src/facade/lang';
+import {PromiseWrapper} from '../../src/facade/promise';
+import {ObservableWrapper} from '../../src/facade/async';
+import {StringMapWrapper} from '../../src/facade/collection';
 import * as modelModule from './model';
 import {ValidatorFn, AsyncValidatorFn} from './directives/validators';
 

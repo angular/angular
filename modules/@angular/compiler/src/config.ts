@@ -1,5 +1,5 @@
-import {isBlank} from 'angular2/src/facade/lang';
-import {unimplemented} from 'angular2/src/facade/exceptions';
+import {isBlank} from '../src/facade/lang';
+import {unimplemented} from '../src/facade/exceptions';
 import {Identifiers} from './identifiers';
 import {CompileIdentifierMetadata} from './compile_metadata';
 

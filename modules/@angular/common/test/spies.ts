@@ -1,5 +1,5 @@
-import {ChangeDetectorRef} from 'angular2/src/core/change_detection/change_detector_ref';
-import {SpyObject, proxy} from 'angular2/testing_internal';
+import {ChangeDetectorRef} from '@angular/core/src/change_detection/change_detector_ref';
+import {SpyObject, proxy} from '@angular/core/testing/testing_internal';
 
 export class SpyChangeDetectorRef extends SpyObject {
   constructor() {
@@ -10,4 +10,6 @@ export class SpyChangeDetectorRef extends SpyObject {
 
 export class SpyNgControl extends SpyObject {}
 
-export class SpyValueAccessor extends SpyObject {}
+export class SpyValueAccessor extends SpyObject {
+  writeValue: any;
+}

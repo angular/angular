@@ -1,20 +1,18 @@
 import {
-  AsyncTestCompleter,
-  TestComponentBuilder,
   beforeEach,
   ddescribe,
   describe,
-  el,
   expect,
   iit,
   inject,
   it,
   xit,
-} from 'angular2/testing_internal';
+} from '@angular/core/testing/testing_internal';
+import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
+import {Component} from '@angular/core';
+import {TestComponentBuilder, ComponentFixture} from '@angular/compiler/testing';
 
-import {Component} from 'angular2/core';
-
-import {NgSwitch, NgSwitchWhen, NgSwitchDefault} from 'angular2/src/common/directives/ng_switch';
+import {NgSwitch, NgSwitchWhen, NgSwitchDefault} from '@angular/common';
 
 export function main() {
   describe('switch', () => {

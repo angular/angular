@@ -1,0 +1,34 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "declaration": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "outDir": "../dist/all/",
+    "paths": {
+      "selenium-webdriver": ["angular2/typings/selenium-webdriver/selenium-webdriver.d.ts"],
+      "rxjs/*": ["../node_modules/rxjs/*"],
+      "@angular/*": ["./@angular/*"],
+      "@angular/*/testing": ["./@angular/*/testing"]
+    },
+    "rootDir": ".",
+    "inlineSourceMap": true,
+    "sourceMap": false,
+    "sourceRoot": ".",
+    "target": "es5"
+  },
+  "exclude": [
+    "angular1_router",
+    "angular2",
+    "benchmarks",
+    "benchmarks_external",
+    "benchpress",
+    "payload_tests",
+    "playground",
+    "rollup-test",
+    "upgrade-ts2dart.d.ts",
+    "zone-ts2dart.d.ts"
+  ]
+}

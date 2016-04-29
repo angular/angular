@@ -7,9 +7,9 @@ import {
   expect,
   beforeEach,
   afterEach
-} from 'angular2/testing_internal';
+} from '@angular/core/testing/testing_internal';
 
-import {isPresent} from "angular2/src/facade/lang";
+import {isPresent} from '../../src/facade/lang';
 
 import {
   CssToken,
@@ -17,7 +17,7 @@ import {
   CssLexer,
   CssLexerMode,
   CssTokenType
-} from 'angular2/src/compiler/css/lexer';
+} from '@angular/compiler/src/css/lexer';
 
 export function main() {
   function tokenize(code, trackComments: boolean = false,

@@ -1,16 +1,12 @@
-import {StringMapWrapper} from 'angular2/src/facade/collection';
-import {global, isPromise, Math} from 'angular2/src/facade/lang';
-
-import {provide} from 'angular2/core';
-
-import {AsyncTestCompleter} from './async_test_completer';
+import {StringMapWrapper} from '../src/facade/collection';
+import {global, isFunction, Math, isPromise} from '../src/facade/lang';
+import {provide} from '../index';
 import {getTestInjector, inject} from './test_injector';
-import {browserDetection} from './utils';
+import {AsyncTestCompleter} from './async_test_completer';
 
-export {AsyncTestCompleter} from './async_test_completer';
+export {expect} from './testing';
 export {inject} from './test_injector';
-
-export {expect, NgMatchers} from './matchers';
+export {AsyncTestCompleter} from './async_test_completer';
 
 export var proxy: ClassDecorator = (t) => t;
 
@@ -28,8 +24,8 @@ var jsmXIt = _global.xit;
 
 var runnerStack = [];
 var inIt = false;
-jasmine.DEFAULT_TIMEOUT_INTERVAL = 500;
-var globalTimeOut = browserDetection.isSlow ? 3000 : jasmine.DEFAULT_TIMEOUT_INTERVAL;
+jasmine.DEFAULT_TIMEOUT_INTERVAL = 3000;
+var globalTimeOut = jasmine.DEFAULT_TIMEOUT_INTERVAL;
 
 var testInjector = getTestInjector();
 
@@ -113,6 +109,11 @@ export function beforeEachBindings(fn): void {
 }
 
 function _it(jsmFn: Function, name: string, testFn: Function, testTimeOut: number): void {
+  if (runnerStack.length == 0) {
+    // This left here intentionally, as we should never get here, and it aids debugging.
+    debugger;
+    throw new Error("Empty Stack!");
+  }
   var runner = runnerStack[runnerStack.length - 1];
   var timeOut = Math.max(globalTimeOut, testTimeOut);
 

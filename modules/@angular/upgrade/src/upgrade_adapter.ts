@@ -9,13 +9,10 @@ import {
   ComponentFactory,
   Provider,
   Type,
-  Testability,
-  APPLICATION_COMMON_PROVIDERS
-} from 'angular2/core';
-import {global} from 'angular2/src/facade/lang';
-import {ObservableWrapper} from 'angular2/src/facade/async';
-import {BROWSER_PROVIDERS, BROWSER_APP_PROVIDERS, browserPlatform} from 'angular2/platform/browser';
-
+  Testability
+} from '@angular/core';
+import {BROWSER_APP_DYNAMIC_PROVIDERS} from '@angular/platform-browser-dynamic';
+import {browserPlatform} from '@angular/platform-browser';
 import {getComponentInfo, ComponentInfo} from './metadata';
 import {onError, controllerKey} from './util';
 import {
@@ -23,7 +20,6 @@ import {
   NG1_INJECTOR,
   NG1_PARSE,
   NG1_ROOT_SCOPE,
-  NG1_SCOPE,
   NG1_TESTABILITY,
   NG2_COMPILER,
   NG2_INJECTOR,
@@ -298,7 +294,7 @@ export class UpgradeAdapter {
     var applicationRef: ApplicationRef =
         ReflectiveInjector.resolveAndCreate(
                               [
-                                BROWSER_APP_PROVIDERS,
+                                BROWSER_APP_DYNAMIC_PROVIDERS,
                                 provide(NG1_INJECTOR, {useFactory: () => ng1Injector}),
                                 provide(NG1_COMPILE,
                                         {useFactory: () => ng1Injector.get(NG1_COMPILE)}),
@@ -367,8 +363,8 @@ export class UpgradeAdapter {
         '$rootScope',
         (injector: angular.IInjectorService, rootScope: angular.IRootScopeService) => {
           ng1Injector = injector;
-          ObservableWrapper.subscribe(ngZone.onMicrotaskEmpty,
-                                      (_) => ngZone.runOutsideAngular(() => rootScope.$apply()));
+          ngZone.onMicrotaskEmpty.subscribe(
+            {next: (_) => ngZone.runOutsideAngular(() => rootScope.$apply())});
           UpgradeNg1ComponentAdapterBuilder.resolve(this.downgradedComponents, injector)
               .then(resolve, reject);
         }
@@ -376,7 +372,7 @@ export class UpgradeAdapter {
     });
 
     // Make sure resumeBootstrap() only exists if the current bootstrap is deferred
-    var windowAngular = (<any>global).angular;
+    var windowAngular = window['angular'];
     windowAngular.resumeBootstrap = undefined;
 
     angular.element(element).data(controllerKey(NG2_INJECTOR), injector);

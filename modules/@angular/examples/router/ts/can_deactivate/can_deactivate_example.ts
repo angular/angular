@@ -1,13 +1,13 @@
-import {provide, Component} from 'angular2/core';
-import {bootstrap} from 'angular2/platform/browser';
+import {provide, Component, ComponentRef} from '@angular/core';
+import {bootstrap} from '@angular/platform-browser-dynamic';
 import {
   CanDeactivate,
   RouteConfig,
   RouteParams,
   ComponentInstruction,
   ROUTER_DIRECTIVES
-} from 'angular2/router';
-import {APP_BASE_HREF} from 'angular2/platform/common';
+} from '@angular/router';
+import {APP_BASE_HREF} from '@angular/common';
 
 // #docregion routerCanDeactivate
 @Component({
@@ -57,11 +57,11 @@ class NoteIndexCmp {
   {path: '/note/:id', component: NoteCmp, name: 'NoteCmp'},
   {path: '/', component: NoteIndexCmp, name: 'NoteIndexCmp'}
 ])
-class AppCmp {
+export class AppCmp {
 }
 
 
-export function main() {
+export function main(): Promise<ComponentRef<AppCmp>> {
   return bootstrap(
-      AppCmp, [provide(APP_BASE_HREF, {useValue: '/angular2/examples/router/ts/can_deactivate'})]);
+      AppCmp, [provide(APP_BASE_HREF, {useValue: '/@angular/examples/router/ts/can_deactivate'})]);
 }

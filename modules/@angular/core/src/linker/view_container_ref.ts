@@ -1,13 +1,13 @@
-import {ListWrapper} from 'angular2/src/facade/collection';
-import {unimplemented} from 'angular2/src/facade/exceptions';
-import {Injector} from 'angular2/src/core/di/injector';
-import {isPresent, isBlank} from 'angular2/src/facade/lang';
+import {ListWrapper} from '../../src/facade/collection';
+import {unimplemented} from '../../src/facade/exceptions';
+import {Injector} from '../di/injector';
+import {isPresent} from '../../src/facade/lang';
 import {wtfCreateScope, wtfLeave, WtfScopeFn} from '../profile/profile';
 
 import {AppElement} from './element';
 
 import {ElementRef} from './element_ref';
-import {TemplateRef, TemplateRef_} from './template_ref';
+import {TemplateRef} from './template_ref';
 import {EmbeddedViewRef, ViewRef, ViewRef_} from './view_ref';
 import {ComponentFactory, ComponentRef} from './component_factory';
 

@@ -1,8 +1,8 @@
 /// <reference path="../../typings/jasmine/jasmine.d.ts" />
 
-import {describe, it, iit, expect, ddescribe, beforeEach} from 'angular2/testing_internal';
-import {isBlank} from 'angular2/src/facade/lang';
-import {ListWrapper} from 'angular2/src/facade/collection';
+import {describe, it, iit, expect, ddescribe, beforeEach} from '@angular/core/testing/testing_internal';
+import {isBlank} from '@angular/facade/src/lang';
+import {ListWrapper} from '@angular/facade/src/collection';
 
 import {StaticReflector, StaticReflectorHost, StaticSymbol} from './static_reflector';
 

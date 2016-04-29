@@ -1,16 +1,14 @@
 import {
   describe,
-  fdescribe,
   xdescribe,
   it,
-  fit,
   xit,
   beforeEach,
   afterEach,
   beforeEachProviders,
   inject
-} from 'angular2/testing';
-import {provide} from 'angular2/core';
+} from '@angular/core/testing/testing_internal';
+import {provide} from '@angular/core';
 
 var db: any;
 class MyService {}

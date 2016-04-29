@@ -1,10 +1,11 @@
-import {BaseException} from 'angular2/src/facade/exceptions';
+import {BaseException} from '@angular/core';
+import {isPresent, isBlank} from '../../src/facade/lang';
+import {ListWrapper, StringMapWrapper} from '../../src/facade/collection';
+
 import * as o from '../output/output_ast';
 import {Identifiers, identifierToken} from '../identifiers';
 import {InjectMethodVars} from './constants';
 import {CompileView} from './compile_view';
-import {isPresent, isBlank} from 'angular2/src/facade/lang';
-import {ListWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
 import {TemplateAst, ProviderAst, ProviderAstType, ReferenceAst} from '../template_ast';
 import {
   CompileTokenMap,
@@ -14,7 +15,6 @@ import {
   CompileProviderMetadata,
   CompileDiDependencyMetadata,
   CompileIdentifierMetadata,
-  CompileTypeMetadata,
 } from '../compile_metadata';
 import {getPropertyInView, createDiTokenExpression, injectFromViewParentInjector} from './util';
 import {CompileQuery, createQueryList, addQueryToTokenMap} from './compile_query';

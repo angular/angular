@@ -3,10 +3,10 @@ import {ReadyState, RequestMethod, ResponseType} from '../enums';
 import {Request} from '../static_request';
 import {Response} from '../static_response';
 import {Headers} from '../headers';
-import {ResponseOptions, BaseResponseOptions} from '../base_response_options';
-import {Injectable} from 'angular2/core';
+import {ResponseOptions} from '../base_response_options';
+import {Injectable} from '@angular/core';
 import {BrowserXhr} from './browser_xhr';
-import {isPresent} from 'angular2/src/facade/lang';
+import {isPresent} from '../../src/facade/lang';
 import {Observable} from 'rxjs/Observable';
 import {Observer} from 'rxjs/Observer';
 import {isSuccess, getResponseURL} from '../http_utils';
@@ -102,7 +102,7 @@ export class XHRConnection implements Connection {
  * ### Example
  *
  * ```
- * import {Http, MyNodeBackend, HTTP_PROVIDERS, BaseRequestOptions} from 'angular2/http';
+ * import {Http, MyNodeBackend, HTTP_PROVIDERS, BaseRequestOptions} from '@angular/http';
  * @Component({
  *   viewProviders: [
  *     HTTP_PROVIDERS,

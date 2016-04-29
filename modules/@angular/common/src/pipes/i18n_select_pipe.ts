@@ -1,6 +1,6 @@
-import {isStringMap} from 'angular2/src/facade/lang';
-import {StringMapWrapper} from 'angular2/src/facade/collection';
-import {Injectable, PipeTransform, Pipe} from 'angular2/core';
+import {Injectable, PipeTransform, Pipe} from '@angular/core';
+import {isStringMap} from '../../src/facade/lang';
+import {StringMapWrapper} from '../../src/facade/collection';
 import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
 
 /**

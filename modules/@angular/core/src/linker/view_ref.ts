@@ -1,8 +1,7 @@
-import {unimplemented} from 'angular2/src/facade/exceptions';
-import {isPresent} from 'angular2/src/facade/lang';
+import {unimplemented} from '../../src/facade/exceptions';
 import {ChangeDetectorRef} from '../change_detection/change_detector_ref';
 import {AppView} from './view';
-import {ChangeDetectionStrategy} from 'angular2/src/core/change_detection/constants';
+import {ChangeDetectionStrategy} from '../change_detection/constants';
 
 export abstract class ViewRef {
   get destroyed(): boolean { return <boolean>unimplemented(); }

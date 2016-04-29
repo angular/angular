@@ -1,16 +1,15 @@
-import {NgZone} from 'angular2/src/core/zone/ng_zone';
-import {Type, isPresent} from 'angular2/src/facade/lang';
-import {Provider} from 'angular2/src/core/di';
-import {Parse5DomAdapter} from 'angular2/src/platform/server/parse5_adapter';
+import {NgZone} from '@angular/core/src/zone/ng_zone';
+import {Provider} from '@angular/core/src/di';
+import {Parse5DomAdapter} from '@angular/platform-server';
 import {
   PostMessageBus,
   PostMessageBusSink,
   PostMessageBusSource
-} from 'angular2/src/web_workers/shared/post_message_bus';
+} from '../web_workers/shared/post_message_bus';
 import {WORKER_APP_APPLICATION_COMMON} from './worker_app_common';
-import {APP_INITIALIZER} from 'angular2/core';
-import {MessageBus} from 'angular2/src/web_workers/shared/message_bus';
-import {COMPILER_PROVIDERS} from 'angular2/src/compiler/compiler';
+import {APP_INITIALIZER} from '@angular/core';
+import {MessageBus} from '../web_workers/shared/message_bus';
+import {COMPILER_PROVIDERS} from '@angular/compiler/src/compiler';
 
 // TODO(jteplitz602) remove this and compile with lib.webworker.d.ts (#3492)
 let _postMessage = {

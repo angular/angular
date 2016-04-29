@@ -1,15 +1,13 @@
-import {DOM} from 'angular2/src/platform/dom/dom_adapter';
+import {NgZone, Injectable} from '@angular/core';
 import {
   isPresent,
-  isBlank,
   StringWrapper,
-  RegExpWrapper,
-  NumberWrapper
-} from 'angular2/src/facade/lang';
-import {StringMapWrapper, ListWrapper} from 'angular2/src/facade/collection';
+} from '../../../src/facade/lang';
+import {StringMapWrapper, ListWrapper} from '../../../src/facade/collection';
+
+import {getDOM} from '../dom_adapter';
 import {EventManagerPlugin} from './event_manager';
-import {NgZone} from 'angular2/src/core/zone/ng_zone';
-import {Injectable} from 'angular2/src/core/di';
+
 
 var modifierKeys = ['alt', 'control', 'meta', 'shift'];
 var modifierKeyGetters: {[key: string]: (event: KeyboardEvent) => boolean} = {
@@ -34,7 +32,7 @@ export class KeyEventsPlugin extends EventManagerPlugin {
         element, StringMapWrapper.get(parsedEvent, 'fullKey'), handler, this.manager.getZone());
 
     return this.manager.getZone().runOutsideAngular(() => {
-      return DOM.onAndCancel(element, StringMapWrapper.get(parsedEvent, 'domEventName'),
+      return getDOM().onAndCancel(element, StringMapWrapper.get(parsedEvent, 'domEventName'),
                              outsideHandler);
     });
   }
@@ -72,7 +70,7 @@ export class KeyEventsPlugin extends EventManagerPlugin {
 
   static getEventFullKey(event: KeyboardEvent): string {
     var fullKey = '';
-    var key = DOM.getEventKey(event);
+    var key = getDOM().getEventKey(event);
     key = key.toLowerCase();
     if (StringWrapper.equals(key, ' ')) {
       key = 'space';  // for readability

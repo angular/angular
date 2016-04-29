@@ -9,16 +9,18 @@ import {
   beforeEach,
   beforeEachProviders,
   inject,
-  AsyncTestCompleter,
-  el,
-  containsRegexp,
-  ComponentFixture,
-  TestComponentBuilder,
-  fakeAsync,
-  tick
-} from 'angular2/testing_internal';
-import {isBlank, isPresent, stringify, Type} from 'angular2/src/facade/lang';
+} from '@angular/core/testing/testing_internal';
 import {
+  fakeAsync,
+  flushMicrotasks,
+  Log,
+  tick,
+  containsRegexp
+} from '@angular/core/testing';
+import {TestComponentBuilder, ComponentFixture} from '@angular/compiler/testing';
+import {isBlank} from '../../src/facade/lang';
+import {
+  Type,
   ViewContainerRef,
   TemplateRef,
   ElementRef,
@@ -33,21 +35,16 @@ import {
   Attribute,
   ViewMetadata,
   provide,
-  Injector,
-  Provider,
   Optional,
   Inject,
-  Injectable,
   Self,
-  SkipSelf,
   InjectMetadata,
   Pipe,
   Host,
-  HostMetadata,
   SkipSelfMetadata
-} from 'angular2/core';
-import {NgIf} from 'angular2/common';
-import {DOM} from 'angular2/src/platform/dom/dom_adapter';
+} from '@angular/core';
+import {NgIf} from '@angular/common';
+import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
 const ALL_DIRECTIVES = /*@ts2dart_const*/[
   forwardRef(() => SimpleDirective),
@@ -293,7 +290,7 @@ export function main() {
 
   describe("View Injector", () => {
     // On CJS fakeAsync is not supported...
-    if (!DOM.supportsDOMEvents()) return;
+    if (!getDOM().supportsDOMEvents()) return;
 
     beforeEachProviders(() => [provide("appService", {useValue: 'appService'})]);
 

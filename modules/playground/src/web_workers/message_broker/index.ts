@@ -1,11 +1,11 @@
-import {Provider, ApplicationRef} from 'angular2/core';
+import {Provider, ApplicationRef} from '@angular/core';
 import {
   bootstrapRender,
   UiArguments,
   FnArg,
   PRIMITIVE,
   ClientMessageBrokerFactory
-} from 'angular2/platform/worker_render';
+} from '../../../../@angular/platform-browser/src/worker_render';
 
 const ECHO_CHANNEL = "ECHO";
 

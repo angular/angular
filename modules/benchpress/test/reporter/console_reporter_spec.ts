@@ -7,9 +7,9 @@ import {
   expect,
   beforeEach,
   afterEach
-} from 'angular2/testing_internal';
+} from '@angular/testing/testing_internal';
 
-import {isBlank, isPresent, Date, DateWrapper} from 'angular2/src/facade/lang';
+import {isBlank, isPresent, Date, DateWrapper} from '@angular/facade';
 
 import {
   SampleState,

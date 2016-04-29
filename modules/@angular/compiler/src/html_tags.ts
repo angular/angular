@@ -3,7 +3,7 @@ import {
   isBlank,
   normalizeBool,
   RegExpWrapper,
-} from 'angular2/src/facade/lang';
+} from '../src/facade/lang';
 
 // see http://www.w3.org/TR/html51/syntax.html#named-character-references
 // see https://html.spec.whatwg.org/multipage/entities.json

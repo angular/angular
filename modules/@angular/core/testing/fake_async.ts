@@ -1,4 +1,4 @@
-import {BaseException} from 'angular2/src/facade/exceptions';
+import {BaseException} from '../index';
 import {getTestInjector} from './test_injector';
 
 let _FakeAsyncTestZoneSpecType = Zone['FakeAsyncTestZoneSpec'];

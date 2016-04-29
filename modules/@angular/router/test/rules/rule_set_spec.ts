@@ -1,5 +1,4 @@
 import {
-  AsyncTestCompleter,
   describe,
   it,
   iit,
@@ -7,18 +6,14 @@ import {
   expect,
   inject,
   beforeEach,
-  SpyObject
-} from 'angular2/testing_internal';
-
-import {Map, StringMapWrapper} from 'angular2/src/facade/collection';
-
-import {RouteMatch, PathMatch, RedirectMatch} from 'angular2/src/router/rules/rules';
-import {RuleSet} from 'angular2/src/router/rules/rule_set';
-import {GeneratedUrl} from 'angular2/src/router/rules/route_paths/route_path';
-
-import {Route, Redirect} from 'angular2/src/router/route_config/route_config_decorator';
-import {parser} from 'angular2/src/router/url_parser';
-import {PromiseWrapper} from 'angular2/src/facade/promise';
+} from '@angular/core/testing/testing_internal';
+import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
+import {RouteMatch, PathMatch, RedirectMatch} from '../../../router/src/rules/rules';
+import {RuleSet} from '../../../router/src/rules/rule_set';
+import {GeneratedUrl} from '../../../router/src/rules/route_paths/route_path';
+import {Route, Redirect} from '../../../router/src/route_config/route_config_decorator';
+import {parser} from '../../../router/src/url_parser';
+import {PromiseWrapper} from '../../src/facade/promise';
 
 
 export function main() {

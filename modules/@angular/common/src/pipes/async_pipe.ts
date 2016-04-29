@@ -1,6 +1,13 @@
-import {isBlank, isPresent, isPromise} from 'angular2/src/facade/lang';
-import {ObservableWrapper, Observable, EventEmitter} from 'angular2/src/facade/async';
-import {Pipe, Injectable, ChangeDetectorRef, OnDestroy, WrappedValue} from 'angular2/core';
+import {
+  Pipe,
+  Injectable,
+  ChangeDetectorRef,
+  OnDestroy,
+  WrappedValue
+} from '@angular/core';
+
+import {isBlank, isPresent, isPromise} from '../../src/facade/lang';
+import {ObservableWrapper, Observable, EventEmitter} from '../../src/facade/async';
 
 import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
 

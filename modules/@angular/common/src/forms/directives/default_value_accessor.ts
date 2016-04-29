@@ -1,6 +1,6 @@
-import {Directive, ElementRef, Renderer, Self, forwardRef, Provider} from 'angular2/core';
+import {Directive, ElementRef, Renderer, forwardRef} from '@angular/core';
+import {isBlank} from '../../../src/facade/lang';
 import {NG_VALUE_ACCESSOR, ControlValueAccessor} from './control_value_accessor';
-import {isBlank} from 'angular2/src/facade/lang';
 
 export const DEFAULT_VALUE_ACCESSOR: any = /*@ts2dart_const*/
     /* @ts2dart_Provider */ {

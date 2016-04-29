@@ -8,7 +8,7 @@ import {
   OnChanges,
   SimpleChange,
   Type
-} from 'angular2/core';
+} from '@angular/core';
 import {
   NG1_COMPILE,
   NG1_SCOPE,

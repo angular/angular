@@ -13,11 +13,11 @@ import {
   Input,
   OnDestroy,
   Optional
-} from 'angular2/core';
+} from '@angular/core';
 import {RouterOutletMap, Router} from '../router';
 import {RouteSegment, UrlSegment, Tree} from '../segments';
-import {isString, isPresent} from 'angular2/src/facade/lang';
-import {ObservableWrapper} from 'angular2/src/facade/async';
+import {isString, isPresent} from '@angular/facade/src/lang';
+import {ObservableWrapper} from '@angular/facade/src/async';
 
 @Directive({selector: '[routerLink]'})
 export class RouterLink implements OnDestroy {

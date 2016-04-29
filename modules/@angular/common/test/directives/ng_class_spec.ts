@@ -1,23 +1,20 @@
 import {
-  ComponentFixture,
-  AsyncTestCompleter,
-  TestComponentBuilder,
   beforeEach,
   beforeEachProviders,
   ddescribe,
   xdescribe,
   describe,
-  el,
   expect,
   iit,
   inject,
   it,
   xit,
-} from 'angular2/testing_internal';
-import {ListWrapper, StringMapWrapper, SetWrapper} from 'angular2/src/facade/collection';
-import {Component, provide} from 'angular2/core';
-import {NgFor} from 'angular2/common';
-import {NgClass} from 'angular2/src/common/directives/ng_class';
+} from '@angular/core/testing/testing_internal';
+import { ComponentFixture, TestComponentBuilder } from '@angular/compiler/testing';
+import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
+import {ListWrapper, StringMapWrapper, SetWrapper} from '../../src/facade/collection';
+import {Component, provide} from '@angular/core';
+import {NgFor, NgClass} from '@angular/common';
 
 function detectChangesAndCheck(fixture: ComponentFixture<any>, classes: string) {
   fixture.detectChanges();

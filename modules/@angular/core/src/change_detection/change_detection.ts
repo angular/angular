@@ -30,6 +30,7 @@ export {
   TrackByFn
 } from './differs/iterable_differs';
 export {KeyValueDiffers, KeyValueDiffer, KeyValueDifferFactory} from './differs/keyvalue_differs';
+export {DefaultIterableDiffer} from './differs/default_iterable_differ';
 export {PipeTransform} from './pipe_transform';
 
 export {

@@ -1,8 +1,8 @@
 import {MessageBasedPlatformLocation} from './platform_location';
 import {
   BrowserPlatformLocation
-} from 'angular2/src/platform/browser/location/browser_platform_location';
-import {APP_INITIALIZER, Provider, Injector, NgZone} from 'angular2/core';
+} from '@angular/platform-browser/src/browser/location/browser_platform_location';
+import {APP_INITIALIZER, Provider, Injector, NgZone} from '@angular/core';
 
 export const WORKER_RENDER_ROUTER = /*@ts2dart_const*/[
   MessageBasedPlatformLocation,

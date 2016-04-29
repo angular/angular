@@ -1,4 +1,4 @@
-import {Type} from 'angular2/src/facade/lang';
+import {Type} from '../../src/facade/lang';
 import {NgClass} from './ng_class';
 import {NgFor} from './ng_for';
 import {NgIf} from './ng_if';
@@ -19,7 +19,7 @@ import {NgPlural, NgPluralCase} from './ng_plural';
  * Instead of writing:
  *
  * ```typescript
- * import {NgClass, NgIf, NgFor, NgSwitch, NgSwitchWhen, NgSwitchDefault} from 'angular2/common';
+ * import {NgClass, NgIf, NgFor, NgSwitch, NgSwitchWhen, NgSwitchDefault} from '@angular/common';
  * import {OtherDirective} from './myDirectives';
  *
  * @Component({
@@ -34,7 +34,7 @@ import {NgPlural, NgPluralCase} from './ng_plural';
  * one could import all the core directives at once:
  *
  * ```typescript
- * import {CORE_DIRECTIVES} from 'angular2/common';
+ * import {CORE_DIRECTIVES} from '@angular/common';
  * import {OtherDirective} from './myDirectives';
  *
  * @Component({

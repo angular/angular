@@ -8,17 +8,16 @@ import {
   expect,
   beforeEach,
   afterEach,
-  AsyncTestCompleter,
   inject,
   beforeEachProviders
-} from 'angular2/testing_internal';
+} from '@angular/core/testing/testing_internal';
 
-import {HtmlParser} from 'angular2/src/compiler/html_parser';
+import {HtmlParser} from '@angular/compiler/src/html_parser';
 import {
   preparseElement,
   PreparsedElementType,
   PreparsedElement
-} from 'angular2/src/compiler/template_preparser';
+} from '@angular/compiler/src/template_preparser';
 
 export function main() {
   describe('preparseElement', () => {

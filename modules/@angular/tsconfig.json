@@ -1,14 +1,23 @@
 {
-    "compilerOptions": {
-        "emitDecoratorMetadata": true,
-        "experimentalDecorators": true,
-        "declaration": true,
-        "module": "commonjs",
-        "rootDir": ".",
-        "sourceMap": true,
-        "sourceRoot": ".",
-        "target": "es5",
-        "outDir": "../../dist/js/cjs",
-        "moduleResolution": "classic"
-    }
+  "compilerOptions": {
+    "baseUrl": ".",
+    "declaration": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "outDir": "../../dist/@angular/",
+    "paths": {
+      "selenium-webdriver": ["./typings/selenium-webdriver/selenium-webdriver.d.ts"],
+      "rxjs/*": ["../../node_modules/rxjs/*"],
+      "@angular/*": ["./*"]
+    },
+    "rootDir": ".",
+    "sourceMap": true,
+    "inlineSources": true,
+    "target": "es5"
+  },
+  "exclude": [
+    "typings"
+  ]
 }

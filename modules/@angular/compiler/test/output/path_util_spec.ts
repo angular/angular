@@ -1,18 +1,15 @@
 import {
-  AsyncTestCompleter,
   beforeEach,
   ddescribe,
   describe,
-  el,
   expect,
   iit,
   inject,
   it,
   xit,
-  TestComponentBuilder
-} from 'angular2/testing_internal';
+} from '@angular/core/testing/testing_internal';
 
-import {getImportModulePath, ImportEnv} from 'angular2/src/compiler/output/path_util';
+import {getImportModulePath, ImportEnv} from '@angular/compiler/src/output/path_util';
 
 export function main() {
   describe('PathUtils', () => {

@@ -8,17 +8,20 @@ import {
   expect,
   beforeEach,
   inject,
-  async,
+  beforeEachProviders
+} from '@angular/core/testing';
+import {
   fakeAsync,
-  tick,
+  async,
+  flushMicrotasks,
   withProviders,
-  beforeEachProviders,
-  TestComponentBuilder
-} from 'angular2/testing';
-
-import {Injectable, bind, Directive, Component, ViewMetadata} from 'angular2/core';
-import {NgIf} from 'angular2/common';
-import {PromiseWrapper} from 'angular2/src/facade/promise';
+  Log,
+  tick,
+} from '@angular/core/testing';
+import {TestComponentBuilder} from '@angular/compiler/testing';
+import {Injectable, bind, Component, ViewMetadata} from '@angular/core';
+import {NgIf} from '@angular/common';
+import {PromiseWrapper} from '../../http/src/facade/promise';
 
 // Services, and components for the tests.
 

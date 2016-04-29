@@ -1,6 +1,6 @@
-import {Map, MapWrapper, StringMapWrapper, ListWrapper} from 'angular2/src/facade/collection';
-import {isPresent, isBlank, normalizeBlank, Type} from 'angular2/src/facade/lang';
-import {PromiseWrapper} from 'angular2/src/facade/async';
+import {StringMapWrapper} from '../src/facade/collection';
+import {isPresent, isBlank, normalizeBlank} from '../src/facade/lang';
+import {PromiseWrapper} from '../src/facade/async';
 
 
 /**
@@ -12,8 +12,8 @@ import {PromiseWrapper} from 'angular2/src/facade/async';
  * ### Example
  *
  * ```
- * import {Component} from 'angular2/core';
- * import {bootstrap} from 'angular2/platform/browser';
+ * import {Component} from '@angular/core';
+ * import {bootstrap} from '@angular/platform-browser/browser';
  * import {Router, ROUTER_DIRECTIVES, ROUTER_PROVIDERS, RouteConfig, RouteParams} from
  * 'angular2/router';
  *
@@ -48,8 +48,8 @@ export class RouteParams {
  * ### Example
  *
  * ```
- * import {Component} from 'angular2/core';
- * import {bootstrap} from 'angular2/platform/browser';
+ * import {Component} from '@angular/core';
+ * import {bootstrap} from '@angular/platform-browser/browser';
  * import {Router, ROUTER_DIRECTIVES, ROUTER_PROVIDERS, RouteConfig, RouteData} from
  * 'angular2/router';
  *
@@ -91,9 +91,9 @@ export var BLANK_ROUTE_DATA = new RouteData();
  * ### Example
  *
  * ```
- * import {Component} from 'angular2/core';
- * import {bootstrap} from 'angular2/platform/browser';
- * import {Router, ROUTER_DIRECTIVES, ROUTER_PROVIDERS, RouteConfig} from 'angular2/router';
+ * import {Component} from '@angular/core';
+ * import {bootstrap} from '@angular/platform-browser/browser';
+ * import {Router, ROUTER_DIRECTIVES, ROUTER_PROVIDERS, RouteConfig} from '@angular/router';
  *
  * @Component({directives: [ROUTER_DIRECTIVES]})
  * @RouteConfig([

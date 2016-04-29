@@ -1,25 +1,21 @@
 import {
-  AsyncTestCompleter,
   beforeEach,
   ddescribe,
   xdescribe,
   describe,
-  dispatchEvent,
   expect,
   iit,
   inject,
   beforeEachProviders,
   it,
   xit,
-  TestComponentBuilder
-} from 'angular2/testing_internal';
+} from '@angular/core/testing/testing_internal';
+import {TestComponentBuilder} from '@angular/compiler/testing';
+import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
 
 import {SpyRouter, SpyLocation} from '../spies';
-
-import {provide, Component} from 'angular2/core';
-import {By} from 'angular2/platform/common_dom';
-import {Location} from 'angular2/platform/common';
-
+import {provide, Component} from '@angular/core';
+import {Location} from '@angular/common';
 import {
   Router,
   RouteRegistry,
@@ -28,10 +24,10 @@ import {
   Route,
   RouteParams,
   ComponentInstruction
-} from 'angular2/router';
-
-import {DOM} from 'angular2/src/platform/dom/dom_adapter';
-import {ResolvedInstruction} from 'angular2/src/router/instruction';
+} from '@angular/router';
+import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
+import {ResolvedInstruction} from '@angular/router/src/instruction';
+import {By} from '@angular/platform-browser/src/dom/debug/by';
 
 let dummyInstruction = new ResolvedInstruction(
     new ComponentInstruction('detail', [], null, null, true, '0', null, 'Detail'), null, {});
@@ -54,7 +50,7 @@ export function main() {
                testComponent.detectChanges();
                let anchorElement =
                    testComponent.debugElement.query(By.css('a.detail-view')).nativeElement;
-               expect(DOM.getAttribute(anchorElement, 'href')).toEqual('detail');
+               expect(getDOM().getAttribute(anchorElement, 'href')).toEqual('detail');
                async.done();
              });
        }));

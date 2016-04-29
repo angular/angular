@@ -1,17 +1,17 @@
 /**
  * JS version of browser APIs. This library can only run in the browser.
  */
-var win = window;
+var win = typeof window !== 'undefined' && window || <any>{};
 
 export {win as window};
-export var document = window.document;
-export var location = window.location;
-export var gc = window['gc'] ? () => window['gc']() : () => null;
-export var performance = window['performance'] ? window['performance'] : null;
-export const Event = window['Event'];
-export const MouseEvent = window['MouseEvent'];
-export const KeyboardEvent = window['KeyboardEvent'];
-export const EventTarget = window['EventTarget'];
-export const History = window['History'];
-export const Location = window['Location'];
-export const EventListener = window['EventListener'];
+export var document = win.document;
+export var location = win.location;
+export var gc = win['gc'] ? () => win['gc']() : () => null;
+export var performance = win['performance'] ? win['performance'] : null;
+export const Event = win['Event'];
+export const MouseEvent = win['MouseEvent'];
+export const KeyboardEvent = win['KeyboardEvent'];
+export const EventTarget = win['EventTarget'];
+export const History = win['History'];
+export const Location = win['Location'];
+export const EventListener = win['EventListener'];

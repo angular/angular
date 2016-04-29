@@ -1,7 +1,7 @@
-import {describe, it, expect, beforeEach, ddescribe, iit, xit, el} from 'angular2/testing_internal';
-import {extractStyleUrls, isStyleUrlResolvable} from 'angular2/src/compiler/style_url_resolver';
+import {describe, it, expect, beforeEach, ddescribe, iit, xit} from '@angular/core/testing';
+import {extractStyleUrls, isStyleUrlResolvable} from '@angular/compiler/src/style_url_resolver';
 
-import {UrlResolver} from 'angular2/src/compiler/url_resolver';
+import {UrlResolver} from '@angular/compiler/src/url_resolver';
 
 export function main() {
   describe('extractStyleUrls', () => {

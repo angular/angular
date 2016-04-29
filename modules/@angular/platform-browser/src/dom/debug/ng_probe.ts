@@ -1,9 +1,9 @@
-import {assertionsEnabled} from 'angular2/src/facade/lang';
-import {DOM} from 'angular2/src/platform/dom/dom_adapter';
-import {DebugNode, getDebugNode} from 'angular2/src/core/debug/debug_node';
-import {DomRootRenderer} from 'angular2/src/platform/dom/dom_renderer';
-import {RootRenderer, NgZone, ApplicationRef} from 'angular2/core';
-import {DebugDomRootRenderer} from 'angular2/src/core/debug/debug_renderer';
+import {DebugNode, getDebugNode, Provider, RootRenderer, NgZone, ApplicationRef} from '@angular/core';
+import {DebugDomRootRenderer} from '../../../core_private';
+import {assertionsEnabled} from '../../facade/lang';
+import {getDOM} from '../dom_adapter';
+import {DomRootRenderer} from '../dom_renderer';
+
 
 const CORE_TOKENS = /*@ts2dart_const*/ {'ApplicationRef': ApplicationRef, 'NgZone': NgZone};
 
@@ -27,8 +27,8 @@ function _createConditionalRootRenderer(rootRenderer) {
 }
 
 function _createRootRenderer(rootRenderer) {
-  DOM.setGlobalVar(INSPECT_GLOBAL_NAME, inspectNativeElement);
-  DOM.setGlobalVar(CORE_TOKENS_GLOBAL_NAME, CORE_TOKENS);
+  getDOM().setGlobalVar(INSPECT_GLOBAL_NAME, inspectNativeElement);
+  getDOM().setGlobalVar(CORE_TOKENS_GLOBAL_NAME, CORE_TOKENS);
   return new DebugDomRootRenderer(rootRenderer);
 }
 

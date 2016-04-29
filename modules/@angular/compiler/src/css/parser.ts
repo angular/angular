@@ -3,7 +3,7 @@ import {
   ParseSourceFile,
   ParseLocation,
   ParseError
-} from "angular2/src/compiler/parse_util";
+} from '@angular/compiler/src/parse_util';
 
 import {
   bitWiseOr,
@@ -11,7 +11,7 @@ import {
   NumberWrapper,
   StringWrapper,
   isPresent
-} from "angular2/src/facade/lang";
+} from '../../src/facade/lang';
 
 import {
   CssLexerMode,
@@ -32,9 +32,9 @@ import {
   $COLON,
   $SEMICOLON,
   isNewline
-} from "angular2/src/compiler/css/lexer";
+} from '@angular/compiler/src/css/lexer';
 
-export {CssToken} from "angular2/src/compiler/css/lexer";
+export {CssToken} from '@angular/compiler/src/css/lexer';
 
 export enum BlockType {
   Import,

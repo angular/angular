@@ -1,23 +1,20 @@
 import {
-  AsyncTestCompleter,
   beforeEach,
   beforeEachProviders,
   expect,
   iit,
-  flushMicrotasks,
   inject,
   it,
-  TestComponentBuilder,
-  ComponentFixture,
   xit,
-} from 'angular2/testing_internal';
+} from '@angular/core/testing/testing_internal';
+import {TestComponentBuilder, ComponentFixture} from '@angular/compiler/testing';
+import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
 
-import {By} from 'angular2/platform/common_dom';
-import {Location} from 'angular2/platform/common';
+import {Location} from '@angular/common';
 
 import {specs, compile, TEST_ROUTER_PROVIDERS, clickOnElement, getHref} from '../util';
 
-import {Router, AsyncRoute, Route} from 'angular2/router';
+import {Router, AsyncRoute, Route} from '@angular/router';
 
 import {
   HelloCmp,
@@ -34,6 +31,7 @@ import {
   parentWithDefaultCmpLoader,
   asyncRouteDataCmp
 } from './fixture_components';
+import {By} from '../../../../platform-browser/src/dom/debug/by';
 
 function getLinkElement(rtc: ComponentFixture<any>) {
   return rtc.debugElement.query(By.css('a')).nativeElement;

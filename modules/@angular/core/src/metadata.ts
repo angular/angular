@@ -57,16 +57,15 @@ import {
 } from './metadata/directives';
 
 import {ViewMetadata, ViewEncapsulation} from './metadata/view';
-import {ChangeDetectionStrategy} from 'angular2/src/core/change_detection/change_detection';
+import {ChangeDetectionStrategy} from './change_detection/change_detection';
 
 import {
   makeDecorator,
   makeParamDecorator,
   makePropDecorator,
   TypeDecorator,
-  Class
 } from './util/decorators';
-import {Type} from 'angular2/src/facade/lang';
+import {Type} from '../src/facade/lang';
 
 /**
  * Interface for the {@link DirectiveMetadata} decorator function.
@@ -262,7 +261,7 @@ export interface ComponentMetadataFactory {
  * ### Example as TypeScript Decorator
  *
  * ```
- * import {Component, View} from "angular2/core";
+ * import {Component, View} from '@angular/core';
  *
  * @Component({...})
  * class MyComponent {
@@ -364,7 +363,7 @@ export interface AttributeMetadataFactory {
  * ### Example as TypeScript Decorator
  *
  * ```
- * import {Query, QueryList, Component} from "angular2/core";
+ * import {Query, QueryList, Component} from '@angular/core';
  *
  * @Component({...})
  * class MyComponent {

@@ -1,6 +1,6 @@
-import {bootstrap} from 'angular2/platform/browser';
+import {bootstrap} from '@angular/platform-browser';
 
-import {Renderer, ElementRef, Component, Directive, Injectable} from 'angular2/core';
+import {Renderer, ElementRef, Component, Directive, Injectable} from '@angular/core';
 import {MyCmp} from './my_cmp/my_cmp';
 
 export function main() {

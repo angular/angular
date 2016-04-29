@@ -1,5 +1,4 @@
 import {
-  AsyncTestCompleter,
   describe,
   it,
   iit,
@@ -7,12 +6,11 @@ import {
   expect,
   inject,
   beforeEach,
-  SpyObject
-} from 'angular2/testing_internal';
+} from '@angular/core/testing/testing_internal';
 
-import {GeneratedUrl} from 'angular2/src/router/rules/route_paths/route_path';
-import {RegexRoutePath} from 'angular2/src/router/rules/route_paths/regex_route_path';
-import {parser, Url} from 'angular2/src/router/url_parser';
+import {GeneratedUrl} from '../../../../router/src/rules/route_paths/route_path';
+import {RegexRoutePath} from '../../../../router/src/rules/route_paths/regex_route_path';
+import {parser, Url} from '../../../../router/src/url_parser';
 
 function emptySerializer(params) {
   return new GeneratedUrl('', {});

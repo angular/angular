@@ -1,5 +1,3 @@
-import {global} from 'angular2/src/facade/lang';
-
 /**
  * Stores error information; delivered via [NgZone.onError] stream.
  */
@@ -90,7 +88,7 @@ export class NgZoneImpl {
                            }
       });
     } else {
-      throw new Error('Angular2 needs to be run with Zone.js polyfill.');
+      throw new Error('Angular requires Zone.js polyfill.');
     }
   }
 

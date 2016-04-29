@@ -1,4 +1,4 @@
-import {Type, isBlank} from 'angular2/src/facade/lang';
+import {Type, isBlank} from '@angular/facade/src/lang';
 
 export function hasLifecycleHook(name: string, obj: Object): boolean {
   if (isBlank(obj)) return false;

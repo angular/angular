@@ -1,21 +1,22 @@
 import {
-  AsyncTestCompleter,
   beforeEach,
   ddescribe,
   describe,
   expect,
-  fakeAsync,
-  flushMicrotasks,
   iit,
   inject,
   it,
+  xit
+} from '@angular/core/testing/testing_internal';
+import {
+  fakeAsync,
+  flushMicrotasks,
   Log,
   tick,
-  xit
-} from 'angular2/testing_internal';
-import {TimerWrapper, PromiseWrapper} from 'angular2/src/facade/async';
-import {BaseException} from 'angular2/src/facade/exceptions';
-import {Parser} from 'angular2/src/compiler/expression_parser/parser';
+} from '@angular/core/testing';
+import {TimerWrapper, PromiseWrapper} from '../../router/src/facade/async';
+import {BaseException} from '../../router/src/facade/exceptions';
+import {Parser} from '../../compiler/src/expression_parser/parser';
 
 export function main() {
   describe('fake async', () => {

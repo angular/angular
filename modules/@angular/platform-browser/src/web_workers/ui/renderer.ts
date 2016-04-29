@@ -1,13 +1,12 @@
-import {Injectable} from 'angular2/src/core/di';
-import {MessageBus} from 'angular2/src/web_workers/shared/message_bus';
-import {Serializer, PRIMITIVE, RenderStoreObject} from 'angular2/src/web_workers/shared/serializer';
-import {RootRenderer, Renderer, RenderComponentType} from 'angular2/src/core/render/api';
-import {EVENT_CHANNEL, RENDERER_CHANNEL} from 'angular2/src/web_workers/shared/messaging_api';
-import {Type} from 'angular2/src/facade/lang';
+import {Injectable} from '@angular/core/src/di';
+import {MessageBus} from '../shared/message_bus';
+import {Serializer, PRIMITIVE, RenderStoreObject} from '../shared/serializer';
+import {RootRenderer, Renderer, RenderComponentType} from '@angular/core/src/render/api';
+import {EVENT_CHANNEL, RENDERER_CHANNEL} from '../shared/messaging_api';
 import {bind} from './bind';
-import {EventDispatcher} from 'angular2/src/web_workers/ui/event_dispatcher';
-import {RenderStore} from 'angular2/src/web_workers/shared/render_store';
-import {ServiceMessageBrokerFactory} from 'angular2/src/web_workers/shared/service_message_broker';
+import {EventDispatcher} from '../ui/event_dispatcher';
+import {RenderStore} from '../shared/render_store';
+import {ServiceMessageBrokerFactory} from '../shared/service_message_broker';
 
 @Injectable()
 export class MessageBasedRenderer {

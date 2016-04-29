@@ -1,26 +1,26 @@
-import {ddescribe, describe, it, iit, xit, expect, afterEach} from 'angular2/testing_internal';
-import {DOM} from 'angular2/src/platform/dom/dom_adapter';
-import {Title} from 'angular2/platform/browser';
+import {ddescribe, describe, it, iit, xit, expect, afterEach} from '@angular/core/testing';
+import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
+import {Title} from '@angular/platform-browser';
 
 export function main() {
   describe('title service', () => {
-    var initialTitle = DOM.getTitle();
+    var initialTitle = getDOM().getTitle();
     var titleService = new Title();
 
-    afterEach(() => { DOM.setTitle(initialTitle); });
+    afterEach(() => { getDOM().setTitle(initialTitle); });
 
     it('should allow reading initial title',
        () => { expect(titleService.getTitle()).toEqual(initialTitle); });
 
     it('should set a title on the injected document', () => {
       titleService.setTitle('test title');
-      expect(DOM.getTitle()).toEqual('test title');
+      expect(getDOM().getTitle()).toEqual('test title');
       expect(titleService.getTitle()).toEqual('test title');
     });
 
     it('should reset title to empty string if title not provided', () => {
       titleService.setTitle(null);
-      expect(DOM.getTitle()).toEqual('');
+      expect(getDOM().getTitle()).toEqual('');
     });
 
   });

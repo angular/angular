@@ -1,5 +1,5 @@
-import {bootstrap} from 'angular2/platform/browser';
-import {Renderer, ElementRef, Component, Directive, Injectable} from 'angular2/core';
+import {bootstrap} from '@angular/platform-browser';
+import {Renderer, ElementRef, Component, Directive, Injectable} from '@angular/core';
 
 export function main() {
   // Bootstrapping only requires specifying a root component.

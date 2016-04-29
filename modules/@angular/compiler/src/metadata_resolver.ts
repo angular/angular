@@ -1,4 +1,26 @@
-import {resolveForwardRef} from 'angular2/src/core/di';
+import {
+  AttributeMetadata,
+  ReflectiveDependency,
+  OptionalMetadata,
+  ComponentMetadata,
+  SelfMetadata,
+  HostMetadata,
+  SkipSelfMetadata,
+  Provider,
+  PLATFORM_DIRECTIVES, PLATFORM_PIPES,
+  reflector,
+  Injectable, Inject, Optional,
+  ViewMetadata,
+  NoAnnotationError,
+  QueryMetadata,
+  resolveForwardRef,
+  InjectMetadata,
+  ViewQueryMetadata
+} from '@angular/core';
+import {
+  constructDependencies,
+  LIFECYCLE_HOOKS_VALUES, ReflectorReader
+} from '../core_private';
 import {
   Type,
   isBlank,
@@ -6,38 +28,20 @@ import {
   isArray,
   stringify,
   isString,
-  isStringMap,
-  RegExpWrapper,
-  StringWrapper
-} from 'angular2/src/facade/lang';
-import {StringMapWrapper} from 'angular2/src/facade/collection';
-import {BaseException} from 'angular2/src/facade/exceptions';
+  isStringMap
+} from '../src/facade/lang';
+import {StringMapWrapper} from '../src/facade/collection';
+import {BaseException} from '../src/facade/exceptions';
 import * as cpl from './compile_metadata';
-import * as md from 'angular2/src/core/metadata/directives';
-import * as dimd from 'angular2/src/core/metadata/di';
 import {DirectiveResolver} from './directive_resolver';
 import {PipeResolver} from './pipe_resolver';
 import {ViewResolver} from './view_resolver';
-import {ViewMetadata} from 'angular2/src/core/metadata/view';
 import {hasLifecycleHook} from './directive_lifecycle_reflector';
-import {LifecycleHooks, LIFECYCLE_HOOKS_VALUES} from 'angular2/src/core/metadata/lifecycle_hooks';
-import {reflector} from 'angular2/src/core/reflection/reflection';
-import {Injectable, Inject, Optional} from 'angular2/src/core/di';
-import {PLATFORM_DIRECTIVES, PLATFORM_PIPES} from 'angular2/src/core/platform_directives_and_pipes';
 import {MODULE_SUFFIX, sanitizeIdentifier, ValueTransformer, visitValue} from './util';
 import {assertArrayOfStrings} from './assertions';
-import {getUrlScheme} from 'angular2/src/compiler/url_resolver';
-import {Provider} from 'angular2/src/core/di/provider';
-import {
-  OptionalMetadata,
-  SelfMetadata,
-  HostMetadata,
-  SkipSelfMetadata,
-  InjectMetadata
-} from 'angular2/src/core/di/metadata';
-import {AttributeMetadata, QueryMetadata} from 'angular2/src/core/metadata/di';
-import {ReflectorReader} from 'angular2/src/core/reflection/reflector_reader';
-import {isProviderLiteral, createProvider} from '../core/di/provider_util';
+import {getUrlScheme} from './url_resolver';
+import {createProvider, isProviderLiteral} from "../core_private";
+
 
 @Injectable()
 export class CompileMetadataResolver {
@@ -81,9 +85,9 @@ export class CompileMetadataResolver {
       var changeDetectionStrategy = null;
       var viewProviders = [];
 
-      if (dirMeta instanceof md.ComponentMetadata) {
+      if (dirMeta instanceof ComponentMetadata) {
         assertArrayOfStrings('styles', dirMeta.styles);
-        var cmpMeta = <md.ComponentMetadata>dirMeta;
+        var cmpMeta = <ComponentMetadata>dirMeta;
         var viewMeta = this._viewResolver.resolve(directiveType);
         assertArrayOfStrings('styles', viewMeta.styles);
         templateMeta = new cpl.CompileTemplateMetadata({
@@ -219,8 +223,8 @@ export class CompileMetadataResolver {
       let isSelf = false;
       let isSkipSelf = false;
       let isOptional = false;
-      let query: dimd.QueryMetadata = null;
-      let viewQuery: dimd.ViewQueryMetadata = null;
+      let query: QueryMetadata = null;
+      let viewQuery: ViewQueryMetadata = null;
       var token = null;
       if (isArray(param)) {
         (<any[]>param)
@@ -326,7 +330,7 @@ export class CompileMetadataResolver {
     });
   }
 
-  getQueriesMetadata(queries: {[key: string]: dimd.QueryMetadata},
+  getQueriesMetadata(queries: {[key: string]: QueryMetadata},
                      isViewQuery: boolean): cpl.CompileQueryMetadata[] {
     var compileQueries = [];
     StringMapWrapper.forEach(queries, (query, propertyName) => {
@@ -337,7 +341,7 @@ export class CompileMetadataResolver {
     return compileQueries;
   }
 
-  getQueryMetadata(q: dimd.QueryMetadata, propertyName: string): cpl.CompileQueryMetadata {
+  getQueryMetadata(q: QueryMetadata, propertyName: string): cpl.CompileQueryMetadata {
     var selectors;
     if (q.isVarBindingQuery) {
       selectors = q.varBindings.map(varName => this.getTokenMetadata(varName));
@@ -399,9 +403,8 @@ function staticTypeModuleUrl(value: any): string {
   return isStaticType(value) ? value['moduleId'] : null;
 }
 
-
 function calcTemplateBaseUrl(reflector: ReflectorReader, type: any,
-                             cmpMetadata: md.ComponentMetadata): string {
+                             cmpMetadata: ComponentMetadata): string {
   if (isStaticType(type)) {
     return type['filePath'];
   }
@@ -410,7 +413,7 @@ function calcTemplateBaseUrl(reflector: ReflectorReader, type: any,
     var moduleId = cmpMetadata.moduleId;
     var scheme = getUrlScheme(moduleId);
     return isPresent(scheme) && scheme.length > 0 ? moduleId :
-                                                    `package:${moduleId}${MODULE_SUFFIX}`;
+      `package:${moduleId}${MODULE_SUFFIX}`;
   }
 
   return reflector.importUri(type);

@@ -1,11 +1,33 @@
-import {CompileIdentifierMetadata, CompileTokenMetadata} from './compile_metadata';
-import {AppView, DebugAppView} from 'angular2/src/core/linker/view';
-import {StaticNodeDebugInfo, DebugContext} from 'angular2/src/core/linker/debug_context';
 import {
-  ViewUtils,
+  SimpleChange,
+  ChangeDetectorRef,
+  ChangeDetectionStrategy,
+  ElementRef,
+  ViewContainerRef,
+  Renderer,
+  RenderComponentType,
+  Injector,
+  QueryList,
+  ViewEncapsulation,
+  TemplateRef
+} from '@angular/core';
+import {
+  AppElement,
+  AppView,
+  DebugAppView,
+  ChangeDetectorState,
+  checkBinding,
+  DebugContext,
+  devModeEqual,
   flattenNestedViewRenderNodes,
   interpolate,
-  checkBinding,
+  RenderDebugInfo,
+  StaticNodeDebugInfo,
+  TemplateRef_,
+  uninitialized,
+  ValueUnwrapper,
+  ViewType,
+  ViewUtils,
   castByValue,
   EMPTY_ARRAY,
   EMPTY_MAP,
@@ -19,30 +41,14 @@ import {
   pureProxy8,
   pureProxy9,
   pureProxy10
-} from 'angular2/src/core/linker/view_utils';
-import {
-  uninitialized,
-  devModeEqual,
-  SimpleChange,
-  ValueUnwrapper,
-  ChangeDetectorRef,
-  ChangeDetectorState,
-  ChangeDetectionStrategy
-} from 'angular2/src/core/change_detection/change_detection';
-import {AppElement} from 'angular2/src/core/linker/element';
-import {ElementRef} from 'angular2/src/core/linker/element_ref';
-import {ViewContainerRef} from 'angular2/src/core/linker/view_container_ref';
-import {Renderer, RenderComponentType, RenderDebugInfo} from 'angular2/src/core/render/api';
-import {ViewEncapsulation} from 'angular2/src/core/metadata/view';
-import {ViewType} from 'angular2/src/core/linker/view_type';
-import {QueryList} from 'angular2/src/core/linker';
-import {Injector} from 'angular2/src/core/di/injector';
-import {TemplateRef, TemplateRef_} from 'angular2/src/core/linker/template_ref';
-import {MODULE_SUFFIX} from './util';
+} from '../core_private';
 
-var APP_VIEW_MODULE_URL = 'asset:angular2/lib/src/core/linker/view' + MODULE_SUFFIX;
-var VIEW_UTILS_MODULE_URL = 'asset:angular2/lib/src/core/linker/view_utils' + MODULE_SUFFIX;
-var CD_MODULE_URL = 'asset:angular2/lib/src/core/change_detection/change_detection' + MODULE_SUFFIX;
+import {CompileIdentifierMetadata, CompileTokenMetadata} from './compile_metadata';
+import {assetUrl} from './util';
+
+var APP_VIEW_MODULE_URL = assetUrl('core', 'linker/view');
+var VIEW_UTILS_MODULE_URL = assetUrl('core', 'linker/view_utils');
+var CD_MODULE_URL = assetUrl('core', 'change_detection/change_detection');
 
 // Reassign the imports to different variables so we can
 // define static variables with the name of the import.
@@ -80,7 +86,7 @@ var impEMPTY_MAP = EMPTY_MAP;
 export class Identifiers {
   static ViewUtils = new CompileIdentifierMetadata({
     name: 'ViewUtils',
-    moduleUrl: 'asset:angular2/lib/src/core/linker/view_utils' + MODULE_SUFFIX,
+    moduleUrl: assetUrl('core', 'linker/view_utils'),
     runtime: impViewUtils
   });
   static AppView = new CompileIdentifierMetadata(
@@ -89,59 +95,59 @@ export class Identifiers {
       {name: 'DebugAppView', moduleUrl: APP_VIEW_MODULE_URL, runtime: impDebugAppView});
   static AppElement = new CompileIdentifierMetadata({
     name: 'AppElement',
-    moduleUrl: 'asset:angular2/lib/src/core/linker/element' + MODULE_SUFFIX,
+    moduleUrl: assetUrl('core', 'linker/element'),
     runtime: impAppElement
   });
   static ElementRef = new CompileIdentifierMetadata({
     name: 'ElementRef',
-    moduleUrl: 'asset:angular2/lib/src/core/linker/element_ref' + MODULE_SUFFIX,
+    moduleUrl: assetUrl('core', 'linker/element_ref'),
     runtime: impElementRef
   });
   static ViewContainerRef = new CompileIdentifierMetadata({
     name: 'ViewContainerRef',
-    moduleUrl: 'asset:angular2/lib/src/core/linker/view_container_ref' + MODULE_SUFFIX,
+    moduleUrl: assetUrl('core', 'linker/view_container_ref'),
     runtime: impViewContainerRef
   });
   static ChangeDetectorRef = new CompileIdentifierMetadata({
     name: 'ChangeDetectorRef',
-    moduleUrl: 'asset:angular2/lib/src/core/change_detection/change_detector_ref' + MODULE_SUFFIX,
+    moduleUrl: assetUrl('core', 'change_detection/change_detector_ref'),
     runtime: impChangeDetectorRef
   });
   static RenderComponentType = new CompileIdentifierMetadata({
     name: 'RenderComponentType',
-    moduleUrl: 'asset:angular2/lib/src/core/render/api' + MODULE_SUFFIX,
+    moduleUrl: assetUrl('core', 'render/api'),
     runtime: impRenderComponentType
   });
   static QueryList = new CompileIdentifierMetadata({
     name: 'QueryList',
-    moduleUrl: 'asset:angular2/lib/src/core/linker/query_list' + MODULE_SUFFIX,
+    moduleUrl: assetUrl('core', 'linker/query_list'),
     runtime: impQueryList
   });
   static TemplateRef = new CompileIdentifierMetadata({
     name: 'TemplateRef',
-    moduleUrl: 'asset:angular2/lib/src/core/linker/template_ref' + MODULE_SUFFIX,
+    moduleUrl: assetUrl('core', 'linker/template_ref'),
     runtime: impTemplateRef
   });
   static TemplateRef_ = new CompileIdentifierMetadata({
     name: 'TemplateRef_',
-    moduleUrl: 'asset:angular2/lib/src/core/linker/template_ref' + MODULE_SUFFIX,
+    moduleUrl: assetUrl('core', 'linker/template_ref'),
     runtime: impTemplateRef_
   });
   static ValueUnwrapper = new CompileIdentifierMetadata(
       {name: 'ValueUnwrapper', moduleUrl: CD_MODULE_URL, runtime: impValueUnwrapper});
   static Injector = new CompileIdentifierMetadata({
     name: 'Injector',
-    moduleUrl: `asset:angular2/lib/src/core/di/injector${MODULE_SUFFIX}`,
+    moduleUrl: assetUrl('core', 'di/injector'),
     runtime: impInjector
   });
   static ViewEncapsulation = new CompileIdentifierMetadata({
     name: 'ViewEncapsulation',
-    moduleUrl: 'asset:angular2/lib/src/core/metadata/view' + MODULE_SUFFIX,
+    moduleUrl: assetUrl('core', 'metadata/view'),
     runtime: impViewEncapsulation
   });
   static ViewType = new CompileIdentifierMetadata({
     name: 'ViewType',
-    moduleUrl: `asset:angular2/lib/src/core/linker/view_type${MODULE_SUFFIX}`,
+    moduleUrl: assetUrl('core', 'linker/view_type'),
     runtime: impViewType
   });
   static ChangeDetectionStrategy = new CompileIdentifierMetadata({
@@ -151,17 +157,17 @@ export class Identifiers {
   });
   static StaticNodeDebugInfo = new CompileIdentifierMetadata({
     name: 'StaticNodeDebugInfo',
-    moduleUrl: `asset:angular2/lib/src/core/linker/debug_context${MODULE_SUFFIX}`,
+    moduleUrl: assetUrl('core', 'linker/debug_context'),
     runtime: impStaticNodeDebugInfo
   });
   static DebugContext = new CompileIdentifierMetadata({
     name: 'DebugContext',
-    moduleUrl: `asset:angular2/lib/src/core/linker/debug_context${MODULE_SUFFIX}`,
+    moduleUrl: assetUrl('core', 'linker/debug_context'),
     runtime: impDebugContext
   });
   static Renderer = new CompileIdentifierMetadata({
     name: 'Renderer',
-    moduleUrl: 'asset:angular2/lib/src/core/render/api' + MODULE_SUFFIX,
+    moduleUrl: assetUrl('core', 'render/api'),
     runtime: impRenderer
   });
   static SimpleChange = new CompileIdentifierMetadata(

@@ -1,33 +1,24 @@
+import {Component, Directive, Output, EventEmitter} from '@angular/core';
 import {
-  Component,
-  Directive,
-  Output,
-  EventEmitter,
-  Provider,
-  forwardRef,
-  Input
-} from 'angular2/core';
-import {
-  ComponentFixture,
   afterEach,
-  AsyncTestCompleter,
-  TestComponentBuilder,
   beforeEach,
   ddescribe,
   describe,
-  dispatchEvent,
-  fakeAsync,
-  tick,
-  flushMicrotasks,
   expect,
   it,
   inject,
   iit,
-  xit,
-  browserDetection
-} from 'angular2/testing_internal';
-
-import {DOM} from 'angular2/src/platform/dom/dom_adapter';
+  xit
+} from '@angular/core/testing/testing_internal';
+import {
+  fakeAsync,
+  tick,
+  flushMicrotasks
+} from '@angular/core/testing';
+import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
+import {TestComponentBuilder} from '@angular/compiler/testing';
+import {ComponentFixture} from '@angular/compiler/testing';
+import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {
   Control,
   ControlGroup,
@@ -42,11 +33,14 @@ import {
   Validators,
   Validator,
   RadioButtonState
-} from 'angular2/common';
-import {By} from 'angular2/platform/browser';
-import {ListWrapper} from 'angular2/src/facade/collection';
-import {ObservableWrapper, TimerWrapper} from 'angular2/src/facade/async';
-import {PromiseWrapper} from "angular2/src/facade/promise";
+} from '@angular/common';
+import {Provider, forwardRef, Input} from '@angular/core';
+import {By} from '@angular/platform-browser/src/dom/debug/by';
+import {ListWrapper} from '../../src/facade/collection';
+import {ObservableWrapper, TimerWrapper} from '../../src/facade/async';
+import {PromiseWrapper} from '../../src/facade/promise';
+import {browserDetection} from '@angular/platform-browser/testing';
+import {dispatchEvent} from '@angular/platform-browser/testing';
 
 export function main() {
   describe("integration tests", () => {
@@ -57,7 +51,7 @@ export function main() {
                 <input type="text" ngControl="login">
                </div>`;
 
-         tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((fixture) => {
+         tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
            fixture.debugElement.componentInstance.form =
                new ControlGroup({"login": new Control("loginValue")});
            fixture.detectChanges();
@@ -74,7 +68,7 @@ export function main() {
                 <input type="text" ngControl="login">
                </div>`;
 
-         tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((fixture) => {
+         tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
            expect(() => fixture.detectChanges())
                .toThrowError(new RegExp(`ngFormModel expects a form. Please pass one in.`));
            async.done();
@@ -89,7 +83,7 @@ export function main() {
                 <input type="text" ngControl="login">
               </div>`;
 
-         tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((fixture) => {
+         tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
            fixture.debugElement.componentInstance.form = form;
            fixture.detectChanges();
            var input = fixture.debugElement.query(By.css("input"));
@@ -110,7 +104,7 @@ export function main() {
                 <input type="text" ngControl="login">
               </div>`;
 
-         tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((fixture) => {
+         tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
            fixture.debugElement.componentInstance.form = form;
            fixture.detectChanges();
            var input = fixture.debugElement.query(By.css("input"));
@@ -132,7 +126,7 @@ export function main() {
                       <span>{{name}}</span>
                     </div>`;
 
-         let fixture = tcb.overrideTemplate(MyComp, t).createFakeAsync(MyComp);
+         let fixture = tcb.overrideTemplate(MyComp8, t).createFakeAsync(MyComp8);
          tick();
 
          fixture.debugElement.componentInstance.form = new ControlGroup({});
@@ -153,7 +147,7 @@ export function main() {
 
          var t = `<div><input type="text" [ngFormControl]="form"></div>`;
 
-         tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((fixture) => {
+         tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
            fixture.debugElement.componentInstance.form = control;
            fixture.detectChanges();
 
@@ -174,7 +168,7 @@ export function main() {
                 <input type="text" ngControl="login">
                </div>`;
 
-         tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((fixture) => {
+         tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
            fixture.debugElement.componentInstance.form =
                new ControlGroup({"login": new Control("oldValue")});
            fixture.detectChanges();
@@ -198,7 +192,7 @@ export function main() {
                 <input type="text" ngControl="login">
                </div>`;
 
-         tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((fixture) => {
+         tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
            fixture.debugElement.componentInstance.form = form;
            fixture.detectChanges();
 
@@ -221,7 +215,7 @@ export function main() {
                 <input type="text" ngControl="login">
                </div>`;
 
-         tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((fixture) => {
+         tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
            fixture.debugElement.componentInstance.form = form;
            fixture.detectChanges();
 
@@ -243,7 +237,7 @@ export function main() {
                   <input type="text" ngControl="text">
                 </div>`;
 
-           tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((fixture) => {
+           tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
              fixture.debugElement.componentInstance.form =
                  new ControlGroup({"text": new Control("old")});
              fixture.detectChanges();
@@ -265,7 +259,7 @@ export function main() {
                   <input ngControl="text">
                 </div>`;
 
-           tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((fixture) => {
+           tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
              fixture.debugElement.componentInstance.form =
                  new ControlGroup({"text": new Control("old")});
              fixture.detectChanges();
@@ -286,7 +280,7 @@ export function main() {
                   <textarea ngControl="text"></textarea>
                 </div>`;
 
-           tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((fixture) => {
+           tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
              fixture.debugElement.componentInstance.form =
                  new ControlGroup({"text": new Control('old')});
              fixture.detectChanges();
@@ -308,7 +302,7 @@ export function main() {
                   <input type="checkbox" ngControl="checkbox">
                 </div>`;
 
-           tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((fixture) => {
+           tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
              fixture.debugElement.componentInstance.form =
                  new ControlGroup({"checkbox": new Control(true)});
              fixture.detectChanges();
@@ -330,7 +324,7 @@ export function main() {
                   <input type="number" ngControl="num">
                 </div>`;
 
-           tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((fixture) => {
+           tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
              fixture.debugElement.componentInstance.form =
                  new ControlGroup({"num": new Control(10)});
              fixture.detectChanges();
@@ -352,7 +346,7 @@ export function main() {
                   <input type="number" ngControl="num" required>
                 </div>`;
 
-           tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((fixture) => {
+           tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
              fixture.debugElement.componentInstance.form =
                  new ControlGroup({"num": new Control(10)});
              fixture.detectChanges();
@@ -381,7 +375,7 @@ export function main() {
                   <input type="number" ngControl="num" [(ngModel)]="data">
                 </div>`;
 
-           tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((fixture) => {
+           tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
              fixture.debugElement.componentInstance.form = form;
              fixture.debugElement.componentInstance.data = null;
              fixture.detectChanges();
@@ -400,7 +394,7 @@ export function main() {
                   <input type="radio" ngControl="foodFish" name="food">
                 </form>`;
 
-           tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((fixture) => {
+           tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
              fixture.debugElement.componentInstance.form = new ControlGroup({
                "foodChicken": new Control(new RadioButtonState(false, 'chicken')),
                "foodFish": new Control(new RadioButtonState(true, 'fish'))
@@ -429,7 +423,7 @@ export function main() {
                       <option value="NYC"></option>
                     </select>`;
 
-                    tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((fixture) => {
+                    tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
                       fixture.detectChanges();
 
                       var select = fixture.debugElement.query(By.css("select"));
@@ -450,7 +444,7 @@ export function main() {
                       </option>
                     </select>`;
 
-                    tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((fixture) => {
+                    tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
                       var testComp = fixture.debugElement.componentInstance;
                       testComp.list = [{"id": "0", "name": "SF"}, {"id": "1", "name": "NYC"}];
                       fixture.detectChanges();
@@ -475,7 +469,7 @@ export function main() {
                     </select>
                   </div>`;
 
-             tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((fixture) => {
+             tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
                fixture.debugElement.componentInstance.form =
                    new ControlGroup({"city": new Control("SF")});
                fixture.detectChanges();
@@ -505,7 +499,7 @@ export function main() {
                   </div>`;
 
              var fixture;
-             tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((compFixture) => fixture =
+             tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((compFixture) => fixture =
                                                                           compFixture);
              tick();
 
@@ -529,7 +523,7 @@ export function main() {
                       </select>
                   </div>`;
 
-                    tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((fixture) => {
+                    tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
 
                       var testComp = fixture.debugElement.componentInstance;
                       testComp.list = [{"name": "SF"}, {"name": "NYC"}, {"name": "Buffalo"}];
@@ -561,9 +555,9 @@ export function main() {
                       </select>
                   </div>`;
 
-                    tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((fixture) => {
+                    tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
 
-                      var testComp: MyComp = fixture.debugElement.componentInstance;
+                      var testComp: MyComp8 = fixture.debugElement.componentInstance;
                       testComp.list = [{"name": "SF"}, {"name": "NYC"}];
                       testComp.selectedCity = testComp.list[1];
                       fixture.detectChanges();
@@ -588,9 +582,9 @@ export function main() {
                         <option *ngFor="let c of list" [ngValue]="c">{{c}}</option>
                       </select>
                   </div>`;
-                    tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((fixture) => {
+                    tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
 
-                      var testComp: MyComp = fixture.debugElement.componentInstance;
+                      var testComp: MyComp8 = fixture.debugElement.componentInstance;
                       testComp.list = [{"name": "SF"}, {"name": "NYC"}];
                       testComp.selectedCity = testComp.list[1];
                       fixture.detectChanges();
@@ -615,7 +609,7 @@ export function main() {
                       </select>
                   </div>`;
 
-                    tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((fixture) => {
+                    tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
 
                       var testComp = fixture.debugElement.componentInstance;
 
@@ -645,7 +639,7 @@ export function main() {
                       </select>
                   </div>`;
 
-                    tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((fixture) => {
+                    tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
 
                       var testComp = fixture.debugElement.componentInstance;
 
@@ -674,7 +668,7 @@ export function main() {
                       </select>
                   </div>`;
 
-                    tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((fixture) => {
+                    tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
 
                       var testComp = fixture.debugElement.componentInstance;
                       testComp.list = [{"name": "SF"}, {"name": "NYC"}, {"name": "NYC"}];
@@ -700,7 +694,7 @@ export function main() {
                   <input type="text" ngControl="name" wrapped-value>
                 </div>`;
 
-           tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((fixture) => {
+           tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
              fixture.debugElement.componentInstance.form =
                  new ControlGroup({"name": new Control("aa")});
              fixture.detectChanges();
@@ -721,7 +715,7 @@ export function main() {
                   <my-input ngControl="name"></my-input>
                 </div>`;
 
-           tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((fixture) => {
+           tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
              fixture.debugElement.componentInstance.form =
                  new ControlGroup({"name": new Control("aa")});
              fixture.detectChanges();
@@ -751,7 +745,7 @@ export function main() {
                     <input type="text" ngControl="max" maxlength="3">
                  </div>`;
 
-           tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((fixture) => {
+           tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
              fixture.debugElement.componentInstance.form = form;
              fixture.detectChanges();
 
@@ -794,7 +788,7 @@ export function main() {
                  </div>`;
 
            var rootTC;
-           tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((root) => rootTC = root);
+           tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((root) => rootTC = root);
            tick();
 
            rootTC.debugElement.componentInstance.form = form;
@@ -822,7 +816,7 @@ export function main() {
                   <input type="text" ngControl="login">
                  </div>`;
 
-           tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((fixture) => {
+           tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
              fixture.debugElement.componentInstance.form = form;
              fixture.detectChanges();
              expect(form.valid).toEqual(true);
@@ -847,7 +841,7 @@ export function main() {
                  </div>`;
 
            var fixture;
-           tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((root) => fixture = root);
+           tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((root) => fixture = root);
            tick();
 
            fixture.debugElement.componentInstance.form = form;
@@ -884,7 +878,7 @@ export function main() {
                   </div>
               </div>`;
 
-           tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((fixture) => {
+           tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
              fixture.debugElement.componentInstance.form = form;
              fixture.detectChanges();
 
@@ -905,7 +899,7 @@ export function main() {
                     </div>
                 </div>`;
 
-           tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((fixture) => {
+           tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
              fixture.debugElement.componentInstance.form = form;
              fixture.detectChanges();
              var input = fixture.debugElement.query(By.css("input"));
@@ -926,7 +920,7 @@ export function main() {
          var t =
              `<div [ngFormModel]="form"><input type="text" ngControl="name" [(ngModel)]="name"></div>`;
 
-         let fixture = tcb.overrideTemplate(MyComp, t).createFakeAsync(MyComp);
+         let fixture = tcb.overrideTemplate(MyComp8, t).createFakeAsync(MyComp8);
          tick();
 
          fixture.debugElement.componentInstance.name = 'oldValue';
@@ -949,7 +943,7 @@ export function main() {
 
          var t = `<div><input type="text" [ngFormControl]="form" [(ngModel)]="name"></div>`;
 
-         let fixture = tcb.overrideTemplate(MyComp, t).createFakeAsync(MyComp);
+         let fixture = tcb.overrideTemplate(MyComp8, t).createFakeAsync(MyComp8);
          tick();
          fixture.debugElement.componentInstance.form = form;
          fixture.debugElement.componentInstance.name = "oldValue";
@@ -974,7 +968,7 @@ export function main() {
                      </div>
                </form>`;
 
-           let fixture = tcb.overrideTemplate(MyComp, t).createFakeAsync(MyComp);
+           let fixture = tcb.overrideTemplate(MyComp8, t).createFakeAsync(MyComp8);
            tick();
            fixture.debugElement.componentInstance.name = null;
            fixture.detectChanges();
@@ -992,7 +986,7 @@ export function main() {
          fakeAsync(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
            var t = `<div><form (ngSubmit)="name='updated'"></form></div>`;
 
-           let fixture = tcb.overrideTemplate(MyComp, t).createFakeAsync(MyComp);
+           let fixture = tcb.overrideTemplate(MyComp8, t).createFakeAsync(MyComp8);
            tick();
            fixture.debugElement.componentInstance.name = 'old';
            var form = fixture.debugElement.query(By.css("form"));
@@ -1008,7 +1002,7 @@ export function main() {
            var t = `<form ngNoForm>
                </form>`;
 
-           tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((fixture) => {
+           tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
              fixture.debugElement.componentInstance.name = null;
              fixture.detectChanges();
 
@@ -1025,7 +1019,7 @@ export function main() {
                     </div>
                   </form>`;
 
-           let fixture = tcb.overrideTemplate(MyComp, t).createFakeAsync(MyComp);
+           let fixture = tcb.overrideTemplate(MyComp8, t).createFakeAsync(MyComp8);
            tick();
            fixture.debugElement.componentInstance.name = 'show';
            fixture.detectChanges();
@@ -1051,7 +1045,7 @@ export function main() {
                </form>`;
 
 
-           let fixture = tcb.overrideTemplate(MyComp, t).createFakeAsync(MyComp);
+           let fixture = tcb.overrideTemplate(MyComp8, t).createFakeAsync(MyComp8);
            tick();
            fixture.debugElement.componentInstance.name = 'show';
            fixture.detectChanges();
@@ -1073,7 +1067,7 @@ export function main() {
                       <input type="text" ngControl="name" [(ngModel)]="name">
                </form>`;
 
-           let fixture = tcb.overrideTemplate(MyComp, t).createFakeAsync(MyComp);
+           let fixture = tcb.overrideTemplate(MyComp8, t).createFakeAsync(MyComp8);
            tick();
            fixture.debugElement.componentInstance.name = "oldValue";
            fixture.detectChanges();
@@ -1094,7 +1088,7 @@ export function main() {
          fakeAsync(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
            var t = `<div><input type="text" [(ngModel)]="name"></div>`;
 
-           let fixture = tcb.overrideTemplate(MyComp, t).createFakeAsync(MyComp);
+           let fixture = tcb.overrideTemplate(MyComp8, t).createFakeAsync(MyComp8);
            tick();
            fixture.debugElement.componentInstance.name = "oldValue";
            fixture.detectChanges();
@@ -1121,7 +1115,7 @@ export function main() {
                   <input type="radio" name="food" ngControl="fish" [(ngModel)]="data['fish2']">
                 </form>`;
 
-           let fixture = tcb.overrideTemplate(MyComp, t).createFakeAsync(MyComp);
+           let fixture = tcb.overrideTemplate(MyComp8, t).createFakeAsync(MyComp8);
            tick();
 
            fixture.debugElement.componentInstance.data = {
@@ -1157,7 +1151,7 @@ export function main() {
 
            var t = `<div><input type="text" [ngFormControl]="form"></div>`;
 
-           tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((fixture) => {
+           tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
              fixture.debugElement.componentInstance.form = form;
              fixture.detectChanges();
 
@@ -1184,7 +1178,7 @@ export function main() {
 
            var t = `<form [ngFormModel]="form"><input type="text" ngControl="name"></form>`;
 
-           tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((fixture) => {
+           tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
              fixture.debugElement.componentInstance.form = form;
              fixture.detectChanges();
 
@@ -1209,7 +1203,7 @@ export function main() {
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            var t = `<div><input [(ngModel)]="name" required></div>`;
 
-           tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((fixture) => {
+           tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
              fixture.debugElement.componentInstance.name = "";
              fixture.detectChanges();
 
@@ -1237,7 +1231,7 @@ export function main() {
            var form = new Control("");
 
            var t = `<div><input type="text" [ngFormControl]="form" [(ngModel)]="name"></div>`;
-           let fixture = tcb.overrideTemplate(MyComp, t).createFakeAsync(MyComp);
+           let fixture = tcb.overrideTemplate(MyComp8, t).createFakeAsync(MyComp8);
            tick();
            fixture.debugElement.componentInstance.form = form;
            fixture.detectChanges();
@@ -1245,8 +1239,8 @@ export function main() {
            // In Firefox, effective text selection in the real DOM requires an actual focus
            // of the field. This is not an issue in a new HTML document.
            if (browserDetection.isFirefox) {
-             var fakeDoc = DOM.createHtmlDocument();
-             DOM.appendChild(fakeDoc.body, fixture.debugElement.nativeElement);
+             var fakeDoc = getDOM().createHtmlDocument();
+             getDOM().appendChild(fakeDoc.body, fixture.debugElement.nativeElement);
            }
 
            var input = fixture.debugElement.query(By.css("input")).nativeElement;
@@ -1264,7 +1258,7 @@ export function main() {
       it("should update the view when the model is set back to what used to be in the view",
          fakeAsync(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
            var t = `<input type="text" [(ngModel)]="name">`;
-           let fixture = tcb.overrideTemplate(MyComp, t).createFakeAsync(MyComp);
+           let fixture = tcb.overrideTemplate(MyComp8, t).createFakeAsync(MyComp8);
            tick();
            fixture.debugElement.componentInstance.name = "";
            fixture.detectChanges();
@@ -1298,7 +1292,7 @@ export function main() {
            // fixed.
            var t = `<form><div ngControlGroup="x" #x="ngForm">
                   <input type="text" ngControl="test"></div>{{x.valid}}</form>`;
-           let fixture = tcb.overrideTemplate(MyComp, t).createFakeAsync(MyComp);
+           let fixture = tcb.overrideTemplate(MyComp8, t).createFakeAsync(MyComp8);
            tick();
            fixture.detectChanges();
          })));
@@ -1394,7 +1388,7 @@ class UniqLoginValidator implements Validator {
     UniqLoginValidator
   ]
 })
-class MyComp {
+class MyComp8 {
   form: any;
   name: string;
   data: any;
@@ -1404,7 +1398,7 @@ class MyComp {
 }
 
 function sortedClassList(el) {
-  var l = DOM.classList(el);
+  var l = getDOM().classList(el);
   ListWrapper.sort(l);
   return l;
 }

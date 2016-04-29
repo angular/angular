@@ -1,5 +1,5 @@
-import {Map, MapWrapper, ListWrapper} from 'angular2/src/facade/collection';
-import {Provider, ProviderBuilder, provide} from './provider';
+import {ListWrapper} from '../../src/facade/collection';
+import {Provider} from './provider';
 import {
   ResolvedReflectiveProvider,
   ReflectiveDependency,
@@ -11,13 +11,12 @@ import {
   NoProviderError,
   CyclicDependencyError,
   InstantiationError,
-  InvalidProviderError,
   OutOfBoundsError
 } from './reflective_exceptions';
-import {Type, isPresent} from 'angular2/src/facade/lang';
-import {BaseException, unimplemented} from 'angular2/src/facade/exceptions';
+import {Type} from '../../src/facade/lang';
+import {BaseException, unimplemented} from '../../src/facade/exceptions';
 import {ReflectiveKey} from './reflective_key';
-import {SelfMetadata, HostMetadata, SkipSelfMetadata} from './metadata';
+import {SelfMetadata, SkipSelfMetadata} from './metadata';
 import {Injector, THROW_IF_NOT_FOUND} from './injector';
 
 var __unused: Type;  // avoid unused import when Type union types are erased

@@ -1,4 +1,4 @@
-import {isPresent} from 'angular2/src/facade/lang';
+import {isPresent} from '../src/facade/lang';
 
 import {ParseSourceSpan} from './parse_util';
 

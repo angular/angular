@@ -1,6 +1,5 @@
-import {Injectable} from 'angular2/src/core/di';
+import {Injectable} from '@angular/core/src/di';
 import {
-  AsyncTestCompleter,
   inject,
   describe,
   ddescribe,
@@ -10,12 +9,12 @@ import {
   xdescribe,
   expect,
   beforeEach,
-  SpyObject
-} from 'angular2/testing_internal';
-import {Testability} from 'angular2/src/core/testability/testability';
-import {NgZone} from 'angular2/src/core/zone/ng_zone';
-import {normalizeBlank, scheduleMicroTask} from 'angular2/src/facade/lang';
-import {PromiseWrapper, EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
+} from '@angular/core/testing/testing_internal';
+import {AsyncTestCompleter, SpyObject} from '@angular/core/testing/testing_internal';
+import {Testability} from '@angular/core/src/testability/testability';
+import {NgZone} from '@angular/core/src/zone/ng_zone';
+import {normalizeBlank, scheduleMicroTask} from '../../src/facade/lang';
+import {PromiseWrapper, EventEmitter, ObservableWrapper} from '../../src/facade/async';
 
 // Schedules a microtasks (using a resolved promise .then())
 function microTask(fn: Function): void {

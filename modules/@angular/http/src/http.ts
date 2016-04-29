@@ -1,7 +1,7 @@
-import {isString, isPresent, isBlank} from 'angular2/src/facade/lang';
-import {makeTypeError} from 'angular2/src/facade/exceptions';
-import {Injectable} from 'angular2/core';
-import {RequestOptionsArgs, Connection, ConnectionBackend} from './interfaces';
+import {isString, isPresent} from '../src/facade/lang';
+import {makeTypeError} from '../src/facade/exceptions';
+import {Injectable} from '@angular/core';
+import {RequestOptionsArgs, ConnectionBackend} from './interfaces';
 import {Request} from './static_request';
 import {Response} from './static_response';
 import {BaseRequestOptions, RequestOptions} from './base_request_options';
@@ -42,7 +42,7 @@ function mergeOptions(defaultOpts: BaseRequestOptions, providedOpts: RequestOpti
  * ### Example
  *
  * ```typescript
- * import {Http, HTTP_PROVIDERS} from 'angular2/http';
+ * import {Http, HTTP_PROVIDERS} from '@angular/http';
  * @Component({
  *   selector: 'http-app',
  *   viewProviders: [HTTP_PROVIDERS],
@@ -74,8 +74,8 @@ function mergeOptions(defaultOpts: BaseRequestOptions, providedOpts: RequestOpti
  * ### Example
  *
  * ```typescript
- * import {BaseRequestOptions, Http} from 'angular2/http';
- * import {MockBackend} from 'angular2/http/testing';
+ * import {BaseRequestOptions, Http} from '@angular/http';
+ * import {MockBackend} from '@angular/http/testing';
  * var injector = Injector.resolveAndCreate([
  *   BaseRequestOptions,
  *   MockBackend,

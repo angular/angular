@@ -1,7 +1,7 @@
-import {Component, provide} from 'angular2/core';
-import {bootstrap} from 'angular2/platform/browser';
-import {RouteConfig, Route, ROUTER_PROVIDERS, ROUTER_DIRECTIVES} from 'angular2/router';
-import {HashLocationStrategy, LocationStrategy} from 'angular2/platform/common';
+import {Component, provide} from '@angular/core';
+import {bootstrap} from '@angular/platform-browser';
+import {RouteConfig, Route, ROUTER_PROVIDERS, ROUTER_DIRECTIVES} from '@angular/router';
+import {HashLocationStrategy, LocationStrategy} from '@angular/common';
 
 
 @Component({selector: 'hello-cmp', template: `hello`})

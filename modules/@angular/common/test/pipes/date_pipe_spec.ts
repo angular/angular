@@ -6,13 +6,13 @@ import {
   xit,
   expect,
   beforeEach,
-  afterEach,
-  browserDetection
-} from 'angular2/testing_internal';
+  afterEach
+} from '@angular/core/testing/testing_internal';
+import {browserDetection} from '@angular/platform-browser/testing';
 
-import {DatePipe} from 'angular2/common';
-import {DateWrapper} from 'angular2/src/facade/lang';
-import {PipeResolver} from 'angular2/src/compiler/pipe_resolver';
+import {DatePipe} from '@angular/common';
+import {DateWrapper} from '../../src/facade/lang';
+import {PipeResolver} from '@angular/compiler/src/pipe_resolver';
 
 export function main() {
   describe("DatePipe", () => {

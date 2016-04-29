@@ -2,7 +2,7 @@ import {
   makeDecorator,
   makeParamDecorator,
   makePropDecorator
-} from 'angular2/src/core/util/decorators';
+} from '@angular/core/src/util/decorators';
 
 export class ClassDecoratorMeta {
   constructor(public value) {}

@@ -1,14 +1,13 @@
-import {Serializer, RenderStoreObject} from 'angular2/src/web_workers/shared/serializer';
+import {Serializer, RenderStoreObject} from '../shared/serializer';
 import {
   serializeMouseEvent,
   serializeKeyboardEvent,
   serializeGenericEvent,
   serializeEventWithTarget,
   serializeTransitionEvent
-} from 'angular2/src/web_workers/ui/event_serializer';
-import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
-import {StringMapWrapper} from 'angular2/src/facade/collection';
-import {EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
+} from './event_serializer';
+import {BaseException} from '../../../src/facade/exceptions';
+import {EventEmitter, ObservableWrapper} from '../../../src/facade/async';
 
 export class EventDispatcher {
   constructor(private _sink: EventEmitter<any>, private _serializer: Serializer) {}

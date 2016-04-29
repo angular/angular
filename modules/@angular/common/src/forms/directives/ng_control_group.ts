@@ -9,8 +9,7 @@ import {
   forwardRef,
   Provider,
   Self
-} from 'angular2/core';
-
+} from '@angular/core';
 import {ControlContainer} from './control_container';
 import {controlPath, composeValidators, composeAsyncValidators} from './shared';
 import {ControlGroup} from '../model';
@@ -37,7 +36,7 @@ export const controlGroupProvider: any =
  *   directives: [FORM_DIRECTIVES],
  *   template: `
  *     <div>
- *       <h2>Angular2 Control &amp; ControlGroup Example</h2>
+ *       <h2>Angular Control &amp; ControlGroup Example</h2>
  *       <form #f="ngForm">
  *         <div ngControlGroup="name" #cg-name="form">
  *           <h3>Enter your name:</h3>

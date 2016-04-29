@@ -1,6 +1,4 @@
 import {
-  TestComponentBuilder,
-  AsyncTestCompleter,
   ddescribe,
   describe,
   it,
@@ -11,7 +9,7 @@ import {
   afterEach,
   beforeEachProviders,
   inject
-} from 'angular2/testing_internal';
+} from '@angular/core/testing/testing_internal';
 
 import {
   HtmlAst,
@@ -20,9 +18,9 @@ import {
   HtmlAttrAst,
   HtmlTextAst,
   htmlVisitAll
-} from 'angular2/src/compiler/html_ast';
+} from '@angular/compiler/src/html_ast';
 
-import {LegacyHtmlAstTransformer} from 'angular2/src/compiler/legacy_template';
+import {LegacyHtmlAstTransformer} from '@angular/compiler/src/legacy_template';
 
 export function main() {
   describe('Support for legacy template', () => {
