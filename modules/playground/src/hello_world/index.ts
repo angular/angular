@@ -1,9 +1,6 @@
-import {coreBootstrap, ReflectiveInjector, AngularEntryPoint} from 'angular2/core';
-import {browserStaticPlatform, BROWSER_APP_PROVIDERS} from 'angular2/platform/browser_static';
+import {bootstrap} from 'angular2/platform/browser';
 import {Renderer, ElementRef, Component, Directive, Injectable} from 'angular2/core';
-import {HelloCmpNgFactory} from './index.ngfactory';
 
-@AngularEntryPoint()
 export function main() {
   // Bootstrapping only requires specifying a root component.
   // The boundary between the Angular application and the rest of the page is
@@ -12,22 +9,19 @@ export function main() {
   // application.
   // You can use the light dom of the <hello-app> tag as temporary content (for
   // example 'Loading...') before the application is ready.
-
-  let appInjector =
-    ReflectiveInjector.resolveAndCreate(BROWSER_APP_PROVIDERS, browserStaticPlatform().injector);
-  coreBootstrap(appInjector, HelloCmpNgFactory);
+  bootstrap(HelloCmp);
 }
 
 // A service available to the Injector, used by the HelloCmp component.
 @Injectable()
-export class GreetingService {
+class GreetingService {
   greeting: string = 'hello';
 }
 
 // Directives are light-weight. They don't allow new
 // expression contexts (use @Component for those needs).
 @Directive({selector: '[red]'})
-export class RedDec {
+class RedDec {
   // ElementRef is always injectable and it wraps the element on which the
   // directive was found by the compiler.
   constructor(el: ElementRef, renderer: Renderer) {
@@ -39,6 +33,9 @@ export class RedDec {
 // - Component - the basic building blocks of Angular 2.0 apps. Backed by
 //   ShadowDom.(http://www.html5rocks.com/en/tutorials/webcomponents/shadowdom/)
 // - Directive - add behavior to existing elements.
+
+// @Component is AtScript syntax to annotate the HelloCmp class as an Angular
+// 2.0 component.
 @Component({
   // The Selector prop tells Angular on which elements to instantiate this
   // class. The syntax supported is a basic subset of CSS selectors, for example
