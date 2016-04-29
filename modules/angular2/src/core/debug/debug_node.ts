@@ -1,7 +1,6 @@
 import {isPresent, Type} from 'angular2/src/facade/lang';
-import {Predicate} from 'angular2/src/facade/collection';
+import {Predicate, ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
 import {Injector} from 'angular2/src/core/di';
-import {ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
 import {RenderDebugInfo} from 'angular2/src/core/render/api';
 
 export class EventListener { constructor(public name: string, public callback: Function){}; }
@@ -27,8 +26,10 @@ export class DebugNode {
     return isPresent(this._debugInfo) ? this._debugInfo.component : null;
   }
 
-  get locals(): {[key: string]: any} {
-    return isPresent(this._debugInfo) ? this._debugInfo.locals : null;
+  get context(): any { return isPresent(this._debugInfo) ? this._debugInfo.context : null; }
+
+  get references(): {[key: string]: any} {
+    return isPresent(this._debugInfo) ? this._debugInfo.references : null;
   }
 
   get providerTokens(): any[] {
@@ -37,9 +38,12 @@ export class DebugNode {
 
   get source(): string { return isPresent(this._debugInfo) ? this._debugInfo.source : null; }
 
+  /**
+   * Use injector.get(token) instead.
+   *
+   * @deprecated
+   */
   inject(token: any): any { return this.injector.get(token); }
-
-  getLocal(name: string): any { return this.locals[name]; }
 }
 
 export class DebugElement extends DebugNode {

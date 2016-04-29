@@ -14,7 +14,7 @@ export class NgTemplateOutlet {
   constructor(private _viewContainerRef: ViewContainerRef) {}
 
   @Input()
-  set ngTemplateOutlet(templateRef: TemplateRef) {
+  set ngTemplateOutlet(templateRef: TemplateRef<Object>) {
     if (isPresent(this._insertedViewRef)) {
       this._viewContainerRef.remove(this._viewContainerRef.indexOf(this._insertedViewRef));
     }

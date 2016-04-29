@@ -77,4 +77,4 @@ Transforms the current value of expression `cardNumber` via the pipe called `myC
 syntax:
 `<p>Employer: {{employer?.companyName}}</p>`|`{{employer?.companyName}}`
 description:
-The Elvis operator (`?`) means that the `employer` field is optional and if `undefined`, the rest of the expression should be ignored.
+The safe navigation operator (`?`) means that the `employer` field is optional and if `undefined`, the rest of the expression should be ignored.

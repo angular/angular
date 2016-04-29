@@ -1,9 +1,8 @@
 import {forwardRef, Provider, Attribute, Directive} from 'angular2/core';
-import {CONST_EXPR} from 'angular2/src/facade/lang';
+import {CONST_EXPR, NumberWrapper} from 'angular2/src/facade/lang';
 import {Validators, NG_VALIDATORS} from '../validators';
 import {AbstractControl} from '../model';
 import * as modelModule from '../model';
-import {NumberWrapper} from "angular2/src/facade/lang";
 
 
 
@@ -28,7 +27,7 @@ export interface Validator { validate(c: modelModule.AbstractControl): {[key: st
 
 const REQUIRED = Validators.required;
 
-const REQUIRED_VALIDATOR =
+export const REQUIRED_VALIDATOR =
     CONST_EXPR(new Provider(NG_VALIDATORS, {useValue: REQUIRED, multi: true}));
 
 /**
@@ -60,7 +59,7 @@ export interface AsyncValidatorFn {
  *
  * {@example common/forms/ts/validators/validators.ts region='min'}
  */
-const MIN_LENGTH_VALIDATOR = CONST_EXPR(
+export const MIN_LENGTH_VALIDATOR = CONST_EXPR(
     new Provider(NG_VALIDATORS, {useExisting: forwardRef(() => MinLengthValidator), multi: true}));
 
 /**
@@ -88,7 +87,7 @@ export class MinLengthValidator implements Validator {
  *
  * {@example common/forms/ts/validators/validators.ts region='max'}
  */
-const MAX_LENGTH_VALIDATOR = CONST_EXPR(
+export const MAX_LENGTH_VALIDATOR = CONST_EXPR(
     new Provider(NG_VALIDATORS, {useExisting: forwardRef(() => MaxLengthValidator), multi: true}));
 
 /**
@@ -122,7 +121,7 @@ export class MaxLengthValidator implements Validator {
  * <input [ngControl]="fullName" pattern="[a-zA-Z ]*">
  * ```
  */
-const PATTERN_VALIDATOR = CONST_EXPR(
+export const PATTERN_VALIDATOR = CONST_EXPR(
     new Provider(NG_VALIDATORS, {useExisting: forwardRef(() => PatternValidator), multi: true}));
 @Directive({
   selector: '[pattern][ngControl],[pattern][ngFormControl],[pattern][ngModel]',

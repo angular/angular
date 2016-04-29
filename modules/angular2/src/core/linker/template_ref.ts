@@ -1,7 +1,10 @@
+import {CONST_EXPR, isBlank} from 'angular2/src/facade/lang';
 import {ElementRef} from './element_ref';
 import {AppElement} from './element';
 import {AppView} from './view';
 import {EmbeddedViewRef} from './view_ref';
+
+const EMPTY_CONTEXT = CONST_EXPR(new Object());
 
 /**
  * Represents an Embedded Template that can be used to instantiate Embedded Views.
@@ -15,7 +18,7 @@ import {EmbeddedViewRef} from './view_ref';
  * {@link ViewContainerRef#createEmbeddedView}, which will create the View and attach it to the
  * View Container.
  */
-export abstract class TemplateRef {
+export abstract class TemplateRef<C> {
   /**
    * The location in the View where the Embedded View logically belongs to.
    *
@@ -30,16 +33,19 @@ export abstract class TemplateRef {
   // TODO(i): rename to anchor or location
   get elementRef(): ElementRef { return null; }
 
-  abstract createEmbeddedView(): EmbeddedViewRef;
+  abstract createEmbeddedView(context: C): EmbeddedViewRef<C>;
 }
 
-export class TemplateRef_ extends TemplateRef {
+export class TemplateRef_<C> extends TemplateRef<C> {
   constructor(private _appElement: AppElement, private _viewFactory: Function) { super(); }
 
-  createEmbeddedView(): EmbeddedViewRef {
-    var view: AppView<any> = this._viewFactory(this._appElement.parentView.viewUtils,
-                                               this._appElement.parentInjector, this._appElement);
-    view.create(null, null);
+  createEmbeddedView(context: C): EmbeddedViewRef<C> {
+    var view: AppView<C> = this._viewFactory(this._appElement.parentView.viewUtils,
+                                             this._appElement.parentInjector, this._appElement);
+    if (isBlank(context)) {
+      context = <any>EMPTY_CONTEXT;
+    }
+    view.create(context, null, null);
     return view.ref;
   }
 

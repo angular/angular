@@ -1,6 +1,7 @@
+import {resolveForwardRef} from 'angular2/src/core/di';
 import {Injectable} from 'angular2/src/core/di';
 import {Map, MapWrapper, ListWrapper} from 'angular2/src/facade/collection';
-import {Type, isPresent, stringify, isBlank} from 'angular2/src/facade/lang';
+import {Type, isPresent, isArray, stringify, isBlank} from 'angular2/src/facade/lang';
 import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
 
 import {ViewMetadata} from '../core/metadata';
@@ -81,11 +82,11 @@ export class MockViewResolver extends ViewResolver {
       view = super.resolve(component);
     }
 
-    var directives = view.directives;
+    var directives = [];
     var overrides = this._directiveOverrides.get(component);
 
-    if (isPresent(overrides) && isPresent(directives)) {
-      directives = ListWrapper.clone(view.directives);
+    if (isPresent(overrides) && isPresent(view.directives)) {
+      flattenArray(view.directives, directives);
       overrides.forEach((to, from) => {
         var srcIndex = directives.indexOf(from);
         if (srcIndex == -1) {
@@ -124,6 +125,17 @@ export class MockViewResolver extends ViewResolver {
     if (isPresent(cached)) {
       throw new BaseException(
           `The component ${stringify(component)} has already been compiled, its configuration can not be changed`);
+    }
+  }
+}
+
+function flattenArray(tree: any[], out: Array<Type | any[]>): void {
+  for (var i = 0; i < tree.length; i++) {
+    var item = resolveForwardRef(tree[i]);
+    if (isArray(item)) {
+      flattenArray(item, out);
+    } else {
+      out.push(item);
     }
   }
 }

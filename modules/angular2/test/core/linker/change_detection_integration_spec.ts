@@ -16,7 +16,9 @@ import {
 } from 'angular2/testing_internal';
 
 import {
+  IS_DART,
   CONST_EXPR,
+  Type,
   isPresent,
   isBlank,
   isNumber,
@@ -37,7 +39,6 @@ import {
 
 import {OnDestroy} from 'angular2/src/core/metadata/lifecycle_hooks';
 
-import {IS_DART, Type} from 'angular2/src/facade/lang';
 import {EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
 
 
@@ -437,7 +438,7 @@ export function main() {
 
       it('should read locals', fakeAsync(() => {
            var ctx =
-               createCompFixture('<template testLocals var-local="someLocal">{{local}}</template>');
+               createCompFixture('<template testLocals let-local="someLocal">{{local}}</template>');
            ctx.detectChanges(false);
 
            expect(renderLog.log).toEqual(['{{someLocalValue}}']);
@@ -580,7 +581,7 @@ export function main() {
 
         it('should throw when trying to assign to a local', fakeAsync(() => {
              expect(() => {_bindSimpleProp('(event)="$event=1"')})
-                 .toThrowError(new RegExp("Cannot reassign a variable binding"));
+                 .toThrowError(new RegExp("Cannot assign to a reference or variable!"));
            }));
 
         it('should support short-circuiting', fakeAsync(() => {
@@ -608,7 +609,7 @@ export function main() {
         it('should read directive properties', fakeAsync(() => {
              var ctx =
                  createCompFixture(
-                     '<div testDirective [a]="42" var-dir="testDirective" [someProp]="dir.a"></div>')
+                     '<div testDirective [a]="42" ref-dir="testDirective" [someProp]="dir.a"></div>')
                      ctx.detectChanges(false);
              expect(renderLog.loggedValues).toEqual([42]);
            }));
@@ -1350,11 +1351,14 @@ class OrderCheckDirective2 {
   constructor(public log: DirectiveLog, _check1: OrderCheckDirective1) {}
 }
 
+class TestLocalsContext {
+  constructor(public someLocal: string) {}
+}
+
 @Directive({selector: '[testLocals]'})
 class TestLocals {
-  constructor(templateRef: TemplateRef, vcRef: ViewContainerRef) {
-    var viewRef = vcRef.createEmbeddedView(templateRef);
-    viewRef.setLocal('someLocal', 'someLocalValue');
+  constructor(templateRef: TemplateRef<TestLocalsContext>, vcRef: ViewContainerRef) {
+    vcRef.createEmbeddedView(templateRef, new TestLocalsContext('someLocalValue'));
   }
 }
 

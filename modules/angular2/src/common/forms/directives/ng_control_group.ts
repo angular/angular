@@ -19,7 +19,7 @@ import {Form} from './form_interface';
 import {NG_VALIDATORS, NG_ASYNC_VALIDATORS} from '../validators';
 import {AsyncValidatorFn, ValidatorFn} from './validators';
 
-const controlGroupProvider =
+export const controlGroupProvider =
     CONST_EXPR(new Provider(ControlContainer, {useExisting: forwardRef(() => NgControlGroup)}));
 
 /**

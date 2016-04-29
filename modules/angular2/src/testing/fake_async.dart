@@ -4,8 +4,6 @@ import 'dart:async' show runZoned, ZoneSpecification;
 import 'package:quiver/testing/async.dart' as quiver;
 import 'package:angular2/src/facade/exceptions.dart' show BaseException;
 
-import 'test_injector.dart' show getTestInjector, FunctionWithParamTokens;
-
 const _u = const Object();
 
 quiver.FakeAsync _fakeAsync = null;
@@ -22,22 +20,9 @@ quiver.FakeAsync _fakeAsync = null;
  *
  * Returns a `Function` that wraps [fn].
  */
-Function fakeAsync(dynamic /* Function | FunctionWithParamTokens */ fn) {
+Function fakeAsync(Function fn) {
   if (_fakeAsync != null) {
     throw 'fakeAsync() calls can not be nested';
-  }
-
-  Function innerFn = null;
-  if (fn is FunctionWithParamTokens) {
-    if (fn.isAsync) {
-      throw 'Cannot wrap async test with fakeAsync';
-    }
-    innerFn = () { getTestInjector().execute(fn); };
-  } else if (fn is Function) {
-    innerFn = fn;
-  } else {
-    throw 'fakeAsync can wrap only test functions but got object of type ' +
-      fn.runtimeType.toString();
   }
 
   return ([a0 = _u,
@@ -58,7 +43,7 @@ Function fakeAsync(dynamic /* Function | FunctionWithParamTokens */ fn) {
           List args = [a0, a1, a2, a3, a4, a5, a6, a7, a8, a9]
               .takeWhile((a) => a != _u)
               .toList();
-          var res = Function.apply(innerFn, args);
+          var res = Function.apply(fn, args);
           _fakeAsync.flushMicrotasks();
 
           if (async.periodicTimerCount > 0) {

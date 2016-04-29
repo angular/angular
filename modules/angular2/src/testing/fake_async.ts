@@ -1,5 +1,5 @@
 import {BaseException} from 'angular2/src/facade/exceptions';
-import {getTestInjector, FunctionWithParamTokens} from './test_injector';
+import {getTestInjector} from './test_injector';
 
 let _FakeAsyncTestZoneSpecType = Zone['FakeAsyncTestZoneSpec'];
 
@@ -19,7 +19,7 @@ let _FakeAsyncTestZoneSpecType = Zone['FakeAsyncTestZoneSpec'];
  * @param fn
  * @returns {Function} The function wrapped to be executed in the fakeAsync zone
  */
-export function fakeAsync(fn: Function | FunctionWithParamTokens): Function {
+export function fakeAsync(fn: Function): Function {
   if (Zone.current.get('FakeAsyncTestZoneSpec') != null) {
     throw new BaseException('fakeAsync() calls can not be nested');
   }
@@ -27,20 +27,9 @@ export function fakeAsync(fn: Function | FunctionWithParamTokens): Function {
   let fakeAsyncTestZoneSpec = new _FakeAsyncTestZoneSpecType();
   let fakeAsyncZone = Zone.current.fork(fakeAsyncTestZoneSpec);
 
-  let innerTestFn: Function = null;
-
-  if (fn instanceof FunctionWithParamTokens) {
-    if (fn.isAsync) {
-      throw new BaseException('Cannot wrap async test with fakeAsync');
-    }
-    innerTestFn = () => { getTestInjector().execute(fn as FunctionWithParamTokens); };
-  } else {
-    innerTestFn = fn;
-  }
-
   return function(...args) {
     let res = fakeAsyncZone.run(() => {
-      let res = innerTestFn(...args);
+      let res = fn(...args);
       flushMicrotasks();
       return res;
     });

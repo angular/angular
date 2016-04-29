@@ -1,5 +1,5 @@
 import {CompileIdentifierMetadata, CompileTokenMetadata} from './compile_metadata';
-import {AppView} from 'angular2/src/core/linker/view';
+import {AppView, DebugAppView} from 'angular2/src/core/linker/view';
 import {StaticNodeDebugInfo, DebugContext} from 'angular2/src/core/linker/debug_context';
 import {
   ViewUtils,
@@ -47,6 +47,7 @@ var CD_MODULE_URL = 'asset:angular2/lib/src/core/change_detection/change_detecti
 // (only needed for Dart).
 var impViewUtils = ViewUtils;
 var impAppView = AppView;
+var impDebugAppView = DebugAppView;
 var impDebugContext = DebugContext;
 var impAppElement = AppElement;
 var impElementRef = ElementRef;
@@ -80,6 +81,8 @@ export class Identifiers {
   });
   static AppView = new CompileIdentifierMetadata(
       {name: 'AppView', moduleUrl: APP_VIEW_MODULE_URL, runtime: impAppView});
+  static DebugAppView = new CompileIdentifierMetadata(
+      {name: 'DebugAppView', moduleUrl: APP_VIEW_MODULE_URL, runtime: impDebugAppView});
   static AppElement = new CompileIdentifierMetadata({
     name: 'AppElement',
     moduleUrl: 'asset:angular2/lib/src/core/linker/element' + MODULE_SUFFIX,

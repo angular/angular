@@ -56,7 +56,7 @@ export class CompileView implements NameResolver {
   public componentView: CompileView;
   public purePipes = new Map<string, CompilePipe>();
   public pipes: CompilePipe[] = [];
-  public variables = new Map<string, o.Expression>();
+  public locals = new Map<string, o.Expression>();
   public className: string;
   public classType: o.Type;
   public viewFactory: o.ReadVarExpr;
@@ -64,6 +64,8 @@ export class CompileView implements NameResolver {
   public literalArrayCount = 0;
   public literalMapCount = 0;
   public pipeCount = 0;
+
+  public componentContext: o.Expression;
 
   constructor(public component: CompileDirectiveMetadata, public genConfig: CompilerConfig,
               public pipeMetas: CompilePipeMetadata[], public styles: o.Expression,
@@ -90,6 +92,9 @@ export class CompileView implements NameResolver {
     } else {
       this.componentView = this.declarationElement.view.componentView;
     }
+    this.componentContext =
+        getPropertyInView(o.THIS_EXPR.prop('context'), this, this.componentView);
+
     var viewQueries = new CompileTokenMap<CompileQuery[]>();
     if (this.viewType === ViewType.COMPONENT) {
       var directiveInstance = o.THIS_EXPR.prop('context');
@@ -111,9 +116,8 @@ export class CompileView implements NameResolver {
       });
     }
     this.viewQueries = viewQueries;
-    templateVariableBindings.forEach((entry) => {
-      this.variables.set(entry[1], o.THIS_EXPR.prop('locals').key(o.literal(entry[0])));
-    });
+    templateVariableBindings.forEach(
+        (entry) => { this.locals.set(entry[1], o.THIS_EXPR.prop('context').prop(entry[0])); });
 
     if (!this.declarationElement.isNull()) {
       this.declarationElement.setEmbeddedView(this);
@@ -133,15 +137,15 @@ export class CompileView implements NameResolver {
     return pipe.call(this, [input].concat(args));
   }
 
-  getVariable(name: string): o.Expression {
+  getLocal(name: string): o.Expression {
     if (name == EventHandlerVars.event.name) {
       return EventHandlerVars.event;
     }
     var currView: CompileView = this;
-    var result = currView.variables.get(name);
+    var result = currView.locals.get(name);
     while (isBlank(result) && isPresent(currView.declarationElement.view)) {
       currView = currView.declarationElement.view;
-      result = currView.variables.get(name);
+      result = currView.locals.get(name);
     }
     if (isPresent(result)) {
       return getPropertyInView(result, this, currView);

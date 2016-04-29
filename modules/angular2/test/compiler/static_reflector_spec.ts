@@ -1,419 +1,391 @@
-import {
-  ddescribe,
-  describe,
-  xdescribe,
-  it,
-  iit,
-  xit,
-  expect,
-  beforeEach,
-  afterEach,
-  AsyncTestCompleter,
-  inject,
-  beforeEachProviders
-} from 'angular2/testing_internal';
+import {describe, it, iit, expect, ddescribe, beforeEach} from 'angular2/testing_internal';
+import {IS_DART, isBlank} from 'angular2/src/facade/lang';
+import {ListWrapper} from 'angular2/src/facade/collection';
 
-import {StaticReflector, StaticReflectorHost} from 'angular2/src/compiler/static_reflector';
+import {
+  StaticReflector,
+  StaticReflectorHost,
+  StaticSymbol,
+  ModuleContext
+} from 'angular2/src/compiler/static_reflector';
 
 export function main() {
-  describe('StaticRefelector', () => {
-    it('should get annotations for NgFor', () => {
-      let host = new MockReflectorHost();
-      let reflector = new StaticReflector(host);
+  // Static reflector is not supported in Dart
+  // as we use reflection to create objects.
+  if (IS_DART) return;
+  let noContext = new ModuleContext('', '');
 
-      let NgFor = reflector.getStaticType('angular2/src/common/directives/ng_for', 'NgFor');
+  describe('StaticReflector', () => {
+    let host: StaticReflectorHost;
+    let reflector: StaticReflector;
+
+    beforeEach(() => {
+      host = new MockReflectorHost();
+      reflector = new StaticReflector(host);
+    });
+
+    function singleModuleSimplify(moduleContext: ModuleContext, value: any) {
+      return reflector.simplify(moduleContext, value, false);
+    }
+
+    function crossModuleSimplify(moduleContext: ModuleContext, value: any) {
+      return reflector.simplify(moduleContext, value, true);
+    }
+
+    it('should get annotations for NgFor', () => {
+      let NgFor = host.findDeclaration('angular2/src/common/directives/ng_for', 'NgFor');
       let annotations = reflector.annotations(NgFor);
       expect(annotations.length).toEqual(1);
       let annotation = annotations[0];
       expect(annotation.selector).toEqual('[ngFor][ngForOf]');
       expect(annotation.inputs).toEqual(['ngForTrackBy', 'ngForOf', 'ngForTemplate']);
+
     });
 
     it('should get constructor for NgFor', () => {
-      let host = new MockReflectorHost();
-      let reflector = new StaticReflector(host);
-
-      let NgFor = reflector.getStaticType('angular2/src/common/directives/ng_for', 'NgFor');
-      let ViewContainerRef = reflector.getStaticType('angular2/src/core/linker/view_container_ref',
-                                                     'ViewContainerRef');
+      let NgFor = host.findDeclaration('angular2/src/common/directives/ng_for', 'NgFor');
+      let ViewContainerRef =
+          host.findDeclaration('angular2/src/core/linker/view_container_ref', 'ViewContainerRef');
       let TemplateRef =
-          reflector.getStaticType('angular2/src/core/linker/template_ref', 'TemplateRef');
-      let IterableDiffers = reflector.getStaticType(
+          host.findDeclaration('angular2/src/core/linker/template_ref', 'TemplateRef');
+      let IterableDiffers = host.findDeclaration(
           'angular2/src/core/change_detection/differs/iterable_differs', 'IterableDiffers');
-      let ChangeDetectorRef = reflector.getStaticType(
+      let ChangeDetectorRef = host.findDeclaration(
           'angular2/src/core/change_detection/change_detector_ref', 'ChangeDetectorRef');
 
       let parameters = reflector.parameters(NgFor);
       expect(parameters)
-          .toEqual([ViewContainerRef, TemplateRef, IterableDiffers, ChangeDetectorRef]);
+          .toEqual([[ViewContainerRef], [TemplateRef], [IterableDiffers], [ChangeDetectorRef]]);
     });
 
     it('should get annotations for HeroDetailComponent', () => {
-      let host = new MockReflectorHost();
-      let reflector = new StaticReflector(host);
-
       let HeroDetailComponent =
-          reflector.getStaticType('./app/hero-detail.component', 'HeroDetailComponent');
+          host.findDeclaration('src/app/hero-detail.component', 'HeroDetailComponent');
       let annotations = reflector.annotations(HeroDetailComponent);
       expect(annotations.length).toEqual(1);
       let annotation = annotations[0];
       expect(annotation.selector).toEqual('my-hero-detail');
+      expect(annotation.directives)
+          .toEqual([[host.findDeclaration('angular2/src/common/directives/ng_for', 'NgFor')]]);
     });
 
     it('should get and empty annotation list for an unknown class', () => {
-      let host = new MockReflectorHost();
-      let reflector = new StaticReflector(host);
-
-      let UnknownClass = reflector.getStaticType('./app/app.component', 'UnknownClass');
+      let UnknownClass = host.findDeclaration('src/app/app.component', 'UnknownClass');
       let annotations = reflector.annotations(UnknownClass);
       expect(annotations).toEqual([]);
     });
 
     it('should get propMetadata for HeroDetailComponent', () => {
-      let host = new MockReflectorHost();
-      let reflector = new StaticReflector(host);
-
       let HeroDetailComponent =
-          reflector.getStaticType('./app/hero-detail.component', 'HeroDetailComponent');
+          host.findDeclaration('src/app/hero-detail.component', 'HeroDetailComponent');
       let props = reflector.propMetadata(HeroDetailComponent);
       expect(props['hero']).toBeTruthy();
     });
 
     it('should get an empty object from propMetadata for an unknown class', () => {
-      let host = new MockReflectorHost();
-      let reflector = new StaticReflector(host);
-
-      let UnknownClass = reflector.getStaticType('./app/app.component', 'UnknownClass');
+      let UnknownClass = host.findDeclaration('src/app/app.component', 'UnknownClass');
       let properties = reflector.propMetadata(UnknownClass);
       expect(properties).toEqual({});
     });
 
     it('should get empty parameters list for an unknown class ', () => {
-      let host = new MockReflectorHost();
-      let reflector = new StaticReflector(host);
-
-      let UnknownClass = reflector.getStaticType('./app/app.component', 'UnknownClass');
+      let UnknownClass = host.findDeclaration('src/app/app.component', 'UnknownClass');
       let parameters = reflector.parameters(UnknownClass);
       expect(parameters).toEqual([]);
     });
 
     it('should simplify primitive into itself', () => {
-      let host = new MockReflectorHost();
-      let reflector = new StaticReflector(host);
-
-      expect(reflector.simplify('', 1)).toBe(1);
-      expect(reflector.simplify('', true)).toBe(true);
-      expect(reflector.simplify('', "some value")).toBe("some value");
+      expect(singleModuleSimplify(noContext, 1)).toBe(1);
+      expect(singleModuleSimplify(noContext, true)).toBe(true);
+      expect(singleModuleSimplify(noContext, "some value")).toBe("some value");
     });
 
-    it('should simplify an array into a copy of the array', () => {
-      let host = new MockReflectorHost();
-      let reflector = new StaticReflector(host);
-
-      expect(reflector.simplify('', [1, 2, 3])).toEqual([1, 2, 3]);
-    });
+    it('should simplify an array into a copy of the array',
+       () => { expect(singleModuleSimplify(noContext, [1, 2, 3])).toEqual([1, 2, 3]); });
 
     it('should simplify an object to a copy of the object', () => {
-      let host = new MockReflectorHost();
-      let reflector = new StaticReflector(host);
       let expr = {a: 1, b: 2, c: 3};
-      expect(reflector.simplify('', expr)).toEqual(expr);
+      expect(singleModuleSimplify(noContext, expr)).toEqual(expr);
     });
 
     it('should simplify &&', () => {
-      let host = new MockReflectorHost();
-      let reflector = new StaticReflector(host);
-      expect(reflector.simplify('', ({ __symbolic: 'binop', operator: '&&', left: true, right: true}))).toBe(true);
-      expect(reflector.simplify('', ({ __symbolic: 'binop', operator: '&&', left: true, right: false}))).toBe(false);
-      expect(reflector.simplify('', ({ __symbolic: 'binop', operator: '&&', left: false, right: true}))).toBe(false);
-      expect(reflector.simplify('', ({ __symbolic: 'binop', operator: '&&', left: false, right: false}))).toBe(false);
+      expect(singleModuleSimplify(noContext, ({ __symbolic: 'binop', operator: '&&', left: true, right: true}))).toBe(true);
+      expect(singleModuleSimplify(noContext, ({ __symbolic: 'binop', operator: '&&', left: true, right: false}))).toBe(false);
+      expect(singleModuleSimplify(noContext, ({ __symbolic: 'binop', operator: '&&', left: false, right: true}))).toBe(false);
+      expect(singleModuleSimplify(noContext, ({ __symbolic: 'binop', operator: '&&', left: false, right: false}))).toBe(false);
     });
 
     it('should simplify ||', () => {
-      let host = new MockReflectorHost();
-      let reflector = new StaticReflector(host);
-      expect(reflector.simplify('', ({ __symbolic: 'binop', operator: '||', left: true, right: true}))).toBe(true);
-      expect(reflector.simplify('', ({ __symbolic: 'binop', operator: '||', left: true, right: false}))).toBe(true);
-      expect(reflector.simplify('', ({ __symbolic: 'binop', operator: '||', left: false, right: true}))).toBe(true);
-      expect(reflector.simplify('', ({ __symbolic: 'binop', operator: '||', left: false, right: false}))).toBe(false);
+      expect(singleModuleSimplify(noContext, ({ __symbolic: 'binop', operator: '||', left: true, right: true}))).toBe(true);
+      expect(singleModuleSimplify(noContext, ({ __symbolic: 'binop', operator: '||', left: true, right: false}))).toBe(true);
+      expect(singleModuleSimplify(noContext, ({ __symbolic: 'binop', operator: '||', left: false, right: true}))).toBe(true);
+      expect(singleModuleSimplify(noContext, ({ __symbolic: 'binop', operator: '||', left: false, right: false}))).toBe(false);
     });
 
     it('should simplify &', () => {
-      let host = new MockReflectorHost();
-      let reflector = new StaticReflector(host);
-
-      expect(reflector.simplify('', ({ __symbolic: 'binop', operator: '&', left: 0x22, right: 0x0F}))).toBe(0x22 & 0x0F);
-      expect(reflector.simplify('', ({ __symbolic: 'binop', operator: '&', left: 0x22, right: 0xF0}))).toBe(0x22 & 0xF0);
+      expect(singleModuleSimplify(noContext, ({ __symbolic: 'binop', operator: '&', left: 0x22, right: 0x0F}))).toBe(0x22 & 0x0F);
+      expect(singleModuleSimplify(noContext, ({ __symbolic: 'binop', operator: '&', left: 0x22, right: 0xF0}))).toBe(0x22 & 0xF0);
     });
 
     it('should simplify |', () => {
-      let host = new MockReflectorHost();
-      let reflector = new StaticReflector(host);
-
-      expect(reflector.simplify('', ({ __symbolic: 'binop', operator: '|', left: 0x22, right: 0x0F}))).toBe(0x22 | 0x0F);
-      expect(reflector.simplify('', ({ __symbolic: 'binop', operator: '|', left: 0x22, right: 0xF0}))).toBe(0x22 | 0xF0);
+      expect(singleModuleSimplify(noContext, ({ __symbolic: 'binop', operator: '|', left: 0x22, right: 0x0F}))).toBe(0x22 | 0x0F);
+      expect(singleModuleSimplify(noContext, ({ __symbolic: 'binop', operator: '|', left: 0x22, right: 0xF0}))).toBe(0x22 | 0xF0);
     });
 
     it('should simplify ^', () => {
-      let host = new MockReflectorHost();
-      let reflector = new StaticReflector(host);
-
-      expect(reflector.simplify('', ({ __symbolic: 'binop', operator: '|', left: 0x22, right: 0x0F}))).toBe(0x22 | 0x0F);
-      expect(reflector.simplify('', ({ __symbolic: 'binop', operator: '|', left: 0x22, right: 0xF0}))).toBe(0x22 | 0xF0);
+      expect(singleModuleSimplify(noContext, ({ __symbolic: 'binop', operator: '|', left: 0x22, right: 0x0F}))).toBe(0x22 | 0x0F);
+      expect(singleModuleSimplify(noContext, ({ __symbolic: 'binop', operator: '|', left: 0x22, right: 0xF0}))).toBe(0x22 | 0xF0);
     });
 
     it('should simplify ==', () => {
-      let host = new MockReflectorHost();
-      let reflector = new StaticReflector(host);
-
-      expect(reflector.simplify('', ({ __symbolic: 'binop', operator: '==', left: 0x22, right: 0x22}))).toBe(0x22 == 0x22);
-      expect(reflector.simplify('', ({ __symbolic: 'binop', operator: '==', left: 0x22, right: 0xF0}))).toBe(0x22 == 0xF0);
+      expect(singleModuleSimplify(noContext, ({ __symbolic: 'binop', operator: '==', left: 0x22, right: 0x22}))).toBe(0x22 == 0x22);
+      expect(singleModuleSimplify(noContext, ({ __symbolic: 'binop', operator: '==', left: 0x22, right: 0xF0}))).toBe(0x22 == 0xF0);
     });
 
     it('should simplify !=', () => {
-      let host = new MockReflectorHost();
-      let reflector = new StaticReflector(host);
-
-      expect(reflector.simplify('', ({ __symbolic: 'binop', operator: '!=', left: 0x22, right: 0x22}))).toBe(0x22 != 0x22);
-      expect(reflector.simplify('', ({ __symbolic: 'binop', operator: '!=', left: 0x22, right: 0xF0}))).toBe(0x22 != 0xF0);
+      expect(singleModuleSimplify(noContext, ({ __symbolic: 'binop', operator: '!=', left: 0x22, right: 0x22}))).toBe(0x22 != 0x22);
+      expect(singleModuleSimplify(noContext, ({ __symbolic: 'binop', operator: '!=', left: 0x22, right: 0xF0}))).toBe(0x22 != 0xF0);
     });
 
     it('should simplify ===', () => {
-      let host = new MockReflectorHost();
-      let reflector = new StaticReflector(host);
-
-      expect(reflector.simplify('', ({ __symbolic: 'binop', operator: '===', left: 0x22, right: 0x22}))).toBe(0x22 === 0x22);
-      expect(reflector.simplify('', ({ __symbolic: 'binop', operator: '===', left: 0x22, right: 0xF0}))).toBe(0x22 === 0xF0);
+      expect(singleModuleSimplify(noContext, ({ __symbolic: 'binop', operator: '===', left: 0x22, right: 0x22}))).toBe(0x22 === 0x22);
+      expect(singleModuleSimplify(noContext, ({ __symbolic: 'binop', operator: '===', left: 0x22, right: 0xF0}))).toBe(0x22 === 0xF0);
     });
 
     it('should simplify !==', () => {
-      let host = new MockReflectorHost();
-      let reflector = new StaticReflector(host);
-
-      expect(reflector.simplify('', ({ __symbolic: 'binop', operator: '!==', left: 0x22, right: 0x22}))).toBe(0x22 !== 0x22);
-      expect(reflector.simplify('', ({ __symbolic: 'binop', operator: '!==', left: 0x22, right: 0xF0}))).toBe(0x22 !== 0xF0);
+      expect(singleModuleSimplify(noContext, ({ __symbolic: 'binop', operator: '!==', left: 0x22, right: 0x22}))).toBe(0x22 !== 0x22);
+      expect(singleModuleSimplify(noContext, ({ __symbolic: 'binop', operator: '!==', left: 0x22, right: 0xF0}))).toBe(0x22 !== 0xF0);
     });
 
     it('should simplify >', () => {
-      let host = new MockReflectorHost();
-      let reflector = new StaticReflector(host);
-
-      expect(reflector.simplify('', ({ __symbolic: 'binop', operator: '>', left: 1, right: 1}))).toBe(1 > 1);
-      expect(reflector.simplify('', ({ __symbolic: 'binop', operator: '>', left: 1, right: 0}))).toBe(1 > 0);
-      expect(reflector.simplify('', ({ __symbolic: 'binop', operator: '>', left: 0, right: 1}))).toBe(0 > 1);
+      expect(singleModuleSimplify(noContext, ({ __symbolic: 'binop', operator: '>', left: 1, right: 1}))).toBe(1 > 1);
+      expect(singleModuleSimplify(noContext, ({ __symbolic: 'binop', operator: '>', left: 1, right: 0}))).toBe(1 > 0);
+      expect(singleModuleSimplify(noContext, ({ __symbolic: 'binop', operator: '>', left: 0, right: 1}))).toBe(0 > 1);
     });
 
     it('should simplify >=', () => {
-      let host = new MockReflectorHost();
-      let reflector = new StaticReflector(host);
-
-      expect(reflector.simplify('', ({ __symbolic: 'binop', operator: '>=', left: 1, right: 1}))).toBe(1 >= 1);
-      expect(reflector.simplify('', ({ __symbolic: 'binop', operator: '>=', left: 1, right: 0}))).toBe(1 >= 0);
-      expect(reflector.simplify('', ({ __symbolic: 'binop', operator: '>=', left: 0, right: 1}))).toBe(0 >= 1);
+      expect(singleModuleSimplify(noContext, ({ __symbolic: 'binop', operator: '>=', left: 1, right: 1}))).toBe(1 >= 1);
+      expect(singleModuleSimplify(noContext, ({ __symbolic: 'binop', operator: '>=', left: 1, right: 0}))).toBe(1 >= 0);
+      expect(singleModuleSimplify(noContext, ({ __symbolic: 'binop', operator: '>=', left: 0, right: 1}))).toBe(0 >= 1);
     });
 
     it('should simplify <=', () => {
-      let host = new MockReflectorHost();
-      let reflector = new StaticReflector(host);
-
-      expect(reflector.simplify('', ({ __symbolic: 'binop', operator: '<=', left: 1, right: 1}))).toBe(1 <= 1);
-      expect(reflector.simplify('', ({ __symbolic: 'binop', operator: '<=', left: 1, right: 0}))).toBe(1 <= 0);
-      expect(reflector.simplify('', ({ __symbolic: 'binop', operator: '<=', left: 0, right: 1}))).toBe(0 <= 1);
+      expect(singleModuleSimplify(noContext, ({ __symbolic: 'binop', operator: '<=', left: 1, right: 1}))).toBe(1 <= 1);
+      expect(singleModuleSimplify(noContext, ({ __symbolic: 'binop', operator: '<=', left: 1, right: 0}))).toBe(1 <= 0);
+      expect(singleModuleSimplify(noContext, ({ __symbolic: 'binop', operator: '<=', left: 0, right: 1}))).toBe(0 <= 1);
     });
 
     it('should simplify <', () => {
-      let host = new MockReflectorHost();
-      let reflector = new StaticReflector(host);
-
-      expect(reflector.simplify('', ({ __symbolic: 'binop', operator: '<', left: 1, right: 1}))).toBe(1 < 1);
-      expect(reflector.simplify('', ({ __symbolic: 'binop', operator: '<', left: 1, right: 0}))).toBe(1 < 0);
-      expect(reflector.simplify('', ({ __symbolic: 'binop', operator: '<', left: 0, right: 1}))).toBe(0 < 1);
+      expect(singleModuleSimplify(noContext, ({ __symbolic: 'binop', operator: '<', left: 1, right: 1}))).toBe(1 < 1);
+      expect(singleModuleSimplify(noContext, ({ __symbolic: 'binop', operator: '<', left: 1, right: 0}))).toBe(1 < 0);
+      expect(singleModuleSimplify(noContext, ({ __symbolic: 'binop', operator: '<', left: 0, right: 1}))).toBe(0 < 1);
     });
 
     it('should simplify <<', () => {
-      let host = new MockReflectorHost();
-      let reflector = new StaticReflector(host);
-
-      expect(reflector.simplify('', ({ __symbolic: 'binop', operator: '<<', left: 0x55, right: 2}))).toBe(0x55 << 2);
+      expect(singleModuleSimplify(noContext, ({ __symbolic: 'binop', operator: '<<', left: 0x55, right: 2}))).toBe(0x55 << 2);
     });
 
     it('should simplify >>', () => {
-      let host = new MockReflectorHost();
-      let reflector = new StaticReflector(host);
-
-      expect(reflector.simplify('', ({ __symbolic: 'binop', operator: '>>', left: 0x55, right: 2}))).toBe(0x55 >> 2);
+      expect(singleModuleSimplify(noContext, ({ __symbolic: 'binop', operator: '>>', left: 0x55, right: 2}))).toBe(0x55 >> 2);
     });
 
     it('should simplify +', () => {
-      let host = new MockReflectorHost();
-      let reflector = new StaticReflector(host);
-
-      expect(reflector.simplify('', ({ __symbolic: 'binop', operator: '+', left: 0x55, right: 2}))).toBe(0x55 + 2);
+      expect(singleModuleSimplify(noContext, ({ __symbolic: 'binop', operator: '+', left: 0x55, right: 2}))).toBe(0x55 + 2);
     });
 
     it('should simplify -', () => {
-      let host = new MockReflectorHost();
-      let reflector = new StaticReflector(host);
-
-      expect(reflector.simplify('', ({ __symbolic: 'binop', operator: '-', left: 0x55, right: 2}))).toBe(0x55 - 2);
+      expect(singleModuleSimplify(noContext, ({ __symbolic: 'binop', operator: '-', left: 0x55, right: 2}))).toBe(0x55 - 2);
     });
 
     it('should simplify *', () => {
-      let host = new MockReflectorHost();
-      let reflector = new StaticReflector(host);
-
-      expect(reflector.simplify('', ({ __symbolic: 'binop', operator: '*', left: 0x55, right: 2}))).toBe(0x55 * 2);
+      expect(singleModuleSimplify(noContext, ({ __symbolic: 'binop', operator: '*', left: 0x55, right: 2}))).toBe(0x55 * 2);
     });
 
     it('should simplify /', () => {
-      let host = new MockReflectorHost();
-      let reflector = new StaticReflector(host);
-
-      expect(reflector.simplify('', ({ __symbolic: 'binop', operator: '/', left: 0x55, right: 2}))).toBe(0x55 / 2);
+      expect(singleModuleSimplify(noContext, ({ __symbolic: 'binop', operator: '/', left: 0x55, right: 2}))).toBe(0x55 / 2);
     });
 
     it('should simplify %', () => {
-      let host = new MockReflectorHost();
-      let reflector = new StaticReflector(host);
-
-      expect(reflector.simplify('', ({ __symbolic: 'binop', operator: '%', left: 0x55, right: 2}))).toBe(0x55 % 2);
+      expect(singleModuleSimplify(noContext, ({ __symbolic: 'binop', operator: '%', left: 0x55, right: 2}))).toBe(0x55 % 2);
     });
 
     it('should simplify prefix -', () => {
-      let host = new MockReflectorHost();
-      let reflector = new StaticReflector(host);
-
-      expect(reflector.simplify('', ({ __symbolic: 'pre', operator: '-', operand: 2}))).toBe(-2);
+      expect(singleModuleSimplify(noContext, ({ __symbolic: 'pre', operator: '-', operand: 2}))).toBe(-2);
     });
 
     it('should simplify prefix ~', () => {
-      let host = new MockReflectorHost();
-      let reflector = new StaticReflector(host);
-
-      expect(reflector.simplify('', ({ __symbolic: 'pre', operator: '~', operand: 2}))).toBe(~2);
+      expect(singleModuleSimplify(noContext, ({ __symbolic: 'pre', operator: '~', operand: 2}))).toBe(~2);
     });
 
     it('should simplify prefix !', () => {
-      let host = new MockReflectorHost();
-      let reflector = new StaticReflector(host);
-
-      expect(reflector.simplify('', ({ __symbolic: 'pre', operator: '!', operand: true}))).toBe(!true);
-      expect(reflector.simplify('', ({ __symbolic: 'pre', operator: '!', operand: false}))).toBe(!false);
+      expect(singleModuleSimplify(noContext, ({ __symbolic: 'pre', operator: '!', operand: true}))).toBe(!true);
+      expect(singleModuleSimplify(noContext, ({ __symbolic: 'pre', operator: '!', operand: false}))).toBe(!false);
     });
 
-    it('should simpify an array index', () => {
-      let host = new MockReflectorHost();
-      let reflector = new StaticReflector(host);
-
-      expect(reflector.simplify('', ({__symbolic: "index", expression: [1, 2, 3], index: 2})))
+    it('should simplify an array index', () => {
+      expect(
+          singleModuleSimplify(noContext, ({__symbolic: "index", expression: [1, 2, 3], index: 2})))
           .toBe(3);
     });
 
     it('should simplify an object index', () => {
-      let host = new MockReflectorHost();
-      let reflector = new StaticReflector(host);
       let expr = {__symbolic: "select", expression: {a: 1, b: 2, c: 3}, member: "b"};
-      expect(reflector.simplify('', expr)).toBe(2);
+      expect(singleModuleSimplify(noContext, expr)).toBe(2);
     });
 
-    it('should simplify a module reference', () => {
-      let host = new MockReflectorHost();
-      let reflector = new StaticReflector(host);
-
-      expect(
-          reflector.simplify('./cases', ({__symbolic: "reference", module: "./extern", name: "s"})))
+    it('should simplify a module reference across modules', () => {
+      expect(crossModuleSimplify(new ModuleContext('', '/src/cases'),
+                                 ({__symbolic: "reference", module: "./extern", name: "s"})))
           .toEqual("s");
+    });
+
+    it('should simplify a module reference without crossing modules', () => {
+      expect(singleModuleSimplify(new ModuleContext('', '/src/cases'),
+                                  ({__symbolic: "reference", module: "./extern", name: "s"})))
+          .toEqual(host.getStaticSymbol('', '/src/extern.d.ts', 's'));
     });
   });
 }
 
 class MockReflectorHost implements StaticReflectorHost {
+  private staticTypeCache = new Map<string, StaticSymbol>();
+
+  getStaticSymbol(moduleId: string, declarationFile: string, name: string): StaticSymbol {
+    var cacheKey = `${declarationFile}:${name}`;
+    var result = this.staticTypeCache.get(cacheKey);
+    if (isBlank(result)) {
+      result = new StaticSymbol(moduleId, declarationFile, name);
+      this.staticTypeCache.set(cacheKey, result);
+    }
+    return result;
+  }
+
+  // In tests, assume that symbols are not re-exported
+  findDeclaration(modulePath: string, symbolName: string, containingFile?: string): StaticSymbol {
+    function splitPath(path: string): string[] { return path.split(/\/|\\/g); }
+
+    function resolvePath(pathParts: string[]): string {
+      let result = [];
+      ListWrapper.forEachWithIndex(pathParts, (part, index) => {
+        switch (part) {
+          case '':
+          case '.':
+            if (index > 0) return;
+            break;
+          case '..':
+            if (index > 0 && result.length != 0) result.pop();
+            return;
+        }
+        result.push(part);
+      });
+      return result.join('/');
+    }
+
+    function pathTo(from: string, to: string): string {
+      let result = to;
+      if (to.startsWith('.')) {
+        let fromParts = splitPath(from);
+        fromParts.pop();  // remove the file name.
+        let toParts = splitPath(to);
+        result = resolvePath(fromParts.concat(toParts));
+      }
+      return result;
+    }
+
+    if (modulePath.indexOf('.') === 0) {
+      return this.getStaticSymbol(`mod/${symbolName}`, pathTo(containingFile, modulePath) + '.d.ts',
+                                  symbolName);
+    }
+    return this.getStaticSymbol(`mod/${symbolName}`, '/tmp/' + modulePath + '.d.ts', symbolName);
+  }
+
   getMetadataFor(moduleId: string): any {
     return {
-      'angular2/src/common/directives/ng_for':
+      '/tmp/angular2/src/common/forms/directives.d.ts':
           {
             "__symbolic": "module",
-            "module": "./ng_for",
-            "metadata":
+            "metadata": {
+              "FORM_DIRECTIVES": [
                 {
-                  "NgFor":
-                      {
-                        "__symbolic": "class",
-                        "decorators":
-                            [
-                              {
-                                "__symbolic": "call",
-                                "expression": {
-                                  "__symbolic": "reference",
-                                  "name": "Directive",
-                                  "module": "../../core/metadata"
-                                },
-                                "arguments":
-                                    [
+                  "__symbolic": "reference",
+                  "name": "NgFor",
+                  "module": "angular2/src/common/directives/ng_for"
+                }
+              ]
+            }
+          },
+          '/tmp/angular2/src/common/directives/ng_for.d.ts':
+              {
+                "__symbolic": "module",
+                "metadata":
+                    {
+                      "NgFor":
+                          {
+                            "__symbolic": "class",
+                            "decorators":
+                                [
+                                  {
+                                    "__symbolic": "call",
+                                    "expression": {
+                                      "__symbolic": "reference",
+                                      "name": "Directive",
+                                      "module": "../../core/metadata"
+                                    },
+                                    "arguments": [
                                       {
                                         "selector": "[ngFor][ngForOf]",
                                         "inputs": ["ngForTrackBy", "ngForOf", "ngForTemplate"]
                                       }
                                     ]
-                              }
-                            ],
-                        "members":
-                            {
-                              "__ctor__": [
+                                  }
+                                ],
+                            "members":
                                 {
-                                  "__symbolic": "constructor",
-                                  "parameters":
-                                      [
-                                        {
-                                          "__symbolic": "reference",
-                                          "module": "../../core/linker/view_container_ref",
-                                          "name": "ViewContainerRef"
-                                        },
-                                        {
-                                          "__symbolic": "reference",
-                                          "module": "../../core/linker/template_ref",
-                                          "name": "TemplateRef"
-                                        },
-                                        {
-                                          "__symbolic": "reference",
-                                          "module":
-                                              "../../core/change_detection/differs/iterable_differs",
-                                          "name": "IterableDiffers"
-                                        },
-                                        {
-                                          "__symbolic": "reference",
-                                          "module":
-                                              "../../core/change_detection/change_detector_ref",
-                                          "name": "ChangeDetectorRef"
-                                        }
-                                      ]
+                                  "__ctor__": [
+                                    {
+                                      "__symbolic": "constructor",
+                                      "parameters":
+                                          [
+                                            {
+                                              "__symbolic": "reference",
+                                              "module": "../../core/linker/view_container_ref",
+                                              "name": "ViewContainerRef"
+                                            },
+                                            {
+                                              "__symbolic": "reference",
+                                              "module": "../../core/linker/template_ref",
+                                              "name": "TemplateRef"
+                                            },
+                                            {
+                                              "__symbolic": "reference",
+                                              "module":
+                                                  "../../core/change_detection/differs/iterable_differs",
+                                              "name": "IterableDiffers"
+                                            },
+                                            {
+                                              "__symbolic": "reference",
+                                              "module":
+                                                  "../../core/change_detection/change_detector_ref",
+                                              "name": "ChangeDetectorRef"
+                                            }
+                                          ]
+                                    }
+                                  ]
                                 }
-                              ]
-                            }
-                      }
-                }
-          },
-          'angular2/src/core/linker/view_container_ref':
-              {
-                "module": "./view_container_ref",
-                "metadata": {"ViewContainerRef": {"__symbolic": "class"}}
+                          }
+                    }
               },
-          'angular2/src/core/linker/template_ref':
+          '/tmp/angular2/src/core/linker/view_container_ref.d.ts':
+              {"metadata": {"ViewContainerRef": {"__symbolic": "class"}}},
+          '/tmp/angular2/src/core/linker/template_ref.d.ts':
               {"module": "./template_ref", "metadata": {"TemplateRef": {"__symbolic": "class"}}},
-          'angular2/src/core/change_detection/differs/iterable_differs':
-              {
-                "module": "./iterable_differs",
-                "metadata": {"IterableDiffers": {"__symbolic": "class"}}
-              },
-          'angular2/src/core/change_detection/change_detector_ref':
-              {
-                "module": "./change_detector_ref",
-                "metadata": {"ChangeDetectorRef": {"__symbolic": "class"}}
-              },
-          './app/hero-detail.component':
+          '/tmp/angular2/src/core/change_detection/differs/iterable_differs.d.ts':
+              {"metadata": {"IterableDiffers": {"__symbolic": "class"}}},
+          '/tmp/angular2/src/core/change_detection/change_detector_ref.d.ts':
+              {"metadata": {"ChangeDetectorRef": {"__symbolic": "class"}}},
+          '/tmp/src/app/hero-detail.component.d.ts':
               {
                 "__symbolic": "module",
-                "module": "./hero-detail.component",
                 "metadata":
                     {
                       "HeroDetailComponent":
@@ -431,7 +403,15 @@ class MockReflectorHost implements StaticReflectorHost {
                                     "arguments": [
                                       {
                                         "selector": "my-hero-detail",
-                                        "template": "\n  <div *ngIf=\"hero\">\n    <h2>{{hero.name}} details!</h2>\n    <div><label>id: </label>{{hero.id}}</div>\n    <div>\n      <label>name: </label>\n      <input [(ngModel)]=\"hero.name\" placeholder=\"name\"/>\n    </div>\n  </div>\n"
+                                        "template": "\n  <div *ngIf=\"hero\">\n    <h2>{{hero.name}} details!</h2>\n    <div><label>id: </label>{{hero.id}}</div>\n    <div>\n      <label>name: </label>\n      <input [(ngModel)]=\"hero.name\" placeholder=\"name\"/>\n    </div>\n  </div>\n",
+                                        "directives":
+                                            [
+                                              {
+                                                "__symbolic": "reference",
+                                                "name": "FORM_DIRECTIVES",
+                                                "module": "angular2/src/common/forms/directives"
+                                              }
+                                            ]
                                       }
                                     ]
                                   }
@@ -459,8 +439,8 @@ class MockReflectorHost implements StaticReflectorHost {
                           }
                     }
               },
-          './extern': {
-        "__symbolic": "module", module: './extern', metadata: { s: "s" }
+          '/src/extern.d.ts': {
+        "__symbolic": "module", metadata: { s: "s" }
       }
     }
     [moduleId];

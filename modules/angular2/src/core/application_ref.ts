@@ -16,7 +16,7 @@ import {PromiseWrapper, PromiseCompleter, ObservableWrapper} from 'angular2/src/
 import {ListWrapper} from 'angular2/src/facade/collection';
 import {TestabilityRegistry, Testability} from 'angular2/src/core/testability/testability';
 import {ComponentResolver} from 'angular2/src/core/linker/component_resolver';
-import {ComponentRef} from 'angular2/src/core/linker/component_factory';
+import {ComponentRef, ComponentFactory} from 'angular2/src/core/linker/component_factory';
 import {
   BaseException,
   WrappedException,
@@ -26,7 +26,6 @@ import {
 import {Console} from 'angular2/src/core/console';
 import {wtfLeave, wtfCreateScope, WtfScopeFn} from './profile/profile';
 import {ChangeDetectorRef} from 'angular2/src/core/change_detection/change_detector_ref';
-import {ComponentFactory} from 'angular2/src/core/linker/component_factory';
 
 /**
  * Create an Angular zone.

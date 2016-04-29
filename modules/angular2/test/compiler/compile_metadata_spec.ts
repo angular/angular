@@ -63,7 +63,8 @@ export function main() {
         templateUrl: 'someTemplateUrl',
         styles: ['someStyle'],
         styleUrls: ['someStyleUrl'],
-        ngContentSelectors: ['*']
+        ngContentSelectors: ['*'],
+        baseUrl: 'someBaseUrl'
       });
       fullDirectiveMeta = CompileDirectiveMetadata.create({
         selector: 'someSelector',

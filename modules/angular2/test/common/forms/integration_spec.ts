@@ -1,4 +1,12 @@
-import {Component, Directive, Output, EventEmitter} from 'angular2/core';
+import {
+  Component,
+  Directive,
+  Output,
+  EventEmitter,
+  Provider,
+  forwardRef,
+  Input
+} from 'angular2/core';
 import {
   ComponentFixture,
   afterEach,
@@ -35,7 +43,6 @@ import {
   Validator,
   RadioButtonState
 } from 'angular2/common';
-import {Provider, forwardRef, Input} from 'angular2/core';
 import {By} from 'angular2/platform/browser';
 import {ListWrapper} from 'angular2/src/facade/collection';
 import {ObservableWrapper, TimerWrapper} from 'angular2/src/facade/async';
@@ -441,7 +448,7 @@ export function main() {
            inject([TestComponentBuilder, AsyncTestCompleter],
                   (tcb: TestComponentBuilder, async) => {
                     var t = `<select>
-                      <option *ngFor="#city of list" [value]="city['id']">
+                      <option *ngFor="let city of list" [value]="city['id']">
                         {{ city['name'] }}
                       </option>
                     </select>`;
@@ -496,7 +503,7 @@ export function main() {
            fakeAsync(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
              var t = `<div [ngFormModel]="form">
                       <select ngControl="city">
-                        <option *ngFor="#c of data" [value]="c"></option>
+                        <option *ngFor="let c of data" [value]="c"></option>
                       </select>
                   </div>`;
 
@@ -521,7 +528,7 @@ export function main() {
                   (tcb: TestComponentBuilder, async) => {
                     var t = `<div>
                       <select [(ngModel)]="selectedCity">
-                        <option *ngFor="#c of list" [ngValue]="c">{{c['name']}}</option>
+                        <option *ngFor="let c of list" [ngValue]="c">{{c['name']}}</option>
                       </select>
                   </div>`;
 
@@ -553,7 +560,7 @@ export function main() {
                   (tcb: TestComponentBuilder, async) => {
                     var t = `<div>
                       <select [(ngModel)]="selectedCity">
-                        <option *ngFor="#c of list" [ngValue]="c">{{c['name']}}</option>
+                        <option *ngFor="let c of list" [ngValue]="c">{{c['name']}}</option>
                       </select>
                   </div>`;
 
@@ -581,7 +588,7 @@ export function main() {
                   (tcb: TestComponentBuilder, async) => {
                     var t = `<div>
                       <select [(ngModel)]="selectedCity">
-                        <option *ngFor="#c of list" [ngValue]="c">{{c}}</option>
+                        <option *ngFor="let c of list" [ngValue]="c">{{c}}</option>
                       </select>
                   </div>`;
                     tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((fixture) => {
@@ -607,7 +614,7 @@ export function main() {
                   (tcb: TestComponentBuilder, async) => {
                     var t = `<div>
                       <select [(ngModel)]="selectedCity">
-                        <option *ngFor="#c of list; trackBy:customTrackBy" [ngValue]="c">{{c}}</option>
+                        <option *ngFor="let c of list; trackBy:customTrackBy" [ngValue]="c">{{c}}</option>
                       </select>
                   </div>`;
 
@@ -637,7 +644,7 @@ export function main() {
                   (tcb: TestComponentBuilder, async) => {
                     var t = `<div>
                       <select [(ngModel)]="selectedCity">
-                        <option *ngFor="#c of list" [ngValue]="c">{{c}}</option>
+                        <option *ngFor="let c of list" [ngValue]="c">{{c}}</option>
                       </select>
                   </div>`;
 
@@ -666,7 +673,7 @@ export function main() {
                   (tcb: TestComponentBuilder, async) => {
                     var t = `<div>
                       <select [(ngModel)]="selectedCity">
-                        <option *ngFor="#c of list" [ngValue]="c">{{c['name']}}</option>
+                        <option *ngFor="let c of list" [ngValue]="c">{{c['name']}}</option>
                       </select>
                   </div>`;
 

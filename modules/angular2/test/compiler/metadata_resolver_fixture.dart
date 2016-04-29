@@ -1,4 +1,4 @@
-library angular2.test.compiler.runtime_metadata_fixture;
+library angular2.test.compiler.metadata_resolver_fixture;
 
 import "package:angular2/core.dart" show Component;
 

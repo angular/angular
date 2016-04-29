@@ -20,11 +20,9 @@ import {provide, Provider, Injector, OpaqueToken} from 'angular2/src/core/di';
 import {DOM} from 'angular2/src/platform/dom/dom_adapter';
 import {DomEventsPlugin} from 'angular2/src/platform/dom/events/dom_events';
 import {KeyEventsPlugin} from 'angular2/src/platform/dom/events/key_events';
-import {HammerGesturesPlugin} from 'angular2/src/platform/dom/events/hammer_gestures';
 import {DOCUMENT} from 'angular2/src/platform/dom/dom_tokens';
 import {DomRootRenderer, DomRootRenderer_} from 'angular2/src/platform/dom/dom_renderer';
-import {DomSharedStylesHost} from 'angular2/src/platform/dom/shared_styles_host';
-import {SharedStylesHost} from "angular2/src/platform/dom/shared_styles_host";
+import {DomSharedStylesHost, SharedStylesHost} from 'angular2/src/platform/dom/shared_styles_host';
 import {BrowserDetails} from 'angular2/src/animate/browser_details';
 import {AnimationBuilder} from 'angular2/src/animate/animation_builder';
 import {XHR} from 'angular2/compiler';
@@ -49,7 +47,11 @@ import {
 import {Serializer} from 'angular2/src/web_workers/shared/serializer';
 import {ON_WEB_WORKER} from 'angular2/src/web_workers/shared/api';
 import {RenderStore} from 'angular2/src/web_workers/shared/render_store';
-import {HAMMER_GESTURE_CONFIG, HammerGestureConfig} from './dom/events/hammer_gestures';
+import {
+  HAMMER_GESTURE_CONFIG,
+  HammerGestureConfig,
+  HammerGesturesPlugin
+} from 'angular2/src/platform/dom/events/hammer_gestures';
 
 export const WORKER_SCRIPT: OpaqueToken = CONST_EXPR(new OpaqueToken("WebWorkerScript"));
 

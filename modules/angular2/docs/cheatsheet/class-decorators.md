@@ -20,6 +20,18 @@ Declares that a class is a component and provides metadata about the component.
 
 @cheatsheetItem
 syntax(ts):
+`@Directive({...})
+class MyDirective() {}`|`@Directive({...})`
+syntax(js):
+`var MyDirective = ng.core.Directive({...}).Class({...})`|`ng.core.Directive({...})`
+syntax(dart):
+`@Directive(...)
+class MyDirective() {}`|`@Directive(...)`
+description:
+Declares that a class is a directive and provides metadata about the directive.
+
+@cheatsheetItem
+syntax(ts):
 `@Pipe({...})
 class MyPipe() {}`|`@Pipe({...})`
 syntax(js):

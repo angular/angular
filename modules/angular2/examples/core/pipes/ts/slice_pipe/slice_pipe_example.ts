@@ -22,7 +22,7 @@ export class SlicePipeStringExample {
 @Component({
   selector: 'slice-list-example',
   template: `<div>
-    <li *ngFor="var i of collection | slice:1:3">{{i}}</li>
+    <li *ngFor="let  i of collection | slice:1:3">{{i}}</li>
   </div>`
 })
 export class SlicePipeListExample {

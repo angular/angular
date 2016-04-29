@@ -408,6 +408,10 @@ export function print(obj: Error | Object) {
   console.log(obj);
 }
 
+export function warn(obj: Error | Object) {
+  console.warn(obj);
+}
+
 // Can't be all uppercase as our transpiler would think it is a special directive...
 export class Json {
   static parse(s: string): Object { return _global.JSON.parse(s); }
@@ -451,7 +455,7 @@ declare var Symbol;
 var _symbolIterator = null;
 export function getSymbolIterator(): string | symbol {
   if (isBlank(_symbolIterator)) {
-    if (isPresent(Symbol) && isPresent(Symbol.iterator)) {
+    if (isPresent((<any>globalScope).Symbol) && isPresent(Symbol.iterator)) {
       _symbolIterator = Symbol.iterator;
     } else {
       // es6-shim specific logic

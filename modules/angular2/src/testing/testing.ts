@@ -2,18 +2,9 @@
  * Public Test Library for unit testing Angular2 Applications. Uses the
  * Jasmine framework.
  */
-import {global} from 'angular2/src/facade/lang';
-import {ListWrapper} from 'angular2/src/facade/collection';
-import {bind} from 'angular2/core';
+import {global, isPromise} from 'angular2/src/facade/lang';
 
-import {
-  FunctionWithParamTokens,
-  inject,
-  async,
-  injectAsync,
-  TestInjector,
-  getTestInjector
-} from './test_injector';
+import {inject, async, injectAsync, TestInjector, getTestInjector} from './test_injector';
 
 export {inject, async, injectAsync} from './test_injector';
 
@@ -73,22 +64,6 @@ export var fdescribe: Function = _global.fdescribe;
  */
 export var xdescribe: Function = _global.xdescribe;
 
-/**
- * Signature for a synchronous test function (no arguments).
- */
-export type SyncTestFn = () => void;
-
-/**
- * Signature for an asynchronous test function which takes a
- * `done` callback.
- */
-export type AsyncTestFn = (done: () => void) => void;
-
-/**
- * Signature for any simple testing function.
- */
-export type AnyTestFn = SyncTestFn | AsyncTestFn | Function;
-
 var jsmBeforeEach = _global.beforeEach;
 var jsmIt = _global.it;
 var jsmIIt = _global.fit;
@@ -123,35 +98,27 @@ export function beforeEachProviders(fn): void {
   });
 }
 
-function runInAsyncTestZone(fnToExecute, finishCallback: Function, failCallback: Function,
-                            testName = ''): any {
-  var AsyncTestZoneSpec = Zone['AsyncTestZoneSpec'];
-  var testZoneSpec = new AsyncTestZoneSpec(finishCallback, failCallback, testName);
-  var testZone = Zone.current.fork(testZoneSpec);
-  return testZone.run(fnToExecute);
-}
-
-function _isPromiseLike(input): boolean {
-  return input && !!(input.then);
-}
-
-function _it(jsmFn: Function, name: string, testFn: FunctionWithParamTokens | AnyTestFn,
-             testTimeOut: number): void {
-  var timeOut = testTimeOut;
-  if (testFn instanceof FunctionWithParamTokens) {
-    let testFnT = testFn;
-    jsmFn(name, (done) => {
-      if (testFnT.isAsync) {
-        runInAsyncTestZone(() => testInjector.execute(testFnT), done, done.fail, name);
+function _wrapTestFn(fn: Function) {
+  // Wraps a test or beforeEach function to handle synchronous and asynchronous execution.
+  return (done: any) => {
+    if (fn.length === 0) {
+      let retVal = fn();
+      if (isPromise(retVal)) {
+        // Asynchronous test function - wait for completion.
+        (<Promise<any>>retVal).then(done, done.fail);
       } else {
-        testInjector.execute(testFnT);
+        // Synchronous test function - complete immediately.
         done();
       }
-    }, timeOut);
-  } else {
-    // The test case doesn't use inject(). ie `it('test', (done) => { ... }));`
-    jsmFn(name, testFn, timeOut);
-  }
+    } else {
+      // Asynchronous test function that takes "done" as parameter.
+      fn(done);
+    }
+  };
+}
+
+function _it(jsmFn: Function, name: string, testFn: Function, testTimeOut: number): void {
+  jsmFn(name, _wrapTestFn(testFn), testTimeOut);
 }
 
 /**
@@ -165,27 +132,8 @@ function _it(jsmFn: Function, name: string, testFn: FunctionWithParamTokens | An
  *
  * {@example testing/ts/testing.ts region='beforeEach'}
  */
-export function beforeEach(fn: FunctionWithParamTokens | AnyTestFn): void {
-  if (fn instanceof FunctionWithParamTokens) {
-    // The test case uses inject(). ie `beforeEach(inject([ClassA], (a) => { ...
-    // }));`
-    let fnT = fn;
-    jsmBeforeEach((done) => {
-      if (fnT.isAsync) {
-        runInAsyncTestZone(() => testInjector.execute(fnT), done, done.fail, 'beforeEach');
-      } else {
-        testInjector.execute(fnT);
-        done();
-      }
-    });
-  } else {
-    // The test case doesn't use inject(). ie `beforeEach((done) => { ... }));`
-    if ((<any>fn).length === 0) {
-      jsmBeforeEach(() => { (<SyncTestFn>fn)(); });
-    } else {
-      jsmBeforeEach((done) => { (<AsyncTestFn>fn)(done); });
-    }
-  }
+export function beforeEach(fn: Function): void {
+  jsmBeforeEach(_wrapTestFn(fn));
 }
 
 /**
@@ -200,8 +148,7 @@ export function beforeEach(fn: FunctionWithParamTokens | AnyTestFn): void {
  *
  * {@example testing/ts/testing.ts region='describeIt'}
  */
-export function it(name: string, fn: FunctionWithParamTokens | AnyTestFn,
-                   timeOut: number = null): void {
+export function it(name: string, fn: Function, timeOut: number = null): void {
   return _it(jsmIt, name, fn, timeOut);
 }
 
@@ -216,16 +163,14 @@ export function it(name: string, fn: FunctionWithParamTokens | AnyTestFn,
  *
  * {@example testing/ts/testing.ts region='xit'}
  */
-export function xit(name: string, fn: FunctionWithParamTokens | AnyTestFn,
-                    timeOut: number = null): void {
+export function xit(name: string, fn: Function, timeOut: number = null): void {
   return _it(jsmXIt, name, fn, timeOut);
 }
 
 /**
  * See {@link fit}.
  */
-export function iit(name: string, fn: FunctionWithParamTokens | AnyTestFn,
-                    timeOut: number = null): void {
+export function iit(name: string, fn: Function, timeOut: number = null): void {
   return _it(jsmIIt, name, fn, timeOut);
 }
 
@@ -239,7 +184,6 @@ export function iit(name: string, fn: FunctionWithParamTokens | AnyTestFn,
  *
  * {@example testing/ts/testing.ts region='fit'}
  */
-export function fit(name: string, fn: FunctionWithParamTokens | AnyTestFn,
-                    timeOut: number = null): void {
+export function fit(name: string, fn: Function, timeOut: number = null): void {
   return _it(jsmIIt, name, fn, timeOut);
 }

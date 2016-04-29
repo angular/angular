@@ -1,5 +1,5 @@
 import {Injector} from 'angular2/src/core/di';
-import {Type, CONST, isPresent, isBlank} from 'angular2/src/facade/lang';
+import {Type, CONST, CONST_EXPR, isPresent, isBlank} from 'angular2/src/facade/lang';
 import {unimplemented} from 'angular2/src/facade/exceptions';
 import {ElementRef} from './element_ref';
 import {ViewRef, ViewRef_} from './view_ref';
@@ -69,6 +69,8 @@ export class ComponentRef_ extends ComponentRef {
   onDestroy(callback: Function): void { this.hostView.onDestroy(callback); }
 }
 
+const EMPTY_CONTEXT = CONST_EXPR(new Object());
+
 @CONST()
 export class ComponentFactory {
   constructor(public selector: string, private _viewFactory: Function,
@@ -87,7 +89,7 @@ export class ComponentFactory {
     }
     // Note: Host views don't need a declarationAppElement!
     var hostView = this._viewFactory(vu, injector, null);
-    var hostElement = hostView.create(projectableNodes, rootSelectorOrNode);
+    var hostElement = hostView.create(EMPTY_CONTEXT, projectableNodes, rootSelectorOrNode);
     return new ComponentRef_(hostElement, this._componentType);
   }
 }

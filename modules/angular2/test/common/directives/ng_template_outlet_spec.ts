@@ -43,7 +43,7 @@ export function main() {
                fixture.detectChanges();
                expect(fixture.nativeElement).toHaveText('');
 
-               var refs = fixture.debugElement.children[0].getLocal('refs');
+               var refs = fixture.debugElement.children[0].references['refs'];
 
                fixture.componentInstance.currentTplRef = refs.tplRefs.first;
                fixture.detectChanges();
@@ -62,7 +62,7 @@ export function main() {
              .then((fixture) => {
 
                fixture.detectChanges();
-               var refs = fixture.debugElement.children[0].getLocal('refs');
+               var refs = fixture.debugElement.children[0].references['refs'];
 
                fixture.componentInstance.currentTplRef = refs.tplRefs.first;
                fixture.detectChanges();
@@ -84,7 +84,7 @@ export function main() {
              .then((fixture) => {
 
                fixture.detectChanges();
-               var refs = fixture.debugElement.children[0].getLocal('refs');
+               var refs = fixture.debugElement.children[0].references['refs'];
 
                fixture.componentInstance.currentTplRef = refs.tplRefs.first;
                fixture.detectChanges();
@@ -104,10 +104,10 @@ export function main() {
 
 @Directive({selector: 'tpl-refs', exportAs: 'tplRefs'})
 class CaptureTplRefs {
-  @ContentChildren(TemplateRef) tplRefs: QueryList<TemplateRef>;
+  @ContentChildren(TemplateRef) tplRefs: QueryList<TemplateRef<any>>;
 }
 
 @Component({selector: 'test-cmp', directives: [NgTemplateOutlet, CaptureTplRefs], template: ''})
 class TestComponent {
-  currentTplRef: TemplateRef;
+  currentTplRef: TemplateRef<any>;
 }

@@ -1,6 +1,6 @@
 {
   "name": "angular-srcs",
-  "version": "2.0.0-beta.15",
+  "version": "2.0.0-beta.17",
   "branchPattern": "2.0.*",
   "description": "Angular 2 - a web framework for modern web apps",
   "homepage": "https://github.com/angular/angular",
@@ -34,8 +34,8 @@
   "dependencies": {
     "es6-shim": "^0.35.0",
     "reflect-metadata": "0.1.2",
-    "rxjs": "5.0.0-beta.2",
-    "zone.js": "^0.6.11"
+    "rxjs": "5.0.0-beta.6",
+    "zone.js": "^0.6.12"
   },
   "devDependencies": {
     "angular": "^1.5.0",
@@ -113,6 +113,7 @@
     "ts-api-guardian": "0.0.2",
     "ts2dart": "^0.7.31",
     "tsd": "^0.6.5-beta",
+    "tsickle": "^0.1.0",
     "tslint": "^3.7.0-dev.2",
     "typescript": "^1.9.0-dev.20160409",
     "universal-analytics": "^0.3.9",

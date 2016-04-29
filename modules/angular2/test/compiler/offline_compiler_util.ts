@@ -1,5 +1,6 @@
 import {print, IS_DART} from 'angular2/src/facade/lang';
 import {OutputEmitter} from 'angular2/src/compiler/output/abstract_emitter';
+import {Console} from 'angular2/src/core/console';
 
 import {
   OfflineCompiler,
@@ -38,7 +39,8 @@ export var compAMetadata = CompileDirectiveMetadata.create({
   template: new CompileTemplateMetadata({
     templateUrl: './offline_compiler_compa.html',
     styles: ['.redStyle { color: red; }'],
-    styleUrls: ['./offline_compiler_compa.css']
+    styleUrls: ['./offline_compiler_compa.css'],
+    baseUrl: THIS_MODULE_URL,
   })
 });
 
@@ -48,8 +50,8 @@ function _createOfflineCompiler(xhr: MockXHR, emitter: OutputEmitter): OfflineCo
   var htmlParser = new HtmlParser();
   var normalizer = new DirectiveNormalizer(xhr, urlResolver, htmlParser);
   return new OfflineCompiler(
-      normalizer,
-      new TemplateParser(new Parser(new Lexer()), new MockSchemaRegistry({}, {}), htmlParser, []),
+      normalizer, new TemplateParser(new Parser(new Lexer()), new MockSchemaRegistry({}, {}),
+                                     htmlParser, new Console(), []),
       new StyleCompiler(urlResolver), new ViewCompiler(new CompilerConfig(true, true, true)),
       emitter);
 }
