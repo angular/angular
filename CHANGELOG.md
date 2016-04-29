@@ -24,7 +24,7 @@ The reference `#...` now always means `ref-`.
 - Outside of `ngFor`, a `#...` meant a reference.
 - Inside of `ngFor`, it meant a local variable. 
 
-This was pattern was confusing.
+This pattern was confusing.
 
 **After:**
 
