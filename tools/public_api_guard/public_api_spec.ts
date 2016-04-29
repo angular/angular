@@ -474,7 +474,6 @@ const CORE = [
   'ViewQueryMetadata.isViewQuery:any',
   'ViewQueryMetadata.toString():string',
   'ViewRef',
-  'ViewRef.changeDetectorRef:ChangeDetectorRef',
   'ViewRef.destroyed:boolean',
   'WrappedException',
   'WrappedException.constructor(_wrapperMessage:string, _originalException:any, _originalStack:any, _context:any)',
