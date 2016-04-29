@@ -12,9 +12,13 @@ describe('Collector', () => {
   let collector: MetadataCollector;
 
   beforeEach(() => {
-    host = new Host(
-        FILES,
-        ['/app/app.component.ts', '/app/cases-data.ts', '/app/cases-no-data.ts', '/promise.ts']);
+    host = new Host(FILES, [
+      '/app/app.component.ts',
+      '/app/cases-data.ts',
+      '/app/cases-no-data.ts',
+      '/promise.ts',
+      '/dangling_ref.ts'
+    ]);
     service = ts.createLanguageService(host);
     program = service.getProgram();
     typeChecker = program.getTypeChecker();
@@ -219,6 +223,14 @@ describe('Collector', () => {
     const caseFullProp = <ClassMetadata>casesMetadata.metadata['FullProp'];
     expect(caseFullProp.members).toEqual(propertyData);
   });
+
+
+  it('should fail for dangling references', () => {
+    const sourceFile = program.getSourceFile('dangling_ref.ts');
+    expect(() => collector.getMetadata(sourceFile, typeChecker))
+        .toThrowError(/dangling reference to formDirectiveProvider/);
+  });
+
 });
 
 // TODO: Do not use \` in a template literal as it confuses clang-format
@@ -232,7 +244,7 @@ const FILES: Directory = {
       import HeroService from './hero.service';
       // thrown away
       import 'angular2/core';
-      
+
       @MyComponent({
         selector: 'my-app',
         template:` + "`" + `
@@ -336,7 +348,7 @@ const FILES: Directory = {
       export class CaseAny {
         constructor(param: any) {}
       }
-      
+
       @Injectable()
       export class GetProp {
         private _name: string;
@@ -344,7 +356,7 @@ const FILES: Directory = {
           return this._name;
         }
       }
-      
+
       @Injectable()
       export class SetProp {
         private _name: string;
@@ -352,7 +364,7 @@ const FILES: Directory = {
           this._name = value;
         }
       }
-      
+
       @Injectable()
       export class FullProp {
         private _name: string;
@@ -372,6 +384,14 @@ const FILES: Directory = {
       }
     `
   },
+  'dangling_ref.ts': `
+    import {Component} from 'angular2/core';
+    import {NgFor} from 'angular2/common';
+
+    const formDirectiveProvider = {one: NgFor};
+    @Component({bindings: [formDirectiveProvider]})
+    export class Dangle {}
+  `,
   'promise.ts': `
     interface PromiseLike<T> {
         then<TResult>(onfulfilled?: (value: T) => TResult | PromiseLike<TResult>, onrejected?: (reason: any) => TResult | PromiseLike<TResult>): PromiseLike<TResult>;
