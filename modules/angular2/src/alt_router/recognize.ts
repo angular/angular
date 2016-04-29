@@ -10,17 +10,18 @@ import {reflector} from 'angular2/src/core/reflection/reflection';
 
 export function recognize(componentResolver: ComponentResolver, type: Type,
                           url: Tree<UrlSegment>): Promise<Tree<RouteSegment>> {
-  return componentResolver.resolveComponent(type).then(factory => {
-    let segment =
-        new RouteSegment([url.root], url.root.parameters, DEFAULT_OUTLET_NAME, type, factory);
-    return _recognizeMany(componentResolver, type, rootNode(url).children)
-        .then(children => new Tree<RouteSegment>(new TreeNode<RouteSegment>(segment, children)));
-  });
+  let matched = new _MatchResult(type, [url.root], null, rootNode(url).children, []);
+  return _constructSegment(componentResolver, matched)
+      .then(roots => new Tree<RouteSegment>(roots[0]));
 }
 
 function _recognize(componentResolver: ComponentResolver, parentType: Type,
                     url: TreeNode<UrlSegment>): Promise<TreeNode<RouteSegment>[]> {
   let metadata = _readMetadata(parentType);  // should read from the factory instead
+  if (isBlank(metadata)) {
+    throw new BaseException(
+        `Component '${stringify(parentType)}' does not have route configuration`);
+  }
 
   let match;
   try {
@@ -43,18 +44,45 @@ function _recognizeMany(componentResolver: ComponentResolver, parentType: Type,
 
 function _constructSegment(componentResolver: ComponentResolver,
                            matched: _MatchResult): Promise<TreeNode<RouteSegment>[]> {
-  return componentResolver.resolveComponent(matched.route.component)
+  return componentResolver.resolveComponent(matched.component)
       .then(factory => {
         let urlOutlet = matched.consumedUrlSegments[0].outlet;
         let segment = new RouteSegment(matched.consumedUrlSegments, matched.parameters,
                                        isBlank(urlOutlet) ? DEFAULT_OUTLET_NAME : urlOutlet,
-                                       matched.route.component, factory);
+                                       matched.component, factory);
 
         if (matched.leftOverUrl.length > 0) {
-          return _recognizeMany(componentResolver, matched.route.component, matched.leftOverUrl)
+          return _recognizeMany(componentResolver, matched.component, matched.leftOverUrl)
               .then(children => [new TreeNode<RouteSegment>(segment, children)]);
         } else {
-          return [new TreeNode<RouteSegment>(segment, [])];
+          return _recognizeLeftOvers(componentResolver, matched.component)
+              .then(children => [new TreeNode<RouteSegment>(segment, children)]);
+        }
+      });
+}
+
+function _recognizeLeftOvers(componentResolver: ComponentResolver,
+                             parentType: Type): Promise<TreeNode<RouteSegment>[]> {
+  return componentResolver.resolveComponent(parentType)
+      .then(factory => {
+        let metadata = _readMetadata(parentType);
+        if (isBlank(metadata)) {
+          return [];
+        }
+
+        let r = (<any[]>metadata.routes).filter(r => r.path == "" || r.path == "/");
+        if (r.length === 0) {
+          return PromiseWrapper.resolve([]);
+        } else {
+          return _recognizeLeftOvers(componentResolver, r[0].component)
+              .then(children => {
+                return componentResolver.resolveComponent(r[0].component)
+                    .then(factory => {
+                      let segment =
+                          new RouteSegment([], null, DEFAULT_OUTLET_NAME, r[0].component, factory);
+                      return [new TreeNode<RouteSegment>(segment, children)];
+                    });
+              });
         }
       });
 }
@@ -66,11 +94,14 @@ function _match(metadata: RoutesMetadata, url: TreeNode<UrlSegment>): _MatchResu
       return matchingResult;
     }
   }
-  throw new BaseException("Cannot match any routes");
+  let availableRoutes = metadata.routes.map(r => `'${r.path}'`).join(", ");
+  throw new BaseException(
+      `Cannot match any routes. Current segment: '${url.value}'. Available routes: [${availableRoutes}].`);
 }
 
 function _matchWithParts(route: RouteMetadata, url: TreeNode<UrlSegment>): _MatchResult {
-  let parts = route.path.split("/");
+  let path = route.path.startsWith("/") ? route.path.substring(1) : route.path;
+  let parts = path.split("/");
   let positionalParams = {};
   let consumedUrlSegments = [];
 
@@ -113,7 +144,7 @@ function _matchWithParts(route: RouteMetadata, url: TreeNode<UrlSegment>): _Matc
       <{[key: string]: string}>StringMapWrapper.merge(isBlank(p) ? {} : p, positionalParams);
   let axuUrlSubtrees = isPresent(lastParent) ? lastParent.children.slice(1) : [];
 
-  return new _MatchResult(route, consumedUrlSegments, parameters, lastSegment.children,
+  return new _MatchResult(route.component, consumedUrlSegments, parameters, lastSegment.children,
                           axuUrlSubtrees);
 }
 
@@ -132,16 +163,12 @@ function _checkOutletNameUniqueness(nodes: TreeNode<RouteSegment>[]): TreeNode<R
 }
 
 class _MatchResult {
-  constructor(public route: RouteMetadata, public consumedUrlSegments: UrlSegment[],
+  constructor(public component: Type, public consumedUrlSegments: UrlSegment[],
               public parameters: {[key: string]: string},
               public leftOverUrl: TreeNode<UrlSegment>[], public aux: TreeNode<UrlSegment>[]) {}
 }
 
 function _readMetadata(componentType: Type) {
   let metadata = reflector.annotations(componentType).filter(f => f instanceof RoutesMetadata);
-  if (metadata.length === 0) {
-    throw new BaseException(
-        `Component '${stringify(componentType)}' does not have route configuration`);
-  }
-  return metadata[0];
+  return ListWrapper.first(metadata);
 }

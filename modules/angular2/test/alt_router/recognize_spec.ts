@@ -48,6 +48,26 @@ export function main() {
              });
        }));
 
+    it('should support empty routes',
+       inject([AsyncTestCompleter, ComponentResolver], (async, resolver) => {
+         recognize(resolver, ComponentA, tree("f"))
+             .then(r => {
+               let a = r.root;
+               expect(stringifyUrl(a.urlSegments)).toEqual([""]);
+               expect(a.type).toBe(ComponentA);
+
+               let f = r.firstChild(r.root);
+               expect(stringifyUrl(f.urlSegments)).toEqual(["f"]);
+               expect(f.type).toBe(ComponentF);
+
+               let d = r.firstChild(r.firstChild(r.root));
+               expect(stringifyUrl(d.urlSegments)).toEqual([]);
+               expect(d.type).toBe(ComponentD);
+
+               async.done();
+             });
+       }));
+
     it('should handle aux routes',
        inject([AsyncTestCompleter, ComponentResolver], (async, resolver) => {
          recognize(resolver, ComponentA, tree("b/paramB(/d//right:d)"))
@@ -133,7 +153,7 @@ export function main() {
        inject([AsyncTestCompleter, ComponentResolver], (async, resolver) => {
          recognize(resolver, ComponentA, tree("invalid"))
              .catch(e => {
-               expect(e.message).toEqual("Cannot match any routes");
+               expect(e.message).toContain("Cannot match any routes");
                async.done();
              });
        }));
@@ -142,7 +162,7 @@ export function main() {
        inject([AsyncTestCompleter, ComponentResolver], (async, resolver) => {
          recognize(resolver, ComponentA, tree("b"))
              .catch(e => {
-               expect(e.message).toEqual("Cannot match any routes");
+               expect(e.message).toContain("Cannot match any routes");
                async.done();
              });
        }));
@@ -175,6 +195,11 @@ class ComponentD {
 class ComponentE {
 }
 
+@Component({selector: 'f', template: 't'})
+@Routes([new Route({path: "/", component: ComponentD})])
+class ComponentF {
+}
+
 @Component({selector: 'c', template: 't'})
 @Routes([new Route({path: "d", component: ComponentD})])
 class ComponentC {
@@ -193,7 +218,8 @@ class ComponentB {
 @Routes([
   new Route({path: "b/:b", component: ComponentB}),
   new Route({path: "d", component: ComponentD}),
-  new Route({path: "e", component: ComponentE})
+  new Route({path: "e", component: ComponentE}),
+  new Route({path: "f", component: ComponentF})
 ])
 class ComponentA {
 }

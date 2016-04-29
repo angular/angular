@@ -1,13 +1,12 @@
-import {provide, ReflectiveInjector, ComponentResolver} from 'angular2/core';
+import {OnInit, provide, ReflectiveInjector, ComponentResolver} from 'angular2/core';
 import {RouterOutlet} from './directives/router_outlet';
 import {Type, isBlank, isPresent} from 'angular2/src/facade/lang';
 import {EventEmitter, Observable} from 'angular2/src/facade/async';
 import {StringMapWrapper} from 'angular2/src/facade/collection';
 import {BaseException} from 'angular2/src/facade/exceptions';
-import {BaseException} from 'angular2/src/facade/exceptions';
 import {RouterUrlSerializer} from './router_url_serializer';
 import {recognize} from './recognize';
-import {Location} from './location/location';
+import {Location} from 'angular2/platform/common';
 import {
   equalSegments,
   routeSegmentComponentFactory,
@@ -31,15 +30,12 @@ export class Router {
   private _prevTree: Tree<RouteSegment>;
   private _urlTree: Tree<UrlSegment>;
 
-  private _location: Location;
-
   private _changes: EventEmitter<void> = new EventEmitter<void>();
 
   constructor(private _componentType: Type, private _componentResolver: ComponentResolver,
               private _urlSerializer: RouterUrlSerializer,
-              private _routerOutletMap: RouterOutletMap, location: Location) {
-    this._location = location;
-    this.navigateByUrl(location.path());
+              private _routerOutletMap: RouterOutletMap, private _location: Location) {
+    this.navigateByUrl(this._location.path());
   }
 
   get urlTree(): Tree<UrlSegment> { return this._urlTree; }
@@ -48,9 +44,7 @@ export class Router {
     this._urlTree = url;
     return recognize(this._componentResolver, this._componentType, url)
         .then(currTree => {
-          let prevRoot = isPresent(this._prevTree) ? rootNode(this._prevTree) : null;
-          new _LoadSegments(currTree, this._prevTree)
-              .loadSegments(rootNode(currTree), prevRoot, this._routerOutletMap);
+          new _LoadSegments(currTree, this._prevTree).load(this._routerOutletMap);
           this._prevTree = currTree;
           this._location.go(this._urlSerializer.serialize(this._urlTree));
           this._changes.emit(null);
@@ -68,6 +62,12 @@ export class Router {
 
 class _LoadSegments {
   constructor(private currTree: Tree<RouteSegment>, private prevTree: Tree<RouteSegment>) {}
+
+  load(parentOutletMap: RouterOutletMap): void {
+    let prevRoot = isPresent(this.prevTree) ? rootNode(this.prevTree) : null;
+    let currRoot = rootNode(this.currTree);
+    this.loadChildSegments(currRoot, prevRoot, parentOutletMap);
+  }
 
   loadSegments(currNode: TreeNode<RouteSegment>, prevNode: TreeNode<RouteSegment>,
                parentOutletMap: RouterOutletMap): void {

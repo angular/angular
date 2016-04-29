@@ -89,7 +89,9 @@ export class RouteSegment {
     this._componentFactory = componentFactory;
   }
 
-  getParam(param: string): string { return this.parameters[param]; }
+  getParam(param: string): string {
+    return isPresent(this.parameters) ? this.parameters[param] : null;
+  }
 
   get type(): Type { return this._type; }
 

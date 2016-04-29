@@ -106,26 +106,6 @@ export function main() {
 
       expect(url.serialize(tree)).toEqual("/one;a=true");
     });
-
-    // it("should parse key-value query params", () => {
-    //   let tree = url.parse("/one?a=1&b=2");
-    //   expect(tree.root).toEqual(new UrlSegment("", {'a': '1', 'b': '2'}, DEFAULT_OUTLET_NAME));
-    // });
-    //
-    // it("should parse key only query params", () => {
-    //   let tree = url.parse("/one?a");
-    //   expect(tree.root).toEqual(new UrlSegment("", {'a': "true"}, DEFAULT_OUTLET_NAME));
-    // });
-    //
-    // it("should parse a url with only query params", () => {
-    //   let tree = url.parse("?a");
-    //   expect(tree.root).toEqual(new UrlSegment("", {'a': "true"}, DEFAULT_OUTLET_NAME));
-    // });
-    //
-    // it("should allow slashes within query params", () => {
-    //   let tree = url.parse("?a=http://boo");
-    //   expect(tree.root).toEqual(new UrlSegment("", {'a': "http://boo"}, DEFAULT_OUTLET_NAME));
-    // });
   });
 }
 

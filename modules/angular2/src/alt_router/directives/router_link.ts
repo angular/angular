@@ -28,7 +28,7 @@ export class RouterLink implements OnDestroy {
 
   @HostBinding() private href: string;
 
-  constructor(private _router: Router, private _segment: RouteSegment) {
+  constructor(private _router: Router) {
     this._subscription = ObservableWrapper.subscribe(_router.changes, (_) => {
       this._targetUrl = _router.urlTree;
       this._updateTargetUrlAndHref();
@@ -53,7 +53,7 @@ export class RouterLink implements OnDestroy {
   }
 
   private _updateTargetUrlAndHref(): void {
-    this._targetUrl = link(this._segment, this._router.urlTree, this._changes);
+    this._targetUrl = link(null, this._router.urlTree, this._changes);
     this.href = this._router.serializeUrl(this._targetUrl);
   }
 }
