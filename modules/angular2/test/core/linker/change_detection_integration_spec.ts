@@ -371,6 +371,12 @@ export function main() {
            expect(renderLog.loggedValues).toEqual([[1, 2]]);
          }));
 
+      it('should support empty literal array', fakeAsync(() => {
+           var ctx = _bindSimpleValue('[]');
+           ctx.detectChanges(false);
+           expect(renderLog.loggedValues).toEqual([[]]);
+         }));
+
       it('should support literal array made of expressions', fakeAsync(() => {
            var ctx = _bindSimpleValue('[1, a]', TestData);
            ctx.componentInstance.a = 2;
@@ -393,6 +399,12 @@ export function main() {
            var ctx = _bindSimpleValue('{z: 1}');
            ctx.detectChanges(false);
            expect(renderLog.loggedValues[0]['z']).toEqual(1);
+         }));
+
+      it('should support empty literal map', fakeAsync(() => {
+           var ctx = _bindSimpleValue('{}');
+           ctx.detectChanges(false);
+           expect(renderLog.loggedValues).toEqual([{}]);
          }));
 
       it('should support literal maps made of expressions', fakeAsync(() => {
