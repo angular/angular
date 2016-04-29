@@ -328,10 +328,10 @@ function _flattenStyles(compId: string, styles: Array<any | any[]>, target: stri
   return target;
 }
 
-var NS_PREFIX_RE = /^@([^:]+):(.+)/g;
+var NS_PREFIX_RE = /^:([^:]+):(.+)/g;
 
 function splitNamespace(name: string): string[] {
-  if (name[0] != '@') {
+  if (name[0] != ':') {
     return [null, name];
   }
   let match = RegExpWrapper.firstMatch(NS_PREFIX_RE, name);

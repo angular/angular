@@ -408,10 +408,10 @@ export function getHtmlTagDefinition(tagName: string): HtmlTagDefinition {
   return isPresent(result) ? result : DEFAULT_TAG_DEFINITION;
 }
 
-var NS_PREFIX_RE = /^@([^:]+):(.+)/g;
+var NS_PREFIX_RE = /^:([^:]+):(.+)/g;
 
 export function splitNsName(elementName: string): string[] {
-  if (elementName[0] != '@') {
+  if (elementName[0] != ':') {
     return [null, elementName];
   }
   let match = RegExpWrapper.firstMatch(NS_PREFIX_RE, elementName);
@@ -423,5 +423,5 @@ export function getNsPrefix(elementName: string): string {
 }
 
 export function mergeNsAndName(prefix: string, localName: string): string {
-  return isPresent(prefix) ? `@${prefix}:${localName}` : localName;
+  return isPresent(prefix) ? `:${prefix}:${localName}` : localName;
 }
