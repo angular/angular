@@ -288,7 +288,6 @@ export class CompileMetadataResolver {
   getProvidersMetadata(providers: any[]):
       Array<cpl.CompileProviderMetadata | cpl.CompileTypeMetadata | any[]> {
     return providers.map((provider) => {
-      if (!provider) throw new Error("Providers array contained empty entry: " + JSON.stringify(providers));
       provider = resolveForwardRef(provider);
       if (isArray(provider)) {
         return this.getProvidersMetadata(provider);

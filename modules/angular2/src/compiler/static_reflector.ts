@@ -36,8 +36,9 @@ import {
   InjectMetadata
 } from "angular2/src/core/di/metadata";
 
-// TODO - do we need moduleId in here?
-export type ModuleContext = {moduleId: string, filePath: string};
+export class ModuleContext {
+  constructor(public moduleId: string, public filePath: string) {}
+}
 
 /**
  * The host of the static resolver is expected to be able to provide module metadata in the form of
@@ -244,6 +245,7 @@ export class StaticReflector implements ReflectorReader {
       }
       if (isPresent(expression)) {
         if (isPresent(expression['__symbolic'])) {
+          let staticType;
           switch (expression['__symbolic']) {
             case "binop":
               let left = simplify(expression['left']);
@@ -315,7 +317,6 @@ export class StaticReflector implements ReflectorReader {
               if (isPresent(selectTarget) && isPrimitive(member)) return selectTarget[member];
               return null;
             case "reference":
-              let staticType;
               if (isPresent(expression['module'])) {
                 staticType = _this.host.findDeclaration(expression['module'], expression['name'], moduleContext.filePath);
               } else {
@@ -328,7 +329,7 @@ export class StaticReflector implements ReflectorReader {
                 if (isClassMetadata(declarationValue)) {
                   result = staticType;
                 } else {
-                  const newModuleContext = {moduleId: staticType.moduleId, filePath: staticType.filePath};
+                  const newModuleContext = new ModuleContext(staticType.moduleId, staticType.filePath);
                   result = _this.simplify(newModuleContext, declarationValue, crossModules);
                 }
               } else {
@@ -338,8 +339,7 @@ export class StaticReflector implements ReflectorReader {
             case "new":
             case "call":
               let target = expression['expression'];
-              let staticType = _this.host.findDeclaration(target['module'], target['name'], moduleContext.filePath);
-              console.log("find in map", staticType);
+              staticType = _this.host.findDeclaration(target['module'], target['name'], moduleContext.filePath);
               let converter = _this.conversionMap.get(staticType);
               let args = expression['arguments'];
               if (isBlank(args)) {

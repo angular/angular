@@ -1,8 +1,9 @@
-import {coreBootstrap, ReflectiveInjector} from 'angular2/core';
-import {browserPlatform, BROWSER_APP_PROVIDERS} from 'angular2/platform/browser';
+import {coreBootstrap, ReflectiveInjector, AngularEntryPoint} from 'angular2/core';
+import {browserStaticPlatform, BROWSER_APP_PROVIDERS} from 'angular2/platform/browser_static';
 import {Renderer, ElementRef, Component, Directive, Injectable} from 'angular2/core';
 import {HelloCmpNgFactory} from './index.ngfactory';
 
+@AngularEntryPoint()
 export function main() {
   // Bootstrapping only requires specifying a root component.
   // The boundary between the Angular application and the rest of the page is
@@ -12,8 +13,8 @@ export function main() {
   // You can use the light dom of the <hello-app> tag as temporary content (for
   // example 'Loading...') before the application is ready.
 
-  const appInjector =
-    ReflectiveInjector.resolveAndCreate(BROWSER_APP_PROVIDERS, browserPlatform().injector);
+  let appInjector =
+    ReflectiveInjector.resolveAndCreate(BROWSER_APP_PROVIDERS, browserStaticPlatform().injector);
   coreBootstrap(appInjector, HelloCmpNgFactory);
 }
 

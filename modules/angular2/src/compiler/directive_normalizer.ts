@@ -93,7 +93,7 @@ export class DirectiveNormalizer {
         visitor.styleUrls.filter(isStyleUrlResolvable)
             .map(url => this._urlResolver.resolve(templateAbsUrl, url))
             .concat(templateMeta.styleUrls.filter(isStyleUrlResolvable)
-                        .map(url => this._urlResolver.resolve(directiveType.moduleUrl, url)));
+                        .map(url => this._urlResolver.resolve(templateMeta.baseUrl, url)));
 
     var allResolvedStyles = allStyles.map(style => {
       var styleWithImports = extractStyleUrls(this._urlResolver, templateAbsUrl, style);

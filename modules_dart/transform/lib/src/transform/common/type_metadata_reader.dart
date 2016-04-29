@@ -398,7 +398,7 @@ class _DirectiveMetadataVisitor extends Object
       _hasMetadata = true;
       if (isComponent) {
         _cmpTemplate =
-            new _CompileTemplateMetadataVisitor().visitAnnotation(node);
+            new _CompileTemplateMetadataVisitor(toAssetUri(_assetId)).visitAnnotation(node);
         _validateTemplates();
       }
       super.visitAnnotation(node);
@@ -411,7 +411,7 @@ class _DirectiveMetadataVisitor extends Object
             '$node' /* source */);
       }
       _viewTemplate =
-          new _CompileTemplateMetadataVisitor().visitAnnotation(node);
+          new _CompileTemplateMetadataVisitor(toAssetUri(_assetId)).visitAnnotation(node);
       _validateTemplates();
     }
 
@@ -720,11 +720,14 @@ class _LifecycleHookVisitor extends SimpleAstVisitor<List<LifecycleHooks>> {
 /// [CompileTemplateMetadata].
 class _CompileTemplateMetadataVisitor
     extends RecursiveAstVisitor<CompileTemplateMetadata> {
+  String _baseUrl;
   ViewEncapsulation _encapsulation;
   String _template;
   String _templateUrl;
   List<String> _styles;
   List<String> _styleUrls;
+
+  _CompileTemplateMetadataVisitor(this._baseUrl);
 
   @override
   CompileTemplateMetadata visitAnnotation(Annotation node) {
@@ -743,7 +746,8 @@ class _CompileTemplateMetadataVisitor
         template: _template,
         templateUrl: _templateUrl,
         styles: _styles,
-        styleUrls: _styleUrls);
+        styleUrls: _styleUrls,
+        baseUrl: _baseUrl);
   }
 
   @override

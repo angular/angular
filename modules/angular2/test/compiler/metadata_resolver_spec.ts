@@ -51,7 +51,6 @@ export function main() {
            expect(meta.isComponent).toBe(true);
            expect(meta.type.runtime).toBe(ComponentWithEverything);
            expect(meta.type.name).toEqual(stringify(ComponentWithEverything));
-           expect(meta.type.moduleUrl).toEqual(`package:someModuleId${MODULE_SUFFIX}`);
            expect(meta.lifecycleHooks).toEqual(LIFECYCLE_HOOKS_VALUES);
            expect(meta.changeDetection).toBe(ChangeDetectionStrategy.CheckAlways);
            expect(meta.inputs).toEqual({'someProp': 'someProp'});
@@ -64,12 +63,13 @@ export function main() {
            expect(meta.template.styleUrls).toEqual(['someStyleUrl']);
            expect(meta.template.template).toEqual('someTemplate');
            expect(meta.template.templateUrl).toEqual('someTemplateUrl');
+           expect(meta.template.baseUrl).toEqual(`package:someModuleId${MODULE_SUFFIX}`);
          }));
 
       it('should use the moduleUrl from the reflector if none is given',
          inject([CompileMetadataResolver], (resolver: CompileMetadataResolver) => {
            var value: string =
-               resolver.getDirectiveMetadata(ComponentWithoutModuleId).type.moduleUrl;
+               resolver.getDirectiveMetadata(ComponentWithoutModuleId).template.baseUrl;
            var expectedEndValue =
                IS_DART ? 'test/compiler/metadata_resolver_spec.dart' : './ComponentWithoutModuleId';
            expect(value.endsWith(expectedEndValue)).toBe(true);
