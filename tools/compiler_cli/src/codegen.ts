@@ -68,7 +68,7 @@ export class CodeGenerator {
       return result;
     }
     for (const symbol of symbols) {
-      const staticType = this.reflectorHost.findDeclaration(absSourcePath, symbol, absSourcePath).moduleId;
+      const staticType = this.reflectorHost.findDeclaration(absSourcePath, symbol, absSourcePath);
       let directive: compiler.CompileDirectiveMetadata;
       directive = this.resolver.maybeGetDirectiveMetadata(<any>staticType);
 
@@ -116,7 +116,11 @@ export class CodeGenerator {
 
     const metadataCollector = new MetadataCollector();
     const reflectorHost = new NodeReflectorHost(program, metadataCollector, compilerHost, parsed.options);
-    const xhr: compiler.XHR = {get: (s: string) => Promise.resolve(compilerHost.readFile(s))};
+    const xhr: compiler.XHR = {get: (s: string) => {
+console.log('reading', s);
+      return Promise.resolve(compilerHost.readFile(s));
+
+  }};
     const urlResolver: compiler.UrlResolver = compiler.createOfflineCompileUrlResolver();
     const staticReflector = new StaticReflector(reflectorHost);
     const htmlParser = new HtmlParser();

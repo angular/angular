@@ -11,8 +11,14 @@ export class NodeReflectorHost implements StaticReflectorHost {
   constructor(private program: ts.Program, private metadataCollector: MetadataCollector,
               private compilerHost: ts.CompilerHost, private options: ts.CompilerOptions) {}
 
+    resolve(m:string, containingFile:string) {
+      const resolved = ts.resolveModuleName(m, containingFile, this.options, this.compilerHost).resolvedModule;
+      return resolved ? resolved.resolvedFileName : null
+    };
+
 // rename to staticref or staticsymbol
-  findDeclaration(module: string, symbolName: string, containingFile: string): StaticType {
+  findDeclaration(module: string, symbolName: string, containingFile: string, containingModule?: string): StaticType {
+
     if (!containingFile || !containingFile.length) {
       if (module.indexOf(".") === 0) {
         throw new Error("Resolution of relative paths requires a containing file.");
@@ -21,13 +27,11 @@ export class NodeReflectorHost implements StaticReflectorHost {
       containingFile = 'index.ts';
     }
 
-    const resolve = (m:string) => {
-      const resolved = ts.resolveModuleName(m, containingFile, this.options, this.compilerHost).resolvedModule;
-      return resolved ? resolved.resolvedFileName : null
-    };
+
 
     try {
-      const filePath = resolve(module);
+      const filePath = this.resolve(module, containingFile);
+
       if (!filePath) {
         throw new Error(`Could not resolve module ${module} relative to ${containingFile}`);
       }
@@ -47,25 +51,52 @@ export class NodeReflectorHost implements StaticReflectorHost {
 
       let moduleId: string;
       const parts = declarationFile.replace(EXT, '').split(path.sep);
+
       for (let index = parts.length - 1; index >=0; index--) {
         let candidate = parts.slice(index, parts.length).join(path.sep);
-        if (resolve(candidate) === declarationFile) {
+        if (this.resolve(candidate, containingFile) === declarationFile) {
           let pkg = parts[index];
           let pkgPath = parts.slice(index+1, parts.length).join(path.sep);
           moduleId = `asset:${pkg}/lib/${pkgPath}`;
           break;
         }
-        if (resolve('.' + path.sep + candidate) === declarationFile) {
+
+      }
+      for (let index = parts.length - 1; index >=0; index--) {
+        let candidate = parts.slice(index, parts.length).join(path.sep);
+      if (this.resolve('.' + path.sep + candidate, containingFile) === declarationFile) {
           moduleId = `asset:./lib/${candidate}`;
           break;
         }
       }
-      return new StaticType(moduleId, declarationFile, symbol.getName());
+console.log('$$$$' , module, declarationFile, containingFile, " ===> ", moduleId);
+
+
+      return this.getStaticType(moduleId, declarationFile, symbol.getName());
     } catch (e) {
       console.error(`can't resolve module ${module} from ${containingFile}`);
       throw e;
     }
 
+  }
+    private typeCache = new Map<string, StaticType>();
+
+      /**
+   * getStaticType produces a Type whose metadata is known but whose implementation is not loaded.
+   * All types passed to the StaticResolver should be pseudo-types returned by this method.
+   *
+   * @param moduleId the module identifier as an absolute path.
+   * @param name the name of the type.
+   */
+  getStaticType(moduleId: string, declarationFile: string, name: string): StaticType {
+    let key = `"${declarationFile}".${name}`;
+    let result = this.typeCache.get(key);
+    if (!result) {
+
+      result = new StaticType(moduleId, declarationFile, name);
+      this.typeCache.set(key, result);
+    }
+    return result;
   }
 
 // TODO take a statictype

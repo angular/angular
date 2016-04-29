@@ -15,6 +15,6 @@ export class NextComp {
 }
 
 // Verify that exceptions from DirectiveResolver don't propagate
-function NotADirective(c: any): void {}
+export function NotADirective(c: any): void {}
 @NotADirective
 export class HasCustomDecorator {}

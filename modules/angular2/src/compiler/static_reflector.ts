@@ -36,6 +36,7 @@ import {
   InjectMetadata
 } from "angular2/src/core/di/metadata";
 
+// TODO - do we need moduleId in here?
 export type ModuleContext = {moduleId: string, filePath: string};
 
 /**
@@ -58,8 +59,10 @@ export interface StaticReflectorHost {
    * @param module the location imported from
    * @param containingFile for relative imports, the path of the file containing the import
    */
-  findDeclaration(module: string,
+  findDeclaration(modulePath: string,
                   symbolName: string, containingFile?: string): StaticType;
+
+  getStaticType(moduleId: string, declarationFile: string, name: string): StaticType;
 }
 
 /**
@@ -76,7 +79,6 @@ export class StaticType {
  * templates statically.
  */
 export class StaticReflector implements ReflectorReader {
-  private typeCache = new Map<string, StaticType>();
   private annotationCache = new Map<StaticType, any[]>();
   private propertyCache = new Map<StaticType, {[key: string]: any}>();
   private parameterCache = new Map<StaticType, any[]>();
@@ -86,23 +88,6 @@ export class StaticReflector implements ReflectorReader {
   constructor(private host: StaticReflectorHost) { this.initializeConversionMap(); }
 
   importUri(typeOrFunc: any): string { return (<StaticType>typeOrFunc).filePath; }
-
-  /**
-   * getStaticType produces a Type whose metadata is known but whose implementation is not loaded.
-   * All types passed to the StaticResolver should be pseudo-types returned by this method.
-   *
-   * @param moduleId the module identifier as an absolute path.
-   * @param name the name of the type.
-   */
-  public getStaticType(context: ModuleContext, name: string): StaticType {
-    let key = `"${context.filePath}".${name}`;
-    let result = this.typeCache.get(key);
-    if (!isPresent(result)) {
-      result = new StaticType(context.moduleId, context.filePath, name);
-      this.typeCache.set(key, result);
-    }
-    return result;
-  }
 
   public annotations(type: StaticType): any[] {
     let annotations = this.annotationCache.get(type);
@@ -334,7 +319,7 @@ export class StaticReflector implements ReflectorReader {
               if (isPresent(expression['module'])) {
                 staticType = _this.host.findDeclaration(expression['module'], expression['name'], moduleContext.filePath);
               } else {
-                staticType = _this.host.findDeclaration(moduleContext.filePath, expression['name'], moduleContext.filePath);
+                staticType = _this.host.getStaticType(moduleContext.moduleId,  moduleContext.filePath, expression['name']);
               }
               let result;
               if (crossModules || isBlank(expression['module'])) {
@@ -343,7 +328,8 @@ export class StaticReflector implements ReflectorReader {
                 if (isClassMetadata(declarationValue)) {
                   result = staticType;
                 } else {
-                  result = _this.simplify(moduleContext, declarationValue, crossModules);
+                  const newModuleContext = {moduleId: staticType.moduleId, filePath: staticType.filePath};
+                  result = _this.simplify(newModuleContext, declarationValue, crossModules);
                 }
               } else {
                 result = staticType;
@@ -353,6 +339,7 @@ export class StaticReflector implements ReflectorReader {
             case "call":
               let target = expression['expression'];
               let staticType = _this.host.findDeclaration(target['module'], target['name'], moduleContext.filePath);
+              console.log("find in map", staticType);
               let converter = _this.conversionMap.get(staticType);
               let args = expression['arguments'];
               if (isBlank(args)) {
@@ -386,6 +373,9 @@ export class StaticReflector implements ReflectorReader {
   }
 
   private getTypeMetadata(type: StaticType): {[key: string]: any} {
+    if (!(type instanceof StaticType)) {
+      throw new Error('not static type');
+    }
     let moduleMetadata = this.getModuleMetadata(type.filePath);
     let result = moduleMetadata['metadata'][type.name];
     if (!isPresent(result)) {
