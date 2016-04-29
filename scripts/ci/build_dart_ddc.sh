@@ -64,6 +64,7 @@ $DART_SDK/bin/dart $DDC_DIR/bin/dartdevc.dart \
   src/person_management/index.dart \
   src/relative_assets/index.dart \
   src/routing/index.dart \
+  src/alt_routing/index.dart \
   src/sourcemap/index.dart \
   src/svg/index.dart \
   src/template_driven_forms/index.dart \
