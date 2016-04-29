@@ -2,7 +2,7 @@ import {isPresent, isBlank, CONST} from 'angular2/src/facade/lang';
 import {ListWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
 import {Injector} from 'angular2/src/core/di';
 import {RenderDebugInfo} from 'angular2/src/core/render/api';
-import {AppView} from './view';
+import {DebugAppView} from './view';
 import {ViewType} from './view_type';
 
 @CONST()
@@ -12,7 +12,7 @@ export class StaticNodeDebugInfo {
 }
 
 export class DebugContext implements RenderDebugInfo {
-  constructor(private _view: AppView<any>, private _nodeIndex: number, private _tplRow: number,
+  constructor(private _view: DebugAppView<any>, private _nodeIndex: number, private _tplRow: number,
               private _tplCol: number) {}
 
   private get _staticNodeInfo(): StaticNodeDebugInfo {
@@ -31,7 +31,7 @@ export class DebugContext implements RenderDebugInfo {
     var componentView = this._view;
     while (isPresent(componentView.declarationAppElement) &&
            componentView.type !== ViewType.COMPONENT) {
-      componentView = componentView.declarationAppElement.parentView;
+      componentView = <DebugAppView<any>>componentView.declarationAppElement.parentView;
     }
     return isPresent(componentView.declarationAppElement) ?
                componentView.declarationAppElement.nativeElement :

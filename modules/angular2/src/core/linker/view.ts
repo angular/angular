@@ -24,7 +24,12 @@ import {
 } from 'angular2/src/facade/lang';
 
 import {ObservableWrapper} from 'angular2/src/facade/async';
-import {Renderer, RootRenderer, RenderComponentType} from 'angular2/src/core/render/api';
+import {
+  Renderer,
+  RootRenderer,
+  RenderComponentType,
+  RenderDebugInfo
+} from 'angular2/src/core/render/api';
 import {ViewRef_} from './view_ref';
 
 import {ViewType} from './view_type';
@@ -78,16 +83,13 @@ export abstract class AppView<T> {
 
   renderer: Renderer;
 
-  private _currentDebugContext: DebugContext = null;
-
   private _hasExternalHostElement: boolean;
 
   public context: T;
 
   constructor(public clazz: any, public componentType: RenderComponentType, public type: ViewType,
               public viewUtils: ViewUtils, public parentInjector: Injector,
-              public declarationAppElement: AppElement, public cdMode: ChangeDetectionStrategy,
-              public staticNodeDebugInfos: StaticNodeDebugInfo[]) {
+              public declarationAppElement: AppElement, public cdMode: ChangeDetectionStrategy) {
     this.ref = new ViewRef_(this);
     if (type === ViewType.COMPONENT || type === ViewType.HOST) {
       this.renderer = viewUtils.renderComponent(componentType);
@@ -115,17 +117,7 @@ export abstract class AppView<T> {
     }
     this._hasExternalHostElement = isPresent(rootSelectorOrNode);
     this.projectableNodes = projectableNodes;
-    if (this.debugMode) {
-      this._resetDebug();
-      try {
-        return this.createInternal(rootSelectorOrNode);
-      } catch (e) {
-        this._rethrowWithContext(e, e.stack);
-        throw e;
-      }
-    } else {
-      return this.createInternal(rootSelectorOrNode);
-    }
+    return this.createInternal(rootSelectorOrNode);
   }
 
   /**
@@ -150,28 +142,18 @@ export abstract class AppView<T> {
   }
 
   selectOrCreateHostElement(elementName: string, rootSelectorOrNode: string | any,
-                            debugCtx: DebugContext): any {
+                            debugInfo: RenderDebugInfo): any {
     var hostElement;
     if (isPresent(rootSelectorOrNode)) {
-      hostElement = this.renderer.selectRootElement(rootSelectorOrNode, debugCtx);
+      hostElement = this.renderer.selectRootElement(rootSelectorOrNode, debugInfo);
     } else {
-      hostElement = this.renderer.createElement(null, elementName, debugCtx);
+      hostElement = this.renderer.createElement(null, elementName, debugInfo);
     }
     return hostElement;
   }
 
   injectorGet(token: any, nodeIndex: number, notFoundResult: any): any {
-    if (this.debugMode) {
-      this._resetDebug();
-      try {
-        return this.injectorGetInternal(token, nodeIndex, notFoundResult);
-      } catch (e) {
-        this._rethrowWithContext(e, e.stack);
-        throw e;
-      }
-    } else {
-      return this.injectorGetInternal(token, nodeIndex, notFoundResult);
-    }
+    return this.injectorGetInternal(token, nodeIndex, notFoundResult);
   }
 
   /**
@@ -210,22 +192,12 @@ export abstract class AppView<T> {
     for (var i = 0; i < children.length; i++) {
       children[i]._destroyRecurse();
     }
-    if (this.debugMode) {
-      this._resetDebug();
-      try {
-        this._destroyLocal();
-      } catch (e) {
-        this._rethrowWithContext(e, e.stack);
-        throw e;
-      }
-    } else {
-      this._destroyLocal();
-    }
+    this.destroyLocal();
 
     this.destroyed = true;
   }
 
-  private _destroyLocal() {
+  destroyLocal() {
     var hostElement =
         this.type === ViewType.COMPONENT ? this.declarationAppElement.nativeElement : null;
     for (var i = 0; i < this.disposables.length; i++) {
@@ -249,8 +221,6 @@ export abstract class AppView<T> {
    * Overwritten by implementations
    */
   destroyInternal(): void {}
-
-  get debugMode(): boolean { return isPresent(this.staticNodeDebugInfos); }
 
   get changeDetectorRef(): ChangeDetectorRef { return this.ref; }
 
@@ -293,17 +263,7 @@ export abstract class AppView<T> {
     if (this.destroyed) {
       this.throwDestroyedError('detectChanges');
     }
-    if (this.debugMode) {
-      this._resetDebug();
-      try {
-        this.detectChangesInternal(throwOnChange);
-      } catch (e) {
-        this._rethrowWithContext(e, e.stack);
-        throw e;
-      }
-    } else {
-      this.detectChangesInternal(throwOnChange);
-    }
+    this.detectChangesInternal(throwOnChange);
     if (this.cdMode === ChangeDetectionStrategy.CheckOnce)
       this.cdMode = ChangeDetectionStrategy.Checked;
 
@@ -355,6 +315,61 @@ export abstract class AppView<T> {
     }
   }
 
+  eventHandler(cb: Function): Function { return cb; }
+
+  throwDestroyedError(details: string): void { throw new ViewDestroyedException(details); }
+}
+
+export class DebugAppView<T> extends AppView<T> {
+  private _currentDebugContext: DebugContext = null;
+
+  constructor(clazz: any, componentType: RenderComponentType, type: ViewType, viewUtils: ViewUtils,
+              parentInjector: Injector, declarationAppElement: AppElement,
+              cdMode: ChangeDetectionStrategy, public staticNodeDebugInfos: StaticNodeDebugInfo[]) {
+    super(clazz, componentType, type, viewUtils, parentInjector, declarationAppElement, cdMode);
+  }
+
+  create(context: T, givenProjectableNodes: Array<any | any[]>,
+         rootSelectorOrNode: string | any): AppElement {
+    this._resetDebug();
+    try {
+      return super.create(context, givenProjectableNodes, rootSelectorOrNode);
+    } catch (e) {
+      this._rethrowWithContext(e, e.stack);
+      throw e;
+    }
+  }
+
+  injectorGet(token: any, nodeIndex: number, notFoundResult: any): any {
+    this._resetDebug();
+    try {
+      return super.injectorGet(token, nodeIndex, notFoundResult);
+    } catch (e) {
+      this._rethrowWithContext(e, e.stack);
+      throw e;
+    }
+  }
+
+  destroyLocal() {
+    this._resetDebug();
+    try {
+      super.destroyLocal();
+    } catch (e) {
+      this._rethrowWithContext(e, e.stack);
+      throw e;
+    }
+  }
+
+  detectChanges(throwOnChange: boolean): void {
+    this._resetDebug();
+    try {
+      super.detectChanges(throwOnChange);
+    } catch (e) {
+      this._rethrowWithContext(e, e.stack);
+      throw e;
+    }
+  }
+
   private _resetDebug() { this._currentDebugContext = null; }
 
   debug(nodeIndex: number, rowNum: number, colNum: number): DebugContext {
@@ -373,22 +388,17 @@ export abstract class AppView<T> {
   }
 
   eventHandler(cb: Function): Function {
-    if (this.debugMode) {
-      return (event) => {
-        this._resetDebug();
-        try {
-          return cb(event);
-        } catch (e) {
-          this._rethrowWithContext(e, e.stack);
-          throw e;
-        }
-      };
-    } else {
-      return cb;
-    }
+    var superHandler = super.eventHandler(cb);
+    return (event) => {
+      this._resetDebug();
+      try {
+        return superHandler(event);
+      } catch (e) {
+        this._rethrowWithContext(e, e.stack);
+        throw e;
+      }
+    };
   }
-
-  throwDestroyedError(details: string): void { throw new ViewDestroyedException(details); }
 }
 
 function _findLastRenderNode(node: any): any {
