@@ -68,7 +68,6 @@ export abstract class AppView<T> {
   subscriptions: any[];
   contentChildren: AppView<any>[] = [];
   viewChildren: AppView<any>[] = [];
-  renderParent: AppView<any>;
   viewContainerElement: AppElement = null;
 
   // The names of the below fields must be kept in sync with codegen_name_util.ts or
@@ -134,7 +133,6 @@ export abstract class AppView<T> {
       // Note: the render nodes have been attached to their host element
       // in the ViewFactory already.
       this.declarationAppElement.parentView.viewChildren.push(this);
-      this.renderParent = this.declarationAppElement.parentView;
       this.dirtyParentQueriesInternal();
     }
   }
@@ -240,18 +238,6 @@ export abstract class AppView<T> {
    */
   dirtyParentQueriesInternal(): void {}
 
-  addRenderContentChild(view: AppView<any>): void {
-    this.contentChildren.push(view);
-    view.renderParent = this;
-    view.dirtyParentQueriesInternal();
-  }
-
-  removeContentChild(view: AppView<any>): void {
-    ListWrapper.remove(this.contentChildren, view);
-    view.dirtyParentQueriesInternal();
-    view.renderParent = null;
-  }
-
   detectChanges(throwOnChange: boolean): void {
     var s = _scope_check(this.clazz);
     if (this.cdMode === ChangeDetectionStrategy.Detached ||
@@ -304,12 +290,14 @@ export abstract class AppView<T> {
   markAsCheckOnce(): void { this.cdMode = ChangeDetectionStrategy.CheckOnce; }
 
   markPathToRootAsCheckOnce(): void {
-    var c: AppView<any> = this;
+    let c: AppView<any> = this;
     while (isPresent(c) && c.cdMode !== ChangeDetectionStrategy.Detached) {
       if (c.cdMode === ChangeDetectionStrategy.Checked) {
         c.cdMode = ChangeDetectionStrategy.CheckOnce;
       }
-      c = c.renderParent;
+      let parentEl =
+          c.type === ViewType.COMPONENT ? c.declarationAppElement : c.viewContainerElement;
+      c = isPresent(parentEl) ? parentEl.parentView : null;
     }
   }
 

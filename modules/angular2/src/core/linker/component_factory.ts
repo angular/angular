@@ -62,7 +62,7 @@ export class ComponentRef_ extends ComponentRef {
   get injector(): Injector { return this._hostElement.injector; }
   get instance(): any { return this._hostElement.component; };
   get hostView(): ViewRef { return this._hostElement.parentView.ref; };
-  get changeDetectorRef(): ChangeDetectorRef { return this.hostView; };
+  get changeDetectorRef(): ChangeDetectorRef { return this._hostElement.parentView.ref; };
   get componentType(): Type { return this._componentType; }
 
   destroy(): void { this._hostElement.parentView.destroy(); }
