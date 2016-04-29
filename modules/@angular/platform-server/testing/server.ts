@@ -4,7 +4,7 @@ import {
   PLATFORM_COMMON_PROVIDERS,
   PLATFORM_INITIALIZER,
   APPLICATION_COMMON_PROVIDERS,
-  Renderer
+  Renderer,
 } from '@angular/core';
 import {DirectiveResolver, ViewResolver} from '@angular/compiler';
 import {TestComponentBuilder} from '@angular/compiler/testing';
@@ -20,6 +20,7 @@ import {BrowserDetection} from '@angular/platform-browser/testing';
 
 import {COMPILER_PROVIDERS} from '@angular/compiler';
 import {DOCUMENT} from '@angular/platform-browser';
+import {BROWSER_SANITIZATION_PROVIDERS} from '@angular/platform-browser';
 import {getDOM} from '../platform_browser_private';
 import {RootRenderer} from '@angular/core';
 import {DomRootRenderer, DomRootRenderer_} from '../../platform-browser/src/dom/dom_renderer';
@@ -75,6 +76,7 @@ export const TEST_SERVER_APPLICATION_PROVIDERS: Array<any /*Type | Provider | an
       // list here.
       APPLICATION_COMMON_PROVIDERS,
       COMPILER_PROVIDERS,
+      BROWSER_SANITIZATION_PROVIDERS,
       /* @ts2dart_Provider */ {provide: DOCUMENT, useFactory: appDoc},
       /* @ts2dart_Provider */ {provide: DomRootRenderer, useClass: DomRootRenderer_},
       /* @ts2dart_Provider */ {provide: RootRenderer, useExisting: DomRootRenderer},

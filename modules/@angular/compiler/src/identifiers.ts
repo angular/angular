@@ -11,6 +11,7 @@ import {
   ViewEncapsulation,
   TemplateRef
 } from '@angular/core';
+import {SecurityContext} from '../core_private';
 import {
   AppElement,
   AppView,
@@ -199,6 +200,11 @@ export class Identifiers {
     new CompileIdentifierMetadata(
         {name: 'pureProxy10', moduleUrl: VIEW_UTILS_MODULE_URL, runtime: pureProxy10}),
   ];
+  static SecurityContext = new CompileIdentifierMetadata({
+    name: 'SecurityContext',
+    moduleUrl: assetUrl('core', 'security'),
+    runtime: SecurityContext,
+  });
 }
 
 export function identifierToken(identifier: CompileIdentifierMetadata): CompileTokenMetadata {

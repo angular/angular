@@ -1223,6 +1223,8 @@ const BROWSER = [
   'By.all():Predicate<DebugElement>',
   'By.css(selector:string):Predicate<DebugElement>',
   'By.directive(type:Type):Predicate<DebugElement>',
+  'DomSanitizationService',
+  'SecurityContext',
   'Title',
   'Title.getTitle():string',
   'Title.setTitle(newTitle:string):any',

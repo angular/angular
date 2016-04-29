@@ -6,6 +6,7 @@ import {
   CompileProviderMetadata,
 } from './compile_metadata';
 import {ParseSourceSpan} from './parse_util';
+import {SecurityContext} from '../core_private';
 
 /**
  * An Abstract Syntax Tree node representing part of a parsed Angular template.
@@ -54,8 +55,10 @@ export class AttrAst implements TemplateAst {
  * A binding for an element property (e.g. `[property]="expression"`).
  */
 export class BoundElementPropertyAst implements TemplateAst {
-  constructor(public name: string, public type: PropertyBindingType, public value: AST,
-              public unit: string, public sourceSpan: ParseSourceSpan) {}
+  constructor(
+      public name: string, public type: PropertyBindingType,
+      public securityContext: SecurityContext, public value: AST, public unit: string,
+      public sourceSpan: ParseSourceSpan) {}
   visit(visitor: TemplateAstVisitor, context: any): any {
     return visitor.visitElementProperty(this, context);
   }

@@ -1,4 +1,5 @@
 import {Injectable} from '@angular/core';
+import {SecurityContext} from '../../core_private';
 import {isPresent} from '../facade/lang';
 import {StringMapWrapper} from '../facade/collection';
 import {ElementSchemaRegistry} from './element_schema_registry';
@@ -207,10 +208,11 @@ var attrToPropMap: {[name: string]: string} = <any>{
 
 
 @Injectable()
-export class DomElementSchemaRegistry implements ElementSchemaRegistry {
+export class DomElementSchemaRegistry extends ElementSchemaRegistry {
   schema = <{[element: string]: {[property: string]: string}}>{};
 
   constructor() {
+    super();
     SCHEMA.forEach(encodedType => {
       var parts = encodedType.split('|');
       var properties = parts[1].split(',');
@@ -252,6 +254,24 @@ export class DomElementSchemaRegistry implements ElementSchemaRegistry {
       }
       return isPresent(elementProperties[propName]);
     }
+  }
+
+  /**
+   * securityContext returns the security context for the given property on the given DOM tag.
+   *
+   * Tag and property name are statically known and cannot change at runtime, i.e. it is not
+   * possible to bind a value into a changing attribute or tag name.
+   *
+   * The filtering is white list based. All attributes in the schema above are assumed to have the
+   * 'NONE' security context, i.e. that they are safe inert string values. Only specific well known
+   * attack vectors are assigned their appropriate context.
+   */
+  securityContext(tagName: string, propName: string): SecurityContext {
+    // TODO(martinprobst): Fill in missing properties.
+    if (propName === 'style') return SecurityContext.STYLE;
+    if (tagName === 'a' && propName === 'href') return SecurityContext.URL;
+    if (propName === 'innerHTML') return SecurityContext.HTML;
+    return SecurityContext.NONE;
   }
 
   getMappedPropName(propName: string): string {

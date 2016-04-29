@@ -13,6 +13,7 @@ export {EventManager, EVENT_MANAGER_PLUGINS} from './dom/events/event_manager';
 export {ELEMENT_PROBE_PROVIDERS} from './dom/debug/ng_probe';
 export {
   BROWSER_APP_COMMON_PROVIDERS,
+  BROWSER_SANITIZATION_PROVIDERS,
   BROWSER_PROVIDERS,
   By,
   Title,
@@ -25,6 +26,7 @@ export {
 export * from '../private_export';
 export {DOCUMENT} from './dom/dom_tokens';
 
+export {DomSanitizationService, SecurityContext} from './security/dom_sanitization_service';
 
 export {
   bootstrapStatic,

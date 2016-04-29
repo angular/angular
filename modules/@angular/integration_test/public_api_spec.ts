@@ -362,6 +362,7 @@ var PLATFORM_BROWSER: string[] = [
   'BROWSER_APP_STATIC_PROVIDERS',
   'BROWSER_PROVIDERS',
   'BROWSER_APP_COMMON_PROVIDERS',
+  'BROWSER_SANITIZATION_PROVIDERS',
   'DOCUMENT',
   'ELEMENT_PROBE_PROVIDERS',
   'DomEventsPlugin',
@@ -375,6 +376,8 @@ var PLATFORM_BROWSER: string[] = [
   'BrowserPlatformLocation',
   'AngularEntrypoint:dart',
   'By',
+  'DomSanitizationService',
+  'SecurityContext',
   'Title',
   'disableDebugTools',
   'enableDebugTools'

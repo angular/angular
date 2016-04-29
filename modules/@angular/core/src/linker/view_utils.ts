@@ -1,3 +1,4 @@
+import {SanitizationService} from '../security';
 import {isBlank, isPresent, looseIdentical} from '../../src/facade/lang';
 import {ListWrapper, StringMapWrapper} from '../../src/facade/collection';
 import {BaseException} from '../../src/facade/exceptions';
@@ -12,9 +13,14 @@ import {uninitialized} from "../change_detection/change_detection_util";
 
 @Injectable()
 export class ViewUtils {
+  sanitizer: SanitizationService;
   private _nextCompTypeId: number = 0;
 
-  constructor(private _renderer: RootRenderer, @Inject(APP_ID) private _appId: string) {}
+  constructor(
+      private _renderer: RootRenderer, @Inject(APP_ID) private _appId: string,
+      sanitizer: SanitizationService) {
+    this.sanitizer = sanitizer;
+  }
 
   /**
    * Used by the generated code

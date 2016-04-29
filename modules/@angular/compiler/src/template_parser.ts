@@ -1,5 +1,5 @@
 import {Injectable, Inject, OpaqueToken, Optional} from '@angular/core';
-import {MAX_INTERPOLATION_VALUES, Console} from '../core_private';
+import {MAX_INTERPOLATION_VALUES, Console, SecurityContext} from '../core_private';
 
 import {
   ListWrapper,
@@ -632,7 +632,7 @@ class TemplateParseVisitor implements HtmlAstVisitor {
         }
         targetReferences.push(new ReferenceAst(elOrDirRef.name, refToken, elOrDirRef.sourceSpan));
       }
-    });
+    });  // fix syntax highlighting issue: `
     return directiveAsts;
   }
 
@@ -705,10 +705,12 @@ class TemplateParseVisitor implements HtmlAstVisitor {
                                     sourceSpan: ParseSourceSpan): BoundElementPropertyAst {
     var unit = null;
     var bindingType;
-    var boundPropertyName;
+    var boundPropertyName: string;
     var parts = name.split(PROPERTY_PARTS_SEPARATOR);
+    let securityContext: SecurityContext;
     if (parts.length === 1) {
       boundPropertyName = this._schemaRegistry.getMappedPropName(parts[0]);
+      securityContext = this._schemaRegistry.securityContext(elementName, boundPropertyName);
       bindingType = PropertyBindingType.Property;
       if (!this._schemaRegistry.hasProperty(elementName, boundPropertyName)) {
         this._reportError(
@@ -718,27 +720,41 @@ class TemplateParseVisitor implements HtmlAstVisitor {
     } else {
       if (parts[0] == ATTRIBUTE_PREFIX) {
         boundPropertyName = parts[1];
+        if (boundPropertyName.toLowerCase().startsWith('on')) {
+          this._reportError(
+              `Binding to event attribute '${boundPropertyName}' is disallowed ` +
+                  `for security reasons, please use (${boundPropertyName.slice(2)})=...`,
+              sourceSpan);
+        }
+        // NB: For security purposes, use the mapped property name, not the attribute name.
+        securityContext = this._schemaRegistry.securityContext(
+            elementName, this._schemaRegistry.getMappedPropName(boundPropertyName));
         let nsSeparatorIdx = boundPropertyName.indexOf(':');
         if (nsSeparatorIdx > -1) {
           let ns = boundPropertyName.substring(0, nsSeparatorIdx);
           let name = boundPropertyName.substring(nsSeparatorIdx + 1);
           boundPropertyName = mergeNsAndName(ns, name);
         }
+
         bindingType = PropertyBindingType.Attribute;
       } else if (parts[0] == CLASS_PREFIX) {
         boundPropertyName = parts[1];
         bindingType = PropertyBindingType.Class;
+        securityContext = SecurityContext.NONE;
       } else if (parts[0] == STYLE_PREFIX) {
         unit = parts.length > 2 ? parts[2] : null;
         boundPropertyName = parts[1];
         bindingType = PropertyBindingType.Style;
+        securityContext = SecurityContext.STYLE;
       } else {
         this._reportError(`Invalid property name '${name}'`, sourceSpan);
         bindingType = null;
+        securityContext = null;
       }
     }
 
-    return new BoundElementPropertyAst(boundPropertyName, bindingType, ast, unit, sourceSpan);
+    return new BoundElementPropertyAst(boundPropertyName, bindingType, securityContext, ast, unit,
+                                       sourceSpan);
   }
 
 

@@ -24,6 +24,7 @@ import {AnimationBuilder} from '../animate/animation_builder';
 import {Testability} from '@angular/core/src/testability/testability';
 import {BrowserGetTestability} from '@angular/platform-browser/src/browser/testability';
 import {BrowserDomAdapter} from '../browser/browser_adapter';
+import {BROWSER_SANITIZATION_PROVIDERS} from '../browser_common';
 import {wtfInit} from '@angular/core/src/profile/wtf_init';
 import {MessageBasedRenderer} from '../web_workers/ui/renderer';
 import {
@@ -41,6 +42,8 @@ import {Serializer} from '../web_workers/shared/serializer';
 import {ON_WEB_WORKER} from '../web_workers/shared/api';
 import {RenderStore} from '../web_workers/shared/render_store';
 import {HAMMER_GESTURE_CONFIG, HammerGestureConfig} from '../dom/events/hammer_gestures';
+import {SanitizationService} from '../../core_private';
+import {DomSanitizationService} from '../security/dom_sanitization_service';
 import {EventManager, EVENT_MANAGER_PLUGINS} from '../dom/events/event_manager';
 import {XHR} from "../../../compiler/src/xhr";
 import {XHRImpl} from "../../../platform-browser-dynamic/src/xhr/xhr_impl";
@@ -73,6 +76,7 @@ export const WORKER_RENDER_APPLICATION_COMMON: Array<any /*Type | Provider | any
     /*@ts2dart_const*/[
       APPLICATION_COMMON_PROVIDERS,
       WORKER_RENDER_MESSAGING_PROVIDERS,
+      BROWSER_SANITIZATION_PROVIDERS,
       /* @ts2dart_Provider */ {provide: ExceptionHandler, useFactory: _exceptionHandler, deps: []},
       /* @ts2dart_Provider */ {provide: DOCUMENT, useFactory: _document, deps: []},
       // TODO(jteplitz602): Investigate if we definitely need EVENT_MANAGER on the render thread
