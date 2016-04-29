@@ -24,7 +24,7 @@ export class NodeReflectorHost implements StaticReflectorHost {
    * they are resolvable by the moduleResolution strategy from the CompilerHost.
    */
   private getModuleId(declarationFile: string, containingFile: string) {
-    const parts = declarationFile.replace(EXT, '').split(path.sep);
+    const parts = declarationFile.replace(EXT, '').split(path.sep).filter(p => !!p);
 
     for (let index = parts.length - 1; index >= 0; index--) {
       let candidate = parts.slice(index, parts.length).join(path.sep);
@@ -51,7 +51,7 @@ export class NodeReflectorHost implements StaticReflectorHost {
         throw new Error("Resolution of relative paths requires a containing file.");
       }
       // Any containing file gives the same result for absolute imports
-      containingFile = 'index.ts';
+      containingFile = path.join(this.compilerHost.getCurrentDirectory(), 'index.ts');
     }
 
     try {

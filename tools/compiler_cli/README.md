@@ -10,16 +10,31 @@ requires that the compiler be included in the code downloaded to the client.
 You can produce smaller, faster applications by running Angular's compiler as a build step,
 and then downloading only the executable JS to the client.
 
+## Install and use
+
+```
+$ npm install angular2-template-compiler typescript rxjs
+# Optional sanity check, make sure TypeScript can compile
+$ ./node_modules/.bin/tsc -p path/to/project
+$ ./node_modules/.bin/ng2tc -p path/to/project
+```
+
+In order to write a `bootstrap` that imports the generated code, you should first write your
+top-level component, and run `ng2tc` once to produce a generated `.ngfactory.ts` file.
+Then you can add an import statement in the `bootstrap` allowing you to bootstrap off the
+generated code.
+
 ## Configuration
 
-The `tsconfig.json` file is expected to contain an additional configuration block:
+The `tsconfig.json` file may contain an additional configuration block:
 ```
  "angularCompilerOptions": {
    "genDir": "."
  }
 ```
 the `genDir` option controls the path (relative to `tsconfig.json`) where the generated file tree
-will be written. More options may be added as we implement more features.
+will be written. If `genDir` is not set, then the code will be generated in the source tree, next
+to your original sources. More options may be added as we implement more features.
 
 We recommend you avoid checking generated files into version control. This permits a state where
 the generated files in the repository were created from sources that were never checked in,
@@ -69,4 +84,12 @@ gulp build.js.cjs
 ./node_modules/.bin/tsc -p tools/compiler_cli/src
 # Run it on the test project
 node ./dist/js/cjs/compiler_cli -p tools/compiler_cli/test
+```
+
+Release:
+```
+$ gulp test.compiler_cli
+$ cp tools/compiler_cli/README.md tools/compiler_cli/package.json dist/js/cjs/compiler_cli
+# npm login as angularcore
+$ npm publish dist/js/cjs/compiler_cli
 ```
