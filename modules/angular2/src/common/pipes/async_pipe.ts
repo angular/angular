@@ -1,12 +1,14 @@
 import {isBlank, isPresent, isPromise, CONST} from 'angular2/src/facade/lang';
+import {ListWrapper} from 'angular2/src/facade/collection';
 import {ObservableWrapper, Observable, EventEmitter} from 'angular2/src/facade/async';
 import {Pipe, Injectable, ChangeDetectorRef, OnDestroy, WrappedValue} from 'angular2/core';
 
 import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
 
 class ObservableStrategy {
-  createSubscription(async: any, updateLatestValue: any): any {
-    return ObservableWrapper.subscribe(async, updateLatestValue, e => { throw e; });
+  createSubscription(async: any, updateLatestValue: any,
+                     onError: (v: any) => any = e => { throw e; }): any {
+    return ObservableWrapper.subscribe(async, updateLatestValue, onError);
   }
 
   dispose(subscription: any): void { ObservableWrapper.dispose(subscription); }
@@ -15,8 +17,9 @@ class ObservableStrategy {
 }
 
 class PromiseStrategy {
-  createSubscription(async: Promise<any>, updateLatestValue: (v: any) => any): any {
-    return async.then(updateLatestValue);
+  createSubscription(async: Promise<any>, updateLatestValue: (v: any) => any,
+                     onError: (v: any) => any = e => { throw e; }): any {
+    return async.then(updateLatestValue, onError);
   }
 
   dispose(subscription: any): void {}
@@ -72,7 +75,7 @@ export class AsyncPipe implements OnDestroy {
   transform(obj: Observable<any>| Promise<any>| EventEmitter<any>): any {
     if (isBlank(this._obj)) {
       if (isPresent(obj)) {
-        this._subscribe(obj);
+        this._subscribe(obj, ListWrapper.first(args));
       }
       this._latestReturnedValue = this._latestValue;
       return this._latestValue;
@@ -80,7 +83,7 @@ export class AsyncPipe implements OnDestroy {
 
     if (obj !== this._obj) {
       this._dispose();
-      return this.transform(obj);
+      return this.transform(obj, ListWrapper.first(args));
     }
 
     if (this._latestValue === this._latestReturnedValue) {
@@ -92,11 +95,11 @@ export class AsyncPipe implements OnDestroy {
   }
 
   /** @internal */
-  _subscribe(obj: Observable<any>| Promise<any>| EventEmitter<any>): void {
+  _subscribe(obj: Observable<any>| Promise<any>| EventEmitter<any>, onError?: any): void {
     this._obj = obj;
     this._strategy = this._selectStrategy(obj);
     this._subscription = this._strategy.createSubscription(
-        obj, (value: Object) => this._updateLatestValue(obj, value));
+        obj, (value: Object) => this._updateLatestValue(obj, value), onError);
   }
 
   /** @internal */

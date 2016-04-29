@@ -53,9 +53,8 @@ export function main() {
              TimerWrapper.setTimeout(() => {
                expect(pipe.transform(emitter)).toEqual(new WrappedValue(message));
                async.done();
-             }, 0)
+             }, 0);
            }));
-
 
         it("should return same value when nothing has changed since the last call",
            inject([AsyncTestCompleter], (async) => {
@@ -66,7 +65,24 @@ export function main() {
                pipe.transform(emitter);
                expect(pipe.transform(emitter)).toBe(message);
                async.done();
-             }, 0)
+             }, 0);
+           }));
+
+        it("should invoke onError of when a function is provided",
+           inject([AsyncTestCompleter], (async) => {
+             var error = false;
+             function onError() { error = true; }
+             var args = [onError];
+             expect(() => pipe.transform(emitter, args)).not.toThrow();
+
+             expect(error).toBe(false);
+             // this should not affect the pipe
+             ObservableWrapper.callError(emitter, message);
+
+             TimerWrapper.setTimeout(() => {
+               expect(error).toBe(true);
+               async.done();
+             }, 0);
            }));
 
         it("should dispose of the existing subscription when subscribing to a new observable",
@@ -82,7 +98,7 @@ export function main() {
              TimerWrapper.setTimeout(() => {
                expect(pipe.transform(newEmitter)).toBe(null);
                async.done();
-             }, 0)
+             }, 0);
            }));
 
         it("should request a change detection check upon receiving a new value",
@@ -93,7 +109,7 @@ export function main() {
              TimerWrapper.setTimeout(() => {
                expect(ref.spy('markForCheck')).toHaveBeenCalled();
                async.done();
-             }, 10)
+             }, 10);
            }));
       });
 
@@ -110,7 +126,7 @@ export function main() {
              TimerWrapper.setTimeout(() => {
                expect(pipe.transform(emitter)).toBe(null);
                async.done();
-             }, 0)
+             }, 0);
            }));
       });
     });
@@ -141,7 +157,24 @@ export function main() {
              TimerWrapper.setTimeout(() => {
                expect(pipe.transform(completer.promise)).toEqual(new WrappedValue(message));
                async.done();
-             }, timer)
+             }, timer);
+           }));
+
+        it("should invoke onError of when a function is provided",
+           inject([AsyncTestCompleter], (async) => {
+             var error = false;
+             function onError() { error = true; }
+             var args = [onError];
+             expect(() => pipe.transform(completer.promise, args)).not.toThrow();
+
+             expect(error).toBe(false);
+             // this should not affect the pipe
+             completer.reject(completer.promise);
+
+             TimerWrapper.setTimeout(() => {
+               expect(error).toBe(true);
+               async.done();
+             }, 0);
            }));
 
         it("should return unwrapped value when nothing has changed since the last call",
@@ -153,7 +186,7 @@ export function main() {
                pipe.transform(completer.promise);
                expect(pipe.transform(completer.promise)).toBe(message);
                async.done();
-             }, timer)
+             }, timer);
            }));
 
         it("should dispose of the existing subscription when subscribing to a new promise",
@@ -169,7 +202,7 @@ export function main() {
              TimerWrapper.setTimeout(() => {
                expect(pipe.transform(newCompleter.promise)).toBe(null);
                async.done();
-             }, timer)
+             }, timer);
            }));
 
         it("should request a change detection check upon receiving a new value",
@@ -181,7 +214,7 @@ export function main() {
              TimerWrapper.setTimeout(() => {
                expect(markForCheck).toHaveBeenCalled();
                async.done();
-             }, timer)
+             }, timer);
            }));
 
         describe("ngOnDestroy", () => {
@@ -191,15 +224,15 @@ export function main() {
           it("should dispose of the existing source", inject([AsyncTestCompleter], (async) => {
                pipe.transform(completer.promise);
                expect(pipe.transform(completer.promise)).toBe(null);
-               completer.resolve(message)
+               completer.resolve(message);
 
 
-                   TimerWrapper.setTimeout(() => {
-                     expect(pipe.transform(completer.promise)).toEqual(new WrappedValue(message));
-                     pipe.ngOnDestroy();
-                     expect(pipe.transform(completer.promise)).toBe(null);
-                     async.done();
-                   }, timer);
+               TimerWrapper.setTimeout(() => {
+                 expect(pipe.transform(completer.promise)).toEqual(new WrappedValue(message));
+                 pipe.ngOnDestroy();
+                 expect(pipe.transform(completer.promise)).toBe(null);
+                 async.done();
+               }, timer);
              }));
         });
       });
