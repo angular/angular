@@ -154,17 +154,17 @@ export function main() {
 
         it('should support explicit mamespace', () => {
           expect(humanizeDom(parser.parse('<myns:div></myns:div>', 'TestComp')))
-              .toEqual([[HtmlElementAst, '@myns:div', 0]]);
+              .toEqual([[HtmlElementAst, ':myns:div', 0]]);
         });
 
         it('should support implicit mamespace', () => {
           expect(humanizeDom(parser.parse('<svg></svg>', 'TestComp')))
-              .toEqual([[HtmlElementAst, '@svg:svg', 0]]);
+              .toEqual([[HtmlElementAst, ':svg:svg', 0]]);
         });
 
         it('should propagate the namespace', () => {
           expect(humanizeDom(parser.parse('<myns:div><p></p></myns:div>', 'TestComp')))
-              .toEqual([[HtmlElementAst, '@myns:div', 0], [HtmlElementAst, '@myns:p', 1]]);
+              .toEqual([[HtmlElementAst, ':myns:div', 0], [HtmlElementAst, ':myns:p', 1]]);
         });
 
         it('should match closing tags case sensitive', () => {
@@ -184,7 +184,7 @@ export function main() {
 
         it('should support self closing foreign elements', () => {
           expect(humanizeDom(parser.parse('<math />', 'TestComp')))
-              .toEqual([[HtmlElementAst, '@math:math', 0]]);
+              .toEqual([[HtmlElementAst, ':math:math', 0]]);
         });
 
         it('should ignore LF immediately after textarea, pre and listing', () => {
@@ -221,7 +221,7 @@ export function main() {
 
         it('should parse attributes on svg elements case sensitive', () => {
           expect(humanizeDom(parser.parse('<svg viewBox="0"></svg>', 'TestComp')))
-              .toEqual([[HtmlElementAst, '@svg:svg', 0], [HtmlAttrAst, 'viewBox', '0']]);
+              .toEqual([[HtmlElementAst, ':svg:svg', 0], [HtmlAttrAst, 'viewBox', '0']]);
         });
 
         it('should parse attributes on template elements', () => {
@@ -231,7 +231,7 @@ export function main() {
 
         it('should support namespace', () => {
           expect(humanizeDom(parser.parse('<svg:use xlink:href="Port" />', 'TestComp')))
-              .toEqual([[HtmlElementAst, '@svg:use', 0], [HtmlAttrAst, '@xlink:href', 'Port']]);
+              .toEqual([[HtmlElementAst, ':svg:use', 0], [HtmlAttrAst, ':xlink:href', 'Port']]);
         });
       });
 

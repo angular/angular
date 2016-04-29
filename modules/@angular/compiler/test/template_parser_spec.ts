@@ -146,7 +146,7 @@ export function main() {
         var parsed = parse('<svg><ng-content></ng-content></svg>', []);
         expect(humanizeTplAst(parsed))
             .toEqual([
-              [ElementAst, '@svg:svg'],
+              [ElementAst, ':svg:svg'],
               [NgContentAst],
             ]);
       });
@@ -854,7 +854,7 @@ There is no directive with "exportAs" set to "dirA" ("<div [ERROR ->]#a="dirA"><
            () => {
              expect(humanizeTplAst(parse('<svg><template></template></svg>', [])))
                  .toEqual([
-                   [ElementAst, '@svg:svg'],
+                   [ElementAst, ':svg:svg'],
                    [EmbeddedTemplateAst],
                  ]);
            });
@@ -1423,11 +1423,11 @@ Property binding a not used by any directive on an embedded template ("[ERROR ->
         expect(humanizeTplAstSourceSpans(
                    parse('<svg><circle /><use xlink:href="Port" /></svg>', [tagSel, attrSel])))
             .toEqual([
-              [ElementAst, '@svg:svg', '<svg>'],
-              [ElementAst, '@svg:circle', '<circle />'],
+              [ElementAst, ':svg:svg', '<svg>'],
+              [ElementAst, ':svg:circle', '<circle />'],
               [DirectiveAst, tagSel, '<circle />'],
-              [ElementAst, '@svg:use', '<use xlink:href="Port" />'],
-              [AttrAst, '@xlink:href', 'Port', 'xlink:href="Port"'],
+              [ElementAst, ':svg:use', '<use xlink:href="Port" />'],
+              [AttrAst, ':xlink:href', 'Port', 'xlink:href="Port"'],
               [DirectiveAst, attrSel, '<use xlink:href="Port" />'],
             ]);
       });
