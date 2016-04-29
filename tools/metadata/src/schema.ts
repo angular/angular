@@ -57,7 +57,7 @@ export interface MetadataObject { [name: string]: MetadataValue; }
 export interface MetadataArray { [name: number]: MetadataValue; }
 
 export interface MetadataSymbolicExpression {
-  __symbolic: "binary" | "call" | "index" | "pre" | "reference" | "select"
+  __symbolic: "binary" | "call" | "index" | "new" | "pre" | "reference" | "select"
 }
 export function isMetadataSymbolicExpression(value: any): value is MetadataSymbolicExpression {
   if (value) {
@@ -65,6 +65,7 @@ export function isMetadataSymbolicExpression(value: any): value is MetadataSymbo
       case "binary":
       case "call":
       case "index":
+      case "new":
       case "pre":
       case "reference":
       case "select":
@@ -97,13 +98,13 @@ export function isMetadataSymbolicIndexExpression(
 }
 
 export interface MetadataSymbolicCallExpression extends MetadataSymbolicExpression {
-  __symbolic: "call";
+  __symbolic: "call" | "new";
   expression: MetadataValue;
   arguments?: MetadataValue[];
 }
 export function isMetadataSymbolicCallExpression(
     value: any): value is MetadataSymbolicCallExpression {
-  return value && value.__symbolic === "call";
+  return value && (value.__symbolic === "call" || value.__symbolic === "new");
 }
 
 export interface MetadataSymbolicPrefixExpression extends MetadataSymbolicExpression {

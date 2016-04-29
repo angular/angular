@@ -180,6 +180,7 @@ export class Evaluator {
               }
             }
           }
+
           // We can fold a call to CONST_EXPR
           if (isCallOf(callExpression, "CONST_EXPR") && callExpression.arguments.length === 1)
             return this.isFoldableWorker(callExpression.arguments[0], folding);
@@ -286,14 +287,31 @@ export class Evaluator {
         if (isCallOf(callExpression, "CONST_EXPR") && callExpression.arguments.length === 1) {
           return args[0];
         }
+        if (isCallOf(callExpression, 'forwardRef') && callExpression.arguments.length === 1) {
+          const firstArgument = callExpression.arguments[0];
+          if (firstArgument.kind == ts.SyntaxKind.ArrowFunction) {
+            const arrowFunction = <ts.ArrowFunction>firstArgument;
+            return this.evaluateNode(arrowFunction.body);
+          }
+        }
         const expression = this.evaluateNode(callExpression.expression);
         if (isDefined(expression) && args.every(isDefined)) {
-          const result: MetadataSymbolicCallExpression = {
-            __symbolic: "call",
-            expression: this.evaluateNode(callExpression.expression)
-          };
+          const result:
+              MetadataSymbolicCallExpression = {__symbolic: "call", expression: expression};
           if (args && args.length) {
             result.arguments = args;
+          }
+          return result;
+        }
+        break;
+      case ts.SyntaxKind.NewExpression:
+        const newExpression = <ts.NewExpression>node;
+        const newArgs = newExpression.arguments.map(arg => this.evaluateNode(arg));
+        const newTarget = this.evaluateNode(newExpression.expression);
+        if (isDefined(newTarget) && newArgs.every(isDefined)) {
+          const result: MetadataSymbolicCallExpression = {__symbolic: "new", expression: newTarget};
+          if (newArgs.length) {
+            result.arguments = newArgs;
           }
           return result;
         }

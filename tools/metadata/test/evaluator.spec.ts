@@ -13,7 +13,9 @@ describe('Evaluator', () => {
   let evaluator: Evaluator;
 
   beforeEach(() => {
-    host = new Host(FILES, ['expressions.ts']);
+    host = new Host(
+        FILES,
+        ['expressions.ts', 'const_expr.ts', 'forwardRef.ts', 'classes.ts', 'newExpression.ts']);
     service = ts.createLanguageService(host);
     program = service.getProgram();
     typeChecker = program.getTypeChecker();
@@ -25,6 +27,7 @@ describe('Evaluator', () => {
     expectNoDiagnostics(service.getCompilerOptionsDiagnostics());
     for (const sourceFile of program.getSourceFiles()) {
       expectNoDiagnostics(service.getSyntacticDiagnostics(sourceFile.fileName));
+      expectNoDiagnostics(service.getSemanticDiagnostics(sourceFile.fileName));
     }
   });
 
@@ -101,6 +104,34 @@ describe('Evaluator', () => {
     expect(evaluator.evaluateNode(findVar(expressions, 'recursiveB').initializer))
         .toEqual({__symbolic: "reference", name: "recursiveA", module: undefined});
   });
+
+  it('should correctly handle special cases for CONST_EXPR', () => {
+    var const_expr = program.getSourceFile('const_expr.ts');
+    expect(evaluator.evaluateNode(findVar(const_expr, 'bTrue').initializer)).toEqual(true);
+    expect(evaluator.evaluateNode(findVar(const_expr, 'bFalse').initializer)).toEqual(false);
+  });
+
+  it('should resolve a forwardRef', () => {
+    var forwardRef = program.getSourceFile('forwardRef.ts');
+    expect(evaluator.evaluateNode(findVar(forwardRef, 'bTrue').initializer)).toEqual(true);
+    expect(evaluator.evaluateNode(findVar(forwardRef, 'bFalse').initializer)).toEqual(false);
+  });
+
+  it('should return new expressions', () => {
+    var newExpression = program.getSourceFile('newExpression.ts');
+    expect(evaluator.evaluateNode(findVar(newExpression, 'someValue').initializer))
+        .toEqual({
+          __symbolic: "new",
+          expression: {__symbolic: "reference", name: "Value", module: "classes.ts"},
+          arguments: ["name", 12]
+        });
+    expect(evaluator.evaluateNode(findVar(newExpression, 'complex').initializer))
+        .toEqual({
+          __symbolic: "new",
+          expression: {__symbolic: "reference", name: "Value", module: "classes.ts"},
+          arguments: ["name", 12]
+        });
+  });
 });
 
 const FILES: Directory = {
@@ -109,6 +140,11 @@ const FILES: Directory = {
       return function(fn: Function) { }
     }
     `,
+  'classes.ts': `
+    export class Value {
+      constructor(public name: string, public value: any) {}
+    }
+  `,
   'consts.ts': `
     export var someName = 'some-name';
     export var someBool = true;
@@ -159,5 +195,22 @@ const FILES: Directory = {
     import {someName, someBool} from './consts';
 
     @Pipe({name: someName, pure: someBool})
-    export class B {}`
+    export class B {}`,
+  'const_expr.ts': `
+    function CONST_EXPR(value: any) { return value; }
+    export var bTrue = CONST_EXPR(true);
+    export var bFalse = CONST_EXPR(false);
+  `,
+  'forwardRef.ts': `
+    function forwardRef(value: any) { return value; }
+    export var bTrue = forwardRef(() => true);
+    export var bFalse = forwardRef(() => false);
+  `,
+  'newExpression.ts': `
+    import {Value} from './classes';
+    function CONST_EXPR(value: any) { return value; }
+    function forwardRef(value: any) { return value; }
+    export const someValue = new Value("name", 12);
+    export const complex = CONST_EXPR(new Value("name", forwardRef(() => 12)));
+  `
 };

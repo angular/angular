@@ -39,7 +39,8 @@ export var compAMetadata = CompileDirectiveMetadata.create({
   template: new CompileTemplateMetadata({
     templateUrl: './offline_compiler_compa.html',
     styles: ['.redStyle { color: red; }'],
-    styleUrls: ['./offline_compiler_compa.css']
+    styleUrls: ['./offline_compiler_compa.css'],
+    baseUrl: THIS_MODULE_URL,
   })
 });
 
