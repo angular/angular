@@ -6,7 +6,6 @@ export {
   inspectNativeElement,
   BrowserDomAdapter,
   By,
-  Title,
   enableDebugTools,
   disableDebugTools
 } from 'angular2/src/platform/browser_common';

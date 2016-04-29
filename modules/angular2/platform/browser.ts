@@ -7,7 +7,6 @@ export {
   inspectNativeElement,
   BrowserDomAdapter,
   By,
-  Title,
   DOCUMENT,
   enableDebugTools,
   disableDebugTools

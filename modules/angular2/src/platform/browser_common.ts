@@ -1,4 +1,4 @@
-import {CONST_EXPR, IS_DART} from 'angular2/src/facade/lang';
+import {CONST_EXPR, IS_DART, global} from 'angular2/src/facade/lang';
 import {provide, Provider, Injector, OpaqueToken} from 'angular2/src/core/di';
 import {XHR} from 'angular2/src/compiler/xhr';
 import {
@@ -34,8 +34,9 @@ import {
   HammerGesturesPlugin
 } from 'angular2/src/platform/dom/events/hammer_gestures';
 import {ELEMENT_PROBE_PROVIDERS} from 'angular2/platform/common_dom';
+import {TitleImpl} from 'angular2/src/platform/browser/title_impl';
+import {Title, Location, Global} from 'angular2/src/platform/tokens';
 export {DOCUMENT} from 'angular2/src/platform/dom/dom_tokens';
-export {Title} from 'angular2/src/platform/browser/title';
 export {
   ELEMENT_PROBE_PROVIDERS,
   ELEMENT_PROBE_PROVIDERS_PROD_MODE,
@@ -69,6 +70,14 @@ function _document(): any {
   return DOM.defaultDoc();
 }
 
+function _location(): any {
+  return DOM.getLocation();
+}
+
+function _global(): any {
+  return global;
+}
+
 /**
  * A set of providers to initialize an Angular application in a web browser.
  *
@@ -88,6 +97,9 @@ export const BROWSER_APP_COMMON_PROVIDERS: Array<any /*Type | Provider | any[]*/
   new Provider(DomRootRenderer, {useClass: DomRootRenderer_}),
   new Provider(RootRenderer, {useExisting: DomRootRenderer}),
   new Provider(SharedStylesHost, {useExisting: DomSharedStylesHost}),
+  new Provider(Title, {useClass: TitleImpl}),
+  new Provider(Location, {useFactory: _location}),
+  new Provider(Global, {useFactory: _global}),
   DomSharedStylesHost,
   Testability,
   BrowserDetails,
