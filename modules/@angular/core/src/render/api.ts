@@ -52,6 +52,8 @@ export abstract class Renderer {
 
   abstract setElementClass(renderElement: any, className: string, isAdd: boolean);
 
+  abstract setElementStyles(renderElement: any, styles: {[key: string]: string});
+
   abstract setElementStyle(renderElement: any, styleName: string, styleValue: string);
 
   abstract invokeElementMethod(renderElement: any, methodName: string, args: any[]);
