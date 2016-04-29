@@ -5,7 +5,6 @@ import {
   isBlank,
   isPrimitive,
   isStringMap,
-  CONST_EXPR,
   FunctionWrapper
 } from 'angular2/src/facade/lang';
 import {
@@ -171,7 +170,7 @@ export class StaticReflector implements ReflectorReader {
   }
 
   private registerDecoratorOrConstructor(type: StaticType, ctor: any,
-                                         crossModuleProps: any[] = CONST_EXPR([])): void {
+                                         crossModuleProps: any[] = []): void {
     this.conversionMap.set(type, (moduleContext: string, args: any[]) => {
       let argValues = [];
       ListWrapper.forEachWithIndex(args, (arg, index) => {
