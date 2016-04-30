@@ -24,6 +24,8 @@ function routerFactory(app: ApplicationRef, componentResolver: ComponentResolver
     throw new BaseException("Bootstrap at least one component before injecting Router.");
   }
   // TODO: vsavkin this should not be null
-  return new Router(null, app.componentTypes[0], componentResolver, urlSerializer, routerOutletMap,
-                    location);
+  let router = new Router(null, app.componentTypes[0], componentResolver, urlSerializer,
+                          routerOutletMap, location);
+  app.registerDisposeListener(() => router.dispose());
+  return router;
 }

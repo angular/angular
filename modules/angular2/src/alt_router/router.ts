@@ -2,7 +2,12 @@ import {OnInit, provide, ReflectiveInjector, ComponentResolver} from 'angular2/c
 import {RouterOutlet} from './directives/router_outlet';
 import {Type, isBlank, isPresent} from 'angular2/src/facade/lang';
 import {ListWrapper} from 'angular2/src/facade/collection';
-import {EventEmitter, Observable, PromiseWrapper} from 'angular2/src/facade/async';
+import {
+  EventEmitter,
+  Observable,
+  PromiseWrapper,
+  ObservableWrapper
+} from 'angular2/src/facade/async';
 import {StringMapWrapper} from 'angular2/src/facade/collection';
 import {BaseException} from 'angular2/src/facade/exceptions';
 import {RouterUrlSerializer} from './router_url_serializer';
@@ -33,13 +38,14 @@ export class RouterOutletMap {
 export class Router {
   private _prevTree: Tree<RouteSegment>;
   private _urlTree: Tree<UrlSegment>;
-
+  private _locationSubscription: any;
   private _changes: EventEmitter<void> = new EventEmitter<void>();
 
   constructor(private _rootComponent: Object, private _rootComponentType: Type,
               private _componentResolver: ComponentResolver,
               private _urlSerializer: RouterUrlSerializer,
               private _routerOutletMap: RouterOutletMap, private _location: Location) {
+    this._setUpLocationChangeListener();
     this.navigateByUrl(this._location.path());
   }
 
@@ -51,6 +57,13 @@ export class Router {
 
   navigate(changes: any[], segment?: RouteSegment): Promise<void> {
     return this._navigate(this.createUrlTree(changes, segment));
+  }
+
+  dispose(): void { ObservableWrapper.dispose(this._locationSubscription); }
+
+  private _setUpLocationChangeListener(): void {
+    this._locationSubscription = this._location.subscribe(
+        (change) => { this._navigate(this._urlSerializer.parse(change['url'])); });
   }
 
   private _navigate(url: Tree<UrlSegment>): Promise<void> {
