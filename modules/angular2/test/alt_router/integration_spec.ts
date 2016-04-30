@@ -127,7 +127,7 @@ export function main() {
        })));
 
     it('should not unload the route if can deactivate returns false',
-       fakeAsync(inject([Router, TestComponentBuilder], (router, tcb) => {
+       fakeAsync(inject([Router, TestComponentBuilder, Location], (router, tcb, location) => {
          let fixture = tcb.createFakeAsync(RootCmp);
 
          router.navigateByUrl('/team/22/cannotDeactivate');
@@ -138,6 +138,8 @@ export function main() {
 
          expect(fixture.debugElement.nativeElement)
              .toHaveText('team 22 { cannotDeactivate, aux:  }');
+
+         expect(location.path()).toEqual('/team/22/cannotDeactivate');
        })));
 
     if (DOM.supportsDOMEvents()) {
