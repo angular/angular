@@ -64,6 +64,19 @@ export function main() {
          expect(location.path()).toEqual('/team/33/simple');
        })));
 
+    it('should navigate when locations changes',
+       fakeAsync(inject([Router, TestComponentBuilder, Location], (router, tcb, location) => {
+         let fixture = tcb.createFakeAsync(RootCmp);
+
+         router.navigateByUrl('/team/22/user/victor');
+         advance(fixture);
+
+         location.simulateHashChange("/team/22/user/fedor");
+         advance(fixture);
+
+         expect(fixture.debugElement.nativeElement).toHaveText('team 22 { hello fedor, aux:  }');
+       })));
+
     it('should support nested routes',
        fakeAsync(inject([Router, TestComponentBuilder], (router, tcb) => {
          let fixture = tcb.createFakeAsync(RootCmp);

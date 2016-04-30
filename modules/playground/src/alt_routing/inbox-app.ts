@@ -7,7 +7,7 @@ import {
   ROUTER_PROVIDERS,
   OnActivate,
   RouteSegment,
-  Tree
+  Tree,
 } from 'angular2/alt_router';
 import * as db from './data';
 import {Location} from 'angular2/platform/common';
