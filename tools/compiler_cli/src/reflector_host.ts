@@ -1,4 +1,4 @@
-import {StaticReflectorHost, StaticSymbol} from 'angular2/src/compiler/static_reflector';
+import {StaticReflectorHost, StaticSymbol} from './static_reflector';
 import * as ts from 'typescript';
 import {MetadataCollector, ModuleMetadata} from 'ts-metadata-collector';
 import * as fs from 'fs';
