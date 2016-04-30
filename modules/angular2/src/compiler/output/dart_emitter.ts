@@ -344,6 +344,9 @@ class _DartEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisito
 
   private _visitIdentifier(value: CompileIdentifierMetadata, typeParams: o.Type[],
                            ctx: EmitterVisitorContext): void {
+    if (isBlank(value.name)) {
+      throw new BaseException(`Internal error: unknown identifier ${value}`);
+    }
     if (isPresent(value.moduleUrl) && value.moduleUrl != this._moduleUrl) {
       var prefix = this.importsWithPrefixes.get(value.moduleUrl);
       if (isBlank(prefix)) {

@@ -138,6 +138,11 @@ export function isStringMap(obj: any): boolean {
   return typeof obj === 'object' && obj !== null;
 }
 
+const STRING_MAP_PROTO = Object.getPrototypeOf({});
+export function isStrictStringMap(obj: any): boolean {
+  return isStringMap(obj) && Object.getPrototypeOf(obj) === STRING_MAP_PROTO;
+}
+
 export function isPromise(obj: any): boolean {
   return obj instanceof (<any>_global).Promise;
 }

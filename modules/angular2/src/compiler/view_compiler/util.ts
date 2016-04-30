@@ -88,7 +88,7 @@ export function createFlatArray(expressions: o.Expression[]): o.Expression {
 
 export function createPureProxy(fn: o.Expression, argCount: number, pureProxyProp: o.ReadPropExpr,
                                 view: CompileView) {
-  view.fields.push(new o.ClassField(pureProxyProp.name, null, [o.StmtModifier.Private]));
+  view.fields.push(new o.ClassField(pureProxyProp.name, null));
   var pureProxyId =
       argCount < Identifiers.pureProxies.length ? Identifiers.pureProxies[argCount] : null;
   if (isBlank(pureProxyId)) {

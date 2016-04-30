@@ -24,7 +24,7 @@ import {LifecycleHooks, LIFECYCLE_HOOKS_VALUES} from 'angular2/src/core/metadata
 import {reflector} from 'angular2/src/core/reflection/reflection';
 import {Injectable, Inject, Optional} from 'angular2/src/core/di';
 import {PLATFORM_DIRECTIVES, PLATFORM_PIPES} from 'angular2/src/core/platform_directives_and_pipes';
-import {MODULE_SUFFIX, sanitizeIdentifier} from './util';
+import {MODULE_SUFFIX, sanitizeIdentifier, ValueTransformer, visitValue} from './util';
 import {assertArrayOfStrings} from './assertions';
 import {getUrlScheme} from 'angular2/src/compiler/url_resolver';
 import {Provider} from 'angular2/src/core/di/provider';
@@ -314,9 +314,7 @@ export class CompileMetadataResolver {
           isPresent(provider.useClass) ?
               this.getTypeMetadata(provider.useClass, staticTypeModuleUrl(provider.useClass)) :
               null,
-      useValue: isPresent(provider.useValue) ?
-                    new cpl.CompileIdentifierMetadata({runtime: provider.useValue}) :
-                    null,
+      useValue: convertToCompileValue(provider.useValue),
       useFactory: isPresent(provider.useFactory) ?
                       this.getFactoryMetadata(provider.useFactory,
                                               staticTypeModuleUrl(provider.useFactory)) :
@@ -416,4 +414,20 @@ function calcTemplateBaseUrl(reflector: ReflectorReader, type: any,
   }
 
   return reflector.importUri(type);
+}
+
+// Only fill CompileIdentifierMetadata.runtime if needed...
+function convertToCompileValue(value: any): any {
+  return visitValue(value, new _CompileValueConverter(), null);
+}
+
+class _CompileValueConverter extends ValueTransformer {
+  visitOther(value: any, context: any): any {
+    if (isStaticType(value)) {
+      return new cpl.CompileIdentifierMetadata(
+          {name: value['name'], moduleUrl: staticTypeModuleUrl(value)});
+    } else {
+      return new cpl.CompileIdentifierMetadata({runtime: value});
+    }
+  }
 }

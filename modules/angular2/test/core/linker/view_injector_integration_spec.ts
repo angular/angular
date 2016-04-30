@@ -314,6 +314,27 @@ export function main() {
            expect(d.dependency).toBeAnInstanceOf(SimpleDirective);
          }));
 
+      it('should support useValue with different values', fakeAsync(() => {
+           var el = createComp('', tcb.overrideProviders(TestComp, [
+             provide('numLiteral', {useValue: 0}),
+             provide('boolLiteral', {useValue: true}),
+             provide('strLiteral', {useValue: 'a'}),
+             provide('null', {useValue: null}),
+             provide('array', {useValue: [1]}),
+             provide('map', {useValue: {'a': 1}}),
+             provide('instance', {useValue: new TestValue('a')}),
+             provide('nested', {useValue: [{'a': [1]}, new TestValue('b')]}),
+           ]));
+           expect(el.inject('numLiteral')).toBe(0);
+           expect(el.inject('boolLiteral')).toBe(true);
+           expect(el.inject('strLiteral')).toBe('a');
+           expect(el.inject('null')).toBe(null);
+           expect(el.inject('array')).toEqual([1]);
+           expect(el.inject('map')).toEqual({'a': 1});
+           expect(el.inject('instance')).toEqual(new TestValue('a'));
+           expect(el.inject('nested')).toEqual([{'a': [1]}, new TestValue('b')]);
+         }));
+
       it("should instantiate providers that have dependencies with SkipSelf", fakeAsync(() => {
            var el = createComp('<div simpleDirective><span someOtherDirective></span></div>',
                                tcb.overrideProviders(
@@ -678,4 +699,8 @@ export function main() {
          }));
     });
   });
+}
+
+class TestValue {
+  constructor(public value: string) {}
 }
