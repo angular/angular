@@ -37,7 +37,7 @@ export function main() {
   describe('navigation', () => {
 
     var tcb: TestComponentBuilder;
-    var fixture: ComponentFixture;
+    var fixture: ComponentFixture<any>;
     var rtr;
 
     beforeEachProviders(() => TEST_ROUTER_PROVIDERS);

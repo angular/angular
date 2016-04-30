@@ -9,11 +9,11 @@ import {NgZone} from 'angular2/src/core/zone/ng_zone';
  */
 @Injectable()
 export class MockApplicationRef extends ApplicationRef {
-  registerBootstrapListener(listener: (ref: ComponentRef) => void): void {}
+  registerBootstrapListener(listener: (ref: ComponentRef<any>) => void): void {}
 
   registerDisposeListener(dispose: () => void): void {}
 
-  bootstrap(componentFactory: ComponentFactory): ComponentRef { return null; }
+  bootstrap<C>(componentFactory: ComponentFactory<C>): ComponentRef<C> { return null; }
 
   get injector(): Injector { return null; };
 

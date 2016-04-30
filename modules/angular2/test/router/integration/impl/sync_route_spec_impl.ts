@@ -30,7 +30,7 @@ import {
 import {PromiseWrapper} from 'angular2/src/facade/async';
 
 
-function getLinkElement(rtc: ComponentFixture) {
+function getLinkElement(rtc: ComponentFixture<any>) {
   return rtc.debugElement.query(By.css('a')).nativeElement;
 }
 
@@ -431,7 +431,7 @@ function syncRoutesWithSyncChildrenWithDefaultRoutesWithoutParams() {
 }
 
 function syncRoutesWithDynamicComponents() {
-  var fixture: ComponentFixture;
+  var fixture: ComponentFixture<any>;
   var tcb: TestComponentBuilder;
   var rtr: Router;
 

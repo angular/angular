@@ -35,7 +35,7 @@ export function main() {
     it('should read the template from an annotation',
        inject([AsyncTestCompleter, ComponentResolver], (async, compiler: ComponentResolver) => {
          compiler.resolveComponent(SomeComponent)
-             .then((compFactory: ComponentFactory) => {
+             .then((compFactory: ComponentFactory<any>) => {
                expect(compFactory).toBe(someCompFactory);
                async.done();
                return null;

@@ -19,7 +19,7 @@ import {Component, provide} from 'angular2/core';
 import {NgFor} from 'angular2/common';
 import {NgClass} from 'angular2/src/common/directives/ng_class';
 
-function detectChangesAndCheck(fixture: ComponentFixture, classes: string) {
+function detectChangesAndCheck(fixture: ComponentFixture<any>, classes: string) {
   fixture.detectChanges();
   expect(fixture.debugElement.children[0].nativeElement.className).toEqual(classes);
 }

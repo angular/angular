@@ -47,7 +47,7 @@ export function browserStaticPlatform(): PlatformRef {
  */
 export function bootstrapStatic(appComponentType: Type,
                                 customProviders?: Array<any /*Type | Provider | any[]*/>,
-                                initReflector?: Function): Promise<ComponentRef> {
+                                initReflector?: Function): Promise<ComponentRef<any>> {
   if (isPresent(initReflector)) {
     initReflector();
   }

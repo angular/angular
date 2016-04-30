@@ -770,14 +770,13 @@ function declareTests(isJit: boolean) {
           it("should allow to destroy a component from within a host event handler",
              fakeAsync(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
 
-               var fixture: ComponentFixture;
-               tcb.overrideView(MyComp, new ViewMetadata({
-                                  template: '<push-cmp-with-host-event></push-cmp-with-host-event>',
-                                  directives: [[[PushCmpWithHostEvent]]]
-                                }))
-
-                   .createAsync(MyComp)
-                   .then(root => { fixture = root; });
+               let fixture =
+                   tcb.overrideView(
+                          MyComp, new ViewMetadata({
+                            template: '<push-cmp-with-host-event></push-cmp-with-host-event>',
+                            directives: [[[PushCmpWithHostEvent]]]
+                          }))
+                       .createFakeAsync(MyComp);
                tick();
                fixture.detectChanges();
 
@@ -865,8 +864,7 @@ function declareTests(isJit: boolean) {
                                       directives: [[[PushCmpWithAsyncPipe]]]
                                     }));
 
-               var fixture: ComponentFixture;
-               tcb.createAsync(MyComp).then(root => { fixture = root; });
+               let fixture = tcb.createFakeAsync(MyComp);
                tick();
 
                var cmp: PushCmpWithAsyncPipe = fixture.debugElement.children[0].references['cmp'];
@@ -1500,8 +1498,7 @@ function declareTests(isJit: boolean) {
                    directives: [DirectiveEmittingEvent, DirectiveListeningEvent]
                  }));
 
-             var fixture: ComponentFixture;
-             tcb.createAsync(MyComp).then(root => { fixture = root; });
+             let fixture = tcb.createFakeAsync(MyComp);
              tick();
 
              var tc = fixture.debugElement.children[0];
@@ -1606,7 +1603,7 @@ function declareTests(isJit: boolean) {
                                    directives: [SomeImperativeViewport]
                                  }))
                     .createAsync(MyComp)
-                    .then((fixture: ComponentFixture) => {
+                    .then((fixture: ComponentFixture<any>) => {
                       fixture.detectChanges();
                       expect(anchorElement).toHaveText('');
 
@@ -1828,8 +1825,7 @@ function declareTests(isJit: boolean) {
                                     directives: [DirectiveWithPropDecorators]
                                   }));
 
-             var fixture: ComponentFixture;
-             tcb.createAsync(MyComp).then(root => { fixture = root; });
+             let fixture = tcb.createFakeAsync(MyComp);
              tick();
 
              var emitter = fixture.debugElement.children[0].inject(DirectiveWithPropDecorators);

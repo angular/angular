@@ -35,7 +35,7 @@ export function main() {
   describe('redirects', () => {
 
     var tcb: TestComponentBuilder;
-    var rootTC: ComponentFixture;
+    var rootTC: ComponentFixture<any>;
     var rtr;
 
     beforeEachProviders(() => TEST_ROUTER_PROVIDERS);

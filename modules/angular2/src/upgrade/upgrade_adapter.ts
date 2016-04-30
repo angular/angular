@@ -524,12 +524,12 @@ export class UpgradeAdapter {
   private compileNg2Components(compiler: ComponentResolver,
                                componentFactoryRefMap: ComponentFactoryRefMap):
       Promise<ComponentFactoryRefMap> {
-    var promises: Array<Promise<ComponentFactory>> = [];
+    var promises: Array<Promise<ComponentFactory<any>>> = [];
     var types = this.upgradedComponents;
     for (var i = 0; i < types.length; i++) {
       promises.push(compiler.resolveComponent(types[i]));
     }
-    return Promise.all(promises).then((componentFactories: Array<ComponentFactory>) => {
+    return Promise.all(promises).then((componentFactories: Array<ComponentFactory<any>>) => {
       var types = this.upgradedComponents;
       for (var i = 0; i < componentFactories.length; i++) {
         componentFactoryRefMap[getComponentInfo(types[i]).selector] = componentFactories[i];
@@ -540,14 +540,14 @@ export class UpgradeAdapter {
 }
 
 interface ComponentFactoryRefMap {
-  [selector: string]: ComponentFactory;
+  [selector: string]: ComponentFactory<any>;
 }
 
 function ng1ComponentDirective(info: ComponentInfo, idPrefix: string): Function {
   (<any>directiveFactory).$inject = [NG2_COMPONENT_FACTORY_REF_MAP, NG1_PARSE];
   function directiveFactory(componentFactoryRefMap: ComponentFactoryRefMap,
                             parse: angular.IParseService): angular.IDirective {
-    var componentFactory: ComponentFactory = componentFactoryRefMap[info.selector];
+    var componentFactory: ComponentFactory<any> = componentFactoryRefMap[info.selector];
     if (!componentFactory) throw new Error('Expecting ComponentFactory for: ' + info.selector);
     var idCount = 0;
     return {

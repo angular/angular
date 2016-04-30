@@ -77,7 +77,7 @@ export class RuntimeCompiler implements ComponentResolver {
               private _viewCompiler: ViewCompiler, private _xhr: XHR,
               private _genConfig: CompilerConfig) {}
 
-  resolveComponent(componentType: Type): Promise<ComponentFactory> {
+  resolveComponent(componentType: Type): Promise<ComponentFactory<any>> {
     var compMeta: CompileDirectiveMetadata =
         this._metadataResolver.getDirectiveMetadata(componentType);
     var hostCacheKey = this._hostCacheKeys.get(componentType);

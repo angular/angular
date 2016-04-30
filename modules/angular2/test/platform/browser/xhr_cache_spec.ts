@@ -59,8 +59,7 @@ export function main() {
 
     it('should allow fakeAsync Tests to load components with templateUrl synchronously',
        fakeAsync(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
-         let fixture: ComponentFixture;
-         tcb.createAsync(TestComponent).then((f) => { fixture = f; });
+         let fixture = tcb.createFakeAsync(TestComponent);
 
          // This should initialize the fixture.
          tick();

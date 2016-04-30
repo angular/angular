@@ -47,7 +47,7 @@ import {RouterLinkTransform} from 'angular2/src/router/directives/router_link_tr
 export function main() {
   describe('routerLink directive', function() {
     var tcb: TestComponentBuilder;
-    var fixture: ComponentFixture;
+    var fixture: ComponentFixture<any>;
     var router: Router;
     var location: Location;
 
@@ -373,7 +373,7 @@ export function main() {
   });
 }
 
-function getHref(tc: ComponentFixture) {
+function getHref(tc: ComponentFixture<any>) {
   return DOM.getAttribute(tc.debugElement.query(By.css('a')).nativeElement, 'href');
 }
 

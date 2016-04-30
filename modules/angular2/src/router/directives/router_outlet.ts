@@ -34,7 +34,7 @@ let _resolveToTrue = PromiseWrapper.resolve(true);
 @Directive({selector: 'router-outlet'})
 export class RouterOutlet implements OnDestroy {
   name: string = null;
-  private _componentRef: Promise<ComponentRef> = null;
+  private _componentRef: Promise<ComponentRef<any>> = null;
   private _currentInstruction: ComponentInstruction = null;
 
   @Output('activate') public activateEvents = new EventEmitter<any>();
@@ -70,7 +70,7 @@ export class RouterOutlet implements OnDestroy {
       this.activateEvents.emit(componentRef.instance);
       if (hasLifecycleHook(hookMod.routerOnActivate, componentType)) {
         return this._componentRef.then(
-            (ref: ComponentRef) =>
+            (ref: ComponentRef<any>) =>
                 (<OnActivate>ref.instance).routerOnActivate(nextInstruction, previousInstruction));
       } else {
         return componentRef;
@@ -96,7 +96,7 @@ export class RouterOutlet implements OnDestroy {
       return PromiseWrapper.resolve(
           hasLifecycleHook(hookMod.routerOnReuse, this._currentInstruction.componentType) ?
               this._componentRef.then(
-                  (ref: ComponentRef) =>
+                  (ref: ComponentRef<any>) =>
                       (<OnReuse>ref.instance).routerOnReuse(nextInstruction, previousInstruction)) :
               true);
     }
@@ -111,13 +111,13 @@ export class RouterOutlet implements OnDestroy {
     if (isPresent(this._componentRef) && isPresent(this._currentInstruction) &&
         hasLifecycleHook(hookMod.routerOnDeactivate, this._currentInstruction.componentType)) {
       next = this._componentRef.then(
-          (ref: ComponentRef) =>
+          (ref: ComponentRef<any>) =>
               (<OnDeactivate>ref.instance)
                   .routerOnDeactivate(nextInstruction, this._currentInstruction));
     }
     return next.then((_) => {
       if (isPresent(this._componentRef)) {
-        var onDispose = this._componentRef.then((ref: ComponentRef) => ref.destroy());
+        var onDispose = this._componentRef.then((ref: ComponentRef<any>) => ref.destroy());
         this._componentRef = null;
         return onDispose;
       }
@@ -138,7 +138,7 @@ export class RouterOutlet implements OnDestroy {
     }
     if (hasLifecycleHook(hookMod.routerCanDeactivate, this._currentInstruction.componentType)) {
       return this._componentRef.then(
-          (ref: ComponentRef) =>
+          (ref: ComponentRef<any>) =>
               (<CanDeactivate>ref.instance)
                   .routerCanDeactivate(nextInstruction, this._currentInstruction));
     } else {
@@ -164,7 +164,7 @@ export class RouterOutlet implements OnDestroy {
       result = false;
     } else if (hasLifecycleHook(hookMod.routerCanReuse, this._currentInstruction.componentType)) {
       result = this._componentRef.then(
-          (ref: ComponentRef) =>
+          (ref: ComponentRef<any>) =>
               (<CanReuse>ref.instance).routerCanReuse(nextInstruction, this._currentInstruction));
     } else {
       result = nextInstruction == this._currentInstruction ||

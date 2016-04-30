@@ -94,8 +94,8 @@ export function getPlatform(): PlatformRef {
  * Shortcut for ApplicationRef.bootstrap.
  * Requires a platform the be created first.
  */
-export function coreBootstrap(injector: Injector,
-                              componentFactory: ComponentFactory): ComponentRef {
+export function coreBootstrap<C>(injector: Injector,
+                                 componentFactory: ComponentFactory<C>): ComponentRef<C> {
   var appRef: ApplicationRef = injector.get(ApplicationRef);
   return appRef.bootstrap(componentFactory);
 }
@@ -106,7 +106,7 @@ export function coreBootstrap(injector: Injector,
  * Requires a platform the be created first.
  */
 export function coreLoadAndBootstrap(injector: Injector,
-                                     componentType: Type): Promise<ComponentRef> {
+                                     componentType: Type): Promise<ComponentRef<any>> {
   var appRef: ApplicationRef = injector.get(ApplicationRef);
   return appRef.run(() => {
     var componentResolver: ComponentResolver = injector.get(ComponentResolver);
@@ -190,7 +190,7 @@ export abstract class ApplicationRef {
    * Register a listener to be called each time `bootstrap()` is called to bootstrap
    * a new root component.
    */
-  abstract registerBootstrapListener(listener: (ref: ComponentRef) => void): void;
+  abstract registerBootstrapListener(listener: (ref: ComponentRef<any>) => void): void;
 
   /**
    * Register a listener to be called when the application is disposed.
@@ -221,7 +221,7 @@ export abstract class ApplicationRef {
    * ### Example
    * {@example core/ts/platform/platform.ts region='longform'}
    */
-  abstract bootstrap(componentFactory: ComponentFactory): ComponentRef;
+  abstract bootstrap<C>(componentFactory: ComponentFactory<C>): ComponentRef<C>;
 
   /**
    * Retrieve the application {@link Injector}.
@@ -266,7 +266,7 @@ export class ApplicationRef_ extends ApplicationRef {
   /** @internal */
   private _disposeListeners: Function[] = [];
   /** @internal */
-  private _rootComponents: ComponentRef[] = [];
+  private _rootComponents: ComponentRef<any>[] = [];
   /** @internal */
   private _rootComponentTypes: Type[] = [];
   /** @internal */
@@ -315,7 +315,7 @@ export class ApplicationRef_ extends ApplicationRef {
                                 (_) => { this._zone.run(() => { this.tick(); }); });
   }
 
-  registerBootstrapListener(listener: (ref: ComponentRef) => void): void {
+  registerBootstrapListener(listener: (ref: ComponentRef<any>) => void): void {
     this._bootstrapListeners.push(listener);
   }
 
@@ -357,7 +357,7 @@ export class ApplicationRef_ extends ApplicationRef {
     return isPromise(result) ? completer.promise : result;
   }
 
-  bootstrap(componentFactory: ComponentFactory): ComponentRef {
+  bootstrap<C>(componentFactory: ComponentFactory<C>): ComponentRef<C> {
     if (!this._asyncInitDone) {
       throw new BaseException(
           'Cannot bootstrap as there are still asynchronous initializers running. Wait for them using waitForAsyncInitializers().');
@@ -383,7 +383,7 @@ export class ApplicationRef_ extends ApplicationRef {
   }
 
   /** @internal */
-  _loadComponent(componentRef: ComponentRef): void {
+  _loadComponent(componentRef: ComponentRef<any>): void {
     this._changeDetectorRefs.push(componentRef.changeDetectorRef);
     this.tick();
     this._rootComponents.push(componentRef);
@@ -391,7 +391,7 @@ export class ApplicationRef_ extends ApplicationRef {
   }
 
   /** @internal */
-  _unloadComponent(componentRef: ComponentRef): void {
+  _unloadComponent(componentRef: ComponentRef<any>): void {
     if (!ListWrapper.contains(this._rootComponents, componentRef)) {
       return;
     }

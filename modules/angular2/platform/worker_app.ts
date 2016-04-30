@@ -44,7 +44,7 @@ export function workerAppPlatform(): PlatformRef {
 
 export function bootstrapApp(
     appComponentType: Type,
-    customProviders?: Array<any /*Type | Provider | any[]*/>): Promise<ComponentRef> {
+    customProviders?: Array<any /*Type | Provider | any[]*/>): Promise<ComponentRef<any>> {
   var appInjector = ReflectiveInjector.resolveAndCreate(
       [WORKER_APP_APPLICATION, isPresent(customProviders) ? customProviders : []],
       workerAppPlatform().injector);

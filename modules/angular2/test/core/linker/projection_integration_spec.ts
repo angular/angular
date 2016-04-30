@@ -293,7 +293,7 @@ export function main() {
                     {template: '<simple stringProp="text"></simple>', directives: [Simple]}))
              .overrideTemplate(Simple, '<ng-content></ng-content><p>P,</p>{{stringProp}}')
              .createAsync(MainComp)
-             .then((main: ComponentFixture) => {
+             .then((main: ComponentFixture<any>) => {
 
                main.detectChanges();
 
@@ -314,7 +314,7 @@ export function main() {
                     {template: '<simple stringProp="text"></simple>', directives: [Simple]}))
              .overrideTemplate(Simple, '<style></style><p>P,</p>{{stringProp}}')
              .createAsync(MainComp)
-             .then((main: ComponentFixture) => {
+             .then((main: ComponentFixture<any>) => {
 
                main.detectChanges();
                expect(main.debugElement.nativeElement).toHaveText('P,text');

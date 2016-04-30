@@ -120,7 +120,7 @@ export function main() {
       return uiRenderStore.deserialize(id);
     }
 
-    function getRenderer(componentRef: ComponentRef) {
+    function getRenderer(componentRef: ComponentRef<any>) {
       return (<any>componentRef.hostView).internalView.renderer;
     }
 

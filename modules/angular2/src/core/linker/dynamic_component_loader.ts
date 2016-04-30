@@ -65,7 +65,8 @@ export abstract class DynamicComponentLoader {
    * ```
    */
   abstract loadAsRoot(type: Type, overrideSelectorOrNode: string | any, injector: Injector,
-                      onDispose?: () => void, projectableNodes?: any[][]): Promise<ComponentRef>;
+                      onDispose?: () => void,
+                      projectableNodes?: any[][]): Promise<ComponentRef<any>>;
 
 
   /**
@@ -110,7 +111,7 @@ export abstract class DynamicComponentLoader {
    */
   abstract loadNextToLocation(type: Type, location: ViewContainerRef,
                               providers?: ResolvedReflectiveProvider[],
-                              projectableNodes?: any[][]): Promise<ComponentRef>;
+                              projectableNodes?: any[][]): Promise<ComponentRef<any>>;
 }
 
 @Injectable()
@@ -118,7 +119,7 @@ export class DynamicComponentLoader_ extends DynamicComponentLoader {
   constructor(private _compiler: ComponentResolver) { super(); }
 
   loadAsRoot(type: Type, overrideSelectorOrNode: string | any, injector: Injector,
-             onDispose?: () => void, projectableNodes?: any[][]): Promise<ComponentRef> {
+             onDispose?: () => void, projectableNodes?: any[][]): Promise<ComponentRef<any>> {
     return this._compiler.resolveComponent(type).then(componentFactory => {
       var componentRef = componentFactory.create(
           injector, projectableNodes,
@@ -132,7 +133,7 @@ export class DynamicComponentLoader_ extends DynamicComponentLoader {
 
   loadNextToLocation(type: Type, location: ViewContainerRef,
                      providers: ResolvedReflectiveProvider[] = null,
-                     projectableNodes: any[][] = null): Promise<ComponentRef> {
+                     projectableNodes: any[][] = null): Promise<ComponentRef<any>> {
     return this._compiler.resolveComponent(type).then(componentFactory => {
       var contextInjector = location.parentInjector;
       var childInjector = isPresent(providers) && providers.length > 0 ?
