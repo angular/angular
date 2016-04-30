@@ -200,8 +200,8 @@ class ViewBuilderVisitor implements TemplateAstVisitor {
 
     var renderNode = o.THIS_EXPR.prop(fieldName);
 
-    var component = ast.getComponent();
     var directives = ast.directives.map(directiveAst => directiveAst.directive);
+    var component = directives.find(directive => directive.isComponent);
     var htmlAttrs = _readHtmlAttrs(ast.attrs);
     var attrNameAndValues = _mergeHtmlAndDirectiveAttrs(htmlAttrs, directives);
     for (var i = 0; i < attrNameAndValues.length; i++) {
