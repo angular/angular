@@ -155,6 +155,8 @@ var NG2_BUNDLE_CONTENT = ANGULAR2_BUNDLE_CONFIG.join(' + ') + ' - rxjs/*';
 var HTTP_BUNDLE_CONTENT = 'angular2/http - rxjs/* - ' + ANGULAR2_BUNDLE_CONFIG.join(' - ');
 var ROUTER_BUNDLE_CONTENT = 'angular2/router + angular2/router/router_link_dsl - rxjs/* - ' +
                             ANGULAR2_BUNDLE_CONFIG.join(' - ');
+var ALT_ROUTER_BUNDLE_CONTENT =
+    'angular2/alt_router - rxjs/* - ' + ANGULAR2_BUNDLE_CONFIG.join(' - ');
 var TESTING_BUNDLE_CONTENT =
     'angular2/testing + angular2/http/testing + angular2/router/testing + angular2/platform/testing/browser - rxjs/* - ' +
     ANGULAR2_BUNDLE_CONFIG.join(' - ');
@@ -1235,6 +1237,8 @@ gulp.task('!bundle.js.prod', ['build.js.prod'], function() {
           bundler.bundle(bundleConfig, HTTP_BUNDLE_CONTENT, './dist/build/http.js', bundlerConfig),
           bundler.bundle(bundleConfig, ROUTER_BUNDLE_CONTENT, './dist/build/router.js',
                          bundlerConfig),
+          bundler.bundle(bundleConfig, ALT_ROUTER_BUNDLE_CONTENT, './dist/build/alt_router.js',
+                         bundlerConfig),
           bundler.bundle(bundleConfig, UPGRADE_BUNDLE_CONTENT, './dist/build/upgrade.js',
                          bundlerConfig)
         ]);
@@ -1254,6 +1258,8 @@ gulp.task('!bundle.js.min', ['build.js.prod'], function() {
           bundler.bundle(bundleConfig, HTTP_BUNDLE_CONTENT, './dist/build/http.min.js',
                          bundlerConfig),
           bundler.bundle(bundleConfig, ROUTER_BUNDLE_CONTENT, './dist/build/router.min.js',
+                         bundlerConfig),
+          bundler.bundle(bundleConfig, ALT_ROUTER_BUNDLE_CONTENT, './dist/build/alt_router.min.js',
                          bundlerConfig),
           bundler.bundle(bundleConfig, UPGRADE_BUNDLE_CONTENT, './dist/build/upgrade.min.js',
                          bundlerConfig)
@@ -1277,6 +1283,8 @@ gulp.task('!bundle.js.dev', ['build.js.dev'], function() {
                          bundlerConfig),
           bundler.bundle(devBundleConfig, ROUTER_BUNDLE_CONTENT, './dist/build/router.dev.js',
                          bundlerConfig),
+          bundler.bundle(devBundleConfig, ALT_ROUTER_BUNDLE_CONTENT,
+                         './dist/build/alt_router.dev.js', bundlerConfig),
           bundler.bundle(devBundleConfig, UPGRADE_BUNDLE_CONTENT, './dist/build/upgrade.dev.js',
                          bundlerConfig)
         ]);
@@ -1397,6 +1405,7 @@ gulp.task('!bundle.js.prod.deps', ['!bundle.js.prod'], function() {
   return merge2(bundler.modify(['dist/build/angular2.js'], 'angular2.js'),
                 bundler.modify(['dist/build/http.js'], 'http.js'),
                 bundler.modify(['dist/build/router.js'], 'router.js'),
+                bundler.modify(['dist/build/alt_router.js'], 'alt_router.js'),
                 bundler.modify(['dist/build/upgrade.js'], 'upgrade.js'))
       .pipe(gulp.dest('dist/js/bundle'));
 });
@@ -1408,6 +1417,7 @@ gulp.task('!bundle.js.min.deps', ['!bundle.js.min'], function() {
   return merge2(bundler.modify(['dist/build/angular2.min.js'], 'angular2.min.js'),
                 bundler.modify(['dist/build/http.min.js'], 'http.min.js'),
                 bundler.modify(['dist/build/router.min.js'], 'router.min.js'),
+                bundler.modify(['dist/build/alt_router.min.js'], 'alt_router.min.js'),
                 bundler.modify(['dist/build/upgrade.min.js'], 'upgrade.min.js'))
       .pipe(uglify())
       .pipe(gulp.dest('dist/js/bundle'));
@@ -1439,6 +1449,7 @@ gulp.task('!bundle.js.dev.deps', ['!bundle.js.dev'], function() {
   return merge2(bundler.modify(['dist/build/angular2.dev.js'], 'angular2.dev.js'),
                 bundler.modify(['dist/build/http.dev.js'], 'http.dev.js'),
                 bundler.modify(['dist/build/router.dev.js'], 'router.dev.js'),
+                bundler.modify(['dist/build/alt_router.dev.js'], 'alt_router.dev.js'),
                 bundler.modify(['dist/build/upgrade.dev.js'], 'upgrade.dev.js'))
       .pipe(gulp.dest('dist/js/bundle'));
 });
