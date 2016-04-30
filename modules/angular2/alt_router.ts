@@ -12,7 +12,7 @@ export {
   RouterUrlSerializer,
   DefaultRouterUrlSerializer
 } from './src/alt_router/router_url_serializer';
-export {OnActivate} from './src/alt_router/interfaces';
+export {OnActivate, CanDeactivate} from './src/alt_router/interfaces';
 export {ROUTER_PROVIDERS} from './src/alt_router/router_providers';
 
 import {RouterOutlet} from './src/alt_router/directives/router_outlet';

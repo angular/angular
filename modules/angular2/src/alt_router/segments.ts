@@ -33,6 +33,8 @@ export function rootNode<T>(tree: Tree<T>): TreeNode<T> {
 }
 
 function _findNode<T>(expected: T, c: TreeNode<T>): TreeNode<T> {
+  // TODO: vsavkin remove it once recognize is fixed
+  if (expected instanceof RouteSegment && equalSegments(<any>expected, <any>c.value)) return c;
   if (expected === c.value) return c;
   for (let cc of c.children) {
     let r = _findNode(expected, cc);
@@ -44,6 +46,9 @@ function _findNode<T>(expected: T, c: TreeNode<T>): TreeNode<T> {
 function _findPath<T>(expected: T, c: TreeNode<T>, collected: TreeNode<T>[]): TreeNode<T>[] {
   collected.push(c);
 
+  // TODO: vsavkin remove it once recognize is fixed
+  if (expected instanceof RouteSegment && equalSegments(<any>expected, <any>c.value))
+    return collected;
   if (expected === c.value) return collected;
   for (let cc of c.children) {
     let r = _findPath(expected, cc, ListWrapper.clone(collected));
@@ -114,6 +119,7 @@ export function equalSegments(a: RouteSegment, b: RouteSegment): boolean {
   if (a._type !== b._type) return false;
   if (isBlank(a.parameters) && !isBlank(b.parameters)) return false;
   if (!isBlank(a.parameters) && isBlank(b.parameters)) return false;
+  if (isBlank(a.parameters) && isBlank(b.parameters)) return true;
   return StringMapWrapper.equals(a.parameters, b.parameters);
 }
 

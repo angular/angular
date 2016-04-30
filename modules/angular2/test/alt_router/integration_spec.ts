@@ -17,6 +17,7 @@ import {
   tick
 } from 'angular2/testing_internal';
 import {provide, Component, ComponentResolver} from 'angular2/core';
+import {PromiseWrapper} from 'angular2/src/facade/async';
 
 
 import {
@@ -28,7 +29,8 @@ import {
   Routes,
   RouterUrlSerializer,
   DefaultRouterUrlSerializer,
-  OnActivate
+  OnActivate,
+  CanDeactivate
 } from 'angular2/alt_router';
 import {SpyLocation} from 'angular2/src/mock/location_mock';
 import {Location} from 'angular2/platform/common';
@@ -42,8 +44,8 @@ export function main() {
       provide(Location, {useClass: SpyLocation}),
       provide(Router,
               {
-                useFactory: (resolver, urlParser, outletMap, location) =>
-                                new Router(RootCmp, resolver, urlParser, outletMap, location),
+                useFactory: (resolver, urlParser, outletMap, location) => new Router(
+                                "RootComponent", RootCmp, resolver, urlParser, outletMap, location),
                 deps: [ComponentResolver, RouterUrlSerializer, RouterOutletMap, Location]
               })
     ]);
@@ -124,9 +126,22 @@ export function main() {
          expect(fixture.debugElement.nativeElement).toHaveText('team 22 { hello fedor, aux:  }');
        })));
 
-    if (DOM.supportsDOMEvents()) {  // this is required to use fakeAsync
+    it('should not unload the route if can deactivate returns false',
+       fakeAsync(inject([Router, TestComponentBuilder], (router, tcb) => {
+         let fixture = tcb.createFakeAsync(RootCmp);
 
-      it("should support router links",
+         router.navigateByUrl('/team/22/cannotDeactivate');
+         advance(fixture);
+
+         router.navigateByUrl('/team/22/user/fedor');
+         advance(fixture);
+
+         expect(fixture.debugElement.nativeElement)
+             .toHaveText('team 22 { cannotDeactivate, aux:  }');
+       })));
+
+    if (DOM.supportsDOMEvents()) {
+      it("should support absolute router links",
          fakeAsync(inject([Router, TestComponentBuilder], (router, tcb) => {
            let fixture = tcb.createFakeAsync(RootCmp);
            advance(fixture);
@@ -141,6 +156,25 @@ export function main() {
            advance(fixture);
 
            expect(fixture.debugElement.nativeElement).toHaveText('team 33 { simple, aux:  }');
+         })));
+
+      it("should support relative router links",
+         fakeAsync(inject([Router, TestComponentBuilder], (router, tcb) => {
+           let fixture = tcb.createFakeAsync(RootCmp);
+           advance(fixture);
+
+           router.navigateByUrl('/team/22/relativelink');
+           advance(fixture);
+           expect(fixture.debugElement.nativeElement)
+               .toHaveText('team 22 { relativelink {  }, aux:  }');
+
+           let native = DOM.querySelector(fixture.debugElement.nativeElement, "a");
+           expect(DOM.getAttribute(native, "href")).toEqual("/team/22/relativelink/simple");
+           DOM.dispatchEvent(native, DOM.createMouseEvent('click'));
+           advance(fixture);
+
+           expect(fixture.debugElement.nativeElement)
+               .toHaveText('team 22 { relativelink { simple }, aux:  }');
          })));
 
       it("should update router links when router changes",
@@ -179,6 +213,11 @@ class UserCmp implements OnActivate {
   routerOnActivate(s: RouteSegment, a?, b?, c?) { this.user = s.getParam('name'); }
 }
 
+@Component({selector: 'cannot-deactivate', template: `cannotDeactivate`})
+class CanDeactivateCmp implements CanDeactivate {
+  routerCanDeactivate(a?, b?): Promise<boolean> { return PromiseWrapper.resolve(false); }
+}
+
 @Component({selector: 'simple-cmp', template: `simple`})
 class SimpleCmp {
 }
@@ -189,10 +228,19 @@ class Simple2Cmp {
 
 @Component({
   selector: 'link-cmp',
-  template: `<a [routerLink]="['team', '33', 'simple']">link</a>`,
+  template: `<a [routerLink]="['/team', '33', 'simple']">link</a>`,
   directives: ROUTER_DIRECTIVES
 })
 class LinkCmp {
+}
+
+@Component({
+  selector: 'link-cmp',
+  template: `<a [routerLink]="['./simple']">relativelink</a> { <router-outlet></router-outlet> }`,
+  directives: ROUTER_DIRECTIVES
+})
+@Routes([new Route({path: 'simple', component: SimpleCmp})])
+class RelativeLinkCmp {
 }
 
 @Component({
@@ -204,7 +252,9 @@ class LinkCmp {
   new Route({path: 'user/:name', component: UserCmp}),
   new Route({path: 'simple', component: SimpleCmp}),
   new Route({path: 'simple2', component: Simple2Cmp}),
-  new Route({path: 'link', component: LinkCmp})
+  new Route({path: 'link', component: LinkCmp}),
+  new Route({path: 'relativelink', component: RelativeLinkCmp}),
+  new Route({path: 'cannotDeactivate', component: CanDeactivateCmp})
 ])
 class TeamCmp implements OnActivate {
   id: string;
