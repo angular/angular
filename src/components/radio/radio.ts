@@ -77,7 +77,7 @@ export class MdRadioGroup implements AfterContentInit, ControlValueAccessor {
 
   /** Event emitted when the group value changes. */
   @Output()
-  change: EventEmitter<MdRadioChange> = new EventEmitter();
+  change: EventEmitter<MdRadioChange> = new EventEmitter<MdRadioChange>();
 
   /** Child radio buttons. */
   @ContentChildren(forwardRef(() => MdRadioButton))
@@ -232,7 +232,7 @@ export class MdRadioButton implements OnInit {
 
   /** Event emitted when the group value changes. */
   @Output()
-  change: EventEmitter<MdRadioChange> = new EventEmitter();
+  change: EventEmitter<MdRadioChange> = new EventEmitter<MdRadioChange>();
 
   constructor(@Optional() radioGroup: MdRadioGroup, public radioDispatcher: MdRadioDispatcher) {
     // Assertions. Ideally these should be stripped out by the compiler.

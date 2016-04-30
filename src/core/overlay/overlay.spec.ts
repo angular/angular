@@ -10,10 +10,9 @@ import {
   beforeEachProviders,
 } from 'angular2/testing';
 import {
-  Component,
-  ViewChild,
-  ElementRef,
-  provide,
+    Component,
+    ViewChild,
+    provide, ViewContainerRef,
 } from 'angular2/core';
 import {TemplatePortalDirective} from '../portal/portal-directives';
 import {TemplatePortal, ComponentPortal} from '../portal/portal';
@@ -47,7 +46,7 @@ export function main() {
       builder.createAsync(TestComponentWithTemplatePortals).then(fixture => {
         fixture.detectChanges();
         templatePortal = fixture.componentInstance.templatePortal;
-        componentPortal = new ComponentPortal(PizzaMsg, fixture.componentInstance.elementRef);
+        componentPortal = new ComponentPortal(PizzaMsg, fixture.componentInstance.viewContainerRef);
       });
 
       flushMicrotasks();
@@ -157,7 +156,7 @@ class PizzaMsg {}
 })
 class TestComponentWithTemplatePortals {
   @ViewChild(TemplatePortalDirective) templatePortal: TemplatePortalDirective;
-  constructor(public elementRef: ElementRef) { }
+  constructor(public viewContainerRef: ViewContainerRef) { }
 }
 
 class FakePositionStrategy implements PositionStrategy {

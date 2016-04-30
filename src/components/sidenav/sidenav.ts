@@ -330,7 +330,7 @@ export class MdSidenavLayout implements AfterContentInit {
     }
   }
 
-  private _closeModalSidenav() {
+  closeModalSidenav() {
     if (this._start != null && this._start.mode != 'side') {
       this._start.close();
     }
@@ -339,7 +339,7 @@ export class MdSidenavLayout implements AfterContentInit {
     }
   }
 
-  private _isShowingBackdrop(): boolean {
+  isShowingBackdrop(): boolean {
     return (this._isSidenavOpen(this._start) && this._start.mode != 'side')
         || (this._isSidenavOpen(this._end) && this._end.mode != 'side');
   }
@@ -358,19 +358,19 @@ export class MdSidenavLayout implements AfterContentInit {
     return (this._isSidenavOpen(sidenav) && sidenav.mode == mode) ? sidenav._width : 0;
   }
 
-  private _getMarginLeft() {
+  getMarginLeft() {
     return this._getSidenavEffectiveWidth(this._left, 'side');
   }
 
-  private _getMarginRight() {
+  getMarginRight() {
     return this._getSidenavEffectiveWidth(this._right, 'side');
   }
 
-  private _getPositionLeft() {
+  getPositionLeft() {
     return this._getSidenavEffectiveWidth(this._left, 'push');
   }
 
-  private _getPositionRight() {
+  getPositionRight() {
     return this._getSidenavEffectiveWidth(this._right, 'push');
   }
 }

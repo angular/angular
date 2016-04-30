@@ -1,6 +1,3 @@
-declare var Symbol: any;
-
-
 /**
  * Annotation Factory that allows HTML style boolean attributes. For example,
  * a field declared like this:
@@ -17,9 +14,7 @@ declare var Symbol: any;
 function booleanFieldValueFactory() {
   return function booleanFieldValueMetadata(target: any, key: string): void {
     const defaultValue = target[key];
-
-    // Use a fallback if Symbol isn't available.
-    const localKey = Symbol ? Symbol(key) : `__md_private_symbol_${key}`;
+    const localKey = `__md_private_symbol_${key}`;
     target[localKey] = defaultValue;
 
     Object.defineProperty(target, key, {

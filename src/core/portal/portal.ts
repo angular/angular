@@ -1,4 +1,4 @@
-import {TemplateRef, Type} from 'angular2/core';
+import {TemplateRef, Type, ViewContainerRef} from 'angular2/core';
 import {ElementRef} from 'angular2/core';
 import {ComponentRef} from 'angular2/core';
 
@@ -71,12 +71,12 @@ export class ComponentPortal extends Portal<ComponentRef> {
    * This is different from where the component *renders*, which is determined by the PortalHost.
    * The origin necessary when the host is outside of the Angular application context.
    */
-  public origin: ElementRef;
+  public viewContainerRef: ViewContainerRef;
 
-  constructor(component: Type, origin: ElementRef = null) {
+  constructor(component: Type, viewContainerRef: ViewContainerRef = null) {
     super();
     this.component = component;
-    this.origin = origin;
+    this.viewContainerRef = viewContainerRef;
   }
 }
 
@@ -88,6 +88,9 @@ export class TemplatePortal extends Portal<Map<string, any>> {
   /** The embedded template that will be used to instantiate an embedded View in the host. */
   templateRef: TemplateRef;
 
+  /** Reference to the ViewContainer into which the template will be stamped out. */
+  viewContainerRef: ViewContainerRef;
+
   /**
    * Additional locals for the instantiated embedded view.
    * These locals can be seen as "exports" for the template, such as how ngFor has
@@ -96,9 +99,10 @@ export class TemplatePortal extends Portal<Map<string, any>> {
    */
   locals: Map<string, any> = new Map<string, any>();
 
-  constructor(template: TemplateRef) {
+  constructor(template: TemplateRef, viewContainerRef: ViewContainerRef) {
     super();
     this.templateRef = template;
+    this.viewContainerRef = viewContainerRef;
   }
 
   get origin(): ElementRef {

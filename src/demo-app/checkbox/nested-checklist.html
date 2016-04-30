@@ -1,6 +1,6 @@
 <h2>Tasks</h2>
 <ul>
-  <li *ngFor="#task of tasks">
+  <li *ngFor="let task of tasks">
     <md-checkbox [(ngModel)]="task.completed"
                  [checked]="allComplete(task.subtasks)"
                  [indeterminate]="someComplete(task.subtasks)"
@@ -8,7 +8,7 @@
       <h3>{{task.name}}</h3>
     </md-checkbox>
     <ul>
-      <li *ngFor="#subtask of task.subtasks">
+      <li *ngFor="let subtask of task.subtasks">
         <md-checkbox [(ngModel)]="subtask.completed">
           {{subtask.name}}
         </md-checkbox>

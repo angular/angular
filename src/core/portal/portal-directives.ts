@@ -3,10 +3,11 @@ import {
     Directive,
     TemplateRef,
     DynamicComponentLoader,
-    ElementRef,
     ViewContainerRef
 } from 'angular2/core';
 import {Portal, TemplatePortal, ComponentPortal, BasePortalHost} from './portal';
+
+
 
 /**
  * Directive version of a `TemplatePortal`. Because the directive *is* a TemplatePortal,
@@ -22,8 +23,8 @@ import {Portal, TemplatePortal, ComponentPortal, BasePortalHost} from './portal'
   exportAs: 'portal',
 })
 export class TemplatePortalDirective extends TemplatePortal {
-  constructor(templateRef: TemplateRef) {
-    super(templateRef);
+  constructor(templateRef: TemplateRef, viewContainerRef: ViewContainerRef) {
+    super(templateRef, viewContainerRef);
   }
 }
 
@@ -45,7 +46,6 @@ export class PortalHostDirective extends BasePortalHost {
 
   constructor(
       private _dynamicComponentLoader: DynamicComponentLoader,
-      private _elementRef: ElementRef,
       private _viewContainerRef: ViewContainerRef) {
     super();
   }
@@ -64,12 +64,14 @@ export class PortalHostDirective extends BasePortalHost {
 
     // If the portal specifies an origin, use that as the logical location of the component
     // in the application tree. Otherwise use the location of this PortalHost.
-    let elementRef = portal.origin != null ? portal.origin : this._elementRef;
+    let viewContainerRef = portal.viewContainerRef != null ?
+        portal.viewContainerRef :
+        this._viewContainerRef;
 
     // Typecast is necessary for Dart transpilation.
-    return this._dynamicComponentLoader.loadNextToLocation(portal.component, elementRef)
+    return this._dynamicComponentLoader.loadNextToLocation(portal.component, viewContainerRef)
       .then(ref => {
-        this.setDisposeFn(() => ref.dispose());
+        this.setDisposeFn(() => ref.destroy());
         return ref;
       });
   }

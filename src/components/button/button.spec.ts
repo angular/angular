@@ -1,15 +1,9 @@
-import {
-  it,
-  describe,
-  expect,
-  beforeEach,
-  inject,
-  TestComponentBuilder
-} from 'angular2/testing';
+import {it, describe, expect, beforeEach, inject, TestComponentBuilder} from 'angular2/testing';
 import {Component} from 'angular2/core';
 import {By} from 'angular2/platform/browser';
-
 import {MdButton, MdAnchor} from './button';
+
+
 
 export function main() {
   describe('MdButton', () => {
@@ -21,7 +15,7 @@ export function main() {
 
     // General button tests
     it('should apply class based on color attribute', (done: () => void) => {
-      return builder.createAsync(TestApp).then((fixture) => {
+      return builder.createAsync(TestApp).then(fixture => {
         let testComponent = fixture.debugElement.componentInstance;
         let buttonDebugElement = fixture.debugElement.query(By.css('button'));
         let aDebugElement = fixture.debugElement.query(By.css('a'));
@@ -40,7 +34,7 @@ export function main() {
     });
 
     it('should should not clear previous defined classes', (done: () => void) => {
-      return builder.createAsync(TestApp).then((fixture) => {
+      return builder.createAsync(TestApp).then(fixture => {
         let testComponent = fixture.debugElement.componentInstance;
         let buttonDebugElement = fixture.debugElement.query(By.css('button'));
 
@@ -66,7 +60,7 @@ export function main() {
     // Regular button tests
     describe('button[md-button]', () => {
       it('should handle a click on the button', (done: () => void) => {
-        return builder.createAsync(TestApp).then((fixture) => {
+        return builder.createAsync(TestApp).then(fixture => {
           let testComponent = fixture.debugElement.componentInstance;
           let buttonDebugElement = fixture.debugElement.query(By.css('button'));
 
@@ -77,7 +71,7 @@ export function main() {
       });
 
       it('should not increment if disabled', (done: () => void) => {
-        return builder.createAsync(TestApp).then((fixture) => {
+        return builder.createAsync(TestApp).then(fixture => {
           let testComponent = fixture.debugElement.componentInstance;
           let buttonDebugElement = fixture.debugElement.query(By.css('button'));
 
@@ -96,7 +90,7 @@ export function main() {
     // Anchor button tests
     describe('a[md-button]', () => {
       it('should not redirect if disabled', (done: () => void) => {
-        return builder.createAsync(TestApp).then((fixture) => {
+        return builder.createAsync(TestApp).then(fixture => {
           let testComponent = fixture.debugElement.componentInstance;
           let buttonDebugElement = fixture.debugElement.query(By.css('a'));
 
@@ -110,7 +104,7 @@ export function main() {
       });
 
       it('should remove tabindex if disabled', (done: () => void) => {
-        return builder.createAsync(TestApp).then((fixture) => {
+        return builder.createAsync(TestApp).then(fixture => {
           let testComponent = fixture.debugElement.componentInstance;
           let buttonDebugElement = fixture.debugElement.query(By.css('a'));
           expect(buttonDebugElement.nativeElement.getAttribute('tabIndex')).toBe(null);
@@ -123,7 +117,7 @@ export function main() {
       });
 
       it('should add aria-disabled attribute if disabled', (done: () => void) => {
-        return builder.createAsync(TestApp).then((fixture) => {
+        return builder.createAsync(TestApp).then(fixture => {
           let testComponent = fixture.debugElement.componentInstance;
           let buttonDebugElement = fixture.debugElement.query(By.css('a'));
           fixture.detectChanges();

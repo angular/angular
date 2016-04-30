@@ -39,7 +39,7 @@ export function main() {
     it('should apply md-2-line class to lists with two lines', (done: () => void) => {
       var template = `
         <md-list>
-          <md-list-item *ngFor="#item of items">
+          <md-list-item *ngFor="let item of items">
             <img src="">
             <h3 md-line>{{item.name}}</h3>
             <p md-line>{{item.description}}</p>
@@ -59,7 +59,7 @@ export function main() {
     it('should apply md-3-line class to lists with three lines', (done: () => void) => {
       var template = `
         <md-list>
-          <md-list-item *ngFor="#item of items">
+          <md-list-item *ngFor="let item of items">
             <h3 md-line>{{item.name}}</h3>
             <p md-line>{{item.description}}</p>
             <p md-line>Some other text</p>
@@ -101,7 +101,7 @@ export function main() {
     it('should not clear custom classes provided by user', (done: () => void) => {
       var template = `
         <md-list>
-          <md-list-item class="test-class" *ngFor="#item of items">
+          <md-list-item class="test-class" *ngFor="let item of items">
             <h3 md-line>{{item.name}}</h3>
             <p md-line>{{item.description}}</p>
           </md-list-item>
@@ -119,7 +119,7 @@ export function main() {
     it('should update classes if number of lines change', (done: () => void) => {
       var template = `
         <md-list>
-          <md-list-item *ngFor="#item of items">
+          <md-list-item *ngFor="let item of items">
             <h3 md-line>{{item.name}}</h3>
             <p md-line>{{item.description}}</p>
             <p md-line *ngIf="showThirdLine">Some other text</p>
@@ -145,7 +145,7 @@ export function main() {
     it('should add aria roles properly', (done: () => void) => {
       var template = `
         <md-list>
-          <md-list-item *ngFor="#item of items">
+          <md-list-item *ngFor="let item of items">
             {{item.name}}
           </md-list-item>
         </md-list>

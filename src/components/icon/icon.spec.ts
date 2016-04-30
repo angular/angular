@@ -1,23 +1,20 @@
 import {
-  it,
-  describe,
-  expect,
-  beforeEach,
-  beforeEachProviders,
-  inject,
-  TestComponentBuilder,
+    it,
+    describe,
+    expect,
+    beforeEach,
+    beforeEachProviders,
+    inject,
+    TestComponentBuilder
 } from 'angular2/testing';
-import {
-  HTTP_PROVIDERS,
-  XHRBackend} from 'angular2/http';
+import {HTTP_PROVIDERS, XHRBackend} from 'angular2/http';
 import {MockBackend} from 'angular2/http/testing';
-import {
-  provide,
-  Component} from 'angular2/core';
-
+import {provide, Component} from 'angular2/core';
 import {MdIcon} from './icon';
 import {MdIconRegistry} from './icon-registry';
 import {getFakeSvgHttpResponse} from './fake-svgs';
+
+
 
 /** Returns the CSS classes assigned to an element as a sorted array. */
 const sortedClassNames = (elem: Element) => elem.className.split(' ').sort();
@@ -74,7 +71,7 @@ export function main() {
 
     describe('Ligature icons', () => {
       it('should add material-icons class by default', (done: () => void) => {
-        return builder.createAsync(MdIconLigatureTestApp).then((fixture) => {
+        return builder.createAsync(MdIconLigatureTestApp).then(fixture => {
           const testComponent = fixture.debugElement.componentInstance;
           const mdIconElement = fixture.debugElement.nativeElement.querySelector('md-icon');
           testComponent.iconName = 'home';
@@ -86,7 +83,7 @@ export function main() {
 
       it('should use alternate icon font if set', (done: () => void) => {
         mdIconRegistry.setDefaultFontSetClass('myfont');
-        return builder.createAsync(MdIconLigatureTestApp).then((fixture) => {
+        return builder.createAsync(MdIconLigatureTestApp).then(fixture => {
           const testComponent = fixture.debugElement.componentInstance;
           const mdIconElement = fixture.debugElement.nativeElement.querySelector('md-icon');
           testComponent.iconName = 'home';
@@ -99,7 +96,7 @@ export function main() {
 
     describe('Icons from URLs', () => {
       it('should fetch SVG icon from URL and inline the content', (done: () => void) => {
-        return builder.createAsync(MdIconFromSvgUrlTestApp).then((fixture) => {
+        return builder.createAsync(MdIconFromSvgUrlTestApp).then(fixture => {
           const testComponent = fixture.debugElement.componentInstance;
           const mdIconElement = fixture.debugElement.nativeElement.querySelector('md-icon');
           let svgElement: any;
@@ -135,7 +132,7 @@ export function main() {
       it('should register icon URLs by name', (done: () => void) => {
         mdIconRegistry.addSvgIcon('fluffy', 'cat.svg');
         mdIconRegistry.addSvgIcon('fido', 'dog.svg');
-        return builder.createAsync(MdIconFromSvgNameTestApp).then((fixture) => {
+        return builder.createAsync(MdIconFromSvgNameTestApp).then(fixture => {
           const testComponent = fixture.debugElement.componentInstance;
           const mdIconElement = fixture.debugElement.nativeElement.querySelector('md-icon');
           let svgElement: SVGElement;
@@ -168,7 +165,7 @@ export function main() {
 
       it('should extract icon from SVG icon set', (done: () => void) => {
         mdIconRegistry.addSvgIconSetInNamespace('farm', 'farm-set-1.svg');
-        return builder.createAsync(MdIconFromSvgNameTestApp).then((fixture) => {
+        return builder.createAsync(MdIconFromSvgNameTestApp).then(fixture => {
           const testComponent = fixture.debugElement.componentInstance;
           const mdIconElement = fixture.debugElement.nativeElement.querySelector('md-icon');
           let svgElement: any;
@@ -207,7 +204,7 @@ export function main() {
         mdIconRegistry.addSvgIconSetInNamespace('farm', 'farm-set-1.svg');
         mdIconRegistry.addSvgIconSetInNamespace('farm', 'farm-set-2.svg');
         mdIconRegistry.addSvgIconSetInNamespace('arrows', 'arrow-set.svg');
-        return builder.createAsync(MdIconFromSvgNameTestApp).then((fixture) => {
+        return builder.createAsync(MdIconFromSvgNameTestApp).then(fixture => {
           const testComponent = fixture.debugElement.componentInstance;
           const mdIconElement = fixture.debugElement.nativeElement.querySelector('md-icon');
           let svgElement: any;
@@ -250,7 +247,7 @@ export function main() {
 
       it('should not wrap <svg> elements in icon sets in another svg tag', (done: () => void) => {
         mdIconRegistry.addSvgIconSet('arrow-set.svg');
-        return builder.createAsync(MdIconFromSvgNameTestApp).then((fixture) => {
+        return builder.createAsync(MdIconFromSvgNameTestApp).then(fixture => {
           const testComponent = fixture.debugElement.componentInstance;
           const mdIconElement = fixture.debugElement.nativeElement.querySelector('md-icon');
           let svgElement: any;
@@ -268,7 +265,7 @@ export function main() {
       });
 
       it('should return unmodified copies of icons from URLs', (done: () => void) => {
-        return builder.createAsync(MdIconFromSvgUrlTestApp).then((fixture) => {
+        return builder.createAsync(MdIconFromSvgUrlTestApp).then(fixture => {
           const testComponent = fixture.debugElement.componentInstance;
           const mdIconElement = fixture.debugElement.nativeElement.querySelector('md-icon');
           let svgElement: any;
@@ -299,7 +296,7 @@ export function main() {
 
       it('should return unmodified copies of icons from icon sets', (done: () => void) => {
         mdIconRegistry.addSvgIconSet('arrow-set.svg');
-        return builder.createAsync(MdIconFromSvgNameTestApp).then((fixture) => {
+        return builder.createAsync(MdIconFromSvgNameTestApp).then(fixture => {
           const testComponent = fixture.debugElement.componentInstance;
           const mdIconElement = fixture.debugElement.nativeElement.querySelector('md-icon');
           let svgElement: any;
@@ -333,7 +330,7 @@ export function main() {
       it('should apply CSS classes for custom font and icon', (done: () => void) => {
         mdIconRegistry.registerFontClassAlias('f1', 'font1');
         mdIconRegistry.registerFontClassAlias('f2');
-        return builder.createAsync(MdIconCustomFontCssTestApp).then((fixture) => {
+        return builder.createAsync(MdIconCustomFontCssTestApp).then(fixture => {
           const testComponent = fixture.debugElement.componentInstance;
           const mdIconElement = fixture.debugElement.nativeElement.querySelector('md-icon');
           testComponent.fontSet = 'f1';
@@ -361,10 +358,12 @@ export function main() {
 
     describe('aria label', () => {
       it('should set aria label from text content if not specified', (done: () => void) => {
-        return builder.createAsync(MdIconLigatureTestApp).then((fixture) => {
+        return builder.createAsync(MdIconLigatureTestApp).then(fixture => {
+
           const testComponent = fixture.debugElement.componentInstance;
           const mdIconElement = fixture.debugElement.nativeElement.querySelector('md-icon');
           testComponent.iconName = 'home';
+
           fixture.detectChanges();
           expect(mdIconElement.getAttribute('aria-label')).toBe('home');
 
@@ -377,7 +376,7 @@ export function main() {
       });
 
       it('should use alt tag if aria label is not specified', (done: () => void) => {
-        return builder.createAsync(MdIconLigatureWithAriaBindingTestApp).then((fixture) => {
+        return builder.createAsync(MdIconLigatureWithAriaBindingTestApp).then(fixture => {
           const testComponent = fixture.debugElement.componentInstance;
           const mdIconElement = fixture.debugElement.nativeElement.querySelector('md-icon');
           testComponent.iconName = 'home';
@@ -394,7 +393,7 @@ export function main() {
       });
 
       it('should use provided aria label rather than icon name', (done: () => void) => {
-        return builder.createAsync(MdIconLigatureWithAriaBindingTestApp).then((fixture) => {
+        return builder.createAsync(MdIconLigatureWithAriaBindingTestApp).then(fixture => {
           const testComponent = fixture.debugElement.componentInstance;
           const mdIconElement = fixture.debugElement.nativeElement.querySelector('md-icon');
           testComponent.iconName = 'home';
@@ -406,7 +405,7 @@ export function main() {
       });
 
       it('should use provided aria label rather than font icon', (done: () => void) => {
-        return builder.createAsync(MdIconCustomFontCssTestApp).then((fixture) => {
+        return builder.createAsync(MdIconCustomFontCssTestApp).then(fixture => {
           const testComponent = fixture.debugElement.componentInstance;
           const mdIconElement = fixture.debugElement.nativeElement.querySelector('md-icon');
           testComponent.fontSet = 'f1';

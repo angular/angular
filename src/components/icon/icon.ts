@@ -1,19 +1,18 @@
 import {
-  AfterContentChecked,
-  ChangeDetectionStrategy,
-  Component,
-  ElementRef,
-  Input,
-  OnChanges,
-  OnInit,
-  Renderer,
-  SimpleChange,
-  ViewEncapsulation,
+    ChangeDetectionStrategy,
+    Component,
+    ElementRef,
+    Input,
+    OnChanges,
+    OnInit,
+    Renderer,
+    SimpleChange,
+    ViewEncapsulation,
+    AfterViewChecked
 } from 'angular2/core';
-import {NgClass} from 'angular2/common';
 import {BaseException} from 'angular2/src/facade/exceptions';
-
 import {MdIconRegistry} from './icon-registry';
+
 
 
 /** Exception thrown when an invalid icon name is passed to an md-icon component. */
@@ -63,11 +62,10 @@ export class MdIconInvalidNameException extends BaseException {
   host: {
     'role': 'img',
   },
-  directives: [NgClass],
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MdIcon implements OnChanges, OnInit, AfterContentChecked {
+export class MdIcon implements OnChanges, OnInit, AfterViewChecked {
   @Input() svgSrc: string;
   @Input() svgIcon: string;
   @Input() fontSet: string;
@@ -143,7 +141,7 @@ export class MdIcon implements OnChanges, OnInit, AfterContentChecked {
     }
   }
 
-  ngAfterContentChecked() {
+  ngAfterViewChecked() {
     // Update aria label here because it may depend on the projected text content.
     // (e.g. <md-icon>home</md-icon> should use 'home').
     this._updateAriaLabel();

@@ -22,7 +22,7 @@
 <h2>Dynamic Example with two-way data-binding</h2>
 <section class="demo-section">
   <md-radio-group name="more_options" [(ngModel)]="favoriteSeason">
-    <md-radio-button *ngFor="#season of seasonOptions" name="more_options" [value]="season">
+    <md-radio-button *ngFor="let season of seasonOptions" name="more_options" [value]="season">
       {{season}}
     </md-radio-button>
   </md-radio-group>

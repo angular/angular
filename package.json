@@ -25,13 +25,13 @@
     "node": ">= 4.2.1 < 5"
   },
   "dependencies": {
-    "angular2": "2.0.0-beta.15",
+    "angular2": "2.0.0-beta.17",
     "es6-promise": "^3.0.2",
     "es6-shim": "^0.35.0",
     "reflect-metadata": "0.1.2",
-    "rxjs": "5.0.0-beta.2",
+    "rxjs": "5.0.0-beta.6",
     "systemjs": "0.19.20",
-    "zone.js": "0.6.10"
+    "zone.js": "0.6.12"
   },
   "devDependencies": {
     "add-stream": "^1.0.0",

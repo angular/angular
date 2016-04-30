@@ -15,7 +15,7 @@ A basic radio group would have the following markup.
 A dynamic example, populated from a `data` variable:
 ```html
 <md-radio-group [(value)]="groupValue">
-  <md-radio-button *ngFor="#d of data" [value]="d.value">
+  <md-radio-button *ngFor="let d of data" [value]="d.value">
     {{d.label}}
   </md-radio-button>
 </md-radio-group>
@@ -24,7 +24,7 @@ A dynamic example, populated from a `data` variable:
 A dynamic example for use inside a form showing support for `[(ngModel)]`:
 ```html
 <md-radio-group [(ngModel)]="chosenOption">
-  <md-radio-button *ngFor="#o of options" [value]="o.value">
+  <md-radio-button *ngFor="let o of options" [value]="o.value">
     {{o.label}}
   </md-radio-button>
 </md-radio-group>

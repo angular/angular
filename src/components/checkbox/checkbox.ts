@@ -105,7 +105,7 @@ export class MdCheckbox implements ControlValueAccessor {
   @Input() tabindex: number = 0;
 
   /** Event emitted when the checkbox's `checked` value changes. */
-  @Output() change: EventEmitter<boolean> = new EventEmitter();
+  @Output() change: EventEmitter<boolean> = new EventEmitter<boolean>();
 
   /** Called when the checkbox is blurred. Needed to properly implement ControlValueAccessor. */
   onTouched: () => any = () => {};

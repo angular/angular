@@ -1,4 +1,7 @@
-import {Component, ElementRef, ViewChildren, QueryList, ViewEncapsulation} from 'angular2/core';
+import {
+    Component, ViewChildren, QueryList, ViewEncapsulation,
+    ViewContainerRef
+} from 'angular2/core';
 import {
   Overlay,
   OverlayState} from '../../core/overlay/overlay';
@@ -19,7 +22,7 @@ export class OverlayDemo {
 
   @ViewChildren(TemplatePortalDirective) templatePortals: QueryList<Portal<any>>;
 
-  constructor(public overlay: Overlay, public elementRef: ElementRef) { }
+  constructor(public overlay: Overlay, public viewContainerRef: ViewContainerRef) { }
 
   openRotiniPanel() {
     let config = new OverlayState();
@@ -32,7 +35,7 @@ export class OverlayDemo {
     this.nextPosition += 30;
 
     this.overlay.create(config).then(ref => {
-      ref.attach(new ComponentPortal(PastaPanel, this.elementRef));
+      ref.attach(new ComponentPortal(PastaPanel, this.viewContainerRef));
     });
   }
 

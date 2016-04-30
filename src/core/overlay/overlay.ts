@@ -1,6 +1,5 @@
 import {
   DynamicComponentLoader,
-  AppViewManager,
   OpaqueToken,
   Inject,
   Injectable,
@@ -40,8 +39,7 @@ let defaultState = new OverlayState();
 export class Overlay {
   constructor(
       @Inject(OVERLAY_CONTAINER_TOKEN) private _overlayContainerElement: HTMLElement,
-      private _dynamicComponentLoader: DynamicComponentLoader,
-      private _appViewManager: AppViewManager) {
+      private _dynamicComponentLoader: DynamicComponentLoader) {
   }
 
   /**
@@ -96,8 +94,7 @@ export class Overlay {
   private _createPortalHost(pane: HTMLElement): DomPortalHost {
     return new DomPortalHost(
         pane,
-        this._dynamicComponentLoader,
-        this._appViewManager);
+        this._dynamicComponentLoader);
   }
 
   /**

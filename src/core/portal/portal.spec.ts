@@ -7,7 +7,7 @@ import {
   ComponentFixture,
   TestComponentBuilder,
 } from 'angular2/testing';
-import {Component, ViewChildren, QueryList, ElementRef} from 'angular2/core';
+import {Component, ViewChildren, QueryList, ViewContainerRef} from 'angular2/core';
 import {TemplatePortalDirective} from './portal-directives';
 import {Portal} from './portal';
 import {ComponentPortal} from './portal';
@@ -15,7 +15,6 @@ import {PortalHostDirective} from './portal-directives';
 import {fakeAsync} from 'angular2/testing';
 import {flushMicrotasks} from 'angular2/testing';
 import {DynamicComponentLoader} from 'angular2/core';
-import {AppViewManager} from 'angular2/core';
 import {DomPortalHost} from './dom-portal-host';
 
 
@@ -219,28 +218,26 @@ export function main() {
 
     describe('DomPortalHost', function() {
       let componentLoader: DynamicComponentLoader;
-      let viewManager: AppViewManager;
-      let someElementRef: ElementRef;
+      let someViewContainerRef: ViewContainerRef;
       let someDomElement: HTMLElement;
       let host: DomPortalHost;
 
       beforeEach(inject(
-          [DynamicComponentLoader, AppViewManager],
-          fakeAsync((dcl: DynamicComponentLoader, avm: AppViewManager) => {
-        viewManager = avm;
+          [DynamicComponentLoader],
+          fakeAsync((dcl: DynamicComponentLoader) => {
         componentLoader = dcl;
         someDomElement = document.createElement('div');
-        host = new DomPortalHost(someDomElement, componentLoader, viewManager);
+        host = new DomPortalHost(someDomElement, componentLoader);
 
-        builder.createAsync(ArbitraryElementRefComponent).then(fixture => {
-          someElementRef = fixture.componentInstance.elementRef;
+        builder.createAsync(ArbitraryViewContainerRefComponent).then(fixture => {
+          someViewContainerRef = fixture.componentInstance.viewContainerRef;
         });
 
         flushMicrotasks();
       })));
 
       it('should attach and detach a component portal', fakeAsyncTest(() => {
-        let portal = new ComponentPortal(PizzaMsg, someElementRef);
+        let portal = new ComponentPortal(PizzaMsg, someViewContainerRef);
 
         let componentInstance: PizzaMsg;
         portal.attach(host).then(ref => {
@@ -334,7 +331,7 @@ export function main() {
         host.detach();
         flushMicrotasks();
 
-        host.attach(new ComponentPortal(PizzaMsg, someElementRef));
+        host.attach(new ComponentPortal(PizzaMsg, someViewContainerRef));
         flushMicrotasks();
 
         expect(someDomElement.textContent).toContain('Pizza');
@@ -351,13 +348,13 @@ export function main() {
 })
 class PizzaMsg {}
 
-/** Simple component to grab an arbitrary ElementRef */
+/** Simple component to grab an arbitrary ViewContainerRef */
 @Component({
   selector: 'some-placeholder',
   template: '<p>Hello</p>'
 })
-class ArbitraryElementRefComponent {
-  constructor(public elementRef: ElementRef) { }
+class ArbitraryViewContainerRefComponent {
+  constructor(public viewContainerRef: ViewContainerRef) { }
 }
 
 
@@ -375,7 +372,7 @@ class ArbitraryElementRefComponent {
 
   <template portal> {{fruit}} </template>
 
-  <template portal #yum="appetizer">{{yum}}</template>
+  <template portal let-yum="appetizer">{{yum}}</template>
   `,
   directives: [PortalHostDirective, TemplatePortalDirective],
 })

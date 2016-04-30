@@ -9,13 +9,13 @@
 
     <md-list>
       <h3 md-subheader>Items</h3>
-      <md-list-item *ngFor="#item of items">
+      <md-list-item *ngFor="let item of items">
         {{item}}
       </md-list-item>
     </md-list>
 
     <md-list>
-      <md-list-item *ngFor="#contact of contacts">
+      <md-list-item *ngFor="let contact of contacts">
         <h3 md-line>{{contact.name}}</h3>
         <p md-line *ngIf="thirdLine">extra line</p>
         <p md-line class="demo-secondary-text">{{contact.headline}}</p>
@@ -24,7 +24,7 @@
 
     <md-list>
       <h3 md-subheader>Today</h3>
-      <md-list-item *ngFor="#message of messages">
+      <md-list-item *ngFor="let message of messages">
         <img md-list-avatar [src]="message.image" alt="Image of {{message.from}}">
         <h4 md-line>{{message.from}}</h4>
         <p md-line>
@@ -33,7 +33,7 @@
         </p>
       </md-list-item>
       <md-divider></md-divider>
-      <md-list-item *ngFor="#message of messages">
+      <md-list-item *ngFor="let message of messages">
         <h4 md-line>{{message.from}}</h4>
         <p md-line> {{message.subject}} </p>
         <p md-line class="demo-secondary-text">{{message.message}} </p>
@@ -45,13 +45,13 @@
     <h2>Dense lists</h2>
     <md-list dense>
       <h3 md-subheader>Items</h3>
-      <md-list-item *ngFor="#item of items">
+      <md-list-item *ngFor="let item of items">
         {{item}}
       </md-list-item>
     </md-list>
 
     <md-list dense>
-      <md-list-item *ngFor="#contact of contacts">
+      <md-list-item *ngFor="let contact of contacts">
         <h3 md-line>{{contact.name}}</h3>
         <p md-line class="demo-secondary-text">{{contact.headline}}</p>
       </md-list-item>
@@ -59,7 +59,7 @@
 
     <md-list dense>
       <h3 md-subheader>Today</h3>
-      <md-list-item *ngFor="#message of messages">
+      <md-list-item *ngFor="let message of messages">
         <img md-list-avatar [src]="message.image" alt="Image of {{message.from}}">
         <h4 md-line>{{message.from}}</h4>
         <p md-line> {{message.subject}} </p>
@@ -70,7 +70,7 @@
   <div>
     <h2>Nav lists</h2>
     <md-nav-list>
-      <a md-list-item *ngFor="#link of links" href="http://www.google.com">
+      <a md-list-item *ngFor="let link of links" href="http://www.google.com">
         {{ link.name }}
       </a>
     </md-nav-list>
@@ -78,7 +78,7 @@
       More info!
     </div>
     <md-nav-list>
-      <md-list-item *ngFor="#link of links">
+      <md-list-item *ngFor="let link of links">
         <a md-line href="http://www.google.com">{{ link.name }}</a>
         <button md-icon-button (click)="infoClicked=!infoClicked">
           <md-icon>info</md-icon>
@@ -86,14 +86,14 @@
       </md-list-item>
     </md-nav-list>
     <md-nav-list>
-      <a md-list-item *ngFor="#link of links" href="http://www.google.com">
+      <a md-list-item *ngFor="let link of links" href="http://www.google.com">
         <md-icon md-list-icon>folder</md-icon>
         <span md-line>{{ link.name }}</span>
         <span md-line class="demo-secondary-text"> Description </span>
       </a>
     </md-nav-list>
     <md-nav-list dense>
-      <md-list-item *ngFor="#link of links">
+      <md-list-item *ngFor="let link of links">
         <a md-line href="http://www.google.com">{{ link.name }}</a>
         <button md-icon-button (click)="infoClicked=!infoClicked">
           <md-icon class="material-icons">info</md-icon>

@@ -29,7 +29,7 @@ export function main() {
               <md-radio-button></md-radio-button>
             </md-radio-group>`)
         .createAsync(TestApp)
-        .then((fixture) => {
+        .then(fixture => {
           let button = fixture.debugElement.query(By.css('md-radio-button'));
 
           fixture.detectChanges();
@@ -41,7 +41,7 @@ export function main() {
       builder
         .overrideTemplate(TestApp, '<md-radio-button disabled></md-radio-button>')
         .createAsync(TestApp)
-        .then((fixture) => {
+        .then(fixture => {
           let button = fixture.debugElement.query(By.css('md-radio-button'));
 
           fixture.detectChanges();
@@ -59,7 +59,7 @@ export function main() {
               <md-radio-button></md-radio-button>
             </md-radio-group>`)
         .createAsync(TestApp)
-        .then((fixture) => {
+        .then(fixture => {
           let button = fixture.debugElement.query(By.css('md-radio-button'));
 
           fixture.detectChanges();
@@ -74,17 +74,18 @@ export function main() {
               <md-radio-button value="1"></md-radio-button>
             </md-radio-group>`)
         .createAsync(TestApp)
-        .then((fixture) => {
+        .then(fixture => {
           let button = fixture.debugElement.query(By.css('md-radio-button'));
           let group = fixture.debugElement.query(By.css('md-radio-group'));
+          let radioGroupInstance = group.injector.get(MdRadioGroup);
 
-          group.componentInstance.selected = button.componentInstance;
+          radioGroupInstance.selected = button.componentInstance;
           fixture.detectChanges();
-          expect(group.componentInstance.value).toBe('1');
+          expect(radioGroupInstance.value).toBe('1');
 
           button.componentInstance.value = '2';
           fixture.detectChanges();
-          expect(group.componentInstance.value).toBe('2');
+          expect(radioGroupInstance.value).toBe('2');
         }).then(done);
     });
 
@@ -92,7 +93,7 @@ export function main() {
       builder
         .overrideTemplate(TestApp, '<md-radio-button></md-radio-button>')
         .createAsync(TestApp)
-        .then((fixture) => {
+        .then(fixture => {
           let button = fixture.debugElement.query(By.css('md-radio-button'));
           let input = button.query(By.css('input'));
 
@@ -109,7 +110,7 @@ export function main() {
       builder
         .overrideTemplate(TestApp, '<md-radio-button></md-radio-button>')
         .createAsync(TestApp)
-        .then((fixture) => {
+        .then(fixture => {
           fakeAsync(function() {
             let button = fixture.debugElement.query(By.css('md-radio-button'));
             let changeEvent: MdRadioChange = null;
@@ -130,7 +131,7 @@ export function main() {
       builder
         .overrideTemplate(TestApp, '<md-radio-button></md-radio-button>')
         .createAsync(TestApp)
-        .then((fixture) => {
+        .then(fixture => {
           let button = fixture.debugElement.query(By.css('md-radio-button'));
           let input = button.query(By.css('input'));
 
@@ -190,17 +191,18 @@ export function main() {
               <md-radio-button value="2"></md-radio-button>
             </md-radio-group>`)
         .createAsync(TestApp)
-        .then((fixture) => {
+        .then(fixture => {
           let buttons = fixture.debugElement.queryAll(By.css('md-radio-button'));
           let group = fixture.debugElement.query(By.css('md-radio-group'));
+          let radioGroupInstance = group.injector.get(MdRadioGroup);
 
           fixture.detectChanges();
-          expect(group.componentInstance.selected).toBe(null);
+          expect(radioGroupInstance.selected).toBe(null);
 
-          group.componentInstance.value = '2';
+          radioGroupInstance.value = '2';
 
           fixture.detectChanges();
-          expect(group.componentInstance.selected).toBe(buttons[1].componentInstance);
+          expect(radioGroupInstance.selected).toBe(buttons[1].componentInstance);
         }).then(done);
     });
 
@@ -212,18 +214,19 @@ export function main() {
               <md-radio-button></md-radio-button>
             </md-radio-group>`)
         .createAsync(TestApp)
-        .then((fixture) => {
+        .then(fixture => {
           let buttons = fixture.debugElement.queryAll(By.css('md-radio-button'));
           let group = fixture.debugElement.query(By.css('md-radio-group'));
+          let radioGroupInstance = group.injector.get(MdRadioGroup);
 
           fixture.detectChanges();
-          expect(group.componentInstance.selected).toBe(null);
+          expect(radioGroupInstance.selected).toBe(null);
 
-          group.componentInstance.selected = buttons[0].componentInstance;
+          radioGroupInstance.selected = buttons[0].componentInstance;
           fixture.detectChanges();
           expect(isSinglySelected(buttons[0], buttons)).toBe(true);
 
-          group.componentInstance.selected = buttons[1].componentInstance;
+          radioGroupInstance.selected = buttons[1].componentInstance;
           fixture.detectChanges();
           expect(isSinglySelected(buttons[1], buttons)).toBe(true);
         }).then(done);
@@ -237,17 +240,18 @@ export function main() {
               <md-radio-button></md-radio-button>
             </md-radio-group>`)
         .createAsync(TestApp)
-        .then((fixture) => {
+        .then(fixture => {
           fakeAsync(function() {
             let buttons = fixture.debugElement.queryAll(By.css('md-radio-button'));
             let group = fixture.debugElement.query(By.css('md-radio-group'));
+            let radioGroupInstance = group.injector.get(MdRadioGroup);
 
             let changeEvent: MdRadioChange = null;
-            group.componentInstance.change.subscribe((evt: MdRadioChange) => {
+            radioGroupInstance.change.subscribe((evt: MdRadioChange) => {
               changeEvent = evt;
             });
 
-            group.componentInstance.selected = buttons[1].componentInstance;
+            radioGroupInstance.selected = buttons[1].componentInstance;
             fixture.detectChanges();
             tick();
 
@@ -265,22 +269,23 @@ export function main() {
               <md-radio-button [value]="1"></md-radio-button>
             </md-radio-group>`)
         .createAsync(TestApp)
-        .then((fixture) => {
+        .then(fixture => {
           fakeAsync(function() {
             let buttons = fixture.debugElement.queryAll(By.css('md-radio-button'));
             let group = fixture.debugElement.query(By.css('md-radio-group'));
+            let radioGroupInstance = group.injector.get(MdRadioGroup);
 
             fixture.detectChanges();
             expect(buttons[0].componentInstance.checked).toBe(false);
             expect(buttons[1].componentInstance.checked).toBe(false);
             expect(fixture.componentInstance.choice).toBe(undefined);
 
-            group.componentInstance.selected = buttons[0].componentInstance;
+            radioGroupInstance.selected = buttons[0].componentInstance;
             fixture.detectChanges();
             expect(isSinglySelected(buttons[0], buttons)).toBe(true);
             expect(fixture.componentInstance.choice).toBe(0);
 
-            group.componentInstance.selected = buttons[1].componentInstance;
+            radioGroupInstance.selected = buttons[1].componentInstance;
             fixture.detectChanges();
             expect(isSinglySelected(buttons[1], buttons)).toBe(true);
             expect(fixture.componentInstance.choice).toBe(1);
@@ -296,21 +301,22 @@ export function main() {
               <md-radio-button [value]="1"></md-radio-button>
             </md-radio-group>`)
         .createAsync(TestAppWithInitialValue)
-        .then((fixture) => {
+        .then(fixture => {
           fakeAsync(function() {
             let buttons = fixture.debugElement.queryAll(By.css('md-radio-button'));
             let group = fixture.debugElement.query(By.css('md-radio-group'));
+            let radioGroupInstance = group.injector.get(MdRadioGroup);
 
             fixture.detectChanges();
             expect(isSinglySelected(buttons[1], buttons)).toBe(true);
             expect(fixture.componentInstance.choice).toBe(1);
 
-            group.componentInstance.selected = buttons[0].componentInstance;
+            radioGroupInstance.selected = buttons[0].componentInstance;
             fixture.detectChanges();
             expect(isSinglySelected(buttons[0], buttons)).toBe(true);
             expect(fixture.componentInstance.choice).toBe(0);
 
-            group.componentInstance.selected = buttons[1].componentInstance;
+            radioGroupInstance.selected = buttons[1].componentInstance;
             fixture.detectChanges();
             expect(isSinglySelected(buttons[1], buttons)).toBe(true);
             expect(fixture.componentInstance.choice).toBe(1);

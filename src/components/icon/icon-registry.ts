@@ -143,11 +143,11 @@ export class MdIconRegistry {
    */
   getSvgIconFromUrl(url: string): Observable<SVGElement> {
     if (this._cachedIconsByUrl.has(url)) {
-      return Observable.of(this._cachedIconsByUrl.get(url).cloneNode(true));
+      return Observable.of(cloneSvg(this._cachedIconsByUrl.get(url)));
     }
     return this._loadSvgIconFromConfig(new SvgIconConfig(url))
         .do(svg => this._cachedIconsByUrl.set(url, svg))
-        .map(svg => svg.cloneNode(true));
+        .map(svg => cloneSvg(svg));
   }
 
   /**
@@ -175,12 +175,12 @@ export class MdIconRegistry {
   private _getSvgFromConfig(config: SvgIconConfig): Observable<SVGElement> {
     if (config.svgElement) {
       // We already have the SVG element for this icon, return a copy.
-      return Observable.of(config.svgElement.cloneNode(true));
+      return Observable.of(cloneSvg(config.svgElement));
     } else {
       // Fetch the icon from the config's URL, cache it, and return a copy.
       return this._loadSvgIconFromConfig(config)
           .do(svg => config.svgElement = svg)
-          .map(svg => svg.cloneNode(true));
+          .map(svg => cloneSvg(svg));
     }
   }
 
@@ -209,7 +209,7 @@ export class MdIconRegistry {
         .filter(iconSetConfig => !iconSetConfig.svgElement)
         .map(iconSetConfig =>
             this._loadSvgIconSetFromConfig(iconSetConfig)
-                .catch((err: any, source: any, caught: any): Observable<SVGElement> => {
+                .catch((err: any, caught: Observable<SVGElement>): Observable<SVGElement> => {
                   // Swallow errors fetching individual URLs so the combined Observable won't
                   // necessarily fail.
                   console.log(`Loading icon set URL: ${iconSetConfig.url} failed: ${err}`);
@@ -349,8 +349,11 @@ export class MdIconRegistry {
     if (this._inProgressUrlFetches.has(url)) {
       return this._inProgressUrlFetches.get(url);
     }
-    const req = this._http.get(url)
-        .map((response) => response.text())
+
+    // TODO(jelbourn): for some reason, the `finally` operator "loses" the generic type on the
+    // Observable. Figure out why and fix it.
+    const req = <Observable<string>> this._http.get(url)
+        .map(response => response.text())
         .finally(() => {
           this._inProgressUrlFetches.delete(url);
         })
@@ -358,4 +361,10 @@ export class MdIconRegistry {
     this._inProgressUrlFetches.set(url, req);
     return req;
   }
+}
+
+
+/** Clones an SVGElement while preserving type information. */
+function cloneSvg(svg: SVGElement) {
+  return <SVGElement> svg.cloneNode(true);
 }

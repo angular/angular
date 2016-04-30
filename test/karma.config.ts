@@ -26,6 +26,9 @@ export function config(config) {
       // Angular 2 polyfills *must* be loaded after es6-shim and system-polyfills in order to
       // setup the monkey-patches for zones.
       {pattern: 'node_modules/angular2/bundles/angular2-polyfills.js', included: true, watched: false},
+      {pattern: 'node_modules/zone.js/dist/jasmine-patch.js', included: true, watched: false},
+      {pattern: 'node_modules/zone.js/dist/async-test.js', included: true, watched: false},
+      {pattern: 'node_modules/zone.js/dist/fake-async-test.js', included: true, watched: false},
       {pattern: 'node_modules/systemjs/dist/system.src.js', included: true, watched: false},
       {pattern: 'node_modules/rxjs/bundles/Rx.js', included: true, watched: false},
       'node_modules/reflect-metadata/Reflect.js',

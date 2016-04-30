@@ -145,7 +145,7 @@
         <button (click)="addABunch(1000)">Add 1000</button>
       </td>
     </thead>
-    <tr *ngFor="#item of items; #i = index">
+    <tr *ngFor="let item of items; let i = index">
       <td>{{i+1}}</td>
       <td>
         <md-input type="number" placeholder="value" aria-label="hello" [(ngModel)]="items[i].value"></md-input>
