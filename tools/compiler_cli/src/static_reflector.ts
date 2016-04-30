@@ -130,7 +130,7 @@ export class StaticReflector implements ReflectorReader {
 
           parameters = [];
           ListWrapper.forEachWithIndex(parameterTypes, (paramType, index) => {
-            let nestedResult = [];
+            let nestedResult: any[] = [];
             if (isPresent(paramType)) {
               nestedResult.push(paramType);
             }
@@ -155,9 +155,9 @@ export class StaticReflector implements ReflectorReader {
 
   private registerDecoratorOrConstructor(type: StaticSymbol, ctor: any): void {
     this.conversionMap.set(type, (context: StaticSymbol, args: any[]) => {
-      let argValues = [];
+      let argValues: any[] = [];
       ListWrapper.forEachWithIndex(args, (arg, index) => {
-        let argValue;
+        let argValue: any;
         if (isStringMap(arg) && isBlank(arg['__symbolic'])) {
           argValue = mapStringMap(arg, (value, key) => this.simplify(context, value));
         } else {
@@ -237,7 +237,7 @@ export class StaticReflector implements ReflectorReader {
         return expression;
       }
       if (isArray(expression)) {
-        let result = [];
+        let result: any[] = [];
         for (let item of(<any>expression)) {
           result.push(simplify(item));
         }
@@ -245,7 +245,7 @@ export class StaticReflector implements ReflectorReader {
       }
       if (isPresent(expression)) {
         if (isPresent(expression['__symbolic'])) {
-          let staticSymbol;
+          let staticSymbol: StaticSymbol;
           switch (expression['__symbolic']) {
             case "binop":
               let left = simplify(expression['left']);
@@ -396,7 +396,7 @@ function isClassMetadata(expression: any): boolean {
 function mapStringMap(input: {[key: string]: any},
                       transform: (value: any, key: string) => any): {[key: string]: any} {
   if (isBlank(input)) return {};
-  var result = {};
+  var result: {[key: string]: any} = {};
   StringMapWrapper.keys(input).forEach((key) => { result[key] = transform(input[key], key); });
   return result;
 }
