@@ -104,27 +104,6 @@ export class ElementAst implements TemplateAst {
   visit(visitor: TemplateAstVisitor, context: any): any {
     return visitor.visitElement(this, context);
   }
-
-  /**
-   * Whether the element has any active bindings (inputs, outputs, vars, or directives).
-   */
-  isBound(): boolean {
-    return (this.inputs.length > 0 || this.outputs.length > 0 || this.exportAsVars.length > 0 ||
-            this.directives.length > 0);
-  }
-
-  /**
-   * Get the component associated with this element, if any.
-   */
-  getComponent(): CompileDirectiveMetadata {
-    for (var i = 0; i < this.directives.length; i++) {
-      var dirAst = this.directives[i];
-      if (dirAst.directive.isComponent) {
-        return dirAst.directive;
-      }
-    }
-    return null;
-  }
 }
 
 /**
