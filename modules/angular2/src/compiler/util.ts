@@ -1,4 +1,13 @@
-import {IS_DART, StringWrapper, Math, isBlank} from 'angular2/src/facade/lang';
+import {
+  IS_DART,
+  StringWrapper,
+  Math,
+  isBlank,
+  isArray,
+  isStrictStringMap,
+  isPrimitive
+} from 'angular2/src/facade/lang';
+import {StringMapWrapper} from 'angular2/src/facade/collection';
 
 export var MODULE_SUFFIX = IS_DART ? '.dart' : '';
 
@@ -26,4 +35,37 @@ export function splitAtColon(input: string, defaultValues: string[]): string[] {
 
 export function sanitizeIdentifier(name: string): string {
   return StringWrapper.replaceAll(name, /\W/g, '_');
+}
+
+export function visitValue(value: any, visitor: ValueVisitor, context: any): any {
+  if (isArray(value)) {
+    return visitor.visitArray(<any[]>value, context);
+  } else if (isStrictStringMap(value)) {
+    return visitor.visitStringMap(<{[key: string]: any}>value, context);
+  } else if (isBlank(value) || isPrimitive(value)) {
+    return visitor.visitPrimitive(value, context);
+  } else {
+    return visitor.visitOther(value, context);
+  }
+}
+
+export interface ValueVisitor {
+  visitArray(arr: any[], context: any): any;
+  visitStringMap(map: {[key: string]: any}, context: any): any;
+  visitPrimitive(value: any, context: any): any;
+  visitOther(value: any, context: any): any;
+}
+
+export class ValueTransformer implements ValueVisitor {
+  visitArray(arr: any[], context: any): any {
+    return arr.map(value => visitValue(value, this, context));
+  }
+  visitStringMap(map: {[key: string]: any}, context: any): any {
+    var result = {};
+    StringMapWrapper.forEach(map,
+                             (value, key) => { result[key] = visitValue(value, this, context); });
+    return result;
+  }
+  visitPrimitive(value: any, context: any): any { return value; }
+  visitOther(value: any, context: any): any { return value; }
 }

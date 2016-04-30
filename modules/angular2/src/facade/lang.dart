@@ -26,6 +26,7 @@ bool isString(Object obj) => obj is String;
 bool isFunction(Object obj) => obj is Function;
 bool isType(Object obj) => obj is Type;
 bool isStringMap(Object obj) => obj is Map;
+bool isStrictStringMap(Object obj) => obj is Map;
 bool isArray(Object obj) => obj is List;
 bool isPromise(Object obj) => obj is Future;
 bool isNumber(Object obj) => obj is num;

@@ -7,6 +7,7 @@ import {
   RegExpWrapper,
   StringWrapper
 } from 'angular2/src/facade/lang';
+import {BaseException} from 'angular2/src/facade/exceptions';
 import {OutputEmitter, EmitterVisitorContext} from './abstract_emitter';
 import {AbstractJsEmitterVisitor} from './abstract_js_emitter';
 import {getImportModulePath, ImportEnv} from './path_util';
@@ -34,6 +35,9 @@ class JsEmitterVisitor extends AbstractJsEmitterVisitor {
   constructor(private _moduleUrl: string) { super(); }
 
   visitExternalExpr(ast: o.ExternalExpr, ctx: EmitterVisitorContext): any {
+    if (isBlank(ast.value.name)) {
+      throw new BaseException(`Internal error: unknown identifier ${ast.value}`);
+    }
     if (isPresent(ast.value.moduleUrl) && ast.value.moduleUrl != this._moduleUrl) {
       var prefix = this.importsWithPrefixes.get(ast.value.moduleUrl);
       if (isBlank(prefix)) {
