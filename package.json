@@ -111,7 +111,7 @@
     "systemjs-builder": "^0.10.3",
     "through2": "^0.6.5",
     "ts-api-guardian": "0.0.2",
-    "ts2dart": "^0.9.9",
+    "ts2dart": "^0.9.10",
     "tsd": "^0.6.5-beta",
     "tsickle": "^0.1.0",
     "tslint": "^3.7.0-dev.2",
