@@ -35,7 +35,7 @@ import {
   asyncRouteDataCmp
 } from './fixture_components';
 
-function getLinkElement(rtc: ComponentFixture) {
+function getLinkElement(rtc: ComponentFixture<any>) {
   return rtc.debugElement.query(By.css('a')).nativeElement;
 }
 

@@ -15,7 +15,7 @@ export class ChangeDetectionPerfRecord {
 export class AngularTools {
   profiler: AngularProfiler;
 
-  constructor(ref: ComponentRef) { this.profiler = new AngularProfiler(ref); }
+  constructor(ref: ComponentRef<any>) { this.profiler = new AngularProfiler(ref); }
 }
 
 /**
@@ -25,7 +25,7 @@ export class AngularTools {
 export class AngularProfiler {
   appRef: ApplicationRef;
 
-  constructor(ref: ComponentRef) { this.appRef = ref.injector.get(ApplicationRef); }
+  constructor(ref: ComponentRef<any>) { this.appRef = ref.injector.get(ApplicationRef); }
 
   /**
    * Exercises change detection in a loop and then prints the average amount of

@@ -94,7 +94,7 @@ export function main() {
       it('should leave the view tree in a consistent state if hydration fails',
          inject([DynamicComponentLoader, TestComponentBuilder, AsyncTestCompleter],
                 (loader: DynamicComponentLoader, tcb: TestComponentBuilder, async) => {
-                  tcb.createAsync(MyComp).then((tc: ComponentFixture) => {
+                  tcb.createAsync(MyComp).then((tc: ComponentFixture<any>) => {
                     tc.detectChanges();
                     PromiseWrapper.catchError(
                         loader.loadNextToLocation(DynamicallyLoadedThrows,
@@ -146,7 +146,7 @@ export function main() {
                   DOM.appendChild(doc.body, rootEl);
                   loader.loadAsRoot(ChildComp, null, injector)
                       .then((componentRef) => {
-                        var el = new ComponentFixture(componentRef, null, false);
+                        var el = new ComponentFixture<any>(componentRef, null, false);
 
                         expect(rootEl.parentNode).toBe(doc.body);
 

@@ -15,7 +15,7 @@ import {isPresent, isBlank} from 'angular2/src/facade/lang';
 
 @Directive({selector: 'router-outlet'})
 export class RouterOutlet {
-  private _loaded: ComponentRef;
+  private _loaded: ComponentRef<any>;
   public outletMap: RouterOutletMap;
 
   constructor(parentOutletMap: RouterOutletMap, private _location: ViewContainerRef,
@@ -32,8 +32,8 @@ export class RouterOutlet {
 
   get isLoaded(): boolean { return isPresent(this._loaded); }
 
-  load(factory: ComponentFactory, providers: ResolvedReflectiveProvider[],
-       outletMap: RouterOutletMap): ComponentRef {
+  load(factory: ComponentFactory<any>, providers: ResolvedReflectiveProvider[],
+       outletMap: RouterOutletMap): ComponentRef<any> {
     this.outletMap = outletMap;
     let inj = ReflectiveInjector.fromResolvedProviders(providers, this._location.parentInjector);
     this._loaded = this._location.createComponent(factory, this._location.length, inj, []);

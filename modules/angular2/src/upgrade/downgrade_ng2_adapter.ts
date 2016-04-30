@@ -21,7 +21,7 @@ export class DowngradeNg2ComponentAdapter {
   component: any = null;
   inputChangeCount: number = 0;
   inputChanges: {[key: string]: SimpleChange} = null;
-  componentRef: ComponentRef = null;
+  componentRef: ComponentRef<any> = null;
   changeDetector: ChangeDetectorRef = null;
   componentScope: angular.IScope;
   childNodes: Node[];
@@ -30,7 +30,8 @@ export class DowngradeNg2ComponentAdapter {
   constructor(private id: string, private info: ComponentInfo,
               private element: angular.IAugmentedJQuery, private attrs: angular.IAttributes,
               private scope: angular.IScope, private parentInjector: Injector,
-              private parse: angular.IParseService, private componentFactory: ComponentFactory) {
+              private parse: angular.IParseService,
+              private componentFactory: ComponentFactory<any>) {
     (<any>this.element[0]).id = id;
     this.componentScope = scope.$new();
     this.childNodes = <Node[]><any>element.contents();

@@ -62,9 +62,8 @@ export abstract class ViewContainerRef {
    *
    * Returns the {@link ViewRef} for the newly created View.
    */
-  // TODO(tbosch): Use a generic once ts2dart supports it.
-  abstract createEmbeddedView(templateRef: TemplateRef<any>, context?: any,
-                              index?: number): EmbeddedViewRef<any>;
+  abstract createEmbeddedView<C>(templateRef: TemplateRef<C>, context?: C,
+                                 index?: number): EmbeddedViewRef<C>;
 
   /**
    * Instantiates a single {@link Component} and inserts its Host View into this container at the
@@ -79,8 +78,8 @@ export abstract class ViewContainerRef {
    *
    * Returns the {@link ComponentRef} of the Host View created for the newly instantiated Component.
    */
-  abstract createComponent(componentFactory: ComponentFactory, index?: number, injector?: Injector,
-                           projectableNodes?: any[][]): ComponentRef;
+  abstract createComponent<C>(componentFactory: ComponentFactory<C>, index?: number,
+                              injector?: Injector, projectableNodes?: any[][]): ComponentRef<C>;
 
   /**
    * Inserts a View identified by a {@link ViewRef} into the container at the specified `index`.
@@ -129,9 +128,8 @@ export class ViewContainerRef_ implements ViewContainerRef {
 
   // TODO(rado): profile and decide whether bounds checks should be added
   // to the methods below.
-  // TODO(tbosch): use a generic C once ts2dart supports it.
-  createEmbeddedView(templateRef: TemplateRef<any>, context: any = null,
-                     index: number = -1): EmbeddedViewRef<any> {
+  createEmbeddedView<C>(templateRef: TemplateRef<C>, context: C = null,
+                        index: number = -1): EmbeddedViewRef<C> {
     var viewRef: EmbeddedViewRef<any> = templateRef.createEmbeddedView(context);
     this.insert(viewRef, index);
     return viewRef;
@@ -141,8 +139,8 @@ export class ViewContainerRef_ implements ViewContainerRef {
   _createComponentInContainerScope: WtfScopeFn =
       wtfCreateScope('ViewContainerRef#createComponent()');
 
-  createComponent(componentFactory: ComponentFactory, index: number = -1, injector: Injector = null,
-                  projectableNodes: any[][] = null): ComponentRef {
+  createComponent<C>(componentFactory: ComponentFactory<C>, index: number = -1,
+                     injector: Injector = null, projectableNodes: any[][] = null): ComponentRef<C> {
     var s = this._createComponentInContainerScope();
     var contextInjector = isPresent(injector) ? injector : this._element.parentInjector;
     var componentRef = componentFactory.create(contextInjector, projectableNodes);

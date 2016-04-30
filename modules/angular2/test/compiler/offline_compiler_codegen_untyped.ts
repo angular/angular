@@ -3,8 +3,9 @@ import {print} from 'angular2/src/facade/lang';
 import {JavaScriptEmitter} from 'angular2/src/compiler/output/js_emitter';
 import {compileComp, compAMetadata} from './offline_compiler_util';
 import {ComponentFactory} from 'angular2/src/core/linker/component_factory';
+import {CompA} from './offline_compiler_util';
 
-export const CompANgFactory: ComponentFactory = null;
+export const CompANgFactory: ComponentFactory<CompA> = null;
 
 // Generator
 export function main(args: string[]) {

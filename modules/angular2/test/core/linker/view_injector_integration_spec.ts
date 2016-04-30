@@ -274,7 +274,7 @@ export function main() {
   var tcb: TestComponentBuilder;
 
   function createCompFixture(template: string, tcb: TestComponentBuilder,
-                             comp: Type = null): ComponentFixture {
+                             comp: Type = null): ComponentFixture<any> {
     if (isBlank(comp)) {
       comp = TestComp;
     }

@@ -10,7 +10,7 @@ import {ComponentFactory} from './component_factory';
  * can later be used to create and render a Component instance.
  */
 export abstract class ComponentResolver {
-  abstract resolveComponent(componentType: Type): Promise<ComponentFactory>;
+  abstract resolveComponent(componentType: Type): Promise<ComponentFactory<any>>;
   abstract clearCache();
 }
 
@@ -20,7 +20,7 @@ function _isComponentFactory(type: any): boolean {
 
 @Injectable()
 export class ReflectorComponentResolver extends ComponentResolver {
-  resolveComponent(componentType: Type): Promise<ComponentFactory> {
+  resolveComponent(componentType: Type): Promise<ComponentFactory<any>> {
     var metadatas = reflector.annotations(componentType);
     var componentFactory = metadatas.find(_isComponentFactory);
 

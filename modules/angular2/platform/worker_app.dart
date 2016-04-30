@@ -39,7 +39,7 @@ PlatformRef workerAppPlatform(SendPort renderSendPort) {
   return platform;
 }
 
-Future<ComponentRef> bootstrapApp(
+Future<ComponentRef<dynamic>> bootstrapApp(
     SendPort renderSendPort,
     Type appComponentType,
     [List<dynamic /*Type | Provider | any[]*/> customProviders]) {

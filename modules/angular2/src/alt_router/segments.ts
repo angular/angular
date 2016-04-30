@@ -86,10 +86,10 @@ export class RouteSegment {
   _type: Type;
 
   /** @internal */
-  _componentFactory: ComponentFactory;
+  _componentFactory: ComponentFactory<any>;
 
   constructor(public urlSegments: UrlSegment[], public parameters: {[key: string]: string},
-              public outlet: string, type: Type, componentFactory: ComponentFactory) {
+              public outlet: string, type: Type, componentFactory: ComponentFactory<any>) {
     this._type = type;
     this._componentFactory = componentFactory;
   }
@@ -123,6 +123,6 @@ export function equalSegments(a: RouteSegment, b: RouteSegment): boolean {
   return StringMapWrapper.equals(a.parameters, b.parameters);
 }
 
-export function routeSegmentComponentFactory(a: RouteSegment): ComponentFactory {
+export function routeSegmentComponentFactory(a: RouteSegment): ComponentFactory<any> {
   return a._componentFactory;
 }

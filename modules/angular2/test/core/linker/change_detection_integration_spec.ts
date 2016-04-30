@@ -82,7 +82,7 @@ export function main() {
   var directiveLog: DirectiveLog;
 
   function createCompFixture(template: string, compType: Type = TestComponent,
-                             _tcb: TestComponentBuilder = null): ComponentFixture {
+                             _tcb: TestComponentBuilder = null): ComponentFixture<any> {
     if (isBlank(_tcb)) {
       _tcb = tcb;
     }
@@ -98,12 +98,14 @@ export function main() {
     return nodes.map(node => node.inject(dirType));
   }
 
-  function _bindSimpleProp(bindAttr: string, compType: Type = TestComponent): ComponentFixture {
+  function _bindSimpleProp(bindAttr: string,
+                           compType: Type = TestComponent): ComponentFixture<any> {
     var template = `<div ${bindAttr}></div>`;
     return createCompFixture(template, compType);
   }
 
-  function _bindSimpleValue(expression: any, compType: Type = TestComponent): ComponentFixture {
+  function _bindSimpleValue(expression: any,
+                            compType: Type = TestComponent): ComponentFixture<any> {
     return _bindSimpleProp(`[someProp]='${expression}'`, compType);
   }
 
@@ -640,7 +642,7 @@ export function main() {
     });
 
     describe('lifecycle', () => {
-      function createCompWithContentAndViewChild(): ComponentFixture {
+      function createCompWithContentAndViewChild(): ComponentFixture<any> {
         return createCompFixture(
             '<div testDirective="parent"><div *ngIf="true" testDirective="contentChild"></div><other-cmp></other-cmp></div>',
             TestComponent,

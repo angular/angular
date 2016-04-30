@@ -121,7 +121,7 @@ export function browserPlatform(): PlatformRef {
  */
 export function bootstrap(
     appComponentType: Type,
-    customProviders?: Array<any /*Type | Provider | any[]*/>): Promise<ComponentRef> {
+    customProviders?: Array<any /*Type | Provider | any[]*/>): Promise<ComponentRef<any>> {
   reflector.reflectionCapabilities = new ReflectionCapabilities();
   var appInjector = ReflectiveInjector.resolveAndCreate(
       [BROWSER_APP_PROVIDERS, isPresent(customProviders) ? customProviders : []],

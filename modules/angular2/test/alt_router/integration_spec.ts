@@ -213,12 +213,12 @@ export function main() {
   });
 }
 
-function advance(fixture: ComponentFixture): void {
+function advance(fixture: ComponentFixture<any>): void {
   tick();
   fixture.detectChanges();
 }
 
-function compileRoot(tcb: TestComponentBuilder): Promise<ComponentFixture> {
+function compileRoot(tcb: TestComponentBuilder): Promise<ComponentFixture<any>> {
   return tcb.createAsync(RootCmp);
 }
 
