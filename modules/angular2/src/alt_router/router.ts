@@ -59,10 +59,12 @@ export class Router {
         .then(currTree => {
           return new _LoadSegments(currTree, this._prevTree)
               .load(this._routerOutletMap, this._rootComponent)
-              .then(_ => {
-                this._prevTree = currTree;
-                this._location.go(this._urlSerializer.serialize(this._urlTree));
-                this._changes.emit(null);
+              .then(updated => {
+                if (updated) {
+                  this._prevTree = currTree;
+                  this._location.go(this._urlSerializer.serialize(this._urlTree));
+                  this._changes.emit(null);
+                }
               });
         });
   }
@@ -90,7 +92,7 @@ class _LoadSegments {
 
   constructor(private currTree: Tree<RouteSegment>, private prevTree: Tree<RouteSegment>) {}
 
-  load(parentOutletMap: RouterOutletMap, rootComponent: Object): Promise<void> {
+  load(parentOutletMap: RouterOutletMap, rootComponent: Object): Promise<boolean> {
     let prevRoot = isPresent(this.prevTree) ? rootNode(this.prevTree) : null;
     let currRoot = rootNode(this.currTree);
 
@@ -100,6 +102,7 @@ class _LoadSegments {
           if (res) {
             this.loadChildSegments(currRoot, prevRoot, parentOutletMap, [rootComponent]);
           }
+          return res;
         });
   }
 
@@ -189,7 +192,7 @@ class _LoadSegments {
   }
 
   private unloadOutlet(outlet: RouterOutlet, components: Object[]): void {
-    if (outlet.isLoaded) {
+    if (isPresent(outlet) && outlet.isLoaded) {
       StringMapWrapper.forEach(outlet.outletMap._outlets,
                                (v, k) => this.unloadOutlet(v, components));
       if (this.performMutation) {
