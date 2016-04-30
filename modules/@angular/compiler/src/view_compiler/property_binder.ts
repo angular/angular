@@ -30,7 +30,7 @@ function createBindFieldExpr(exprIndex: number): o.ReadPropExpr {
 }
 
 function createCurrValueExpr(exprIndex: number): o.ReadVarExpr {
-  return o.variable(`currVal_${exprIndex}`);
+  return o.variable(`currVal_${exprIndex}`);  // fix syntax highlighting: `
 }
 
 function bind(view: CompileView, currValExpr: o.ReadVarExpr, fieldExpr: o.ReadPropExpr,

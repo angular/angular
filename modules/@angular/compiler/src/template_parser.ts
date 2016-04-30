@@ -632,7 +632,7 @@ class TemplateParseVisitor implements HtmlAstVisitor {
         }
         targetReferences.push(new ReferenceAst(elOrDirRef.name, refToken, elOrDirRef.sourceSpan));
       }
-    });
+    }); // fix syntax highlighting issue: `
     return directiveAsts;
   }
 
