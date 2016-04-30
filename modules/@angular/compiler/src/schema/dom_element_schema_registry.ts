@@ -1,5 +1,6 @@
 import {Injectable} from '@angular/core';
 import {isPresent} from '../facade/lang';
+import {SecurityContext} from '../security/security_context';
 import {StringMapWrapper} from '../facade/collection';
 import {ElementSchemaRegistry} from './element_schema_registry';
 
@@ -11,22 +12,23 @@ enum PropertyType {
   OBJECT,
 }
 
-enum SecurityContext {
-  HTML,
-  CSS,
-  JS,
-  URL,
-  RESOURCE_URL,
-}
-
 interface Property {
   type: PropertyType;
   context: SecurityContext;
 }
 
-const SECURITY_CONTEXTS: {[k: string]: {k: string}: SecurityContext} = {
+// const SECURITY_CONTEXTS: {[k: string]: {[k: string]: SecurityContext}} = {
+//   'form': {'action': SecurityContext.URL},
+//   'body': {'background': SecurityContext.URL},
+// 'applet':   'code', 'codebase'
+// 'object':   'codebase',
+// 'object':  'data'  ,
+// };
 
-};
+function getSecurityContext(tag: string, propertyName: string): SecurityContext {
+  if (tag === 'a' && propertyName === 'href') return SecurityContext.URL;
+  return SecurityContext.NONE;
+}
 
 /**
  * This array represents the DOM schema. It encodes inheritance, properties, and events.
@@ -59,13 +61,6 @@ const SECURITY_CONTEXTS: {[k: string]: {k: string}: SecurityContext} = {
  * - `!`: property is a boolean.
  * - `#`: property is a number.
  * - `%`: property is an object.
- *
- * Each property must be suffixed with:
- * =h
- * =c
- * =j
- * =u
- * =r
  *
  * ## Query
  *
@@ -224,7 +219,7 @@ const SCHEMA: string[] =
     '@svg:view^@svg:|#zoomAndPan'
   ]);
 
-var attrToPropMap: {[name: string]: string} = <any>{
+const attrToPropMap: {[name: string]: string} = <any>{
   'class': 'className',
   'innerHtml': 'innerHTML',
   'readonly': 'readOnly',
@@ -234,25 +229,24 @@ var attrToPropMap: {[name: string]: string} = <any>{
 
 @Injectable()
 export class DomElementSchemaRegistry implements ElementSchemaRegistry {
-  schema = <{[element: string]: {[property: string]: Property}}>{};
+  private schema = <{[element: string]: {[property: string]: Property}}>{};
 
   constructor() {
     SCHEMA.forEach(encodedType => {
-      var parts = encodedType.split('|');
-      var properties = parts[1].split(',');
-      var typeParts = (parts[0] + '^').split('^');
-      var typeName = typeParts[0];
-      var elementProps = <{[property: string]: Property}>{};
+      let parts = encodedType.split('|');
+      let properties = parts[1].split(',');
+      let typeParts = (parts[0] + '^').split('^');
+      let typeName = typeParts[0];
+      let elementProps = <{[property: string]: Property}>{};
       typeName.split(',').forEach(tag => this.schema[tag] = elementProps);
-      var superType = this.schema[typeParts[1]];
+      let superType = this.schema[typeParts[1]];
       if (isPresent(superType)) {
         StringMapWrapper.forEach(superType, (v, k) => elementProps[k] = v);
       }
       properties.forEach((property: string) => {
-        if (property == '') return;
+        if (property === '') return;
         let name = property.substring(1);
         let type: PropertyType;
-        let context: SecurityContext;
         switch (property[0]) {
           case '*':
             // TODO(mhevery): support events.
@@ -272,18 +266,7 @@ export class DomElementSchemaRegistry implements ElementSchemaRegistry {
             type = PropertyType.STRING;
             break;
         }
-        if (property.startsWith('*')) {
-          // We don't yet support events.
-          // type = EVENT;
-        } else if (property.startsWith('!')) {
-          property.substring(1)] = PropertyType.BOOLEAN;
-        } else if (property.startsWith('#')) {
-          type[property.substring(1)] = PropertyType.NUMBER;
-        } else if (property.startsWith('%')) {
-          type[property.substring(1)] = PropertyType.OBJECT;
-        } else {
-          type[property] = PropertyType.STRING;
-        }
+        let context: SecurityContext = getSecurityContext(typeName, property);
         elementProps[property] = {type, context};
       });
     });
@@ -295,7 +278,7 @@ export class DomElementSchemaRegistry implements ElementSchemaRegistry {
       // once it is instantiated
       return true;
     } else {
-      var elementProperties = this.schema[tagName.toLowerCase()];
+      let elementProperties = this.schema[tagName.toLowerCase()];
       if (!isPresent(elementProperties)) {
         elementProperties = this.schema['unknown'];
       }
@@ -303,8 +286,15 @@ export class DomElementSchemaRegistry implements ElementSchemaRegistry {
     }
   }
 
+  getSecurityContext(tagName: string, propName: string): SecurityContext {
+    let elementProperties = this.schema[tagName.toLowerCase()];
+    if (!elementProperties) return SecurityContext.NONE;
+    let prop = elementProperties[propName];
+    return isPresent(prop) ? prop.context : SecurityContext.NONE;
+  }
+
   getMappedPropName(propName: string): string {
-    var mappedPropName = StringMapWrapper.get(attrToPropMap, propName);
+    let mappedPropName = StringMapWrapper.get(attrToPropMap, propName);
     return isPresent(mappedPropName) ? mappedPropName : propName;
   }
 }
