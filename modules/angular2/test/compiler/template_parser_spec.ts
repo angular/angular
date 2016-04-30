@@ -945,6 +945,14 @@ There is no directive with "exportAs" set to "dirA" ("<div [ERROR ->]#a="dirA"><
         })
       }
 
+      function createDir(selector: string): CompileDirectiveMetadata {
+        return CompileDirectiveMetadata.create({
+          selector: selector,
+          type:
+              new CompileTypeMetadata({moduleUrl: someModuleUrl, name: `SomeDir${compCounter++}`})
+        })
+      }
+
       describe('project text nodes', () => {
         it('should project text nodes with wildcard selector', () => {
           expect(humanizeContentProjection(parse('<div>hello</div>', [createComp('div', ['*'])])))
@@ -1057,6 +1065,12 @@ There is no directive with "exportAs" set to "dirA" ("<div [ERROR ->]#a="dirA"><
                                                  [createComp('div', ['a', 'b']), ngIf])))
               .toEqual([['div', null], ['template', 1], ['a', null]]);
         });
+      });
+
+      it('should support other directives before the component', () => {
+        expect(humanizeContentProjection(
+                   parse('<div>hello</div>', [createDir('div'), createComp('div', ['*'])])))
+            .toEqual([['div', null], ['#text(hello)', 0]]);
       });
     });
 
