@@ -24,6 +24,9 @@ interface Property {
   context: SecurityContext;
 }
 
+const SECURITY_CONTEXTS: {[k: string]: {k: string}: SecurityContext} = {
+
+};
 
 /**
  * This array represents the DOM schema. It encodes inheritance, properties, and events.
