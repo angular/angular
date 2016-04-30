@@ -850,7 +850,6 @@ const COMPILER = [
   'DirectiveAst.visit(visitor:TemplateAstVisitor, context:any):any',
   'ElementAst',
   'ElementAst.constructor(name:string, attrs:AttrAst[], inputs:BoundElementPropertyAst[], outputs:BoundEventAst[], references:ReferenceAst[], directives:DirectiveAst[], providers:ProviderAst[], hasViewContainer:boolean, children:TemplateAst[], ngContentIndex:number, sourceSpan:ParseSourceSpan)',
-  'ElementAst.getComponent():CompileDirectiveMetadata',
   'ElementAst.visit(visitor:TemplateAstVisitor, context:any):any',
   'EmbeddedTemplateAst',
   'EmbeddedTemplateAst.constructor(attrs:AttrAst[], outputs:BoundEventAst[], references:ReferenceAst[], variables:VariableAst[], directives:DirectiveAst[], providers:ProviderAst[], hasViewContainer:boolean, children:TemplateAst[], ngContentIndex:number, sourceSpan:ParseSourceSpan)',

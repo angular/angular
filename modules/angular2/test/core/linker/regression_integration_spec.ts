@@ -33,6 +33,7 @@ import {
   OpaqueToken,
   Injector
 } from 'angular2/core';
+import {NgIf, NgClass} from 'angular2/common';
 import {CompilerConfig} from 'angular2/compiler';
 
 export function main() {
@@ -170,6 +171,22 @@ function declareTests(isJit: boolean) {
              });
        }));
 
+    it('should support ngClass before a component and content projection inside of an ngIf',
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+         tcb.overrideView(
+                MyComp, new ViewMetadata({
+                  template: `A<cmp-content *ngIf="true" [ngClass]="'red'">B</cmp-content>C`,
+                  directives: [NgClass, NgIf, CmpWithNgContent]
+                }))
+             .createAsync(MyComp)
+             .then((fixture) => {
+               fixture.detectChanges();
+               expect(fixture.nativeElement).toHaveText('ABC');
+               async.done();
+             });
+       }));
+
+
   });
 }
 
@@ -186,4 +203,8 @@ class PlatformPipe implements PipeTransform {
 @Pipe({name: 'somePipe', pure: true})
 class CustomPipe implements PipeTransform {
   transform(value: any): any { return 'someCustomPipe'; }
+}
+
+@Component({selector: 'cmp-content', template: `<ng-content></ng-content>`})
+class CmpWithNgContent {
 }
