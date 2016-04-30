@@ -286,7 +286,7 @@ export class DomElementSchemaRegistry implements ElementSchemaRegistry {
     }
   }
 
-  getSecurityContext(tagName: string, propName: string): SecurityContext {
+  securityContext(tagName: string, propName: string): SecurityContext {
     let elementProperties = this.schema[tagName.toLowerCase()];
     if (!elementProperties) return SecurityContext.NONE;
     let prop = elementProperties[propName];

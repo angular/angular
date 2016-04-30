@@ -58,7 +58,7 @@ export function main() {
     });
 
     it('should return security contexts for elements', () => {
-      expect(registry.getSecurityContext('a', 'href')).toBe(SecurityContext.URL);
+      expect(registry.securityContext('a', 'href')).toBe(SecurityContext.URL);
     });
 
     it('should detect properties on namespaced elements',
