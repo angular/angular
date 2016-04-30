@@ -14,10 +14,6 @@ class Math {
   static num min(num a, num b) => math.min(a, b);
 }
 
-class CONST {
-  const CONST();
-}
-
 const IS_DART = true;
 
 scheduleMicroTask(Function fn) {
@@ -296,6 +292,10 @@ bool normalizeBool(bool obj) {
 
 bool isJsObject(o) {
   return false;
+}
+
+warn(o) {
+  print(o);
 }
 
 // Functions below are noop in Dart. Imperatively controlling dev mode kills

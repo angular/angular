@@ -10,7 +10,7 @@ import {
 } from 'angular2/testing_internal';
 import {SpyIterableDifferFactory} from '../../spies';
 import {IterableDiffers} from 'angular2/src/core/change_detection/differs/iterable_differs';
-import {Injector, provide} from 'angular2/core';
+import {Injector, provide, ReflectiveInjector} from 'angular2/core';
 
 export function main() {
   describe('IterableDiffers', function() {
@@ -51,7 +51,7 @@ export function main() {
 
     describe(".extend()", () => {
       it('should throw if calling extend when creating root injector', () => {
-        var injector = Injector.resolveAndCreate([IterableDiffers.extend([])]);
+        var injector = ReflectiveInjector.resolveAndCreate([IterableDiffers.extend([])]);
 
         expect(() => injector.get(IterableDiffers))
             .toThrowErrorWith("Cannot extend IterableDiffers without a parent injector");
@@ -59,7 +59,8 @@ export function main() {
 
       it('should extend di-inherited diffesr', () => {
         var parent = new IterableDiffers([factory1]);
-        var injector = Injector.resolveAndCreate([provide(IterableDiffers, {useValue: parent})]);
+        var injector =
+            ReflectiveInjector.resolveAndCreate([provide(IterableDiffers, {useValue: parent})]);
         var childInjector = injector.resolveAndCreateChild([IterableDiffers.extend([factory2])]);
 
         expect(injector.get(IterableDiffers).factories).toEqual([factory1]);

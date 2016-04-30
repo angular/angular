@@ -16,9 +16,10 @@ import {
 } from 'angular2/testing_internal';
 
 import {provide, Component, Injector, Inject} from 'angular2/core';
+import {Location} from 'angular2/platform/common';
 import {PromiseWrapper, TimerWrapper} from 'angular2/src/facade/async';
 
-import {Router, RouterOutlet, RouterLink, RouteParams, RouteData, Location} from 'angular2/router';
+import {Router, RouterOutlet, RouterLink, RouteParams, RouteData} from 'angular2/router';
 import {
   RouteConfig,
   Route,

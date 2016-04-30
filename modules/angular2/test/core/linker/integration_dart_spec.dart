@@ -140,8 +140,8 @@ main() {
   describe("ObservableListDiff", () {
     it(
         'should be notified of changes',
-        inject([TestComponentBuilder, Log],
-            fakeAsync((TestComponentBuilder tcb, Log log) {
+        fakeAsync(inject([TestComponentBuilder, Log],
+                         (TestComponentBuilder tcb, Log log) {
           tcb
               .overrideView(
                   Dummy,
@@ -259,7 +259,7 @@ class OnChangeComponent implements OnChanges {
     ])
 @View(
     template:
-        '<span *ngFor="#item of list">{{item}}</span><directive-logging-checks></directive-logging-checks>',
+        '<span *ngFor="let item of list">{{item}}</span><directive-logging-checks></directive-logging-checks>',
     directives: const [NgFor, DirectiveLoggingChecks])
 class ComponentWithObservableList {
   Iterable list;

@@ -7,6 +7,7 @@ import {
   NgContentAst,
   EmbeddedTemplateAst,
   ElementAst,
+  ReferenceAst,
   VariableAst,
   BoundEventAst,
   BoundElementPropertyAst,
@@ -39,6 +40,8 @@ import {CompileElement, CompileNode} from './compile_element';
 export function bindView(view: CompileView, parsedTemplate: TemplateAst[]): void {
   var visitor = new ViewBinderVisitor(view);
   templateVisitAll(visitor, parsedTemplate);
+  view.pipes.forEach(
+      (pipe) => { bindPipeDestroyLifecycleCallbacks(pipe.meta, pipe.instance, pipe.view); });
 }
 
 class ViewBinderVisitor implements TemplateAstVisitor {
@@ -101,6 +104,7 @@ class ViewBinderVisitor implements TemplateAstVisitor {
       bindDirectiveDestroyLifecycleCallbacks(directiveAst.directive, directiveInstance,
                                              compileElement);
     });
+    bindView(compileElement.embeddedView, ast.children);
     return null;
   }
 
@@ -110,6 +114,7 @@ class ViewBinderVisitor implements TemplateAstVisitor {
     return null;
   }
 
+  visitReference(ast: ReferenceAst, ctx: any): any { return null; }
   visitVariable(ast: VariableAst, ctx: any): any { return null; }
   visitDirectiveProperty(ast: BoundDirectivePropertyAst, context: any): any { return null; }
   visitElementProperty(ast: BoundElementPropertyAst, context: any): any { return null; }

@@ -11,7 +11,7 @@ import {
   xit,
   SpyObject
 } from 'angular2/testing_internal';
-import {ObservableWrapper} from 'angular2/src/facade/async';
+import {ObservableWrapper, TimerWrapper} from 'angular2/src/facade/async';
 import {BrowserJsonp} from 'angular2/src/http/backends/browser_jsonp';
 import {
   JSONPConnection,
@@ -19,9 +19,8 @@ import {
   JSONPBackend,
   JSONPBackend_
 } from 'angular2/src/http/backends/jsonp_backend';
-import {provide, Injector} from 'angular2/core';
+import {provide, Injector, ReflectiveInjector} from 'angular2/core';
 import {isPresent, StringWrapper} from 'angular2/src/facade/lang';
-import {TimerWrapper} from 'angular2/src/facade/async';
 import {Request} from 'angular2/src/http/static_request';
 import {Response} from 'angular2/src/http/static_response';
 import {Map} from 'angular2/src/facade/collection';
@@ -71,7 +70,7 @@ export function main() {
     let sampleRequest: Request;
 
     beforeEach(() => {
-      let injector = Injector.resolveAndCreate([
+      let injector = ReflectiveInjector.resolveAndCreate([
         provide(ResponseOptions, {useClass: BaseResponseOptions}),
         provide(BrowserJsonp, {useClass: MockBrowserJsonp}),
         provide(JSONPBackend, {useClass: JSONPBackend_})

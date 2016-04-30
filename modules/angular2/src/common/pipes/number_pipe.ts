@@ -5,13 +5,11 @@ import {
   StringWrapper,
   NumberWrapper,
   RegExpWrapper,
-  CONST,
   FunctionWrapper
 } from 'angular2/src/facade/lang';
 import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
 import {NumberFormatter, NumberFormatStyle} from 'angular2/src/facade/intl';
 import {Injectable, PipeTransform, WrappedValue, Pipe} from 'angular2/core';
-import {ListWrapper} from 'angular2/src/facade/collection';
 
 import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
 
@@ -21,7 +19,6 @@ var _re = RegExpWrapper.create('^(\\d+)?\\.((\\d+)(\\-(\\d+))?)?$');
 /**
  * Internal base class for numeric pipes.
  */
-@CONST()
 @Injectable()
 export class NumberPipe {
   /** @internal */
@@ -83,12 +80,10 @@ export class NumberPipe {
  *
  * {@example core/pipes/ts/number_pipe/number_pipe_example.ts region='NumberPipe'}
  */
-@CONST()
 @Pipe({name: 'number'})
 @Injectable()
 export class DecimalPipe extends NumberPipe implements PipeTransform {
-  transform(value: any, args: any[]): string {
-    var digits: string = ListWrapper.first(args);
+  transform(value: any, digits: string = null): string {
     return NumberPipe._format(value, NumberFormatStyle.Decimal, digits);
   }
 }
@@ -109,12 +104,10 @@ export class DecimalPipe extends NumberPipe implements PipeTransform {
  *
  * {@example core/pipes/ts/number_pipe/number_pipe_example.ts region='PercentPipe'}
  */
-@CONST()
 @Pipe({name: 'percent'})
 @Injectable()
 export class PercentPipe extends NumberPipe implements PipeTransform {
-  transform(value: any, args: any[]): string {
-    var digits: string = ListWrapper.first(args);
+  transform(value: any, digits: string = null): string {
     return NumberPipe._format(value, NumberFormatStyle.Percent, digits);
   }
 }
@@ -139,14 +132,11 @@ export class PercentPipe extends NumberPipe implements PipeTransform {
  *
  * {@example core/pipes/ts/number_pipe/number_pipe_example.ts region='CurrencyPipe'}
  */
-@CONST()
 @Pipe({name: 'currency'})
 @Injectable()
 export class CurrencyPipe extends NumberPipe implements PipeTransform {
-  transform(value: any, args: any[]): string {
-    var currencyCode: string = isPresent(args) && args.length > 0 ? args[0] : 'USD';
-    var symbolDisplay: boolean = isPresent(args) && args.length > 1 ? args[1] : false;
-    var digits: string = isPresent(args) && args.length > 2 ? args[2] : null;
+  transform(value: any, currencyCode: string = 'USD', symbolDisplay: boolean = false,
+            digits: string = null): string {
     return NumberPipe._format(value, NumberFormatStyle.Currency, digits, currencyCode,
                               symbolDisplay);
   }

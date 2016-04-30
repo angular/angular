@@ -6,6 +6,8 @@ import {
   HtmlAttrAst,
   HtmlTextAst,
   HtmlCommentAst,
+  HtmlExpansionAst,
+  HtmlExpansionCaseAst,
   htmlVisitAll
 } from 'angular2/src/compiler/html_ast';
 import {ParseError, ParseLocation} from 'angular2/src/compiler/parse_util';
@@ -66,6 +68,19 @@ class _Humanizer implements HtmlAstVisitor {
 
   visitComment(ast: HtmlCommentAst, context: any): any {
     var res = this._appendContext(ast, [HtmlCommentAst, ast.value, this.elDepth]);
+    this.result.push(res);
+    return null;
+  }
+
+  visitExpansion(ast: HtmlExpansionAst, context: any): any {
+    var res = this._appendContext(ast, [HtmlExpansionAst, ast.switchValue, ast.type]);
+    this.result.push(res);
+    htmlVisitAll(this, ast.cases);
+    return null;
+  }
+
+  visitExpansionCase(ast: HtmlExpansionCaseAst, context: any): any {
+    var res = this._appendContext(ast, [HtmlExpansionCaseAst, ast.value]);
     this.result.push(res);
     return null;
   }

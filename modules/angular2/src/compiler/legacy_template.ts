@@ -1,12 +1,6 @@
 import {Injectable, Provider, provide} from 'angular2/src/core/di';
 
-import {
-  StringWrapper,
-  RegExpWrapper,
-  CONST_EXPR,
-  isBlank,
-  isPresent
-} from 'angular2/src/facade/lang';
+import {StringWrapper, RegExpWrapper, isBlank, isPresent} from 'angular2/src/facade/lang';
 
 import {
   HtmlAstVisitor,
@@ -14,6 +8,8 @@ import {
   HtmlElementAst,
   HtmlTextAst,
   HtmlCommentAst,
+  HtmlExpansionAst,
+  HtmlExpansionCaseAst,
   HtmlAst
 } from './html_ast';
 import {HtmlParser, HtmlParseTreeResult} from './html_parser';
@@ -27,11 +23,11 @@ var TEMPLATE_SELECTOR_REGEXP = /^(\S+)/g;
 var SPECIAL_PREFIXES_REGEXP = /^(class|style|attr)\./ig;
 var INTERPOLATION_REGEXP = /\{\{.*?\}\}/g;
 
-const SPECIAL_CASES = CONST_EXPR([
+const SPECIAL_CASES = /*@ts2dart_const*/[
   'ng-non-bindable',
   'ng-default-control',
   'ng-no-form',
-]);
+];
 
 /**
  * Convert templates to the case sensitive syntax
@@ -83,6 +79,14 @@ export class LegacyHtmlAstTransformer implements HtmlAstVisitor {
   }
 
   visitText(ast: HtmlTextAst, context: any): HtmlTextAst { return ast; }
+
+  visitExpansion(ast: HtmlExpansionAst, context: any): any {
+    let cases = ast.cases.map(c => c.visit(this, null));
+    return new HtmlExpansionAst(ast.switchValue, ast.type, cases, ast.sourceSpan,
+                                ast.switchValueSourceSpan);
+  }
+
+  visitExpansionCase(ast: HtmlExpansionCaseAst, context: any): any { return ast; }
 
   private _rewriteLongSyntax(ast: HtmlAttrAst): HtmlAttrAst {
     let m = RegExpWrapper.firstMatch(LONG_SYNTAX_REGEXP, ast.name);
@@ -211,9 +215,10 @@ export class LegacyHtmlAstTransformer implements HtmlAstVisitor {
 
 @Injectable()
 export class LegacyHtmlParser extends HtmlParser {
-  parse(sourceContent: string, sourceUrl: string): HtmlParseTreeResult {
+  parse(sourceContent: string, sourceUrl: string,
+        parseExpansionForms: boolean = false): HtmlParseTreeResult {
     let transformer = new LegacyHtmlAstTransformer();
-    let htmlParseTreeResult = super.parse(sourceContent, sourceUrl);
+    let htmlParseTreeResult = super.parse(sourceContent, sourceUrl, parseExpansionForms);
 
     let rootNodes = htmlParseTreeResult.rootNodes.map(node => node.visit(transformer, null));
 

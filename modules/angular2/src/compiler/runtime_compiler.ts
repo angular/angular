@@ -30,7 +30,6 @@ import {
   NgContentAst,
   EmbeddedTemplateAst,
   ElementAst,
-  VariableAst,
   BoundEventAst,
   BoundElementPropertyAst,
   AttrAst,
@@ -45,10 +44,12 @@ import {StyleCompiler, StylesCompileDependency, StylesCompileResult} from './sty
 import {ViewCompiler} from './view_compiler/view_compiler';
 import {TemplateParser} from './template_parser';
 import {DirectiveNormalizer} from './directive_normalizer';
-import {RuntimeMetadataResolver} from './runtime_metadata';
-import {HostViewFactory} from 'angular2/src/core/linker/view';
-import {HostViewFactoryRef, HostViewFactoryRef_} from 'angular2/src/core/linker/view_ref';
-import {Compiler, Compiler_} from 'angular2/src/core/linker/compiler';
+import {CompileMetadataResolver} from './metadata_resolver';
+import {ComponentFactory} from 'angular2/src/core/linker/component_factory';
+import {
+  ComponentResolver,
+  ReflectorComponentResolver
+} from 'angular2/src/core/linker/component_resolver';
 
 import {CompilerConfig} from './config';
 import * as ir from './output/output_ast';
@@ -64,23 +65,21 @@ import {XHR} from 'angular2/src/compiler/xhr';
  * ready for linking into an application.
  */
 @Injectable()
-export class RuntimeCompiler extends Compiler_ {
+export class RuntimeCompiler implements ComponentResolver {
   private _styleCache: Map<string, Promise<string>> = new Map<string, Promise<string>>();
   private _hostCacheKeys = new Map<Type, any>();
   private _compiledTemplateCache = new Map<any, CompiledTemplate>();
   private _compiledTemplateDone = new Map<any, Promise<CompiledTemplate>>();
 
-  constructor(private _runtimeMetadataResolver: RuntimeMetadataResolver,
+  constructor(private _metadataResolver: CompileMetadataResolver,
               private _templateNormalizer: DirectiveNormalizer,
               private _templateParser: TemplateParser, private _styleCompiler: StyleCompiler,
               private _viewCompiler: ViewCompiler, private _xhr: XHR,
-              private _genConfig: CompilerConfig) {
-    super();
-  }
+              private _genConfig: CompilerConfig) {}
 
-  compileInHost(componentType: Type): Promise<HostViewFactoryRef_> {
+  resolveComponent(componentType: Type): Promise<ComponentFactory> {
     var compMeta: CompileDirectiveMetadata =
-        this._runtimeMetadataResolver.getDirectiveMetadata(componentType);
+        this._metadataResolver.getDirectiveMetadata(componentType);
     var hostCacheKey = this._hostCacheKeys.get(componentType);
     if (isBlank(hostCacheKey)) {
       hostCacheKey = new Object();
@@ -92,8 +91,8 @@ export class RuntimeCompiler extends Compiler_ {
       this._loadAndCompileComponent(hostCacheKey, hostMeta, [compMeta], [], []);
     }
     return this._compiledTemplateDone.get(hostCacheKey)
-        .then((compiledTemplate: CompiledTemplate) => new HostViewFactoryRef_(
-                  new HostViewFactory(compMeta.selector, compiledTemplate.viewFactory)));
+        .then((compiledTemplate: CompiledTemplate) => new ComponentFactory(
+                  compMeta.selector, compiledTemplate.viewFactory, componentType));
   }
 
   clearCache() {
@@ -147,9 +146,9 @@ export class RuntimeCompiler extends Compiler_ {
 
       var childCacheKey = dep.comp.type.runtime;
       var childViewDirectives: CompileDirectiveMetadata[] =
-          this._runtimeMetadataResolver.getViewDirectivesMetadata(dep.comp.type.runtime);
+          this._metadataResolver.getViewDirectivesMetadata(dep.comp.type.runtime);
       var childViewPipes: CompilePipeMetadata[] =
-          this._runtimeMetadataResolver.getViewPipesMetadata(dep.comp.type.runtime);
+          this._metadataResolver.getViewPipesMetadata(dep.comp.type.runtime);
       var childIsRecursive = ListWrapper.contains(childCompilingComponentsPath, childCacheKey);
       childCompilingComponentsPath.push(childCacheKey);
 
@@ -225,8 +224,8 @@ class CompiledTemplate {
   viewFactory: Function = null;
   proxyViewFactory: Function;
   constructor() {
-    this.proxyViewFactory = (viewManager, childInjector, contextEl) =>
-        this.viewFactory(viewManager, childInjector, contextEl);
+    this.proxyViewFactory = (viewUtils, childInjector, contextEl) =>
+        this.viewFactory(viewUtils, childInjector, contextEl);
   }
 
   init(viewFactory: Function) { this.viewFactory = viewFactory; }

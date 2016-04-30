@@ -15,12 +15,14 @@ void main() {
     print("Server Listening for requests on 127.0.0.1:1337");
     var bus = new MultiClientServerMessageBus.fromHttpServer(server);
 
-    platform([WORKER_APP_PLATFORM]).application([
+    var platform = createPlatform(ReflectiveInjector.resolveAndCreate(WORKER_APP_PLATFORM));
+    var appInjector = ReflectiveInjector.resolveAndCreate([
       WORKER_APP_APPLICATION_COMMON,
       new Provider(MessageBus, useValue: bus),
       new Provider(APP_INITIALIZER,
           useFactory: initAppThread, multi: true, deps: [NgZone, MessageBus])
-    ]).bootstrap(TodoApp);
+    ], platform.injector);
+    coreLoadAndBootstrap(appInjector, TodoApp);
   });
 }
 

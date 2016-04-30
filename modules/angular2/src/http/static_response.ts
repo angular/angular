@@ -1,5 +1,5 @@
 import {ResponseType} from './enums';
-import {CONST_EXPR, isString, isPresent, Json} from 'angular2/src/facade/lang';
+import {isString, isPresent, Json} from 'angular2/src/facade/lang';
 import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
 import {Headers} from './headers';
 import {ResponseOptions} from './base_response_options';
@@ -76,6 +76,7 @@ export class Response {
   constructor(responseOptions: ResponseOptions) {
     this._body = responseOptions.body;
     this.status = responseOptions.status;
+    this.ok = (this.status >= 200 && this.status <= 299);
     this.statusText = responseOptions.statusText;
     this.headers = responseOptions.headers;
     this.type = responseOptions.type;

@@ -6,6 +6,8 @@ import {
   HtmlAttrAst,
   HtmlTextAst,
   HtmlCommentAst,
+  HtmlExpansionAst,
+  HtmlExpansionCaseAst,
   htmlVisitAll
 } from 'angular2/src/compiler/html_ast';
 import {isPresent, isBlank, StringWrapper} from 'angular2/src/facade/lang';
@@ -178,6 +180,10 @@ class _StringifyVisitor implements HtmlAstVisitor {
   }
 
   visitComment(ast: HtmlCommentAst, context: any): any { return ""; }
+
+  visitExpansion(ast: HtmlExpansionAst, context: any): any { return null; }
+
+  visitExpansionCase(ast: HtmlExpansionCaseAst, context: any): any { return null; }
 
   private _join(strs: string[], str: string): string {
     return strs.filter(s => s.length > 0).join(str);

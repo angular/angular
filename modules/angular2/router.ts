@@ -8,12 +8,7 @@ export {Router} from './src/router/router';
 export {RouterOutlet} from './src/router/directives/router_outlet';
 export {RouterLink} from './src/router/directives/router_link';
 export {RouteParams, RouteData} from './src/router/instruction';
-export {PlatformLocation} from './src/router/location/platform_location';
 export {RouteRegistry, ROUTER_PRIMARY_COMPONENT} from './src/router/route_registry';
-export {LocationStrategy, APP_BASE_HREF} from './src/router/location/location_strategy';
-export {HashLocationStrategy} from './src/router/location/hash_location_strategy';
-export {PathLocationStrategy} from './src/router/location/path_location_strategy';
-export {Location} from './src/router/location/location';
 export * from './src/router/route_config/route_config_decorator';
 export * from './src/router/route_definition';
 export {OnActivate, OnDeactivate, OnReuse, CanDeactivate, CanReuse} from './src/router/interfaces';
@@ -25,7 +20,6 @@ export {ROUTER_PROVIDERS, ROUTER_BINDINGS} from 'angular2/src/router/router_prov
 
 import {RouterOutlet} from './src/router/directives/router_outlet';
 import {RouterLink} from './src/router/directives/router_link';
-import {CONST_EXPR} from './src/facade/lang';
 
 /**
  * A list of directives. To use the router directives like {@link RouterOutlet} and
@@ -49,4 +43,4 @@ import {CONST_EXPR} from './src/facade/lang';
  * bootstrap(AppCmp, [ROUTER_PROVIDERS]);
  * ```
  */
-export const ROUTER_DIRECTIVES: any[] = CONST_EXPR([RouterOutlet, RouterLink]);
+export const ROUTER_DIRECTIVES: any[] = /*@ts2dart_const*/[RouterOutlet, RouterLink];

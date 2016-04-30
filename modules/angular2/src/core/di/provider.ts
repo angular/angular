@@ -1,47 +1,12 @@
 import {
+  normalizeBool,
   Type,
-  isBlank,
-  isPresent,
-  CONST,
-  CONST_EXPR,
-  stringify,
-  isArray,
   isType,
+  isBlank,
   isFunction,
-  normalizeBool
+  stringify
 } from 'angular2/src/facade/lang';
-import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
-import {MapWrapper, ListWrapper} from 'angular2/src/facade/collection';
-import {reflector} from 'angular2/src/core/reflection/reflection';
-import {Key} from './key';
-import {
-  InjectMetadata,
-  InjectableMetadata,
-  OptionalMetadata,
-  SelfMetadata,
-  HostMetadata,
-  SkipSelfMetadata,
-  DependencyMetadata
-} from './metadata';
-import {
-  NoAnnotationError,
-  MixingMultiProvidersWithRegularProvidersError,
-  InvalidProviderError
-} from './exceptions';
-import {resolveForwardRef} from './forward_ref';
-
-/**
- * `Dependency` is used by the framework to extend DI.
- * This is internal to Angular and should not be used directly.
- */
-export class Dependency {
-  constructor(public key: Key, public optional: boolean, public lowerBoundVisibility: any,
-              public upperBoundVisibility: any, public properties: any[]) {}
-
-  static fromKey(key: Key): Dependency { return new Dependency(key, false, null, null, []); }
-}
-
-const _EMPTY_LIST = CONST_EXPR([]);
+import {BaseException} from 'angular2/src/facade/exceptions';
 
 /**
  * Describes how the {@link Injector} should instantiate a given token.
@@ -57,8 +22,8 @@ const _EMPTY_LIST = CONST_EXPR([]);
  *
  * expect(injector.get("message")).toEqual('Hello');
  * ```
+ * @ts2dart_const
  */
-@CONST()
 export class Provider {
   /**
    * Token used when retrieving this provider. Usually, it is a type {@link Type}.
@@ -80,11 +45,11 @@ export class Provider {
    *
    * var injectorClass = Injector.resolveAndCreate([
    *   Car,
-   *   new Provider(Vehicle, { useClass: Car })
+   *   {provide: Vehicle,  useClass: Car }
    * ]);
    * var injectorAlias = Injector.resolveAndCreate([
    *   Car,
-   *   new Provider(Vehicle, { useExisting: Car })
+   *   {provide: Vehicle,  useExisting: Car }
    * ]);
    *
    * expect(injectorClass.get(Vehicle)).not.toBe(injectorClass.get(Car));
@@ -129,11 +94,11 @@ export class Provider {
    *
    * var injectorAlias = Injector.resolveAndCreate([
    *   Car,
-   *   new Provider(Vehicle, { useExisting: Car })
+   *   {provide: Vehicle,  useExisting: Car }
    * ]);
    * var injectorClass = Injector.resolveAndCreate([
    *   Car,
-   *   new Provider(Vehicle, { useClass: Car })
+   *   {provide: Vehicle,  useClass: Car }
    * ]);
    *
    * expect(injectorAlias.get(Vehicle)).toBe(injectorAlias.get(Car));
@@ -152,7 +117,7 @@ export class Provider {
    *
    * ```typescript
    * var injector = Injector.resolveAndCreate([
-   *   new Provider(Number, { useFactory: () => { return 1+2; }}),
+   *   {provide: Number,  useFactory: () => { return 1+2; }},
    *   new Provider(String, { useFactory: (value) => { return "Value: " + value; },
    *                       deps: [Number] })
    * ]);
@@ -173,7 +138,7 @@ export class Provider {
    *
    * ```typescript
    * var injector = Injector.resolveAndCreate([
-   *   new Provider(Number, { useFactory: () => { return 1+2; }}),
+   *   {provide: Number,  useFactory: () => { return 1+2; }},
    *   new Provider(String, { useFactory: (value) => { return "Value: " + value; },
    *                       deps: [Number] })
    * ]);
@@ -243,8 +208,8 @@ export class Provider {
  * See {@link Provider} instead.
  *
  * @deprecated
+ * @ts2dart_const
  */
-@CONST()
 export class Binding extends Provider {
   constructor(token, {toClass, toValue, toAlias, toFactory, deps, multi}: {
     toClass?: Type,
@@ -284,69 +249,6 @@ export class Binding extends Provider {
 }
 
 /**
- * An internal resolved representation of a {@link Provider} used by the {@link Injector}.
- *
- * It is usually created automatically by `Injector.resolveAndCreate`.
- *
- * It can be created manually, as follows:
- *
- * ### Example ([live demo](http://plnkr.co/edit/RfEnhh8kUEI0G3qsnIeT?p%3Dpreview&p=preview))
- *
- * ```typescript
- * var resolvedProviders = Injector.resolve([new Provider('message', {useValue: 'Hello'})]);
- * var injector = Injector.fromResolvedProviders(resolvedProviders);
- *
- * expect(injector.get('message')).toEqual('Hello');
- * ```
- */
-export interface ResolvedProvider {
-  /**
-   * A key, usually a `Type`.
-   */
-  key: Key;
-
-  /**
-   * Factory function which can return an instance of an object represented by a key.
-   */
-  resolvedFactories: ResolvedFactory[];
-
-  /**
-   * Indicates if the provider is a multi-provider or a regular provider.
-   */
-  multiProvider: boolean;
-}
-
-/**
- * See {@link ResolvedProvider} instead.
- *
- * @deprecated
- */
-export interface ResolvedBinding extends ResolvedProvider {}
-
-export class ResolvedProvider_ implements ResolvedBinding {
-  constructor(public key: Key, public resolvedFactories: ResolvedFactory[],
-              public multiProvider: boolean) {}
-
-  get resolvedFactory(): ResolvedFactory { return this.resolvedFactories[0]; }
-}
-
-/**
- * An internal resolved representation of a factory function created by resolving {@link Provider}.
- */
-export class ResolvedFactory {
-  constructor(
-      /**
-       * Factory function which can return an instance of an object represented by a key.
-       */
-      public factory: Function,
-
-      /**
-       * Arguments (dependencies) to the `factory` function.
-       */
-      public dependencies: Dependency[]) {}
-}
-
-/**
  * Creates a {@link Provider}.
  *
  * To construct a {@link Provider}, bind a `token` to either a class, a value, a factory function,
@@ -354,37 +256,12 @@ export class ResolvedFactory {
  * to an existing `token`.
  * See {@link ProviderBuilder} for more details.
  *
- * The `token` is most commonly a class or {@link angular2/di/OpaqueToken}.
+ * The `token` is most commonly a class or {@link OpaqueToken-class.html}.
  *
  * @deprecated
  */
 export function bind(token): ProviderBuilder {
   return new ProviderBuilder(token);
-}
-
-/**
- * Creates a {@link Provider}.
- *
- * See {@link Provider} for more details.
- *
- * <!-- TODO: improve the docs -->
- */
-export function provide(token, {useClass, useValue, useExisting, useFactory, deps, multi}: {
-  useClass?: Type,
-  useValue?: any,
-  useExisting?: any,
-  useFactory?: Function,
-  deps?: Object[],
-  multi?: boolean
-}): Provider {
-  return new Provider(token, {
-    useClass: useClass,
-    useValue: useValue,
-    useExisting: useExisting,
-    useFactory: useFactory,
-    deps: deps,
-    multi: multi
-  });
 }
 
 /**
@@ -509,180 +386,26 @@ export class ProviderBuilder {
 }
 
 /**
- * Resolve a single provider.
- */
-export function resolveFactory(provider: Provider): ResolvedFactory {
-  var factoryFn: Function;
-  var resolvedDeps;
-  if (isPresent(provider.useClass)) {
-    var useClass = resolveForwardRef(provider.useClass);
-    factoryFn = reflector.factory(useClass);
-    resolvedDeps = _dependenciesFor(useClass);
-  } else if (isPresent(provider.useExisting)) {
-    factoryFn = (aliasInstance) => aliasInstance;
-    resolvedDeps = [Dependency.fromKey(Key.get(provider.useExisting))];
-  } else if (isPresent(provider.useFactory)) {
-    factoryFn = provider.useFactory;
-    resolvedDeps = constructDependencies(provider.useFactory, provider.dependencies);
-  } else {
-    factoryFn = () => provider.useValue;
-    resolvedDeps = _EMPTY_LIST;
-  }
-  return new ResolvedFactory(factoryFn, resolvedDeps);
-}
-
-/**
- * Converts the {@link Provider} into {@link ResolvedProvider}.
+ * Creates a {@link Provider}.
  *
- * {@link Injector} internally only uses {@link ResolvedProvider}, {@link Provider} contains
- * convenience provider syntax.
+ * See {@link Provider} for more details.
+ *
+ * <!-- TODO: improve the docs -->
  */
-export function resolveProvider(provider: Provider): ResolvedProvider {
-  return new ResolvedProvider_(Key.get(provider.token), [resolveFactory(provider)], provider.multi);
-}
-
-/**
- * Resolve a list of Providers.
- */
-export function resolveProviders(providers: Array<Type | Provider | any[]>): ResolvedProvider[] {
-  var normalized = _normalizeProviders(providers, []);
-  var resolved = normalized.map(resolveProvider);
-  return MapWrapper.values(mergeResolvedProviders(resolved, new Map<number, ResolvedProvider>()));
-}
-
-/**
- * Merges a list of ResolvedProviders into a list where
- * each key is contained exactly once and multi providers
- * have been merged.
- */
-export function mergeResolvedProviders(
-    providers: ResolvedProvider[],
-    normalizedProvidersMap: Map<number, ResolvedProvider>): Map<number, ResolvedProvider> {
-  for (var i = 0; i < providers.length; i++) {
-    var provider = providers[i];
-    var existing = normalizedProvidersMap.get(provider.key.id);
-    if (isPresent(existing)) {
-      if (provider.multiProvider !== existing.multiProvider) {
-        throw new MixingMultiProvidersWithRegularProvidersError(existing, provider);
-      }
-      if (provider.multiProvider) {
-        for (var j = 0; j < provider.resolvedFactories.length; j++) {
-          existing.resolvedFactories.push(provider.resolvedFactories[j]);
-        }
-      } else {
-        normalizedProvidersMap.set(provider.key.id, provider);
-      }
-    } else {
-      var resolvedProvider;
-      if (provider.multiProvider) {
-        resolvedProvider = new ResolvedProvider_(
-            provider.key, ListWrapper.clone(provider.resolvedFactories), provider.multiProvider);
-      } else {
-        resolvedProvider = provider;
-      }
-      normalizedProvidersMap.set(provider.key.id, resolvedProvider);
-    }
-  }
-  return normalizedProvidersMap;
-}
-
-function _normalizeProviders(providers: Array<Type | Provider | ProviderBuilder | any[]>,
-                             res: Provider[]): Provider[] {
-  providers.forEach(b => {
-    if (b instanceof Type) {
-      res.push(provide(b, {useClass: b}));
-
-    } else if (b instanceof Provider) {
-      res.push(b);
-
-    } else if (b instanceof Array) {
-      _normalizeProviders(b, res);
-
-    } else if (b instanceof ProviderBuilder) {
-      throw new InvalidProviderError(b.token);
-
-    } else {
-      throw new InvalidProviderError(b);
-    }
+export function provide(token, {useClass, useValue, useExisting, useFactory, deps, multi}: {
+  useClass?: Type,
+  useValue?: any,
+  useExisting?: any,
+  useFactory?: Function,
+  deps?: Object[],
+  multi?: boolean
+}): Provider {
+  return new Provider(token, {
+    useClass: useClass,
+    useValue: useValue,
+    useExisting: useExisting,
+    useFactory: useFactory,
+    deps: deps,
+    multi: multi
   });
-
-  return res;
-}
-
-export function constructDependencies(typeOrFunc: any, dependencies: any[]): Dependency[] {
-  if (isBlank(dependencies)) {
-    return _dependenciesFor(typeOrFunc);
-  } else {
-    var params: any[][] = dependencies.map(t => [t]);
-    return dependencies.map(t => _extractToken(typeOrFunc, t, params));
-  }
-}
-
-function _dependenciesFor(typeOrFunc: any): Dependency[] {
-  var params = reflector.parameters(typeOrFunc);
-  if (isBlank(params)) return [];
-  if (params.some(isBlank)) {
-    throw new NoAnnotationError(typeOrFunc, params);
-  }
-  return params.map((p: any[]) => _extractToken(typeOrFunc, p, params));
-}
-
-function _extractToken(typeOrFunc, metadata /*any[] | any*/, params: any[][]): Dependency {
-  var depProps = [];
-  var token = null;
-  var optional = false;
-
-  if (!isArray(metadata)) {
-    if (metadata instanceof InjectMetadata) {
-      return _createDependency(metadata.token, optional, null, null, depProps);
-    } else {
-      return _createDependency(metadata, optional, null, null, depProps);
-    }
-  }
-
-  var lowerBoundVisibility = null;
-  var upperBoundVisibility = null;
-
-  for (var i = 0; i < metadata.length; ++i) {
-    var paramMetadata = metadata[i];
-
-    if (paramMetadata instanceof Type) {
-      token = paramMetadata;
-
-    } else if (paramMetadata instanceof InjectMetadata) {
-      token = paramMetadata.token;
-
-    } else if (paramMetadata instanceof OptionalMetadata) {
-      optional = true;
-
-    } else if (paramMetadata instanceof SelfMetadata) {
-      upperBoundVisibility = paramMetadata;
-
-    } else if (paramMetadata instanceof HostMetadata) {
-      upperBoundVisibility = paramMetadata;
-
-    } else if (paramMetadata instanceof SkipSelfMetadata) {
-      lowerBoundVisibility = paramMetadata;
-
-    } else if (paramMetadata instanceof DependencyMetadata) {
-      if (isPresent(paramMetadata.token)) {
-        token = paramMetadata.token;
-      }
-      depProps.push(paramMetadata);
-    }
-  }
-
-  token = resolveForwardRef(token);
-
-  if (isPresent(token)) {
-    return _createDependency(token, optional, lowerBoundVisibility, upperBoundVisibility, depProps);
-  } else {
-    throw new NoAnnotationError(typeOrFunc, params);
-  }
-}
-
-function _createDependency(token, optional, lowerBoundVisibility, upperBoundVisibility,
-                           depProps): Dependency {
-  return new Dependency(Key.get(token), optional, lowerBoundVisibility, upperBoundVisibility,
-                        depProps);
 }

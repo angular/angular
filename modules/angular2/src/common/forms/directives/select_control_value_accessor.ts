@@ -11,7 +11,6 @@ import {
 } from 'angular2/core';
 import {NG_VALUE_ACCESSOR, ControlValueAccessor} from './control_value_accessor';
 import {
-  CONST_EXPR,
   StringWrapper,
   isPrimitive,
   isPresent,
@@ -21,8 +20,11 @@ import {
 
 import {MapWrapper} from 'angular2/src/facade/collection';
 
-const SELECT_VALUE_ACCESSOR = CONST_EXPR(new Provider(
-    NG_VALUE_ACCESSOR, {useExisting: forwardRef(() => SelectControlValueAccessor), multi: true}));
+export const SELECT_VALUE_ACCESSOR: any = /*@ts2dart_const*/ /*@ts2dart_Provider*/ {
+  provide: NG_VALUE_ACCESSOR,
+  useExisting: forwardRef(() => SelectControlValueAccessor),
+  multi: true
+};
 
 function _buildValueString(id: string, value: any): string {
   if (isBlank(id)) return `${value}`;
@@ -36,10 +38,16 @@ function _extractId(valueString: string): string {
 
 /**
  * The accessor for writing a value and listening to changes on a select element.
+ *
+ * Note: We have to listen to the 'change' event because 'input' events aren't fired
+ * for selects in Firefox and IE:
+ * https://bugzilla.mozilla.org/show_bug.cgi?id=1024350
+ * https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/4660045/
+ *
  */
 @Directive({
   selector: 'select[ngControl],select[ngFormControl],select[ngModel]',
-  host: {'(input)': 'onChange($event.target.value)', '(blur)': 'onTouched()'},
+  host: {'(change)': 'onChange($event.target.value)', '(blur)': 'onTouched()'},
   providers: [SELECT_VALUE_ACCESSOR]
 })
 export class SelectControlValueAccessor implements ControlValueAccessor {
@@ -90,7 +98,7 @@ export class SelectControlValueAccessor implements ControlValueAccessor {
  *
  * ```
  * <select ngControl="city">
- *   <option *ngFor="#c of cities" [value]="c"></option>
+ *   <option *ngFor="let c of cities" [value]="c"></option>
  * </select>
  * ```
  */

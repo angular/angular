@@ -200,8 +200,16 @@ export class NgZone {
    *
    * Any future tasks or microtasks scheduled from within this function will continue executing from
    * within the Angular zone.
+   *
+   * If a synchronous error happens it will be rethrown and not reported via `onError`.
    */
   run(fn: () => any): any { return this._zoneImpl.runInner(fn); }
+
+  /**
+   * Same as #run, except that synchronous errors are caught and forwarded
+   * via `onError` and not rethrown.
+   */
+  runGuarded(fn: () => any): any { return this._zoneImpl.runInnerGuarded(fn); }
 
   /**
    * Executes the `fn` function synchronously in Angular's parent zone and returns value returned by

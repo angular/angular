@@ -200,6 +200,11 @@ _AnalyzerOutputLine.prototype = {
       return true;
     }
 
+    // Don't worry about warnings in external code.
+    if (this.sourcePath.match(/benchmarks_external/i)) {
+      return true;
+    }
+
     if (this.errorCode.match(/UNUSED_SHOWN_NAME/i)) {
       // TODO: Narrow this ignore down to test code only.
       // See https://github.com/angular/angular/issues/8044

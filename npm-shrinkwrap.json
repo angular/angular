@@ -1,6 +1,6 @@
 {
   "name": "angular-srcs",
-  "version": "2.0.0-beta.14",
+  "version": "2.0.0-beta.17",
   "dependencies": {
     "abbrev": {
       "version": "1.0.7",
@@ -7336,14 +7336,7 @@
     "rc": {
       "version": "1.1.6",
       "from": "rc@>=1.0.1 <2.0.0",
-      "resolved": "https://registry.npmjs.org/rc/-/rc-1.1.6.tgz",
-      "dependencies": {
-        "minimist": {
-          "version": "1.2.0",
-          "from": "minimist@>=1.2.0 <2.0.0",
-          "resolved": "https://registry.npmjs.org/minimist/-/minimist-1.2.0.tgz"
-        }
-      }
+      "resolved": "https://registry.npmjs.org/rc/-/rc-1.1.6.tgz"
     },
     "rcfinder": {
       "version": "0.1.8",
@@ -7665,9 +7658,9 @@
       "resolved": "https://registry.npmjs.org/run-sequence/-/run-sequence-1.1.5.tgz"
     },
     "rxjs": {
-      "version": "5.0.0-beta.2",
-      "from": "rxjs@5.0.0-beta.2",
-      "resolved": "https://registry.npmjs.org/rxjs/-/rxjs-5.0.0-beta.2.tgz"
+      "version": "5.0.0-beta.6",
+      "from": "rxjs@5.0.0-beta.6",
+      "resolved": "https://registry.npmjs.org/rxjs/-/rxjs-5.0.0-beta.6.tgz"
     },
     "sass-graph": {
       "version": "2.0.1",
@@ -7768,14 +7761,7 @@
     "semver-diff": {
       "version": "2.1.0",
       "from": "semver-diff@>=2.0.0 <3.0.0",
-      "resolved": "https://registry.npmjs.org/semver-diff/-/semver-diff-2.1.0.tgz",
-      "dependencies": {
-        "semver": {
-          "version": "5.1.0",
-          "from": "semver@>=5.0.3 <6.0.0",
-          "resolved": "https://registry.npmjs.org/semver/-/semver-5.1.0.tgz"
-        }
-      }
+      "resolved": "https://registry.npmjs.org/semver-diff/-/semver-diff-2.1.0.tgz"
     },
     "semver-utils": {
       "version": "1.1.1",
@@ -7804,7 +7790,8 @@
       "dependencies": {
         "mime-db": {
           "version": "1.20.0",
-          "from": "mime-db@>=1.20.0 <1.21.0"
+          "from": "mime-db@1.20.0",
+          "resolved": "https://registry.npmjs.org/mime-db/-/mime-db-1.20.0.tgz"
         },
         "mime-types": {
           "version": "2.1.8",
@@ -8516,9 +8503,8 @@
       }
     },
     "ts2dart": {
-      "version": "0.7.31",
-      "from": "ts2dart@0.7.31",
-      "resolved": "https://registry.npmjs.org/ts2dart/-/ts2dart-0.7.31.tgz",
+      "version": "0.9.9",
+      "from": "ts2dart@0.9.9",
       "dependencies": {
         "source-map": {
           "version": "0.4.4",
@@ -8536,11 +8522,6 @@
               "resolved": "https://registry.npmjs.org/source-map/-/source-map-0.1.32.tgz"
             }
           }
-        },
-        "typescript": {
-          "version": "1.7.3",
-          "from": "typescript@1.7.3",
-          "resolved": "https://registry.npmjs.org/typescript/-/typescript-1.7.3.tgz"
         }
       }
     },
@@ -8633,6 +8614,30 @@
           "version": "1.4.0",
           "from": "verror@>=1.4.0 <1.5.0",
           "resolved": "https://registry.npmjs.org/verror/-/verror-1.4.0.tgz"
+        }
+      }
+    },
+    "tsickle": {
+      "version": "0.1.0",
+      "from": "tsickle@latest",
+      "resolved": "https://registry.npmjs.org/tsickle/-/tsickle-0.1.0.tgz",
+      "dependencies": {
+        "source-map": {
+          "version": "0.4.4",
+          "from": "source-map@>=0.4.2 <0.5.0",
+          "resolved": "https://registry.npmjs.org/source-map/-/source-map-0.4.4.tgz"
+        },
+        "source-map-support": {
+          "version": "0.3.3",
+          "from": "source-map-support@>=0.3.1 <0.4.0",
+          "resolved": "https://registry.npmjs.org/source-map-support/-/source-map-support-0.3.3.tgz",
+          "dependencies": {
+            "source-map": {
+              "version": "0.1.32",
+              "from": "source-map@0.1.32",
+              "resolved": "https://registry.npmjs.org/source-map/-/source-map-0.1.32.tgz"
+            }
+          }
         }
       }
     },
@@ -9289,9 +9294,9 @@
       }
     },
     "zone.js": {
-      "version": "0.6.10",
-      "from": "zone.js@0.6.10",
-      "resolved": "https://registry.npmjs.org/zone.js/-/zone.js-0.6.10.tgz"
+      "version": "0.6.12",
+      "from": "zone.js@0.6.12",
+      "resolved": "https://registry.npmjs.org/zone.js/-/zone.js-0.6.12.tgz"
     }
   }
 }

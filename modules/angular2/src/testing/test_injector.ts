@@ -1,12 +1,17 @@
-import {Injector, Provider, PLATFORM_INITIALIZER} from 'angular2/core';
+import {ReflectiveInjector, Provider, PLATFORM_INITIALIZER} from 'angular2/core';
 import {BaseException, ExceptionHandler} from 'angular2/src/facade/exceptions';
 import {ListWrapper} from 'angular2/src/facade/collection';
 import {FunctionWrapper, isPresent, Type} from 'angular2/src/facade/lang';
 
+import {async} from './async';
+import {AsyncTestCompleter} from './async_test_completer';
+
+export {async} from './async';
+
 export class TestInjector {
   private _instantiated: boolean = false;
 
-  private _injector: Injector = null;
+  private _injector: ReflectiveInjector = null;
 
   private _providers: Array<Type | Provider | any[]> = [];
 
@@ -28,22 +33,26 @@ export class TestInjector {
   }
 
   createInjector() {
-    var rootInjector = Injector.resolveAndCreate(this.platformProviders);
+    var rootInjector = ReflectiveInjector.resolveAndCreate(this.platformProviders);
     this._injector = rootInjector.resolveAndCreateChild(
         ListWrapper.concat(this.applicationProviders, this._providers));
     this._instantiated = true;
     return this._injector;
   }
 
-  execute(fn: FunctionWithParamTokens): any {
-    var additionalProviders = fn.additionalProviders();
-    if (additionalProviders.length > 0) {
-      this.addProviders(additionalProviders);
-    }
+  get(token: any) {
     if (!this._instantiated) {
       this.createInjector();
     }
-    return fn.execute(this._injector);
+    return this._injector.get(token);
+  }
+
+  execute(tokens: any[], fn: Function): any {
+    if (!this._instantiated) {
+      this.createInjector();
+    }
+    var params = tokens.map(t => this._injector.get(t));
+    return FunctionWrapper.apply(fn, params);
   }
 }
 
@@ -76,7 +85,7 @@ export function setBaseTestProviders(platformProviders: Array<Type | Provider | 
   testInjector.platformProviders = platformProviders;
   testInjector.applicationProviders = applicationProviders;
   var injector = testInjector.createInjector();
-  let inits: Function[] = injector.getOptional(PLATFORM_INITIALIZER);
+  let inits: Function[] = injector.get(PLATFORM_INITIALIZER, null);
   if (isPresent(inits)) {
     inits.forEach(init => init());
   }
@@ -117,21 +126,47 @@ export function resetBaseTestProviders() {
  *
  * @param {Array} tokens
  * @param {Function} fn
- * @return {FunctionWithParamTokens}
+ * @return {Function}
  */
-export function inject(tokens: any[], fn: Function): FunctionWithParamTokens {
-  return new FunctionWithParamTokens(tokens, fn, false);
+export function inject(tokens: any[], fn: Function): Function {
+  let testInjector = getTestInjector();
+  if (tokens.indexOf(AsyncTestCompleter) >= 0) {
+    // Return an async test method that returns a Promise if AsyncTestCompleter is one of the
+    // injected tokens.
+    return () => {
+      let completer: AsyncTestCompleter = testInjector.get(AsyncTestCompleter);
+      testInjector.execute(tokens, fn);
+      return completer.promise;
+    }
+  } else {
+    // Return a synchronous test method with the injected tokens.
+    return () => { return getTestInjector().execute(tokens, fn); };
+  }
 }
 
 export class InjectSetupWrapper {
   constructor(private _providers: () => any) {}
 
-  inject(tokens: any[], fn: Function): FunctionWithParamTokens {
-    return new FunctionWithParamTokens(tokens, fn, false, this._providers);
+  private _addProviders() {
+    var additionalProviders = this._providers();
+    if (additionalProviders.length > 0) {
+      getTestInjector().addProviders(additionalProviders);
+    }
   }
 
-  injectAsync(tokens: any[], fn: Function): FunctionWithParamTokens {
-    return new FunctionWithParamTokens(tokens, fn, true, this._providers);
+  inject(tokens: any[], fn: Function): Function {
+    return () => {
+      this._addProviders();
+      return inject_impl(tokens, fn)();
+    }
+  }
+
+  /** @Deprecated {use async(withProviders().inject())} */
+  injectAsync(tokens: any[], fn: Function): Function {
+    return () => {
+      this._addProviders();
+      return injectAsync_impl(tokens, fn)();
+    }
   }
 }
 
@@ -140,6 +175,8 @@ export function withProviders(providers: () => any) {
 }
 
 /**
+ * @Deprecated {use async(inject())}
+ *
  * Allows injecting dependencies in `beforeEach()` and `it()`. The test must return
  * a promise which will resolve when all asynchronous activity is complete.
  *
@@ -155,27 +192,13 @@ export function withProviders(providers: () => any) {
  *
  * @param {Array} tokens
  * @param {Function} fn
- * @return {FunctionWithParamTokens}
+ * @return {Function}
  */
-export function injectAsync(tokens: any[], fn: Function): FunctionWithParamTokens {
-  return new FunctionWithParamTokens(tokens, fn, true);
+export function injectAsync(tokens: any[], fn: Function): Function {
+  return async(inject(tokens, fn));
 }
 
-function emptyArray(): Array<any> {
-  return [];
-}
-
-export class FunctionWithParamTokens {
-  constructor(private _tokens: any[], private _fn: Function, public isAsync: boolean,
-              public additionalProviders: () => any = emptyArray) {}
-
-  /**
-   * Returns the value of the executed function.
-   */
-  execute(injector: Injector): any {
-    var params = this._tokens.map(t => injector.get(t));
-    return FunctionWrapper.apply(this._fn, params);
-  }
-
-  hasToken(token: any): boolean { return this._tokens.indexOf(token) > -1; }
-}
+// This is to ensure inject(Async) within InjectSetupWrapper doesn't call itself
+// when transpiled to Dart.
+var inject_impl = inject;
+var injectAsync_impl = injectAsync;

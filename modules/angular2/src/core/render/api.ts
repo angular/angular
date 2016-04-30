@@ -11,12 +11,13 @@ export abstract class RenderDebugInfo {
   get injector(): Injector { return unimplemented(); }
   get component(): any { return unimplemented(); }
   get providerTokens(): any[] { return unimplemented(); }
-  get locals(): {[key: string]: string} { return unimplemented(); }
+  get references(): {[key: string]: any} { return unimplemented(); }
+  get context(): any { return unimplemented(); }
   get source(): string { return unimplemented(); }
 }
 
 export abstract class Renderer {
-  abstract selectRootElement(selector: string, debugInfo: RenderDebugInfo): any;
+  abstract selectRootElement(selectorOrNode: string | any, debugInfo: RenderDebugInfo): any;
 
   abstract createElement(parentElement: any, name: string, debugInfo: RenderDebugInfo): any;
 

@@ -6,6 +6,7 @@ import {
   Lexer,
   EOF,
   isIdentifier,
+  isQuote,
   Token,
   $PERIOD,
   $COLON,
@@ -16,7 +17,8 @@ import {
   $LBRACE,
   $RBRACE,
   $LPAREN,
-  $RPAREN
+  $RPAREN,
+  $SLASH
 } from './lexer';
 import {
   AST,
@@ -49,7 +51,6 @@ import {
 var _implicitReceiver = new ImplicitReceiver();
 // TODO(tbosch): Cannot make this const/final right now because of the transpiler...
 var INTERPOLATION_REGEXP = /\{\{([\s\S]*?)\}\}/g;
-var COMMENT_REGEX = /\/\//g;
 
 class ParseException extends BaseException {
   constructor(message: string, input: string, errLocation: string, ctxLocation?: any) {
@@ -59,6 +60,10 @@ class ParseException extends BaseException {
 
 export class SplitInterpolation {
   constructor(public strings: string[], public expressions: string[]) {}
+}
+
+export class TemplateBindingParseResult {
+  constructor(public templateBindings: TemplateBinding[], public warnings: string[]) {}
 }
 
 @Injectable()
@@ -111,7 +116,7 @@ export class Parser {
     return new Quote(prefix, uninterpretedExpression, location);
   }
 
-  parseTemplateBindings(input: string, location: any): TemplateBinding[] {
+  parseTemplateBindings(input: string, location: any): TemplateBindingParseResult {
     var tokens = this._lexer.tokenize(input);
     return new _ParseAST(input, location, tokens, false).parseTemplateBindings();
   }
@@ -160,7 +165,25 @@ export class Parser {
   }
 
   private _stripComments(input: string): string {
-    return StringWrapper.split(input, COMMENT_REGEX)[0].trim();
+    let i = this._commentStart(input);
+    return isPresent(i) ? input.substring(0, i).trim() : input;
+  }
+
+  private _commentStart(input: string): number {
+    var outerQuote = null;
+    for (var i = 0; i < input.length - 1; i++) {
+      let char = StringWrapper.charCodeAt(input, i);
+      let nextChar = StringWrapper.charCodeAt(input, i + 1);
+
+      if (char === $SLASH && nextChar == $SLASH && isBlank(outerQuote)) return i;
+
+      if (outerQuote === char) {
+        outerQuote = null;
+      } else if (isBlank(outerQuote) && isQuote(char)) {
+        outerQuote = char;
+      }
+    }
+    return null;
   }
 
   private _checkNoInterpolation(input: string, location: any): void {
@@ -209,16 +232,11 @@ export class _ParseAST {
     }
   }
 
-  optionalKeywordVar(): boolean {
-    if (this.peekKeywordVar()) {
-      this.advance();
-      return true;
-    } else {
-      return false;
-    }
-  }
+  peekKeywordLet(): boolean { return this.next.isKeywordLet(); }
 
-  peekKeywordVar(): boolean { return this.next.isKeywordVar() || this.next.isOperator('#'); }
+  peekDeprecatedKeywordVar(): boolean { return this.next.isKeywordDeprecatedVar(); }
+
+  peekDeprecatedOperatorHash(): boolean { return this.next.isOperator('#'); }
 
   expectCharacter(code: number) {
     if (this.optionalCharacter(code)) return;
@@ -598,11 +616,23 @@ export class _ParseAST {
     return result.toString();
   }
 
-  parseTemplateBindings(): any[] {
-    var bindings = [];
+  parseTemplateBindings(): TemplateBindingParseResult {
+    var bindings: TemplateBinding[] = [];
     var prefix = null;
+    var warnings: string[] = [];
     while (this.index < this.tokens.length) {
-      var keyIsVar: boolean = this.optionalKeywordVar();
+      var keyIsVar: boolean = this.peekKeywordLet();
+      if (!keyIsVar && this.peekDeprecatedKeywordVar()) {
+        keyIsVar = true;
+        warnings.push(`"var" inside of expressions is deprecated. Use "let" instead!`);
+      }
+      if (!keyIsVar && this.peekDeprecatedOperatorHash()) {
+        keyIsVar = true;
+        warnings.push(`"#" inside of expressions is deprecated. Use "let" instead!`);
+      }
+      if (keyIsVar) {
+        this.advance();
+      }
       var key = this.expectTemplateBindingKey();
       if (!keyIsVar) {
         if (prefix == null) {
@@ -620,7 +650,8 @@ export class _ParseAST {
         } else {
           name = '\$implicit';
         }
-      } else if (this.next !== EOF && !this.peekKeywordVar()) {
+      } else if (this.next !== EOF && !this.peekKeywordLet() && !this.peekDeprecatedKeywordVar() &&
+                 !this.peekDeprecatedOperatorHash()) {
         var start = this.inputIndex;
         var ast = this.parsePipe();
         var source = this.input.substring(start, this.inputIndex);
@@ -631,7 +662,7 @@ export class _ParseAST {
         this.optionalCharacter($COMMA);
       }
     }
-    return bindings;
+    return new TemplateBindingParseResult(bindings, warnings);
   }
 
   error(message: string, index: number = null) {

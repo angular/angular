@@ -1,3 +1,199 @@
+<a name="2.0.0-beta.17"></a>
+# 2.0.0-beta.17 (2016-04-28)
+
+
+### Bug Fixes
+
+* **changelog:** fix changelog script. ([c209836](https://github.com/angular/angular/commit/c209836))
+* **compiler:** Allow templates to access variables that are declared afterwards. ([1e8864c](https://github.com/angular/angular/commit/1e8864c)), closes [#8261](https://github.com/angular/angular/issues/8261)
+* **core:** properly evaluate expressions with conditional and boolean operators ([1ad2a02](https://github.com/angular/angular/commit/1ad2a02)), closes [#8235](https://github.com/angular/angular/issues/8235) [#8244](https://github.com/angular/angular/issues/8244) [#8282](https://github.com/angular/angular/issues/8282)
+* **metadata:** Do not attach module names to metadata. ([d964888](https://github.com/angular/angular/commit/d964888)), closes [#8225](https://github.com/angular/angular/issues/8225) [#8082](https://github.com/angular/angular/issues/8082) [#8256](https://github.com/angular/angular/issues/8256)
+* **testing:** allow test component builder to override directives from lists ([ff2ae7a](https://github.com/angular/angular/commit/ff2ae7a)), closes [#7397](https://github.com/angular/angular/issues/7397) [#8217](https://github.com/angular/angular/issues/8217)
+
+### Features
+
+* **compiler:** ElementSchema now has explicit DOM schema information ([d327ac4](https://github.com/angular/angular/commit/d327ac4)), closes [#8179](https://github.com/angular/angular/issues/8179)
+* **core:** separate refs from vars. ([d2efac1](https://github.com/angular/angular/commit/d2efac1)), closes [#7158](https://github.com/angular/angular/issues/7158) [#8264](https://github.com/angular/angular/issues/8264)
+
+
+### BREAKING CHANGES
+
+The reference `#...` now always means `ref-`.
+
+**Before:**
+- Outside of `ngFor`, a `#...` meant a reference.
+- Inside of `ngFor`, it meant a local variable. 
+
+This was pattern was confusing.
+
+**After:**
+
+- `<template #abc>` now defines a reference to a TemplateRef, instead of an input variable used inside of the template.
+- Inside of structural directives that declare local variables, such as `*ngFor`, usage of `#...` is deprecated. Use `let` instead.
+  - `<div *ngFor="#item of items">` now becomes `<div *ngFor="let item of items">`
+- `var-...` is deprecated. 
+  - use `#` or a `ref-` outside of `*ngFor`
+  - for `ngFor`, use the syntax:  `<template ngFor let-... [ngForOf]="...">`
+
+
+<a name="2.0.0-beta.16"></a>
+# 2.0.0-beta.16 (2016-04-26)
+
+
+### Bug Fixes
+
+* **angular_1_router:** Removed arrow function from module template ([d094a85](https://github.com/angular/angular/commit/d094a85)), closes [#8076](https://github.com/angular/angular/issues/8076)
+* **build:** ignore Dart warnings for external code. ([4140405](https://github.com/angular/angular/commit/4140405))
+* **codegen:** add explicit any to class fields ([c8d00dc](https://github.com/angular/angular/commit/c8d00dc)), closes [#8204](https://github.com/angular/angular/issues/8204) [#8205](https://github.com/angular/angular/issues/8205)
+* **compiler:** only call pure pipes if their input changed. ([8db6215](https://github.com/angular/angular/commit/8db6215))
+* **compiler:** properly implement pure pipes and change pipe syntax ([152a117](https://github.com/angular/angular/commit/152a117))
+* **compiler:** support string tokens with `.` inside. ([cc86fee](https://github.com/angular/angular/commit/cc86fee))
+* **compiler:** use DI order for change detection order. ([67d05eb](https://github.com/angular/angular/commit/67d05eb)), closes [#8198](https://github.com/angular/angular/issues/8198)
+* **core:** various minor compiler fixes ([2f70457](https://github.com/angular/angular/commit/2f70457)), closes [#8162](https://github.com/angular/angular/issues/8162)
+* **forms:** ensure select model updates in firefox and ie ([c3daccd](https://github.com/angular/angular/commit/c3daccd)), closes [#6573](https://github.com/angular/angular/issues/6573) [#8148](https://github.com/angular/angular/issues/8148)
+* **forms:** improve error message when ngFormModel is missing a form ([12837e1](https://github.com/angular/angular/commit/12837e1)), closes [#8136](https://github.com/angular/angular/issues/8136) [#8143](https://github.com/angular/angular/issues/8143)
+* **forms:** number input should report null when blank ([e69cb40](https://github.com/angular/angular/commit/e69cb40)), closes [#6932](https://github.com/angular/angular/issues/6932) [#8141](https://github.com/angular/angular/issues/8141)
+* **metadata:** emit metadata rooted at 'angular2' ([9889c21](https://github.com/angular/angular/commit/9889c21)), closes [#8144](https://github.com/angular/angular/issues/8144) [#8147](https://github.com/angular/angular/issues/8147)
+* **release:** Fix the package.json zone.js requirement to 0.6.12 ([6103aa0](https://github.com/angular/angular/commit/6103aa0))
+* **tests:** remove payload size check ([22c05b0](https://github.com/angular/angular/commit/22c05b0))
+* **transformers:** support `query.read` ([386cc5d](https://github.com/angular/angular/commit/386cc5d)), closes [#8172](https://github.com/angular/angular/issues/8172)
+* **upgrade:** clean up scope when element is destroyed ([0fc9ec2](https://github.com/angular/angular/commit/0fc9ec2)), closes [#8102](https://github.com/angular/angular/issues/8102)
+
+### Features
+
+* **codegen:** produce `.ngfactory.dart/ts` files instead of `.template.dart/ts` files. ([c06b0a2](https://github.com/angular/angular/commit/c06b0a2))
+* **core:** add `Query.read` and remove `DynamicComponentLoader.loadIntoLocation`. ([efbd446](https://github.com/angular/angular/commit/efbd446))
+* **core:** introduce ComponentFactory. ([0c600cf](https://github.com/angular/angular/commit/0c600cf))
+* **core:** separate reflective injector from Injector interface ([0a7d10b](https://github.com/angular/angular/commit/0a7d10b))
+* **core:** support importUri in StaticReflector ([3e11422](https://github.com/angular/angular/commit/3e11422)), closes [#8195](https://github.com/angular/angular/issues/8195)
+* **core:** support non reflective bootstrap. ([9092ac7](https://github.com/angular/angular/commit/9092ac7))
+* **html_lexer:** support special forms used by i18n { exp, plural, =0 {} } ([7f29766](https://github.com/angular/angular/commit/7f29766))
+* **html_parser:** support special forms used by i18n { exp, plural, =0 {} } ([7c9717b](https://github.com/angular/angular/commit/7c9717b))
+* **i18n:** add custom placeholder names ([bb9fb21](https://github.com/angular/angular/commit/bb9fb21)), closes [#7799](https://github.com/angular/angular/issues/7799) [#8057](https://github.com/angular/angular/issues/8057)
+* **i18n:** add support for nested expansion forms ([c6244d1](https://github.com/angular/angular/commit/c6244d1)), closes [#7977](https://github.com/angular/angular/issues/7977)
+* **i18n:** support plural and gender special forms ([88b0a23](https://github.com/angular/angular/commit/88b0a23))
+* **Location:** out of router and into platform/common ([b602bd8](https://github.com/angular/angular/commit/b602bd8)), closes [#7962](https://github.com/angular/angular/issues/7962)
+* **NgTemplateOutlet:** add NgTemplateOutlet directive ([f4e6994](https://github.com/angular/angular/commit/f4e6994)), closes [#7615](https://github.com/angular/angular/issues/7615) [#8021](https://github.com/angular/angular/issues/8021)
+* **router:** add Router and RouterOutlet ([5a897cf](https://github.com/angular/angular/commit/5a897cf)), closes [#8173](https://github.com/angular/angular/issues/8173)
+* **router:** add router metadata ([ef67a0c](https://github.com/angular/angular/commit/ef67a0c))
+* **router:** add UrlSegment, RouteSegment, and Tree ([90a1f7d](https://github.com/angular/angular/commit/90a1f7d))
+* **router:** implement recognizer ([ef6163e](https://github.com/angular/angular/commit/ef6163e))
+* **router:** implement RouterUrlParser ([f698567](https://github.com/angular/angular/commit/f698567))
+* **test:** Implement fakeAsync using the FakeAsyncTestZoneSpec from zone.js. ([bab81a9](https://github.com/angular/angular/commit/bab81a9)), closes [#8142](https://github.com/angular/angular/issues/8142)
+* **tests:** manage asynchronous tests using zones ([8490921](https://github.com/angular/angular/commit/8490921)), closes [#7735](https://github.com/angular/angular/issues/7735)
+* **view_compiler:** codegen DI and Queries ([2b34c88](https://github.com/angular/angular/commit/2b34c88)), closes [#6301](https://github.com/angular/angular/issues/6301) [#6567](https://github.com/angular/angular/issues/6567)
+
+
+### BREAKING CHANGES
+
+* - pipes now take a variable number of arguments, and not an array that contains all arguments.
+
+* inject can no longer wrap fakeAsync while fakeAsync can wrap inject. So the order in existing tests with inject and fakeAsync has to be switched as follows:
+Before:
+```
+inject([...], fakeAsync((...) => {...}))
+```
+After:
+```
+fakeAsync(inject([...], (...) => {...}))
+```
+You will also need to add the dependency
+`'node_modules/zone.js/dist/fake-async-test.js'`
+as a served file in your Karma or other test configuration.
+
+* - Injector was renamed into `ReflectiveInjector`,
+  as `Injector` is only an abstract class with one method on it
+- `Injector.getOptional()` was changed into `Injector.get(token, notFoundValue)`
+  to make implementing injectors simpler
+- `ViewContainerRef.createComponent` now takes an `Injector`
+  instead of `ResolvedProviders`. If a reflective injector
+  should be used, create one before calling this method.
+  (e.g. via `ReflectiveInjector.resolveAndCreate(…)`.
+
+* - `DynamicComponentLoader.loadIntoLocation` has been removed. Use `@ViewChild(‘myVar’, read: ViewContainerRef)` to get hold of a `ViewContainerRef` at an element with variable `myVar`. Then call `DynamicComponentLoader.loadNextToLocation`.
+- `DynamicComponentLoader.loadNextToLocation` now takes a `ViewContainerRef` instead of an `ElementRef`.
+- `AppViewManager` is renamed into `ViewUtils` and is a mere private utility service.
+
+* - `Compiler` is renamed to `ComponentResolver`,
+  `Compiler.compileInHost` has been renamed to `ComponentResolver.resolveComponent`.
+- `ComponentRef.dispose` is renamed to `ComponentRef.destroy`
+- `ViewContainerRef.createHostView` is renamed to `ViewContainerRef.createComponent`
+- `ComponentFixture_` has been removed, the class `ComponentFixture`
+  can now be created directly as it is no more using private APIs.
+
+* `Location` and other related providers have been moved out of `router` and into `platform/common`. `BrowserPlatformLocation` is not meant to be used directly however advanced configurations may use it via the following import change.
+Before:
+```
+import {
+  PlatformLocation,
+  Location,
+  LocationStrategy,
+  HashLocationStrategy,
+  PathLocationStrategy,
+  APP_BASE_HREF}
+from 'angular2/router';
+import {BrowserPlatformLocation} from 'angular2/src/router/location/browser_platform_location';
+```
+After:
+```
+import {
+  PlatformLocation,
+  Location,
+  LocationStrategy,
+  HashLocationStrategy,
+  PathLocationStrategy,
+  APP_BASE_HREF}
+from 'angular2/platform/common';
+import {BrowserPlatformLocation} from 'angular2/src/platform/browser/location/browser_platform_location';
+```
+
+* `injectAsync` is now deprecated. Instead, use the `async` function
+to wrap any asynchronous tests.
+
+You will also need to add the dependency
+`'node_modules/zone.js/dist/async-test.js'`
+as a served file in your Karma or other test configuration.
+
+Before:
+```
+it('should wait for returned promises', injectAsync([FancyService], (service) => {
+  return service.getAsyncValue().then((value) => { expect(value).toEqual('async value'); });
+}));
+it('should wait for returned promises', injectAsync([], () => {
+  return somePromise.then(() => { expect(true).toEqual(true); });
+}));
+```
+After:
+```
+it('should wait for returned promises', async(inject([FancyService], (service) => {
+  service.getAsyncValue().then((value) => { expect(value).toEqual('async value'); });
+})));
+// Note that if there is no injection, we no longer need `inject` OR `injectAsync`.
+it('should wait for returned promises', async(() => {
+  somePromise.then() => { expect(true).toEqual(true); });
+}));
+```
+
+* - Renderer:
+  * renderComponent method is removed form `Renderer`, only present on `RootRenderer`
+  * Renderer.setDebugInfo is removed. Renderer.createElement / createText / createTemplateAnchor
+    now take the DebugInfo directly.
+- Query semantics:
+  * Queries don't work with dynamically loaded components.
+  * e.g. for router-outlet: loaded components can't be queries via @ViewQuery,
+    but router-outlet emits an event `activate` now that emits the activated component
+- Exception classes and the context inside changed (renamed fields)
+- DebugElement.attributes is an Object and not a Map in JS any more
+- ChangeDetectorGenConfig was renamed into CompilerConfig
+- AppViewManager.createEmbeddedViewInContainer / AppViewManager.createHostViewInContainer
+  are removed, use the methods in ViewContainerRef instead
+- Change detection order changed:
+  * 1. dirty check component inputs
+  * 2. dirty check content children
+  * 3. update render nodes
+
+
+
 <a name="2.0.0-beta.15"></a>
 # 2.0.0-beta.15 (2016-04-13)
 
@@ -21,6 +217,11 @@
 * **transformers:** changes transformers to collect information about providers and resolve identifi ([3b60503](https://github.com/angular/angular/commit/3b60503))
 * **transformers:** special case Profiler ([83b8f59](https://github.com/angular/angular/commit/83b8f59))
 * **typescript:** update to 1.9 nightly. ([3412aba](https://github.com/angular/angular/commit/3412aba)), closes [#8003](https://github.com/angular/angular/issues/8003)
+
+### BREAKING CHANGES
+
+* In Dart files, `import 'package:angular2/bootstrap.dart'` no longer works.
+  Instead, use `import 'package:angular2/platform/browser.dart'`.
 
 ### Reverts
 

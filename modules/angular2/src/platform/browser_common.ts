@@ -1,12 +1,11 @@
-import {CONST_EXPR, IS_DART} from 'angular2/src/facade/lang';
-import {provide, Provider, Injector, OpaqueToken} from 'angular2/src/core/di';
+import {IS_DART} from 'angular2/src/facade/lang';
+import {provide, Injector, OpaqueToken} from 'angular2/src/core/di';
 import {XHR} from 'angular2/src/compiler/xhr';
 import {
   PLATFORM_INITIALIZER,
   PLATFORM_DIRECTIVES,
   PLATFORM_PIPES,
   ComponentRef,
-  platform,
   ExceptionHandler,
   Reflector,
   RootRenderer,
@@ -19,11 +18,9 @@ import {Testability} from 'angular2/src/core/testability/testability';
 import {DOM} from 'angular2/src/platform/dom/dom_adapter';
 import {DomEventsPlugin} from 'angular2/src/platform/dom/events/dom_events';
 import {KeyEventsPlugin} from 'angular2/src/platform/dom/events/key_events';
-import {HammerGesturesPlugin} from 'angular2/src/platform/dom/events/hammer_gestures';
 import {DOCUMENT} from 'angular2/src/platform/dom/dom_tokens';
 import {DomRootRenderer, DomRootRenderer_} from 'angular2/src/platform/dom/dom_renderer';
-import {DomSharedStylesHost} from 'angular2/src/platform/dom/shared_styles_host';
-import {SharedStylesHost} from "angular2/src/platform/dom/shared_styles_host";
+import {DomSharedStylesHost, SharedStylesHost} from 'angular2/src/platform/dom/shared_styles_host';
 import {BrowserDetails} from "angular2/src/animate/browser_details";
 import {AnimationBuilder} from "angular2/src/animate/animation_builder";
 import {BrowserDomAdapter} from './browser/browser_adapter';
@@ -33,7 +30,8 @@ import {wtfInit} from 'angular2/src/core/profile/wtf_init';
 import {EventManager, EVENT_MANAGER_PLUGINS} from "angular2/src/platform/dom/events/event_manager";
 import {
   HAMMER_GESTURE_CONFIG,
-  HammerGestureConfig
+  HammerGestureConfig,
+  HammerGesturesPlugin
 } from 'angular2/src/platform/dom/events/hammer_gestures';
 import {ELEMENT_PROBE_PROVIDERS} from 'angular2/platform/common_dom';
 export {DOCUMENT} from 'angular2/src/platform/dom/dom_tokens';
@@ -48,15 +46,19 @@ export {BrowserDomAdapter} from './browser/browser_adapter';
 export {enableDebugTools, disableDebugTools} from 'angular2/src/platform/browser/tools/tools';
 export {HAMMER_GESTURE_CONFIG, HammerGestureConfig} from './dom/events/hammer_gestures';
 
+export const BROWSER_PLATFORM_MARKER =
+    /*@ts2dart_const*/ new OpaqueToken('BrowserPlatformMarker');
+
 /**
  * A set of providers to initialize the Angular platform in a web browser.
  *
  * Used automatically by `bootstrap`, or can be passed to {@link platform}.
  */
-export const BROWSER_PROVIDERS: Array<any /*Type | Provider | any[]*/> = CONST_EXPR([
+export const BROWSER_PROVIDERS: Array<any /*Type | Provider | any[]*/> = /*@ts2dart_const*/[
+  /*@ts2dart_Provider*/ {provide: BROWSER_PLATFORM_MARKER, useValue: true},
   PLATFORM_COMMON_PROVIDERS,
-  new Provider(PLATFORM_INITIALIZER, {useValue: initDomAdapter, multi: true}),
-]);
+  /*@ts2dart_Provider*/ {provide: PLATFORM_INITIALIZER, useValue: initDomAdapter, multi: true},
+];
 
 function _exceptionHandler(): ExceptionHandler {
   // !IS_DART is required because we must rethrow exceptions in JS,
@@ -73,30 +75,31 @@ function _document(): any {
  *
  * Used automatically by `bootstrap`, or can be passed to {@link PlatformRef.application}.
  */
-export const BROWSER_APP_COMMON_PROVIDERS: Array<any /*Type | Provider | any[]*/> = CONST_EXPR([
-  APPLICATION_COMMON_PROVIDERS,
-  FORM_PROVIDERS,
-  new Provider(PLATFORM_PIPES, {useValue: COMMON_PIPES, multi: true}),
-  new Provider(PLATFORM_DIRECTIVES, {useValue: COMMON_DIRECTIVES, multi: true}),
-  new Provider(ExceptionHandler, {useFactory: _exceptionHandler, deps: []}),
-  new Provider(DOCUMENT, {useFactory: _document, deps: []}),
-  new Provider(EVENT_MANAGER_PLUGINS, {useClass: DomEventsPlugin, multi: true}),
-  new Provider(EVENT_MANAGER_PLUGINS, {useClass: KeyEventsPlugin, multi: true}),
-  new Provider(EVENT_MANAGER_PLUGINS, {useClass: HammerGesturesPlugin, multi: true}),
-  new Provider(HAMMER_GESTURE_CONFIG, {useClass: HammerGestureConfig}),
-  new Provider(DomRootRenderer, {useClass: DomRootRenderer_}),
-  new Provider(RootRenderer, {useExisting: DomRootRenderer}),
-  new Provider(SharedStylesHost, {useExisting: DomSharedStylesHost}),
-  DomSharedStylesHost,
-  Testability,
-  BrowserDetails,
-  AnimationBuilder,
-  EventManager,
-  ELEMENT_PROBE_PROVIDERS
-]);
+export const BROWSER_APP_COMMON_PROVIDERS: Array<any /*Type | Provider | any[]*/> =
+    /*@ts2dart_const*/[
+      APPLICATION_COMMON_PROVIDERS,
+      FORM_PROVIDERS,
+      /* @ts2dart_Provider */ {provide: PLATFORM_PIPES, useValue: COMMON_PIPES, multi: true},
+      /* @ts2dart_Provider */ {provide: PLATFORM_DIRECTIVES, useValue: COMMON_DIRECTIVES, multi: true},
+      /* @ts2dart_Provider */ {provide: ExceptionHandler, useFactory: _exceptionHandler, deps: []},
+      /* @ts2dart_Provider */ {provide: DOCUMENT, useFactory: _document, deps: []},
+      /* @ts2dart_Provider */ {provide: EVENT_MANAGER_PLUGINS, useClass: DomEventsPlugin, multi: true},
+      /* @ts2dart_Provider */ {provide: EVENT_MANAGER_PLUGINS, useClass: KeyEventsPlugin, multi: true},
+      /* @ts2dart_Provider */ {provide: EVENT_MANAGER_PLUGINS, useClass: HammerGesturesPlugin, multi: true},
+      /* @ts2dart_Provider */ {provide: HAMMER_GESTURE_CONFIG, useClass: HammerGestureConfig},
+      /* @ts2dart_Provider */ {provide: DomRootRenderer, useClass: DomRootRenderer_},
+      /* @ts2dart_Provider */ {provide: RootRenderer, useExisting: DomRootRenderer},
+      /* @ts2dart_Provider */ {provide: SharedStylesHost, useExisting: DomSharedStylesHost},
+      DomSharedStylesHost,
+      Testability,
+      BrowserDetails,
+      AnimationBuilder,
+      EventManager,
+      ELEMENT_PROBE_PROVIDERS
+    ];
 
 export const CACHED_TEMPLATE_PROVIDER: Array<any /*Type | Provider | any[]*/> =
-    CONST_EXPR([new Provider(XHR, {useClass: CachedXHR})]);
+    /*@ts2dart_const*/[/*@ts2dart_Provider*/ {provide: XHR, useClass: CachedXHR}];
 
 export function initDomAdapter() {
   BrowserDomAdapter.makeCurrent();

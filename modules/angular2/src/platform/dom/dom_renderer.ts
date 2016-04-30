@@ -5,10 +5,10 @@ import {
   isBlank,
   Json,
   RegExpWrapper,
-  CONST_EXPR,
   stringify,
   StringWrapper,
-  isArray
+  isArray,
+  isString
 } from 'angular2/src/facade/lang';
 
 import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
@@ -29,7 +29,8 @@ import {DOM} from 'angular2/src/platform/dom/dom_adapter';
 import {camelCaseToDashCase} from './util';
 
 const NAMESPACE_URIS =
-    CONST_EXPR({'xlink': 'http://www.w3.org/1999/xlink', 'svg': 'http://www.w3.org/2000/svg'});
+    /*@ts2dart_const*/
+    {'xlink': 'http://www.w3.org/1999/xlink', 'svg': 'http://www.w3.org/2000/svg'};
 const TEMPLATE_COMMENT_TEXT = 'template bindings={}';
 var TEMPLATE_BINDINGS_EXP = /^template bindings=(.*)$/g;
 
@@ -76,10 +77,15 @@ export class DomRenderer implements Renderer {
     }
   }
 
-  selectRootElement(selector: string, debugInfo: RenderDebugInfo): Element {
-    var el = DOM.querySelector(this._rootRenderer.document, selector);
-    if (isBlank(el)) {
-      throw new BaseException(`The selector "${selector}" did not match any elements`);
+  selectRootElement(selectorOrNode: string | any, debugInfo: RenderDebugInfo): Element {
+    var el;
+    if (isString(selectorOrNode)) {
+      el = DOM.querySelector(this._rootRenderer.document, selectorOrNode);
+      if (isBlank(el)) {
+        throw new BaseException(`The selector "${selectorOrNode}" did not match any elements`);
+      }
+    } else {
+      el = selectorOrNode;
     }
     DOM.clearNodes(el);
     return el;
@@ -298,8 +304,8 @@ function decoratePreventDefault(eventHandler: Function): Function {
 
 var COMPONENT_REGEX = /%COMP%/g;
 export const COMPONENT_VARIABLE = '%COMP%';
-export const HOST_ATTR = `_nghost-${COMPONENT_VARIABLE}`;
-export const CONTENT_ATTR = `_ngcontent-${COMPONENT_VARIABLE}`;
+export const HOST_ATTR = /*@ts2dart_const*/ `_nghost-${COMPONENT_VARIABLE}`;
+export const CONTENT_ATTR = /*@ts2dart_const*/ `_ngcontent-${COMPONENT_VARIABLE}`;
 
 function _shimContentAttribute(componentShortId: string): string {
   return StringWrapper.replaceAll(CONTENT_ATTR, COMPONENT_REGEX, componentShortId);

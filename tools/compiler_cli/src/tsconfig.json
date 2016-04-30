@@ -1,0 +1,20 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "target": "es5",
+        "lib": ["es6", "dom"],
+        "noImplicitAny": true,
+        "sourceMap": true,
+        "baseUrl": "../../..",
+        "paths": {
+          "angular2/*": ["dist/js/cjs/angular2/*"],
+          "ts-metadata-collector": ["dist/tools/metadata"]
+        },
+        "experimentalDecorators": true,
+        "rootDir": ".",
+        // Write to a directory that has the node_modules symlink in a parent
+        "outDir": "../../../dist/js/cjs/compiler_cli",
+        "declaration": true
+    },
+    "exclude": ["test"]
+}

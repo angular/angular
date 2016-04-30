@@ -7,6 +7,8 @@ import {
   HtmlAttrAst,
   HtmlTextAst,
   HtmlCommentAst,
+  HtmlExpansionAst,
+  HtmlExpansionCaseAst,
   htmlVisitAll
 } from 'angular2/src/compiler/html_ast';
 import {ListWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
@@ -14,6 +16,7 @@ import {RegExpWrapper, NumberWrapper, isPresent} from 'angular2/src/facade/lang'
 import {BaseException} from 'angular2/src/facade/exceptions';
 import {Parser} from 'angular2/src/compiler/expression_parser/parser';
 import {Message, id} from './message';
+import {expandNodes} from './expander';
 import {
   messageFromAttribute,
   I18nError,
@@ -119,14 +122,15 @@ export class I18nHtmlParser implements HtmlParser {
   constructor(private _htmlParser: HtmlParser, private _parser: Parser,
               private _messagesContent: string, private _messages: {[key: string]: HtmlAst[]}) {}
 
-  parse(sourceContent: string, sourceUrl: string): HtmlParseTreeResult {
+  parse(sourceContent: string, sourceUrl: string,
+        parseExpansionForms: boolean = false): HtmlParseTreeResult {
     this.errors = [];
 
-    let res = this._htmlParser.parse(sourceContent, sourceUrl);
+    let res = this._htmlParser.parse(sourceContent, sourceUrl, true);
     if (res.errors.length > 0) {
       return res;
     } else {
-      let nodes = this._recurse(res.rootNodes);
+      let nodes = this._recurse(expandNodes(res.rootNodes).nodes);
       return this.errors.length > 0 ? new HtmlParseTreeResult([], this.errors) :
                                       new HtmlParseTreeResult(nodes, []);
     }
@@ -146,9 +150,11 @@ export class I18nHtmlParser implements HtmlParser {
   }
 
   private _mergeI18Part(p: Part): HtmlAst[] {
-    let messageId = id(p.createMessage(this._parser));
+    let message = p.createMessage(this._parser);
+    let messageId = id(message);
     if (!StringMapWrapper.contains(this._messages, messageId)) {
-      throw new I18nError(p.sourceSpan, `Cannot find message for id '${messageId}'`);
+      throw new I18nError(
+          p.sourceSpan, `Cannot find message for id '${messageId}', content '${message.content}'.`);
     }
 
     let parsedMessage = this._messages[messageId];
@@ -285,14 +291,17 @@ export class I18nHtmlParser implements HtmlParser {
       }
 
       let i18n = i18ns[0];
-      let messageId = id(messageFromAttribute(this._parser, el, i18n));
+      let message = messageFromAttribute(this._parser, el, i18n);
+      let messageId = id(message);
 
       if (StringMapWrapper.contains(this._messages, messageId)) {
         let updatedMessage = this._replaceInterpolationInAttr(attr, this._messages[messageId]);
         res.push(new HtmlAttrAst(attr.name, updatedMessage, attr.sourceSpan));
 
       } else {
-        throw new I18nError(attr.sourceSpan, `Cannot find message for id '${messageId}'`);
+        throw new I18nError(
+            attr.sourceSpan,
+            `Cannot find message for id '${messageId}', content '${message.content}'.`);
       }
     });
     return res;
@@ -359,6 +368,10 @@ class _CreateNodeMapping implements HtmlAstVisitor {
     this.mapping.push(ast);
     return null;
   }
+
+  visitExpansion(ast: HtmlExpansionAst, context: any): any { return null; }
+
+  visitExpansionCase(ast: HtmlExpansionCaseAst, context: any): any { return null; }
 
   visitComment(ast: HtmlCommentAst, context: any): any { return ""; }
 }

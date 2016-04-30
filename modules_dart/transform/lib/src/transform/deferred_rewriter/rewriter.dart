@@ -17,7 +17,7 @@ import 'package:angular2/src/transform/common/url_resolver.dart';
 ///    `_entryPoint`
 /// 2. Removes any libraries that don't require angular codegen.
 /// 3. For the remaining libraries, rewrites the import to the corresponding
-///    `.template.dart` file.
+///    `.ngfactory.dart` file.
 /// 4. Chains a future to the `loadLibrary` call which initializes the
 ///    library.
 ///

@@ -3,9 +3,11 @@
 var glob = require('glob');
 var JasmineRunner = require('jasmine');
 var path = require('path');
+// require('es6-shim/es6-shim.js');
 require('zone.js/dist/zone-node.js');
 require('zone.js/dist/long-stack-trace-zone.js');
-require('es6-shim/es6-shim.js');
+require('zone.js/dist/async-test.js');
+require('zone.js/dist/fake-async-test.js');
 require('reflect-metadata/Reflect');
 
 var jrunner = new JasmineRunner();
@@ -36,4 +38,5 @@ jrunner.projectBaseDir = path.resolve(__dirname, '../../');
 jrunner.specDir = '';
 jrunner.addSpecFiles(specFiles);
 require('./test-cjs-main.js');
+require('zone.js/dist/jasmine-patch.js');
 jrunner.execute();

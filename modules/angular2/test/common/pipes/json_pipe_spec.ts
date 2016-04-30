@@ -9,7 +9,6 @@ import {
   afterEach,
   AsyncTestCompleter,
   inject,
-  proxy,
   TestComponentBuilder
 } from 'angular2/testing_internal';
 import {Json, RegExp, NumberWrapper, StringWrapper} from 'angular2/src/facade/lang';

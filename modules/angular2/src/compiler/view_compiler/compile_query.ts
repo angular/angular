@@ -30,14 +30,12 @@ export class CompileQuery {
   addValue(value: o.Expression, view: CompileView) {
     var currentView = view;
     var elPath: CompileElement[] = [];
-    var viewPath: CompileView[] = [];
     while (isPresent(currentView) && currentView !== this.view) {
       var parentEl = currentView.declarationElement;
       elPath.unshift(parentEl);
       currentView = parentEl.view;
-      viewPath.push(currentView);
     }
-    var queryListForDirtyExpr = getPropertyInView(this.queryList, viewPath);
+    var queryListForDirtyExpr = getPropertyInView(this.queryList, view, this.view);
 
     var viewValues = this._values;
     elPath.forEach((el) => {
@@ -77,7 +75,7 @@ export class CompileQuery {
 function createQueryValues(viewValues: ViewQueryValues): o.Expression[] {
   return ListWrapper.flatten(viewValues.values.map((entry) => {
     if (entry instanceof ViewQueryValues) {
-      return mapNestedViews(entry.view.declarationElement.getOrCreateAppElement(), entry.view,
+      return mapNestedViews(entry.view.declarationElement.appElement, entry.view,
                             createQueryValues(entry));
     } else {
       return <o.Expression>entry;

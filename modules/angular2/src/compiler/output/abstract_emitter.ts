@@ -197,6 +197,11 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
     var name = expr.name;
     if (isPresent(expr.builtin)) {
       name = this.getBuiltinMethodName(expr.builtin);
+      if (isBlank(name)) {
+        // some builtins just mean to skip the call.
+        // e.g. `bind` in Dart.
+        return null;
+      }
     }
     ctx.print(`.${name}(`);
     this.visitAllExpressions(expr.args, ctx, `,`);
@@ -259,11 +264,13 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
   abstract visitExternalExpr(ast: o.ExternalExpr, ctx: EmitterVisitorContext): any;
 
   visitConditionalExpr(ast: o.ConditionalExpr, ctx: EmitterVisitorContext): any {
+    ctx.print(`(`);
     ast.condition.visitExpression(this, ctx);
     ctx.print('? ');
     ast.trueCase.visitExpression(this, ctx);
     ctx.print(': ');
     ast.falseCase.visitExpression(this, ctx);
+    ctx.print(`)`);
     return null;
   }
   visitNotExpr(ast: o.NotExpr, ctx: EmitterVisitorContext): any {

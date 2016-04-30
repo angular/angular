@@ -1,15 +1,6 @@
 import {bootstrap} from 'angular2/platform/browser';
 import {NgIf} from 'angular2/common';
-import {
-  Compiler,
-  Component,
-  Directive,
-  ViewContainerRef,
-  bind,
-  provide,
-  Provider
-} from 'angular2/core';
-import {ComponentRef_} from 'angular2/src/core/linker/dynamic_component_loader';
+import {Component, Directive, ViewContainerRef, bind, provide, Provider} from 'angular2/core';
 import {ApplicationRef} from 'angular2/src/core/application_ref';
 import {reflector} from 'angular2/src/core/reflection/reflection';
 import {ReflectionCapabilities} from 'angular2/src/core/reflection/reflection_capabilities';
@@ -94,10 +85,10 @@ export function main() {
   function initNg2() {
     bootstrap(AppComponentWithStaticTree, createBindings())
         .then((ref) => {
-          var injector = (<ComponentRef_>ref).injector;
+          var injector = ref.injector;
           appRef = injector.get(ApplicationRef);
 
-          app = (<ComponentRef_>ref).hostComponent;
+          app = ref.instance;
           bindAction('#ng2DestroyDom', ng2DestroyDom);
           bindAction('#ng2CreateDom', ng2CreateDom);
           bindAction('#ng2UpdateDomProfile', profile(ng2CreateDom, noop, 'ng2-update'));

@@ -1,10 +1,22 @@
 import {CompileIdentifierMetadata, CompileTokenMetadata} from './compile_metadata';
-import {AppView} from 'angular2/src/core/linker/view';
+import {AppView, DebugAppView} from 'angular2/src/core/linker/view';
 import {StaticNodeDebugInfo, DebugContext} from 'angular2/src/core/linker/debug_context';
 import {
+  ViewUtils,
   flattenNestedViewRenderNodes,
   interpolate,
-  checkBinding
+  checkBinding,
+  castByValue,
+  pureProxy1,
+  pureProxy2,
+  pureProxy3,
+  pureProxy4,
+  pureProxy5,
+  pureProxy6,
+  pureProxy7,
+  pureProxy8,
+  pureProxy9,
+  pureProxy10
 } from 'angular2/src/core/linker/view_utils';
 import {
   uninitialized,
@@ -15,7 +27,6 @@ import {
   ChangeDetectorState,
   ChangeDetectionStrategy
 } from 'angular2/src/core/change_detection/change_detection';
-import {AppViewManager_} from 'angular2/src/core/linker/view_manager';
 import {AppElement} from 'angular2/src/core/linker/element';
 import {ElementRef} from 'angular2/src/core/linker/element_ref';
 import {ViewContainerRef} from 'angular2/src/core/linker/view_container_ref';
@@ -34,8 +45,9 @@ var CD_MODULE_URL = 'asset:angular2/lib/src/core/change_detection/change_detecti
 // Reassign the imports to different variables so we can
 // define static variables with the name of the import.
 // (only needed for Dart).
-var impAppViewManager_ = AppViewManager_;
+var impViewUtils = ViewUtils;
 var impAppView = AppView;
+var impDebugAppView = DebugAppView;
 var impDebugContext = DebugContext;
 var impAppElement = AppElement;
 var impElementRef = ElementRef;
@@ -59,15 +71,18 @@ var impFlattenNestedViewRenderNodes = flattenNestedViewRenderNodes;
 var impDevModeEqual = devModeEqual;
 var impInterpolate = interpolate;
 var impCheckBinding = checkBinding;
+var impCastByValue = castByValue;
 
 export class Identifiers {
-  static AppViewManager_ = new CompileIdentifierMetadata({
-    name: 'AppViewManager_',
-    moduleUrl: 'asset:angular2/lib/src/core/linker/view_manager' + MODULE_SUFFIX,
-    runtime: impAppViewManager_
+  static ViewUtils = new CompileIdentifierMetadata({
+    name: 'ViewUtils',
+    moduleUrl: 'asset:angular2/lib/src/core/linker/view_utils' + MODULE_SUFFIX,
+    runtime: impViewUtils
   });
   static AppView = new CompileIdentifierMetadata(
       {name: 'AppView', moduleUrl: APP_VIEW_MODULE_URL, runtime: impAppView});
+  static DebugAppView = new CompileIdentifierMetadata(
+      {name: 'DebugAppView', moduleUrl: APP_VIEW_MODULE_URL, runtime: impDebugAppView});
   static AppElement = new CompileIdentifierMetadata({
     name: 'AppElement',
     moduleUrl: 'asset:angular2/lib/src/core/linker/element' + MODULE_SUFFIX,
@@ -162,6 +177,31 @@ export class Identifiers {
       {name: 'devModeEqual', moduleUrl: CD_MODULE_URL, runtime: impDevModeEqual});
   static interpolate = new CompileIdentifierMetadata(
       {name: 'interpolate', moduleUrl: VIEW_UTILS_MODULE_URL, runtime: impInterpolate});
+  static castByValue = new CompileIdentifierMetadata(
+      {name: 'castByValue', moduleUrl: VIEW_UTILS_MODULE_URL, runtime: impCastByValue});
+  static pureProxies = [
+    null,
+    new CompileIdentifierMetadata(
+        {name: 'pureProxy1', moduleUrl: VIEW_UTILS_MODULE_URL, runtime: pureProxy1}),
+    new CompileIdentifierMetadata(
+        {name: 'pureProxy2', moduleUrl: VIEW_UTILS_MODULE_URL, runtime: pureProxy2}),
+    new CompileIdentifierMetadata(
+        {name: 'pureProxy3', moduleUrl: VIEW_UTILS_MODULE_URL, runtime: pureProxy3}),
+    new CompileIdentifierMetadata(
+        {name: 'pureProxy4', moduleUrl: VIEW_UTILS_MODULE_URL, runtime: pureProxy4}),
+    new CompileIdentifierMetadata(
+        {name: 'pureProxy5', moduleUrl: VIEW_UTILS_MODULE_URL, runtime: pureProxy5}),
+    new CompileIdentifierMetadata(
+        {name: 'pureProxy6', moduleUrl: VIEW_UTILS_MODULE_URL, runtime: pureProxy6}),
+    new CompileIdentifierMetadata(
+        {name: 'pureProxy7', moduleUrl: VIEW_UTILS_MODULE_URL, runtime: pureProxy7}),
+    new CompileIdentifierMetadata(
+        {name: 'pureProxy8', moduleUrl: VIEW_UTILS_MODULE_URL, runtime: pureProxy8}),
+    new CompileIdentifierMetadata(
+        {name: 'pureProxy9', moduleUrl: VIEW_UTILS_MODULE_URL, runtime: pureProxy9}),
+    new CompileIdentifierMetadata(
+        {name: 'pureProxy10', moduleUrl: VIEW_UTILS_MODULE_URL, runtime: pureProxy10}),
+  ];
 }
 
 export function identifierToken(identifier: CompileIdentifierMetadata): CompileTokenMetadata {

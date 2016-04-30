@@ -1,12 +1,7 @@
 import {Component, Injectable, provide} from 'angular2/core';
 import {bootstrap} from 'angular2/platform/browser';
-import {
-  OnDeactivate,
-  ComponentInstruction,
-  RouteConfig,
-  ROUTER_DIRECTIVES,
-  APP_BASE_HREF
-} from 'angular2/router';
+import {OnDeactivate, ComponentInstruction, RouteConfig, ROUTER_DIRECTIVES} from 'angular2/router';
+import {APP_BASE_HREF} from 'angular2/platform/common';
 
 
 @Injectable()
@@ -41,7 +36,7 @@ class MyCmp implements OnDeactivate {
     <router-outlet></router-outlet>
     <div id="log">
       <h2>Log:</h2>
-      <p *ngFor="#logItem of logService.logs">{{ logItem }}</p>
+      <p *ngFor="let logItem of logService.logs">{{ logItem }}</p>
     </div>
   `,
   directives: [ROUTER_DIRECTIVES]

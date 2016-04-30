@@ -13,14 +13,19 @@ import {
   isArray
 } from 'angular2/src/facade/lang';
 import {unimplemented, BaseException} from 'angular2/src/facade/exceptions';
-import {StringMapWrapper, MapWrapper, SetWrapper} from 'angular2/src/facade/collection';
+import {
+  StringMapWrapper,
+  MapWrapper,
+  SetWrapper,
+  ListWrapper
+} from 'angular2/src/facade/collection';
 import {
   ChangeDetectionStrategy,
   CHANGE_DETECTION_STRATEGY_VALUES
 } from 'angular2/src/core/change_detection/change_detection';
 import {ViewEncapsulation, VIEW_ENCAPSULATION_VALUES} from 'angular2/src/core/metadata/view';
 import {CssSelector} from 'angular2/src/compiler/selector';
-import {splitAtColon} from './util';
+import {splitAtColon, sanitizeIdentifier} from './util';
 import {LifecycleHooks, LIFECYCLE_HOOKS_VALUES} from 'angular2/src/core/metadata/lifecycle_hooks';
 import {getUrlScheme} from './url_resolver';
 
@@ -313,7 +318,9 @@ export class CompileTokenMetadata implements CompileMetadataWithIdentifier {
            (isPresent(ak) && ak == token2.assetCacheKey);
   }
 
-  get name(): string { return isPresent(this.value) ? this.value : this.identifier.name; }
+  get name(): string {
+    return isPresent(this.value) ? sanitizeIdentifier(this.value) : this.identifier.name;
+  }
 }
 
 export class CompileTokenMap<VALUE> {
@@ -414,17 +421,20 @@ export class CompileQueryMetadata {
   descendants: boolean;
   first: boolean;
   propertyName: string;
+  read: CompileTokenMetadata;
 
-  constructor({selectors, descendants, first, propertyName}: {
+  constructor({selectors, descendants, first, propertyName, read}: {
     selectors?: Array<CompileTokenMetadata>,
     descendants?: boolean,
     first?: boolean,
-    propertyName?: string
+    propertyName?: string,
+    read?: CompileTokenMetadata
   } = {}) {
     this.selectors = selectors;
     this.descendants = normalizeBool(descendants);
     this.first = normalizeBool(first);
     this.propertyName = propertyName;
+    this.read = read;
   }
 
   static fromJson(data: {[key: string]: any}): CompileQueryMetadata {
@@ -432,7 +442,8 @@ export class CompileQueryMetadata {
       selectors: _arrayFromJson(data['selectors'], CompileTokenMetadata.fromJson),
       descendants: data['descendants'],
       first: data['first'],
-      propertyName: data['propertyName']
+      propertyName: data['propertyName'],
+      read: _objFromJson(data['read'], CompileTokenMetadata.fromJson)
     });
   }
 
@@ -441,7 +452,8 @@ export class CompileQueryMetadata {
       'selectors': _arrayToJson(this.selectors),
       'descendants': this.descendants,
       'first': this.first,
-      'propertyName': this.propertyName
+      'propertyName': this.propertyName,
+      'read': _objToJson(this.read)
     };
   }
 }
@@ -456,13 +468,16 @@ export class CompileTemplateMetadata {
   styles: string[];
   styleUrls: string[];
   ngContentSelectors: string[];
-  constructor({encapsulation, template, templateUrl, styles, styleUrls, ngContentSelectors}: {
+  baseUrl: string;
+  constructor({encapsulation, template, templateUrl, styles, styleUrls, ngContentSelectors,
+               baseUrl}: {
     encapsulation?: ViewEncapsulation,
     template?: string,
     templateUrl?: string,
     styles?: string[],
     styleUrls?: string[],
-    ngContentSelectors?: string[]
+    ngContentSelectors?: string[],
+    baseUrl?: string
   } = {}) {
     this.encapsulation = isPresent(encapsulation) ? encapsulation : ViewEncapsulation.Emulated;
     this.template = template;
@@ -470,6 +485,7 @@ export class CompileTemplateMetadata {
     this.styles = isPresent(styles) ? styles : [];
     this.styleUrls = isPresent(styleUrls) ? styleUrls : [];
     this.ngContentSelectors = isPresent(ngContentSelectors) ? ngContentSelectors : [];
+    this.baseUrl = baseUrl;
   }
 
   static fromJson(data: {[key: string]: any}): CompileTemplateMetadata {
@@ -481,7 +497,8 @@ export class CompileTemplateMetadata {
       templateUrl: data['templateUrl'],
       styles: data['styles'],
       styleUrls: data['styleUrls'],
-      ngContentSelectors: data['ngContentSelectors']
+      ngContentSelectors: data['ngContentSelectors'],
+      baseUrl: data['baseUrl']
     });
   }
 
@@ -493,7 +510,8 @@ export class CompileTemplateMetadata {
       'templateUrl': this.templateUrl,
       'styles': this.styles,
       'styleUrls': this.styleUrls,
-      'ngContentSelectors': this.ngContentSelectors
+      'ngContentSelectors': this.ngContentSelectors,
+      'baseUrl': this.baseUrl
     };
   }
 }

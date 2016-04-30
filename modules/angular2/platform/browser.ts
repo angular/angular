@@ -1,4 +1,4 @@
-export {AngularEntrypoint} from 'angular2/src/core/angular_entrypoint';
+export * from 'angular2/src/core/angular_entrypoint';
 export {
   BROWSER_PROVIDERS,
   CACHED_TEMPLATE_PROVIDER,
@@ -13,26 +13,43 @@ export {
   disableDebugTools
 } from 'angular2/src/platform/browser_common';
 
-import {Type, isPresent, CONST_EXPR} from 'angular2/src/facade/lang';
+import {Type, isPresent, isBlank} from 'angular2/src/facade/lang';
 import {
   BROWSER_PROVIDERS,
-  BROWSER_APP_COMMON_PROVIDERS
+  BROWSER_APP_COMMON_PROVIDERS,
+  BROWSER_PLATFORM_MARKER
 } from 'angular2/src/platform/browser_common';
 import {COMPILER_PROVIDERS} from 'angular2/compiler';
-import {ComponentRef, platform, reflector} from 'angular2/core';
+import {
+  ComponentRef,
+  coreLoadAndBootstrap,
+  reflector,
+  ReflectiveInjector,
+  PlatformRef,
+  OpaqueToken,
+  getPlatform,
+  createPlatform,
+  assertPlatform
+} from 'angular2/core';
 import {ReflectionCapabilities} from 'angular2/src/core/reflection/reflection_capabilities';
 import {XHRImpl} from "angular2/src/platform/browser/xhr_impl";
 import {XHR} from 'angular2/compiler';
-import {Provider} from 'angular2/src/core/di';
 
 /**
  * An array of providers that should be passed into `application()` when bootstrapping a component.
  */
-export const BROWSER_APP_PROVIDERS: Array<any /*Type | Provider | any[]*/> = CONST_EXPR([
+export const BROWSER_APP_PROVIDERS: Array<any /*Type | Provider | any[]*/> = /*@ts2dart_const*/[
   BROWSER_APP_COMMON_PROVIDERS,
   COMPILER_PROVIDERS,
-  new Provider(XHR, {useClass: XHRImpl}),
-]);
+  /*@ts2dart_Provider*/ {provide: XHR, useClass: XHRImpl},
+];
+
+export function browserPlatform(): PlatformRef {
+  if (isBlank(getPlatform())) {
+    createPlatform(ReflectiveInjector.resolveAndCreate(BROWSER_PROVIDERS));
+  }
+  return assertPlatform(BROWSER_PLATFORM_MARKER);
+}
 
 /**
  * Bootstrapping for Angular applications.
@@ -106,7 +123,8 @@ export function bootstrap(
     appComponentType: Type,
     customProviders?: Array<any /*Type | Provider | any[]*/>): Promise<ComponentRef> {
   reflector.reflectionCapabilities = new ReflectionCapabilities();
-  let appProviders =
-      isPresent(customProviders) ? [BROWSER_APP_PROVIDERS, customProviders] : BROWSER_APP_PROVIDERS;
-  return platform(BROWSER_PROVIDERS).application(appProviders).bootstrap(appComponentType);
+  var appInjector = ReflectiveInjector.resolveAndCreate(
+      [BROWSER_APP_PROVIDERS, isPresent(customProviders) ? customProviders : []],
+      browserPlatform().injector);
+  return coreLoadAndBootstrap(appInjector, appComponentType);
 }

@@ -11,7 +11,7 @@ import {
   NgForm
 } from 'angular2/common';
 
-import {RegExpWrapper, print, isPresent, CONST_EXPR} from 'angular2/src/facade/lang';
+import {RegExpWrapper, print, isPresent} from 'angular2/src/facade/lang';
 
 /**
  * A domain model we are binding the form controls to.
@@ -39,8 +39,11 @@ function creditCardValidator(c): {[key: string]: boolean} {
   }
 }
 
-const creditCardValidatorBinding =
-    CONST_EXPR(new Provider(NG_VALIDATORS, {useValue: creditCardValidator, multi: true}));
+const creditCardValidatorBinding = /** @ts2dart_const */ /** @ts2dart_Provider */ {
+  provide: NG_VALIDATORS,
+  useValue: creditCardValidator,
+  multi: true
+};
 
 @Directive({selector: '[credit-card]', providers: [creditCardValidatorBinding]})
 class CreditCardValidator {
@@ -122,7 +125,7 @@ class ShowError {
       <p>
         <label for="country">Country</label>
         <select id="country" ngControl="country" [(ngModel)]="model.country">
-          <option *ngFor="#c of countries" [value]="c">{{c}}</option>
+          <option *ngFor="let c of countries" [value]="c">{{c}}</option>
         </select>
       </p>
 

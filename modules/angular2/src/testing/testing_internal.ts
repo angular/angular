@@ -1,12 +1,13 @@
 import {StringMapWrapper} from 'angular2/src/facade/collection';
-import {global, isFunction, Math} from 'angular2/src/facade/lang';
+import {global, isPromise, Math} from 'angular2/src/facade/lang';
 
 import {provide} from 'angular2/core';
 
-import {getTestInjector, FunctionWithParamTokens, inject} from './test_injector';
+import {AsyncTestCompleter} from './async_test_completer';
+import {getTestInjector, inject} from './test_injector';
 import {browserDetection} from './utils';
-import {NgZone} from 'angular2/src/core/zone/ng_zone';
 
+export {AsyncTestCompleter} from './async_test_completer';
 export {inject} from './test_injector';
 
 export {expect, NgMatchers} from './matchers';
@@ -16,19 +17,6 @@ export var proxy: ClassDecorator = (t) => t;
 var _global = <any>(typeof window === 'undefined' ? global : window);
 
 export var afterEach: Function = _global.afterEach;
-
-export type SyncTestFn = () => void;
-type AsyncTestFn = (done: () => void) => void;
-type AnyTestFn = SyncTestFn | AsyncTestFn;
-
-/**
- * Injectable completer that allows signaling completion of an asynchronous test. Used internally.
- */
-export class AsyncTestCompleter {
-  constructor(private _done: Function) {}
-
-  done(): void { this._done(); }
-}
 
 var jsmBeforeEach = _global.beforeEach;
 var jsmDescribe = _global.describe;
@@ -51,18 +39,15 @@ var testInjector = getTestInjector();
  * Note: Jasmine own `beforeEach` is used by this library to handle DI providers.
  */
 class BeforeEachRunner {
-  private _fns: Array<FunctionWithParamTokens | SyncTestFn> = [];
+  private _fns: Array<Function> = [];
 
   constructor(private _parent: BeforeEachRunner) {}
 
-  beforeEach(fn: FunctionWithParamTokens | SyncTestFn): void { this._fns.push(fn); }
+  beforeEach(fn: Function): void { this._fns.push(fn); }
 
   run(): void {
     if (this._parent) this._parent.run();
-    this._fns.forEach((fn) => {
-      return isFunction(fn) ? (<SyncTestFn>fn)() :
-                              (testInjector.execute(<FunctionWithParamTokens>fn));
-    });
+    this._fns.forEach((fn) => { fn(); });
   }
 }
 
@@ -90,13 +75,13 @@ export function xdescribe(...args): void {
   return _describe(jsmXDescribe, ...args);
 }
 
-export function beforeEach(fn: FunctionWithParamTokens | SyncTestFn): void {
+export function beforeEach(fn: Function): void {
   if (runnerStack.length > 0) {
     // Inside a describe block, beforeEach() uses a BeforeEachRunner
     runnerStack[runnerStack.length - 1].beforeEach(fn);
   } else {
     // Top level beforeEach() are delegated to jasmine
-    jsmBeforeEach(<SyncTestFn>fn);
+    jsmBeforeEach(fn);
   }
 }
 
@@ -127,55 +112,37 @@ export function beforeEachBindings(fn): void {
   beforeEachProviders(fn);
 }
 
-function _it(jsmFn: Function, name: string, testFn: FunctionWithParamTokens | AnyTestFn,
-             testTimeOut: number): void {
+function _it(jsmFn: Function, name: string, testFn: Function, testTimeOut: number): void {
   var runner = runnerStack[runnerStack.length - 1];
   var timeOut = Math.max(globalTimeOut, testTimeOut);
 
-  if (testFn instanceof FunctionWithParamTokens) {
-    // The test case uses inject(). ie `it('test', inject([AsyncTestCompleter], (async) => { ...
-    // }));`
-    let testFnT = testFn;
+  jsmFn(name, (done) => {
+    var completerProvider = provide(AsyncTestCompleter, {
+      useFactory: () => {
+        // Mark the test as async when an AsyncTestCompleter is injected in an it()
+        if (!inIt) throw new Error('AsyncTestCompleter can only be injected in an "it()"');
+        return new AsyncTestCompleter();
+      }
+    });
+    testInjector.addProviders([completerProvider]);
+    runner.run();
 
-    if (testFn.hasToken(AsyncTestCompleter)) {
-      jsmFn(name, (done) => {
-        var completerProvider = provide(AsyncTestCompleter, {
-          useFactory: () => {
-            // Mark the test as async when an AsyncTestCompleter is injected in an it()
-            if (!inIt) throw new Error('AsyncTestCompleter can only be injected in an "it()"');
-            return new AsyncTestCompleter(done);
-          }
-        });
-
-        testInjector.addProviders([completerProvider]);
-        runner.run();
-
-        inIt = true;
-        testInjector.execute(testFnT);
-        inIt = false;
-      }, timeOut);
+    inIt = true;
+    if (testFn.length == 0) {
+      let retVal = testFn();
+      if (isPromise(retVal)) {
+        // Asynchronous test function that returns a Promise - wait for completion.
+        (<Promise<any>>retVal).then(done, done.fail);
+      } else {
+        // Synchronous test function - complete immediately.
+        done();
+      }
     } else {
-      jsmFn(name, () => {
-        runner.run();
-        testInjector.execute(testFnT);
-      }, timeOut);
+      // Asynchronous test function that takes in 'done' parameter.
+      testFn(done);
     }
-
-  } else {
-    // The test case doesn't use inject(). ie `it('test', (done) => { ... }));`
-
-    if ((<any>testFn).length === 0) {
-      jsmFn(name, () => {
-        runner.run();
-        (<SyncTestFn>testFn)();
-      }, timeOut);
-    } else {
-      jsmFn(name, (done) => {
-        runner.run();
-        (<AsyncTestFn>testFn)(done);
-      }, timeOut);
-    }
-  }
+    inIt = false;
+  }, timeOut);
 }
 
 export function it(name, fn, timeOut = null): void {
@@ -189,7 +156,6 @@ export function xit(name, fn, timeOut = null): void {
 export function iit(name, fn, timeOut = null): void {
   return _it(jsmIIt, name, fn, timeOut);
 }
-
 
 export interface GuinessCompatibleSpy extends jasmine.Spy {
   /** By chaining the spy with and.returnValue, all calls to the function will return a specific

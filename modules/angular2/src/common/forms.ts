@@ -43,7 +43,7 @@ export {
 export {FormBuilder} from './forms/form_builder';
 import {FormBuilder} from './forms/form_builder';
 import {RadioControlRegistry} from './forms/directives/radio_control_value_accessor';
-import {Type, CONST_EXPR} from 'angular2/src/facade/lang';
+import {Type} from 'angular2/src/facade/lang';
 
 /**
  * Shorthand set of providers used for building Angular forms.
@@ -54,11 +54,11 @@ import {Type, CONST_EXPR} from 'angular2/src/facade/lang';
  * bootstrap(MyApp, [FORM_PROVIDERS]);
  * ```
  */
-export const FORM_PROVIDERS: Type[] = CONST_EXPR([FormBuilder, RadioControlRegistry]);
+export const FORM_PROVIDERS: Type[] = /*@ts2dart_const*/[FormBuilder, RadioControlRegistry];
 
 /**
  * See {@link FORM_PROVIDERS} instead.
  *
  * @deprecated
  */
-export const FORM_BINDINGS = FORM_PROVIDERS;
+export const FORM_BINDINGS = /*@ts2dart_const*/ FORM_PROVIDERS;

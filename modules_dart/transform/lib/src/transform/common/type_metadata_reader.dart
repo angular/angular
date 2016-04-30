@@ -398,7 +398,7 @@ class _DirectiveMetadataVisitor extends Object
       _hasMetadata = true;
       if (isComponent) {
         _cmpTemplate =
-            new _CompileTemplateMetadataVisitor().visitAnnotation(node);
+            new _CompileTemplateMetadataVisitor(toAssetUri(_assetId)).visitAnnotation(node);
         _validateTemplates();
       }
       super.visitAnnotation(node);
@@ -411,7 +411,7 @@ class _DirectiveMetadataVisitor extends Object
             '$node' /* source */);
       }
       _viewTemplate =
-          new _CompileTemplateMetadataVisitor().visitAnnotation(node);
+          new _CompileTemplateMetadataVisitor(toAssetUri(_assetId)).visitAnnotation(node);
       _validateTemplates();
     }
 
@@ -720,11 +720,14 @@ class _LifecycleHookVisitor extends SimpleAstVisitor<List<LifecycleHooks>> {
 /// [CompileTemplateMetadata].
 class _CompileTemplateMetadataVisitor
     extends RecursiveAstVisitor<CompileTemplateMetadata> {
+  String _baseUrl;
   ViewEncapsulation _encapsulation;
   String _template;
   String _templateUrl;
   List<String> _styles;
   List<String> _styleUrls;
+
+  _CompileTemplateMetadataVisitor(this._baseUrl);
 
   @override
   CompileTemplateMetadata visitAnnotation(Annotation node) {
@@ -743,7 +746,8 @@ class _CompileTemplateMetadataVisitor
         template: _template,
         templateUrl: _templateUrl,
         styles: _styles,
-        styleUrls: _styleUrls);
+        styleUrls: _styleUrls,
+        baseUrl: _baseUrl);
   }
 
   @override
@@ -1010,16 +1014,24 @@ List<CompileDiDependencyMetadata> _readDeps(ListLiteral deps) {
 _createQueryMetadata(Annotation a, bool defaultDescendantsValue, bool first, String propertyName) {
   final selector = _readToken(a.arguments.arguments.first);
   var descendants = defaultDescendantsValue;
+  var read = null;
   a.arguments.arguments.skip(0).forEach((arg) {
-    if (arg is NamedExpression && arg.name.toString() == "descendants:")
-      descendants = naiveEval(arg.expression);
+    if (arg is NamedExpression) {
+      var name = arg.name.toString();
+      if (name == "descendants:") {
+        descendants = naiveEval(arg.expression);
+      } else if (name == "read:") {
+        read = _readToken(arg.expression);
+      }
+    }
   });
 
   final selectors = selector.value is String ?
       selector.value.split(",").map( (value) => new CompileTokenMetadata(value: value) ).toList() :
       [selector];
   return new CompileQueryMetadata(
-      selectors: selectors, descendants: descendants, first: first, propertyName: propertyName);
+      selectors: selectors, descendants: descendants, first: first,
+      read: read, propertyName: propertyName);
 }
 
 List<CompileDiDependencyMetadata> _getCompileDiDependencyMetadata(

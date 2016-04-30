@@ -3,7 +3,6 @@ import {Symbols} from './symbols';
 
 import {
   MetadataValue,
-  MetadataObject,
   MetadataSymbolicCallExpression,
   MetadataSymbolicReferenceExpression
 } from './schema';
@@ -58,40 +57,72 @@ function isDefined(obj: any): boolean {
   return obj !== undefined;
 }
 
+// import {propertyName as name} from 'place'
+// import {name} from 'place'
+export interface ImportSpecifierMetadata {
+  name: string;
+  propertyName?: string;
+}
+export interface ImportMetadata {
+  defaultName?: string;                      // import d from 'place'
+  namespace?: string;                        // import * as d from 'place'
+  namedImports?: ImportSpecifierMetadata[];  // import {a} from 'place'
+  from: string;                              // from 'place'
+}
+
 /**
  * Produce a symbolic representation of an expression folding values into their final value when
  * possible.
  */
 export class Evaluator {
   constructor(private typeChecker: ts.TypeChecker, private symbols: Symbols,
-              private moduleNameOf: (fileName: string) => string) {}
+              private imports: ImportMetadata[]) {}
 
-  // TODO: Determine if the first declaration is deterministic.
-  private symbolFileName(symbol: ts.Symbol): string {
+  symbolReference(symbol: ts.Symbol): MetadataSymbolicReferenceExpression {
     if (symbol) {
-      if (symbol.flags & ts.SymbolFlags.Alias) {
-        symbol = this.typeChecker.getAliasedSymbol(symbol);
-      }
-      const declarations = symbol.getDeclarations();
-      if (declarations && declarations.length > 0) {
-        const sourceFile = declarations[0].getSourceFile();
-        if (sourceFile) {
-          return sourceFile.fileName;
+      let module: string;
+      let name = symbol.name;
+      for (const eachImport of this.imports) {
+        if (symbol.name === eachImport.defaultName) {
+          module = eachImport.from;
+          name = undefined;
+        }
+        if (eachImport.namedImports) {
+          for (const named of eachImport.namedImports) {
+            if (symbol.name === named.name) {
+              name = named.propertyName ? named.propertyName : named.name;
+              module = eachImport.from;
+              break;
+            }
+          }
         }
       }
-    }
-    return undefined;
-  }
-
-  private symbolReference(symbol: ts.Symbol): MetadataSymbolicReferenceExpression {
-    if (symbol) {
-      const name = symbol.name;
-      const module = this.moduleNameOf(this.symbolFileName(symbol));
       return {__symbolic: "reference", name, module};
     }
   }
 
+  private findImportNamespace(node: ts.Node) {
+    if (node.kind === ts.SyntaxKind.PropertyAccessExpression) {
+      const lhs = (<ts.PropertyAccessExpression>node).expression;
+      if (lhs.kind === ts.SyntaxKind.Identifier) {
+        // TOOD: Use Array.find when tools directory is upgraded to support es6 target
+        for (const eachImport of this.imports) {
+          if (eachImport.namespace === (<ts.Identifier>lhs).text) {
+            return eachImport;
+          }
+        }
+      }
+    }
+  }
+
   private nodeSymbolReference(node: ts.Node): MetadataSymbolicReferenceExpression {
+    const importNamespace = this.findImportNamespace(node);
+    if (importNamespace) {
+      const result = this.symbolReference(
+          this.typeChecker.getSymbolAtLocation((<ts.PropertyAccessExpression>node).name));
+      result.module = importNamespace.from;
+      return result;
+    }
     return this.symbolReference(this.typeChecker.getSymbolAtLocation(node));
   }
 
@@ -115,7 +146,7 @@ export class Evaluator {
    * - A array index is foldable if index expression is foldable and the array is foldable.
    * - Binary operator expressions are foldable if the left and right expressions are foldable and
    *   it is one of '+', '-', '*', '/', '%', '||', and '&&'.
-   * - An identifier is foldable if a value can be found for its symbol is in the evaluator symbol
+   * - An identifier is foldable if a value can be found for its symbol in the evaluator symbol
    *   table.
    */
   public isFoldable(node: ts.Node): boolean {
@@ -129,7 +160,7 @@ export class Evaluator {
           return everyNodeChild(node, child => {
             if (child.kind === ts.SyntaxKind.PropertyAssignment) {
               const propertyAssignment = <ts.PropertyAssignment>child;
-              return this.isFoldableWorker(propertyAssignment.initializer, folding)
+              return this.isFoldableWorker(propertyAssignment.initializer, folding);
             }
             return false;
           });
@@ -149,6 +180,7 @@ export class Evaluator {
               }
             }
           }
+
           // We can fold a call to CONST_EXPR
           if (isCallOf(callExpression, "CONST_EXPR") && callExpression.arguments.length === 1)
             return this.isFoldableWorker(callExpression.arguments[0], folding);
@@ -255,14 +287,31 @@ export class Evaluator {
         if (isCallOf(callExpression, "CONST_EXPR") && callExpression.arguments.length === 1) {
           return args[0];
         }
+        if (isCallOf(callExpression, 'forwardRef') && callExpression.arguments.length === 1) {
+          const firstArgument = callExpression.arguments[0];
+          if (firstArgument.kind == ts.SyntaxKind.ArrowFunction) {
+            const arrowFunction = <ts.ArrowFunction>firstArgument;
+            return this.evaluateNode(arrowFunction.body);
+          }
+        }
         const expression = this.evaluateNode(callExpression.expression);
         if (isDefined(expression) && args.every(isDefined)) {
-          const result: MetadataSymbolicCallExpression = {
-            __symbolic: "call",
-            expression: this.evaluateNode(callExpression.expression)
-          };
+          const result:
+              MetadataSymbolicCallExpression = {__symbolic: "call", expression: expression};
           if (args && args.length) {
             result.arguments = args;
+          }
+          return result;
+        }
+        break;
+      case ts.SyntaxKind.NewExpression:
+        const newExpression = <ts.NewExpression>node;
+        const newArgs = newExpression.arguments.map(arg => this.evaluateNode(arg));
+        const newTarget = this.evaluateNode(newExpression.expression);
+        if (isDefined(newTarget) && newArgs.every(isDefined)) {
+          const result: MetadataSymbolicCallExpression = {__symbolic: "new", expression: newTarget};
+          if (newArgs.length) {
+            result.arguments = newArgs;
           }
           return result;
         }
@@ -272,6 +321,9 @@ export class Evaluator {
         const expression = this.evaluateNode(propertyAccessExpression.expression);
         const member = this.nameOf(propertyAccessExpression.name);
         if (this.isFoldable(propertyAccessExpression.expression)) return expression[member];
+        if (this.findImportNamespace(propertyAccessExpression)) {
+          return this.nodeSymbolReference(propertyAccessExpression);
+        }
         if (isDefined(expression)) {
           return {__symbolic: "select", expression, member};
         }

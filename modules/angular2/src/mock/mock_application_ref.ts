@@ -1,8 +1,7 @@
 import {ApplicationRef} from 'angular2/src/core/application_ref';
-import {Injectable} from 'angular2/src/core/di';
+import {Injectable, Injector} from 'angular2/src/core/di';
 import {Type} from 'angular2/src/facade/lang';
-import {ComponentRef} from 'angular2/src/core/linker/dynamic_component_loader';
-import {Provider, Injector} from 'angular2/src/core/di';
+import {ComponentRef, ComponentFactory} from 'angular2/src/core/linker/component_factory';
 import {NgZone} from 'angular2/src/core/zone/ng_zone';
 
 /**
@@ -14,13 +13,15 @@ export class MockApplicationRef extends ApplicationRef {
 
   registerDisposeListener(dispose: () => void): void {}
 
-  bootstrap(componentType: Type, bindings?: Array<Type | Provider | any[]>): Promise<ComponentRef> {
-    return null;
-  }
+  bootstrap(componentFactory: ComponentFactory): ComponentRef { return null; }
 
   get injector(): Injector { return null; };
 
   get zone(): NgZone { return null; };
+
+  run(callback: Function): any { return null; }
+
+  waitForAsyncInitializers(): Promise<any> { return null; }
 
   dispose(): void {}
 

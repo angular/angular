@@ -134,13 +134,17 @@ void allTests() {
       new CompileTypeMetadata(name: 'Service', moduleUrl: 'moduleUrl');
 
       fooComponentMeta.queries = [
-        new CompileQueryMetadata(selectors: [new CompileTokenMetadata(identifier: new CompileIdentifierMetadata(name: 'Service'))]),
-        new CompileQueryMetadata(selectors: [new CompileTokenMetadata(value: 'one')])
+        new CompileQueryMetadata(selectors: [new CompileTokenMetadata(identifier: new CompileIdentifierMetadata(name: 'Service'))],
+            read: new CompileTokenMetadata(identifier: new CompileIdentifierMetadata(name: 'Service'))),
+        new CompileQueryMetadata(selectors: [new CompileTokenMetadata(value: 'one')],
+            read: new CompileTokenMetadata(value: 'one'))
       ];
 
       fooComponentMeta.viewQueries = [
-        new CompileQueryMetadata(selectors: [new CompileTokenMetadata(identifier: new CompileIdentifierMetadata(name: 'Service'))]),
-        new CompileQueryMetadata(selectors: [new CompileTokenMetadata(value: 'one')])
+        new CompileQueryMetadata(selectors: [new CompileTokenMetadata(identifier: new CompileIdentifierMetadata(name: 'Service'))],
+            read: new CompileTokenMetadata(identifier: new CompileIdentifierMetadata(name: 'Service'))),
+        new CompileQueryMetadata(selectors: [new CompileTokenMetadata(value: 'one')],
+            read: new CompileTokenMetadata(value: 'one'))
       ];
 
       fooNgMeta.ngDeps.imports.add(new ImportModel()..uri = 'bar.dart');
@@ -155,11 +159,17 @@ void allTests() {
 
       expect(cmp.queries[0].selectors[0].identifier.name, equals("Service"));
       expect(cmp.queries[0].selectors[0].identifier.moduleUrl, equals("moduleUrl"));
+      expect(cmp.queries[0].read.identifier.name, equals("Service"));
+      expect(cmp.queries[0].read.identifier.moduleUrl, equals("moduleUrl"));
       expect(cmp.queries[1].selectors[0].value, equals("one"));
+      expect(cmp.queries[1].read.value, equals("one"));
 
       expect(cmp.viewQueries[0].selectors[0].identifier.name, equals("Service"));
       expect(cmp.viewQueries[0].selectors[0].identifier.moduleUrl, equals("moduleUrl"));
+      expect(cmp.viewQueries[0].read.identifier.name, equals("Service"));
+      expect(cmp.viewQueries[0].read.identifier.moduleUrl, equals("moduleUrl"));
       expect(cmp.viewQueries[1].selectors[0].value, equals("one"));
+      expect(cmp.viewQueries[1].read.value, equals("one"));
     });
 
     test('should resolve providers from types.', () async {
@@ -625,7 +635,7 @@ void allTests() {
       var linked = (await _testLink(reader, fooAssetId, fooMetaAssetId)).ngDeps;
       expect(linked, isNotNull);
       var linkedImport = linked.depImports
-          .firstWhere((i) => i.uri.endsWith('bar.template.dart'));
+          .firstWhere((i) => i.uri.endsWith('bar.ngfactory.dart'));
       expect(linkedImport, isNotNull);
       expect(linkedImport.prefix.startsWith('i'), isTrue);
     });
@@ -640,7 +650,7 @@ void allTests() {
       var linked = (await _testLink(reader, fooAssetId, fooMetaAssetId)).ngDeps;
       expect(linked, isNotNull);
       var linkedImport = linked.depImports
-          .firstWhere((i) => i.uri.endsWith('bar.template.dart'));
+          .firstWhere((i) => i.uri.endsWith('bar.ngfactory.dart'));
       expect(linkedImport, isNotNull);
       expect(linkedImport.prefix.startsWith('i'), isTrue);
     });
@@ -658,7 +668,7 @@ void allTests() {
       var linked = (await _testLink(reader, fooAssetId, fooMetaAssetId)).ngDeps;
       expect(linked, isNotNull);
       var linkedImport = linked.depImports.firstWhere(
-          (i) => i.uri.endsWith('bar.template.dart'),
+          (i) => i.uri.endsWith('bar.ngfactory.dart'),
           orElse: () => null);
       expect(linkedImport, isNull);
     });

@@ -1,11 +1,12 @@
 import {Directive, Host, ViewContainerRef, TemplateRef} from 'angular2/core';
-import {isPresent, isBlank, normalizeBlank, CONST_EXPR} from 'angular2/src/facade/lang';
+import {isPresent, isBlank, normalizeBlank} from 'angular2/src/facade/lang';
 import {ListWrapper, Map} from 'angular2/src/facade/collection';
 
-const _WHEN_DEFAULT = CONST_EXPR(new Object());
+const _WHEN_DEFAULT = /*@ts2dart_const*/ new Object();
 
 export class SwitchView {
-  constructor(private _viewContainerRef: ViewContainerRef, private _templateRef: TemplateRef) {}
+  constructor(private _viewContainerRef: ViewContainerRef,
+              private _templateRef: TemplateRef<Object>) {}
 
   create(): void { this._viewContainerRef.createEmbeddedView(this._templateRef); }
 
@@ -21,7 +22,7 @@ export class SwitchView {
  * `NgSwitch` simply inserts nested elements based on which match expression matches the value
  * obtained from the evaluated switch expression. In other words, you define a container element
  * (where you place the directive with a switch expression on the
- * **`[ngSwitch]="..."` attribute**), define any inner elements inside of the directive and
+ * `[ngSwitch]="..."` attribute), define any inner elements inside of the directive and
  * place a `[ngSwitchWhen]` attribute per element.
  *
  * The `ngSwitchWhen` property is used to inform `NgSwitch` which element to display when the
@@ -175,7 +176,7 @@ export class NgSwitchWhen {
   _view: SwitchView;
   private _switch: NgSwitch;
 
-  constructor(viewContainer: ViewContainerRef, templateRef: TemplateRef,
+  constructor(viewContainer: ViewContainerRef, templateRef: TemplateRef<Object>,
               @Host() ngSwitch: NgSwitch) {
     this._switch = ngSwitch;
     this._view = new SwitchView(viewContainer, templateRef);
@@ -195,7 +196,7 @@ export class NgSwitchWhen {
  */
 @Directive({selector: '[ngSwitchDefault]'})
 export class NgSwitchDefault {
-  constructor(viewContainer: ViewContainerRef, templateRef: TemplateRef,
+  constructor(viewContainer: ViewContainerRef, templateRef: TemplateRef<Object>,
               @Host() sswitch: NgSwitch) {
     sswitch._registerView(_WHEN_DEFAULT, new SwitchView(viewContainer, templateRef));
   }

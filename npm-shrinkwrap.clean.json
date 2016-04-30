@@ -4602,12 +4602,7 @@
       }
     },
     "rc": {
-      "version": "1.1.6",
-      "dependencies": {
-        "minimist": {
-          "version": "1.2.0"
-        }
-      }
+      "version": "1.1.6"
     },
     "rcfinder": {
       "version": "0.1.8",
@@ -4807,7 +4802,7 @@
       "version": "1.1.5"
     },
     "rxjs": {
-      "version": "5.0.0-beta.2"
+      "version": "5.0.0-beta.6"
     },
     "sass-graph": {
       "version": "2.0.1",
@@ -4870,12 +4865,7 @@
       "version": "5.1.0"
     },
     "semver-diff": {
-      "version": "2.1.0",
-      "dependencies": {
-        "semver": {
-          "version": "5.1.0"
-        }
-      }
+      "version": "2.1.0"
     },
     "semver-utils": {
       "version": "1.1.1"
@@ -5343,7 +5333,7 @@
       }
     },
     "ts2dart": {
-      "version": "0.7.31",
+      "version": "0.9.9",
       "dependencies": {
         "source-map": {
           "version": "0.4.4"
@@ -5355,9 +5345,6 @@
               "version": "0.1.32"
             }
           }
-        },
-        "typescript": {
-          "version": "1.7.3"
         }
       }
     },
@@ -5414,6 +5401,22 @@
         },
         "verror": {
           "version": "1.4.0"
+        }
+      }
+    },
+    "tsickle": {
+      "version": "0.1.0",
+      "dependencies": {
+        "source-map": {
+          "version": "0.4.4"
+        },
+        "source-map-support": {
+          "version": "0.3.3",
+          "dependencies": {
+            "source-map": {
+              "version": "0.1.32"
+            }
+          }
         }
       }
     },
@@ -5822,9 +5825,9 @@
       }
     },
     "zone.js": {
-      "version": "0.6.10"
+      "version": "0.6.12"
     }
   },
   "name": "angular-srcs",
-  "version": "2.0.0-beta.14"
+  "version": "2.0.0-beta.17"
 }

@@ -15,7 +15,8 @@ import {
 import {specs, compile, TEST_ROUTER_PROVIDERS, clickOnElement, getHref} from '../util';
 
 import {By} from 'angular2/platform/common_dom';
-import {Router, Route, Location} from 'angular2/router';
+import {Location} from 'angular2/platform/common';
+import {Router, Route} from 'angular2/router';
 
 import {
   HelloCmp,

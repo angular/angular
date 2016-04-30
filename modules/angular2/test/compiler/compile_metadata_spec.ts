@@ -63,7 +63,8 @@ export function main() {
         templateUrl: 'someTemplateUrl',
         styles: ['someStyle'],
         styleUrls: ['someStyleUrl'],
-        ngContentSelectors: ['*']
+        ngContentSelectors: ['*'],
+        baseUrl: 'someBaseUrl'
       });
       fullDirectiveMeta = CompileDirectiveMetadata.create({
         selector: 'someSelector',
@@ -103,7 +104,8 @@ export function main() {
             selectors: [new CompileTokenMetadata({value: 'selector'})],
             descendants: true,
             first: false,
-            propertyName: 'prop'
+            propertyName: 'prop',
+            read: new CompileTokenMetadata({value: 'readToken'})
           })
         ],
         viewQueries: [
@@ -111,7 +113,8 @@ export function main() {
             selectors: [new CompileTokenMetadata({value: 'selector'})],
             descendants: true,
             first: false,
-            propertyName: 'prop'
+            propertyName: 'prop',
+            read: new CompileTokenMetadata({value: 'readToken'})
           })
         ]
       });

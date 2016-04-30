@@ -2,6 +2,21 @@ var fs = require('fs');
 var path = require('path');
 
 module.exports = function(gulp, plugins, config) {
+  function symlink(relativeFolder, linkDir) {
+    var sourceDir = path.join('..', relativeFolder);
+    if (!fs.existsSync(linkDir)) {
+      console.log('creating link', linkDir, sourceDir);
+      try {
+        fs.symlinkSync(sourceDir, linkDir, 'dir');
+      }
+      catch(e) {
+        var sourceDir = path.join(config.dir, relativeFolder);
+        console.log('linking failed: trying to hard copy', linkDir, sourceDir);
+        copyRecursiveSync(sourceDir, linkDir);
+      }
+    }
+  }
+
   return function() {
     var nodeModulesDir = path.join(config.dir, 'node_modules');
     if (!fs.existsSync(nodeModulesDir)) {
@@ -11,20 +26,12 @@ module.exports = function(gulp, plugins, config) {
       if (relativeFolder === 'node_modules') {
         return;
       }
-      var sourceDir = path.join('..', relativeFolder);
+
       var linkDir = path.join(nodeModulesDir, relativeFolder);
-      if (!fs.existsSync(linkDir)) {
-        console.log('creating link', linkDir, sourceDir);
-        try {
-          fs.symlinkSync(sourceDir, linkDir, 'dir');
-        }
-        catch(e) {
-          var sourceDir = path.join(config.dir, relativeFolder);
-          console.log('linking failed: trying to hard copy', linkDir, sourceDir);
-          copyRecursiveSync(sourceDir, linkDir);
-        }
-      }
+      symlink(relativeFolder, linkDir);
     });
+    // Also symlink tools we release independently to NPM, so tests can require metadata, etc.
+    symlink('../../tools/metadata', path.join(nodeModulesDir, 'ts-metadata-collector'));
   };
 };
 

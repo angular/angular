@@ -23,6 +23,8 @@ import {
   HtmlAttrAst,
   HtmlAst,
   HtmlCommentAst,
+  HtmlExpansionAst,
+  HtmlExpansionCaseAst,
   htmlVisitAll
 } from './html_ast';
 import {HtmlParser} from './html_parser';
@@ -64,9 +66,9 @@ export class DirectiveNormalizer {
                     template: CompileTemplateMetadata): Promise<CompileTemplateMetadata> {
     if (isPresent(template.template)) {
       return PromiseWrapper.resolve(this.normalizeLoadedTemplate(
-          directiveType, template, template.template, directiveType.moduleUrl));
+          directiveType, template, template.template, template.baseUrl));
     } else if (isPresent(template.templateUrl)) {
-      var sourceAbsUrl = this._urlResolver.resolve(directiveType.moduleUrl, template.templateUrl);
+      var sourceAbsUrl = this._urlResolver.resolve(template.baseUrl, template.templateUrl);
       return this._xhr.get(sourceAbsUrl)
           .then(templateContent => this.normalizeLoadedTemplate(directiveType, template,
                                                                 templateContent, sourceAbsUrl));
@@ -91,7 +93,7 @@ export class DirectiveNormalizer {
         visitor.styleUrls.filter(isStyleUrlResolvable)
             .map(url => this._urlResolver.resolve(templateAbsUrl, url))
             .concat(templateMeta.styleUrls.filter(isStyleUrlResolvable)
-                        .map(url => this._urlResolver.resolve(directiveType.moduleUrl, url)));
+                        .map(url => this._urlResolver.resolve(templateMeta.baseUrl, url)));
 
     var allResolvedStyles = allStyles.map(style => {
       var styleWithImports = extractStyleUrls(this._urlResolver, templateAbsUrl, style);
@@ -158,4 +160,7 @@ class TemplatePreparseVisitor implements HtmlAstVisitor {
   visitComment(ast: HtmlCommentAst, context: any): any { return null; }
   visitAttr(ast: HtmlAttrAst, context: any): any { return null; }
   visitText(ast: HtmlTextAst, context: any): any { return null; }
+  visitExpansion(ast: HtmlExpansionAst, context: any): any { return null; }
+
+  visitExpansionCase(ast: HtmlExpansionCaseAst, context: any): any { return null; }
 }

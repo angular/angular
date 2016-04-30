@@ -13,6 +13,7 @@ import {isPresent, isBlank} from 'angular2/src/facade/lang';
 import {StringMapWrapper} from 'angular2/src/facade/collection';
 import {Parser} from 'angular2/src/compiler/expression_parser/parser';
 import {Message, id} from './message';
+import {expandNodes} from './expander';
 import {
   I18nError,
   Part,
@@ -121,11 +122,11 @@ export class MessageExtractor {
     this.messages = [];
     this.errors = [];
 
-    let res = this._htmlParser.parse(template, sourceUrl);
+    let res = this._htmlParser.parse(template, sourceUrl, true);
     if (res.errors.length > 0) {
       return new ExtractionResult([], res.errors);
     } else {
-      this._recurse(res.rootNodes);
+      this._recurse(expandNodes(res.rootNodes).nodes);
       return new ExtractionResult(this.messages, this.errors);
     }
   }

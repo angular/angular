@@ -1,4 +1,4 @@
-import {CONST, Type} from 'angular2/src/facade/lang';
+import {Type} from 'angular2/src/facade/lang';
 
 /**
  * Defines template and style encapsulation options available for Component's {@link View}.
@@ -60,8 +60,8 @@ export var VIEW_ENCAPSULATION_VALUES =
  *   }
  * }
  * ```
+ * @ts2dart_const
  */
-@CONST()
 export class ViewMetadata {
   /**
    * Specifies a template URL for an Angular component.
@@ -104,7 +104,7 @@ export class ViewMetadata {
    *   directives: [NgFor]
    *   template: '
    *   <ul>
-   *     <li *ngFor="#item of items">{{item}}</li>
+   *     <li *ngFor="let item of items">{{item}}</li>
    *   </ul>'
    * })
    * class MyComponent {

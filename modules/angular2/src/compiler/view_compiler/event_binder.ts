@@ -47,7 +47,8 @@ export class CompileEventListener {
       this._hasComponentHostListener = true;
     }
     this._method.resetDebugInfo(this.compileElement.nodeIndex, hostEvent);
-    var context = isPresent(directiveInstance) ? directiveInstance : o.THIS_EXPR.prop('context');
+    var context = isPresent(directiveInstance) ? directiveInstance :
+                                                 this.compileElement.view.componentContext;
     var actionStmts = convertCdStatementToIr(this.compileElement.view, context, hostEvent.handler);
     var lastIndex = actionStmts.length - 1;
     if (lastIndex >= 0) {
@@ -67,10 +68,9 @@ export class CompileEventListener {
   }
 
   finishMethod() {
-    var markPathToRootStart =
-        this._hasComponentHostListener ?
-            this.compileElement.getOrCreateAppElement().prop('componentView') :
-            o.THIS_EXPR;
+    var markPathToRootStart = this._hasComponentHostListener ?
+                                  this.compileElement.appElement.prop('componentView') :
+                                  o.THIS_EXPR;
     var resultExpr: o.Expression = o.literal(true);
     this._actionResultExprs.forEach((expr) => { resultExpr = resultExpr.and(expr); });
     var stmts =
@@ -88,7 +88,8 @@ export class CompileEventListener {
            [
              new o.ReturnStatement(
                  o.THIS_EXPR.callMethod(this._methodName, [EventHandlerVars.event]))
-           ])
+           ],
+           o.BOOL_TYPE)
     ]);
     if (isPresent(this.eventTarget)) {
       listenExpr = ViewProperties.renderer.callMethod(

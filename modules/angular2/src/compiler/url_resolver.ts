@@ -1,4 +1,4 @@
-import {Injectable, Inject} from 'angular2/src/core/di';
+import {Provider, Injectable, Inject} from 'angular2/src/core/di';
 import {
   StringWrapper,
   isPresent,
@@ -9,7 +9,6 @@ import {
 import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
 import {ListWrapper} from 'angular2/src/facade/collection';
 import {PACKAGE_ROOT_URL} from 'angular2/src/core/application_tokens';
-import {Provider} from 'angular2/src/core/di';
 
 const _ASSET_SCHEME = 'asset:';
 
@@ -27,7 +26,10 @@ export function createOfflineCompileUrlResolver(): UrlResolver {
 /**
  * A default provider for {@link PACKAGE_ROOT_URL} that maps to '/'.
  */
-export var DEFAULT_PACKAGE_URL_PROVIDER = new Provider(PACKAGE_ROOT_URL, {useValue: "/"});
+export var DEFAULT_PACKAGE_URL_PROVIDER = {
+  provide: PACKAGE_ROOT_URL,
+  useValue: "/"
+};
 
 /**
  * Used by the {@link Compiler} when resolving HTML and CSS template URLs.

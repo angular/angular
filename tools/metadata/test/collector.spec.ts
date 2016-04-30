@@ -29,12 +29,26 @@ describe('Collector', () => {
     expect(metadata).toBeUndefined();
   });
 
+  it("should be able to collect import statements", () => {
+    const sourceFile = program.getSourceFile('app/app.component.ts');
+    expect(collector.collectImports(sourceFile))
+        .toEqual([
+          {
+            from: 'angular2/core',
+            namedImports: [{name: 'MyComponent', propertyName: 'Component'}, {name: 'OnInit'}]
+          },
+          {from: 'angular2/common', namespace: 'common'},
+          {from: './hero', namedImports: [{name: 'Hero'}]},
+          {from: './hero-detail.component', namedImports: [{name: 'HeroDetailComponent'}]},
+          {from: './hero.service', defaultName: 'HeroService'}
+        ]);
+  });
+
   it("should be able to collect a simple component's metadata", () => {
     const sourceFile = program.getSourceFile('app/hero-detail.component.ts');
     const metadata = collector.getMetadata(sourceFile, typeChecker);
     expect(metadata).toEqual({
       __symbolic: 'module',
-      module: './hero-detail.component',
       metadata: {
         HeroDetailComponent: {
           __symbolic: 'class',
@@ -83,7 +97,6 @@ describe('Collector', () => {
     const metadata = collector.getMetadata(sourceFile, typeChecker);
     expect(metadata).toEqual({
       __symbolic: 'module',
-      module: './app.component',
       metadata: {
         AppComponent: {
           __symbolic: 'class',
@@ -113,8 +126,7 @@ describe('Collector', () => {
                     },
                     {__symbolic: 'reference', name: 'NgFor', module: 'angular2/common'}
                   ],
-                  providers:
-                      [{__symbolic: 'reference', name: 'HeroService', module: './hero.service'}],
+                  providers: [{__symbolic: 'reference', name: undefined, module: './hero.service'}],
                   pipes: [
                     {__symbolic: 'reference', name: 'LowerCasePipe', module: 'angular2/common'},
                     {
@@ -131,9 +143,8 @@ describe('Collector', () => {
             __ctor__: [
               {
                 __symbolic: 'constructor',
-                parameters: [
-                  {__symbolic: 'reference', module: './hero.service', name: 'HeroService'}
-                ]
+                parameters:
+                    [{__symbolic: 'reference', name: undefined, module: './hero.service'}]
               }
             ]
           }
@@ -147,7 +158,6 @@ describe('Collector', () => {
     const metadata = collector.getMetadata(sourceFile, typeChecker);
     expect(metadata).toEqual({
       __symbolic: 'module',
-      module: './mock-heroes',
       metadata: {
         HEROES: [
           {"id": 11, "name": "Mr. Nice"},
@@ -187,7 +197,7 @@ describe('Collector', () => {
     expect(ctorData).toEqual([{__symbolic: 'constructor', parameters: [null]}]);
   });
 
-  it('should record annotations on set and get declartions', () => {
+  it('should record annotations on set and get declarations', () => {
     const propertyData = {
       name: [
         {
@@ -215,13 +225,15 @@ describe('Collector', () => {
 const FILES: Directory = {
   'app': {
     'app.component.ts': `
-      import {Component, OnInit} from 'angular2/core';
-      import {NgFor, LowerCasePipe, UpperCasePipe} from 'angular2/common';
+      import {Component as MyComponent, OnInit} from 'angular2/core';
+      import * as common from 'angular2/common';
       import {Hero} from './hero';
       import {HeroDetailComponent} from './hero-detail.component';
-      import {HeroService} from './hero.service';
-
-      @Component({
+      import HeroService from './hero.service';
+      // thrown away
+      import 'angular2/core';
+      
+      @MyComponent({
         selector: 'my-app',
         template:` + "`" + `
         <h2>My Heroes</h2>
@@ -235,9 +247,9 @@ const FILES: Directory = {
         <my-hero-detail [hero]="selectedHero"></my-hero-detail>
         ` +
                             "`" + `,
-        directives: [HeroDetailComponent, NgFor],
+        directives: [HeroDetailComponent, common.NgFor],
         providers: [HeroService],
-        pipes: [LowerCasePipe, UpperCasePipe]
+        pipes: [common.LowerCasePipe, common.UpperCasePipe]
       })
       export class AppComponent implements OnInit {
         public title = 'Tour of Heroes';
@@ -282,7 +294,7 @@ const FILES: Directory = {
         @Input() public hero: Hero;
       }`,
     'mock-heroes.ts': `
-      import {Hero} from './hero';
+      import {Hero as Hero} from './hero';
 
       export const HEROES: Hero[] = [
           {"id": 11, "name": "Mr. Nice"},
@@ -296,13 +308,17 @@ const FILES: Directory = {
           {"id": 19, "name": "Magma"},
           {"id": 20, "name": "Tornado"}
       ];`,
+    'default-exporter.ts': `
+      let a: string;
+      export default a;
+    `,
     'hero.service.ts': `
       import {Injectable} from 'angular2/core';
       import {HEROES} from './mock-heroes';
       import {Hero} from './hero';
 
       @Injectable()
-      export class HeroService {
+      class HeroService {
           getHeros() {
               return Promise.resolve(HEROES);
           }
@@ -311,7 +327,8 @@ const FILES: Directory = {
               return new Promise<Hero[]>(resolve =>
                 setTimeout(()=>resolve(HEROES), 2000)); // 2 seconds
           }
-      }`,
+      }
+      export default HeroService;`,
     'cases-data.ts': `
       import {Injectable, Input} from 'angular2/core';
 
@@ -348,7 +365,7 @@ const FILES: Directory = {
       }
      `,
     'cases-no-data.ts': `
-      import {HeroService} from './hero.service';
+      import HeroService from './hero.service';
 
       export class CaseCtor {
         constructor(private _heroService: HeroService) { }

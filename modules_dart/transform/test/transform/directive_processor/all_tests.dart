@@ -590,10 +590,12 @@ void allTests() {
       expect(deps[5].isOptional, isTrue);
       expect(deps[6].query.selectors[0].name, equals("ServiceDep"));
       expect(deps[6].query.descendants, isTrue);
+      expect(deps[6].query.read.identifier.name, equals("ServiceDep"));
       expect(deps[7].query.selectors[0].identifier.name, equals("ServiceDep"));
       expect(deps[7].query.descendants, isTrue);
       expect(deps[8].viewQuery.selectors[0].value, equals("one"));
       expect(deps[8].viewQuery.selectors[1].value, equals("two"));
+      expect(deps[8].viewQuery.read.value, equals("three"));
       expect(deps[9].viewQuery.selectors[0].value, equals("one"));
       expect(deps[9].viewQuery.selectors[1].value, equals("two"));
       expect(deps[10].token.identifier.name, equals("ServiceDep"));

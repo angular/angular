@@ -1,15 +1,11 @@
 import {Injectable} from 'angular2/src/core/di';
 import {
-  PlatformLocation,
-  UrlChangeEvent,
-  UrlChangeListener
-} from 'angular2/src/router/location/platform_location';
-import {
   FnArg,
   UiArguments,
   ClientMessageBroker,
   ClientMessageBrokerFactory
 } from 'angular2/src/web_workers/shared/client_message_broker';
+import {PlatformLocation, UrlChangeEvent, UrlChangeListener} from 'angular2/platform/common';
 import {ROUTER_CHANNEL} from 'angular2/src/web_workers/shared/messaging_api';
 import {LocationType} from 'angular2/src/web_workers/shared/serialized_types';
 import {PromiseWrapper, EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';

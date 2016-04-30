@@ -16,7 +16,7 @@ import 'package:barback/barback.dart';
 ///
 /// For example, if entry_point.dart imports dependency.dart, this will check if
 /// dependency.ng_meta.json exists. If it does, we add an entry to the
-/// `depImports` of [NgDepsModel] for dependency.template.dart.
+/// `depImports` of [NgDepsModel] for dependency.ngfactory.dart.
 ///
 /// We use this information later to ensure that each file's dependencies are
 /// initialized when that file is initialized.

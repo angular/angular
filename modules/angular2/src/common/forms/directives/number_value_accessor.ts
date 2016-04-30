@@ -1,9 +1,12 @@
-import {Directive, ElementRef, Renderer, Self, forwardRef, Provider} from 'angular2/core';
+import {Directive, ElementRef, Renderer, Self, forwardRef} from 'angular2/core';
 import {NG_VALUE_ACCESSOR, ControlValueAccessor} from './control_value_accessor';
-import {isBlank, CONST_EXPR, NumberWrapper} from 'angular2/src/facade/lang';
+import {isBlank, NumberWrapper} from 'angular2/src/facade/lang';
 
-const NUMBER_VALUE_ACCESSOR = CONST_EXPR(new Provider(
-    NG_VALUE_ACCESSOR, {useExisting: forwardRef(() => NumberValueAccessor), multi: true}));
+export const NUMBER_VALUE_ACCESSOR: any = /*@ts2dart_const*/ /*@ts2dart_Provider*/ {
+  provide: NG_VALUE_ACCESSOR,
+  useExisting: forwardRef(() => NumberValueAccessor),
+  multi: true
+};
 
 /**
  * The accessor for writing a number value and listening to changes that is used by the
@@ -35,7 +38,7 @@ export class NumberValueAccessor implements ControlValueAccessor {
   }
 
   registerOnChange(fn: (_: number) => void): void {
-    this.onChange = (value) => { fn(NumberWrapper.parseFloat(value)); };
+    this.onChange = (value) => { fn(value == '' ? null : NumberWrapper.parseFloat(value)); };
   }
   registerOnTouched(fn: () => void): void { this.onTouched = fn; }
 }

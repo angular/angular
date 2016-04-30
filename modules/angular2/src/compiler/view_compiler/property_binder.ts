@@ -11,7 +11,7 @@ import {
   TemplateAst
 } from '../template_ast';
 
-import {isBlank, isPresent, isArray, CONST_EXPR} from 'angular2/src/facade/lang';
+import {isBlank, isPresent, isArray} from 'angular2/src/facade/lang';
 
 import {CompileView} from './compile_view';
 import {CompileElement, CompileNode} from './compile_element';
@@ -71,15 +71,15 @@ export function bindRenderText(boundText: BoundTextAst, compileNode: CompileNode
   view.bindings.push(new CompileBinding(compileNode, boundText));
   var currValExpr = createCurrValueExpr(bindingIndex);
   var valueField = createBindFieldExpr(bindingIndex);
-  view.detectChangesInInputsMethod.resetDebugInfo(compileNode.nodeIndex, boundText);
+  view.detectChangesRenderPropertiesMethod.resetDebugInfo(compileNode.nodeIndex, boundText);
 
-  bind(view, currValExpr, valueField, boundText.value, o.THIS_EXPR.prop('context'),
+  bind(view, currValExpr, valueField, boundText.value, view.componentContext,
        [
          o.THIS_EXPR.prop('renderer')
              .callMethod('setText', [compileNode.renderNode, currValExpr])
              .toStmt()
        ],
-       view.detectChangesInInputsMethod);
+       view.detectChangesRenderPropertiesMethod);
 }
 
 function bindAndWriteToRenderer(boundProps: BoundElementPropertyAst[], context: o.Expression,
@@ -89,7 +89,7 @@ function bindAndWriteToRenderer(boundProps: BoundElementPropertyAst[], context: 
   boundProps.forEach((boundProp) => {
     var bindingIndex = view.bindings.length;
     view.bindings.push(new CompileBinding(compileElement, boundProp));
-    view.detectChangesHostPropertiesMethod.resetDebugInfo(compileElement.nodeIndex, boundProp);
+    view.detectChangesRenderPropertiesMethod.resetDebugInfo(compileElement.nodeIndex, boundProp);
     var fieldExpr = createBindFieldExpr(bindingIndex);
     var currValExpr = createCurrValueExpr(bindingIndex);
     var renderMethod: string;
@@ -125,13 +125,13 @@ function bindAndWriteToRenderer(boundProps: BoundElementPropertyAst[], context: 
             .toStmt());
 
     bind(view, currValExpr, fieldExpr, boundProp.value, context, updateStmts,
-         view.detectChangesHostPropertiesMethod);
+         view.detectChangesRenderPropertiesMethod);
   });
 }
 
 export function bindRenderInputs(boundProps: BoundElementPropertyAst[],
                                  compileElement: CompileElement): void {
-  bindAndWriteToRenderer(boundProps, o.THIS_EXPR.prop('context'), compileElement);
+  bindAndWriteToRenderer(boundProps, compileElement.view.componentContext, compileElement);
 }
 
 export function bindDirectiveHostProps(directiveAst: DirectiveAst, directiveInstance: o.Expression,
@@ -184,13 +184,12 @@ export function bindDirectiveInputs(directiveAst: DirectiveAst, directiveInstanc
       statements.push(
           logBindingUpdateStmt(compileElement.renderNode, input.directiveName, currValExpr));
     }
-    bind(view, currValExpr, fieldExpr, input.value, o.THIS_EXPR.prop('context'), statements,
+    bind(view, currValExpr, fieldExpr, input.value, view.componentContext, statements,
          detectChangesInInputsMethod);
   });
   if (isOnPushComp) {
     detectChangesInInputsMethod.addStmt(new o.IfStmt(DetectChangesVars.changed, [
-      compileElement.getOrCreateAppElement()
-          .prop('componentView')
+      compileElement.appElement.prop('componentView')
           .callMethod('markAsCheckOnce', [])
           .toStmt()
     ]));

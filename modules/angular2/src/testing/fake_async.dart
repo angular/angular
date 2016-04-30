@@ -16,6 +16,8 @@ quiver.FakeAsync _fakeAsync = null;
  * If there are any pending timers at the end of the function, an exception
  * will be thrown.
  *
+ * Can be used to wrap inject() calls.
+ *
  * Returns a `Function` that wraps [fn].
  */
 Function fakeAsync(Function fn) {
@@ -23,17 +25,16 @@ Function fakeAsync(Function fn) {
     throw 'fakeAsync() calls can not be nested';
   }
 
-  return (
-      [a0 = _u,
-      a1 = _u,
-      a2 = _u,
-      a3 = _u,
-      a4 = _u,
-      a5 = _u,
-      a6 = _u,
-      a7 = _u,
-      a8 = _u,
-      a9 = _u]) {
+  return ([a0 = _u,
+           a1 = _u,
+           a2 = _u,
+           a3 = _u,
+           a4 = _u,
+           a5 = _u,
+           a6 = _u,
+           a7 = _u,
+           a8 = _u,
+           a9 = _u]) {
     // runZoned() to install a custom exception handler that re-throws
     return runZoned(() {
       return new quiver.FakeAsync().run((quiver.FakeAsync async) {

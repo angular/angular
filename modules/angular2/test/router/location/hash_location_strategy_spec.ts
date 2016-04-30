@@ -1,7 +1,6 @@
 import {
   AsyncTestCompleter,
   describe,
-  proxy,
   it,
   iit,
   ddescribe,
@@ -14,9 +13,7 @@ import {
 
 import {Injector, provide} from 'angular2/core';
 
-import {PlatformLocation} from 'angular2/src/router/location/platform_location';
-import {APP_BASE_HREF} from 'angular2/src/router/location/location_strategy';
-import {HashLocationStrategy} from 'angular2/src/router/location/hash_location_strategy';
+import {PlatformLocation, APP_BASE_HREF, HashLocationStrategy} from 'angular2/platform/common';
 import {SpyPlatformLocation} from '../spies';
 
 export function main() {

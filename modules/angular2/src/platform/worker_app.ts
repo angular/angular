@@ -1,5 +1,5 @@
 import {NgZone} from 'angular2/src/core/zone/ng_zone';
-import {Type, CONST_EXPR, isPresent} from 'angular2/src/facade/lang';
+import {Type, isPresent} from 'angular2/src/facade/lang';
 import {Provider} from 'angular2/src/core/di';
 import {Parse5DomAdapter} from 'angular2/src/platform/server/parse5_adapter';
 import {
@@ -22,8 +22,8 @@ let _postMessage = {
 export const WORKER_APP_APPLICATION: Array<any /*Type | Provider | any[]*/> = [
   WORKER_APP_APPLICATION_COMMON,
   COMPILER_PROVIDERS,
-  new Provider(MessageBus, {useFactory: createMessageBus, deps: [NgZone]}),
-  new Provider(APP_INITIALIZER, {useValue: setupWebWorker, multi: true})
+  /* @ts2dart_Provider */ {provide: MessageBus, useFactory: createMessageBus, deps: [NgZone]},
+  /* @ts2dart_Provider */ {provide: APP_INITIALIZER, useValue: setupWebWorker, multi: true}
 ];
 
 function createMessageBus(zone: NgZone): MessageBus {

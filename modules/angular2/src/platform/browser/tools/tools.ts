@@ -1,5 +1,5 @@
 import {global} from 'angular2/src/facade/lang';
-import {ComponentRef} from 'angular2/src/core/linker/dynamic_component_loader';
+import {ComponentRef} from 'angular2/src/core/linker/component_factory';
 import {AngularTools} from './common_tools';
 
 var context = <any>global;

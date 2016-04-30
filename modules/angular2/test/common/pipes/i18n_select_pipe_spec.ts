@@ -24,28 +24,28 @@ export function main() {
 
     describe("transform", () => {
       it("should return male text if value is male", () => {
-        var val = pipe.transform('male', [mapping]);
+        var val = pipe.transform('male', mapping);
         expect(val).toEqual('Invite him.');
       });
 
       it("should return female text if value is female", () => {
-        var val = pipe.transform('female', [mapping]);
+        var val = pipe.transform('female', mapping);
         expect(val).toEqual('Invite her.');
       });
 
       it("should return other text if value is anything other than male or female", () => {
-        var val = pipe.transform('Anything else', [mapping]);
+        var val = pipe.transform('Anything else', mapping);
         expect(val).toEqual('Invite them.');
       });
 
       it("should use 'other' if value is undefined", () => {
         var gender;
-        var val = pipe.transform(gender, [mapping]);
+        var val = pipe.transform(gender, mapping);
         expect(val).toEqual('Invite them.');
       });
 
       it("should not support bad arguments",
-         () => { expect(() => pipe.transform('male', ['hey'])).toThrowError(); });
+         () => { expect(() => pipe.transform('male', 'hey')).toThrowError(); });
     });
 
   });

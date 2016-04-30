@@ -1,5 +1,6 @@
-import {CONST_EXPR} from 'angular2/src/facade/lang';
+import {isBlank} from 'angular2/src/facade/lang';
 import {ListWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
+import {BaseException} from 'angular2/src/facade/exceptions';
 import {ObservableWrapper, EventEmitter} from 'angular2/src/facade/async';
 import {
   SimpleChange,
@@ -19,8 +20,11 @@ import {Control, ControlGroup} from '../model';
 import {setUpControl, setUpControlGroup, composeValidators, composeAsyncValidators} from './shared';
 import {Validators, NG_VALIDATORS, NG_ASYNC_VALIDATORS} from '../validators';
 
-const formDirectiveProvider =
-    CONST_EXPR(new Provider(ControlContainer, {useExisting: forwardRef(() => NgFormModel)}));
+export const formDirectiveProvider: any =
+    /*@ts2dart_const*/ /* @ts2dart_Provider */ {
+      provide: ControlContainer,
+      useExisting: forwardRef(() => NgFormModel)
+    };
 
 /**
  * Binds an existing control group to a DOM element.
@@ -114,6 +118,7 @@ export class NgFormModel extends ControlContainer implements Form,
   }
 
   ngOnChanges(changes: {[key: string]: SimpleChange}): void {
+    this._checkFormPresent();
     if (StringMapWrapper.contains(changes, "form")) {
       var sync = composeValidators(this._validators);
       this.form.validator = Validators.compose([this.form.validator, sync]);
@@ -172,5 +177,12 @@ export class NgFormModel extends ControlContainer implements Form,
       var ctrl: any = this.form.find(dir.path);
       dir.valueAccessor.writeValue(ctrl.value);
     });
+  }
+
+  private _checkFormPresent() {
+    if (isBlank(this.form)) {
+      throw new BaseException(
+          `ngFormModel expects a form. Please pass one in. Example: <form [ngFormModel]="myCoolForm">`);
+    }
   }
 }

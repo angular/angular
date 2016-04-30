@@ -90,7 +90,7 @@ class TransformerOptions {
   ///
   /// This option is strictly for internal testing and is not available as an
   /// option on the transformer.
-  /// Setting this to `false` means that our generated .template.dart files do
+  /// Setting this to `false` means that our generated .ngfactory.dart files do
   /// not have any compiled templates or change detectors defined in them.
   /// These files will not be usable, but this allows us to test the code output
   /// of the transformer without breaking when compiled template internals

@@ -18,7 +18,9 @@ import {
   HtmlAttrAst,
   HtmlTextAst,
   HtmlCommentAst,
-  htmlVisitAll
+  htmlVisitAll,
+  HtmlExpansionAst,
+  HtmlExpansionCaseAst
 } from 'angular2/src/compiler/html_ast';
 import {ParseError, ParseLocation} from 'angular2/src/compiler/parse_util';
 import {humanizeDom, humanizeDomSourceSpans, humanizeLineColumn} from './html_ast_spec_utils';
@@ -227,7 +229,7 @@ export function main() {
               .toEqual([[HtmlElementAst, 'template', 0], [HtmlAttrAst, 'k', 'v']]);
         });
 
-        it('should support mamespace', () => {
+        it('should support namespace', () => {
           expect(humanizeDom(parser.parse('<svg:use xlink:href="Port" />', 'TestComp')))
               .toEqual([[HtmlElementAst, '@svg:use', 0], [HtmlAttrAst, '@xlink:href', 'Port']]);
         });
@@ -237,6 +239,75 @@ export function main() {
         it('should preserve comments', () => {
           expect(humanizeDom(parser.parse('<!-- comment --><div></div>', 'TestComp')))
               .toEqual([[HtmlCommentAst, 'comment', 0], [HtmlElementAst, 'div', 0]]);
+        });
+      });
+
+      describe("expansion forms", () => {
+        it("should parse out expansion forms", () => {
+          let parsed = parser.parse(`<div>before{messages.length, plural, =0 {You have <b>no</b> messages} =1 {One {{message}}}}after</div>`,
+                                    'TestComp', true);
+
+          expect(humanizeDom(parsed))
+              .toEqual([
+                [HtmlElementAst, 'div', 0],
+                [HtmlTextAst, 'before', 1],
+                [HtmlExpansionAst, 'messages.length', 'plural'],
+                [HtmlExpansionCaseAst, '0'],
+                [HtmlExpansionCaseAst, '1'],
+                [HtmlTextAst, 'after', 1]
+              ]);
+
+          let cases = (<any>parsed.rootNodes[0]).children[1].cases;
+
+          expect(humanizeDom(new HtmlParseTreeResult(cases[0].expression, [])))
+              .toEqual([
+                [HtmlTextAst, 'You have ', 0],
+                [HtmlElementAst, 'b', 0],
+                [HtmlTextAst, 'no', 1],
+                [HtmlTextAst, ' messages', 0],
+              ]);
+
+          expect(humanizeDom(new HtmlParseTreeResult(cases[1].expression, [])))
+              .toEqual([[HtmlTextAst, 'One {{message}}', 0]]);
+        });
+
+        it("should parse out nested expansion forms", () => {
+          let parsed = parser.parse(`{messages.length, plural, =0 { {p.gender, gender, =m {m}} }}`,
+                                    'TestComp', true);
+
+
+          expect(humanizeDom(parsed))
+              .toEqual([
+                [HtmlExpansionAst, 'messages.length', 'plural'],
+                [HtmlExpansionCaseAst, '0'],
+              ]);
+
+          let firstCase = (<any>parsed.rootNodes[0]).cases[0];
+
+          expect(humanizeDom(new HtmlParseTreeResult(firstCase.expression, [])))
+              .toEqual([
+                [HtmlExpansionAst, 'p.gender', 'gender'],
+                [HtmlExpansionCaseAst, 'm'],
+                [HtmlTextAst, ' ', 0],
+              ]);
+        });
+
+        it("should error when expansion form is not closed", () => {
+          let p = parser.parse(`{messages.length, plural, =0 {one}`, 'TestComp', true);
+          expect(humanizeErrors(p.errors))
+              .toEqual([[null, "Invalid expansion form. Missing '}'.", '0:34']]);
+        });
+
+        it("should error when expansion case is not closed", () => {
+          let p = parser.parse(`{messages.length, plural, =0 {one`, 'TestComp', true);
+          expect(humanizeErrors(p.errors))
+              .toEqual([[null, "Invalid expansion form. Missing '}'.", '0:29']]);
+        });
+
+        it("should error when invalid html in the case", () => {
+          let p = parser.parse(`{messages.length, plural, =0 {<b/>}`, 'TestComp', true);
+          expect(humanizeErrors(p.errors))
+              .toEqual([['b', 'Only void and foreign elements can be self closed "b"', '0:30']]);
         });
       });
 

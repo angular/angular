@@ -4,7 +4,7 @@ import 'package:test/test.dart';
 
 import 'package:angular2/angular2.dart';
 import 'package:angular2/src/core/di/metadata.dart' show InjectMetadata;
-import 'package:angular2/src/core/di/exceptions.dart' show NoAnnotationError;
+import 'package:angular2/src/core/di/reflective_exceptions.dart' show NoAnnotationError;
 import 'package:angular2/src/core/reflection/reflection.dart';
 import 'package:angular2/src/core/reflection/reflection_capabilities.dart';
 import 'package:angular2/src/testing/test_injector.dart';
@@ -79,8 +79,7 @@ dynamic _runInjectableFunction(Function fn) {
     tokens.add(token);
   }
 
-  var injectFn = new FunctionWithParamTokens(tokens, fn, false);
-  return _testInjector.execute(injectFn);
+  return _testInjector.execute(tokens, fn);
 }
 
 /// Use the test injector to get bindings and run a function.
