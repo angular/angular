@@ -26,6 +26,10 @@ export class Tree<T> {
   }
 
   pathFromRoot(t: T): T[] { return _findPath(t, this._root, []).map(s => s.value); }
+
+  contains(tree: Tree<T>): boolean {
+    return _contains(this._root, tree._root);
+  }
 }
 
 export class UrlTree extends Tree<UrlSegment> {
@@ -55,15 +59,32 @@ function _findPath<T>(expected: T, c: TreeNode<T>, collected: TreeNode<T>[]): Tr
   collected.push(c);
 
   // TODO: vsavkin remove it once recognize is fixed
-  if (expected instanceof RouteSegment && equalSegments(<any>expected, <any>c.value))
-    return collected;
-  if (expected === c.value) return collected;
+  if(_equalValues(expected, c.value)) return collected;
+
   for (let cc of c.children) {
     let r = _findPath(expected, cc, ListWrapper.clone(collected));
     if (isPresent(r)) return r;
   }
 
   return null;
+}
+
+function _contains<T>(tree: TreeNode<T>, subtree: TreeNode<T>): boolean {
+  if (!_equalValues(tree.value, subtree.value)) return false;
+
+  for (let subtreeNode of subtree.children) {
+    let s = tree.children.filter(child => _equalValues(child.value, subtreeNode.value));
+    if (s.length === 0) return false;
+    if (!_contains(s[0], subtreeNode)) return false;
+  }
+
+  return true;
+}
+
+function _equalValues(a:any, b:any):boolean {
+  if (a instanceof RouteSegment) return equalSegments(<any>a, <any>b);
+  if (a instanceof UrlSegment) return equalUrlSegments(<any>a, <any>b)
+  return a === b;
 }
 
 export class TreeNode<T> {
@@ -125,6 +146,17 @@ export function equalSegments(a: RouteSegment, b: RouteSegment): boolean {
   if (isBlank(a) && !isBlank(b)) return false;
   if (!isBlank(a) && isBlank(b)) return false;
   if (a._type !== b._type) return false;
+  if (a.outlet != b.outlet) return false;
+  if (isBlank(a.parameters) && !isBlank(b.parameters)) return false;
+  if (!isBlank(a.parameters) && isBlank(b.parameters)) return false;
+  if (isBlank(a.parameters) && isBlank(b.parameters)) return true;
+  return StringMapWrapper.equals(a.parameters, b.parameters);
+}
+
+export function equalUrlSegments(a: UrlSegment, b: UrlSegment): boolean {
+  if (isBlank(a) && !isBlank(b)) return false;
+  if (!isBlank(a) && isBlank(b)) return false;
+  if (a.outlet != b.outlet) return false;
   if (isBlank(a.parameters) && !isBlank(b.parameters)) return false;
   if (!isBlank(a.parameters) && isBlank(b.parameters)) return false;
   if (isBlank(a.parameters) && isBlank(b.parameters)) return true;
