@@ -7,3 +7,7 @@ export var ReflectionCapabilities: typeof t.ReflectionCapabilities = r.Reflectio
 export var VIEW_ENCAPSULATION_VALUES: typeof t.VIEW_ENCAPSULATION_VALUES = r.VIEW_ENCAPSULATION_VALUES;
 export type DebugDomRootRenderer = t.DebugDomRootRenderer;
 export var DebugDomRootRenderer: typeof t.DebugDomRootRenderer = r.DebugDomRootRenderer;
+export var SecurityContext: typeof t.SecurityContext = r.SecurityContext;
+export type SecurityContext = t.SecurityContext;
+export var SanitizationService: typeof t.SanitizationService = r.SanitizationService;
+export type SanitizationService = t.SanitizationService;

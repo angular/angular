@@ -1,4 +1,5 @@
 import {Injectable} from '@angular/core';
+import {SecurityContext} from '../../core_private';
 import {isPresent} from '../facade/lang';
 import {StringMapWrapper} from '../facade/collection';
 import {ElementSchemaRegistry} from './element_schema_registry';
@@ -252,6 +253,13 @@ export class DomElementSchemaRegistry implements ElementSchemaRegistry {
       }
       return isPresent(elementProperties[propName]);
     }
+  }
+
+  securityContext(tagName: string, propName: string): SecurityContext {
+    if (propName === 'style') return SecurityContext.STYLE;
+    if (tagName === 'a' && propName === 'href') return SecurityContext.URL;
+    if (propName === 'innerHTML') return SecurityContext.HTML;
+    return SecurityContext.NONE;
   }
 
   getMappedPropName(propName: string): string {

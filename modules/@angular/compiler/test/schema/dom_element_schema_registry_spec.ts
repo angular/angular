@@ -11,11 +11,12 @@ import {
 } from '@angular/core/testing/testing_internal';
 
 import {DomElementSchemaRegistry} from '@angular/compiler/src/schema/dom_element_schema_registry';
+import {SecurityContext} from '../../core_private';
 import {extractSchema} from './schema_extractor';
 
 export function main() {
   describe('DOMElementSchema', () => {
-    var registry: DomElementSchemaRegistry;
+    let registry: DomElementSchemaRegistry;
     beforeEach(() => { registry = new DomElementSchemaRegistry(); });
 
     it('should detect properties on regular elements', () => {
@@ -33,21 +34,20 @@ export function main() {
       expect(registry.hasProperty('div', 'unknown')).toBeFalsy();
     });
 
-    it('should detect different kinds of types',
-       () => {
-         // inheritance: video => media => *
-         expect(registry.hasProperty('video', 'className')).toBeTruthy();   // from *
-         expect(registry.hasProperty('video', 'id')).toBeTruthy();          // string
-         expect(registry.hasProperty('video', 'scrollLeft')).toBeTruthy();  // number
-         expect(registry.hasProperty('video', 'height')).toBeTruthy();      // number
-         expect(registry.hasProperty('video', 'autoplay')).toBeTruthy();    // boolean
-         expect(registry.hasProperty('video', 'classList')).toBeTruthy();   // object
-         // from *; but events are not properties
-         expect(registry.hasProperty('video', 'click')).toBeFalsy();
-       })
+    it('should detect different kinds of types', () => {
+      // inheritance: video => media => *
+      expect(registry.hasProperty('video', 'className')).toBeTruthy();   // from *
+      expect(registry.hasProperty('video', 'id')).toBeTruthy();          // string
+      expect(registry.hasProperty('video', 'scrollLeft')).toBeTruthy();  // number
+      expect(registry.hasProperty('video', 'height')).toBeTruthy();      // number
+      expect(registry.hasProperty('video', 'autoplay')).toBeTruthy();    // boolean
+      expect(registry.hasProperty('video', 'classList')).toBeTruthy();   // object
+      // from *; but events are not properties
+      expect(registry.hasProperty('video', 'click')).toBeFalsy();
+    });
 
-        it('should return true for custom-like elements',
-           () => { expect(registry.hasProperty('custom-like', 'unknown')).toBeTruthy(); });
+    it('should return true for custom-like elements',
+       () => { expect(registry.hasProperty('custom-like', 'unknown')).toBeTruthy(); });
 
     it('should re-map property names that are specified in DOM facade',
        () => { expect(registry.getMappedPropName('readonly')).toEqual('readOnly'); });
@@ -55,6 +55,10 @@ export function main() {
     it('should not re-map property names that are not specified in DOM facade', () => {
       expect(registry.getMappedPropName('title')).toEqual('title');
       expect(registry.getMappedPropName('exotic-unknown')).toEqual('exotic-unknown');
+    });
+
+    it('should return security contexts for elements', () => {
+      expect(registry.securityContext('a', 'href')).toBe(SecurityContext.URL);
     });
 
     it('should detect properties on namespaced elements',

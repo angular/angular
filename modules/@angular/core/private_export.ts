@@ -1,4 +1,5 @@
 import * as constants from './src/change_detection/constants';
+import * as security from './src/security';
 import * as reflective_provider from './src/di/reflective_provider';
 import * as lifecycle_hooks from './src/metadata/lifecycle_hooks';
 import * as reflector_reader from './src/reflection/reflector_reader';
@@ -52,6 +53,10 @@ export declare namespace __core_private_types__ {
   export var ValueUnwrapper: typeof change_detection_util.ValueUnwrapper;
   export type RenderDebugInfo = api.RenderDebugInfo;
   export var RenderDebugInfo: typeof api.RenderDebugInfo;
+  export var SecurityContext: typeof security.SecurityContext;
+  export type SecurityContext = security.SecurityContext;
+  export var SanitizationService: typeof security.SanitizationService;
+  export type SanitizationService = security.SanitizationService;
   export type TemplateRef_<C> = template_ref.TemplateRef_<C>;
   export var TemplateRef_: typeof template_ref.TemplateRef_;
   export var wtfInit: typeof wtf_init.wtfInit;
@@ -104,6 +109,8 @@ export var __core_private__ = {
   uninitialized: change_detection_util.uninitialized,
   ValueUnwrapper: change_detection_util.ValueUnwrapper,
   RenderDebugInfo: api.RenderDebugInfo,
+  SecurityContext: security.SecurityContext,
+  SanitizationService: security.SanitizationService,
   TemplateRef_: template_ref.TemplateRef_,
   wtfInit: wtf_init.wtfInit,
   ReflectionCapabilities: reflection_capabilities.ReflectionCapabilities,

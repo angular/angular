@@ -10,8 +10,9 @@ import {
   OpaqueToken,
   Testability
 } from '@angular/core';
-import {wtfInit} from '../core_private';
+import {wtfInit, SanitizationService} from '../core_private';
 import {COMMON_DIRECTIVES, COMMON_PIPES, FORM_PROVIDERS} from '@angular/common';
+import {DomSanitizationService} from './security/dom_sanitization_service';
 
 import {IS_DART} from './facade/lang';
 import {BrowserDomAdapter} from './browser/browser_adapter';
@@ -62,6 +63,10 @@ function _document(): any {
   return getDOM().defaultDoc();
 }
 
+export const BROWSER_SANITIZATION_PROVIDERS: Array<any> = /*@ts2dart_const*/[
+  /* @ts2dart_Provider */ {provide: SanitizationService, useClass: DomSanitizationService},
+];
+
 /**
  * A set of providers to initialize an Angular application in a web browser.
  *
@@ -71,6 +76,7 @@ export const BROWSER_APP_COMMON_PROVIDERS: Array<any /*Type | Provider | any[]*/
     /*@ts2dart_const*/[
       APPLICATION_COMMON_PROVIDERS,
       FORM_PROVIDERS,
+      BROWSER_SANITIZATION_PROVIDERS,
       /* @ts2dart_Provider */ {provide: PLATFORM_PIPES, useValue: COMMON_PIPES, multi: true},
       /* @ts2dart_Provider */ {provide: PLATFORM_DIRECTIVES, useValue: COMMON_DIRECTIVES, multi: true},
       /* @ts2dart_Provider */ {provide: ExceptionHandler, useFactory: _exceptionHandler, deps: []},

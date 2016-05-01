@@ -1,4 +1,5 @@
 import {isPresent} from '../src/facade/lang';
+import {SecurityContext} from '../core_private';
 import {ElementSchemaRegistry} from '../index';
 
 export class MockSchemaRegistry implements ElementSchemaRegistry {
@@ -8,6 +9,10 @@ export class MockSchemaRegistry implements ElementSchemaRegistry {
   hasProperty(tagName: string, property: string): boolean {
     var result = this.existingProperties[property];
     return isPresent(result) ? result : true;
+  }
+
+  securityContext(tagName: string, property: string): SecurityContext {
+    return SecurityContext.NONE;
   }
 
   getMappedPropName(attrName: string): string {
