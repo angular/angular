@@ -256,6 +256,7 @@ export class DomElementSchemaRegistry implements ElementSchemaRegistry {
   }
 
   securityContext(tagName: string, propName: string): SecurityContext {
+    if (propName === 'style') return SecurityContext.STYLE;
     if (tagName === 'a' && propName === 'href') return SecurityContext.URL;
     if (propName === 'innerHTML') return SecurityContext.HTML;
     return SecurityContext.NONE;

@@ -139,14 +139,33 @@ function declareTests(isJit: boolean) {
         tcb.overrideView(SecuredComponent, new ViewMetadata({template: tpl, directives: []}))
             .createAsync(SecuredComponent)
             .then((fixture) => {
+              let e = fixture.debugElement.children[0].nativeElement;
               fixture.debugElement.componentInstance.ctxProp = 'hello';
               fixture.detectChanges();
-              expect(fixture.debugElement.children[0].nativeElement.href).toEqual('hello');
+              expect(getDOM().getAttribute(e, 'href')).toEqual('hello');
 
               fixture.debugElement.componentInstance.ctxProp = 'javascript:alert(1)';
               fixture.detectChanges();
-              expect(fixture.debugElement.children[0].nativeElement.href)
-                  .toEqual('unsafe:javascript:alert(1)');
+              expect(getDOM().getAttribute(e, 'href')).toEqual('unsafe:javascript:alert(1)');
+
+              async.done();
+            });
+      });
+
+      itAsync('should escape unsafe style values', (tcb: TestComponentBuilder, async) => {
+        let tpl = `<div [style.background]="ctxProp">Text</div>`;
+        tcb.overrideView(SecuredComponent, new ViewMetadata({template: tpl, directives: []}))
+            .createAsync(SecuredComponent)
+            .then((fixture) => {
+              let e = fixture.debugElement.children[0].nativeElement;
+              fixture.debugElement.componentInstance.ctxProp = 'red';
+              fixture.detectChanges();
+              expect(getDOM().getStyle(e, 'background')).toEqual('red');
+
+              fixture.debugElement.componentInstance.ctxProp = 'url(javascript:evil())';
+              fixture.detectChanges();
+              // Updated value gets rejected, no value change.
+              expect(getDOM().getStyle(e, 'background')).toEqual('red');
 
               async.done();
             });

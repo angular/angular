@@ -1,4 +1,5 @@
 import {sanitizeUrl} from './url_sanitizer';
+import {sanitizeStyle} from './style_sanitizer';
 import {SecurityContext} from '../../core_private';
 import {Injectable} from '@angular/core';
 import {isNumber, isString, isBlank, assertionsEnabled} from '../facade/lang';
@@ -51,7 +52,7 @@ export class DomSanitizationService {
   getSafeUrl(value: SafeUrl | string): string {
     if (value == null) return null;
     if (value instanceof SafeUrlImpl) return value.value;
-    return this.sanitizeUrlInternal(value.toString());
+    return sanitizeUrl(String(value));
   }
 
   getSafeScript(value: SafeScript | string): string {
@@ -77,7 +78,7 @@ export class DomSanitizationService {
   }
 
   sanitizeUrl(value: string): SafeUrl {
-    let s = this.sanitizeUrlInternal(value);
+    let s = sanitizeUrl(value);
     return new SafeUrlImpl(s);
   }
 
@@ -87,22 +88,15 @@ export class DomSanitizationService {
   }
 
   private sanitizeStyleMap(value: any): any {
-    if (isString(value)) return this.sanitizeStyleValue(<string>value);
+    if (isString(value)) return sanitizeStyle(<string>value);
     if (isNumber(value)) return value;
     let input = <{[k: string]: string}>value;
     let res: {[k: string]: string} = {};
     for (let k of StringMapWrapper.keys(input)) {
-      res[k] = this.sanitizeStyleValue(input[k]);
+      res[k] = sanitizeStyle(input[k]);
     }
     return res;
   }
-
-  private sanitizeStyleValue(value: string): string {
-    // TODO(martinprobst): Sanitize Style values.
-    return value;
-  }
-
-  private sanitizeUrlInternal(value: string): string { return sanitizeUrl(value); }
 
   bypassSecurityTrustHtml(value: string): SafeHtml { return new SafeHtmlImpl(value); }
   bypassSecurityTrustStyle(value: string): SafeStyle { return new SafeStyleImpl(value); }
