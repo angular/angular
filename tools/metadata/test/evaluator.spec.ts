@@ -117,7 +117,7 @@ describe('Evaluator', () => {
     expect(evaluator.evaluateNode(findVar(forwardRef, 'bFalse').initializer)).toEqual(false);
   });
 
-  fit('should return new expressions', () => {
+  it('should return new expressions', () => {
     evaluator =
         new Evaluator(typeChecker, symbols, [{from: './classes', namedImports: [{name: 'Value'}]}]);
     var newExpression = program.getSourceFile('newExpression.ts');
