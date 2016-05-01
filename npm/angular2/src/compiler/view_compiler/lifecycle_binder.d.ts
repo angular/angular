@@ -1,0 +1,10 @@
+import * as o from '../output/output_ast';
+import { CompileDirectiveMetadata, CompilePipeMetadata } from '../compile_metadata';
+import { DirectiveAst } from '../template_ast';
+import { CompileElement } from './compile_element';
+import { CompileView } from './compile_view';
+export declare function bindDirectiveDetectChangesLifecycleCallbacks(directiveAst: DirectiveAst, directiveInstance: o.Expression, compileElement: CompileElement): void;
+export declare function bindDirectiveAfterContentLifecycleCallbacks(directiveMeta: CompileDirectiveMetadata, directiveInstance: o.Expression, compileElement: CompileElement): void;
+export declare function bindDirectiveAfterViewLifecycleCallbacks(directiveMeta: CompileDirectiveMetadata, directiveInstance: o.Expression, compileElement: CompileElement): void;
+export declare function bindDirectiveDestroyLifecycleCallbacks(directiveMeta: CompileDirectiveMetadata, directiveInstance: o.Expression, compileElement: CompileElement): void;
+export declare function bindPipeDestroyLifecycleCallbacks(pipeMeta: CompilePipeMetadata, pipeInstance: o.Expression, view: CompileView): void;

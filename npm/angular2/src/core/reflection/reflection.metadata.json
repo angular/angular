@@ -1,0 +1,1 @@
+{"__symbolic":"module","metadata":{"reflector":{"__symbolic":"new","expression":{"__symbolic":"reference","name":"Reflector","module":"./reflector"},"arguments":[{"__symbolic":"new","expression":{"__symbolic":"reference","name":"ReflectionCapabilities","module":"./reflection_capabilities"}}]}}}

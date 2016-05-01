@@ -1,0 +1,1 @@
+{"__symbolic":"module","metadata":{"PLATFORM_DIRECTIVES":{"__symbolic":"new","expression":{"__symbolic":"reference","name":"OpaqueToken","module":"angular2/src/core/di"},"arguments":["Platform Directives"]},"PLATFORM_PIPES":{"__symbolic":"new","expression":{"__symbolic":"reference","name":"OpaqueToken","module":"angular2/src/core/di"},"arguments":["Platform Pipes"]}}}

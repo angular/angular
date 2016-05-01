@@ -1,0 +1,1 @@
+{"__symbolic":"module","metadata":{"DynamicComponentLoader_":{"__symbolic":"class","decorators":[{"__symbolic":"call","expression":{"__symbolic":"reference","name":"Injectable","module":"angular2/src/core/di"}}],"members":{"__ctor__":[{"__symbolic":"constructor","parameters":[{"__symbolic":"reference","name":"ComponentResolver","module":"./component_resolver"}]}]}}}}

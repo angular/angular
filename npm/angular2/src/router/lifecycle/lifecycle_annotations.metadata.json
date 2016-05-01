@@ -1,0 +1,1 @@
+{"__symbolic":"module","metadata":{"CanActivate":{"__symbolic":"call","expression":{"__symbolic":"reference","name":"makeDecorator","module":"angular2/src/core/util/decorators"},"arguments":[{"__symbolic":"reference","name":"CanActivate","module":"./lifecycle_annotations_impl"}]}}}
