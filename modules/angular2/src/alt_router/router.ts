@@ -1,19 +1,14 @@
-import {OnInit, provide, ReflectiveInjector, ComponentResolver} from 'angular2/core';
+import {OnInit, provide, ReflectiveInjector, ComponentResolver} from '@angular/core';
 import {RouterOutlet} from './directives/router_outlet';
-import {Type, isBlank, isPresent} from 'angular2/src/facade/lang';
-import {ListWrapper} from 'angular2/src/facade/collection';
-import {
-  EventEmitter,
-  Observable,
-  PromiseWrapper,
-  ObservableWrapper
-} from 'angular2/src/facade/async';
-import {StringMapWrapper} from 'angular2/src/facade/collection';
-import {BaseException} from 'angular2/src/facade/exceptions';
+import {Type, isBlank, isPresent} from '@angular/facade/src/lang';
+import {ListWrapper} from '@angular/facade/src/collection';
+import {EventEmitter, Observable, PromiseWrapper, ObservableWrapper} from '@angular/facade/src/async';
+import {StringMapWrapper} from '@angular/facade/src/collection';
+import {BaseException} from '@angular/core';
 import {RouterUrlSerializer} from './router_url_serializer';
 import {CanDeactivate} from './interfaces';
 import {recognize} from './recognize';
-import {Location} from 'angular2/platform/common';
+import {Location} from '@angular/common';
 import {link} from './link';
 
 import {

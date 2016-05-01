@@ -1,13 +1,21 @@
 {
-    "compilerOptions": {
-        "module": "commonjs",
-        "target": "es5",
-        "noImplicitAny": false,
-        "outDir": "../dist/tools",
-        "rootDir": ".",
-        "sourceMap": false
+  "compilerOptions": {
+    "baseUrl": ".",
+    "declaration": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "outDir": "../dist/tools/",
+    "paths": {
     },
-    "exclude": [
-        "node_modules"
-    ]
+    "rootDir": ".",
+    "sourceMap": true,
+    "inlineSources": true,
+    "target": "es5"
+  },
+  "exclude": [
+    "node_modules",
+    "compiler_cli"
+  ]
 }

@@ -1,6 +1,6 @@
-import {bind, provide, Binding, Provider, Injector, OpaqueToken} from 'angular2/src/core/di';
-import {StringMapWrapper} from 'angular2/src/facade/collection';
-import {PromiseWrapper} from 'angular2/src/facade/async';
+import {bind, provide, Binding, Provider, Injector, OpaqueToken} from '@angular/core/src/di';
+import {StringMapWrapper} from '@angular/facade';
+import {PromiseWrapper} from '@angular/facade';
 
 import {Metric} from '../metric';
 

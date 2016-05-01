@@ -1,4 +1,5 @@
-import {runClickBenchmark, verifyNoBrowserErrors} from 'angular2/src/testing/perf_util';
+import {verifyNoBrowserErrors} from '@angular/testing/src/e2e_util';
+import {runClickBenchmark} from '@angular/testing/src/perf_util';
 
 describe('ng2 largetable benchmark', function() {
 

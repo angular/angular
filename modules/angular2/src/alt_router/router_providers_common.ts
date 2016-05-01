@@ -1,9 +1,9 @@
-import {OpaqueToken, ComponentResolver} from 'angular2/core';
-import {LocationStrategy, PathLocationStrategy, Location} from 'angular2/platform/common';
+import {OpaqueToken, ComponentResolver} from '@angular/core';
+import {LocationStrategy, PathLocationStrategy, Location} from '@angular/common';
 import {Router, RouterOutletMap} from './router';
 import {RouterUrlSerializer, DefaultRouterUrlSerializer} from './router_url_serializer';
-import {ApplicationRef} from 'angular2/core';
-import {BaseException} from 'angular2/src/facade/exceptions';
+import {ApplicationRef} from '@angular/core';
+import {BaseException} from '@angular/core';
 
 export const ROUTER_PROVIDERS_COMMON: any[] = /*@ts2dart_const*/[
   RouterOutletMap,

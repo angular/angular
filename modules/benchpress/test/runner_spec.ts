@@ -9,7 +9,7 @@ import {
   inject,
   it,
   xit,
-} from 'angular2/testing_internal';
+} from '@angular/testing/testing_internal';
 import {
   Runner,
   Sampler,
@@ -24,8 +24,8 @@ import {
   WebDriverAdapter,
   SampleState
 } from 'benchpress/common';
-import {isBlank} from 'angular2/src/facade/lang';
-import {PromiseWrapper} from 'angular2/src/facade/async';
+import {isBlank} from '@angular/facade';
+import {PromiseWrapper} from '@angular/facade';
 
 export function main() {
   describe('runner', () => {

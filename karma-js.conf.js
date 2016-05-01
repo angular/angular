@@ -11,7 +11,11 @@ module.exports = function(config) {
     files: [
       // Sources and specs.
       // Loaded through the System loader, in `test-main.js`.
-      {pattern: 'dist/js/dev/es5/**', included: false, watched: false},
+      {pattern: 'dist/all/@angular/**/*.js', included: false, watched: true},
+      {pattern: 'dist/all/@angular/**/*.js.map', included: false, watched: false},
+
+      {pattern: 'dist/all/angular2/**/*.js', included: false, watched: true},
+      {pattern: 'dist/all/angular2/**/*.js.map', included: false, watched: false},
 
       'node_modules/es6-shim/es6-shim.js',
       // include Angular v1 for upgrade module testing
@@ -24,16 +28,23 @@ module.exports = function(config) {
       'node_modules/zone.js/dist/fake-async-test.js',
 
       // Including systemjs because it defines `__eval`, which produces correct stack traces.
-      'modules/angular2/src/testing/shims_for_IE.js',
+      'modules/@angular/platform-browser/testing/shims_for_IE.js',
       'node_modules/systemjs/dist/system.src.js',
       {pattern: 'node_modules/rxjs/**', included: false, watched: false, served: true},
       'node_modules/reflect-metadata/Reflect.js',
       'tools/build/file2modulename.js',
       'test-main.js',
-      {pattern: 'modules/**/test/**/static_assets/**', included: false, watched: false}
+      {pattern: 'dist/all/empty.*', included: false, watched: false},
+      {pattern: 'modules/@angular/platform-browser/test/static_assets/**', included: false, watched: false},
+      {pattern: 'modules/@angular/platform-browser-dynamic/test/browser/static_assets/**', included: false, watched: false}
     ],
 
-    exclude: ['dist/js/dev/es5/**/e2e_test/**', 'dist/js/dev/es5/angular2/examples/**', 'dist/angular1_router.js'],
+    exclude: [
+      'dist/all/@angular/**/e2e_test/**',
+      'dist/all/@angular/examples/**',
+      'dist/all/angular1_router.js',
+      'dist/all/@angular/platform-browser/testing/e2e_util.js'
+    ],
 
     customLaunchers: browserProvidersConf.customLaunchers,
 

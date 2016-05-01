@@ -1,4 +1,4 @@
-import {StringMapWrapper, ListWrapper} from 'angular2/src/facade/collection';
+import {StringMapWrapper, ListWrapper} from '@angular/facade/src/collection';
 import {
   isArray,
   isPresent,
@@ -6,7 +6,7 @@ import {
   isPrimitive,
   isStringMap,
   FunctionWrapper
-} from 'angular2/src/facade/lang';
+} from '@angular/facade/src/lang';
 import {
   AttributeMetadata,
   DirectiveMetadata,
@@ -22,10 +22,10 @@ import {
   ViewChildrenMetadata,
   ViewQueryMetadata,
   QueryMetadata,
-} from 'angular2/src/core/metadata';
-import {ReflectorReader} from 'angular2/src/core/reflection/reflector_reader';
-import {reflector} from 'angular2/src/core/reflection/reflection';
-import {Provider} from 'angular2/src/core/di/provider';
+} from '@angular/core';
+import {ReflectorReader} from '@angular/core/src/reflection/reflector_reader';
+import {reflector} from '@angular/core';
+import {Provider} from '@angular/core';
 import {
   HostMetadata,
   OptionalMetadata,
@@ -33,7 +33,7 @@ import {
   SelfMetadata,
   SkipSelfMetadata,
   InjectMetadata,
-} from "angular2/src/core/di/metadata";
+} from "@angular/core";
 
 /**
  * The host of the static resolver is expected to be able to provide module metadata in the form of

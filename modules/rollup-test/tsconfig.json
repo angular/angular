@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "declaration": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "module": "es2015",
+    "moduleResolution": "node",
+    "outDir": "./dist/",
+    "rootDir": ".",
+    "sourceMap": true,
+    "sourceRoot": ".",
+    "target": "es2015"
+  },
+  "files": [
+    "hello_world.ts"
+    //"../typings/es6-collections/es6-collections.d.ts",
+    //"../typings/es6-promise/es6-promise.d.ts"
+  ]
+}

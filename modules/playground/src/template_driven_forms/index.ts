@@ -1,5 +1,5 @@
-import {bootstrap} from 'angular2/platform/browser';
-import {Component, Directive, Host, forwardRef, Provider} from 'angular2/core';
+import {bootstrap} from '@angular/platform-browser-dynamic';
+import {Component, Directive, Host, forwardRef, Provider} from '@angular/core';
 import {
   ControlGroup,
   NgIf,
@@ -9,9 +9,9 @@ import {
   NgControl,
   Validators,
   NgForm
-} from 'angular2/common';
+} from '@angular/common';
 
-import {RegExpWrapper, print, isPresent} from 'angular2/src/facade/lang';
+import {RegExpWrapper, print, isPresent} from '@angular/facade';
 
 /**
  * A domain model we are binding the form controls to.

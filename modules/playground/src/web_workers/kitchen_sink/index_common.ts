@@ -1,9 +1,9 @@
-import {Renderer, ElementRef, Component, Directive, Injectable} from 'angular2/core';
-import {StringWrapper} from 'angular2/src/facade/lang';
+import {Renderer, ElementRef, Component, Directive, Injectable} from '@angular/core';
+import {StringWrapper} from '@angular/facade';
 
 // A service available to the Injector, used by the HelloCmp component.
 @Injectable()
-class GreetingService {
+export class GreetingService {
   greeting: string = 'hello';
 }
 

@@ -1,6 +1,6 @@
-import {bootstrap} from 'angular2/platform/browser';
-import {Component} from 'angular2/core';
-import {NgFor} from 'angular2/common';
+import {bootstrap} from '@angular/platform-browser';
+import {Component} from '@angular/core';
+import {NgFor} from '@angular/common';
 import {Store, Todo, TodoFactory} from './services/TodoStore';
 
 @Component({

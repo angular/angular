@@ -109,12 +109,30 @@ const CORE = [
   'ContentChildrenMetadata.constructor(_selector:Type|string, {descendants=false,read=null}:{descendants?:boolean, read?:any})',
   'CyclicDependencyError',
   'CyclicDependencyError.constructor(injector:ReflectiveInjector, key:ReflectiveKey)',
+  'DefaultIterableDiffer',
+  'DefaultIterableDiffer.check(collection:any):boolean',
+  'DefaultIterableDiffer.collection:any',
+  'DefaultIterableDiffer.constructor(_trackByFn:TrackByFn)',
+  'DefaultIterableDiffer.diff(collection:any):DefaultIterableDiffer',
+  'DefaultIterableDiffer.forEachAddedItem(fn:Function):any',
+  'DefaultIterableDiffer.forEachIdentityChange(fn:Function):any',
+  'DefaultIterableDiffer.forEachItem(fn:Function):any',
+  'DefaultIterableDiffer.forEachMovedItem(fn:Function):any',
+  'DefaultIterableDiffer.forEachPreviousItem(fn:Function):any',
+  'DefaultIterableDiffer.forEachRemovedItem(fn:Function):any',
+  'DefaultIterableDiffer.isDirty:boolean',
+  'DefaultIterableDiffer.length:number',
+  'DefaultIterableDiffer.onDestroy():any',
+  'DefaultIterableDiffer.toString():string',
+  'WtfScopeFn',
   'DebugNode',
   'DebugNode.componentInstance:any',
   'DebugNode.constructor(nativeNode:any, parent:DebugNode, _debugInfo:RenderDebugInfo)',
+  'DebugNode.getLocal(name:string):any',
   'DebugNode.inject(token:any):any',
   'DebugNode.injector:Injector',
   'DebugNode.listeners:EventListener[]',
+  'DebugNode.locals:{[key:string]:any}',
   'DebugNode.nativeNode:any',
   'DebugNode.parent:DebugElement',
   'DebugNode.providerTokens:any[]',
@@ -1076,7 +1094,7 @@ const INSTRUMENTATION = [
 
 const UPGRADE = [
   'UpgradeAdapter',
-  'UpgradeAdapter.addProvider(provider:Type|Provider|any[]):void',
+  'UpgradeAdapter.addProvider(provider:Type|{[k:string]:any}|any[]):void',
   'UpgradeAdapter.bootstrap(element:Element, modules:any[], config:IAngularBootstrapConfig):UpgradeAdapterRef',
   'UpgradeAdapter.downgradeNg2Component(type:Type):Function',
   'UpgradeAdapter.downgradeNg2Provider(token:any):Function',
@@ -1209,7 +1227,7 @@ const BROWSER = [
   'Title.getTitle():string',
   'Title.setTitle(newTitle:string):any',
   'bootstrapStatic(appComponentType:Type, customProviders:Array<any>, initReflector:Function):Promise<ComponentRef<any>>',
-  'const BROWSER_APP_PROVIDERS:Array<any>',
+  'const BROWSER_APP_DYNAMIC_PROVIDERS:Array<any>',
   'const BROWSER_PROVIDERS:Array<any>',
   'const ELEMENT_PROBE_PROVIDERS:any[]',
   'const ELEMENT_PROBE_PROVIDERS_PROD_MODE:any[]',
@@ -1220,24 +1238,29 @@ const BROWSER = [
 ];
 
 describe('public API', () => {
-  it("should check core.ts", () => { checkPublicApi("modules/angular2/core.ts", CORE); });
-  it("should check common.ts", () => { checkPublicApi("modules/angular2/common.ts", COMMON); });
-  it("should check compiler.ts",
-     () => { checkPublicApi("modules/angular2/compiler.ts", COMPILER); });
-  it("should check instrumentation.ts",
-     () => { checkPublicApi("modules/angular2/instrumentation.ts", INSTRUMENTATION); });
-  it("should check upgrade.ts", () => { checkPublicApi("modules/angular2/upgrade.ts", UPGRADE); });
-  it("should check browser.ts",
-     () => { checkPublicApi("modules/angular2/platform/browser_static.ts", BROWSER); });
+  check("@angular/core", CORE);
+  // check("@angular/common", COMMON);
+  // check("@angular/compiler", COMPILER);
+  // check("@angular/instrumentation.ts", INSTRUMENTATION);
+  // check("@angular/upgrade", UPGRADE);
+  // check("@angular/platform-browser-static", BROWSER);
 });
 
+function check(file: string, expected: string[]) {
+  it('should check' + file, () => checkPublicApi(file, expected));
+}
+
 function checkPublicApi(file: string, expected: string[]) {
-  const sortedActual = publicApi(file).sort();
+  const sortedActual = publicApi('modules/' + file + '/index.ts').sort();
   const sortedExpected = expected.sort();
   const missing = sortedActual.filter((i) => sortedExpected.indexOf(i) < 0);
   const extra = sortedExpected.filter((i) => sortedActual.indexOf(i) < 0);
 
   if (missing.length > 0) {
+    console.log('=================================================================');
+    console.log('=================================================================');
+    console.log('=================================================================');
+    console.log('=================================================================');
     console.log("Missing:");
     missing.forEach((m) => console.log(m));
   }
