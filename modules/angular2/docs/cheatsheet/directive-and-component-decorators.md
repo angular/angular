@@ -13,7 +13,7 @@ syntax(js):
 `ng.core.Input(myProperty, myComponent);`|`ng.core.Input(`|`);`
 description:
 Declares an input property that we can update via property binding (e.g.
-`<my-cmp [my-property]="someExpression">`).
+`<my-cmp [myProperty]="someExpression">`).
 
 
 @cheatsheetItem
@@ -22,7 +22,7 @@ syntax(ts dart):
 syntax(js):
 `myEvent = new ng.core.EventEmitter(); ng.core.Output(myEvent, myComponent);`|`ng.core.Output(`|`);`
 description:
-Declares an output property that fires events to which we can subscribe with an event binding (e.g. `<my-cmp (my-event)="doSomething()">`).
+Declares an output property that fires events to which we can subscribe with an event binding (e.g. `<my-cmp (myEvent)="doSomething()">`).
 
 
 @cheatsheetItem
