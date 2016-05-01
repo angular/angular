@@ -4,9 +4,10 @@
 var CIconfiguration = {
   'Chrome':       { unitTest: {target: 'SL', required: true}, e2e: {target: null, required: true}},
   'Firefox':      { unitTest: {target: 'SL', required: true}, e2e: {target: null, required: true}},
-  // FirefoxBeta should be required:true
+  // FirefoxBeta and ChromeBeta should be target:'BS' or target:'SL', and required:true
   // https://github.com/angular/angular/issues/7560
-  'FirefoxBeta':  { unitTest: {target: 'SL', required: false}, e2e: {target: null, required: false}},
+  'ChromeBeta':   { unitTest: {target: null, required: true}, e2e: {target: null, required: false}},
+  'FirefoxBeta':  { unitTest: {target: null, required: true}, e2e: {target: null, required: false}},
   'ChromeDev':    { unitTest: {target: null, required: true}, e2e: {target: null, required: true}},
   'FirefoxDev':   { unitTest: {target: null, required: true}, e2e: {target: null, required: true}},
   'IE9':          { unitTest: {target: 'SL', required: false}, e2e: {target: null, required: true}},
@@ -23,8 +24,7 @@ var CIconfiguration = {
   'Safari9':      { unitTest: {target: 'BS', required: false}, e2e: {target: null, required: true}},
   'iOS7':         { unitTest: {target: 'BS', required: true}, e2e: {target: null, required: true}},
   'iOS8':         { unitTest: {target: 'BS', required: false}, e2e: {target: null, required: true}},
-  // TODO(mlaval): iOS9 deactivated as not reliable, reactivate after https://github.com/angular/angular/issues/5408
-  'iOS9':         { unitTest: {target: null, required: false}, e2e: {target: null, required: true}},
+  'iOS9':         { unitTest: {target: 'BS', required: false}, e2e: {target: null, required: true}},
   'WindowsPhone': { unitTest: {target: 'BS', required: false}, e2e: {target: null, required: true}}
 };
 
@@ -38,7 +38,7 @@ var customLaunchers = {
   'SL_CHROME': {
     base: 'SauceLabs',
     browserName: 'chrome',
-    version: '46'
+    version: '48'
   },
   'SL_CHROMEBETA': {
     base: 'SauceLabs',
@@ -53,7 +53,7 @@ var customLaunchers = {
   'SL_FIREFOX': {
     base: 'SauceLabs',
     browserName: 'firefox',
-    version: '42'
+    version: '44'
   },
   'SL_FIREFOXBETA': {
     base: 'SauceLabs',
@@ -167,6 +167,20 @@ var customLaunchers = {
     browser: 'firefox',
     os: 'Windows',
     os_version: '10'
+  },
+  'BS_CHROMEDEV': {
+    base: 'BrowserStack',
+    browser: 'chrome',
+    browser_version: '50',
+    os: 'OS X',
+    os_version: 'Yosemite'
+  },
+  'BS_FIREFOXDEV': {
+    base: 'BrowserStack',
+    browser: 'firefox',
+    browser_version: '46',
+    os: 'OS X',
+    os_version: 'Yosemite'
   },
   'BS_SAFARI7': {
     base: 'BrowserStack',
