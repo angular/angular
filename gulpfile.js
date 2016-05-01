@@ -1053,7 +1053,7 @@ gulp.task('!test.compiler_cli.codegen', function(done) {
   try {
     require('./dist/js/cjs/compiler_cli')
         .main("tools/compiler_cli/test")
-        .then(function() { done(); })
+        .then(function() { runTsc('tools/compiler_cli/test', done); })
         .catch(function(rej) { done(new Error(rej)); });
   } catch (err) {
     done(err);
