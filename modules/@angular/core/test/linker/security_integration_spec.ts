@@ -120,7 +120,7 @@ function declareTests(isJit: boolean) {
 
     beforeEachProviders(() => [provide(ANCHOR_ELEMENT, {useValue: el('<div></div>')})]);
 
-    ddescribe('safe HTML values', function() {
+    describe('safe HTML values', function() {
       itAsync('should disallow binding on*', (tcb: TestComponentBuilder, async) => {
         let tpl = `<div [attr.onclick]="ctxProp"></div>`;
         tcb = tcb.overrideView(SecuredComponent, new ViewMetadata({template: tpl}));
@@ -142,11 +142,13 @@ function declareTests(isJit: boolean) {
               let e = fixture.debugElement.children[0].nativeElement;
               fixture.debugElement.componentInstance.ctxProp = 'hello';
               fixture.detectChanges();
-              expect(getDOM().getAttribute(e, 'href')).toEqual('hello');
+              // In the browser, reading href returns an absolute URL. On the server side, it just
+              // echoes back the property.
+              expect(getDOM().getProperty(e, 'href')).toMatch(/.*\/?hello$/);
 
               fixture.debugElement.componentInstance.ctxProp = 'javascript:alert(1)';
               fixture.detectChanges();
-              expect(getDOM().getAttribute(e, 'href')).toEqual('unsafe:javascript:alert(1)');
+              expect(getDOM().getProperty(e, 'href')).toEqual('unsafe:javascript:alert(1)');
 
               async.done();
             });
@@ -165,7 +167,7 @@ function declareTests(isJit: boolean) {
               fixture.debugElement.componentInstance.ctxProp = 'url(javascript:evil())';
               fixture.detectChanges();
               // Updated value gets rejected, no value change.
-              expect(getDOM().getStyle(e, 'background')).toEqual('red');
+              expect(getDOM().getStyle(e, 'background')).not.toContain('javascript');
 
               async.done();
             });
