@@ -1,4 +1,4 @@
-import {Injectable, Inject, OpaqueToken, Optional} from '@angular/core';
+import {Injectable, Inject, OpaqueToken, Optional, SecurityContext} from '@angular/core';
 import {MAX_INTERPOLATION_VALUES, Console} from '../core_private';
 
 import {
@@ -49,7 +49,6 @@ import {
 import {CssSelector, SelectorMatcher} from './selector';
 
 import {ElementSchemaRegistry} from './schema/element_schema_registry';
-import {SecurityContext} from './security/security_context';
 import {preparseElement, PreparsedElementType} from './template_preparser';
 
 import {isStyleUrlResolvable} from './style_url_resolver';

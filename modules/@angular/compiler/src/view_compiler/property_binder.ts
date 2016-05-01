@@ -1,3 +1,4 @@
+import {SecurityContext} from '@angular/core';
 import {LifecycleHooks, isDefaultChangeDetectionStrategy} from '../../core_private';
 
 import {isBlank, isPresent} from '../../src/facade/lang';
@@ -5,7 +6,7 @@ import {isBlank, isPresent} from '../../src/facade/lang';
 import * as cdAst from '../expression_parser/ast';
 import * as o from '../output/output_ast';
 import {Identifiers} from '../identifiers';
-import {DetectChangesVars} from './constants';
+import {DetectChangesVars, ViewProperties} from './constants';
 
 import {
   BoundTextAst,
@@ -94,7 +95,7 @@ function bindAndWriteToRenderer(boundProps: BoundElementPropertyAst[], context: 
     var fieldExpr = createBindFieldExpr(bindingIndex);
     var currValExpr = createCurrValueExpr(bindingIndex);
     var renderMethod: string;
-    var renderValue: o.Expression = currValExpr;
+    var renderValue: o.Expression = sanitizedValue(boundProp, currValExpr);
     var updateStmts = [];
     switch (boundProp.type) {
       case PropertyBindingType.Property:
@@ -128,6 +129,33 @@ function bindAndWriteToRenderer(boundProps: BoundElementPropertyAst[], context: 
     bind(view, currValExpr, fieldExpr, boundProp.value, context, updateStmts,
          view.detectChangesRenderPropertiesMethod);
   });
+}
+
+function sanitizedValue(boundProp: BoundElementPropertyAst, renderValue: o.Expression): o.Expression {
+  let methodName: string;
+  switch (boundProp.securityContext) {
+    case SecurityContext.NONE:
+      return renderValue;
+    case SecurityContext.HTML:
+      methodName = 'getSafeHtml';
+      break;
+    case SecurityContext.STYLE:
+      methodName = 'getSafeStyle';
+      break;
+    case SecurityContext.SCRIPT:
+      methodName = 'getSafeScript';
+      break;
+    case SecurityContext.URL:
+      methodName = 'getSafeUrl';
+      break;
+    case SecurityContext.RESOURCE_URL:
+      methodName = 'getSafeResourceUrl';
+      break;
+    default:
+      throw new Error(`internal error, unexpected SecurityContext ${boundProp.securityContext}.`);
+  }
+  let ctx = ViewProperties.viewUtils.prop('sanitizer');
+  return ctx.callMethod(methodName, [renderValue]);
 }
 
 export function bindRenderInputs(boundProps: BoundElementPropertyAst[],

@@ -1,5 +1,5 @@
 import {isPresent} from '../src/facade/lang';
-import {SecurityContext} from '../src/security/security_context';
+import {SecurityContext} from '@angular/core';
 import {ElementSchemaRegistry} from '../index';
 
 export class MockSchemaRegistry implements ElementSchemaRegistry {

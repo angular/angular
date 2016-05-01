@@ -11,7 +11,7 @@ import {
 } from '@angular/core/testing/testing_internal';
 
 import {DomElementSchemaRegistry} from '@angular/compiler/src/schema/dom_element_schema_registry';
-import {SecurityContext} from '@angular/compiler/src/security/security_context';
+import {SecurityContext} from '@angular/core';
 import {extractSchema} from './schema_extractor';
 
 export function main() {

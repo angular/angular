@@ -1,34 +1,14 @@
 import {Injectable} from '@angular/core';
+import {SecurityContext} from '@angular/core';
 import {isPresent} from '../facade/lang';
-import {SecurityContext} from '../security/security_context';
 import {StringMapWrapper} from '../facade/collection';
 import {ElementSchemaRegistry} from './element_schema_registry';
 
-enum PropertyType {
-  EVENT,
-  BOOLEAN,
-  NUMBER,
-  STRING,
-  OBJECT,
-}
-
-interface Property {
-  type: PropertyType;
-  context: SecurityContext;
-}
-
-// const SECURITY_CONTEXTS: {[k: string]: {[k: string]: SecurityContext}} = {
-//   'form': {'action': SecurityContext.URL},
-//   'body': {'background': SecurityContext.URL},
-// 'applet':   'code', 'codebase'
-// 'object':   'codebase',
-// 'object':  'data'  ,
-// };
-
-function getSecurityContext(tag: string, propertyName: string): SecurityContext {
-  if (tag === 'a' && propertyName === 'href') return SecurityContext.URL;
-  return SecurityContext.NONE;
-}
+const EVENT = 'event';
+const BOOLEAN = 'boolean';
+const NUMBER = 'number';
+const STRING = 'string';
+const OBJECT = 'object';
 
 /**
  * This array represents the DOM schema. It encodes inheritance, properties, and events.
@@ -219,7 +199,7 @@ const SCHEMA: string[] =
     '@svg:view^@svg:|#zoomAndPan'
   ]);
 
-const attrToPropMap: {[name: string]: string} = <any>{
+var attrToPropMap: {[name: string]: string} = <any>{
   'class': 'className',
   'innerHtml': 'innerHTML',
   'readonly': 'readOnly',
@@ -229,45 +209,34 @@ const attrToPropMap: {[name: string]: string} = <any>{
 
 @Injectable()
 export class DomElementSchemaRegistry implements ElementSchemaRegistry {
-  private schema = <{[element: string]: {[property: string]: Property}}>{};
+  schema = <{[element: string]: {[property: string]: string}}>{};
 
   constructor() {
     SCHEMA.forEach(encodedType => {
-      let parts = encodedType.split('|');
-      let properties = parts[1].split(',');
-      let typeParts = (parts[0] + '^').split('^');
-      let typeName = typeParts[0];
-      let elementProps = <{[property: string]: Property}>{};
-      typeName.split(',').forEach(tag => this.schema[tag] = elementProps);
-      let superType = this.schema[typeParts[1]];
+      var parts = encodedType.split('|');
+      var properties = parts[1].split(',');
+      var typeParts = (parts[0] + '^').split('^');
+      var typeName = typeParts[0];
+      var type = <{[property: string]: string}>{};
+      typeName.split(',').forEach(tag => this.schema[tag] = type);
+      var superType = this.schema[typeParts[1]];
       if (isPresent(superType)) {
-        StringMapWrapper.forEach(superType, (v, k) => elementProps[k] = v);
+        StringMapWrapper.forEach(superType, (v, k) => type[k] = v);
       }
       properties.forEach((property: string) => {
-        if (property === '') return;
-        let name = property.substring(1);
-        let type: PropertyType;
-        switch (property[0]) {
-          case '*':
-            // TODO(mhevery): support events.
-            // type = PropertyType.EVENT;
-            break;
-          case '!':
-            type = PropertyType.BOOLEAN;
-            break;
-          case '#':
-            type = PropertyType.NUMBER;
-            break;
-          case '%':
-            type = PropertyType.OBJECT;
-            break;
-          default:
-            name = property;  // no prefix.
-            type = PropertyType.STRING;
-            break;
+        if (property == '') {
+        } else if (property.startsWith('*')) {
+          // We don't yet support events.
+          // type[property.substring(1)] = EVENT;
+        } else if (property.startsWith('!')) {
+          type[property.substring(1)] = BOOLEAN;
+        } else if (property.startsWith('#')) {
+          type[property.substring(1)] = NUMBER;
+        } else if (property.startsWith('%')) {
+          type[property.substring(1)] = OBJECT;
+        } else {
+          type[property] = STRING;
         }
-        let context: SecurityContext = getSecurityContext(typeName, property);
-        elementProps[property] = {type, context};
       });
     });
   }
@@ -278,7 +247,7 @@ export class DomElementSchemaRegistry implements ElementSchemaRegistry {
       // once it is instantiated
       return true;
     } else {
-      let elementProperties = this.schema[tagName.toLowerCase()];
+      var elementProperties = this.schema[tagName.toLowerCase()];
       if (!isPresent(elementProperties)) {
         elementProperties = this.schema['unknown'];
       }
@@ -287,14 +256,13 @@ export class DomElementSchemaRegistry implements ElementSchemaRegistry {
   }
 
   securityContext(tagName: string, propName: string): SecurityContext {
-    let elementProperties = this.schema[tagName.toLowerCase()];
-    if (!elementProperties) return SecurityContext.NONE;
-    let prop = elementProperties[propName];
-    return isPresent(prop) ? prop.context : SecurityContext.NONE;
+    if (tagName === 'a' && propName === 'href') return SecurityContext.URL;
+    if (propName === 'innerHTML') return SecurityContext.HTML;
+    return SecurityContext.NONE;
   }
 
   getMappedPropName(propName: string): string {
-    let mappedPropName = StringMapWrapper.get(attrToPropMap, propName);
+    var mappedPropName = StringMapWrapper.get(attrToPropMap, propName);
     return isPresent(mappedPropName) ? mappedPropName : propName;
   }
 }
