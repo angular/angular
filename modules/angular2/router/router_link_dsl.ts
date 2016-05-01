@@ -23,10 +23,10 @@ export {RouterLinkTransform} from 'angular2/src/router/directives/router_link_tr
  * <a [routerLink]="route:User"> <!-- Same as <a [routerLink]="['User']"> -->
  * <a [routerLink]="route:/User"> <!-- Same as <a [routerLink]="['User']"> -->
  * <a [routerLink]="route:./User"> <!-- Same as <a [routerLink]="['./User']"> -->
- * <a [routerLink]="./User(id: value, name: 'Bob')"> <!-- Same as <a [routerLink]="['./User', {id:
- * value, name: 'Bob'}]"> -->
- * <a [routerLink]="/User/Modal"> <!-- Same as <a [routerLink]="['/User', 'Modal']"> -->
- * <a [routerLink]="User[Modal]"> <!-- Same as <a [routerLink]="['User', ['Modal']]"> -->
+ * <a [routerLink]="route:./User(id: value, name: 'Bob')"> <!-- Same as <a [routerLink]="['./User',
+ * {id: value, name: 'Bob'}]"> -->
+ * <a [routerLink]="route:/User/Modal"> <!-- Same as <a [routerLink]="['/User', 'Modal']"> -->
+ * <a [routerLink]="route:User[Modal]"> <!-- Same as <a [routerLink]="['User', ['Modal']]"> -->
  * ```
  */
 export const ROUTER_LINK_DSL_PROVIDER =
