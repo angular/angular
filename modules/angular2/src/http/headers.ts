@@ -70,7 +70,7 @@ export class Headers {
     return headersString.trim()
         .split('\n')
         .map(val => val.split(':'))
-        .map(([key, ...parts]) => ([key.trim(), parts.join(':').trim()]))
+        .map(([key, ...parts]) => ([key.trim().toLowerCase(), parts.join(':').trim()]))
         .reduce((headers, [key, value]) => !headers.set(key, value) && headers, new Headers());
   }
 
