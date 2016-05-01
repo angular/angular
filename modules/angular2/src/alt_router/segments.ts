@@ -28,6 +28,14 @@ export class Tree<T> {
   pathFromRoot(t: T): T[] { return _findPath(t, this._root, []).map(s => s.value); }
 }
 
+export class UrlTree extends Tree<UrlSegment> {
+  constructor(root: TreeNode<UrlSegment>) { super(root); }
+}
+
+export class RouteTree extends Tree<RouteSegment> {
+  constructor(root: TreeNode<RouteSegment>) { super(root); }
+}
+
 export function rootNode<T>(tree: Tree<T>): TreeNode<T> {
   return tree._root;
 }
@@ -103,7 +111,7 @@ export class RouteSegment {
   get stringifiedUrlSegments(): string { return this.urlSegments.map(s => s.toString()).join("/"); }
 }
 
-export function serializeRouteSegmentTree(tree: Tree<RouteSegment>): string {
+export function serializeRouteSegmentTree(tree: RouteTree): string {
   return _serializeRouteSegmentTree(tree._root);
 }
 

@@ -7,7 +7,8 @@ import {
   ROUTER_PROVIDERS,
   OnActivate,
   RouteSegment,
-  Tree,
+  RouteTree,
+  UrlTree
 } from 'angular2/alt_router';
 import * as db from './data';
 import {Location} from 'angular2/platform/common';
@@ -99,8 +100,8 @@ class InboxDetailCmp implements OnActivate {
 
   constructor(private _db: DbService) {}
 
-  routerOnActivate(curr: RouteSegment, prev?: RouteSegment, currTree?: Tree<RouteSegment>,
-                   prevTree?: Tree<RouteSegment>): void {
+  routerOnActivate(curr: RouteSegment, prev?: RouteSegment, currTree?: RouteTree,
+                   prevTree?: RouteTree): void {
     let id = curr.getParam("id");
     this._db.email(id).then(data => this.record.setData(data));
   }
@@ -113,8 +114,8 @@ class InboxCmp implements OnActivate {
 
   constructor(private _db: DbService) {}
 
-  routerOnActivate(curr: RouteSegment, prev?: RouteSegment, currTree?: Tree<RouteSegment>,
-                   prevTree?: Tree<RouteSegment>): void {
+  routerOnActivate(curr: RouteSegment, prev?: RouteSegment, currTree?: RouteTree,
+                   prevTree?: RouteTree): void {
     var sortType = curr.getParam('sort');
     var sortEmailsByDate = isPresent(sortType) && sortType == "date";
 
