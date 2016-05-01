@@ -4,7 +4,13 @@ import {Pipe, Injectable, ChangeDetectorRef, OnDestroy, WrappedValue} from 'angu
 
 import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
 
-class ObservableStrategy {
+interface SubscriptionStrategy {
+  createSubscription(async: any, updateLatestValue: any): any;
+  dispose(subscription: any): void;
+  onDestroy(subscription: any): void;
+}
+
+class ObservableStrategy implements SubscriptionStrategy {
   createSubscription(async: any, updateLatestValue: any): any {
     return ObservableWrapper.subscribe(async, updateLatestValue, e => { throw e; });
   }
@@ -14,7 +20,7 @@ class ObservableStrategy {
   onDestroy(subscription: any): void { ObservableWrapper.dispose(subscription); }
 }
 
-class PromiseStrategy {
+class PromiseStrategy implements SubscriptionStrategy {
   createSubscription(async: Promise<any>, updateLatestValue: (v: any) => any): any {
     return async.then(updateLatestValue);
   }
@@ -58,7 +64,7 @@ export class AsyncPipe implements OnDestroy {
   _subscription: Object = null;
   /** @internal */
   _obj: Observable<any>| Promise<any>| EventEmitter<any> = null;
-  private _strategy: any = null;
+  private _strategy: SubscriptionStrategy = null;
   /** @internal */
   public _ref: ChangeDetectorRef;
   constructor(_ref: ChangeDetectorRef) { this._ref = _ref; }
