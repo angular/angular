@@ -1,12 +1,6 @@
 import {Injectable, Provider, provide} from 'angular2/src/core/di';
 
-import {
-  StringWrapper,
-  RegExpWrapper,
-  CONST_EXPR,
-  isBlank,
-  isPresent
-} from 'angular2/src/facade/lang';
+import {StringWrapper, RegExpWrapper, isBlank, isPresent} from 'angular2/src/facade/lang';
 
 import {
   HtmlAstVisitor,
@@ -29,11 +23,11 @@ var TEMPLATE_SELECTOR_REGEXP = /^(\S+)/g;
 var SPECIAL_PREFIXES_REGEXP = /^(class|style|attr)\./ig;
 var INTERPOLATION_REGEXP = /\{\{.*?\}\}/g;
 
-const SPECIAL_CASES = CONST_EXPR([
+const SPECIAL_CASES = /*@ts2dart_const*/[
   'ng-non-bindable',
   'ng-default-control',
   'ng-no-form',
-]);
+];
 
 /**
  * Convert templates to the case sensitive syntax

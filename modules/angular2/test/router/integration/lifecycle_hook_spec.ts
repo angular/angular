@@ -55,7 +55,7 @@ export function main() {
   describe('Router lifecycle hooks', () => {
 
     var tcb: TestComponentBuilder;
-    var fixture: ComponentFixture;
+    var fixture: ComponentFixture<any>;
     var rtr: Router;
 
     beforeEachProviders(() => TEST_ROUTER_PROVIDERS);

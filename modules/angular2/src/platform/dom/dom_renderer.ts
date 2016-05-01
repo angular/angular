@@ -5,7 +5,6 @@ import {
   isBlank,
   Json,
   RegExpWrapper,
-  CONST_EXPR,
   stringify,
   StringWrapper,
   isArray,
@@ -30,7 +29,8 @@ import {DOM} from 'angular2/src/platform/dom/dom_adapter';
 import {camelCaseToDashCase} from './util';
 
 const NAMESPACE_URIS =
-    CONST_EXPR({'xlink': 'http://www.w3.org/1999/xlink', 'svg': 'http://www.w3.org/2000/svg'});
+    /*@ts2dart_const*/
+    {'xlink': 'http://www.w3.org/1999/xlink', 'svg': 'http://www.w3.org/2000/svg'};
 const TEMPLATE_COMMENT_TEXT = 'template bindings={}';
 var TEMPLATE_BINDINGS_EXP = /^template bindings=(.*)$/g;
 
@@ -304,8 +304,8 @@ function decoratePreventDefault(eventHandler: Function): Function {
 
 var COMPONENT_REGEX = /%COMP%/g;
 export const COMPONENT_VARIABLE = '%COMP%';
-export const HOST_ATTR = `_nghost-${COMPONENT_VARIABLE}`;
-export const CONTENT_ATTR = `_ngcontent-${COMPONENT_VARIABLE}`;
+export const HOST_ATTR = /*@ts2dart_const*/ `_nghost-${COMPONENT_VARIABLE}`;
+export const CONTENT_ATTR = /*@ts2dart_const*/ `_ngcontent-${COMPONENT_VARIABLE}`;
 
 function _shimContentAttribute(componentShortId: string): string {
   return StringWrapper.replaceAll(CONTENT_ATTR, COMPONENT_REGEX, componentShortId);

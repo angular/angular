@@ -15,6 +15,10 @@ import {
   tick
 } from 'angular2/testing';
 
+import {ROUTER_FAKE_PROVIDERS} from 'angular2/src/alt_router/router_testing_providers';
+import {ROUTER_DIRECTIVES, Routes, Route} from 'angular2/alt_router';
+
+
 import {Injectable, bind, Directive, Component, ViewMetadata} from 'angular2/core';
 import {PromiseWrapper} from 'angular2/src/facade/promise';
 import {XHR} from 'angular2/src/compiler/xhr';
@@ -38,6 +42,18 @@ class ExternalTemplateComp {
 
 @Component({selector: 'bad-template-comp', templateUrl: 'non-existant.html'})
 class BadTemplateUrl {
+}
+
+@Component({
+  selector: 'test-router-cmp',
+  template: `<a [routerLink]="['One']">one</a> <a [routerLink]="['Two']">two</a><router-outlet></router-outlet>`,
+  directives: [ROUTER_DIRECTIVES]
+})
+@Routes([
+  new Route({path: '/One', component: BadTemplateUrl}),
+  new Route({path: '/Two', component: ExternalTemplateComp}),
+])
+class TestRouterComponent {
 }
 
 // Tests for angular2/testing bundle specific to the browser environment.
@@ -160,5 +176,15 @@ export function main() {
                       })),
          10000);  // Long timeout here because this test makes an actual XHR, and is slow on Edge.
     });
+  });
+
+  describe('apps with router components', () => {
+    beforeEachProviders(() => [ROUTER_FAKE_PROVIDERS]);
+
+    it('should build without a problem',
+       async(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
+         tcb.createAsync(TestRouterComponent)
+             .then((fixture) => { expect(fixture.nativeElement).toHaveText('one two'); });
+       })));
   });
 }

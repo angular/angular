@@ -1,7 +1,8 @@
 import {
   OpaqueToken,
   ComponentRef,
-  DynamicComponentLoader,
+  ComponentFactory,
+  ComponentResolver,
   Injector,
   Injectable,
   ViewMetadata,
@@ -34,7 +35,7 @@ export var ComponentFixtureNoNgZone = new OpaqueToken("ComponentFixtureNoNgZone"
 /**
  * Fixture for debugging and testing a component.
  */
-export class ComponentFixture {
+export class ComponentFixture<T> {
   /**
    * The DebugElement associated with the root element of this component.
    */
@@ -58,7 +59,7 @@ export class ComponentFixture {
   /**
    * The ComponentRef for the component
    */
-  componentRef: ComponentRef;
+  componentRef: ComponentRef<T>;
 
   /**
    * The ChangeDetectorRef for the component
@@ -79,7 +80,7 @@ export class ComponentFixture {
   private _onMicrotaskEmptySubscription = null;
   private _onErrorSubscription = null;
 
-  constructor(componentRef: ComponentRef, ngZone: NgZone, autoDetect: boolean) {
+  constructor(componentRef: ComponentRef<T>, ngZone: NgZone, autoDetect: boolean) {
     this.changeDetectorRef = componentRef.changeDetectorRef;
     this.elementRef = componentRef.location;
     this.debugElement = <DebugElement>getDebugNode(this.elementRef.nativeElement);
@@ -334,15 +335,30 @@ export class TestComponentBuilder {
     return this.overrideViewProviders(type, providers);
   }
 
+  private _create<C>(ngZone: NgZone, componentFactory: ComponentFactory<C>): ComponentFixture<C> {
+    let rootElId = `root${_nextRootElementId++}`;
+    let rootEl = el(`<div id="${rootElId}"></div>`);
+    let doc = this._injector.get(DOCUMENT);
+
+    // TODO(juliemr): can/should this be optional?
+    let oldRoots = DOM.querySelectorAll(doc, '[id^=root]');
+    for (let i = 0; i < oldRoots.length; i++) {
+      DOM.remove(oldRoots[i]);
+    }
+    DOM.appendChild(doc.body, rootEl);
+    var componentRef = componentFactory.create(this._injector, [], `#${rootElId}`);
+    let autoDetect: boolean = this._injector.get(ComponentFixtureAutoDetect, false);
+    return new ComponentFixture<any /*C*/>(componentRef, ngZone, autoDetect);
+  }
+
   /**
    * Builds and returns a ComponentFixture.
    *
    * @return {Promise<ComponentFixture>}
    */
-  createAsync(rootComponentType: Type): Promise<ComponentFixture> {
+  createAsync(rootComponentType: Type): Promise<ComponentFixture<any>> {
     let noNgZone = IS_DART || this._injector.get(ComponentFixtureNoNgZone, false);
     let ngZone: NgZone = noNgZone ? null : this._injector.get(NgZone, null);
-    let autoDetect: boolean = this._injector.get(ComponentFixtureAutoDetect, false);
 
     let initComponent = () => {
       let mockDirectiveResolver = this._injector.get(DirectiveResolver);
@@ -359,28 +375,15 @@ export class TestComponentBuilder {
       this._viewBindingsOverrides.forEach(
           (bindings, type) => mockDirectiveResolver.setViewBindingsOverride(type, bindings));
 
-      let rootElId = `root${_nextRootElementId++}`;
-      let rootEl = el(`<div id="${rootElId}"></div>`);
-      let doc = this._injector.get(DOCUMENT);
-
-      // TODO(juliemr): can/should this be optional?
-      let oldRoots = DOM.querySelectorAll(doc, '[id^=root]');
-      for (let i = 0; i < oldRoots.length; i++) {
-        DOM.remove(oldRoots[i]);
-      }
-      DOM.appendChild(doc.body, rootEl);
-
-      let promise: Promise<ComponentRef> =
-          this._injector.get(DynamicComponentLoader)
-              .loadAsRoot(rootComponentType, `#${rootElId}`, this._injector);
-      return promise.then(
-          (componentRef) => { return new ComponentFixture(componentRef, ngZone, autoDetect); });
+      let promise: Promise<ComponentFactory<any>> =
+          this._injector.get(ComponentResolver).resolveComponent(rootComponentType);
+      return promise.then(componentFactory => this._create(ngZone, componentFactory));
     };
 
     return ngZone == null ? initComponent() : ngZone.run(initComponent);
   }
 
-  createFakeAsync(rootComponentType: Type): ComponentFixture {
+  createFakeAsync(rootComponentType: Type): ComponentFixture<any> {
     let result;
     let error;
     PromiseWrapper.then(this.createAsync(rootComponentType), (_result) => { result = _result; },
@@ -390,5 +393,13 @@ export class TestComponentBuilder {
       throw error;
     }
     return result;
+  }
+
+  createSync<C>(componentFactory: ComponentFactory<C>): ComponentFixture<C> {
+    let noNgZone = IS_DART || this._injector.get(ComponentFixtureNoNgZone, false);
+    let ngZone: NgZone = noNgZone ? null : this._injector.get(NgZone, null);
+
+    let initComponent = () => this._create(ngZone, componentFactory);
+    return ngZone == null ? initComponent() : ngZone.run(initComponent);
   }
 }

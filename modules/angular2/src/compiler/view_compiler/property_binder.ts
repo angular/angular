@@ -11,7 +11,7 @@ import {
   TemplateAst
 } from '../template_ast';
 
-import {isBlank, isPresent, isArray, CONST_EXPR} from 'angular2/src/facade/lang';
+import {isBlank, isPresent, isArray} from 'angular2/src/facade/lang';
 
 import {CompileView} from './compile_view';
 import {CompileElement, CompileNode} from './compile_element';
@@ -43,6 +43,7 @@ function bind(view: CompileView, currValExpr: o.ReadVarExpr, fieldExpr: o.ReadPr
     return;
   }
 
+  // private is fine here as no child view will reference the cached value...
   view.fields.push(new o.ClassField(fieldExpr.name, null, [o.StmtModifier.Private]));
   view.createMethod.addStmt(
       o.THIS_EXPR.prop(fieldExpr.name).set(o.importExpr(Identifiers.uninitialized)).toStmt());

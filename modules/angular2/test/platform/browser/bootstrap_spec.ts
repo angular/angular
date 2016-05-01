@@ -262,11 +262,11 @@ export function main() {
 
     it('should register each application with the testability registry',
        inject([AsyncTestCompleter], (async) => {
-         var refPromise1: Promise<ComponentRef> = bootstrap(HelloRootCmp, testProviders);
-         var refPromise2: Promise<ComponentRef> = bootstrap(HelloRootCmp2, testProviders);
+         var refPromise1: Promise<ComponentRef<any>> = bootstrap(HelloRootCmp, testProviders);
+         var refPromise2: Promise<ComponentRef<any>> = bootstrap(HelloRootCmp2, testProviders);
 
          PromiseWrapper.all([refPromise1, refPromise2])
-             .then((refs: ComponentRef[]) => {
+             .then((refs: ComponentRef<any>[]) => {
                var registry = refs[0].injector.get(TestabilityRegistry);
                var testabilities =
                    [refs[0].injector.get(Testability), refs[1].injector.get(Testability)];

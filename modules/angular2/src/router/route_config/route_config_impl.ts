@@ -1,4 +1,4 @@
-import {CONST, Type, isPresent} from 'angular2/src/facade/lang';
+import {Type, isPresent} from 'angular2/src/facade/lang';
 import {RouteDefinition} from '../route_definition';
 import {RegexSerializer} from '../rules/route_paths/regex_route_path';
 
@@ -10,13 +10,13 @@ var __make_dart_analyzer_happy: Promise<any> = null;
  * The `RouteConfig` decorator defines routes for a given component.
  *
  * It takes an array of {@link RouteDefinition}s.
+ * @ts2dart_const
  */
-@CONST()
 export class RouteConfig {
   constructor(public configs: RouteDefinition[]) {}
 }
 
-@CONST()
+/* @ts2dart_const */
 export abstract class AbstractRoute implements RouteDefinition {
   name: string;
   useAsDefault: boolean;
@@ -56,8 +56,8 @@ export abstract class AbstractRoute implements RouteDefinition {
  * ])
  * class MyApp {}
  * ```
+ * @ts2dart_const
  */
-@CONST()
 export class Route extends AbstractRoute {
   component: any;
   aux: string = null;
@@ -94,8 +94,8 @@ export class Route extends AbstractRoute {
  * ])
  * class MyApp {}
  * ```
+ * @ts2dart_const
  */
-@CONST()
 export class AuxRoute extends AbstractRoute {
   component: any;
 
@@ -135,8 +135,8 @@ export class AuxRoute extends AbstractRoute {
  * ])
  * class MyApp {}
  * ```
+ * @ts2dart_const
  */
-@CONST()
 export class AsyncRoute extends AbstractRoute {
   loader: () => Promise<Type>;
   aux: string = null;
@@ -174,8 +174,8 @@ export class AsyncRoute extends AbstractRoute {
  * ])
  * class MyApp {}
  * ```
+ * @ts2dart_const
  */
-@CONST()
 export class Redirect extends AbstractRoute {
   redirectTo: any[];
 

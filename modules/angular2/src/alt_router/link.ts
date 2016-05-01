@@ -1,12 +1,64 @@
 import {Tree, TreeNode, UrlSegment, RouteSegment, rootNode} from './segments';
-import {isBlank, isString, isStringMap} from 'angular2/src/facade/lang';
+import {isBlank, isPresent, isString, isStringMap} from 'angular2/src/facade/lang';
 import {ListWrapper} from 'angular2/src/facade/collection';
 
-export function link(segment: RouteSegment, tree: Tree<UrlSegment>,
-                     change: any[]): Tree<UrlSegment> {
-  if (change.length === 0) return tree;
-  let normalizedChange = (change.length === 1 && change[0] == "/") ? change : ["/"].concat(change);
-  return new Tree<UrlSegment>(_update(rootNode(tree), normalizedChange));
+export function link(segment: RouteSegment, routeTree: Tree<RouteSegment>,
+                     urlTree: Tree<UrlSegment>, change: any[]): Tree<UrlSegment> {
+  if (change.length === 0) return urlTree;
+
+  let startingNode;
+  let normalizedChange;
+
+  if (isString(change[0]) && change[0].startsWith("./")) {
+    normalizedChange = ["/", change[0].substring(2)].concat(change.slice(1));
+    startingNode = _findStartingNode(_findUrlSegment(segment, routeTree), rootNode(urlTree));
+
+  } else if (isString(change[0]) && change.length === 1 && change[0] == "/") {
+    normalizedChange = change;
+    startingNode = rootNode(urlTree);
+
+  } else if (isString(change[0]) && !change[0].startsWith("/")) {
+    normalizedChange = ["/"].concat(change);
+    startingNode = _findStartingNode(_findUrlSegment(segment, routeTree), rootNode(urlTree));
+
+  } else {
+    normalizedChange = ["/"].concat(change);
+    startingNode = rootNode(urlTree);
+  }
+
+  let updated = _update(startingNode, normalizedChange);
+  let newRoot = _constructNewTree(rootNode(urlTree), startingNode, updated);
+
+  return new Tree<UrlSegment>(newRoot);
+}
+
+function _findUrlSegment(segment: RouteSegment, routeTree: Tree<RouteSegment>): UrlSegment {
+  let s = segment;
+  let res = null;
+  while (isBlank(res)) {
+    res = ListWrapper.last(s.urlSegments);
+    s = routeTree.parent(s);
+  }
+  return res;
+}
+
+function _findStartingNode(segment: UrlSegment, node: TreeNode<UrlSegment>): TreeNode<UrlSegment> {
+  if (node.value === segment) return node;
+  for (var c of node.children) {
+    let r = _findStartingNode(segment, c);
+    if (isPresent(r)) return r;
+  }
+  return null;
+}
+
+function _constructNewTree(node: TreeNode<UrlSegment>, original: TreeNode<UrlSegment>,
+                           updated: TreeNode<UrlSegment>): TreeNode<UrlSegment> {
+  if (node === original) {
+    return new TreeNode<UrlSegment>(node.value, updated.children);
+  } else {
+    return new TreeNode<UrlSegment>(
+        node.value, node.children.map(c => _constructNewTree(c, original, updated)));
+  }
 }
 
 function _update(node: TreeNode<UrlSegment>, changes: any[]): TreeNode<UrlSegment> {

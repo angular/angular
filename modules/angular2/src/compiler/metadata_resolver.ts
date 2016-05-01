@@ -24,7 +24,7 @@ import {LifecycleHooks, LIFECYCLE_HOOKS_VALUES} from 'angular2/src/core/metadata
 import {reflector} from 'angular2/src/core/reflection/reflection';
 import {Injectable, Inject, Optional} from 'angular2/src/core/di';
 import {PLATFORM_DIRECTIVES, PLATFORM_PIPES} from 'angular2/src/core/platform_directives_and_pipes';
-import {MODULE_SUFFIX, sanitizeIdentifier} from './util';
+import {MODULE_SUFFIX, sanitizeIdentifier, ValueTransformer, visitValue} from './util';
 import {assertArrayOfStrings} from './assertions';
 import {getUrlScheme} from 'angular2/src/compiler/url_resolver';
 import {Provider} from 'angular2/src/core/di/provider';
@@ -37,6 +37,7 @@ import {
 } from 'angular2/src/core/di/metadata';
 import {AttributeMetadata, QueryMetadata} from 'angular2/src/core/metadata/di';
 import {ReflectorReader} from 'angular2/src/core/reflection/reflector_reader';
+import {isProviderLiteral, createProvider} from '../core/di/provider_util';
 
 @Injectable()
 export class CompileMetadataResolver {
@@ -292,6 +293,8 @@ export class CompileMetadataResolver {
         return this.getProvidersMetadata(provider);
       } else if (provider instanceof Provider) {
         return this.getProviderMetadata(provider);
+      } else if (isProviderLiteral(provider)) {
+        return this.getProviderMetadata(createProvider(provider));
       } else {
         return this.getTypeMetadata(provider, staticTypeModuleUrl(provider));
       }
@@ -311,9 +314,7 @@ export class CompileMetadataResolver {
           isPresent(provider.useClass) ?
               this.getTypeMetadata(provider.useClass, staticTypeModuleUrl(provider.useClass)) :
               null,
-      useValue: isPresent(provider.useValue) ?
-                    new cpl.CompileIdentifierMetadata({runtime: provider.useValue}) :
-                    null,
+      useValue: convertToCompileValue(provider.useValue),
       useFactory: isPresent(provider.useFactory) ?
                       this.getFactoryMetadata(provider.useFactory,
                                               staticTypeModuleUrl(provider.useFactory)) :
@@ -413,4 +414,20 @@ function calcTemplateBaseUrl(reflector: ReflectorReader, type: any,
   }
 
   return reflector.importUri(type);
+}
+
+// Only fill CompileIdentifierMetadata.runtime if needed...
+function convertToCompileValue(value: any): any {
+  return visitValue(value, new _CompileValueConverter(), null);
+}
+
+class _CompileValueConverter extends ValueTransformer {
+  visitOther(value: any, context: any): any {
+    if (isStaticType(value)) {
+      return new cpl.CompileIdentifierMetadata(
+          {name: value['name'], moduleUrl: staticTypeModuleUrl(value)});
+    } else {
+      return new cpl.CompileIdentifierMetadata({runtime: value});
+    }
+  }
 }

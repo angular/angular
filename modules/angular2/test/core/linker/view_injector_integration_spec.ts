@@ -17,7 +17,7 @@ import {
   fakeAsync,
   tick
 } from 'angular2/testing_internal';
-import {isBlank, isPresent, stringify, Type, CONST_EXPR} from 'angular2/src/facade/lang';
+import {isBlank, isPresent, stringify, Type} from 'angular2/src/facade/lang';
 import {
   ViewContainerRef,
   TemplateRef,
@@ -49,7 +49,7 @@ import {
 import {NgIf} from 'angular2/common';
 import {DOM} from 'angular2/src/platform/dom/dom_adapter';
 
-const ALL_DIRECTIVES = CONST_EXPR([
+const ALL_DIRECTIVES = /*@ts2dart_const*/[
   forwardRef(() => SimpleDirective),
   forwardRef(() => CycleDirective),
   forwardRef(() => SimpleComponent),
@@ -81,16 +81,16 @@ const ALL_DIRECTIVES = CONST_EXPR([
   forwardRef(() => PushComponentNeedsChangeDetectorRef),
   forwardRef(() => NeedsHostAppService),
   NgIf
-]);
+];
 
-const ALL_PIPES = CONST_EXPR([
+const ALL_PIPES = /*@ts2dart_const*/[
   forwardRef(() => PipeNeedsChangeDetectorRef),
   forwardRef(() => PipeNeedsService),
   forwardRef(() => PurePipe),
   forwardRef(() => ImpurePipe),
   forwardRef(() => DuplicatePipe1),
   forwardRef(() => DuplicatePipe2),
-]);
+];
 
 @Directive({selector: '[simpleDirective]'})
 class SimpleDirective {
@@ -274,7 +274,7 @@ export function main() {
   var tcb: TestComponentBuilder;
 
   function createCompFixture(template: string, tcb: TestComponentBuilder,
-                             comp: Type = null): ComponentFixture {
+                             comp: Type = null): ComponentFixture<any> {
     if (isBlank(comp)) {
       comp = TestComp;
     }
@@ -312,6 +312,27 @@ export function main() {
 
            expect(d).toBeAnInstanceOf(NeedsDirective);
            expect(d.dependency).toBeAnInstanceOf(SimpleDirective);
+         }));
+
+      it('should support useValue with different values', fakeAsync(() => {
+           var el = createComp('', tcb.overrideProviders(TestComp, [
+             provide('numLiteral', {useValue: 0}),
+             provide('boolLiteral', {useValue: true}),
+             provide('strLiteral', {useValue: 'a'}),
+             provide('null', {useValue: null}),
+             provide('array', {useValue: [1]}),
+             provide('map', {useValue: {'a': 1}}),
+             provide('instance', {useValue: new TestValue('a')}),
+             provide('nested', {useValue: [{'a': [1]}, new TestValue('b')]}),
+           ]));
+           expect(el.inject('numLiteral')).toBe(0);
+           expect(el.inject('boolLiteral')).toBe(true);
+           expect(el.inject('strLiteral')).toBe('a');
+           expect(el.inject('null')).toBe(null);
+           expect(el.inject('array')).toEqual([1]);
+           expect(el.inject('map')).toEqual({'a': 1});
+           expect(el.inject('instance')).toEqual(new TestValue('a'));
+           expect(el.inject('nested')).toEqual([{'a': [1]}, new TestValue('b')]);
          }));
 
       it("should instantiate providers that have dependencies with SkipSelf", fakeAsync(() => {
@@ -591,17 +612,21 @@ export function main() {
          fakeAsync(() => {
            var cf = createCompFixture(
                '<div componentNeedsChangeDetectorRef></div>',
-               tcb.overrideTemplate(PushComponentNeedsChangeDetectorRef,
-                                    '{{counter}}<div directiveNeedsChangeDetectorRef></div>'));
+               tcb.overrideTemplate(
+                   PushComponentNeedsChangeDetectorRef,
+                   '{{counter}}<div directiveNeedsChangeDetectorRef></div><div *ngIf="true" directiveNeedsChangeDetectorRef></div>'));
            cf.detectChanges();
            var compEl = cf.debugElement.children[0];
-           var comp = compEl.inject(PushComponentNeedsChangeDetectorRef);
+           var comp: PushComponentNeedsChangeDetectorRef =
+               compEl.inject(PushComponentNeedsChangeDetectorRef);
            comp.counter = 1;
            cf.detectChanges();
            expect(compEl.nativeElement).toHaveText('0');
-           compEl.children[0]
-               .inject(DirectiveNeedsChangeDetectorRef)
-               .changeDetectorRef.markForCheck();
+           expect(compEl.children[0].inject(DirectiveNeedsChangeDetectorRef).changeDetectorRef)
+               .toBe(comp.changeDetectorRef);
+           expect(compEl.children[1].inject(DirectiveNeedsChangeDetectorRef).changeDetectorRef)
+               .toBe(comp.changeDetectorRef);
+           comp.changeDetectorRef.markForCheck();
            cf.detectChanges();
            expect(compEl.nativeElement).toHaveText('1');
          }));
@@ -674,4 +699,8 @@ export function main() {
          }));
     });
   });
+}
+
+class TestValue {
+  constructor(public value: string) {}
 }

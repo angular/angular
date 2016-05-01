@@ -31,8 +31,6 @@ import {
   global,
   stringify,
   isBlank,
-  CONST,
-  CONST_EXPR,
   IS_DART
 } from 'angular2/src/facade/lang';
 import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
@@ -93,7 +91,7 @@ import {TemplateRef_, TemplateRef} from 'angular2/src/core/linker/template_ref';
 
 import {Renderer} from 'angular2/src/core/render';
 
-const ANCHOR_ELEMENT = CONST_EXPR(new OpaqueToken('AnchorElement'));
+const ANCHOR_ELEMENT = /*@ts2dart_const*/ new OpaqueToken('AnchorElement');
 
 export function main() {
   if (IS_DART) {
@@ -772,14 +770,13 @@ function declareTests(isJit: boolean) {
           it("should allow to destroy a component from within a host event handler",
              fakeAsync(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
 
-               var fixture: ComponentFixture;
-               tcb.overrideView(MyComp, new ViewMetadata({
-                                  template: '<push-cmp-with-host-event></push-cmp-with-host-event>',
-                                  directives: [[[PushCmpWithHostEvent]]]
-                                }))
-
-                   .createAsync(MyComp)
-                   .then(root => { fixture = root; });
+               let fixture =
+                   tcb.overrideView(
+                          MyComp, new ViewMetadata({
+                            template: '<push-cmp-with-host-event></push-cmp-with-host-event>',
+                            directives: [[[PushCmpWithHostEvent]]]
+                          }))
+                       .createFakeAsync(MyComp);
                tick();
                fixture.detectChanges();
 
@@ -802,15 +799,32 @@ function declareTests(isJit: boolean) {
 
                           .createAsync(MyComp)
                           .then((fixture) => {
-                            var cmp = fixture.debugElement.children[0].references['cmp'];
-
-                            fixture.debugElement.componentInstance.ctxProp = "one";
+                            var cmpEl = fixture.debugElement.children[0];
+                            var cmp = cmpEl.componentInstance;
+                            fixture.detectChanges();
                             fixture.detectChanges();
                             expect(cmp.numberOfChecks).toEqual(1);
 
-                            fixture.debugElement.componentInstance.ctxProp = "two";
+                            cmpEl.children[0].triggerEventHandler('click', <Event>{});
+
+                            // regular element
+                            fixture.detectChanges();
                             fixture.detectChanges();
                             expect(cmp.numberOfChecks).toEqual(2);
+
+                            // element inside of an *ngIf
+                            cmpEl.children[1].triggerEventHandler('click', <Event>{});
+
+                            fixture.detectChanges();
+                            fixture.detectChanges();
+                            expect(cmp.numberOfChecks).toEqual(3);
+
+                            // element inside a nested component
+                            cmpEl.children[2].children[0].triggerEventHandler('click', <Event>{});
+
+                            fixture.detectChanges();
+                            fixture.detectChanges();
+                            expect(cmp.numberOfChecks).toEqual(4);
 
                             async.done();
                           })}));
@@ -850,8 +864,7 @@ function declareTests(isJit: boolean) {
                                       directives: [[[PushCmpWithAsyncPipe]]]
                                     }));
 
-               var fixture: ComponentFixture;
-               tcb.createAsync(MyComp).then(root => { fixture = root; });
+               let fixture = tcb.createFakeAsync(MyComp);
                tick();
 
                var cmp: PushCmpWithAsyncPipe = fixture.debugElement.children[0].references['cmp'];
@@ -1485,8 +1498,7 @@ function declareTests(isJit: boolean) {
                    directives: [DirectiveEmittingEvent, DirectiveListeningEvent]
                  }));
 
-             var fixture: ComponentFixture;
-             tcb.createAsync(MyComp).then(root => { fixture = root; });
+             let fixture = tcb.createFakeAsync(MyComp);
              tick();
 
              var tc = fixture.debugElement.children[0];
@@ -1591,7 +1603,7 @@ function declareTests(isJit: boolean) {
                                    directives: [SomeImperativeViewport]
                                  }))
                     .createAsync(MyComp)
-                    .then((fixture: ComponentFixture) => {
+                    .then((fixture: ComponentFixture<any>) => {
                       fixture.detectChanges();
                       expect(anchorElement).toHaveText('');
 
@@ -1813,8 +1825,7 @@ function declareTests(isJit: boolean) {
                                     directives: [DirectiveWithPropDecorators]
                                   }));
 
-             var fixture: ComponentFixture;
-             tcb.createAsync(MyComp).then(root => { fixture = root; });
+             let fixture = tcb.createFakeAsync(MyComp);
              tick();
 
              var emitter = fixture.debugElement.children[0].inject(DirectiveWithPropDecorators);
@@ -1989,11 +2000,18 @@ class DirectiveWithTitleAndHostProperty {
   title: string;
 }
 
+@Component({selector: 'event-cmp', template: '<div (click)="noop()"></div>'})
+class EventCmp {
+  noop() {}
+}
+
 @Component({
   selector: 'push-cmp',
   inputs: ['prop'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  template: '{{field}}'
+  template:
+      '{{field}}<div (click)="noop()"></div><div *ngIf="true" (click)="noop()"></div><event-cmp></event-cmp>',
+  directives: [EventCmp, NgIf]
 })
 @Injectable()
 class PushCmp {
@@ -2001,6 +2019,8 @@ class PushCmp {
   prop;
 
   constructor() { this.numberOfChecks = 0; }
+
+  noop() {}
 
   get field() {
     this.numberOfChecks++;
@@ -2274,7 +2294,9 @@ class PublicApi {
 
 @Directive({
   selector: '[public-api]',
-  providers: [new Provider(PublicApi, {useExisting: PrivateImpl, deps: []})]
+  providers: [
+    /* @ts2dart_Provider */ {provide: PublicApi, useExisting: PrivateImpl, deps: []}
+  ]
 })
 @Injectable()
 class PrivateImpl extends PublicApi {
@@ -2345,7 +2367,11 @@ function createInjectableWithLogging(inj: Injector) {
 @Component({
   selector: 'component-providing-logging-injectable',
   providers: [
-    new Provider(InjectableService, {useFactory: createInjectableWithLogging, deps: [Injector]})
+    /* @ts2dart_Provider */ {
+      provide: InjectableService,
+      useFactory: createInjectableWithLogging,
+      deps: [Injector]
+    }
   ],
   template: ''
 })
@@ -2371,8 +2397,8 @@ class DirectiveProvidingInjectableInView {
 
 @Component({
   selector: 'directive-providing-injectable',
-  providers: [new Provider(InjectableService, {useValue: 'host'})],
-  viewProviders: [new Provider(InjectableService, {useValue: 'view'})],
+  providers: [/* @ts2dart_Provider */ {provide: InjectableService, useValue: 'host'}],
+  viewProviders: [/* @ts2dart_Provider */ {provide: InjectableService, useValue: 'view'}],
   template: ''
 })
 @Injectable()
@@ -2409,7 +2435,7 @@ class DirectiveConsumingInjectableUnbounded {
 }
 
 
-@CONST()
+/* @ts2dart_const */
 class EventBus {
   parentEventBus: EventBus;
   name: string;
@@ -2422,7 +2448,9 @@ class EventBus {
 
 @Directive({
   selector: 'grand-parent-providing-event-bus',
-  providers: [new Provider(EventBus, {useValue: new EventBus(null, "grandparent")})]
+  providers: [
+    /* @ts2dart_Provider */ {provide: EventBus, useValue: new EventBus(null, "grandparent")}
+  ]
 })
 class GrandParentProvidingEventBus {
   bus: EventBus;

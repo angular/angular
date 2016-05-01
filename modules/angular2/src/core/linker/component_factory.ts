@@ -1,5 +1,5 @@
 import {Injector} from 'angular2/src/core/di';
-import {Type, CONST, CONST_EXPR, isPresent, isBlank} from 'angular2/src/facade/lang';
+import {Type, isPresent, isBlank} from 'angular2/src/facade/lang';
 import {unimplemented} from 'angular2/src/facade/exceptions';
 import {ElementRef} from './element_ref';
 import {ViewRef, ViewRef_} from './view_ref';
@@ -14,7 +14,7 @@ import {ChangeDetectorRef} from '../change_detection/change_detection';
  * Component Instance and allows you to destroy the Component Instance via the {@link #destroy}
  * method.
  */
-export abstract class ComponentRef {
+export abstract class ComponentRef<C> {
   /**
    * Location of the Host Element of this Component Instance.
    */
@@ -28,7 +28,7 @@ export abstract class ComponentRef {
   /**
    * The instance of the Component.
    */
-  get instance(): any { return unimplemented(); };
+  get instance(): C { return unimplemented(); };
 
   /**
    * The {@link ViewRef} of the Host View of this Component instance.
@@ -56,23 +56,23 @@ export abstract class ComponentRef {
   abstract onDestroy(callback: Function): void;
 }
 
-export class ComponentRef_ extends ComponentRef {
+export class ComponentRef_<C> extends ComponentRef<C> {
   constructor(private _hostElement: AppElement, private _componentType: Type) { super(); }
   get location(): ElementRef { return this._hostElement.elementRef; }
   get injector(): Injector { return this._hostElement.injector; }
-  get instance(): any { return this._hostElement.component; };
+  get instance(): C { return this._hostElement.component; };
   get hostView(): ViewRef { return this._hostElement.parentView.ref; };
-  get changeDetectorRef(): ChangeDetectorRef { return this.hostView; };
+  get changeDetectorRef(): ChangeDetectorRef { return this._hostElement.parentView.ref; };
   get componentType(): Type { return this._componentType; }
 
   destroy(): void { this._hostElement.parentView.destroy(); }
   onDestroy(callback: Function): void { this.hostView.onDestroy(callback); }
 }
 
-const EMPTY_CONTEXT = CONST_EXPR(new Object());
+const EMPTY_CONTEXT = /*@ts2dart_const*/ new Object();
 
-@CONST()
-export class ComponentFactory {
+/*@ts2dart_const*/
+export class ComponentFactory<C> {
   constructor(public selector: string, private _viewFactory: Function,
               private _componentType: Type) {}
 
@@ -82,7 +82,7 @@ export class ComponentFactory {
    * Creates a new component.
    */
   create(injector: Injector, projectableNodes: any[][] = null,
-         rootSelectorOrNode: string | any = null): ComponentRef {
+         rootSelectorOrNode: string | any = null): ComponentRef<C> {
     var vu: ViewUtils = injector.get(ViewUtils);
     if (isBlank(projectableNodes)) {
       projectableNodes = [];
@@ -90,6 +90,6 @@ export class ComponentFactory {
     // Note: Host views don't need a declarationAppElement!
     var hostView = this._viewFactory(vu, injector, null);
     var hostElement = hostView.create(EMPTY_CONTEXT, projectableNodes, rootSelectorOrNode);
-    return new ComponentRef_(hostElement, this._componentType);
+    return new ComponentRef_<C>(hostElement, this._componentType);
   }
 }

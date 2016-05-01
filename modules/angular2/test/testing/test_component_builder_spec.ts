@@ -17,8 +17,7 @@ import {
   ComponentFixtureNoNgZone
 } from 'angular2/testing_internal';
 
-import {CONST_EXPR} from 'angular2/src/facade/lang';
-import {Injectable, provide} from 'angular2/core';
+import {Injectable, provide, ComponentResolver} from 'angular2/core';
 import {NgIf} from 'angular2/common';
 import {Directive, Component, ViewMetadata, Input} from 'angular2/src/core/metadata';
 import {IS_DART} from 'angular2/src/facade/lang';
@@ -152,7 +151,7 @@ class ListDir1Alt {
 class ListDir2 {
 }
 
-const LIST_CHILDREN = CONST_EXPR([ListDir1, ListDir2]);
+const LIST_CHILDREN = /*@ts2dart_const*/[ListDir1, ListDir2];
 
 @Component(
     {selector: 'directive-list-comp', template: `(<li1></li1>)(<li2></li2>)`, directives: [LIST_CHILDREN]})
@@ -461,6 +460,27 @@ export function main() {
                       });
                     }));
         });
+
+        describe('createSync', () => {
+          it('should create components',
+             inject([ComponentResolver, TestComponentBuilder, AsyncTestCompleter],
+                    (cr: ComponentResolver, tcb: TestComponentBuilder, async) => {
+                      cr.resolveComponent(MyIfComp).then((cmpFactory) => {
+                        let componentFixture = tcb.createSync(cmpFactory);
+
+                        componentFixture.detectChanges();
+                        expect(componentFixture.nativeElement).toHaveText('MyIf()');
+
+                        componentFixture.componentInstance.showMore = true;
+                        componentFixture.detectChanges();
+                        expect(componentFixture.nativeElement).toHaveText('MyIf(More)');
+
+                        async.done();
+                      });
+                    }));
+
+        });
+
       });
     }
   });

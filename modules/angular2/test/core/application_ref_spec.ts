@@ -50,7 +50,7 @@ export function main() {
   describe("bootstrap", () => {
     var platform: PlatformRef;
     var errorLogger: _ArrayLogger;
-    var someCompFactory: ComponentFactory;
+    var someCompFactory: ComponentFactory<any>;
 
     beforeEach(() => {
       errorLogger = new _ArrayLogger();
@@ -153,24 +153,24 @@ class _ArrayLogger {
   logGroupEnd(){};
 }
 
-class _MockComponentFactory extends ComponentFactory {
-  constructor(private _compRef: ComponentRef) { super(null, null, null); }
+class _MockComponentFactory extends ComponentFactory<any> {
+  constructor(private _compRef: ComponentRef<any>) { super(null, null, null); }
   create(injector: Injector, projectableNodes: any[][] = null,
-         rootSelectorOrNode: string | any = null): ComponentRef {
+         rootSelectorOrNode: string | any = null): ComponentRef<any> {
     return this._compRef;
   }
 }
 
 class _MockComponentResolver implements ComponentResolver {
-  constructor(private _compFactory: ComponentFactory) {}
+  constructor(private _compFactory: ComponentFactory<any>) {}
 
-  resolveComponent(type: Type): Promise<ComponentFactory> {
+  resolveComponent(type: Type): Promise<ComponentFactory<any>> {
     return PromiseWrapper.resolve(this._compFactory);
   }
   clearCache() {}
 }
 
-class _MockComponentRef extends ComponentRef_ {
+class _MockComponentRef extends ComponentRef_<any> {
   constructor(private _injector: Injector) { super(null, null); }
   get injector(): Injector { return this._injector; }
   get changeDetectorRef(): ChangeDetectorRef { return <any>new SpyChangeDetectorRef(); }

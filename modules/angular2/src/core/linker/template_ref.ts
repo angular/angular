@@ -1,10 +1,10 @@
-import {CONST_EXPR, isBlank} from 'angular2/src/facade/lang';
+import {isBlank} from 'angular2/src/facade/lang';
 import {ElementRef} from './element_ref';
 import {AppElement} from './element';
 import {AppView} from './view';
 import {EmbeddedViewRef} from './view_ref';
 
-const EMPTY_CONTEXT = CONST_EXPR(new Object());
+const EMPTY_CONTEXT = /*@ts2dart_const*/ new Object();
 
 /**
  * Represents an Embedded Template that can be used to instantiate Embedded Views.

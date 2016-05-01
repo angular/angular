@@ -30,7 +30,7 @@ import {BrowserDetection} from 'angular2/src/testing/utils';
 
 import {ELEMENT_PROBE_PROVIDERS} from 'angular2/platform/common_dom';
 
-import {CONST_EXPR, IS_DART} from 'angular2/src/facade/lang';
+import {IS_DART} from 'angular2/src/facade/lang';
 
 import {Log} from 'angular2/src/testing/utils';
 
@@ -47,30 +47,30 @@ function createNgZone(): NgZone {
  * Default platform providers for testing without a compiler.
  */
 export const TEST_BROWSER_STATIC_PLATFORM_PROVIDERS: Array<any /*Type | Provider | any[]*/> =
-    CONST_EXPR([
+    /*@ts2dart_const*/[
       PLATFORM_COMMON_PROVIDERS,
-      new Provider(PLATFORM_INITIALIZER, {useValue: initBrowserTests, multi: true})
-    ]);
+      /*@ts2dart_Provider*/{provide: PLATFORM_INITIALIZER, useValue: initBrowserTests, multi: true}
+    ];
 
 export const ADDITIONAL_TEST_BROWSER_PROVIDERS: Array<any /*Type | Provider | any[]*/> =
-    CONST_EXPR([
-      new Provider(APP_ID, {useValue: 'a'}),
+    /*@ts2dart_const*/[
+      /*@ts2dart_Provider*/ {provide: APP_ID, useValue: 'a'},
       ELEMENT_PROBE_PROVIDERS,
-      new Provider(DirectiveResolver, {useClass: MockDirectiveResolver}),
-      new Provider(ViewResolver, {useClass: MockViewResolver}),
+      /*@ts2dart_Provider*/ {provide: DirectiveResolver, useClass: MockDirectiveResolver},
+      /*@ts2dart_Provider*/ {provide: ViewResolver, useClass: MockViewResolver},
       Log,
       TestComponentBuilder,
-      new Provider(NgZone, {useFactory: createNgZone}),
-      new Provider(LocationStrategy, {useClass: MockLocationStrategy}),
-      new Provider(AnimationBuilder, {useClass: MockAnimationBuilder}),
-    ]);
+      /*@ts2dart_Provider*/ {provide: NgZone, useFactory: createNgZone},
+      /*@ts2dart_Provider*/ {provide: LocationStrategy, useClass: MockLocationStrategy},
+      /*@ts2dart_Provider*/ {provide: AnimationBuilder, useClass: MockAnimationBuilder},
+    ];
 
 /**
  * Default application providers for testing without a compiler.
  */
 export const TEST_BROWSER_STATIC_APPLICATION_PROVIDERS: Array<any /*Type | Provider | any[]*/> =
-    CONST_EXPR([
+    /*@ts2dart_const*/[
       BROWSER_APP_COMMON_PROVIDERS,
-      new Provider(XHR, {useClass: XHRImpl}),
+      /*@ts2dart_Provider*/ {provide: XHR, useClass: XHRImpl},
       ADDITIONAL_TEST_BROWSER_PROVIDERS
-    ]);
+    ];

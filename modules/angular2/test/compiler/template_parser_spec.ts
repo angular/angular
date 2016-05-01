@@ -14,7 +14,7 @@ import {provide} from 'angular2/src/core/di';
 import {Console} from 'angular2/src/core/console';
 
 import {TEST_PROVIDERS} from './test_bindings';
-import {isPresent, CONST_EXPR} from 'angular2/src/facade/lang';
+import {isPresent} from 'angular2/src/facade/lang';
 import {
   TemplateParser,
   splitClasses,
@@ -506,8 +506,8 @@ export function main() {
         }
 
         function createProvider(
-            token: string, {multi = false, deps = CONST_EXPR([])}:
-                               {multi?: boolean, deps?: string[]} = {}): CompileProviderMetadata {
+            token: string, {multi = false, deps = /*@ts2dart_const*/[
+                            ]}: {multi?: boolean, deps?: string[]} = {}): CompileProviderMetadata {
           return new CompileProviderMetadata({
             token: createToken(token),
             multi: multi,
@@ -516,13 +516,14 @@ export function main() {
           });
         }
 
-        function createDir(selector: string, {providers = null, viewProviders = null,
-                                              deps = CONST_EXPR([]), queries = CONST_EXPR([])}: {
-          providers?: CompileProviderMetadata[],
-          viewProviders?: CompileProviderMetadata[],
-          deps?: string[],
-          queries?: string[]
-        } = {}): CompileDirectiveMetadata {
+        function createDir(selector: string,
+                           {providers = null, viewProviders = null, deps = /*@ts2dart_const*/[],
+                            queries = /*@ts2dart_const*/[]}: {
+                             providers?: CompileProviderMetadata[],
+                             viewProviders?: CompileProviderMetadata[],
+                             deps?: string[],
+                             queries?: string[]
+                           } = {}): CompileDirectiveMetadata {
           var isComponent = !selector.startsWith('[');
           return CompileDirectiveMetadata.create({
             selector: selector,
@@ -1026,6 +1027,14 @@ There is no directive with "exportAs" set to "dirA" ("<div [ERROR ->]#a="dirA"><
         })
       }
 
+      function createDir(selector: string): CompileDirectiveMetadata {
+        return CompileDirectiveMetadata.create({
+          selector: selector,
+          type:
+              new CompileTypeMetadata({moduleUrl: someModuleUrl, name: `SomeDir${compCounter++}`})
+        })
+      }
+
       describe('project text nodes', () => {
         it('should project text nodes with wildcard selector', () => {
           expect(humanizeContentProjection(parse('<div>hello</div>', [createComp('div', ['*'])])))
@@ -1138,6 +1147,12 @@ There is no directive with "exportAs" set to "dirA" ("<div [ERROR ->]#a="dirA"><
                                                  [createComp('div', ['a', 'b']), ngIf])))
               .toEqual([['div', null], ['template', 1], ['a', null]]);
         });
+      });
+
+      it('should support other directives before the component', () => {
+        expect(humanizeContentProjection(
+                   parse('<div>hello</div>', [createDir('div'), createComp('div', ['*'])])))
+            .toEqual([['div', null], ['#text(hello)', 0]]);
       });
     });
 

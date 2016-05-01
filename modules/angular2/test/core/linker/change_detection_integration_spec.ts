@@ -17,7 +17,6 @@ import {
 
 import {
   IS_DART,
-  CONST_EXPR,
   Type,
   isPresent,
   isBlank,
@@ -83,7 +82,7 @@ export function main() {
   var directiveLog: DirectiveLog;
 
   function createCompFixture(template: string, compType: Type = TestComponent,
-                             _tcb: TestComponentBuilder = null): ComponentFixture {
+                             _tcb: TestComponentBuilder = null): ComponentFixture<any> {
     if (isBlank(_tcb)) {
       _tcb = tcb;
     }
@@ -99,12 +98,14 @@ export function main() {
     return nodes.map(node => node.inject(dirType));
   }
 
-  function _bindSimpleProp(bindAttr: string, compType: Type = TestComponent): ComponentFixture {
+  function _bindSimpleProp(bindAttr: string,
+                           compType: Type = TestComponent): ComponentFixture<any> {
     var template = `<div ${bindAttr}></div>`;
     return createCompFixture(template, compType);
   }
 
-  function _bindSimpleValue(expression: any, compType: Type = TestComponent): ComponentFixture {
+  function _bindSimpleValue(expression: any,
+                            compType: Type = TestComponent): ComponentFixture<any> {
     return _bindSimpleProp(`[someProp]='${expression}'`, compType);
   }
 
@@ -372,6 +373,12 @@ export function main() {
            expect(renderLog.loggedValues).toEqual([[1, 2]]);
          }));
 
+      it('should support empty literal array', fakeAsync(() => {
+           var ctx = _bindSimpleValue('[]');
+           ctx.detectChanges(false);
+           expect(renderLog.loggedValues).toEqual([[]]);
+         }));
+
       it('should support literal array made of expressions', fakeAsync(() => {
            var ctx = _bindSimpleValue('[1, a]', TestData);
            ctx.componentInstance.a = 2;
@@ -394,6 +401,12 @@ export function main() {
            var ctx = _bindSimpleValue('{z: 1}');
            ctx.detectChanges(false);
            expect(renderLog.loggedValues[0]['z']).toEqual(1);
+         }));
+
+      it('should support empty literal map', fakeAsync(() => {
+           var ctx = _bindSimpleValue('{}');
+           ctx.detectChanges(false);
+           expect(renderLog.loggedValues).toEqual([{}]);
          }));
 
       it('should support literal maps made of expressions', fakeAsync(() => {
@@ -629,7 +642,7 @@ export function main() {
     });
 
     describe('lifecycle', () => {
-      function createCompWithContentAndViewChild(): ComponentFixture {
+      function createCompWithContentAndViewChild(): ComponentFixture<any> {
         return createCompFixture(
             '<div testDirective="parent"><div *ngIf="true" testDirective="contentChild"></div><other-cmp></other-cmp></div>',
             TestComponent,
@@ -1072,7 +1085,7 @@ export function main() {
   });
 }
 
-const ALL_DIRECTIVES = CONST_EXPR([
+const ALL_DIRECTIVES = /*@ts2dart_const*/[
   forwardRef(() => TestDirective),
   forwardRef(() => TestComponent),
   forwardRef(() => AnotherComponent),
@@ -1083,9 +1096,9 @@ const ALL_DIRECTIVES = CONST_EXPR([
   forwardRef(() => OrderCheckDirective2),
   forwardRef(() => OrderCheckDirective0),
   forwardRef(() => OrderCheckDirective1),
-]);
+];
 
-const ALL_PIPES = CONST_EXPR([
+const ALL_PIPES = /*@ts2dart_const*/[
   forwardRef(() => CountingPipe),
   forwardRef(() => CountingImpurePipe),
   forwardRef(() => MultiArgPipe),
@@ -1093,7 +1106,7 @@ const ALL_PIPES = CONST_EXPR([
   forwardRef(() => IdentityPipe),
   forwardRef(() => WrappedPipe),
   AsyncPipe
-]);
+];
 
 @Injectable()
 class RenderLog {

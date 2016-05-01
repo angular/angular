@@ -142,7 +142,7 @@ export class RedirectToParentCmp {
 @Component({selector: 'dynamic-loader-cmp', template: `{ <div #viewport></div> }`})
 @RouteConfig([new Route({path: '/', component: HelloCmp})])
 export class DynamicLoaderCmp {
-  private _componentRef: ComponentRef = null;
+  private _componentRef: ComponentRef<any> = null;
 
   @ViewChild('viewport', {read: ViewContainerRef}) viewport: ViewContainerRef;
 

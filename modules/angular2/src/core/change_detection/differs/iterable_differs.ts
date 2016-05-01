@@ -1,4 +1,4 @@
-import {isBlank, isPresent, CONST, getTypeNameForDebugging} from 'angular2/src/facade/lang';
+import {isBlank, isPresent, getTypeNameForDebugging} from 'angular2/src/facade/lang';
 import {BaseException} from 'angular2/src/facade/exceptions';
 import {ListWrapper} from 'angular2/src/facade/collection';
 import {ChangeDetectorRef} from '../change_detector_ref';
@@ -30,9 +30,10 @@ export interface IterableDifferFactory {
 
 /**
  * A repository of different iterable diffing strategies used by NgFor, NgClass, and others.
+ * @ts2dart_const
  */
-@CONST()
 export class IterableDiffers {
+  /*@ts2dart_const*/
   constructor(public factories: IterableDifferFactory[]) {}
 
   static create(factories: IterableDifferFactory[], parent?: IterableDiffers): IterableDiffers {

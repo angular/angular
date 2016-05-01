@@ -11,7 +11,7 @@ class SpyApplicationRef extends SpyObject implements ApplicationRef {
 }
 
 @proxy
-class SpyComponentRef extends SpyObject implements ComponentRef {
+class SpyComponentRef extends SpyObject implements ComponentRef<dynamic> {
   Injector injector;
 
   SpyComponentRef() {

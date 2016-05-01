@@ -1,11 +1,4 @@
-import {
-  isBlank,
-  isPresent,
-  Type,
-  stringify,
-  CONST_EXPR,
-  looseIdentical
-} from 'angular2/src/facade/lang';
+import {isBlank, isPresent, Type, stringify, looseIdentical} from 'angular2/src/facade/lang';
 import {ListWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
 import {BaseException} from 'angular2/src/facade/exceptions';
 import {AppElement} from './element';
@@ -60,7 +53,7 @@ function _flattenNestedViewRenderNodes(nodes: any[], renderNodes: any[]): any[] 
   return renderNodes;
 }
 
-const EMPTY_ARR = CONST_EXPR([]);
+const EMPTY_ARR = /*@ts2dart_const*/[];
 
 export function ensureSlotCount(projectableNodes: any[][], expectedSlotCount: number): any[][] {
   var res;
@@ -162,6 +155,9 @@ export function mapLooseIdentical<V>(m1: {[key: string]: V}, m2: {[key: string]:
 export function castByValue<T>(input: any, value: T): T {
   return <T>input;
 }
+
+export const EMPTY_ARRAY = /*@ts2dart_const*/[];
+export const EMPTY_MAP = /*@ts2dart_const*/ {};
 
 export function pureProxy1<P0, R>(fn: (p0: P0) => R): (p0: P0) => R {
   var result: R;

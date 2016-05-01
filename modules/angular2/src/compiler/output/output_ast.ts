@@ -1,4 +1,4 @@
-import {CONST_EXPR, isString, isPresent, isBlank} from 'angular2/src/facade/lang';
+import {isString, isPresent, isBlank} from 'angular2/src/facade/lang';
 import {CompileIdentifierMetadata} from '../compile_metadata';
 
 //// Types
@@ -545,7 +545,7 @@ export class ClassStmt extends Statement {
 
 export class IfStmt extends Statement {
   constructor(public condition: Expression, public trueCase: Statement[],
-              public falseCase: Statement[] = CONST_EXPR([])) {
+              public falseCase: Statement[] = /*@ts2dart_const*/[]) {
     super();
   }
   visitStatement(visitor: StatementVisitor, context: any): any {

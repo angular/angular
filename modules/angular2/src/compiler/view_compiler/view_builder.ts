@@ -128,9 +128,8 @@ class ViewBuilderVisitor implements TemplateAstVisitor {
   private _visitText(ast: TemplateAst, value: string, ngContentIndex: number,
                      parent: CompileElement): o.Expression {
     var fieldName = `_text_${this.view.nodes.length}`;
-    this.view.fields.push(new o.ClassField(fieldName,
-                                           o.importType(this.view.genConfig.renderTypes.renderText),
-                                           [o.StmtModifier.Private]));
+    this.view.fields.push(
+        new o.ClassField(fieldName, o.importType(this.view.genConfig.renderTypes.renderText)));
     var renderNode = o.THIS_EXPR.prop(fieldName);
     var compileNode = new CompileNode(parent, this.view, this.view.nodes.length, renderNode, ast);
     var createRenderNode =
@@ -194,14 +193,13 @@ class ViewBuilderVisitor implements TemplateAstVisitor {
     }
     var fieldName = `_el_${nodeIndex}`;
     this.view.fields.push(
-        new o.ClassField(fieldName, o.importType(this.view.genConfig.renderTypes.renderElement),
-                         [o.StmtModifier.Private]));
+        new o.ClassField(fieldName, o.importType(this.view.genConfig.renderTypes.renderElement)));
     this.view.createMethod.addStmt(o.THIS_EXPR.prop(fieldName).set(createRenderNodeExpr).toStmt());
 
     var renderNode = o.THIS_EXPR.prop(fieldName);
 
-    var component = ast.getComponent();
     var directives = ast.directives.map(directiveAst => directiveAst.directive);
+    var component = directives.find(directive => directive.isComponent);
     var htmlAttrs = _readHtmlAttrs(ast.attrs);
     var attrNameAndValues = _mergeHtmlAndDirectiveAttrs(htmlAttrs, directives);
     for (var i = 0; i < attrNameAndValues.length; i++) {
@@ -257,8 +255,7 @@ class ViewBuilderVisitor implements TemplateAstVisitor {
     var nodeIndex = this.view.nodes.length;
     var fieldName = `_anchor_${nodeIndex}`;
     this.view.fields.push(
-        new o.ClassField(fieldName, o.importType(this.view.genConfig.renderTypes.renderComment),
-                         [o.StmtModifier.Private]));
+        new o.ClassField(fieldName, o.importType(this.view.genConfig.renderTypes.renderComment)));
     this.view.createMethod.addStmt(
         o.THIS_EXPR.prop(fieldName)
             .set(ViewProperties.renderer.callMethod(

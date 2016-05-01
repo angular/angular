@@ -5,14 +5,14 @@ import {ROUTER_PROVIDERS_COMMON} from 'angular2/src/router/router_providers_comm
 
 export var WORKER_APP_ROUTER = [
   ROUTER_PROVIDERS_COMMON,
-  new Provider(PlatformLocation, {useClass: WebWorkerPlatformLocation}),
-  new Provider(APP_INITIALIZER,
-               {
-                 useFactory: (platformLocation: WebWorkerPlatformLocation, zone: NgZone) => () =>
-                                 initRouter(platformLocation, zone),
-                 multi: true,
-                 deps: [PlatformLocation, NgZone]
-               })
+  /* @ts2dart_Provider */ {provide: PlatformLocation, useClass: WebWorkerPlatformLocation},
+  {
+    provide: APP_INITIALIZER,
+    useFactory: (platformLocation: WebWorkerPlatformLocation, zone: NgZone) => () =>
+                    initRouter(platformLocation, zone),
+    multi: true,
+    deps: [PlatformLocation, NgZone]
+  }
 ];
 
 function initRouter(platformLocation: WebWorkerPlatformLocation, zone: NgZone): Promise<boolean> {

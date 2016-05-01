@@ -33,7 +33,7 @@ import {
  * have been precompiled offline.
  */
 export const BROWSER_APP_PROVIDERS: Array<any /*Type | Provider | any[]*/> =
-    BROWSER_APP_COMMON_PROVIDERS;
+    /*@ts2dart_const*/ BROWSER_APP_COMMON_PROVIDERS;
 
 export function browserStaticPlatform(): PlatformRef {
   if (isBlank(getPlatform())) {
@@ -47,7 +47,7 @@ export function browserStaticPlatform(): PlatformRef {
  */
 export function bootstrapStatic(appComponentType: Type,
                                 customProviders?: Array<any /*Type | Provider | any[]*/>,
-                                initReflector?: Function): Promise<ComponentRef> {
+                                initReflector?: Function): Promise<ComponentRef<any>> {
   if (isPresent(initReflector)) {
     initReflector();
   }

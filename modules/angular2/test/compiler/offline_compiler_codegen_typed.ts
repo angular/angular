@@ -2,11 +2,11 @@
 import {print, IS_DART} from 'angular2/src/facade/lang';
 import {TypeScriptEmitter} from 'angular2/src/compiler/output/ts_emitter';
 import {DartEmitter} from 'angular2/src/compiler/output/dart_emitter';
-import * as o from 'angular2/src/compiler/output/output_ast';
 import {compileComp, compAMetadata} from './offline_compiler_util';
 import {ComponentFactory} from 'angular2/src/core/linker/component_factory';
+import {CompA} from './offline_compiler_util';
 
-export const CompANgFactory: ComponentFactory = null;
+export const CompANgFactory: ComponentFactory<CompA> = null;
 
 // Generator
 export function main(args: string[]) {

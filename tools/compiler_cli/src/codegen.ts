@@ -6,7 +6,7 @@ import * as ts from 'typescript';
 import * as path from 'path';
 
 import * as compiler from 'angular2/compiler';
-import {StaticReflector} from 'angular2/src/compiler/static_reflector';
+import {StaticReflector} from './static_reflector';
 import {CompileMetadataResolver} from 'angular2/src/compiler/metadata_resolver';
 import {HtmlParser} from 'angular2/src/compiler/html_parser';
 import {DirectiveNormalizer} from 'angular2/src/compiler/directive_normalizer';

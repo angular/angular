@@ -30,13 +30,13 @@ import {
 import {specs, compile, clickOnElement, getHref} from '../util';
 import {BaseException} from 'angular2/src/facade/exceptions';
 
-function getLinkElement(rtc: ComponentFixture, linkIndex: number = 0) {
+function getLinkElement(rtc: ComponentFixture<any>, linkIndex: number = 0) {
   return rtc.debugElement.queryAll(By.css('a'))[linkIndex].nativeElement;
 }
 
 function auxRoutes() {
   var tcb: TestComponentBuilder;
-  var fixture: ComponentFixture;
+  var fixture: ComponentFixture<any>;
   var rtr;
 
   beforeEach(inject([TestComponentBuilder, Router], (tcBuilder, router) => {
@@ -139,7 +139,7 @@ function auxRoutes() {
 
 function auxRoutesWithAPrimaryRoute() {
   var tcb: TestComponentBuilder;
-  var fixture: ComponentFixture;
+  var fixture: ComponentFixture<any>;
   var rtr;
 
   beforeEach(inject([TestComponentBuilder, Router], (tcBuilder, router) => {
