@@ -27,8 +27,7 @@ var __make_dart_analyzer_happy: Promise<any> = null;
  */
 export interface OnActivate {
   routerOnActivate(nextInstruction: ComponentInstruction,
-                   prevInstruction: ComponentInstruction): any |
-      Promise<any>;
+                   prevInstruction: ComponentInstruction): any | Promise<any>;
 }
 
 /**
@@ -47,8 +46,8 @@ export interface OnActivate {
  * {@example router/ts/reuse/reuse_example.ts region='reuseCmp'}
  */
 export interface OnReuse {
-  routerOnReuse(nextInstruction: ComponentInstruction, prevInstruction: ComponentInstruction): any |
-      Promise<any>;
+  routerOnReuse(nextInstruction: ComponentInstruction,
+                prevInstruction: ComponentInstruction): any | Promise<any>;
 }
 
 /**
@@ -68,8 +67,7 @@ export interface OnReuse {
  */
 export interface OnDeactivate {
   routerOnDeactivate(nextInstruction: ComponentInstruction,
-                     prevInstruction: ComponentInstruction): any |
-      Promise<any>;
+                     prevInstruction: ComponentInstruction): any | Promise<any>;
 }
 
 /**
@@ -94,8 +92,7 @@ export interface OnDeactivate {
  */
 export interface CanReuse {
   routerCanReuse(nextInstruction: ComponentInstruction,
-                 prevInstruction: ComponentInstruction): boolean |
-      Promise<boolean>;
+                 prevInstruction: ComponentInstruction): boolean | Promise<boolean>;
 }
 
 /**
@@ -119,6 +116,5 @@ export interface CanReuse {
  */
 export interface CanDeactivate {
   routerCanDeactivate(nextInstruction: ComponentInstruction,
-                      prevInstruction: ComponentInstruction): boolean |
-      Promise<boolean>;
+                      prevInstruction: ComponentInstruction): boolean | Promise<boolean>;
 }
