@@ -3,7 +3,7 @@ import * as ts from 'typescript';
 import {lstatSync} from 'fs';
 import * as path from 'path';
 import {AngularCompilerOptions} from './codegen';
-import {CodeGeneratorHost} from './compiler_host';
+import {TsickleHost} from './compiler_host';
 
 /**
  * Our interface to the TypeScript standard compiler.
@@ -14,7 +14,8 @@ export interface CompilerInterface {
   readConfiguration(
       project: string,
       basePath: string): {parsed: ts.ParsedCommandLine, ngOptions: AngularCompilerOptions};
-  typeCheckAndEmit(compilerHost: CodeGeneratorHost, oldProgram?: ts.Program): number;
+  typeCheck(compilerHost: ts.CompilerHost, program: ts.Program): void;
+  emit(compilerHost: ts.CompilerHost, program: ts.Program): number;
 }
 
 const DEBUG = false;
@@ -72,27 +73,32 @@ export class Tsc implements CompilerInterface {
     return {parsed: this.parsed, ngOptions: this.ngOptions};
   }
 
-  typeCheckAndEmit(compilerHost: CodeGeneratorHost, oldProgram?: ts.Program): number {
+  typeCheck(compilerHost: ts.CompilerHost, oldProgram: ts.Program): void {
+    // Create a new program since codegen files were created after making the old program
     const program =
         ts.createProgram(this.parsed.fileNames, this.parsed.options, compilerHost, oldProgram);
     debug("Checking global diagnostics...");
     check(program.getGlobalDiagnostics());
 
+    let diagnostics: ts.Diagnostic[] = [];
     debug("Type checking...");
-    {
-      let diagnostics: ts.Diagnostic[] = [];
-      for (let sf of program.getSourceFiles()) {
-        diagnostics.push(...ts.getPreEmitDiagnostics(program, sf));
-      }
-      check(diagnostics);
+
+    for (let sf of program.getSourceFiles()) {
+      diagnostics.push(...ts.getPreEmitDiagnostics(program, sf));
     }
-
-    debug("Emitting outputs...");
-
-    const {diagnostics, emitSkipped} = program.emit();
     check(diagnostics);
+  }
+
+  emit(compilerHost: TsickleHost, oldProgram: ts.Program): number {
+    // Create a new program since the host may be different from the old program.
+    const program = ts.createProgram(this.parsed.fileNames, this.parsed.options, compilerHost);
+    debug("Emitting outputs...");
+    const emitResult = program.emit();
+    let diagnostics: ts.Diagnostic[] = [];
+    diagnostics.push(...emitResult.diagnostics);
+
     check(compilerHost.diagnostics);
-    return emitSkipped ? 1 : 0;
+    return emitResult.emitSkipped ? 1 : 0;
   }
 }
 export var tsc: CompilerInterface = new Tsc();

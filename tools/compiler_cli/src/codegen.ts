@@ -21,7 +21,6 @@ import {Parse5DomAdapter} from '@angular/platform-server';
 
 import {MetadataCollector} from 'ts-metadata-collector';
 import {NodeReflectorHost} from './reflector_host';
-import {wrapCompilerHost, CodeGeneratorHost} from './compiler_host';
 
 const SOURCE_EXTENSION = /\.[jt]s$/;
 const PREAMBLE = `/**
@@ -33,11 +32,23 @@ const PREAMBLE = `/**
 export interface AngularCompilerOptions {
   // Absolute path to a directory where generated file structure is written
   genDir: string;
+
+  // Path to the directory containing the tsconfig.json file.
+  basePath: string;
+
+  // Don't do the template code generation
+  skipTemplateCodegen: boolean;
+
+  // Don't produce .metadata.json files (they don't work for bundled emit with --out)
+  skipMetadataEmit: boolean;
+
+  // Lookup angular's symbols using the old angular2/... npm namespace.
+  legacyPackageLayout: boolean;
 }
 
 export class CodeGenerator {
   constructor(private ngOptions: AngularCompilerOptions, private basePath: string,
-              public program: ts.Program, public host: CodeGeneratorHost,
+              private program: ts.Program, public host: ts.CompilerHost,
               private staticReflector: StaticReflector, private resolver: CompileMetadataResolver,
               private compiler: compiler.OfflineCompiler,
               private reflectorHost: NodeReflectorHost) {}
@@ -105,20 +116,11 @@ export class CodeGenerator {
                            .map(generateOneFile));
   }
 
-  static create(ngOptions: AngularCompilerOptions, parsed: ts.ParsedCommandLine, basePath: string,
-                compilerHost: ts.CompilerHost):
-      {errors?: ts.Diagnostic[], generator?: CodeGenerator} {
-    const program = ts.createProgram(parsed.fileNames, parsed.options, compilerHost);
-    const errors = program.getOptionsDiagnostics();
-    if (errors && errors.length) {
-      return {errors};
-    }
-
-    const metadataCollector = new MetadataCollector();
-    const reflectorHost =
-        new NodeReflectorHost(program, metadataCollector, compilerHost, parsed.options);
+  static create(ngOptions: AngularCompilerOptions, program: ts.Program, options: ts.CompilerOptions,
+                compilerHost: ts.CompilerHost): CodeGenerator {
     const xhr: compiler.XHR = {get: (s: string) => Promise.resolve(compilerHost.readFile(s))};
     const urlResolver: compiler.UrlResolver = compiler.createOfflineCompileUrlResolver();
+    const reflectorHost = new NodeReflectorHost(program, compilerHost, options, ngOptions);
     const staticReflector = new StaticReflector(reflectorHost);
     const htmlParser = new HtmlParser();
     const normalizer = new DirectiveNormalizer(xhr, urlResolver, htmlParser);
@@ -132,10 +134,7 @@ export class CodeGenerator {
         new compiler.DirectiveResolver(staticReflector), new compiler.PipeResolver(staticReflector),
         new compiler.ViewResolver(staticReflector), null, null, staticReflector);
 
-    return {
-      generator: new CodeGenerator(ngOptions, basePath, program,
-                                   wrapCompilerHost(compilerHost, parsed.options), staticReflector,
-                                   resolver, offlineCompiler, reflectorHost)
-    };
+    return new CodeGenerator(ngOptions, ngOptions.basePath, program, compilerHost, staticReflector,
+                             resolver, offlineCompiler, reflectorHost);
   }
 }

@@ -1,6 +1,6 @@
 {
   "name": "ts-metadata-collector",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Collects static Decorator metadata from TypeScript sources",
   "homepage": "https://github.com/angular/angular/tree/master/tools/metadata",
   "bugs": "https://github.com/angular/angular/issues",
@@ -11,6 +11,6 @@
   "repository": {"type":"git","url":"https://github.com/angular/angular.git"},
   "devDependencies": {},
   "peerDependencies": {
-    "typescript": "^1.8.9 || ^1.9"
+    "typescript": "^1.8.9 || ^1.9.0-dev"
   }
 }
