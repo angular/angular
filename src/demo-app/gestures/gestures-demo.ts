@@ -8,6 +8,8 @@ import {Component} from '@angular/core';
 })
 export class GesturesDemo {
   dragCount: number = 0;
+  panCount: number = 0;
   pressCount: number = 0;
+  longpressCount: number = 0;
   swipeCount: number = 0;
 }
