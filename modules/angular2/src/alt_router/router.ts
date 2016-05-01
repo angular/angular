@@ -46,6 +46,7 @@ export class Router {
               private _componentResolver: ComponentResolver,
               private _urlSerializer: RouterUrlSerializer,
               private _routerOutletMap: RouterOutletMap, private _location: Location) {
+    this._prevTree = this._createInitialTree();
     this._setUpLocationChangeListener();
     this.navigateByUrl(this._location.path());
   }
@@ -61,6 +62,12 @@ export class Router {
   }
 
   dispose(): void { ObservableWrapper.dispose(this._locationSubscription); }
+
+  private _createInitialTree(): RouteTree {
+    let root = new RouteSegment([new UrlSegment("", null, null)], null, DEFAULT_OUTLET_NAME,
+                                this._rootComponentType, null);
+    return new RouteTree(new TreeNode<RouteSegment>(root, []));
+  }
 
   private _setUpLocationChangeListener(): void {
     this._locationSubscription = this._location.subscribe(
