@@ -1056,11 +1056,19 @@ gulp.task('test.typings', ['build.js.cjs'],
 gulp.task('!build.compiler_cli', ['build.js.cjs'],
           function(done) { runTsc('tools/compiler_cli/src', done); });
 
+gulp.task('!clean.compiler_cli', function(done) {
+  fse.remove(path.join('dist', 'tools', 'compiler_cli', 'test'),
+             fse.remove(path.join('tools', 'compiler_cli', 'test', 'src', '*.ngfactory.ts'),
+                        fse.remove(path.join('tools', 'compiler_cli', 'test', 'src', 'a',
+                                             '*.ngfactory.ts'),
+                                   done)));
+});
+
 gulp.task('!test.compiler_cli.codegen', function(done) {
   try {
     require('./dist/js/cjs/compiler_cli/main')
         .main("tools/compiler_cli/test")
-        .then(function() { runTsc('tools/compiler_cli/test', done); })
+        .then(done)
         .catch(function(rej) { done(new Error(rej)); });
   } catch (err) {
     done(err);
@@ -1070,11 +1078,17 @@ gulp.task('!test.compiler_cli.codegen', function(done) {
 gulp.task('!test.compiler_cli.unit',
           function(done) { runJasmineTests(['dist/js/cjs/compiler_cli/**/*_spec.js'], done) });
 
+// This task overwrites our careful tsickle-lowered Decorators with normal .js emit.
+// So it should only be run after asserting on the .js file content.
+gulp.task('!test.compiler_cli.verify_codegen',
+          function(done) { runTsc('tools/compiler_cli/test', done); });
+
 // End-to-end test for compiler CLI.
 // Calls the compiler using its command-line interface, then compiles the app with the codegen.
 // TODO(alexeagle): wire up the playground tests with offline compilation, similar to dart.
 gulp.task('test.compiler_cli', ['!build.compiler_cli'], function(done) {
-  runSequence('!test.compiler_cli.unit', '!test.compiler_cli.codegen', sequenceComplete(done));
+  runSequence('!clean.compiler_cli', '!test.compiler_cli.codegen', '!test.compiler_cli.unit',
+              '!test.compiler_cli.verify_codegen', sequenceComplete(done));
 });
 
 // -----------------

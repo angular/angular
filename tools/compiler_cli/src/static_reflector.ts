@@ -1,4 +1,4 @@
-import {StringMapWrapper, ListWrapper} from '@angular/facade/src/collection';
+import {StringMapWrapper, ListWrapper} from '@angular/core/src/facade/collection';
 import {
   isArray,
   isPresent,
@@ -6,7 +6,7 @@ import {
   isPrimitive,
   isStringMap,
   FunctionWrapper
-} from '@angular/facade/src/lang';
+} from '@angular/core/src/facade/lang';
 import {
   AttributeMetadata,
   DirectiveMetadata,
@@ -58,6 +58,9 @@ export interface StaticReflectorHost {
   findDeclaration(modulePath: string, symbolName: string, containingFile?: string): StaticSymbol;
 
   getStaticSymbol(moduleId: string, declarationFile: string, name: string): StaticSymbol;
+
+  angularImportLocations():
+      {coreDecorators: string, diDecorators: string, diMetadata: string, provider: string};
 }
 
 /**
@@ -117,6 +120,9 @@ export class StaticReflector implements ReflectorReader {
   }
 
   public parameters(type: StaticSymbol): any[] {
+    if (!(type instanceof StaticSymbol)) {
+      throw new Error(`parameters recieved ${JSON.stringify(type)} which is not a StaticSymbol`);
+    }
     try {
       let parameters = this.parameterCache.get(type);
       if (!isPresent(parameters)) {
@@ -148,7 +154,7 @@ export class StaticReflector implements ReflectorReader {
       }
       return parameters;
     } catch (e) {
-      console.log(`Failed on type ${type} with error ${e}`);
+      console.log(`Failed on type ${JSON.stringify(type)} with error ${e}`);
       throw e;
     }
   }
@@ -170,10 +176,7 @@ export class StaticReflector implements ReflectorReader {
   }
 
   private initializeConversionMap(): void {
-    let coreDecorators = 'angular2/src/core/metadata';
-    let diDecorators = 'angular2/src/core/di/decorators';
-    let diMetadata = 'angular2/src/core/di/metadata';
-    let provider = 'angular2/src/core/di/provider';
+    const {coreDecorators, diDecorators, diMetadata, provider} = this.host.angularImportLocations();
     this.registerDecoratorOrConstructor(this.host.findDeclaration(provider, 'Provider'), Provider);
 
     this.registerDecoratorOrConstructor(this.host.findDeclaration(diDecorators, 'Host'),

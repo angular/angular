@@ -241,6 +241,14 @@ describe('StaticReflector', () => {
 class MockReflectorHost implements StaticReflectorHost {
   private staticTypeCache = new Map<string, StaticSymbol>();
 
+  angularImportLocations() {
+    return {
+      coreDecorators: 'angular2/src/core/metadata',
+      diDecorators: 'angular2/src/core/di/decorators',
+      diMetadata: 'angular2/src/core/di/metadata',
+      provider: 'angular2/src/core/di/provider'
+    };
+  }
   getStaticSymbol(moduleId: string, declarationFile: string, name: string): StaticSymbol {
     var cacheKey = `${declarationFile}:${name}`;
     var result = this.staticTypeCache.get(cacheKey);

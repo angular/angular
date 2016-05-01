@@ -13,7 +13,7 @@ and then downloading only the executable JS to the client.
 ## Install and use
 
 ```
-$ npm install angular2-template-compiler typescript rxjs
+$ npm install angular2-template-compiler typescript@next rxjs @angular/compiler
 # Optional sanity check, make sure TypeScript can compile
 $ ./node_modules/.bin/tsc -p path/to/project
 $ ./node_modules/.bin/ng2tc -p path/to/project

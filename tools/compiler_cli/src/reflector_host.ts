@@ -3,14 +3,33 @@ import * as ts from 'typescript';
 import {MetadataCollector, ModuleMetadata} from 'ts-metadata-collector';
 import * as fs from 'fs';
 import * as path from 'path';
+import {AngularCompilerOptions} from './codegen';
 
 const EXT = /(\.ts|\.d\.ts|\.js|\.jsx|\.tsx)$/;
 const DTS = /\.d\.ts$/;
 
 export class NodeReflectorHost implements StaticReflectorHost {
-  constructor(private program: ts.Program, private metadataCollector: MetadataCollector,
-              private compilerHost: ts.CompilerHost, private options: ts.CompilerOptions) {}
+  private metadataCollector = new MetadataCollector();
+  constructor(private program: ts.Program, private compilerHost: ts.CompilerHost,
+              private options: ts.CompilerOptions, private ngOptions: AngularCompilerOptions) {}
 
+  angularImportLocations() {
+    if (this.ngOptions.legacyPackageLayout) {
+      return {
+        coreDecorators: 'angular2/src/core/metadata',
+        diDecorators: 'angular2/src/core/di/decorators',
+        diMetadata: 'angular2/src/core/di/metadata',
+        provider: 'angular2/src/core/di/provider'
+      };
+    } else {
+      return {
+        coreDecorators: '@angular/core/src/metadata',
+        diDecorators: '@angular/core/src/di/decorators',
+        diMetadata: '@angular/core/src/di/metadata',
+        provider: '@angular/core/src/di/provider'
+      };
+    }
+  }
   private resolve(m: string, containingFile: string) {
     const resolved =
         ts.resolveModuleName(m, containingFile, this.options, this.compilerHost).resolvedModule;
@@ -51,7 +70,7 @@ export class NodeReflectorHost implements StaticReflectorHost {
         throw new Error("Resolution of relative paths requires a containing file.");
       }
       // Any containing file gives the same result for absolute imports
-      containingFile = path.join(this.compilerHost.getCurrentDirectory(), 'index.ts');
+      containingFile = path.join(this.ngOptions.basePath, 'index.ts');
     }
 
     try {
@@ -134,8 +153,10 @@ export class NodeReflectorHost implements StaticReflectorHost {
   }
 
   writeMetadata(emitFilePath: string, sourceFile: ts.SourceFile) {
-    if (DTS.test(emitFilePath)) {
-      const path = emitFilePath.replace(DTS, '.metadata.json');
+    // TODO: replace with DTS filePath when https://github.com/Microsoft/TypeScript/pull/8412 is
+    // released
+    if (/*DTS*/ /\.js$/.test(emitFilePath)) {
+      const path = emitFilePath.replace(/*DTS*/ /\.js$/, '.metadata.json');
       const metadata =
           this.metadataCollector.getMetadata(sourceFile, this.program.getTypeChecker());
       if (metadata && metadata.metadata) {
