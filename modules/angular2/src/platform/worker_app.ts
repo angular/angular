@@ -14,7 +14,7 @@ import {COMPILER_PROVIDERS} from 'angular2/src/compiler/compiler';
 
 // TODO(jteplitz602) remove this and compile with lib.webworker.d.ts (#3492)
 let _postMessage = {
-  postMessage: (message: any, transferrables?:[ArrayBuffer]) => {
+  postMessage: (message: any, transferrables?: [ArrayBuffer]) => {
     (<any>postMessage)(message, transferrables);
   }
 };
