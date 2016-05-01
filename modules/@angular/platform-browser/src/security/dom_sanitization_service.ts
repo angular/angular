@@ -1,7 +1,11 @@
+import {Injectable} from '@angular/core';
+
+import {SecurityContext, SanitizationService} from '../../core_private';
+
+import {sanitizeHtml} from './html_sanitizer';
 import {sanitizeUrl} from './url_sanitizer';
 import {sanitizeStyle} from './style_sanitizer';
-import {SecurityContext, SanitizationService} from '../../core_private';
-import {Injectable} from '@angular/core';
+
 export {SecurityContext};
 
 /** Marker interface for a value that's safe to use in a particular context. */
@@ -103,7 +107,7 @@ export class DomSanitizationServiceImpl extends DomSanitizationService {
       case SecurityContext.HTML:
         if (value instanceof SafeHtmlImpl) return value.changingThisBreaksApplicationSecurity;
         this.checkNotSafeValue(value, 'HTML');
-        return this.sanitizeHtml(String(value));
+        return sanitizeHtml(String(value));
       case SecurityContext.STYLE:
         if (value instanceof SafeStyleImpl) return value.changingThisBreaksApplicationSecurity;
         this.checkNotSafeValue(value, 'Style');
@@ -131,11 +135,6 @@ export class DomSanitizationServiceImpl extends DomSanitizationService {
     if (value instanceof SafeValueImpl) {
       throw new Error('Required a safe ' + expectedType + ', got a ' + value.getTypeName());
     }
-  }
-
-  private sanitizeHtml(value: string): string {
-    // TODO(martinprobst): implement.
-    return value;
   }
 
   bypassSecurityTrustHtml(value: string): SafeHtml { return new SafeHtmlImpl(value); }
