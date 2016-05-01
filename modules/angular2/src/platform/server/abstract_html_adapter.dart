@@ -442,6 +442,10 @@ abstract class AbstractHtml5LibAdapter implements DomAdapter {
     throw 'not implemented';
   }
 
+  getAnimationEnd() {
+    throw 'not implemented';
+  }
+
   supportsAnimation() {
     throw 'not implemented';
   }

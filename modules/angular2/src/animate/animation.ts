@@ -84,11 +84,19 @@ export class Animation {
         Math.max(this.parseDurationString(
                      computedStyles.getPropertyValue(this._stringPrefix + 'transition-delay')),
                  this.parseDurationString(
-                     this.element.style.getPropertyValue(this._stringPrefix + 'transition-delay')));
+                     this.element.style.getPropertyValue(this._stringPrefix + 'transition-delay')),
+                 this.parseDurationString(
+                     computedStyles.getPropertyValue(this._stringPrefix + 'animation-delay')),
+                 this.parseDurationString(
+                     this.element.style.getPropertyValue(this._stringPrefix + 'animation-delay')));
     this.computedDuration = Math.max(this.parseDurationString(computedStyles.getPropertyValue(
                                          this._stringPrefix + 'transition-duration')),
                                      this.parseDurationString(this.element.style.getPropertyValue(
-                                         this._stringPrefix + 'transition-duration')));
+                                         this._stringPrefix + 'transition-duration')),
+                                     this.parseDurationString(computedStyles.getPropertyValue(
+                                         this._stringPrefix + 'animation-duration')),
+                                     this.parseDurationString(this.element.style.getPropertyValue(
+                                         this._stringPrefix + 'animation-duration')));
     this.addEvents();
   }
 
@@ -130,6 +138,8 @@ export class Animation {
     if (this.totalTime > 0) {
       this.eventClearFunctions.push(DOM.onAndCancel(
           this.element, DOM.getTransitionEnd(), (event: any) => this.handleAnimationEvent(event)));
+      this.eventClearFunctions.push(DOM.onAndCancel(
+          this.element, DOM.getAnimationEnd(), (event: any) => this.handleAnimationEvent(event)));
     } else {
       this.handleAnimationCompleted();
     }

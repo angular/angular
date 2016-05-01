@@ -10,6 +10,7 @@ import {XHRImpl} from 'angular2/src/platform/browser/xhr_impl';
 export abstract class GenericBrowserDomAdapter extends DomAdapter {
   private _animationPrefix: string = null;
   private _transitionEnd: string = null;
+  private _animationEnd: string = null;
   constructor() {
     super();
     try {
@@ -36,9 +37,21 @@ export abstract class GenericBrowserDomAdapter extends DomAdapter {
           this._transitionEnd = value;
         }
       });
+      var animEndEventNames: {[key: string]: string} = {
+        WebkitAnimation: 'webkitAnimationEnd',
+        MozAnimation: 'animationend',
+        OAnimation: 'oAnimationEnd',
+        animation: 'animationend'
+      };
+      StringMapWrapper.forEach(animEndEventNames, (value, key) => {
+        if (isPresent(this.getStyle(element, key))) {
+          this._animationEnd = value;
+        }
+      });
     } catch (e) {
       this._animationPrefix = null;
       this._transitionEnd = null;
+      this._animationEnd = null;
     }
   }
 
@@ -55,6 +68,7 @@ export abstract class GenericBrowserDomAdapter extends DomAdapter {
     return isPresent(this._animationPrefix) ? this._animationPrefix : "";
   }
   getTransitionEnd(): string { return isPresent(this._transitionEnd) ? this._transitionEnd : ""; }
+  getAnimationEnd(): string { return isPresent(this._animationEnd) ? this._animationEnd : ""; }
   supportsAnimation(): boolean {
     return isPresent(this._animationPrefix) && isPresent(this._transitionEnd);
   }
