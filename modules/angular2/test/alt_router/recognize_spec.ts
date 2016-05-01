@@ -149,6 +149,19 @@ export function main() {
              });
        }));
 
+    it('should match a wildcard',
+       inject([AsyncTestCompleter, ComponentResolver], (async, resolver) => {
+         recognize(resolver, ComponentG, tree("a;aa=1/b;bb=2"))
+             .then(r => {
+               let c = r.children(r.root);
+               expect(c.length).toEqual(1);
+               expect(stringifyUrl(c[0].urlSegments)).toEqual([]);
+               expect(c[0].parameters).toEqual(null);
+
+               async.done();
+             });
+       }));
+
     it('should error when no matching routes',
        inject([AsyncTestCompleter, ComponentResolver], (async, resolver) => {
          recognize(resolver, ComponentA, tree("invalid"))
@@ -212,6 +225,12 @@ class ComponentC {
   new Route({path: "c/:c", component: ComponentC})
 ])
 class ComponentB {
+}
+
+@Component({selector: 'g', template: 't'})
+@Routes(
+    [new Route({path: "d", component: ComponentD}), new Route({path: "*", component: ComponentE})])
+class ComponentG {
 }
 
 @Component({selector: 'a', template: 't'})
