@@ -141,13 +141,12 @@ function declareTests(isJit: boolean) {
             .then((fixture) => {
               fixture.debugElement.componentInstance.ctxProp = 'hello';
               fixture.detectChanges();
-              expect(getDOM().getInnerHTML(fixture.debugElement.nativeElement))
-                  .toContain('href="hello"');
+              expect(fixture.debugElement.children[0].nativeElement.href).toEqual('hello');
 
               fixture.debugElement.componentInstance.ctxProp = 'javascript:alert(1)';
               fixture.detectChanges();
-              expect(getDOM().getInnerHTML(fixture.debugElement.nativeElement))
-                  .toContain('href="unsafe:javascript:alert(1)"');
+              expect(fixture.debugElement.children[0].nativeElement.href)
+                  .toEqual('unsafe:javascript:alert(1)');
 
               async.done();
             });
