@@ -705,7 +705,7 @@ class TemplateParseVisitor implements HtmlAstVisitor {
                                     sourceSpan: ParseSourceSpan): BoundElementPropertyAst {
     var unit = null;
     var bindingType;
-    var boundPropertyName;
+    var boundPropertyName: string;
     var parts = name.split(PROPERTY_PARTS_SEPARATOR);
     let securityContext: SecurityContext;
     if (parts.length === 1) {

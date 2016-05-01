@@ -22,7 +22,7 @@
  * that. More importantly, it disallows masking of a colon,
  * e.g. "javascript&#58;...".
  */
-const SAFE_URL_PATTERN = /^(?:(?:https?|mailto|ftp|tel|file):|[^&:/?#]*(?:[/?#]|$))/i;
+const SAFE_URL_PATTERN = /^(?:(?:https?|mailto|ftp|tel|file):|[^&:/?#]*(?:[/?#]|$))/gi;
 
 export function sanitizeUrl(url: string): string {
   if (String(url).match(SAFE_URL_PATTERN)) return url;
