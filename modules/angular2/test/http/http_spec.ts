@@ -152,6 +152,60 @@ export function main() {
                  .subscribe((res: Response) => {});
            }));
 
+        it('should accept a fully-qualified request as its only parameter',
+           inject([AsyncTestCompleter], (async) => {
+             backend.connections.subscribe(c => {
+               expect(c.request.url).toBe('https://google.com');
+               expect(c.request.method).toBe(RequestMethod.Post);
+               c.mockRespond(new Response(new ResponseOptions({body: 'Thank you'})));
+               async.done();
+             });
+             http.request(new Request('https://google.com',
+                                      new RequestOptions({method: RequestMethod.Post})))
+                 .subscribe((res) => {});
+           }));
+
+        it('should accept a fully-qualified request as its only parameter',
+           inject([AsyncTestCompleter], (async) => {
+             backend.connections.subscribe(c => {
+               expect(c.request.url).toBe('https://google.com');
+               c.mockRespond(new Response(new ResponseOptions({body: 'Thank you'})));
+               async.done();
+             });
+             http.request(new Request('https://google.com')).subscribe((res) => {});
+           }));
+
+        it('should accept a fully-qualified request as its only parameter',
+           inject([AsyncTestCompleter], (async) => {
+             backend.connections.subscribe(c => {
+               expect(c.request.url).toBe('https://google.com');
+               c.mockRespond(new Response(new ResponseOptions({body: 'Thank you'})));
+               async.done();
+             });
+             http.request(Request.create('https://google.com')).subscribe((res) => {});
+           }));
+
+        it('should accept a fully-qualified request as its only parameter',
+           inject([AsyncTestCompleter], (async) => {
+             backend.connections.subscribe(c => {
+               expect(c.request.url).toBe('https://google.com');
+               c.mockRespond(new Response(new ResponseOptions({body: 'Thank you'})));
+               async.done();
+             });
+             http.request(Request.create('https://google.com', {body: 'Thank you'}))
+                 .subscribe((res) => {});
+           }));
+
+        it('should accept a fully-qualified request as its only parameter',
+           inject([AsyncTestCompleter], (async) => {
+             backend.connections.subscribe(c => {
+               expect(c.request.url).toBe('https://google.com');
+               c.mockRespond(new Response(new ResponseOptions({body: 'Thank you'})));
+               async.done();
+             });
+             http.request(Request.create({url: 'https://google.com', body: 'Thank you'}))
+                 .subscribe((res) => {});
+           }));
 
         it('should perform a get request for given url if only passed a string',
            inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {

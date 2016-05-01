@@ -1,5 +1,5 @@
 import {RequestMethod} from './enums';
-import {RequestArgs} from './interfaces';
+import {RequestArgs, RequestOptionsArgs} from './interfaces';
 import {Headers} from './headers';
 import {normalizeMethodName} from './http_utils';
 import {RegExpWrapper, isPresent, isJsObject, StringWrapper} from 'angular2/src/facade/lang';
@@ -43,6 +43,20 @@ import {RegExpWrapper, isPresent, isJsObject, StringWrapper} from 'angular2/src/
  * ```
  */
 export class Request {
+  static create(url: string, requestOptions?: RequestOptionsArgs): Request;
+  static create(requestOptions: RequestArgs): Request;
+  /**
+   * Static factory method
+   */
+  static create(urlOrRequestOptions: string | RequestArgs,
+                requestOptions?: RequestOptionsArgs): Request {
+    if (typeof urlOrRequestOptions === 'string') {
+      return new Request(urlOrRequestOptions, requestOptions);
+    } else {
+      return new Request(urlOrRequestOptions);
+    }
+  }
+
   /**
    * Http method with which to perform the request.
    */
@@ -55,10 +69,21 @@ export class Request {
   url: string;
   // TODO: support URLSearchParams | FormData | Blob | ArrayBuffer
   private _body: string;
-  constructor(requestOptions: RequestArgs) {
+
+  constructor(url: string, requestOptions?: RequestOptionsArgs);
+  constructor(requestOptions: RequestArgs);
+  constructor(urlOrRequestOptions: string | RequestArgs, requestOptions: RequestOptionsArgs = {}) {
     // TODO: assert that url is present
-    let url = requestOptions.url;
-    this.url = requestOptions.url;
+    var url;
+
+    if (typeof urlOrRequestOptions === 'string') {
+      url = urlOrRequestOptions;
+    } else {
+      requestOptions = urlOrRequestOptions;
+      url = requestOptions.url;
+    }
+
+    this.url = url;
     if (isPresent(requestOptions.search)) {
       let search = requestOptions.search.toString();
       if (search.length > 0) {
