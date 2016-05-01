@@ -632,7 +632,7 @@ class TemplateParseVisitor implements HtmlAstVisitor {
         }
         targetReferences.push(new ReferenceAst(elOrDirRef.name, refToken, elOrDirRef.sourceSpan));
       }
-    }); // fix syntax highlighting issue: `
+    });  // fix syntax highlighting issue: `
     return directiveAsts;
   }
 
@@ -720,6 +720,11 @@ class TemplateParseVisitor implements HtmlAstVisitor {
     } else {
       if (parts[0] == ATTRIBUTE_PREFIX) {
         boundPropertyName = parts[1];
+        if (boundPropertyName.toLowerCase().startsWith('on')) {
+          this._reportError(`Binding to event attribute '${boundPropertyName}' is disallowed, ` +
+                                `please use (${boundPropertyName.slice(2)})=...`,
+                            sourceSpan);
+        }
         // NB: For security purposes, use the mapped property name, not the attribute name.
         securityContext = this._schemaRegistry.securityContext(
             elementName, this._schemaRegistry.getMappedPropName(boundPropertyName));

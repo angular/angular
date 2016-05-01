@@ -121,21 +121,17 @@ function declareTests(isJit: boolean) {
     beforeEachProviders(() => [provide(ANCHOR_ELEMENT, {useValue: el('<div></div>')})]);
 
     ddescribe('safe HTML values', function() {
-      itAsync('should escape unsafe HTML', (tcb: TestComponentBuilder, async) => {
-        let tpl = `<div>
-                     <div [innerHTML]="ctxProp"></div>
-                   </div>`;
-        tcb.overrideView(SecuredComponent, new ViewMetadata({template: tpl, directives: []}))
-            .createAsync(SecuredComponent)
-            .then((fixture) => {
-              fixture.debugElement.componentInstance.ctxProp =
-                  '<button onclick="alert(1)">';
-              fixture.detectChanges();
-
-              expect(getDOM().getInnerHTML(fixture.debugElement.nativeElement))
-                  .toContain('<button>');
-              async.done();
-            });
+      itAsync('should disallow binding on*', (tcb: TestComponentBuilder, async) => {
+        let tpl = `<div [attr.onclick]="ctxProp"></div>`;
+        tcb = tcb.overrideView(SecuredComponent, new ViewMetadata({template: tpl}));
+        PromiseWrapper.catchError(tcb.createAsync(SecuredComponent), (e) => {
+          expect(e.message).toEqual(
+              `Template parse errors:\n` + `Binding to event attribute 'onclick' is disallowed, ` +
+              `please use (click)=... ` +
+              `("<div [ERROR ->][attr.onclick]="ctxProp"></div>"): SecuredComponent@0:5`);
+          async.done();
+          return null;
+        });
       });
 
       itAsync('should escape unsafe attributes', (tcb: TestComponentBuilder, async) => {
