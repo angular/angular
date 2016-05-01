@@ -24,6 +24,7 @@ import {AnimationBuilder} from '../animate/animation_builder';
 import {Testability} from '@angular/core/src/testability/testability';
 import {BrowserGetTestability} from '@angular/platform-browser/src/browser/testability';
 import {BrowserDomAdapter} from '../browser/browser_adapter';
+import {BROWSER_SANITIZATION_PROVIDERS} from '../browser_common';
 import {wtfInit} from '@angular/core/src/profile/wtf_init';
 import {MessageBasedRenderer} from '../web_workers/ui/renderer';
 import {
@@ -73,6 +74,7 @@ export const WORKER_RENDER_APPLICATION_COMMON: Array<any /*Type | Provider | any
     /*@ts2dart_const*/[
       APPLICATION_COMMON_PROVIDERS,
       WORKER_RENDER_MESSAGING_PROVIDERS,
+      BROWSER_SANITIZATION_PROVIDERS,
       /* @ts2dart_Provider */ {provide: ExceptionHandler, useFactory: _exceptionHandler, deps: []},
       /* @ts2dart_Provider */ {provide: DOCUMENT, useFactory: _document, deps: []},
       // TODO(jteplitz602): Investigate if we definitely need EVENT_MANAGER on the render thread
@@ -84,7 +86,6 @@ export const WORKER_RENDER_APPLICATION_COMMON: Array<any /*Type | Provider | any
       /* @ts2dart_Provider */ {provide: DomRootRenderer, useClass: DomRootRenderer_},
       /* @ts2dart_Provider */ {provide: RootRenderer, useExisting: DomRootRenderer},
       /* @ts2dart_Provider */ {provide: SharedStylesHost, useExisting: DomSharedStylesHost},
-      /* @ts2dart_Provider */ {provide: SanitizationService, useClass: DomSanitizationService},
       /* @ts2dart_Provider */ {provide: XHR, useClass: XHRImpl},
       MessageBasedXHRImpl,
       /* @ts2dart_Provider */ {provide: ServiceMessageBrokerFactory, useClass: ServiceMessageBrokerFactory_},

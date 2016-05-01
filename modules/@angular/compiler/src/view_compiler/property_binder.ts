@@ -1,4 +1,4 @@
-import {SecurityContext} from '@angular/core';
+import {SecurityContext} from '../../core_private';
 import {LifecycleHooks, isDefaultChangeDetectionStrategy} from '../../core_private';
 
 import {isBlank, isPresent} from '../../src/facade/lang';
@@ -18,8 +18,6 @@ import {
 import {CompileView} from './compile_view';
 import {CompileElement, CompileNode} from './compile_element';
 import {CompileMethod} from './compile_method';
-
-import {CompileIdentifierMetadata} from '../compile_metadata';
 
 import {camelCaseToDashCase} from '../util';
 

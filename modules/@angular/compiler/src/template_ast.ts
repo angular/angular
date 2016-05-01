@@ -6,7 +6,7 @@ import {
   CompileProviderMetadata,
 } from './compile_metadata';
 import {ParseSourceSpan} from './parse_util';
-import {SecurityContext} from '@angular/core';
+import {SecurityContext} from '../core_private';
 
 /**
  * An Abstract Syntax Tree node representing part of a parsed Angular template.

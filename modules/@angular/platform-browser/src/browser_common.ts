@@ -63,6 +63,10 @@ function _document(): any {
   return getDOM().defaultDoc();
 }
 
+export const BROWSER_SANITIZATION_PROVIDERS: Array<any> = /*@ts2dart_const*/[
+  /* @ts2dart_Provider */ {provide: SanitizationService, useClass: DomSanitizationService},
+];
+
 /**
  * A set of providers to initialize an Angular application in a web browser.
  *
@@ -72,6 +76,7 @@ export const BROWSER_APP_COMMON_PROVIDERS: Array<any /*Type | Provider | any[]*/
     /*@ts2dart_const*/[
       APPLICATION_COMMON_PROVIDERS,
       FORM_PROVIDERS,
+      BROWSER_SANITIZATION_PROVIDERS,
       /* @ts2dart_Provider */ {provide: PLATFORM_PIPES, useValue: COMMON_PIPES, multi: true},
       /* @ts2dart_Provider */ {provide: PLATFORM_DIRECTIVES, useValue: COMMON_DIRECTIVES, multi: true},
       /* @ts2dart_Provider */ {provide: ExceptionHandler, useFactory: _exceptionHandler, deps: []},
@@ -82,7 +87,6 @@ export const BROWSER_APP_COMMON_PROVIDERS: Array<any /*Type | Provider | any[]*/
       /* @ts2dart_Provider */ {provide: HAMMER_GESTURE_CONFIG, useClass: HammerGestureConfig},
       /* @ts2dart_Provider */ {provide: DomRootRenderer, useClass: DomRootRenderer_},
       /* @ts2dart_Provider */ {provide: RootRenderer, useExisting: DomRootRenderer},
-      /* @ts2dart_Provider */ {provide: SanitizationService, useClass: DomSanitizationService},
       /* @ts2dart_Provider */ {provide: SharedStylesHost, useExisting: DomSharedStylesHost},
       DomSharedStylesHost,
       Testability,

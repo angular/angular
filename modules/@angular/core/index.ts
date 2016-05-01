@@ -4,7 +4,6 @@
  * Starting point to import all public core APIs.
  */
 export * from './src/metadata';
-export {SecurityContext, SanitizationService} from './src/security';
 export * from './src/util';
 export * from './src/di';
 export {

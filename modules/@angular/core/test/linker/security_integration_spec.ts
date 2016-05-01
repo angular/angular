@@ -135,9 +135,7 @@ function declareTests(isJit: boolean) {
       });
 
       itAsync('should escape unsafe attributes', (tcb: TestComponentBuilder, async) => {
-        let tpl = `<div>
-                     <a [href]="ctxProp">Link Title</a>
-                   </div>`;
+        let tpl = `<a [href]="ctxProp">Link Title</a>`;
         tcb.overrideView(SecuredComponent, new ViewMetadata({template: tpl, directives: []}))
             .createAsync(SecuredComponent)
             .then((fixture) => {

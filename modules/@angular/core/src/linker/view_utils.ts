@@ -1,4 +1,4 @@
-import {SanitizationService} from '@angular/core';
+import {SanitizationService} from '../security';
 import {
   isBlank,
   isPresent,
