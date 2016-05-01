@@ -30,10 +30,13 @@ export function main() {
     describe("supports", () => {
       it("should support date", () => { expect(pipe.supports(date)).toBe(true); });
       it("should support int", () => { expect(pipe.supports(123456789)).toBe(true); });
+      it("should support ISO string",
+         () => { expect(pipe.supports("2015-06-15T21:43:11Z")).toBe(true); });
 
       it("should not support other objects", () => {
         expect(pipe.supports(new Object())).toBe(false);
         expect(pipe.supports(null)).toBe(false);
+        expect(pipe.supports("")).toBe(false);
       });
     });
 
