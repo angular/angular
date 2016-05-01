@@ -1,4 +1,4 @@
-import {isPresent, isBlank, normalizeBool} from 'angular2/src/facade/lang';
+import {isPresent, isBlank, isEmptyValue, normalizeBool} from 'angular2/src/facade/lang';
 import {Observable, EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
 import {PromiseWrapper} from 'angular2/src/facade/promise';
 import {StringMapWrapper, ListWrapper} from 'angular2/src/facade/collection';
@@ -59,6 +59,7 @@ export abstract class AbstractControl {
   private _valueChanges: EventEmitter<any>;
   private _statusChanges: EventEmitter<any>;
   private _status: string;
+  private _empty: boolean = true;
   private _errors: {[key: string]: any};
   private _pristine: boolean = true;
   private _touched: boolean = false;
@@ -72,6 +73,8 @@ export abstract class AbstractControl {
   get status(): string { return this._status; }
 
   get valid(): boolean { return this._status === VALID; }
+  
+  get empty(): boolean { return this._empty; }
 
   /**
    * Returns the errors of this control.
@@ -123,6 +126,7 @@ export abstract class AbstractControl {
 
     this._errors = this._runValidator();
     this._status = this._calculateStatus();
+    this._empty = isEmptyValue(this._value);
 
     if (this._status == VALID || this._status == PENDING) {
       this._runAsyncValidator(emitEvent);
