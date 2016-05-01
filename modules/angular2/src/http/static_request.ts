@@ -84,5 +84,5 @@ export class Request {
    * empty
    * string.
    */
-  text(): String { return isPresent(this._body) ? this._body.toString() : ''; }
+  text(): string { return isPresent(this._body) ? this._body.toString() : ''; }
 }
