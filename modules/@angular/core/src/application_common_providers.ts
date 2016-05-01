@@ -1,5 +1,4 @@
 import {Type} from '../src/facade/lang';
-import {SanitizationService} from './security';
 import {APP_ID_RANDOM_PROVIDER} from './application_tokens';
 import {APPLICATION_CORE_PROVIDERS} from './application_ref';
 import {
@@ -23,7 +22,6 @@ export const APPLICATION_COMMON_PROVIDERS: Array<Type | {[k: string]: any} | any
       APPLICATION_CORE_PROVIDERS,
       /* @ts2dart_Provider */ {provide: ComponentResolver, useClass: ReflectorComponentResolver},
       APP_ID_RANDOM_PROVIDER,
-      SanitizationService,
       ViewUtils,
       /* @ts2dart_Provider */ {provide: IterableDiffers, useValue: defaultIterableDiffers},
       /* @ts2dart_Provider */ {provide: KeyValueDiffers, useValue: defaultKeyValueDiffers},

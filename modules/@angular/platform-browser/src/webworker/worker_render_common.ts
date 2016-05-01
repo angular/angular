@@ -39,6 +39,8 @@ import {Serializer} from '../web_workers/shared/serializer';
 import {ON_WEB_WORKER} from '../web_workers/shared/api';
 import {RenderStore} from '../web_workers/shared/render_store';
 import {HAMMER_GESTURE_CONFIG, HammerGestureConfig} from '../dom/events/hammer_gestures';
+import {SanitizationService} from '../../core_private';
+import {DomSanitizationService} from '../security/dom_sanitization_service';
 import {EventManager, EVENT_MANAGER_PLUGINS} from '../dom/events/event_manager';
 import {XHR} from "../../../compiler/src/xhr";
 import {XHRImpl} from "../../../platform-browser-dynamic/src/xhr/xhr_impl";
@@ -82,6 +84,7 @@ export const WORKER_RENDER_APPLICATION_COMMON: Array<any /*Type | Provider | any
       /* @ts2dart_Provider */ {provide: DomRootRenderer, useClass: DomRootRenderer_},
       /* @ts2dart_Provider */ {provide: RootRenderer, useExisting: DomRootRenderer},
       /* @ts2dart_Provider */ {provide: SharedStylesHost, useExisting: DomSharedStylesHost},
+      /* @ts2dart_Provider */ {provide: SanitizationService, useClass: DomSanitizationService},
       /* @ts2dart_Provider */ {provide: XHR, useClass: XHRImpl},
       MessageBasedXHRImpl,
       /* @ts2dart_Provider */ {provide: ServiceMessageBrokerFactory, useClass: ServiceMessageBrokerFactory_},

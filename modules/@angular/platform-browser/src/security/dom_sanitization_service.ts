@@ -1,14 +1,8 @@
-import {Injectable} from '../di/decorators';
 import {sanitizeUrl} from './url_sanitizer';
-
-export enum SecurityContext {
-  NONE,
-  HTML,
-  STYLE,
-  SCRIPT,
-  URL,
-  RESOURCE_URL,
-}
+import {SecurityContext} from '../../core_private';
+import {Injectable} from '@angular/core';
+import {isNumber, isString, isBlank, assertionsEnabled} from '../facade/lang';
+import {StringMapWrapper} from '../facade/collection';
 
 export interface SafeHtml {}
 export interface SafeStyle {}
@@ -17,10 +11,28 @@ export interface SafeUrl {}
 export interface SafeResourceUrl {}
 
 @Injectable()
-export class SanitizationService {
-
+export class DomSanitizationService {
   constructor() {
     // empty.
+  }
+
+  sanitize(ctx: SecurityContext, value: any): any {
+    switch (ctx) {
+      case SecurityContext.NONE:
+        return value;
+      case SecurityContext.HTML:
+        return this.getSafeHtml(value);
+      case SecurityContext.STYLE:
+        return this.getSafeStyle(value);
+      case SecurityContext.SCRIPT:
+        return this.getSafeScript(value);
+      case SecurityContext.URL:
+        return this.getSafeUrl(value);
+      case SecurityContext.RESOURCE_URL:
+        return this.getSafeResourceUrl(value);
+      default:
+        throw new Error(`Unexpected SecurityContext ${ctx}`);
+    }
   }
 
   // FIXME(martinprobst): Better names. coerceSafeHtml? sanitizeOrUnwrapHtml(...)?
@@ -30,10 +42,10 @@ export class SanitizationService {
     return this.sanitizeHtmlInternal(value.toString());
   }
 
-  getSafeStyle(value: SafeStyle | string): string {
+  getSafeStyle(value: SafeStyle | any): any {
     if (value == null) return null;
     if (value instanceof SafeStyleImpl) return value.value;
-    return this.sanitizeStyleValueInternal(value.toString());
+    return this.sanitizeStyleMap(value);
   }
 
   getSafeUrl(value: SafeUrl | string): string {
@@ -58,10 +70,12 @@ export class SanitizationService {
     let s = this.sanitizeHtmlInternal(value);
     return new SafeHtmlImpl(s);
   }
-  sanitizeStyleValue(value: string): SafeStyle {
-    let s = this.sanitizeStyleValueInternal(value);
+
+  sanitizeStyle(value: any): SafeStyle {
+    let s = this.sanitizeStyleMap(value);
     return new SafeStyleImpl(s);
   }
+
   sanitizeUrl(value: string): SafeUrl {
     let s = this.sanitizeUrlInternal(value);
     return new SafeUrlImpl(s);
@@ -71,14 +85,24 @@ export class SanitizationService {
     // FIXME(martinprobst): sanitize HTML.
     return value;
   }
-  private sanitizeStyleValueInternal(value: string): string {
-    // FIXME(martinprobst): sanitize Style values.
+
+  private sanitizeStyleMap(value: any): any {
+    if (isString(value)) return this.sanitizeStyleValue(<string>value);
+    if (isNumber(value)) return value;
+    let input = <{[k: string]: string}>value;
+    let res: {[k: string]: string} = {};
+    for (let k of StringMapWrapper.keys(input)) {
+      res[k] = this.sanitizeStyleValue(input[k]);
+    }
+    return res;
+  }
+
+  private sanitizeStyleValue(value: string): string {
+    // TODO(martinprobst): Sanitize Style values.
     return value;
   }
 
-  private sanitizeUrlInternal(value: string): string {
-    return sanitizeUrl(value);
-  }
+  private sanitizeUrlInternal(value: string): string { return sanitizeUrl(value); }
 
   bypassSecurityTrustHtml(value: string): SafeHtml { return new SafeHtmlImpl(value); }
   bypassSecurityTrustStyle(value: string): SafeStyle { return new SafeStyleImpl(value); }
@@ -96,7 +120,7 @@ class SafeHtmlImpl implements SafeHtml {
 }
 
 class SafeStyleImpl implements SafeStyle {
-  constructor(public value: string) {
+  constructor(public value: string | {[k: string]: string}) {
     // empty
   }
 }

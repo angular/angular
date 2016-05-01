@@ -1,5 +1,5 @@
-import {Injectable, Inject, OpaqueToken, Optional, SecurityContext} from '@angular/core';
-import {MAX_INTERPOLATION_VALUES, Console} from '../core_private';
+import {Injectable, Inject, OpaqueToken, Optional} from '@angular/core';
+import {MAX_INTERPOLATION_VALUES, Console, SecurityContext} from '../core_private';
 
 import {
   ListWrapper,

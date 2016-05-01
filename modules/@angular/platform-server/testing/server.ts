@@ -4,7 +4,8 @@ import {
   PLATFORM_COMMON_PROVIDERS,
   PLATFORM_INITIALIZER,
   APPLICATION_COMMON_PROVIDERS,
-  Renderer
+  Renderer,
+  SanitizationService
 } from '@angular/core';
 import {DirectiveResolver, ViewResolver} from '@angular/compiler';
 import {TestComponentBuilder} from '@angular/compiler/testing';
@@ -29,7 +30,7 @@ import {
   EVENT_MANAGER_PLUGINS,
   ELEMENT_PROBE_PROVIDERS
 } from '@angular/platform-browser';
-import {DomEventsPlugin} from '@angular/platform-browser';
+import {DomEventsPlugin, DomSanitizationService} from '@angular/platform-browser';
 import {LocationStrategy} from '@angular/common';
 import {Log} from '@angular/core/testing';
 import {DOMTestComponentRenderer} from '@angular/platform-browser/testing';
@@ -75,6 +76,7 @@ export const TEST_SERVER_APPLICATION_PROVIDERS: Array<any /*Type | Provider | an
       /* @ts2dart_Provider */ {provide: DOCUMENT, useFactory: appDoc},
       /* @ts2dart_Provider */ {provide: DomRootRenderer, useClass: DomRootRenderer_},
       /* @ts2dart_Provider */ {provide: RootRenderer, useExisting: DomRootRenderer},
+      /* @ts2dart_Provider */ {provide: SanitizationService, useClass: DomSanitizationService},
       EventManager,
       /* @ts2dart_Provider */ {provide: EVENT_MANAGER_PLUGINS, useClass: DomEventsPlugin, multi: true},
       /* @ts2dart_Provider */ {provide: XHR, useClass: XHR},

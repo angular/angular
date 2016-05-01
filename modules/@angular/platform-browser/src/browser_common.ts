@@ -10,8 +10,9 @@ import {
   OpaqueToken,
   Testability
 } from '@angular/core';
-import {wtfInit} from '../core_private';
+import {wtfInit, SanitizationService} from '../core_private';
 import {COMMON_DIRECTIVES, COMMON_PIPES, FORM_PROVIDERS} from '@angular/common';
+import {DomSanitizationService} from './security/dom_sanitization_service';
 
 import {IS_DART} from './facade/lang';
 import {BrowserDomAdapter} from './browser/browser_adapter';
@@ -81,6 +82,7 @@ export const BROWSER_APP_COMMON_PROVIDERS: Array<any /*Type | Provider | any[]*/
       /* @ts2dart_Provider */ {provide: HAMMER_GESTURE_CONFIG, useClass: HammerGestureConfig},
       /* @ts2dart_Provider */ {provide: DomRootRenderer, useClass: DomRootRenderer_},
       /* @ts2dart_Provider */ {provide: RootRenderer, useExisting: DomRootRenderer},
+      /* @ts2dart_Provider */ {provide: SanitizationService, useClass: DomSanitizationService},
       /* @ts2dart_Provider */ {provide: SharedStylesHost, useExisting: DomSharedStylesHost},
       DomSharedStylesHost,
       Testability,

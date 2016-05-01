@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {SecurityContext} from '@angular/core';
+import {SecurityContext} from '../../core_private';
 import {isPresent} from '../facade/lang';
 import {StringMapWrapper} from '../facade/collection';
 import {ElementSchemaRegistry} from './element_schema_registry';

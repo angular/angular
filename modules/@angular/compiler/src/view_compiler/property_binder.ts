@@ -19,6 +19,8 @@ import {CompileView} from './compile_view';
 import {CompileElement, CompileNode} from './compile_element';
 import {CompileMethod} from './compile_method';
 
+import {CompileIdentifierMetadata} from '../compile_metadata';
+
 import {camelCaseToDashCase} from '../util';
 
 import {convertCdExpressionToIr} from './expression_converter';
@@ -132,30 +134,31 @@ function bindAndWriteToRenderer(boundProps: BoundElementPropertyAst[], context: 
 }
 
 function sanitizedValue(boundProp: BoundElementPropertyAst, renderValue: o.Expression): o.Expression {
-  let methodName: string;
+  let enumValue: string;
   switch (boundProp.securityContext) {
     case SecurityContext.NONE:
-      return renderValue;
+      return renderValue;  // No sanitization needed.
     case SecurityContext.HTML:
-      methodName = 'getSafeHtml';
+      enumValue = 'HTML';
       break;
     case SecurityContext.STYLE:
-      methodName = 'getSafeStyle';
+      enumValue = 'STYLE';
       break;
     case SecurityContext.SCRIPT:
-      methodName = 'getSafeScript';
+      enumValue = 'SCRIPT';
       break;
     case SecurityContext.URL:
-      methodName = 'getSafeUrl';
+      enumValue = 'URL';
       break;
     case SecurityContext.RESOURCE_URL:
-      methodName = 'getSafeResourceUrl';
+      enumValue = 'RESOURCE_URL';
       break;
     default:
       throw new Error(`internal error, unexpected SecurityContext ${boundProp.securityContext}.`);
   }
   let ctx = ViewProperties.viewUtils.prop('sanitizer');
-  return ctx.callMethod(methodName, [renderValue]);
+  let args = [o.importExpr(Identifiers.SecurityContext).prop(enumValue), renderValue];
+  return ctx.callMethod('sanitize', args);
 }
 
 export function bindRenderInputs(boundProps: BoundElementPropertyAst[],
