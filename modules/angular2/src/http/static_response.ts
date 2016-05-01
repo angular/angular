@@ -114,4 +114,8 @@ export class Response {
   arrayBuffer(): any {
     throw new BaseException('"arrayBuffer()" method not implemented on Response superclass');
   }
+
+  toString(): string {
+    return `Response with status: ${this.status} ${this.statusText} for URL: ${this.url}`;
+  }
 }
