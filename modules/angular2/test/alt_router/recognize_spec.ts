@@ -18,7 +18,7 @@ import {
 import {recognize} from 'angular2/src/alt_router/recognize';
 import {Routes, Route} from 'angular2/alt_router';
 import {provide, Component, ComponentResolver} from 'angular2/core';
-import {UrlSegment, Tree} from 'angular2/src/alt_router/segments';
+import {UrlSegment, RouteTree, UrlTree} from 'angular2/src/alt_router/segments';
 import {DefaultRouterUrlSerializer} from 'angular2/src/alt_router/router_url_serializer';
 import {DEFAULT_OUTLET_NAME} from 'angular2/src/alt_router/constants';
 
@@ -192,7 +192,7 @@ export function main() {
   });
 }
 
-function tree(url: string): Tree<UrlSegment> {
+function tree(url: string): UrlTree {
   return new DefaultRouterUrlSerializer().parse(url);
 }
 

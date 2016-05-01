@@ -1,4 +1,4 @@
-import {RouteSegment, UrlSegment, Tree, TreeNode, rootNode} from './segments';
+import {RouteSegment, UrlSegment, Tree, TreeNode, rootNode, UrlTree, RouteTree} from './segments';
 import {RoutesMetadata, RouteMetadata} from './metadata/metadata';
 import {Type, isBlank, isPresent, stringify} from 'angular2/src/facade/lang';
 import {ListWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
@@ -10,10 +10,9 @@ import {reflector} from 'angular2/src/core/reflection/reflection';
 
 // TODO: vsavkin: recognize should take the old tree and merge it
 export function recognize(componentResolver: ComponentResolver, type: Type,
-                          url: Tree<UrlSegment>): Promise<Tree<RouteSegment>> {
+                          url: UrlTree): Promise<RouteTree> {
   let matched = new _MatchResult(type, [url.root], null, rootNode(url).children, []);
-  return _constructSegment(componentResolver, matched)
-      .then(roots => new Tree<RouteSegment>(roots[0]));
+  return _constructSegment(componentResolver, matched).then(roots => new RouteTree(roots[0]));
 }
 
 function _recognize(componentResolver: ComponentResolver, parentType: Type,

@@ -1,20 +1,20 @@
-import {UrlSegment, Tree, TreeNode, rootNode} from './segments';
+import {UrlSegment, Tree, TreeNode, rootNode, UrlTree} from './segments';
 import {BaseException} from 'angular2/src/facade/exceptions';
 import {isBlank, isPresent, RegExpWrapper} from 'angular2/src/facade/lang';
 import {ListWrapper} from 'angular2/src/facade/collection';
 
 export abstract class RouterUrlSerializer {
-  abstract parse(url: string): Tree<UrlSegment>;
-  abstract serialize(tree: Tree<UrlSegment>): string;
+  abstract parse(url: string): UrlTree;
+  abstract serialize(tree: UrlTree): string;
 }
 
 export class DefaultRouterUrlSerializer extends RouterUrlSerializer {
-  parse(url: string): Tree<UrlSegment> {
+  parse(url: string): UrlTree {
     let root = new _UrlParser().parse(url);
-    return new Tree<UrlSegment>(root);
+    return new UrlTree(root);
   }
 
-  serialize(tree: Tree<UrlSegment>): string { return _serializeUrlTreeNode(rootNode(tree)); }
+  serialize(tree: UrlTree): string { return _serializeUrlTreeNode(rootNode(tree)); }
 }
 
 function _serializeUrlTreeNode(node: TreeNode<UrlSegment>): string {

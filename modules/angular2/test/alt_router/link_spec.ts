@@ -15,7 +15,13 @@ import {
   xit
 } from 'angular2/testing_internal';
 
-import {RouteSegment, UrlSegment, Tree, TreeNode} from 'angular2/src/alt_router/segments';
+import {
+  RouteSegment,
+  UrlSegment,
+  UrlTree,
+  TreeNode,
+  RouteTree
+} from 'angular2/src/alt_router/segments';
 import {link} from 'angular2/src/alt_router/link';
 import {DefaultRouterUrlSerializer} from 'angular2/src/alt_router/router_url_serializer';
 
@@ -88,7 +94,7 @@ export function main() {
       let child = new RouteSegment([], null, null, null, null);
       let root = new TreeNode<RouteSegment>(new RouteSegment([c], {}, null, null, null),
                                             [new TreeNode<RouteSegment>(child, [])]);
-      let tree = new Tree<RouteSegment>(root);
+      let tree = new RouteTree(root);
 
       let t = link(child, tree, p, ["./c2"]);
       expect(parser.serialize(t)).toEqual("/a(aux:ap)/c2(aux:cp)");
@@ -96,7 +102,7 @@ export function main() {
   });
 }
 
-function s(u: UrlSegment): Tree<RouteSegment> {
+function s(u: UrlSegment): RouteTree {
   let root = new TreeNode<RouteSegment>(new RouteSegment([u], {}, null, null, null), []);
-  return new Tree<RouteSegment>(root);
+  return new RouteTree(root);
 }

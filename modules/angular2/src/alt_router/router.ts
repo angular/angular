@@ -20,7 +20,8 @@ import {
   equalSegments,
   routeSegmentComponentFactory,
   RouteSegment,
-  Tree,
+  UrlTree,
+  RouteTree,
   rootNode,
   TreeNode,
   UrlSegment,
@@ -36,8 +37,8 @@ export class RouterOutletMap {
 }
 
 export class Router {
-  private _prevTree: Tree<RouteSegment>;
-  private _urlTree: Tree<UrlSegment>;
+  private _prevTree: RouteTree;
+  private _urlTree: UrlTree;
   private _locationSubscription: any;
   private _changes: EventEmitter<void> = new EventEmitter<void>();
 
@@ -49,7 +50,7 @@ export class Router {
     this.navigateByUrl(this._location.path());
   }
 
-  get urlTree(): Tree<UrlSegment> { return this._urlTree; }
+  get urlTree(): UrlTree { return this._urlTree; }
 
   navigateByUrl(url: string): Promise<void> {
     return this._navigate(this._urlSerializer.parse(url));
@@ -66,7 +67,7 @@ export class Router {
         (change) => { this._navigate(this._urlSerializer.parse(change['url'])); });
   }
 
-  private _navigate(url: Tree<UrlSegment>): Promise<void> {
+  private _navigate(url: UrlTree): Promise<void> {
     this._urlTree = url;
     return recognize(this._componentResolver, this._rootComponentType, url)
         .then(currTree => {
@@ -82,7 +83,7 @@ export class Router {
         });
   }
 
-  createUrlTree(changes: any[], segment?: RouteSegment): Tree<UrlSegment> {
+  createUrlTree(changes: any[], segment?: RouteSegment): UrlTree {
     if (isPresent(this._prevTree)) {
       let s = isPresent(segment) ? segment : this._prevTree.root;
       return link(s, this._prevTree, this.urlTree, changes);
@@ -91,11 +92,11 @@ export class Router {
     }
   }
 
-  serializeUrl(url: Tree<UrlSegment>): string { return this._urlSerializer.serialize(url); }
+  serializeUrl(url: UrlTree): string { return this._urlSerializer.serialize(url); }
 
   get changes(): Observable<void> { return this._changes; }
 
-  get routeTree(): Tree<RouteSegment> { return this._prevTree; }
+  get routeTree(): RouteTree { return this._prevTree; }
 }
 
 
@@ -103,7 +104,7 @@ class _LoadSegments {
   private deactivations: Object[][] = [];
   private performMutation: boolean = true;
 
-  constructor(private currTree: Tree<RouteSegment>, private prevTree: Tree<RouteSegment>) {}
+  constructor(private currTree: RouteTree, private prevTree: RouteTree) {}
 
   load(parentOutletMap: RouterOutletMap, rootComponent: Object): Promise<boolean> {
     let prevRoot = isPresent(this.prevTree) ? rootNode(this.prevTree) : null;
