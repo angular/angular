@@ -55,6 +55,23 @@ export abstract class ViewContainerRef {
   get length(): number { return <number>unimplemented(); };
 
   /**
+   * Adds iterator function so ViewContainerRef can be used with spread operators, Array.from, for..of and other constructs supporing ES6 iterables.
+   */
+  [Symbol.iterator]() {
+    let index = 0;
+    const length = this.length;
+    return {
+      next() {
+        if (index < length) {
+          return {value: this.get(index++), done: false};
+        } else {
+          return {value: this.get(index++), done: true};
+        }
+      }
+    };
+  }
+
+  /**
    * Instantiates an Embedded View based on the {@link TemplateRef `templateRef`} and inserts it
    * into this container at the specified `index`.
    *
