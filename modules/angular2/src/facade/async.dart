@@ -86,6 +86,8 @@ class EventEmitter<T> extends Stream<T> {
     return _controller.stream.listen(onData,
         onError: onError, onDone: onDone, cancelOnError: cancelOnError);
   }
+  
+  bool get isBroadcast => true;
 
   void add(value) {
     _controller.add(value);
