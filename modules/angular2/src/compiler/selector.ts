@@ -18,7 +18,8 @@ var _SELECTOR_REGEXP = RegExpWrapper.create(
     '(?:\\.([-\\w]+))|' +                     // ".class"
     '(?:\\[([-\\w*]+)(?:=([^\\]]*))?\\])|' +  // "[name]", "[name=value]" or "[name*=value]"
     '(\\))|' +                                // ")"
-    '(\\s*,\\s*)');                           // ","
+    '(\\s*,\\s*)|' +                          // ","
+    '(\\*)');                                 // "*"
 
 /**
  * A css selector contains an element name,
@@ -45,7 +46,17 @@ export class CssSelector {
     var match;
     var current = cssSelector;
     var inNot = false;
+    var reLastIndex = 0;
+    var entireSelectorMatched = selector.length === 0;
+    var invalidSelectorMessage = 'Unsupported selector';
     while (isPresent(match = RegExpMatcherWrapper.next(matcher))) {
+      if (match.index !== reLastIndex) {
+        throw new BaseException(invalidSelectorMessage);
+      }
+      reLastIndex = matcher.re.lastIndex;
+      if (reLastIndex === selector.length) {
+        entireSelectorMatched = true;
+      }
       if (isPresent(match[1])) {
         if (inNot) {
           throw new BaseException('Nesting :not is not allowed in a selector');
@@ -74,6 +85,9 @@ export class CssSelector {
         _addResult(results, cssSelector);
         cssSelector = current = new CssSelector();
       }
+    }
+    if (!entireSelectorMatched) {
+      throw new BaseException(invalidSelectorMessage);
     }
     _addResult(results, cssSelector);
     return results;
