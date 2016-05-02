@@ -1,39 +1,31 @@
-import {ApplicationRef, Provider} from '@angular/core';
+import {OpaqueToken, ComponentResolver} from '@angular/core';
 import {LocationStrategy, PathLocationStrategy, Location} from '@angular/common';
-import {Router, RootRouter} from './router';
-import {RouteRegistry, ROUTER_PRIMARY_COMPONENT} from './route_registry';
-import {Type} from '../src/facade/lang';
-import {BaseException} from '../src/facade/exceptions';
+import {Router, RouterOutletMap} from './router';
+import {RouterUrlSerializer, DefaultRouterUrlSerializer} from './router_url_serializer';
+import {ApplicationRef} from '@angular/core';
+import {BaseException} from '@angular/core';
 
-/**
- * The Platform agnostic ROUTER PROVIDERS
- */
 export const ROUTER_PROVIDERS_COMMON: any[] = /*@ts2dart_const*/[
-  RouteRegistry,
-  /* @ts2dart_Provider */ {provide: LocationStrategy, useClass: PathLocationStrategy},
-  Location,
-  {
+  RouterOutletMap,
+  /*@ts2dart_Provider*/ {provide: RouterUrlSerializer, useClass: DefaultRouterUrlSerializer},
+  /*@ts2dart_Provider*/ {provide: LocationStrategy, useClass: PathLocationStrategy}, Location,
+  /*@ts2dart_Provider*/ {
     provide: Router,
     useFactory: routerFactory,
-    deps: [RouteRegistry, Location, ROUTER_PRIMARY_COMPONENT, ApplicationRef]
+    deps: /*@ts2dart_const*/
+        [ApplicationRef, ComponentResolver, RouterUrlSerializer, RouterOutletMap, Location],
   },
-  {
-    provide: ROUTER_PRIMARY_COMPONENT,
-    useFactory: routerPrimaryComponentFactory,
-    deps: /*@ts2dart_const*/ ([ApplicationRef])
-  }
 ];
 
-function routerFactory(registry: RouteRegistry, location: Location, primaryComponent: Type,
-                       appRef: ApplicationRef): RootRouter {
-  var rootRouter = new RootRouter(registry, location, primaryComponent);
-  appRef.registerDisposeListener(() => rootRouter.dispose());
-  return rootRouter;
-}
-
-function routerPrimaryComponentFactory(app: ApplicationRef): Type {
+function routerFactory(app: ApplicationRef, componentResolver: ComponentResolver,
+                       urlSerializer: RouterUrlSerializer, routerOutletMap: RouterOutletMap,
+                       location: Location): Router {
   if (app.componentTypes.length == 0) {
     throw new BaseException("Bootstrap at least one component before injecting Router.");
   }
-  return app.componentTypes[0];
+  // TODO: vsavkin this should not be null
+  let router = new Router(null, app.componentTypes[0], componentResolver, urlSerializer,
+                          routerOutletMap, location);
+  app.registerDisposeListener(() => router.dispose());
+  return router;
 }
