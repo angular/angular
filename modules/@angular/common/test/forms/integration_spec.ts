@@ -1236,16 +1236,9 @@ export function main() {
            fixture.debugElement.componentInstance.form = form;
            fixture.detectChanges();
 
-           // In Firefox, effective text selection in the real DOM requires an actual focus
-           // of the field. This is not an issue in a new HTML document.
-           if (browserDetection.isFirefox) {
-             var fakeDoc = getDOM().createHtmlDocument();
-             getDOM().appendChild(fakeDoc.body, fixture.debugElement.nativeElement);
-           }
-
            var input = fixture.debugElement.query(By.css("input")).nativeElement;
            input.value = "aa";
-           input.selectionStart = 1;
+           input.setSelectionRange(1, 2);
            dispatchEvent(input, "input");
 
            tick();
