@@ -105,7 +105,7 @@ function runJasmineTests(globs, done) {
   var fork = require('child_process').fork;
   var args = ['--'].concat(globs);
 
-  fork('./tools/cjs-jasmine', args, {stdio: 'inherit'})
+  fork('./dist/tools/cjs-jasmine', args, {stdio: 'inherit'})
       .on('close', function jasmineCloseHandler(exitCode) {
         if (exitCode && treatTestErrorsAsFatal) {
           var err = new Error('Jasmine tests failed');
@@ -1068,7 +1068,7 @@ gulp.task('!test.compiler_cli.codegen', function(done) {
     require('./dist/tools/compiler_cli/main')
         .main("tools/compiler_cli/test")
         .then(done)
-        .catch(function(rej) { done(new Error(rej)); });
+        .catch(function(rej) { done(rej); });
   } catch (err) {
     done(err);
   }

@@ -10,8 +10,7 @@ source ./env.sh
 cd ../..
 
 $(npm bin)/tsc -p ./tools/tsconfig.json
-$(npm bin)/tsc -p ./modules/tsconfig.json
-
-
+$(npm bin)/ng2tc -p ./modules/tsconfig.json
+$(npm bin)/tsc -p ./tools/compiler_cli/src/tsconfig.json
 
 echo 'travis_fold:end:BUILD'
