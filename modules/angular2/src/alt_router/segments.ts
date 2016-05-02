@@ -27,9 +27,7 @@ export class Tree<T> {
 
   pathFromRoot(t: T): T[] { return _findPath(t, this._root, []).map(s => s.value); }
 
-  contains(tree: Tree<T>): boolean {
-    return _contains(this._root, tree._root);
-  }
+  contains(tree: Tree<T>): boolean { return _contains(this._root, tree._root); }
 }
 
 export class UrlTree extends Tree<UrlSegment> {
@@ -59,7 +57,7 @@ function _findPath<T>(expected: T, c: TreeNode<T>, collected: TreeNode<T>[]): Tr
   collected.push(c);
 
   // TODO: vsavkin remove it once recognize is fixed
-  if(_equalValues(expected, c.value)) return collected;
+  if (_equalValues(expected, c.value)) return collected;
 
   for (let cc of c.children) {
     let r = _findPath(expected, cc, ListWrapper.clone(collected));
@@ -81,9 +79,9 @@ function _contains<T>(tree: TreeNode<T>, subtree: TreeNode<T>): boolean {
   return true;
 }
 
-function _equalValues(a:any, b:any):boolean {
+function _equalValues(a: any, b: any): boolean {
   if (a instanceof RouteSegment) return equalSegments(<any>a, <any>b);
-  if (a instanceof UrlSegment) return equalUrlSegments(<any>a, <any>b)
+  if (a instanceof UrlSegment) return equalUrlSegments(<any>a, <any>b);
   return a === b;
 }
 
@@ -156,6 +154,7 @@ export function equalSegments(a: RouteSegment, b: RouteSegment): boolean {
 export function equalUrlSegments(a: UrlSegment, b: UrlSegment): boolean {
   if (isBlank(a) && !isBlank(b)) return false;
   if (!isBlank(a) && isBlank(b)) return false;
+  if (a.segment != b.segment) return false;
   if (a.outlet != b.outlet) return false;
   if (isBlank(a.parameters) && !isBlank(b.parameters)) return false;
   if (!isBlank(a.parameters) && isBlank(b.parameters)) return false;

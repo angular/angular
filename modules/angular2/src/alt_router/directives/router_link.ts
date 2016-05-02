@@ -26,6 +26,7 @@ export class RouterLink implements OnDestroy {
   private _subscription: any;
 
   @HostBinding() private href: string;
+  @HostBinding('class.router-link-active') private isActive: boolean = false;
 
   constructor(@Optional() private _routeSegment: RouteSegment, private _router: Router) {
     this._subscription =
@@ -53,6 +54,9 @@ export class RouterLink implements OnDestroy {
     let tree = this._router.createUrlTree(this._changes, this._routeSegment);
     if (isPresent(tree)) {
       this.href = this._router.serializeUrl(tree);
+      this.isActive = this._router.urlTree.contains(tree);
+    } else {
+      this.isActive = false;
     }
   }
 }
