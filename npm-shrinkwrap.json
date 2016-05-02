@@ -88,6 +88,16 @@
       "from": "angular-mocks@1.5.0",
       "resolved": "https://registry.npmjs.org/angular-mocks/-/angular-mocks-1.5.0.tgz"
     },
+    "angular2": {
+      "version": "2.0.0-beta.17",
+      "from": "angular/angular#2.0.0-build.cacdead.js",
+      "resolved": "git://github.com/angular/angular.git#08cbd5481d04255864f5ff8e33d0756d4ec4c440"
+    },
+    "angular2-template-compiler": {
+      "version": "0.1.5",
+      "from": "angular2-template-compiler@>=0.1.5 <0.2.0",
+      "resolved": "https://registry.npmjs.org/angular2-template-compiler/-/angular2-template-compiler-0.1.5.tgz"
+    },
     "ansi": {
       "version": "0.3.0",
       "from": "ansi@>=0.3.0 <0.4.0",
@@ -8549,6 +8559,11 @@
         }
       }
     },
+    "ts-metadata-collector": {
+      "version": "0.1.1",
+      "from": "ts-metadata-collector@>=0.1.0 <0.2.0",
+      "resolved": "https://registry.npmjs.org/ts-metadata-collector/-/ts-metadata-collector-0.1.1.tgz"
+    },
     "ts2dart": {
       "version": "0.9.10",
       "from": "ts2dart@>=0.9.9 <0.10.0",
@@ -8666,9 +8681,9 @@
       }
     },
     "tsickle": {
-      "version": "0.1.0",
-      "from": "tsickle@latest",
-      "resolved": "https://registry.npmjs.org/tsickle/-/tsickle-0.1.0.tgz",
+      "version": "0.1.1",
+      "from": "tsickle@0.1.1",
+      "resolved": "https://registry.npmjs.org/tsickle/-/tsickle-0.1.1.tgz",
       "dependencies": {
         "source-map": {
           "version": "0.4.4",
