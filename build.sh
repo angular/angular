@@ -6,9 +6,9 @@ cd `dirname $0`
 
 
 TSCONFIG=./modules/tsconfig.json
-echo "====== (all)COMPILING: \$(npm bin)/tsc -p ${TSCONFIG} ====="
+echo "====== (all)COMPILING: \$(npm bin)/ng2tc -p ${TSCONFIG} ====="
 rm -rf ./dist/all/
-$(npm bin)/tsc -p ${TSCONFIG}
+$(npm bin)/ng2tc -p ${TSCONFIG}
 
 
 rm -rf ./dist/packages-dist
@@ -30,8 +30,8 @@ do
   UMDES5PATH=${DESTDIR}/${PACKAGE}.umd.js
 
 
-  echo "======      COMPILING: \$(npm bin)/tsc -p ${SRCDIR}/tsconfig.json        ====="
-  $(npm bin)/tsc -p ${SRCDIR}/tsconfig.json
+  echo "======      COMPILING: \$(npm bin)/ng2tc -p ${SRCDIR}/tsconfig.json        ====="
+  $(npm bin)/ng2tc -p ${SRCDIR}/tsconfig.json
   cp ${SRCDIR}/package.json ${DESTDIR}/
 
 
@@ -44,8 +44,8 @@ do
   fi
 
 
-  echo "====== (esm)COMPILING: \$(npm bin)/tsc -p ${SRCDIR}/tsconfig-es2015.json ====="
-  $(npm bin)/tsc -p ${SRCDIR}/tsconfig-es2015.json
+  echo "====== (esm)COMPILING: \$(npm bin)/ng2tc -p ${SRCDIR}/tsconfig-es2015.json ====="
+  $(npm bin)/ng2tc -p ${SRCDIR}/tsconfig-es2015.json
 
 
   echo "======      BUNDLING: ${SRCDIR} ====="
