@@ -331,11 +331,7 @@ export class StaticReflector implements ReflectorReader {
               let declarationValue =
                   isPresent(moduleMetadata) ? moduleMetadata['metadata'][staticSymbol.name] : null;
               if (isPresent(declarationValue)) {
-                if (isClassMetadata(declarationValue)) {
-                  result = staticSymbol;
-                } else {
-                  result = _this.simplify(staticSymbol, declarationValue);
-                }
+                result = _this.simplify(staticSymbol, declarationValue);
               }
               return result;
             case "class":
@@ -389,10 +385,6 @@ export class StaticReflector implements ReflectorReader {
     }
     return result;
   }
-}
-
-function isClassMetadata(expression: any): boolean {
-  return !isPrimitive(expression) && !isArray(expression) && expression['__symbolic'] == 'class';
 }
 
 function mapStringMap(input: {[key: string]: any},
