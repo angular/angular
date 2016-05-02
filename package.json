@@ -28,6 +28,7 @@
     "angular": "^1.5.0",
     "angular-animate": "^1.5.0",
     "angular-mocks": "^1.5.0",
+    "angular2-template-compiler": "^0.1.5",
     "base64-js": "^0.0.8",
     "bower": "^1.3.12",
     "broccoli": "^0.16.9",
