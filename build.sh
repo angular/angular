@@ -51,7 +51,7 @@ do
 
 
   echo "======      COMPILING: \$(npm bin)/ng2tc -p ${SRCDIR}/tsconfig.json        ====="
-  $(npm bin)/ng2tc -p ${SRCDIR}/tsconfig.json
+  $(npm bin)/ng2tc -p ${SRCDIR}/tsconfig-es5.json
   cp ${SRCDIR}/package.json ${DESTDIR}/
 
 
