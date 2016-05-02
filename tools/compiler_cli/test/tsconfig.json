@@ -23,6 +23,7 @@
         "paths": {
           "@angular/*": ["dist/all/@angular/*"],
           "@angular/core": ["dist/all/@angular/core/"],
+          "@angular/compiler": ["dist/all/@angular/compiler/"],
           "rxjs/*": ["node_modules/rxjs/*"],
           "ts-metadata-collector": ["dist/tools/metadata"]
         }

@@ -50,7 +50,7 @@ do
   UMDES5PATH=${DESTDIR}/${PACKAGE}.umd.js
 
 
-  echo "======      COMPILING: \$(npm bin)/ng2tc -p ${SRCDIR}/tsconfig.json        ====="
+  echo "======      COMPILING: \$(npm bin)/ng2tc -p ${SRCDIR}/tsconfig-es5.json        ====="
   $(npm bin)/ng2tc -p ${SRCDIR}/tsconfig-es5.json
   cp ${SRCDIR}/package.json ${DESTDIR}/
 

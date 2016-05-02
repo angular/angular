@@ -1053,8 +1053,7 @@ gulp.task('!test.typings',
 gulp.task('test.typings', ['build.js.cjs'],
           function(done) { runSequence('!test.typings', sequenceComplete(done)); });
 
-gulp.task('!build.compiler_cli', ['build.js.cjs'],
-          function(done) { runTsc('tools/compiler_cli/src', done); });
+gulp.task('!build.compiler_cli', function(done) { runTsc('tools/compiler_cli/src', done); });
 
 gulp.task('!clean.compiler_cli', function(done) {
   fse.remove(path.join('dist', 'tools', 'compiler_cli', 'test'),
@@ -1066,7 +1065,7 @@ gulp.task('!clean.compiler_cli', function(done) {
 
 gulp.task('!test.compiler_cli.codegen', function(done) {
   try {
-    require('./dist/js/cjs/compiler_cli/main')
+    require('./dist/tools/compiler_cli/main')
         .main("tools/compiler_cli/test")
         .then(done)
         .catch(function(rej) { done(new Error(rej)); });
@@ -1076,7 +1075,7 @@ gulp.task('!test.compiler_cli.codegen', function(done) {
 });
 
 gulp.task('!test.compiler_cli.unit',
-          function(done) { runJasmineTests(['dist/js/cjs/compiler_cli/**/*_spec.js'], done) });
+          function(done) { runJasmineTests(['dist/tools/compiler_cli/**/*_spec.js'], done) });
 
 // This task overwrites our careful tsickle-lowered Decorators with normal .js emit.
 // So it should only be run after asserting on the .js file content.
