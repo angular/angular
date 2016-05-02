@@ -23,6 +23,8 @@ tmp
 
 # Files created by the template compiler
 **/*.ngfactory.ts
+**/*.css.ts
+**/*.css.shim.ts
 
 # Or type definitions we mirror from github
 # (NB: these lines are removed in publish-build-artifacts.sh)

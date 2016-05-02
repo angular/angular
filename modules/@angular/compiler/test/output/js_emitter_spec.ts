@@ -13,6 +13,7 @@ import {isBlank} from '../../src/facade/lang';
 import {JavaScriptEmitter} from '@angular/compiler/src/output/js_emitter';
 import {CompileIdentifierMetadata} from '@angular/compiler/src/compile_metadata';
 import * as o from '@angular/compiler/src/output/output_ast';
+import {SimpleJsImportGenerator} from '../offline_compiler_util';
 
 var someModuleUrl = 'asset:somePackage/lib/somePath';
 var anotherModuleUrl = 'asset:somePackage/lib/someOtherPath';
@@ -33,7 +34,7 @@ export function main() {
     var someVar: o.ReadVarExpr;
 
     beforeEach(() => {
-      emitter = new JavaScriptEmitter();
+      emitter = new JavaScriptEmitter(new SimpleJsImportGenerator());
       someVar = o.variable('someVar');
     });
 
@@ -111,9 +112,10 @@ export function main() {
     it('should support external identifiers', () => {
       expect(emitStmt(o.importExpr(sameModuleIdentifier).toStmt())).toEqual('someLocalId;');
       expect(emitStmt(o.importExpr(externalModuleIdentifier).toStmt()))
-          .toEqual(
-              [`var import0 = re` + `quire('./someOtherPath');`, `import0.someExternalId;`].join(
-                  '\n'));
+          .toEqual([
+            `var import0 = re` + `quire('somePackage/someOtherPath');`,
+            `import0.someExternalId;`
+          ].join('\n'));
     });
 
     it('should support operators', () => {

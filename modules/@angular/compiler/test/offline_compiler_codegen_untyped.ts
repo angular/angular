@@ -3,12 +3,12 @@ import {print} from '../src/facade/lang';
 import {JavaScriptEmitter} from '@angular/compiler/src/output/js_emitter';
 import {compileComp, compAMetadata} from './offline_compiler_util';
 import {ComponentFactory} from '@angular/core/src/linker/component_factory';
-import {CompA} from './offline_compiler_util';
+import {CompA, SimpleJsImportGenerator} from './offline_compiler_util';
 
 export const CompANgFactory: ComponentFactory<CompA> = null;
 
 export function emit() {
-  var emitter = new JavaScriptEmitter();
+  var emitter = new JavaScriptEmitter(new SimpleJsImportGenerator());
   return compileComp(emitter, compAMetadata);
 }
 

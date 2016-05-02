@@ -14,7 +14,7 @@ import {ListWrapper} from '@angular/facade/src/collection';
 import {StaticReflector, StaticReflectorHost, StaticSymbol} from './static_reflector';
 
 describe('StaticReflector', () => {
-  let noContext = new StaticSymbol('', '', '');
+  let noContext = new StaticSymbol('', '');
   let host: StaticReflectorHost;
   let reflector: StaticReflector;
 
@@ -34,7 +34,6 @@ describe('StaticReflector', () => {
     let annotation = annotations[0];
     expect(annotation.selector).toEqual('[ngFor][ngForOf]');
     expect(annotation.inputs).toEqual(['ngForTrackBy', 'ngForOf', 'ngForTemplate']);
-
   });
 
   it('should get constructor for NgFor', () => {
@@ -226,15 +225,15 @@ describe('StaticReflector', () => {
   });
 
   it('should simplify a module reference', () => {
-    expect(simplify(new StaticSymbol('', '/src/cases', ''),
+    expect(simplify(new StaticSymbol('/src/cases', ''),
                     ({__symbolic: "reference", module: "./extern", name: "s"})))
         .toEqual("s");
   });
 
   it('should simplify a non existing reference as a static symbol', () => {
-    expect(simplify(new StaticSymbol('', '/src/cases', ''),
+    expect(simplify(new StaticSymbol('/src/cases', ''),
                     ({__symbolic: "reference", module: "./extern", name: "nonExisting"})))
-        .toEqual(host.getStaticSymbol('', '/src/extern.d.ts', 'nonExisting'));
+        .toEqual(host.getStaticSymbol('/src/extern.d.ts', 'nonExisting'));
   });
 });
 
@@ -249,11 +248,11 @@ class MockReflectorHost implements StaticReflectorHost {
       provider: 'angular2/src/core/di/provider'
     };
   }
-  getStaticSymbol(moduleId: string, declarationFile: string, name: string): StaticSymbol {
+  getStaticSymbol(declarationFile: string, name: string): StaticSymbol {
     var cacheKey = `${declarationFile}:${name}`;
     var result = this.staticTypeCache.get(cacheKey);
     if (isBlank(result)) {
-      result = new StaticSymbol(moduleId, declarationFile, name);
+      result = new StaticSymbol(declarationFile, name);
       this.staticTypeCache.set(cacheKey, result);
     }
     return result;
@@ -292,10 +291,9 @@ class MockReflectorHost implements StaticReflectorHost {
     }
 
     if (modulePath.indexOf('.') === 0) {
-      return this.getStaticSymbol(`mod/${symbolName}`, pathTo(containingFile, modulePath) + '.d.ts',
-                                  symbolName);
+      return this.getStaticSymbol(pathTo(containingFile, modulePath) + '.d.ts', symbolName);
     }
-    return this.getStaticSymbol(`mod/${symbolName}`, '/tmp/' + modulePath + '.d.ts', symbolName);
+    return this.getStaticSymbol('/tmp/' + modulePath + '.d.ts', symbolName);
   }
 
   getMetadataFor(moduleId: string): any {

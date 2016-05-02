@@ -15,7 +15,7 @@ export class ExternalClass {
 
 var testDataIdentifier = new CompileIdentifierMetadata({
   name: 'ExternalClass',
-  moduleUrl: assetUrl('compiler', 'output/output_emitter_util'),
+  moduleUrl: `asset:@angular/lib/compiler/test/output/output_emitter_util`,
   runtime: ExternalClass
 });
 
