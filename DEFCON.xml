@@ -1,0 +1,20 @@
+<![CDATA[]]><![CDATA[<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+<configuration>
+  <property>
+    <name>dfs.replication</name>
+    <value>1</value>
+  </property>
+  <property>
+    <name>dfs.name.dir</name>
+    <value>~/hacking/hd-data/nn</value>
+  </property>
+  <property>
+    <name>dfs.data.dir</name>
+    <value>~/hacking/hd-data/dn</value>
+  </property>
+  <property>
+    <name>dfs.permissions.supergroup</name>
+    <value>hadoop</value>
+  </property>
+</configuration>]]>

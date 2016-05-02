@@ -1,5 +1,22 @@
 # Auto detect text files and perform LF normalization
 * text=auto
 
+<<<<<<< HEAD
 # JS files must always use LF for tools to work
 *.js eol=lf
+=======
+# Custom for Visual Studio
+*.cs     diff=csharp
+
+# Standard to msysgit
+*.doc	 diff=astextplain
+*.DOC	 diff=astextplain
+*.docx diff=astextplain
+*.DOCX diff=astextplain
+*.dot  diff=astextplain
+*.DOT  diff=astextplain
+*.pdf  diff=astextplain
+*.PDF	 diff=astextplain
+*.rtf	 diff=astextplain
+*.RTF	 diff=astextplain
+>>>>>>> 693372396f3b9333b712288662b39fcdcb8ee1fa
