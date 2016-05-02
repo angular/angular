@@ -16,7 +16,7 @@ import {
 } from '@angular/core';
 import {RouterOutletMap, Router} from '../router';
 import {RouteSegment, UrlSegment, Tree} from '../segments';
-import {isString, isPresent} from '../facade/lang';
+import {isString, isArray, isPresent} from '../facade/lang';
 import {ObservableWrapper} from '../facade/async';
 
 @Directive({selector: '[routerLink]'})
@@ -25,8 +25,8 @@ export class RouterLink implements OnDestroy {
   private _comands: any[] = [];
   private _subscription: any;
 
-  @HostBinding() private href: string;
-  @HostBinding('class.router-link-active') private isActive: boolean = false;
+  @HostBinding() href: string;
+  @HostBinding('class.router-link-active') isActive: boolean = false;
 
   constructor(@Optional() private _routeSegment: RouteSegment, private _router: Router) {
     this._subscription =
@@ -36,8 +36,12 @@ export class RouterLink implements OnDestroy {
   ngOnDestroy() { ObservableWrapper.dispose(this._subscription); }
 
   @Input()
-  set routerLink(data: any[]) {
-    this._comands = data;
+  set routerLink(data: any[]|any) {
+    if (isArray(data)) {
+      this._comands = <any[]>data;
+    } else {
+      this._comands = [data];
+    }
     this._updateTargetUrlAndHref();
   }
 
