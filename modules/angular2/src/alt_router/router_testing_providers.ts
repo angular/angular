@@ -14,6 +14,11 @@ function routerFactory(componentResolver: ComponentResolver, urlSerializer: Rout
                     location);
 }
 
+/**
+ * Providers for fake router dependecies.
+ * This allows TestComponentBuilder to create components with RouterLink and RouterOutlet directives
+ * without the test writer needing to override them.
+ */
 export const ROUTER_FAKE_PROVIDERS: any[] = /*@ts2dart_const*/ [
   RouterOutletMap,
   /* @ts2dart_Provider */ {provide: Location, useClass: SpyLocation},
