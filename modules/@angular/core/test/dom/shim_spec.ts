@@ -13,12 +13,14 @@ export function main() {
   describe('Shim', () => {
 
     it('should provide correct function.name ', () => {
-      var functionWithoutName = function(_) {};
+      var functionWithoutName = identity(() => function(_) {});
       function foo(_){};
 
-      expect((<any>functionWithoutName).name).toEqual('');
+      expect((<any>functionWithoutName).name).toBeFalsy();
       expect((<any>foo).name).toEqual('foo');
     });
 
   });
 }
+
+function identity(a) { return a; }
