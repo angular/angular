@@ -192,6 +192,24 @@ export function main() {
                .toHaveText('team 22 { relativelink { simple }, aux:  }');
          })));
 
+      it("should set the router-link-active class",
+         fakeAsync(inject([Router, TestComponentBuilder], (router, tcb) => {
+           let fixture = tcb.createFakeAsync(RootCmp);
+           advance(fixture);
+
+           router.navigateByUrl('/team/22/relativelink');
+           advance(fixture);
+           expect(fixture.debugElement.nativeElement)
+               .toHaveText('team 22 { relativelink {  }, aux:  }');
+           let link = DOM.querySelector(fixture.debugElement.nativeElement, "a");
+           expect(DOM.hasClass(link, "router-link-active")).toEqual(false);
+
+           DOM.dispatchEvent(link, DOM.createMouseEvent('click'));
+           advance(fixture);
+
+           expect(DOM.hasClass(link, "router-link-active")).toEqual(true);
+         })));
+
       it("should update router links when router changes",
          fakeAsync(inject([Router, TestComponentBuilder], (router, tcb) => {
            let fixture = tcb.createFakeAsync(RootCmp);
