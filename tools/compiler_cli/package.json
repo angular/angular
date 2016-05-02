@@ -1,6 +1,6 @@
 {
   "name": "angular2-template-compiler",
-  "version": "0.1.3",
+  "version": "0.1.9",
   "description": "Execute angular2 template compiler in nodejs.",
   "main": "index.js",
   "typings": "index.d.ts",
@@ -15,9 +15,9 @@
   },
   "peerDependencies": {
     "typescript": "^1.8.0 || ^1.9.0-dev",
-    "@angular/compiler": "0.0.0-5",
-    "@angular/platform-server": "0.0.0-5",
-    "@angular/core": "0.0.0-5"
+    "@angular/compiler": "^0.0.0-5",
+    "@angular/platform-server": "^0.0.0-5",
+    "@angular/core": "^0.0.0-5"
   },
   "repository": {
     "type": "git",
