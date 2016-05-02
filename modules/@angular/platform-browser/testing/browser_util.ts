@@ -3,16 +3,19 @@ import {getDOM} from '../src/dom/dom_adapter';
 import {isPresent, isString, RegExpWrapper, StringWrapper, RegExp} from '../src/facade/lang';
 
 export class BrowserDetection {
-  private _ua: string;
+  private _overrideUa: string;
+  private get _ua():string {
+    if (isPresent(this._overrideUa)) {
+      return this._overrideUa;
+    } else {
+      return isPresent(getDOM()) ? getDOM().getUserAgent() : '';
+    }
+  }
 
   static setup() { browserDetection = new BrowserDetection(null); }
 
   constructor(ua: string) {
-    if (isPresent(ua)) {
-      this._ua = ua;
-    } else {
-      this._ua = isPresent(getDOM()) ? getDOM().getUserAgent() : '';
-    }
+    this._overrideUa = ua;
   }
 
   get isFirefox(): boolean { return this._ua.indexOf('Firefox') > -1; }
