@@ -68,9 +68,9 @@ export class NgForRow {
  *
  * ### Syntax
  *
- * - `<li *ngFor="let item of items; #i = index">...</li>`
- * - `<li template="ngFor #item of items; #i = index">...</li>`
- * - `<template ngFor #item [ngForOf]="items" #i="index"><li>...</li></template>`
+ * - `<li *ngFor="let item of items; let i = index">...</li>`
+ * - `<li template="ngFor let item of items; let i = index">...</li>`
+ * - `<template ngFor let-item [ngForOf]="items" let-i="index"><li>...</li></template>`
  *
  * ### Example
  *
