@@ -147,6 +147,55 @@ export function main() {
          expect(fixture.debugElement.componentInstance.name).toEqual('updated');
        })));
 
+    it("should mark NgForm as submitted on submit event",
+       inject([TestComponentBuilder], fakeAsync((tcb: TestComponentBuilder) => {
+                var t = `<div>
+                      <form #f="ngForm" (ngSubmit)="data=f.submitted"></form>
+                      <span>{{data}}</span>
+                    </div>`;
+
+                var fixture: ComponentFixture;
+
+                tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then(
+                    (root) => { fixture = root; });
+                tick();
+
+                fixture.debugElement.componentInstance.data = false;
+
+                tick();
+
+                var form = fixture.debugElement.query(By.css("form"));
+                dispatchEvent(form.nativeElement, "submit");
+
+                tick();
+                expect(fixture.debugElement.componentInstance.data).toEqual(true);
+              })));
+
+    it("should mark NgFormModel as submitted on submit event",
+       inject([TestComponentBuilder], fakeAsync((tcb: TestComponentBuilder) => {
+                var t = `<div>
+                      <form #f="ngForm" [ngFormModel]="form" (ngSubmit)="data=f.submitted"></form>
+                      <span>{{data}}</span>
+                    </div>`;
+
+                var fixture: ComponentFixture;
+
+                tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then(
+                    (root) => { fixture = root; });
+                tick();
+
+                fixture.debugElement.componentInstance.form = new ControlGroup({});
+                fixture.debugElement.componentInstance.data = false;
+
+                tick();
+
+                var form = fixture.debugElement.query(By.css("form"));
+                dispatchEvent(form.nativeElement, "submit");
+
+                tick();
+                expect(fixture.debugElement.componentInstance.data).toEqual(true);
+              })));
+
     it("should work with single controls",
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
          var control = new Control("loginValue");
