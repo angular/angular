@@ -32,8 +32,8 @@ import {
   RouteConfig,
   ROUTER_DIRECTIVES,
   ROUTER_PRIMARY_COMPONENT
-} from '@angular/router';
-import {RootRouter} from '@angular/router/src/router';
+} from '@angular/router-deprecated';
+import {RootRouter} from '@angular/router-deprecated/src/router';
 
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {By} from '@angular/platform-browser/src/dom/debug/by';

@@ -93,7 +93,8 @@ export var BLANK_ROUTE_DATA = new RouteData();
  * ```
  * import {Component} from '@angular/core';
  * import {bootstrap} from '@angular/platform-browser/browser';
- * import {Router, ROUTER_DIRECTIVES, ROUTER_PROVIDERS, RouteConfig} from '@angular/router';
+ * import {Router, ROUTER_DIRECTIVES, ROUTER_PROVIDERS, RouteConfig} from
+ * '@angular/router-deprecated';
  *
  * @Component({directives: [ROUTER_DIRECTIVES]})
  * @RouteConfig([

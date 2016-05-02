@@ -13,14 +13,14 @@ import {
 import {TestComponentBuilder, ComponentFixture} from '@angular/compiler/testing';
 import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
 
-import {Router, RouterOutlet, RouterLink, RouteParams, RouteData} from '@angular/router';
+import {Router, RouterOutlet, RouterLink, RouteParams, RouteData} from '@angular/router-deprecated';
 import {
   RouteConfig,
   Route,
   AuxRoute,
   AsyncRoute,
   Redirect
-} from '../../../router/src/route_config/route_config_decorator';
+} from '../../src/route_config/route_config_decorator';
 import {Location} from '@angular/common';
 
 import {TEST_ROUTER_PROVIDERS, RootCmp, compile} from './util';

@@ -25,55 +25,36 @@ declare var System: any;
           '@angular/common': '/packages-dist/common/common.umd.js',
           '@angular/compiler': '/packages-dist/compiler/compiler.umd.js',
           '@angular/platform-browser': '/packages-dist/platform-browser/platform-browser.umd.js',
-          '@angular/platform-browser-dynamic': '/packages-dist/platform-browser-dynamic/platform-browser-dynamic.umd.js',
+          '@angular/platform-browser-dynamic':
+              '/packages-dist/platform-browser-dynamic/platform-browser-dynamic.umd.js',
           '@angular/http': '/packages-dist/http/http.umd.js',
           '@angular/upgrade': '/packages-dist/upgrade/upgrade.umd.js',
           '@angular/router': '/packages-dist/router/router.umd.js',
+          '@angular/router-deprecated': '/packages-dist/router-deprecated/router-deprecated.umd.js',
           '@angular/core/src/facade': '/all/@angular/core/src/facade',
           'rxjs': location.pathname.replace(/index\.html$/, '') + 'rxjs'
         },
         packages: {
-          'app': {
-            defaultExtension: 'js'
-          },
-          '@angular/core/src/facade': {
-            defaultExtension: 'js'
-          }
+          'app': {defaultExtension: 'js'},
+          '@angular/core/src/facade': {defaultExtension: 'js'}
         }
       });
     } else {
-      console.warn("Not using the Angular bundles. Don't use this configuration for e2e/performance tests!");
+      console.warn(
+          "Not using the Angular bundles. Don't use this configuration for e2e/performance tests!");
 
       System.config({
-        map: {
-          'index': 'index.js',
-          '@angular': '/all/@angular'
-        },
+        map: {'index': 'index.js', '@angular': '/all/@angular'},
         packages: {
           // 'app': {
           //   main: 'index.js',
           //   defaultExtension: 'js'
           // },
-          '@angular/core': {
-            main: 'index.js',
-            defaultExtension: 'js'
-          },
-          '@angular/compiler': {
-            main: 'index.js',
-            defaultExtension: 'js'
-          },
-          '@angular/common': {
-            main: 'index.js',
-            defaultExtension: 'js'
-          },
-          '@angular/platform-browser': {
-            main: 'index.js',
-            defaultExtension: 'js'
-          },
-          '@angular/platform-browser-dynamic': {
-            main: 'index.js',
-            defaultExtension: 'js'
-          }
+          '@angular/core': {main: 'index.js', defaultExtension: 'js'},
+          '@angular/compiler': {main: 'index.js', defaultExtension: 'js'},
+          '@angular/common': {main: 'index.js', defaultExtension: 'js'},
+          '@angular/platform-browser': {main: 'index.js', defaultExtension: 'js'},
+          '@angular/platform-browser-dynamic': {main: 'index.js', defaultExtension: 'js'}
           // 'rxjs': {
           //   defaultExtension: 'js'
           // }
@@ -83,9 +64,7 @@ declare var System: any;
 
 
     // BOOTSTRAP the app!
-    System.import('index').then(function (m) {
-      m.main();
-    }, console.error.bind(console));
+    System.import('index').then(function(m) { m.main(); }, console.error.bind(console));
   }
 
 

@@ -14,7 +14,7 @@ import {Location} from '@angular/common';
 
 import {specs, compile, TEST_ROUTER_PROVIDERS, clickOnElement, getHref} from '../util';
 
-import {Router, AsyncRoute, Route} from '@angular/router';
+import {Router, AsyncRoute, Route} from '@angular/router-deprecated';
 
 import {
   HelloCmp,

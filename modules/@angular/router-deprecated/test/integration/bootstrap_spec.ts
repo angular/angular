@@ -25,7 +25,7 @@ import {
   Route,
   Redirect,
   AuxRoute
-} from '../../../router/src/route_config/route_config_decorator';
+} from '../../src/route_config/route_config_decorator';
 import {PromiseWrapper} from '../../src/facade/async';
 import {BaseException, WrappedException} from '../../src/facade/exceptions';
 import {
@@ -34,7 +34,7 @@ import {
   RouteParams,
   Router,
   ROUTER_DIRECTIVES
-} from '@angular/router';
+} from '@angular/router-deprecated';
 
 import {MockLocationStrategy} from '@angular/common/testing';
 import {ApplicationRef} from '@angular/core/src/application_ref';

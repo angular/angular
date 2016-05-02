@@ -24,9 +24,9 @@ import {
   Route,
   RouteParams,
   ComponentInstruction
-} from '@angular/router';
+} from '@angular/router-deprecated';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
-import {ResolvedInstruction} from '@angular/router/src/instruction';
+import {ResolvedInstruction} from '@angular/router-deprecated/src/instruction';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 
 let dummyInstruction = new ResolvedInstruction(

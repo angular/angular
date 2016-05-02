@@ -11,10 +11,10 @@ import {
 import {provide, Component} from '@angular/core';
 import {isBlank} from '../../src/facade/lang';
 import {BaseException} from '../../src/facade/exceptions';
-import {RootRouter} from '@angular/router/src/router';
-import {Router, ROUTER_DIRECTIVES, ROUTER_PRIMARY_COMPONENT} from '@angular/router';
+import {RootRouter} from '@angular/router-deprecated/src/router';
+import {Router, ROUTER_DIRECTIVES, ROUTER_PRIMARY_COMPONENT} from '@angular/router-deprecated';
 import {Location} from '@angular/common';
-import {RouteRegistry} from '@angular/router/src/route_registry';
+import {RouteRegistry} from '@angular/router-deprecated/src/route_registry';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {SpyLocation} from '@angular/common/testing';
 import {TestComponentBuilder, ComponentFixture} from '@angular/compiler/testing';

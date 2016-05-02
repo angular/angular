@@ -1,6 +1,6 @@
 import {Component, provide} from '@angular/core';
 import {bootstrap} from '@angular/platform-browser-dynamic';
-import {RouteConfig, Route, ROUTER_PROVIDERS, ROUTER_DIRECTIVES} from '@angular/router';
+import {RouteConfig, Route, ROUTER_PROVIDERS, ROUTER_DIRECTIVES} from '@angular/router-deprecated';
 import {HashLocationStrategy, LocationStrategy} from '@angular/common';
 
 

@@ -22,24 +22,18 @@ import {
   ObservableWrapper
 } from '../../src/facade/async';
 
-import {Router, RouterOutlet, RouterLink, RouteParams} from '@angular/router';
+import {Router, RouterOutlet, RouterLink, RouteParams} from '@angular/router-deprecated';
 import {
   RouteConfig,
   Route,
   AuxRoute,
   AsyncRoute,
   Redirect
-} from '../../../router/src/route_config/route_config_decorator';
+} from '../../src/route_config/route_config_decorator';
 
-import {
-  OnActivate,
-  OnDeactivate,
-  OnReuse,
-  CanDeactivate,
-  CanReuse
-} from '../../../router/src/interfaces';
-import {CanActivate} from '../../../router/src/lifecycle/lifecycle_annotations';
-import {ComponentInstruction} from '../../../router/src/instruction';
+import {OnActivate, OnDeactivate, OnReuse, CanDeactivate, CanReuse} from '../../src/interfaces';
+import {CanActivate} from '../../src/lifecycle/lifecycle_annotations';
+import {ComponentInstruction} from '../../src/instruction';
 
 
 import {TEST_ROUTER_PROVIDERS, RootCmp, compile} from './util';

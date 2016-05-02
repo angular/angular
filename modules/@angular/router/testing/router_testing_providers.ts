@@ -1,7 +1,7 @@
 import {SpyLocation} from '@angular/common/testing';
 import {Location} from '@angular/common';
-import {Router, RouterOutletMap} from './router';
-import {RouterUrlSerializer, DefaultRouterUrlSerializer} from './router_url_serializer';
+import {Router, RouterOutletMap} from '../src/router';
+import {RouterUrlSerializer, DefaultRouterUrlSerializer} from '../src/router_url_serializer';
 import {Component, ComponentResolver} from '@angular/core';
 
 @Component({selector: 'fake-app-root-comp', template: `<span></span>`})

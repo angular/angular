@@ -7,6 +7,8 @@ import * as compiler from '@angular/compiler';
 import * as compiler_testing from '@angular/compiler/testing';
 import * as http from '@angular/http';
 import * as http_testing from '@angular/http/testing';
+import * as router_deprecated from '@angular/router-deprecated';
+import * as router_deprecated_testing from '@angular/router-deprecated/testing';
 import * as router from '@angular/router';
 import * as router_testing from '@angular/router/testing';
 import * as upgrade from '@angular/upgrade';
@@ -27,6 +29,8 @@ const LIB_MAP = {
   'core/testing': core_testing,
   'http': http,
   'http/testing': http_testing,
+  'router-deprecated': router_deprecated,
+  'router-deprecated/testing': router_deprecated_testing,
   'router': router,
   'router/testing': router_testing,
   'upgrade': upgrade,

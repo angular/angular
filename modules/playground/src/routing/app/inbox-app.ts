@@ -1,5 +1,12 @@
 import {Component, Injectable} from '@angular/core';
-import {RouterLink, RouteConfig, Router, Route, RouterOutlet, RouteParams} from '@angular/router';
+import {
+  RouterLink,
+  RouteConfig,
+  Router,
+  Route,
+  RouterOutlet,
+  RouteParams
+} from '@angular/router-deprecated';
 import * as db from './data';
 import {Location} from '@angular/common';
 import {PromiseWrapper, PromiseCompleter} from '@angular/core/src/facade/async';
@@ -81,7 +88,8 @@ class DbService {
   }
 }
 
-@Component({selector: 'inbox-detail', directives: [RouterLink], templateUrl: 'app/inbox-detail.html'})
+@Component(
+    {selector: 'inbox-detail', directives: [RouterLink], templateUrl: 'app/inbox-detail.html'})
 class InboxDetailCmp {
   record: InboxRecord = new InboxRecord();
   ready: boolean = false;

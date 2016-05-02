@@ -7,7 +7,7 @@ import {
   RouteParams,
   RouteData,
   ROUTER_DIRECTIVES
-} from '@angular/router';
+} from '@angular/router-deprecated';
 import {PromiseWrapper} from '../../../src/facade/async';
 import {isPresent} from '../../../src/facade/lang';
 import {DynamicComponentLoader} from '@angular/core/src/linker/dynamic_component_loader';

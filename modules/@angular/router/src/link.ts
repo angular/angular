@@ -1,6 +1,6 @@
 import {Tree, TreeNode, UrlSegment, RouteSegment, rootNode, UrlTree, RouteTree} from './segments';
-import {isBlank, isPresent, isString, isStringMap} from '@angular/facade/src/lang';
-import {ListWrapper} from '@angular/facade/src/collection';
+import {isBlank, isPresent, isString, isStringMap} from './facade/lang';
+import {ListWrapper} from './facade/collection';
 
 export function link(segment: RouteSegment, routeTree: RouteTree, urlTree: UrlTree,
                      change: any[]): UrlTree {

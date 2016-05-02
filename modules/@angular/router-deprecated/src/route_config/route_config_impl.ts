@@ -49,7 +49,7 @@ export abstract class AbstractRoute implements RouteDefinition {
  *
  * ### Example
  * ```
- * import {RouteConfig, Route} from '@angular/router';
+ * import {RouteConfig, Route} from '@angular/router-deprecated';
  *
  * @RouteConfig([
  *   new Route({path: '/home', component: HomeCmp, name: 'HomeCmp' })
@@ -87,7 +87,7 @@ export class Route extends AbstractRoute {
  *
  * ### Example
  * ```
- * import {RouteConfig, AuxRoute} from '@angular/router';
+ * import {RouteConfig, AuxRoute} from '@angular/router-deprecated';
  *
  * @RouteConfig([
  *   new AuxRoute({path: '/home', component: HomeCmp})
@@ -127,7 +127,7 @@ export class AuxRoute extends AbstractRoute {
  *
  * ### Example
  * ```
- * import {RouteConfig, AsyncRoute} from '@angular/router';
+ * import {RouteConfig, AsyncRoute} from '@angular/router-deprecated';
  *
  * @RouteConfig([
  *   new AsyncRoute({path: '/home', loader: () => Promise.resolve(MyLoadedCmp), name:
@@ -166,7 +166,7 @@ export class AsyncRoute extends AbstractRoute {
  *
  * ### Example
  * ```
- * import {RouteConfig, Route, Redirect} from '@angular/router';
+ * import {RouteConfig, Route, Redirect} from '@angular/router-deprecated';
  *
  * @RouteConfig([
  *   new Redirect({path: '/', redirectTo: ['/Home'] }),

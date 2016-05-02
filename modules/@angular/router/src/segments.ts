@@ -1,6 +1,6 @@
 import {ComponentFactory, Type} from '@angular/core';
-import {StringMapWrapper, ListWrapper} from '@angular/facade/src/collection';
-import {isBlank, isPresent, stringify} from '@angular/facade/src/lang';
+import {StringMapWrapper, ListWrapper} from './facade/collection';
+import {isBlank, isPresent, stringify} from './facade/lang';
 
 export class Tree<T> {
   /** @internal */

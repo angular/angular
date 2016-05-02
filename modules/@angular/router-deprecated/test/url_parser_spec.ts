@@ -8,7 +8,7 @@ import {
   beforeEach,
 } from '@angular/core/testing/testing_internal';
 
-import {UrlParser, Url} from '../../router/src/url_parser';
+import {UrlParser, Url} from '../src/url_parser';
 
 
 export function main() {

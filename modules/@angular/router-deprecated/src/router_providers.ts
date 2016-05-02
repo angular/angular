@@ -14,7 +14,7 @@ import {PlatformLocation} from '@angular/common';
  *   ROUTER_DIRECTIVES,
  *   ROUTER_PROVIDERS,
  *   RouteConfig
- * } from '@angular/router';
+ * } from '@angular/router-deprecated';
  *
  * @Component({directives: [ROUTER_DIRECTIVES]})
  * @RouteConfig([

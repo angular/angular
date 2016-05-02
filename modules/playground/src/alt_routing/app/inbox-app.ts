@@ -9,7 +9,7 @@ import {
   RouteSegment,
   RouteTree,
   UrlTree
-} from 'angular2/alt_router';
+} from '@angular/router';
 import * as db from './data';
 import {Location} from '@angular/common';
 import {PromiseWrapper} from '@angular/core/src/facade/async';

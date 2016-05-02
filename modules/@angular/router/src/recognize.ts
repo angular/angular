@@ -1,8 +1,8 @@
 import {RouteSegment, UrlSegment, Tree, TreeNode, rootNode, UrlTree, RouteTree} from './segments';
 import {RoutesMetadata, RouteMetadata} from './metadata/metadata';
-import {Type, isBlank, isPresent, stringify} from '@angular/facade/src/lang';
-import {ListWrapper, StringMapWrapper} from '@angular/facade/src/collection';
-import {PromiseWrapper} from '@angular/facade/src/promise';
+import {Type, isBlank, isPresent, stringify} from './facade/lang';
+import {ListWrapper, StringMapWrapper} from './facade/collection';
+import {PromiseWrapper} from './facade/promise';
 import {BaseException} from '@angular/core';
 import {ComponentResolver} from '@angular/core';
 import {DEFAULT_OUTLET_NAME} from './constants';

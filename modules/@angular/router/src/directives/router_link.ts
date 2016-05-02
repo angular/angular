@@ -16,8 +16,8 @@ import {
 } from '@angular/core';
 import {RouterOutletMap, Router} from '../router';
 import {RouteSegment, UrlSegment, Tree} from '../segments';
-import {isString, isPresent} from '@angular/facade/src/lang';
-import {ObservableWrapper} from '@angular/facade/src/async';
+import {isString, isPresent} from '../facade/lang';
+import {ObservableWrapper} from '../facade/async';
 
 @Directive({selector: '[routerLink]'})
 export class RouterLink implements OnDestroy {

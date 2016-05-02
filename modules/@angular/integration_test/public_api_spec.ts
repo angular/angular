@@ -445,7 +445,7 @@ var HTTP: string[] = [
 
 var HTTP_TESTING: string[] = ['MockBackend', 'MockConnection'];
 
-var ROUTER: string[] = [
+var ROUTER_DEPRECATED: string[] = [
   'AsyncRoute',
   'AuxRoute',
   'CanActivate',
@@ -468,7 +468,26 @@ var ROUTER: string[] = [
   'RouterOutlet'
 ];
 
-var ROUTER_TESTING: string[] = [];
+var ROUTER_DEPRETACED_TESTING: string[] = [];
+
+
+var ROUTER: string[] = [
+  'ROUTER_DIRECTIVES',
+  'ROUTER_PROVIDERS',
+  'Route',
+  'Router',
+  'DefaultRouterUrlSerializer',
+  'RouteSegment',
+  'RouteTree',
+  'RouterOutletMap',
+  'RouterUrlSerializer',
+  'Routes',
+  'Tree',
+  'UrlSegment',
+  'UrlTree'
+];
+
+var ROUTER_TESTING: string[] = ['ROUTER_FAKE_PROVIDERS'];
 
 
 var API = {
@@ -480,6 +499,8 @@ var API = {
   'core/testing': CORE_TESTING,
   'http': HTTP,
   'http/testing': HTTP_TESTING,
+  'router-deprecated': ROUTER_DEPRECATED,
+  'router-deprecated/testing': ROUTER_DEPRETACED_TESTING,
   'router': ROUTER,
   'router/testing': ROUTER_TESTING,
   'upgrade': UPGRADE,

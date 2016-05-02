@@ -15,7 +15,7 @@ import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
 
 import {Location} from '@angular/common';
 import {Component} from '@angular/core';
-import {Router, ROUTER_DIRECTIVES, Route, AuxRoute, RouteConfig} from '@angular/router';
+import {Router, ROUTER_DIRECTIVES, Route, AuxRoute, RouteConfig} from '@angular/router-deprecated';
 import {specs, compile, clickOnElement, getHref} from '../util';
 import {BaseException} from '../../../src/facade/exceptions';
 import {By} from '@angular/platform-browser/src/dom/debug/by';

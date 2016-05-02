@@ -1,10 +1,10 @@
 
 export default {
-  entry: '../../../dist/packages-dist/router-deprecated/esm/index.js',
-  dest: '../../../dist/packages-dist/router-deprecated/esm/router-deprecated.umd.js',
+  entry: '../../../dist/packages-dist/router/esm/index.js',
+  dest: '../../../dist/packages-dist/router/esm/router.umd.js',
   sourceMap: true,
   format: 'umd',
-  moduleName: 'ng.router_deprecated',
+  moduleName: 'ng.router',
   globals: {
     '@angular/core': 'ng.core',
     '@angular/common': 'ng.common',

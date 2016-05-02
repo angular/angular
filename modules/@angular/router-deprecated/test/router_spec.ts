@@ -14,18 +14,13 @@ import {SpyRouterOutlet} from './spies';
 import {Type} from '../src/facade/lang';
 import {PromiseWrapper, ObservableWrapper} from '../src/facade/async';
 import {ListWrapper} from '../src/facade/collection';
-import {Router, RootRouter} from '@angular/router/src/router';
+import {Router, RootRouter} from '../src/router';
 import {SpyLocation} from '@angular/common/testing';
 import {Location} from '@angular/common';
-import {RouteRegistry, ROUTER_PRIMARY_COMPONENT} from '@angular/router/src/route_registry';
-import {
-  RouteConfig,
-  AsyncRoute,
-  Route,
-  Redirect
-} from '@angular/router/src/route_config/route_config_decorator';
+import {RouteRegistry, ROUTER_PRIMARY_COMPONENT} from '../src/route_registry';
+import {RouteConfig, AsyncRoute, Route, Redirect} from '../src/route_config/route_config_decorator';
 import {provide} from '@angular/core';
-import {RouterOutlet} from '@angular/router/src/directives/router_outlet';
+import {RouterOutlet} from '../src/directives/router_outlet';
 
 export function main() {
   describe('Router', () => {
