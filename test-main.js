@@ -17,8 +17,7 @@ System.config({
     'parse5/index': 'dist/all/empty.js',
     '@angular/platform-server/src/parse5_adapter': 'dist/all/empty.js',
     'angular2/*': 'dist/all/angular2/*.js',
-    'angular2/src/alt_router/router_testing_providers': 'dist/all/angular2/src/alt_router/router_testing_providers.js',
-    'angular2/alt_router': 'dist/all/angular2/alt_router.js'
+    'angular2/src/alt_router/router_testing_providers': 'dist/all/angular2/src/alt_router/router_testing_providers.js'
   },
   packages: {
     '@angular/core': {
@@ -39,6 +38,10 @@ System.config({
       defaultExtension: 'js'
     },
     '@angular/router': {
+      main: 'index.js',
+      defaultExtension: 'js'
+    },
+    '@angular/router-deprecated': {
       main: 'index.js',
       defaultExtension: 'js'
     },

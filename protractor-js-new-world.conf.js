@@ -19,7 +19,6 @@ exports.config = {
     'dist/all/**/e2e_test/**/*_spec.js'
   ],
   exclude: [
-    '**/alt_routing/**', // temporary package
     '**/web_workers/**', // needs to be setup
     '**/key_events/**',  // can't tell why this is failing
     '**/sourcemap/**'     // fails only on travis

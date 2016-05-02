@@ -18,8 +18,8 @@ import {
   tick,
 } from '@angular/core/testing';
 
-import {ROUTER_FAKE_PROVIDERS} from 'angular2/src/alt_router/router_testing_providers';
-import {ROUTER_DIRECTIVES, Routes, Route} from 'angular2/alt_router';
+import {ROUTER_FAKE_PROVIDERS} from '@angular/router/testing';
+import {ROUTER_DIRECTIVES, Routes, Route} from '@angular/router';
 
 
 import {Component, bind} from '@angular/core';

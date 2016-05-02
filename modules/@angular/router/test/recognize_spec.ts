@@ -1,26 +1,23 @@
 import {
-  ComponentFixture,
   AsyncTestCompleter,
-  TestComponentBuilder,
   beforeEach,
   ddescribe,
   xdescribe,
   describe,
-  el,
   expect,
   iit,
   inject,
   beforeEachProviders,
   it,
   xit
-} from 'angular2/testing_internal';
+} from '@angular/core/testing/testing_internal';
 
-import {recognize} from 'angular2/src/alt_router/recognize';
-import {Routes, Route} from 'angular2/alt_router';
-import {provide, Component, ComponentResolver} from 'angular2/core';
-import {UrlSegment, RouteTree, UrlTree} from 'angular2/src/alt_router/segments';
-import {DefaultRouterUrlSerializer} from 'angular2/src/alt_router/router_url_serializer';
-import {DEFAULT_OUTLET_NAME} from 'angular2/src/alt_router/constants';
+import {recognize} from '../src/recognize';
+import {Routes, Route} from '@angular/router';
+import {provide, Component, ComponentResolver} from '@angular/core';
+import {UrlSegment, RouteTree, UrlTree} from '../src/segments';
+import {DefaultRouterUrlSerializer} from '../src/router_url_serializer';
+import {DEFAULT_OUTLET_NAME} from '../src/constants';
 
 export function main() {
   describe('recognize', () => {

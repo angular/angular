@@ -52,7 +52,7 @@ var _resolveToNull = PromiseWrapper.resolve<Instruction>(null);
  *   ROUTER_DIRECTIVES,
  *   ROUTER_PROVIDERS,
  *   RouteConfig
- * } from '@angular/router';
+ * } from '@angular/router-deprecated';
  *
  * @Component({directives: [ROUTER_DIRECTIVES]})
  * @RouteConfig([

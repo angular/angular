@@ -1,4 +1,5 @@
-import {Type, stringify} from "@angular/facade/src/lang";
+import {Type} from '@angular/core';
+import {stringify} from "../facade/lang";
 
 export abstract class RouteMetadata {
   abstract get path(): string;

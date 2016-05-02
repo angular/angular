@@ -6,7 +6,7 @@ import {
   RouteParams,
   ComponentInstruction,
   ROUTER_DIRECTIVES
-} from '@angular/router';
+} from '@angular/router-deprecated';
 import {APP_BASE_HREF} from '@angular/common';
 
 // #docregion routerCanDeactivate

@@ -1,9 +1,7 @@
 import {PromiseWrapper} from '@angular/core/src/facade/async';
 import {Component} from '@angular/core';
-import {
-  ServiceMessageBrokerFactory,
-  PRIMITIVE
-} from '@angular/platform-browser/src/worker_app';;
+import {ServiceMessageBrokerFactory, PRIMITIVE} from '@angular/platform-browser/src/worker_app';
+;
 
 const ECHO_CHANNEL = "ECHO";
 

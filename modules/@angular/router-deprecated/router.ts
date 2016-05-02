@@ -30,7 +30,7 @@ import {RouterLink} from './src/directives/router_link';
  *
  * ```
  * import {Component} from '@angular/core';
- * import {ROUTER_DIRECTIVES, ROUTER_PROVIDERS, RouteConfig} from '@angular/router';
+ * import {ROUTER_DIRECTIVES, ROUTER_PROVIDERS, RouteConfig} from '@angular/router-deprecated';
  *
  * @Component({directives: [ROUTER_DIRECTIVES]})
  * @RouteConfig([

@@ -8,9 +8,9 @@ import {
   beforeEach,
 } from '@angular/core/testing/testing_internal';
 
-import {GeneratedUrl} from '../../../../router/src/rules/route_paths/route_path';
-import {RegexRoutePath} from '../../../../router/src/rules/route_paths/regex_route_path';
-import {parser, Url} from '../../../../router/src/url_parser';
+import {GeneratedUrl} from '../../../src/rules/route_paths/route_path';
+import {RegexRoutePath} from '../../../src/rules/route_paths/regex_route_path';
+import {parser, Url} from '../../../src/url_parser';
 
 function emptySerializer(params) {
   return new GeneratedUrl('', {});

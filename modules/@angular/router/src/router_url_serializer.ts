@@ -1,6 +1,6 @@
 import {UrlSegment, Tree, TreeNode, rootNode, UrlTree} from './segments';
 import {BaseException} from '@angular/core';
-import {isBlank, isPresent, RegExpWrapper} from '@angular/facade/src/lang';
+import {isBlank, isPresent, RegExpWrapper} from './facade/lang';
 
 export abstract class RouterUrlSerializer {
   abstract parse(url: string): UrlTree;

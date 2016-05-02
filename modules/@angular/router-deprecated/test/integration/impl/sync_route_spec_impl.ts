@@ -12,7 +12,7 @@ import {TestComponentBuilder, ComponentFixture} from '@angular/compiler/testing'
 
 import {specs, compile, TEST_ROUTER_PROVIDERS, clickOnElement, getHref} from '../util';
 import {Location} from '@angular/common';
-import {Router, Route} from '@angular/router';
+import {Router, Route} from '@angular/router-deprecated';
 import {
   HelloCmp,
   UserCmp,

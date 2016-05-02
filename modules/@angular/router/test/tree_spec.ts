@@ -1,21 +1,18 @@
 import {
-  ComponentFixture,
   AsyncTestCompleter,
-  TestComponentBuilder,
   beforeEach,
   ddescribe,
   xdescribe,
   describe,
-  el,
   expect,
   iit,
   inject,
   beforeEachProviders,
   it,
   xit
-} from 'angular2/testing_internal';
+} from '@angular/core/testing/testing_internal';
 
-import {Tree, TreeNode} from 'angular2/src/alt_router/segments';
+import {Tree, TreeNode} from '../src/segments';
 
 export function main() {
   describe('tree', () => {

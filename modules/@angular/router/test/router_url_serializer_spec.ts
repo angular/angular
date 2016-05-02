@@ -1,22 +1,19 @@
 import {
-  ComponentFixture,
   AsyncTestCompleter,
-  TestComponentBuilder,
   beforeEach,
   ddescribe,
   xdescribe,
   describe,
-  el,
   expect,
   iit,
   inject,
   beforeEachProviders,
   it,
   xit
-} from 'angular2/testing_internal';
+} from '@angular/core/testing/testing_internal';
 
-import {DefaultRouterUrlSerializer} from 'angular2/src/alt_router/router_url_serializer';
-import {UrlSegment} from 'angular2/src/alt_router/segments';
+import {DefaultRouterUrlSerializer} from '../src/router_url_serializer';
+import {UrlSegment} from '../src/segments';
 
 export function main() {
   describe('url serializer', () => {

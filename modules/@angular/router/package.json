@@ -1,5 +1,5 @@
 {
-  "name": "@angular/router-deprecated",
+  "name": "@angular/router",
   "version": "$$ANGULAR_VERSION$$",
   "description": "",
   "main": "index.js",

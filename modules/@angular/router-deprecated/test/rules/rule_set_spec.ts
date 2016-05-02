@@ -8,11 +8,11 @@ import {
   beforeEach,
 } from '@angular/core/testing/testing_internal';
 import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
-import {RouteMatch, PathMatch, RedirectMatch} from '../../../router/src/rules/rules';
-import {RuleSet} from '../../../router/src/rules/rule_set';
-import {GeneratedUrl} from '../../../router/src/rules/route_paths/route_path';
-import {Route, Redirect} from '../../../router/src/route_config/route_config_decorator';
-import {parser} from '../../../router/src/url_parser';
+import {RouteMatch, PathMatch, RedirectMatch} from '../../src/rules/rules';
+import {RuleSet} from '../../src/rules/rule_set';
+import {GeneratedUrl} from '../../src/rules/route_paths/route_path';
+import {Route, Redirect} from '../../src/route_config/route_config_decorator';
+import {parser} from '../../src/url_parser';
 import {PromiseWrapper} from '../../src/facade/promise';
 
 

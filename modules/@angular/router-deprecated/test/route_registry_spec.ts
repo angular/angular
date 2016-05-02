@@ -12,14 +12,14 @@ import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
 import {PromiseWrapper} from '../src/facade/async';
 import {Type, IS_DART} from '../src/facade/lang';
 
-import {RouteRegistry} from '../../router/src/route_registry';
+import {RouteRegistry} from '../src/route_registry';
 import {
   RouteConfig,
   Route,
   Redirect,
   AuxRoute,
   AsyncRoute
-} from '../../router/src/route_config/route_config_decorator';
+} from '../src/route_config/route_config_decorator';
 
 
 export function main() {

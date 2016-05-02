@@ -11,7 +11,7 @@ import {
 } from '@angular/core';
 import {RouterOutletMap} from '../router';
 import {DEFAULT_OUTLET_NAME} from '../constants';
-import {isPresent, isBlank} from '@angular/facade/src/lang';
+import {isPresent, isBlank} from '../facade/lang';
 
 @Directive({selector: 'router-outlet'})
 export class RouterOutlet {

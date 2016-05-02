@@ -125,9 +125,9 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
     // API of tsickle for lowering decorators to properties on the class.
     if (isPresent((<any>typeOrFunc).ctorParameters)) {
       let ctorParameters = (<any>typeOrFunc).ctorParameters;
-      let paramTypes = ctorParameters.map( ctorParam => ctorParam && ctorParam.type );
-      let paramAnnotations = ctorParameters.map( ctorParam =>
-          ctorParam && convertTsickleDecoratorIntoMetadata(ctorParam.decorators) );
+      let paramTypes = ctorParameters.map(ctorParam => ctorParam && ctorParam.type);
+      let paramAnnotations = ctorParameters.map(
+          ctorParam => ctorParam && convertTsickleDecoratorIntoMetadata(ctorParam.decorators));
       return this._zipTypesAndAnnotations(paramTypes, paramAnnotations);
     }
 
@@ -182,9 +182,10 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
     if (isPresent((<any>typeOrFunc).propDecorators)) {
       let propDecorators = (<any>typeOrFunc).propDecorators;
       let propMetadata = <{[key: string]: any[]}>{};
-      Object.keys(propDecorators).forEach( prop => {
-        propMetadata[prop] = convertTsickleDecoratorIntoMetadata(propDecorators[prop]);
-      });
+      Object.keys(propDecorators)
+          .forEach(prop => {
+            propMetadata[prop] = convertTsickleDecoratorIntoMetadata(propDecorators[prop]);
+          });
       return propMetadata;
     }
 
@@ -220,7 +221,7 @@ function convertTsickleDecoratorIntoMetadata(decoratorInvocations: any[]): any[]
   if (!decoratorInvocations) {
     return [];
   }
-  return decoratorInvocations.map( decoratorInvocation => {
+  return decoratorInvocations.map(decoratorInvocation => {
     var decoratorType = decoratorInvocation.type;
     var annotationCls = decoratorType.annotationCls;
     var annotationArgs = decoratorInvocation.args ? decoratorInvocation.args : [];

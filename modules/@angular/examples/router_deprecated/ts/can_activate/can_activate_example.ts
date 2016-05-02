@@ -1,6 +1,11 @@
 import {provide, Component, ComponentRef} from '@angular/core';
 import {bootstrap} from '@angular/platform-browser-dynamic';
-import {CanActivate, RouteConfig, ComponentInstruction, ROUTER_DIRECTIVES} from '@angular/router';
+import {
+  CanActivate,
+  RouteConfig,
+  ComponentInstruction,
+  ROUTER_DIRECTIVES
+} from '@angular/router-deprecated';
 import {APP_BASE_HREF} from '@angular/common';
 
 function checkIfWeHavePermission(instruction: ComponentInstruction) {

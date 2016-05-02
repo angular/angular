@@ -7,7 +7,7 @@ import {
   CanReuse,
   RouteParams,
   OnReuse
-} from '@angular/router';
+} from '@angular/router-deprecated';
 import {APP_BASE_HREF} from '@angular/common';
 
 
