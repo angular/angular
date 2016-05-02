@@ -84,7 +84,11 @@ module.exports = function(config) {
 
     browsers: ['Chrome'],
 
-    port: 9876
+    port: 9876,
+    captureTimeout: 60000,
+    browserDisconnectTimeout : 60000,
+    browserDisconnectTolerance : 3,
+    browserNoActivityTimeout : 60000,
   });
 
   if (process.env.TRAVIS) {
