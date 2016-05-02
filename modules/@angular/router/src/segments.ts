@@ -90,21 +90,18 @@ export class TreeNode<T> {
 }
 
 export class UrlSegment {
-  constructor(public segment: any, public parameters: {[key: string]: string},
+  constructor(public segment: any, public parameters: {[key: string]: any},
               public outlet: string) {}
 
   toString(): string {
     let outletPrefix = isBlank(this.outlet) ? "" : `${this.outlet}:`;
-    let segmentPrefix = isBlank(this.segment) ? "" : this.segment;
-    return `${outletPrefix}${segmentPrefix}${_serializeParams(this.parameters)}`;
+    return `${outletPrefix}${this.segment}${_serializeParams(this.parameters)}`;
   }
 }
 
 function _serializeParams(params: {[key: string]: string}): string {
   let res = "";
-  if (isPresent(params)) {
-    StringMapWrapper.forEach(params, (v, k) => res += `;${k}=${v}`);
-  }
+  StringMapWrapper.forEach(params, (v, k) => res += `;${k}=${v}`);
   return res;
 }
 
@@ -115,7 +112,7 @@ export class RouteSegment {
   /** @internal */
   _componentFactory: ComponentFactory<any>;
 
-  constructor(public urlSegments: UrlSegment[], public parameters: {[key: string]: string},
+  constructor(public urlSegments: UrlSegment[], public parameters: {[key: string]: any},
               public outlet: string, type: Type, componentFactory: ComponentFactory<any>) {
     this._type = type;
     this._componentFactory = componentFactory;
@@ -145,9 +142,6 @@ export function equalSegments(a: RouteSegment, b: RouteSegment): boolean {
   if (!isBlank(a) && isBlank(b)) return false;
   if (a._type !== b._type) return false;
   if (a.outlet != b.outlet) return false;
-  if (isBlank(a.parameters) && !isBlank(b.parameters)) return false;
-  if (!isBlank(a.parameters) && isBlank(b.parameters)) return false;
-  if (isBlank(a.parameters) && isBlank(b.parameters)) return true;
   return StringMapWrapper.equals(a.parameters, b.parameters);
 }
 
@@ -156,9 +150,12 @@ export function equalUrlSegments(a: UrlSegment, b: UrlSegment): boolean {
   if (!isBlank(a) && isBlank(b)) return false;
   if (a.segment != b.segment) return false;
   if (a.outlet != b.outlet) return false;
-  if (isBlank(a.parameters) && !isBlank(b.parameters)) return false;
-  if (!isBlank(a.parameters) && isBlank(b.parameters)) return false;
-  if (isBlank(a.parameters) && isBlank(b.parameters)) return true;
+  if (isBlank(a.parameters)) {
+    console.log("a", a);
+  }
+  if (isBlank(b.parameters)) {
+    console.log("b", b);
+  }
   return StringMapWrapper.equals(a.parameters, b.parameters);
 }
 

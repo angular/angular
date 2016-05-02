@@ -79,17 +79,11 @@ export function main() {
 
     it("should parse key-value matrix params", () => {
       let tree = url.parse("/one;a=11a;b=11b(/two;c=22//right:three;d=33)");
+      let c = tree.children(tree.root);
 
-      let c = tree.firstChild(tree.root);
-      expectSegment(c, "one");
-
-      let c2 = tree.children(c);
-      expectSegment(c2[0], ";a=11a;b=11b");
-      expectSegment(c2[1], "aux:two");
-      expectSegment(c2[2], "right:three");
-
-      expectSegment(tree.firstChild(c2[1]), ";c=22");
-      expectSegment(tree.firstChild(c2[2]), ";d=33");
+      expectSegment(c[0], "one;a=11a;b=11b");
+      expectSegment(c[1], "aux:two;c=22");
+      expectSegment(c[2], "right:three;d=33");
 
       expect(url.serialize(tree)).toEqual("/one;a=11a;b=11b(aux:two;c=22//right:three;d=33)");
     });
@@ -98,8 +92,7 @@ export function main() {
       let tree = url.parse("/one;a");
 
       let c = tree.firstChild(tree.root);
-      expectSegment(c, "one");
-      expectSegment(tree.firstChild(c), ";a=true");
+      expectSegment(c, "one;a=true");
 
       expect(url.serialize(tree)).toEqual("/one;a=true");
     });

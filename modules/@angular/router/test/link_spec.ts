@@ -27,68 +27,142 @@ export function main() {
       expect(t).toBe(p);
     });
 
-    it("should support going to root", () => {
+    it("should navigate to the root", () => {
       let p = parser.parse("/");
       let tree = s(p.root);
       let t = link(tree.root, tree, p, ["/"]);
       expect(parser.serialize(t)).toEqual("");
     });
 
-    it("should support positional params", () => {
+    it("should support nested segments", () => {
       let p = parser.parse("/a/b");
       let tree = s(p.firstChild(p.root));
       let t = link(tree.root, tree, p, ["/one", 11, "two", 22]);
       expect(parser.serialize(t)).toEqual("/one/11/two/22");
     });
 
-    it("should preserve route siblings when changing the main route", () => {
+    it("should preserve siblings", () => {
       let p = parser.parse("/a/11/b(c)");
       let tree = s(p.root);
       let t = link(tree.root, tree, p, ["/a", 11, 'd']);
       expect(parser.serialize(t)).toEqual("/a/11/d(aux:c)");
     });
 
-    it("should preserve route siblings when changing a aux route", () => {
-      let p = parser.parse("/a/11/b(c)");
-      let tree = s(p.root);
-      let t = link(tree.root, tree, p, ["/a", 11, 'aux:d']);
-      expect(parser.serialize(t)).toEqual("/a/11/b(aux:d)");
-    });
-
-    it('should update parameters', () => {
+    it('should update matrix parameters', () => {
       let p = parser.parse("/a;aa=11");
       let tree = s(p.root);
       let t = link(tree.root, tree, p, ["/a", {aa: 22, bb: 33}]);
       expect(parser.serialize(t)).toEqual("/a;aa=22;bb=33");
     });
 
-    it("should update relative subtree (when starts with ./)", () => {
-      let p = parser.parse("/a(ap)/c(cp)");
-      let c = p.firstChild(p.root);
-      let tree = s(c);
-      let t = link(tree.root, tree, p, ["./c2"]);
-      expect(parser.serialize(t)).toEqual("/a(aux:ap)/c2(aux:cp)");
+    it('should create matrix parameters', () => {
+      let p = parser.parse("/a");
+      let tree = s(p.root);
+      let t = link(tree.root, tree, p, ["/a", {aa: 22, bb: 33}]);
+      expect(parser.serialize(t)).toEqual("/a;aa=22;bb=33");
     });
 
-    it("should update relative subtree (when does not start with ./)", () => {
-      let p = parser.parse("/a(ap)/c(cp)");
-      let c = p.firstChild(p.root);
-      let tree = s(c);
-      let t = link(tree.root, tree, p, ["c2"]);
-      expect(parser.serialize(t)).toEqual("/a(aux:ap)/c2(aux:cp)");
+    it('should create matrix parameters together with other segments', () => {
+      let p = parser.parse("/a");
+      let tree = s(p.root);
+      let t = link(tree.root, tree, p, ["/a", "/b", {aa: 22, bb: 33}]);
+      expect(parser.serialize(t)).toEqual("/a/b;aa=22;bb=33");
     });
 
-    it("should update relative subtree when the provided segment doesn't have url segments", () => {
-      let p = parser.parse("/a(ap)/c(cp)");
-      let c = p.firstChild(p.root);
+    describe("relative navigation", () => {
+      it("should work", () => {
+        let p = parser.parse("/a(ap)/c(cp)");
+        let c = p.firstChild(p.root);
+        let tree = s(c);
+        let t = link(tree.root, tree, p, ["c2"]);
+        expect(parser.serialize(t)).toEqual("/a(aux:ap)/c2(aux:cp)");
+      });
 
-      let child = new RouteSegment([], null, null, null, null);
-      let root = new TreeNode<RouteSegment>(new RouteSegment([c], {}, null, null, null),
-                                            [new TreeNode<RouteSegment>(child, [])]);
-      let tree = new RouteTree(root);
+      it("should work when the first command starts with a ./", () => {
+        let p = parser.parse("/a(ap)/c(cp)");
+        let c = p.firstChild(p.root);
+        let tree = s(c);
+        let t = link(tree.root, tree, p, ["./c2"]);
+        expect(parser.serialize(t)).toEqual("/a(aux:ap)/c2(aux:cp)");
+      });
 
-      let t = link(child, tree, p, ["./c2"]);
-      expect(parser.serialize(t)).toEqual("/a(aux:ap)/c2(aux:cp)");
+      it("should work when the first command is ./)", () => {
+        let p = parser.parse("/a(ap)/c(cp)");
+        let c = p.firstChild(p.root);
+        let tree = s(c);
+        let t = link(tree.root, tree, p, ["./", "c2"]);
+        expect(parser.serialize(t)).toEqual("/a(aux:ap)/c2(aux:cp)");
+      });
+
+      it("should work when given params", () => {
+        let p = parser.parse("/a(ap)/c(cp)");
+        let c = p.firstChild(p.root);
+        let tree = s(c);
+        let t = link(tree.root, tree, p, [{'x': 99}]);
+
+        expect(parser.serialize(t)).toEqual("/a(aux:ap)/c;x=99(aux:cp)");
+      });
+
+      it("should support going to a parent", () => {
+        let p = parser.parse("/a(ap)/c(cp)");
+        let a = p.firstChild(p.root);
+        let tree = s(a);
+        let t = link(tree.root, tree, p, ["../a2"]);
+        expect(parser.serialize(t)).toEqual("/a2(aux:ap)");
+      });
+
+      it("should support going to a parent (nested case)", () => {
+        let p = parser.parse("/a/c");
+        let c = p.firstChild(p.firstChild(p.root));
+        let tree = s(c);
+        let t = link(tree.root, tree, p, ["../c2"]);
+        expect(parser.serialize(t)).toEqual("/a/c2");
+      });
+
+      it("should work when given ../", () => {
+        let p = parser.parse("/a/c");
+        let c = p.firstChild(p.firstChild(p.root));
+        let tree = s(c);
+        let t = link(tree.root, tree, p, ["../"]);
+        expect(parser.serialize(t)).toEqual("/a");
+      });
+
+      it("should navigate to the root", () => {
+        let p = parser.parse("/a/c");
+        let c = p.firstChild(p.root);
+        let tree = s(c);
+        let t = link(tree.root, tree, p, ["../"]);
+        expect(parser.serialize(t)).toEqual("");
+      });
+
+      it("should support setting matrix params", () => {
+        let p = parser.parse("/a(ap)/c(cp)");
+        let c = p.firstChild(p.root);
+        let tree = s(c);
+        let t = link(tree.root, tree, p, ["../", {'x': 5}]);
+        expect(parser.serialize(t)).toEqual("/a;x=5(aux:ap)");
+      });
+
+      it("should throw when too many ..", () => {
+        let p = parser.parse("/a(ap)/c(cp)");
+        let c = p.firstChild(p.root);
+        let tree = s(c);
+
+        expect(() => link(tree.root, tree, p, ["../../"])).toThrowError("Invalid number of '../'");
+      });
+
+      it("should work when the provided segment doesn't have url segments", () => {
+        let p = parser.parse("/a(ap)/c(cp)");
+        let c = p.firstChild(p.root);
+
+        let child = new RouteSegment([], {'one':1}, null, null, null);
+        let root = new TreeNode<RouteSegment>(new RouteSegment([c], {}, null, null, null),
+          [new TreeNode<RouteSegment>(child, [])]);
+        let tree = new RouteTree(root);
+
+        let t = link(child, tree, p, ["./c2"]);
+        expect(parser.serialize(t)).toEqual("/a(aux:ap)/c2(aux:cp)");
+      });
     });
   });
 }

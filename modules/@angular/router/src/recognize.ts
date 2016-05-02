@@ -11,7 +11,7 @@ import {reflector} from '@angular/core';
 // TODO: vsavkin: recognize should take the old tree and merge it
 export function recognize(componentResolver: ComponentResolver, type: Type,
                           url: UrlTree): Promise<RouteTree> {
-  let matched = new _MatchResult(type, [url.root], null, rootNode(url).children, []);
+  let matched = new _MatchResult(type, [url.root], {}, rootNode(url).children, []);
   return _constructSegment(componentResolver, matched).then(roots => new RouteTree(roots[0]));
 }
 
@@ -82,7 +82,7 @@ function _recognizeLeftOvers(componentResolver: ComponentResolver,
                 return componentResolver.resolveComponent(r[0].component)
                     .then(factory => {
                       let segment =
-                          new RouteSegment([], null, DEFAULT_OUTLET_NAME, r[0].component, factory);
+                          new RouteSegment([], {}, DEFAULT_OUTLET_NAME, r[0].component, factory);
                       return [new TreeNode<RouteSegment>(segment, children)];
                     });
               });
@@ -142,14 +142,9 @@ function _matchWithParts(route: RouteMetadata, url: TreeNode<UrlSegment>): _Matc
     current = ListWrapper.first(current.children);
   }
 
-  if (isPresent(current) && isBlank(current.value.segment)) {
-    lastParent = lastSegment;
-    lastSegment = current;
-  }
-
   let p = lastSegment.value.parameters;
   let parameters =
-      <{[key: string]: string}>StringMapWrapper.merge(isBlank(p) ? {} : p, positionalParams);
+      <{[key: string]: string}>StringMapWrapper.merge(p, positionalParams);
   let axuUrlSubtrees = isPresent(lastParent) ? lastParent.children.slice(1) : [];
 
   return new _MatchResult(route.component, consumedUrlSegments, parameters, lastSegment.children,
