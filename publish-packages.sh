@@ -26,6 +26,7 @@ for PACKAGE in \
   platform-browser-dynamic \
   platform-server \
   router \
+  router-deprecated \
   upgrade
 do
   DESTDIR=./dist/packages-dist/${PACKAGE}
