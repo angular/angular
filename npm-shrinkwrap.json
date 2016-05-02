@@ -88,6 +88,16 @@
       "from": "angular-mocks@1.5.0",
       "resolved": "https://registry.npmjs.org/angular-mocks/-/angular-mocks-1.5.0.tgz"
     },
+    "angular2": {
+      "version": "2.0.0-beta.17",
+      "from": "angular/angular#2.0.0-build.cacdead.js",
+      "resolved": "git://github.com/angular/angular.git#08cbd5481d04255864f5ff8e33d0756d4ec4c440"
+    },
+    "angular2-template-compiler": {
+      "version": "0.1.5",
+      "from": "angular2-template-compiler@0.1.5",
+      "resolved": "file:dist/js/cjs/compiler_cli"
+    },
     "ansi": {
       "version": "0.3.0",
       "from": "ansi@>=0.3.0 <0.4.0",
@@ -8548,6 +8558,11 @@
           "resolved": "https://registry.npmjs.org/typescript/-/typescript-1.7.3.tgz"
         }
       }
+    },
+    "ts-metadata-collector": {
+      "version": "0.1.1",
+      "from": "ts-metadata-collector@>=0.1.0 <0.2.0",
+      "resolved": "file:dist/tools/metadata"
     },
     "ts2dart": {
       "version": "0.9.10",
