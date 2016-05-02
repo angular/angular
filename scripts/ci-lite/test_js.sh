@@ -27,7 +27,7 @@ echo 'travis_fold:end:test.node'
 echo 'travis_fold:start:test.localChrome'
 
 # rebuild since codegen has overwritten some files.
-$(npm bin)/tsc -p modules/tsconfig.json
+$(npm bin)/ng2tc -p modules/tsconfig.json
 
 # Run unit tests in local chrome
 if [[ ${TRAVIS} ]]; then
