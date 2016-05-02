@@ -121,6 +121,17 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
     if (isPresent((<any>typeOrFunc).parameters)) {
       return (<any>typeOrFunc).parameters;
     }
+
+    // API of tsickle for lowering decorators to properties on the class.
+    if (isPresent((<any>typeOrFunc).ctorParameters)) {
+      let ctorParameters = (<any>typeOrFunc).ctorParameters;
+      let paramTypes = ctorParameters.map( ctorParam => ctorParam && ctorParam.type );
+      let paramAnnotations = ctorParameters.map( ctorParam =>
+          ctorParam && convertTsickleDecoratorIntoMetadata(ctorParam.decorators) );
+      return this._zipTypesAndAnnotations(paramTypes, paramAnnotations);
+    }
+
+    // API for metadata created by invoking the decorators.
     if (isPresent(this._reflect) && isPresent(this._reflect.getMetadata)) {
       var paramAnnotations = this._reflect.getMetadata('parameters', typeOrFunc);
       var paramTypes = this._reflect.getMetadata('design:paramtypes', typeOrFunc);
@@ -143,6 +154,13 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
       }
       return annotations;
     }
+
+    // API of tsickle for lowering decorators to properties on the class.
+    if (isPresent((<any>typeOrFunc).decorators)) {
+      return convertTsickleDecoratorIntoMetadata((<any>typeOrFunc).decorators);
+    }
+
+    // API for metadata created by invoking the decorators.
     if (isPresent(this._reflect) && isPresent(this._reflect.getMetadata)) {
       var annotations = this._reflect.getMetadata('annotations', typeOrFunc);
       if (isPresent(annotations)) return annotations;
@@ -159,6 +177,18 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
       }
       return propMetadata;
     }
+
+    // API of tsickle for lowering decorators to properties on the class.
+    if (isPresent((<any>typeOrFunc).propDecorators)) {
+      let propDecorators = (<any>typeOrFunc).propDecorators;
+      let propMetadata = <{[key: string]: any[]}>{};
+      Object.keys(propDecorators).forEach( prop => {
+        propMetadata[prop] = convertTsickleDecoratorIntoMetadata(propDecorators[prop]);
+      });
+      return propMetadata;
+    }
+
+    // API for metadata created by invoking the decorators.
     if (isPresent(this._reflect) && isPresent(this._reflect.getMetadata)) {
       var propMetadata = this._reflect.getMetadata('propMetadata', typeOrFunc);
       if (isPresent(propMetadata)) return propMetadata;
@@ -184,4 +214,18 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
 
   // There is not a concept of import uri in Js, but this is useful in developing Dart applications.
   importUri(type: Type): string { return `./${stringify(type)}`; }
+}
+
+function convertTsickleDecoratorIntoMetadata(decoratorInvocations: any[]): any[] {
+  if (!decoratorInvocations) {
+    return [];
+  }
+  return decoratorInvocations.map( decoratorInvocation => {
+    var decoratorType = decoratorInvocation.type;
+    var annotationCls = decoratorType.annotationCls;
+    var annotationArgs = decoratorInvocation.args ? decoratorInvocation.args : [];
+    var annotation = Object.create(annotationCls.prototype);
+    annotationCls.apply(annotation, annotationArgs);
+    return annotation;
+  });
 }

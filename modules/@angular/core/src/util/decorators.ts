@@ -270,6 +270,7 @@ export function makeDecorator(
     }
   }
   DecoratorFactory.prototype = Object.create(annotationCls.prototype);
+  (<any>DecoratorFactory).annotationCls = annotationCls;
   return DecoratorFactory;
 }
 
@@ -304,15 +305,16 @@ export function makeParamDecorator(annotationCls): any {
     }
   }
   ParamDecoratorFactory.prototype = Object.create(annotationCls.prototype);
+  (<any>ParamDecoratorFactory).annotationCls = annotationCls;
   return ParamDecoratorFactory;
 }
 
-export function makePropDecorator(decoratorCls): any {
+export function makePropDecorator(annotationCls): any {
   function PropDecoratorFactory(...args): any {
-    var decoratorInstance = Object.create(decoratorCls.prototype);
-    decoratorCls.apply(decoratorInstance, args);
+    var decoratorInstance = Object.create(annotationCls.prototype);
+    annotationCls.apply(decoratorInstance, args);
 
-    if (this instanceof decoratorCls) {
+    if (this instanceof annotationCls) {
       return decoratorInstance;
     } else {
       return function PropDecorator(target: any, name: string) {
@@ -324,6 +326,7 @@ export function makePropDecorator(decoratorCls): any {
       };
     }
   }
-  PropDecoratorFactory.prototype = Object.create(decoratorCls.prototype);
+  PropDecoratorFactory.prototype = Object.create(annotationCls.prototype);
+  (<any>PropDecoratorFactory).annotationCls = annotationCls;
   return PropDecoratorFactory;
 }
