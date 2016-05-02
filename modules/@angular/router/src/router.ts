@@ -52,14 +52,14 @@ export class Router {
     return this._navigate(this._urlSerializer.parse(url));
   }
 
-  navigate(changes: any[], segment?: RouteSegment): Promise<void> {
-    return this._navigate(this.createUrlTree(changes, segment));
+  navigate(commands: any[], segment?: RouteSegment): Promise<void> {
+    return this._navigate(this.createUrlTree(commands, segment));
   }
 
   dispose(): void { ObservableWrapper.dispose(this._locationSubscription); }
 
   private _createInitialTree(): RouteTree {
-    let root = new RouteSegment([new UrlSegment("", null, null)], null, DEFAULT_OUTLET_NAME,
+    let root = new RouteSegment([new UrlSegment("", {}, null)], {}, DEFAULT_OUTLET_NAME,
                                 this._rootComponentType, null);
     return new RouteTree(new TreeNode<RouteSegment>(root, []));
   }
@@ -85,13 +85,9 @@ export class Router {
         });
   }
 
-  createUrlTree(changes: any[], segment?: RouteSegment): UrlTree {
-    if (isPresent(this._prevTree)) {
-      let s = isPresent(segment) ? segment : this._prevTree.root;
-      return link(s, this._prevTree, this.urlTree, changes);
-    } else {
-      return null;
-    }
+  createUrlTree(commands: any[], segment?: RouteSegment): UrlTree {
+    let s = isPresent(segment) ? segment : this._prevTree.root;
+    return link(s, this._prevTree, this.urlTree, commands);
   }
 
   serializeUrl(url: UrlTree): string { return this._urlSerializer.serialize(url); }

@@ -22,7 +22,7 @@ import {ObservableWrapper} from '../facade/async';
 @Directive({selector: '[routerLink]'})
 export class RouterLink implements OnDestroy {
   @Input() target: string;
-  private _changes: any[] = [];
+  private _comands: any[] = [];
   private _subscription: any;
 
   @HostBinding() private href: string;
@@ -37,21 +37,22 @@ export class RouterLink implements OnDestroy {
 
   @Input()
   set routerLink(data: any[]) {
-    this._changes = data;
+    this._comands = data;
     this._updateTargetUrlAndHref();
   }
+
 
   @HostListener("click")
   onClick(): boolean {
     if (!isString(this.target) || this.target == '_self') {
-      this._router.navigate(this._changes, this._routeSegment);
+      this._router.navigate(this._comands, this._routeSegment);
       return false;
     }
     return true;
   }
 
   private _updateTargetUrlAndHref(): void {
-    let tree = this._router.createUrlTree(this._changes, this._routeSegment);
+    let tree = this._router.createUrlTree(this._comands, this._routeSegment);
     if (isPresent(tree)) {
       this.href = this._router.serializeUrl(tree);
       this.isActive = this._router.urlTree.contains(tree);
