@@ -1,4 +1,4 @@
-import {verifyNoBrowserErrors} from '@angular/testing/src/e2e_util';
+import {verifyNoBrowserErrors} from '@angular/platform-browser/testing_e2e';
 
 describe('WebWorkers Input', function() {
   afterEach(() => {
@@ -6,7 +6,7 @@ describe('WebWorkers Input', function() {
     browser.ignoreSynchronization = false;
   });
   const selector = 'input-app';
-  const URL = 'playground/src/web_workers/input/index.html';
+  const URL = 'all/playground/src/web_workers/input/index.html';
   const VALUE = 'test val';
 
   it('should bootstrap', () => {

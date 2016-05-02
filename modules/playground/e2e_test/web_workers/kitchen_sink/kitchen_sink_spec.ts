@@ -1,4 +1,4 @@
-import {verifyNoBrowserErrors} from '@angular/testing/src/e2e_util';
+import {verifyNoBrowserErrors} from '@angular/platform-browser/testing_e2e';
 
 describe('WebWorkers Kitchen Sink', function() {
   afterEach(() => {
@@ -6,7 +6,7 @@ describe('WebWorkers Kitchen Sink', function() {
     browser.ignoreSynchronization = false;
   });
   var selector = "hello-app .greeting";
-  var URL = "playground/src/web_workers/kitchen_sink/index.html";
+  var URL = 'all/playground/src/web_workers/kitchen_sink/index.html';
 
   it('should greet', () => {
     // This test can't wait for Angular 2 as Testability is not available when using WebWorker

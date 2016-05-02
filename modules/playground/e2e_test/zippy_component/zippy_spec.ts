@@ -1,11 +1,11 @@
-import {verifyNoBrowserErrors} from '@angular/testing/src/e2e_util';
+import {verifyNoBrowserErrors} from '@angular/platform-browser/testing_e2e';
 
 describe('Zippy Component', function() {
 
   afterEach(verifyNoBrowserErrors);
 
   describe('zippy', function() {
-    var URL = 'playground/src/zippy_component/index.html';
+    var URL = 'all/playground/src/zippy_component/index.html';
 
     beforeEach(function() { browser.get(URL); });
 

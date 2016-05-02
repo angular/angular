@@ -1,4 +1,4 @@
-import {verifyNoBrowserErrors} from '@angular/testing/src/e2e_util';
+import {verifyNoBrowserErrors} from '@angular/platform-browser/testing_e2e';
 
 function waitForElement(selector) {
   var EC = (<any>protractor).ExpectedConditions;
@@ -9,7 +9,7 @@ function waitForElement(selector) {
 describe('hash routing example app', function() {
   afterEach(verifyNoBrowserErrors);
 
-  var URL = 'playground/src/hash_routing/index.html';
+  var URL = 'all/playground/src/hash_routing/index.html';
 
   it('should navigate between routes', function() {
     browser.get(URL + '#/bye');
@@ -28,7 +28,7 @@ describe('hash routing example app', function() {
 
 
   it('should open in new window if target is _blank', () => {
-    var URL = 'playground/src/hash_routing/index.html';
+    var URL = 'all/playground/src/hash_routing/index.html';
     browser.get(URL + '#/');
     waitForElement('hello-cmp');
 

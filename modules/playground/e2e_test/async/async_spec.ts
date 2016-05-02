@@ -1,7 +1,7 @@
-import {verifyNoBrowserErrors} from '@angular/testing/src/e2e_util';
+import {verifyNoBrowserErrors} from '@angular/platform-browser/testing_e2e';
 
 describe('async', () => {
-  var URL = 'playground/src/async/index.html';
+  var URL = 'all/playground/src/async/index.html';
 
   beforeEach(() => browser.get(URL));
 

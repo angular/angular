@@ -2,7 +2,7 @@ import {verifyNoBrowserErrors} from '@angular/platform-browser/testing/e2e_util'
 
 describe('key_events', function() {
 
-  var URL = 'playground/src/key_events/index.html';
+  var URL = 'all/playground/src/key_events/index.html?bundles=false';
 
   afterEach(verifyNoBrowserErrors);
   beforeEach(() => { browser.get(URL); });

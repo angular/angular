@@ -1,8 +1,8 @@
-import {verifyNoBrowserErrors} from '@angular/testing/src/e2e_util';
+import {verifyNoBrowserErrors} from '@angular/platform-browser/testing_e2e';
 
 describe('SVG', function() {
 
-  var URL = 'playground/src/svg/index.html';
+  var URL = 'all/playground/src/svg/index.html';
 
   afterEach(verifyNoBrowserErrors);
   beforeEach(() => { browser.get(URL); });

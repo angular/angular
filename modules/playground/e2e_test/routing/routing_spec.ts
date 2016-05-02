@@ -1,4 +1,4 @@
-import {verifyNoBrowserErrors} from '@angular/testing/src/e2e_util';
+import {verifyNoBrowserErrors} from '@angular/platform-browser/testing_e2e';
 
 function waitForElement(selector) {
   var EC = (<any>protractor).ExpectedConditions;
@@ -11,7 +11,7 @@ describe('routing inbox-app', () => {
   afterEach(verifyNoBrowserErrors);
 
   describe('index view', () => {
-    var URL = 'playground/src/routing/';
+    var URL = 'all/playground/src/routing/';
 
     it('should list out the current collection of items', () => {
       browser.get(URL);
@@ -31,7 +31,7 @@ describe('routing inbox-app', () => {
 
 
   describe('drafts view', () => {
-    var URL = 'playground/src/routing/#/drafts';
+    var URL = 'all/playground/src/routing/#/drafts';
 
     it('should navigate to the drafts view when the drafts link is clicked', () => {
       browser.get(URL);
@@ -55,7 +55,7 @@ describe('routing inbox-app', () => {
 
 
   describe('detail view', () => {
-    var URL = 'playground/src/routing/';
+    var URL = 'all/playground/src/routing/';
 
     it('should navigate to the detail view when an email is clicked', () => {
       browser.get(URL);

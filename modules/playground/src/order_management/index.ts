@@ -1,4 +1,4 @@
-import {bootstrap} from '@angular/platform-browser';
+import {bootstrap} from '@angular/platform-browser-dynamic';
 import {
   Component,
   Directive,
@@ -12,7 +12,7 @@ import {
 } from '@angular/core';
 import {NgIf, NgFor, FORM_DIRECTIVES} from '@angular/common';
 
-import {ListWrapper} from '@angular/facade';
+import {ListWrapper} from '@angular/core/src/facade/collection';
 
 /**
  * You can find the Angular 1 implementation of this example here:

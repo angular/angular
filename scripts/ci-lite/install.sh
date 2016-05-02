@@ -39,7 +39,7 @@ echo 'travis_fold:end:install.node_modules'
 
 # Install Chromium
 echo 'travis_fold:start:install.chromium'
-if [[ ${TRAVIS} && ${CI_MODE} == "js" ]]; then
+if [[ ${CI_MODE} == "js" || ${CI_MODE} == "e2e" ]]; then
   ./scripts/ci/install_chromium.sh
 fi
 echo 'travis_fold:end:install-chromium'
@@ -72,9 +72,8 @@ $(npm bin)/tsd reinstall --overwrite --config modules/angular1_router/tsd.json
 echo 'travis_fold:end:install.typings'
 
 
-# TODO: install webdriver stuff
 # node tools/chromedriverpatch.js
-# webdriver-manager update
+$(npm bin)/webdriver-manager update
 
 # TODO: install bower packages
 # bower install

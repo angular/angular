@@ -1,10 +1,10 @@
-import {verifyNoBrowserErrors} from '@angular/testing/src/e2e_util';
+import {verifyNoBrowserErrors} from '@angular/platform-browser/testing_e2e';
 
 describe('Template-Driven Forms', function() {
 
   afterEach(verifyNoBrowserErrors);
 
-  var URL = 'playground/src/template_driven_forms/index.html';
+  var URL = 'all/playground/src/template_driven_forms/index.html';
 
   it('should display errors', function() {
     browser.get(URL);

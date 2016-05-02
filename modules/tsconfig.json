@@ -26,7 +26,6 @@
     "benchmarks_external",
     "benchpress",
     "payload_tests",
-    "playground",
     "rollup-test",
     "upgrade-ts2dart.d.ts",
     "zone-ts2dart.d.ts"

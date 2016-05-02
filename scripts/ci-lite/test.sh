@@ -11,7 +11,7 @@ cd ../..
 
 ./scripts/ci-lite/lint.sh
 ./scripts/ci-lite/test_js.sh
-./scripts/ci-lite/test_build_only.sh
+./scripts/ci-lite/test_e2e.sh
 ./scripts/ci-lite/test_saucelabs.sh
 ./scripts/ci-lite/test_browserstack.sh
 

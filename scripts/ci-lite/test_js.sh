@@ -15,16 +15,16 @@ source ./env.sh
 cd ../..
 
 
-echo 'travis_fold:start:test.node'
+echo 'travis_fold:start:test.unit.node'
 
 # Run unit tests in node
 node ./dist/tools/tsc-watch/ node
 
-echo 'travis_fold:end:test.node'
+echo 'travis_fold:end:test.unit.node'
 
 
 
-echo 'travis_fold:start:test.localChrome'
+echo 'travis_fold:start:test.unit.localChrome'
 
 # rebuild since codegen has overwritten some files.
 $(npm bin)/ng2tc -p modules/tsconfig.json
@@ -35,8 +35,7 @@ if [[ ${TRAVIS} ]]; then
 fi
 
 $(npm bin)/karma start ./karma-js.conf.js --single-run --browsers=${KARMA_JS_BROWSERS}
-echo 'travis_fold:end:test.localChrome'
-
+echo 'travis_fold:end:test.unit.localChrome'
 
 
 echo 'travis_fold:end:test.js'

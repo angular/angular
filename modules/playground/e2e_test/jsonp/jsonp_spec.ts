@@ -1,11 +1,11 @@
-import {verifyNoBrowserErrors} from '@angular/testing/src/e2e_util';
+import {verifyNoBrowserErrors} from '@angular/platform-browser/testing_e2e';
 
 describe('jsonp', function() {
 
   afterEach(verifyNoBrowserErrors);
 
   describe('fetching', function() {
-    var URL = 'playground/src/jsonp/index.html';
+    var URL = 'all/playground/src/jsonp/index.html';
 
     it('should fetch and display people', function() {
       browser.get(URL);

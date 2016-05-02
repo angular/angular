@@ -1,20 +1,9 @@
-import {Component, Injectable} from 'angular2/core';
-import {
-  Routes,
-  Route,
-  Router,
-  ROUTER_DIRECTIVES,
-  ROUTER_PROVIDERS,
-  OnActivate,
-  RouteSegment,
-  RouteTree,
-  UrlTree
-} from 'angular2/alt_router';
+import {Component, Injectable} from '@angular/core';
+import {RouterLink, RouteConfig, Router, Route, RouterOutlet, RouteParams} from '@angular/router';
 import * as db from './data';
-import {Location} from 'angular2/platform/common';
-import {PromiseWrapper} from 'angular2/src/facade/async';
-import {isPresent, DateWrapper} from 'angular2/src/facade/lang';
-import {PromiseCompleter} from 'angular2/src/facade/promise';
+import {Location} from '@angular/common';
+import {PromiseWrapper, PromiseCompleter} from '@angular/core/src/facade/async';
+import {isPresent, DateWrapper} from '@angular/core/src/facade/lang';
 
 class InboxRecord {
   id: string = '';
@@ -92,34 +81,27 @@ class DbService {
   }
 }
 
-@Component(
-    {selector: 'inbox-detail', directives: ROUTER_DIRECTIVES, templateUrl: 'inbox-detail.html'})
-class InboxDetailCmp implements OnActivate {
+@Component({selector: 'inbox-detail', directives: [RouterLink], templateUrl: 'app/inbox-detail.html'})
+class InboxDetailCmp {
   record: InboxRecord = new InboxRecord();
   ready: boolean = false;
 
-  constructor(private _db: DbService) {}
-
-  routerOnActivate(curr: RouteSegment, prev?: RouteSegment, currTree?: RouteTree,
-                   prevTree?: RouteTree): void {
-    let id = curr.getParam("id");
-    this._db.email(id).then(data => this.record.setData(data));
+  constructor(db: DbService, params: RouteParams) {
+    var id = params.get('id');
+    PromiseWrapper.then(db.email(id), (data) => { this.record.setData(data); });
   }
 }
 
-@Component({selector: 'inbox', templateUrl: 'inbox.html', directives: ROUTER_DIRECTIVES})
-class InboxCmp implements OnActivate {
+@Component({selector: 'inbox', templateUrl: 'app/inbox.html', directives: [RouterLink]})
+class InboxCmp {
   items: InboxRecord[] = [];
   ready: boolean = false;
 
-  constructor(private _db: DbService) {}
-
-  routerOnActivate(curr: RouteSegment, prev?: RouteSegment, currTree?: RouteTree,
-                   prevTree?: RouteTree): void {
-    var sortType = curr.getParam('sort');
+  constructor(public router: Router, db: DbService, params: RouteParams) {
+    var sortType = params.get('sort');
     var sortEmailsByDate = isPresent(sortType) && sortType == "date";
 
-    PromiseWrapper.then(this._db.emails(), (emails: any[]) => {
+    PromiseWrapper.then(db.emails(), (emails: any[]) => {
       this.ready = true;
       this.items = emails.map(data => new InboxRecord(data));
 
@@ -135,12 +117,12 @@ class InboxCmp implements OnActivate {
 }
 
 
-@Component({selector: 'drafts', templateUrl: 'drafts.html', directives: ROUTER_DIRECTIVES})
+@Component({selector: 'drafts', templateUrl: 'app/drafts.html', directives: [RouterLink]})
 class DraftsCmp {
   items: InboxRecord[] = [];
   ready: boolean = false;
 
-  constructor(db: DbService) {
+  constructor(public router: Router, db: DbService) {
     PromiseWrapper.then(db.drafts(), (drafts: any[]) => {
       this.ready = true;
       this.items = drafts.map(data => new InboxRecord(data));
@@ -150,17 +132,22 @@ class DraftsCmp {
 
 @Component({
   selector: 'inbox-app',
-  providers: [DbService, ROUTER_PROVIDERS],
-  templateUrl: 'inbox-app.html',
-  directives: ROUTER_DIRECTIVES,
+  viewProviders: [DbService],
+  templateUrl: 'app/inbox-app.html',
+  directives: [RouterOutlet, RouterLink]
 })
-@Routes([
-  new Route({path: '/', component: InboxCmp}),
-  new Route({path: '/drafts', component: DraftsCmp}),
-  new Route({path: '/detail/:id', component: InboxDetailCmp})
+@RouteConfig([
+  new Route({path: '/', component: InboxCmp, name: 'Inbox'}),
+  new Route({path: '/drafts', component: DraftsCmp, name: 'Drafts'}),
+  new Route({path: '/detail/:id', component: InboxDetailCmp, name: 'DetailPage'})
 ])
 export class InboxApp {
-  constructor(private _location: Location) {}
-  inboxPageActive() { return this._location.path() == ''; }
-  draftsPageActive() { return this._location.path() == '/drafts'; }
+  router: Router;
+  location: Location;
+  constructor(router: Router, location: Location) {
+    this.router = router;
+    this.location = location;
+  }
+  inboxPageActive() { return this.location.path() == ''; }
+  draftsPageActive() { return this.location.path() == '/drafts'; }
 }

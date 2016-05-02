@@ -1,5 +1,5 @@
 import {bootstrap} from '@angular/platform-browser-dynamic';
-import {Component, Directive, Host, forwardRef, Provider} from '@angular/core';
+import {Component, Directive, Host} from '@angular/core';
 import {
   ControlGroup,
   NgIf,
@@ -11,7 +11,7 @@ import {
   NgForm
 } from '@angular/common';
 
-import {RegExpWrapper, print, isPresent} from '@angular/facade';
+import {RegExpWrapper, print, isPresent} from '@angular/core/src/facade/lang';
 
 /**
  * A domain model we are binding the form controls to.

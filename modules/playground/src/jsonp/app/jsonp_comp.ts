@@ -1,6 +1,5 @@
 import {Component} from '@angular/core';
-import {Jsonp, Response} from '@angular/http/http';
-import {ObservableWrapper} from '@angular/facade';
+import {Jsonp} from '@angular/http';
 
 @Component({
   selector: 'jsonp-app',

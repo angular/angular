@@ -1,4 +1,4 @@
-import {verifyNoBrowserErrors} from '@angular/testing/src/e2e_util';
+import {verifyNoBrowserErrors} from '@angular/platform-browser/testing_e2e';
 
 describe("WebWorker Router", () => {
   beforeEach(() => {
@@ -14,7 +14,7 @@ describe("WebWorker Router", () => {
 
   let contentSelector = "app main h1";
   let navSelector = "app nav ul";
-  var baseUrl = "playground/src/web_workers/router/index.html";
+  var baseUrl = 'all/playground/src/web_workers/router/index.html';
 
   it("should route on click", () => {
     browser.get(baseUrl);

@@ -1,8 +1,7 @@
-import {bootstrap} from '@angular/platform-browser';
+import {bootstrap} from '@angular/platform-browser-dynamic';
 import {
   FORM_DIRECTIVES,
   ControlGroup,
-  NgControl,
   Validators,
   NgFormModel,
   FormBuilder,
@@ -11,7 +10,7 @@ import {
 } from '@angular/common';
 import {Component, Directive, Host} from '@angular/core';
 
-import {RegExpWrapper, print, isPresent} from '@angular/facade';
+import {RegExpWrapper, print, isPresent} from '@angular/core/src/facade/lang';
 import {AbstractControl} from '@angular/common';
 
 /**

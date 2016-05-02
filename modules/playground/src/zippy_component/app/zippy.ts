@@ -1,7 +1,7 @@
 import {Component, EventEmitter, Input, Output} from '@angular/core';
-import {ObservableWrapper} from '@angular/facade';
+import {ObservableWrapper} from '@angular/core/src/facade/async';
 
-@Component({selector: 'zippy', templateUrl: 'zippy.html'})
+@Component({selector: 'zippy', templateUrl: 'app/zippy.html'})
 export class Zippy {
   visible: boolean = true;
   @Input() title: string = '';

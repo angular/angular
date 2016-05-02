@@ -1,11 +1,11 @@
-import {verifyNoBrowserErrors} from '@angular/testing/src/e2e_util';
+import {verifyNoBrowserErrors} from '@angular/platform-browser/testing_e2e';
 
 describe('hello world', function() {
 
   afterEach(verifyNoBrowserErrors);
 
   describe('hello world app', function() {
-    var URL = 'playground/src/hello_world/index.html';
+    var URL = 'all/playground/src/hello_world/index.html';
 
     it('should greet', function() {
       browser.get(URL);

@@ -1,10 +1,10 @@
-import * as testUtil from '@angular/testing/src/e2e_util';
+import * as testUtil from '@angular/platform-browser/testing_e2e';
 
 var fs = require('fs');
 var sourceMap = require('source-map');
 
 describe('sourcemaps', function() {
-  var URL = 'playground/src/sourcemap/index.html';
+  var URL = 'all/playground/src/sourcemap/index.html';
 
   it('should map sources', function() {
     browser.get(URL);
@@ -30,7 +30,7 @@ describe('sourcemaps', function() {
 
 
       const content =
-          fs.readFileSync('dist/js/dev/es5/playground/src/sourcemap/index.js').toString("utf8");
+          fs.readFileSync('dist/all/playground/src/sourcemap/index.js').toString("utf8");
       const marker = "//# sourceMappingURL=data:application/json;base64,";
       const index = content.indexOf(marker);
       const sourceMapData =
