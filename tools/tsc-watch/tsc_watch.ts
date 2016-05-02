@@ -8,6 +8,7 @@ enum State {
 }
 
 export const TSC = 'node_modules/typescript/bin/tsc';
+export const NG2TC = 'node_modules/.bin/ng2tc';
 export type Command = (stdIn, stdErr) => Promise<number>;
 
 export class TscWatch {
@@ -39,7 +40,10 @@ export class TscWatch {
   }
 
   watch() {
-    var args = [TSC, '--project', this.tsconfig];
+    // TODO(tbosch): We don't support ng2tc in watch mode yet,
+    // so we fall back to plain tsc. However, we don't use
+    // the preprocessing of tsickle regarding decorators...
+    var args = [this.runOnce ? NG2TC : TSC, '--project', this.tsconfig];
     if (!this.runOnce) args.push('--watch');
     var tsc =
         this.runCmd(args, {}, (d) => this.consumeLine(d, false), (d) => this.consumeLine(d, true));
