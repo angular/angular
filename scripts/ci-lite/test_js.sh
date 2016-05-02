@@ -16,6 +16,7 @@ cd ../..
 
 
 echo 'travis_fold:start:test.unit.node'
+gulp test.compiler_cli
 
 # Run unit tests in node
 node ./dist/tools/tsc-watch/ node
