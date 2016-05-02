@@ -16,17 +16,27 @@ import {
   ComponentFixtureNoNgZone
 } from '@angular/compiler/testing';
 import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
-import {Injectable, provide, Component, Input, ViewMetadata, ComponentResolver} from '@angular/core';
+import {
+  Injectable,
+  provide,
+  Component,
+  Input,
+  ViewMetadata,
+  ComponentResolver
+} from '@angular/core';
 import {NgIf} from '@angular/common';
 import {IS_DART} from '../src/facade/lang';
 import {PromiseWrapper} from '../src/facade/promise';
 import {dispatchEvent} from "@angular/platform-browser/testing";
-import {withProviders} from "@angular/core/testing/test_injector"
+import {
+  withProviders
+} from "@angular/core/testing/test_injector"
 
-@Component(
-    {selector: 'child-comp', template: `<span>Original {{childBinding}}</span>`, directives: []})
-@Injectable()
-class ChildComp {
+    @Component({
+      selector: 'child-comp',
+      template: `<span>Original {{childBinding}}</span>`,
+      directives: []
+    }) @Injectable() class ChildComp {
   childBinding: string;
   constructor() { this.childBinding = 'Child'; }
 }

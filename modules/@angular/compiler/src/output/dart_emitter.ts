@@ -1,8 +1,4 @@
-import {
-  isPresent,
-  isBlank,
-  isArray
-} from '../../src/facade/lang';
+import {isPresent, isBlank, isArray} from '../../src/facade/lang';
 import {BaseException} from '../../src/facade/exceptions';
 import {CompileIdentifierMetadata} from '../compile_metadata';
 import * as o from './output_ast';

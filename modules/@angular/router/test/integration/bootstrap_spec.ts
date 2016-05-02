@@ -40,7 +40,7 @@ import {MockLocationStrategy} from '@angular/common/testing';
 import {ApplicationRef} from '@angular/core/src/application_ref';
 import {MockApplicationRef} from '@angular/core/testing';
 
-//noinspection JSAnnotator
+// noinspection JSAnnotator
 class DummyConsole implements Console {
   log(message) {}
   warn(message) {}

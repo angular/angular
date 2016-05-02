@@ -28,7 +28,7 @@ import {
   HAMMER_GESTURE_CONFIG,
   HammerGestureConfig,
   HammerGesturesPlugin
-} from './dom/events/hammer_gestures'
+} from './dom/events/hammer_gestures';
 import {DomSharedStylesHost} from './dom/shared_styles_host';
 import {AnimationBuilder} from './animate/animation_builder';
 import {BrowserDetails} from './animate/browser_details';
@@ -97,7 +97,8 @@ export {
 } from '../src/dom/events/hammer_gestures'
 
 
-export function initDomAdapter() {
+    export function
+    initDomAdapter() {
   BrowserDomAdapter.makeCurrent();
   wtfInit();
   BrowserGetTestability.init();

@@ -1,8 +1,5 @@
 import {ViewEncapsulation, Injectable} from '@angular/core';
-import {
-  CompileIdentifierMetadata,
-  CompileDirectiveMetadata
-} from './compile_metadata';
+import {CompileIdentifierMetadata, CompileDirectiveMetadata} from './compile_metadata';
 import * as o from './output/output_ast';
 import {ShadowCss} from './shadow_css';
 import {UrlResolver} from './url_resolver';

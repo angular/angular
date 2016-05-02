@@ -1569,7 +1569,6 @@ var firstTask = true;
 
 
 
-
 gulp.on('task_start', (e) => {
   if (firstTask) {
     firstTask = false;

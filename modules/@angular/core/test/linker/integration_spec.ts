@@ -10,12 +10,7 @@ import {
   it,
   xit,
 } from '@angular/core/testing/testing_internal';
-import {
-  containsRegexp,
-  fakeAsync,
-  tick,
-  clearPendingTimers
-} from '@angular/core/testing';
+import {containsRegexp, fakeAsync, tick, clearPendingTimers} from '@angular/core/testing';
 import {TestComponentBuilder, ComponentFixture} from '@angular/compiler/testing';
 import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
@@ -163,14 +158,14 @@ function declareTests(isJit: boolean) {
                .then((fixture) => {
                  fixture.debugElement.componentInstance.ctxProp = 'Initial aria label';
                  fixture.detectChanges();
-                 expect(
-                     getDOM().getAttribute(fixture.debugElement.children[0].nativeElement, 'aria-label'))
+                 expect(getDOM().getAttribute(fixture.debugElement.children[0].nativeElement,
+                                              'aria-label'))
                      .toEqual('Initial aria label');
 
                  fixture.debugElement.componentInstance.ctxProp = 'Changed aria label';
                  fixture.detectChanges();
-                 expect(
-                     getDOM().getAttribute(fixture.debugElement.children[0].nativeElement, 'aria-label'))
+                 expect(getDOM().getAttribute(fixture.debugElement.children[0].nativeElement,
+                                              'aria-label'))
                      .toEqual('Changed aria label');
 
                  async.done();
@@ -187,12 +182,14 @@ function declareTests(isJit: boolean) {
 
                  fixture.debugElement.componentInstance.ctxProp = 'bar';
                  fixture.detectChanges();
-                 expect(getDOM().getAttribute(fixture.debugElement.children[0].nativeElement, 'foo'))
+                 expect(
+                     getDOM().getAttribute(fixture.debugElement.children[0].nativeElement, 'foo'))
                      .toEqual('bar');
 
                  fixture.debugElement.componentInstance.ctxProp = null;
                  fixture.detectChanges();
-                 expect(getDOM().hasAttribute(fixture.debugElement.children[0].nativeElement, 'foo'))
+                 expect(
+                     getDOM().hasAttribute(fixture.debugElement.children[0].nativeElement, 'foo'))
                      .toBeFalsy();
 
                  async.done();
@@ -1087,7 +1084,8 @@ function declareTests(isJit: boolean) {
                .then((fixture) => {
                  fixture.detectChanges();
 
-                 expect(getDOM().getAttribute(fixture.debugElement.children[0].nativeElement, "role"))
+                 expect(
+                     getDOM().getAttribute(fixture.debugElement.children[0].nativeElement, "role"))
                      .toEqual("button");
 
                  async.done();
@@ -1136,9 +1134,9 @@ function declareTests(isJit: boolean) {
                    var dispatchedEvent = getDOM().createMouseEvent('click');
                    var dispatchedEvent2 = getDOM().createMouseEvent('click');
                    getDOM().dispatchEvent(fixture.debugElement.children[0].nativeElement,
-                                     dispatchedEvent);
+                                          dispatchedEvent);
                    getDOM().dispatchEvent(fixture.debugElement.children[1].nativeElement,
-                                     dispatchedEvent2);
+                                          dispatchedEvent2);
                    expect(getDOM().isPrevented(dispatchedEvent)).toBe(true);
                    expect(getDOM().isPrevented(dispatchedEvent2)).toBe(false);
                    expect(getDOM().getChecked(fixture.debugElement.children[0].nativeElement))
@@ -1379,7 +1377,8 @@ function declareTests(isJit: boolean) {
                             }))
                .createAsync(MyComp)
                .then((fixture) => {
-                 expect(getDOM().querySelectorAll(fixture.debugElement.nativeElement, 'script').length)
+                 expect(
+                     getDOM().querySelectorAll(fixture.debugElement.nativeElement, 'script').length)
                      .toEqual(0);
                  async.done();
                });
@@ -2531,7 +2530,8 @@ class DuplicateDir {
 @Directive({selector: '[no-duplicate]'})
 class OtherDuplicateDir {
   constructor(elRef: ElementRef) {
-    getDOM().setText(elRef.nativeElement, getDOM().getText(elRef.nativeElement) + 'othernoduplicate');
+    getDOM().setText(elRef.nativeElement,
+                     getDOM().getText(elRef.nativeElement) + 'othernoduplicate');
   }
 }
 

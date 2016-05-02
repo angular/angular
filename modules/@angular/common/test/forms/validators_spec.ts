@@ -8,12 +8,7 @@ import {
   beforeEach,
   afterEach
 } from '@angular/core/testing/testing_internal';
-import {
-  fakeAsync,
-  flushMicrotasks,
-  Log,
-  tick
-} from '@angular/core/testing';
+import {fakeAsync, flushMicrotasks, Log, tick} from '@angular/core/testing';
 import {ControlGroup, Control, Validators, AbstractControl, ControlArray} from '@angular/common';
 import {PromiseWrapper} from '../../src/facade/promise';
 import {EventEmitter, ObservableWrapper, TimerWrapper} from '../../src/facade/async';

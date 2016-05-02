@@ -1,9 +1,5 @@
 import {reflector} from '@angular/core';
-import {
-  isPresent,
-  IS_DART,
-  FunctionWrapper
-} from '../../src/facade/lang';
+import {isPresent, IS_DART, FunctionWrapper} from '../../src/facade/lang';
 import {ObservableWrapper} from '../../src/facade/async';
 import {BaseException, unimplemented} from '../../src/facade/exceptions';
 import {ListWrapper} from '../../src/facade/collection';

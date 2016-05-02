@@ -66,7 +66,7 @@ export function main() {
   describe('test APIs for the browser', () => {
     describe('angular2 jasmine matchers', () => {
       describe('toHaveCssClass', () => {
-       it('should assert that the CSS class is present', () => {
+        it('should assert that the CSS class is present', () => {
           var el = document.createElement('div');
           el.classList.add('matias');
           expect(el).toHaveCssClass('matias');

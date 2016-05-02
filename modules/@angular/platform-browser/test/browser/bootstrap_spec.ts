@@ -216,9 +216,10 @@ export function main() {
     it('should unregister change detectors when components are disposed',
        inject([AsyncTestCompleter], (async) => {
          var platform = createPlatform(ReflectiveInjector.resolveAndCreate(BROWSER_PROVIDERS));
-         var app = ReflectiveInjector.resolveAndCreate([BROWSER_APP_DYNAMIC_PROVIDERS, testProviders],
-                                                       platform.injector)
-                       .get(ApplicationRef);
+         var app =
+             ReflectiveInjector.resolveAndCreate([BROWSER_APP_DYNAMIC_PROVIDERS, testProviders],
+                                                 platform.injector)
+                 .get(ApplicationRef);
          coreLoadAndBootstrap(app.injector, HelloRootCmp)
              .then((ref) => {
                ref.destroy();

@@ -197,15 +197,15 @@ export function main() {
                // adapter
                // can't handle css child selectors.
                expect(getDOM().getAttribute(fixture.debugElement.query(By.css('book-cmp'))
-                                           .query(By.css('a'))
-                                           .nativeElement,
-                                       'href'))
+                                                .query(By.css('a'))
+                                                .nativeElement,
+                                            'href'))
                    .toEqual('/book/1984/page/100');
 
                expect(getDOM().getAttribute(fixture.debugElement.query(By.css('page-cmp'))
-                                           .query(By.css('a'))
-                                           .nativeElement,
-                                       'href'))
+                                                .query(By.css('a'))
+                                                .nativeElement,
+                                            'href'))
                    .toEqual('/book/1984/page/2');
                async.done();
              });

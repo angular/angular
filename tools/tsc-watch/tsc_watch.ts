@@ -2,27 +2,33 @@ import {spawn} from 'child_process';
 import {resolve} from 'url';
 
 enum State {
-  idle, waiting, error
+  idle,
+  waiting,
+  error
 }
 
 export const TSC = 'node_modules/typescript/bin/tsc';
 export type Command = (stdIn, stdErr) => Promise<number>;
 
 export class TscWatch {
-  private tsconfig:string;
-  private start:string|RegExp;
-  private error:string|RegExp;
-  private complete:string|RegExp;
-  private onStartCmds:Array<string[]|Command>;
-  private onChangeCmds:Array<string[]|Command>;
-  private state:State;
-  private triggered:Promise<number> = null;
+  private tsconfig: string;
+  private start: string | RegExp;
+  private error: string | RegExp;
+  private complete: string | RegExp;
+  private onStartCmds: Array<string[] | Command>;
+  private onChangeCmds: Array<string[] | Command>;
+  private state: State;
+  private triggered: Promise<number> = null;
   private runOnce: boolean = false;
 
-  constructor({tsconfig, start, error, complete, onStartCmds=null, onChangeCmds=null}:
-    {tsconfig:string, error:string|RegExp, start:string, complete:string,
-      onStartCmds?:Array<string[]|Command>, onChangeCmds?:Array<string[]|Command>})
-  {
+  constructor({tsconfig, start, error, complete, onStartCmds = null, onChangeCmds = null}: {
+    tsconfig: string,
+    error: string | RegExp,
+    start: string,
+    complete: string,
+    onStartCmds?: Array<string[] | Command>,
+    onChangeCmds?: Array<string[] | Command>
+  }) {
     console.log('Watching:', tsconfig, 'in', process.cwd());
     this.tsconfig = tsconfig;
     this.start = start;
@@ -35,7 +41,8 @@ export class TscWatch {
   watch() {
     var args = [TSC, '--project', this.tsconfig];
     if (!this.runOnce) args.push('--watch');
-    var tsc = this.runCmd(args, {}, (d) => this.consumeLine(d, false), (d) => this.consumeLine(d, true));
+    var tsc =
+        this.runCmd(args, {}, (d) => this.consumeLine(d, false), (d) => this.consumeLine(d, true));
     if (this.runOnce) {
       tsc.then(() => this.triggerCmds(), code => process.exit(code));
     }
@@ -43,27 +50,27 @@ export class TscWatch {
     this.onStartCmds.forEach((cmd) => this.runCmd(cmd, () => null, () => null));
   }
 
-  private runCmd(argsOrCmd: string[]|Command, env?,
-              stdOut = pipeStdOut, stdErr = pipeStdErr):Promise<number>
-  {
+  private runCmd(argsOrCmd: string[] | Command, env?, stdOut = pipeStdOut,
+                 stdErr = pipeStdErr): Promise<number> {
     if (typeof argsOrCmd == 'function') {
       return (argsOrCmd as Command)(stdErr, stdOut);
     } else if (argsOrCmd instanceof Array) {
       var args = argsOrCmd as Array<string>;
       return <any>new Promise((resolve, reject) => {
-        var [cmd, ...options] = args;
-        console.log('=====>', cmd, options.join(' '));
-        var childProcess = spawn(cmd, options, {stdio: 'pipe'});
-        childProcess.stdout.on('data', stdOut);
-        childProcess.stderr.on('data', stdErr);
-        var onExit = () => childProcess.kill();
-        childProcess.on('close', (code: number) => {
-          process.removeListener('exit', onExit);
-          console.log('EXIT:', code, '<=====', args.join(' '));
-          code ? reject(code) : resolve(code);
-        });
-        process.on('exit', onExit);
-      }).catch(reportError);
+               var [cmd, ...options] = args;
+               console.log('=====>', cmd, options.join(' '));
+               var childProcess = spawn(cmd, options, {stdio: 'pipe'});
+               childProcess.stdout.on('data', stdOut);
+               childProcess.stderr.on('data', stdErr);
+               var onExit = () => childProcess.kill();
+               childProcess.on('close', (code: number) => {
+                 process.removeListener('exit', onExit);
+                 console.log('EXIT:', code, '<=====', args.join(' '));
+                 code ? reject(code) : resolve(code);
+               });
+               process.on('exit', onExit);
+             })
+          .catch(reportError);
     } else {
       throw new Error('Expecting function or an array of strings...');
     }
@@ -74,7 +81,7 @@ export class TscWatch {
     this.watch();
   }
 
-  consumeLine(buffer:Buffer, isStdError:boolean) {
+  consumeLine(buffer: Buffer, isStdError: boolean) {
     var line = '' + buffer;
     if (contains(line, this.start)) {
       console.log('==============================================================================');
@@ -92,7 +99,8 @@ export class TscWatch {
         this.state = State.idle;
       } else {
         if (this.triggered) {
-          this.triggered.then(() => this.triggerCmds(), (e) => {console.log("Error while running commands....", e)});
+          this.triggered.then(() => this.triggerCmds(),
+                              (e) => {console.log("Error while running commands....", e)});
         } else {
           this.triggerCmds();
         }
@@ -103,12 +111,10 @@ export class TscWatch {
   }
 
   triggerCmds() {
-    var cmdPromise:Promise<number> = Promise.resolve();
-    this.onChangeCmds.forEach((cmd:string[]|Command) => {
-      cmdPromise = cmdPromise.then(() => {
-        return this.runCmd(<string[]>cmd);
-      })
-    });
+    var cmdPromise: Promise<number> = Promise.resolve();
+    this.onChangeCmds.forEach((cmd: string[] | Command) => {cmdPromise = cmdPromise.then(() => {
+                                return this.runCmd(<string[]>cmd);
+                              })});
     cmdPromise.then(() => this.triggered = null, (code) => {
       if (this.runOnce) {
         if (typeof code != 'number') {
@@ -116,7 +122,7 @@ export class TscWatch {
           process.exit(1);
         }
         process.exit(code);
-      } else  {
+      } else {
         this.triggered = null;
       }
     });
@@ -124,7 +130,7 @@ export class TscWatch {
   }
 }
 
-function stdOut(data:Buffer, isStdError:boolean) {
+function stdOut(data: Buffer, isStdError: boolean) {
   if (isStdError) {
     process.stderr.write(data);
   } else {
@@ -132,7 +138,7 @@ function stdOut(data:Buffer, isStdError:boolean) {
   }
 }
 
-function contains(line: string, text: string| RegExp): boolean {
+function contains(line: string, text: string | RegExp): boolean {
   if (typeof text == 'string') {
     return line.indexOf(text as string) != -1;
   } else if (text instanceof RegExp) {
@@ -153,5 +159,9 @@ export function reportError(e) {
   return Promise.reject(e);
 }
 
-function pipeStdOut(d) { process.stdout.write(d); }
-function pipeStdErr(d) { process.stderr.write(d); }
+function pipeStdOut(d) {
+  process.stdout.write(d);
+}
+function pipeStdErr(d) {
+  process.stderr.write(d);
+}

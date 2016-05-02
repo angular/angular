@@ -23,7 +23,10 @@ import {DOCUMENT} from '@angular/platform-browser';
 import {getDOM} from '../platform_browser_private';
 import {RootRenderer} from '@angular/core';
 import {DomRootRenderer, DomRootRenderer_} from '../../platform-browser/src/dom/dom_renderer';
-import {DomSharedStylesHost, SharedStylesHost} from '../../platform-browser/src/dom/shared_styles_host';
+import {
+  DomSharedStylesHost,
+  SharedStylesHost
+} from '../../platform-browser/src/dom/shared_styles_host';
 import {
   EventManager,
   EVENT_MANAGER_PLUGINS,

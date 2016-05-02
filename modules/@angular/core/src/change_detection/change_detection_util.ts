@@ -1,8 +1,5 @@
 import {looseIdentical, isPrimitive} from '../../src/facade/lang';
-import {
-  isListLikeIterable,
-  areIterablesEqual
-} from '../../src/facade/collection';
+import {isListLikeIterable, areIterablesEqual} from '../../src/facade/collection';
 
 export {looseIdentical} from '../../src/facade/lang';
 export var uninitialized: Object = /*@ts2dart_const*/ new Object();

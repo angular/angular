@@ -7,9 +7,12 @@ import {
   HostMetadata,
   SkipSelfMetadata,
   Provider,
-  PLATFORM_DIRECTIVES, PLATFORM_PIPES,
+  PLATFORM_DIRECTIVES,
+  PLATFORM_PIPES,
   reflector,
-  Injectable, Inject, Optional,
+  Injectable,
+  Inject,
+  Optional,
   ViewMetadata,
   NoAnnotationError,
   QueryMetadata,
@@ -17,10 +20,7 @@ import {
   InjectMetadata,
   ViewQueryMetadata
 } from '@angular/core';
-import {
-  constructDependencies,
-  LIFECYCLE_HOOKS_VALUES, ReflectorReader
-} from '../core_private';
+import {constructDependencies, LIFECYCLE_HOOKS_VALUES, ReflectorReader} from '../core_private';
 import {
   Type,
   isBlank,
@@ -413,7 +413,7 @@ function calcTemplateBaseUrl(reflector: ReflectorReader, type: any,
     var moduleId = cmpMetadata.moduleId;
     var scheme = getUrlScheme(moduleId);
     return isPresent(scheme) && scheme.length > 0 ? moduleId :
-      `package:${moduleId}${MODULE_SUFFIX}`;
+                                                    `package:${moduleId}${MODULE_SUFFIX}`;
   }
 
   return reflector.importUri(type);

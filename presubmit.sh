@@ -3,6 +3,8 @@
 set -e -o pipefail
 
 cd `dirname $0`
+gulp lint
+gulp check-format
 export NODE_PATH=$NODE_PATH:$(pwd)/dist/all
 ./build.sh;
 $(npm bin)/tsc -p tools

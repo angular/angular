@@ -1,11 +1,4 @@
-import {
-  Type,
-  isPresent,
-  isFunction,
-  global,
-  stringify,
-  ConcreteType
-} from '../../src/facade/lang';
+import {Type, isPresent, isFunction, global, stringify, ConcreteType} from '../../src/facade/lang';
 import {BaseException} from '../../src/facade/exceptions';
 import {GetterFn, SetterFn, MethodFn} from './types';
 import {PlatformReflectionCapabilities} from './platform_reflection_capabilities';

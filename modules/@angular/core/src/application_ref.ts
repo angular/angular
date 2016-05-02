@@ -1,12 +1,5 @@
 import {NgZone, NgZoneError} from './zone/ng_zone';
-import {
-  Type,
-  isBlank,
-  isPresent,
-  assertionsEnabled,
-  lockMode,
-  isPromise
-} from '../src/facade/lang';
+import {Type, isBlank, isPresent, assertionsEnabled, lockMode, isPromise} from '../src/facade/lang';
 import {Injector, Injectable} from './di';
 import {PLATFORM_INITIALIZER, APP_INITIALIZER} from './application_tokens';
 import {PromiseWrapper, ObservableWrapper} from '../src/facade/async';
@@ -14,11 +7,7 @@ import {ListWrapper} from '../src/facade/collection';
 import {TestabilityRegistry, Testability} from './testability/testability';
 import {ComponentResolver} from './linker/component_resolver';
 import {ComponentRef, ComponentFactory} from './linker/component_factory';
-import {
-  BaseException,
-  ExceptionHandler,
-  unimplemented
-} from '../src/facade/exceptions';
+import {BaseException, ExceptionHandler, unimplemented} from '../src/facade/exceptions';
 import {Console} from './console';
 import {wtfLeave, wtfCreateScope, WtfScopeFn} from './profile/profile';
 import {ChangeDetectorRef} from './change_detection/change_detector_ref';

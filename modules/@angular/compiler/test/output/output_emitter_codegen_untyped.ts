@@ -10,12 +10,11 @@ export function getExpressions(): any {
 }
 
 // Generator
-export function emit () {
+export function emit() {
   var emitter = new JavaScriptEmitter();
   var emittedCode =
-    emitter.emitStatements(
-      assetUrl('compiler', 'output/output_emitter_codegen_untyped', 'test'),
-      codegenStmts, codegenExportsVars);
+      emitter.emitStatements(assetUrl('compiler', 'output/output_emitter_codegen_untyped', 'test'),
+                             codegenStmts, codegenExportsVars);
   return emittedCode;
 }
 

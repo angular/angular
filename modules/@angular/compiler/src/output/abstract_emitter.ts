@@ -1,9 +1,4 @@
-import {
-  isPresent,
-  isBlank,
-  isString,
-  StringWrapper
-} from '../../src/facade/lang';
+import {isPresent, isBlank, isString, StringWrapper} from '../../src/facade/lang';
 import {BaseException} from '../../src/facade/exceptions';
 import * as o from './output_ast';
 

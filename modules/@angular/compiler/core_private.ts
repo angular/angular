@@ -1,16 +1,19 @@
 import {__core_private__ as r, __core_private_types__ as t} from '@angular/core';
 
-export var isDefaultChangeDetectionStrategy: typeof t.isDefaultChangeDetectionStrategy = r.isDefaultChangeDetectionStrategy;
+export var isDefaultChangeDetectionStrategy: typeof t.isDefaultChangeDetectionStrategy =
+    r.isDefaultChangeDetectionStrategy;
 export type ChangeDetectorState = t.ChangeDetectorState;
 export var ChangeDetectorState: typeof t.ChangeDetectorState = r.ChangeDetectorState;
-export var CHANGE_DETECTION_STRATEGY_VALUES: typeof t.CHANGE_DETECTION_STRATEGY_VALUES = r.CHANGE_DETECTION_STRATEGY_VALUES;
+export var CHANGE_DETECTION_STRATEGY_VALUES: typeof t.CHANGE_DETECTION_STRATEGY_VALUES =
+    r.CHANGE_DETECTION_STRATEGY_VALUES;
 export var constructDependencies: typeof t.constructDependencies = r.constructDependencies;
 export type LifecycleHooks = t.LifecycleHooks;
 export var LifecycleHooks: typeof t.LifecycleHooks = r.LifecycleHooks;
 export var LIFECYCLE_HOOKS_VALUES: typeof t.LIFECYCLE_HOOKS_VALUES = r.LIFECYCLE_HOOKS_VALUES;
 export type ReflectorReader = t.ReflectorReader;
 export var ReflectorReader: typeof t.ReflectorReader = r.ReflectorReader;
-export var ReflectorComponentResolver: typeof t.ReflectorComponentResolver = r.ReflectorComponentResolver;
+export var ReflectorComponentResolver: typeof t.ReflectorComponentResolver =
+    r.ReflectorComponentResolver;
 export type AppElement = t.AppElement;
 export var AppElement: typeof t.AppElement = r.AppElement;
 export var AppView: typeof t.AppView = r.AppView;
@@ -20,10 +23,12 @@ export type ViewType = t.ViewType;
 export var ViewType: typeof t.ViewType = r.ViewType;
 export var MAX_INTERPOLATION_VALUES: typeof t.MAX_INTERPOLATION_VALUES = r.MAX_INTERPOLATION_VALUES;
 export var checkBinding: typeof t.checkBinding = r.checkBinding;
-export var flattenNestedViewRenderNodes: typeof t.flattenNestedViewRenderNodes = r.flattenNestedViewRenderNodes;
+export var flattenNestedViewRenderNodes: typeof t.flattenNestedViewRenderNodes =
+    r.flattenNestedViewRenderNodes;
 export var interpolate: typeof t.interpolate = r.interpolate;
 export var ViewUtils: typeof t.ViewUtils = r.ViewUtils;
-export var VIEW_ENCAPSULATION_VALUES: typeof t.VIEW_ENCAPSULATION_VALUES = r.VIEW_ENCAPSULATION_VALUES;
+export var VIEW_ENCAPSULATION_VALUES: typeof t.VIEW_ENCAPSULATION_VALUES =
+    r.VIEW_ENCAPSULATION_VALUES;
 export var DebugContext: typeof t.DebugContext = r.DebugContext;
 export var StaticNodeDebugInfo: typeof t.StaticNodeDebugInfo = r.StaticNodeDebugInfo;
 export var devModeEqual: typeof t.devModeEqual = r.devModeEqual;
@@ -49,4 +54,3 @@ export var pureProxy10: typeof t.pureProxy10 = r.pureProxy10;
 export var castByValue: typeof t.castByValue = r.castByValue;
 export type Console = t.Console;
 export var Console: typeof t.Console = r.Console;
-

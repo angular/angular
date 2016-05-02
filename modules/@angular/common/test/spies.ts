@@ -10,6 +10,4 @@ export class SpyChangeDetectorRef extends SpyObject {
 
 export class SpyNgControl extends SpyObject {}
 
-export class SpyValueAccessor extends SpyObject {
-  writeValue: any;
-}
+export class SpyValueAccessor extends SpyObject { writeValue: any; }

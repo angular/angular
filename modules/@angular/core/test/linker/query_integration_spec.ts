@@ -269,18 +269,18 @@ export function main() {
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            var template = '<needs-tpl><template><div>light</div></template></needs-tpl>';
            tcb.overrideTemplate(MyComp0, template)
-             .createAsync(MyComp0)
-             .then((view) => {
-               view.detectChanges();
-               var needsTpl: NeedsTpl = view.debugElement.children[0].inject(NeedsTpl);
+               .createAsync(MyComp0)
+               .then((view) => {
+                 view.detectChanges();
+                 var needsTpl: NeedsTpl = view.debugElement.children[0].inject(NeedsTpl);
 
-               expect(needsTpl.vc.createEmbeddedView(needsTpl.query.first).rootNodes[0])
-                 .toHaveText('light');
-               expect(needsTpl.vc.createEmbeddedView(needsTpl.viewQuery.first).rootNodes[0])
-                 .toHaveText('shadow');
+                 expect(needsTpl.vc.createEmbeddedView(needsTpl.query.first).rootNodes[0])
+                     .toHaveText('light');
+                 expect(needsTpl.vc.createEmbeddedView(needsTpl.viewQuery.first).rootNodes[0])
+                     .toHaveText('shadow');
 
-               async.done();
-             });
+                 async.done();
+               });
          }));
 
       it('should find named TemplateRefs',
@@ -866,7 +866,9 @@ class NeedsViewChild implements AfterViewInit,
 
   ngAfterViewInit() { this.logs.push(["init", isPresent(this.child) ? this.child.text : null]); }
 
-  ngAfterViewChecked() { this.logs.push(["check", isPresent(this.child) ? this.child.text : null]); }
+  ngAfterViewChecked() {
+    this.logs.push(["check", isPresent(this.child) ? this.child.text : null]);
+  }
 }
 
 @Directive({selector: '[dir]'})

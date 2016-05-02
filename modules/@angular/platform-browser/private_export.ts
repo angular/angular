@@ -11,13 +11,9 @@ export namespace __platform_browser_private__ {
   export type DomAdapter = dom_adapter.DomAdapter;
   export var DomAdapter = dom_adapter.DomAdapter;
 
-  export function getDOM():DomAdapter{
-    return dom_adapter.getDOM();
-  }
+  export function getDOM(): DomAdapter { return dom_adapter.getDOM(); }
 
-  export function setDOM(adapter:DomAdapter){
-    return dom_adapter.setDOM(adapter);
-  }
+  export function setDOM(adapter: DomAdapter) { return dom_adapter.setDOM(adapter); }
 
   export var setRootDomAdapter = dom_adapter.setRootDomAdapter;
 
@@ -27,7 +23,7 @@ export namespace __platform_browser_private__ {
   export type AnimationBuilder = animation_builder.AnimationBuilder;
   export var AnimationBuilder = animation_builder.AnimationBuilder;
 
-  export type CssAnimationBuilder = css_animation_builder.CssAnimationBuilder
+  export type CssAnimationBuilder = css_animation_builder.CssAnimationBuilder;
   export var CssAnimationBuilder = css_animation_builder.CssAnimationBuilder;
 
   export type CssAnimationOptions = css_animation_options.CssAnimationOptions;

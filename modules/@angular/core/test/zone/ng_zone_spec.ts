@@ -9,9 +9,7 @@ import {
   xdescribe,
   xit,
 } from '@angular/core/testing/testing_internal';
-import {
-  Log
-} from '@angular/core/testing';
+import {Log} from '@angular/core/testing';
 
 import {
   PromiseCompleter,

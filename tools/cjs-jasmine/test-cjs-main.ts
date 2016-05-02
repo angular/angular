@@ -2,4 +2,4 @@ var testingPlatformServer = require('../../all/@angular/platform-server/testing/
 var testing = require('../../all/@angular/core/testing');
 
 testing.setBaseTestProviders(testingPlatformServer.TEST_SERVER_PLATFORM_PROVIDERS,
-  testingPlatformServer.TEST_SERVER_APPLICATION_PROVIDERS);
+                             testingPlatformServer.TEST_SERVER_APPLICATION_PROVIDERS);

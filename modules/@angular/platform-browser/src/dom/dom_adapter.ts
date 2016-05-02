@@ -2,11 +2,11 @@ import {isBlank, Type} from '../../src/facade/lang';
 
 var _DOM: DomAdapter = null;
 
-export function getDOM(){
+export function getDOM() {
   return _DOM;
 }
 
-export function setDOM(adapter:DomAdapter){
+export function setDOM(adapter: DomAdapter) {
   _DOM = adapter;
 }
 

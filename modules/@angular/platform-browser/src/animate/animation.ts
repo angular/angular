@@ -120,7 +120,8 @@ export class Animation {
    * @param classes
    */
   removeClasses(classes: string[]): void {
-    for (let i = 0, len = classes.length; i < len; i++) getDOM().removeClass(this.element, classes[i]);
+    for (let i = 0, len = classes.length; i < len; i++)
+      getDOM().removeClass(this.element, classes[i]);
   }
 
   /**
@@ -128,8 +129,9 @@ export class Animation {
    */
   addEvents(): void {
     if (this.totalTime > 0) {
-      this.eventClearFunctions.push(getDOM().onAndCancel(
-          this.element, getDOM().getTransitionEnd(), (event: any) => this.handleAnimationEvent(event)));
+      this.eventClearFunctions.push(
+          getDOM().onAndCancel(this.element, getDOM().getTransitionEnd(),
+                               (event: any) => this.handleAnimationEvent(event)));
     } else {
       this.handleAnimationCompleted();
     }

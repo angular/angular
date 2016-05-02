@@ -10,13 +10,7 @@ import {
 } from '@angular/core/testing/testing_internal';
 import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
 import {browserDetection} from '@angular/platform-browser/testing';
-import {
-  ObservableWrapper,
-  Observable,
-  Subject,
-  EventEmitter,
-  PromiseWrapper
-} from '../src/async';
+import {ObservableWrapper, Observable, Subject, EventEmitter, PromiseWrapper} from '../src/async';
 
 export function main() {
   describe('EventEmitter', () => {

@@ -14,7 +14,8 @@ export class BrowserDetails {
    */
   doesElapsedTimeIncludesDelay(): void {
     var div = getDOM().createElement('div');
-    getDOM().setAttribute(div, 'style', `position: absolute; top: -9999px; left: -9999px; width: 1px;
+    getDOM().setAttribute(div, 'style',
+                          `position: absolute; top: -9999px; left: -9999px; width: 1px;
       height: 1px; transition: all 1ms linear 1ms;`);
     // Firefox requires that we wait for 2 frames for some reason
     this.raf((timestamp: any) => {

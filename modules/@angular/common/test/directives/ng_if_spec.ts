@@ -28,7 +28,8 @@ export function main() {
              .createAsync(TestComponent)
              .then((fixture) => {
                fixture.detectChanges();
-               expect(getDOM().querySelectorAll(fixture.debugElement.nativeElement, 'copy-me').length)
+               expect(
+                   getDOM().querySelectorAll(fixture.debugElement.nativeElement, 'copy-me').length)
                    .toEqual(1);
                expect(fixture.debugElement.nativeElement).toHaveText('hello');
                async.done();
@@ -44,7 +45,8 @@ export function main() {
              .createAsync(TestComponent)
              .then((fixture) => {
                fixture.detectChanges();
-               expect(getDOM().querySelectorAll(fixture.debugElement.nativeElement, 'copy-me').length)
+               expect(
+                   getDOM().querySelectorAll(fixture.debugElement.nativeElement, 'copy-me').length)
                    .toEqual(1);
                expect(fixture.debugElement.nativeElement).toHaveText('hello2');
                async.done();
@@ -60,19 +62,22 @@ export function main() {
              .then((fixture) => {
                fixture.debugElement.componentInstance.booleanCondition = false;
                fixture.detectChanges();
-               expect(getDOM().querySelectorAll(fixture.debugElement.nativeElement, 'copy-me').length)
+               expect(
+                   getDOM().querySelectorAll(fixture.debugElement.nativeElement, 'copy-me').length)
                    .toEqual(0);
                expect(fixture.debugElement.nativeElement).toHaveText('');
 
                fixture.debugElement.componentInstance.booleanCondition = true;
                fixture.detectChanges();
-               expect(getDOM().querySelectorAll(fixture.debugElement.nativeElement, 'copy-me').length)
+               expect(
+                   getDOM().querySelectorAll(fixture.debugElement.nativeElement, 'copy-me').length)
                    .toEqual(1);
                expect(fixture.debugElement.nativeElement).toHaveText('hello');
 
                fixture.debugElement.componentInstance.booleanCondition = false;
                fixture.detectChanges();
-               expect(getDOM().querySelectorAll(fixture.debugElement.nativeElement, 'copy-me').length)
+               expect(
+                   getDOM().querySelectorAll(fixture.debugElement.nativeElement, 'copy-me').length)
                    .toEqual(0);
                expect(fixture.debugElement.nativeElement).toHaveText('');
 
@@ -90,31 +95,36 @@ export function main() {
              .then((fixture) => {
                fixture.debugElement.componentInstance.booleanCondition = false;
                fixture.detectChanges();
-               expect(getDOM().querySelectorAll(fixture.debugElement.nativeElement, 'copy-me').length)
+               expect(
+                   getDOM().querySelectorAll(fixture.debugElement.nativeElement, 'copy-me').length)
                    .toEqual(0);
                expect(fixture.debugElement.nativeElement).toHaveText('');
 
                fixture.debugElement.componentInstance.booleanCondition = true;
                fixture.detectChanges();
-               expect(getDOM().querySelectorAll(fixture.debugElement.nativeElement, 'copy-me').length)
+               expect(
+                   getDOM().querySelectorAll(fixture.debugElement.nativeElement, 'copy-me').length)
                    .toEqual(1);
                expect(fixture.debugElement.nativeElement).toHaveText('hello');
 
                fixture.debugElement.componentInstance.nestedBooleanCondition = false;
                fixture.detectChanges();
-               expect(getDOM().querySelectorAll(fixture.debugElement.nativeElement, 'copy-me').length)
+               expect(
+                   getDOM().querySelectorAll(fixture.debugElement.nativeElement, 'copy-me').length)
                    .toEqual(0);
                expect(fixture.debugElement.nativeElement).toHaveText('');
 
                fixture.debugElement.componentInstance.nestedBooleanCondition = true;
                fixture.detectChanges();
-               expect(getDOM().querySelectorAll(fixture.debugElement.nativeElement, 'copy-me').length)
+               expect(
+                   getDOM().querySelectorAll(fixture.debugElement.nativeElement, 'copy-me').length)
                    .toEqual(1);
                expect(fixture.debugElement.nativeElement).toHaveText('hello');
 
                fixture.debugElement.componentInstance.booleanCondition = false;
                fixture.detectChanges();
-               expect(getDOM().querySelectorAll(fixture.debugElement.nativeElement, 'copy-me').length)
+               expect(
+                   getDOM().querySelectorAll(fixture.debugElement.nativeElement, 'copy-me').length)
                    .toEqual(0);
                expect(fixture.debugElement.nativeElement).toHaveText('');
 
@@ -135,21 +145,24 @@ export function main() {
              .createAsync(TestComponent)
              .then((fixture) => {
                fixture.detectChanges();
-               expect(getDOM().querySelectorAll(fixture.debugElement.nativeElement, 'copy-me').length)
+               expect(
+                   getDOM().querySelectorAll(fixture.debugElement.nativeElement, 'copy-me').length)
                    .toEqual(3);
                expect(getDOM().getText(fixture.debugElement.nativeElement))
                    .toEqual('helloNumberhelloStringhelloFunction');
 
                fixture.debugElement.componentInstance.numberCondition = 0;
                fixture.detectChanges();
-               expect(getDOM().querySelectorAll(fixture.debugElement.nativeElement, 'copy-me').length)
+               expect(
+                   getDOM().querySelectorAll(fixture.debugElement.nativeElement, 'copy-me').length)
                    .toEqual(1);
                expect(fixture.debugElement.nativeElement).toHaveText('helloString');
 
                fixture.debugElement.componentInstance.numberCondition = 1;
                fixture.debugElement.componentInstance.stringCondition = "bar";
                fixture.detectChanges();
-               expect(getDOM().querySelectorAll(fixture.debugElement.nativeElement, 'copy-me').length)
+               expect(
+                   getDOM().querySelectorAll(fixture.debugElement.nativeElement, 'copy-me').length)
                    .toEqual(1);
                expect(fixture.debugElement.nativeElement).toHaveText('helloNumber');
                async.done();
@@ -166,13 +179,17 @@ export function main() {
                .createAsync(TestComponent)
                .then((fixture) => {
                  fixture.detectChanges();
-                 expect(getDOM().querySelectorAll(fixture.debugElement.nativeElement, 'copy-me').length)
+                 expect(getDOM()
+                            .querySelectorAll(fixture.debugElement.nativeElement, 'copy-me')
+                            .length)
                      .toEqual(1);
                  expect(fixture.debugElement.nativeElement).toHaveText('hello');
 
                  fixture.debugElement.componentInstance.numberCondition = 2;
                  fixture.detectChanges();
-                 expect(getDOM().querySelectorAll(fixture.debugElement.nativeElement, 'copy-me').length)
+                 expect(getDOM()
+                            .querySelectorAll(fixture.debugElement.nativeElement, 'copy-me')
+                            .length)
                      .toEqual(1);
                  expect(fixture.debugElement.nativeElement).toHaveText('hello');
 
@@ -188,14 +205,14 @@ export function main() {
                .createAsync(TestComponent)
                .then((fixture) => {
                  fixture.detectChanges();
-                 getDOM().addClass(getDOM().querySelector(fixture.debugElement.nativeElement, 'copy-me'),
-                              "foo");
+                 getDOM().addClass(
+                     getDOM().querySelector(fixture.debugElement.nativeElement, 'copy-me'), "foo");
 
                  fixture.debugElement.componentInstance.numberCondition = 2;
                  fixture.detectChanges();
-                 expect(
-                     getDOM().hasClass(getDOM().querySelector(fixture.debugElement.nativeElement, 'copy-me'),
-                                  "foo"))
+                 expect(getDOM().hasClass(
+                            getDOM().querySelector(fixture.debugElement.nativeElement, 'copy-me'),
+                            "foo"))
                      .toBe(true);
 
                  async.done();
@@ -212,7 +229,9 @@ export function main() {
                .createAsync(TestComponent)
                .then((fixture) => {
                  expect(() => fixture.detectChanges()).toThrowError();
-                 expect(getDOM().querySelectorAll(fixture.debugElement.nativeElement, 'copy-me').length)
+                 expect(getDOM()
+                            .querySelectorAll(fixture.debugElement.nativeElement, 'copy-me')
+                            .length)
                      .toEqual(0);
                  expect(fixture.debugElement.nativeElement).toHaveText('');
                  async.done();

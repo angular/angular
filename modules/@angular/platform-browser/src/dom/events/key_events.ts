@@ -33,7 +33,7 @@ export class KeyEventsPlugin extends EventManagerPlugin {
 
     return this.manager.getZone().runOutsideAngular(() => {
       return getDOM().onAndCancel(element, StringMapWrapper.get(parsedEvent, 'domEventName'),
-                             outsideHandler);
+                                  outsideHandler);
     });
   }
 

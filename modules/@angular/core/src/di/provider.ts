@@ -1,11 +1,4 @@
-import {
-  normalizeBool,
-  Type,
-  isType,
-  isBlank,
-  isFunction,
-  stringify
-} from '../../src/facade/lang';
+import {normalizeBool, Type, isType, isBlank, isFunction, stringify} from '../../src/facade/lang';
 import {BaseException} from '../../src/facade/exceptions';
 
 /**

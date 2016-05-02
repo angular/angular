@@ -96,10 +96,7 @@ var COMMON: string[] = [
   'NgPluralCase'
 ];
 
-var COMMON_TESTING: string[] = [
-  'MockLocationStrategy',
-  'SpyLocation'
-];
+var COMMON_TESTING: string[] = ['MockLocationStrategy', 'SpyLocation'];
 
 var COMPILER: string[] = [
   'ElementSchemaRegistry',
@@ -386,7 +383,7 @@ var PLATFORM_BROWSER: string[] = [
 var PLATFORM_BROWSER_TESTING: string[] = [
   'TEST_BROWSER_STATIC_APPLICATION_PROVIDERS',
   'TEST_BROWSER_STATIC_PLATFORM_PROVIDERS',
-  'ADDITIONAL_TEST_BROWSER_PROVIDERS', // This should be made private
+  'ADDITIONAL_TEST_BROWSER_PROVIDERS',  // This should be made private
   'BrowserDetection',
   'DOMTestComponentRenderer',
   'TestComponentRenderer',
@@ -406,19 +403,13 @@ var PLATFORM_BROWSER_DYNAMIC: string[] = [
   'UrlChangeListener:dart'
 ];
 
-var PLATFORM_BROWSER_DYNAMIC_TESTING: string[] = [
-  'TEST_BROWSER_DYNAMIC_APPLICATION_PROVIDERS',
-  'TEST_BROWSER_DYNAMIC_PLATFORM_PROVIDERS'
-];
+var PLATFORM_BROWSER_DYNAMIC_TESTING: string[] =
+    ['TEST_BROWSER_DYNAMIC_APPLICATION_PROVIDERS', 'TEST_BROWSER_DYNAMIC_PLATFORM_PROVIDERS'];
 
-var PLATFORM_SERVER: string[] = [
-  'Parse5DomAdapter'
-];
+var PLATFORM_SERVER: string[] = ['Parse5DomAdapter'];
 
-var PLATFORM_SERVER_TESTING: string[] = [
-  'TEST_SERVER_APPLICATION_PROVIDERS',
-  'TEST_SERVER_PLATFORM_PROVIDERS'
-];
+var PLATFORM_SERVER_TESTING: string[] =
+    ['TEST_SERVER_APPLICATION_PROVIDERS', 'TEST_SERVER_PLATFORM_PROVIDERS'];
 
 var UPGRADE: string[] = [
   'UpgradeAdapter',
@@ -452,10 +443,7 @@ var HTTP: string[] = [
   'XHRConnection'
 ];
 
-var HTTP_TESTING: string[] = [
-  'MockBackend',
-  'MockConnection'
-];
+var HTTP_TESTING: string[] = ['MockBackend', 'MockConnection'];
 
 var ROUTER: string[] = [
   'AsyncRoute',
@@ -480,8 +468,7 @@ var ROUTER: string[] = [
   'RouterOutlet'
 ];
 
-var ROUTER_TESTING: string[] = [
-];
+var ROUTER_TESTING: string[] = [];
 
 
 var API = {

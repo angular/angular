@@ -12,10 +12,7 @@ import {
 } from '@angular/core';
 import {isPresent} from '../../../src/facade/lang';
 import {ListWrapper} from '../../../src/facade/collection';
-import {
-  NG_VALUE_ACCESSOR,
-  ControlValueAccessor
-} from './control_value_accessor';
+import {NG_VALUE_ACCESSOR, ControlValueAccessor} from './control_value_accessor';
 import {NgControl} from './ng_control';
 
 export const RADIO_VALUE_ACCESSOR: any = /*@ts2dart_const*/ /*@ts2dart_Provider*/ {

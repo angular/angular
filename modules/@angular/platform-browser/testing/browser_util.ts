@@ -4,7 +4,7 @@ import {isPresent, isString, RegExpWrapper, StringWrapper, RegExp} from '../src/
 
 export class BrowserDetection {
   private _overrideUa: string;
-  private get _ua():string {
+  private get _ua(): string {
     if (isPresent(this._overrideUa)) {
       return this._overrideUa;
     } else {
@@ -14,9 +14,7 @@ export class BrowserDetection {
 
   static setup() { browserDetection = new BrowserDetection(null); }
 
-  constructor(ua: string) {
-    this._overrideUa = ua;
-  }
+  constructor(ua: string) { this._overrideUa = ua; }
 
   get isFirefox(): boolean { return this._ua.indexOf('Firefox') > -1; }
 

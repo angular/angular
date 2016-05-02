@@ -17,7 +17,8 @@ import {OutputEmitter} from './output/abstract_emitter';
 import * as o from './output/output_ast';
 
 import {
-  MODULE_SUFFIX, assetUrl,
+  MODULE_SUFFIX,
+  assetUrl,
 } from './util';
 
 var _COMPONENT_FACTORY_IDENTIFIER = new CompileIdentifierMetadata({

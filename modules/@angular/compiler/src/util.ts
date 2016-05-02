@@ -70,7 +70,7 @@ export class ValueTransformer implements ValueVisitor {
   visitOther(value: any, context: any): any { return value; }
 }
 
-export function assetUrl(pkg: string, path: string = null, type:string = 'src'): string {
+export function assetUrl(pkg: string, path: string = null, type: string = 'src'): string {
   if (IS_DART) {
     if (path == null) {
       return `asset:angular2/${pkg}/${pkg}.dart`;

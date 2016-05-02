@@ -7,7 +7,8 @@
  * to read information
  * from the form DOM elements.
  *
- * Forms providers are not included in default providers; you must import these providers explicitly.
+ * Forms providers are not included in default providers; you must import these providers
+ * explicitly.
  */
 export {AbstractControl, Control, ControlGroup, ControlArray} from './forms/model';
 

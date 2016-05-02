@@ -19,9 +19,11 @@ import {
   HasGetterAndSetterDecorators
 } from './reflector_common';
 import {IS_DART} from '../../src/facade/lang';
-import {browserDetection} from '@angular/platform-browser/testing'
+import {
+  browserDetection
+} from '@angular/platform-browser/testing'
 
-class AType {
+    class AType {
   value;
 
   constructor(value) { this.value = value; }

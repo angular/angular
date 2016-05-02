@@ -1,13 +1,4 @@
-import {
-  describe,
-  it,
-  iit,
-  ddescribe,
-  expect,
-  tick,
-  beforeEach,
-  containsRegexp
-} from '../testing';
+import {describe, it, iit, ddescribe, expect, tick, beforeEach, containsRegexp} from '../testing';
 import {SpyObject} from '@angular/core/testing/testing_internal';
 
 import {MapWrapper} from '../../platform-browser/src/facade/collection';

@@ -5,4 +5,3 @@ export var SelectorMatcher: typeof _.SelectorMatcher = _.SelectorMatcher;
 
 export type CssSelector = typeof _.CssSelector;
 export var CssSelector: typeof _.CssSelector = _.CssSelector;
-

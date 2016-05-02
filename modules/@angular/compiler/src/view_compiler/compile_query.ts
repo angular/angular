@@ -4,10 +4,7 @@ import {ListWrapper} from '../../src/facade/collection';
 import * as o from '../output/output_ast';
 import {Identifiers} from '../identifiers';
 
-import {
-  CompileQueryMetadata,
-  CompileTokenMap
-} from '../compile_metadata';
+import {CompileQueryMetadata, CompileTokenMap} from '../compile_metadata';
 
 import {CompileView} from './compile_view';
 import {CompileElement} from './compile_element';

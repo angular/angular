@@ -2,13 +2,7 @@
  * Public Test Library for unit testing Angular2 Applications. Uses the
  * Jasmine framework.
  */
-import {
-  inject,
-  async,
-  injectAsync,
-  TestInjector,
-  getTestInjector
-} from './test_injector';
+import {inject, async, injectAsync, TestInjector, getTestInjector} from './test_injector';
 
 import {isPromise} from '../src/facade/lang';
 

@@ -9,12 +9,7 @@ import {
   afterEach,
   inject,
 } from '@angular/core/testing/testing_internal';
-import {
-  fakeAsync,
-  flushMicrotasks,
-  Log,
-  tick
-} from '@angular/core/testing';
+import {fakeAsync, flushMicrotasks, Log, tick} from '@angular/core/testing';
 import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
 import {ControlGroup, Control, ControlArray, Validators} from '@angular/common';
 import {IS_DART, isPresent} from '../../src/facade/lang';

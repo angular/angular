@@ -1,5 +1,8 @@
 import {Provider} from '@angular/core';
-import {bootstrapApp, WORKER_APP_ROUTER} from '../../../../@angular/platform-browser/src/worker_app';
+import {
+  bootstrapApp,
+  WORKER_APP_ROUTER
+} from '../../../../@angular/platform-browser/src/worker_app';
 import {HashLocationStrategy, LocationStrategy} from '@angular/common';
 import {App} from './index_common';
 

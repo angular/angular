@@ -1,14 +1,4 @@
-import {
-  beforeEach,
-  ddescribe,
-  describe,
-  expect,
-  iit,
-  inject,
-  it,
-  xdescribe,
-  xit
-} from '../testing';
+import {beforeEach, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '../testing';
 
 import {assertionsEnabled, IS_DART} from '../../router/src/facade/lang';
 

@@ -31,28 +31,28 @@ if (globsIndex < 0) {
   args = process.argv.slice(globsIndex + 1);
 }
 
-var specFiles = args.map(function(globstr) {
-  return glob.sync(globstr, {
-    cwd: distAll,
-    ignore: [
-      // the following code and tests are not compatible with CJS/node environment
-      '@angular/platform-browser/**',
-      '@angular/platform-browser-dynamic/**',
-      '@angular/core/test/zone/**',
-      '@angular/core/test/fake_async_spec.*',
-      '@angular/common/test/forms/**',
-      '@angular/router/test/route_config/route_config_spec.*',
-      '@angular/router/test/integration/bootstrap_spec.*',
-      '@angular/integration_test/symbol_inspector/**',
-      '@angular/upgrade/**',
-      '@angular/examples/**',
-      'angular1_router/**',
-      'payload_tests/**'
-    ]
-  });
-}).reduce(function(specFiles, paths) {
-  return specFiles.concat(paths);
-}, []);
+var specFiles =
+    args.map(function(globstr) {
+          return glob.sync(globstr, {
+            cwd: distAll,
+            ignore: [
+              // the following code and tests are not compatible with CJS/node environment
+              '@angular/platform-browser/**',
+              '@angular/platform-browser-dynamic/**',
+              '@angular/core/test/zone/**',
+              '@angular/core/test/fake_async_spec.*',
+              '@angular/common/test/forms/**',
+              '@angular/router/test/route_config/route_config_spec.*',
+              '@angular/router/test/integration/bootstrap_spec.*',
+              '@angular/integration_test/symbol_inspector/**',
+              '@angular/upgrade/**',
+              '@angular/examples/**',
+              'angular1_router/**',
+              'payload_tests/**'
+            ]
+          });
+        })
+        .reduce(function(specFiles, paths) { return specFiles.concat(paths); }, []);
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 100;
 
@@ -69,4 +69,3 @@ specFiles.forEach((file) => {
   if (r.main) r.main();
 });
 jrunner.execute();
-

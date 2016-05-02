@@ -19,11 +19,8 @@ var testDataIdentifier = new CompileIdentifierMetadata({
   runtime: ExternalClass
 });
 
-var eventEmitterIdentifier = new CompileIdentifierMetadata({
-  name: 'EventEmitter',
-  moduleUrl: assetUrl('core'),
-  runtime: EventEmitter
-});
+var eventEmitterIdentifier = new CompileIdentifierMetadata(
+    {name: 'EventEmitter', moduleUrl: assetUrl('core'), runtime: EventEmitter});
 
 var enumIdentifier = new CompileIdentifierMetadata({
   name: 'ViewType.HOST',
@@ -31,11 +28,8 @@ var enumIdentifier = new CompileIdentifierMetadata({
   runtime: ViewType.HOST
 });
 
-var baseExceptionIdentifier = new CompileIdentifierMetadata({
-  name: 'BaseException',
-  moduleUrl: assetUrl('core'),
-  runtime: BaseException
-});
+var baseExceptionIdentifier = new CompileIdentifierMetadata(
+    {name: 'BaseException', moduleUrl: assetUrl('core'), runtime: BaseException});
 
 export var codegenExportsVars = [
   'getExpressions',

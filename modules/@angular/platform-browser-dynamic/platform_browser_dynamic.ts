@@ -9,16 +9,17 @@ import {getDOM} from './platform_browser_private';
 import {ReflectionCapabilities} from './core_private';
 
 export const CACHED_TEMPLATE_PROVIDER: Array<any /*Type | Provider | any[]*/> =
-  /*@ts2dart_const*/ [{provide: XHR, useClass: CachedXHR}];
+    /*@ts2dart_const*/[{provide: XHR, useClass: CachedXHR}];
 
 /**
  * An array of providers that should be passed into `application()` when bootstrapping a component.
  */
-export const BROWSER_APP_DYNAMIC_PROVIDERS: Array<any /*Type | Provider | any[]*/> = /*@ts2dart_const*/ [
-  BROWSER_APP_COMMON_PROVIDERS,
-  COMPILER_PROVIDERS,
-  {provide: XHR, useClass: XHRImpl},
-];
+export const BROWSER_APP_DYNAMIC_PROVIDERS: Array<any /*Type | Provider | any[]*/> =
+    /*@ts2dart_const*/[
+      BROWSER_APP_COMMON_PROVIDERS,
+      COMPILER_PROVIDERS,
+      {provide: XHR, useClass: XHRImpl},
+    ];
 
 
 
@@ -91,11 +92,11 @@ export const BROWSER_APP_DYNAMIC_PROVIDERS: Array<any /*Type | Provider | any[]*
  * Returns a `Promise` of {@link ComponentRef}.
  */
 export function bootstrap(
-  appComponentType: Type,
-  customProviders?: Array<any /*Type | Provider | any[]*/>): Promise<ComponentRef<any>> {
+    appComponentType: Type,
+    customProviders?: Array<any /*Type | Provider | any[]*/>): Promise<ComponentRef<any>> {
   reflector.reflectionCapabilities = new ReflectionCapabilities();
   var appInjector = ReflectiveInjector.resolveAndCreate(
-    [BROWSER_APP_DYNAMIC_PROVIDERS, isPresent(customProviders) ? customProviders : []],
-    browserPlatform().injector);
+      [BROWSER_APP_DYNAMIC_PROVIDERS, isPresent(customProviders) ? customProviders : []],
+      browserPlatform().injector);
   return coreLoadAndBootstrap(appInjector, appComponentType);
 }

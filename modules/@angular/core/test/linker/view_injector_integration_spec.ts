@@ -10,13 +10,7 @@ import {
   beforeEachProviders,
   inject,
 } from '@angular/core/testing/testing_internal';
-import {
-  fakeAsync,
-  flushMicrotasks,
-  Log,
-  tick,
-  containsRegexp
-} from '@angular/core/testing';
+import {fakeAsync, flushMicrotasks, Log, tick, containsRegexp} from '@angular/core/testing';
 import {TestComponentBuilder, ComponentFixture} from '@angular/compiler/testing';
 import {isBlank} from '../../src/facade/lang';
 import {

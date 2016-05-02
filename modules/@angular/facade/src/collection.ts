@@ -1,11 +1,4 @@
-import {
-  isJsObject,
-  global,
-  isPresent,
-  isBlank,
-  isArray,
-  getSymbolIterator
-} from './lang';
+import {isJsObject, global, isPresent, isBlank, isArray, getSymbolIterator} from './lang';
 
 export var Map = global.Map;
 export var Set = global.Set;

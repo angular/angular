@@ -10,7 +10,7 @@ import {
   it,
   xit,
 } from '@angular/core/testing/testing_internal';
-import { ComponentFixture, TestComponentBuilder } from '@angular/compiler/testing';
+import {ComponentFixture, TestComponentBuilder} from '@angular/compiler/testing';
 import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
 import {ListWrapper, StringMapWrapper, SetWrapper} from '../../src/facade/collection';
 import {Component, provide} from '@angular/core';

@@ -15,8 +15,8 @@ export function getExpressions(): any {
 export function emit() {
   var emitter = IS_DART ? new DartEmitter() : new TypeScriptEmitter();
   var emittedCode =
-    emitter.emitStatements(assetUrl('compiler', 'output/output_emitter_codegen_typed', 'test'),
-      codegenStmts, codegenExportsVars);
+      emitter.emitStatements(assetUrl('compiler', 'output/output_emitter_codegen_typed', 'test'),
+                             codegenStmts, codegenExportsVars);
   return emittedCode;
 }
 

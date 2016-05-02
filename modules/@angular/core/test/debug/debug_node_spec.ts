@@ -294,7 +294,8 @@ export function main() {
                var childTestEls = fixture.debugElement.queryAll(By.css('child-comp'));
 
                expect(childTestEls.length).toBe(1);
-               expect(getDOM().hasClass(childTestEls[0].nativeElement, 'child-comp-class')).toBe(true);
+               expect(getDOM().hasClass(childTestEls[0].nativeElement, 'child-comp-class'))
+                   .toBe(true);
 
                async.done();
              });

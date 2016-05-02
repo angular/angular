@@ -1,10 +1,5 @@
 import {isPresent} from '../../src/facade/lang';
-import {
-  Renderer,
-  RootRenderer,
-  RenderComponentType,
-  RenderDebugInfo
-} from '../render/api';
+import {Renderer, RootRenderer, RenderComponentType, RenderDebugInfo} from '../render/api';
 import {
   DebugNode,
   DebugElement,

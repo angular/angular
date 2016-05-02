@@ -316,7 +316,9 @@ export class CompileTokenMetadata implements CompileMetadataWithIdentifier {
            (isPresent(ak) && ak == token2.assetCacheKey);
   }
 
-  get name(): string { return isPresent(this.value) ? sanitizeIdentifier(this.value) : this.identifier.name; }
+  get name(): string {
+    return isPresent(this.value) ? sanitizeIdentifier(this.value) : this.identifier.name;
+  }
 }
 
 export class CompileTokenMap<VALUE> {

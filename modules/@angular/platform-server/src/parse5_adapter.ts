@@ -2,14 +2,7 @@ var parse5 = require('parse5/index');
 
 import {ListWrapper, StringMapWrapper} from '../src/facade/collection';
 import {DomAdapter, setRootDomAdapter} from '../platform_browser_private';
-import {
-  isPresent,
-  isBlank,
-  global,
-  Type,
-  setValueOnPath,
-  DateWrapper
-} from '../src/facade/lang';
+import {isPresent, isBlank, global, Type, setValueOnPath, DateWrapper} from '../src/facade/lang';
 import {BaseException} from '../src/facade/exceptions';
 import {SelectorMatcher, CssSelector} from '../compiler_private';
 import {XHR} from '@angular/compiler';

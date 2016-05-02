@@ -61,7 +61,4 @@ export const ADDITIONAL_TEST_BROWSER_PROVIDERS: Array<any /*Type | Provider | an
  * Default application providers for testing without a compiler.
  */
 export const TEST_BROWSER_STATIC_APPLICATION_PROVIDERS: Array<any /*Type | Provider | any[]*/> =
-    /*@ts2dart_const*/[
-      BROWSER_APP_COMMON_PROVIDERS,
-      ADDITIONAL_TEST_BROWSER_PROVIDERS
-    ];
+    /*@ts2dart_const*/[BROWSER_APP_COMMON_PROVIDERS, ADDITIONAL_TEST_BROWSER_PROVIDERS];

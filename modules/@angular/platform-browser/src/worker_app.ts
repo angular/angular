@@ -12,10 +12,7 @@ import {
   assertPlatform
 } from '@angular/core';
 
-export {
-  WORKER_APP_PLATFORM,
-  WORKER_APP_APPLICATION_COMMON
-} from './webworker/worker_app_common';
+export {WORKER_APP_PLATFORM, WORKER_APP_APPLICATION_COMMON} from './webworker/worker_app_common';
 export {WORKER_APP_APPLICATION} from './webworker/worker_app';
 export {
   ClientMessageBroker,

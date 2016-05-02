@@ -34,7 +34,9 @@ import {
   ClientMessageBrokerFactory,
   ClientMessageBrokerFactory_
 } from '../web_workers/shared/client_message_broker';
-import {BrowserPlatformLocation} from '@angular/platform-browser/src/browser/location/browser_platform_location';
+import {
+  BrowserPlatformLocation
+} from '@angular/platform-browser/src/browser/location/browser_platform_location';
 import {Serializer} from '../web_workers/shared/serializer';
 import {ON_WEB_WORKER} from '../web_workers/shared/api';
 import {RenderStore} from '../web_workers/shared/render_store';

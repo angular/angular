@@ -5,7 +5,8 @@ import {
   AttrAst,
   DirectiveAst,
   ProviderAst,
-  ProviderAstType, ReferenceAst
+  ProviderAstType,
+  ReferenceAst
 } from './template_ast';
 import {
   CompileTypeMetadata,

@@ -9,8 +9,8 @@ import {
   beforeEachProviders,
 } from '@angular/core/testing/testing_internal';
 import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
-import { TestInjector } from '@angular/core/testing';
-import { TestComponentBuilder } from '@angular/compiler/testing';
+import {TestInjector} from '@angular/core/testing';
+import {TestComponentBuilder} from '@angular/compiler/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {
   bind,
@@ -89,8 +89,7 @@ export function main() {
       uiRenderStore = new RenderStore();
       var testUiInjector = new TestInjector();
       testUiInjector.platformProviders = TEST_BROWSER_STATIC_PLATFORM_PROVIDERS;
-      testUiInjector.applicationProviders = TEST_BROWSER_STATIC_APPLICATION_PROVIDERS
-      ;
+      testUiInjector.applicationProviders = TEST_BROWSER_STATIC_APPLICATION_PROVIDERS;
       testUiInjector.addProviders([
         Serializer,
         provide(RenderStore, {useValue: uiRenderStore}),
@@ -144,7 +143,7 @@ export function main() {
     it('should update any element property/attributes/class/style independent of the compilation on the root element and other elements',
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
          tcb.overrideView(MyComp2, new ViewMetadata(
-                                      {template: '<input [title]="y" style="position:absolute">'}))
+                                       {template: '<input [title]="y" style="position:absolute">'}))
              .createAsync(MyComp2)
              .then((fixture) => {
                var checkSetters = (componentRef, workerEl) => {
@@ -225,7 +224,8 @@ export function main() {
                  getRenderer(fixture.componentRef)
                      .invokeElementMethod(el.nativeElement, 'setAttribute', ['a', 'b']);
 
-                 expect(getDOM().getAttribute(getRenderElement(el.nativeElement), 'a')).toEqual('b');
+                 expect(getDOM().getAttribute(getRenderElement(el.nativeElement), 'a'))
+                     .toEqual('b');
                  async.done();
                });
          }));

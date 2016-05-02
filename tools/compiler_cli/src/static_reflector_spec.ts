@@ -1,6 +1,13 @@
 /// <reference path="../../typings/jasmine/jasmine.d.ts" />
 
-import {describe, it, iit, expect, ddescribe, beforeEach} from '@angular/core/testing/testing_internal';
+import {
+  describe,
+  it,
+  iit,
+  expect,
+  ddescribe,
+  beforeEach
+} from '@angular/core/testing/testing_internal';
 import {isBlank} from '@angular/facade/src/lang';
 import {ListWrapper} from '@angular/facade/src/collection';
 

@@ -15,7 +15,7 @@ export function emit() {
 // Generator
 export function main(args: string[]) {
   emit().then((source) => {
-        // debug: console.error(source);
-        print(source);
-      });
+    // debug: console.error(source);
+    print(source);
+  });
 }

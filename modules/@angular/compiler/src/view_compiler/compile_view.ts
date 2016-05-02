@@ -20,7 +20,8 @@ import {
   getViewFactoryName,
   injectFromViewParentInjector,
   createDiTokenExpression,
-  getPropertyInView, createPureProxy
+  getPropertyInView,
+  createPureProxy
 } from './util';
 import {CompilerConfig} from '../config';
 import {CompileBinding} from './compile_binding';

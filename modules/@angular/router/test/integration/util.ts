@@ -34,8 +34,9 @@ export class RootCmp {
   activatedCmp: any;
 }
 
-export function compile(tcb: TestComponentBuilder,
-                        template: string = "<router-outlet></router-outlet>"): Promise<ComponentFixture<RootCmp>> {
+export function compile(
+    tcb: TestComponentBuilder,
+    template: string = "<router-outlet></router-outlet>"): Promise<ComponentFixture<RootCmp>> {
   return tcb.overrideTemplate(RootCmp, ('<div>' + template + '</div>')).createAsync(RootCmp);
 }
 

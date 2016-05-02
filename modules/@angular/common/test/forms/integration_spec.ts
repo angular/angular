@@ -10,11 +10,7 @@ import {
   iit,
   xit
 } from '@angular/core/testing/testing_internal';
-import {
-  fakeAsync,
-  tick,
-  flushMicrotasks
-} from '@angular/core/testing';
+import {fakeAsync, tick, flushMicrotasks} from '@angular/core/testing';
 import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
 import {TestComponentBuilder} from '@angular/compiler/testing';
 import {ComponentFixture} from '@angular/compiler/testing';
@@ -51,15 +47,17 @@ export function main() {
                 <input type="text" ngControl="login">
                </div>`;
 
-         tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
-           fixture.debugElement.componentInstance.form =
-               new ControlGroup({"login": new Control("loginValue")});
-           fixture.detectChanges();
+         tcb.overrideTemplate(MyComp8, t)
+             .createAsync(MyComp8)
+             .then((fixture) => {
+               fixture.debugElement.componentInstance.form =
+                   new ControlGroup({"login": new Control("loginValue")});
+               fixture.detectChanges();
 
-           var input = fixture.debugElement.query(By.css("input"));
-           expect(input.nativeElement.value).toEqual("loginValue");
-           async.done();
-         });
+               var input = fixture.debugElement.query(By.css("input"));
+               expect(input.nativeElement.value).toEqual("loginValue");
+               async.done();
+             });
        }));
 
     it("should throw if a form isn't passed into ngFormModel",
@@ -68,11 +66,13 @@ export function main() {
                 <input type="text" ngControl="login">
                </div>`;
 
-         tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
-           expect(() => fixture.detectChanges())
-               .toThrowError(new RegExp(`ngFormModel expects a form. Please pass one in.`));
-           async.done();
-         });
+         tcb.overrideTemplate(MyComp8, t)
+             .createAsync(MyComp8)
+             .then((fixture) => {
+               expect(() => fixture.detectChanges())
+                   .toThrowError(new RegExp(`ngFormModel expects a form. Please pass one in.`));
+               async.done();
+             });
        }));
 
     it("should update the control group values on DOM change",
@@ -83,17 +83,19 @@ export function main() {
                 <input type="text" ngControl="login">
               </div>`;
 
-         tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
-           fixture.debugElement.componentInstance.form = form;
-           fixture.detectChanges();
-           var input = fixture.debugElement.query(By.css("input"));
+         tcb.overrideTemplate(MyComp8, t)
+             .createAsync(MyComp8)
+             .then((fixture) => {
+               fixture.debugElement.componentInstance.form = form;
+               fixture.detectChanges();
+               var input = fixture.debugElement.query(By.css("input"));
 
-           input.nativeElement.value = "updatedValue";
-           dispatchEvent(input.nativeElement, "input");
+               input.nativeElement.value = "updatedValue";
+               dispatchEvent(input.nativeElement, "input");
 
-           expect(form.value).toEqual({"login": "updatedValue"});
-           async.done();
-         });
+               expect(form.value).toEqual({"login": "updatedValue"});
+               async.done();
+             });
        }));
 
     it("should ignore the change event for <input type=text>",
@@ -104,19 +106,21 @@ export function main() {
                 <input type="text" ngControl="login">
               </div>`;
 
-         tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
-           fixture.debugElement.componentInstance.form = form;
-           fixture.detectChanges();
-           var input = fixture.debugElement.query(By.css("input"));
+         tcb.overrideTemplate(MyComp8, t)
+             .createAsync(MyComp8)
+             .then((fixture) => {
+               fixture.debugElement.componentInstance.form = form;
+               fixture.detectChanges();
+               var input = fixture.debugElement.query(By.css("input"));
 
-           input.nativeElement.value = "updatedValue";
+               input.nativeElement.value = "updatedValue";
 
-           ObservableWrapper.subscribe(form.valueChanges,
-                                       (value) => { throw 'Should not happen'; });
-           dispatchEvent(input.nativeElement, "change");
+               ObservableWrapper.subscribe(form.valueChanges,
+                                           (value) => { throw 'Should not happen'; });
+               dispatchEvent(input.nativeElement, "change");
 
-           async.done();
-         });
+               async.done();
+             });
        }));
 
     it("should emit ngSubmit event on submit",
@@ -147,19 +151,21 @@ export function main() {
 
          var t = `<div><input type="text" [ngFormControl]="form"></div>`;
 
-         tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
-           fixture.debugElement.componentInstance.form = control;
-           fixture.detectChanges();
+         tcb.overrideTemplate(MyComp8, t)
+             .createAsync(MyComp8)
+             .then((fixture) => {
+               fixture.debugElement.componentInstance.form = control;
+               fixture.detectChanges();
 
-           var input = fixture.debugElement.query(By.css("input"));
-           expect(input.nativeElement.value).toEqual("loginValue");
+               var input = fixture.debugElement.query(By.css("input"));
+               expect(input.nativeElement.value).toEqual("loginValue");
 
-           input.nativeElement.value = "updatedValue";
-           dispatchEvent(input.nativeElement, "input");
+               input.nativeElement.value = "updatedValue";
+               dispatchEvent(input.nativeElement, "input");
 
-           expect(control.value).toEqual("updatedValue");
-           async.done();
-         });
+               expect(control.value).toEqual("updatedValue");
+               async.done();
+             });
        }));
 
     it("should update DOM elements when rebinding the control group",
@@ -168,19 +174,21 @@ export function main() {
                 <input type="text" ngControl="login">
                </div>`;
 
-         tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
-           fixture.debugElement.componentInstance.form =
-               new ControlGroup({"login": new Control("oldValue")});
-           fixture.detectChanges();
+         tcb.overrideTemplate(MyComp8, t)
+             .createAsync(MyComp8)
+             .then((fixture) => {
+               fixture.debugElement.componentInstance.form =
+                   new ControlGroup({"login": new Control("oldValue")});
+               fixture.detectChanges();
 
-           fixture.debugElement.componentInstance.form =
-               new ControlGroup({"login": new Control("newValue")});
-           fixture.detectChanges();
+               fixture.debugElement.componentInstance.form =
+                   new ControlGroup({"login": new Control("newValue")});
+               fixture.detectChanges();
 
-           var input = fixture.debugElement.query(By.css("input"));
-           expect(input.nativeElement.value).toEqual("newValue");
-           async.done();
-         });
+               var input = fixture.debugElement.query(By.css("input"));
+               expect(input.nativeElement.value).toEqual("newValue");
+               async.done();
+             });
        }));
 
     it("should update DOM elements when updating the value of a control",
@@ -192,18 +200,20 @@ export function main() {
                 <input type="text" ngControl="login">
                </div>`;
 
-         tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
-           fixture.debugElement.componentInstance.form = form;
-           fixture.detectChanges();
+         tcb.overrideTemplate(MyComp8, t)
+             .createAsync(MyComp8)
+             .then((fixture) => {
+               fixture.debugElement.componentInstance.form = form;
+               fixture.detectChanges();
 
-           login.updateValue("newValue");
+               login.updateValue("newValue");
 
-           fixture.detectChanges();
+               fixture.detectChanges();
 
-           var input = fixture.debugElement.query(By.css("input"));
-           expect(input.nativeElement.value).toEqual("newValue");
-           async.done();
-         });
+               var input = fixture.debugElement.query(By.css("input"));
+               expect(input.nativeElement.value).toEqual("newValue");
+               async.done();
+             });
        }));
 
     it("should mark controls as touched after interacting with the DOM control",
@@ -215,19 +225,21 @@ export function main() {
                 <input type="text" ngControl="login">
                </div>`;
 
-         tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
-           fixture.debugElement.componentInstance.form = form;
-           fixture.detectChanges();
+         tcb.overrideTemplate(MyComp8, t)
+             .createAsync(MyComp8)
+             .then((fixture) => {
+               fixture.debugElement.componentInstance.form = form;
+               fixture.detectChanges();
 
-           var loginEl = fixture.debugElement.query(By.css("input"));
-           expect(login.touched).toBe(false);
+               var loginEl = fixture.debugElement.query(By.css("input"));
+               expect(login.touched).toBe(false);
 
-           dispatchEvent(loginEl.nativeElement, "blur");
+               dispatchEvent(loginEl.nativeElement, "blur");
 
-           expect(login.touched).toBe(true);
+               expect(login.touched).toBe(true);
 
-           async.done();
-         });
+               async.done();
+             });
        }));
 
     describe("different control types", () => {
@@ -237,20 +249,22 @@ export function main() {
                   <input type="text" ngControl="text">
                 </div>`;
 
-           tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
-             fixture.debugElement.componentInstance.form =
-                 new ControlGroup({"text": new Control("old")});
-             fixture.detectChanges();
+           tcb.overrideTemplate(MyComp8, t)
+               .createAsync(MyComp8)
+               .then((fixture) => {
+                 fixture.debugElement.componentInstance.form =
+                     new ControlGroup({"text": new Control("old")});
+                 fixture.detectChanges();
 
-             var input = fixture.debugElement.query(By.css("input"));
-             expect(input.nativeElement.value).toEqual("old");
+                 var input = fixture.debugElement.query(By.css("input"));
+                 expect(input.nativeElement.value).toEqual("old");
 
-             input.nativeElement.value = "new";
-             dispatchEvent(input.nativeElement, "input");
+                 input.nativeElement.value = "new";
+                 dispatchEvent(input.nativeElement, "input");
 
-             expect(fixture.debugElement.componentInstance.form.value).toEqual({"text": "new"});
-             async.done();
-           });
+                 expect(fixture.debugElement.componentInstance.form.value).toEqual({"text": "new"});
+                 async.done();
+               });
          }));
 
       it("should support <input> without type",
@@ -259,19 +273,21 @@ export function main() {
                   <input ngControl="text">
                 </div>`;
 
-           tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
-             fixture.debugElement.componentInstance.form =
-                 new ControlGroup({"text": new Control("old")});
-             fixture.detectChanges();
-             var input = fixture.debugElement.query(By.css("input"));
-             expect(input.nativeElement.value).toEqual("old");
+           tcb.overrideTemplate(MyComp8, t)
+               .createAsync(MyComp8)
+               .then((fixture) => {
+                 fixture.debugElement.componentInstance.form =
+                     new ControlGroup({"text": new Control("old")});
+                 fixture.detectChanges();
+                 var input = fixture.debugElement.query(By.css("input"));
+                 expect(input.nativeElement.value).toEqual("old");
 
-             input.nativeElement.value = "new";
-             dispatchEvent(input.nativeElement, "input");
+                 input.nativeElement.value = "new";
+                 dispatchEvent(input.nativeElement, "input");
 
-             expect(fixture.debugElement.componentInstance.form.value).toEqual({"text": "new"});
-             async.done();
-           });
+                 expect(fixture.debugElement.componentInstance.form.value).toEqual({"text": "new"});
+                 async.done();
+               });
          }));
 
       it("should support <textarea>",
@@ -280,20 +296,22 @@ export function main() {
                   <textarea ngControl="text"></textarea>
                 </div>`;
 
-           tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
-             fixture.debugElement.componentInstance.form =
-                 new ControlGroup({"text": new Control('old')});
-             fixture.detectChanges();
+           tcb.overrideTemplate(MyComp8, t)
+               .createAsync(MyComp8)
+               .then((fixture) => {
+                 fixture.debugElement.componentInstance.form =
+                     new ControlGroup({"text": new Control('old')});
+                 fixture.detectChanges();
 
-             var textarea = fixture.debugElement.query(By.css("textarea"));
-             expect(textarea.nativeElement.value).toEqual("old");
+                 var textarea = fixture.debugElement.query(By.css("textarea"));
+                 expect(textarea.nativeElement.value).toEqual("old");
 
-             textarea.nativeElement.value = "new";
-             dispatchEvent(textarea.nativeElement, "input");
+                 textarea.nativeElement.value = "new";
+                 dispatchEvent(textarea.nativeElement, "input");
 
-             expect(fixture.debugElement.componentInstance.form.value).toEqual({"text": 'new'});
-             async.done();
-           });
+                 expect(fixture.debugElement.componentInstance.form.value).toEqual({"text": 'new'});
+                 async.done();
+               });
          }));
 
       it("should support <type=checkbox>",
@@ -302,20 +320,23 @@ export function main() {
                   <input type="checkbox" ngControl="checkbox">
                 </div>`;
 
-           tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
-             fixture.debugElement.componentInstance.form =
-                 new ControlGroup({"checkbox": new Control(true)});
-             fixture.detectChanges();
+           tcb.overrideTemplate(MyComp8, t)
+               .createAsync(MyComp8)
+               .then((fixture) => {
+                 fixture.debugElement.componentInstance.form =
+                     new ControlGroup({"checkbox": new Control(true)});
+                 fixture.detectChanges();
 
-             var input = fixture.debugElement.query(By.css("input"));
-             expect(input.nativeElement.checked).toBe(true);
+                 var input = fixture.debugElement.query(By.css("input"));
+                 expect(input.nativeElement.checked).toBe(true);
 
-             input.nativeElement.checked = false;
-             dispatchEvent(input.nativeElement, "change");
+                 input.nativeElement.checked = false;
+                 dispatchEvent(input.nativeElement, "change");
 
-             expect(fixture.debugElement.componentInstance.form.value).toEqual({"checkbox": false});
-             async.done();
-           });
+                 expect(fixture.debugElement.componentInstance.form.value)
+                     .toEqual({"checkbox": false});
+                 async.done();
+               });
          }));
 
       it("should support <type=number>",
@@ -324,20 +345,22 @@ export function main() {
                   <input type="number" ngControl="num">
                 </div>`;
 
-           tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
-             fixture.debugElement.componentInstance.form =
-                 new ControlGroup({"num": new Control(10)});
-             fixture.detectChanges();
+           tcb.overrideTemplate(MyComp8, t)
+               .createAsync(MyComp8)
+               .then((fixture) => {
+                 fixture.debugElement.componentInstance.form =
+                     new ControlGroup({"num": new Control(10)});
+                 fixture.detectChanges();
 
-             var input = fixture.debugElement.query(By.css("input"));
-             expect(input.nativeElement.value).toEqual("10");
+                 var input = fixture.debugElement.query(By.css("input"));
+                 expect(input.nativeElement.value).toEqual("10");
 
-             input.nativeElement.value = "20";
-             dispatchEvent(input.nativeElement, "input");
+                 input.nativeElement.value = "20";
+                 dispatchEvent(input.nativeElement, "input");
 
-             expect(fixture.debugElement.componentInstance.form.value).toEqual({"num": 20});
-             async.done();
-           });
+                 expect(fixture.debugElement.componentInstance.form.value).toEqual({"num": 20});
+                 async.done();
+               });
          }));
 
       it("should support <type=number> when value is cleared in the UI",
@@ -346,25 +369,27 @@ export function main() {
                   <input type="number" ngControl="num" required>
                 </div>`;
 
-           tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
-             fixture.debugElement.componentInstance.form =
-                 new ControlGroup({"num": new Control(10)});
-             fixture.detectChanges();
+           tcb.overrideTemplate(MyComp8, t)
+               .createAsync(MyComp8)
+               .then((fixture) => {
+                 fixture.debugElement.componentInstance.form =
+                     new ControlGroup({"num": new Control(10)});
+                 fixture.detectChanges();
 
-             var input = fixture.debugElement.query(By.css("input"));
-             input.nativeElement.value = "";
-             dispatchEvent(input.nativeElement, "input");
+                 var input = fixture.debugElement.query(By.css("input"));
+                 input.nativeElement.value = "";
+                 dispatchEvent(input.nativeElement, "input");
 
-             expect(fixture.debugElement.componentInstance.form.valid).toBe(false);
-             expect(fixture.debugElement.componentInstance.form.value).toEqual({"num": null});
+                 expect(fixture.debugElement.componentInstance.form.valid).toBe(false);
+                 expect(fixture.debugElement.componentInstance.form.value).toEqual({"num": null});
 
-             input.nativeElement.value = "0";
-             dispatchEvent(input.nativeElement, "input");
+                 input.nativeElement.value = "0";
+                 dispatchEvent(input.nativeElement, "input");
 
-             expect(fixture.debugElement.componentInstance.form.valid).toBe(true);
-             expect(fixture.debugElement.componentInstance.form.value).toEqual({"num": 0});
-             async.done();
-           });
+                 expect(fixture.debugElement.componentInstance.form.valid).toBe(true);
+                 expect(fixture.debugElement.componentInstance.form.value).toEqual({"num": 0});
+                 async.done();
+               });
          }));
 
 
@@ -375,16 +400,18 @@ export function main() {
                   <input type="number" ngControl="num" [(ngModel)]="data">
                 </div>`;
 
-           tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
-             fixture.debugElement.componentInstance.form = form;
-             fixture.debugElement.componentInstance.data = null;
-             fixture.detectChanges();
+           tcb.overrideTemplate(MyComp8, t)
+               .createAsync(MyComp8)
+               .then((fixture) => {
+                 fixture.debugElement.componentInstance.form = form;
+                 fixture.debugElement.componentInstance.data = null;
+                 fixture.detectChanges();
 
-             var input = fixture.debugElement.query(By.css("input"));
-             expect(input.nativeElement.value).toEqual("");
+                 var input = fixture.debugElement.query(By.css("input"));
+                 expect(input.nativeElement.value).toEqual("");
 
-             async.done();
-           });
+                 async.done();
+               });
          }));
 
       it("should support <type=radio>",
@@ -394,24 +421,26 @@ export function main() {
                   <input type="radio" ngControl="foodFish" name="food">
                 </form>`;
 
-           tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
-             fixture.debugElement.componentInstance.form = new ControlGroup({
-               "foodChicken": new Control(new RadioButtonState(false, 'chicken')),
-               "foodFish": new Control(new RadioButtonState(true, 'fish'))
-             });
-             fixture.detectChanges();
+           tcb.overrideTemplate(MyComp8, t)
+               .createAsync(MyComp8)
+               .then((fixture) => {
+                 fixture.debugElement.componentInstance.form = new ControlGroup({
+                   "foodChicken": new Control(new RadioButtonState(false, 'chicken')),
+                   "foodFish": new Control(new RadioButtonState(true, 'fish'))
+                 });
+                 fixture.detectChanges();
 
-             var input = fixture.debugElement.query(By.css("input"));
-             expect(input.nativeElement.checked).toEqual(false);
+                 var input = fixture.debugElement.query(By.css("input"));
+                 expect(input.nativeElement.checked).toEqual(false);
 
-             dispatchEvent(input.nativeElement, "change");
-             fixture.detectChanges();
+                 dispatchEvent(input.nativeElement, "change");
+                 fixture.detectChanges();
 
-             let value = fixture.debugElement.componentInstance.form.value;
-             expect(value['foodChicken'].checked).toEqual(true);
-             expect(value['foodFish'].checked).toEqual(false);
-             async.done();
-           });
+                 let value = fixture.debugElement.componentInstance.form.value;
+                 expect(value['foodChicken'].checked).toEqual(true);
+                 expect(value['foodFish'].checked).toEqual(false);
+                 async.done();
+               });
          }));
 
       describe("should support <select>", () => {
@@ -423,16 +452,18 @@ export function main() {
                       <option value="NYC"></option>
                     </select>`;
 
-                    tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
-                      fixture.detectChanges();
+                    tcb.overrideTemplate(MyComp8, t)
+                        .createAsync(MyComp8)
+                        .then((fixture) => {
+                          fixture.detectChanges();
 
-                      var select = fixture.debugElement.query(By.css("select"));
-                      var sfOption = fixture.debugElement.query(By.css("option"));
+                          var select = fixture.debugElement.query(By.css("select"));
+                          var sfOption = fixture.debugElement.query(By.css("option"));
 
-                      expect(select.nativeElement.value).toEqual("SF");
-                      expect(sfOption.nativeElement.selected).toBe(true);
-                      async.done();
-                    });
+                          expect(select.nativeElement.value).toEqual("SF");
+                          expect(sfOption.nativeElement.selected).toBe(true);
+                          async.done();
+                        });
                   }));
 
         it("with basic selection and value bindings",
@@ -444,51 +475,56 @@ export function main() {
                       </option>
                     </select>`;
 
-                    tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
-                      var testComp = fixture.debugElement.componentInstance;
-                      testComp.list = [{"id": "0", "name": "SF"}, {"id": "1", "name": "NYC"}];
-                      fixture.detectChanges();
+                    tcb.overrideTemplate(MyComp8, t)
+                        .createAsync(MyComp8)
+                        .then((fixture) => {
+                          var testComp = fixture.debugElement.componentInstance;
+                          testComp.list = [{"id": "0", "name": "SF"}, {"id": "1", "name": "NYC"}];
+                          fixture.detectChanges();
 
-                      var sfOption = fixture.debugElement.query(By.css("option"));
-                      expect(sfOption.nativeElement.value).toEqual('0');
+                          var sfOption = fixture.debugElement.query(By.css("option"));
+                          expect(sfOption.nativeElement.value).toEqual('0');
 
-                      testComp.list[0]['id'] = '2';
-                      fixture.detectChanges();
-                      expect(sfOption.nativeElement.value).toEqual('2');
-                      async.done();
-                    });
+                          testComp.list[0]['id'] = '2';
+                          fixture.detectChanges();
+                          expect(sfOption.nativeElement.value).toEqual('2');
+                          async.done();
+                        });
                   }));
 
         it("with ngControl",
-           inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder,
-                                                               async) => {
-             var t = `<div [ngFormModel]="form">
+           inject([TestComponentBuilder, AsyncTestCompleter],
+                  (tcb: TestComponentBuilder, async) => {
+                    var t = `<div [ngFormModel]="form">
                     <select ngControl="city">
                       <option value="SF"></option>
                       <option value="NYC"></option>
                     </select>
                   </div>`;
 
-             tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
-               fixture.debugElement.componentInstance.form =
-                   new ControlGroup({"city": new Control("SF")});
-               fixture.detectChanges();
+                    tcb.overrideTemplate(MyComp8, t)
+                        .createAsync(MyComp8)
+                        .then((fixture) => {
+                          fixture.debugElement.componentInstance.form =
+                              new ControlGroup({"city": new Control("SF")});
+                          fixture.detectChanges();
 
-               var select = fixture.debugElement.query(By.css("select"));
-               var sfOption = fixture.debugElement.query(By.css("option"));
+                          var select = fixture.debugElement.query(By.css("select"));
+                          var sfOption = fixture.debugElement.query(By.css("option"));
 
 
-               expect(select.nativeElement.value).toEqual("SF");
-               expect(sfOption.nativeElement.selected).toBe(true);
+                          expect(select.nativeElement.value).toEqual("SF");
+                          expect(sfOption.nativeElement.selected).toBe(true);
 
-               select.nativeElement.value = "NYC";
-               dispatchEvent(select.nativeElement, "change");
+                          select.nativeElement.value = "NYC";
+                          dispatchEvent(select.nativeElement, "change");
 
-               expect(fixture.debugElement.componentInstance.form.value).toEqual({"city": 'NYC'});
-               expect(sfOption.nativeElement.selected).toBe(false);
-               async.done();
-             });
-           }));
+                          expect(fixture.debugElement.componentInstance.form.value)
+                              .toEqual({"city": 'NYC'});
+                          expect(sfOption.nativeElement.selected).toBe(false);
+                          async.done();
+                        });
+                  }));
 
         it("with a dynamic list of options",
            fakeAsync(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
@@ -499,8 +535,9 @@ export function main() {
                   </div>`;
 
              var fixture;
-             tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((compFixture) => fixture =
-                                                                          compFixture);
+             tcb.overrideTemplate(MyComp8, t)
+                 .createAsync(MyComp8)
+                 .then((compFixture) => fixture = compFixture);
              tick();
 
              fixture.debugElement.componentInstance.form =
@@ -523,27 +560,29 @@ export function main() {
                       </select>
                   </div>`;
 
-                    tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
+                    tcb.overrideTemplate(MyComp8, t)
+                        .createAsync(MyComp8)
+                        .then((fixture) => {
 
-                      var testComp = fixture.debugElement.componentInstance;
-                      testComp.list = [{"name": "SF"}, {"name": "NYC"}, {"name": "Buffalo"}];
-                      testComp.selectedCity = testComp.list[1];
-                      fixture.detectChanges();
+                          var testComp = fixture.debugElement.componentInstance;
+                          testComp.list = [{"name": "SF"}, {"name": "NYC"}, {"name": "Buffalo"}];
+                          testComp.selectedCity = testComp.list[1];
+                          fixture.detectChanges();
 
-                      var select = fixture.debugElement.query(By.css("select"));
-                      var nycOption = fixture.debugElement.queryAll(By.css("option"))[1];
+                          var select = fixture.debugElement.query(By.css("select"));
+                          var nycOption = fixture.debugElement.queryAll(By.css("option"))[1];
 
-                      expect(select.nativeElement.value).toEqual("1: Object");
-                      expect(nycOption.nativeElement.selected).toBe(true);
+                          expect(select.nativeElement.value).toEqual("1: Object");
+                          expect(nycOption.nativeElement.selected).toBe(true);
 
-                      select.nativeElement.value = "2: Object";
-                      dispatchEvent(select.nativeElement, "change");
-                      fixture.detectChanges();
-                      TimerWrapper.setTimeout(() => {
-                        expect(testComp.selectedCity['name']).toEqual("Buffalo");
-                        async.done();
-                      }, 0);
-                    });
+                          select.nativeElement.value = "2: Object";
+                          dispatchEvent(select.nativeElement, "change");
+                          fixture.detectChanges();
+                          TimerWrapper.setTimeout(() => {
+                            expect(testComp.selectedCity['name']).toEqual("Buffalo");
+                            async.done();
+                          }, 0);
+                        });
                   }));
 
         it("when new options are added",
@@ -555,23 +594,25 @@ export function main() {
                       </select>
                   </div>`;
 
-                    tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
+                    tcb.overrideTemplate(MyComp8, t)
+                        .createAsync(MyComp8)
+                        .then((fixture) => {
 
-                      var testComp: MyComp8 = fixture.debugElement.componentInstance;
-                      testComp.list = [{"name": "SF"}, {"name": "NYC"}];
-                      testComp.selectedCity = testComp.list[1];
-                      fixture.detectChanges();
+                          var testComp: MyComp8 = fixture.debugElement.componentInstance;
+                          testComp.list = [{"name": "SF"}, {"name": "NYC"}];
+                          testComp.selectedCity = testComp.list[1];
+                          fixture.detectChanges();
 
-                      testComp.list.push({"name": "Buffalo"});
-                      testComp.selectedCity = testComp.list[2];
-                      fixture.detectChanges();
+                          testComp.list.push({"name": "Buffalo"});
+                          testComp.selectedCity = testComp.list[2];
+                          fixture.detectChanges();
 
-                      var select = fixture.debugElement.query(By.css("select"));
-                      var buffalo = fixture.debugElement.queryAll(By.css("option"))[2];
-                      expect(select.nativeElement.value).toEqual("2: Object");
-                      expect(buffalo.nativeElement.selected).toBe(true);
-                      async.done();
-                    });
+                          var select = fixture.debugElement.query(By.css("select"));
+                          var buffalo = fixture.debugElement.queryAll(By.css("option"))[2];
+                          expect(select.nativeElement.value).toEqual("2: Object");
+                          expect(buffalo.nativeElement.selected).toBe(true);
+                          async.done();
+                        });
                   }));
 
         it("when options are removed",
@@ -582,22 +623,24 @@ export function main() {
                         <option *ngFor="let c of list" [ngValue]="c">{{c}}</option>
                       </select>
                   </div>`;
-                    tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
+                    tcb.overrideTemplate(MyComp8, t)
+                        .createAsync(MyComp8)
+                        .then((fixture) => {
 
-                      var testComp: MyComp8 = fixture.debugElement.componentInstance;
-                      testComp.list = [{"name": "SF"}, {"name": "NYC"}];
-                      testComp.selectedCity = testComp.list[1];
-                      fixture.detectChanges();
+                          var testComp: MyComp8 = fixture.debugElement.componentInstance;
+                          testComp.list = [{"name": "SF"}, {"name": "NYC"}];
+                          testComp.selectedCity = testComp.list[1];
+                          fixture.detectChanges();
 
-                      var select = fixture.debugElement.query(By.css("select"));
-                      expect(select.nativeElement.value).toEqual("1: Object");
+                          var select = fixture.debugElement.query(By.css("select"));
+                          expect(select.nativeElement.value).toEqual("1: Object");
 
-                      testComp.list.pop();
-                      fixture.detectChanges();
+                          testComp.list.pop();
+                          fixture.detectChanges();
 
-                      expect(select.nativeElement.value).not.toEqual("1: Object");
-                      async.done();
-                    });
+                          expect(select.nativeElement.value).not.toEqual("1: Object");
+                          async.done();
+                        });
                   }));
 
         it("when option values change identity while tracking by index",
@@ -609,25 +652,27 @@ export function main() {
                       </select>
                   </div>`;
 
-                    tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
+                    tcb.overrideTemplate(MyComp8, t)
+                        .createAsync(MyComp8)
+                        .then((fixture) => {
 
-                      var testComp = fixture.debugElement.componentInstance;
+                          var testComp = fixture.debugElement.componentInstance;
 
-                      testComp.list = [{"name": "SF"}, {"name": "NYC"}];
-                      testComp.selectedCity = testComp.list[0];
-                      fixture.detectChanges();
+                          testComp.list = [{"name": "SF"}, {"name": "NYC"}];
+                          testComp.selectedCity = testComp.list[0];
+                          fixture.detectChanges();
 
-                      testComp.list[1] = "Buffalo";
-                      testComp.selectedCity = testComp.list[1];
-                      fixture.detectChanges();
+                          testComp.list[1] = "Buffalo";
+                          testComp.selectedCity = testComp.list[1];
+                          fixture.detectChanges();
 
-                      var select = fixture.debugElement.query(By.css("select"));
-                      var buffalo = fixture.debugElement.queryAll(By.css("option"))[1];
+                          var select = fixture.debugElement.query(By.css("select"));
+                          var buffalo = fixture.debugElement.queryAll(By.css("option"))[1];
 
-                      expect(select.nativeElement.value).toEqual("1: Buffalo");
-                      expect(buffalo.nativeElement.selected).toBe(true);
-                      async.done();
-                    });
+                          expect(select.nativeElement.value).toEqual("1: Buffalo");
+                          expect(buffalo.nativeElement.selected).toBe(true);
+                          async.done();
+                        });
                   }));
 
         it("with duplicate option values",
@@ -639,24 +684,26 @@ export function main() {
                       </select>
                   </div>`;
 
-                    tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
+                    tcb.overrideTemplate(MyComp8, t)
+                        .createAsync(MyComp8)
+                        .then((fixture) => {
 
-                      var testComp = fixture.debugElement.componentInstance;
+                          var testComp = fixture.debugElement.componentInstance;
 
-                      testComp.list = [{"name": "NYC"}, {"name": "SF"}, {"name": "SF"}];
-                      testComp.selectedCity = testComp.list[0];
-                      fixture.detectChanges();
+                          testComp.list = [{"name": "NYC"}, {"name": "SF"}, {"name": "SF"}];
+                          testComp.selectedCity = testComp.list[0];
+                          fixture.detectChanges();
 
-                      testComp.selectedCity = testComp.list[1];
-                      fixture.detectChanges();
+                          testComp.selectedCity = testComp.list[1];
+                          fixture.detectChanges();
 
-                      var select = fixture.debugElement.query(By.css("select"));
-                      var firstSF = fixture.debugElement.queryAll(By.css("option"))[1];
+                          var select = fixture.debugElement.query(By.css("select"));
+                          var firstSF = fixture.debugElement.queryAll(By.css("option"))[1];
 
-                      expect(select.nativeElement.value).toEqual("1: Object");
-                      expect(firstSF.nativeElement.selected).toBe(true);
-                      async.done();
-                    });
+                          expect(select.nativeElement.value).toEqual("1: Object");
+                          expect(firstSF.nativeElement.selected).toBe(true);
+                          async.done();
+                        });
                   }));
 
         it("when option values have same content, but different identities",
@@ -668,23 +715,25 @@ export function main() {
                       </select>
                   </div>`;
 
-                    tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
+                    tcb.overrideTemplate(MyComp8, t)
+                        .createAsync(MyComp8)
+                        .then((fixture) => {
 
-                      var testComp = fixture.debugElement.componentInstance;
-                      testComp.list = [{"name": "SF"}, {"name": "NYC"}, {"name": "NYC"}];
-                      testComp.selectedCity = testComp.list[0];
-                      fixture.detectChanges();
+                          var testComp = fixture.debugElement.componentInstance;
+                          testComp.list = [{"name": "SF"}, {"name": "NYC"}, {"name": "NYC"}];
+                          testComp.selectedCity = testComp.list[0];
+                          fixture.detectChanges();
 
-                      testComp.selectedCity = testComp.list[2];
-                      fixture.detectChanges();
+                          testComp.selectedCity = testComp.list[2];
+                          fixture.detectChanges();
 
-                      var select = fixture.debugElement.query(By.css("select"));
-                      var secondNYC = fixture.debugElement.queryAll(By.css("option"))[2];
+                          var select = fixture.debugElement.query(By.css("select"));
+                          var secondNYC = fixture.debugElement.queryAll(By.css("option"))[2];
 
-                      expect(select.nativeElement.value).toEqual("2: Object");
-                      expect(secondNYC.nativeElement.selected).toBe(true);
-                      async.done();
-                    });
+                          expect(select.nativeElement.value).toEqual("2: Object");
+                          expect(secondNYC.nativeElement.selected).toBe(true);
+                          async.done();
+                        });
                   }));
       });
 
@@ -694,19 +743,21 @@ export function main() {
                   <input type="text" ngControl="name" wrapped-value>
                 </div>`;
 
-           tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
-             fixture.debugElement.componentInstance.form =
-                 new ControlGroup({"name": new Control("aa")});
-             fixture.detectChanges();
-             var input = fixture.debugElement.query(By.css("input"));
-             expect(input.nativeElement.value).toEqual("!aa!");
+           tcb.overrideTemplate(MyComp8, t)
+               .createAsync(MyComp8)
+               .then((fixture) => {
+                 fixture.debugElement.componentInstance.form =
+                     new ControlGroup({"name": new Control("aa")});
+                 fixture.detectChanges();
+                 var input = fixture.debugElement.query(By.css("input"));
+                 expect(input.nativeElement.value).toEqual("!aa!");
 
-             input.nativeElement.value = "!bb!";
-             dispatchEvent(input.nativeElement, "input");
+                 input.nativeElement.value = "!bb!";
+                 dispatchEvent(input.nativeElement, "input");
 
-             expect(fixture.debugElement.componentInstance.form.value).toEqual({"name": "bb"});
-             async.done();
-           });
+                 expect(fixture.debugElement.componentInstance.form.value).toEqual({"name": "bb"});
+                 async.done();
+               });
          }));
 
       it("should support custom value accessors on non builtin input elements that fire a change event without a 'target' property",
@@ -715,20 +766,23 @@ export function main() {
                   <my-input ngControl="name"></my-input>
                 </div>`;
 
-           tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
-             fixture.debugElement.componentInstance.form =
-                 new ControlGroup({"name": new Control("aa")});
-             fixture.detectChanges();
-             var input = fixture.debugElement.query(By.css("my-input"));
-             expect(input.componentInstance.value).toEqual("!aa!");
+           tcb.overrideTemplate(MyComp8, t)
+               .createAsync(MyComp8)
+               .then((fixture) => {
+                 fixture.debugElement.componentInstance.form =
+                     new ControlGroup({"name": new Control("aa")});
+                 fixture.detectChanges();
+                 var input = fixture.debugElement.query(By.css("my-input"));
+                 expect(input.componentInstance.value).toEqual("!aa!");
 
-             input.componentInstance.value = "!bb!";
-             ObservableWrapper.subscribe(input.componentInstance.onInput, (value) => {
-               expect(fixture.debugElement.componentInstance.form.value).toEqual({"name": "bb"});
-               async.done();
-             });
-             input.componentInstance.dispatchChangeEvent();
-           });
+                 input.componentInstance.value = "!bb!";
+                 ObservableWrapper.subscribe(input.componentInstance.onInput, (value) => {
+                   expect(fixture.debugElement.componentInstance.form.value)
+                       .toEqual({"name": "bb"});
+                   async.done();
+                 });
+                 input.componentInstance.dispatchChangeEvent();
+               });
          }));
 
     });
@@ -745,38 +799,40 @@ export function main() {
                     <input type="text" ngControl="max" maxlength="3">
                  </div>`;
 
-           tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
-             fixture.debugElement.componentInstance.form = form;
-             fixture.detectChanges();
+           tcb.overrideTemplate(MyComp8, t)
+               .createAsync(MyComp8)
+               .then((fixture) => {
+                 fixture.debugElement.componentInstance.form = form;
+                 fixture.detectChanges();
 
-             var required = fixture.debugElement.query(By.css("[required]"));
-             var minLength = fixture.debugElement.query(By.css("[minlength]"));
-             var maxLength = fixture.debugElement.query(By.css("[maxlength]"));
+                 var required = fixture.debugElement.query(By.css("[required]"));
+                 var minLength = fixture.debugElement.query(By.css("[minlength]"));
+                 var maxLength = fixture.debugElement.query(By.css("[maxlength]"));
 
-             required.nativeElement.value = "";
-             minLength.nativeElement.value = "1";
-             maxLength.nativeElement.value = "1234";
-             dispatchEvent(required.nativeElement, "input");
-             dispatchEvent(minLength.nativeElement, "input");
-             dispatchEvent(maxLength.nativeElement, "input");
+                 required.nativeElement.value = "";
+                 minLength.nativeElement.value = "1";
+                 maxLength.nativeElement.value = "1234";
+                 dispatchEvent(required.nativeElement, "input");
+                 dispatchEvent(minLength.nativeElement, "input");
+                 dispatchEvent(maxLength.nativeElement, "input");
 
-             expect(form.hasError("required", ["login"])).toEqual(true);
-             expect(form.hasError("minlength", ["min"])).toEqual(true);
-             expect(form.hasError("maxlength", ["max"])).toEqual(true);
+                 expect(form.hasError("required", ["login"])).toEqual(true);
+                 expect(form.hasError("minlength", ["min"])).toEqual(true);
+                 expect(form.hasError("maxlength", ["max"])).toEqual(true);
 
-             expect(form.hasError("loginIsEmpty")).toEqual(true);
+                 expect(form.hasError("loginIsEmpty")).toEqual(true);
 
-             required.nativeElement.value = "1";
-             minLength.nativeElement.value = "123";
-             maxLength.nativeElement.value = "123";
-             dispatchEvent(required.nativeElement, "input");
-             dispatchEvent(minLength.nativeElement, "input");
-             dispatchEvent(maxLength.nativeElement, "input");
+                 required.nativeElement.value = "1";
+                 minLength.nativeElement.value = "123";
+                 maxLength.nativeElement.value = "123";
+                 dispatchEvent(required.nativeElement, "input");
+                 dispatchEvent(minLength.nativeElement, "input");
+                 dispatchEvent(maxLength.nativeElement, "input");
 
-             expect(form.valid).toEqual(true);
+                 expect(form.valid).toEqual(true);
 
-             async.done();
-           });
+                 async.done();
+               });
          }));
 
       it("should use async validators defined in the html",
@@ -816,19 +872,21 @@ export function main() {
                   <input type="text" ngControl="login">
                  </div>`;
 
-           tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
-             fixture.debugElement.componentInstance.form = form;
-             fixture.detectChanges();
-             expect(form.valid).toEqual(true);
+           tcb.overrideTemplate(MyComp8, t)
+               .createAsync(MyComp8)
+               .then((fixture) => {
+                 fixture.debugElement.componentInstance.form = form;
+                 fixture.detectChanges();
+                 expect(form.valid).toEqual(true);
 
-             var input = fixture.debugElement.query(By.css("input"));
+                 var input = fixture.debugElement.query(By.css("input"));
 
-             input.nativeElement.value = "";
-             dispatchEvent(input.nativeElement, "input");
+                 input.nativeElement.value = "";
+                 dispatchEvent(input.nativeElement, "input");
 
-             expect(form.valid).toEqual(false);
-             async.done();
-           });
+                 expect(form.valid).toEqual(false);
+                 async.done();
+               });
          }));
 
       it("should use async validators defined in the model",
@@ -878,14 +936,16 @@ export function main() {
                   </div>
               </div>`;
 
-           tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
-             fixture.debugElement.componentInstance.form = form;
-             fixture.detectChanges();
+           tcb.overrideTemplate(MyComp8, t)
+               .createAsync(MyComp8)
+               .then((fixture) => {
+                 fixture.debugElement.componentInstance.form = form;
+                 fixture.detectChanges();
 
-             var input = fixture.debugElement.query(By.css("input"));
-             expect(input.nativeElement.value).toEqual("value");
-             async.done();
-           });
+                 var input = fixture.debugElement.query(By.css("input"));
+                 expect(input.nativeElement.value).toEqual("value");
+                 async.done();
+               });
          }));
 
       it("should update the control group values on DOM change",
@@ -899,17 +959,19 @@ export function main() {
                     </div>
                 </div>`;
 
-           tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
-             fixture.debugElement.componentInstance.form = form;
-             fixture.detectChanges();
-             var input = fixture.debugElement.query(By.css("input"));
+           tcb.overrideTemplate(MyComp8, t)
+               .createAsync(MyComp8)
+               .then((fixture) => {
+                 fixture.debugElement.componentInstance.form = form;
+                 fixture.detectChanges();
+                 var input = fixture.debugElement.query(By.css("input"));
 
-             input.nativeElement.value = "updatedValue";
-             dispatchEvent(input.nativeElement, "input");
+                 input.nativeElement.value = "updatedValue";
+                 dispatchEvent(input.nativeElement, "input");
 
-             expect(form.value).toEqual({"nested": {"login": "updatedValue"}});
-             async.done();
-           });
+                 expect(form.value).toEqual({"nested": {"login": "updatedValue"}});
+                 async.done();
+               });
          }));
     });
 
@@ -1002,13 +1064,15 @@ export function main() {
            var t = `<form ngNoForm>
                </form>`;
 
-           tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
-             fixture.debugElement.componentInstance.name = null;
-             fixture.detectChanges();
+           tcb.overrideTemplate(MyComp8, t)
+               .createAsync(MyComp8)
+               .then((fixture) => {
+                 fixture.debugElement.componentInstance.name = null;
+                 fixture.detectChanges();
 
-             expect(fixture.debugElement.children[0].providerTokens.length).toEqual(0);
-             async.done();
-           });
+                 expect(fixture.debugElement.children[0].providerTokens.length).toEqual(0);
+                 async.done();
+               });
          }));
 
       it("should remove controls",
@@ -1151,25 +1215,29 @@ export function main() {
 
            var t = `<div><input type="text" [ngFormControl]="form"></div>`;
 
-           tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
-             fixture.debugElement.componentInstance.form = form;
-             fixture.detectChanges();
+           tcb.overrideTemplate(MyComp8, t)
+               .createAsync(MyComp8)
+               .then((fixture) => {
+                 fixture.debugElement.componentInstance.form = form;
+                 fixture.detectChanges();
 
-             var input = fixture.debugElement.query(By.css("input")).nativeElement;
-             expect(sortedClassList(input)).toEqual(['ng-invalid', 'ng-pristine', 'ng-untouched']);
+                 var input = fixture.debugElement.query(By.css("input")).nativeElement;
+                 expect(sortedClassList(input))
+                     .toEqual(['ng-invalid', 'ng-pristine', 'ng-untouched']);
 
-             dispatchEvent(input, "blur");
-             fixture.detectChanges();
+                 dispatchEvent(input, "blur");
+                 fixture.detectChanges();
 
-             expect(sortedClassList(input)).toEqual(["ng-invalid", "ng-pristine", "ng-touched"]);
+                 expect(sortedClassList(input))
+                     .toEqual(["ng-invalid", "ng-pristine", "ng-touched"]);
 
-             input.value = "updatedValue";
-             dispatchEvent(input, "input");
-             fixture.detectChanges();
+                 input.value = "updatedValue";
+                 dispatchEvent(input, "input");
+                 fixture.detectChanges();
 
-             expect(sortedClassList(input)).toEqual(["ng-dirty", "ng-touched", "ng-valid"]);
-             async.done();
-           });
+                 expect(sortedClassList(input)).toEqual(["ng-dirty", "ng-touched", "ng-valid"]);
+                 async.done();
+               });
          }));
 
       it("should work with complex model-driven forms",
@@ -1178,50 +1246,58 @@ export function main() {
 
            var t = `<form [ngFormModel]="form"><input type="text" ngControl="name"></form>`;
 
-           tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
-             fixture.debugElement.componentInstance.form = form;
-             fixture.detectChanges();
+           tcb.overrideTemplate(MyComp8, t)
+               .createAsync(MyComp8)
+               .then((fixture) => {
+                 fixture.debugElement.componentInstance.form = form;
+                 fixture.detectChanges();
 
-             var input = fixture.debugElement.query(By.css("input")).nativeElement;
-             expect(sortedClassList(input)).toEqual(["ng-invalid", "ng-pristine", "ng-untouched"]);
+                 var input = fixture.debugElement.query(By.css("input")).nativeElement;
+                 expect(sortedClassList(input))
+                     .toEqual(["ng-invalid", "ng-pristine", "ng-untouched"]);
 
-             dispatchEvent(input, "blur");
-             fixture.detectChanges();
+                 dispatchEvent(input, "blur");
+                 fixture.detectChanges();
 
-             expect(sortedClassList(input)).toEqual(["ng-invalid", "ng-pristine", "ng-touched"]);
+                 expect(sortedClassList(input))
+                     .toEqual(["ng-invalid", "ng-pristine", "ng-touched"]);
 
-             input.value = "updatedValue";
-             dispatchEvent(input, "input");
-             fixture.detectChanges();
+                 input.value = "updatedValue";
+                 dispatchEvent(input, "input");
+                 fixture.detectChanges();
 
-             expect(sortedClassList(input)).toEqual(["ng-dirty", "ng-touched", "ng-valid"]);
-             async.done();
-           });
+                 expect(sortedClassList(input)).toEqual(["ng-dirty", "ng-touched", "ng-valid"]);
+                 async.done();
+               });
          }));
 
       it("should work with ngModel",
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            var t = `<div><input [(ngModel)]="name" required></div>`;
 
-           tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
-             fixture.debugElement.componentInstance.name = "";
-             fixture.detectChanges();
+           tcb.overrideTemplate(MyComp8, t)
+               .createAsync(MyComp8)
+               .then((fixture) => {
+                 fixture.debugElement.componentInstance.name = "";
+                 fixture.detectChanges();
 
-             var input = fixture.debugElement.query(By.css("input")).nativeElement;
-             expect(sortedClassList(input)).toEqual(["ng-invalid", "ng-pristine", "ng-untouched"]);
+                 var input = fixture.debugElement.query(By.css("input")).nativeElement;
+                 expect(sortedClassList(input))
+                     .toEqual(["ng-invalid", "ng-pristine", "ng-untouched"]);
 
-             dispatchEvent(input, "blur");
-             fixture.detectChanges();
+                 dispatchEvent(input, "blur");
+                 fixture.detectChanges();
 
-             expect(sortedClassList(input)).toEqual(["ng-invalid", "ng-pristine", "ng-touched"]);
+                 expect(sortedClassList(input))
+                     .toEqual(["ng-invalid", "ng-pristine", "ng-touched"]);
 
-             input.value = "updatedValue";
-             dispatchEvent(input, "input");
-             fixture.detectChanges();
+                 input.value = "updatedValue";
+                 dispatchEvent(input, "input");
+                 fixture.detectChanges();
 
-             expect(sortedClassList(input)).toEqual(["ng-dirty", "ng-touched", "ng-valid"]);
-             async.done();
-           });
+                 expect(sortedClassList(input)).toEqual(["ng-dirty", "ng-touched", "ng-valid"]);
+                 async.done();
+               });
          }));
     });
 

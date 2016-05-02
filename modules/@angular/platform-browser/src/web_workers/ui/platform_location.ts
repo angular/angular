@@ -4,10 +4,7 @@ import {
 import {UrlChangeListener} from '@angular/common';
 import {Injectable} from '@angular/core/src/di';
 import {ROUTER_CHANNEL} from '../shared/messaging_api';
-import {
-  ServiceMessageBrokerFactory,
-  ServiceMessageBroker
-} from '../shared/service_message_broker';
+import {ServiceMessageBrokerFactory, ServiceMessageBroker} from '../shared/service_message_broker';
 import {PRIMITIVE, Serializer} from '../shared/serializer';
 import {bind} from './bind';
 import {LocationType} from '../shared/serialized_types';

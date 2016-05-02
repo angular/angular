@@ -84,20 +84,14 @@ var impEMPTY_ARRAY = EMPTY_ARRAY;
 var impEMPTY_MAP = EMPTY_MAP;
 
 export class Identifiers {
-  static ViewUtils = new CompileIdentifierMetadata({
-    name: 'ViewUtils',
-    moduleUrl: assetUrl('core', 'linker/view_utils'),
-    runtime: impViewUtils
-  });
+  static ViewUtils = new CompileIdentifierMetadata(
+      {name: 'ViewUtils', moduleUrl: assetUrl('core', 'linker/view_utils'), runtime: impViewUtils});
   static AppView = new CompileIdentifierMetadata(
       {name: 'AppView', moduleUrl: APP_VIEW_MODULE_URL, runtime: impAppView});
   static DebugAppView = new CompileIdentifierMetadata(
       {name: 'DebugAppView', moduleUrl: APP_VIEW_MODULE_URL, runtime: impDebugAppView});
-  static AppElement = new CompileIdentifierMetadata({
-    name: 'AppElement',
-    moduleUrl: assetUrl('core', 'linker/element'),
-    runtime: impAppElement
-  });
+  static AppElement = new CompileIdentifierMetadata(
+      {name: 'AppElement', moduleUrl: assetUrl('core', 'linker/element'), runtime: impAppElement});
   static ElementRef = new CompileIdentifierMetadata({
     name: 'ElementRef',
     moduleUrl: assetUrl('core', 'linker/element_ref'),
@@ -118,11 +112,8 @@ export class Identifiers {
     moduleUrl: assetUrl('core', 'render/api'),
     runtime: impRenderComponentType
   });
-  static QueryList = new CompileIdentifierMetadata({
-    name: 'QueryList',
-    moduleUrl: assetUrl('core', 'linker/query_list'),
-    runtime: impQueryList
-  });
+  static QueryList = new CompileIdentifierMetadata(
+      {name: 'QueryList', moduleUrl: assetUrl('core', 'linker/query_list'), runtime: impQueryList});
   static TemplateRef = new CompileIdentifierMetadata({
     name: 'TemplateRef',
     moduleUrl: assetUrl('core', 'linker/template_ref'),
@@ -135,21 +126,15 @@ export class Identifiers {
   });
   static ValueUnwrapper = new CompileIdentifierMetadata(
       {name: 'ValueUnwrapper', moduleUrl: CD_MODULE_URL, runtime: impValueUnwrapper});
-  static Injector = new CompileIdentifierMetadata({
-    name: 'Injector',
-    moduleUrl: assetUrl('core', 'di/injector'),
-    runtime: impInjector
-  });
+  static Injector = new CompileIdentifierMetadata(
+      {name: 'Injector', moduleUrl: assetUrl('core', 'di/injector'), runtime: impInjector});
   static ViewEncapsulation = new CompileIdentifierMetadata({
     name: 'ViewEncapsulation',
     moduleUrl: assetUrl('core', 'metadata/view'),
     runtime: impViewEncapsulation
   });
-  static ViewType = new CompileIdentifierMetadata({
-    name: 'ViewType',
-    moduleUrl: assetUrl('core', 'linker/view_type'),
-    runtime: impViewType
-  });
+  static ViewType = new CompileIdentifierMetadata(
+      {name: 'ViewType', moduleUrl: assetUrl('core', 'linker/view_type'), runtime: impViewType});
   static ChangeDetectionStrategy = new CompileIdentifierMetadata({
     name: 'ChangeDetectionStrategy',
     moduleUrl: CD_MODULE_URL,
@@ -165,11 +150,8 @@ export class Identifiers {
     moduleUrl: assetUrl('core', 'linker/debug_context'),
     runtime: impDebugContext
   });
-  static Renderer = new CompileIdentifierMetadata({
-    name: 'Renderer',
-    moduleUrl: assetUrl('core', 'render/api'),
-    runtime: impRenderer
-  });
+  static Renderer = new CompileIdentifierMetadata(
+      {name: 'Renderer', moduleUrl: assetUrl('core', 'render/api'), runtime: impRenderer});
   static SimpleChange = new CompileIdentifierMetadata(
       {name: 'SimpleChange', moduleUrl: CD_MODULE_URL, runtime: impSimpleChange});
   static uninitialized = new CompileIdentifierMetadata(

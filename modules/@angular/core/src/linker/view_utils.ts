@@ -1,8 +1,4 @@
-import {
-  isBlank,
-  isPresent,
-  looseIdentical
-} from '../../src/facade/lang';
+import {isBlank, isPresent, looseIdentical} from '../../src/facade/lang';
 import {ListWrapper, StringMapWrapper} from '../../src/facade/collection';
 import {BaseException} from '../../src/facade/exceptions';
 import {AppElement} from './element';

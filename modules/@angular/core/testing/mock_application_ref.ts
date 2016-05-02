@@ -5,7 +5,7 @@ import {
   ComponentFactory,
   Injector,
   NgZone,
- Type
+  Type
 } from '../index';
 
 /**

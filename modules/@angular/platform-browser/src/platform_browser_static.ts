@@ -9,7 +9,11 @@ import {
 } from '@angular/core';
 
 import {Type, isPresent, isBlank} from './facade/lang';
-import {BROWSER_APP_COMMON_PROVIDERS, BROWSER_PROVIDERS, BROWSER_PLATFORM_MARKER} from './browser_common';
+import {
+  BROWSER_APP_COMMON_PROVIDERS,
+  BROWSER_PROVIDERS,
+  BROWSER_PLATFORM_MARKER
+} from './browser_common';
 export {ELEMENT_PROBE_PROVIDERS} from './dom/debug/ng_probe';
 export {BrowserPlatformLocation} from './browser/location/browser_platform_location';
 export {
@@ -45,8 +49,8 @@ export function bootstrapStatic(appComponentType: Type,
     initReflector();
   }
 
-  let appProviders =
-      isPresent(customProviders) ? [BROWSER_APP_STATIC_PROVIDERS, customProviders] : BROWSER_APP_STATIC_PROVIDERS;
+  let appProviders = isPresent(customProviders) ? [BROWSER_APP_STATIC_PROVIDERS, customProviders] :
+                                                  BROWSER_APP_STATIC_PROVIDERS;
   var appInjector =
       ReflectiveInjector.resolveAndCreate(appProviders, browserStaticPlatform().injector);
   return coreLoadAndBootstrap(appInjector, appComponentType);

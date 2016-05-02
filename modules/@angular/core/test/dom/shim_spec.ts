@@ -23,4 +23,6 @@ export function main() {
   });
 }
 
-function identity(a) { return a; }
+function identity(a) {
+  return a;
+}
