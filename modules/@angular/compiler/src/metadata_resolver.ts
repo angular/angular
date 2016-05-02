@@ -84,7 +84,7 @@ export class CompileMetadataResolver {
       var templateMeta = null;
       var changeDetectionStrategy = null;
       var viewProviders = [];
-
+      var moduleUrl = staticTypeModuleUrl(directiveType);
       if (dirMeta instanceof ComponentMetadata) {
         assertArrayOfStrings('styles', dirMeta.styles);
         var cmpMeta = <ComponentMetadata>dirMeta;
@@ -101,6 +101,7 @@ export class CompileMetadataResolver {
         if (isPresent(dirMeta.viewProviders)) {
           viewProviders = this.getProvidersMetadata(dirMeta.viewProviders);
         }
+        moduleUrl = componentModuleUrl(this._reflector, directiveType, cmpMeta);
       }
 
       var providers = [];
@@ -117,10 +118,7 @@ export class CompileMetadataResolver {
         selector: dirMeta.selector,
         exportAs: dirMeta.exportAs,
         isComponent: isPresent(templateMeta),
-        type: this.getTypeMetadata(directiveType,
-                                   isPresent(cmpMeta) ?
-                                       componentModuleUrl(this._reflector, directiveType, cmpMeta) :
-                                       staticTypeModuleUrl(dirMeta)),
+        type: this.getTypeMetadata(directiveType, moduleUrl),
         template: templateMeta,
         changeDetection: changeDetectionStrategy,
         inputs: dirMeta.inputs,
