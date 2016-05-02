@@ -21,10 +21,15 @@ import {TEST_PROVIDERS} from './test_bindings';
 export function main() {
   describe('DirectiveNormalizer', () => {
     var dirType: CompileTypeMetadata;
+    var dirTypeWithHttpUrl: CompileTypeMetadata;
 
     beforeEachProviders(() => TEST_PROVIDERS);
 
-    beforeEach(() => { dirType = new CompileTypeMetadata({name: 'SomeComp'}); });
+    beforeEach(() => {
+      dirType = new CompileTypeMetadata({moduleUrl: 'package:some/module/a.js', name: 'SomeComp'});
+      dirTypeWithHttpUrl =
+          new CompileTypeMetadata({moduleUrl: 'http://some/module/a.js', name: 'SomeComp'});
+    });
 
     describe('loadTemplate', () => {
       describe('inline template', () => {
@@ -36,8 +41,7 @@ export function main() {
                                                    template: 'a',
                                                    templateUrl: null,
                                                    styles: [],
-                                                   styleUrls: ['test.css'],
-                                                   baseUrl: 'package:some/module/a.js'
+                                                   styleUrls: ['test.css']
                                                  }))
                         .then((template: CompileTemplateMetadata) => {
                           expect(template.template).toEqual('a');
@@ -46,7 +50,7 @@ export function main() {
                         });
                   }));
 
-        it('should resolve styles on the annotation against the baseUrl',
+        it('should resolve styles on the annotation against the moduleUrl',
            inject([AsyncTestCompleter, DirectiveNormalizer],
                   (async, normalizer: DirectiveNormalizer) => {
                     normalizer.normalizeTemplate(dirType, new CompileTemplateMetadata({
@@ -54,8 +58,7 @@ export function main() {
                                                    template: '',
                                                    templateUrl: null,
                                                    styles: [],
-                                                   styleUrls: ['test.css'],
-                                                   baseUrl: 'package:some/module/a.js'
+                                                   styleUrls: ['test.css']
                                                  }))
                         .then((template: CompileTemplateMetadata) => {
                           expect(template.styleUrls).toEqual(['package:some/module/test.css']);
@@ -63,7 +66,7 @@ export function main() {
                         });
                   }));
 
-        it('should resolve styles in the template against the baseUrl',
+        it('should resolve styles in the template against the moduleUrl',
            inject([AsyncTestCompleter, DirectiveNormalizer],
                   (async, normalizer: DirectiveNormalizer) => {
                     normalizer.normalizeTemplate(dirType, new CompileTemplateMetadata({
@@ -71,8 +74,7 @@ export function main() {
                                                    template: '<style>@import test.css</style>',
                                                    templateUrl: null,
                                                    styles: [],
-                                                   styleUrls: [],
-                                                   baseUrl: 'package:some/module/a.js'
+                                                   styleUrls: []
                                                  }))
                         .then((template: CompileTemplateMetadata) => {
                           expect(template.styleUrls).toEqual(['package:some/module/test.css']);
@@ -83,7 +85,7 @@ export function main() {
 
       describe('templateUrl', () => {
 
-        it('should load a template from a url that is resolved against baseUrl',
+        it('should load a template from a url that is resolved against moduleUrl',
            inject([AsyncTestCompleter, DirectiveNormalizer, XHR],
                   (async, normalizer: DirectiveNormalizer, xhr: MockXHR) => {
                     xhr.expect('package:some/module/sometplurl.html', 'a');
@@ -92,8 +94,7 @@ export function main() {
                                                    template: null,
                                                    templateUrl: 'sometplurl.html',
                                                    styles: [],
-                                                   styleUrls: ['test.css'],
-                                                   baseUrl: 'package:some/module/a.js'
+                                                   styleUrls: ['test.css']
                                                  }))
                         .then((template: CompileTemplateMetadata) => {
                           expect(template.template).toEqual('a');
@@ -104,7 +105,7 @@ export function main() {
                     xhr.flush();
                   }));
 
-        it('should resolve styles on the annotation against the baseUrl',
+        it('should resolve styles on the annotation against the moduleUrl',
            inject([AsyncTestCompleter, DirectiveNormalizer, XHR],
                   (async, normalizer: DirectiveNormalizer, xhr: MockXHR) => {
                     xhr.expect('package:some/module/tpl/sometplurl.html', '');
@@ -113,8 +114,7 @@ export function main() {
                                                    template: null,
                                                    templateUrl: 'tpl/sometplurl.html',
                                                    styles: [],
-                                                   styleUrls: ['test.css'],
-                                                   baseUrl: 'package:some/module/a.js'
+                                                   styleUrls: ['test.css']
                                                  }))
                         .then((template: CompileTemplateMetadata) => {
                           expect(template.styleUrls).toEqual(['package:some/module/test.css']);
@@ -133,8 +133,7 @@ export function main() {
                                                    template: null,
                                                    templateUrl: 'tpl/sometplurl.html',
                                                    styles: [],
-                                                   styleUrls: [],
-                                                   baseUrl: 'package:some/module/a.js'
+                                                   styleUrls: []
                                                  }))
                         .then((template: CompileTemplateMetadata) => {
                           expect(template.styleUrls).toEqual(['package:some/module/tpl/test.css']);
@@ -160,50 +159,36 @@ export function main() {
          inject([DirectiveNormalizer], (normalizer: DirectiveNormalizer) => {
 
            var viewEncapsulation = ViewEncapsulation.Native;
-           var template = normalizer.normalizeLoadedTemplate(dirType, new CompileTemplateMetadata({
-                                                               encapsulation: viewEncapsulation,
-                                                               styles: [],
-                                                               styleUrls: [],
-                                                               baseUrl: 'package:some/module/a.js'
-                                                             }),
-                                                             '', 'package:some/module/');
+           var template = normalizer.normalizeLoadedTemplate(
+               dirType, new CompileTemplateMetadata(
+                            {encapsulation: viewEncapsulation, styles: [], styleUrls: []}),
+               '', 'package:some/module/');
            expect(template.encapsulation).toBe(viewEncapsulation);
          }));
 
       it('should keep the template as html',
          inject([DirectiveNormalizer], (normalizer: DirectiveNormalizer) => {
-           var template = normalizer.normalizeLoadedTemplate(dirType, new CompileTemplateMetadata({
-                                                               encapsulation: null,
-                                                               styles: [],
-                                                               styleUrls: [],
-                                                               baseUrl: 'package:some/module/a.js'
-                                                             }),
-                                                             'a', 'package:some/module/');
+           var template = normalizer.normalizeLoadedTemplate(
+               dirType,
+               new CompileTemplateMetadata({encapsulation: null, styles: [], styleUrls: []}), 'a',
+               'package:some/module/');
            expect(template.template).toEqual('a')
          }));
 
       it('should collect ngContent',
          inject([DirectiveNormalizer], (normalizer: DirectiveNormalizer) => {
-           var template = normalizer.normalizeLoadedTemplate(dirType, new CompileTemplateMetadata({
-                                                               encapsulation: null,
-                                                               styles: [],
-                                                               styleUrls: [],
-                                                               baseUrl: 'package:some/module/a.js'
-                                                             }),
-                                                             '<ng-content select="a"></ng-content>',
-                                                             'package:some/module/');
+           var template = normalizer.normalizeLoadedTemplate(
+               dirType,
+               new CompileTemplateMetadata({encapsulation: null, styles: [], styleUrls: []}),
+               '<ng-content select="a"></ng-content>', 'package:some/module/');
            expect(template.ngContentSelectors).toEqual(['a']);
          }));
 
       it('should normalize ngContent wildcard selector',
          inject([DirectiveNormalizer], (normalizer: DirectiveNormalizer) => {
            var template = normalizer.normalizeLoadedTemplate(
-               dirType, new CompileTemplateMetadata({
-                 encapsulation: null,
-                 styles: [],
-                 styleUrls: [],
-                 baseUrl: 'package:some/module/a.js'
-               }),
+               dirType,
+               new CompileTemplateMetadata({encapsulation: null, styles: [], styleUrls: []}),
                '<ng-content></ng-content><ng-content select></ng-content><ng-content select="*"></ng-content>',
                'package:some/module/');
            expect(template.ngContentSelectors).toEqual(['*', '*', '*']);
@@ -211,91 +196,64 @@ export function main() {
 
       it('should collect top level styles in the template',
          inject([DirectiveNormalizer], (normalizer: DirectiveNormalizer) => {
-           var template =
-               normalizer.normalizeLoadedTemplate(dirType, new CompileTemplateMetadata({
-                                                    encapsulation: null,
-                                                    styles: [],
-                                                    styleUrls: [],
-                                                    baseUrl: 'package:some/module/a.js'
-                                                  }),
-                                                  '<style>a</style>', 'package:some/module/');
+           var template = normalizer.normalizeLoadedTemplate(
+               dirType,
+               new CompileTemplateMetadata({encapsulation: null, styles: [], styleUrls: []}),
+               '<style>a</style>', 'package:some/module/');
            expect(template.styles).toEqual(['a']);
          }));
 
       it('should collect styles inside in elements',
          inject([DirectiveNormalizer], (normalizer: DirectiveNormalizer) => {
-           var template = normalizer.normalizeLoadedTemplate(dirType, new CompileTemplateMetadata({
-                                                               encapsulation: null,
-                                                               styles: [],
-                                                               styleUrls: [],
-                                                               baseUrl: 'package:some/module/a.js'
-                                                             }),
-                                                             '<div><style>a</style></div>',
-                                                             'package:some/module/');
+           var template = normalizer.normalizeLoadedTemplate(
+               dirType,
+               new CompileTemplateMetadata({encapsulation: null, styles: [], styleUrls: []}),
+               '<div><style>a</style></div>', 'package:some/module/');
            expect(template.styles).toEqual(['a']);
          }));
 
       it('should collect styleUrls in the template',
          inject([DirectiveNormalizer], (normalizer: DirectiveNormalizer) => {
-           var template = normalizer.normalizeLoadedTemplate(dirType, new CompileTemplateMetadata({
-                                                               encapsulation: null,
-                                                               styles: [],
-                                                               styleUrls: [],
-                                                               baseUrl: 'package:some/module/a.js'
-                                                             }),
-                                                             '<link rel="stylesheet" href="aUrl">',
-                                                             'package:some/module/');
+           var template = normalizer.normalizeLoadedTemplate(
+               dirType,
+               new CompileTemplateMetadata({encapsulation: null, styles: [], styleUrls: []}),
+               '<link rel="stylesheet" href="aUrl">', 'package:some/module/');
            expect(template.styleUrls).toEqual(['package:some/module/aUrl']);
          }));
 
       it('should collect styleUrls in elements',
          inject([DirectiveNormalizer], (normalizer: DirectiveNormalizer) => {
            var template = normalizer.normalizeLoadedTemplate(
-               dirType, new CompileTemplateMetadata({
-                 encapsulation: null,
-                 styles: [],
-                 styleUrls: [],
-                 baseUrl: 'package:some/module/a.js'
-               }),
+               dirType,
+               new CompileTemplateMetadata({encapsulation: null, styles: [], styleUrls: []}),
                '<div><link rel="stylesheet" href="aUrl"></div>', 'package:some/module/');
            expect(template.styleUrls).toEqual(['package:some/module/aUrl']);
          }));
 
       it('should ignore link elements with non stylesheet rel attribute',
          inject([DirectiveNormalizer], (normalizer: DirectiveNormalizer) => {
-           var template = normalizer.normalizeLoadedTemplate(dirType, new CompileTemplateMetadata({
-                                                               encapsulation: null,
-                                                               styles: [],
-                                                               styleUrls: [],
-                                                               baseUrl: 'package:some/module/a.js'
-                                                             }),
-                                                             '<link href="b" rel="a">',
-                                                             'package:some/module/');
+           var template = normalizer.normalizeLoadedTemplate(
+               dirType,
+               new CompileTemplateMetadata({encapsulation: null, styles: [], styleUrls: []}),
+               '<link href="b" rel="a">', 'package:some/module/');
            expect(template.styleUrls).toEqual([]);
          }));
 
       it('should ignore link elements with absolute urls but non package: scheme',
          inject([DirectiveNormalizer], (normalizer: DirectiveNormalizer) => {
            var template = normalizer.normalizeLoadedTemplate(
-               dirType, new CompileTemplateMetadata({
-                 encapsulation: null,
-                 styles: [],
-                 styleUrls: [],
-                 baseUrl: 'package:some/module/a.js'
-               }),
+               dirType,
+               new CompileTemplateMetadata({encapsulation: null, styles: [], styleUrls: []}),
                '<link href="http://some/external.css" rel="stylesheet">', 'package:some/module/');
            expect(template.styleUrls).toEqual([]);
          }));
 
       it('should extract @import style urls into styleAbsUrl',
          inject([DirectiveNormalizer], (normalizer: DirectiveNormalizer) => {
-           var template = normalizer.normalizeLoadedTemplate(dirType, new CompileTemplateMetadata({
-                                                               encapsulation: null,
-                                                               styles: ['@import "test.css";'],
-                                                               styleUrls: [],
-                                                               baseUrl: 'package:some/module/a.js'
-                                                             }),
-                                                             '', 'package:some/module/id');
+           var template = normalizer.normalizeLoadedTemplate(
+               dirType, new CompileTemplateMetadata(
+                            {encapsulation: null, styles: ['@import "test.css";'], styleUrls: []}),
+               '', 'package:some/module/id');
            expect(template.styles).toEqual(['']);
            expect(template.styleUrls).toEqual(['package:some/module/test.css']);
          }));
@@ -306,8 +264,7 @@ export function main() {
                dirType, new CompileTemplateMetadata({
                  encapsulation: null,
                  styles: ['.foo{background-image: url(\'double.jpg\');'],
-                 styleUrls: [],
-                 baseUrl: 'package:some/module/a.js'
+                 styleUrls: []
                }),
                '', 'package:some/module/id');
            expect(template.styles).toEqual(['.foo{background-image: url(\'double.jpg\');']);
@@ -315,52 +272,38 @@ export function main() {
 
       it('should resolve relative style urls in styleUrls',
          inject([DirectiveNormalizer], (normalizer: DirectiveNormalizer) => {
-           var template = normalizer.normalizeLoadedTemplate(dirType, new CompileTemplateMetadata({
-                                                               encapsulation: null,
-                                                               styles: [],
-                                                               styleUrls: ['test.css'],
-                                                               baseUrl: 'package:some/module/a.js'
-                                                             }),
-                                                             '', 'package:some/module/id');
+           var template = normalizer.normalizeLoadedTemplate(
+               dirType, new CompileTemplateMetadata(
+                            {encapsulation: null, styles: [], styleUrls: ['test.css']}),
+               '', 'package:some/module/id');
            expect(template.styles).toEqual([]);
            expect(template.styleUrls).toEqual(['package:some/module/test.css']);
          }));
 
       it('should resolve relative style urls in styleUrls with http directive url',
          inject([DirectiveNormalizer], (normalizer: DirectiveNormalizer) => {
-           var template = normalizer.normalizeLoadedTemplate(dirType, new CompileTemplateMetadata({
-                                                               encapsulation: null,
-                                                               styles: [],
-                                                               styleUrls: ['test.css'],
-                                                               baseUrl: 'http://some/module/a.js'
-                                                             }),
-                                                             '', 'http://some/module/id');
+           var template = normalizer.normalizeLoadedTemplate(
+               dirTypeWithHttpUrl, new CompileTemplateMetadata(
+                                       {encapsulation: null, styles: [], styleUrls: ['test.css']}),
+               '', 'http://some/module/id');
            expect(template.styles).toEqual([]);
            expect(template.styleUrls).toEqual(['http://some/module/test.css']);
          }));
 
       it('should normalize ViewEncapsulation.Emulated to ViewEncapsulation.None if there are no styles nor stylesheets',
          inject([DirectiveNormalizer], (normalizer: DirectiveNormalizer) => {
-           var template =
-               normalizer.normalizeLoadedTemplate(dirType, new CompileTemplateMetadata({
-                                                    encapsulation: ViewEncapsulation.Emulated,
-                                                    styles: [],
-                                                    styleUrls: [],
-                                                    baseUrl: 'package:some/module/a.js'
-                                                  }),
-                                                  '', 'package:some/module/id');
+           var template = normalizer.normalizeLoadedTemplate(
+               dirType, new CompileTemplateMetadata(
+                            {encapsulation: ViewEncapsulation.Emulated, styles: [], styleUrls: []}),
+               '', 'package:some/module/id');
            expect(template.encapsulation).toEqual(ViewEncapsulation.None);
          }));
 
       it('should ignore ng-content in elements with ngNonBindable',
          inject([DirectiveNormalizer], (normalizer: DirectiveNormalizer) => {
            var template = normalizer.normalizeLoadedTemplate(
-               dirType, new CompileTemplateMetadata({
-                 encapsulation: null,
-                 styles: [],
-                 styleUrls: [],
-                 baseUrl: 'package:some/module/a.js'
-               }),
+               dirType,
+               new CompileTemplateMetadata({encapsulation: null, styles: [], styleUrls: []}),
                '<div ngNonBindable><ng-content select="a"></ng-content></div>',
                'package:some/module/');
            expect(template.ngContentSelectors).toEqual([]);
@@ -369,12 +312,8 @@ export function main() {
       it('should still collect <style> in elements with ngNonBindable',
          inject([DirectiveNormalizer], (normalizer: DirectiveNormalizer) => {
            var template = normalizer.normalizeLoadedTemplate(
-               dirType, new CompileTemplateMetadata({
-                 encapsulation: null,
-                 styles: [],
-                 styleUrls: [],
-                 baseUrl: 'package:some/module/a.js'
-               }),
+               dirType,
+               new CompileTemplateMetadata({encapsulation: null, styles: [], styleUrls: []}),
                '<div ngNonBindable><style>div {color:red}</style></div>', 'package:some/module/');
            expect(template.styles).toEqual(['div {color:red}']);
          }));

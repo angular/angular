@@ -1,4 +1,4 @@
-import {print, IS_DART} from '../src/facade/lang';
+import {print, isPresent, IS_DART} from '../src/facade/lang';
 import {OutputEmitter} from '@angular/compiler/src/output/abstract_emitter';
 import {Console} from '../core_private';
 
@@ -19,6 +19,7 @@ import {createOfflineCompileUrlResolver} from '@angular/compiler/src/url_resolve
 import {MockSchemaRegistry} from '../testing/schema_registry_mock';
 import {MODULE_SUFFIX} from '@angular/compiler/src/util';
 import {MockXHR} from '../testing/xhr_mock';
+import {ImportGenerator} from '@angular/compiler/src/output/path_util';
 
 import {
   CompileDirectiveMetadata,
@@ -29,7 +30,7 @@ import {
 
 export class CompA { user: string; }
 
-var THIS_MODULE_PATH = `asset:angular2/test/compiler`;
+var THIS_MODULE_PATH = `asset:@angular/lib/compiler/test`;
 var THIS_MODULE_URL = `${THIS_MODULE_PATH}/offline_compiler_util${MODULE_SUFFIX}`;
 
 export var compAMetadata = CompileDirectiveMetadata.create({
@@ -40,8 +41,7 @@ export var compAMetadata = CompileDirectiveMetadata.create({
   template: new CompileTemplateMetadata({
     templateUrl: './offline_compiler_compa.html',
     styles: ['.redStyle { color: red; }'],
-    styleUrls: ['./offline_compiler_compa.css'],
-    baseUrl: THIS_MODULE_URL,
+    styleUrls: ['./offline_compiler_compa.css']
   })
 });
 
@@ -54,7 +54,7 @@ function _createOfflineCompiler(xhr: MockXHR, emitter: OutputEmitter): OfflineCo
       normalizer, new TemplateParser(new Parser(new Lexer()), new MockSchemaRegistry({}, {}),
                                      htmlParser, new Console(), []),
       new StyleCompiler(urlResolver), new ViewCompiler(new CompilerConfig(true, true, true)),
-      emitter);
+      emitter, xhr);
 }
 
 export function compileComp(emitter: OutputEmitter,
@@ -67,4 +67,16 @@ export function compileComp(emitter: OutputEmitter,
   });
   xhr.flush();
   return result;
+}
+
+export class SimpleJsImportGenerator implements ImportGenerator {
+  getImportPath(moduleUrlStr: string, importedUrlStr: string): string {
+    // var moduleAssetUrl = ImportGenerator.parseAssetUrl(moduleUrlStr);
+    var importedAssetUrl = ImportGenerator.parseAssetUrl(importedUrlStr);
+    if (isPresent(importedAssetUrl)) {
+      return `${importedAssetUrl.packageName}/${importedAssetUrl.modulePath}`;
+    } else {
+      return importedUrlStr;
+    }
+  }
 }

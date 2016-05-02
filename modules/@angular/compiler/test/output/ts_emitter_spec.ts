@@ -13,6 +13,7 @@ import {isBlank} from '../../src/facade/lang';
 import {TypeScriptEmitter} from '@angular/compiler/src/output/ts_emitter';
 import {CompileIdentifierMetadata} from '@angular/compiler/src/compile_metadata';
 import * as o from '@angular/compiler/src/output/output_ast';
+import {SimpleJsImportGenerator} from '../offline_compiler_util';
 
 var someModuleUrl = 'asset:somePackage/lib/somePath';
 var anotherModuleUrl = 'asset:somePackage/lib/someOtherPath';
@@ -33,7 +34,7 @@ export function main() {
     var someVar: o.ReadVarExpr;
 
     beforeEach(() => {
-      emitter = new TypeScriptEmitter();
+      emitter = new TypeScriptEmitter(new SimpleJsImportGenerator());
       someVar = o.variable('someVar');
     });
 
@@ -112,8 +113,10 @@ export function main() {
     it('should support external identifiers', () => {
       expect(emitStmt(o.importExpr(sameModuleIdentifier).toStmt())).toEqual('someLocalId;');
       expect(emitStmt(o.importExpr(externalModuleIdentifier).toStmt()))
-          .toEqual([`import * as import0 from './someOtherPath';`, `import0.someExternalId;`].join(
-              '\n'));
+          .toEqual([
+            `import * as import0 from 'somePackage/someOtherPath';`,
+            `import0.someExternalId;`
+          ].join('\n'));
     });
 
     it('should support operators', () => {
@@ -302,7 +305,7 @@ export function main() {
           .toEqual('var a:someLocalId = null;');
       expect(emitStmt(writeVarExpr.toDeclStmt(o.importType(externalModuleIdentifier))))
           .toEqual([
-            `import * as import0 from './someOtherPath';`,
+            `import * as import0 from 'somePackage/someOtherPath';`,
             `var a:import0.someExternalId = null;`
           ].join('\n'));
     });

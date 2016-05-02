@@ -9,7 +9,7 @@ import {
   CATCH_ERROR_VAR,
   CATCH_STACK_VAR,
 } from './abstract_emitter';
-import {getImportModulePath, ImportEnv} from './path_util';
+import {ImportGenerator} from './path_util';
 
 var _debugModuleUrl = 'asset://debug/lib';
 
@@ -37,7 +37,7 @@ export function debugOutputAstAsDart(ast: o.Statement | o.Expression | o.Type | 
 }
 
 export class DartEmitter implements OutputEmitter {
-  constructor() {}
+  constructor(private _importGenerator: ImportGenerator) {}
   emitStatements(moduleUrl: string, stmts: o.Statement[], exportedVars: string[]): string {
     var srcParts = [];
     // Note: We are not creating a library here as Dart does not need it.
@@ -49,7 +49,7 @@ export class DartEmitter implements OutputEmitter {
 
     converter.importsWithPrefixes.forEach((prefix, importedModuleUrl) => {
       srcParts.push(
-          `import '${getImportModulePath(moduleUrl, importedModuleUrl, ImportEnv.Dart)}' as ${prefix};`);
+          `import '${this._importGenerator.getImportPath(moduleUrl, importedModuleUrl)}' as ${prefix};`);
     });
     srcParts.push(ctx.toSource());
     return srcParts.join('\n');

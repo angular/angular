@@ -4,6 +4,7 @@ import {unimplemented} from '../../src/facade/exceptions';
 import {codegenExportsVars, codegenStmts} from './output_emitter_util';
 import {JavaScriptEmitter} from '@angular/compiler/src/output/js_emitter';
 import {assetUrl} from '../../src/util';
+import {SimpleJsImportGenerator} from '../offline_compiler_util';
 
 export function getExpressions(): any {
   return unimplemented();
@@ -11,7 +12,7 @@ export function getExpressions(): any {
 
 // Generator
 export function emit() {
-  var emitter = new JavaScriptEmitter();
+  var emitter = new JavaScriptEmitter(new SimpleJsImportGenerator());
   var emittedCode =
       emitter.emitStatements(assetUrl('compiler', 'output/output_emitter_codegen_untyped', 'test'),
                              codegenStmts, codegenExportsVars);

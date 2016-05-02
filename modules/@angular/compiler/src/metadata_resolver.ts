@@ -95,8 +95,7 @@ export class CompileMetadataResolver {
           template: viewMeta.template,
           templateUrl: viewMeta.templateUrl,
           styles: viewMeta.styles,
-          styleUrls: viewMeta.styleUrls,
-          baseUrl: calcTemplateBaseUrl(this._reflector, directiveType, cmpMeta)
+          styleUrls: viewMeta.styleUrls
         });
         changeDetectionStrategy = cmpMeta.changeDetection;
         if (isPresent(dirMeta.viewProviders)) {
@@ -118,7 +117,10 @@ export class CompileMetadataResolver {
         selector: dirMeta.selector,
         exportAs: dirMeta.exportAs,
         isComponent: isPresent(templateMeta),
-        type: this.getTypeMetadata(directiveType, staticTypeModuleUrl(directiveType)),
+        type: this.getTypeMetadata(directiveType,
+                                   isPresent(cmpMeta) ?
+                                       componentModuleUrl(this._reflector, directiveType, cmpMeta) :
+                                       staticTypeModuleUrl(dirMeta)),
         template: templateMeta,
         changeDetection: changeDetectionStrategy,
         inputs: dirMeta.inputs,
@@ -392,7 +394,7 @@ function flattenArray(tree: any[], out: Array<Type | any[]>): void {
 }
 
 function isStaticType(value: any): boolean {
-  return isStringMap(value) && isPresent(value['name']) && isPresent(value['moduleId']);
+  return isStringMap(value) && isPresent(value['name']) && isPresent(value['filePath']);
 }
 
 function isValidType(value: any): boolean {
@@ -400,13 +402,13 @@ function isValidType(value: any): boolean {
 }
 
 function staticTypeModuleUrl(value: any): string {
-  return isStaticType(value) ? value['moduleId'] : null;
+  return isStaticType(value) ? value['filePath'] : null;
 }
 
-function calcTemplateBaseUrl(reflector: ReflectorReader, type: any,
-                             cmpMetadata: ComponentMetadata): string {
+function componentModuleUrl(reflector: ReflectorReader, type: any,
+                            cmpMetadata: ComponentMetadata): string {
   if (isStaticType(type)) {
-    return type['filePath'];
+    return staticTypeModuleUrl(type);
   }
 
   if (isPresent(cmpMetadata.moduleId)) {

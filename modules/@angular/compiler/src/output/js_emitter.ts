@@ -10,10 +10,10 @@ import {
 import {BaseException} from '@angular/core';
 import {OutputEmitter, EmitterVisitorContext} from './abstract_emitter';
 import {AbstractJsEmitterVisitor} from './abstract_js_emitter';
-import {getImportModulePath, ImportEnv} from './path_util';
+import {ImportGenerator} from './path_util';
 
 export class JavaScriptEmitter implements OutputEmitter {
-  constructor() {}
+  constructor(private _importGenerator: ImportGenerator) {}
   emitStatements(moduleUrl: string, stmts: o.Statement[], exportedVars: string[]): string {
     var converter = new JsEmitterVisitor(moduleUrl);
     var ctx = EmitterVisitorContext.createRoot(exportedVars);
@@ -21,8 +21,9 @@ export class JavaScriptEmitter implements OutputEmitter {
     var srcParts = [];
     converter.importsWithPrefixes.forEach((prefix, importedModuleUrl) => {
       // Note: can't write the real word for import as it screws up system.js auto detection...
-      srcParts.push(`var ${prefix} = req` +
-                    `uire('${getImportModulePath(moduleUrl, importedModuleUrl, ImportEnv.JS)}');`);
+      srcParts.push(
+          `var ${prefix} = req` +
+          `uire('${this._importGenerator.getImportPath(moduleUrl, importedModuleUrl)}');`);
     });
     srcParts.push(ctx.toSource());
     return srcParts.join('\n');

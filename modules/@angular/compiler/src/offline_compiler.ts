@@ -15,6 +15,7 @@ import {TemplateParser} from './template_parser';
 import {DirectiveNormalizer} from './directive_normalizer';
 import {OutputEmitter} from './output/abstract_emitter';
 import * as o from './output/output_ast';
+import {XHR} from './xhr';
 
 import {
   MODULE_SUFFIX,
@@ -31,6 +32,10 @@ export class SourceModule {
   constructor(public moduleUrl: string, public source: string) {}
 }
 
+export class StyleSheetSourceWithImports {
+  constructor(public source: SourceModule, public importedUrls: string[]) {}
+}
+
 export class NormalizedComponentWithViewDirectives {
   constructor(public component: CompileDirectiveMetadata,
               public directives: CompileDirectiveMetadata[], public pipes: CompilePipeMetadata[]) {}
@@ -39,7 +44,8 @@ export class NormalizedComponentWithViewDirectives {
 export class OfflineCompiler {
   constructor(private _directiveNormalizer: DirectiveNormalizer,
               private _templateParser: TemplateParser, private _styleCompiler: StyleCompiler,
-              private _viewCompiler: ViewCompiler, private _outputEmitter: OutputEmitter) {}
+              private _viewCompiler: ViewCompiler, private _outputEmitter: OutputEmitter,
+              private _xhr: XHR) {}
 
   normalizeDirectiveMetadata(directive: CompileDirectiveMetadata):
       Promise<CompileDirectiveMetadata> {
@@ -80,15 +86,19 @@ export class OfflineCompiler {
     return this._codegenSourceModule(moduleUrl, statements, exportedVars);
   }
 
-  compileStylesheet(stylesheetUrl: string, cssText: string): SourceModule[] {
-    var plainStyles = this._styleCompiler.compileStylesheet(stylesheetUrl, cssText, false);
-    var shimStyles = this._styleCompiler.compileStylesheet(stylesheetUrl, cssText, true);
-    return [
-      this._codegenSourceModule(_stylesModuleUrl(stylesheetUrl, false),
-                                _resolveStyleStatements(plainStyles), [plainStyles.stylesVar]),
-      this._codegenSourceModule(_stylesModuleUrl(stylesheetUrl, true),
-                                _resolveStyleStatements(shimStyles), [shimStyles.stylesVar])
-    ];
+  loadAndCompileStylesheet(stylesheetUrl: string, shim: boolean,
+                           suffix: string): Promise<StyleSheetSourceWithImports> {
+    return this._xhr.get(stylesheetUrl)
+        .then((cssText) => {
+          var compileResult = this._styleCompiler.compileStylesheet(stylesheetUrl, cssText, shim);
+          var importedUrls = [];
+          compileResult.dependencies.forEach((dep) => {
+            importedUrls.push(dep.moduleUrl);
+            dep.valuePlaceholder.moduleUrl = _stylesModuleUrl(dep.moduleUrl, dep.isShimmed, suffix);
+          });
+          return new StyleSheetSourceWithImports(
+              this._codgenStyles(stylesheetUrl, shim, suffix, compileResult), importedUrls);
+        });
   }
 
   private _compileComponent(compMeta: CompileDirectiveMetadata,
@@ -99,11 +109,18 @@ export class OfflineCompiler {
                                                     directives, pipes, compMeta.type.name);
     var viewResult = this._viewCompiler.compileComponent(compMeta, parsedTemplate,
                                                          o.variable(styleResult.stylesVar), pipes);
-    ListWrapper.addAll(targetStatements, _resolveStyleStatements(styleResult));
+    ListWrapper.addAll(targetStatements,
+                       _resolveStyleStatements(compMeta.type.moduleUrl, styleResult));
     ListWrapper.addAll(targetStatements, _resolveViewStatements(viewResult));
     return viewResult.viewFactoryVar;
   }
 
+  private _codgenStyles(inputUrl: string, shim: boolean, suffix: string,
+                        stylesCompileResult: StylesCompileResult): SourceModule {
+    return this._codegenSourceModule(_stylesModuleUrl(inputUrl, shim, suffix),
+                                     stylesCompileResult.statements,
+                                     [stylesCompileResult.stylesVar]);
+  }
 
   private _codegenSourceModule(moduleUrl: string, statements: o.Statement[],
                                exportedVars: string[]): SourceModule {
@@ -119,25 +136,36 @@ function _resolveViewStatements(compileResult: ViewCompileResult): o.Statement[]
 }
 
 
-function _resolveStyleStatements(compileResult: StylesCompileResult): o.Statement[] {
+function _resolveStyleStatements(containingModuleUrl: string,
+                                 compileResult: StylesCompileResult): o.Statement[] {
+  var containingSuffix = _splitSuffix(containingModuleUrl)[1];
   compileResult.dependencies.forEach((dep) => {
-    dep.valuePlaceholder.moduleUrl = _stylesModuleUrl(dep.sourceUrl, dep.isShimmed);
+    dep.valuePlaceholder.moduleUrl =
+        _stylesModuleUrl(dep.moduleUrl, dep.isShimmed, containingSuffix);
   });
   return compileResult.statements;
 }
 
 function _templateModuleUrl(comp: CompileDirectiveMetadata): string {
-  var moduleUrl = comp.type.moduleUrl;
-  var urlWithoutSuffix = moduleUrl.substring(0, moduleUrl.length - MODULE_SUFFIX.length);
-  return `${urlWithoutSuffix}.ngfactory${MODULE_SUFFIX}`;
+  var urlWithSuffix = _splitSuffix(comp.type.moduleUrl);
+  return `${urlWithSuffix[0]}.ngfactory${urlWithSuffix[1]}`;
 }
 
-function _stylesModuleUrl(stylesheetUrl: string, shim: boolean): string {
-  return shim ? `${stylesheetUrl}.shim${MODULE_SUFFIX}` : `${stylesheetUrl}${MODULE_SUFFIX}`;
+function _stylesModuleUrl(stylesheetUrl: string, shim: boolean, suffix: string): string {
+  return shim ? `${stylesheetUrl}.shim${suffix}` : `${stylesheetUrl}${suffix}`;
 }
 
 function _assertComponent(meta: CompileDirectiveMetadata) {
   if (!meta.isComponent) {
     throw new BaseException(`Could not compile '${meta.type.name}' because it is not a component.`);
+  }
+}
+
+function _splitSuffix(path: string): string[] {
+  let lastDot = path.lastIndexOf('.');
+  if (lastDot !== -1) {
+    return [path.substring(0, lastDot), path.substring(lastDot)];
+  } else {
+    return [path, ''];
   }
 }

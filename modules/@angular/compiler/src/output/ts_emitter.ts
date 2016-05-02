@@ -9,7 +9,7 @@ import {
   CATCH_ERROR_VAR,
   CATCH_STACK_VAR
 } from './abstract_emitter';
-import {getImportModulePath, ImportEnv} from './path_util';
+import {ImportGenerator} from './path_util';
 
 var _debugModuleUrl = 'asset://debug/lib';
 
@@ -38,7 +38,7 @@ export function debugOutputAstAsTypeScript(ast: o.Statement | o.Expression | o.T
 }
 
 export class TypeScriptEmitter implements OutputEmitter {
-  constructor() {}
+  constructor(private _importGenerator: ImportGenerator) {}
   emitStatements(moduleUrl: string, stmts: o.Statement[], exportedVars: string[]): string {
     var converter = new _TsEmitterVisitor(moduleUrl);
     var ctx = EmitterVisitorContext.createRoot(exportedVars);
@@ -48,7 +48,7 @@ export class TypeScriptEmitter implements OutputEmitter {
       // Note: can't write the real word for import as it screws up system.js auto detection...
       srcParts.push(
           `imp` +
-          `ort * as ${prefix} from '${getImportModulePath(moduleUrl, importedModuleUrl, ImportEnv.JS)}';`);
+          `ort * as ${prefix} from '${this._importGenerator.getImportPath(moduleUrl, importedModuleUrl)}';`);
     });
     srcParts.push(ctx.toSource());
     return srcParts.join('\n');

@@ -160,9 +160,9 @@ export class RuntimeCompiler implements ComponentResolver {
             var dep = result.dependencies[i];
             var cssText = cssTexts[i];
             var nestedCompileResult =
-                this._styleCompiler.compileStylesheet(dep.sourceUrl, cssText, dep.isShimmed);
+                this._styleCompiler.compileStylesheet(dep.moduleUrl, cssText, dep.isShimmed);
             nestedCompileResultPromises.push(
-                this._resolveStylesCompileResult(dep.sourceUrl, nestedCompileResult));
+                this._resolveStylesCompileResult(dep.moduleUrl, nestedCompileResult));
           }
           return PromiseWrapper.all(nestedCompileResultPromises);
         })
@@ -182,10 +182,10 @@ export class RuntimeCompiler implements ComponentResolver {
   }
 
   private _loadStylesheetDep(dep: StylesCompileDependency): Promise<string> {
-    var cacheKey = `${dep.sourceUrl}${dep.isShimmed ? '.shim' : ''}`;
+    var cacheKey = `${dep.moduleUrl}${dep.isShimmed ? '.shim' : ''}`;
     var cssTextPromise = this._styleCache.get(cacheKey);
     if (isBlank(cssTextPromise)) {
-      cssTextPromise = this._xhr.get(dep.sourceUrl);
+      cssTextPromise = this._xhr.get(dep.moduleUrl);
       this._styleCache.set(cacheKey, cssTextPromise);
     }
     return cssTextPromise;

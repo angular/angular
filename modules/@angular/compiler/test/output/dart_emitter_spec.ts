@@ -13,6 +13,7 @@ import {isBlank} from '../../src/facade/lang';
 import {DartEmitter} from '@angular/compiler/src/output/dart_emitter';
 import {CompileIdentifierMetadata} from '@angular/compiler/src/compile_metadata';
 import * as o from '@angular/compiler/src/output/output_ast';
+import {DartImportGenerator} from '@angular/compiler/src/output/dart_imports';
 
 var someModuleUrl = 'asset:somePackage/lib/somePath';
 var anotherModuleUrl = 'asset:somePackage/lib/someOtherPath';
@@ -36,7 +37,7 @@ export function main() {
     var someVar: o.ReadVarExpr;
 
     beforeEach(() => {
-      emitter = new DartEmitter();
+      emitter = new DartEmitter(new DartImportGenerator());
       someVar = o.variable('someVar');
     });
 

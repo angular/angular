@@ -43,9 +43,9 @@ import {
  */
 export interface StaticReflectorHost {
   /**
-   *  Return a ModuleMetadata for the given module.
+   * Return a ModuleMetadata for the given module.
    *
-   * @param moduleId is a string identifier for a module as an absolute path.
+   * @param modulePath is a string identifier for a module as an absolute path.
    * @returns the metadata for the given module.
    */
   getMetadataFor(modulePath: string): {[key: string]: any};
@@ -57,7 +57,7 @@ export interface StaticReflectorHost {
    */
   findDeclaration(modulePath: string, symbolName: string, containingFile?: string): StaticSymbol;
 
-  getStaticSymbol(moduleId: string, declarationFile: string, name: string): StaticSymbol;
+  getStaticSymbol(declarationFile: string, name: string): StaticSymbol;
 
   angularImportLocations():
       {coreDecorators: string, diDecorators: string, diMetadata: string, provider: string};
@@ -66,10 +66,10 @@ export interface StaticReflectorHost {
 /**
  * A token representing the a reference to a static type.
  *
- * This token is unique for a moduleId and name and can be used as a hash table key.
+ * This token is unique for a filePath and name and can be used as a hash table key.
  */
 export class StaticSymbol {
-  constructor(public moduleId: string, public filePath: string, public name: string) {}
+  constructor(public filePath: string, public name: string) {}
 }
 
 /**
@@ -324,8 +324,7 @@ export class StaticReflector implements ReflectorReader {
                 staticSymbol = _this.host.findDeclaration(expression['module'], expression['name'],
                                                           context.filePath);
               } else {
-                staticSymbol = _this.host.getStaticSymbol(context.moduleId, context.filePath,
-                                                          expression['name']);
+                staticSymbol = _this.host.getStaticSymbol(context.filePath, expression['name']);
               }
               let result = staticSymbol;
               let moduleMetadata = _this.getModuleMetadata(staticSymbol.filePath);
