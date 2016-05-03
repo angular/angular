@@ -81,6 +81,9 @@ export class MetadataWriterHost extends DelegatingHost {
       // released
       return;
     }
+    if (/(\.ngfactory\.js|\.css\.js|\.css\.shim\.js)$/.test(fileName)) {
+      return;
+    }
 
     if (IGNORED_FILES.test(fileName)) {
       return;
