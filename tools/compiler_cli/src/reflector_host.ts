@@ -53,7 +53,7 @@ export class NodeReflectorHost implements StaticReflectorHost, ImportGenerator {
    * they are resolvable by the moduleResolution strategy from the CompilerHost.
    */
   getImportPath(containingFile: string, importedFile: string) {
-    importedFile = this.resolveAssetUrl(importedFile, '');
+    importedFile = this.resolveAssetUrl(importedFile, containingFile);
     containingFile = this.resolveAssetUrl(containingFile, '');
 
     // TODO(tbosch): if a file does not yet exist (because we compile it later),
