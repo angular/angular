@@ -20,8 +20,6 @@
       "@angular/compiler/testing": ["../../../dist/packages-dist/compiler/testing"]
     },
     "rootDir": ".",
-    "sourceMap": true,
-    "sourceRoot": ".",
     "target": "es2015"
   },
   "files": [

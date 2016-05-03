@@ -15,8 +15,6 @@
       "@angular/core/testing": ["../../../dist/packages-dist/core/testing"]
     },
     "rootDir": ".",
-    "sourceMap": true,
-    "sourceRoot": ".",
     "target": "es2015"
   },
   "files": [
