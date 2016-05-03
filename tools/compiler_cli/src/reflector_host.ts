@@ -59,6 +59,9 @@ export class NodeReflectorHost implements StaticReflectorHost, ImportGenerator {
     // TODO(tbosch): if a file does not yet exist (because we compile it later),
     // we still need to create it so that the `resolve` method works!
     if (!this.compilerHost.fileExists(importedFile)) {
+      if (this.ngOptions.trace) {
+        console.log(`Generating empty file ${importedFile} to allow resolution of import`);
+      }
       this.compilerHost.writeFile(importedFile, '', false);
       fs.writeFileSync(importedFile, '');
     }

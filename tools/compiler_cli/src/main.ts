@@ -42,10 +42,9 @@ export function main(project: string, basePath?: string): Promise<any> {
     const errors = program.getOptionsDiagnostics();
     check(errors);
 
-    const doCodegen =
-        ngOptions.skipTemplateCodegen ?
-            Promise.resolve(null) :
-            CodeGenerator.create(ngOptions, program, parsed.options, host).codegen();
+    const doCodegen = ngOptions.skipTemplateCodegen ?
+                          Promise.resolve(null) :
+                          CodeGenerator.create(ngOptions, program, parsed.options, host).codegen();
 
     return doCodegen.then(() => {
       tsc.typeCheck(host, program);
