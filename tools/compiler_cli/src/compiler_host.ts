@@ -60,6 +60,8 @@ export class TsickleHost extends DelegatingHost {
       }
 }
 
+const IGNORED_FILES = /\.ngfactory\.js$|\.css\.js$|\.css\.shim\.js$/;
+
 export class MetadataWriterHost extends DelegatingHost {
   private reflectorHost: NodeReflectorHost;
   constructor(delegate: ts.CompilerHost, program: ts.Program, options: ts.CompilerOptions,
@@ -77,6 +79,10 @@ export class MetadataWriterHost extends DelegatingHost {
 
       // TODO: remove this early return after https://github.com/Microsoft/TypeScript/pull/8412 is
       // released
+      return;
+    }
+
+    if (IGNORED_FILES.test(fileName)) {
       return;
     }
 
