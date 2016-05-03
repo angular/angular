@@ -68,6 +68,7 @@ import {
   AfterViewInit,
   AfterViewChecked
 } from '@angular/core';
+import {NgFor} from '@angular/common';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {AsyncPipe} from '@angular/common';
 
@@ -544,16 +545,23 @@ export function main() {
 
         it('should call pure pipes that are used multiple times only when the arguments change',
            fakeAsync(() => {
-             var ctx = createCompFixture(`<div [someProp]="name | countingPipe"></div><div [someProp]="age | countingPipe"></div>`, Person);
+             var ctx = createCompFixture(
+                 `<div [someProp]="name | countingPipe"></div><div [someProp]="age | countingPipe"></div>` +
+                     '<div *ngFor="let x of [1,2]" [someProp]="address.city | countingPipe"></div>',
+                 Person);
              ctx.componentInstance.name = 'a';
              ctx.componentInstance.age = 10;
+             ctx.componentInstance.address = new Address('mtv');
              ctx.detectChanges(false);
-             expect(renderLog.loggedValues).toEqual(['a state:0', '10 state:1']);
+             expect(renderLog.loggedValues)
+                 .toEqual(['mtv state:0', 'mtv state:1', 'a state:2', '10 state:3']);
              ctx.detectChanges(false);
-             expect(renderLog.loggedValues).toEqual(['a state:0', '10 state:1']);
+             expect(renderLog.loggedValues)
+                 .toEqual(['mtv state:0', 'mtv state:1', 'a state:2', '10 state:3']);
              ctx.componentInstance.age = 11;
              ctx.detectChanges(false);
-             expect(renderLog.loggedValues).toEqual(['a state:0', '10 state:1', '11 state:2']);
+             expect(renderLog.loggedValues)
+                 .toEqual(['mtv state:0', 'mtv state:1', 'a state:2', '10 state:3', '11 state:4']);
            }));
 
         it('should call impure pipes on each change detection run', fakeAsync(() => {
@@ -1098,6 +1106,7 @@ const ALL_DIRECTIVES = /*@ts2dart_const*/[
   forwardRef(() => OrderCheckDirective2),
   forwardRef(() => OrderCheckDirective0),
   forwardRef(() => OrderCheckDirective1),
+  NgFor
 ];
 
 const ALL_PIPES = /*@ts2dart_const*/[

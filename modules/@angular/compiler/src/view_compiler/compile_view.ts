@@ -127,16 +127,7 @@ export class CompileView implements NameResolver {
   }
 
   callPipe(name: string, input: o.Expression, args: o.Expression[]): o.Expression {
-    var compView = this.componentView;
-    var pipe = compView.purePipes.get(name);
-    if (isBlank(pipe)) {
-      pipe = new CompilePipe(compView, name);
-      if (pipe.pure) {
-        compView.purePipes.set(name, pipe);
-      }
-      compView.pipes.push(pipe);
-    }
-    return pipe.call(this, [input].concat(args));
+    return CompilePipe.call(this, name, [input].concat(args));
   }
 
   getLocal(name: string): o.Expression {
