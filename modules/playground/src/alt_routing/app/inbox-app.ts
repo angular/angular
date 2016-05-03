@@ -156,6 +156,7 @@ class DraftsCmp {
 })
 @Routes([
   new Route({path: '/', component: InboxCmp}),
+  new Route({path: '/inbox', component: InboxCmp}),
   new Route({path: '/drafts', component: DraftsCmp}),
   new Route({path: '/detail/:id', component: InboxDetailCmp})
 ])

@@ -7,12 +7,11 @@ function waitForElement(selector) {
 }
 
 describe('alt-routing inbox-app', () => {
+  var URL = 'all/playground/src/alt_routing/';
 
   afterEach(verifyNoBrowserErrors);
 
   describe('index view', () => {
-    var URL = 'all/playground/src/alt_routing/';
-
     it('should list out the current collection of items', () => {
       browser.get(URL);
       waitForElement('.inbox-item-record');
@@ -31,8 +30,6 @@ describe('alt-routing inbox-app', () => {
 
 
   describe('drafts view', () => {
-    var URL = 'all/playground/src/alt_routing/#/drafts';
-
     it('should navigate to the drafts view when the drafts link is clicked', () => {
       browser.get(URL);
       waitForElement('.inbox-item-record');
@@ -55,8 +52,6 @@ describe('alt-routing inbox-app', () => {
 
 
   describe('detail view', () => {
-    var URL = 'all/playground/src/alt_routing/';
-
     it('should navigate to the detail view when an email is clicked', () => {
       browser.get(URL);
       waitForElement('#item-10');
@@ -83,7 +78,7 @@ describe('alt-routing inbox-app', () => {
          element(by.css('#item-10')).click();
          waitForElement('.sort-button');
          element(by.css('.sort-button')).click();
-         expect(browser.getCurrentUrl()).toMatch(/\/;sort=date$/);
+         expect(browser.getCurrentUrl()).toContain(';sort=date');
          waitForElement('.inbox-item-record');
          expect(element(by.css(".inbox-item-record > a")).getAttribute("id")).toEqual("item-137");
        });
