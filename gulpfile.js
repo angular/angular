@@ -105,7 +105,7 @@ function runJasmineTests(globs, done) {
   var fork = require('child_process').fork;
   var args = ['--'].concat(globs);
 
-  fork('./tools/cjs-jasmine', args, {stdio: 'inherit'})
+  fork('./dist/tools/cjs-jasmine', args, {stdio: 'inherit'})
       .on('close', function jasmineCloseHandler(exitCode) {
         if (exitCode && treatTestErrorsAsFatal) {
           var err = new Error('Jasmine tests failed');
