@@ -18,8 +18,6 @@
       "@angular/platform-browser-dynamic": ["../../../dist/packages-dist/platform-browser-dynamic"]
     },
     "rootDir": ".",
-    "sourceMap": true,
-    "sourceRoot": ".",
     "target": "es5"
   },
   "files": [

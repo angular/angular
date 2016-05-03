@@ -14,8 +14,6 @@
       "@angular/core": ["../../../dist/packages-dist/core/"]
     },
     "rootDir": ".",
-    "sourceMap": true,
-    "sourceRoot": ".",
     "target": "es5"
   },
   "files": [

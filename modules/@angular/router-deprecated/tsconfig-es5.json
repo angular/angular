@@ -16,8 +16,6 @@
       "@angular/platform-browser": ["../../../dist/packages-dist/platform-browser/"]
     },
     "rootDir": ".",
-    "sourceMap": true,
-    "sourceRoot": ".",
     "target": "es5"
   },
   "files": [

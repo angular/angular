@@ -19,8 +19,6 @@
       "@angular/platform-browser/testing": ["../../../dist/packages-dist/platform-browser/testing"]
     },
     "rootDir": ".",
-    "sourceMap": true,
-    "sourceRoot": ".",
     "target": "es2015"
   },
   "files": [

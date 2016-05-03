@@ -14,8 +14,6 @@
       "rxjs/*": ["../../../node_modules/rxjs/*"]
     },
     "rootDir": ".",
-    "sourceMap": true,
-    "sourceRoot": "",
     "target": "es5"
   },
   "files": [
