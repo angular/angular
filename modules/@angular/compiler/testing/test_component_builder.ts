@@ -16,7 +16,7 @@ import {
 import {DirectiveResolver, ViewResolver} from '../index';
 
 import {BaseException} from '../src/facade/exceptions';
-import {Type, isPresent, isBlank, IS_DART} from '../src/facade/lang';
+import {Type, isPresent, isBlank, IS_DART, scheduleMicroTask} from '../src/facade/lang';
 import {PromiseWrapper, ObservableWrapper, PromiseCompleter} from '../src/facade/async';
 import {ListWrapper, MapWrapper} from '../src/facade/collection';
 
@@ -102,10 +102,16 @@ export class ComponentFixture<T> {
           });
       this._onStableSubscription = ObservableWrapper.subscribe(ngZone.onStable, (_) => {
         this._isStable = true;
-        if (this._completer != null) {
-          this._completer.resolve(true);
-          this._completer = null;
-        }
+        // Check whether there are no pending macrotasks in a microtask so that ngZone gets a chance
+        // to update the state of pending macrotasks.
+        scheduleMicroTask(() => {
+          if (!this.ngZone.hasPendingMacrotasks) {
+            if (this._completer != null) {
+              this._completer.resolve(true);
+              this._completer = null;
+            }
+          }
+        });
       });
 
       this._onErrorSubscription = ObservableWrapper.subscribe(
@@ -156,7 +162,7 @@ export class ComponentFixture<T> {
    * Return whether the fixture is currently stable or has async tasks that have not been completed
    * yet.
    */
-  isStable(): boolean { return this._isStable; }
+  isStable(): boolean { return this._isStable && !this.ngZone.hasPendingMacrotasks; }
 
   /**
    * Get a promise that resolves when the fixture is stable.
@@ -165,8 +171,10 @@ export class ComponentFixture<T> {
    * asynchronous change detection.
    */
   whenStable(): Promise<any> {
-    if (this._isStable) {
+    if (this.isStable()) {
       return PromiseWrapper.resolve(false);
+    } else if (this._completer !== null) {
+      return this._completer.promise;
     } else {
       this._completer = new PromiseCompleter<any>();
       return this._completer.promise;
