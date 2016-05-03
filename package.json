@@ -1,6 +1,6 @@
 {
   "name": "angular-srcs",
-  "version": "2.0.0-beta.17",
+  "version": "2.0.0-rc.0",
   "private": true,
   "branchPattern": "2.0.*",
   "description": "Angular 2 - a web framework for modern web apps",
