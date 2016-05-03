@@ -137,7 +137,42 @@ To import various symbols please adjust the paths in the following way:
 - `DebugNode.locals` has been removed. Use the new methods `DebugElement.references`
   to get the references that are present on this element,
   or `DebugElement.context` to get the context of the `EmbeddedViewRef` or the component to which the element belongs.
+* - Depending on if you are using precompiled templates or you are compiling templates on the fly, the setup for the base test providers has changed:
 
+Before:
+```js
+// Somewhere in test setup
+import {setBaseTestProviders} from 'angular2/testing';
+import {
+  TEST_BROWSER_PLATFORM_PROVIDERS,
+  TEST_BROWSER_APPLICATION_PROVIDERS
+} from 'angular2/platform/testing/browser';
+setBaseTestProviders(TEST_BROWSER_PLATFORM_PROVIDERS,
+                     TEST_BROWSER_APPLICATION_PROVIDERS);
+```
+After (applications that compile templates on the fly):
+```js
+// Somewhere in the test setup
+import {setBaseTestProviders} from '@angular/core/testing';
+import {
+  TEST_BROWSER_DYNAMIC_PLATFORM_PROVIDERS,
+  TEST_BROWSER_DYNAMIC_APPLICATION_PROVIDERS
+} from '@angular/platform-browser-dynamic/testing';
+setBaseTestProviders(TEST_BROWSER_DYNAMIC_PLATFORM_PROVIDERS,
+                     TEST_BROWSER_DYNAMIC_APPLICATION_PROVIDERS);
+```
+
+After (applications with precompiled templates):
+```js
+// Somewhere in the test setup
+import {setBaseTestProviders} from '@angular/core/testing';
+import {
+  TEST_BROWSER_STATIC_PLATFORM_PROVIDERS,
+  TEST_BROWSER_STATIC_APPLICATION_PROVIDERS
+} from '@angular/platform-browser/testing';
+setBaseTestProviders(TEST_BROWSER_STATIC_PLATFORM_PROVIDERS,
+                     TEST_BROWSER_STATIC_APPLICATION_PROVIDERS);
+```
 
 
 <a name="2.0.0-beta.17"></a>
