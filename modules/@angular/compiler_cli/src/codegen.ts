@@ -8,16 +8,11 @@ import * as path from 'path';
 import * as compiler from '@angular/compiler';
 import {ViewEncapsulation} from '@angular/core';
 import {StaticReflector} from './static_reflector';
-import {CompileMetadataResolver} from '@angular/compiler/src/metadata_resolver';
-import {HtmlParser} from '@angular/compiler/src/html_parser';
-import {DirectiveNormalizer} from '@angular/compiler/src/directive_normalizer';
-import {Lexer} from '@angular/compiler/src/expression_parser/lexer';
-import {Parser} from '@angular/compiler/src/expression_parser/parser';
-import {TemplateParser} from '@angular/compiler/src/template_parser';
-import {DomElementSchemaRegistry} from '@angular/compiler/src/schema/dom_element_schema_registry';
-import {StyleCompiler} from '@angular/compiler/src/style_compiler';
-import {ViewCompiler} from '@angular/compiler/src/view_compiler/view_compiler';
-import {TypeScriptEmitter} from '@angular/compiler/src/output/ts_emitter';
+import {CompileMetadataResolver, HtmlParser, DirectiveNormalizer, Lexer, Parser,
+TemplateParser, DomElementSchemaRegistry, StyleCompiler,
+ViewCompiler, TypeScriptEmitter
+} from './compiler_private';
+
 import {Parse5DomAdapter} from '@angular/platform-server';
 
 import {MetadataCollector} from 'ts-metadata-collector';

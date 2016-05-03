@@ -15,7 +15,6 @@
     "target": "es5"
   },
   "exclude": [
-    "node_modules",
-    "compiler_cli"
+    "node_modules"
   ]
 }

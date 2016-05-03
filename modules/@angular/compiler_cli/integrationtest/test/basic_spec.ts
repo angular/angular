@@ -1,10 +1,8 @@
-/// <reference path="../../typings/jasmine/jasmine.d.ts" />
-/// <reference path="../../typings/node/node.d.ts" />
 import * as fs from 'fs';
 import * as path from 'path';
 
 describe("template codegen output", () => {
-  const outDir = path.join('dist', 'tools', 'compiler_cli', 'test', 'built');
+  const outDir = path.join('dist', 'all', '@angular', 'compiler_cli', 'integrationtest', 'src');
 
   it("should lower Decorators without reflect-metadata", () => {
     const jsOutput = path.join(outDir, 'basic.js');
@@ -17,7 +15,7 @@ describe("template codegen output", () => {
     expect(fs.existsSync(metadataOutput)).toBeTruthy();
     const output = fs.readFileSync(metadataOutput, {encoding: 'utf-8'});
     expect(output).toContain('"decorators":');
-    expect(output).toContain('"name":"Component","module":"angular2/core"');
+    expect(output).toContain('"name":"Component","module":"@angular/core"');
   });
 
   it("should write .d.ts files", () => {

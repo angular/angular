@@ -15,20 +15,33 @@ source ./env.sh
 cd ../..
 
 
+echo 'travis_fold:start:test.unit.tools'
+
+# Run unit tests in tools
+node ./dist/tools/tsc-watch/ tools triggerCmds
+
+echo 'travis_fold:end:test.unit.tools'
+
+
 echo 'travis_fold:start:test.unit.node'
-gulp test.compiler_cli
 
 # Run unit tests in node
-node ./dist/tools/tsc-watch/ node
+node ./dist/tools/tsc-watch/ node triggerCmds
 
 echo 'travis_fold:end:test.unit.node'
 
 
+echo 'travis_fold:start:test.compiler_cli.node'
 
-echo 'travis_fold:start:test.unit.localChrome'
+# Run compiler_cli integration tests in node
+node dist/tools/cjs-jasmine -- @angular/compiler_cli/integrationtest/**/*_spec.js
+
+echo 'travis_fold:end:test.compiler_cli.node'
 
 # rebuild since codegen has overwritten some files.
-$(npm bin)/ng2tc -p modules/tsconfig.json
+node dist/all/@angular/compiler_cli/src/main -p modules/tsconfig.json
+
+echo 'travis_fold:start:test.unit.localChrome'
 
 # Run unit tests in local chrome
 if [[ ${TRAVIS} ]]; then

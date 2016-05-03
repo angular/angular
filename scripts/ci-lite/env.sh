@@ -41,7 +41,7 @@ fi
 
 # Append dist/all to the NODE_PATH so that cjs module resolver finds find the packages that use
 # absolute module ids (e.g. @angular/core)
-export NODE_PATH=${NODE_PATH}:$(pwd)/../../dist/all
+export NODE_PATH=${NODE_PATH}:$(pwd)/../../dist/all:$(pwd)/../../dist/tools
 export LOGS_DIR=/tmp/angular-build/logs
 
 if [[ ${TRAVIS} ]]; then

@@ -80,18 +80,17 @@ At a high level, this program
 ## For developers
 Run the compiler from source:
 ```
-# Build angular2
-./build.sh
-# Build the compiler
-./node_modules/.bin/tsc -p tools/compiler_cli/src
+# Build angular2 and the compiler
+./node_modules/.bin/tsc -p modules
 # Run it on the test project
-node ./dist/tools/compiler_cli/main.js -p tools/compiler_cli/test
+$ export NODE_PATH=$NODE_PATH:dist/all:dist/tools
+$ node dist/packages-dist/compiler_cli/src/main -p modules/@angular/compiler_cli/integrationtest
 ```
 
 Release:
 ```
-$ gulp test.compiler_cli
-$ cp tools/compiler_cli/README.md tools/compiler_cli/package.json dist/tools/compiler_cli
+$ node dist/tools/cjs-jasmine -- @angular/compiler_cli/integrationtest/**/*_spec.js
+$ cp modules/@angular/compiler_cli/README.md modules/@angular/compiler_cli/package.json dist/all/@angular/compiler_cli
 # npm login as angular
-$ npm publish dist/tools/compiler_cli/ --access=public
+$ npm publish dist/all/@angular/compiler_cli --access=public
 ```

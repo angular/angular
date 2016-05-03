@@ -5,7 +5,7 @@
   "main": "index.js",
   "typings": "index.d.ts",
   "bin": {
-     "ngc": "./main.js"
+     "ngc": "./src/main.js"
   },
   "dependencies": {
     "ts-metadata-collector": "^0.1.0",

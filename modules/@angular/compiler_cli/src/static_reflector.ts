@@ -1,12 +1,3 @@
-import {StringMapWrapper, ListWrapper} from '@angular/core/src/facade/collection';
-import {
-  isArray,
-  isPresent,
-  isBlank,
-  isPrimitive,
-  isStringMap,
-  FunctionWrapper
-} from '@angular/core/src/facade/lang';
 import {
   AttributeMetadata,
   DirectiveMetadata,
@@ -23,8 +14,7 @@ import {
   ViewQueryMetadata,
   QueryMetadata,
 } from '@angular/core';
-import {ReflectorReader} from '@angular/core/src/reflection/reflector_reader';
-import {reflector} from '@angular/core';
+import {ReflectorReader} from './core_private';
 import {Provider} from '@angular/core';
 import {
   HostMetadata,
@@ -89,26 +79,26 @@ export class StaticReflector implements ReflectorReader {
 
   public annotations(type: StaticSymbol): any[] {
     let annotations = this.annotationCache.get(type);
-    if (!isPresent(annotations)) {
+    if (!annotations) {
       let classMetadata = this.getTypeMetadata(type);
-      if (isPresent(classMetadata['decorators'])) {
+      if (classMetadata['decorators']) {
         annotations = this.simplify(type, classMetadata['decorators']);
       } else {
         annotations = [];
       }
-      this.annotationCache.set(type, annotations.filter(ann => isPresent(ann)));
+      this.annotationCache.set(type, annotations.filter(ann => !!ann));
     }
     return annotations;
   }
 
   public propMetadata(type: StaticSymbol): {[key: string]: any} {
     let propMetadata = this.propertyCache.get(type);
-    if (!isPresent(propMetadata)) {
+    if (!propMetadata) {
       let classMetadata = this.getTypeMetadata(type);
-      let members = isPresent(classMetadata) ? classMetadata['members'] : {};
+      let members = classMetadata ? classMetadata['members'] : {};
       propMetadata = mapStringMap(members, (propData, propName) => {
         let prop = (<any[]>propData).find(a => a['__symbolic'] == 'property');
-        if (isPresent(prop) && isPresent(prop['decorators'])) {
+        if (prop && prop['decorators']) {
           return this.simplify(type, prop['decorators']);
         } else {
           return [];
@@ -125,29 +115,29 @@ export class StaticReflector implements ReflectorReader {
     }
     try {
       let parameters = this.parameterCache.get(type);
-      if (!isPresent(parameters)) {
+      if (!parameters) {
         let classMetadata = this.getTypeMetadata(type);
-        let members = isPresent(classMetadata) ? classMetadata['members'] : null;
-        let ctorData = isPresent(members) ? members['__ctor__'] : null;
-        if (isPresent(ctorData)) {
+        let members = classMetadata ? classMetadata['members'] : null;
+        let ctorData = members ? members['__ctor__'] : null;
+        if (ctorData) {
           let ctor = (<any[]>ctorData).find(a => a['__symbolic'] == 'constructor');
           let parameterTypes = <any[]>this.simplify(type, ctor['parameters']);
           let parameterDecorators = <any[]>this.simplify(type, ctor['parameterDecorators']);
 
           parameters = [];
-          ListWrapper.forEachWithIndex(parameterTypes, (paramType, index) => {
+          parameterTypes.forEach( (paramType, index) => {
             let nestedResult: any[] = [];
-            if (isPresent(paramType)) {
+            if (paramType) {
               nestedResult.push(paramType);
             }
-            let decorators = isPresent(parameterDecorators) ? parameterDecorators[index] : null;
-            if (isPresent(decorators)) {
-              ListWrapper.addAll(nestedResult, decorators);
+            let decorators = parameterDecorators ? parameterDecorators[index] : null;
+            if (decorators) {
+              nestedResult.push(...decorators);
             }
             parameters.push(nestedResult);
           });
         }
-        if (!isPresent(parameters)) {
+        if (!parameters) {
           parameters = [];
         }
         this.parameterCache.set(type, parameters);
@@ -162,16 +152,18 @@ export class StaticReflector implements ReflectorReader {
   private registerDecoratorOrConstructor(type: StaticSymbol, ctor: any): void {
     this.conversionMap.set(type, (context: StaticSymbol, args: any[]) => {
       let argValues: any[] = [];
-      ListWrapper.forEachWithIndex(args, (arg, index) => {
+      args.forEach( (arg, index) => {
         let argValue: any;
-        if (isStringMap(arg) && isBlank(arg['__symbolic'])) {
+        if (typeof arg === 'object' && !arg['__symbolic']) {
           argValue = mapStringMap(arg, (value, key) => this.simplify(context, value));
         } else {
           argValue = this.simplify(context, arg);
         }
         argValues.push(argValue);
       });
-      return FunctionWrapper.apply(reflector.factory(ctor), argValues);
+      var metadata = Object.create(ctor.prototype);
+      ctor.apply(metadata, argValues);
+      return metadata;
     });
   }
 
@@ -239,15 +231,15 @@ export class StaticReflector implements ReflectorReader {
       if (isPrimitive(expression)) {
         return expression;
       }
-      if (isArray(expression)) {
+      if (expression instanceof Array) {
         let result: any[] = [];
         for (let item of(<any>expression)) {
           result.push(simplify(item));
         }
         return result;
       }
-      if (isPresent(expression)) {
-        if (isPresent(expression['__symbolic'])) {
+      if (expression) {
+        if (expression['__symbolic']) {
           let staticSymbol: StaticSymbol;
           switch (expression['__symbolic']) {
             case "binop":
@@ -312,15 +304,15 @@ export class StaticReflector implements ReflectorReader {
             case "index":
               let indexTarget = simplify(expression['expression']);
               let index = simplify(expression['index']);
-              if (isPresent(indexTarget) && isPrimitive(index)) return indexTarget[index];
+              if (indexTarget && isPrimitive(index)) return indexTarget[index];
               return null;
             case "select":
               let selectTarget = simplify(expression['expression']);
               let member = simplify(expression['member']);
-              if (isPresent(selectTarget) && isPrimitive(member)) return selectTarget[member];
+              if (selectTarget && isPrimitive(member)) return selectTarget[member];
               return null;
             case "reference":
-              if (isPresent(expression['module'])) {
+              if (expression['module']) {
                 staticSymbol = _this.host.findDeclaration(expression['module'], expression['name'],
                                                           context.filePath);
               } else {
@@ -329,8 +321,8 @@ export class StaticReflector implements ReflectorReader {
               let result = staticSymbol;
               let moduleMetadata = _this.getModuleMetadata(staticSymbol.filePath);
               let declarationValue =
-                  isPresent(moduleMetadata) ? moduleMetadata['metadata'][staticSymbol.name] : null;
-              if (isPresent(declarationValue)) {
+                  moduleMetadata ? moduleMetadata['metadata'][staticSymbol.name] : null;
+              if (declarationValue) {
                 result = _this.simplify(staticSymbol, declarationValue);
               }
               return result;
@@ -342,9 +334,9 @@ export class StaticReflector implements ReflectorReader {
               staticSymbol =
                   _this.host.findDeclaration(target['module'], target['name'], context.filePath);
               let converter = _this.conversionMap.get(staticSymbol);
-              if (isPresent(converter)) {
+              if (converter) {
                 let args = expression['arguments'];
-                if (isBlank(args)) {
+                if (!args) {
                   args = [];
                 }
                 return converter(context, args);
@@ -367,9 +359,9 @@ export class StaticReflector implements ReflectorReader {
    */
   public getModuleMetadata(module: string): {[key: string]: any} {
     let moduleMetadata = this.metadataCache.get(module);
-    if (!isPresent(moduleMetadata)) {
+    if (!moduleMetadata) {
       moduleMetadata = this.host.getMetadataFor(module);
-      if (!isPresent(moduleMetadata)) {
+      if (!moduleMetadata) {
         moduleMetadata = {__symbolic: "module", module: module, metadata: {}};
       }
       this.metadataCache.set(module, moduleMetadata);
@@ -380,7 +372,7 @@ export class StaticReflector implements ReflectorReader {
   private getTypeMetadata(type: StaticSymbol): {[key: string]: any} {
     let moduleMetadata = this.getModuleMetadata(type.filePath);
     let result = moduleMetadata['metadata'][type.name];
-    if (!isPresent(result)) {
+    if (!result) {
       result = {__symbolic: "class"};
     }
     return result;
@@ -389,8 +381,12 @@ export class StaticReflector implements ReflectorReader {
 
 function mapStringMap(input: {[key: string]: any},
                       transform: (value: any, key: string) => any): {[key: string]: any} {
-  if (isBlank(input)) return {};
+  if (!input) return {};
   var result: {[key: string]: any} = {};
-  StringMapWrapper.keys(input).forEach((key) => { result[key] = transform(input[key], key); });
+  Object.keys(input).forEach((key) => { result[key] = transform(input[key], key); });
   return result;
+}
+
+function isPrimitive(o: any):boolean {
+  return o === null || (typeof o !== "function" && typeof o !== "object");
 }

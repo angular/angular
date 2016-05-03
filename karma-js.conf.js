@@ -39,6 +39,7 @@ module.exports = function(config) {
     exclude: [
       'dist/all/@angular/**/e2e_test/**',
       'dist/all/@angular/examples/**',
+      'dist/all/@angular/compiler_cli/**',
       'dist/all/angular1_router.js',
       'dist/all/@angular/platform-browser/testing/e2e_util.js'
     ],
