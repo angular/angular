@@ -1068,7 +1068,7 @@ gulp.task('!test.compiler_cli.codegen', function(done) {
     require('./dist/tools/compiler_cli/main')
         .main("tools/compiler_cli/test")
         .then(done)
-        .catch(function(rej) { done(new Error(rej)); });
+        .catch(function(rej) { done(rej); });
   } catch (err) {
     done(err);
   }
