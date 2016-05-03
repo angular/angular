@@ -13,6 +13,21 @@ import {RouterOutletMap} from '../router';
 import {DEFAULT_OUTLET_NAME} from '../constants';
 import {isPresent, isBlank} from '../facade/lang';
 
+/**
+ * A router outlet is a placeholder that Angular dynamically fills based on the application's route.
+ *
+ * ## Use
+ *
+ * ```
+ * <router-outlet></router-outlet>
+ * ```
+ *
+ * Outlets can be named.
+ *
+ * ```
+ * <router-outlet name="right"></router-outlet>
+ * ```
+ */
 @Directive({selector: 'router-outlet'})
 export class RouterOutlet {
   private _loaded: ComponentRef<any>;
@@ -28,10 +43,19 @@ export class RouterOutlet {
     this._loaded = null;
   }
 
+  /**
+   * Returns the loaded component.
+   */
   get loadedComponent(): Object { return isPresent(this._loaded) ? this._loaded.instance : null; }
 
+  /**
+   * Returns true is the outlet is not empty.
+   */
   get isLoaded(): boolean { return isPresent(this._loaded); }
 
+  /**
+   * Called by the Router to instantiate a new component.
+   */
   load(factory: ComponentFactory<any>, providers: ResolvedReflectiveProvider[],
        outletMap: RouterOutletMap): ComponentRef<any> {
     this.outletMap = outletMap;

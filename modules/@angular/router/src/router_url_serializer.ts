@@ -2,11 +2,24 @@ import {UrlSegment, Tree, TreeNode, rootNode, UrlTree} from './segments';
 import {BaseException} from '@angular/core';
 import {isBlank, isPresent, RegExpWrapper} from './facade/lang';
 
+/**
+ * Defines a way to serialize/deserialize a url tree.
+ */
 export abstract class RouterUrlSerializer {
+  /**
+   * Parse a url into a {@Link UrlTree}
+   */
   abstract parse(url: string): UrlTree;
+
+  /**
+   * Converts a {@Link UrlTree} into a url
+   */
   abstract serialize(tree: UrlTree): string;
 }
 
+/**
+ * A default implementation of the serialization.
+ */
 export class DefaultRouterUrlSerializer extends RouterUrlSerializer {
   parse(url: string): UrlTree {
     let root = new _UrlParser().parse(url);

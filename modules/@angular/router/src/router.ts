@@ -25,18 +25,30 @@ import {
 import {hasLifecycleHook} from './lifecycle_reflector';
 import {DEFAULT_OUTLET_NAME} from './constants';
 
+/**
+ * @internal
+ */
 export class RouterOutletMap {
   /** @internal */
   _outlets: {[name: string]: RouterOutlet} = {};
   registerOutlet(name: string, outlet: RouterOutlet): void { this._outlets[name] = outlet; }
 }
 
+/**
+ * The `Router` is responsible for mapping URLs to components.
+ *
+ * You can see the state of the router by inspecting the read-only fields `router.urlTree`
+ * and `router.routeTree`.
+ */
 export class Router {
   private _prevTree: RouteTree;
   private _urlTree: UrlTree;
   private _locationSubscription: any;
   private _changes: EventEmitter<void> = new EventEmitter<void>();
 
+  /**
+   * @internal
+   */
   constructor(private _rootComponent: Object, private _rootComponentType: Type,
               private _componentResolver: ComponentResolver,
               private _urlSerializer: RouterUrlSerializer,
@@ -46,17 +58,93 @@ export class Router {
     this.navigateByUrl(this._location.path());
   }
 
+  /**
+   * Returns the current url tree.
+   */
   get urlTree(): UrlTree { return this._urlTree; }
 
+  /**
+   * Returns the current route tree.
+   */
+  get routeTree(): RouteTree { return this._prevTree; }
+
+  /**
+   * An observable or url changes from the router.
+   */
+  get changes(): Observable<void> { return this._changes; }
+
+  /**
+   * Navigate based on the provided url. This navigation is always absolute.
+   *
+   * ### Usage
+   *
+   * ```
+   * router.navigateByUrl("/team/33/user/11");
+   * ```
+   */
   navigateByUrl(url: string): Promise<void> {
     return this._navigate(this._urlSerializer.parse(url));
   }
 
+  /**
+   * Navigate based on the provided array of commands and a starting point.
+   * If no segment is provided, the navigation is absolute.
+   *
+   * ### Usage
+   *
+   * ```
+   * router.navigate(['team', 33, 'team', '11], segment);
+   * ```
+   */
   navigate(commands: any[], segment?: RouteSegment): Promise<void> {
     return this._navigate(this.createUrlTree(commands, segment));
   }
 
+  /**
+   * @internal
+   */
   dispose(): void { ObservableWrapper.dispose(this._locationSubscription); }
+
+  /**
+   * Applies an array of commands to the current url tree and creates
+   * a new url tree.
+   *
+   * When given a segment, applies the given commands starting from the segment.
+   * When not given a segment, applies the given command starting from the root.
+   *
+   * ### Usage
+   *
+   * ```
+   * // create /team/33/user/11
+   * router.createUrlTree(['/team', 33, 'user', 11]);
+   *
+   * // create /team/33;expand=true/user/11
+   * router.createUrlTree(['/team', 33, {expand: true}, 'user', 11]);
+   *
+   * // you can collapse static fragments like this
+   * router.createUrlTree(['/team/33/user', userId]);
+   *
+   * // assuming the current url is `/team/33/user/11` and the segment points to `user/11`
+   *
+   * // navigate to /team/33/user/11/details
+   * router.createUrlTree(['details'], segment);
+   *
+   * // navigate to /team/33/user/22
+   * router.createUrlTree(['../22'], segment);
+   *
+   * // navigate to /team/44/user/22
+   * router.createUrlTree(['../../team/44/user/22'], segment);
+   * ```
+   */
+  createUrlTree(commands: any[], segment?: RouteSegment): UrlTree {
+    let s = isPresent(segment) ? segment : this._prevTree.root;
+    return link(s, this._prevTree, this.urlTree, commands);
+  }
+
+  /**
+   * Serializes a {@link UrlTree} into a string.
+   */
+  serializeUrl(url: UrlTree): string { return this._urlSerializer.serialize(url); }
 
   private _createInitialTree(): RouteTree {
     let root = new RouteSegment([new UrlSegment("", {}, null)], {}, DEFAULT_OUTLET_NAME,
@@ -84,17 +172,6 @@ export class Router {
               });
         });
   }
-
-  createUrlTree(commands: any[], segment?: RouteSegment): UrlTree {
-    let s = isPresent(segment) ? segment : this._prevTree.root;
-    return link(s, this._prevTree, this.urlTree, commands);
-  }
-
-  serializeUrl(url: UrlTree): string { return this._urlSerializer.serialize(url); }
-
-  get changes(): Observable<void> { return this._changes; }
-
-  get routeTree(): RouteTree { return this._prevTree; }
 }
 
 

@@ -5,6 +5,9 @@ import {RouterUrlSerializer, DefaultRouterUrlSerializer} from './router_url_seri
 import {ApplicationRef} from '@angular/core';
 import {BaseException} from '@angular/core';
 
+/**
+ * The Platform agnostic ROUTER PROVIDERS
+ */
 export const ROUTER_PROVIDERS_COMMON: any[] = /*@ts2dart_const*/[
   RouterOutletMap,
   /*@ts2dart_Provider*/ {provide: RouterUrlSerializer, useClass: DefaultRouterUrlSerializer},
