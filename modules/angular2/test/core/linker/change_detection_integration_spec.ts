@@ -67,7 +67,7 @@ import {
   AfterViewChecked
 } from 'angular2/core';
 import {By} from 'angular2/platform/common_dom';
-import {AsyncPipe} from 'angular2/common';
+import {AsyncPipe, NgFor} from 'angular2/common';
 
 import {ElementSchemaRegistry} from 'angular2/src/compiler/schema/element_schema_registry';
 import {MockSchemaRegistry} from '../../compiler/schema_registry_mock';
@@ -540,16 +540,23 @@ export function main() {
 
         it('should call pure pipes that are used multiple times only when the arguments change',
            fakeAsync(() => {
-             var ctx = createCompFixture(`<div [someProp]="name | countingPipe"></div><div [someProp]="age | countingPipe"></div>`, Person);
+             var ctx = createCompFixture(
+                 `<div [someProp]="name | countingPipe"></div><div [someProp]="age | countingPipe"></div>` +
+                     '<div *ngFor="let x of [1,2]" [someProp]="address.city | countingPipe"></div>',
+                 Person);
              ctx.componentInstance.name = 'a';
              ctx.componentInstance.age = 10;
+             ctx.componentInstance.address = new Address('mtv');
              ctx.detectChanges(false);
-             expect(renderLog.loggedValues).toEqual(['a state:0', '10 state:1']);
+             expect(renderLog.loggedValues)
+                 .toEqual(['mtv state:0', 'mtv state:1', 'a state:2', '10 state:3']);
              ctx.detectChanges(false);
-             expect(renderLog.loggedValues).toEqual(['a state:0', '10 state:1']);
+             expect(renderLog.loggedValues)
+                 .toEqual(['mtv state:0', 'mtv state:1', 'a state:2', '10 state:3']);
              ctx.componentInstance.age = 11;
              ctx.detectChanges(false);
-             expect(renderLog.loggedValues).toEqual(['a state:0', '10 state:1', '11 state:2']);
+             expect(renderLog.loggedValues)
+                 .toEqual(['mtv state:0', 'mtv state:1', 'a state:2', '10 state:3', '11 state:4']);
            }));
 
         it('should call impure pipes on each change detection run', fakeAsync(() => {
@@ -1102,6 +1109,7 @@ const ALL_DIRECTIVES = CONST_EXPR([
   forwardRef(() => OrderCheckDirective2),
   forwardRef(() => OrderCheckDirective0),
   forwardRef(() => OrderCheckDirective1),
+  NgFor
 ]);
 
 const ALL_PIPES = CONST_EXPR([
