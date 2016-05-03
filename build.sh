@@ -50,8 +50,14 @@ do
   UMDES5PATH=${DESTDIR}/${PACKAGE}.umd.js
 
 
-  echo "======      COMPILING: \$(npm bin)/ng2tc -p ${SRCDIR}/tsconfig-es5.json        ====="
-  $(npm bin)/ng2tc -p ${SRCDIR}/tsconfig-es5.json
+  if [[ ${PACKAGE} == "router-deprecated" ]]; then
+    echo "======      COMPILING: \$(npm bin)/tsc -p ${SRCDIR}/tsconfig-es5.json        ====="
+    $(npm bin)/tsc -p ${SRCDIR}/tsconfig-es5.json
+  else
+    echo "======      COMPILING: \$(npm bin)/ng2tc -p ${SRCDIR}/tsconfig-es5.json        ====="
+    $(npm bin)/ng2tc -p ${SRCDIR}/tsconfig-es5.json
+  fi
+
   cp ${SRCDIR}/package.json ${DESTDIR}/
 
 
@@ -66,8 +72,13 @@ do
   fi
 
 
-  echo "====== (esm)COMPILING: \$(npm bin)/ng2tc -p ${SRCDIR}/tsconfig-es2015.json ====="
-  $(npm bin)/ng2tc -p ${SRCDIR}/tsconfig-es2015.json
+  if [[ ${PACKAGE} == "router-deprecated" ]]; then
+    echo "====== (esm)COMPILING: \$(npm bin)/tsc -p ${SRCDIR}/tsconfig-es2015.json ====="
+    $(npm bin)/tsc -p ${SRCDIR}/tsconfig-es2015.json
+  else
+    echo "====== (esm)COMPILING: \$(npm bin)/ng2tc -p ${SRCDIR}/tsconfig-es2015.json ====="
+    $(npm bin)/ng2tc -p ${SRCDIR}/tsconfig-es2015.json
+  fi
 
 
   echo "======      BUNDLING: ${SRCDIR} ====="
