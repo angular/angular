@@ -1,3 +1,97 @@
+<a name="2.0.0-rc.0"></a>
+# 2.0.0-rc.0 (2016-05-02)
+
+This is the first release candidate that contains repackaging of Angular into individual packages one per each feature area.
+
+All of the packages are now distributed under the @angular npm scope. This changes how Angular is installed via npm and how you import the code.
+
+To install Angular for a browser application please use:
+
+```
+npm install --save @angular/core @angular/compiler @angular/common @angular/platform-browser @angular/platform-browser-dynamic rxjs@5.0.0-beta.6 zone.js@0.6.12
+```
+
+To import various symbols please adjust the paths in the following way:
+
+- `angular2/core` -> `@angular/core`
+- `angular2/compiler` -> `@angular/compiler`
+- `angular2/common` -> `@angular/common`
+- `angular2/platform/browser` -> `@angular/platform-browser` (applications with precompiled templates) + `@angular/platform-browser-dynamic` (applications that compile templates on the fly)
+- `angular2/platform/server` -> `@angular/platform-server`
+- `angular2/testing` -> `@angular/core/testing` (it/describe/..) + `@angular/compiler/testing` (TestComponentBuilder) + `@angular/platform-browser/testing`
+- `angular2/upgrade` -> `@angular/upgrade`
+- `angular2/http` -> `@angular/http`
+- `angular2/router` -> `@angular/router-deprecated` (snapshot of the component router from beta.17 for backwards compatibility)
+- new package: `@angular/router` - component router with several [breaking changes](https://docs.google.com/document/d/1WLSNV3V1AKdwLwRiLuN7JqbPBKQ_S5quRlcT5LPIldw/edit#heading=h.blfh5ya9sf5r)
+
+
+
+### Features
+
+* **core:** introduce template context ([cacdead](https://github.com/angular/angular/commit/cacdead)), closes [#8321](https://github.com/angular/angular/issues/8321)
+* **core:** support the decorator data that tsickle produces ([b6fd811](https://github.com/angular/angular/commit/b6fd811))
+* **di:** support map literals as providers ([46cd868](https://github.com/angular/angular/commit/46cd868))
+* **offline compiler:** a replacement for tsc that compiles templates ([78946fe](https://github.com/angular/angular/commit/78946fe))
+* **offline compiler:** add metadata emit ([072446a](https://github.com/angular/angular/commit/072446a))
+* **router:** add CanDeactivate ([deba804](https://github.com/angular/angular/commit/deba804))
+* **router:** add link that support only absolute urls ([fa5bfe4](https://github.com/angular/angular/commit/fa5bfe4))
+* **router:** add Router and RouterOutlet to support aux routes ([6e1fed4](https://github.com/angular/angular/commit/6e1fed4))
+* **router:** add RouterLink ([de56dd5](https://github.com/angular/angular/commit/de56dd5))
+* **router:** add RouterUrlSerializer ([79830f1](https://github.com/angular/angular/commit/79830f1))
+* **router:** add RouteTree and UrlTree as aliases to Tree<RouteSegment> and Tree<UrlSegment> ([277b1fc](https://github.com/angular/angular/commit/277b1fc))
+* **router:** add support for wildcards ([8836219](https://github.com/angular/angular/commit/8836219))
+* **router:** adds an example app using the new router ([602641d](https://github.com/angular/angular/commit/602641d))
+* **router:** change location when navigating ([560cc14](https://github.com/angular/angular/commit/560cc14))
+* **router:** implement relative navigation ([e5b87e5](https://github.com/angular/angular/commit/e5b87e5))
+* **router:** implements support for router-link-active ([ec4ca0e](https://github.com/angular/angular/commit/ec4ca0e))
+* **router:** listen to location changes ([62a0809](https://github.com/angular/angular/commit/62a0809)), closes [#8362](https://github.com/angular/angular/issues/8362)
+* **router:** set router-link-active when RouterLink is active ([4fe0f1f](https://github.com/angular/angular/commit/4fe0f1f)), closes [#8376](https://github.com/angular/angular/issues/8376)
+* **router:** update recognize to handle matrix parameters ([446657b](https://github.com/angular/angular/commit/446657b))
+* **router:** update recognize to support aux routes ([d35c109](https://github.com/angular/angular/commit/d35c109))
+* **router:** update url parser to handle aux routes ([fad3b64](https://github.com/angular/angular/commit/fad3b64))
+* **testing:** Use NgZone in TestComponentBuilder. ([769835e](https://github.com/angular/angular/commit/769835e)), closes [#8301](https://github.com/angular/angular/issues/8301)
+* **tests:** add ROUTER_FAKE_PROVIDERS to angular2/alt_router/router_testing_providers ([0f1b370](https://github.com/angular/angular/commit/0f1b370))
+
+### Bug Fixes
+
+* **metadata:** Preserve Provider expressions ([7c0d497](https://github.com/angular/angular/commit/7c0d497))
+* **codegen:** event handler has boolean return type ([ca40ef5](https://github.com/angular/angular/commit/ca40ef5))
+* **compiler:** fix cross view references and providers with `useValue`. ([f114d6c](https://github.com/angular/angular/commit/f114d6c)), closes [#8366](https://github.com/angular/angular/issues/8366)
+* **compiler:** project using the right directive as component. ([0f774df](https://github.com/angular/angular/commit/0f774df)), closes [#8344](https://github.com/angular/angular/issues/8344)
+* **compiler:** support css stylesheets in offline compiler ([00d3b60](https://github.com/angular/angular/commit/00d3b60))
+* **compiler:** support empty array and map literals. ([11955f9](https://github.com/angular/angular/commit/11955f9)), closes [#8336](https://github.com/angular/angular/issues/8336)
+* **compiler_cli:** make sure the generated code gets compiled via tic ([163d80a](https://github.com/angular/angular/commit/163d80a))
+* **core:** check components if an event handler inside of an embedded view fires. ([4d691b6](https://github.com/angular/angular/commit/4d691b6)), closes [#8242](https://github.com/angular/angular/issues/8242)
+* **core:** return the ChangeDetectorRef of the component also for embedded views. ([351f24e](https://github.com/angular/angular/commit/351f24e))
+* **metadata:** expose Providers in metadata ([8bf6ef6](https://github.com/angular/angular/commit/8bf6ef6))
+* **perf:** don’t use `try/catch` in production mode ([b1a9e44](https://github.com/angular/angular/commit/b1a9e44)), closes [#8338](https://github.com/angular/angular/issues/8338)
+* **router:** canDeactivate should not change the url when returns false ([76d6f5f](https://github.com/angular/angular/commit/76d6f5f)), closes [#8360](https://github.com/angular/angular/issues/8360)
+* **router:** create a route tree when creating the router service ([ca13f1c](https://github.com/angular/angular/commit/ca13f1c)), closes [#8365](https://github.com/angular/angular/issues/8365)
+* **typescript:** strip abstract keyword from properties in .d.ts ([a84c2d7](https://github.com/angular/angular/commit/a84c2d7)), closes [#8339](https://github.com/angular/angular/issues/8339)
+
+
+
+### OTHER BREAKING CHANGES
+    
+
+* - ViewRef.changeDetectorRef was removed as using ChangeDetectorRefs
+  for EmbeddedViewRefs does not make sense. Use ComponentRef.changeDetectorRef
+  or inject ChangeDetectorRef instead.
+
+* - Before, a `EmbeddedViewRef` used to have methods for 
+  setting variables. Now, a user has to pass in a context
+  object that represents all variables when an `EmbeddedViewRef`
+  should be created.
+- `ViewContainerRef.createEmbeddedViewRef` now takes
+   a context object as 2nd argument.
+- `EmbeddedViewRef.setLocal` and `getLocal` have been removed.
+  Use `EmbeddedViewRef.context` to access the context.
+- `DebugNode.locals` has been removed. Use the new methods `DebugElement.references`
+  to get the references that are present on this element,
+  or `DebugElement.context` to get the context of the `EmbeddedViewRef` or the component to which the element belongs.
+
+
+
 <a name="2.0.0-beta.17"></a>
 # 2.0.0-beta.17 (2016-04-28)
 
