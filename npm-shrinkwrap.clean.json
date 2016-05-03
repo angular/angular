@@ -58,9 +58,6 @@
       "version": "2.0.0-beta.17",
       "resolved": "git://github.com/angular/angular.git#08cbd5481d04255864f5ff8e33d0756d4ec4c440"
     },
-    "angular2-template-compiler": {
-      "version": "0.1.5"
-    },
     "ansi": {
       "version": "0.3.0"
     },
