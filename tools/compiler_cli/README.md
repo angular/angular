@@ -13,14 +13,16 @@ and then downloading only the executable JS to the client.
 ## Install and use
 
 ```
-$ npm install angular2-template-compiler typescript@next rxjs @angular/compiler
-# Optional sanity check, make sure TypeScript can compile
+# First install angular, see https://github.com/angular/angular/blob/master/CHANGELOG.md#200-rc0-2016-05-02
+$ npm install @angular/compiler-cli typescript@next @angular/platform-server @angular/compiler
+# Optional sanity check, make sure TypeScript can compile.
 $ ./node_modules/.bin/tsc -p path/to/project
-$ ./node_modules/.bin/ng2tc -p path/to/project
+# ngc is a drop-in replacement for tsc.
+$ ./node_modules/.bin/ngc -p path/to/project
 ```
 
 In order to write a `bootstrap` that imports the generated code, you should first write your
-top-level component, and run `ng2tc` once to produce a generated `.ngfactory.ts` file.
+top-level component, and run `ngc` once to produce a generated `.ngfactory.ts` file.
 Then you can add an import statement in the `bootstrap` allowing you to bootstrap off the
 generated code.
 
@@ -79,17 +81,17 @@ At a high level, this program
 Run the compiler from source:
 ```
 # Build angular2
-gulp build.js.cjs
+./build.sh
 # Build the compiler
 ./node_modules/.bin/tsc -p tools/compiler_cli/src
 # Run it on the test project
-node ./dist/js/cjs/compiler_cli -p tools/compiler_cli/test
+node ./dist/tools/compiler_cli/main.js -p tools/compiler_cli/test
 ```
 
 Release:
 ```
 $ gulp test.compiler_cli
 $ cp tools/compiler_cli/README.md tools/compiler_cli/package.json dist/tools/compiler_cli
-# npm login as angularcore
-$ npm publish dist/tools/compiler_cli
+# npm login as angular
+$ npm publish dist/tools/compiler_cli/ --access=public
 ```
