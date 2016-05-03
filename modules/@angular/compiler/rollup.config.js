@@ -2,7 +2,6 @@
 export default {
   entry: '../../../dist/packages-dist/compiler/esm/index.js',
   dest: '../../../dist/packages-dist/compiler/esm/compiler.umd.js',
-  sourceMap: true,
   format: 'umd',
   moduleName: 'ng.compiler',
   globals: {
