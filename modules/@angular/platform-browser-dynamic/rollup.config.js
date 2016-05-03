@@ -2,7 +2,6 @@
 export default {
   entry: '../../../dist/packages-dist/platform-browser-dynamic/esm/index.js',
   dest: '../../../dist/packages-dist/platform-browser-dynamic/esm/platform-browser-dynamic.umd.js',
-  sourceMap: true,
   format: 'umd',
   moduleName: 'ng.platformBrowserDynamic',
   globals: {

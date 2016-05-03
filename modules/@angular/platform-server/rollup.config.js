@@ -2,7 +2,6 @@
 export default {
   entry: '../../../dist/packages-dist/platform-server/esm/index.js',
   dest: '../../../dist/packages-dist/platform-server/esm/platform-server.umd.js',
-  sourceMap: true,
   format: 'umd',
   moduleName: 'ng.platformServer',
   globals: {

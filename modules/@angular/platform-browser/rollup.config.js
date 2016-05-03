@@ -2,7 +2,6 @@
 export default {
   entry: '../../../dist/packages-dist/platform-browser/esm/index.js',
   dest: '../../../dist/packages-dist/platform-browser/esm/platform-browser.umd.js',
-  sourceMap: true,
   format: 'umd',
   moduleName: 'ng.platformBrowser',
   globals: {

@@ -17,7 +17,7 @@
     },
     "rootDir": ".",
     "sourceMap": true,
-    "sourceRoot": ".",
+    "inlineSources": true,
     "target": "es2015"
   },
   "files": [

@@ -20,7 +20,7 @@
     },
     "rootDir": ".",
     "sourceMap": true,
-    "sourceRoot": ".",
+    "inlineSources": true,
     "target": "es5"
   },
   "files": [
