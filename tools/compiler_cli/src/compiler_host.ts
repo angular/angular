@@ -4,11 +4,6 @@ import {convertDecorators} from 'tsickle';
 import {NodeReflectorHost} from './reflector_host';
 import {AngularCompilerOptions} from './codegen';
 
-const DEBUG = false;
-function debug(msg: string, ...o: any[]) {
-  if (DEBUG) console.log(msg, ...o);
-}
-
 /**
  * Implementation of CompilerHost that forwards all methods to another instance.
  * Useful for partial implementations to override only methods they care about.
@@ -37,11 +32,12 @@ export abstract class DelegatingHost implements ts.CompilerHost {
 export class TsickleHost extends DelegatingHost {
   // Additional diagnostics gathered by pre- and post-emit transformations.
   public diagnostics: ts.Diagnostic[] = [];
-  private TSICKLE_SUPPORT = `interface DecoratorInvocation {
-    type: Function;
-    args?: any[];
-  }
-  `;
+  private TSICKLE_SUPPORT = `
+interface DecoratorInvocation {
+  type: Function;
+  args?: any[];
+}
+`;
   constructor(delegate: ts.CompilerHost, private options: ts.CompilerOptions) { super(delegate); }
 
   getSourceFile =
@@ -53,8 +49,7 @@ export class TsickleHost extends DelegatingHost {
           if (converted.diagnostics) {
             this.diagnostics.push(...converted.diagnostics);
           }
-          newContent = this.TSICKLE_SUPPORT + converted.output;
-          debug(newContent);
+          newContent = converted.output + this.TSICKLE_SUPPORT;
         }
         return ts.createSourceFile(fileName, newContent, languageVersion, true);
       }
