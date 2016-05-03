@@ -22,7 +22,7 @@ import {stringify} from "../facade/lang";
  */
 export abstract class RouteMetadata {
   abstract get path(): string;
-  abstract get component(): Type;
+  abstract get component(): Type|string;
 }
 
 /**
@@ -31,8 +31,8 @@ export abstract class RouteMetadata {
  */
 export class Route implements RouteMetadata {
   path: string;
-  component: Type;
-  constructor({path, component}: {path?: string, component?: Type} = {}) {
+  component: Type|string;
+  constructor({path, component}: {path?: string, component?: Type|string} = {}) {
     this.path = path;
     this.component = component;
   }
