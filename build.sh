@@ -94,4 +94,8 @@ do
       modules/\@angular/typings/es6-promise/es6-promise.d.ts
   rm ${UMDES6PATH}
 
+  cat ./modules/@angular/license-banner.txt > ${UMDES5PATH}.tmp
+  cat ${UMDES5PATH} >> ${UMDES5PATH}.tmp
+  mv ${UMDES5PATH}.tmp ${UMDES5PATH}
+
 done
