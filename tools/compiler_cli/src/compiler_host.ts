@@ -79,6 +79,9 @@ export class MetadataWriterHost extends DelegatingHost {
       // released
       return;
     }
+    if (/(\.ngfactory\.js|\.css\.js|\.css\.shim\.js)$/.test(fileName)) {
+      return;
+    }
 
     if (!sourceFiles) {
       throw new Error('Metadata emit requires the sourceFiles are passed to WriteFileCallback. ' +
