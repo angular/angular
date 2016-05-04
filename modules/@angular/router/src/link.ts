@@ -3,7 +3,6 @@ import {isBlank, isPresent, isString, isStringMap} from './facade/lang';
 import {BaseException} from './facade/exceptions';
 import {ListWrapper, StringMapWrapper} from './facade/collection';
 
-// TODO: vsavkin: should reuse segments
 export function link(segment: RouteSegment, routeTree: RouteTree, urlTree: UrlTree, commands: any[]): UrlTree {
   if (commands.length === 0) return urlTree;
 

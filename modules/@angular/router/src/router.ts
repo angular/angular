@@ -12,7 +12,6 @@ import {Location} from '@angular/common';
 import {link} from './link';
 
 import {
-  equalSegments,
   routeSegmentComponentFactory,
   RouteSegment,
   UrlTree,
@@ -20,7 +19,8 @@ import {
   rootNode,
   TreeNode,
   UrlSegment,
-  serializeRouteSegmentTree
+  serializeRouteSegmentTree,
+createEmptyRouteTree
 } from './segments';
 import {hasLifecycleHook} from './lifecycle_reflector';
 import {DEFAULT_OUTLET_NAME} from './constants';
@@ -53,7 +53,7 @@ export class Router {
               private _componentResolver: ComponentResolver,
               private _urlSerializer: RouterUrlSerializer,
               private _routerOutletMap: RouterOutletMap, private _location: Location) {
-    this._routeTree = this._createInitialTree();
+    this._routeTree = createEmptyRouteTree(this._rootComponentType);
     this._setUpLocationChangeListener();
     this.navigateByUrl(this._location.path());
   }
@@ -146,12 +146,6 @@ export class Router {
    */
   serializeUrl(url: UrlTree): string { return this._urlSerializer.serialize(url); }
 
-  private _createInitialTree(): RouteTree {
-    let root = new RouteSegment([new UrlSegment("", {}, null)], {}, DEFAULT_OUTLET_NAME,
-                                this._rootComponentType, null);
-    return new RouteTree(new TreeNode<RouteSegment>(root, []));
-  }
-
   private _setUpLocationChangeListener(): void {
     this._locationSubscription = this._location.subscribe(
         (change) => { this._navigate(this._urlSerializer.parse(change['url'])); });
@@ -159,7 +153,7 @@ export class Router {
 
   private _navigate(url: UrlTree): Promise<void> {
     this._urlTree = url;
-    return recognize(this._componentResolver, this._rootComponentType, url)
+    return recognize(this._componentResolver, this._rootComponentType, url, this._routeTree)
         .then(currTree => {
           return new _ActivateSegments(currTree, this._routeTree)
               .activate(this._routerOutletMap, this._rootComponent)
@@ -244,7 +238,7 @@ class _ActivateSegments {
     let prev = isPresent(prevNode) ? prevNode.value : null;
     let outlet = this.getOutlet(parentOutletMap, currNode.value);
 
-    if (equalSegments(curr, prev)) {
+    if (curr === prev) {
       this.activateChildSegments(currNode, prevNode, outlet.outletMap,
                              components.concat([outlet.component]));
     } else {

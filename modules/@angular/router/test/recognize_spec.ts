@@ -15,15 +15,17 @@ import {
 import {recognize} from '../src/recognize';
 import {Routes, Route} from '@angular/router';
 import {provide, Component, ComponentResolver} from '@angular/core';
-import {UrlSegment, RouteTree, UrlTree} from '../src/segments';
+import {UrlSegment, RouteTree, UrlTree, createEmptyRouteTree} from '../src/segments';
 import {DefaultRouterUrlSerializer} from '../src/router_url_serializer';
 import {DEFAULT_OUTLET_NAME} from '../src/constants';
 
 export function main() {
   describe('recognize', () => {
+    let emptyRouteTree = createEmptyRouteTree(ComponentA);
+    
     it('should handle position args',
        inject([AsyncTestCompleter, ComponentResolver], (async, resolver) => {
-         recognize(resolver, ComponentA, tree("b/paramB/c/paramC/d"))
+         recognize(resolver, ComponentA, tree("b/paramB/c/paramC/d"), emptyRouteTree)
              .then(r => {
                let a = r.root;
                expect(stringifyUrl(a.urlSegments)).toEqual([""]);
@@ -47,7 +49,7 @@ export function main() {
 
     it('should support empty routes',
        inject([AsyncTestCompleter, ComponentResolver], (async, resolver) => {
-         recognize(resolver, ComponentA, tree("f"))
+         recognize(resolver, ComponentA, tree("f"), emptyRouteTree)
              .then(r => {
                let a = r.root;
                expect(stringifyUrl(a.urlSegments)).toEqual([""]);
@@ -67,7 +69,7 @@ export function main() {
 
     it('should handle aux routes',
        inject([AsyncTestCompleter, ComponentResolver], (async, resolver) => {
-         recognize(resolver, ComponentA, tree("b/paramB(/d//right:d)"))
+         recognize(resolver, ComponentA, tree("b/paramB(/d//right:d)"), emptyRouteTree)
              .then(r => {
                let c = r.children(r.root);
                expect(stringifyUrl(c[0].urlSegments)).toEqual(["b", "paramB"]);
@@ -88,7 +90,7 @@ export function main() {
 
     it("should error when two segments with the same outlet name",
        inject([AsyncTestCompleter, ComponentResolver], (async, resolver) => {
-         recognize(resolver, ComponentA, tree("b/paramB(right:d//right:e)"))
+         recognize(resolver, ComponentA, tree("b/paramB(right:d//right:e)"), emptyRouteTree)
              .catch(e => {
                expect(e.message).toEqual(
                    "Two segments cannot have the same outlet name: 'right:d' and 'right:e'.");
@@ -98,7 +100,7 @@ export function main() {
 
     it('should handle nested aux routes',
        inject([AsyncTestCompleter, ComponentResolver], (async, resolver) => {
-         recognize(resolver, ComponentA, tree("b/paramB(/d(right:e))"))
+         recognize(resolver, ComponentA, tree("b/paramB(/d(right:e))"), emptyRouteTree)
              .then(r => {
                let c = r.children(r.root);
                expect(stringifyUrl(c[0].urlSegments)).toEqual(["b", "paramB"]);
@@ -119,7 +121,7 @@ export function main() {
 
     it('should handle non top-level aux routes',
        inject([AsyncTestCompleter, ComponentResolver], (async, resolver) => {
-         recognize(resolver, ComponentA, tree('b/paramB/d(e)'))
+         recognize(resolver, ComponentA, tree('b/paramB/d(e)'), emptyRouteTree)
              .then(r => {
                let c = r.children(r.firstChild(r.root));
                expect(stringifyUrl(c[0].urlSegments)).toEqual(["d"]);
@@ -136,7 +138,7 @@ export function main() {
 
     it('should handle matrix parameters',
        inject([AsyncTestCompleter, ComponentResolver], (async, resolver) => {
-         recognize(resolver, ComponentA, tree("b/paramB;b1=1;b2=2(/d;d1=1;d2=2)"))
+         recognize(resolver, ComponentA, tree("b/paramB;b1=1;b2=2(/d;d1=1;d2=2)"), emptyRouteTree)
              .then(r => {
                let c = r.children(r.root);
                expect(c[0].parameters).toEqual({'b': 'paramB', 'b1': '1', 'b2': '2'});
@@ -148,7 +150,7 @@ export function main() {
 
     it('should match a wildcard',
        inject([AsyncTestCompleter, ComponentResolver], (async, resolver) => {
-         recognize(resolver, ComponentG, tree("a;aa=1/b;bb=2"))
+         recognize(resolver, ComponentG, tree("a;aa=1/b;bb=2"), emptyRouteTree)
              .then(r => {
                let c = r.children(r.root);
                expect(c.length).toEqual(1);
@@ -161,7 +163,7 @@ export function main() {
 
     it('should error when no matching routes',
        inject([AsyncTestCompleter, ComponentResolver], (async, resolver) => {
-         recognize(resolver, ComponentA, tree("invalid"))
+         recognize(resolver, ComponentA, tree("invalid"), emptyRouteTree)
              .catch(e => {
                expect(e.message).toContain("Cannot match any routes");
                async.done();
@@ -170,7 +172,7 @@ export function main() {
 
     it('should handle no matching routes (too short)',
        inject([AsyncTestCompleter, ComponentResolver], (async, resolver) => {
-         recognize(resolver, ComponentA, tree("b"))
+         recognize(resolver, ComponentA, tree("b"), emptyRouteTree)
              .catch(e => {
                expect(e.message).toContain("Cannot match any routes");
                async.done();
@@ -179,13 +181,27 @@ export function main() {
 
     it("should error when a component doesn't have @Routes",
        inject([AsyncTestCompleter, ComponentResolver], (async, resolver) => {
-         recognize(resolver, ComponentA, tree("d/invalid"))
+         recognize(resolver, ComponentA, tree("d/invalid"), emptyRouteTree)
              .catch(e => {
                expect(e.message)
                    .toEqual("Component 'ComponentD' does not have route configuration");
                async.done();
              });
        }));
+
+    it("should reuse existing segments",
+       inject([AsyncTestCompleter, ComponentResolver], (async, resolver) => {
+         recognize(resolver, ComponentA, tree("/b/1/d"), emptyRouteTree).then(t1 => {
+           recognize(resolver, ComponentA, tree("/b/1/e"), t1).then(t2 => {
+             expect(t1.root).toBe(t2.root);
+             expect(t1.firstChild(t1.root)).toBe(t2.firstChild(t2.root));
+             expect(t1.firstChild(t1.firstChild(t1.root))).not.toBe(
+               t2.firstChild(t2.firstChild(t2.root)));
+
+             async.done();
+           });
+       });
+     }));
   });
 }
 

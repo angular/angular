@@ -1,6 +1,7 @@
 import {ComponentFactory, Type} from '@angular/core';
 import {StringMapWrapper, ListWrapper} from './facade/collection';
 import {isBlank, isPresent, stringify, NumberWrapper} from './facade/lang';
+import {DEFAULT_OUTLET_NAME} from './constants';
 
 export class Tree<T> {
   /** @internal */
@@ -43,8 +44,6 @@ export function rootNode<T>(tree: Tree<T>): TreeNode<T> {
 }
 
 function _findNode<T>(expected: T, c: TreeNode<T>): TreeNode<T> {
-  // TODO: vsavkin remove it once recognize is fixed
-  if (expected instanceof RouteSegment && equalSegments(<any>expected, <any>c.value)) return c;
   if (expected === c.value) return c;
   for (let cc of c.children) {
     let r = _findNode(expected, cc);
@@ -55,9 +54,7 @@ function _findNode<T>(expected: T, c: TreeNode<T>): TreeNode<T> {
 
 function _findPath<T>(expected: T, c: TreeNode<T>, collected: TreeNode<T>[]): TreeNode<T>[] {
   collected.push(c);
-
-  // TODO: vsavkin remove it once recognize is fixed
-  if (_equalValues(expected, c.value)) return collected;
+  if (expected === c.value) return collected;
 
   for (let cc of c.children) {
     let r = _findPath(expected, cc, ListWrapper.clone(collected));
@@ -68,21 +65,15 @@ function _findPath<T>(expected: T, c: TreeNode<T>, collected: TreeNode<T>[]): Tr
 }
 
 function _contains<T>(tree: TreeNode<T>, subtree: TreeNode<T>): boolean {
-  if (!_equalValues(tree.value, subtree.value)) return false;
+  if (tree.value !== subtree.value) return false;
 
   for (let subtreeNode of subtree.children) {
-    let s = tree.children.filter(child => _equalValues(child.value, subtreeNode.value));
+    let s = tree.children.filter(child => child.value === subtreeNode.value);
     if (s.length === 0) return false;
     if (!_contains(s[0], subtreeNode)) return false;
   }
 
   return true;
-}
-
-function _equalValues(a: any, b: any): boolean {
-  // if (a instanceof RouteSegment) return equalSegments(<any>a, <any>b);
-  // if (a instanceof UrlSegment) return equalUrlSegments(<any>a, <any>b);
-  return a === b;
 }
 
 export class TreeNode<T> {
@@ -131,6 +122,11 @@ export class RouteSegment {
   get stringifiedUrlSegments(): string { return this.urlSegments.map(s => s.toString()).join("/"); }
 }
 
+export function createEmptyRouteTree(type:Type): RouteTree {
+  let root = new RouteSegment([new UrlSegment("", {}, null)], {}, DEFAULT_OUTLET_NAME, type, null);
+  return new RouteTree(new TreeNode<RouteSegment>(root, []));
+}
+
 export function serializeRouteSegmentTree(tree: RouteTree): string {
   return _serializeRouteSegmentTree(tree._root);
 }
@@ -141,26 +137,16 @@ function _serializeRouteSegmentTree(node: TreeNode<RouteSegment>): string {
   return `${v.outlet}:${v.stringifiedUrlSegments}(${stringify(v.type)}) [${children}]`;
 }
 
-export function equalSegments(a: RouteSegment, b: RouteSegment): boolean {
-  if (isBlank(a) && !isBlank(b)) return false;
-  if (!isBlank(a) && isBlank(b)) return false;
-  if (a._type !== b._type) return false;
-  if (a.outlet != b.outlet) return false;
-  return StringMapWrapper.equals(a.parameters, b.parameters);
-}
+export function equalUrlSegments(a: UrlSegment[], b: UrlSegment[]): boolean {
+  if (a.length !== b.length) return false;
 
-export function equalUrlSegments(a: UrlSegment, b: UrlSegment): boolean {
-  if (isBlank(a) && !isBlank(b)) return false;
-  if (!isBlank(a) && isBlank(b)) return false;
-  if (a.segment != b.segment) return false;
-  if (a.outlet != b.outlet) return false;
-  if (isBlank(a.parameters)) {
-    console.log("a", a);
+  for (let i = 0; i < a.length; ++i) {
+    if (a[i].segment != b[i].segment) return false;
+    if (a[i].outlet != b[i].outlet) return false;
+    if (!StringMapWrapper.equals(a[i].parameters, b[i].parameters)) return false;
   }
-  if (isBlank(b.parameters)) {
-    console.log("b", b);
-  }
-  return StringMapWrapper.equals(a.parameters, b.parameters);
+
+  return true;
 }
 
 export function routeSegmentComponentFactory(a: RouteSegment): ComponentFactory<any> {
