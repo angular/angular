@@ -11,42 +11,38 @@ const OFFLINE_COMPILE = [
   'offline_compiler_codegen_typed'
 ];
 
-function processOutputEmitterCodeGen():
-    Promise<number> {
-      return new Promise((resolve, reject) => {
-                var outDir = 'dist/all/@angular/compiler/test/';
-                var promises = [];
-                console.log('Processing codegen...');
-                OFFLINE_COMPILE.forEach((file: string) => {
-                  var codegen = require('../../all/@angular/compiler/test/' + file + '.js');
-                  if (codegen.emit) {
-                    console.log(`  ${file} has changed, regenerating...`);
-                    promises.push(
-                        Promise.resolve(codegen.emit())
-                            .then((code) => { writeFileSync(outDir + file + '.ts', code); }));
-                  }
-                });
-                if (promises.length) {
-                  Promise.all(promises)
-                      .then(() => {
-                        var args = [
-                          '--project',
-                          'tools/cjs-jasmine/tsconfig-output_emitter_codegen.json'
-                        ];
-                        console.log('    compiling changes: tsc ' + args.join(' '));
-                        var tsc = spawn(TSC, args, {stdio: 'pipe'});
-                        tsc.stdout.on('data', (data) => process.stdout.write(data));
-                        tsc.stderr.on('data', (data) => process.stderr.write(data));
-                        tsc.on('close', (code) => code ? reject('Tsc exited with: ' + code) :
-                                                        resolve(code));
-                      })
-                      .catch(reportError);
-                } else {
-                  resolve(0);
-                }
-              })
-          .catch(reportError);
-    }
+function processOutputEmitterCodeGen(): Promise<number> {
+  return new Promise((resolve, reject) => {
+           var outDir = 'dist/all/@angular/compiler/test/';
+           var promises = [];
+           console.log('Processing codegen...');
+           OFFLINE_COMPILE.forEach((file: string) => {
+             var codegen = require('../../all/@angular/compiler/test/' + file + '.js');
+             if (codegen.emit) {
+               console.log(`  ${file} has changed, regenerating...`);
+               promises.push(Promise.resolve(codegen.emit())
+                                 .then((code) => { writeFileSync(outDir + file + '.ts', code); }));
+             }
+           });
+           if (promises.length) {
+             Promise.all(promises)
+                 .then(() => {
+                   var args =
+                       ['--project', 'tools/cjs-jasmine/tsconfig-output_emitter_codegen.json'];
+                   console.log('    compiling changes: tsc ' + args.join(' '));
+                   var tsc = spawn(TSC, args, {stdio: 'pipe'});
+                   tsc.stdout.on('data', (data) => process.stdout.write(data));
+                   tsc.stderr.on('data', (data) => process.stderr.write(data));
+                   tsc.on('close',
+                          (code) => code ? reject('Tsc exited with: ' + code) : resolve(code));
+                 })
+                 .catch(reportError);
+           } else {
+             resolve(0);
+           }
+         })
+      .catch(reportError);
+}
 
 function md(dir: string, folders: string[]) {
   if (folders.length) {
@@ -71,7 +67,13 @@ if (platform == 'node') {
     complete: 'Compilation complete. Watching for file changes.',
     onChangeCmds: [
       processOutputEmitterCodeGen,
-      ['node', 'dist/tools/cjs-jasmine', '--', '{@angular,benchpress}/**/*_spec.js', '@angular/compiler_cli/test/**/*_spec.js']
+      [
+        'node',
+        'dist/tools/cjs-jasmine',
+        '--',
+        '{@angular,benchpress}/**/*_spec.js',
+        '@angular/compiler_cli/test/**/*_spec.js'
+      ]
     ]
   });
 } else if (platform == 'browser') {
@@ -92,7 +94,8 @@ if (platform == 'node') {
     complete: 'Compilation complete. Watching for file changes.',
     onChangeCmds: [
       // TODO: fix and enable tests for public_api_spec again!
-      // ['node', 'dist/tools/cjs-jasmine/index-tools', '--', '{metadata,public_api_guard}/**/*{_,.}spec.js']
+      // ['node', 'dist/tools/cjs-jasmine/index-tools', '--',
+      // '{metadata,public_api_guard}/**/*{_,.}spec.js']
       ['node', 'dist/tools/cjs-jasmine/index-tools', '--', 'metadata/**/*{_,.}spec.js']
     ]
   });

@@ -69,7 +69,7 @@ export class RouterLink implements OnDestroy {
   ngOnDestroy() { ObservableWrapper.dispose(this._subscription); }
 
   @Input()
-  set routerLink(data: any[]|any) {
+  set routerLink(data: any[] | any) {
     if (isArray(data)) {
       this._commands = <any[]>data;
     } else {

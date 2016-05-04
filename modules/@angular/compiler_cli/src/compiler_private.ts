@@ -25,7 +25,8 @@ export type TemplateParser = _c.TemplateParser;
 export var TemplateParser: typeof _c.TemplateParser = _c.TemplateParser;
 
 export type DomElementSchemaRegistry = _c.DomElementSchemaRegistry;
-export var DomElementSchemaRegistry: typeof _c.DomElementSchemaRegistry = _c.DomElementSchemaRegistry;
+export var DomElementSchemaRegistry: typeof _c.DomElementSchemaRegistry =
+    _c.DomElementSchemaRegistry;
 
 export type StyleCompiler = _c.StyleCompiler;
 export var StyleCompiler: typeof _c.StyleCompiler = _c.StyleCompiler;

@@ -36,25 +36,25 @@ export function main() {
       RouterOutletMap,
       provide(Location, {useClass: SpyLocation}),
       provide(Router,
-        {
-          useFactory: (resolver, urlParser, outletMap, location) => new Router(
-            "RootComponent", RootCmp, resolver, urlParser, outletMap, location),
-          deps: [ComponentResolver, RouterUrlSerializer, RouterOutletMap, Location]
-        })
+              {
+                useFactory: (resolver, urlParser, outletMap, location) => new Router(
+                                "RootComponent", RootCmp, resolver, urlParser, outletMap, location),
+                deps: [ComponentResolver, RouterUrlSerializer, RouterOutletMap, Location]
+              })
     ]);
 
     describe("routerLink=", () => {
       it("should accept an array of commands", inject([Router], (router) => {
-        let link = new RouterLink(null, router);
-        link.routerLink = ['/one', 11];
-        expect(link.href).toEqual("/one/11");
-      }));
+           let link = new RouterLink(null, router);
+           link.routerLink = ['/one', 11];
+           expect(link.href).toEqual("/one/11");
+         }));
 
       it("should accept a single command", inject([Router], (router) => {
-        let link = new RouterLink(null, router);
-        link.routerLink = '/one/11';
-        expect(link.href).toEqual("/one/11");
-      }));
+           let link = new RouterLink(null, router);
+           link.routerLink = '/one/11';
+           expect(link.href).toEqual("/one/11");
+         }));
     });
   });
 }

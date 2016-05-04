@@ -57,9 +57,8 @@ export function main() {
       expect(registry.getMappedPropName('exotic-unknown')).toEqual('exotic-unknown');
     });
 
-    it('should return security contexts for elements', () => {
-      expect(registry.securityContext('a', 'href')).toBe(SecurityContext.URL);
-    });
+    it('should return security contexts for elements',
+       () => { expect(registry.securityContext('a', 'href')).toBe(SecurityContext.URL); });
 
     it('should detect properties on namespaced elements',
        () => { expect(registry.hasProperty('@svg:g', 'id')).toBeTruthy(); });

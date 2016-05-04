@@ -68,9 +68,9 @@ function declareTests(isJit: boolean) {
         let tpl = `<div [attr.onclick]="ctxProp"></div>`;
         tcb = tcb.overrideView(SecuredComponent, new ViewMetadata({template: tpl}));
         PromiseWrapper.catchError(tcb.createAsync(SecuredComponent), (e) => {
-          expect(e.message).toContain(
-              `Template parse errors:\n` + `Binding to event attribute 'onclick' is disallowed ` +
-              `for security reasons, please use (click)=... `);
+          expect(e.message).toContain(`Template parse errors:\n` +
+                                      `Binding to event attribute 'onclick' is disallowed ` +
+                                      `for security reasons, please use (click)=... `);
           async.done();
           return null;
         });

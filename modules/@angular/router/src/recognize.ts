@@ -143,8 +143,7 @@ function _matchWithParts(route: RouteMetadata, url: TreeNode<UrlSegment>): _Matc
   }
 
   let p = lastSegment.value.parameters;
-  let parameters =
-      <{[key: string]: string}>StringMapWrapper.merge(p, positionalParams);
+  let parameters = <{[key: string]: string}>StringMapWrapper.merge(p, positionalParams);
   let axuUrlSubtrees = isPresent(lastParent) ? lastParent.children.slice(1) : [];
 
   return new _MatchResult(route.component, consumedUrlSegments, parameters, lastSegment.children,

@@ -4,7 +4,8 @@ import {BaseException} from './facade/exceptions';
 import {ListWrapper} from './facade/collection';
 
 // TODO: vsavkin: should reuse segments
-export function link(segment: RouteSegment, routeTree: RouteTree, urlTree: UrlTree, commands: any[]): UrlTree {
+export function link(segment: RouteSegment, routeTree: RouteTree, urlTree: UrlTree,
+                     commands: any[]): UrlTree {
   if (commands.length === 0) return urlTree;
 
   let normalizedCommands = _normalizeCommands(commands);
@@ -13,24 +14,26 @@ export function link(segment: RouteSegment, routeTree: RouteTree, urlTree: UrlTr
   }
 
   let startingNode = _findStartingNode(normalizedCommands, urlTree, segment, routeTree);
-  let updated = normalizedCommands.commands.length > 0 ?
-    _updateMany(ListWrapper.clone(startingNode.children), normalizedCommands.commands) : [];
+  let updated =
+      normalizedCommands.commands.length > 0 ?
+          _updateMany(ListWrapper.clone(startingNode.children), normalizedCommands.commands) :
+          [];
   let newRoot = _constructNewTree(rootNode(urlTree), startingNode, updated);
 
   return new UrlTree(newRoot);
 }
 
-function _navigateToRoot(normalizedChange:_NormalizedNavigationCommands):boolean {
-  return normalizedChange.isAbsolute && normalizedChange.commands.length === 1 && normalizedChange.commands[0] == "/";
+function _navigateToRoot(normalizedChange: _NormalizedNavigationCommands): boolean {
+  return normalizedChange.isAbsolute && normalizedChange.commands.length === 1 &&
+         normalizedChange.commands[0] == "/";
 }
 
 class _NormalizedNavigationCommands {
-  constructor(public isAbsolute: boolean,
-              public numberOfDoubleDots: number,
+  constructor(public isAbsolute: boolean, public numberOfDoubleDots: number,
               public commands: any[]) {}
 }
 
-function _normalizeCommands(commands: any[]): _NormalizedNavigationCommands {;''
+function _normalizeCommands(commands: any[]): _NormalizedNavigationCommands {
   if (isString(commands[0]) && commands.length === 1 && commands[0] == "/") {
     return new _NormalizedNavigationCommands(true, 0, commands);
   }
@@ -53,18 +56,18 @@ function _normalizeCommands(commands: any[]): _NormalizedNavigationCommands {;''
 
       // first exp is treated in a special way
       if (i == 0) {
-        if (j == 0 && cc == ".") { //  './a'
+        if (j == 0 && cc == ".") {  //  './a'
           // skip it
-        } else if (j == 0 && cc == "") { //  '/a'
+        } else if (j == 0 && cc == "") {  //  '/a'
           isAbsolute = true;
-        } else if (cc == "..") { //  '../a'
+        } else if (cc == "..") {  //  '../a'
           numberOfDoubleDots++;
         } else if (cc != '') {
           res.push(cc);
         }
 
       } else {
-        if (cc != ''){
+        if (cc != '') {
           res.push(cc);
         }
       }
@@ -74,7 +77,8 @@ function _normalizeCommands(commands: any[]): _NormalizedNavigationCommands {;''
   return new _NormalizedNavigationCommands(isAbsolute, numberOfDoubleDots, res);
 }
 
-function _findUrlSegment(segment: RouteSegment, routeTree: RouteTree, urlTree: UrlTree, numberOfDoubleDots: number): UrlSegment {
+function _findUrlSegment(segment: RouteSegment, routeTree: RouteTree, urlTree: UrlTree,
+                         numberOfDoubleDots: number): UrlSegment {
   let s = segment;
   while (s.urlSegments.length === 0) {
     s = routeTree.parent(s);
@@ -87,11 +91,13 @@ function _findUrlSegment(segment: RouteSegment, routeTree: RouteTree, urlTree: U
   return path[path.length - 1 - numberOfDoubleDots];
 }
 
-function _findStartingNode(normalizedChange:_NormalizedNavigationCommands, urlTree:UrlTree, segment:RouteSegment, routeTree:RouteTree):TreeNode<UrlSegment> {
+function _findStartingNode(normalizedChange: _NormalizedNavigationCommands, urlTree: UrlTree,
+                           segment: RouteSegment, routeTree: RouteTree): TreeNode<UrlSegment> {
   if (normalizedChange.isAbsolute) {
     return rootNode(urlTree);
   } else {
-    let urlSegment = _findUrlSegment(segment, routeTree, urlTree, normalizedChange.numberOfDoubleDots);
+    let urlSegment =
+        _findUrlSegment(segment, routeTree, urlTree, normalizedChange.numberOfDoubleDots);
     return _findMatchingNode(urlSegment, rootNode(urlTree));
   }
 }
@@ -130,29 +136,30 @@ function _update(node: TreeNode<UrlSegment>, commands: any[]): TreeNode<UrlSegme
   } else if (isBlank(node) && isStringMap(next)) {
     let urlSegment = new UrlSegment(segment, next, outlet);
     return _recurse(urlSegment, node, rest.slice(1));
-    
-  // different outlet => preserve the subtree
+
+    // different outlet => preserve the subtree
   } else if (outlet != node.value.outlet) {
     return node;
 
-  // params command
+    // params command
   } else if (isStringMap(segment)) {
     let newSegment = new UrlSegment(node.value.segment, segment, node.value.outlet);
     return _recurse(newSegment, node, rest);
 
-  // next one is a params command
+    // next one is a params command
   } else if (isStringMap(next)) {
     let urlSegment = new UrlSegment(segment, next, outlet);
     return _recurse(urlSegment, node, rest.slice(1));
 
-  // next one is not a params command
+    // next one is not a params command
   } else {
     let urlSegment = new UrlSegment(segment, {}, outlet);
     return _recurse(urlSegment, node, rest);
   }
 }
 
-function _recurse(urlSegment: UrlSegment, node: TreeNode<UrlSegment>, rest: any[]): TreeNode<UrlSegment> {
+function _recurse(urlSegment: UrlSegment, node: TreeNode<UrlSegment>,
+                  rest: any[]): TreeNode<UrlSegment> {
   if (rest.length === 0) {
     return new TreeNode<UrlSegment>(urlSegment, []);
   }

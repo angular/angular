@@ -90,8 +90,8 @@ export class TreeNode<T> {
 }
 
 export class UrlSegment {
-  constructor(public segment: any, public parameters: {[key: string]: any},
-              public outlet: string) {}
+  constructor(public segment: any, public parameters: {[key: string]: any}, public outlet: string) {
+  }
 
   toString(): string {
     let outletPrefix = isBlank(this.outlet) ? "" : `${this.outlet}:`;

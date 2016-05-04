@@ -131,7 +131,8 @@ function bindAndWriteToRenderer(boundProps: BoundElementPropertyAst[], context: 
   });
 }
 
-function sanitizedValue(boundProp: BoundElementPropertyAst, renderValue: o.Expression): o.Expression {
+function sanitizedValue(boundProp: BoundElementPropertyAst,
+                        renderValue: o.Expression): o.Expression {
   let enumValue: string;
   switch (boundProp.securityContext) {
     case SecurityContext.NONE:

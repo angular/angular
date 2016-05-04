@@ -9,7 +9,11 @@ import {
 import {isBlank} from '@angular/facade/src/lang';
 import {ListWrapper} from '@angular/facade/src/collection';
 
-import {StaticReflector, StaticReflectorHost, StaticSymbol} from '@angular/compiler_cli/src/static_reflector';
+import {
+  StaticReflector,
+  StaticReflectorHost,
+  StaticSymbol
+} from '@angular/compiler_cli/src/static_reflector';
 
 describe('StaticReflector', () => {
   let noContext = new StaticSymbol('', '');

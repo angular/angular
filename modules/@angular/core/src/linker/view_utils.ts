@@ -16,9 +16,8 @@ export class ViewUtils {
   sanitizer: SanitizationService;
   private _nextCompTypeId: number = 0;
 
-  constructor(
-      private _renderer: RootRenderer, @Inject(APP_ID) private _appId: string,
-      sanitizer: SanitizationService) {
+  constructor(private _renderer: RootRenderer, @Inject(APP_ID) private _appId: string,
+              sanitizer: SanitizationService) {
     this.sanitizer = sanitizer;
   }
 

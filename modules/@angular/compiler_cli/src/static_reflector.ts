@@ -125,7 +125,7 @@ export class StaticReflector implements ReflectorReader {
           let parameterDecorators = <any[]>this.simplify(type, ctor['parameterDecorators']);
 
           parameters = [];
-          parameterTypes.forEach( (paramType, index) => {
+          parameterTypes.forEach((paramType, index) => {
             let nestedResult: any[] = [];
             if (paramType) {
               nestedResult.push(paramType);
@@ -152,7 +152,7 @@ export class StaticReflector implements ReflectorReader {
   private registerDecoratorOrConstructor(type: StaticSymbol, ctor: any): void {
     this.conversionMap.set(type, (context: StaticSymbol, args: any[]) => {
       let argValues: any[] = [];
-      args.forEach( (arg, index) => {
+      args.forEach((arg, index) => {
         let argValue: any;
         if (typeof arg === 'object' && !arg['__symbolic']) {
           argValue = mapStringMap(arg, (value, key) => this.simplify(context, value));
@@ -387,6 +387,6 @@ function mapStringMap(input: {[key: string]: any},
   return result;
 }
 
-function isPrimitive(o: any):boolean {
+function isPrimitive(o: any): boolean {
   return o === null || (typeof o !== "function" && typeof o !== "object");
 }

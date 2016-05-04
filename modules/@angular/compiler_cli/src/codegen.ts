@@ -8,9 +8,17 @@ import * as path from 'path';
 import * as compiler from '@angular/compiler';
 import {ViewEncapsulation} from '@angular/core';
 import {StaticReflector} from './static_reflector';
-import {CompileMetadataResolver, HtmlParser, DirectiveNormalizer, Lexer, Parser,
-TemplateParser, DomElementSchemaRegistry, StyleCompiler,
-ViewCompiler, TypeScriptEmitter
+import {
+  CompileMetadataResolver,
+  HtmlParser,
+  DirectiveNormalizer,
+  Lexer,
+  Parser,
+  TemplateParser,
+  DomElementSchemaRegistry,
+  StyleCompiler,
+  ViewCompiler,
+  TypeScriptEmitter
 } from './compiler_private';
 
 import {Parse5DomAdapter} from '@angular/platform-server';
@@ -96,8 +104,7 @@ export class CodeGenerator {
     let root = this.ngOptions.basePath;
     for (let eachRootDir of this.options.rootDirs || []) {
       if (this.ngOptions.trace) {
-        console.log(
-            `Check if ${filePath} is under rootDirs element ${eachRootDir}`);
+        console.log(`Check if ${filePath} is under rootDirs element ${eachRootDir}`);
       }
       if (path.relative(eachRootDir, filePath).indexOf('.') !== 0) {
         root = eachRootDir;
@@ -170,7 +177,7 @@ export class CodeGenerator {
         new compiler.DirectiveResolver(staticReflector), new compiler.PipeResolver(staticReflector),
         new compiler.ViewResolver(staticReflector), null, null, staticReflector);
 
-    return new CodeGenerator(options, ngOptions, program, compilerHost,
-                             staticReflector, resolver, offlineCompiler, reflectorHost);
+    return new CodeGenerator(options, ngOptions, program, compilerHost, staticReflector, resolver,
+                             offlineCompiler, reflectorHost);
   }
 }

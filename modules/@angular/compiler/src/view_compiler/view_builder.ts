@@ -214,7 +214,7 @@ class ViewBuilderVisitor implements TemplateAstVisitor {
       var nestedComponentIdentifier =
           new CompileIdentifierMetadata({name: getViewFactoryName(component, 0)});
       this.targetDependencies.push(new ViewCompileDependency(component, nestedComponentIdentifier));
-      compViewExpr = o.variable(`compView_${nodeIndex}`); // fix highlighting: `
+      compViewExpr = o.variable(`compView_${nodeIndex}`);  // fix highlighting: `
       compileElement.setComponentView(compViewExpr);
       this.view.createMethod.addStmt(compViewExpr.set(o.importExpr(nestedComponentIdentifier)
                                                           .callFn([
@@ -337,7 +337,7 @@ function createViewTopLevelStmts(view: CompileView, targetStatements: o.Statemen
   var nodeDebugInfosVar: o.Expression = o.NULL_EXPR;
   if (view.genConfig.genDebugInfo) {
     nodeDebugInfosVar = o.variable(
-        `nodeDebugInfos_${view.component.type.name}${view.viewIndex}`); // fix highlighting: `
+        `nodeDebugInfos_${view.component.type.name}${view.viewIndex}`);  // fix highlighting: `
     targetStatements.push(
         (<o.ReadVarExpr>nodeDebugInfosVar)
             .set(o.literalArr(view.nodes.map(createStaticNodeDebugInfo),

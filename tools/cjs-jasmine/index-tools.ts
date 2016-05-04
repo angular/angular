@@ -29,13 +29,8 @@ if (globsIndex < 0) {
   args = process.argv.slice(globsIndex + 1);
 }
 
-var specFiles =
-    args.map(function(globstr) {
-          return glob.sync(globstr, {
-            cwd: toolsDir
-          });
-        })
-        .reduce(function(specFiles, paths) { return specFiles.concat(paths); }, []);
+var specFiles = args.map(function(globstr) { return glob.sync(globstr, {cwd: toolsDir}); })
+                    .reduce(function(specFiles, paths) { return specFiles.concat(paths); }, []);
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 100;
 
@@ -45,7 +40,5 @@ jrunner.onComplete(function(passed) { process.exit(passed ? 0 : 1); });
 jrunner.projectBaseDir = path.resolve(__dirname, '../../');
 jrunner.specDir = '';
 require('zone.js/dist/jasmine-patch.js');
-specFiles.forEach((file) => {
-  toolsDirRequire(file);
-});
+specFiles.forEach((file) => { toolsDirRequire(file); });
 jrunner.execute();
