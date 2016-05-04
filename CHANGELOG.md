@@ -1,3 +1,35 @@
+<a name="2.0.0-rc.1"></a>
+# 2.0.0-rc.1 (2016-05-03)
+
+### Known Issues
+
+*** SECURITY WARNING ***
+Contextual escaping is not yet implemented in Angular 2. This will be fixed in the upcoming RC.
+In the meantime make sure to correctly escape all values that go into the DOM.
+*** SECURITY WARNING ***
+
+- source maps for umd bundles are missing
+- `Ruler` service is not being reexported via `@angular/platform-browser`
+
+
+### Bug Fixes
+
+* **compiler:** calculate the right moduleUrl ([3a40cb1](https://github.com/angular/angular/commit/3a40cb1))
+* **compiler:** don’t emit metadata for generated files ([43e0fa5](https://github.com/angular/angular/commit/43e0fa5))
+* **compiler:** fix where pipes live ([dd6e0cf](https://github.com/angular/angular/commit/dd6e0cf)), closes [#8408](https://github.com/angular/angular/issues/8408)
+* **compiler:** use absolute paths for comparing module urls ([52a6ba7](https://github.com/angular/angular/commit/52a6ba7))
+* **compiler:** use rootDirs compilerOption to affect genDir layout. ([a033f83](https://github.com/angular/angular/commit/a033f83))
+* **docs:** upgrade deprecated ngFor-Syntax ([27a7b51](https://github.com/angular/angular/commit/27a7b51))
+* **router:** add support for ../ ([89704e0](https://github.com/angular/angular/commit/89704e0))
+* **testing:** Check for pending macrotasks in ComponentFixture.whenStable() and ComponentFixtu ([509f4ec](https://github.com/angular/angular/commit/509f4ec)), closes [#8389](https://github.com/angular/angular/issues/8389)
+* **router-deprecated:** inheriting from RouterOutlet works now
+
+### Features
+
+* **router:** make RouterLink accept single values ([b625f24](https://github.com/angular/angular/commit/b625f24))
+
+
+
 <a name="2.0.0-rc.0"></a>
 # 2.0.0-rc.0 (2016-05-02)
 
