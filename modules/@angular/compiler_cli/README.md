@@ -83,13 +83,12 @@ Run the compiler from source:
 # Build angular2 and the compiler
 ./node_modules/.bin/tsc -p modules
 # Run it on the test project
-$ export NODE_PATH=$NODE_PATH:dist/all:dist/tools
-$ node dist/packages-dist/compiler_cli/src/main -p modules/@angular/compiler_cli/integrationtest
+$ ./integrationtest.sh
 ```
 
 Release:
 ```
-$ node dist/tools/cjs-jasmine -- @angular/compiler_cli/integrationtest/**/*_spec.js
+$ ./integrationtest.sh
 $ cp modules/@angular/compiler_cli/README.md modules/@angular/compiler_cli/package.json dist/all/@angular/compiler_cli
 # npm login as angular
 $ npm publish dist/all/@angular/compiler_cli --access=public
