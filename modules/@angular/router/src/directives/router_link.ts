@@ -59,7 +59,7 @@ export class RouterLink implements OnDestroy {
   @HostBinding() href: string;
   @HostBinding('class.router-link-active') isActive: boolean = false;
 
-  constructor(@Optional() private _routeSegment: RouteSegment, private _router: Router) {
+  constructor(private _routeSegment: RouteSegment, private _router: Router) {
     // because auxiliary links take existing primary and auxiliary routes into account,
     // we need to update the link whenever params or other routes change.
     this._subscription =

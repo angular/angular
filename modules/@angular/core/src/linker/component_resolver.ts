@@ -1,4 +1,4 @@
-import {Type, isBlank, stringify} from '../../src/facade/lang';
+import {Type, isBlank, isString, stringify} from '../../src/facade/lang';
 import {BaseException} from '../../src/facade/exceptions';
 import {PromiseWrapper} from '../../src/facade/async';
 import {reflector} from '../reflection/reflection';
@@ -10,7 +10,7 @@ import {Injectable} from '../di/decorators';
  * can later be used to create and render a Component instance.
  */
 export abstract class ComponentResolver {
-  abstract resolveComponent(componentType: Type): Promise<ComponentFactory<any>>;
+  abstract resolveComponent(component: Type|string): Promise<ComponentFactory<any>>;
   abstract clearCache();
 }
 
@@ -20,12 +20,16 @@ function _isComponentFactory(type: any): boolean {
 
 @Injectable()
 export class ReflectorComponentResolver extends ComponentResolver {
-  resolveComponent(componentType: Type): Promise<ComponentFactory<any>> {
-    var metadatas = reflector.annotations(componentType);
+  resolveComponent(component: Type|string): Promise<ComponentFactory<any>> {
+    if (isString(component)) {
+      return PromiseWrapper.reject(new BaseException(`Cannot resolve component using '${component}'.`), null);
+    }
+
+    var metadatas = reflector.annotations(<Type>component);
     var componentFactory = metadatas.find(_isComponentFactory);
 
     if (isBlank(componentFactory)) {
-      throw new BaseException(`No precompiled component ${stringify(componentType)} found`);
+      throw new BaseException(`No precompiled component ${stringify(component)} found`);
     }
     return PromiseWrapper.resolve(componentFactory);
   }

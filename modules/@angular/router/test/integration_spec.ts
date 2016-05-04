@@ -39,6 +39,7 @@ export function main() {
       provide(RouterUrlSerializer, {useClass: DefaultRouterUrlSerializer}),
       RouterOutletMap,
       provide(Location, {useClass: SpyLocation}),
+      provide(RouteSegment, {useFactory: (r) => r.routeTree.root, deps: [Router]}),
       provide(Router,
               {
                 useFactory: (resolver, urlParser, outletMap, location) => new Router(
@@ -95,7 +96,8 @@ export function main() {
              .toHaveText('team 22 { hello victor, aux: simple }');
        })));
 
-    it('should unload outlets', fakeAsync(inject([Router, TestComponentBuilder], (router, tcb) => {
+    it('should deactivate outlets',
+       fakeAsync(inject([Router, TestComponentBuilder], (router, tcb) => {
          let fixture = tcb.createFakeAsync(RootCmp);
 
          router.navigateByUrl('/team/22/user/victor(/simple)');
@@ -107,7 +109,7 @@ export function main() {
          expect(fixture.debugElement.nativeElement).toHaveText('team 22 { hello victor, aux:  }');
        })));
 
-    it('should unload nested outlets',
+    it('should deactivate nested outlets',
        fakeAsync(inject([Router, TestComponentBuilder], (router, tcb) => {
          let fixture = tcb.createFakeAsync(RootCmp);
 
@@ -136,7 +138,7 @@ export function main() {
          expect(fixture.debugElement.nativeElement).toHaveText('team 22 { hello fedor, aux:  }');
        })));
 
-    it('should not unload the route if can deactivate returns false',
+    it('should not deactivate the route if can deactivate returns false',
        fakeAsync(inject([Router, TestComponentBuilder, Location], (router, tcb, location) => {
          let fixture = tcb.createFakeAsync(RootCmp);
 
@@ -223,6 +225,13 @@ export function main() {
            advance(fixture);
 
            expect(getDOM().getAttribute(native, "href")).toEqual("/team/33/simple(aux:simple2)");
+         })));
+
+      it("should support top-level link",
+         fakeAsync(inject([Router, TestComponentBuilder], (router, tcb) => {
+           let fixture = tcb.createFakeAsync(LinkCmp);
+           advance(fixture);
+           expect(fixture.debugElement.nativeElement).toHaveText('link');
          })));
     }
   });

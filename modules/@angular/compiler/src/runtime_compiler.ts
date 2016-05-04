@@ -4,6 +4,7 @@ import {
   IS_DART,
   Type,
   isBlank,
+  isString
 } from '../src/facade/lang';
 import {BaseException} from '../src/facade/exceptions';
 import {
@@ -49,7 +50,12 @@ export class RuntimeCompiler implements ComponentResolver {
               private _viewCompiler: ViewCompiler, private _xhr: XHR,
               private _genConfig: CompilerConfig) {}
 
-  resolveComponent(componentType: Type): Promise<ComponentFactory<any>> {
+  resolveComponent(component: Type|string): Promise<ComponentFactory<any>> {
+    if (isString(component)) {
+      return PromiseWrapper.reject(new BaseException(`Cannot resolve component using '${component}'.`), null);
+    }
+
+    let componentType = <Type>component;
     var compMeta: CompileDirectiveMetadata =
         this._metadataResolver.getDirectiveMetadata(componentType);
     var hostCacheKey = this._hostCacheKeys.get(componentType);

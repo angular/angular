@@ -1,9 +1,8 @@
 import {Tree, TreeNode, UrlSegment, RouteSegment, rootNode, UrlTree, RouteTree} from './segments';
 import {isBlank, isPresent, isString, isStringMap} from './facade/lang';
 import {BaseException} from './facade/exceptions';
-import {ListWrapper} from './facade/collection';
+import {ListWrapper, StringMapWrapper} from './facade/collection';
 
-// TODO: vsavkin: should reuse segments
 export function link(segment: RouteSegment, routeTree: RouteTree, urlTree: UrlTree,
                      commands: any[]): UrlTree {
   if (commands.length === 0) return urlTree;
@@ -134,7 +133,7 @@ function _update(node: TreeNode<UrlSegment>, commands: any[]): TreeNode<UrlSegme
     return new TreeNode<UrlSegment>(urlSegment, children);
 
   } else if (isBlank(node) && isStringMap(next)) {
-    let urlSegment = new UrlSegment(segment, next, outlet);
+    let urlSegment = new UrlSegment(segment, _stringify(next), outlet);
     return _recurse(urlSegment, node, rest.slice(1));
 
     // different outlet => preserve the subtree
@@ -143,19 +142,37 @@ function _update(node: TreeNode<UrlSegment>, commands: any[]): TreeNode<UrlSegme
 
     // params command
   } else if (isStringMap(segment)) {
-    let newSegment = new UrlSegment(node.value.segment, segment, node.value.outlet);
+    let newSegment = new UrlSegment(node.value.segment, _stringify(segment), node.value.outlet);
     return _recurse(newSegment, node, rest);
 
-    // next one is a params command
+    // next one is a params command && can reuse the node
+  } else if (isStringMap(next) && _compare(segment, _stringify(next), node.value)) {
+    return _recurse(node.value, node, rest.slice(1));
+
+    // next one is a params command && cannot reuse the node
   } else if (isStringMap(next)) {
-    let urlSegment = new UrlSegment(segment, next, outlet);
+    let urlSegment = new UrlSegment(segment, _stringify(next), outlet);
     return _recurse(urlSegment, node, rest.slice(1));
 
-    // next one is not a params command
+    // next one is not a params command && can reuse the node
+  } else if (_compare(segment, {}, node.value)) {
+    return _recurse(node.value, node, rest);
+
+    // next one is not a params command && cannot reuse the node
   } else {
     let urlSegment = new UrlSegment(segment, {}, outlet);
     return _recurse(urlSegment, node, rest);
   }
+}
+
+function _stringify(params: {[key: string]: any}): {[key: string]: string} {
+  let res = {};
+  StringMapWrapper.forEach(params, (v, k) => res[k] = v.toString());
+  return res;
+}
+
+function _compare(path: string, params: {[key: string]: any}, segment: UrlSegment): boolean {
+  return path == segment.segment && StringMapWrapper.equals(params, segment.parameters);
 }
 
 function _recurse(urlSegment: UrlSegment, node: TreeNode<UrlSegment>,

@@ -41,6 +41,15 @@ export function main() {
                return null;
              });
        }));
+
+    it('should throw when given a string',
+       inject([AsyncTestCompleter, ComponentResolver], (async, compiler: ComponentResolver) => {
+         compiler.resolveComponent("someString")
+             .catch((e) => {
+               expect(e.message).toContain("Cannot resolve component using 'someString'.")
+               async.done();
+             });
+       }));
   });
 }
 

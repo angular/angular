@@ -1,6 +1,7 @@
 import {SpyLocation} from '@angular/common/testing';
 import {Location} from '@angular/common';
 import {Router, RouterOutletMap} from '../src/router';
+import {RouteSegment} from '../src/segments';
 import {RouterUrlSerializer, DefaultRouterUrlSerializer} from '../src/router_url_serializer';
 import {Component, ComponentResolver} from '@angular/core';
 
@@ -24,4 +25,5 @@ export const ROUTER_FAKE_PROVIDERS: any[] = /*@ts2dart_const*/ [
     deps: /*@ts2dart_const*/
         [ComponentResolver, RouterUrlSerializer, RouterOutletMap, Location]
   },
+  /*@ts2dart_Provider*/ {provide: RouteSegment, useFactory: (r) => r.routeTree.root, deps: [Router]}
 ];
