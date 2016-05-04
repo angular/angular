@@ -1,6 +1,6 @@
 import {ComponentFactory, Type} from '@angular/core';
 import {StringMapWrapper, ListWrapper} from './facade/collection';
-import {isBlank, isPresent, stringify} from './facade/lang';
+import {isBlank, isPresent, stringify, NumberWrapper} from './facade/lang';
 
 export class Tree<T> {
   /** @internal */
@@ -80,8 +80,8 @@ function _contains<T>(tree: TreeNode<T>, subtree: TreeNode<T>): boolean {
 }
 
 function _equalValues(a: any, b: any): boolean {
-  if (a instanceof RouteSegment) return equalSegments(<any>a, <any>b);
-  if (a instanceof UrlSegment) return equalUrlSegments(<any>a, <any>b);
+  // if (a instanceof RouteSegment) return equalSegments(<any>a, <any>b);
+  // if (a instanceof UrlSegment) return equalUrlSegments(<any>a, <any>b);
   return a === b;
 }
 
@@ -90,8 +90,8 @@ export class TreeNode<T> {
 }
 
 export class UrlSegment {
-  constructor(public segment: any, public parameters: {[key: string]: any}, public outlet: string) {
-  }
+  constructor(public segment: any, public parameters: {[key: string]: string},
+              public outlet: string) {}
 
   toString(): string {
     let outletPrefix = isBlank(this.outlet) ? "" : `${this.outlet}:`;
@@ -112,7 +112,7 @@ export class RouteSegment {
   /** @internal */
   _componentFactory: ComponentFactory<any>;
 
-  constructor(public urlSegments: UrlSegment[], public parameters: {[key: string]: any},
+  constructor(public urlSegments: UrlSegment[], public parameters: {[key: string]: string},
               public outlet: string, type: Type, componentFactory: ComponentFactory<any>) {
     this._type = type;
     this._componentFactory = componentFactory;
@@ -120,6 +120,10 @@ export class RouteSegment {
 
   getParam(param: string): string {
     return isPresent(this.parameters) ? this.parameters[param] : null;
+  }
+
+  getParamAsNumber(param: string): number {
+    return isPresent(this.parameters) ? NumberWrapper.parseFloat(this.parameters[param]) : null;
   }
 
   get type(): Type { return this._type; }

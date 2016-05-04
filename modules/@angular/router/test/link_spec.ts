@@ -69,6 +69,34 @@ export function main() {
       expect(parser.serialize(t)).toEqual("/a/b;aa=22;bb=33");
     });
 
+    describe("node reuse", () => {
+      it('should reuse nodes when path is the same', () => {
+        let p = parser.parse("/a/b");
+        let tree = s(p.root);
+        let t = link(tree.root, tree, p, ['/a/c']);
+
+        expect(t.root).toBe(p.root);
+        expect(t.firstChild(t.root)).toBe(p.firstChild(p.root));
+        expect(t.firstChild(t.firstChild(t.root))).not.toBe(p.firstChild(p.firstChild(p.root)));
+      });
+
+      it("should create new node when params are the same", () => {
+        let p = parser.parse("/a;x=1");
+        let tree = s(p.root);
+        let t = link(tree.root, tree, p, ['/a', {'x': 1}]);
+
+        expect(t.firstChild(t.root)).toBe(p.firstChild(p.root));
+      });
+
+      it("should create new node when params are different", () => {
+        let p = parser.parse("/a;x=1");
+        let tree = s(p.root);
+        let t = link(tree.root, tree, p, ['/a', {'x': 2}]);
+
+        expect(t.firstChild(t.root)).not.toBe(p.firstChild(p.root));
+      });
+    });
+
     describe("relative navigation", () => {
       it("should work", () => {
         let p = parser.parse("/a(ap)/c(cp)");
@@ -155,9 +183,9 @@ export function main() {
         let p = parser.parse("/a(ap)/c(cp)");
         let c = p.firstChild(p.root);
 
-        let child = new RouteSegment([], {'one': 1}, null, null, null);
+        let child = new RouteSegment([], {'one':'1'}, null, null, null);
         let root = new TreeNode<RouteSegment>(new RouteSegment([c], {}, null, null, null),
-                                              [new TreeNode<RouteSegment>(child, [])]);
+          [new TreeNode<RouteSegment>(child, [])]);
         let tree = new RouteTree(root);
 
         let t = link(child, tree, p, ["./c2"]);
