@@ -89,6 +89,14 @@ const HTML_ATTRS =
            'scope,scrolling,shape,size,span,start,summary,tabindex,target,title,type,' +
            'valign,value,vspace,width');
 
+// NB: This currently conciously doesn't support SVG. SVG sanitization has had several security
+// issues in the past, so it seems safer to leave it out if possible. If support for binding SVG via
+// innerHTML is required, SVG attributes should be added here.
+
+// NB: Sanitization does not allow <form> elements or other active elements (<button> etc). Those
+// can be sanitized, but they increase security surface area without a legitimate use case, so they
+// are left out here.
+
 const VALID_ATTRS = merge(URI_ATTRS, HTML_ATTRS);
 
 /**
@@ -99,6 +107,9 @@ class SanitizingHtmlSerializer {
   private buf: string[] = [];
 
   sanitizeChildren(el: Element): string {
+    // This cannot use a TreeWalker, as it has to run on Angular's various DOM adapters.
+    // However this code never accesses properties off of `document` before deleting its contents
+    // again, so it shouldn't be vulnerable to DOM clobbering.
     let current: Node = el.firstChild;
     while (current) {
       if (DOM.isElementNode(current)) {
