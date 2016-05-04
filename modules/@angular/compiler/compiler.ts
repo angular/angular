@@ -19,6 +19,7 @@ export {
   SourceModule,
   NormalizedComponentWithViewDirectives,
   OfflineCompiler,
+  RuntimeCompiler,
   CompileMetadataWithIdentifier,
   CompileMetadataWithType,
   CompileIdentifierMetadata,

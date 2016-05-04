@@ -11,7 +11,7 @@ import {reflector} from '@angular/core';
 // TODO: vsavkin: recognize should take the old tree and merge it
 export function recognize(componentResolver: ComponentResolver, rootComponent: Type,
                           url: UrlTree): Promise<RouteTree> {
-  let matched = new _MatchResult(rootComponent, [url.root], null, rootNode(url).children, []);
+  let matched = new _MatchResult(rootComponent, [url.root], {}, rootNode(url).children, []);
   return _constructSegment(componentResolver, matched).then(roots => new RouteTree(roots[0]));
 }
 

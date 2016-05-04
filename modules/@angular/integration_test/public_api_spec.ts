@@ -185,6 +185,7 @@ var CORE: string[] = [
   'ChangeDetectorRef',
   'Class:js',
   'ComponentResolver',
+  'SystemJsComponentResolver',
   'Component',
   'ComponentMetadata',
   'ComponentRef',
