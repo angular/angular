@@ -11,5 +11,5 @@ export interface PlatformReflectionCapabilities {
   getter(name: string): GetterFn;
   setter(name: string): SetterFn;
   method(name: string): MethodFn;
-  importUri(type: Type): string;
+  importUri(type: any): string;
 }

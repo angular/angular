@@ -1,4 +1,4 @@
-#!/usr/bin / env node
+#!/usr/bin/env node
 
 // Must be imported first, because angular2 decorators throws on load.
 import 'reflect-metadata';

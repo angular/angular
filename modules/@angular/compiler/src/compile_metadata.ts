@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, ViewEncapsulation} from '@angular/core';
+import {ChangeDetectionStrategy, ViewEncapsulation, reflector} from '@angular/core';
 import {
   CHANGE_DETECTION_STRATEGY_VALUES,
   VIEW_ENCAPSULATION_VALUES,
@@ -259,10 +259,13 @@ export class CompileFactoryMetadata implements CompileIdentifierMetadata,
   }
 }
 
+var UNDEFINED = new Object();
+
 export class CompileTokenMetadata implements CompileMetadataWithIdentifier {
   value: any;
   identifier: CompileIdentifierMetadata;
   identifierIsInstance: boolean;
+  private _assetCacheKey = UNDEFINED;
 
   constructor({value, identifier, identifierIsInstance}: {
     value?: any,
@@ -299,14 +302,23 @@ export class CompileTokenMetadata implements CompileMetadataWithIdentifier {
   }
 
   get assetCacheKey(): any {
-    if (isPresent(this.identifier)) {
-      return isPresent(this.identifier.moduleUrl) &&
-                     isPresent(getUrlScheme(this.identifier.moduleUrl)) ?
-                 `${this.identifier.name}|${this.identifier.moduleUrl}|${this.identifierIsInstance}` :
-                 null;
-    } else {
-      return this.value;
+    if (this._assetCacheKey === UNDEFINED) {
+      if (isPresent(this.identifier)) {
+        if (isPresent(this.identifier.moduleUrl) &&
+                      isPresent(getUrlScheme(this.identifier.moduleUrl))) {
+          var uri = reflector.importUri({
+            'filePath': this.identifier.moduleUrl,
+            'name': this.identifier.name
+          });
+          this._assetCacheKey = `${this.identifier.name}|${uri}|${this.identifierIsInstance}`;
+        } else {
+          this._assetCacheKey = null;
+        }
+      } else {
+        this._assetCacheKey = this.value;
+      }
     }
+    return this._assetCacheKey;
   }
 
   equalsTo(token2: CompileTokenMetadata): boolean {

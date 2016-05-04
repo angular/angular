@@ -1,5 +1,5 @@
 import {Component, Inject} from '@angular/core';
-import {FORM_DIRECTIVES} from '@angular/common';
+import {FORM_DIRECTIVES, NgIf} from '@angular/common';
 import {MyComp} from './a/multiple_components';
 
 @Component({
@@ -7,9 +7,10 @@ import {MyComp} from './a/multiple_components';
   templateUrl: './basic.html',
   styles: ['.red { color: red }'],
   styleUrls: ['./basic.css'],
-  directives: [MyComp, FORM_DIRECTIVES]
+  directives: [MyComp, FORM_DIRECTIVES, NgIf]
 })
 export class Basic {
   ctxProp: string;
-  constructor() { this.ctxProp = 'initiaValue'; }
+  ctxBool: boolean;
+  constructor() { this.ctxProp = 'initialValue'; }
 }
