@@ -492,6 +492,35 @@ function declareTests(isJit: boolean) {
                });
          }));
 
+      it('should not detach views in ViewContainers when the parent view is destroyed.',
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+           tcb.overrideView(
+                  MyComp, new ViewMetadata({
+                    template:
+                        '<div *ngIf="ctxBoolProp"><template some-viewport var-greeting="someTmpl"><span>{{greeting}}</span></template></div>',
+                    directives: [SomeViewport]
+                  }))
+
+               .createAsync(MyComp)
+               .then((fixture) => {
+                 fixture.debugElement.componentInstance.ctxBoolProp = true;
+                 fixture.detectChanges();
+
+                 var ngIfEl = fixture.debugElement.children[0];
+                 var someViewport:SomeViewport = ngIfEl.childNodes[0].inject(SomeViewport);
+                 expect(someViewport.container.length).toBe(2);
+                 expect(ngIfEl.children.length).toBe(2);
+
+                 fixture.debugElement.componentInstance.ctxBoolProp = false;
+                 fixture.detectChanges();
+
+                 expect(someViewport.container.length).toBe(2);
+                 expect(fixture.debugElement.children.length).toBe(0);
+
+                 async.done();
+               });
+         }));
+
       it('should use a comment while stamping out `<template>` elements.',
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            tcb.overrideView(MyComp, new ViewMetadata({template: '<template></template>'}))
@@ -2154,7 +2183,7 @@ class ChildComp2 {
 @Directive({selector: '[some-viewport]'})
 @Injectable()
 class SomeViewport {
-  constructor(container: ViewContainerRef, templateRef: TemplateRef) {
+  constructor(public container: ViewContainerRef, templateRef: TemplateRef) {
     container.createEmbeddedView(templateRef).setLocal('some-tmpl', 'hello');
     container.createEmbeddedView(templateRef).setLocal('some-tmpl', 'again');
   }
