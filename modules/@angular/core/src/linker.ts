@@ -1,5 +1,6 @@
 // Public API for compiler
 export {ComponentResolver} from './linker/component_resolver';
+export {SystemJsComponentResolver} from './linker/systemjs_component_resolver';
 export {QueryList} from './linker/query_list';
 export {DynamicComponentLoader} from './linker/dynamic_component_loader';
 export {ElementRef} from './linker/element_ref';
