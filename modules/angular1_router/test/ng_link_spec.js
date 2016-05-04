@@ -140,6 +140,18 @@ describe('ngLink', function () {
       navigateTo('/');
       expect(elt.find('a').attr('class')).toBe('ng-link-active');
     });
+
+    it('should not add a href if link attributes are undefined', function () {
+      setup({baseHref: baseHref, html5Mode: html5Mode, hashPrefix: hashPrefix});
+      configureRouter([
+        { path: '/a', component: 'oneCmp' },
+        { path: '/b', component: 'twoCmp', name: 'Two' }
+      ]);
+
+      var elt = compile('<a ng-link="something.undefined">link</a> | outer { <div ng-outlet></div> }');
+      navigateTo('/a');
+      expect(elt.find('a').hasAttr('href')).toBeFalsy();
+    });
   }
 
   function registerComponent(name, template, controller) {
