@@ -1,3 +1,27 @@
+<a name="2.0.0-alpha.4"></a>
+# [2.0.0-alpha.4 mahogany-tambourine](https://github.com/angular/material2/compare/2.0.0-alpha.3...v2.0.0-alpha.4) (2016-05-04)
+
+
+### Bug Fixes
+
+* **button:** cleaned up button theming([0672356](https://github.com/angular/material2/commit/0672356))
+* **checkbox:** fix horizontal spacing between checkboxes and radio buttons([f4a7266](https://github.com/angular/material2/commit/f4a7266))
+* **sidenav:** add min width for empty navs([dbe3cc5](https://github.com/angular/material2/commit/dbe3cc5))
+* **sidenav:** prevent content from scrolling when sidenav is open([fea5923](https://github.com/angular/material2/commit/fea5923))
+* **theme:** new, more delightful default theme([2f3e9db](https://github.com/angular/material2/commit/2f3e9db))
+* update to @angular 2.0.0-rc.0 ([#384](https://github.com/angular/material2/issues/384))([04c8a1f](https://github.com/angular/material2/commit/04c8a1f))
+
+
+### Features
+
+* **icon:** initial md-icon implementation ([#281](https://github.com/angular/material2/issues/281))([a094a33](https://github.com/angular/material2/commit/a094a33))
+* **card:** add alignment shortcuts for md-card-actions([77be2df](https://github.com/angular/material2/commit/77be2df))
+* **grid-list:** basic scaffold for grid list (unreleased)([a9e1fa5](https://github.com/angular/material2/commit/a9e1fa5))
+* **list:** add icon support([7b3698c](https://github.com/angular/material2/commit/7b3698c))
+* **sidenav:** add fullscreen mode([aa6c740](https://github.com/angular/material2/commit/aa6c740))
+
+
+
 <a name="2.0.0-alpha.3"></a>
 # [2.0.0-alpha.3 cotton-candelabrum](https://github.com/angular/material2/compare/2.0.0-alpha.2...v2.0.0-alpha.3) (2016-04-21)
 
