@@ -1,20 +1,462 @@
 import {
-  it,
-  describe,
-  expect,
-  beforeEach,
-  fakeAsync,
-  inject,
-  tick,
-  ComponentFixture,
-  TestComponentBuilder,
-} from 'angular2/testing';
-import {Component, DebugElement, EventEmitter} from 'angular2/core';
-import {By} from 'angular2/platform/browser';
-
+    it,
+    beforeEach,
+    inject,
+    async,
+    fakeAsync,
+    flushMicrotasks
+} from '@angular/core/testing';
+import {FORM_DIRECTIVES, NgModel, NgControl} from '@angular/common';
+import {TestComponentBuilder, ComponentFixture} from '@angular/compiler/testing';
+import {Component, DebugElement} from '@angular/core';
+import {By} from '@angular/platform-browser';
 import {MdCheckbox} from './checkbox';
+import {PromiseCompleter} from '../../core/async/promise-completer';
 
-// IE11 does not support event constructors, so we need to perform this check.
+
+
+describe('MdCheckbox', () => {
+  let builder: TestComponentBuilder;
+  let fixture: ComponentFixture<any>;
+
+  beforeEach(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
+    builder = tcb;
+  }));
+
+  describe('basic behaviors', () => {
+    let checkboxDebugElement: DebugElement;
+    let checkboxNativeElement: HTMLElement;
+    let checkboxInstance: MdCheckbox;
+    let testComponent: SingleCheckbox;
+
+    beforeEach(async(() => {
+      builder.createAsync(SingleCheckbox).then(f => {
+        fixture = f;
+        fixture.detectChanges();
+
+        checkboxDebugElement = fixture.debugElement.query(By.directive(MdCheckbox));
+        checkboxNativeElement = checkboxDebugElement.nativeElement;
+        checkboxInstance = checkboxDebugElement.componentInstance;
+        testComponent = fixture.debugElement.componentInstance;
+      });
+    }));
+
+    it('should add and remove the checked state', () => {
+      expect(checkboxInstance.checked).toBe(false);
+      expect(checkboxNativeElement.classList).not.toContain('md-checkbox-checked');
+      expect(checkboxNativeElement.getAttribute('aria-checked')).toBe('false');
+
+      testComponent.isChecked = true;
+      fixture.detectChanges();
+
+      expect(checkboxInstance.checked).toBe(true);
+      expect(checkboxNativeElement.classList).toContain('md-checkbox-checked');
+      expect(checkboxNativeElement.getAttribute('aria-checked')).toBe('true');
+
+      testComponent.isChecked = false;
+      fixture.detectChanges();
+
+      expect(checkboxInstance.checked).toBe(false);
+      expect(checkboxNativeElement.classList).not.toContain('md-checkbox-checked');
+      expect(checkboxNativeElement.getAttribute('aria-checked')).toBe('false');
+    });
+
+    it('should add and remove indeterminate state', () => {
+      expect(checkboxNativeElement.classList).not.toContain('md-checkbox-checked');
+      expect(checkboxNativeElement.getAttribute('aria-checked')).toBe('false');
+
+      testComponent.isIndeterminate = true;
+      fixture.detectChanges();
+
+      expect(checkboxNativeElement.classList).toContain('md-checkbox-indeterminate');
+      expect(checkboxNativeElement.getAttribute('aria-checked')).toBe('mixed');
+
+      testComponent.isIndeterminate = false;
+      fixture.detectChanges();
+
+      expect(checkboxNativeElement.classList).not.toContain('md-checkbox-indeterminate');
+      expect(checkboxNativeElement.getAttribute('aria-checked')).toBe('false');
+    });
+
+    it('should toggle checked state on click', () => {
+      expect(checkboxInstance.checked).toBe(false);
+
+      checkboxNativeElement.click();
+      fixture.detectChanges();
+
+      expect(checkboxInstance.checked).toBe(true);
+
+      checkboxNativeElement.click();
+      fixture.detectChanges();
+
+      expect(checkboxInstance.checked).toBe(false);
+    });
+
+    it('should change from indeterminate to checked on click', () => {
+      testComponent.isIndeterminate = true;
+      fixture.detectChanges();
+
+      checkboxNativeElement.click();
+      fixture.detectChanges();
+
+      expect(checkboxInstance.checked).toBe(true);
+      expect(checkboxInstance.indeterminate).toBe(false);
+
+      checkboxNativeElement.click();
+      fixture.detectChanges();
+
+      expect(checkboxInstance.checked).toBe(false);
+      expect(checkboxInstance.indeterminate).toBe(false);
+    });
+
+    it('should add and remove disabled state', () => {
+      expect(checkboxInstance.disabled).toBe(false);
+      expect(checkboxNativeElement.classList).not.toContain('md-checkbox-disabled');
+      expect(checkboxNativeElement.tabIndex).toBe(0);
+
+      testComponent.isDisabled = true;
+      fixture.detectChanges();
+
+      expect(checkboxInstance.disabled).toBe(true);
+      expect(checkboxNativeElement.classList).toContain('md-checkbox-disabled');
+      expect(checkboxNativeElement.hasAttribute('tabindex')).toBe(false);
+
+      testComponent.isDisabled = false;
+      fixture.detectChanges();
+
+      expect(checkboxInstance.disabled).toBe(false);
+      expect(checkboxNativeElement.classList).not.toContain('md-checkbox-disabled');
+      expect(checkboxNativeElement.tabIndex).toBe(0);
+    });
+
+    it('should not toggle `checked` state upon interation while disabled', () => {
+      testComponent.isDisabled = true;
+      fixture.detectChanges();
+
+      checkboxNativeElement.click();
+      expect(checkboxInstance.checked).toBe(false);
+    });
+
+    it('should overwrite indeterminate state when checked is re-set', () => {
+      testComponent.isIndeterminate = true;
+      fixture.detectChanges();
+
+      testComponent.isChecked = true;
+      fixture.detectChanges();
+
+      expect(checkboxInstance.checked).toBe(true);
+      expect(checkboxInstance.indeterminate).toBe(false);
+    });
+
+    it('should preserve the user-provided id', () => {
+      expect(checkboxNativeElement.id).toBe('simple-check');
+    });
+
+    it('should create a label element with its own unique id for aria-labelledby', () => {
+      let labelElement = checkboxNativeElement.querySelector('label');
+      expect(labelElement.id).toBeTruthy();
+      expect(labelElement.id).not.toBe(checkboxNativeElement.id);
+      expect(checkboxNativeElement.getAttribute('aria-labelledby')).toBe(labelElement.id);
+    });
+
+    it('should project the checkbox content into the label element', () => {
+      let labelElement = checkboxNativeElement.querySelector('label');
+
+      expect(labelElement.textContent.trim()).toBe('Simple checkbox');
+    });
+
+    it('should mark the host element with role="checkbox"', () => {
+      expect(checkboxNativeElement.getAttribute('role')).toBe('checkbox');
+    });
+
+    it('should make the host element a tab stop', () => {
+      expect(checkboxNativeElement.tabIndex).toBe(0);
+    });
+
+    it('should add a css class to end-align the checkbox', () => {
+      testComponent.alignment = 'end';
+      fixture.detectChanges();
+
+      expect(checkboxNativeElement.classList).toContain('md-checkbox-align-end');
+    });
+
+    it('should emit a change event when the `checked` value changes', () => {
+      // TODO(jelbourn): this *should* work with async(), but fixture.whenStable currently doesn't
+      // know to look at pending macro tasks.
+      // See https://github.com/angular/angular/issues/8389
+      // As a short-term solution, use a promise (which jasmine knows how to understand).
+      let promiseCompleter = new PromiseCompleter();
+      checkboxInstance.change.subscribe(() => {
+        promiseCompleter.resolve();
+      });
+
+      testComponent.isChecked = true;
+      fixture.detectChanges();
+
+      return promiseCompleter.promise;
+    });
+
+    it('should stop propagation of interaction events when disabed', () => {
+      testComponent.isDisabled = true;
+      fixture.detectChanges();
+
+      checkboxNativeElement.click();
+      fixture.detectChanges();
+
+      expect(testComponent.parentElementClicked).toBe(false);
+    });
+
+    it('should not scroll when pressing space on the checkbox', () => {
+      let keyboardEvent = dispatchKeyboardEvent('keydown', checkboxNativeElement, ' ');
+      fixture.detectChanges();
+
+      expect(keyboardEvent.preventDefault).toHaveBeenCalled();
+    });
+
+    it('should toggle the checked state when pressing space', () => {
+      dispatchKeyboardEvent('keyup', checkboxNativeElement, ' ');
+      fixture.detectChanges();
+
+      expect(checkboxInstance.checked).toBe(true);
+
+      dispatchKeyboardEvent('keyup', checkboxNativeElement, ' ');
+      fixture.detectChanges();
+
+      expect(checkboxInstance.checked).toBe(false);
+    });
+
+    it('should not toggle the checked state when pressing space if disabled', () => {
+      testComponent.isDisabled = true;
+      fixture.detectChanges();
+
+      dispatchKeyboardEvent('keyup', checkboxNativeElement, ' ');
+      fixture.detectChanges();
+
+      expect(checkboxInstance.checked).toBe(false);
+      expect(testComponent.parentElementKeyedUp).toBe(false);
+    });
+
+    describe('state transition css classes', () => {
+      it('should transition unchecked -> checked -> unchecked', () => {
+        testComponent.isChecked = true;
+        fixture.detectChanges();
+        expect(checkboxNativeElement.classList).toContain('md-checkbox-anim-unchecked-checked');
+
+        testComponent.isChecked = false;
+        fixture.detectChanges();
+        expect(checkboxNativeElement.classList).not.toContain('md-checkbox-anim-unchecked-checked');
+        expect(checkboxNativeElement.classList).toContain('md-checkbox-anim-checked-unchecked');
+      });
+
+      it('should transition unchecked -> indeterminate -> unchecked', () => {
+        testComponent.isIndeterminate = true;
+        fixture.detectChanges();
+
+        expect(checkboxNativeElement.classList)
+            .toContain('md-checkbox-anim-unchecked-indeterminate');
+
+        testComponent.isIndeterminate = false;
+        fixture.detectChanges();
+
+        expect(checkboxNativeElement.classList)
+            .not.toContain('md-checkbox-anim-unchecked-indeterminate');
+        expect(checkboxNativeElement.classList)
+            .toContain('md-checkbox-anim-indeterminate-unchecked');
+      });
+
+      it('should transition indeterminate -> checked', () => {
+        testComponent.isIndeterminate = true;
+        fixture.detectChanges();
+
+        testComponent.isChecked = true;
+        fixture.detectChanges();
+
+        expect(checkboxNativeElement.classList).not.toContain(
+            'md-checkbox-anim-unchecked-indeterminate');
+        expect(checkboxNativeElement.classList).toContain('md-checkbox-anim-indeterminate-checked');
+      });
+
+      it('should not apply transition classes when there is no state change', () => {
+        testComponent.isChecked = checkboxInstance.checked;
+        fixture.detectChanges();
+        expect(checkboxNativeElement).not.toMatch(/^md\-checkbox\-anim/g);
+
+        testComponent.isIndeterminate = checkboxInstance.indeterminate;
+        expect(checkboxNativeElement).not.toMatch(/^md\-checkbox\-anim/g);
+      });
+
+      it('should not initially have any transition classes', () => {
+        expect(checkboxNativeElement).not.toMatch(/^md\-checkbox\-anim/g);
+      });
+    });
+  });
+
+  describe('with provided aria-label ', () => {
+    let checkboxDebugElement: DebugElement;
+    let checkboxNativeElement: HTMLElement;
+
+    it('should use the provided aria-label', async(() => {
+      builder.createAsync(CheckboxWithAriaLabel).then(f => {
+        fixture = f;
+        checkboxDebugElement = fixture.debugElement.query(By.directive(MdCheckbox));
+        checkboxNativeElement = checkboxDebugElement.nativeElement;
+
+        expect(checkboxNativeElement.getAttribute('aria-label')).toBe('Super effective');
+      });
+    }));
+  });
+
+  describe('with provided tabIndex', () => {
+    let checkboxDebugElement: DebugElement;
+    let checkboxNativeElement: HTMLElement;
+    let testComponent: CheckboxWithTabIndex;
+
+    beforeEach(async(() => {
+      builder.createAsync(CheckboxWithTabIndex).then(f => {
+        fixture = f;
+        fixture.detectChanges();
+
+        testComponent = fixture.debugElement.componentInstance;
+        checkboxDebugElement = fixture.debugElement.query(By.directive(MdCheckbox));
+        checkboxNativeElement = checkboxDebugElement.nativeElement;
+      });
+    }));
+
+    it('should preserve any given tabIndex', async(() => {
+      expect(checkboxNativeElement.tabIndex).toBe(7);
+    }));
+
+    it('should preserve given tabIndex when the checkbox is disabled then enabled', () => {
+      testComponent.isDisabled = true;
+      fixture.detectChanges();
+
+      testComponent.customTabIndex = 13;
+      fixture.detectChanges();
+
+      testComponent.isDisabled = false;
+      fixture.detectChanges();
+
+      expect(checkboxNativeElement.tabIndex).toBe(13);
+    });
+  });
+
+  describe('with multiple checkboxes', () => {
+    beforeEach(async(() => {
+      builder.createAsync(MultipleCheckboxes).then(f => {
+        fixture = f;
+        fixture.detectChanges();
+      });
+    }));
+
+    it('should assign a unique id to each checkbox', () => {
+      let [firstId, secondId] =
+          fixture.debugElement.queryAll(By.directive(MdCheckbox))
+          .map(debugElement => debugElement.nativeElement.id);
+
+      expect(firstId).toBeTruthy();
+      expect(secondId).toBeTruthy();
+      expect(firstId).not.toEqual(secondId);
+    });
+  });
+
+  describe('with ngModel and ngControl', () => {
+    beforeEach(async(() => {
+      builder.createAsync(CheckboxWithFormDirectives).then(f => {
+        f.detectChanges();
+        fixture = f;
+      });
+    }));
+
+    it('should be in pristine, untouched, and valid states initially', fakeAsync(() => {
+      flushMicrotasks();
+
+      let checkboxElement = fixture.debugElement.query(By.directive(MdCheckbox));
+      let ngControl = <NgControl> checkboxElement.injector.get(NgControl);
+
+      expect(ngControl.valid).toBe(true);
+      expect(ngControl.pristine).toBe(true);
+      expect(ngControl.touched).toBe(false);
+
+      // TODO(jelbourn): test that `touched` and `pristine` state are modified appropriately.
+      // This is currently blocked on issues with async() and fakeAsync().
+    }));
+  });
+
+});
+
+
+/** Simple component for testing a single checkbox. */
+@Component({
+  directives: [MdCheckbox],
+  template: `
+  <div (click)="parentElementClicked = true" (keyup)="parentElementKeyedUp = true">    
+    <md-checkbox 
+        id="simple-check"
+        [align]="alignment"
+        [checked]="isChecked" 
+        [indeterminate]="isIndeterminate" 
+        [disabled]="isDisabled"
+        (change)="changeCount = changeCount + 1">
+      Simple checkbox
+    </md-checkbox>
+  </div>`
+})
+class SingleCheckbox {
+  alignment: string = 'start';
+  isChecked: boolean = false;
+  isIndeterminate: boolean = false;
+  isDisabled: boolean = false;
+  parentElementClicked: boolean = false;
+  parentElementKeyedUp: boolean = false;
+  lastKeydownEvent: Event = null;
+}
+
+/** Simple component for testing an MdCheckbox with ngModel and ngControl. */
+@Component({
+  directives: [MdCheckbox, FORM_DIRECTIVES, NgModel],
+  template: `
+    <form>
+      <md-checkbox ngControl="cb" [(ngModel)]="isGood">Be good</md-checkbox>
+    </form>
+  `,
+})
+class CheckboxWithFormDirectives {
+  isGood: boolean = false;
+}
+
+/** Simple test component with multiple checkboxes. */
+@Component(({
+  directives: [MdCheckbox],
+  template: `
+    <md-checkbox>Option 1</md-checkbox>
+    <md-checkbox>Option 2</md-checkbox>
+  `
+}))
+class MultipleCheckboxes { }
+
+
+/** Simple test component with tabIndex */
+@Component({
+  directives: [MdCheckbox],
+  template: `
+    <md-checkbox [tabindex]="customTabIndex" [disabled]="isDisabled">
+    </md-checkbox>`,
+})
+class CheckboxWithTabIndex {
+  customTabIndex: number = 7;
+  isDisabled: boolean = false;
+}
+
+/** Simple test component with an aria-label set. */
+@Component({
+  directives: [MdCheckbox],
+  template: `<md-checkbox aria-label="Super effective"></md-checkbox>`
+})
+class CheckboxWithAriaLabel { }
+
+// TODO(jelbourn): remove eveything below when Angular supports faking events.
+
+
 var BROWSER_SUPPORTS_EVENT_CONSTRUCTORS: boolean = (function() {
   // See: https://github.com/rauschma/event_constructors_check/blob/gh-pages/index.html#L39
   try {
@@ -25,789 +467,36 @@ var BROWSER_SUPPORTS_EVENT_CONSTRUCTORS: boolean = (function() {
   }
 })();
 
-export function main() {
-  describe('MdCheckbox', function() {
-    var builder: TestComponentBuilder;
 
-    beforeEach(inject([TestComponentBuilder], function(tcb: TestComponentBuilder) {
-      builder = tcb;
-    }));
-
-    it('attaches a class "md-checkbox" to the host element', function(done: () => void) {
-      builder.createAsync(CheckboxController).then(function(fixture) {
-        fixture.detectChanges();
-        let el = fixture.debugElement.query(By.css('.md-checkbox'));
-        expect(el).not.toBeNull();
-      }).then(done).catch(done);
-    });
-    it('attaches a unique id to the host element', function(done: () => void) {
-      builder.createAsync(CheckboxMultiController).then(function(fixture) {
-        fixture.detectChanges();
-        let first = fixture.debugElement.query(By.css('.md-checkbox:first-of-type'));
-        let second = fixture.debugElement.query(By.css('.md-checkbox:nth-of-type(2)'));
-        expect(first.nativeElement.id).toMatch(/^md\-checkbox\-\d$/g);
-        expect(second.nativeElement.id).toMatch(/^md\-checkbox\-\d$/g);
-        expect(first.nativeElement.id).not.toEqual(second.nativeElement.id);
-      }).then(done).catch(done);
-    });
-
-    it('allows clients to provide their own id', function(done: () => void) {
-      builder.createAsync(CheckboxCustomIdController).then(function(fixture) {
-        fixture.detectChanges();
-        let component = fixture.componentInstance;
-        let el = fixture.debugElement.query(By.css('.md-checkbox'));
-        expect(el.nativeElement.id).toEqual(component.checkboxId);
-      }).then(done).catch(done);
-    });
-
-    it('creates a label with an id based off the checkbox id', function(done: () => void) {
-      builder.createAsync(CheckboxController).then(function(fixture) {
-        fixture.detectChanges();
-        let el = fixture.debugElement.query(By.css('.md-checkbox'));
-        let label = el.nativeElement.querySelector('label');
-        expect(label.id).toEqual(`${el.nativeElement.id}-label`);
-      }).then(done).catch(done);
-    });
-
-    it('uses <ng-content></ng-content> for the label markup', function(done: () => void) {
-      builder.createAsync(CheckboxController).then(function(fixture) {
-        fixture.detectChanges();
-        let el = fixture.debugElement.query(By.css('.md-checkbox'));
-        let label = el.nativeElement.querySelector('label');
-        expect(label.innerHTML.trim()).toEqual('<em>my</em> checkbox');
-      }).then(done).catch(done);
-    });
-
-    it('adds a checkbox role attribute to the host element', function(done: () => void) {
-      builder.createAsync(CheckboxController).then(function(fixture) {
-        fixture.detectChanges();
-        let el = fixture.debugElement.query(By.css('.md-checkbox'));
-        expect(el.nativeElement.getAttribute('role')).toEqual('checkbox');
-      }).then(done).catch(done);
-    });
-
-    it('defaults "aria-checked" to "false" on the host element', function(done: () => void) {
-      builder.createAsync(CheckboxController).then(function(fixture) {
-        fixture.detectChanges();
-        let el = fixture.debugElement.query(By.css('.md-checkbox'));
-        expect(el.nativeElement.getAttribute('aria-checked')).toEqual('false');
-      }).then(done).catch(done);
-    });
-
-    it('defaults "aria-disabled" to "false" on the host element', function(done: () => void) {
-      builder.createAsync(CheckboxController).then(function(fixture) {
-        fixture.detectChanges();
-        let el = fixture.debugElement.query(By.css('.md-checkbox'));
-        expect(el.nativeElement.getAttribute('aria-disabled')).toEqual('false');
-      }).then(done).catch(done);
-    });
-
-    it('defaults tabindex to 0 to the host element', function(done: () => void) {
-      builder.createAsync(CheckboxController).then(function(fixture) {
-        fixture.detectChanges();
-        let el = fixture.debugElement.query(By.css('.md-checkbox'));
-        expect(el.nativeElement.tabIndex).toEqual(0);
-      }).then(done).catch(done);
-    });
-
-    it('allows clients to provide their own tabindex', function(done: () => void) {
-      builder.createAsync(CheckboxCustomTabindexController).then(function(fixture) {
-        fixture.detectChanges();
-        let component = fixture.componentInstance;
-        let el = fixture.debugElement.query(By.css('.md-checkbox'));
-        expect(el.nativeElement.tabIndex).toEqual(component.checkboxTabindex);
-      }).then(done).catch(done);
-    });
-
-    it('allows clients to provide an aria-label', function(done: () => void) {
-      builder.createAsync(CheckboxCustomArialabelController).then(function(fixture) {
-        fixture.detectChanges();
-        let component = fixture.componentInstance;
-        let el = fixture.debugElement.query(By.css('.md-checkbox'));
-        expect(el.nativeElement.getAttribute('aria-label')).toEqual(component.checkboxLabel);
-      }).then(done).catch(done);
-    });
-
-    it('sets the "aria-labelledby" attribute to the id of the label', function(done: () => void) {
-      builder.createAsync(CheckboxController).then(function(fixture) {
-        fixture.detectChanges();
-        let el = fixture.debugElement.query(By.css('.md-checkbox'));
-        let label = el.nativeElement.querySelector('label');
-        expect(el.nativeElement.getAttribute('aria-labelledby')).toEqual(label.id);
-      }).then(done).catch(done);
-    });
-
-    describe('when given an "align" input with a value of "end"', function() {
-      var fixture: ComponentFixture;
-
-      beforeEach(function(done: () => void) {
-        builder.createAsync(CheckboxEndAlignedController).then(function(f) {
-          fixture = f;
-          fixture.detectChanges();
-        }).then(done).catch(done);
-      });
-
-      it('sets an "md-checkbox-align-end" class on the host element', function() {
-        let el = fixture.debugElement.query(By.css('.md-checkbox'));
-        expect(el.nativeElement.className).toContain('md-checkbox-align-end');
-      });
-    });
-
-    describe(`when the checkbox's checked value is set`, function() {
-      var fixture: ComponentFixture;
-      var controller: CheckboxController;
-      var changePromise: Promise<boolean>;
-      var waitingForChange: boolean;
-
-      function waitForChange(): Promise<boolean> {
-        if (waitingForChange) {
-          throw new Error('You are already waiting for a change!');
-        }
-        waitingForChange = true;
-        return new Promise(function(resolve, reject) {
-          controller.eventProxy.subscribe(resolve, reject);
-        }).then(function(val) {
-          waitingForChange = false;
-          return val;
-        });
-      }
-
-      beforeEach(function(done: () => void) {
-        builder.createAsync(CheckboxController).then(function(f) {
-          fixture = f;
-          controller = fixture.componentInstance;
-
-          changePromise = waitForChange();
-          controller.isChecked = true;
-          fixture.detectChanges();
-        }).then(done).catch(done);
-      });
-
-      it('adds a "md-checkbox-checked" modifier class to the host element', function() {
-        let el = fixture.debugElement.query(By.css('.md-checkbox'));
-        expect(el.nativeElement.className).toContain('md-checkbox-checked');
-      });
-
-      it('sets "aria-checked" to be "true" on the host element', function() {
-        let el = fixture.debugElement.query(By.css('md-checkbox'));
-        controller.isIndeterminate = false;
-        controller.isChecked = true;
-        fixture.detectChanges();
-        expect(el.nativeElement.getAttribute('aria-checked')).toEqual('true');
-      });
-
-      it('emits a change event with the currently checked value', function(done: () => void) {
-        changePromise.then(function(isChecked) {
-          expect(isChecked).toBe(true);
-
-          let nextChangePromise = waitForChange();
-          controller.isChecked = false;
-          fixture.detectChanges();
-
-          return nextChangePromise;
-        }).then(function(isChecked) {
-          expect(isChecked).toBe(false);
-        }).then(done).catch(done);
-      });
-    });
-
-    describe('when the checkbox is indeterminate', function() {
-      var fixture: ComponentFixture;
-      var controller: CheckboxController;
-
-      beforeEach(function(done: () => void) {
-        builder.createAsync(CheckboxController).then(function(f) {
-          fixture = f;
-          controller = fixture.componentInstance;
-
-          controller.isIndeterminate = true;
-          fixture.detectChanges();
-        }).then(done).catch(done);
-      });
-
-      it('adds a "md-checkbox-indeterminate" class to the host element', function() {
-        let el = fixture.debugElement.query(By.css('.md-checkbox'));
-        expect(el.nativeElement.className).toContain('md-checkbox-indeterminate');
-      });
-
-      it('sets "aria-checked" to "mixed" on the host element', function() {
-        let el = fixture.debugElement.query(By.css('.md-checkbox'));
-        expect(el.nativeElement.getAttribute('aria-checked')).toEqual('mixed');
-      });
-
-      describe('when re-checked to true', function() {
-        beforeEach(function() {
-          controller.isChecked = true;
-          fixture.detectChanges();
-        });
-
-        it('removes md-checkbox-indeterminate', function() {
-          let el = fixture.debugElement.query(By.css('.md-checkbox'));
-          expect(el.nativeElement.className).not.toContain('md-checkbox-indeterminate');
-        });
-      });
-
-      describe('when re-checked to false', function() {
-        beforeEach(function() {
-          controller.isChecked = true;
-          fixture.detectChanges();
-
-          controller.isIndeterminate = true;
-          fixture.detectChanges();
-
-          controller.isChecked = false;
-          fixture.detectChanges();
-        });
-
-        it('removes md-checkbox-indeterminate', function() {
-          let el = fixture.debugElement.query(By.css('.md-checkbox'));
-          expect(el.nativeElement.className).not.toContain('md-checkbox-indeterminate');
-        });
-      });
-    });
-
-    describe('when the checkbox is disabled', function() {
-      var fixture: ComponentFixture;
-      var controller: CheckboxController;
-
-      beforeEach(function(done: () => void) {
-        builder.createAsync(CheckboxController).then(function(f) {
-          fixture = f;
-          controller = fixture.componentInstance;
-          fixture.detectChanges();
-
-          controller.isDisabled = true;
-          fixture.detectChanges();
-        }).then(done).catch(done);
-      });
-
-      it('adds a "md-checkbox-disabled" class to the host element', function() {
-        let el = fixture.debugElement.query(By.css('.md-checkbox'));
-        expect(el.nativeElement.className).toContain('md-checkbox-disabled');
-      });
-
-      it('removes the tabindex attribute from the host element', function() {
-        let el = fixture.debugElement.query(By.css('.md-checkbox'));
-        expect(el.nativeElement.hasAttribute('tabindex')).toBe(false);
-      });
-
-      it('sets "aria-disabled" to "true" on the host element', function() {
-        let el = fixture.debugElement.query(By.css('.md-checkbox'));
-        expect(el.nativeElement.getAttribute('aria-disabled')).toEqual('true');
-      });
-
-      it('restores the previously set tabindex when re-enabled', function(done: () => void) {
-        builder.createAsync(CheckboxCustomTabindexController).then(function(f) {
-          fixture = f;
-          let tabindexController: CheckboxCustomTabindexController = fixture.componentInstance;
-
-          tabindexController.isDisabled = true;
-          fixture.detectChanges();
-          let el = fixture.debugElement.query(By.css('.md-checkbox'));
-          expect(el.nativeElement.hasAttribute('tabindex')).toBe(false);
-
-          tabindexController.isDisabled = false;
-          fixture.detectChanges();
-          el = fixture.debugElement.query(By.css('.md-checkbox'));
-          expect(el.nativeElement.getAttribute('tabindex')).toEqual(
-              String(tabindexController.checkboxTabindex));
-        }).then(done).catch(done);
-      });
-
-      describe('when the tabindex input is changed while disabled', function() {
-        var tabindexController: CheckboxCustomTabindexController;
-        var newTabindex: number;
-
-        beforeEach(function(done: () => void) {
-          newTabindex = 10;
-
-          builder.createAsync(CheckboxCustomTabindexController).then(function(f) {
-            fixture = f;
-            tabindexController = fixture.componentInstance;
-
-            tabindexController.isDisabled = true;
-            tabindexController.checkboxTabindex = newTabindex;
-            fixture.detectChanges();
-          }).then(done).catch(done);
-        });
-
-        it('keeps the tabindex removed from the host', function() {
-          let el = fixture.debugElement.query(By.css('.md-checkbox'));
-          expect(el.nativeElement.hasAttribute('tabindex')).toBe(false);
-        });
-
-        it('uses the newly changed tabindex when re-enabled', function() {
-          tabindexController.isDisabled = false;
-          fixture.detectChanges();
-
-          let el = fixture.debugElement.query(By.css('.md-checkbox'));
-          expect(el.nativeElement.getAttribute('tabindex')).toEqual(String(newTabindex));
-        });
-      });
-    });
-
-    describe('when the checkbox is clicked', function() {
-      var fixture: ComponentFixture;
-      var controller: CheckboxController;
-      var el: DebugElement;
-
-      function clickCheckbox(): Event {
-        return click(el, fixture);
-      }
-
-      beforeEach(function(done: () => void) {
-        builder.createAsync(CheckboxController).then(function(f) {
-          fixture = f;
-          controller = fixture.componentInstance;
-
-          fixture.detectChanges();
-          el = fixture.debugElement.query(By.css('.md-checkbox'));
-        }).then(done).catch(done);
-      });
-
-      it('toggles the checked value', function() {
-        clickCheckbox();
-        expect(el.nativeElement.className).toContain('md-checkbox-checked');
-
-        clickCheckbox();
-        expect(el.nativeElement.className).not.toContain('md-checkbox-checked');
-      });
-
-      describe('when the checkbox is disabled', function() {
-        beforeEach(function() {
-          controller.isDisabled = true;
-          fixture.detectChanges();
-        });
-
-        it('stops the click event from propagating', function() {
-          let evt = clickCheckbox();
-          expect(evt.stopPropagation).toHaveBeenCalled();
-        });
-
-        it('does not alter the checked value', function() {
-          clickCheckbox();
-          expect(el.nativeElement.className).not.toContain('md-checkbox-checked');
-        });
-      });
-    });
-
-    describe('when the checkbox is focused', function() {
-      var fixture: ComponentFixture;
-      var controller: CheckboxController;
-      var el: DebugElement;
-
-      function dispatchUIEventOnEl(evtName: string) {
-        var evt: Event;
-        if (BROWSER_SUPPORTS_EVENT_CONSTRUCTORS) {
-          evt = new Event(evtName);
-        } else {
-          evt = document.createEvent('Event');
-          evt.initEvent(evtName, true, true);
-        }
-        el.nativeElement.dispatchEvent(evt);
-        fixture.detectChanges();
-      }
-
-      beforeEach(function(done: () => void) {
-        builder.createAsync(CheckboxController).then(function(f) {
-          fixture = f;
-          controller = fixture.componentInstance;
-
-          fixture.detectChanges();
-          el = fixture.debugElement.query(By.css('.md-checkbox'));
-        }).then(done).catch(done);
-      });
-
-      it('blocks spacebar keydown events from performing their default behavior', function() {
-        dispatchUIEventOnEl('focus');
-
-        var evt = keydown(el, ' ', fixture);
-        expect(evt.preventDefault).toHaveBeenCalled();
-      });
-
-      it('does not block other keyboard events from performing their default behavior', function() {
-        dispatchUIEventOnEl('focus');
-
-        var evt = keydown(el, 'Tab', fixture);
-        expect(evt.preventDefault).not.toHaveBeenCalled();
-      });
-    });
-
-    describe('when a spacebar press occurs on the checkbox', function() {
-      var fixture: ComponentFixture;
-      var controller: CheckboxController;
-      var el: DebugElement;
-
-      function spacePress(): Event {
-        return keyup(el, ' ', fixture);
-      }
-
-      beforeEach(function(done: () => void) {
-        builder.createAsync(CheckboxController).then(function(f) {
-          fixture = f;
-          controller = fixture.componentInstance;
-
-          fixture.detectChanges();
-          el = fixture.debugElement.query(By.css('.md-checkbox'));
-        }).then(done).catch(done);
-      });
-
-      it('toggles the checked value', function() {
-        spacePress();
-        expect(el.nativeElement.className).toContain('md-checkbox-checked');
-
-        spacePress();
-        expect(el.nativeElement.className).not.toContain('md-checkbox-checked');
-      });
-
-      describe('when the checkbox is disabled', function() {
-        beforeEach(function() {
-          controller.isDisabled = true;
-          fixture.detectChanges();
-        });
-
-        it('stops the click event from propagating', function() {
-          let evt = spacePress();
-          expect(evt.stopPropagation).toHaveBeenCalled();
-        });
-
-        it('does not alter the checked value', function() {
-          spacePress();
-          expect(el.nativeElement.className).not.toContain('md-checkbox-checked');
-        });
-      });
-    });
-
-    describe('usage as a form control', function() {
-      var fixture: ComponentFixture;
-      var controller: CheckboxFormcontrolController;
-
-      beforeEach(function(done: () => void) {
-        builder.createAsync(CheckboxFormcontrolController).then(function(f) {
-          fixture = f;
-          controller = fixture.componentInstance;
-          fixture.detectChanges();
-        }).then(done).catch(done);
-      });
-
-      // NOTE(traviskaufman): This test is not that elegant, but I have not found a better way
-      // to test through ngModel as of now.
-      // See: https://github.com/angular/angular/issues/7409
-      it('supports ngModel/ngControl', function(done: () => void) {
-        var el:  DebugElement;
-        var invalidMsg: DebugElement;
-
-        fakeAsync(function() {
-          el = fixture.debugElement.query(By.css('.md-checkbox'));
-          invalidMsg = fixture.debugElement.query(By.css('#invalid-msg'));
-
-          fixture.detectChanges();
-          tick();
-          expect(el.nativeElement.className).toContain('ng-untouched');
-          expect(el.nativeElement.className).toContain('ng-pristine');
-          expect(invalidMsg.nativeElement.hidden).toBe(true);
-
-          controller.model.isChecked = true;
-          fixture.detectChanges();
-          tick();
-          fixture.detectChanges();
-
-          expect(el.nativeElement.className).toContain('md-checkbox-checked');
-          expect(el.nativeElement.className).toContain('ng-dirty');
-          expect(el.nativeElement.className).toContain('ng-valid');
-
-          var blur: Event;
-          if (BROWSER_SUPPORTS_EVENT_CONSTRUCTORS) {
-            blur = new Event('blur');
-          } else {
-            blur = document.createEvent('UIEvent');
-            (<UIEvent>blur).initUIEvent('blur', true, true, window, 0);
-          }
-          el.nativeElement.dispatchEvent(blur);
-          fixture.detectChanges();
-          tick();
-          expect(el.nativeElement.className).toContain('ng-touched');
-        })();
-
-        let onceChanged = controller.model.waitForChange();
-        click(el, fixture);
-        onceChanged.then(function() {
-          expect(controller.model.isChecked).toBe(false);
-        }).then(done).catch(done);
-      });
-    });
-
-    describe('applying transition classes', function() {
-      var fixture: ComponentFixture;
-      var controller: CheckboxController;
-
-      beforeEach(function(done: () => void) {
-        builder.createAsync(CheckboxController).then(function(f) {
-          fixture = f;
-          controller = fixture.componentInstance;
-          fixture.detectChanges();
-        }).then(done).catch(done);
-      });
-
-      it('applies transition classes when going from unchecked <-> checked', function() {
-        let el = fixture.debugElement.query(By.css('.md-checkbox'));
-
-        controller.isChecked = true;
-        fixture.detectChanges();
-        expect(el.nativeElement.className).toContain('md-checkbox-anim-unchecked-checked');
-
-        controller.isChecked = false;
-        fixture.detectChanges();
-        expect(el.nativeElement.className).not.toContain('md-checkbox-anim-unchecked-checked');
-        expect(el.nativeElement.className).toContain('md-checkbox-anim-checked-unchecked');
-      });
-
-      it('applies transition classes when going from unchecked <-> indeterminate', function() {
-        let el = fixture.debugElement.query(By.css('.md-checkbox'));
-
-        controller.isIndeterminate = true;
-        fixture.detectChanges();
-        expect(el.nativeElement.className).toContain('md-checkbox-anim-unchecked-indeterminate');
-
-        controller.isIndeterminate = false;
-        fixture.detectChanges();
-        expect(el.nativeElement.className).not.toContain(
-            'md-checkbox-anim-unchecked-indeterminate');
-        expect(el.nativeElement.className).toContain('md-checkbox-anim-indeterminate-unchecked');
-      });
-
-      it('applies a transition class when going from checked -> indeterminate', function() {
-        let el = fixture.debugElement.query(By.css('.md-checkbox'));
-
-        controller.isChecked = true;
-        fixture.detectChanges();
-
-        controller.isIndeterminate = true;
-        fixture.detectChanges();
-        expect(el.nativeElement.className).not.toContain('md-checkbox-anim-unchecked-checked');
-        expect(el.nativeElement.className).toContain('md-checkbox-anim-checked-indeterminate');
-      });
-
-      it('applies a transition class when going from indeterminate -> checked', function() {
-        let el = fixture.debugElement.query(By.css('.md-checkbox'));
-
-        controller.isIndeterminate = true;
-        fixture.detectChanges();
-
-        controller.isChecked = true;
-        fixture.detectChanges();
-        expect(el.nativeElement.className).not.toContain(
-            'md-checkbox-anim-unchecked-indeterminate');
-        expect(el.nativeElement.className).toContain('md-checkbox-anim-indeterminate-checked');
-      });
-
-      it('does not apply any transition classes when there is nothing to transition', function() {
-        let el = fixture.debugElement.query(By.css('.md-checkbox'));
-
-        controller.isChecked = controller.isChecked;
-        fixture.detectChanges();
-        expect(el.nativeElement.className).not.toMatch(/^md\-checkbox\-anim/g);
-
-        controller.isIndeterminate = controller.isIndeterminate;
-        fixture.detectChanges();
-        expect(el.nativeElement.className).not.toMatch(/^md\-checkbox\-anim/g);
-      });
-
-      it('does not apply any transition classes when the component is initialized', function() {
-        let el = fixture.debugElement.query(By.css('.md-checkbox'));
-        expect(el.nativeElement.className).not.toMatch(/^md\-checkbox\-anim/g);
-      });
-
-      describe('when interacted with from the initial state', function() {
-        beforeEach(function(done: any) {
-          builder.createAsync(CheckboxBarebonesController).then(function(f) {
-            fixture = f;
-            controller = fixture.componentInstance;
-            fixture.detectChanges();
-          }).then(done).catch(done.fail);
-        });
-
-        it('applies a transition class when checked', function() {
-          let el = fixture.debugElement.query(By.css('.md-checkbox'));
-          click(el, fixture);
-          expect(el.nativeElement.className).toContain('md-checkbox-anim-unchecked-checked');
-        });
-
-        it('applies a transition class when made indeterminate', function() {
-          let el = fixture.debugElement.query(By.css('.md-checkbox'));
-          controller.isIndeterminate = true;
-          fixture.detectChanges();
-          expect(el.nativeElement.className).toContain('md-checkbox-anim-unchecked-indeterminate');
-        });
-      });
-    });
-  });
-}
-
-function click(el: DebugElement, fixture: ComponentFixture) {
-  var clickEvent: Event;
+/**
+ * Dispatches a keyboard event from an element.
+ * @param eventName The name of the event to dispatch, such as "keydown".
+ * @param element The element from which the event will be dispatched.
+ * @param key The key tied to the KeyboardEvent.
+ * @returns The artifically created keyboard event.
+ */
+function dispatchKeyboardEvent(eventName: string, element: HTMLElement, key: string): Event {
+  let keyboardEvent: Event;
   if (BROWSER_SUPPORTS_EVENT_CONSTRUCTORS) {
-    clickEvent = new Event('click');
+    keyboardEvent = new KeyboardEvent(eventName);
   } else {
-    clickEvent = document.createEvent('UIEvent');
-    (<UIEvent>clickEvent).initUIEvent('click', true, true, window, 1);
+    keyboardEvent = document.createEvent('Event');
+    keyboardEvent.initEvent(eventName, true, true);
   }
-  spyOn(clickEvent, 'stopPropagation').and.callThrough();
-  el.nativeElement.dispatchEvent(clickEvent);
-  fixture.detectChanges();
-  return clickEvent;
-}
 
-// TODO(traviskaufman): Reinvestigate implementation of this method once tests in Dart begin to run.
-function keyEvent(name: string, el: DebugElement, key: string, fixture: ComponentFixture): Event {
-  var kbdEvent: Event;
-  if (BROWSER_SUPPORTS_EVENT_CONSTRUCTORS) {
-    kbdEvent = new KeyboardEvent(name);
-  } else {
-    kbdEvent = document.createEvent('Event');
-    kbdEvent.initEvent(name, true, true);
-  }
   // Hack DOM Level 3 Events "key" prop into keyboard event.
-  Object.defineProperty(kbdEvent, 'key', {
+  Object.defineProperty(keyboardEvent, 'key', {
     value: key,
     enumerable: false,
     writable: false,
-    configurable: true
+    configurable: true,
   });
-  spyOn(kbdEvent, 'preventDefault').and.callThrough();
-  spyOn(kbdEvent, 'stopPropagation').and.callThrough();
-  el.nativeElement.dispatchEvent(kbdEvent);
-  fixture.detectChanges();
-  return kbdEvent;
+
+  // Using spyOn seems to be the *only* way to determine if preventDefault is called, since it
+  // seems that `defaultPrevented` does not get set with the technique.
+  spyOn(keyboardEvent, 'preventDefault').and.callThrough();
+
+  element.dispatchEvent(keyboardEvent);
+  return keyboardEvent;
 }
 
-function keydown(el: DebugElement, key: string, fixture: ComponentFixture): Event {
-  return keyEvent('keydown', el, key, fixture);
-}
-
-function keyup(el: DebugElement, key: string, fixture: ComponentFixture): Event {
-  return keyEvent('keyup', el, key, fixture);
-}
-
-@Component({
-  selector: 'checkbox-controller',
-  template: `
-    <md-checkbox [checked]="isChecked"
-                 [indeterminate]="isIndeterminate"
-                 [disabled]="isDisabled"
-                 (change)="eventProxy.emit($event)">
-      <em>my</em> checkbox
-    </md-checkbox>
-  `,
-  directives: [MdCheckbox]
-})
-class CheckboxController {
-  isChecked: boolean = false;
-  isIndeterminate: boolean = false;
-  isDisabled: boolean = false;
-  eventProxy: EventEmitter<boolean> = new EventEmitter<boolean>();
-}
-
-@Component({
-  selector: 'checkbox-multi-controller',
-  template: `
-    <md-checkbox></md-checkbox>
-    <md-checkbox></md-checkbox>
-  `,
-  directives: [MdCheckbox]
-})
-class CheckboxMultiController {}
-
-@Component({
-  selector: 'checkbox-custom-id-controller',
-  template: `
-    <md-checkbox [id]="checkboxId"></md-checkbox>
-  `,
-  directives: [MdCheckbox]
-})
-class CheckboxCustomIdController {
-  checkboxId: string = 'my-checkbox';
-}
-
-@Component({
-  selector: 'checkbox-custom-tabindex-controller',
-  template: `
-    <md-checkbox [tabindex]="checkboxTabindex" [disabled]="isDisabled"></md-checkbox>
-  `,
-  directives: [MdCheckbox]
-})
-class CheckboxCustomTabindexController {
-  checkboxTabindex: number = 5;
-  isDisabled: boolean = false;
-}
-
-@Component({
-  selector: 'checkbox-custom-arialabel-controller',
-  template: `
-    <md-checkbox [aria-label]="checkboxLabel"></md-checkbox>
-  `,
-  directives: [MdCheckbox]
-})
-class CheckboxCustomArialabelController {
-  checkboxLabel: string = 'My awesome checkbox';
-}
-
-class FormcontrolModel {
-  private _isChecked = false;
-  private _changeEmitter = new EventEmitter<boolean>();
-
-  get isChecked(): boolean {
-    return this._isChecked;
-  }
-
-  set isChecked(isChecked: boolean) {
-    let shouldEmitChange = this._isChecked !== isChecked;
-    this._isChecked = isChecked;
-    if (shouldEmitChange) {
-      this._changeEmitter.emit(this._isChecked);
-    }
-  }
-
-  waitForChange(): Promise<boolean> {
-    return new Promise((resolve, reject) => {
-      let subscription: {unsubscribe: () => void};
-      let subscriber = function(isChecked: boolean) {
-        subscription.unsubscribe();
-        resolve(isChecked);
-      };
-      subscription = this._changeEmitter.subscribe(subscriber, reject);
-    });
-  }
-}
-
-@Component({
-  selector: 'checkbox-formcontrol-controller',
-  template: `
-    <form>
-      <md-checkbox [(ngModel)]="model.isChecked"
-                   ngControl="cb" #cb="ngForm">
-      </md-checkbox>
-      <p id="invalid-msg" [hidden]="cb.valid || cb.pristine">INVALID!</p>
-    </form>
-  `,
-  directives: [MdCheckbox]
-})
-class CheckboxFormcontrolController {
-  model = new FormcontrolModel();
-}
-
-@Component({
-  selector: 'checkbox-end-aligned-controller',
-  template: `<md-checkbox [align]="'end'"></md-checkbox>`,
-  directives: [MdCheckbox]
-})
-class CheckboxEndAlignedController {}
-
-@Component({
-  selector: 'checkbox-barebones-controller',
-  template: `<md-checkbox [indeterminate]="isIndeterminate"></md-checkbox>`,
-  directives: [MdCheckbox]
-})
-class CheckboxBarebonesController {
-  public isIndeterminate: boolean = false;
-}

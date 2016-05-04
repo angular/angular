@@ -3,7 +3,7 @@ import {
   OpaqueToken,
   Optional,
   Inject
-} from 'angular2/core';
+} from '@angular/core';
 
 export const LIVE_ANNOUNCER_ELEMENT_TOKEN  = new OpaqueToken('mdLiveAnnouncerElement');
 

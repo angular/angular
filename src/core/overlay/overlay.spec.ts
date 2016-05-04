@@ -4,16 +4,16 @@ import {
   expect,
   beforeEach,
   inject,
-  TestComponentBuilder,
   fakeAsync,
   flushMicrotasks,
   beforeEachProviders,
-} from 'angular2/testing';
+} from '@angular/core/testing';
+import {TestComponentBuilder} from '@angular/compiler/testing';
 import {
     Component,
     ViewChild,
     provide, ViewContainerRef,
-} from 'angular2/core';
+} from '@angular/core';
 import {TemplatePortalDirective} from '../portal/portal-directives';
 import {TemplatePortal, ComponentPortal} from '../portal/portal';
 import {Overlay, OVERLAY_CONTAINER_TOKEN} from './overlay';

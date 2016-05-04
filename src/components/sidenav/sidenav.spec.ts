@@ -3,21 +3,20 @@ import {
   describe,
   expect,
   beforeEach,
-  ComponentFixture,
-  TestComponentBuilder,
   fakeAsync,
   inject,
   injectAsync,
   tick
-} from 'angular2/testing';
-import {XHR} from 'angular2/src/compiler/xhr';
+} from '@angular/core/testing';
+import {TestComponentBuilder, ComponentFixture} from '@angular/compiler/testing';
+import {XHR} from '@angular/compiler';
 import {
   Component,
   Type,
   ViewMetadata
-} from 'angular2/core';
+} from '@angular/core';
 
-import {By} from 'angular2/platform/browser';
+import {By} from '@angular/platform-browser';
 import {MdSidenav, MdSidenavLayout, MD_SIDENAV_DIRECTIVES} from './sidenav';
 
 
@@ -30,8 +29,8 @@ function fakeAsyncAdaptor(fn: () => void) {
  * Create a ComponentFixture from the builder. This takes a template and a style for sidenav.
  */
 function createFixture(appType: Type, builder: TestComponentBuilder,
-    template: string, style: string): ComponentFixture {
-  let fixture: ComponentFixture = null;
+    template: string, style: string): ComponentFixture<any> {
+  let fixture: ComponentFixture<any> = null;
   // Remove the styles (which remove the animations/transitions).
   builder
     .overrideView(MdSidenavLayout, new ViewMetadata({
@@ -39,14 +38,14 @@ function createFixture(appType: Type, builder: TestComponentBuilder,
       styles: [style],
       directives: [MdSidenav],
     }))
-    .createAsync(appType).then((f: ComponentFixture) => { fixture = f; });
+    .createAsync(appType).then((f: ComponentFixture<any>) => { fixture = f; });
   tick();
 
   return fixture;
 }
 
 
-function endSidenavTransition(fixture: ComponentFixture) {
+function endSidenavTransition(fixture: ComponentFixture<any>) {
   let sidenav: any = fixture.debugElement.query(By.directive(MdSidenav)).componentInstance;
   sidenav.onTransitionEnd({
     target: (<any>sidenav)._elementRef.nativeElement,

@@ -1,9 +1,9 @@
-import {Component} from 'angular2/core';
+import {Component} from '@angular/core';
 import {PortalHostDirective} from '../../core/portal/portal-directives';
 import {TemplatePortalDirective} from '../../core/portal/portal-directives';
 import {Portal} from '../../core/portal/portal';
-import {ViewChildren} from 'angular2/core';
-import {QueryList} from 'angular2/core';
+import {ViewChildren} from '@angular/core';
+import {QueryList} from '@angular/core';
 import {ComponentPortal} from '../../core/portal/portal';
 
 @Component({

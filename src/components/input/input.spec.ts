@@ -5,11 +5,11 @@ import {
   beforeEach,
   fakeAsync,
   inject,
-  TestComponentBuilder,
   tick,
-} from 'angular2/testing';
-import {Component} from 'angular2/core';
-import {By} from 'angular2/platform/browser';
+} from '@angular/core/testing';
+import {TestComponentBuilder} from '@angular/compiler/testing';
+import {Component} from '@angular/core';
+import {By} from '@angular/platform-browser';
 import {
   MdInput,
   MD_INPUT_DIRECTIVES,
@@ -88,7 +88,7 @@ export function main() {
         .then(fixture => {
             expect(() => fixture.detectChanges())
               .toThrow();
-              // TODO(jelbourn): .toThrow(new MdInputDuplicatedHintException('start'));
+              // TODO(jelbourn): .toThrow(new MdInputDuplicatedHintError('start'));
               // See https://github.com/angular/angular/issues/8348
         });
     });
@@ -98,7 +98,7 @@ export function main() {
         .then(fixture => {
           expect(() => fixture.detectChanges())
             .toThrow();
-            // TODO(jelbourn): .toThrow(new MdInputDuplicatedHintException('start'));
+            // TODO(jelbourn): .toThrow(new MdInputDuplicatedHintError('start'));
             // See https://github.com/angular/angular/issues/8348
         });
     });
@@ -108,7 +108,7 @@ export function main() {
         .then(fixture => {
           expect(() => fixture.detectChanges())
             .toThrow();
-            // TODO(jelbourn): .toThrow(new MdInputPlaceholderConflictException());
+            // TODO(jelbourn): .toThrow(new MdInputPlaceholderConflictError());
             // See https://github.com/angular/angular/issues/8348
         });
     });
@@ -122,7 +122,7 @@ export function main() {
             // hard to build a full exception to compare with.
             // We just check for any exception in this case.
             expect(() => fixture.detectChanges())
-              .toThrow(/* new MdInputUnsupportedTypeException('file') */);
+              .toThrow(/* new MdInputUnsupportedTypeError('file') */);
           })();
         });
     });

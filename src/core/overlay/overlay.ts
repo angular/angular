@@ -4,7 +4,7 @@ import {
   Inject,
   Injectable,
   ElementRef
-} from 'angular2/core';
+} from '@angular/core';
 import {OverlayState} from './overlay-state';
 import {DomPortalHost} from '../portal/dom-portal-host';
 import {OverlayRef} from './overlay-ref';

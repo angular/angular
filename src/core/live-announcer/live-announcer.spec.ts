@@ -4,16 +4,15 @@ import {
   expect,
   beforeEach,
   inject,
-  TestComponentBuilder,
-  ComponentFixture,
   fakeAsync,
   flushMicrotasks,
   tick,
   beforeEachProviders,
   getTestInjector
-} from 'angular2/testing';
-import {Component, provide} from 'angular2/core';
-import {By} from 'angular2/platform/browser';
+} from '@angular/core/testing';
+import {TestComponentBuilder, ComponentFixture} from '@angular/compiler/testing';
+import {Component, provide} from '@angular/core';
+import {By} from '@angular/platform-browser';
 import {MdLiveAnnouncer, LIVE_ANNOUNCER_ELEMENT_TOKEN} from './live-announcer';
 
 export function main() {
@@ -38,7 +37,7 @@ export function main() {
     });
 
     it('should correctly update the announce text', fakeAsyncTest(() => {
-      let appFixture: ComponentFixture = null;
+      let appFixture: ComponentFixture<TestApp> = null;
 
       builder.createAsync(TestApp).then(fixture => {
         appFixture = fixture;
@@ -58,7 +57,7 @@ export function main() {
     }));
 
     it('should correctly update the politeness attribute', fakeAsyncTest(() => {
-      let appFixture: ComponentFixture = null;
+      let appFixture: ComponentFixture<TestApp> = null;
 
       builder.createAsync(TestApp).then(fixture => {
         appFixture = fixture;
@@ -76,7 +75,7 @@ export function main() {
     }));
 
     it('should apply the aria-live value polite by default', fakeAsyncTest(() => {
-      let appFixture: ComponentFixture = null;
+      let appFixture: ComponentFixture<TestApp> = null;
 
       builder.createAsync(TestApp).then(fixture => {
         appFixture = fixture;

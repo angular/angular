@@ -1,4 +1,4 @@
-import {Component} from 'angular2/core';
+import {Component} from '@angular/core';
 import {MdRadioButton, MdRadioGroup} from '../../components/radio/radio';
 import {MdRadioDispatcher} from '../../components/radio/radio_dispatcher';
 

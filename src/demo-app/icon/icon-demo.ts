@@ -1,4 +1,4 @@
-import {Component, ViewEncapsulation} from 'angular2/core';
+import {Component, ViewEncapsulation} from '@angular/core';
 import {MdIcon} from '../../components/icon/icon';
 import {MdIconRegistry} from '../../components/icon/icon-registry';
 

@@ -3,7 +3,7 @@ import {
   ChangeDetectionStrategy,
   HostBinding,
   Input
-} from 'angular2/core';
+} from '@angular/core';
 
 
 // TODO(josephperrott): Benchpress tests.

@@ -1,11 +1,10 @@
-import {Injectable} from 'angular2/core';
-import {BaseException} from 'angular2/src/facade/exceptions';
-import {Http} from 'angular2/http';
+import {Injectable} from '@angular/core';
+import {Http} from '@angular/http';
 import {Observable} from 'rxjs/Rx';
 
 
 /** Exception thrown when attempting to load an icon with a name that cannot be found. */
-export class MdIconNameNotFoundException extends BaseException {
+export class MdIconNameNotFoundError extends Error {
   constructor(iconName: string) {
       super(`Unable to find icon with the name "${iconName}"`);
   }
@@ -15,7 +14,7 @@ export class MdIconNameNotFoundException extends BaseException {
  * Exception thrown when attempting to load SVG content that does not contain the expected
  * <svg> tag.
  */
-export class MdIconSvgTagNotFoundException extends BaseException {
+export class MdIconSvgTagNotFoundError extends Error {
   constructor() {
       super('<svg> tag not found');
   }
@@ -153,7 +152,7 @@ export class MdIconRegistry {
   /**
    * Returns an Observable that produces the icon (as an <svg> DOM element) with the given name
    * and namespace. The icon must have been previously registered with addIcon or addIconSet;
-   * if not, the Observable will throw an MdIconNameNotFoundException.
+   * if not, the Observable will throw an MdIconNameNotFoundError.
    */
   getNamedSvgIcon(name: string, namespace = ''): Observable<SVGElement> {
     // Return (copy of) cached icon if possible.
@@ -166,7 +165,7 @@ export class MdIconRegistry {
     if (iconSetConfigs) {
       return this._getSvgFromIconSetConfigs(name, iconSetConfigs);
     }
-    return Observable.throw(new MdIconNameNotFoundException(key));
+    return Observable.throw(new MdIconNameNotFoundError(key));
   }
 
   /**
@@ -190,7 +189,7 @@ export class MdIconRegistry {
    * if found copies the element to a new <svg> element. If not found, fetches all icon sets
    * that have not been cached, and searches again after all fetches are completed.
    * The returned Observable produces the SVG element if possible, and throws
-   * MdIconNameNotFoundException if no icon with the specified name can be found.
+   * MdIconNameNotFoundError if no icon with the specified name can be found.
    */
   private _getSvgFromIconSetConfigs(name: string, iconSetConfigs: SvgIconConfig[]):
       Observable<SVGElement> {
@@ -227,7 +226,7 @@ export class MdIconRegistry {
         .map((ignoredResults: any) => {
           const foundIcon = this._extractIconWithNameFromAnySet(name, iconSetConfigs);
           if (!foundIcon) {
-            throw new MdIconNameNotFoundException(name);
+            throw new MdIconNameNotFoundError(name);
           }
           return foundIcon;
         });
@@ -318,7 +317,7 @@ export class MdIconRegistry {
     div.innerHTML = str;
     const svg = <SVGElement>div.querySelector('svg');
     if (!svg) {
-      throw new MdIconSvgTagNotFoundException();
+      throw new MdIconSvgTagNotFoundError();
     }
     return svg;
   }

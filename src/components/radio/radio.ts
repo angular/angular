@@ -14,15 +14,17 @@ import {
   QueryList,
   ViewEncapsulation,
   forwardRef
-} from 'angular2/core';
-
+} from '@angular/core';
 import {
   NG_VALUE_ACCESSOR,
   ControlValueAccessor
-} from 'angular2/src/common/forms/directives/control_value_accessor';
-
+} from '@angular/common';
 import {MdRadioDispatcher} from './radio_dispatcher';
+
+
 export {MdRadioDispatcher} from './radio_dispatcher';
+
+
 
 /**
  * Provider Expression that allows md-radio-group to register as a ControlValueAccessor. This

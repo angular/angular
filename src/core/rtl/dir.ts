@@ -1,4 +1,4 @@
-import {Directive, HostBinding, Output, Input, EventEmitter} from 'angular2/core';
+import {Directive, HostBinding, Output, Input, EventEmitter} from '@angular/core';
 
 export type LayoutDirection = 'ltr' | 'rtl';
 

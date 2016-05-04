@@ -1,4 +1,4 @@
-import {Component} from 'angular2/core';
+import {Component} from '@angular/core';
 import {MdIcon} from '../../components/icon/icon';
 import {MdToolbar} from '../../components/toolbar/toolbar';
 

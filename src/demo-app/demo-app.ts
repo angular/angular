@@ -1,5 +1,5 @@
-import {Component} from 'angular2/core';
-import {Route, RouteConfig, ROUTER_DIRECTIVES} from 'angular2/router';
+import {Component} from '@angular/core';
+import {Route, Routes, ROUTER_DIRECTIVES} from '@angular/router';
 import {CardDemo} from './card/card-demo';
 import {ButtonDemo} from './button/button-demo';
 import {IconDemo} from './icon/icon-demo';
@@ -48,23 +48,23 @@ export class Home {}
   ],
   pipes: []
 })
-@RouteConfig([
-  new Route({path: '/', name: 'Home', component: Home, useAsDefault: true}),
-  new Route({path: '/button',   name: 'ButtonDemo', component: ButtonDemo}),
-  new Route({path: '/card', name: 'CardDemo', component: CardDemo}),
-  new Route({path: '/radio', name: 'RadioDemo', component: RadioDemo}),
-  new Route({path: '/sidenav', name: 'SidenavDemo', component: SidenavDemo}),
-  new Route({path: '/progress-circle', name: 'ProgressCircleDemo', component: ProgressCircleDemo}),
-  new Route({path: '/progress-bar', name: 'ProgressBarDemo', component: ProgressBarDemo}),
-  new Route({path: '/portal', name: 'PortalDemo', component: PortalDemo}),
-  new Route({path: '/overlay', name: 'OverlayDemo', component: OverlayDemo}),
-  new Route({path: '/checkbox', name: 'CheckboxDemo', component: CheckboxDemo}),
-  new Route({path: '/input', name: 'InputDemo', component: InputDemo}),
-  new Route({path: '/toolbar', name: 'ToolbarDemo', component: ToolbarDemo}),
-  new Route({path: '/icon', name: 'IconDemo', component: IconDemo}),
-  new Route({path: '/list', name: 'ListDemo', component: ListDemo}),
-  new Route({path: '/live-announcer', name: 'LiveAnnouncerDemo', component: LiveAnnouncerDemo}),
-  new Route({path: '/gestures', name: 'GesturesDemo', component: GesturesDemo}),
-  new Route({path: '/grid-list', name: 'GridListDemo', component: GridListDemo}),
+@Routes([
+  new Route({path: '/', component: Home}),
+  new Route({path: '/button', component: ButtonDemo}),
+  new Route({path: '/card', component: CardDemo}),
+  new Route({path: '/radio', component: RadioDemo}),
+  new Route({path: '/sidenav', component: SidenavDemo}),
+  new Route({path: '/progress-circle', component: ProgressCircleDemo}),
+  new Route({path: '/progress-bar', component: ProgressBarDemo}),
+  new Route({path: '/portal', component: PortalDemo}),
+  new Route({path: '/overlay', component: OverlayDemo}),
+  new Route({path: '/checkbox', component: CheckboxDemo}),
+  new Route({path: '/input', component: InputDemo}),
+  new Route({path: '/toolbar', component: ToolbarDemo}),
+  new Route({path: '/icon', component: IconDemo}),
+  new Route({path: '/list', component: ListDemo}),
+  new Route({path: '/live-announcer', component: LiveAnnouncerDemo}),
+  new Route({path: '/gestures', component: GesturesDemo}),
+  new Route({path: '/grid-list', component: GridListDemo}),
 ])
 export class DemoApp { }

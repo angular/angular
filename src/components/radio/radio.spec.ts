@@ -6,10 +6,10 @@ import {
   fakeAsync,
   inject,
   tick,
-  TestComponentBuilder
-} from 'angular2/testing';
-import {Component, DebugElement} from 'angular2/core';
-import {By} from 'angular2/platform/browser';
+} from '@angular/core/testing';
+import {TestComponentBuilder} from '@angular/compiler/testing';
+import {Component, DebugElement} from '@angular/core';
+import {By} from '@angular/platform-browser';
 
 import {MdRadioButton, MdRadioGroup, MdRadioChange} from './radio';
 import {MdRadioDispatcher} from './radio_dispatcher';

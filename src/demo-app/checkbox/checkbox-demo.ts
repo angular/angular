@@ -1,4 +1,5 @@
-import {Component} from 'angular2/core';
+import {Component} from '@angular/core';
+import {FORM_DIRECTIVES} from '@angular/common';
 import {MdCheckbox} from '../../components/checkbox/checkbox';
 
 interface Task {
@@ -61,7 +62,7 @@ class MdCheckboxDemoNestedChecklist {
   selector: 'md-checkbox-demo',
   templateUrl: 'demo-app/checkbox/checkbox-demo.html',
   styleUrls: ['demo-app/checkbox/checkbox-demo.css'],
-  directives: [MdCheckbox, MdCheckboxDemoNestedChecklist]
+  directives: [MdCheckbox, MdCheckboxDemoNestedChecklist, FORM_DIRECTIVES]
 })
 export class CheckboxDemo {
   isIndeterminate: boolean = false;

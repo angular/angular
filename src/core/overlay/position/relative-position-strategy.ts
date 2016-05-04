@@ -1,5 +1,5 @@
 import {PositionStrategy} from './position-strategy';
-import {ElementRef} from 'angular2/core';
+import {ElementRef} from '@angular/core';
 
 export class RelativePositionStrategy implements PositionStrategy {
   constructor(private _relativeTo: ElementRef) { }

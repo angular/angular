@@ -1,5 +1,16 @@
-import {Component, ViewEncapsulation, ContentChildren, ContentChild, QueryList, Directive,
-  ElementRef, Renderer, AfterContentInit} from 'angular2/core';
+import {
+    Component,
+    ViewEncapsulation,
+    ContentChildren,
+    ContentChild,
+    QueryList,
+    Directive,
+    ElementRef,
+    Renderer,
+    AfterContentInit,
+} from '@angular/core';
+
+
 
 @Component({
   selector: 'md-list, md-nav-list',

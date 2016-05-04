@@ -1,4 +1,4 @@
-import {Component} from 'angular2/core';
+import {Component} from '@angular/core';
 import {MdButton} from '../../components/button/button';
 import {MdProgressBar} from '../../components/progress-bar/progress-bar';
 

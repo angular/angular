@@ -1,0 +1,25 @@
+{
+  "project": {
+    "version": "0.0.37",
+    "name": "material2"
+  },
+  "apps": [
+    {"main": "src/main.ts", "tsconfig": "src/tsconfig.json"}
+  ],
+  "addons": [],
+  "packages": [],
+  "e2e": {
+    "protractor": {
+      "config": "test/protractor.conf.js"
+    }
+  },
+  "test": {
+    "karma": {
+      "config": "test/karma.conf.js"
+    }
+  },
+  "defaults": {
+    "prefix": "",
+    "sourceDir": "src"
+  }
+}

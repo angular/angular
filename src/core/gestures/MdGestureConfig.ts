@@ -1,5 +1,5 @@
-import {Injectable} from 'angular2/core';
-import {HammerGestureConfig} from 'angular2/src/platform/browser_common';
+import {Injectable} from '@angular/core';
+import {HammerGestureConfig} from '@angular/platform-browser';
 
 /* Adjusts configuration of our gesture library, Hammer. */
 @Injectable()

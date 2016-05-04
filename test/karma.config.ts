@@ -19,22 +19,13 @@ export function config(config) {
       require('karma-firefox-launcher'),
     ],
     files: [
-      {pattern: 'node_modules/es6-shim/es6-shim.min.js', included: true, watched: false},
-      {pattern: 'node_modules/systemjs/dist/system-polyfills.js', included: true, watched: false},
-      'node_modules/angular2/es6/dev/src/testing/shims_for_IE.js',
-
-      // Angular 2 polyfills *must* be loaded after es6-shim and system-polyfills in order to
-      // setup the monkey-patches for zones.
-      {pattern: 'node_modules/angular2/bundles/angular2-polyfills.js', included: true, watched: false},
-      {pattern: 'node_modules/zone.js/dist/jasmine-patch.js', included: true, watched: false},
-      {pattern: 'node_modules/zone.js/dist/async-test.js', included: true, watched: false},
-      {pattern: 'node_modules/zone.js/dist/fake-async-test.js', included: true, watched: false},
-      {pattern: 'node_modules/systemjs/dist/system.src.js', included: true, watched: false},
-      {pattern: 'node_modules/rxjs/bundles/Rx.js', included: true, watched: false},
-      'node_modules/reflect-metadata/Reflect.js',
-      {pattern: 'node_modules/angular2/bundles/angular2.dev.js', included: true, watched: false},
-      {pattern: 'node_modules/angular2/bundles/http.dev.js', included: true, watched: false},
-      {pattern: 'node_modules/angular2/bundles/testing.dev.js', included: true, watched: false},
+      {pattern: 'dist/vendor/es6-shim/es6-shim.js', included: true, watched: false},
+      {pattern: 'dist/vendor/reflect-metadata/Reflect.js', included: true, watched: false},
+      {pattern: 'dist/vendor/systemjs/dist/system-polyfills.js', included: true, watched: false},
+      {pattern: 'dist/vendor/systemjs/dist/system.src.js', included: true, watched: false},
+      {pattern: 'dist/vendor/zone.js/dist/zone.js', included: true, watched: false},
+      {pattern: 'dist/vendor/zone.js/dist/async-test.js', included: true, watched: false},
+      {pattern: 'dist/vendor/zone.js/dist/fake-async-test.js', included: true, watched: false},
 
       {pattern: 'test/karma-test-shim.js', included: true, watched: true},
 
@@ -52,10 +43,8 @@ export function config(config) {
     ],
     proxies: {
       // required for component assests fetched by Angular's compiler
-      '/demo-app/': '/base/dist/demo-app/',
       '/components/': '/base/dist/components/',
       '/core/': '/base/dist/core/',
-      '/directives/': '/base/dist/directives/',
     },
 
     customLaunchers: customLaunchers,

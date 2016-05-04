@@ -216,7 +216,7 @@ $_md-checkbox-indeterminate-checked-easing-function: cubic-bezier(0.14, 0, 0, 1)
   pointer-events: none;
 }
 
-.md-checkbox {
+md-checkbox {
   cursor: pointer;
 
   &:focus {

@@ -6,7 +6,7 @@ import {
   inject,
   fakeAsync,
   flushMicrotasks,
-} from 'angular2/testing';
+} from '@angular/core/testing';
 import {GlobalPositionStrategy} from './global-position-strategy';
 
 

@@ -9,14 +9,13 @@ import {
     SimpleChange,
     ViewEncapsulation,
     AfterViewChecked
-} from 'angular2/core';
-import {BaseException} from 'angular2/src/facade/exceptions';
+} from '@angular/core';
 import {MdIconRegistry} from './icon-registry';
 
 
 
 /** Exception thrown when an invalid icon name is passed to an md-icon component. */
-export class MdIconInvalidNameException extends BaseException {
+export class MdIconInvalidNameError extends Error {
   constructor(iconName: string) {
       super(`Invalid icon name: "${name}"`);
   }
@@ -89,12 +88,12 @@ export class MdIcon implements OnChanges, OnInit, AfterViewChecked {
    * The separator for the two fields is ':'. If there is no separator, an empty
    * string is returned for the icon set and the entire value is returned for
    * the icon name. If the argument is falsy, returns an array of two empty strings.
-   * Throws a MdIconInvalidNameException if the name contains two or more ':' separators.
+   * Throws a MdIconInvalidNameError if the name contains two or more ':' separators.
    * Examples:
    *   'social:cake' -> ['social', 'cake']
    *   'penguin' -> ['', 'penguin']
    *   null -> ['', '']
-   *   'a:b:c' -> (throws MdIconInvalidNameException)
+   *   'a:b:c' -> (throws MdIconInvalidNameError)
    */
   private _splitIconName(iconName: string): [string, string] {
     if (!iconName) {
@@ -108,7 +107,7 @@ export class MdIcon implements OnChanges, OnInit, AfterViewChecked {
       case 2:
         return <[string, string]>parts;
       default:
-        throw new MdIconInvalidNameException(iconName);
+        throw new MdIconInvalidNameError(iconName);
     }
   }
 

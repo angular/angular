@@ -3,8 +3,7 @@ import {
     ChangeDetectionStrategy,
     HostBinding,
     Input,
-} from 'angular2/core';
-import {isPresent} from 'angular2/src/facade/lang';
+} from '@angular/core';
 
 
 // TODO(josephperrott): Benchpress tests.
@@ -38,9 +37,7 @@ export class MdProgressBar {
     return this._value;
   }
   set value(v: number) {
-    if (isPresent(v)) {
-      this._value = MdProgressBar.clamp(v);
-    }
+    this._value = MdProgressBar.clamp(v || 0);
   }
 
 
@@ -55,9 +52,7 @@ export class MdProgressBar {
     return this._bufferValue;
   }
   set bufferValue(v: number) {
-    if (isPresent(v)) {
-      this._bufferValue = MdProgressBar.clamp(v);
-    }
+    this._bufferValue = MdProgressBar.clamp(v || 0);
   }
 
 

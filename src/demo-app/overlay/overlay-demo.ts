@@ -1,7 +1,7 @@
 import {
     Component, ViewChildren, QueryList, ViewEncapsulation,
     ViewContainerRef
-} from 'angular2/core';
+} from '@angular/core';
 import {
   Overlay,
   OverlayState} from '../../core/overlay/overlay';

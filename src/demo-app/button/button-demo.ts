@@ -1,4 +1,4 @@
-import {Component} from 'angular2/core';
+import {Component} from '@angular/core';
 import {MdButton, MdAnchor} from '../../components/button/button';
 import {MdIcon} from '../../components/icon/icon';
 

@@ -1,6 +1,6 @@
-import {DynamicComponentLoader, ComponentRef, EmbeddedViewRef} from 'angular2/core';
+import {DynamicComponentLoader, ComponentRef, EmbeddedViewRef} from '@angular/core';
 import {BasePortalHost, ComponentPortal, TemplatePortal} from './portal';
-import {MdComponentPortalAttachedToDomWithoutOriginException} from './portal-exceptions';
+import {MdComponentPortalAttachedToDomWithoutOriginError} from './portal-errors';
 
 
 /**
@@ -17,14 +17,14 @@ export class DomPortalHost extends BasePortalHost {
   }
 
   /** Attach the given ComponentPortal to DOM element using the DynamicComponentLoader. */
-  attachComponentPortal(portal: ComponentPortal): Promise<ComponentRef> {
+  attachComponentPortal(portal: ComponentPortal): Promise<ComponentRef<any>> {
     if (portal.viewContainerRef == null) {
-      throw new MdComponentPortalAttachedToDomWithoutOriginException();
+      throw new MdComponentPortalAttachedToDomWithoutOriginError();
     }
 
     return this._componentLoader.loadNextToLocation(
         portal.component, portal.viewContainerRef).then(ref => {
-      let hostView = <EmbeddedViewRef> ref.hostView;
+      let hostView = <EmbeddedViewRef<any>> ref.hostView;
       this._hostDomElement.appendChild(hostView.rootNodes[0]);
       this.setDisposeFn(() => ref.destroy());
       return ref;
@@ -34,9 +34,6 @@ export class DomPortalHost extends BasePortalHost {
   attachTemplatePortal(portal: TemplatePortal): Promise<Map<string, any>> {
     let viewContainer = portal.viewContainerRef;
     let viewRef = viewContainer.createEmbeddedView(portal.templateRef);
-    // TODO(jelbourn): locals don't currently work with DomPortalHost; investigate whether there
-    // is a bug in Angular.
-    portal.locals.forEach((v, k) => viewRef.setLocal(k, v));
 
     viewRef.rootNodes.forEach(rootNode => this._hostDomElement.appendChild(rootNode));
 

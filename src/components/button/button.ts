@@ -6,7 +6,7 @@ import {
   ChangeDetectionStrategy,
   ElementRef,
   Renderer,
-} from 'angular2/core';
+} from '@angular/core';
 
 // TODO(jelbourn): Ink ripples.
 // TODO(jelbourn): Make the `isMouseDown` stuff done with one global listener.

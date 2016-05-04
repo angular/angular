@@ -4,10 +4,10 @@ import {
   expect,
   beforeEach,
   inject,
-  TestComponentBuilder
-} from 'angular2/testing';
-import {Component} from 'angular2/core';
-import {By} from 'angular2/platform/browser';
+} from '@angular/core/testing';
+import {TestComponentBuilder} from '@angular/compiler/testing';
+import {Component} from '@angular/core';
+import {By} from '@angular/platform-browser';
 
 import {MD_LIST_DIRECTIVES} from './list';
 

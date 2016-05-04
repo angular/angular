@@ -5,11 +5,11 @@ import {
     beforeEach,
     beforeEachProviders,
     inject,
-    TestComponentBuilder
-} from 'angular2/testing';
-import {HTTP_PROVIDERS, XHRBackend} from 'angular2/http';
-import {MockBackend} from 'angular2/http/testing';
-import {provide, Component} from 'angular2/core';
+} from '@angular/core/testing';
+import {TestComponentBuilder} from '@angular/compiler/testing';
+import {HTTP_PROVIDERS, XHRBackend} from '@angular/http';
+import {MockBackend} from '@angular/http/testing';
+import {provide, Component} from '@angular/core';
 import {MdIcon} from './icon';
 import {MdIconRegistry} from './icon-registry';
 import {getFakeSvgHttpResponse} from './fake-svgs';

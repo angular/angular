@@ -1,29 +1,28 @@
 import {
-  AfterContentInit,
-  Component,
-  ContentChildren,
-  ElementRef,
-  Host,
-  HostBinding,
-  HostListener,
-  Input,
-  Optional,
-  Output,
-  QueryList,
-  Type,
-  ChangeDetectionStrategy,
-  EventEmitter,
-  Renderer
-} from 'angular2/core';
-import {BaseException} from 'angular2/src/facade/exceptions';
+    AfterContentInit,
+    Component,
+    ContentChildren,
+    ElementRef,
+    Host,
+    HostBinding,
+    HostListener,
+    Input,
+    Optional,
+    Output,
+    QueryList,
+    Type,
+    ChangeDetectionStrategy,
+    EventEmitter,
+    Renderer
+} from '@angular/core';
 import {Dir} from '../../core/rtl/dir';
-import {PromiseCompleter} from 'angular2/src/facade/promise';
+import {PromiseCompleter} from '../../core/async/promise-completer';
 
 
 /**
  * Exception thrown when two MdSidenav are matching the same side.
  */
-export class MdDuplicatedSidenavException extends BaseException {
+export class MdDuplicatedSidenavError extends Error {
   constructor(align: string) {
     super(`A sidenav was already declared for 'align="${align}"'`);
   }
@@ -307,12 +306,12 @@ export class MdSidenavLayout implements AfterContentInit {
     this._sidenavs.forEach(sidenav => {
       if (sidenav.align == 'end') {
         if (this._end != null) {
-          throw new MdDuplicatedSidenavException('end');
+          throw new MdDuplicatedSidenavError('end');
         }
         this._end = sidenav;
       } else {
         if (this._start != null) {
-          throw new MdDuplicatedSidenavException('start');
+          throw new MdDuplicatedSidenavError('start');
         }
         this._start = sidenav;
       }
@@ -351,8 +350,8 @@ export class MdSidenavLayout implements AfterContentInit {
   /**
    * Return the width of the sidenav, if it's in the proper mode and opened.
    * This may relayout the view, so do not call this often.
-   * @param MdSidenav
-   * @private
+   * @param sidenav
+   * @param mode
    */
   private _getSidenavEffectiveWidth(sidenav: MdSidenav, mode: string): number {
     return (this._isSidenavOpen(sidenav) && sidenav.mode == mode) ? sidenav._width : 0;

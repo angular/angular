@@ -1,4 +1,4 @@
-import {Component} from 'angular2/core';
+import {Component} from '@angular/core';
 import {MdLiveAnnouncer} from '../../core/live-announcer/live-announcer';
 
 @Component({

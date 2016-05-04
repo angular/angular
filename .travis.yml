@@ -46,6 +46,7 @@ matrix:
   allow_failures:
   - env: "MODE=saucelabs_optional"
   - env: "MODE=browserstack_optional"
+  - env: "MODE=e2e"
 
 install:
   - npm install

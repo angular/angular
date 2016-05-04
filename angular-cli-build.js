@@ -20,17 +20,24 @@ module.exports = function(defaults) {
         'src/core/style'
       ]
     },
-    vendorNpmFiles: []
+    vendorNpmFiles: [
+      'systemjs/dist/system-polyfills.js',
+      'systemjs/dist/system.src.js',
+      'zone.js/dist/*.js',
+      'es6-shim/es6-shim.js',
+      'reflect-metadata/*.js',
+      'rxjs/**/*.js',
+      '@angular/**/*.js',
+    ]
   });
 
-  const ngTree = angularAppTree.toTree();
-  const cssAutoprefixed = autoPrefixerTree(new Funnel(ngTree, {
+  const cssAutoprefixed = autoPrefixerTree(new Funnel(angularAppTree, {
     include: [ '**/*.css' ]
   }));
 
   return new MergeTree([
     new Funnel('src', { include: ['**/*.scss']}),
-    angularAppTree.toTree(),
-    cssAutoprefixed
+    angularAppTree,
+    cssAutoprefixed,
   ], { overwrite: true });
 };

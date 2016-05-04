@@ -1,4 +1,4 @@
-import {Component} from 'angular2/core';
+import {Component} from '@angular/core';
 import {MD_INPUT_DIRECTIVES} from '../../components/input/input';
 import {MdButton} from '../../components/button/button';
 import {MdCard} from '../../components/card/card';

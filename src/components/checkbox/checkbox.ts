@@ -8,13 +8,14 @@ import {
   Provider,
   Renderer,
   ViewEncapsulation,
-  forwardRef
-} from 'angular2/core';
-
+  forwardRef,
+} from '@angular/core';
 import {
   NG_VALUE_ACCESSOR,
-  ControlValueAccessor
-} from 'angular2/src/common/forms/directives/control_value_accessor';
+  ControlValueAccessor,
+} from '@angular/common';
+
+
 
 /**
  * Monotonically increasing integer used to auto-generate unique ids for checkbox components.
@@ -60,7 +61,6 @@ enum TransitionCheckState {
   host: {
     'role': 'checkbox',
     '[id]': 'id',
-    '[class.md-checkbox]': 'true',
     '[class.md-checkbox-indeterminate]': 'indeterminate',
     '[class.md-checkbox-checked]': 'checked',
     '[class.md-checkbox-disabled]': 'disabled',
@@ -110,6 +110,9 @@ export class MdCheckbox implements ControlValueAccessor {
   /** Called when the checkbox is blurred. Needed to properly implement ControlValueAccessor. */
   onTouched: () => any = () => {};
 
+  /** Whether the `checked` state has been set to its initial value. */
+  private _isInitialized: boolean = false;
+
   private _currentAnimationClass: string = '';
 
   private _currentCheckState: TransitionCheckState = TransitionCheckState.Init;
@@ -131,11 +134,19 @@ export class MdCheckbox implements ControlValueAccessor {
   }
 
   set checked(checked: boolean) {
-    this._indeterminate = false;
-    this._checked = checked;
-    this._transitionCheckState(
-        this._checked ? TransitionCheckState.Checked : TransitionCheckState.Unchecked);
-    this.change.emit(this._checked);
+    if (checked != this.checked) {
+      this._indeterminate = false;
+      this._checked = checked;
+      this._transitionCheckState(
+          this._checked ? TransitionCheckState.Checked : TransitionCheckState.Unchecked);
+
+      // Only fire a change event if this isn't the first time the checked property is ever set.
+      if (this._isInitialized) {
+        this.change.emit(this._checked);
+      }
+    }
+
+    this._isInitialized = true;
   }
 
   /**

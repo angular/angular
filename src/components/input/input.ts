@@ -11,12 +11,11 @@ import {
   ContentChildren,
   QueryList,
   OnChanges,
-} from 'angular2/core';
+} from '@angular/core';
 import {
   NG_VALUE_ACCESSOR,
   ControlValueAccessor
-} from 'angular2/src/common/forms/directives/control_value_accessor';
-import {BaseException} from 'angular2/src/facade/exceptions';
+} from '@angular/common';
 import {BooleanFieldValue} from '../../core/annotations/field-value';
 
 
@@ -28,7 +27,7 @@ const MD_INPUT_CONTROL_VALUE_ACCESSOR = new Provider(
       multi: true
     });
 
-// Invalid input type. Using one of these will throw an MdInputUnsupportedTypeException.
+// Invalid input type. Using one of these will throw an MdInputUnsupportedTypeError.
 const MD_INPUT_INVALID_INPUT_TYPE = [
   'file',
   'radio',
@@ -39,19 +38,19 @@ const MD_INPUT_INVALID_INPUT_TYPE = [
 let nextUniqueId = 0;
 
 
-export class MdInputPlaceholderConflictException extends BaseException {
+export class MdInputPlaceholderConflictError extends Error {
   constructor() {
     super('Placeholder attribute and child element were both specified.');
   }
 }
 
-export class MdInputUnsupportedTypeException extends BaseException {
+export class MdInputUnsupportedTypeError extends Error {
   constructor(type: string) {
     super(`Input type "${type}" isn't supported by md-input.`);
   }
 }
 
-export class MdInputDuplicatedHintException extends BaseException {
+export class MdInputDuplicatedHintError extends Error {
   constructor(align: string) {
     super(`A hint was already declared for 'align="${align}"'.`);
   }
@@ -227,10 +226,10 @@ export class MdInput implements ControlValueAccessor, AfterContentInit, OnChange
    */
   private _validateConstraints() {
     if (this.placeholder != '' && this.placeholder != null && this._placeholderChild != null) {
-      throw new MdInputPlaceholderConflictException();
+      throw new MdInputPlaceholderConflictError();
     }
     if (MD_INPUT_INVALID_INPUT_TYPE.indexOf(this.type) != -1) {
-      throw new MdInputUnsupportedTypeException(this.type);
+      throw new MdInputUnsupportedTypeError(this.type);
     }
 
     if (this._hintChildren) {
@@ -240,12 +239,12 @@ export class MdInput implements ControlValueAccessor, AfterContentInit, OnChange
       this._hintChildren.forEach((hint: MdHint) => {
         if (hint.align == 'start') {
           if (startHint || this.hintLabel) {
-            throw new MdInputDuplicatedHintException('start');
+            throw new MdInputDuplicatedHintError('start');
           }
           startHint = hint;
         } else if (hint.align == 'end') {
           if (endHint) {
-            throw new MdInputDuplicatedHintException('end');
+            throw new MdInputDuplicatedHintError('end');
           }
           endHint = hint;
         }

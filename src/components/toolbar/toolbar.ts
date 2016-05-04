@@ -2,9 +2,9 @@ import {
   Component,
   ChangeDetectionStrategy,
   Input
-} from 'angular2/core';
-import {Renderer} from 'angular2/core';
-import {ElementRef} from 'angular2/core';
+} from '@angular/core';
+import {Renderer} from '@angular/core';
+import {ElementRef} from '@angular/core';
 
 @Component({
   selector: 'md-toolbar',
