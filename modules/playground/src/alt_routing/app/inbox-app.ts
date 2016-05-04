@@ -16,38 +16,38 @@ import {PromiseWrapper} from '@angular/core/src/facade/async';
 import {isPresent, DateWrapper} from '@angular/core/src/facade/lang';
 import {PromiseCompleter} from '@angular/core/src/facade/promise';
 
-class InboxRecord {
-  id: string = '';
-  subject: string = '';
-  content: string = '';
-  email: string = '';
-  firstName: string = '';
-  lastName: string = '';
-  date: string;
-  draft: boolean = false;
+export class InboxRecord {
+  id:string = '';
+  subject:string = '';
+  content:string = '';
+  email:string = '';
+  firstName:string = '';
+  lastName:string = '';
+  date:string;
+  draft:boolean = false;
 
-  constructor(data: {
-    id: string,
-    subject: string,
-    content: string,
-    email: string,
-    firstName: string,
-    lastName: string,
-    date: string, draft?: boolean
+  constructor(data:{
+    id:string,
+    subject:string,
+    content:string,
+    email:string,
+    firstName:string,
+    lastName:string,
+    date:string, draft?:boolean
   } = null) {
     if (isPresent(data)) {
       this.setData(data);
     }
   }
 
-  setData(record: {
-    id: string,
-    subject: string,
-    content: string,
-    email: string,
-    firstName: string,
-    lastName: string,
-    date: string, draft?: boolean
+  setData(record:{
+    id:string,
+    subject:string,
+    content:string,
+    email:string,
+    firstName:string,
+    lastName:string,
+    date:string, draft?:boolean
   }) {
     this.id = record['id'];
     this.subject = record['subject'];
@@ -60,8 +60,7 @@ class InboxRecord {
   }
 }
 
-@Injectable()
-class DbService {
+export class DbService {
   getData(): Promise<any[]> {
     var p = new PromiseCompleter<any[]>();
     p.resolve(db.data);
@@ -134,20 +133,6 @@ class InboxCmp implements OnActivate {
   }
 }
 
-
-@Component({selector: 'drafts', templateUrl: 'app/drafts.html', directives: ROUTER_DIRECTIVES})
-class DraftsCmp {
-  items: InboxRecord[] = [];
-  ready: boolean = false;
-
-  constructor(db: DbService) {
-    PromiseWrapper.then(db.drafts(), (drafts: any[]) => {
-      this.ready = true;
-      this.items = drafts.map(data => new InboxRecord(data));
-    });
-  }
-}
-
 @Component({
   selector: 'inbox-app',
   providers: [DbService, ROUTER_PROVIDERS],
@@ -157,7 +142,7 @@ class DraftsCmp {
 @Routes([
   new Route({path: '/', component: InboxCmp}),
   new Route({path: '/inbox', component: InboxCmp}),
-  new Route({path: '/drafts', component: DraftsCmp}),
+  new Route({path: '/drafts', component: 'app/drafts.js'}),
   new Route({path: '/detail/:id', component: InboxDetailCmp})
 ])
 export class InboxApp {
