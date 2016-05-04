@@ -13,7 +13,8 @@
     "paths": {
       "selenium-webdriver": ["./@angular/typings/selenium-webdriver/selenium-webdriver.d.ts"],
       "rxjs/*": ["../node_modules/rxjs/*"],
-      "@angular/*": ["./@angular/*"]
+      "@angular/*": ["./@angular/*"],
+      "ts-metadata-collector": ["../dist/tools/ts-metadata-collector"]
     },
     "rootDir": ".",
     "inlineSourceMap": true,

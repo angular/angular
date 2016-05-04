@@ -95,8 +95,8 @@ if (platform == 'node') {
     onChangeCmds: [
       // TODO: fix and enable tests for public_api_spec again!
       // ['node', 'dist/tools/cjs-jasmine/index-tools', '--',
-      // '{metadata,public_api_guard}/**/*{_,.}spec.js']
-      ['node', 'dist/tools/cjs-jasmine/index-tools', '--', 'metadata/**/*{_,.}spec.js']
+      // '{ts-metadata-collector,public_api_guard}/**/*{_,.}spec.js']
+      ['node', 'dist/tools/cjs-jasmine/index-tools', '--', 'ts-metadata-collector/**/*{_,.}spec.js']
     ]
   });
 }

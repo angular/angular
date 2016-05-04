@@ -15,7 +15,7 @@
           "@angular/compiler": ["../../../dist/packages-dist/compiler"],
           "@angular/platform-server": ["../../../dist/packages-dist/platform-server"],
           "@angular/platform-browser": ["../../../dist/packages-dist/platform-browser"],
-          "ts-metadata-collector": ["dist/tools/metadata"]
+          "ts-metadata-collector": ["../../../dist/tools/ts-metadata-collector"]
         },
         "experimentalDecorators": true,
         "rootDir": ".",
