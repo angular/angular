@@ -146,7 +146,10 @@ describe('Collector', () => {
                 parameters:
                     [{__symbolic: 'reference', name: undefined, module: './hero.service'}]
               }
-            ]
+            ],
+            onSelect: [{__symbolic: 'method'}],
+            ngOnInit: [{__symbolic: 'method'}],
+            getHeroes: [{__symbolic: 'method'}]
           }
         }
       }
@@ -232,7 +235,7 @@ const FILES: Directory = {
       import HeroService from './hero.service';
       // thrown away
       import 'angular2/core';
-      
+
       @MyComponent({
         selector: 'my-app',
         template:` + "`" + `
@@ -336,7 +339,7 @@ const FILES: Directory = {
       export class CaseAny {
         constructor(param: any) {}
       }
-      
+
       @Injectable()
       export class GetProp {
         private _name: string;
@@ -344,7 +347,7 @@ const FILES: Directory = {
           return this._name;
         }
       }
-      
+
       @Injectable()
       export class SetProp {
         private _name: string;
@@ -352,7 +355,7 @@ const FILES: Directory = {
           this._name = value;
         }
       }
-      
+
       @Injectable()
       export class FullProp {
         private _name: string;

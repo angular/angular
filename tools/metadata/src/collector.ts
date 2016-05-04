@@ -131,20 +131,18 @@ export class MetadataCollector {
                 hasParameterData = true;
               }
             }
-            if (methodDecorators || hasDecoratorData || hasParameterData) {
-              const data: MethodMetadata = {__symbolic: isConstructor ? "constructor" : "method"};
-              const name = isConstructor ? "__ctor__" : evaluator.nameOf(member.name);
-              if (methodDecorators) {
-                data.decorators = methodDecorators;
-              }
-              if (hasDecoratorData) {
-                data.parameterDecorators = parameterDecoratorData;
-              }
-              if (hasParameterData) {
-                (<ConstructorMetadata>data).parameters = parametersData;
-              }
-              recordMember(name, data);
+            const data: MethodMetadata = {__symbolic: isConstructor ? "constructor" : "method"};
+            const name = isConstructor ? "__ctor__" : evaluator.nameOf(member.name);
+            if (methodDecorators) {
+              data.decorators = methodDecorators;
             }
+            if (hasDecoratorData) {
+              data.parameterDecorators = parameterDecoratorData;
+            }
+            if (hasParameterData) {
+              (<ConstructorMetadata>data).parameters = parametersData;
+            }
+            recordMember(name, data);
             break;
           case ts.SyntaxKind.PropertyDeclaration:
           case ts.SyntaxKind.GetAccessor:
