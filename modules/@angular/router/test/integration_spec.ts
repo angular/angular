@@ -39,6 +39,7 @@ export function main() {
       provide(RouterUrlSerializer, {useClass: DefaultRouterUrlSerializer}),
       RouterOutletMap,
       provide(Location, {useClass: SpyLocation}),
+      provide(RouteSegment, {useFactory: (r) => r.routeTree.root, deps: [Router]}),
       provide(Router,
               {
                 useFactory: (resolver, urlParser, outletMap, location) => new Router(
@@ -224,6 +225,13 @@ export function main() {
 
            expect(getDOM().getAttribute(native, "href")).toEqual("/team/33/simple(aux:simple2)");
          })));
+
+      it("should support top-level link",
+        fakeAsync(inject([Router, TestComponentBuilder], (router, tcb) => {
+          let fixture = tcb.createFakeAsync(LinkCmp);
+          advance(fixture);
+          expect(fixture.debugElement.nativeElement).toHaveText('link');
+        })));
     }
   });
 }

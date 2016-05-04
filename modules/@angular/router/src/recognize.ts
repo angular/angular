@@ -8,7 +8,6 @@ import {ComponentResolver} from '@angular/core';
 import {DEFAULT_OUTLET_NAME} from './constants';
 import {reflector} from '@angular/core';
 
-// TODO: vsavkin: recognize should take the old tree and merge it
 export function recognize(componentResolver: ComponentResolver, rootComponent: Type,
                           url: UrlTree): Promise<RouteTree> {
   let matched = new _MatchResult(rootComponent, [url.root], {}, rootNode(url).children, []);

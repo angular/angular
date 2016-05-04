@@ -1,6 +1,7 @@
 import {OpaqueToken, ComponentResolver} from '@angular/core';
 import {LocationStrategy, PathLocationStrategy, Location} from '@angular/common';
 import {Router, RouterOutletMap} from './router';
+import {RouteSegment} from './segments';
 import {RouterUrlSerializer, DefaultRouterUrlSerializer} from './router_url_serializer';
 import {ApplicationRef} from '@angular/core';
 import {BaseException} from '@angular/core';
@@ -18,6 +19,7 @@ export const ROUTER_PROVIDERS_COMMON: any[] = /*@ts2dart_const*/[
     deps: /*@ts2dart_const*/
         [ApplicationRef, ComponentResolver, RouterUrlSerializer, RouterOutletMap, Location],
   },
+  /*@ts2dart_Provider*/ {provide: RouteSegment, useFactory: (r) => r.routeTree.root, deps: [Router]}
 ];
 
 function routerFactory(app: ApplicationRef, componentResolver: ComponentResolver,

@@ -20,7 +20,7 @@ import {DefaultRouterUrlSerializer} from '../src/router_url_serializer';
 import {DEFAULT_OUTLET_NAME} from '../src/constants';
 
 export function main() {
-  ddescribe('recognize', () => {
+  describe('recognize', () => {
     it('should handle position args',
        inject([AsyncTestCompleter, ComponentResolver], (async, resolver) => {
          recognize(resolver, ComponentA, tree("b/paramB/c/paramC/d"))
