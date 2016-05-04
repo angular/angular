@@ -8554,11 +8554,6 @@
         }
       }
     },
-    "ts-metadata-collector": {
-      "version": "0.1.1",
-      "from": "ts-metadata-collector@>=0.1.0 <0.2.0",
-      "resolved": "https://registry.npmjs.org/ts-metadata-collector/-/ts-metadata-collector-0.1.1.tgz"
-    },
     "ts2dart": {
       "version": "0.9.10",
       "from": "ts2dart@>=0.9.9 <0.10.0",

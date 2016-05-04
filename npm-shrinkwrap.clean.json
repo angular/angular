@@ -5365,9 +5365,6 @@
         }
       }
     },
-    "ts-metadata-collector": {
-      "version": "0.1.1"
-    },
     "ts2dart": {
       "version": "0.9.10",
       "dependencies": {
