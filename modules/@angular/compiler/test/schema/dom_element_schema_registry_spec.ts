@@ -57,8 +57,14 @@ export function main() {
       expect(registry.getMappedPropName('exotic-unknown')).toEqual('exotic-unknown');
     });
 
-    it('should return security contexts for elements',
-       () => { expect(registry.securityContext('a', 'href')).toBe(SecurityContext.URL); });
+    it('should return security contexts for elements', () => {
+      expect(registry.securityContext('iframe', 'srcdoc')).toBe(SecurityContext.HTML);
+      expect(registry.securityContext('p', 'innerHTML')).toBe(SecurityContext.HTML);
+      expect(registry.securityContext('a', 'href')).toBe(SecurityContext.URL);
+      expect(registry.securityContext('a', 'style')).toBe(SecurityContext.STYLE);
+      expect(registry.securityContext('ins', 'cite')).toBe(SecurityContext.URL);
+      expect(registry.securityContext('base', 'href')).toBe(SecurityContext.RESOURCE_URL);
+    });
 
     it('should detect properties on namespaced elements',
        () => { expect(registry.hasProperty('@svg:g', 'id')).toBeTruthy(); });

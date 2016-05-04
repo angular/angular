@@ -206,6 +206,53 @@ var attrToPropMap: {[name: string]: string} = <any>{
   'tabindex': 'tabIndex'
 };
 
+function registerContext(map: {[k: string]: SecurityContext}, ctx: SecurityContext, specs: string[]) {
+  for (let spec of specs) map[spec] = ctx;
+}
+
+/** Map from tagName|propertyName SecurityContext. Properties applying to all tags use '*'. */
+const SECURITY_SCHEMA: {[k: string]: SecurityContext} = {};
+
+registerContext(SECURITY_SCHEMA, SecurityContext.HTML, [
+  'iframe|srcdoc',
+  '*|innerHTML',
+  '*|outerHTML',
+]);
+registerContext(SECURITY_SCHEMA, SecurityContext.STYLE, ['*|style']);
+// NB: no SCRIPT contexts here, they are never allowed.
+registerContext(SECURITY_SCHEMA, SecurityContext.URL, [
+  'area|href',
+  'area|ping',
+  'audio|src',
+  'a|href',
+  'a|ping',
+  'blockquote|cite',
+  'body|background',
+  'button|formaction',
+  'del|cite',
+  'form|action',
+  'img|src',
+  'input|formaction',
+  'input|src',
+  'ins|cite',
+  'q|cite',
+  'source|src',
+  'video|poster',
+  'video|src',
+]);
+registerContext(SECURITY_SCHEMA, SecurityContext.RESOURCE_URL, [
+  'applet|code',
+  'applet|codebase',
+  'base|href',
+  'frame|src',
+  'head|profile',
+  'html|manifest',
+  'iframe|src',
+  'object|codebase',
+  'object|data',
+  'script|src',
+  'track|src',
+]);
 
 @Injectable()
 export class DomElementSchemaRegistry extends ElementSchemaRegistry {
@@ -267,11 +314,10 @@ export class DomElementSchemaRegistry extends ElementSchemaRegistry {
    * attack vectors are assigned their appropriate context.
    */
   securityContext(tagName: string, propName: string): SecurityContext {
-    // TODO(martinprobst): Fill in missing properties.
-    if (propName === 'style') return SecurityContext.STYLE;
-    if (tagName === 'a' && propName === 'href') return SecurityContext.URL;
-    if (propName === 'innerHTML') return SecurityContext.HTML;
-    return SecurityContext.NONE;
+    let ctx = SECURITY_SCHEMA[tagName + '|' + propName];
+    if (ctx !== undefined) return ctx;
+    ctx = SECURITY_SCHEMA['*|' + propName];
+    return ctx !== undefined ? ctx : SecurityContext.NONE;
   }
 
   getMappedPropName(propName: string): string {
