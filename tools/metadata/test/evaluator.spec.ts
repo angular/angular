@@ -183,7 +183,7 @@ const FILES: Directory = {
     export var bShiftLeft = 1 << 2;              // 0x04
     export var bShiftRight = -1 >> 2;            // -1
     export var bShiftRightU = -1 >>> 2;          // 0x3fffffff
-    
+
     export var recursiveA = recursiveB;
     export var recursiveB = recursiveA;
   `,

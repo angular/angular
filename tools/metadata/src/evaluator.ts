@@ -97,6 +97,9 @@ export class Evaluator {
           }
         }
       }
+      if (!module && !this.symbols.has(symbol)) {
+        throw new Error(`dangling reference to ${name}, does it need to be exported?`);
+      }
       return {__symbolic: "reference", name, module};
     }
   }
