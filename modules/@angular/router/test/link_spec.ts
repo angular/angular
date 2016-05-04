@@ -183,9 +183,9 @@ export function main() {
         let p = parser.parse("/a(ap)/c(cp)");
         let c = p.firstChild(p.root);
 
-        let child = new RouteSegment([], {'one':'1'}, null, null, null);
+        let child = new RouteSegment([], {'one': '1'}, null, null, null);
         let root = new TreeNode<RouteSegment>(new RouteSegment([c], {}, null, null, null),
-          [new TreeNode<RouteSegment>(child, [])]);
+                                              [new TreeNode<RouteSegment>(child, [])]);
         let tree = new RouteTree(root);
 
         let t = link(child, tree, p, ["./c2"]);

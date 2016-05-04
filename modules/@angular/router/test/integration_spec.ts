@@ -96,7 +96,8 @@ export function main() {
              .toHaveText('team 22 { hello victor, aux: simple }');
        })));
 
-    it('should deactivate outlets', fakeAsync(inject([Router, TestComponentBuilder], (router, tcb) => {
+    it('should deactivate outlets',
+       fakeAsync(inject([Router, TestComponentBuilder], (router, tcb) => {
          let fixture = tcb.createFakeAsync(RootCmp);
 
          router.navigateByUrl('/team/22/user/victor(/simple)');
@@ -227,11 +228,11 @@ export function main() {
          })));
 
       it("should support top-level link",
-        fakeAsync(inject([Router, TestComponentBuilder], (router, tcb) => {
-          let fixture = tcb.createFakeAsync(LinkCmp);
-          advance(fixture);
-          expect(fixture.debugElement.nativeElement).toHaveText('link');
-        })));
+         fakeAsync(inject([Router, TestComponentBuilder], (router, tcb) => {
+           let fixture = tcb.createFakeAsync(LinkCmp);
+           advance(fixture);
+           expect(fixture.debugElement.nativeElement).toHaveText('link');
+         })));
     }
   });
 }

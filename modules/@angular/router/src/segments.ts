@@ -122,7 +122,7 @@ export class RouteSegment {
   get stringifiedUrlSegments(): string { return this.urlSegments.map(s => s.toString()).join("/"); }
 }
 
-export function createEmptyRouteTree(type:Type): RouteTree {
+export function createEmptyRouteTree(type: Type): RouteTree {
   let root = new RouteSegment([new UrlSegment("", {}, null)], {}, DEFAULT_OUTLET_NAME, type, null);
   return new RouteTree(new TreeNode<RouteSegment>(root, []));
 }

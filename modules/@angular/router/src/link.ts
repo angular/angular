@@ -3,7 +3,8 @@ import {isBlank, isPresent, isString, isStringMap} from './facade/lang';
 import {BaseException} from './facade/exceptions';
 import {ListWrapper, StringMapWrapper} from './facade/collection';
 
-export function link(segment: RouteSegment, routeTree: RouteTree, urlTree: UrlTree, commands: any[]): UrlTree {
+export function link(segment: RouteSegment, routeTree: RouteTree, urlTree: UrlTree,
+                     commands: any[]): UrlTree {
   if (commands.length === 0) return urlTree;
 
   let normalizedCommands = _normalizeCommands(commands);
@@ -12,20 +13,22 @@ export function link(segment: RouteSegment, routeTree: RouteTree, urlTree: UrlTr
   }
 
   let startingNode = _findStartingNode(normalizedCommands, urlTree, segment, routeTree);
-  let updated = normalizedCommands.commands.length > 0 ?
-    _updateMany(ListWrapper.clone(startingNode.children), normalizedCommands.commands) : [];
+  let updated =
+      normalizedCommands.commands.length > 0 ?
+          _updateMany(ListWrapper.clone(startingNode.children), normalizedCommands.commands) :
+          [];
   let newRoot = _constructNewTree(rootNode(urlTree), startingNode, updated);
 
   return new UrlTree(newRoot);
 }
 
-function _navigateToRoot(normalizedChange:_NormalizedNavigationCommands):boolean {
-  return normalizedChange.isAbsolute && normalizedChange.commands.length === 1 && normalizedChange.commands[0] == "/";
+function _navigateToRoot(normalizedChange: _NormalizedNavigationCommands): boolean {
+  return normalizedChange.isAbsolute && normalizedChange.commands.length === 1 &&
+         normalizedChange.commands[0] == "/";
 }
 
 class _NormalizedNavigationCommands {
-  constructor(public isAbsolute: boolean,
-              public numberOfDoubleDots: number,
+  constructor(public isAbsolute: boolean, public numberOfDoubleDots: number,
               public commands: any[]) {}
 }
 
@@ -52,18 +55,18 @@ function _normalizeCommands(commands: any[]): _NormalizedNavigationCommands {
 
       // first exp is treated in a special way
       if (i == 0) {
-        if (j == 0 && cc == ".") { //  './a'
+        if (j == 0 && cc == ".") {  //  './a'
           // skip it
-        } else if (j == 0 && cc == "") { //  '/a'
+        } else if (j == 0 && cc == "") {  //  '/a'
           isAbsolute = true;
-        } else if (cc == "..") { //  '../a'
+        } else if (cc == "..") {  //  '../a'
           numberOfDoubleDots++;
         } else if (cc != '') {
           res.push(cc);
         }
 
       } else {
-        if (cc != ''){
+        if (cc != '') {
           res.push(cc);
         }
       }
@@ -73,7 +76,8 @@ function _normalizeCommands(commands: any[]): _NormalizedNavigationCommands {
   return new _NormalizedNavigationCommands(isAbsolute, numberOfDoubleDots, res);
 }
 
-function _findUrlSegment(segment: RouteSegment, routeTree: RouteTree, urlTree: UrlTree, numberOfDoubleDots: number): UrlSegment {
+function _findUrlSegment(segment: RouteSegment, routeTree: RouteTree, urlTree: UrlTree,
+                         numberOfDoubleDots: number): UrlSegment {
   let s = segment;
   while (s.urlSegments.length === 0) {
     s = routeTree.parent(s);
@@ -86,11 +90,13 @@ function _findUrlSegment(segment: RouteSegment, routeTree: RouteTree, urlTree: U
   return path[path.length - 1 - numberOfDoubleDots];
 }
 
-function _findStartingNode(normalizedChange:_NormalizedNavigationCommands, urlTree:UrlTree, segment:RouteSegment, routeTree:RouteTree):TreeNode<UrlSegment> {
+function _findStartingNode(normalizedChange: _NormalizedNavigationCommands, urlTree: UrlTree,
+                           segment: RouteSegment, routeTree: RouteTree): TreeNode<UrlSegment> {
   if (normalizedChange.isAbsolute) {
     return rootNode(urlTree);
   } else {
-    let urlSegment = _findUrlSegment(segment, routeTree, urlTree, normalizedChange.numberOfDoubleDots);
+    let urlSegment =
+        _findUrlSegment(segment, routeTree, urlTree, normalizedChange.numberOfDoubleDots);
     return _findMatchingNode(urlSegment, rootNode(urlTree));
   }
 }
@@ -110,7 +116,7 @@ function _constructNewTree(node: TreeNode<UrlSegment>, original: TreeNode<UrlSeg
     return new TreeNode<UrlSegment>(node.value, updated);
   } else {
     return new TreeNode<UrlSegment>(
-      node.value, node.children.map(c => _constructNewTree(c, original, updated)));
+        node.value, node.children.map(c => _constructNewTree(c, original, updated)));
   }
 }
 
@@ -140,7 +146,7 @@ function _update(node: TreeNode<UrlSegment>, commands: any[]): TreeNode<UrlSegme
     return _recurse(newSegment, node, rest);
 
     // next one is a params command && can reuse the node
-  } else if (isStringMap(next) && _compare(segment, _stringify(next), node.value)){
+  } else if (isStringMap(next) && _compare(segment, _stringify(next), node.value)) {
     return _recurse(node.value, node, rest.slice(1));
 
     // next one is a params command && cannot reuse the node
@@ -159,7 +165,7 @@ function _update(node: TreeNode<UrlSegment>, commands: any[]): TreeNode<UrlSegme
   }
 }
 
-function _stringify(params: {[key: string]: any}):{[key: string]: string} {
+function _stringify(params: {[key: string]: any}): {[key: string]: string} {
   let res = {};
   StringMapWrapper.forEach(params, (v, k) => res[k] = v.toString());
   return res;
@@ -169,7 +175,8 @@ function _compare(path: string, params: {[key: string]: any}, segment: UrlSegmen
   return path == segment.segment && StringMapWrapper.equals(params, segment.parameters);
 }
 
-function _recurse(urlSegment: UrlSegment, node: TreeNode<UrlSegment>, rest: any[]): TreeNode<UrlSegment> {
+function _recurse(urlSegment: UrlSegment, node: TreeNode<UrlSegment>,
+                  rest: any[]): TreeNode<UrlSegment> {
   if (rest.length === 0) {
     return new TreeNode<UrlSegment>(urlSegment, []);
   }

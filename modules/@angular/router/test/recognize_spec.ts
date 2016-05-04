@@ -22,7 +22,7 @@ import {DEFAULT_OUTLET_NAME} from '../src/constants';
 export function main() {
   describe('recognize', () => {
     let emptyRouteTree = createEmptyRouteTree(ComponentA);
-    
+
     it('should handle position args',
        inject([AsyncTestCompleter, ComponentResolver], (async, resolver) => {
          recognize(resolver, ComponentA, tree("b/paramB/c/paramC/d"), emptyRouteTree)
@@ -191,17 +191,19 @@ export function main() {
 
     it("should reuse existing segments",
        inject([AsyncTestCompleter, ComponentResolver], (async, resolver) => {
-         recognize(resolver, ComponentA, tree("/b/1/d"), emptyRouteTree).then(t1 => {
-           recognize(resolver, ComponentA, tree("/b/1/e"), t1).then(t2 => {
-             expect(t1.root).toBe(t2.root);
-             expect(t1.firstChild(t1.root)).toBe(t2.firstChild(t2.root));
-             expect(t1.firstChild(t1.firstChild(t1.root))).not.toBe(
-               t2.firstChild(t2.firstChild(t2.root)));
+         recognize(resolver, ComponentA, tree("/b/1/d"), emptyRouteTree)
+             .then(t1 => {
+               recognize(resolver, ComponentA, tree("/b/1/e"), t1)
+                   .then(t2 => {
+                     expect(t1.root).toBe(t2.root);
+                     expect(t1.firstChild(t1.root)).toBe(t2.firstChild(t2.root));
+                     expect(t1.firstChild(t1.firstChild(t1.root)))
+                         .not.toBe(t2.firstChild(t2.firstChild(t2.root)));
 
-             async.done();
-           });
-       });
-     }));
+                     async.done();
+                   });
+             });
+       }));
   });
 }
 

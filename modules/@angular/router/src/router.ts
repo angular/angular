@@ -20,7 +20,7 @@ import {
   TreeNode,
   UrlSegment,
   serializeRouteSegmentTree,
-createEmptyRouteTree
+  createEmptyRouteTree
 } from './segments';
 import {hasLifecycleHook} from './lifecycle_reflector';
 import {DEFAULT_OUTLET_NAME} from './constants';
@@ -240,7 +240,7 @@ class _ActivateSegments {
 
     if (curr === prev) {
       this.activateChildSegments(currNode, prevNode, outlet.outletMap,
-                             components.concat([outlet.component]));
+                                 components.concat([outlet.component]));
     } else {
       this.deactivateOutlet(outlet, components);
       if (this.performMutation) {
