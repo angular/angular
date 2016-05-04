@@ -114,7 +114,7 @@ export class StaticReflector implements ReflectorReader {
 
   public parameters(type: StaticSymbol): any[] {
     if (!(type instanceof StaticSymbol)) {
-      throw new Error(`parameters recieved ${JSON.stringify(type)} which is not a StaticSymbol`);
+      throw new Error(`parameters received ${JSON.stringify(type)} which is not a StaticSymbol`);
     }
     try {
       let parameters = this.parameterCache.get(type);
@@ -124,8 +124,8 @@ export class StaticReflector implements ReflectorReader {
         let ctorData = members ? members['__ctor__'] : null;
         if (ctorData) {
           let ctor = (<any[]>ctorData).find(a => a['__symbolic'] == 'constructor');
-          let parameterTypes = <any[]>this.simplify(type, ctor['parameters']);
-          let parameterDecorators = <any[]>this.simplify(type, ctor['parameterDecorators']);
+          let parameterTypes = <any[]>this.simplify(type, ctor['parameters'] || []);
+          let parameterDecorators = <any[]>this.simplify(type, ctor['parameterDecorators'] || []);
 
           parameters = [];
           parameterTypes.forEach((paramType, index) => {
@@ -150,6 +150,17 @@ export class StaticReflector implements ReflectorReader {
       console.log(`Failed on type ${JSON.stringify(type)} with error ${e}`);
       throw e;
     }
+  }
+
+  hasLifecycleHook(type: any, lcInterface: /*Type*/ any, lcProperty: string): boolean {
+    if (!(type instanceof StaticSymbol)) {
+      throw new Error(
+          `hasLifecycleHook received ${JSON.stringify(type)} which is not a StaticSymbol`);
+    }
+    let classMetadata = this.getTypeMetadata(type);
+    let members = classMetadata ? classMetadata['members'] : null;
+    let member:any[] = members ? members[lcProperty] : null;
+    return member ? member.some(a => a['__symbolic'] == 'method') : false;
   }
 
   private registerDecoratorOrConstructor(type: StaticSymbol, ctor: any): void {

@@ -1,31 +1,43 @@
+import {
+  OnInit,
+  OnDestroy,
+  DoCheck,
+  OnChanges,
+  AfterContentInit,
+  AfterContentChecked,
+  AfterViewInit,
+  AfterViewChecked,
+  reflector
+} from '@angular/core';
 import {LifecycleHooks} from '../core_private';
 
 import {Type} from '../src/facade/lang';
+import {MapWrapper} from '../src/facade/collection';
 
+const LIFECYCLE_INTERFACES: Map<any, Type> = MapWrapper.createFromPairs([
+  [LifecycleHooks.OnInit, OnInit],
+  [LifecycleHooks.OnDestroy, OnDestroy],
+  [LifecycleHooks.DoCheck, DoCheck],
+  [LifecycleHooks.OnChanges, OnChanges],
+  [LifecycleHooks.AfterContentInit, AfterContentInit],
+  [LifecycleHooks.AfterContentChecked, AfterContentChecked],
+  [LifecycleHooks.AfterViewInit, AfterViewInit],
+  [LifecycleHooks.AfterViewChecked, AfterViewChecked],
+]);
 
-export function hasLifecycleHook(lcInterface: LifecycleHooks, token): boolean {
-  if (!(token instanceof Type)) return false;
+const LIFECYCLE_PROPS: Map<any, string> = MapWrapper.createFromPairs([
+  [LifecycleHooks.OnInit, 'ngOnInit'],
+  [LifecycleHooks.OnDestroy, 'ngOnDestroy'],
+  [LifecycleHooks.DoCheck, 'ngDoCheck'],
+  [LifecycleHooks.OnChanges, 'ngOnChanges'],
+  [LifecycleHooks.AfterContentInit, 'ngAfterContentInit'],
+  [LifecycleHooks.AfterContentChecked, 'ngAfterContentChecked'],
+  [LifecycleHooks.AfterViewInit, 'ngAfterViewInit'],
+  [LifecycleHooks.AfterViewChecked, 'ngAfterViewChecked'],
+]);
 
-  var proto = (<any>token).prototype;
-
-  switch (lcInterface) {
-    case LifecycleHooks.AfterContentInit:
-      return !!proto.ngAfterContentInit;
-    case LifecycleHooks.AfterContentChecked:
-      return !!proto.ngAfterContentChecked;
-    case LifecycleHooks.AfterViewInit:
-      return !!proto.ngAfterViewInit;
-    case LifecycleHooks.AfterViewChecked:
-      return !!proto.ngAfterViewChecked;
-    case LifecycleHooks.OnChanges:
-      return !!proto.ngOnChanges;
-    case LifecycleHooks.DoCheck:
-      return !!proto.ngDoCheck;
-    case LifecycleHooks.OnDestroy:
-      return !!proto.ngOnDestroy;
-    case LifecycleHooks.OnInit:
-      return !!proto.ngOnInit;
-    default:
-      return false;
-  }
+export function hasLifecycleHook(hook: LifecycleHooks, token): boolean {
+  var lcInterface = LIFECYCLE_INTERFACES.get(hook);
+  var lcProp = LIFECYCLE_PROPS.get(hook);
+  return reflector.hasLifecycleHook(token, lcInterface, lcProp);
 }

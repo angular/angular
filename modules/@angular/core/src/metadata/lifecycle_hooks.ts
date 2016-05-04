@@ -75,7 +75,7 @@ export var LIFECYCLE_HOOKS_VALUES = [
  * bootstrap(App).catch(err => console.error(err));
  * ```
  */
-export interface OnChanges { ngOnChanges(changes: {[key: string]: SimpleChange}); }
+export abstract class OnChanges { abstract ngOnChanges(changes: {[key: string]: SimpleChange}); }
 
 /**
  * Implement this interface to execute custom initialization logic after your directive's
@@ -118,7 +118,7 @@ export interface OnChanges { ngOnChanges(changes: {[key: string]: SimpleChange})
  * bootstrap(App).catch(err => console.error(err));
  *  ```
  */
-export interface OnInit { ngOnInit(); }
+export abstract class OnInit { abstract ngOnInit(); }
 
 /**
  * Implement this interface to override the default change detection algorithm for your directive.
@@ -185,7 +185,7 @@ export interface OnInit { ngOnInit(); }
  * }
  * ```
  */
-export interface DoCheck { ngDoCheck(); }
+export abstract class DoCheck { abstract ngDoCheck(); }
 
 /**
  * Implement this interface to get notified when your directive is destroyed.
@@ -276,7 +276,7 @@ export interface DoCheck { ngDoCheck(); }
  * every 50ms, until it reaches 0.
  *
  */
-export interface OnDestroy { ngOnDestroy(); }
+export abstract class OnDestroy { abstract ngOnDestroy(); }
 
 /**
  * Implement this interface to get notified when your directive's content has been fully
@@ -329,7 +329,7 @@ export interface OnDestroy { ngOnDestroy(); }
  * bootstrap(App).catch(err => console.error(err));
  * ```
  */
-export interface AfterContentInit { ngAfterContentInit(); }
+export abstract class AfterContentInit { abstract ngAfterContentInit(); }
 
 /**
  * Implement this interface to get notified after every check of your directive's content.
@@ -377,7 +377,7 @@ export interface AfterContentInit { ngAfterContentInit(); }
  * bootstrap(App).catch(err => console.error(err));
  * ```
  */
-export interface AfterContentChecked { ngAfterContentChecked(); }
+export abstract class AfterContentChecked { abstract ngAfterContentChecked(); }
 
 /**
  * Implement this interface to get notified when your component's view has been fully initialized.
@@ -424,7 +424,7 @@ export interface AfterContentChecked { ngAfterContentChecked(); }
  * bootstrap(App).catch(err => console.error(err));
  * ```
  */
-export interface AfterViewInit { ngAfterViewInit(); }
+export abstract class AfterViewInit { abstract ngAfterViewInit(); }
 
 /**
  * Implement this interface to get notified after every check of your component's view.
@@ -474,4 +474,4 @@ export interface AfterViewInit { ngAfterViewInit(); }
  * bootstrap(App).catch(err => console.error(err));
  * ```
  */
-export interface AfterViewChecked { ngAfterViewChecked(); }
+export abstract class AfterViewChecked { abstract ngAfterViewChecked(); }

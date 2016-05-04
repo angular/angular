@@ -83,12 +83,12 @@ Run the compiler from source:
 # Build angular2 and the compiler
 ./node_modules/.bin/tsc -p modules
 # Run it on the test project
-$ ./integrationtest.sh
+$ ./modules/@angular/compiler_cli./integrationtest.sh
 ```
 
 Release:
 ```
-$ ./integrationtest.sh
+$ ./modules/@angular/compiler_cli./integrationtest.sh
 $ cp modules/@angular/compiler_cli/README.md modules/@angular/compiler_cli/package.json dist/all/@angular/compiler_cli
 # npm login as angular
 $ npm publish dist/all/@angular/compiler_cli --access=public

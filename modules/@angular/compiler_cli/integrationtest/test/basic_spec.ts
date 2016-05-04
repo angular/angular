@@ -28,7 +28,14 @@ describe("template codegen output", () => {
     expect(fs.readFileSync(dtsOutput, {encoding: 'utf-8'})).toContain('Basic');
   });
 
-  it("should be able to create the basic component and trigger an ngIf", () => {
+  it("should be able to create the basic component", () => {
+    const appInjector = ReflectiveInjector.resolveAndCreate(BROWSER_APP_STATIC_PROVIDERS,
+                                                            browserPlatform().injector);
+    var comp = BasicNgFactory.create(appInjector);
+    expect(comp.instance).toBeTruthy();
+  });
+
+  it("should support ngIf", () => {
     const appInjector = ReflectiveInjector.resolveAndCreate(BROWSER_APP_STATIC_PROVIDERS,
                                                             browserPlatform().injector);
     var comp = BasicNgFactory.create(appInjector);
@@ -39,5 +46,20 @@ describe("template codegen output", () => {
     comp.changeDetectorRef.detectChanges();
     expect(debugElement.children.length).toBe(3);
     expect(debugElement.children[2].injector.get(MyComp)).toBeTruthy();
+  });
+
+  it("should support ngFor", () => {
+    const appInjector = ReflectiveInjector.resolveAndCreate(BROWSER_APP_STATIC_PROVIDERS,
+                                                            browserPlatform().injector);
+    var comp = BasicNgFactory.create(appInjector);
+    var debugElement = <DebugElement>getDebugNode(comp.location.nativeElement);
+    expect(debugElement.children.length).toBe(2);
+
+    // test NgFor
+    comp.instance.ctxArr = [1, 2];
+    comp.changeDetectorRef.detectChanges();
+    expect(debugElement.children.length).toBe(4);
+    expect(debugElement.children[2].attributes['value']).toBe('1');
+    expect(debugElement.children[3].attributes['value']).toBe('2');
   });
 });

@@ -1,3 +1,4 @@
 <div>{{ctxProp}}</div>
 <form><input type="button" [(ngModel)]="ctxProp"/></form>
 <my-comp *ngIf="ctxBool"></my-comp>
+<div *ngFor="let x of ctxArr" [attr.value]="x"></div>

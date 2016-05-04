@@ -197,8 +197,16 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
     return {};
   }
 
-  interfaces(type: Type): any[] {
-    throw new BaseException("JavaScript does not support interfaces");
+  // Note: JavaScript does not support to query for interfaces during runtime.
+  // However, we can't throw here as the reflector will always call this method
+  // when asked for a lifecycle interface as this is what we check in Dart.
+  interfaces(type: Type): any[] { return []; }
+
+  hasLifecycleHook(type: any, lcInterface: Type, lcProperty: string): boolean {
+    if (!(type instanceof Type)) return false;
+
+    var proto = (<any>type).prototype;
+    return !!proto[lcProperty];
   }
 
   getter(name: string): GetterFn { return <GetterFn>new Function('o', 'return o.' + name + ';'); }

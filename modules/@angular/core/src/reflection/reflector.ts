@@ -45,9 +45,7 @@ export class Reflector extends ReflectorReader {
     this.reflectionCapabilities = reflectionCapabilities;
   }
 
-  updateCapabilities(caps: PlatformReflectionCapabilities) {
-    this.reflectionCapabilities = caps;
-  }
+  updateCapabilities(caps: PlatformReflectionCapabilities) { this.reflectionCapabilities = caps; }
 
   isReflectionEnabled(): boolean { return this.reflectionCapabilities.isReflectionEnabled(); }
 
@@ -120,12 +118,21 @@ export class Reflector extends ReflectorReader {
     }
   }
 
-  interfaces(type: Type): any[] {
+  interfaces(type: /*Type*/ any): any[] {
     if (this._injectableInfo.has(type)) {
       var res = this._getReflectionInfo(type).interfaces;
       return isPresent(res) ? res : [];
     } else {
       return this.reflectionCapabilities.interfaces(type);
+    }
+  }
+
+  hasLifecycleHook(type: any, lcInterface: /*Type*/ any, lcProperty: string): boolean {
+    var interfaces = this.interfaces(type);
+    if (interfaces.indexOf(lcInterface) !== -1) {
+      return true;
+    } else {
+      return this.reflectionCapabilities.hasLifecycleHook(type, lcInterface, lcProperty);
     }
   }
 

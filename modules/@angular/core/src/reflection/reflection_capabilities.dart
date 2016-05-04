@@ -291,6 +291,11 @@ class ReflectionCapabilities implements PlatformReflectionCapabilities {
     return name.endsWith("=") ? name.substring(0, name.length - 1) : name;
   }
 
+  bool hasLifecycleHook(dynamic type, Type lcInterface, String lcProperty) {
+    if (type is! Type) return false;
+    return this.interfaces(type).contains(lcInterface);
+  }
+
   List interfaces(type) {
     final clazz = reflectType(type);
     _assertDeclaresLifecycleHooks(clazz);

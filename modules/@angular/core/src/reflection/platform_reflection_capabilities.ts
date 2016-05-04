@@ -5,6 +5,7 @@ export interface PlatformReflectionCapabilities {
   isReflectionEnabled(): boolean;
   factory(type: Type): Function;
   interfaces(type: Type): any[];
+  hasLifecycleHook(type: any, lcInterface: /*Type*/ any, lcProperty: string): boolean;
   parameters(type: any): any[][];
   annotations(type: any): any[];
   propMetadata(typeOrFunc: any): {[key: string]: any[]};
