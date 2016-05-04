@@ -95,7 +95,7 @@ export function main() {
              .toHaveText('team 22 { hello victor, aux: simple }');
        })));
 
-    it('should unload outlets', fakeAsync(inject([Router, TestComponentBuilder], (router, tcb) => {
+    it('should deactivate outlets', fakeAsync(inject([Router, TestComponentBuilder], (router, tcb) => {
          let fixture = tcb.createFakeAsync(RootCmp);
 
          router.navigateByUrl('/team/22/user/victor(/simple)');
@@ -107,7 +107,7 @@ export function main() {
          expect(fixture.debugElement.nativeElement).toHaveText('team 22 { hello victor, aux:  }');
        })));
 
-    it('should unload nested outlets',
+    it('should deactivate nested outlets',
        fakeAsync(inject([Router, TestComponentBuilder], (router, tcb) => {
          let fixture = tcb.createFakeAsync(RootCmp);
 
@@ -136,7 +136,7 @@ export function main() {
          expect(fixture.debugElement.nativeElement).toHaveText('team 22 { hello fedor, aux:  }');
        })));
 
-    it('should not unload the route if can deactivate returns false',
+    it('should not deactivate the route if can deactivate returns false',
        fakeAsync(inject([Router, TestComponentBuilder, Location], (router, tcb, location) => {
          let fixture = tcb.createFakeAsync(RootCmp);
 

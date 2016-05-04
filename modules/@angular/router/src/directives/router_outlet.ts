@@ -30,7 +30,7 @@ import {isPresent, isBlank} from '../facade/lang';
  */
 @Directive({selector: 'router-outlet'})
 export class RouterOutlet {
-  private _loaded: ComponentRef<any>;
+  private _activated: ComponentRef<any>;
   public outletMap: RouterOutletMap;
 
   constructor(parentOutletMap: RouterOutletMap, private _location: ViewContainerRef,
@@ -38,29 +38,29 @@ export class RouterOutlet {
     parentOutletMap.registerOutlet(isBlank(name) ? DEFAULT_OUTLET_NAME : name, this);
   }
 
-  unload(): void {
-    this._loaded.destroy();
-    this._loaded = null;
+  deactivate(): void {
+    this._activated.destroy();
+    this._activated = null;
   }
 
   /**
    * Returns the loaded component.
    */
-  get loadedComponent(): Object { return isPresent(this._loaded) ? this._loaded.instance : null; }
+  get component(): Object { return isPresent(this._activated) ? this._activated.instance : null; }
 
   /**
    * Returns true is the outlet is not empty.
    */
-  get isLoaded(): boolean { return isPresent(this._loaded); }
+  get isActivated(): boolean { return isPresent(this._activated); }
 
   /**
    * Called by the Router to instantiate a new component.
    */
-  load(factory: ComponentFactory<any>, providers: ResolvedReflectiveProvider[],
-       outletMap: RouterOutletMap): ComponentRef<any> {
+  activate(factory: ComponentFactory<any>, providers: ResolvedReflectiveProvider[],
+           outletMap: RouterOutletMap): ComponentRef<any> {
     this.outletMap = outletMap;
     let inj = ReflectiveInjector.fromResolvedProviders(providers, this._location.parentInjector);
-    this._loaded = this._location.createComponent(factory, this._location.length, inj, []);
-    return this._loaded;
+    this._activated = this._location.createComponent(factory, this._location.length, inj, []);
+    return this._activated;
   }
 }
