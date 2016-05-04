@@ -12,5 +12,8 @@
     "@angular/common": "$$ANGULAR_VERSION$$",
     "@angular/compiler": "$$ANGULAR_VERSION$$",
     "@angular/platform-browser": "$$ANGULAR_VERSION$$"
+  },
+  "dependencies": {
+    "parse5": "1.3.2"
   }
 }
