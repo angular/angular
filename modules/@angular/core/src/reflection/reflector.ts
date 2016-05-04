@@ -45,6 +45,10 @@ export class Reflector extends ReflectorReader {
     this.reflectionCapabilities = reflectionCapabilities;
   }
 
+  updateCapabilities(caps: PlatformReflectionCapabilities) {
+    this.reflectionCapabilities = caps;
+  }
+
   isReflectionEnabled(): boolean { return this.reflectionCapabilities.isReflectionEnabled(); }
 
   /**
@@ -160,7 +164,7 @@ export class Reflector extends ReflectorReader {
   /** @internal */
   _containsReflectionInfo(typeOrFunc: any) { return this._injectableInfo.has(typeOrFunc); }
 
-  importUri(type: Type): string { return this.reflectionCapabilities.importUri(type); }
+  importUri(type: any): string { return this.reflectionCapabilities.importUri(type); }
 }
 
 function _mergeMaps(target: Map<string, Function>, config: {[key: string]: Function}): void {

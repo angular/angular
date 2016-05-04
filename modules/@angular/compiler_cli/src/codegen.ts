@@ -25,6 +25,7 @@ import {Parse5DomAdapter} from '@angular/platform-server';
 
 import {MetadataCollector} from 'ts-metadata-collector';
 import {NodeReflectorHost} from './reflector_host';
+import {StaticAndDynamicReflectionCapabilities} from './static_reflection_capabilities';
 
 const GENERATED_FILES = /\.ngfactory\.ts$|\.css\.ts$|\.css\.shim\.ts$/;
 
@@ -164,6 +165,7 @@ export class CodeGenerator {
     const urlResolver: compiler.UrlResolver = compiler.createOfflineCompileUrlResolver();
     const reflectorHost = new NodeReflectorHost(program, compilerHost, options, ngOptions);
     const staticReflector = new StaticReflector(reflectorHost);
+    StaticAndDynamicReflectionCapabilities.install(staticReflector);
     const htmlParser = new HtmlParser();
     const normalizer = new DirectiveNormalizer(xhr, urlResolver, htmlParser);
     const parser = new Parser(new Lexer());

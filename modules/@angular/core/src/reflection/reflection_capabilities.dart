@@ -342,7 +342,12 @@ class ReflectionCapabilities implements PlatformReflectionCapabilities {
     return classMirror.metadata;
   }
 
-  String importUri(Type type) {
+  String importUri(dynamic type) {
+    // StaticSymbol
+    if (type is Map && type['filePath'] != null) {
+      return type['filePath'];
+    }
+    // Runtime type
     return '${(reflectClass(type).owner as LibraryMirror).uri}';
   }
 }

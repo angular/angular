@@ -75,7 +75,10 @@ export class StaticReflector implements ReflectorReader {
 
   constructor(private host: StaticReflectorHost) { this.initializeConversionMap(); }
 
-  importUri(typeOrFunc: any): string { return (<StaticSymbol>typeOrFunc).filePath; }
+  importUri(typeOrFunc: StaticSymbol): string {
+    var staticSymbol = this.host.findDeclaration(typeOrFunc.filePath, typeOrFunc.name, '');
+    return staticSymbol ? staticSymbol.filePath : null;
+  }
 
   public annotations(type: StaticSymbol): any[] {
     let annotations = this.annotationCache.get(type);
