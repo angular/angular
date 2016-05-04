@@ -11,7 +11,7 @@ import {
     AfterViewChecked
 } from '@angular/core';
 import {MdIconRegistry} from './icon-registry';
-
+export {MdIconRegistry} from './icon-registry';
 
 
 /** Exception thrown when an invalid icon name is passed to an md-icon component. */

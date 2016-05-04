@@ -1,6 +1,5 @@
 import {Component, ViewEncapsulation} from '@angular/core';
-import {MdIcon} from '../../components/icon/icon';
-import {MdIconRegistry} from '../../components/icon/icon-registry';
+import {MdIcon, MdIconRegistry} from '../../components/icon/icon';
 
 @Component({
   selector: 'md-icon-demo',
