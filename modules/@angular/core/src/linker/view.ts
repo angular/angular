@@ -192,13 +192,7 @@ export abstract class AppView<T> {
       ObservableWrapper.dispose(this.subscriptions[i]);
     }
     this.destroyInternal();
-    if (this._hasExternalHostElement) {
-      this.renderer.detachView(this.flatRootNodes);
-    } else if (isPresent(this.viewContainerElement)) {
-      this.viewContainerElement.detachView(this.viewContainerElement.nestedViews.indexOf(this));
-    } else {
-      this.dirtyParentQueriesInternal();
-    }
+    this.dirtyParentQueriesInternal();
     this.renderer.destroyView(hostElement, this.allNodes);
   }
 
