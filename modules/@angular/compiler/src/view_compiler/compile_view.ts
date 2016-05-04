@@ -159,7 +159,8 @@ export class CompileView implements NameResolver {
       proxyParams.push(new o.FnParam(paramName));
       proxyReturnEntries.push(o.variable(paramName));
     }
-    createPureProxy(o.fn(proxyParams, [new o.ReturnStatement(o.literalArr(proxyReturnEntries))], new o.ArrayType(o.DYNAMIC_TYPE)),
+    createPureProxy(o.fn(proxyParams, [new o.ReturnStatement(o.literalArr(proxyReturnEntries))],
+                         new o.ArrayType(o.DYNAMIC_TYPE)),
                     values.length, proxyExpr, this);
     return proxyExpr.callFn(values);
   }
@@ -178,7 +179,8 @@ export class CompileView implements NameResolver {
       proxyReturnEntries.push([entries[i][0], o.variable(paramName)]);
       values.push(<o.Expression>entries[i][1]);
     }
-    createPureProxy(o.fn(proxyParams, [new o.ReturnStatement(o.literalMap(proxyReturnEntries))], new o.MapType(o.DYNAMIC_TYPE)),
+    createPureProxy(o.fn(proxyParams, [new o.ReturnStatement(o.literalMap(proxyReturnEntries))],
+                         new o.MapType(o.DYNAMIC_TYPE)),
                     entries.length, proxyExpr, this);
     return proxyExpr.callFn(values);
   }
