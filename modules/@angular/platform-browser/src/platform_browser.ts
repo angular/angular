@@ -35,6 +35,7 @@ export {
   BrowserPlatformLocation
 } from './platform_browser_static';
 
+export {Ruler} from './browser/ruler';
 
 
 export function browserPlatform(): PlatformRef {
