@@ -1234,6 +1234,13 @@ gulp.task('!build.js.cjs', function() {
           // linknodemodules is all sync
           linknodemodules(gulp, gulpPlugins, {dir: CONFIG.dest.js.cjs})();
         }
+        require('reflect-metadata');
+        var templateCompiler = require('./dist/js/cjs/angular2/src/transform/offline_compiler.js');
+        templateCompiler.compile({
+          componentSources:
+              ['angular2/test/integration/basic', 'angular2/test/integration/multiple_components'],
+          outDir: '.'
+        });
       });
 });
 
