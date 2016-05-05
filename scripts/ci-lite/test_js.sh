@@ -18,7 +18,7 @@ cd ../..
 echo 'travis_fold:start:test.unit.tools'
 
 # Run unit tests in tools
-node ./dist/tools/tsc-watch/ tools triggerCmds
+node ./dist/tools/tsc-watch/ tools runCmdsOnly
 
 echo 'travis_fold:end:test.unit.tools'
 
@@ -26,7 +26,7 @@ echo 'travis_fold:end:test.unit.tools'
 echo 'travis_fold:start:test.unit.node'
 
 # Run unit tests in node
-node ./dist/tools/tsc-watch/ node triggerCmds
+node ./dist/tools/tsc-watch/ node runCmdsOnly
 
 echo 'travis_fold:end:test.unit.node'
 
