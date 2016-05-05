@@ -6,10 +6,12 @@ import {Headers} from '../headers';
 import {ResponseOptions} from '../base_response_options';
 import {Injectable} from '@angular/core';
 import {BrowserXhr} from './browser_xhr';
-import {isPresent} from '../../src/facade/lang';
+import {isPresent, isString} from '../../src/facade/lang';
 import {Observable} from 'rxjs/Observable';
 import {Observer} from 'rxjs/Observer';
 import {isSuccess, getResponseURL} from '../http_utils';
+
+const XSSI_PREFIX = ')]}\',\n';
 
 /**
  * Creates connections using `XMLHttpRequest`. Given a fully-qualified
@@ -32,13 +34,17 @@ export class XHRConnection implements Connection {
     this.response = new Observable<Response>((responseObserver: Observer<Response>) => {
       let _xhr: XMLHttpRequest = browserXHR.build();
       _xhr.open(RequestMethod[req.method].toUpperCase(), req.url);
+
       // load event handler
       let onLoad = () => {
         // responseText is the old-school way of retrieving response (supported by IE8 & 9)
         // response/responseType properties were introduced in XHR Level2 spec (supported by
         // IE10)
         let body = isPresent(_xhr.response) ? _xhr.response : _xhr.responseText;
-
+        // Implicitly strip a potential XSSI prefix.
+        if (isString(body) && body.startsWith(XSSI_PREFIX)) {
+          body = body.substring(XSSI_PREFIX.length);
+        }
         let headers = Headers.fromResponseHeaderString(_xhr.getAllResponseHeaders());
 
         let url = getResponseURL(_xhr);
