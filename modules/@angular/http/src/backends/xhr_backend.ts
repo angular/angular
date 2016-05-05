@@ -12,13 +12,13 @@ import {Observer} from 'rxjs/Observer';
 import {isSuccess, getResponseURL} from '../http_utils';
 
 /**
-* Creates connections using `XMLHttpRequest`. Given a fully-qualified
-* request, an `XHRConnection` will immediately create an `XMLHttpRequest` object and send the
-* request.
-*
-* This class would typically not be created or interacted with directly inside applications, though
-* the {@link MockConnection} may be interacted with in tests.
-*/
+ * Creates connections using `XMLHttpRequest`. Given a fully-qualified
+ * request, an `XHRConnection` will immediately create an `XMLHttpRequest` object and send the
+ * request.
+ *
+ * This class would typically not be created or interacted with directly inside applications, though
+ * the {@link MockConnection} may be interacted with in tests.
+ */
 export class XHRConnection implements Connection {
   request: Request;
   /**
