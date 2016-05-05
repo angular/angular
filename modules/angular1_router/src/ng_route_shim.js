@@ -281,7 +281,9 @@
           }
 
           var href = element.attr(hrefAttrName);
-          if (href && $rootRouter.recognize(href)) {
+          var target = element.attr('target');
+          
+          if (href && $rootRouter.recognize(href) && !['_blank', '_parent', '_self', '_top'].contains(target)) {
             $rootRouter.navigateByUrl(href);
             event.preventDefault();
           }
