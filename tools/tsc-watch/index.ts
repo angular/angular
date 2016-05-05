@@ -103,8 +103,8 @@ if (platform == 'node') {
 
 if (runMode === 'watch') {
   tscWatch.watch();
-} else if (runMode === 'triggerCmds') {
-  tscWatch.triggerCmds();
+} else if (runMode === 'runCmdsOnly') {
+  tscWatch.runCmdsOnly();
 } else {
   tscWatch.run();
 }

@@ -81,6 +81,11 @@ export class TscWatch {
     this.watch();
   }
 
+  runCmdsOnly() {
+    this.runOnce = true;
+    this.triggerCmds();
+  }
+
   consumeLine(buffer: Buffer, isStdError: boolean) {
     var line = '' + buffer;
     if (contains(line, this.start)) {
