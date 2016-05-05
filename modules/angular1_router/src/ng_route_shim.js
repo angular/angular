@@ -282,8 +282,9 @@
 
           var href = element.attr(hrefAttrName);
           var target = element.attr('target');
+          var isExternal = (['_blank', '_parent', '_self', '_top'].indexOf(target) > -1);          
           
-          if (href && $rootRouter.recognize(href) && !['_blank', '_parent', '_self', '_top'].contains(target)) {
+          if (href && $rootRouter.recognize(href) && !isExternal) {
             $rootRouter.navigateByUrl(href);
             event.preventDefault();
           }
