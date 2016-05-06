@@ -17,11 +17,23 @@ export class Tree<T> {
     return p.length > 1 ? p[p.length - 2] : null;
   }
 
-  children(t: T): T[] { return _findNode(t, this._root).children.map(t => t.value); }
+  children(t: T): T[] {
+    let node = _findNode(t, this._root);
+    if (isBlank(node)) throw new BaseException(`Cannot find '${t}'`);
+    return node.children.map(t => t.value);
+  }
 
-  firstChild(t: T): T { return _findNode(t, this._root).children[0].value; }
+  firstChild(t: T): T {
+    let node = _findNode(t, this._root);
+    if (isBlank(node)) throw new BaseException(`Cannot find '${t}'`);
+    return node.children.length > 0 ? node.children[0].value : null;
+  }
 
-  pathFromRoot(t: T): T[] { return _findPath(t, this._root, []).map(s => s.value); }
+  pathFromRoot(t: T): T[] {
+    let n = _findPath(t, this._root, []);
+    if (isBlank(n)) throw new BaseException(`Cannot find '${t}'`);
+    return n.map(s => s.value);
+  }
 
   contains(tree: Tree<T>): boolean { return _contains(this._root, tree._root); }
 }
@@ -44,8 +56,7 @@ function _findNode<T>(expected: T, c: TreeNode<T>): TreeNode<T> {
     let r = _findNode(expected, cc);
     if (isPresent(r)) return r;
   }
-
-  throw new BaseException(`Cannot find '${expected}'`);
+  return null;
 }
 
 function _findPath<T>(expected: T, c: TreeNode<T>, collected: TreeNode<T>[]): TreeNode<T>[] {
@@ -56,8 +67,7 @@ function _findPath<T>(expected: T, c: TreeNode<T>, collected: TreeNode<T>[]): Tr
     let r = _findPath(expected, cc, ListWrapper.clone(collected));
     if (isPresent(r)) return r;
   }
-
-  throw new BaseException(`Cannot find '${expected}'`);
+  return null;
 }
 
 function _contains<T>(tree: TreeNode<T>, subtree: TreeNode<T>): boolean {

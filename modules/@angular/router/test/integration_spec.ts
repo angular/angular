@@ -167,7 +167,7 @@ export function main() {
          router.navigateByUrl('/team/22/user/fedor');
          advance(fixture);
 
-         expect(deactivatable.onDeactivateSegment.stringifiedUrlSegments).toEqual('deactivatable');
+         expect(deactivatable.recorded[0][0].stringifiedUrlSegments).toEqual("deactivatable");
        })));
 
     it('should reuse components when implement CanReuse and return true',
@@ -307,7 +307,11 @@ class UserCmp implements OnActivate {
 
 @Component({selector: 'cannot-deactivate', template: `cannotDeactivate`})
 class CanDeactivateCmp implements CanDeactivate {
-  routerCanDeactivate(a?, b?): Promise<boolean> { return PromiseWrapper.resolve(false); }
+  recorded = [];
+  routerCanDeactivate(a?, b?, c?): Promise<boolean> {
+    this.recorded.push([a, b, c]);
+    return PromiseWrapper.resolve(false);
+  }
 }
 
 @Component({selector: 'simple-cmp', template: `simple`})
@@ -328,9 +332,9 @@ class LinkCmp {
 
 @Component({selector: 'deactivatable-cmp', template: ``})
 class DeactivatableCmp implements OnDeactivate {
-  onDeactivateSegment: RouteSegment = null;
+  recorded = [];
 
-  routerOnDeactivate(s: RouteSegment, a?, b?): void { this.onDeactivateSegment = s; }
+  routerOnDeactivate(a?, b?, c?): void { this.recorded.push([a, b, c]); }
 }
 
 @Component({selector: 'reusable-cmp', template: ``})
