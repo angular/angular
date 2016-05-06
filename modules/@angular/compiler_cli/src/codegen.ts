@@ -155,8 +155,10 @@ export class CodeGenerator {
               return Promise.all(stylesheetPromises);
             })
             .catch((e) => { console.error(e.stack); });
-    return Promise.all(
-        this.program.getRootFileNames().filter(f => !GENERATED_FILES.test(f)).map(generateOneFile));
+    return Promise.all(this.program.getSourceFiles()
+                           .map(sf => sf.fileName)
+                           .filter(f => !GENERATED_FILES.test(f))
+                           .map(generateOneFile));
   }
 
   static create(ngOptions: AngularCompilerOptions, program: ts.Program, options: ts.CompilerOptions,
