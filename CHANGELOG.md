@@ -1,3 +1,19 @@
+<a name="2.0.0-rc.2"></a>
+### OTHER BREAKING CHANGES
+
+- HTML, style values, and URLs are now automatically sanitized. Values that do not match are escaped
+  or ignored. When binding a URL or style property that would get ignored, bind to a value
+  explicitly marked as safe instead by injection the DOM sanitization service:
+  ```
+  class MyComponent {
+    constructor(sanitizer: DomSanitizationService) {
+      // ONLY DO THIS FOR VALUES YOU KNOW TO BE SAFE! NEVER ALLOW USER DATA IN THIS!
+      this.safeStyleValue = sanitizer.bypassSecurityTrustStyle('rotate(90deg)');
+      // then bind to `safeStyleValue` in your template.
+    }
+  }
+  ```
+
 <a name="2.0.0-rc.1"></a>
 # 2.0.0-rc.1 (2016-05-03)
 
@@ -104,13 +120,13 @@ To import various symbols please adjust the paths in the following way:
 
 
 ### OTHER BREAKING CHANGES
-    
+
 
 * - ViewRef.changeDetectorRef was removed as using ChangeDetectorRefs
   for EmbeddedViewRefs does not make sense. Use ComponentRef.changeDetectorRef
   or inject ChangeDetectorRef instead.
 
-* - Before, a `EmbeddedViewRef` used to have methods for 
+* - Before, a `EmbeddedViewRef` used to have methods for
   setting variables. Now, a user has to pass in a context
   object that represents all variables when an `EmbeddedViewRef`
   should be created.
@@ -148,7 +164,7 @@ The reference `#...` now always means `ref-`.
 
 **Before:**
 - Outside of `ngFor`, a `#...` meant a reference.
-- Inside of `ngFor`, it meant a local variable. 
+- Inside of `ngFor`, it meant a local variable.
 
 This was pattern was confusing.
 
@@ -157,7 +173,7 @@ This was pattern was confusing.
 - `<template #abc>` now defines a reference to a TemplateRef, instead of an input variable used inside of the template.
 - Inside of structural directives that declare local variables, such as `*ngFor`, usage of `#...` is deprecated. Use `let` instead.
   - `<div *ngFor="#item of items">` now becomes `<div *ngFor="let item of items">`
-- `var-...` is deprecated. 
+- `var-...` is deprecated.
   - use `#` or a `ref-` outside of `*ngFor`
   - for `ngFor`, use the syntax:  `<template ngFor let-... [ngForOf]="...">`
 
