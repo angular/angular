@@ -1,6 +1,6 @@
 library playground.hello_world.index_common_dart.ng_deps.dart;
 
-import 'goodbye.template.dart' as _templates;
+import 'goodbye.ngfactory.dart' as _templates;
 
 import 'goodbye.dart';
 import 'package:angular2/angular2.dart'

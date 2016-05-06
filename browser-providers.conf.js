@@ -38,7 +38,7 @@ var customLaunchers = {
   'SL_CHROME': {
     base: 'SauceLabs',
     browserName: 'chrome',
-    version: '46'
+    version: '50'
   },
   'SL_CHROMEBETA': {
     base: 'SauceLabs',
@@ -53,7 +53,7 @@ var customLaunchers = {
   'SL_FIREFOX': {
     base: 'SauceLabs',
     browserName: 'firefox',
-    version: '42'
+    version: '45'
   },
   'SL_FIREFOXBETA': {
     base: 'SauceLabs',
@@ -299,12 +299,7 @@ module.exports = {
   customLaunchers: customLaunchers,
   sauceAliases: sauceAliases,
   browserstackAliases: browserstackAliases
-}
-
-if (process.env.TRAVIS) {
-  process.env.SAUCE_ACCESS_KEY = process.env.SAUCE_ACCESS_KEY.split('').reverse().join('');
-  process.env.BROWSER_STACK_ACCESS_KEY = process.env.BROWSER_STACK_ACCESS_KEY.split('').reverse().join('');
-}
+};
 
 function buildConfiguration(type, target, required) {
   return Object.keys(CIconfiguration)

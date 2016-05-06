@@ -5,6 +5,5 @@ import "package:angular2/core.dart";
 
 @AngularEntrypoint()
 main() {
-  platform([WORKER_RENDER_PLATFORM])
-      .asyncApplication(initIsolate("background_index.dart"));
+  bootstrapRender("background_index.dart");
 }

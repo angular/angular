@@ -9,19 +9,26 @@ import {
   inject,
   it,
   xit,
-} from 'angular2/testing_internal';
+} from '@angular/testing/testing_internal';
 
-import {PromiseWrapper} from 'angular2/src/facade/async';
-import {DateWrapper} from 'angular2/src/facade/lang';
+import {PromiseWrapper} from '@angular/facade';
+import {DateWrapper} from '@angular/facade';
 
-import {Reporter, MultiReporter, bind, provide, Injector, MeasureValues} from 'benchpress/common';
+import {
+  Reporter,
+  MultiReporter,
+  bind,
+  provide,
+  ReflectiveInjector,
+  MeasureValues
+} from 'benchpress/common';
 
 export function main() {
   function createReporters(ids: any[]) {
-    var r = Injector.resolveAndCreate([
-                      ids.map(id => provide(id, {useValue: new MockReporter(id)})),
-                      MultiReporter.createBindings(ids)
-                    ])
+    var r = ReflectiveInjector.resolveAndCreate([
+                                ids.map(id => provide(id, {useValue: new MockReporter(id)})),
+                                MultiReporter.createBindings(ids)
+                              ])
                 .get(MultiReporter);
     return PromiseWrapper.resolve(r);
   }

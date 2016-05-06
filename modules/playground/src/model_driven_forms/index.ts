@@ -1,18 +1,17 @@
-import {bootstrap} from 'angular2/platform/browser';
+import {bootstrap} from '@angular/platform-browser-dynamic';
 import {
   FORM_DIRECTIVES,
   ControlGroup,
-  NgControl,
   Validators,
   NgFormModel,
   FormBuilder,
   NgIf,
   NgFor
-} from 'angular2/common';
-import {Component, Directive, Host} from 'angular2/core';
+} from '@angular/common';
+import {Component, Directive, Host} from '@angular/core';
 
-import {RegExpWrapper, print, isPresent} from 'angular2/src/facade/lang';
-import {AbstractControl} from 'angular2/common';
+import {RegExpWrapper, print, isPresent} from '@angular/core/src/facade/lang';
+import {AbstractControl} from '@angular/common';
 
 /**
  * Custom validator.
@@ -102,7 +101,7 @@ class ShowError {
       <p>
         <label for="country">Country</label>
         <select id="country" ngControl="country">
-          <option *ngFor="#c of countries" [value]="c">{{c}}</option>
+          <option *ngFor="let c of countries" [value]="c">{{c}}</option>
         </select>
       </p>
 

@@ -1,9 +1,9 @@
-import {Renderer, ElementRef, Component, Directive, Injectable} from 'angular2/core';
-import {StringWrapper} from 'angular2/src/facade/lang';
+import {Renderer, ElementRef, Component, Directive, Injectable} from '@angular/core';
+import {StringWrapper} from '@angular/core/src/facade/lang';
 
 // A service available to the Injector, used by the HelloCmp component.
 @Injectable()
-class GreetingService {
+export class GreetingService {
   greeting: string = 'hello';
 }
 
@@ -24,8 +24,6 @@ class RedDec {
 //   ShadowDom.(http://www.html5rocks.com/en/tutorials/webcomponents/shadowdom/)
 // - Directive - add behavior to existing elements.
 
-// @Component is AtScript syntax to annotate the HelloCmp class as an Angular
-// 2.0 component.
 @Component({
   // The Selector prop tells Angular on which elements to instantiate this
   // class. The syntax supported is a basic subset of CSS selectors, for example

@@ -1,6 +1,5 @@
 import {
   afterEach,
-  AsyncTestCompleter,
   beforeEach,
   ddescribe,
   describe,
@@ -9,21 +8,18 @@ import {
   inject,
   it,
   xit,
-} from 'angular2/testing_internal';
-
-import {ListWrapper} from 'angular2/src/facade/collection';
-import {PromiseWrapper} from 'angular2/src/facade/async';
-
-import {Metric, MultiMetric, bind, provide, Injector} from 'benchpress/common';
+} from '@angular/core/testing';
+import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
+import {Metric, MultiMetric, bind, provide, ReflectiveInjector} from 'benchpress/common';
 
 export function main() {
   function createMetric(ids: any[]) {
-    var m = Injector.resolveAndCreate([
-                      ids.map(id => provide(id, {useValue: new MockMetric(id)})),
-                      MultiMetric.createBindings(ids)
-                    ])
+    var m = ReflectiveInjector.resolveAndCreate([
+                                ids.map(id => provide(id, {useValue: new MockMetric(id)})),
+                                MultiMetric.createBindings(ids)
+                              ])
                 .get(MultiMetric);
-    return PromiseWrapper.resolve(m);
+    return Promise.resolve(m);
   }
 
   describe('multi metric', () => {
@@ -68,12 +64,12 @@ class MockMetric extends Metric {
     this._id = id;
   }
 
-  beginMeasure(): Promise<string> { return PromiseWrapper.resolve(`${this._id}_beginMeasure`); }
+  beginMeasure(): Promise<string> { return Promise.resolve(`${this._id}_beginMeasure`); }
 
   endMeasure(restart: boolean): Promise<{[key: string]: any}> {
     var result = {};
     result[this._id] = {'restart': restart};
-    return PromiseWrapper.resolve(result);
+    return Promise.resolve(result);
   }
 
   describe(): {[key: string]: string} {

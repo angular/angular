@@ -1,22 +1,22 @@
-import {DOM} from 'angular2/src/platform/dom/dom_adapter';
-import {window, document, gc} from 'angular2/src/facade/browser';
+import {DOM} from '@angular/platform-browser/src/dom/dom_adapter';
+import {window, document, gc} from '@angular/facade';
 import {
   getIntParameter,
   getStringParameter,
   bindAction,
   windowProfile,
   windowProfileEnd
-} from 'angular2/src/testing/benchmark_util';
-import {bootstrap} from 'angular2/platform/browser';
-import {Component, Directive, bind, provide} from 'angular2/core';
-import {NgFor, NgSwitch, NgSwitchWhen, NgSwitchDefault} from 'angular2/common';
-import {ApplicationRef} from 'angular2/src/core/application_ref';
-import {BrowserDomAdapter} from 'angular2/src/platform/browser/browser_adapter';
+} from '@angular/testing/src/benchmark_util';
+import {bootstrap} from '@angular/platform-browser';
+import {Component, Directive, bind, provide} from '@angular/core';
+import {NgFor, NgSwitch, NgSwitchWhen, NgSwitchDefault} from '@angular/common';
+import {ApplicationRef} from '@angular/core/src/application_ref';
+import {BrowserDomAdapter} from '@angular/platform-browser/src/browser/browser_adapter';
 
-import {ListWrapper} from 'angular2/src/facade/collection';
+import {ListWrapper} from '@angular/facade';
 
-import {Inject} from 'angular2/src/core/di/decorators';
-import {reflector} from 'angular2/src/core/reflection/reflection';
+import {Inject} from '@angular/core/src/di/decorators';
+import {reflector} from '@angular/core/src/reflection/reflection';
 
 export const BENCHMARK_TYPE = 'LargetableComponent.benchmarkType';
 export const LARGETABLE_ROWS = 'LargetableComponent.rows';
@@ -113,7 +113,7 @@ export function main() {
     bootstrap(AppComponent, _createBindings())
         .then((ref) => {
           var injector = ref.injector;
-          app = ref.hostComponent;
+          app = ref.instance;
           appRef = injector.get(ApplicationRef);
           bindAction('#ng2DestroyDom', ng2DestroyDom);
           bindAction('#ng2CreateDom', ng2CreateDom);
@@ -214,22 +214,22 @@ class CellData {
   template: `
       <table [ngSwitch]="benchmarkType">
         <tbody template="ngSwitchWhen 'interpolation'">
-          <tr template="ngFor #row of data">
-            <td template="ngFor #column of row">
+          <tr template="ngFor let row of data">
+            <td template="ngFor let column of row">
               {{column.i}}:{{column.j}}|
             </td>
           </tr>
         </tbody>
         <tbody template="ngSwitchWhen 'interpolationAttr'">
-          <tr template="ngFor #row of data">
-            <td template="ngFor #column of row" attr.i="{{column.i}}" attr.j="{{column.j}}">
+          <tr template="ngFor let row of data">
+            <td template="ngFor let column of row" attr.i="{{column.i}}" attr.j="{{column.j}}">
               i,j attrs
             </td>
           </tr>
         </tbody>
         <tbody template="ngSwitchWhen 'interpolationFn'">
-          <tr template="ngFor #row of data">
-            <td template="ngFor #column of row">
+          <tr template="ngFor let row of data">
+            <td template="ngFor let column of row">
               {{column.iFn()}}:{{column.jFn()}}|
             </td>
           </tr>

@@ -11,7 +11,7 @@ library angular2.test.transform.debug_reflection_remover_files;
 var code = """
 library web_foo;
 
-import 'package:angular2/platform/browser.dart';import 'index.template.dart' as ngStaticInit;
+import 'package:angular2/platform/browser.dart';import 'index.ngfactory.dart' as ngStaticInit;
 import 'package:angular2/src/core/reflection/reflection.dart';
 import 'package:angular2/src/core/reflection/debug_reflection_capabilities.dart';
 

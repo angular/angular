@@ -1,3 +1,325 @@
+<a name="2.0.0-rc.1"></a>
+# 2.0.0-rc.1 (2016-05-03)
+
+### Known Issues
+
+*** SECURITY WARNING ***
+Contextual escaping is not yet implemented in Angular 2. This will be fixed in the upcoming RC.
+In the meantime make sure to correctly escape all values that go into the DOM.
+*** SECURITY WARNING ***
+
+- source maps for umd bundles are missing
+- `Ruler` service is not being reexported via `@angular/platform-browser`
+
+
+### Bug Fixes
+
+* **compiler:** calculate the right moduleUrl ([3a40cb1](https://github.com/angular/angular/commit/3a40cb1))
+* **compiler:** don’t emit metadata for generated files ([43e0fa5](https://github.com/angular/angular/commit/43e0fa5))
+* **compiler:** fix where pipes live ([dd6e0cf](https://github.com/angular/angular/commit/dd6e0cf)), closes [#8408](https://github.com/angular/angular/issues/8408)
+* **compiler:** use absolute paths for comparing module urls ([52a6ba7](https://github.com/angular/angular/commit/52a6ba7))
+* **compiler:** use rootDirs compilerOption to affect genDir layout. ([a033f83](https://github.com/angular/angular/commit/a033f83))
+* **docs:** upgrade deprecated ngFor-Syntax ([27a7b51](https://github.com/angular/angular/commit/27a7b51))
+* **router:** add support for ../ ([89704e0](https://github.com/angular/angular/commit/89704e0))
+* **testing:** Check for pending macrotasks in ComponentFixture.whenStable() and ComponentFixtu ([509f4ec](https://github.com/angular/angular/commit/509f4ec)), closes [#8389](https://github.com/angular/angular/issues/8389)
+* **router-deprecated:** inheriting from RouterOutlet works now
+
+### Features
+
+* **router:** make RouterLink accept single values ([b625f24](https://github.com/angular/angular/commit/b625f24))
+
+
+
+<a name="2.0.0-rc.0"></a>
+# 2.0.0-rc.0 (2016-05-02)
+
+This is the first release candidate that contains repackaging of Angular into individual packages one per each feature area.
+
+All of the packages are now distributed under the @angular npm scope. This changes how Angular is installed via npm and how you import the code.
+
+To install Angular for a browser application please use:
+
+```
+npm install --save @angular/core @angular/compiler @angular/common @angular/platform-browser @angular/platform-browser-dynamic rxjs@5.0.0-beta.6 zone.js@0.6.12
+```
+
+To import various symbols please adjust the paths in the following way:
+
+- `angular2/core` -> `@angular/core`
+- `angular2/compiler` -> `@angular/compiler`
+- `angular2/common` -> `@angular/common`
+- `angular2/platform/browser` -> `@angular/platform-browser` (applications with precompiled templates) + `@angular/platform-browser-dynamic` (applications that compile templates on the fly)
+- `angular2/platform/server` -> `@angular/platform-server`
+- `angular2/testing` -> `@angular/core/testing` (it/describe/..) + `@angular/compiler/testing` (TestComponentBuilder) + `@angular/platform-browser/testing`
+- `angular2/upgrade` -> `@angular/upgrade`
+- `angular2/http` -> `@angular/http`
+- `angular2/router` -> `@angular/router-deprecated` (snapshot of the component router from beta.17 for backwards compatibility)
+- new package: `@angular/router` - component router with several [breaking changes](https://docs.google.com/document/d/1WLSNV3V1AKdwLwRiLuN7JqbPBKQ_S5quRlcT5LPIldw/edit#heading=h.blfh5ya9sf5r)
+
+
+
+### Features
+
+* **core:** introduce template context ([cacdead](https://github.com/angular/angular/commit/cacdead)), closes [#8321](https://github.com/angular/angular/issues/8321)
+* **core:** support the decorator data that tsickle produces ([b6fd811](https://github.com/angular/angular/commit/b6fd811))
+* **di:** support map literals as providers ([46cd868](https://github.com/angular/angular/commit/46cd868))
+* **offline compiler:** a replacement for tsc that compiles templates ([78946fe](https://github.com/angular/angular/commit/78946fe))
+* **offline compiler:** add metadata emit ([072446a](https://github.com/angular/angular/commit/072446a))
+* **router:** add CanDeactivate ([deba804](https://github.com/angular/angular/commit/deba804))
+* **router:** add link that support only absolute urls ([fa5bfe4](https://github.com/angular/angular/commit/fa5bfe4))
+* **router:** add Router and RouterOutlet to support aux routes ([6e1fed4](https://github.com/angular/angular/commit/6e1fed4))
+* **router:** add RouterLink ([de56dd5](https://github.com/angular/angular/commit/de56dd5))
+* **router:** add RouterUrlSerializer ([79830f1](https://github.com/angular/angular/commit/79830f1))
+* **router:** add RouteTree and UrlTree as aliases to Tree<RouteSegment> and Tree<UrlSegment> ([277b1fc](https://github.com/angular/angular/commit/277b1fc))
+* **router:** add support for wildcards ([8836219](https://github.com/angular/angular/commit/8836219))
+* **router:** adds an example app using the new router ([602641d](https://github.com/angular/angular/commit/602641d))
+* **router:** change location when navigating ([560cc14](https://github.com/angular/angular/commit/560cc14))
+* **router:** implement relative navigation ([e5b87e5](https://github.com/angular/angular/commit/e5b87e5))
+* **router:** implements support for router-link-active ([ec4ca0e](https://github.com/angular/angular/commit/ec4ca0e))
+* **router:** listen to location changes ([62a0809](https://github.com/angular/angular/commit/62a0809)), closes [#8362](https://github.com/angular/angular/issues/8362)
+* **router:** set router-link-active when RouterLink is active ([4fe0f1f](https://github.com/angular/angular/commit/4fe0f1f)), closes [#8376](https://github.com/angular/angular/issues/8376)
+* **router:** update recognize to handle matrix parameters ([446657b](https://github.com/angular/angular/commit/446657b))
+* **router:** update recognize to support aux routes ([d35c109](https://github.com/angular/angular/commit/d35c109))
+* **router:** update url parser to handle aux routes ([fad3b64](https://github.com/angular/angular/commit/fad3b64))
+* **testing:** Use NgZone in TestComponentBuilder. ([769835e](https://github.com/angular/angular/commit/769835e)), closes [#8301](https://github.com/angular/angular/issues/8301)
+* **tests:** add ROUTER_FAKE_PROVIDERS to angular2/alt_router/router_testing_providers ([0f1b370](https://github.com/angular/angular/commit/0f1b370))
+
+### Bug Fixes
+
+* **metadata:** Preserve Provider expressions ([7c0d497](https://github.com/angular/angular/commit/7c0d497))
+* **codegen:** event handler has boolean return type ([ca40ef5](https://github.com/angular/angular/commit/ca40ef5))
+* **compiler:** fix cross view references and providers with `useValue`. ([f114d6c](https://github.com/angular/angular/commit/f114d6c)), closes [#8366](https://github.com/angular/angular/issues/8366)
+* **compiler:** project using the right directive as component. ([0f774df](https://github.com/angular/angular/commit/0f774df)), closes [#8344](https://github.com/angular/angular/issues/8344)
+* **compiler:** support css stylesheets in offline compiler ([00d3b60](https://github.com/angular/angular/commit/00d3b60))
+* **compiler:** support empty array and map literals. ([11955f9](https://github.com/angular/angular/commit/11955f9)), closes [#8336](https://github.com/angular/angular/issues/8336)
+* **compiler_cli:** make sure the generated code gets compiled via tic ([163d80a](https://github.com/angular/angular/commit/163d80a))
+* **core:** check components if an event handler inside of an embedded view fires. ([4d691b6](https://github.com/angular/angular/commit/4d691b6)), closes [#8242](https://github.com/angular/angular/issues/8242)
+* **core:** return the ChangeDetectorRef of the component also for embedded views. ([351f24e](https://github.com/angular/angular/commit/351f24e))
+* **metadata:** expose Providers in metadata ([8bf6ef6](https://github.com/angular/angular/commit/8bf6ef6))
+* **perf:** don’t use `try/catch` in production mode ([b1a9e44](https://github.com/angular/angular/commit/b1a9e44)), closes [#8338](https://github.com/angular/angular/issues/8338)
+* **router:** canDeactivate should not change the url when returns false ([76d6f5f](https://github.com/angular/angular/commit/76d6f5f)), closes [#8360](https://github.com/angular/angular/issues/8360)
+* **router:** create a route tree when creating the router service ([ca13f1c](https://github.com/angular/angular/commit/ca13f1c)), closes [#8365](https://github.com/angular/angular/issues/8365)
+* **typescript:** strip abstract keyword from properties in .d.ts ([a84c2d7](https://github.com/angular/angular/commit/a84c2d7)), closes [#8339](https://github.com/angular/angular/issues/8339)
+
+
+
+### OTHER BREAKING CHANGES
+    
+
+* - ViewRef.changeDetectorRef was removed as using ChangeDetectorRefs
+  for EmbeddedViewRefs does not make sense. Use ComponentRef.changeDetectorRef
+  or inject ChangeDetectorRef instead.
+
+* - Before, a `EmbeddedViewRef` used to have methods for 
+  setting variables. Now, a user has to pass in a context
+  object that represents all variables when an `EmbeddedViewRef`
+  should be created.
+- `ViewContainerRef.createEmbeddedViewRef` now takes
+   a context object as 2nd argument.
+- `EmbeddedViewRef.setLocal` and `getLocal` have been removed.
+  Use `EmbeddedViewRef.context` to access the context.
+- `DebugNode.locals` has been removed. Use the new methods `DebugElement.references`
+  to get the references that are present on this element,
+  or `DebugElement.context` to get the context of the `EmbeddedViewRef` or the component to which the element belongs.
+
+
+
+<a name="2.0.0-beta.17"></a>
+# 2.0.0-beta.17 (2016-04-28)
+
+
+### Bug Fixes
+
+* **changelog:** fix changelog script. ([c209836](https://github.com/angular/angular/commit/c209836))
+* **compiler:** Allow templates to access variables that are declared afterwards. ([1e8864c](https://github.com/angular/angular/commit/1e8864c)), closes [#8261](https://github.com/angular/angular/issues/8261)
+* **core:** properly evaluate expressions with conditional and boolean operators ([1ad2a02](https://github.com/angular/angular/commit/1ad2a02)), closes [#8235](https://github.com/angular/angular/issues/8235) [#8244](https://github.com/angular/angular/issues/8244) [#8282](https://github.com/angular/angular/issues/8282)
+* **metadata:** Do not attach module names to metadata. ([d964888](https://github.com/angular/angular/commit/d964888)), closes [#8225](https://github.com/angular/angular/issues/8225) [#8082](https://github.com/angular/angular/issues/8082) [#8256](https://github.com/angular/angular/issues/8256)
+* **testing:** allow test component builder to override directives from lists ([ff2ae7a](https://github.com/angular/angular/commit/ff2ae7a)), closes [#7397](https://github.com/angular/angular/issues/7397) [#8217](https://github.com/angular/angular/issues/8217)
+
+### Features
+
+* **compiler:** ElementSchema now has explicit DOM schema information ([d327ac4](https://github.com/angular/angular/commit/d327ac4)), closes [#8179](https://github.com/angular/angular/issues/8179)
+* **core:** separate refs from vars. ([d2efac1](https://github.com/angular/angular/commit/d2efac1)), closes [#7158](https://github.com/angular/angular/issues/7158) [#8264](https://github.com/angular/angular/issues/8264)
+
+
+### BREAKING CHANGES
+
+The reference `#...` now always means `ref-`.
+
+**Before:**
+- Outside of `ngFor`, a `#...` meant a reference.
+- Inside of `ngFor`, it meant a local variable. 
+
+This was pattern was confusing.
+
+**After:**
+
+- `<template #abc>` now defines a reference to a TemplateRef, instead of an input variable used inside of the template.
+- Inside of structural directives that declare local variables, such as `*ngFor`, usage of `#...` is deprecated. Use `let` instead.
+  - `<div *ngFor="#item of items">` now becomes `<div *ngFor="let item of items">`
+- `var-...` is deprecated. 
+  - use `#` or a `ref-` outside of `*ngFor`
+  - for `ngFor`, use the syntax:  `<template ngFor let-... [ngForOf]="...">`
+
+
+<a name="2.0.0-beta.16"></a>
+# 2.0.0-beta.16 (2016-04-26)
+
+
+### Bug Fixes
+
+* **angular_1_router:** Removed arrow function from module template ([d094a85](https://github.com/angular/angular/commit/d094a85)), closes [#8076](https://github.com/angular/angular/issues/8076)
+* **build:** ignore Dart warnings for external code. ([4140405](https://github.com/angular/angular/commit/4140405))
+* **codegen:** add explicit any to class fields ([c8d00dc](https://github.com/angular/angular/commit/c8d00dc)), closes [#8204](https://github.com/angular/angular/issues/8204) [#8205](https://github.com/angular/angular/issues/8205)
+* **compiler:** only call pure pipes if their input changed. ([8db6215](https://github.com/angular/angular/commit/8db6215))
+* **compiler:** properly implement pure pipes and change pipe syntax ([152a117](https://github.com/angular/angular/commit/152a117))
+* **compiler:** support string tokens with `.` inside. ([cc86fee](https://github.com/angular/angular/commit/cc86fee))
+* **compiler:** use DI order for change detection order. ([67d05eb](https://github.com/angular/angular/commit/67d05eb)), closes [#8198](https://github.com/angular/angular/issues/8198)
+* **core:** various minor compiler fixes ([2f70457](https://github.com/angular/angular/commit/2f70457)), closes [#8162](https://github.com/angular/angular/issues/8162)
+* **forms:** ensure select model updates in firefox and ie ([c3daccd](https://github.com/angular/angular/commit/c3daccd)), closes [#6573](https://github.com/angular/angular/issues/6573) [#8148](https://github.com/angular/angular/issues/8148)
+* **forms:** improve error message when ngFormModel is missing a form ([12837e1](https://github.com/angular/angular/commit/12837e1)), closes [#8136](https://github.com/angular/angular/issues/8136) [#8143](https://github.com/angular/angular/issues/8143)
+* **forms:** number input should report null when blank ([e69cb40](https://github.com/angular/angular/commit/e69cb40)), closes [#6932](https://github.com/angular/angular/issues/6932) [#8141](https://github.com/angular/angular/issues/8141)
+* **metadata:** emit metadata rooted at 'angular2' ([9889c21](https://github.com/angular/angular/commit/9889c21)), closes [#8144](https://github.com/angular/angular/issues/8144) [#8147](https://github.com/angular/angular/issues/8147)
+* **release:** Fix the package.json zone.js requirement to 0.6.12 ([6103aa0](https://github.com/angular/angular/commit/6103aa0))
+* **tests:** remove payload size check ([22c05b0](https://github.com/angular/angular/commit/22c05b0))
+* **transformers:** support `query.read` ([386cc5d](https://github.com/angular/angular/commit/386cc5d)), closes [#8172](https://github.com/angular/angular/issues/8172)
+* **upgrade:** clean up scope when element is destroyed ([0fc9ec2](https://github.com/angular/angular/commit/0fc9ec2)), closes [#8102](https://github.com/angular/angular/issues/8102)
+
+### Features
+
+* **codegen:** produce `.ngfactory.dart/ts` files instead of `.template.dart/ts` files. ([c06b0a2](https://github.com/angular/angular/commit/c06b0a2))
+* **core:** add `Query.read` and remove `DynamicComponentLoader.loadIntoLocation`. ([efbd446](https://github.com/angular/angular/commit/efbd446))
+* **core:** introduce ComponentFactory. ([0c600cf](https://github.com/angular/angular/commit/0c600cf))
+* **core:** separate reflective injector from Injector interface ([0a7d10b](https://github.com/angular/angular/commit/0a7d10b))
+* **core:** support importUri in StaticReflector ([3e11422](https://github.com/angular/angular/commit/3e11422)), closes [#8195](https://github.com/angular/angular/issues/8195)
+* **core:** support non reflective bootstrap. ([9092ac7](https://github.com/angular/angular/commit/9092ac7))
+* **html_lexer:** support special forms used by i18n { exp, plural, =0 {} } ([7f29766](https://github.com/angular/angular/commit/7f29766))
+* **html_parser:** support special forms used by i18n { exp, plural, =0 {} } ([7c9717b](https://github.com/angular/angular/commit/7c9717b))
+* **i18n:** add custom placeholder names ([bb9fb21](https://github.com/angular/angular/commit/bb9fb21)), closes [#7799](https://github.com/angular/angular/issues/7799) [#8057](https://github.com/angular/angular/issues/8057)
+* **i18n:** add support for nested expansion forms ([c6244d1](https://github.com/angular/angular/commit/c6244d1)), closes [#7977](https://github.com/angular/angular/issues/7977)
+* **i18n:** support plural and gender special forms ([88b0a23](https://github.com/angular/angular/commit/88b0a23))
+* **Location:** out of router and into platform/common ([b602bd8](https://github.com/angular/angular/commit/b602bd8)), closes [#7962](https://github.com/angular/angular/issues/7962)
+* **NgTemplateOutlet:** add NgTemplateOutlet directive ([f4e6994](https://github.com/angular/angular/commit/f4e6994)), closes [#7615](https://github.com/angular/angular/issues/7615) [#8021](https://github.com/angular/angular/issues/8021)
+* **router:** add Router and RouterOutlet ([5a897cf](https://github.com/angular/angular/commit/5a897cf)), closes [#8173](https://github.com/angular/angular/issues/8173)
+* **router:** add router metadata ([ef67a0c](https://github.com/angular/angular/commit/ef67a0c))
+* **router:** add UrlSegment, RouteSegment, and Tree ([90a1f7d](https://github.com/angular/angular/commit/90a1f7d))
+* **router:** implement recognizer ([ef6163e](https://github.com/angular/angular/commit/ef6163e))
+* **router:** implement RouterUrlParser ([f698567](https://github.com/angular/angular/commit/f698567))
+* **test:** Implement fakeAsync using the FakeAsyncTestZoneSpec from zone.js. ([bab81a9](https://github.com/angular/angular/commit/bab81a9)), closes [#8142](https://github.com/angular/angular/issues/8142)
+* **tests:** manage asynchronous tests using zones ([8490921](https://github.com/angular/angular/commit/8490921)), closes [#7735](https://github.com/angular/angular/issues/7735)
+* **view_compiler:** codegen DI and Queries ([2b34c88](https://github.com/angular/angular/commit/2b34c88)), closes [#6301](https://github.com/angular/angular/issues/6301) [#6567](https://github.com/angular/angular/issues/6567)
+
+
+### BREAKING CHANGES
+
+* - pipes now take a variable number of arguments, and not an array that contains all arguments.
+
+* inject can no longer wrap fakeAsync while fakeAsync can wrap inject. So the order in existing tests with inject and fakeAsync has to be switched as follows:
+Before:
+```
+inject([...], fakeAsync((...) => {...}))
+```
+After:
+```
+fakeAsync(inject([...], (...) => {...}))
+```
+You will also need to add the dependency
+`'node_modules/zone.js/dist/fake-async-test.js'`
+as a served file in your Karma or other test configuration.
+
+* - Injector was renamed into `ReflectiveInjector`,
+  as `Injector` is only an abstract class with one method on it
+- `Injector.getOptional()` was changed into `Injector.get(token, notFoundValue)`
+  to make implementing injectors simpler
+- `ViewContainerRef.createComponent` now takes an `Injector`
+  instead of `ResolvedProviders`. If a reflective injector
+  should be used, create one before calling this method.
+  (e.g. via `ReflectiveInjector.resolveAndCreate(…)`.
+
+* - `DynamicComponentLoader.loadIntoLocation` has been removed. Use `@ViewChild(‘myVar’, read: ViewContainerRef)` to get hold of a `ViewContainerRef` at an element with variable `myVar`. Then call `DynamicComponentLoader.loadNextToLocation`.
+- `DynamicComponentLoader.loadNextToLocation` now takes a `ViewContainerRef` instead of an `ElementRef`.
+- `AppViewManager` is renamed into `ViewUtils` and is a mere private utility service.
+
+* - `Compiler` is renamed to `ComponentResolver`,
+  `Compiler.compileInHost` has been renamed to `ComponentResolver.resolveComponent`.
+- `ComponentRef.dispose` is renamed to `ComponentRef.destroy`
+- `ViewContainerRef.createHostView` is renamed to `ViewContainerRef.createComponent`
+- `ComponentFixture_` has been removed, the class `ComponentFixture`
+  can now be created directly as it is no more using private APIs.
+
+* `Location` and other related providers have been moved out of `router` and into `platform/common`. `BrowserPlatformLocation` is not meant to be used directly however advanced configurations may use it via the following import change.
+Before:
+```
+import {
+  PlatformLocation,
+  Location,
+  LocationStrategy,
+  HashLocationStrategy,
+  PathLocationStrategy,
+  APP_BASE_HREF}
+from 'angular2/router';
+import {BrowserPlatformLocation} from 'angular2/src/router/location/browser_platform_location';
+```
+After:
+```
+import {
+  PlatformLocation,
+  Location,
+  LocationStrategy,
+  HashLocationStrategy,
+  PathLocationStrategy,
+  APP_BASE_HREF}
+from 'angular2/platform/common';
+import {BrowserPlatformLocation} from 'angular2/src/platform/browser/location/browser_platform_location';
+```
+
+* `injectAsync` is now deprecated. Instead, use the `async` function
+to wrap any asynchronous tests.
+
+You will also need to add the dependency
+`'node_modules/zone.js/dist/async-test.js'`
+as a served file in your Karma or other test configuration.
+
+Before:
+```
+it('should wait for returned promises', injectAsync([FancyService], (service) => {
+  return service.getAsyncValue().then((value) => { expect(value).toEqual('async value'); });
+}));
+it('should wait for returned promises', injectAsync([], () => {
+  return somePromise.then(() => { expect(true).toEqual(true); });
+}));
+```
+After:
+```
+it('should wait for returned promises', async(inject([FancyService], (service) => {
+  service.getAsyncValue().then((value) => { expect(value).toEqual('async value'); });
+})));
+// Note that if there is no injection, we no longer need `inject` OR `injectAsync`.
+it('should wait for returned promises', async(() => {
+  somePromise.then() => { expect(true).toEqual(true); });
+}));
+```
+
+* - Renderer:
+  * renderComponent method is removed form `Renderer`, only present on `RootRenderer`
+  * Renderer.setDebugInfo is removed. Renderer.createElement / createText / createTemplateAnchor
+    now take the DebugInfo directly.
+- Query semantics:
+  * Queries don't work with dynamically loaded components.
+  * e.g. for router-outlet: loaded components can't be queries via @ViewQuery,
+    but router-outlet emits an event `activate` now that emits the activated component
+- Exception classes and the context inside changed (renamed fields)
+- DebugElement.attributes is an Object and not a Map in JS any more
+- ChangeDetectorGenConfig was renamed into CompilerConfig
+- AppViewManager.createEmbeddedViewInContainer / AppViewManager.createHostViewInContainer
+  are removed, use the methods in ViewContainerRef instead
+- Change detection order changed:
+  * 1. dirty check component inputs
+  * 2. dirty check content children
+  * 3. update render nodes
+
+
+
 <a name="2.0.0-beta.15"></a>
 # 2.0.0-beta.15 (2016-04-13)
 
@@ -21,6 +343,11 @@
 * **transformers:** changes transformers to collect information about providers and resolve identifi ([3b60503](https://github.com/angular/angular/commit/3b60503))
 * **transformers:** special case Profiler ([83b8f59](https://github.com/angular/angular/commit/83b8f59))
 * **typescript:** update to 1.9 nightly. ([3412aba](https://github.com/angular/angular/commit/3412aba)), closes [#8003](https://github.com/angular/angular/issues/8003)
+
+### BREAKING CHANGES
+
+* In Dart files, `import 'package:angular2/bootstrap.dart'` no longer works.
+  Instead, use `import 'package:angular2/platform/browser.dart'`.
 
 ### Reverts
 

@@ -21,6 +21,11 @@ tmp
 *.js.deps
 *.js.map
 
+# Files created by the template compiler
+**/*.ngfactory.ts
+**/*.css.ts
+**/*.css.shim.ts
+
 # Or type definitions we mirror from github
 # (NB: these lines are removed in publish-build-artifacts.sh)
 **/typings/**/*.d.ts
@@ -49,3 +54,6 @@ npm-debug.log
 
 # built dart payload tests
 /modules_dart/payload/**/build
+
+# rollup-test output
+/modules/rollup-test/dist/

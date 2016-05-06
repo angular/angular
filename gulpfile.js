@@ -105,7 +105,7 @@ function runJasmineTests(globs, done) {
   var fork = require('child_process').fork;
   var args = ['--'].concat(globs);
 
-  fork('./tools/cjs-jasmine', args, {stdio: 'inherit'})
+  fork('./dist/tools/cjs-jasmine', args, {stdio: 'inherit'})
       .on('close', function jasmineCloseHandler(exitCode) {
         if (exitCode && treatTestErrorsAsFatal) {
           var err = new Error('Jasmine tests failed');
@@ -155,6 +155,8 @@ var NG2_BUNDLE_CONTENT = ANGULAR2_BUNDLE_CONFIG.join(' + ') + ' - rxjs/*';
 var HTTP_BUNDLE_CONTENT = 'angular2/http - rxjs/* - ' + ANGULAR2_BUNDLE_CONFIG.join(' - ');
 var ROUTER_BUNDLE_CONTENT = 'angular2/router + angular2/router/router_link_dsl - rxjs/* - ' +
                             ANGULAR2_BUNDLE_CONFIG.join(' - ');
+var ALT_ROUTER_BUNDLE_CONTENT =
+    'angular2/alt_router - rxjs/* - ' + ANGULAR2_BUNDLE_CONFIG.join(' - ');
 var TESTING_BUNDLE_CONTENT =
     'angular2/testing + angular2/http/testing + angular2/router/testing + angular2/platform/testing/browser - rxjs/* - ' +
     ANGULAR2_BUNDLE_CONFIG.join(' - ');
@@ -298,7 +300,14 @@ function doCheckFormat() {
   var clangFormat = require('clang-format');
   var gulpFormat = require('gulp-clang-format');
 
-  return gulp.src(['modules/**/*.ts', 'tools/**/*.ts', '!**/typings/**/*.d.ts', 'gulpfile.js'])
+  return gulp.src([
+               'modules/**/*.ts',
+               'tools/**/*.ts',
+               '!**/typings/**/*.d.ts',
+               // workaround https://github.com/angular/clang-format/issues/28
+               '!tools/compiler_cli/src/main.ts',
+               'gulpfile.js'
+             ])
       .pipe(gulpFormat.checkFormat('file', clangFormat));
 }
 
@@ -452,22 +461,40 @@ gulp.task('serve.e2e.dart', ['build.js.cjs'], function(neverDone) {
 // ------------------
 // CI tests suites
 
-function runKarma(configFile, done) {
+function execProcess(name, args, done) {
   var exec = require('child_process').exec;
 
-  var cmd = process.platform === 'win32' ? 'node_modules\\.bin\\karma run ' :
-                                           'node node_modules/.bin/karma run ';
-  cmd += configFile;
-  exec(cmd, function(e, stdout) {
+  var cmd = process.platform === 'win32' ? 'node_modules\\.bin\\' + name + ' ' :
+                                           'node node_modules/.bin/' + name + ' ';
+  cmd += args;
+  exec(cmd, done);
+}
+function runKarma(configFile, done) {
+  execProcess('karma', 'run ' + configFile, function(e, stdout) {
     // ignore errors, we don't want to fail the build in the interactive (non-ci) mode
     // karma server will print all test failures
     done();
   });
 }
 
+// Gulp-typescript doesn't work with typescript@next:
+// https://github.com/ivogabe/gulp-typescript/issues/331
+function runTsc(project, done) {
+  execProcess('tsc', '-p ' + project, function(e, stdout, stderr) {
+    if (e) {
+      console.log(stdout);
+      console.error(stderr);
+      done(e);
+    } else {
+      done();
+    }
+  });
+}
+
 gulp.task('test.js', function(done) {
-  runSequence('test.unit.tools/ci', 'test.transpiler.unittest', 'test.unit.js/ci',
-              'test.unit.cjs/ci', 'test.typings', 'check-public-api', sequenceComplete(done));
+  runSequence('test.compiler_cli', 'test.unit.tools/ci', 'test.transpiler.unittest',
+              'test.unit.js/ci', 'test.unit.cjs/ci', 'test.typings', 'check-public-api',
+              sequenceComplete(done));
 });
 
 gulp.task('test.dart', function(done) {
@@ -768,7 +795,7 @@ gulp.task('!checkAndReport.payload.js', function() {
                       {
                         failConditions: PAYLOAD_TESTS_CONFIG.ts[packaging].sizeLimits,
                         prefix: caseName + '_' + packaging
-                      })
+                      });
   }
 
   return PAYLOAD_TESTS_CONFIG.ts.cases.reduce(function(sizeReportingStreams, caseName) {
@@ -896,7 +923,7 @@ gulp.task('test.unit.cjs/ci', function(done) {
   runJasmineTests(['dist/js/cjs/{angular2,benchpress}/test/**/*_spec.js'], done);
 });
 
-gulp.task('check-public-api',
+gulp.task('check-public-api', ['build.tools'],
           function(done) { runJasmineTests(['dist/tools/public_api_guard/**/*_spec.js'], done); });
 
 gulp.task('test.unit.cjs', ['build/clean.js', 'build.tools'], function(neverDone) {
@@ -1026,6 +1053,43 @@ gulp.task('!test.typings',
 gulp.task('test.typings', ['build.js.cjs'],
           function(done) { runSequence('!test.typings', sequenceComplete(done)); });
 
+gulp.task('!build.compiler_cli', function(done) { runTsc('tools/compiler_cli/src', done); });
+
+gulp.task('!clean.compiler_cli', function(done) {
+  fse.remove(path.join('dist', 'tools', 'compiler_cli', 'test'),
+             fse.remove(path.join('tools', 'compiler_cli', 'test', 'src', '*.ngfactory.ts'),
+                        fse.remove(path.join('tools', 'compiler_cli', 'test', 'src', 'a',
+                                             '*.ngfactory.ts'),
+                                   done)));
+});
+
+gulp.task('!test.compiler_cli.codegen', function(done) {
+  try {
+    require('./dist/tools/compiler_cli/main')
+        .main("tools/compiler_cli/test")
+        .then(done)
+        .catch(function(rej) { done(rej); });
+  } catch (err) {
+    done(err);
+  }
+});
+
+gulp.task('!test.compiler_cli.unit',
+          function(done) { runJasmineTests(['dist/tools/compiler_cli/**/*_spec.js'], done) });
+
+// This task overwrites our careful tsickle-lowered Decorators with normal .js emit.
+// So it should only be run after asserting on the .js file content.
+gulp.task('!test.compiler_cli.verify_codegen',
+          function(done) { runTsc('tools/compiler_cli/test', done); });
+
+// End-to-end test for compiler CLI.
+// Calls the compiler using its command-line interface, then compiles the app with the codegen.
+// TODO(alexeagle): wire up the playground tests with offline compilation, similar to dart.
+gulp.task('test.compiler_cli', ['!build.compiler_cli'], function(done) {
+  runSequence('!clean.compiler_cli', '!test.compiler_cli.codegen', '!test.compiler_cli.unit',
+              '!test.compiler_cli.verify_codegen', sequenceComplete(done));
+});
+
 // -----------------
 // orchestrated targets
 
@@ -1091,7 +1155,7 @@ gulp.task('!build.tools', function() {
   var sourcemaps = require('gulp-sourcemaps');
   var tsc = require('gulp-typescript');
 
-  var stream = gulp.src(['tools/**/*.ts'])
+  var stream = gulp.src(['tools/**/*.ts', '!tools/compiler_cli/**'])
                    .pipe(sourcemaps.init())
                    .pipe(tsc({
                      target: 'ES5',
@@ -1197,6 +1261,8 @@ gulp.task('!bundle.js.prod', ['build.js.prod'], function() {
           bundler.bundle(bundleConfig, HTTP_BUNDLE_CONTENT, './dist/build/http.js', bundlerConfig),
           bundler.bundle(bundleConfig, ROUTER_BUNDLE_CONTENT, './dist/build/router.js',
                          bundlerConfig),
+          bundler.bundle(bundleConfig, ALT_ROUTER_BUNDLE_CONTENT, './dist/build/alt_router.js',
+                         bundlerConfig),
           bundler.bundle(bundleConfig, UPGRADE_BUNDLE_CONTENT, './dist/build/upgrade.js',
                          bundlerConfig)
         ]);
@@ -1216,6 +1282,8 @@ gulp.task('!bundle.js.min', ['build.js.prod'], function() {
           bundler.bundle(bundleConfig, HTTP_BUNDLE_CONTENT, './dist/build/http.min.js',
                          bundlerConfig),
           bundler.bundle(bundleConfig, ROUTER_BUNDLE_CONTENT, './dist/build/router.min.js',
+                         bundlerConfig),
+          bundler.bundle(bundleConfig, ALT_ROUTER_BUNDLE_CONTENT, './dist/build/alt_router.min.js',
                          bundlerConfig),
           bundler.bundle(bundleConfig, UPGRADE_BUNDLE_CONTENT, './dist/build/upgrade.min.js',
                          bundlerConfig)
@@ -1239,6 +1307,8 @@ gulp.task('!bundle.js.dev', ['build.js.dev'], function() {
                          bundlerConfig),
           bundler.bundle(devBundleConfig, ROUTER_BUNDLE_CONTENT, './dist/build/router.dev.js',
                          bundlerConfig),
+          bundler.bundle(devBundleConfig, ALT_ROUTER_BUNDLE_CONTENT,
+                         './dist/build/alt_router.dev.js', bundlerConfig),
           bundler.bundle(devBundleConfig, UPGRADE_BUNDLE_CONTENT, './dist/build/upgrade.dev.js',
                          bundlerConfig)
         ]);
@@ -1359,6 +1429,7 @@ gulp.task('!bundle.js.prod.deps', ['!bundle.js.prod'], function() {
   return merge2(bundler.modify(['dist/build/angular2.js'], 'angular2.js'),
                 bundler.modify(['dist/build/http.js'], 'http.js'),
                 bundler.modify(['dist/build/router.js'], 'router.js'),
+                bundler.modify(['dist/build/alt_router.js'], 'alt_router.js'),
                 bundler.modify(['dist/build/upgrade.js'], 'upgrade.js'))
       .pipe(gulp.dest('dist/js/bundle'));
 });
@@ -1370,6 +1441,7 @@ gulp.task('!bundle.js.min.deps', ['!bundle.js.min'], function() {
   return merge2(bundler.modify(['dist/build/angular2.min.js'], 'angular2.min.js'),
                 bundler.modify(['dist/build/http.min.js'], 'http.min.js'),
                 bundler.modify(['dist/build/router.min.js'], 'router.min.js'),
+                bundler.modify(['dist/build/alt_router.min.js'], 'alt_router.min.js'),
                 bundler.modify(['dist/build/upgrade.min.js'], 'upgrade.min.js'))
       .pipe(uglify())
       .pipe(gulp.dest('dist/js/bundle'));
@@ -1401,6 +1473,7 @@ gulp.task('!bundle.js.dev.deps', ['!bundle.js.dev'], function() {
   return merge2(bundler.modify(['dist/build/angular2.dev.js'], 'angular2.dev.js'),
                 bundler.modify(['dist/build/http.dev.js'], 'http.dev.js'),
                 bundler.modify(['dist/build/router.dev.js'], 'router.dev.js'),
+                bundler.modify(['dist/build/alt_router.dev.js'], 'alt_router.dev.js'),
                 bundler.modify(['dist/build/upgrade.dev.js'], 'upgrade.dev.js'))
       .pipe(gulp.dest('dist/js/bundle'));
 });
@@ -1506,13 +1579,16 @@ process.on('beforeExit', function() {
 
 
 var firstTask = true;
+
+
+
 gulp.on('task_start', (e) => {
   if (firstTask) {
     firstTask = false;
     analytics.buildSuccess('gulp <startup>', process.uptime() * 1000);
   }
 
-  analytics.buildStart('gulp ' + e.task)
+  analytics.buildStart('gulp ' + e.task);
 });
-gulp.on('task_stop', (e) => {analytics.buildSuccess('gulp ' + e.task, e.duration * 1000)});
-gulp.on('task_err', (e) => {analytics.buildError('gulp ' + e.task, e.duration * 1000)});
+gulp.on('task_stop', (e) => { analytics.buildSuccess('gulp ' + e.task, e.duration * 1000); });
+gulp.on('task_err', (e) => { analytics.buildError('gulp ' + e.task, e.duration * 1000); });

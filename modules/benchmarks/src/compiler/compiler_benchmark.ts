@@ -1,12 +1,12 @@
-import {bootstrap} from 'angular2/platform/browser';
-import {BrowserDomAdapter} from 'angular2/src/platform/browser/browser_adapter';
-import {DOM} from 'angular2/src/platform/dom/dom_adapter';
-import {PromiseWrapper} from 'angular2/src/facade/async';
-import {ListWrapper, Map, MapWrapper} from 'angular2/src/facade/collection';
-import {DateWrapper, Type, print, isPresent} from 'angular2/src/facade/lang';
+import {bootstrap} from '@angular/platform-browser';
+import {BrowserDomAdapter} from '@angular/platform-browser/src/browser/browser_adapter';
+import {DOM} from '@angular/platform-browser/src/dom/dom_adapter';
+import {PromiseWrapper} from '@angular/facade';
+import {ListWrapper, Map, MapWrapper} from '@angular/facade';
+import {DateWrapper, Type, print, isPresent} from '@angular/facade';
 
 import {
-  Compiler,
+  ComponentResolver,
   Component,
   Directive,
   ViewContainerRef,
@@ -14,11 +14,11 @@ import {
   provide,
   Provider,
   ViewMetadata
-} from 'angular2/core';
+} from '@angular/core';
 
-import {CompilerConfig, ViewResolver} from 'angular2/compiler';
+import {CompilerConfig, ViewResolver} from '@angular/compiler';
 
-import {getIntParameter, bindAction} from 'angular2/src/testing/benchmark_util';
+import {getIntParameter, bindAction} from '@angular/testing/src/benchmark_util';
 
 function _createBindings(): Provider[] {
   var multiplyTemplatesBy = getIntParameter('elements');
@@ -40,7 +40,7 @@ export function main() {
   BrowserDomAdapter.makeCurrent();
   bootstrap(CompilerAppComponent, _createBindings())
       .then((ref) => {
-        var app = ref.hostComponent;
+        var app = ref.instance;
         bindAction('#compileNoBindings',
                    measureWrapper(() => app.compileNoBindings(), 'No Bindings'));
         bindAction('#compileWithBindings',
@@ -91,15 +91,15 @@ class MultiplyViewResolver extends ViewResolver {
 
 @Component({selector: 'app', directives: [], template: ``})
 class CompilerAppComponent {
-  constructor(private _compiler: Compiler) {}
+  constructor(private _compiler: ComponentResolver) {}
   compileNoBindings() {
     this._compiler.clearCache();
-    return this._compiler.compileInHost(BenchmarkComponentNoBindings);
+    return this._compiler.resolveComponent(BenchmarkComponentNoBindings);
   }
 
   compileWithBindings() {
     this._compiler.clearCache();
-    return this._compiler.compileInHost(BenchmarkComponentWithBindings);
+    return this._compiler.resolveComponent(BenchmarkComponentWithBindings);
   }
 }
 

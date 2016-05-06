@@ -1,6 +1,6 @@
-import {Injector, bind, provide, Provider} from 'angular2/src/core/di';
-import {isPresent, isBlank} from 'angular2/src/facade/lang';
-import {PromiseWrapper} from 'angular2/src/facade/async';
+import {Injector, bind, provide, Provider, ReflectiveInjector} from '@angular/core';
+import {isPresent, isBlank} from '@angular/facade';
+import {PromiseWrapper} from '@angular/facade';
 
 import {Sampler, SampleState} from './sampler';
 import {ConsoleReporter} from './reporter/console_reporter';
@@ -52,7 +52,7 @@ export class Runner {
       sampleBindings.push(bindings);
     }
 
-    var inj = Injector.resolveAndCreate(sampleBindings);
+    var inj = ReflectiveInjector.resolveAndCreate(sampleBindings);
     var adapter = inj.get(WebDriverAdapter);
 
     return PromiseWrapper
@@ -66,7 +66,7 @@ export class Runner {
           // Only WebDriverAdapter is reused.
           // TODO vsavkin consider changing it when toAsyncFactory is added back or when child
           // injectors are handled better.
-          var injector = Injector.resolveAndCreate([
+          var injector = ReflectiveInjector.resolveAndCreate([
             sampleBindings,
             bind(Options.CAPABILITIES).toValue(capabilities),
             bind(Options.USER_AGENT).toValue(userAgent),

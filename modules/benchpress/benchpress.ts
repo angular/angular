@@ -1,4 +1,4 @@
-import {bind, provide} from 'angular2/src/core/di';
+import {bind, provide} from '@angular/core/src/di';
 import {Options} from './common';
 
 export * from './common';

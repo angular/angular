@@ -7,14 +7,14 @@ import {
   expect,
   beforeEach,
   afterEach
-} from 'angular2/testing_internal';
-import {Date, DateWrapper} from 'angular2/src/facade/lang';
-import {ListWrapper} from 'angular2/src/facade/collection';
+} from '@angular/testing/testing_internal';
+import {Date, DateWrapper} from '@angular/facade';
+import {ListWrapper} from '@angular/facade';
 
 import {
   Validator,
   RegressionSlopeValidator,
-  Injector,
+  ReflectiveInjector,
   bind,
   provide,
   MeasureValues
@@ -25,11 +25,11 @@ export function main() {
     var validator;
 
     function createValidator({size, metric}) {
-      validator = Injector.resolveAndCreate([
-                            RegressionSlopeValidator.BINDINGS,
-                            bind(RegressionSlopeValidator.METRIC).toValue(metric),
-                            bind(RegressionSlopeValidator.SAMPLE_SIZE).toValue(size)
-                          ])
+      validator = ReflectiveInjector.resolveAndCreate([
+                                      RegressionSlopeValidator.BINDINGS,
+                                      bind(RegressionSlopeValidator.METRIC).toValue(metric),
+                                      bind(RegressionSlopeValidator.SAMPLE_SIZE).toValue(size)
+                                    ])
                       .get(RegressionSlopeValidator);
     }
 

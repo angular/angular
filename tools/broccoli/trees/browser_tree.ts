@@ -51,6 +51,7 @@ const kServedPaths = [
   'playground/src/key_events',
   'playground/src/relative_assets',
   'playground/src/routing',
+  'playground/src/alt_routing',
   'playground/src/sourcemap',
   'playground/src/svg',
   'playground/src/todo',

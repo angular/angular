@@ -5,7 +5,7 @@ import fse = require('fs-extra');
 import path = require('path');
 import * as ts from 'typescript';
 import {wrapDiffingPlugin, DiffingBroccoliPlugin, DiffResult} from './diffing-broccoli-plugin';
-import {MetadataCollector} from '../metadata';
+import {MetadataCollector} from '../ts-metadata-collector';
 
 type FileRegistry = ts.Map<{version: number}>;
 
@@ -83,6 +83,7 @@ class DiffingTSCompiler implements DiffingBroccoliPlugin {
     }
 
     this.tsOpts.rootDir = inputPath;
+    this.tsOpts.baseUrl = inputPath;
     this.tsOpts.outDir = this.cachePath;
 
     this.tsServiceHost = new CustomLanguageServiceHost(this.tsOpts, this.rootFilePaths,

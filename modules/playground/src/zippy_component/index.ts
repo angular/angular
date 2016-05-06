@@ -1,6 +1,6 @@
-import {bootstrap} from 'angular2/platform/browser';
-import {Component} from 'angular2/core';
-import {Zippy} from './zippy';
+import {bootstrap} from '@angular/platform-browser-dynamic';
+import {Component} from '@angular/core';
+import {Zippy} from './app/zippy';
 
 @Component({
   selector: 'zippy-app',
@@ -9,7 +9,7 @@ import {Zippy} from './zippy';
       This is some content.
     </zippy>
     <ul>
-      <li *ngFor="var log of logs">{{log}}</li>
+      <li *ngFor="let  log of logs">{{log}}</li>
     </ul>
   `,
   directives: [Zippy]

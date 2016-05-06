@@ -9,16 +9,16 @@ import {
   inject,
   it,
   xit,
-} from 'angular2/testing_internal';
+} from '@angular/testing/testing_internal';
 
-import {PromiseWrapper} from 'angular2/src/facade/async';
-import {Json, isBlank, isPresent} from 'angular2/src/facade/lang';
+import {PromiseWrapper} from '@angular/facade';
+import {Json, isBlank, isPresent} from '@angular/facade';
 
 import {
   WebDriverExtension,
   IOsDriverExtension,
   WebDriverAdapter,
-  Injector,
+  ReflectiveInjector,
   bind,
   provide
 } from 'benchpress/common';
@@ -37,12 +37,12 @@ export function main() {
         perfRecords = [];
       }
       log = [];
-      extension =
-          Injector.resolveAndCreate([
-                    IOsDriverExtension.BINDINGS,
-                    provide(WebDriverAdapter, {useValue: new MockDriverAdapter(log, perfRecords)})
-                  ])
-              .get(IOsDriverExtension);
+      extension = ReflectiveInjector.resolveAndCreate([
+                                      IOsDriverExtension.BINDINGS,
+                                      provide(WebDriverAdapter,
+                                              {useValue: new MockDriverAdapter(log, perfRecords)})
+                                    ])
+                      .get(IOsDriverExtension);
       return extension;
     }
 

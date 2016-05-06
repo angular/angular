@@ -1,7 +1,7 @@
-import {bootstrap} from 'angular2/platform/browser';
-import {Component} from 'angular2/core';
-import {NgFor} from 'angular2/common';
-import {Store, Todo, TodoFactory} from './services/TodoStore';
+import {bootstrap} from '@angular/platform-browser-dynamic';
+import {Component} from '@angular/core';
+import {NgFor} from '@angular/common';
+import {Store, Todo, TodoFactory} from './app/TodoStore';
 
 @Component({
   selector: 'todo-app',

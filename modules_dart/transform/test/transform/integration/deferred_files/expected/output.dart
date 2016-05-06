@@ -8,7 +8,7 @@ library angular2.test.transform.integration.deferred;
 const indexContents = '''
 library web_foo;
 
-import 'index.template.dart' as ngStaticInit;import 'bar.template.dart' deferred as bar;
+import 'index.ngfactory.dart' as ngStaticInit;import 'bar.ngfactory.dart' deferred as bar;
 
 void main() {
   bar.loadLibrary().then((_) {bar.initReflector();}).then((_) {
@@ -22,7 +22,7 @@ library bar;
 
 import 'package:angular2/src/core/metadata.dart';
 
-import 'dep.template.dart' deferred as dep;
+import 'dep.ngfactory.dart' deferred as dep;
 
 @Component(selector: '[soup]')
 @View(template: '')

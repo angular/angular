@@ -76,7 +76,7 @@ module.exports = function makeNodeTree(projects, destinationPath) {
       'angular2/test/animate/**',
       'angular2/test/core/zone/**',
       'angular2/test/testing/fake_async_spec.ts',
-      'angular2/test/testing/testing_public_spec.ts',
+      'angular2/test/testing/testing_public_browser_spec.ts',
       'angular2/test/platform/xhr_impl_spec.ts',
       'angular2/test/platform/browser/**/*.ts',
       'angular2/test/common/forms/**',
@@ -152,7 +152,10 @@ module.exports = function makeNodeTree(projects, destinationPath) {
   compiledTree = replace(compiledTree, {
     files: ['**/*.d.ts'],
     patterns: [
+      // all readonly keywords
       {match: /^(\s*(static\s+|private\s+)*)readonly\s+/mg, replacement: "$1"},
+      // abstract properties (but not methods or classes)
+      {match: /^(\s+)abstract\s+([^\(\n]*$)/mg, replacement: "$1$2"},
     ]
   });
 

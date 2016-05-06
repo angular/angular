@@ -7,21 +7,29 @@ import {
   expect,
   beforeEach,
   afterEach
-} from 'angular2/testing_internal';
-import {Date, DateWrapper} from 'angular2/src/facade/lang';
-import {ListWrapper} from 'angular2/src/facade/collection';
+} from '@angular/testing/testing_internal';
+import {Date, DateWrapper} from '@angular/facade';
+import {ListWrapper} from '@angular/facade';
 
-import {Validator, SizeValidator, Injector, bind, provide, MeasureValues} from 'benchpress/common';
+import {
+  Validator,
+  SizeValidator,
+  ReflectiveInjector,
+  bind,
+  provide,
+  MeasureValues
+} from 'benchpress/common';
 
 export function main() {
   describe('size validator', () => {
     var validator;
 
     function createValidator(size) {
-      validator =
-          Injector.resolveAndCreate(
-                      [SizeValidator.BINDINGS, bind(SizeValidator.SAMPLE_SIZE).toValue(size)])
-              .get(SizeValidator);
+      validator = ReflectiveInjector.resolveAndCreate([
+                                      SizeValidator.BINDINGS,
+                                      bind(SizeValidator.SAMPLE_SIZE).toValue(size)
+                                    ])
+                      .get(SizeValidator);
     }
 
     it('should return sampleSize as description', () => {
