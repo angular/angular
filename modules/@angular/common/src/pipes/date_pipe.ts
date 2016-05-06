@@ -1,30 +1,20 @@
+import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
 import {PipeTransform, Pipe, Injectable} from '@angular/core';
 import {
   isDate,
   isNumber,
-<<<<<<< HEAD:modules/angular2/src/common/pipes/date_pipe.ts
   isPresent,
   isString,
   Date,
-=======
->>>>>>> angular/master:modules/@angular/common/src/pipes/date_pipe.ts
   DateWrapper,
   isBlank,
-<<<<<<< HEAD:modules/angular2/src/common/pipes/date_pipe.ts
   FunctionWrapper,
   RegExpWrapper
-} from 'angular2/src/facade/lang';
-import {DateFormatter} from 'angular2/src/facade/intl';
-import {PipeTransform, WrappedValue, Pipe, Injectable} from 'angular2/core';
-import {StringMapWrapper, ListWrapper} from 'angular2/src/facade/collection';
-=======
 } from '../../src/facade/lang';
 import {DateFormatter} from '../../src/facade/intl';
 import {StringMapWrapper} from '../../src/facade/collection';
->>>>>>> angular/master:modules/@angular/common/src/pipes/date_pipe.ts
 
 import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
-
 
 // TODO: move to a global configurable location along with other i18n components.
 var defaultLocale: string = 'en-US';
@@ -113,12 +103,7 @@ export class DatePipe implements PipeTransform {
     'shortTime': 'jm'
   };
 
-<<<<<<< HEAD:modules/angular2/src/common/pipes/date_pipe.ts
-  transform(value: any, args: any[]): string {
-=======
-
   transform(value: any, pattern: string = 'mediumDate'): string {
->>>>>>> angular/master:modules/@angular/common/src/pipes/date_pipe.ts
     if (isBlank(value)) return null;
 
     if (!this.supports(value)) {

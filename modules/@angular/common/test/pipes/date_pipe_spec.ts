@@ -30,10 +30,14 @@ export function main() {
     describe("supports", () => {
       it("should support date", () => { expect(pipe.supports(date)).toBe(true); });
       it("should support int", () => { expect(pipe.supports(123456789)).toBe(true); });
+      it("should support date iso string",
+         () => { expect(pipe.supports('2016-04-15T18:06:08-07:00')).toBe(true); });
 
       it("should not support other objects", () => {
         expect(pipe.supports(new Object())).toBe(false);
         expect(pipe.supports(null)).toBe(false);
+        expect(pipe.supports('definetely not iso date')).toBe(false);
+        expect(pipe.supports('january 2015 13 friday')).toBe(false);
       });
     });
 
