@@ -29,16 +29,12 @@ export interface CanReuse {
                  currTree?: RouteTree): boolean;
 }
 
-/**
- * Defines route lifecycle method `routerOnDeactivate`, which is called by the router before
- * destroying a component as part of a route change.
- *
- * The `routerOnDeactivate` hook is called with two {@link RouteTree}s, representing the current
- * and the future state of the application.
- *
- * `routerOnDeactivate` must return a promise. The route change will wait until the promise settles.
- */
 export interface CanDeactivate {
   routerCanDeactivate(curr?: RouteSegment, currTree?: RouteTree,
                       futureTree?: RouteTree): Promise<boolean>;
+}
+
+export interface CanDeactivateChild {
+  routerCanDeactivate(childSegment: RouteSegment, childComponent: Object, curr?: RouteSegment,
+                      currTree?: RouteTree, futureTree?: RouteTree): Promise<boolean>;
 }

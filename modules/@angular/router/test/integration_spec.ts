@@ -11,9 +11,9 @@ import {
   it,
   xit
 } from '@angular/core/testing/testing_internal';
-import {fakeAsync, tick} from '@angular/core/testing';
+import {fakeAsync, tick, Log} from '@angular/core/testing';
 import {ComponentFixture, TestComponentBuilder} from '@angular/compiler/testing';
-import {provide, Component, ComponentResolver} from '@angular/core';
+import {provide, Component, ComponentResolver, forwardRef} from '@angular/core';
 import {PromiseWrapper} from '../src/facade/async';
 
 
@@ -29,6 +29,7 @@ import {
   OnActivate,
   OnDeactivate,
   CanDeactivate,
+  CanDeactivateChild,
   CanReuse
 } from '@angular/router';
 import {SpyLocation} from '@angular/common/testing';
@@ -207,6 +208,25 @@ export function main() {
          expect(team).not.toBe(reusable);
        })));
 
+    it('should invoke lifecycle hooks',
+       fakeAsync(inject([Router, TestComponentBuilder, Location, Log], (router, tcb, location,
+                                                                        log) => {
+         let fixture = tcb.createFakeAsync(RootCmp);
+
+         router.navigateByUrl('/lifecycle/1/lifecycle/2');
+         advance(fixture);
+
+         expect(log.result()).toEqual("onActivate1; onActivate2");
+         log.clear();
+
+         router.navigateByUrl('/lifecycle/3');
+         advance(fixture);
+
+         expect(log.result())
+             .toEqual(
+                 "canDeactivate2; canDeactivateChild1_2; canDeactivate1; onDeactivate2; onDeactivate1; onActivate3");
+       })));
+
     if (getDOM().supportsDOMEvents()) {
       it("should support absolute router links",
          fakeAsync(inject([Router, TestComponentBuilder], (router, tcb) => {
@@ -375,6 +395,37 @@ class TeamCmp implements OnActivate {
 }
 
 @Component({
+  selector: 'lifecycle-cmp',
+  template: `<router-outlet></router-outlet>`,
+  directives: ROUTER_DIRECTIVES
+})
+@Routes([new Route({path: '/lifecycle/:id', component: forwardRef(() => LifecycleCmp)})])
+class LifecycleCmp implements OnActivate,
+    OnDeactivate, CanDeactivate, CanDeactivateChild {
+  constructor(private log: Log) {}
+
+  routerOnActivate(curr: RouteSegment, prev?, currTree?, prevTree?): void {
+    this.log.add(`onActivate${curr.getParam('id')}`);
+  }
+
+  routerOnDeactivate(curr?: RouteSegment, currTree?, futureTree?): void {
+    this.log.add(`onDeactivate${curr.getParam('id')}`);
+  }
+
+  routerCanDeactivate(curr?: RouteSegment, currTree?, futureTree?): Promise<boolean> {
+    this.log.add(`canDeactivate${curr.getParam('id')}`);
+    return PromiseWrapper.resolve(true);
+  }
+
+  routerCanDeactivateChild(childSegment: RouteSegment, childComp: Object, curr?: RouteSegment,
+                           currTree?, futureTree?): Promise<boolean> {
+    this.log.add(`canDeactivateChild${curr.getParam('id')}_${childSegment.getParam('id')}`);
+    return PromiseWrapper.resolve(true);
+  }
+}
+
+
+@Component({
   selector: 'root-cmp',
   template: `<router-outlet></router-outlet>`,
   directives: [ROUTER_DIRECTIVES]
@@ -382,7 +433,8 @@ class TeamCmp implements OnActivate {
 @Routes([
   new Route({path: 'team/:id', component: TeamCmp}),
   new Route({path: 'deactivatable', component: DeactivatableCmp}),
-  new Route({path: 'reusable/:id', component: ReusableCmp})
+  new Route({path: 'reusable/:id', component: ReusableCmp}),
+  new Route({path: '/lifecycle/:id', component: LifecycleCmp})
 ])
 class RootCmp {
 }
