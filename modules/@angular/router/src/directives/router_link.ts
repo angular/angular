@@ -14,8 +14,8 @@ import {
   OnDestroy,
   Optional
 } from '@angular/core';
-import {RouterOutletMap, Router} from '../router';
-import {RouteSegment, UrlSegment, Tree} from '../segments';
+import {RouterOutletMap, Router, RouteSegmentContainer} from '../router';
+import {RouteSegment} from '../segments';
 import {isString, isArray, isPresent} from '../facade/lang';
 import {ObservableWrapper} from '../facade/async';
 
@@ -59,7 +59,8 @@ export class RouterLink implements OnDestroy {
   @HostBinding() href: string;
   @HostBinding('class.router-link-active') isActive: boolean = false;
 
-  constructor(private _routeSegment: RouteSegment, private _router: Router) {
+  constructor(@Optional() private _routeSegmentContainer: RouteSegmentContainer,
+              private _router: Router) {
     // because auxiliary links take existing primary and auxiliary routes into account,
     // we need to update the link whenever params or other routes change.
     this._subscription =
@@ -97,5 +98,9 @@ export class RouterLink implements OnDestroy {
     } else {
       this.isActive = false;
     }
+  }
+
+  private get _routeSegment(): RouteSegment {
+    return isPresent(this._routeSegmentContainer) ? this._routeSegmentContainer.routeSegment : null;
   }
 }

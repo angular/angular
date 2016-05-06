@@ -1,6 +1,7 @@
 import {ComponentFactory, Type} from '@angular/core';
 import {StringMapWrapper, ListWrapper} from './facade/collection';
 import {isBlank, isPresent, stringify, NumberWrapper} from './facade/lang';
+import {BaseException} from './facade/exceptions';
 import {DEFAULT_OUTLET_NAME} from './constants';
 
 export class Tree<T> {
@@ -16,15 +17,9 @@ export class Tree<T> {
     return p.length > 1 ? p[p.length - 2] : null;
   }
 
-  children(t: T): T[] {
-    let n = _findNode(t, this._root);
-    return isPresent(n) ? n.children.map(t => t.value) : null;
-  }
+  children(t: T): T[] { return _findNode(t, this._root).children.map(t => t.value); }
 
-  firstChild(t: T): T {
-    let n = _findNode(t, this._root);
-    return isPresent(n) && n.children.length > 0 ? n.children[0].value : null;
-  }
+  firstChild(t: T): T { return _findNode(t, this._root).children[0].value; }
 
   pathFromRoot(t: T): T[] { return _findPath(t, this._root, []).map(s => s.value); }
 
@@ -49,7 +44,8 @@ function _findNode<T>(expected: T, c: TreeNode<T>): TreeNode<T> {
     let r = _findNode(expected, cc);
     if (isPresent(r)) return r;
   }
-  return null;
+
+  throw new BaseException(`Cannot find '${expected}'`);
 }
 
 function _findPath<T>(expected: T, c: TreeNode<T>, collected: TreeNode<T>[]): TreeNode<T>[] {
@@ -61,7 +57,7 @@ function _findPath<T>(expected: T, c: TreeNode<T>, collected: TreeNode<T>[]): Tr
     if (isPresent(r)) return r;
   }
 
-  return null;
+  throw new BaseException(`Cannot find '${expected}'`);
 }
 
 function _contains<T>(tree: TreeNode<T>, subtree: TreeNode<T>): boolean {

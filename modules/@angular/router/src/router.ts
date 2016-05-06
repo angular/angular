@@ -34,6 +34,8 @@ export class RouterOutletMap {
   registerOutlet(name: string, outlet: RouterOutlet): void { this._outlets[name] = outlet; }
 }
 
+export abstract class RouteSegmentContainer { abstract get routeSegment(): RouteSegment; }
+
 /**
  * The `Router` is responsible for mapping URLs to components.
  *
@@ -179,21 +181,100 @@ class _ActivateSegments {
     let prevRoot = isPresent(this.prevTree) ? rootNode(this.prevTree) : null;
     let currRoot = rootNode(this.currTree);
 
-    return this.canDeactivate(currRoot, prevRoot, parentOutletMap, rootComponent)
+    let l = new _LifecycleCollector(this.currTree, this.prevTree);
+    return l.canDeactivate(currRoot, prevRoot, parentOutletMap, rootComponent)
         .then(res => {
           this.performMutation = true;
           if (res) {
-            this.activateChildSegments(currRoot, prevRoot, parentOutletMap, [rootComponent]);
+            this.activateChildSegments(currRoot, prevRoot, parentOutletMap);
           }
           return res;
         });
   }
 
-  private canDeactivate(currRoot: TreeNode<RouteSegment>, prevRoot: TreeNode<RouteSegment>,
-                        outletMap: RouterOutletMap, rootComponent: Object): Promise<boolean> {
-    this.performMutation = false;
-    this.activateChildSegments(currRoot, prevRoot, outletMap, [rootComponent]);
+  private activateChildSegments(currNode: TreeNode<RouteSegment>, prevNode: TreeNode<RouteSegment>,
+                                outletMap: RouterOutletMap): void {
+    var prevChildren = _childrenToMap(prevNode);
+    currNode.children.forEach(c => {
+      this.activateSegments(c, prevChildren[c.value.outlet], outletMap);
+      StringMapWrapper.delete(prevChildren, c.value.outlet);
+    });
+    StringMapWrapper.forEach(
+        prevChildren, (v, k) => this.deactivateOutletAndItChildren(outletMap._outlets[k], v));
+  }
 
+  activateSegments(currNode: TreeNode<RouteSegment>, prevNode: TreeNode<RouteSegment>,
+                   parentOutletMap: RouterOutletMap): void {
+    let curr = currNode.value;
+    let prev = isPresent(prevNode) ? prevNode.value : null;
+    let outlet = _getOutlet(parentOutletMap, currNode.value);
+
+    if (curr === prev) {
+      this.activateChildSegments(currNode, prevNode, outlet.outletMap);
+    } else {
+      if (this.routerCanReuse(outlet, curr, prev)) {
+        this.invokeOnDeactivateIfNeeded(outlet, prev);
+        this.invokeOnActivateIfNeeded(outlet, curr, prev);
+        this.activateChildSegments(currNode, prevNode, outlet.outletMap);
+
+      } else {
+        this.deactivateOutletAndItChildren(outlet, prev);
+        let outletMap = new RouterOutletMap();
+        let component = this.activateNewSegments(outletMap, curr, prev, outlet);
+        this.activateChildSegments(currNode, prevNode, outletMap);
+      }
+    }
+  }
+
+  private activateNewSegments(outletMap: RouterOutletMap, curr: RouteSegment, prev: RouteSegment,
+                              outlet: RouterOutlet): Object {
+    let resolved = ReflectiveInjector.resolve([
+      provide(RouterOutletMap, {useValue: outletMap}),
+      provide(RouteSegmentContainer, {useValue: outlet})
+    ]);
+    let ref = outlet.activate(routeSegmentComponentFactory(curr), curr, resolved, outletMap);
+    this.invokeOnActivateIfNeeded(outlet, curr, prev);
+    return ref.instance;
+  }
+
+  private deactivateOutletAndItChildren(outlet: RouterOutlet, prev: RouteSegment): void {
+    if (isPresent(outlet) && outlet.isActivated) {
+      StringMapWrapper.forEach(outlet.outletMap._outlets,
+                               (v, k) => this.deactivateOutletAndItChildren(v, prev));
+      this.invokeOnDeactivateIfNeeded(outlet, prev);
+      outlet.deactivate();
+    }
+  }
+
+  private invokeOnActivateIfNeeded(outlet: RouterOutlet, curr: RouteSegment,
+                                   prev: RouteSegment): void {
+    if (hasLifecycleHook("routerOnActivate", outlet.component)) {
+      outlet.component.routerOnActivate(curr, prev, this.currTree, this.prevTree);
+    }
+  }
+
+  private invokeOnDeactivateIfNeeded(outlet: RouterOutlet, curr: RouteSegment): void {
+    if (hasLifecycleHook("routerOnDeactivate", outlet.component)) {
+      outlet.component.routerOnDeactivate(curr, this.prevTree, this.currTree);
+    }
+  }
+
+  private routerCanReuse(outlet: RouterOutlet, curr: RouteSegment, prev: RouteSegment): boolean {
+    return isPresent(prev) && curr.type === prev.type && outlet.isActivated &&
+           hasLifecycleHook("routerCanReuse", outlet.component) &&
+           outlet.component.routerCanReuse(curr, prev, this.currTree, this.prevTree);
+  }
+}
+
+
+class _LifecycleCollector {
+  private deactivations: Object[][] = [];
+
+  constructor(private currTree: RouteTree, private prevTree: RouteTree) {}
+
+  canDeactivate(currRoot: TreeNode<RouteSegment>, prevRoot: TreeNode<RouteSegment>,
+                outletMap: RouterOutletMap, rootComponent: Object): Promise<boolean> {
+    this.walkChildSegments(currRoot, prevRoot, outletMap, [rootComponent]);
     let allPaths = PromiseWrapper.all(this.deactivations.map(r => this.checkCanDeactivatePath(r)));
     return allPaths.then((values: boolean[]) => values.filter(v => v).length === values.length);
   }
@@ -212,77 +293,59 @@ class _ActivateSegments {
     return curr;
   }
 
-  private activateChildSegments(currNode: TreeNode<RouteSegment>, prevNode: TreeNode<RouteSegment>,
-                                outletMap: RouterOutletMap, components: Object[]): void {
-    let prevChildren = isPresent(prevNode) ?
-                           prevNode.children.reduce(
-                               (m, c) => {
-                                 m[c.value.outlet] = c;
-                                 return m;
-                               },
-                               {}) :
-                           {};
-
+  private walkChildSegments(currNode: TreeNode<RouteSegment>, prevNode: TreeNode<RouteSegment>,
+                            outletMap: RouterOutletMap, components: Object[]): void {
+    var prevChildren = _childrenToMap(prevNode);
     currNode.children.forEach(c => {
-      this.activateSegments(c, prevChildren[c.value.outlet], outletMap, components);
+      this.walkSegment(c, prevChildren[c.value.outlet], outletMap, components);
       StringMapWrapper.delete(prevChildren, c.value.outlet);
     });
 
     StringMapWrapper.forEach(prevChildren,
-                             (v, k) => this.deactivateOutlet(outletMap._outlets[k], components));
+                             (v, k) => this.walkDeactivation(outletMap._outlets[k], components));
   }
 
-  activateSegments(currNode: TreeNode<RouteSegment>, prevNode: TreeNode<RouteSegment>,
-                   parentOutletMap: RouterOutletMap, components: Object[]): void {
+  walkSegment(currNode: TreeNode<RouteSegment>, prevNode: TreeNode<RouteSegment>,
+              parentOutletMap: RouterOutletMap, components: Object[]): void {
     let curr = currNode.value;
     let prev = isPresent(prevNode) ? prevNode.value : null;
-    let outlet = this.getOutlet(parentOutletMap, currNode.value);
-
+    let outlet = _getOutlet(parentOutletMap, currNode.value);
     if (curr === prev) {
-      this.activateChildSegments(currNode, prevNode, outlet.outletMap,
-                                 components.concat([outlet.component]));
+      this.walkChildSegments(currNode, prevNode, outlet.outletMap,
+                             components.concat([outlet.component]));
     } else {
-      this.deactivateOutlet(outlet, components);
-      if (this.performMutation) {
-        let outletMap = new RouterOutletMap();
-        let component = this.activateNewSegments(outletMap, curr, prev, outlet);
-        this.activateChildSegments(currNode, prevNode, outletMap, components.concat([component]));
-      }
+      this.walkDeactivation(outlet, components);
     }
   }
 
-  private activateNewSegments(outletMap: RouterOutletMap, curr: RouteSegment, prev: RouteSegment,
-                              outlet: RouterOutlet): Object {
-    let resolved = ReflectiveInjector.resolve(
-        [provide(RouterOutletMap, {useValue: outletMap}), provide(RouteSegment, {useValue: curr})]);
-    let ref = outlet.activate(routeSegmentComponentFactory(curr), resolved, outletMap);
-    if (hasLifecycleHook("routerOnActivate", ref.instance)) {
-      ref.instance.routerOnActivate(curr, prev, this.currTree, this.prevTree);
-    }
-    return ref.instance;
-  }
-
-  private getOutlet(outletMap: RouterOutletMap, segment: RouteSegment): RouterOutlet {
-    let outlet = outletMap._outlets[segment.outlet];
-    if (isBlank(outlet)) {
-      if (segment.outlet == DEFAULT_OUTLET_NAME) {
-        throw new BaseException(`Cannot find default outlet`);
-      } else {
-        throw new BaseException(`Cannot find the outlet ${segment.outlet}`);
-      }
-    }
-    return outlet;
-  }
-
-  private deactivateOutlet(outlet: RouterOutlet, components: Object[]): void {
+  private walkDeactivation(outlet: RouterOutlet, components: Object[]): void {
     if (isPresent(outlet) && outlet.isActivated) {
       StringMapWrapper.forEach(outlet.outletMap._outlets,
-                               (v, k) => this.deactivateOutlet(v, components));
-      if (this.performMutation) {
-        outlet.deactivate();
-      } else {
-        this.deactivations.push(components.concat([outlet.component]));
-      }
+                               (v, k) => this.walkDeactivation(v, components));
+      this.deactivations.push(components.concat([outlet.component]));
     }
   }
+}
+
+function _childrenToMap(node: TreeNode<RouteSegment>) {
+  return isPresent(node) ?
+             node.children.reduce(
+                 (m, c) => {
+                   m[c.value.outlet] = c;
+                   return m;
+                 },
+                 {}) :
+             {};
+};
+
+function _getOutlet(outletMap: RouterOutletMap, segment: RouteSegment): RouterOutlet {
+  let outlet = outletMap._outlets[segment.outlet];
+  if (isBlank(outlet)) {
+    if (segment.outlet == DEFAULT_OUTLET_NAME) {
+      throw new BaseException(`Cannot find default outlet`);
+    } else {
+      throw new BaseException(`Cannot find the outlet ${segment.outlet}`);
+    }
+  }
+  return outlet;
 }

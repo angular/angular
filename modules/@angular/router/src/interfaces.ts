@@ -13,6 +13,25 @@ export interface OnActivate {
 }
 
 /**
+ * Defines route lifecycle method `routerOnDeactivate`, which is called by the router at the end of
+ * a
+ * successful route deactivation.
+ */
+export interface OnDeactivate {
+  routerOnDeactivate(curr: RouteSegment, currTree?: RouteTree, futureTree?: RouteTree): void;
+}
+
+/**
+ * Defines route lifecycle method `routerOnReuse`, which is called by the router to determine if an
+ * outlet
+ * should be reused.
+ */
+export interface CanReuse {
+  routerCanReuse(curr: RouteSegment, prev?: RouteSegment, currTree?: RouteTree,
+                 prevTree?: RouteTree): boolean;
+}
+
+/**
  * Defines route lifecycle method `routerOnDeactivate`, which is called by the router before
  * destroying a component as part of a route change.
  *

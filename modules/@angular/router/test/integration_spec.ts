@@ -27,7 +27,9 @@ import {
   RouterUrlSerializer,
   DefaultRouterUrlSerializer,
   OnActivate,
-  CanDeactivate
+  OnDeactivate,
+  CanDeactivate,
+  CanReuse
 } from '@angular/router';
 import {SpyLocation} from '@angular/common/testing';
 import {Location} from '@angular/common';
@@ -154,6 +156,57 @@ export function main() {
          expect(location.path()).toEqual('/team/22/cannotDeactivate');
        })));
 
+    it('should call routerOnDeactivate when deactivating a component',
+       fakeAsync(inject([Router, TestComponentBuilder, Location], (router, tcb, location) => {
+         let fixture = tcb.createFakeAsync(RootCmp);
+
+         router.navigateByUrl('/deactivatable');
+         advance(fixture);
+         let deactivatable = fixture.debugElement.children[1].componentInstance;
+
+         router.navigateByUrl('/team/22/user/fedor');
+         advance(fixture);
+
+         expect(deactivatable.onDeactivateSegment.stringifiedUrlSegments).toEqual('deactivatable');
+       })));
+
+    it('should reuse components when implement CanReuse and return true',
+       fakeAsync(inject([Router, TestComponentBuilder, Location], (router, tcb, location) => {
+         let fixture = tcb.createFakeAsync(RootCmp);
+
+         router.navigateByUrl('/reusable/1');
+         advance(fixture);
+         let reusable1 = fixture.debugElement.children[1].componentInstance;
+         expect(reusable1.id).toEqual("1");
+
+         router.navigateByUrl('/reusable/2');
+         advance(fixture);
+         let reusable2 = fixture.debugElement.children[1].componentInstance;
+         expect(reusable2).toBe(reusable1);
+         expect(reusable2.id).toEqual("2");
+
+         reusable2.canReuseValue = false;
+         router.navigateByUrl('/reusable/3');
+         advance(fixture);
+         let reusable3 = fixture.debugElement.children[1].componentInstance;
+         expect(reusable2).not.toBe(reusable3);
+       })));
+
+    it('should not reuse components when switching component types',
+       fakeAsync(inject([Router, TestComponentBuilder, Location], (router, tcb, location) => {
+         let fixture = tcb.createFakeAsync(RootCmp);
+
+         router.navigateByUrl('/reusable/1');
+         advance(fixture);
+         let reusable = fixture.debugElement.children[1].componentInstance;
+
+         router.navigateByUrl('/team/33/user/john');
+         advance(fixture);
+         let team = fixture.debugElement.children[1].componentInstance;
+
+         expect(team).not.toBe(reusable);
+       })));
+
     if (getDOM().supportsDOMEvents()) {
       it("should support absolute router links",
          fakeAsync(inject([Router, TestComponentBuilder], (router, tcb) => {
@@ -273,6 +326,23 @@ class Simple2Cmp {
 class LinkCmp {
 }
 
+@Component({selector: 'deactivatable-cmp', template: ``})
+class DeactivatableCmp implements OnDeactivate {
+  onDeactivateSegment: RouteSegment = null;
+
+  routerOnDeactivate(s: RouteSegment, a?, b?): void { this.onDeactivateSegment = s; }
+}
+
+@Component({selector: 'reusable-cmp', template: ``})
+class ReusableCmp implements CanReuse {
+  canReuseValue: boolean = true;
+
+  id: string;
+  routerOnActivate(s: RouteSegment, a?, b?, c?) { this.id = s.getParam('id'); }
+
+  routerCanReuse(s: RouteSegment, a?, b?, c?): boolean { return this.canReuseValue; }
+}
+
 @Component({
   selector: 'link-cmp',
   template: `<a [routerLink]="['./simple']">relativelink</a> { <router-outlet></router-outlet> }`,
@@ -305,6 +375,10 @@ class TeamCmp implements OnActivate {
   template: `<router-outlet></router-outlet>`,
   directives: [ROUTER_DIRECTIVES]
 })
-@Routes([new Route({path: 'team/:id', component: TeamCmp})])
+@Routes([
+  new Route({path: 'team/:id', component: TeamCmp}),
+  new Route({path: 'deactivatable', component: DeactivatableCmp}),
+  new Route({path: 'reusable/:id', component: ReusableCmp})
+])
 class RootCmp {
 }
