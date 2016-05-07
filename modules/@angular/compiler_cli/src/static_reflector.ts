@@ -345,8 +345,12 @@ export class StaticReflector implements ReflectorReader {
             case "new":
             case "call":
               let target = expression['expression'];
-              staticSymbol =
+              if (target['module']) {
+                staticSymbol =
                   _this.host.findDeclaration(target['module'], target['name'], context.filePath);
+              } else {
+                staticSymbol = _this.host.getStaticSymbol(context.filePath, target['name']);
+              }
               let converter = _this.conversionMap.get(staticSymbol);
               if (converter) {
                 let args = expression['arguments'];
