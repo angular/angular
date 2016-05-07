@@ -46,11 +46,11 @@ export function main() {
     }
 
     it('should declare variables', () => {
-      expect(emitStmt(someVar.set(o.literal(1)).toDeclStmt())).toEqual(`var someVar = 1;`);
+      expect(emitStmt(someVar.set(o.literal(1)).toDeclStmt())).toEqual(`var someVar:any = 1;`);
       expect(emitStmt(someVar.set(o.literal(1)).toDeclStmt(null, [o.StmtModifier.Final])))
-          .toEqual(`const someVar = 1;`);
+          .toEqual(`const someVar:any = 1;`);
       expect(emitStmt(someVar.set(o.literal(1)).toDeclStmt(), ['someVar']))
-          .toEqual(`export var someVar = 1;`);
+          .toEqual(`export var someVar:any = 1;`);
       expect(emitStmt(someVar.set(o.literal(1)).toDeclStmt(o.INT_TYPE)))
           .toEqual(`var someVar:number = 1;`);
     });
@@ -186,7 +186,7 @@ export function main() {
             'try {',
             '  body();',
             '} catch (error) {',
-            '  const stack = error.stack;',
+            '  const stack:any = error.stack;',
             '  catchFn(error,stack);',
             '}'
           ].join('\n'));
@@ -235,7 +235,7 @@ export function main() {
       it('should support declaring fields', () => {
         expect(emitStmt(new o.ClassStmt('SomeClass', null, [new o.ClassField('someField')], [],
                                         null, [])))
-            .toEqual(['class SomeClass {', '  someField: any;', '}'].join('\n'));
+            .toEqual(['class SomeClass {', '  someField:any;', '}'].join('\n'));
         expect(emitStmt(new o.ClassStmt('SomeClass', null,
                                         [new o.ClassField('someField', o.INT_TYPE)], [], null, [])))
             .toEqual(['class SomeClass {', '  someField:number;', '}'].join('\n'));
@@ -249,7 +249,7 @@ export function main() {
       it('should support declaring getters', () => {
         expect(emitStmt(new o.ClassStmt('SomeClass', null, [],
                                         [new o.ClassGetter('someGetter', [])], null, [])))
-            .toEqual(['class SomeClass {', '  get someGetter() {', '  }', '}'].join('\n'));
+            .toEqual(['class SomeClass {', '  get someGetter():any {', '  }', '}'].join('\n'));
         expect(
             emitStmt(new o.ClassStmt('SomeClass', null, [],
                                      [new o.ClassGetter('someGetter', [], o.INT_TYPE)], null, [])))
@@ -258,13 +258,13 @@ export function main() {
                                         [new o.ClassGetter('someGetter', [callSomeMethod])], null,
                                         [])))
             .toEqual(
-                ['class SomeClass {', '  get someGetter() {', '    this.someMethod();', '  }', '}']
+                ['class SomeClass {', '  get someGetter():any {', '    this.someMethod();', '  }', '}']
                     .join('\n'));
         expect(
             emitStmt(new o.ClassStmt(
                 'SomeClass', null, [],
                 [new o.ClassGetter('someGetter', [], null, [o.StmtModifier.Private])], null, [])))
-            .toEqual(['class SomeClass {', '  private get someGetter() {', '  }', '}'].join('\n'));
+            .toEqual(['class SomeClass {', '  private get someGetter():any {', '  }', '}'].join('\n'));
       });
 
       it('should support methods', () => {

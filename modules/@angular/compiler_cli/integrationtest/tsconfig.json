@@ -9,7 +9,7 @@
     "compilerOptions": {
         "target": "es5",
         "experimentalDecorators": true,
-        "noImplicitAny": false,
+        "noImplicitAny": true,
         "moduleResolution": "node",
         "outDir": "../../../../dist/all/@angular/compiler_cli/integrationtest",
         "rootDir": "",
