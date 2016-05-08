@@ -62,6 +62,25 @@ export function main() {
          expect(location.path()).toEqual('/team/33/simple');
        })));
 
+    it('should navigate back and forward',
+      fakeAsync(inject([Router, TestComponentBuilder, Location], (router, tcb, location) => {
+        let fixture = tcb.createFakeAsync(RootCmp);
+
+        router.navigateByUrl('/team/33/simple');
+        advance(fixture);
+
+        router.navigateByUrl('/team/22/user/victor');
+        advance(fixture);
+
+        location.back();
+        advance(fixture);
+        expect(location.path()).toEqual('/team/33/simple');
+
+        location.forward();
+        advance(fixture);
+        expect(location.path()).toEqual('/team/22/user/victor');
+      })));
+
     it('should navigate when locations changes',
        fakeAsync(inject([Router, TestComponentBuilder, Location], (router, tcb, location) => {
          let fixture = tcb.createFakeAsync(RootCmp);

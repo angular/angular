@@ -148,23 +148,25 @@ export class Router {
 
   private _setUpLocationChangeListener(): void {
     this._locationSubscription = this._location.subscribe(
-        (change) => { this._navigate(this._urlSerializer.parse(change['url'])); });
+        (change) => { this._navigate(this._urlSerializer.parse(change['url']), change['pop']); });
   }
 
-  private _navigate(url: UrlTree): Promise<void> {
+  private _navigate(url: UrlTree, pop?: boolean): Promise<void> {
     this._urlTree = url;
     return recognize(this._componentResolver, this._rootComponentType, url, this._routeTree)
-        .then(currTree => {
-          return new _ActivateSegments(currTree, this._routeTree)
-              .activate(this._routerOutletMap, this._rootComponent)
-              .then(updated => {
-                if (updated) {
-                  this._routeTree = currTree;
-                  this._location.go(this._urlSerializer.serialize(this._urlTree));
-                  this._changes.emit(null);
-                }
-              });
-        });
+      .then(currTree => {
+        return new _ActivateSegments(currTree, this._routeTree)
+          .activate(this._routerOutletMap, this._rootComponent)
+          .then(updated => {
+            if (updated) {
+              this._routeTree = currTree;
+              if (isBlank(pop) || !pop) {
+                this._location.go(this._urlSerializer.serialize(this._urlTree));
+              }
+              this._changes.emit(null);
+            }
+          });
+      });
   }
 }
 
