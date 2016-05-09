@@ -2,7 +2,7 @@ import {CONST_EXPR} from 'angular2/src/facade/lang';
 import {EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
 import {
   OnChanges,
-  SimpleChange,
+  SimpleChanges,
   Query,
   Directive,
   forwardRef,
@@ -71,7 +71,7 @@ export class NgModel extends NgControl implements OnChanges {
     this.valueAccessor = selectValueAccessor(this, valueAccessors);
   }
 
-  ngOnChanges(changes: {[key: string]: SimpleChange}) {
+  ngOnChanges(changes: SimpleChanges) {
     if (!this._added) {
       setUpControl(this._control, this);
       this._control.updateValueAndValidity({emitEvent: false});

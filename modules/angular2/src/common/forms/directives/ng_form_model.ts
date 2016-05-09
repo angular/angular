@@ -2,7 +2,7 @@ import {CONST_EXPR} from 'angular2/src/facade/lang';
 import {ListWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
 import {ObservableWrapper, EventEmitter} from 'angular2/src/facade/async';
 import {
-  SimpleChange,
+  SimpleChanges,
   OnChanges,
   Directive,
   forwardRef,
@@ -113,7 +113,7 @@ export class NgFormModel extends ControlContainer implements Form,
     super();
   }
 
-  ngOnChanges(changes: {[key: string]: SimpleChange}): void {
+  ngOnChanges(changes: SimpleChanges): void {
     if (StringMapWrapper.contains(changes, "form")) {
       var sync = composeValidators(this._validators);
       this.form.validator = Validators.compose([this.form.validator, sync]);

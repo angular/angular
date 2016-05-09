@@ -7,7 +7,8 @@ export {
   OnChanges,
   OnDestroy,
   OnInit,
-  DoCheck
+  DoCheck,
+  SimpleChanges
 } from './linker/interfaces';
 export {DirectiveResolver} from './linker/directive_resolver';
 export {ViewResolver} from './linker/view_resolver';

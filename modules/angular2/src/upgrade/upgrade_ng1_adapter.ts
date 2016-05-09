@@ -6,6 +6,7 @@ import {
   Inject,
   OnChanges,
   SimpleChange,
+  SimpleChanges,
   Type
 } from 'angular2/core';
 import {
@@ -224,7 +225,7 @@ class UpgradeNg1ComponentAdapter implements OnChanges, DoCheck {
     }
   }
 
-  ngOnChanges(changes: {[name: string]: SimpleChange}) {
+  ngOnChanges(changes: SimpleChanges) {
     for (var name in changes) {
       if ((<Object>changes).hasOwnProperty(name)) {
         var change: SimpleChange = changes[name];

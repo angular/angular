@@ -13,6 +13,12 @@ export enum LifecycleHooks {
 }
 
 /**
+ * A `changes` object whose keys are property names and
+ * values are instances of {@link SimpleChange}. See {@link OnChanges}
+ */
+export interface SimpleChanges {[propName: string]: SimpleChange};
+
+/**
  * @internal
  */
 export var LIFECYCLE_HOOKS_VALUES = [
@@ -57,7 +63,7 @@ export var LIFECYCLE_HOOKS_VALUES = [
  * class MyComponent implements OnChanges {
  *   @Input() myProp: any;
  *
- *   ngOnChanges(changes: {[propName: string]: SimpleChange}) {
+ *   ngOnChanges(changes: SimpleChanges) {
  *     console.log('ngOnChanges - myProp = ' + changes['myProp'].currentValue);
  *   }
  * }
@@ -76,7 +82,7 @@ export var LIFECYCLE_HOOKS_VALUES = [
  * bootstrap(App).catch(err => console.error(err));
  * ```
  */
-export interface OnChanges { ngOnChanges(changes: {[key: string]: SimpleChange}); }
+export interface OnChanges { ngOnChanges(changes: SimpleChanges); }
 
 /**
  * Implement this interface to execute custom initialization logic after your directive's

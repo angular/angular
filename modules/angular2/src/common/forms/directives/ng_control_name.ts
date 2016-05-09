@@ -4,7 +4,7 @@ import {EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
 import {
   OnChanges,
   OnDestroy,
-  SimpleChange,
+  SimpleChanges,
   Query,
   Directive,
   forwardRef,
@@ -114,7 +114,7 @@ export class NgControlName extends NgControl implements OnChanges,
     this.valueAccessor = selectValueAccessor(this, valueAccessors);
   }
 
-  ngOnChanges(changes: {[key: string]: SimpleChange}) {
+  ngOnChanges(changes: SimpleChanges) {
     if (!this._added) {
       this.formDirective.addControl(this);
       this._added = true;

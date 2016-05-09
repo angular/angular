@@ -6,7 +6,7 @@ import {
   Injector,
   OnChanges,
   ProtoViewRef,
-  SimpleChange
+  SimpleChanges
 } from 'angular2/core';
 import {NG1_SCOPE} from './constants';
 import {ComponentInfo} from './metadata';
@@ -20,7 +20,7 @@ const INITIAL_VALUE = {
 export class DowngradeNg2ComponentAdapter {
   component: any = null;
   inputChangeCount: number = 0;
-  inputChanges: {[key: string]: SimpleChange} = null;
+  inputChanges: SimpleChanges = null;
   hostViewRef: HostViewRef = null;
   changeDetector: ChangeDetectorRef = null;
   componentScope: angular.IScope;
