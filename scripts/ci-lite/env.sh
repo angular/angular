@@ -30,6 +30,12 @@ if [[ ${TRAVIS} ]]; then
     browserstack_required)
       KARMA_JS_BROWSERS=`node -e "console.log(require('/home/travis/build/angular/angular/browser-providers.conf').browserstackAliases.CI_REQUIRED.join(','))"`
       ;;
+    saucelabs_optional)
+      KARMA_JS_BROWSERS=`node -e "console.log(require('/home/travis/build/angular/angular/browser-providers.conf').sauceAliases.CI_OPTIONAL.join(','))"`
+      ;;
+    browserstack_optional)
+      KARMA_JS_BROWSERS=`node -e "console.log(require('/home/travis/build/angular/angular/browser-providers.conf').browserstackAliases.CI_OPTIONAL.join(','))"`
+      ;;
   esac
 else
   KARMA_JS_BROWSERS=Chrome

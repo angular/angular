@@ -46,7 +46,7 @@ echo 'travis_fold:end:install-chromium'
 
 # Install Sauce Connect
 echo 'travis_fold:start:install.sauceConnect'
-if [[ ${TRAVIS} && ${CI_MODE} == "saucelabs_required" ]]; then
+if [[ ${TRAVIS}] && (${CI_MODE} == "saucelabs_required" || ${CI_MODE} == "saucelabs_optional") ]]; then
   ./scripts/sauce/sauce_connect_setup.sh
 fi
 echo 'travis_fold:end:install.sauceConnect'
@@ -54,7 +54,7 @@ echo 'travis_fold:end:install.sauceConnect'
 
 # Install BrowserStack Tunnel
 echo 'travis_fold:start:install.browserstack'
-if [[ ${TRAVIS} && ${CI_MODE} == "browserstack_required" ]]; then
+if [[ ${TRAVIS} && (${CI_MODE} == "browserstack_required" || ${CI_MODE} == "browserstack_optional") ]]; then
   ./scripts/browserstack/start_tunnel.sh
 fi
 echo 'travis_fold:end:install.browserstack'

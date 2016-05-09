@@ -21,6 +21,12 @@ if [[ ${TRAVIS} ]]; then
     browserstack_required)
       ./scripts/browserstack/teardown_tunnel.sh
       ;;
+    saucelabs_optional)
+      ./scripts/sauce/sauce_connect_teardown.sh
+      ;;
+    browserstack_optional)
+      ./scripts/browserstack/teardown_tunnel.sh
+      ;;
   esac
 fi
 
