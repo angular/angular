@@ -41,6 +41,7 @@ export {
   looseIdentical,
   uninitialized
 } from './change_detection_util';
+export {SimpleChanges} from '../metadata/lifecycle_hooks';
 
 /**
  * Structural diffing for `Object`s and `Map`s.

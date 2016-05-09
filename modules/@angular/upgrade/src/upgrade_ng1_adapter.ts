@@ -7,6 +7,7 @@ import {
   OnInit,
   OnChanges,
   SimpleChange,
+  SimpleChanges,
   Type
 } from '@angular/core';
 import {
@@ -248,7 +249,7 @@ class UpgradeNg1ComponentAdapter implements OnInit, OnChanges, DoCheck {
     }
   }
 
-  ngOnChanges(changes: {[name: string]: SimpleChange}) {
+  ngOnChanges(changes: SimpleChanges) {
     for (var name in changes) {
       if ((<Object>changes).hasOwnProperty(name)) {
         var change: SimpleChange = changes[name];

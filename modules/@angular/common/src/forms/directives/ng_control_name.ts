@@ -1,7 +1,7 @@
 import {
   OnChanges,
   OnDestroy,
-  SimpleChange,
+  SimpleChanges,
   Directive,
   forwardRef,
   Host,
@@ -114,7 +114,7 @@ export class NgControlName extends NgControl implements OnChanges,
     this.valueAccessor = selectValueAccessor(this, valueAccessors);
   }
 
-  ngOnChanges(changes: {[key: string]: SimpleChange}) {
+  ngOnChanges(changes: SimpleChanges) {
     if (!this._added) {
       this.formDirective.addControl(this);
       this._added = true;

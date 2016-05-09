@@ -6,6 +6,7 @@ import {
   ComponentFactory,
   ComponentRef,
   SimpleChange,
+  SimpleChanges,
   ReflectiveInjector
 } from '@angular/core';
 import {NG1_SCOPE} from './constants';
@@ -19,7 +20,7 @@ const INITIAL_VALUE = {
 export class DowngradeNg2ComponentAdapter {
   component: any = null;
   inputChangeCount: number = 0;
-  inputChanges: {[key: string]: SimpleChange} = null;
+  inputChanges: SimpleChanges = null;
   componentRef: ComponentRef<any> = null;
   changeDetector: ChangeDetectorRef = null;
   componentScope: angular.IScope;

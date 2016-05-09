@@ -1,5 +1,5 @@
 import {
-  SimpleChange,
+  SimpleChanges,
   OnChanges,
   Directive,
   forwardRef,
@@ -116,7 +116,7 @@ export class NgFormModel extends ControlContainer implements Form,
     super();
   }
 
-  ngOnChanges(changes: {[key: string]: SimpleChange}): void {
+  ngOnChanges(changes: SimpleChanges): void {
     this._checkFormPresent();
     if (StringMapWrapper.contains(changes, "form")) {
       var sync = composeValidators(this._validators);

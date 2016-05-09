@@ -28,7 +28,7 @@ import {
   AfterContentChecked,
   AfterViewInit,
   AfterViewChecked,
-  SimpleChange,
+  SimpleChanges,
   provide
 } from '@angular/core';
 
@@ -141,7 +141,7 @@ class ComponentWithoutModuleId {
 class ComponentWithEverything implements OnChanges,
     OnInit, DoCheck, OnDestroy, AfterContentInit, AfterContentChecked, AfterViewInit,
     AfterViewChecked {
-  ngOnChanges(changes: {[key: string]: SimpleChange}): void {}
+  ngOnChanges(changes: SimpleChanges): void {}
   ngOnInit(): void {}
   ngDoCheck(): void {}
   ngOnDestroy(): void {}

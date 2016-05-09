@@ -1,6 +1,6 @@
 import {
   OnChanges,
-  SimpleChange,
+  SimpleChanges,
   Directive,
   forwardRef,
   Inject,
@@ -72,7 +72,7 @@ export class NgModel extends NgControl implements OnChanges {
     this.valueAccessor = selectValueAccessor(this, valueAccessors);
   }
 
-  ngOnChanges(changes: {[key: string]: SimpleChange}) {
+  ngOnChanges(changes: SimpleChanges) {
     if (!this._added) {
       setUpControl(this._control, this);
       this._control.updateValueAndValidity({emitEvent: false});
