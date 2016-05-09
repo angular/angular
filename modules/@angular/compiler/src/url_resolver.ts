@@ -50,10 +50,6 @@ export class UrlResolver {
    * `baseUrl` and `url`,
    * - if `url` is absolute (it has a scheme: 'http://', 'https://' or start with '/'), the `url` is
    * returned as is (ignoring the `baseUrl`)
-   *
-   * @param {string} baseUrl
-   * @param {string} url
-   * @returns {string} the resolved URL
    */
   resolve(baseUrl: string, url: string): string {
     var resolvedUrl = url;
@@ -95,16 +91,16 @@ export function getUrlScheme(url: string): string {
  * No encoding is performed.  Any component may be omitted as either null or
  * undefined.
  *
- * @param {?string=} opt_scheme The scheme such as 'http'.
- * @param {?string=} opt_userInfo The user name before the '@'.
- * @param {?string=} opt_domain The domain such as 'www.google.com', already
+ * @param opt_scheme The scheme such as 'http'.
+ * @param opt_userInfo The user name before the '@'.
+ * @param opt_domain The domain such as 'www.google.com', already
  *     URI-encoded.
- * @param {(string|null)=} opt_port The port number.
- * @param {?string=} opt_path The path, already URI-encoded.  If it is not
+ * @param opt_port The port number.
+ * @param opt_path The path, already URI-encoded.  If it is not
  *     empty, it must begin with a slash.
- * @param {?string=} opt_queryData The URI-encoded query data.
- * @param {?string=} opt_fragment The URI-encoded fragment identifier.
- * @return {string} The fully combined URI.
+ * @param opt_queryData The URI-encoded query data.
+ * @param opt_fragment The URI-encoded fragment identifier.
+ * @return The fully combined URI.
  */
 function _buildFromEncodedParts(opt_scheme?: string, opt_userInfo?: string, opt_domain?: string,
                                 opt_port?: string, opt_path?: string, opt_queryData?: string,
@@ -247,8 +243,8 @@ enum _ComponentIndex {
  * goog.uri.utils.split(someStr)[goog.uri.utils.CompontentIndex.QUERY_DATA];
  * </pre>
  *
- * @param {string} uri The URI string to examine.
- * @return {!Array.<string|undefined>} Each component still URI-encoded.
+ * @param uri The URI string to examine.
+ * @return Each component still URI-encoded.
  *     Each component that is present will contain the encoded value, whereas
  *     components that are not present will be undefined or empty, depending
  *     on the browser's regular expression implementation.  Never null, since
@@ -262,8 +258,8 @@ function _split(uri: string): Array<string | any> {
   * Removes dot segments in given path component, as described in
   * RFC 3986, section 5.2.4.
   *
-  * @param {string} path A non-empty path component.
-  * @return {string} Path component with removed dot segments.
+  * @param path A non-empty path component.
+  * @return Path component with removed dot segments.
   */
 function _removeDotSegments(path: string): string {
   if (path == '/') return '/';
@@ -306,8 +302,6 @@ function _removeDotSegments(path: string): string {
 /**
  * Takes an array of the parts from split and canonicalizes the path part
  * and then joins all the parts.
- * @param {Array.<string?>} parts
- * @return {string}
  */
 function _joinAndCanonicalizePath(parts: any[]): string {
   var path = parts[_ComponentIndex.Path];
@@ -321,9 +315,8 @@ function _joinAndCanonicalizePath(parts: any[]): string {
 
 /**
  * Resolves a URL.
- * @param {string} base The URL acting as the base URL.
- * @param {string} to The URL to resolve.
- * @return {string}
+ * @param base The URL acting as the base URL.
+ * @param to The URL to resolve.
  */
 function _resolveUrl(base: string, url: string): string {
   var parts = _split(encodeURI(url));

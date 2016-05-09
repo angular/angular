@@ -240,11 +240,6 @@ export class TestComponentBuilder {
   /**
    * Overrides only the html of a {@link ComponentMetadata}.
    * All the other properties of the component's {@link ViewMetadata} are preserved.
-   *
-   * @param {Type} component
-   * @param {string} html
-   *
-   * @return {TestComponentBuilder}
    */
   overrideTemplate(componentType: Type, template: string): TestComponentBuilder {
     let clone = this._clone();
@@ -254,11 +249,6 @@ export class TestComponentBuilder {
 
   /**
    * Overrides a component's {@link ViewMetadata}.
-   *
-   * @param {Type} component
-   * @param {view} View
-   *
-   * @return {TestComponentBuilder}
    */
   overrideView(componentType: Type, view: ViewMetadata): TestComponentBuilder {
     let clone = this._clone();
@@ -268,12 +258,6 @@ export class TestComponentBuilder {
 
   /**
    * Overrides the directives from the component {@link ViewMetadata}.
-   *
-   * @param {Type} component
-   * @param {Type} from
-   * @param {Type} to
-   *
-   * @return {TestComponentBuilder}
    */
   overrideDirective(componentType: Type, from: Type, to: Type): TestComponentBuilder {
     let clone = this._clone();
@@ -295,11 +279,6 @@ export class TestComponentBuilder {
    * The providers specified via this method are appended to the existing `providers` causing the
    * duplicated providers to
    * be overridden.
-   *
-   * @param {Type} component
-   * @param {any[]} providers
-   *
-   * @return {TestComponentBuilder}
    */
   overrideProviders(type: Type, providers: any[]): TestComponentBuilder {
     let clone = this._clone();
@@ -323,11 +302,6 @@ export class TestComponentBuilder {
    * The providers specified via this method are appended to the existing `providers` causing the
    * duplicated providers to
    * be overridden.
-   *
-   * @param {Type} component
-   * @param {any[]} providers
-   *
-   * @return {TestComponentBuilder}
    */
   overrideViewProviders(type: Type, providers: any[]): TestComponentBuilder {
     let clone = this._clone();
@@ -354,8 +328,6 @@ export class TestComponentBuilder {
 
   /**
    * Builds and returns a ComponentFixture.
-   *
-   * @return {Promise<ComponentFixture>}
    */
   createAsync(rootComponentType: Type): Promise<ComponentFixture<any>> {
     let noNgZone = IS_DART || this._injector.get(ComponentFixtureNoNgZone, false);
