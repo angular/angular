@@ -4,19 +4,24 @@ import {assertionsEnabled} from '../../src/facade/lang';
 /**
  * Regular expression for safe style values.
  *
- * Quotes (" and ') are allowed, but a check must be done elsewhere to ensure
- * they're balanced.
+ * Quotes (" and ') are allowed, but a check must be done elsewhere to ensure they're balanced.
  *
- * ',' allows multiple values to be assigned to the same property
- * (e.g. background-attachment or font-family) and hence could allow
- * multiple values to get injected, but that should pose no risk of XSS.
+ * ',' allows multiple values to be assigned to the same property (e.g. background-attachment or
+ * font-family) and hence could allow multiple values to get injected, but that should pose no risk
+ * of XSS.
  *
- * The rgb() and rgba() expression checks only for XSS safety, not for CSS
- * validity.
+ * The function expression checks only for XSS safety, not for CSS validity.
  *
- * This regular expression was taken from the Closure sanitization library.
+ * This regular expression was taken from the Closure sanitization library, and augmented for
+ * transformation values.
  */
-const SAFE_STYLE_VALUE = /^([-,."'%_!# a-zA-Z0-9]+|(?:rgb|hsl)a?\([0-9.%, ]+\))$/;
+const VALUES = '[-,."\'%_!# a-zA-Z0-9]+';
+const TRANSFORMATION_FNS = '(?:matrix|translate|scale|rotate|skew|perspective)(?:X|Y|3d)?';
+const COLOR_FNS = '(?:rgb|hsl)a?';
+const FN_ARGS = '\\([-0-9.%, a-zA-Z]+\\)';
+
+const SAFE_STYLE_VALUE =
+    new RegExp(`^(${VALUES}|(?:${TRANSFORMATION_FNS}|${COLOR_FNS})${FN_ARGS})$`, 'g');
 
 /**
  * Checks that quotes (" and ') are properly balanced inside a string. Assumes
@@ -45,7 +50,7 @@ function hasBalancedQuotes(value: string) {
  * value) and returns a value that is safe to use in a browser environment.
  */
 export function sanitizeStyle(value: string): string {
-  value = String(value);  // Make sure it's actually a string.
+  value = String(value).trim();  // Make sure it's actually a string.
   if (value.match(SAFE_STYLE_VALUE) && hasBalancedQuotes(value)) return value;
 
   if (assertionsEnabled()) {

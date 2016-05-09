@@ -15,14 +15,20 @@ export function main() {
     });
     t.afterEach(() => { getDOM().log = originalLog; });
 
+    function expectSanitize(v: string) { return t.expect(sanitizeStyle(v)); }
 
     t.it('sanitizes values', () => {
-      t.expect(sanitizeStyle('abc')).toEqual('abc');
-      t.expect(sanitizeStyle('expression(haha)')).toEqual('unsafe');
-      // Unbalanced quotes.
-      t.expect(sanitizeStyle('"value" "')).toEqual('unsafe');
-
-      t.expect(logMsgs.join('\n')).toMatch(/sanitizing unsafe style value/);
+      expectSanitize('abc').toEqual('abc');
+      expectSanitize('50px').toEqual('50px');
+      expectSanitize('rgb(255, 0, 0)').toEqual('rgb(255, 0, 0)');
+      expectSanitize('expression(haha)').toEqual('unsafe');
+    });
+    t.it('rejects unblanaced quotes', () => { expectSanitize('"value" "').toEqual('unsafe'); });
+    t.it('accepts transform functions', () => {
+      expectSanitize('rotate(90deg)').toEqual('rotate(90deg)');
+      expectSanitize('rotate(javascript:evil())').toEqual('unsafe');
+      expectSanitize('translateX(12px, -5px)').toEqual('translateX(12px, -5px)');
+      expectSanitize('scale3d(1, 1, 2)').toEqual('scale3d(1, 1, 2)');
     });
   });
 }
