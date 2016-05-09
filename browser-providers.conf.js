@@ -4,15 +4,16 @@
 var CIconfiguration = {
   'Chrome':       { unitTest: {target: 'SL', required: true}, e2e: {target: null, required: true}},
   'Firefox':      { unitTest: {target: 'SL', required: true}, e2e: {target: null, required: true}},
-  // FirefoxBeta should be required:true
-  // https://github.com/angular/angular/issues/7560
-  'FirefoxBeta':  { unitTest: {target: 'SL', required: false}, e2e: {target: null, required: false}},
+  // FirefoxBeta and ChromeBeta should be target:'BS' or target:'SL', and required:true
+  // Currently deactivated due to https://github.com/angular/angular/issues/7560
+  'ChromeBeta':   { unitTest: {target: null, required: true}, e2e: {target: null, required: false}},
+  'FirefoxBeta':  { unitTest: {target: null, required: false}, e2e: {target: null, required: false}},
   'ChromeDev':    { unitTest: {target: null, required: true}, e2e: {target: null, required: true}},
   'FirefoxDev':   { unitTest: {target: null, required: true}, e2e: {target: null, required: true}},
   'IE9':          { unitTest: {target: 'SL', required: false}, e2e: {target: null, required: true}},
   'IE10':         { unitTest: {target: 'SL', required: true}, e2e: {target: null, required: true}},
   'IE11':         { unitTest: {target: 'SL', required: true}, e2e: {target: null, required: true}},
-  'Edge':         { unitTest: {target: null, required: true}, e2e: {target: null, required: false}},
+  'Edge':         { unitTest: {target: 'SL', required: false}, e2e: {target: null, required: true}},
   'Android4.1':   { unitTest: {target: 'SL', required: false}, e2e: {target: null, required: true}},
   'Android4.2':   { unitTest: {target: 'SL', required: false}, e2e: {target: null, required: true}},
   'Android4.3':   { unitTest: {target: 'SL', required: false}, e2e: {target: null, required: true}},
@@ -23,8 +24,7 @@ var CIconfiguration = {
   'Safari9':      { unitTest: {target: 'BS', required: false}, e2e: {target: null, required: true}},
   'iOS7':         { unitTest: {target: 'BS', required: true}, e2e: {target: null, required: true}},
   'iOS8':         { unitTest: {target: 'BS', required: false}, e2e: {target: null, required: true}},
-  // TODO(mlaval): iOS9 deactivated as not reliable, reactivate after https://github.com/angular/angular/issues/5408
-  'iOS9':         { unitTest: {target: null, required: false}, e2e: {target: null, required: true}},
+  'iOS9':         { unitTest: {target: 'BS', required: false}, e2e: {target: null, required: true}},
   'WindowsPhone': { unitTest: {target: 'BS', required: false}, e2e: {target: null, required: true}}
 };
 
@@ -121,9 +121,9 @@ var customLaunchers = {
   },
   'SL_EDGE': {
     base: 'SauceLabs',
-    browserName: 'microsoftedge',
+    browserName: 'MicrosoftEdge',
     platform: 'Windows 10',
-    version: '20.10240'
+    version: '13.10586'
   },
   'SL_ANDROID4.1': {
     base: 'SauceLabs',
