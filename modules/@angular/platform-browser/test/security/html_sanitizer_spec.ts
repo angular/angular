@@ -39,7 +39,7 @@ export function main() {
     t.it('ignores non-element, non-attribute nodes', () => {
       t.expect(sanitizeHtml('<!-- comments? -->no.')).toEqual('no.');
       t.expect(sanitizeHtml('<?pi nodes?>no.')).toEqual('no.');
-      t.expect(logMsgs.join('\n')).toMatch(/HTML contents were removed during sanitization/);
+      t.expect(logMsgs.join('\n')).toMatch(/sanitizing HTML stripped some content/);
     });
     t.it('escapes entities', () => {
       t.expect(sanitizeHtml('<p>Hello &lt; World</p>')).toEqual('<p>Hello &lt; World</p>');

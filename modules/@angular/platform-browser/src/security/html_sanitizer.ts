@@ -253,7 +253,7 @@ export function sanitizeHtml(unsafeHtml: string): string {
     }
 
     if (assertionsEnabled() && safeHtml !== unsafeHtml) {
-      DOM.log('WARNING: some HTML contents were removed during sanitization.');
+      DOM.log('WARNING: sanitizing HTML stripped some content.');
     }
 
     return safeHtml;

@@ -1,8 +1,26 @@
 import * as t from '@angular/core/testing/testing_internal';
+
+import {getDOM} from '../../src/dom/dom_adapter';
 import {sanitizeUrl} from '../../src/security/url_sanitizer';
 
 export function main() {
   t.describe('URL sanitizer', () => {
+    let logMsgs: string[];
+    let originalLog: (msg: any) => any;
+
+    t.beforeEach(() => {
+      logMsgs = [];
+      originalLog = getDOM().log;  // Monkey patch DOM.log.
+      getDOM().log = (msg) => logMsgs.push(msg);
+    });
+    t.afterEach(() => { getDOM().log = originalLog; });
+
+    t.it('reports unsafe URLs', () => {
+      t.expect(sanitizeUrl('javascript:evil()')).toBe('unsafe:javascript:evil()');
+      t.expect(logMsgs.join('\n')).toMatch(/sanitizing unsafe URL value/);
+    });
+
+
     t.describe('valid URLs', () => {
       const validUrls = [
         '',
