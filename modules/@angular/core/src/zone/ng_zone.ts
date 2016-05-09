@@ -106,10 +106,6 @@ export class NgZone {
   /** @internal */
   private _onErrorEvents: EventEmitter<any> = new EventEmitter(false);
 
-  /**
-   * @param {bool} enableLongStackTrace whether to enable long stack trace. They should only be
-   *               enabled in development mode as they significantly impact perf.
-   */
   constructor({enableLongStackTrace = false}) {
     this._zoneImpl = new NgZoneImpl({
       trace: enableLongStackTrace,

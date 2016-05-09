@@ -124,9 +124,6 @@ export function resetBaseTestProviders() {
  * eventually
  *   becomes `it('...', @Inject (object: AClass, async: AsyncTestCompleter) => { ... });`
  *
- * @param {Array} tokens
- * @param {Function} fn
- * @return {Function}
  */
 export function inject(tokens: any[], fn: Function): Function {
   let testInjector = getTestInjector();
@@ -190,9 +187,6 @@ export function withProviders(providers: () => any) {
  * })
  * ```
  *
- * @param {Array} tokens
- * @param {Function} fn
- * @return {Function}
  */
 export function injectAsync(tokens: any[], fn: Function): Function {
   return async(inject(tokens, fn));
