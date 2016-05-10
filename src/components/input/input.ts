@@ -9,6 +9,8 @@ import {
   ContentChild,
   SimpleChange,
   ContentChildren,
+  ViewChild,
+  ElementRef,
   QueryList,
   OnChanges,
 } from '@angular/core';
@@ -94,6 +96,7 @@ export class MdHint {
   templateUrl: 'components/input/input.html',
   styleUrls: ['components/input/input.css'],
   providers: [MD_INPUT_CONTROL_VALUE_ACCESSOR],
+  host: {'(click)' : 'focus()'}
 })
 export class MdInput implements ControlValueAccessor, AfterContentInit, OnChanges {
   private _focused: boolean = false;
@@ -154,6 +157,14 @@ export class MdInput implements ControlValueAccessor, AfterContentInit, OnChange
   // might place it as RTL when we don't want to. We still want to use `align` as an
   // Input though, so we use HostBinding.
   @HostBinding('attr.align') private get _align(): any { return null; }
+
+
+  @ViewChild('input') private _inputElement: ElementRef;
+
+  /** Set focus on input */
+  focus() {
+    this._inputElement.nativeElement.focus();
+  }
 
   /** @internal */
   onFocus() {
