@@ -310,6 +310,18 @@ export function main() {
         expect(path).toEqual('first/min/second;author=max');
       });
     });
+
+    describe("wildcards", () => {
+      it('should not append empty StarPathSegment to the url', inject([AsyncTestCompleter], (async) => {
+        router.config(
+          [new Route({path: '/wild/*any', component: DummyComponent, name: 'Wild'})]);
+
+        router.navigate(['/Wild']).then(s => {
+          expect(location.path()).toEqual('/wild');
+          async.done();
+        });
+      }));
+    });
   });
 }
 
