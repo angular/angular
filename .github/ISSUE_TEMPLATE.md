@@ -14,6 +14,8 @@ This repository's issues are reserved for feature requests and bug reports.
 please provide steps to reproduce and if possible a minimal demo of the problem**
 via https://plnkr.co or similar.
 
+Plunker Template: http://plnkr.co/edit/o077B6uEiiIgkC0S06dd?p=preview
+
 
 * **What is the expected behavior?**
 

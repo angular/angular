@@ -44,7 +44,8 @@ Also see our [`Good for community contribution`](https://github.com/angular/mate
 
 #### Quick links
 [Google group](https://groups.google.com/forum/#!forum/angular-material2),
-[Contributing](https://github.com/angular/material2/blob/master/CONTRIBUTING.md)
+[Contributing](https://github.com/angular/material2/blob/master/CONTRIBUTING.md),
+[Plunker Template](http://plnkr.co/edit/o077B6uEiiIgkC0S06dd?p=preview)
 
 ## The goal of Angular Material
 Our goal is to build a set of high-quality UI components built with Angular 2 and TypeScript, 
