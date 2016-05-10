@@ -17,12 +17,13 @@ import {
 } from '@angular/core';
 import {Dir} from '../../core/rtl/dir';
 import {PromiseCompleter} from '../../core/async/promise-completer';
+import {MdError} from '../../core/errors/error';
 
 
 /**
  * Exception thrown when two MdSidenav are matching the same side.
  */
-export class MdDuplicatedSidenavError extends Error {
+export class MdDuplicatedSidenavError extends MdError {
   constructor(align: string) {
     super(`A sidenav was already declared for 'align="${align}"'`);
   }

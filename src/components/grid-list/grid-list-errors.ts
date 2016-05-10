@@ -1,7 +1,9 @@
+import {MdError} from '../../core/errors/error';
+
 /**
  * Exception thrown when cols property is missing from grid-list
  */
-export class MdGridListColsError extends Error {
+export class MdGridListColsError extends MdError {
   constructor() {
     super(`md-grid-list: must pass in number of columns. Example: <md-grid-list cols="3">`);
   }
@@ -10,7 +12,7 @@ export class MdGridListColsError extends Error {
 /**
  * Exception thrown when a tile's colspan is longer than the number of cols in list
  */
-export class MdGridTileTooWideError extends Error {
+export class MdGridTileTooWideError extends MdError {
   constructor(cols: number, listLength: number) {
     super(`Tile with colspan ${cols} is wider than grid with cols="${listLength}".`);
   }
@@ -19,7 +21,7 @@ export class MdGridTileTooWideError extends Error {
 /**
  * Exception thrown when an invalid ratio is passed in as a rowHeight
  */
-export class MdGridListBadRatioError extends Error {
+export class MdGridListBadRatioError extends MdError {
   constructor(value: string) {
     super(`md-grid-list: invalid ratio given for row-height: "${value}"`);
   }

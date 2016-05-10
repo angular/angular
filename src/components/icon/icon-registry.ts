@@ -1,10 +1,11 @@
 import {Injectable} from '@angular/core';
 import {Http} from '@angular/http';
 import {Observable} from 'rxjs/Rx';
+import {MdError} from '../../core/errors/error';
 
 
 /** Exception thrown when attempting to load an icon with a name that cannot be found. */
-export class MdIconNameNotFoundError extends Error {
+export class MdIconNameNotFoundError extends MdError {
   constructor(iconName: string) {
       super(`Unable to find icon with the name "${iconName}"`);
   }
@@ -14,7 +15,7 @@ export class MdIconNameNotFoundError extends Error {
  * Exception thrown when attempting to load SVG content that does not contain the expected
  * <svg> tag.
  */
-export class MdIconSvgTagNotFoundError extends Error {
+export class MdIconSvgTagNotFoundError extends MdError {
   constructor() {
       super('<svg> tag not found');
   }

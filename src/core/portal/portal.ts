@@ -2,10 +2,10 @@ import {TemplateRef, Type, ViewContainerRef, ElementRef, ComponentRef} from '@an
 import {
     MdNullPortalHostError,
     MdPortalAlreadyAttachedError,
-    MdNoPortalAttachedErron,
+    MdNoPortalAttachedError,
     MdNullPortalError,
     MdPortalHostAlreadyDisposedError,
-    MdUnknownPortalTypeErron
+    MdUnknownPortalTypeError
 } from './portal-errors';
 
 
@@ -34,7 +34,7 @@ export abstract class Portal<T> {
   detach(): Promise<void> {
     let host = this._attachedHost;
     if (host == null) {
-      throw new MdNoPortalAttachedErron();
+      throw new MdNoPortalAttachedError();
     }
 
     this._attachedHost = null;
@@ -172,7 +172,7 @@ export abstract class BasePortalHost implements PortalHost {
       return this.attachTemplatePortal(portal);
     }
 
-    throw new MdUnknownPortalTypeErron();
+    throw new MdUnknownPortalTypeError();
   }
 
   abstract attachComponentPortal(portal: ComponentPortal): Promise<ComponentRef<any>>;

@@ -11,11 +11,12 @@ import {
     AfterViewChecked
 } from '@angular/core';
 import {MdIconRegistry} from './icon-registry';
+import {MdError} from '../../core/errors/error';
 export {MdIconRegistry} from './icon-registry';
 
 
 /** Exception thrown when an invalid icon name is passed to an md-icon component. */
-export class MdIconInvalidNameError extends Error {
+export class MdIconInvalidNameError extends MdError {
   constructor(iconName: string) {
       super(`Invalid icon name: "${name}"`);
   }
