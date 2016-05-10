@@ -313,6 +313,9 @@ Location.prototype.subscribe = function () {
 Location.prototype.path = function () {
   return $location.url();
 };
+Location.prototype.hash = function () {
+  return "";
+};
 Location.prototype.go = function (path, query) {
   return $location.url(path + query);
 };

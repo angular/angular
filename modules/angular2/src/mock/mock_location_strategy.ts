@@ -12,6 +12,7 @@ export class MockLocationStrategy extends LocationStrategy {
   internalBaseHref: string = '/';
   internalPath: string = '/';
   internalTitle: string = '';
+  internalHash: string = '';
   urlChanges: string[] = [];
   /** @internal */
   _subject: EventEmitter<any> = new EventEmitter();
@@ -21,6 +22,8 @@ export class MockLocationStrategy extends LocationStrategy {
     this.internalPath = url;
     ObservableWrapper.callEmit(this._subject, new _MockPopStateEvent(this.path()));
   }
+
+  hash(): string { return this.internalHash; }
 
   path(): string { return this.internalPath; }
 

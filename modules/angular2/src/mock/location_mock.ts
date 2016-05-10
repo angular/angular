@@ -18,11 +18,18 @@ export class SpyLocation implements Location {
   /** @internal */
   _baseHref: string = '';
 
+  /** @internal */
+  _hash: string = '';
+
   setInitialPath(url: string) { this._path = url; }
 
   setBaseHref(url: string) { this._baseHref = url; }
 
+  setHash(hash: string) { this._hash = hash; }
+
   path(): string { return this._path; }
+
+  hash(): string { return this._hash; }
 
   simulateUrlPop(pathname: string) {
     ObservableWrapper.callEmit(this._subject, {'url': pathname, 'pop': true});

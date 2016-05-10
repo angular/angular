@@ -20,6 +20,7 @@ import {UrlChangeListener} from './platform_location';
  */
 export abstract class LocationStrategy {
   abstract path(): string;
+  abstract hash(): string;
   abstract prepareExternalUrl(internal: string): string;
   abstract pushState(state: any, title: string, url: string, queryParams: string): void;
   abstract replaceState(state: any, title: string, url: string, queryParams: string): void;
