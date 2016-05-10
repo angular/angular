@@ -18,7 +18,7 @@ import {ListWrapper} from 'angular2/src/facade/collection';
 
 import {Router, RootRouter} from 'angular2/src/router/router';
 import {SpyLocation} from 'angular2/src/mock/location_mock';
-import {Location} from 'angular2/platform/common';
+import {Location, PathLocationStrategy} from 'angular2/platform/common';
 
 import {RouteRegistry, ROUTER_PRIMARY_COMPONENT} from 'angular2/src/router/route_registry';
 import {
@@ -312,16 +312,30 @@ export function main() {
     });
 
     describe("wildcards", () => {
-      it('should not append empty StarPathSegment to the url', inject([AsyncTestCompleter], (async) => {
-        router.config(
-          [new Route({path: '/wild/*any', component: DummyComponent, name: 'Wild'})]);
+      it('should not append empty StarPathSegment to the url',
+         inject([AsyncTestCompleter], (async) => {
+           router.config(
+               [new Route({path: '/wild/*any', component: DummyComponent, name: 'Wild'})]);
 
-        router.navigate(['/Wild']).then(s => {
-          expect(location.path()).toEqual('/wild');
-          async.done();
-        });
-      }));
+           router.navigate(['/Wild']).then(s => {
+             expect(location.path()).toEqual('/wild');
+             async.done();
+           });
+         }));
     });
+
+    it("should not modify hash fragment when using path location strategy",
+       inject([AsyncTestCompleter], (async) => {
+         location.platformStrategy = new PathLocationStrategy(null, 'someHref');
+         (<any>location).setHash("hashValue");
+
+         router.config([new Route({path: '/test', component: DummyComponent, name: 'Test'})]);
+
+         router.navigate(['/Test']).then(s => {
+           expect(location.path()).toEqual('/test#hashValue');
+           async.done();
+         });
+       }));
   });
 }
 

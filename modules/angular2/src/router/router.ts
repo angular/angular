@@ -2,7 +2,7 @@ import {PromiseWrapper, EventEmitter, ObservableWrapper} from 'angular2/src/faca
 import {Map, StringMapWrapper, MapWrapper, ListWrapper} from 'angular2/src/facade/collection';
 import {isBlank, isString, isPresent, Type, isArray} from 'angular2/src/facade/lang';
 import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
-import {Location} from 'angular2/platform/common';
+import {Location, PathLocationStrategy} from 'angular2/platform/common';
 import {Inject, Injectable} from 'angular2/core';
 
 import {RouteRegistry, ROUTER_PRIMARY_COMPONENT} from './route_registry';
@@ -517,9 +517,17 @@ export class RootRouter extends Router {
   commit(instruction: Instruction, _skipLocationChange: boolean = false): Promise<any> {
     var emitPath = instruction.toUrlPath();
     var emitQuery = instruction.toUrlQuery();
+
     if (emitPath.length > 0 && emitPath[0] != '/') {
       emitPath = '/' + emitPath;
     }
+
+    var hash = this._location.hash();
+    if (isPresent(this._location.platformStrategy) &&
+        this._location.platformStrategy instanceof PathLocationStrategy && hash.length > 0) {
+      emitPath += '#' + hash;
+    }
+
     var promise = super.commit(instruction);
     if (!_skipLocationChange) {
       promise = promise.then((_) => { this._location.go(emitPath, emitQuery); });
