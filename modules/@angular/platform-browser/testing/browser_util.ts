@@ -43,6 +43,10 @@ export class BrowserDetection {
   get supportsIntlApi(): boolean {
     return this._ua.indexOf('Chrome/4') > -1 && this._ua.indexOf('Edge') == -1;
   }
+
+  get isChromeDesktop(): boolean {
+    return this._ua.indexOf('Chrome') > -1 && this._ua.indexOf('Mobile Safari') == -1 && this._ua.indexOf('Edge') == -1;
+  }
 }
 
 export function dispatchEvent(element, eventType): void {
