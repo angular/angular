@@ -279,8 +279,7 @@ export abstract class AppView<T> {
 
   detectChanges(throwOnChange: boolean): void {
     var s = _scope_check(this.clazz);
-    if (this.cdMode === ChangeDetectionStrategy.Detached ||
-        this.cdMode === ChangeDetectionStrategy.Checked ||
+    if (this.cdMode === ChangeDetectionStrategy.Checked ||
         this.cdState === ChangeDetectorState.Errored)
       return;
     if (this.destroyed) {
@@ -304,13 +303,17 @@ export abstract class AppView<T> {
 
   detectContentChildrenChanges(throwOnChange: boolean) {
     for (var i = 0; i < this.contentChildren.length; ++i) {
-      this.contentChildren[i].detectChanges(throwOnChange);
+      var child = this.contentChildren[i];
+      if (child.cdMode === ChangeDetectionStrategy.Detached) continue;
+      child.detectChanges(throwOnChange);
     }
   }
 
   detectViewChildrenChanges(throwOnChange: boolean) {
     for (var i = 0; i < this.viewChildren.length; ++i) {
-      this.viewChildren[i].detectChanges(throwOnChange);
+      var child = this.viewChildren[i];
+      if (child.cdMode === ChangeDetectionStrategy.Detached) continue;
+      child.detectChanges(throwOnChange);
     }
   }
 
