@@ -8,7 +8,7 @@ cd `dirname $0`
 TSCONFIG=./modules/tsconfig.json
 echo "====== (all)COMPILING: \$(npm bin)/tsc -p ${TSCONFIG} ====="
 rm -rf ./dist/all/
-mkdir ./dist/all/
+mkdir -p ./dist/all/
 
 # prepare all files for e2e tests
 cp -r ./modules/playground ./dist/all/
