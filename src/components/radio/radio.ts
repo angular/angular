@@ -5,7 +5,6 @@ import {
   Directive,
   EventEmitter,
   HostBinding,
-  HostListener,
   Input,
   OnInit,
   Optional,
@@ -205,7 +204,10 @@ export class MdRadioGroup implements AfterContentInit, ControlValueAccessor {
   selector: 'md-radio-button',
   templateUrl: './components/radio/radio.html',
   styleUrls: ['./components/radio/radio.css'],
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
+  host: {
+    '(click)': 'onClick($event)'
+  }
 })
 export class MdRadioButton implements OnInit {
   @HostBinding('class.md-radio-focused')
@@ -333,7 +335,6 @@ export class MdRadioButton implements OnInit {
     this._disabled = (value != null && value !== false) ? true : null;
   }
 
-  @HostListener('click', ['$event'])
   onClick(event: Event) {
     if (this.disabled) {
       event.preventDefault();
