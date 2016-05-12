@@ -19,11 +19,18 @@ $md-input-underline-focused-color: md-color($md-primary);
 $md-input-underline-disabled-background-image: linear-gradient(to right,
         rgba(0,0,0,0.26) 0%, rgba(0,0,0,0.26) 33%, transparent 0%);
 
+/** 
+ * Undo the red box-shadow glow added by Firefox on invalid inputs.
+ * See https://developer.mozilla.org/en-US/docs/Web/CSS/:-moz-ui-invalid
+ */
+:-moz-ui-invalid {
+  box-shadow: none;
+}
 
 /**
  * Applies a floating placeholder above the input itself.
  */
-%md-input-placeholder-floating {
+@mixin md-input-placeholder-floating {
   visibility: visible;
   padding-bottom: 5px;
   transform: translateY(-100%) scale(0.75);
@@ -32,7 +39,6 @@ $md-input-underline-disabled-background-image: linear-gradient(to right,
     color: $md-input-required-placeholder-color;
   }
 }
-
 
 :host {
   display: inline-block;
@@ -120,7 +126,7 @@ $md-input-underline-disabled-background-image: linear-gradient(to right,
 
     // Show the placeholder above the input when it's not empty, or focused.
     &.md-float:not(.md-empty), &.md-float.md-focused {
-      @extend %md-input-placeholder-floating;
+      @include md-input-placeholder-floating;
     }
 
     // :focus is applied to the input, but we apply md-focused to the other elements
@@ -143,7 +149,7 @@ $md-input-underline-disabled-background-image: linear-gradient(to right,
   // Once the autofill is committed, a change event happen and the regular md-input
   // classes take over to fulfill this behaviour.
   input:-webkit-autofill + .md-input-placeholder {
-    @extend %md-input-placeholder-floating;
+    @include md-input-placeholder-floating;
   }
 
   // The underline is what's shown under the input, its prefix and its suffix.

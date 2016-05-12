@@ -138,7 +138,7 @@ export class MdInput implements ControlValueAccessor, AfterContentInit, OnChange
   @Input() @BooleanFieldValue() floatingPlaceholder: boolean = true;
   @Input() hintLabel: string = '';
   @Input() id: string = `md-input-${nextUniqueId++}`;
-  @Input() maxLength: number = -1;
+  @Input() maxLength: number = null;
   @Input() placeholder: string;
   @Input() @BooleanFieldValue() required: boolean = false;
   @Input() @BooleanFieldValue() spellcheck: boolean = false;
