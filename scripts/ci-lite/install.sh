@@ -27,13 +27,8 @@ echo 'travis_fold:end:install-npm'
 
 
 # Install all npm dependencies according to shrinkwrap.json
-#   note: package.json contain preinstall and postintall hooks that can short-circuit
-#         the installation if node_modules is up to date
 echo 'travis_fold:start:install.node_modules'
-if [[ ${TRAVIS} ]]; then
-  node tools/npm/check-node-modules --purge
-fi
-npm install
+node tools/npm/check-node-modules --purge || npm install
 echo 'travis_fold:end:install.node_modules'
 
 
