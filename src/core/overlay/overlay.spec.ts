@@ -20,6 +20,8 @@ import {Overlay, OVERLAY_CONTAINER_TOKEN} from './overlay';
 import {OverlayRef} from './overlay-ref';
 import {OverlayState} from './overlay-state';
 import {PositionStrategy} from './position/position-strategy';
+import {OverlayPositionBuilder} from './position/overlay-position-builder';
+import {ViewportRuler} from './position/viewport-ruler';
 
 
 export function main() {
@@ -32,6 +34,8 @@ export function main() {
 
     beforeEachProviders(() => [
       Overlay,
+      OverlayPositionBuilder,
+      ViewportRuler,
       provide(OVERLAY_CONTAINER_TOKEN, {useFactory: () => {
         overlayContainerElement = document.createElement('div');
         return overlayContainerElement;

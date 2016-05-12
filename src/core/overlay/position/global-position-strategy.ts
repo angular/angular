@@ -1,4 +1,5 @@
 import {PositionStrategy} from './position-strategy';
+import {applyCssTransform} from '../../style/apply-transform';
 
 
 /**
@@ -97,9 +98,7 @@ export class GlobalPositionStrategy implements PositionStrategy {
     let tranlateX = this._reduceTranslateValues('translateX', this._translateX);
     let translateY = this._reduceTranslateValues('translateY', this._translateY);
 
-    // It's important to trim the result, because the browser will ignore the set operation
-    // if the string contains only whitespace.
-    element.style.transform = `${tranlateX} ${translateY}`.trim();
+    applyCssTransform(element, `${tranlateX} ${translateY}`);
 
     return Promise.resolve();
   }

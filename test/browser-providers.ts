@@ -43,18 +43,25 @@ const configuration: { [name: string]: ConfigurationInfo } = {
   'Safari7':      { unitTest: {target: null, required: false}, e2e: {target: null, required: true}},
   'Safari8':      { unitTest: {target: 'BS', required: false}, e2e: {target: null, required: true}},
   'Safari9':      { unitTest: {target: 'BS', required: false}, e2e: {target: null, required: true}},
-  'iOS7':         { unitTest: {target: 'BS', required: true}, e2e: {target: null, required: true}},
-  'iOS8':         { unitTest: {target: 'BS', required: false}, e2e: {target: null, required: true}},
+  'iOS7':         { unitTest: {target: 'BS', required: false}, e2e: {target: null, required: true}},
+  'iOS8':         { unitTest: {target: 'BS', required: true}, e2e: {target: null, required: true}},
   // TODO(mlaval): iOS9 deactivated as not reliable, reactivate after
   //               https://github.com/angular/angular/issues/5408
-  'iOS9':         { unitTest: {target: null, required: false}, e2e: {target: null, required: true}},
+  'iOS9':         { unitTest: {target: 'BS', required: false}, e2e: {target: null, required: true}},
   'WindowsPhone': { unitTest: {target: 'BS', required: false}, e2e: {target: null, required: true}}
 };
 
 export const customLaunchers: { [name: string]: BrowserLauncherInfo } = {
   'ChromeNoSandbox': {
     base: 'Chrome',
-    flags: ['--no-sandbox'] },
+    flags: ['--no-sandbox']
+  },
+  // Chrome set to 1024x768 resolution for *local testing only*.
+  // On CI, both SauceLabs and Browserstack already default all browser window sizes to 1024x768.
+  'Chrome_1024x768': {
+    base : 'Chrome',
+    flags: ['--window-size=1024,768']
+  },
   'SL_CHROME': {
     base: 'SauceLabs',
     browserName: 'chrome',
@@ -210,19 +217,22 @@ export const customLaunchers: { [name: string]: BrowserLauncherInfo } = {
     base: 'BrowserStack',
     device: 'iPhone 5S',
     os: 'ios',
-    os_version: '7.0'
+    os_version: '7.0',
+    resolution: '1024x768'
   },
   'BS_IOS8': {
     base: 'BrowserStack',
     device: 'iPhone 6',
     os: 'ios',
-    os_version: '8.3'
+    os_version: '8.3',
+    resolution: '1024x768'
   },
   'BS_IOS9': {
     base: 'BrowserStack',
     device: 'iPhone 6S',
     os: 'ios',
-    os_version: '9.0'
+    os_version: '9.0',
+    resolution: '1024x768'
   },
   'BS_IE9': {
     base: 'BrowserStack',

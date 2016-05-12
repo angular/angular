@@ -12,7 +12,8 @@
     "rootDir": ".",
     "sourceMap": true,
     "target": "es5",
-    "inlineSources": true
+    "inlineSources": true,
+    "stripInternal": true
   },
   "files": [
     "main.ts",

@@ -9,6 +9,13 @@
     "deploy",
     "typings"
   ],
+  "headers": [{
+    "source": "*",
+    "headers": [{
+      "key": "Cache-Control",
+      "value": "no-cache"
+    }]
+  }],
   "rewrites": [{
     "source": "/**/!(*.@(js|ts|html|css|json|svg|png|jpg|jpeg))",
     "destination": "/index.html"
