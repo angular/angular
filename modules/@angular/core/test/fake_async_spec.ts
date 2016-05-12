@@ -13,6 +13,7 @@ import {
   flushMicrotasks,
   Log,
   tick,
+  discardPeriodicTasks,
 } from '@angular/core/testing';
 import {TimerWrapper, PromiseWrapper} from '../../router/src/facade/async';
 import {BaseException} from '../../router/src/facade/exceptions';
@@ -204,6 +205,24 @@ export function main() {
            expect(cycles).toEqual(1);
          }));
 
+      it('should clear periodic timers', fakeAsync(() => {
+        var cycles = 0;
+        var id = TimerWrapper.setInterval(() => { cycles++; }, 10);
+
+        tick(10);
+        expect(cycles).toEqual(1);
+
+        discardPeriodicTasks();
+
+        // Tick once to clear out the timer which already started.
+        tick(10);
+        expect(cycles).toEqual(2);
+
+        tick(10);
+        // Nothing should change
+        expect(cycles).toEqual(2);
+      }));
+
       it('should process microtasks before timers', fakeAsync(() => {
            var log = new Log();
 
@@ -257,6 +276,11 @@ export function main() {
 
       it('calling tick should throw', () => {
         expect(() => { tick(); })
+            .toThrowError('The code should be running in the fakeAsync zone to call this function');
+      });
+
+      it('calling discardPeriodicTasks should throw', () => {
+        expect(() => { discardPeriodicTasks() ; })
             .toThrowError('The code should be running in the fakeAsync zone to call this function');
       });
     });

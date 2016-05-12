@@ -81,6 +81,15 @@ export function tick(millis: number = 0): void {
 }
 
 /**
+ * Discard all remaining periodic tasks.
+ */
+export function discardPeriodicTasks(): void {
+  let zoneSpec = _getFakeAsyncZoneSpec();
+  let pendingTimers = zoneSpec.pendingPeriodicTimers;
+  zoneSpec.pendingPeriodicTimers.length = 0;
+}
+
+/**
  * Flush any pending microtasks.
  */
 export function flushMicrotasks(): void {

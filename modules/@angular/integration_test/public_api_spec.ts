@@ -359,6 +359,7 @@ var CORE_TESTING: string[] = [
   'resetBaseTestProviders',
   'setBaseTestProviders',
   'tick',
+  'discardPeriodicTasks',
   'withProviders',
   'xdescribe',
   'xit'
