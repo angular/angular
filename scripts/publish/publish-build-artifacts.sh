@@ -30,8 +30,13 @@ function publishRepo {
   
   # Replace $$ANGULAR_VESION$$ with the build version.
   BUILD_VER="2.0.0-${SHORT_SHA}"
-  find $REPO_DIR/ -type f -name package.json -print0 | xargs -0 sed -i '' "s/\\\$\\\$ANGULAR_VERSION\\\$\\\$/${BUILD_VER}/g"
-  find $REPO_DIR/ -type f -name "*umd.js" -print0 | xargs -0 sed -i '' "s/\\\$\\\$ANGULAR_VERSION\\\$\\\$/${BUILD_VER}/g"
+  if [[ ${TRAVIS} ]]; then
+    find $REPO_DIR/ -type f -name package.json -print0 | xargs -0 sed -i "s/\\\$\\\$ANGULAR_VERSION\\\$\\\$/${BUILD_VER}/g"
+    find $REPO_DIR/ -type f -name "*umd.js" -print0 | xargs -0 sed -i "s/\\\$\\\$ANGULAR_VERSION\\\$\\\$/${BUILD_VER}/g"
+  else
+    find $REPO_DIR/ -type f -name package.json -print0 | xargs -0 sed -i '' "s/\\\$\\\$ANGULAR_VERSION\\\$\\\$/${BUILD_VER}/g"
+    find $REPO_DIR/ -type f -name "*umd.js" -print0 | xargs -0 sed -i '' "s/\\\$\\\$ANGULAR_VERSION\\\$\\\$/${BUILD_VER}/g"
+  fi
   echo `date` > $REPO_DIR/BUILD_INFO
   echo $SHA >> $REPO_DIR/BUILD_INFO
 
