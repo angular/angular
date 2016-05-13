@@ -21,6 +21,7 @@ find ./dist/packages-dist/ -type f -name "*umd.js" -print0 | xargs -0 sed -i '' 
 for PACKAGE in \
   core \
   compiler \
+  compiler_cli \
   common \
   http \
   platform-browser \
