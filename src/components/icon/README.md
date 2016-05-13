@@ -54,8 +54,8 @@ mdIconRegistry.addSvgIconInNamespace('animals', 'cat', '/assets/cat.svg');
 ```
 
 ```html
-<md-icon svgIcon="moon"></svg-icon>
-<md-icon svgIcon="animals:cat"></svg-icon>
+<md-icon svgIcon="moon"></md-icon>
+<md-icon svgIcon="animals:cat"></md-icon>
 ```
 
 ### Icon sets
