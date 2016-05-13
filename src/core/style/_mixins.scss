@@ -25,3 +25,33 @@
   text-transform: none;
   width: 1px;
 }
+
+@mixin md-temporary-ink-ripple($component) {
+  // TODO(mtlin): Replace when ink ripple component is implemented.
+  // A placeholder ink ripple, shown when keyboard focused.
+  .md-ink-ripple {
+    background-color: md-color($md-accent);
+    border-radius: 50%;
+    height: 48px;
+    left: 50%;
+    opacity: 0;
+    overflow: hidden;
+    pointer-events: none;
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%,-50%);
+    transition: opacity ease 0.28s, background-color ease 0.28s;
+    width: 48px;
+
+    // Fade in when radio focused.
+    .md-#{$component}-focused & {
+      opacity: 0.1;
+    }
+
+    // TODO(mtlin): This corresponds to disabled focus state, but it's unclear how to enter into
+    // this state.
+    .md-#{$component}-disabled & {
+      background: #000;
+    }
+  }
+}

@@ -1,6 +1,7 @@
 @import "default-theme";
 @import "theme-functions";
 @import "variables";
+@import "mixins";
 
 /** The width/height of the checkbox element. */
 $md-checkbox-size: $md-toggle-size !default;
@@ -217,11 +218,8 @@ $_md-checkbox-indeterminate-checked-easing-function: cubic-bezier(0.14, 0, 0, 1)
 }
 
 md-checkbox {
-  cursor: pointer;
-
-  &:focus {
-    // TODO(traviskaufman): Add ink ripple on focus state, once ripple is implemented.
-    outline: none;
+  &, label {
+    cursor: pointer;
   }
 }
 
@@ -251,7 +249,7 @@ md-checkbox {
 }
 
 // TODO(kara): Remove this style when fixing vertical baseline
-.md-checkbox-layout label {
+.md-checkbox-layout .md-checkbox-label {
   line-height: 24px;
 }
 
@@ -461,3 +459,11 @@ md-checkbox {
     }
   }
 }
+
+// Underlying native input element.
+// Visually hidden but still able to respond to focus.
+.md-checkbox-input {
+  @include md-visually-hidden;
+}
+
+@include md-temporary-ink-ripple(checkbox);

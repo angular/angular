@@ -1,5 +1,18 @@
-<div class="md-checkbox-layout">
+<label class="md-checkbox-layout">
   <div class="md-checkbox-inner-container">
+    <input class="md-checkbox-input" type="checkbox"
+           [id]="inputId"
+           [checked]="checked"
+           [disabled]="disabled"
+           [name]="name"
+           [tabIndex]="tabindex"
+           [indeterminate]="indeterminate"
+           [attr.aria-label]="ariaLabel"
+           [attr.aria-labelledby]="ariaLabelledby"
+           (focus)="onInputFocus()"
+           (blur)="onInputBlur()"
+           (change)="onInteractionEvent($event)">
+    <div class="md-ink-ripple"></div>
     <div class="md-checkbox-frame"></div>
     <div class="md-checkbox-background">
       <svg version="1.1"
@@ -16,7 +29,7 @@
       <div class="md-checkbox-mixedmark"></div>
     </div>
   </div>
-  <label [id]="labelId">
+  <span class="md-checkbox-label">
     <ng-content></ng-content>
-  </label>
-</div>
+  </span>
+</label>

@@ -1,5 +1,6 @@
 @import "default-theme";
 @import "variables";
+@import "mixins";
 
 $md-radio-size: $md-toggle-size !default;
 
@@ -24,34 +25,6 @@ md-radio-button {
   position: relative;
   top: 2px;
   width: $md-radio-size;
-}
-
-// TODO(mtlin): Replace when ink ripple component is implemented.
-// A placeholder ink ripple, shown when keyboard focused.
-.md-ink-ripple {
-  background-color: md-color($md-accent);
-  border-radius: 50%;
-  height: 48px;
-  left: 10px;
-  opacity: 0;
-  pointer-events: none;
-  position: absolute;
-  top: 10px;
-  transform: translate(-50%,-50%);
-  transition: opacity ease 0.28s, background-color ease 0.28s;
-  width: 48px;
-  overflow: hidden;
-
-  // Fade in when radio focused.
-  .md-radio-focused & {
-    opacity: 0.1;
-  }
-
-  // TODO(mtlin): This corresponds to disabled focus state, but it's unclear how to enter into
-  // this state.
-  .md-radio-disabled & {
-    background: #000;
-  }
 }
 
 // The outer circle for the radio, always present.
@@ -117,17 +90,12 @@ md-radio-button {
 // Underlying native input element.
 // Visually hidden but still able to respond to focus.
 .md-radio-input {
-  position: absolute;
-  width: 0;
-  height: 0;
-  margin: 0;
-  padding: 0;
-  opacity: 0;
-  appearance: none;
-  border: none;
+  @include md-visually-hidden;
 }
 
 // Basic disabled state.
 .md-radio-disabled, .md-radio-disabled .md-radio-label {
   cursor: default;
 }
+
+@include md-temporary-ink-ripple(radio);

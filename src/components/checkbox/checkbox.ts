@@ -15,8 +15,6 @@ import {
   ControlValueAccessor,
 } from '@angular/common';
 
-
-
 /**
  * Monotonically increasing integer used to auto-generate unique ids for checkbox components.
  */
@@ -59,21 +57,11 @@ enum TransitionCheckState {
   templateUrl: './components/checkbox/checkbox.html',
   styleUrls: ['./components/checkbox/checkbox.css'],
   host: {
-    'role': 'checkbox',
-    '[id]': 'id',
     '[class.md-checkbox-indeterminate]': 'indeterminate',
     '[class.md-checkbox-checked]': 'checked',
     '[class.md-checkbox-disabled]': 'disabled',
     '[class.md-checkbox-align-end]': 'align == "end"',
-    '[attr.tabindex]': 'disabled ? null : tabindex',
-    '[attr.aria-label]': 'ariaLabel',
-    '[attr.aria-labelledby]': 'labelId',
-    '[attr.aria-checked]': 'getAriaChecked()',
-    '[attr.aria-disabled]': 'disabled',
-    '(click)': 'onInteractionEvent($event)',
-    '(keydown.space)': 'onSpaceDown($event)',
-    '(keyup.space)': 'onInteractionEvent($event)',
-    '(blur)': 'onTouched()'
+    '[class.md-checkbox-focused]': 'hasFocus',
   },
   providers: [MD_CHECKBOX_CONTROL_VALUE_ACCESSOR],
   encapsulation: ViewEncapsulation.None,
@@ -86,8 +74,18 @@ export class MdCheckbox implements ControlValueAccessor {
    */
   @Input('aria-label') ariaLabel: string = '';
 
+  /**
+   * Users can specify the `aria-labelledby` attribute which will be forwarded to the input element
+   */
+  @Input('aria-labelledby') ariaLabelledby: string = null;
+
   /** A unique id for the checkbox. If one is not supplied, it is auto-generated. */
   @Input() id: string = `md-checkbox-${++nextId}`;
+
+  /** ID to be applied to the `input` element */
+  get inputId(): string {
+    return `input-${this.id}`;
+  }
 
   /** Whether or not the checkbox should come before or after the label. */
   @Input() align: 'start' | 'end' = 'start';
@@ -103,6 +101,9 @@ export class MdCheckbox implements ControlValueAccessor {
    * on the host element will be removed. It will be placed back when the checkbox is re-enabled.
    */
   @Input() tabindex: number = 0;
+
+  /** Name value will be applied to the input element if present */
+  @Input() name: string = null;
 
   /** Event emitted when the checkbox's `checked` value changes. */
   @Output() change: EventEmitter<boolean> = new EventEmitter<boolean>();
@@ -122,6 +123,8 @@ export class MdCheckbox implements ControlValueAccessor {
   private _indeterminate: boolean = false;
 
   private _changeSubscription: {unsubscribe: () => any} = null;
+
+  hasFocus: boolean = false;
 
   constructor(private _renderer: Renderer, private _elementRef: ElementRef) {}
 
@@ -172,43 +175,6 @@ export class MdCheckbox implements ControlValueAccessor {
     }
   }
 
-  /** The id that is attached to the checkbox's label. */
-  get labelId() {
-    return `${this.id}-label`;
-  }
-
-  /** Returns the proper aria-checked attribute value based on the checkbox's state. */
-  getAriaChecked() {
-    if (this.indeterminate) {
-      return 'mixed';
-    }
-    return this.checked ? 'true' : 'false';
-  }
-
-  /** Toggles the checked state of the checkbox. If the checkbox is disabled, this does nothing. */
-  toggle() {
-    this.checked = !this.checked;
-  }
-
-  /**
-   * Event handler used for both (click) and (keyup.space) events. Delegates to toggle().
-   */
-  onInteractionEvent(event: Event) {
-    if (this.disabled) {
-      event.stopPropagation();
-      return;
-    }
-    this.toggle();
-  }
-
-  /**
-   * Event handler used for (keydown.space) events. Used to prevent spacebar events from bubbling
-   * when the component is focused, which prevents side effects like page scrolling from happening.
-   */
-  onSpaceDown(evt: Event) {
-    evt.preventDefault();
-  }
-
   /** Implemented as part of ControlValueAccessor. */
   writeValue(value: any) {
     this.checked = !!value;
@@ -245,6 +211,43 @@ export class MdCheckbox implements ControlValueAccessor {
 
     if (this._currentAnimationClass.length > 0) {
       renderer.setElementClass(elementRef.nativeElement, this._currentAnimationClass, true);
+    }
+  }
+
+  /**
+   * Informs the component when the input has focus so that we can style accordingly
+   * @internal
+   */
+  onInputFocus() {
+    this.hasFocus = true;
+  }
+
+  /**
+   * Informs the component when we lose focus in order to style accordingly
+   * @internal
+   */
+  onInputBlur() {
+    this.hasFocus = false;
+    this.onTouched();
+  }
+
+  /**
+   * Toggles the `checked` value between true and false
+   */
+  toggle() {
+    this.checked = !this.checked;
+  }
+
+  /**
+   * Event handler for checkbox input element.  Toggles checked state if element is not disabled.
+   * @param event
+   * @internal
+   */
+  onInteractionEvent(event: Event) {
+    if (this.disabled) {
+      event.stopPropagation();
+    } else {
+      this.toggle();
     }
   }
 

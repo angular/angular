@@ -40,8 +40,11 @@ class MdCheckboxDemoNestedChecklist {
     }
   ];
 
-  allComplete(tasks: Task[]): boolean {
-    return tasks.every(t => t.completed);
+  allComplete(task: Task): boolean {
+    let subtasks = task.subtasks;
+    return subtasks.every(t => t.completed) ? true
+        : subtasks.every(t => !t.completed) ? false
+        : task.completed;
   }
 
   someComplete(tasks: Task[]): boolean {
@@ -51,10 +54,6 @@ class MdCheckboxDemoNestedChecklist {
 
   setAllCompleted(tasks: Task[], completed: boolean) {
     tasks.forEach(t => t.completed = completed);
-  }
-
-  updateOnSubtaskChange(task: Task) {
-    task.completed = this.allComplete(task.subtasks);
   }
 }
 
