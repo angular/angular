@@ -26,7 +26,15 @@ export {
 export * from '../private_export';
 export {DOCUMENT} from './dom/dom_tokens';
 
-export {DomSanitizationService, SecurityContext} from './security/dom_sanitization_service';
+export {
+  DomSanitizationService,
+  SafeHtml,
+  SafeScript,
+  SafeStyle,
+  SafeUrl,
+  SafeResourceUrl,
+  SecurityContext
+} from './security/dom_sanitization_service';
 
 export {
   bootstrapStatic,

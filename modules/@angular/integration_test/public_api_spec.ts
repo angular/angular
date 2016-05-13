@@ -23,6 +23,11 @@ import {ListWrapper} from '../facade/src/collection';
 //
 // =================================================================================================
 // =================================================================================================
+// Note that this test only tests for *values* exported (e.g. classes, functions, variables), but
+// not for *types* exported (interfaces, typedefs).
+// See tools/public_api_guard/public_api_spec.ts for a type based test.
+// =================================================================================================
+
 
 var COMMON: string[] = [
   'APP_BASE_HREF',
