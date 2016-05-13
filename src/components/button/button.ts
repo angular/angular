@@ -68,7 +68,7 @@ export class MdButton {
     }
   }
 
-  setKeyboardFocus($event: any) {
+  setKeyboardFocus() {
     this.isKeyboardFocused = !this.isMouseDown;
   }
 
