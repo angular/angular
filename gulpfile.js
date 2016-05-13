@@ -600,7 +600,8 @@ function launchKarmaWithExternalBrowsers(reporters, browsers, done) {
                  browserNoActivityTimeout: 240000,
                  captureTimeout: 120000,
                  reporters: reporters,
-                 browsers: browsers
+                 browsers: browsers,
+                 browserDisconnectTolerance: 5
                },
                function(err) {
                  done();
