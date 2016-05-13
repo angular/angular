@@ -24,7 +24,7 @@ const analyticsFile = path.resolve(path.join(__dirname, '..', '..', '.build-anal
 const analyticsId = "UA-8594346-17"; // Owned by the Angular account
 const analyticsOptions = {
   https: true,
-  debug: false
+  debug: true
 };
 
 let cid = fs.existsSync(analyticsFile) ? fs.readFileSync(analyticsFile, 'utf-8') : null;

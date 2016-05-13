@@ -6,7 +6,7 @@ set -ex -o pipefail
 NODE_VERSION=5.4.1
 NPM_VERSION=3.5.3
 CHROMIUM_VERSION=386251 # Chrome 50 linux stable, see https://www.chromium.org/developers/calendar
-SAUCE_CONNECT_VERSION=4.3.11
+SAUCE_CONNECT_VERSION=4.3.14
 
 
 
@@ -65,4 +65,3 @@ if [[ ${TRAVIS} ]]; then
   export BROWSER_STACK_ACCESS_KEY=BWCd4SynLzdDcv8xtzsB
   export CHROME_BIN=${HOME}/.chrome/chromium/chrome-linux/chrome
 fi
-
