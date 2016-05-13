@@ -1,6 +1,7 @@
-import {
-  bootstrapRender,
-  WORKER_RENDER_ROUTER
-} from '../../../../@angular/platform-browser/src/worker_render';
+import {bootstrapRender} from '@angular/platform-browser-dynamic';
 
-bootstrapRender("loader.js", WORKER_RENDER_ROUTER);
+import {WORKER_RENDER_LOCATION_PROVIDERS} from '@angular/platform-browser';
+
+export function main() {
+  bootstrapRender("loader.js", WORKER_RENDER_LOCATION_PROVIDERS);
+}

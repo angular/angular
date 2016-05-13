@@ -30,14 +30,14 @@ describe("template codegen output", () => {
 
   it("should be able to create the basic component", () => {
     const appInjector = ReflectiveInjector.resolveAndCreate(BROWSER_APP_STATIC_PROVIDERS,
-                                                            browserPlatform().injector);
+      browserPlatform().injector);
     var comp = BasicNgFactory.create(appInjector);
     expect(comp.instance).toBeTruthy();
   });
 
   it("should support ngIf", () => {
     const appInjector = ReflectiveInjector.resolveAndCreate(BROWSER_APP_STATIC_PROVIDERS,
-                                                            browserPlatform().injector);
+      browserPlatform().injector);
     var comp = BasicNgFactory.create(appInjector);
     var debugElement = <DebugElement>getDebugNode(comp.location.nativeElement);
     expect(debugElement.children.length).toBe(2);
@@ -50,7 +50,7 @@ describe("template codegen output", () => {
 
   it("should support ngFor", () => {
     const appInjector = ReflectiveInjector.resolveAndCreate(BROWSER_APP_STATIC_PROVIDERS,
-                                                            browserPlatform().injector);
+      browserPlatform().injector);
     var comp = BasicNgFactory.create(appInjector);
     var debugElement = <DebugElement>getDebugNode(comp.location.nativeElement);
     expect(debugElement.children.length).toBe(2);

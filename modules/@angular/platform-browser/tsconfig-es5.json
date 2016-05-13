@@ -15,9 +15,7 @@
       "@angular/core": ["../../../dist/packages-dist/core"],
       "@angular/core/testing": ["../../../dist/packages-dist/core/testing"],
       "@angular/common": ["../../../dist/packages-dist/common"],
-      "@angular/common/testing": ["../../../dist/packages-dist/common/testing"],
-      "@angular/compiler": ["../../../dist/packages-dist/compiler"],
-      "@angular/compiler/testing": ["../../../dist/packages-dist/compiler/testing"]
+      "@angular/common/testing": ["../../../dist/packages-dist/common/testing"]
     },
     "rootDir": ".",
     "sourceMap": true,

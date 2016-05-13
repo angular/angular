@@ -1,4 +1,4 @@
-import {OpaqueToken, ComponentResolver} from '@angular/core';
+import {ComponentResolver} from '@angular/core';
 import {LocationStrategy, PathLocationStrategy, Location} from '@angular/common';
 import {Router, RouterOutletMap} from './router';
 import {RouteSegment} from './segments';

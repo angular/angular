@@ -379,6 +379,8 @@ export class RegExpMatcherWrapper {
 
 export class FunctionWrapper {
   static apply(fn: Function, posArgs: any): any { return fn.apply(null, posArgs); }
+
+  static bind(fn: Function, scope: any): Function { return fn.bind(scope); }
 }
 
 // JS has NaN !== NaN

@@ -1,11 +1,11 @@
-import {Injectable} from '@angular/core/src/di';
+import {Injectable} from '@angular/core';
 import {
   FnArg,
   UiArguments,
   ClientMessageBroker,
   ClientMessageBrokerFactory
 } from '../shared/client_message_broker';
-import {PlatformLocation, UrlChangeEvent, UrlChangeListener} from '@angular/common';
+import {PlatformLocation, UrlChangeListener} from '@angular/common';
 import {ROUTER_CHANNEL} from '../shared/messaging_api';
 import {LocationType} from '../shared/serialized_types';
 import {PromiseWrapper, EventEmitter, ObservableWrapper} from '../../../src/facade/async';

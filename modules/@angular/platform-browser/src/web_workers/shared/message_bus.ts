@@ -1,6 +1,5 @@
 import {EventEmitter} from '../../../src/facade/async';
-import {NgZone} from '@angular/core/src/zone/ng_zone';
-export {EventEmitter, Observable} from '../../../src/facade/async';
+import {NgZone} from '@angular/core';
 
 /**
  * Message Bus is a low level API used to communicate between the UI and the background.

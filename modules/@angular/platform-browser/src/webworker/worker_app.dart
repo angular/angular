@@ -10,7 +10,7 @@ import 'dart:isolate';
 
 const OpaqueToken RENDER_SEND_PORT = const OpaqueToken("RenderSendPort");
 
-const List<dynamic> WORKER_APP_APPLICATION = const [
+const List<dynamic> WORKER_APP_APPLICATION_PROVIDERS = const [
   WORKER_APP_APPLICATION_COMMON,
   const Provider(MessageBus,
       useFactory: createMessageBus, deps: const [NgZone, RENDER_SEND_PORT]),

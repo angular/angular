@@ -1,8 +1,8 @@
 import {Inject, Injectable} from '@angular/core';
-import {DOCUMENT} from '../src/dom/dom_tokens';
-import {getDOM} from '../src/dom/dom_adapter';
+import {DOCUMENT} from '@angular/platform-browser';
+import {getDOM} from '../platform_browser_private';
 import {TestComponentRenderer} from '@angular/compiler/testing';
-import {el} from './browser_util';
+import {el} from '@angular/platform-browser/testing';
 
 /**
  * A DOM based implementation of the TestComponentRenderer.

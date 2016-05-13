@@ -252,6 +252,10 @@ class FunctionWrapper {
   static apply(Function fn, posArgs) {
     return Function.apply(fn, posArgs);
   }
+
+  static Function bind(Function fn, dynamic scope) {
+    return fn;
+  }
 }
 
 const _NAN_KEY = const Object();

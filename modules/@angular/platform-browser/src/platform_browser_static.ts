@@ -26,13 +26,12 @@ export {
 
 /**
  * An array of providers that should be passed into `application()` when bootstrapping a component
- * when all templates
- * have been precompiled offline.
+ * when all templates have been precompiled offline.
  */
 export const BROWSER_APP_STATIC_PROVIDERS: Array<any /*Type | Provider | any[]*/> =
     /*@ts2dart_const*/ BROWSER_APP_COMMON_PROVIDERS;
 
-export function browserStaticPlatform(): PlatformRef {
+export function browserPlatform(): PlatformRef {
   if (isBlank(getPlatform())) {
     createPlatform(ReflectiveInjector.resolveAndCreate(BROWSER_PROVIDERS));
   }
@@ -52,6 +51,6 @@ export function bootstrapStatic(appComponentType: Type,
   let appProviders = isPresent(customProviders) ? [BROWSER_APP_STATIC_PROVIDERS, customProviders] :
                                                   BROWSER_APP_STATIC_PROVIDERS;
   var appInjector =
-      ReflectiveInjector.resolveAndCreate(appProviders, browserStaticPlatform().injector);
+      ReflectiveInjector.resolveAndCreate(appProviders, browserPlatform().injector);
   return coreLoadAndBootstrap(appInjector, appComponentType);
 }

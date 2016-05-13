@@ -1,15 +1,14 @@
-import {Provider, ApplicationRef} from '@angular/core';
-import {
-  bootstrapRender,
-  UiArguments,
-  FnArg,
-  PRIMITIVE,
-  ClientMessageBrokerFactory
-} from '../../../../@angular/platform-browser/src/worker_render';
+import {ApplicationRef} from '@angular/core';
+import {bootstrapRender} from '@angular/platform-browser-dynamic';
+
+// TODO
+import {UiArguments, FnArg, PRIMITIVE, ClientMessageBrokerFactory} from '@angular/platform-browser';
 
 const ECHO_CHANNEL = "ECHO";
 
-bootstrapRender("loader.js").then((ref) => afterBootstrap(ref));
+export function main() {
+  bootstrapRender("loader.js").then((ref) => afterBootstrap(ref));
+}
 
 function afterBootstrap(ref: ApplicationRef) {
   let brokerFactory: ClientMessageBrokerFactory = ref.injector.get(ClientMessageBrokerFactory);
