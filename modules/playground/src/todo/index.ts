@@ -1,14 +1,18 @@
-import {bootstrap} from 'angular2/bootstrap';
-import {Component, View} from 'angular2/core';
-import {NgFor} from 'angular2/common';
-import {Store, Todo, TodoFactory} from './services/TodoStore';
+import {bootstrap} from '@angular/platform-browser-dynamic';
+import {Component} from '@angular/core';
+import {NgFor} from '@angular/common';
+import {Store, Todo, TodoFactory} from './app/TodoStore';
 
-@Component({selector: 'todo-app', viewProviders: [Store, TodoFactory]})
-@View({templateUrl: 'todo.html', directives: [NgFor]})
+@Component({
+  selector: 'todo-app',
+  viewProviders: [Store, TodoFactory],
+  templateUrl: 'todo.html',
+  directives: [NgFor]
+})
 class TodoApp {
   todoEdit: Todo = null;
 
-  constructor(public todoStore: Store, public factory: TodoFactory) {}
+  constructor(public todoStore: Store<Todo>, public factory: TodoFactory) {}
 
   enterTodo(inputElement): void {
     this.addTodo(inputElement.value);

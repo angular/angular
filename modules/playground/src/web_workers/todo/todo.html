@@ -17,7 +17,7 @@
 
     <ul id="todo-list">
 
-      <li *ngFor="#todo of todoStore.list" [class.hidden]="hideActive && !todo.completed || hideCompleted && todo.completed">
+      <li *ngFor="let todo of todoStore.list" [class.hidden]="hideActive && !todo.completed || hideCompleted && todo.completed">
         <div class="view"
             [class.hidden]="todoEdit == todo">
 

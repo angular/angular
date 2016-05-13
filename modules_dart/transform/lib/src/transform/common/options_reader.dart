@@ -1,11 +1,15 @@
 library angular2.transform.common.options_reader;
 
+import 'dart:io';
+
 import 'package:barback/barback.dart';
+
 import 'annotation_matcher.dart';
 import 'mirror_mode.dart';
 import 'options.dart';
+import './url_resolver.dart';
 
-  TransformerOptions parseBarbackSettings(BarbackSettings settings) {
+TransformerOptions parseBarbackSettings(BarbackSettings settings) {
   var config = settings.configuration;
   var entryPoints = _readStringList(config, ENTRY_POINT_PARAM);
   var initReflector =
@@ -15,10 +19,17 @@ import 'options.dart';
   var platformDirectives = _readStringList(config, PLATFORM_DIRECTIVES);
   var platformPipes = _readStringList(config, PLATFORM_PIPES);
   var resolvedIdentifiers = config[RESOLVED_IDENTIFIERS];
+  var errorOnMissingIdentifiers = _readBool(config, ERROR_ON_MISSING_IDENTIFIERS, defaultValue: true);
   var formatCode = _readBool(config, FORMAT_CODE_PARAM, defaultValue: false);
   String mirrorModeVal =
       config.containsKey(MIRROR_MODE_PARAM) ? config[MIRROR_MODE_PARAM] : '';
   var mirrorMode = MirrorMode.none;
+  var codegenMode;
+  if (settings.mode == BarbackMode.DEBUG) {
+    codegenMode = CODEGEN_DEBUG_MODE;
+  } else {
+    codegenMode = config[CODEGEN_MODE_PARAM];
+  }
   switch (mirrorModeVal) {
     case 'debug':
       mirrorMode = MirrorMode.debug;
@@ -34,15 +45,17 @@ import 'options.dart';
       modeName: settings.mode.name,
       mirrorMode: mirrorMode,
       initReflector: initReflector,
-      genChangeDetectionDebugInfo: settings.mode == BarbackMode.DEBUG,
+      codegenMode: codegenMode,
       customAnnotationDescriptors: _readCustomAnnotations(config),
       reflectPropertiesAsAttributes: reflectPropertiesAsAttributes,
       platformDirectives: platformDirectives,
       platformPipes: platformPipes,
       resolvedIdentifiers: resolvedIdentifiers,
+      errorOnMissingIdentifiers: errorOnMissingIdentifiers,
       inlineViews: _readBool(config, INLINE_VIEWS_PARAM, defaultValue: false),
       lazyTransformers:
           _readBool(config, LAZY_TRANSFORMERS, defaultValue: false),
+      translations: _readAssetId(config, TRANSLATIONS),
       formatCode: formatCode);
 }
 
@@ -50,6 +63,14 @@ bool _readBool(Map config, String paramName, {bool defaultValue}) {
   return config.containsKey(paramName)
       ? config[paramName] != false
       : defaultValue;
+}
+
+AssetId _readAssetId(Map config, String paramName) {
+  if (config.containsKey(paramName)) {
+    return fromUri(config[paramName]);
+  } else {
+    return null;
+  }
 }
 
 /// Cribbed from the polymer project.
@@ -69,7 +90,8 @@ List<String> _readStringList(Map config, String paramName) {
     error = true;
   }
   if (error) {
-    print('Invalid value for "$paramName" in the Angular 2 transformer.');
+    stderr.writeln(
+        'Invalid value for "$paramName" in the Angular 2 transformer.');
   }
   return result;
 }
@@ -101,7 +123,7 @@ List<ClassDescriptor> _readCustomAnnotations(Map config) {
     }
   }
   if (error) {
-    print(CUSTOM_ANNOTATIONS_ERROR);
+    stderr.writeln(CUSTOM_ANNOTATIONS_ERROR);
   }
   return descriptors;
 }
@@ -111,7 +133,7 @@ const CUSTOM_ANNOTATIONS_ERROR = '''
   Expected something that looks like the following:
 
   transformers:
-  - angular2:
+  - angular2[/transform/codegen]:
       custom_annotations:
         - name: MyAnnotation
           import: 'package:my_package/my_annotation.dart'

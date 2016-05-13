@@ -9,16 +9,16 @@ import {
   inject,
   it,
   xit,
-} from 'angular2/testing_internal';
+} from '@angular/testing/testing_internal';
 
-import {PromiseWrapper} from 'angular2/src/facade/async';
-import {Json, isBlank, isPresent} from 'angular2/src/facade/lang';
+import {PromiseWrapper} from '@angular/facade';
+import {Json, isBlank, isPresent} from '@angular/facade';
 
 import {
   WebDriverExtension,
   IOsDriverExtension,
   WebDriverAdapter,
-  Injector,
+  ReflectiveInjector,
   bind,
   provide
 } from 'benchpress/common';
@@ -32,17 +32,17 @@ export function main() {
 
     var normEvents = new TraceEventFactory('timeline', 'pid0');
 
-    function createExtension(perfRecords = null) {
+    function createExtension(perfRecords = null): WebDriverExtension {
       if (isBlank(perfRecords)) {
         perfRecords = [];
       }
       log = [];
-      extension =
-          Injector.resolveAndCreate([
-                    IOsDriverExtension.BINDINGS,
-                    provide(WebDriverAdapter, {useValue: new MockDriverAdapter(log, perfRecords)})
-                  ])
-              .get(IOsDriverExtension);
+      extension = ReflectiveInjector.resolveAndCreate([
+                                      IOsDriverExtension.BINDINGS,
+                                      provide(WebDriverAdapter,
+                                              {useValue: new MockDriverAdapter(log, perfRecords)})
+                                    ])
+                      .get(IOsDriverExtension);
       return extension;
     }
 
@@ -61,7 +61,7 @@ export function main() {
 
     it('should mark the timeline via console.timeEnd()', inject([AsyncTestCompleter], (async) => {
          createExtension()
-             .timeEnd('someName')
+             .timeEnd('someName', null)
              .then((_) => {
                expect(log).toEqual([['executeScript', `console.timeEnd('someName');`]]);
                async.done();

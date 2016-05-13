@@ -15,8 +15,9 @@ dependency_overrides:
   angular2:
     path: ../angular2
 transformers:
-- angular2:
-    entry_points:
+- angular2/transform/codegen
+- angular2/transform/reflection_remover:
+    $include:
         - web/src/compiler/compiler_benchmark.dart
         - web/src/costs/index.dart
         - web/src/di/di_benchmark.dart

@@ -34,10 +34,10 @@ class AngularTransformerGroup extends TransformerGroup {
     } else {
       phases = [
         [new DirectiveProcessor(options)],
-        [new DirectiveMetadataLinker()],
+        [new DirectiveMetadataLinker(options)],
         [new ReflectionRemover(options)],
         [
-          new DeferredRewriter(options),
+          new DeferredRewriter(),
           new StylesheetCompiler(),
           new TemplateCompiler(options)
         ],

@@ -117,7 +117,7 @@ speed things up is to use plain class fields in your expressions and avoid any
 kinds of computation. Example:
 
 ```typescript
-@View({
+@Component({
   template: '<button [enabled]="isEnabled">{{title}}</button>'
 })
 class FancyButton {

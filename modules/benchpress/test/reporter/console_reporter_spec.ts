@@ -7,16 +7,16 @@ import {
   expect,
   beforeEach,
   afterEach
-} from 'angular2/testing_internal';
+} from '@angular/testing/testing_internal';
 
-import {isBlank, isPresent, Date, DateWrapper} from 'angular2/src/facade/lang';
+import {isBlank, isPresent, Date, DateWrapper} from '@angular/facade';
 
 import {
   SampleState,
   Reporter,
   bind,
   provide,
-  Injector,
+  ReflectiveInjector,
   ConsoleReporter,
   SampleDescription,
   MeasureValues
@@ -45,7 +45,7 @@ export function main() {
       if (isPresent(columnWidth)) {
         bindings.push(bind(ConsoleReporter.COLUMN_WIDTH).toValue(columnWidth));
       }
-      reporter = Injector.resolveAndCreate(bindings).get(ConsoleReporter);
+      reporter = ReflectiveInjector.resolveAndCreate(bindings).get(ConsoleReporter);
     }
 
     it('should print the sample id, description and table header', () => {

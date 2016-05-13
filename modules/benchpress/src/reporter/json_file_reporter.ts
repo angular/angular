@@ -1,7 +1,7 @@
-import {DateWrapper, isPresent, isBlank, Json} from 'angular2/src/facade/lang';
-import {PromiseWrapper} from 'angular2/src/facade/async';
+import {DateWrapper, isPresent, isBlank, Json} from '@angular/facade';
+import {PromiseWrapper} from '@angular/facade';
 
-import {bind, provide, Provider, OpaqueToken} from 'angular2/src/core/di';
+import {bind, provide, Provider, OpaqueToken} from '@angular/core/src/di';
 
 import {Reporter} from '../reporter';
 import {SampleDescription} from '../sample_description';

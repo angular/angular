@@ -1,5 +1,3 @@
-/// <reference path="../../../../angular2/typings/node/node.d.ts" />
-
 var {Cc, Ci, Cu} = require('chrome');
 var os = Cc['@mozilla.org/observer-service;1'].getService(Ci.nsIObserverService);
 var ParserUtil = require('./parser_util');

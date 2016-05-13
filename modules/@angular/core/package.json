@@ -1,0 +1,14 @@
+{
+  "name": "@angular/core",
+  "version": "$$ANGULAR_VERSION$$",
+  "description": "",
+  "main": "index.js",
+  "jsnext:main": "esm/index.js",
+  "typings": "index.d.ts",
+  "author": "angular",
+  "license": "MIT",
+  "peerDependencies": {
+    "rxjs": "5.0.0-beta.6",
+    "zone.js": "^0.6.6"
+  }
+}

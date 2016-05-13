@@ -1,10 +1,12 @@
 library angular2.test.transform.common.annotation_matcher_test;
 
 import 'dart:async';
+
 import 'package:analyzer/analyzer.dart';
-import 'package:angular2/src/transform/common/annotation_matcher.dart';
 import 'package:barback/barback.dart' show AssetId;
-import 'package:guinness/guinness.dart';
+import 'package:test/test.dart';
+
+import 'package:angular2/src/transform/common/annotation_matcher.dart';
 
 main() {
   allTests();
@@ -39,66 +41,69 @@ var foo;
 ''');
 
 void allTests() {
-  it('should be able to match basic annotations.', () {
+  test('should be able to match basic annotations.', () {
     var matcher = new AnnotationMatcher()
-      ..add(const AnnotationDescriptor('Test', 'package:test/test.dart', null));
+      ..add(const ClassDescriptor('Test', 'package:test/test.dart'));
     var visitor = new MatchRecordingVisitor(matcher);
     simpleAst.accept(visitor);
-    expect(visitor.matches.length).toBe(1);
+    expect(visitor.matches.length, equals(1));
   });
 
-  it('should be able to match namespaced annotations.', () {
+  test('should be able to match namespaced annotations.', () {
     var matcher = new AnnotationMatcher()
-      ..add(const AnnotationDescriptor('Test', 'package:test/test.dart', null));
+      ..add(const ClassDescriptor('Test', 'package:test/test.dart'));
     var visitor = new MatchRecordingVisitor(matcher);
     namespacedAst.accept(visitor);
-    expect(visitor.matches.length).toBe(1);
+    expect(visitor.matches.length, equals(1));
   });
 
-  it('should be able to match relative imports.', () {
+  test('should be able to match relative imports.', () {
     var matcher = new AnnotationMatcher()
-      ..add(const AnnotationDescriptor('Test', 'package:test/test.dart', null));
+      ..add(const ClassDescriptor('Test', 'package:test/test.dart'));
     var visitor =
         new MatchRecordingVisitor(matcher, new AssetId('test', 'lib/foo.dart'));
     relativePathAst.accept(visitor);
-    expect(visitor.matches.length).toBe(1);
+    expect(visitor.matches.length, equals(1));
   });
 
-  it('should be able to match relative imports with a namespace.', () {
+  test('should be able to match relative imports with a namespace.', () {
     var matcher = new AnnotationMatcher()
-      ..add(const AnnotationDescriptor('Test', 'package:test/test.dart', null));
+      ..add(const ClassDescriptor('Test', 'package:test/test.dart'));
     var visitor =
         new MatchRecordingVisitor(matcher, new AssetId('test', 'lib/foo.dart'));
     namespacedRelativePathAst.accept(visitor);
-    expect(visitor.matches.length).toBe(1);
+    expect(visitor.matches.length, equals(1));
   });
 
-  it('should not match annotations if the import is missing.', () {
+  test('should not match annotations if the import is missing.', () {
     var matcher = new AnnotationMatcher()
-      ..add(const AnnotationDescriptor('Test', 'package:test/foo.dart', null));
+      ..add(const ClassDescriptor('Test', 'package:test/foo.dart'));
     var visitor = new MatchRecordingVisitor(matcher);
     simpleAst.accept(visitor);
-    expect(visitor.matches.isEmpty).toBeTrue();
+    expect(visitor.matches.isEmpty, isTrue);
   });
 
-  it('should not match annotations if the name is different.', () {
+  test('should not match annotations if the name is different.', () {
     var matcher = new AnnotationMatcher()
-      ..add(const AnnotationDescriptor('Foo', 'package:test/test.dart', null));
+      ..add(const ClassDescriptor('Foo', 'package:test/test.dart'));
     var visitor = new MatchRecordingVisitor(matcher);
     simpleAst.accept(visitor);
-    expect(visitor.matches.isEmpty).toBeTrue();
+    expect(visitor.matches.isEmpty, isTrue);
   });
 }
 
 class MatchRecordingVisitor extends RecursiveAstVisitor {
   final AssetId assetId;
   final AnnotationMatcher matcher;
-  final List<Annotation> matches = [];
+  final matches = <Annotation>[];
 
-  MatchRecordingVisitor(this.matcher, [this.assetId]) : super();
+  MatchRecordingVisitor(this.matcher, [AssetId assetId])
+      : super(),
+        this.assetId =
+            assetId != null ? assetId : new AssetId('a', 'lib/a.dart');
 
   @override
   void visitAnnotation(Annotation annotation) {
-    if (matcher.hasMatch(annotation, assetId)) matches.add(annotation);
+    if (matcher.hasMatch(annotation.name, assetId)) matches.add(annotation);
   }
 }

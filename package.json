@@ -1,22 +1,11 @@
 {
   "name": "angular-srcs",
-  "version": "2.0.0-beta.8",
+  "version": "2.0.0-rc.1",
+  "private": true,
   "branchPattern": "2.0.*",
   "description": "Angular 2 - a web framework for modern web apps",
   "homepage": "https://github.com/angular/angular",
   "bugs": "https://github.com/angular/angular/issues",
-  "contributors": [
-    "Alex Eagle <alexeagle@google.com>",
-    "Chirayu Krishnappa <chirayu@google.com>",
-    "Jeff Cross <crossj@google.com>",
-    "Matias Niemela <matsko@google.com>",
-    "Misko Hevery <misko@google.com>",
-    "Rado Kirov <radokirov@google.com>",
-    "Tobias Bosch <tbosch@google.com>",
-    "Victor Savkin <vsavkin@google.com>",
-    "Yegor Jbanov <yjbanov@google.com>",
-    "Jeremy Elbourn <jelbourn@google.com>"
-  ],
   "license": "MIT",
   "engines": {
     "node": ">= 5.4.1 < 6"
@@ -26,17 +15,14 @@
     "url": "https://github.com/angular/angular.git"
   },
   "scripts": {
-    "preinstall": "node tools/analytics/build-analytics start install npm3-install && node tools/analytics/build-analytics start install npm-preinstall && node tools/npm/check-node-modules && node tools/analytics/build-analytics success install npm-preinstall && node tools/analytics/build-analytics start install npm-install-net",
-    "postinstall": "node tools/analytics/build-analytics success install npm-install-net && node tools/analytics/build-analytics start install npm-postinstall && node tools/npm/copy-npm-shrinkwrap && node tools/chromedriverpatch.js && webdriver-manager update && bower install && gulp pubget.dart && tsd reinstall --overwrite --clean --config modules/angular2/tsd.json && tsd reinstall --overwrite --clean --config tools/tsd.json && tsd reinstall --overwrite --config modules/angular1_router/tsd.json && node tools/analytics/build-analytics success install npm-postinstall && node tools/analytics/build-analytics success install npm3-install",
-    "build": "node --max-old-space-size=2048 ./node_modules/.bin/gulp build.js",
-    "test": "gulp test.all.js && gulp test.all.dart"
+    "preinstall": "node tools/npm/check-node-modules",
+    "postinstall": "node tools/npm/copy-npm-shrinkwrap"
   },
   "dependencies": {
-    "es6-promise": "^3.0.2",
-    "es6-shim": "^0.33.3",
+    "es6-shim": "^0.35.0",
     "reflect-metadata": "0.1.2",
-    "rxjs": "5.0.0-beta.2",
-    "zone.js": "0.5.15"
+    "rxjs": "5.0.0-beta.6",
+    "zone.js": "^0.6.12"
   },
   "devDependencies": {
     "angular": "^1.5.0",
@@ -72,7 +58,7 @@
     "gulp-sass": "^2.0.4",
     "gulp-shell": "^0.5.1",
     "gulp-sourcemaps": "^1.6.0",
-    "gulp-tslint": "^3.5.0",
+    "gulp-tslint": "^4.3.4",
     "gulp-typescript": "^2.10.0",
     "gulp-uglify": "^1.2.0",
     "hash-files": "^1.0.0",
@@ -82,7 +68,6 @@
     "karma": "^0.13.17",
     "karma-browserstack-launcher": "^0.1.9",
     "karma-chrome-launcher": "^0.2.0",
-    "karma-dart": "^0.3.0",
     "karma-jasmine": "^0.3.6",
     "karma-sauce-launcher": "^0.3.0",
     "karma-sourcemap-loader": "^0.3.6",
@@ -101,6 +86,7 @@
     "q": "^1.0.1",
     "react": "^0.14.0",
     "rewire": "^2.3.3",
+    "rollup": "^0.26.1",
     "run-sequence": "^1.1.0",
     "selenium-webdriver": "^2.47.0",
     "semver": "^5.1.0",
@@ -113,10 +99,11 @@
     "systemjs-builder": "^0.10.3",
     "through2": "^0.6.5",
     "ts-api-guardian": "0.0.2",
-    "ts2dart": "^0.7.22",
+    "ts2dart": "^0.9.10",
     "tsd": "^0.6.5-beta",
-    "tslint": "^3.2.1",
-    "typescript": "^1.7.3",
+    "tsickle": "^0.1.2",
+    "tslint": "^3.7.0-dev.2",
+    "typescript": "^1.9.0-dev.20160409",
     "universal-analytics": "^0.3.9",
     "webpack": "^1.12.6",
     "which": "~1",

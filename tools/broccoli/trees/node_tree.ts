@@ -8,6 +8,7 @@ import mergeTrees from '../broccoli-merge-trees';
 var path = require('path');
 import renderLodashTemplate from '../broccoli-lodash';
 import replace from '../broccoli-replace';
+import generateForTest from '../broccoli-generate-for-test';
 var stew = require('broccoli-stew');
 var writeFile = require('broccoli-file-creator');
 
@@ -30,10 +31,12 @@ module.exports = function makeNodeTree(projects, destinationPath) {
       'angular2/src/upgrade/**',
       'angular2/upgrade.ts',
       'angular2/platform/testing/**',
+      'angular2/manual_typings/**',
+      'angular2/typings/**'
     ]
   });
 
-  let ambientTypings = [
+  let externalTypings = [
     'angular2/typings/hammerjs/hammerjs.d.ts',
     'angular2/typings/node/node.d.ts',
     'angular2/manual_typings/globals.d.ts',
@@ -41,8 +44,15 @@ module.exports = function makeNodeTree(projects, destinationPath) {
     'angular2/typings/es6-promise/es6-promise.d.ts'
   ];
 
+  let externalTypingsTree = new Funnel('modules', {files: externalTypings});
+
+  let packageTypings =
+      new Funnel('node_modules', {include: ['rxjs/**/*.d.ts', 'zone.js/**/*.d.ts']});
+
+  let compileSrcContext = mergeTrees([srcTree, externalTypingsTree, packageTypings]);
+
   // Compile the sources and generate the @internal .d.ts
-  let compiledSrcTreeWithInternals = compileTree(srcTree, true, ambientTypings);
+  let compiledSrcTreeWithInternals = compileTree(compileSrcContext, true, []);
 
   var testTree = new Funnel('modules', {
     include: [
@@ -66,10 +76,12 @@ module.exports = function makeNodeTree(projects, destinationPath) {
       'angular2/test/animate/**',
       'angular2/test/core/zone/**',
       'angular2/test/testing/fake_async_spec.ts',
-      'angular2/test/testing/testing_public_spec.ts',
+      'angular2/test/testing/testing_public_browser_spec.ts',
       'angular2/test/platform/xhr_impl_spec.ts',
       'angular2/test/platform/browser/**/*.ts',
       'angular2/test/common/forms/**',
+      'angular2/manual_typings/**',
+      'angular2/typings/**',
 
       // we call browser's bootstrap
       'angular2/test/router/route_config/route_config_spec.ts',
@@ -91,18 +103,61 @@ module.exports = function makeNodeTree(projects, destinationPath) {
   let srcPrivateDeclarations =
       new Funnel(compiledSrcTreeWithInternals, {srcDir: INTERNAL_TYPINGS_PATH});
 
-  testTree = mergeTrees([testTree, srcPrivateDeclarations]);
-
-  let compiledTestTree = compileTree(testTree, false, ambientTypings.concat([
+  let testAmbients = [
     'angular2/typings/jasmine/jasmine.d.ts',
     'angular2/typings/angular-protractor/angular-protractor.d.ts',
-  ]));
+    'angular2/typings/selenium-webdriver/selenium-webdriver.d.ts'
+  ];
+  let testAmbientsTree = new Funnel('modules', {files: testAmbients});
+
+  testTree = mergeTrees(
+      [testTree, srcPrivateDeclarations, testAmbientsTree, externalTypingsTree, packageTypings]);
+
+  let compiledTestTree = compileTree(testTree, false, []);
 
   // Merge the compiled sources and tests
   let compiledSrcTree =
       new Funnel(compiledSrcTreeWithInternals, {exclude: [`${INTERNAL_TYPINGS_PATH}/**`]});
 
   let compiledTree = mergeTrees([compiledSrcTree, compiledTestTree]);
+
+  // Generate test files
+  let generatedJsTestFiles =
+      generateForTest(compiledTree, {files: ['*/test/**/*_codegen_untyped.js']});
+  let generatedTsTestFiles = stew.rename(
+      generateForTest(compiledTree, {files: ['*/test/**/*_codegen_typed.js']}), /.js$/, '.ts');
+
+  // Compile generated test files against the src @internal .d.ts and the test files
+  compiledTree = mergeTrees(
+      [
+        compiledTree,
+        generatedJsTestFiles,
+        compileTree(
+            new Funnel(
+                mergeTrees([
+                  packageTypings,
+                  new Funnel('modules',
+                             {include: ['angular2/manual_typings/**', 'angular2/typings/**']}),
+                  generatedTsTestFiles,
+                  srcPrivateDeclarations,
+                  compiledTestTree
+                ]),
+                {include: ['angular2/**', 'rxjs/**', 'zone.js/**']}),
+            false, [])
+      ],
+      {overwrite: true});
+
+  // Down-level .d.ts files to be TS 1.8 compatible
+  // TODO(alexeagle): this can be removed once we drop support for using Angular 2 with TS 1.8
+  compiledTree = replace(compiledTree, {
+    files: ['**/*.d.ts'],
+    patterns: [
+      // all readonly keywords
+      {match: /^(\s*(static\s+|private\s+)*)readonly\s+/mg, replacement: "$1"},
+      // abstract properties (but not methods or classes)
+      {match: /^(\s+)abstract\s+([^\(\n]*$)/mg, replacement: "$1$2"},
+    ]
+  });
 
   // Now we add the LICENSE file into all the folders that will become npm packages
   outputPackages.forEach(function(destDir) {

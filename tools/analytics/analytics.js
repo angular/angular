@@ -60,13 +60,13 @@ let customParams = {
   cd6: process.env.TRAVIS_BRANCH,
   // Travis - Repo Slug  (angular/angular)
   cd7: process.env.TRAVIS_REPO_SLUG,
-  // Travis - Job ID (4.1)
-  cd12: process.env.TRAVIS_JOB_NUMBER,
+  // Travis - Job ID (1, 2, 3, 4, ...)
+  cd12: process.env.TRAVIS_JOB_NUMBER ? process.env.TRAVIS_JOB_NUMBER.split('.')[1] : undefined,
   // HW - CPU Info
   cd8: `${os.cpus().length} x ${os.cpus()[0].model}`,
   // HW - Memory Info
   cd9: `${Math.round(os.totalmem()/1024/1024/1024)}GB`,
-  // gulp --projects (angular2,angular2_material)
+  // gulp --projects (angular2)
   cd13: minimist(process.argv.slice(2)).projects
 };
 
@@ -167,7 +167,7 @@ module.exports = {
   },
 
   ciError: (actionName, duration) => {
-    recordEvent('success', 'ci', actionName, duration);
+    recordEvent('error', 'ci', actionName, duration);
   },
 
   bundleSize: (filePath, sizeInBytes, compressionLevel) => {

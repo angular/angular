@@ -1,4 +1,4 @@
-library angular2.test.transform.common.read_file;
+library angular2.test.transform.common.recording_logger;
 
 import 'package:barback/barback.dart';
 import 'package:source_span/source_span.dart';

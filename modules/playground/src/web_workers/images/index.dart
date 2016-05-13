@@ -7,6 +7,5 @@ import "package:angular2/src/core/reflection/reflection.dart";
 
 main() {
   reflector.reflectionCapabilities = new ReflectionCapabilities();
-  platform([WORKER_RENDER_PLATFORM])
-      .asyncApplication(initIsolate("background_index.dart"));
+  bootstrapRender("background_index.dart");
 }
