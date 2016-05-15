@@ -1,6 +1,8 @@
 import {getDOM} from '../dom/dom_adapter';
 import {assertionsEnabled} from '../../src/facade/lang';
 
+import {sanitizeUrl} from './url_sanitizer';
+
 /**
  * Regular expression for safe style values.
  *
@@ -19,9 +21,28 @@ const VALUES = '[-,."\'%_!# a-zA-Z0-9]+';
 const TRANSFORMATION_FNS = '(?:matrix|translate|scale|rotate|skew|perspective)(?:X|Y|3d)?';
 const COLOR_FNS = '(?:rgb|hsl)a?';
 const FN_ARGS = '\\([-0-9.%, a-zA-Z]+\\)';
-
 const SAFE_STYLE_VALUE =
     new RegExp(`^(${VALUES}|(?:${TRANSFORMATION_FNS}|${COLOR_FNS})${FN_ARGS})$`, 'g');
+
+/**
+ * Matches a `url(...)` value with an arbitrary argument as long as it does
+ * not contain parentheses.
+ *
+ * The URL value still needs to be sanitized separately.
+ *
+ * `url(...)` values are a very common use case, e.g. for `background-image`. With carefully crafted
+ * CSS style rules, it is possible to construct an information leak with `url` values in CSS, e.g.
+ * by observing whether scroll bars are displayed, or character ranges used by a font face
+ * definition.
+ *
+ * Angular only allows binding CSS values (as opposed to entire CSS rules), so it is unlikely that
+ * binding a URL value without further cooperation from the page will cause an information leak, and
+ * if so, it is just a leak, not a full blown XSS vulnerability.
+ *
+ * Given the common use case, low likelihood of attack vector, and low impact of an attack, this
+ * code is permissive and allows URLs that sanitize otherwise.
+ */
+const URL_RE = /^url\(([^)]+)\)$/;
 
 /**
  * Checks that quotes (" and ') are properly balanced inside a string. Assumes
@@ -51,11 +72,16 @@ function hasBalancedQuotes(value: string) {
  */
 export function sanitizeStyle(value: string): string {
   value = String(value).trim();  // Make sure it's actually a string.
-  if (value.match(SAFE_STYLE_VALUE) && hasBalancedQuotes(value)) return value;
 
-  if (assertionsEnabled()) {
-    getDOM().log('WARNING: sanitizing unsafe style value ' + value);
+  // Single url(...) values are supported, but only for URLs that sanitize cleanly. See above for
+  // reasoning behind this.
+  let urlMatch = URL_RE.exec(value);
+  if ((urlMatch && sanitizeUrl(urlMatch[1]) === urlMatch[1]) ||
+      value.match(SAFE_STYLE_VALUE) && hasBalancedQuotes(value)) {
+    return value;  // Safe style values.
   }
+
+  if (assertionsEnabled()) getDOM().log('WARNING: sanitizing unsafe style value ' + value);
 
   return 'unsafe';
 }
