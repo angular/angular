@@ -36,7 +36,9 @@ export function main() {
         'TEL:123-123-1234',
         '#anchor',
         '/page1.md',
-        'http://JavaScript/my.js'
+        'http://JavaScript/my.js',
+        'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/',  // Truncated.
+        'data:video/webm;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/',
       ];
       for (let url of validUrls) {
         t.it(`valid ${url}`, () => t.expect(sanitizeUrl(url)).toEqual(url));
@@ -56,6 +58,11 @@ export function main() {
         '&#x6A&#x61&#x76&#x61&#x73&#x63&#x72&#x69&#x70&#x74&#x3A;',
         'jav&#x09;ascript:alert();',
         'jav\u0000ascript:alert();',
+        'data:;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/',
+        'data:,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/',
+        'data:iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/',
+        'data:text/javascript;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/',
+        'data:application/x-msdownload;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/',
       ];
       for (let url of invalidUrls) {
         t.it(`valid ${url}`, () => t.expect(sanitizeUrl(url)).toMatch(/^unsafe:/));
