@@ -68,11 +68,16 @@ export class CodeGenerator {
     const normalize = (metadata: compiler.CompileDirectiveMetadata) => {
       const directiveType = metadata.type.runtime;
       const directives = this.resolver.getViewDirectivesMetadata(directiveType);
-      const pipes = this.resolver.getViewPipesMetadata(directiveType);
-      return new compiler.NormalizedComponentWithViewDirectives(metadata, directives, pipes);
+      return Promise.all(directives.map(d => this.compiler.normalizeDirectiveMetadata(d)))
+          .then(normalizedDirectives => {
+            const pipes = this.resolver.getViewPipesMetadata(directiveType);
+            return new compiler.NormalizedComponentWithViewDirectives(metadata,
+                                                                      normalizedDirectives, pipes);
+          });
     };
-
-    return this.compiler.compileTemplates(metadatas.map(normalize));
+    return Promise.all(metadatas.map(normalize))
+        .then(normalizedCompWithDirectives =>
+                  this.compiler.compileTemplates(normalizedCompWithDirectives));
   }
 
   private readComponents(absSourcePath: string) {
@@ -131,13 +136,13 @@ export class CodeGenerator {
   codegen(): Promise<any> {
     Parse5DomAdapter.makeCurrent();
 
+    let stylesheetPromises: Promise<any>[] = [];
     const generateOneFile = (absSourcePath: string) =>
         Promise.all(this.readComponents(absSourcePath))
             .then((metadatas: compiler.CompileDirectiveMetadata[]) => {
               if (!metadatas || !metadatas.length) {
                 return;
               }
-              let stylesheetPromises: Promise<any>[] = [];
               metadatas.forEach((metadata) => {
                 let stylesheetPaths = metadata && metadata.template && metadata.template.styleUrls;
                 if (stylesheetPaths) {
@@ -147,18 +152,22 @@ export class CodeGenerator {
                   });
                 }
               });
-              const generated = this.generateSource(metadatas);
-              const sourceFile = this.program.getSourceFile(absSourcePath);
-              const emitPath = this.calculateEmitPath(generated.moduleUrl);
-              this.host.writeFile(emitPath, PREAMBLE + generated.source, false, () => {},
-                                  [sourceFile]);
-              return Promise.all(stylesheetPromises);
+              return this.generateSource(metadatas);
+            })
+            .then(generated => {
+              if (generated) {
+                const sourceFile = this.program.getSourceFile(absSourcePath);
+                const emitPath = this.calculateEmitPath(generated.moduleUrl);
+                this.host.writeFile(emitPath, PREAMBLE + generated.source, false, () => {},
+                                    [sourceFile]);
+              }
             })
             .catch((e) => { console.error(e.stack); });
-    return Promise.all(this.program.getSourceFiles()
+    var compPromises = this.program.getSourceFiles()
                            .map(sf => sf.fileName)
                            .filter(f => !GENERATED_FILES.test(f))
-                           .map(generateOneFile));
+                           .map(generateOneFile);
+    return Promise.all(stylesheetPromises.concat(compPromises));
   }
 
   static create(ngOptions: AngularCompilerOptions, program: ts.Program, options: ts.CompilerOptions,
