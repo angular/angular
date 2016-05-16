@@ -18,10 +18,10 @@
              [spellcheck]="spellcheck"
              [attr.maxlength]="maxLength"
              [type]="type"
-             (focus)="onFocus()"
-             (blur)="onBlur()"
+             (focus)="handleFocus($event)"
+             (blur)="handleBlur($event)"
              [(ngModel)]="value"
-             (change)="onChange($event)">
+             (change)="handleChange($event)">
 
       <label class="md-input-placeholder"
              [attr.for]="id"

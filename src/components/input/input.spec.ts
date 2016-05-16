@@ -259,6 +259,30 @@ export function main() {
           expect(typeof fixture.componentInstance.value).toBe('number');
         });
     });
+
+    it('supports blur and focus events', () => {
+      return builder.createAsync(MdInputWithBlurAndFocusEvents).then(fixture => {
+        const testComponent = fixture.componentInstance;
+        const inputComponent = fixture.debugElement.query(By.directive(MdInput)).componentInstance;
+        const fakeEvent = <FocusEvent>{};
+        fakeAsync(() => {
+          spyOn(testComponent, 'onFocus');
+          spyOn(testComponent, 'onBlur');
+
+          expect(testComponent.onFocus).not.toHaveBeenCalled();
+          expect(testComponent.onBlur).not.toHaveBeenCalled();
+
+          inputComponent.handleFocus(fakeEvent);
+          tick();
+          expect(testComponent.onFocus).toHaveBeenCalledWith(fakeEvent);
+
+
+          inputComponent.handleBlur(fakeEvent);
+          tick();
+          expect(testComponent.onBlur).toHaveBeenCalledWith(fakeEvent);
+        })();
+      });
+    });
   });
 }
 
@@ -406,4 +430,16 @@ class MdInputBaseTestController {
 class MdInputAriaTestController {
   ariaLabel: string = 'label';
   ariaDisabled: boolean = true;
+}
+
+@Component({
+  selector: 'test-input-controller',
+  template: `
+    <md-input (focus)="onFocus($event)" (blur)="onBlur($event)"></md-input>
+  `,
+  directives: [MdInput]
+})
+class MdInputWithBlurAndFocusEvents {
+  onBlur(event: FocusEvent) {}
+  onFocus(event: FocusEvent) {}
 }
