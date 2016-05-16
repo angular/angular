@@ -8,7 +8,6 @@ import {
   beforeEach,
   beforeEachProviders,
   SpyObject,
-  proxy,
   browserDetection
 } from 'angular2/testing_internal';
 import {createPairedMessageBuses} from '../shared/web_worker_test_util';

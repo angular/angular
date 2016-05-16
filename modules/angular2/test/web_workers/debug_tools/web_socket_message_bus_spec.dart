@@ -9,8 +9,7 @@ import "package:angular2/testing_internal.dart"
         expect,
         beforeEach,
         beforeEachProviders,
-        SpyObject,
-        proxy;
+        SpyObject;
 import "package:angular2/src/web_workers/debug_tools/web_socket_message_bus.dart";
 import "dart:html" show WebSocket, MessageEvent;
 import "./message_bus_common.dart";

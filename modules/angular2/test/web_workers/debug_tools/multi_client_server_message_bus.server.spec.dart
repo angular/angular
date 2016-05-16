@@ -13,7 +13,6 @@ import "package:angular2/src/testing/testing_internal_core.dart"
         iit,
         inject,
         it,
-        proxy,
         testSetup;
 import 'package:angular2/src/platform/server/html_adapter.dart';
 import "package:angular2/src/web_workers/debug_tools/multi_client_server_message_bus.dart";
