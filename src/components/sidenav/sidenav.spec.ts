@@ -238,6 +238,45 @@ export function main() {
         }).toThrow();
       }));
     });
+
+    describe('attributes', () => {
+
+      it('should correctly parse opened="false"', fakeAsyncAdaptor(() => {
+        let newBuilder = builder.overrideTemplate(BasicTestApp, `
+          <md-sidenav-layout>
+            <md-sidenav #sidenav mode="side" opened="false">
+              Closed Sidenav.
+            </md-sidenav>
+          </md-sidenav-layout>`);
+
+        let fixture = createFixture(BasicTestApp, newBuilder, template, style);
+        fixture.detectChanges();
+
+        let sidenavEl = fixture.debugElement.query(By.css('md-sidenav')).nativeElement;
+
+        expect(sidenavEl.classList).toContain('md-sidenav-closed');
+        expect(sidenavEl.classList).not.toContain('md-sidenav-opened');
+      }));
+
+      it('should correctly parse opened="true"', fakeAsyncAdaptor(() => {
+        let newBuilder = builder.overrideTemplate(BasicTestApp, `
+          <md-sidenav-layout>
+            <md-sidenav #sidenav mode="side" opened="true">
+              Closed Sidenav.
+            </md-sidenav>
+          </md-sidenav-layout>`);
+
+        let fixture = createFixture(BasicTestApp, newBuilder, template, style);
+        fixture.detectChanges();
+
+        let sidenavEl = fixture.debugElement.query(By.css('md-sidenav')).nativeElement;
+
+        expect(sidenavEl.classList).not.toContain('md-sidenav-closed');
+        expect(sidenavEl.classList).toContain('md-sidenav-opened');
+      }));
+
+    });
+
   });
 }
 

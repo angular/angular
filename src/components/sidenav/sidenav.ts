@@ -18,6 +18,7 @@ import {
 import {Dir} from '../../core/rtl/dir';
 import {PromiseCompleter} from '../../core/async/promise-completer';
 import {MdError} from '../../core/errors/error';
+import { BooleanFieldValue } from '../../core/annotations/field-value';
 
 
 /**
@@ -50,7 +51,7 @@ export class MdSidenav {
   @Input() mode: 'over' | 'push' | 'side' = 'over';
 
   /** Whether the sidenav is opened. */
-  @Input('opened') private _opened: boolean = false;
+  @Input('opened') @BooleanFieldValue() private _opened: boolean = false;
 
   /** Event emitted when the sidenav is being opened. Use this to synchronize animations. */
   @Output('open-start') onOpenStart = new EventEmitter<void>();
