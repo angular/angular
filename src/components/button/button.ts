@@ -47,6 +47,7 @@ export class MdButton {
     this._updateColor(value);
   }
 
+  /** @internal */
   setMousedown() {
     // We only *show* the focus style when focus has come to the button via the keyboard.
     // The Material Design spec is silent on this topic, and without doing this, the
@@ -68,10 +69,12 @@ export class MdButton {
     }
   }
 
+  /** @internal */
   setKeyboardFocus() {
     this.isKeyboardFocused = !this.isMouseDown;
   }
 
+  /** @internal */
   removeKeyboardFocus() {
     this.isKeyboardFocused = false;
   }
@@ -118,6 +121,7 @@ export class MdAnchor extends MdButton {
     this._disabled = (value != null && value != false) ? true : null;
   }
 
+  /** @internal */
   haltDisabledEvents(event: Event) {
     // A disabled button shouldn't apply any actions
     if (this.disabled) {

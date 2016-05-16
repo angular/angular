@@ -27,13 +27,13 @@ export class MdToolbar {
     this._updateColor(value);
   }
 
-  _updateColor(newColor: string) {
+  private _updateColor(newColor: string) {
     this._setElementColor(this._color, false);
     this._setElementColor(newColor, true);
     this._color = newColor;
   }
 
-  _setElementColor(color: string, isAdd: boolean) {
+  private _setElementColor(color: string, isAdd: boolean) {
     if (color != null && color != '') {
       this.renderer.setElementClass(this.elementRef.nativeElement, `md-${color}`, isAdd);
     }

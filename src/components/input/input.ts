@@ -24,11 +24,10 @@ import {MdError} from '../../core/errors/error';
 
 const noop = () => {};
 
-const MD_INPUT_CONTROL_VALUE_ACCESSOR = new Provider(
-    NG_VALUE_ACCESSOR, {
-      useExisting: forwardRef(() => MdInput),
-      multi: true
-    });
+const MD_INPUT_CONTROL_VALUE_ACCESSOR = new Provider(NG_VALUE_ACCESSOR, {
+  useExisting: forwardRef(() => MdInput),
+  multi: true
+});
 
 // Invalid input type. Using one of these will throw an MdInputUnsupportedTypeError.
 const MD_INPUT_INVALID_INPUT_TYPE = [
@@ -71,9 +70,7 @@ export class MdInputDuplicatedHintError extends MdError {
 export class MdPlaceholder {}
 
 
-/**
- * The hint directive, used to tag content as hint labels (going under the input).
- */
+/** The hint directive, used to tag content as hint labels (going under the input). */
 @Directive({
   selector: 'md-hint',
   host: {
@@ -202,6 +199,7 @@ export class MdInput implements ControlValueAccessor, AfterContentInit, OnChange
     this._onTouchedCallback = fn;
   }
 
+  /** @internal */
   ngAfterContentInit() {
     this._validateConstraints();
 
@@ -211,6 +209,7 @@ export class MdInput implements ControlValueAccessor, AfterContentInit, OnChange
     });
   }
 
+  /** @internal */
   ngOnChanges(changes: {[key: string]: SimpleChange}) {
     this._validateConstraints();
   }
