@@ -8517,9 +8517,9 @@
       }
     },
     "ts2dart": {
-      "version": "0.7.31",
-      "from": "ts2dart@0.7.31",
-      "resolved": "https://registry.npmjs.org/ts2dart/-/ts2dart-0.7.31.tgz",
+      "version": "0.9.1",
+      "from": "ts2dart@0.9.1",
+      "resolved": "https://registry.npmjs.org/ts2dart/-/ts2dart-0.9.1.tgz",
       "dependencies": {
         "source-map": {
           "version": "0.4.4",
@@ -8539,9 +8539,9 @@
           }
         },
         "typescript": {
-          "version": "1.7.3",
-          "from": "typescript@1.7.3",
-          "resolved": "https://registry.npmjs.org/typescript/-/typescript-1.7.3.tgz"
+          "version": "1.9.0-dev.20160409",
+          "from": "typescript@1.9.0-dev.20160409",
+          "resolved": "https://registry.npmjs.org/typescript/-/typescript-1.9.0-dev.20160409.tgz"
         }
       }
     },
