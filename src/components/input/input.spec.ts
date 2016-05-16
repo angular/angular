@@ -54,6 +54,26 @@ export function main() {
         });
     });
 
+    it('should have a different ID for outer element and internal input', () => {
+      return builder
+          .overrideTemplate(MdInputBaseTestController, `
+            <md-input id="test-id"></md-input>
+          `)
+          .createAsync(MdInputBaseTestController)
+          .then(fixture => {
+            fixture.detectChanges();
+            fakeAsync(() => {
+              const componentElement: HTMLElement = fixture.debugElement
+                  .query(By.directive(MdInput)).nativeElement;
+              const inputElement: HTMLInputElement = fixture.debugElement.query(By.css('input'))
+                  .nativeElement;
+              expect(componentElement.id).toBe('test-id');
+              expect(inputElement.id).toBeTruthy();
+              expect(inputElement.id).not.toBe(componentElement.id);
+            })();
+          });
+    });
+
     it('counts characters', () => {
       return builder.createAsync(MdInputBaseTestController).then(fixture => {
         let instance = fixture.componentInstance;

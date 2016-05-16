@@ -128,6 +128,7 @@ export class MdInput implements ControlValueAccessor, AfterContentInit, OnChange
   get characterCount(): number {
     return this.empty ? 0 : ('' + this._value).length;
   }
+  get inputId(): string { return `${this.id}-input`; }
 
   /**
    * Bindings.
