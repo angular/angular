@@ -14,7 +14,15 @@ import {
 } from 'angular2/testing_internal';
 
 import {PromiseWrapper} from 'angular2/src/facade/async';
-import {Type, isPresent, isBlank, stringify, isString, IS_DART} from 'angular2/src/facade/lang';
+import {
+  Type,
+  isPresent,
+  isBlank,
+  stringify,
+  isString,
+  IS_DART,
+  CONST_EXPR
+} from 'angular2/src/facade/lang';
 import {
   MapWrapper,
   SetWrapper,
@@ -50,7 +58,7 @@ import {PipeTransform, WrappedValue, Injectable, Pipe} from 'angular2/core';
 
 
 // Attention: This path has to point to this test file!
-const THIS_MODULE_ID = 'angular2/test/compiler/template_compiler_spec';
+const THIS_MODULE_ID = CONST_EXPR('angular2/test/compiler/template_compiler_spec');
 var THIS_MODULE_REF = moduleRef(`package:${THIS_MODULE_ID}${MODULE_SUFFIX}`);
 var REFLECTOR_MODULE_REF =
     moduleRef(`package:angular2/src/core/reflection/reflection${MODULE_SUFFIX}`);

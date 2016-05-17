@@ -1,6 +1,12 @@
 import {Injectable} from 'angular2/src/core/di/decorators';
 import {ListWrapper, SetWrapper} from "angular2/src/facade/collection";
-import {NumberWrapper, StringJoiner, StringWrapper, isPresent} from "angular2/src/facade/lang";
+import {
+  NumberWrapper,
+  StringJoiner,
+  StringWrapper,
+  isPresent,
+  CONST_EXPR
+} from "angular2/src/facade/lang";
 import {BaseException} from 'angular2/src/facade/exceptions';
 
 export enum TokenType {
@@ -106,52 +112,54 @@ function newNumberToken(index: number, n: number): Token {
 
 export var EOF: Token = new Token(-1, TokenType.Character, 0, "");
 
-export const $EOF = 0;
-export const $TAB = 9;
-export const $LF = 10;
-export const $VTAB = 11;
-export const $FF = 12;
-export const $CR = 13;
-export const $SPACE = 32;
-export const $BANG = 33;
-export const $DQ = 34;
-export const $HASH = 35;
-export const $$ = 36;
-export const $PERCENT = 37;
-export const $AMPERSAND = 38;
-export const $SQ = 39;
-export const $LPAREN = 40;
-export const $RPAREN = 41;
-export const $STAR = 42;
-export const $PLUS = 43;
-export const $COMMA = 44;
-export const $MINUS = 45;
-export const $PERIOD = 46;
-export const $SLASH = 47;
-export const $COLON = 58;
-export const $SEMICOLON = 59;
-export const $LT = 60;
-export const $EQ = 61;
-export const $GT = 62;
-export const $QUESTION = 63;
+export const $EOF = CONST_EXPR(CONST_EXPR(0));
+export const $TAB = CONST_EXPR(9);
+export const $LF = CONST_EXPR(10);
+export const $VTAB = CONST_EXPR(11);
+export const $FF = CONST_EXPR(12);
+export const $CR = CONST_EXPR(13);
+export const $SPACE = CONST_EXPR(32);
+export const $BANG = CONST_EXPR(33);
+export const $DQ = CONST_EXPR(34);
+export const $HASH = CONST_EXPR(35);
+export const $$ = CONST_EXPR(36);
+export const $PERCENT = CONST_EXPR(37);
+export const $AMPERSAND = CONST_EXPR(38);
+export const $SQ = CONST_EXPR(39);
+export const $LPAREN = CONST_EXPR(40);
+export const $RPAREN = CONST_EXPR(41);
+export const $STAR = CONST_EXPR(42);
+export const $PLUS = CONST_EXPR(43);
+export const $COMMA = CONST_EXPR(44);
+export const $MINUS = CONST_EXPR(45);
+export const $PERIOD = CONST_EXPR(46);
+export const $SLASH = CONST_EXPR(47);
+export const $COLON = CONST_EXPR(58);
+export const $SEMICOLON = CONST_EXPR(59);
+export const $LT = CONST_EXPR(60);
+export const $EQ = CONST_EXPR(61);
+export const $GT = CONST_EXPR(62);
+export const $QUESTION = CONST_EXPR(63);
 
-const $0 = 48;
-const $9 = 57;
+const $0 = CONST_EXPR(48);
+const $9 = CONST_EXPR(57);
 
-const $A = 65, $E = 69, $Z = 90;
+const $A = CONST_EXPR(65), $E = CONST_EXPR(69), $Z = CONST_EXPR(90);
 
-export const $LBRACKET = 91;
-export const $BACKSLASH = 92;
-export const $RBRACKET = 93;
-const $CARET = 94;
-const $_ = 95;
-export const $BT = 96;
-const $a = 97, $e = 101, $f = 102, $n = 110, $r = 114, $t = 116, $u = 117, $v = 118, $z = 122;
+export const $LBRACKET = CONST_EXPR(91);
+export const $BACKSLASH = CONST_EXPR(92);
+export const $RBRACKET = CONST_EXPR(93);
+const $CARET = CONST_EXPR(94);
+const $_ = CONST_EXPR(95);
+export const $BT = CONST_EXPR(96);
+const $a = CONST_EXPR(97), $e = CONST_EXPR(101), $f = CONST_EXPR(102), $n = CONST_EXPR(110),
+      $r = CONST_EXPR(114), $t = CONST_EXPR(116), $u = CONST_EXPR(117), $v = CONST_EXPR(118),
+      $z = CONST_EXPR(122);
 
-export const $LBRACE = 123;
-export const $BAR = 124;
-export const $RBRACE = 125;
-const $NBSP = 160;
+export const $LBRACE = CONST_EXPR(123);
+export const $BAR = CONST_EXPR(124);
+export const $RBRACE = CONST_EXPR(125);
+const $NBSP = CONST_EXPR(160);
 
 export class ScannerError extends BaseException {
   constructor(public message) { super(); }

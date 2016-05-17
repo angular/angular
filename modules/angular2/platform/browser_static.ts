@@ -11,7 +11,7 @@ export {
   disableDebugTools
 } from 'angular2/src/platform/browser_common';
 
-import {Type, isPresent} from 'angular2/src/facade/lang';
+import {Type, isPresent, CONST_EXPR} from 'angular2/src/facade/lang';
 import {
   BROWSER_PROVIDERS,
   BROWSER_APP_COMMON_PROVIDERS
@@ -24,7 +24,7 @@ import {ComponentRef, platform} from 'angular2/core';
  * have been precompiled offline.
  */
 export const BROWSER_APP_PROVIDERS: Array<any /*Type | Provider | any[]*/> =
-    BROWSER_APP_COMMON_PROVIDERS;
+    CONST_EXPR(BROWSER_APP_COMMON_PROVIDERS);
 
 /**
  * See {@link bootstrap} for more information.
