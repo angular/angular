@@ -141,7 +141,7 @@ export class DowngradeNg2ComponentAdapter {
       }
 
       if (expr != null && assignExpr != null) {
-        var getter = this.parse(expr);
+        var getter = <any>this.parse(expr);
         var setter = getter.assign;
         if (assignExpr && !setter) {
           throw new Error(`Expression '${expr}' is not assignable!`);
