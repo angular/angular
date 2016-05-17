@@ -12,10 +12,6 @@ cache:
     - $HOME/.pub-cache
     - $HOME/.chrome/chromium
 
-before_cache:
-  # Undo the pollution of the typescript_next build before the cache is primed for future use
-  - if [[ "$MODE" == "typescript_next" ]]; then npm install typescript; fi
-
 env:
   global:
     # Use newer verison of GCC to that is required to compile native npm modules for Node v4+ on Ubuntu Precise
@@ -56,7 +52,6 @@ env:
     - MODE=js
     - MODE=router
     - MODE=build_only
-    - MODE=typescript_next
     - MODE=lint
 
 matrix:
