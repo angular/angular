@@ -314,6 +314,94 @@ export function main() {
                });
          }));
 
+      it('should bind properties, events in controller when bindToController is not used', inject([AsyncTestCompleter], (async) => {
+        var adapter = new UpgradeAdapter();
+        var ng1Module = angular.module('ng1', []);
+
+        var ng1 = function() {
+          return {
+            restrict: 'E',
+            template: '{{someText}} - Length: {{data.length}}',
+            scope: { data: "="},
+            controller: function($scope) {
+              $scope.someText = "ng1 - Data: " + $scope.data;
+            }
+          };
+        };
+
+        ng1Module.directive('ng1', ng1);
+        var Ng2 = Component({
+          selector: 'ng2',
+          template: '{{someText}} - Length: {{dataList.length}} | <ng1 [(data)]="dataList"></ng1>',
+          directives: [adapter.upgradeNg1Component('ng1')],
+        })
+        .Class({
+
+          constructor: function() {
+            this.dataList = [1, 2, 3];
+            this.someText = "ng2"
+          }
+        });
+        ng1Module.directive('ng2', adapter.downgradeNg2Component(Ng2));
+        var element = html(`<div><ng2></ng2></div>`);
+        adapter.bootstrap(element, ['ng1'])
+          .ready((ref) => {
+            // we need to do setTimeout, because the EventEmitter uses setTimeout to schedule
+            // events, and so without this we would not see the events processed.
+            setTimeout(() => {
+              expect(multiTrim(document.body.textContent))
+                .toEqual(
+                "ng2 - Length: 3 | ng1 - Data: 1,2,3 - Length: 3");
+              ref.dispose();
+              async.done();
+            }, 0);
+          });
+      }));
+
+      it('should bind properties, events in link function', inject([AsyncTestCompleter], (async) => {
+        var adapter = new UpgradeAdapter();
+        var ng1Module = angular.module('ng1', []);
+
+        var ng1 = function() {
+          return {
+            restrict: 'E',
+            template: '{{someText}} - Length: {{data.length}}',
+            scope: { data: "=" },
+            link: function($scope) {
+              $scope.someText = "ng1 - Data: " + $scope.data;
+            }
+          };
+        };
+
+        ng1Module.directive('ng1', ng1);
+        var Ng2 = Component({
+          selector: 'ng2',
+          template: '{{someText}} - Length: {{dataList.length}} | <ng1 [(data)]="dataList"></ng1>',
+          directives: [adapter.upgradeNg1Component('ng1')],
+        })
+          .Class({
+
+            constructor: function() {
+              this.dataList = [1, 2, 3];
+              this.someText = "ng2"
+            }
+          });
+        ng1Module.directive('ng2', adapter.downgradeNg2Component(Ng2));
+        var element = html(`<div><ng2></ng2></div>`);
+        adapter.bootstrap(element, ['ng1'])
+          .ready((ref) => {
+            // we need to do setTimeout, because the EventEmitter uses setTimeout to schedule
+            // events, and so without this we would not see the events processed.
+            setTimeout(() => {
+              expect(multiTrim(document.body.textContent))
+                .toEqual(
+                "ng2 - Length: 3 | ng1 - Data: 1,2,3 - Length: 3");
+              ref.dispose();
+              async.done();
+            }, 0);
+          });
+      }));
+
       it('should support templateUrl fetched from $httpBackend',
          inject([AsyncTestCompleter], (async) => {
            var adapter = new UpgradeAdapter();
