@@ -1,0 +1,14 @@
+<h1>Tab Group Demo</h1>
+
+<md-tab-group class="demo-tab-group">
+  <md-tab *ngFor="let tab of tabs">
+    <template md-tab-label>{{tab.label}}</template>
+    <template md-tab-content>
+      {{tab.content}}
+      <br>
+      <br>
+      <br>
+      <md-input placeholder="Tab Label" [(ngModel)]="tab.label"></md-input>
+    </template>
+  </md-tab>
+</md-tab-group>

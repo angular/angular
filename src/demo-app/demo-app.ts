@@ -22,6 +22,7 @@ import {InputDemo} from './input/input-demo';
 import {LiveAnnouncerDemo} from './live-announcer/live-announcer-demo';
 import {GesturesDemo} from './gestures/gestures-demo';
 import {GridListDemo} from './grid-list/grid-list-demo';
+import {TabGroupDemo} from './tab-group/tab-group-demo';
 
 @Component({
   selector: 'home',
@@ -66,5 +67,6 @@ export class Home {}
   new Route({path: '/live-announcer', component: LiveAnnouncerDemo}),
   new Route({path: '/gestures', component: GesturesDemo}),
   new Route({path: '/grid-list', component: GridListDemo}),
+  new Route({path: '/tab-group', component: TabGroupDemo})
 ])
 export class DemoApp { }

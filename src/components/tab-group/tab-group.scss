@@ -1,0 +1,64 @@
+@import 'variables';
+@import 'default-theme';
+
+$md-tab-bar-height: 48px !default;
+
+:host {
+  display: block;
+  font-family: $md-font-family;
+}
+
+/** The top section of the view; contains the tab labels */
+.md-tab-header {
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  border-bottom: 1px solid md-color($md-background, status-bar);
+}
+
+/** Wraps each tab label */
+.md-tab-label {
+  line-height: $md-tab-bar-height;
+  height: $md-tab-bar-height;
+  padding: 0 12px;
+  font-size: $md-body-font-size-base;
+  font-family: $md-font-family;
+  font-weight: 500;
+  cursor: pointer;
+  box-sizing: border-box;
+  color: currentColor;
+  opacity: 0.6;
+  min-width: 160px;
+  text-align: center;
+  &:focus {
+    outline: none;
+    opacity: 1;
+    background-color: md-color($md-primary, 100, 0.3);
+  }
+}
+
+/** The bottom section of the view; contains the tab bodies */
+.md-tab-body-wrapper {
+  position: relative;
+  height: 200px;
+  overflow: hidden;
+  padding: 12px;
+}
+
+/** Wraps each tab body */
+.md-tab-body {
+  display: none;
+  &.md-active {
+    display: block;
+  }
+}
+
+/** The colored bar that underlines the active tab */
+md-ink-bar {
+  position: absolute;
+  bottom: 0;
+  height: 2px;
+  background-color: md-color($md-primary, 500);
+  transition: 0.35s ease-out;
+}

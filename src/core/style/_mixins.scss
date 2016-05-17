@@ -26,6 +26,17 @@
   width: 1px;
 }
 
+/**
+ * Forces an element to grow to fit floated contents; used as as an alternative to
+ * `overflow: hidden;` because it doesn't cut off contents.
+ */
+@mixin md-clearfix {
+  &:before, &:after {
+    content: '';
+    clear: both;
+    display: table;
+  }
+}
 @mixin md-temporary-ink-ripple($component) {
   // TODO(mtlin): Replace when ink ripple component is implemented.
   // A placeholder ink ripple, shown when keyboard focused.
