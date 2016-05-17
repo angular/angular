@@ -93,10 +93,8 @@ if (platform == 'node') {
     error: 'error',
     complete: 'Compilation complete. Watching for file changes.',
     onChangeCmds: [
-      // TODO: fix and enable tests for public_api_spec again!
-      // ['node', 'dist/tools/cjs-jasmine/index-tools', '--',
-      // '{ts-metadata-collector,public_api_guard}/**/*{_,.}spec.js']
-      ['node', 'dist/tools/cjs-jasmine/index-tools', '--', 'ts-metadata-collector/**/*{_,.}spec.js']
+      ['node', 'dist/tools/cjs-jasmine/index-tools', '--', 'ts-metadata-collector/**/*{_,.}spec.js'],
+      ['node', 'dist/tools/cjs-jasmine/index-tools', '--', 'public_api_guard/**/*{_,.}spec.js']
     ]
   });
 }
