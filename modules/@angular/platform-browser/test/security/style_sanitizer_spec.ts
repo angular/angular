@@ -30,5 +30,10 @@ export function main() {
       expectSanitize('translateX(12px, -5px)').toEqual('translateX(12px, -5px)');
       expectSanitize('scale3d(1, 1, 2)').toEqual('scale3d(1, 1, 2)');
     });
+    t.it('sanitizes URLs', () => {
+      expectSanitize('url(foo/bar.png)').toEqual('url(foo/bar.png)');
+      expectSanitize('url(javascript:evil())').toEqual('unsafe');
+      expectSanitize('url(strangeprotocol:evil)').toEqual('unsafe');
+    });
   });
 }

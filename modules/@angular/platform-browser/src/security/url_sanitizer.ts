@@ -29,12 +29,14 @@ import {assertionsEnabled} from '../../src/facade/lang';
  */
 const SAFE_URL_PATTERN = /^(?:(?:https?|mailto|ftp|tel|file):|[^&:/?#]*(?:[/?#]|$))/gi;
 
+/** A pattern that matches safe data URLs. Only matches image and video types. */
+const DATA_URL_PATTERN = /^data:(?:image\/(?:bmp|gif|jpeg|jpg|png|tiff|webp)|video\/(?:mpeg|mp4|ogg|webm));base64,[a-z0-9+\/]+=*$/i;
+
 export function sanitizeUrl(url: string): string {
   url = String(url);
-  if (url.match(SAFE_URL_PATTERN)) return url;
+  if (url.match(SAFE_URL_PATTERN) || url.match(DATA_URL_PATTERN)) return url;
 
-  if (assertionsEnabled()) {
-    getDOM().log('WARNING: sanitizing unsafe URL value ' + url);
-  }
+  if (assertionsEnabled()) getDOM().log('WARNING: sanitizing unsafe URL value ' + url);
+
   return 'unsafe:' + url;
 }
