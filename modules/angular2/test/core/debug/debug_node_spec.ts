@@ -351,8 +351,8 @@ export function main() {
              .then((fixture) => {
                fixture.detectChanges();
 
-               expect(fixture.debugElement.children[0].inject(Logger).log)
-                   .toEqual(['parent', 'nestedparent', 'child', 'nestedchild']);
+               var logger: Logger = fixture.debugElement.children[0].inject(Logger);
+               expect(logger.log).toEqual(['parent', 'nestedparent', 'child', 'nestedchild']);
 
                async.done();
              });

@@ -1,3 +1,4 @@
+import {CONST_EXPR} from 'angular2/src/facade/lang';
 import {DOM} from 'angular2/src/platform/dom/dom_adapter';
 import {window, document, gc} from 'angular2/src/facade/browser';
 import {
@@ -18,9 +19,9 @@ import {ListWrapper} from 'angular2/src/facade/collection';
 import {Inject} from 'angular2/src/core/di/decorators';
 import {reflector} from 'angular2/src/core/reflection/reflection';
 
-export const BENCHMARK_TYPE = 'LargetableComponent.benchmarkType';
-export const LARGETABLE_ROWS = 'LargetableComponent.rows';
-export const LARGETABLE_COLS = 'LargetableComponent.cols';
+export const BENCHMARK_TYPE = CONST_EXPR('LargetableComponent.benchmarkType');
+export const LARGETABLE_ROWS = CONST_EXPR('LargetableComponent.rows');
+export const LARGETABLE_COLS = CONST_EXPR('LargetableComponent.cols');
 
 function _createBindings() {
   return [
