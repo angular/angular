@@ -42,7 +42,7 @@ export class DowngradeNg2ComponentAdapter {
     this.contentInsertionPoint = document.createComment('ng1 insertion point');
 
     this.componentRef =
-        this.componentFactory.create(childInjector, [[this.contentInsertionPoint]], '#' + this.id);
+        this.componentFactory.create(childInjector, [[this.contentInsertionPoint]], this.element[0]);
     this.changeDetector = this.componentRef.changeDetectorRef;
     this.component = this.componentRef.instance;
   }

@@ -540,8 +540,9 @@ interface ComponentFactoryRefMap {
 }
 
 function ng1ComponentDirective(info: ComponentInfo, idPrefix: string): Function {
-  (<any>directiveFactory).$inject = [NG2_COMPONENT_FACTORY_REF_MAP, NG1_PARSE];
-  function directiveFactory(componentFactoryRefMap: ComponentFactoryRefMap,
+  (<any>directiveFactory).$inject = [NG1_INJECTOR, NG2_COMPONENT_FACTORY_REF_MAP, NG1_PARSE];
+  function directiveFactory(ng1Injector: angular.IInjectorService,
+                            componentFactoryRefMap: ComponentFactoryRefMap,
                             parse: angular.IParseService): angular.IDirective {
     var componentFactory: ComponentFactory<any> = componentFactoryRefMap[info.selector];
     if (!componentFactory) throw new Error('Expecting ComponentFactory for: ' + info.selector);
@@ -553,6 +554,9 @@ function ng1ComponentDirective(info: ComponentInfo, idPrefix: string): Function 
         post: (scope: angular.IScope, element: angular.IAugmentedJQuery, attrs: angular.IAttributes,
                parentInjector: any, transclude: angular.ITranscludeFunction): void => {
           var domElement = <any>element[0];
+          if (parentInjector === null) {
+            parentInjector = ng1Injector.get(NG2_INJECTOR);
+          }
           var facade =
               new DowngradeNg2ComponentAdapter(idPrefix + (idCount++), info, element, attrs, scope,
                                                <Injector>parentInjector, parse, componentFactory);
