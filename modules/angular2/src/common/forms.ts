@@ -61,4 +61,4 @@ export const FORM_PROVIDERS: Type[] = CONST_EXPR([FormBuilder, RadioControlRegis
  *
  * @deprecated
  */
-export const FORM_BINDINGS = FORM_PROVIDERS;
+export const FORM_BINDINGS = CONST_EXPR(FORM_PROVIDERS);

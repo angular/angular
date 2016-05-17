@@ -40,4 +40,4 @@ export const ROUTER_PROVIDERS: any[] = CONST_EXPR([
  *
  * @deprecated
  */
-export const ROUTER_BINDINGS = ROUTER_PROVIDERS;
+export const ROUTER_BINDINGS = CONST_EXPR(ROUTER_PROVIDERS);

@@ -110,7 +110,7 @@ export function main() {
       function _bindSimpleValue(expression: string, context = _DEFAULT_CONTEXT) {
         var val = _createChangeDetector(expression, context);
         val.changeDetector.detectChanges();
-        return val.dispatcher.log;
+        return (<TestDispatcher>val.dispatcher).log;
       }
 
       describe('short-circuit', () => {
@@ -316,11 +316,11 @@ export function main() {
         var val = _createChangeDetector('age', person);
 
         val.changeDetector.detectChanges();
-        expect(val.dispatcher.log).toEqual(['propName=NaN']);
+        expect((<TestDispatcher>val.dispatcher).log).toEqual(['propName=NaN']);
         val.dispatcher.clear();
 
         val.changeDetector.detectChanges();
-        expect(val.dispatcher.log).toEqual([]);
+        expect((<TestDispatcher>val.dispatcher).log).toEqual([]);
       });
 
       it('should do simple watching', () => {
@@ -328,36 +328,36 @@ export function main() {
         var val = _createChangeDetector('name', person);
 
         val.changeDetector.detectChanges();
-        expect(val.dispatcher.log).toEqual(['propName=misko']);
+        expect((<TestDispatcher>val.dispatcher).log).toEqual(['propName=misko']);
         val.dispatcher.clear();
 
         val.changeDetector.detectChanges();
-        expect(val.dispatcher.log).toEqual([]);
+        expect((<TestDispatcher>val.dispatcher).log).toEqual([]);
         val.dispatcher.clear();
 
         person.name = 'Misko';
         val.changeDetector.detectChanges();
-        expect(val.dispatcher.log).toEqual(['propName=Misko']);
+        expect((<TestDispatcher>val.dispatcher).log).toEqual(['propName=Misko']);
       });
 
       it('should support literal array', () => {
         var val = _createChangeDetector('[1, 2]');
         val.changeDetector.detectChanges();
-        expect(val.dispatcher.loggedValues).toEqual([[1, 2]]);
+        expect((<TestDispatcher>val.dispatcher).loggedValues).toEqual([[1, 2]]);
 
         val = _createChangeDetector('[1, a]', new TestData(2));
         val.changeDetector.detectChanges();
-        expect(val.dispatcher.loggedValues).toEqual([[1, 2]]);
+        expect((<TestDispatcher>val.dispatcher).loggedValues).toEqual([[1, 2]]);
       });
 
       it('should support literal maps', () => {
         var val = _createChangeDetector('{z: 1}');
         val.changeDetector.detectChanges();
-        expect(val.dispatcher.loggedValues[0]['z']).toEqual(1);
+        expect((<TestDispatcher>val.dispatcher).loggedValues[0]['z']).toEqual(1);
 
         val = _createChangeDetector('{z: a}', new TestData(1));
         val.changeDetector.detectChanges();
-        expect(val.dispatcher.loggedValues[0]['z']).toEqual(1);
+        expect((<TestDispatcher>val.dispatcher).loggedValues[0]['z']).toEqual(1);
       });
 
       it('should support interpolation', () => {
@@ -365,7 +365,7 @@ export function main() {
 
         val.changeDetector.detectChanges();
 
-        expect(val.dispatcher.log).toEqual(['propName=BvalueA']);
+        expect((<TestDispatcher>val.dispatcher).log).toEqual(['propName=BvalueA']);
       });
 
       it('should output empty strings for null values in interpolation', () => {
@@ -373,7 +373,7 @@ export function main() {
 
         val.changeDetector.detectChanges();
 
-        expect(val.dispatcher.log).toEqual(['propName=BA']);
+        expect((<TestDispatcher>val.dispatcher).log).toEqual(['propName=BA']);
       });
 
       it('should escape values in literals that indicate interpolation',
@@ -385,7 +385,7 @@ export function main() {
           var val = _createChangeDetector('passThrough([12])', person);
           val.changeDetector.detectChanges();
           val.changeDetector.detectChanges();
-          expect(val.dispatcher.loggedValues).toEqual([[12]]);
+          expect((<TestDispatcher>val.dispatcher).loggedValues).toEqual([[12]]);
         });
       });
 
@@ -395,7 +395,7 @@ export function main() {
             var person = new Person('bob');
             var val = _createChangeDetector('name', person);
             val.changeDetector.detectChanges();
-            expect(val.dispatcher.loggedValues).toEqual(['bob']);
+            expect((<TestDispatcher>val.dispatcher).loggedValues).toEqual(['bob']);
           });
         });
 
@@ -405,7 +405,7 @@ export function main() {
             var person = new Person('bob');
             var val = _createChangeDetector('name | pipe', person, registry);
             val.changeDetector.detectChanges();
-            expect(val.dispatcher.loggedValues).toEqual(['bob state:0']);
+            expect((<TestDispatcher>val.dispatcher).loggedValues).toEqual(['bob state:0']);
           });
 
           it('should support arguments in pipes', () => {
@@ -414,7 +414,8 @@ export function main() {
             var person = new Person('value', address);
             var val = _createChangeDetector("name | pipe:'one':address.city", person, registry);
             val.changeDetector.detectChanges();
-            expect(val.dispatcher.loggedValues).toEqual(['value one two default']);
+            expect((<TestDispatcher>val.dispatcher).loggedValues)
+                .toEqual(['value one two default']);
           });
 
           it('should associate pipes right-to-left', () => {
@@ -422,7 +423,8 @@ export function main() {
             var person = new Person('value');
             var val = _createChangeDetector("name | pipe:'a':'b' | pipe:0:1:2", person, registry);
             val.changeDetector.detectChanges();
-            expect(val.dispatcher.loggedValues).toEqual(['value a b default 0 1 2']);
+            expect((<TestDispatcher>val.dispatcher).loggedValues)
+                .toEqual(['value a b default 0 1 2']);
           });
 
           it('should not reevaluate pure pipes unless its context or arg changes', () => {
@@ -460,7 +462,7 @@ export function main() {
             var person = new Person('bob');
             var val = _createChangeDetector('(name | pipe).length', person, registry);
             val.changeDetector.detectChanges();
-            expect(val.dispatcher.loggedValues).toEqual([3]);
+            expect((<TestDispatcher>val.dispatcher).loggedValues).toEqual([3]);
           });
         });
 
@@ -492,7 +494,7 @@ export function main() {
             val.changeDetector.hydrate(_DEFAULT_CONTEXT, null, new TestDispatcher([directive1], []),
                                        null);
             val.changeDetector.detectChanges();
-            expect(val.dispatcher.loggedValues).toEqual([]);
+            expect((<TestDispatcher>val.dispatcher).loggedValues).toEqual([]);
             expect(directive1.a).toEqual(42);
           });
 
@@ -874,7 +876,7 @@ export function main() {
 
           val.changeDetector.detectChanges();
 
-          expect(val.dispatcher.loggedValues).toEqual(['aaa']);
+          expect((<TestDispatcher>val.dispatcher).loggedValues).toEqual(['aaa']);
         });
       });
 
@@ -900,7 +902,7 @@ export function main() {
                   'Expression [\'"]a in location[\'"] has changed after it was checked.'));
 
           val.changeDetector.detectChanges();
-          expect(val.dispatcher.loggedValues).toEqual(['value']);
+          expect((<TestDispatcher>val.dispatcher).loggedValues).toEqual(['value']);
         });
       });
 
@@ -1021,7 +1023,7 @@ export function main() {
           val.changeDetector.mode = ChangeDetectionStrategy.Detached;
           val.changeDetector.detectChanges();
 
-          expect(val.dispatcher.log).toEqual([]);
+          expect((<TestDispatcher>val.dispatcher).log).toEqual([]);
         });
 
         it('should not check a checked change detector', () => {
@@ -1031,7 +1033,7 @@ export function main() {
           val.changeDetector.mode = ChangeDetectionStrategy.Checked;
           val.changeDetector.detectChanges();
 
-          expect(val.dispatcher.log).toEqual([]);
+          expect((<TestDispatcher>val.dispatcher).log).toEqual([]);
         });
 
         it('should change CheckOnce to Checked', () => {
@@ -1173,12 +1175,12 @@ export function main() {
           var val = _createChangeDetector('name', context);
 
           val.changeDetector.detectChanges();
-          expect(val.dispatcher.log).toEqual(['propName=Bob']);
+          expect((<TestDispatcher>val.dispatcher).log).toEqual(['propName=Bob']);
 
           val.changeDetector.dehydrate();
           expect(() => {val.changeDetector.detectChanges()})
               .toThrowErrorWith("Attempt to use a dehydrated detector");
-          expect(val.dispatcher.log).toEqual(['propName=Bob']);
+          expect((<TestDispatcher>val.dispatcher).log).toEqual(['propName=Bob']);
         });
       });
 
@@ -1190,12 +1192,12 @@ export function main() {
 
         val.changeDetector.detectChanges();
 
-        expect(val.dispatcher.log).toEqual(['propName=Megatron']);
+        expect((<TestDispatcher>val.dispatcher).log).toEqual(['propName=Megatron']);
 
         val.dispatcher.clear();
         val.changeDetector.detectChanges();
 
-        expect(val.dispatcher.log).toEqual([]);
+        expect((<TestDispatcher>val.dispatcher).log).toEqual([]);
       });
 
       it('should unwrap the wrapped value', () => {
@@ -1206,7 +1208,7 @@ export function main() {
 
         val.changeDetector.detectChanges();
 
-        expect(val.dispatcher.log).toEqual(['propName=Megatron']);
+        expect((<TestDispatcher>val.dispatcher).log).toEqual(['propName=Megatron']);
       });
 
       describe('handleEvent', () => {
