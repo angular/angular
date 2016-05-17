@@ -4,6 +4,7 @@
 - HTML, style values, and URLs are now automatically sanitized. Values that do not match are escaped
   or ignored. When binding a URL or style property that would get ignored, bind to a value
   explicitly marked as safe instead by injection the DOM sanitization service:
+  
   ```
   class MyComponent {
     constructor(sanitizer: DomSanitizationService) {
