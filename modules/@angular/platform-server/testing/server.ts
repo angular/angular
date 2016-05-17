@@ -5,19 +5,19 @@ import {
   PLATFORM_INITIALIZER,
   APPLICATION_COMMON_PROVIDERS,
   RootRenderer
-} from "@angular/core";
-import {DirectiveResolver, ViewResolver, XHR, COMPILER_PROVIDERS} from "@angular/compiler";
+} from '@angular/core';
+import {DirectiveResolver, ViewResolver, XHR, COMPILER_PROVIDERS} from '@angular/compiler';
 import {
   TestComponentBuilder,
   MockDirectiveResolver,
   MockViewResolver,
   TestComponentRenderer
-} from "@angular/compiler/testing";
-import {Parse5DomAdapter} from "../index";
-import {AnimationBuilder} from "../../platform-browser/src/animate/animation_builder";
-import {MockAnimationBuilder} from "../../platform-browser/testing/animation_builder_mock";
-import {MockLocationStrategy} from "../../common/testing/mock_location_strategy";
-import {BrowserDetection, DOMTestComponentRenderer} from "@angular/platform-browser/testing";
+} from '@angular/compiler/testing';
+import {Parse5DomAdapter} from '../index';
+import {AnimationBuilder} from '../../platform-browser/src/animate/animation_builder';
+import {MockAnimationBuilder} from '../../platform-browser/testing/animation_builder_mock';
+import {MockLocationStrategy} from '../../common/testing/mock_location_strategy';
+import {BrowserDetection, DOMTestComponentRenderer} from '@angular/platform-browser/testing';
 import {
   DOCUMENT,
   BROWSER_SANITIZATION_PROVIDERS,
@@ -25,12 +25,12 @@ import {
   EVENT_MANAGER_PLUGINS,
   ELEMENT_PROBE_PROVIDERS,
   DomEventsPlugin
-} from "@angular/platform-browser";
-import {getDOM} from "../platform_browser_private";
-import {DomRootRenderer, DomRootRenderer_} from "../../platform-browser/src/dom/dom_renderer";
-import {DomSharedStylesHost, SharedStylesHost} from "../../platform-browser/src/dom/shared_styles_host";
-import {LocationStrategy} from "@angular/common";
-import {Log} from "@angular/core/testing";
+} from '@angular/platform-browser';
+import {getDOM} from '../platform_browser_private';
+import {DomRootRenderer, DomRootRenderer_} from '../../platform-browser/src/dom/dom_renderer';
+import {DomSharedStylesHost, SharedStylesHost} from '../../platform-browser/src/dom/shared_styles_host';
+import {LocationStrategy} from '@angular/common';
+import {Log} from '@angular/core/testing';
 
 function initServerTests() {
   Parse5DomAdapter.makeCurrent();
