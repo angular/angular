@@ -1,3 +1,5 @@
+// @ignoreProblemForFile UNUSED_IMPORT
+// @ignoreProblemForFile UNUSED_SHOWN_NAME
 library bar.template.dart;
 
 import 'bar.dart';
