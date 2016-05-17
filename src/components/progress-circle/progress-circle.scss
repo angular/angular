@@ -4,14 +4,11 @@
 
 /* Animation Durations */
 $md-progress-circle-duration : 5.25s !default;
-$md-progress-circle-value-change-duration : $md-progress-circle-duration * 0.25 !default;
 $md-progress-circle-constant-rotate-duration : $md-progress-circle-duration * 0.55 !default;
 $md-progress-circle-sporadic-rotate-duration : $md-progress-circle-duration !default;
 
 /** Component sizing */
 $md-progress-circle-stroke-width: 10px !default;
-$md-progress-circle-radius: 40px !default;
-$md-progress-circle-circumference: $pi * $md-progress-circle-radius * 2 !default;
 // Height and weight of the viewport for md-progress-circle.
 $md-progress-circle-viewport-size : 100px !default;
 
@@ -24,51 +21,31 @@ $md-progress-circle-viewport-size : 100px !default;
   width: $md-progress-circle-viewport-size;
 
   /** SVG's viewBox is defined as 0 0 100 100, this means that all SVG children will placed
-      based on a 100px by 100px box.
-
-      The SVG and Circle dimensions/location:
-        SVG
-          Height: 100px
-          Width: 100px
-        Circle
-          Radius: 40px
-          Circumference: 251.3274px
-          Center x: 50px
-          Center y: 50px
+      based on a 100px by 100px box.  Additionally all SVG sizes and locations are in reference to
+      this viewBox.
   */
   svg {
     height: 100%;
     width: 100%;
-    transform: rotate(-90deg);
     transform-origin: center;
   }
 
 
-  circle {
+  path {
     fill: transparent;
     stroke: md-color($md-primary, 600);
     /** Stroke width of 10px defines stroke as 10% of the viewBox */
     stroke-width: $md-progress-circle-stroke-width;
-    /** SVG circle rotations begin rotated 90deg clockwise from the circle's center top */
-    transition: stroke-dashoffset 0.225s linear;
-    /** The dash array of the circle is defined as the circumference of the circle. */
-    stroke-dasharray: $md-progress-circle-circumference;
-    /** The stroke dashoffset is used to "fill" the circle, 0px represents an full circle,
-        while the circles full circumference represents an empty circle. */
-    stroke-dashoffset: 0px;
   }
 
-
-  &[color="accent"] circle {
+  &[color="accent"] path {
     stroke: md-color($md-accent, 600);
   }
 
 
-  &[color="warn"] circle {
+  &[color="warn"] path {
     stroke: md-color($md-warn, 600);
   }
-
-
 
 
   &[mode="indeterminate"] {
@@ -80,14 +57,6 @@ $md-progress-circle-viewport-size : 100px !default;
                                linear;
     animation-iteration-count: infinite;
     transition: none;
-
-    circle {
-      animation-duration: $md-progress-circle-value-change-duration;
-      animation-name: md-progress-circle-value-change;
-      animation-timing-function: $ease-in-out-curve-function;
-      animation-iteration-count: infinite;
-      transition: none;
-    }
   }
 }
 
@@ -106,8 +75,4 @@ $md-progress-circle-viewport-size : 100px !default;
   75%      { transform: rotate( 810deg); }
   87.5%    { transform: rotate( 945deg); }
   100%     { transform: rotate(1080deg); }
-}
-@keyframes md-progress-circle-value-change {
-  0%       { stroke-dashoffset: 261.3274px; }
-  100%     { stroke-dashoffset: -241.3274px; }
 }
