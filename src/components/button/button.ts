@@ -14,6 +14,7 @@ import {
 
 
 @Component({
+  moduleId: module.id,
   selector: 'button[md-button], button[md-raised-button], button[md-icon-button], ' +
             'button[md-fab], button[md-mini-fab]',
   inputs: ['color'],
@@ -23,8 +24,8 @@ import {
     '(focus)': 'setKeyboardFocus()',
     '(blur)': 'removeKeyboardFocus()',
   },
-  templateUrl: './components/button/button.html',
-  styleUrls: ['./components/button/button.css'],
+  templateUrl: 'button.html',
+  styleUrls: ['button.css'],
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -81,6 +82,7 @@ export class MdButton {
 }
 
 @Component({
+  moduleId: module.id,
   selector: 'a[md-button], a[md-raised-button], a[md-icon-button], a[md-fab], a[md-mini-fab]',
   inputs: ['color'],
   host: {
@@ -90,8 +92,8 @@ export class MdButton {
     '(blur)': 'removeKeyboardFocus()',
     '(click)': 'haltDisabledEvents($event)',
   },
-  templateUrl: './components/button/button.html',
-  styleUrls: ['./components/button/button.css'],
+  templateUrl: 'button.html',
+  styleUrls: ['button.css'],
   encapsulation: ViewEncapsulation.None
 })
 export class MdAnchor extends MdButton {

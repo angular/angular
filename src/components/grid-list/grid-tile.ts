@@ -9,10 +9,11 @@ import {
 import {coerceToNumber} from './grid-list';
 
 @Component({
+  moduleId: module.id,
   selector: 'md-grid-tile',
   host: { 'role': 'listitem' },
-  templateUrl: './components/grid-list/grid-tile.html',
-  styleUrls: ['./components/grid-list/grid-list.css'],
+  templateUrl: 'grid-tile.html',
+  styleUrls: ['grid-list.css'],
   encapsulation: ViewEncapsulation.None,
 })
 export class MdGridTile {

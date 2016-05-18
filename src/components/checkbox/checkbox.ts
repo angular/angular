@@ -53,9 +53,10 @@ enum TransitionCheckState {
  * See: https://www.google.com/design/spec/components/selection-controls.html
  */
 @Component({
+  moduleId: module.id,
   selector: 'md-checkbox',
-  templateUrl: './components/checkbox/checkbox.html',
-  styleUrls: ['./components/checkbox/checkbox.css'],
+  templateUrl: 'checkbox.html',
+  styleUrls: ['checkbox.css'],
   host: {
     '[class.md-checkbox-indeterminate]': 'indeterminate',
     '[class.md-checkbox-checked]': 'checked',

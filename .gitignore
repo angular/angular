@@ -25,6 +25,7 @@
 /.idea
 
 # misc
+.DS_Store
 /.sass-cache
 /connect.lock
 /coverage/*

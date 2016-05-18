@@ -12,7 +12,7 @@ import {
   ControlValueAccessor,
   NG_VALUE_ACCESSOR
 } from '@angular/common';
-import { BooleanFieldValue } from '../../core/annotations/field-value';
+import { BooleanFieldValue } from '@angular2-material/core/annotations/field-value';
 import { Observable } from 'rxjs/Observable';
 
 export const MD_SLIDE_TOGGLE_VALUE_ACCESSOR: any = {
@@ -25,14 +25,15 @@ export const MD_SLIDE_TOGGLE_VALUE_ACCESSOR: any = {
 let nextId = 0;
 
 @Component({
+  moduleId: module.id,
   selector: 'md-slide-toggle',
   host: {
     '[class.md-checked]': 'checked',
     '[class.md-disabled]': 'disabled',
     '(click)': 'onTouched()'
   },
-  templateUrl: './components/slide-toggle/slide-toggle.html',
-  styleUrls: ['./components/slide-toggle/slide-toggle.css'],
+  templateUrl: 'slide-toggle.html',
+  styleUrls: ['slide-toggle.css'],
   providers: [MD_SLIDE_TOGGLE_VALUE_ACCESSOR],
   changeDetection: ChangeDetectionStrategy.OnPush
 })

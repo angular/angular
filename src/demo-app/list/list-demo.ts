@@ -1,12 +1,13 @@
 import {Component} from '@angular/core';
-import {MdButton} from '../../components/button/button';
-import {MD_LIST_DIRECTIVES} from '../../components/list/list';
-import {MdIcon} from '../../components/icon/icon';
+import {MdButton} from '@angular2-material/button/button';
+import {MD_LIST_DIRECTIVES} from '@angular2-material/list/list';
+import {MdIcon} from '@angular2-material/icon/icon';
 
 @Component({
+  moduleId: module.id,
   selector: 'list-demo',
-  templateUrl: 'demo-app/list/list-demo.html',
-  styleUrls: ['demo-app/list/list-demo.css'],
+  templateUrl: 'list-demo.html',
+  styleUrls: ['list-demo.css'],
   directives: [MD_LIST_DIRECTIVES, MdButton, MdIcon]
 })
 export class ListDemo {

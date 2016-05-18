@@ -1,11 +1,12 @@
 import {Component} from '@angular/core';
-import {MdButton} from '../../components/button/button';
-import {MdProgressCircle, MdSpinner} from '../../components/progress-circle/progress-circle';
+import {MdButton} from '@angular2-material/button/button';
+import {MdProgressCircle, MdSpinner} from '@angular2-material/progress-circle/progress-circle';
 
 @Component({
+  moduleId: module.id,
   selector: 'progress-circle-demo',
-  templateUrl: 'demo-app/progress-circle/progress-circle-demo.html',
-  styleUrls: ['demo-app/progress-circle/progress-circle-demo.css'],
+  templateUrl: 'progress-circle-demo.html',
+  styleUrls: ['progress-circle-demo.css'],
   directives: [MdProgressCircle, MdSpinner, MdButton]
 })
 export class ProgressCircleDemo {

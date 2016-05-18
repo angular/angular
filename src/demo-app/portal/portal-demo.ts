@@ -1,15 +1,16 @@
 import {Component} from '@angular/core';
-import {PortalHostDirective} from '../../core/portal/portal-directives';
-import {TemplatePortalDirective} from '../../core/portal/portal-directives';
-import {Portal} from '../../core/portal/portal';
+import {PortalHostDirective} from '@angular2-material/core/portal/portal-directives';
+import {TemplatePortalDirective} from '@angular2-material/core/portal/portal-directives';
+import {Portal} from '@angular2-material/core/portal/portal';
 import {ViewChildren} from '@angular/core';
 import {QueryList} from '@angular/core';
-import {ComponentPortal} from '../../core/portal/portal';
+import {ComponentPortal} from '@angular2-material/core/portal/portal';
 
 @Component({
+  moduleId: module.id,
   selector: 'portal-demo',
-  templateUrl: 'demo-app/portal/portal-demo.html',
-  styleUrls: ['demo-app/portal/portal-demo.css'],
+  templateUrl: 'portal-demo.html',
+  styleUrls: ['portal-demo.css'],
   directives: [TemplatePortalDirective, PortalHostDirective]
 })
 export class PortalDemo {
@@ -32,6 +33,7 @@ export class PortalDemo {
 
 
 @Component({
+  moduleId: module.id,
   selector: 'science-joke',
   template: `<p> 100 kilopascals go into a bar. </p>`
 })

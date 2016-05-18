@@ -239,9 +239,10 @@ export class MdRadioGroup implements AfterContentInit, ControlValueAccessor {
 
 
 @Component({
+  moduleId: module.id,
   selector: 'md-radio-button',
-  templateUrl: './components/radio/radio.html',
-  styleUrls: ['./components/radio/radio.css'],
+  templateUrl: 'radio.html',
+  styleUrls: ['radio.css'],
   encapsulation: ViewEncapsulation.None,
   host: {
     '(click)': 'onClick($event)'

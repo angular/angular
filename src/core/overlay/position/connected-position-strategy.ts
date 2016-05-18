@@ -1,7 +1,7 @@
 import {PositionStrategy} from './position-strategy';
 import {ElementRef} from '@angular/core';
+import {applyCssTransform} from '@angular2-material/core/style/apply-transform';
 import {ViewportRuler} from './viewport-ruler';
-import {applyCssTransform} from '../../style/apply-transform';
 
 
 

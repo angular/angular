@@ -1,25 +1,48 @@
 /***********************************************************************************************
  * User Configuration.
  **********************************************************************************************/
+
+System.defaultJSExtensions = true;
+
+
+const components = [
+  'button',
+  'card',
+  'checkbox',
+  'grid-list',
+  'icon',
+  'input',
+  'list',
+  'progress-bar',
+  'progress-circle',
+  'radio',
+  'sidenav',
+  'slide-toggle',
+  'tab-group',
+  'toolbar'
+];
+
+
 /** Map relative paths to URLs. */
 const map: any = {
+  '@angular2-material/core': '/core',
 };
+components.forEach(name => map[`@angular2-material/${name}`] = `/components/${name}`);
+
 
 /** User packages configuration. */
 const packages: any = {
-  'demo-app': {
+  '@angular2-material/core': {
     format: 'cjs',
     defaultExtension: 'js'
-  },
-  'components': {
-    format: 'cjs',
-    defaultExtension: 'js'
-  },
-  'core': {
-    format: 'cjs',
-    defaultExtension: 'js'
-  },
+  }
 };
+components.forEach(name => {
+  packages[`@angular2-material/${name}`] = {
+    format: 'cjs',
+    defaultExtension: 'js'
+  };
+});
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
 /***********************************************************************************************

@@ -7,9 +7,10 @@ import {Renderer} from '@angular/core';
 import {ElementRef} from '@angular/core';
 
 @Component({
+  moduleId: module.id,
   selector: 'md-toolbar',
-  templateUrl: './components/toolbar/toolbar.html',
-  styleUrls: ['./components/toolbar/toolbar.css'],
+  templateUrl: 'toolbar.html',
+  styleUrls: ['toolbar.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MdToolbar {

@@ -10,8 +10,8 @@ import {
     ViewEncapsulation,
     AfterViewChecked
 } from '@angular/core';
+import {MdError} from '@angular2-material/core/errors/error';
 import {MdIconRegistry} from './icon-registry';
-import {MdError} from '../../core/errors/error';
 export {MdIconRegistry} from './icon-registry';
 
 
@@ -56,9 +56,10 @@ export class MdIconInvalidNameError extends MdError {
  *     <md-icon fontSet="fa" fontIcon="alarm"></md-icon>
  */
 @Component({
+  moduleId: module.id,
   template: '<ng-content></ng-content>',
   selector: 'md-icon',
-  styleUrls: ['./components/icon/icon.css'],
+  styleUrls: ['icon.css'],
   host: {
     'role': 'img',
   },

@@ -14,10 +14,10 @@ import {
     EventEmitter,
     Renderer
 } from '@angular/core';
-import {Dir} from '../../core/rtl/dir';
-import {PromiseCompleter} from '../../core/async/promise-completer';
-import {MdError} from '../../core/errors/error';
-import { BooleanFieldValue } from '../../core/annotations/field-value';
+import {Dir} from '@angular2-material/core/rtl/dir';
+import {PromiseCompleter} from '@angular2-material/core/async/promise-completer';
+import {MdError} from '@angular2-material/core/errors/error';
+import { BooleanFieldValue } from '@angular2-material/core/annotations/field-value';
 
 
 /** Exception thrown when two MdSidenav are matching the same side. */
@@ -36,6 +36,7 @@ export class MdDuplicatedSidenavError extends MdError {
  * Please refer to README.md for examples on how to use it.
  */
 @Component({
+  moduleId: module.id,
   selector: 'md-sidenav',
   template: '<ng-content></ng-content>',
   host: {
@@ -231,15 +232,16 @@ export class MdSidenav {
  * and coordinate the backdrop and content styling.
  */
 @Component({
+  moduleId: module.id,
   selector: 'md-sidenav-layout',
   // Do not use ChangeDetectionStrategy.OnPush. It does not work for this component because
   // technically it is a sibling of MdSidenav (on the content tree) and isn't updated when MdSidenav
   // changes its state.
   directives: [MdSidenav],
-  templateUrl: './components/sidenav/sidenav.html',
+  templateUrl: 'sidenav.html',
   styleUrls: [
-    './components/sidenav/sidenav.css',
-    './components/sidenav/sidenav-transitions.css',
+    'sidenav.css',
+    'sidenav-transitions.css',
   ],
 })
 export class MdSidenavLayout implements AfterContentInit {

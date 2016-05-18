@@ -1,18 +1,19 @@
 import {Component} from '@angular/core';
-import {MD_INPUT_DIRECTIVES} from '../../components/input/input';
-import {MdButton} from '../../components/button/button';
-import {MdCard} from '../../components/card/card';
-import {MdCheckbox} from '../../components/checkbox/checkbox';
-import {MdIcon} from '../../components/icon/icon';
-import {MdToolbar} from '../../components/toolbar/toolbar';
+import {MD_INPUT_DIRECTIVES} from '@angular2-material/input/input';
+import {MdButton} from '@angular2-material/button/button';
+import {MdCard} from '@angular2-material/card/card';
+import {MdCheckbox} from '@angular2-material/checkbox/checkbox';
+import {MdIcon} from '@angular2-material/icon/icon';
+import {MdToolbar} from '@angular2-material/toolbar/toolbar';
 
 
 let max = 5;
 
 @Component({
+  moduleId: module.id,
   selector: 'input-demo',
-  templateUrl: 'demo-app/input/input-demo.html',
-  styleUrls: ['demo-app/input/input-demo.css'],
+  templateUrl: 'input-demo.html',
+  styleUrls: ['input-demo.css'],
   directives: [MdCard, MdCheckbox, MdButton, MdIcon, MdToolbar, MD_INPUT_DIRECTIVES]
 })
 export class InputDemo {

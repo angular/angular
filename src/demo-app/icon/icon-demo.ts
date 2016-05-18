@@ -1,10 +1,11 @@
 import {Component, ViewEncapsulation} from '@angular/core';
-import {MdIcon, MdIconRegistry} from '../../components/icon/icon';
+import {MdIcon, MdIconRegistry} from '@angular2-material/icon/icon';
 
 @Component({
+  moduleId: module.id,
   selector: 'md-icon-demo',
-  templateUrl: 'demo-app/icon/icon-demo.html',
-  styleUrls: ['demo-app/icon/icon-demo.css'],
+  templateUrl: 'icon-demo.html',
+  styleUrls: ['icon-demo.css'],
   directives: [MdIcon],
   viewProviders: [MdIconRegistry],
   encapsulation: ViewEncapsulation.None,
@@ -12,8 +13,8 @@ import {MdIcon, MdIconRegistry} from '../../components/icon/icon';
 export class IconDemo {
   constructor(mdIconRegistry: MdIconRegistry) {
     mdIconRegistry
-        .addSvgIcon('thumb-up', '/demo-app/icon/assets/thumbup-icon.svg')
-        .addSvgIconSetInNamespace('core', '/demo-app/icon/assets/core-icon-set.svg')
+        .addSvgIcon('thumb-up', '/icon/assets/thumbup-icon.svg')
+        .addSvgIconSetInNamespace('core', '/icon/assets/core-icon-set.svg')
         .registerFontClassAlias('fontawesome', 'fa');
   }
 }

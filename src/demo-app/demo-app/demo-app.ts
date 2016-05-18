@@ -1,29 +1,31 @@
 import {Component} from '@angular/core';
 import {Route, Routes, ROUTER_DIRECTIVES} from '@angular/router';
-import {CardDemo} from './card/card-demo';
-import {ButtonDemo} from './button/button-demo';
-import {IconDemo} from './icon/icon-demo';
-import {RadioDemo} from './radio/radio-demo';
-import {SidenavDemo} from './sidenav/sidenav-demo';
-import {ProgressBarDemo} from './progress-bar/progress-bar-demo';
-import {ProgressCircleDemo} from './progress-circle/progress-circle-demo';
-import {CheckboxDemo} from './checkbox/checkbox-demo';
-import {Dir} from '../core/rtl/dir';
-import {MdButton} from '../components/button/button';
-import {MD_SIDENAV_DIRECTIVES} from '../components/sidenav/sidenav';
-import {MD_LIST_DIRECTIVES} from '../components/list/list';
-import {MdIcon} from '../components/icon/icon';
-import {MdToolbar} from '../components/toolbar/toolbar';
-import {PortalDemo} from './portal/portal-demo';
-import {ToolbarDemo} from './toolbar/toolbar-demo';
-import {OverlayDemo} from './overlay/overlay-demo';
-import {ListDemo} from './list/list-demo';
-import {InputDemo} from './input/input-demo';
-import {LiveAnnouncerDemo} from './live-announcer/live-announcer-demo';
-import {GesturesDemo} from './gestures/gestures-demo';
-import {GridListDemo} from './grid-list/grid-list-demo';
-import {TabGroupDemo} from './tab-group/tab-group-demo';
-import {SlideToggleDemo} from './slide-toggle/slide-toggle-demo';
+
+import {Dir} from '@angular2-material/core/rtl/dir';
+import {MdButton} from '@angular2-material/button/button';
+import {MD_SIDENAV_DIRECTIVES} from '@angular2-material/sidenav/sidenav';
+import {MD_LIST_DIRECTIVES} from '@angular2-material/list/list';
+import {MdIcon} from '@angular2-material/icon/icon';
+import {MdToolbar} from '@angular2-material/toolbar/toolbar';
+
+import {CardDemo} from '../card/card-demo';
+import {ButtonDemo} from '../button/button-demo';
+import {IconDemo} from '../icon/icon-demo';
+import {RadioDemo} from '../radio/radio-demo';
+import {SidenavDemo} from '../sidenav/sidenav-demo';
+import {ProgressBarDemo} from '../progress-bar/progress-bar-demo';
+import {ProgressCircleDemo} from '../progress-circle/progress-circle-demo';
+import {CheckboxDemo} from '../checkbox/checkbox-demo';
+import {PortalDemo} from '../portal/portal-demo';
+import {ToolbarDemo} from '../toolbar/toolbar-demo';
+import {OverlayDemo} from '../overlay/overlay-demo';
+import {ListDemo} from '../list/list-demo';
+import {InputDemo} from '../input/input-demo';
+import {LiveAnnouncerDemo} from '../live-announcer/live-announcer-demo';
+import {GesturesDemo} from '../gestures/gestures-demo';
+import {GridListDemo} from '../grid-list/grid-list-demo';
+import {TabGroupDemo} from '../tab-group/tab-group-demo';
+import {SlideToggleDemo} from '../slide-toggle/slide-toggle-demo';
 
 @Component({
   selector: 'home',
@@ -35,10 +37,11 @@ import {SlideToggleDemo} from './slide-toggle/slide-toggle-demo';
 export class Home {}
 
 @Component({
+  moduleId: module.id,
   selector: 'demo-app',
   providers: [],
-  templateUrl: 'demo-app/demo-app.html',
-  styleUrls: ['demo-app/demo-app.css'],
+  templateUrl: 'demo-app.html',
+  styleUrls: ['demo-app.css'],
   directives: [
     ROUTER_DIRECTIVES,
     Dir,

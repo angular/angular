@@ -1,7 +1,7 @@
 import {Component, Input, ViewChildren, NgZone} from '@angular/core';
 import {QueryList} from '@angular/core';
 import {ContentChildren} from '@angular/core';
-import {PortalHostDirective} from '../../core/portal/portal-directives';
+import {PortalHostDirective} from '@angular2-material/core/portal/portal-directives';
 import {MdTabLabel} from './tab-label';
 import {MdTabContent} from './tab-content';
 import {MdTabLabelWrapper} from './tab-label-wrapper';
@@ -16,9 +16,10 @@ let nextId = 0;
  * See: https://www.google.com/design/spec/components/tabs.html
  */
 @Component({
+  moduleId: module.id,
   selector: 'md-tab-group',
-  templateUrl: './components/tab-group/tab-group.html',
-  styleUrls: ['./components/tab-group/tab-group.css'],
+  templateUrl: 'tab-group.html',
+  styleUrls: ['tab-group.css'],
   directives: [PortalHostDirective, MdTabLabelWrapper, MdInkBar],
 })
 export class MdTabGroup {

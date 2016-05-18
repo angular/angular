@@ -1,16 +1,17 @@
 import {bootstrap} from '@angular/platform-browser-dynamic';
 import {HAMMER_GESTURE_CONFIG} from '@angular/platform-browser';
-import {DemoApp} from './demo-app/demo-app';
 import {HTTP_PROVIDERS} from '@angular/http';
 import {ROUTER_PROVIDERS} from '@angular/router';
-import {MdIconRegistry} from './components/icon/icon-registry';
-import {OVERLAY_CONTAINER_TOKEN} from './core/overlay/overlay';
-import {MdLiveAnnouncer} from './core/live-announcer/live-announcer';
 import {provide} from '@angular/core';
-import {createOverlayContainer} from './core/overlay/overlay-container';
 import {Renderer} from '@angular/core';
-import {MdGestureConfig} from './core/gestures/MdGestureConfig';
-import 'rxjs/Rx';
+
+import {OVERLAY_CONTAINER_TOKEN} from '@angular2-material/core/overlay/overlay';
+import {MdLiveAnnouncer} from '@angular2-material/core/live-announcer/live-announcer';
+import {createOverlayContainer} from '@angular2-material/core/overlay/overlay-container';
+import {MdGestureConfig} from '@angular2-material/core/gestures/MdGestureConfig';
+import {MdIconRegistry} from '@angular2-material/icon/icon-registry';
+
+import {DemoApp} from './demo-app/demo-app';
 
 bootstrap(DemoApp, [
   ROUTER_PROVIDERS,

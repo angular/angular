@@ -1,12 +1,13 @@
 import {Component, ViewEncapsulation} from '@angular/core';
-import {MD_TAB_GROUP_DIRECTIVES} from '../../components/tab-group/tab-group';
-import {MdToolbar} from '../../components/toolbar/toolbar';
-import {MdInput} from '../../components/input/input';
+import {MD_TAB_GROUP_DIRECTIVES} from '@angular2-material/tab-group/tab-group';
+import {MdToolbar} from '@angular2-material/toolbar/toolbar';
+import {MdInput} from '@angular2-material/input/input';
 
 @Component({
+  moduleId: module.id,
   selector: 'tab-group-demo',
-  templateUrl: 'demo-app/tab-group/tab-group-demo.html',
-  styleUrls: ['demo-app/tab-group/tab-group-demo.css'],
+  templateUrl: 'tab-group-demo.html',
+  styleUrls: ['tab-group-demo.css'],
   directives: [MD_TAB_GROUP_DIRECTIVES, MdToolbar, MdInput],
   encapsulation: ViewEncapsulation.None,
 })

@@ -13,10 +13,11 @@ import {
 
 
 @Component({
+  moduleId: module.id,
   selector: 'md-list, md-nav-list',
   host: {'role': 'list'},
   template: '<ng-content></ng-content>',
-  styleUrls: ['./components/list/list.css'],
+  styleUrls: ['list.css'],
   encapsulation: ViewEncapsulation.None
 })
 export class MdList {}
@@ -30,9 +31,10 @@ export class MdLine {}
 export class MdListAvatar {}
 
 @Component({
+  moduleId: module.id,
   selector: 'md-list-item, a[md-list-item]',
   host: {'role': 'listitem'},
-  templateUrl: './components/list/list-item.html',
+  templateUrl: 'list-item.html',
   encapsulation: ViewEncapsulation.None
 })
 export class MdListItem implements AfterContentInit {

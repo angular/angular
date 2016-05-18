@@ -1,12 +1,13 @@
 import {Component} from '@angular/core';
-import {MdButton, MdAnchor} from '../../components/button/button';
-import {MdIcon} from '../../components/icon/icon';
+import {MdButton, MdAnchor} from '@angular2-material/button/button';
+import {MdIcon} from '@angular2-material/icon/icon';
 
 @Component({
-    selector: 'button-demo',
-    templateUrl: 'demo-app/button/button-demo.html',
-    styleUrls: ['demo-app/button/button-demo.css'],
-    directives: [MdButton, MdAnchor, MdIcon]
+  moduleId: module.id,
+  selector: 'button-demo',
+  templateUrl: 'button-demo.html',
+  styleUrls: ['button-demo.css'],
+  directives: [MdButton, MdAnchor, MdIcon]
 })
 export class ButtonDemo {
   isDisabled: boolean = false;

@@ -18,7 +18,7 @@ import {
     FixedTileStyler
 } from './tile-styler';
 import {MdGridListColsError} from './grid-list-errors';
-import {Dir} from '../../core/rtl/dir';
+import {Dir} from '@angular2-material/core/rtl/dir';
 
 // TODO(kara): Conditional (responsive) column count / row size.
 // TODO(kara): Re-layout on window resize / media change (debounced).
@@ -27,10 +27,10 @@ import {Dir} from '../../core/rtl/dir';
 const MD_FIT_MODE = 'fit';
 
 @Component({
+  moduleId: module.id,
   selector: 'md-grid-list',
-  host: { 'role': 'list' },
-  templateUrl: './components/grid-list/grid-list.html',
-  styleUrls: ['./components/grid-list/grid-list.css'],
+  templateUrl: 'grid-list.html',
+  styleUrls: ['grid-list.css'],
   encapsulation: ViewEncapsulation.None,
 })
 export class MdGridList implements OnInit, AfterContentChecked {

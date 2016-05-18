@@ -30,14 +30,15 @@ type EasingFn = (currentTime: number, startValue: number,
  * <md-progress-circle> component.
  */
 @Component({
+  moduleId: module.id,
   selector: 'md-progress-circle',
   host: {
     'role': 'progressbar',
     'aria-valuemin': '0',
     'aria-valuemax': '100',
   },
-  templateUrl: './components/progress-circle/progress-circle.html',
-  styleUrls: ['./components/progress-circle/progress-circle.css'],
+  templateUrl: 'progress-circle.html',
+  styleUrls: ['progress-circle.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MdProgressCircle {
@@ -188,12 +189,13 @@ export class MdProgressCircle {
  * indeterminate <md-progress-circle> instance.
  */
 @Component({
+  moduleId: module.id,
   selector: 'md-spinner',
   host: {
     'role': 'progressbar',
   },
-  templateUrl: './components/progress-circle/progress-circle.html',
-  styleUrls: ['./components/progress-circle/progress-circle.css'],
+  templateUrl: 'progress-circle.html',
+  styleUrls: ['progress-circle.css'],
 })
 export class MdSpinner extends MdProgressCircle {
   constructor(changeDetectorRef: ChangeDetectorRef) {

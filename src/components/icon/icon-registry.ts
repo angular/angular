@@ -1,5 +1,6 @@
 import {Injectable} from '@angular/core';
 import {Http} from '@angular/http';
+import {MdError} from '@angular2-material/core/errors/error';
 import {Observable} from 'rxjs/Observable';
 import 'rxjs/add/observable/forkJoin';
 import 'rxjs/add/observable/of';
@@ -9,7 +10,6 @@ import 'rxjs/add/operator/do';
 import 'rxjs/add/operator/share';
 import 'rxjs/add/operator/finally';
 import 'rxjs/add/operator/catch';
-import {MdError} from '../../core/errors/error';
 
 
 /** Exception thrown when attempting to load an icon with a name that cannot be found. */

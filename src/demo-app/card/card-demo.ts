@@ -1,11 +1,12 @@
 import {Component} from '@angular/core';
-import {MdButton} from '../../components/button/button';
-import {MD_CARD_DIRECTIVES} from '../../components/card/card';
+import {MdButton} from '@angular2-material/button/button';
+import {MD_CARD_DIRECTIVES} from '@angular2-material/card/card';
 
 @Component({
-    selector: 'card-demo',
-    templateUrl: 'demo-app/card/card-demo.html',
-    styleUrls: ['demo-app/card/card-demo.css'],
-    directives: [MD_CARD_DIRECTIVES, MdButton]
+  moduleId: module.id,
+  selector: 'card-demo',
+  templateUrl: 'card-demo.html',
+  styleUrls: ['card-demo.css'],
+  directives: [MD_CARD_DIRECTIVES, MdButton]
 })
 export class CardDemo {}

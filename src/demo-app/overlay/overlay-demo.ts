@@ -8,10 +8,11 @@ import {
     ViewChild,
     ViewContainerRef
 } from '@angular/core';
-import {Overlay, OverlayState, OVERLAY_PROVIDERS} from '../../core/overlay/overlay';
-import {ComponentPortal, Portal} from '../../core/portal/portal';
-import {TemplatePortalDirective} from '../../core/portal/portal-directives';
-import {RelativePosition} from '../../core/overlay/position/connected-position-strategy';
+import {Overlay, OverlayState, OVERLAY_PROVIDERS} from '@angular2-material/core/overlay/overlay';
+import {ComponentPortal, Portal} from '@angular2-material/core/portal/portal';
+import {TemplatePortalDirective} from '@angular2-material/core/portal/portal-directives';
+import {RelativePosition} from
+    '@angular2-material/core/overlay/position/connected-position-strategy';
 
 
 
@@ -22,9 +23,10 @@ class OverlayOrigin {
 
 
 @Component({
+  moduleId: module.id,
   selector: 'overlay-demo',
-  templateUrl: 'demo-app/overlay/overlay-demo.html',
-  styleUrls: ['demo-app/overlay/overlay-demo.css'],
+  templateUrl: 'overlay-demo.html',
+  styleUrls: ['overlay-demo.css'],
   directives: [TemplatePortalDirective, OverlayOrigin],
   providers: [OVERLAY_PROVIDERS],
   encapsulation: ViewEncapsulation.None,
@@ -89,6 +91,7 @@ export class OverlayDemo {
 
 /** Simple component to load into an overlay */
 @Component({
+  moduleId: module.id,
   selector: 'rotini-panel',
   template: '<p class="demo-rotini">Rotini {{value}}</p>'
 })

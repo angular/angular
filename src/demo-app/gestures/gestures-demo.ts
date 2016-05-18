@@ -1,9 +1,10 @@
 import {Component} from '@angular/core';
 
 @Component({
+  moduleId: module.id,
   selector: 'gestures-demo',
-  templateUrl: 'demo-app/gestures/gestures-demo.html',
-  styleUrls: ['demo-app/gestures/gestures-demo.css'],
+  templateUrl: 'gestures-demo.html',
+  styleUrls: ['gestures-demo.css'],
   directives: []
 })
 export class GesturesDemo {

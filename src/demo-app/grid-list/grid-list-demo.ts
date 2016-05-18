@@ -1,12 +1,13 @@
 import {Component} from '@angular/core';
-import {MD_GRID_LIST_DIRECTIVES} from '../../components/grid-list/grid-list';
-import {MdButton} from '../../components/button/button';
-import {MD_CARD_DIRECTIVES} from '../../components/card/card';
+import {MD_GRID_LIST_DIRECTIVES} from '@angular2-material/grid-list/grid-list';
+import {MdButton} from '@angular2-material/button/button';
+import {MD_CARD_DIRECTIVES} from '@angular2-material/card/card';
 
 @Component({
+  moduleId: module.id,
   selector: 'grid-list-demo',
-  templateUrl: 'demo-app/grid-list/grid-list-demo.html',
-  styleUrls: ['demo-app/grid-list/grid-list-demo.css'],
+  templateUrl: 'grid-list-demo.html',
+  styleUrls: ['grid-list-demo.css'],
   directives: [MD_GRID_LIST_DIRECTIVES, MdButton, MD_CARD_DIRECTIVES]
 })
 export class GridListDemo {

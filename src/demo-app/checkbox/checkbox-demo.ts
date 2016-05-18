@@ -1,6 +1,6 @@
 import {Component} from '@angular/core';
 import {FORM_DIRECTIVES} from '@angular/common';
-import {MdCheckbox} from '../../components/checkbox/checkbox';
+import {MdCheckbox} from '@angular2-material/checkbox/checkbox';
 
 interface Task {
   name: string;
@@ -9,13 +9,14 @@ interface Task {
 }
 
 @Component({
+  moduleId: module.id,
   selector: 'md-checkbox-demo-nested-checklist',
   styles: [`
     li {
       margin-bottom: 4px;
     }
   `],
-  templateUrl: 'demo-app/checkbox/nested-checklist.html',
+  templateUrl: 'nested-checklist.html',
   directives: [MdCheckbox]
 })
 class MdCheckboxDemoNestedChecklist {
@@ -58,9 +59,10 @@ class MdCheckboxDemoNestedChecklist {
 }
 
 @Component({
+  moduleId: module.id,
   selector: 'md-checkbox-demo',
-  templateUrl: 'demo-app/checkbox/checkbox-demo.html',
-  styleUrls: ['demo-app/checkbox/checkbox-demo.css'],
+  templateUrl: 'checkbox-demo.html',
+  styleUrls: ['checkbox-demo.css'],
   directives: [MdCheckbox, MdCheckboxDemoNestedChecklist, FORM_DIRECTIVES]
 })
 export class CheckboxDemo {

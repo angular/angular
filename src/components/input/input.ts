@@ -20,8 +20,8 @@ import {
   NG_VALUE_ACCESSOR,
   ControlValueAccessor
 } from '@angular/common';
-import {BooleanFieldValue} from '../../core/annotations/field-value';
-import {MdError} from '../../core/errors/error';
+import {BooleanFieldValue} from '@angular2-material/core/annotations/field-value';
+import {MdError} from '@angular2-material/core/errors/error';
 import {Observable} from 'rxjs/Observable';
 
 
@@ -92,9 +92,10 @@ export class MdHint {
  * improve on its behaviour, along with styling it according to the Material Design.
  */
 @Component({
+  moduleId: module.id,
   selector: 'md-input',
-  templateUrl: 'components/input/input.html',
-  styleUrls: ['components/input/input.css'],
+  templateUrl: 'input.html',
+  styleUrls: ['input.css'],
   providers: [MD_INPUT_CONTROL_VALUE_ACCESSOR],
   host: {'(click)' : 'focus()'}
 })

@@ -18,9 +18,9 @@ function booleanFieldValueFactory() {
     target[localKey] = defaultValue;
 
     Object.defineProperty(target, key, {
-      get() { return this[localKey]; },
+      get() { return (<any>this)[localKey]; },
       set(value: boolean) {
-        this[localKey] = value != null && `${value}` !== 'false';
+        (<any>this)[localKey] = value != null && `${value}` !== 'false';
       }
     });
   };

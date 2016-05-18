@@ -1,7 +1,7 @@
 import {MdGridTile} from './grid-tile';
 import {TileCoordinator} from './tile-coordinator';
 import {MdGridListBadRatioError} from './grid-list-errors';
-import {Dir} from '../../core/rtl/dir';
+import {Dir} from '@angular2-material/core/rtl/dir';
 
 /* Sets the style properties for an individual tile, given the position calculated by the
 * Tile Coordinator. */

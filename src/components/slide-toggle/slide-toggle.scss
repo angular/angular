@@ -1,9 +1,9 @@
-@import "../../core/style/variables";
-@import "../../core/style/mixins";
-@import "../../core/style/elevation";
+@import "variables";
+@import "mixins";
+@import "elevation";
 
 //TODO(): remove the default theme.
-@import "../../core/style/default-theme";
+@import "default-theme";
 
 $md-slide-toggle-width: 36px !default;
 $md-slide-toggle-height: 24px !default;

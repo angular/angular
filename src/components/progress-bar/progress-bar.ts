@@ -14,14 +14,15 @@ import {
  * <md-progress-bar> component.
  */
 @Component({
+  moduleId: module.id,
   selector: 'md-progress-bar',
   host: {
     'role': 'progressbar',
     'aria-valuemin': '0',
     'aria-valuemax': '100',
   },
-  templateUrl: './components/progress-bar/progress-bar.html',
-  styleUrls: ['./components/progress-bar/progress-bar.css'],
+  templateUrl: 'progress-bar.html',
+  styleUrls: ['progress-bar.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MdProgressBar {

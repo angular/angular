@@ -4,7 +4,7 @@ import {TestComponentBuilder, ComponentFixture} from '@angular/compiler/testing'
 import {Component, DebugElement} from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {MdCheckbox} from './checkbox';
-import {PromiseCompleter} from '../../core/async/promise-completer';
+import {PromiseCompleter} from '@angular2-material/core/async/promise-completer';
 
 // TODO: Implement E2E tests for spacebar/click behavior for checking/unchecking
 
