@@ -21,6 +21,7 @@ import {
 import {MdRadioDispatcher} from './radio_dispatcher';
 
 
+// Re-exports.
 export {MdRadioDispatcher} from './radio_dispatcher';
 
 
@@ -59,7 +60,12 @@ export class MdRadioChange {
   },
 })
 export class MdRadioGroup implements AfterContentInit, ControlValueAccessor {
-  /** The value for the radio group. Should match currently selected button. */
+  /**
+   * Selected value for group. Should equal the value of the selected radio button if there *is*
+   * a corresponding radio button with a matching value. If there is *not* such a corresponding
+   * radio button, this value persists to be applied in case a new radio button is added with a
+   * matching value.
+   */
   private _value: any = null;
 
   /** The HTML name attribute applied to radio buttons in this group. */
@@ -71,9 +77,13 @@ export class MdRadioGroup implements AfterContentInit, ControlValueAccessor {
   /** The currently selected radio button. Should match value. */
   private _selected: MdRadioButton = null;
 
+  /** Whether the `value` has been set to its initial value. */
+  private _isInitialized: boolean = false;
+
   /** Change event subscription set up by registerOnChange (ControlValueAccessor). */
   private _changeSubscription: {unsubscribe: () => any} = null;
 
+  /** onTouch function registered via registerOnTouch (ControlValueAccessor). */
   onTouched: () => any = () => {};
 
   /** Event emitted when the group value changes. */
@@ -84,18 +94,6 @@ export class MdRadioGroup implements AfterContentInit, ControlValueAccessor {
   @ContentChildren(forwardRef(() => MdRadioButton))
   private _radios: QueryList<MdRadioButton> = null;
 
-  /**
-   * Initialize properties once content children are available.
-   * This allows us to propagate relevant attributes to associated buttons.
-   */
-  ngAfterContentInit() {
-    if (this._name == null) {
-      this.name = `md-radio-group-${_uniqueIdCounter++}`;
-    } else {
-      this._updateChildRadioNames();
-    }
-  }
-
   @Input()
   get name(): string {
     return this._name;
@@ -103,17 +101,14 @@ export class MdRadioGroup implements AfterContentInit, ControlValueAccessor {
 
   set name(value: string) {
     this._name = value;
-
     this._updateChildRadioNames();
   }
 
   /** Propagate name attribute to radio buttons. */
   private _updateChildRadioNames(): void {
-    if (this._radios != null) {
-      this._radios.forEach((radio) => {
-        radio.name = this._name;
-      });
-    }
+    (this._radios || []).forEach(radio => {
+      radio.name = this._name;
+    });
   }
 
   @Input()
@@ -137,26 +132,68 @@ export class MdRadioGroup implements AfterContentInit, ControlValueAccessor {
       this._value = newValue;
 
       this._updateSelectedRadioFromValue();
-      this._emitChangeEvent();
+
+      // Only fire a change event if this isn't the first time the value is ever set.
+      if (this._isInitialized) {
+        this._emitChangeEvent();
+      }
     }
   }
 
-  private _updateSelectedRadioFromValue(): void {
-    // Update selected if different from current value.
-    let isAlreadySelected = this._selected != null && this._selected.value == this._value;
-    if (this._radios != null && !isAlreadySelected) {
-      let matched = this._radios.filter((radio) => {
-        return radio.value == this._value;
-      });
+  @Input()
+  get selected() {
+    return this._selected;
+  }
 
-      if (matched.length == 0) {
-        // When the value of the group is cleared to null, deselect all radio button in the group.
-        if (this.value == null) {
+  set selected(selected: MdRadioButton) {
+    this._selected = selected;
+    this.value = selected ? selected.value : null;
+
+    if (selected && !selected.checked) {
+      selected.checked = true;
+    }
+  }
+
+  /**
+   * Initialize properties once content children are available.
+   * This allows us to propagate relevant attributes to associated buttons.
+   * @internal
+   */
+  ngAfterContentInit() {
+    if (!this._name) {
+      this.name = `md-radio-group-${_uniqueIdCounter++}`;
+    }
+
+    // Mark this component as initialized in AfterContentInit because the initial value can
+    // possibly be set by NgModel on MdRadioGroup, and it is possible that the OnInit of the
+    // NgModel occurs *after* the OnInit of the MdRadioGroup.
+    this._isInitialized = true;
+  }
+
+  /**
+   * Mark this group as being "touched" (for ngModel). Meant to be called by the contained
+   * radio buttons upon their blur.
+   * @internal
+   */
+  touch() {
+    if (this.onTouched) {
+      this.onTouched();
+    }
+  }
+
+  /** Updates the `selected` radio button from the internal _value state. */
+  private _updateSelectedRadioFromValue(): void {
+    // If the value already matches the selected radio, no dothing.
+    let isAlreadySelected = this._selected != null && this._selected.value == this._value;
+
+    if (this._radios != null && !isAlreadySelected) {
+      let matchingRadio = this._radios.filter(radio => radio.value == this._value)[0];
+
+      if (matchingRadio) {
+        this.selected = matchingRadio;
+      } else if (this.value == null) {
           this.selected = null;
-          this._radios.forEach(radio => radio.checked = false);
-        }
-      } else {
-        this.selected = matched[0];
+          this._radios.forEach(radio => { radio.checked = false; });
       }
     }
   }
@@ -169,38 +206,32 @@ export class MdRadioGroup implements AfterContentInit, ControlValueAccessor {
     this.change.emit(event);
   }
 
-  @Input()
-  get selected() {
-    return this._selected;
-  }
-
-  set selected(selected: MdRadioButton) {
-    if (selected) {
-      this._selected = selected;
-      this.value = selected.value;
-
-      selected.checked = true;
-    } else {
-      this._selected = null;
-      this._value = null;
-    }
-  }
-
-   /** Implemented as part of ControlValueAccessor. */
+   /** 
+    * Implemented as part of ControlValueAccessor.
+    * @internal
+    */
   writeValue(value: any) {
     this.value = value;
   }
 
-  /** Implemented as part of ControlValueAccessor. */
+  /**
+   * Implemented as part of ControlValueAccessor.
+   * @internal
+   */
   registerOnChange(fn: any) {
     if (this._changeSubscription) {
       this._changeSubscription.unsubscribe();
     }
-    this._changeSubscription = <{unsubscribe: () => any}>this.change.subscribe(
-      (changeEvent: MdRadioChange) => { fn(changeEvent.value); });
+
+    this._changeSubscription = this.change.subscribe((changeEvent: MdRadioChange) => {
+      fn(changeEvent.value);
+    });
   }
 
-  /** Implemented as part of ControlValueAccessor. */
+  /**
+   * Implemented as part of ControlValueAccessor.
+   * @internal
+   */
   registerOnTouched(fn: any) {
     this.onTouched = fn;
   }
@@ -251,39 +282,11 @@ export class MdRadioButton implements OnInit {
 
     this.radioGroup = radioGroup;
 
-    radioDispatcher.listen((name: string) => {
-      if (name == this.name) {
+    radioDispatcher.listen((id: string, name: string) => {
+      if (id != this.id && name == this.name) {
         this.checked = false;
       }
     });
-  }
-
-  ngOnInit() {
-    if (this.id == null) {
-      this.id = `md-radio-${_uniqueIdCounter++}`;
-    }
-
-    if (this.radioGroup && this._value == this.radioGroup.value) {
-      this._checked = true;
-    }
-  }
-
-  /*
-   * We use a hidden native input field to handle changes to focus state via keyboard navigation,
-   * with visual rendering done separately. The native element is kept in sync with the overall
-   * state of the component.
-   */
-  onInputFocus() {
-    this._isFocused = true;
-  }
-
-  onInputBlur() {
-    this._isFocused = false;
-  }
-
-  /** Input change handler, called only on keyboard selection. */
-  onInputChange() {
-    this.checked = true;
   }
 
   get inputId(): string {
@@ -296,16 +299,21 @@ export class MdRadioButton implements OnInit {
     return this._checked;
   }
 
-  set checked(value: boolean) {
-    if (value) {
+  set checked(newCheckedState: boolean) {
+    if (newCheckedState) {
       // Notify all radio buttons with the same name to un-check.
-      this.radioDispatcher.notify(this.name);
-
-      if (!this._checked) {
-        this._emitChangeEvent();
-      }
+      this.radioDispatcher.notify(this.id, this.name);
     }
-    this._checked = value;
+
+    if (newCheckedState != this._checked) {
+      this._emitChangeEvent();
+    }
+
+    this._checked = newCheckedState;
+
+    if (newCheckedState && this.radioGroup && this.radioGroup.value != this.value) {
+      this.radioGroup.selected = this;
+    }
   }
 
   /** MdRadioGroup reads this to assign its own value. */
@@ -323,14 +331,6 @@ export class MdRadioButton implements OnInit {
     }
   }
 
-  /** Dispatch change event with current value. */
-  private _emitChangeEvent(): void {
-    let event = new MdRadioChange();
-    event.source = this;
-    event.value = this._value;
-    this.change.emit(event);
-  }
-
   @HostBinding('class.md-radio-disabled')
   @Input()
   get disabled(): boolean {
@@ -342,6 +342,29 @@ export class MdRadioButton implements OnInit {
     this._disabled = (value != null && value !== false) ? true : null;
   }
 
+  /** @internal */
+  ngOnInit() {
+    // All radio buttons must have a unique id.
+    if (!this.id) {
+      this.id = `md-radio-${_uniqueIdCounter++}`;
+    }
+
+    // If the radio is inside of a radio group and it matches that group's value upon
+    // initialization, start off as checked.
+    if (this.radioGroup && this.radioGroup.value === this._value) {
+      this.checked = true;
+    }
+  }
+
+  /** Dispatch change event with current value. */
+  private _emitChangeEvent(): void {
+    let event = new MdRadioChange();
+    event.source = this;
+    event.value = this._value;
+    this.change.emit(event);
+  }
+
+  /** @internal */
   onClick(event: Event) {
     if (this.disabled) {
       event.preventDefault();
@@ -353,8 +376,40 @@ export class MdRadioButton implements OnInit {
       // Propagate the change one-way via the group, which will in turn mark this
       // button as checked.
       this.radioGroup.selected = this;
+      this.radioGroup.touch();
     } else {
       this.checked = true;
     }
   }
+
+  /**
+   * We use a hidden native input field to handle changes to focus state via keyboard navigation,
+   * with visual rendering done separately. The native element is kept in sync with the overall
+   * state of the component.
+   * @internal
+   */
+  onInputFocus() {
+    this._isFocused = true;
+  }
+
+  /** @internal */
+  onInputBlur() {
+    this._isFocused = false;
+    if (this.radioGroup) {
+      this.radioGroup.touch();
+    }
+  }
+
+  /**
+   * Checks the radio due to an interaction with the underlying native <input type="radio">
+   * @internal
+   */
+  onInputChange() {
+    this.checked = true;
+    if (this.radioGroup) {
+      this.radioGroup.touch();
+    }
+  }
 }
+
+export const MD_RADIO_DIRECTIVES = [MdRadioGroup, MdRadioButton];

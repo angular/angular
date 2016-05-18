@@ -1,11 +1,4 @@
-import {
-    it,
-    beforeEach,
-    inject,
-    async,
-    fakeAsync,
-    flushMicrotasks
-} from '@angular/core/testing';
+import {it, beforeEach, inject, async, fakeAsync, flushMicrotasks} from '@angular/core/testing';
 import {FORM_DIRECTIVES, NgModel, NgControl} from '@angular/common';
 import {TestComponentBuilder, ComponentFixture} from '@angular/compiler/testing';
 import {Component, DebugElement} from '@angular/core';

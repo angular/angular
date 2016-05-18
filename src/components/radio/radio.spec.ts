@@ -1,396 +1,390 @@
 import {
-  it,
-  describe,
-  expect,
-  beforeEach,
-  fakeAsync,
-  inject,
-  tick,
+    it,
+    describe,
+    beforeEach,
+    beforeEachProviders,
+    inject,
+    async,
+    fakeAsync,
+    tick
 } from '@angular/core/testing';
-import {TestComponentBuilder} from '@angular/compiler/testing';
-import {Component, DebugElement} from '@angular/core';
+import {FORM_DIRECTIVES, NgControl} from '@angular/common';
+import {TestComponentBuilder, ComponentFixture} from '@angular/compiler/testing';
+import {Component, DebugElement, provide} from '@angular/core';
 import {By} from '@angular/platform-browser';
-
-import {MdRadioButton, MdRadioGroup, MdRadioChange} from './radio';
+import {MD_RADIO_DIRECTIVES, MdRadioGroup, MdRadioButton} from './radio';
 import {MdRadioDispatcher} from './radio_dispatcher';
 
-export function main() {
-  describe('MdRadioButton', () => {
-    let builder: TestComponentBuilder;
 
-    beforeEach(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
-      builder = tcb;
-    }));
+describe('MdRadio', () => {
+  let builder: TestComponentBuilder;
+  let dispatcher: MdRadioDispatcher;
 
-    it('should have same name as radio group', () => {
-      return builder
-        .overrideTemplate(TestApp, `
-            <md-radio-group name="my_group">
-              <md-radio-button></md-radio-button>
-            </md-radio-group>`)
-        .createAsync(TestApp)
-        .then(fixture => {
-          let button = fixture.debugElement.query(By.css('md-radio-button'));
-
-          fixture.detectChanges();
-          expect(button.componentInstance.name).toBe('my_group');
-        });
-    });
-
-    it('should not allow click selection if disabled', () => {
-      return builder
-        .overrideTemplate(TestApp, '<md-radio-button disabled></md-radio-button>')
-        .createAsync(TestApp)
-        .then(fixture => {
-          let button = fixture.debugElement.query(By.css('md-radio-button'));
-
-          fixture.detectChanges();
-          expect(button.componentInstance.checked).toBe(false);
-
-          button.nativeElement.click();
-          expect(button.componentInstance.checked).toBe(false);
-        });
-    });
-
-    it('should be disabled if radio group disabled', () => {
-      return builder
-        .overrideTemplate(TestApp, `
-            <md-radio-group disabled>
-              <md-radio-button></md-radio-button>
-            </md-radio-group>`)
-        .createAsync(TestApp)
-        .then(fixture => {
-          let button = fixture.debugElement.query(By.css('md-radio-button'));
-
-          fixture.detectChanges();
-          expect(button.componentInstance.disabled).toBe(true);
-        });
-    });
-
-    it('updates parent group value when selected and value changed', () => {
-      return builder
-        .overrideTemplate(TestApp, `
-            <md-radio-group>
-              <md-radio-button value="1"></md-radio-button>
-            </md-radio-group>`)
-        .createAsync(TestApp)
-        .then(fixture => {
-          let button = fixture.debugElement.query(By.css('md-radio-button'));
-          let group = fixture.debugElement.query(By.css('md-radio-group'));
-          let radioGroupInstance = group.injector.get(MdRadioGroup);
-
-          radioGroupInstance.selected = button.componentInstance;
-          fixture.detectChanges();
-          expect(radioGroupInstance.value).toBe('1');
-
-          button.componentInstance.value = '2';
-          fixture.detectChanges();
-          expect(radioGroupInstance.value).toBe('2');
-        });
-    });
-
-    it('should be checked after input change event', () => {
-      return builder
-        .overrideTemplate(TestApp, '<md-radio-button></md-radio-button>')
-        .createAsync(TestApp)
-        .then(fixture => {
-          let button = fixture.debugElement.query(By.css('md-radio-button'));
-          let input = button.query(By.css('input'));
-
-          fixture.detectChanges();
-          expect(button.componentInstance.checked).toBe(false);
-
-          let event = createEvent('change');
-          input.nativeElement.dispatchEvent(event);
-          expect(button.componentInstance.checked).toBe(true);
-        });
-    });
-
-    it('should emit event when checked', () => {
-      return builder
-        .overrideTemplate(TestApp, '<md-radio-button></md-radio-button>')
-        .createAsync(TestApp)
-        .then(fixture => {
-          fakeAsync(function() {
-            let button = fixture.debugElement.query(By.css('md-radio-button'));
-            let changeEvent: MdRadioChange = null;
-            button.componentInstance.change.subscribe((evt: MdRadioChange) => {
-              changeEvent = evt;
-            });
-            button.componentInstance.checked = true;
-            fixture.detectChanges();
-            tick();
-
-            expect(changeEvent).not.toBe(null);
-            expect(changeEvent.source).toBe(button.componentInstance);
-          });
-        });
-    });
-
-    it('should be focusable', () => {
-      return builder
-        .overrideTemplate(TestApp, '<md-radio-button></md-radio-button>')
-        .createAsync(TestApp)
-        .then(fixture => {
-          let button = fixture.debugElement.query(By.css('md-radio-button'));
-          let input = button.query(By.css('input'));
-
-          fixture.detectChanges();
-          expect(button.nativeElement.classList.contains('md-radio-focused')).toBe(false);
-
-          let event = createEvent('focus');
-          input.nativeElement.dispatchEvent(event);
-          fixture.detectChanges();
-          expect(button.nativeElement.classList.contains('md-radio-focused')).toBe(true);
-
-          event = createEvent('blur');
-          input.nativeElement.dispatchEvent(event);
-          fixture.detectChanges();
-          expect(button.nativeElement.classList.contains('md-radio-focused')).toBe(false);
-        });
-    });
-  });
-
-  describe('MdRadioDispatcher', () => {
-    let builder: TestComponentBuilder;
-    let dispatcher: MdRadioDispatcher;
-
-    beforeEach(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
-      builder = tcb;
+  beforeEachProviders(() => [
+    provide(MdRadioDispatcher, {useFactory: () => {
       dispatcher = new MdRadioDispatcher();
+      return dispatcher;
+    }})
+  ]);
+
+  beforeEach(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
+    builder = tcb;
+  }));
+
+  describe('inside of a group', () => {
+    let fixture: ComponentFixture<RadiosInsideRadioGroup>;
+    let groupDebugElement: DebugElement;
+    let groupNativeElement: HTMLElement;
+    let radioDebugElements: DebugElement[];
+    let radioNativeElements: HTMLElement[];
+    let groupInstance: MdRadioGroup;
+    let radioInstances: MdRadioButton[];
+    let testComponent: RadiosInsideRadioGroup;
+
+    beforeEach(async(() => {
+      builder.createAsync(RadiosInsideRadioGroup).then(f => {
+        fixture = f;
+        fixture.detectChanges();
+
+        testComponent = fixture.debugElement.componentInstance;
+
+        groupDebugElement = fixture.debugElement.query(By.directive(MdRadioGroup));
+        groupNativeElement = groupDebugElement.nativeElement;
+        groupInstance = groupDebugElement.injector.get(MdRadioGroup);
+
+        radioDebugElements = fixture.debugElement.queryAll(By.directive(MdRadioButton));
+        radioNativeElements = radioDebugElements.map(debugEl => debugEl.nativeElement);
+        radioInstances = radioDebugElements.map(debugEl => debugEl.componentInstance);
+      });
     }));
 
-    it('notifies listeners', () => {
-      let notificationCount = 0;
-      const numListeners = 2;
-
-      for (let i = 0; i < numListeners; i++) {
-        dispatcher.listen(() => {
-          notificationCount++;
-        });
+    it('should set individual radio names based on the group name', () => {
+      expect(groupInstance.name).toBeTruthy();
+      for (let radio of radioInstances) {
+        expect(radio.name).toBe(groupInstance.name);
       }
-
-      dispatcher.notify('hello');
-
-      expect(notificationCount).toBe(numListeners);
     });
-  });
 
-  describe('MdRadioGroup', () => {
-    let builder: TestComponentBuilder;
+    it('should disable click interaction when the group is disabled', () => {
+      testComponent.isGroupDisabled = true;
+      fixture.detectChanges();
 
-    beforeEach(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
-      builder = tcb;
+      radioNativeElements[0].click();
+      expect(radioInstances[0].checked).toBe(false);
+    });
+
+    it('should disable each individual radio when the group is disabled', () => {
+      testComponent.isGroupDisabled = true;
+      fixture.detectChanges();
+
+      for (let radio of radioInstances) {
+        expect(radio.disabled).toBe(true);
+      }
+    });
+
+    it('should update the group value when one of the radios changes', () => {
+      expect(groupInstance.value).toBeFalsy();
+
+      radioInstances[0].checked = true;
+      fixture.detectChanges();
+
+      expect(groupInstance.value).toBe('fire');
+      expect(groupInstance.selected).toBe(radioInstances[0]);
+    });
+
+    it('should update the group and radios when one of the radios is clicked', () => {
+      expect(groupInstance.value).toBeFalsy();
+
+      radioNativeElements[0].click();
+      fixture.detectChanges();
+
+      expect(groupInstance.value).toBe('fire');
+      expect(groupInstance.selected).toBe(radioInstances[0]);
+      expect(radioInstances[0].checked).toBe(true);
+      expect(radioInstances[1].checked).toBe(false);
+
+      radioNativeElements[1].click();
+      fixture.detectChanges();
+
+      expect(groupInstance.value).toBe('water');
+      expect(groupInstance.selected).toBe(radioInstances[1]);
+      expect(radioInstances[0].checked).toBe(false);
+      expect(radioInstances[1].checked).toBe(true);
+    });
+
+    it('should check a radio upon interaction with the underlying native radio button', () => {
+      let nativeRadioInput = <HTMLElement> radioNativeElements[0].querySelector('input');
+
+      nativeRadioInput.click();
+      fixture.detectChanges();
+
+      expect(radioInstances[0].checked).toBe(true);
+      expect(groupInstance.value).toBe('fire');
+      expect(groupInstance.selected).toBe(radioInstances[0]);
+    });
+
+    it('should emit a change event from radio buttons', fakeAsync(() => {
+      expect(radioInstances[0].checked).toBe(false);
+
+      let changeSpy = jasmine.createSpy('radio change listener');
+      radioInstances[0].change.subscribe(changeSpy);
+
+      radioInstances[0].checked = true;
+      fixture.detectChanges();
+      tick();
+      expect(changeSpy).toHaveBeenCalled();
+
+      radioInstances[0].checked = false;
+      fixture.detectChanges();
+      tick();
+      expect(changeSpy).toHaveBeenCalledTimes(2);
     }));
 
-    it('can select by value', () => {
-      return builder
-        .overrideTemplate(TestApp, `
-            <md-radio-group>
-              <md-radio-button value="1"></md-radio-button>
-              <md-radio-button value="2"></md-radio-button>
-            </md-radio-group>`)
-        .createAsync(TestApp)
-        .then(fixture => {
-          let buttons = fixture.debugElement.queryAll(By.css('md-radio-button'));
-          let group = fixture.debugElement.query(By.css('md-radio-group'));
-          let radioGroupInstance = group.injector.get(MdRadioGroup);
+    it('should emit a change event from the radio group', fakeAsync(() => {
+      expect(groupInstance.value).toBeFalsy();
 
-          fixture.detectChanges();
-          expect(radioGroupInstance.selected).toBe(null);
+      let changeSpy = jasmine.createSpy('radio-group change listener');
+      groupInstance.change.subscribe(changeSpy);
 
-          radioGroupInstance.value = '2';
+      groupInstance.value = 'fire';
+      fixture.detectChanges();
+      tick();
+      expect(changeSpy).toHaveBeenCalled();
 
-          fixture.detectChanges();
-          expect(radioGroupInstance.selected).toBe(buttons[1].componentInstance);
-        });
+      groupInstance.value = 'water';
+      fixture.detectChanges();
+      tick();
+      expect(changeSpy).toHaveBeenCalledTimes(2);
+    }));
+
+    // TODO(jelbourn): test this in an e2e test with *real* focus, rather than faking
+    // a focus / blur event.
+    it('should focus individual radio buttons', () => {
+      let nativeRadioInput = <HTMLElement> radioNativeElements[0].querySelector('input');
+
+      expect(nativeRadioInput.classList).not.toContain('md-radio-focused');
+
+      dispatchFocusChangeEvent('focus', nativeRadioInput);
+      fixture.detectChanges();
+
+      expect(radioNativeElements[0].classList).toContain('md-radio-focused');
+
+      dispatchFocusChangeEvent('blur', nativeRadioInput);
+      fixture.detectChanges();
+
+      expect(radioNativeElements[0].classList).not.toContain('md-radio-focused');
     });
 
-    it('should select uniquely', () => {
-      return builder
-        .overrideTemplate(TestApp, `
-            <md-radio-group>
-              <md-radio-button></md-radio-button>
-              <md-radio-button></md-radio-button>
-            </md-radio-group>`)
-        .createAsync(TestApp)
-        .then(fixture => {
-          let buttons = fixture.debugElement.queryAll(By.css('md-radio-button'));
-          let group = fixture.debugElement.query(By.css('md-radio-group'));
-          let radioGroupInstance = group.injector.get(MdRadioGroup);
+    it('should update the group and radios when updating the group value', () => {
+      expect(groupInstance.value).toBeFalsy();
 
-          fixture.detectChanges();
-          expect(radioGroupInstance.selected).toBe(null);
+      testComponent.groupValue = 'fire';
+      fixture.detectChanges();
 
-          radioGroupInstance.selected = buttons[0].componentInstance;
-          fixture.detectChanges();
-          expect(isSinglySelected(buttons[0], buttons)).toBe(true);
+      expect(groupInstance.value).toBe('fire');
+      expect(groupInstance.selected).toBe(radioInstances[0]);
+      expect(radioInstances[0].checked).toBe(true);
+      expect(radioInstances[1].checked).toBe(false);
 
-          radioGroupInstance.selected = buttons[1].componentInstance;
-          fixture.detectChanges();
-          expect(isSinglySelected(buttons[1], buttons)).toBe(true);
-        });
+      testComponent.groupValue = 'water';
+      fixture.detectChanges();
+
+      expect(groupInstance.value).toBe('water');
+      expect(groupInstance.selected).toBe(radioInstances[1]);
+      expect(radioInstances[0].checked).toBe(false);
+      expect(radioInstances[1].checked).toBe(true);
     });
 
-    it('should emit event when value changes', () => {
-      return builder
-        .overrideTemplate(TestApp, `
-            <md-radio-group>
-              <md-radio-button></md-radio-button>
-              <md-radio-button></md-radio-button>
-            </md-radio-group>`)
-        .createAsync(TestApp)
-        .then(fixture => {
-          fakeAsync(function() {
-            let buttons = fixture.debugElement.queryAll(By.css('md-radio-button'));
-            let group = fixture.debugElement.query(By.css('md-radio-group'));
-            let radioGroupInstance = group.injector.get(MdRadioGroup);
+    it('should deselect all of the checkboxes when the group value is cleared', () => {
+      radioInstances[0].checked = true;
+      fixture.detectChanges();
 
-            let changeEvent: MdRadioChange = null;
-            radioGroupInstance.change.subscribe((evt: MdRadioChange) => {
-              changeEvent = evt;
-            });
+      expect(groupInstance.value).toBeTruthy();
 
-            radioGroupInstance.selected = buttons[1].componentInstance;
-            fixture.detectChanges();
-            tick();
-
-            expect(changeEvent).not.toBe(null);
-            expect(changeEvent.source).toBe(buttons[1].componentInstance);
-          });
-        });
+      groupInstance.value = null;
+      fixture.detectChanges();
+      expect(radioInstances.every(radio => !radio.checked)).toBe(true);
     });
-
-    it('should bind value to model without initial value', () => {
-      return builder
-        .overrideTemplate(TestApp, `
-            <md-radio-group  [(ngModel)]="choice">
-              <md-radio-button [value]="0"></md-radio-button>
-              <md-radio-button [value]="1"></md-radio-button>
-            </md-radio-group>`)
-        .createAsync(TestApp)
-        .then(fixture => {
-          fakeAsync(function() {
-            let buttons = fixture.debugElement.queryAll(By.css('md-radio-button'));
-            let group = fixture.debugElement.query(By.css('md-radio-group'));
-            let radioGroupInstance = group.injector.get(MdRadioGroup);
-
-            fixture.detectChanges();
-            expect(buttons[0].componentInstance.checked).toBe(false);
-            expect(buttons[1].componentInstance.checked).toBe(false);
-            expect(fixture.componentInstance.choice).toBe(undefined);
-
-            radioGroupInstance.selected = buttons[0].componentInstance;
-            fixture.detectChanges();
-            expect(isSinglySelected(buttons[0], buttons)).toBe(true);
-            expect(fixture.componentInstance.choice).toBe(0);
-
-            radioGroupInstance.selected = buttons[1].componentInstance;
-            fixture.detectChanges();
-            expect(isSinglySelected(buttons[1], buttons)).toBe(true);
-            expect(fixture.componentInstance.choice).toBe(1);
-          });
-        });
-    });
-
-    it('should bind value to model with initial value', () => {
-      return builder
-        .overrideTemplate(TestAppWithInitialValue, `
-            <md-radio-group  [(ngModel)]="choice">
-              <md-radio-button [value]="0"></md-radio-button>
-              <md-radio-button [value]="1"></md-radio-button>
-            </md-radio-group>`)
-        .createAsync(TestAppWithInitialValue)
-        .then(fixture => {
-          fakeAsync(function() {
-            let buttons = fixture.debugElement.queryAll(By.css('md-radio-button'));
-            let group = fixture.debugElement.query(By.css('md-radio-group'));
-            let radioGroupInstance = group.injector.get(MdRadioGroup);
-
-            fixture.detectChanges();
-            expect(isSinglySelected(buttons[1], buttons)).toBe(true);
-            expect(fixture.componentInstance.choice).toBe(1);
-
-            radioGroupInstance.selected = buttons[0].componentInstance;
-            fixture.detectChanges();
-            expect(isSinglySelected(buttons[0], buttons)).toBe(true);
-            expect(fixture.componentInstance.choice).toBe(0);
-
-            radioGroupInstance.selected = buttons[1].componentInstance;
-            fixture.detectChanges();
-            expect(isSinglySelected(buttons[1], buttons)).toBe(true);
-            expect(fixture.componentInstance.choice).toBe(1);
-          });
-        });
-    });
-
-    it('should deselect all buttons when model is null or undefined', () => {
-      return builder
-          .overrideTemplate(TestAppWithInitialValue, `
-            <md-radio-group [ngModel]="choice">
-              <md-radio-button [value]="0"></md-radio-button>
-              <md-radio-button [value]="1"></md-radio-button>
-            </md-radio-group>
-          `)
-          .createAsync(TestAppWithInitialValue)
-          .then(fixture => {
-            let buttons = fixture.debugElement.queryAll(By.css('md-radio-button'));
-
-            fixture.componentInstance.choice = 0;
-            fixture.detectChanges();
-            expect(isSinglySelected(buttons[0], buttons)).toBe(true);
-
-            fixture.componentInstance.choice = null;
-            fixture.detectChanges();
-            expect(allDeselected(buttons)).toBe(true);
-          });
-    });
-
   });
-}
 
-/** Checks whether a given button is uniquely selected from a group of buttons. */
-function isSinglySelected(button: DebugElement, buttons: DebugElement[]): boolean {
-  let component = button.componentInstance;
-  let otherSelectedButtons =
-      buttons.filter((e: DebugElement) =>
-          e.componentInstance != component && e.componentInstance.checked);
-  return component.checked && otherSelectedButtons.length == 0;
-}
+  describe('group with ngModel', () => {
+    let fixture: ComponentFixture<RadioGroupWithNgModel>;
+    let groupDebugElement: DebugElement;
+    let groupNativeElement: HTMLElement;
+    let radioDebugElements: DebugElement[];
+    let radioNativeElements: HTMLElement[];
+    let groupInstance: MdRadioGroup;
+    let radioInstances: MdRadioButton[];
+    let testComponent: RadioGroupWithNgModel;
+    let groupNgControl: NgControl;
 
-function allDeselected(buttons: DebugElement[]): boolean {
-  return buttons.every(debugEl => !debugEl.componentInstance.checked);
-}
+    beforeEach(async(() => {
+      builder.createAsync(RadioGroupWithNgModel).then(f => {
+        fixture = f;
+        fixture.detectChanges();
 
-/** Browser-agnostic function for creating an event. */
-function createEvent(name: string): Event {
-  let ev: Event;
-  try {
-    ev = createEvent(name);
-  } catch (e) {
-    ev = document.createEvent('Event');
-    ev.initEvent(name, true, true);
-  }
-  return ev;
-}
+        testComponent = fixture.debugElement.componentInstance;
+
+        groupDebugElement = fixture.debugElement.query(By.directive(MdRadioGroup));
+        groupNativeElement = groupDebugElement.nativeElement;
+        groupInstance = groupDebugElement.injector.get(MdRadioGroup);
+        groupNgControl = groupDebugElement.injector.get(NgControl);
+
+        radioDebugElements = fixture.debugElement.queryAll(By.directive(MdRadioButton));
+        radioNativeElements = radioDebugElements.map(debugEl => debugEl.nativeElement);
+        radioInstances = radioDebugElements.map(debugEl => debugEl.componentInstance);
+      });
+    }));
+
+    it('should have the correct ngControl state initially and after interaction', fakeAsync(() => {
+      // The control should start off valid, pristine, and untouched.
+      expect(groupNgControl.valid).toBe(true);
+      expect(groupNgControl.pristine).toBe(true);
+      expect(groupNgControl.touched).toBe(false);
+
+      // After changing the value programmatically, the control should become dirty (not pristine),
+      // but remain untouched.
+      radioInstances[1].checked = true;
+      fixture.detectChanges();
+      tick();
+
+      expect(groupNgControl.valid).toBe(true);
+      expect(groupNgControl.pristine).toBe(false);
+      expect(groupNgControl.touched).toBe(false);
+
+      // After a user interaction occurs (such as a click), the control should remain dirty and
+      // now also be touched.
+      radioNativeElements[2].click();
+      fixture.detectChanges();
+      tick();
+
+      expect(groupNgControl.valid).toBe(true);
+      expect(groupNgControl.pristine).toBe(false);
+      expect(groupNgControl.touched).toBe(true);
+    }));
+
+    it('should update the ngModel value when selecting a radio button', fakeAsync(() => {
+      radioInstances[1].checked = true;
+      fixture.detectChanges();
+
+      tick();
+
+      expect(testComponent.modelValue).toBe('chocolate');
+    }));
+  });
+
+  describe('as standalone', () => {
+    let fixture: ComponentFixture<StandaloneRadioButtons>;
+    let radioDebugElements: DebugElement[];
+    let seasonRadioInstances: MdRadioButton[];
+    let weatherRadioInstances: MdRadioButton[];
+    let testComponent: StandaloneRadioButtons;
+
+    beforeEach(async(() => {
+      builder.createAsync(StandaloneRadioButtons).then(f => {
+        fixture = f;
+        fixture.detectChanges();
+
+        testComponent = fixture.debugElement.componentInstance;
+
+        radioDebugElements = fixture.debugElement.queryAll(By.directive(MdRadioButton));
+        seasonRadioInstances = radioDebugElements
+            .filter(debugEl => debugEl.componentInstance.name == 'season')
+            .map(debugEl => debugEl.componentInstance);
+        weatherRadioInstances = radioDebugElements
+            .filter(debugEl => debugEl.componentInstance.name == 'weather')
+            .map(debugEl => debugEl.componentInstance);
+      });
+    }));
+
+    it('should uniquely select radios by a name', () => {
+      seasonRadioInstances[0].checked = true;
+      weatherRadioInstances[1].checked = true;
+
+      fixture.detectChanges();
+      expect(seasonRadioInstances[0].checked).toBe(true);
+      expect(seasonRadioInstances[1].checked).toBe(false);
+      expect(seasonRadioInstances[2].checked).toBe(false);
+      expect(weatherRadioInstances[0].checked).toBe(false);
+      expect(weatherRadioInstances[1].checked).toBe(true);
+      expect(weatherRadioInstances[2].checked).toBe(false);
+
+      seasonRadioInstances[1].checked = true;
+      fixture.detectChanges();
+      expect(seasonRadioInstances[0].checked).toBe(false);
+      expect(seasonRadioInstances[1].checked).toBe(true);
+      expect(seasonRadioInstances[2].checked).toBe(false);
+      expect(weatherRadioInstances[0].checked).toBe(false);
+      expect(weatherRadioInstances[1].checked).toBe(true);
+      expect(weatherRadioInstances[2].checked).toBe(false);
+
+      weatherRadioInstances[2].checked = true;
+      expect(seasonRadioInstances[0].checked).toBe(false);
+      expect(seasonRadioInstances[1].checked).toBe(true);
+      expect(seasonRadioInstances[2].checked).toBe(false);
+      expect(weatherRadioInstances[0].checked).toBe(false);
+      expect(weatherRadioInstances[1].checked).toBe(false);
+      expect(weatherRadioInstances[2].checked).toBe(true);
+    });
+  });
+});
 
 
-/** Test component. */
 @Component({
-  directives: [MdRadioButton, MdRadioGroup],
-  providers: [MdRadioDispatcher],
-  template: ''
+  directives: [MD_RADIO_DIRECTIVES],
+  template: `
+  <md-radio-group [disabled]="isGroupDisabled" [value]="groupValue">
+    <md-radio-button value="fire">Charmander</md-radio-button>
+    <md-radio-button value="water">Squirtle</md-radio-button>
+    <md-radio-button value="leaf">Bulbasaur</md-radio-button>
+  </md-radio-group>
+  `
 })
-class TestApp {
-  choice: number;
+class RadiosInsideRadioGroup {
+  isGroupDisabled: boolean = false;
+  groupValue: string = null;
 }
 
-/** Test component. */
+
 @Component({
-  directives: [MdRadioButton, MdRadioGroup],
-  providers: [MdRadioDispatcher],
-  template: ''
+  directives: [MD_RADIO_DIRECTIVES],
+  template: `
+    <md-radio-button name="season" value="spring">Spring</md-radio-button>
+    <md-radio-button name="season" value="summer">Summer</md-radio-button>
+    <md-radio-button name="season" value="autum">Autumn</md-radio-button>
+    
+    <md-radio-button name="weather" value="warm">Spring</md-radio-button>
+    <md-radio-button name="weather" value="hot">Summer</md-radio-button>
+    <md-radio-button name="weather" value="cool">Autumn</md-radio-button>
+  `
 })
-class TestAppWithInitialValue {
-  choice: number = 1;
+class StandaloneRadioButtons { }
+
+
+@Component({
+  directives: [MD_RADIO_DIRECTIVES, FORM_DIRECTIVES],
+  template: `
+  <md-radio-group [(ngModel)]="modelValue">
+    <md-radio-button value="vanilla">Vanilla</md-radio-button>
+    <md-radio-button value="chocolate">Chocolate</md-radio-button>
+    <md-radio-button value="strawberry">Strawberry</md-radio-button>
+  </md-radio-group>
+  `
+})
+class RadioGroupWithNgModel {
+  modelValue: string;
+}
+
+// TODO(jelbourn): remove eveything below when Angular supports faking events.
+
+
+/**
+ * Dispatches a focus change event from an element. 
+ * @param eventName Name of the event, either 'focus' or 'blur'.
+ * @param element The element from which the event will be dispatched.
+ */
+function dispatchFocusChangeEvent(eventName: string, element: HTMLElement): void {
+  let event  = document.createEvent('Event');
+  event.initEvent(eventName, true, true);
+  element.dispatchEvent(event);
 }
