@@ -1,0 +1,28 @@
+{
+  "name": "@angular2-material/slide-toggle",
+  "version": "2.0.0-alpha.5",
+  "description": "Angular 2 Material Slide Toggle",
+  "main": "./slide-toggle.js",
+  "typings": "./slide-toggle.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/angular/material2.git"
+  },
+  "keywords": [
+    "angular",
+    "material",
+    "material design",
+    "components",
+    "slide-toggle",
+    "switch",
+    "toggle"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/angular/material2/issues"
+  },
+  "homepage": "https://github.com/angular/material2#readme",
+  "peerDependencies": {
+    "@angular2-material/core": "2.0.0-alpha.4"
+  }
+}
