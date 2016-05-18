@@ -1,0 +1,14 @@
+<div>
+
+  <md-slide-toggle color="primary" [(ngModel)]="firstToggle">
+    Default Slide Toggle
+  </md-slide-toggle>
+
+  <md-slide-toggle [(ngModel)]="firstToggle" disabled>
+    Disabled Slide Toggle
+  </md-slide-toggle>
+
+  <md-slide-toggle [disabled]="firstToggle">
+    Disable Bound
+  </md-slide-toggle>
+</div>

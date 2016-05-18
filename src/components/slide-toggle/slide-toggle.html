@@ -1,0 +1,22 @@
+<label class="md-slide-toggle-label">
+  <div class="md-slide-toggle-container">
+    <div class="md-slide-toggle-bar"></div>
+    <div class="md-slide-toggle-thumb-container">
+      <div class="md-slide-toggle-thumb"></div>
+    </div>
+
+    <input #input class="md-slide-toggle-checkbox" type="checkbox"
+           [id]="getInputId()"
+           [tabIndex]="tabIndex"
+           [checked]="checked"
+           [disabled]="disabled"
+           [attr.name]="name"
+           [attr.aria-label]="ariaLabel"
+           [attr.aria-labelledby]="ariaLabelledby"
+           (blur)="onTouched()"
+           (change)="onChangeEvent()">
+  </div>
+  <span class="md-slide-toggle-content">
+    <ng-content></ng-content>
+  </span>
+</label>

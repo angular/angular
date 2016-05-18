@@ -1,0 +1,153 @@
+@import "../../core/style/variables";
+@import "../../core/style/mixins";
+@import "../../core/style/elevation";
+
+//TODO(): remove the default theme.
+@import "../../core/style/default-theme";
+
+$md-slide-toggle-width: 36px !default;
+$md-slide-toggle-height: 24px !default;
+$md-slide-toggle-bar-height: 14px !default;
+$md-slide-toggle-thumb-size: 20px !default;
+$md-slide-toggle-margin: 16px !default;
+
+@mixin md-switch-checked($palette) {
+  .md-slide-toggle-thumb {
+    background-color: md-color($palette);
+  }
+
+  .md-slide-toggle-bar {
+    background-color: md-color($palette, 0.5);
+  }
+}
+
+:host {
+  display: flex;
+  height: $md-slide-toggle-height;
+
+  margin: $md-slide-toggle-margin 0;
+  line-height: $md-slide-toggle-height;
+
+  white-space: nowrap;
+  user-select: none;
+
+  outline: none;
+
+  &.md-checked {
+    @include md-switch-checked($md-accent);
+
+    &.md-primary {
+      @include md-switch-checked($md-primary);
+    }
+
+    &.md-warn {
+      @include md-switch-checked($md-warn);
+    }
+
+    .md-slide-toggle-thumb-container {
+      transform: translate3d(100%, 0, 0);
+    }
+  }
+
+  &.md-disabled {
+
+    .md-slide-toggle-label, .md-slide-toggle-container {
+      cursor: default;
+    }
+
+    .md-slide-toggle-thumb {
+      // The thumb of the slide-toggle always uses the hue 400 of the grey palette in dark or light themes.
+      // Since this is very specific to the slide-toggle component, we're not providing
+      // it in the background palette.
+      background-color: md-color($md-grey, 400);
+    }
+    .md-slide-toggle-bar {
+      background-color: md-color($md-foreground, divider);
+    }
+  }
+}
+
+// The label is our root container for the slide-toggle / switch indicator and label text.
+// It has to be a label, to support accessibility for the visual hidden input.
+.md-slide-toggle-label {
+  display: flex;
+  flex: 1;
+
+  cursor: pointer;
+}
+
+// Container for the composition of the slide-toggle / switch indicator.
+.md-slide-toggle-container {
+  cursor: grab;
+  width: $md-slide-toggle-width;
+  height: $md-slide-toggle-height;
+
+  position: relative;
+  user-select: none;
+
+  margin-right: 8px;
+}
+
+// The thumb container is responsible for the dragging functionality.
+// It moves around and holds the actual circle as a thumb.
+.md-slide-toggle-thumb-container {
+  position: absolute;
+  top: $md-slide-toggle-height / 2 - $md-slide-toggle-thumb-size / 2;
+  left: 0;
+  z-index: 1;
+
+  width: $md-slide-toggle-width - $md-slide-toggle-thumb-size;
+
+  transform: translate3d(0, 0, 0);
+
+  transition: $swift-linear;
+  transition-property: transform;
+}
+
+// The thumb will be elevated from the slide-toggle bar.
+// Also the thumb is bound to its parent thumb-container, which manages the movement of the thumb.
+.md-slide-toggle-thumb {
+  position: absolute;
+  margin: 0;
+  left: 0;
+  top: 0;
+
+  height: $md-slide-toggle-thumb-size;
+  width: $md-slide-toggle-thumb-size;
+  border-radius: 50%;
+
+  background-color: md-color($md-background, background);
+  @include md-elevation(1);
+}
+
+// Horizontal bar for the slide-toggle.
+// The slide-toggle bar is shown behind the thumb container.
+.md-slide-toggle-bar {
+  position: absolute;
+  left: 1px;
+  top: $md-slide-toggle-height / 2 - $md-slide-toggle-bar-height / 2;
+
+  width: $md-slide-toggle-width - 2px;
+  height: $md-slide-toggle-bar-height;
+
+  // The bar of the slide-toggle always uses the hue 500 of the grey palette in dark or light themes.
+  // Since this is very specific to the slide-toggle component, we're not providing
+  // it in the background palette.
+  background-color: md-color($md-grey, 500);
+
+  border-radius: 8px;
+}
+
+// The slide toggle shows a visually hidden checkbox inside of the component.
+// This checkbox allows us to take advantage of the browsers support.
+// Like accessibility and keyboard interaction.
+.md-slide-toggle-checkbox {
+  @include md-visually-hidden();
+}
+
+.md-slide-toggle-bar,
+.md-slide-toggle-thumb {
+  transition: $swift-linear;
+  transition-property: background-color;
+  transition-delay: 0.05s;
+}
