@@ -22,8 +22,8 @@ export function main() {
       builder = tcb;
     }));
 
-    it('should have same name as radio group', (done: () => void) => {
-      builder
+    it('should have same name as radio group', () => {
+      return builder
         .overrideTemplate(TestApp, `
             <md-radio-group name="my_group">
               <md-radio-button></md-radio-button>
@@ -34,11 +34,11 @@ export function main() {
 
           fixture.detectChanges();
           expect(button.componentInstance.name).toBe('my_group');
-        }).then(done);
+        });
     });
 
-    it('should not allow click selection if disabled', (done: () => void) => {
-      builder
+    it('should not allow click selection if disabled', () => {
+      return builder
         .overrideTemplate(TestApp, '<md-radio-button disabled></md-radio-button>')
         .createAsync(TestApp)
         .then(fixture => {
@@ -49,11 +49,11 @@ export function main() {
 
           button.nativeElement.click();
           expect(button.componentInstance.checked).toBe(false);
-        }).then(done);
+        });
     });
 
-    it('should be disabled if radio group disabled', (done: () => void) => {
-      builder
+    it('should be disabled if radio group disabled', () => {
+      return builder
         .overrideTemplate(TestApp, `
             <md-radio-group disabled>
               <md-radio-button></md-radio-button>
@@ -64,11 +64,11 @@ export function main() {
 
           fixture.detectChanges();
           expect(button.componentInstance.disabled).toBe(true);
-        }).then(done);
+        });
     });
 
-    it('updates parent group value when selected and value changed', (done: () => void) => {
-      builder
+    it('updates parent group value when selected and value changed', () => {
+      return builder
         .overrideTemplate(TestApp, `
             <md-radio-group>
               <md-radio-button value="1"></md-radio-button>
@@ -86,11 +86,11 @@ export function main() {
           button.componentInstance.value = '2';
           fixture.detectChanges();
           expect(radioGroupInstance.value).toBe('2');
-        }).then(done);
+        });
     });
 
-    it('should be checked after input change event', (done: () => void) => {
-      builder
+    it('should be checked after input change event', () => {
+      return builder
         .overrideTemplate(TestApp, '<md-radio-button></md-radio-button>')
         .createAsync(TestApp)
         .then(fixture => {
@@ -103,11 +103,11 @@ export function main() {
           let event = createEvent('change');
           input.nativeElement.dispatchEvent(event);
           expect(button.componentInstance.checked).toBe(true);
-        }).then(done);
+        });
     });
 
-    it('should emit event when checked', (done: () => void) => {
-      builder
+    it('should emit event when checked', () => {
+      return builder
         .overrideTemplate(TestApp, '<md-radio-button></md-radio-button>')
         .createAsync(TestApp)
         .then(fixture => {
@@ -124,11 +124,11 @@ export function main() {
             expect(changeEvent).not.toBe(null);
             expect(changeEvent.source).toBe(button.componentInstance);
           });
-        }).then(done);
+        });
     });
 
-    it('should be focusable', (done: () => void) => {
-      builder
+    it('should be focusable', () => {
+      return builder
         .overrideTemplate(TestApp, '<md-radio-button></md-radio-button>')
         .createAsync(TestApp)
         .then(fixture => {
@@ -147,7 +147,7 @@ export function main() {
           input.nativeElement.dispatchEvent(event);
           fixture.detectChanges();
           expect(button.nativeElement.classList.contains('md-radio-focused')).toBe(false);
-        }).then(done);
+        });
     });
   });
 
@@ -183,8 +183,8 @@ export function main() {
       builder = tcb;
     }));
 
-    it('can select by value', (done: () => void) => {
-      builder
+    it('can select by value', () => {
+      return builder
         .overrideTemplate(TestApp, `
             <md-radio-group>
               <md-radio-button value="1"></md-radio-button>
@@ -203,11 +203,11 @@ export function main() {
 
           fixture.detectChanges();
           expect(radioGroupInstance.selected).toBe(buttons[1].componentInstance);
-        }).then(done);
+        });
     });
 
-    it('should select uniquely', (done: () => void) => {
-      builder
+    it('should select uniquely', () => {
+      return builder
         .overrideTemplate(TestApp, `
             <md-radio-group>
               <md-radio-button></md-radio-button>
@@ -229,11 +229,11 @@ export function main() {
           radioGroupInstance.selected = buttons[1].componentInstance;
           fixture.detectChanges();
           expect(isSinglySelected(buttons[1], buttons)).toBe(true);
-        }).then(done);
+        });
     });
 
-    it('should emit event when value changes', (done: () => void) => {
-      builder
+    it('should emit event when value changes', () => {
+      return builder
         .overrideTemplate(TestApp, `
             <md-radio-group>
               <md-radio-button></md-radio-button>
@@ -258,11 +258,11 @@ export function main() {
             expect(changeEvent).not.toBe(null);
             expect(changeEvent.source).toBe(buttons[1].componentInstance);
           });
-        }).then(done);
+        });
     });
 
-    it('should bind value to model without initial value', (done: () => void) => {
-      builder
+    it('should bind value to model without initial value', () => {
+      return builder
         .overrideTemplate(TestApp, `
             <md-radio-group  [(ngModel)]="choice">
               <md-radio-button [value]="0"></md-radio-button>
@@ -290,11 +290,11 @@ export function main() {
             expect(isSinglySelected(buttons[1], buttons)).toBe(true);
             expect(fixture.componentInstance.choice).toBe(1);
           });
-        }).then(done);
+        });
     });
 
-    it('should bind value to model with initial value', (done: () => void) => {
-      builder
+    it('should bind value to model with initial value', () => {
+      return builder
         .overrideTemplate(TestAppWithInitialValue, `
             <md-radio-group  [(ngModel)]="choice">
               <md-radio-button [value]="0"></md-radio-button>
@@ -321,7 +321,29 @@ export function main() {
             expect(isSinglySelected(buttons[1], buttons)).toBe(true);
             expect(fixture.componentInstance.choice).toBe(1);
           });
-        }).then(done);
+        });
+    });
+
+    it('should deselect all buttons when model is null or undefined', () => {
+      return builder
+          .overrideTemplate(TestAppWithInitialValue, `
+            <md-radio-group [ngModel]="choice">
+              <md-radio-button [value]="0"></md-radio-button>
+              <md-radio-button [value]="1"></md-radio-button>
+            </md-radio-group>
+          `)
+          .createAsync(TestAppWithInitialValue)
+          .then(fixture => {
+            let buttons = fixture.debugElement.queryAll(By.css('md-radio-button'));
+
+            fixture.componentInstance.choice = 0;
+            fixture.detectChanges();
+            expect(isSinglySelected(buttons[0], buttons)).toBe(true);
+
+            fixture.componentInstance.choice = null;
+            fixture.detectChanges();
+            expect(allDeselected(buttons)).toBe(true);
+          });
     });
 
   });
@@ -334,6 +356,10 @@ function isSinglySelected(button: DebugElement, buttons: DebugElement[]): boolea
       buttons.filter((e: DebugElement) =>
           e.componentInstance != component && e.componentInstance.checked);
   return component.checked && otherSelectedButtons.length == 0;
+}
+
+function allDeselected(buttons: DebugElement[]): boolean {
+  return buttons.every(debugEl => !debugEl.componentInstance.checked);
 }
 
 /** Browser-agnostic function for creating an event. */

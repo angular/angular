@@ -150,12 +150,14 @@ export class MdRadioGroup implements AfterContentInit, ControlValueAccessor {
       });
 
       if (matched.length == 0) {
-        // Didn't find a button that matches this value, return early without setting.
-        return;
+        // When the value of the group is cleared to null, deselect all radio button in the group.
+        if (this.value == null) {
+          this.selected = null;
+          this._radios.forEach(radio => radio.checked = false);
+        }
+      } else {
+        this.selected = matched[0];
       }
-
-      // Change the selection immediately.
-      this.selected = matched[0];
     }
   }
 
@@ -173,10 +175,15 @@ export class MdRadioGroup implements AfterContentInit, ControlValueAccessor {
   }
 
   set selected(selected: MdRadioButton) {
-    this._selected = selected;
-    this.value = selected.value;
+    if (selected) {
+      this._selected = selected;
+      this.value = selected.value;
 
-    selected.checked = true;
+      selected.checked = true;
+    } else {
+      this._selected = null;
+      this._value = null;
+    }
   }
 
    /** Implemented as part of ControlValueAccessor. */
