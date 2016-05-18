@@ -5,9 +5,6 @@
 
 
 :host {
-  transition: margin-left $swift-ease-out-duration $swift-ease-out-timing-function,
-              margin-right $swift-ease-out-duration $swift-ease-out-timing-function;
-
   & > .md-sidenav-backdrop {
     &.md-sidenav-shown {
       transition: background-color $swift-ease-out-duration $swift-ease-out-timing-function;
@@ -15,9 +12,7 @@
   }
 
   & > md-content {
-    transition: margin-left $swift-ease-out-duration $swift-ease-out-timing-function,
-                margin-right $swift-ease-out-duration $swift-ease-out-timing-function,
-                left $swift-ease-out-duration $swift-ease-out-timing-function,
+    transition: left $swift-ease-out-duration $swift-ease-out-timing-function,
                 right $swift-ease-out-duration $swift-ease-out-timing-function;
   }
 
