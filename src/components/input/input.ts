@@ -135,14 +135,24 @@ export class MdInput implements ControlValueAccessor, AfterContentInit, OnChange
    */
   @Input() align: 'start' | 'end' = 'start';
   @Input() dividerColor: 'primary' | 'accent' | 'warn' = 'primary';
-  @Input() @BooleanFieldValue() disabled: boolean = false;
   @Input() @BooleanFieldValue() floatingPlaceholder: boolean = true;
   @Input() hintLabel: string = '';
+
+  @Input() autoComplete: string;
+  @Input() @BooleanFieldValue() autoFocus: boolean = false;
+  @Input() @BooleanFieldValue() disabled: boolean = false;
   @Input() id: string = `md-input-${nextUniqueId++}`;
-  @Input() maxLength: number = null;
+  @Input() list: string;
+  @Input() max: string;
+  @Input() maxLength: number = -1;
+  @Input() min: string;
+  @Input() minLength: number;
   @Input() placeholder: string;
+  @Input() @BooleanFieldValue() readOnly: boolean = false;
   @Input() @BooleanFieldValue() required: boolean = false;
-  @Input() @BooleanFieldValue() spellcheck: boolean = false;
+  @Input() @BooleanFieldValue() spellCheck: boolean = false;
+  @Input() step: number;
+  @Input() tabIndex: number;
   @Input() type: string = 'text';
 
   private _blurEmitter: EventEmitter<FocusEvent> = new EventEmitter<FocusEvent>();
