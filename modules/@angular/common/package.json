@@ -9,5 +9,9 @@
   "license": "MIT",
   "peerDependencies": {
     "@angular/core": "$$ANGULAR_VERSION$$"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/angular/angular.git"
   }
 }
