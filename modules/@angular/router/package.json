@@ -11,5 +11,9 @@
     "@angular/core": "$$ANGULAR_VERSION$$",
     "@angular/common": "$$ANGULAR_VERSION$$",
     "@angular/platform-browser": "$$ANGULAR_VERSION$$"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/angular/angular.git"
   }
 }
