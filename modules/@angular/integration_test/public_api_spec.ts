@@ -386,6 +386,7 @@ var PLATFORM_BROWSER: string[] = [
   'DomSanitizationService',
   'SecurityContext',
   'Title',
+  'Ruler',
   'disableDebugTools',
   'enableDebugTools'
 ];
