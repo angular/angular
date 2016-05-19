@@ -3,7 +3,6 @@ import {
   SimpleChange,
   Directive,
   forwardRef,
-  Provider,
   Inject,
   Optional,
   Self

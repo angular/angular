@@ -1,4 +1,4 @@
-import {Directive, Renderer, ElementRef, Self, forwardRef, Provider} from '@angular/core';
+import {Directive, Renderer, ElementRef, forwardRef} from '@angular/core';
 import {NG_VALUE_ACCESSOR, ControlValueAccessor} from './control_value_accessor';
 
 export const CHECKBOX_VALUE_ACCESSOR: any = /*@ts2dart_const*/ {

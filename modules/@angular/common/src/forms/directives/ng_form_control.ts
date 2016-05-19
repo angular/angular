@@ -1,10 +1,8 @@
 import {
   OnChanges,
   SimpleChange,
-  Query,
   Directive,
   forwardRef,
-  Provider,
   Inject,
   Optional,
   Self

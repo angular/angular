@@ -1,9 +1,8 @@
-import {Directive, forwardRef, Provider, Optional, Inject, Self} from '@angular/core';
+import {Directive, forwardRef, Optional, Inject, Self} from '@angular/core';
 import {
   PromiseWrapper,
   ObservableWrapper,
-  EventEmitter,
-  PromiseCompleter
+  EventEmitter
 } from '../../../src/facade/async';
 import {ListWrapper} from '../../../src/facade/collection';
 import {isPresent} from '../../../src/facade/lang';
