@@ -3,7 +3,6 @@ import {
   ElementRef,
   Renderer,
   forwardRef,
-  Provider,
   Input,
   OnInit,
   OnDestroy,

@@ -2,12 +2,10 @@ import {
   OnChanges,
   OnDestroy,
   SimpleChange,
-  Query,
   Directive,
   forwardRef,
   Host,
   SkipSelf,
-  Provider,
   Inject,
   Optional,
   Self

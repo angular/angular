@@ -2,7 +2,6 @@ import {
   Directive,
   Renderer,
   forwardRef,
-  Provider,
   ElementRef,
   Input,
   Host,
