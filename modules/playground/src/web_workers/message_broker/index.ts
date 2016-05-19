@@ -1,8 +1,5 @@
 import {ApplicationRef} from '@angular/core';
-import {bootstrapRender} from '@angular/platform-browser-dynamic';
-
-// TODO
-import {UiArguments, FnArg, PRIMITIVE, ClientMessageBrokerFactory} from '@angular/platform-browser';
+import {bootstrapRender, UiArguments, FnArg, PRIMITIVE, ClientMessageBrokerFactory} from '@angular/platform-browser';
 
 const ECHO_CHANNEL = "ECHO";
 

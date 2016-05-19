@@ -1,5 +1,5 @@
 import {Component, createPlatform, coreLoadAndBootstrap, ReflectiveInjector} from '@angular/core';
-import {BROWSER_PROVIDERS, BROWSER_APP_STATIC_PROVIDERS} from '@angular/platform-browser';
+import {BROWSER_PLATFORM_PROVIDERS, BROWSER_APP_STATIC_PROVIDERS} from '@angular/platform-browser';
 
 var appProviders: any[] = [];
 
@@ -8,7 +8,7 @@ var appProviders: any[] = [];
 class MyApp {
 }
 
-var platform = createPlatform(ReflectiveInjector.resolveAndCreate(BROWSER_PROVIDERS));
+var platform = createPlatform(ReflectiveInjector.resolveAndCreate(BROWSER_PLATFORM_PROVIDERS));
 var appInjector = ReflectiveInjector.resolveAndCreate([BROWSER_APP_STATIC_PROVIDERS, appProviders],
                                                       platform.injector);
 coreLoadAndBootstrap(appInjector, MyApp);

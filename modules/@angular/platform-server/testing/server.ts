@@ -4,39 +4,33 @@ import {
   PLATFORM_COMMON_PROVIDERS,
   PLATFORM_INITIALIZER,
   APPLICATION_COMMON_PROVIDERS,
-} from '@angular/core';
-import {DirectiveResolver, ViewResolver} from '@angular/compiler';
-import {TestComponentBuilder} from '@angular/compiler/testing';
-import {Parse5DomAdapter} from '../index';
-
-import {AnimationBuilder} from '../../platform-browser/src/animate/animation_builder';
-import {MockAnimationBuilder} from '../../platform-browser/testing/animation_builder_mock';
-import {MockDirectiveResolver, MockViewResolver} from '@angular/compiler/testing';
-import {MockLocationStrategy} from '../../common/testing/mock_location_strategy';
-
-import {XHR} from '@angular/compiler';
-import {BrowserDetection} from '@angular/platform-browser/testing';
-
-import {COMPILER_PROVIDERS} from '@angular/compiler';
-import {DOCUMENT} from '@angular/platform-browser';
-import {BROWSER_SANITIZATION_PROVIDERS} from '@angular/platform-browser';
-import {getDOM} from '../platform_browser_private';
-import {RootRenderer} from '@angular/core';
-import {DomRootRenderer, DomRootRenderer_} from '../../platform-browser/src/dom/dom_renderer';
+  RootRenderer
+} from "@angular/core";
+import {DirectiveResolver, ViewResolver, XHR, COMPILER_PROVIDERS} from "@angular/compiler";
 import {
-  DomSharedStylesHost,
-  SharedStylesHost
-} from '../../platform-browser/src/dom/shared_styles_host';
+  TestComponentBuilder,
+  MockDirectiveResolver,
+  MockViewResolver,
+  TestComponentRenderer
+} from "@angular/compiler/testing";
+import {Parse5DomAdapter} from "../index";
+import {AnimationBuilder} from "../../platform-browser/src/animate/animation_builder";
+import {MockAnimationBuilder} from "../../platform-browser/testing/animation_builder_mock";
+import {MockLocationStrategy} from "../../common/testing/mock_location_strategy";
+import {BrowserDetection, DOMTestComponentRenderer} from "@angular/platform-browser/testing";
 import {
+  DOCUMENT,
+  BROWSER_SANITIZATION_PROVIDERS,
   EventManager,
   EVENT_MANAGER_PLUGINS,
-  ELEMENT_PROBE_PROVIDERS
-} from '@angular/platform-browser';
-import {DomEventsPlugin} from '@angular/platform-browser';
-import {LocationStrategy} from '@angular/common';
-import {Log} from '@angular/core/testing';
-import {DOMTestComponentRenderer} from '@angular/platform-browser-dynamic/testing';
-import {TestComponentRenderer} from '@angular/compiler/testing';
+  ELEMENT_PROBE_PROVIDERS,
+  DomEventsPlugin
+} from "@angular/platform-browser";
+import {getDOM} from "../platform_browser_private";
+import {DomRootRenderer, DomRootRenderer_} from "../../platform-browser/src/dom/dom_renderer";
+import {DomSharedStylesHost, SharedStylesHost} from "../../platform-browser/src/dom/shared_styles_host";
+import {LocationStrategy} from "@angular/common";
+import {Log} from "@angular/core/testing";
 
 function initServerTests() {
   Parse5DomAdapter.makeCurrent();

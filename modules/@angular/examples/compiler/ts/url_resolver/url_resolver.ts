@@ -1,5 +1,5 @@
 import {provide} from '@angular/core';
-import {bootstrap} from '@angular/platform-browser-dynamic';
+import {bootstrap} from '@angular/platform-browser';
 import {UrlResolver} from '@angular/compiler';
 
 var MyApp: any;

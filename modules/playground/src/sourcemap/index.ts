@@ -1,5 +1,5 @@
 import {BaseException} from '@angular/core/src/facade/exceptions';
-import {bootstrap} from '@angular/platform-browser-dynamic';
+import {bootstrap} from '@angular/platform-browser';
 import {Component} from '@angular/core';
 
 @Component({

@@ -1,6 +1,5 @@
-import {bootstrap} from '@angular/platform-browser-dynamic';
-
-import {Renderer, ElementRef, Component, Directive, Injectable} from '@angular/core';
+import {bootstrap} from '@angular/platform-browser';
+import {Component} from '@angular/core';
 import {MyCmp} from './app/my_cmp';
 
 export function main() {

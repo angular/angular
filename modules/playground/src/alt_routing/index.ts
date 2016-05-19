@@ -1,6 +1,6 @@
 import {InboxApp} from './app/inbox-app';
 import {provide} from '@angular/core';
-import {bootstrap} from '@angular/platform-browser-dynamic';
+import {bootstrap} from '@angular/platform-browser';
 import {HashLocationStrategy, LocationStrategy} from '@angular/common';
 import {ROUTER_PROVIDERS} from '@angular/router-deprecated';
 

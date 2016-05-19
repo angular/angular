@@ -12,7 +12,7 @@ import {
   Testability
 } from '@angular/core';
 import {browserPlatform} from '@angular/platform-browser';
-import {BROWSER_APP_DYNAMIC_PROVIDERS} from '@angular/platform-browser-dynamic';
+import {BROWSER_APP_PROVIDERS} from '@angular/platform-browser';
 import {getComponentInfo, ComponentInfo} from './metadata';
 import {onError, controllerKey} from './util';
 import {
@@ -294,7 +294,7 @@ export class UpgradeAdapter {
     var applicationRef: ApplicationRef =
         ReflectiveInjector.resolveAndCreate(
                               [
-                                BROWSER_APP_DYNAMIC_PROVIDERS,
+                                BROWSER_APP_PROVIDERS,
                                 provide(NG1_INJECTOR, {useFactory: () => ng1Injector}),
                                 provide(NG1_COMPILE,
                                         {useFactory: () => ng1Injector.get(NG1_COMPILE)}),

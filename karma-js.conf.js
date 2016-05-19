@@ -33,7 +33,7 @@ module.exports = function(config) {
       'test-main.js',
       {pattern: 'dist/all/empty.*', included: false, watched: false},
       {pattern: 'modules/@angular/platform-browser/test/static_assets/**', included: false, watched: false},
-      {pattern: 'modules/@angular/platform-browser-dynamic/test/browser/static_assets/**', included: false, watched: false}
+      {pattern: 'modules/@angular/platform-browser/test/browser/static_assets/**', included: false, watched: false}
     ],
 
     exclude: [

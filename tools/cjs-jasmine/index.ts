@@ -38,7 +38,6 @@ var specFiles: any =
             ignore: [
               // the following code and tests are not compatible with CJS/node environment
               '@angular/platform-browser/**',
-              '@angular/platform-browser-dynamic/**',
               '@angular/core/test/zone/**',
               '@angular/core/test/fake_async_spec.*',
               '@angular/common/test/forms/**',

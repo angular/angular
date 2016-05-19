@@ -48,7 +48,7 @@ let _PLACEHOLDER_EXPANDED_REGEXP = RegExpWrapper.create(`\\<ph(\\s)+name=("(\\w)
  * Partitioning transforms an array of HtmlAst into an array of Part.
  * A part can optionally contain a root element or a root text node. And it can also contain
  * children.
- * A part can contain i18n property, in which case it needs to be transalted.
+ * A part can contain i18n property, in which case it needs to be translated.
  *
  * Example:
  *

@@ -1,4 +1,4 @@
-import {bootstrapRender} from '@angular/platform-browser-dynamic';
+import {bootstrapRender} from '@angular/platform-browser';
 
 export function main() {
   bootstrapRender("loader.js");

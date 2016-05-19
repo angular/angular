@@ -14,8 +14,6 @@ import * as router_testing from '@angular/router/testing';
 import * as upgrade from '@angular/upgrade';
 import * as platformBrowser from '@angular/platform-browser';
 import * as platformBrowser_testing from '@angular/platform-browser/testing';
-import * as platformBrowserDynamic from '@angular/platform-browser-dynamic';
-import * as platformBrowserDynamic_testing from '@angular/platform-browser-dynamic/testing';
 import * as platformServer from '@angular/platform-server';
 import * as platformServer_testing from '@angular/platform-server/testing';
 
@@ -36,8 +34,6 @@ const LIB_MAP = {
   'upgrade': upgrade,
   'platform-browser': platformBrowser,
   'platform-browser/testing': platformBrowser_testing,
-  'platform-browser-dynamic': platformBrowserDynamic,
-  'platform-browser-dynamic/testing': platformBrowserDynamic_testing,
   'platform-server': platformServer,
   'platform-server/testing': platformServer_testing
 };

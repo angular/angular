@@ -1,5 +1,5 @@
 import {Component, provide, ComponentRef} from '@angular/core';
-import {bootstrap} from '@angular/platform-browser-dynamic';
+import {bootstrap} from '@angular/platform-browser';
 import {
   RouteConfig,
   ComponentInstruction,

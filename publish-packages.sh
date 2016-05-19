@@ -25,7 +25,6 @@ for PACKAGE in \
   common \
   http \
   platform-browser \
-  platform-browser-dynamic \
   platform-server \
   router \
   router-deprecated \

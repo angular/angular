@@ -1,4 +1,4 @@
-import {bootstrap} from '@angular/platform-browser-dynamic';
+import {bootstrap} from '@angular/platform-browser';
 import {ImageDemo} from './index_common';
 
 export function main() {

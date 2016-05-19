@@ -366,85 +366,80 @@ var CORE_TESTING: string[] = [
 
 var PLATFORM_BROWSER: string[] = [
   '__platform_browser_private__',
-  'BROWSER_APP_STATIC_PROVIDERS',
-  'BROWSER_PROVIDERS',
-  'BROWSER_APP_COMMON_PROVIDERS',
-  'BROWSER_SANITIZATION_PROVIDERS',
-  'DOCUMENT',
-  'ELEMENT_PROBE_PROVIDERS',
-  'DomEventsPlugin',
-  'KeyEventsPlugin',
-  'EVENT_MANAGER_PLUGINS',
-  'EventManager',
-  'HAMMER_GESTURE_CONFIG',
-  'HammerGestureConfig',
+  'AngularEntrypoint:dart',
+  'bootstrap',
+  'bootstrapApp',
+  'bootstrapRender',
   'bootstrapStatic',
+  'bootstrapStaticApp',
+  'bootstrapStaticRender',
+  'BROWSER_APP_COMMON_PROVIDERS',
+  'BROWSER_APP_PROVIDERS',
+  'BROWSER_APP_STATIC_PROVIDERS',
+  'BROWSER_PLATFORM_PROVIDERS',
+  'BROWSER_SANITIZATION_PROVIDERS',
   'browserPlatform',
   'BrowserPlatformLocation',
-  'AngularEntrypoint:dart',
   'By',
-  'DomSanitizationService',
-  'SecurityContext',
-  'Title',
-  'disableDebugTools',
-  'enableDebugTools',
+  'CACHED_TEMPLATE_PROVIDER',
   'ClientMessageBroker',
   'ClientMessageBrokerFactory',
+  'disableDebugTools',
+  'DOCUMENT',
+  'DomEventsPlugin',
+  'DomSanitizationService',
+  'ELEMENT_PROBE_PROVIDERS',
+  'enableDebugTools',
+  'EVENT_MANAGER_PLUGINS',
+  'EventManager',
   'FnArg',
+  'HAMMER_GESTURE_CONFIG',
+  'HammerGestureConfig',
+  'initializeGenericWorkerRenderer',
+  'KeyEventsPlugin',
   'MessageBus',
   'PRIMITIVE',
   'ReceivedMessage',
+  'SecurityContext',
   'ServiceMessageBroker',
   'ServiceMessageBrokerFactory',
+  'Title',
   'UiArguments',
+  'UrlChangeEvent:dart',
+  'UrlChangeListener:dart',
+  'WebWorkerInstance',
   'WORKER_APP_APPLICATION_COMMON_PROVIDERS',
   'WORKER_APP_APPLICATION_PROVIDERS',
+  'WORKER_APP_LOCATION_PROVIDERS',
   'WORKER_APP_PLATFORM_PROVIDERS',
+  'WORKER_APP_STATIC_APPLICATION_PROVIDERS',
   'WORKER_RENDER_APPLICATION_COMMON_PROVIDERS',
   'WORKER_RENDER_APPLICATION_PROVIDERS',
+  'WORKER_RENDER_APPLICATION_PROVIDERS',
+  'WORKER_RENDER_LOCATION_PROVIDERS',
   'WORKER_RENDER_PLATFORM_PROVIDERS',
   'WORKER_RENDER_STARTABLE_MESSAGING_SERVICE',
+  'WORKER_RENDER_STATIC_APPLICATION_PROVIDERS',
   'WORKER_SCRIPT',
-  'WORKER_APP_LOCATION_PROVIDERS',
-  'WORKER_RENDER_LOCATION_PROVIDERS',
   'workerAppPlatform',
-  'workerRenderPlatform',
-  'WebWorkerInstance',
-  'bootstrapStaticApp',
-  'bootstrapStaticRender',
-  'initializeGenericWorkerRenderer'
+  'workerRenderPlatform'
 ];
 
 var PLATFORM_BROWSER_TESTING: string[] = [
-  'TEST_BROWSER_STATIC_APPLICATION_PROVIDERS',
-  'TEST_BROWSER_STATIC_PLATFORM_PROVIDERS',
   'ADDITIONAL_TEST_BROWSER_PROVIDERS',  // This should be made private
+  'ADDITIONAL_TEST_BROWSER_STATIC_PROVIDERS',  // This should be made private
   'BrowserDetection',
   'browserDetection',
   'dispatchEvent',
+  'DOMTestComponentRenderer',
   'el',
   'expect',
   'normalizeCSS',
-  'stringifyElement'
-];
-
-var PLATFORM_BROWSER_DYNAMIC: string[] = [
-  'BROWSER_APP_DYNAMIC_PROVIDERS',
-  'CACHED_TEMPLATE_PROVIDER',
-  'bootstrap',
-  'UrlChangeEvent:dart',
-  'UrlChangeListener:dart',
-  'WORKER_APP_DYNAMIC_APPLICATION_PROVIDERS',
-  'WORKER_RENDER_DYNAMIC_APPLICATION_PROVIDERS',
-  'bootstrapApp',
-  'bootstrapRender'
-];
-
-var PLATFORM_BROWSER_DYNAMIC_TESTING: string[] = [
-  'TEST_BROWSER_DYNAMIC_APPLICATION_PROVIDERS',
-  'TEST_BROWSER_DYNAMIC_PLATFORM_PROVIDERS',
-  'ADDITIONAL_DYNAMIC_TEST_BROWSER_PROVIDERS',
-  'DOMTestComponentRenderer'
+  'stringifyElement',
+  'TEST_BROWSER_APPLICATION_PROVIDERS',
+  'TEST_BROWSER_PLATFORM_PROVIDERS',
+  'TEST_BROWSER_STATIC_APPLICATION_PROVIDERS',
+  'TEST_BROWSER_STATIC_PLATFORM_PROVIDERS'
 ];
 
 var PLATFORM_SERVER: string[] = ['Parse5DomAdapter'];
@@ -547,8 +542,6 @@ var API = {
   'upgrade': UPGRADE,
   'platform-browser': PLATFORM_BROWSER,
   'platform-browser/testing': PLATFORM_BROWSER_TESTING,
-  'platform-browser-dynamic': PLATFORM_BROWSER_DYNAMIC,
-  'platform-browser-dynamic/testing': PLATFORM_BROWSER_DYNAMIC_TESTING,
   'platform-server': PLATFORM_SERVER,
   'platform-server/testing': PLATFORM_SERVER_TESTING
 };
@@ -578,8 +571,6 @@ export function main() {
       'upgrade',
       'platform-browser',
       'platform-browser/testing',
-      'platform-browser-dynamic',
-      'platform-browser-dynamic/testing',
       'platform-server',
       'platform-server/testing'
     ];

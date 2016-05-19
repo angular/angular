@@ -1,7 +1,5 @@
 import {ROUTER_PROVIDERS} from '@angular/router-deprecated';
-import {bootstrapApp} from '@angular/platform-browser-dynamic';
-
-import {WORKER_APP_LOCATION_PROVIDERS} from '@angular/platform-browser';
+import {bootstrapApp, WORKER_APP_LOCATION_PROVIDERS} from '@angular/platform-browser';
 
 import {HashLocationStrategy, LocationStrategy} from '@angular/common';
 import {App} from './index_common';

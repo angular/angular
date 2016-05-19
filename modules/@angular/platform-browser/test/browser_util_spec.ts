@@ -1,5 +1,5 @@
 import {describe, it, iit, ddescribe, expect} from '@angular/core/testing';
-import {BrowserDetection} from '@angular/platform-browser/testing';
+import {BrowserDetection} from '../testing/browser_util';
 import {StringMapWrapper} from '../src/facade/collection';
 
 export function main() {

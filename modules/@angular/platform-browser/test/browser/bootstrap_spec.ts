@@ -10,27 +10,21 @@ import {
   xdescribe,
   xit
 } from '@angular/core/testing/testing_internal';
-import {
-  fakeAsync,
-  flushMicrotasks,
-  Log,
-  tick,
-} from '@angular/core/testing';
+import {Log} from '@angular/core/testing';
 import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
-import {IS_DART, isPresent, stringify} from '../../src/facade/lang';
-import {BROWSER_PROVIDERS} from '@angular/platform-browser';
-import {BROWSER_APP_DYNAMIC_PROVIDERS} from '@angular/platform-browser-dynamic';
-import {bootstrap} from '@angular/platform-browser-dynamic';
-import {ApplicationRef, PlatformRef} from '@angular/core/src/application_ref';
+import {stringify} from '../../src/facade/lang';
+import {BROWSER_PLATFORM_PROVIDERS} from '@angular/platform-browser';
+import {BROWSER_APP_PROVIDERS} from '@angular/platform-browser';
+import {bootstrap} from '@angular/platform-browser';
+import {ApplicationRef} from '@angular/core/src/application_ref';
 import {Console} from '@angular/core/src/console';
 import {Component, Directive, OnDestroy} from '@angular/core';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {DOCUMENT} from '@angular/platform-browser/src/dom/dom_tokens';
-import {PromiseWrapper, TimerWrapper} from '../../src/facade/async';
+import {PromiseWrapper} from '../../src/facade/async';
 import {
   provide,
   Inject,
-  Injector,
   PLATFORM_INITIALIZER,
   APP_INITIALIZER,
   coreLoadAndBootstrap,
@@ -215,9 +209,9 @@ export function main() {
 
     it('should unregister change detectors when components are disposed',
        inject([AsyncTestCompleter], (async) => {
-         var platform = createPlatform(ReflectiveInjector.resolveAndCreate(BROWSER_PROVIDERS));
+         var platform = createPlatform(ReflectiveInjector.resolveAndCreate(BROWSER_PLATFORM_PROVIDERS));
          var app =
-             ReflectiveInjector.resolveAndCreate([BROWSER_APP_DYNAMIC_PROVIDERS, testProviders],
+             ReflectiveInjector.resolveAndCreate([BROWSER_APP_PROVIDERS, testProviders],
                                                  platform.injector)
                  .get(ApplicationRef);
          coreLoadAndBootstrap(app.injector, HelloRootCmp)
@@ -251,7 +245,7 @@ export function main() {
 
     it("should run platform initializers", inject([Log], (log: Log) => {
          let p = createPlatform(ReflectiveInjector.resolveAndCreate([
-           BROWSER_PROVIDERS,
+           BROWSER_PLATFORM_PROVIDERS,
            provide(PLATFORM_INITIALIZER, {useValue: log.fn("platform_init1"), multi: true}),
            provide(PLATFORM_INITIALIZER, {useValue: log.fn("platform_init2"), multi: true})
          ]));
@@ -259,7 +253,7 @@ export function main() {
          log.clear();
          var a = ReflectiveInjector.resolveAndCreate(
              [
-               BROWSER_APP_DYNAMIC_PROVIDERS,
+               BROWSER_APP_PROVIDERS,
                provide(APP_INITIALIZER, {useValue: log.fn("app_init1"), multi: true}),
                provide(APP_INITIALIZER, {useValue: log.fn("app_init2"), multi: true})
              ],
