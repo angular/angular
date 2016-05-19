@@ -37,10 +37,39 @@ module.exports.detect = function(gulp) {
     };
   }
   return DART_SDK;
+};
+
+
+module.exports.checkMinVersion = function (dartSdk, min, doThrow) {
+  var dartVersion = /^.*([0-9]+\.[0-9]+\.[0-9]+).*$/.exec(spawnSync(dartSdk.VM, ['--version']).stderr.toString().replace(/\n/g, ''))[1];
+  var pubVersion = /^.*([0-9]+\.[0-9]+\.[0-9]+).*$/.exec(spawnSync(dartSdk.PUB, ['--version']).stdout.toString().replace(/\n/g, ''))[1];
+
+  ['dart', 'pub'].forEach((bin) => {
+    var actualVersion = bin === 'dart' ? dartVersion : pubVersion;
+    var errorMsg = `Invalid ${bin} version. Minimum version is ${min}, got: ${actualVersion}`;
+    var successMsg = `${bin} version ${actualVersion} meets minimum requirement of ${min}`;
+    if (!verifyVersion(actualVersion, min)) {
+      if (doThrow) throw new Error(errorMsg);
+      console.error(errorMsg);
+    } else {
+      console.log(successMsg);
+    }
+  });
+
+};
+
+function verifyVersion(actual, min) {
+  var cursor = 0;
+  actual = splitVersion(actual)
+  min = splitVersion(min);
+  while (cursor<3) {
+    if (!(Number.isInteger(actual[cursor]) && Number.isInteger(min[cursor]))) return false;
+    if (actual[cursor] < min[cursor]) return false;
+    cursor++;
+  }
+  return true;
 }
 
-module.exports.logVersion = function(dartSdk) {
-  console.log('DART SDK:') ;
-  console.log('- dart: ' + spawnSync(dartSdk.VM, ['--version']).stderr.toString().replace(/\n/g, ''));
-  console.log('- pub: ' + spawnSync(dartSdk.PUB, ['--version']).stdout.toString().replace(/\n/g, ''));
+function splitVersion (str) {
+  return str.split('.').map(v => parseInt(v));
 }
