@@ -1,7 +1,7 @@
 import {WORKER_APP_STATIC_APPLICATION_PROVIDERS} from '../static/worker_app';
 import {workerAppPlatform} from '../common/worker_app';
 import {COMPILER_PROVIDERS, XHR} from '@angular/compiler';
-import {WebWorkerXHRImpl} from '../../web_workers/worker/xhr_impl';
+import {XHRImpl} from '../../xhr/xhr_impl';
 import {isPresent} from '../../facade/lang';
 
 import {
@@ -14,8 +14,7 @@ import {
 export const WORKER_APP_APPLICATION_PROVIDERS: Array<any /*Type | Provider | any[]*/> = [
   WORKER_APP_STATIC_APPLICATION_PROVIDERS,
   COMPILER_PROVIDERS,
-  WebWorkerXHRImpl,
-  /* @ts2dart_Provider */ {provide: XHR, useExisting: WebWorkerXHRImpl}
+  /* @ts2dart_Provider */ {provide: XHR, useClass: XHRImpl},
 ];
 
 export function bootstrapApp(

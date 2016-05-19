@@ -5,4 +5,3 @@
 export const RENDERER_CHANNEL = "ng-Renderer";
 export const EVENT_CHANNEL = "ng-Events";
 export const ROUTER_CHANNEL = "ng-Router";
-export const XHR_CHANNEL = "ng-XHR";
