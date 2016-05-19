@@ -645,6 +645,16 @@ export function main() {
           })();
         });
     });
+
+    it('supports a name attribute', () => {
+      return builder.createAsync(MdInputWithNameTestController).then(fixture => {
+        const inputElement: HTMLInputElement = fixture.debugElement.query(By.css('input'))
+            .nativeElement;
+        fixture.detectChanges();
+
+        expect(inputElement.name).toBe('some-name');
+      });
+    });
   });
 }
 
@@ -814,3 +824,12 @@ class MdInputWithBlurAndFocusEvents {
   directives: [MdInput]
 })
 class MdInputOptionalAttributeController {}
+
+@Component({
+  selector: 'test-input-controller',
+  template: `
+    <md-input name="some-name"></md-input>
+  `,
+  directives: [MdInput]
+})
+class MdInputWithNameTestController {}
