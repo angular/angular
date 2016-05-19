@@ -1,3 +1,5 @@
+// @ignoreProblemForFile UNUSED_IMPORT
+// @ignoreProblemForFile UNUSED_SHOWN_NAME
 library web_foo.template.dart;
 
 import 'index.dart';

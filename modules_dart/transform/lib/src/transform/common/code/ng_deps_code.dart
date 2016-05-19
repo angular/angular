@@ -127,6 +127,8 @@ class NgDepsWriter extends Object
       : this.buffer = buffer != null ? buffer : new StringBuffer();
 }
 
+const _ignoredProblems = const <String>['UNUSED_IMPORT', 'UNUSED_SHOWN_NAME'];
+
 abstract class NgDepsWriterMixin
     implements
         AnnotationWriterMixin,
@@ -137,6 +139,11 @@ abstract class NgDepsWriterMixin
   StringBuffer get buffer;
 
   void writeNgDepsModel(NgDepsModel model) {
+    // Avoid strong-mode warnings about unused imports.
+    for (var problem in _ignoredProblems) {
+      buffer.writeln('// @ignoreProblemForFile $problem');
+    }
+
     if (model.libraryUri.isNotEmpty) {
       buffer.writeln('library ${model.libraryUri}${TEMPLATE_EXTENSION};\n');
     }
