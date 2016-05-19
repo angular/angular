@@ -11,9 +11,6 @@ export enum LifecycleHooks {
   AfterViewChecked
 }
 
-/**
- * @internal
- */
 export var LIFECYCLE_HOOKS_VALUES = [
   LifecycleHooks.OnInit,
   LifecycleHooks.OnDestroy,

@@ -5,6 +5,7 @@
   "compilerOptions": {
     "baseUrl": ".",
     "declaration": true,
+    "stripInternal": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "module": "commonjs",

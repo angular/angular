@@ -98,8 +98,11 @@ export class ObservableWrapper {
  * Once a reference implementation of the spec is available, switch to it.
  */
 export class EventEmitter<T> extends Subject<T> {
-  /** @internal */
-  _isAsync: boolean;
+  // TODO: mark this as internal once all the facades are gone
+  // we can't mark it as internal now because EventEmitter exported via @angular/core would not
+  // contain this property making it incompatible with all the code that uses EventEmitter via
+  // facades, which are local to the code and do not have this property stripped.
+  __isAsync: boolean;
 
   /**
    * Creates an instance of [EventEmitter], which depending on [isAsync],
@@ -107,7 +110,7 @@ export class EventEmitter<T> extends Subject<T> {
    */
   constructor(isAsync: boolean = true) {
     super();
-    this._isAsync = isAsync;
+    this.__isAsync = isAsync;
   }
 
   emit(value: T) { super.next(value); }
@@ -123,30 +126,30 @@ export class EventEmitter<T> extends Subject<T> {
     let completeFn = () => null;
 
     if (generatorOrNext && typeof generatorOrNext === 'object') {
-      schedulerFn = this._isAsync ? (value) => { setTimeout(() => generatorOrNext.next(value)); } :
+      schedulerFn = this.__isAsync ? (value) => { setTimeout(() => generatorOrNext.next(value)); } :
                                     (value) => { generatorOrNext.next(value); };
 
       if (generatorOrNext.error) {
-        errorFn = this._isAsync ? (err) => { setTimeout(() => generatorOrNext.error(err)); } :
+        errorFn = this.__isAsync ? (err) => { setTimeout(() => generatorOrNext.error(err)); } :
                                   (err) => { generatorOrNext.error(err); };
       }
 
       if (generatorOrNext.complete) {
-        completeFn = this._isAsync ? () => { setTimeout(() => generatorOrNext.complete()); } :
+        completeFn = this.__isAsync ? () => { setTimeout(() => generatorOrNext.complete()); } :
                                      () => { generatorOrNext.complete(); };
       }
     } else {
-      schedulerFn = this._isAsync ? (value) => { setTimeout(() => generatorOrNext(value)); } :
+      schedulerFn = this.__isAsync ? (value) => { setTimeout(() => generatorOrNext(value)); } :
                                     (value) => { generatorOrNext(value); };
 
       if (error) {
         errorFn =
-            this._isAsync ? (err) => { setTimeout(() => error(err)); } : (err) => { error(err); };
+            this.__isAsync ? (err) => { setTimeout(() => error(err)); } : (err) => { error(err); };
       }
 
       if (complete) {
         completeFn =
-            this._isAsync ? () => { setTimeout(() => complete()); } : () => { complete(); };
+            this.__isAsync ? () => { setTimeout(() => complete()); } : () => { complete(); };
       }
     }
 
