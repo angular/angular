@@ -4,13 +4,18 @@ set -e -o pipefail
 
 cd `dirname $0`
 
+export NODE_PATH=${NODE_PATH}:$(pwd)/dist/all:$(pwd)/dist/tools
 
-TSCONFIG=./modules/tsconfig.json
-echo "====== (all)COMPILING: \$(npm bin)/tsc -p ${TSCONFIG} ====="
+
 rm -rf ./dist/all/
 mkdir -p ./dist/all/
 
-# prepare all files for e2e tests
+TSCONFIG=./tools/tsconfig.json
+echo "====== (all)COMPILING: \$(npm bin)/tsc -p ${TSCONFIG} ====="
+$(npm bin)/tsc -p ${TSCONFIG}
+
+
+echo "====== Copying files needed for e2e tests ====="
 cp -r ./modules/playground ./dist/all/
 cp -r ./modules/playground/favicon.ico ./dist/
 #rsync -aP ./modules/playground/* ./dist/all/playground/
@@ -26,6 +31,9 @@ ln -s ../../../../node_modules/rxjs .
 ln -s ../../../../node_modules/angular/angular.js .
 cd -
 
+
+TSCONFIG=./modules/tsconfig.json
+echo "====== (all)COMPILING: \$(npm bin)/tsc -p ${TSCONFIG} ====="
 # compile ts code
 # TODO: Right now we have a cycle in that the compiler_cli depends on Angular
 # but we need it to compile Angular.
