@@ -3,7 +3,6 @@ import {
     Component,
     ContentChildren,
     ElementRef,
-    Host,
     HostBinding,
     Input,
     Optional,
@@ -19,14 +18,12 @@ import {PromiseCompleter} from '@angular2-material/core/async/promise-completer'
 import {MdError} from '@angular2-material/core/errors/error';
 import { BooleanFieldValue } from '@angular2-material/core/annotations/field-value';
 
-
 /** Exception thrown when two MdSidenav are matching the same side. */
 export class MdDuplicatedSidenavError extends MdError {
   constructor(align: string) {
     super(`A sidenav was already declared for 'align="${align}"'`);
   }
 }
-
 
 /**
  * <md-sidenav> component.
@@ -223,8 +220,6 @@ export class MdSidenav {
   private _closePromiseReject: () => void;
 }
 
-
-
 /**
  * <md-sidenav-layout> component.
  *
@@ -263,12 +258,12 @@ export class MdSidenavLayout implements AfterContentInit {
   private _left: MdSidenav;
   private _right: MdSidenav;
 
-  constructor(@Optional() @Host() private _dir: Dir, private _element: ElementRef,
+  constructor(@Optional() private _dir: Dir, private _element: ElementRef,
               private _renderer: Renderer) {
     // If a `Dir` directive exists up the tree, listen direction changes and update the left/right
     // properties to point to the proper start/end.
     if (_dir != null) {
-      _dir.dirChange.add(() => this._validateDrawers());
+      _dir.dirChange.subscribe(() => this._validateDrawers());
     }
   }
 
