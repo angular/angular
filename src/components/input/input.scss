@@ -75,6 +75,9 @@ $md-input-underline-disabled-background-image: linear-gradient(to right,
     // Font needs to be inherited, because by default <input> has a system font.
     font: inherit;
 
+    // The Material input should match whatever background it is above.
+    background: transparent;
+
     // By default, <input> has a padding, border, outline and a default width.
     border: none;
     outline: none;
