@@ -1,0 +1,17 @@
+<section>
+  <div>
+    <p>isDisabled: {{isDisabled}}, clickCounter: <span id="clickCounter">{{clickCounter}}</span></p>
+    <button md-raised-button (click)="isDisabled=!isDisabled" id="disableToggle">Disable buttons</button>
+  </div>
+  <button md-button [disabled]="isDisabled" (click)="clickCounter=clickCounter+1" id="testButton">off</button>
+  <button md-button color="primary" [disabled]="isDisabled">off</button>
+  <a href="http://www.google.com" md-button color="accent" [disabled]="isDisabled">off</a>
+  <button md-raised-button color="primary" [disabled]="isDisabled">off</button>
+  <button md-mini-fab [disabled]="isDisabled">
+    <md-icon class="md-24">check</md-icon>
+  </button>
+
+  <button md-icon-button color="accent" [disabled]="isDisabled">
+    <md-icon class="md-24">favorite</md-icon>
+  </button>
+</section>

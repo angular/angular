@@ -1,7 +1,11 @@
+const fs = require('fs');
 const path = require('path');
 
-/** Setup TypeScript for our tests. */
-require('ts-node/register');
+// Load ts-node to be able to execute TypeScript files with protractor.
+require('ts-node').register({
+  project: path.join(__dirname, '../e2e/')
+});
+
 
 const E2E_BASE_URL = process.env['E2E_BASE_URL'] || 'http://localhost:4200';
 const config = {

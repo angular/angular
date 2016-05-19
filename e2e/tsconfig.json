@@ -4,7 +4,6 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "inlineSources": true,
-    "mapRoot": "",
     "module": "commonjs",
     "moduleResolution": "node",
     "noEmitOnError": true,
@@ -15,7 +14,6 @@
     "target": "es5"
   },
   "files": [
-    "index.e2e.ts",
     "e2e.d.ts"
   ]
 }

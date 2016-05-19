@@ -25,7 +25,7 @@ module.exports = function(defaults) {
 
 
 /**
- * Build the Broccoli Tree containing all the files used as the input to the Angular2App.
+ * Build the Broccoli Tree containing all the files used as the input to the Demo Angular2App.
  */
 function _buildDemoAppInputTree() {
   return new MergeTree([
@@ -42,6 +42,26 @@ function _buildDemoAppInputTree() {
   ]);
 }
 
+
+/**
+ * Build the Broccoli Tree containing all the files used as the input to the e2e Angular2App.
+ */
+function _buildE2EAppInputTree() {
+  return new MergeTree([
+    new Funnel('typings', {
+      destDir: 'typings'
+    }),
+    new Funnel('src', {
+      include: ['components/**/*', 'core/**/*'],
+      destDir: 'src/e2e-app'
+    }),
+    new Funnel('src/e2e-app', {
+      destDir: 'src/e2e-app'
+    })
+  ]);
+}
+
+
 /**
  * Build the Broccoli Tree that contains the Angular2 App. This picks between E2E, Example or Demo
  * app.
@@ -49,12 +69,28 @@ function _buildDemoAppInputTree() {
  * @returns {Angular2App}
  */
 function _buildAppTree(defaults) {
-  let inputNode = _buildDemoAppInputTree();
+  let inputNode;
+  let sourceDir;
+  switch(process.env['MD_APP']) {
+    case 'e2e':
+      inputNode = _buildE2EAppInputTree();
+      sourceDir = 'src/e2e-app';
+      break;
+    default:
+      inputNode = _buildDemoAppInputTree();
+      sourceDir = 'src/demo-app';
+  }
 
   return new Angular2App(defaults, inputNode, {
-    sourceDir: 'src/demo-app',
-    tsCompiler: {
-    },
+    sourceDir: sourceDir,
+    polyfills: [
+      'vendor/es6-shim/es6-shim.js',
+      'vendor/reflect-metadata/Reflect.js',
+      'vendor/systemjs/dist/system.src.js',
+      'vendor/zone.js/dist/zone.js',
+      'vendor/hammerjs/hammer.min.js'
+    ],
+    tsCompiler: {},
     sassCompiler: {
       includePaths: [
         'src/core/style'
@@ -67,7 +103,8 @@ function _buildAppTree(defaults) {
       'es6-shim/es6-shim.js',
       'reflect-metadata/*.js',
       'rxjs/**/*.js',
-      '@angular/**/*.js'
+      '@angular/**/*.js',
+      'hammerjs/*.min.+(js|js.map)'
     ]
   });
 }

@@ -21,7 +21,7 @@ if is_lint; then
 elif is_e2e; then
   ng serve &
   sleep 20
-  npm run e2e
+  ng e2e
 else
   karma start test/karma.conf.js --single-run --no-auto-watch --reporters='dots'
 fi
