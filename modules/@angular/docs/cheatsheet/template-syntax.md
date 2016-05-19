@@ -78,3 +78,17 @@ syntax:
 `<p>Employer: {{employer?.companyName}}</p>`|`{{employer?.companyName}}`
 description:
 The safe navigation operator (`?`) means that the `employer` field is optional and if `undefined`, the rest of the expression should be ignored.
+
+@cheatsheetItem
+syntax:
+`<svg:rect x="0" y="0" width="100" height="100"/>`|`svg:`
+description:
+SVG snippet templates need an `svg:` prefix on their root element to disambiguate the SVG element from an HTML component.
+
+@cheatsheetItem
+syntax:
+`<svg>
+  <rect x="0" y="0" width="100" height="100"/>
+</svg>`|`svg`
+description:
+`<svg>` root elements are detected as SVG element automatically without the prefix
