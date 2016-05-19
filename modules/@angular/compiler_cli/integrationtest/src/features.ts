@@ -14,7 +14,7 @@ export const SOME_OPAQUE_TOKEN = new OpaqueToken('opaqueToken');
   ]
 })
 export class CompWithProviders {
-  constructor(@Inject('strToken') public ctxProp) {}
+  constructor(@Inject('strToken') public ctxProp: string) {}
 }
 
 @Component({

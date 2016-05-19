@@ -4,6 +4,8 @@ import {
   expect,
   inject,
   beforeEachProviders,
+  beforeEach,
+  afterEach,
   it,
 } from '@angular/core/testing/testing_internal';
 import {TestComponentBuilder} from '@angular/compiler/testing';
@@ -63,39 +65,27 @@ function declareTests(isJit: boolean) {
 
     beforeEachProviders(() => [provide(ANCHOR_ELEMENT, {useValue: el('<div></div>')})]);
 
+    let originalLog: (msg: any) => any;
+    beforeEach(() => {
+      originalLog = getDOM().log;
+      getDOM().log = (msg) => { /* disable logging */ };
+    });
+    afterEach(() => { getDOM().log = originalLog; });
+
+
+    itAsync('should disallow binding on*', (tcb: TestComponentBuilder, async) => {
+      let tpl = `<div [attr.onclick]="ctxProp"></div>`;
+      tcb = tcb.overrideView(SecuredComponent, new ViewMetadata({template: tpl}));
+      PromiseWrapper.catchError(tcb.createAsync(SecuredComponent), (e) => {
+        expect(e.message).toContain(`Template parse errors:\n` +
+                                    `Binding to event attribute 'onclick' is disallowed ` +
+                                    `for security reasons, please use (click)=... `);
+        async.done();
+        return null;
+      });
+    });
+
     describe('safe HTML values', function() {
-      itAsync('should disallow binding on*', (tcb: TestComponentBuilder, async) => {
-        let tpl = `<div [attr.onclick]="ctxProp"></div>`;
-        tcb = tcb.overrideView(SecuredComponent, new ViewMetadata({template: tpl}));
-        PromiseWrapper.catchError(tcb.createAsync(SecuredComponent), (e) => {
-          expect(e.message).toContain(`Template parse errors:\n` +
-                                      `Binding to event attribute 'onclick' is disallowed ` +
-                                      `for security reasons, please use (click)=... `);
-          async.done();
-          return null;
-        });
-      });
-
-      itAsync('should escape unsafe attributes', (tcb: TestComponentBuilder, async) => {
-        let tpl = `<a [href]="ctxProp">Link Title</a>`;
-        tcb.overrideView(SecuredComponent, new ViewMetadata({template: tpl, directives: []}))
-            .createAsync(SecuredComponent)
-            .then((fixture) => {
-              let e = fixture.debugElement.children[0].nativeElement;
-              fixture.debugElement.componentInstance.ctxProp = 'hello';
-              fixture.detectChanges();
-              // In the browser, reading href returns an absolute URL. On the server side,
-              // it just echoes back the property.
-              expect(getDOM().getProperty(e, 'href')).toMatch(/.*\/?hello$/);
-
-              fixture.debugElement.componentInstance.ctxProp = 'javascript:alert(1)';
-              fixture.detectChanges();
-              expect(getDOM().getProperty(e, 'href')).toEqual('unsafe:javascript:alert(1)');
-
-              async.done();
-            });
-      });
-
       itAsync('should not escape values marked as trusted',
               [TestComponentBuilder, AsyncTestCompleter, DomSanitizationService],
               (tcb: TestComponentBuilder, async, sanitizer: DomSanitizationService) => {
@@ -105,8 +95,9 @@ function declareTests(isJit: boolean) {
                     .createAsync(SecuredComponent)
                     .then((fixture) => {
                       let e = fixture.debugElement.children[0].nativeElement;
+                      let ci = fixture.debugElement.componentInstance;
                       let trusted = sanitizer.bypassSecurityTrustUrl('javascript:alert(1)');
-                      fixture.debugElement.componentInstance.ctxProp = trusted;
+                      ci.ctxProp = trusted;
                       fixture.detectChanges();
                       expect(getDOM().getProperty(e, 'href')).toEqual('javascript:alert(1)');
 
@@ -123,13 +114,37 @@ function declareTests(isJit: boolean) {
                     .createAsync(SecuredComponent)
                     .then((fixture) => {
                       let trusted = sanitizer.bypassSecurityTrustScript('javascript:alert(1)');
-                      fixture.debugElement.componentInstance.ctxProp = trusted;
+                      let ci = fixture.debugElement.componentInstance;
+                      ci.ctxProp = trusted;
                       expect(() => fixture.detectChanges())
                           .toThrowErrorWith('Required a safe URL, got a Script');
 
                       async.done();
                     });
               });
+    });
+
+    describe('sanitizing', () => {
+      itAsync('should escape unsafe attributes', (tcb: TestComponentBuilder, async) => {
+        let tpl = `<a [href]="ctxProp">Link Title</a>`;
+        tcb.overrideView(SecuredComponent, new ViewMetadata({template: tpl, directives: []}))
+            .createAsync(SecuredComponent)
+            .then((fixture) => {
+              let e = fixture.debugElement.children[0].nativeElement;
+              let ci = fixture.debugElement.componentInstance;
+              ci.ctxProp = 'hello';
+              fixture.detectChanges();
+              // In the browser, reading href returns an absolute URL. On the server side,
+              // it just echoes back the property.
+              expect(getDOM().getProperty(e, 'href')).toMatch(/.*\/?hello$/);
+
+              ci.ctxProp = 'javascript:alert(1)';
+              fixture.detectChanges();
+              expect(getDOM().getProperty(e, 'href')).toEqual('unsafe:javascript:alert(1)');
+
+              async.done();
+            });
+      });
 
       itAsync('should escape unsafe style values', (tcb: TestComponentBuilder, async) => {
         let tpl = `<div [style.background]="ctxProp">Text</div>`;
@@ -137,14 +152,15 @@ function declareTests(isJit: boolean) {
             .createAsync(SecuredComponent)
             .then((fixture) => {
               let e = fixture.debugElement.children[0].nativeElement;
+              let ci = fixture.debugElement.componentInstance;
               // Make sure binding harmless values works.
-              fixture.debugElement.componentInstance.ctxProp = 'red';
+              ci.ctxProp = 'red';
               fixture.detectChanges();
               // In some browsers, this will contain the full background specification, not just
               // the color.
               expect(getDOM().getStyle(e, 'background')).toMatch(/red.*/);
 
-              fixture.debugElement.componentInstance.ctxProp = 'url(javascript:evil())';
+              ci.ctxProp = 'url(javascript:evil())';
               fixture.detectChanges();
               // Updated value gets rejected, no value change.
               expect(getDOM().getStyle(e, 'background')).not.toContain('javascript');
@@ -152,6 +168,35 @@ function declareTests(isJit: boolean) {
               async.done();
             });
       });
+
+      itAsync('should escape unsafe HTML values', (tcb: TestComponentBuilder, async) => {
+        let tpl = `<div [innerHTML]="ctxProp">Text</div>`;
+        tcb.overrideView(SecuredComponent, new ViewMetadata({template: tpl, directives: []}))
+            .createAsync(SecuredComponent)
+            .then((fixture) => {
+              let e = fixture.debugElement.children[0].nativeElement;
+              let ci = fixture.debugElement.componentInstance;
+              // Make sure binding harmless values works.
+              ci.ctxProp = 'some <p>text</p>';
+              fixture.detectChanges();
+              expect(getDOM().getInnerHTML(e)).toEqual('some <p>text</p>');
+
+              ci.ctxProp = 'ha <script>evil()</script>';
+              fixture.detectChanges();
+              expect(getDOM().getInnerHTML(e)).toEqual('ha evil()');
+
+              ci.ctxProp = 'also <img src="x" onerror="evil()"> evil';
+              fixture.detectChanges();
+              expect(getDOM().getInnerHTML(e)).toEqual('also <img src="x"> evil');
+
+              ci.ctxProp = 'also <iframe srcdoc="evil"> evil';
+              fixture.detectChanges();
+              expect(getDOM().getInnerHTML(e)).toEqual('also  evil');
+
+              async.done();
+            });
+      });
     });
+
   });
 }

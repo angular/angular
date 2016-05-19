@@ -15,7 +15,6 @@
     "url": "https://github.com/angular/angular.git"
   },
   "scripts": {
-    "preinstall": "node tools/npm/check-node-modules",
     "postinstall": "node tools/npm/copy-npm-shrinkwrap"
   },
   "dependencies": {

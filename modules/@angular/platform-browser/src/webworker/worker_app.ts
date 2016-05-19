@@ -1,15 +1,12 @@
-import {NgZone} from '@angular/core/src/zone/ng_zone';
-import {Provider} from '@angular/core/src/di';
-import {Parse5DomAdapter} from '@angular/platform-server';
+import {APP_INITIALIZER, NgZone} from '@angular/core';
+import {WorkerDomAdapter} from '../web_workers/worker/worker_adapter';
 import {
   PostMessageBus,
   PostMessageBusSink,
   PostMessageBusSource
 } from '../web_workers/shared/post_message_bus';
-import {WORKER_APP_APPLICATION_COMMON} from './worker_app_common';
-import {APP_INITIALIZER} from '@angular/core';
+import {WORKER_APP_APPLICATION_COMMON_PROVIDERS} from './worker_app_common';
 import {MessageBus} from '../web_workers/shared/message_bus';
-import {COMPILER_PROVIDERS} from '@angular/compiler/src/compiler';
 
 // TODO(jteplitz602) remove this and compile with lib.webworker.d.ts (#3492)
 let _postMessage = {
@@ -18,9 +15,8 @@ let _postMessage = {
   }
 };
 
-export const WORKER_APP_APPLICATION: Array<any /*Type | Provider | any[]*/> = [
-  WORKER_APP_APPLICATION_COMMON,
-  COMPILER_PROVIDERS,
+export const WORKER_APP_APPLICATION_PROVIDERS: Array<any /*Type | Provider | any[]*/> = [
+  WORKER_APP_APPLICATION_COMMON_PROVIDERS,
   /* @ts2dart_Provider */ {provide: MessageBus, useFactory: createMessageBus, deps: [NgZone]},
   /* @ts2dart_Provider */ {provide: APP_INITIALIZER, useValue: setupWebWorker, multi: true}
 ];
@@ -34,5 +30,5 @@ function createMessageBus(zone: NgZone): MessageBus {
 }
 
 function setupWebWorker(): void {
-  Parse5DomAdapter.makeCurrent();
+  WorkerDomAdapter.makeCurrent();
 }

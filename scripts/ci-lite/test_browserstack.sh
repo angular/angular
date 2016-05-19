@@ -2,7 +2,7 @@
 
 set -ex -o pipefail
 
-if [[ ${TRAVIS} && ${CI_MODE} != "browserstack_required" ]]; then
+if [[ ${TRAVIS} && ${CI_MODE} != "browserstack_required" && ${CI_MODE} != "browserstack_optional" ]]; then
   exit 0;
 fi
 

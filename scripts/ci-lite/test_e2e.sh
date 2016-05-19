@@ -32,6 +32,8 @@ fi
 NODE_PATH=$NODE_PATH:./dist/all $(npm bin)/protractor ./protractor-js-new-world.conf.js
 echo 'travis_fold:end:test.e2e.localChrome'
 
-
-
 echo 'travis_fold:end:test.js'
+
+if [[ ${TRAVIS} ]]; then
+  ./scripts/publish/publish-build-artifacts.sh
+fi

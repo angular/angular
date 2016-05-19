@@ -33,7 +33,7 @@ if (globsIndex < 0) {
 
 var specFiles =
     args.map(function(globstr) {
-          return glob.sync(globstr, {
+          var tests = glob.sync(globstr, {
             cwd: distAll,
             ignore: [
               // the following code and tests are not compatible with CJS/node environment
@@ -51,6 +51,10 @@ var specFiles =
               'payload_tests/**'
             ]
           });
+          // The security spec however works (and must work!) on the server side.
+          tests = tests.concat(
+              glob.sync('@angular/platform-browser/test/security/**/*_spec.js', {cwd: distAll}));
+          return tests;
         })
         .reduce(function(specFiles, paths) { return specFiles.concat(paths); }, []);
 

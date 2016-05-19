@@ -186,33 +186,22 @@ class UpgradeNg1ComponentAdapter implements OnInit, OnChanges, DoCheck {
   checkLastValues: any[] = [];
   componentScope: angular.IScope;
   element: Element;
+  $element: any = null;
 
   constructor(private linkFn: angular.ILinkFn, scope: angular.IScope,
               private directive: angular.IDirective, elementRef: ElementRef,
-              $controller: angular.IControllerService, private inputs: string[],
+              private $controller: angular.IControllerService, private inputs: string[],
               private outputs: string[], private propOuts: string[],
               private checkProperties: string[], private propertyMap: {[key: string]: string}) {
     this.element = elementRef.nativeElement;
     this.componentScope = scope.$new(!!directive.scope);
-    var $element = angular.element(this.element);
+    this.$element = angular.element(this.element);
     var controllerType = directive.controller;
-    var controller: any = null;
-    if (controllerType) {
-      var locals = {$scope: this.componentScope, $element: $element};
-      controller = $controller(controllerType, locals, null, directive.controllerAs);
-      $element.data(controllerKey(directive.name), controller);
+    if (directive.bindToController && controllerType) {
+      this.destinationObj = this.buildController(controllerType);
+    } else {
+      this.destinationObj = this.componentScope;
     }
-    var link = directive.link;
-    if (typeof link == 'object') link = (<angular.IDirectivePrePost>link).pre;
-    if (link) {
-      var attrs: angular.IAttributes = NOT_SUPPORTED;
-      var transcludeFn: angular.ITranscludeFunction = NOT_SUPPORTED;
-      var linkController = this.resolveRequired($element, directive.require);
-      (<angular.IDirectiveLinkFn>directive.link)(this.componentScope, $element, attrs,
-                                                 linkController, transcludeFn);
-    }
-    this.destinationObj =
-        directive.bindToController && controller ? controller : this.componentScope;
 
     for (var i = 0; i < inputs.length; i++) {
       this[inputs[i]] = null;
@@ -225,9 +214,24 @@ class UpgradeNg1ComponentAdapter implements OnInit, OnChanges, DoCheck {
       this[propOuts[k]] = new EventEmitter();
       this.checkLastValues.push(INITIAL_VALUE);
     }
+
   }
 
   ngOnInit() {
+
+    if (!this.directive.bindToController && this.directive.controller) {
+      this.buildController(this.directive.controller)
+    }
+    var link = this.directive.link;
+    if (typeof link == 'object') link = (<angular.IDirectivePrePost>link).pre;
+    if (link) {
+      var attrs: angular.IAttributes = NOT_SUPPORTED;
+      var transcludeFn: angular.ITranscludeFunction = NOT_SUPPORTED;
+      var linkController = this.resolveRequired(this.$element, this.directive.require);
+      (<angular.IDirectiveLinkFn>this.directive.link)(this.componentScope, this.$element, attrs,
+        linkController, transcludeFn);
+    }
+
     var childNodes: Node[] = [];
     var childNode;
     while (childNode = this.element.firstChild) {
@@ -275,6 +279,13 @@ class UpgradeNg1ComponentAdapter implements OnInit, OnChanges, DoCheck {
 
   setComponentProperty(name: string, value: any) {
     this.destinationObj[this.propertyMap[name]] = value;
+  }
+
+  private buildController(controllerType) {
+    var locals = { $scope: this.componentScope, $element: this.$element };
+    var controller:any = this.$controller(controllerType, locals, null, this.directive.controllerAs);
+    this.$element.data(controllerKey(this.directive.name), controller);
+    return controller;
   }
 
   private resolveRequired($element: angular.IAugmentedJQuery, require: string | string[]): any {

@@ -56,6 +56,8 @@ export abstract class DomAdapter {
   abstract preventDefault(evt);
   abstract isPrevented(evt): boolean;
   abstract getInnerHTML(el): string;
+  /** Returns content if el is a <template> element, null otherwise. */
+  abstract getTemplateContent(el): any;
   abstract getOuterHTML(el): string;
   abstract nodeName(node): string;
   abstract nodeValue(node): string;

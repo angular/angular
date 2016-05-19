@@ -4,14 +4,15 @@ import {
   PostMessageBusSource
 } from '../web_workers/shared/post_message_bus';
 import {MessageBus} from '../web_workers/shared/message_bus';
-import {APP_INITIALIZER} from '@angular/core';
-import {Injector, Injectable, Provider} from '@angular/core/src/di';
+import {Injector, Injectable, APP_INITIALIZER} from '@angular/core';
 import {
-  WORKER_RENDER_APPLICATION_COMMON,
+  WORKER_RENDER_APPLICATION_COMMON_PROVIDERS,
   WORKER_SCRIPT,
   initializeGenericWorkerRenderer
 } from './worker_render_common';
 import {BaseException} from '../../src/facade/exceptions';
+
+export {WORKER_RENDER_STARTABLE_MESSAGING_SERVICE} from './worker_render_common';
 
 /**
  * Wrapper class that exposes the Worker
@@ -32,8 +33,8 @@ export class WebWorkerInstance {
 /**
  * An array of providers that should be passed into `application()` when initializing a new Worker.
  */
-export const WORKER_RENDER_APPLICATION: Array<any /*Type | Provider | any[]*/> = /*@ts2dart_const*/[
-  WORKER_RENDER_APPLICATION_COMMON, WebWorkerInstance,
+export const WORKER_RENDER_APPLICATION_PROVIDERS: Array<any /*Type | Provider | any[]*/> = /*@ts2dart_const*/[
+  WORKER_RENDER_APPLICATION_COMMON_PROVIDERS, WebWorkerInstance,
   /*@ts2dart_Provider*/ {
     provide: APP_INITIALIZER,
     useFactory: (injector => () => initWebWorkerApplication(injector)),

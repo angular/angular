@@ -1224,6 +1224,11 @@ const BROWSER = [
   'By.css(selector:string):Predicate<DebugElement>',
   'By.directive(type:Type):Predicate<DebugElement>',
   'DomSanitizationService',
+  'SafeHtml',
+  'SafeScript',
+  'SafeStyle',
+  'SafeUrl',
+  'SafeResourceUrl',
   'SecurityContext',
   'Title',
   'Title.getTitle():string',
@@ -1236,7 +1241,7 @@ const BROWSER = [
   'disableDebugTools():void',
   'enableDebugTools(ref:ComponentRef<any>):void',
   'inspectNativeElement(element:any):DebugNode',
-  'browserStaticPlatform():PlatformRef'
+  'browserPlatform():PlatformRef'
 ];
 
 describe('public API', () => {

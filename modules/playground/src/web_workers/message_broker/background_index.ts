@@ -1,4 +1,4 @@
-import {bootstrapApp} from '../../../../@angular/platform-browser/src/worker_app';
+import {bootstrapApp} from '@angular/platform-browser-dynamic';
 import {App} from './index_common';
 
 export function main() {

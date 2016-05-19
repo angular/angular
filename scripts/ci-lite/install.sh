@@ -27,13 +27,8 @@ echo 'travis_fold:end:install-npm'
 
 
 # Install all npm dependencies according to shrinkwrap.json
-#   note: package.json contain preinstall and postintall hooks that can short-circuit
-#         the installation if node_modules is up to date
 echo 'travis_fold:start:install.node_modules'
-if [[ ${TRAVIS} ]]; then
-  node tools/npm/check-node-modules --purge
-fi
-npm install
+node tools/npm/check-node-modules --purge || npm install
 echo 'travis_fold:end:install.node_modules'
 
 
@@ -46,7 +41,7 @@ echo 'travis_fold:end:install-chromium'
 
 # Install Sauce Connect
 echo 'travis_fold:start:install.sauceConnect'
-if [[ ${TRAVIS} && ${CI_MODE} == "saucelabs_required" ]]; then
+if [[ ${TRAVIS}] && (${CI_MODE} == "saucelabs_required" || ${CI_MODE} == "saucelabs_optional") ]]; then
   ./scripts/sauce/sauce_connect_setup.sh
 fi
 echo 'travis_fold:end:install.sauceConnect'
@@ -54,7 +49,7 @@ echo 'travis_fold:end:install.sauceConnect'
 
 # Install BrowserStack Tunnel
 echo 'travis_fold:start:install.browserstack'
-if [[ ${TRAVIS} && ${CI_MODE} == "browserstack_required" ]]; then
+if [[ ${TRAVIS} && (${CI_MODE} == "browserstack_required" || ${CI_MODE} == "browserstack_optional") ]]; then
   ./scripts/browserstack/start_tunnel.sh
 fi
 echo 'travis_fold:end:install.browserstack'

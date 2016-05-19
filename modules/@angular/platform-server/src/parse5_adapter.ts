@@ -165,6 +165,9 @@ export class Parse5DomAdapter extends DomAdapter {
   preventDefault(evt) { evt.returnValue = false; }
   isPrevented(evt): boolean { return isPresent(evt.returnValue) && !evt.returnValue; }
   getInnerHTML(el): string { return serializer.serialize(this.templateAwareRoot(el)); }
+  getTemplateContent(el): Node {
+    return null;  // no <template> support in parse5.
+  }
   getOuterHTML(el): string {
     serializer.html = '';
     serializer._serializeElement(el);

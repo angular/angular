@@ -1,5 +1,5 @@
-import {Type, isBlank, isPresent, assertionsEnabled} from '../src/facade/lang';
-import {provide, Provider, Injector, OpaqueToken} from './di';
+import {Type} from '../src/facade/lang';
+import {Provider} from './di';
 import {Console} from './console';
 import {Reflector, reflector} from './reflection/reflection';
 import {ReflectorReader} from './reflection/reflector_reader';

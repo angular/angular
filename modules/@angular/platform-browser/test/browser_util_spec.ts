@@ -16,7 +16,8 @@ export function main() {
         isWebkit: true,
         isIOS7: false,
         isSlow: false,
-        supportsIntlApi: true
+        supportsIntlApi: true,
+        isChromeDesktop: true
       },
       {
         name: 'Chrome mobile',
@@ -28,7 +29,8 @@ export function main() {
         isWebkit: true,
         isIOS7: false,
         isSlow: false,
-        supportsIntlApi: true
+        supportsIntlApi: true,
+        isChromeDesktop: false
       },
       {
         name: 'Firefox',
@@ -40,7 +42,8 @@ export function main() {
         isWebkit: false,
         isIOS7: false,
         isSlow: false,
-        supportsIntlApi: false
+        supportsIntlApi: false,
+        isChromeDesktop: false
       },
       {
         name: 'IE9',
@@ -52,7 +55,8 @@ export function main() {
         isWebkit: false,
         isIOS7: false,
         isSlow: true,
-        supportsIntlApi: false
+        supportsIntlApi: false,
+        isChromeDesktop: false
       },
       {
         name: 'IE10',
@@ -64,7 +68,8 @@ export function main() {
         isWebkit: false,
         isIOS7: false,
         isSlow: true,
-        supportsIntlApi: false
+        supportsIntlApi: false,
+        isChromeDesktop: false
       },
       {
         name: 'IE11',
@@ -76,7 +81,8 @@ export function main() {
         isWebkit: false,
         isIOS7: false,
         isSlow: true,
-        supportsIntlApi: false
+        supportsIntlApi: false,
+        isChromeDesktop: false
       },
       {
         name: 'Edge',
@@ -88,7 +94,8 @@ export function main() {
         isWebkit: false,
         isIOS7: false,
         isSlow: false,
-        supportsIntlApi: false
+        supportsIntlApi: false,
+        isChromeDesktop: false
       },
       {
         name: 'Android4.1',
@@ -100,7 +107,8 @@ export function main() {
         isWebkit: true,
         isIOS7: false,
         isSlow: true,
-        supportsIntlApi: false
+        supportsIntlApi: false,
+        isChromeDesktop: false
       },
       {
         name: 'Android4.2',
@@ -112,7 +120,8 @@ export function main() {
         isWebkit: true,
         isIOS7: false,
         isSlow: true,
-        supportsIntlApi: false
+        supportsIntlApi: false,
+        isChromeDesktop: false
       },
       {
         name: 'Android4.3',
@@ -124,7 +133,8 @@ export function main() {
         isWebkit: true,
         isIOS7: false,
         isSlow: true,
-        supportsIntlApi: false
+        supportsIntlApi: false,
+        isChromeDesktop: false
       },
       {
         name: 'Android4.4',
@@ -136,7 +146,8 @@ export function main() {
         isWebkit: true,
         isIOS7: false,
         isSlow: false,
-        supportsIntlApi: false
+        supportsIntlApi: false,
+        isChromeDesktop: false
       },
       {
         name: 'Safari7',
@@ -148,7 +159,8 @@ export function main() {
         isWebkit: true,
         isIOS7: false,
         isSlow: false,
-        supportsIntlApi: false
+        supportsIntlApi: false,
+        isChromeDesktop: false
       },
       {
         name: 'Safari8',
@@ -160,7 +172,8 @@ export function main() {
         isWebkit: true,
         isIOS7: false,
         isSlow: false,
-        supportsIntlApi: false
+        supportsIntlApi: false,
+        isChromeDesktop: false
       },
       {
         name: 'iOS7',
@@ -172,7 +185,8 @@ export function main() {
         isWebkit: true,
         isIOS7: true,
         isSlow: true,
-        supportsIntlApi: false
+        supportsIntlApi: false,
+        isChromeDesktop: false
       },
       {
         name: 'iOS8',
@@ -184,7 +198,8 @@ export function main() {
         isWebkit: true,
         isIOS7: false,
         isSlow: false,
-        supportsIntlApi: false
+        supportsIntlApi: false,
+        isChromeDesktop: false
       }
     ];
 
@@ -199,6 +214,7 @@ export function main() {
         expect(bd.isIOS7).toBe(StringMapWrapper.get(browser, 'isIOS7'));
         expect(bd.isSlow).toBe(StringMapWrapper.get(browser, 'isSlow'));
         expect(bd.supportsIntlApi).toBe(StringMapWrapper.get(browser, 'supportsIntlApi'));
+        expect(bd.isChromeDesktop).toBe(StringMapWrapper.get(browser, 'isChromeDesktop'));
       });
     });
   });

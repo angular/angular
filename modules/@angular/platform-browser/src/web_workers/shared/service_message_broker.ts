@@ -1,4 +1,4 @@
-import {Injectable} from '@angular/core/src/di';
+import {Injectable} from '@angular/core';
 import {ListWrapper, Map} from '../../../src/facade/collection';
 import {Serializer} from '../shared/serializer';
 import {isPresent, Type, FunctionWrapper} from '../../../src/facade/lang';

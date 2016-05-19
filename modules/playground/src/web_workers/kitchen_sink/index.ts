@@ -1,4 +1,5 @@
-import {Provider} from '@angular/core';
-import {bootstrapRender} from '../../../../@angular/platform-browser/src/worker_render';
+import {bootstrapRender} from '@angular/platform-browser-dynamic';
 
-bootstrapRender("loader.js");
+export function main() {
+  bootstrapRender("loader.js");
+}

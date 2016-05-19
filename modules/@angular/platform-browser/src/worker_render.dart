@@ -24,19 +24,19 @@ export '../src/web_workers/shared/service_message_broker.dart'
 
 export '../src/web_workers/shared/serializer.dart' show PRIMITIVE;
 export '../src/web_workers/shared/message_bus.dart';
-export '../src/web_workers/ui/router_providers.dart' show WORKER_RENDER_ROUTER;
+export '../src/web_workers/ui/location_providers.dart' show WORKER_RENDER_ROUTER;
 
 
 const WORKER_RENDER_APP = WORKER_RENDER_APPLICATION_COMMON;
 
-PlatformRef workerRenderPlatform() {
+PlatformRef workerStaticRenderPlatform() {
   if (isBlank(getPlatform())) {
     createPlatform(ReflectiveInjector.resolveAndCreate(WORKER_RENDER_PLATFORM));
   }
   return assertPlatform(WORKER_RENDER_PLATFORM_MARKER);
 }
 
-Future<ApplicationRef> bootstrapRender(
+Future<ApplicationRef> bootstrapStaticRender(
     String workerScriptUri,
     [List<dynamic /*Type | Provider | any[]*/> customProviders]) {
   return initIsolate(workerScriptUri).then( (appProviders) {

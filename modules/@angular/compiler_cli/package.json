@@ -1,6 +1,6 @@
 {
   "name": "@angular/compiler-cli",
-  "version": "0.2.0",
+  "version": "$$ANGULAR_VERSION$$",
   "description": "Execute angular2 template compiler in nodejs.",
   "main": "index.js",
   "typings": "index.d.ts",
@@ -15,9 +15,9 @@
   },
   "peerDependencies": {
     "typescript": "^1.9.0-dev",
-    "@angular/compiler": "^2.0.0-rc",
-    "@angular/platform-server": "^2.0.0-rc",
-    "@angular/core": "^2.0.0-rc"
+    "@angular/compiler": "$$ANGULAR_VERSION$$",
+    "@angular/platform-server": "$$ANGULAR_VERSION$$",
+    "@angular/core": "$$ANGULAR_VERSION$$"
   },
   "repository": {
     "type": "git",

@@ -1,12 +1,20 @@
+import {
+  reflector,
+  ReflectiveInjector,
+  coreLoadAndBootstrap,
+  Type,
+  ComponentRef
+} from '@angular/core';
+
 import {COMPILER_PROVIDERS, XHR} from '@angular/compiler';
-import {CachedXHR} from './src/xhr/xhr_cache';
-import {Provider, Type, ComponentRef} from '@angular/core';
-import {isPresent} from './src/facade/lang';
-import {XHRImpl} from './src/xhr/xhr_impl';
-import {BROWSER_APP_COMMON_PROVIDERS, browserPlatform} from '@angular/platform-browser';
-import {reflector, ReflectiveInjector, coreLoadAndBootstrap} from '@angular/core';
-import {getDOM} from './platform_browser_private';
-import {ReflectionCapabilities} from './core_private';
+import {CachedXHR} from '../src/xhr/xhr_cache';
+import {isPresent} from '../src/facade/lang';
+import {XHRImpl} from '../src/xhr/xhr_impl';
+import {
+  browserPlatform,
+  BROWSER_APP_COMMON_PROVIDERS,
+} from '@angular/platform-browser';
+import {ReflectionCapabilities} from '../core_private';
 
 export const CACHED_TEMPLATE_PROVIDER: Array<any /*Type | Provider | any[]*/> =
     /*@ts2dart_const*/[{provide: XHR, useClass: CachedXHR}];
@@ -20,8 +28,6 @@ export const BROWSER_APP_DYNAMIC_PROVIDERS: Array<any /*Type | Provider | any[]*
       COMPILER_PROVIDERS,
       {provide: XHR, useClass: XHRImpl},
     ];
-
-
 
 /**
  * Bootstrapping for Angular applications.

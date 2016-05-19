@@ -10,6 +10,8 @@ import {
   xit
 } from '@angular/core/testing/testing_internal';
 
+import {browserDetection} from '@angular/platform-browser/testing';
+
 import {DomElementSchemaRegistry} from '@angular/compiler/src/schema/dom_element_schema_registry';
 import {SecurityContext} from '../../core_private';
 import {extractSchema} from './schema_extractor';
@@ -69,14 +71,17 @@ export function main() {
     it('should detect properties on namespaced elements',
        () => { expect(registry.hasProperty('@svg:g', 'id')).toBeTruthy(); });
 
-    it('generate a new schema', () => {
-      // console.log(JSON.stringify(registry.properties));
-      extractSchema(
+    if (browserDetection.isChromeDesktop) {
+      it('generate a new schema', () => {
+        // console.log(JSON.stringify(registry.properties));
+        extractSchema(
           (descriptors) => {
-              // Uncomment this line to see:
-              // the generated schema which can then be pasted to the DomElementSchemaRegistry
-              // console.log(descriptors);
+            // Uncomment this line to see:
+            // the generated schema which can then be pasted to the DomElementSchemaRegistry
+            // console.log(descriptors);
           });
-    });
+      });
+    }
+
   });
 }
