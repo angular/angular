@@ -143,17 +143,17 @@ export class MdInput implements ControlValueAccessor, AfterContentInit, OnChange
   @Input() @BooleanFieldValue() autoFocus: boolean = false;
   @Input() @BooleanFieldValue() disabled: boolean = false;
   @Input() id: string = `md-input-${nextUniqueId++}`;
-  @Input() list: string;
-  @Input() max: string;
-  @Input() maxLength: number = -1;
-  @Input() min: string;
-  @Input() minLength: number;
-  @Input() placeholder: string;
+  @Input() list: string = null;
+  @Input() max: string = null;
+  @Input() maxLength: number = null;
+  @Input() min: string = null;
+  @Input() minLength: number = null;
+  @Input() placeholder: string = null;
   @Input() @BooleanFieldValue() readOnly: boolean = false;
   @Input() @BooleanFieldValue() required: boolean = false;
   @Input() @BooleanFieldValue() spellCheck: boolean = false;
-  @Input() step: number;
-  @Input() tabIndex: number;
+  @Input() step: number = null;
+  @Input() tabIndex: number = null;
   @Input() type: string = 'text';
   @Input() name: string = null;
 
