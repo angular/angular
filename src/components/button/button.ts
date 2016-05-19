@@ -6,6 +6,7 @@ import {
   ChangeDetectionStrategy,
   ElementRef,
   Renderer,
+  Type,
 } from '@angular/core';
 
 // TODO(jelbourn): Ink ripples.
@@ -132,3 +133,6 @@ export class MdAnchor extends MdButton {
     }
   }
 }
+
+
+export const MD_BUTTON_DIRECTIVES: Type[] = [MdButton, MdAnchor];
