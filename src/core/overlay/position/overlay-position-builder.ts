@@ -2,6 +2,7 @@ import {ViewportRuler} from './viewport-ruler';
 import {ConnectedPositionStrategy} from './connected-position-strategy';
 import {ElementRef, Injectable} from '@angular/core';
 import {GlobalPositionStrategy} from './global-position-strategy';
+import {OverlayPos, OriginPos} from './connected-position';
 
 
 
@@ -16,8 +17,8 @@ export class OverlayPositionBuilder {
   }
 
   /** Creates a relative position strategy. */
-  connectedTo(elementRef: ElementRef) {
-    return new ConnectedPositionStrategy(elementRef, this._viewportRuler);
+  connectedTo(elementRef: ElementRef, originPos: OriginPos, overlayPos: OverlayPos) {
+    return new ConnectedPositionStrategy(elementRef, originPos, overlayPos, this._viewportRuler);
   }
 }
 

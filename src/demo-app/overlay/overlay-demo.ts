@@ -11,8 +11,6 @@ import {
 import {Overlay, OverlayState, OVERLAY_PROVIDERS} from '@angular2-material/core/overlay/overlay';
 import {ComponentPortal, Portal} from '@angular2-material/core/portal/portal';
 import {TemplatePortalDirective} from '@angular2-material/core/portal/portal-directives';
-import {RelativePosition} from
-    '@angular2-material/core/overlay/position/connected-position-strategy';
 
 
 
@@ -70,15 +68,12 @@ export class OverlayDemo {
   }
 
   openSpaghettiPanel() {
-    // TODO(jelbourn): make a nice API for this.
     // TODO(jelbourn): separate overlay demo for connected positioning.
-    let strategy = this.overlay.position().connectedTo(this._overlayOrigin.elementRef);
-    var pos = new RelativePosition();
-    pos.originX = 'start';
-    pos.originY = 'end';
-    pos.overlayX = 'start';
-    pos.overlayY = 'start';
-    strategy.addPreferredPosition(pos);
+    let strategy = this.overlay.position()
+        .connectedTo(
+            this._overlayOrigin.elementRef,
+            {originX: 'start', originY: 'bottom'},
+            {overlayX: 'start', overlayY: 'top'} );
 
     let config = new OverlayState();
     config.positionStrategy = strategy;

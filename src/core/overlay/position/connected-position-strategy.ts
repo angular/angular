@@ -1,7 +1,8 @@
 import {PositionStrategy} from './position-strategy';
 import {ElementRef} from '@angular/core';
-import {applyCssTransform} from '@angular2-material/core/style/apply-transform';
 import {ViewportRuler} from './viewport-ruler';
+import {applyCssTransform} from '@angular2-material/core/style/apply-transform';
+import {ConnectionPair, OriginPos, OverlayPos} from './connected-position';
 
 
 
@@ -18,20 +19,26 @@ export class ConnectedPositionStrategy implements PositionStrategy {
   _isRtl: boolean = false;
 
   /** Ordered list of preferred positions, from most to least desirable. */
-  _preferredPositions: RelativePosition[] = [];
+  _preferredPositions: ConnectionPair[] = [];
 
   /** The origin element against which the overlay will be positioned. */
   private _origin: HTMLElement;
 
 
-  constructor(private _connectedTo: ElementRef, private _viewportRuler: ViewportRuler) {
+  constructor(
+      private _connectedTo: ElementRef,
+      private _originPos: OriginPos,
+      private _overlayPos: OverlayPos,
+      private _viewportRuler: ViewportRuler) {
     this._origin = this._connectedTo.nativeElement;
+    this.withFallbackPosition(_originPos, _overlayPos);
   }
 
 
   /**
    * Updates the position of the overlay element, using whichever preferred position relative
    * to the origin fits on-screen.
+   * @internal
    */
   apply(element: HTMLElement): Promise<void> {
     // We need the bounding rects for the origin and the overlay to determine how to position
@@ -67,8 +74,13 @@ export class ConnectedPositionStrategy implements PositionStrategy {
 
 
   /** Adds a preferred position to the end of the ordered preferred position list. */
-  addPreferredPosition(pos: RelativePosition): void {
+  addPreferredPosition(pos: ConnectionPair): void {
     this._preferredPositions.push(pos);
+  }
+
+  withFallbackPosition(originPos: OriginPos, overlayPos: OverlayPos): this {
+    this._preferredPositions.push(new ConnectionPair(originPos, overlayPos));
+    return this;
   }
 
 
@@ -76,7 +88,7 @@ export class ConnectedPositionStrategy implements PositionStrategy {
    * Gets the horizontal (x) "start" dimension based on whether the overlay is in an RTL context.
    * @param rect
    */
-  _getStartX(rect: ClientRect): number {
+  private _getStartX(rect: ClientRect): number {
     return this._isRtl ? rect.right : rect.left;
   }
 
@@ -84,7 +96,7 @@ export class ConnectedPositionStrategy implements PositionStrategy {
    * Gets the horizontal (x) "end" dimension based on whether the overlay is in an RTL context.
    * @param rect
    */
-  _getEndX(rect: ClientRect): number {
+  private _getEndX(rect: ClientRect): number {
     return this._isRtl ? rect.left : rect.right;
   }
 
@@ -94,7 +106,7 @@ export class ConnectedPositionStrategy implements PositionStrategy {
    * @param originRect
    * @param pos
    */
-  private _getOriginConnectionPoint(originRect: ClientRect, pos: RelativePosition): Point {
+  private _getOriginConnectionPoint(originRect: ClientRect, pos: ConnectionPair): Point {
     const originStartX = this._getStartX(originRect);
     const originEndX = this._getEndX(originRect);
 
@@ -109,7 +121,7 @@ export class ConnectedPositionStrategy implements PositionStrategy {
     if (pos.originY == 'center') {
       y = originRect.top + (originRect.height / 2);
     } else {
-      y = pos.originY == 'start' ? originRect.top : originRect.bottom;
+      y = pos.originY == 'top' ? originRect.top : originRect.bottom;
     }
 
     return {x, y};
@@ -126,7 +138,7 @@ export class ConnectedPositionStrategy implements PositionStrategy {
   private _getOverlayPoint(
       originPoint: Point,
       overlayRect: ClientRect,
-      pos: RelativePosition): Point {
+      pos: ConnectionPair): Point {
     // Calculate the (overlayStartX, overlayStartY), the start of the potential overlay position
     // relative to the origin point.
     let overlayStartX: number;
@@ -140,7 +152,7 @@ export class ConnectedPositionStrategy implements PositionStrategy {
     if (pos.overlayY == 'center') {
       overlayStartY = -overlayRect.height / 2;
     } else {
-      overlayStartY = pos.overlayY == 'start' ? 0 : -overlayRect.height;
+      overlayStartY = pos.overlayY == 'top' ? 0 : -overlayRect.height;
     }
 
     return {
@@ -191,14 +203,3 @@ export class ConnectedPositionStrategy implements PositionStrategy {
 type Point = {x: number, y: number};
 
 
-/** One dimension of a connection point on the perimeter of the origin or overlay element. */
-export type ConnectionPoint = 'start' | 'center' | 'end';
-
-
-/** The points of the origin element and the overlay element to connect. */
-export class RelativePosition {
-  originX: ConnectionPoint;
-  originY: ConnectionPoint;
-  overlayX: ConnectionPoint;
-  overlayY: ConnectionPoint;
-}

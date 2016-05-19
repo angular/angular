@@ -1,7 +1,8 @@
 import {it, describe, expect, beforeEach} from '@angular/core/testing';
 import {ElementRef} from '@angular/core';
-import {ConnectedPositionStrategy, RelativePosition} from './connected-position-strategy';
+import {ConnectedPositionStrategy} from './connected-position-strategy';
 import {ViewportRuler} from './viewport-ruler';
+import {OverlayPositionBuilder} from './overlay-position-builder';
 
 
 // Default width and height of the overlay and origin panels throughout these tests.
@@ -25,6 +26,7 @@ export function main() {
     let strategy: ConnectedPositionStrategy;
     let fakeElementRef: ElementRef;
     let fakeViewportRuler: FakeViewportRuler;
+    let positionBuilder: OverlayPositionBuilder;
 
     let originRect: ClientRect;
     let originCenterX: number;
@@ -40,8 +42,7 @@ export function main() {
       document.body.appendChild(overlayElement);
 
       fakeElementRef = new FakeElementRef(originElement);
-
-      strategy = new ConnectedPositionStrategy(fakeElementRef, new ViewportRuler());
+      positionBuilder = new OverlayPositionBuilder(new ViewportRuler());
     });
 
     afterEach(() => {
@@ -118,22 +119,13 @@ export function main() {
         originElement.style.left = '200px';
         originRect = originElement.getBoundingClientRect();
 
-        // Above, right aligned.
-        let offscreenPos = new RelativePosition();
-        offscreenPos.originX = 'end';
-        offscreenPos.originY = 'start';
-        offscreenPos.overlayX = 'end';
-        offscreenPos.overlayY = 'end';
-
-        // Below, left aligned.
-        let fallbackPosition = new RelativePosition();
-        fallbackPosition.originX = 'start';
-        fallbackPosition.originY = 'end';
-        fallbackPosition.overlayX = 'start';
-        fallbackPosition.overlayY = 'start';
-
-        strategy.addPreferredPosition(offscreenPos);
-        strategy.addPreferredPosition(fallbackPosition);
+        strategy = positionBuilder.connectedTo(
+            fakeElementRef,
+            {originX: 'end', originY: 'top'},
+            {overlayX: 'end', overlayY: 'bottom'})
+            .withFallbackPosition(
+                {originX: 'start', originY: 'bottom'},
+                {overlayX: 'start', overlayY: 'top'});
 
         strategy.apply(overlayElement);
 
@@ -151,22 +143,13 @@ export function main() {
         originRect = originElement.getBoundingClientRect();
         originCenterY = originRect.top + (ORIGIN_HEIGHT / 2);
 
-        // To the left, below.
-        let offscreenPos = new RelativePosition();
-        offscreenPos.originX = 'start';
-        offscreenPos.originY = 'end';
-        offscreenPos.overlayX = 'end';
-        offscreenPos.overlayY = 'start';
-
-        // To the right, centered.
-        let fallbackPos = new RelativePosition();
-        fallbackPos.originX = 'end';
-        fallbackPos.originY = 'center';
-        fallbackPos.overlayX = 'start';
-        fallbackPos.overlayY = 'center';
-
-        strategy.addPreferredPosition(offscreenPos);
-        strategy.addPreferredPosition(fallbackPos);
+        strategy = positionBuilder.connectedTo(
+            fakeElementRef,
+            {originX: 'start', originY: 'bottom'},
+            {overlayX: 'end', overlayY: 'top'})
+            .withFallbackPosition(
+                {originX: 'end', originY: 'center'},
+                {overlayX: 'start', overlayY: 'center'});
 
         strategy.apply(overlayElement);
 
@@ -180,28 +163,19 @@ export function main() {
         fakeViewportRuler.fakeRect = {
           top: 0, left: 0, width: 500, height: 500, right: 500, bottom: 500
         };
-        strategy = new ConnectedPositionStrategy(fakeElementRef, fakeViewportRuler);
+        positionBuilder = new OverlayPositionBuilder(fakeViewportRuler);
 
         originElement.style.top = '475px';
         originElement.style.left = '200px';
         originRect = originElement.getBoundingClientRect();
 
-        // Below, left aligned.
-        let offscreenPos = new RelativePosition();
-        offscreenPos.originX = 'start';
-        offscreenPos.originY = 'end';
-        offscreenPos.overlayX = 'start';
-        offscreenPos.overlayY = 'start';
-
-        // Above, right aligned.
-        let fallbackPos = new RelativePosition();
-        fallbackPos.originX = 'end';
-        fallbackPos.originY = 'start';
-        fallbackPos.overlayX = 'end';
-        fallbackPos.overlayY = 'end';
-
-        strategy.addPreferredPosition(offscreenPos);
-        strategy.addPreferredPosition(fallbackPos);
+        strategy = positionBuilder.connectedTo(
+            fakeElementRef,
+            {originX: 'start', originY: 'bottom'},
+            {overlayX: 'start', overlayY: 'top'})
+            .withFallbackPosition(
+                {originX: 'end', originY: 'top'},
+                {overlayX: 'end', overlayY: 'bottom'});
 
         strategy.apply(overlayElement);
 
@@ -215,28 +189,19 @@ export function main() {
         fakeViewportRuler.fakeRect = {
           top: 0, left: 0, width: 500, height: 500, right: 500, bottom: 500
         };
-        strategy = new ConnectedPositionStrategy(fakeElementRef, fakeViewportRuler);
+        positionBuilder = new OverlayPositionBuilder(fakeViewportRuler);
 
         originElement.style.top = '200px';
         originElement.style.left = '475px';
         originRect = originElement.getBoundingClientRect();
 
-        // To the right, centered.
-        let offscreenPos = new RelativePosition();
-        offscreenPos.originX = 'end';
-        offscreenPos.originY = 'center';
-        offscreenPos.overlayX = 'start';
-        offscreenPos.overlayY = 'center';
-
-        // To the left, below.
-        let fallbackPos = new RelativePosition();
-        fallbackPos.originX = 'start';
-        fallbackPos.originY = 'end';
-        fallbackPos.overlayX = 'end';
-        fallbackPos.overlayY = 'start';
-
-        strategy.addPreferredPosition(offscreenPos);
-        strategy.addPreferredPosition(fallbackPos);
+        strategy = positionBuilder.connectedTo(
+            fakeElementRef,
+            {originX: 'end', originY: 'center'},
+            {overlayX: 'start', overlayY: 'center'})
+            .withFallbackPosition(
+                {originX: 'start', originY: 'bottom'},
+                {overlayX: 'end', overlayY: 'top'});
 
         strategy.apply(overlayElement);
 
@@ -255,12 +220,10 @@ export function main() {
      */
     function runSimplePositionTests() {
       it('should position a panel below, left-aligned', () => {
-        var pos = new RelativePosition();
-        pos.originX = 'start';
-        pos.originY = 'end';
-        pos.overlayX = 'start';
-        pos.overlayY = 'start';
-        strategy.addPreferredPosition(pos);
+        strategy = positionBuilder.connectedTo(
+            fakeElementRef,
+            {originX: 'start', originY: 'bottom'},
+            {overlayX: 'start', overlayY: 'top'});
 
         strategy.apply(overlayElement);
 
@@ -270,12 +233,10 @@ export function main() {
       });
 
       it('should position to the right, center aligned vertically', () => {
-        var pos = new RelativePosition();
-        pos.originX = 'end';
-        pos.originY = 'center';
-        pos.overlayX = 'start';
-        pos.overlayY = 'center';
-        strategy.addPreferredPosition(pos);
+        strategy = positionBuilder.connectedTo(
+            fakeElementRef,
+            {originX: 'end', originY: 'center'},
+            {overlayX: 'start', overlayY: 'center'});
 
         strategy.apply(overlayElement);
 
@@ -285,12 +246,10 @@ export function main() {
       });
 
       it('should position to the left, below', () => {
-        var pos = new RelativePosition();
-        pos.originX = 'start';
-        pos.originY = 'end';
-        pos.overlayX = 'end';
-        pos.overlayY = 'start';
-        strategy.addPreferredPosition(pos);
+        strategy = positionBuilder.connectedTo(
+            fakeElementRef,
+            {originX: 'start', originY: 'bottom'},
+            {overlayX: 'end', overlayY: 'top'});
 
         strategy.apply(overlayElement);
 
@@ -300,12 +259,10 @@ export function main() {
       });
 
       it('should position above, right aligned', () => {
-        var pos = new RelativePosition();
-        pos.originX = 'end';
-        pos.originY = 'start';
-        pos.overlayX = 'end';
-        pos.overlayY = 'end';
-        strategy.addPreferredPosition(pos);
+        strategy = positionBuilder.connectedTo(
+            fakeElementRef,
+            {originX: 'end', originY: 'top'},
+            {overlayX: 'end', overlayY: 'bottom'});
 
         strategy.apply(overlayElement);
 
@@ -315,12 +272,10 @@ export function main() {
       });
 
       it('should position below, centered', () => {
-        var pos = new RelativePosition();
-        pos.originX = 'center';
-        pos.originY = 'end';
-        pos.overlayX = 'center';
-        pos.overlayY = 'start';
-        strategy.addPreferredPosition(pos);
+        strategy = positionBuilder.connectedTo(
+            fakeElementRef,
+            {originX: 'center', originY: 'bottom'},
+            {overlayX: 'center', overlayY: 'top'});
 
         strategy.apply(overlayElement);
 
@@ -330,12 +285,10 @@ export function main() {
       });
 
       it('should center the overlay on the origin', () => {
-        var pos = new RelativePosition();
-        pos.originX = 'center';
-        pos.originY = 'center';
-        pos.overlayX = 'center';
-        pos.overlayY = 'center';
-        strategy.addPreferredPosition(pos);
+        strategy = positionBuilder.connectedTo(
+            fakeElementRef,
+            {originX: 'center', originY: 'center'},
+            {overlayX: 'center', overlayY: 'center'});
 
         strategy.apply(overlayElement);
 
