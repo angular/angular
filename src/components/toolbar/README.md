@@ -40,7 +40,7 @@ Multiple rows inside of a `md-toolbar` can be added by appending as many as need
 ```
 
 ### Alignment
-The alingment inside of a toolbar row can be easily done by using the flexbox layout.<br/>
+The alignment inside of a toolbar row can be easily done by using the flexbox layout.<br/>
 For example, the following markup aligns the items on the `right`.
 
 Custom HTML
