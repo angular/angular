@@ -14,6 +14,7 @@
   },
   "files": [
     "src/router.ts",
+    "test/tree.spec.ts",
     "test/router.spec.ts",
     "typings/main.d.ts"
   ]
