@@ -1,7 +1,4 @@
-import {X} from '../src/router';
-
-describe("Test", () => {
+describe("Integration", () => {
   it("test", () => {
-    expect(X).toEqual(5);
   });
 });
