@@ -1,4 +1,3 @@
-import {ReflectiveInjector} from "angular2/core";
 import {
   afterEach,
   AsyncTestCompleter,
@@ -50,7 +49,7 @@ export function main() {
       bind(Options.USER_METRICS).toValue(userMetrics),
       provide(WebDriverAdapter, {useValue: wdAdapter})
     ];
-    return ReflectiveInjector.resolveAndCreate(bindings).get(UserMetric);
+    return Injector.resolveAndCreate(bindings).get(UserMetric);
   }
 
   describe('user metric', () => {
