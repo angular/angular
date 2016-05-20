@@ -288,7 +288,7 @@ as a served file in your Karma or other test configuration.
   should be used, create one before calling this method.
   (e.g. via `ReflectiveInjector.resolveAndCreate(…)`.
 
-* - `DynamicComponentLoader.loadIntoLocation` has been removed. Use `@ViewChild(‘myVar’, read: ViewContainerRef)` to get hold of a `ViewContainerRef` at an element with variable `myVar`. Then call `DynamicComponentLoader.loadNextToLocation`.
+* - `DynamicComponentLoader.loadIntoLocation` has been removed. Use `@ViewChild(‘myVar’, {read: ViewContainerRef})` to get hold of a `ViewContainerRef` at an element with variable `myVar`. Then call `DynamicComponentLoader.loadNextToLocation`.
 - `DynamicComponentLoader.loadNextToLocation` now takes a `ViewContainerRef` instead of an `ElementRef`.
 - `AppViewManager` is renamed into `ViewUtils` and is a mere private utility service.
 
