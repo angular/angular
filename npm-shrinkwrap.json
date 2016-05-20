@@ -1,6 +1,6 @@
 {
   "name": "angular-srcs",
-  "version": "2.0.0-beta.17",
+  "version": "2.0.0-rc.1",
   "dependencies": {
     "abbrev": {
       "version": "1.0.7",
@@ -7653,9 +7653,9 @@
       "resolved": "https://registry.npmjs.org/rndm/-/rndm-1.1.1.tgz"
     },
     "rollup": {
-      "version": "0.26.1",
-      "from": "rollup@>=0.26.1 <0.27.0",
-      "resolved": "https://registry.npmjs.org/rollup/-/rollup-0.26.1.tgz",
+      "version": "0.26.3",
+      "from": "rollup@0.26.3",
+      "resolved": "https://registry.npmjs.org/rollup/-/rollup-0.26.3.tgz",
       "dependencies": {
         "ansi-regex": {
           "version": "2.0.0",

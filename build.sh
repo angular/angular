@@ -104,13 +104,6 @@ do
       ../../../node_modules/.bin/rollup -c rollup.config.js
     ) 2>&1 | grep -v "as external dependency"
 
-    # workaround for https://github.com/rollup/rollup/issues/626
-    if [[ ${TRAVIS} ]]; then
-      sed -i    "s/ class exports\./ class /g" ${UMD_ES6_PATH}
-    else
-      sed -i '' "s/ class exports\./ class /g" ${UMD_ES6_PATH}
-    fi
-
     $(npm bin)/tsc  \
         --out ${UMD_ES5_PATH} \
         --target es5 \
