@@ -22,7 +22,7 @@ ln -s ../../../../node_modules/zone.js/dist/long-stack-trace-zone.js .
 ln -s ../../../../node_modules/systemjs/dist/system.src.js .
 ln -s ../../../../node_modules/base64-js/lib/b64.js .
 ln -s ../../../../node_modules/reflect-metadata/Reflect.js .
-ln -s ../../../../node_modules/rxjs/bundles/Rx.js .
+ln -s ../../../../node_modules/rxjs .
 ln -s ../../../../node_modules/angular/angular.js .
 cd -
 

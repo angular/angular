@@ -1,5 +1,4 @@
 import {
-  Provider,
   PLATFORM_INITIALIZER,
   PLATFORM_DIRECTIVES,
   PLATFORM_PIPES,
@@ -36,7 +35,8 @@ import {
 import {DomSharedStylesHost} from './dom/shared_styles_host';
 import {AnimationBuilder} from './animate/animation_builder';
 import {BrowserDetails} from './animate/browser_details';
-
+import {PlatformLocation} from '@angular/common';
+import {BrowserPlatformLocation} from './browser/location/browser_platform_location';
 export {Title} from './browser/title';
 export {BrowserDomAdapter} from './browser/browser_adapter';
 export {enableDebugTools, disableDebugTools} from './browser/tools/tools';
@@ -54,6 +54,7 @@ export const BROWSER_PROVIDERS: Array<any /*Type | Provider | any[]*/> = /*@ts2d
   /*@ts2dart_Provider*/ {provide: BROWSER_PLATFORM_MARKER, useValue: true},
   PLATFORM_COMMON_PROVIDERS,
   /*@ts2dart_Provider*/ {provide: PLATFORM_INITIALIZER, useValue: initDomAdapter, multi: true},
+  /*@ts2dart_Provider*/ {provide: PlatformLocation, useClass: BrowserPlatformLocation}
 ];
 
 function _exceptionHandler(): ExceptionHandler {
@@ -101,14 +102,9 @@ export const BROWSER_APP_COMMON_PROVIDERS: Array<any /*Type | Provider | any[]*/
     ];
 
 
-export {
-  HAMMER_GESTURE_CONFIG,
-  HammerGestureConfig
-} from '../src/dom/events/hammer_gestures'
+export {HAMMER_GESTURE_CONFIG, HammerGestureConfig} from '../src/dom/events/hammer_gestures';
 
-
-    export function
-    initDomAdapter() {
+export function initDomAdapter() {
   BrowserDomAdapter.makeCurrent();
   wtfInit();
   BrowserGetTestability.init();

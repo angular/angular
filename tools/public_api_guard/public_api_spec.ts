@@ -1241,7 +1241,7 @@ const BROWSER = [
   'disableDebugTools():void',
   'enableDebugTools(ref:ComponentRef<any>):void',
   'inspectNativeElement(element:any):DebugNode',
-  'browserStaticPlatform():PlatformRef'
+  'browserPlatform():PlatformRef'
 ];
 
 describe('public API', () => {

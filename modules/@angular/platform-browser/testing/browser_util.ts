@@ -45,7 +45,8 @@ export class BrowserDetection {
   }
 
   get isChromeDesktop(): boolean {
-    return this._ua.indexOf('Chrome') > -1 && this._ua.indexOf('Mobile Safari') == -1 && this._ua.indexOf('Edge') == -1;
+    return this._ua.indexOf('Chrome') > -1 && this._ua.indexOf('Mobile Safari') == -1 &&
+           this._ua.indexOf('Edge') == -1;
   }
 }
 

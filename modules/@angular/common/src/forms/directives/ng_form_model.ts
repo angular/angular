@@ -3,7 +3,6 @@ import {
   OnChanges,
   Directive,
   forwardRef,
-  Provider,
   Inject,
   Optional,
   Self

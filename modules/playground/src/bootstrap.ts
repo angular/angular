@@ -8,12 +8,9 @@ declare var System: any;
   writeScriptTag('/all/playground/vendor/long-stack-trace-zone.js');
   writeScriptTag('/all/playground/vendor/system.src.js');
   writeScriptTag('/all/playground/vendor/Reflect.js');
-  writeScriptTag('/all/playground/vendor/Rx.js', 'playgroundBootstrap()');
+  writeScriptTag('/all/playground/vendor/rxjs/bundles/Rx.js', 'playgroundBootstrap()');
   global.playgroundBootstrap = playgroundBootstrap;
 
-
-
-  ////////
   function playgroundBootstrap() {
     // check query param
     var useBundles = location.search.indexOf('bundles=false') == -1;
@@ -54,7 +51,8 @@ declare var System: any;
           '@angular/compiler': {main: 'index.js', defaultExtension: 'js'},
           '@angular/common': {main: 'index.js', defaultExtension: 'js'},
           '@angular/platform-browser': {main: 'index.js', defaultExtension: 'js'},
-          '@angular/platform-browser-dynamic': {main: 'index.js', defaultExtension: 'js'}
+          '@angular/platform-browser-dynamic': {main: 'index.js', defaultExtension: 'js'},
+          '@angular/router': {main: 'index.js', defaultExtension: 'js'},
           // 'rxjs': {
           //   defaultExtension: 'js'
           // }

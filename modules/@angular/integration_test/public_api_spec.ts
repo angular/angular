@@ -373,12 +373,12 @@ var PLATFORM_BROWSER: string[] = [
   'DOCUMENT',
   'ELEMENT_PROBE_PROVIDERS',
   'DomEventsPlugin',
+  'KeyEventsPlugin',
   'EVENT_MANAGER_PLUGINS',
   'EventManager',
   'HAMMER_GESTURE_CONFIG',
   'HammerGestureConfig',
   'bootstrapStatic',
-  'browserStaticPlatform',
   'browserPlatform',
   'BrowserPlatformLocation',
   'AngularEntrypoint:dart',
@@ -387,7 +387,32 @@ var PLATFORM_BROWSER: string[] = [
   'SecurityContext',
   'Title',
   'disableDebugTools',
-  'enableDebugTools'
+  'enableDebugTools',
+  'ClientMessageBroker',
+  'ClientMessageBrokerFactory',
+  'FnArg',
+  'MessageBus',
+  'PRIMITIVE',
+  'ReceivedMessage',
+  'ServiceMessageBroker',
+  'ServiceMessageBrokerFactory',
+  'UiArguments',
+  'WORKER_APP_APPLICATION_COMMON_PROVIDERS',
+  'WORKER_APP_APPLICATION_PROVIDERS',
+  'WORKER_APP_PLATFORM_PROVIDERS',
+  'WORKER_RENDER_APPLICATION_COMMON_PROVIDERS',
+  'WORKER_RENDER_APPLICATION_PROVIDERS',
+  'WORKER_RENDER_PLATFORM_PROVIDERS',
+  'WORKER_RENDER_STARTABLE_MESSAGING_SERVICE',
+  'WORKER_SCRIPT',
+  'WORKER_APP_LOCATION_PROVIDERS',
+  'WORKER_RENDER_LOCATION_PROVIDERS',
+  'workerAppPlatform',
+  'workerRenderPlatform',
+  'WebWorkerInstance',
+  'bootstrapStaticApp',
+  'bootstrapStaticRender',
+  'initializeGenericWorkerRenderer'
 ];
 
 var PLATFORM_BROWSER_TESTING: string[] = [
@@ -395,8 +420,6 @@ var PLATFORM_BROWSER_TESTING: string[] = [
   'TEST_BROWSER_STATIC_PLATFORM_PROVIDERS',
   'ADDITIONAL_TEST_BROWSER_PROVIDERS',  // This should be made private
   'BrowserDetection',
-  'DOMTestComponentRenderer',
-  'TestComponentRenderer',
   'browserDetection',
   'dispatchEvent',
   'el',
@@ -410,11 +433,19 @@ var PLATFORM_BROWSER_DYNAMIC: string[] = [
   'CACHED_TEMPLATE_PROVIDER',
   'bootstrap',
   'UrlChangeEvent:dart',
-  'UrlChangeListener:dart'
+  'UrlChangeListener:dart',
+  'WORKER_APP_DYNAMIC_APPLICATION_PROVIDERS',
+  'WORKER_RENDER_DYNAMIC_APPLICATION_PROVIDERS',
+  'bootstrapApp',
+  'bootstrapRender'
 ];
 
-var PLATFORM_BROWSER_DYNAMIC_TESTING: string[] =
-    ['TEST_BROWSER_DYNAMIC_APPLICATION_PROVIDERS', 'TEST_BROWSER_DYNAMIC_PLATFORM_PROVIDERS'];
+var PLATFORM_BROWSER_DYNAMIC_TESTING: string[] = [
+  'TEST_BROWSER_DYNAMIC_APPLICATION_PROVIDERS',
+  'TEST_BROWSER_DYNAMIC_PLATFORM_PROVIDERS',
+  'ADDITIONAL_DYNAMIC_TEST_BROWSER_PROVIDERS',
+  'DOMTestComponentRenderer'
+];
 
 var PLATFORM_SERVER: string[] = ['Parse5DomAdapter'];
 

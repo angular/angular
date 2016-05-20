@@ -11,8 +11,8 @@ import {
   Type,
   Testability
 } from '@angular/core';
-import {BROWSER_APP_DYNAMIC_PROVIDERS} from '@angular/platform-browser-dynamic';
 import {browserPlatform} from '@angular/platform-browser';
+import {BROWSER_APP_DYNAMIC_PROVIDERS} from '@angular/platform-browser-dynamic';
 import {getComponentInfo, ComponentInfo} from './metadata';
 import {onError, controllerKey} from './util';
 import {

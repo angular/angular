@@ -1,12 +1,11 @@
-import {Injectable} from '@angular/core/src/di';
+import {Injectable, RootRenderer, Renderer, RenderComponentType} from '@angular/core';
 import {MessageBus} from '../shared/message_bus';
 import {Serializer, PRIMITIVE, RenderStoreObject} from '../shared/serializer';
-import {RootRenderer, Renderer, RenderComponentType} from '@angular/core/src/render/api';
 import {EVENT_CHANNEL, RENDERER_CHANNEL} from '../shared/messaging_api';
-import {bind} from './bind';
 import {EventDispatcher} from '../ui/event_dispatcher';
 import {RenderStore} from '../shared/render_store';
 import {ServiceMessageBrokerFactory} from '../shared/service_message_broker';
+import {FunctionWrapper} from '../../facade/lang';
 
 @Injectable()
 export class MessageBasedRenderer {
@@ -22,55 +21,55 @@ export class MessageBasedRenderer {
     this._eventDispatcher = new EventDispatcher(this._bus.to(EVENT_CHANNEL), this._serializer);
 
     broker.registerMethod("renderComponent", [RenderComponentType, PRIMITIVE],
-                          bind(this._renderComponent, this));
+                          FunctionWrapper.bind(this._renderComponent, this));
 
     broker.registerMethod("selectRootElement", [RenderStoreObject, PRIMITIVE, PRIMITIVE],
-                          bind(this._selectRootElement, this));
+                          FunctionWrapper.bind(this._selectRootElement, this));
     broker.registerMethod("createElement",
                           [RenderStoreObject, RenderStoreObject, PRIMITIVE, PRIMITIVE],
-                          bind(this._createElement, this));
+                          FunctionWrapper.bind(this._createElement, this));
     broker.registerMethod("createViewRoot", [RenderStoreObject, RenderStoreObject, PRIMITIVE],
-                          bind(this._createViewRoot, this));
+                          FunctionWrapper.bind(this._createViewRoot, this));
     broker.registerMethod("createTemplateAnchor", [RenderStoreObject, RenderStoreObject, PRIMITIVE],
-                          bind(this._createTemplateAnchor, this));
+                          FunctionWrapper.bind(this._createTemplateAnchor, this));
     broker.registerMethod("createText",
                           [RenderStoreObject, RenderStoreObject, PRIMITIVE, PRIMITIVE],
-                          bind(this._createText, this));
+                          FunctionWrapper.bind(this._createText, this));
     broker.registerMethod("projectNodes", [RenderStoreObject, RenderStoreObject, RenderStoreObject],
-                          bind(this._projectNodes, this));
+                          FunctionWrapper.bind(this._projectNodes, this));
     broker.registerMethod("attachViewAfter",
                           [RenderStoreObject, RenderStoreObject, RenderStoreObject],
-                          bind(this._attachViewAfter, this));
+                          FunctionWrapper.bind(this._attachViewAfter, this));
     broker.registerMethod("detachView", [RenderStoreObject, RenderStoreObject],
-                          bind(this._detachView, this));
+                          FunctionWrapper.bind(this._detachView, this));
     broker.registerMethod("destroyView", [RenderStoreObject, RenderStoreObject, RenderStoreObject],
-                          bind(this._destroyView, this));
+                          FunctionWrapper.bind(this._destroyView, this));
     broker.registerMethod("setElementProperty",
                           [RenderStoreObject, RenderStoreObject, PRIMITIVE, PRIMITIVE],
-                          bind(this._setElementProperty, this));
+                          FunctionWrapper.bind(this._setElementProperty, this));
     broker.registerMethod("setElementAttribute",
                           [RenderStoreObject, RenderStoreObject, PRIMITIVE, PRIMITIVE],
-                          bind(this._setElementAttribute, this));
+                          FunctionWrapper.bind(this._setElementAttribute, this));
     broker.registerMethod("setBindingDebugInfo",
                           [RenderStoreObject, RenderStoreObject, PRIMITIVE, PRIMITIVE],
-                          bind(this._setBindingDebugInfo, this));
+                          FunctionWrapper.bind(this._setBindingDebugInfo, this));
     broker.registerMethod("setElementClass",
                           [RenderStoreObject, RenderStoreObject, PRIMITIVE, PRIMITIVE],
-                          bind(this._setElementClass, this));
+                          FunctionWrapper.bind(this._setElementClass, this));
     broker.registerMethod("setElementStyle",
                           [RenderStoreObject, RenderStoreObject, PRIMITIVE, PRIMITIVE],
-                          bind(this._setElementStyle, this));
+                          FunctionWrapper.bind(this._setElementStyle, this));
     broker.registerMethod("invokeElementMethod",
                           [RenderStoreObject, RenderStoreObject, PRIMITIVE, PRIMITIVE],
-                          bind(this._invokeElementMethod, this));
+                          FunctionWrapper.bind(this._invokeElementMethod, this));
     broker.registerMethod("setText", [RenderStoreObject, RenderStoreObject, PRIMITIVE],
-                          bind(this._setText, this));
+                          FunctionWrapper.bind(this._setText, this));
     broker.registerMethod("listen", [RenderStoreObject, RenderStoreObject, PRIMITIVE, PRIMITIVE],
-                          bind(this._listen, this));
+                          FunctionWrapper.bind(this._listen, this));
     broker.registerMethod("listenGlobal", [RenderStoreObject, PRIMITIVE, PRIMITIVE, PRIMITIVE],
-                          bind(this._listenGlobal, this));
+                          FunctionWrapper.bind(this._listenGlobal, this));
     broker.registerMethod("listenDone", [RenderStoreObject, RenderStoreObject],
-                          bind(this._listenDone, this));
+                          FunctionWrapper.bind(this._listenDone, this));
   }
 
   private _renderComponent(renderComponentType: RenderComponentType, rendererId: number) {

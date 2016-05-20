@@ -9,21 +9,18 @@ import {TreeDiffer, DiffResult} from './tree-differ';
 import stabilizeTree from './broccoli-tree-stabilizer';
 let symlinkOrCopy = require('symlink-or-copy');
 
-
 export {DiffResult} from './tree-differ';
 
+export type PluginClass = any;
 
 /**
  * Makes writing diffing plugins easy.
  *
  * Factory method that takes a class that implements the DiffingBroccoliPlugin interface and returns
  * an instance of BroccoliTree.
- *
- * @param pluginClass
- * @returns {DiffingBroccoliPlugin}
  */
-export function wrapDiffingPlugin(pluginClass): DiffingPluginWrapperFactory {
-  return function() { return new DiffingPluginWrapper(pluginClass, arguments); };
+export function wrapDiffingPlugin(pluginClass: PluginClass): DiffingPluginWrapperFactory {
+  return function() { return new DiffingPluginWrapper(pluginClass, arguments) };
 }
 
 
@@ -33,8 +30,8 @@ export interface DiffingBroccoliPlugin {
 }
 
 
-export type DiffingPluginWrapperFactory = (inputTrees: (BroccoliTree | BroccoliTree[]), options?) =>
-    BroccoliTree;
+export type DiffingPluginWrapperFactory =
+  (inputTrees: (BroccoliTree | BroccoliTree[]), options?: any) => BroccoliTree;
 
 
 class DiffingPluginWrapper implements BroccoliTree {
@@ -42,19 +39,19 @@ class DiffingPluginWrapper implements BroccoliTree {
   treeDiffers: TreeDiffer[] = null;
   initialized = false;
   wrappedPlugin: DiffingBroccoliPlugin = null;
-  inputTree = null;
-  inputTrees = null;
-  description = null;
+  inputTree: BroccoliTree = null;
+  inputTrees: BroccoliTree[] = null;
+  description: string = null;
 
   // props monkey-patched by broccoli builder:
-  inputPath = null;
-  inputPaths = null;
-  cachePath = null;
-  outputPath = null;
+  inputPath: string = null;
+  inputPaths: string[] = null;
+  cachePath: string = null;
+  outputPath: string = null;
 
   private diffResult: DiffResult = null;
 
-  constructor(private pluginClass, private wrappedPluginArguments) {
+  constructor(private pluginClass: PluginClass, private wrappedPluginArguments: IArguments) {
     if (Array.isArray(wrappedPluginArguments[0])) {
       this.inputTrees = this.stabilizeTrees(wrappedPluginArguments[0]);
     } else {
@@ -65,7 +62,7 @@ class DiffingPluginWrapper implements BroccoliTree {
   }
 
   private getDiffResult(): (DiffResult | DiffResult[]) {
-    let returnOrCalculateDiffResult = (tree, index) => {
+    let returnOrCalculateDiffResult = (tree: BroccoliTree, index: number) => {
       // returnOrCalculateDiffResult will do one of two things:
       //
       // If `this.diffResult` is null, calculate a DiffResult using TreeDiffer
@@ -74,16 +71,16 @@ class DiffingPluginWrapper implements BroccoliTree {
       // Otherwise, `this.diffResult` was produced from the output of the
       // inputTree's rebuild() method, and can be used without being checked.
       // Set `this.diffResult` to null and return the previously stored value.
-      let diffResult = tree.diffResult;
+      let diffResult = this.diffResult;
       if (diffResult) return diffResult;
-      let differ = index === false ? this.treeDiffer : this.treeDiffers[index];
+      let differ = index === -1 ? this.treeDiffer : this.treeDiffers[index];
       return differ.diffTree();
     };
 
     if (this.inputTrees) {
       return this.inputTrees.map(returnOrCalculateDiffResult);
     } else if (this.inputTree) {
-      return returnOrCalculateDiffResult(this.inputTree, false);
+      return returnOrCalculateDiffResult(this.inputTree, -1);
     } else {
       throw new Error("Missing TreeDiffer");
     }
@@ -160,7 +157,7 @@ class DiffingPluginWrapper implements BroccoliTree {
   private stabilizeTrees(trees: BroccoliTree[]) {
     // Prevent extensions to prevent array from being mutated from the outside.
     // For-loop used to avoid re-allocating a new array.
-    var stableTrees = [];
+    var stableTrees: BroccoliTree[] = [];
     for (let i = 0; i < trees.length; ++i) {
       // ignore null/undefined input tries in order to support conditional build pipelines
       if (trees[i]) {
@@ -182,8 +179,9 @@ class DiffingPluginWrapper implements BroccoliTree {
     // Since it's not safe to use instanceof operator in node, we are checking the constructor.name.
     //
     // New-style/rebuild trees should always be stable.
-    let isNewStyleTree = !!(tree['newStyleTree'] || typeof tree.rebuild === 'function' ||
-                            tree['isReadAPICompatTree'] || tree.constructor['name'] === 'Funnel');
+    let isNewStyleTree =
+        !!(tree['newStyleTree'] || typeof tree.rebuild === 'function' ||
+           (<any>tree)['isReadAPICompatTree'] || (<any>tree).constructor['name'] === 'Funnel');
 
     return isNewStyleTree ? tree : stabilizeTree(tree);
   }

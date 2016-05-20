@@ -257,14 +257,14 @@ export class Evaluator {
               const assignment = <ts.PropertyAssignment>child;
               const propertyName = this.nameOf(assignment.name);
               const propertyValue = this.evaluateNode(assignment.initializer);
-              obj[propertyName] = propertyValue;
+              (<any>obj)[propertyName] = propertyValue;
               allPropertiesDefined = isDefined(propertyValue) && allPropertiesDefined;
           }
         });
         if (allPropertiesDefined) return obj;
         break;
       case ts.SyntaxKind.ArrayLiteralExpression:
-        let arr = [];
+        let arr: MetadataValue[] = [];
         let allElementsDefined = true;
         ts.forEachChild(node, child => {
           const value = this.evaluateNode(child);
@@ -320,7 +320,7 @@ export class Evaluator {
         const propertyAccessExpression = <ts.PropertyAccessExpression>node;
         const expression = this.evaluateNode(propertyAccessExpression.expression);
         const member = this.nameOf(propertyAccessExpression.name);
-        if (this.isFoldable(propertyAccessExpression.expression)) return expression[member];
+        if (this.isFoldable(propertyAccessExpression.expression)) return (<any>expression)[member];
         if (this.findImportNamespace(propertyAccessExpression)) {
           return this.nodeSymbolReference(propertyAccessExpression);
         }
@@ -335,7 +335,7 @@ export class Evaluator {
         const index = this.evaluateNode(elementAccessExpression.argumentExpression);
         if (this.isFoldable(elementAccessExpression.expression) &&
             this.isFoldable(elementAccessExpression.argumentExpression))
-          return expression[<string | number>index];
+          return (<any>expression)[<string | number>index];
         if (isDefined(expression) && isDefined(index)) {
           return {__symbolic: "index", expression, index};
         }

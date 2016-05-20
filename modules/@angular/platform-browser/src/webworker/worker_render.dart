@@ -2,7 +2,7 @@ library angular2.src.platform.worker_render;
 
 import 'package:angular2/src/platform/worker_render_common.dart'
     show
-        WORKER_RENDER_APPLICATION_COMMON,
+        WORKER_RENDER_APPLICATION_COMMON_PROVIDERS,
         WORKER_RENDER_MESSAGING_PROVIDERS,
         WORKER_SCRIPT,
         initializeGenericWorkerRenderer;
@@ -13,7 +13,7 @@ import 'package:angular2/src/core/di.dart';
 import 'dart:isolate';
 import 'dart:async';
 
-const WORKER_RENDER_APP = WORKER_RENDER_APPLICATION_COMMON;
+const WORKER_RENDER_APP_PROVIDERS = WORKER_RENDER_APPLICATION_COMMON_PROVIDERS;
 
 Future<List> initIsolate(String scriptUri) async {
   var instance = await spawnIsolate(Uri.parse(scriptUri));

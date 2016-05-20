@@ -3,12 +3,14 @@
 import fse = require('fs-extra');
 import path = require('path');
 import {wrapDiffingPlugin, DiffingBroccoliPlugin, DiffResult} from './diffing-broccoli-plugin';
+import {AngularBuilderOptions} from './angular_builder';
+
 var spawn = require('child_process').spawn;
 var exec = require('child_process').exec;
 
-function processToPromise(process) {
+function processToPromise(process: NodeJS.Process) {
   return new Promise(function(resolve, reject) {
-    process.on('close', function(code) {
+    process.on('close', function(code: number) {
       if (code) {
         reject(code);
       } else {
@@ -23,7 +25,7 @@ class DartFormatter implements DiffingBroccoliPlugin {
   private verbose: boolean;
   private firstBuild: boolean = true;
 
-  constructor(public inputPath: string, public cachePath: string, options) {
+  constructor(public inputPath: string, public cachePath: string, options: AngularBuilderOptions) {
     if (!options.dartSDK) throw new Error("Missing Dart SDK");
     this.DARTFMT = options.dartSDK.DARTFMT;
     this.verbose = options.logs.dartfmt;
@@ -32,7 +34,7 @@ class DartFormatter implements DiffingBroccoliPlugin {
   rebuild(treeDiff: DiffResult): Promise<any> {
     let args = ['-w'];
     let argsLength = 2;
-    let argPackages = [];
+    let argPackages: string[][] = [];
     let firstBuild = this.firstBuild;
     treeDiff.addedPaths.concat(treeDiff.changedPaths)
         .forEach((changedFile) => {
@@ -59,10 +61,10 @@ class DartFormatter implements DiffingBroccoliPlugin {
       argPackages.push(args);
     }
 
-    let execute = (args) => {
+    let execute = (args: string[]) => {
       if (args.length < 2) return Promise.resolve();
       return new Promise((resolve, reject) => {
-        exec(this.DARTFMT + ' ' + args.join(' '), (err, stdout, stderr) => {
+        exec(this.DARTFMT + ' ' + args.join(' '), (err: Error, stdout: string, stderr: string) => {
           if (this.verbose) {
             console.log(stdout);
           }
@@ -91,9 +93,9 @@ export default wrapDiffingPlugin(DartFormatter);
 var ARROW_LINE = /^(\s+)\^+/;
 var BEFORE_CHARS = 15;
 var stripAnsi = require('strip-ansi');
-function shortenFormatterOutput(formatterOutput) {
+function shortenFormatterOutput(formatterOutput: string) {
   var lines = formatterOutput.split('\n');
-  var match, line;
+  var match: string, line: string;
   for (var i = 0; i < lines.length; i += 1) {
     line = lines[i];
     if (match = stripAnsi(line).match(ARROW_LINE)) {

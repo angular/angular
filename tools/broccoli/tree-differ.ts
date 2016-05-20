@@ -4,7 +4,7 @@ import fs = require('fs');
 import path = require('path');
 
 
-function tryStatSync(path) {
+function tryStatSync(path: string) {
   try {
     return fs.statSync(path);
   } catch (e) {
@@ -25,12 +25,12 @@ export class TreeDiffer {
               excludeExtensions?: string[]) {
     this.rootDirName = path.basename(rootPath);
 
-    let buildRegexp = (arr) => new RegExp(`(${arr.reduce(combine, "")})$`, "i");
+    let buildRegexp = (arr: string[]) => new RegExp(`(${arr.reduce(combine, "")})$`, "i");
 
     this.include = (includeExtensions || []).length ? buildRegexp(includeExtensions) : null;
     this.exclude = (excludeExtensions || []).length ? buildRegexp(excludeExtensions) : null;
 
-    function combine(prev, curr) {
+    function combine(prev: string, curr: string) {
       if (curr.charAt(0) !== ".") {
         throw new Error(`Extension must begin with '.'. Was: '${curr}'`);
       }
@@ -150,7 +150,7 @@ class DirtyCheckingDiffResult extends DiffResult {
            `(files: ${pad(this.filesChecked, 5)}, dirs: ${pad(this.directoriesChecked, 4)})`;
   }
 
-  log(verbose) {
+  log(verbose: boolean) {
     let prefixedPaths = this.addedPaths.map(p => `+ ${p}`)
                             .concat(this.changedPaths.map(p => `* ${p}`))
                             .concat(this.removedPaths.map(p => `- ${p}`));
@@ -161,8 +161,8 @@ class DirtyCheckingDiffResult extends DiffResult {
 }
 
 
-function pad(value, length) {
-  value = '' + value;
+function pad(v: string | number, length: number) {
+  let value = '' + v;
   let whitespaceLength = (value.length < length) ? length - value.length : 0;
   whitespaceLength = whitespaceLength + 1;
   return new Array(whitespaceLength).join(' ') + value;

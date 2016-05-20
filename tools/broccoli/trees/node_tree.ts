@@ -14,7 +14,7 @@ var writeFile = require('broccoli-file-creator');
 
 var projectRootDir = path.normalize(path.join(__dirname, '..', '..', '..', '..'));
 
-module.exports = function makeNodeTree(projects, destinationPath) {
+module.exports = function makeNodeTree(projects: string[], destinationPath: string) {
   // list of npm packages that this build will create
   var outputPackages = ['angular2', 'benchpress'];
 
@@ -206,7 +206,7 @@ module.exports = function makeNodeTree(projects, destinationPath) {
                 `var parse5Adapter = require('angular2/src/platform/server/parse5_adapter');\r\n` +
                 `parse5Adapter.Parse5DomAdapter.makeCurrent();`
       },
-      {match: /$/, replacement: (_, relativePath) => "\r\n main(); \r\n"}
+      {match: /$/, replacement: (_: any, relativePath: string) => "\r\n main(); \r\n"}
     ]
   });
 
@@ -218,7 +218,8 @@ module.exports = function makeNodeTree(projects, destinationPath) {
   return destCopy(nodeTree, destinationPath);
 };
 
-function compileTree(tree, genInternalTypings, rootFilePaths: string[] = []) {
+function compileTree(tree: BroccoliTree, genInternalTypings: boolean,
+                     rootFilePaths: string[] = []) {
   return compileWithTypescript(tree, {
     // build pipeline options
     "rootFilePaths": rootFilePaths,
@@ -238,12 +239,12 @@ function compileTree(tree, genInternalTypings, rootFilePaths: string[] = []) {
   });
 }
 
-function extractDocs(tree) {
+function extractDocs(tree: BroccoliTree) {
   var docs = new Funnel(tree, {include: ['**/*.md', '**/*.png'], exclude: ['**/*.dart.md']});
   return stew.rename(docs, 'README.js.md', 'README.md');
 }
 
-function extractPkgJsons(tree, BASE_PACKAGE_JSON) {
+function extractPkgJsons(tree: BroccoliTree, BASE_PACKAGE_JSON: any) {
   // Generate shared package.json info
   var COMMON_PACKAGE_JSON = {
     version: BASE_PACKAGE_JSON.version,

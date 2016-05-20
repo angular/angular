@@ -104,9 +104,9 @@ function getSourceTree(options: AngularBuilderOptions) {
   return mergeTrees([compiledTree, generatedDartTestFiles], {overwrite: true});
 }
 
-function fixDartFolderLayout(sourceTree) {
+function fixDartFolderLayout(sourceTree: BroccoliTree) {
   // Move around files to match Dart's layout expectations.
-  return stew.rename(sourceTree, function(relativePath) {
+  return stew.rename(sourceTree, function(relativePath: string) {
     // If a file matches the `pattern`, insert the given `insertion` as the second path part.
     var replacements = [
       {pattern: /^benchmarks\/test\//, insertion: ''},
@@ -139,7 +139,7 @@ function getHtmlSourcesTree() {
       {files: ['*/**'], patterns: [{match: '$SCRIPTS$', replacement: replaceScriptTagInHtml}]});
 
   // Copy a url_params_to_form.js for each benchmark html file.
-  var urlParamsToFormTree = new MultiCopy('', {
+  var urlParamsToFormTree = new MultiCopy(<any>'', {
     srcPath: 'tools/build/snippets/url_params_to_form.js',
     targetPatterns: ['modules/benchmarks*/src/*', 'modules/benchmarks*/src/*/*'],
   });
@@ -173,7 +173,7 @@ function getTemplatedPubspecsTree() {
 
 function getDocsTree() {
   // LICENSE files
-  var licenses = new MultiCopy('', {
+  var licenses = new MultiCopy(<any>'', {
     srcPath: 'LICENSE',
     targetPatterns: ['modules/*'],
     exclude: [
@@ -190,7 +190,7 @@ function getDocsTree() {
   // Documentation.
   // Rename *.dart.md -> *.dart.
   var mdTree = stew.rename(modulesFunnel(['**/*.dart.md']),
-                           relativePath => relativePath.replace(/\.dart\.md$/, '.md'));
+                           (relativePath: string) => relativePath.replace(/\.dart\.md$/, '.md'));
   // Copy all assets, ignore .js. and .dart. (handled above).
   var docs = modulesFunnel(['**/*.md', '**/*.png', '**/*.html', '**/*.css', '**/*.scss'],
                            ['**/*.js.md', '**/*.dart.md', 'angular1_router/**/*']);

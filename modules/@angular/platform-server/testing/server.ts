@@ -4,7 +4,6 @@ import {
   PLATFORM_COMMON_PROVIDERS,
   PLATFORM_INITIALIZER,
   APPLICATION_COMMON_PROVIDERS,
-  Renderer,
 } from '@angular/core';
 import {DirectiveResolver, ViewResolver} from '@angular/compiler';
 import {TestComponentBuilder} from '@angular/compiler/testing';
@@ -36,7 +35,7 @@ import {
 import {DomEventsPlugin} from '@angular/platform-browser';
 import {LocationStrategy} from '@angular/common';
 import {Log} from '@angular/core/testing';
-import {DOMTestComponentRenderer} from '@angular/platform-browser/testing';
+import {DOMTestComponentRenderer} from '@angular/platform-browser-dynamic/testing';
 import {TestComponentRenderer} from '@angular/compiler/testing';
 
 function initServerTests() {

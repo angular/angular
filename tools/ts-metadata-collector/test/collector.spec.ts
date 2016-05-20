@@ -1,6 +1,6 @@
 import * as ts from 'typescript';
 import {MetadataCollector} from '../src/collector';
-import {ClassMetadata} from '../src/schema';
+import {ClassMetadata, ModuleMetadata} from '../src/schema';
 
 import {Directory, expectValidSources, Host} from './typescript.mocks';
 
@@ -185,8 +185,8 @@ describe('Collector', () => {
     expect(metadata).toBeFalsy();
   });
 
-  let casesFile;
-  let casesMetadata;
+  let casesFile: ts.SourceFile;
+  let casesMetadata: ModuleMetadata;
 
   beforeEach(() => {
     casesFile = program.getSourceFile('/app/cases-data.ts');

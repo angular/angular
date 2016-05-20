@@ -2,24 +2,19 @@ import {
   Renderer,
   RootRenderer,
   RenderComponentType,
-  RenderDebugInfo
-} from '@angular/core/src/render/api';
-import {
-  ClientMessageBroker,
-  ClientMessageBrokerFactory,
-  FnArg,
-  UiArguments
-} from '../shared/client_message_broker';
-import {isPresent, isBlank, print} from '../../../src/facade/lang';
+  Injectable,
+  ViewEncapsulation
+} from '@angular/core';
+import {RenderDebugInfo} from '../../../core_private';
+
+import {ClientMessageBrokerFactory, FnArg, UiArguments} from '../shared/client_message_broker';
+import {isPresent, isBlank} from '../../../src/facade/lang';
 import {ListWrapper} from '../../../src/facade/collection';
-import {Injectable} from '@angular/core/src/di';
 import {RenderStore} from '../shared/render_store';
-import {RENDERER_CHANNEL} from '../shared/messaging_api';
+import {RENDERER_CHANNEL, EVENT_CHANNEL} from '../shared/messaging_api';
 import {Serializer, RenderStoreObject} from '../shared/serializer';
-import {EVENT_CHANNEL} from '../shared/messaging_api';
 import {MessageBus} from '../shared/message_bus';
 import {ObservableWrapper} from '../../../src/facade/async';
-import {ViewEncapsulation} from '@angular/core';
 import {deserializeGenericEvent} from './event_deserializer';
 
 @Injectable()

@@ -1,16 +1,13 @@
-import {
-  inject,
-  describe,
-  it,
-  expect,
-  beforeEach,
-  beforeEachProviders
-} from '@angular/core/testing/testing_internal';
+import {inject, describe, it, expect} from '@angular/core/testing/testing_internal';
 import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
-import {SpyMessageBroker} from './spies';
-import {WebWorkerXHRImpl} from '@angular/platform-browser/src/web_workers/worker/xhr_impl';
+
+import {SpyMessageBroker} from '@angular/platform-browser/test/web_workers/worker/spies';
+import {WebWorkerXHRImpl} from '@angular/platform-browser-dynamic/src/web_workers/worker/xhr_impl';
 import {PromiseWrapper} from '../../../src/facade/async';
-import {MockMessageBrokerFactory, expectBrokerCall} from '../shared/web_worker_test_util';
+import {
+  MockMessageBrokerFactory,
+  expectBrokerCall
+} from '@angular/platform-browser/test/web_workers/shared/web_worker_test_util';
 
 export function main() {
   describe("WebWorkerXHRImpl", () => {

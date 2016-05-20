@@ -40,6 +40,8 @@ class MockBrowserXHR extends BrowserXhr {
   status: number;
   responseHeaders: string;
   responseURL: string;
+  statusText: string;
+
   constructor() {
     super();
     var spy = new SpyObject();
@@ -50,6 +52,8 @@ class MockBrowserXHR extends BrowserXhr {
   }
 
   setStatusCode(status: number) { this.status = status; }
+
+  setStatusText(statusText: string) { this.statusText = statusText; }
 
   setResponse(value: string) { this.response = value; }
 
@@ -354,6 +358,35 @@ export function main() {
            existingXHRs[0].setStatusCode(statusCode);
            existingXHRs[0].dispatchEvent('load');
          }));
+
+      it('should set the status text property from the XMLHttpRequest instance if present',
+         inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+           var statusText = 'test';
+           var connection = new XHRConnection(sampleRequest, new MockBrowserXHR());
+
+           connection.response.subscribe((res: Response) => {
+             expect(res.statusText).toBe(statusText);
+             async.done();
+           });
+
+           existingXHRs[0].setStatusText(statusText);
+           existingXHRs[0].setStatusCode(200);
+           existingXHRs[0].dispatchEvent('load');
+         }));
+
+      it('should set status text to "OK" if it is not present in XMLHttpRequest instance',
+         inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+           var connection = new XHRConnection(sampleRequest, new MockBrowserXHR());
+
+           connection.response.subscribe((res: Response) => {
+             expect(res.statusText).toBe('OK');
+             async.done();
+           });
+
+           existingXHRs[0].setStatusCode(200);
+           existingXHRs[0].dispatchEvent('load');
+         }));
+
     });
   });
 }

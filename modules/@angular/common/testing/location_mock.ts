@@ -9,19 +9,19 @@ import {Location} from '../index';
 export class SpyLocation implements Location {
   urlChanges: string[] = [];
   /** @internal */
-  _path: string = '';
+  private _history: LocationState[] = [new LocationState('', '')];
   /** @internal */
-  _query: string = '';
+  private _historyIndex: number = 0;
   /** @internal */
   _subject: EventEmitter<any> = new EventEmitter();
   /** @internal */
   _baseHref: string = '';
 
-  setInitialPath(url: string) { this._path = url; }
+  setInitialPath(url: string) { this._history[this._historyIndex].path = url; }
 
   setBaseHref(url: string) { this._baseHref = url; }
 
-  path(): string { return this._path; }
+  path(): string { return this._history[this._historyIndex].path; }
 
   simulateUrlPop(pathname: string) {
     ObservableWrapper.callEmit(this._subject, {'url': pathname, 'pop': true});
@@ -43,11 +43,17 @@ export class SpyLocation implements Location {
 
   go(path: string, query: string = '') {
     path = this.prepareExternalUrl(path);
-    if (this._path == path && this._query == query) {
+
+    if (this._historyIndex > 0) {
+      this._history.splice(this._historyIndex + 1);
+    }
+    this._history.push(new LocationState(path, query));
+    this._historyIndex = this._history.length - 1;
+
+    var locationState = this._history[this._historyIndex - 1];
+    if(locationState.path == path && locationState.query == query) {
       return;
     }
-    this._path = path;
-    this._query = query;
 
     var url = path + (query.length > 0 ? ('?' + query) : '');
     this.urlChanges.push(url);
@@ -55,19 +61,26 @@ export class SpyLocation implements Location {
 
   replaceState(path: string, query: string = '') {
     path = this.prepareExternalUrl(path);
-    this._path = path;
-    this._query = query;
+
+    this._history[this._historyIndex].path = path;
+    this._history[this._historyIndex].query = query;
 
     var url = path + (query.length > 0 ? ('?' + query) : '');
     this.urlChanges.push('replace: ' + url);
   }
 
   forward() {
-    // TODO
+    if (this._historyIndex < (this._history.length - 1)) {
+      this._historyIndex++;
+      ObservableWrapper.callEmit(this._subject, {'url': this.path(), 'pop': true})
+    }
   }
 
   back() {
-    // TODO
+    if (this._historyIndex > 0) {
+      this._historyIndex--;
+      ObservableWrapper.callEmit(this._subject, {'url': this.path(), 'pop': true})
+    }
   }
 
   subscribe(onNext: (value: any) => void, onThrow: (error: any) => void = null,
@@ -78,4 +91,13 @@ export class SpyLocation implements Location {
   // TODO: remove these once Location is an interface, and can be implemented cleanly
   platformStrategy: any = null;
   normalize(url: string): string { return null; }
+}
+
+class LocationState {
+  path: string;
+  query: string;
+  constructor(path: string, query: string) {
+    this.path = path;
+    this.query = query;
+  }
 }

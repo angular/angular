@@ -13,7 +13,7 @@ Angular
 Angular is a development platform for building mobile and desktop web applications. This is the
 repository for [Angular 2][ng2], both the JavaScript (JS) and [Dart][dart] versions.
 
-Angular 2 is currently in **Beta**.
+Angular 2 is currently in **Release Candidate**.
 
 ## Quickstart
 

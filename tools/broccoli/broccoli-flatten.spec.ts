@@ -10,11 +10,11 @@ import {DiffingFlatten} from './broccoli-flatten';
 describe('Flatten', () => {
   afterEach(() => mockfs.restore());
 
-  function flatten(inputPaths) { return new DiffingFlatten(inputPaths, 'output', null); }
-
-  function read(path) { return fs.readFileSync(path, {encoding: "utf-8"}); }
-  function rm(path) { return fs.unlinkSync(path); }
-  function write(path, content) { fs.writeFileSync(path, content, {encoding: "utf-8"}); }
+  let flatten = (inputPaths: string) => new DiffingFlatten(inputPaths, 'output', null);
+  let read = (path: string) => fs.readFileSync(path, {encoding: "utf-8"});
+  let rm = (path: string) => fs.unlinkSync(path);
+  let write =
+      (path: string, content: string) => { fs.writeFileSync(path, content, {encoding: "utf-8"}); }
 
 
   it('should flatten files and be incremental', () => {

@@ -11,29 +11,29 @@ require('zone.js/dist/fake-async-test.js');
 require('reflect-metadata/Reflect');
 
 var jrunner = new JasmineRunner();
-var distAll = process.cwd() + '/dist/all';
-function distAllRequire(moduleId) {
+var distAll: string = process.cwd() + '/dist/all';
+function distAllRequire(moduleId: string) {
   return require(path.join(distAll, moduleId));
 }
 
 
 // Tun on full stack traces in errors to help debugging
-Error['stackTraceLimit'] = Infinity;
+(<any>Error)['stackTraceLimit'] = Infinity;
 
 jrunner.jasmine.DEFAULT_TIMEOUT_INTERVAL = 100;
 
 // Support passing multiple globs
 var globsIndex = process.argv.indexOf('--');
-var args;
+var args: string[];
 if (globsIndex < 0) {
   args = [process.argv[2]];
 } else {
   args = process.argv.slice(globsIndex + 1);
 }
 
-var specFiles =
-    args.map(function(globstr) {
-          var tests = glob.sync(globstr, {
+var specFiles: any =
+    args.map(function(globstr: string): string[] {
+          var tests: string[] = glob.sync(globstr, {
             cwd: distAll,
             ignore: [
               // the following code and tests are not compatible with CJS/node environment
@@ -56,19 +56,19 @@ var specFiles =
               glob.sync('@angular/platform-browser/test/security/**/*_spec.js', {cwd: distAll}));
           return tests;
         })
-        .reduce(function(specFiles, paths) { return specFiles.concat(paths); }, []);
+        .reduce((specFiles: string[], paths: string[]) => specFiles.concat(paths), <string[]>[]);
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 100;
 
 jrunner.configureDefaultReporter({showColors: process.argv.indexOf('--no-color') === -1});
 
-jrunner.onComplete(function(passed) { process.exit(passed ? 0 : 1); });
+jrunner.onComplete(function(passed: boolean) { process.exit(passed ? 0 : 1); });
 jrunner.projectBaseDir = path.resolve(__dirname, '../../');
 jrunner.specDir = '';
 require('./test-cjs-main.js');
 require('zone.js/dist/jasmine-patch.js');
 distAllRequire('@angular/platform-server/src/parse5_adapter.js').Parse5DomAdapter.makeCurrent();
-specFiles.forEach((file) => {
+specFiles.forEach((file: string) => {
   var r = distAllRequire(file);
   if (r.main) r.main();
 });

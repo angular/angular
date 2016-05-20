@@ -37,7 +37,7 @@ export class Host implements ts.LanguageServiceHost {
     if (names.length && names[0] === '') names.shift();
     for (const name of names) {
       if (!current || typeof current === 'string') return undefined;
-      current = current[name];
+      current = (<any>current)[name];
     }
     if (typeof current === 'string') return current;
   }
@@ -120,7 +120,7 @@ export function expectValidSources(service: ts.LanguageService, program: ts.Prog
   }
 }
 
-export function allChildren<T>(node: ts.Node, cb: (node: ts.Node) => T) {
+export function allChildren<T>(node: ts.Node, cb: (node: ts.Node) => T): T {
   return ts.forEachChild(node, child => {
     const result = cb(node);
     if (result) {

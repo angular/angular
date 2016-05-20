@@ -11,7 +11,7 @@ import {wrapDiffingPlugin, DiffingBroccoliPlugin, DiffResult} from './diffing-br
  * and tees a copy to the given path outside the tmp dir.
  */
 class DestCopy implements DiffingBroccoliPlugin {
-  constructor(private inputPath, private cachePath, private outputRoot: string) {}
+  constructor(private inputPath: string, private cachePath: string, private outputRoot: string) {}
 
 
   rebuild(treeDiff: DiffResult) {

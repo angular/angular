@@ -1,6 +1,4 @@
 import {ROUTER_PROVIDERS_COMMON} from './router_providers_common';
-import {BrowserPlatformLocation} from '@angular/platform-browser';
-import {PlatformLocation} from '@angular/common';
 
 /**
  * A list of {@link Provider}s. To use the router, you must add this to your application.
@@ -24,7 +22,5 @@ import {PlatformLocation} from '@angular/common';
  * bootstrap(AppCmp, [ROUTER_PROVIDERS]);
  * ```
  */
-export const ROUTER_PROVIDERS: any[] = /*@ts2dart_const*/[
-  ROUTER_PROVIDERS_COMMON,
-  /*@ts2dart_Provider*/ {provide: PlatformLocation, useClass: BrowserPlatformLocation},
-];
+// TODO: merge with router_providers_common.ts
+export const ROUTER_PROVIDERS: any[] = /*@ts2dart_const*/[ROUTER_PROVIDERS_COMMON];
