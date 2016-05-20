@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "target": "es6",
+    "noImplicitAny": false,
+    "outDir": "dist/es6",
+    "rootDir": "src",
+    "sourceMap": true,
+    "sourceRoot": "./",
+    "declaration": true,
+    "removeComments": true,
+    "moduleResolution": "node"
+  },
+  "files": [
+    "src/router.ts"
+  ]
+}
