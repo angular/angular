@@ -1,5 +1,5 @@
-import {HtmlParser, HtmlParseTreeResult} from '../html_parser';
-import {ParseSourceSpan, ParseError} from '../parse_util';
+import {HtmlParser, HtmlParseTreeResult} from "../html_parser";
+import {ParseSourceSpan, ParseError} from "../parse_util";
 import {
   HtmlAst,
   HtmlAstVisitor,
@@ -10,31 +10,28 @@ import {
   HtmlExpansionAst,
   HtmlExpansionCaseAst,
   htmlVisitAll
-} from '../html_ast';
-import {ListWrapper, StringMapWrapper} from '../../src/facade/collection';
-import {RegExpWrapper, NumberWrapper, isPresent} from '../../src/facade/lang';
-import {BaseException} from '../../src/facade/exceptions';
-import {Parser} from '../expression_parser/parser';
-import {id} from './message';
-import {expandNodes} from './expander';
+} from "../html_ast";
+import {ListWrapper, StringMapWrapper} from "../facade/collection";
+import {RegExpWrapper, NumberWrapper, isPresent} from "../facade/lang";
+import {BaseException} from "../facade/exceptions";
+import {Parser} from "../expression_parser/parser";
+import {id} from "./message";
+import {expandNodes} from "./expander";
 import {
-  messageFromAttribute,
+  messageFromI18nAttribute,
   I18nError,
   I18N_ATTR_PREFIX,
   I18N_ATTR,
   partition,
   Part,
-  stringifyNodes,
-  meaning,
   getPhNameFromBinding,
-  dedupePhName
-} from './shared';
+  dedupePhName,
+  messageFromAttribute
+} from "./shared";
 
-const _I18N_ATTR = "i18n";
 const _PLACEHOLDER_ELEMENT = "ph";
 const _NAME_ATTR = "name";
-const _I18N_ATTR_PREFIX = "i18n-";
-let _PLACEHOLDER_EXPANDED_REGEXP = RegExpWrapper.create(`\\<ph(\\s)+name=("(\\w)+")\\>\\<\\/ph\\>`);
+let _PLACEHOLDER_EXPANDED_REGEXP = /<ph(\s)+name=("(\w)+")><\/ph>/gi;
 
 /**
  * Creates an i18n-ed version of the parsed template.
@@ -120,13 +117,15 @@ export class I18nHtmlParser implements HtmlParser {
   errors: ParseError[];
 
   constructor(private _htmlParser: HtmlParser, private _parser: Parser,
-              private _messagesContent: string, private _messages: {[key: string]: HtmlAst[]}) {}
+              private _messagesContent: string, private _messages: {[key: string]: HtmlAst[]},
+              private _implicitTags: string[], private _implicitAttrs: {[k: string]: string[]}) {}
 
   parse(sourceContent: string, sourceUrl: string,
         parseExpansionForms: boolean = false): HtmlParseTreeResult {
     this.errors = [];
 
     let res = this._htmlParser.parse(sourceContent, sourceUrl, true);
+
     if (res.errors.length > 0) {
       return res;
     } else {
@@ -184,7 +183,7 @@ export class I18nHtmlParser implements HtmlParser {
   }
 
   private _recurse(nodes: HtmlAst[]): HtmlAst[] {
-    let ps = partition(nodes, this.errors);
+    let ps = partition(nodes, this.errors, this._implicitTags);
     return ListWrapper.flatten(ps.map(p => this._processI18nPart(p)));
   }
 
@@ -281,17 +280,26 @@ export class I18nHtmlParser implements HtmlParser {
 
   private _i18nAttributes(el: HtmlElementAst): HtmlAttrAst[] {
     let res = [];
+    let implicitAttrs: string[] =
+        isPresent(this._implicitAttrs[el.name]) ? this._implicitAttrs[el.name] : [];
+
     el.attrs.forEach(attr => {
       if (attr.name.startsWith(I18N_ATTR_PREFIX) || attr.name == I18N_ATTR) return;
 
-      let i18ns = el.attrs.filter(a => a.name == `i18n-${attr.name}`);
+      let message;
+
+      let i18ns = el.attrs.filter(a => a.name == `${I18N_ATTR_PREFIX}${attr.name}`);
+
       if (i18ns.length == 0) {
-        res.push(attr);
-        return;
+        if (implicitAttrs.indexOf(attr.name) == -1) {
+          res.push(attr);
+          return;
+        }
+        message = messageFromAttribute(this._parser, attr);
+      } else {
+        message = messageFromI18nAttribute(this._parser, el, i18ns[0]);
       }
 
-      let i18n = i18ns[0];
-      let message = messageFromAttribute(this._parser, el, i18n);
       let messageId = id(message);
 
       if (StringMapWrapper.contains(this._messages, messageId)) {

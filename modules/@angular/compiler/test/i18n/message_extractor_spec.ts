@@ -23,7 +23,7 @@ export function main() {
     beforeEach(() => {
       let htmlParser = new HtmlParser();
       var parser = new Parser(new Lexer());
-      extractor = new MessageExtractor(htmlParser, parser);
+      extractor = new MessageExtractor(htmlParser, parser, ['i18n-tag'], {'i18n-el': ['trans']});
     });
 
     it('should extract from elements with the i18n attr', () => {
@@ -203,6 +203,30 @@ export function main() {
           .toEqual([
             new Message("message", "meaning", "desc1"),
           ]);
+    });
+
+    describe('implicit translation', () => {
+      it('should extract from elements', () => {
+        let res = extractor.extract("<i18n-tag>message</i18n-tag>", "someurl");
+        expect(res.messages).toEqual([new Message("message", null, null)]);
+      });
+
+      it('should extract meaning and description from elements when present', () => {
+        let res =
+            extractor.extract("<i18n-tag i18n='meaning|description'>message</i18n-tag>", "someurl");
+        expect(res.messages).toEqual([new Message("message", "meaning", "description")]);
+      });
+
+      it('should extract from attributes', () => {
+        let res = extractor.extract(`<i18n-el trans='message'></i18n-el>`, "someurl");
+        expect(res.messages).toEqual([new Message("message", null, null)]);
+      });
+
+      it('should extract meaning and description from attributes when present', () => {
+        let res = extractor.extract(`<i18n-el trans='message' i18n-trans="meaning|desc"></i18n-el>`,
+                                    "someurl");
+        expect(res.messages).toEqual([new Message("message", "meaning", "desc")]);
+      });
     });
 
     describe("errors", () => {

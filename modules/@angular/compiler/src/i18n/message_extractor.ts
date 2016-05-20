@@ -1,29 +1,19 @@
-import {HtmlParser} from '../html_parser';
-import {ParseSourceSpan, ParseError} from '../parse_util';
-import {
-  HtmlAst,
-  HtmlAstVisitor,
-  HtmlElementAst,
-  HtmlAttrAst,
-  HtmlTextAst,
-  HtmlCommentAst,
-  htmlVisitAll
-} from '../html_ast';
-import {isPresent} from '../../src/facade/lang';
-import {StringMapWrapper} from '../../src/facade/collection';
-import {Parser} from '../expression_parser/parser';
-import {Message, id} from './message';
-import {expandNodes} from './expander';
+import {HtmlParser} from "../html_parser";
+import {ParseError} from "../parse_util";
+import {HtmlAst, HtmlElementAst} from "../html_ast";
+import {isPresent} from "../facade/lang";
+import {StringMapWrapper} from "../facade/collection";
+import {Parser} from "../expression_parser/parser";
+import {Message, id} from "./message";
+import {expandNodes} from "./expander";
 import {
   I18nError,
   Part,
   I18N_ATTR_PREFIX,
   partition,
-  meaning,
-  description,
-  stringifyNodes,
+  messageFromI18nAttribute,
   messageFromAttribute
-} from './shared';
+} from "./shared";
 
 /**
  * All messages extracted from a template.
@@ -116,7 +106,8 @@ export class MessageExtractor {
   messages: Message[];
   errors: ParseError[];
 
-  constructor(private _htmlParser: HtmlParser, private _parser: Parser) {}
+  constructor(private _htmlParser: HtmlParser, private _parser: Parser,
+              private _implicitTags: string[], private _implicitAttrs: {[k: string]: string[]}) {}
 
   extract(template: string, sourceUrl: string): ExtractionResult {
     this.messages = [];
@@ -146,7 +137,7 @@ export class MessageExtractor {
 
   private _recurse(nodes: HtmlAst[]): void {
     if (isPresent(nodes)) {
-      let ps = partition(nodes, this.errors);
+      let ps = partition(nodes, this.errors, this._implicitTags);
       ps.forEach(p => this._extractMessagesFromPart(p));
     }
   }
@@ -161,10 +152,15 @@ export class MessageExtractor {
   }
 
   private _extractMessagesFromAttributes(p: HtmlElementAst): void {
+    let transAttrs: string[] =
+        isPresent(this._implicitAttrs[p.name]) ? this._implicitAttrs[p.name] : [];
+    let explicitAttrs: string[] = [];
+
     p.attrs.forEach(attr => {
       if (attr.name.startsWith(I18N_ATTR_PREFIX)) {
         try {
-          this.messages.push(messageFromAttribute(this._parser, p, attr));
+          explicitAttrs.push(attr.name.substring(I18N_ATTR_PREFIX.length));
+          this.messages.push(messageFromI18nAttribute(this._parser, p, attr));
         } catch (e) {
           if (e instanceof I18nError) {
             this.errors.push(e);
@@ -174,5 +170,10 @@ export class MessageExtractor {
         }
       }
     });
+
+    p.attrs.filter(attr => !attr.name.startsWith(I18N_ATTR_PREFIX))
+        .filter(attr => explicitAttrs.indexOf(attr.name) == -1)
+        .filter(attr => transAttrs.indexOf(attr.name) > -1)
+        .forEach(attr => this.messages.push(messageFromAttribute(this._parser, attr)));
   }
 }

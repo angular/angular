@@ -1,38 +1,19 @@
-import {
-  beforeEach,
-  ddescribe,
-  describe,
-  expect,
-  iit,
-  inject,
-  it,
-  xdescribe,
-  xit
-} from '@angular/core/testing/testing_internal';
-
-import {I18nHtmlParser} from '@angular/compiler/src/i18n/i18n_html_parser';
-import {Message, id} from '@angular/compiler/src/i18n/message';
-import {Parser} from '@angular/compiler/src/expression_parser/parser';
-import {Lexer} from '@angular/compiler/src/expression_parser/lexer';
-
-import {StringMapWrapper} from '../../src/facade/collection';
-import {HtmlParser, HtmlParseTreeResult} from '@angular/compiler/src/html_parser';
-import {
-  HtmlAst,
-  HtmlAstVisitor,
-  HtmlElementAst,
-  HtmlAttrAst,
-  HtmlTextAst,
-  HtmlCommentAst,
-  htmlVisitAll
-} from '@angular/compiler/src/html_ast';
-import {serializeXmb, deserializeXmb} from '@angular/compiler/src/i18n/xmb_serializer';
-import {ParseError, ParseLocation} from '@angular/compiler/src/parse_util';
-import {humanizeDom} from '@angular/compiler/test/html_ast_spec_utils';
+import {describe, expect, it, iit, ddescribe} from "@angular/core/testing/testing_internal";
+import {I18nHtmlParser} from "@angular/compiler/src/i18n/i18n_html_parser";
+import {Message, id} from "@angular/compiler/src/i18n/message";
+import {Parser} from "@angular/compiler/src/expression_parser/parser";
+import {Lexer} from "@angular/compiler/src/expression_parser/lexer";
+import {StringMapWrapper} from "../../src/facade/collection";
+import {HtmlParser, HtmlParseTreeResult} from "@angular/compiler/src/html_parser";
+import {HtmlElementAst, HtmlAttrAst, HtmlTextAst} from "@angular/compiler/src/html_ast";
+import {deserializeXmb} from "@angular/compiler/src/i18n/xmb_serializer";
+import {ParseError} from "@angular/compiler/src/parse_util";
+import {humanizeDom} from "@angular/compiler/test/html_ast_spec_utils";
 
 export function main() {
   describe('I18nHtmlParser', () => {
-    function parse(template: string, messages: {[key: string]: string}): HtmlParseTreeResult {
+    function parse(template: string, messages: {[key: string]: string}, implicitTags: string[] = [],
+                   implicitAttrs: {[k: string]: string[]} = {}): HtmlParseTreeResult {
       var parser = new Parser(new Lexer());
       let htmlParser = new HtmlParser();
 
@@ -40,7 +21,8 @@ export function main() {
       StringMapWrapper.forEach(messages, (v, k) => msgs += `<msg id="${k}">${v}</msg>`);
       let res = deserializeXmb(`<message-bundle>${msgs}</message-bundle>`, 'someUrl');
 
-      return new I18nHtmlParser(htmlParser, parser, res.content, res.messages)
+      return new I18nHtmlParser(htmlParser, parser, res.content, res.messages, implicitTags,
+                                implicitAttrs)
           .parse(template, "someurl", true);
     }
 
@@ -331,6 +313,44 @@ export function main() {
             .toEqual(["Invalid interpolation name '99'"]);
       });
 
+      describe('implicit translation', () => {
+        it("should support attributes", () => {
+          let translations: {[key: string]: string} = {};
+          translations[id(new Message("some message", null, null))] = "another message";
+
+          expect(humanizeDom(parse("<i18n-el value='some message'></i18n-el>", translations, [],
+                                   {'i18n-el': ['value']})))
+              .toEqual([[HtmlElementAst, 'i18n-el', 0], [HtmlAttrAst, 'value', 'another message']]);
+        });
+
+        it("should support attributes with meaning and description", () => {
+          let translations: {[key: string]: string} = {};
+          translations[id(new Message("some message", "meaning", "description"))] =
+              "another message";
+
+          expect(humanizeDom(parse(
+                     "<i18n-el value='some message' i18n-value='meaning|description'></i18n-el>",
+                     translations, [], {'i18n-el': ['value']})))
+              .toEqual([[HtmlElementAst, 'i18n-el', 0], [HtmlAttrAst, 'value', 'another message']]);
+        });
+
+        it("should support elements", () => {
+          let translations: {[key: string]: string} = {};
+          translations[id(new Message("message", null, null))] = "another message";
+
+          expect(humanizeDom(parse("<i18n-el>message</i18n-el>", translations, ['i18n-el'])))
+              .toEqual([[HtmlElementAst, 'i18n-el', 0], [HtmlTextAst, 'another message', 1]]);
+        });
+
+        it("should support elements with meaning and description", () => {
+          let translations: {[key: string]: string} = {};
+          translations[id(new Message("message", "meaning", "description"))] = "another message";
+
+          expect(humanizeDom(parse("<i18n-el i18n='meaning|description'>message</i18n-el>",
+                                   translations, ['i18n-el'])))
+              .toEqual([[HtmlElementAst, 'i18n-el', 0], [HtmlTextAst, 'another message', 1]]);
+        });
+      });
     });
   });
 }

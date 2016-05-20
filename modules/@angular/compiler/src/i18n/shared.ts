@@ -27,7 +27,7 @@ export class I18nError extends ParseError {
 
 
 // Man, this is so ugly!
-export function partition(nodes: HtmlAst[], errors: ParseError[]): Part[] {
+export function partition(nodes: HtmlAst[], errors: ParseError[], implicitTags: string[]): Part[] {
   let res = [];
 
   for (let i = 0; i < nodes.length; ++i) {
@@ -47,7 +47,8 @@ export function partition(nodes: HtmlAst[], errors: ParseError[]): Part[] {
 
     } else if (n instanceof HtmlElementAst) {
       let i18n = _findI18nAttr(n);
-      res.push(new Part(n, null, n.children, isPresent(i18n) ? i18n.value : null, isPresent(i18n)));
+      let hasI18n: boolean = isPresent(i18n) || implicitTags.indexOf(n.name) > -1;
+      res.push(new Part(n, null, n.children, isPresent(i18n) ? i18n.value : null, hasI18n));
     } else if (n instanceof HtmlTextAst) {
       res.push(new Part(null, n, null, null, false));
     }
@@ -99,17 +100,28 @@ export function description(i18n: string): string {
   return parts.length > 1 ? parts[1] : null;
 }
 
-export function messageFromAttribute(parser: Parser, p: HtmlElementAst,
-                                     attr: HtmlAttrAst): Message {
-  let expectedName = attr.name.substring(5);
+/**
+ * Extract a translation string given an `i18n-` prefixed attribute.
+ *
+ * @internal
+ */
+export function messageFromI18nAttribute(parser: Parser, p: HtmlElementAst,
+                                         i18nAttr: HtmlAttrAst): Message {
+  let expectedName = i18nAttr.name.substring(5);
   let matching = p.attrs.filter(a => a.name == expectedName);
 
   if (matching.length > 0) {
-    let value = removeInterpolation(matching[0].value, matching[0].sourceSpan, parser);
-    return new Message(value, meaning(attr.value), description(attr.value));
-  } else {
-    throw new I18nError(p.sourceSpan, `Missing attribute '${expectedName}'.`);
+    return messageFromAttribute(parser, matching[0], meaning(i18nAttr.value),
+                                description(i18nAttr.value));
   }
+
+  throw new I18nError(p.sourceSpan, `Missing attribute '${expectedName}'.`);
+}
+
+export function messageFromAttribute(parser: Parser, attr: HtmlAttrAst, meaning: string = null,
+                                     description: string = null): Message {
+  let value = removeInterpolation(attr.value, attr.sourceSpan, parser);
+  return new Message(value, meaning, description);
 }
 
 export function removeInterpolation(value: string, source: ParseSourceSpan,
