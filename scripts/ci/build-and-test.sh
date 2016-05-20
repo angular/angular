@@ -19,7 +19,7 @@ if is_lint; then
   npm run tslint
   npm run ci:forbidden-identifiers
 elif is_e2e; then
-  ng serve &
+  MD_APP=e2e ng serve &
   sleep 20
   ng e2e
 else
