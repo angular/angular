@@ -14,6 +14,6 @@
   },
   "files": [
     "src/router.ts",
-    "typings/tsd.d.ts"
+    "typings/main.d.ts"
   ]
 }
