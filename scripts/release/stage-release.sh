@@ -16,7 +16,7 @@ rm -rf ./deploy
 ng build
 
 # Inline the css and html into the component ts files.
-./node_modules/gulp/bin/gulp.js inline-resources
+npm run inline-resources
 
 # deploy/ serves as a working directory to stage the release.
 mkdir deploy
