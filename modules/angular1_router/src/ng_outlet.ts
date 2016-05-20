@@ -213,6 +213,10 @@ function ngLinkDirective($rootRouter, $parse) {
     let link = attrs.ngLink || '';
 
     function getLink(params) {
+      if (!params) {
+        return;
+      }
+
       navigationInstruction = router.generate(params);
 
       scope.$watch(function() { return router.isRouteActive(navigationInstruction); },
