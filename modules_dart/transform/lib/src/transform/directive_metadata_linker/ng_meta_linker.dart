@@ -382,17 +382,17 @@ class _NgMetaIdentifierResolver {
     } else if (id.name == "Random") {
       return new CompileIdentifierMetadata(name: id.name, moduleUrl: 'dart:math');
     } else if (id.name == "Profiler") {
-      return new CompileIdentifierMetadata(name: id.name, moduleUrl: 'asset:perf_api/lib/perf_api.dart');
+      return new CompileIdentifierMetadata(name: id.name, moduleUrl: 'package:perf_api/perf_api.dart');
     } else if (id.name == "Logger") {
-      return new CompileIdentifierMetadata(name: id.name, moduleUrl: 'asset:logging/lib/logging.dart');
+      return new CompileIdentifierMetadata(name: id.name, moduleUrl: 'package:logging/logging.dart');
     } else if (id.name == "Clock") {
-      return new CompileIdentifierMetadata(name: id.name, moduleUrl: 'asset:quiver/lib/time.dart');
+      return new CompileIdentifierMetadata(name: id.name, moduleUrl: 'package:quiver/time.dart');
     } else if (id.name == "Cache") {
       return new CompileIdentifierMetadata(name: id.name, moduleUrl: 'package:quiver/cache.dart');
     } else if (id.name == "Log") {
-      return new CompileIdentifierMetadata(name: id.name, moduleUrl: 'asset:angular2/lib/src/testing/utils.dart');
+      return new CompileIdentifierMetadata(name: id.name, moduleUrl: 'package:angular2/src/testing/utils.dart');
     } else if (id.name == "TestComponentBuilder") {
-      return new CompileIdentifierMetadata(name: id.name, moduleUrl: 'asset:angular2/lib/src/testing/test_component_builder.dart');
+      return new CompileIdentifierMetadata(name: id.name, moduleUrl: 'package:angular2/src/testing/test_component_builder.dart');
     } else if (id.name == "Stream") {
       return new CompileIdentifierMetadata(name: id.name, moduleUrl: 'dart:async');
     } else if (id.name == "StreamController") {
@@ -402,17 +402,17 @@ class _NgMetaIdentifierResolver {
     } else if (id.name == "Stopwatch" || id.name == "Map") {
       return new CompileIdentifierMetadata(name: id.name, moduleUrl: 'dart:core');
     } else if (id.name == "FakeAsync") {
-      return new CompileIdentifierMetadata(name: id.name, moduleUrl: 'asset:angular2/lib/src/testing/fake_async.dart');
+      return new CompileIdentifierMetadata(name: id.name, moduleUrl: 'package:angular2/src/testing/fake_async.dart');
     } else if (id.name == "StreamTracer") {
-      return new CompileIdentifierMetadata(name: id.name, moduleUrl: 'asset:streamy/lib/src/core/tracing.dart');
+      return new CompileIdentifierMetadata(name: id.name, moduleUrl: 'package:streamy/core.dart');
     } else if (id.name == "Tracer") {
-      return new CompileIdentifierMetadata(name: id.name, moduleUrl: 'asset:streamy/lib/src/core/tracing.dart');
+      return new CompileIdentifierMetadata(name: id.name, moduleUrl: 'package:streamy/core.dart');
     } else if (id.name == "RequestHandler") {
-      return new CompileIdentifierMetadata(name: id.name, moduleUrl: 'asset:streamy/lib/src/core/request_handler.dart');
+      return new CompileIdentifierMetadata(name: id.name, moduleUrl: 'package:streamy/core.dart');
     } else if (id.name == "BatchingStrategy") {
-      return new CompileIdentifierMetadata(name: id.name, moduleUrl: 'asset:streamy/lib/src/extra/request_handler/batching.dart');
+      return new CompileIdentifierMetadata(name: id.name, moduleUrl: 'package:streamy/extra.dart');
     } else if (id.name == "ProxyClient") {
-      return new CompileIdentifierMetadata(name: id.name, moduleUrl: 'asset:streamy/lib/src/extra/request_handler/proxy.dart');
+      return new CompileIdentifierMetadata(name: id.name, moduleUrl: 'package:streamy/extra.dart');
     } else if (id.name == "StreamyHttpService") {
       return new CompileIdentifierMetadata(name: id.name, moduleUrl: 'package:streamy/toolbox.dart');
     } else if (id.name == "TransactionStrategy") {
