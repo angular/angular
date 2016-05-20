@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "module": "commonjs",
+    "target": "es5",
+    "noImplicitAny": false,
+    "outDir": "dist",
+    "rootDir": ".",
+    "sourceMap": true,
+    "sourceRoot": "./",
+    "declaration": true,
+    "removeComments": true
+  },
+  "files": [
+    "src/router.ts",
+    "test/router.spec.ts",
+    "typings/tsd"
+  ]
+}
