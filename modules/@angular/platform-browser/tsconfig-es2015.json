@@ -28,9 +28,9 @@
   "files": [
     "index.ts",
     "testing.ts",
-    "../typings/jasmine/jasmine.d.ts",
-    "../typings/hammerjs/hammerjs.d.ts",
-    "../typings/angular-protractor/angular-protractor.d.ts",
+    "../../../typings/jasmine/jasmine.d.ts",
+    "../../../typings/hammerjs/hammerjs.d.ts",
+    "../../../typings/angular-protractor/angular-protractor.d.ts",
     "../../../node_modules/zone.js/dist/zone.js.d.ts"
   ]
 }

@@ -325,7 +325,7 @@ gulp.task('enforce-format', function() {
   });
 });
 
-gulp.task('lint', ['build.tools'], function() {
+gulp.task('lint', function() {
   var tslint = require('gulp-tslint');
   // Built-in rules are at
   // https://github.com/palantir/tslint#supported-rules

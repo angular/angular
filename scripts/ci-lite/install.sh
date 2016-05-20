@@ -61,9 +61,7 @@ if [[ ${TRAVIS} ]]; then
   echo ${TSDRC} > ~/.tsdrc
 fi
 
-$(npm bin)/tsd reinstall --overwrite --clean --config modules/@angular/tsd.json
-$(npm bin)/tsd reinstall --overwrite --clean --config tools/tsd.json
-$(npm bin)/tsd reinstall --overwrite --config modules/angular1_router/tsd.json
+$(npm bin)/tsd reinstall --overwrite --clean --config ./tsd.json
 echo 'travis_fold:end:install.typings'
 
 

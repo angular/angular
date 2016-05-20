@@ -24,6 +24,5 @@
     "index.ts",
     "testing.ts",
     "../../../node_modules/zone.js/dist/zone.js.d.ts"
-
   ]
 }

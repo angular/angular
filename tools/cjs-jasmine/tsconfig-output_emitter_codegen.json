@@ -15,12 +15,11 @@
     "rootDir": "../../dist/all/@angular",
     "sourceMap": true,
     "sourceRoot": ".",
+    "lib": ["es6", "dom"],
     "target": "es5"
   },
   "files": [
-    "../../modules/@angular/typings/es6-collections/es6-collections.d.ts",
-    "../../modules/@angular/typings/es6-promise/es6-promise.d.ts",
-    "../../modules/@angular/typings/node/node.d.ts",
+    "../../typings/node/node.d.ts",
     "../../dist/all/@angular/compiler/test/output/output_emitter_codegen_typed.ts",
     "../../dist/all/@angular/compiler/test/output/output_emitter_codegen_untyped.ts",
     "../../dist/all/@angular/compiler/test/offline_compiler_codegen_untyped.ts",

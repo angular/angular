@@ -50,8 +50,8 @@ export class TscWatch {
     this.onStartCmds.forEach((cmd) => this.runCmd(cmd, null, () => null, () => null));
   }
 
-  private runCmd(argsOrCmd: string[] | Command, env?: {[k: string]: string}, 
-                 stdOut = pipeStdOut, stdErr = pipeStdErr): Promise<number> 
+  private runCmd(argsOrCmd: string[] | Command, env?: {[k: string]: string},
+                 stdOut = pipeStdOut, stdErr = pipeStdErr): Promise<number>
   {
     if (typeof argsOrCmd == 'function') {
       return (argsOrCmd as Command)(stdErr, stdOut);
@@ -117,7 +117,7 @@ export class TscWatch {
   }
 
   triggerCmds() {
-    var cmdPromise: Promise<number> = Promise.resolve();
+    var cmdPromise: Promise<number> = Promise.resolve(0);
     this.onChangeCmds.forEach((cmd: string[] | Command) => {cmdPromise = cmdPromise.then(() => {
                                 return this.runCmd(<string[]>cmd);
                               })});

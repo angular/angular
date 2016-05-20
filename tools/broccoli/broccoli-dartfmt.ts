@@ -1,5 +1,3 @@
-/// <reference path="../typings/node/node.d.ts" />
-/// <reference path="../typings/fs-extra/fs-extra.d.ts" />
 import fse = require('fs-extra');
 import path = require('path');
 import {wrapDiffingPlugin, DiffingBroccoliPlugin, DiffResult} from './diffing-broccoli-plugin';
@@ -62,8 +60,9 @@ class DartFormatter implements DiffingBroccoliPlugin {
     }
 
     let execute = (args: string[]) => {
-      if (args.length < 2) return Promise.resolve();
-      return new Promise((resolve, reject) => {
+      if (args.length < 2)
+        return Promise.resolve();
+      return new Promise<void>((resolve, reject) => {
         exec(this.DARTFMT + ' ' + args.join(' '), (err: Error, stdout: string, stderr: string) => {
           if (this.verbose) {
             console.log(stdout);

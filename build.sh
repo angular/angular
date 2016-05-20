@@ -107,11 +107,10 @@ do
     $(npm bin)/tsc  \
         --out ${UMD_ES5_PATH} \
         --target es5 \
+        --lib "es6,dom" \
         --allowJs \
-        ${UMD_ES6_PATH} \
-        modules/\@angular/manual_typings/globals.d.ts \
-        modules/\@angular/typings/es6-collections/es6-collections.d.ts \
-        modules/\@angular/typings/es6-promise/es6-promise.d.ts
+        ${UMD_ES6_PATH}
+
     rm ${UMD_ES6_PATH}
 
     cat ./modules/@angular/license-banner.txt > ${UMD_ES5_PATH}.tmp

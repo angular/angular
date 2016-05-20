@@ -1,5 +1,3 @@
-/// <reference path="../typings/node/node.d.ts" />
-
 import fs = require('fs');
 import fse = require('fs-extra');
 import path = require('path');

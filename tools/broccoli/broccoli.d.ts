@@ -1,6 +1,3 @@
-/// <reference path="../typings/es6-promise/es6-promise.d.ts" />
-
-
 interface BroccoliTree {
   /**
    * Contains the fs path for the input tree when the plugin takes only one input tree.
