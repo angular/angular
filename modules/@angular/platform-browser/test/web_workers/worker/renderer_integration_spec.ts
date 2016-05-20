@@ -13,23 +13,18 @@ import {TestInjector} from '@angular/core/testing';
 import {TestComponentBuilder} from '@angular/compiler/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {
-  bind,
   provide,
-  Provider,
   Injector,
   ViewMetadata,
   Component,
   Injectable,
-  ElementRef,
   ComponentRef
 } from '@angular/core';
 import {NgIf} from '@angular/common';
 import {WebWorkerRootRenderer} from '@angular/platform-browser/src/web_workers/worker/renderer';
 import {
   ClientMessageBrokerFactory,
-  ClientMessageBrokerFactory_,
-  UiArguments,
-  FnArg
+  ClientMessageBrokerFactory_
 } from '@angular/platform-browser/src/web_workers/shared/client_message_broker';
 import {Serializer} from '@angular/platform-browser/src/web_workers/shared/serializer';
 import {RootRenderer} from '@angular/core/src/render/api';
@@ -39,14 +34,13 @@ import {RenderStore} from '@angular/platform-browser/src/web_workers/shared/rend
 import {MessageBasedRenderer} from '@angular/platform-browser/src/web_workers/ui/renderer';
 import {createPairedMessageBuses, PairedMessageBuses} from '../shared/web_worker_test_util';
 import {
-  ServiceMessageBrokerFactory,
   ServiceMessageBrokerFactory_
 } from '@angular/platform-browser/src/web_workers/shared/service_message_broker';
 import {CompilerConfig} from '@angular/compiler';
 import {dispatchEvent} from '../../../../platform-browser/testing/browser_util';
 import {
-  TEST_BROWSER_STATIC_PLATFORM_PROVIDERS,
-  TEST_BROWSER_STATIC_APPLICATION_PROVIDERS
+  TEST_BROWSER_PLATFORM_PROVIDERS,
+  TEST_BROWSER_APPLICATION_PROVIDERS
 } from '@angular/platform-browser/testing';
 
 export function main() {
@@ -88,8 +82,8 @@ export function main() {
     beforeEachProviders(() => {
       uiRenderStore = new RenderStore();
       var testUiInjector = new TestInjector();
-      testUiInjector.platformProviders = TEST_BROWSER_STATIC_PLATFORM_PROVIDERS;
-      testUiInjector.applicationProviders = TEST_BROWSER_STATIC_APPLICATION_PROVIDERS;
+      testUiInjector.platformProviders = TEST_BROWSER_PLATFORM_PROVIDERS;
+      testUiInjector.applicationProviders = TEST_BROWSER_APPLICATION_PROVIDERS;
       testUiInjector.addProviders([
         Serializer,
         provide(RenderStore, {useValue: uiRenderStore}),

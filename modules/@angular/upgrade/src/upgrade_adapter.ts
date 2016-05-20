@@ -10,11 +10,10 @@ import {
   Provider,
   Type,
   Testability
-} from '@angular/core';
-import {browserPlatform} from '@angular/platform-browser';
-import {BROWSER_APP_PROVIDERS} from '@angular/platform-browser';
-import {getComponentInfo, ComponentInfo} from './metadata';
-import {onError, controllerKey} from './util';
+} from "@angular/core";
+import {browserPlatform, BROWSER_APP_PROVIDERS, BROWSER_APP_COMPILER_PROVIDERS} from "@angular/platform-browser";
+import {getComponentInfo, ComponentInfo} from "./metadata";
+import {onError, controllerKey} from "./util";
 import {
   NG1_COMPILE,
   NG1_INJECTOR,
@@ -26,10 +25,10 @@ import {
   NG2_COMPONENT_FACTORY_REF_MAP,
   NG2_ZONE,
   REQUIRE_INJECTOR
-} from './constants';
-import {DowngradeNg2ComponentAdapter} from './downgrade_ng2_adapter';
-import {UpgradeNg1ComponentAdapterBuilder} from './upgrade_ng1_adapter';
-import * as angular from './angular_js';
+} from "./constants";
+import {DowngradeNg2ComponentAdapter} from "./downgrade_ng2_adapter";
+import {UpgradeNg1ComponentAdapterBuilder} from "./upgrade_ng1_adapter";
+import * as angular from "./angular_js";
 
 var upgradeCount: number = 0;
 
@@ -295,6 +294,7 @@ export class UpgradeAdapter {
         ReflectiveInjector.resolveAndCreate(
                               [
                                 BROWSER_APP_PROVIDERS,
+                                BROWSER_APP_COMPILER_PROVIDERS,
                                 provide(NG1_INJECTOR, {useFactory: () => ng1Injector}),
                                 provide(NG1_COMPILE,
                                         {useFactory: () => ng1Injector.get(NG1_COMPILE)}),

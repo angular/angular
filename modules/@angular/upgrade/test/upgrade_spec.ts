@@ -1,26 +1,7 @@
-import {
-  beforeEach,
-  ddescribe,
-  describe,
-  expect,
-  iit,
-  inject,
-  it,
-  xdescribe,
-  xit,
-} from '@angular/core/testing/testing_internal';
-import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
-import {
-  Component,
-  Class,
-  Inject,
-  EventEmitter,
-  ApplicationRef,
-  provide,
-  Testability,
-} from '@angular/core';
-import {UpgradeAdapter} from '@angular/upgrade';
-import * as angular from '@angular/upgrade/src/angular_js';
+import {describe, expect, inject, it, AsyncTestCompleter} from "@angular/core/testing/testing_internal";
+import {Component, Class, EventEmitter, provide, Testability} from "@angular/core";
+import {UpgradeAdapter} from "@angular/upgrade";
+import * as angular from "@angular/upgrade/src/angular_js";
 
 export function main() {
   describe('adapter: ng1 to ng2', () => {

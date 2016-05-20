@@ -12,7 +12,6 @@ describe('WebWorkers Input', function() {
   it('should bootstrap', () => {
     // This test can't wait for Angular 2 as Testability is not available when using WebWorker
     browser.ignoreSynchronization = true;
-    browser.get('/');
     browser.get(URL);
 
     waitForBootstrap();
@@ -23,7 +22,6 @@ describe('WebWorkers Input', function() {
   it('should bind to input value', () => {
     // This test can't wait for Angular 2 as Testability is not available when using WebWorker
     browser.ignoreSynchronization = true;
-    browser.get('/');
     browser.get(URL);
 
     waitForBootstrap();
@@ -38,7 +36,6 @@ describe('WebWorkers Input', function() {
   it('should bind to textarea value', () => {
     // This test can't wait for Angular 2 as Testability is not available when using WebWorker
     browser.ignoreSynchronization = true;
-    browser.get('/');
     browser.get(URL);
 
     waitForBootstrap();

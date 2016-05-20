@@ -6,4 +6,4 @@ import {OpaqueToken} from '@angular/core';
  * Note: Document might not be available in the Application Context when Application and Rendering
  * Contexts are not the same (e.g. when running the application into a Web Worker).
  */
-export const DOCUMENT: OpaqueToken = /*@ts2dart_const*/ new OpaqueToken('DocumentToken');
+export const DOCUMENT: OpaqueToken = new OpaqueToken('DocumentToken');

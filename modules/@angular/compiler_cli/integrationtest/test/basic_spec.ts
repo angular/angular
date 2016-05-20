@@ -3,7 +3,7 @@ import * as path from 'path';
 import {BasicNgFactory} from '../src/basic.ngfactory';
 import {MyComp} from '../src/a/multiple_components';
 import {ReflectiveInjector, DebugElement, getDebugNode} from '@angular/core';
-import {browserPlatform, BROWSER_APP_STATIC_PROVIDERS} from '@angular/platform-browser';
+import {browserPlatform, BROWSER_APP_PROVIDERS} from '@angular/platform-browser';
 
 describe("template codegen output", () => {
   const outDir = path.join('dist', 'all', '@angular', 'compiler_cli', 'integrationtest', 'src');
@@ -29,14 +29,14 @@ describe("template codegen output", () => {
   });
 
   it("should be able to create the basic component", () => {
-    const appInjector = ReflectiveInjector.resolveAndCreate(BROWSER_APP_STATIC_PROVIDERS,
+    const appInjector = ReflectiveInjector.resolveAndCreate(BROWSER_APP_PROVIDERS,
       browserPlatform().injector);
     var comp = BasicNgFactory.create(appInjector);
     expect(comp.instance).toBeTruthy();
   });
 
   it("should support ngIf", () => {
-    const appInjector = ReflectiveInjector.resolveAndCreate(BROWSER_APP_STATIC_PROVIDERS,
+    const appInjector = ReflectiveInjector.resolveAndCreate(BROWSER_APP_PROVIDERS,
       browserPlatform().injector);
     var comp = BasicNgFactory.create(appInjector);
     var debugElement = <DebugElement>getDebugNode(comp.location.nativeElement);
@@ -49,7 +49,7 @@ describe("template codegen output", () => {
   });
 
   it("should support ngFor", () => {
-    const appInjector = ReflectiveInjector.resolveAndCreate(BROWSER_APP_STATIC_PROVIDERS,
+    const appInjector = ReflectiveInjector.resolveAndCreate(BROWSER_APP_PROVIDERS,
       browserPlatform().injector);
     var comp = BasicNgFactory.create(appInjector);
     var debugElement = <DebugElement>getDebugNode(comp.location.nativeElement);

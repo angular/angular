@@ -13,13 +13,11 @@ import {
 import {
   fakeAsync,
   async,
-  flushMicrotasks,
   withProviders,
-  Log,
   tick,
 } from '@angular/core/testing';
 import {TestComponentBuilder} from '@angular/compiler/testing';
-import {Injectable, bind, Component, ViewMetadata} from '@angular/core';
+import {Injectable, provide, Component, ViewMetadata} from '@angular/core';
 import {NgIf} from '@angular/common';
 import {PromiseWrapper} from '../../http/src/facade/promise';
 
@@ -136,7 +134,7 @@ export function main() {
 
   describe('using the test injector with the inject helper', () => {
     describe('setting up Providers', () => {
-      beforeEachProviders(() => [bind(FancyService).toValue(new FancyService())]);
+      beforeEachProviders(() => [provide(FancyService, {useValue: new FancyService()})]);
 
       it('should use set up providers',
          inject([FancyService], (service) => { expect(service.value).toEqual('real value'); }));
@@ -187,12 +185,12 @@ export function main() {
 
     describe('per test providers', () => {
       it('should allow per test providers',
-         withProviders(() => [bind(FancyService).toValue(new FancyService())])
+         withProviders(() => [provide(FancyService, {useValue: new FancyService()})])
              .inject([FancyService],
                      (service) => { expect(service.value).toEqual('real value'); }));
 
       it('should return value from inject', () => {
-        let retval = withProviders(() => [bind(FancyService).toValue(new FancyService())])
+        let retval = withProviders(() => [provide(FancyService, {useValue: new FancyService()})])
                          .inject([FancyService], (service) => {
                            expect(service.value).toEqual('real value');
                            return 10;
@@ -233,7 +231,7 @@ export function main() {
     };
 
     var restoreJasmineBeforeEach =
-        () => { jasmine.getEnv().beforeEach = originalJasmineBeforeEach; }
+        () => { jasmine.getEnv().beforeEach = originalJasmineBeforeEach; };
 
     it('should fail when an asynchronous error is thrown', (done) => {
       var itPromise = patchJasmineIt();
@@ -267,7 +265,7 @@ export function main() {
     });
 
     describe('using beforeEachProviders', () => {
-      beforeEachProviders(() => [bind(FancyService).toValue(new FancyService())]);
+      beforeEachProviders(() => [provide(FancyService, {useValue: new FancyService()})]);
 
       beforeEach(
           inject([FancyService], (service) => { expect(service.value).toEqual('real value'); }));
@@ -277,7 +275,7 @@ export function main() {
         it('should fail when the injector has already been used', () => {
           patchJasmineBeforeEach();
           expect(() => {
-            beforeEachProviders(() => [bind(FancyService).toValue(new FancyService())]);
+            beforeEachProviders(() => [provide(FancyService, {useValue: new FancyService()})]);
           })
               .toThrowError('beforeEachProviders was called after the injector had been used ' +
                             'in a beforeEach or it block. This invalidates the test injector');
@@ -366,7 +364,7 @@ export function main() {
     it('should override a provider',
        async(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
 
-         tcb.overrideProviders(TestProvidersComp, [bind(FancyService).toClass(MockFancyService)])
+         tcb.overrideProviders(TestProvidersComp, [provide(FancyService, {useClass: MockFancyService})])
              .createAsync(TestProvidersComp)
              .then((componentFixture) => {
                componentFixture.detectChanges();
@@ -380,7 +378,7 @@ export function main() {
        async(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
 
          tcb.overrideViewProviders(TestViewProvidersComp,
-                                   [bind(FancyService).toClass(MockFancyService)])
+                                   [provide(FancyService, {useClass: MockFancyService})])
              .createAsync(TestViewProvidersComp)
              .then((componentFixture) => {
                componentFixture.detectChanges();

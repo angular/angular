@@ -1,40 +1,40 @@
 import {
   beforeEach,
   afterEach,
-  ddescribe,
   describe,
   expect,
-  iit,
   inject,
   it,
-  xdescribe,
-  xit
-} from '@angular/core/testing/testing_internal';
-import {Log} from '@angular/core/testing';
-import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
-import {stringify} from '../../src/facade/lang';
-import {BROWSER_PLATFORM_PROVIDERS} from '@angular/platform-browser';
-import {BROWSER_APP_PROVIDERS} from '@angular/platform-browser';
-import {bootstrap} from '@angular/platform-browser';
-import {ApplicationRef} from '@angular/core/src/application_ref';
-import {Console} from '@angular/core/src/console';
-import {Component, Directive, OnDestroy} from '@angular/core';
-import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
-import {DOCUMENT} from '@angular/platform-browser/src/dom/dom_tokens';
-import {PromiseWrapper} from '../../src/facade/async';
+  AsyncTestCompleter
+} from "@angular/core/testing/testing_internal";
+import {Log} from "@angular/core/testing";
+import {stringify} from "../../src/facade/lang";
 import {
+  BROWSER_PLATFORM_PROVIDERS,
+  BROWSER_APP_PROVIDERS,
+  BROWSER_APP_COMPILER_PROVIDERS,
+  bootstrap
+} from "@angular/platform-browser";
+import {ApplicationRef, disposePlatform} from "@angular/core/src/application_ref";
+import {Console} from "@angular/core/src/console";
+import {
+  Component,
+  Directive,
+  OnDestroy,
   provide,
   Inject,
   PLATFORM_INITIALIZER,
   APP_INITIALIZER,
   coreLoadAndBootstrap,
   createPlatform,
-  ReflectiveInjector
-} from '@angular/core';
-import {disposePlatform} from '@angular/core/src/application_ref';
-import {ExceptionHandler, BaseException} from '@angular/core';
-import {Testability, TestabilityRegistry} from '@angular/core/src/testability/testability';
-import {ComponentRef} from '@angular/core/src/linker/component_factory';
+  ReflectiveInjector,
+  ExceptionHandler
+} from "@angular/core";
+import {getDOM} from "@angular/platform-browser/src/dom/dom_adapter";
+import {DOCUMENT} from "@angular/platform-browser/src/dom/dom_tokens";
+import {PromiseWrapper} from "../../src/facade/async";
+import {Testability, TestabilityRegistry} from "@angular/core/src/testability/testability";
+import {ComponentRef} from "@angular/core/src/linker/component_factory";
 
 @Component({selector: 'hello-app', template: '{{greeting}} world!'})
 class HelloRootCmp {
@@ -211,7 +211,7 @@ export function main() {
        inject([AsyncTestCompleter], (async) => {
          var platform = createPlatform(ReflectiveInjector.resolveAndCreate(BROWSER_PLATFORM_PROVIDERS));
          var app =
-             ReflectiveInjector.resolveAndCreate([BROWSER_APP_PROVIDERS, testProviders],
+             ReflectiveInjector.resolveAndCreate([BROWSER_APP_PROVIDERS, BROWSER_APP_COMPILER_PROVIDERS, testProviders],
                                                  platform.injector)
                  .get(ApplicationRef);
          coreLoadAndBootstrap(HelloRootCmp, app.injector)

@@ -3,8 +3,7 @@ import {isPresent} from '../../../src/facade/lang';
 import {BaseException} from '../../../src/facade/exceptions';
 import {HammerGesturesPluginCommon} from './hammer_common';
 
-export const HAMMER_GESTURE_CONFIG: OpaqueToken =
-    /*@ts2dart_const*/ new OpaqueToken("HammerGestureConfig");
+export const HAMMER_GESTURE_CONFIG: OpaqueToken = new OpaqueToken("HammerGestureConfig");
 
 export interface HammerInstance {
   on(eventName: string, callback: Function): void;

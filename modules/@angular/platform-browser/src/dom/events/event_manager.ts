@@ -4,8 +4,7 @@ import {BaseException} from '../../../src/facade/exceptions';
 import {ListWrapper} from '../../../src/facade/collection';
 
 
-export const EVENT_MANAGER_PLUGINS: OpaqueToken =
-    /*@ts2dart_const*/ new OpaqueToken("EventManagerPlugins");
+export const EVENT_MANAGER_PLUGINS: OpaqueToken = new OpaqueToken("EventManagerPlugins");
 
 @Injectable()
 export class EventManager {

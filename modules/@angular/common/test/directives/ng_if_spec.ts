@@ -8,7 +8,7 @@ import {
   xit,
 } from '@angular/core/testing/testing_internal';
 import {expect} from '@angular/platform-browser/testing';
-import {TestComponentBuilder, ComponentFixture} from '@angular/compiler/testing';
+import {TestComponentBuilder} from '@angular/compiler/testing';
 import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
 
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';

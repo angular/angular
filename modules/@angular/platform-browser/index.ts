@@ -20,9 +20,7 @@ export {
   SecurityContext
 } from './src/security/dom_sanitization_service';
 
-export * from './src/platform/common/browser';
-export * from './src/platform/static/browser';
-export * from './src/platform/dynamic/browser';
+export * from './src/browser';
 
 // Web Workers
 export {
@@ -41,12 +39,8 @@ export * from './src/web_workers/shared/message_bus';
 export {WORKER_APP_LOCATION_PROVIDERS} from './src/web_workers/worker/location_providers';
 export {WORKER_RENDER_LOCATION_PROVIDERS} from './src/web_workers/ui/location_providers';
 
-export * from './src/platform/common/worker_render';
-export * from './src/platform/common/worker_app';
-export * from './src/platform/dynamic/worker_render';
-export * from './src/platform/dynamic/worker_app';
-export * from './src/platform/static/worker_render';
-export * from './src/platform/static/worker_app';
+export * from './src/worker_render';
+export * from './src/worker_app';
 
 export * from './private_export';
 
