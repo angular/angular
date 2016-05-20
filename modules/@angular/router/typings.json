@@ -1,0 +1,8 @@
+{
+  "name": "vladivostok",
+  "version": false,
+  "dependencies": {},
+  "ambientDependencies": {
+    "jasmine": "registry:dt/jasmine#2.2.0+20160505161446"
+  }
+}
