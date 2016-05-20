@@ -15,6 +15,6 @@
   "files": [
     "src/router.ts",
     "test/router.spec.ts",
-    "typings/tsd"
+    "typings/main.d.ts"
   ]
 }
