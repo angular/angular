@@ -348,7 +348,7 @@ it('should wait for returned promises', async(inject([FancyService], (service) =
 })));
 // Note that if there is no injection, we no longer need `inject` OR `injectAsync`.
 it('should wait for returned promises', async(() => {
-  somePromise.then() => { expect(true).toEqual(true); });
+  somePromise.then(() => { expect(true).toEqual(true); });
 }));
 ```
 
