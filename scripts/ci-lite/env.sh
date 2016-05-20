@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -ex -o pipefail
+set -e -o pipefail
 
 
 NODE_VERSION=5.4.1
