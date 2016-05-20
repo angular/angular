@@ -5,4 +5,4 @@ import {Basic} from './basic';
 
 const appInjector =
     ReflectiveInjector.resolveAndCreate(BROWSER_APP_STATIC_PROVIDERS, browserPlatform().injector);
-coreBootstrap(appInjector, BasicNgFactory);
+coreBootstrap(BasicNgFactory, appInjector);

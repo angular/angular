@@ -51,7 +51,7 @@ export function createPlatform(injector: Injector): PlatformRef {
 export function assertPlatform(requiredToken: any): PlatformRef {
   var platform = getPlatform();
   if (isBlank(platform)) {
-    throw new BaseException('Not platform exists!');
+    throw new BaseException('No platform exists!');
   }
   if (isPresent(platform) && isBlank(platform.injector.get(requiredToken, null))) {
     throw new BaseException(
@@ -78,10 +78,10 @@ export function getPlatform(): PlatformRef {
 
 /**
  * Shortcut for ApplicationRef.bootstrap.
- * Requires a platform the be created first.
+ * Requires a platform to be created first.
  */
-export function coreBootstrap<C>(injector: Injector,
-                                 componentFactory: ComponentFactory<C>): ComponentRef<C> {
+export function coreBootstrap<C>(componentFactory: ComponentFactory<C>,
+                                 injector: Injector): ComponentRef<C> {
   var appRef: ApplicationRef = injector.get(ApplicationRef);
   return appRef.bootstrap(componentFactory);
 }
@@ -89,10 +89,10 @@ export function coreBootstrap<C>(injector: Injector,
 /**
  * Resolves the componentFactory for the given component,
  * waits for asynchronous initializers and bootstraps the component.
- * Requires a platform the be created first.
+ * Requires a platform to be created first.
  */
-export function coreLoadAndBootstrap(injector: Injector,
-                                     componentType: Type): Promise<ComponentRef<any>> {
+export function coreLoadAndBootstrap(componentType: Type,
+                                     injector: Injector): Promise<ComponentRef<any>> {
   var appRef: ApplicationRef = injector.get(ApplicationRef);
   return appRef.run(() => {
     var componentResolver: ComponentResolver = injector.get(ComponentResolver);

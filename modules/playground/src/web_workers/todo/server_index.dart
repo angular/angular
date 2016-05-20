@@ -22,7 +22,7 @@ void main() {
       new Provider(APP_INITIALIZER,
           useFactory: initAppThread, multi: true, deps: [NgZone, MessageBus])
     ], platform.injector);
-    coreLoadAndBootstrap(appInjector, TodoApp);
+    coreLoadAndBootstrap(TodoApp, appInjector);
   });
 }
 

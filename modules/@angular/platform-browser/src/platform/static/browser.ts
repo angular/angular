@@ -30,5 +30,5 @@ export function bootstrapStatic(appComponentType: Type,
                                                   BROWSER_APP_STATIC_PROVIDERS;
   var appInjector =
       ReflectiveInjector.resolveAndCreate(appProviders, browserPlatform().injector);
-  return coreLoadAndBootstrap(appInjector, appComponentType);
+  return coreLoadAndBootstrap(appComponentType, appInjector);
 }

@@ -25,7 +25,6 @@ import {
   Component,
   ReflectiveInjector,
   coreLoadAndBootstrap,
-  coreBootstrap,
   PlatformRef,
   createPlatform,
   disposePlatform,
@@ -114,8 +113,8 @@ export function main() {
            }, 1);
            var app = createApplication(
                [{provide: APP_INITIALIZER, useValue: () => completer.promise, multi: true}]);
-           coreLoadAndBootstrap(app.injector, MyComp6)
-               .then((compRef) => {
+           coreLoadAndBootstrap(MyComp6, app.injector)
+               .then(_ => {
                  expect(initializerDone).toBe(true);
                  async.done();
                });

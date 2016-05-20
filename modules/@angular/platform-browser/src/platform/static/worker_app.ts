@@ -29,7 +29,7 @@ export function bootstrapStaticApp(
   var appInjector = ReflectiveInjector.resolveAndCreate(
     [WORKER_APP_STATIC_APPLICATION_PROVIDERS, isPresent(customProviders) ? customProviders : []],
     workerAppPlatform().injector);
-  return coreLoadAndBootstrap(appInjector, appComponentType);
+  return coreLoadAndBootstrap(appComponentType, appInjector);
 }
 
 function createMessageBus(zone: NgZone): MessageBus {

@@ -102,5 +102,5 @@ export function bootstrap(
   var appInjector = ReflectiveInjector.resolveAndCreate(
       [BROWSER_APP_PROVIDERS, isPresent(customProviders) ? customProviders : []],
       browserPlatform().injector);
-  return coreLoadAndBootstrap(appInjector, appComponentType);
+  return coreLoadAndBootstrap(appComponentType, appInjector);
 }

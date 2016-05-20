@@ -23,5 +23,5 @@ export function bootstrapApp(
   var appInjector = ReflectiveInjector.resolveAndCreate(
       [WORKER_APP_APPLICATION_PROVIDERS, isPresent(customProviders) ? customProviders : []],
       workerAppPlatform().injector);
-  return coreLoadAndBootstrap(appInjector, appComponentType);
+  return coreLoadAndBootstrap(appComponentType, appInjector);
 }

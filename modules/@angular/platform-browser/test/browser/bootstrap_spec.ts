@@ -214,7 +214,7 @@ export function main() {
              ReflectiveInjector.resolveAndCreate([BROWSER_APP_PROVIDERS, testProviders],
                                                  platform.injector)
                  .get(ApplicationRef);
-         coreLoadAndBootstrap(app.injector, HelloRootCmp)
+         coreLoadAndBootstrap(HelloRootCmp, app.injector)
              .then((ref) => {
                ref.destroy();
                expect(() => app.tick()).not.toThrow();
