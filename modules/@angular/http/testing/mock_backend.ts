@@ -50,7 +50,7 @@ export class MockConnection implements Connection {
    * var connection;
    * backend.connections.subscribe(c => connection = c);
    * http.request('data.json').subscribe(res => console.log(res.text()));
-   * connection.mockRespond(new Response('fake response')); //logs 'fake response'
+   * connection.mockRespond(new Response(new ResponseOptions({ body: 'fake response' }))); //logs 'fake response'
    * ```
    *
    */
