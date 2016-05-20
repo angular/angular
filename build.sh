@@ -60,8 +60,9 @@ for PACKAGE in \
 do
   SRCDIR=./modules/@angular/${PACKAGE}
   DESTDIR=./dist/packages-dist/${PACKAGE}
-  UMDES6PATH=${DESTDIR}/esm/${PACKAGE}.umd.js
-  UMDES5PATH=${DESTDIR}/${PACKAGE}.umd.js
+  UMD_ES6_PATH=${DESTDIR}/esm/${PACKAGE}.umd.js
+  UMD_ES5_PATH=${DESTDIR}/bundles/${PACKAGE}.umd.js
+  UMD_ES5_MIN_PATH=${DESTDIR}/bundles/${PACKAGE}.umd.min.js
 
   if [[ ${PACKAGE} == "router-deprecated" ]]; then
     echo "======      COMPILING: \$(npm bin)/tsc -p ${SRCDIR}/tsconfig-es5.json        ====="
@@ -95,6 +96,8 @@ do
     fi
 
     echo "======      BUNDLING: ${SRCDIR} ====="
+    mkdir ${DESTDIR}/bundles
+
     (
       cd  ${SRCDIR}
       echo "..."  # here just to have grep match something and not exit with 1
@@ -103,24 +106,25 @@ do
 
     # workaround for https://github.com/rollup/rollup/issues/626
     if [[ ${TRAVIS} ]]; then
-      sed -i    "s/ class exports\./ class /g" ${DESTDIR}/esm/${PACKAGE}.umd.js
+      sed -i    "s/ class exports\./ class /g" ${UMD_ES6_PATH}
     else
-      sed -i '' "s/ class exports\./ class /g" ${DESTDIR}/esm/${PACKAGE}.umd.js
+      sed -i '' "s/ class exports\./ class /g" ${UMD_ES6_PATH}
     fi
 
     $(npm bin)/tsc  \
-        --out ${UMDES5PATH} \
+        --out ${UMD_ES5_PATH} \
         --target es5 \
         --allowJs \
-        ${UMDES6PATH} \
+        ${UMD_ES6_PATH} \
         modules/\@angular/manual_typings/globals.d.ts \
         modules/\@angular/typings/es6-collections/es6-collections.d.ts \
         modules/\@angular/typings/es6-promise/es6-promise.d.ts
-    rm ${UMDES6PATH}
+    rm ${UMD_ES6_PATH}
 
-    cat ./modules/@angular/license-banner.txt > ${UMDES5PATH}.tmp
-    cat ${UMDES5PATH} >> ${UMDES5PATH}.tmp
-    mv ${UMDES5PATH}.tmp ${UMDES5PATH}
+    cat ./modules/@angular/license-banner.txt > ${UMD_ES5_PATH}.tmp
+    cat ${UMD_ES5_PATH} >> ${UMD_ES5_PATH}.tmp
+    mv ${UMD_ES5_PATH}.tmp ${UMD_ES5_PATH}
 
+    $(npm bin)/uglifyjs -c --screw-ie8 -o ${UMD_ES5_MIN_PATH} ${UMD_ES5_PATH}
   fi
 done
