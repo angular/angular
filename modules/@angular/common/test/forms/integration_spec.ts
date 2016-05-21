@@ -1036,12 +1036,12 @@ export function main() {
            fixture.detectChanges();
 
            var form = fixture.debugElement.children[0].inject(NgForm);
-           expect(form.controls['user']).not.toBeDefined();
+           expect(form.controls['id']).not.toBeDefined();
 
            tick();
 
-           expect(form.controls['user']).toBeDefined();
-           expect(form.controls['user'].controls['login']).toBeDefined();
+           expect(form.controls['id']).toBeDefined();
+           expect(form.controls['id'].controls['login']).toBeDefined();
          })));
 
       it("should emit ngSubmit event on submit",
@@ -1116,13 +1116,13 @@ export function main() {
            tick();
            var form = fixture.debugElement.children[0].inject(NgForm);
 
-           expect(form.controls['user']).toBeDefined();
+           expect(form.controls['id']).toBeDefined();
 
            fixture.debugElement.componentInstance.name = 'hide';
            fixture.detectChanges();
            tick();
 
-           expect(form.controls['user']).not.toBeDefined();
+           expect(form.controls['id']).not.toBeDefined();
          })));
 
       it("should support ngModel for complex forms",

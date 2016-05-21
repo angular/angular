@@ -1,6 +1,7 @@
 import {ComponentFactory, Type} from '@angular/core';
 import {StringMapWrapper, ListWrapper} from './facade/collection';
 import {isBlank, isPresent, stringify, NumberWrapper} from './facade/lang';
+import {BaseException} from './facade/exceptions';
 import {DEFAULT_OUTLET_NAME} from './constants';
 
 export class Tree<T> {
@@ -17,16 +18,22 @@ export class Tree<T> {
   }
 
   children(t: T): T[] {
-    let n = _findNode(t, this._root);
-    return isPresent(n) ? n.children.map(t => t.value) : null;
+    let node = _findNode(t, this._root);
+    if (isBlank(node)) throw new BaseException(`Cannot find '${t}'`);
+    return node.children.map(t => t.value);
   }
 
   firstChild(t: T): T {
-    let n = _findNode(t, this._root);
-    return isPresent(n) && n.children.length > 0 ? n.children[0].value : null;
+    let node = _findNode(t, this._root);
+    if (isBlank(node)) throw new BaseException(`Cannot find '${t}'`);
+    return node.children.length > 0 ? node.children[0].value : null;
   }
 
-  pathFromRoot(t: T): T[] { return _findPath(t, this._root, []).map(s => s.value); }
+  pathFromRoot(t: T): T[] {
+    let n = _findPath(t, this._root, []);
+    if (isBlank(n)) throw new BaseException(`Cannot find '${t}'`);
+    return n.map(s => s.value);
+  }
 
   contains(tree: Tree<T>): boolean { return _contains(this._root, tree._root); }
 }
@@ -60,7 +67,6 @@ function _findPath<T>(expected: T, c: TreeNode<T>, collected: TreeNode<T>[]): Tr
     let r = _findPath(expected, cc, ListWrapper.clone(collected));
     if (isPresent(r)) return r;
   }
-
   return null;
 }
 

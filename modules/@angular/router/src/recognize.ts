@@ -12,7 +12,7 @@ import {RoutesMetadata, RouteMetadata} from './metadata/metadata';
 import {Type, isBlank, isPresent, stringify} from './facade/lang';
 import {ListWrapper, StringMapWrapper} from './facade/collection';
 import {PromiseWrapper} from './facade/promise';
-import {BaseException, ComponentFactory} from '@angular/core';
+import {BaseException, ComponentFactory, resolveForwardRef} from '@angular/core';
 import {ComponentResolver} from '@angular/core';
 import {DEFAULT_OUTLET_NAME} from './constants';
 import {reflector} from '@angular/core';
@@ -182,8 +182,8 @@ function _matchWithParts(route: RouteMetadata, url: TreeNode<UrlSegment>): _Matc
   let parameters = <{[key: string]: string}>StringMapWrapper.merge(p, positionalParams);
   let axuUrlSubtrees = isPresent(lastParent) ? lastParent.children.slice(1) : [];
 
-  return new _MatchResult(route.component, consumedUrlSegments, parameters, lastSegment.children,
-                          axuUrlSubtrees);
+  return new _MatchResult(resolveForwardRef(route.component), consumedUrlSegments, parameters,
+                          lastSegment.children, axuUrlSubtrees);
 }
 
 function _checkOutletNameUniqueness(nodes: TreeNode<RouteSegment>[]): TreeNode<RouteSegment>[] {

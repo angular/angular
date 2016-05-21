@@ -9,7 +9,8 @@ import {
   ReflectiveInjector,
   OnInit
 } from '@angular/core';
-import {RouterOutletMap} from '../router';
+import {RouterOutletMap, RouteSegmentContainer} from '../router';
+import {RouteSegment} from '../segments';
 import {DEFAULT_OUTLET_NAME} from '../constants';
 import {isPresent, isBlank} from '../facade/lang';
 
@@ -29,7 +30,8 @@ import {isPresent, isBlank} from '../facade/lang';
  * ```
  */
 @Directive({selector: 'router-outlet'})
-export class RouterOutlet {
+export class RouterOutlet implements RouteSegmentContainer {
+  public routeSegment: RouteSegment;
   private _activated: ComponentRef<any>;
   public outletMap: RouterOutletMap;
 
@@ -41,12 +43,13 @@ export class RouterOutlet {
   deactivate(): void {
     this._activated.destroy();
     this._activated = null;
+    this.routeSegment = null;
   }
 
   /**
    * Returns the loaded component.
    */
-  get component(): Object { return isPresent(this._activated) ? this._activated.instance : null; }
+  get component(): any { return isPresent(this._activated) ? this._activated.instance : null; }
 
   /**
    * Returns true is the outlet is not empty.
@@ -56,8 +59,9 @@ export class RouterOutlet {
   /**
    * Called by the Router to instantiate a new component.
    */
-  activate(factory: ComponentFactory<any>, providers: ResolvedReflectiveProvider[],
-           outletMap: RouterOutletMap): ComponentRef<any> {
+  activate(factory: ComponentFactory<any>, routeSegment: RouteSegment,
+           providers: ResolvedReflectiveProvider[], outletMap: RouterOutletMap): ComponentRef<any> {
+    this.routeSegment = routeSegment;
     this.outletMap = outletMap;
     let inj = ReflectiveInjector.fromResolvedProviders(providers, this._location.parentInjector);
     this._activated = this._location.createComponent(factory, this._location.length, inj, []);

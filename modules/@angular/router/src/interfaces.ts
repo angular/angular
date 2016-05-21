@@ -1,4 +1,4 @@
-import {RouteSegment, Tree, RouteTree} from './segments';
+import {RouteSegment, RouteTree} from './segments';
 
 /**
  * Defines route lifecycle method `routerOnActivate`, which is called by the router at the end of a
@@ -13,14 +13,28 @@ export interface OnActivate {
 }
 
 /**
- * Defines route lifecycle method `routerOnDeactivate`, which is called by the router before
- * destroying a component as part of a route change.
- *
- * The `routerOnDeactivate` hook is called with two {@link RouteTree}s, representing the current
- * and the future state of the application.
- *
- * `routerOnDeactivate` must return a promise. The route change will wait until the promise settles.
+ * Defines route lifecycle method `routerOnDeactivate`, which is called by the router at the end of
+ * a successful route deactivation.
  */
+export interface OnDeactivate {
+  routerOnDeactivate(curr?: RouteSegment, currTree?: RouteTree, futureTree?: RouteTree): void;
+}
+
+/**
+ * Defines route lifecycle method `routerOnReuse`, which is called by the router to determine if an
+ * outlet should be reused.
+ */
+export interface CanReuse {
+  routerCanReuse(future: RouteSegment, curr?: RouteSegment, futureTree?: RouteTree,
+                 currTree?: RouteTree): boolean;
+}
+
 export interface CanDeactivate {
-  routerCanDeactivate(currTree?: RouteTree, futureTree?: RouteTree): Promise<boolean>;
+  routerCanDeactivate(curr?: RouteSegment, currTree?: RouteTree,
+                      futureTree?: RouteTree): Promise<boolean>;
+}
+
+export interface CanDeactivateChild {
+  routerCanDeactivate(childSegment: RouteSegment, childComponent: Object, curr?: RouteSegment,
+                      currTree?: RouteTree, futureTree?: RouteTree): Promise<boolean>;
 }

@@ -11,9 +11,9 @@ import {
   it,
   xit
 } from '@angular/core/testing/testing_internal';
-import {fakeAsync, tick} from '@angular/core/testing';
+import {fakeAsync, tick, Log} from '@angular/core/testing';
 import {ComponentFixture, TestComponentBuilder} from '@angular/compiler/testing';
-import {provide, Component, ComponentResolver} from '@angular/core';
+import {provide, Component, ComponentResolver, forwardRef} from '@angular/core';
 import {PromiseWrapper} from '../src/facade/async';
 
 
@@ -27,7 +27,10 @@ import {
   RouterUrlSerializer,
   DefaultRouterUrlSerializer,
   OnActivate,
-  CanDeactivate
+  OnDeactivate,
+  CanDeactivate,
+  CanDeactivateChild,
+  CanReuse
 } from '@angular/router';
 import {SpyLocation} from '@angular/common/testing';
 import {Location} from '@angular/common';
@@ -173,6 +176,76 @@ export function main() {
          expect(location.path()).toEqual('/team/22/cannotDeactivate');
        })));
 
+    it('should call routerOnDeactivate when deactivating a component',
+       fakeAsync(inject([Router, TestComponentBuilder, Location], (router, tcb, location) => {
+         let fixture = tcb.createFakeAsync(RootCmp);
+
+         router.navigateByUrl('/deactivatable');
+         advance(fixture);
+         let deactivatable = fixture.debugElement.children[1].componentInstance;
+
+         router.navigateByUrl('/team/22/user/fedor');
+         advance(fixture);
+
+         expect(deactivatable.recorded[0][0].stringifiedUrlSegments).toEqual("deactivatable");
+       })));
+
+    it('should reuse components when implement CanReuse and return true',
+       fakeAsync(inject([Router, TestComponentBuilder, Location], (router, tcb, location) => {
+         let fixture = tcb.createFakeAsync(RootCmp);
+
+         router.navigateByUrl('/reusable/1');
+         advance(fixture);
+         let reusable1 = fixture.debugElement.children[1].componentInstance;
+         expect(reusable1.id).toEqual("1");
+
+         router.navigateByUrl('/reusable/2');
+         advance(fixture);
+         let reusable2 = fixture.debugElement.children[1].componentInstance;
+         expect(reusable2).toBe(reusable1);
+         expect(reusable2.id).toEqual("2");
+
+         reusable2.canReuseValue = false;
+         router.navigateByUrl('/reusable/3');
+         advance(fixture);
+         let reusable3 = fixture.debugElement.children[1].componentInstance;
+         expect(reusable2).not.toBe(reusable3);
+       })));
+
+    it('should not reuse components when switching component types',
+       fakeAsync(inject([Router, TestComponentBuilder, Location], (router, tcb, location) => {
+         let fixture = tcb.createFakeAsync(RootCmp);
+
+         router.navigateByUrl('/reusable/1');
+         advance(fixture);
+         let reusable = fixture.debugElement.children[1].componentInstance;
+
+         router.navigateByUrl('/team/33/user/john');
+         advance(fixture);
+         let team = fixture.debugElement.children[1].componentInstance;
+
+         expect(team).not.toBe(reusable);
+       })));
+
+    it('should invoke lifecycle hooks',
+       fakeAsync(inject([Router, TestComponentBuilder, Location, Log], (router, tcb, location,
+                                                                        log) => {
+         let fixture = tcb.createFakeAsync(RootCmp);
+
+         router.navigateByUrl('/lifecycle/1/lifecycle/2');
+         advance(fixture);
+
+         expect(log.result()).toEqual("onActivate1; onActivate2");
+         log.clear();
+
+         router.navigateByUrl('/lifecycle/3');
+         advance(fixture);
+
+         expect(log.result())
+             .toEqual(
+                 "canDeactivate2; canDeactivateChild1_2; canDeactivate1; onDeactivate2; onDeactivate1; onActivate3");
+       })));
+
     if (getDOM().supportsDOMEvents()) {
       it("should support absolute router links",
          fakeAsync(inject([Router, TestComponentBuilder], (router, tcb) => {
@@ -273,7 +346,11 @@ class UserCmp implements OnActivate {
 
 @Component({selector: 'cannot-deactivate', template: `cannotDeactivate`})
 class CanDeactivateCmp implements CanDeactivate {
-  routerCanDeactivate(a?, b?): Promise<boolean> { return PromiseWrapper.resolve(false); }
+  recorded = [];
+  routerCanDeactivate(a?, b?, c?): Promise<boolean> {
+    this.recorded.push([a, b, c]);
+    return PromiseWrapper.resolve(false);
+  }
 }
 
 @Component({selector: 'simple-cmp', template: `simple`})
@@ -290,6 +367,23 @@ class Simple2Cmp {
   directives: ROUTER_DIRECTIVES
 })
 class LinkCmp {
+}
+
+@Component({selector: 'deactivatable-cmp', template: ``})
+class DeactivatableCmp implements OnDeactivate {
+  recorded = [];
+
+  routerOnDeactivate(a?, b?, c?): void { this.recorded.push([a, b, c]); }
+}
+
+@Component({selector: 'reusable-cmp', template: ``})
+class ReusableCmp implements CanReuse {
+  canReuseValue: boolean = true;
+
+  id: string;
+  routerOnActivate(s: RouteSegment, a?, b?, c?) { this.id = s.getParam('id'); }
+
+  routerCanReuse(s: RouteSegment, a?, b?, c?): boolean { return this.canReuseValue; }
 }
 
 @Component({
@@ -320,10 +414,46 @@ class TeamCmp implements OnActivate {
 }
 
 @Component({
+  selector: 'lifecycle-cmp',
+  template: `<router-outlet></router-outlet>`,
+  directives: ROUTER_DIRECTIVES
+})
+@Routes([new Route({path: '/lifecycle/:id', component: forwardRef(() => LifecycleCmp)})])
+class LifecycleCmp implements OnActivate,
+    OnDeactivate, CanDeactivate, CanDeactivateChild {
+  constructor(private log: Log) {}
+
+  routerOnActivate(curr: RouteSegment, prev?, currTree?, prevTree?): void {
+    this.log.add(`onActivate${curr.getParam('id')}`);
+  }
+
+  routerOnDeactivate(curr?: RouteSegment, currTree?, futureTree?): void {
+    this.log.add(`onDeactivate${curr.getParam('id')}`);
+  }
+
+  routerCanDeactivate(curr?: RouteSegment, currTree?, futureTree?): Promise<boolean> {
+    this.log.add(`canDeactivate${curr.getParam('id')}`);
+    return PromiseWrapper.resolve(true);
+  }
+
+  routerCanDeactivateChild(childSegment: RouteSegment, childComp: Object, curr?: RouteSegment,
+                           currTree?, futureTree?): Promise<boolean> {
+    this.log.add(`canDeactivateChild${curr.getParam('id')}_${childSegment.getParam('id')}`);
+    return PromiseWrapper.resolve(true);
+  }
+}
+
+
+@Component({
   selector: 'root-cmp',
   template: `<router-outlet></router-outlet>`,
   directives: [ROUTER_DIRECTIVES]
 })
-@Routes([new Route({path: 'team/:id', component: TeamCmp})])
+@Routes([
+  new Route({path: 'team/:id', component: TeamCmp}),
+  new Route({path: 'deactivatable', component: DeactivatableCmp}),
+  new Route({path: 'reusable/:id', component: ReusableCmp}),
+  new Route({path: '/lifecycle/:id', component: LifecycleCmp})
+])
 class RootCmp {
 }
