@@ -1,18 +1,26 @@
+import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
 import {PipeTransform, Pipe, Injectable} from '@angular/core';
 import {
   isDate,
   isNumber,
+  isPresent,
+  isString,
+  Date,
   DateWrapper,
   isBlank,
+  FunctionWrapper,
+  RegExpWrapper
 } from '../../src/facade/lang';
 import {DateFormatter} from '../../src/facade/intl';
 import {StringMapWrapper} from '../../src/facade/collection';
 
 import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
 
-
 // TODO: move to a global configurable location along with other i18n components.
 var defaultLocale: string = 'en-US';
+
+var ISO8601_STR: RegExp = RegExpWrapper.create(
+    '^([+-]?\\d{4,6})-?(\\d\\d)-?(\\d\\d)(?:[ T](\\d\\d)(?::?(\\d\\d)(?::?(\\d\\d)(?:\\.(\\d{1,6}))?)?)?( ?[zZ]| ?([-+])(\\d\\d)(?::?(\\d\\d))?)?)?$');
 
 /**
  * Formats a date value to a string based on the requested format.
@@ -29,7 +37,7 @@ var defaultLocale: string = 'en-US';
  *
  *     expression | date[:format]
  *
- * where `expression` is a date object or a number (milliseconds since UTC epoch) and
+ * where `expression` is a date object or a number (milliseconds since UTC epoch) or ISO string and
  * `format` indicates which date/time components to include:
  *
  *  | Component | Symbol | Short Form   | Long Form         | Numeric   | 2-digit   |
@@ -95,7 +103,6 @@ export class DatePipe implements PipeTransform {
     'shortTime': 'jm'
   };
 
-
   transform(value: any, pattern: string = 'mediumDate'): string {
     if (isBlank(value)) return null;
 
@@ -105,6 +112,8 @@ export class DatePipe implements PipeTransform {
 
     if (isNumber(value)) {
       value = DateWrapper.fromMillis(value);
+    } else if (isString(value)) {
+      value = DateWrapper.fromISOString(value);
     }
     if (StringMapWrapper.contains(DatePipe._ALIASES, pattern)) {
       pattern = <string>StringMapWrapper.get(DatePipe._ALIASES, pattern);
@@ -112,5 +121,7 @@ export class DatePipe implements PipeTransform {
     return DateFormatter.format(value, defaultLocale, pattern);
   }
 
-  supports(obj: any): boolean { return isDate(obj) || isNumber(obj); }
+  supports(obj: any): boolean {
+    return isDate(obj) || isNumber(obj) || (isString(obj) && RegExpWrapper.test(ISO8601_STR, obj));
+  }
 }
