@@ -584,19 +584,6 @@ is:
 }
 ```
 
-* The recently added binding of the current router to the current component
-has been renamed from `router` to `$router`.
-So now the recommended set up for your bindings in your routed component
-is:
-```js
-{
-  ...
-  bindings: {
-    $router: '<'
-  }
-}
-```
-
 
 
 <a name="2.0.0-beta.8"></a>
