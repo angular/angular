@@ -1440,6 +1440,7 @@ gulp.task('!bundle.ng.polyfills', ['clean'],
           function() { return addDevDependencies('angular2-polyfills.js'); });
 
 var JS_DEV_DEPS = [
+  'modules/angular2/src/testing/shims_for_IE.js',
   licenseWrap('node_modules/zone.js/LICENSE', true),
   'node_modules/zone.js/dist/zone.js',
   'node_modules/zone.js/dist/long-stack-trace-zone.js',
