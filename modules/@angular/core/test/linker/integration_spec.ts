@@ -1527,11 +1527,10 @@ function declareTests(isJit: boolean) {
              tick();
 
              var tc = fixture.debugElement.children[0];
-             tc.inject(DirectiveEmittingEvent).fireEvent("boom");
+
 
              try {
-               tick();
-               throw "Should throw";
+               tc.inject(DirectiveEmittingEvent).fireEvent("boom");
              } catch (e) {
                clearPendingTimers();
 
