@@ -148,6 +148,7 @@ var ANGULAR2_BUNDLE_CONFIG = [
   'angular2/compiler',
   'angular2/instrumentation',
   'angular2/platform/browser',
+  'angular2/platform/common',
   'angular2/platform/common_dom'
 ];
 
