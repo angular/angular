@@ -2,6 +2,7 @@
   "compilerOptions": {
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
+    "strictNullChecks": true,
     "target": "es6",
     "noImplicitAny": false,
     "outDir": "dist/es6",
