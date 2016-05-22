@@ -12,7 +12,7 @@
     "build_npm": "rm -rf dist && tsc -p tsconfig.publish.es5.json && tsc -p tsconfig.publish.es6.json",
     "postbuild_npm": "cp package.json README.md dist/ && npm run rewrite_npm_package",
     "rewrite_npm_package": "node --harmony_destructuring tools/rewrite-published-package.js",
-    "build_bundle": "cp -r src router && tsc typings/main.d.ts src/router.ts --rootDir . --module system -t es5 --outFile dist/bundles/router.js  --moduleResolution node --emitDecoratorMetadata --experimentalDecorators"
+    "build_bundle": "cp -r src router && tsc typings/index.d.ts src/router.ts --rootDir . --module system -t es5 --outFile dist/bundles/router.js  --moduleResolution node --emitDecoratorMetadata --experimentalDecorators"
   },
   "keywords": [
     "angular2",
@@ -30,10 +30,10 @@
   },
   "homepage": "https://github.com/angular/vladivostok#readme",
   "dependencies": {
-    "@angular/core":  "2.0.0-rc.1",
-    "@angular/platform-browser": "2.0.0-rc.1",
     "@angular/common": "2.0.0-rc.1",
     "@angular/compiler": "2.0.0-rc.1",
+    "@angular/core": "2.0.0-rc.1",
+    "@angular/platform-browser": "2.0.0-rc.1",
     "@angular/platform-browser-dynamic": "2.0.0-rc.1",
     "rxjs": "5.0.0-beta.6"
   },
@@ -60,8 +60,8 @@
     "systemjs-builder": "^0.15.7",
     "traceur": "0.0.96",
     "tsd": "^0.6.5",
-    "typescript": "1.8.9",
-    "typings": "^0.6.2",
+    "typescript": "^1.9.0-dev.20160521-1.0",
+    "typings": "^1.0.4",
     "zone.js": "^0.6.6"
   },
   "typings": "dist/router.d.ts"
