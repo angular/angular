@@ -58,7 +58,7 @@ import {StringMapWrapper, isListLikeIterable} from '../../src/facade/collection'
  *       color: gray;
  *       border: medium solid gray;
  *     }
- *   `]
+ *   `],
  *   directives: [NgClass]
  * })
  * class ToggleButton {
