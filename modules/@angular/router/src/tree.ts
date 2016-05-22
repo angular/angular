@@ -6,17 +6,17 @@ export class Tree<T> {
 
   get root(): T { return this._root.value; }
 
-  parent(t: T): T {
+  parent(t: T): T | null {
     const p = this.pathFromRoot(t);
     return p.length > 1 ? p[p.length - 2] : null;
   }
 
   children(t: T): T[] {
     const n = _findNode(t, this._root);
-    return n ? n.children.map(t => t.value) : null;
+    return n ? n.children.map(t => t.value) : [];
   }
 
-  firstChild(t: T): T {
+  firstChild(t: T): T | null {
     const n = _findNode(t, this._root);
     return n && n.children.length > 0 ? n.children[0].value : null;
   }
@@ -30,7 +30,7 @@ export function rootNode<T>(tree: Tree<T>): TreeNode<T> {
   return tree._root;
 }
 
-function _findNode<T>(expected: T, c: TreeNode<T>): TreeNode<T> {
+function _findNode<T>(expected: T, c: TreeNode<T>): TreeNode<T> | null {
   if (expected === c.value) return c;
   for (let cc of c.children) {
     const r = _findNode(expected, cc);
@@ -49,7 +49,7 @@ function _findPath<T>(expected: T, c: TreeNode<T>, collected: TreeNode<T>[]): Tr
     if (r) return r;
   }
 
-  return null;
+  return [];
 }
 
 function _contains<T>(tree: TreeNode<T>, subtree: TreeNode<T>): boolean {
