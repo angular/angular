@@ -1,8 +1,8 @@
 {
   "name": "vladivostok",
   "version": false,
-  "dependencies": {},
-  "ambientDependencies": {
-    "jasmine": "registry:dt/jasmine#2.2.0+20160505161446"
+  "globalDependencies": {
+    "jasmine": "registry:dt/jasmine#2.2.0+20160505161446",
+    "es6-shim": "github:DefinitelyTyped/DefinitelyTyped/es6-shim/es6-shim.d.ts#6697d6f7dadbf5773cb40ecda35a76027e0783b2"
   }
 }
