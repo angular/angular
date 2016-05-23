@@ -38,6 +38,10 @@ module.exports = function(config) {
       {pattern: 'dist/**/*.js.map', included: false, watched: false}
     ],
 
+    preprocessors: {
+      '**/*.js': ['sourcemap']
+    },
+
     reporters: ['mocha'],
     port: 9876,
     colors: true,
