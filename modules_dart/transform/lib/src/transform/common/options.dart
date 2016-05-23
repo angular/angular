@@ -145,7 +145,8 @@ class TransformerOptions {
         platformDirectives: platformDirectives,
         platformPipes: platformPipes,
         resolvedIdentifiers: resolvedIdentifiers,
-        errorOnMissingIdentifiers: errorOnMissingIdentifiers,
+        // TODO(tbosch): remove this from the options once this has landed
+        errorOnMissingIdentifiers: true,
         inlineViews: inlineViews,
         lazyTransformers: lazyTransformers,
         translations: translations,
