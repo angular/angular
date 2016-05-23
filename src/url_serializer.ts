@@ -54,7 +54,7 @@ function serializeChildren(node: TreeNode<UrlSegment>): string {
 }
 
 export function serializeSegment(segment: UrlSegment): string {
-  return `${segment.segment}${serializeParams(segment.parameters)}`;
+  return `${segment.path}${serializeParams(segment.parameters)}`;
 }
 
 function serializeParams(params: {[key: string]: string}): string {
