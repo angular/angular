@@ -2,10 +2,13 @@
 @import 'default-theme';
 
 $md-tab-bar-height: 48px !default;
+$md-tab-content-min-height: 200px !default;
 
 :host {
-  display: block;
+  display: flex;
+  flex-direction: column;
   font-family: $md-font-family;
+  min-height: $md-tab-bar-height + $md-tab-content-min-height;
 }
 
 /** The top section of the view; contains the tab labels */
@@ -15,6 +18,7 @@ $md-tab-bar-height: 48px !default;
   display: flex;
   flex-direction: row;
   border-bottom: 1px solid md-color($md-background, status-bar);
+  flex-shrink: 0;
 }
 
 /** Wraps each tab label */
@@ -41,14 +45,18 @@ $md-tab-bar-height: 48px !default;
 /** The bottom section of the view; contains the tab bodies */
 .md-tab-body-wrapper {
   position: relative;
-  height: 200px;
   overflow: hidden;
-  padding: 12px;
+  flex-grow: 1;
+  display: flex;
 }
 
 /** Wraps each tab body */
 .md-tab-body {
   display: none;
+  overflow: auto;
+  box-sizing: border-box;
+  flex-grow: 1;
+  flex-shrink: 1;
   &.md-active {
     display: block;
   }
