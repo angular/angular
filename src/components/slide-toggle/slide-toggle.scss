@@ -12,12 +12,28 @@ $md-slide-toggle-thumb-size: 20px !default;
 $md-slide-toggle-margin: 16px !default;
 
 @mixin md-switch-checked($palette) {
-  .md-slide-toggle-thumb {
-    background-color: md-color($palette);
-  }
+  &.md-checked {
+    .md-slide-toggle-thumb {
+      background-color: md-color($palette);
+    }
 
-  .md-slide-toggle-bar {
-    background-color: md-color($palette, 0.5);
+    .md-slide-toggle-bar {
+      background-color: md-color($palette, 0.5);
+    }
+  }
+}
+
+@mixin md-switch-ripple($palette) {
+  // Temporary ripple effect for the thumb of the slide-toggle.
+  // Bind to the parent selector and specify the current palette.
+  @include md-temporary-ink-ripple(slide-toggle, true, $palette);
+
+  &.md-slide-toggle-focused {
+    &:not(.md-checked) .md-ink-ripple {
+      // When the slide-toggle is not checked and it shows its focus indicator, it should use a 12% opacity
+      // of black in light themes and 12% of white in dark themes.
+      background-color: md-color($md-foreground, divider);
+    }
   }
 }
 
@@ -34,19 +50,22 @@ $md-slide-toggle-margin: 16px !default;
   outline: none;
 
   &.md-checked {
-    @include md-switch-checked($md-accent);
-
-    &.md-primary {
-      @include md-switch-checked($md-primary);
-    }
-
-    &.md-warn {
-      @include md-switch-checked($md-warn);
-    }
-
     .md-slide-toggle-thumb-container {
       transform: translate3d(100%, 0, 0);
     }
+  }
+
+  @include md-switch-checked($md-accent);
+  @include md-switch-ripple($md-accent);
+
+  &.md-primary {
+    @include md-switch-checked($md-primary);
+    @include md-switch-ripple($md-primary);
+  }
+
+  &.md-warn {
+    @include md-switch-checked($md-warn);
+    @include md-switch-ripple($md-warn);
   }
 
   &.md-disabled {

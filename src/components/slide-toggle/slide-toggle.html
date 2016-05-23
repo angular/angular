@@ -2,7 +2,9 @@
   <div class="md-slide-toggle-container">
     <div class="md-slide-toggle-bar"></div>
     <div class="md-slide-toggle-thumb-container">
-      <div class="md-slide-toggle-thumb"></div>
+      <div class="md-slide-toggle-thumb">
+        <div class="md-ink-ripple"></div>
+      </div>
     </div>
 
     <input #input class="md-slide-toggle-checkbox" type="checkbox"
@@ -13,7 +15,8 @@
            [attr.name]="name"
            [attr.aria-label]="ariaLabel"
            [attr.aria-labelledby]="ariaLabelledby"
-           (blur)="onTouched()"
+           (blur)="onInputBlur()"
+           (focus)="onInputFocus()"
            (change)="onChangeEvent()">
   </div>
   <span class="md-slide-toggle-content">

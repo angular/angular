@@ -235,9 +235,29 @@ describe('MdSlideToggle', () => {
       expect(slideToggleElement.classList).toContain('md-checked');
     });
 
+    it('should correctly set the slide-toggle to checked on focus', () => {
+      expect(slideToggleElement.classList).not.toContain('md-slide-toggle-focused');
+
+      dispatchFocusChangeEvent('focus', inputElement);
+      fixture.detectChanges();
+
+      expect(slideToggleElement.classList).toContain('md-slide-toggle-focused');
+    });
+
   });
 
 });
+
+/**
+ * Dispatches a focus change event from an element.
+ * @param eventName Name of the event, either 'focus' or 'blur'.
+ * @param element The element from which the event will be dispatched.
+ */
+function dispatchFocusChangeEvent(eventName: string, element: HTMLElement): void {
+  let event  = document.createEvent('Event');
+  event.initEvent(eventName, true, true);
+  element.dispatchEvent(event);
+}
 
 @Component({
   selector: 'slide-toggle-test-app',
