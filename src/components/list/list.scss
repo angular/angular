@@ -25,11 +25,11 @@ $md-dense-avatar-height: 48px;
 $md-dense-two-line-height: 60px;
 $md-dense-three-line-height: 76px;
 
-/*  
+/*
 This mixin provides all list-item styles, changing font size and height
 based on whether the list is in dense mode.
 */
-@mixin md-list-item-base($font-size, $base-height, $avatar-height, 
+@mixin md-list-item-base($font-size, $base-height, $avatar-height,
   $two-line-height, $three-line-height) {
 
   .md-list-item {
@@ -94,7 +94,7 @@ based on whether the list is in dense mode.
 }
 
 /*
-This mixin provides all md-line styles, changing secondary font size 
+This mixin provides all md-line styles, changing secondary font size
 based on whether the list is in dense mode.
 */
 @mixin md-line-base($secondary-font-size) {
@@ -201,7 +201,7 @@ md-nav-list {
   .md-list-item {
     cursor: pointer;
 
-    &:hover {
+    &:hover, &.md-list-item-focus {
       background: md-color($md-background, 'hover');
     }
   }

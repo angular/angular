@@ -9,7 +9,7 @@ import {TestComponentBuilder} from '@angular/compiler/testing';
 import {Component} from '@angular/core';
 import {By} from '@angular/platform-browser';
 
-import {MD_LIST_DIRECTIVES} from './list';
+import {MD_LIST_DIRECTIVES, MdListItem} from './list';
 
 describe('MdList', () => {
   let builder: TestComponentBuilder;
@@ -17,6 +17,31 @@ describe('MdList', () => {
   beforeEach(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
     builder = tcb;
   }));
+
+  it('should add and remove focus class on focus/blur', () => {
+    var template = `
+        <md-list>
+          <a md-list-item>
+            Paprika
+          </a>
+        </md-list>
+      `;
+    return builder.overrideTemplate(TestList, template)
+        .createAsync(TestList).then((fixture) => {
+          let listItem = fixture.debugElement.query(By.directive(MdListItem));
+          let listItemDiv = fixture.debugElement.query(By.css('.md-list-item'));
+          fixture.detectChanges();
+          expect(listItemDiv.nativeElement.classList).not.toContain('md-list-item-focus');
+
+          listItem.componentInstance.handleFocus();
+          fixture.detectChanges();
+          expect(listItemDiv.nativeElement.classList).toContain('md-list-item-focus');
+
+          listItem.componentInstance.handleBlur();
+          fixture.detectChanges();
+          expect(listItemDiv.nativeElement.classList).not.toContain('md-list-item-focus');
+        });
+  });
 
   it('should not apply any class to a list without lines', (done: () => void) => {
     var template = `
