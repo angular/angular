@@ -7,9 +7,9 @@
     "target": "es5",
     "noImplicitAny": false,
     "outDir": "dist",
-    "rootDir": "src",
-    "sourceMap": true,
-    "sourceRoot": "./",
+    "rootDir": ".",
+    "inlineSourceMap": true,
+    "inlineSources": true,
     "declaration": true,
     "removeComments": true
   },
