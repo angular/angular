@@ -26,6 +26,7 @@ transformers:
         - web/src/naive_infinite_scroll/index.dart
         - web/src/static_tree/tree_benchmark.dart
         - web/src/tree/tree_benchmark.dart
+        - web/src/page_load/page_load.dart
 - $dart2js:
     $include: web/src/**
     minify: false
