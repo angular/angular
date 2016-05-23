@@ -46,12 +46,7 @@ System.import('system-config.js').then(function() {
   return Promise.all(
     allSpecFiles.map(function (moduleName) {
       return System.import(moduleName).then(function(module) {
-        // TODO(jelbourn): remove `main` method from tests and this check.
-        if (module.hasOwnProperty('main')) {
-          return module.main();
-        } else {
-          return module;
-        }
+        return module;
       });
     }));
 }).then(__karma__.start, __karma__.error);

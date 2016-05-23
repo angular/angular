@@ -15,107 +15,105 @@ import {Component, provide} from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {MdLiveAnnouncer, LIVE_ANNOUNCER_ELEMENT_TOKEN} from './live-announcer';
 
-export function main() {
-  describe('MdLiveAnnouncer', () => {
-    let live: MdLiveAnnouncer;
-    let builder: TestComponentBuilder;
-    let liveEl: Element;
+describe('MdLiveAnnouncer', () => {
+  let live: MdLiveAnnouncer;
+  let builder: TestComponentBuilder;
+  let liveEl: Element;
 
-    beforeEachProviders(() => [MdLiveAnnouncer]);
+  beforeEachProviders(() => [MdLiveAnnouncer]);
 
-    beforeEach(inject([TestComponentBuilder, MdLiveAnnouncer],
-      (tcb: TestComponentBuilder, _live: MdLiveAnnouncer) => {
-        builder = tcb;
-        live = _live;
-        liveEl = getLiveElement();
+  beforeEach(inject([TestComponentBuilder, MdLiveAnnouncer],
+    (tcb: TestComponentBuilder, _live: MdLiveAnnouncer) => {
+      builder = tcb;
+      live = _live;
+      liveEl = getLiveElement();
     }));
 
-    afterEach(() => {
-      // In our tests we always remove the current live element, because otherwise we would have
-      // multiple live elements due multiple service instantiations.
-      liveEl.parentNode.removeChild(liveEl);
+  afterEach(() => {
+    // In our tests we always remove the current live element, because otherwise we would have
+    // multiple live elements due multiple service instantiations.
+    liveEl.parentNode.removeChild(liveEl);
+  });
+
+  it('should correctly update the announce text', fakeAsyncTest(() => {
+    let appFixture: ComponentFixture<TestApp> = null;
+
+    builder.createAsync(TestApp).then(fixture => {
+      appFixture = fixture;
     });
 
-    it('should correctly update the announce text', fakeAsyncTest(() => {
-      let appFixture: ComponentFixture<TestApp> = null;
+    flushMicrotasks();
 
-      builder.createAsync(TestApp).then(fixture => {
-        appFixture = fixture;
-      });
+    let buttonElement = appFixture.debugElement
+      .query(By.css('button')).nativeElement;
 
-      flushMicrotasks();
+    buttonElement.click();
 
-      let buttonElement = appFixture.debugElement
-        .query(By.css('button')).nativeElement;
+    // This flushes our 100ms timeout for the screenreaders.
+    tick(100);
 
-      buttonElement.click();
+    expect(liveEl.textContent).toBe('Test');
+  }));
 
-      // This flushes our 100ms timeout for the screenreaders.
-      tick(100);
+  it('should correctly update the politeness attribute', fakeAsyncTest(() => {
+    let appFixture: ComponentFixture<TestApp> = null;
 
-      expect(liveEl.textContent).toBe('Test');
-    }));
+    builder.createAsync(TestApp).then(fixture => {
+      appFixture = fixture;
+    });
 
-    it('should correctly update the politeness attribute', fakeAsyncTest(() => {
-      let appFixture: ComponentFixture<TestApp> = null;
+    flushMicrotasks();
 
-      builder.createAsync(TestApp).then(fixture => {
-        appFixture = fixture;
-      });
+    live.announce('Hey Google', 'assertive');
 
-      flushMicrotasks();
+    // This flushes our 100ms timeout for the screenreaders.
+    tick(100);
 
-      live.announce('Hey Google', 'assertive');
+    expect(liveEl.textContent).toBe('Hey Google');
+    expect(liveEl.getAttribute('aria-live')).toBe('assertive');
+  }));
 
-      // This flushes our 100ms timeout for the screenreaders.
-      tick(100);
+  it('should apply the aria-live value polite by default', fakeAsyncTest(() => {
+    let appFixture: ComponentFixture<TestApp> = null;
 
-      expect(liveEl.textContent).toBe('Hey Google');
-      expect(liveEl.getAttribute('aria-live')).toBe('assertive');
-    }));
+    builder.createAsync(TestApp).then(fixture => {
+      appFixture = fixture;
+    });
 
-    it('should apply the aria-live value polite by default', fakeAsyncTest(() => {
-      let appFixture: ComponentFixture<TestApp> = null;
+    flushMicrotasks();
 
-      builder.createAsync(TestApp).then(fixture => {
-        appFixture = fixture;
-      });
+    live.announce('Hey Google');
 
-      flushMicrotasks();
+    // This flushes our 100ms timeout for the screenreaders.
+    tick(100);
 
-      live.announce('Hey Google');
+    expect(liveEl.textContent).toBe('Hey Google');
+    expect(liveEl.getAttribute('aria-live')).toBe('polite');
+  }));
 
-      // This flushes our 100ms timeout for the screenreaders.
-      tick(100);
+  it('should allow to use a custom live element', fakeAsyncTest(() => {
+    let customLiveEl = document.createElement('div');
 
-      expect(liveEl.textContent).toBe('Hey Google');
-      expect(liveEl.getAttribute('aria-live')).toBe('polite');
-    }));
+    // We need to reset our test injector here, because it is already instantiated above.
+    getTestInjector().reset();
 
-    it('should allow to use a custom live element', fakeAsyncTest(() => {
-      let customLiveEl = document.createElement('div');
+    getTestInjector().addProviders([
+      provide(LIVE_ANNOUNCER_ELEMENT_TOKEN, {useValue: customLiveEl}),
+      MdLiveAnnouncer
+    ]);
 
-      // We need to reset our test injector here, because it is already instantiated above.
-      getTestInjector().reset();
+    let injector = getTestInjector().createInjector();
+    let liveService: MdLiveAnnouncer = injector.get(MdLiveAnnouncer);
 
-      getTestInjector().addProviders([
-        provide(LIVE_ANNOUNCER_ELEMENT_TOKEN, {useValue: customLiveEl}),
-        MdLiveAnnouncer
-      ]);
+    liveService.announce('Custom Element');
 
-      let injector = getTestInjector().createInjector();
-      let liveService: MdLiveAnnouncer = injector.get(MdLiveAnnouncer);
+    // This flushes our 100ms timeout for the screenreaders.
+    tick(100);
 
-      liveService.announce('Custom Element');
+    expect(customLiveEl.textContent).toBe('Custom Element');
+  }));
 
-      // This flushes our 100ms timeout for the screenreaders.
-      tick(100);
-
-      expect(customLiveEl.textContent).toBe('Custom Element');
-    }));
-
-  });
-}
+});
 
 function fakeAsyncTest(fn: () => void) {
   return inject([], fakeAsync(fn));
@@ -131,7 +129,8 @@ function getLiveElement(): Element {
 })
 class TestApp {
 
-  constructor(private live: MdLiveAnnouncer) {};
+  constructor(private live: MdLiveAnnouncer) {
+  };
 
   announceText(message: string) {
     this.live.announce(message);
