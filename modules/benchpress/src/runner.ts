@@ -10,6 +10,7 @@ import {SizeValidator} from './validator/size_validator';
 import {Validator} from './validator';
 import {PerflogMetric} from './metric/perflog_metric';
 import {MultiMetric} from './metric/multi_metric';
+import {UserMetric} from './metric/user_metric';
 import {ChromeDriverExtension} from './webdriver/chrome_driver_extension';
 import {FirefoxDriverExtension} from './webdriver/firefox_driver_extension';
 import {IOsDriverExtension} from './webdriver/ios_driver_extension';
@@ -33,24 +34,38 @@ export class Runner {
     this._defaultBindings = defaultBindings;
   }
 
-  sample({id, execute, prepare, microMetrics, bindings}:
-             {id: string, execute?: any, prepare?: any, microMetrics?: any, bindings?: any}):
-      Promise<SampleState> {
+  sample({id, execute, prepare, microMetrics, bindings, userMetrics}: {
+    id: string,
+    execute?: any,
+    prepare?: any,
+    microMetrics?: any,
+    bindings?: any,
+    userMetrics?: any
+  }): Promise<SampleState> {
     var sampleBindings = [
       _DEFAULT_PROVIDERS,
       this._defaultBindings,
       bind(Options.SAMPLE_ID).toValue(id),
       bind(Options.EXECUTE).toValue(execute)
     ];
+    var multiMetrics = [];
+
     if (isPresent(prepare)) {
       sampleBindings.push(bind(Options.PREPARE).toValue(prepare));
     }
     if (isPresent(microMetrics)) {
-      sampleBindings.push(bind(Options.MICRO_METRICS).toValue(microMetrics));
+      multiMetrics.push(PerflogMetric)
+          sampleBindings.push(bind(Options.MICRO_METRICS).toValue(microMetrics));
     }
     if (isPresent(bindings)) {
       sampleBindings.push(bindings);
     }
+    if (isPresent(userMetrics)) {
+      multiMetrics.push(UserMetric);
+      sampleBindings.push(benchpress.UserMetric.createBindings(userMetrics));
+    }
+
+    sampleBindings.push(benchpress.MultiMetric.createBindings(multiMetrics));
 
     var inj = ReflectiveInjector.resolveAndCreate(sampleBindings);
     var adapter = inj.get(WebDriverAdapter);
@@ -91,7 +106,6 @@ var _DEFAULT_PROVIDERS = [
   PerflogMetric.BINDINGS,
   SampleDescription.BINDINGS,
   MultiReporter.createBindings([ConsoleReporter]),
-  MultiMetric.createBindings([PerflogMetric]),
 
   Reporter.bindTo(MultiReporter),
   Validator.bindTo(RegressionSlopeValidator),
