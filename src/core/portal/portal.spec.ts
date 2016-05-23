@@ -13,7 +13,7 @@ import {
   ViewChildren,
   QueryList,
   ViewContainerRef,
-  DynamicComponentLoader
+  ComponentResolver
 } from '@angular/core';
 import {TemplatePortalDirective, PortalHostDirective} from './portal-directives';
 import {Portal, ComponentPortal} from './portal';
@@ -180,12 +180,12 @@ describe('Portals', () => {
   });
 
   describe('DomPortalHost', function () {
-    let componentLoader: DynamicComponentLoader;
+    let componentLoader: ComponentResolver;
     let someViewContainerRef: ViewContainerRef;
     let someDomElement: HTMLElement;
     let host: DomPortalHost;
 
-    beforeEach(inject([DynamicComponentLoader], (dcl: DynamicComponentLoader) => {
+    beforeEach(inject([ComponentResolver], (dcl: ComponentResolver) => {
       componentLoader = dcl;
     }));
 

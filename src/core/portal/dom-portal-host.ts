@@ -1,4 +1,4 @@
-import {DynamicComponentLoader, ComponentRef, EmbeddedViewRef} from '@angular/core';
+import {ComponentResolver, ComponentRef, EmbeddedViewRef} from '@angular/core';
 import {BasePortalHost, ComponentPortal, TemplatePortal} from './portal';
 import {MdComponentPortalAttachedToDomWithoutOriginError} from './portal-errors';
 
@@ -12,18 +12,20 @@ import {MdComponentPortalAttachedToDomWithoutOriginError} from './portal-errors'
 export class DomPortalHost extends BasePortalHost {
   constructor(
       private _hostDomElement: Element,
-      private _componentLoader: DynamicComponentLoader) {
+      private _componentResolver: ComponentResolver) {
     super();
   }
 
-  /** Attach the given ComponentPortal to DOM element using the DynamicComponentLoader. */
+  /** Attach the given ComponentPortal to DOM element using the ComponentResolver. */
   attachComponentPortal(portal: ComponentPortal): Promise<ComponentRef<any>> {
     if (portal.viewContainerRef == null) {
       throw new MdComponentPortalAttachedToDomWithoutOriginError();
     }
 
-    return this._componentLoader.loadNextToLocation(
-        portal.component, portal.viewContainerRef).then(ref => {
+    return this._componentResolver.resolveComponent(portal.component).then(componentFactory => {
+      let ref = portal.viewContainerRef.createComponent(
+          componentFactory, portal.viewContainerRef.length, portal.viewContainerRef.parentInjector);
+
       let hostView = <EmbeddedViewRef<any>> ref.hostView;
       this._hostDomElement.appendChild(hostView.rootNodes[0]);
       this.setDisposeFn(() => ref.destroy());
