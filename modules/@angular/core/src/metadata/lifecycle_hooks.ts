@@ -15,11 +15,8 @@ export enum LifecycleHooks {
  * A `changes` object whose keys are property names and
  * values are instances of {@link SimpleChange}. See {@link OnChanges}
  */
-export interface SimpleChanges {[propName: string]: SimpleChange};
+export interface SimpleChanges {[propName: string]: SimpleChange}
 
-/**
- * @internal
- */
 export var LIFECYCLE_HOOKS_VALUES = [
   LifecycleHooks.OnInit,
   LifecycleHooks.OnDestroy,
