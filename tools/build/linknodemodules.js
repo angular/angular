@@ -31,7 +31,7 @@ module.exports = function(gulp, plugins, config) {
       symlink(relativeFolder, linkDir);
     });
     // Also symlink tools we release independently to NPM, so tests can require metadata, etc.
-    symlink('../../tools/metadata', path.join(nodeModulesDir, 'ts-metadata-collector'));
+    symlink('../../tools/metadata', path.join(nodeModulesDir, 'tsc-wrapped'));
   };
 };
 
