@@ -1,11 +1,10 @@
 import { UrlTree, UrlSegment, equalUrlSegments } from './url_tree';
-import { shallowEqual, flatten, first, merge } from './util';
-import { TreeNode, rootNode } from './tree';
+import { shallowEqual, flatten, first, merge } from './utils/collection';
+import { TreeNode, rootNode } from './utils/tree';
 import { RouterState, ActivatedRoute, Params, PRIMARY_OUTLET } from './router_state';
 import { RouterConfig, Route } from './config';
 import { ComponentResolver, ComponentFactory, Type } from '@angular/core';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
-import { Observer } from 'rxjs/Observer';
 
 export function recognize(componentResolver: ComponentResolver, config: RouterConfig,
                           url: UrlTree, existingState: RouterState): Promise<RouterState> {

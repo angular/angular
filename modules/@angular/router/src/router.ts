@@ -3,12 +3,12 @@ import { Location } from '@angular/common';
 import { UrlSerializer } from './url_serializer';
 import { RouterOutletMap } from './router_outlet_map';
 import { recognize } from './recognize';
-import { rootNode, TreeNode } from './tree';
+import { rootNode, TreeNode } from './utils/tree';
 import { UrlTree } from './url_tree';
 import { createEmptyState, RouterState, ActivatedRoute, PRIMARY_OUTLET } from './router_state';
 import { RouterConfig } from './config';
 import { RouterOutlet } from './directives/router_outlet';
-import { forEach } from './util';
+import { forEach } from './utils/collection';
 import { Subscription } from 'rxjs/Subscription';
 
 /**

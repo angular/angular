@@ -14,7 +14,7 @@
   },
   "files": [
     "src/router.ts",
-    "test/tree.spec.ts",
+    "test/utils/tree.spec.ts",
     "test/url_serializer.spec.ts",
     "test/recognize.spec.ts",
     "test/router.spec.ts",
