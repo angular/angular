@@ -35,14 +35,8 @@ cd -
 TSCONFIG=./modules/tsconfig.json
 echo "====== (all)COMPILING: \$(npm bin)/tsc -p ${TSCONFIG} ====="
 # compile ts code
-# TODO: Right now we have a cycle in that the compiler_cli depends on Angular
-# but we need it to compile Angular.
-# The solution right now is to do 2 compilation runs.
-# Fix this by separating the metadata extraction into a separate binary that does
-# not depend on Angular.
-$(npm bin)/tsc -p ${TSCONFIG}
-NG_TC="node dist/all/@angular/compiler_cli/src/main"
-$NG_TC -p modules/tsconfig.json
+TSC="node dist/tools/tsc-wrapped/src/main"
+$TSC -p modules/tsconfig.json
 
 rm -rf ./dist/packages-dist
 
@@ -68,8 +62,8 @@ do
     echo "======      COMPILING: \$(npm bin)/tsc -p ${SRCDIR}/tsconfig-es5.json        ====="
     $(npm bin)/tsc -p ${SRCDIR}/tsconfig-es5.json
   else
-    echo "======      COMPILING: ${NG_TC} -p ${SRCDIR}/tsconfig-es5.json        ====="
-    $NG_TC -p ${SRCDIR}/tsconfig-es5.json
+    echo "======      COMPILING: ${TSC} -p ${SRCDIR}/tsconfig-es5.json        ====="
+    $TSC -p ${SRCDIR}/tsconfig-es5.json
   fi
 
   cp ${SRCDIR}/package.json ${DESTDIR}/
@@ -91,8 +85,8 @@ do
       echo "====== (esm)COMPILING: \$(npm bin)/tsc -p ${SRCDIR}/tsconfig-es2015.json ====="
       $(npm bin)/tsc -p ${SRCDIR}/tsconfig-es2015.json
     else
-      echo "====== (esm)COMPILING: $NG_TC -p ${SRCDIR}/tsconfig-es2015.json ====="
-      $NG_TC -p ${SRCDIR}/tsconfig-es2015.json
+      echo "====== (esm)COMPILING: $TSC -p ${SRCDIR}/tsconfig-es2015.json ====="
+      $TSC -p ${SRCDIR}/tsconfig-es2015.json
     fi
 
     echo "======      BUNDLING: ${SRCDIR} ====="

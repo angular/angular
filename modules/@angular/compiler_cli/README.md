@@ -73,7 +73,7 @@ with the one already used in the plugin for TypeScript typechecking and emit.
 
 ## Design
 At a high level, this program
-- collects static metadata about the sources using the `ts-metadata-collector` package in angular2
+- collects static metadata about the sources using the `tsc-wrapped` package in angular2
 - uses the `OfflineCompiler` from `angular2/src/compiler/compiler` to codegen additional `.ts` files
 - these `.ts` files are written to the `genDir` path, then compiled together with the application.
 

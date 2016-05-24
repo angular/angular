@@ -1,8 +1,7 @@
 import * as ts from 'typescript';
-import * as path from 'path';
+import {writeFileSync} from 'fs';
 import {convertDecorators} from 'tsickle';
-import {NodeReflectorHost} from './reflector_host';
-import {AngularCompilerOptions} from './codegen';
+import {MetadataCollector} from './collector';
 
 /**
  * Implementation of CompilerHost that forwards all methods to another instance.
@@ -38,7 +37,7 @@ interface DecoratorInvocation {
   args?: any[];
 }
 `;
-  constructor(delegate: ts.CompilerHost, private options: ts.CompilerOptions) { super(delegate); }
+  constructor(delegate: ts.CompilerHost) { super(delegate); }
 
   getSourceFile =
       (fileName: string, languageVersion: ts.ScriptTarget, onError?: (message: string) => void) => {
@@ -52,17 +51,29 @@ interface DecoratorInvocation {
           newContent = converted.output + this.TSICKLE_SUPPORT;
         }
         return ts.createSourceFile(fileName, newContent, languageVersion, true);
-      }
+      };
 }
 
 const IGNORED_FILES = /\.ngfactory\.js$|\.css\.js$|\.css\.shim\.js$/;
 
 export class MetadataWriterHost extends DelegatingHost {
-  private reflectorHost: NodeReflectorHost;
-  constructor(delegate: ts.CompilerHost, program: ts.Program, options: ts.CompilerOptions,
-              ngOptions: AngularCompilerOptions) {
+  private metadataCollector = new MetadataCollector();
+  constructor(delegate: ts.CompilerHost, private program: ts.Program) {
     super(delegate);
-    this.reflectorHost = new NodeReflectorHost(program, this, options, ngOptions);
+  }
+
+  private writeMetadata(emitFilePath: string, sourceFile: ts.SourceFile) {
+    // TODO: replace with DTS filePath when https://github.com/Microsoft/TypeScript/pull/8412 is
+    // released
+    if (/*DTS*/ /\.js$/.test(emitFilePath)) {
+      const path = emitFilePath.replace(/*DTS*/ /\.js$/, '.metadata.json');
+      const metadata =
+        this.metadataCollector.getMetadata(sourceFile, this.program.getTypeChecker());
+      if (metadata && metadata.metadata) {
+        const metadataText = JSON.stringify(metadata);
+        writeFileSync(path, metadataText, {encoding: 'utf-8'});
+      }
+    }
   }
 
   writeFile: ts.WriteFileCallback = (fileName: string, data: string, writeByteOrderMark: boolean,
@@ -88,6 +99,6 @@ export class MetadataWriterHost extends DelegatingHost {
     if (sourceFiles.length > 1) {
       throw new Error('Bundled emit with --out is not supported');
     }
-    this.reflectorHost.writeMetadata(fileName, sourceFiles[0]);
-  }
+    this.writeMetadata(fileName, sourceFiles[0]);
+  };
 }

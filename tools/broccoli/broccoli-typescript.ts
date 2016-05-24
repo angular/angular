@@ -3,7 +3,7 @@ import fse = require('fs-extra');
 import path = require('path');
 import * as ts from 'typescript';
 import {wrapDiffingPlugin, DiffingBroccoliPlugin, DiffResult} from './diffing-broccoli-plugin';
-import {MetadataCollector} from '../ts-metadata-collector';
+import {MetadataCollector} from '../tsc-wrapped';
 
 type FileRegistry = ts.Map<{version: number}>;
 

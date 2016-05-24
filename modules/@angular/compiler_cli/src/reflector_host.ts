@@ -1,10 +1,10 @@
 import {StaticReflectorHost, StaticSymbol} from './static_reflector';
 import * as ts from 'typescript';
-import {MetadataCollector, ModuleMetadata} from 'ts-metadata-collector';
+import {AngularCompilerOptions, MetadataCollector, ModuleMetadata} from 'tsc-wrapped';
 import * as fs from 'fs';
 import * as path from 'path';
-import {AngularCompilerOptions} from './codegen';
-import {ImportGenerator, AssetUrl} from './compiler_private';
+import {ImportGenerator, AssetUrl} from './compiler_private'
+
 
 const EXT = /(\.ts|\.d\.ts|\.js|\.jsx|\.tsx)$/;
 const DTS = /\.d\.ts$/;
@@ -12,24 +12,15 @@ const DTS = /\.d\.ts$/;
 export class NodeReflectorHost implements StaticReflectorHost, ImportGenerator {
   private metadataCollector = new MetadataCollector();
   constructor(private program: ts.Program, private compilerHost: ts.CompilerHost,
-              private options: ts.CompilerOptions, private ngOptions: AngularCompilerOptions) {}
+              private options: AngularCompilerOptions) {}
 
   angularImportLocations() {
-    if (this.ngOptions.legacyPackageLayout) {
-      return {
-        coreDecorators: 'angular2/src/core/metadata',
-        diDecorators: 'angular2/src/core/di/decorators',
-        diMetadata: 'angular2/src/core/di/metadata',
-        provider: 'angular2/src/core/di/provider'
-      };
-    } else {
-      return {
-        coreDecorators: '@angular/core/src/metadata',
-        diDecorators: '@angular/core/src/di/decorators',
-        diMetadata: '@angular/core/src/di/metadata',
-        provider: '@angular/core/src/di/provider'
-      };
-    }
+    return {
+      coreDecorators: '@angular/core/src/metadata',
+      diDecorators: '@angular/core/src/di/decorators',
+      diMetadata: '@angular/core/src/di/metadata',
+      provider: '@angular/core/src/di/provider'
+    };
   }
   private resolve(m: string, containingFile: string) {
     const resolved =
@@ -63,7 +54,7 @@ export class NodeReflectorHost implements StaticReflectorHost, ImportGenerator {
     // TODO(tbosch): if a file does not yet exist (because we compile it later),
     // we still need to create it so that the `resolve` method works!
     if (!this.compilerHost.fileExists(importedFile)) {
-      if (this.ngOptions.trace) {
+      if (this.options.trace) {
         console.log(`Generating empty file ${importedFile} to allow resolution of import`);
       }
       this.compilerHost.writeFile(importedFile, '', false);
@@ -92,7 +83,7 @@ export class NodeReflectorHost implements StaticReflectorHost, ImportGenerator {
         throw new Error("Resolution of relative paths requires a containing file.");
       }
       // Any containing file gives the same result for absolute imports
-      containingFile = path.join(this.ngOptions.basePath, 'index.ts');
+      containingFile = path.join(this.options.basePath, 'index.ts');
     }
 
     try {
@@ -173,20 +164,6 @@ export class NodeReflectorHost implements StaticReflectorHost, ImportGenerator {
     } catch (e) {
       console.error(`Failed to read JSON file ${filePath}`);
       throw e;
-    }
-  }
-
-  writeMetadata(emitFilePath: string, sourceFile: ts.SourceFile) {
-    // TODO: replace with DTS filePath when https://github.com/Microsoft/TypeScript/pull/8412 is
-    // released
-    if (/*DTS*/ /\.js$/.test(emitFilePath)) {
-      const path = emitFilePath.replace(/*DTS*/ /\.js$/, '.metadata.json');
-      const metadata =
-          this.metadataCollector.getMetadata(sourceFile, this.program.getTypeChecker());
-      if (metadata && metadata.metadata) {
-        const metadataText = JSON.stringify(metadata);
-        fs.writeFileSync(path, metadataText, {encoding: 'utf-8'});
-      }
     }
   }
 }

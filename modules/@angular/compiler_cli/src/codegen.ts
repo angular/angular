@@ -4,6 +4,7 @@
  */
 import * as ts from 'typescript';
 import * as path from 'path';
+import {AngularCompilerOptions} from 'tsc-wrapped';
 
 import * as compiler from '@angular/compiler';
 import {ViewEncapsulation} from '@angular/core';
@@ -23,7 +24,6 @@ import {
 
 import {Parse5DomAdapter} from '@angular/platform-server';
 
-import {MetadataCollector} from 'ts-metadata-collector';
 import {NodeReflectorHost} from './reflector_host';
 import {StaticAndDynamicReflectionCapabilities} from './static_reflection_capabilities';
 
@@ -35,30 +35,8 @@ const PREAMBLE = `/**
  */
 `;
 
-// TODO(alexeagle): we end up passing options and ngOptions everywhere.
-// Maybe this should extend ts.CompilerOptions so we only need this one.
-export interface AngularCompilerOptions {
-  // Absolute path to a directory where generated file structure is written
-  genDir: string;
-
-  // Path to the directory containing the tsconfig.json file.
-  basePath: string;
-
-  // Don't do the template code generation
-  skipTemplateCodegen: boolean;
-
-  // Don't produce .metadata.json files (they don't work for bundled emit with --out)
-  skipMetadataEmit: boolean;
-
-  // Lookup angular's symbols using the old angular2/... npm namespace.
-  legacyPackageLayout: boolean;
-
-  // Print extra information while running the compiler
-  trace: boolean;
-}
-
 export class CodeGenerator {
-  constructor(private options: ts.CompilerOptions, private ngOptions: AngularCompilerOptions,
+  constructor(private options: AngularCompilerOptions,
               private program: ts.Program, public host: ts.CompilerHost,
               private staticReflector: StaticReflector, private resolver: CompileMetadataResolver,
               private compiler: compiler.OfflineCompiler,
@@ -107,9 +85,9 @@ export class CodeGenerator {
 
   // Write codegen in a directory structure matching the sources.
   private calculateEmitPath(filePath: string) {
-    let root = this.ngOptions.basePath;
+    let root = this.options.basePath;
     for (let eachRootDir of this.options.rootDirs || []) {
-      if (this.ngOptions.trace) {
+      if (this.options.trace) {
         console.log(`Check if ${filePath} is under rootDirs element ${eachRootDir}`);
       }
       if (path.relative(eachRootDir, filePath).indexOf('.') !== 0) {
@@ -117,7 +95,7 @@ export class CodeGenerator {
       }
     }
 
-    return path.join(this.ngOptions.genDir, path.relative(root, filePath));
+    return path.join(this.options.genDir, path.relative(root, filePath));
   }
 
   // TODO(tbosch): add a cache for shared css files
@@ -170,11 +148,11 @@ export class CodeGenerator {
     return Promise.all(stylesheetPromises.concat(compPromises));
   }
 
-  static create(ngOptions: AngularCompilerOptions, program: ts.Program, options: ts.CompilerOptions,
+  static create(options: AngularCompilerOptions, program: ts.Program,
                 compilerHost: ts.CompilerHost): CodeGenerator {
     const xhr: compiler.XHR = {get: (s: string) => Promise.resolve(compilerHost.readFile(s))};
     const urlResolver: compiler.UrlResolver = compiler.createOfflineCompileUrlResolver();
-    const reflectorHost = new NodeReflectorHost(program, compilerHost, options, ngOptions);
+    const reflectorHost = new NodeReflectorHost(program, compilerHost, options);
     const staticReflector = new StaticReflector(reflectorHost);
     StaticAndDynamicReflectionCapabilities.install(staticReflector);
     const htmlParser = new HtmlParser();
@@ -190,7 +168,7 @@ export class CodeGenerator {
         new compiler.DirectiveResolver(staticReflector), new compiler.PipeResolver(staticReflector),
         new compiler.ViewResolver(staticReflector), null, null, staticReflector);
 
-    return new CodeGenerator(options, ngOptions, program, compilerHost, staticReflector, resolver,
+    return new CodeGenerator(options, program, compilerHost, staticReflector, resolver,
                              offlineCompiler, reflectorHost);
   }
 }

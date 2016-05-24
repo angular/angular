@@ -1,8 +1,6 @@
 import * as ts from 'typescript';
-// Don't import from fs in general, that's the CompilerHost's job
-import {lstatSync} from 'fs';
 import * as path from 'path';
-import {AngularCompilerOptions} from './codegen';
+import AngularCompilerOptions from './options';
 import {TsickleHost} from './compiler_host';
 
 /**
@@ -19,7 +17,6 @@ export interface CompilerInterface {
 }
 
 const DEBUG = false;
-const SOURCE_EXTENSION = /\.[jt]s$/;
 
 function debug(msg: string, ...o: any[]) {
   if (DEBUG) console.log(msg, ...o);
@@ -50,19 +47,24 @@ export class Tsc implements CompilerInterface {
   public parsed: ts.ParsedCommandLine;
   private basePath: string;
 
+  constructor(private readFile = ts.sys.readFile, private readDirectory = ts.sys.readDirectory) {}
+
   readConfiguration(project: string, basePath: string) {
     this.basePath = basePath;
 
     // Allow a directory containing tsconfig.json as the project value
-    if (lstatSync(project).isDirectory()) {
+    try {
+      this.readDirectory(project);
       project = path.join(project, "tsconfig.json");
+    } catch (e) {
+      // Was not a directory, continue on assuming it's a file
     }
 
-    const {config, error} = ts.readConfigFile(project, ts.sys.readFile);
+    const {config, error} = ts.readConfigFile(project, this.readFile);
     check([error]);
 
     this.parsed =
-        ts.parseJsonConfigFileContent(config, {readDirectory: ts.sys.readDirectory}, basePath);
+        ts.parseJsonConfigFileContent(config, {readDirectory: this.readDirectory}, basePath);
 
     check(this.parsed.errors);
 
@@ -70,6 +72,9 @@ export class Tsc implements CompilerInterface {
     // Parsed options are already converted to absolute paths
     this.ngOptions = config.angularCompilerOptions || {};
     this.ngOptions.genDir = path.join(basePath, this.ngOptions.genDir || '.');
+    for (const key of Object.keys(this.parsed.options)) {
+      this.ngOptions[key] = this.parsed.options[key];
+    }
     return {parsed: this.parsed, ngOptions: this.ngOptions};
   }
 
