@@ -11,22 +11,58 @@ import { RouterOutlet } from './directives/router_outlet';
 import { forEach } from './util';
 import { Subscription } from 'rxjs/Subscription';
 
+/**
+ * The `Router` is responsible for mapping URLs to components.
+ */
 export class Router {
   private currentState: RouterState;
   private config: RouterConfig;
   private locationSubscription: Subscription;
 
+  /**
+   * @internal
+   */
   constructor(private rootComponent:Object, private resolver: ComponentResolver, private urlSerializer: UrlSerializer, private outletMap: RouterOutletMap, private location: Location) {
     this.currentState = createEmptyState(<any>rootComponent.constructor);
     this.setUpLocationChangeListener();
     this.navigateByUrl(this.location.path());
   }
 
+  /**
+   * Returns the current route state.
+   */
+  get routerState(): RouterState {
+    return this.currentState;
+  }
+
+  /**
+   * Navigate based on the provided url. This navigation is always absolute.
+   *
+   * ### Usage
+   *
+   * ```
+   * router.navigateByUrl("/team/33/user/11");
+   * ```
+   */
   navigateByUrl(url: string): void {
     const urlTree = this.urlSerializer.parse(url);
     this.navigate(urlTree, false);
   }
 
+  /**
+   * Resets the configuration used for navigation and generating links.
+   *
+   * ### Usage
+   *
+   * ```
+   * router.resetConfig([
+   *  { name: 'team', path: 'team/:id', component: TeamCmp, children: [
+   *    { name: 'simple', path: 'simple', component: SimpleCmp },
+   *    { name: 'user', path: 'user/:name', component: UserCmp }
+   *  ] }
+   * ]);
+   * ```
+   */
   resetConfig(config: RouterConfig): void {
     this.config = config;
   }

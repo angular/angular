@@ -1,6 +1,9 @@
 import { Tree, TreeNode } from './tree';
 import { shallowEqual } from './util';
 
+/**
+ * A URL in the tree form.
+ */
 export class UrlTree extends Tree<UrlSegment> {
   constructor(root: TreeNode<UrlSegment>, public queryParameters: {[key: string]: string}, public fragment: string | null) {
     super(root);
