@@ -15,7 +15,7 @@ import {
 import {TestComponentBuilder, ComponentFixture} from '@angular/compiler/testing';
 import { ComponentResolver } from '@angular/core';
 import { SpyLocation } from '@angular/common/testing';
-import { UrlSerializer, DefaultUrlSerializer, RouterOutletMap, Router, ActivatedRoute, ROUTER_DIRECTIVES } from '../index';
+import { UrlSerializer, DefaultUrlSerializer, RouterOutletMap, Router, ActivatedRoute, ROUTER_DIRECTIVES } from '../src/index';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/map';
 

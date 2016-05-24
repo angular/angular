@@ -2,8 +2,8 @@
   "name": "vladivostok",
   "version": "0.9.1",
   "description": "",
-  "main": "./dist/router.js",
-  "jsnext:main": "./dist/es6/router.js",
+  "main": "./dist/src/index.js",
+  "jsnext:main": "./dist/es6/index.js",
   "scripts": {
     "karma": "karma start",
     "test": "npm run build; karma start",
