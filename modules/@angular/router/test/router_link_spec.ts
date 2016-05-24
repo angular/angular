@@ -26,8 +26,8 @@ import {
   OnActivate,
   CanDeactivate
 } from '@angular/router';
-import {Location} from '@angular/common';
-import {SpyLocation} from '@angular/common/testing';
+import {Location, LocationStrategy} from '@angular/common';
+import {SpyLocation, MockLocationStrategy} from '@angular/common/testing';
 
 export function main() {
   describe('RouterLink', () => {
@@ -35,6 +35,7 @@ export function main() {
       provide(RouterUrlSerializer, {useClass: DefaultRouterUrlSerializer}),
       RouterOutletMap,
       provide(Location, {useClass: SpyLocation}),
+      provide(LocationStrategy, {useClass: MockLocationStrategy}),
       provide(Router,
               {
                 useFactory: (resolver, urlParser, outletMap, location) => new Router(
@@ -44,14 +45,14 @@ export function main() {
     ]);
 
     describe("routerLink=", () => {
-      it("should accept an array of commands", inject([Router], (router) => {
-           let link = new RouterLink(null, router);
+      it("should accept an array of commands", inject([Router, LocationStrategy], (router, locationStrategy) => {
+           let link = new RouterLink(null, router, locationStrategy);
            link.routerLink = ['/one', 11];
            expect(link.href).toEqual("/one/11");
          }));
 
-      it("should accept a single command", inject([Router], (router) => {
-           let link = new RouterLink(null, router);
+      it("should accept a single command", inject([Router, LocationStrategy], (router, locationStrategy) => {
+           let link = new RouterLink(null, router, locationStrategy);
            link.routerLink = '/one/11';
            expect(link.href).toEqual("/one/11");
          }));
