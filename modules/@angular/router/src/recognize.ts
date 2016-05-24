@@ -110,7 +110,8 @@ function matchIndex(config: Route[], url: TreeNode<UrlSegment>): MatchResult | n
   for (let r of config) {
     if (r.index) {
       const outlet = r.outlet ? r.outlet : PRIMARY_OUTLET;
-      return new MatchResult(r.component, r.children, [], {}, [url], [], outlet);
+      const children = r.children ? r.children : [];
+      return new MatchResult(r.component, children, [], {}, [url], [], outlet);
     }
   }
   return null;
@@ -122,7 +123,7 @@ function matchWithParts(route: Route, url: TreeNode<UrlSegment>): MatchResult | 
   const path = route.path.startsWith("/") ? route.path.substring(1) : route.path;
   if (path === "**") {
     const consumedUrl = [];
-    let u = url;
+    let u:TreeNode<UrlSegment>|null = url;
     while (u) {
       consumedUrl.push(u.value);
       u = first(u.children);
