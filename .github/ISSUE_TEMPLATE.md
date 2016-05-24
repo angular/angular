@@ -1,35 +1,22 @@
-**Note: for support questions, please use one of these channels:**
-https://github.com/angular/material2/blob/master/CONTRIBUTING.md#question.
-This repository's issues are reserved for feature requests and bug reports.
-
-* **Do you want to request a *feature* or report a *bug*?**
+#### Bug, feature request, or proposal:
 
 
-
-* **What is the current behavior?**
-
+#### What is the expected behavior?
 
 
-* **If the current behavior is a bug,
-please provide steps to reproduce and if possible a minimal demo of the problem**
-via https://plnkr.co or similar.
-
-Plunker Template: http://plnkr.co/edit/o077B6uEiiIgkC0S06dd?p=preview
+#### What is the current behavior?
 
 
-* **What is the expected behavior?**
+#### What are the steps to reproduce?
+
+Providing a Plunker (or similar) is the *best* way to get the team to see your issue.
+Plunker template: http://plnkr.co/edit/o077B6uEiiIgkC0S06dd
 
 
-
-* **What is the motivation / use case for changing the behavior?**
-
+#### What is the use-case or motivation for changing an existing behavior?
 
 
-* **Which version of Angular and Material, and which browser and OS does this issue affect?**
-Did this work in previous versions of Angular / Material?
-Please also test with the latest stable and snapshot versions.
+#### What are the relevant versions of Angular, Material, OS, affected browsers, etc.?
 
 
-
-* **Other information**
-(e.g. detailed explanation, stacktraces, related issues, suggestions how to fix)
+#### Is there anything else we should know?
