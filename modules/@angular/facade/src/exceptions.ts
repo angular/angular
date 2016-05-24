@@ -3,6 +3,9 @@ import {ExceptionHandler} from './exception_handler';
 
 export {ExceptionHandler} from './exception_handler';
 
+/**
+ * @stable
+ */
 export class BaseException extends Error {
   public stack: any;
   constructor(public message: string = "--") {
@@ -15,6 +18,7 @@ export class BaseException extends Error {
 
 /**
  * Wraps an exception and provides additional context or information.
+ * @stable
  */
 export class WrappedException extends BaseWrappedException {
   private _wrapperStack: any;

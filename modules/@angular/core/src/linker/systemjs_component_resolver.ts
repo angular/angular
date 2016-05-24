@@ -4,6 +4,7 @@ import { ComponentFactory } from './component_factory';
 
 /**
  * Component resolver that can load components lazily
+ * @experimental
  */
 export class SystemJsComponentResolver implements ComponentResolver {
   constructor(private _resolver: ComponentResolver) {}

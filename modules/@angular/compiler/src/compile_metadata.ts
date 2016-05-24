@@ -1,4 +1,5 @@
-import {ChangeDetectionStrategy, ViewEncapsulation, reflector} from '@angular/core';
+import {ChangeDetectionStrategy, ViewEncapsulation} from '@angular/core';
+import {reflector} from '../core_private';
 import {
   CHANGE_DETECTION_STRATEGY_VALUES,
   VIEW_ENCAPSULATION_VALUES,

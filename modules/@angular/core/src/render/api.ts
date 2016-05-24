@@ -5,6 +5,9 @@ import {AnimationKeyframe} from '../../src/animation/animation_keyframe';
 import {AnimationPlayer} from '../../src/animation/animation_player';
 import {AnimationStyles} from '../../src/animation/animation_styles';
 
+/**
+ * @experimental
+ */
 export class RenderComponentType {
   constructor(public id: string, public templateUrl: string, public slotCount: number,
               public encapsulation: ViewEncapsulation, public styles: Array<string | any[]>) {}
@@ -19,6 +22,9 @@ export abstract class RenderDebugInfo {
   get source(): string { return unimplemented(); }
 }
 
+/**
+ * @experimental
+ */
 export abstract class Renderer {
   abstract selectRootElement(selectorOrNode: string | any, debugInfo: RenderDebugInfo): any;
 
@@ -77,8 +83,8 @@ export abstract class Renderer {
  * If you are implementing a custom renderer, you must implement this interface.
  *
  * The default Renderer implementation is `DomRenderer`. Also available is `WebWorkerRenderer`.
+ * @experimental
  */
-
 export abstract class RootRenderer {
   abstract renderComponent(componentType: RenderComponentType): Renderer;
 }

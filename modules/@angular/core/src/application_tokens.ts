@@ -9,6 +9,7 @@ import {Math, StringWrapper} from '../src/facade/lang';
  * If you need to avoid randomly generated value to be used as an application id, you can provide
  * a custom value via a DI provider <!-- TODO: provider --> configuring the root {@link Injector}
  * using this token.
+ * @experimental
  */
 export const APP_ID: any = /*@ts2dart_const*/ new OpaqueToken('AppId');
 
@@ -18,6 +19,7 @@ function _appIdRandomProviderFactory() {
 
 /**
  * Providers that will generate a random APP_ID_TOKEN.
+ * @experimental
  */
 export const APP_ID_RANDOM_PROVIDER =
     /*@ts2dart_const*/ /* @ts2dart_Provider */ {
@@ -32,18 +34,21 @@ function _randomChar(): string {
 
 /**
  * A function that will be executed when a platform is initialized.
+ * @experimental
  */
 export const PLATFORM_INITIALIZER: any =
     /*@ts2dart_const*/ new OpaqueToken("Platform Initializer");
 
 /**
  * A function that will be executed when an application is initialized.
+ * @experimental
  */
 export const APP_INITIALIZER: any =
     /*@ts2dart_const*/ new OpaqueToken("Application Initializer");
 
 /**
  * A token which indicates the root directory of the application
+ * @experimental
  */
 export const PACKAGE_ROOT_URL: any =
     /*@ts2dart_const*/ new OpaqueToken("Application Packages Root URL");

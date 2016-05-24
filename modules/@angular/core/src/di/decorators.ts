@@ -10,6 +10,7 @@ import {makeDecorator, makeParamDecorator} from '../util/decorators';
 
 /**
  * Factory for creating {@link InjectMetadata}.
+ * @stable
  */
 export interface InjectMetadataFactory {
   (token: any): any;
@@ -18,6 +19,7 @@ export interface InjectMetadataFactory {
 
 /**
  * Factory for creating {@link OptionalMetadata}.
+ * @stable
  */
 export interface OptionalMetadataFactory {
   (): any;
@@ -26,6 +28,7 @@ export interface OptionalMetadataFactory {
 
 /**
  * Factory for creating {@link InjectableMetadata}.
+ * @stable
  */
 export interface InjectableMetadataFactory {
   (): any;
@@ -34,6 +37,7 @@ export interface InjectableMetadataFactory {
 
 /**
  * Factory for creating {@link SelfMetadata}.
+ * @stable
  */
 export interface SelfMetadataFactory {
   (): any;
@@ -42,6 +46,7 @@ export interface SelfMetadataFactory {
 
 /**
  * Factory for creating {@link HostMetadata}.
+ * @stable
  */
 export interface HostMetadataFactory {
   (): any;
@@ -50,6 +55,7 @@ export interface HostMetadataFactory {
 
 /**
  * Factory for creating {@link SkipSelfMetadata}.
+ * @stable
  */
 export interface SkipSelfMetadataFactory {
   (): any;
@@ -58,31 +64,37 @@ export interface SkipSelfMetadataFactory {
 
 /**
  * Factory for creating {@link InjectMetadata}.
+ * @stable
  */
 export var Inject: InjectMetadataFactory = makeParamDecorator(InjectMetadata);
 
 /**
  * Factory for creating {@link OptionalMetadata}.
+ * @stable
  */
 export var Optional: OptionalMetadataFactory = makeParamDecorator(OptionalMetadata);
 
 /**
  * Factory for creating {@link InjectableMetadata}.
+ * @stable
  */
 export var Injectable: InjectableMetadataFactory =
     <InjectableMetadataFactory>makeDecorator(InjectableMetadata);
 
 /**
  * Factory for creating {@link SelfMetadata}.
+ * @stable
  */
 export var Self: SelfMetadataFactory = makeParamDecorator(SelfMetadata);
 
 /**
  * Factory for creating {@link HostMetadata}.
+ * @stable
  */
 export var Host: HostMetadataFactory = makeParamDecorator(HostMetadata);
 
 /**
  * Factory for creating {@link SkipSelfMetadata}.
+ * @stable
  */
 export var SkipSelf: SkipSelfMetadataFactory = makeParamDecorator(SkipSelfMetadata);

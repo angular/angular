@@ -22,6 +22,7 @@ export './metadata/lifecycle_hooks.dart' show
 
 /**
  * See: [DirectiveMetadata] for docs.
+ * @stable
  */
 class Directive extends DirectiveMetadata {
   const Directive(
@@ -50,6 +51,7 @@ class Directive extends DirectiveMetadata {
 
 /**
  * See: [ComponentMetadata] for docs.
+ * @stable
  */
 class Component extends ComponentMetadata {
   const Component(
@@ -100,6 +102,7 @@ class Component extends ComponentMetadata {
 
 /**
  * See: [ViewMetadata] for docs.
+ * @deprecated
  */
 class View extends ViewMetadata {
   const View(
@@ -124,6 +127,7 @@ class View extends ViewMetadata {
 
 /**
  * See: [PipeMetadata] for docs.
+ * @stable
  */
 class Pipe extends PipeMetadata {
   const Pipe({name, pure}) : super(name: name, pure: pure);
@@ -131,6 +135,7 @@ class Pipe extends PipeMetadata {
 
 /**
  * See: [AttributeMetadata] for docs.
+ * @stable
  */
 class Attribute extends AttributeMetadata {
   const Attribute(String attributeName) : super(attributeName);
@@ -138,8 +143,8 @@ class Attribute extends AttributeMetadata {
 
 /**
  * See: [QueryMetadata] for docs.
+ * @deprecated Use ContentChildren/ContentChild instead
  */
-@Deprecated("Use ContentChildren/ContentChild instead")
 class Query extends QueryMetadata {
   const Query(dynamic /*Type | string*/ selector,
       {bool descendants: false, dynamic read: null})
@@ -148,6 +153,7 @@ class Query extends QueryMetadata {
 
 /**
  * See: [ContentChildrenMetadata] for docs.
+ * @stable
  */
 class ContentChildren extends ContentChildrenMetadata {
   const ContentChildren(dynamic /*Type | string*/ selector,
@@ -157,6 +163,7 @@ class ContentChildren extends ContentChildrenMetadata {
 
 /**
  * See: [ContentChildMetadata] for docs.
+ * @stable
  */
 class ContentChild extends ContentChildMetadata {
   const ContentChild(dynamic /*Type | string*/ selector, {dynamic read: null}) : super(selector, read: read);
@@ -164,8 +171,8 @@ class ContentChild extends ContentChildMetadata {
 
 /**
  * See: [ViewQueryMetadata] for docs.
+ * @deprecated Use ViewChildren/ViewChild instead
  */
-@Deprecated("Use ViewChildren/ViewChild instead")
 class ViewQuery extends ViewQueryMetadata {
   const ViewQuery(dynamic /*Type | string*/ selector, {dynamic read: null})
       : super(selector, descendants: true, read: read);
@@ -173,6 +180,7 @@ class ViewQuery extends ViewQueryMetadata {
 
 /**
  * See: [ViewChildrenMetadata] for docs.
+ * @stable
  */
 class ViewChildren extends ViewChildrenMetadata {
   const ViewChildren(dynamic /*Type | string*/ selector, {dynamic read: null}) : super(selector, read: read);
@@ -180,6 +188,7 @@ class ViewChildren extends ViewChildrenMetadata {
 
 /**
  * See: [ViewChildMetadata] for docs.
+ * @stable
  */
 class ViewChild extends ViewChildMetadata {
   const ViewChild(dynamic /*Type | string*/ selector, {dynamic read: null}) : super(selector, read: read);
@@ -187,6 +196,7 @@ class ViewChild extends ViewChildMetadata {
 
 /**
  * See: [InputMetadata] for docs.
+ * @stable
  */
 class Input extends InputMetadata {
   const Input([String bindingPropertyName]) : super(bindingPropertyName);
@@ -194,6 +204,7 @@ class Input extends InputMetadata {
 
 /**
  * See: [OutputMetadata] for docs.
+ * @stable
  */
 class Output extends OutputMetadata {
   const Output([String bindingPropertyName]) : super(bindingPropertyName);
@@ -201,6 +212,7 @@ class Output extends OutputMetadata {
 
 /**
  * See: [HostBindingMetadata] for docs.
+ * @stable
  */
 class HostBinding extends HostBindingMetadata {
   const HostBinding([String hostPropertyName]) : super(hostPropertyName);
@@ -208,6 +220,7 @@ class HostBinding extends HostBindingMetadata {
 
 /**
  * See: [HostListenerMetadata] for docs.
+ * @stable
  */
 class HostListener extends HostListenerMetadata {
   const HostListener(String eventName, [List<String> args])

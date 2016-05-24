@@ -58,7 +58,8 @@ export var pureProxy10: typeof t.pureProxy10 = r.pureProxy10;
 export var castByValue: typeof t.castByValue = r.castByValue;
 export type Console = t.Console;
 export var Console: typeof t.Console = r.Console;
-
+export var reflector: t.Reflector = r.reflector;
+export type Reflector = t.Reflector;
 export type NoOpAnimationPlayer = t.NoOpAnimationPlayer;
 export var NoOpAnimationPlayer: typeof t.NoOpAnimationPlayer = r.NoOpAnimationPlayer;
 export type AnimationPlayer = t.AnimationPlayer;

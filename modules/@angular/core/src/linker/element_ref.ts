@@ -26,6 +26,7 @@ export class ElementRef {
    *    web worker.
    *   </p>
    * </div>
+   * @stable
    */
   public nativeElement: any;
 

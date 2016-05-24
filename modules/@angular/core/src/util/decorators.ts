@@ -206,6 +206,7 @@ function applyParams(fnOrArray: (Function | any[]), key: string): Function {
  *   }
  * });
  * ```
+ * @stable
  */
 export function Class(clsDef: ClassDefinition): ConcreteType {
   var constructor = applyParams(

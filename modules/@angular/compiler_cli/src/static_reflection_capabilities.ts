@@ -1,5 +1,4 @@
-import {reflector} from '@angular/core';
-import {ReflectionCapabilities} from './core_private';
+import {ReflectionCapabilities, reflector} from './core_private';
 import {StaticReflector} from './static_reflector';
 
 export class StaticAndDynamicReflectionCapabilities {

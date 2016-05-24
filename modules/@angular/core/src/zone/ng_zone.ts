@@ -74,6 +74,7 @@ export {NgZoneError} from './ng_zone_impl';
  *   }
  * }
  * ```
+ * @experimental
  */
 export class NgZone {
   static isInAngularZone(): boolean { return NgZoneImpl.isInAngularZone(); }
