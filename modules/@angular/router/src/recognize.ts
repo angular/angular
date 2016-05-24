@@ -37,7 +37,7 @@ function constructActivatedRoute(componentResolver: ComponentResolver, match: Ma
 function recognizeMany(componentResolver: ComponentResolver, config: Route[], urls: TreeNode<UrlSegment>[],
                        existingRoutes: TreeNode<ActivatedRoute>[]): Promise<TreeNode<ActivatedRoute>[]> {
   const recognized = urls.map(url => recognizeOne(componentResolver, config, url, existingRoutes));
-  return Promise.all(<any>recognized).then(flatten);
+  return Promise.all(<any>recognized).then(<any>flatten);
 }
 
 function createOrReuseRoute(match: MatchResult, factory: ComponentFactory<any>, existing: TreeNode<ActivatedRoute> | null): ActivatedRoute {
