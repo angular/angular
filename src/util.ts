@@ -45,3 +45,11 @@ export function merge<V>(m1: {[key: string]: V}, m2: {[key: string]: V}): {[key:
 
   return m;
 }
+
+export function forEach<K, V>(map: {[key: string]: V}, callback: /*(V, K) => void*/ Function): void {
+  for (var prop in map) {
+    if (map.hasOwnProperty(prop)) {
+      callback(map[prop], prop);
+    }
+  }
+}
