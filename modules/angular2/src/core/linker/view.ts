@@ -105,7 +105,7 @@ export abstract class AppView<T> {
     this._literalMapCache = ListWrapper.createFixedSize(literalMapCacheSize);
   }
 
-  create(givenProjectableNodes: Array<any | any[]>, rootSelectorOrNode: string) {
+  create(givenProjectableNodes: Array<any | any[]>, rootSelector: string): void {
     var context;
     var projectableNodes;
     switch (this.type) {
@@ -126,7 +126,7 @@ export abstract class AppView<T> {
     }
     this.context = context;
     this.projectableNodes = projectableNodes;
-    return this.createInternal(rootSelectorOrNode);
+    this.createInternal(rootSelector);
   }
 
   /**
@@ -323,19 +323,18 @@ export class DebugAppView<T> extends AppView<T> {
   private _currentDebugContext: DebugContext = null;
 
   constructor(clazz: any, componentType: RenderComponentType, type: ViewType,
-              locals: {[key: string]: any}, viewManager: AppViewManager_,
-              parentInjector: Injector, declarationAppElement: AppElement,
-              cdMode: ChangeDetectionStrategy, literalArrayCacheSize: number,
-              literalMapCacheSize: number, public staticNodeDebugInfos: StaticNodeDebugInfo[]) {
-    super(clazz, componentType, type, locals, viewManager, parentInjector, declarationAppElement, cdMode,
-        literalArrayCacheSize, literalMapCacheSize);
+              locals: {[key: string]: any}, viewManager: AppViewManager_, parentInjector: Injector,
+              declarationAppElement: AppElement, cdMode: ChangeDetectionStrategy,
+              literalArrayCacheSize: number, literalMapCacheSize: number,
+              public staticNodeDebugInfos: StaticNodeDebugInfo[]) {
+    super(clazz, componentType, type, locals, viewManager, parentInjector, declarationAppElement,
+          cdMode, literalArrayCacheSize, literalMapCacheSize);
   }
 
-  create(givenProjectableNodes: Array<any | any[]>,
-         rootSelectorOrNode: string | any): void {
+  create(givenProjectableNodes: Array<any | any[]>, rootSelector: string): void {
     this._resetDebug();
     try {
-      return super.create(givenProjectableNodes, rootSelectorOrNode);
+      super.create(givenProjectableNodes, rootSelector);
     } catch (e) {
       this._rethrowWithContext(e, e.stack);
       throw e;
