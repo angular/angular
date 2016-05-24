@@ -66,7 +66,7 @@
     "ts-node": "^0.7.3",
     "tslint": "^3.5.0",
     "typescript": "^1.9.0-dev",
-    "typings": "^0.8.1",
+    "typings": "^1.0.4",
     "which": "^1.2.4"
   }
 }

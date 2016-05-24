@@ -2,11 +2,12 @@
   "name": "material2",
   "dependencies": {},
   "devDependencies": {},
-  "ambientDevDependencies": {
-    "jasmine": "github:DefinitelyTyped/DefinitelyTyped/jasmine/jasmine.d.ts#26c98c8a9530c44f8c801ccc3b2057e2101187ee"
+  "globalDevDependencies": {
+    "jasmine": "registry:dt/jasmine#2.2.0+20160505161446"
   },
-  "ambientDependencies": {
+  "globalDependencies": {
     "core-js": "registry:dt/core-js#0.0.0+20160317120654",
-    "hammerjs": "github:DefinitelyTyped/DefinitelyTyped/hammerjs/hammerjs.d.ts#de8e80dfe5360fef44d00c41257d5ef37add000a"
+    "es6-shim": "registry:dt/es6-shim#0.31.2+20160317120654",
+    "hammerjs": "registry:dt/hammerjs#2.0.4+20160417130828"
   }
 }
