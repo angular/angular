@@ -585,7 +585,7 @@ export function main() {
                         });
                   }));
 
-        it("when new options are added",
+        it("when new options are added (selection through the model)",
            inject([TestComponentBuilder, AsyncTestCompleter],
                   (tcb: TestComponentBuilder, async) => {
                     var t = `<div>
@@ -614,6 +614,39 @@ export function main() {
                           async.done();
                         });
                   }));
+
+        it("when new options are added (selection through the UI)",
+            inject([TestComponentBuilder, AsyncTestCompleter],
+                (tcb: TestComponentBuilder, async) => {
+                  var t = `<div>
+                      <select [(ngModel)]="selectedCity">
+                        <option *ngFor="let c of list" [ngValue]="c">{{c['name']}}</option>
+                      </select>
+                  </div>`;
+
+                  tcb.overrideTemplate(MyComp8, t)
+                      .createAsync(MyComp8)
+                      .then((fixture) => {
+
+                        var testComp: MyComp8 = fixture.debugElement.componentInstance;
+                        testComp.list = [{"name": "SF"}, {"name": "NYC"}];
+                        testComp.selectedCity = testComp.list[0];
+                        fixture.detectChanges();
+
+                        var select = fixture.debugElement.query(By.css("select"));
+                        var ny = fixture.debugElement.queryAll(By.css("option"))[1];
+
+                        select.nativeElement.value = "1: Object";
+                        dispatchEvent(select.nativeElement, "change");
+                        testComp.list.push({"name": "Buffalo"});
+                        fixture.detectChanges();
+
+                        expect(select.nativeElement.value).toEqual("1: Object");
+                        expect(ny.nativeElement.selected).toBe(true);
+                        async.done();
+                      });
+                }));
+
 
         it("when options are removed",
            inject([TestComponentBuilder, AsyncTestCompleter],

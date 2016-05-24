@@ -68,7 +68,10 @@ export class SelectControlValueAccessor implements ControlValueAccessor {
   }
 
   registerOnChange(fn: (value: any) => any): void {
-    this.onChange = (valueString: string) => { fn(this._getOptionValue(valueString)); };
+    this.onChange = (valueString: string) => {
+      this.value = valueString;
+      fn(this._getOptionValue(valueString));
+    };
   }
   registerOnTouched(fn: () => any): void { this.onTouched = fn; }
 
