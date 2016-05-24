@@ -66,6 +66,11 @@ export class Router {
   resetConfig(config: RouterConfig): void {
     this.config = config;
   }
+  
+  /**
+   * @internal
+   */
+  dispose(): void { this.locationSubscription.unsubscribe(); }
 
   private setUpLocationChangeListener(): void {
     this.locationSubscription = <any>this.location.subscribe((change) => {
