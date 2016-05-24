@@ -1,5 +1,5 @@
 import { UrlTree, UrlSegment } from './url_tree';
-import { rootNode, TreeNode } from './tree';
+import { rootNode, TreeNode } from './utils/tree';
 
 /**
  * Defines a way to serialize/deserialize a url tree.

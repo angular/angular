@@ -1,4 +1,4 @@
-import { Tree, TreeNode } from './tree';
+import { Tree, TreeNode } from './utils/tree';
 import { UrlSegment } from './url_tree';
 import { Observable } from 'rxjs/Observable';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';

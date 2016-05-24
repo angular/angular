@@ -1,5 +1,5 @@
-import { Tree, TreeNode } from './tree';
-import { shallowEqual } from './util';
+import { Tree, TreeNode } from './utils/tree';
+import { shallowEqual } from './utils/collection';
 
 /**
  * A URL in the tree form.
