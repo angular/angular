@@ -21,6 +21,14 @@ export class Tree<T> {
     return n && n.children.length > 0 ? n.children[0].value : null;
   }
 
+  siblings(t: T): T[] {
+    const p = findPath(t, this._root, []);
+    if (p.length < 2) return [];
+
+    const c = p[p.length - 2].children.map(c => c.value);
+    return c.filter(cc => cc !== t);
+  }
+
   pathFromRoot(t: T): T[] { return findPath(t, this._root, []).map(s => s.value); }
 
   contains(tree: Tree<T>): boolean { return contains(this._root, tree._root); }
