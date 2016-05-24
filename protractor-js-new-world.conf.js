@@ -24,7 +24,7 @@ exports.config = {
   ],
   capabilities: process.env.TRAVIS ? BROWSER_OPTIONS.ChromeOnTravis : BROWSER_OPTIONS.LocalChrome,
   directConnect: true,
-  baseUrl: 'http://localhost:7777/',
+  baseUrl: 'http://localhost:8000/',
   framework: 'jasmine2',
   jasmineNodeOpts: {
     showColors: true,
