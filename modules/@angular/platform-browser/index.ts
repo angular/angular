@@ -44,3 +44,8 @@ export * from './src/worker_app';
 
 export * from './private_export';
 
+import {BROWSER_PLATFORM_PROVIDERS} from './src/browser';
+
+/* @deprecated use BROWSER_PLATFORM_PROVIDERS */
+export const BROWSER_PROVIDERS: any[] = BROWSER_PLATFORM_PROVIDERS;
+
