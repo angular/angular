@@ -32,10 +32,8 @@
     "@angular/platform-browser": "2.0.0-rc.1",
     "@angular/platform-browser-dynamic": "2.0.0-rc.1",
     "@angular/router": "2.0.0-rc.1",
-    "es6-promise": "^3.0.2",
-    "es6-shim": "^0.35.0",
+    "core-js": "^2.4.0",
     "hammerjs": "^2.0.8",
-    "reflect-metadata": "0.1.3",
     "rxjs": "5.0.0-beta.6",
     "systemjs": "0.19.26",
     "zone.js": "0.6.12"

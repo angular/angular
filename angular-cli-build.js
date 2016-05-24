@@ -84,8 +84,7 @@ function _buildAppTree(defaults) {
   return new Angular2App(defaults, inputNode, {
     sourceDir: sourceDir,
     polyfills: [
-      'vendor/es6-shim/es6-shim.js',
-      'vendor/reflect-metadata/Reflect.js',
+      'vendor/core-js/client/core.js',
       'vendor/systemjs/dist/system.src.js',
       'vendor/zone.js/dist/zone.js',
       'vendor/hammerjs/hammer.min.js'
@@ -100,8 +99,7 @@ function _buildAppTree(defaults) {
       'systemjs/dist/system-polyfills.js',
       'systemjs/dist/system.src.js',
       'zone.js/dist/*.js',
-      'es6-shim/es6-shim.js',
-      'reflect-metadata/*.js',
+      'core-js/client/core.js',
       'rxjs/**/*.js',
       '@angular/**/*.js',
       'hammerjs/*.min.+(js|js.map)'
