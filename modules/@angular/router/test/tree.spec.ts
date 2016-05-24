@@ -24,6 +24,12 @@ describe('tree', () => {
     expect(t.firstChild(2)).toEqual(null);
   });
 
+  it("should return the siblings of a node", () => {
+    const t = new Tree<any>(new TreeNode<number>(1, [new TreeNode<number>(2, []), new TreeNode<number>(3, [])]));
+    expect(t.siblings(2)).toEqual([3]);
+    expect(t.siblings(1)).toEqual([]);
+  });
+
   it("should return the path to the root", () => {
     const t = new Tree<any>(new TreeNode<number>(1, [new TreeNode<number>(2, [])]));
     expect(t.pathFromRoot(2)).toEqual([1, 2]);
