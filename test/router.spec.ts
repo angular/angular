@@ -153,20 +153,53 @@ describe("Integration", () => {
 
       expect(fixture.debugElement.nativeElement).toHaveText('');
     })));
+
+  describe("router links", () => {
+    it("should support string router links",
+      fakeAsync(inject([Router, TestComponentBuilder], (router, tcb) => {
+        router.resetConfig([
+          { name: 'team', path: 'team/:id', component: TeamCmp, children: [
+            { name: 'link', path: 'link', component: StringLinkCmp },
+            { name: 'simple', path: 'simple', component: SimpleCmp }
+          ] }
+        ]);
+
+        const fixture = tcb.createFakeAsync(RootCmp);
+        advance(fixture);
+
+        router.navigateByUrl('/team/22/link');
+        advance(fixture);
+        expect(fixture.debugElement.nativeElement).toHaveText('team 22 { link, right:  }');
+
+        const native = fixture.debugElement.nativeElement.querySelector("a");
+        expect(native.getAttribute("href")).toEqual("/team/33/simple");
+        native.click();
+        advance(fixture);
+
+        expect(fixture.debugElement.nativeElement).toHaveText('team 33 { simple, right:  }');
+      })));
+  });
 });
 
+@Component({
+  selector: 'link-cmp',
+  template: `<a routerLink="/team/33/simple">link</a>`,
+  directives: ROUTER_DIRECTIVES
+})
+class StringLinkCmp {}
 
 @Component({
   selector: 'simple-cmp',
   template: `simple`,
-  directives: [ROUTER_DIRECTIVES]
+  directives: ROUTER_DIRECTIVES
 })
-class SimpleCmp {}
+class SimpleCmp {
+}
 
 @Component({
   selector: 'team-cmp',
   template: `team {{id | async}} { <router-outlet></router-outlet>, right: <router-outlet name="right"></router-outlet> }`,
-  directives: [ROUTER_DIRECTIVES]
+  directives: ROUTER_DIRECTIVES
 })
 class TeamCmp {
   id: Observable<string>;
