@@ -40,7 +40,8 @@ env:
   matrix:
     # Order: a slower build first, so that we don't occupy an idle travis worker waiting for others to complete.
    - CI_MODE=js
-   - CI_MODE=lint
+   # disabled because it currently doesn't do anything
+   #- CI_MODE=lint
    - CI_MODE=e2e
    - CI_MODE=saucelabs_required
    - CI_MODE=browserstack_required
