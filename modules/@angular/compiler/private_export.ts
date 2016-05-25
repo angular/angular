@@ -4,6 +4,7 @@ import * as metadata_resolver from './src/metadata_resolver';
 import * as html_parser from './src/html_parser';
 import * as directive_normalizer from './src/directive_normalizer';
 import * as lexer from './src/expression_parser/lexer';
+import * as parse_util from './src/parse_util';
 import * as parser from './src/expression_parser/parser';
 import * as template_parser from './src/template_parser';
 import * as dom_element_schema_registry from './src/schema/dom_element_schema_registry';
@@ -39,8 +40,25 @@ export namespace __compiler_private__ {
   export type Parser = parser.Parser;
   export var Parser = parser.Parser;
 
+  export type ParseLocation = parse_util.ParseLocation;
+  export var ParseLocation = parse_util.ParseLocation;
+
+  export type ParseError = parse_util.ParseError;
+  export var ParseError = parse_util.ParseError;
+
+  export type ParseErrorLevel = parse_util.ParseErrorLevel;
+  export var ParseErrorLevel = parse_util.ParseErrorLevel;
+
+  export type ParseSourceFile = parse_util.ParseSourceFile;
+  export var ParseSourceFile = parse_util.ParseSourceFile;
+
+  export type ParseSourceSpan = parse_util.ParseSourceSpan;
+  export var ParseSourceSpan = parse_util.ParseSourceSpan;
+
   export type TemplateParser = template_parser.TemplateParser;
   export var TemplateParser = template_parser.TemplateParser;
+
+  export type TemplateParseResult = template_parser.TemplateParseResult;
 
   export type DomElementSchemaRegistry = dom_element_schema_registry.DomElementSchemaRegistry;
   export var DomElementSchemaRegistry = dom_element_schema_registry.DomElementSchemaRegistry;
