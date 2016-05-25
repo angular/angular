@@ -139,21 +139,24 @@ export class TemplateParser {
            directives: CompileDirectiveMetadata[], pipes: CompilePipeMetadata[],
            templateUrl: string): TemplateParseResult {
     var htmlAstWithErrors = this._htmlParser.parse(template, templateUrl);
-    var errors: ParseError[] = htmlAstWithErrors.errors;
+    var errors:ParseError[] = htmlAstWithErrors.errors;
     var result;
     if (htmlAstWithErrors.rootNodes.length > 0) {
       var uniqDirectives = <CompileDirectiveMetadata[]>removeDuplicates(directives);
       var uniqPipes = <CompilePipeMetadata[]>removeDuplicates(pipes);
       var providerViewContext =
-          new ProviderViewContext(component, htmlAstWithErrors.rootNodes[0].sourceSpan);
+        new ProviderViewContext(component, htmlAstWithErrors.rootNodes[0].sourceSpan);
       var parseVisitor = new TemplateParseVisitor(providerViewContext, uniqDirectives, uniqPipes,
-                                                  this._exprParser, this._schemaRegistry);
+        this._exprParser, this._schemaRegistry);
 
       result = htmlVisitAll(parseVisitor, htmlAstWithErrors.rootNodes, EMPTY_ELEMENT_CONTEXT);
       errors = errors.concat(parseVisitor.errors).concat(providerViewContext.errors);
     } else {
       result = [];
     }
+
+    this._assertNoReferenceDuplicationOnTemplate(result, errors);
+
     if (errors.length > 0) {
       return new TemplateParseResult(result, errors);
     }
@@ -163,6 +166,25 @@ export class TemplateParser {
     }
     return new TemplateParseResult(result, errors);
   }
+
+  _assertNoReferenceDuplicationOnTemplate(result:any[], errors:TemplateParseError[]):void {
+    const existingReferences = [];
+    result
+      .filter(element => !!element.references)
+      .forEach(element => element.references.forEach(reference=> {
+        const name = reference.name;
+        if (existingReferences.indexOf(name) < 0) {
+          existingReferences.push(name);
+        }
+        else {
+          const error = new TemplateParseError(
+            `Reference "#${name}" is defined several times`,
+            reference.sourceSpan,
+            ParseErrorLevel.FATAL);
+          errors.push(error);
+        }
+      }));
+  }
 }
 
 class TemplateParseVisitor implements HtmlAstVisitor {
@@ -171,7 +193,6 @@ class TemplateParseVisitor implements HtmlAstVisitor {
   directivesIndex = new Map<CompileDirectiveMetadata, number>();
   ngContentCount: number = 0;
   pipesByName: Map<string, CompilePipeMetadata>;
-  parsedVariables: string[] = [];
 
   constructor(public providerViewContext: ProviderViewContext,
               directives: CompileDirectiveMetadata[], pipes: CompilePipeMetadata[],
@@ -516,14 +537,10 @@ class TemplateParseVisitor implements HtmlAstVisitor {
 
   private _parseVariable(identifier: string, value: string, sourceSpan: ParseSourceSpan,
                          targetVars: VariableAst[]) {
+
     if (identifier.indexOf('-') > -1) {
       this._reportError(`"-" is not allowed in variable names`, sourceSpan);
     }
-
-    if (this.parsedVariables.indexOf(identifier) > -1) {
-      this._reportError(`Variable "#${identifier}" is defined several times`, sourceSpan);
-    }
-    this.parsedVariables.push(identifier);
 
     targetVars.push(new VariableAst(identifier, value, sourceSpan));
   }
@@ -533,6 +550,7 @@ class TemplateParseVisitor implements HtmlAstVisitor {
     if (identifier.indexOf('-') > -1) {
       this._reportError(`"-" is not allowed in reference names`, sourceSpan);
     }
+
     targetRefs.push(new ElementOrDirectiveRef(identifier, value, sourceSpan));
   }
 
