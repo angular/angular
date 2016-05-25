@@ -70,15 +70,11 @@ export class QueryList<T> {
 
   toString(): string { return this._results.toString(); }
 
-  /**
-   * @internal
-   */
   reset(res: Array<T|any[]>): void {
     this._results = ListWrapper.flatten(res);
     this._dirty = false;
   }
 
-  /** @internal */
   notifyOnChanges(): void { this._emitter.emit(this); }
 
   /** internal */
