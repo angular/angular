@@ -90,4 +90,4 @@ export class MdListItem implements AfterContentInit {
   }
 }
 
-export const MD_LIST_DIRECTIVES: any[] = [MdList, MdListItem, MdLine, MdListAvatar];
+export const MD_LIST_DIRECTIVES = [MdList, MdListItem, MdLine, MdListAvatar];

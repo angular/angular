@@ -41,3 +41,5 @@ export class MdToolbar {
   }
 
 }
+
+export const MD_TOOLBAR_DIRECTIVES = [MdToolbar];

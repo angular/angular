@@ -88,3 +88,5 @@ export class MdProgressBar {
 function clamp(v: number, min = 0, max = 100) {
   return Math.max(min, Math.min(max, v));
 }
+
+export const MD_PROGRESS_BAR_DIRECTIVES = [MdProgressBar];

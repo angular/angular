@@ -8,7 +8,6 @@ import {
     Optional,
     Output,
     QueryList,
-    Type,
     ChangeDetectionStrategy,
     EventEmitter,
     Renderer
@@ -375,4 +374,4 @@ export class MdSidenavLayout implements AfterContentInit {
 }
 
 
-export const MD_SIDENAV_DIRECTIVES: Type[] = [MdSidenavLayout, MdSidenav];
+export const MD_SIDENAV_DIRECTIVES = [MdSidenavLayout, MdSidenav];

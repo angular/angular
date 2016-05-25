@@ -169,3 +169,5 @@ export class MdSlideToggle implements ControlValueAccessor {
   }
 
 }
+
+export const MD_SLIDE_TOGGLE_DIRECTIVES = [MdSlideToggle];
