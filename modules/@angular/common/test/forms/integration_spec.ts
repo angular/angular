@@ -1203,43 +1203,74 @@ export function main() {
 
       it("should support <type=radio>",
          fakeAsync(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
-           var t = `<form>
-                  <input type="radio" name="food" ngControl="chicken" [(ngModel)]="data['chicken1']">
-                  <input type="radio" name="food" ngControl="fish" [(ngModel)]="data['fish1']">
-                </form>
-                <form>
-                  <input type="radio" name="food" ngControl="chicken" [(ngModel)]="data['chicken2']">
-                  <input type="radio" name="food" ngControl="fish" [(ngModel)]="data['fish2']">
+           const t = `<form>
+                  <input type="radio" name="food" ngControl="chicken" [(ngModel)]="data['chicken']">
+                  <input type="radio" name="food" ngControl="fish" [(ngModel)]="data['fish']">
+                  <input type="radio" name="food" ngControl="beef" [(ngModel)]="data['beef']">
+                  <input type="radio" name="food" ngControl="pork" [(ngModel)]="data['pork']">
                 </form>`;
 
-           let fixture = tcb.overrideTemplate(MyComp8, t).createFakeAsync(MyComp8);
+           const fixture = tcb.overrideTemplate(MyComp8, t).createFakeAsync(MyComp8);
            tick();
 
            fixture.debugElement.componentInstance.data = {
-             'chicken1': new RadioButtonState(false, 'chicken'),
-             'fish1': new RadioButtonState(true, 'fish'),
-
-             'chicken2': new RadioButtonState(false, 'chicken'),
-             'fish2': new RadioButtonState(true, 'fish')
+             'chicken': new RadioButtonState(false, 'chicken'),
+             'fish': new RadioButtonState(true, 'fish'),
+             'beef': new RadioButtonState(false, 'beef'),
+             'pork': new RadioButtonState(true, 'pork')
            };
            fixture.detectChanges();
            tick();
 
-           var input = fixture.debugElement.query(By.css("input"));
+           const input = fixture.debugElement.query(By.css("input"));
            expect(input.nativeElement.checked).toEqual(false);
 
            dispatchEvent(input.nativeElement, "change");
            tick();
 
-           let data = fixture.debugElement.componentInstance.data;
+           const data = fixture.debugElement.componentInstance.data;
 
-           expect(data['chicken1']).toEqual(new RadioButtonState(true, 'chicken'));
-           expect(data['fish1']).toEqual(new RadioButtonState(false, 'fish'));
-
-           expect(data['chicken2']).toEqual(new RadioButtonState(false, 'chicken'));
-           expect(data['fish2']).toEqual(new RadioButtonState(true, 'fish'));
+           expect(data['chicken']).toEqual(new RadioButtonState(true, 'chicken'));
+           expect(data['fish']).toEqual(new RadioButtonState(false, 'fish'));
+           expect(data['beef']).toEqual(new RadioButtonState(false, 'beef'));
+           expect(data['pork']).toEqual(new RadioButtonState(false, 'pork'));
          })));
     });
+
+    it("should support multiple named <type=radio> groups",
+        fakeAsync(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
+          const t = `<form>
+                  <input type="radio" name="food" ngControl="chicken" [(ngModel)]="data['chicken']">
+                  <input type="radio" name="food" ngControl="fish" [(ngModel)]="data['fish']">
+                  <input type="radio" name="drink" ngControl="cola" [(ngModel)]="data['cola']">
+                  <input type="radio" name="drink" ngControl="sprite" [(ngModel)]="data['sprite']">
+                </form>`;
+
+          const fixture = tcb.overrideTemplate(MyComp8, t).createFakeAsync(MyComp8);
+          tick();
+
+          fixture.debugElement.componentInstance.data = {
+            'chicken': new RadioButtonState(false, 'chicken'),
+            'fish': new RadioButtonState(true, 'fish'),
+            'cola': new RadioButtonState(false, 'cola'),
+            'sprite': new RadioButtonState(true, 'sprite')
+          };
+          fixture.detectChanges();
+          tick();
+
+          const input = fixture.debugElement.query(By.css("input"));
+          expect(input.nativeElement.checked).toEqual(false);
+
+          dispatchEvent(input.nativeElement, "change");
+          tick();
+
+          const data = fixture.debugElement.componentInstance.data;
+
+          expect(data['chicken']).toEqual(new RadioButtonState(true, 'chicken'));
+          expect(data['fish']).toEqual(new RadioButtonState(false, 'fish'));
+          expect(data['cola']).toEqual(new RadioButtonState(false, 'cola'));
+          expect(data['sprite']).toEqual(new RadioButtonState(true, 'sprite'));
+        })));
 
     describe("setting status classes", () => {
       it("should work with single fields",

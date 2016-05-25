@@ -43,10 +43,16 @@ export class RadioControlRegistry {
 
   select(accessor: RadioControlValueAccessor) {
     this._accessors.forEach((c) => {
-      if (c[0].control.root === accessor._control.control.root && c[1] !== accessor) {
+      if (this._isSameGroup(c, accessor) && c[1] !== accessor) {
         c[1].fireUncheck();
       }
     });
+  }
+
+  private _isSameGroup(controlPair:[NgControl, RadioControlValueAccessor],
+                       accessor: RadioControlValueAccessor) {
+    return controlPair[0].control.root === accessor._control.control.root &&
+           controlPair[1].name === accessor.name;
   }
 }
 
