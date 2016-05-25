@@ -15,7 +15,7 @@ export abstract class ServiceMessageBrokerFactory {
 @Injectable()
 export class ServiceMessageBrokerFactory_ extends ServiceMessageBrokerFactory {
   /** @internal */
-  public _serializer: Serializer;
+  _serializer: Serializer;
 
   constructor(private _messageBus: MessageBus, _serializer: Serializer) {
     super();

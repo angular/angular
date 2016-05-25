@@ -20,7 +20,7 @@ export abstract class ClientMessageBrokerFactory {
 @Injectable()
 export class ClientMessageBrokerFactory_ extends ClientMessageBrokerFactory {
   /** @internal */
-  public _serializer: Serializer;
+  _serializer: Serializer;
   constructor(private _messageBus: MessageBus, _serializer: Serializer) {
     super();
     this._serializer = _serializer;
