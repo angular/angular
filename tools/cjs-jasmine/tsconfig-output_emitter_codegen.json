@@ -19,7 +19,7 @@
     "target": "es5"
   },
   "files": [
-    "../../typings/node/node.d.ts",
+    "../../node_modules/@types/node/index.d.ts",
     "../../dist/all/@angular/compiler/test/output/output_emitter_codegen_typed.ts",
     "../../dist/all/@angular/compiler/test/output/output_emitter_codegen_untyped.ts",
     "../../dist/all/@angular/compiler/test/offline_compiler_codegen_untyped.ts",

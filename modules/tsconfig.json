@@ -11,7 +11,7 @@
     "moduleResolution": "node",
     "outDir": "../dist/all/",
     "paths": {
-      "selenium-webdriver": ["./@angular/typings/selenium-webdriver/selenium-webdriver.d.ts"],
+      "selenium-webdriver": ["../node_modules/@types/selenium-webdriver/index.d.ts"],
       "rxjs/*": ["../node_modules/rxjs/*"],
       "@angular/*": ["./@angular/*"],
       "tsc-wrapped": ["../dist/tools/tsc-wrapped"]

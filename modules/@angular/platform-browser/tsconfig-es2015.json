@@ -12,7 +12,6 @@
     "moduleResolution": "node",
     "outDir": "../../../dist/packages-dist/platform-browser/esm",
     "paths": {
-      "selenium-webdriver": ["./typings/selenium-webdriver/selenium-webdriver.d.ts"],
       "@angular/core": ["../../../dist/packages-dist/core"],
       "@angular/core/testing": ["../../../dist/packages-dist/core/testing"],
       "@angular/common": ["../../../dist/packages-dist/common"],
@@ -28,9 +27,9 @@
   "files": [
     "index.ts",
     "testing.ts",
-    "../../../typings/jasmine/jasmine.d.ts",
-    "../../../typings/hammerjs/hammerjs.d.ts",
-    "../../../typings/angular-protractor/angular-protractor.d.ts",
+    "../../../node_modules/@types/hammerjs/index.d.ts",
+    "../../../node_modules/@types/protractor/index.d.ts",
+    "../../../node_modules/@types/jasmine/index.d.ts",
     "../../../node_modules/zone.js/dist/zone.js.d.ts"
   ]
 }

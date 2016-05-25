@@ -23,7 +23,6 @@
   "files": [
     "index.ts",
     "testing.ts",
-    "../../../typings/jasmine/jasmine.d.ts",
     "../../../node_modules/zone.js/dist/zone.js.d.ts"
   ]
 }

@@ -15,7 +15,7 @@
     "url": "https://github.com/angular/angular.git"
   },
   "scripts": {
-    "postinstall": "node tools/npm/copy-npm-shrinkwrap; tsd reinstall --overwrite --clean --config ./tsd.json"
+    "postinstall": "node tools/npm/copy-npm-shrinkwrap"
   },
   "dependencies": {
     "es6-shim": "^0.35.0",
@@ -24,6 +24,13 @@
     "zone.js": "^0.6.12"
   },
   "devDependencies": {
+    "@types/angularjs": "^1.5.13-alpha",
+    "@types/fs-extra": "0.0.22-alpha",
+    "@types/hammerjs": "^2.0.22-alpha",
+    "@types/jasmine": "^2.2.22-alpha",
+    "@types/node": "^4.0.22-alpha",
+    "@types/protractor": "^1.5.11-alpha",
+    "@types/selenium-webdriver": "^2.44.20-alpha",
     "angular": "^1.5.0",
     "angular-animate": "^1.5.0",
     "angular-mocks": "^1.5.0",
@@ -100,7 +107,6 @@
     "through2": "^0.6.5",
     "ts-api-guardian": "0.0.2",
     "ts2dart": "^0.9.10",
-    "tsd": "^0.6.5-beta",
     "tsickle": "^0.1.2",
     "tslint": "^3.7.0-dev.2",
     "typescript": "^1.9.0-dev.20160409",
