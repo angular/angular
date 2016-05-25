@@ -518,7 +518,7 @@ export class RootRouter extends Router {
     });
 
     this.registry.configFromComponent(primaryComponent);
-    this.navigateByUrl(location.path(), true);
+    this.navigateByUrl(location.path());
   }
 
   commit(instruction: Instruction, _skipLocationChange: boolean = false): Promise<any> {
