@@ -3,9 +3,6 @@
 
 <ng-content select="md-sidenav"></ng-content>
 
-<md-content [style.margin-left.px]="getMarginLeft()"
-            [style.margin-right.px]="getMarginRight()"
-            [style.left.px]="getPositionLeft()"
-            [style.right.px]="getPositionRight()">
+<md-content [ngStyle]="getStyles()">
   <ng-content></ng-content>
 </md-content>

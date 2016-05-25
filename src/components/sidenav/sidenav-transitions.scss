@@ -5,15 +5,14 @@
 
 
 :host {
-  & > .md-sidenav-backdrop {
+  > .md-sidenav-backdrop {
     &.md-sidenav-shown {
       transition: background-color $swift-ease-out-duration $swift-ease-out-timing-function;
     }
   }
 
-  & > md-content {
-    transition: left $swift-ease-out-duration $swift-ease-out-timing-function,
-                right $swift-ease-out-duration $swift-ease-out-timing-function;
+  > md-content {
+    transition: transform $swift-ease-out-duration $swift-ease-out-timing-function;
   }
 
   > md-sidenav {
