@@ -397,6 +397,7 @@ export interface AttributeMetadataFactory {
  *   [new ng.Query(SomeType)]
  * ]
  * ```
+ * @deprecated
  */
 export interface QueryMetadataFactory {
   (selector: Type | string,
@@ -407,6 +408,7 @@ export interface QueryMetadataFactory {
 
 /**
  * Factory for {@link ContentChildren}.
+ * @stable
  */
 export interface ContentChildrenMetadataFactory {
   (selector: Type | string, {descendants, read}?: {descendants?: boolean, read?: any}): any;
@@ -416,6 +418,7 @@ export interface ContentChildrenMetadataFactory {
 
 /**
  * Factory for {@link ContentChild}.
+ * @stable
  */
 export interface ContentChildMetadataFactory {
   (selector: Type | string, {read}?: {read?: any}): any;
@@ -424,6 +427,7 @@ export interface ContentChildMetadataFactory {
 
 /**
  * Factory for {@link ViewChildren}.
+ * @stable
  */
 export interface ViewChildrenMetadataFactory {
   (selector: Type | string, {read}?: {read?: any}): any;
@@ -432,6 +436,7 @@ export interface ViewChildrenMetadataFactory {
 
 /**
  * Factory for {@link ViewChild}.
+ * @stable
  */
 export interface ViewChildMetadataFactory {
   (selector: Type | string, {read}?: {read?: any}): any;
@@ -445,6 +450,7 @@ export interface ViewChildMetadataFactory {
  * ### Example
  *
  * {@example core/ts/metadata/metadata.ts region='pipe'}
+ * @stable
  */
 export interface PipeMetadataFactory {
   (obj: {name: string, pure?: boolean}): any;
@@ -455,6 +461,7 @@ export interface PipeMetadataFactory {
  * {@link InputMetadata} factory for creating decorators.
  *
  * See {@link InputMetadata}.
+ * @stable
  */
 export interface InputMetadataFactory {
   (bindingPropertyName?: string): any;
@@ -465,6 +472,7 @@ export interface InputMetadataFactory {
  * {@link OutputMetadata} factory for creating decorators.
  *
  * See {@link OutputMetadata}.
+ * @stable
  */
 export interface OutputMetadataFactory {
   (bindingPropertyName?: string): any;
@@ -473,6 +481,7 @@ export interface OutputMetadataFactory {
 
 /**
  * {@link HostBindingMetadata} factory function.
+ * @stable
  */
 export interface HostBindingMetadataFactory {
   (hostPropertyName?: string): any;
@@ -481,6 +490,7 @@ export interface HostBindingMetadataFactory {
 
 /**
  * {@link HostListenerMetadata} factory function.
+ * @stable
  */
 export interface HostListenerMetadataFactory {
   (eventName: string, args?: string[]): any;
@@ -510,6 +520,7 @@ export interface HostListenerMetadataFactory {
  * ### Example
  *
  * {@example core/ts/metadata/metadata.ts region='component'}
+ * @stable
  */
 export var Component: ComponentMetadataFactory =
     <ComponentMetadataFactory>makeDecorator(ComponentMetadata, (fn: any) => fn.View = View);
@@ -892,6 +903,7 @@ export var Component: ComponentMetadataFactory =
  * Note also that although the `<li></li>` template still exists inside the `<template></template>`,
  * the instantiated
  * view occurs on the second `<li></li>` which is a sibling to the `<template>` element.
+ * @stable
  */
 export var Directive: DirectiveMetadataFactory =
     <DirectiveMetadataFactory>makeDecorator(DirectiveMetadata);
@@ -925,6 +937,7 @@ export var Directive: DirectiveMetadataFactory =
  *   }
  * }
  * ```
+ * @deprecated
  */
 var View: ViewMetadataFactory =
     <ViewMetadataFactory>makeDecorator(ViewMetadata, (fn: any) => fn.View = View);
@@ -945,6 +958,7 @@ var View: ViewMetadataFactory =
  * A decorator can inject string literal `text` like so:
  *
  * {@example core/ts/metadata/metadata.ts region='attributeMetadata'}
+ * @stable
  */
 export var Attribute: AttributeMetadataFactory = makeParamDecorator(AttributeMetadata);
 
@@ -1055,6 +1069,7 @@ export var Attribute: AttributeMetadataFactory = makeParamDecorator(AttributeMet
  *
  * The injected object is an unmodifiable live list.
  * See {@link QueryList} for more details.
+ * @deprecated
  */
 export var Query: QueryMetadataFactory = makeParamDecorator(QueryMetadata);
 
@@ -1078,6 +1093,7 @@ export var Query: QueryMetadataFactory = makeParamDecorator(QueryMetadata);
  *   }
  * }
  * ```
+ * @stable
  */
 export var ContentChildren: ContentChildrenMetadataFactory =
     makePropDecorator(ContentChildrenMetadata);
@@ -1111,6 +1127,7 @@ export var ContentChildren: ContentChildrenMetadataFactory =
  *   <item>b</item>
  * </container>
  * ```
+ * @stable
  */
 export var ContentChild: ContentChildMetadataFactory = makePropDecorator(ContentChildMetadata);
 
@@ -1193,6 +1210,7 @@ export var ContentChild: ContentChildMetadataFactory = makePropDecorator(Content
  * ```
  *
  * See also: [ViewChildrenMetadata]
+ * @stable
  */
 export var ViewChildren: ViewChildrenMetadataFactory = makePropDecorator(ViewChildrenMetadata);
 
@@ -1266,6 +1284,7 @@ export var ViewChildren: ViewChildrenMetadataFactory = makePropDecorator(ViewChi
  * }
  * ```
  * See also: [ViewChildMetadata]
+ * @stable
  */
 export var ViewChild: ViewChildMetadataFactory = makePropDecorator(ViewChildMetadata);
 
@@ -1304,6 +1323,7 @@ export var ViewChild: ViewChildMetadataFactory = makePropDecorator(ViewChildMeta
  *
  * The injected object is an iterable and observable live list.
  * See {@link QueryList} for more details.
+ * @deprecated
  */
 export var ViewQuery: QueryMetadataFactory = makeParamDecorator(ViewQueryMetadata);
 
@@ -1314,6 +1334,7 @@ export var ViewQuery: QueryMetadataFactory = makeParamDecorator(ViewQueryMetadat
  * ### Example
  *
  * {@example core/ts/metadata/metadata.ts region='pipe'}
+ * @stable
  */
 export var Pipe: PipeMetadataFactory = <PipeMetadataFactory>makeDecorator(PipeMetadata);
 
@@ -1358,6 +1379,7 @@ export var Pipe: PipeMetadataFactory = <PipeMetadataFactory>makeDecorator(PipeMe
  *
  * bootstrap(App);
  * ```
+ * @stable
  */
 export var Input: InputMetadataFactory = makePropDecorator(InputMetadata);
 
@@ -1402,6 +1424,7 @@ export var Input: InputMetadataFactory = makePropDecorator(InputMetadata);
  * }
  * bootstrap(App);
  * ```
+ * @stable
  */
 export var Output: OutputMetadataFactory = makePropDecorator(OutputMetadata);
 
@@ -1440,6 +1463,7 @@ export var Output: OutputMetadataFactory = makePropDecorator(OutputMetadata);
  *
  * bootstrap(App);
  * ```
+ * @stable
  */
 export var HostBinding: HostBindingMetadataFactory = makePropDecorator(HostBindingMetadata);
 
@@ -1477,5 +1501,6 @@ export var HostBinding: HostBindingMetadataFactory = makePropDecorator(HostBindi
  *
  * bootstrap(App);
  * ```
+ * @stable
  */
 export var HostListener: HostListenerMetadataFactory = makePropDecorator(HostListenerMetadata);

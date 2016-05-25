@@ -24,6 +24,9 @@ export class DefaultIterableDifferFactory implements IterableDifferFactory {
 
 var trackByIdentity = (index: number, item: any) => item;
 
+/**
+ * @stable
+ */
 export class DefaultIterableDiffer implements IterableDiffer {
   private _length: number = null;
   private _collection = null;
@@ -532,6 +535,9 @@ export class DefaultIterableDiffer implements IterableDiffer {
   }
 }
 
+/**
+ * @stable
+ */
 export class CollectionChangeRecord {
   currentIndex: number = null;
   previousIndex: number = null;

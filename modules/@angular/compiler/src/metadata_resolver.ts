@@ -1,6 +1,5 @@
 import {
   AttributeMetadata,
-  ReflectiveDependency,
   OptionalMetadata,
   ComponentMetadata,
   SelfMetadata,
@@ -9,18 +8,16 @@ import {
   Provider,
   PLATFORM_DIRECTIVES,
   PLATFORM_PIPES,
-  reflector,
   Injectable,
   Inject,
   Optional,
   ViewMetadata,
-  NoAnnotationError,
   QueryMetadata,
   resolveForwardRef,
   InjectMetadata,
   ViewQueryMetadata
 } from '@angular/core';
-import {constructDependencies, LIFECYCLE_HOOKS_VALUES, ReflectorReader} from '../core_private';
+import {LIFECYCLE_HOOKS_VALUES, ReflectorReader, reflector} from '../core_private';
 import {
   Type,
   isBlank,

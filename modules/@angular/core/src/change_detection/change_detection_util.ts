@@ -34,6 +34,7 @@ export function devModeEqual(a: any, b: any): boolean {
  *    return WrappedValue.wrap(this._latestValue); // this will force update
  *  }
  * ```
+ * @stable
  */
 export class WrappedValue {
   constructor(public wrapped: any) {}
@@ -60,6 +61,7 @@ export class ValueUnwrapper {
 
 /**
  * Represents a basic change from a previous to a new value.
+ * @stable
  */
 export class SimpleChange {
   constructor(public previousValue: any, public currentValue: any) {}

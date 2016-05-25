@@ -14,6 +14,7 @@ import {ChangeDetectorRef} from './change_detection/change_detector_ref';
 
 /**
  * Create an Angular zone.
+ * @experimental
  */
 export function createNgZone(): NgZone {
   return new NgZone({enableLongStackTrace: assertionsEnabled()});
@@ -25,6 +26,7 @@ var _inPlatformCreate: boolean = false;
 /**
  * Creates a platform.
  * Platforms have to be eagerly created via this function.
+ * @experimental
  */
 export function createPlatform(injector: Injector): PlatformRef {
   if (_inPlatformCreate) {
@@ -47,6 +49,7 @@ export function createPlatform(injector: Injector): PlatformRef {
 /**
  * Checks that there currently is a platform
  * which contains the given token as a provider.
+ * @experimental
  */
 export function assertPlatform(requiredToken: any): PlatformRef {
   var platform = getPlatform();
@@ -62,6 +65,7 @@ export function assertPlatform(requiredToken: any): PlatformRef {
 
 /**
  * Dispose the existing platform.
+ * @experimental
  */
 export function disposePlatform(): void {
   if (isPresent(_platform) && !_platform.disposed) {
@@ -71,6 +75,7 @@ export function disposePlatform(): void {
 
 /**
  * Returns the current platform.
+ * @experimental
  */
 export function getPlatform(): PlatformRef {
   return isPresent(_platform) && !_platform.disposed ? _platform : null;
@@ -79,6 +84,7 @@ export function getPlatform(): PlatformRef {
 /**
  * Shortcut for ApplicationRef.bootstrap.
  * Requires a platform to be created first.
+ * @experimental
  */
 export function coreBootstrap<C>(componentFactory: ComponentFactory<C>,
                                  injector: Injector): ComponentRef<C> {
@@ -90,6 +96,7 @@ export function coreBootstrap<C>(componentFactory: ComponentFactory<C>,
  * Resolves the componentFactory for the given component,
  * waits for asynchronous initializers and bootstraps the component.
  * Requires a platform to be created first.
+ * @experimental
  */
 export function coreLoadAndBootstrap(componentType: Type,
                                      injector: Injector): Promise<ComponentRef<any>> {
@@ -109,6 +116,7 @@ export function coreLoadAndBootstrap(componentType: Type,
  *
  * A page's platform is initialized implicitly when {@link bootstrap}() is called, or
  * explicitly by calling {@link createPlatform}().
+ * @stable
  */
 export abstract class PlatformRef {
   /**
@@ -170,6 +178,7 @@ export class PlatformRef_ extends PlatformRef {
  * A reference to an Angular application running on a page.
  *
  * For more about Angular applications, see the documentation for {@link bootstrap}.
+ * @stable
  */
 export abstract class ApplicationRef {
   /**

@@ -1,13 +1,11 @@
 import {
   ResolvedReflectiveProvider,
   Directive,
-  DynamicComponentLoader,
   ViewContainerRef,
   Attribute,
   ComponentRef,
   ComponentFactory,
-  ReflectiveInjector,
-  OnInit
+  ReflectiveInjector
 } from '@angular/core';
 import {RouterOutletMap} from '../router';
 import {DEFAULT_OUTLET_NAME} from '../constants';

@@ -10,8 +10,7 @@ export {
   InjectableMetadata,
   SelfMetadata,
   HostMetadata,
-  SkipSelfMetadata,
-  DependencyMetadata
+  SkipSelfMetadata
 } from './di/metadata';
 
 // we have to reexport * because Dart and TS export two different sets of types
@@ -25,15 +24,12 @@ export {
   Binding,
   ProviderBuilder,
   bind,
-
   Provider,
   provide
 } from './di/provider';
 export {
   ResolvedReflectiveBinding,
   ResolvedReflectiveFactory,
-  ReflectiveDependency,
-
   ResolvedReflectiveProvider
 } from './di/reflective_provider';
 export {ReflectiveKey} from './di/reflective_key';

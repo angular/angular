@@ -2,10 +2,9 @@ import {
   Injectable,
   ViewMetadata,
   ComponentMetadata,
-  reflector,
 } from '@angular/core';
 
-import {ReflectorReader} from '../core_private';
+import {ReflectorReader, reflector} from '../core_private';
 
 import {Type, stringify, isBlank, isPresent} from '../src/facade/lang';
 import {BaseException} from '../src/facade/exceptions';

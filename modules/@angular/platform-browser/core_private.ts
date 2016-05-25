@@ -12,6 +12,7 @@ export var SecurityContext: typeof t.SecurityContext = r.SecurityContext;
 export type SecurityContext = t.SecurityContext;
 export var SanitizationService: typeof t.SanitizationService = r.SanitizationService;
 export type SanitizationService = t.SanitizationService;
+export var reflector: typeof t.reflector = r.reflector;
 
 export type NoOpAnimationPlayer = t.NoOpAnimationPlayer;
 export var NoOpAnimationPlayer: typeof t.NoOpAnimationPlayer = r.NoOpAnimationPlayer;

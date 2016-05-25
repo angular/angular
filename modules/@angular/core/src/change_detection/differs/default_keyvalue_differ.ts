@@ -335,6 +335,9 @@ export class DefaultKeyValueDiffer implements KeyValueDiffer {
 }
 
 
+/**
+ * @stable
+ */
 export class KeyValueChangeRecord {
   previousValue: any = null;
   currentValue: any = null;

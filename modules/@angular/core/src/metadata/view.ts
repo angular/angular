@@ -5,6 +5,7 @@ import {AnimationEntryMetadata} from '../animation/metadata';
  * Defines template and style encapsulation options available for Component's {@link View}.
  *
  * See {@link ViewMetadata#encapsulation}.
+ * @stable
  */
 export enum ViewEncapsulation {
   /**

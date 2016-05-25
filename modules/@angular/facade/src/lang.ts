@@ -91,6 +91,7 @@ export function lockMode() {
  * One important assertion this disables verifies that a change detection pass
  * does not result in additional changes to any bindings (also known as
  * unidirectional data flow).
+ * @stable
  */
 export function enableProdMode() {
   if (_modeLocked) {

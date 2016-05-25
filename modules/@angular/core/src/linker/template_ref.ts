@@ -17,6 +17,7 @@ const EMPTY_CONTEXT = /*@ts2dart_const*/ new Object();
  * To instantiate Embedded Views based on a Template, use
  * {@link ViewContainerRef#createEmbeddedView}, which will create the View and attach it to the
  * View Container.
+ * @stable
  */
 export abstract class TemplateRef<C> {
   /**

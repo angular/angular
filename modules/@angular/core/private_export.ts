@@ -20,6 +20,8 @@ import * as debug from './src/debug/debug_renderer';
 import * as provider_util from './src/di/provider_util';
 import * as console from './src/console';
 import {Provider} from './index';
+import * as reflection from './src/reflection/reflection';
+import {Reflector} from './src/reflection/reflection';
 
 import {
   NoOpAnimationPlayer as NoOpAnimationPlayer_,
@@ -103,6 +105,9 @@ export declare namespace __core_private_types__ {
   export var castByValue: typeof view_utils.castByValue;
   export type Console = console.Console;
   export var Console: typeof console.Console;
+  export var reflector: typeof reflection.reflector;
+  export type Reflector = reflection.Reflector;
+  export var Reflector: typeof reflection.Reflector;
   export type NoOpAnimationPlayer = NoOpAnimationPlayer_;
   export var NoOpAnimationPlayer: typeof NoOpAnimationPlayer_;
   export type AnimationPlayer = AnimationPlayer_;
@@ -178,6 +183,8 @@ export var __core_private__ = {
   pureProxy10: view_utils.pureProxy10,
   castByValue: view_utils.castByValue,
   Console: console.Console,
+  reflector: reflection.reflector,
+  Reflector: reflection.Reflector,
   NoOpAnimationPlayer: NoOpAnimationPlayer_,
   AnimationPlayer: AnimationPlayer_,
   NoOpAnimationDriver: NoOpAnimationDriver_,

@@ -26,6 +26,7 @@ import {Observable, EventEmitter} from '../../src/facade/async';
  *   }
  * }
  * ```
+ * @deprecated
  */
 export class QueryList<T> {
   private _dirty = true;
