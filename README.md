@@ -8,29 +8,8 @@ This is the home for the Angular team's Material Design components built on top 
 ### Project status
 The alpha has begun! See the [changelog](CHANGELOG.md) for more information.
 
-Individual components can be installed with `npm`:
-```bash
-# The core module is required as a peerDependency for other components
-npm install --save @angular2-material/core @angular2-material/checkbox
-```
-
-You can see our [list of published packages on npm](https://www.npmjs.com/~angular2-material).
-
-If you're using SystemJS as your module loader, your configuration for the angular-material
-packages should look like:
-```js
-// The core package is required as a peerDependency for other components.
-'@angular2-material/core': {
-  format: 'cjs',
-  defaultExtension: 'js',
-  main: 'core.js'
-},
-'@angular2-material/checkbox': {
-  format: 'cjs',
-  defaultExtension: 'js',
-  main: 'checkbox.js'
-},
-```
+You also might want to check out our [Getting Started Guide](https://github.com/angular/material2/blob/master/GETTING_STARTED.md) if you're 
+building your first project with Angular Material 2.
 
 During alpha, breaking API and behavior changes will be occurring regularly.
 
