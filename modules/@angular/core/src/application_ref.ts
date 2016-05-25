@@ -418,9 +418,6 @@ export class ApplicationRef_ extends ApplicationRef {
   get componentTypes(): Type[] { return this._rootComponentTypes; }
 }
 
-/**
- * @internal
- */
 export const PLATFORM_CORE_PROVIDERS =
     /*@ts2dart_const*/[
       PlatformRef_,
