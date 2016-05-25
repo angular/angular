@@ -23,6 +23,7 @@ import 'package:angular2/src/transform/common/model/reflection_info_model.pb.dar
 import 'package:angular2/src/transform/common/ng_meta.dart';
 import 'package:angular2/src/transform/common/zone.dart' as zone;
 import 'package:angular2/src/transform/directive_processor/rewriter.dart';
+import 'package:angular2/src/facade/lang.dart';
 
 import '../common/read_file.dart';
 import '../common/recording_logger.dart';
@@ -975,6 +976,30 @@ void allTests() {
       expect(useValue, isNull);
     });
 
+    test('should throw on `providers` using useValue (static identifier).', () async {
+      var error;
+      await _testCreateModel('bad_directives_files/components.dart',
+        filePartName: 'component-with-providers-use-value-static').catchError((e) { error = e; });
+      expect(error, isNotNull);
+      expect(error.message, equals('Incorrect identifier "Ids.someValue".'));
+    });
+
+    test('should throw on `providers` using useValue (private identifier).', () async {
+      var error;
+      await _testCreateModel('bad_directives_files/components.dart',
+        filePartName: 'component-with-providers-use-value-private').catchError((e) { error = e; });
+      expect(error, isNotNull);
+      expect(error.message, equals('Private identifier "_somePrivateVar" not supported.'));
+    });
+
+    test('should throw on `providers` using useValue (inline ctor call).', () async {
+      var error;
+      await _testCreateModel('bad_directives_files/components.dart',
+        filePartName: 'component-with-providers-use-value-ctor').catchError((e) { error = e; });
+      expect(error, isNotNull);
+      expect(error.message, equals('Incorrect identifier "const SomeConstClass()".'));
+    });
+
     test('should populate `providers` using useFactory.', () async {
       var cmp = (await _testCreateModel('directives_files/components.dart'))
           .identifiers['ComponentWithProvidersUseFactory'];
@@ -1000,6 +1025,22 @@ void allTests() {
       expect(deps[5].isOptional, equals(true));
     });
 
+    test('should throw on `providers` using useFactory (static factories).', () async {
+      var error;
+      await _testCreateModel('bad_directives_files/components.dart',
+        filePartName: 'component-with-providers-use-factory-static').catchError((e) { error = e; });
+      expect(error, isNotNull);
+      expect(error.message, equals('Incorrect identifier "Ids.someFactory".'));
+    });
+
+    test('should throw on `providers` using useFactory (private factories).', () async {
+      var error;
+      await _testCreateModel('bad_directives_files/components.dart',
+        filePartName: 'component-with-providers-use-factory-private').catchError((e) { error = e; });
+      expect(error, isNotNull);
+      expect(error.message, equals('Private identifier "_somePrivateFactory" not supported.'));
+    });
+
     test('should populate `providers` using toFactory.', () async {
       var cmp = (await _testCreateModel('directives_files/components.dart'))
           .identifiers['ComponentWithProvidersToFactory'];
@@ -1011,6 +1052,14 @@ void allTests() {
       var useFactory = cmp.providers.first.useFactory;
       expect(useFactory.prefix, isNull);
       expect(useFactory.name, equals("funcDep"));
+    });
+
+    test('should throw on `providers` without useValue/useFactory/useClass.', () async {
+      var error;
+      await _testCreateModel('bad_directives_files/components.dart',
+        filePartName: 'component-with-providers-use-nothing').catchError((e) { error = e; });
+      expect(error, isNotNull);
+      expect(error.message, equals('No "useClass", "useExisting", "useValue" or "useFactory" found in "const Provider(ServiceDep)".'));
     });
 
     test('should populate factories', () async {
@@ -1199,17 +1248,36 @@ Future<NgMeta> _testCreateModel(String inputPath,
     {List<AnnotationDescriptor> customDescriptors: const [],
     AssetId assetId,
     AssetReader reader,
-    TransformLogger logger}) {
+    TransformLogger logger,
+    String filePartName}) {
   if (logger == null) logger = new RecordingLogger();
   return zone.exec(() async {
     var inputId = _assetIdForPath(inputPath);
     if (reader == null) {
       reader = new TestAssetReader();
     }
+    var assetContent = await reader.readAsString(inputId);
     if (assetId != null) {
-      reader.addAsset(assetId, await reader.readAsString(inputId));
       inputId = assetId;
     }
+    if (assetContent == null) {
+      assetContent = '';
+    }
+    var fileParts = StringWrapper.split(assetContent, new RegExp(r"""//\s*---\s*part:([\w-]+)"""));
+    var commonPart = fileParts[0];
+    var selectedPart = '';
+    if (filePartName != null) {
+      for (var i=1; i<fileParts.length; i+=2) {
+        if (fileParts[i] == filePartName) {
+          selectedPart = fileParts[i+1];
+          break;
+        }
+      }
+      if (selectedPart == '') {
+        throw new ArgumentError('Unknown file part "${filePartName}" in ${inputPath}.');
+      }
+    }
+    reader.addAsset(inputId, commonPart + selectedPart);
 
     var annotationMatcher = new AnnotationMatcher()..addAll(customDescriptors);
     return createNgMeta(reader, inputId, annotationMatcher);

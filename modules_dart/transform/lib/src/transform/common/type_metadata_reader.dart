@@ -94,23 +94,19 @@ class TypeMetadataReader {
   }
 
   dynamic _readValue(dynamic initializer) {
-    try {
-      if (initializer is InstanceCreationExpression &&
-          ((initializer as InstanceCreationExpression)
-              .constructorName
-              .toString() ==
-              "Provider" ||
-              (initializer as InstanceCreationExpression)
-                  .constructorName
-                  .toString() ==
-                  "Binding")) {
-        return _readProvider(initializer);
-      } else if (initializer is ListLiteral) {
-        return _readProviders(initializer);
-      } else {
-        return null;
-      }
-    } catch (e) {
+    if (initializer is InstanceCreationExpression &&
+        ((initializer as InstanceCreationExpression)
+            .constructorName
+            .toString() ==
+            "Provider" ||
+            (initializer as InstanceCreationExpression)
+                .constructorName
+                .toString() ==
+                "Binding")) {
+      return _readProvider(initializer);
+    } else if (initializer is ListLiteral) {
+      return _readProviders(initializer, throwOnErrors: false);
+    } else {
       return null;
     }
   }
@@ -519,7 +515,7 @@ class _DirectiveMetadataVisitor extends Object
     _checkMeta();
 
     if (providerValues is ListLiteral) {
-      providers.addAll(_readProviders(providerValues));
+      providers.addAll(_readProviders(providerValues, throwOnErrors: true));
     } else {
       providers.add(_readIdentifier(providerValues));
     }
@@ -910,19 +906,24 @@ class _PipeMetadataVisitor extends Object with RecursiveAstVisitor<Object> {
   }
 }
 
-List _readProviders(ListLiteral providerValues) {
-  return providerValues.elements.map((el) {
+List _readProviders(ListLiteral providerValues, {bool throwOnErrors}) {
+  bool hasError = false;
+  var providers = providerValues.elements.map((el) {
     if (el is PrefixedIdentifier || el is SimpleIdentifier) {
-      return _readIdentifier(el);
+      return _readIdentifier(el, throwOnErrors: throwOnErrors);
     } else if (el is InstanceCreationExpression &&
         (el.constructorName.toString() == "Provider" ||
             el.constructorName.toString() == "Binding")) {
       return _readProvider(el);
     } else {
-      throw new ArgumentError(
-          'Incorrect value. Expected a Provider or a String, but got "${el}".');
+      hasError = true;
+      if (throwOnErrors) {
+        throw new ArgumentError(
+            'Incorrect value. Expected a Provider or a String, but got "${el}".');
+      }
     }
   }).toList();
+  return hasError ? null : providers;
 }
 
 
@@ -930,37 +931,46 @@ CompileProviderMetadata _readProvider(InstanceCreationExpression el) {
   final token = el.argumentList.arguments.first;
 
   var useClass, useExisting, useValue, useFactory, deps, multi;
+  bool hasAnyValue = false;
   el.argumentList.arguments.skip(1).forEach((arg) {
     switch (arg.name.toString()) {
       case "useClass:":
         final id = _readIdentifier(arg.expression);
         useClass = new CompileTypeMetadata(prefix: id.prefix, name: id.name);
+        hasAnyValue = true;
         break;
       case "toClass:":
         final id = _readIdentifier(arg.expression);
         useClass = new CompileTypeMetadata(prefix: id.prefix, name: id.name);
+        hasAnyValue = true;
         break;
       case "useExisting:":
         useExisting = _readToken(arg.expression);
+        hasAnyValue = true;
         break;
       case "toAlias:":
         useExisting = _readToken(arg.expression);
+        hasAnyValue = true;
         break;
       case "useValue:":
         useValue = _readValue(arg.expression);
+        hasAnyValue = true;
         break;
       case "toValue:":
         useValue = _readValue(arg.expression);
+        hasAnyValue = true;
         break;
       case "useFactory:":
         final id = _readIdentifier(arg.expression);
         useFactory = new CompileFactoryMetadata(
             name: id.name, prefix: id.prefix);
+        hasAnyValue = true;
         break;
       case "toFactory:":
         final id = _readIdentifier(arg.expression);
         useFactory = new CompileFactoryMetadata(
             name: id.name, prefix: id.prefix);
+        hasAnyValue = true;
         break;
       case "deps:":
         deps = _readDeps(arg.expression);
@@ -970,6 +980,9 @@ CompileProviderMetadata _readProvider(InstanceCreationExpression el) {
         break;
     }
   });
+  if (!hasAnyValue) {
+    throw new ArgumentError('No "useClass", "useExisting", "useValue" or "useFactory" found in "${el}".');
+  }
   return new CompileProviderMetadata(
       token: _readToken(token),
       useClass: useClass,
@@ -1087,19 +1100,33 @@ bool _hasConst(List list, String name) => list
         m is InstanceCreationExpression && m.constructorName.toString() == name)
     .isNotEmpty;
 
-dynamic _readIdentifier(dynamic el) {
+dynamic _readIdentifier(dynamic el, {bool throwOnErrors: true}) {
+  var name;
+  var prefix;
   if (el is PrefixedIdentifier) {
-    final prefix = '${el.prefix}';
+    prefix = '${el.prefix}';
     if (prefix.length > 0 && prefix.toUpperCase()[0] == prefix[0]) {
       throw new ArgumentError('Incorrect identifier "${el}".');
-    } else {
-      return new CompileIdentifierMetadata(
-          name: '${el.identifier}', prefix: prefix);
     }
+    name = '${el.identifier}';
   } else if (el is SimpleIdentifier) {
-    return new CompileIdentifierMetadata(name: '$el');
+    name = '$el';
+  }
+  if (name == null) {
+    if (throwOnErrors) {
+      throw new ArgumentError('Incorrect identifier "${el}".');
+    } else {
+      return null;
+    }
+  } else if (name.startsWith('_')) {
+    if (throwOnErrors) {
+      throw new ArgumentError('Private identifier "${el}" not supported.');
+    } else {
+      return null;
+    }
   } else {
-    throw new ArgumentError('Incorrect identifier "${el}".');
+    return new CompileIdentifierMetadata(
+        name: name, prefix: prefix);
   }
 }
 

@@ -20,14 +20,14 @@ export function inspectNativeElement(element): DebugNode {
   return getDebugNode(element);
 }
 
-function _createConditionalRootRenderer(rootRenderer) {
+function createConditionalRootRenderer(rootRenderer): RootRenderer {
   if (assertionsEnabled()) {
-    return _createRootRenderer(rootRenderer);
+    return createRootRenderer(rootRenderer);
   }
   return rootRenderer;
 }
 
-function _createRootRenderer(rootRenderer) {
+function createRootRenderer(rootRenderer): RootRenderer {
   DOM.setGlobalVar(INSPECT_GLOBAL_NAME, inspectNativeElement);
   DOM.setGlobalVar(CORE_TOKENS_GLOBAL_NAME, CORE_TOKENS);
   return new DebugDomRootRenderer(rootRenderer);
@@ -38,8 +38,8 @@ function _createRootRenderer(rootRenderer) {
  */
 export const ELEMENT_PROBE_PROVIDERS: any[] = CONST_EXPR([
   new Provider(RootRenderer,
-               {useFactory: _createConditionalRootRenderer, deps: [DomRootRenderer]})
+               {useFactory: createConditionalRootRenderer, deps: [DomRootRenderer]})
 ]);
 
 export const ELEMENT_PROBE_PROVIDERS_PROD_MODE: any[] = CONST_EXPR(
-    [new Provider(RootRenderer, {useFactory: _createRootRenderer, deps: [DomRootRenderer]})]);
+    [new Provider(RootRenderer, {useFactory: createRootRenderer, deps: [DomRootRenderer]})]);

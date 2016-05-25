@@ -73,8 +73,8 @@ export const WORKER_RENDER_ROUTER: Array<any /*Type | Provider | any[]*/> =
 export const WORKER_RENDER_APPLICATION_COMMON: Array<any /*Type | Provider | any[]*/> = CONST_EXPR([
   APPLICATION_COMMON_PROVIDERS,
   WORKER_RENDER_MESSAGING_PROVIDERS,
-  new Provider(ExceptionHandler, {useFactory: _exceptionHandler, deps: []}),
-  new Provider(DOCUMENT, {useFactory: _document, deps: []}),
+  new Provider(ExceptionHandler, {useFactory: exceptionHandler, deps: []}),
+  new Provider(DOCUMENT, {useFactory: document, deps: []}),
   // TODO(jteplitz602): Investigate if we definitely need EVENT_MANAGER on the render thread
   // #5298
   new Provider(EVENT_MANAGER_PLUGINS, {useClass: DomEventsPlugin, multi: true}),
@@ -114,10 +114,10 @@ export function initWebWorkerRenderPlatform(): void {
   BrowserGetTestability.init();
 }
 
-function _exceptionHandler(): ExceptionHandler {
+function exceptionHandler(): ExceptionHandler {
   return new ExceptionHandler(DOM, !IS_DART);
 }
 
-function _document(): any {
+function document(): any {
   return DOM.defaultDoc();
 }

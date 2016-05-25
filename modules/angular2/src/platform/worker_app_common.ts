@@ -46,11 +46,11 @@ export const WORKER_APP_APPLICATION_COMMON: Array<any /*Type | Provider | any[]*
   new Provider(RootRenderer, {useExisting: WebWorkerRootRenderer}),
   new Provider(ON_WEB_WORKER, {useValue: true}),
   RenderStore,
-  new Provider(ExceptionHandler, {useFactory: _exceptionHandler, deps: []}),
+  new Provider(ExceptionHandler, {useFactory: exceptionHandler, deps: []}),
   WebWorkerXHRImpl,
   new Provider(XHR, {useExisting: WebWorkerXHRImpl})
 ]);
 
-function _exceptionHandler(): ExceptionHandler {
+function exceptionHandler(): ExceptionHandler {
   return new ExceptionHandler(new PrintLogger());
 }

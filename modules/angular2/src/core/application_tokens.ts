@@ -35,7 +35,7 @@ export const APP_COMPONENT: OpaqueToken = CONST_EXPR(new OpaqueToken('AppCompone
  */
 export const APP_ID: OpaqueToken = CONST_EXPR(new OpaqueToken('AppId'));
 
-function _appIdRandomProviderFactory() {
+function appIdRandomProviderFactory(): string {
   return `${_randomChar()}${_randomChar()}${_randomChar()}`;
 }
 
@@ -43,7 +43,7 @@ function _appIdRandomProviderFactory() {
  * Providers that will generate a random APP_ID_TOKEN.
  */
 export const APP_ID_RANDOM_PROVIDER: Provider =
-    CONST_EXPR(new Provider(APP_ID, {useFactory: _appIdRandomProviderFactory, deps: []}));
+    CONST_EXPR(new Provider(APP_ID, {useFactory: appIdRandomProviderFactory, deps: []}));
 
 function _randomChar(): string {
   return StringWrapper.fromCharCode(97 + Math.floor(Math.random() * 25));
