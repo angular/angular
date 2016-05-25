@@ -58,13 +58,13 @@ export const BROWSER_PROVIDERS: Array<any /*Type | Provider | any[]*/> = CONST_E
   new Provider(PLATFORM_INITIALIZER, {useValue: initDomAdapter, multi: true}),
 ]);
 
-function _exceptionHandler(): ExceptionHandler {
+function exceptionHandler(): ExceptionHandler {
   // !IS_DART is required because we must rethrow exceptions in JS,
   // but must not rethrow exceptions in Dart
   return new ExceptionHandler(DOM, !IS_DART);
 }
 
-function _document(): any {
+function document(): any {
   return DOM.defaultDoc();
 }
 
@@ -78,8 +78,8 @@ export const BROWSER_APP_COMMON_PROVIDERS: Array<any /*Type | Provider | any[]*/
   FORM_PROVIDERS,
   new Provider(PLATFORM_PIPES, {useValue: COMMON_PIPES, multi: true}),
   new Provider(PLATFORM_DIRECTIVES, {useValue: COMMON_DIRECTIVES, multi: true}),
-  new Provider(ExceptionHandler, {useFactory: _exceptionHandler, deps: []}),
-  new Provider(DOCUMENT, {useFactory: _document, deps: []}),
+  new Provider(ExceptionHandler, {useFactory: exceptionHandler, deps: []}),
+  new Provider(DOCUMENT, {useFactory: document, deps: []}),
   new Provider(EVENT_MANAGER_PLUGINS, {useClass: DomEventsPlugin, multi: true}),
   new Provider(EVENT_MANAGER_PLUGINS, {useClass: KeyEventsPlugin, multi: true}),
   new Provider(EVENT_MANAGER_PLUGINS, {useClass: HammerGesturesPlugin, multi: true}),
