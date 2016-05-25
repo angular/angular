@@ -27,6 +27,8 @@ import {CompilerConfig} from '../config';
 import {CompileBinding} from './compile_binding';
 import {Identifiers} from '../identifiers';
 
+import {CompiledAnimation} from '../animation/animation_compiler';
+
 export class CompileView implements NameResolver {
   public viewType: ViewType;
   public viewQueries: CompileTokenMap<CompileQuery[]>;
@@ -48,6 +50,7 @@ export class CompileView implements NameResolver {
   public afterContentLifecycleCallbacksMethod: CompileMethod;
   public afterViewLifecycleCallbacksMethod: CompileMethod;
   public destroyMethod: CompileMethod;
+  public detachMethod: CompileMethod;
   public eventHandlerMethods: o.ClassMethod[] = [];
 
   public fields: o.ClassField[] = [];
@@ -66,13 +69,17 @@ export class CompileView implements NameResolver {
   public literalArrayCount = 0;
   public literalMapCount = 0;
   public pipeCount = 0;
+  public animations = new Map<string, CompiledAnimation>();
 
   public componentContext: o.Expression;
 
   constructor(public component: CompileDirectiveMetadata, public genConfig: CompilerConfig,
-              public pipeMetas: CompilePipeMetadata[], public styles: o.Expression,
+              public pipeMetas: CompilePipeMetadata[],
+              public styles: o.Expression,
+              animations: CompiledAnimation[],
               public viewIndex: number, public declarationElement: CompileElement,
               public templateVariableBindings: string[][]) {
+    animations.forEach(entry => this.animations.set(entry.name, entry));
     this.createMethod = new CompileMethod(this);
     this.injectorGetMethod = new CompileMethod(this);
     this.updateContentQueriesMethod = new CompileMethod(this);
@@ -84,6 +91,7 @@ export class CompileView implements NameResolver {
     this.afterContentLifecycleCallbacksMethod = new CompileMethod(this);
     this.afterViewLifecycleCallbacksMethod = new CompileMethod(this);
     this.destroyMethod = new CompileMethod(this);
+    this.detachMethod = new CompileMethod(this);
 
     this.viewType = getViewType(component, viewIndex);
     this.className = `_View_${component.type.name}${viewIndex}`;

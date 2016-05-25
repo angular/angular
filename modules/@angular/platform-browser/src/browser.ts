@@ -19,7 +19,8 @@ import {
   ComponentRef
 } from "@angular/core";
 import {isBlank, isPresent} from "./facade/lang";
-import {wtfInit, SanitizationService, ReflectionCapabilities} from "../core_private";
+import {wtfInit, SanitizationService, ReflectionCapabilities, AnimationDriver, NoOpAnimationDriver} from '../core_private';
+import {WebAnimationsDriver} from '../src/dom/web_animations_driver';
 import {COMMON_DIRECTIVES, COMMON_PIPES, FORM_PROVIDERS, PlatformLocation} from "@angular/common";
 import {DomSanitizationService, DomSanitizationServiceImpl} from "./security/dom_sanitization_service";
 import {BrowserDomAdapter} from "./browser/browser_adapter";
@@ -33,8 +34,6 @@ import {KeyEventsPlugin} from "./dom/events/key_events";
 import {ELEMENT_PROBE_PROVIDERS} from "./dom/debug/ng_probe";
 import {DomEventsPlugin} from "./dom/events/dom_events";
 import {HAMMER_GESTURE_CONFIG, HammerGestureConfig, HammerGesturesPlugin} from "./dom/events/hammer_gestures";
-import {AnimationBuilder} from "./animate/animation_builder";
-import {BrowserDetails} from "./animate/browser_details";
 import {BrowserPlatformLocation} from "./browser/location/browser_platform_location";
 import {COMPILER_PROVIDERS, XHR} from "@angular/compiler";
 import {CachedXHR} from "./xhr/xhr_cache";
@@ -83,10 +82,9 @@ export const BROWSER_APP_PROVIDERS: Array<any /*Type | Provider | any[]*/> =
       {provide: DomRootRenderer, useClass: DomRootRenderer_},
       {provide: RootRenderer, useExisting: DomRootRenderer},
       {provide: SharedStylesHost, useExisting: DomSharedStylesHost},
+      {provide: AnimationDriver, useFactory: _resolveDefaultAnimationDriver},
       DomSharedStylesHost,
       Testability,
-      BrowserDetails,
-      AnimationBuilder,
       EventManager,
       ELEMENT_PROBE_PROVIDERS
     ];
@@ -197,4 +195,11 @@ function _exceptionHandler(): ExceptionHandler {
 
 function _document(): any {
   return getDOM().defaultDoc();
+}
+
+function _resolveDefaultAnimationDriver(): AnimationDriver {
+  if (getDOM().supportsWebAnimation()) {
+    return new WebAnimationsDriver();
+  }
+  return new NoOpAnimationDriver();
 }

@@ -2,7 +2,7 @@ import {Injectable, ViewMetadata, Type, BaseException} from '@angular/core';
 import {ViewResolver} from '../index';
 import {Map} from '../src/facade/collection';
 import {isPresent, stringify, isBlank, isArray} from '../src/facade/lang';
-import {resolveForwardRef} from '@angular/core';
+import {AnimationEntryMetadata, resolveForwardRef} from '@angular/core';
 
 @Injectable()
 export class MockViewResolver extends ViewResolver {
@@ -10,6 +10,8 @@ export class MockViewResolver extends ViewResolver {
   _views = new Map<Type, ViewMetadata>();
   /** @internal */
   _inlineTemplates = new Map<Type, string>();
+  /** @internal */
+  _animations = new Map<Type, AnimationEntryMetadata[]>();
   /** @internal */
   _viewCache = new Map<Type, ViewMetadata>();
   /** @internal */
@@ -24,13 +26,17 @@ export class MockViewResolver extends ViewResolver {
     this._checkOverrideable(component);
     this._views.set(component, view);
   }
-
   /**
    * Overrides the inline template for a component - other configuration remains unchanged.
    */
   setInlineTemplate(component: Type, template: string): void {
     this._checkOverrideable(component);
     this._inlineTemplates.set(component, template);
+  }
+
+  setAnimations(component: Type, animations: AnimationEntryMetadata[]): void {
+    this._checkOverrideable(component);
+    this._animations.set(component, animations);
   }
 
   /**
@@ -67,10 +73,26 @@ export class MockViewResolver extends ViewResolver {
     }
 
     var directives = [];
+    if (isPresent(view.directives)) {
+      flattenArray(view.directives, directives);
+    }
+    var animations = view.animations;
+    var templateUrl = view.templateUrl;
     var overrides = this._directiveOverrides.get(component);
 
+    var inlineAnimations = this._animations.get(component);
+    if (isPresent(inlineAnimations)) {
+      animations = inlineAnimations;
+    }
+
+    var inlineTemplate = this._inlineTemplates.get(component);
+    if (isPresent(inlineTemplate)) {
+      templateUrl = null;
+    } else {
+      inlineTemplate = view.template;
+    }
+
     if (isPresent(overrides) && isPresent(view.directives)) {
-      flattenArray(view.directives, directives);
       overrides.forEach((to, from) => {
         var srcIndex = directives.indexOf(from);
         if (srcIndex == -1) {
@@ -79,15 +101,18 @@ export class MockViewResolver extends ViewResolver {
         }
         directives[srcIndex] = to;
       });
-      view = new ViewMetadata(
-          {template: view.template, templateUrl: view.templateUrl, directives: directives});
     }
 
-    var inlineTemplate = this._inlineTemplates.get(component);
-    if (isPresent(inlineTemplate)) {
-      view = new ViewMetadata(
-          {template: inlineTemplate, templateUrl: null, directives: view.directives});
-    }
+    view = new ViewMetadata({
+      template: inlineTemplate,
+      templateUrl: templateUrl,
+      directives: directives.length > 0 ? directives : null,
+      animations: animations,
+      styles: view.styles,
+      styleUrls: view.styleUrls,
+      pipes: view.pipes,
+      encapsulation: view.encapsulation
+    });
 
     this._viewCache.set(component, view);
     return view;
@@ -112,6 +137,7 @@ export class MockViewResolver extends ViewResolver {
 }
 
 function flattenArray(tree: any[], out: Array<Type | any[]>): void {
+  if (!isPresent(tree)) return;
   for (var i = 0; i < tree.length; i++) {
     var item = resolveForwardRef(tree[i]);
     if (isArray(item)) {

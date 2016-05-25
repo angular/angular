@@ -1,13 +1,12 @@
 import {APP_ID, NgZone, PLATFORM_COMMON_PROVIDERS, PLATFORM_INITIALIZER} from '@angular/core';
 import {BROWSER_APP_PROVIDERS} from '../src/browser';
 import {BrowserDomAdapter} from '../src/browser/browser_adapter';
-import {AnimationBuilder} from '../src/animate/animation_builder';
-import {MockAnimationBuilder} from './animation_builder_mock';
 import {MockLocationStrategy} from '@angular/common/testing';
 import {LocationStrategy} from '@angular/common';
 import {BrowserDetection} from './browser_util';
 import {Log} from '@angular/core/testing';
 import {ELEMENT_PROBE_PROVIDERS} from '../src/dom/debug/ng_probe';
+import {AnimationDriver, NoOpAnimationDriver} from '../core_private';
 
 /**
  * Default platform providers for testing without a compiler.
@@ -25,7 +24,7 @@ export const ADDITIONAL_TEST_BROWSER_STATIC_PROVIDERS: Array<any /*Type | Provid
       Log,
       {provide: NgZone, useFactory: createNgZone},
       {provide: LocationStrategy, useClass: MockLocationStrategy},
-      {provide: AnimationBuilder, useClass: MockAnimationBuilder}
+      {provide: AnimationDriver, useClass: NoOpAnimationDriver}
     ];
 
 /**

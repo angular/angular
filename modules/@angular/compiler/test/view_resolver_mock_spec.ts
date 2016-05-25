@@ -30,7 +30,6 @@ export function main() {
         var view = viewResolver.resolve(SomeComponent);
         expect(view.template).toEqual('overridden template');
         expect(isBlank(view.directives)).toBe(true);
-
       });
 
       it('should not allow overriding a view after it has been resolved', () => {
