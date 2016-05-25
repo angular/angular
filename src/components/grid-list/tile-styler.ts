@@ -1,7 +1,6 @@
 import {MdGridTile} from './grid-tile';
 import {TileCoordinator} from './tile-coordinator';
 import {MdGridListBadRatioError} from './grid-list-errors';
-import {Dir} from '@angular2-material/core/rtl/dir';
 
 /* Sets the style properties for an individual tile, given the position calculated by the
 * Tile Coordinator. */
@@ -10,18 +9,18 @@ export class TileStyler {
   _rows: number = 0;
   _rowspan: number = 0;
   _cols: number;
-  _dir: Dir;
+  _direction: string;
 
   /** Adds grid-list layout info once it is available. Cannot be processed in the constructor
    * because these properties haven't been calculated by that point.
    * @internal
    * */
-  init(_gutterSize: string, tracker: TileCoordinator, cols: number, dir: Dir): void {
+  init(_gutterSize: string, tracker: TileCoordinator, cols: number, direction: string): void {
     this._gutterSize = normalizeUnits(_gutterSize);
     this._rows = tracker.rowCount;
     this._rowspan = tracker.rowspan;
     this._cols = cols;
-    this._dir = dir;
+    this._direction = direction;
   }
 
   /**
@@ -93,7 +92,7 @@ export class TileStyler {
 
     // The width and horizontal position of each tile is always calculated the same way, but the
     // height and vertical position depends on the rowMode.
-    let side = this._dir.value === 'ltr' ? 'left' : 'right';
+    let side = this._direction === 'ltr' ? 'left' : 'right';
     tile.setStyle(side, this.getTilePosition(baseTileWidth, colIndex));
     tile.setStyle('width', calc(this.getTileSize(baseTileWidth, tile.colspan)));
   }
@@ -119,8 +118,8 @@ export class FixedTileStyler extends TileStyler {
   constructor(public fixedRowHeight: string) { super(); }
 
   /** @internal */
-  init(gutterSize: string, tracker: TileCoordinator, cols: number, dir: Dir) {
-    super.init(gutterSize, tracker, cols, dir);
+  init(gutterSize: string, tracker: TileCoordinator, cols: number, direction: string) {
+    super.init(gutterSize, tracker, cols, direction);
     this.fixedRowHeight = normalizeUnits(this.fixedRowHeight);
   }
 
