@@ -197,12 +197,11 @@ describe('MdRadio', () => {
 
     it('should deselect all of the checkboxes when the group value is cleared', () => {
       radioInstances[0].checked = true;
-      fixture.detectChanges();
 
       expect(groupInstance.value).toBeTruthy();
 
       groupInstance.value = null;
-      fixture.detectChanges();
+
       expect(radioInstances.every(radio => !radio.checked)).toBe(true);
     });
   });
@@ -235,6 +234,31 @@ describe('MdRadio', () => {
         radioInstances = radioDebugElements.map(debugEl => debugEl.componentInstance);
       });
     }));
+
+    it('should set individual radio names based on the group name', () => {
+      expect(groupInstance.name).toBeTruthy();
+      for (let radio of radioInstances) {
+        expect(radio.name).toBe(groupInstance.name);
+      }
+
+      groupInstance.name = 'new name';
+      for (let radio of radioInstances) {
+        expect(radio.name).toBe(groupInstance.name);
+      }
+    });
+
+    it('should check the corresponding radio button on group value change', () => {
+      expect(groupInstance.value).toBeFalsy();
+      for (let radio of radioInstances) {
+        expect(radio.checked).toBeFalsy();
+      }
+
+      groupInstance.value = 'vanilla';
+      for (let radio of radioInstances) {
+        expect(radio.checked).toBe(groupInstance.value === radio.value);
+      }
+      expect(groupInstance.selected.value).toBe(groupInstance.value);
+    });
 
     it('should have the correct ngControl state initially and after interaction', fakeAsync(() => {
       // The control should start off valid, pristine, and untouched.
@@ -333,7 +357,7 @@ describe('MdRadio', () => {
 @Component({
   directives: [MD_RADIO_DIRECTIVES],
   template: `
-  <md-radio-group [disabled]="isGroupDisabled" [value]="groupValue">
+  <md-radio-group [disabled]="isGroupDisabled" [value]="groupValue" name="test-name">
     <md-radio-button value="fire">Charmander</md-radio-button>
     <md-radio-button value="water">Squirtle</md-radio-button>
     <md-radio-button value="leaf">Bulbasaur</md-radio-button>
@@ -365,21 +389,26 @@ class StandaloneRadioButtons { }
   directives: [MD_RADIO_DIRECTIVES, FORM_DIRECTIVES],
   template: `
   <md-radio-group [(ngModel)]="modelValue">
-    <md-radio-button value="vanilla">Vanilla</md-radio-button>
-    <md-radio-button value="chocolate">Chocolate</md-radio-button>
-    <md-radio-button value="strawberry">Strawberry</md-radio-button>
+    <md-radio-button *ngFor="let option of options" [value]="option.value">
+      {{option.label}}
+    </md-radio-button>
   </md-radio-group>
   `
 })
 class RadioGroupWithNgModel {
   modelValue: string;
+  options = [
+    {label: 'Vanilla', value: 'vanilla'},
+    {label: 'Chocolate', value: 'chocolate'},
+    {label: 'Strawberry', value: 'strawberry'},
+  ];
 }
 
 // TODO(jelbourn): remove eveything below when Angular supports faking events.
 
 
 /**
- * Dispatches a focus change event from an element. 
+ * Dispatches a focus change event from an element.
  * @param eventName Name of the event, either 'focus' or 'blur'.
  * @param element The element from which the event will be dispatched.
  */

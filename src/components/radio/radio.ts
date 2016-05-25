@@ -69,7 +69,7 @@ export class MdRadioGroup implements AfterContentInit, ControlValueAccessor {
   private _value: any = null;
 
   /** The HTML name attribute applied to radio buttons in this group. */
-  private _name: string = null;
+  private _name: string = `md-radio-group-${_uniqueIdCounter++}`;
 
   /** Disables all individual radio buttons assigned to this group. */
   private _disabled: boolean = false;
@@ -101,14 +101,7 @@ export class MdRadioGroup implements AfterContentInit, ControlValueAccessor {
 
   set name(value: string) {
     this._name = value;
-    this._updateChildRadioNames();
-  }
-
-  /** Propagate name attribute to radio buttons. */
-  private _updateChildRadioNames(): void {
-    (this._radios || []).forEach(radio => {
-      radio.name = this._name;
-    });
+    this._updateRadioButtonNames();
   }
 
   @Input()
@@ -160,10 +153,6 @@ export class MdRadioGroup implements AfterContentInit, ControlValueAccessor {
    * @internal
    */
   ngAfterContentInit() {
-    if (!this._name) {
-      this.name = `md-radio-group-${_uniqueIdCounter++}`;
-    }
-
     // Mark this component as initialized in AfterContentInit because the initial value can
     // possibly be set by NgModel on MdRadioGroup, and it is possible that the OnInit of the
     // NgModel occurs *after* the OnInit of the MdRadioGroup.
@@ -181,9 +170,15 @@ export class MdRadioGroup implements AfterContentInit, ControlValueAccessor {
     }
   }
 
+  private _updateRadioButtonNames(): void {
+    (this._radios || []).forEach(radio => {
+      radio.name = this.name;
+    });
+  }
+
   /** Updates the `selected` radio button from the internal _value state. */
   private _updateSelectedRadioFromValue(): void {
-    // If the value already matches the selected radio, no dothing.
+    // If the value already matches the selected radio, do nothing.
     let isAlreadySelected = this._selected != null && this._selected.value == this._value;
 
     if (this._radios != null && !isAlreadySelected) {
@@ -192,8 +187,8 @@ export class MdRadioGroup implements AfterContentInit, ControlValueAccessor {
       if (matchingRadio) {
         this.selected = matchingRadio;
       } else if (this.value == null) {
-          this.selected = null;
-          this._radios.forEach(radio => { radio.checked = false; });
+        this.selected = null;
+        this._radios.forEach(radio => { radio.checked = false; });
       }
     }
   }
@@ -206,7 +201,7 @@ export class MdRadioGroup implements AfterContentInit, ControlValueAccessor {
     this.change.emit(event);
   }
 
-   /** 
+  /**
     * Implemented as part of ControlValueAccessor.
     * @internal
     */
@@ -258,7 +253,7 @@ export class MdRadioButton implements OnInit {
   /** The unique ID for the radio button. */
   @HostBinding('id')
   @Input()
-  id: string;
+  id: string = `md-radio-${_uniqueIdCounter++}`;
 
   /** Analog to HTML 'name' attribute used to group radios for unique selection. */
   @Input()
@@ -345,15 +340,11 @@ export class MdRadioButton implements OnInit {
 
   /** @internal */
   ngOnInit() {
-    // All radio buttons must have a unique id.
-    if (!this.id) {
-      this.id = `md-radio-${_uniqueIdCounter++}`;
-    }
-
-    // If the radio is inside of a radio group and it matches that group's value upon
-    // initialization, start off as checked.
-    if (this.radioGroup && this.radioGroup.value === this._value) {
-      this.checked = true;
+    if (this.radioGroup) {
+      // If the radio is inside a radio group, determine if it should be checked
+      this.checked = this.radioGroup.value === this._value;
+      // Copy name from parent radio group
+      this.name = this.radioGroup.name;
     }
   }
 
