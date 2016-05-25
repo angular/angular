@@ -1,6 +1,3 @@
-/// <reference path="broccoli.d.ts" />
-/// <reference path="../typings/node/node.d.ts" />
-
 import fs = require('fs');
 let symlinkOrCopy = require('symlink-or-copy');
 
@@ -40,6 +37,6 @@ class TreeStabilizer implements BroccoliTree {
 }
 
 
-export default function stabilizeTree(inputTree) {
+export default function stabilizeTree(inputTree: BroccoliTree): BroccoliTree {
   return new TreeStabilizer(inputTree);
 }

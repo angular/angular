@@ -16,7 +16,7 @@ import 'package:barback/barback.dart';
 ///
 /// For example, if entry_point.dart imports dependency.dart, this will check if
 /// dependency.ng_meta.json exists. If it does, we add an entry to the
-/// `depImports` of [NgDepsModel] for dependency.template.dart.
+/// `depImports` of [NgDepsModel] for dependency.ngfactory.dart.
 ///
 /// We use this information later to ensure that each file's dependencies are
 /// initialized when that file is initialized.
@@ -64,20 +64,20 @@ Future<Map<String, String>> _processNgImports(NgDepsModel model,
   return Future
       .wait(
           importsAndExports.where(_isNotDartDirective).map((dynamic directive) {
-    // Check whether the import or export generated summary NgMeta information.
-    final summaryJsonUri =
-        resolver.resolve(assetUri, toSummaryExtension(directive.uri));
-    return reader.hasInput(fromUri(summaryJsonUri)).then((hasInput) {
-      if (hasInput) {
-        retVal[directive.uri] = summaryJsonUri;
-      }
-    }, onError: (err, stack) {
-      log.warning(
-          'Error while looking for $summaryJsonUri. '
-          'Message: $err\n'
-          'Stack: $stack',
-          asset: assetId);
-    });
-  }))
+        // Check whether the import or export generated summary NgMeta information.
+        final summaryJsonUri =
+            resolver.resolve(assetUri, toSummaryExtension(directive.uri));
+        return reader.hasInput(fromUri(summaryJsonUri)).then((hasInput) {
+          if (hasInput) {
+            retVal[directive.uri] = summaryJsonUri;
+          }
+        }, onError: (err, stack) {
+          log.warning(
+              'Error while looking for $summaryJsonUri. '
+              'Message: $err\n'
+              'Stack: $stack',
+              asset: assetId);
+        });
+      }))
       .then((_) => retVal);
 }

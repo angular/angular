@@ -1,7 +1,6 @@
-import {verifyNoBrowserErrors} from "angular2/src/testing/e2e_util";
-import {PromiseWrapper} from "angular2/src/facade/async";
+import {verifyNoBrowserErrors} from '@angular/platform-browser/testing_e2e';
 
-var URL = 'playground/src/web_workers/message_broker/index.html';
+var URL = 'all/playground/src/web_workers/message_broker/index.html';
 
 describe("MessageBroker", function() {
 

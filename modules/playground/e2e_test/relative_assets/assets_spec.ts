@@ -1,5 +1,4 @@
-import {verifyNoBrowserErrors} from 'angular2/src/testing/e2e_util';
-import {Promise} from 'angular2/src/facade/async';
+import {verifyNoBrowserErrors} from '@angular/platform-browser/testing_e2e';
 
 function waitForElement(selector) {
   var EC = (<any>protractor).ExpectedConditions;
@@ -11,7 +10,7 @@ describe('relative assets relative-app', () => {
 
   afterEach(verifyNoBrowserErrors);
 
-  var URL = 'playground/src/relative_assets/';
+  var URL = 'all/playground/src/relative_assets/';
 
   it('should load in the templateUrl relative to the my-cmp component', () => {
     browser.get(URL);

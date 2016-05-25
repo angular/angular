@@ -2,22 +2,26 @@ var broccoli = require('broccoli');
 var fs = require('fs');
 var makeBrowserTree = require('./trees/browser_tree');
 var makeNodeTree = require('./trees/node_tree');
-var makeDartTree = require('./trees/dart_tree');
 var path = require('path');
 var printSlowTrees = require('broccoli-slow-trees');
 var Q = require('q');
 
-type ProjectMap = {
+export type ProjectMap = {
   [key: string]: boolean
 };
 
-type Options = {
+export type Options = {
   projects: ProjectMap;
-noTypeChecks: boolean;
-generateEs6: boolean;
-useBundles: boolean;
+  noTypeChecks: boolean;
+  generateEs6: boolean;
+  useBundles: boolean;
+};
+
+export interface AngularBuilderOptions {
+  outputPath: string;
+  dartSDK?: any;
+  logs?: any;
 }
-;
 
 /**
  * BroccoliBuilder facade for all of our build pipelines.
@@ -111,13 +115,15 @@ export class AngularBuilder {
       logs: this.options.logs,
       projects: projects
     };
+    // Workaround for https://github.com/dart-lang/dart_style/issues/493
+    var makeDartTree = require('./trees/dart_tree');
     let tree = makeDartTree(options);
     return new broccoli.Builder(tree);
   }
 
 
-  private rebuild(builder, name) {
-    return builder.build().then(
+  private rebuild(builder: BroccoliBuilder, name: string): Promise<BuildResult> {
+    return builder.build().then<BuildResult>(
         (result) => {
           if (!this.firstResult) {
             this.firstResult = result;
@@ -125,8 +131,9 @@ export class AngularBuilder {
 
           printSlowTrees(result.graph);
           writeBuildLog(result, name);
+          return result;
         },
-        (error) => {
+        (error): any => {
           // the build tree is the same during rebuilds, only leaf properties of the nodes change
           // so let's traverse it and get updated values for input/cache/output paths
           if (this.firstResult) {
@@ -149,10 +156,10 @@ function writeBuildLog(result: BuildResult, name: string) {
 }
 
 
-function broccoliNodeToBuildNode(broccoliNode) {
+function broccoliNodeToBuildNode(broccoliNode: BroccoliNode): BuildNode {
   let tree = broccoliNode.tree.newStyleTree || broccoliNode.tree;
 
-  return new BuildNode(tree.description || tree.constructor.name,
+  return new BuildNode(tree.description || (<any>tree.constructor).name,
                        tree.inputPath ? [tree.inputPath] : tree.inputPaths, tree.cachePath,
                        tree.outputPath, broccoliNode.selfTime / (1000 * 1000 * 1000),
                        broccoliNode.totalTime / (1000 * 1000 * 1000),
@@ -163,5 +170,5 @@ function broccoliNodeToBuildNode(broccoliNode) {
 class BuildNode {
   constructor(public pluginName: string, public inputPaths: string[], public cachePath: string,
               public outputPath: string, public selfTime: number, public totalTime: number,
-              public inputNodes: BroccoliNode[]) {}
+              public inputNodes: BuildNode[]) {}
 }

@@ -18,12 +18,7 @@ function checkNodeModules(logOutput, purgeIfStale) {
     if (logOutput) console.error(':-( npm dependencies are stale or in an in unknown state!');
     if (purgeIfStale) {
       if (logOutput) console.log('    purging...');
-
-      var nodeModulesPath = path.join(PROJECT_ROOT, 'node_modules');
-
-      if (fs.existsSync(nodeModulesPath)) {
-        _deleteDir(nodeModulesPath);
-      }
+      _deleteDir(path.join(PROJECT_ROOT, 'node_modules'));
     }
   }
 

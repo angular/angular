@@ -1,7 +1,6 @@
-import {bootstrap} from 'angular2/bootstrap';
-
-import {Renderer, ElementRef, Component, Directive, Injectable} from 'angular2/core';
-import {MyCmp} from './my_cmp/my_cmp';
+import {bootstrap} from '@angular/platform-browser';
+import {Component} from '@angular/core';
+import {MyCmp} from './app/my_cmp';
 
 export function main() {
   bootstrap(RelativeApp);

@@ -9,16 +9,16 @@ import {
   inject,
   it,
   xit,
-} from 'angular2/testing_internal';
+} from '@angular/testing/testing_internal';
 
-import {PromiseWrapper} from 'angular2/src/facade/async';
-import {Json, isBlank} from 'angular2/src/facade/lang';
+import {PromiseWrapper} from '@angular/facade';
+import {Json, isBlank} from '@angular/facade';
 
 import {
   WebDriverExtension,
   ChromeDriverExtension,
   WebDriverAdapter,
-  Injector,
+  ReflectiveInjector,
   bind,
   provide,
   Options
@@ -49,7 +49,7 @@ export function main() {
     var normEvents = new TraceEventFactory('timeline', 'pid0');
 
     function createExtension(perfRecords = null, userAgent = null,
-                             messageMethod = 'Tracing.dataCollected') {
+                             messageMethod = 'Tracing.dataCollected'): WebDriverExtension {
       if (isBlank(perfRecords)) {
         perfRecords = [];
       }
@@ -57,13 +57,14 @@ export function main() {
         userAgent = CHROME44_USER_AGENT;
       }
       log = [];
-      extension = Injector.resolveAndCreate([
-                            ChromeDriverExtension.BINDINGS,
-                            bind(WebDriverAdapter)
-                                .toValue(new MockDriverAdapter(log, perfRecords, messageMethod)),
-                            bind(Options.USER_AGENT).toValue(userAgent)
-                          ])
-                      .get(ChromeDriverExtension);
+      extension =
+          ReflectiveInjector.resolveAndCreate([
+                              ChromeDriverExtension.PROVIDERS,
+                              provide(WebDriverAdapter)
+                                  .toValue(new MockDriverAdapter(log, perfRecords, messageMethod)),
+                              provide(Options.USER_AGENT).toValue(userAgent)
+                            ])
+              .get(ChromeDriverExtension);
       return extension;
     }
 
@@ -85,7 +86,7 @@ export function main() {
 
     it('should mark the timeline via console.timeEnd()', inject([AsyncTestCompleter], (async) => {
          createExtension()
-             .timeEnd('someName')
+             .timeEnd('someName', null)
              .then((_) => {
                expect(log).toEqual([['executeScript', `console.timeEnd('someName');`]]);
                async.done();
@@ -467,7 +468,7 @@ export function main() {
                    benchmarkEvents.instant('BenchmarkInstrumentation::ImplThreadRenderingStats',
                                            1100, {'data': {'frame_count': 2}})
                  ]).readPerfLog(),
-                 (err) => {
+                 (err): any => {
                    expect(() => { throw err; })
                        .toThrowError('multi-frame render stats not supported');
                    async.done();
@@ -502,7 +503,7 @@ export function main() {
                    ],
                    CHROME45_USER_AGENT, 'Tracing.bufferUsage')
                    .readPerfLog(),
-               (err) => {
+               (err): any => {
                  expect(() => { throw err; })
                      .toThrowError('The DevTools trace buffer filled during the test!');
                  async.done();

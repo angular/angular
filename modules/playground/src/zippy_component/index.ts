@@ -1,15 +1,15 @@
-import {bootstrap} from 'angular2/bootstrap';
-import {Component, View} from 'angular2/core';
-import {Zippy} from './zippy';
+import {bootstrap} from '@angular/platform-browser';
+import {Component} from '@angular/core';
+import {Zippy} from './app/zippy';
 
-@Component({selector: 'zippy-app'})
-@View({
+@Component({
+  selector: 'zippy-app',
   template: `
     <zippy (open)="pushLog('open')" (close)="pushLog('close')" title="Details">
       This is some content.
     </zippy>
     <ul>
-      <li *ngFor="var log of logs">{{log}}</li>
+      <li *ngFor="let  log of logs">{{log}}</li>
     </ul>
   `,
   directives: [Zippy]

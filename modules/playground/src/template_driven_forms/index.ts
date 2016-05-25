@@ -1,5 +1,5 @@
-import {bootstrap} from 'angular2/bootstrap';
-import {Component, Directive, View, Host, forwardRef, Provider} from 'angular2/core';
+import {bootstrap} from '@angular/platform-browser';
+import {Component, Directive, Host} from '@angular/core';
 import {
   ControlGroup,
   NgIf,
@@ -9,9 +9,9 @@ import {
   NgControl,
   Validators,
   NgForm
-} from 'angular2/common';
+} from '@angular/common';
 
-import {RegExpWrapper, print, isPresent, CONST_EXPR} from 'angular2/src/facade/lang';
+import {RegExpWrapper, print, isPresent} from '@angular/core/src/facade/lang';
 
 /**
  * A domain model we are binding the form controls to.
@@ -39,8 +39,11 @@ function creditCardValidator(c): {[key: string]: boolean} {
   }
 }
 
-const creditCardValidatorBinding =
-    CONST_EXPR(new Provider(NG_VALIDATORS, {useValue: creditCardValidator, multi: true}));
+const creditCardValidatorBinding = /** @ts2dart_const */ /** @ts2dart_Provider */ {
+  provide: NG_VALIDATORS,
+  useValue: creditCardValidator,
+  multi: true
+};
 
 @Directive({selector: '[credit-card]', providers: [creditCardValidatorBinding]})
 class CreditCardValidator {
@@ -61,8 +64,9 @@ class CreditCardValidator {
  * actual error message.
  * To make it simple, we are using a simple map here.
  */
-@Component({selector: 'show-error', inputs: ['controlPath: control', 'errorTypes: errors']})
-@View({
+@Component({
+  selector: 'show-error',
+  inputs: ['controlPath: control', 'errorTypes: errors'],
   template: `
     <span *ngIf="errorMessage !== null">{{errorMessage}}</span>
   `,
@@ -95,8 +99,8 @@ class ShowError {
 }
 
 
-@Component({selector: 'template-driven-forms'})
-@View({
+@Component({
+  selector: 'template-driven-forms',
   template: `
     <h1>Checkout Form</h1>
 
@@ -121,7 +125,7 @@ class ShowError {
       <p>
         <label for="country">Country</label>
         <select id="country" ngControl="country" [(ngModel)]="model.country">
-          <option *ngFor="#c of countries" [value]="c">{{c}}</option>
+          <option *ngFor="let c of countries" [value]="c">{{c}}</option>
         </select>
       </p>
 

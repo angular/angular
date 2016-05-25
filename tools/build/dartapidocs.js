@@ -11,8 +11,6 @@ module.exports = function(gulp, plugins, config) {
 
     var supportedModules = [
       'dist/dart/angular2',
-      // TODO: blocked by https://github.com/angular/angular/issues/3518
-      // 'dist/dart/angular2_material',
       'dist/dart/benchpress'
     ];
 
@@ -21,7 +19,7 @@ module.exports = function(gulp, plugins, config) {
     } else {
       console.log('INFO: running dartdoc for ', dir);
 
-      var stream = spawn(config.command, ['--input=.', '--output=' + config.output],
+      var stream = spawn(config.command, ['--output=' + config.output],
                          {stdio: [process.stdin, process.stdout, process.stderr], cwd: dir});
 
       stream.on('exit', function(code) {

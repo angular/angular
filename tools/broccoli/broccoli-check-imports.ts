@@ -12,12 +12,13 @@ class CheckImports implements DiffingBroccoliPlugin {
   static IMPORT_DECL_REGEXP = new RegExp(`^import[^;]+;`, "mg");
   static IMPORT_PATH_REGEXP = new RegExp(`['"]([^'"]+)+['"]`, "m");
 
-  static ALLOWED_IMPORTS = {
+  static ALLOWED_IMPORTS: {[s: string]: string[]} = {
     "angular2/src/core": ["angular2/src/facade"],
     "angular2/src/facade": ["rxjs"],
     "angular2/src/common": ["angular2/core", "angular2/src/facade"],
     "angular2/src/http": ["angular2/core", "angular2/src/facade", "rxjs"],
-    "angular2/src/upgrade": ["angular2/core", "angular2/src/facade", "angular2/platform/browser"]
+    "angular2/src/upgrade":
+        ["angular2/core", "angular2/src/facade", "angular2/platform/browser", "angular2/compiler"]
     //"angular2/src/render": [
     //  "angular2/animate",
     //  "angular2/core",
@@ -27,7 +28,7 @@ class CheckImports implements DiffingBroccoliPlugin {
 
   private initRun = true;
 
-  constructor(private inputPath, private cachePath, private options) {}
+  constructor(private inputPath: string, private cachePath: string, private options: number) {}
 
   rebuild(treeDiff: DiffResult) {
     const errors = this.checkAllPaths(treeDiff);

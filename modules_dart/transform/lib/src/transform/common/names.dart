@@ -14,15 +14,12 @@ const REFLECTION_CAPABILITIES_NAME = 'ReflectionCapabilities';
 const REFLECTOR_IMPORT = 'package:angular2/src/core/reflection/reflection.dart';
 const REFLECTOR_PREFIX = '_ngRef';
 const REGISTER_TYPE_METHOD_NAME = 'registerType';
-const REGISTER_GETTERS_METHOD_NAME = 'registerGetters';
-const REGISTER_SETTERS_METHOD_NAME = 'registerSetters';
-const REGISTER_METHODS_METHOD_NAME = 'registerMethods';
 const SUMMARY_META_EXTENSION = '.ng_summary.json';
-const TEMPLATE_EXTENSION = '.template.dart';
+const TEMPLATE_EXTENSION = '.ngfactory.dart';
 
 /// Note that due to the implementation of `_toExtension`, ordering is
 /// important. For example, putting '.dart' first in this list will cause
-/// incorrect behavior because it will (incompletely) match '.template.dart'
+/// incorrect behavior because it will (incompletely) match '.ngfactory.dart'
 /// files.
 const ALL_EXTENSIONS = const [
   DEFERRED_EXTENSION,

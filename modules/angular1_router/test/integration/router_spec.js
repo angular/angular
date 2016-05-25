@@ -2,30 +2,14 @@
 
 describe('router', function () {
 
-  var elt,
-      $compile,
-      $rootScope,
-      $router,
-      $compileProvider;
-
+  var elt, testMod;
   beforeEach(function () {
-    module('ng');
-    module('ngComponentRouter');
-    module(function($provide) {
-      $provide.value('$routerRootComponent', 'app');
-    });
-    module(function (_$compileProvider_) {
-      $compileProvider = _$compileProvider_;
-    });
-
-    inject(function (_$compile_, _$rootScope_, _$router_) {
-      $compile = _$compile_;
-      $rootScope = _$rootScope_;
-      $router = _$router_;
-    });
+    testMod = angular.module('testMod', ['ngComponentRouter'])
+      .value('$routerRootComponent', 'app');
   });
 
-  it('should work with a provided root component', inject(function($location) {
+  it('should work with a provided root component', function() {
+
     registerComponent('homeCmp', {
       template: 'Home'
     });
@@ -37,20 +21,23 @@ describe('router', function () {
       ]
     });
 
-    compile('<app></app>');
+    module('testMod');
+    compileApp();
 
-    $location.path('/');
-    $rootScope.$digest();
-    expect(elt.text()).toBe('Home');
-  }));
+    inject(function($location, $rootScope) {
+      $location.path('/');
+      $rootScope.$digest();
+      expect(elt.text()).toBe('Home');
+    });
+  });
 
-  it('should bind the component to the current router', inject(function($location) {
+  it('should bind the component to the current router', function() {
     var router;
     registerComponent('homeCmp', {
-      bindings: { router: '=' },
+      providers: { $router: '=' },
       controller: function($scope, $element) {
         this.$routerOnActivate = function() {
-          router = this.router;
+          router = this.$router;
         };
       },
       template: 'Home'
@@ -63,64 +50,146 @@ describe('router', function () {
       ]
     });
 
-    compile('<app></app>');
+    module('testMod');
+    compileApp();
 
-    $location.path('/');
-    $rootScope.$digest();
-    var homeElement = elt.find('home-cmp');
-    expect(homeElement.text()).toBe('Home');
-    expect(homeElement.isolateScope().$ctrl.router).toBeDefined();
-    expect(router).toBeDefined();
-  }));
+    inject(function($location, $rootScope) {
+      $location.path('/');
+      $rootScope.$digest();
+      var homeElement = elt.find('home-cmp');
+      expect(homeElement.text()).toBe('Home');
+      expect(homeElement.isolateScope().$ctrl.$router).toBeDefined();
+      expect(router).toBeDefined();
+    })
+  });
 
-  it('should work when an async route is provided route data', inject(function($location, $q) {
-    registerDirective('homeCmp', {
-      template: 'Home ({{homeCmp.isAdmin}})',
+  it('should work when an async route is provided route data', function() {
+    registerComponent('homeCmp', {
+      template: 'Home ({{$ctrl.isAdmin}})',
       $routerOnActivate: function(next, prev) {
         this.isAdmin = next.routeData.data.isAdmin;
       }
     });
 
-    registerDirective('app', {
+    registerComponent('app', {
       template: '<div ng-outlet></div>',
       $routeConfig: [
-        { path: '/', loader: function() { return $q.when('homeCmp'); }, data: { isAdmin: true } }
+        { path: '/', loader: function($q) { return $q.when('homeCmp'); }, data: { isAdmin: true } }
       ]
     });
 
-    compile('<app></app>');
+    module('testMod');
+    compileApp();
 
-    $location.path('/');
-    $rootScope.$digest();
-    expect(elt.text()).toBe('Home (true)');
-  }));
+    inject(function($location, $rootScope) {
+      $location.path('/');
+      $rootScope.$digest();
+      expect(elt.text()).toBe('Home (true)');
+    });
+  });
 
-  function registerDirective(name, options) {
-    function factory() {
-      return {
-        template: options.template || '',
-        controllerAs: name,
-        controller: getController(options)
-      };
-    }
-    applyStaticProperties(factory, options);
-    $compileProvider.directive(name, factory);
-  }
+  it('should work with a templateUrl component', function() {
+
+    var $routerOnActivate = jasmine.createSpy('$routerOnActivate');
+
+    registerComponent('homeCmp', {
+      templateUrl: 'homeCmp.html',
+      $routerOnActivate: $routerOnActivate
+    });
+
+    registerComponent('app', {
+      template: '<div ng-outlet></div>',
+      $routeConfig: [
+        { path: '/', component: 'homeCmp' }
+      ]
+    });
+
+    module('testMod');
+
+    inject(function($location, $rootScope, $httpBackend) {
+
+      $httpBackend.expectGET('homeCmp.html').respond('Home');
+
+      compileApp();
+
+      $location.path('/');
+      $rootScope.$digest();
+      $httpBackend.flush();
+      var homeElement = elt.find('home-cmp');
+      expect(homeElement.text()).toBe('Home');
+      expect($routerOnActivate).toHaveBeenCalled();
+    })
+  });
+
+  it('should provide the current instruction', function() {
+    registerComponent('homeCmp', {
+      template: 'Home ({{homeCmp.isAdmin}})'
+    });
+
+    registerComponent('app', {
+      template: '<div ng-outlet></div>',
+      $routeConfig: [
+        { path: '/', component: 'homeCmp', name: 'Home' }
+      ]
+    });
+
+    module('testMod');
+
+    inject(function($rootScope, $rootRouter, $location) {
+      compileApp();
+
+      $location.path('/');
+      $rootScope.$digest();
+      var instruction = $rootRouter.generate(['/Home']);
+      expect($rootRouter.currentInstruction).toEqual(instruction);
+    });
+  });
+
+  it('should provide the root level router', function() {
+    registerComponent('homeCmp', {
+      template: 'Home ({{homeCmp.isAdmin}})',
+      providers: {
+        $router: '<'
+      }
+    });
+
+    registerComponent('app', {
+      template: '<div ng-outlet></div>',
+      $routeConfig: [
+        { path: '/', component: 'homeCmp', name: 'Home' }
+      ]
+    });
+
+    module('testMod');
+
+    inject(function($rootScope, $rootRouter, $location) {
+      compileApp();
+
+      $location.path('/');
+      $rootScope.$digest();
+      var homeElement = elt.find('home-cmp');
+      expect(homeElement.isolateScope().$ctrl.$router.root).toEqual($rootRouter);
+    });
+  });
 
   function registerComponent(name, options) {
 
     var definition = {
-      bindings: options.bindings,
-      template: options.template || '',
-      controller: getController(options),
-    }
-    applyStaticProperties(definition, options);
-    $compileProvider.component(name, definition);
+      providers: options.providers,
+      controller: getController(options)
+    };
+    if (options.template) definition.template = options.template;
+    if (options.templateUrl) definition.templateUrl = options.templateUrl;
+
+    applyStaticProperties(definition.controller, options);
+    angular.module('testMod').component(name, definition);
   }
 
-  function compile(template) {
-    elt = $compile('<div>' + template + '</div>')($rootScope);
-    $rootScope.$digest();
+  function compileApp() {
+    inject(function($compile, $rootScope) {
+      elt = $compile('<div><app></app</div>')($rootScope);
+      $rootScope.$digest();
+    });
     return elt;
   }
 

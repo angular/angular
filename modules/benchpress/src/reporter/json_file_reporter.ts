@@ -1,7 +1,7 @@
-import {DateWrapper, isPresent, isBlank, Json} from 'angular2/src/facade/lang';
-import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
+import {DateWrapper, isPresent, isBlank, Json} from '@angular/facade';
+import {PromiseWrapper} from '@angular/facade';
 
-import {bind, provide, Provider, OpaqueToken} from 'angular2/src/core/di';
+import {bind, provide, Provider, OpaqueToken} from '@angular/core/src/di';
 
 import {Reporter} from '../reporter';
 import {SampleDescription} from '../sample_description';
@@ -15,7 +15,7 @@ export class JsonFileReporter extends Reporter {
   // TODO(tbosch): use static values when our transpiler supports them
   static get PATH(): OpaqueToken { return _PATH; }
   // TODO(tbosch): use static values when our transpiler supports them
-  static get BINDINGS(): Provider[] { return _PROVIDERS; }
+  static get PROVIDERS(): Provider[] { return _PROVIDERS; }
 
   _writeFile: Function;
   _path: string;

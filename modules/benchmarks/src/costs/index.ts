@@ -1,9 +1,9 @@
-import {bootstrap} from 'angular2/bootstrap';
-import {Component, Directive, DynamicComponentLoader, ElementRef, View} from 'angular2/core';
-import {NgIf, NgFor} from 'angular2/common';
-import {ApplicationRef} from 'angular2/src/core/application_ref';
-import {ListWrapper} from 'angular2/src/facade/collection';
-import {getIntParameter, bindAction} from 'angular2/src/testing/benchmark_util';
+import {bootstrap} from '@angular/platform-browser';
+import {Component, Directive, DynamicComponentLoader, ViewContainerRef} from '@angular/core';
+import {NgIf, NgFor} from '@angular/common';
+import {ApplicationRef} from '@angular/core/src/application_ref';
+import {ListWrapper} from '@angular/facade';
+import {getIntParameter, bindAction} from '@angular/testing/src/benchmark_util';
 
 var testList = null;
 
@@ -14,7 +14,7 @@ export function main() {
   bootstrap(AppComponent)
       .then((ref) => {
         var injector = ref.injector;
-        var app: AppComponent = ref.hostComponent;
+        var app: AppComponent = ref.instance;
         var appRef = injector.get(ApplicationRef);
 
         bindAction('#reset', function() {
@@ -43,8 +43,7 @@ export function main() {
 }
 
 
-@Component({selector: 'dummy'})
-@View({template: `<div></div>`})
+@Component({selector: 'dummy', template: `<div></div>`})
 class DummyComponent {
 }
 
@@ -54,25 +53,25 @@ class DummyDirective {
 
 @Directive({selector: 'dynamic-dummy'})
 class DynamicDummy {
-  constructor(loader: DynamicComponentLoader, location: ElementRef) {
+  constructor(loader: DynamicComponentLoader, location: ViewContainerRef) {
     loader.loadNextToLocation(DummyComponent, location);
   }
 }
 
-@Component({selector: 'app'})
-@View({
+@Component({
+  selector: 'app',
   directives: [NgIf, NgFor, DummyComponent, DummyDirective, DynamicDummy],
   template: `
     <div *ngIf="testingPlainComponents">
-      <dummy *ngFor="#i of list"></dummy>
+      <dummy *ngFor="let i of list"></dummy>
     </div>
 
     <div *ngIf="testingWithDirectives">
-      <dummy dummy-decorator *ngFor="#i of list"></dummy>
+      <dummy dummy-decorator *ngFor="let i of list"></dummy>
     </div>
 
     <div *ngIf="testingDynamicComponents">
-      <dynamic-dummy *ngFor="#i of list"></dynamic-dummy>
+      <dynamic-dummy *ngFor="let i of list"></dynamic-dummy>
     </div>
   `
 })

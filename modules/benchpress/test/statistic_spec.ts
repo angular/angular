@@ -7,11 +7,11 @@ import {
   expect,
   beforeEach,
   afterEach
-} from 'angular2/testing_internal';
+} from '@angular/testing/testing_internal';
 
 import {Statistic} from 'benchpress/src/statistic';
 
-import {NaN} from 'angular2/src/facade/math';
+import {NaN} from '@angular/facade';
 
 export function main() {
   describe('statistic', () => {

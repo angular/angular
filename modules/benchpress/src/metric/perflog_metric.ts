@@ -1,4 +1,4 @@
-import {PromiseWrapper, Promise, TimerWrapper} from 'angular2/src/facade/async';
+import {PromiseWrapper, TimerWrapper} from '@angular/facade';
 import {
   isPresent,
   isBlank,
@@ -6,10 +6,10 @@ import {
   Math,
   RegExpWrapper,
   NumberWrapper
-} from 'angular2/src/facade/lang';
-import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
-import {ListWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
-import {bind, provide, Provider, OpaqueToken} from 'angular2/src/core/di';
+} from '@angular/facade';
+import {BaseException, WrappedException} from '@angular/facade';
+import {ListWrapper, StringMapWrapper} from '@angular/facade';
+import {bind, provide, Provider, OpaqueToken} from '@angular/core/src/di';
 
 import {WebDriverExtension, PerfLogFeatures} from '../web_driver_extension';
 import {Metric} from '../metric';
@@ -20,7 +20,7 @@ import {Options} from '../common_options';
  */
 export class PerflogMetric extends Metric {
   // TODO(tbosch): use static values when our transpiler supports them
-  static get BINDINGS(): Provider[] { return _PROVIDERS; }
+  static get PROVIDERS(): Provider[] { return _PROVIDERS; }
   // TODO(tbosch): use static values when our transpiler supports them
   static get SET_TIMEOUT(): OpaqueToken { return _SET_TIMEOUT; }
 

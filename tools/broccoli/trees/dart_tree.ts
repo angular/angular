@@ -1,5 +1,3 @@
-/// <reference path="../../typings/node/node.d.ts" />
-/// <reference path="../angular_builder.d.ts" />
 'use strict';
 
 import {MultiCopy} from './../multi_copy';
@@ -12,6 +10,8 @@ var stew = require('broccoli-stew');
 import ts2dart from '../broccoli-ts2dart';
 import dartfmt from '../broccoli-dartfmt';
 import replace from '../broccoli-replace';
+import {AngularBuilderOptions} from '../angular_builder';
+import generateForTest from '../broccoli-generate-for-test';
 
 var global_excludes = [
   'angular2/examples/**/ts/**/*',
@@ -61,22 +61,51 @@ function stripModulePrefix(relativePath: string): string {
   return relativePath.replace(/^modules\//, '');
 }
 
-function getSourceTree() {
-  var tsInputTree = modulesFunnel(['**/*.js', '**/*.ts', '**/*.dart'], ['angular1_router/**/*']);
+function getSourceTree(options: AngularBuilderOptions) {
+  var tsInputTree = modulesFunnel(
+      [
+        'tsconfig-ts2dart.json',
+        'upgrade-ts2dart.d.ts',
+        'zone-ts2dart.d.ts',
+        '**/*.js',
+        '**/*.ts',
+        '**/*.dart'
+      ],
+      [
+        'rollup-test/**/*',
+        'angular1_router/**/*',
+        'angular2/upgrade/**/*',
+        'angular2/core/test/typings.d.ts',
+        'angular2/manual_typings/globals.d.ts',
+        'angular2/typings/es6-collections/es6-collections.d.ts',
+        'angular2/typings/es6-promise/es6-promise.d.ts',
+        'angular2/typings/tsd.d.ts',
+        'angular2/typings.d.ts',
+      ]);
   var transpiled = ts2dart(tsInputTree, {
     generateLibraryName: true,
     generateSourceMap: false,
     translateBuiltins: true,
+    tsconfig: 'tsconfig-ts2dart.json'
   });
+
   // Native sources, dart only examples, etc.
   var dartSrcs = modulesFunnel(
       ['**/*.dart', '**/*.ng_meta.json', '**/*.aliases.json', '**/css/**', '**/*.css']);
-  return mergeTrees([transpiled, dartSrcs]);
+
+  var compiledTree = mergeTrees([transpiled, dartSrcs]);
+
+  // Generate test files
+  let generatedDartTestFiles = generateForTest(
+      mergeTrees([compiledTree, new Funnel('packages', {include: ['path/**', 'stack_trace/**']})]),
+      {files: ['*/test/**/*_codegen_typed.dart'], dartPath: options.dartSDK.VM});
+
+  return mergeTrees([compiledTree, generatedDartTestFiles], {overwrite: true});
 }
 
-function fixDartFolderLayout(sourceTree) {
+function fixDartFolderLayout(sourceTree: BroccoliTree) {
   // Move around files to match Dart's layout expectations.
-  return stew.rename(sourceTree, function(relativePath) {
+  return stew.rename(sourceTree, function(relativePath: string) {
     // If a file matches the `pattern`, insert the given `insertion` as the second path part.
     var replacements = [
       {pattern: /^benchmarks\/test\//, insertion: ''},
@@ -109,7 +138,7 @@ function getHtmlSourcesTree() {
       {files: ['*/**'], patterns: [{match: '$SCRIPTS$', replacement: replaceScriptTagInHtml}]});
 
   // Copy a url_params_to_form.js for each benchmark html file.
-  var urlParamsToFormTree = new MultiCopy('', {
+  var urlParamsToFormTree = new MultiCopy(<any>'', {
     srcPath: 'tools/build/snippets/url_params_to_form.js',
     targetPatterns: ['modules/benchmarks*/src/*', 'modules/benchmarks*/src/*/*'],
   });
@@ -143,10 +172,12 @@ function getTemplatedPubspecsTree() {
 
 function getDocsTree() {
   // LICENSE files
-  var licenses = new MultiCopy('', {
+  var licenses = new MultiCopy(<any>'', {
     srcPath: 'LICENSE',
     targetPatterns: ['modules/*'],
     exclude: [
+      '*/@angular',
+      '*/angular2',
       '*/angular1_router',
       '*/angular2/src/http',
       '*/payload_tests',
@@ -158,7 +189,7 @@ function getDocsTree() {
   // Documentation.
   // Rename *.dart.md -> *.dart.
   var mdTree = stew.rename(modulesFunnel(['**/*.dart.md']),
-                           relativePath => relativePath.replace(/\.dart\.md$/, '.md'));
+                           (relativePath: string) => relativePath.replace(/\.dart\.md$/, '.md'));
   // Copy all assets, ignore .js. and .dart. (handled above).
   var docs = modulesFunnel(['**/*.md', '**/*.png', '**/*.html', '**/*.css', '**/*.scss'],
                            ['**/*.js.md', '**/*.dart.md', 'angular1_router/**/*']);
@@ -169,7 +200,7 @@ function getDocsTree() {
 }
 
 module.exports = function makeDartTree(options: AngularBuilderOptions) {
-  var dartSources = dartfmt(getSourceTree(), {dartSDK: options.dartSDK, logs: options.logs});
+  var dartSources = dartfmt(getSourceTree(options), {dartSDK: options.dartSDK, logs: options.logs});
   var sourceTree = mergeTrees([dartSources, getHtmlSourcesTree(), getExamplesJsonTree()]);
   sourceTree = fixDartFolderLayout(sourceTree);
 

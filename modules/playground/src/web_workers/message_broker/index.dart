@@ -7,8 +7,7 @@ import "dart:html";
 @AngularEntrypoint()
 main() {
   const ECHO_CHANNEL = "ECHO";
-  platform([WORKER_RENDER_PLATFORM])
-      .asyncApplication(initIsolate("background_index.dart"))
+  bootstrapRender("background_index.dart")
       .then((ref) {
     var brokerFactory = ref.injector.get(ClientMessageBrokerFactory);
     var broker = brokerFactory.createMessageBroker(ECHO_CHANNEL, false);

@@ -1,6 +1,6 @@
-import {isPresent, isBlank, Date, DateWrapper} from 'angular2/src/facade/lang';
-import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
-import {bind, provide, Provider, OpaqueToken} from 'angular2/src/core/di';
+import {isPresent, isBlank, Date, DateWrapper} from '@angular/facade';
+import {PromiseWrapper} from '@angular/facade';
+import {bind, provide, Provider, OpaqueToken} from '@angular/core/src/di';
 
 import {Metric} from './metric';
 import {Validator} from './validator';
@@ -20,7 +20,7 @@ import {MeasureValues} from './measure_values';
  */
 export class Sampler {
   // TODO(tbosch): use static values when our transpiler supports them
-  static get BINDINGS(): Provider[] { return _PROVIDERS; }
+  static get PROVIDERS(): Provider[] { return _PROVIDERS; }
 
   _driver: WebDriverAdapter;
   _metric: Metric;
@@ -62,8 +62,8 @@ export class Sampler {
     return loop(new SampleState([], null));
   }
 
-  _iterate(lastState) {
-    var resultPromise;
+  _iterate(lastState): Promise<SampleState> {
+    var resultPromise: Promise<any>;
     if (isPresent(this._prepare)) {
       resultPromise = this._driver.waitFor(this._prepare);
     } else {

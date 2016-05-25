@@ -1,5 +1,4 @@
-import {verifyNoBrowserErrors} from 'angular2/src/testing/e2e_util';
-import {Promise} from 'angular2/src/facade/async';
+import {verifyNoBrowserErrors} from '@angular/platform-browser/testing_e2e';
 
 describe('WebWorkers Kitchen Sink', function() {
   afterEach(() => {
@@ -7,7 +6,7 @@ describe('WebWorkers Kitchen Sink', function() {
     browser.ignoreSynchronization = false;
   });
   var selector = "hello-app .greeting";
-  var URL = "playground/src/web_workers/kitchen_sink/index.html";
+  var URL = 'all/playground/src/web_workers/kitchen_sink/index.html';
 
   it('should greet', () => {
     // This test can't wait for Angular 2 as Testability is not available when using WebWorker
@@ -15,7 +14,9 @@ describe('WebWorkers Kitchen Sink', function() {
     browser.get(URL);
 
     browser.wait(protractor.until.elementLocated(by.css(selector)), 15000);
-    expect(element.all(by.css(selector)).first().getText()).toEqual("hello world!");
+    var elem = element(by.css(selector));
+    browser.wait(protractor.until.elementTextIs(elem, 'hello world!'), 5000);
+    expect(elem.getText()).toEqual("hello world!");
 
   });
 

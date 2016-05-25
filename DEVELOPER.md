@@ -32,17 +32,17 @@ following products on your development machine:
   (version `>=3.5.3 <4.0`), which comes with Node. Depending on your system, you can install Node either from
   source or as a pre-packaged bundle.
 
-* *Optional*: [Dart](https://www.dartlang.org) (version ` >=1.13.2 <2.0.0`), specifically the Dart-SDK and
+* *Optional*: [Dart](https://www.dartlang.org) (version `>=1.13.2 <2.0.0`), specifically the Dart SDK and
   Dartium (a version of [Chromium](http://www.chromium.org) with native support for Dart through
-  the Dart VM). One of the **simplest** ways to get both is to install the **Dart Editor bundle**,
-  which includes the editor, SDK and Dartium. See the [Dart tools](https://www.dartlang.org/tools)
-  download [page for instructions](https://www.dartlang.org/tools/download.html).  
-  You can also download both **stable** and **dev** channel versions from the [download
-  archive](https://www.dartlang.org/tools/download-archive). In that case, on Windows, Dart must be added
-  to the `Path` (e.g. `path-to-dart-sdk-folder\bin`) and a new `DARTIUM_BIN` environment variable must be
-  created, pointing to the executable (e.g. `path-to-dartium-folder\chrome.exe).`
+  the Dart VM). Visit Dart's [Downloads page](https://www.dartlang.org/downloads) page for
+  instructions. You can also download both **stable** and **dev** channel versions from the
+  [download archive](https://www.dartlang.org/downloads/archive/). In that case, on Windows, Dart
+  must be added to the `PATH` (e.g. `path-to-dart-sdk-folder\bin`) and a new `DARTIUM_BIN`
+  environment variable must be created, pointing to the executable (e.g.
+  `path-to-dartium-folder\chrome.exe`).
 
-
+* [Java Development Kit](http://www.oracle.com/technetwork/es/java/javase/downloads/index.html) which is used
+  to execute the selenium standalone server for e2e testing.
 
 ## Getting the Sources
 
@@ -183,8 +183,8 @@ Karma is run against the new output.
 much easier to debug. `xit` and `xdescribe` can also be useful to exclude a test and a group of
 tests respectively.
 
-**Note**: **watch mode** needs symlinks to work, so if you're using windows, ensure you have the
-rights to built them in your operating system.
+**Note**: **watch mode** needs symlinks to work, so if you're using Windows, ensure you have the
+rights to built them in your operating system. On Windows, only administrators can create symbolic links by default, but you may change the policy. (see [here](https://technet.microsoft.com/library/cc766301.aspx?f=255&MSPPError=-2147217396).)
 
 ### Unit tests with Sauce Labs or Browser Stack
 
@@ -259,6 +259,10 @@ to some whitespace difference.
     $ echo -e '#!/bin/sh\nexec git clang-format' > .git/hooks/pre-commit
     $ chmod u+x !$
 ```
+
+**NOTE**: To use ```git clang-format``` use have to make sure that ```git-clang-format``` is in your
+```PATH```. The easiest way is probably to just ```npm install -g clang-format``` as it comes with
+```git-clang-format```.
 
 * **WebStorm** can run clang-format on the current file.
   1. Under Preferences, open Tools > External Tools.

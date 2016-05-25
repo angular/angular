@@ -1,5 +1,3 @@
-/// <reference path="../typings/node/node.d.ts" />
-/// <reference path="../typings/fs-extra/fs-extra.d.ts" />
 /// <reference path="./broccoli-writer.d.ts" />
 
 import Writer = require('broccoli-writer');
@@ -23,9 +21,9 @@ export interface MultiCopyOptions {
  * given by glob patterns, .
  */
 export class MultiCopy extends Writer {
-  constructor(private inputTree, private options: MultiCopyOptions) { super(); }
+  constructor(private inputTree: BroccoliTree, private options: MultiCopyOptions) { super(); }
 
-  write(readTree: (tree) => Promise<string>, destDir: string): Promise<any> {
+  write(readTree: (tree: BroccoliTree) => Promise<string>, destDir: string): Promise<any> {
     return readTree(this.inputTree)
         .then((inputPath: string) => {
           var fileName = path.basename(this.options.srcPath);

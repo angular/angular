@@ -1,25 +1,28 @@
-/// <reference path="../typings/node/node.d.ts" />
-/// <reference path="../typings/fs-extra/fs-extra.d.ts" />
-
 import fs = require('fs');
 import fse = require('fs-extra');
 import path = require('path');
-import * as ts2dart from 'ts2dart';
 import {wrapDiffingPlugin, DiffingBroccoliPlugin, DiffResult} from './diffing-broccoli-plugin';
 
 class TSToDartTranspiler implements DiffingBroccoliPlugin {
   static includeExtensions = ['.ts'];
 
-  private transpiler: ts2dart.Transpiler;
+  private transpiler: any /*ts2dart.Transpiler*/;
 
   constructor(public inputPath: string, public cachePath: string,
-              public options: ts2dart.TranspilerOptions) {
+              public options: any /*ts2dart.TranspilerOptions*/) {
     options.basePath = inputPath;
+    options.tsconfig = path.join(inputPath, options.tsconfig);
+    // Workaround for https://github.com/dart-lang/dart_style/issues/493
+    var ts2dart = require('ts2dart');
     this.transpiler = new ts2dart.Transpiler(options);
   }
 
   rebuild(treeDiff: DiffResult) {
-    let toEmit = [path.resolve(this.inputPath, 'angular2/manual_typings/globals.d.ts')];
+    let toEmit = [
+      path.resolve(this.inputPath, 'angular2/manual_typings/globals.d.ts'),
+      path.resolve(this.inputPath, 'angular2/typings/es6-promise/es6-promise.d.ts'),
+      path.resolve(this.inputPath, 'angular2/typings/es6-collections/es6-collections.d.ts')
+    ];
     let getDartFilePath = (path: string) => path.replace(/((\.js)|(\.ts))$/i, '.dart');
     treeDiff.addedPaths.concat(treeDiff.changedPaths)
         .forEach((changedPath) => {

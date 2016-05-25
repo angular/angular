@@ -1,9 +1,6 @@
-import {bootstrap} from 'angular2/bootstrap';
-import {Component, Directive, View, Host, forwardRef, Provider, Injectable} from 'angular2/core';
-import {NgIf, NgFor, FORM_DIRECTIVES} from 'angular2/common';
-
-import {CONST_EXPR} from 'angular2/src/facade/lang';
-
+import {bootstrap} from '@angular/platform-browser';
+import {Component, Directive, Host, forwardRef, Provider, Injectable} from '@angular/core';
+import {NgIf, NgFor, FORM_DIRECTIVES} from '@angular/common';
 
 /**
  * You can find the Angular 1 implementation of this example here:
@@ -76,8 +73,8 @@ class DataService {
 
 // ---- components
 
-@Component({selector: 'full-name-cmp'})
-@View({
+@Component({
+  selector: 'full-name-cmp',
   template: `
     <h1>Edit Full Name</h1>
     <div>
@@ -107,8 +104,8 @@ class FullNameComponent {
   get person(): Person { return this._service.currentPerson; }
 }
 
-@Component({selector: 'person-detail-cmp'})
-@View({
+@Component({
+  selector: 'person-detail-cmp',
   template: `
     <h2>{{person.fullName}}</h2>
 
@@ -155,13 +152,13 @@ class PersonsDetailComponent {
   get person(): Person { return this._service.currentPerson; }
 }
 
-@Component({selector: 'persons-cmp'})
-@View({
+@Component({
+  selector: 'persons-cmp',
   template: `
     <h1>FullName Demo</h1>
     <div>
       <ul>
-  		  <li *ngFor="#person of persons">
+  		  <li *ngFor="let person of persons">
   			  <label (click)="select(person)">{{person.fullName}}</label>
   			</li>
   	 </ul>
@@ -180,8 +177,9 @@ class PersonsComponent {
 }
 
 
-@Component({selector: 'person-management-app', viewBindings: [DataService]})
-@View({
+@Component({
+  selector: 'person-management-app',
+  viewProviders: [DataService],
   template: `
     <button (click)="switchToEditName()">Edit Full Name</button>
     <button (click)="switchToPersonList()">Person Array</button>

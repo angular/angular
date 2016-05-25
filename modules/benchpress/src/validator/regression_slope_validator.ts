@@ -1,5 +1,5 @@
-import {ListWrapper} from 'angular2/src/facade/collection';
-import {bind, provide, Provider, OpaqueToken} from 'angular2/src/core/di';
+import {ListWrapper} from '@angular/facade';
+import {bind, provide, Provider, OpaqueToken} from '@angular/core/src/di';
 
 import {Validator} from '../validator';
 import {Statistic} from '../statistic';
@@ -15,7 +15,7 @@ export class RegressionSlopeValidator extends Validator {
   // TODO(tbosch): use static values when our transpiler supports them
   static get METRIC(): OpaqueToken { return _METRIC; }
   // TODO(tbosch): use static values when our transpiler supports them
-  static get BINDINGS(): Provider[] { return _PROVIDERS; }
+  static get PROVIDERS(): Provider[] { return _PROVIDERS; }
 
   _sampleSize: number;
   _metric: string;

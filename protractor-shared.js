@@ -79,6 +79,17 @@ var BROWSER_CAPS = {
       browser: 'ALL'
     }
   },
+  ChromeOnTravis: {
+    browserName: 'chrome',
+    chromeOptions: mergeInto({
+      'args': ['--no-sandbox', '--js-flags=--expose-gc'],
+      'binary': process.env.CHROME_BIN
+    }, CHROME_OPTIONS),
+    loggingPrefs: {
+      performance: 'ALL',
+      browser: 'ALL'
+    }
+  },
   ChromeAndroid: {
     browserName: 'chrome',
     chromeOptions: mergeInto(CHROME_OPTIONS, {
@@ -214,7 +225,7 @@ exports.createBenchpressRunner = function(options) {
     benchpress.bind(benchpress.Options.FORCE_GC).toValue(argv['force-gc']),
     benchpress.bind(benchpress.Options.DEFAULT_DESCRIPTION)
         .toValue({'lang': options.lang, 'runId': runId}),
-    benchpress.JsonFileReporter.BINDINGS,
+    benchpress.JsonFileReporter.PROVIDERS,
     benchpress.bind(benchpress.JsonFileReporter.PATH).toValue(resultsFolder)
   ];
   if (!argv['dryrun']) {

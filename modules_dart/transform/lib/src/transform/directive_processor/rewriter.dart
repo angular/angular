@@ -5,7 +5,9 @@ import 'dart:async';
 import 'package:analyzer/analyzer.dart';
 import 'package:barback/barback.dart' show AssetId;
 
-import 'package:angular2/src/compiler/template_compiler.dart';
+import 'package:angular2/src/compiler/compile_metadata.dart'
+    show CompileIdentifierMetadata, CompileProviderMetadata;
+import 'package:angular2/src/compiler/offline_compiler.dart';
 import 'package:angular2/src/transform/common/annotation_matcher.dart';
 import 'package:angular2/src/transform/common/asset_reader.dart';
 import 'package:angular2/src/transform/common/code/ng_deps_code.dart';
@@ -14,6 +16,7 @@ import 'package:angular2/src/transform/common/interface_matcher.dart';
 import 'package:angular2/src/transform/common/logging.dart';
 import 'package:angular2/src/transform/common/ng_compiler.dart';
 import 'package:angular2/src/transform/common/ng_meta.dart';
+import 'package:angular2/src/transform/common/url_resolver.dart';
 import 'package:angular2/src/transform/common/zone.dart' as zone;
 
 import 'inliner.dart';
@@ -68,7 +71,7 @@ class _NgMetaVisitor extends Object with SimpleAstVisitor<Object> {
   final _normalizations = <Future>[];
 
   _NgMetaVisitor(this.ngMeta, this.assetId, AnnotationMatcher annotationMatcher,
-      InterfaceMatcher interfaceMatcher, TemplateCompiler templateCompiler)
+      InterfaceMatcher interfaceMatcher, OfflineCompiler templateCompiler)
       : _reader = new TypeMetadataReader(
             annotationMatcher, interfaceMatcher, templateCompiler);
 
@@ -88,15 +91,20 @@ class _NgMetaVisitor extends Object with SimpleAstVisitor<Object> {
 
   @override
   Object visitClassDeclaration(ClassDeclaration node) {
-    _normalizations.add(
-        _reader.readTypeMetadata(node, assetId).then((compileMetadataWithType) {
-      if (compileMetadataWithType != null) {
-        ngMeta.types[compileMetadataWithType.type.name] =
-            compileMetadataWithType;
+    _normalizations.add(_reader
+        .readTypeMetadata(node, assetId)
+        .then((compileMetadataWithIdentifier) {
+      if (compileMetadataWithIdentifier != null) {
+        ngMeta.identifiers[compileMetadataWithIdentifier.identifier.name] =
+            compileMetadataWithIdentifier;
+      } else {
+        ngMeta.identifiers[node.name.name] = new CompileIdentifierMetadata(
+            name: node.name.name, moduleUrl: toAssetUri(assetId));
       }
     }).catchError((err) {
       log.error('ERROR: $err', asset: assetId);
     }));
+
     return null;
   }
 
@@ -108,6 +116,11 @@ class _NgMetaVisitor extends Object with SimpleAstVisitor<Object> {
     // doesn't support decorators on variable declarations (see
     // angular/angular#1747 and angular/ts2dart#249 for context).
     outer: for (var variable in node.variables.variables) {
+      if (variable.isConst) {
+        final id = _reader.readIdentifierMetadata(variable, assetId);
+        ngMeta.identifiers[variable.name.name] = id;
+      }
+
       var initializer = variable.initializer;
       if (initializer != null && initializer is ListLiteral) {
         var otherNames = [];
@@ -120,6 +133,38 @@ class _NgMetaVisitor extends Object with SimpleAstVisitor<Object> {
         ngMeta.aliases[variable.name.name] = otherNames;
       }
     }
+    return null;
+  }
+
+  @override
+  Object visitFunctionTypeAlias(FunctionTypeAlias node) {
+    ngMeta.identifiers[node.name.name] = new CompileIdentifierMetadata(
+        name: node.name.name, moduleUrl: toAssetUri(assetId));
+    return null;
+  }
+
+  @override
+  Object visitFunctionDeclaration(FunctionDeclaration node) {
+    _normalizations.add(_reader
+        .readFactoryMetadata(node, assetId)
+        .then((compileMetadataWithIdentifier) {
+      if (compileMetadataWithIdentifier != null) {
+        ngMeta.identifiers[compileMetadataWithIdentifier.identifier.name] =
+            compileMetadataWithIdentifier;
+      } else {
+        ngMeta.identifiers[node.name.name] = new CompileIdentifierMetadata(
+            name: node.name.name, moduleUrl: toAssetUri(assetId));
+      }
+    }).catchError((err) {
+      log.error('ERROR: $err', asset: assetId);
+    }));
+    return null;
+  }
+
+  @override
+  Object visitEnumDeclaration(EnumDeclaration node) {
+    ngMeta.identifiers[node.name.name] = new CompileIdentifierMetadata(
+        name: node.name.name, moduleUrl: toAssetUri(assetId));
     return null;
   }
 }

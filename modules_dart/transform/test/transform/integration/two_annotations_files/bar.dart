@@ -1,9 +1,10 @@
 library bar;
 
-import 'package:angular2/src/core/metadata.dart';
+import 'package:angular2/core.dart';
 
-@Component(selector: '[soup]')
-@View(template: 'Salad: {{myNum}} is awesome')
+@Annotation1(prop1: 'value1')
+@Annotation2(prop2: 'value2')
+@Component(selector: 'xyz', template: '')
 class MyComponent {
   int myNum;
 

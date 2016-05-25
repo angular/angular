@@ -51,29 +51,24 @@ const kServedPaths = [
   'playground/src/key_events',
   'playground/src/relative_assets',
   'playground/src/routing',
+  'playground/src/alt_routing',
   'playground/src/sourcemap',
   'playground/src/svg',
   'playground/src/todo',
   'playground/src/upgrade',
   'playground/src/zippy_component',
   'playground/src/async',
-  'playground/src/material/button',
-  'playground/src/material/checkbox',
-  'playground/src/material/dialog',
-  'playground/src/material/grid_list',
-  'playground/src/material/input',
-  'playground/src/material/progress-linear',
-  'playground/src/material/radio',
-  'playground/src/material/switcher',
   'playground/src/web_workers/kitchen_sink',
   'playground/src/web_workers/todo',
   'playground/src/web_workers/images',
   'playground/src/web_workers/message_broker',
-  'playground/src/web_workers/router'
+  'playground/src/web_workers/router',
+  'playground/src/web_workers/input'
 ];
 
 
-module.exports = function makeBrowserTree(options, destinationPath) {
+module.exports = function makeBrowserTree(options: any, destinationPath: string) {
+  // TODO: define an interface for the options
   const modules = options.projects;
   const noTypeChecks = options.noTypeChecks;
   const generateEs6 = options.generateEs6;
@@ -89,12 +84,6 @@ module.exports = function makeBrowserTree(options, destinationPath) {
       ],
       destDir: '/angular2/'
     });
-  }
-
-  if (modules.angular2_material) {
-    var angular2MaterialTree =
-        new Funnel('modules/angular2_material',
-                   {include: ['**/**'], exclude: ['e2e_test/**'], destDir: '/angular2_material/'});
   }
 
   if (modules.benchmarks) {
@@ -127,14 +116,18 @@ module.exports = function makeBrowserTree(options, destinationPath) {
                    {include: ['**/**'], exclude: ['e2e_test/**'], destDir: '/benchpress/'});
   }
 
+  let externalTypings =
+      new Funnel('node_modules', {include: ['rxjs/**/*.d.ts', 'zone.js/**/*.d.ts']});
+
+
   var modulesTree = mergeTrees([
     angular2Tree,
-    angular2MaterialTree,
     benchmarksTree,
     benchmarksExternalTree,
     payloadTestsTree,
     playgroundTree,
-    benchpressTree
+    benchpressTree,
+    externalTypings,
   ]);
 
   var es6PolyfillTypings =
@@ -144,7 +137,7 @@ module.exports = function makeBrowserTree(options, destinationPath) {
 
   var scriptPathPatternReplacement = {
     match: '@@PATH',
-    replacement: function(replacement, relativePath) {
+    replacement: function(replacement: string, relativePath: string) {
       var parts = relativePath.replace(/\\/g, '/').split('/');
       return parts.splice(0, parts.length - 1).join('/');
     }
@@ -152,7 +145,7 @@ module.exports = function makeBrowserTree(options, destinationPath) {
 
   var scriptFilePatternReplacement = {
     match: '@@FILENAME',
-    replacement: function(replacement, relativePath) {
+    replacement: function(replacement: string, relativePath: string) {
       var parts = relativePath.replace(/\\/g, '/').split('/');
       return parts[parts.length - 1].replace('html', 'js');
     }
@@ -160,7 +153,7 @@ module.exports = function makeBrowserTree(options, destinationPath) {
 
   var useBundlesPatternReplacement = {
     match: '@@USE_BUNDLES',
-    replacement: function(replacement, relativePath) { return useBundles; }
+    replacement: function(replacement: string, relativePath: string) { return useBundles; }
   };
 
   // Check that imports do not break barrel boundaries
@@ -174,6 +167,7 @@ module.exports = function makeBrowserTree(options, destinationPath) {
   let ambientTypings = [
     'angular2/typings/hammerjs/hammerjs.d.ts',
     'angular2/typings/node/node.d.ts',
+    'node_modules/zone.js/dist/zone.js.d.ts',
     'angular2/manual_typings/globals.d.ts',
     'angular2/typings/es6-collections/es6-collections.d.ts',
     'angular2/typings/es6-promise/es6-promise.d.ts'
@@ -197,7 +191,7 @@ module.exports = function makeBrowserTree(options, destinationPath) {
   var vendorScriptsTree = flatten(new Funnel('.', {
     files: [
       'node_modules/es6-shim/es6-shim.js',
-      'node_modules/zone.js/dist/zone-microtask.js',
+      'node_modules/zone.js/dist/zone.js',
       'node_modules/zone.js/dist/long-stack-trace-zone.js',
       'node_modules/systemjs/dist/system.src.js',
       'node_modules/base64-js/lib/b64.js',
@@ -212,7 +206,7 @@ module.exports = function makeBrowserTree(options, destinationPath) {
 
   // Get scripts for each benchmark or example
   let servingTrees = kServedPaths.reduce(getServedFunnels, []);
-  function getServedFunnels(funnels, destDir) {
+  function getServedFunnels(funnels: BroccoliTree[], destDir: string) {
     let options = {srcDir: '/', destDir: destDir};
     funnels.push(new Funnel(vendorScriptsTree, options));
     if (destDir.indexOf('benchmarks') > -1) {
@@ -225,8 +219,7 @@ module.exports = function makeBrowserTree(options, destinationPath) {
   }
 
 
-  if (modules.angular2_material || modules.benchmarks || modules.benchmarks_external ||
-      modules.playground) {
+  if (modules.benchmarks || modules.benchmarks_external || modules.playground) {
     var assetsTree = new Funnel(
         modulesTree, {include: ['**/*'], exclude: ['**/*.{html,ts,dart}'], destDir: '/'});
   }

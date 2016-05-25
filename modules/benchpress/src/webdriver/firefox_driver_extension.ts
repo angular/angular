@@ -1,11 +1,10 @@
-import {bind, provide, Provider} from 'angular2/src/core/di';
-import {isPresent, StringWrapper} from 'angular2/src/facade/lang';
+import {bind, provide, Provider} from '@angular/core/src/di';
+import {isPresent, StringWrapper} from '@angular/facade';
 import {WebDriverExtension, PerfLogFeatures} from '../web_driver_extension';
 import {WebDriverAdapter} from '../web_driver_adapter';
-import {Promise} from 'angular2/src/facade/async';
 
 export class FirefoxDriverExtension extends WebDriverExtension {
-  static get BINDINGS(): Provider[] { return _PROVIDERS; }
+  static get PROVIDERS(): Provider[] { return _PROVIDERS; }
 
   private _profilerStarted: boolean;
 

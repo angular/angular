@@ -19,6 +19,14 @@ elif [ "$MODE" = "lint" ]; then
 elif [ "$MODE" = "build_only" ]; then
   ${SCRIPT_DIR}/build_js.sh
   ${SCRIPT_DIR}/build_dart.sh
+elif [ "$MODE" = "typescript_next" ]; then
+   # Ignore complaints about unsatisfied peer deps
+   npm install typescript@next || true
+   ${SCRIPT_DIR}/build_js.sh
+   # Run typings test using the GA release of TypeScript
+   # This ensures that users aren't forced onto beta/nightly
+   npm install typescript@1.8.9
+   ./node_modules/.bin/gulp \!test.typings
 elif [ "$MODE" = "payload" ]; then
   source ${SCRIPT_DIR}/env_dart.sh
   ./node_modules/.bin/gulp test.payload.dart/ci

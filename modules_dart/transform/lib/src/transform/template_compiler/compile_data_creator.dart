@@ -3,8 +3,8 @@ library angular2.transform.template_compiler.compile_data_creator;
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:angular2/src/compiler/directive_metadata.dart';
-import 'package:angular2/src/compiler/template_compiler.dart';
+import 'package:angular2/src/compiler/compile_metadata.dart';
+import 'package:angular2/src/compiler/offline_compiler.dart';
 import 'package:angular2/src/transform/common/asset_reader.dart';
 import 'package:angular2/src/transform/common/logging.dart';
 import 'package:angular2/src/transform/common/model/ng_deps_model.pb.dart';
@@ -39,8 +39,8 @@ Future<CompileDataResults> createCompileData(
 
 class CompileDataResults {
   final NgMeta ngMeta;
-  final Map<ReflectionInfoModel,
-      NormalizedComponentWithViewDirectives> viewDefinitions;
+  final Map<ReflectionInfoModel, NormalizedComponentWithViewDirectives>
+      viewDefinitions;
 
   CompileDataResults._(this.ngMeta, this.viewDefinitions);
 }
@@ -74,25 +74,25 @@ class _CompileDataCreator {
     var hasTemplate = ngDeps != null &&
         ngDeps.reflectables != null &&
         ngDeps.reflectables.any((reflectable) {
-          if (ngMeta.types.containsKey(reflectable.name)) {
-            final metadata = ngMeta.types[reflectable.name];
-            return metadata is CompileDirectiveMetadata &&
-                metadata.template != null;
+          if (ngMeta.identifiers.containsKey(reflectable.name)) {
+            final metadata = ngMeta.identifiers[reflectable.name];
+            return metadata is CompileDirectiveMetadata;
           }
           return false;
         });
+
     if (!hasTemplate) return new CompileDataResults._(ngMeta, const {});
 
     final compileData =
         <ReflectionInfoModel, NormalizedComponentWithViewDirectives>{};
-    final ngMetaMap = await _extractNgMeta();
     final platformDirectives =
         await _readPlatformTypes(this.platformDirectives, 'directives');
     final platformPipes = await _readPlatformTypes(this.platformPipes, 'pipes');
+    final ngMetaMap = await _extractNgMeta();
 
     for (var reflectable in ngDeps.reflectables) {
-      if (ngMeta.types.containsKey(reflectable.name)) {
-        final compileDirectiveMetadata = ngMeta.types[reflectable.name];
+      if (ngMeta.identifiers.containsKey(reflectable.name)) {
+        final compileDirectiveMetadata = ngMeta.identifiers[reflectable.name];
         if (compileDirectiveMetadata is CompileDirectiveMetadata &&
             compileDirectiveMetadata.template != null) {
           final compileDatum = new NormalizedComponentWithViewDirectives(
@@ -117,18 +117,19 @@ class _CompileDataCreator {
     var resolvedMetadata = [];
     for (var dep in prefixedTypes) {
       if (!ngMetaMap.containsKey(dep.prefix)) {
-        log.warning(
+        log.error(
             'Missing prefix "${dep.prefix}" '
-            'needed by "${dep}" from metadata map',
+            'needed by "${dep}" from metadata map,',
             asset: entryPoint);
-        continue;
+        return null;
       }
       final depNgMeta = ngMetaMap[dep.prefix];
-
-      if (depNgMeta.types.containsKey(dep.name)) {
-        resolvedMetadata.add(depNgMeta.types[dep.name]);
-      } else if (depNgMeta.aliases.containsKey(dep.name)) {
+      if (depNgMeta.aliases.containsKey(dep.name)) {
         resolvedMetadata.addAll(depNgMeta.flatten(dep.name));
+
+      } else if (depNgMeta.identifiers.containsKey(dep.name)) {
+        resolvedMetadata.add(depNgMeta.identifiers[dep.name]);
+
       } else {
         log.error(
             'Could not find Directive/Pipe entry for $dep. '
@@ -168,10 +169,12 @@ class _CompileDataCreator {
       if (jsonString != null && jsonString.isNotEmpty) {
         var newMetadata = new NgMeta.fromJson(JSON.decode(jsonString));
 
-        if (newMetadata.types.containsKey(token)) {
-          return [newMetadata.types[token]];
-        } else if (newMetadata.aliases.containsKey(token)) {
+        if (newMetadata.aliases.containsKey(token)) {
           return newMetadata.flatten(token);
+
+        } else if (newMetadata.identifiers.containsKey(token)) {
+          return [newMetadata.identifiers[token]];
+
         } else {
           log.warning('Could not resolve platform type ${token} in ${uri}',
               asset: metaAssetId);
@@ -193,8 +196,7 @@ class _CompileDataCreator {
     if (ngDeps == null || ngDeps.imports == null || ngDeps.imports.isEmpty) {
       return map;
     }
-    final resolver = const TransformerUrlResolver();
-
+    final resolver = createOfflineCompileUrlResolver();
     ngMeta.ngDeps.imports
         .where((model) => !isDartCoreUri(model.uri))
         .forEach((model) {
@@ -242,6 +244,7 @@ class _CompileDataCreator {
       var ngMeta = retVal[prefix] = new NgMeta.empty();
       for (var importAssetUri in prefixToImports[prefix]) {
         var metaAssetId = fromUri(toMetaExtension(importAssetUri));
+
         if (await reader.hasInput(metaAssetId)) {
           try {
             var jsonString = await reader.readAsString(metaAssetId);

@@ -1,6 +1,3 @@
-/// <reference path="../typings/node/node.d.ts" />
-/// <reference path="../typings/fs-extra/fs-extra.d.ts" />
-
 import fs = require('fs');
 import fse = require('fs-extra');
 import path = require('path');
@@ -11,7 +8,7 @@ import {wrapDiffingPlugin, DiffingBroccoliPlugin, DiffResult} from './diffing-br
  * and tees a copy to the given path outside the tmp dir.
  */
 class DestCopy implements DiffingBroccoliPlugin {
-  constructor(private inputPath, private cachePath, private outputRoot: string) {}
+  constructor(private inputPath: string, private cachePath: string, private outputRoot: string) {}
 
 
   rebuild(treeDiff: DiffResult) {

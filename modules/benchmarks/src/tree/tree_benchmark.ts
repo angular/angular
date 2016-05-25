@@ -1,28 +1,27 @@
-import {bootstrap} from 'angular2/bootstrap';
+import {bootstrap} from '@angular/platform-browser';
 import {
-  Compiler,
   Component,
   Directive,
-  View,
   ViewContainerRef,
   bind,
   provide,
-  Provider
-} from 'angular2/core';
-import {NgIf} from 'angular2/common';
+  Provider,
+  enableProdMode
+} from '@angular/core';
+import {NgIf} from '@angular/common';
 
-import {ApplicationRef} from 'angular2/src/core/application_ref';
-import {DOM} from 'angular2/src/platform/dom/dom_adapter';
-import {isPresent} from 'angular2/src/facade/lang';
-import {window, document, gc} from 'angular2/src/facade/browser';
+import {ApplicationRef} from '@angular/core/src/application_ref';
+import {DOM} from '@angular/platform-browser/src/dom/dom_adapter';
+import {isPresent} from '@angular/facade';
+import {window, document, gc} from '@angular/facade';
 import {
   getIntParameter,
   getStringParameter,
   bindAction,
   windowProfile,
   windowProfileEnd
-} from 'angular2/src/testing/benchmark_util';
-import {BrowserDomAdapter} from 'angular2/src/platform/browser/browser_adapter';
+} from '@angular/testing/src/benchmark_util';
+import {BrowserDomAdapter} from '@angular/platform-browser/src/browser/browser_adapter';
 
 function createProviders(): Provider[] {
   return [];
@@ -33,6 +32,7 @@ var BASELINE_IF_TEMPLATE;
 
 export function main() {
   BrowserDomAdapter.makeCurrent();
+  enableProdMode();
   var maxDepth = getIntParameter('depth');
 
   BASELINE_TREE_TEMPLATE = DOM.createTemplate(
@@ -95,7 +95,7 @@ export function main() {
           var injector = ref.injector;
           appRef = injector.get(ApplicationRef);
 
-          app = ref.hostComponent;
+          app = ref.instance;
           bindAction('#ng2DestroyDom', ng2DestroyDom);
           bindAction('#ng2CreateDom', ng2CreateDom);
           bindAction('#ng2UpdateDomProfile', profile(ng2CreateDom, noop, 'ng2-update'));
@@ -217,8 +217,9 @@ class BaseLineIf {
   }
 }
 
-@Component({selector: 'tree', inputs: ['data']})
-@View({
+@Component({
+  selector: 'tree',
+  inputs: ['data'],
   directives: [TreeComponent, NgIf],
   template:
       `<span> {{data.value}} <span template='ngIf data.right != null'><tree [data]='data.right'></tree></span><span template='ngIf data.left != null'><tree [data]='data.left'></tree></span></span>`
@@ -227,8 +228,8 @@ class TreeComponent {
   data: TreeNode;
 }
 
-@Component({selector: 'app'})
-@View({directives: [TreeComponent], template: `<tree [data]='initData'></tree>`})
+@Component(
+    {selector: 'app', directives: [TreeComponent], template: `<tree [data]='initData'></tree>`})
 class AppComponent {
   initData: TreeNode;
   constructor() {

@@ -9,15 +9,15 @@ import {
   inject,
   it,
   xit,
-} from 'angular2/testing_internal';
+} from '@angular/testing/testing_internal';
 
-import {DateWrapper, Json, RegExpWrapper, isPresent} from 'angular2/src/facade/lang';
-import {PromiseWrapper} from 'angular2/src/facade/async';
+import {DateWrapper, Json, RegExpWrapper, isPresent} from '@angular/facade';
+import {PromiseWrapper} from '@angular/facade';
 
 import {
   bind,
   provide,
-  Injector,
+  ReflectiveInjector,
   SampleDescription,
   MeasureValues,
   Options
@@ -32,7 +32,7 @@ export function main() {
 
     function createReporter({sampleId, descriptions, metrics, path}) {
       var bindings = [
-        JsonFileReporter.BINDINGS,
+        JsonFileReporter.PROVIDERS,
         provide(SampleDescription,
                 {useValue: new SampleDescription(sampleId, descriptions, metrics)}),
         bind(JsonFileReporter.PATH).toValue(path),
@@ -43,7 +43,7 @@ export function main() {
               return PromiseWrapper.resolve(null);
             })
       ];
-      return Injector.resolveAndCreate(bindings).get(JsonFileReporter);
+      return ReflectiveInjector.resolveAndCreate(bindings).get(JsonFileReporter);
     }
 
     it('should write all data into a file', inject([AsyncTestCompleter], (async) => {

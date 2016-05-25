@@ -6,5 +6,7 @@ var purgeIfStale = (process.argv.indexOf('--purge') !== -1);
 
 // check-node-modules will exit(1) if we don't need to install to short-circuit `npm install`
 // see .travis.yml's `install` block to see the reason for this
-process.exit(checkNpm(true, purgeIfStale) ? 1 : 0);
+var nodeModulesOK = checkNpm(true, purgeIfStale);
+
+process.exit( nodeModulesOK ? 0 : 1);
 

@@ -25,7 +25,7 @@ describe('deep tree baseline', function() {
             id: 'baseline',
             execute: function() { $('button')
                                       .click(); },
-            bindings: [benchpress.bind(benchpress.Options.SAMPLE_DESCRIPTION).toValue({depth: 9})]
+            providers: [benchpress.bind(benchpress.Options.SAMPLE_DESCRIPTION).toValue({depth: 9})]
           })
         .then(done, done.fail);
   });

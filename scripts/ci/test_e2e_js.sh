@@ -15,8 +15,6 @@ function killServer () {
 ./node_modules/.bin/gulp serve.js.prod&
 serverPid=$!
 
-./node_modules/.bin/gulp build.css.material&
-
 trap killServer EXIT
 
 # wait for server to come up!

@@ -2,7 +2,7 @@ library angular2.transform.stylesheet_compiler.processor;
 
 import 'dart:async';
 
-import 'package:angular2/src/compiler/source_module.dart';
+import 'package:angular2/src/compiler/offline_compiler.dart';
 import 'package:angular2/src/transform/common/asset_reader.dart';
 import 'package:angular2/src/transform/common/code/source_module.dart';
 import 'package:angular2/src/transform/common/logging.dart';
@@ -28,7 +28,7 @@ Future<Iterable<Asset>> processStylesheet(
   final cssText = await reader.readAsString(stylesheetId);
   return logElapsedAsync(() async {
     final sourceModules =
-        templateCompiler.compileStylesheetCodeGen(stylesheetUrl, cssText);
+        templateCompiler.compileStylesheet(stylesheetUrl, cssText);
 
     return sourceModules.map((SourceModule module) => new Asset.fromString(
         new AssetId.parse('${module.moduleUrl}'), writeSourceModule(module)));

@@ -9,7 +9,7 @@ import {
   inject,
   it,
   xit,
-} from 'angular2/testing_internal';
+} from '@angular/testing/testing_internal';
 import {
   Runner,
   Sampler,
@@ -17,21 +17,22 @@ import {
   Validator,
   bind,
   provide,
+  ReflectiveInjector,
   Injector,
   Metric,
   Options,
   WebDriverAdapter,
   SampleState
 } from 'benchpress/common';
-import {isBlank} from 'angular2/src/facade/lang';
-import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
+import {isBlank} from '@angular/facade';
+import {PromiseWrapper} from '@angular/facade';
 
 export function main() {
   describe('runner', () => {
-    var injector: Injector;
+    var injector: ReflectiveInjector;
     var runner;
 
-    function createRunner(defaultBindings = null) {
+    function createRunner(defaultBindings = null): Runner {
       if (isBlank(defaultBindings)) {
         defaultBindings = [];
       }
@@ -62,7 +63,7 @@ export function main() {
 
     it('should merge SampleDescription.description', inject([AsyncTestCompleter], (async) => {
          createRunner([bind(Options.DEFAULT_DESCRIPTION).toValue({'a': 1})])
-             .sample({id: 'someId', bindings: [bind(Options.SAMPLE_DESCRIPTION).toValue({'b': 2})]})
+             .sample({id: 'someId', providers: [bind(Options.SAMPLE_DESCRIPTION).toValue({'b': 2})]})
              .then((_) => injector.get(SampleDescription))
              .then((desc) => {
                expect(desc.description)
@@ -120,7 +121,7 @@ export function main() {
          ])
              .sample({
                id: 'someId',
-               bindings: [
+               providers: [
                  bind(Options.DEFAULT_DESCRIPTION)
                      .toValue({'a': 2}),
                ]
