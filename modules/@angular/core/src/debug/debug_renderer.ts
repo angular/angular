@@ -9,6 +9,10 @@ import {
   removeDebugNodeFromIndex
 } from './debug_node';
 
+import {AnimationKeyframe} from '../animation/animation_keyframe';
+import {AnimationStyles} from '../animation/animation_styles';
+import {AnimationPlayer} from '../animation/animation_player';
+
 export class DebugDomRootRenderer implements RootRenderer {
   constructor(private _delegate: RootRenderer) {}
 
@@ -137,4 +141,8 @@ export class DebugDomRenderer implements Renderer {
   }
 
   setText(renderNode: any, text: string) { this._delegate.setText(renderNode, text); }
+
+  animate(element: any, startingStyles: AnimationStyles, keyframes: AnimationKeyframe[], duration: number, delay: number, easing: string): AnimationPlayer {
+    return this._delegate.animate(element, startingStyles, keyframes, duration, delay, easing);
+  }
 }

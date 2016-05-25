@@ -12,3 +12,27 @@ export var SecurityContext: typeof t.SecurityContext = r.SecurityContext;
 export type SecurityContext = t.SecurityContext;
 export var SanitizationService: typeof t.SanitizationService = r.SanitizationService;
 export type SanitizationService = t.SanitizationService;
+
+export type NoOpAnimationPlayer = t.NoOpAnimationPlayer;
+export var NoOpAnimationPlayer: typeof t.NoOpAnimationPlayer = r.NoOpAnimationPlayer;
+export type AnimationPlayer = t.AnimationPlayer;
+export var AnimationPlayer: typeof t.AnimationPlayer = r.AnimationPlayer;
+export type NoOpAnimationDriver = t.NoOpAnimationDriver;
+export var NoOpAnimationDriver: typeof t.NoOpAnimationDriver = r.NoOpAnimationDriver;
+export type AnimationDriver = t.AnimationDriver;
+export var AnimationDriver: typeof t.AnimationDriver = r.AnimationDriver;
+export type AnimationSequencePlayer = t.AnimationSequencePlayer;
+export var AnimationSequencePlayer: typeof t.AnimationSequencePlayer = r.AnimationSequencePlayer;
+export type AnimationGroupPlayer = t.AnimationGroupPlayer;
+export var AnimationGroupPlayer: typeof t.AnimationGroupPlayer = r.AnimationGroupPlayer;
+export type AnimationKeyframe = t.AnimationKeyframe;
+export var AnimationKeyframe: typeof t.AnimationKeyframe = r.AnimationKeyframe;
+export type AnimationStyleUtil = t.AnimationStyleUtil;
+export var AnimationStyleUtil: typeof t.AnimationStyleUtil = r.AnimationStyleUtil;
+export type AnimationStyles = t.AnimationStyles;
+export var AnimationStyles: typeof t.AnimationStyles = r.AnimationStyles;
+
+export type MockAnimationPlayer = t.MockAnimationPlayer;
+export var MockAnimationPlayer: typeof t.MockAnimationPlayer = r.MockAnimationPlayer;
+export type MockAnimationDriver = t.MockAnimationDriver;
+export var MockAnimationDriver: typeof t.MockAnimationDriver = r.MockAnimationDriver;

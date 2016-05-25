@@ -45,6 +45,8 @@ import {
   CompileTokenMetadata
 } from '../compile_metadata';
 
+import {AnimationCompiler} from '../animation/animation_compiler';
+
 const IMPLICIT_TEMPLATE_VAR = '\$implicit';
 const CLASS_ATTR = 'class';
 const STYLE_ATTR = 'style';
@@ -78,6 +80,8 @@ export function finishView(view: CompileView, targetStatements: o.Statement[]) {
 
 class ViewBuilderVisitor implements TemplateAstVisitor {
   nestedViewCount: number = 0;
+
+  private _animationCompiler = new AnimationCompiler();
 
   constructor(public view: CompileView, public targetDependencies: ViewCompileDependency[]) {}
 
@@ -270,9 +274,11 @@ class ViewBuilderVisitor implements TemplateAstVisitor {
                            ast.providers, ast.hasViewContainer, true, ast.references);
     this.view.nodes.push(compileElement);
 
+    var compiledAnimations = this._animationCompiler.compileComponent(this.view.component);
+
     this.nestedViewCount++;
     var embeddedView = new CompileView(
-        this.view.component, this.view.genConfig, this.view.pipeMetas, o.NULL_EXPR,
+        this.view.component, this.view.genConfig, this.view.pipeMetas, o.NULL_EXPR, compiledAnimations,
         this.view.viewIndex + this.nestedViewCount, compileElement, templateVariableBindings);
     this.nestedViewCount += buildView(embeddedView, ast.children, this.targetDependencies);
 
@@ -423,7 +429,8 @@ function createViewClass(view: CompileView, renderCompTypeVar: o.ReadVarExpr,
                       [new o.FnParam(DetectChangesVars.throwOnChange.name, o.BOOL_TYPE)],
                       generateDetectChangesMethod(view)),
     new o.ClassMethod('dirtyParentQueriesInternal', [], view.dirtyParentQueriesMethod.finish()),
-    new o.ClassMethod('destroyInternal', [], view.destroyMethod.finish())
+    new o.ClassMethod('destroyInternal', [], view.destroyMethod.finish()),
+    new o.ClassMethod('detachInternal', [], view.detachMethod.finish())
   ].concat(view.eventHandlerMethods);
   var superClass = view.genConfig.genDebugInfo ? Identifiers.DebugAppView : Identifiers.AppView;
   var viewClass = new o.ClassStmt(view.className, o.importExpr(superClass, [getContextType(view)]),

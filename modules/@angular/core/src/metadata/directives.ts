@@ -2,6 +2,7 @@ import {isPresent, Type} from '../../src/facade/lang';
 import {InjectableMetadata} from '../di/metadata';
 import {ViewEncapsulation} from './view';
 import {ChangeDetectionStrategy} from '../change_detection/constants';
+import {AnimationEntryMetadata} from '../animation/metadata';
 
 /**
  * Directives allow you to attach behavior to elements in the DOM.
@@ -872,6 +873,8 @@ export class ComponentMetadata extends DirectiveMetadata {
 
   styles: string[];
 
+  animations: AnimationEntryMetadata[];
+
   directives: Array<Type | any[]>;
 
   pipes: Array<Type | any[]>;
@@ -881,7 +884,7 @@ export class ComponentMetadata extends DirectiveMetadata {
   constructor({selector, inputs, outputs, properties, events, host, exportAs, moduleId,
                providers, viewProviders,
                changeDetection = ChangeDetectionStrategy.Default, queries, templateUrl, template,
-               styleUrls, styles, directives, pipes, encapsulation}: {
+               styleUrls, styles, animations, directives, pipes, encapsulation}: {
     selector?: string,
     inputs?: string[],
     outputs?: string[],
@@ -898,6 +901,7 @@ export class ComponentMetadata extends DirectiveMetadata {
     template?: string,
     styleUrls?: string[],
     styles?: string[],
+    animations?: AnimationEntryMetadata[],
     directives?: Array<Type | any[]>,
     pipes?: Array<Type | any[]>,
     encapsulation?: ViewEncapsulation
@@ -924,6 +928,7 @@ export class ComponentMetadata extends DirectiveMetadata {
     this.pipes = pipes;
     this.encapsulation = encapsulation;
     this.moduleId = moduleId;
+    this.animations = animations;
   }
 }
 

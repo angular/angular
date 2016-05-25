@@ -75,12 +75,13 @@ import {ProviderElementContext, ProviderViewContext} from './provider_parser';
 // Group 4 = "ref-/#"
 // Group 5 = "on-"
 // Group 6 = "bindon-"
-// Group 7 = the identifier after "bind-", "var-/#", or "on-"
-// Group 8 = identifier inside [()]
-// Group 9 = identifier inside []
-// Group 10 = identifier inside ()
+// Group 7 = "animate-/@"
+// Group 8 = the identifier after "bind-", "var-/#", or "on-"
+// Group 9 = identifier inside [()]
+// Group 10 = identifier inside []
+// Group 11 = identifier inside ()
 var BIND_NAME_REGEXP =
-    /^(?:(?:(?:(bind-)|(var-)|(let-)|(ref-|#)|(on-)|(bindon-))(.+))|\[\(([^\)]+)\)\]|\[([^\]]+)\]|\(([^\)]+)\))$/g;
+    /^(?:(?:(?:(bind-)|(var-)|(let-)|(ref-|#)|(on-)|(bindon-)|(animate-|@))(.+))|\[\(([^\)]+)\)\]|\[([^\]]+)\]|\(([^\)]+)\))$/g;
 
 const TEMPLATE_ELEMENT = 'template';
 const TEMPLATE_ATTR = 'template';
@@ -303,6 +304,7 @@ class TemplateParseVisitor implements HtmlAstVisitor {
     var elementOrDirectiveProps: BoundElementOrDirectiveProperty[] = [];
     var elementOrDirectiveRefs: ElementOrDirectiveRef[] = [];
     var elementVars: VariableAst[] = [];
+    var animationProps: BoundElementPropertyAst[] = [];
     var events: BoundEventAst[] = [];
 
     var templateElementOrDirectiveProps: BoundElementOrDirectiveProperty[] = [];
@@ -316,7 +318,7 @@ class TemplateParseVisitor implements HtmlAstVisitor {
 
     element.attrs.forEach(attr => {
       var hasBinding =
-          this._parseAttr(isTemplateElement, attr, matchableAttrs, elementOrDirectiveProps, events,
+          this._parseAttr(isTemplateElement, attr, matchableAttrs, elementOrDirectiveProps, animationProps, events,
                           elementOrDirectiveRefs, elementVars);
       var hasTemplateBinding = this._parseInlineTemplateBinding(
           attr, templateMatchableAttrs, templateElementOrDirectiveProps, templateElementVars);
@@ -337,7 +339,7 @@ class TemplateParseVisitor implements HtmlAstVisitor {
                                                   elementOrDirectiveProps, elementOrDirectiveRefs,
                                                   element.sourceSpan, references);
     var elementProps: BoundElementPropertyAst[] =
-        this._createElementPropertyAsts(element.name, elementOrDirectiveProps, directiveAsts);
+      this._createElementPropertyAsts(element.name, elementOrDirectiveProps, directiveAsts).concat(animationProps);
     var isViewRoot = parent.isTemplateElement || hasInlineTemplates;
     var providerContext =
         new ProviderElementContext(this.providerViewContext, parent.providerContext, isViewRoot,
@@ -439,7 +441,9 @@ class TemplateParseVisitor implements HtmlAstVisitor {
 
   private _parseAttr(isTemplateElement: boolean, attr: HtmlAttrAst,
                      targetMatchableAttrs: string[][],
-                     targetProps: BoundElementOrDirectiveProperty[], targetEvents: BoundEventAst[],
+                     targetProps: BoundElementOrDirectiveProperty[],
+                     targetAnimationProps: BoundElementPropertyAst[],
+                     targetEvents: BoundEventAst[],
                      targetRefs: ElementOrDirectiveRef[], targetVars: VariableAst[]): boolean {
     var attrName = this._normalizeAttributeName(attr.name);
     var attrValue = attr.value;
@@ -448,11 +452,11 @@ class TemplateParseVisitor implements HtmlAstVisitor {
     if (isPresent(bindParts)) {
       hasBinding = true;
       if (isPresent(bindParts[1])) {  // match: bind-prop
-        this._parseProperty(bindParts[7], attrValue, attr.sourceSpan, targetMatchableAttrs,
+        this._parseProperty(bindParts[8], attrValue, attr.sourceSpan, targetMatchableAttrs,
                             targetProps);
 
       } else if (isPresent(bindParts[2])) {  // match: var-name / var-name="iden"
-        var identifier = bindParts[7];
+        var identifier = bindParts[8];
         if (isTemplateElement) {
           this._reportError(`"var-" on <template> elements is deprecated. Use "let-" instead!`,
                             attr.sourceSpan, ParseErrorLevel.WARNING);
@@ -465,38 +469,41 @@ class TemplateParseVisitor implements HtmlAstVisitor {
 
       } else if (isPresent(bindParts[3])) {  // match: let-name
         if (isTemplateElement) {
-          var identifier = bindParts[7];
+          var identifier = bindParts[8];
           this._parseVariable(identifier, attrValue, attr.sourceSpan, targetVars);
         } else {
           this._reportError(`"let-" is only supported on template elements.`, attr.sourceSpan);
         }
 
       } else if (isPresent(bindParts[4])) {  // match: ref- / #iden
-        var identifier = bindParts[7];
+        var identifier = bindParts[8];
         this._parseReference(identifier, attrValue, attr.sourceSpan, targetRefs);
 
       } else if (isPresent(bindParts[5])) {  // match: on-event
-        this._parseEvent(bindParts[7], attrValue, attr.sourceSpan, targetMatchableAttrs,
+        this._parseEvent(bindParts[8], attrValue, attr.sourceSpan, targetMatchableAttrs,
                          targetEvents);
 
       } else if (isPresent(bindParts[6])) {  // match: bindon-prop
-        this._parseProperty(bindParts[7], attrValue, attr.sourceSpan, targetMatchableAttrs,
-                            targetProps);
-        this._parseAssignmentEvent(bindParts[7], attrValue, attr.sourceSpan, targetMatchableAttrs,
-                                   targetEvents);
-
-      } else if (isPresent(bindParts[8])) {  // match: [(expr)]
         this._parseProperty(bindParts[8], attrValue, attr.sourceSpan, targetMatchableAttrs,
                             targetProps);
         this._parseAssignmentEvent(bindParts[8], attrValue, attr.sourceSpan, targetMatchableAttrs,
                                    targetEvents);
 
-      } else if (isPresent(bindParts[9])) {  // match: [expr]
+      } else if (isPresent(bindParts[7])) {  // match: animate-name
+        this._parseAnimation(bindParts[8], attrValue, attr.sourceSpan, targetMatchableAttrs,
+          targetAnimationProps);
+      } else if (isPresent(bindParts[9])) {  // match: [(expr)]
         this._parseProperty(bindParts[9], attrValue, attr.sourceSpan, targetMatchableAttrs,
                             targetProps);
+        this._parseAssignmentEvent(bindParts[9], attrValue, attr.sourceSpan, targetMatchableAttrs,
+                                   targetEvents);
 
-      } else if (isPresent(bindParts[10])) {  // match: (event)
-        this._parseEvent(bindParts[10], attrValue, attr.sourceSpan, targetMatchableAttrs,
+      } else if (isPresent(bindParts[10])) {  // match: [expr]
+        this._parseProperty(bindParts[10], attrValue, attr.sourceSpan, targetMatchableAttrs,
+                            targetProps);
+
+      } else if (isPresent(bindParts[11])) {  // match: (event)
+        this._parseEvent(bindParts[11], attrValue, attr.sourceSpan, targetMatchableAttrs,
                          targetEvents);
       }
     } else {
@@ -534,6 +541,14 @@ class TemplateParseVisitor implements HtmlAstVisitor {
                          targetProps: BoundElementOrDirectiveProperty[]) {
     this._parsePropertyAst(name, this._parseBinding(expression, sourceSpan), sourceSpan,
                            targetMatchableAttrs, targetProps);
+  }
+
+  private _parseAnimation(name: string, expression: string, sourceSpan: ParseSourceSpan,
+                          targetMatchableAttrs: string[][],
+                          targetAnimationProps: BoundElementPropertyAst[]) {
+    var ast = this._parseBinding(expression, sourceSpan);
+    targetMatchableAttrs.push([name, ast.source]);
+    targetAnimationProps.push(new BoundElementPropertyAst(name, PropertyBindingType.Animation, SecurityContext.NONE, ast, null, sourceSpan));
   }
 
   private _parsePropertyInterpolation(name: string, value: string, sourceSpan: ParseSourceSpan,
@@ -716,8 +731,8 @@ class TemplateParseVisitor implements HtmlAstVisitor {
       bindingType = PropertyBindingType.Property;
       if (!this._schemaRegistry.hasProperty(elementName, boundPropertyName)) {
         this._reportError(
-            `Can't bind to '${boundPropertyName}' since it isn't a known native property`,
-            sourceSpan);
+          `Can't bind to '${boundPropertyName}' since it isn't a known native property`,
+          sourceSpan);
       }
     } else {
       if (parts[0] == ATTRIBUTE_PREFIX) {

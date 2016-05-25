@@ -21,6 +21,27 @@ import * as provider_util from './src/di/provider_util';
 import * as console from './src/console';
 import {Provider} from './index';
 
+import {
+  NoOpAnimationPlayer as NoOpAnimationPlayer_,
+  AnimationPlayer as AnimationPlayer_
+} from './src/animation/animation_player';
+import {
+  NoOpAnimationDriver as NoOpAnimationDriver_,
+  AnimationDriver as AnimationDriver_
+} from './src/animation/animation_driver';
+import {AnimationSequencePlayer as AnimationSequencePlayer_} from './src/animation/animation_sequence_player';
+import {AnimationGroupPlayer as AnimationGroupPlayer_} from './src/animation/animation_group_player';
+import {AnimationKeyframe as AnimationKeyframe_} from './src/animation/animation_keyframe';
+import {AnimationStyleUtil as AnimationStyleUtil_} from './src/animation/animation_style_util';
+import {AnimationStyles as AnimationStyles_} from './src/animation/animation_styles';
+import {
+  ANY_STATE as ANY_STATE_,
+  EMPTY_STATE as EMPTY_STATE_,
+  FILL_STYLE_FLAG as FILL_STYLE_FLAG_
+} from './src/animation/animation_constants';
+import {MockAnimationPlayer as MockAnimationPlayer_} from './testing/animation/mock_animation_player';
+import {MockAnimationDriver as MockAnimationDriver_} from './testing/animation/mock_animation_driver';
+
 export declare namespace __core_private_types__ {
   export var isDefaultChangeDetectionStrategy: typeof constants.isDefaultChangeDetectionStrategy;
   export type ChangeDetectorState = constants.ChangeDetectorState;
@@ -82,6 +103,31 @@ export declare namespace __core_private_types__ {
   export var castByValue: typeof view_utils.castByValue;
   export type Console = console.Console;
   export var Console: typeof console.Console;
+  export type NoOpAnimationPlayer = NoOpAnimationPlayer_;
+  export var NoOpAnimationPlayer: typeof NoOpAnimationPlayer_;
+  export type AnimationPlayer = AnimationPlayer_;
+  export var AnimationPlayer: typeof AnimationPlayer_;
+  export type NoOpAnimationDriver = NoOpAnimationDriver_;
+  export var NoOpAnimationDriver: typeof NoOpAnimationDriver_;
+  export type AnimationDriver = AnimationDriver_;
+  export var AnimationDriver: typeof AnimationDriver_;
+  export type AnimationSequencePlayer = AnimationSequencePlayer_;
+  export var AnimationSequencePlayer: typeof AnimationSequencePlayer_;
+  export type AnimationGroupPlayer = AnimationGroupPlayer_;
+  export var AnimationGroupPlayer: typeof AnimationGroupPlayer_;
+  export type AnimationKeyframe = AnimationKeyframe_;
+  export var AnimationKeyframe: typeof AnimationKeyframe_;
+  export type AnimationStyleUtil = AnimationStyleUtil_;
+  export var AnimationStyleUtil: typeof AnimationStyleUtil_;
+  export type AnimationStyles = AnimationStyles_;
+  export var AnimationStyles: typeof AnimationStyles_;
+  export var ANY_STATE: typeof ANY_STATE_;
+  export var EMPTY_STATE: typeof EMPTY_STATE_;
+  export var FILL_STYLE_FLAG: typeof FILL_STYLE_FLAG_;
+  export type MockAnimationPlayer = MockAnimationPlayer_;
+  export var MockAnimationPlayer: typeof MockAnimationPlayer_;
+  export type MockAnimationDriver = MockAnimationDriver_;
+  export var MockAnimationDriver: typeof MockAnimationDriver_;
 }
 
 export var __core_private__ = {
@@ -132,4 +178,18 @@ export var __core_private__ = {
   pureProxy10: view_utils.pureProxy10,
   castByValue: view_utils.castByValue,
   Console: console.Console,
+  NoOpAnimationPlayer: NoOpAnimationPlayer_,
+  AnimationPlayer: AnimationPlayer_,
+  NoOpAnimationDriver: NoOpAnimationDriver_,
+  AnimationDriver: AnimationDriver_,
+  AnimationSequencePlayer: AnimationSequencePlayer_,
+  AnimationGroupPlayer: AnimationGroupPlayer_,
+  AnimationKeyframe: AnimationKeyframe_,
+  AnimationStyleUtil: AnimationStyleUtil_,
+  AnimationStyles: AnimationStyles_,
+  MockAnimationPlayer: MockAnimationPlayer_,
+  MockAnimationDriver: MockAnimationDriver_,
+  ANY_STATE: ANY_STATE_,
+  EMPTY_STATE: EMPTY_STATE_,
+  FILL_STYLE_FLAG: FILL_STYLE_FLAG_
 };

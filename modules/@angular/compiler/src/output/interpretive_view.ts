@@ -41,6 +41,14 @@ class _InterpretiveAppView extends DebugAppView<any> implements DynamicInstance 
       return super.injectorGet(token, nodeIndex, notFoundResult);
     }
   }
+  detachInternal(): void {
+    var m = this.methods.get('detachInternal');
+    if (isPresent(m)) {
+      return m();
+    } else {
+      return super.detachInternal();
+    }
+  }
   destroyInternal(): void {
     var m = this.methods.get('destroyInternal');
     if (isPresent(m)) {
