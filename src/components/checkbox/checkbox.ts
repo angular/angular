@@ -149,7 +149,9 @@ export class MdCheckbox implements ControlValueAccessor {
         this.change.emit(this._checked);
       }
     }
+  }
 
+  ngAfterContentInit() {
     this._isInitialized = true;
   }
 
