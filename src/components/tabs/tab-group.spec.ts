@@ -7,7 +7,7 @@ import {
     async
 } from '@angular/core/testing';
 import {TestComponentBuilder, ComponentFixture} from '@angular/compiler/testing';
-import {MD_TAB_GROUP_DIRECTIVES, MdTabGroup} from './tab-group';
+import {MD_TABS_DIRECTIVES, MdTabGroup} from './tabs';
 import {Component} from '@angular/core';
 import {By} from '@angular/platform-browser';
 
@@ -125,7 +125,7 @@ describe('MdTabGroup', () => {
       </md-tab>
     </md-tab-group>
   `,
-  directives: [MD_TAB_GROUP_DIRECTIVES]
+  directives: [MD_TABS_DIRECTIVES]
 })
 class SimpleTabsTestApp {
   selectedIndex: number = 1;

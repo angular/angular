@@ -18,7 +18,7 @@ const components = [
   'radio',
   'sidenav',
   'slide-toggle',
-  'tab-group',
+  'tabs',
   'toolbar'
 ];
 

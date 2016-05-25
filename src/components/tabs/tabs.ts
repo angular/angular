@@ -113,4 +113,4 @@ export class MdTabGroup {
   }
 }
 
-export const MD_TAB_GROUP_DIRECTIVES = [MdTabGroup, MdTabLabel, MdTabContent];
+export const MD_TABS_DIRECTIVES = [MdTabGroup, MdTabLabel, MdTabContent];
