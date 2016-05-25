@@ -37,7 +37,7 @@ import {BrowserPlatformLocation} from "./browser/location/browser_platform_locat
 import {COMPILER_PROVIDERS, XHR} from "@angular/compiler";
 import {CachedXHR} from "./xhr/xhr_cache";
 import {XHRImpl} from "./xhr/xhr_impl";
-import {reflector} from '../../compiler_cli/src/core_private';
+import {reflector} from '../core_private';
 
 export const CACHED_TEMPLATE_PROVIDER: Array<any /*Type | Provider | any[]*/> =
   [{provide: XHR, useClass: CachedXHR}];
