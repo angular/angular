@@ -15,7 +15,7 @@
     "url": "https://github.com/angular/angular.git"
   },
   "scripts": {
-    "postinstall": "node tools/npm/copy-npm-shrinkwrap"
+    "postinstall": "node tools/npm/copy-npm-shrinkwrap; webdriver-manager update"
   },
   "dependencies": {
     "es6-shim": "^0.35.0",
