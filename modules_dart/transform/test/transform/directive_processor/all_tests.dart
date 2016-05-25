@@ -540,13 +540,14 @@ void allTests() {
 
       final List list = model.identifiers['b'].value;
 
-      expect(list.length, equals(3));
+      expect(list.length, equals(4));
       expect(list[0].name, equals("SomeClass"));
       expect(list[1].name, equals("a"));
       expect(list[2].toJson(), equals(new CompileProviderMetadata(
           token: new CompileTokenMetadata(value: 'someOtherToken'),
           useClass: new CompileTypeMetadata(name: 'SomeClass'))
           .toJson()));
+      expect(list[3], equals(null));
     });
 
     test(

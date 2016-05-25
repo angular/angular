@@ -9,5 +9,8 @@ const a = const Provider("someToken", useClass: SomeClass);
 const b = const [
   SomeClass,
   a,
-  const Provider("someOtherToken", useClass: SomeClass)
+  const Provider("someOtherToken", useClass: SomeClass),
+  _someInvalidPrivateIdentifier
 ];
+
+const _someInvalidPrivateIdentifier = 'Test';

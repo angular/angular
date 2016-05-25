@@ -1103,24 +1103,24 @@ bool _hasConst(List list, String name) => list
 dynamic _readIdentifier(dynamic el, {bool throwOnErrors: true}) {
   var name;
   var prefix;
+  var error;
   if (el is PrefixedIdentifier) {
     prefix = '${el.prefix}';
     if (prefix.length > 0 && prefix.toUpperCase()[0] == prefix[0]) {
-      throw new ArgumentError('Incorrect identifier "${el}".');
+      error = 'Incorrect identifier "${el}".';
     }
     name = '${el.identifier}';
   } else if (el is SimpleIdentifier) {
     name = '$el';
+  } else {
+    error = 'Incorrect identifier "${el}".';
   }
-  if (name == null) {
+  if (name != null && name.startsWith('_')) {
+    error = 'Private identifier "${el}" not supported.';
+  }
+  if (error != null) {
     if (throwOnErrors) {
-      throw new ArgumentError('Incorrect identifier "${el}".');
-    } else {
-      return null;
-    }
-  } else if (name.startsWith('_')) {
-    if (throwOnErrors) {
-      throw new ArgumentError('Private identifier "${el}" not supported.');
+      throw new ArgumentError(error);
     } else {
       return null;
     }
