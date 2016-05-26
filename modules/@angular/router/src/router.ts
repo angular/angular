@@ -4,18 +4,29 @@ import { UrlSerializer } from './url_serializer';
 import { RouterOutletMap } from './router_outlet_map';
 import { recognize } from './recognize';
 import { rootNode, TreeNode } from './utils/tree';
-import { UrlTree } from './url_tree';
-import { createEmptyState, RouterState, ActivatedRoute, PRIMARY_OUTLET } from './router_state';
+import { UrlTree, createEmptyUrlTree } from './url_tree';
+import { PRIMARY_OUTLET, Params } from './shared';
+import { createEmptyState, RouterState, ActivatedRoute} from './router_state';
 import { RouterConfig } from './config';
 import { RouterOutlet } from './directives/router_outlet';
+import { createUrlTree } from './create_url_tree';
 import { forEach } from './utils/collection';
+import { Observable } from 'rxjs/Observable';
 import { Subscription } from 'rxjs/Subscription';
+import 'rxjs/add/operator/map';
+import 'rxjs/add/operator/mergeMap';
+import 'rxjs/add/operator/toPromise';
+import {fromPromise} from 'rxjs/observable/fromPromise';
+import {forkJoin} from 'rxjs/observable/forkJoin';
+
+export interface NavigationExtras { relativeTo?: ActivatedRoute; queryParameters?: Params; fragment?: string; }
 
 /**
  * The `Router` is responsible for mapping URLs to components.
  */
 export class Router {
-  private currentState: RouterState;
+  private currentUrlTree: UrlTree;
+  private currentRouterState: RouterState;
   private config: RouterConfig;
   private locationSubscription: Subscription;
 
@@ -23,7 +34,8 @@ export class Router {
    * @internal
    */
   constructor(private rootComponent:Object, private resolver: ComponentResolver, private urlSerializer: UrlSerializer, private outletMap: RouterOutletMap, private location: Location) {
-    this.currentState = createEmptyState(<any>rootComponent.constructor);
+    this.currentUrlTree = createEmptyUrlTree();
+    this.currentRouterState = createEmptyState(<any>rootComponent.constructor);
     this.setUpLocationChangeListener();
     this.navigateByUrl(this.location.path());
   }
@@ -32,7 +44,14 @@ export class Router {
    * Returns the current route state.
    */
   get routerState(): RouterState {
-    return this.currentState;
+    return this.currentRouterState;
+  }
+
+  /**
+   * Returns the current url tree.
+   */
+  get urlTree(): UrlTree {
+    return this.currentUrlTree;
   }
 
   /**
@@ -44,9 +63,9 @@ export class Router {
    * router.navigateByUrl("/team/33/user/11");
    * ```
    */
-  navigateByUrl(url: string): void {
+  navigateByUrl(url: string): Observable<void> {
     const urlTree = this.urlSerializer.parse(url);
-    this.navigate(urlTree, false);
+    return this.runNavigate(urlTree, false);
   }
 
   /**
@@ -56,9 +75,9 @@ export class Router {
    *
    * ```
    * router.resetConfig([
-   *  { name: 'team', path: 'team/:id', component: TeamCmp, children: [
-   *    { name: 'simple', path: 'simple', component: SimpleCmp },
-   *    { name: 'user', path: 'user/:name', component: UserCmp }
+   *  { path: 'team/:id', component: TeamCmp, children: [
+   *    { path: 'simple', component: SimpleCmp },
+   *    { path: 'user/:name', component: UserCmp }
    *  ] }
    * ]);
    * ```
@@ -66,71 +85,140 @@ export class Router {
   resetConfig(config: RouterConfig): void {
     this.config = config;
   }
-  
+
   /**
    * @internal
    */
   dispose(): void { this.locationSubscription.unsubscribe(); }
 
+  /**
+   * Applies an array of commands to the current url tree and creates
+   * a new url tree.
+   *
+   * When given an activate route, applies the given commands starting from the route.
+   * When not given a route, applies the given command starting from the root.
+   *
+   * ### Usage
+   *
+   * ```
+   * // create /team/33/user/11
+   * router.createUrlTree(['/team', 33, 'user', 11]);
+   *
+   * // create /team/33;expand=true/user/11
+   * router.createUrlTree(['/team', 33, {expand: true}, 'user', 11]);
+   *
+   * // you can collapse static fragments like this
+   * router.createUrlTree(['/team/33/user', userId]);
+   *
+   * // assuming the current url is `/team/33/user/11` and the route points to `user/11`
+   *
+   * // navigate to /team/33/user/11/details
+   * router.createUrlTree(['details'], {relativeTo: route});
+   *
+   * // navigate to /team/33/user/22
+   * router.createUrlTree(['../22'], {relativeTo: route});
+   *
+   * // navigate to /team/44/user/22
+   * router.createUrlTree(['../../team/44/user/22'], {relativeTo: route});
+   * ```
+   */
+  createUrlTree(commands: any[], {relativeTo, queryParameters, fragment}: NavigationExtras = {}): UrlTree {
+    const a = relativeTo ? relativeTo : this.routerState.root;
+    return createUrlTree(a, this.currentUrlTree, commands, queryParameters, fragment);
+  }
+
+
+  /**
+   * Navigate based on the provided array of commands and a starting point.
+   * If no starting route is provided, the navigation is absolute.
+   *
+   * ### Usage
+   *
+   * ```
+   * router.navigate(['team', 33, 'team', '11], {relativeTo: route});
+   * ```
+   */
+  navigate(commands: any[], extras: NavigationExtras = {}): Observable<void> {
+    return this.runNavigate(this.createUrlTree(commands, extras));
+  }
+
+  /**
+   * Serializes a {@link UrlTree} into a string.
+   */
+  serializeUrl(url: UrlTree): string { return this.urlSerializer.serialize(url); }
+
+  /**
+   * Parse a string into a {@link UrlTree}.
+   */
+  parseUrl(url: string): UrlTree { return this.urlSerializer.parse(url); }
+
   private setUpLocationChangeListener(): void {
     this.locationSubscription = <any>this.location.subscribe((change) => {
-      this.navigate(this.urlSerializer.parse(change['url']), change['pop'])
+      this.runNavigate(this.urlSerializer.parse(change['url']), change['pop'])
     });
   }
 
-  private navigate(url: UrlTree, pop?: boolean): Promise<void> {
-    return recognize(this.resolver, this.config, url, this.currentState).then(newState => {
-      new ActivateRoutes(newState, this.currentState).activate(this.outletMap);
-      this.currentState = newState;
-      if (!pop) {
-        this.location.go(this.urlSerializer.serialize(url));
-      }
-    }).catch(e => console.log("error", e.message));
+  private runNavigate(url:UrlTree, pop?:boolean):Observable<void> {
+    const r = recognize(this.config, url, this.currentRouterState).mergeMap((newState:RouterState) => {
+      return new ActivateRoutes(this.resolver, newState, this.currentRouterState).activate(this.outletMap).map(() => {
+        this.currentUrlTree = url;
+        this.currentRouterState = newState;
+        if (!pop) {
+          this.location.go(this.urlSerializer.serialize(url));
+        }
+      });
+    });
+    r.subscribe((a) => {}, (e) => {}, () => {}); // force execution
+    return r;
   }
 }
 
 class ActivateRoutes {
-  constructor(private futureState: RouterState, private currState: RouterState) {}
+  constructor(private resolver: ComponentResolver, private futureState: RouterState, private currState: RouterState) {}
 
-  activate(parentOutletMap: RouterOutletMap): void {
+  activate(parentOutletMap: RouterOutletMap): Observable<void> {
     const currRoot = this.currState ? rootNode(this.currState) : null;
     const futureRoot = rootNode(this.futureState);
-    this.activateChildRoutes(futureRoot, currRoot, parentOutletMap);
+    return this.activateChildRoutes(futureRoot, currRoot, parentOutletMap);
   }
 
   private activateChildRoutes(futureNode: TreeNode<ActivatedRoute>,
                               currNode: TreeNode<ActivatedRoute> | null,
-                              outletMap: RouterOutletMap): void {
+                              outletMap: RouterOutletMap): Observable<any> {
     const prevChildren = nodeChildrenAsMap(currNode);
+    const observables = [];
     futureNode.children.forEach(c => {
-      this.activateRoutes(c, prevChildren[c.value.outlet], outletMap);
+      observables.push(this.activateRoutes(c, prevChildren[c.value.outlet], outletMap).toPromise());
       delete prevChildren[c.value.outlet];
     });
     forEach(prevChildren, (v, k) => this.deactivateOutletAndItChildren(outletMap._outlets[k]));
+    return forkJoin(observables);
   }
 
+
   activateRoutes(futureNode: TreeNode<ActivatedRoute>, currNode: TreeNode<ActivatedRoute>,
-                 parentOutletMap: RouterOutletMap): void {
+                 parentOutletMap: RouterOutletMap): Observable<void> {
     const future = futureNode.value;
     const curr = currNode ? currNode.value : null;
     const outlet = getOutlet(parentOutletMap, futureNode.value);
 
     if (future === curr) {
-      this.activateChildRoutes(futureNode, currNode, outlet.outletMap);
+      return this.activateChildRoutes(futureNode, currNode, outlet.outletMap);
     } else {
       this.deactivateOutletAndItChildren(outlet);
       const outletMap = new RouterOutletMap();
-      this.activateNewRoutes(outletMap, future, outlet);
-      this.activateChildRoutes(futureNode, currNode, outletMap);
+      return this.activateNewRoutes(outletMap, future, outlet).mergeMap(() =>
+        this.activateChildRoutes(futureNode, currNode, outletMap));
     }
   }
 
-  private activateNewRoutes(outletMap: RouterOutletMap, future: ActivatedRoute, outlet: RouterOutlet): void {
+  private activateNewRoutes(outletMap: RouterOutletMap, future: ActivatedRoute, outlet: RouterOutlet): Observable<void> {
     const resolved = ReflectiveInjector.resolve([
       {provide: ActivatedRoute, useValue: future},
       {provide: RouterOutletMap, useValue: outletMap}
     ]);
-    outlet.activate(future.factory, resolved, outletMap);
+    return fromPromise(this.resolver.resolveComponent(<any>future.component)).
+      map(factory => outlet.activate(factory, resolved, outletMap));
   }
 
   private deactivateOutletAndItChildren(outlet: RouterOutlet): void {
