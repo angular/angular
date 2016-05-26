@@ -109,6 +109,7 @@ export class EventEmitter<T> extends Subject<T> {
   // we can't mark it as internal now because EventEmitter exported via @angular/core would not
   // contain this property making it incompatible with all the code that uses EventEmitter via
   // facades, which are local to the code and do not have this property stripped.
+  // tslint:disable-next-line
   __isAsync: boolean;
 
   /**

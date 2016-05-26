@@ -1,23 +1,18 @@
 import {ListWrapper, StringMapWrapper} from '../facade/collection';
 import {Math} from '../facade/math';
-import {ANY_STATE, EMPTY_STATE} from '../../core_private';
+import {ANY_STATE, FILL_STYLE_FLAG} from '../../core_private';
 import {
-  IS_DART,
   RegExpWrapper,
   isArray,
   isPresent,
   isBlank,
-  isNumber,
   isString,
   isStringMap,
   NumberWrapper
 } from '../facade/lang';
 
-import {FILL_STYLE_FLAG} from '../../core_private';
-
 import {
   CompileAnimationEntryMetadata,
-  CompileAnimationStateMetadata,
   CompileAnimationStateDeclarationMetadata,
   CompileAnimationStateTransitionMetadata,
   CompileAnimationMetadata,
@@ -32,7 +27,6 @@ import {
 import {
   AnimationAst,
   AnimationEntryAst,
-  AnimationStateAst,
   AnimationStateTransitionAst,
   AnimationStateDeclarationAst,
   AnimationKeyframeAst,

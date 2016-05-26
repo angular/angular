@@ -13,10 +13,7 @@ import {
   ViewChildrenMetadata,
   ViewQueryMetadata,
   QueryMetadata,
-} from '@angular/core';
-import {ReflectorReader} from './core_private';
-import {Provider} from '@angular/core';
-import {
+  Provider,
   HostMetadata,
   OptionalMetadata,
   InjectableMetadata,
@@ -24,6 +21,7 @@ import {
   SkipSelfMetadata,
   InjectMetadata,
 } from "@angular/core";
+import {ReflectorReader} from "./core_private";
 
 /**
  * The host of the static resolver is expected to be able to provide module metadata in the form of
