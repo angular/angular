@@ -221,7 +221,7 @@ class UpgradeNg1ComponentAdapter implements OnInit, OnChanges, DoCheck {
   ngOnInit() {
 
     if (!this.directive.bindToController && this.directive.controller) {
-      this.buildController(this.directive.controller)
+      this.buildController(this.directive.controller);
     }
     var link = this.directive.link;
     if (typeof link == 'object') link = (<angular.IDirectivePrePost>link).pre;

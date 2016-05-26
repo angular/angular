@@ -134,7 +134,7 @@ export function inject(tokens: any[], fn: Function): Function {
       let completer: AsyncTestCompleter = testInjector.get(AsyncTestCompleter);
       testInjector.execute(tokens, fn);
       return completer.promise;
-    }
+    };
   } else {
     // Return a synchronous test method with the injected tokens.
     return () => { return getTestInjector().execute(tokens, fn); };
@@ -155,7 +155,7 @@ export class InjectSetupWrapper {
     return () => {
       this._addProviders();
       return inject_impl(tokens, fn)();
-    }
+    };
   }
 
   /** @Deprecated {use async(withProviders().inject())} */
@@ -163,7 +163,7 @@ export class InjectSetupWrapper {
     return () => {
       this._addProviders();
       return injectAsync_impl(tokens, fn)();
-    }
+    };
   }
 }
 

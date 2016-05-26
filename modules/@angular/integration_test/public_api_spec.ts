@@ -569,7 +569,7 @@ export function main() {
       it(`should fail if public API for ${mod} has changed`, () => {
         var symbols = getSymbolsFromLibrary(mod);
         expect(diff(symbols, API[mod])).toEqual([]);
-      })
+      });
     });
   });
 }
