@@ -62,10 +62,11 @@ export enum ContentType {
   ARRAY_BUFFER
 }
 
-/*
+/**
  * Define which buffer to use to store the response
+ * @experimental
  */
-export enum ResponseBuffer {
+export enum ResponseContentType {
   ArrayBuffer,
   Json,
   Text

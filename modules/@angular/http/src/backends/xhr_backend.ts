@@ -12,7 +12,7 @@ import {Observable} from 'rxjs/Observable';
 import {Observer} from 'rxjs/Observer';
 
 import {ResponseOptions} from '../base_response_options';
-import {ContentType, ReadyState, RequestMethod, ResponseType, ResponseBuffer} from '../enums';
+import {ContentType, ReadyState, RequestMethod, ResponseContentType, ResponseType} from '../enums';
 import {isPresent, isString} from '../facade/lang';
 import {Headers} from '../headers';
 import {getResponseURL, isSuccess} from '../http_utils';
@@ -23,7 +23,6 @@ import {Response} from '../static_response';
 import {BrowserXhr} from './browser_xhr';
 
 const XSSI_PREFIX = /^\)\]\}',?\n/;
-
 
 /**
  * Creates connections using `XMLHttpRequest`. Given a fully-qualified
@@ -52,7 +51,7 @@ export class XHRConnection implements Connection {
         _xhr.withCredentials = req.withCredentials;
       }
       // load event handler
-      let onLoad = () => { 
+      let onLoad = () => {
         // responseText is the old-school way of retrieving response (supported by IE8 & 9)
         // response/responseType properties were introduced in XHR Level2 spec (supported by
         // IE10)
@@ -110,18 +109,21 @@ export class XHRConnection implements Connection {
       }
 
       // Select the correct buffer type to store the response
-      if (isPresent(req.buffer) && isPresent(_xhr.responseType)) switch (req.buffer) {
-          case ResponseBuffer.ArrayBuffer:
-            _xhr.responseType = "arraybuffer";
+      if (isPresent(req.responseType) && isPresent(_xhr.responseType)) {
+        switch (req.responseType) {
+          case ResponseContentType.ArrayBuffer:
+            _xhr.responseType = 'arraybuffer';
             break;
-          case ResponseBuffer.Json:
-            _xhr.responseType = "json";
+          case ResponseContentType.Json:
+            _xhr.responseType = 'json';
+            break;
+          case ResponseContentType.Text:
+            _xhr.responseType = 'text';
             break;
           default:
-          case ResponseBuffer.Text:
-            _xhr.responseType = "text";
-            break;
+            throw new Error('The selected responseType is not supported');
         }
+      }
 
       _xhr.addEventListener('load', onLoad);
       _xhr.addEventListener('error', onError);

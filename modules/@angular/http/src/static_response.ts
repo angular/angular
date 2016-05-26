@@ -10,9 +10,10 @@ import {BaseException} from '../src/facade/exceptions';
 import {Json, isString} from '../src/facade/lang';
 
 import {ResponseOptions} from './base_response_options';
+import {Body} from './body';
 import {ResponseType} from './enums';
 import {Headers} from './headers';
-import {isJsObject, stringToArrayBuffer} from './http_utils';
+import {isJsObject} from './http_utils';
 
 
 /**
@@ -35,7 +36,7 @@ import {isJsObject, stringToArrayBuffer} from './http_utils';
  *
  * @experimental
  */
-export class Response {
+export class Response extends Body {
   /**
    * One of "basic", "cors", "default", "error, or "opaque".
    *
@@ -84,10 +85,8 @@ export class Response {
    */
   headers: Headers;
 
-  // TODO: Support FormData, Blob
-  private _body: string | Object | ArrayBuffer;
-
   constructor(responseOptions: ResponseOptions) {
+    super();
     this._body = responseOptions.body;
     this.status = responseOptions.status;
     this.ok = (this.status >= 200 && this.status <= 299);
@@ -97,60 +96,7 @@ export class Response {
     this.url = responseOptions.url;
   }
 
-  /**
-   * Attempts to return body as parsed `JSON` object, or raises an exception.
-   */
-  json(): any {
-    var jsonResponse: string|Object;
-    if (isJsObject(this._body)) {
-      jsonResponse = this._body;
-    } else if (isString(this._body)) {
-      jsonResponse = Json.parse(<string>this._body);
-    } else if (this._body instanceof ArrayBuffer) {
-      jsonResponse = Json.parse(this.text());
-    } else {
-      jsonResponse = this._body;
-    }
-    return jsonResponse;
-  }
-
-  /**
-   * Returns the body as a string, presuming `toString()` can be called on the response body.
-   */
-  text(): string {
-    var textResponse: string;
-    if (this._body instanceof ArrayBuffer) {
-      textResponse = String.fromCharCode.apply(null, new Uint16Array(<ArrayBuffer>this._body));
-    } else if (isJsObject(this._body)) {
-      textResponse = Json.stringify(this._body);
-    } else {
-      textResponse = this._body.toString();
-    }
-    return textResponse;
-  }
-
-  /**
-   * Return the body as an ArrayBuffer
-   */
-  arrayBuffer(): ArrayBuffer {
-    var bufferResponse: ArrayBuffer;
-    if (this._body instanceof ArrayBuffer) {
-      bufferResponse = <ArrayBuffer>this._body;
-    } else {
-      bufferResponse = stringToArrayBuffer(this.text());
-    }
-    return bufferResponse;
-  }
-
-
   toString(): string {
     return `Response with status: ${this.status} ${this.statusText} for URL: ${this.url}`;
   }
-
-  /**
-   * Not yet implemented
-   */
-  // TODO: Blob return type
-  blob(): any { throw new BaseException('"blob()" method not implemented on Response superclass'); }
-
 }

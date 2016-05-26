@@ -256,7 +256,7 @@ export function main() {
         var connection = new XHRConnection(
             new Request(base.merge(new RequestOptions({body: body}))), new MockBrowserXHR());
         connection.response.subscribe();
-        expect(sendSpy).toHaveBeenCalledWith(JSON.stringify(body));
+        expect(sendSpy).toHaveBeenCalledWith(body);
         expect(setRequestHeaderSpy).toHaveBeenCalledWith('Content-Type', 'application/json');
       });
 

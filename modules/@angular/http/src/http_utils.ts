@@ -38,10 +38,10 @@ export function getResponseURL(xhr: any): string {
   return;
 }
 
-export function stringToArrayBuffer(string: String): ArrayBuffer {
-  let view = new Uint16Array(string.length);
-  for (var i = 0, strLen = string.length; i < strLen; i++) {
-    view[i] = string.charCodeAt(i);
+export function stringToArrayBuffer(input: String): ArrayBuffer {
+  let view = new Uint16Array(input.length);
+  for (var i = 0, strLen = input.length; i < strLen; i++) {
+    view[i] = input.charCodeAt(i);
   }
   return view.buffer;
 }

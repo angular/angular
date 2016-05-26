@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ReadyState, RequestMethod, ResponseType, ResponseBuffer} from './enums';
+import {ReadyState, RequestMethod, ResponseContentType, ResponseType} from './enums';
 import {Headers} from './headers';
 import {Request} from './static_request';
 import {URLSearchParams} from './url_search_params';
@@ -52,7 +52,7 @@ export interface RequestOptionsArgs {
   headers?: Headers;
   body?: any;
   withCredentials?: boolean;
-  buffer?: ResponseBuffer;
+  responseType?: ResponseContentType;
 }
 
 /**
@@ -68,7 +68,8 @@ export interface RequestArgs extends RequestOptionsArgs { url: string; }
  */
 export type ResponseOptionsArgs = {
   // TODO: Support Blob, JSON
-  body?: string | Object | FormData | ArrayBuffer; status?: number; statusText?: string; headers?: Headers;
+  body?: string | Object | FormData | ArrayBuffer; status?: number; statusText?: string;
+  headers?: Headers;
   type?: ResponseType;
   url?: string;
 }
