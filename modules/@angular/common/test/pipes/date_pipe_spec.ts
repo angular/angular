@@ -61,17 +61,25 @@ export function main() {
         });
 
         it('should format common multi component patterns', () => {
+          expect(pipe.transform(date, 'E, M/d/y')).toEqual('Mon, 6/15/2015');
+          expect(pipe.transform(date, 'E, M/d')).toEqual('Mon, 6/15');
+          expect(pipe.transform(date, 'MMM d')).toEqual('Jun 15');
+          expect(pipe.transform(date, 'dd/MM/yyyy')).toEqual('15/06/2015');
+          expect(pipe.transform(date, 'MM/dd/yyyy')).toEqual('06/15/2015');
           expect(pipe.transform(date, 'yMEd')).toEqual('Mon, 6/15/2015');
           expect(pipe.transform(date, 'MEd')).toEqual('Mon, 6/15');
           expect(pipe.transform(date, 'MMMd')).toEqual('Jun 15');
           expect(pipe.transform(date, 'yMMMMEEEEd')).toEqual('Monday, June 15, 2015');
           expect(pipe.transform(date, 'jms')).toEqual('9:43:11 PM');
           expect(pipe.transform(date, 'ms')).toEqual('43:11');
+          expect(pipe.transform(date, 'jm')).toEqual('9:43');
         });
 
         it('should format with pattern aliases', () => {
           expect(pipe.transform(date, 'medium')).toEqual('Jun 15, 2015, 9:43:11 PM');
           expect(pipe.transform(date, 'short')).toEqual('6/15/2015, 9:43 PM');
+          expect(pipe.transform(date, 'dd/MM/yyyy')).toEqual('15/06/2015');
+          expect(pipe.transform(date, 'MM/dd/yyyy')).toEqual('06/15/2015');
           expect(pipe.transform(date, 'fullDate')).toEqual('Monday, June 15, 2015');
           expect(pipe.transform(date, 'longDate')).toEqual('June 15, 2015');
           expect(pipe.transform(date, 'mediumDate')).toEqual('Jun 15, 2015');
