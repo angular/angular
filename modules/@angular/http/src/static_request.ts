@@ -1,7 +1,6 @@
-import {RequestMethod} from './enums';
+import {ContentType, RequestMethod} from './enums';
 import {RequestArgs} from './interfaces';
 import {Headers} from './headers';
-import {ContentType} from './enums';
 import {URLSearchParams} from './url_search_params';
 import {normalizeMethodName} from './http_utils';
 import {isPresent, StringWrapper} from '../src/facade/lang';

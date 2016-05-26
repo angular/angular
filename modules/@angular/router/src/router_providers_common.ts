@@ -1,10 +1,8 @@
-import {ComponentResolver} from '@angular/core';
+import {ApplicationRef, BaseException, ComponentResolver} from '@angular/core';
 import {LocationStrategy, PathLocationStrategy, Location} from '@angular/common';
 import {Router, RouterOutletMap} from './router';
 import {RouteSegment} from './segments';
 import {RouterUrlSerializer, DefaultRouterUrlSerializer} from './router_url_serializer';
-import {ApplicationRef} from '@angular/core';
-import {BaseException} from '@angular/core';
 
 /**
  * The Platform agnostic ROUTER PROVIDERS

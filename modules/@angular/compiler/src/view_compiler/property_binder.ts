@@ -1,5 +1,4 @@
-import {SecurityContext} from '../../core_private';
-import {EMPTY_STATE as EMPTY_ANIMATION_STATE, LifecycleHooks, isDefaultChangeDetectionStrategy} from '../../core_private';
+import {EMPTY_STATE as EMPTY_ANIMATION_STATE, LifecycleHooks, isDefaultChangeDetectionStrategy, SecurityContext} from '../../core_private';
 
 import {isBlank, isPresent} from '../../src/facade/lang';
 
