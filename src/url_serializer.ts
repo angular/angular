@@ -1,4 +1,5 @@
 import { UrlTree, UrlSegment } from './url_tree';
+import { PRIMARY_OUTLET } from './shared';
 import { rootNode, TreeNode } from './utils/tree';
 
 /**
@@ -54,7 +55,8 @@ function serializeChildren(node: TreeNode<UrlSegment>): string {
 }
 
 export function serializeSegment(segment: UrlSegment): string {
-  return `${segment.path}${serializeParams(segment.parameters)}`;
+  const outlet = segment.outlet === PRIMARY_OUTLET ? '' : `${segment.outlet}:`;
+  return `${outlet}${segment.path}${serializeParams(segment.parameters)}`;
 }
 
 function serializeParams(params: {[key: string]: string}): string {
@@ -105,41 +107,58 @@ class UrlParser {
 
   parseRootSegment(): TreeNode<UrlSegment> {
     if (this.remaining  == '' || this.remaining == '/') {
-      return new TreeNode<UrlSegment>(new UrlSegment('', {}), []);
+      return new TreeNode<UrlSegment>(new UrlSegment('', {}, PRIMARY_OUTLET), []);
     } else {
-      let segments = this.parseSegments();
-      return new TreeNode<UrlSegment>(new UrlSegment('', {}), segments);
+      const segments = this.parseSegments(false);
+      return new TreeNode<UrlSegment>(new UrlSegment('', {}, PRIMARY_OUTLET), segments);
     }
   }
 
-  parseSegments(): TreeNode<UrlSegment>[] {
+  parseSegments(hasOutletName: boolean): TreeNode<UrlSegment>[] {
     if (this.remaining.length == 0) {
       return [];
     }
     if (this.peekStartsWith('/')) {
       this.capture('/');
     }
-    var path = matchUrlSegment(this.remaining);
+    let path = matchUrlSegment(this.remaining);
     this.capture(path);
 
-    var matrixParams: {[key: string]: any} = {};
+    let outletName;
+    if (hasOutletName) {
+      if (path.indexOf(":") === -1) {
+        throw new Error("Not outlet name is provided");
+      }
+      if (path.indexOf(":") > -1 && hasOutletName) {
+        let parts = path.split(":");
+        outletName = parts[0];
+        path = parts[1];
+      }
+    } else {
+      if (path.indexOf(":") > -1) {
+        throw new Error("Not outlet name is allowed");
+      }
+      outletName = PRIMARY_OUTLET;
+    }
+
+    let matrixParams: {[key: string]: any} = {};
     if (this.peekStartsWith(';')) {
       matrixParams = this.parseMatrixParams();
     }
 
-    var secondary = [];
+    let secondary = [];
     if (this.peekStartsWith('(')) {
       secondary = this.parseSecondarySegments();
     }
 
-    var children: TreeNode<UrlSegment>[] = [];
+    let children: TreeNode<UrlSegment>[] = [];
     if (this.peekStartsWith('/') && !this.peekStartsWith('//')) {
       this.capture('/');
-      children = this.parseSegments();
+      children = this.parseSegments(false);
     }
 
-    let segment = new UrlSegment(path, matrixParams);
-    let node = new TreeNode<UrlSegment>(segment, children);
+    const segment = new UrlSegment(path, matrixParams, outletName);
+    const node = new TreeNode<UrlSegment>(segment, children);
     return [node].concat(secondary);
   }
 
@@ -215,7 +234,7 @@ class UrlParser {
     this.capture('(');
 
     while (!this.peekStartsWith(')') && this.remaining.length > 0) {
-      segments = segments.concat(this.parseSegments());
+      segments = segments.concat(this.parseSegments(true));
       if (this.peekStartsWith('//')) {
         this.capture('//');
       }

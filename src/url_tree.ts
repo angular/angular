@@ -1,5 +1,10 @@
 import { Tree, TreeNode } from './utils/tree';
 import { shallowEqual } from './utils/collection';
+import { PRIMARY_OUTLET } from './shared';
+
+export function createEmptyUrlTree() {
+  return new UrlTree(new TreeNode<UrlSegment>(new UrlSegment("", {}, PRIMARY_OUTLET), []), {}, null);
+}
 
 /**
  * A URL in the tree form.
@@ -11,17 +16,18 @@ export class UrlTree extends Tree<UrlSegment> {
 }
 
 export class UrlSegment {
-  constructor(public path: string, public parameters: {[key: string]: string}) {}
+  constructor(public path: string, public parameters: {[key: string]: string}, public outlet: string) {}
 
   toString() {
-    let params = [];
+    const params = [];
     for (let prop in this.parameters) {
       if (this.parameters.hasOwnProperty(prop)) {
         params.push(`${prop}=${this.parameters[prop]}`);
       }
     }
     const paramsString = params.length > 0 ? `(${params.join(',')})` : '';
-    return `${this.path}${paramsString}`;
+    const outlet = this.outlet === PRIMARY_OUTLET ? '' : `${this.outlet}:`;
+    return `${outlet}${this.path}${paramsString}`;
   }
 }
 
