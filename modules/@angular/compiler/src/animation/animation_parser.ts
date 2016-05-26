@@ -105,7 +105,7 @@ function _parseAnimationStateTransition(transitionStateMetadata: CompileAnimatio
       transitionExprs.push(transExpr);
     });
   });
-  var entry = _normalizeAnimationEntry(transitionStateMetadata.animation);
+  var entry = _normalizeAnimationEntry(transitionStateMetadata.steps);
   var animation = _normalizeStyleSteps(entry, stateStyles, errors);
   var animationAst = _parseTransitionAnimation(animation, 0, styles, stateStyles, errors);
   if (errors.length == 0) {

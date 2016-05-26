@@ -878,6 +878,75 @@ export class ComponentMetadata extends DirectiveMetadata {
 
   styles: string[];
 
+  /**
+   * Animations are defined on components via an animation-like DSL. This DSL approach to describing
+   * animations allows for a flexibility that both benefits developers and the framework.
+   *
+   * Animations work by listening on state changes that occur on an element within
+   * the template. When a state change occurs, Angular can then take advantage and animate the
+   * arc in between. This works similar to how CSS transitions work, however, by having a
+   * programmatic DSL, animations are not limited to environments that are DOM-specific.
+   * (Angular can also perform optimizations behind the scenes to make animations more performant.)
+   *
+   * For animations to be available for use, animation state changes are placed within
+   * {@link trigger animation triggers} which are housed inside of the `animations` annotation
+   * metadata. Within a trigger both {@link state state} and {@link transition transition} entries
+   * can be placed.
+   *
+   * ```typescript
+   * @Component({
+   *   selector: 'animation-cmp',
+   *   templateUrl: 'animation-cmp.html',
+   *   animations: [
+   *     // this here is our animation trigger that
+   *     // will contain our state change animations.
+   *     trigger('myTriggerName', [
+   *       // the styles defined for the `on` and `off`
+   *       // states declared below are persisted on the
+   *       // element once the animation completes.
+   *       state('on', style({ opacity: 1 }),
+   *       state('off', style({ opacity: 0 }),
+   *
+   *       // this here is our animation that kicks off when
+   *       // this state change jump is true
+   *       transition('on => off', [
+   *         animate("1s")
+   *       ])
+   *     ])
+   *   ]
+   * })
+   * ```
+   *
+   * As depicted in the code above, a group of related animation states are all contained within
+   * an animation `trigger` (the code example above called the trigger `myTriggerName`).
+   * When a trigger is created then it can be bound onto an element within the component's
+   * template via a property prefixed by an `@` symbol followed by trigger name and an expression that
+   * is used to determine the state value for that trigger.
+   *
+   * ```html
+   * <!-- animation-cmp.html -->
+   * <div @myTriggerName="expression">...</div>
+   * ```
+   *
+   * For state changes to be executed, the `expression` value must change value from its existing value
+   * to something that we have set an animation to animate on (in the example above we are listening
+   * to a change of state between `on` and `off`). The `expression` value attached to the trigger
+   * must be something that can be evaluated with the template/component context.
+   *
+   * ### DSL Animation Functions
+   *
+   * Please visit each of the animation DSL functions listed below to gain a better understanding
+   * of how and why they are used for crafting animations in Angular2:
+   *
+   * - {@link trigger trigger()}
+   * - {@link state state()}
+   * - {@link transition transition()}
+   * - {@link group group()}
+   * - {@link sequence sequence()}
+   * - {@link style style()}
+   * - {@link animate animate()}
+   * - {@link keyframes keyframes()}
+   */
   animations: AnimationEntryMetadata[];
 
   directives: Array<Type | any[]>;
