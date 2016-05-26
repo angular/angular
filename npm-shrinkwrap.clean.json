@@ -24,6 +24,12 @@
     "@types/selenium-webdriver": {
       "version": "2.44.20-alpha"
     },
+    "@most/multicast": {
+      "version": "1.1.4"
+    },
+    "@most/prelude": {
+      "version": "1.2.0"
+    },
     "abbrev": {
       "version": "1.0.7"
     },
@@ -4004,6 +4010,9 @@
     "morgan": {
       "version": "1.6.1"
     },
+    "most": {
+      "version": "0.19.6"
+    },
     "mozilla-toolkit-versioning": {
       "version": "0.0.2"
     },
@@ -4707,7 +4716,7 @@
       "version": "1.1.5"
     },
     "rxjs": {
-      "version": "5.0.0-beta.6"
+      "version": "5.0.0-beta.8"
     },
     "sass-graph": {
       "version": "2.0.1",
@@ -5015,6 +5024,9 @@
     },
     "supports-color": {
       "version": "0.2.0"
+    },
+    "symbol-observable": {
+      "version": "0.2.4"
     },
     "symlink-or-copy": {
       "version": "1.0.1"
