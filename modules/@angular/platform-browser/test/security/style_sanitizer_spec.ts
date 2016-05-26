@@ -32,8 +32,16 @@ export function main() {
     });
     t.it('sanitizes URLs', () => {
       expectSanitize('url(foo/bar.png)').toEqual('url(foo/bar.png)');
+      expectSanitize('url( foo/bar.png\n )').toEqual('url( foo/bar.png\n )');
       expectSanitize('url(javascript:evil())').toEqual('unsafe');
       expectSanitize('url(strangeprotocol:evil)').toEqual('unsafe');
+    });
+    t.it('accepts quoted URLs', () => {
+      expectSanitize('url("foo/bar.png")').toEqual('url("foo/bar.png")');
+      expectSanitize(`url('foo/bar.png')`).toEqual(`url('foo/bar.png')`);
+      expectSanitize(`url(  'foo/bar.png'\n )`).toEqual(`url(  'foo/bar.png'\n )`);
+      expectSanitize('url("javascript:evil()")').toEqual('unsafe');
+      expectSanitize('url( " javascript:evil() " )').toEqual('unsafe');
     });
   });
 }
