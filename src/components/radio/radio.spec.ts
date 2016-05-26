@@ -297,6 +297,50 @@ describe('MdRadio', () => {
     }));
   });
 
+  describe('group with ngModel and change event', () => {
+    let fixture: ComponentFixture<RadioGroupWithNgModel>;
+    let groupDebugElement: DebugElement;
+    let groupNativeElement: HTMLElement;
+    let radioDebugElements: DebugElement[];
+    let radioNativeElements: HTMLElement[];
+    let groupInstance: MdRadioGroup;
+    let radioInstances: MdRadioButton[];
+    let testComponent: RadioGroupWithNgModel;
+    let groupNgControl: NgControl;
+
+    beforeEach(async(() => {
+      builder.createAsync(RadioGroupWithNgModel).then(f => {
+        fixture = f;
+
+        testComponent = fixture.componentInstance;
+
+        groupDebugElement = fixture.debugElement.query(By.directive(MdRadioGroup));
+        groupNativeElement = groupDebugElement.nativeElement;
+        groupInstance = groupDebugElement.injector.get(MdRadioGroup);
+        groupNgControl = groupDebugElement.injector.get(NgControl);
+
+        radioDebugElements = fixture.debugElement.queryAll(By.directive(MdRadioButton));
+        radioNativeElements = radioDebugElements.map(debugEl => debugEl.nativeElement);
+        radioInstances = radioDebugElements.map(debugEl => debugEl.componentInstance);
+
+        fixture.detectChanges();
+
+        spyOn(testComponent, 'onChange');
+      });
+    }));
+
+    it('should update the model before firing change event', fakeAsync(() => {
+      expect(testComponent.modelValue).toBeUndefined();
+
+      groupInstance.value = 'chocolate';
+      fixture.detectChanges();
+
+      tick();
+      expect(testComponent.modelValue).toBe('chocolate');
+      expect(testComponent.onChange).toHaveBeenCalledWith('chocolate');
+    }));
+  });
+
   describe('as standalone', () => {
     let fixture: ComponentFixture<StandaloneRadioButtons>;
     let radioDebugElements: DebugElement[];
@@ -388,7 +432,7 @@ class StandaloneRadioButtons { }
 @Component({
   directives: [MD_RADIO_DIRECTIVES, FORM_DIRECTIVES],
   template: `
-  <md-radio-group [(ngModel)]="modelValue">
+  <md-radio-group [(ngModel)]="modelValue" (change)="onChange(modelValue)">
     <md-radio-button *ngFor="let option of options" [value]="option.value">
       {{option.label}}
     </md-radio-button>
@@ -402,10 +446,10 @@ class RadioGroupWithNgModel {
     {label: 'Chocolate', value: 'chocolate'},
     {label: 'Strawberry', value: 'strawberry'},
   ];
+  onChange(value: string) {}
 }
 
 // TODO(jelbourn): remove eveything below when Angular supports faking events.
-
 
 /**
  * Dispatches a focus change event from an element.
