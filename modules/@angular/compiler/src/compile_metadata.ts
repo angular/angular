@@ -94,18 +94,18 @@ export class CompileAnimationStateDeclarationMetadata extends CompileAnimationSt
 export class CompileAnimationStateTransitionMetadata extends CompileAnimationStateMetadata {
   static fromJson(data: {[key: string]: any}): CompileAnimationStateTransitionMetadata {
     var value = data['value'];
-    var animation = _objFromJson(value['animation'], metadataFromJson);
-    return new CompileAnimationStateTransitionMetadata(value['stateChangeExpr'], animation);
+    var steps = _objFromJson(value['steps'], metadataFromJson);
+    return new CompileAnimationStateTransitionMetadata(value['stateChangeExpr'], steps);
   }
 
-  constructor(public stateChangeExpr: string, public animation: CompileAnimationMetadata) { super(); }
+  constructor(public stateChangeExpr: string, public steps: CompileAnimationMetadata) { super(); }
 
   toJson(): {[key: string]: any} {
     return {
       'class': 'AnimationStateTransitionMetadata',
       'value': {
         'stateChangeExpr': this.stateChangeExpr,
-        'animation': this.animation.toJson()
+        'steps': this.steps.toJson()
       }
     };
   }
