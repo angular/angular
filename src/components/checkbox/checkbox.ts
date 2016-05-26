@@ -284,3 +284,5 @@ export class MdCheckbox implements ControlValueAccessor {
     return `md-checkbox-anim-${animSuffix}`;
   }
 }
+
+export const MD_CHECKBOX_DIRECTIVES = [MdCheckbox];

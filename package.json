@@ -19,7 +19,7 @@
     "inline-resources": "node ./scripts/release/inline-resources.js ./dist/components",
     "deploy": "firebase deploy"
   },
-  "version": "2.0.0-alpha.4",
+  "version": "2.0.0-alpha.5",
   "license": "MIT",
   "engines": {
     "node": ">= 4.2.1 < 5"
