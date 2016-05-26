@@ -26,15 +26,15 @@ export abstract class RenderDebugInfo {
  * @experimental
  */
 export abstract class Renderer {
-  abstract selectRootElement(selectorOrNode: string | any, debugInfo: RenderDebugInfo): any;
+  abstract selectRootElement(selectorOrNode: string | any, debugInfo?: RenderDebugInfo): any;
 
-  abstract createElement(parentElement: any, name: string, debugInfo: RenderDebugInfo): any;
+  abstract createElement(parentElement: any, name: string, debugInfo?: RenderDebugInfo): any;
 
   abstract createViewRoot(hostElement: any): any;
 
-  abstract createTemplateAnchor(parentElement: any, debugInfo: RenderDebugInfo): any;
+  abstract createTemplateAnchor(parentElement: any, debugInfo?: RenderDebugInfo): any;
 
-  abstract createText(parentElement: any, value: string, debugInfo: RenderDebugInfo): any;
+  abstract createText(parentElement: any, value: string, debugInfo?: RenderDebugInfo): any;
 
   abstract projectNodes(parentElement: any, nodes: any[]): void;
 
@@ -65,7 +65,7 @@ export abstract class Renderer {
 
   abstract setElementStyle(renderElement: any, styleName: string, styleValue: string);
 
-  abstract invokeElementMethod(renderElement: any, methodName: string, args: any[]);
+  abstract invokeElementMethod(renderElement: any, methodName: string, args?: any[]);
 
   abstract setText(renderNode: any, text: string);
 

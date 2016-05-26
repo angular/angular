@@ -24,14 +24,14 @@ export class DebugDomRootRenderer implements RootRenderer {
 export class DebugDomRenderer implements Renderer {
   constructor(private _delegate: Renderer) {}
 
-  selectRootElement(selectorOrNode: string | any, debugInfo: RenderDebugInfo): any {
+  selectRootElement(selectorOrNode: string | any, debugInfo?: RenderDebugInfo): any {
     var nativeEl = this._delegate.selectRootElement(selectorOrNode, debugInfo);
     var debugEl = new DebugElement(nativeEl, null, debugInfo);
     indexDebugNode(debugEl);
     return nativeEl;
   }
 
-  createElement(parentElement: any, name: string, debugInfo: RenderDebugInfo): any {
+  createElement(parentElement: any, name: string, debugInfo?: RenderDebugInfo): any {
     var nativeEl = this._delegate.createElement(parentElement, name, debugInfo);
     var debugEl = new DebugElement(nativeEl, getDebugNode(parentElement), debugInfo);
     debugEl.name = name;
@@ -41,14 +41,14 @@ export class DebugDomRenderer implements Renderer {
 
   createViewRoot(hostElement: any): any { return this._delegate.createViewRoot(hostElement); }
 
-  createTemplateAnchor(parentElement: any, debugInfo: RenderDebugInfo): any {
+  createTemplateAnchor(parentElement: any, debugInfo?: RenderDebugInfo): any {
     var comment = this._delegate.createTemplateAnchor(parentElement, debugInfo);
     var debugEl = new DebugNode(comment, getDebugNode(parentElement), debugInfo);
     indexDebugNode(debugEl);
     return comment;
   }
 
-  createText(parentElement: any, value: string, debugInfo: RenderDebugInfo): any {
+  createText(parentElement: any, value: string, debugInfo?: RenderDebugInfo): any {
     var text = this._delegate.createText(parentElement, value, debugInfo);
     var debugEl = new DebugNode(text, getDebugNode(parentElement), debugInfo);
     indexDebugNode(debugEl);
@@ -136,7 +136,7 @@ export class DebugDomRenderer implements Renderer {
     this._delegate.setElementStyle(renderElement, styleName, styleValue);
   }
 
-  invokeElementMethod(renderElement: any, methodName: string, args: any[]) {
+  invokeElementMethod(renderElement: any, methodName: string, args?: any[]) {
     this._delegate.invokeElementMethod(renderElement, methodName, args);
   }
 
