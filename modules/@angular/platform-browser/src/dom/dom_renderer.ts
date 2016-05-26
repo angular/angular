@@ -7,7 +7,6 @@ import {
   RenderComponentType,
   ViewEncapsulation
 } from '@angular/core';
-import {RenderDebugInfo} from '../../core_private';
 import {
   isPresent,
   isBlank,
@@ -28,7 +27,8 @@ import {
   AnimationKeyframe,
   AnimationStyles,
   AnimationPlayer,
-  AnimationDriver
+  AnimationDriver,
+  RenderDebugInfo,
 } from '../../core_private';
 
 import {EventManager} from './events/event_manager';

@@ -1,5 +1,5 @@
 import {ConnectionBackend, Connection} from '../interfaces';
-import {ReadyState, RequestMethod, ResponseType} from '../enums';
+import {ReadyState, RequestMethod, ResponseType, ContentType} from '../enums';
 import {Request} from '../static_request';
 import {Response} from '../static_response';
 import {Headers} from '../headers';
@@ -10,7 +10,6 @@ import {isPresent, isString} from '../../src/facade/lang';
 import {Observable} from 'rxjs/Observable';
 import {Observer} from 'rxjs/Observer';
 import {isSuccess, getResponseURL} from '../http_utils';
-import {ContentType} from '../enums';
 
 const XSSI_PREFIX = ')]}\',\n';
 
