@@ -1,19 +1,9 @@
 import { Tree, TreeNode } from './utils/tree';
 import { UrlSegment } from './url_tree';
+import { Params, PRIMARY_OUTLET } from './shared';
 import { Observable } from 'rxjs/Observable';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
-import { ComponentFactory, Type } from '@angular/core';
-
-/**
- * A collection of parameters.
- */
-export type Params = { [key: string]: string };
-
-/**
- * Name of the primary outlet.
- * @type {string}
- */
-export const PRIMARY_OUTLET: string = "PRIMARY_OUTLET";
+import { Type } from '@angular/core';
 
 /**
  * The state of the router at a particular moment in time.
@@ -37,11 +27,11 @@ export class RouterState extends Tree<ActivatedRoute> {
 }
 
 export function createEmptyState(rootComponent: Type): RouterState {
-  const emptyUrl = new BehaviorSubject([new UrlSegment("", {})]);
+  const emptyUrl = new BehaviorSubject([new UrlSegment("", {}, PRIMARY_OUTLET)]);
   const emptyParams = new BehaviorSubject({});
   const emptyQueryParams = new BehaviorSubject({});
   const fragment = new BehaviorSubject("");
-  const activated = new ActivatedRoute(emptyUrl, emptyParams, PRIMARY_OUTLET, rootComponent, <any>null);
+  const activated = new ActivatedRoute(emptyUrl, emptyParams, PRIMARY_OUTLET, rootComponent);
   return new RouterState(new TreeNode<ActivatedRoute>(activated, []), emptyQueryParams, fragment);
 }
 
@@ -62,6 +52,5 @@ export class ActivatedRoute {
   constructor(public urlSegments: Observable<UrlSegment[]>,
               public params: Observable<Params>,
               public outlet: string,
-              public component: Type,
-              public factory: ComponentFactory<any>) {}
+              public component: Type | string) {}
 }

@@ -1,46 +1,48 @@
-import { UrlTree, UrlSegment, equalUrlSegments } from './url_tree';
-import { shallowEqual, flatten, first, merge } from './utils/collection';
+import { UrlTree, UrlSegment } from './url_tree';
+import { flatten, first, merge } from './utils/collection';
 import { TreeNode, rootNode } from './utils/tree';
-import { RouterState, ActivatedRoute, Params, PRIMARY_OUTLET } from './router_state';
+import { RouterState, ActivatedRoute } from './router_state';
+import { Params, PRIMARY_OUTLET } from './shared';
 import { RouterConfig, Route } from './config';
-import { ComponentResolver, ComponentFactory, Type } from '@angular/core';
+import { Type } from '@angular/core';
+import { Observable } from 'rxjs/Observable';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
-export function recognize(componentResolver: ComponentResolver, config: RouterConfig,
-                          url: UrlTree, existingState: RouterState): Promise<RouterState> {
-  const match = new MatchResult(existingState.root.component, config, [url.root], {}, rootNode(url).children, [], PRIMARY_OUTLET);
-  return constructActivatedRoute(componentResolver, match, rootNode(existingState)).
-    then(roots => {
-      (<any>existingState.queryParams).next(url.queryParameters);
-      (<any>existingState.fragment).next(url.fragment);
-      return new RouterState(roots[0], existingState.queryParams, existingState.fragment);
+export function recognize(config: RouterConfig, url: UrlTree, existingState: RouterState): Observable<RouterState> {
+  try {
+    const match = new MatchResult(existingState.root.component, config, [url.root], {}, rootNode(url).children, [], PRIMARY_OUTLET);
+    (<any>existingState.queryParams).next(url.queryParameters);
+    (<any>existingState.fragment).next(url.fragment);
+    const roots = constructActivatedRoute(match, rootNode(existingState));
+    const res = new RouterState(roots[0], existingState.queryParams, existingState.fragment);
+    return new Observable<RouterState>(obs => {
+      obs.next(res);
+      obs.complete();
     });
+  } catch(e) {
+    return new Observable<RouterState>(obs => obs.error(e));
+  }
 }
 
-function constructActivatedRoute(componentResolver: ComponentResolver, match: MatchResult,
-                                 existingRoute: TreeNode<ActivatedRoute> | null): Promise<TreeNode<ActivatedRoute>[]> {
-  //TODO: remove the cast after Angular is fixed
-  return componentResolver.resolveComponent(<any>match.component).then(factory => {
-      const activatedRoute = createOrReuseRoute(match, factory, existingRoute);
-      const existingChildren = existingRoute ? existingRoute.children : [];
+function constructActivatedRoute(match: MatchResult, existingRoute: TreeNode<ActivatedRoute> | null): TreeNode<ActivatedRoute>[] {
+  const activatedRoute = createOrReuseRoute(match, existingRoute);
+  const existingChildren = existingRoute ? existingRoute.children : [];
 
-      if (match.leftOverUrl.length > 0) {
-        return recognizeMany(componentResolver, match.children, match.leftOverUrl, existingChildren)
-          .then(checkOutletNameUniqueness)
-          .then(children => [new TreeNode<ActivatedRoute>(activatedRoute, children)]);
-      } else {
-        return Promise.resolve([new TreeNode<ActivatedRoute>(activatedRoute, [])]);
-      }
-    });
+  if (match.leftOverUrl.length > 0) {
+    const children = recognizeMany(match.children, match.leftOverUrl, existingChildren);
+    checkOutletNameUniqueness(children);
+    return [new TreeNode<ActivatedRoute>(activatedRoute, children)];
+  } else {
+    return [new TreeNode<ActivatedRoute>(activatedRoute, [])];
+  }
 }
 
-function recognizeMany(componentResolver: ComponentResolver, config: Route[], urls: TreeNode<UrlSegment>[],
-                       existingRoutes: TreeNode<ActivatedRoute>[]): Promise<TreeNode<ActivatedRoute>[]> {
-  const recognized = urls.map(url => recognizeOne(componentResolver, config, url, existingRoutes));
-  return Promise.all(<any>recognized).then(<any>flatten);
+function recognizeMany(config: Route[], urls: TreeNode<UrlSegment>[],
+                       existingRoutes: TreeNode<ActivatedRoute>[]): TreeNode<ActivatedRoute>[] {
+  return flatten(urls.map(url => recognizeOne(config, url, existingRoutes)));
 }
 
-function createOrReuseRoute(match: MatchResult, factory: ComponentFactory<any>, existing: TreeNode<ActivatedRoute> | null): ActivatedRoute {
+function createOrReuseRoute(match: MatchResult, existing: TreeNode<ActivatedRoute> | null): ActivatedRoute {
   if (existing) {
     const v = existing.value;
     if (v.component === match.component && v.outlet === match.outlet) {
@@ -49,26 +51,21 @@ function createOrReuseRoute(match: MatchResult, factory: ComponentFactory<any>, 
       return v;
     }
   }
-  return new ActivatedRoute(new BehaviorSubject(match.consumedUrlSegments), new BehaviorSubject(match.parameters), match.outlet,
-    factory.componentType, factory);
+  return new ActivatedRoute(new BehaviorSubject(match.consumedUrlSegments), new BehaviorSubject(match.parameters), match.outlet, match.component);
 }
 
-function recognizeOne(componentResolver: ComponentResolver, config: Route[],
-                    url: TreeNode<UrlSegment>,
-                    existingRoutes: TreeNode<ActivatedRoute>[]): Promise<TreeNode<ActivatedRoute>[]> {
-  let m;
-  try {
-    m = match(config, url);
-  } catch (e) {
-    return <any>Promise.reject(e);
-  }
+function recognizeOne(config: Route[], url: TreeNode<UrlSegment>,
+                      existingRoutes: TreeNode<ActivatedRoute>[]): TreeNode<ActivatedRoute>[] {
+  let m = match(config, url);
 
   const routesWithRightOutlet = existingRoutes.filter(r => r.value.outlet == m.outlet);
   const routeWithRightOutlet = routesWithRightOutlet.length > 0 ? routesWithRightOutlet[0] : null;
 
-  const primary = constructActivatedRoute(componentResolver, m, routeWithRightOutlet);
-  const secondary = recognizeMany(componentResolver, config, m.secondary, existingRoutes);
-  return Promise.all([primary, secondary]).then(flatten).then(checkOutletNameUniqueness);
+  const primary = constructActivatedRoute(m, routeWithRightOutlet);
+  const secondary = recognizeMany(config, m.secondary, existingRoutes);
+  const res = primary.concat(secondary);
+  checkOutletNameUniqueness(res);
+  return res;
 }
 
 function checkOutletNameUniqueness(nodes: TreeNode<ActivatedRoute>[]): TreeNode<ActivatedRoute>[] {
@@ -92,7 +89,10 @@ function match(config: Route[], url: TreeNode<UrlSegment>): MatchResult {
   const mIndex = matchIndex(config, url);
   if (mIndex) return mIndex;
 
-  const availableRoutes = config.map(r => `'${r.path}'`).join(", ");
+  const availableRoutes = config.map(r => {
+    const outlet = !r.outlet ? '' : `${r.outlet}:`;
+    return `'${outlet}${r.path}'`;
+  }).join(", ");
   throw new Error(
     `Cannot match any routes. Current segment: '${url.value}'. Available routes: [${availableRoutes}].`);
 }
@@ -118,6 +118,7 @@ function matchIndex(config: Route[], url: TreeNode<UrlSegment>): MatchResult | n
 
 function matchWithParts(route: Route, url: TreeNode<UrlSegment>): MatchResult | null {
   if (!route.path) return null;
+  if ((route.outlet ? route.outlet : PRIMARY_OUTLET) !== url.value.outlet) return null;
 
   const path = route.path.startsWith("/") ? route.path.substring(1) : route.path;
   if (path === "**") {
