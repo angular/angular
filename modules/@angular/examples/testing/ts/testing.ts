@@ -33,7 +33,7 @@ describe('another component',
 // #enddocregion
 
 // #docregion xdescribe
-xdescribe('some component', () => { it('has a test', () => {throw 'This test will not run.'}); });
+xdescribe('some component', () => { it('has a test', () => {throw 'This test will not run.';}); });
 describe('another component', () => {
   it('also has a test', () => {
                             // This test will run.

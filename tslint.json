@@ -1,9 +1,5 @@
 {
     "rules": {
-      "requireInternalWithUnderscore": true,
-      "requireParameterType": true,
-      "requireReturnType": true,
-      "duplicateModuleImport": true,
       "semicolon": true,
       "variable-name": false
     }
