@@ -1,5 +1,7 @@
 {
     "rules": {
+      "requireInternalWithUnderscore": true,
+      "duplicateModuleImport": true,
       "semicolon": true,
       "variable-name": false
     }

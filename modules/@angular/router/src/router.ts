@@ -1,10 +1,8 @@
-import {OnInit, provide, ReflectiveInjector, ComponentResolver} from '@angular/core';
+import {BaseException, provide, ReflectiveInjector, ComponentResolver} from '@angular/core';
 import {RouterOutlet} from './directives/router_outlet';
 import {Type, isBlank, isPresent} from './facade/lang';
-import {ListWrapper} from './facade/collection';
+import {ListWrapper, StringMapWrapper} from './facade/collection';
 import {EventEmitter, Observable, PromiseWrapper, ObservableWrapper} from './facade/async';
-import {StringMapWrapper} from './facade/collection';
-import {BaseException} from '@angular/core';
 import {RouterUrlSerializer} from './router_url_serializer';
 import {CanDeactivate} from './interfaces';
 import {recognize} from './recognize';

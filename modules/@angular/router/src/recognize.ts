@@ -12,8 +12,7 @@ import {RoutesMetadata, RouteMetadata} from './metadata/metadata';
 import {Type, isBlank, isPresent, stringify} from './facade/lang';
 import {ListWrapper, StringMapWrapper} from './facade/collection';
 import {PromiseWrapper} from './facade/promise';
-import {BaseException, ComponentFactory} from '@angular/core';
-import {ComponentResolver} from '@angular/core';
+import {BaseException, ComponentFactory, ComponentResolver} from '@angular/core';
 import {DEFAULT_OUTLET_NAME} from './constants';
 import {reflector} from './core_private';
 
