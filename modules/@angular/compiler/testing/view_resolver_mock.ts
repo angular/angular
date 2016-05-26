@@ -1,8 +1,7 @@
-import {Injectable, ViewMetadata, Type, BaseException} from '@angular/core';
+import {Injectable, ViewMetadata, Type, BaseException, AnimationEntryMetadata, resolveForwardRef} from '@angular/core';
 import {ViewResolver} from '../index';
 import {Map} from '../src/facade/collection';
 import {isPresent, stringify, isBlank, isArray} from '../src/facade/lang';
-import {AnimationEntryMetadata, resolveForwardRef} from '@angular/core';
 
 @Injectable()
 export class MockViewResolver extends ViewResolver {
