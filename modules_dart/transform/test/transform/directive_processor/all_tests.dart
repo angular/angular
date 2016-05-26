@@ -540,14 +540,16 @@ void allTests() {
 
       final List list = model.identifiers['b'].value;
 
-      expect(list.length, equals(4));
+      expect(list.length, equals(5));
       expect(list[0].name, equals("SomeClass"));
       expect(list[1].name, equals("a"));
       expect(list[2].toJson(), equals(new CompileProviderMetadata(
           token: new CompileTokenMetadata(value: 'someOtherToken'),
           useClass: new CompileTypeMetadata(name: 'SomeClass'))
           .toJson()));
-      expect(list[3], equals(null));
+      expect(list[3].toJson(), equals(new CompileIdentifierMetadata(
+          name: '_somePrivateList').toJson()));
+      expect(list[4], equals(null));
     });
 
     test(
@@ -751,7 +753,7 @@ void allTests() {
 
       expect(cmp, isNotNull);
       expect(cmp.providers, isNotNull);
-      expect(cmp.providers.length, equals(2));
+      expect(cmp.providers.length, equals(3));
 
       var firstToken = cmp.providers.first;
       expect(firstToken.identifier.prefix, isNull);
@@ -760,6 +762,10 @@ void allTests() {
       var secondToken = cmp.providers[1];
       expect(secondToken.identifier.prefix, equals("dep2"));
       expect(secondToken.identifier.name, equals("ServiceDep"));
+
+      var thirdToken = cmp.providers[2];
+      expect(thirdToken.identifier.prefix, isNull);
+      expect(thirdToken.identifier.name, equals("_privateNestedProviders"));
     });
 
     test('should populate `viewProviders` using types.', () async {

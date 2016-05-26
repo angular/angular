@@ -517,7 +517,8 @@ class _DirectiveMetadataVisitor extends Object
     if (providerValues is ListLiteral) {
       providers.addAll(_readProviders(providerValues, throwOnErrors: true));
     } else {
-      providers.add(_readIdentifier(providerValues));
+      // Support private nested provider lists...
+      providers.add(_readIdentifier(providerValues, allowPrivate: true));
     }
   }
 
@@ -910,7 +911,8 @@ List _readProviders(ListLiteral providerValues, {bool throwOnErrors}) {
   bool hasError = false;
   var providers = providerValues.elements.map((el) {
     if (el is PrefixedIdentifier || el is SimpleIdentifier) {
-      return _readIdentifier(el, throwOnErrors: throwOnErrors);
+      // Support private nested provider lists...
+      return _readIdentifier(el, allowPrivate: true, throwOnErrors: throwOnErrors);
     } else if (el is InstanceCreationExpression &&
         (el.constructorName.toString() == "Provider" ||
             el.constructorName.toString() == "Binding")) {
@@ -1100,7 +1102,8 @@ bool _hasConst(List list, String name) => list
         m is InstanceCreationExpression && m.constructorName.toString() == name)
     .isNotEmpty;
 
-dynamic _readIdentifier(dynamic el, {bool throwOnErrors: true}) {
+dynamic _readIdentifier(dynamic el, {bool allowPrivate: false,
+    bool throwOnErrors: true}) {
   var name;
   var prefix;
   var error;
@@ -1115,7 +1118,7 @@ dynamic _readIdentifier(dynamic el, {bool throwOnErrors: true}) {
   } else {
     error = 'Incorrect identifier "${el}".';
   }
-  if (name != null && name.startsWith('_')) {
+  if (name != null && !allowPrivate && name.startsWith('_')) {
     error = 'Private identifier "${el}" not supported.';
   }
   if (error != null) {

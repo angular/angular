@@ -5,6 +5,8 @@ import 'package:angular2/angular2.dart'
 import 'dep1.dart';
 import 'dep2.dart' as dep2;
 
+const _privateNestedProviders = const [];
+
 @Component(selector: 'component-first')
 @View(
     template: '<dep1></dep1><dep2></dep2>',
@@ -88,7 +90,7 @@ class ComponentWithHostListeners {
 @Component(
     selector: 'component-with-providers-types',
     template: '',
-    providers: [ServiceDep, dep2.ServiceDep])
+    providers: [ServiceDep, dep2.ServiceDep, _privateNestedProviders])
 class ComponentWithProvidersTypes {}
 
 @Component(
