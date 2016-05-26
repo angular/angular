@@ -1,23 +1,24 @@
 import {
     Component,
-    ElementRef,
     ViewChildren,
     QueryList,
     ViewEncapsulation,
-    Directive,
     ViewChild,
     ViewContainerRef
 } from '@angular/core';
-import {Overlay, OverlayState, OVERLAY_PROVIDERS} from '@angular2-material/core/overlay/overlay';
-import {ComponentPortal, Portal} from '@angular2-material/core/portal/portal';
-import {TemplatePortalDirective} from '@angular2-material/core/portal/portal-directives';
-
-
-
-@Directive({selector: '[overlay-origin]'})
-class OverlayOrigin {
-  constructor(public elementRef: ElementRef) { }
-}
+import {
+    Overlay,
+    OverlayState,
+    OverlayOrigin,
+    OVERLAY_PROVIDERS,
+    OVERLAY_DIRECTIVES
+} from '@angular2-material/core/overlay/overlay';
+import {
+    ComponentPortal,
+    Portal,
+    PORTAL_DIRECTIVES,
+    TemplatePortalDirective
+} from '@angular2-material/core/portal/portal';
 
 
 @Component({
@@ -25,12 +26,13 @@ class OverlayOrigin {
   selector: 'overlay-demo',
   templateUrl: 'overlay-demo.html',
   styleUrls: ['overlay-demo.css'],
-  directives: [TemplatePortalDirective, OverlayOrigin],
+  directives: [PORTAL_DIRECTIVES, OVERLAY_DIRECTIVES],
   providers: [OVERLAY_PROVIDERS],
   encapsulation: ViewEncapsulation.None,
 })
 export class OverlayDemo {
   nextPosition: number = 0;
+  isMenuOpen: boolean = false;
 
   @ViewChildren(TemplatePortalDirective) templatePortals: QueryList<Portal<any>>;
   @ViewChild(OverlayOrigin) private _overlayOrigin: OverlayOrigin;

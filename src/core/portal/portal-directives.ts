@@ -100,3 +100,5 @@ export class PortalHostDirective extends BasePortalHost {
     });
   }
 }
+
+export const PORTAL_DIRECTIVES = [TemplatePortalDirective, PortalHostDirective];

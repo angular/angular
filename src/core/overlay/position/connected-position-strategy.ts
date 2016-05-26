@@ -2,8 +2,11 @@ import {PositionStrategy} from './position-strategy';
 import {ElementRef} from '@angular/core';
 import {ViewportRuler} from './viewport-ruler';
 import {applyCssTransform} from '@angular2-material/core/style/apply-transform';
-import {ConnectionPair, OriginPos, OverlayPos} from './connected-position';
-
+import {
+    ConnectionPositionPair,
+    OriginConnectionPosition,
+    OverlayConnectionPosition
+} from './connected-position';
 
 
 /**
@@ -19,7 +22,7 @@ export class ConnectedPositionStrategy implements PositionStrategy {
   _isRtl: boolean = false;
 
   /** Ordered list of preferred positions, from most to least desirable. */
-  _preferredPositions: ConnectionPair[] = [];
+  _preferredPositions: ConnectionPositionPair[] = [];
 
   /** The origin element against which the overlay will be positioned. */
   private _origin: HTMLElement;
@@ -27,13 +30,16 @@ export class ConnectedPositionStrategy implements PositionStrategy {
 
   constructor(
       private _connectedTo: ElementRef,
-      private _originPos: OriginPos,
-      private _overlayPos: OverlayPos,
+      private _originPos: OriginConnectionPosition,
+      private _overlayPos: OverlayConnectionPosition,
       private _viewportRuler: ViewportRuler) {
     this._origin = this._connectedTo.nativeElement;
     this.withFallbackPosition(_originPos, _overlayPos);
   }
 
+  get positions() {
+    return this._preferredPositions;
+  }
 
   /**
    * Updates the position of the overlay element, using whichever preferred position relative
@@ -74,12 +80,14 @@ export class ConnectedPositionStrategy implements PositionStrategy {
 
 
   /** Adds a preferred position to the end of the ordered preferred position list. */
-  addPreferredPosition(pos: ConnectionPair): void {
+  addPreferredPosition(pos: ConnectionPositionPair): void {
     this._preferredPositions.push(pos);
   }
 
-  withFallbackPosition(originPos: OriginPos, overlayPos: OverlayPos): this {
-    this._preferredPositions.push(new ConnectionPair(originPos, overlayPos));
+  withFallbackPosition(
+      originPos: OriginConnectionPosition,
+      overlayPos: OverlayConnectionPosition): this {
+    this._preferredPositions.push(new ConnectionPositionPair(originPos, overlayPos));
     return this;
   }
 
@@ -106,7 +114,7 @@ export class ConnectedPositionStrategy implements PositionStrategy {
    * @param originRect
    * @param pos
    */
-  private _getOriginConnectionPoint(originRect: ClientRect, pos: ConnectionPair): Point {
+  private _getOriginConnectionPoint(originRect: ClientRect, pos: ConnectionPositionPair): Point {
     const originStartX = this._getStartX(originRect);
     const originEndX = this._getEndX(originRect);
 
@@ -138,7 +146,7 @@ export class ConnectedPositionStrategy implements PositionStrategy {
   private _getOverlayPoint(
       originPoint: Point,
       overlayRect: ClientRect,
-      pos: ConnectionPair): Point {
+      pos: ConnectionPositionPair): Point {
     // Calculate the (overlayStartX, overlayStartY), the start of the potential overlay position
     // relative to the origin point.
     let overlayStartX: number;

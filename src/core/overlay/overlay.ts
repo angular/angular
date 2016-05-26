@@ -12,11 +12,6 @@ import {OverlayPositionBuilder} from './position/overlay-position-builder';
 import {ViewportRuler} from './position/viewport-ruler';
 
 
-// Re-export overlay-related modules so they can be imported directly from here.
-export {OverlayState} from './overlay-state';
-export {OverlayRef} from './overlay-ref';
-export {createOverlayContainer} from './overlay-container';
-
 /** Token used to inject the DOM element that serves as the overlay container. */
 export const OVERLAY_CONTAINER_TOKEN = new OpaqueToken('overlayContainer');
 
@@ -103,3 +98,9 @@ export const OVERLAY_PROVIDERS = [
   OverlayPositionBuilder,
   Overlay,
 ];
+
+// Re-export overlay-related modules so they can be imported directly from here.
+export {OverlayState} from './overlay-state';
+export {OverlayRef} from './overlay-ref';
+export {createOverlayContainer} from './overlay-container';
+export {OVERLAY_DIRECTIVES, ConnectedOverlayDirective, OverlayOrigin} from './overlay-directives';

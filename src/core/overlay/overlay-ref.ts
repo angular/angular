@@ -29,6 +29,11 @@ export class OverlayRef implements PortalHost {
     return this._portalHost.hasAttached();
   }
 
+  /** Gets the current state config of the overlay. */
+  getState() {
+    return this._state;
+  }
+
   /** Updates the position of the overlay based on the position strategy. */
   private _updatePosition() {
     if (this._state.positionStrategy) {

@@ -6,28 +6,25 @@ export type VerticalConnectionPos = 'top' | 'center' | 'bottom';
 
 
 /** A connection point on the origin element. */
-export interface OriginPos {
+export interface OriginConnectionPosition {
   originX: HorizontalConnectionPos;
   originY: VerticalConnectionPos;
 }
 
 /** A connection point on the overlay element. */
-export interface OverlayPos {
+export interface OverlayConnectionPosition {
   overlayX: HorizontalConnectionPos;
   overlayY: VerticalConnectionPos;
 }
 
-/**
- * The points of the origin element and the overlay element to connect.
- * @internal
- */
-export class ConnectionPair {
+/** The points of the origin element and the overlay element to connect. */
+export class ConnectionPositionPair {
   originX: HorizontalConnectionPos;
   originY: VerticalConnectionPos;
   overlayX: HorizontalConnectionPos;
   overlayY: VerticalConnectionPos;
 
-  constructor(origin: OriginPos, overlay: OverlayPos) {
+  constructor(origin: OriginConnectionPosition, overlay: OverlayConnectionPosition) {
     this.originX = origin.originX;
     this.originY = origin.originY;
     this.overlayX = overlay.overlayX;

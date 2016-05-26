@@ -10,6 +10,17 @@
   Pasta 3
 </button>
 
+
+<button overlay-origin #trigger="overlayOrigin" (click)="isMenuOpen = !isMenuOpen">
+  Open menu
+</button>
+
+<template connected-overlay [origin]="trigger">
+  <div style="background-color: mediumpurple" *ngIf="isMenuOpen">
+    This is the menu panel.
+  </div>
+</template>
+
 <!-- Template to load into an overlay. -->
 <template portal>
   <p class="demo-fusilli"> Fusilli </p>

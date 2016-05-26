@@ -9,6 +9,7 @@ import {
 } from './portal-errors';
 
 
+
 /**
  * A `Portal` is something that you want to render somewhere else.
  * It can be attach to / detached from a `PortalHost`.
@@ -202,3 +203,7 @@ export abstract class BasePortalHost implements PortalHost {
     this._disposeFn = fn;
   }
 }
+
+
+export {PORTAL_DIRECTIVES, TemplatePortalDirective, PortalHostDirective} from './portal-directives';
+export {DomPortalHost} from './dom-portal-host';
