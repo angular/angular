@@ -17,7 +17,8 @@
         "lib": ["es6", "dom"],
         "baseUrl": ".",
         "paths": {
-          "@angular/*": ["../../../../dist/all/@angular/*"]
+          "@angular/*": ["../../../../dist/all/@angular/*"],
+          "@angular/tsc-wrapped": ["../../../../dist/tools/tsc-wrapped"]
         }
     }
 }
