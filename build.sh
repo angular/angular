@@ -45,6 +45,7 @@ for PACKAGE in \
   compiler \
   common \
   platform-browser \
+  platform-browser-dynamic \
   platform-server \
   http \
   router \

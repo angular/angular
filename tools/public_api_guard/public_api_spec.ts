@@ -1225,6 +1225,7 @@ const PLATFORM_BROWSER = [
   'const BROWSER_APP_COMPILER_PROVIDERS:Array<any>',
   'const BROWSER_APP_PROVIDERS:Array<any>',
   'const BROWSER_PLATFORM_PROVIDERS:Array<any>',
+  'const BROWSER_PROVIDERS:any[]',
   'const BROWSER_SANITIZATION_PROVIDERS:Array<any>',
   'const CACHED_TEMPLATE_PROVIDER:Array<any>',
   'const DOCUMENT:OpaqueToken',
