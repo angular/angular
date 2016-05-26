@@ -5,10 +5,12 @@ import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
 
 import {PromiseObservable} from 'rxjs/observable/PromiseObservable';
+import {FromObservable} from 'rxjs/observable/FromObservable';
 import {toPromise} from 'rxjs/operator/toPromise';
 
 export {Observable} from 'rxjs/Observable';
 export {Subject} from 'rxjs/Subject';
+import * as $$observable from 'symbol-observable'
 
 export class TimerWrapper {
   static setTimeout(fn: (...args: any[]) => void, millis: number): number {
@@ -28,10 +30,12 @@ export class ObservableWrapper {
                       onComplete: () => void = () => {}): Object {
     onError = (typeof onError === "function") && onError || noop;
     onComplete = (typeof onComplete === "function") && onComplete || noop;
-    return emitter.subscribe({next: onNext, error: onError, complete: onComplete});
+    return FromObservable.create(emitter).subscribe({next: onNext, error: onError, complete: onComplete});
   }
 
-  static isObservable(obs: any): boolean { return !!obs.subscribe; }
+  static isObservable(obs: any): boolean {
+    return (obs instanceof Observable) || obs[$$observable];
+   }
 
   /**
    * Returns whether `obs` has any subscribers listening to events.

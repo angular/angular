@@ -10,7 +10,8 @@ import {
 } from '@angular/core/testing/testing_internal';
 import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
 
-import {Observable, Subject, EventEmitter, PromiseWrapper} from '../../src/facade/async';
+import {Observable, Subject, EventEmitter, PromiseWrapper, ObservableWrapper} from '../../src/facade/async';
+import {from as mFrom} from 'most'
 
 export function main() {
   describe("Observable", () => {
@@ -57,5 +58,22 @@ export function main() {
 
          }));
     });
+  });
+
+  describe('Observable interop', () => {
+
+    it('should support most.js observables', (done) => {
+
+      let log = [];
+      ObservableWrapper.subscribe(mFrom([1, 2, 3, 4]), (value) => {
+        log.push(value);
+      }, (err) => {}, () => {
+        expect(log).toEqual([1,2,3,4]);
+        done();
+      });
+
+    });
+
+
   });
 }
