@@ -1,5 +1,6 @@
 {
     "rules": {
+      "duplicateModuleImport": true,
       "semicolon": true,
       "variable-name": false
     }

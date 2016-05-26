@@ -1,4 +1,5 @@
 import {
+  AnimationEntryMetadata,
   OpaqueToken,
   ComponentRef,
   ComponentFactory,
@@ -27,8 +28,6 @@ import {tick} from '@angular/core/testing';
 export class TestComponentRenderer {
   insertRootElement(rootElementId: string) {}
 }
-
-import {AnimationEntryMetadata} from '@angular/core';
 
 export var ComponentFixtureAutoDetect = new OpaqueToken("ComponentFixtureAutoDetect");
 export var ComponentFixtureNoNgZone = new OpaqueToken("ComponentFixtureNoNgZone");

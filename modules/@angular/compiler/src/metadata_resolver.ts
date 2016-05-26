@@ -1,4 +1,14 @@
 import {
+  AnimationMetadata,
+  AnimationEntryMetadata,
+  AnimationStateMetadata,
+  AnimationStateDeclarationMetadata,
+  AnimationStateTransitionMetadata,
+  AnimationStyleMetadata,
+  AnimationKeyframesSequenceMetadata,
+  AnimationAnimateMetadata,
+  AnimationWithStepsMetadata,
+  AnimationGroupMetadata,
   AttributeMetadata,
   OptionalMetadata,
   ComponentMetadata,
@@ -30,7 +40,6 @@ import {
 import {StringMapWrapper} from '../src/facade/collection';
 import {BaseException} from '../src/facade/exceptions';
 import * as cpl from './compile_metadata';
-import * as anmd from '@angular/core';
 import {DirectiveResolver} from './directive_resolver';
 import {PipeResolver} from './pipe_resolver';
 import {ViewResolver} from './view_resolver';
@@ -75,36 +84,36 @@ export class CompileMetadataResolver {
     return sanitizeIdentifier(identifier);
   }
 
-  getAnimationEntryMetadata(entry: anmd.AnimationEntryMetadata): cpl.CompileAnimationEntryMetadata {
+  getAnimationEntryMetadata(entry: AnimationEntryMetadata): cpl.CompileAnimationEntryMetadata {
     var defs = entry.definitions.map(def => this.getAnimationStateMetadata(def));
     return new cpl.CompileAnimationEntryMetadata(entry.name, defs);
   }
 
-  getAnimationStateMetadata(value: anmd.AnimationStateMetadata): cpl.CompileAnimationStateMetadata {
-    if (value instanceof anmd.AnimationStateDeclarationMetadata) {
+  getAnimationStateMetadata(value: AnimationStateMetadata): cpl.CompileAnimationStateMetadata {
+    if (value instanceof AnimationStateDeclarationMetadata) {
       var styles = this.getAnimationStyleMetadata(value.styles);
       return new cpl.CompileAnimationStateDeclarationMetadata(value.stateNameExpr, styles);
-    } else if (value instanceof anmd.AnimationStateTransitionMetadata) {
+    } else if (value instanceof AnimationStateTransitionMetadata) {
       return new cpl.CompileAnimationStateTransitionMetadata(value.stateChangeExpr, this.getAnimationMetadata(value.animation));
     }
     return null;
   }
 
-  getAnimationStyleMetadata(value: anmd.AnimationStyleMetadata): cpl.CompileAnimationStyleMetadata {
+  getAnimationStyleMetadata(value: AnimationStyleMetadata): cpl.CompileAnimationStyleMetadata {
     return new cpl.CompileAnimationStyleMetadata(value.offset, value.styles);
   }
 
-  getAnimationMetadata(value: anmd.AnimationMetadata): cpl.CompileAnimationMetadata {
-    if (value instanceof anmd.AnimationStyleMetadata) {
+  getAnimationMetadata(value: AnimationMetadata): cpl.CompileAnimationMetadata {
+    if (value instanceof AnimationStyleMetadata) {
       return this.getAnimationStyleMetadata(value);
-    } else if (value instanceof anmd.AnimationKeyframesSequenceMetadata) {
+    } else if (value instanceof AnimationKeyframesSequenceMetadata) {
       return new cpl.CompileAnimationKeyframesSequenceMetadata(value.steps.map(entry => this.getAnimationStyleMetadata(entry)));
-    } else if (value instanceof anmd.AnimationAnimateMetadata) {
+    } else if (value instanceof AnimationAnimateMetadata) {
       let animateData = <cpl.CompileAnimationStyleMetadata|cpl.CompileAnimationKeyframesSequenceMetadata>this.getAnimationMetadata(value.styles);
       return new cpl.CompileAnimationAnimateMetadata(value.timings, animateData);
-    } else if (value instanceof anmd.AnimationWithStepsMetadata) {
+    } else if (value instanceof AnimationWithStepsMetadata) {
       var steps = value.steps.map(step => this.getAnimationMetadata(step));
-      if (value instanceof anmd.AnimationGroupMetadata) {
+      if (value instanceof AnimationGroupMetadata) {
         return new cpl.CompileAnimationGroupMetadata(steps);
       } else {
         return new cpl.CompileAnimationSequenceMetadata(steps);
