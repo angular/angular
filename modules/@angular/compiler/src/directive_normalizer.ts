@@ -24,7 +24,7 @@ import {
   htmlVisitAll
 } from './html_ast';
 import {HtmlParser} from './html_parser';
-import {CompilerConfig} from './config'
+import {CompilerConfig} from './config';
 
 import {preparseElement, PreparsedElementType} from './template_preparser';
 
