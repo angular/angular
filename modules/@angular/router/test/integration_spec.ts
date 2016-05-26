@@ -252,6 +252,24 @@ export function main() {
            advance(fixture);
            expect(fixture.debugElement.nativeElement).toHaveText('link');
          })));
+
+      it('should replace state when path is equal to current path',
+        fakeAsync(inject([Router, TestComponentBuilder, Location], (router, tcb, location) => {
+          let fixture = tcb.createFakeAsync(RootCmp);
+
+          router.navigateByUrl('/team/33/simple');
+          advance(fixture);
+
+          router.navigateByUrl('/team/22/user/victor');
+          advance(fixture);
+
+          router.navigateByUrl('/team/22/user/victor');
+          advance(fixture);
+
+          location.back();
+          advance(fixture);
+          expect(location.path()).toEqual('/team/33/simple');
+        })));
     }
   });
 }
