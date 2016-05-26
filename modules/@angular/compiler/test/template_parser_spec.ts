@@ -11,6 +11,7 @@ import {
   beforeEachProviders
 } from '@angular/core/testing/testing_internal';
 import {provide} from '@angular/core';
+import {SecurityContext} from '../core_private';
 
 import {Console} from '@angular/core/src/console';
 
@@ -51,6 +52,7 @@ import {
 import {identifierToken, Identifiers} from '../src/identifiers';
 
 import {ElementSchemaRegistry} from '@angular/compiler/src/schema/element_schema_registry';
+import {DomElementSchemaRegistry} from '@angular/compiler/src/schema/dom_element_schema_registry';
 import {MockSchemaRegistry} from '@angular/compiler/testing';
 
 import {Unparser} from './expression_parser/unparser';
@@ -66,9 +68,13 @@ var MOCK_SCHEMA_REGISTRY = [
       {useValue: new MockSchemaRegistry({'invalidProp': false}, {'mappedAttr': 'mappedProp'})})
 ];
 
+let zeConsole = console;
+
 export function main() {
   var ngIf;
-  var parse;
+  var parse:
+      (template: string, directives: CompileDirectiveMetadata[], pipes?: CompilePipeMetadata[]) =>
+          TemplateAst[];
   var console: ArrayConsole;
 
   function commonBeforeEach() {
@@ -117,6 +123,41 @@ export function main() {
       commonBeforeEach();
       it('should compose transformers',
          () => { expect(humanizeTplAst(parse('<div>', []))).toEqual([[ElementAst, 'bar']]); });
+    });
+  });
+
+  describe('TemplateParser Security', () => {
+    // Semi-integration test to make sure TemplateParser properly sets the security context.
+    // Uses the actual DomElementSchemaRegistry.
+    beforeEachProviders(
+        () =>
+            [TEST_PROVIDERS, provide(ElementSchemaRegistry, {useClass: DomElementSchemaRegistry})]);
+
+    commonBeforeEach();
+
+    describe('security context', () => {
+      function secContext(tpl: string): SecurityContext {
+        let ast = parse(tpl, []);
+        let propBinding = (<ElementAst>ast[0]).inputs[0];
+        return propBinding.securityContext;
+      }
+
+      it('should set for properties', () => {
+        expect(secContext('<div [title]="v">')).toBe(SecurityContext.NONE);
+        expect(secContext('<div [innerHTML]="v">')).toBe(SecurityContext.HTML);
+      });
+      it('should set for property value bindings', () => {
+        expect(secContext('<div innerHTML="{{v}}">')).toBe(SecurityContext.HTML);
+      });
+      it('should set for attributes', () => {
+        expect(secContext('<a [attr.href]="v">')).toBe(SecurityContext.URL);
+        // NB: attributes below need to change case.
+        expect(secContext('<a [attr.innerHtml]="v">')).toBe(SecurityContext.HTML);
+        expect(secContext('<a [attr.formaction]="v">')).toBe(SecurityContext.URL);
+      });
+      it('should set for style', () => {
+        expect(secContext('<a [style.backgroundColor]="v">')).toBe(SecurityContext.STYLE);
+      });
     });
   });
 

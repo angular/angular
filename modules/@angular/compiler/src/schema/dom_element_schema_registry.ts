@@ -3,6 +3,7 @@ import {SecurityContext} from '../../core_private';
 import {isPresent} from '../facade/lang';
 import {StringMapWrapper} from '../facade/collection';
 import {ElementSchemaRegistry} from './element_schema_registry';
+import {SECURITY_SCHEMA} from './dom_security_schema';
 
 const EVENT = 'event';
 const BOOLEAN = 'boolean';
@@ -51,6 +52,20 @@ const OBJECT = 'object';
  * NOTE: This schema is auto extracted from `schema_extractor.ts` located in the test folder,
  *       see dom_element_schema_registry_spec.ts
  */
+
+// =================================================================================================
+// =================================================================================================
+// =========== S T O P   -  S T O P   -  S T O P   -  S T O P   -  S T O P   -  S T O P  ===========
+// =================================================================================================
+// =================================================================================================
+//
+//                       DO NOT EDIT THIS DOM SCHEMA WITHOUT A SECURITY REVIEW!
+//
+// Newly added properties must be security reviewed and assigned an appropriate SecurityContext in
+// dom_security_schema.ts. Reach out to mprobst for details.
+//
+// =================================================================================================
+
 const SCHEMA: string[] =
     /*@ts2dart_const*/ ([
       '*|%classList,className,id,innerHTML,*beforecopy,*beforecut,*beforepaste,*copy,*cut,*paste,*search,*selectstart,*webkitfullscreenchange,*webkitfullscreenerror,*wheel,outerHTML,#scrollLeft,#scrollTop',
@@ -202,58 +217,11 @@ const SCHEMA: string[] =
 
 var attrToPropMap: {[name: string]: string} = <any>{
   'class': 'className',
+  'formaction': 'formAction',
   'innerHtml': 'innerHTML',
   'readonly': 'readOnly',
   'tabindex': 'tabIndex'
 };
-
-function registerContext(map: {[k: string]: SecurityContext}, ctx: SecurityContext, specs: string[]) {
-  for (let spec of specs) map[spec] = ctx;
-}
-
-/** Map from tagName|propertyName SecurityContext. Properties applying to all tags use '*'. */
-const SECURITY_SCHEMA: {[k: string]: SecurityContext} = {};
-
-registerContext(SECURITY_SCHEMA, SecurityContext.HTML, [
-  'iframe|srcdoc',
-  '*|innerHTML',
-  '*|outerHTML',
-]);
-registerContext(SECURITY_SCHEMA, SecurityContext.STYLE, ['*|style']);
-// NB: no SCRIPT contexts here, they are never allowed.
-registerContext(SECURITY_SCHEMA, SecurityContext.URL, [
-  'area|href',
-  'area|ping',
-  'audio|src',
-  'a|href',
-  'a|ping',
-  'blockquote|cite',
-  'body|background',
-  'button|formaction',
-  'del|cite',
-  'form|action',
-  'img|src',
-  'input|formaction',
-  'input|src',
-  'ins|cite',
-  'q|cite',
-  'source|src',
-  'video|poster',
-  'video|src',
-]);
-registerContext(SECURITY_SCHEMA, SecurityContext.RESOURCE_URL, [
-  'applet|code',
-  'applet|codebase',
-  'base|href',
-  'frame|src',
-  'head|profile',
-  'html|manifest',
-  'iframe|src',
-  'object|codebase',
-  'object|data',
-  'script|src',
-  'track|src',
-]);
 
 @Injectable()
 export class DomElementSchemaRegistry extends ElementSchemaRegistry {
@@ -276,6 +244,8 @@ export class DomElementSchemaRegistry extends ElementSchemaRegistry {
         if (property == '') {
         } else if (property.startsWith('*')) {
           // We don't yet support events.
+          // If ever allowing to bind to events, GO THROUGH A SECURITY REVIEW, allowing events will
+          // almost certainly introduce bad XSS vulnerabilities.
           // type[property.substring(1)] = EVENT;
         } else if (property.startsWith('!')) {
           type[property.substring(1)] = BOOLEAN;
@@ -315,6 +285,10 @@ export class DomElementSchemaRegistry extends ElementSchemaRegistry {
    * attack vectors are assigned their appropriate context.
    */
   securityContext(tagName: string, propName: string): SecurityContext {
+    // Make sure comparisons are case insensitive, so that case differences between attribute and
+    // property names do not have a security impact.
+    tagName = tagName.toLowerCase();
+    propName = propName.toLowerCase();
     let ctx = SECURITY_SCHEMA[tagName + '|' + propName];
     if (ctx !== undefined) return ctx;
     ctx = SECURITY_SCHEMA['*|' + propName];

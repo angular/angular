@@ -77,6 +77,12 @@ export function main() {
       expect(registry.hasProperty(nodeName, 'type')).toBeTruthy();
     });
 
+    it('should check security contexts case insensitive', () => {
+      expect(registry.securityContext('p', 'iNnErHtMl')).toBe(SecurityContext.HTML);
+      expect(registry.securityContext('p', 'formaction')).toBe(SecurityContext.URL);
+      expect(registry.securityContext('p', 'formAction')).toBe(SecurityContext.URL);
+    });
+
     if (browserDetection.isChromeDesktop) {
       it('generate a new schema', () => {
         // console.log(JSON.stringify(registry.properties));
