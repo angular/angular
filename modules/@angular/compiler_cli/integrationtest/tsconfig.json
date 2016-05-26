@@ -19,10 +19,5 @@
         "paths": {
           "@angular/*": ["../../../../dist/all/@angular/*"]
         }
-    },
-
-    "files": [
-      "src/bootstrap.ts",
-      "typings.d.ts"
-    ]
+    }
 }
