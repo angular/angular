@@ -822,6 +822,16 @@ There is no directive with "exportAs" set to "dirA" ("<div [ERROR ->]#a="dirA"><
 "let-" is only supported on template elements. ("<div [ERROR ->]let-a></div>"): TestComp@0:5`);
         });
 
+        it('should report duplicate reference names', () => { 
+          expect(() => parse('<div #a></div><div #a></div>', [])) 
+            .toThrowError(`Template parse errors:
+Reference "#a" is defined several times ("<div #a></div><div [ERROR ->]#a></div>"): TestComp@0:19`); 
+        });
+
+           it('should not throw error when there is same reference name in different templates', () => { 
+            expect(() => parse('<div #a><template #a><span>OK</span></template></div>', [])).not.toThrowError(); 
+        });
+
         it('should assign references with empty value to components', () => {
           var dirA = CompileDirectiveMetadata.create({
             selector: '[a]',

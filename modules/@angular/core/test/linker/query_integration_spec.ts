@@ -1059,11 +1059,11 @@ class NeedsContentChildWithRead {
 
 @Component({
   selector: 'needs-view-children-read',
-  template: '<div #q text="va"></div><div #q text="vb"></div>',
+  template: '<div #q text="va"></div><div #w text="vb"></div>',
   directives: [TextDirective]
 })
 class NeedsViewChildrenWithRead {
-  @ViewChildren('q', {read: TextDirective}) textDirChildren: QueryList<TextDirective>;
+  @ViewChildren('q,w', {read: TextDirective}) textDirChildren: QueryList<TextDirective>;
   @ViewChildren('nonExisting', {read: TextDirective}) nonExistingVar: QueryList<TextDirective>;
 }
 
