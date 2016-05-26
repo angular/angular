@@ -9,7 +9,6 @@ cd `dirname $0`
 source ./env.sh
 cd ../..
 
-./scripts/ci-lite/lint.sh
 ./scripts/ci-lite/test_js.sh
 ./scripts/ci-lite/test_e2e.sh
 ./scripts/ci-lite/test_saucelabs.sh
