@@ -581,7 +581,7 @@ const CORE = [
   'state(stateNameExpr:string, styles:AnimationStyleMetadata):AnimationStateDeclarationMetadata',
   'style(tokens:string|{[key:string]:string|number}|Array<string|{[key:string]:string|number}>):AnimationStyleMetadata',
   'transition(stateChangeExpr:string, animationData:AnimationMetadata|AnimationMetadata[]):AnimationStateTransitionMetadata',
-  'trigger(name:string, animation:AnimationMetadata|AnimationMetadata[]):AnimationEntryMetadata'
+  'trigger(name:string, animation:AnimationMetadata|AnimationMetadata[]):AnimationEntryMetadata',
 ];
 
 const COMMON = [
@@ -1320,11 +1320,11 @@ const PLATFORM_BROWSER = [
 ];
 
 describe('public API', () => {
-  check("@angular/core", CORE);
-  check("@angular/common", COMMON);
-  check("@angular/compiler", COMPILER);
-  check("@angular/upgrade", UPGRADE);
-  check("@angular/platform-browser", PLATFORM_BROWSER);
+  check('@angular/core', CORE);
+  check('@angular/common', COMMON);
+  check('@angular/compiler', COMPILER);
+  check('@angular/upgrade', UPGRADE);
+  check('@angular/platform-browser', PLATFORM_BROWSER);
 });
 
 function check(file: string, expected: string[]) {
@@ -1342,12 +1342,12 @@ function checkPublicApi(file: string, expected: string[]) {
     console.log('=================================================================');
     console.log('=================================================================');
     console.log('=================================================================');
-    console.log("Missing:");
+    console.log('Missing:');
     missing.forEach((m) => console.log(m));
   }
 
   if (extra.length > 0) {
-    console.log("Extra:");
+    console.log('Extra:');
     extra.forEach((m) => console.log(m));
   }
 

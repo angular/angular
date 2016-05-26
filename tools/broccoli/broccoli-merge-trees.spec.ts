@@ -15,7 +15,7 @@ describe('MergeTrees', () => {
   }
 
   let diffTrees = (differs: TreeDiffer[]): DiffResult[] => differs.map(tree => tree.diffTree());
-  function read(path: string) { return fs.readFileSync(path, "utf-8"); }
+  function read(path: string) { return fs.readFileSync(path, 'utf-8'); }
 
   it('should copy the file from the right-most inputTree with overwrite=true', () => {
     let testDir: any = {

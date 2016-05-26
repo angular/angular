@@ -1,8 +1,7 @@
 'use strict';
 
 import destCopy from '../broccoli-dest-copy';
-import compileWithTypescript, { INTERNAL_TYPINGS_PATH }
-from '../broccoli-typescript';
+import compileWithTypescript, {INTERNAL_TYPINGS_PATH} from '../broccoli-typescript';
 var Funnel = require('broccoli-funnel');
 import mergeTrees from '../broccoli-merge-trees';
 var path = require('path');
@@ -32,7 +31,7 @@ module.exports = function makeNodeTree(projects: string[], destinationPath: stri
       'angular2/upgrade.ts',
       'angular2/platform/testing/**',
       'angular2/manual_typings/**',
-      'angular2/typings/**'
+      'angular2/typings/**',
     ]
   });
 
@@ -41,7 +40,7 @@ module.exports = function makeNodeTree(projects: string[], destinationPath: stri
     'angular2/typings/node/node.d.ts',
     'angular2/manual_typings/globals.d.ts',
     'angular2/typings/es6-collections/es6-collections.d.ts',
-    'angular2/typings/es6-promise/es6-promise.d.ts'
+    'angular2/typings/es6-promise/es6-promise.d.ts',
   ];
 
   let externalTypingsTree = new Funnel('modules', {files: externalTypings});
@@ -95,7 +94,7 @@ module.exports = function makeNodeTree(projects: string[], destinationPath: stri
 
       'angular2/test/upgrade/**/*.ts',
       'angular1_router/**',
-      'payload_tests/**'
+      'payload_tests/**',
     ]
   });
 
@@ -130,17 +129,14 @@ module.exports = function makeNodeTree(projects: string[], destinationPath: stri
   // Compile generated test files against the src @internal .d.ts and the test files
   compiledTree = mergeTrees(
       [
-        compiledTree,
-        generatedJsTestFiles,
+        compiledTree, generatedJsTestFiles,
         compileTree(
             new Funnel(
                 mergeTrees([
                   packageTypings,
-                  new Funnel('modules',
-                             {include: ['angular2/manual_typings/**', 'angular2/typings/**']}),
-                  generatedTsTestFiles,
-                  srcPrivateDeclarations,
-                  compiledTestTree
+                  new Funnel(
+                      'modules', {include: ['angular2/manual_typings/**', 'angular2/typings/**']}),
+                  generatedTsTestFiles, srcPrivateDeclarations, compiledTestTree
                 ]),
                 {include: ['angular2/**', 'rxjs/**', 'zone.js/**']}),
             false, [])
@@ -153,9 +149,9 @@ module.exports = function makeNodeTree(projects: string[], destinationPath: stri
     files: ['**/*.d.ts'],
     patterns: [
       // all readonly keywords
-      {match: /^(\s*(static\s+|private\s+)*)readonly\s+/mg, replacement: "$1"},
+      {match: /^(\s*(static\s+|private\s+)*)readonly\s+/mg, replacement: '$1'},
       // abstract properties (but not methods or classes)
-      {match: /^(\s+)abstract\s+([^\(\n]*$)/mg, replacement: "$1$2"},
+      {match: /^(\s+)abstract\s+([^\(\n]*$)/mg, replacement: '$1$2'},
     ]
   });
 
@@ -176,17 +172,16 @@ module.exports = function makeNodeTree(projects: string[], destinationPath: stri
 
   // Copy es6 typings so quickstart doesn't require typings install
   let typingsTree = mergeTrees([
-    new Funnel('modules',
-               {
-                 include: [
-                   'angular2/typings/es6-collections/es6-collections.d.ts',
-                   'angular2/typings/es6-promise/es6-promise.d.ts',
-                 ]
-               }),
-    writeFile('angular2/typings/browser.d.ts',
-              '// Typings needed for compilation with --target=es5\n' +
-                  '///<reference path="./es6-collections/es6-collections.d.ts"/>\n' +
-                  '///<reference path="./es6-promise/es6-promise.d.ts"/>\n')
+    new Funnel('modules', {
+      include: [
+        'angular2/typings/es6-collections/es6-collections.d.ts',
+        'angular2/typings/es6-promise/es6-promise.d.ts',
+      ]
+    }),
+    writeFile(
+        'angular2/typings/browser.d.ts', '// Typings needed for compilation with --target=es5\n' +
+            '///<reference path="./es6-collections/es6-collections.d.ts"/>\n' +
+            '///<reference path="./es6-promise/es6-promise.d.ts"/>\n')
   ]);
 
   var nodeTree =
@@ -201,9 +196,9 @@ module.exports = function makeNodeTree(projects: string[], destinationPath: stri
         replacement:
             () =>
                 `var parse5Adapter = require('angular2/src/platform/server/parse5_adapter');\r\n` +
-                `parse5Adapter.Parse5DomAdapter.makeCurrent();`
+            `parse5Adapter.Parse5DomAdapter.makeCurrent();`
       },
-      {match: /$/, replacement: (_: any, relativePath: string) => "\r\n main(); \r\n"}
+      {match: /$/, replacement: (_: any, relativePath: string) => '\r\n main(); \r\n'}
     ]
   });
 
@@ -215,24 +210,24 @@ module.exports = function makeNodeTree(projects: string[], destinationPath: stri
   return destCopy(nodeTree, destinationPath);
 };
 
-function compileTree(tree: BroccoliTree, genInternalTypings: boolean,
-                     rootFilePaths: string[] = []) {
+function compileTree(
+    tree: BroccoliTree, genInternalTypings: boolean, rootFilePaths: string[] = []) {
   return compileWithTypescript(tree, {
     // build pipeline options
-    "rootFilePaths": rootFilePaths,
-    "internalTypings": genInternalTypings,
+    'rootFilePaths': rootFilePaths,
+    'internalTypings': genInternalTypings,
     // tsc options
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "declaration": true,
-    "stripInternal": true,
-    "module": "commonjs",
-    "moduleResolution": "classic",
-    "noEmitOnError": true,
-    "rootDir": ".",
-    "inlineSourceMap": true,
-    "inlineSources": true,
-    "target": "es5"
+    'emitDecoratorMetadata': true,
+    'experimentalDecorators': true,
+    'declaration': true,
+    'stripInternal': true,
+    'module': 'commonjs',
+    'moduleResolution': 'classic',
+    'noEmitOnError': true,
+    'rootDir': '.',
+    'inlineSourceMap': true,
+    'inlineSources': true,
+    'target': 'es5'
   });
 }
 
