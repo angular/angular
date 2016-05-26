@@ -1,10 +1,10 @@
+import {RuleWalker} from 'tslint/lib/language/walker';
 import {RuleFailure} from 'tslint/lib/lint';
 import {AbstractRule} from 'tslint/lib/rules';
-import {RuleWalker} from 'tslint/lib/language/walker';
 import * as ts from 'typescript';
 
 export class Rule extends AbstractRule {
-  public static FAILURE_STRING = "missing type declaration";
+  public static FAILURE_STRING = 'missing type declaration';
 
   public apply(sourceFile: ts.SourceFile): RuleFailure[] {
     const typedefWalker = new TypedefWalker(sourceFile, this.getOptions());
@@ -28,12 +28,12 @@ class TypedefWalker extends RuleWalker {
 
   private checkTypeAnnotation(location: number, typeAnnotation: ts.TypeNode, name?: ts.Node) {
     if (typeAnnotation == null) {
-      let ns = "<name missing>";
+      let ns = '<name missing>';
       if (name != null && name.kind === ts.SyntaxKind.Identifier) {
         ns = (<ts.Identifier>name).text;
       }
       if (ns.charAt(0) === '_') return;
-      let failure = this.createFailure(location, 1, "expected parameter " + ns + " to have a type");
+      let failure = this.createFailure(location, 1, 'expected parameter ' + ns + ' to have a type');
       this.addFailure(failure);
     }
   }

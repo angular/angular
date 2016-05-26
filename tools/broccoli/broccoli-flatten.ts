@@ -14,8 +14,9 @@ var isWindows = process.platform === 'win32';
  * the associated changes.
  */
 export class DiffingFlatten implements DiffingBroccoliPlugin {
-  constructor(private inputPath: string, private cachePath: string,
-              private options: AngularBuilderOptions) {}
+  constructor(
+      private inputPath: string, private cachePath: string,
+      private options: AngularBuilderOptions) {}
 
 
   rebuild(treeDiff: DiffResult) {
@@ -39,8 +40,9 @@ export class DiffingFlatten implements DiffingBroccoliPlugin {
       if (!fs.existsSync(destFilePath)) {
         symlinkOrCopy(sourceFilePath, destFilePath);
       } else {
-        throw new Error(`Duplicate file '${path.basename(changedFilePath)}' ` +
-                        `found in path '${changedFilePath}'`);
+        throw new Error(
+            `Duplicate file '${path.basename(changedFilePath)}' ` +
+            `found in path '${changedFilePath}'`);
       }
     });
 

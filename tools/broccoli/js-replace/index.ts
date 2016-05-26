@@ -7,5 +7,5 @@ function readJs(file: string) {
       fs.readFileSync(path.join('tools/broccoli/js-replace', file + '.js'), {encoding: 'utf-8'});
   // TODO(broccoli): we don't really need this, it's here to make the output match the
   // tools/build/html
-  return content.substring(0, content.lastIndexOf("\n"));
+  return content.substring(0, content.lastIndexOf('\n'));
 }

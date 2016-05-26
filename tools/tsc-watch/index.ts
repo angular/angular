@@ -1,14 +1,14 @@
 import {spawn} from 'child_process';
-import {TscWatch, TSC, reportError} from './tsc_watch';
 import {writeFileSync, mkdirSync, existsSync} from 'fs';
+
+import {TscWatch, TSC, reportError} from './tsc_watch';
+
 export * from './tsc_watch';
 import 'reflect-metadata';
 
 const OFFLINE_COMPILE = [
-  'output/output_emitter_codegen_untyped',
-  'output/output_emitter_codegen_typed',
-  'offline_compiler_codegen_untyped',
-  'offline_compiler_codegen_typed'
+  'output/output_emitter_codegen_untyped', 'output/output_emitter_codegen_typed',
+  'offline_compiler_codegen_untyped', 'offline_compiler_codegen_typed'
 ];
 
 function processOutputEmitterCodeGen(): Promise<number> {
@@ -20,8 +20,9 @@ function processOutputEmitterCodeGen(): Promise<number> {
              var codegen = require('../../all/@angular/compiler/test/' + file + '.js');
              if (codegen.emit) {
                console.log(`  ${file} has changed, regenerating...`);
-               promises.push(Promise.resolve(codegen.emit())
-                                 .then((code) => { writeFileSync(outDir + file + '.ts', code); }));
+               promises.push(Promise.resolve(codegen.emit()).then((code) => {
+                 writeFileSync(outDir + file + '.ts', code);
+               }));
              }
            });
            if (promises.length) {
@@ -33,8 +34,9 @@ function processOutputEmitterCodeGen(): Promise<number> {
                    var tsc = spawn(TSC, args, {stdio: 'pipe'});
                    tsc.stdout.on('data', (data: any) => process.stdout.write(data));
                    tsc.stderr.on('data', (data: any) => process.stderr.write(data));
-                   tsc.on('close',
-                          (code: any) => code ? reject('Tsc exited with: ' + code) : resolve(code));
+                   tsc.on(
+                       'close',
+                       (code: any) => code ? reject('Tsc exited with: ' + code) : resolve(code));
                  })
                  .catch(reportError);
            } else {
@@ -68,10 +70,7 @@ if (platform == 'node') {
     onChangeCmds: [
       processOutputEmitterCodeGen,
       [
-        'node',
-        'dist/tools/cjs-jasmine',
-        '--',
-        '{@angular,benchpress}/**/*_spec.js',
+        'node', 'dist/tools/cjs-jasmine', '--', '{@angular,benchpress}/**/*_spec.js',
         '@angular/compiler_cli/test/**/*_spec.js'
       ]
     ]
@@ -92,9 +91,10 @@ if (platform == 'node') {
     start: 'File change detected. Starting incremental compilation...',
     error: 'error',
     complete: 'Compilation complete. Watching for file changes.',
-    onChangeCmds: [
-      ['node', 'dist/tools/cjs-jasmine/index-tools', '--', '{public_api_guard,tsc-wrapped}/**/*{_,.}spec.js']
-    ]
+    onChangeCmds: [[
+      'node', 'dist/tools/cjs-jasmine/index-tools', '--',
+      '{public_api_guard,tsc-wrapped}/**/*{_,.}spec.js'
+    ]]
   });
 }
 

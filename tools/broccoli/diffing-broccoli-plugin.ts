@@ -23,13 +23,13 @@ export function wrapDiffingPlugin(pluginClass: PluginClass): DiffingPluginWrappe
 
 
 export interface DiffingBroccoliPlugin {
-  rebuild(diff: (DiffResult | DiffResult[])): (Promise<DiffResult | void>| DiffResult | void);
-  cleanup ? () : void;
+  rebuild(diff: (DiffResult|DiffResult[])): (Promise<DiffResult|void>|DiffResult|void);
+  cleanup?(): void;
 }
 
 
 export type DiffingPluginWrapperFactory =
-  (inputTrees: (BroccoliTree | BroccoliTree[]), options?: any) => BroccoliTree;
+    (inputTrees: (BroccoliTree | BroccoliTree[]), options?: any) => BroccoliTree;
 
 
 class DiffingPluginWrapper implements BroccoliTree {
@@ -59,7 +59,7 @@ class DiffingPluginWrapper implements BroccoliTree {
     this.description = this.pluginClass.name;
   }
 
-  private getDiffResult(): (DiffResult | DiffResult[]) {
+  private getDiffResult(): (DiffResult|DiffResult[]) {
     let returnOrCalculateDiffResult = (tree: BroccoliTree, index: number) => {
       // returnOrCalculateDiffResult will do one of two things:
       //
@@ -80,16 +80,16 @@ class DiffingPluginWrapper implements BroccoliTree {
     } else if (this.inputTree) {
       return returnOrCalculateDiffResult(this.inputTree, -1);
     } else {
-      throw new Error("Missing TreeDiffer");
+      throw new Error('Missing TreeDiffer');
     }
   }
 
-  private maybeStoreDiffResult(value: (DiffResult | void)) {
+  private maybeStoreDiffResult(value: (DiffResult|void)) {
     if (!(value instanceof DiffResult)) value = null;
     this.diffResult = <DiffResult>(value);
   }
 
-  rebuild(): (Promise<any>| void) {
+  rebuild(): (Promise<any>|void) {
     try {
       let firstRun = !this.initialized;
       this.init();
@@ -99,7 +99,7 @@ class DiffingPluginWrapper implements BroccoliTree {
       let result = this.wrappedPlugin.rebuild(diffResult);
 
       if (result) {
-        let resultPromise = <Promise<DiffResult | void>>(result);
+        let resultPromise = <Promise<DiffResult|void>>(result);
         if (resultPromise.then) {
           // rebuild() -> Promise<>
           return resultPromise.then((result: (DiffResult | void)) => {
@@ -139,15 +139,15 @@ class DiffingPluginWrapper implements BroccoliTree {
       let description = this.description;
       this.initialized = true;
       if (this.inputPaths) {
-        this.treeDiffers =
-            this.inputPaths.map((inputPath) => new TreeDiffer(
-                                    description, inputPath, includeExtensions, excludeExtensions));
+        this.treeDiffers = this.inputPaths.map(
+            (inputPath) =>
+                new TreeDiffer(description, inputPath, includeExtensions, excludeExtensions));
       } else if (this.inputPath) {
         this.treeDiffer =
             new TreeDiffer(description, this.inputPath, includeExtensions, excludeExtensions);
       }
-      this.wrappedPlugin = new this.pluginClass(this.inputPaths || this.inputPath, this.cachePath,
-                                                this.wrappedPluginArguments[1]);
+      this.wrappedPlugin = new this.pluginClass(
+          this.inputPaths || this.inputPath, this.cachePath, this.wrappedPluginArguments[1]);
     }
   }
 

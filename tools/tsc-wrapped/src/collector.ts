@@ -1,17 +1,9 @@
 import * as ts from 'typescript';
+
 import {Evaluator, ImportMetadata, ImportSpecifierMetadata} from './evaluator';
+import {ClassMetadata, ConstructorMetadata, ModuleMetadata, MemberMetadata, MetadataMap, MetadataSymbolicExpression, MetadataSymbolicReferenceExpression, MetadataValue, MethodMetadata} from './schema';
 import {Symbols} from './symbols';
-import {
-  ClassMetadata,
-  ConstructorMetadata,
-  ModuleMetadata,
-  MemberMetadata,
-  MetadataMap,
-  MetadataSymbolicExpression,
-  MetadataSymbolicReferenceExpression,
-  MetadataValue,
-  MethodMetadata
-} from './schema';
+
 
 /**
  * Collect decorator metadata from a TypeScript module.
@@ -40,14 +32,13 @@ export class MetadataCollector {
             switch (bindings.kind) {
               case ts.SyntaxKind.NamedImports:
                 const namedImports: ImportSpecifierMetadata[] = [];
-                (<ts.NamedImports>bindings)
-                    .elements.forEach(i => {
-                      const namedImport = {name: i.name.text};
-                      if (i.propertyName) {
-                        (<any>namedImport)['propertyName'] = i.propertyName.text;
-                      }
-                      namedImports.push(namedImport);
-                    });
+                (<ts.NamedImports>bindings).elements.forEach(i => {
+                  const namedImport = {name: i.name.text};
+                  if (i.propertyName) {
+                    (<any>namedImport)['propertyName'] = i.propertyName.text;
+                  }
+                  namedImports.push(namedImport);
+                });
                 (<any>newImport)['namedImports'] = namedImports;
                 break;
               case ts.SyntaxKind.NamespaceImport:
@@ -86,7 +77,7 @@ export class MetadataCollector {
     }
 
     function classMetadataOf(classDeclaration: ts.ClassDeclaration): ClassMetadata {
-      let result: ClassMetadata = {__symbolic: "class"};
+      let result: ClassMetadata = {__symbolic: 'class'};
 
       function getDecorators(decorators: ts.Decorator[]): MetadataSymbolicExpression[] {
         if (decorators && decorators.length)
@@ -114,7 +105,7 @@ export class MetadataCollector {
             isConstructor = true;
           // fallthrough
           case ts.SyntaxKind.MethodDeclaration:
-            const method = <ts.MethodDeclaration | ts.ConstructorDeclaration>member;
+            const method = <ts.MethodDeclaration|ts.ConstructorDeclaration>member;
             const methodDecorators = getDecorators(method.decorators);
             const parameters = method.parameters;
             const parameterDecoratorData: MetadataSymbolicExpression[][] = [];
@@ -131,8 +122,8 @@ export class MetadataCollector {
                 hasParameterData = true;
               }
             }
-            const data: MethodMetadata = {__symbolic: isConstructor ? "constructor" : "method"};
-            const name = isConstructor ? "__ctor__" : evaluator.nameOf(member.name);
+            const data: MethodMetadata = {__symbolic: isConstructor ? 'constructor' : 'method'};
+            const name = isConstructor ? '__ctor__' : evaluator.nameOf(member.name);
             if (methodDecorators) {
               data.decorators = methodDecorators;
             }
@@ -150,8 +141,9 @@ export class MetadataCollector {
             const property = <ts.PropertyDeclaration>member;
             const propertyDecorators = getDecorators(property.decorators);
             if (propertyDecorators) {
-              recordMember(evaluator.nameOf(property.name),
-                           {__symbolic: 'property', decorators: propertyDecorators});
+              recordMember(
+                  evaluator.nameOf(property.name),
+                  {__symbolic: 'property', decorators: propertyDecorators});
             }
             break;
         }
@@ -194,6 +186,6 @@ export class MetadataCollector {
       }
     }
 
-    return metadata && {__symbolic: "module", metadata};
+    return metadata && {__symbolic: 'module', metadata};
   }
 }

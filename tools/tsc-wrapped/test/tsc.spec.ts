@@ -3,7 +3,8 @@ import {Tsc} from '../src/tsc';
 
 describe('options parsing', () => {
 
-  const tsc = new Tsc(() => `
+  const tsc = new Tsc(
+      () => `
 {
     "angularCompilerOptions": {
         "googleClosureOutput": true
@@ -12,13 +13,14 @@ describe('options parsing', () => {
         "module": "commonjs",
         "outDir": "built"
     }
-}`, () => ['tsconfig.json']);
+}`,
+      () => ['tsconfig.json']);
 
   it('should combine all options into ngOptions', () => {
     const {parsed, ngOptions} = tsc.readConfiguration('projectDir', 'basePath');
 
     expect(ngOptions).toEqual({
-      genDir:'basePath',
+      genDir: 'basePath',
       googleClosureOutput: true,
       module: ts.ModuleKind.CommonJS,
       outDir: 'basePath/built',

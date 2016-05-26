@@ -32,25 +32,26 @@ if (globsIndex < 0) {
 }
 
 var specFiles: any =
-    args.map(function(globstr: string): string[] {
-          return glob.sync(globstr, {
-            cwd: distAll,
-            ignore: [
-              // the following code and tests are not compatible with CJS/node environment
-              '@angular/platform-browser/**',
-              '@angular/core/test/zone/**',
-              '@angular/core/test/fake_async_spec.*',
-              '@angular/common/test/forms/**',
-              '@angular/router/test/route_config/route_config_spec.*',
-              '@angular/router/test/integration/bootstrap_spec.*',
-              '@angular/integration_test/symbol_inspector/**',
-              '@angular/upgrade/**',
-              '@angular/examples/**',
-              'angular1_router/**',
-              'payload_tests/**'
-            ]
-          });
-        })
+    args.map(function(globstr: string):
+                 string[] {
+                   return glob.sync(globstr, {
+                     cwd: distAll,
+                     ignore: [
+                       // the following code and tests are not compatible with CJS/node environment
+                       '@angular/platform-browser/**',
+                       '@angular/core/test/zone/**',
+                       '@angular/core/test/fake_async_spec.*',
+                       '@angular/common/test/forms/**',
+                       '@angular/router/test/route_config/route_config_spec.*',
+                       '@angular/router/test/integration/bootstrap_spec.*',
+                       '@angular/integration_test/symbol_inspector/**',
+                       '@angular/upgrade/**',
+                       '@angular/examples/**',
+                       'angular1_router/**',
+                       'payload_tests/**',
+                     ]
+                   });
+                 })
         // The security spec however works (and must work!) on the server side.
         .concat(glob.sync('@angular/platform-browser/test/security/**/*_spec.js', {cwd: distAll}))
         .reduce((specFiles: string[], paths: string[]) => specFiles.concat(paths), <string[]>[]);

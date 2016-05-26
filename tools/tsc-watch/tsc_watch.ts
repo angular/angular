@@ -12,22 +12,20 @@ export type Command = (stdIn: any, stdErr: any) => Promise<number>;
 
 export class TscWatch {
   private tsconfig: string;
-  private start: string | RegExp;
-  private error: string | RegExp;
-  private complete: string | RegExp;
-  private onStartCmds: Array<string[] | Command>;
-  private onChangeCmds: Array<string[] | Command>;
+  private start: string|RegExp;
+  private error: string|RegExp;
+  private complete: string|RegExp;
+  private onStartCmds: Array<string[]|Command>;
+  private onChangeCmds: Array<string[]|Command>;
   private state: State;
   private triggered: Promise<number> = null;
   private runOnce: boolean = false;
 
   constructor({tsconfig, start, error, complete, onStartCmds = null, onChangeCmds = null}: {
     tsconfig: string,
-    error: string | RegExp,
+    error: string|RegExp,
     start: string,
-    complete: string,
-    onStartCmds?: Array<string[] | Command>,
-    onChangeCmds?: Array<string[] | Command>
+    complete: string, onStartCmds?: Array<string[]|Command>, onChangeCmds?: Array<string[]|Command>
   }) {
     console.log('Watching:', tsconfig, 'in', process.cwd());
     this.tsconfig = tsconfig;
@@ -50,9 +48,9 @@ export class TscWatch {
     this.onStartCmds.forEach((cmd) => this.runCmd(cmd, null, () => null, () => null));
   }
 
-  private runCmd(argsOrCmd: string[] | Command, env?: {[k: string]: string},
-                 stdOut = pipeStdOut, stdErr = pipeStdErr): Promise<number>
-  {
+  private runCmd(
+      argsOrCmd: string[]|Command, env?: {[k: string]: string}, stdOut = pipeStdOut,
+      stdErr = pipeStdErr): Promise<number> {
     if (typeof argsOrCmd == 'function') {
       return (argsOrCmd as Command)(stdErr, stdOut);
     } else if (argsOrCmd instanceof Array) {
@@ -105,8 +103,9 @@ export class TscWatch {
         this.state = State.idle;
       } else {
         if (this.triggered) {
-          this.triggered.then(() => this.triggerCmds(),
-                              (e) => {console.log("Error while running commands....", e)});
+          this.triggered.then(
+              () => this.triggerCmds(),
+              (e) => {console.log('Error while running commands....', e)});
         } else {
           this.triggerCmds();
         }

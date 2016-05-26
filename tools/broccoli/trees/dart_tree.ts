@@ -26,7 +26,7 @@ var global_excludes = [
   'playground/src/http/**/*',
   'playground/src/jsonp/**/*',
   'playground/test/http/**/*',
-  'playground/test/jsonp/**/*'
+  'playground/test/jsonp/**/*',
 ];
 
 
@@ -50,7 +50,7 @@ function replaceScriptTagInHtml(placeholder: string, relativePath: string): stri
   }
   var scriptName = relativePath.replace(/\\/g, '/').replace(/.*\/([^/]+)\.html$/, '$1.dart');
   scriptTags += '<script src="' + scriptName + '" type="application/dart"></script>\n' +
-                '<script src="packages/browser/dart.js" type="text/javascript"></script>';
+      '<script src="packages/browser/dart.js" type="text/javascript"></script>';
   return scriptTags;
 }
 
@@ -69,7 +69,7 @@ function getSourceTree(options: AngularBuilderOptions) {
         'zone-ts2dart.d.ts',
         '**/*.js',
         '**/*.ts',
-        '**/*.dart'
+        '**/*.dart',
       ],
       [
         'rollup-test/**/*',
@@ -115,7 +115,8 @@ function fixDartFolderLayout(sourceTree: BroccoliTree) {
       {pattern: /^playground\/test\//, insertion: ''},
       {pattern: /^playground\//, insertion: 'web/'},
       {pattern: /^[^\/]*\/test\//, insertion: ''},
-      {pattern: /^./, insertion: 'lib'},  // catch all.
+      // catch all.
+      {pattern: /^./, insertion: 'lib'},
     ];
 
     for (var i = 0; i < replacements.length; i++) {
@@ -181,18 +182,20 @@ function getDocsTree() {
       '*/angular1_router',
       '*/angular2/src/http',
       '*/payload_tests',
-      '*/upgrade'
+      '*/upgrade',
     ]  // Not in dart.
   });
   licenses = stew.rename(licenses, stripModulePrefix);
 
   // Documentation.
   // Rename *.dart.md -> *.dart.
-  var mdTree = stew.rename(modulesFunnel(['**/*.dart.md']),
-                           (relativePath: string) => relativePath.replace(/\.dart\.md$/, '.md'));
+  var mdTree = stew.rename(
+      modulesFunnel(['**/*.dart.md']),
+      (relativePath: string) => relativePath.replace(/\.dart\.md$/, '.md'));
   // Copy all assets, ignore .js. and .dart. (handled above).
-  var docs = modulesFunnel(['**/*.md', '**/*.png', '**/*.html', '**/*.css', '**/*.scss'],
-                           ['**/*.js.md', '**/*.dart.md', 'angular1_router/**/*']);
+  var docs = modulesFunnel(
+      ['**/*.md', '**/*.png', '**/*.html', '**/*.css', '**/*.scss'],
+      ['**/*.js.md', '**/*.dart.md', 'angular1_router/**/*']);
 
   var assets = modulesFunnel(['playground/**/*.json']);
 

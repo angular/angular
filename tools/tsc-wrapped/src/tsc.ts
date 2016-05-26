@@ -1,5 +1,6 @@
-import * as ts from 'typescript';
 import * as path from 'path';
+import * as ts from 'typescript';
+
 import AngularCompilerOptions from './options';
 import {TsickleHost} from './compiler_host';
 
@@ -9,9 +10,8 @@ import {TsickleHost} from './compiler_host';
  * you should implement a similar interface.
  */
 export interface CompilerInterface {
-  readConfiguration(
-      project: string,
-      basePath: string): {parsed: ts.ParsedCommandLine, ngOptions: AngularCompilerOptions};
+  readConfiguration(project: string, basePath: string):
+      {parsed: ts.ParsedCommandLine, ngOptions: AngularCompilerOptions};
   typeCheck(compilerHost: ts.CompilerHost, program: ts.Program): void;
   emit(compilerHost: ts.CompilerHost, program: ts.Program): number;
 }
@@ -23,16 +23,17 @@ function debug(msg: string, ...o: any[]) {
 }
 
 export function formatDiagnostics(diags: ts.Diagnostic[]): string {
-  return diags.map((d) => {
-                let res = ts.DiagnosticCategory[d.category];
-                if (d.file) {
-                  res += ' at ' + d.file.fileName + ':';
-                  const {line, character} = d.file.getLineAndCharacterOfPosition(d.start);
-                  res += (line + 1) + ':' + (character + 1) + ':';
-                }
-                res += ' ' + ts.flattenDiagnosticMessageText(d.messageText, '\n');
-                return res;
-              })
+  return diags
+      .map((d) => {
+        let res = ts.DiagnosticCategory[d.category];
+        if (d.file) {
+          res += ' at ' + d.file.fileName + ':';
+          const {line, character} = d.file.getLineAndCharacterOfPosition(d.start);
+          res += (line + 1) + ':' + (character + 1) + ':';
+        }
+        res += ' ' + ts.flattenDiagnosticMessageText(d.messageText, '\n');
+        return res;
+      })
       .join('\n');
 }
 
@@ -55,7 +56,7 @@ export class Tsc implements CompilerInterface {
     // Allow a directory containing tsconfig.json as the project value
     try {
       this.readDirectory(project);
-      project = path.join(project, "tsconfig.json");
+      project = path.join(project, 'tsconfig.json');
     } catch (e) {
       // Was not a directory, continue on assuming it's a file
     }
@@ -82,11 +83,11 @@ export class Tsc implements CompilerInterface {
     // Create a new program since codegen files were created after making the old program
     const program =
         ts.createProgram(this.parsed.fileNames, this.parsed.options, compilerHost, oldProgram);
-    debug("Checking global diagnostics...");
+    debug('Checking global diagnostics...');
     check(program.getGlobalDiagnostics());
 
     let diagnostics: ts.Diagnostic[] = [];
-    debug("Type checking...");
+    debug('Type checking...');
 
     for (let sf of program.getSourceFiles()) {
       diagnostics.push(...ts.getPreEmitDiagnostics(program, sf));
@@ -97,7 +98,7 @@ export class Tsc implements CompilerInterface {
   emit(compilerHost: TsickleHost, oldProgram: ts.Program): number {
     // Create a new program since the host may be different from the old program.
     const program = ts.createProgram(this.parsed.fileNames, this.parsed.options, compilerHost);
-    debug("Emitting outputs...");
+    debug('Emitting outputs...');
     const emitResult = program.emit();
     let diagnostics: ts.Diagnostic[] = [];
     diagnostics.push(...emitResult.diagnostics);

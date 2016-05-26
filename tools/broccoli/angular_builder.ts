@@ -11,10 +11,7 @@ export type ProjectMap = {
 };
 
 export type Options = {
-  projects: ProjectMap;
-  noTypeChecks: boolean;
-  generateEs6: boolean;
-  useBundles: boolean;
+  projects: ProjectMap; noTypeChecks: boolean; generateEs6: boolean; useBundles: boolean;
 };
 
 export interface AngularBuilderOptions {
@@ -133,14 +130,16 @@ export class AngularBuilder {
           writeBuildLog(result, name);
           return result;
         },
-        (error): any => {
-          // the build tree is the same during rebuilds, only leaf properties of the nodes change
-          // so let's traverse it and get updated values for input/cache/output paths
-          if (this.firstResult) {
-            writeBuildLog(this.firstResult, name);
-          }
-          throw error;
-        });
+        (error):
+            any => {
+              // the build tree is the same during rebuilds, only leaf properties of the nodes
+              // change
+              // so let's traverse it and get updated values for input/cache/output paths
+              if (this.firstResult) {
+                writeBuildLog(this.firstResult, name);
+              }
+              throw error;
+            });
   }
 }
 
@@ -159,16 +158,17 @@ function writeBuildLog(result: BuildResult, name: string) {
 function broccoliNodeToBuildNode(broccoliNode: BroccoliNode): BuildNode {
   let tree = broccoliNode.tree.newStyleTree || broccoliNode.tree;
 
-  return new BuildNode(tree.description || (<any>tree.constructor).name,
-                       tree.inputPath ? [tree.inputPath] : tree.inputPaths, tree.cachePath,
-                       tree.outputPath, broccoliNode.selfTime / (1000 * 1000 * 1000),
-                       broccoliNode.totalTime / (1000 * 1000 * 1000),
-                       broccoliNode.subtrees.map(broccoliNodeToBuildNode));
+  return new BuildNode(
+      tree.description || (<any>tree.constructor).name,
+      tree.inputPath ? [tree.inputPath] : tree.inputPaths, tree.cachePath, tree.outputPath,
+      broccoliNode.selfTime / (1000 * 1000 * 1000), broccoliNode.totalTime / (1000 * 1000 * 1000),
+      broccoliNode.subtrees.map(broccoliNodeToBuildNode));
 }
 
 
 class BuildNode {
-  constructor(public pluginName: string, public inputPaths: string[], public cachePath: string,
-              public outputPath: string, public selfTime: number, public totalTime: number,
-              public inputNodes: BuildNode[]) {}
+  constructor(
+      public pluginName: string, public inputPaths: string[], public cachePath: string,
+      public outputPath: string, public selfTime: number, public totalTime: number,
+      public inputNodes: BuildNode[]) {}
 }

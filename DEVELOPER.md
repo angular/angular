@@ -238,17 +238,17 @@ repository, allowing many tools and editors to share our settings.
 
 To check the formatting of your code, run
 
-    gulp check-format
+    gulp lint
 
-Note that the continuous build on Travis runs `gulp enforce-format`. Unlike the `check-format` task,
-this will actually fail the build if files aren't formatted according to the style guide.
+Note that the continuous build on CircleCI will fail the build if files aren't formatted according
+to the style guide.
 
 Your life will be easier if you include the formatter in your standard workflow. Otherwise, you'll
 likely forget to check the formatting, and waste time waiting for a build on Travis that fails due
 to some whitespace difference.
 
-* Use `$(npm bin)/clang-format -i [file name]` to format a file (or multiple).
-* Use `gulp enforce-format` to check if your code is `clang-format` clean. This also gives
+* Use `gulp format` to format everything.
+* Use `gulp lint` to check if your code is `clang-format` clean. This also gives
   you a command line to format your code.
 * `clang-format` also includes a git hook, run `git clang-format` to format all files you
   touched.
