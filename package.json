@@ -13,7 +13,7 @@
     "demo-app": "ng serve",
     "test": "karma start test/karma.conf.js",
     "tslint": "tslint -c tslint.json 'src/**/*.ts'",
-    "stylelint": "stylelint 'src/**/*.scss' --config .stylelint-config.json --syntax scss",
+    "stylelint": "stylelint 'src/**/*.scss' --config stylelint-config.json --syntax scss",
     "typings": "typings install --ambient",
     "postinstall": "npm run typings",
     "e2e": "protractor",
