@@ -8,7 +8,8 @@
 
 import {StringWrapper, isPresent} from '../src/facade/lang';
 
-import {ContentType, RequestMethod, ResponseBuffer} from './enums';
+import {Body} from './body';
+import {ContentType, RequestMethod, ResponseContentType} from './enums';
 import {Headers} from './headers';
 import {normalizeMethodName} from './http_utils';
 import {RequestArgs} from './interfaces';
@@ -55,7 +56,7 @@ import {URLSearchParams} from './url_search_params';
  *
  * @experimental
  */
-export class Request {
+export class Request extends Body {
   /**
    * Http method with which to perform the request.
    */
@@ -66,15 +67,14 @@ export class Request {
   headers: Headers;
   /** Url of the remote resource */
   url: string;
-  /** Body of the request **/
-  private _body: any;
   /** Type of the request body **/
   private contentType: ContentType;
   /** Enable use credentials */
   withCredentials: boolean;
-  /* Select a buffer to store the response */
-  buffer: ResponseBuffer;
+  /** Buffer to store the response */
+  responseType: ResponseContentType;
   constructor(requestOptions: RequestArgs) {
+    super();
     // TODO: assert that url is present
     let url = requestOptions.url;
     this.url = requestOptions.url;
@@ -97,43 +97,7 @@ export class Request {
     // TODO(jeffbcross): implement behavior
     this.headers = new Headers(requestOptions.headers);
     this.withCredentials = requestOptions.withCredentials;
-    this.buffer = requestOptions.buffer;
-  }
-
-
-  /**
-   * Returns the request's body as string, assuming that body exists. If body is undefined, return
-   * empty
-   * string.
-   */
-  text(): string { return isPresent(this._body) ? this._body.toString() : ''; }
-
-  /**
-   * Returns the request's body as JSON string, assuming that body exists. If body is undefined,
-   * return
-   * empty
-   * string.
-   */
-  json(): string { return isPresent(this._body) ? JSON.stringify(this._body) : ''; }
-
-  /**
-   * Returns the request's body as array buffer, assuming that body exists. If body is undefined,
-   * return
-   * null.
-   */
-  arrayBuffer(): ArrayBuffer {
-    if (this._body instanceof ArrayBuffer) return <ArrayBuffer>this._body;
-    throw 'The request body isn\'t an array buffer';
-  }
-
-  /**
-   * Returns the request's body as blob, assuming that body exists. If body is undefined, return
-   * null.
-   */
-  blob(): Blob {
-    if (this._body instanceof Blob) return <Blob>this._body;
-    if (this._body instanceof ArrayBuffer) return new Blob([this._body]);
-    throw 'The request body isn\'t either a blob or an array buffer';
+    this.responseType = requestOptions.responseType;
   }
 
   /**

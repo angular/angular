@@ -117,18 +117,15 @@ export declare enum ReadyState {
 }
 
 /** @experimental */
-export declare class Request {
+export declare class Request extends Body {
     headers: Headers;
     method: RequestMethod;
+    responseType: ResponseContentType;
     url: string;
     withCredentials: boolean;
     constructor(requestOptions: RequestArgs);
-    arrayBuffer(): ArrayBuffer;
-    blob(): Blob;
     detectContentType(): ContentType;
     getBody(): any;
-    json(): string;
-    text(): string;
 }
 
 /** @experimental */
@@ -147,10 +144,11 @@ export declare class RequestOptions {
     body: any;
     headers: Headers;
     method: RequestMethod | string;
+    responseType: ResponseContentType;
     search: URLSearchParams;
     url: string;
     withCredentials: boolean;
-    constructor({method, headers, body, url, search, withCredentials}?: RequestOptionsArgs);
+    constructor({method, headers, body, url, search, withCredentials, responseType}?: RequestOptionsArgs);
     merge(options?: RequestOptionsArgs): RequestOptions;
 }
 
@@ -159,13 +157,14 @@ export interface RequestOptionsArgs {
     body?: any;
     headers?: Headers;
     method?: string | RequestMethod;
+    responseType?: ResponseContentType;
     search?: string | URLSearchParams;
     url?: string;
     withCredentials?: boolean;
 }
 
 /** @experimental */
-export declare class Response {
+export declare class Response extends Body {
     bytesLoaded: number;
     headers: Headers;
     ok: boolean;
@@ -175,16 +174,19 @@ export declare class Response {
     type: ResponseType;
     url: string;
     constructor(responseOptions: ResponseOptions);
-    arrayBuffer(): any;
-    blob(): any;
-    json(): any;
-    text(): string;
     toString(): string;
 }
 
 /** @experimental */
+export declare enum ResponseContentType {
+    ArrayBuffer = 0,
+    Json = 1,
+    Text = 2,
+}
+
+/** @experimental */
 export declare class ResponseOptions {
-    body: string | Object;
+    body: string | Object | ArrayBuffer;
     headers: Headers;
     status: number;
     url: string;
@@ -194,7 +196,7 @@ export declare class ResponseOptions {
 
 /** @experimental */
 export declare type ResponseOptionsArgs = {
-    body?: string | Object | FormData;
+    body?: string | Object | FormData | ArrayBuffer;
     status?: number;
     statusText?: string;
     headers?: Headers;

@@ -36,7 +36,7 @@ function mergeOptions(
       headers: providedOpts.headers,
       body: providedOpts.body,
       withCredentials: providedOpts.withCredentials,
-      buffer: providedOpts.buffer
+      responseType: providedOpts.responseType
     }));
   }
   if (isPresent(method)) {
