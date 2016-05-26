@@ -92,14 +92,14 @@ export class WebWorkerRenderer implements Renderer, RenderStoreObject {
     this._rootRenderer.runOnService(fnName, fnArgsWithRenderer);
   }
 
-  selectRootElement(selectorOrNode: string, debugInfo: RenderDebugInfo): any {
+  selectRootElement(selectorOrNode: string, debugInfo?: RenderDebugInfo): any {
     var node = this._rootRenderer.allocateNode();
     this._runOnService('selectRootElement',
                        [new FnArg(selectorOrNode, null), new FnArg(node, RenderStoreObject)]);
     return node;
   }
 
-  createElement(parentElement: any, name: string, debugInfo: RenderDebugInfo): any {
+  createElement(parentElement: any, name: string, debugInfo?: RenderDebugInfo): any {
     var node = this._rootRenderer.allocateNode();
     this._runOnService('createElement', [
       new FnArg(parentElement, RenderStoreObject),
@@ -119,7 +119,7 @@ export class WebWorkerRenderer implements Renderer, RenderStoreObject {
     return viewRoot;
   }
 
-  createTemplateAnchor(parentElement: any, debugInfo: RenderDebugInfo): any {
+  createTemplateAnchor(parentElement: any, debugInfo?: RenderDebugInfo): any {
     var node = this._rootRenderer.allocateNode();
     this._runOnService(
         'createTemplateAnchor',
@@ -127,7 +127,7 @@ export class WebWorkerRenderer implements Renderer, RenderStoreObject {
     return node;
   }
 
-  createText(parentElement: any, value: string, debugInfo: RenderDebugInfo): any {
+  createText(parentElement: any, value: string, debugInfo?: RenderDebugInfo): any {
     var node = this._rootRenderer.allocateNode();
     this._runOnService('createText', [
       new FnArg(parentElement, RenderStoreObject),
@@ -205,7 +205,7 @@ export class WebWorkerRenderer implements Renderer, RenderStoreObject {
     ]);
   }
 
-  invokeElementMethod(renderElement: any, methodName: string, args: any[]) {
+  invokeElementMethod(renderElement: any, methodName: string, args?: any[]) {
     this._runOnService('invokeElementMethod', [
       new FnArg(renderElement, RenderStoreObject),
       new FnArg(methodName, null),
