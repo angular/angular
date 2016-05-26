@@ -3,6 +3,9 @@ import {unimplemented} from '../../src/facade/exceptions';
 const _THROW_IF_NOT_FOUND = /*@ts2dart_const*/ new Object();
 export const THROW_IF_NOT_FOUND = /*@ts2dart_const*/ _THROW_IF_NOT_FOUND;
 
+/**
+ * @stable
+ */
 export abstract class Injector {
   static THROW_IF_NOT_FOUND = _THROW_IF_NOT_FOUND;
 

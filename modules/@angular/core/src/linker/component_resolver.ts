@@ -8,6 +8,7 @@ import {Injectable} from '../di/decorators';
 /**
  * Low-level service for loading {@link ComponentFactory}s, which
  * can later be used to create and render a Component instance.
+ * @experimental
  */
 export abstract class ComponentResolver {
   abstract resolveComponent(component: Type|string): Promise<ComponentFactory<any>>;

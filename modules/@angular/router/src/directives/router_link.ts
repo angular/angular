@@ -1,21 +1,6 @@
-import {
-  ResolvedReflectiveProvider,
-  Directive,
-  DynamicComponentLoader,
-  ViewContainerRef,
-  Attribute,
-  ComponentRef,
-  ComponentFactory,
-  ReflectiveInjector,
-  OnInit,
-  HostListener,
-  HostBinding,
-  Input,
-  OnDestroy,
-  Optional
-} from '@angular/core';
-import {RouterOutletMap, Router} from '../router';
-import {RouteSegment, UrlSegment, Tree} from '../segments';
+import {Directive, HostListener, HostBinding, Input, OnDestroy} from '@angular/core';
+import {Router} from '../router';
+import {RouteSegment} from '../segments';
 import {isString, isArray, isPresent} from '../facade/lang';
 import {ObservableWrapper} from '../facade/async';
 

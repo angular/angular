@@ -26,8 +26,7 @@ function publishRepo {
   # copy over build artifacts into the repo directory
   rm -rf $REPO_DIR/*
   cp -R $ARTIFACTS_DIR/* $REPO_DIR/
-  grep -v /typings/ .gitignore > $REPO_DIR/.gitignore
-  
+
   # Replace $$ANGULAR_VESION$$ with the build version.
   BUILD_VER="2.0.0-${SHORT_SHA}"
   if [[ ${TRAVIS} ]]; then

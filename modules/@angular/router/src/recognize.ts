@@ -15,7 +15,7 @@ import {PromiseWrapper} from './facade/promise';
 import {BaseException, ComponentFactory} from '@angular/core';
 import {ComponentResolver} from '@angular/core';
 import {DEFAULT_OUTLET_NAME} from './constants';
-import {reflector} from '@angular/core';
+import {reflector} from './core_private';
 
 export function recognize(componentResolver: ComponentResolver, rootComponent: Type, url: UrlTree,
                           existingTree: RouteTree): Promise<RouteTree> {

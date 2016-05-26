@@ -30,6 +30,7 @@ class _ArrayLogger {
  * bootstrap(MyApp, [provide(ExceptionHandler, {useClass: MyExceptionHandler})])
  *
  * ```
+ * @stable
  */
 export class ExceptionHandler {
   constructor(private _logger: any, private _rethrowException: boolean = true) {}

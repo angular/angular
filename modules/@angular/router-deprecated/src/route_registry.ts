@@ -13,7 +13,7 @@ import {
   getTypeNameForDebugging,
 } from '../src/facade/lang';
 import {BaseException} from '../src/facade/exceptions';
-import {Injectable, Inject, OpaqueToken, reflector} from '@angular/core';
+import {Injectable, Inject, OpaqueToken} from '@angular/core';
 import {RouteConfig, Route, AuxRoute, RouteDefinition} from './route_config/route_config_impl';
 import {PathMatch, RedirectMatch, RouteMatch} from './rules/rules';
 import {RuleSet} from './rules/rule_set';
@@ -27,6 +27,7 @@ import {
 import {normalizeRouteConfig, assertComponentExists} from './route_config/route_config_normalizer';
 import {parser, Url, convertUrlParamsToArray} from './url_parser';
 import {GeneratedUrl} from './rules/route_paths/route_path';
+import {reflector} from '../core_private';
 
 var _resolveToNull = PromiseWrapper.resolve<Instruction>(null);
 

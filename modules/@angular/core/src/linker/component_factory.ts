@@ -13,6 +13,7 @@ import {Injector} from '../di/injector';
  * `ComponentRef` provides access to the Component Instance as well other objects related to this
  * Component Instance and allows you to destroy the Component Instance via the {@link #destroy}
  * method.
+ * @stable
  */
 export abstract class ComponentRef<C> {
   /**
@@ -69,9 +70,12 @@ export class ComponentRef_<C> extends ComponentRef<C> {
   onDestroy(callback: Function): void { this.hostView.onDestroy(callback); }
 }
 
-const EMPTY_CONTEXT = /*@ts2dart_const*/ new Object();
 
-/*@ts2dart_const*/
+/**
+ * @experimental
+ * @ts2dart_const
+ */
+const EMPTY_CONTEXT = /*@ts2dart_const*/ new Object();
 export class ComponentFactory<C> {
   constructor(public selector: string, private _viewFactory: Function,
               private _componentType: Type) {}

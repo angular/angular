@@ -5,6 +5,9 @@ import {RenderDebugInfo} from '../render/api';
 
 export class EventListener { constructor(public name: string, public callback: Function){}; }
 
+/**
+ * @experimental
+ */
 export class DebugNode {
   nativeNode: any;
   listeners: EventListener[];
@@ -46,6 +49,9 @@ export class DebugNode {
   inject(token: any): any { return this.injector.get(token); }
 }
 
+/**
+ * @experimental
+ */
 export class DebugElement extends DebugNode {
   name: string;
   properties: {[key: string]: string};
@@ -129,6 +135,9 @@ export class DebugElement extends DebugNode {
   }
 }
 
+/**
+ * @experimental
+ */
 export function asNativeElements(debugEls: DebugElement[]): any {
   return debugEls.map((el) => el.nativeElement);
 }
@@ -162,6 +171,9 @@ function _queryNodeChildren(parentNode: DebugNode, predicate: Predicate<DebugNod
 // Need to keep the nodes in a global Map so that multiple angular apps are supported.
 var _nativeNodeToDebugNode = new Map<any, DebugNode>();
 
+/**
+ * @experimental
+ */
 export function getDebugNode(nativeNode: any): DebugNode {
   return _nativeNodeToDebugNode.get(nativeNode);
 }

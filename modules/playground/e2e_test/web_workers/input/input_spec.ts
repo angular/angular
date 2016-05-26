@@ -48,8 +48,16 @@ describe('WebWorkers Input', function() {
   });
 
   function waitForBootstrap() {
-    browser.wait(protractor.until.elementLocated(by.css(selector + ' h2')), 15000);
-    let elem = element(by.css(selector + ' h2'));
-    browser.wait(protractor.until.elementTextIs(elem, 'Input App'), 5000);
+    browser
+      .wait(protractor.until.elementLocated(by.css(selector + ' h2')), 5000)
+      .then(_ => {
+        let elem = element(by.css(selector + ' h2'));
+        browser.wait(protractor.until.elementTextIs(elem, 'Input App'), 5000);
+      }, _ => {
+        // jasmine will timeout if this gets called too many times
+        console.log('>> unexpected timeout -> browser.refresh()');
+        browser.refresh();
+        waitForBootstrap();
+      });
   }
 });

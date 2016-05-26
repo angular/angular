@@ -3,6 +3,9 @@ import {ChangeDetectorRef} from '../change_detection/change_detector_ref';
 import {AppView} from './view';
 import {ChangeDetectionStrategy} from '../change_detection/constants';
 
+/**
+ * @stable
+ */
 export abstract class ViewRef {
   get destroyed(): boolean { return <boolean>unimplemented(); }
 
@@ -32,7 +35,7 @@ export abstract class ViewRef {
  * </ul>
  * ```
  *
- * ... we have two {@link TemplateRef}s:
+ * We have two {@link TemplateRef}s:
  *
  * Outer {@link TemplateRef}:
  * ```
@@ -61,6 +64,7 @@ export abstract class ViewRef {
  * </ul>
  * <!-- /ViewRef: outer-0 -->
  * ```
+ * @experimental
  */
 export abstract class EmbeddedViewRef<C> extends ViewRef {
   get context(): C { return unimplemented(); }

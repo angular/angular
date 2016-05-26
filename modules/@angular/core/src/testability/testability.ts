@@ -10,6 +10,7 @@ import {Injectable} from '../di/decorators';
  * The Testability service provides testing hooks that can be accessed from
  * the browser and by services such as Protractor. Each bootstrapped Angular
  * application on the page will have an instance of Testability.
+ * @experimental
  */
 @Injectable()
 export class Testability {
@@ -101,6 +102,7 @@ export class Testability {
 
 /**
  * A global registry of {@link Testability} instances for specific elements.
+ * @experimental
  */
 @Injectable()
 export class TestabilityRegistry {
@@ -145,6 +147,7 @@ class _NoopGetTestability implements GetTestability {
 
 /**
  * Set the {@link GetTestability} implementation used by the Angular testing framework.
+ * @experimental
  */
 export function setTestabilityGetter(getter: GetTestability): void {
   _testabilityGetter = getter;

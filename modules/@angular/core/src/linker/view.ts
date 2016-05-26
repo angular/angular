@@ -1,7 +1,9 @@
 import {
   ListWrapper,
   StringMapWrapper,
-} from '../../src/facade/collection';
+  Map,
+  MapWrapper
+} from '../facade/collection';
 
 import {AppElement} from './element';
 import {
@@ -14,9 +16,9 @@ import {
   stringify,
   isPrimitive,
   isString
-} from '../../src/facade/lang';
+} from '../facade/lang';
 
-import {ObservableWrapper} from '../../src/facade/async';
+import {ObservableWrapper} from '../facade/async';
 import {Renderer, RootRenderer, RenderComponentType, RenderDebugInfo} from '../render/api';
 import {ViewRef_} from './view_ref';
 
@@ -42,6 +44,14 @@ import {
 import {StaticNodeDebugInfo, DebugContext} from './debug_context';
 import {ElementInjector} from './element_injector';
 import {Injector} from '../di/injector';
+
+import {AUTO_STYLE} from '../animation/metadata';
+import {AnimationPlayer} from '../animation/animation_player';
+import {AnimationGroupPlayer} from '../animation/animation_group_player';
+import {AnimationKeyframe} from '../animation/animation_keyframe';
+import {AnimationStyles} from '../animation/animation_styles';
+import {AnimationDriver} from '../animation/animation_driver';
+import {ActiveAnimationPlayersMap} from '../animation/active_animation_players_map';
 
 var _scope_check: WtfScopeFn = wtfCreateScope(`AppView#check(ascii id)`);
 
@@ -71,6 +81,8 @@ export abstract class AppView<T> {
 
   private _hasExternalHostElement: boolean;
 
+  public activeAnimationPlayers = new ActiveAnimationPlayersMap();
+
   public context: T;
 
   constructor(public clazz: any, public componentType: RenderComponentType, public type: ViewType,
@@ -82,6 +94,25 @@ export abstract class AppView<T> {
     } else {
       this.renderer = declarationAppElement.parentView.renderer;
     }
+  }
+
+  cancelActiveAnimation(element: any, animationName: string, removeAllAnimations: boolean = false) {
+    if (removeAllAnimations) {
+      this.activeAnimationPlayers.findAllPlayersByElement(element).forEach(player => player.destroy());
+    } else {
+      var player = this.activeAnimationPlayers.find(element, animationName);
+      if (isPresent(player)) {
+        player.destroy();
+      }
+    }
+  }
+
+  registerAndStartAnimation(element: any, animationName: string, player: AnimationPlayer): void {
+    this.activeAnimationPlayers.set(element, animationName, player);
+    player.onDone(() => {
+      this.activeAnimationPlayers.remove(element, animationName);
+    });
+    player.play();
   }
 
   create(context: T, givenProjectableNodes: Array<any | any[]>,
@@ -193,13 +224,38 @@ export abstract class AppView<T> {
     }
     this.destroyInternal();
     this.dirtyParentQueriesInternal();
-    this.renderer.destroyView(hostElement, this.allNodes);
+
+    if (this.activeAnimationPlayers.length == 0) {
+      this.renderer.destroyView(hostElement, this.allNodes);
+    } else {
+      var player = new AnimationGroupPlayer(this.activeAnimationPlayers.getAllPlayers());
+      player.onDone(() => {
+        this.renderer.destroyView(hostElement, this.allNodes);
+      });
+    }
   }
 
   /**
    * Overwritten by implementations
    */
   destroyInternal(): void {}
+
+  /**
+   * Overwritten by implementations
+   */
+  detachInternal(): void {}
+
+  detach(): void {
+    this.detachInternal();
+    if (this.activeAnimationPlayers.length == 0) {
+      this.renderer.detachView(this.flatRootNodes);
+    } else {
+      var player = new AnimationGroupPlayer(this.activeAnimationPlayers.getAllPlayers());
+      player.onDone(() => {
+        this.renderer.detachView(this.flatRootNodes);
+      });
+    }
+  }
 
   get changeDetectorRef(): ChangeDetectorRef { return this.ref; }
 
@@ -313,6 +369,16 @@ export class DebugAppView<T> extends AppView<T> {
     this._resetDebug();
     try {
       return super.injectorGet(token, nodeIndex, notFoundResult);
+    } catch (e) {
+      this._rethrowWithContext(e, e.stack);
+      throw e;
+    }
+  }
+
+  detach(): void {
+    this._resetDebug();
+    try {
+      super.detach();
     } catch (e) {
       this._rethrowWithContext(e, e.stack);
       throw e;

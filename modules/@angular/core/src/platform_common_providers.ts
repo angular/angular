@@ -14,6 +14,7 @@ var __unused: Type;  // prevent missing use Dart warning.
 
 /**
  * A default set of providers which should be included in any Angular platform.
+ * @experimental
  */
 export const PLATFORM_COMMON_PROVIDERS: Array<any | Type | Provider | any[]> = /*@ts2dart_const*/[
   PLATFORM_CORE_PROVIDERS,

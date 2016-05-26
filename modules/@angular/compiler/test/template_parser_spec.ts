@@ -252,6 +252,13 @@ export function main() {
               ]);
         });
 
+        it('should parse bound properties via animate- and not report them as attributes', () => {
+          expect(humanizeTplAst(parse('<div animate-something="value2">', [])))
+            .toEqual([
+              [ElementAst, 'div'],
+              [BoundElementPropertyAst, PropertyBindingType.Animation, 'something', 'value2', null]
+            ]);
+        });
       });
 
       describe('events', () => {

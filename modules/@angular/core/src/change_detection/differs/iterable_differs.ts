@@ -7,6 +7,8 @@ import {Provider, SkipSelfMetadata, OptionalMetadata} from '../../di';
 /**
  * A strategy for tracking changes over time to an iterable. Used for {@link NgFor} to
  * respond to changes in an iterable by effecting equivalent changes in the DOM.
+ * 
+ * @stable
  */
 export interface IterableDiffer {
   diff(object: any): any;
@@ -31,6 +33,7 @@ export interface IterableDifferFactory {
 /**
  * A repository of different iterable diffing strategies used by NgFor, NgClass, and others.
  * @ts2dart_const
+ * @stable
  */
 export class IterableDiffers {
   /*@ts2dart_const*/

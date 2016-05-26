@@ -19,6 +19,7 @@ export interface ForwardRefFn { (): any; }
  *
  * ### Example
  * {@example core/di/ts/forward_ref/forward_ref.ts region='forward_ref'}
+ * @experimental
  */
 export function forwardRef(forwardRefFn: ForwardRefFn): Type {
   (<any>forwardRefFn).__forward_ref__ = forwardRef;
@@ -40,6 +41,7 @@ export function forwardRef(forwardRefFn: ForwardRefFn): Type {
  * ```
  *
  * See: {@link forwardRef}
+ * @experimental
  */
 export function resolveForwardRef(type: any): any {
   if (isFunction(type) && type.hasOwnProperty('__forward_ref__') &&

@@ -25,6 +25,6 @@ emit.
 ```
 $ $(npm bin)/tsc -p tools
 $ cp tools/tsc-wrapped/package.json dist/tools/tsc-wrapped/
-$ npm login [angularcore]
+$ npm login [angular]
 $ npm publish dist/tools/tsc-wrapped
 ```

@@ -19,6 +19,7 @@ import {resolveForwardRef} from '../di/forward_ref';
  *
  * {@example core/ts/metadata/metadata.ts region='attributeMetadata'}
  * @ts2dart_const
+ * @stable
  */
 export class AttributeMetadata extends DependencyMetadata {
   constructor(public attributeName: string) { super(); }
@@ -141,6 +142,7 @@ export class AttributeMetadata extends DependencyMetadata {
  * The injected object is an unmodifiable live list.
  * See {@link QueryList} for more details.
  * @ts2dart_const
+ * @deprecated
  */
 export class QueryMetadata extends DependencyMetadata {
   /**
@@ -208,6 +210,7 @@ export class QueryMetadata extends DependencyMetadata {
  * }
  * ```
  * @ts2dart_const
+ * @stable
  */
 export class ContentChildrenMetadata extends QueryMetadata {
   constructor(_selector: Type | string,
@@ -237,6 +240,7 @@ export class ContentChildrenMetadata extends QueryMetadata {
  * }
  * ```
  * @ts2dart_const
+ * @stable
  */
 export class ContentChildMetadata extends QueryMetadata {
   constructor(_selector: Type | string, {read = null}: {read?: any} = {}) {
@@ -279,6 +283,7 @@ export class ContentChildMetadata extends QueryMetadata {
  * The injected object is an iterable and observable live list.
  * See {@link QueryList} for more details.
  * @ts2dart_const
+ * @deprecated
  */
 export class ViewQueryMetadata extends QueryMetadata {
   constructor(_selector: Type | string,
@@ -371,6 +376,7 @@ export class ViewQueryMetadata extends QueryMetadata {
  * }
  * ```
  * @ts2dart_const
+ * @stable
  */
 export class ViewChildrenMetadata extends ViewQueryMetadata {
   constructor(_selector: Type | string, {read = null}: {read?: any} = {}) {
@@ -448,6 +454,7 @@ export class ViewChildrenMetadata extends ViewQueryMetadata {
  * }
  * ```
  * @ts2dart_const
+ * @stable
  */
 export class ViewChildMetadata extends ViewQueryMetadata {
   constructor(_selector: Type | string, {read = null}: {read?: any} = {}) {

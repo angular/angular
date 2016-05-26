@@ -32,7 +32,6 @@ export * from './src/change_detection';
 export * from './src/platform_directives_and_pipes';
 export * from './src/platform_common_providers';
 export * from './src/application_common_providers';
-export * from './src/reflection/reflection';
 export {
   wtfCreateScope,
   wtfLeave,
@@ -40,7 +39,11 @@ export {
   wtfEndTimeRange,
   WtfScopeFn
 } from './src/profile/profile';
+
 export {Type, enableProdMode} from "./src/facade/lang";
 export {EventEmitter} from "./src/facade/async";
 export {ExceptionHandler, WrappedException, BaseException} from "./src/facade/exceptions";
 export * from './private_export';
+
+export * from './src/animation/metadata';
+export {AnimationPlayer} from './src/animation/animation_player';

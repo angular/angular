@@ -26,10 +26,6 @@ tmp
 **/*.css.ts
 **/*.css.shim.ts
 
-# Or type definitions we mirror from github
-# (NB: these lines are removed in publish-build-artifacts.sh)
-/typings/
-
 # Include when developing application packages.
 pubspec.lock
 .c9

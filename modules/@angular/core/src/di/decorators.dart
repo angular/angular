@@ -5,6 +5,7 @@ export 'metadata.dart';
 
 /**
  * {@link InjectMetadata}.
+ * @stable
  */
 class Inject extends InjectMetadata {
   const Inject(dynamic token) : super(token);
@@ -12,6 +13,7 @@ class Inject extends InjectMetadata {
 
 /**
  * {@link OptionalMetadata}.
+ * @stable
  */
 class Optional extends OptionalMetadata {
   const Optional() : super();
@@ -19,6 +21,7 @@ class Optional extends OptionalMetadata {
 
 /**
  * {@link InjectableMetadata}.
+ * @stable
  */
 class Injectable extends InjectableMetadata {
   const Injectable() : super();
@@ -26,6 +29,7 @@ class Injectable extends InjectableMetadata {
 
 /**
  * {@link SelfMetadata}.
+ * @stable
  */
 class Self extends SelfMetadata {
   const Self() : super();
@@ -33,6 +37,7 @@ class Self extends SelfMetadata {
 
 /**
  * {@link HostMetadata}.
+ * @stable
  */
 class Host extends HostMetadata {
   const Host() : super();
@@ -40,6 +45,7 @@ class Host extends HostMetadata {
 
 /**
  * {@link SkipSelfMetadata}.
+ * @stable
  */
 class SkipSelf extends SkipSelfMetadata {
   const SkipSelf() : super();

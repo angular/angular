@@ -152,4 +152,5 @@ export class WorkerDomAdapter extends DomAdapter {
   getAnimationPrefix(): string { throw "not implemented"; }
   getTransitionEnd(): string { throw "not implemented"; }
   supportsAnimation(): boolean { throw "not implemented"; }
+  supportsWebAnimation(): boolean { throw "not implemented"; }
 }

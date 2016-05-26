@@ -165,6 +165,7 @@ var COMPILER_TESTING: string[] = [
   'TestComponentRenderer'
 ];
 
+// API Classification audited
 var CORE: string[] = [
   '__core_private__',
   'BaseException',
@@ -176,8 +177,28 @@ var CORE: string[] = [
   'wtfStartTimeRange',
   'APP_INITIALIZER',
   'APP_ID',
-  'AngularEntrypoint:dart',
   'AbstractProviderError',
+  'AUTO_STYLE',
+  'AnimationAnimateMetadata',
+  'AnimationEntryMetadata',
+  'AnimationGroupMetadata',
+  'AnimationMetadata',
+  'AnimationSequenceMetadata',
+  'AnimationStateDeclarationMetadata',
+  'AnimationStateMetadata',
+  'AnimationStateTransitionMetadata',
+  'AnimationStyleMetadata',
+  'AnimationWithStepsMetadata',
+  'AnimationKeyframesSequenceMetadata',
+  'AnimationPlayer',
+  'animate',
+  'group',
+  'sequence',
+  'state',
+  'style',
+  'keyframes',
+  'trigger',
+  'transition',
   'ApplicationRef',
   'APPLICATION_COMMON_PROVIDERS',
   'Attribute',
@@ -189,7 +210,7 @@ var CORE: string[] = [
   "CollectionChangeRecord",
   'ChangeDetectionStrategy',
   'ChangeDetectorRef',
-  'Class:js',
+  'Class',
   'ComponentResolver',
   'SystemJsComponentResolver',
   'Component',
@@ -203,8 +224,6 @@ var CORE: string[] = [
   'PLATFORM_PIPES',
   'DebugNode',
   'DebugElement',
-  'ReflectiveDependency',
-  'DependencyMetadata',
   'Directive',
   'DirectiveMetadata',
   'DynamicComponentLoader',
@@ -254,8 +273,6 @@ var CORE: string[] = [
   'Renderer',
   'RootRenderer',
   'RenderComponentType',
-  'ResolvedReflectiveBinding:dart',
-  'ResolvedReflectiveProvider:dart',
   'ResolvedReflectiveFactory',
   'Self',
   'SelfMetadata',
@@ -265,20 +282,9 @@ var CORE: string[] = [
   'TemplateRef',
   'Testability',
   'TestabilityRegistry',
-  'GetTestability:dart',
   'setTestabilityGetter',
   'Type',
   'PACKAGE_ROOT_URL',
-  'View:dart',
-  /*
-  'View.directives:dart',
-  'View.encapsulation:dart',
-  'View.pipes:dart',
-  'View.styleUrls:dart',
-  'View.styles:dart',
-  'View.template:dart',
-  'View.templateUrl:dart',
-  */
   'ViewChild',
   'ViewChildMetadata',
   'ViewChildren',
@@ -294,14 +300,14 @@ var CORE: string[] = [
   'bind',
   'provide',
   'createNgZone',
-  'forwardRef:js',
+  'forwardRef',
   'coreBootstrap',
   'coreLoadAndBootstrap',
   'createPlatform',
   'disposePlatform',
   'getPlatform',
   'assertPlatform',
-  'resolveForwardRef:js',
+  'resolveForwardRef',
   'PLATFORM_COMMON_PROVIDERS',
   'PLATFORM_INITIALIZER',
   'AfterContentChecked',
@@ -309,25 +315,10 @@ var CORE: string[] = [
   'AfterViewChecked',
   'AfterViewInit',
   'DoCheck',
-  'IterableDifferFactory:dart',
-  'IterableDiffer:dart',
-  'KeyValueDifferFactory:dart',
-  'KeyValueDiffer:dart',
   'OnChanges',
   'OnDestroy',
   'OnInit',
-  'PipeTransform:dart',
-  'reflector',
-  'Stream:dart',
-  'GetterFn:dart',
-  'MethodFn:dart',
-  'NoReflectionCapabilities:dart',
-  'PlatformReflectionCapabilities:dart',
-  'ReflectionInfo',
-  'Reflector',
-  'SetterFn:dart',
   'ViewRef',
-  'TrackByFn:dart'
 ];
 
 var CORE_TESTING: string[] = [
@@ -495,7 +486,7 @@ var ROUTER_DEPRECATED: string[] = [
   'RouterOutlet'
 ];
 
-var ROUTER_DEPRETACED_TESTING: string[] = [];
+var ROUTER_DEPRECATED_TESTING: string[] = [];
 
 
 var ROUTER: string[] = [
@@ -527,7 +518,7 @@ var API = {
   'http': HTTP,
   'http/testing': HTTP_TESTING,
   'router-deprecated': ROUTER_DEPRECATED,
-  'router-deprecated/testing': ROUTER_DEPRETACED_TESTING,
+  'router-deprecated/testing': ROUTER_DEPRECATED_TESTING,
   'router': ROUTER,
   'router/testing': ROUTER_TESTING,
   'upgrade': UPGRADE,

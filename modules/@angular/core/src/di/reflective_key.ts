@@ -16,6 +16,7 @@ import {resolveForwardRef} from './forward_ref';
  * `Key` should not be created directly. {@link ReflectiveInjector} creates keys automatically when
  * resolving
  * providers.
+ * @experimental
  */
 export class ReflectiveKey {
   /**

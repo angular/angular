@@ -2,6 +2,7 @@ import {isPresent, Type} from '../../src/facade/lang';
 import {InjectableMetadata} from '../di/metadata';
 import {ViewEncapsulation} from './view';
 import {ChangeDetectionStrategy} from '../change_detection/constants';
+import {AnimationEntryMetadata} from '../animation/metadata';
 
 /**
  * Directives allow you to attach behavior to elements in the DOM.
@@ -381,6 +382,7 @@ import {ChangeDetectionStrategy} from '../change_detection/constants';
  * the instantiated
  * view occurs on the second `<li></li>` which is a sibling to the `<template>` element.
  * @ts2dart_const
+ * @stable
  */
 export class DirectiveMetadata extends InjectableMetadata {
   /**
@@ -788,6 +790,7 @@ export class DirectiveMetadata extends InjectableMetadata {
  *
  * {@example core/ts/metadata/metadata.ts region='component'}
  * @ts2dart_const
+ * @stable
  */
 export class ComponentMetadata extends DirectiveMetadata {
   /**
@@ -872,6 +875,8 @@ export class ComponentMetadata extends DirectiveMetadata {
 
   styles: string[];
 
+  animations: AnimationEntryMetadata[];
+
   directives: Array<Type | any[]>;
 
   pipes: Array<Type | any[]>;
@@ -881,7 +886,7 @@ export class ComponentMetadata extends DirectiveMetadata {
   constructor({selector, inputs, outputs, properties, events, host, exportAs, moduleId,
                providers, viewProviders,
                changeDetection = ChangeDetectionStrategy.Default, queries, templateUrl, template,
-               styleUrls, styles, directives, pipes, encapsulation}: {
+               styleUrls, styles, animations, directives, pipes, encapsulation}: {
     selector?: string,
     inputs?: string[],
     outputs?: string[],
@@ -898,6 +903,7 @@ export class ComponentMetadata extends DirectiveMetadata {
     template?: string,
     styleUrls?: string[],
     styles?: string[],
+    animations?: AnimationEntryMetadata[],
     directives?: Array<Type | any[]>,
     pipes?: Array<Type | any[]>,
     encapsulation?: ViewEncapsulation
@@ -924,6 +930,7 @@ export class ComponentMetadata extends DirectiveMetadata {
     this.pipes = pipes;
     this.encapsulation = encapsulation;
     this.moduleId = moduleId;
+    this.animations = animations;
   }
 }
 
@@ -938,6 +945,7 @@ export class ComponentMetadata extends DirectiveMetadata {
  *
  * {@example core/ts/metadata/metadata.ts region='pipe'}
  * @ts2dart_const
+ * @stable
  */
 export class PipeMetadata extends InjectableMetadata {
   name: string;
@@ -994,6 +1002,7 @@ export class PipeMetadata extends InjectableMetadata {
  * bootstrap(App);
  * ```
  * @ts2dart_const
+ * @stable
  */
 export class InputMetadata {
   constructor(
@@ -1044,6 +1053,7 @@ export class InputMetadata {
  * bootstrap(App);
  * ```
  * @ts2dart_const
+ * @stable
  */
 export class OutputMetadata {
   constructor(public bindingPropertyName?: string) {}
@@ -1084,6 +1094,7 @@ export class OutputMetadata {
  * bootstrap(App);
  * ```
  * @ts2dart_const
+ * @stable
  */
 export class HostBindingMetadata {
   constructor(public hostPropertyName?: string) {}
@@ -1123,6 +1134,7 @@ export class HostBindingMetadata {
  * bootstrap(App);
  * ```
  * @ts2dart_const
+ * @stable
  */
 export class HostListenerMetadata {
   constructor(public eventName: string, public args?: string[]) {}

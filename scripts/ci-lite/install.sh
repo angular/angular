@@ -55,16 +55,6 @@ fi
 echo 'travis_fold:end:install.browserstack'
 
 
-# Install external typings via tsd
-echo 'travis_fold:start:install.typings'
-if [[ ${TRAVIS} ]]; then
-  echo ${TSDRC} > ~/.tsdrc
-fi
-
-$(npm bin)/tsd reinstall --overwrite --clean --config ./tsd.json
-echo 'travis_fold:end:install.typings'
-
-
 # node tools/chromedriverpatch.js
 $(npm bin)/webdriver-manager update
 
