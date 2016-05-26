@@ -44,7 +44,7 @@ module.exports = function(config) {
       '**/*.js': ['sourcemap']
     },
 
-    reporters: ['mocha'],
+    reporters: ['dots'],
     port: 9876,
     colors: true,
     logLevel: config.LOG_INFO,
