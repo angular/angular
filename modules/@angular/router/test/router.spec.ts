@@ -29,16 +29,18 @@ describe("Integration", () => {
       useFactory: (resolver, urlSerializer, outletMap, location) =>
         new Router(new RootCmp(), resolver, urlSerializer, outletMap, location),
       deps: [ComponentResolver, UrlSerializer, RouterOutletMap, Location]
-    }
+    },
+    {provide: ActivatedRoute, useFactory: (r) => r.routerState.root, deps: [Router]},
   ]);
   
   it('should update location when navigating',
     fakeAsync(inject([Router, TestComponentBuilder, Location], (router, tcb, location) => {
       router.resetConfig([
-        { name: 'team', path: 'team/:id', component: TeamCmp }
+        { path: 'team/:id', component: TeamCmp }
       ]);
       
       const fixture = tcb.createFakeAsync(RootCmp);
+      advance(fixture);
 
       router.navigateByUrl('/team/22');
       advance(fixture);
@@ -53,9 +55,9 @@ describe("Integration", () => {
   xit('should navigate back and forward',
     fakeAsync(inject([Router, TestComponentBuilder, Location], (router, tcb, location) => {
       router.resetConfig([
-        { name: 'team', path: 'team/:id', component: TeamCmp, children: [
-          { name: 'simple', path: 'simple', component: SimpleCmp },
-          { name: 'user', path: 'user/:name', component: UserCmp }
+        { path: 'team/:id', component: TeamCmp, children: [
+          { path: 'simple', component: SimpleCmp },
+          { path: 'user/:name', component: UserCmp }
         ] }
       ]);
 
@@ -80,8 +82,8 @@ describe("Integration", () => {
   it('should navigate when locations changes',
     fakeAsync(inject([Router, TestComponentBuilder, Location], (router, tcb, location) => {
       router.resetConfig([
-        { name: 'team', path: 'team/:id', component: TeamCmp, children: [
-          { name: 'user', path: 'user/:name', component: UserCmp }
+        { path: 'team/:id', component: TeamCmp, children: [
+          { path: 'user/:name', component: UserCmp }
         ] }
       ]);
 
@@ -99,15 +101,15 @@ describe("Integration", () => {
   it('should support secondary routes',
     fakeAsync(inject([Router, TestComponentBuilder], (router, tcb) => {
       router.resetConfig([
-        { name: 'team', path: 'team/:id', component: TeamCmp, children: [
-          { name: 'user', path: 'user/:name', component: UserCmp },
-          { name: 'simple', path: 'simple', component: SimpleCmp, outlet: 'right' }
+        { path: 'team/:id', component: TeamCmp, children: [
+          { path: 'user/:name', component: UserCmp },
+          { path: 'simple', component: SimpleCmp, outlet: 'right' }
         ] }
       ]);
 
       const fixture = tcb.createFakeAsync(RootCmp);
 
-      router.navigateByUrl('/team/22/user/victor(simple)');
+      router.navigateByUrl('/team/22/user/victor(right:simple)');
       advance(fixture);
 
       expect(fixture.debugElement.nativeElement)
@@ -117,15 +119,15 @@ describe("Integration", () => {
   it('should deactivate outlets',
     fakeAsync(inject([Router, TestComponentBuilder], (router, tcb) => {
       router.resetConfig([
-        { name: 'team', path: 'team/:id', component: TeamCmp, children: [
-          { name: 'user', path: 'user/:name', component: UserCmp },
-          { name: 'simple', path: 'simple', component: SimpleCmp, outlet: 'right' }
+        { path: 'team/:id', component: TeamCmp, children: [
+          { path: 'user/:name', component: UserCmp },
+          { path: 'simple', component: SimpleCmp, outlet: 'right' }
         ] }
       ]);
 
       const fixture = tcb.createFakeAsync(RootCmp);
 
-      router.navigateByUrl('/team/22/user/victor(simple)');
+      router.navigateByUrl('/team/22/user/victor(right:simple)');
       advance(fixture);
 
       router.navigateByUrl('/team/22/user/victor');
@@ -137,15 +139,15 @@ describe("Integration", () => {
   it('should deactivate nested outlets',
     fakeAsync(inject([Router, TestComponentBuilder], (router, tcb) => {
       router.resetConfig([
-        { name: 'team', path: 'team/:id', component: TeamCmp, children: [
-          { name: 'user', path: 'user/:name', component: UserCmp },
-          { name: 'simple', path: 'simple', component: SimpleCmp, outlet: 'right' }
+        { path: 'team/:id', component: TeamCmp, children: [
+          { path: 'user/:name', component: UserCmp },
+          { path: 'simple', component: SimpleCmp, outlet: 'right' }
         ] }
       ]);
 
       const fixture = tcb.createFakeAsync(RootCmp);
 
-      router.navigateByUrl('/team/22/user/victor(simple)');
+      router.navigateByUrl('/team/22/user/victor(right:simple)');
       advance(fixture);
 
       router.navigateByUrl('/');
@@ -158,9 +160,9 @@ describe("Integration", () => {
     it("should support string router links",
       fakeAsync(inject([Router, TestComponentBuilder], (router, tcb) => {
         router.resetConfig([
-          { name: 'team', path: 'team/:id', component: TeamCmp, children: [
-            { name: 'link', path: 'link', component: StringLinkCmp },
-            { name: 'simple', path: 'simple', component: SimpleCmp }
+          { path: 'team/:id', component: TeamCmp, children: [
+            { path: 'link', component: StringLinkCmp },
+            { path: 'simple', component: SimpleCmp }
           ] }
         ]);
 
@@ -178,6 +180,63 @@ describe("Integration", () => {
 
         expect(fixture.debugElement.nativeElement).toHaveText('team 33 { simple, right:  }');
       })));
+
+    it("should support absolute router links",
+      fakeAsync(inject([Router, TestComponentBuilder], (router, tcb) => {
+        router.resetConfig([
+          { path: 'team/:id', component: TeamCmp, children: [
+            { path: 'link', component: AbsoluteLinkCmp },
+            { path: 'simple', component: SimpleCmp }
+          ] }
+        ]);
+
+        const fixture = tcb.createFakeAsync(RootCmp);
+        advance(fixture);
+
+        router.navigateByUrl('/team/22/link');
+        advance(fixture);
+        expect(fixture.debugElement.nativeElement).toHaveText('team 22 { link, right:  }');
+
+        const native = fixture.debugElement.nativeElement.querySelector("a");
+        expect(native.getAttribute("href")).toEqual("/team/33/simple");
+        native.click();
+        advance(fixture);
+
+        expect(fixture.debugElement.nativeElement).toHaveText('team 33 { simple, right:  }');
+      })));
+
+    it("should support relative router links",
+      fakeAsync(inject([Router, TestComponentBuilder], (router, tcb) => {
+        router.resetConfig([
+          { path: 'team/:id', component: TeamCmp, children: [
+            { path: 'link', component: RelativeLinkCmp },
+            { path: 'simple', component: SimpleCmp }
+          ] }
+        ]);
+
+        const fixture = tcb.createFakeAsync(RootCmp);
+        advance(fixture);
+
+        router.navigateByUrl('/team/22/link');
+        advance(fixture);
+        expect(fixture.debugElement.nativeElement)
+          .toHaveText('team 22 { link, right:  }');
+
+        const native = fixture.debugElement.nativeElement.querySelector("a");
+        expect(native.getAttribute("href")).toEqual("/team/22/simple");
+        native.click();
+        advance(fixture);
+
+        expect(fixture.debugElement.nativeElement)
+          .toHaveText('team 22 { simple, right:  }');
+      })));
+
+    it("should support top-level link",
+      fakeAsync(inject([Router, TestComponentBuilder], (router, tcb) => {
+        let fixture = tcb.createFakeAsync(AbsoluteLinkCmp);
+        advance(fixture);
+        expect(fixture.debugElement.nativeElement).toHaveText('link');
+      })));
   });
 });
 
@@ -187,6 +246,20 @@ describe("Integration", () => {
   directives: ROUTER_DIRECTIVES
 })
 class StringLinkCmp {}
+
+@Component({
+  selector: 'link-cmp',
+  template: `<a [routerLink]="['/team/33/simple']">link</a>`,
+  directives: ROUTER_DIRECTIVES
+})
+class AbsoluteLinkCmp {}
+
+@Component({
+  selector: 'link-cmp',
+  template: `<a [routerLink]="['../simple']">link</a>`,
+  directives: ROUTER_DIRECTIVES
+})
+class RelativeLinkCmp {}
 
 @Component({
   selector: 'simple-cmp',
