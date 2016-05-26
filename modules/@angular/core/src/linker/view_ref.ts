@@ -35,7 +35,7 @@ export abstract class ViewRef {
  * </ul>
  * ```
  *
- * ... we have two {@link TemplateRef}s:
+ * We have two {@link TemplateRef}s:
  *
  * Outer {@link TemplateRef}:
  * ```
