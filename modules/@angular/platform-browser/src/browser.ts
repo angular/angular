@@ -17,6 +17,7 @@ import {
   Type,
   ComponentRef
 } from "@angular/core";
+import {reflector} from '../core_private';
 import {isBlank, isPresent} from "./facade/lang";
 import {wtfInit, SanitizationService, ReflectionCapabilities, AnimationDriver, NoOpAnimationDriver} from '../core_private';
 import {WebAnimationsDriver} from '../src/dom/web_animations_driver';
