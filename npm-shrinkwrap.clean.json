@@ -1593,6 +1593,9 @@
     "buffer-crc32": {
       "version": "0.2.5"
     },
+    "buffer-shims": {
+      "version": "1.0.0"
+    },
     "buffer-xor": {
       "version": "1.0.3"
     },
@@ -1650,7 +1653,15 @@
       "version": "1.0.2"
     },
     "clang-format": {
-      "version": "1.0.32"
+      "version": "1.0.39",
+      "dependencies": {
+        "async": {
+          "version": "1.5.2"
+        },
+        "glob": {
+          "version": "7.0.3"
+        }
+      }
     },
     "cli-color": {
       "version": "1.1.0",
@@ -2867,8 +2878,11 @@
         "duplexer2": {
           "version": "0.1.4"
         },
+        "isarray": {
+          "version": "1.0.0"
+        },
         "readable-stream": {
-          "version": "2.0.5"
+          "version": "2.1.4"
         },
         "stream-combiner2": {
           "version": "1.1.1"
@@ -2889,11 +2903,14 @@
     "gulp-diff": {
       "version": "1.0.0",
       "dependencies": {
+        "isarray": {
+          "version": "1.0.0"
+        },
         "readable-stream": {
-          "version": "2.0.5"
+          "version": "2.0.6"
         },
         "through2": {
-          "version": "2.0.0"
+          "version": "2.0.1"
         }
       }
     },
@@ -3897,7 +3914,7 @@
       "version": "0.3.0"
     },
     "memoizee": {
-      "version": "0.3.9"
+      "version": "0.3.10"
     },
     "memory-fs": {
       "version": "0.3.0",
