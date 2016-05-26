@@ -5,12 +5,17 @@ import {CompileIdentifierMetadata} from './compile_metadata';
 
 export class CompilerConfig {
   public renderTypes: RenderTypes;
+  public interpolateRegexp: RegExp;
   constructor(public genDebugInfo: boolean, public logBindingUpdate: boolean,
-              public useJit: boolean, renderTypes: RenderTypes = null) {
+              public useJit: boolean, renderTypes: RenderTypes = null, interpolateRegexp: RegExp = null) {
     if (isBlank(renderTypes)) {
       renderTypes = new DefaultRenderTypes();
     }
     this.renderTypes = renderTypes;
+    if (isBlank(interpolateRegexp)) {
+      interpolateRegexp = DEFAULT_INTERPOLATE_REGEXP;
+    }
+    this.interpolateRegexp = interpolateRegexp;
   }
 }
 
@@ -36,3 +41,8 @@ export class DefaultRenderTypes implements RenderTypes {
   renderNode = null;
   renderEvent = null;
 }
+
+/**
+ * A regexp pattern used to interpolate in default.
+ */
+export var DEFAULT_INTERPOLATE_REGEXP = /\{\{([\s\S]*?)\}\}/g;
