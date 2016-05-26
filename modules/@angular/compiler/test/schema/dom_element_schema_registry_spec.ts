@@ -10,6 +10,9 @@ import {
   xit
 } from '@angular/core/testing/testing_internal';
 
+import {HtmlParser} from '@angular/compiler/src/html_parser';
+import {HtmlElementAst} from '@angular/compiler/src/html_ast';
+
 import {browserDetection} from '@angular/platform-browser/testing';
 
 import {DomElementSchemaRegistry} from '@angular/compiler/src/schema/dom_element_schema_registry';
@@ -68,8 +71,11 @@ export function main() {
       expect(registry.securityContext('base', 'href')).toBe(SecurityContext.RESOURCE_URL);
     });
 
-    it('should detect properties on namespaced elements',
-       () => { expect(registry.hasProperty('@svg:g', 'id')).toBeTruthy(); });
+    it('should detect properties on namespaced elements', () => {
+      let htmlAst = new HtmlParser().parse('<svg:style>', 'TestComp');
+      let nodeName  = (<HtmlElementAst>htmlAst.rootNodes[0]).name;
+      expect(registry.hasProperty(nodeName, 'type')).toBeTruthy();
+    });
 
     if (browserDetection.isChromeDesktop) {
       it('generate a new schema', () => {
