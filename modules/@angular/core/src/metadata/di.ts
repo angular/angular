@@ -1,4 +1,4 @@
-import {stringify, isString, Type} from '../../src/facade/lang';
+import {stringify, isString, Type, StringWrapper} from '../../src/facade/lang';
 import {DependencyMetadata} from '../di/metadata';
 import {resolveForwardRef} from '../di/forward_ref';
 
@@ -184,7 +184,7 @@ export class QueryMetadata extends DependencyMetadata {
    * returns a list of variable bindings this is querying for.
    * Only applicable if this is a variable bindings query.
    */
-  get varBindings(): string[] { return this.selector.split(','); }
+  get varBindings(): string[] { return StringWrapper.split(this.selector, /\s*,\s*/g); }
 
   toString(): string { return `@Query(${stringify(this.selector)})`; }
 }
