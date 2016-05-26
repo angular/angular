@@ -44,11 +44,12 @@ export function main() {
     });
 
     it('should normalize urls on popstate', inject([AsyncTestCompleter], (async) => {
-         locationStrategy.simulatePopState('/my/app/user/btford');
+
          location.subscribe((ev) => {
            expect(ev['url']).toEqual('/user/btford');
            async.done();
-         })
+         });
+         locationStrategy.simulatePopState('/my/app/user/btford');
        }));
 
     it('should revert to the previous path when a back() operation is executed', () => {
