@@ -621,7 +621,7 @@ const COMMON = [
   'AsyncPipe',
   'AsyncPipe.constructor(_ref:ChangeDetectorRef)',
   'AsyncPipe.ngOnDestroy():void',
-  'AsyncPipe.transform(obj:Observable<any>|Promise<any>|EventEmitter<any>, onError:(v: any) => any):any',
+  'AsyncPipe.transform(obj:Observable<any>|Promise<any>|EventEmitter<any>):any',
   'CheckboxControlValueAccessor',
   'CheckboxControlValueAccessor.constructor(_renderer:Renderer, _elementRef:ElementRef)',
   'CheckboxControlValueAccessor.onChange:any',
