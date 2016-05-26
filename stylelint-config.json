@@ -1,0 +1,5 @@
+{
+  "rules": {
+    "selector-no-id": true
+  }
+}

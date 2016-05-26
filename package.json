@@ -8,11 +8,12 @@
     "url": "https://github.com/angular/material2.git"
   },
   "scripts": {
-    "ci:forbidden-identifiers": "node ./scripts/ci/forbidden-identifiers.js",
+    "ci:forbidden-identifiers": "node ./scripts/ci/forbidden-identifiers.js",    
     "build": "ng build",
     "demo-app": "ng serve",
     "test": "karma start test/karma.conf.js",
     "tslint": "tslint -c tslint.json 'src/**/*.ts'",
+    "stylelint": "stylelint 'src/**/*.scss' --config .stylelint-config.json --syntax scss",
     "typings": "typings install --ambient",
     "postinstall": "npm run typings",
     "e2e": "protractor",
@@ -64,6 +65,7 @@
     "sass": "^0.5.0",
     "strip-ansi": "^3.0.0",
     "symlink-or-copy": "^1.0.1",
+    "stylelint": "^6.5.1",
     "ts-node": "^0.7.3",
     "tslint": "^3.5.0",
     "typescript": "^1.9.0-dev",
