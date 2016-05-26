@@ -5,6 +5,7 @@ import {
   Input
 } from '@angular/core';
 import {Router} from '../router';
+import {ActivatedRoute} from '../router_state';
 
 /**
  * The RouterLink directive lets you link to specific parts of your app.
@@ -12,7 +13,7 @@ import {Router} from '../router';
  * Consider the following route configuration:
 
  * ```
- * [{ name: 'user', path: '/user', component: UserCmp }]
+ * [{ path: '/user', component: UserCmp }]
  * ```
  *
  * When linking to this `User` route, you can write:
@@ -34,22 +35,19 @@ import {Router} from '../router';
 @Directive({selector: '[routerLink]'})
 export class RouterLink {
   @Input() target: string;
-  private commands: any[]|null = null;
-  private absoluteUrl: string|null = null;
+  private commands: any[] = [];
 
   // the url displayed on the anchor element.
   @HostBinding() href: string;
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private route: ActivatedRoute) {}
 
   @Input()
   set routerLink(data: any[] | string) {
     if (Array.isArray(data)) {
       this.commands = data;
-      this.absoluteUrl = null;
     } else {
-      this.commands = null;
-      this.absoluteUrl = data;
+      this.commands = [data];
     }
     this.updateTargetUrlAndHref();
   }
@@ -59,15 +57,16 @@ export class RouterLink {
   onClick(): boolean {
     // If no target, or if target is _self, prevent default browser behavior
     if (!(typeof this.target === "string") || this.target == '_self') {
-      this.router.navigateByUrl(this.absoluteUrl);
+      this.router.navigate(this.commands, {relativeTo: this.route});
       return false;
     }
     return true;
   }
 
   private updateTargetUrlAndHref(): void {
-    if (this.absoluteUrl) {
-      this.href = this.absoluteUrl;
+    const tree = this.router.createUrlTree(this.commands, {relativeTo: this.route});
+    if (tree) {
+      this.href = this.router.serializeUrl(tree);
     }
   }
 }

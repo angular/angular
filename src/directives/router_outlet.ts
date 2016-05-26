@@ -1,6 +1,6 @@
 import {Directive, ViewContainerRef, Attribute, ComponentRef, ComponentFactory, ResolvedReflectiveProvider, ReflectiveInjector} from '@angular/core';
 import {RouterOutletMap} from '../router_outlet_map';
-import {PRIMARY_OUTLET} from '../router_state';
+import {PRIMARY_OUTLET} from '../shared';
 
 @Directive({selector: 'router-outlet'})
 export class RouterOutlet {

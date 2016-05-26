@@ -22,6 +22,7 @@
     "src/router_state.ts",
     "src/url_serializer.ts",
     "src/url_tree.ts",
+    "src/create_url_tree.ts",
     "src/directives/router_outlet.ts",
     "src/directives/router_link.ts",
     "src/utils/tree.ts",
@@ -29,6 +30,7 @@
     "test/utils/tree.spec.ts",
     "test/url_serializer.spec.ts",
     "test/recognize.spec.ts",
+    "test/create_url_tree.spec.ts",
     "test/router.spec.ts",
     "typings/index.d.ts"
   ]
