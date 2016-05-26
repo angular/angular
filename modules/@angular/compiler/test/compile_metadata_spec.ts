@@ -172,10 +172,6 @@ export function main() {
     });
 
     describe('TemplateMetadata', () => {
-      it('should use ViewEncapsulation.Emulated by default', () => {
-        expect(new CompileTemplateMetadata({encapsulation: null}).encapsulation)
-            .toBe(ViewEncapsulation.Emulated);
-      });
 
       it('should serialize with full data', () => {
         expect(CompileTemplateMetadata.fromJson(fullTemplateMeta.toJson()))

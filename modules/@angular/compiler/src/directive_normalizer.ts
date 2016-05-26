@@ -1,6 +1,6 @@
 import {Injectable, ViewEncapsulation} from '@angular/core';
 
-import {isPresent} from '../src/facade/lang';
+import {isPresent, isBlank} from '../src/facade/lang';
 import {BaseException} from '../src/facade/exceptions';
 import {PromiseWrapper} from '../src/facade/async';
 
@@ -24,6 +24,7 @@ import {
   htmlVisitAll
 } from './html_ast';
 import {HtmlParser} from './html_parser';
+import {CompilerConfig} from './config'
 
 import {preparseElement, PreparsedElementType} from './template_preparser';
 
@@ -31,7 +32,7 @@ import {preparseElement, PreparsedElementType} from './template_preparser';
 @Injectable()
 export class DirectiveNormalizer {
   constructor(private _xhr: XHR, private _urlResolver: UrlResolver,
-              private _htmlParser: HtmlParser) {}
+              private _htmlParser: HtmlParser, private _config: CompilerConfig) {}
 
   normalizeDirective(directive: CompileDirectiveMetadata): Promise<CompileDirectiveMetadata> {
     if (!directive.isComponent) {
@@ -99,6 +100,9 @@ export class DirectiveNormalizer {
     });
 
     var encapsulation = templateMeta.encapsulation;
+    if (isBlank(encapsulation)) {
+      encapsulation = this._config.defaultEncapsulation;
+    }
     if (encapsulation === ViewEncapsulation.Emulated && allResolvedStyles.length === 0 &&
         allStyleAbsUrls.length === 0) {
       encapsulation = ViewEncapsulation.None;
