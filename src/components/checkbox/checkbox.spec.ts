@@ -286,7 +286,27 @@ describe('MdCheckbox', () => {
       fixture.detectChanges();
 
       tick();
-      expect(testComponent.handleChange).toHaveBeenCalled();
+
+      expect(testComponent.handleChange).toHaveBeenCalledTimes(1);
+      expect(testComponent.handleChange).toHaveBeenCalledWith(true);
+    }));
+
+    it('should not emit a DOM event to the change output', async(() => {
+      expect(testComponent.handleChange).not.toHaveBeenCalled();
+
+      // Trigger the click on the inputElement, because the input will probably
+      // emit a DOM event to the change output.
+      inputElement.click();
+      fixture.detectChanges();
+
+      fixture.whenStable().then(() => {
+        // We're checking the arguments type / emitted value to be a boolean, because sometimes the
+        // emitted value can be a DOM Event, which is not valid.
+        // See angular/angular#4059
+        expect(testComponent.handleChange).toHaveBeenCalledTimes(1);
+        expect(testComponent.handleChange).toHaveBeenCalledWith(true);
+      });
+
     }));
   });
 
@@ -521,8 +541,8 @@ class CheckboxWithNameAttribute {}
 /** Simple test component with change event */
 @Component({
   directives: [MdCheckbox],
-  template: `<md-checkbox (change)="handleChange()"></md-checkbox>`
+  template: `<md-checkbox (change)="handleChange($event)"></md-checkbox>`
 })
 class CheckboxWithChangeEvent {
-  handleChange(): void {}
+  handleChange(value: boolean): void {}
 }

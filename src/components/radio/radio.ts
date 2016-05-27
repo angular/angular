@@ -391,7 +391,12 @@ export class MdRadioButton implements OnInit {
    * Checks the radio due to an interaction with the underlying native <input type="radio">
    * @internal
    */
-  onInputChange() {
+  onInputChange(event: Event) {
+    // We always have to stop propagation on the change event.
+    // Otherwise the change event, from the input element, will bubble up and
+    // emit its event object to the `change` output.
+    event.stopPropagation();
+
     this.checked = true;
     if (this.radioGroup) {
       this.radioGroup.touch();

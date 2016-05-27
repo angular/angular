@@ -250,14 +250,18 @@ export class MdCheckbox implements AfterContentInit, ControlValueAccessor {
   }
 
   /**
-   * Event handler for checkbox input element.  Toggles checked state if element is not disabled.
+   * Event handler for checkbox input element.
+   * Toggles checked state if element is not disabled.
    * @param event
    * @internal
    */
   onInteractionEvent(event: Event) {
-    if (this.disabled) {
-      event.stopPropagation();
-    } else {
+    // We always have to stop propagation on the change event.
+    // Otherwise the change event, from the input element, will bubble up and
+    // emit its event object to the `change` output. 
+    event.stopPropagation();
+
+    if (!this.disabled) {
       this.toggle();
     }
   }

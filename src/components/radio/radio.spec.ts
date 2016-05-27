@@ -12,7 +12,7 @@ import {FORM_DIRECTIVES, NgControl} from '@angular/common';
 import {TestComponentBuilder, ComponentFixture} from '@angular/compiler/testing';
 import {Component, DebugElement, provide} from '@angular/core';
 import {By} from '@angular/platform-browser';
-import {MD_RADIO_DIRECTIVES, MdRadioGroup, MdRadioButton} from './radio';
+import {MD_RADIO_DIRECTIVES, MdRadioGroup, MdRadioButton, MdRadioChange} from './radio';
 import {MdRadioDispatcher} from './radio_dispatcher';
 
 
@@ -446,7 +446,7 @@ class RadioGroupWithNgModel {
     {label: 'Chocolate', value: 'chocolate'},
     {label: 'Strawberry', value: 'strawberry'},
   ];
-  onChange(value: string) {}
+  onChange(value: MdRadioChange) {}
 }
 
 // TODO(jelbourn): remove eveything below when Angular supports faking events.

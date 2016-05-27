@@ -75,7 +75,12 @@ export class MdSlideToggle implements ControlValueAccessor {
    * which triggers a onChange event on click.
    * @internal
    */
-  onChangeEvent() {
+  onChangeEvent(event: Event) {
+    // We always have to stop propagation on the change event.
+    // Otherwise the change event, from the input element, will bubble up and
+    // emit its event object to the component's `change` output.
+    event.stopPropagation();
+
     if (!this.disabled) {
       this.toggle();
     }

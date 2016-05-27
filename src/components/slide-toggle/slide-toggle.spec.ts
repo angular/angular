@@ -5,6 +5,7 @@ import {
   beforeEach,
   inject,
   async,
+  fakeAsync,
 } from '@angular/core/testing';
 import {TestComponentBuilder, ComponentFixture} from '@angular/compiler/testing';
 import {By} from '@angular/platform-browser';
@@ -161,14 +162,17 @@ describe('MdSlideToggle', () => {
       expect(slideToggleElement.classList).not.toContain('ng-dirty');
     });
 
-    it('should emit the new values', () => {
-      expect(testComponent.changeCount).toBe(0);
+    it('should emit the new values properly', fakeAsync(() => {
+      spyOn(testComponent, 'onValueChange');
 
       labelElement.click();
       fixture.detectChanges();
 
-      expect(testComponent.changeCount).toBe(1);
-    });
+      fixture.whenStable().then(() => {
+        expect(testComponent.onValueChange).toHaveBeenCalledTimes(1);
+        expect(testComponent.onValueChange).toHaveBeenCalledWith(true);
+      });
+    }));
 
     it('should support subscription on the change observable', () => {
       slideToggle.change.subscribe(value => {
@@ -265,7 +269,7 @@ function dispatchFocusChangeEvent(eventName: string, element: HTMLElement): void
     <md-slide-toggle [(ngModel)]="slideModel" [disabled]="isDisabled" [color]="slideColor" 
                      [id]="slideId" [checked]="slideChecked" [name]="slideName" 
                      [aria-label]="slideLabel" [ariaLabel]="slideLabel" 
-                     [ariaLabelledby]="slideLabelledBy" (change)="changeCount = changeCount + 1">
+                     [ariaLabelledby]="slideLabelledBy" (change)="onValueChange($event)">
       <span>Test Slide Toggle</span>
     </md-slide-toggle>
   `,
@@ -280,5 +284,6 @@ class SlideToggleTestApp {
   slideName: string;
   slideLabel: string;
   slideLabelledBy: string;
-  changeCount: number = 0;
+
+  onValueChange(value: boolean): void {};
 }
