@@ -8257,9 +8257,9 @@
       "resolved": "https://registry.npmjs.org/trim-newlines/-/trim-newlines-1.0.0.tgz"
     },
     "ts-api-guardian": {
-      "version": "0.0.2",
-      "from": "ts-api-guardian@0.0.2",
-      "resolved": "https://registry.npmjs.org/ts-api-guardian/-/ts-api-guardian-0.0.2.tgz",
+      "version": "0.0.3",
+      "from": "ts-api-guardian@0.0.3",
+      "resolved": "https://registry.npmjs.org/ts-api-guardian/-/ts-api-guardian-0.0.3.tgz",
       "dependencies": {
         "typescript": {
           "version": "1.7.3",

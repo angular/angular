@@ -5179,7 +5179,7 @@
       "version": "1.0.0"
     },
     "ts-api-guardian": {
-      "version": "0.0.2",
+      "version": "0.0.3",
       "dependencies": {
         "typescript": {
           "version": "1.7.3"
