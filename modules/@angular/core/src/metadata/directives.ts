@@ -850,8 +850,11 @@ export class ComponentMetadata extends DirectiveMetadata {
   /**
    * The module id of the module that contains the component.
    * Needed to be able to resolve relative urls for templates and styles.
+   * In CommonJS, this can always be set to `module.id`, similarly SystemJS exposes `__moduleName`
+   * variable within each module.
+   *
    * In Dart, this can be determined automatically and does not need to be set.
-   * In CommonJS, this can always be set to `module.id`.
+
    *
    * ## Simple Example
    *
