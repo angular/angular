@@ -1,5 +1,5 @@
 <!-- The background div is named as such because it appears below the other divs and is not sized based on values. -->
 <div class="md-progress-bar-background"></div>
-<div class="md-progress-bar-buffer" [style.transform]="bufferTransform()"></div>
-<div class="md-progress-bar-primary md-progress-bar-fill" [style.transform]="primaryTransform()"></div>
+<div class="md-progress-bar-buffer" [ngStyle]="bufferTransform()"></div>
+<div class="md-progress-bar-primary md-progress-bar-fill" [ngStyle]="primaryTransform()"></div>
 <div class="md-progress-bar-secondary md-progress-bar-fill"></div>
