@@ -16,11 +16,13 @@ export abstract class AnimationPlayer {
 }
 
 export class NoOpAnimationPlayer implements AnimationPlayer {
+  
   private _subscriptions = [];
   public parentPlayer: AnimationPlayer = null;
   constructor() {
     scheduleMicroTask(() => this._onFinish());
   }
+  /** @internal */
   _onFinish() {
     this._subscriptions.forEach(entry => { entry(); });
     this._subscriptions = [];

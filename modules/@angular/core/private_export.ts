@@ -21,8 +21,8 @@ import * as provider_util from './src/di/provider_util';
 import * as console from './src/console';
 import {Provider} from './index';
 import * as reflection from './src/reflection/reflection';
-// tslint:disable-next-line
-import {Reflector} from './src/reflection/reflection';
+// We need to import this name separately from the above wildcard, because this symbol is exposed.
+import {Reflector} from './src/reflection/reflection'; // tslint:disable-line
 
 import {
   NoOpAnimationPlayer as NoOpAnimationPlayer_,
