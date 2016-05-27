@@ -424,6 +424,29 @@ void allTests() {
       expect(cmp.providers[0].useClass.diDeps.first.token.identifier.moduleUrl, equals("moduleUrl"));
     });
 
+    test('should generate generate diDeps of pipes.', () async {
+      fooNgMeta.identifiers['Service2'] =
+      new CompileTypeMetadata(name: 'Service2', moduleUrl: 'moduleUrl');
+
+      fooNgMeta.identifiers['FooPipe'] = new CompilePipeMetadata(type: new CompileTypeMetadata(
+          name: 'FooPipe',
+          moduleUrl: 'moduleUrl',
+          diDeps: [
+            new CompileDiDependencyMetadata(
+                token: new CompileTokenMetadata(identifier: new CompileIdentifierMetadata(name: 'Service2')))
+          ]));
+
+      updateReader();
+
+      final extracted = await _testLink(reader, fooAssetId, fooMetaAssetId);
+      final pipe = extracted.identifiers["FooPipe"];
+
+      expect(pipe.type.name, equals("FooPipe"));
+      expect(pipe.type.moduleUrl, equals("moduleUrl"));
+      expect(pipe.type.diDeps.first.token.identifier.name, equals("Service2"));
+      expect(pipe.type.diDeps.first.token.identifier.moduleUrl, equals("moduleUrl"));
+    });
+
     test('should resolve queries and viewQueries.', () async {
       barNgMeta.identifiers['Service'] =
       new CompileTypeMetadata(name: 'Service', moduleUrl: 'moduleUrl');

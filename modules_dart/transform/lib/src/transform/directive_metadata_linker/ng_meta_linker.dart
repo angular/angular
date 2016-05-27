@@ -190,6 +190,8 @@ class _NgMetaIdentifierResolver {
         _resolveProviderMetadata(ngMetaMap, meta);
         _resolveQueryMetadata(ngMetaMap, meta);
         _resolveDiDependencyMetadata(ngMetaMap, meta.type.name, meta.type.diDeps);
+      } else if (meta is CompilePipeMetadata) {
+        _resolveDiDependencyMetadata(ngMetaMap, meta.type.name, meta.type.diDeps);
       } else if (meta is CompileTypeMetadata) {
         _resolveDiDependencyMetadata(ngMetaMap, meta.name, meta.diDeps);
       } else if (meta is CompileFactoryMetadata) {

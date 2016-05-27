@@ -1134,6 +1134,25 @@ void allTests() {
       var model = await _testCreateModel('pipe_files/pipes.dart');
       expect(model.identifiers['NameAndPurePipe'].pure, isTrue);
     });
+
+    test('should read the pipe lifecycles', () async {
+      var ngMeta = (await _testCreateModel(
+              'interfaces_files/soup.dart'));
+
+      expect(ngMeta.identifiers['SoupPipe'].lifecycleHooks,
+          contains(LifecycleHooks.OnDestroy));
+    });
+
+    test('should populate `diDependency`.', () async {
+      var cmp = (await _testCreateModel('pipe_files/pipes.dart'))
+          .identifiers['PipeWithDiDeps'];
+
+      expect(cmp, isNotNull);
+      var deps = cmp.type.diDeps;
+      expect(deps, isNotNull);
+      expect(deps.length, equals(1));
+      expect(deps[0].token.identifier.name, equals("ServiceDep"));
+    });
   });
 }
 

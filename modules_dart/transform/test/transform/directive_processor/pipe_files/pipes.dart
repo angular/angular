@@ -7,3 +7,11 @@ class NameOnlyPipe {}
 
 @Pipe(name: 'nameAndPure', pure: true)
 class NameAndPurePipe {}
+
+@Pipe(name: 'pipeWithDiDeps')
+class PipeWithDiDeps {
+  PipeWithDiDeps(ServiceDep arg1);
+}
+
+@Injectable()
+class ServiceDep {}

@@ -6,3 +6,6 @@ import 'package:angular2/src/core/linker.dart';
 @Component(selector: '[soup]')
 @View(template: '')
 class ChangingSoupComponent implements OnChanges, AnotherInterface {}
+
+@Pipe(name: 'soup')
+class SoupPipe implements OnDestroy {}
