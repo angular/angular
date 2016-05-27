@@ -4,7 +4,7 @@
 import 'reflect-metadata';
 
 import * as ts from 'typescript';
-import * as tsc from 'tsc-wrapped';
+import * as tsc from '@angular/tsc-wrapped';
 
 import {CodeGenerator} from './codegen';
 
