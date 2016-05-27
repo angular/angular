@@ -31,16 +31,6 @@ node ./dist/tools/tsc-watch/ node runCmdsOnly
 echo 'travis_fold:end:test.unit.node'
 
 
-echo 'travis_fold:start:test.compiler_cli.node'
-
-# Run compiler_cli integration tests in node
-node dist/tools/cjs-jasmine -- @angular/compiler_cli/integrationtest/**/*_spec.js
-
-echo 'travis_fold:end:test.compiler_cli.node'
-
-# rebuild since codegen has overwritten some files.
-node dist/all/@angular/compiler_cli/src/main -p modules/tsconfig.json
-
 echo 'travis_fold:start:test.unit.localChrome'
 
 # Run unit tests in local chrome

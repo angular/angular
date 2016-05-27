@@ -1,6 +1,6 @@
 import {StaticReflectorHost, StaticSymbol} from './static_reflector';
 import * as ts from 'typescript';
-import {AngularCompilerOptions, MetadataCollector, ModuleMetadata} from 'tsc-wrapped';
+import {AngularCompilerOptions, MetadataCollector, ModuleMetadata} from '@angular/tsc-wrapped';
 import * as fs from 'fs';
 import * as path from 'path';
 import {ImportGenerator, AssetUrl} from './compiler_private';
