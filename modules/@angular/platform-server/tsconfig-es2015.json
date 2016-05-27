@@ -13,9 +13,13 @@
     "outDir": "../../../dist/packages-dist/platform-server/esm",
     "paths": {
       "@angular/core": ["../../../dist/packages-dist/core/"],
+      "@angular/core/testing": ["../../../dist/packages-dist/core/testing"],
       "@angular/common": ["../../../dist/packages-dist/common/"],
+      "@angular/common/testing": ["../../../dist/packages-dist/common/testing"],
       "@angular/compiler": ["../../../dist/packages-dist/compiler/"],
-      "@angular/platform-browser": ["../../../dist/packages-dist/platform-browser/"]
+      "@angular/compiler/testing": ["../../../dist/packages-dist/compiler/testing"],
+      "@angular/platform-browser": ["../../../dist/packages-dist/platform-browser/"],
+      "@angular/platform-browser/testing": ["../../../dist/packages-dist/platform-browser/testing"]
     },
     "rootDir": ".",
     "sourceMap": true,
@@ -24,6 +28,8 @@
   },
   "files": [
     "index.ts",
+    "testing.ts",
+    "../../../node_modules/@types/jasmine/index.d.ts",
     "../../../node_modules/@types/node/index.d.ts",
     "../../../node_modules/zone.js/dist/zone.js.d.ts"
   ]

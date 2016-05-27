@@ -17,7 +17,10 @@
       "@angular/common": ["../../../dist/packages-dist/common"],
       "@angular/common/testing": ["../../../dist/packages-dist/common/testing"],
       "@angular/compiler": ["../../../dist/packages-dist/compiler"],
-      "@angular/compiler/testing": ["../../../dist/packages-dist/compiler/testing"]
+      "@angular/compiler/testing": ["../../../dist/packages-dist/compiler/testing"],
+      // workaround for https://github.com/Microsoft/TypeScript/issues/8723
+      // we can get rid of this once we update to typescript 1.9.0-dev.20160525-1.0 or newer
+      "selenium-webdriver": ["../../../node_modules/@types/selenium-webdriver/index.d.ts"]
     },
     "rootDir": ".",
     "sourceMap": true,
@@ -28,6 +31,7 @@
   "files": [
     "index.ts",
     "testing.ts",
+    "testing_e2e.ts",
     "../../../node_modules/@types/hammerjs/index.d.ts",
     "../../../node_modules/@types/protractor/index.d.ts",
     "../../../node_modules/@types/jasmine/index.d.ts",

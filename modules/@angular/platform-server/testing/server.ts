@@ -14,7 +14,7 @@ import {
   TestComponentRenderer
 } from '@angular/compiler/testing';
 import {Parse5DomAdapter} from '../index';
-import {MockLocationStrategy} from '../../common/testing/mock_location_strategy';
+import {MockLocationStrategy} from '@angular/common/testing';
 import {BrowserDetection, DOMTestComponentRenderer} from '@angular/platform-browser/testing';
 import {AnimationDriver, NoOpAnimationDriver} from '../core_private';
 import {
@@ -23,11 +23,9 @@ import {
   EventManager,
   EVENT_MANAGER_PLUGINS,
   ELEMENT_PROBE_PROVIDERS,
-  DomEventsPlugin
+  DomEventsPlugin,
 } from '@angular/platform-browser';
-import {getDOM} from '../platform_browser_private';
-import {DomRootRenderer, DomRootRenderer_} from '../../platform-browser/src/dom/dom_renderer';
-import {DomSharedStylesHost, SharedStylesHost} from '../../platform-browser/src/dom/shared_styles_host';
+import {getDOM, DomRootRenderer, DomRootRenderer_, DomSharedStylesHost, SharedStylesHost} from '../platform_browser_private';
 import {LocationStrategy} from '@angular/common';
 import {Log} from '@angular/core/testing';
 
