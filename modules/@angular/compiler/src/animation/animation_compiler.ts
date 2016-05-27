@@ -123,6 +123,7 @@ class _AnimationBuilder implements AnimationAstVisitor {
     return this._callAnimateMethod(ast, startingStylesExpr, o.literalArr(keyframeExpressions));
   }
 
+  /** @internal */
   _visitEndStateAnimation(ast: AnimationStepAst,
                             context: _AnimationBuilderContext): o.Expression {
     var startingStylesExpr = ast.startingStyles.visit(this, context);
@@ -136,6 +137,7 @@ class _AnimationBuilder implements AnimationAstVisitor {
     return this._callAnimateMethod(ast, startingStylesExpr, keyframesExpr);
   }
 
+  /** @internal */
   _callAnimateMethod(ast: AnimationStepAst, startingStylesExpr, keyframesExpr) {
     return _ANIMATION_FACTORY_RENDERER_VAR.callMethod('animate', [
       _ANIMATION_FACTORY_ELEMENT_VAR,

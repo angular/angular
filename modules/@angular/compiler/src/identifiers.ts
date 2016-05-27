@@ -11,7 +11,6 @@ import {
   ViewEncapsulation,
   TemplateRef
 } from '@angular/core';
-import {SecurityContext} from '../core_private';
 import {
   AppElement,
   AppView,
@@ -22,7 +21,6 @@ import {
   devModeEqual,
   flattenNestedViewRenderNodes,
   interpolate,
-  RenderDebugInfo,
   StaticNodeDebugInfo,
   TemplateRef_,
   uninitialized,
@@ -47,7 +45,8 @@ import {
   NoOpAnimationPlayer as NoOpAnimationPlayer_,
   AnimationGroupPlayer as AnimationGroupPlayer_,
   AnimationSequencePlayer as AnimationSequencePlayer_,
-  AnimationStyleUtil
+  AnimationStyleUtil,
+  SecurityContext
 } from '../core_private';
 
 import {CompileIdentifierMetadata, CompileTokenMetadata} from './compile_metadata';

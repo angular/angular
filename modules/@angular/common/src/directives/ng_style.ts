@@ -1,6 +1,6 @@
-import {KeyValueChangeRecord} from '@angular/core';
 import {
   DoCheck,
+  KeyValueChangeRecord,
   KeyValueDiffer,
   KeyValueDiffers,
   ElementRef,

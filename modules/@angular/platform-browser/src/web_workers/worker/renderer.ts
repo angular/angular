@@ -5,7 +5,6 @@ import {
   Injectable,
   ViewEncapsulation
 } from '@angular/core';
-import {RenderDebugInfo} from '../../../core_private';
 
 import {ClientMessageBrokerFactory, FnArg, UiArguments} from '../shared/client_message_broker';
 import {isPresent, isBlank} from '../../../src/facade/lang';
@@ -17,7 +16,7 @@ import {MessageBus} from '../shared/message_bus';
 import {ObservableWrapper} from '../../../src/facade/async';
 import {deserializeGenericEvent} from './event_deserializer';
 
-import {AnimationKeyframe, AnimationPlayer, AnimationStyles} from '../../../core_private';
+import {AnimationKeyframe, AnimationPlayer, AnimationStyles, RenderDebugInfo} from '../../../core_private';
 
 @Injectable()
 export class WebWorkerRootRenderer implements RootRenderer {

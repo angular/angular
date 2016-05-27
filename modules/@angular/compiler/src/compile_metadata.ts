@@ -1,10 +1,10 @@
 import {ChangeDetectionStrategy, ViewEncapsulation} from '@angular/core';
-import {reflector} from '../core_private';
 import {
   CHANGE_DETECTION_STRATEGY_VALUES,
   VIEW_ENCAPSULATION_VALUES,
   LifecycleHooks,
-  LIFECYCLE_HOOKS_VALUES
+  LIFECYCLE_HOOKS_VALUES,
+  reflector
 } from '../core_private';
 
 import {
