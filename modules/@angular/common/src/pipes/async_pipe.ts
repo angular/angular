@@ -74,9 +74,10 @@ export class AsyncPipe implements OnDestroy {
   _subscription: Object = null;
   /** @internal */
   _obj: Observable<any>| Promise<any>| EventEmitter<any> = null;
-  private _strategy: SubscriptionStrategy = null;
   /** @internal */
-  public _ref: ChangeDetectorRef;
+  _ref: ChangeDetectorRef;
+  private _strategy: SubscriptionStrategy = null;
+
   constructor(_ref: ChangeDetectorRef) { this._ref = _ref; }
 
   ngOnDestroy(): void {

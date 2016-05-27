@@ -118,7 +118,7 @@ export class DatePipe implements PipeTransform {
     return DateFormatter.format(value, defaultLocale, pattern);
   }
 
-  supports(obj: any): boolean {
+  private supports(obj: any): boolean {
     if (isDate(obj) || isNumber(obj)) {
       return true;
     }
