@@ -1,6 +1,7 @@
 import {Injectable, EventEmitter} from '@angular/core';
 import {ObservableWrapper} from '../src/facade/async';
 import {Location} from '../index';
+import {LocationStrategy} from "../src/location/location_strategy";
 
 /**
  * A spy for {@link Location} that allows tests to fire simulated location events.
@@ -16,6 +17,8 @@ export class SpyLocation implements Location {
   _subject: EventEmitter<any> = new EventEmitter();
   /** @internal */
   _baseHref: string = '';
+  /** @internal */
+  _platformStrategy: LocationStrategy = null;
 
   setInitialPath(url: string) { this._history[this._historyIndex].path = url; }
 
@@ -101,8 +104,6 @@ export class SpyLocation implements Location {
     return ObservableWrapper.subscribe(this._subject, onNext, onThrow, onReturn);
   }
 
-  // TODO: remove these once Location is an interface, and can be implemented cleanly
-  platformStrategy: any = null;
   normalize(url: string): string { return null; }
 }
 
