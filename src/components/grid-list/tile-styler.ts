@@ -97,16 +97,30 @@ export class TileStyler {
     tile.setStyle('width', calc(this.getTileSize(baseTileWidth, tile.colspan)));
   }
 
-  /** Sets the vertical placement of the tile in the list.
-   * This method will be implemented by each type of TileStyler.
+  /** Calculates the total size taken up by gutters across one axis of a list.
    * @internal
    */
+  getGutterSpan(): string {
+    return `${this._gutterSize} * (${this._rowspan} - 1)`;
+  }
+
+  /** Calculates the total size taken up by tiles across one axis of a list.
+   * @internal
+   */
+  getTileSpan(tileHeight: string): string {
+    return `${this._rowspan} * ${this.getTileSize(tileHeight, 1)}`;
+  }
+
+  /** Sets the vertical placement of the tile in the list.
+  * This method will be implemented by each type of TileStyler.
+* @internal
+*/
   setRowStyles(tile: MdGridTile, rowIndex: number, percentWidth: number, gutterWidth: number) {}
 
   /** Calculates the computed height and returns the correct style property to set.
-   * This method will be implemented by each type of TileStyler.
-   * @internal
-   */
+  * This method will be implemented by each type of TileStyler.
+* @internal
+*/
   getComputedHeight(): [string, string] { return null; }
 }
 
@@ -132,7 +146,9 @@ export class FixedTileStyler extends TileStyler {
 
   /** @internal */
   getComputedHeight(): [string, string] {
-    return ['height', calc(`${this._rowspan} * ${this.getTileSize(this.fixedRowHeight, 1)}`)];
+    return [
+      'height', calc(`${this.getTileSpan(this.fixedRowHeight)} + ${this.getGutterSpan()}`)
+    ];
   }
 }
 
@@ -165,7 +181,7 @@ export class RatioTileStyler extends TileStyler {
   /** @internal */
   getComputedHeight(): [string, string] {
     return [
-      'paddingBottom', calc(`${this._rowspan} * ${this.getTileSize(this.baseTileHeight, 1)}`)
+      'paddingBottom', calc(`${this.getTileSpan(this.baseTileHeight)} + ${this.getGutterSpan()}`)
     ];
   }
 
