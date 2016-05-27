@@ -23,6 +23,7 @@
     "src/url_serializer.ts",
     "src/url_tree.ts",
     "src/shared.ts",
+    "src/router_providers.ts",
     "src/create_url_tree.ts",
     "src/directives/router_outlet.ts",
     "src/directives/router_link.ts",

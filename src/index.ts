@@ -5,6 +5,7 @@ export { UrlTree, UrlSegment} from './url_tree';
 export { RouterOutletMap } from './router_outlet_map';
 export { RouterConfig, Route } from './config';
 export { Params, PRIMARY_OUTLET } from './shared';
+export { provideRouter } from './router_providers';
 
 import { RouterOutlet } from './directives/router_outlet';
 import { RouterLink } from './directives/router_link';
