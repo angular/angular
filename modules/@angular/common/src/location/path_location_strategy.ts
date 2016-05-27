@@ -53,6 +53,8 @@ import {Location} from './location';
  *   provide(APP_BASE_HREF, {useValue: '/my/app'})
  * ]);
  * ```
+ *
+ * @stable
  */
 @Injectable()
 export class PathLocationStrategy extends LocationStrategy {

@@ -71,6 +71,7 @@ export {ControlValueAccessor} from './directives/control_value_accessor';
  * })
  * class MyApp {}
  * ```
+ * @experimental
  */
 export const FORM_DIRECTIVES: Type[] = /*@ts2dart_const*/[
   NgControlName,

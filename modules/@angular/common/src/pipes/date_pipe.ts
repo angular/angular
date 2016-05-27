@@ -81,6 +81,8 @@ var defaultLocale: string = 'en-US';
  * ```
  *
  * {@example core/pipes/ts/date_pipe/date_pipe_example.ts region='DatePipe'}
+ *
+ * @experimental
  */
 @Pipe({name: 'date', pure: true})
 @Injectable()

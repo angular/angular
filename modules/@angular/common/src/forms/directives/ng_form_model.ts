@@ -96,6 +96,8 @@ export const formDirectiveProvider: any =
  *  }
  * }
  *  ```
+ *
+ *  @experimental
  */
 @Directive({
   selector: '[ngFormModel]',

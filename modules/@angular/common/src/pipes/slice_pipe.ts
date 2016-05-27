@@ -58,10 +58,11 @@ import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
  * ## String Examples
  *
  * {@example core/pipes/ts/slice_pipe/slice_pipe_example.ts region='SlicePipe_string'}
+ *
+ * @stable
  */
 
 @Pipe({name: 'slice', pure: false})
-@Injectable()
 export class SlicePipe implements PipeTransform {
   transform(value: any, start: number, end: number = null): any {
     if (isBlank(value)) return value;

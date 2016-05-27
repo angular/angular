@@ -45,6 +45,8 @@ import {UrlChangeListener, PlatformLocation} from './platform_location';
  *   provide(LocationStrategy, {useClass: HashLocationStrategy})
  * ]);
  * ```
+ *
+ * @stable
  */
 @Injectable()
 export class HashLocationStrategy extends LocationStrategy {

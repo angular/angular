@@ -52,7 +52,6 @@ var COMMON: string[] = [
   'DatePipe',
   'DecimalPipe',
   'DefaultValueAccessor',
-  'FORM_BINDINGS',
   'FORM_DIRECTIVES',
   'FORM_PROVIDERS',
   'Form:dart',

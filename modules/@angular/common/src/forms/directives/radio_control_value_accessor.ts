@@ -58,6 +58,8 @@ export class RadioControlRegistry {
 
 /**
  * The value provided by the forms API for radio buttons.
+ *
+ * @experimental
  */
 export class RadioButtonState {
   constructor(public checked: boolean, public value: string) {}

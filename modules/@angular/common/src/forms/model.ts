@@ -50,7 +50,7 @@ function toObservable(r: any): Observable<any> {
 }
 
 /**
- *
+ * @experimental
  */
 export abstract class AbstractControl {
   /** @internal */
@@ -266,6 +266,8 @@ export abstract class AbstractControl {
  * validation function.
  *
  * ### Example ([live demo](http://plnkr.co/edit/23DESOpbNnBpBHZt1BR4?p=preview))
+ *
+ * @experimental
  */
 export class Control extends AbstractControl {
   /** @internal */
@@ -331,6 +333,8 @@ export class Control extends AbstractControl {
  * controls, but is of variable length.
  *
  * ### Example ([live demo](http://plnkr.co/edit/23DESOpbNnBpBHZt1BR4?p=preview))
+ *
+ * @experimental
  */
 export class ControlGroup extends AbstractControl {
   private _optionals: {[key: string]: boolean};
@@ -448,6 +452,8 @@ export class ControlGroup extends AbstractControl {
  * as broken change detection.
  *
  * ### Example ([live demo](http://plnkr.co/edit/23DESOpbNnBpBHZt1BR4?p=preview))
+ *
+ * @experimental
  */
 export class ControlArray extends AbstractControl {
   constructor(public controls: AbstractControl[], validator: ValidatorFn = null,

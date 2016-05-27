@@ -22,6 +22,8 @@ import {isBlank} from '../../src/facade/lang';
  * - `<div *ngIf="condition">...</div>`
  * - `<div template="ngIf condition">...</div>`
  * - `<template [ngIf]="condition"><div>...</div></template>`
+ *
+ * @stable
  */
 @Directive({selector: '[ngIf]', inputs: ['ngIf']})
 export class NgIf {

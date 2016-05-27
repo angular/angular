@@ -35,6 +35,10 @@ import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
  * --Note--: The 'pattern' parameter will be converted to a RegExp instance. Make sure to escape the
  * string properly if you are matching for regular expression special characters like parenthesis,
  * brackets etc.
+ *
+ * @deprecated The current pipe has limited functionality. The pipe api is not meant to be able
+ * express complex yet generic value transformations. We recommend that these transformations happen
+ * in the component logic instead.
  */
 
 @Pipe({name: 'replace'})

@@ -158,7 +158,7 @@ export class InjectSetupWrapper {
     };
   }
 
-  /** @Deprecated {use async(withProviders().inject())} */
+  /** @deprecated {use async(withProviders().inject())} */
   injectAsync(tokens: any[], fn: Function): Function {
     return () => {
       this._addProviders();
@@ -172,7 +172,7 @@ export function withProviders(providers: () => any) {
 }
 
 /**
- * @Deprecated {use async(inject())}
+ * @deprecated {use async(inject())}
  *
  * Allows injecting dependencies in `beforeEach()` and `it()`. The test must return
  * a promise which will resolve when all asynchronous activity is complete.

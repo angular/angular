@@ -14,6 +14,7 @@ import {ValidatorFn, AsyncValidatorFn} from './directives/validators';
  * ### Example
  *
  * {@example core/forms/ts/ng_validators/ng_validators.ts region='ng_validators'}
+ * @experimental
  */
 export const NG_VALIDATORS: OpaqueToken = /*@ts2dart_const*/ new OpaqueToken("NgValidators");
 
@@ -24,6 +25,8 @@ export const NG_VALIDATORS: OpaqueToken = /*@ts2dart_const*/ new OpaqueToken("Ng
  * Provide this using `multi: true` to add validators.
  *
  * See {@link NG_VALIDATORS} for more details.
+ *
+ * @experimental
  */
 export const NG_ASYNC_VALIDATORS: OpaqueToken =
     /*@ts2dart_const*/ new OpaqueToken("NgAsyncValidators");
@@ -39,6 +42,8 @@ export const NG_ASYNC_VALIDATORS: OpaqueToken =
  * ```typescript
  * var loginControl = new Control("", Validators.required)
  * ```
+ *
+ * @experimental
  */
 export class Validators {
   /**

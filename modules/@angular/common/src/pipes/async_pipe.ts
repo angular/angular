@@ -59,6 +59,8 @@ var __unused: Promise<any>;  // avoid unused import when Promise union types are
  * to the view. Every 500ms, the `time` Observable updates the view with the current time.
  *
  * {@example core/pipes/ts/async_pipe/async_pipe_example.ts region='AsyncPipeObservable'}
+ *
+ * @stable
  */
 @Pipe({name: 'async', pure: false})
 @Injectable()

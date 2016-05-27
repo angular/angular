@@ -75,6 +75,8 @@ export const formDirectiveProvider: any =
  *   }
  * }
  *  ```
+ *
+ *  @experimental
  */
 @Directive({
   selector: 'form:not([ngNoForm]):not([ngFormModel]),ngForm,[ngForm]',

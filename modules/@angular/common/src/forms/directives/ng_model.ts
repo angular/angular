@@ -47,6 +47,8 @@ export const formControlBinding: any =
  *  searchQuery: string;
  * }
  *  ```
+ *
+ *  @experimental
  */
 @Directive({
   selector: '[ngModel]:not([ngControl]):not([ngFormControl])',

@@ -15,6 +15,9 @@ import {SwitchView} from './ng_switch';
 
 const _CATEGORY_DEFAULT = 'other';
 
+/**
+ * @experimental
+ */
 export abstract class NgLocalization { abstract getPluralCategory(value: any): string; }
 
 /**
@@ -71,6 +74,7 @@ export abstract class NgLocalization { abstract getPluralCategory(value: any): s
  * }
  *
  * ```
+ * @experimental
  */
 
 @Directive({selector: '[ngPluralCase]'})
@@ -84,6 +88,9 @@ export class NgPluralCase {
 }
 
 
+/**
+ * @experimental
+ */
 @Directive({selector: '[ngPlural]'})
 export class NgPlural implements AfterContentInit {
   private _switchValue: number;

@@ -66,6 +66,8 @@ export const controlGroupProvider: any =
  *
  * This example declares a control group for a user's name. The value and validation state of
  * this group can be accessed separately from the overall form.
+ *
+ * @experimental
  */
 @Directive({
   selector: '[ngControlGroup]',

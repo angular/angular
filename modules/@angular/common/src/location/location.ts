@@ -42,6 +42,8 @@ import {LocationStrategy} from './location_strategy';
  *
  * bootstrap(AppCmp, [ROUTER_PROVIDERS]);
  * ```
+ *
+ * @stable
  */
 @Injectable()
 export class Location {

@@ -16,6 +16,8 @@ import {UrlChangeListener} from './platform_location';
  * `http://example.com/foo` as an equivalent URL.
  *
  * See these two classes for more.
+ *
+ * @stable
  */
 export abstract class LocationStrategy {
   abstract path(): string;
@@ -57,5 +59,6 @@ export abstract class LocationStrategy {
  *   provide(APP_BASE_HREF, {useValue: '/my/app'})
  * ]);
  * ```
+ * @stable
  */
 export const APP_BASE_HREF: OpaqueToken = /*@ts2dart_const*/ new OpaqueToken('appBaseHref');

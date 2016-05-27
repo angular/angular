@@ -59,6 +59,8 @@ import {isPresent, isBlank} from '../../src/facade/lang';
  *
  * In this example the `font-style`, `font-size` and `font-weight` styles will be updated
  * based on the `style` property's value changes.
+ *
+ * @stable
  */
 @Directive({selector: '[ngStyle]', inputs: ['rawStyle: ngStyle']})
 export class NgStyle implements DoCheck {

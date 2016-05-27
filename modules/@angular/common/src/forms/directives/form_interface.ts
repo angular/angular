@@ -6,6 +6,8 @@ import {Control, ControlGroup} from '../model';
  * An interface that {@link NgFormModel} and {@link NgForm} implement.
  *
  * Only used by the forms module.
+ *
+ * @experimental
  */
 export interface Form {
   /**

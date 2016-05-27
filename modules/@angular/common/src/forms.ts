@@ -52,12 +52,7 @@ import {Type} from '@angular/core';
  * ```typescript
  * bootstrap(MyApp, [FORM_PROVIDERS]);
  * ```
+ *
+ * @experimental
  */
 export const FORM_PROVIDERS: Type[] = /*@ts2dart_const*/[FormBuilder, RadioControlRegistry];
-
-/**
- * See {@link FORM_PROVIDERS} instead.
- *
- * @deprecated
- */
-export const FORM_BINDINGS = /*@ts2dart_const*/ FORM_PROVIDERS;

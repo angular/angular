@@ -5,6 +5,8 @@ import {isPresent} from '../../../src/facade/lang';
 /**
  * Directive automatically applied to Angular forms that sets CSS classes
  * based on control status (valid/invalid/dirty/etc).
+ *
+ * @experimental
  */
 @Directive({
   selector: '[ngControl],[ngModel],[ngFormControl]',

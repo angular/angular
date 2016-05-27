@@ -45,6 +45,8 @@ import {ValidatorFn, AsyncValidatorFn} from './directives/validators';
  *   }
  * }
  * ```
+ *
+ * @experimental
  */
 @Injectable()
 export class FormBuilder {

@@ -72,6 +72,8 @@ import {StringMapWrapper, isListLikeIterable} from '../../src/facade/collection'
  *   }
  * }
  * ```
+ *
+ * @stable
  */
 @Directive({selector: '[ngClass]', inputs: ['rawClass: ngClass', 'initialClasses: class']})
 export class NgClass implements DoCheck, OnDestroy {

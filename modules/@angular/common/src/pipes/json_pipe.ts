@@ -7,10 +7,10 @@ import {Json} from '../../src/facade/lang';
  *
  * ### Example
  * {@example core/pipes/ts/json_pipe/json_pipe_example.ts region='JsonPipe'}
+ *
+ * @stable
  */
-/* @ts2dart_const */
 @Pipe({name: 'json', pure: false})
-@Injectable()
 export class JsonPipe implements PipeTransform {
   transform(value: any): string { return Json.stringify(value); }
 }

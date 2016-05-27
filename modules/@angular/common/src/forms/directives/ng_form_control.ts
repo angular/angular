@@ -76,6 +76,8 @@ export const formControlBinding: any =
  *  login:string;
  * }
  *  ```
+ *
+ *  @experimental
  */
 @Directive({
   selector: '[ngFormControl]',

@@ -68,6 +68,8 @@ export class SwitchView {
  *
  * bootstrap(App).catch(err => console.error(err));
  * ```
+ *
+ * @experimental
  */
 @Directive({selector: '[ngSwitch]', inputs: ['ngSwitch']})
 export class NgSwitch {
@@ -166,6 +168,8 @@ export class NgSwitch {
  * If multiple match expression match the switch expression value, all of them are displayed.
  *
  * See {@link NgSwitch} for more details and example.
+ *
+ * @experimental
  */
 @Directive({selector: '[ngSwitchWhen]', inputs: ['ngSwitchWhen']})
 export class NgSwitchWhen {
@@ -193,6 +197,8 @@ export class NgSwitchWhen {
  * value.
  *
  * See {@link NgSwitch} for more details and example.
+ *
+ * @experimental
  */
 @Directive({selector: '[ngSwitchDefault]'})
 export class NgSwitchDefault {

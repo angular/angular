@@ -6,6 +6,8 @@ import {isPresent} from '../../src/facade/lang';
  *
  * ### Syntax
  * - `<template [ngTemplateOutlet]="templateRefExpression"></template>`
+ *
+ * @experimental
  */
 @Directive({selector: '[ngTemplateOutlet]'})
 export class NgTemplateOutlet {

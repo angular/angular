@@ -34,9 +34,9 @@ var interpolationExp: RegExp = RegExpWrapper.create('#');
  *  }
  *  ```
  *
+ * @experimental
  */
 @Pipe({name: 'i18nPlural', pure: true})
-@Injectable()
 export class I18nPluralPipe implements PipeTransform {
   transform(value: number, pluralMap: {[count: string]: string}): string {
     var key: string;

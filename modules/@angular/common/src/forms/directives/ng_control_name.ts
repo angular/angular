@@ -87,6 +87,8 @@ export const controlNameBinding: any =
  *  }
  * }
  *  ```
+ *
+ *  @experimental
  */
 @Directive({
   selector: '[ngControl]',

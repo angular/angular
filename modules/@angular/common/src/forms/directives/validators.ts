@@ -41,6 +41,8 @@ export const REQUIRED_VALIDATOR: any = /*@ts2dart_const*/ /*@ts2dart_Provider*/ 
  * ```
  * <input ngControl="fullName" required>
  * ```
+ *
+ * @experimental
  */
 @Directive({
   selector: '[required][ngControl],[required][ngFormControl],[required][ngModel]',
@@ -70,6 +72,8 @@ export const MIN_LENGTH_VALIDATOR: any = /*@ts2dart_const*/ /*@ts2dart_Provider*
 /**
  * A directive which installs the {@link MinLengthValidator} for any `ngControl`,
  * `ngFormControl`, or control with `ngModel` that also has a `minlength` attribute.
+ *
+ * @experimental
  */
 @Directive({
   selector: '[minlength][ngControl],[minlength][ngFormControl],[minlength][ngModel]',
@@ -101,6 +105,8 @@ export const MAX_LENGTH_VALIDATOR: any = /*@ts2dart_const*/ /*@ts2dart_Provider*
 /**
  * A directive which installs the {@link MaxLengthValidator} for any `ngControl, `ngFormControl`,
  * or control with `ngModel` that also has a `maxlength` attribute.
+ *
+ * @experimental
  */
 @Directive({
   selector: '[maxlength][ngControl],[maxlength][ngFormControl],[maxlength][ngModel]',
@@ -117,6 +123,13 @@ export class MaxLengthValidator implements Validator {
 }
 
 
+export const PATTERN_VALIDATOR: any = /*@ts2dart_const*/ /*@ts2dart_Provider*/ {
+  provide: NG_VALIDATORS,
+  useExisting: forwardRef(() => PatternValidator),
+  multi: true
+};
+
+
 /**
  * A Directive that adds the `pattern` validator to any controls marked with the
  * `pattern` attribute, via the {@link NG_VALIDATORS} binding. Uses attribute value
@@ -128,12 +141,8 @@ export class MaxLengthValidator implements Validator {
  * ```
  * <input [ngControl]="fullName" pattern="[a-zA-Z ]*">
  * ```
+ * @experimental
  */
-export const PATTERN_VALIDATOR: any = /*@ts2dart_const*/ /*@ts2dart_Provider*/ {
-  provide: NG_VALIDATORS,
-  useExisting: forwardRef(() => PatternValidator),
-  multi: true
-};
 @Directive({
   selector: '[pattern][ngControl],[pattern][ngFormControl],[pattern][ngModel]',
   providers: [PATTERN_VALIDATOR]

@@ -14,6 +14,8 @@ export const CHECKBOX_VALUE_ACCESSOR: any = /*@ts2dart_const*/ {
  *  ```
  *  <input type="checkbox" ngControl="rememberLogin">
  *  ```
+ *
+ *  @experimental
  */
 @Directive({
   selector:

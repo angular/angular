@@ -17,6 +17,8 @@ export const DEFAULT_VALUE_ACCESSOR: any = /*@ts2dart_const*/
  *  ```
  *  <input type="text" ngControl="searchQuery">
  *  ```
+ *
+ *  @experimental
  */
 @Directive({
   selector:

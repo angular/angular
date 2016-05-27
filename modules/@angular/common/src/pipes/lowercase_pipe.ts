@@ -8,10 +8,10 @@ import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
  * ### Example
  *
  * {@example core/pipes/ts/lowerupper_pipe/lowerupper_pipe_example.ts region='LowerUpperPipe'}
+ *
+ * @experimental
  */
-/* @ts2dart_const */
 @Pipe({name: 'lowercase'})
-@Injectable()
 export class LowerCasePipe implements PipeTransform {
   transform(value: string): string {
     if (isBlank(value)) return value;
