@@ -47,7 +47,7 @@ export class MdListItem implements AfterContentInit {
   /** @internal */
   hasFocus: boolean = false;
 
-  /** @internal */
+  /** TODO: internal */
   ngAfterContentInit() {
     this._setLineClass(this._lines.length);
 

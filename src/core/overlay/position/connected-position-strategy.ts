@@ -44,7 +44,7 @@ export class ConnectedPositionStrategy implements PositionStrategy {
   /**
    * Updates the position of the overlay element, using whichever preferred position relative
    * to the origin fits on-screen.
-   * @internal
+   * TODO: internal
    */
   apply(element: HTMLElement): Promise<void> {
     // We need the bounding rects for the origin and the overlay to determine how to position
@@ -76,12 +76,6 @@ export class ConnectedPositionStrategy implements PositionStrategy {
     // For now, just stick it in the first position and let it go off-screen.
     this._setElementPosition(element, firstOverlayPoint);
     return Promise.resolve();
-  }
-
-
-  /** Adds a preferred position to the end of the ordered preferred position list. */
-  addPreferredPosition(pos: ConnectionPositionPair): void {
-    this._preferredPositions.push(pos);
   }
 
   withFallbackPosition(

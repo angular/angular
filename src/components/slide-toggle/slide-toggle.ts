@@ -108,7 +108,7 @@ export class MdSlideToggle implements ControlValueAccessor {
 
   /**
    * Implemented as part of ControlValueAccessor.
-   * @internal
+   * TODO: internal
    */
   writeValue(value: any): void {
     this.checked = value;
@@ -116,7 +116,7 @@ export class MdSlideToggle implements ControlValueAccessor {
 
   /**
    * Implemented as part of ControlValueAccessor.
-   * @internal
+   * TODO: internal
    */
   registerOnChange(fn: any): void {
     this.onChange = fn;
@@ -124,7 +124,7 @@ export class MdSlideToggle implements ControlValueAccessor {
 
   /**
    * Implemented as part of ControlValueAccessor.
-   * @internal
+   * TODO: internal
    */
   registerOnTouched(fn: any): void {
     this.onTouched = fn;

@@ -112,7 +112,7 @@ export class MdIcon implements OnChanges, OnInit, AfterViewChecked {
     }
   }
 
-  /** @internal */
+  /** TODO: internal */
   ngOnChanges(changes: { [propertyName: string]: SimpleChange }) {
     const changedInputs = Object.keys(changes);
     // Only update the inline SVG icon if the inputs changed, to avoid unnecessary DOM operations.
@@ -134,7 +134,7 @@ export class MdIcon implements OnChanges, OnInit, AfterViewChecked {
     this._updateAriaLabel();
   }
 
-  /** @internal */
+  /** TODO: internal */
   ngOnInit() {
     // Update font classes because ngOnChanges won't be called if none of the inputs are present,
     // e.g. <md-icon>arrow</md-icon>. In this case we need to add a CSS class for the default font.
@@ -143,7 +143,7 @@ export class MdIcon implements OnChanges, OnInit, AfterViewChecked {
     }
   }
 
-  /** @internal */
+  /** TODO: internal */
   ngAfterViewChecked() {
     // Update aria label here because it may depend on the projected text content.
     // (e.g. <md-icon>home</md-icon> should use 'home').

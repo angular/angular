@@ -50,12 +50,12 @@ export class ConnectedOverlayDirective implements OnInit, OnDestroy {
     return this._overlayRef;
   }
 
-  /** @internal */
+  /** TODO: internal */
   ngOnInit() {
     this._createOverlay();
   }
 
-  /** @internal */
+  /** TODO: internal */
   ngOnDestroy() {
     this._destroyOverlay();
   }

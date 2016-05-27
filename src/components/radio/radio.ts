@@ -150,7 +150,7 @@ export class MdRadioGroup implements AfterContentInit, ControlValueAccessor {
   /**
    * Initialize properties once content children are available.
    * This allows us to propagate relevant attributes to associated buttons.
-   * @internal
+   * TODO: internal
    */
   ngAfterContentInit() {
     // Mark this component as initialized in AfterContentInit because the initial value can
@@ -204,7 +204,7 @@ export class MdRadioGroup implements AfterContentInit, ControlValueAccessor {
 
   /**
     * Implemented as part of ControlValueAccessor.
-    * @internal
+    * TODO: internal
     */
   writeValue(value: any) {
     this.value = value;
@@ -212,7 +212,7 @@ export class MdRadioGroup implements AfterContentInit, ControlValueAccessor {
 
   /**
    * Implemented as part of ControlValueAccessor.
-   * @internal
+   * TODO: internal
    */
   registerOnChange(fn: (value: any) => void) {
     this._controlValueAccessorChangeFn = fn;
@@ -220,7 +220,7 @@ export class MdRadioGroup implements AfterContentInit, ControlValueAccessor {
 
   /**
    * Implemented as part of ControlValueAccessor.
-   * @internal
+   * TODO: internal
    */
   registerOnTouched(fn: any) {
     this.onTouched = fn;
@@ -333,7 +333,7 @@ export class MdRadioButton implements OnInit {
     this._disabled = (value != null && value !== false) ? true : null;
   }
 
-  /** @internal */
+  /** TODO: internal */
   ngOnInit() {
     if (this.radioGroup) {
       // If the radio is inside a radio group, determine if it should be checked

@@ -87,7 +87,7 @@ export class GlobalPositionStrategy implements PositionStrategy {
 
   /**
    * Apply the position to the element.
-   * @internal
+   * TODO: internal
    */
   apply(element: HTMLElement): Promise<void> {
     element.style.position = this._cssPosition;

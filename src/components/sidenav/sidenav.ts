@@ -266,7 +266,7 @@ export class MdSidenavLayout implements AfterContentInit {
     }
   }
 
-  /** @internal */
+  /** TODO: internal */
   ngAfterContentInit() {
     // On changes, assert on consistency.
     this._sidenavs.changes.subscribe(() => this._validateDrawers());

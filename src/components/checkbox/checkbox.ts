@@ -1,19 +1,17 @@
 import {
-  ChangeDetectionStrategy,
-  Component,
-  ElementRef,
-  EventEmitter,
-  Input,
-  Output,
-  Provider,
-  Renderer,
-  ViewEncapsulation,
-  forwardRef,
+    ChangeDetectionStrategy,
+    Component,
+    ElementRef,
+    EventEmitter,
+    Input,
+    Output,
+    Provider,
+    Renderer,
+    ViewEncapsulation,
+    forwardRef,
+    AfterContentInit
 } from '@angular/core';
-import {
-  NG_VALUE_ACCESSOR,
-  ControlValueAccessor,
-} from '@angular/common';
+import {NG_VALUE_ACCESSOR, ControlValueAccessor} from '@angular/common';
 
 /**
  * Monotonically increasing integer used to auto-generate unique ids for checkbox components.
@@ -68,7 +66,7 @@ enum TransitionCheckState {
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class MdCheckbox implements ControlValueAccessor {
+export class MdCheckbox implements AfterContentInit, ControlValueAccessor {
   /**
    * Attached to the aria-label attribute of the host element. In most cases, arial-labelledby will
    * take precedence so this may be omitted.
@@ -151,6 +149,7 @@ export class MdCheckbox implements ControlValueAccessor {
     }
   }
 
+  /** TODO: internal */
   ngAfterContentInit() {
     this._isInitialized = true;
   }
@@ -178,12 +177,18 @@ export class MdCheckbox implements ControlValueAccessor {
     }
   }
 
-  /** Implemented as part of ControlValueAccessor. */
+  /**
+   * Implemented as part of ControlValueAccessor.
+   * TODO: internal
+   */
   writeValue(value: any) {
     this.checked = !!value;
   }
 
-  /** Implemented as part of ControlValueAccessor. */
+  /**
+   * Implemented as part of ControlValueAccessor.
+   * TODO: internal
+   */
   registerOnChange(fn: any) {
     if (this._changeSubscription) {
       this._changeSubscription.unsubscribe();
@@ -191,7 +196,10 @@ export class MdCheckbox implements ControlValueAccessor {
     this._changeSubscription = <{unsubscribe: () => any}>this.change.subscribe(fn);
   }
 
-  /** Implemented as part of ControlValueAccessor. */
+  /**
+   * Implemented as part of ControlValueAccessor.
+   * TODO: internal
+   */
   registerOnTouched(fn: any) {
     this.onTouched = fn;
   }
