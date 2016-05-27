@@ -82,7 +82,6 @@ var COMMON: string[] = [
   'NgSwitch',
   'NgSwitchWhen',
   'NgSwitchDefault',
-  'NumberPipe',
   'ObservableListDiff:dart',
   'ObservableListDiffFactory:dart',
   'PatternValidator',
