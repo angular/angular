@@ -24,7 +24,7 @@ emit.
 ## Releasing
 ```
 $ $(npm bin)/tsc -p tools
-$ cp tools/tsc-wrapped/package.json dist/tools/tsc-wrapped/
+$ cp tools/tsc-wrapped/package.json dist/tools/@angular/tsc-wrapped/
 $ npm login [angular]
-$ npm publish dist/tools/tsc-wrapped
+$ npm publish dist/tools/@angular/tsc-wrapped
 ```

@@ -1,3 +1,11 @@
+// Only needed to satisfy the check in core/src/util/decorators.ts
+// TODO(alexeagle): maybe remove that check?
+require('reflect-metadata');
+
+require('@angular/platform-server/src/parse5_adapter.js').Parse5DomAdapter.makeCurrent();
+require('zone.js/dist/zone-node.js');
+require('zone.js/dist/long-stack-trace-zone.js');
+
 import * as fs from 'fs';
 import * as path from 'path';
 import {BasicNgFactory} from '../src/basic.ngfactory';
@@ -6,7 +14,7 @@ import {ReflectiveInjector, DebugElement, getDebugNode} from '@angular/core';
 import {browserPlatform, BROWSER_APP_PROVIDERS} from '@angular/platform-browser';
 
 describe("template codegen output", () => {
-  const outDir = path.join('dist', 'all', '@angular', 'compiler_cli', 'integrationtest', 'src');
+  const outDir = 'src';
 
   it("should lower Decorators without reflect-metadata", () => {
     const jsOutput = path.join(outDir, 'basic.js');

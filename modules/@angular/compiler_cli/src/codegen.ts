@@ -4,7 +4,7 @@
  */
 import * as ts from 'typescript';
 import * as path from 'path';
-import {AngularCompilerOptions} from 'tsc-wrapped';
+import {AngularCompilerOptions} from '@angular/tsc-wrapped';
 
 import * as compiler from '@angular/compiler';
 import {ViewEncapsulation} from '@angular/core';

@@ -14,7 +14,7 @@
       "selenium-webdriver": ["../node_modules/@types/selenium-webdriver/index.d.ts"],
       "rxjs/*": ["../node_modules/rxjs/*"],
       "@angular/*": ["./@angular/*"],
-      "tsc-wrapped": ["../dist/tools/tsc-wrapped"]
+      "@angular/tsc-wrapped": ["../dist/tools/@angular/tsc-wrapped"]
     },
     "rootDir": ".",
     "inlineSourceMap": true,

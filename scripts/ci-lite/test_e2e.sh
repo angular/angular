@@ -22,6 +22,8 @@ echo 'travis_fold:start:test.buildPackages'
 echo 'travis_fold:end:test.buildPackages'
 
 
+./scripts/ci-lite/offline_compiler_test.sh
+
 echo 'travis_fold:start:test.e2e.localChrome'
 cd dist/
 $(npm bin)/gulp serve &

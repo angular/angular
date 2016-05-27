@@ -78,18 +78,16 @@ At a high level, this program
 - these `.ts` files are written to the `genDir` path, then compiled together with the application.
 
 ## For developers
-Run the compiler from source:
 ```
 # Build angular2 and the compiler
-./node_modules/.bin/tsc -p modules
-# Run it on the test project
-$ ./modules/@angular/compiler_cli./integrationtest.sh
-```
-
-Release:
-```
-$ ./modules/@angular/compiler_cli./integrationtest.sh
-$ cp modules/@angular/compiler_cli/README.md modules/@angular/compiler_cli/package.json dist/all/@angular/compiler_cli
-# npm login as angular
-$ npm publish dist/all/@angular/compiler_cli --access=public
+./build.sh
+# Run the test once
+# (First edit the LINKABLE_PKGS to use npm link instead of npm install)
+$ ./scripts/ci-lite/offline_compiler_test.sh
+# Keep a package fresh in watch mode
+./node_modules/.bin/tsc -p modules/@angular/compiler/tsconfig-es5.json -w
+# Iterate on the test
+cd /tmp/wherever/e2e_test.1464388257/
+./node_modules/.bin/ngc
+./node_modules/.bin/jasmine test/*_spec.js
 ```

@@ -2,8 +2,7 @@
     "angularCompilerOptions": {
       // For TypeScript 1.8, we have to lay out generated files
       // in the same source directory with your code.
-      "genDir": ".",
-      "legacyPackageLayout": false
+      "genDir": "."
     },
 
     "compilerOptions": {
@@ -11,13 +10,9 @@
         "experimentalDecorators": true,
         "noImplicitAny": true,
         "moduleResolution": "node",
-        "outDir": "../../../../dist/all/@angular/compiler_cli/integrationtest",
         "rootDir": "",
         "declaration": true,
         "lib": ["es6", "dom"],
-        "baseUrl": ".",
-        "paths": {
-          "@angular/*": ["../../../../dist/all/@angular/*"]
-        }
+        "baseUrl": "."
     }
 }

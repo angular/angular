@@ -35,7 +35,7 @@ cd -
 TSCONFIG=./modules/tsconfig.json
 echo "====== (all)COMPILING: \$(npm bin)/tsc -p ${TSCONFIG} ====="
 # compile ts code
-TSC="node dist/tools/tsc-wrapped/src/main"
+TSC="node dist/tools/@angular/tsc-wrapped/src/main"
 $TSC -p modules/tsconfig.json
 
 rm -rf ./dist/packages-dist
