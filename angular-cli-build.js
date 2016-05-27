@@ -20,7 +20,10 @@ module.exports = function(defaults) {
     include: [ '**/*.css' ]
   }));
 
-  return new MergeTree([appTree, cssAutoprefixed], { overwrite: true });
+  // Include the scss sources in the output for when we publish.
+  const scssSources = new Funnel('src', {include: ['**/*.scss']});
+
+  return new MergeTree([appTree, cssAutoprefixed, scssSources], { overwrite: true });
 };
 
 
