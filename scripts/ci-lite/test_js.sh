@@ -33,6 +33,9 @@ echo 'travis_fold:end:test.unit.node'
 
 echo 'travis_fold:start:test.unit.localChrome'
 
+# rebuild to codegen files in @angular/compiler/test
+node dist/all/@angular/compiler_cli/src/main -p modules/tsconfig.json
+
 # Run unit tests in local chrome
 if [[ ${TRAVIS} ]]; then
   sh -e /etc/init.d/xvfb start

@@ -52,7 +52,6 @@ module.exports = function(config) {
       'karma-sauce-launcher',
       'karma-chrome-launcher',
       'karma-sourcemap-loader',
-      'karma-dart',
       internalAngularReporter
     ],
 

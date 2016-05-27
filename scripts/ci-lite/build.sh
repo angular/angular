@@ -10,7 +10,7 @@ source ./env.sh
 cd ../..
 
 $(npm bin)/tsc -p tools
-cp tools/tsc-wrapped/package.json dist/tools/tsc-wrapped
-node dist/tools/tsc-wrapped/src/main -p modules
+cp tools/@angular/tsc-wrapped/package.json dist/tools/@angular/tsc-wrapped
+node dist/tools/@angular/tsc-wrapped/src/main -p modules
 
 echo 'travis_fold:end:BUILD'

@@ -4,7 +4,7 @@ set -ex -o pipefail
 # These ones can be `npm link`ed for fast development
 LINKABLE_PKGS=(
   $(pwd)/dist/packages-dist/{common,core,compiler,compiler_cli,platform-{browser,server}}
-  $(pwd)/dist/tools/tsc-wrapped
+  $(pwd)/dist/tools/@angular/tsc-wrapped
 )
 PKGS=(
   reflect-metadata
@@ -15,6 +15,7 @@ PKGS=(
   jasmine
 )
 
+TMPDIR=${TMPDIR:-.}
 readonly TMP=$TMPDIR/e2e_test.$(date +%s)
 mkdir -p $TMP
 cp -R -v modules/@angular/compiler_cli/integrationtest/* $TMP

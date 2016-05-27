@@ -82,11 +82,12 @@ At a high level, this program
 # Build angular2 and the compiler
 ./build.sh
 # Run the test once
-# (First edit the PKGS_LINKABLE to use npm link instead of npm install)
+# (First edit the LINKABLE_PKGS to use npm link instead of npm install)
 $ ./scripts/ci-lite/offline_compiler_test.sh
 # Keep a package fresh in watch mode
 ./node_modules/.bin/tsc -p modules/@angular/compiler/tsconfig-es5.json -w
 # Iterate on the test
 cd /tmp/wherever/e2e_test.1464388257/
+./node_modules/.bin/ngc
 ./node_modules/.bin/jasmine test/*_spec.js
 ```

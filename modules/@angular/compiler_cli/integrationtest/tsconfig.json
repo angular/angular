@@ -13,9 +13,6 @@
         "rootDir": "",
         "declaration": true,
         "lib": ["es6", "dom"],
-        "baseUrl": ".",
-        "paths": {
-          "@angular/*": ["../../../../dist/all/@angular/*"]
-        }
+        "baseUrl": "."
     }
 }
