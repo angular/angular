@@ -2,7 +2,7 @@ import {Component, provide} from '@angular/core';
 import {bootstrap} from '@angular/platform-browser';
 import {Observable, Subscriber} from 'rxjs/Rx';
 
-// #docregion AsyncPipe
+// #docregion AsyncPipePromise
 @Component({
   selector: 'async-example',
   template: `<div>

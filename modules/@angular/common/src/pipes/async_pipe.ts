@@ -36,22 +36,29 @@ var _observableStrategy = new ObservableStrategy();
 var __unused: Promise<any>;  // avoid unused import when Promise union types are erased
 
 /**
- * The `async` pipe subscribes to an Observable or Promise and returns the latest value it has
+ * The `async` pipe subscribes to an `Observable` or `Promise` and returns the latest value it has
  * emitted.
  * When a new value is emitted, the `async` pipe marks the component to be checked for changes.
+ * When the component gets destroyed, the `async` pipe unsubscribes automatically to avoid
+ * potential memory leaks.
  *
- * ### Example
+ * ## Usage
+ *
+ *     object | async
+ *
+ * where `object` is of type `Observable` or of type `Promise`.
+ *
+ * ## Examples
  *
  * This example binds a `Promise` to the view. Clicking the `Resolve` button resolves the
  * promise.
  *
- * {@example core/pipes/ts/async_pipe/async_pipe_example.ts region='AsyncPipe'}
+ * {@example core/pipes/ts/async_pipe/async_pipe_example.ts region='AsyncPipePromise'}
  *
  * It's also possible to use `async` with Observables. The example below binds the `time` Observable
  * to the view. Every 500ms, the `time` Observable updates the view with the current time.
  *
- * ```typescript
- * ```
+ * {@example core/pipes/ts/async_pipe/async_pipe_example.ts region='AsyncPipeObservable'}
  */
 @Pipe({name: 'async', pure: false})
 @Injectable()
