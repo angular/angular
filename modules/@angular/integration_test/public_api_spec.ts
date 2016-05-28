@@ -442,6 +442,7 @@ var HTTP: string[] = [
   'BrowserXhr',
   'Connection',
   'ConnectionBackend',
+  'CookieXSRFStrategy',
   'HTTP_BINDINGS',
   'HTTP_PROVIDERS',
   'Headers',
@@ -460,7 +461,8 @@ var HTTP: string[] = [
   'ResponseType',
   'URLSearchParams',
   'XHRBackend',
-  'XHRConnection'
+  'XHRConnection',
+  'XSRFStrategy',
 ];
 
 var HTTP_TESTING: string[] = ['MockBackend', 'MockConnection'];

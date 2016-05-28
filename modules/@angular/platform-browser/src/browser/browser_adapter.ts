@@ -350,6 +350,18 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
       return DateWrapper.toMillis(DateWrapper.now());
     }
   }
+
+  supportsCookies(): boolean { return true; }
+
+  getCookie(name: string): string {
+    return parseCookieValue(document.cookie, name);
+  }
+
+  setCookie(name: string, value: string) {
+    // document.cookie is magical, assigning into it assigns/overrides one cookie value, but does
+    // not clear other cookies.
+    document.cookie = encodeURIComponent(name) + '=' + encodeURIComponent(value);
+  }
 }
 
 
@@ -373,4 +385,16 @@ function relativePath(url): string {
   urlParsingNode.setAttribute('href', url);
   return (urlParsingNode.pathname.charAt(0) === '/') ? urlParsingNode.pathname :
                                                        '/' + urlParsingNode.pathname;
+}
+
+export function parseCookieValue(cookie: string, name: string): string {
+  name = encodeURIComponent(name);
+  let cookies = cookie.split(';');
+  for (let cookie of cookies) {
+    let [key, value] = cookie.split('=', 2);
+    if (key.trim() === name) {
+      return decodeURIComponent(value);
+    }
+  }
+  return null;
 }

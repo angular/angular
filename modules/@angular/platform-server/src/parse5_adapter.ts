@@ -563,6 +563,10 @@ export class Parse5DomAdapter extends DomAdapter {
   parse(templateHtml: string) { throw new Error('not implemented'); }
   invoke(el: Element, methodName: string, args: any[]): any { throw new Error('not implemented'); }
   getEventKey(event): string { throw new Error('not implemented'); }
+
+  supportsCookies(): boolean { return false; }
+  getCookie(name: string): string { throw new Error('not implemented'); }
+  setCookie(name: string, value: string) { throw new Error('not implemented'); }
 }
 
 // TODO: build a proper list, this one is all the keys of a HTMLInputElement

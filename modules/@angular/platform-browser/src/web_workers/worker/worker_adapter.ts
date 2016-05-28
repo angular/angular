@@ -153,4 +153,8 @@ export class WorkerDomAdapter extends DomAdapter {
   getTransitionEnd(): string { throw "not implemented"; }
   supportsAnimation(): boolean { throw "not implemented"; }
   supportsWebAnimation(): boolean { throw "not implemented"; }
+
+  supportsCookies(): boolean { return false; }
+  getCookie(name: string): string { throw "not implemented"; }
+  setCookie(name: string, value: string) { throw "not implemented"; }
 }

@@ -1,6 +1,7 @@
 import {
   afterEach,
   beforeEach,
+  beforeEachProviders,
   ddescribe,
   describe,
   expect,
@@ -11,8 +12,10 @@ import {
 } from '@angular/core/testing/testing_internal';
 import {AsyncTestCompleter, SpyObject} from '@angular/core/testing/testing_internal';
 import {BrowserXhr} from '../../src/backends/browser_xhr';
-import {XHRConnection, XHRBackend} from '../../src/backends/xhr_backend';
-import {provide, Injector, ReflectiveInjector} from '@angular/core';
+import {XSRFStrategy} from '../../src/interfaces';
+import {XHRConnection, XHRBackend, CookieXSRFStrategy} from '../../src/backends/xhr_backend';
+import {provide, Injector, Injectable, ReflectiveInjector} from '@angular/core';
+import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {Request} from '../../src/static_request';
 import {Response} from '../../src/static_response';
 import {Headers} from '../../src/headers';
@@ -89,22 +92,59 @@ export function main() {
     var backend: XHRBackend;
     var sampleRequest: Request;
 
-    beforeEach(() => {
-      var injector = ReflectiveInjector.resolveAndCreate([
-        provide(ResponseOptions, {useClass: BaseResponseOptions}),
-        provide(BrowserXhr, {useClass: MockBrowserXHR}),
-        XHRBackend
-      ]);
-      backend = injector.get(XHRBackend);
-      var base = new BaseRequestOptions();
+    beforeEachProviders(
+        () =>
+            [provide(ResponseOptions, {useClass: BaseResponseOptions}),
+             provide(BrowserXhr, {useClass: MockBrowserXHR}), XHRBackend,
+             provide(XSRFStrategy, {useValue: new CookieXSRFStrategy()}),
+    ]);
+
+    beforeEach(inject([XHRBackend], (be: XHRBackend) => {
+      backend = be;
+      let base = new BaseRequestOptions();
       sampleRequest = new Request(base.merge(new RequestOptions({url: 'https://google.com'})));
-    });
+    }));
 
     afterEach(() => { existingXHRs = []; });
 
-    it('should create a connection',
-       () => { expect(() => backend.createConnection(sampleRequest)).not.toThrow(); });
+    describe('creating a connection', () => {
+      @Injectable()
+      class NoopXsrfStrategy implements XSRFStrategy {
+        configureRequest(req: Request) {}
+      }
+      beforeEachProviders(() => [provide(XSRFStrategy, {useClass: NoopXsrfStrategy})]);
 
+      it('succeeds',
+         () => { expect(() => backend.createConnection(sampleRequest)).not.toThrow(); });
+    });
+
+    if (getDOM().supportsCookies()) {
+      describe('XSRF support', () => {
+        it('sets an XSRF header by default', () => {
+          getDOM().setCookie('XSRF-TOKEN', 'magic XSRF value');
+          backend.createConnection(sampleRequest);
+          expect(sampleRequest.headers.get('X-XSRF-TOKEN')).toBe('magic XSRF value');
+        });
+        it('respects existing headers', () => {
+          getDOM().setCookie('XSRF-TOKEN', 'magic XSRF value');
+          sampleRequest.headers.set('X-XSRF-TOKEN', 'already set');
+          backend.createConnection(sampleRequest);
+          expect(sampleRequest.headers.get('X-XSRF-TOKEN')).toBe('already set');
+        });
+
+        describe('configuration', () => {
+          beforeEachProviders(
+              () => [provide(
+                  XSRFStrategy, {useValue: new CookieXSRFStrategy('my cookie', 'X-MY-HEADER')})]);
+
+          it('uses the configured names', () => {
+            getDOM().setCookie('my cookie', 'XSRF value');
+            backend.createConnection(sampleRequest);
+            expect(sampleRequest.headers.get('X-MY-HEADER')).toBe('XSRF value');
+          });
+        })
+      });
+    }
 
     describe('XHRConnection', () => {
       it('should use the injected BaseResponseOptions to create the response',

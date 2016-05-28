@@ -1,4 +1,6 @@
-import {ConnectionBackend, Connection} from '../interfaces';
+import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
+
+import {ConnectionBackend, Connection, XSRFStrategy} from '../interfaces';
 import {ReadyState, RequestMethod, ResponseType, ContentType} from '../enums';
 import {Request} from '../static_request';
 import {Response} from '../static_response';
@@ -135,6 +137,27 @@ export class XHRConnection implements Connection {
 }
 
 /**
+ * `XSRFConfiguration` sets up Cross Site Request Forgery (XSRF) protection for the application
+ * using a cookie. See https://www.owasp.org/index.php/Cross-Site_Request_Forgery_(CSRF) for more
+ * information on XSRF.
+ *
+ * Applications can configure custom cookie and header names by binding an instance of this class
+ * with different `cookieName` and `headerName` values. See the main HTTP documentation for more
+ * details.
+ */
+export class CookieXSRFStrategy implements XSRFStrategy {
+  constructor(
+      private _cookieName: string = 'XSRF-TOKEN', private _headerName: string = 'X-XSRF-TOKEN') {}
+
+  configureRequest(req: Request) {
+    let xsrfToken = getDOM().getCookie(this._cookieName);
+    if (xsrfToken && !req.headers.has(this._headerName)) {
+      req.headers.set(this._headerName, xsrfToken);
+    }
+  }
+}
+
+/**
  * Creates {@link XHRConnection} instances.
  *
  * This class would typically not be used by end users, but could be
@@ -158,12 +181,15 @@ export class XHRConnection implements Connection {
  *   }
  * }
  * ```
- *
  **/
 @Injectable()
 export class XHRBackend implements ConnectionBackend {
-  constructor(private _browserXHR: BrowserXhr, private _baseResponseOptions: ResponseOptions) {}
+  constructor(
+      private _browserXHR: BrowserXhr, private _baseResponseOptions: ResponseOptions,
+      private _xsrfStrategy: XSRFStrategy) {}
+
   createConnection(request: Request): XHRConnection {
+    this._xsrfStrategy.configureRequest(request);
     return new XHRConnection(request, this._browserXHR, this._baseResponseOptions);
   }
 }
