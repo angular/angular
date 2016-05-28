@@ -14,7 +14,7 @@ export class MdGridListColsError extends MdError {
  */
 export class MdGridTileTooWideError extends MdError {
   constructor(cols: number, listLength: number) {
-    super(`Tile with colspan ${cols} is wider than grid with cols="${listLength}".`);
+    super(`md-grid-list: tile with colspan ${cols} is wider than grid with cols="${listLength}".`);
   }
 }
 
