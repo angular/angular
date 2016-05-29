@@ -1,5 +1,11 @@
 import {Injectable, Inject} from '@angular/core';
-import {isBlank, isPresent, StringWrapper} from '../../src/facade/lang';
+import {
+  isBlank,
+  isPresent,
+  StringWrapper,
+  RegExpWrapper,
+  escapeRegExp
+} from '../../src/facade/lang';
 import {BaseException} from '../../src/facade/exceptions';
 import {ListWrapper} from '../../src/facade/collection';
 import {
@@ -46,7 +52,7 @@ import {
   AstVisitor,
   Quote
 } from './ast';
-import {CompilerConfig} from '../config';
+import {CompilerConfig, InterpolationConfig} from '../config';
 
 
 var _implicitReceiver = new ImplicitReceiver();
@@ -65,12 +71,21 @@ export class TemplateBindingParseResult {
   constructor(public templateBindings: TemplateBinding[], public warnings: string[]) {}
 }
 
+function _createInterpolateRegExp(config: InterpolationConfig): RegExp {
+  var regexp = escapeRegExp(config.startSymbol) + '([\\s\\S]*?)' + escapeRegExp(config.endSymbol);
+  return RegExpWrapper.create(regexp, 'g');
+}
+
 @Injectable()
 export class Parser {
+  /** @internal */
+  private _interpolateRegExp: RegExp;
   constructor(/** @internal */
               public _lexer: Lexer,
               /** @internal */
-              public _config: CompilerConfig) {}
+              private _config: CompilerConfig) {
+    this._interpolateRegExp = _createInterpolateRegExp(_config.interpolation);
+  }
 
   parseAction(input: string, location: any): ASTWithSource {
     this._checkNoInterpolation(input, location);
@@ -138,7 +153,7 @@ export class Parser {
   }
 
   splitInterpolation(input: string, location: string): SplitInterpolation {
-    var parts = StringWrapper.split(input, this._config.interpolateRegexp);
+    var parts = StringWrapper.split(input, this._interpolateRegExp);
     if (parts.length <= 1) {
       return null;
     }
@@ -188,18 +203,21 @@ export class Parser {
   }
 
   private _checkNoInterpolation(input: string, location: any): void {
-    var parts = StringWrapper.split(input, this._config.interpolateRegexp);
+    var parts = StringWrapper.split(input, this._interpolateRegExp);
     if (parts.length > 1) {
-      throw new ParseException('Got interpolation ({{}}) where expression was expected', input,
-                               `at column ${this._findInterpolationErrorColumn(parts, 1)} in`,
-                               location);
+      throw new ParseException(
+          `Got interpolation (${this._config.interpolation.startSymbol}${this._config.interpolation.endSymbol}) where expression was expected`,
+          input, `at column ${this._findInterpolationErrorColumn(parts, 1)} in`, location);
     }
   }
 
   private _findInterpolationErrorColumn(parts: string[], partInErrIdx: number): number {
     var errLocation = '';
     for (var j = 0; j < partInErrIdx; j++) {
-      errLocation += j % 2 === 0 ? parts[j] : `{{${parts[j]}}}`;
+      errLocation +=
+          j % 2 === 0 ?
+              parts[j] :
+              `${this._config.interpolation.startSymbol}${parts[j]}${this._config.interpolation.endSymbol}`;
     }
 
     return errLocation.length;

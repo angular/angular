@@ -9,6 +9,7 @@ export {
   TEMPLATE_TRANSFORMS,
   CompilerConfig,
   RenderTypes,
+  InterpolationConfig,
   UrlResolver,
   DEFAULT_PACKAGE_URL_PROVIDER,
   createOfflineCompileUrlResolver,

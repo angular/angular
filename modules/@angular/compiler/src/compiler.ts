@@ -3,7 +3,7 @@ import {assertionsEnabled} from '../src/facade/lang';
 
 export * from './template_ast';
 export {TEMPLATE_TRANSFORMS} from './template_parser';
-export {CompilerConfig, RenderTypes} from './config';
+export {CompilerConfig, RenderTypes, InterpolationConfig} from './config';
 export * from './compile_metadata';
 export * from './offline_compiler';
 export {RuntimeCompiler} from './runtime_compiler';

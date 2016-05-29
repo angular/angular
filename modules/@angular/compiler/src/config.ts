@@ -1,4 +1,4 @@
-import {isBlank} from '../src/facade/lang';
+import {isBlank, RegExpWrapper} from '../src/facade/lang';
 import {unimplemented} from '../src/facade/exceptions';
 import {Identifiers} from './identifiers';
 import {CompileIdentifierMetadata} from './compile_metadata';
@@ -6,20 +6,21 @@ import {ViewEncapsulation} from '@angular/core';
 
 export class CompilerConfig {
   public renderTypes: RenderTypes;
-  public interpolateRegexp: RegExp;
+  public interpolation: InterpolationConfig;
   public defaultEncapsulation: ViewEncapsulation;
 
   constructor(public genDebugInfo: boolean, public logBindingUpdate: boolean,
-              public useJit: boolean, renderTypes: RenderTypes = null, 
-              interpolateRegexp: RegExp = null, defaultEncapsulation: ViewEncapsulation = null) {
+              public useJit: boolean, renderTypes: RenderTypes = null,
+              interpolation: InterpolationConfig = null,
+              defaultEncapsulation: ViewEncapsulation = null) {
     if (isBlank(renderTypes)) {
       renderTypes = new DefaultRenderTypes();
     }
     this.renderTypes = renderTypes;
-    if (isBlank(interpolateRegexp)) {
-      interpolateRegexp = DEFAULT_INTERPOLATE_REGEXP;
+    if (isBlank(interpolation)) {
+      interpolation = DEFAULT_INTERPOLATION_CONFIG;
     }
-    this.interpolateRegexp = interpolateRegexp;
+    this.interpolation = interpolation;
     if (isBlank(defaultEncapsulation)) {
       defaultEncapsulation = ViewEncapsulation.Emulated;
     }
@@ -51,6 +52,11 @@ export class DefaultRenderTypes implements RenderTypes {
 }
 
 /**
- * A regexp pattern used to interpolate in default.
+ * Interpolation configuration for the parser.
+ * Can be replaced to customize the start/end symbols.
  */
-export var DEFAULT_INTERPOLATE_REGEXP = /\{\{([\s\S]*?)\}\}/g;
+export class InterpolationConfig {
+  constructor(public startSymbol: string, public endSymbol: string) {}
+}
+
+const DEFAULT_INTERPOLATION_CONFIG = new InterpolationConfig('{{', '}}');

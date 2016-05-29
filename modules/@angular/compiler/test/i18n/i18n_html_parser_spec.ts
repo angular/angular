@@ -15,15 +15,15 @@ export function main() {
   describe('I18nHtmlParser', () => {
     function parse(template: string, messages: {[key: string]: string}, implicitTags: string[] = [],
                    implicitAttrs: {[k: string]: string[]} = {}): HtmlParseTreeResult {
-      var parser = new Parser(new Lexer(), new CompilerConfig(true, true, true));
+      var config = new CompilerConfig(true, true, true);
+      var parser = new Parser(new Lexer(), config);
       let htmlParser = new HtmlParser();
 
       let msgs = '';
       StringMapWrapper.forEach(messages, (v, k) => msgs += `<msg id="${k}">${v}</msg>`);
       let res = deserializeXmb(`<message-bundle>${msgs}</message-bundle>`, 'someUrl');
 
-      return new I18nHtmlParser(htmlParser, parser, res.content, res.messages, implicitTags,
-                                implicitAttrs)
+      return new I18nHtmlParser(config, htmlParser, parser, res.content, res.messages, implicitTags, implicitAttrs)
           .parse(template, "someurl", true);
     }
 

@@ -506,3 +506,7 @@ export function bitWiseAnd(values: number[]): number {
 export function escape(s: string): string {
   return _global.encodeURI(s);
 }
+
+export function escapeRegExp(s: string): string {
+  return s.replace(/([.*+?^=!:${}()|[\]\/\\])/g, '\\$1');
+}

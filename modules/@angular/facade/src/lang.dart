@@ -400,3 +400,7 @@ num bitWiseAnd(List values) {
 String escape(String s) {
   return Uri.encodeComponent(s);
 }
+
+String escapeRegExp(String s) {
+  return s.replaceAllMapped(new RegExp(r'([.*+?^=!:${}()|[\]\/\\])'), (Match m) => '\\${m[1]}');
+}
