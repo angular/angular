@@ -12,27 +12,6 @@ export {RouterUrlSerializer, DefaultRouterUrlSerializer} from './src/router_url_
 export {OnActivate, CanDeactivate} from './src/interfaces';
 export {ROUTER_PROVIDERS} from './src/router_providers';
 
-import {RouterOutlet} from './src/directives/router_outlet';
-import {RouterLink} from './src/directives/router_link';
-
-/**
- * A list of directives. To use the router directives like {@link RouterOutlet} and
- * {@link RouterLink}, add this to your `directives` array in the {@link View} decorator of your
- * component.
- *
- * ```
- * import {Component} from '@angular/core';
- * import {ROUTER_DIRECTIVES, Routes} from '@angular/router';
- *
- * @Component({directives: [ROUTER_DIRECTIVES]})
- * @Routes([
- *  {...},
- * ])
- * class AppCmp {
- *    // ...
- * }
- *
- * bootstrap(AppCmp);
- * ```
- */
-export const ROUTER_DIRECTIVES: any[] = /*@ts2dart_const*/[RouterOutlet, RouterLink];
+export {RouterOutlet} from './src/directives/router_outlet';
+export {RouterLink} from './src/directives/router_link';
+export {ROUTER_DIRECTIVES} from "./src/directives/router_directives";
