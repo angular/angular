@@ -319,7 +319,8 @@ export class UpgradeAdapter {
         .value(NG2_COMPONENT_FACTORY_REF_MAP, componentFactoryRefMap)
         .config([
           '$provide',
-          (provide) => {
+          '$injector',
+          (provide, ng1Injector) => {
             provide.decorator(NG1_ROOT_SCOPE, [
               '$delegate',
               function(rootScopeDelegate: angular.IRootScopeService) {
@@ -333,27 +334,29 @@ export class UpgradeAdapter {
                 return rootScope = rootScopeDelegate;
               }
             ]);
-            provide.decorator(NG1_TESTABILITY, [
-              '$delegate',
-              function(testabilityDelegate: angular.ITestabilityService) {
-                var ng2Testability: Testability = injector.get(Testability);
+            if (ng1Injector.has(NG1_TESTABILITY)) {
+              provide.decorator(NG1_TESTABILITY, [
+                '$delegate',
+                function(testabilityDelegate: angular.ITestabilityService) {
+                  var ng2Testability: Testability = injector.get(Testability);
 
-                var origonalWhenStable: Function = testabilityDelegate.whenStable;
-                var newWhenStable = (callback: Function): void => {
-                  var whenStableContext: any = this;
-                  origonalWhenStable.call(this, function() {
-                    if (ng2Testability.isStable()) {
-                      callback.apply(this, arguments);
-                    } else {
-                      ng2Testability.whenStable(newWhenStable.bind(whenStableContext, callback));
-                    }
-                  });
-                };
+                  var origonalWhenStable: Function = testabilityDelegate.whenStable;
+                  var newWhenStable = (callback: Function): void => {
+                    var whenStableContext: any = this;
+                    origonalWhenStable.call(this, function() {
+                      if (ng2Testability.isStable()) {
+                        callback.apply(this, arguments);
+                      } else {
+                        ng2Testability.whenStable(newWhenStable.bind(whenStableContext, callback));
+                      }
+                    });
+                  };
 
-                testabilityDelegate.whenStable = newWhenStable;
-                return testabilityDelegate;
-              }
-            ]);
+                  testabilityDelegate.whenStable = newWhenStable;
+                  return testabilityDelegate;
+                }
+              ]);
+            }
           }
         ]);
 

@@ -1,6 +1,6 @@
 {
   "name": "@angular/http",
-  "version": "$$ANGULAR_VERSION$$",
+  "version": "0.0.0-PLACEHOLDER",
   "description": "",
   "main": "index.js",
   "jsnext:main": "esm/index.js",
@@ -9,7 +9,7 @@
   "license": "MIT",
   "peerDependencies": {
     "rxjs": "5.0.0-beta.6",
-    "@angular/core": "$$ANGULAR_VERSION$$"
+    "@angular/core": "0.0.0-PLACEHOLDER"
   },
   "repository": {
     "type": "git",

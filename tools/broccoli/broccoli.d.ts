@@ -63,13 +63,13 @@ interface BroccoliTree {
    */
   description?: string;
 
-  rebuild(): (Promise<any>| void);
+  rebuild(): (Promise<any>|void);
   cleanup(): void;
 }
 
 
 interface OldBroccoliTree {
-  read?(readTree: (tree: BroccoliTree) => Promise<string>): (Promise<string>| string);
+  read?(readTree: (tree: BroccoliTree) => Promise<string>): (Promise<string>|string);
 }
 
 

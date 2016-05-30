@@ -85,14 +85,14 @@ export class SpyLocation implements Location {
   forward() {
     if (this._historyIndex < (this._history.length - 1)) {
       this._historyIndex++;
-      ObservableWrapper.callEmit(this._subject, {'url': this.path(), 'pop': true})
+      ObservableWrapper.callEmit(this._subject, {'url': this.path(), 'pop': true});
     }
   }
 
   back() {
     if (this._historyIndex > 0) {
       this._historyIndex--;
-      ObservableWrapper.callEmit(this._subject, {'url': this.path(), 'pop': true})
+      ObservableWrapper.callEmit(this._subject, {'url': this.path(), 'pop': true});
     }
   }
 

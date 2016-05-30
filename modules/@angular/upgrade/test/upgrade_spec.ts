@@ -193,19 +193,11 @@ export function main() {
                  expect(multiTrim(document.body.textContent))
                      .toEqual(
                          "ignore: -; " + "literal: Text; interpolate: Hello world; " +
-                         "oneWayA: A; oneWayB: B; twoWayA: initModelA; twoWayB: initModelB; (1) | " +
-                         "modelA: initModelA; modelB: initModelB; eventA: ?; eventB: ?;");
-                 setTimeout(() => {
-                   // we need to do setTimeout, because the EventEmitter uses setTimeout to schedule
-                   // events, and so without this we would not see the events processed.
-                   expect(multiTrim(document.body.textContent))
-                       .toEqual("ignore: -; " + "literal: Text; interpolate: Hello world; " +
-                                "oneWayA: A; oneWayB: B; twoWayA: newA; twoWayB: newB; (3) | " +
-                                "modelA: newA; modelB: newB; eventA: aFired; eventB: bFired;");
-                   ref.dispose();
-                   async.done();
-                 });
-               });
+                         "oneWayA: A; oneWayB: B; twoWayA: newA; twoWayB: newB; (2) | " +
+                         "modelA: newA; modelB: newB; eventA: aFired; eventB: bFired;")
+                ref.dispose();
+                async.done();
+              });
 
          }));
 

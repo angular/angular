@@ -30,7 +30,7 @@ if (globsIndex < 0) {
 }
 
 var specFiles = args.map(function(globstr: string) { return glob.sync(globstr, {cwd: toolsDir}); })
-                    .reduce((specFiles:string[], paths: string[]) => specFiles.concat(paths), []);
+                    .reduce((specFiles: string[], paths: string[]) => specFiles.concat(paths), []);
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 100;
 

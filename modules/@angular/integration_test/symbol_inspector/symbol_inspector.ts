@@ -47,7 +47,7 @@ const IGNORE =
       originalStack: true,
       wrapperMessage: true,
       wrapperStack: true, '@@observable': true
-    }
+    };
 
 function collectTopLevelSymbols(prefix: string, lib: any):
     string[] {

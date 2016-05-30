@@ -581,7 +581,7 @@ const CORE = [
   'state(stateNameExpr:string, styles:AnimationStyleMetadata):AnimationStateDeclarationMetadata',
   'style(tokens:string|{[key:string]:string|number}|Array<string|{[key:string]:string|number}>):AnimationStyleMetadata',
   'transition(stateChangeExpr:string, animationData:AnimationMetadata|AnimationMetadata[]):AnimationStateTransitionMetadata',
-  'trigger(name:string, animation:AnimationMetadata|AnimationMetadata[]):AnimationEntryMetadata'
+  'trigger(name:string, animation:AnimationMetadata|AnimationMetadata[]):AnimationEntryMetadata',
 ];
 
 const COMMON = [
@@ -801,6 +801,7 @@ const COMMON = [
   'NgForm.path:string[]',
   'NgForm.removeControl(dir:NgControl):void',
   'NgForm.removeControlGroup(dir:NgControlGroup):void',
+  'NgForm.submitted:boolean',
   'NgForm.updateModel(dir:NgControl, value:any):void',
   'NgFormControl',
   'NgFormControl.asyncValidator:AsyncValidatorFn',
@@ -830,6 +831,7 @@ const COMMON = [
   'NgFormModel.path:string[]',
   'NgFormModel.removeControl(dir:NgControl):void',
   'NgFormModel.removeControlGroup(dir:NgControlGroup):any',
+  'NgFormModel.submitted:boolean',
   'NgFormModel.updateModel(dir:NgControl, value:any):void',
   'NgIf',
   'NgIf.constructor(_viewContainer:ViewContainerRef, _templateRef:TemplateRef<Object>)',
@@ -1044,8 +1046,10 @@ const COMPILER = [
   'CompileQueryMetadata.selectors:Array<CompileTokenMetadata>',
   'CompileQueryMetadata.toJson():{[key:string]:any}',
   'CompilerConfig',
-  'CompilerConfig.constructor(genDebugInfo:boolean, logBindingUpdate:boolean, useJit:boolean, renderTypes:RenderTypes)',
+  'CompilerConfig.constructor(genDebugInfo:boolean, logBindingUpdate:boolean, useJit:boolean, renderTypes:RenderTypes, interpolateRegexp:RegExp, defaultEncapsulation:ViewEncapsulation)',
   'CompilerConfig.renderTypes:RenderTypes',
+  'CompilerConfig.interpolateRegexp:RegExp',
+  'CompilerConfig.defaultEncapsulation:ViewEncapsulation',
   'CompileTemplateMetadata',
   'CompileTemplateMetadata.animations:CompileAnimationEntryMetadata[]',
   'CompileTemplateMetadata.constructor({encapsulation,template,templateUrl,styles,styleUrls,animations,ngContentSelectors}:{encapsulation?:ViewEncapsulation, template?:string, templateUrl?:string, styles?:string[], styleUrls?:string[], ngContentSelectors?:string[], animations?:CompileAnimationEntryMetadata[]})',
@@ -1225,6 +1229,7 @@ const PLATFORM_BROWSER = [
   'const BROWSER_APP_COMPILER_PROVIDERS:Array<any>',
   'const BROWSER_APP_PROVIDERS:Array<any>',
   'const BROWSER_PLATFORM_PROVIDERS:Array<any>',
+  'const BROWSER_PROVIDERS:any[]',
   'const BROWSER_SANITIZATION_PROVIDERS:Array<any>',
   'const CACHED_TEMPLATE_PROVIDER:Array<any>',
   'const DOCUMENT:OpaqueToken',
@@ -1315,11 +1320,11 @@ const PLATFORM_BROWSER = [
 ];
 
 describe('public API', () => {
-  check("@angular/core", CORE);
-  check("@angular/common", COMMON);
-  check("@angular/compiler", COMPILER);
-  check("@angular/upgrade", UPGRADE);
-  check("@angular/platform-browser", PLATFORM_BROWSER);
+  check('@angular/core', CORE);
+  check('@angular/common', COMMON);
+  check('@angular/compiler', COMPILER);
+  check('@angular/upgrade', UPGRADE);
+  check('@angular/platform-browser', PLATFORM_BROWSER);
 });
 
 function check(file: string, expected: string[]) {
@@ -1337,12 +1342,12 @@ function checkPublicApi(file: string, expected: string[]) {
     console.log('=================================================================');
     console.log('=================================================================');
     console.log('=================================================================');
-    console.log("Missing:");
+    console.log('Missing:');
     missing.forEach((m) => console.log(m));
   }
 
   if (extra.length > 0) {
-    console.log("Extra:");
+    console.log('Extra:');
     extra.forEach((m) => console.log(m));
   }
 

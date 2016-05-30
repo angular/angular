@@ -8,10 +8,10 @@ describe('Flatten', () => {
   afterEach(() => mockfs.restore());
 
   let flatten = (inputPaths: string) => new DiffingFlatten(inputPaths, 'output', null);
-  let read = (path: string) => fs.readFileSync(path, {encoding: "utf-8"});
+  let read = (path: string) => fs.readFileSync(path, {encoding: 'utf-8'});
   let rm = (path: string) => fs.unlinkSync(path);
   let write =
-      (path: string, content: string) => { fs.writeFileSync(path, content, {encoding: "utf-8"}); }
+      (path: string, content: string) => { fs.writeFileSync(path, content, {encoding: 'utf-8'}); }
 
 
   it('should flatten files and be incremental', () => {
@@ -67,7 +67,8 @@ describe('Flatten', () => {
     let differ = new TreeDiffer('testLabel', 'input');
     let flattenedTree = flatten('input');
     expect(() => flattenedTree.rebuild(differ.diffTree()))
-        .toThrowError("Duplicate file 'file-1.txt' found in path 'dir1" + path.sep + "subdir-1" +
-                      path.sep + "file-1.txt'");
+        .toThrowError(
+            'Duplicate file \'file-1.txt\' found in path \'dir1' + path.sep + 'subdir-1' +
+            path.sep + 'file-1.txt\'');
   });
 });

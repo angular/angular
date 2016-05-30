@@ -9,11 +9,8 @@ cd `dirname $0`
 source ./env.sh
 cd ../..
 
-$(npm bin)/tsc -p ./tools/tsconfig.json
-
-node dist/tools/tsc-wrapped/src/main -p modules/tsconfig.json
-
-# Compile the compiler_cli integration tests
-node dist/all/@angular/compiler_cli/src/main -p modules/@angular/compiler_cli/integrationtest
+$(npm bin)/tsc -p tools
+cp tools/@angular/tsc-wrapped/package.json dist/tools/@angular/tsc-wrapped
+node dist/tools/@angular/tsc-wrapped/src/main -p modules
 
 echo 'travis_fold:end:BUILD'

@@ -350,6 +350,7 @@ var CORE_TESTING: string[] = [
   'resetBaseTestProviders',
   'setBaseTestProviders',
   'tick',
+  'discardPeriodicTasks',
   'withProviders',
   'xdescribe',
   'xit'
@@ -364,6 +365,7 @@ var PLATFORM_BROWSER: string[] = [
   'BROWSER_APP_PROVIDERS',
   'BROWSER_APP_COMPILER_PROVIDERS',
   'BROWSER_PLATFORM_PROVIDERS',
+  'BROWSER_PROVIDERS',
   'BROWSER_SANITIZATION_PROVIDERS',
   'browserPlatform',
   'BrowserPlatformLocation',
@@ -486,7 +488,7 @@ var ROUTER_DEPRECATED: string[] = [
   'RouterOutlet'
 ];
 
-var ROUTER_DEPRETACED_TESTING: string[] = [];
+var ROUTER_DEPRECATED_TESTING: string[] = [];
 
 
 var ROUTER: string[] = [
@@ -518,7 +520,7 @@ var API = {
   'http': HTTP,
   'http/testing': HTTP_TESTING,
   'router-deprecated': ROUTER_DEPRECATED,
-  'router-deprecated/testing': ROUTER_DEPRETACED_TESTING,
+  'router-deprecated/testing': ROUTER_DEPRECATED_TESTING,
   'router': ROUTER,
   'router/testing': ROUTER_TESTING,
   'upgrade': UPGRADE,
@@ -567,7 +569,7 @@ export function main() {
       it(`should fail if public API for ${mod} has changed`, () => {
         var symbols = getSymbolsFromLibrary(mod);
         expect(diff(symbols, API[mod])).toEqual([]);
-      })
+      });
     });
   });
 }

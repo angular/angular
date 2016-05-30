@@ -3,6 +3,7 @@ import {SecurityContext} from '../../core_private';
 import {isPresent} from '../facade/lang';
 import {StringMapWrapper} from '../facade/collection';
 import {ElementSchemaRegistry} from './element_schema_registry';
+import {SECURITY_SCHEMA} from './dom_security_schema';
 
 const EVENT = 'event';
 const BOOLEAN = 'boolean';
@@ -29,7 +30,7 @@ const OBJECT = 'object';
  *
  * NOTE: The blank element inherits from root `*` element, the super element of all elements.
  *
- * NOTE an element prefix such as `@svg:` has no special meaning to the schema.
+ * NOTE an element prefix such as `:svg:` has no special meaning to the schema.
  *
  * ## Properties
  *
@@ -48,23 +49,38 @@ const OBJECT = 'object';
  * if a given property exist on a given element.
  *
  * NOTE: We don't yet support querying for types or events.
- * NOTE: This schema is auto extracted from `schema_extractor.ts` located in the test folder.
+ * NOTE: This schema is auto extracted from `schema_extractor.ts` located in the test folder,
+ *       see dom_element_schema_registry_spec.ts
  */
+
+// =================================================================================================
+// =================================================================================================
+// =========== S T O P   -  S T O P   -  S T O P   -  S T O P   -  S T O P   -  S T O P  ===========
+// =================================================================================================
+// =================================================================================================
+//
+//                       DO NOT EDIT THIS DOM SCHEMA WITHOUT A SECURITY REVIEW!
+//
+// Newly added properties must be security reviewed and assigned an appropriate SecurityContext in
+// dom_security_schema.ts. Reach out to mprobst for details.
+//
+// =================================================================================================
+
 const SCHEMA: string[] =
     /*@ts2dart_const*/ ([
       '*|%classList,className,id,innerHTML,*beforecopy,*beforecut,*beforepaste,*copy,*cut,*paste,*search,*selectstart,*webkitfullscreenchange,*webkitfullscreenerror,*wheel,outerHTML,#scrollLeft,#scrollTop',
       '^*|accessKey,contentEditable,dir,!draggable,!hidden,innerText,lang,*abort,*autocomplete,*autocompleteerror,*beforecopy,*beforecut,*beforepaste,*blur,*cancel,*canplay,*canplaythrough,*change,*click,*close,*contextmenu,*copy,*cuechange,*cut,*dblclick,*drag,*dragend,*dragenter,*dragleave,*dragover,*dragstart,*drop,*durationchange,*emptied,*ended,*error,*focus,*input,*invalid,*keydown,*keypress,*keyup,*load,*loadeddata,*loadedmetadata,*loadstart,*message,*mousedown,*mouseenter,*mouseleave,*mousemove,*mouseout,*mouseover,*mouseup,*mousewheel,*mozfullscreenchange,*mozfullscreenerror,*mozpointerlockchange,*mozpointerlockerror,*paste,*pause,*play,*playing,*progress,*ratechange,*reset,*resize,*scroll,*search,*seeked,*seeking,*select,*selectstart,*show,*stalled,*submit,*suspend,*timeupdate,*toggle,*volumechange,*waiting,*webglcontextcreationerror,*webglcontextlost,*webglcontextrestored,*webkitfullscreenchange,*webkitfullscreenerror,*wheel,outerText,!spellcheck,%style,#tabIndex,title,!translate',
       'media|!autoplay,!controls,%crossOrigin,#currentTime,!defaultMuted,#defaultPlaybackRate,!disableRemotePlayback,!loop,!muted,*encrypted,#playbackRate,preload,src,#volume',
-      '@svg:^*|*abort,*autocomplete,*autocompleteerror,*blur,*cancel,*canplay,*canplaythrough,*change,*click,*close,*contextmenu,*cuechange,*dblclick,*drag,*dragend,*dragenter,*dragleave,*dragover,*dragstart,*drop,*durationchange,*emptied,*ended,*error,*focus,*input,*invalid,*keydown,*keypress,*keyup,*load,*loadeddata,*loadedmetadata,*loadstart,*mousedown,*mouseenter,*mouseleave,*mousemove,*mouseout,*mouseover,*mouseup,*mousewheel,*pause,*play,*playing,*progress,*ratechange,*reset,*resize,*scroll,*seeked,*seeking,*select,*show,*stalled,*submit,*suspend,*timeupdate,*toggle,*volumechange,*waiting,%style,#tabIndex',
-      '@svg:graphics^@svg:|',
-      '@svg:animation^@svg:|*begin,*end,*repeat',
-      '@svg:geometry^@svg:|',
-      '@svg:componentTransferFunction^@svg:|',
-      '@svg:gradient^@svg:|',
-      '@svg:textContent^@svg:graphics|',
-      '@svg:textPositioning^@svg:textContent|',
-      'a|charset,coords,download,hash,host,hostname,href,hreflang,name,password,pathname,ping,port,protocol,rel,rev,search,shape,target,text,type,username',
-      'area|alt,coords,hash,host,hostname,href,!noHref,password,pathname,ping,port,protocol,search,shape,target,username',
+      ':svg:^*|*abort,*autocomplete,*autocompleteerror,*blur,*cancel,*canplay,*canplaythrough,*change,*click,*close,*contextmenu,*cuechange,*dblclick,*drag,*dragend,*dragenter,*dragleave,*dragover,*dragstart,*drop,*durationchange,*emptied,*ended,*error,*focus,*input,*invalid,*keydown,*keypress,*keyup,*load,*loadeddata,*loadedmetadata,*loadstart,*mousedown,*mouseenter,*mouseleave,*mousemove,*mouseout,*mouseover,*mouseup,*mousewheel,*pause,*play,*playing,*progress,*ratechange,*reset,*resize,*scroll,*seeked,*seeking,*select,*show,*stalled,*submit,*suspend,*timeupdate,*toggle,*volumechange,*waiting,%style,#tabIndex',
+      ':svg:graphics^:svg:|',
+      ':svg:animation^:svg:|*begin,*end,*repeat',
+      ':svg:geometry^:svg:|',
+      ':svg:componentTransferFunction^:svg:|',
+      ':svg:gradient^:svg:|',
+      ':svg:textContent^:svg:graphics|',
+      ':svg:textPositioning^:svg:textContent|',
+      'a|charset,coords,download,hash,host,hostname,href,hreflang,name,password,pathname,ping,port,protocol,referrerpolicy,rel,rev,search,shape,target,text,type,username',
+      'area|alt,coords,hash,host,hostname,href,!noHref,password,pathname,ping,port,protocol,referrerpolicy,search,shape,target,username',
       'audio^media|',
       'br|clear',
       'base|href,target',
@@ -88,8 +104,8 @@ const SCHEMA: string[] =
       'head|',
       'h1,h2,h3,h4,h5,h6|align',
       'html|version',
-      'iframe|align,!allowFullscreen,frameBorder,height,longDesc,marginHeight,marginWidth,name,%sandbox,scrolling,src,srcdoc,width',
-      'img|align,alt,border,%crossOrigin,#height,#hspace,!isMap,longDesc,lowsrc,name,sizes,src,srcset,useMap,#vspace,#width',
+      'iframe|align,!allowFullscreen,frameBorder,height,longDesc,marginHeight,marginWidth,name,referrerpolicy,%sandbox,scrolling,src,srcdoc,width',
+      'img|align,alt,border,%crossOrigin,#height,#hspace,!isMap,longDesc,lowsrc,name,referrerpolicy,sizes,src,srcset,useMap,#vspace,#width',
       'input|accept,align,alt,autocapitalize,autocomplete,!autofocus,!checked,!defaultChecked,defaultValue,dirName,!disabled,%files,formAction,formEnctype,formMethod,!formNoValidate,formTarget,#height,!incremental,!indeterminate,max,#maxLength,min,#minLength,!multiple,name,pattern,placeholder,!readOnly,!required,selectionDirection,#selectionEnd,#selectionStart,#size,src,step,type,useMap,value,%valueAsDate,#valueAsNumber,#width',
       'keygen|!autofocus,challenge,!disabled,keytype,name',
       'li|type,#value',
@@ -132,127 +148,80 @@ const SCHEMA: string[] =
       'ul|!compact,type',
       'unknown|',
       'video^media|#height,poster,#width',
-      '@svg:a^@svg:graphics|',
-      '@svg:animate^@svg:animation|',
-      '@svg:animateMotion^@svg:animation|',
-      '@svg:animateTransform^@svg:animation|',
-      '@svg:circle^@svg:geometry|',
-      '@svg:clipPath^@svg:graphics|',
-      '@svg:cursor^@svg:|',
-      '@svg:defs^@svg:graphics|',
-      '@svg:desc^@svg:|',
-      '@svg:discard^@svg:|',
-      '@svg:ellipse^@svg:geometry|',
-      '@svg:feBlend^@svg:|',
-      '@svg:feColorMatrix^@svg:|',
-      '@svg:feComponentTransfer^@svg:|',
-      '@svg:feComposite^@svg:|',
-      '@svg:feConvolveMatrix^@svg:|',
-      '@svg:feDiffuseLighting^@svg:|',
-      '@svg:feDisplacementMap^@svg:|',
-      '@svg:feDistantLight^@svg:|',
-      '@svg:feDropShadow^@svg:|',
-      '@svg:feFlood^@svg:|',
-      '@svg:feFuncA^@svg:componentTransferFunction|',
-      '@svg:feFuncB^@svg:componentTransferFunction|',
-      '@svg:feFuncG^@svg:componentTransferFunction|',
-      '@svg:feFuncR^@svg:componentTransferFunction|',
-      '@svg:feGaussianBlur^@svg:|',
-      '@svg:feImage^@svg:|',
-      '@svg:feMerge^@svg:|',
-      '@svg:feMergeNode^@svg:|',
-      '@svg:feMorphology^@svg:|',
-      '@svg:feOffset^@svg:|',
-      '@svg:fePointLight^@svg:|',
-      '@svg:feSpecularLighting^@svg:|',
-      '@svg:feSpotLight^@svg:|',
-      '@svg:feTile^@svg:|',
-      '@svg:feTurbulence^@svg:|',
-      '@svg:filter^@svg:|',
-      '@svg:foreignObject^@svg:graphics|',
-      '@svg:g^@svg:graphics|',
-      '@svg:image^@svg:graphics|',
-      '@svg:line^@svg:geometry|',
-      '@svg:linearGradient^@svg:gradient|',
-      '@svg:mpath^@svg:|',
-      '@svg:marker^@svg:|',
-      '@svg:mask^@svg:|',
-      '@svg:metadata^@svg:|',
-      '@svg:path^@svg:geometry|',
-      '@svg:pattern^@svg:|',
-      '@svg:polygon^@svg:geometry|',
-      '@svg:polyline^@svg:geometry|',
-      '@svg:radialGradient^@svg:gradient|',
-      '@svg:rect^@svg:geometry|',
-      '@svg:svg^@svg:graphics|#currentScale,#zoomAndPan',
-      '@svg:script^@svg:|type',
-      '@svg:set^@svg:animation|',
-      '@svg:stop^@svg:|',
-      '@svg:style^@svg:|!disabled,media,title,type',
-      '@svg:switch^@svg:graphics|',
-      '@svg:symbol^@svg:|',
-      '@svg:tspan^@svg:textPositioning|',
-      '@svg:text^@svg:textPositioning|',
-      '@svg:textPath^@svg:textContent|',
-      '@svg:title^@svg:|',
-      '@svg:use^@svg:graphics|',
-      '@svg:view^@svg:|#zoomAndPan'
+      ':svg:a^:svg:graphics|',
+      ':svg:animate^:svg:animation|',
+      ':svg:animateMotion^:svg:animation|',
+      ':svg:animateTransform^:svg:animation|',
+      ':svg:circle^:svg:geometry|',
+      ':svg:clipPath^:svg:graphics|',
+      ':svg:cursor^:svg:|',
+      ':svg:defs^:svg:graphics|',
+      ':svg:desc^:svg:|',
+      ':svg:discard^:svg:|',
+      ':svg:ellipse^:svg:geometry|',
+      ':svg:feBlend^:svg:|',
+      ':svg:feColorMatrix^:svg:|',
+      ':svg:feComponentTransfer^:svg:|',
+      ':svg:feComposite^:svg:|',
+      ':svg:feConvolveMatrix^:svg:|',
+      ':svg:feDiffuseLighting^:svg:|',
+      ':svg:feDisplacementMap^:svg:|',
+      ':svg:feDistantLight^:svg:|',
+      ':svg:feDropShadow^:svg:|',
+      ':svg:feFlood^:svg:|',
+      ':svg:feFuncA^:svg:componentTransferFunction|',
+      ':svg:feFuncB^:svg:componentTransferFunction|',
+      ':svg:feFuncG^:svg:componentTransferFunction|',
+      ':svg:feFuncR^:svg:componentTransferFunction|',
+      ':svg:feGaussianBlur^:svg:|',
+      ':svg:feImage^:svg:|',
+      ':svg:feMerge^:svg:|',
+      ':svg:feMergeNode^:svg:|',
+      ':svg:feMorphology^:svg:|',
+      ':svg:feOffset^:svg:|',
+      ':svg:fePointLight^:svg:|',
+      ':svg:feSpecularLighting^:svg:|',
+      ':svg:feSpotLight^:svg:|',
+      ':svg:feTile^:svg:|',
+      ':svg:feTurbulence^:svg:|',
+      ':svg:filter^:svg:|',
+      ':svg:foreignObject^:svg:graphics|',
+      ':svg:g^:svg:graphics|',
+      ':svg:image^:svg:graphics|',
+      ':svg:line^:svg:geometry|',
+      ':svg:linearGradient^:svg:gradient|',
+      ':svg:mpath^:svg:|',
+      ':svg:marker^:svg:|',
+      ':svg:mask^:svg:|',
+      ':svg:metadata^:svg:|',
+      ':svg:path^:svg:geometry|',
+      ':svg:pattern^:svg:|',
+      ':svg:polygon^:svg:geometry|',
+      ':svg:polyline^:svg:geometry|',
+      ':svg:radialGradient^:svg:gradient|',
+      ':svg:rect^:svg:geometry|',
+      ':svg:svg^:svg:graphics|#currentScale,#zoomAndPan',
+      ':svg:script^:svg:|type',
+      ':svg:set^:svg:animation|',
+      ':svg:stop^:svg:|',
+      ':svg:style^:svg:|!disabled,media,title,type',
+      ':svg:switch^:svg:graphics|',
+      ':svg:symbol^:svg:|',
+      ':svg:tspan^:svg:textPositioning|',
+      ':svg:text^:svg:textPositioning|',
+      ':svg:textPath^:svg:textContent|',
+      ':svg:title^:svg:|',
+      ':svg:use^:svg:graphics|',
+      ':svg:view^:svg:|#zoomAndPan'
     ]);
 
 var attrToPropMap: {[name: string]: string} = <any>{
   'class': 'className',
+  'formaction': 'formAction',
   'innerHtml': 'innerHTML',
   'readonly': 'readOnly',
   'tabindex': 'tabIndex'
 };
-
-function registerContext(map: {[k: string]: SecurityContext}, ctx: SecurityContext, specs: string[]) {
-  for (let spec of specs) map[spec] = ctx;
-}
-
-/** Map from tagName|propertyName SecurityContext. Properties applying to all tags use '*'. */
-const SECURITY_SCHEMA: {[k: string]: SecurityContext} = {};
-
-registerContext(SECURITY_SCHEMA, SecurityContext.HTML, [
-  'iframe|srcdoc',
-  '*|innerHTML',
-  '*|outerHTML',
-]);
-registerContext(SECURITY_SCHEMA, SecurityContext.STYLE, ['*|style']);
-// NB: no SCRIPT contexts here, they are never allowed.
-registerContext(SECURITY_SCHEMA, SecurityContext.URL, [
-  'area|href',
-  'area|ping',
-  'audio|src',
-  'a|href',
-  'a|ping',
-  'blockquote|cite',
-  'body|background',
-  'button|formaction',
-  'del|cite',
-  'form|action',
-  'img|src',
-  'input|formaction',
-  'input|src',
-  'ins|cite',
-  'q|cite',
-  'source|src',
-  'video|poster',
-  'video|src',
-]);
-registerContext(SECURITY_SCHEMA, SecurityContext.RESOURCE_URL, [
-  'applet|code',
-  'applet|codebase',
-  'base|href',
-  'frame|src',
-  'head|profile',
-  'html|manifest',
-  'iframe|src',
-  'object|codebase',
-  'object|data',
-  'script|src',
-  'track|src',
-]);
 
 @Injectable()
 export class DomElementSchemaRegistry extends ElementSchemaRegistry {
@@ -275,6 +244,8 @@ export class DomElementSchemaRegistry extends ElementSchemaRegistry {
         if (property == '') {
         } else if (property.startsWith('*')) {
           // We don't yet support events.
+          // If ever allowing to bind to events, GO THROUGH A SECURITY REVIEW, allowing events will
+          // almost certainly introduce bad XSS vulnerabilities.
           // type[property.substring(1)] = EVENT;
         } else if (property.startsWith('!')) {
           type[property.substring(1)] = BOOLEAN;
@@ -314,6 +285,10 @@ export class DomElementSchemaRegistry extends ElementSchemaRegistry {
    * attack vectors are assigned their appropriate context.
    */
   securityContext(tagName: string, propName: string): SecurityContext {
+    // Make sure comparisons are case insensitive, so that case differences between attribute and
+    // property names do not have a security impact.
+    tagName = tagName.toLowerCase();
+    propName = propName.toLowerCase();
     let ctx = SECURITY_SCHEMA[tagName + '|' + propName];
     if (ctx !== undefined) return ctx;
     ctx = SECURITY_SCHEMA['*|' + propName];

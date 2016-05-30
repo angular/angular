@@ -3,6 +3,7 @@ import {Router} from '../router';
 import {RouteSegment} from '../segments';
 import {isString, isArray, isPresent} from '../facade/lang';
 import {ObservableWrapper} from '../facade/async';
+import {LocationStrategy} from '@angular/common';
 
 /**
  * The RouterLink directive lets you link to specific parts of your app.
@@ -44,7 +45,8 @@ export class RouterLink implements OnDestroy {
   @HostBinding() href: string;
   @HostBinding('class.router-link-active') isActive: boolean = false;
 
-  constructor(private _routeSegment: RouteSegment, private _router: Router) {
+  constructor(private _routeSegment: RouteSegment, private _router: Router,
+              private _locationStrategy: LocationStrategy) {
     // because auxiliary links take existing primary and auxiliary routes into account,
     // we need to update the link whenever params or other routes change.
     this._subscription =
@@ -64,20 +66,24 @@ export class RouterLink implements OnDestroy {
   }
 
 
-  @HostListener("click")
-  onClick(): boolean {
-    // If no target, or if target is _self, prevent default browser behavior
-    if (!isString(this.target) || this.target == '_self') {
-      this._router.navigate(this._commands, this._routeSegment);
-      return false;
+  @HostListener("click", ["$event.button", "$event.ctrlKey", "$event.metaKey"])
+  onClick(button: number, ctrlKey: boolean, metaKey: boolean): boolean {
+    if (button != 0 || ctrlKey || metaKey) {
+      return true;
     }
-    return true;
+
+    if (isString(this.target) && this.target != '_self') {
+      return true;
+    }
+
+    this._router.navigate(this._commands, this._routeSegment);
+    return false;
   }
 
   private _updateTargetUrlAndHref(): void {
     let tree = this._router.createUrlTree(this._commands, this._routeSegment);
     if (isPresent(tree)) {
-      this.href = this._router.serializeUrl(tree);
+      this.href = this._locationStrategy.prepareExternalUrl(this._router.serializeUrl(tree));
       this.isActive = this._router.urlTree.contains(tree);
     } else {
       this.isActive = false;

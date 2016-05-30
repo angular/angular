@@ -5,10 +5,10 @@ import {tsc, check} from './tsc';
 import NgOptions from './options';
 import {MetadataWriterHost, TsickleHost} from './compiler_host';
 
-export type CodegenExtension = (ngOptions: NgOptions, program: ts.Program, host: ts.CompilerHost) => Promise<any>;
+export type CodegenExtension = (ngOptions: NgOptions, program: ts.Program, host: ts.CompilerHost) =>
+    Promise<any>;
 
-export function main(project: string, basePath?: string,
-                     codegen?: CodegenExtension): Promise<any> {
+export function main(project: string, basePath?: string, codegen?: CodegenExtension): Promise<any> {
   try {
     let projectDir = project;
     if (fs.lstatSync(project).isFile()) {
@@ -58,7 +58,7 @@ if (require.main === module) {
       .then(exitCode => process.exit(exitCode))
       .catch(e => {
         console.error(e.stack);
-        console.error("Compilation failed");
+        console.error('Compilation failed');
         process.exit(1);
       });
 }

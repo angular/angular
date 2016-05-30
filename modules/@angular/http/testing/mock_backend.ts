@@ -81,6 +81,16 @@ export class MockConnection implements Connection {
    * Emits the provided error object as an error to the {@link Response} {@link EventEmitter}
    * returned
    * from {@link Http}.
+   * 
+   * ### Example
+   *
+   * ```
+   * var connection;
+   * backend.connections.subscribe(c => connection = c);
+   * http.request('data.json').subscribe(res => res, err => console.log(err)));
+   * connection.mockError(new Error('error'));
+   * ```
+   * 
    */
   mockError(err?: Error) {
     // Matches XHR semantics

@@ -2,15 +2,28 @@ import {isBlank} from '../src/facade/lang';
 import {unimplemented} from '../src/facade/exceptions';
 import {Identifiers} from './identifiers';
 import {CompileIdentifierMetadata} from './compile_metadata';
+import {ViewEncapsulation} from '@angular/core';
 
 export class CompilerConfig {
   public renderTypes: RenderTypes;
+  public interpolateRegexp: RegExp;
+  public defaultEncapsulation: ViewEncapsulation;
+
   constructor(public genDebugInfo: boolean, public logBindingUpdate: boolean,
-              public useJit: boolean, renderTypes: RenderTypes = null) {
+              public useJit: boolean, renderTypes: RenderTypes = null, 
+              interpolateRegexp: RegExp = null, defaultEncapsulation: ViewEncapsulation = null) {
     if (isBlank(renderTypes)) {
       renderTypes = new DefaultRenderTypes();
     }
     this.renderTypes = renderTypes;
+    if (isBlank(interpolateRegexp)) {
+      interpolateRegexp = DEFAULT_INTERPOLATE_REGEXP;
+    }
+    this.interpolateRegexp = interpolateRegexp;
+    if (isBlank(defaultEncapsulation)) {
+      defaultEncapsulation = ViewEncapsulation.Emulated;
+    }
+    this.defaultEncapsulation = defaultEncapsulation;
   }
 }
 
@@ -36,3 +49,8 @@ export class DefaultRenderTypes implements RenderTypes {
   renderNode = null;
   renderEvent = null;
 }
+
+/**
+ * A regexp pattern used to interpolate in default.
+ */
+export var DEFAULT_INTERPOLATE_REGEXP = /\{\{([\s\S]*?)\}\}/g;

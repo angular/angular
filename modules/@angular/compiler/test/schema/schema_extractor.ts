@@ -1,6 +1,6 @@
 import {isString, isPresent} from '../../src/facade/lang';
 
-const SVG_PREFIX = '@svg:';
+const SVG_PREFIX = ':svg:';
 
 var document = typeof global['document'] == 'object' ? global['document'] : null;
 

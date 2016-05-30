@@ -15,6 +15,10 @@ import {
   NgSelectOption
 } from './directives/select_control_value_accessor';
 import {
+  SelectMultipleControlValueAccessor,
+  NgSelectMultipleOption
+} from './directives/select_multiple_control_value_accessor';
+import {
   RequiredValidator,
   MinLengthValidator,
   MaxLengthValidator,
@@ -39,6 +43,10 @@ export {
   SelectControlValueAccessor,
   NgSelectOption
 } from './directives/select_control_value_accessor';
+export {
+  SelectMultipleControlValueAccessor,
+  NgSelectMultipleOption
+} from './directives/select_multiple_control_value_accessor';
 export {
   RequiredValidator,
   MinLengthValidator,
@@ -74,10 +82,12 @@ export const FORM_DIRECTIVES: Type[] = /*@ts2dart_const*/[
   NgForm,
 
   NgSelectOption,
+  NgSelectMultipleOption,
   DefaultValueAccessor,
   NumberValueAccessor,
   CheckboxControlValueAccessor,
   SelectControlValueAccessor,
+  SelectMultipleControlValueAccessor,
   RadioControlValueAccessor,
   NgControlStatus,
 

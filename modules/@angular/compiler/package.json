@@ -1,6 +1,6 @@
 {
   "name": "@angular/compiler",
-  "version": "$$ANGULAR_VERSION$$",
+  "version": "0.0.0-PLACEHOLDER",
   "description": "",
   "main": "index.js",
   "jsnext:main": "esm/index.js",
@@ -8,7 +8,7 @@
   "author": "angular",
   "license": "MIT",
   "peerDependencies": {
-    "@angular/core": "$$ANGULAR_VERSION$$"
+    "@angular/core": "0.0.0-PLACEHOLDER"
   },
   "repository": {
     "type": "git",

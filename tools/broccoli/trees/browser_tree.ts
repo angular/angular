@@ -63,7 +63,7 @@ const kServedPaths = [
   'playground/src/web_workers/images',
   'playground/src/web_workers/message_broker',
   'playground/src/web_workers/router',
-  'playground/src/web_workers/input'
+  'playground/src/web_workers/input',
 ];
 
 
@@ -87,9 +87,9 @@ module.exports = function makeBrowserTree(options: any, destinationPath: string)
   }
 
   if (modules.benchmarks) {
-    var benchmarksTree =
-        new Funnel('modules/benchmarks',
-                   {include: ['**/**'], exclude: ['e2e_test/**'], destDir: '/benchmarks/'});
+    var benchmarksTree = new Funnel(
+        'modules/benchmarks',
+        {include: ['**/**'], exclude: ['e2e_test/**'], destDir: '/benchmarks/'});
   }
 
   if (modules.benchmarks_external) {
@@ -99,21 +99,21 @@ module.exports = function makeBrowserTree(options: any, destinationPath: string)
   }
 
   if (modules.payload_tests) {
-    var payloadTestsTree =
-        new Funnel('modules/payload_tests',
-                   {include: ['**/ts/**'], exclude: ['e2e_test/**'], destDir: '/payload_tests/'});
+    var payloadTestsTree = new Funnel(
+        'modules/payload_tests',
+        {include: ['**/ts/**'], exclude: ['e2e_test/**'], destDir: '/payload_tests/'});
   }
 
   if (modules.playground) {
-    var playgroundTree =
-        new Funnel('modules/playground',
-                   {include: ['**/**'], exclude: ['e2e_test/**'], destDir: '/playground/'});
+    var playgroundTree = new Funnel(
+        'modules/playground',
+        {include: ['**/**'], exclude: ['e2e_test/**'], destDir: '/playground/'});
   }
 
   if (modules.benchpress) {
-    var benchpressTree =
-        new Funnel('modules/benchpress',
-                   {include: ['**/**'], exclude: ['e2e_test/**'], destDir: '/benchpress/'});
+    var benchpressTree = new Funnel(
+        'modules/benchpress',
+        {include: ['**/**'], exclude: ['e2e_test/**'], destDir: '/benchpress/'});
   }
 
   let externalTypings =
@@ -160,7 +160,7 @@ module.exports = function makeBrowserTree(options: any, destinationPath: string)
   modulesTree = checkImports(modulesTree);
 
   modulesTree = replace(modulesTree, {
-    files: ["playground*/**/*.js"],
+    files: ['playground*/**/*.js'],
     patterns: [{match: /\$SCRIPTS\$/, replacement: jsReplace('SCRIPTS')}]
   });
 
@@ -170,7 +170,7 @@ module.exports = function makeBrowserTree(options: any, destinationPath: string)
     'node_modules/zone.js/dist/zone.js.d.ts',
     'angular2/manual_typings/globals.d.ts',
     'angular2/typings/es6-collections/es6-collections.d.ts',
-    'angular2/typings/es6-promise/es6-promise.d.ts'
+    'angular2/typings/es6-promise/es6-promise.d.ts',
   ];
 
   // Use TypeScript to transpile the *.ts files to ES5
@@ -195,7 +195,7 @@ module.exports = function makeBrowserTree(options: any, destinationPath: string)
       'node_modules/zone.js/dist/long-stack-trace-zone.js',
       'node_modules/systemjs/dist/system.src.js',
       'node_modules/base64-js/lib/b64.js',
-      'node_modules/reflect-metadata/Reflect.js'
+      'node_modules/reflect-metadata/Reflect.js',
     ]
   }));
 
@@ -233,10 +233,8 @@ module.exports = function makeBrowserTree(options: any, destinationPath: string)
     htmlTree = replace(htmlTree, {
       files: ['playground*/**/*.html'],
       patterns: [
-        {match: /\$SCRIPTS\$/, replacement: htmlReplace('SCRIPTS')},
-        scriptPathPatternReplacement,
-        scriptFilePatternReplacement,
-        useBundlesPatternReplacement
+        {match: /\$SCRIPTS\$/, replacement: htmlReplace('SCRIPTS')}, scriptPathPatternReplacement,
+        scriptFilePatternReplacement, useBundlesPatternReplacement
       ]
     });
   }
@@ -246,9 +244,7 @@ module.exports = function makeBrowserTree(options: any, destinationPath: string)
       files: ['benchmarks/**'],
       patterns: [
         {match: /\$SCRIPTS\$/, replacement: htmlReplace('SCRIPTS_benchmarks')},
-        scriptPathPatternReplacement,
-        scriptFilePatternReplacement,
-        useBundlesPatternReplacement
+        scriptPathPatternReplacement, scriptFilePatternReplacement, useBundlesPatternReplacement
       ]
     });
   }
@@ -258,9 +254,7 @@ module.exports = function makeBrowserTree(options: any, destinationPath: string)
       files: ['benchmarks_external/**'],
       patterns: [
         {match: /\$SCRIPTS\$/, replacement: htmlReplace('SCRIPTS_benchmarks_external')},
-        scriptPathPatternReplacement,
-        scriptFilePatternReplacement,
-        useBundlesPatternReplacement
+        scriptPathPatternReplacement, scriptFilePatternReplacement, useBundlesPatternReplacement
       ]
     });
   }
@@ -270,7 +264,7 @@ module.exports = function makeBrowserTree(options: any, destinationPath: string)
     // for web-worker e2e tests.
     htmlTree = replace(htmlTree, {
       files: ['playground*/**/web_workers/**/*.html'],
-      patterns: [{match: "/bundle/angular2.dev.js", replacement: "/bundle/web_worker/ui.dev.js"}]
+      patterns: [{match: '/bundle/angular2.dev.js', replacement: '/bundle/web_worker/ui.dev.js'}]
     });
   }
 
@@ -284,7 +278,7 @@ module.exports = function makeBrowserTree(options: any, destinationPath: string)
         'bower_components/polymer/polymer.html',
         'bower_components/polymer/polymer-micro.html',
         'bower_components/polymer/polymer-mini.html',
-        'tools/build/snippets/url_params_to_form.js'
+        'tools/build/snippets/url_params_to_form.js',
       ]
     });
     var polymer = stew.mv(flatten(polymerFiles), 'benchmarks_external/src/tree/polymer');

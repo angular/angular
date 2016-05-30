@@ -11,7 +11,7 @@ export class Log {
   fn(value) {
     return (a1: any = null, a2: any = null, a3: any = null, a4: any = null, a5: any = null) => {
       this.logItems.push(value);
-    }
+    };
   }
 
   clear(): void { this.logItems = []; }

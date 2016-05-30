@@ -14,12 +14,10 @@
  * ```
  */
 export function async(fn: Function): Function {
-  return () => {
-    return new Promise<void>((finishCallback, failCallback) => {
+  return () => new Promise<void>((finishCallback, failCallback) => {
       var AsyncTestZoneSpec = Zone['AsyncTestZoneSpec'];
       var testZoneSpec = new AsyncTestZoneSpec(finishCallback, failCallback, 'test');
       var testZone = Zone.current.fork(testZoneSpec);
       return testZone.run(fn);
     });
-  }
 }

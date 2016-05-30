@@ -26,7 +26,9 @@ export class Symbols {
 
   public has(symbol: ts.Symbol): boolean { return this.map.has(symbol.getDeclarations()[0]); }
 
-  public set(symbol: ts.Symbol, value: any): void { this.map.set(symbol.getDeclarations()[0], value); }
+  public set(symbol: ts.Symbol, value: any): void {
+    this.map.set(symbol.getDeclarations()[0], value);
+  }
 
   public get(symbol: ts.Symbol): any { return this.map.get(symbol.getDeclarations()[0]); }
 

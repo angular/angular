@@ -8,8 +8,9 @@ class TSToDartTranspiler implements DiffingBroccoliPlugin {
 
   private transpiler: any /*ts2dart.Transpiler*/;
 
-  constructor(public inputPath: string, public cachePath: string,
-              public options: any /*ts2dart.TranspilerOptions*/) {
+  constructor(
+      public inputPath: string, public cachePath: string,
+      public options: any /*ts2dart.TranspilerOptions*/) {
     options.basePath = inputPath;
     options.tsconfig = path.join(inputPath, options.tsconfig);
     // Workaround for https://github.com/dart-lang/dart_style/issues/493
@@ -24,17 +25,16 @@ class TSToDartTranspiler implements DiffingBroccoliPlugin {
       path.resolve(this.inputPath, 'angular2/typings/es6-collections/es6-collections.d.ts')
     ];
     let getDartFilePath = (path: string) => path.replace(/((\.js)|(\.ts))$/i, '.dart');
-    treeDiff.addedPaths.concat(treeDiff.changedPaths)
-        .forEach((changedPath) => {
-          let inputFilePath = path.resolve(this.inputPath, changedPath);
+    treeDiff.addedPaths.concat(treeDiff.changedPaths).forEach((changedPath) => {
+      let inputFilePath = path.resolve(this.inputPath, changedPath);
 
-          // Ignore files which don't need to be transpiled to Dart
-          let dartInputFilePath = getDartFilePath(inputFilePath);
-          if (fs.existsSync(dartInputFilePath)) return;
+      // Ignore files which don't need to be transpiled to Dart
+      let dartInputFilePath = getDartFilePath(inputFilePath);
+      if (fs.existsSync(dartInputFilePath)) return;
 
-          // Prepare to rebuild
-          toEmit.push(path.resolve(this.inputPath, changedPath));
-        });
+      // Prepare to rebuild
+      toEmit.push(path.resolve(this.inputPath, changedPath));
+    });
 
     treeDiff.removedPaths.forEach((removedPath) => {
       let absolutePath = path.resolve(this.inputPath, removedPath);

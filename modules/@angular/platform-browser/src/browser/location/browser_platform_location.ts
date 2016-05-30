@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {History, Location} from '../../../src/facade/browser';
 import {UrlChangeListener, PlatformLocation} from '@angular/common';
 import {getDOM} from '../../dom/dom_adapter';
-
+import {supportsState} from './history';
 
 
 /**
@@ -46,11 +46,19 @@ export class BrowserPlatformLocation extends PlatformLocation {
   set pathname(newPath: string) { this._location.pathname = newPath; }
 
   pushState(state: any, title: string, url: string): void {
-    this._history.pushState(state, title, url);
+    if(supportsState()) {
+      this._history.pushState(state, title, url);
+    } else {
+      this._location.hash = url;
+    }
   }
 
   replaceState(state: any, title: string, url: string): void {
-    this._history.replaceState(state, title, url);
+    if(supportsState()) {
+      this._history.replaceState(state, title, url);
+    } else {
+      this._location.hash = url;
+    }
   }
 
   forward(): void { this._history.forward(); }
