@@ -35,7 +35,7 @@ webdriver-manager update
 
 When running the tests:
 
-1.  Spin up a local server with `ng-serve`. 
+1.  Spin up a local server with `ng serve`. 
 
 2.  Run tests with:
 
