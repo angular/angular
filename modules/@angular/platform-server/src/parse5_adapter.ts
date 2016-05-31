@@ -553,7 +553,7 @@ export class Parse5DomAdapter extends DomAdapter {
   setGlobalVar(path: string, value: any) { setValueOnPath(global, path, value); }
   requestAnimationFrame(callback): number { return setTimeout(callback, 0); }
   cancelAnimationFrame(id: number) { clearTimeout(id); }
-  supportsWebAnimation(): boolean { return true; }
+  supportsWebAnimation(): boolean { return false; }
   performanceNow(): number { return DateWrapper.toMillis(DateWrapper.now()); }
   getAnimationPrefix(): string { return ''; }
   getTransitionEnd(): string { return 'transitionend'; }
@@ -567,6 +567,7 @@ export class Parse5DomAdapter extends DomAdapter {
   supportsCookies(): boolean { return false; }
   getCookie(name: string): string { throw new Error('not implemented'); }
   setCookie(name: string, value: string) { throw new Error('not implemented'); }
+  animate(element: any, keyframes: any[], options: any): any { throw new Error('not implemented'); }
 }
 
 // TODO: build a proper list, this one is all the keys of a HTMLInputElement

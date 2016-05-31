@@ -21,7 +21,7 @@ import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
 import {isPresent} from '../../src/facade/lang';
 import {MockAnimationPlayer} from '../../testing/animation/mock_animation_player';
-import {AnimationStyleUtil} from '../../src/animation/animation_style_util';
+import * as animationUtils from '../../src/animation/animation_style_util';
 import {AnimationKeyframe} from '../../src/animation/animation_keyframe';
 import {AnimationStyles} from '../../src/animation/animation_styles';
 
@@ -29,14 +29,14 @@ import {FILL_STYLE_FLAG} from '../../src/animation/animation_constants';
 import {AUTO_STYLE} from '../../src/animation/metadata';
 
 export function main() {
-  describe('AnimationStyleUtil', function() {
+  describe('Animation Style Utils', function() {
 
-    describe('balanceStyles', () => {
+    describe('balanceAnimationStyles', () => {
       it('should set all non-shared styles to the provided null value between the two sets of styles', () => {
         var styles = { opacity: 0, color: 'red' };
         var newStyles = { background: 'red' };
         var flag = '*';
-        var result = AnimationStyleUtil.balanceStyles(styles, newStyles, flag);
+        var result = animationUtils.balanceAnimationStyles(styles, newStyles, flag);
         expect(result).toEqual({
           opacity:flag,
           color:flag,
@@ -47,17 +47,17 @@ export function main() {
       it('should handle an empty set of styles', () => {
         var value = '*';
 
-        expect(AnimationStyleUtil.balanceStyles({}, { opacity: 0 }, value)).toEqual({
-          opacity: 0
+        expect(animationUtils.balanceAnimationStyles({}, { opacity: '0' }, value)).toEqual({
+          opacity: '0'
         });
 
-        expect(AnimationStyleUtil.balanceStyles({ opacity: 0 }, {}, value)).toEqual({
+        expect(animationUtils.balanceAnimationStyles({ opacity: '0' }, {}, value)).toEqual({
           opacity: value
         });
       });
     });
 
-    describe('balanceKeyframes', () => {
+    describe('balanceAnimationKeyframes', () => {
       it('should balance both the starting and final keyframes with thep provided styles', () => {
         var collectedStyles = {
           width: 100,
@@ -74,9 +74,9 @@ export function main() {
           new AnimationKeyframe(1, new AnimationStyles([{ background: 'blue', left: '100px', top: '100px' }]))
         ];
 
-        var result = AnimationStyleUtil.balanceKeyframes(collectedStyles, finalStyles, keyframes);
+        var result = animationUtils.balanceAnimationKeyframes(collectedStyles, finalStyles, keyframes);
 
-        expect(AnimationStyleUtil.flattenStyles(result[0].styles.styles)).toEqual({
+        expect(animationUtils.flattenStyles(result[0].styles.styles)).toEqual({
           "width": 100,
           "height": 100,
           "opacity": 1,
@@ -86,7 +86,7 @@ export function main() {
           "top": '*'
         });
 
-        expect(AnimationStyleUtil.flattenStyles(result[1].styles.styles)).toEqual({
+        expect(animationUtils.flattenStyles(result[1].styles.styles)).toEqual({
           "width": '*',
           "height": '*',
           "opacity": '*',
@@ -103,15 +103,15 @@ export function main() {
           new AnimationKeyframe(1, new AnimationStyles([{ width: 100 }]))
         ];
 
-        var result = AnimationStyleUtil.balanceKeyframes({}, {}, keyframes);
+        var result = animationUtils.balanceAnimationKeyframes({}, {}, keyframes);
 
-        expect(AnimationStyleUtil.flattenStyles(result[0].styles.styles)).toEqual({
+        expect(animationUtils.flattenStyles(result[0].styles.styles)).toEqual({
           "height": 100,
           "opacity": 1,
           "width": "*"
         });
 
-        expect(AnimationStyleUtil.flattenStyles(result[1].styles.styles)).toEqual({
+        expect(animationUtils.flattenStyles(result[1].styles.styles)).toEqual({
           "width": 100,
           "height": "*",
           "opacity": "*"
@@ -131,11 +131,11 @@ export function main() {
           "width": null,
           "color": null
         };
-        expect(AnimationStyleUtil.clearStyles(styles)).toEqual(expectedResult);
+        expect(animationUtils.clearStyles(styles)).toEqual(expectedResult);
       });
 
       it('should handle an empty set of styles', () => {
-        expect(AnimationStyleUtil.clearStyles({})).toEqual({});
+        expect(animationUtils.clearStyles({})).toEqual({});
       });
     });
 
@@ -153,13 +153,13 @@ export function main() {
 
         var collection: {[key: string]: string|number} = {};
 
-        expect(AnimationStyleUtil.collectAndResolveStyles(collection, styles1)).toEqual(styles1);
+        expect(animationUtils.collectAndResolveStyles(collection, styles1)).toEqual(styles1);
         expect(collection).toEqual({
           "opacity": 0,
           "width": 100
         });
 
-        expect(AnimationStyleUtil.collectAndResolveStyles(collection, styles2)).toEqual(styles2);
+        expect(animationUtils.collectAndResolveStyles(collection, styles2)).toEqual(styles2);
         expect(collection).toEqual({
           "opacity": 1,
           "width": 100,
@@ -180,12 +180,12 @@ export function main() {
 
         var collection = {};
 
-        expect(AnimationStyleUtil.collectAndResolveStyles(collection, styles1)).toEqual([{
+        expect(animationUtils.collectAndResolveStyles(collection, styles1)).toEqual([{
           "opacity": 0,
           "width": AUTO_STYLE
         }]);
 
-        expect(AnimationStyleUtil.collectAndResolveStyles(collection, styles2)).toEqual([{
+        expect(animationUtils.collectAndResolveStyles(collection, styles2)).toEqual([{
           "opacity": 0,
           "height": 999
         }]);

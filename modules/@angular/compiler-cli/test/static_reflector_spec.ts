@@ -15,6 +15,8 @@ import {
   StaticSymbol
 } from '@angular/compiler-cli/src/static_reflector';
 
+import {transition, sequence, group, trigger, state, style, animate, keyframes} from '@angular/core';
+
 describe('StaticReflector', () => {
   let noContext = new StaticSymbol('', '');
   let host: StaticReflectorHost;
@@ -62,6 +64,19 @@ describe('StaticReflector', () => {
     expect(annotation.selector).toEqual('my-hero-detail');
     expect(annotation.directives)
         .toEqual([[host.findDeclaration('angular2/src/common/directives/ng_for', 'NgFor')]]);
+    expect(annotation.animations).toEqual([
+      trigger("myAnimation", [
+        state("state1", style({ "background": "white" })),
+        transition("* => *", sequence([
+          group([
+            animate("1s 0.5s", keyframes([
+              style({ "background": "blue"}),
+              style({ "background": "red"})
+            ]))
+          ])
+        ]))
+      ])
+    ]);
   });
 
   it('should throw and exception for unsupported metadata versions', () => {
@@ -252,6 +267,7 @@ class MockReflectorHost implements StaticReflectorHost {
       coreDecorators: 'angular2/src/core/metadata',
       diDecorators: 'angular2/src/core/di/decorators',
       diMetadata: 'angular2/src/core/di/metadata',
+      animationMetadata: 'angular2/src/core/animation/metadata',
       provider: 'angular2/src/core/di/provider'
     };
   }
@@ -405,11 +421,100 @@ class MockReflectorHost implements StaticReflectorHost {
                         "name": "FORM_DIRECTIVES",
                         "module": "angular2/src/common/forms/directives"
                       }
+                    ],
+                    "animations": [{
+                      "__symbolic": "call",
+                      "expression": {
+                        "__symbolic": "reference",
+                        "name": "trigger",
+                        "module": "angular2/src/core/animation/metadata"
+                      },
+                      "arguments": [
+                        "myAnimation",
+                        [{ "__symbolic": "call",
+                           "expression": {
+                             "__symbolic": "reference",
+                             "name": "state",
+                             "module": "angular2/src/core/animation/metadata"
+                           },
+                           "arguments": [
+                             "state1",
+                              { "__symbolic": "call",
+                                "expression": {
+                                  "__symbolic": "reference",
+                                  "name": "style",
+                                  "module": "angular2/src/core/animation/metadata"
+                                },
+                                "arguments": [
+                                  { "background":"white" }
+                                ]
+                              }
+                            ]
+                          }, {
+                            "__symbolic": "call",
+                            "expression": {
+                              "__symbolic":"reference",
+                              "name":"transition",
+                              "module": "angular2/src/core/animation/metadata"
+                            },
+                            "arguments": [
+                              "* => *",
+                              {
+                                "__symbolic":"call",
+                                "expression":{
+                                  "__symbolic":"reference",
+                                  "name":"sequence",
+                                  "module": "angular2/src/core/animation/metadata"
+                                },
+                                "arguments":[[{ "__symbolic": "call",
+                                  "expression": {
+                                    "__symbolic":"reference",
+                                    "name":"group",
+                                    "module": "angular2/src/core/animation/metadata"
+                                  },
+                                  "arguments":[[{
+                                    "__symbolic": "call",
+                                    "expression": {
+                                      "__symbolic":"reference",
+                                      "name":"animate",
+                                      "module": "angular2/src/core/animation/metadata"
+                                    },
+                                    "arguments":[
+                                      "1s 0.5s",
+                                      { "__symbolic": "call",
+                                        "expression": {
+                                          "__symbolic":"reference",
+                                          "name":"keyframes",
+                                          "module": "angular2/src/core/animation/metadata"
+                                        },
+                                        "arguments":[[{ "__symbolic": "call",
+                                          "expression": {
+                                            "__symbolic":"reference",
+                                            "name":"style",
+                                            "module": "angular2/src/core/animation/metadata"
+                                          },
+                                          "arguments":[ { "background": "blue"} ]
+                                        }, {
+                                          "__symbolic": "call",
+                                          "expression": {
+                                            "__symbolic":"reference",
+                                            "name":"style",
+                                            "module": "angular2/src/core/animation/metadata"
+                                          },
+                                          "arguments":[ { "background": "red"} ]
+                                        }]]
+                                      }
+                                    ]
+                                  }]]
+                                }]]
+                              }
+                            ]
+                          }
+                        ]
                     ]
-                  }
-                ]
-              }
-            ],
+                  }]
+                }]
+              }],
             "members": {
               "hero": [
                 {

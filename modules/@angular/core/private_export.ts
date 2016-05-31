@@ -35,8 +35,8 @@ import {
 import {AnimationSequencePlayer as AnimationSequencePlayer_} from './src/animation/animation_sequence_player';
 import {AnimationGroupPlayer as AnimationGroupPlayer_} from './src/animation/animation_group_player';
 import {AnimationKeyframe as AnimationKeyframe_} from './src/animation/animation_keyframe';
-import {AnimationStyleUtil as AnimationStyleUtil_} from './src/animation/animation_style_util';
 import {AnimationStyles as AnimationStyles_} from './src/animation/animation_styles';
+import * as animationUtils from './src/animation/animation_style_util';
 import {
   ANY_STATE as ANY_STATE_,
   EMPTY_STATE as EMPTY_STATE_,
@@ -121,8 +121,11 @@ export declare namespace __core_private_types__ {
   export var AnimationGroupPlayer: typeof AnimationGroupPlayer_;
   export type AnimationKeyframe = AnimationKeyframe_;
   export var AnimationKeyframe: typeof AnimationKeyframe_;
-  export type AnimationStyleUtil = AnimationStyleUtil_;
-  export var AnimationStyleUtil: typeof AnimationStyleUtil_;
+  export var balanceAnimationStyles: typeof animationUtils.balanceAnimationStyles;
+  export var balanceAnimationKeyframes: typeof animationUtils.balanceAnimationKeyframes;
+  export var flattenStyles: typeof animationUtils.flattenStyles;
+  export var clearStyles: typeof animationUtils.clearStyles;
+  export var collectAndResolveStyles: typeof animationUtils.collectAndResolveStyles;
   export type AnimationStyles = AnimationStyles_;
   export var AnimationStyles: typeof AnimationStyles_;
   export var ANY_STATE: typeof ANY_STATE_;
@@ -187,7 +190,11 @@ export var __core_private__ = {
   AnimationSequencePlayer: AnimationSequencePlayer_,
   AnimationGroupPlayer: AnimationGroupPlayer_,
   AnimationKeyframe: AnimationKeyframe_,
-  AnimationStyleUtil: AnimationStyleUtil_,
+  balanceAnimationStyles: animationUtils.balanceAnimationStyles,
+  balanceAnimationKeyframes: animationUtils.balanceAnimationKeyframes,
+  flattenStyles: animationUtils.flattenStyles,
+  clearStyles: animationUtils.clearStyles,
+  collectAndResolveStyles: animationUtils.collectAndResolveStyles,
   AnimationStyles: AnimationStyles_,
   ANY_STATE: ANY_STATE_,
   EMPTY_STATE: EMPTY_STATE_,

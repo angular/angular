@@ -20,6 +20,14 @@ import {
   SelfMetadata,
   SkipSelfMetadata,
   InjectMetadata,
+  trigger,
+  state,
+  transition,
+  sequence,
+  group,
+  animate,
+  style,
+  keyframes
 } from "@angular/core";
 import {ReflectorReader} from "./core_private";
  
@@ -50,7 +58,7 @@ export interface StaticReflectorHost {
   getStaticSymbol(declarationFile: string, name: string): StaticSymbol;
 
   angularImportLocations():
-      {coreDecorators: string, diDecorators: string, diMetadata: string, provider: string};
+      {coreDecorators: string, diDecorators: string, diMetadata: string, animationMetadata: string, provider: string};
 }
 
 /**
@@ -181,8 +189,19 @@ export class StaticReflector implements ReflectorReader {
     });
   }
 
+  private registerFunction(type: StaticSymbol, fn: any): void {
+    this.conversionMap.set(type, (context: StaticSymbol, args: any[]) => {
+      let argValues: any[] = [];
+      args.forEach((arg, index) => {
+        let argValue = this.simplify(context, arg);
+        argValues.push(argValue);
+      });
+      return fn.apply(null, argValues);
+    });
+  }
+
   private initializeConversionMap(): void {
-    const {coreDecorators, diDecorators, diMetadata, provider} = this.host.angularImportLocations();
+    const {coreDecorators, diDecorators, diMetadata, animationMetadata, provider} = this.host.angularImportLocations();
     this.registerDecoratorOrConstructor(this.host.findDeclaration(provider, 'Provider'), Provider);
 
     this.registerDecoratorOrConstructor(this.host.findDeclaration(diDecorators, 'Host'),
@@ -235,6 +254,15 @@ export class StaticReflector implements ReflectorReader {
                                         SkipSelfMetadata);
     this.registerDecoratorOrConstructor(this.host.findDeclaration(diMetadata, 'OptionalMetadata'),
                                         OptionalMetadata);
+
+    this.registerFunction(this.host.findDeclaration(animationMetadata, 'trigger'), trigger);
+    this.registerFunction(this.host.findDeclaration(animationMetadata, 'state'), state);
+    this.registerFunction(this.host.findDeclaration(animationMetadata, 'transition'), transition);
+    this.registerFunction(this.host.findDeclaration(animationMetadata, 'style'), style);
+    this.registerFunction(this.host.findDeclaration(animationMetadata, 'animate'), animate);
+    this.registerFunction(this.host.findDeclaration(animationMetadata, 'keyframes'), keyframes);
+    this.registerFunction(this.host.findDeclaration(animationMetadata, 'sequence'), sequence);
+    this.registerFunction(this.host.findDeclaration(animationMetadata, 'group'), group);
   }
 
   /** @internal */

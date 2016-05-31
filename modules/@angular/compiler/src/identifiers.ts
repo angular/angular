@@ -45,7 +45,10 @@ import {
   NoOpAnimationPlayer as NoOpAnimationPlayer_,
   AnimationGroupPlayer as AnimationGroupPlayer_,
   AnimationSequencePlayer as AnimationSequencePlayer_,
-  AnimationStyleUtil,
+  balanceAnimationStyles as impBalanceAnimationStyles,
+  balanceAnimationKeyframes as impBalanceAnimationKeyframes,
+  clearStyles as impClearStyles,
+  collectAndResolveStyles as impCollectAndResolveStyles,
   SecurityContext
 } from '../core_private';
 
@@ -245,22 +248,22 @@ export class Identifiers {
   static balanceAnimationStyles = new CompileIdentifierMetadata({
     name: 'balanceAnimationStyles',
     moduleUrl: ANIMATION_STYLE_UTIL_ASSET_URL,
-    runtime: AnimationStyleUtil.balanceStyles
+    runtime: impBalanceAnimationStyles
   });
   static balanceAnimationKeyframes = new CompileIdentifierMetadata({
     name: 'balanceAnimationKeyframes',
     moduleUrl: ANIMATION_STYLE_UTIL_ASSET_URL,
-    runtime: AnimationStyleUtil.balanceKeyframes
+    runtime: impBalanceAnimationKeyframes
   });
-  static clearAnimationStyles = new CompileIdentifierMetadata({
-    name: 'clearAnimationStyles',
+  static clearStyles = new CompileIdentifierMetadata({
+    name: 'clearStyles',
     moduleUrl: ANIMATION_STYLE_UTIL_ASSET_URL,
-    runtime: AnimationStyleUtil.clearStyles
+    runtime: impClearStyles
   });
   static collectAndResolveStyles = new CompileIdentifierMetadata({
     name: 'collectAndResolveStyles',
     moduleUrl: ANIMATION_STYLE_UTIL_ASSET_URL,
-    runtime: AnimationStyleUtil.collectAndResolveStyles
+    runtime: impCollectAndResolveStyles
   });
 }
 
