@@ -9,13 +9,13 @@ import {
   inject,
   it,
   xit,
-  beforeEachProviders
+  beforeEachProviders,
+  MockAnimationPlayer
 } from '@angular/core/testing/testing_internal';
 
 import {isPresent} from "../../src/facade/lang";
 import {WebAnimationsPlayer} from '../../src/dom/web_animations_player';
 import {DomAnimatePlayer} from '../../src/dom/dom_animate_player';
-import {MockAnimationPlayer} from '../../core_private';
 
 export class MockDomAnimatePlayer implements DomAnimatePlayer {
   public captures: {[key: string]: any[]} = {};
