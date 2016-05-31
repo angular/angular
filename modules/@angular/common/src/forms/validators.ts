@@ -79,13 +79,13 @@ export class Validators {
   /**
    * Validator that requires a control to match a regex to its value.
    */
-  static pattern(pattern: string): ValidatorFn {
+  static pattern(pattern: pattern): ValidatorFn {
     return (control: modelModule.AbstractControl): {[key: string]: any} => {
       if (isPresent(Validators.required(control))) return null;
-      let regex = new RegExp(`^${pattern}$`);
+      let regex = new RegExp(pattern);
       let v: string = control.value;
       return regex.test(v) ? null :
-                             {"pattern": {"requiredPattern": `^${pattern}$`, "actualValue": v}};
+                             {"pattern": {"requiredPattern": pattern, "actualValue": v}};
     };
   }
 
