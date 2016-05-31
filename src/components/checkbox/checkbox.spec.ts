@@ -11,7 +11,7 @@ import {FORM_DIRECTIVES, NgModel, NgControl} from '@angular/common';
 import {TestComponentBuilder, ComponentFixture} from '@angular/compiler/testing';
 import {Component, DebugElement} from '@angular/core';
 import {By} from '@angular/platform-browser';
-import {MdCheckbox} from './checkbox';
+import {MdCheckbox, MdCheckboxChange} from './checkbox';
 import {PromiseCompleter} from '@angular2-material/core/async/promise-completer';
 
 
@@ -273,26 +273,24 @@ describe('MdCheckbox', () => {
         testComponent = fixture.debugElement.componentInstance;
         inputElement = <HTMLInputElement>checkboxNativeElement.querySelector('input');
         labelElement = <HTMLLabelElement>checkboxNativeElement.querySelector('label');
-
-        spyOn(testComponent, 'handleChange');
       });
     }));
 
     it('should call the change event on first change after initialization', fakeAsync(() => {
       fixture.detectChanges();
-      expect(testComponent.handleChange).not.toHaveBeenCalled();
+      expect(testComponent.lastEvent).toBeUndefined();
 
       checkboxInstance.checked = true;
       fixture.detectChanges();
 
       tick();
 
-      expect(testComponent.handleChange).toHaveBeenCalledTimes(1);
-      expect(testComponent.handleChange).toHaveBeenCalledWith(true);
+      expect(testComponent.lastEvent.checked).toBe(true);
     }));
 
     it('should not emit a DOM event to the change output', async(() => {
-      expect(testComponent.handleChange).not.toHaveBeenCalled();
+      fixture.detectChanges();
+      expect(testComponent.lastEvent).toBeUndefined();
 
       // Trigger the click on the inputElement, because the input will probably
       // emit a DOM event to the change output.
@@ -303,8 +301,7 @@ describe('MdCheckbox', () => {
         // We're checking the arguments type / emitted value to be a boolean, because sometimes the
         // emitted value can be a DOM Event, which is not valid.
         // See angular/angular#4059
-        expect(testComponent.handleChange).toHaveBeenCalledTimes(1);
-        expect(testComponent.handleChange).toHaveBeenCalledWith(true);
+        expect(testComponent.lastEvent.checked).toBe(true);
       });
 
     }));
@@ -541,8 +538,8 @@ class CheckboxWithNameAttribute {}
 /** Simple test component with change event */
 @Component({
   directives: [MdCheckbox],
-  template: `<md-checkbox (change)="handleChange($event)"></md-checkbox>`
+  template: `<md-checkbox (change)="lastEvent = $event"></md-checkbox>`
 })
 class CheckboxWithChangeEvent {
-  handleChange(value: boolean): void {}
+  lastEvent: MdCheckboxChange;
 }

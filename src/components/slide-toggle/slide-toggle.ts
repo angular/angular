@@ -21,6 +21,12 @@ export const MD_SLIDE_TOGGLE_VALUE_ACCESSOR: any = {
   multi: true
 };
 
+// A simple change event emitted by the MdSlideToggle component.
+export class MdSlideToggleChange {
+  source: MdSlideToggle;
+  checked: boolean;
+}
+
 // Increasing integer for generating unique ids for slide-toggle components.
 let nextId = 0;
 
@@ -59,8 +65,8 @@ export class MdSlideToggle implements ControlValueAccessor {
   @Input() ariaLabel: string = null;
   @Input() ariaLabelledby: string = null;
 
-  @Output('change') private _change: EventEmitter<boolean> = new EventEmitter<boolean>();
-  change: Observable<boolean> = this._change.asObservable();
+  private _change: EventEmitter<MdSlideToggleChange> = new EventEmitter<MdSlideToggleChange>();
+  @Output() change: Observable<MdSlideToggleChange> = this._change.asObservable();
 
   // Returns the unique id for the visual hidden input.
   getInputId = () => `${this.id || this._uniqueId}-input`;
@@ -144,7 +150,7 @@ export class MdSlideToggle implements ControlValueAccessor {
     if (this.checked !== !!value) {
       this._checked = value;
       this.onChange(this._checked);
-      this._change.emit(this._checked);
+      this._emitChangeEvent();
     }
   }
 
@@ -171,6 +177,13 @@ export class MdSlideToggle implements ControlValueAccessor {
     if (color != null && color != '') {
       this._renderer.setElementClass(this._elementRef.nativeElement, `md-${color}`, isAdd);
     }
+  }
+
+  private _emitChangeEvent() {
+    let event = new MdSlideToggleChange();
+    event.source = this;
+    event.checked = this.checked;
+    this._change.emit(event);
   }
 
 }

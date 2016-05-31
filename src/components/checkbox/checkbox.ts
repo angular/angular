@@ -42,6 +42,12 @@ enum TransitionCheckState {
   Indeterminate
 }
 
+// A simple change event emitted by the MdCheckbox component.
+export class MdCheckboxChange {
+  source: MdCheckbox;
+  checked: boolean;
+}
+
 /**
  * A material design checkbox component. Supports all of the functionality of an HTML5 checkbox,
  * and exposes a similar API. An MdCheckbox can be either checked, unchecked, indeterminate, or
@@ -105,7 +111,7 @@ export class MdCheckbox implements AfterContentInit, ControlValueAccessor {
   @Input() name: string = null;
 
   /** Event emitted when the checkbox's `checked` value changes. */
-  @Output() change: EventEmitter<boolean> = new EventEmitter<boolean>();
+  @Output() change: EventEmitter<MdCheckboxChange> = new EventEmitter<MdCheckboxChange>();
 
   /** Called when the checkbox is blurred. Needed to properly implement ControlValueAccessor. */
   onTouched: () => any = () => {};
@@ -144,7 +150,7 @@ export class MdCheckbox implements AfterContentInit, ControlValueAccessor {
 
       // Only fire a change event if this isn't the first time the checked property is ever set.
       if (this._isInitialized) {
-        this.change.emit(this._checked);
+        this._emitChangeEvent();
       }
     }
   }
@@ -225,6 +231,14 @@ export class MdCheckbox implements AfterContentInit, ControlValueAccessor {
     }
   }
 
+  private _emitChangeEvent() {
+    let event = new MdCheckboxChange();
+    event.source = this;
+    event.checked = this.checked;
+
+    this.change.emit(event);
+  }
+
   /**
    * Informs the component when the input has focus so that we can style accordingly
    * @internal
@@ -258,7 +272,7 @@ export class MdCheckbox implements AfterContentInit, ControlValueAccessor {
   onInteractionEvent(event: Event) {
     // We always have to stop propagation on the change event.
     // Otherwise the change event, from the input element, will bubble up and
-    // emit its event object to the `change` output. 
+    // emit its event object to the `change` output.
     event.stopPropagation();
 
     if (!this.disabled) {

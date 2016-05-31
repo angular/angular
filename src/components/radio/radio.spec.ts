@@ -324,20 +324,19 @@ describe('MdRadio', () => {
         radioInstances = radioDebugElements.map(debugEl => debugEl.componentInstance);
 
         fixture.detectChanges();
-
-        spyOn(testComponent, 'onChange');
       });
     }));
 
     it('should update the model before firing change event', fakeAsync(() => {
       expect(testComponent.modelValue).toBeUndefined();
+      expect(testComponent.lastEvent).toBeUndefined();
 
       groupInstance.value = 'chocolate';
       fixture.detectChanges();
 
       tick();
       expect(testComponent.modelValue).toBe('chocolate');
-      expect(testComponent.onChange).toHaveBeenCalledWith('chocolate');
+      expect(testComponent.lastEvent.value).toBe('chocolate');
     }));
   });
 
@@ -432,7 +431,7 @@ class StandaloneRadioButtons { }
 @Component({
   directives: [MD_RADIO_DIRECTIVES, FORM_DIRECTIVES],
   template: `
-  <md-radio-group [(ngModel)]="modelValue" (change)="onChange(modelValue)">
+  <md-radio-group [(ngModel)]="modelValue" (change)="lastEvent = $event">
     <md-radio-button *ngFor="let option of options" [value]="option.value">
       {{option.label}}
     </md-radio-button>
@@ -446,7 +445,7 @@ class RadioGroupWithNgModel {
     {label: 'Chocolate', value: 'chocolate'},
     {label: 'Strawberry', value: 'strawberry'},
   ];
-  onChange(value: MdRadioChange) {}
+  lastEvent: MdRadioChange;
 }
 
 // TODO(jelbourn): remove eveything below when Angular supports faking events.
