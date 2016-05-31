@@ -1,20 +1,7 @@
 import * as ts from 'typescript';
 
-import {MetadataValue, MetadataSymbolicCallExpression, MetadataSymbolicReferenceExpression} from './schema';
+import {MetadataValue, MetadataSymbolicCallExpression, MetadataSymbolicReferenceExpression, MetadataError, isMetadataError, isMetadataModuleReferenceExpression, isMetadataImportedSymbolReferenceExpression, isMetadataGlobalReferenceExpression,} from './schema';
 import {Symbols} from './symbols';
-
-
-// TOOD: Remove when tools directory is upgraded to support es6 target
-interface Map<K, V> {
-  has(k: K): boolean;
-  set(k: K, v: V): void;
-  get(k: K): V;
-  delete (k: K): void;
-}
-interface MapConstructor {
-  new<K, V>(): Map<K, V>;
-}
-declare var Map: MapConstructor;
 
 function isMethodCallOf(callExpression: ts.CallExpression, memberName: string): boolean {
   const expression = callExpression.expression;
@@ -46,7 +33,7 @@ function everyNodeChild(node: ts.Node, cb: (node: ts.Node) => boolean) {
   return !ts.forEachChild(node, node => !cb(node));
 }
 
-function isPrimitive(value: any): boolean {
+export function isPrimitive(value: any): boolean {
   return Object(value) !== value;
 }
 
@@ -72,63 +59,21 @@ export interface ImportMetadata {
  * possible.
  */
 export class Evaluator {
-  constructor(
-      private typeChecker: ts.TypeChecker, private symbols: Symbols,
-      private imports: ImportMetadata[]) {}
+  constructor(private symbols: Symbols) {}
 
-  symbolReference(symbol: ts.Symbol): MetadataSymbolicReferenceExpression {
-    if (symbol) {
-      let module: string;
-      let name = symbol.name;
-      for (const eachImport of this.imports) {
-        if (symbol.name === eachImport.defaultName) {
-          module = eachImport.from;
-          name = undefined;
-        }
-        if (eachImport.namedImports) {
-          for (const named of eachImport.namedImports) {
-            if (symbol.name === named.name) {
-              name = named.propertyName ? named.propertyName : named.name;
-              module = eachImport.from;
-              break;
-            }
-          }
-        }
-      }
-      return {__symbolic: 'reference', name, module};
-    }
-  }
-
-  private findImportNamespace(node: ts.Node) {
-    if (node.kind === ts.SyntaxKind.PropertyAccessExpression) {
-      const lhs = (<ts.PropertyAccessExpression>node).expression;
-      if (lhs.kind === ts.SyntaxKind.Identifier) {
-        // TOOD: Use Array.find when tools directory is upgraded to support es6 target
-        for (const eachImport of this.imports) {
-          if (eachImport.namespace === (<ts.Identifier>lhs).text) {
-            return eachImport;
-          }
-        }
-      }
-    }
-  }
-
-  private nodeSymbolReference(node: ts.Node): MetadataSymbolicReferenceExpression {
-    const importNamespace = this.findImportNamespace(node);
-    if (importNamespace) {
-      const result = this.symbolReference(
-          this.typeChecker.getSymbolAtLocation((<ts.PropertyAccessExpression>node).name));
-      result.module = importNamespace.from;
-      return result;
-    }
-    return this.symbolReference(this.typeChecker.getSymbolAtLocation(node));
-  }
-
-  nameOf(node: ts.Node): string {
+  nameOf(node: ts.Node): string|MetadataError {
     if (node.kind == ts.SyntaxKind.Identifier) {
       return (<ts.Identifier>node).text;
     }
-    return <string>this.evaluateNode(node);
+    const result = this.evaluateNode(node);
+    if (isMetadataError(result) || typeof result === 'string') {
+      return result;
+    } else {
+      return {
+        __symbolic: 'error',
+        message: `Name expected a string or an identifier but received "${node.getText()}""`
+      };
+    }
   }
 
   /**
@@ -214,25 +159,10 @@ export class Evaluator {
           return this.isFoldableWorker(elementAccessExpression.expression, folding) &&
               this.isFoldableWorker(elementAccessExpression.argumentExpression, folding);
         case ts.SyntaxKind.Identifier:
-          let symbol = this.typeChecker.getSymbolAtLocation(node);
-          if (symbol.flags & ts.SymbolFlags.Alias) {
-            symbol = this.typeChecker.getAliasedSymbol(symbol);
-          }
-          if (this.symbols.has(symbol)) return true;
-
-          // If this is a reference to a foldable variable then it is foldable too.
-          const variableDeclaration = <ts.VariableDeclaration>(
-              symbol.declarations && symbol.declarations.length && symbol.declarations[0]);
-          if (variableDeclaration.kind === ts.SyntaxKind.VariableDeclaration) {
-            const initializer = variableDeclaration.initializer;
-            if (folding.has(initializer)) {
-              // A recursive reference is not foldable.
-              return false;
-            }
-            folding.set(initializer, true);
-            const result = this.isFoldableWorker(initializer, folding);
-            folding.delete(initializer);
-            return result;
+          let identifier = <ts.Identifier>node;
+          let reference = this.symbols.resolve(identifier.text);
+          if (isPrimitive(reference)) {
+            return true;
           }
           break;
       }
@@ -245,46 +175,43 @@ export class Evaluator {
    * tree are folded. For example, a node representing `1 + 2` is folded into `3`.
    */
   public evaluateNode(node: ts.Node): MetadataValue {
+    let error: MetadataError|undefined;
     switch (node.kind) {
       case ts.SyntaxKind.ObjectLiteralExpression:
-        let obj: MetadataValue = {};
-        let allPropertiesDefined = true;
+        let obj: {[name: string]: any} = {};
         ts.forEachChild(node, child => {
           switch (child.kind) {
             case ts.SyntaxKind.PropertyAssignment:
               const assignment = <ts.PropertyAssignment>child;
               const propertyName = this.nameOf(assignment.name);
+              if (isMetadataError(propertyName)) {
+                return propertyName;
+              }
               const propertyValue = this.evaluateNode(assignment.initializer);
-              (<any>obj)[propertyName] = propertyValue;
-              allPropertiesDefined = isDefined(propertyValue) && allPropertiesDefined;
+              if (isMetadataError(propertyValue)) {
+                error = propertyValue;
+                return true;  // Stop the forEachChild.
+              } else {
+                obj[<string>propertyName] = propertyValue;
+              }
           }
         });
-        if (allPropertiesDefined) return obj;
-        break;
+        if (error) return error;
+        return obj;
       case ts.SyntaxKind.ArrayLiteralExpression:
         let arr: MetadataValue[] = [];
-        let allElementsDefined = true;
         ts.forEachChild(node, child => {
           const value = this.evaluateNode(child);
+          if (isMetadataError(value)) {
+            error = value;
+            return true;  // Stop the forEachChild.
+          }
           arr.push(value);
-          allElementsDefined = isDefined(value) && allElementsDefined;
         });
-        if (allElementsDefined) return arr;
-        break;
+        if (error) return error;
+        return arr;
       case ts.SyntaxKind.CallExpression:
         const callExpression = <ts.CallExpression>node;
-        const args = callExpression.arguments.map(arg => this.evaluateNode(arg));
-        if (this.isFoldable(callExpression)) {
-          if (isMethodCallOf(callExpression, 'concat')) {
-            const arrayValue = <MetadataValue[]>this.evaluateNode(
-                (<ts.PropertyAccessExpression>callExpression.expression).expression);
-            return arrayValue.concat(args[0]);
-          }
-        }
-        // Always fold a CONST_EXPR even if the argument is not foldable.
-        if (isCallOf(callExpression, 'CONST_EXPR') && callExpression.arguments.length === 1) {
-          return args[0];
-        }
         if (isCallOf(callExpression, 'forwardRef') && callExpression.arguments.length === 1) {
           const firstArgument = callExpression.arguments[0];
           if (firstArgument.kind == ts.SyntaxKind.ArrowFunction) {
@@ -292,72 +219,136 @@ export class Evaluator {
             return this.evaluateNode(arrowFunction.body);
           }
         }
-        const expression = this.evaluateNode(callExpression.expression);
-        if (isDefined(expression) && args.every(isDefined)) {
-          const result:
-              MetadataSymbolicCallExpression = {__symbolic: 'call', expression: expression};
-          if (args && args.length) {
-            result.arguments = args;
-          }
-          return result;
+        const args = callExpression.arguments.map(arg => this.evaluateNode(arg));
+        if (args.some(isMetadataError)) {
+          return args.find(isMetadataError);
         }
-        break;
+        if (this.isFoldable(callExpression)) {
+          if (isMethodCallOf(callExpression, 'concat')) {
+            const arrayValue = <MetadataValue[]>this.evaluateNode(
+                (<ts.PropertyAccessExpression>callExpression.expression).expression);
+            if (isMetadataError(arrayValue)) return arrayValue;
+            return arrayValue.concat(args[0]);
+          }
+        }
+        // Always fold a CONST_EXPR even if the argument is not foldable.
+        if (isCallOf(callExpression, 'CONST_EXPR') && callExpression.arguments.length === 1) {
+          return args[0];
+        }
+        const expression = this.evaluateNode(callExpression.expression);
+        if (isMetadataError(expression)) {
+          return expression;
+        }
+        let result: MetadataSymbolicCallExpression = {__symbolic: 'call', expression: expression};
+        if (args && args.length) {
+          result.arguments = args;
+        }
+        return result;
       case ts.SyntaxKind.NewExpression:
         const newExpression = <ts.NewExpression>node;
         const newArgs = newExpression.arguments.map(arg => this.evaluateNode(arg));
-        const newTarget = this.evaluateNode(newExpression.expression);
-        if (isDefined(newTarget) && newArgs.every(isDefined)) {
-          const result: MetadataSymbolicCallExpression = {__symbolic: 'new', expression: newTarget};
-          if (newArgs.length) {
-            result.arguments = newArgs;
-          }
-          return result;
+        if (newArgs.some(isMetadataError)) {
+          return newArgs.find(isMetadataError);
         }
-        break;
+        const newTarget = this.evaluateNode(newExpression.expression);
+        if (isMetadataError(newTarget)) {
+          return newTarget;
+        }
+        const call: MetadataSymbolicCallExpression = {__symbolic: 'new', expression: newTarget};
+        if (newArgs.length) {
+          call.arguments = newArgs;
+        }
+        return call;
       case ts.SyntaxKind.PropertyAccessExpression: {
         const propertyAccessExpression = <ts.PropertyAccessExpression>node;
         const expression = this.evaluateNode(propertyAccessExpression.expression);
+        if (isMetadataError(expression)) {
+          return expression;
+        }
         const member = this.nameOf(propertyAccessExpression.name);
-        if (this.isFoldable(propertyAccessExpression.expression)) return (<any>expression)[member];
-        if (this.findImportNamespace(propertyAccessExpression)) {
-          return this.nodeSymbolReference(propertyAccessExpression);
+        if (isMetadataError(member)) {
+          return member;
         }
-        if (isDefined(expression)) {
-          return {__symbolic: 'select', expression, member};
+        if (this.isFoldable(propertyAccessExpression.expression))
+          return (<any>expression)[<string>member];
+        if (isMetadataModuleReferenceExpression(expression)) {
+          // A select into a module refrence and be converted into a reference to the symbol
+          // in the module
+          return {__symbolic: 'reference', module: expression.module, name: member};
         }
-        break;
+        return {__symbolic: 'select', expression, member};
       }
       case ts.SyntaxKind.ElementAccessExpression: {
         const elementAccessExpression = <ts.ElementAccessExpression>node;
         const expression = this.evaluateNode(elementAccessExpression.expression);
+        if (isMetadataError(expression)) {
+          return expression;
+        }
         const index = this.evaluateNode(elementAccessExpression.argumentExpression);
+        if (isMetadataError(expression)) {
+          return expression;
+        }
         if (this.isFoldable(elementAccessExpression.expression) &&
             this.isFoldable(elementAccessExpression.argumentExpression))
           return (<any>expression)[<string|number>index];
-        if (isDefined(expression) && isDefined(index)) {
-          return {__symbolic: 'index', expression, index};
-        }
-        break;
+        return {__symbolic: 'index', expression, index};
       }
       case ts.SyntaxKind.Identifier:
-        let symbol = this.typeChecker.getSymbolAtLocation(node);
-        if (symbol.flags & ts.SymbolFlags.Alias) {
-          symbol = this.typeChecker.getAliasedSymbol(symbol);
+        const identifier = <ts.Identifier>node;
+        const name = identifier.text;
+        const reference = this.symbols.resolve(name);
+        if (reference === undefined) {
+          // Encode as a global reference. StaticReflector will check the reference.
+          return { __symbolic: 'reference', name }
         }
-        if (this.symbols.has(symbol)) return this.symbols.get(symbol);
-        if (this.isFoldable(node)) {
-          // isFoldable implies, in this context, symbol declaration is a VariableDeclaration
-          const variableDeclaration = <ts.VariableDeclaration>(
-              symbol.declarations && symbol.declarations.length && symbol.declarations[0]);
-          return this.evaluateNode(variableDeclaration.initializer);
+        return reference;
+      case ts.SyntaxKind.TypeReference:
+        const typeReferenceNode = <ts.TypeReferenceNode>node;
+        const typeNameNode = typeReferenceNode.typeName;
+        if (typeNameNode.kind != ts.SyntaxKind.Identifier) {
+          return { __symbolic: 'error', message: 'Qualified type names not supported' }
         }
-        return this.nodeSymbolReference(node);
+        const typeNameIdentifier = <ts.Identifier>typeReferenceNode.typeName;
+        const typeName = typeNameIdentifier.text;
+        const typeReference = this.symbols.resolve(typeName);
+        if (!typeReference) {
+          return {__symbolic: 'error', message: `Could not resolve type ${typeName}`};
+        }
+        if (typeReferenceNode.typeArguments && typeReferenceNode.typeArguments.length) {
+          const args = typeReferenceNode.typeArguments.map(element => this.evaluateNode(element));
+          if (isMetadataImportedSymbolReferenceExpression(typeReference)) {
+            return {
+              __symbolic: 'reference',
+              module: typeReference.module,
+              name: typeReference.name,
+              arguments: args
+            };
+          } else if (isMetadataGlobalReferenceExpression(typeReference)) {
+            return {__symbolic: 'reference', name: typeReference.name, arguments: args};
+          }
+        }
+        return typeReference;
       case ts.SyntaxKind.NoSubstitutionTemplateLiteral:
         return (<ts.LiteralExpression>node).text;
       case ts.SyntaxKind.StringLiteral:
         return (<ts.StringLiteral>node).text;
       case ts.SyntaxKind.NumericLiteral:
         return parseFloat((<ts.LiteralExpression>node).text);
+      case ts.SyntaxKind.AnyKeyword:
+        return {__symbolic: 'reference', name: 'any'};
+      case ts.SyntaxKind.StringKeyword:
+        return {__symbolic: 'reference', name: 'string'};
+      case ts.SyntaxKind.NumberKeyword:
+        return {__symbolic: 'reference', name: 'number'};
+      case ts.SyntaxKind.BooleanKeyword:
+        return {__symbolic: 'reference', name: 'boolean'};
+      case ts.SyntaxKind.ArrayType:
+        const arrayTypeNode = <ts.ArrayTypeNode>node;
+        return {
+          __symbolic: 'reference',
+          name: 'Array',
+          arguments: [this.evaluateNode(arrayTypeNode.elementType)]
+        };
       case ts.SyntaxKind.NullKeyword:
         return null;
       case ts.SyntaxKind.TrueKeyword:
@@ -462,6 +453,6 @@ export class Evaluator {
         }
         break;
     }
-    return undefined;
+    return {__symbolic: 'error', message: 'Expression is too complex to resolve statically'};
   }
 }

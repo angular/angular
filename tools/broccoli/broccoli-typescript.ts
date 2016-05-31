@@ -121,7 +121,6 @@ class DiffingTSCompiler implements DiffingBroccoliPlugin {
       this.doFullBuild();
     } else {
       let program = this.tsService.getProgram();
-      let typeChecker = program.getTypeChecker();
       tsEmitInternal = false;
       pathsToEmit.forEach((tsFilePath) => {
         let output = this.tsService.getEmitOutput(tsFilePath);
@@ -139,7 +138,7 @@ class DiffingTSCompiler implements DiffingBroccoliPlugin {
             fs.writeFileSync(o.name, this.fixSourceMapSources(o.text), FS_OPTS);
             if (endsWith(o.name, '.d.ts')) {
               const sourceFile = program.getSourceFile(tsFilePath);
-              this.emitMetadata(o.name, sourceFile, typeChecker);
+              this.emitMetadata(o.name, sourceFile);
             }
           });
         }
@@ -210,7 +209,7 @@ class DiffingTSCompiler implements DiffingBroccoliPlugin {
         const originalFile = absoluteFilePath.replace(this.tsOpts.outDir, this.tsOpts.rootDir)
                                  .replace(/\.d\.ts$/, '.ts');
         const sourceFile = program.getSourceFile(originalFile);
-        this.emitMetadata(absoluteFilePath, sourceFile, typeChecker);
+        this.emitMetadata(absoluteFilePath, sourceFile);
       }
     });
 
@@ -256,10 +255,9 @@ class DiffingTSCompiler implements DiffingBroccoliPlugin {
    * Emit a .metadata.json file to correspond to the .d.ts file if the module contains classes that
    * use decorators or exported constants.
    */
-  private emitMetadata(
-      dtsFileName: string, sourceFile: ts.SourceFile, typeChecker: ts.TypeChecker) {
+  private emitMetadata(dtsFileName: string, sourceFile: ts.SourceFile) {
     if (sourceFile) {
-      const metadata = this.metadataCollector.getMetadata(sourceFile, typeChecker);
+      const metadata = this.metadataCollector.getMetadata(sourceFile);
       if (metadata && metadata.metadata) {
         const metadataText = JSON.stringify(metadata);
         const metadataFileName = dtsFileName.replace(/\.d.ts$/, '.metadata.json');

@@ -15,14 +15,15 @@ describe('Evaluator', () => {
   let evaluator: Evaluator;
 
   beforeEach(() => {
-    host = new Host(
-        FILES,
-        ['expressions.ts', 'const_expr.ts', 'forwardRef.ts', 'classes.ts', 'newExpression.ts']);
+    host = new Host(FILES, [
+      'expressions.ts', 'consts.ts', 'const_expr.ts', 'forwardRef.ts', 'classes.ts',
+      'newExpression.ts'
+    ]);
     service = ts.createLanguageService(host);
     program = service.getProgram();
     typeChecker = program.getTypeChecker();
-    symbols = new Symbols();
-    evaluator = new Evaluator(typeChecker, symbols, []);
+    symbols = new Symbols(null);
+    evaluator = new Evaluator(symbols);
   });
 
   it('should not have typescript errors in test data', () => {
@@ -59,8 +60,14 @@ describe('Evaluator', () => {
 
   it('should be able to evaluate expressions', () => {
     var expressions = program.getSourceFile('expressions.ts');
+    symbols.define('someName', 'some-name');
+    symbols.define('someBool', true);
+    symbols.define('one', 1);
+    symbols.define('two', 2);
     expect(evaluator.evaluateNode(findVar(expressions, 'three').initializer)).toBe(3);
+    symbols.define('three', 3);
     expect(evaluator.evaluateNode(findVar(expressions, 'four').initializer)).toBe(4);
+    symbols.define('four', 4);
     expect(evaluator.evaluateNode(findVar(expressions, 'obj').initializer))
         .toEqual({one: 1, two: 2, three: 3, four: 4});
     expect(evaluator.evaluateNode(findVar(expressions, 'arr').initializer)).toEqual([1, 2, 3, 4]);
@@ -102,9 +109,9 @@ describe('Evaluator', () => {
   it('should report recursive references as symbolic', () => {
     var expressions = program.getSourceFile('expressions.ts');
     expect(evaluator.evaluateNode(findVar(expressions, 'recursiveA').initializer))
-        .toEqual({__symbolic: 'reference', name: 'recursiveB', module: undefined});
+        .toEqual({__symbolic: 'reference', name: 'recursiveB'});
     expect(evaluator.evaluateNode(findVar(expressions, 'recursiveB').initializer))
-        .toEqual({__symbolic: 'reference', name: 'recursiveA', module: undefined});
+        .toEqual({__symbolic: 'reference', name: 'recursiveA'});
   });
 
   it('should correctly handle special cases for CONST_EXPR', () => {
@@ -120,8 +127,8 @@ describe('Evaluator', () => {
   });
 
   it('should return new expressions', () => {
-    evaluator =
-        new Evaluator(typeChecker, symbols, [{from: './classes', namedImports: [{name: 'Value'}]}]);
+    symbols.define('Value', {__symbolic: 'reference', module: './classes', name: 'Value'});
+    evaluator = new Evaluator(symbols);
     var newExpression = program.getSourceFile('newExpression.ts');
     expect(evaluator.evaluateNode(findVar(newExpression, 'someValue').initializer)).toEqual({
       __symbolic: 'new',
@@ -154,7 +161,10 @@ const FILES: Directory = {
     export var two = 2;
   `,
   'expressions.ts': `
-    import {someName, someBool, one, two} from './consts';
+    export var someName = 'some-name';
+    export var someBool = true;
+    export var one = 1;
+    export var two = 2;
 
     export var three = one + two;
     export var four = two * two;

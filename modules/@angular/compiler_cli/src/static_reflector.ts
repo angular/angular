@@ -359,6 +359,8 @@ export class StaticReflector implements ReflectorReader {
               } else {
                 return context;
               }
+             case "error":
+              throw new Error(expression['message']);
           }
           return null;
         }

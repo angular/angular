@@ -62,17 +62,21 @@ export class CodeGenerator {
 
   private readComponents(absSourcePath: string) {
     const result: Promise<compiler.CompileDirectiveMetadata>[] = [];
-    const metadata = this.staticReflector.getModuleMetadata(absSourcePath);
-    if (!metadata) {
+    const moduleMetadata = this.staticReflector.getModuleMetadata(absSourcePath);
+    if (!moduleMetadata) {
       console.log(`WARNING: no metadata found for ${absSourcePath}`);
       return result;
     }
-
-    const symbols = Object.keys(metadata['metadata']);
+    const metadata = moduleMetadata['metadata'];
+    const symbols = metadata && Object.keys(metadata);
     if (!symbols || !symbols.length) {
       return result;
     }
     for (const symbol of symbols) {
+      if (metadata[symbol] && metadata[symbol].__symbolic == 'error') {
+        // Ignore symbols that are only included to record error information.
+        continue;
+      }
       const staticType = this.reflectorHost.findDeclaration(absSourcePath, symbol, absSourcePath);
       let directive: compiler.CompileDirectiveMetadata;
       directive = this.resolver.maybeGetDirectiveMetadata(<any>staticType);
