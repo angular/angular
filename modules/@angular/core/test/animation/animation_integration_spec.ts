@@ -33,8 +33,6 @@ import {AnimationDriver} from '../../src/animation/animation_driver';
 import {MockAnimationDriver} from '../../testing/animation/mock_animation_driver';
 import {trigger, state, transition, keyframes, style, animate, group, sequence, AnimationEntryMetadata} from '../../src/animation/metadata';
 
-import {AnimationStyleUtil} from '../../src/animation/animation_style_util';
-
 import {AUTO_STYLE} from '../../src/animation/metadata';
 
 export function main() {

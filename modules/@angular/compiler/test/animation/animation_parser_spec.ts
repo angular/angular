@@ -44,7 +44,7 @@ import {
   AnimationStepAst
 } from '../../src/animation/animation_ast';
 
-import {FILL_STYLE_FLAG, AnimationStyleUtil} from '../../core_private';
+import {FILL_STYLE_FLAG, flattenStyles} from '../../core_private';
 
 import {StringMapWrapper} from '../../src/facade/collection';
 
@@ -348,7 +348,7 @@ export function main() {
       var kf1 = keyframesStep.keyframes[0];
       var kf2 = keyframesStep.keyframes[1];
 
-      expect(AnimationStyleUtil.flattenStyles(kf1.styles.styles)).toEqual({
+      expect(flattenStyles(kf1.styles.styles)).toEqual({
         "color": "red",
         "background": FILL_STYLE_FLAG
       });
@@ -368,7 +368,7 @@ export function main() {
       var kf2 = keyframesStep.keyframes[1];
       var kf3 = keyframesStep.keyframes[2];
 
-      expect(AnimationStyleUtil.flattenStyles(kf3.styles.styles)).toEqual({
+      expect(flattenStyles(kf3.styles.styles)).toEqual({
         "background": "blue",
         "color": "red",
         "border-color": "white"
@@ -390,7 +390,7 @@ export function main() {
       var kf3 = keyframesStep.keyframes[2];
 
       expect(kf1.offset).toEqual(0);
-      expect(AnimationStyleUtil.flattenStyles(kf1.styles.styles)).toEqual({
+      expect(flattenStyles(kf1.styles.styles)).toEqual({
         "font-size": FILL_STYLE_FLAG,
         "background": FILL_STYLE_FLAG,
         "color": FILL_STYLE_FLAG
@@ -412,7 +412,7 @@ export function main() {
       var kf3 = keyframesStep.keyframes[2];
 
       expect(kf3.offset).toEqual(1);
-      expect(AnimationStyleUtil.flattenStyles(kf3.styles.styles)).toEqual({
+      expect(flattenStyles(kf3.styles.styles)).toEqual({
         "color": "orange",
         "background": "red",
         "transform": "rotate(360deg)",
