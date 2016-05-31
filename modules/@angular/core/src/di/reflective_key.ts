@@ -1,5 +1,5 @@
-import {stringify, isBlank} from '../../src/facade/lang';
-import {BaseException} from '../../src/facade/exceptions';
+import {stringify, isBlank} from '../facade/lang';
+import {BaseException} from '../facade/exceptions';
 import {resolveForwardRef} from './forward_ref';
 
 /**

@@ -6,8 +6,8 @@ import {
   serializeEventWithTarget,
   serializeTransitionEvent
 } from './event_serializer';
-import {BaseException} from '../../../src/facade/exceptions';
-import {EventEmitter, ObservableWrapper} from '../../../src/facade/async';
+import {BaseException} from '../../facade/exceptions';
+import {EventEmitter, ObservableWrapper} from '../../facade/async';
 
 export class EventDispatcher {
   constructor(private _sink: EventEmitter<any>, private _serializer: Serializer) {}

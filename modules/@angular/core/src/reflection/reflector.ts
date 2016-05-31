@@ -1,5 +1,5 @@
-import {Type, isPresent, stringify} from '../../src/facade/lang';
-import {BaseException, WrappedException} from '../../src/facade/exceptions';
+import {Type, isPresent, stringify} from '../facade/lang';
+import {BaseException, WrappedException} from '../facade/exceptions';
 import {
   ListWrapper,
   Map,
@@ -7,7 +7,7 @@ import {
   Set,
   SetWrapper,
   StringMapWrapper
-} from '../../src/facade/collection';
+} from '../facade/collection';
 import {SetterFn, GetterFn, MethodFn} from './types';
 import {ReflectorReader} from './reflector_reader';
 import {PlatformReflectionCapabilities} from './platform_reflection_capabilities';

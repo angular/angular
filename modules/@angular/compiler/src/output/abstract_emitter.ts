@@ -1,5 +1,5 @@
-import {isPresent, isBlank, isString, StringWrapper} from '../../src/facade/lang';
-import {BaseException} from '../../src/facade/exceptions';
+import {isPresent, isBlank, isString, StringWrapper} from '../facade/lang';
+import {BaseException} from '../facade/exceptions';
 import * as o from './output_ast';
 
 var _SINGLE_QUOTE_ESCAPE_STRING_RE = /'|\\|\n|\r|\$/g;

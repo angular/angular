@@ -1,5 +1,5 @@
 import { ComponentResolver } from './component_resolver';
-import { Type, isString, global } from '../../src/facade/lang';
+import { Type, isString, global } from '../facade/lang';
 import { ComponentFactory } from './component_factory';
 
 /**

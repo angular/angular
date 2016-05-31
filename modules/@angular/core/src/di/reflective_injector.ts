@@ -1,4 +1,4 @@
-import {ListWrapper} from '../../src/facade/collection';
+import {ListWrapper} from '../facade/collection';
 import {Provider} from './provider';
 import {
   ResolvedReflectiveProvider,
@@ -13,8 +13,8 @@ import {
   InstantiationError,
   OutOfBoundsError
 } from './reflective_exceptions';
-import {Type} from '../../src/facade/lang';
-import {BaseException, unimplemented} from '../../src/facade/exceptions';
+import {Type} from '../facade/lang';
+import {BaseException, unimplemented} from '../facade/exceptions';
 import {ReflectiveKey} from './reflective_key';
 import {SelfMetadata, SkipSelfMetadata} from './metadata';
 import {Injector, THROW_IF_NOT_FOUND} from './injector';

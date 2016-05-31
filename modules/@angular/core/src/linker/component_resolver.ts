@@ -1,6 +1,6 @@
-import {Type, isBlank, isString, stringify} from '../../src/facade/lang';
-import {BaseException} from '../../src/facade/exceptions';
-import {PromiseWrapper} from '../../src/facade/async';
+import {Type, isBlank, isString, stringify} from '../facade/lang';
+import {BaseException} from '../facade/exceptions';
+import {PromiseWrapper} from '../facade/async';
 import {reflector} from '../reflection/reflection';
 import {ComponentFactory} from './component_factory';
 import {Injectable} from '../di/decorators';

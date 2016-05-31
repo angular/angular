@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, ViewEncapsulation} from '@angular/core';
 import {ChangeDetectorState, ViewType} from '../../core_private';
 
-import {isBlank, resolveEnumToken} from '../../src/facade/lang';
+import {isBlank, resolveEnumToken} from '../facade/lang';
 import {CompileIdentifierMetadata} from '../compile_metadata';
 import * as o from '../output/output_ast';
 import {Identifiers} from '../identifiers';

@@ -7,13 +7,13 @@ import {
 } from '@angular/core';
 
 import {ClientMessageBrokerFactory, FnArg, UiArguments} from '../shared/client_message_broker';
-import {isPresent, isBlank} from '../../../src/facade/lang';
-import {ListWrapper} from '../../../src/facade/collection';
+import {isPresent, isBlank} from '../../facade/lang';
+import {ListWrapper} from '../../facade/collection';
 import {RenderStore} from '../shared/render_store';
 import {RENDERER_CHANNEL, EVENT_CHANNEL} from '../shared/messaging_api';
 import {Serializer, RenderStoreObject} from '../shared/serializer';
 import {MessageBus} from '../shared/message_bus';
-import {ObservableWrapper} from '../../../src/facade/async';
+import {ObservableWrapper} from '../../facade/async';
 import {deserializeGenericEvent} from './event_deserializer';
 
 import {AnimationKeyframe, AnimationPlayer, AnimationStyles, RenderDebugInfo} from '../../../core_private';

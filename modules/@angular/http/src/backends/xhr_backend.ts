@@ -8,7 +8,7 @@ import {Response} from '../static_response';
 import {Headers} from '../headers';
 import {ResponseOptions} from '../base_response_options';
 import {BrowserXhr} from './browser_xhr';
-import {isPresent, isString} from '../../src/facade/lang';
+import {isPresent, isString} from '../facade/lang';
 import {Observable} from 'rxjs/Observable';
 import {Observer} from 'rxjs/Observer';
 import {isSuccess, getResponseURL} from '../http_utils';

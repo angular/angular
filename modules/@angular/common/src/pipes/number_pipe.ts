@@ -7,9 +7,10 @@ import {
   NumberWrapper,
   RegExpWrapper,
   Type
-} from '../../src/facade/lang';
-import {BaseException} from '../../src/facade/exceptions';
-import {NumberFormatter, NumberFormatStyle} from '../../src/facade/intl';
+} from '../facade/lang';
+import {BaseException} from '../facade/exceptions';
+import {NumberFormatter, NumberFormatStyle} from '../facade/intl';
+
 import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
 
 var defaultLocale: string = 'en-US';

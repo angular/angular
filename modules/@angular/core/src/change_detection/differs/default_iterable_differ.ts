@@ -1,5 +1,5 @@
-import {BaseException} from '../../../src/facade/exceptions';
-import {isListLikeIterable, iterateListLike} from '../../../src/facade/collection';
+import {BaseException} from '../../facade/exceptions';
+import {isListLikeIterable, iterateListLike} from '../../facade/collection';
 
 import {
   isBlank,
@@ -8,7 +8,7 @@ import {
   getMapKey,
   looseIdentical,
   isArray
-} from '../../../src/facade/lang';
+} from '../../facade/lang';
 
 import {ChangeDetectorRef} from '../change_detector_ref';
 import {IterableDiffer, IterableDifferFactory, TrackByFn} from './iterable_differs';

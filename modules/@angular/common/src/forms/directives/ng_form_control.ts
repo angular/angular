@@ -8,8 +8,8 @@ import {
   Self
 } from '@angular/core';
 
-import {StringMapWrapper} from '../../../src/facade/collection';
-import {EventEmitter, ObservableWrapper} from '../../../src/facade/async';
+import {StringMapWrapper} from '../../facade/collection';
+import {EventEmitter, ObservableWrapper} from '../../facade/async';
 
 import {NgControl} from './ng_control';
 import {Control} from '../model';

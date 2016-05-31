@@ -1,5 +1,5 @@
-import {normalizeBool, Type, isType, isBlank, isFunction, stringify} from '../../src/facade/lang';
-import {BaseException} from '../../src/facade/exceptions';
+import {normalizeBool, Type, isType, isBlank, isFunction, stringify} from '../facade/lang';
+import {BaseException} from '../facade/exceptions';
 
 /**
  * Describes how the {@link Injector} should instantiate a given token.

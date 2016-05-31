@@ -7,10 +7,10 @@ import {
   Optional,
   Self
 } from '@angular/core';
-import {isBlank} from '../../../src/facade/lang';
-import {ListWrapper, StringMapWrapper} from '../../../src/facade/collection';
-import {BaseException} from '../../../src/facade/exceptions';
-import {ObservableWrapper, EventEmitter} from '../../../src/facade/async';
+import {isBlank} from '../../facade/lang';
+import {ListWrapper, StringMapWrapper} from '../../facade/collection';
+import {BaseException} from '../../facade/exceptions';
+import {ObservableWrapper, EventEmitter} from '../../facade/async';
 import {NgControl} from './ng_control';
 import {NgControlGroup} from './ng_control_group';
 import {ControlContainer} from './control_container';

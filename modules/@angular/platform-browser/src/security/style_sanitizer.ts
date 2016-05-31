@@ -1,5 +1,5 @@
 import {getDOM} from '../dom/dom_adapter';
-import {assertionsEnabled} from '../../src/facade/lang';
+import {assertionsEnabled} from '../facade/lang';
 
 import {sanitizeUrl} from './url_sanitizer';
 

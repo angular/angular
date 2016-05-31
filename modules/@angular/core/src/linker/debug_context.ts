@@ -1,5 +1,5 @@
-import {isPresent, isBlank} from '../../src/facade/lang';
-import {ListWrapper, StringMapWrapper} from '../../src/facade/collection';
+import {isPresent, isBlank} from '../facade/lang';
+import {ListWrapper, StringMapWrapper} from '../facade/collection';
 import {Injector} from '../di';
 import {ViewType} from './view_type';
 import {RenderDebugInfo} from '../render/api';

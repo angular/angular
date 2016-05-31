@@ -1,12 +1,12 @@
 import {MessageBus} from './message_bus';
-import {print, isPresent, DateWrapper, stringify, StringWrapper} from '../../../src/facade/lang';
+import {print, isPresent, DateWrapper, stringify, StringWrapper} from '../../facade/lang';
 import {
   PromiseCompleter,
   PromiseWrapper,
   ObservableWrapper,
   EventEmitter
-} from '../../../src/facade/async';
-import {StringMapWrapper} from '../../../src/facade/collection';
+} from '../../facade/async';
+import {StringMapWrapper} from '../../facade/collection';
 import {Serializer} from './serializer';
 import {Injectable, Type} from '@angular/core';
 

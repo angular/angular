@@ -1,5 +1,5 @@
-import {StringMapWrapper} from '../../src/facade/collection';
-import {isPresent, isFunction, Type} from '../../src/facade/lang';
+import {StringMapWrapper} from '../facade/collection';
+import {isPresent, isFunction, Type} from '../facade/lang';
 import {DomAdapter} from '../dom/dom_adapter';
 
 

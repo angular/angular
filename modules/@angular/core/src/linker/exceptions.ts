@@ -1,4 +1,4 @@
-import {BaseException, WrappedException} from '../../src/facade/exceptions';
+import {BaseException, WrappedException} from '../facade/exceptions';
 
 /**
  * An error thrown if application changes model breaking the top-down data flow.

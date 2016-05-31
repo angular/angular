@@ -1,6 +1,6 @@
 import * as o from './output_ast';
-import {isPresent, isBlank, isArray} from '../../src/facade/lang';
-import {BaseException} from '../../src/facade/exceptions';
+import {isPresent, isBlank, isArray} from '../facade/lang';
+import {BaseException} from '../facade/exceptions';
 import {CompileIdentifierMetadata} from '../compile_metadata';
 import {
   OutputEmitter,

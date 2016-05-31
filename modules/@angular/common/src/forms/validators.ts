@@ -1,8 +1,8 @@
 import {OpaqueToken} from '@angular/core';
-import {isBlank, isPresent, isString} from '../../src/facade/lang';
-import {PromiseWrapper} from '../../src/facade/promise';
-import {ObservableWrapper} from '../../src/facade/async';
-import {StringMapWrapper} from '../../src/facade/collection';
+import {isBlank, isPresent, isString} from '../facade/lang';
+import {PromiseWrapper} from '../facade/promise';
+import {ObservableWrapper} from '../facade/async';
+import {StringMapWrapper} from '../facade/collection';
 import * as modelModule from './model';
 import {ValidatorFn, AsyncValidatorFn} from './directives/validators';
 

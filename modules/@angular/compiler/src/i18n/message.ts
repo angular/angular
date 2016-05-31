@@ -1,4 +1,4 @@
-import {isPresent, escape} from '../../src/facade/lang';
+import {isPresent, escape} from '../facade/lang';
 
 /**
  * A message extracted from a template.

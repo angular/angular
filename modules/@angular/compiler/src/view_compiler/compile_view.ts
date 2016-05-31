@@ -1,7 +1,7 @@
 import {ViewType} from '../../core_private';
 
-import {isPresent, isBlank} from '../../src/facade/lang';
-import {ListWrapper} from '../../src/facade/collection';
+import {isPresent, isBlank} from '../facade/lang';
+import {ListWrapper} from '../facade/collection';
 
 import * as o from '../output/output_ast';
 import {EventHandlerVars} from './constants';

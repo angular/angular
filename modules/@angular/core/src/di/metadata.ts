@@ -1,4 +1,4 @@
-import {stringify} from '../../src/facade/lang';
+import {stringify} from '../facade/lang';
 
 /**
  * A parameter metadata that specifies a dependency.

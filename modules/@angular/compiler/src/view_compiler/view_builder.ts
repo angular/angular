@@ -1,8 +1,8 @@
 import {ChangeDetectionStrategy, ViewEncapsulation} from '@angular/core';
 import {isDefaultChangeDetectionStrategy, ViewType} from '../../core_private';
 
-import {isPresent, StringWrapper} from '../../src/facade/lang';
-import {ListWrapper, StringMapWrapper, SetWrapper} from '../../src/facade/collection';
+import {isPresent, StringWrapper} from '../facade/lang';
+import {ListWrapper, StringMapWrapper, SetWrapper} from '../facade/collection';
 
 import * as o from '../output/output_ast';
 import {Identifiers, identifierToken} from '../identifiers';

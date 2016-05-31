@@ -1,5 +1,5 @@
-import {isBlank, isPresent, StringWrapper} from '../../src/facade/lang';
-import {ListWrapper, StringMapWrapper} from '../../src/facade/collection';
+import {isBlank, isPresent, StringWrapper} from '../facade/lang';
+import {ListWrapper, StringMapWrapper} from '../facade/collection';
 
 import {EventHandlerVars, ViewProperties} from './constants';
 

@@ -16,11 +16,11 @@ import {
   StringWrapper,
   isArray,
   isString
-} from '../../src/facade/lang';
+} from '../facade/lang';
 
-import {StringMapWrapper} from '../../src/facade/collection';
+import {StringMapWrapper} from '../facade/collection';
 
-import {BaseException} from '../../src/facade/exceptions';
+import {BaseException} from '../facade/exceptions';
 import {DomSharedStylesHost} from './shared_styles_host';
 
 import {

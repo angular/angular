@@ -1,5 +1,5 @@
 import {ComponentRef} from '@angular/core';
-import {global} from '../../../src/facade/lang';
+import {global} from '../../facade/lang';
 
 import {AngularTools} from './common_tools';
 

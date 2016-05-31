@@ -1,6 +1,6 @@
 import {BaseException} from '@angular/core';
-import {isPresent, isBlank} from '../../src/facade/lang';
-import {ListWrapper, StringMapWrapper} from '../../src/facade/collection';
+import {isPresent, isBlank} from '../facade/lang';
+import {ListWrapper, StringMapWrapper} from '../facade/collection';
 
 import * as o from '../output/output_ast';
 import {Identifiers, identifierToken} from '../identifiers';

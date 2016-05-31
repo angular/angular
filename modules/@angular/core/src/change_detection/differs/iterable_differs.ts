@@ -1,6 +1,6 @@
-import {isBlank, isPresent, getTypeNameForDebugging} from '../../../src/facade/lang';
-import {BaseException} from '../../../src/facade/exceptions';
-import {ListWrapper} from '../../../src/facade/collection';
+import {isBlank, isPresent, getTypeNameForDebugging} from '../../facade/lang';
+import {BaseException} from '../../facade/exceptions';
+import {ListWrapper} from '../../facade/collection';
 import {ChangeDetectorRef} from '../change_detector_ref';
 import {Provider, SkipSelfMetadata, OptionalMetadata} from '../../di';
 

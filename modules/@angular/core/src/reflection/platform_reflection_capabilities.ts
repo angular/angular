@@ -1,4 +1,4 @@
-import {Type} from '../../src/facade/lang';
+import {Type} from '../facade/lang';
 import {GetterFn, SetterFn, MethodFn} from './types';
 
 export interface PlatformReflectionCapabilities {

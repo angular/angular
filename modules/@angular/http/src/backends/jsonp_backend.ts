@@ -5,8 +5,8 @@ import {Response} from '../static_response';
 import {ResponseOptions, BaseResponseOptions} from '../base_response_options';
 import {Injectable} from '@angular/core';
 import {BrowserJsonp} from './browser_jsonp';
-import {makeTypeError} from '../../src/facade/exceptions';
-import {StringWrapper, isPresent} from '../../src/facade/lang';
+import {makeTypeError} from '../facade/exceptions';
+import {StringWrapper, isPresent} from '../facade/lang';
 import {Observable} from 'rxjs/Observable';
 import {Observer} from 'rxjs/Observer';
 

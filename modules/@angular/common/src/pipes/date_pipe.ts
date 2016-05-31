@@ -5,9 +5,9 @@ import {
   isString,
   DateWrapper,
   isBlank,
-} from '../../src/facade/lang';
-import {DateFormatter} from '../../src/facade/intl';
-import {StringMapWrapper} from '../../src/facade/collection';
+} from '../facade/lang';
+import {DateFormatter} from '../facade/intl';
+import {StringMapWrapper} from '../facade/collection';
 
 import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
 

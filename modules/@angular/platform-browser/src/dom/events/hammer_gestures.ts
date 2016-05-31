@@ -1,6 +1,6 @@
 import {Injectable, Inject, OpaqueToken} from '@angular/core';
-import {isPresent} from '../../../src/facade/lang';
-import {BaseException} from '../../../src/facade/exceptions';
+import {isPresent} from '../../facade/lang';
+import {BaseException} from '../../facade/exceptions';
 import {HammerGesturesPluginCommon} from './hammer_common';
 
 export const HAMMER_GESTURE_CONFIG: OpaqueToken = new OpaqueToken("HammerGestureConfig");

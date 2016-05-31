@@ -1,4 +1,4 @@
-import {ListWrapper} from '../../src/facade/collection';
+import {ListWrapper} from '../facade/collection';
 
 export class AST {
   visit(visitor: AstVisitor, context: any = null): any { return null; }

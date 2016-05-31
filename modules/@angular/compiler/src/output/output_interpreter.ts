@@ -1,8 +1,8 @@
 import {reflector} from '../../core_private';
-import {isPresent, IS_DART, FunctionWrapper} from '../../src/facade/lang';
-import {ObservableWrapper} from '../../src/facade/async';
-import {BaseException, unimplemented} from '../../src/facade/exceptions';
-import {ListWrapper} from '../../src/facade/collection';
+import {isPresent, IS_DART, FunctionWrapper} from '../facade/lang';
+import {ObservableWrapper} from '../facade/async';
+import {BaseException, unimplemented} from '../facade/exceptions';
+import {ListWrapper} from '../facade/collection';
 
 import * as o from './output_ast';
 import {debugOutputAstAsDart} from './dart_emitter';

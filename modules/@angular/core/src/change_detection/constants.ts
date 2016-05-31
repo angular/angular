@@ -1,4 +1,4 @@
-import {isBlank} from '../../src/facade/lang';
+import {isBlank} from '../facade/lang';
 
 /**
  * Describes the current state of the change detector.

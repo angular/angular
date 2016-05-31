@@ -7,7 +7,7 @@ import {
   Directive,
   Renderer
 } from '@angular/core';
-import {isPresent, isBlank} from '../../src/facade/lang';
+import {isPresent, isBlank} from '../facade/lang';
 
 /**
  * The `NgStyle` directive changes styles based on a result of expression evaluation.

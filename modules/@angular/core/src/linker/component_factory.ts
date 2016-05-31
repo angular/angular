@@ -1,5 +1,5 @@
-import {Type, isPresent, isBlank} from '../../src/facade/lang';
-import {unimplemented} from '../../src/facade/exceptions';
+import {Type, isPresent, isBlank} from '../facade/lang';
+import {unimplemented} from '../facade/exceptions';
 import {ElementRef} from './element_ref';
 import {ViewRef, ViewRef_} from './view_ref';
 import {AppElement} from './element';

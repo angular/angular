@@ -1,4 +1,4 @@
-import {Type} from '../../../src/facade/lang';
+import {Type} from '../../facade/lang';
 import {DomAdapter, setRootDomAdapter} from '../../dom/dom_adapter';
 
 /**

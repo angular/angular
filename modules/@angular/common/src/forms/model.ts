@@ -1,7 +1,7 @@
-import {isPresent, isBlank, normalizeBool} from '../../src/facade/lang';
-import {Observable, EventEmitter, ObservableWrapper} from '../../src/facade/async';
-import {PromiseWrapper} from '../../src/facade/promise';
-import {StringMapWrapper, ListWrapper} from '../../src/facade/collection';
+import {isPresent, isBlank, normalizeBool} from '../facade/lang';
+import {Observable, EventEmitter, ObservableWrapper} from '../facade/async';
+import {PromiseWrapper} from '../facade/promise';
+import {StringMapWrapper, ListWrapper} from '../facade/collection';
 import {ValidatorFn, AsyncValidatorFn} from './directives/validators';
 
 /**

@@ -1,6 +1,6 @@
 import {
   ListWrapper,
-} from '../../src/facade/collection';
+} from '../facade/collection';
 import {
   TemplateAst,
   TemplateAstVisitor,

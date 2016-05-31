@@ -1,5 +1,5 @@
 import {getDOM} from '../dom/dom_adapter';
-import {assertionsEnabled} from '../../src/facade/lang';
+import {assertionsEnabled} from '../facade/lang';
 
 /**
  * A pattern that recognizes a commonly useful subset of URLs that are safe.

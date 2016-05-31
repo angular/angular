@@ -1,5 +1,5 @@
 import {Injectable, Inject, Optional} from '@angular/core';
-import {isPresent} from '../../src/facade/lang';
+import {isPresent} from '../facade/lang';
 
 import {LocationStrategy, APP_BASE_HREF} from './location_strategy';
 import {Location} from './location';

@@ -7,7 +7,7 @@ import {
   isFunction,
   RegExpWrapper,
   StringWrapper
-} from '../../src/facade/lang';
+} from '../facade/lang';
 
 import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
 

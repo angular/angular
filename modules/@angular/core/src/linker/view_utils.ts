@@ -1,7 +1,7 @@
 import {SanitizationService} from '../security';
-import {isBlank, isPresent, looseIdentical} from '../../src/facade/lang';
-import {ListWrapper, StringMapWrapper} from '../../src/facade/collection';
-import {BaseException} from '../../src/facade/exceptions';
+import {isBlank, isPresent, looseIdentical} from '../facade/lang';
+import {ListWrapper, StringMapWrapper} from '../facade/collection';
+import {BaseException} from '../facade/exceptions';
 import {AppElement} from './element';
 import {ExpressionChangedAfterItHasBeenCheckedException} from './exceptions';
 import {devModeEqual} from '../change_detection/change_detection';

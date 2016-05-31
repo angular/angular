@@ -14,8 +14,8 @@ import {
   isPresent,
   isBlank,
   looseIdentical
-} from '../../../src/facade/lang';
-import {MapWrapper} from '../../../src/facade/collection';
+} from '../../facade/lang';
+import {MapWrapper} from '../../facade/collection';
 
 import {NG_VALUE_ACCESSOR, ControlValueAccessor} from './control_value_accessor';
 

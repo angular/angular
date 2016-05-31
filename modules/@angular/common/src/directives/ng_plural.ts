@@ -8,8 +8,8 @@ import {
   AfterContentInit,
   Input
 } from '@angular/core';
-import {isPresent, NumberWrapper} from '../../src/facade/lang';
-import {Map} from '../../src/facade/collection';
+import {isPresent, NumberWrapper} from '../facade/lang';
+import {Map} from '../facade/collection';
 
 import {SwitchView} from './ng_switch';
 

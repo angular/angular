@@ -1,5 +1,5 @@
-import {isPresent} from '../../src/facade/lang';
-import {Predicate, ListWrapper, MapWrapper} from '../../src/facade/collection';
+import {isPresent} from '../facade/lang';
+import {Predicate, ListWrapper, MapWrapper} from '../facade/collection';
 import {Injector} from '../di';
 import {RenderDebugInfo} from '../render/api';
 

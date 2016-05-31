@@ -1,7 +1,7 @@
 import {
   isPresent,
   evalExpression,
-} from '../../src/facade/lang';
+} from '../facade/lang';
 import * as o from './output_ast';
 import {EmitterVisitorContext} from './abstract_emitter';
 import {AbstractJsEmitterVisitor} from './abstract_js_emitter';

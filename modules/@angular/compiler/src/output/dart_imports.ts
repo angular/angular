@@ -1,5 +1,5 @@
-import {BaseException} from '../../src/facade/exceptions';
-import {isPresent, isBlank, RegExpWrapper, Math} from '../../src/facade/lang';
+import {BaseException} from '../facade/exceptions';
+import {isPresent, isBlank, RegExpWrapper, Math} from '../facade/lang';
 import {Injectable} from '@angular/core';
 
 import {AssetUrl, ImportGenerator} from './path_util';

@@ -1,5 +1,5 @@
-import {ListWrapper} from '../../src/facade/collection';
-import {isBlank, isPresent, isFunction, global, setValueOnPath, DateWrapper} from '../../src/facade/lang';
+import {ListWrapper} from '../facade/collection';
+import {isBlank, isPresent, isFunction, global, setValueOnPath, DateWrapper} from '../facade/lang';
 import {GenericBrowserDomAdapter} from './generic_browser_adapter';
 import {setRootDomAdapter} from '../dom/dom_adapter';
 

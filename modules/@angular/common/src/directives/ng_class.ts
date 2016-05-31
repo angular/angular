@@ -11,8 +11,8 @@ import {
   CollectionChangeRecord,
   KeyValueChangeRecord
 } from '@angular/core';
-import {isPresent, isString, isArray} from '../../src/facade/lang';
-import {StringMapWrapper, isListLikeIterable} from '../../src/facade/collection';
+import {isPresent, isString, isArray} from '../facade/lang';
+import {StringMapWrapper, isListLikeIterable} from '../facade/collection';
 
 /**
  * The `NgClass` directive conditionally adds and removes CSS classes on an HTML element based on

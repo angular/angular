@@ -1,5 +1,5 @@
 import {Directive, ViewContainerRef, TemplateRef} from '@angular/core';
-import {isBlank} from '../../src/facade/lang';
+import {isBlank} from '../facade/lang';
 
 /**
  * Removes or recreates a portion of the DOM tree based on an {expression}.

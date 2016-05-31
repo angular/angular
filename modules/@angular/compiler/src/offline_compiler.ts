@@ -7,8 +7,8 @@ import {
   createHostComponentMeta
 } from './compile_metadata';
 
-import {BaseException} from '../src/facade/exceptions';
-import {ListWrapper} from '../src/facade/collection';
+import {BaseException} from './facade/exceptions';
+import {ListWrapper} from './facade/collection';
 import {StyleCompiler, StylesCompileResult} from './style_compiler';
 import {ViewCompiler, ViewCompileResult} from './view_compiler/view_compiler';
 import {TemplateParser} from './template_parser';
@@ -17,10 +17,7 @@ import {OutputEmitter} from './output/abstract_emitter';
 import * as o from './output/output_ast';
 import {XHR} from './xhr';
 
-import {
-  MODULE_SUFFIX,
-  assetUrl,
-} from './util';
+import {assetUrl} from './util';
 
 var _COMPONENT_FACTORY_IDENTIFIER = new CompileIdentifierMetadata({
   name: 'ComponentFactory',

@@ -1,4 +1,4 @@
-import {StringWrapper} from '../../src/facade/lang';
+import {StringWrapper} from '../facade/lang';
 
 var CAMEL_CASE_REGEXP = /([A-Z])/g;
 var DASH_CASE_REGEXP = /-([a-z])/g;

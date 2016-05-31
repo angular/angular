@@ -6,8 +6,8 @@ import {ServiceMessageBrokerFactory, ServiceMessageBroker} from '../shared/servi
 import {PRIMITIVE, Serializer} from '../shared/serializer';
 import {LocationType} from '../shared/serialized_types';
 import {MessageBus} from '../shared/message_bus';
-import {EventEmitter, ObservableWrapper, PromiseWrapper} from '../../../src/facade/async';
-import {FunctionWrapper} from '../../../src/facade/lang';
+import {EventEmitter, ObservableWrapper, PromiseWrapper} from '../../facade/async';
+import {FunctionWrapper} from '../../facade/lang';
 
 @Injectable()
 export class MessageBasedPlatformLocation {

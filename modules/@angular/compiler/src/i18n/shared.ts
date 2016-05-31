@@ -10,7 +10,7 @@ import {
   HtmlExpansionCaseAst,
   htmlVisitAll
 } from '../html_ast';
-import {isPresent, isBlank, StringWrapper} from '../../src/facade/lang';
+import {isPresent, isBlank, StringWrapper} from '../facade/lang';
 import {Message} from './message';
 import {Parser} from '../expression_parser/parser';
 

@@ -1,6 +1,6 @@
-import {Type, isArray, isPresent, serializeEnum} from '../../../src/facade/lang';
-import {BaseException} from '../../../src/facade/exceptions';
-import {Map, StringMapWrapper, MapWrapper} from '../../../src/facade/collection';
+import {Type, isArray, isPresent, serializeEnum} from '../../facade/lang';
+import {BaseException} from '../../facade/exceptions';
+import {Map, StringMapWrapper, MapWrapper} from '../../facade/collection';
 import {RenderComponentType, Injectable, ViewEncapsulation} from '@angular/core';
 import {VIEW_ENCAPSULATION_VALUES} from '../../../core_private';
 import {RenderStore} from './render_store';

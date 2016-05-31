@@ -1,5 +1,5 @@
-import {NumberWrapper, StringWrapper, isPresent, resolveEnumToken} from '../../src/facade/lang';
-import {BaseException} from '../../src/facade/exceptions';
+import {NumberWrapper, StringWrapper, isPresent, resolveEnumToken} from '../facade/lang';
+import {BaseException} from '../facade/exceptions';
 
 import {
   isWhitespace,

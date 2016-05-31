@@ -1,4 +1,4 @@
-import {EventEmitter} from '../../../src/facade/async';
+import {EventEmitter} from '../../facade/async';
 import {NgZone} from '@angular/core';
 
 /**

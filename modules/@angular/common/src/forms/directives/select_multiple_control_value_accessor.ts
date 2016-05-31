@@ -16,9 +16,9 @@ import {
   isPresent, 
   looseIdentical, 
   isString
-} from '../../../src/facade/lang';
+} from '../../facade/lang';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
-import {MapWrapper} from '../../../src/facade/collection';
+import {MapWrapper} from '../../facade/collection';
 
 const SELECT_MULTIPLE_VALUE_ACCESSOR = {
   provide: NG_VALUE_ACCESSOR,

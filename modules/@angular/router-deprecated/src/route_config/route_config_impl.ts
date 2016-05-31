@@ -1,4 +1,4 @@
-import {Type} from '../../src/facade/lang';
+import {Type} from '../facade/lang';
 import {RouteDefinition} from '../route_definition';
 import {RegexSerializer} from '../rules/route_paths/regex_route_path';
 

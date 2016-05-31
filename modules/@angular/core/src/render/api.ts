@@ -1,4 +1,4 @@
-import {unimplemented} from '../../src/facade/exceptions';
+import {unimplemented} from '../facade/exceptions';
 import {ViewEncapsulation} from '../metadata/view';
 import {Injector} from '../di/injector';
 import {AnimationKeyframe} from '../../src/animation/animation_keyframe';

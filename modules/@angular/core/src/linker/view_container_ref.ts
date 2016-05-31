@@ -1,7 +1,7 @@
-import {ListWrapper} from '../../src/facade/collection';
-import {unimplemented} from '../../src/facade/exceptions';
+import {ListWrapper} from '../facade/collection';
+import {unimplemented} from '../facade/exceptions';
 import {Injector} from '../di/injector';
-import {isPresent} from '../../src/facade/lang';
+import {isPresent} from '../facade/lang';
 import {wtfCreateScope, wtfLeave, WtfScopeFn} from '../profile/profile';
 
 import {AppElement} from './element';

@@ -7,7 +7,7 @@ import {
   Optional,
   Self
 } from '@angular/core';
-import {EventEmitter, ObservableWrapper} from '../../../src/facade/async';
+import {EventEmitter, ObservableWrapper} from '../../facade/async';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
 import {NgControl} from './ng_control';
 import {Control} from '../model';

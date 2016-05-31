@@ -1,4 +1,4 @@
-import {stringify, isString, Type, StringWrapper} from '../../src/facade/lang';
+import {stringify, isString, Type, StringWrapper} from '../facade/lang';
 import {DependencyMetadata} from '../di/metadata';
 import {resolveForwardRef} from '../di/forward_ref';
 

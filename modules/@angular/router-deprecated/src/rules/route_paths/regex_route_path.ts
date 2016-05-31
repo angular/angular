@@ -1,4 +1,4 @@
-import {RegExpWrapper, RegExpMatcherWrapper, isBlank} from '../../../src/facade/lang';
+import {RegExpWrapper, RegExpMatcherWrapper, isBlank} from '../../facade/lang';
 import {BaseException} from '@angular/core';
 import {Url} from '../../url_parser';
 import {RoutePath, GeneratedUrl, MatchedUrl} from './route_path';

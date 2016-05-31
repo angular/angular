@@ -1,5 +1,5 @@
-import {isPresent} from '../../src/facade/lang';
-import {ListWrapper} from '../../src/facade/collection';
+import {isPresent} from '../facade/lang';
+import {ListWrapper} from '../facade/collection';
 
 import * as o from '../output/output_ast';
 import {TemplateAst} from '../template_ast';
