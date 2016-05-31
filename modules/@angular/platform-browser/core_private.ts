@@ -32,8 +32,3 @@ export type AnimationStyleUtil = t.AnimationStyleUtil;
 export var AnimationStyleUtil: typeof t.AnimationStyleUtil = r.AnimationStyleUtil;
 export type AnimationStyles = t.AnimationStyles;
 export var AnimationStyles: typeof t.AnimationStyles = r.AnimationStyles;
-
-export type MockAnimationPlayer = t.MockAnimationPlayer;
-export var MockAnimationPlayer: typeof t.MockAnimationPlayer = r.MockAnimationPlayer;
-export type MockAnimationDriver = t.MockAnimationDriver;
-export var MockAnimationDriver: typeof t.MockAnimationDriver = r.MockAnimationDriver;

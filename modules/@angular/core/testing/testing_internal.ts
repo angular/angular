@@ -8,6 +8,9 @@ export {expect} from './testing';
 export {inject} from './test_injector';
 export {AsyncTestCompleter} from './async_test_completer';
 
+export {MockAnimationPlayer} from './animation/mock_animation_player';
+export {MockAnimationDriver} from './animation/mock_animation_driver';
+
 export var proxy: ClassDecorator = (t) => t;
 
 var _global = <any>(typeof window === 'undefined' ? global : window);

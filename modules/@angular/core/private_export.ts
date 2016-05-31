@@ -42,8 +42,6 @@ import {
   EMPTY_STATE as EMPTY_STATE_,
   FILL_STYLE_FLAG as FILL_STYLE_FLAG_
 } from './src/animation/animation_constants';
-import {MockAnimationPlayer as MockAnimationPlayer_} from './testing/animation/mock_animation_player';
-import {MockAnimationDriver as MockAnimationDriver_} from './testing/animation/mock_animation_driver';
 
 export declare namespace __core_private_types__ {
   export var isDefaultChangeDetectionStrategy: typeof constants.isDefaultChangeDetectionStrategy;
@@ -130,10 +128,6 @@ export declare namespace __core_private_types__ {
   export var ANY_STATE: typeof ANY_STATE_;
   export var EMPTY_STATE: typeof EMPTY_STATE_;
   export var FILL_STYLE_FLAG: typeof FILL_STYLE_FLAG_;
-  export type MockAnimationPlayer = MockAnimationPlayer_;
-  export var MockAnimationPlayer: typeof MockAnimationPlayer_;
-  export type MockAnimationDriver = MockAnimationDriver_;
-  export var MockAnimationDriver: typeof MockAnimationDriver_;
 }
 
 export var __core_private__ = {
@@ -195,8 +189,6 @@ export var __core_private__ = {
   AnimationKeyframe: AnimationKeyframe_,
   AnimationStyleUtil: AnimationStyleUtil_,
   AnimationStyles: AnimationStyles_,
-  MockAnimationPlayer: MockAnimationPlayer_,
-  MockAnimationDriver: MockAnimationDriver_,
   ANY_STATE: ANY_STATE_,
   EMPTY_STATE: EMPTY_STATE_,
   FILL_STYLE_FLAG: FILL_STYLE_FLAG_
