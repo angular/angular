@@ -1,4 +1,4 @@
-import { ComponentResolver, ReflectiveInjector } from '@angular/core';
+import { ComponentResolver, ReflectiveInjector, Type } from '@angular/core';
 import { Location } from '@angular/common';
 import { UrlSerializer } from './url_serializer';
 import { RouterOutletMap } from './router_outlet_map';
@@ -33,9 +33,9 @@ export class Router {
   /**
    * @internal
    */
-  constructor(private rootComponent:Object, private resolver: ComponentResolver, private urlSerializer: UrlSerializer, private outletMap: RouterOutletMap, private location: Location) {
+  constructor(private roorComponentType:Type, private resolver: ComponentResolver, private urlSerializer: UrlSerializer, private outletMap: RouterOutletMap, private location: Location) {
     this.currentUrlTree = createEmptyUrlTree();
-    this.currentRouterState = createEmptyState(<any>rootComponent.constructor);
+    this.currentRouterState = createEmptyState(roorComponentType);
     this.setUpLocationChangeListener();
     this.navigateByUrl(this.location.path());
   }
