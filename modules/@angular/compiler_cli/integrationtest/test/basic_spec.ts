@@ -27,7 +27,7 @@ describe("template codegen output", () => {
     expect(fs.existsSync(metadataOutput)).toBeTruthy();
     const output = fs.readFileSync(metadataOutput, {encoding: 'utf-8'});
     expect(output).toContain('"decorators":');
-    expect(output).toContain('"name":"Component","module":"@angular/core"');
+    expect(output).toContain('"module":"@angular/core","name":"Component"');
   });
 
   it("should write .d.ts files", () => {

@@ -1,6 +1,6 @@
 import * as ts from 'typescript';
 import {MetadataCollector} from '../src/collector';
-import {ClassMetadata, ModuleMetadata} from '../src/schema';
+import {ClassMetadata, ConstructorMetadata, ModuleMetadata} from '../src/schema';
 
 import {Directory, expectValidSources, Host} from './typescript.mocks';
 
@@ -8,16 +8,15 @@ describe('Collector', () => {
   let host: ts.LanguageServiceHost;
   let service: ts.LanguageService;
   let program: ts.Program;
-  let typeChecker: ts.TypeChecker;
   let collector: MetadataCollector;
 
   beforeEach(() => {
-    host = new Host(
-        FILES,
-        ['/app/app.component.ts', '/app/cases-data.ts', '/app/cases-no-data.ts', '/promise.ts']);
+    host = new Host(FILES, [
+      '/app/app.component.ts', '/app/cases-data.ts', '/app/error-cases.ts', '/promise.ts',
+      '/unsupported-1.ts', '/unsupported-2.ts'
+    ]);
     service = ts.createLanguageService(host);
     program = service.getProgram();
-    typeChecker = program.getTypeChecker();
     collector = new MetadataCollector();
   });
 
@@ -25,27 +24,13 @@ describe('Collector', () => {
 
   it('should return undefined for modules that have no metadata', () => {
     const sourceFile = program.getSourceFile('app/hero.ts');
-    const metadata = collector.getMetadata(sourceFile, typeChecker);
+    const metadata = collector.getMetadata(sourceFile);
     expect(metadata).toBeUndefined();
-  });
-
-  it('should be able to collect import statements', () => {
-    const sourceFile = program.getSourceFile('app/app.component.ts');
-    expect(collector.collectImports(sourceFile)).toEqual([
-      {
-        from: 'angular2/core',
-        namedImports: [{name: 'MyComponent', propertyName: 'Component'}, {name: 'OnInit'}]
-      },
-      {from: 'angular2/common', namespace: 'common'},
-      {from: './hero', namedImports: [{name: 'Hero'}]},
-      {from: './hero-detail.component', namedImports: [{name: 'HeroDetailComponent'}]},
-      {from: './hero.service', defaultName: 'HeroService'}
-    ]);
   });
 
   it('should be able to collect a simple component\'s metadata', () => {
     const sourceFile = program.getSourceFile('app/hero-detail.component.ts');
-    const metadata = collector.getMetadata(sourceFile, typeChecker);
+    const metadata = collector.getMetadata(sourceFile);
     expect(metadata).toEqual({
       __symbolic: 'module',
       metadata: {
@@ -53,7 +38,7 @@ describe('Collector', () => {
           __symbolic: 'class',
           decorators: [{
             __symbolic: 'call',
-            expression: {__symbolic: 'reference', name: 'Component', module: 'angular2/core'},
+            expression: {__symbolic: 'reference', module: 'angular2/core', name: 'Component'},
             arguments: [{
               selector: 'my-hero-detail',
               template: `
@@ -74,7 +59,7 @@ describe('Collector', () => {
               decorators: [{
                 __symbolic: 'call',
                 expression:
-                    {__symbolic: 'reference', name: 'Input', module: 'angular2/core'}
+                    {__symbolic: 'reference', module: 'angular2/core', name: 'Input'}
               }]
             }]
           }
@@ -85,7 +70,7 @@ describe('Collector', () => {
 
   it('should be able to get a more complicated component\'s metadata', () => {
     const sourceFile = program.getSourceFile('/app/app.component.ts');
-    const metadata = collector.getMetadata(sourceFile, typeChecker);
+    const metadata = collector.getMetadata(sourceFile);
     expect(metadata).toEqual({
       __symbolic: 'module',
       metadata: {
@@ -93,7 +78,7 @@ describe('Collector', () => {
           __symbolic: 'class',
           decorators: [{
             __symbolic: 'call',
-            expression: {__symbolic: 'reference', name: 'Component', module: 'angular2/core'},
+            expression: {__symbolic: 'reference', module: 'angular2/core', name: 'Component'},
             arguments: [{
               selector: 'my-app',
               template: `
@@ -110,22 +95,22 @@ describe('Collector', () => {
               directives: [
                 {
                   __symbolic: 'reference',
+                  module: './hero-detail.component',
                   name: 'HeroDetailComponent',
-                  module: './hero-detail.component'
                 },
-                {__symbolic: 'reference', name: 'NgFor', module: 'angular2/common'}
+                {__symbolic: 'reference', module: 'angular2/common', name: 'NgFor'}
               ],
-              providers: [{__symbolic: 'reference', name: undefined, module: './hero.service'}],
+              providers: [{__symbolic: 'reference', module: './hero.service', default: true}],
               pipes: [
-                {__symbolic: 'reference', name: 'LowerCasePipe', module: 'angular2/common'},
-                {__symbolic: 'reference', name: 'UpperCasePipe', module: 'angular2/common'}
+                {__symbolic: 'reference', module: 'angular2/common', name: 'LowerCasePipe'},
+                {__symbolic: 'reference', module: 'angular2/common', name: 'UpperCasePipe'}
               ]
             }]
           }],
           members: {
             __ctor__: [{
               __symbolic: 'constructor',
-              parameters: [{__symbolic: 'reference', name: undefined, module: './hero.service'}]
+              parameters: [{__symbolic: 'reference', module: './hero.service', default: true}]
             }],
             onSelect: [{__symbolic: 'method'}],
             ngOnInit: [{__symbolic: 'method'}],
@@ -138,7 +123,7 @@ describe('Collector', () => {
 
   it('should return the values of exported variables', () => {
     const sourceFile = program.getSourceFile('/app/mock-heroes.ts');
-    const metadata = collector.getMetadata(sourceFile, typeChecker);
+    const metadata = collector.getMetadata(sourceFile);
     expect(metadata).toEqual({
       __symbolic: 'module',
       metadata: {
@@ -153,11 +138,11 @@ describe('Collector', () => {
     });
   });
 
-  it('should have no data produced for the no data cases', () => {
-    const sourceFile = program.getSourceFile('/app/cases-no-data.ts');
+  it('should return undefined for modules that have no metadata', () => {
+    const sourceFile = program.getSourceFile('/app/error-cases.ts');
     expect(sourceFile).toBeTruthy(sourceFile);
-    const metadata = collector.getMetadata(sourceFile, typeChecker);
-    expect(metadata).toBeFalsy();
+    const metadata = collector.getMetadata(sourceFile);
+    expect(metadata).toBeUndefined();
   });
 
   let casesFile: ts.SourceFile;
@@ -165,14 +150,15 @@ describe('Collector', () => {
 
   beforeEach(() => {
     casesFile = program.getSourceFile('/app/cases-data.ts');
-    casesMetadata = collector.getMetadata(casesFile, typeChecker);
+    casesMetadata = collector.getMetadata(casesFile);
   });
 
-  it('should provide null for an any ctor pameter type', () => {
+  it('should provide any reference for an any ctor parameter type', () => {
     const casesAny = <ClassMetadata>casesMetadata.metadata['CaseAny'];
     expect(casesAny).toBeTruthy();
     const ctorData = casesAny.members['__ctor__'];
-    expect(ctorData).toEqual([{__symbolic: 'constructor', parameters: [null]}]);
+    expect(ctorData).toEqual(
+        [{__symbolic: 'constructor', parameters: [{__symbolic: 'reference', name: 'any'}]}]);
   });
 
   it('should record annotations on set and get declarations', () => {
@@ -192,6 +178,67 @@ describe('Collector', () => {
     expect(caseSetProp.members).toEqual(propertyData);
     const caseFullProp = <ClassMetadata>casesMetadata.metadata['FullProp'];
     expect(caseFullProp.members).toEqual(propertyData);
+  });
+
+  it('should record references to parameterized types', () => {
+    const casesForIn = <ClassMetadata>casesMetadata.metadata['NgFor'];
+    expect(casesForIn).toEqual({
+      __symbolic: 'class',
+      decorators: [{
+        __symbolic: 'call',
+        expression: {__symbolic: 'reference', module: 'angular2/core', name: 'Injectable'}
+      }],
+      members: {
+        __ctor__: [{
+          __symbolic: 'constructor',
+          parameters: [{
+            __symbolic: 'reference',
+            name: 'ClassReference',
+            arguments: [{__symbolic: 'reference', name: 'NgForRow'}]
+          }]
+        }]
+      }
+    });
+  });
+
+  it('should report errors for destructured imports', () => {
+    let unsupported1 = program.getSourceFile('/unsupported-1.ts');
+    let metadata = collector.getMetadata(unsupported1);
+    expect(metadata).toEqual({
+      __symbolic: 'module',
+      metadata: {
+        a: {
+          __symbolc: 'error',
+          message: 'Destructuring declarations cannot be referenced statically'
+        },
+        b: {
+          __symbolc: 'error',
+          message: 'Destructuring declarations cannot be referenced statically'
+        },
+        c: {
+          __symbolc: 'error',
+          message: 'Destructuring declarations cannot be referenced statically'
+        },
+        d: {
+          __symbolc: 'error',
+          message: 'Destructuring declarations cannot be referenced statically'
+        },
+        e: {
+          __symbolic: 'error',
+          message: 'Only intialized variables and constants can be referenced statically'
+        }
+      }
+    });
+  });
+
+  it('should report an error for refrences to unexpected types', () => {
+    let unsupported1 = program.getSourceFile('/unsupported-2.ts');
+    let metadata = collector.getMetadata(unsupported1);
+    let barClass = <ClassMetadata>metadata.metadata['Bar'];
+    let ctor = <ConstructorMetadata>barClass.members['__ctor__'][0];
+    let parameter = ctor.parameters[0];
+    expect(parameter).toEqual(
+        {__symbolic: 'error', message: 'Reference to non-exported class Foo'});
   });
 });
 
@@ -344,8 +391,18 @@ const FILES: Directory = {
           this._name = value;
         }
       }
+
+      export class ClassReference<T> { }
+      export class NgForRow {
+
+      }
+
+      @Injectable()
+      export class NgFor {
+        constructor (public ref: ClassReference<NgForRow>) {}
+      }
      `,
-    'cases-no-data.ts': `
+    'error-cases.ts': `
       import HeroService from './hero.service';
 
       export class CaseCtor {
@@ -377,7 +434,21 @@ const FILES: Directory = {
 
     declare var Promise: PromiseConstructor;
   `,
-
+  'unsupported-1.ts': `
+    export let {a, b} = {a: 1, b: 2};
+    export let [c, d] = [1, 2];
+    export let e;
+  `,
+  'unsupported-2.ts': `
+    import {Injectable} from 'angular2/core';
+ 
+    class Foo {}
+    
+    @Injectable()
+    export class Bar {
+      constructor(private f: Foo) {}
+    }
+  `,
   'node_modules': {
     'angular2': {
       'core.d.ts': `

@@ -1,9 +1,8 @@
 import * as ts from 'typescript';
 
-import {Evaluator, ImportMetadata, ImportSpecifierMetadata} from './evaluator';
-import {ClassMetadata, ConstructorMetadata, ModuleMetadata, MemberMetadata, MetadataMap, MetadataSymbolicExpression, MetadataSymbolicReferenceExpression, MetadataValue, MethodMetadata} from './schema';
+import {Evaluator, ImportMetadata, ImportSpecifierMetadata, isPrimitive} from './evaluator';
+import {ClassMetadata, ConstructorMetadata, ModuleMetadata, MemberMetadata, MetadataError, MetadataMap, MetadataSymbolicExpression, MetadataSymbolicReferenceExpression, MetadataValue, MethodMetadata, isMetadataError, isMetadataSymbolicReferenceExpression,} from './schema';
 import {Symbols} from './symbols';
-
 
 /**
  * Collect decorator metadata from a TypeScript module.
@@ -11,69 +10,17 @@ import {Symbols} from './symbols';
 export class MetadataCollector {
   constructor() {}
 
-  collectImports(sourceFile: ts.SourceFile) {
-    let imports: ImportMetadata[] = [];
-    const stripQuotes = (s: string) => s.replace(/^['"]|['"]$/g, '');
-    function visit(node: ts.Node) {
-      switch (node.kind) {
-        case ts.SyntaxKind.ImportDeclaration:
-          const importDecl = <ts.ImportDeclaration>node;
-          const from = stripQuotes(importDecl.moduleSpecifier.getText());
-          const newImport = {from};
-          if (!importDecl.importClause) {
-            // Bare imports do not bring symbols into scope, so we don't need to record them
-            break;
-          }
-          if (importDecl.importClause.name) {
-            (<any>newImport)['defaultName'] = importDecl.importClause.name.text;
-          }
-          const bindings = importDecl.importClause.namedBindings;
-          if (bindings) {
-            switch (bindings.kind) {
-              case ts.SyntaxKind.NamedImports:
-                const namedImports: ImportSpecifierMetadata[] = [];
-                (<ts.NamedImports>bindings).elements.forEach(i => {
-                  const namedImport = {name: i.name.text};
-                  if (i.propertyName) {
-                    (<any>namedImport)['propertyName'] = i.propertyName.text;
-                  }
-                  namedImports.push(namedImport);
-                });
-                (<any>newImport)['namedImports'] = namedImports;
-                break;
-              case ts.SyntaxKind.NamespaceImport:
-                (<any>newImport)['namespace'] = (<ts.NamespaceImport>bindings).name.text;
-                break;
-            }
-          }
-          imports.push(newImport);
-          break;
-      }
-      ts.forEachChild(node, visit);
-    }
-    ts.forEachChild(sourceFile, visit);
-    return imports;
-  }
-
   /**
    * Returns a JSON.stringify friendly form describing the decorators of the exported classes from
    * the source file that is expected to correspond to a module.
    */
-  public getMetadata(sourceFile: ts.SourceFile, typeChecker: ts.TypeChecker): ModuleMetadata {
-    const locals = new Symbols();
-    const evaluator = new Evaluator(typeChecker, locals, this.collectImports(sourceFile));
+  public getMetadata(sourceFile: ts.SourceFile): ModuleMetadata {
+    const locals = new Symbols(sourceFile);
+    const evaluator = new Evaluator(locals);
+    let metadata: {[name: string]: MetadataValue | ClassMetadata}|undefined;
 
     function objFromDecorator(decoratorNode: ts.Decorator): MetadataSymbolicExpression {
       return <MetadataSymbolicExpression>evaluator.evaluateNode(decoratorNode.expression);
-    }
-
-    function referenceFromType(type: ts.Type): MetadataSymbolicReferenceExpression {
-      if (type) {
-        let symbol = type.getSymbol();
-        if (symbol) {
-          return evaluator.symbolReference(symbol);
-        }
-      }
     }
 
     function classMetadataOf(classDeclaration: ts.ClassDeclaration): ClassMetadata {
@@ -83,6 +30,15 @@ export class MetadataCollector {
         if (decorators && decorators.length)
           return decorators.map(decorator => objFromDecorator(decorator));
         return undefined;
+      }
+
+      function referenceFrom(node: ts.Node): MetadataSymbolicReferenceExpression|MetadataError {
+        const result = evaluator.evaluateNode(node);
+        if (isMetadataError(result) || isMetadataSymbolicReferenceExpression(result)) {
+          return result;
+        } else {
+          return {__symbolic: 'error', message: 'Symbol reference expected'};
+        }
       }
 
       // Add class decorators
@@ -108,8 +64,9 @@ export class MetadataCollector {
             const method = <ts.MethodDeclaration|ts.ConstructorDeclaration>member;
             const methodDecorators = getDecorators(method.decorators);
             const parameters = method.parameters;
-            const parameterDecoratorData: MetadataSymbolicExpression[][] = [];
-            const parametersData: MetadataSymbolicReferenceExpression[] = [];
+            const parameterDecoratorData: (MetadataSymbolicExpression | MetadataError)[][] = [];
+            const parametersData: (MetadataSymbolicReferenceExpression | MetadataError | null)[] =
+                [];
             let hasDecoratorData: boolean = false;
             let hasParameterData: boolean = false;
             for (const parameter of parameters) {
@@ -117,8 +74,11 @@ export class MetadataCollector {
               parameterDecoratorData.push(parameterData);
               hasDecoratorData = hasDecoratorData || !!parameterData;
               if (isConstructor) {
-                const parameterType = typeChecker.getTypeAtLocation(parameter);
-                parametersData.push(referenceFromType(parameterType) || null);
+                if (parameter.type) {
+                  parametersData.push(referenceFrom(parameter.type));
+                } else {
+                  parametersData.push(null);
+                }
                 hasParameterData = true;
               }
             }
@@ -133,7 +93,9 @@ export class MetadataCollector {
             if (hasParameterData) {
               (<ConstructorMetadata>data).parameters = parametersData;
             }
-            recordMember(name, data);
+            if (!isMetadataError(name)) {
+              recordMember(name, data);
+            }
             break;
           case ts.SyntaxKind.PropertyDeclaration:
           case ts.SyntaxKind.GetAccessor:
@@ -141,9 +103,10 @@ export class MetadataCollector {
             const property = <ts.PropertyDeclaration>member;
             const propertyDecorators = getDecorators(property.decorators);
             if (propertyDecorators) {
-              recordMember(
-                  evaluator.nameOf(property.name),
-                  {__symbolic: 'property', decorators: propertyDecorators});
+              let name = evaluator.nameOf(property.name);
+              if (!isMetadataError(name)) {
+                recordMember(name, {__symbolic: 'property', decorators: propertyDecorators});
+              }
             }
             break;
         }
@@ -155,36 +118,94 @@ export class MetadataCollector {
       return result.decorators || members ? result : undefined;
     }
 
-    let metadata: {[name: string]: (ClassMetadata | MetadataValue)};
-    const symbols = typeChecker.getSymbolsInScope(sourceFile, ts.SymbolFlags.ExportValue);
-    for (var symbol of symbols) {
-      for (var declaration of symbol.getDeclarations()) {
-        switch (declaration.kind) {
-          case ts.SyntaxKind.ClassDeclaration:
-            const classDeclaration = <ts.ClassDeclaration>declaration;
+    // Predeclare classes
+    ts.forEachChild(sourceFile, node => {
+      switch (node.kind) {
+        case ts.SyntaxKind.ClassDeclaration:
+          const classDeclaration = <ts.ClassDeclaration>node;
+          const className = classDeclaration.name.text;
+          if (node.flags & ts.NodeFlags.Export) {
+            locals.define(className, {__symbolic: 'reference', name: className});
+          } else {
+            locals.define(
+                className,
+                {__symbolic: 'error', message: `Reference to non-exported class ${className}`});
+          }
+          break;
+      }
+    });
+    ts.forEachChild(sourceFile, node => {
+      switch (node.kind) {
+        case ts.SyntaxKind.ClassDeclaration:
+          const classDeclaration = <ts.ClassDeclaration>node;
+          const className = classDeclaration.name.text;
+          if (node.flags & ts.NodeFlags.Export) {
             if (classDeclaration.decorators) {
               if (!metadata) metadata = {};
-              metadata[classDeclaration.name.text] = classMetadataOf(classDeclaration);
+              metadata[className] = classMetadataOf(classDeclaration);
             }
-            break;
-          case ts.SyntaxKind.VariableDeclaration:
-            const variableDeclaration = <ts.VariableDeclaration>declaration;
-            if (variableDeclaration.initializer) {
-              const value = evaluator.evaluateNode(variableDeclaration.initializer);
-              if (value !== undefined) {
-                if (evaluator.isFoldable(variableDeclaration.initializer)) {
-                  // Record the value for use in other initializers
-                  locals.set(symbol, value);
-                }
-                if (!metadata) metadata = {};
-                metadata[evaluator.nameOf(variableDeclaration.name)] =
-                    evaluator.evaluateNode(variableDeclaration.initializer);
+          }
+          // Otherwise don't record metadata for the class.
+          break;
+        case ts.SyntaxKind.VariableStatement:
+          const variableStatement = <ts.VariableStatement>node;
+          for (let variableDeclaration of variableStatement.declarationList.declarations) {
+            if (variableDeclaration.name.kind == ts.SyntaxKind.Identifier) {
+              let nameNode = <ts.Identifier>variableDeclaration.name;
+              let varValue: MetadataValue;
+              if (variableDeclaration.initializer) {
+                varValue = evaluator.evaluateNode(variableDeclaration.initializer);
+              } else {
+                varValue = {
+                  __symbolic: 'error',
+                  message: 'Only intialized variables and constants can be referenced statically'
+                };
               }
+              if (variableStatement.flags & ts.NodeFlags.Export ||
+                  variableDeclaration.flags & ts.NodeFlags.Export) {
+                if (!metadata) metadata = {};
+                metadata[nameNode.text] = varValue;
+              }
+              if (isPrimitive(varValue)) {
+                locals.define(nameNode.text, varValue);
+              }
+            } else {
+              // Destructuring (or binding) declarations are not supported,
+              // var {<identifier>[, <identifer>]+} = <expression>;
+              //   or
+              // var [<identifier>[, <identifier}+] = <expression>;
+              // are not supported.
+              let varValue = {
+                __symbolc: 'error',
+                message: 'Destructuring declarations cannot be referenced statically'
+              };
+              const report = (nameNode: ts.Node) => {
+                switch (nameNode.kind) {
+                  case ts.SyntaxKind.Identifier:
+                    const name = <ts.Identifier>nameNode;
+                    locals.define(name.text, varValue);
+                    if (node.flags & ts.NodeFlags.Export) {
+                      if (!metadata) metadata = {};
+                      metadata[name.text] = varValue;
+                    }
+                    break;
+                  case ts.SyntaxKind.BindingElement:
+                    const bindingElement = <ts.BindingElement>nameNode;
+                    report(bindingElement.name);
+                    break;
+                  case ts.SyntaxKind.ObjectBindingPattern:
+                  case ts.SyntaxKind.ArrayBindingPattern:
+                    const bindings = <ts.BindingPattern>nameNode;
+                    bindings.elements.forEach(report);
+                    break;
+                }
+              };
+              report(variableDeclaration.name);
             }
-            break;
-        }
+          }
+          break;
       }
-    }
+    });
 
     return metadata && {__symbolic: 'module', metadata};
   }

@@ -67,8 +67,7 @@ export class MetadataWriterHost extends DelegatingHost {
     // released
     if (/*DTS*/ /\.js$/.test(emitFilePath)) {
       const path = emitFilePath.replace(/*DTS*/ /\.js$/, '.metadata.json');
-      const metadata =
-          this.metadataCollector.getMetadata(sourceFile, this.program.getTypeChecker());
+      const metadata = this.metadataCollector.getMetadata(sourceFile);
       if (metadata && metadata.metadata) {
         const metadataText = JSON.stringify(metadata);
         writeFileSync(path, metadataText, {encoding: 'utf-8'});
