@@ -13,7 +13,7 @@ mkdir -p ./dist/all/
 TSCONFIG=./tools/tsconfig.json
 echo "====== (all)COMPILING: \$(npm bin)/tsc -p ${TSCONFIG} ====="
 $(npm bin)/tsc -p ${TSCONFIG}
-
+cp ./tools/@angular/tsc-wrapped/package.json ./dist/tools/@angular/tsc-wrapped
 
 echo "====== Copying files needed for e2e tests ====="
 cp -r ./modules/playground ./dist/all/
