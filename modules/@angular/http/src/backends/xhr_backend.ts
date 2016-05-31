@@ -1,4 +1,5 @@
-import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
+import {Injectable} from '@angular/core';
+import {__platform_browser_private__} from '@angular/platform-browser';
 
 import {ConnectionBackend, Connection, XSRFStrategy} from '../interfaces';
 import {ReadyState, RequestMethod, ResponseType, ContentType} from '../enums';
@@ -6,7 +7,6 @@ import {Request} from '../static_request';
 import {Response} from '../static_response';
 import {Headers} from '../headers';
 import {ResponseOptions} from '../base_response_options';
-import {Injectable} from '@angular/core';
 import {BrowserXhr} from './browser_xhr';
 import {isPresent, isString} from '../../src/facade/lang';
 import {Observable} from 'rxjs/Observable';
@@ -150,7 +150,7 @@ export class CookieXSRFStrategy implements XSRFStrategy {
       private _cookieName: string = 'XSRF-TOKEN', private _headerName: string = 'X-XSRF-TOKEN') {}
 
   configureRequest(req: Request) {
-    let xsrfToken = getDOM().getCookie(this._cookieName);
+    let xsrfToken = __platform_browser_private__.getDOM().getCookie(this._cookieName);
     if (xsrfToken && !req.headers.has(this._headerName)) {
       req.headers.set(this._headerName, xsrfToken);
     }

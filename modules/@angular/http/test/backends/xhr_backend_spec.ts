@@ -15,7 +15,7 @@ import {BrowserXhr} from '../../src/backends/browser_xhr';
 import {XSRFStrategy} from '../../src/interfaces';
 import {XHRConnection, XHRBackend, CookieXSRFStrategy} from '../../src/backends/xhr_backend';
 import {provide, Injector, Injectable, ReflectiveInjector} from '@angular/core';
-import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
+import {__platform_browser_private__} from '@angular/platform-browser';
 import {Request} from '../../src/static_request';
 import {Response} from '../../src/static_response';
 import {Headers} from '../../src/headers';
@@ -118,6 +118,7 @@ export function main() {
          () => { expect(() => backend.createConnection(sampleRequest)).not.toThrow(); });
     });
 
+    const getDOM = __platform_browser_private__.getDOM;
     if (getDOM().supportsCookies()) {
       describe('XSRF support', () => {
         it('sets an XSRF header by default', () => {
