@@ -27,7 +27,7 @@ describe("Integration", () => {
     {
       provide: Router,
       useFactory: (resolver, urlSerializer, outletMap, location) =>
-        new Router(new RootCmp(), resolver, urlSerializer, outletMap, location),
+        new Router(RootCmp, resolver, urlSerializer, outletMap, location),
       deps: [ComponentResolver, UrlSerializer, RouterOutletMap, Location]
     },
     {provide: ActivatedRoute, useFactory: (r) => r.routerState.root, deps: [Router]},
