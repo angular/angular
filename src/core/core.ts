@@ -7,3 +7,5 @@ export * from './portal/portal-directives';
 
 // Gestures
 export * from './gestures/MdGestureConfig';
+
+export * from './line/line';

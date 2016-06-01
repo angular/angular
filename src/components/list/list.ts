@@ -9,7 +9,7 @@ import {
     Renderer,
     AfterContentInit,
 } from '@angular/core';
-import { MdLine, MdLineSetter } from '../../core/line/line';
+import { MdLine, MdLineSetter } from '@angular2-material/core/line/line';
 
 @Component({
   moduleId: module.id,
