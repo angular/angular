@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, Injector} from '@angular/core';
 import {
   describe,
   it,
@@ -15,7 +15,7 @@ import {
 import {TestComponentBuilder, ComponentFixture} from '@angular/compiler/testing';
 import { ComponentResolver } from '@angular/core';
 import { SpyLocation } from '@angular/common/testing';
-import { UrlSerializer, DefaultUrlSerializer, RouterOutletMap, Router, ActivatedRoute, ROUTER_DIRECTIVES } from '../src/index';
+import { UrlSerializer, DefaultUrlSerializer, RouterOutletMap, Router, ActivatedRoute, ROUTER_DIRECTIVES, Params } from '../src/index';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/map';
 
@@ -26,13 +26,14 @@ describe("Integration", () => {
     {provide: Location, useClass: SpyLocation},
     {
       provide: Router,
-      useFactory: (resolver, urlSerializer, outletMap, location) =>
-        new Router(RootCmp, resolver, urlSerializer, outletMap, location),
-      deps: [ComponentResolver, UrlSerializer, RouterOutletMap, Location]
+      useFactory: (resolver, urlSerializer, outletMap, location, injector) =>
+        new Router(RootCmp, resolver, urlSerializer, outletMap, location, injector),
+      deps: [ComponentResolver, UrlSerializer, RouterOutletMap, Location, Injector]
     },
     {provide: ActivatedRoute, useFactory: (r) => r.routerState.root, deps: [Router]},
   ]);
-  
+
+
   it('should update location when navigating',
     fakeAsync(inject([Router, TestComponentBuilder, Location], (router, tcb, location) => {
       router.resetConfig([
@@ -156,6 +157,48 @@ describe("Integration", () => {
       expect(fixture.debugElement.nativeElement).toHaveText('');
     })));
 
+  it('should set query params and fragment',
+    fakeAsync(inject([Router, TestComponentBuilder], (router, tcb) => {
+      router.resetConfig([
+        { path: 'query', component: QueryParamsAndFragmentCmp }
+      ]);
+
+      const fixture = tcb.createFakeAsync(RootCmp);
+
+      router.navigateByUrl('/query?name=1#fragment1');
+      advance(fixture);
+      expect(fixture.debugElement.nativeElement).toHaveText('query: 1 fragment: fragment1');
+
+      router.navigateByUrl('/query?name=2#fragment2');
+      advance(fixture);
+      expect(fixture.debugElement.nativeElement).toHaveText('query: 2 fragment: fragment2');
+    })));
+
+  it('should push params only when they change',
+    fakeAsync(inject([Router, TestComponentBuilder], (router, tcb:TestComponentBuilder) => {
+      router.resetConfig([
+        { path: 'team/:id', component: TeamCmp, children: [
+          { path: 'user/:name', component: UserCmp }
+        ] }
+      ]);
+
+      const fixture = tcb.createFakeAsync(RootCmp);
+
+      router.navigateByUrl('/team/22/user/victor');
+      advance(fixture);
+      const team = fixture.debugElement.children[1].componentInstance;
+      const user = fixture.debugElement.children[1].children[1].componentInstance;
+
+      expect(team.recordedParams).toEqual([{id: '22'}]);
+      expect(user.recordedParams).toEqual([{name: 'victor'}]);
+
+      router.navigateByUrl('/team/22/user/fedor');
+      advance(fixture);
+
+      expect(team.recordedParams).toEqual([{id: '22'}]);
+      expect(user.recordedParams).toEqual([{name: 'victor'}, {name: 'fedor'}]);
+    })));
+
   describe("router links", () => {
     it("should support string router links",
       fakeAsync(inject([Router, TestComponentBuilder], (router, tcb) => {
@@ -238,6 +281,52 @@ describe("Integration", () => {
         expect(fixture.debugElement.nativeElement).toHaveText('link');
       })));
   });
+
+  describe("guards", () => {
+    describe("CanActivate", () => {
+      describe("should not activate a route when CanActivate returns false", () => {
+        beforeEachProviders(() => [
+          {provide: 'alwaysFalse', useValue: (a, b) => false}
+        ]);
+
+        it('works',
+          fakeAsync(inject([Router, TestComponentBuilder, Location], (router, tcb, location) => {
+            router.resetConfig([
+              { path: 'team/:id', component: TeamCmp, canActivate: ["alwaysFalse"] }
+            ]);
+
+            const fixture = tcb.createFakeAsync(RootCmp);
+            advance(fixture);
+
+            router.navigateByUrl('/team/22');
+            advance(fixture);
+
+            expect(location.path()).toEqual('');
+          })));
+      });
+
+      describe("should activate a route when CanActivate returns true", () => {
+        beforeEachProviders(() => [
+          {provide: 'alwaysFalse', useValue: (a, b) => true}
+        ]);
+
+        it('works',
+          fakeAsync(inject([Router, TestComponentBuilder, Location], (router, tcb, location) => {
+            router.resetConfig([
+              { path: 'team/:id', component: TeamCmp, canActivate: ["alwaysFalse"] }
+            ]);
+
+            const fixture = tcb.createFakeAsync(RootCmp);
+            advance(fixture);
+
+            router.navigateByUrl('/team/22');
+            advance(fixture);
+
+            expect(location.path()).toEqual('/team/22');
+          })));
+      });
+    });
+  });
 });
 
 @Component({
@@ -276,9 +365,11 @@ class SimpleCmp {
 })
 class TeamCmp {
   id: Observable<string>;
+  recordedParams: Params[] = [];
 
   constructor(route: ActivatedRoute) {
     this.id = route.params.map(p => p['id']);
+    route.params.forEach(_ => this.recordedParams.push(_));
   }
 }
 
@@ -289,8 +380,26 @@ class TeamCmp {
 })
 class UserCmp {
   name: Observable<string>;
+  recordedParams: Params[] = [];
+
   constructor(route: ActivatedRoute) {
     this.name = route.params.map(p => p['name']);
+    route.params.forEach(_ => this.recordedParams.push(_));
+  }
+}
+
+@Component({
+  selector: 'query-cmp',
+  template: `query: {{name | async}} fragment: {{fragment | async}}`,
+  directives: [ROUTER_DIRECTIVES]
+})
+class QueryParamsAndFragmentCmp {
+  name: Observable<string>;
+  fragment: Observable<string>;
+
+  constructor(router: Router) {
+    this.name = router.routerState.queryParams.map(p => p['name']);
+    this.fragment = router.routerState.fragment;
   }
 }
 

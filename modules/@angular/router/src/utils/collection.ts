@@ -28,6 +28,10 @@ export function first<T>(a: T[]): T | null {
   return a.length > 0 ? a[0] : null;
 }
 
+export function and(bools: boolean[]): boolean {
+  return bools.reduce((a,b) => a && b, true);
+}
+
 export function merge<V>(m1: {[key: string]: V}, m2: {[key: string]: V}): {[key: string]: V} {
   var m: {[key: string]: V} = {};
 

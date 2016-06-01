@@ -1,4 +1,4 @@
-import { ComponentResolver, ReflectiveInjector, Type } from '@angular/core';
+import { ComponentResolver, ReflectiveInjector, Type, Injector } from '@angular/core';
 import { Location } from '@angular/common';
 import { UrlSerializer } from './url_serializer';
 import { RouterOutletMap } from './router_outlet_map';
@@ -8,15 +8,18 @@ import { createRouterState } from './create_router_state';
 import { TreeNode } from './utils/tree';
 import { UrlTree, createEmptyUrlTree } from './url_tree';
 import { PRIMARY_OUTLET, Params } from './shared';
-import { createEmptyState, createEmptyStateCandidate, RouterState, RouterStateCandidate, ActivatedRoute, ActivatedRouteCandidate} from './router_state';
+import { createEmptyState, RouterState, RouterStateCandidate, ActivatedRoute, ActivatedRouteCandidate} from './router_state';
 import { RouterConfig } from './config';
 import { RouterOutlet } from './directives/router_outlet';
 import { createUrlTree } from './create_url_tree';
-import { forEach } from './utils/collection';
+import { forEach, and, shallowEqual } from './utils/collection';
 import { Observable } from 'rxjs/Observable';
 import { Subscription } from 'rxjs/Subscription';
 import 'rxjs/add/operator/map';
+import 'rxjs/add/operator/scan';
 import 'rxjs/add/operator/mergeMap';
+import {of} from 'rxjs/observable/of';
+import {forkJoin} from 'rxjs/observable/forkJoin';
 
 export interface NavigationExtras { relativeTo?: ActivatedRoute; queryParameters?: Params; fragment?: string; }
 
@@ -26,17 +29,15 @@ export interface NavigationExtras { relativeTo?: ActivatedRoute; queryParameters
 export class Router {
   private currentUrlTree: UrlTree;
   private currentRouterState: RouterState;
-  private currentRouterStateCandidate: RouterStateCandidate;
   private config: RouterConfig;
   private locationSubscription: Subscription;
 
   /**
    * @internal
    */
-  constructor(private rootComponentType:Type, private resolver: ComponentResolver, private urlSerializer: UrlSerializer, private outletMap: RouterOutletMap, private location: Location) {
+  constructor(private rootComponentType:Type, private resolver: ComponentResolver, private urlSerializer: UrlSerializer, private outletMap: RouterOutletMap, private location: Location, private injector: Injector) {
     this.currentUrlTree = createEmptyUrlTree();
     this.currentRouterState = createEmptyState(rootComponentType);
-    this.currentRouterStateCandidate = createEmptyStateCandidate(rootComponentType);
     this.setUpLocationChangeListener();
     this.navigateByUrl(this.location.path());
   }
@@ -159,26 +160,27 @@ export class Router {
     });
   }
 
-  private runNavigate(url:UrlTree, pop?:boolean):Observable<void> {
-    let candidate;
+  private runNavigate(url:UrlTree, pop?:boolean):Observable<any> {
     let state;
     const r = recognize(this.rootComponentType, this.config, url).mergeMap((newRouterStateCandidate) => {
       return resolve(this.resolver, newRouterStateCandidate);
 
     }).map((routerStateCandidate) => {
-      candidate = routerStateCandidate;
-      return createRouterState(routerStateCandidate, this.currentRouterStateCandidate, this.currentRouterState);
+      return createRouterState(routerStateCandidate, this.currentRouterState);
 
     }).map((newState:RouterState) => {
       state = newState;
+
+    }).mergeMap(_ => {
+      return new GuardChecks(state.candidate, this.currentRouterState.candidate, this.injector).check(this.outletMap);
     });
 
-    r.subscribe((_) => {
-      new ActivateRoutes(state, this.currentRouterState, candidate).activate(this.outletMap);
+    r.subscribe((shouldActivate) => {
+      if (!shouldActivate) return;
+      new ActivateRoutes(state, this.currentRouterState).activate(this.outletMap);
 
       this.currentUrlTree = url;
       this.currentRouterState = state;
-      this.currentRouterStateCandidate = candidate;
 
       if (!pop) {
         this.location.go(this.urlSerializer.serialize(url));
@@ -188,59 +190,104 @@ export class Router {
   }
 }
 
+class GuardChecks {
+  private checks = [];
+  constructor(private future: RouterStateCandidate, private curr: RouterStateCandidate, private injector: Injector) {}
+
+  check(parentOutletMap: RouterOutletMap): Observable<boolean> {
+    const futureRoot = this.future._root;
+    const currRoot = this.curr ? this.curr._root : null;
+    this.traverseChildRoutes(futureRoot, currRoot, parentOutletMap);
+    if (this.checks.length === 0) return of(true);
+    return forkJoin(this.checks.map(s => this.runCanActivate(s))).map(and);
+  }
+
+  private traverseChildRoutes(futureNode: TreeNode<ActivatedRouteCandidate>,
+                              currNode: TreeNode<ActivatedRouteCandidate> | null,
+                              outletMap: RouterOutletMap): void {
+    const prevChildren = nodeChildrenAsMap(currNode);
+    futureNode.children.forEach(c => {
+      this.traverseRoutes(c, prevChildren[c.value.outlet], outletMap);
+      delete prevChildren[c.value.outlet];
+    });
+    forEach(prevChildren, (v, k) => this.deactivateOutletAndItChildren(outletMap._outlets[k]));
+  }
+
+  traverseRoutes(futureNode: TreeNode<ActivatedRouteCandidate>, currNode: TreeNode<ActivatedRouteCandidate> | null,
+                 parentOutletMap: RouterOutletMap): void {
+    const future = futureNode.value;
+    const curr = currNode ? currNode.value : null;
+
+    if (future === curr) {
+      if (!shallowEqual(future.params, curr.params)) {
+        this.checks.push(future);
+      }
+      this.traverseChildRoutes(futureNode, currNode, null);
+    } else {
+      this.deactivateOutletAndItChildren(null);
+      this.checks.push(future);
+      this.traverseChildRoutes(futureNode, null, null);
+    }
+  }
+
+  private deactivateOutletAndItChildren(outlet: RouterOutlet): void {}
+
+  private runCanActivate(future: ActivatedRouteCandidate): Observable<boolean> {
+    const canActivate = future._routeConfig ? future._routeConfig.canActivate : null;
+    if (!canActivate || canActivate.length === 0) return of(true);
+    return forkJoin(canActivate.map(c => {
+      const guard = this.injector.get(c);
+      return of(guard(future, this.future));
+    })).map(and);
+  }
+}
+
 class ActivateRoutes {
-  constructor(private futureState: RouterState, private currState: RouterState,
-              private futureStateCandidate: RouterStateCandidate) {}
+  constructor(private futureState: RouterState, private currState: RouterState) {}
 
   activate(parentOutletMap: RouterOutletMap):void {
     const futureRoot = this.futureState._root;
     const currRoot = this.currState ? this.currState._root : null;
-    const futureCandidateRoot = this.futureStateCandidate._root;
-    this.activateChildRoutes(futureRoot, currRoot, futureCandidateRoot, parentOutletMap);
+
+    pushQueryParamsAndFragment(this.futureState);
+    this.activateChildRoutes(futureRoot, currRoot, parentOutletMap);
   }
 
   private activateChildRoutes(futureNode: TreeNode<ActivatedRoute>,
                               currNode: TreeNode<ActivatedRoute> | null,
-                              futureCandidateNode: TreeNode<ActivatedRouteCandidate>,
                               outletMap: RouterOutletMap): void {
     const prevChildren = nodeChildrenAsMap(currNode);
-    for (let i = 0; i < futureNode.children.length; ++i) {
-      const c = futureNode.children[i];
-      const cc = futureCandidateNode.children[i];
-      this.activateRoutes(c, prevChildren[c.value.outlet], cc, outletMap);
+    futureNode.children.forEach(c => {
+      this.activateRoutes(c, prevChildren[c.value.outlet], outletMap);
       delete prevChildren[c.value.outlet];
-    }
+    });
     forEach(prevChildren, (v, k) => this.deactivateOutletAndItChildren(outletMap._outlets[k]));
   }
 
-
-  activateRoutes(futureNode: TreeNode<ActivatedRoute>, currNode: TreeNode<ActivatedRoute>,
-                 futureCandidateNode: TreeNode<ActivatedRouteCandidate>,
+  activateRoutes(futureNode: TreeNode<ActivatedRoute>, currNode: TreeNode<ActivatedRoute> | null,
                  parentOutletMap: RouterOutletMap): void {
     const future = futureNode.value;
-    const futureCandidate = futureCandidateNode.value;
     const curr = currNode ? currNode.value : null;
     const outlet = getOutlet(parentOutletMap, futureNode.value);
 
     if (future === curr) {
-      pushValues(future, futureCandidate);
-      this.activateChildRoutes(futureNode, currNode, futureCandidateNode, outlet.outletMap);
+      pushValues(future);
+      this.activateChildRoutes(futureNode, currNode, outlet.outletMap);
     } else {
       this.deactivateOutletAndItChildren(outlet);
       const outletMap = new RouterOutletMap();
-      this.activateNewRoutes(outletMap, future, futureCandidate, outlet);
-      this.activateChildRoutes(futureNode, currNode, futureCandidateNode, outletMap);
+      this.activateNewRoutes(outletMap, future, outlet);
+      this.activateChildRoutes(futureNode, null, outletMap);
     }
   }
 
-  private activateNewRoutes(outletMap: RouterOutletMap, future: ActivatedRoute,
-                            futureCandidate: ActivatedRouteCandidate, outlet: RouterOutlet): void {
+  private activateNewRoutes(outletMap: RouterOutletMap, future: ActivatedRoute, outlet: RouterOutlet): void {
     const resolved = ReflectiveInjector.resolve([
       {provide: ActivatedRoute, useValue: future},
       {provide: RouterOutletMap, useValue: outletMap}
     ]);
-    outlet.activate(futureCandidate._resolvedComponentFactory, resolved, outletMap);
-    pushValues(future, futureCandidate);
+    outlet.activate(future.candidate._resolvedComponentFactory, resolved, outletMap);
+    pushValues(future);
   }
 
   private deactivateOutletAndItChildren(outlet: RouterOutlet): void {
@@ -251,12 +298,24 @@ class ActivateRoutes {
   }
 }
 
-function pushValues(route: ActivatedRoute, candidate: ActivatedRouteCandidate): void {
-  (<any>route.urlSegments).next(candidate.urlSegments);
-  (<any>route.params).next(candidate.params);
+function pushValues(route: ActivatedRoute): void {
+  if (!shallowEqual(route.candidate.params, (<any>route.params).value)) {
+    (<any>route.urlSegments).next(route.candidate.urlSegments);
+    (<any>route.params).next(route.candidate.params);
+  }
 }
 
-function nodeChildrenAsMap(node: TreeNode<ActivatedRoute>|null) {
+function pushQueryParamsAndFragment(state: RouterState): void {
+  if (!shallowEqual(state.candidate.queryParams, (<any>state.queryParams).value)) {
+    (<any>state.queryParams).next(state.candidate.queryParams);
+  }
+
+  if (state.candidate.fragment !== (<any>state.fragment).value) {
+    (<any>state.fragment).next(state.candidate.fragment);
+  }
+}
+
+function nodeChildrenAsMap(node: TreeNode<any>|null) {
   return node ?
     node.children.reduce(
       (m, c) => {
