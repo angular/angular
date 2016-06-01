@@ -34,10 +34,6 @@ export class Tree<T> {
   contains(tree: Tree<T>): boolean { return contains(this._root, tree._root); }
 }
 
-export function rootNode<T>(tree: Tree<T>): TreeNode<T> {
-  return tree._root;
-}
-
 function findNode<T>(expected: T, c: TreeNode<T>): TreeNode<T> | null {
   if (expected === c.value) return c;
   for (let cc of c.children) {
