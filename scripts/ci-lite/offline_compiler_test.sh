@@ -32,6 +32,7 @@ cp -v package.json $TMP
 
   # Compile the compiler-cli integration tests
   ./node_modules/.bin/ngc
+  ./node_modules/.bin/ng-xi18n
 
   ./node_modules/.bin/jasmine init
   # Run compiler-cli integration tests in node

@@ -2,15 +2,19 @@ import * as selector from './src/selector';
 import * as path_util from './src/output/path_util';
 import * as metadata_resolver from './src/metadata_resolver';
 import * as html_parser from './src/html_parser';
+import * as i18n_html_parser from './src/i18n/i18n_html_parser';
 import * as directive_normalizer from './src/directive_normalizer';
 import * as lexer from './src/expression_parser/lexer';
-import * as parse_util from './src/parse_util';
 import * as parser from './src/expression_parser/parser';
 import * as template_parser from './src/template_parser';
 import * as dom_element_schema_registry from './src/schema/dom_element_schema_registry';
 import * as style_compiler from './src/style_compiler';
 import * as view_compiler from './src/view_compiler/view_compiler';
 import * as ts_emitter from './src/output/ts_emitter';
+import * as i18n_extractor from './src/i18n/message_extractor';
+import * as i18n_message from './src/i18n/message';
+import * as xmb_serializer from './src/i18n/xmb_serializer';
+import * as parse_util from './src/parse_util';
 
 export namespace __compiler_private__ {
   export type SelectorMatcher = selector.SelectorMatcher;
@@ -30,6 +34,23 @@ export namespace __compiler_private__ {
 
   export type HtmlParser = html_parser.HtmlParser;
   export var HtmlParser = html_parser.HtmlParser;
+
+  export type I18nHtmlParser = i18n_html_parser.I18nHtmlParser;
+  export var I18nHtmlParser = i18n_html_parser.I18nHtmlParser;
+
+  export type ExtractionResult = i18n_extractor.ExtractionResult;
+  export var ExtractionResult = i18n_extractor.ExtractionResult;
+
+  export type Message = i18n_message.Message;
+  export var Message = i18n_message.Message;
+
+  export type MessageExtractor = i18n_extractor.MessageExtractor;
+  export var MessageExtractor = i18n_extractor.MessageExtractor;
+
+  export var removeDuplicates = i18n_extractor.removeDuplicates;
+  
+  export var serializeXmb = xmb_serializer.serializeXmb;
+  export var deserializeXmb = xmb_serializer.deserializeXmb;
 
   export type DirectiveNormalizer = directive_normalizer.DirectiveNormalizer;
   export var DirectiveNormalizer = directive_normalizer.DirectiveNormalizer;

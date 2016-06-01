@@ -1,5 +1,4 @@
 import {
-  provide,
   ChangeDetectorRef,
   Injector,
   OnChanges,
@@ -7,7 +6,8 @@ import {
   ComponentRef,
   SimpleChange,
   SimpleChanges,
-  ReflectiveInjector
+  ReflectiveInjector,
+  EventEmitter
 } from '@angular/core';
 import {NG1_SCOPE} from './constants';
 import {ComponentInfo} from './metadata';
@@ -145,11 +145,11 @@ export class DowngradeNg2ComponentAdapter {
         if (assignExpr && !setter) {
           throw new Error(`Expression '${expr}' is not assignable!`);
         }
-        var emitter = this.component[output.prop];
+        var emitter = this.component[output.prop] as EventEmitter<any>;
         if (emitter) {
           emitter.subscribe({
-            next: assignExpr ? ((setter) => (value) => setter(this.scope, value))(setter) :
-                               ((getter) => (value) => getter(this.scope, {$event: value}))(getter)
+            next: assignExpr ? ((setter: any) => v => setter(this.scope, v))(setter) :
+                               ((getter: any) => v => getter(this.scope, {$event: v}))(getter)
           });
         } else {
           throw new Error(`Missing emitter '${output.prop}' on component '${this.info.selector}'!`);

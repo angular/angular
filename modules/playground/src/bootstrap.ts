@@ -9,7 +9,7 @@ declare var System: any;
   writeScriptTag('/all/playground/vendor/system.src.js');
   writeScriptTag('/all/playground/vendor/Reflect.js');
   writeScriptTag('/all/playground/vendor/rxjs/bundles/Rx.js', 'playgroundBootstrap()');
-  global.playgroundBootstrap = playgroundBootstrap;
+  (<any>global).playgroundBootstrap = playgroundBootstrap;
 
   function playgroundBootstrap() {
     // check query param
