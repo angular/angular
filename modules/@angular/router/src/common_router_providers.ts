@@ -3,7 +3,7 @@ import { UrlSerializer, DefaultUrlSerializer } from './url_serializer';
 import { ActivatedRoute } from './router_state';
 import { Router } from './router';
 import { RouterConfig } from './config';
-import { ComponentResolver, ApplicationRef} from '@angular/core';
+import { ComponentResolver, ApplicationRef, Injector } from '@angular/core';
 import { LocationStrategy, PathLocationStrategy, Location } from '@angular/common';
 
 /**
@@ -32,17 +32,17 @@ export function provideRouter(config: RouterConfig):any[] {
 
     {
       provide: Router,
-      useFactory: (ref, resolver, urlSerializer, outletMap, location) => {
+      useFactory: (ref, resolver, urlSerializer, outletMap, location, injector) => {
         if (ref.componentTypes.length == 0) {
           throw new Error("Bootstrap at least one component before injecting Router.");
         }
         const componentType = ref.componentTypes[0];
-        const r = new Router(componentType, resolver, urlSerializer, outletMap, location);
+        const r = new Router(componentType, resolver, urlSerializer, outletMap, location, injector);
         r.resetConfig(config);
         ref.registerDisposeListener(() => r.dispose());
         return r;
       },
-      deps: [ApplicationRef, ComponentResolver, UrlSerializer, RouterOutletMap, Location]
+      deps: [ApplicationRef, ComponentResolver, UrlSerializer, RouterOutletMap, Location, Injector]
     },
 
     RouterOutletMap,

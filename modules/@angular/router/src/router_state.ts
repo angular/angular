@@ -22,21 +22,22 @@ import { Type, ComponentFactory } from '@angular/core';
  * ```
  */
 export class RouterState extends Tree<ActivatedRoute> {
-  constructor(root: TreeNode<ActivatedRoute>, public queryParams: Observable<Params>, public fragment: Observable<string>) {
+  constructor(root: TreeNode<ActivatedRoute>, public queryParams: Observable<Params>, public fragment: Observable<string>, public candidate: RouterStateCandidate) {
     super(root);
   }
 }
 
 export function createEmptyState(rootComponent: Type): RouterState {
+  const candidate = createEmptyStateCandidate(rootComponent);
   const emptyUrl = new BehaviorSubject([new UrlSegment("", {}, PRIMARY_OUTLET)]);
   const emptyParams = new BehaviorSubject({});
   const emptyQueryParams = new BehaviorSubject({});
   const fragment = new BehaviorSubject("");
-  const activated = new ActivatedRoute(emptyUrl, emptyParams, PRIMARY_OUTLET, rootComponent);
-  return new RouterState(new TreeNode<ActivatedRoute>(activated, []), emptyQueryParams, fragment);
+  const activated = new ActivatedRoute(emptyUrl, emptyParams, PRIMARY_OUTLET, rootComponent, candidate.root);
+  return new RouterState(new TreeNode<ActivatedRoute>(activated, []), emptyQueryParams, fragment, candidate);
 }
 
-export function createEmptyStateCandidate(rootComponent: Type): RouterStateCandidate {
+function createEmptyStateCandidate(rootComponent: Type): RouterStateCandidate {
   const emptyUrl = [new UrlSegment("", {}, PRIMARY_OUTLET)];
   const emptyParams = {};
   const emptyQueryParams = {};
@@ -62,7 +63,9 @@ export class ActivatedRoute {
   constructor(public urlSegments: Observable<UrlSegment[]>,
               public params: Observable<Params>,
               public outlet: string,
-              public component: Type | string) {}
+              public component: Type | string,
+              public candidate: ActivatedRouteCandidate
+  ) {}
 }
 
 export class ActivatedRouteCandidate {

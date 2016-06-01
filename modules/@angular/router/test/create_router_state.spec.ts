@@ -1,13 +1,12 @@
 import {DefaultUrlSerializer} from '../src/url_serializer';
 import {UrlTree} from '../src/url_tree';
 import {Params, PRIMARY_OUTLET} from '../src/shared';
-import {ActivatedRoute, ActivatedRouteCandidate, RouterStateCandidate, createEmptyStateCandidate, createEmptyState} from '../src/router_state';
+import {ActivatedRoute, ActivatedRouteCandidate, RouterStateCandidate, createEmptyState} from '../src/router_state';
 import {createRouterState} from '../src/create_router_state';
 import {recognize} from '../src/recognize';
 import {RouterConfig} from '../src/config';
 
 describe('create router state', () => {
-  const emptyCandidate = () => createEmptyStateCandidate(RootComponent);
   const emptyState = () => createEmptyState(RootComponent);
 
   it('should work create new state', () => {
@@ -15,7 +14,7 @@ describe('create router state', () => {
       {path: 'a', component: ComponentA},
       {path: 'b', component: ComponentB, outlet: 'left'},
       {path: 'c', component: ComponentC, outlet: 'right'}
-    ], "a(left:b//right:c)"), emptyCandidate(), emptyState());
+    ], "a(left:b//right:c)"), emptyState());
 
     checkActivatedRoute(state.root, RootComponent);
 
@@ -32,10 +31,8 @@ describe('create router state', () => {
       {path: 'c', component: ComponentC, outlet: 'left'}
     ];
 
-    const prevCandidate = createState(config, "a(left:b)");
-    const prevState = createRouterState(prevCandidate, emptyCandidate(), emptyState());
-
-    const state = createRouterState(createState(config, "a(left:c)"), prevCandidate, prevState);
+    const prevState = createRouterState(createState(config, "a(left:b)"), emptyState());
+    const state = createRouterState(createState(config, "a(left:c)"), prevState);
 
     expect(prevState.root).toBe(state.root);
     const prevC = prevState.children(prevState.root);
