@@ -175,11 +175,19 @@ class BankAccount {
 @Component({
   selector: 'test-app',
   template: `
-   <bank-account bank="RBC" account="4747"></bank-account>
+   <bank-account bank="RBC"
+                 account="4747"
+                 [style.width.px]="width"
+                 [style.color]="color"
+                 [class.closed]="isClosed"
+                 [class.open]="!isClosed"></bank-account>
  `,
   directives: [BankAccount]
 })
 class TestApp {
+  width = 200;
+  color = 'red';
+  isClosed = true;
 }
 
 export function main() {
@@ -281,6 +289,30 @@ export function main() {
 
            expect(bankElem.attributes['bank']).toEqual('RBC');
            expect(bankElem.attributes['account']).toEqual('4747');
+           async.done();
+         });
+       }));
+
+    it('should list element classes',
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+         tcb.createAsync(TestApp).then((fixture) => {
+           fixture.detectChanges();
+           var bankElem = fixture.debugElement.children[0];
+
+           expect(bankElem.classes['closed']).toBe(true);
+           expect(bankElem.classes['open']).toBe(false);
+           async.done();
+         });
+       }));
+
+    it('should list element styles',
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+         tcb.createAsync(TestApp).then((fixture) => {
+           fixture.detectChanges();
+           var bankElem = fixture.debugElement.children[0];
+
+           expect(bankElem.styles['width']).toEqual('200px');
+           expect(bankElem.styles['color']).toEqual('red');
            async.done();
          });
        }));

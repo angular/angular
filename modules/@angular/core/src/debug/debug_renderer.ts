@@ -9,6 +9,8 @@ import {
   removeDebugNodeFromIndex
 } from './debug_node';
 
+import {StringMapWrapper} from '../../src/facade/collection';
+
 import {AnimationKeyframe} from '../animation/animation_keyframe';
 import {AnimationStyles} from '../animation/animation_styles';
 import {AnimationPlayer} from '../animation/animation_player';
@@ -125,14 +127,29 @@ export class DebugDomRenderer implements Renderer {
   }
 
   setElementClass(renderElement: any, className: string, isAdd: boolean) {
+    var debugEl = getDebugNode(renderElement);
+    if (isPresent(debugEl) && debugEl instanceof DebugElement) {
+      debugEl.classes[className] = isAdd;
+    }
     this._delegate.setElementClass(renderElement, className, isAdd);
   }
 
   setElementStyles(renderElement: any, styles: {[key: string]: string}) {
+    var debugEl = getDebugNode(renderElement);
+    if (isPresent(debugEl) && debugEl instanceof DebugElement) {
+      var elStyles = debugEl.styles;
+      StringMapWrapper.forEach(styles, (value, prop) => {
+        elStyles[prop] = value;
+      });
+    }
     this._delegate.setElementStyles(renderElement, styles);
   }
 
   setElementStyle(renderElement: any, styleName: string, styleValue: string) {
+    var debugEl = getDebugNode(renderElement);
+    if (isPresent(debugEl) && debugEl instanceof DebugElement) {
+      debugEl.styles[styleName] = styleValue;
+    }
     this._delegate.setElementStyle(renderElement, styleName, styleValue);
   }
 

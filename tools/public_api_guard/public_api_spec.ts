@@ -171,6 +171,7 @@ const CORE = [
   'DebugElement.attributes:{[key:string]:string}',
   'DebugElement.childNodes:DebugNode[]',
   'DebugElement.children:DebugElement[]',
+  'DebugElement.classes:{[key:string]:boolean}',
   'DebugElement.constructor(nativeNode:any, parent:any, _debugInfo:RenderDebugInfo)',
   'DebugElement.insertChildrenAfter(child:DebugNode, newChildren:DebugNode[]):any',
   'DebugElement.name:string',
