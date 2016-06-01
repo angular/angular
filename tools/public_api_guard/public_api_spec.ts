@@ -898,9 +898,9 @@ const COMMON = [
   'NgForm.ngSubmit:any',
   'NgForm.onSubmit():boolean',
   'NgForm.path:string[]',
-  'NgForm.submitted:boolean',
   'NgForm.removeControl(dir:NgControl):void',
   'NgForm.removeControlGroup(dir:NgControlGroup):void',
+  'NgForm.submitted:boolean',
   'NgForm.updateModel(dir:NgControl, value:any):void',
   'NgFormControl',
   'NgFormControl.asyncValidator:AsyncValidatorFn',
@@ -928,9 +928,9 @@ const COMMON = [
   'NgFormModel.ngSubmit:any',
   'NgFormModel.onSubmit():boolean',
   'NgFormModel.path:string[]',
-  'NgFormModel.submitted:boolean',
   'NgFormModel.removeControl(dir:NgControl):void',
   'NgFormModel.removeControlGroup(dir:NgControlGroup):any',
+  'NgFormModel.submitted:boolean',
   'NgFormModel.updateModel(dir:NgControl, value:any):void',
   'NgIf',
   'NgIf.constructor(_viewContainer:ViewContainerRef, _templateRef:TemplateRef<Object>)',
@@ -1882,8 +1882,8 @@ const HTTP = [
   'Response.status:number',
   'Response.statusText:string',
   'Response.text():string',
-  'Response.totalBytes:number',
   'Response.toString():string',
+  'Response.totalBytes:number',
   'Response.type:ResponseType',
   'Response.url:string',
   'ResponseOptions',
@@ -1947,13 +1947,14 @@ const HTTP_TESTING = [
   'MockConnection.mockDownload(res:Response):any',
   'MockConnection.mockError(err?:Error):any',
   'MockConnection.mockRespond(res:Response):any',
+  'MockConnection.mockRespond(res:Response):any',
   'MockConnection.readyState:ReadyState',
   'MockConnection.request:Request',
   'MockConnection.response:ReplaySubject<Response>',
 ];
 
 
-fdescribe('public API', () => {
+describe('public API', () => {
   check('@angular/core/index.ts', CORE);
   check('@angular/core/testing.ts', CORE_TESTING);
   check('@angular/common/index.ts', COMMON);
@@ -1971,16 +1972,23 @@ fdescribe('public API', () => {
 });
 
 function check(file: string, expected: string[]) {
-  it('should check' + file, () => checkPublicApi(file, expected));
+  it('should check ' + file, () => checkPublicApi(file, expected));
 }
 
 function checkPublicApi(file: string, expected: string[]) {
   const sortedActual = publicApi('modules/' + file).sort();
-  const sortedExpected = expected.sort();
+  const sortedExpected = expected.slice().sort();
+
+  const unsorted = expected.find((element, index) => element !== sortedExpected[index]);
   const missing = sortedActual.filter((i) => sortedExpected.indexOf(i) < 0);
   const extra = sortedExpected.filter((i) => sortedActual.indexOf(i) < 0);
 
   // console.log(sortedActual.join('\',\n  \''));
+  if (unsorted) {
+    fail(`The array of expected APIs is incorrectly sorted starting at element:\n    ${unsorted}`);
+  }
+
+
   if (missing.length > 0) {
     console.log('=================================================================');
     console.log('=================================================================');
