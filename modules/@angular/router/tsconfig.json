@@ -2,6 +2,7 @@
   "compilerOptions": {
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
+    "noEmitOnError": false,
     "module": "commonjs",
     "target": "es5",
     "noImplicitAny": false,
@@ -16,6 +17,8 @@
     "src/index.ts",
     "src/router.ts",
     "src/recognize.ts",
+    "src/resolve.ts",
+    "src/create_router_state.ts",
     "src/router.ts",
     "src/config.ts",
     "src/router_outlet_map.ts",
@@ -32,6 +35,7 @@
     "test/utils/tree.spec.ts",
     "test/url_serializer.spec.ts",
     "test/recognize.spec.ts",
+    "test/create_router_state.spec.ts",
     "test/create_url_tree.spec.ts",
     "test/router.spec.ts",
     "typings/index.d.ts"

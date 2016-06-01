@@ -1,6 +1,6 @@
 import { UrlTree, UrlSegment } from './url_tree';
 import { PRIMARY_OUTLET } from './shared';
-import { rootNode, TreeNode } from './utils/tree';
+import { TreeNode } from './utils/tree';
 
 /**
  * Defines a way to serialize/deserialize a url tree.
@@ -27,7 +27,7 @@ export class DefaultUrlSerializer implements UrlSerializer {
   }
 
   serialize(tree: UrlTree): string { 
-    const node = serializeUrlTreeNode(rootNode(tree));
+    const node = serializeUrlTreeNode(tree._root);
     const query = serializeQueryParams(tree.queryParameters);
     const fragment = tree.fragment !== null ? `#${tree.fragment}` : '';
     return `${node}${query}${fragment}`;
