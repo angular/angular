@@ -1,5 +1,5 @@
 import { UrlTree, UrlSegment, equalUrlSegments } from './url_tree';
-import { TreeNode, rootNode } from './utils/tree';
+import { TreeNode } from './utils/tree';
 import { forEach, shallowEqual } from './utils/collection';
 import { RouterState, ActivatedRoute } from './router_state';
 import { Params, PRIMARY_OUTLET } from './shared';
@@ -7,7 +7,7 @@ import { Params, PRIMARY_OUTLET } from './shared';
 export function createUrlTree(route: ActivatedRoute, urlTree: UrlTree, commands: any[], 
                               queryParameters: Params | undefined, fragment: string | undefined): UrlTree {
   if (commands.length === 0) {
-    return tree(rootNode(urlTree), urlTree, queryParameters, fragment);
+    return tree(urlTree._root, urlTree, queryParameters, fragment);
   }
 
   const normalizedCommands = normalizeCommands(commands);
@@ -19,7 +19,7 @@ export function createUrlTree(route: ActivatedRoute, urlTree: UrlTree, commands:
   const updated = normalizedCommands.commands.length > 0 ?
       updateMany(startingNode.children.slice(0), normalizedCommands.commands) :
       [];
-  const newRoot = constructNewTree(rootNode(urlTree), startingNode, updated);
+  const newRoot = constructNewTree(urlTree._root, startingNode, updated);
 
   return tree(newRoot, urlTree, queryParameters, fragment);
 }
@@ -87,11 +87,11 @@ function normalizeCommands(commands: any[]): NormalizedNavigationCommands {
 function findStartingNode(normalizedChange: NormalizedNavigationCommands, urlTree: UrlTree,
                            route: ActivatedRoute): TreeNode<UrlSegment> {
   if (normalizedChange.isAbsolute) {
-    return rootNode(urlTree);
+    return urlTree._root;
   } else {
     const urlSegment =
       findUrlSegment(route, urlTree, normalizedChange.numberOfDoubleDots);
-    return findMatchingNode(urlSegment, rootNode(urlTree));
+    return findMatchingNode(urlSegment, urlTree._root);
   }
 }
 
