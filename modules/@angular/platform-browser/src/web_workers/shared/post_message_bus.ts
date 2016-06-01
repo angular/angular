@@ -66,7 +66,8 @@ export class PostMessageBusSource implements MessageBusSource {
       eventTarget.addEventListener("message", (ev: MessageEvent) => this._handleMessages(ev));
     } else {
       // if no eventTarget is given we assume we're in a WebWorker and listen on the global scope
-      addEventListener("message", (ev: MessageEvent) => this._handleMessages(ev));
+      const workerScope = <EventTarget>self;
+      workerScope.addEventListener("message", (ev: MessageEvent) => this._handleMessages(ev));
     }
   }
 
