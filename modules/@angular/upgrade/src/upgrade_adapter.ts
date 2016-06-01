@@ -547,8 +547,6 @@ function ng1ComponentDirective(info: ComponentInfo, idPrefix: string): Function 
   function directiveFactory(ng1Injector: angular.IInjectorService,
                             componentFactoryRefMap: ComponentFactoryRefMap,
                             parse: angular.IParseService): angular.IDirective {
-    var componentFactory: ComponentFactory<any> = componentFactoryRefMap[info.selector];
-    if (!componentFactory) throw new Error('Expecting ComponentFactory for: ' + info.selector);
     var idCount = 0;
     return {
       restrict: 'E',
@@ -556,6 +554,9 @@ function ng1ComponentDirective(info: ComponentInfo, idPrefix: string): Function 
       link: {
         post: (scope: angular.IScope, element: angular.IAugmentedJQuery, attrs: angular.IAttributes,
                parentInjector: any, transclude: angular.ITranscludeFunction): void => {
+          var componentFactory: ComponentFactory<any> = componentFactoryRefMap[info.selector];
+          if (!componentFactory) throw new Error('Expecting ComponentFactory for: ' + info.selector);
+
           var domElement = <any>element[0];
           if (parentInjector === null) {
             parentInjector = ng1Injector.get(NG2_INJECTOR);

@@ -4,7 +4,7 @@ import {UpgradeAdapter} from "@angular/upgrade";
 import * as angular from "@angular/upgrade/src/angular_js";
 
 export function main() {
-  ddescribe('adapter: ng1 to ng2', () => {
+  describe('adapter: ng1 to ng2', () => {
     it('should have angular 1 loaded', () => expect(angular.version.major).toBe(1));
 
     it('should instantiate ng2 in ng1 template and project content',
