@@ -5,7 +5,8 @@
   "main": "index.js",
   "typings": "index.d.ts",
   "bin": {
-     "ngc": "./src/main.js"
+    "ngc": "./src/main.js",
+    "ng-xi18n": "./src/extract_i18n.js"
   },
   "dependencies": {
     "@angular/tsc-wrapped": "^0.1.0",

@@ -1,16 +1,35 @@
 import {__compiler_private__ as _c} from '@angular/compiler';
 
-export var AssetUrl: typeof _c.AssetUrl = _c.AssetUrl;
 export type AssetUrl = _c.AssetUrl;
+export var AssetUrl: typeof _c.AssetUrl = _c.AssetUrl;
 
-export var ImportGenerator: typeof _c.ImportGenerator = _c.ImportGenerator;
 export type ImportGenerator = _c.ImportGenerator;
+export var ImportGenerator: typeof _c.ImportGenerator  = _c.ImportGenerator;
 
 export type CompileMetadataResolver = _c.CompileMetadataResolver;
 export var CompileMetadataResolver: typeof _c.CompileMetadataResolver = _c.CompileMetadataResolver;
 
 export type HtmlParser = _c.HtmlParser;
 export var HtmlParser: typeof _c.HtmlParser = _c.HtmlParser;
+
+export type I18nHtmlParser = _c.I18nHtmlParser;
+export var I18nHtmlParser: typeof _c.I18nHtmlParser = _c.I18nHtmlParser;
+
+export type MessageExtractor = _c.MessageExtractor;
+export var MessageExtractor: typeof _c.MessageExtractor = _c.MessageExtractor;
+
+export type ExtractionResult = _c.ExtractionResult;
+export var ExtractionResult: typeof _c.ExtractionResult = _c.ExtractionResult;
+
+export type Message = _c.Message;
+export var Message: typeof _c.Message = _c.Message;
+
+export var removeDuplicates: typeof _c.removeDuplicates = _c.removeDuplicates;
+export var serializeXmb: typeof _c.serializeXmb = _c.serializeXmb;
+export var deserializeXmb: typeof _c.deserializeXmb = _c.deserializeXmb;
+
+export type ParseError = _c.ParseError;
+export var ParseError: typeof _c.ParseError = _c.ParseError;
 
 export type DirectiveNormalizer = _c.DirectiveNormalizer;
 export var DirectiveNormalizer: typeof _c.DirectiveNormalizer = _c.DirectiveNormalizer;

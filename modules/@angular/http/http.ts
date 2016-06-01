@@ -190,7 +190,7 @@ export const HTTP_PROVIDERS: any[] = [
   {provide: XSRFStrategy, useValue: new CookieXSRFStrategy()},
 ];
 
-function httpFactory(xhrBackend: XHRBackend, requestOptions: RequestOptions): Http {
+export function httpFactory(xhrBackend: XHRBackend, requestOptions: RequestOptions): Http {
   return new Http(xhrBackend, requestOptions);
 }
 
