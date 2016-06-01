@@ -10,7 +10,7 @@ import {
   ElementRef,
   Optional
 } from '@angular/core';
-import {MdGridTile} from './grid-tile';
+import {MdGridTile, MdGridTileText} from './grid-tile';
 import {TileCoordinator} from './tile-coordinator';
 import {
     TileStyler,
@@ -20,6 +20,7 @@ import {
 } from './tile-styler';
 import {MdGridListColsError} from './grid-list-errors';
 import {Dir} from '@angular2-material/core/rtl/dir';
+import {MdLine} from '@angular2-material/core/line/line';
 
 // TODO(kara): Conditional (responsive) column count / row size.
 // TODO(kara): Re-layout on window resize / media change (debounced).
@@ -167,4 +168,4 @@ export function coerceToNumber(value: string | number): number {
   return typeof value === 'string' ? parseInt(value, 10) : value;
 }
 
-export const MD_GRID_LIST_DIRECTIVES: any[] = [MdGridList, MdGridTile];
+export const MD_GRID_LIST_DIRECTIVES: any[] = [MdGridList, MdGridTile, MdLine, MdGridTileText];

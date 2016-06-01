@@ -1,5 +1,6 @@
 @import "variables";
 @import "default-theme";
+@import "list-shared";
 
 $md-list-side-padding: 16px;
 $md-list-avatar-size: 40px;
@@ -56,26 +57,11 @@ based on whether the list is in dense mode.
   }
 
   .md-list-text {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
+    @include md-line-wrapper-base();
     padding: 0 $md-list-side-padding;
-    box-sizing: border-box;
-    overflow: hidden;
 
     &:first-child {
       padding: 0;
-    }
-
-    &:empty {
-      display: none;
-    }
-
-    & > * {
-      margin: 0;
-      padding: 0;
-      font-weight: normal;
-      font-size: inherit;
     }
   }
 
@@ -90,26 +76,6 @@ based on whether the list is in dense mode.
     height: $md-list-icon-size;
     border-radius: 50%;
     padding: 4px;
-  }
-}
-
-/*
-This mixin provides all md-line styles, changing secondary font size
-based on whether the list is in dense mode.
-*/
-@mixin md-line-base($secondary-font-size) {
-
-  [md-line] {
-    display: block;
-    white-space: nowrap;
-    overflow-x: hidden;
-    text-overflow: ellipsis;
-    box-sizing: border-box;
-
-    // all lines but the top line should have smaller text
-    &:nth-child(n+2) {
-      font-size: $secondary-font-size;
-    }
   }
 }
 

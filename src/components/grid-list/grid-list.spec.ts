@@ -12,7 +12,7 @@ import {Component} from '@angular/core';
 import {By} from '@angular/platform-browser';
 
 import {MD_GRID_LIST_DIRECTIVES, MdGridList} from './grid-list';
-import {MdGridTile} from './grid-tile';
+import {MdGridTile, MdGridTileText} from './grid-tile';
 
 describe('MdGridList', () => {
   let builder: TestComponentBuilder;
@@ -374,6 +374,48 @@ describe('MdGridList', () => {
           });
         });
   });
+
+  it('should add not add any classes to footers without lines', () => {
+    var template = `
+      <md-grid-list cols="1">
+        <md-grid-tile>
+          <md-grid-tile-footer>
+            I'm a footer!
+          </md-grid-tile-footer>
+        </md-grid-tile>
+      </md-grid-list>
+    `;
+
+    return builder.overrideTemplate(TestGridList, template)
+        .createAsync(TestGridList).then((fixture: ComponentFixture<TestGridList>) => {
+          fixture.detectChanges();
+
+          let footer = fixture.debugElement.query(By.directive(MdGridTileText));
+          expect(footer.nativeElement.classList.contains('md-2-line')).toBe(false);
+        });
+  });
+
+  it('should add class to footers with two lines', () => {
+    var template = `
+      <md-grid-list cols="1">
+        <md-grid-tile>
+          <md-grid-tile-footer>
+            <h3 md-line>First line</h3>
+            <span md-line>Second line</span>
+          </md-grid-tile-footer>
+        </md-grid-tile>
+      </md-grid-list>
+    `;
+
+    return builder.overrideTemplate(TestGridList, template)
+        .createAsync(TestGridList).then((fixture: ComponentFixture<TestGridList>) => {
+          fixture.detectChanges();
+
+          let footer = fixture.debugElement.query(By.directive(MdGridTileText));
+          expect(footer.nativeElement.classList.contains('md-2-line')).toBe(true);
+        });
+  });
+
 });
 
 @Component({

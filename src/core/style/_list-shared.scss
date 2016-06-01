@@ -1,0 +1,50 @@
+/**
+ * This mixin provides all md-line styles, changing secondary font size
+ * based on whether the list is in dense mode.
+ */
+@mixin md-line-base($secondary-font-size) {
+  [md-line] {
+    display: block;
+    white-space: nowrap;
+    overflow-x: hidden;
+    text-overflow: ellipsis;
+    box-sizing: border-box;
+
+    // all lines but the top line should have smaller text
+    &:nth-child(n+2) {
+      font-size: $secondary-font-size;
+    }
+  }
+}
+
+/**
+ * This mixin provides base styles for the wrapper around md-line
+ * elements in a list.
+ */
+@mixin md-line-wrapper-base() {
+  @include md-normalize-text();
+
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+
+  // Must remove wrapper when lines are empty or it takes up horizontal
+  // space and pushes other elements to the right.
+  &:empty {
+    display: none;
+  }
+}
+
+/**
+ * This mixin normalizes default element styles, e.g. font weight for heading text.
+ */
+@mixin md-normalize-text() {
+  & > * {
+    margin: 0;
+    padding: 0;
+    font-weight: normal;
+    font-size: inherit;
+  }
+}

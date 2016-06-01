@@ -57,5 +57,35 @@
       <p>Change gutter: <input type="number" [(ngModel)]="ratioGutter"></p>
     </md-card-actions>
   </md-card>
+
+  <md-card>
+    <md-card-title>Grid list with header</md-card-title>
+    <md-card-content>
+      <md-grid-list cols="3" rowHeight="200px">
+        <md-grid-tile *ngFor="let dog of dogs" style="background:gray">
+          <md-grid-tile-header>
+            <md-icon md-grid-avatar>info_outline</md-icon>
+            {{dog.name}}
+          </md-grid-tile-header>
+        </md-grid-tile>
+      </md-grid-list>
+    </md-card-content>
+  </md-card>
+
+  <md-card>
+    <md-card-title>Grid list with footer</md-card-title>
+    <md-card-content>
+      <md-grid-list cols="3" rowHeight="200px">
+        <md-grid-tile *ngFor="let dog of dogs">
+          <img [alt]="dog.name" src="https://material.angularjs.org/material2_assets/ngconf/{{dog.name}}.png">
+          <md-grid-tile-footer>
+            <h3 md-line>{{dog.name}}</h3>
+            <span md-line>Human: {{dog.human}}</span>
+            <md-icon>star_border</md-icon>
+          </md-grid-tile-footer>
+        </md-grid-tile>
+      </md-grid-list>
+    </md-card-content>
+  </md-card>
 </div>
 

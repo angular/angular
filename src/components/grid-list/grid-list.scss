@@ -1,4 +1,15 @@
-// TODO(kara): Review this to see if MD spec updates are needed
+@import "list-shared";
+
+/* height of tile header or footer if it has one line */
+$md-grid-list-one-line-height: 48px;
+/* height of tile header or footer if it has two lines */
+$md-grid-list-two-line-height: 68px;
+/* side padding for text in tile headers and footers */
+$md-grid-list-text-padding: 16px;
+
+/* font styles for text in tile headers and footers */
+$md-grid-list-font-size: 16px;
+$md-grid-list-secondary-font: 12px;
 
 md-grid-list {
   display: block;
@@ -29,32 +40,30 @@ md-grid-tile {
   // Headers & footers
   md-grid-tile-header,
   md-grid-tile-footer {
+    @include md-line-base($md-grid-list-secondary-font);
+    @include md-normalize-text();
+
     display: flex;
-    flex-direction: row;
     align-items: center;
-    height: 48px;
+    height: $md-grid-list-one-line-height;
     color: #fff;
     background: rgba(0, 0, 0, 0.18);
     overflow: hidden;
+    padding: 0 $md-grid-list-text-padding;
+    font-size: $md-grid-list-font-size;
 
     // Positioning
     position: absolute;
     left: 0;
     right: 0;
 
-    h3,
-    h4 {
-      font-weight: 400;
-      margin: 0 0 0 16px;
+    &.md-2-line {
+      height: $md-grid-list-two-line-height;
     }
+  }
 
-    h3 {
-      font-size: 14px;
-    }
-
-    h4 {
-      font-size: 12px;
-    }
+  .md-grid-list-text {
+    @include md-line-wrapper-base();
   }
 
   md-grid-tile-header {
@@ -63,5 +72,18 @@ md-grid-tile {
 
   md-grid-tile-footer {
     bottom: 0;
+  }
+
+  [md-grid-avatar] {
+    padding-right: $md-grid-list-text-padding;
+
+    [dir='rtl'] & {
+      padding-right: 0;
+      padding-left: $md-grid-list-text-padding;
+    }
+
+    &:empty {
+      display:none;
+    }
   }
 }

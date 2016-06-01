@@ -1,5 +1,5 @@
 .demo-grid-list {
-  width: 800px;
+  width: 1100px;
 
   md-card {
     margin: 16px 0;
@@ -11,5 +11,9 @@
 
   .demo-basic-list md-grid-tile {
     background: rgba(0,0,0,0.32);
+  }
+
+  img {
+    width: 350px;
   }
 }
