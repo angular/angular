@@ -1751,59 +1751,6 @@ function declareTests(isJit: boolean) {
          }));
     });
 
-    // Disabled until a solution is found, refs:
-    // - https://github.com/angular/angular/issues/776
-    // - https://github.com/angular/angular/commit/81f3f32
-    xdescribe('Missing directive checks', () => {
-      function expectCompileError(tcb, inlineTpl, errMessage, done) {
-        tcb = tcb.overrideView(MyComp, new ViewMetadata({template: inlineTpl}));
-        PromiseWrapper.then(
-            tcb.createAsync(MyComp),
-            (value) => {
-              throw new BaseException(
-                  "Test failure: should not have come here as an exception was expected");
-            },
-            (err) => {
-              expect(err.message).toEqual(errMessage);
-              done();
-            });
-      }
-
-      if (assertionsEnabled()) {
-        it('should raise an error if no directive is registered for a template with template bindings',
-           inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder,
-                                                               async) => {
-             expectCompileError(tcb, '<div><div template="if: foo"></div></div>',
-                                'Missing directive to handle \'if\' in <div template="if: foo">',
-                                () => async.done());
-           }));
-
-        it('should raise an error for missing template directive (1)',
-           inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder,
-                                                               async) => {
-             expectCompileError(tcb, '<div><template foo></template></div>',
-                                'Missing directive to handle: <template foo>', () => async.done());
-           }));
-
-        it('should raise an error for missing template directive (2)',
-           inject([TestComponentBuilder, AsyncTestCompleter],
-                  (tcb: TestComponentBuilder, async) => {
-                    expectCompileError(tcb, '<div><template *ngIf="condition"></template></div>',
-                                       'Missing directive to handle: <template *ngIf="condition">',
-                                       () => async.done());
-                  }));
-
-        it('should raise an error for missing template directive (3)',
-           inject([TestComponentBuilder, AsyncTestCompleter],
-                  (tcb: TestComponentBuilder, async) => {
-                    expectCompileError(
-                        tcb, '<div *ngIf="condition"></div>',
-                        'Missing directive to handle \'if\' in MyComp: <div *ngIf="condition">',
-                        () => async.done());
-                  }));
-      }
-    });
-
     describe('property decorators', () => {
       it('should support property decorators',
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
