@@ -1,80 +1,66 @@
 import { UrlTree, UrlSegment } from './url_tree';
 import { flatten, first, merge } from './utils/collection';
-import { TreeNode, rootNode } from './utils/tree';
-import { RouterState, ActivatedRoute } from './router_state';
+import { TreeNode } from './utils/tree';
+import { RouterStateCandidate, ActivatedRouteCandidate } from './router_state';
 import { Params, PRIMARY_OUTLET } from './shared';
 import { RouterConfig, Route } from './config';
 import { Type } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
-export function recognize(config: RouterConfig, url: UrlTree, existingState: RouterState): Observable<RouterState> {
+export function recognize(rootComponentType: Type, config: RouterConfig, url: UrlTree): Observable<RouterStateCandidate> {
   try {
-    const match = new MatchResult(existingState.root.component, config, [url.root], {}, rootNode(url).children, [], PRIMARY_OUTLET);
-    (<any>existingState.queryParams).next(url.queryParameters);
-    (<any>existingState.fragment).next(url.fragment);
-    const roots = constructActivatedRoute(match, rootNode(existingState));
-    const res = new RouterState(roots[0], existingState.queryParams, existingState.fragment);
-    return new Observable<RouterState>(obs => {
+    const match = new MatchResult(rootComponentType, config, [url.root], {}, url._root.children, [], PRIMARY_OUTLET, null);
+    const roots = constructActivatedRoute(match);
+    const res = new RouterStateCandidate(roots[0], url.queryParameters, url.fragment);
+    return new Observable<RouterStateCandidate>(obs => {
       obs.next(res);
       obs.complete();
     });
   } catch(e) {
-    return new Observable<RouterState>(obs => obs.error(e));
+    return new Observable<RouterStateCandidate>(obs => obs.error(e));
   }
 }
 
-function constructActivatedRoute(match: MatchResult, existingRoute: TreeNode<ActivatedRoute> | null): TreeNode<ActivatedRoute>[] {
-  const activatedRoute = createOrReuseRoute(match, existingRoute);
-  const existingChildren = existingRoute ? existingRoute.children : [];
-
+function constructActivatedRoute(match: MatchResult): TreeNode<ActivatedRouteCandidate>[] {
+  const activatedRoute = createActivatedRouteCandidate(match);
   if (match.leftOverUrl.length > 0) {
-    const children = recognizeMany(match.children, match.leftOverUrl, existingChildren);
+    const children = recognizeMany(match.children, match.leftOverUrl);
     checkOutletNameUniqueness(children);
-    return [new TreeNode<ActivatedRoute>(activatedRoute, children)];
+    children.sort((a, b) => {
+      if (a.value.outlet === PRIMARY_OUTLET) return -1;
+      if (b.value.outlet === PRIMARY_OUTLET) return 1;
+      return a.value.outlet.localeCompare(b.value.outlet)
+    });
+    return [new TreeNode<ActivatedRouteCandidate>(activatedRoute, children)];
   } else {
-    return [new TreeNode<ActivatedRoute>(activatedRoute, [])];
+    return [new TreeNode<ActivatedRouteCandidate>(activatedRoute, [])];
   }
 }
 
-function recognizeMany(config: Route[], urls: TreeNode<UrlSegment>[],
-                       existingRoutes: TreeNode<ActivatedRoute>[]): TreeNode<ActivatedRoute>[] {
-  return flatten(urls.map(url => recognizeOne(config, url, existingRoutes)));
+function recognizeMany(config: Route[], urls: TreeNode<UrlSegment>[]): TreeNode<ActivatedRouteCandidate>[] {
+  return flatten(urls.map(url => recognizeOne(config, url)));
 }
 
-function createOrReuseRoute(match: MatchResult, existing: TreeNode<ActivatedRoute> | null): ActivatedRoute {
-  if (existing) {
-    const v = existing.value;
-    if (v.component === match.component && v.outlet === match.outlet) {
-      (<any>(v.params)).next(match.parameters);
-      (<any>(v.urlSegments)).next(match.consumedUrlSegments);
-      return v;
-    }
-  }
-  return new ActivatedRoute(new BehaviorSubject(match.consumedUrlSegments), new BehaviorSubject(match.parameters), match.outlet, match.component);
+function createActivatedRouteCandidate(match: MatchResult): ActivatedRouteCandidate {
+  return new ActivatedRouteCandidate(match.consumedUrlSegments, match.parameters, match.outlet, match.component, match.route);
 }
 
-function recognizeOne(config: Route[], url: TreeNode<UrlSegment>,
-                      existingRoutes: TreeNode<ActivatedRoute>[]): TreeNode<ActivatedRoute>[] {
-  let m = match(config, url);
-
-  const routesWithRightOutlet = existingRoutes.filter(r => r.value.outlet == m.outlet);
-  const routeWithRightOutlet = routesWithRightOutlet.length > 0 ? routesWithRightOutlet[0] : null;
-
-  const primary = constructActivatedRoute(m, routeWithRightOutlet);
-  const secondary = recognizeMany(config, m.secondary, existingRoutes);
+function recognizeOne(config: Route[], url: TreeNode<UrlSegment>): TreeNode<ActivatedRouteCandidate>[] {
+  const m = match(config, url);
+  const primary = constructActivatedRoute(m);
+  const secondary = recognizeMany(config, m.secondary);
   const res = primary.concat(secondary);
   checkOutletNameUniqueness(res);
   return res;
 }
 
-function checkOutletNameUniqueness(nodes: TreeNode<ActivatedRoute>[]): TreeNode<ActivatedRoute>[] {
+function checkOutletNameUniqueness(nodes: TreeNode<ActivatedRouteCandidate>[]): TreeNode<ActivatedRouteCandidate>[] {
   let names = {};
   nodes.forEach(n => {
     let routeWithSameOutletName = names[n.value.outlet];
     if (routeWithSameOutletName) {
-      const p = (<any>routeWithSameOutletName.urlSegments).value.map(s => s.toString()).join("/");
-      const c = (<any>n.value.urlSegments).value.map(s => s.toString()).join("/");
+      const p = routeWithSameOutletName.urlSegments.map(s => s.toString()).join("/");
+      const c = n.value.urlSegments.map(s => s.toString()).join("/");
       throw new Error(`Two segments cannot have the same outlet name: '${p}' and '${c}'.`);
     }
     names[n.value.outlet] = n.value;
@@ -110,7 +96,7 @@ function matchIndex(config: Route[], url: TreeNode<UrlSegment>): MatchResult | n
     if (r.index) {
       const outlet = r.outlet ? r.outlet : PRIMARY_OUTLET;
       const children = r.children ? r.children : [];
-      return new MatchResult(r.component, children, [], {}, [url], [], outlet);
+      return new MatchResult(r.component, children, [], {}, [url], [], outlet, r);
     }
   }
   return null;
@@ -129,7 +115,7 @@ function matchWithParts(route: Route, url: TreeNode<UrlSegment>): MatchResult | 
       u = first(u.children);
     }
     const last = consumedUrl[consumedUrl.length - 1];
-    return new MatchResult(route.component, [], consumedUrl, last.parameters, [], [], PRIMARY_OUTLET);
+    return new MatchResult(route.component, [], consumedUrl, last.parameters, [], [], PRIMARY_OUTLET, route);
   }
 
   const parts = path.split("/");
@@ -174,7 +160,7 @@ function matchWithParts(route: Route, url: TreeNode<UrlSegment>): MatchResult | 
   const outlet = route.outlet ? route.outlet : PRIMARY_OUTLET;
 
   return new MatchResult(route.component, children, consumedUrlSegments, parameters, lastSegment.children,
-    secondarySubtrees, outlet);
+    secondarySubtrees, outlet, route);
 }
 
 class MatchResult {
@@ -184,6 +170,7 @@ class MatchResult {
               public parameters: {[key: string]: string},
               public leftOverUrl: TreeNode<UrlSegment>[],
               public secondary: TreeNode<UrlSegment>[],
-              public outlet: string
+              public outlet: string,
+              public route: Route
   ) {}
 }
