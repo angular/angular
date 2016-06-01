@@ -18,7 +18,8 @@
     "postinstall": "npm run typings",
     "e2e": "protractor",
     "inline-resources": "node ./scripts/release/inline-resources.js ./dist/components",
-    "deploy": "firebase deploy"
+    "deploy": "firebase deploy",
+    "webdriver-manager": "webdriver-manager"
   },
   "version": "2.0.0-alpha.5-2",
   "license": "MIT",
