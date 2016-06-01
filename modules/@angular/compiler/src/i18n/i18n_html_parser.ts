@@ -1,3 +1,4 @@
+import {CompilerConfig} from "../config";
 import {HtmlParser, HtmlParseTreeResult} from "../html_parser";
 import {ParseSourceSpan, ParseError} from "../parse_util";
 import {
@@ -115,10 +116,12 @@ let _PLACEHOLDER_EXPANDED_REGEXP = /<ph(\s)+name=("(\w)+")><\/ph>/gi;
  */
 export class I18nHtmlParser implements HtmlParser {
   errors: ParseError[];
+  ;
 
-  constructor(private _htmlParser: HtmlParser, private _parser: Parser,
+  constructor(private _config: CompilerConfig, private _htmlParser: HtmlParser, private _parser: Parser,
               private _messagesContent: string, private _messages: {[key: string]: HtmlAst[]},
-              private _implicitTags: string[], private _implicitAttrs: {[k: string]: string[]}) {}
+              private _implicitTags: string[], private _implicitAttrs: {[k: string]: string[]}) {
+  }
 
   parse(sourceContent: string, sourceUrl: string,
         parseExpansionForms: boolean = false): HtmlParseTreeResult {
@@ -354,7 +357,7 @@ export class I18nHtmlParser implements HtmlParser {
   private _convertIntoExpression(name: string, expMap: Map<string, string>,
                                  sourceSpan: ParseSourceSpan) {
     if (expMap.has(name)) {
-      return `{{${expMap.get(name)}}}`;
+      return `${this._config.interpolation.startSymbol}${expMap.get(name)}${this._config.interpolation.endSymbol}`;
     } else {
       throw new I18nError(sourceSpan, `Invalid interpolation name '${name}'`);
     }
