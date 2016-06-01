@@ -498,6 +498,8 @@ var ROUTER: string[] = [
   'ROUTER_PROVIDERS',
   'Route',
   'Router',
+  'RouterOutlet',
+  'RouterLink',
   'DefaultRouterUrlSerializer',
   'RouteSegment',
   'RouteTree',
