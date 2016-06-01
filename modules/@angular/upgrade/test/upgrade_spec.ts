@@ -709,6 +709,45 @@ export function main() {
                  async.done();
                });
          }));
+
+       it('should support ng2 > ng1 > ng2', inject([AsyncTestCompleter], (async) => {
+           var adapter = new UpgradeAdapter();
+           var ng1Module = angular.module('ng1', []);
+
+           var ng1 = {
+             template: 'ng1(<ng2b></ng2b>)',
+           };
+           ng1Module.component('ng1', ng1);
+
+           var Ng2a =
+             Component({
+               selector: 'ng2a',
+               template: 'ng2a(<ng1></ng1>)',
+               directives: [adapter.upgradeNg1Component('ng1')]
+             })
+                 .Class({
+                   constructor: function() {}
+                 });
+           ng1Module.directive('ng2a', adapter.downgradeNg2Component(Ng2a));
+
+           var Ng2b =
+             Component({
+               selector: 'ng2b',
+               template: 'ng2b',
+               directives: []
+             })
+                 .Class({
+                   constructor: function() {}
+                 });
+           ng1Module.directive('ng2b', adapter.downgradeNg2Component(Ng2b));
+
+           var element = html(`<div><ng2a></ng2a></div>`);
+           adapter.bootstrap(element, ['ng1'])
+               .ready((ref) => {
+                 expect(multiTrim(document.body.textContent)).toEqual('ng2a(ng1(ng2b))');
+                 async.done();
+               });
+         }));
     });
 
     describe('injection', () => {
