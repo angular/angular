@@ -1,4 +1,4 @@
-import {Directive, ViewContainerRef, Attribute, ComponentRef, ComponentFactory, ResolvedReflectiveProvider, ReflectiveInjector} from '@angular/core';
+import {Injector, Directive, ViewContainerRef, Attribute, ComponentRef, ComponentFactory, ResolvedReflectiveProvider, ReflectiveInjector} from '@angular/core';
 import {RouterOutletMap} from '../router_outlet_map';
 import {PRIMARY_OUTLET} from '../shared';
 
@@ -8,7 +8,7 @@ export class RouterOutlet {
   public outletMap:RouterOutletMap;
 
   constructor(parentOutletMap:RouterOutletMap, private location:ViewContainerRef,
-              @Attribute('name') name:string) {
+              @Attribute('name') name:string, public injector: Injector) {
     parentOutletMap.registerOutlet(name ? name : PRIMARY_OUTLET, this);
   }
 
