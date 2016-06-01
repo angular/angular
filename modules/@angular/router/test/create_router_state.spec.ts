@@ -1,0 +1,72 @@
+import {DefaultUrlSerializer} from '../src/url_serializer';
+import {UrlTree} from '../src/url_tree';
+import {Params, PRIMARY_OUTLET} from '../src/shared';
+import {ActivatedRoute, ActivatedRouteCandidate, RouterStateCandidate, createEmptyStateCandidate, createEmptyState} from '../src/router_state';
+import {createRouterState} from '../src/create_router_state';
+import {recognize} from '../src/recognize';
+import {RouterConfig} from '../src/config';
+
+describe('create router state', () => {
+  const emptyCandidate = () => createEmptyStateCandidate(RootComponent);
+  const emptyState = () => createEmptyState(RootComponent);
+
+  it('should work create new state', () => {
+    const state = createRouterState(createState([
+      {path: 'a', component: ComponentA},
+      {path: 'b', component: ComponentB, outlet: 'left'},
+      {path: 'c', component: ComponentC, outlet: 'right'}
+    ], "a(left:b//right:c)"), emptyCandidate(), emptyState());
+
+    checkActivatedRoute(state.root, RootComponent);
+
+    const c = state.children(state.root);
+    checkActivatedRoute(c[0], ComponentA);
+    checkActivatedRoute(c[1], ComponentB, 'left');
+    checkActivatedRoute(c[2], ComponentC, 'right');
+  });
+
+  it('should reuse existing nodes when it can', () => {
+    const config = [
+      {path: 'a', component: ComponentA},
+      {path: 'b', component: ComponentB, outlet: 'left'},
+      {path: 'c', component: ComponentC, outlet: 'left'}
+    ];
+
+    const prevCandidate = createState(config, "a(left:b)");
+    const prevState = createRouterState(prevCandidate, emptyCandidate(), emptyState());
+
+    const state = createRouterState(createState(config, "a(left:c)"), prevCandidate, prevState);
+
+    expect(prevState.root).toBe(state.root);
+    const prevC = prevState.children(prevState.root);
+    const currC = state.children(state.root);
+
+    expect(prevC[0]).toBe(currC[0]);
+    expect(prevC[1]).not.toBe(currC[1]);
+    checkActivatedRoute(currC[1], ComponentC, 'left');
+  });
+});
+
+function createState(config: RouterConfig, url: string): RouterStateCandidate {
+  let res;
+  recognize(RootComponent, config, tree(url)).forEach(s => res = s);
+  return res;
+}
+
+function checkActivatedRoute(actual: ActivatedRoute | null, cmp: Function, outlet: string = PRIMARY_OUTLET):void {
+  if (actual === null) {
+    expect(actual).toBeDefined();
+  } else {
+    expect(actual.component).toBe(cmp);
+    expect(actual.outlet).toEqual(outlet);
+  }
+}
+
+function tree(url: string): UrlTree {
+  return new DefaultUrlSerializer().parse(url);
+}
+
+class RootComponent {}
+class ComponentA {}
+class ComponentB {}
+class ComponentC {}
