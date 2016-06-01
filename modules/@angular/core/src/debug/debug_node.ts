@@ -56,6 +56,8 @@ export class DebugElement extends DebugNode {
   name: string;
   properties: {[key: string]: any};
   attributes: {[key: string]: string};
+  classes: {[key: string]: boolean};
+  styles: {[key: string]: string};
   childNodes: DebugNode[];
   nativeElement: any;
 
@@ -63,6 +65,8 @@ export class DebugElement extends DebugNode {
     super(nativeNode, parent, _debugInfo);
     this.properties = {};
     this.attributes = {};
+    this.classes = {};
+    this.styles = {};
     this.childNodes = [];
     this.nativeElement = nativeNode;
   }
