@@ -6,6 +6,7 @@ export { RouterOutletMap } from './router_outlet_map';
 export { RouterConfig, Route } from './config';
 export { Params, PRIMARY_OUTLET } from './shared';
 export { provideRouter } from './router_providers';
+export { CanActivate, CanDeactivate } from './interfaces';
 
 import { RouterOutlet } from './directives/router_outlet';
 import { RouterLink } from './directives/router_link';

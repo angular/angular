@@ -254,7 +254,11 @@ class GuardChecks {
     if (!canActivate || canActivate.length === 0) return of(true);
     return forkJoin(canActivate.map(c => {
       const guard = this.injector.get(c);
-      return of(guard(future, this.future));
+      if (guard.canActivate) {
+        return of(guard.canActivate(future, this.future));
+      } else {
+        return of(guard(future, this.future));
+      }
     })).map(and);
   }
 
@@ -263,7 +267,11 @@ class GuardChecks {
     if (!canDeactivate || canDeactivate.length === 0) return of(true);
     return forkJoin(canDeactivate.map(c => {
       const guard = this.injector.get(c);
-      return of(guard(component, curr, this.curr));
+      if (guard.canDeactivate) {
+        return of(guard.canDeactivate(component, curr, this.curr));
+      } else {
+        return of(guard(component, curr, this.curr));
+      }
     })).map(and);
   }
 }
