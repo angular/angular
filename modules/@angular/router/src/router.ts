@@ -33,9 +33,9 @@ export class Router {
   /**
    * @internal
    */
-  constructor(private roorComponentType:Type, private resolver: ComponentResolver, private urlSerializer: UrlSerializer, private outletMap: RouterOutletMap, private location: Location) {
+  constructor(private rootComponentType:Type, private resolver: ComponentResolver, private urlSerializer: UrlSerializer, private outletMap: RouterOutletMap, private location: Location) {
     this.currentUrlTree = createEmptyUrlTree();
-    this.currentRouterState = createEmptyState(roorComponentType);
+    this.currentRouterState = createEmptyState(rootComponentType);
     this.setUpLocationChangeListener();
     this.navigateByUrl(this.location.path());
   }
