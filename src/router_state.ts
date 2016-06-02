@@ -23,6 +23,9 @@ import { Type, ComponentFactory } from '@angular/core';
  * ```
  */
 export class RouterState extends Tree<ActivatedRoute> {
+  /**
+   * @internal
+   */
   constructor(root: TreeNode<ActivatedRoute>, public queryParams: Observable<Params>, public fragment: Observable<string>, public snapshot: RouterStateSnapshot) {
     super(root);
   }
@@ -68,6 +71,9 @@ export class ActivatedRoute {
   _futureSnapshot: ActivatedRouteSnapshot;
   snapshot: ActivatedRouteSnapshot;
 
+  /**
+   * @internal
+   */
   constructor(public urlSegments: Observable<UrlSegment[]>,
               public params: Observable<Params>,
               public outlet: string,
@@ -103,6 +109,9 @@ export class ActivatedRouteSnapshot {
   /** @internal **/
   _lastUrlSegment: UrlSegment;
 
+  /**
+   * @internal
+   */
   constructor(public urlSegments: UrlSegment[],
               public params: Params,
               public outlet: string,
@@ -128,6 +137,9 @@ export class ActivatedRouteSnapshot {
  * ```
  */
 export class RouterStateSnapshot extends Tree<ActivatedRouteSnapshot> {
+  /**
+   * @internal
+   */
   constructor(root: TreeNode<ActivatedRouteSnapshot>, public queryParams: Params, public fragment: string | null) {
     super(root);
   }

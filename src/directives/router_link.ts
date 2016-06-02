@@ -40,6 +40,9 @@ export class RouterLink {
   // the url displayed on the anchor element.
   @HostBinding() href: string;
 
+  /**
+   * @internal
+   */
   constructor(private router: Router, private route: ActivatedRoute) {}
 
   @Input()
@@ -51,8 +54,7 @@ export class RouterLink {
     }
     this.updateTargetUrlAndHref();
   }
-
-
+  
   @HostListener("click")
   onClick(): boolean {
     // If no target, or if target is _self, prevent default browser behavior
