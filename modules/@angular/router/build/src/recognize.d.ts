@@ -1,5 +1,6 @@
 import { UrlTree } from './url_tree';
-import { RouterState } from './router_state';
+import { RouterStateSnapshot } from './router_state';
 import { RouterConfig } from './config';
+import { Type } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
-export declare function recognize(config: RouterConfig, url: UrlTree, existingState: RouterState): Observable<RouterState>;
+export declare function recognize(rootComponentType: Type, config: RouterConfig, url: UrlTree): Observable<RouterStateSnapshot>;
