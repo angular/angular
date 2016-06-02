@@ -254,6 +254,12 @@ export class MdRadioButton implements OnInit {
   @Input()
   name: string;
 
+  /** Used to set the 'aria-label' attribute on the underlying input element. */
+  @Input('aria-label') ariaLabel: string;
+
+  /** The 'aria-labelledby' attribute takes precedence as the element's text alternative. */
+  @Input('aria-labelledby') ariaLabelledby: string;
+
   /** Whether this radio is disabled. */
   private _disabled: boolean;
 

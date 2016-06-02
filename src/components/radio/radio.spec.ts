@@ -345,10 +345,14 @@ describe('MdRadio', () => {
     let radioDebugElements: DebugElement[];
     let seasonRadioInstances: MdRadioButton[];
     let weatherRadioInstances: MdRadioButton[];
+    let fruitRadioInstances: MdRadioButton[];
+    let fruitRadioNativeInputs: HTMLElement[];
     let testComponent: StandaloneRadioButtons;
 
     beforeEach(async(() => {
       builder.createAsync(StandaloneRadioButtons).then(f => {
+        let fruitRadioNativeElements: HTMLElement[];
+
         fixture = f;
         fixture.detectChanges();
 
@@ -361,6 +365,18 @@ describe('MdRadio', () => {
         weatherRadioInstances = radioDebugElements
             .filter(debugEl => debugEl.componentInstance.name == 'weather')
             .map(debugEl => debugEl.componentInstance);
+        fruitRadioInstances = radioDebugElements
+            .filter(debugEl => debugEl.componentInstance.name == 'fruit')
+            .map(debugEl => debugEl.componentInstance);
+
+        fruitRadioNativeElements = radioDebugElements
+            .filter(debugEl => debugEl.componentInstance.name == 'fruit')
+            .map(debugEl => debugEl.nativeElement);
+
+        fruitRadioNativeInputs = [];
+        for (let element of fruitRadioNativeElements) {
+          fruitRadioNativeInputs.push(<HTMLElement> element.querySelector('input'));
+        }
       });
     }));
 
@@ -393,6 +409,40 @@ describe('MdRadio', () => {
       expect(weatherRadioInstances[1].checked).toBe(false);
       expect(weatherRadioInstances[2].checked).toBe(true);
     });
+
+    it('should add aria-label attribute to the underlying input element if defined', () => {
+      expect(fruitRadioNativeInputs[0].getAttribute('aria-label')).toBe('Banana');
+    });
+
+    it('should not add aria-label attribute if not defined', () => {
+      expect(fruitRadioNativeInputs[1].hasAttribute('aria-label')).toBeFalsy();
+    });
+
+    it('should change aria-label attribute if property is changed at runtime', () => {
+      expect(fruitRadioNativeInputs[0].getAttribute('aria-label')).toBe('Banana');
+
+      fruitRadioInstances[0].ariaLabel = 'Pineapple';
+      fixture.detectChanges();
+
+      expect(fruitRadioNativeInputs[0].getAttribute('aria-label')).toBe('Pineapple');
+    });
+
+    it('should add aria-labelledby attribute to the underlying input element if defined', () => {
+      expect(fruitRadioNativeInputs[0].getAttribute('aria-labelledby')).toBe('xyz');
+    });
+
+    it('should not add aria-labelledby attribute if not defined', () => {
+      expect(fruitRadioNativeInputs[1].hasAttribute('aria-labelledby')).toBeFalsy();
+    });
+
+    it('should change aria-labelledby attribute if property is changed at runtime', () => {
+      expect(fruitRadioNativeInputs[0].getAttribute('aria-labelledby')).toBe('xyz');
+
+      fruitRadioInstances[0].ariaLabelledby = 'uvw';
+      fixture.detectChanges();
+
+      expect(fruitRadioNativeInputs[0].getAttribute('aria-labelledby')).toBe('uvw');
+    });
   });
 });
 
@@ -423,6 +473,11 @@ class RadiosInsideRadioGroup {
     <md-radio-button name="weather" value="warm">Spring</md-radio-button>
     <md-radio-button name="weather" value="hot">Summer</md-radio-button>
     <md-radio-button name="weather" value="cool">Autumn</md-radio-button>
+    
+    <span id="xyz">Baby Banana<span>
+    <md-radio-button name="fruit" value="banana" aria-label="Banana" aria-labelledby="xyz">
+    </md-radio-button>
+    <md-radio-button name="fruit" value="raspberry">Raspberry</md-radio-button>
   `
 })
 class StandaloneRadioButtons { }

@@ -47,13 +47,16 @@ The `md-radio-group` component has no button initially selected.
 ## `<md-radio-button>`
 ### Properties
 
-| Name | Type | Description |
+| Name (attribute) | Type | Description |
 | --- | --- | --- |
 | `id` | `string` | The unique ID of this radio button. |
 | `name` | `string` | Group name, defaults to parent radio group if present. |
 | `value` | `any` | The value of this radio button. |
 | `checked` | `boolean` | Whether the radio is checked. |
 | `disabled` | `boolean` | Whether the radio is disabled. |
+| `aria-label` | `string` | Used to set the `aria-label` attribute of the underlying input element. |
+| `aria-labelledby` | `string` | Used to set the `aria-labelledby` attribute of the underlying input element.
+                                 If provided, this attribute takes precedence as the element's text alternative. |
 
 When checked, an event is emitted from the `change` EventEmitter property.
 

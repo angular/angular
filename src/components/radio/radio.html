@@ -13,6 +13,8 @@
           [checked]="checked"
           [disabled]="disabled"
           [name]="name"
+          [attr.aria-label]="ariaLabel"
+          [attr.aria-labelledby]="ariaLabelledby"
           (change)="onInputChange($event)"
           (focus)="onInputFocus()"
           (blur)="onInputBlur()" />
