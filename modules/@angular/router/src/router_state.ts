@@ -90,7 +90,7 @@ export class ActivatedRouteSnapshot {
   _resolvedComponentFactory: ComponentFactory<any>;
   
   /** @internal **/
-  _routeConfig: Route;
+  _routeConfig: Route | null;
 
   /** @internal **/
   _lastUrlSegment: UrlSegment;
@@ -99,7 +99,7 @@ export class ActivatedRouteSnapshot {
               public params: Params,
               public outlet: string,
               public component: Type | string, 
-              routeConfig: Route,
+              routeConfig: Route | null,
               lastUrlSegment: UrlSegment) {
     this._routeConfig = routeConfig;
     this._lastUrlSegment = lastUrlSegment;
@@ -120,7 +120,7 @@ export class ActivatedRouteSnapshot {
  * ```
  */
 export class RouterStateSnapshot extends Tree<ActivatedRouteSnapshot> {
-  constructor(root: TreeNode<ActivatedRouteSnapshot>, public queryParams: Params, public fragment: string) {
+  constructor(root: TreeNode<ActivatedRouteSnapshot>, public queryParams: Params, public fragment: string | null) {
     super(root);
   }
 }

@@ -3,7 +3,7 @@ import { TreeNode } from './utils/tree';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
 export function createRouterState(curr: RouterStateSnapshot, prevState: RouterState): RouterState {
-  const root = createNode(curr._root, prevState ? prevState._root : null);
+  const root = createNode(curr._root, prevState ? prevState._root : undefined);
   const queryParams = prevState ? prevState.queryParams : new BehaviorSubject(curr.queryParams);
   const fragment = prevState ? prevState.fragment : new BehaviorSubject(curr.fragment);
   return new RouterState(root, queryParams, fragment, curr);

@@ -218,15 +218,15 @@ class GuardChecks {
     const future = futureNode.value;
     const curr = currNode ? currNode.value : null;
 
-    if (future === curr) {
+    if (curr && future === curr) {
       if (!shallowEqual(future.params, curr.params)) {
         this.checks.push(future);
       }
-      this.traverseChildRoutes(futureNode, currNode, null);
+      this.traverseChildRoutes(futureNode, currNode, <any>null);
     } else {
-      this.deactivateOutletAndItChildren(null);
+      this.deactivateOutletAndItChildren(<any>null);
       this.checks.push(future);
-      this.traverseChildRoutes(futureNode, null, null);
+      this.traverseChildRoutes(futureNode, null, <any>null);
     }
   }
 
