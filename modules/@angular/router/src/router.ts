@@ -8,7 +8,7 @@ import { createRouterState } from './create_router_state';
 import { TreeNode } from './utils/tree';
 import { UrlTree, createEmptyUrlTree } from './url_tree';
 import { PRIMARY_OUTLET, Params } from './shared';
-import { createEmptyState, RouterState, RouterStateCandidate, ActivatedRoute, ActivatedRouteCandidate} from './router_state';
+import { createEmptyState, RouterState, RouterStateSnapshot, ActivatedRoute, ActivatedRouteSnapshot} from './router_state';
 import { RouterConfig } from './config';
 import { RouterOutlet } from './directives/router_outlet';
 import { createUrlTree } from './create_url_tree';
@@ -162,17 +162,17 @@ export class Router {
 
   private runNavigate(url:UrlTree, pop?:boolean):Observable<any> {
     let state;
-    const r = recognize(this.rootComponentType, this.config, url).mergeMap((newRouterStateCandidate) => {
-      return resolve(this.resolver, newRouterStateCandidate);
+    const r = recognize(this.rootComponentType, this.config, url).mergeMap((newRouterStateSnapshot) => {
+      return resolve(this.resolver, newRouterStateSnapshot);
 
-    }).map((routerStateCandidate) => {
-      return createRouterState(routerStateCandidate, this.currentRouterState);
+    }).map((routerStateSnapshot) => {
+      return createRouterState(routerStateSnapshot, this.currentRouterState);
 
     }).map((newState:RouterState) => {
       state = newState;
 
     }).mergeMap(_ => {
-      return new GuardChecks(state.candidate, this.currentRouterState.candidate, this.injector).check(this.outletMap);
+      return new GuardChecks(state.snapshot, this.currentRouterState.snapshot, this.injector).check(this.outletMap);
     });
 
     r.subscribe((shouldActivate) => {
@@ -192,7 +192,7 @@ export class Router {
 
 class GuardChecks {
   private checks = [];
-  constructor(private future: RouterStateCandidate, private curr: RouterStateCandidate, private injector: Injector) {}
+  constructor(private future: RouterStateSnapshot, private curr: RouterStateSnapshot, private injector: Injector) {}
 
   check(parentOutletMap: RouterOutletMap): Observable<boolean> {
     const futureRoot = this.future._root;
@@ -202,8 +202,8 @@ class GuardChecks {
     return forkJoin(this.checks.map(s => this.runCanActivate(s))).map(and);
   }
 
-  private traverseChildRoutes(futureNode: TreeNode<ActivatedRouteCandidate>,
-                              currNode: TreeNode<ActivatedRouteCandidate> | null,
+  private traverseChildRoutes(futureNode: TreeNode<ActivatedRouteSnapshot>,
+                              currNode: TreeNode<ActivatedRouteSnapshot> | null,
                               outletMap: RouterOutletMap): void {
     const prevChildren = nodeChildrenAsMap(currNode);
     futureNode.children.forEach(c => {
@@ -213,7 +213,7 @@ class GuardChecks {
     forEach(prevChildren, (v, k) => this.deactivateOutletAndItChildren(outletMap._outlets[k]));
   }
 
-  traverseRoutes(futureNode: TreeNode<ActivatedRouteCandidate>, currNode: TreeNode<ActivatedRouteCandidate> | null,
+  traverseRoutes(futureNode: TreeNode<ActivatedRouteSnapshot>, currNode: TreeNode<ActivatedRouteSnapshot> | null,
                  parentOutletMap: RouterOutletMap): void {
     const future = futureNode.value;
     const curr = currNode ? currNode.value : null;
@@ -232,7 +232,7 @@ class GuardChecks {
 
   private deactivateOutletAndItChildren(outlet: RouterOutlet): void {}
 
-  private runCanActivate(future: ActivatedRouteCandidate): Observable<boolean> {
+  private runCanActivate(future: ActivatedRouteSnapshot): Observable<boolean> {
     const canActivate = future._routeConfig ? future._routeConfig.canActivate : null;
     if (!canActivate || canActivate.length === 0) return of(true);
     return forkJoin(canActivate.map(c => {
@@ -286,7 +286,7 @@ class ActivateRoutes {
       {provide: ActivatedRoute, useValue: future},
       {provide: RouterOutletMap, useValue: outletMap}
     ]);
-    outlet.activate(future.candidate._resolvedComponentFactory, resolved, outletMap);
+    outlet.activate(future.snapshot._resolvedComponentFactory, resolved, outletMap);
     pushValues(future);
   }
 
@@ -299,19 +299,19 @@ class ActivateRoutes {
 }
 
 function pushValues(route: ActivatedRoute): void {
-  if (!shallowEqual(route.candidate.params, (<any>route.params).value)) {
-    (<any>route.urlSegments).next(route.candidate.urlSegments);
-    (<any>route.params).next(route.candidate.params);
+  if (!shallowEqual(route.snapshot.params, (<any>route.params).value)) {
+    (<any>route.urlSegments).next(route.snapshot.urlSegments);
+    (<any>route.params).next(route.snapshot.params);
   }
 }
 
 function pushQueryParamsAndFragment(state: RouterState): void {
-  if (!shallowEqual(state.candidate.queryParams, (<any>state.queryParams).value)) {
-    (<any>state.queryParams).next(state.candidate.queryParams);
+  if (!shallowEqual(state.snapshot.queryParams, (<any>state.queryParams).value)) {
+    (<any>state.queryParams).next(state.snapshot.queryParams);
   }
 
-  if (state.candidate.fragment !== (<any>state.fragment).value) {
-    (<any>state.fragment).next(state.candidate.fragment);
+  if (state.snapshot.fragment !== (<any>state.fragment).value) {
+    (<any>state.fragment).next(state.snapshot.fragment);
   }
 }
 

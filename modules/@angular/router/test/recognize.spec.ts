@@ -1,7 +1,7 @@
 import {DefaultUrlSerializer} from '../src/url_serializer';
 import {UrlTree} from '../src/url_tree';
 import {Params, PRIMARY_OUTLET} from '../src/shared';
-import {ActivatedRouteCandidate} from '../src/router_state';
+import {ActivatedRouteSnapshot} from '../src/router_state';
 import {recognize} from '../src/recognize';
 
 describe('recognize', () => {
@@ -196,7 +196,7 @@ describe('recognize', () => {
   });
 });
 
-function checkActivatedRoute(actual: ActivatedRouteCandidate | null, url: string, params: Params, cmp: Function, outlet: string = PRIMARY_OUTLET):void {
+function checkActivatedRoute(actual: ActivatedRouteSnapshot | null, url: string, params: Params, cmp: Function, outlet: string = PRIMARY_OUTLET):void {
   if (actual === null) {
     expect(actual).toBeDefined();
   } else {

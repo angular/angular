@@ -7,7 +7,7 @@ import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Type, ComponentFactory } from '@angular/core';
 
 /**
- * The state of the router at a particular moment in time.
+ * The state of the router.
  *
  * ### Usage
  *
@@ -22,32 +22,33 @@ import { Type, ComponentFactory } from '@angular/core';
  * ```
  */
 export class RouterState extends Tree<ActivatedRoute> {
-  constructor(root: TreeNode<ActivatedRoute>, public queryParams: Observable<Params>, public fragment: Observable<string>, public candidate: RouterStateCandidate) {
+  constructor(root: TreeNode<ActivatedRoute>, public queryParams: Observable<Params>, public fragment: Observable<string>, public snapshot: RouterStateSnapshot) {
     super(root);
   }
 }
 
 export function createEmptyState(rootComponent: Type): RouterState {
-  const candidate = createEmptyStateCandidate(rootComponent);
+  const snapshot = createEmptyStateSnapshot(rootComponent);
   const emptyUrl = new BehaviorSubject([new UrlSegment("", {}, PRIMARY_OUTLET)]);
   const emptyParams = new BehaviorSubject({});
   const emptyQueryParams = new BehaviorSubject({});
   const fragment = new BehaviorSubject("");
-  const activated = new ActivatedRoute(emptyUrl, emptyParams, PRIMARY_OUTLET, rootComponent, candidate.root);
-  return new RouterState(new TreeNode<ActivatedRoute>(activated, []), emptyQueryParams, fragment, candidate);
+  const activated = new ActivatedRoute(emptyUrl, emptyParams, PRIMARY_OUTLET, rootComponent, snapshot.root);
+  return new RouterState(new TreeNode<ActivatedRoute>(activated, []), emptyQueryParams, fragment, snapshot);
 }
 
-function createEmptyStateCandidate(rootComponent: Type): RouterStateCandidate {
+function createEmptyStateSnapshot(rootComponent: Type): RouterStateSnapshot {
   const emptyUrl = [new UrlSegment("", {}, PRIMARY_OUTLET)];
   const emptyParams = {};
   const emptyQueryParams = {};
   const fragment = "";
-  const activated = new ActivatedRouteCandidate(emptyUrl, emptyParams, PRIMARY_OUTLET, rootComponent, null);
-  return new RouterStateCandidate(new TreeNode<ActivatedRouteCandidate>(activated, []), emptyQueryParams, fragment);
+  const activated = new ActivatedRouteSnapshot(emptyUrl, emptyParams, PRIMARY_OUTLET, rootComponent, null);
+  return new RouterStateSnapshot(new TreeNode<ActivatedRouteSnapshot>(activated, []), emptyQueryParams, fragment);
 }
 
 /**
- * Contains the information about a component loaded in an outlet.
+ * Contains the information about a component loaded in an outlet. The information is provided through
+ * the params and urlSegments observables.
  *
  * ### Usage
  *
@@ -64,11 +65,24 @@ export class ActivatedRoute {
               public params: Observable<Params>,
               public outlet: string,
               public component: Type | string,
-              public candidate: ActivatedRouteCandidate
+              public snapshot: ActivatedRouteSnapshot
   ) {}
 }
 
-export class ActivatedRouteCandidate {
+/**
+ * Contains the information about a component loaded in an outlet at a particular moment in time.
+ *
+ * ### Usage
+ *
+ * ```
+ * class MyComponent {
+ *   constructor(route: ActivatedRoute) {
+ *     const id: string = route.snapshot.params.id;
+ *   }
+ * }
+ * ```
+ */
+export class ActivatedRouteSnapshot {
   /**
    * @internal
    */
@@ -86,8 +100,21 @@ export class ActivatedRouteCandidate {
   }
 }
 
-export class RouterStateCandidate extends Tree<ActivatedRouteCandidate> {
-  constructor(root: TreeNode<ActivatedRouteCandidate>, public queryParams: Params, public fragment: string) {
+/**
+ * The state of the router at a particular moment in time.
+ *
+ * ### Usage
+ *
+ * ```
+ * class MyComponent {
+ *   constructor(router: Router) {
+ *     const snapshot = router.routerState.snapshot;
+ *   }
+ * }
+ * ```
+ */
+export class RouterStateSnapshot extends Tree<ActivatedRouteSnapshot> {
+  constructor(root: TreeNode<ActivatedRouteSnapshot>, public queryParams: Params, public fragment: string) {
     super(root);
   }
 }
