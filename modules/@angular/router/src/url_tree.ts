@@ -10,12 +10,18 @@ export function createEmptyUrlTree() {
  * A URL in the tree form.
  */
 export class UrlTree extends Tree<UrlSegment> {
+  /**
+   * @internal
+   */
   constructor(root: TreeNode<UrlSegment>, public queryParameters: {[key: string]: string}, public fragment: string | null) {
     super(root);
   }
 }
 
 export class UrlSegment {
+  /**
+   * @internal
+   */
   constructor(public path: string, public parameters: {[key: string]: string}, public outlet: string) {}
 
   toString() {
