@@ -133,6 +133,17 @@ void allTests() {
           'empty_ng_deps_files/expected/foo.template.dart',
       'a|web/bar.template.dart':
           'empty_ng_deps_files/expected/bar.template.dart'
+    }),
+    new IntegrationTestConfig('should handle generated injectors.',
+        inputs: {
+          'a|web/foo.dart': 'injector_files/foo.dart',
+          'a|web/bar.dart': 'injector_files/bar.dart'
+        },
+        outputs: {
+      'a|web/foo.template.dart':
+          'injector_files/expected/foo.template.dart',
+      'a|web/bar.template.dart':
+          'injector_files/expected/bar.template.dart'
     })
   ];
 

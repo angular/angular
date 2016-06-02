@@ -37,13 +37,14 @@ import {
   ChangeDetectorRef
 } from "angular2/core";
 import {Console} from 'angular2/src/core/console';
-import {BaseException} from 'angular2/src/facade/exceptions';
+import {BaseException, unimplemented} from 'angular2/src/facade/exceptions';
 import {PromiseWrapper, PromiseCompleter, TimerWrapper} from "angular2/src/facade/async";
 import {
   ComponentFactory,
   ComponentRef_,
   ComponentRef
 } from 'angular2/src/core/linker/component_factory';
+import {InjectorFactory} from 'angular2/src/core/linker/injector_factory';
 import {ExceptionHandler} from 'angular2/src/facade/exception_handler';
 
 export function main() {
@@ -167,6 +168,11 @@ class _MockComponentResolver implements ComponentResolver {
   resolveComponent(type: Type): Promise<ComponentFactory> {
     return PromiseWrapper.resolve(this._compFactory);
   }
+
+  createInjectorFactory(injectorModule: Type, extraProviders?: any[]): InjectorFactory<any> {
+    return unimplemented();
+  }
+
   clearCache() {}
 }
 

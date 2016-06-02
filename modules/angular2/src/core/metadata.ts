@@ -10,7 +10,9 @@ export {
   ViewChildrenMetadata,
   ViewQueryMetadata,
   ViewChildMetadata,
-  AttributeMetadata
+  AttributeMetadata,
+  ProviderPropertyMetadata,
+  InjectorModuleMetadata
 } from './metadata/di';
 
 export {
@@ -43,7 +45,9 @@ import {
   ViewChildrenMetadata,
   ViewChildMetadata,
   ViewQueryMetadata,
-  AttributeMetadata
+  AttributeMetadata,
+  InjectorModuleMetadata,
+  ProviderPropertyMetadata
 } from './metadata/di';
 
 import {
@@ -1473,3 +1477,65 @@ export var HostBinding: HostBindingMetadataFactory = makePropDecorator(HostBindi
  * ```
  */
 export var HostListener: HostListenerMetadataFactory = makePropDecorator(HostListenerMetadata);
+
+/**
+ * Interface for the {@link InjectorModuleMetadata} decorator function.
+ *
+ * See {@link InjectorModule}.
+ */
+export interface InjectorModuleDecorator extends TypeDecorator {}
+
+/**
+ * Defines an injector module from which an injector can be generated.
+ *
+ * ### Example
+ *
+ * ```
+ * @InjectorModule({
+ *   providers: [SomeService]
+ * })
+ * class MyModule {}
+ *
+ * ```
+ * @experimental
+ */
+export var InjectorModule: InjectorModuleMetadataFactory =
+    <InjectorModuleMetadataFactory>makeDecorator(InjectorModuleMetadata);
+
+/**
+ * {@link InjectorModuleMetadata} factory for creating decorators.
+ *
+ * See {@link InjectorModuleMetadata}.
+ * @experimental
+ */
+export interface InjectorModuleMetadataFactory {
+  (obj?: {providers?: any[]}): InjectorModuleDecorator;
+  new (obj: {properties?: string[]}): InjectorModuleMetadata;
+}
+
+/**
+ * Defines an injectable whose value is given by a property on an InjectorModule class.
+ *
+ * ### Example
+ *
+ * ```
+ * @InjectorModule()
+ * class MyModule {
+ *   @Provides(SomeToken)
+ *   someProp: string = 'Hello world';
+ * }
+ * ```
+ * @experimental
+ */
+export var Provides: ProviderPropertyMetadataFactory = makePropDecorator(ProviderPropertyMetadata);
+
+/**
+ * {@link ConfigProviderPropertyMetadata} factory for creating decorators.
+ *
+ * See {@link ConfigProviderPropertyMetadata}.
+ * @experimental
+ */
+export interface ProviderPropertyMetadataFactory {
+  (token: any, obj?: {multi?: boolean}): any;
+  new (token: any, obj?: {multi?: boolean}): any;
+}

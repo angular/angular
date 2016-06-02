@@ -111,12 +111,10 @@ class _FindDeferredLibraries extends Object with SimpleAstVisitor<Object> {
   final _urlResolver = createOfflineCompileUrlResolver();
 
   final AssetReader _reader;
-  final AssetId _entryPoint;
   final String _entryPointUri;
 
   _FindDeferredLibraries(this._reader, AssetId entryPoint)
-      : _entryPoint = entryPoint,
-        _entryPointUri = toAssetUri(entryPoint);
+      : _entryPointUri = toAssetUri(entryPoint);
 
   @override
   Object visitImportDirective(ImportDirective node) {

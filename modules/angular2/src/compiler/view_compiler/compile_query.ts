@@ -70,7 +70,7 @@ export class CompileQuery {
     return isStatic;
   }
 
-  afterChildren(targetStaticMethod, targetDynamicMethod: CompileMethod) {
+  afterChildren(targetStaticMethod: CompileMethod, targetDynamicMethod: CompileMethod) {
     var values = createQueryValues(this._values);
     var updateStmts = [this.queryList.callMethod('reset', [o.literalArr(values)]).toStmt()];
     if (isPresent(this.ownerDirectiveExpression)) {

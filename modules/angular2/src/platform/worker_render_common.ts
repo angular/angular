@@ -12,7 +12,8 @@ import {
   PLATFORM_COMMON_PROVIDERS,
   RootRenderer,
   PLATFORM_INITIALIZER,
-  APP_INITIALIZER
+  APP_INITIALIZER,
+  TestabilityRegistry
 } from 'angular2/core';
 import {EVENT_MANAGER_PLUGINS, EventManager} from 'angular2/platform/common_dom';
 import {provide, Provider, Injector, OpaqueToken} from 'angular2/src/core/di';
@@ -63,7 +64,9 @@ export const WORKER_RENDER_PLATFORM_MARKER =
 export const WORKER_RENDER_PLATFORM: Array<any /*Type | Provider | any[]*/> = CONST_EXPR([
   PLATFORM_COMMON_PROVIDERS,
   CONST_EXPR(new Provider(WORKER_RENDER_PLATFORM_MARKER, {useValue: true})),
-  new Provider(PLATFORM_INITIALIZER, {useValue: initWebWorkerRenderPlatform, multi: true})
+  new Provider(
+      PLATFORM_INITIALIZER,
+      {useFactory: initWebWorkerRenderPlatform, multi: true, deps: [TestabilityRegistry]})
 ]);
 
 /**
@@ -111,10 +114,12 @@ export function initializeGenericWorkerRenderer(injector: Injector) {
   });
 }
 
-export function initWebWorkerRenderPlatform(): void {
-  BrowserDomAdapter.makeCurrent();
-  wtfInit();
-  BrowserGetTestability.init();
+export function initWebWorkerRenderPlatform(registry: TestabilityRegistry): Function {
+  return () => {
+    BrowserDomAdapter.makeCurrent();
+    wtfInit();
+    registry.setTestabilityGetter(new BrowserGetTestability());
+  };
 }
 
 function exceptionHandler(): ExceptionHandler {

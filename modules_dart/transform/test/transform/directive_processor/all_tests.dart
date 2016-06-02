@@ -1156,6 +1156,53 @@ void allTests() {
       expect(deps[0].token.identifier.name, equals("ServiceDep"));
     });
   });
+
+  group('injectors', () {
+    test('should populate `providers` using types.', () async {
+      var inj = (await _testCreateModel('injector_files/injectors.dart'))
+          .identifiers['InjectorWithProvidersTypes'];
+
+      expect(inj, isNotNull);
+      expect(inj.providers, isNotNull);
+      expect(inj.providers.length, equals(1));
+
+      var firstToken = inj.providers.first;
+      expect(firstToken.prefix, isNull);
+      expect(firstToken.name, equals("ServiceDep"));
+    });
+
+    test('should read `Provides` properties.', () async {
+      var inj = (await _testCreateModel('injector_files/injectors.dart'))
+          .identifiers['InjectorWithProviderProperties'];
+
+      expect(inj, isNotNull);
+      expect(inj.providers, isNotNull);
+      expect(inj.providers.length, equals(3));
+
+      expect(inj.providers[0].token.name, equals("ServiceDep"));
+      expect(inj.providers[0].useProperty, equals("someProp"));
+      expect(inj.providers[0].multi, equals(false));
+
+      expect(inj.providers[1].token.name, equals("ServiceDep"));
+      expect(inj.providers[1].useProperty, equals("someGetter"));
+      expect(inj.providers[1].multi, equals(false));
+
+      expect(inj.providers[2].token.name, equals("ServiceDep"));
+      expect(inj.providers[2].useProperty, equals("someMultiProp"));
+      expect(inj.providers[2].multi, equals(true));
+    });
+
+    test('should read constructor deps', () async {
+      var inj = (await _testCreateModel('injector_files/injectors.dart'))
+          .identifiers['InjectorWithDeps'];
+
+      expect(inj.diDeps.length, equals(4));
+      expect(inj.diDeps[0].token.name, equals('ServiceDep'));
+      expect(inj.diDeps[1].token.name, equals('ServiceDep'));
+      expect(inj.diDeps[2].token.name, equals('ServiceDep'));
+      expect(inj.diDeps[3].token, isNull);
+    });
+  });
 }
 
 Future<NgMeta> _testCreateModel(String inputPath,

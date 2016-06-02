@@ -22,6 +22,10 @@ function _isDirectiveMetadata(type: any): boolean {
   return type instanceof DirectiveMetadata;
 }
 
+export class NoDirectiveAnnotationError extends BaseException {
+  constructor(type: Type) { super(`No Directive annotation found on ${stringify(type)}`); }
+}
+
 /*
  * Resolve a `Type` for {@link DirectiveMetadata}.
  *
@@ -54,7 +58,7 @@ export class DirectiveResolver {
       }
     }
 
-    throw new BaseException(`No Directive annotation found on ${stringify(type)}`);
+    throw new NoDirectiveAnnotationError(type);
   }
 
   private _mergeWithPropertyMetadata(dm: DirectiveMetadata,
@@ -165,5 +169,3 @@ export class DirectiveResolver {
     }
   }
 }
-
-export var CODEGEN_DIRECTIVE_RESOLVER = new DirectiveResolver(reflector);

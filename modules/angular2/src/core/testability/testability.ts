@@ -106,8 +106,15 @@ export class Testability {
 export class TestabilityRegistry {
   /** @internal */
   _applications = new Map<any, Testability>();
+  private _testabilityGetter: GetTestability = new _NoopGetTestability();
 
-  constructor() { _testabilityGetter.addToWindow(this); }
+  /**
+   * Set the {@link GetTestability} implementation used by the Angular testing framework.
+   */
+  setTestabilityGetter(getter: GetTestability): void {
+    this._testabilityGetter = getter;
+    getter.addToWindow(this);
+  }
 
   registerApplication(token: any, testability: Testability) {
     this._applications.set(token, testability);
@@ -120,7 +127,7 @@ export class TestabilityRegistry {
   getAllRootElements(): any[] { return MapWrapper.keys(this._applications); }
 
   findTestabilityInTree(elem: Node, findInAncestors: boolean = true): Testability {
-    return _testabilityGetter.findTestabilityInTree(this, elem, findInAncestors);
+    return this._testabilityGetter.findTestabilityInTree(this, elem, findInAncestors);
   }
 }
 
@@ -142,12 +149,3 @@ class _NoopGetTestability implements GetTestability {
     return null;
   }
 }
-
-/**
- * Set the {@link GetTestability} implementation used by the Angular testing framework.
- */
-export function setTestabilityGetter(getter: GetTestability): void {
-  _testabilityGetter = getter;
-}
-
-var _testabilityGetter: GetTestability = CONST_EXPR(new _NoopGetTestability());

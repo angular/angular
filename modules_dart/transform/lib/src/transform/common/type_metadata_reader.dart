@@ -23,10 +23,12 @@ class TypeMetadataReader {
   final _PipeMetadataVisitor _pipeVisitor;
   final _CompileTypeMetadataVisitor _typeVisitor;
   final _CompileFactoryMetadataVisitor _factoryVisitor;
+  final _InjectorModuleMetadataVisitor _injectorModuleVisitor;
   final OfflineCompiler _templateCompiler;
 
   TypeMetadataReader._(this._directiveVisitor, this._pipeVisitor,
-      this._templateCompiler, this._typeVisitor, this._factoryVisitor);
+      this._templateCompiler, this._typeVisitor, this._factoryVisitor,
+      this._injectorModuleVisitor);
 
   /// Accepts an [AnnotationMatcher] which tests that an [Annotation]
   /// is a [Directive], [Component], or [View].
@@ -39,9 +41,12 @@ class TypeMetadataReader {
         annotationMatcher, lifecycleVisitor, typeVisitor);
     var pipeVisitor = new _PipeMetadataVisitor(
         annotationMatcher, lifecycleVisitor, typeVisitor);
+    var injectorVisitor = new _InjectorModuleMetadataVisitor(
+        annotationMatcher, typeVisitor);
 
     return new TypeMetadataReader._(
-        directiveVisitor, pipeVisitor, templateCompiler, typeVisitor, factoryVisitor);
+        directiveVisitor, pipeVisitor, templateCompiler, typeVisitor, factoryVisitor,
+        injectorVisitor);
   }
 
   /// Reads *un-normalized* [CompileDirectiveMetadata]/[CompilePipeMetadata] from the
@@ -57,10 +62,12 @@ class TypeMetadataReader {
   Future<dynamic> readTypeMetadata(ClassDeclaration node, AssetId assetId) {
     _directiveVisitor.reset(assetId);
     _pipeVisitor.reset(assetId);
+    _injectorModuleVisitor.reset(assetId);
     _typeVisitor.reset(assetId);
 
     node.accept(_directiveVisitor);
     node.accept(_pipeVisitor);
+    node.accept(_injectorModuleVisitor);
     node.accept(_typeVisitor);
 
     if (_directiveVisitor.hasMetadata) {
@@ -68,6 +75,8 @@ class TypeMetadataReader {
       return _templateCompiler.normalizeDirectiveMetadata(metadata);
     } else if (_pipeVisitor.hasMetadata) {
       return new Future.value(_pipeVisitor.createMetadata());
+    } else if (_injectorModuleVisitor.hasMetadata) {
+      return new Future.value(_injectorModuleVisitor.createMetadata());
     } else if (_typeVisitor.isInjectable) {
       return new Future.value(_typeVisitor.type);
     } else {
@@ -197,21 +206,21 @@ class _CompileTypeMetadataVisitor extends Object
     final isDirective = _annotationMatcher.isDirective(node, _assetId);
     final isPipe = _annotationMatcher.isPipe(node, _assetId);
     final isInjectable = _annotationMatcher.isInjectable(node, _assetId);
+    final isInjectorModule = _annotationMatcher.isInjectorModule(node, _assetId);
 
-    _isInjectable = _isInjectable || isComponent || isDirective || isPipe || isInjectable;
-
+    _isInjectable = _isInjectable || isComponent || isDirective || isPipe || isInjectable || isInjectorModule;
     return null;
   }
 
   @override
   Object visitClassDeclaration(ClassDeclaration node) {
     node.metadata.accept(this);
-    final fieldTypes = _readFields(node);
+    var diDeps;
     if (this._isInjectable) {
       final constructor = node.getConstructor(null);
-      final diDeps = constructor == null ? [] :
+      final fieldTypes = _readFields(node);
+      diDeps = constructor == null ? [] :
         _getCompileDiDependencyMetadata(constructor.parameters, fieldTypes);
-
       _type = new CompileTypeMetadata(
           moduleUrl: toAssetUri(_assetId),
           name: node.name.toString(),
@@ -917,6 +926,159 @@ class _PipeMetadataVisitor extends Object with RecursiveAstVisitor<Object> {
   void _populatePure(Expression pureValue) {
     _checkMeta();
     _pure = _expressionToBool(pureValue, 'Pipe#pure');
+  }
+}
+
+/// Visitor responsible for processing a [InjectorModule] annotated
+/// [ClassDeclaration] and creating a [CompileInjectorModuleMetadata] object.
+class _InjectorModuleMetadataVisitor extends Object
+    with RecursiveAstVisitor<Object> {
+  /// Tests [Annotation]s to determine if they define an [InjectorModule]
+  final AnnotationMatcher _annotationMatcher;
+
+  final _CompileTypeMetadataVisitor _typeVisitor;
+
+  /// The [AssetId] we are currently processing.
+  AssetId _assetId;
+
+  _InjectorModuleMetadataVisitor(
+      this._annotationMatcher, this._typeVisitor) {
+    reset(null);
+  }
+
+  /// Whether the visitor has found an [InjectorModule] annotation
+  /// since the last call to `reset`.
+  bool _hasMetadata = false;
+
+  // Annotation fields
+  CompileTypeMetadata _type;
+  List _providers;
+
+  void reset(AssetId assetId) {
+    _typeVisitor.reset(assetId);
+    _assetId = assetId;
+    _hasMetadata = false;
+
+    _providers = [];
+  }
+
+  bool get hasMetadata => _hasMetadata;
+
+  CompileInjectorModuleMetadata createMetadata() {
+    return new CompileInjectorModuleMetadata(
+        name: _type.name,
+        moduleUrl: _type.moduleUrl,
+        diDeps: _type.diDeps,
+        providers: _providers);
+  }
+
+  @override
+  Object visitAnnotation(Annotation node) {
+    var isInjectorModule = _annotationMatcher.isInjectorModule(node, _assetId);
+    if (isInjectorModule) {
+      if (_hasMetadata) {
+        throw new FormatException(
+            'Only one InjectorModule is allowed per class. '
+            'Found unexpected "$node".',
+            '$node' /* source */);
+      }
+      _hasMetadata = true;
+      super.visitAnnotation(node);
+    }
+
+    // Annotation we do not recognize - no need to visit.
+    return null;
+  }
+
+  @override
+  Object visitFieldDeclaration(FieldDeclaration node) {
+    for (var variable in node.fields.variables) {
+      for (var meta in node.metadata) {
+        if (_isAnnotation(meta, 'Provides')) {
+          _addProviderProperty(variable.name.toString(), meta);
+        }
+      }
+    }
+    return null;
+  }
+
+  @override
+  Object visitMethodDeclaration(MethodDeclaration node) {
+    for (var meta in node.metadata) {
+      if (_isAnnotation(meta, 'Provides') && node.isGetter) {
+        _addProviderProperty(node.name.toString(), meta);
+      }
+    }
+    return null;
+  }
+
+  void _addProviderProperty(String name, Annotation meta) {
+    var token = _readToken(meta.arguments.arguments.first);
+    var multi = false;
+    meta.arguments.arguments.skip(0).forEach((arg) {
+      if (arg is NamedExpression) {
+        var name = arg.name.toString();
+        if (name == "multi:") {
+          multi = naiveEval(arg.expression);
+        }
+      }
+    });
+    _providers.add(new CompileProviderMetadata(token: token, useProperty: name,
+        multi: multi));
+  }
+
+  void _populateProviders(Expression providerValues, List providers) {
+    _checkMeta();
+
+    if (providerValues is ListLiteral) {
+      providers.addAll(_readProviders(providerValues, throwOnErrors: true));
+    } else {
+      // Support private nested provider lists...
+      providers.add(_readIdentifier(providerValues, allowPrivate: true));
+    }
+  }
+
+  //TODO Use AnnotationMatcher instead of string matching
+  bool _isAnnotation(Annotation node, String annotationName) {
+    var id = node.name;
+    final name = id is PrefixedIdentifier ? '${id.identifier}' : '$id';
+    return name == annotationName;
+  }
+
+  @override
+  Object visitClassDeclaration(ClassDeclaration node) {
+    node.metadata.accept(this);
+    node.accept(_typeVisitor);
+    _type = _typeVisitor.type;
+
+    if (this._hasMetadata) {
+      node.members.accept(this);
+    }
+    return null;
+  }
+
+  @override
+  Object visitNamedExpression(NamedExpression node) {
+    // TODO(kegluneq): Remove this limitation.
+    if (node.name is! Label || node.name.label is! SimpleIdentifier) {
+      throw new FormatException(
+          'Angular 2 currently only supports simple identifiers in InjectorModules.',
+          '$node' /* source */);
+    }
+    var keyString = '${node.name.label}';
+    switch (keyString) {
+      case 'providers':
+        _populateProviders(node.expression, _providers);
+        break;
+    }
+    return null;
+  }
+
+  void _checkMeta() {
+    if (!_hasMetadata) {
+      throw new ArgumentError('Incorrect value passed to readTypeMetadata. '
+          'Expected type is ClassDeclaration');
+    }
   }
 }
 

@@ -11,7 +11,8 @@ import {
   RootRenderer,
   reflector,
   APPLICATION_COMMON_PROVIDERS,
-  PLATFORM_COMMON_PROVIDERS
+  PLATFORM_COMMON_PROVIDERS,
+  TestabilityRegistry
 } from "angular2/core";
 import {COMMON_DIRECTIVES, COMMON_PIPES, FORM_PROVIDERS} from "angular2/common";
 import {Testability} from 'angular2/src/core/testability/testability';
@@ -57,7 +58,8 @@ export const BROWSER_PLATFORM_MARKER = CONST_EXPR(new OpaqueToken('BrowserPlatfo
 export const BROWSER_PROVIDERS: Array<any /*Type | Provider | any[]*/> = CONST_EXPR([
   new Provider(BROWSER_PLATFORM_MARKER, {useValue: true}),
   PLATFORM_COMMON_PROVIDERS,
-  new Provider(PLATFORM_INITIALIZER, {useValue: initDomAdapter, multi: true}),
+  new Provider(PLATFORM_INITIALIZER,
+               {useFactory: createInitDomAdapter, multi: true, deps: [TestabilityRegistry]}),
 ]);
 
 function exceptionHandler(): ExceptionHandler {
@@ -100,8 +102,10 @@ export const BROWSER_APP_COMMON_PROVIDERS: Array<any /*Type | Provider | any[]*/
 export const CACHED_TEMPLATE_PROVIDER: Array<any /*Type | Provider | any[]*/> =
     CONST_EXPR([new Provider(XHR, {useClass: CachedXHR})]);
 
-export function initDomAdapter() {
-  BrowserDomAdapter.makeCurrent();
-  wtfInit();
-  BrowserGetTestability.init();
+export function createInitDomAdapter(testabilityRegistry: TestabilityRegistry): Function {
+  return () => {
+    BrowserDomAdapter.makeCurrent();
+    wtfInit();
+    testabilityRegistry.setTestabilityGetter(new BrowserGetTestability());
+  };
 }

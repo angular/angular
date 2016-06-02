@@ -98,10 +98,6 @@ class PublicTestability implements _JsObjectProxyable {
 class BrowserGetTestability implements GetTestability {
   const BrowserGetTestability();
 
-  static init() {
-    setTestabilityGetter(const BrowserGetTestability());
-  }
-
   void addToWindow(TestabilityRegistry registry) {
     var jsRegistry = js.context['ngTestabilityRegistries'];
     if (jsRegistry == null) {
@@ -126,7 +122,7 @@ class BrowserGetTestability implements GetTestability {
         }
         return _jsify(result);
       };
-      js.context['getAllAngularTestabilities'] = 
+      js.context['getAllAngularTestabilities'] =
           _jsify(getAllAngularTestabilities);
 
       var whenAllStable = _jsify((callback) {

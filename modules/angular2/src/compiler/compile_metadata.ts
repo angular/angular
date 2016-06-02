@@ -164,15 +164,17 @@ export class CompileProviderMetadata {
   useValue: any;
   useExisting: CompileTokenMetadata;
   useFactory: CompileFactoryMetadata;
+  useProperty: string;
   deps: CompileDiDependencyMetadata[];
   multi: boolean;
 
-  constructor({token, useClass, useValue, useExisting, useFactory, deps, multi}: {
+  constructor({token, useClass, useValue, useExisting, useFactory, useProperty, deps, multi}: {
     token?: CompileTokenMetadata,
     useClass?: CompileTypeMetadata,
     useValue?: any,
     useExisting?: CompileTokenMetadata,
     useFactory?: CompileFactoryMetadata,
+    useProperty?: string,
     deps?: CompileDiDependencyMetadata[],
     multi?: boolean
   }) {
@@ -181,6 +183,7 @@ export class CompileProviderMetadata {
     this.useValue = useValue;
     this.useExisting = useExisting;
     this.useFactory = useFactory;
+    this.useProperty = useProperty;
     this.deps = normalizeBlank(deps);
     this.multi = normalizeBool(multi);
   }
@@ -192,6 +195,7 @@ export class CompileProviderMetadata {
       useExisting: _objFromJson(data['useExisting'], CompileTokenMetadata.fromJson),
       useValue: _objFromJson(data['useValue'], CompileIdentifierMetadata.fromJson),
       useFactory: _objFromJson(data['useFactory'], CompileFactoryMetadata.fromJson),
+      useProperty: data['useProperty'],
       multi: data['multi'],
       deps: _arrayFromJson(data['deps'], CompileDiDependencyMetadata.fromJson)
     });
@@ -206,6 +210,7 @@ export class CompileProviderMetadata {
       'useExisting': _objToJson(this.useExisting),
       'useValue': _objToJson(this.useValue),
       'useFactory': _objToJson(this.useFactory),
+      'useProperty': this.useProperty,
       'multi': this.multi,
       'deps': _arrayToJson(this.deps)
     };
@@ -326,12 +331,14 @@ export class CompileTokenMetadata implements CompileMetadataWithIdentifier {
 export class CompileTokenMap<VALUE> {
   private _valueMap = new Map<any, VALUE>();
   private _values: VALUE[] = [];
+  private _tokens: CompileTokenMetadata[] = [];
 
   add(token: CompileTokenMetadata, value: VALUE) {
     var existing = this.get(token);
     if (isPresent(existing)) {
       throw new BaseException(`Can only add to a TokenMap! Token: ${token.name}`);
     }
+    this._tokens.push(token);
     this._values.push(value);
     var rk = token.runtimeCacheKey;
     if (isPresent(rk)) {
@@ -354,6 +361,7 @@ export class CompileTokenMap<VALUE> {
     }
     return result;
   }
+  keys(): CompileTokenMetadata[] { return this._tokens; }
   values(): VALUE[] { return this._values; }
   get size(): number { return this._values.length; }
 }
@@ -761,13 +769,76 @@ export class CompilePipeMetadata implements CompileMetadataWithType {
   }
 }
 
+/**
+ * Metadata regarding compilation of an InjectorModule.
+ */
+export class CompileInjectorModuleMetadata implements CompileMetadataWithType, CompileTypeMetadata {
+  runtime: Type;
+  name: string;
+  prefix: string;
+  moduleUrl: string;
+  isHost = false;
+  value: any;
+  diDeps: CompileDiDependencyMetadata[];
+  providers:
+      Array<CompileProviderMetadata | CompileTypeMetadata | CompileIdentifierMetadata | any[]>;
+
+  constructor({runtime, name, moduleUrl, prefix, value, diDeps, providers}: {
+    runtime?: Type,
+    name?: string,
+    moduleUrl?: string,
+    prefix?: string,
+    value?: any,
+    diDeps?: CompileDiDependencyMetadata[],
+    providers?:
+        Array<CompileProviderMetadata | CompileTypeMetadata | CompileIdentifierMetadata | any[]>
+  } = {}) {
+    this.runtime = runtime;
+    this.name = name;
+    this.moduleUrl = moduleUrl;
+    this.prefix = prefix;
+    this.value = value;
+    this.diDeps = _normalizeArray(diDeps);
+    this.providers = _normalizeArray(providers);
+  }
+
+  static fromJson(data: {[key: string]: any}): CompileInjectorModuleMetadata {
+    return new CompileInjectorModuleMetadata({
+      name: data['name'],
+      moduleUrl: data['moduleUrl'],
+      prefix: data['prefix'],
+      value: data['value'],
+      diDeps: _arrayFromJson(data['diDeps'], CompileDiDependencyMetadata.fromJson),
+      providers: _arrayFromJson(data['providers'], metadataFromJson)
+    });
+  }
+
+  get identifier(): CompileIdentifierMetadata { return this; }
+  get type(): CompileInjectorModuleMetadata { return this; }
+
+  toJson(): {[key: string]: any} {
+    return {
+      // Note: Runtime type can't be serialized...
+      'class': 'InjectorModule',
+      'name': this.name,
+      'moduleUrl': this.moduleUrl,
+      'prefix': this.prefix,
+      'isHost': this.isHost,
+      'value': this.value,
+      'diDeps': _arrayToJson(this.diDeps),
+      'providers': _arrayToJson(this.providers)
+    };
+  }
+}
+
 var _COMPILE_METADATA_FROM_JSON = {
   'Directive': CompileDirectiveMetadata.fromJson,
   'Pipe': CompilePipeMetadata.fromJson,
   'Type': CompileTypeMetadata.fromJson,
   'Provider': CompileProviderMetadata.fromJson,
   'Identifier': CompileIdentifierMetadata.fromJson,
-  'Factory': CompileFactoryMetadata.fromJson
+  'Factory': CompileFactoryMetadata.fromJson,
+  'InjectorModule': CompileInjectorModuleMetadata.fromJson,
 };
 
 function _arrayFromJson(obj: any[], fn: (a: {[key: string]: any}) => any): any {

@@ -1476,9 +1476,9 @@ function declareTests(isJit: boolean) {
                expect(c.source).toContain(":0:7");
                expect(c.context).toBe(fixture.debugElement.componentInstance);
                expect(c.locals["local"]).toBeDefined();
+               async.done();
              }
 
-             async.done();
            });
          }));
 
@@ -1496,9 +1496,9 @@ function declareTests(isJit: boolean) {
                var c = e.context;
                expect(c.renderNode).toBeTruthy();
                expect(c.source).toContain(':0:5');
+               async.done();
              }
 
-             async.done();
            });
          }));
 

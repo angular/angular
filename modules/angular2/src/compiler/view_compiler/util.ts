@@ -77,3 +77,13 @@ export function createFlatArray(expressions: o.Expression[]): o.Expression {
   }
   return result;
 }
+
+export function convertValueToOutputAst(value: any): o.Expression {
+  if (value instanceof CompileIdentifierMetadata) {
+    return o.importExpr(value);
+  } else if (value instanceof o.Expression) {
+    return value;
+  } else {
+    return o.literal(value);
+  }
+}

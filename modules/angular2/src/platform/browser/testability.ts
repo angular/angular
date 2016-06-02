@@ -10,7 +10,6 @@ import {
   TestabilityRegistry,
   Testability,
   GetTestability,
-  setTestabilityGetter
 } from 'angular2/core';
 
 class PublicTestability {
@@ -33,8 +32,6 @@ class PublicTestability {
 }
 
 export class BrowserGetTestability implements GetTestability {
-  static init() { setTestabilityGetter(new BrowserGetTestability()); }
-
   addToWindow(registry: TestabilityRegistry): void {
     global.getAngularTestability = (elem: any, findInAncestors: boolean = true) => {
       var testability = registry.findTestabilityInTree(elem, findInAncestors);

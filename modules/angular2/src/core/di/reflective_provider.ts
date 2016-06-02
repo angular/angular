@@ -7,7 +7,7 @@ import {
   isArray,
   isType
 } from 'angular2/src/facade/lang';
-import {MapWrapper, ListWrapper} from 'angular2/src/facade/collection';
+import {MapWrapper, ListWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
 import {reflector} from 'angular2/src/core/reflection/reflection';
 import {ReflectiveKey} from './reflective_key';
 import {
@@ -19,6 +19,7 @@ import {
   SkipSelfMetadata,
   DependencyMetadata
 } from './metadata';
+import {InjectorModuleMetadata, ProviderPropertyMetadata} from '../metadata/di';
 import {
   NoAnnotationError,
   MixingMultiProvidersWithRegularProvidersError,
@@ -41,6 +42,10 @@ export class ReflectiveDependency {
 }
 
 const _EMPTY_LIST = CONST_EXPR([]);
+
+function _identityPostProcess(obj) {
+  return obj;
+}
 
 /**
  * An internal resolved representation of a {@link Provider} used by the {@link Injector}.
@@ -102,7 +107,12 @@ export class ResolvedReflectiveFactory {
       /**
        * Arguments (dependencies) to the `factory` function.
        */
-      public dependencies: ReflectiveDependency[]) {}
+      public dependencies: ReflectiveDependency[],
+
+      /**
+       * A function to use to post process the factory value (might be null).
+       */
+      public postProcess: Function) {}
 }
 
 
@@ -126,7 +136,9 @@ export function resolveReflectiveFactory(provider: Provider): ResolvedReflective
     factoryFn = () => provider.useValue;
     resolvedDeps = _EMPTY_LIST;
   }
-  return new ResolvedReflectiveFactory(factoryFn, resolvedDeps);
+  var postProcess = isPresent(provider.useProperty) ? reflector.getter(provider.useProperty) :
+                                                      _identityPostProcess;
+  return new ResolvedReflectiveFactory(factoryFn, resolvedDeps, postProcess);
 }
 
 /**
@@ -193,9 +205,11 @@ function _normalizeProviders(providers: Array<Type | Provider | ProviderBuilder 
   providers.forEach(b => {
     if (b instanceof Type) {
       res.push(provide(b, {useClass: b}));
+      _normalizeProviders(getInjectorModuleProviders(b), res);
 
     } else if (b instanceof Provider) {
       res.push(b);
+      _normalizeProviders(getInjectorModuleProviders(b.token), res);
 
     } else if (b instanceof Array) {
       _normalizeProviders(b, res);
@@ -289,4 +303,35 @@ function _createDependency(token, optional, lowerBoundVisibility, upperBoundVisi
                            depProps): ReflectiveDependency {
   return new ReflectiveDependency(ReflectiveKey.get(token), optional, lowerBoundVisibility,
                                   upperBoundVisibility, depProps);
+}
+
+/**
+ * Retruns {@link InjectorModuleMetadata} providers for a given token if possible.
+ */
+export function getInjectorModuleProviders(token: any): any[] {
+  var providers = [];
+  var annotations: any[] = null;
+  try {
+    if (isType(token)) {
+      annotations = reflector.annotations(resolveForwardRef(token));
+    }
+  } catch (e) {
+    // reflector will throw if reflection is not enabled.
+  }
+  var metadata: InjectorModuleMetadata =
+      isPresent(annotations) ? annotations.find((type) => type instanceof InjectorModuleMetadata) :
+                               null;
+  if (isPresent(metadata)) {
+    var propertyMetadata = reflector.propMetadata(token);
+    ListWrapper.addAll(providers, metadata.providers);
+    StringMapWrapper.forEach(propertyMetadata, (metadata: any[], propName: string) => {
+      metadata.forEach(a => {
+        if (a instanceof ProviderPropertyMetadata) {
+          providers.push(
+              new Provider(a.token, {multi: a.multi, useProperty: propName, useExisting: token}));
+        }
+      });
+    });
+  }
+  return providers;
 }

@@ -36,7 +36,7 @@ export function createNgZone(): NgZone {
   return new NgZone({enableLongStackTrace: assertionsEnabled()});
 }
 
-var _platform: PlatformRef;
+var _platform: PlatformRef_;
 var _inPlatformCreate: boolean = false;
 
 /**
@@ -55,6 +55,7 @@ export function createPlatform(injector: Injector): PlatformRef {
   _inPlatformCreate = true;
   try {
     _platform = injector.get(PlatformRef);
+    _platform.init(injector);
   } finally {
     _inPlatformCreate = false;
   }
@@ -156,12 +157,14 @@ export class PlatformRef_ extends PlatformRef {
 
   private _disposed: boolean = false;
 
-  constructor(private _injector: Injector) {
-    super();
+  private _injector: Injector;
+
+  init(injector: Injector) {
     if (!_inPlatformCreate) {
-      throw new BaseException('Platforms have to be created via `createPlatform`!');
+      throw new BaseException('Platforms have to be initialized via `createPlatform`!');
     }
-    let inits: Function[] = <Function[]>_injector.get(PLATFORM_INITIALIZER, null);
+    this._injector = injector;
+    let inits: Function[] = <Function[]>injector.get(PLATFORM_INITIALIZER, null);
     if (isPresent(inits)) inits.forEach(init => init());
   }
 
