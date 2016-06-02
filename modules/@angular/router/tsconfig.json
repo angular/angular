@@ -30,6 +30,7 @@
     "src/create_url_tree.ts",
     "src/directives/router_outlet.ts",
     "src/directives/router_link.ts",
+    "src/interfaces.ts",
     "src/utils/tree.ts",
     "src/utils/collection.ts",
     "test/utils/tree.spec.ts",
