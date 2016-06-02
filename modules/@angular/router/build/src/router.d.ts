@@ -1,4 +1,4 @@
-import { ComponentResolver } from '@angular/core';
+import { ComponentResolver, Type, Injector } from '@angular/core';
 import { Location } from '@angular/common';
 import { UrlSerializer } from './url_serializer';
 import { RouterOutletMap } from './router_outlet_map';
@@ -8,24 +8,25 @@ import { RouterState, ActivatedRoute } from './router_state';
 import { RouterConfig } from './config';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/map';
+import 'rxjs/add/operator/scan';
 import 'rxjs/add/operator/mergeMap';
-import 'rxjs/add/operator/toPromise';
 export interface NavigationExtras {
     relativeTo?: ActivatedRoute;
     queryParameters?: Params;
     fragment?: string;
 }
 export declare class Router {
-    private rootComponent;
+    private rootComponentType;
     private resolver;
     private urlSerializer;
     private outletMap;
     private location;
+    private injector;
     private currentUrlTree;
     private currentRouterState;
     private config;
     private locationSubscription;
-    constructor(rootComponent: Object, resolver: ComponentResolver, urlSerializer: UrlSerializer, outletMap: RouterOutletMap, location: Location);
+    constructor(rootComponentType: Type, resolver: ComponentResolver, urlSerializer: UrlSerializer, outletMap: RouterOutletMap, location: Location, injector: Injector);
     readonly routerState: RouterState;
     readonly urlTree: UrlTree;
     navigateByUrl(url: string): Observable<void>;
