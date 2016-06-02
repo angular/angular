@@ -54,7 +54,6 @@ export type Event = NavigationStart | NavigationEnd | NavigationCancel | Navigat
 export class Router {
   private currentUrlTree: UrlTree;
   private currentRouterState: RouterState;
-  private config: RouterConfig;
   private locationSubscription: Subscription;
   private routerEvents: Subject<Event>;
   private navigationId: number = 0;
@@ -62,7 +61,7 @@ export class Router {
   /**
    * @internal
    */
-  constructor(private rootComponentType:Type, private resolver: ComponentResolver, private urlSerializer: UrlSerializer, private outletMap: RouterOutletMap, private location: Location, private injector: Injector) {
+  constructor(private rootComponentType:Type, private resolver: ComponentResolver, private urlSerializer: UrlSerializer, private outletMap: RouterOutletMap, private location: Location, private injector: Injector, private config: RouterConfig) {
     this.routerEvents = new Subject<Event>();
     this.currentUrlTree = createEmptyUrlTree();
     this.currentRouterState = createEmptyState(rootComponentType);
