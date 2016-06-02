@@ -7,8 +7,11 @@ export class RouterOutlet {
   private activated:ComponentRef<any>|null;
   public outletMap:RouterOutletMap;
 
+  /**
+   * @internal
+   */
   constructor(parentOutletMap:RouterOutletMap, private location:ViewContainerRef,
-              @Attribute('name') name:string, public injector: Injector) {
+              @Attribute('name') name:string) {
     parentOutletMap.registerOutlet(name ? name : PRIMARY_OUTLET, this);
   }
 
@@ -28,7 +31,7 @@ export class RouterOutlet {
   activate(factory: ComponentFactory<any>, providers: ResolvedReflectiveProvider[],
            outletMap: RouterOutletMap): void {
     this.outletMap = outletMap;
-    let inj = ReflectiveInjector.fromResolvedProviders(providers, this.location.parentInjector);
+    const inj = ReflectiveInjector.fromResolvedProviders(providers, this.location.parentInjector);
     this.activated = this.location.createComponent(factory, this.location.length, inj, []);
   }
 }
