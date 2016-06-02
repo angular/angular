@@ -41,7 +41,6 @@ function _createCompilerConfig() {
  */
 export const COMPILER_PROVIDERS: Array<any | Type | {[k: string]: any} | any[]> =
     /*@ts2dart_const*/[
-      /*@ts2dart_Provider*/ {provide: CompilerConfig, useFactory: _createCompilerConfig, deps: []},
       Lexer,
       Parser,
       HtmlParser,
@@ -51,6 +50,7 @@ export const COMPILER_PROVIDERS: Array<any | Type | {[k: string]: any} | any[]> 
       DEFAULT_PACKAGE_URL_PROVIDER,
       StyleCompiler,
       ViewCompiler,
+      /*@ts2dart_Provider*/ {provide: CompilerConfig, useFactory: _createCompilerConfig, deps: []},
       RuntimeCompiler,
       /*@ts2dart_Provider*/ {provide: ComponentResolver, useExisting: RuntimeCompiler},
       DomElementSchemaRegistry,

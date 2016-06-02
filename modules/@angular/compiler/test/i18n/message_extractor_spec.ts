@@ -11,7 +11,6 @@ import {
 } from '@angular/core/testing/testing_internal';
 
 import {HtmlParser} from '@angular/compiler/src/html_parser';
-import {CompilerConfig} from '@angular/compiler/src/config';
 import {MessageExtractor, removeDuplicates} from '@angular/compiler/src/i18n/message_extractor';
 import {Message} from '@angular/compiler/src/i18n/message';
 import {Parser} from '@angular/compiler/src/expression_parser/parser';
@@ -23,7 +22,7 @@ export function main() {
 
     beforeEach(() => {
       let htmlParser = new HtmlParser();
-      var parser = new Parser(new Lexer(), new CompilerConfig(true, true, true));
+      var parser = new Parser(new Lexer());
       extractor = new MessageExtractor(htmlParser, parser, ['i18n-tag'], {'i18n-el': ['trans']});
     });
 

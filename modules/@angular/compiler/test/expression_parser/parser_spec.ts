@@ -2,12 +2,11 @@ import {ddescribe, describe, it, xit, iit, expect, beforeEach} from '@angular/co
 import {isBlank, isPresent} from '../../src/facade/lang';
 import {Parser} from '@angular/compiler/src/expression_parser/parser';
 import {Unparser} from './unparser';
-import {CompilerConfig} from '@angular/compiler';
 import {Lexer} from '@angular/compiler/src/expression_parser/lexer';
 import {BindingPipe, LiteralPrimitive, AST} from '@angular/compiler/src/expression_parser/ast';
 
 export function main() {
-  function createParser() { return new Parser(new Lexer(), new CompilerConfig(true, true, true)); }
+  function createParser() { return new Parser(new Lexer()); }
 
   function parseAction(text, location = null): any {
     return createParser().parseAction(text, location);
@@ -452,14 +451,6 @@ export function main() {
 
       it('should parse expression with newline characters', () => {
         checkInterpolation(`{{ 'foo' +\n 'bar' +\r 'baz' }}`, `{{ "foo" + "bar" + "baz" }}`);
-      });
-
-      it('should support custom interpolation regexp', () => {
-        var customParser = new Parser(new Lexer(), new CompilerConfig(true, true, true, null, /<<([\s\S]*?)>>/g));
-        var ast = (customParser.parseInterpolation('<< a >>', null) as any).ast;
-        expect(ast.strings).toEqual(['', '']);
-        expect(ast.expressions.length).toEqual(1);
-        expect(ast.expressions[0].name).toEqual('a');
       });
 
       describe("comments", () => {

@@ -24,7 +24,7 @@ OfflineCompiler createTemplateCompiler(AssetReader reader,
   var _urlResolver = createOfflineCompileUrlResolver();
 
   // TODO(yjbanov): add router AST transformer when ready
-  var parser = new ng.Parser(new ng.Lexer(), compilerConfig);
+  var parser = new ng.Parser(new ng.Lexer());
   var _htmlParser = _createHtmlParser(translations, parser);
 
   var templateParser = new TemplateParser(

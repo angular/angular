@@ -50,11 +50,11 @@ function _createOfflineCompiler(xhr: MockXHR, emitter: OutputEmitter): OfflineCo
   xhr.when(`${THIS_MODULE_PATH}/offline_compiler_compa.html`, 'Hello World {{user}}!');
   var htmlParser = new HtmlParser();
   var config = new CompilerConfig(true, true, true);
-  var normalizer = new DirectiveNormalizer(xhr, urlResolver, htmlParser, config);
+  var normalizer = new DirectiveNormalizer(xhr, urlResolver, htmlParser, new CompilerConfig(true, true, true));
   return new OfflineCompiler(
-      normalizer, new TemplateParser(new Parser(new Lexer(), config), new MockSchemaRegistry({}, {}),
+      normalizer, new TemplateParser(new Parser(new Lexer()), new MockSchemaRegistry({}, {}),
                                      htmlParser, new Console(), []),
-      new StyleCompiler(urlResolver), new ViewCompiler(config),
+      new StyleCompiler(urlResolver), new ViewCompiler(new CompilerConfig(true, true, true)),
       emitter, xhr);
 }
 

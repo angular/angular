@@ -1,7 +1,6 @@
 import {describe, expect, it, iit, ddescribe} from "@angular/core/testing/testing_internal";
 import {I18nHtmlParser} from "@angular/compiler/src/i18n/i18n_html_parser";
 import {Message, id} from "@angular/compiler/src/i18n/message";
-import {CompilerConfig} from "@angular/compiler/src/config";
 import {Parser} from "@angular/compiler/src/expression_parser/parser";
 import {Lexer} from "@angular/compiler/src/expression_parser/lexer";
 import {StringMapWrapper} from "../../src/facade/collection";
@@ -15,7 +14,7 @@ export function main() {
   describe('I18nHtmlParser', () => {
     function parse(template: string, messages: {[key: string]: string}, implicitTags: string[] = [],
                    implicitAttrs: {[k: string]: string[]} = {}): HtmlParseTreeResult {
-      var parser = new Parser(new Lexer(), new CompilerConfig(true, true, true));
+      var parser = new Parser(new Lexer());
       let htmlParser = new HtmlParser();
 
       let msgs = '';
