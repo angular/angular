@@ -22,6 +22,8 @@ import {
   InjectMetadata,
 } from "@angular/core";
 import {ReflectorReader} from "./core_private";
+ 
+const SUPPORTED_SCHEMA_VERSION = 1;
 
 /**
  * The host of the static resolver is expected to be able to provide module metadata in the form of
@@ -379,8 +381,14 @@ export class StaticReflector implements ReflectorReader {
     let moduleMetadata = this.metadataCache.get(module);
     if (!moduleMetadata) {
       moduleMetadata = this.host.getMetadataFor(module);
+      if (Array.isArray(moduleMetadata)) {
+        moduleMetadata = (<Array<any>>moduleMetadata).find(element => element.version === SUPPORTED_SCHEMA_VERSION) || moduleMetadata[0];
+      }
       if (!moduleMetadata) {
-        moduleMetadata = {__symbolic: "module", module: module, metadata: {}};
+        moduleMetadata = {__symbolic: "module", version: SUPPORTED_SCHEMA_VERSION, module: module, metadata: {}};
+      }
+      if (moduleMetadata['version'] != SUPPORTED_SCHEMA_VERSION) {
+        throw new Error(`Metadata version mismatch for module ${module}, found version ${moduleMetadata['version']}, expected ${SUPPORTED_SCHEMA_VERSION}`);
       }
       this.metadataCache.set(module, moduleMetadata);
     }

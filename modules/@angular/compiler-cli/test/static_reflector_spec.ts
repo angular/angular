@@ -64,6 +64,11 @@ describe('StaticReflector', () => {
         .toEqual([[host.findDeclaration('angular2/src/common/directives/ng_for', 'NgFor')]]);
   });
 
+  it('should throw and exception for unsupported metadata versions', () => {
+    let e = host.findDeclaration('src/version-error', 'e');
+    expect(() => reflector.annotations(e)).toThrow(new Error('Metadata version mismatch for module /tmp/src/version-error.d.ts, found version 100, expected 1'));
+  });
+
   it('should get and empty annotation list for an unknown class', () => {
     let UnknownClass = host.findDeclaration('src/app/app.component', 'UnknownClass');
     let annotations = reflector.annotations(UnknownClass);
@@ -300,8 +305,9 @@ class MockReflectorHost implements StaticReflectorHost {
 
   getMetadataFor(moduleId: string): any {
     let data: {[key: string]: any} = {
-      '/tmp/angular2/src/common/forms/directives.d.ts': {
+      '/tmp/angular2/src/common/forms/directives.d.ts': [{
         "__symbolic": "module",
+        "version": 1,
         "metadata": {
           "FORM_DIRECTIVES": [
             {
@@ -311,9 +317,10 @@ class MockReflectorHost implements StaticReflectorHost {
             }
           ]
         }
-      },
+      }],
       '/tmp/angular2/src/common/directives/ng_for.d.ts': {
         "__symbolic": "module",
+        "version": 1,
         "metadata": {
           "NgFor": {
             "__symbolic": "class",
@@ -366,15 +373,16 @@ class MockReflectorHost implements StaticReflectorHost {
         }
       },
       '/tmp/angular2/src/core/linker/view_container_ref.d.ts':
-          {"metadata": {"ViewContainerRef": {"__symbolic": "class"}}},
+          {version: 1, "metadata": {"ViewContainerRef": {"__symbolic": "class"}}},
       '/tmp/angular2/src/core/linker/template_ref.d.ts':
-          {"module": "./template_ref", "metadata": {"TemplateRef": {"__symbolic": "class"}}},
+          {version: 1, "module": "./template_ref", "metadata": {"TemplateRef": {"__symbolic": "class"}}},
       '/tmp/angular2/src/core/change_detection/differs/iterable_differs.d.ts':
-          {"metadata": {"IterableDiffers": {"__symbolic": "class"}}},
+          {version: 1, "metadata": {"IterableDiffers": {"__symbolic": "class"}}},
       '/tmp/angular2/src/core/change_detection/change_detector_ref.d.ts':
-          {"metadata": {"ChangeDetectorRef": {"__symbolic": "class"}}},
+          {version: 1, "metadata": {"ChangeDetectorRef": {"__symbolic": "class"}}},
       '/tmp/src/app/hero-detail.component.d.ts': {
         "__symbolic": "module",
+        "version": 1,
         "metadata": {
           "HeroDetailComponent": {
             "__symbolic": "class",
@@ -422,7 +430,8 @@ class MockReflectorHost implements StaticReflectorHost {
           }
         }
       },
-      '/src/extern.d.ts': {"__symbolic": "module", metadata: {s: "s"}}
+      '/src/extern.d.ts': {"__symbolic": "module", "version": 1, metadata: {s: "s"}},
+      '/tmp/src/version-error.d.ts': {"__symbolic": "module", "version": 100, metadata: {e: "s"}},
     };
     return data[moduleId];
   }

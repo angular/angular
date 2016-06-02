@@ -1,5 +1,17 @@
+// Metadata Schema
+
+// If you make a backwards incompatible change to the schema, increment the VERSION number.
+
+// If you make a backwards compatible change to the metadata (such as adding an option field) then
+// leave VERSION the same. If possible, as many versions of the metadata that can represent the
+// semantics of the file in an array. For example, when generating a version 2 file, if version 1
+// can accurately represent the metadata, generate both version 1 and version 2 in an array.
+
+export const VERSION = 1;
+
 export interface ModuleMetadata {
   __symbolic: 'module';
+  version: number;
   metadata: {[name: string]: (ClassMetadata | MetadataValue)};
 }
 export function isModuleMetadata(value: any): value is ModuleMetadata {

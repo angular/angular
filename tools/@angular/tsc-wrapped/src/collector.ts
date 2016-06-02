@@ -1,7 +1,7 @@
 import * as ts from 'typescript';
 
 import {Evaluator, ImportMetadata, ImportSpecifierMetadata, isPrimitive} from './evaluator';
-import {ClassMetadata, ConstructorMetadata, ModuleMetadata, MemberMetadata, MetadataError, MetadataMap, MetadataSymbolicExpression, MetadataSymbolicReferenceExpression, MetadataValue, MethodMetadata, isMetadataError, isMetadataSymbolicReferenceExpression,} from './schema';
+import {ClassMetadata, ConstructorMetadata, ModuleMetadata, MemberMetadata, MetadataError, MetadataMap, MetadataSymbolicExpression, MetadataSymbolicReferenceExpression, MetadataValue, MethodMetadata, isMetadataError, isMetadataSymbolicReferenceExpression, VERSION} from './schema';
 import {Symbols} from './symbols';
 
 /**
@@ -207,6 +207,6 @@ export class MetadataCollector {
       }
     });
 
-    return metadata && {__symbolic: 'module', metadata};
+    return metadata && {__symbolic: 'module', version: VERSION, metadata};
   }
 }
