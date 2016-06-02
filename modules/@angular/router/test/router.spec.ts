@@ -18,7 +18,7 @@ import {TestComponentBuilder, ComponentFixture} from '@angular/compiler/testing'
 import { ComponentResolver } from '@angular/core';
 import { SpyLocation } from '@angular/common/testing';
 import { UrlSerializer, DefaultUrlSerializer, RouterOutletMap, Router, ActivatedRoute, ROUTER_DIRECTIVES, Params,
- RouterStateSnapshot, ActivatedRouteSnapshot } from '../src/index';
+ RouterStateSnapshot, ActivatedRouteSnapshot, CanActivate, CanDeactivate } from '../src/index';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/map';
 
@@ -330,13 +330,38 @@ describe("Integration", () => {
 
       describe("should activate a route when CanActivate returns true", () => {
         beforeEachProviders(() => [
-          {provide: 'alwaysFalse', useValue: (a:ActivatedRouteSnapshot, s:RouterStateSnapshot) => true}
+          {provide: 'alwaysTrue', useValue: (a:ActivatedRouteSnapshot, s:RouterStateSnapshot) => true}
         ]);
 
         it('works',
           fakeAsync(inject([Router, TestComponentBuilder, Location], (router, tcb, location) => {
             router.resetConfig([
-              { path: 'team/:id', component: TeamCmp, canActivate: ["alwaysFalse"] }
+              { path: 'team/:id', component: TeamCmp, canActivate: ["alwaysTrue"] }
+            ]);
+
+            const fixture = tcb.createFakeAsync(RootCmp);
+            advance(fixture);
+
+            router.navigateByUrl('/team/22');
+            advance(fixture);
+
+            expect(location.path()).toEqual('/team/22');
+          })));
+      });
+
+      describe("should work when given a class", () => {
+        class AlwaysTrue implements CanActivate {
+          canActivate(route:ActivatedRouteSnapshot, state:RouterStateSnapshot):boolean {
+            return true;
+          }
+        }
+
+        beforeEachProviders(() => [AlwaysTrue]);
+
+        it('works',
+          fakeAsync(inject([Router, TestComponentBuilder, Location], (router, tcb, location) => {
+            router.resetConfig([
+              { path: 'team/:id', component: TeamCmp, canActivate: [AlwaysTrue] }
             ]);
 
             const fixture = tcb.createFakeAsync(RootCmp);
@@ -382,6 +407,31 @@ describe("Integration", () => {
             advance(fixture);
 
             expect(location.path()).toEqual('/team/33');
+          })));
+      });
+
+      describe("should work when given a class", () => {
+        class AlwaysTrue implements CanDeactivate<TeamCmp> {
+          canDeactivate(component: TeamCmp, route:ActivatedRouteSnapshot, state:RouterStateSnapshot):boolean {
+            return true;
+          }
+        }
+
+        beforeEachProviders(() => [AlwaysTrue]);
+
+        it('works',
+          fakeAsync(inject([Router, TestComponentBuilder, Location], (router, tcb, location) => {
+            router.resetConfig([
+              { path: 'team/:id', component: TeamCmp, canDeactivate: [AlwaysTrue] }
+            ]);
+
+            const fixture = tcb.createFakeAsync(RootCmp);
+            advance(fixture);
+
+            router.navigateByUrl('/team/22');
+            advance(fixture);
+
+            expect(location.path()).toEqual('/team/22');
           })));
       });
     });
