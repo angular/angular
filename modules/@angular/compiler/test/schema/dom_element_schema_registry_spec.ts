@@ -85,13 +85,13 @@ export function main() {
 
     if (browserDetection.isChromeDesktop) {
       it('generate a new schema', () => {
-        // console.log(JSON.stringify(registry.properties));
-        extractSchema(
-          (descriptors) => {
-            // Uncomment this line to see:
-            // the generated schema which can then be pasted to the DomElementSchemaRegistry
-            // console.log(descriptors);
-          });
+        let schema = '\n';
+        extractSchema().forEach((props, name) => {
+          schema += `'${name}|${props.join(',')}',\n`;
+        });
+        // Uncomment this line to see:
+        // the generated schema which can then be pasted to the DomElementSchemaRegistry
+        //console.log(schema);
       });
     }
 
