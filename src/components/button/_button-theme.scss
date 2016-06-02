@@ -1,6 +1,5 @@
-
-// Applies specified coloring to three supported palettes
-@mixin md-button-theme ($property, $color: 'default', $opacity: 1) {
+/** Applies a property to an md-button element for each of the supported palettes. */
+@mixin md-button-theme($property, $color: 'default', $opacity: 1) {
   &.md-primary {
     #{$property}: md-color($md-primary, $color, $opacity);
   }
@@ -16,5 +15,35 @@
       $palette: if($property == 'color', $md-foreground, $md-background);
       #{$property}: md-color($palette, disabled-button);
     }
+  }
+}
+
+/** Applies a focus style to an md-button element for each of the supported palettes. */
+@mixin md-button-focus {
+  &::after {
+    // The button spec calls for focus on raised buttons (and FABs) to be indicated with a
+    // black, 12% opacity shade over the normal color (for both light and dark themes).
+    // We do this by placing an :after psuedo-element with the appropriate shade over the button.
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    content: '';
+    background-color: rgba(black, 0.12);
+    border-radius: inherit;
+    pointer-events: none;
+  }
+
+  &.md-primary::after {
+    background-color: md-color($md-primary, 0.12);
+  }
+
+  &.md-accent::after {
+    background-color: md-color($md-accent, 0.12);
+  }
+
+  &.md-warn::after {
+    background-color: md-color($md-warn, 0.12);
   }
 }
