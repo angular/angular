@@ -1,8 +1,10 @@
+import {isPresent} from './facade/lang';
+
 export class ParseLocation {
   constructor(public file: ParseSourceFile, public offset: number, public line: number,
               public col: number) {}
 
-  toString(): string { return `${this.file.url}@${this.line}:${this.col}`; }
+  toString(): string { return isPresent(this.offset) ? `${this.file.url}@${this.line}:${this.col}` : this.file.url; }
 }
 
 export class ParseSourceFile {
@@ -60,7 +62,7 @@ export abstract class ParseError {
 
     let context = source.substring(ctxStart, this.span.start.offset) + '[ERROR ->]' +
                   source.substring(this.span.start.offset, ctxEnd + 1);
-
-    return `${this.msg} ("${context}"): ${this.span.start}`;
+    let contextStr = isPresent(this.span.start.offset) ? ` ("${context}")` : '';
+    return `${this.msg}${contextStr}: ${this.span.start}`;
   }
 }

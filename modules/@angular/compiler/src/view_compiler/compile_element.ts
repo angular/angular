@@ -16,10 +16,9 @@ import {
   CompileDiDependencyMetadata,
   CompileIdentifierMetadata,
 } from '../compile_metadata';
-import {getPropertyInView, createDiTokenExpression, injectFromViewParentInjector} from './util';
+import {getPropertyInView, createDiTokenExpression, injectFromViewParentInjector, convertValueToOutputAst} from './util';
 import {CompileQuery, createQueryList, addQueryToTokenMap} from './compile_query';
 import {CompileMethod} from './compile_method';
-import {ValueTransformer, visitValue} from '../util';
 
 export class CompileNode {
   constructor(public parent: CompileElement, public view: CompileView, public nodeIndex: number,
@@ -143,7 +142,7 @@ export class CompileElement extends CompileNode {
           return o.importExpr(provider.useClass)
               .instantiate(depsExpr, o.importType(provider.useClass));
         } else {
-          return _convertValueToOutputAst(provider.useValue);
+          return convertValueToOutputAst(provider.useValue);
         }
       });
       var propName = `_${resolvedProvider.token.name}_${this.nodeIndex}_${this._instances.size}`;
@@ -398,31 +397,5 @@ class _QueryWithRead {
   public read: CompileTokenMetadata;
   constructor(public query: CompileQuery, match: CompileTokenMetadata) {
     this.read = isPresent(query.meta.read) ? query.meta.read : match;
-  }
-}
-
-function _convertValueToOutputAst(value: any): o.Expression {
-  return visitValue(value, new _ValueOutputAstTransformer(), null);
-}
-
-class _ValueOutputAstTransformer extends ValueTransformer {
-  visitArray(arr: any[], context: any): o.Expression {
-    return o.literalArr(arr.map(value => visitValue(value, this, context)));
-  }
-  visitStringMap(map: {[key: string]: any}, context: any): o.Expression {
-    var entries = [];
-    StringMapWrapper.forEach(
-        map, (value, key) => { entries.push([key, visitValue(value, this, context)]); });
-    return o.literalMap(entries);
-  }
-  visitPrimitive(value: any, context: any): o.Expression { return o.literal(value); }
-  visitOther(value: any, context: any): o.Expression {
-    if (value instanceof CompileIdentifierMetadata) {
-      return o.importExpr(value);
-    } else if (value instanceof o.Expression) {
-      return value;
-    } else {
-      throw new BaseException(`Illegal state: Don't now how to compile value ${value}`);
-    }
   }
 }

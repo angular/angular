@@ -4,13 +4,15 @@ import {
   CompileDirectiveMetadata,
   CompileIdentifierMetadata,
   CompilePipeMetadata,
-  createHostComponentMeta
+  createHostComponentMeta,
+  CompileInjectorMetadata
 } from './compile_metadata';
 
 import {BaseException} from './facade/exceptions';
 import {ListWrapper} from './facade/collection';
 import {StyleCompiler, StylesCompileResult} from './style_compiler';
 import {ViewCompiler, ViewCompileResult} from './view_compiler/view_compiler';
+import {InjectorCompiler, InjectorCompileResult} from './view_compiler/injector_compiler';
 import {TemplateParser} from './template_parser';
 import {DirectiveNormalizer} from './directive_normalizer';
 import {OutputEmitter} from './output/abstract_emitter';
@@ -41,7 +43,8 @@ export class NormalizedComponentWithViewDirectives {
 export class OfflineCompiler {
   constructor(private _directiveNormalizer: DirectiveNormalizer,
               private _templateParser: TemplateParser, private _styleCompiler: StyleCompiler,
-              private _viewCompiler: ViewCompiler, private _outputEmitter: OutputEmitter,
+              private _viewCompiler: ViewCompiler, private _injectorCompiler: InjectorCompiler,
+              private _outputEmitter: OutputEmitter,
               private _xhr: XHR) {}
 
   normalizeDirectiveMetadata(directive: CompileDirectiveMetadata):
@@ -49,7 +52,7 @@ export class OfflineCompiler {
     return this._directiveNormalizer.normalizeDirective(directive);
   }
 
-  compileTemplates(components: NormalizedComponentWithViewDirectives[]): SourceModule {
+  compile(components: NormalizedComponentWithViewDirectives[], injectors: CompileInjectorMetadata[]): SourceModule {
     if (components.length === 0) {
       throw new BaseException('No components given');
     }
@@ -79,6 +82,12 @@ export class OfflineCompiler {
                                         [o.importType(compMeta.type)], [o.TypeModifier.Const])))
               .toDeclStmt(null, [o.StmtModifier.Final]));
       exportedVars.push(compFactoryVar);
+    });
+
+    injectors.forEach( (injectorMeta) => {
+      var compileResult = this._injectorCompiler.compileInjector(injectorMeta);
+      compileResult.statements.forEach( stmt => statements.push(stmt));
+      exportedVars.push(compileResult.injectorFactoryVar);
     });
     return this._codegenSourceModule(moduleUrl, statements, exportedVars);
   }

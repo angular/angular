@@ -13,6 +13,7 @@ import {Lexer} from '@angular/compiler/src/expression_parser/lexer';
 import {HtmlParser} from '@angular/compiler/src/html_parser';
 import {StyleCompiler} from '@angular/compiler/src/style_compiler';
 import {ViewCompiler} from '@angular/compiler/src/view_compiler/view_compiler';
+import {InjectorCompiler} from '@angular/compiler/src/view_compiler/injector_compiler';
 import {DirectiveNormalizer} from '@angular/compiler/src/directive_normalizer';
 import {CompilerConfig} from '@angular/compiler/src/config';
 import {createOfflineCompileUrlResolver} from '@angular/compiler/src/url_resolver';
@@ -55,6 +56,7 @@ function _createOfflineCompiler(xhr: MockXHR, emitter: OutputEmitter): OfflineCo
       normalizer, new TemplateParser(new Parser(new Lexer()), new MockSchemaRegistry({}, {}),
                                      htmlParser, new Console(), []),
       new StyleCompiler(urlResolver), new ViewCompiler(new CompilerConfig(true, true, true)),
+      new InjectorCompiler(),
       emitter, xhr);
 }
 
@@ -63,7 +65,7 @@ export function compileComp(emitter: OutputEmitter,
   var xhr = new MockXHR();
   var compiler = _createOfflineCompiler(xhr, emitter);
   var result = compiler.normalizeDirectiveMetadata(comp).then((normComp) => {
-    return compiler.compileTemplates([new NormalizedComponentWithViewDirectives(normComp, [], [])])
+    return compiler.compile([new NormalizedComponentWithViewDirectives(normComp, [], [])], [])
         .source;
   });
   xhr.flush();

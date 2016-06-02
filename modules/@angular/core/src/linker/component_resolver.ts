@@ -1,8 +1,9 @@
 import {Type, isBlank, isString, stringify} from '../facade/lang';
-import {BaseException} from '../facade/exceptions';
+import {BaseException, unimplemented} from '../facade/exceptions';
 import {PromiseWrapper} from '../facade/async';
 import {reflector} from '../reflection/reflection';
 import {ComponentFactory} from './component_factory';
+import {InjectorFactory} from '../linker/injector_factory';
 import {Injectable} from '../di/decorators';
 
 /**
@@ -12,6 +13,8 @@ import {Injectable} from '../di/decorators';
  */
 export abstract class ComponentResolver {
   abstract resolveComponent(component: Type|string): Promise<ComponentFactory<any>>;
+  abstract createInjectorFactory(config: Type, extraProviders?: any[]): InjectorFactory<any>;
+  abstract loadInjectorFactory(configTypeModule: string): Promise<InjectorFactory<any>>;
   abstract clearCache();
 }
 
@@ -34,5 +37,14 @@ export class ReflectorComponentResolver extends ComponentResolver {
     }
     return PromiseWrapper.resolve(componentFactory);
   }
+
+  createInjectorFactory(config: Type, extraProviders?: any[]): InjectorFactory<any> {
+    return unimplemented();
+  }
+
+  loadInjectorFactory(configTypeModule: string): Promise<InjectorFactory<any>> {
+    return unimplemented();
+  }
+
   clearCache() {}
 }

@@ -330,15 +330,17 @@ export class CompileProviderMetadata {
   useValue: any;
   useExisting: CompileTokenMetadata;
   useFactory: CompileFactoryMetadata;
+  useProperty: string;
   deps: CompileDiDependencyMetadata[];
   multi: boolean;
 
-  constructor({token, useClass, useValue, useExisting, useFactory, deps, multi}: {
+  constructor({token, useClass, useValue, useExisting, useFactory, useProperty, deps, multi}: {
     token?: CompileTokenMetadata,
     useClass?: CompileTypeMetadata,
     useValue?: any,
     useExisting?: CompileTokenMetadata,
     useFactory?: CompileFactoryMetadata,
+    useProperty?: string,
     deps?: CompileDiDependencyMetadata[],
     multi?: boolean
   }) {
@@ -347,6 +349,7 @@ export class CompileProviderMetadata {
     this.useValue = useValue;
     this.useExisting = useExisting;
     this.useFactory = useFactory;
+    this.useProperty = useProperty;
     this.deps = normalizeBlank(deps);
     this.multi = normalizeBool(multi);
   }
@@ -358,6 +361,7 @@ export class CompileProviderMetadata {
       useExisting: _objFromJson(data['useExisting'], CompileTokenMetadata.fromJson),
       useValue: _objFromJson(data['useValue'], CompileIdentifierMetadata.fromJson),
       useFactory: _objFromJson(data['useFactory'], CompileFactoryMetadata.fromJson),
+      useProperty: data['useProperty'],
       multi: data['multi'],
       deps: _arrayFromJson(data['deps'], CompileDiDependencyMetadata.fromJson)
     });
@@ -372,6 +376,7 @@ export class CompileProviderMetadata {
       'useExisting': _objToJson(this.useExisting),
       'useValue': _objToJson(this.useValue),
       'useFactory': _objToJson(this.useFactory),
+      'useProperty': this.useProperty,
       'multi': this.multi,
       'deps': _arrayToJson(this.deps)
     };
@@ -504,12 +509,14 @@ export class CompileTokenMetadata implements CompileMetadataWithIdentifier {
 export class CompileTokenMap<VALUE> {
   private _valueMap = new Map<any, VALUE>();
   private _values: VALUE[] = [];
+  private _tokens: CompileTokenMetadata[] = [];
 
   add(token: CompileTokenMetadata, value: VALUE) {
     var existing = this.get(token);
     if (isPresent(existing)) {
       throw new BaseException(`Can only add to a TokenMap! Token: ${token.name}`);
     }
+    this._tokens.push(token);
     this._values.push(value);
     var rk = token.runtimeCacheKey;
     if (isPresent(rk)) {
@@ -532,6 +539,7 @@ export class CompileTokenMap<VALUE> {
     }
     return result;
   }
+  keys(): CompileTokenMetadata[] { return this._tokens; }
   values(): VALUE[] { return this._values; }
   get size(): number { return this._values.length; }
 }
@@ -945,6 +953,40 @@ export class CompilePipeMetadata implements CompileMetadataWithType {
   }
 }
 
+/**
+ * Metadata regarding compilation of a directive.
+ */
+export class CompileInjectorMetadata implements CompileMetadataWithType {
+  type: CompileTypeMetadata;
+  providers: Array<CompileProviderMetadata | CompileTypeMetadata | CompileIdentifierMetadata | any[]>;
+
+  constructor({type, providers}: {
+    type?: CompileTypeMetadata,
+    providers?:
+        Array<CompileProviderMetadata | CompileTypeMetadata | CompileIdentifierMetadata | any[]>
+  } = {}) {
+    this.type = type;
+    this.providers = _normalizeArray(providers);
+  }
+
+  get identifier(): CompileIdentifierMetadata { return this.type; }
+
+  static fromJson(data: {[key: string]: any}): CompileInjectorMetadata {
+    return new CompileInjectorMetadata({
+      type: isPresent(data['type']) ? CompileTypeMetadata.fromJson(data['type']) : data['type'],
+      providers: _arrayFromJson(data['providers'], metadataFromJson)
+    });
+  }
+
+  toJson(): {[key: string]: any} {
+    return {
+      'class': 'Injector',
+      'type': isPresent(this.type) ? this.type.toJson() : this.type,
+      'providers': _arrayToJson(this.providers)
+    };
+  }
+}
+
 var _COMPILE_METADATA_FROM_JSON = {
   'Directive': CompileDirectiveMetadata.fromJson,
   'Pipe': CompilePipeMetadata.fromJson,
@@ -952,6 +994,7 @@ var _COMPILE_METADATA_FROM_JSON = {
   'Provider': CompileProviderMetadata.fromJson,
   'Identifier': CompileIdentifierMetadata.fromJson,
   'Factory': CompileFactoryMetadata.fromJson,
+  'Injector': CompileInjectorMetadata.fromJson,
   'AnimationEntryMetadata': CompileAnimationEntryMetadata.fromJson,
   'AnimationStateDeclarationMetadata': CompileAnimationStateDeclarationMetadata.fromJson,
   'AnimationStateTransitionMetadata': CompileAnimationStateTransitionMetadata.fromJson,

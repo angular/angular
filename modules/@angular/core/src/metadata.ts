@@ -10,7 +10,9 @@ export {
   ViewChildrenMetadata,
   ViewQueryMetadata,
   ViewChildMetadata,
-  AttributeMetadata
+  AttributeMetadata,
+  ProviderPropertyMetadata,
+  InjectorMetadata
 } from './metadata/di';
 
 export {
@@ -43,7 +45,9 @@ import {
   ViewChildrenMetadata,
   ViewChildMetadata,
   ViewQueryMetadata,
-  AttributeMetadata
+  AttributeMetadata,
+  InjectorMetadata,
+  ProviderPropertyMetadata
 } from './metadata/di';
 
 import {
@@ -1504,3 +1508,70 @@ export var HostBinding: HostBindingMetadataFactory = makePropDecorator(HostBindi
  * @stable
  */
 export var HostListener: HostListenerMetadataFactory = makePropDecorator(HostListenerMetadata);
+
+/**
+ * Interface for the {@link InjectorMetadata} decorator function.
+ *
+ * See {@link InjectorConfig}.
+ */
+export interface InjectorDecorator extends TypeDecorator {}
+
+/**
+ * Defines an injector config from which an injector can be generated.
+ *
+ * ### Example
+ *
+ * ```
+ * @InjectorConfig({
+ *   providers: [SomeService]
+ * })
+ * class MyConfig {}
+ *
+ * ```
+ * @experimental
+ */
+export var InjectorConfig: InjectorMetadataFactory =
+    <InjectorMetadataFactory>makeDecorator(InjectorMetadata);
+
+/**
+ * {@link InjectorMetadata} factory for creating decorators.
+ *
+ * See {@link InjectorMetadata}.
+ * @experimental
+ */
+export interface InjectorMetadataFactory {
+  (obj?: {
+    providers?: any[]
+  }): InjectorDecorator;
+  new (obj: {
+    properties?: string[]
+  }): InjectorMetadata;
+}
+
+/**
+ * Defines an injectable whose value is given by a property on an InjectorConfig class.
+ *
+ * ### Example
+ *
+ * ```
+ * @InjectorConfig()
+ * class MyConfig {
+ *   @Provides(SomeToken)
+ *   someProp: string = 'Hello world';
+ * }
+ * ```
+ * @experimental
+ */
+export var Provides: ProviderPropertyMetadataFactory =
+    makePropDecorator(ProviderPropertyMetadata);
+
+/**
+ * {@link ConfigProviderPropertyMetadata} factory for creating decorators.
+ *
+ * See {@link ConfigProviderPropertyMetadata}.
+ * @experimental
+ */
+export interface ProviderPropertyMetadataFactory {
+  (token: any, obj?: {multi?: boolean}): any;
+  new (token: any, obj?: {multi?: boolean}): any;
+}

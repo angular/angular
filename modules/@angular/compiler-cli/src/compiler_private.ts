@@ -34,5 +34,8 @@ export var StyleCompiler: typeof _c.StyleCompiler = _c.StyleCompiler;
 export type ViewCompiler = _c.ViewCompiler;
 export var ViewCompiler: typeof _c.ViewCompiler = _c.ViewCompiler;
 
+export type InjectorCompiler = _c.InjectorCompiler;
+export var InjectorCompiler: typeof _c.InjectorCompiler = _c.InjectorCompiler;
+
 export type TypeScriptEmitter = _c.TypeScriptEmitter;
 export var TypeScriptEmitter: typeof _c.TypeScriptEmitter = _c.TypeScriptEmitter;

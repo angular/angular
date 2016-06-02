@@ -1,5 +1,5 @@
 import {ddescribe, describe, it, iit, expect, beforeEach} from '@angular/core/testing';
-import {DirectiveResolver} from '@angular/compiler/src/directive_resolver';
+import {DirectiveResolver, NoDirectiveAnnotationError} from '@angular/compiler/src/directive_resolver';
 import {
   DirectiveMetadata,
   Directive,
@@ -126,7 +126,7 @@ export function main() {
 
     it('should throw if not matching metadata is found', () => {
       expect(() => { resolver.resolve(SomeDirectiveWithoutMetadata); })
-          .toThrowError('No Directive annotation found on SomeDirectiveWithoutMetadata');
+          .toThrow(new NoDirectiveAnnotationError(SomeDirectiveWithoutMetadata));
     });
 
     it('should not read parent class Directive metadata', function() {

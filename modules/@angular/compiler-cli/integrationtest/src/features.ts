@@ -1,4 +1,4 @@
-import {Component, Inject, OpaqueToken} from '@angular/core';
+import {Component, Inject, OpaqueToken, InjectorConfig, Provides} from '@angular/core';
 import {NgIf} from '@angular/common';
 
 export const SOME_OPAQUE_TOKEN = new OpaqueToken('opaqueToken');
@@ -26,4 +26,14 @@ export class CompWithProviders {
   directives: [NgIf]
 })
 export class CompWithReferences {
+}
+
+@InjectorConfig({
+  providers: [
+    {provide: 'strToken', useValue: 'strValue'}
+  ]
+})
+export class SomeConfig {
+  @Provides('propToken')
+  someProp: string = 'propValue';
 }

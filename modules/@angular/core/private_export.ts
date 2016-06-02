@@ -10,6 +10,7 @@ import * as view_type from './src/linker/view_type';
 import * as view_utils from './src/linker/view_utils';
 import * as metadata_view from './src/metadata/view';
 import * as debug_context from './src/linker/debug_context';
+import * as injector_factory from './src/linker/injector_factory';
 import * as change_detection_util from './src/change_detection/change_detection_util';
 import * as api from './src/render/api';
 import * as template_ref from './src/linker/template_ref';
@@ -132,6 +133,8 @@ export declare namespace __core_private_types__ {
   export var ANY_STATE: typeof ANY_STATE_;
   export var EMPTY_STATE: typeof EMPTY_STATE_;
   export var FILL_STYLE_FLAG: typeof FILL_STYLE_FLAG_;
+  export var CodegenInjector: typeof injector_factory.CodegenInjector;
+  export type CodegenInjector<CONFIG> = injector_factory.CodegenInjector<CONFIG>;
 }
 
 export var __core_private__ = {
@@ -200,5 +203,6 @@ export var __core_private__ = {
   AnimationStyles: AnimationStyles_,
   ANY_STATE: ANY_STATE_,
   EMPTY_STATE: EMPTY_STATE_,
-  FILL_STYLE_FLAG: FILL_STYLE_FLAG_
+  FILL_STYLE_FLAG: FILL_STYLE_FLAG_,
+  CodegenInjector: injector_factory.CodegenInjector
 };
