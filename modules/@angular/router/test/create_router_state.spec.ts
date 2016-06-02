@@ -1,7 +1,7 @@
 import {DefaultUrlSerializer} from '../src/url_serializer';
 import {UrlTree} from '../src/url_tree';
 import {Params, PRIMARY_OUTLET} from '../src/shared';
-import {ActivatedRoute, ActivatedRouteCandidate, RouterStateCandidate, createEmptyState} from '../src/router_state';
+import {ActivatedRoute, ActivatedRouteSnapshot, RouterStateSnapshot, createEmptyState} from '../src/router_state';
 import {createRouterState} from '../src/create_router_state';
 import {recognize} from '../src/recognize';
 import {RouterConfig} from '../src/config';
@@ -44,7 +44,7 @@ describe('create router state', () => {
   });
 });
 
-function createState(config: RouterConfig, url: string): RouterStateCandidate {
+function createState(config: RouterConfig, url: string): RouterStateSnapshot {
   let res;
   recognize(RootComponent, config, tree(url)).forEach(s => res = s);
   return res;

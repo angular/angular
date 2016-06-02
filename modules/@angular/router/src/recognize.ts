@@ -1,28 +1,28 @@
 import { UrlTree, UrlSegment } from './url_tree';
 import { flatten, first, merge } from './utils/collection';
 import { TreeNode } from './utils/tree';
-import { RouterStateCandidate, ActivatedRouteCandidate } from './router_state';
+import { RouterStateSnapshot, ActivatedRouteSnapshot } from './router_state';
 import { Params, PRIMARY_OUTLET } from './shared';
 import { RouterConfig, Route } from './config';
 import { Type } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 
-export function recognize(rootComponentType: Type, config: RouterConfig, url: UrlTree): Observable<RouterStateCandidate> {
+export function recognize(rootComponentType: Type, config: RouterConfig, url: UrlTree): Observable<RouterStateSnapshot> {
   try {
     const match = new MatchResult(rootComponentType, config, [url.root], {}, url._root.children, [], PRIMARY_OUTLET, null);
     const roots = constructActivatedRoute(match);
-    const res = new RouterStateCandidate(roots[0], url.queryParameters, url.fragment);
-    return new Observable<RouterStateCandidate>(obs => {
+    const res = new RouterStateSnapshot(roots[0], url.queryParameters, url.fragment);
+    return new Observable<RouterStateSnapshot>(obs => {
       obs.next(res);
       obs.complete();
     });
   } catch(e) {
-    return new Observable<RouterStateCandidate>(obs => obs.error(e));
+    return new Observable<RouterStateSnapshot>(obs => obs.error(e));
   }
 }
 
-function constructActivatedRoute(match: MatchResult): TreeNode<ActivatedRouteCandidate>[] {
-  const activatedRoute = createActivatedRouteCandidate(match);
+function constructActivatedRoute(match: MatchResult): TreeNode<ActivatedRouteSnapshot>[] {
+  const activatedRoute = createActivatedRouteSnapshot(match);
   if (match.leftOverUrl.length > 0) {
     const children = recognizeMany(match.children, match.leftOverUrl);
     checkOutletNameUniqueness(children);
@@ -31,21 +31,21 @@ function constructActivatedRoute(match: MatchResult): TreeNode<ActivatedRouteCan
       if (b.value.outlet === PRIMARY_OUTLET) return 1;
       return a.value.outlet.localeCompare(b.value.outlet)
     });
-    return [new TreeNode<ActivatedRouteCandidate>(activatedRoute, children)];
+    return [new TreeNode<ActivatedRouteSnapshot>(activatedRoute, children)];
   } else {
-    return [new TreeNode<ActivatedRouteCandidate>(activatedRoute, [])];
+    return [new TreeNode<ActivatedRouteSnapshot>(activatedRoute, [])];
   }
 }
 
-function recognizeMany(config: Route[], urls: TreeNode<UrlSegment>[]): TreeNode<ActivatedRouteCandidate>[] {
+function recognizeMany(config: Route[], urls: TreeNode<UrlSegment>[]): TreeNode<ActivatedRouteSnapshot>[] {
   return flatten(urls.map(url => recognizeOne(config, url)));
 }
 
-function createActivatedRouteCandidate(match: MatchResult): ActivatedRouteCandidate {
-  return new ActivatedRouteCandidate(match.consumedUrlSegments, match.parameters, match.outlet, match.component, match.route);
+function createActivatedRouteSnapshot(match: MatchResult): ActivatedRouteSnapshot {
+  return new ActivatedRouteSnapshot(match.consumedUrlSegments, match.parameters, match.outlet, match.component, match.route);
 }
 
-function recognizeOne(config: Route[], url: TreeNode<UrlSegment>): TreeNode<ActivatedRouteCandidate>[] {
+function recognizeOne(config: Route[], url: TreeNode<UrlSegment>): TreeNode<ActivatedRouteSnapshot>[] {
   const m = match(config, url);
   const primary = constructActivatedRoute(m);
   const secondary = recognizeMany(config, m.secondary);
@@ -54,7 +54,7 @@ function recognizeOne(config: Route[], url: TreeNode<UrlSegment>): TreeNode<Acti
   return res;
 }
 
-function checkOutletNameUniqueness(nodes: TreeNode<ActivatedRouteCandidate>[]): TreeNode<ActivatedRouteCandidate>[] {
+function checkOutletNameUniqueness(nodes: TreeNode<ActivatedRouteSnapshot>[]): TreeNode<ActivatedRouteSnapshot>[] {
   let names = {};
   nodes.forEach(n => {
     let routeWithSameOutletName = names[n.value.outlet];
