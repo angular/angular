@@ -54,7 +54,7 @@ export class DebugNode {
  */
 export class DebugElement extends DebugNode {
   name: string;
-  properties: {[key: string]: string};
+  properties: {[key: string]: any};
   attributes: {[key: string]: string};
   childNodes: DebugNode[];
   nativeElement: any;
