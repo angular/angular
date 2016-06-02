@@ -37,8 +37,7 @@ export function provideRouter(config: RouterConfig):any[] {
           throw new Error("Bootstrap at least one component before injecting Router.");
         }
         const componentType = ref.componentTypes[0];
-        const r = new Router(componentType, resolver, urlSerializer, outletMap, location, injector);
-        r.resetConfig(config);
+        const r = new Router(componentType, resolver, urlSerializer, outletMap, location, injector, config);
         ref.registerDisposeListener(() => r.dispose());
         return r;
       },

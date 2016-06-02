@@ -18,23 +18,40 @@ import {TestComponentBuilder, ComponentFixture} from '@angular/compiler/testing'
 import { ComponentResolver } from '@angular/core';
 import { SpyLocation } from '@angular/common/testing';
 import { UrlSerializer, DefaultUrlSerializer, RouterOutletMap, Router, ActivatedRoute, ROUTER_DIRECTIVES, Params,
- RouterStateSnapshot, ActivatedRouteSnapshot, CanActivate, CanDeactivate, Event, NavigationStart, NavigationEnd, NavigationCancel, NavigationError } from '../src/index';
+ RouterStateSnapshot, ActivatedRouteSnapshot, CanActivate, CanDeactivate, Event, NavigationStart, NavigationEnd, NavigationCancel, NavigationError, RouterConfig } from '../src/index';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/map';
 
 describe("Integration", () => {
-  beforeEachProviders(() => [
-    RouterOutletMap,
-    {provide: UrlSerializer, useClass: DefaultUrlSerializer},
-    {provide: Location, useClass: SpyLocation},
-    {
-      provide: Router,
-      useFactory: (resolver, urlSerializer, outletMap, location, injector) =>
-        new Router(RootCmp, resolver, urlSerializer, outletMap, location, injector),
-      deps: [ComponentResolver, UrlSerializer, RouterOutletMap, Location, Injector]
-    },
-    {provide: ActivatedRoute, useFactory: (r) => r.routerState.root, deps: [Router]},
-  ]);
+
+  beforeEachProviders(() => {
+    let config: RouterConfig = [
+      { path: 'simple', component: SimpleCmp }
+    ];
+
+    return [
+      RouterOutletMap,
+      {provide: UrlSerializer, useClass: DefaultUrlSerializer},
+      {provide: Location, useClass: SpyLocation},
+      {
+        provide: Router,
+        useFactory: (resolver, urlSerializer, outletMap, location, injector) =>
+          new Router(RootCmp, resolver, urlSerializer, outletMap, location, injector, config),
+        deps: [ComponentResolver, UrlSerializer, RouterOutletMap, Location, Injector]
+      },
+      {provide: ActivatedRoute, useFactory: (r) => r.routerState.root, deps: [Router]},
+    ];
+  });
+
+  it('should navigate with a provided config',
+    fakeAsync(inject([Router, TestComponentBuilder, Location], (router, tcb, location) => {
+      const fixture = tcb.createFakeAsync(RootCmp);
+      advance(fixture);
+
+      router.navigateByUrl('/simple');
+      advance(fixture);
+      expect(location.path()).toEqual('/simple');
+    })));
 
 
   it('should update location when navigating',
@@ -42,7 +59,7 @@ describe("Integration", () => {
       router.resetConfig([
         { path: 'team/:id', component: TeamCmp }
       ]);
-      
+
       const fixture = tcb.createFakeAsync(RootCmp);
       advance(fixture);
 
