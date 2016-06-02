@@ -1,8 +1,9 @@
 import {DefaultUrlSerializer} from '../src/url_serializer';
 import {UrlTree, UrlSegment} from '../src/url_tree';
-import {ActivatedRoute, ActivatedRouteSnapshot} from '../src/router_state';
+import {ActivatedRoute, ActivatedRouteSnapshot, advanceActivatedRoute} from '../src/router_state';
 import {PRIMARY_OUTLET, Params} from '../src/shared';
 import {createUrlTree} from '../src/create_url_tree';
+import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 
 describe('createUrlTree', () => {
   const serializer = new DefaultUrlSerializer();
@@ -174,7 +175,8 @@ function create(start: UrlSegment | null, tree: UrlTree, commands: any[], queryP
   if (!start) {
     expect(start).toBeDefined();
   }
-  const s = new ActivatedRouteSnapshot([], <any>null, PRIMARY_OUTLET, "someComponent", null, <any>start);
-  const a = new ActivatedRoute(<any>null, <any>null, PRIMARY_OUTLET, "someComponent", s);
+  const s = new ActivatedRouteSnapshot([], <any>{}, PRIMARY_OUTLET, "someComponent", null, <any>start);
+  const a = new ActivatedRoute(new BehaviorSubject(null), new BehaviorSubject(null), PRIMARY_OUTLET, "someComponent", s);
+  advanceActivatedRoute(a);
   return createUrlTree(a, tree, commands, queryParameters, fragment);
 }

@@ -1,7 +1,8 @@
 import {DefaultUrlSerializer} from '../src/url_serializer';
 import {UrlTree} from '../src/url_tree';
+import {TreeNode} from '../src/utils/tree';
 import {Params, PRIMARY_OUTLET} from '../src/shared';
-import {ActivatedRoute, ActivatedRouteSnapshot, RouterStateSnapshot, createEmptyState} from '../src/router_state';
+import {ActivatedRoute, RouterState, RouterStateSnapshot, createEmptyState, advanceActivatedRoute} from '../src/router_state';
 import {createRouterState} from '../src/create_router_state';
 import {recognize} from '../src/recognize';
 import {RouterConfig} from '../src/config';
@@ -32,6 +33,7 @@ describe('create router state', () => {
     ];
 
     const prevState = createRouterState(createState(config, "a(left:b)"), emptyState());
+    advanceState(prevState);
     const state = createRouterState(createState(config, "a(left:c)"), prevState);
 
     expect(prevState.root).toBe(state.root);
@@ -43,6 +45,15 @@ describe('create router state', () => {
     checkActivatedRoute(currC[1], ComponentC, 'left');
   });
 });
+
+function advanceState(state: RouterState): void {
+  advanceNode(state._root);
+}
+
+function advanceNode(node: TreeNode<ActivatedRoute>): void {
+  advanceActivatedRoute(node.value);
+  node.children.forEach(advanceNode);
+}
 
 function createState(config: RouterConfig, url: string): RouterStateSnapshot {
   let res;

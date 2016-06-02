@@ -13,7 +13,11 @@ export class RouterOutlet {
   }
 
   get isActivated(): boolean { return !!this.activated; }
-  
+  get component(): Object {
+    if (!this.activated) throw new Error("Outlet is not activated");
+    return this.activated.instance;
+  }
+
   deactivate(): void {
     if (this.activated) {
       this.activated.destroy();
