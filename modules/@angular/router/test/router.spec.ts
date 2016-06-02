@@ -2,6 +2,7 @@ import {Component, Injector} from '@angular/core';
 import {
   describe,
   ddescribe,
+  xdescribe,
   it,
   iit,
   xit,
@@ -16,7 +17,8 @@ import {
 import {TestComponentBuilder, ComponentFixture} from '@angular/compiler/testing';
 import { ComponentResolver } from '@angular/core';
 import { SpyLocation } from '@angular/common/testing';
-import { UrlSerializer, DefaultUrlSerializer, RouterOutletMap, Router, ActivatedRoute, ROUTER_DIRECTIVES, Params } from '../src/index';
+import { UrlSerializer, DefaultUrlSerializer, RouterOutletMap, Router, ActivatedRoute, ROUTER_DIRECTIVES, Params,
+ RouterStateSnapshot, ActivatedRouteSnapshot } from '../src/index';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/map';
 
@@ -328,7 +330,7 @@ describe("Integration", () => {
 
       describe("should activate a route when CanActivate returns true", () => {
         beforeEachProviders(() => [
-          {provide: 'alwaysFalse', useValue: (a, b) => true}
+          {provide: 'alwaysFalse', useValue: (a:ActivatedRouteSnapshot, s:RouterStateSnapshot) => true}
         ]);
 
         it('works',
@@ -344,6 +346,42 @@ describe("Integration", () => {
             advance(fixture);
 
             expect(location.path()).toEqual('/team/22');
+          })));
+      });
+    });
+
+    describe("CanDeactivate", () => {
+      describe("should not deactivate a route when CanDeactivate returns false", () => {
+        beforeEachProviders(() => [
+          {provide: 'CanDeactivate', useValue: (c:TeamCmp, a:ActivatedRouteSnapshot, b:RouterStateSnapshot) => {
+            return c.route.snapshot.params['id'] === "22";
+          }}
+        ]);
+
+
+        it('works',
+          fakeAsync(inject([Router, TestComponentBuilder, Location], (router, tcb, location) => {
+            router.resetConfig([
+              { path: 'team/:id', component: TeamCmp, canDeactivate: ["CanDeactivate"] }
+            ]);
+
+            const fixture = tcb.createFakeAsync(RootCmp);
+            advance(fixture);
+
+            router.navigateByUrl('/team/22');
+            advance(fixture);
+
+            expect(location.path()).toEqual('/team/22');
+
+            router.navigateByUrl('/team/33');
+            advance(fixture);
+
+            expect(location.path()).toEqual('/team/33');
+
+            router.navigateByUrl('/team/44');
+            advance(fixture);
+
+            expect(location.path()).toEqual('/team/33');
           })));
       });
     });
@@ -388,7 +426,7 @@ class TeamCmp {
   id: Observable<string>;
   recordedParams: Params[] = [];
 
-  constructor(route: ActivatedRoute) {
+  constructor(public route: ActivatedRoute) {
     this.id = route.params.map(p => p['id']);
     route.params.forEach(_ => this.recordedParams.push(_));
   }
