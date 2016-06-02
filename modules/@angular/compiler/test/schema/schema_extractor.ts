@@ -4,7 +4,7 @@ const SVG_PREFIX = ':svg:';
 
 var document = typeof global['document'] == 'object' ? global['document'] : null;
 
-export function extractSchema(fn: (descriptors: string[]) => void): string[] {
+export function extractSchema(): Map<string, string[]> {
   var SVGGraphicsElement = global['SVGGraphicsElement'];
   var SVGAnimationElement = global['SVGAnimationElement'];
   var SVGGeometryElement = global['SVGGeometryElement'];
@@ -13,7 +13,7 @@ export function extractSchema(fn: (descriptors: string[]) => void): string[] {
   var SVGTextContentElement = global['SVGTextContentElement'];
   var SVGTextPositioningElement = global['SVGTextPositioningElement'];
   if (!document || !SVGGraphicsElement) return null;
-  var descriptors: string[] = [];
+  var descMap: Map<string, string[]> = new Map();
   var visited: {[name: string]: boolean} = {};
   var element = document.createElement('video');
   var svgAnimation = document.createElementNS('http://www.w3.org/2000/svg', 'set');
@@ -22,39 +22,41 @@ export function extractSchema(fn: (descriptors: string[]) => void): string[] {
   var svgGradient = document.createElementNS('http://www.w3.org/2000/svg', 'linearGradient');
   var svgText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
 
-  extractProperties(Element, element, visited, descriptors, '*', '');
-  extractProperties(HTMLElement, element, visited, descriptors, '', '*');
-  extractProperties(HTMLMediaElement, element, visited, descriptors, 'media', '');
-  extractProperties(SVGElement, svgText, visited, descriptors, SVG_PREFIX, '*');
-  extractProperties(SVGGraphicsElement, svgText, visited, descriptors, SVG_PREFIX + 'graphics',
+  extractProperties(Node, element, visited, descMap, '*', '');
+  extractProperties(Element, element, visited, descMap, '*', '');
+  extractProperties(HTMLElement, element, visited, descMap, '', '*');
+  extractProperties(HTMLMediaElement, element, visited, descMap, 'media', '');
+  extractProperties(SVGElement, svgText, visited, descMap, SVG_PREFIX, '*');
+  extractProperties(SVGGraphicsElement, svgText, visited, descMap, SVG_PREFIX + 'graphics',
                     SVG_PREFIX);
-  extractProperties(SVGAnimationElement, svgAnimation, visited, descriptors,
+  extractProperties(SVGAnimationElement, svgAnimation, visited, descMap,
                     SVG_PREFIX + 'animation', SVG_PREFIX);
-  extractProperties(SVGGeometryElement, svgPath, visited, descriptors, SVG_PREFIX + 'geometry',
+  extractProperties(SVGGeometryElement, svgPath, visited, descMap, SVG_PREFIX + 'geometry',
                     SVG_PREFIX);
-  extractProperties(SVGComponentTransferFunctionElement, svgFeFuncA, visited, descriptors,
+  extractProperties(SVGComponentTransferFunctionElement, svgFeFuncA, visited, descMap,
                     SVG_PREFIX + 'componentTransferFunction', SVG_PREFIX);
-  extractProperties(SVGGradientElement, svgGradient, visited, descriptors, SVG_PREFIX + 'gradient',
+  extractProperties(SVGGradientElement, svgGradient, visited, descMap, SVG_PREFIX + 'gradient',
                     SVG_PREFIX);
-  extractProperties(SVGTextContentElement, svgText, visited, descriptors,
+  extractProperties(SVGTextContentElement, svgText, visited, descMap,
                     SVG_PREFIX + 'textContent', SVG_PREFIX + 'graphics');
-  extractProperties(SVGTextPositioningElement, svgText, visited, descriptors,
+  extractProperties(SVGTextPositioningElement, svgText, visited, descMap,
                     SVG_PREFIX + 'textPositioning', SVG_PREFIX + 'textContent');
   var keys = Object.getOwnPropertyNames(window).filter(
       k => k.endsWith('Element') && (k.startsWith('HTML') || k.startsWith('SVG')));
   keys.sort();
-  keys.forEach(name => extractRecursiveProperties(visited, descriptors, window[name]));
-  fn(descriptors);
+  keys.forEach(name => extractRecursiveProperties(visited, descMap, window[name]));
+
+  return descMap;
 }
 
-function extractRecursiveProperties(visited: {[name: string]: boolean}, descriptors: string[],
+function extractRecursiveProperties(visited: {[name: string]: boolean}, descMap: Map<string, string[]>,
                                     type: Function): string {
   var name = extractName(type);
   if (visited[name]) return name;  // already been here
   var superName = '';
   if (name != '*') {
     superName =
-        extractRecursiveProperties(visited, descriptors, type.prototype.__proto__.constructor);
+        extractRecursiveProperties(visited, descMap, type.prototype.__proto__.constructor);
   }
 
   var instance: HTMLElement = null;
@@ -69,15 +71,16 @@ function extractRecursiveProperties(visited: {[name: string]: boolean}, descript
       throw new Error(`Tag <${tagName}> is not an instance of ${htmlType['name']}`);
     }
   });
-  extractProperties(type, instance, visited, descriptors, name, superName);
+  extractProperties(type, instance, visited, descMap, name, superName);
   return name;
 }
 
 function extractProperties(type: Function, instance: any, visited: {[name: string]: boolean},
-                           descriptors: string[], name: string, superName: string) {
+                           descMap: Map<string, string[]>, name: string, superName: string) {
   if (!type) return;
   visited[name] = true;
-  var props = <string[]>[];
+  const fullName = name + (superName ? '^' + superName : '');
+  let props: string[] = descMap.has(fullName) ? descMap.get(fullName) : [];
   var prototype = type.prototype;
   var keys = Object.getOwnPropertyNames(prototype);
   keys.sort();
@@ -93,7 +96,9 @@ function extractProperties(type: Function, instance: any, visited: {[name: strin
       }
     }
   });
-  descriptors.push(name + (superName ? '^' + superName : '') + '|' + props.join(','));
+
+  // There is no point in using `Node.nodeValue`, filter it out
+  descMap.set(fullName, type === Node ? props.filter(p => p != '%nodeValue') : props);
 }
 
 function extractName(type: Function): string {
