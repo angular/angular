@@ -924,18 +924,22 @@ export function main() {
            }));
 
         it('should be called after processing the content and view children', fakeAsync(() => {
-            var ctx = createCompFixture(
-                '<div testDirective="parent"><div *ngFor="var x of [0,1]" testDirective="contentChild{{x}}"></div>' +
-                '<other-cmp></other-cmp></div>',
-                TestComponent,
-                tcb.overrideTemplate(AnotherComponent, '<div testDirective="viewChild"></div>'));
+             var ctx = createCompFixture(
+                 '<div testDirective="parent"><div *ngFor="var x of [0,1]" testDirective="contentChild{{x}}"></div>' +
+                     '<other-cmp></other-cmp></div>',
+                 TestComponent,
+                 tcb.overrideTemplate(AnotherComponent, '<div testDirective="viewChild"></div>'));
 
              ctx.detectChanges(false);
              ctx.destroy();
 
              expect(directiveLog.filter(['ngOnDestroy']))
-                 .toEqual(
-                     ['contentChild0.ngOnDestroy', 'contentChild1.ngOnDestroy', 'viewChild.ngOnDestroy', 'parent.ngOnDestroy']);
+                 .toEqual([
+                   'contentChild0.ngOnDestroy',
+                   'contentChild1.ngOnDestroy',
+                   'viewChild.ngOnDestroy',
+                   'parent.ngOnDestroy'
+                 ]);
            }));
 
         it('should be called in reverse order so the child is always notified before the parent',

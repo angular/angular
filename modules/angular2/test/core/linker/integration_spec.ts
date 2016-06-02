@@ -507,7 +507,7 @@ function declareTests(isJit: boolean) {
                  fixture.detectChanges();
 
                  var ngIfEl = fixture.debugElement.children[0];
-                 var someViewport:SomeViewport = ngIfEl.childNodes[0].inject(SomeViewport);
+                 var someViewport: SomeViewport = ngIfEl.childNodes[0].inject(SomeViewport);
                  expect(someViewport.container.length).toBe(2);
                  expect(ngIfEl.children.length).toBe(2);
 
