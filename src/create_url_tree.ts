@@ -96,8 +96,7 @@ function findStartingNode(normalizedChange: NormalizedNavigationCommands, urlTre
 }
 
 function findUrlSegment(route: ActivatedRoute, urlTree: UrlTree, numberOfDoubleDots: number): UrlSegment {
-  const segments = (<any>route.urlSegments).value;
-  const urlSegment = segments[segments.length - 1];
+  const urlSegment = route.snapshot._lastUrlSegment;
   const path = urlTree.pathFromRoot(urlSegment);
   if (path.length <= numberOfDoubleDots) {
     throw new Error("Invalid number of '../'");
