@@ -21,6 +21,7 @@ import {
 import {MdGridListColsError} from './grid-list-errors';
 import {Dir} from '@angular2-material/core/rtl/dir';
 import {MdLine} from '@angular2-material/core/line/line';
+import {coerceToString, coerceToNumber} from './grid-list-measure';
 
 // TODO(kara): Conditional (responsive) column count / row size.
 // TODO(kara): Re-layout on window resize / media change (debounced).
@@ -152,20 +153,5 @@ export class MdGridList implements OnInit, AfterContentChecked {
   }
 }
 
-/**
- * Converts values into strings. Falsy values become empty strings.
- * @internal
- */
-export function coerceToString(value: string | number): string {
-  return `${value || ''}`;
-}
-
-/**
- * Converts a value that might be a string into a number.
- * @internal
- */
-export function coerceToNumber(value: string | number): number {
-  return typeof value === 'string' ? parseInt(value, 10) : value;
-}
 
 export const MD_GRID_LIST_DIRECTIVES: any[] = [MdGridList, MdGridTile, MdLine, MdGridTileText];

@@ -11,14 +11,12 @@ import {
     OverlayState,
     OverlayOrigin,
     OVERLAY_PROVIDERS,
-    OVERLAY_DIRECTIVES
-} from '@angular2-material/core/overlay/overlay';
-import {
+    OVERLAY_DIRECTIVES,
     ComponentPortal,
     Portal,
     PORTAL_DIRECTIVES,
     TemplatePortalDirective
-} from '@angular2-material/core/portal/portal';
+} from '@angular2-material/core/core';
 
 
 @Component({

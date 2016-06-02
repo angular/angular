@@ -8,3 +8,7 @@ is_e2e() {
 is_lint() {
   [[ "$MODE" = lint ]]
 }
+
+is_circular_deps_check() {
+  [[ "$MODE" = circular_deps ]]
+}

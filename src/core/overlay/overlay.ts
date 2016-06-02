@@ -98,9 +98,3 @@ export const OVERLAY_PROVIDERS = [
   OverlayPositionBuilder,
   Overlay,
 ];
-
-// Re-export overlay-related modules so they can be imported directly from here.
-export {OverlayState} from './overlay-state';
-export {OverlayRef} from './overlay-ref';
-export {createOverlayContainer} from './overlay-container';
-export {OVERLAY_DIRECTIVES, ConnectedOverlayDirective, OverlayOrigin} from './overlay-directives';

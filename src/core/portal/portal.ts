@@ -203,7 +203,3 @@ export abstract class BasePortalHost implements PortalHost {
     this._disposeFn = fn;
   }
 }
-
-
-export {PORTAL_DIRECTIVES, TemplatePortalDirective, PortalHostDirective} from './portal-directives';
-export {DomPortalHost} from './dom-portal-host';
