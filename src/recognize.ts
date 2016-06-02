@@ -174,7 +174,7 @@ class MatchResult {
               public leftOverUrl: TreeNode<UrlSegment>[],
               public secondary: TreeNode<UrlSegment>[],
               public outlet: string,
-              public route: Route,
+              public route: Route | null,
               public lastUrlSegment: UrlSegment
   ) {}
 }

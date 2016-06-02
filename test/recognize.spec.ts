@@ -202,7 +202,7 @@ describe('recognize', () => {
         { path: 'a', component: ComponentA },
         { path: 'b', component: ComponentB, outlet: 'aux' },
         { path: 'c', component: ComponentC, outlet: 'aux' }
-      ], tree("a(aux:b//aux:c)")).subscribe(null, s => {
+      ], tree("a(aux:b//aux:c)")).subscribe((_) => {}, s => {
         expect(s.toString()).toContain("Two segments cannot have the same outlet name: 'aux:b' and 'aux:c'.");
       });
     });
@@ -210,7 +210,7 @@ describe('recognize', () => {
     it("should error when no matching routes", () => {
       recognize(RootComponent, [
         { path: 'a', component: ComponentA }
-      ], tree("invalid")).subscribe(null, s => {
+      ], tree("invalid")).subscribe((_) => {}, s => {
         expect(s.toString()).toContain("Cannot match any routes");
       });
     });
@@ -218,7 +218,7 @@ describe('recognize', () => {
     it("should error when no matching routes (too short)", () => {
       recognize(RootComponent, [
         { path: 'a/:id', component: ComponentA }
-      ], tree("a")).subscribe(null, s => {
+      ], tree("a")).subscribe((_) => {}, s => {
         expect(s.toString()).toContain("Cannot match any routes");
       });
     });

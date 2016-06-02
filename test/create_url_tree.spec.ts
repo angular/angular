@@ -174,7 +174,7 @@ function create(start: UrlSegment | null, tree: UrlTree, commands: any[], queryP
   if (!start) {
     expect(start).toBeDefined();
   }
-  const s = new ActivatedRouteSnapshot([], <any>null, PRIMARY_OUTLET, "someComponent", null, start);
+  const s = new ActivatedRouteSnapshot([], <any>null, PRIMARY_OUTLET, "someComponent", null, <any>start);
   const a = new ActivatedRoute(<any>null, <any>null, PRIMARY_OUTLET, "someComponent", s);
   return createUrlTree(a, tree, commands, queryParameters, fragment);
 }
