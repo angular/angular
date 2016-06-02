@@ -5,6 +5,7 @@ export declare function shallowEqual(a: {
 }): boolean;
 export declare function flatten<T>(a: T[][]): T[];
 export declare function first<T>(a: T[]): T | null;
+export declare function and(bools: boolean[]): boolean;
 export declare function merge<V>(m1: {
     [key: string]: V;
 }, m2: {

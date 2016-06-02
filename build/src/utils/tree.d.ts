@@ -9,7 +9,6 @@ export declare class Tree<T> {
     pathFromRoot(t: T): T[];
     contains(tree: Tree<T>): boolean;
 }
-export declare function rootNode<T>(tree: Tree<T>): TreeNode<T>;
 export declare class TreeNode<T> {
     value: T;
     children: TreeNode<T>[];
