@@ -52,7 +52,7 @@ var createErrorFormatter = function (basePath, emitter, SourceMapConsumer) {
 
 var InternalAngularReporter = function (config, emitter) {
   var formatter = createErrorFormatter(config.basePath, emitter, SourceMapConsumer);
-  DotsReporter.call(this, formatter, false)
+  DotsReporter.call(this, formatter, false, config.colors)
 }
 InternalAngularReporter.$inject = ['config', 'emitter']
 
