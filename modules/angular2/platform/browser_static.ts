@@ -13,9 +13,9 @@ export {
 
 import {Type, isPresent, isBlank, CONST_EXPR} from 'angular2/src/facade/lang';
 import {
-  BROWSER_PROVIDERS,
   BROWSER_APP_COMMON_PROVIDERS,
-  BROWSER_PLATFORM_MARKER
+  BROWSER_PLATFORM_MARKER,
+  initDomAdapter
 } from 'angular2/src/platform/browser_common';
 import {
   ComponentRef,
@@ -24,8 +24,16 @@ import {
   PlatformRef,
   getPlatform,
   createPlatform,
-  assertPlatform
+  assertPlatform,
+  PLATFORM_INITIALIZER,
+  MapInjector
 } from 'angular2/core';
+
+import {PlatformRef_} from 'angular2/src/core/application_ref';
+import {Reflector, reflector} from 'angular2/src/core/reflection/reflection';
+import {ReflectorReader} from 'angular2/src/core/reflection/reflector_reader';
+import {TestabilityRegistry} from 'angular2/src/core/testability/testability';
+import {Console} from 'angular2/src/core/console';
 
 /**
  * An array of providers that should be passed into `application()` when bootstrapping a component
@@ -33,11 +41,19 @@ import {
  * have been precompiled offline.
  */
 export const BROWSER_APP_PROVIDERS: Array<any /*Type | Provider | any[]*/> =
-    CONST_EXPR(BROWSER_APP_COMMON_PROVIDERS);
+    CONST_EXPR([BROWSER_APP_COMMON_PROVIDERS]);
 
 export function browserStaticPlatform(): PlatformRef {
   if (isBlank(getPlatform())) {
-    createPlatform(ReflectiveInjector.resolveAndCreate(BROWSER_PROVIDERS));
+    var tokens = new Map<any, any>();
+    tokens.set(PlatformRef, new PlatformRef_());
+    tokens.set(Reflector, reflector);
+    tokens.set(ReflectorReader, reflector);
+    tokens.set(TestabilityRegistry, new TestabilityRegistry());
+    tokens.set(Console, new Console());
+    tokens.set(BROWSER_PLATFORM_MARKER, true);
+    tokens.set(PLATFORM_INITIALIZER, [initDomAdapter])
+    createPlatform(new MapInjector(null, tokens));
   }
   return assertPlatform(BROWSER_PLATFORM_MARKER);
 }

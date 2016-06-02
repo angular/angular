@@ -187,11 +187,14 @@ class _NgMetaIdentifierResolver {
 
     ngMeta.identifiers.forEach((_, meta) {
       if (meta is CompileDirectiveMetadata) {
-        _resolveProviderMetadata(ngMetaMap, meta);
+        _resolveDirectiveProviderMetadata(ngMetaMap, meta);
         _resolveQueryMetadata(ngMetaMap, meta);
         _resolveDiDependencyMetadata(ngMetaMap, meta.type.name, meta.type.diDeps);
       } else if (meta is CompilePipeMetadata) {
         _resolveDiDependencyMetadata(ngMetaMap, meta.type.name, meta.type.diDeps);
+      } else if (meta is CompileInjectorModuleMetadata) {
+        _resolveDiDependencyMetadata(ngMetaMap, meta.name, meta.diDeps);
+        _resolveInjectorProviders(ngMetaMap, meta);
       } else if (meta is CompileTypeMetadata) {
         _resolveDiDependencyMetadata(ngMetaMap, meta.name, meta.diDeps);
       } else if (meta is CompileFactoryMetadata) {
@@ -211,15 +214,22 @@ class _NgMetaIdentifierResolver {
 
     } else if (value is CompileProviderMetadata) {
       _resolveProvider(ngMetaMap, neededBy, value);
-
-      return [value];
+      var providers = [value];
+      if (value.token.identifier is CompileInjectorModuleMetadata) {
+        providers.addAll(_resolveProviders(ngMetaMap, value.token.identifier.providers, value.token.identifier.name));
+      }
+      return providers;
 
     } else if (value is CompileIdentifierMetadata) {
       final resolved = _resolveIdentifier(ngMetaMap, neededBy, value);
       if (resolved == null) return [];
 
       if (resolved is CompileTypeMetadata) {
-        return [new CompileProviderMetadata(token: new CompileTokenMetadata(identifier: resolved), useClass: resolved)];
+        var providers = [new CompileProviderMetadata(token: new CompileTokenMetadata(identifier: resolved), useClass: resolved)];
+        if (resolved is CompileInjectorModuleMetadata) {
+          providers.addAll(_resolveProviders(ngMetaMap, resolved.providers, resolved.name));
+        }
+        return providers;
 
       } else if (resolved is CompileIdentifierMetadata && resolved.value is List) {
         return _resolveProviders(ngMetaMap, resolved.value, neededBy);
@@ -236,7 +246,7 @@ class _NgMetaIdentifierResolver {
     }
   }
 
-  void _resolveProviderMetadata(Map<String, NgMeta> ngMetaMap, CompileDirectiveMetadata dirMeta) {
+  void _resolveDirectiveProviderMetadata(Map<String, NgMeta> ngMetaMap, CompileDirectiveMetadata dirMeta) {
     final neededBy = dirMeta.type.name;
     if (dirMeta.providers != null) {
       dirMeta.providers =
@@ -246,6 +256,14 @@ class _NgMetaIdentifierResolver {
     if (dirMeta.viewProviders != null) {
       dirMeta.viewProviders =
           _resolveProviders(ngMetaMap, dirMeta.viewProviders, neededBy);
+    }
+  }
+
+  void _resolveInjectorProviders(Map<String, NgMeta> ngMetaMap, CompileInjectorModuleMetadata injectorModuleMeta) {
+    final neededBy = injectorModuleMeta.type.name;
+    if (injectorModuleMeta.providers != null) {
+      injectorModuleMeta.providers =
+          _resolveProviders(ngMetaMap, injectorModuleMeta.providers, neededBy);
     }
   }
 

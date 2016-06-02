@@ -20,6 +20,7 @@ import {DirectiveNormalizer} from 'angular2/src/compiler/directive_normalizer';
 import {RuntimeMetadataResolver} from 'angular2/src/compiler/runtime_metadata';
 import {StyleCompiler} from 'angular2/src/compiler/style_compiler';
 import {ViewCompiler} from 'angular2/src/compiler/view_compiler/view_compiler';
+import {InjectorCompiler} from 'angular2/src/compiler/view_compiler/injector_compiler';
 import {CompilerConfig} from './config';
 import {ComponentResolver} from 'angular2/src/core/linker/component_resolver';
 import {RuntimeCompiler} from 'angular2/src/compiler/runtime_compiler';
@@ -50,6 +51,7 @@ export const COMPILER_PROVIDERS: Array<Type | Provider | any[]> = CONST_EXPR([
   DEFAULT_PACKAGE_URL_PROVIDER,
   StyleCompiler,
   ViewCompiler,
+  InjectorCompiler,
   new Provider(CompilerConfig, {useFactory: createCompilerConfig, deps: []}),
   RuntimeCompiler,
   new Provider(ComponentResolver, {useExisting: RuntimeCompiler}),

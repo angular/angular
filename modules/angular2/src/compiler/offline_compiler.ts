@@ -2,13 +2,16 @@ import {
   CompileDirectiveMetadata,
   CompileIdentifierMetadata,
   CompilePipeMetadata,
-  createHostComponentMeta
+  createHostComponentMeta,
+  CompileInjectorModuleMetadata,
+  CompileTypeMetadata
 } from './compile_metadata';
 
 import {BaseException, unimplemented} from 'angular2/src/facade/exceptions';
 import {ListWrapper} from 'angular2/src/facade/collection';
 import {StyleCompiler, StylesCompileDependency, StylesCompileResult} from './style_compiler';
 import {ViewCompiler, ViewCompileResult} from './view_compiler/view_compiler';
+import {InjectorCompiler, InjectorCompileResult} from './view_compiler/injector_compiler';
 import {TemplateParser} from './template_parser';
 import {DirectiveNormalizer} from './directive_normalizer';
 import {OutputEmitter} from './output/abstract_emitter';
@@ -37,20 +40,25 @@ export class NormalizedComponentWithViewDirectives {
 export class OfflineCompiler {
   constructor(private _directiveNormalizer: DirectiveNormalizer,
               private _templateParser: TemplateParser, private _styleCompiler: StyleCompiler,
-              private _viewCompiler: ViewCompiler, private _outputEmitter: OutputEmitter) {}
+              private _viewCompiler: ViewCompiler, private _injectorCompiler: InjectorCompiler,
+              private _outputEmitter: OutputEmitter) {}
 
   normalizeDirectiveMetadata(directive: CompileDirectiveMetadata):
       Promise<CompileDirectiveMetadata> {
     return this._directiveNormalizer.normalizeDirective(directive);
   }
 
-  compileTemplates(components: NormalizedComponentWithViewDirectives[]): SourceModule {
-    if (components.length === 0) {
-      throw new BaseException('No components given');
+  compile(components: NormalizedComponentWithViewDirectives[], injectorModules: CompileInjectorModuleMetadata[]): SourceModule {
+    var moduleUrl: string;
+    if (components.length > 0) {
+      moduleUrl = _templateModuleUrl(components[0].component.type);
+    } else if (injectorModules.length > 0) {
+      moduleUrl = _templateModuleUrl(injectorModules[0].type);
+    } else {
+      throw new BaseException('No components nor injectorModules given');
     }
     var statements = [];
     var exportedVars = [];
-    var moduleUrl = _templateModuleUrl(components[0].component);
     components.forEach(componentWithDirs => {
       var compMeta = <CompileDirectiveMetadata>componentWithDirs.component;
       _assertComponent(compMeta);
@@ -73,6 +81,12 @@ export class OfflineCompiler {
                                                     [o.TypeModifier.Const])))
                           .toDeclStmt(null, [o.StmtModifier.Final]));
       exportedVars.push(compFactoryVar);
+    });
+
+    injectorModules.forEach( (injectorModuleMeta) => {
+      var compileResult = this._injectorCompiler.compileInjector(injectorModuleMeta);
+      compileResult.statements.forEach( stmt => statements.push(stmt));
+      exportedVars.push(compileResult.injectorFactoryVar);
     });
     return this._codegenSourceModule(moduleUrl, statements, exportedVars);
   }
@@ -111,7 +125,7 @@ export class OfflineCompiler {
 
 function _resolveViewStatements(compileResult: ViewCompileResult): o.Statement[] {
   compileResult.dependencies.forEach(
-      (dep) => { dep.factoryPlaceholder.moduleUrl = _templateModuleUrl(dep.comp); });
+      (dep) => { dep.factoryPlaceholder.moduleUrl = _templateModuleUrl(dep.comp.type); });
   return compileResult.statements;
 }
 
@@ -123,8 +137,8 @@ function _resolveStyleStatements(compileResult: StylesCompileResult): o.Statemen
   return compileResult.statements;
 }
 
-function _templateModuleUrl(comp: CompileDirectiveMetadata): string {
-  var moduleUrl = comp.type.moduleUrl;
+function _templateModuleUrl(type: CompileTypeMetadata): string {
+  var moduleUrl = type.moduleUrl;
   var urlWithoutSuffix = moduleUrl.substring(0, moduleUrl.length - MODULE_SUFFIX.length);
   return `${urlWithoutSuffix}.template${MODULE_SUFFIX}`;
 }

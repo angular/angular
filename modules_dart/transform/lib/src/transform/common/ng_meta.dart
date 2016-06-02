@@ -33,7 +33,7 @@ class NgMeta {
 
   /// Metadata for each identifier
   /// Type: [CompileDirectiveMetadata]|[CompilePipeMetadata]|[CompileTypeMetadata]|
-  /// [CompileIdentifierMetadata]|[CompileFactoryMetadata]
+  /// [CompileIdentifierMetadata]|[CompileFactoryMetadata]|[CompileInjectorModuleMetadata]
   final Map<String, dynamic> identifiers;
 
   /// List of other types and names associated with a given name.
@@ -72,7 +72,7 @@ class NgMeta {
   bool get needsResolution {
     return identifiers.values.any((id) =>
       id is CompileDirectiveMetadata || id is CompilePipeMetadata || id is CompileTypeMetadata || id is CompileFactoryMetadata
-          || (id is CompileIdentifierMetadata && id.value != null));
+          || id is CompileInjectorModuleMetadata || (id is CompileIdentifierMetadata && id.value != null));
   }
 
   /// Parse from the serialized form produced by [toJson].

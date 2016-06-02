@@ -1,4 +1,4 @@
-import {CONST, Type, stringify, isPresent, isString} from 'angular2/src/facade/lang';
+import {CONST, CONST_EXPR, Type, stringify, isPresent, isString} from 'angular2/src/facade/lang';
 import {resolveForwardRef} from 'angular2/src/core/di';
 import {DependencyMetadata} from 'angular2/src/core/di/metadata';
 
@@ -452,5 +452,58 @@ export class ViewChildrenMetadata extends ViewQueryMetadata {
 export class ViewChildMetadata extends ViewQueryMetadata {
   constructor(_selector: Type | string, {read = null}: {read?: any} = {}) {
     super(_selector, {descendants: true, first: true, read: read});
+  }
+}
+
+/**
+ * Defines an injectable whose value is given by a property on an InjectorModule class.
+ *
+ * ### Example
+ *
+ * ```
+ * @InjectorModule()
+ * class MyModule {
+ *   @Provides(SomeToken)
+ *   someProp: string = 'Hello world';
+ * }
+ * ```
+ * @experimental
+ */
+@CONST()
+export class ProviderPropertyMetadata {
+  private _multi: boolean;
+  constructor(public token: any, {multi = false}: {multi?: boolean} = {}) {
+    this._multi = multi;
+  }
+
+  get multi(): boolean {
+    return this._multi;
+  }
+}
+
+/**
+ * Defines an injector module from which an injector can be generated.
+ *
+ * ### Example
+ *
+ * ```
+ * @InjectorModule({
+ *   providers: [SomeService]
+ * })
+ * class MyModule {}
+ *
+ * ```
+ * @experimental
+ */
+@CONST()
+export class InjectorModuleMetadata {
+  private _providers: any[];
+
+  constructor({providers = CONST_EXPR([])}:{providers?: any[]} = {}) {
+    this._providers = providers;
+  }
+
+  get providers(): any[] {
+    return this._providers;
   }
 }

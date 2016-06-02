@@ -132,6 +132,13 @@ export class Provider {
   useFactory: Function;
 
   /**
+   * Specifies the property of the configuration class to use as value.
+   *
+   * Only used in conjunction with the @Injector class.
+   */
+  useProperty: string;
+
+  /**
    * Specifies a set of dependencies
    * (as `token`s) which should be injected into the factory function.
    *
@@ -155,11 +162,12 @@ export class Provider {
   /** @internal */
   _multi: boolean;
 
-  constructor(token, {useClass, useValue, useExisting, useFactory, deps, multi}: {
+  constructor(token, {useClass, useValue, useExisting, useFactory, useProperty, deps, multi}: {
     useClass?: Type,
     useValue?: any,
     useExisting?: any,
     useFactory?: Function,
+    useProperty?: string,
     deps?: Object[],
     multi?: boolean
   }) {
@@ -168,6 +176,7 @@ export class Provider {
     this.useValue = useValue;
     this.useExisting = useExisting;
     this.useFactory = useFactory;
+    this.useProperty = useProperty;
     this.dependencies = deps;
     this._multi = multi;
   }

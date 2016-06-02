@@ -38,9 +38,9 @@ Future<Outputs> processTemplates(AssetReader reader, AssetId assetId,
     XmbDeserializationResult translations,
     Map<String, String> resolvedIdentifiers
     }) async {
-  var viewDefResults = await createCompileData(
+  var compileDefs = await createCompileData(
       reader, assetId, platformDirectives, platformPipes);
-  if (viewDefResults == null) return null;
+  if (compileDefs == null) return null;
   var templateCompiler = zone.templateCompiler;
   if (templateCompiler == null) {
     templateCompiler = createTemplateCompiler(reader,
@@ -49,21 +49,22 @@ Future<Outputs> processTemplates(AssetReader reader, AssetId assetId,
             translations: translations);
   }
 
-  final compileData =
-      viewDefResults.viewDefinitions.values.toList(growable: false);
-  if (compileData.isEmpty) {
-    return new Outputs._(viewDefResults.ngMeta.ngDeps, null);
+  final compileComponentsData =
+      compileDefs.viewDefinitions.values.toList(growable: false);
+  if (compileComponentsData.isEmpty && compileDefs.injectorDefinitions.isEmpty) {
+    return new Outputs._(compileDefs.ngMeta.ngDeps, null);
   }
 
   final compiledTemplates = logElapsedSync(() {
-    return templateCompiler.compileTemplates(compileData);
-  }, operationName: 'compileTemplates', assetId: assetId);
+    return templateCompiler.compile(compileComponentsData,
+        compileDefs.injectorDefinitions);
+  }, operationName: 'compile', assetId: assetId);
 
   if (compiledTemplates != null) {
     // We successfully compiled templates!
     // For each compiled template, add the compiled template class as an
     // "Annotation" on the code to be registered with the reflector.
-    for (var reflectable in viewDefResults.viewDefinitions.keys) {
+    for (var reflectable in compileDefs.viewDefinitions.keys) {
       // TODO(kegluneq): Avoid duplicating naming logic for generated classes.
       reflectable.annotations.add(new AnnotationModel()
         ..name = '${reflectable.name}NgFactory'
@@ -71,7 +72,7 @@ Future<Outputs> processTemplates(AssetReader reader, AssetId assetId,
     }
   }
 
-  return new Outputs._(viewDefResults.ngMeta.ngDeps, compiledTemplates);
+  return new Outputs._(compileDefs.ngMeta.ngDeps, compiledTemplates);
 }
 
 AssetId templatesAssetId(AssetId primaryId) =>

@@ -1,5 +1,6 @@
 import {isPresent, isBlank} from 'angular2/src/facade/lang';
 import {BaseException} from 'angular2/src/facade/exceptions';
+import {StringMapWrapper} from 'angular2/src/facade/collection';
 
 import * as o from '../output/output_ast';
 import {
@@ -96,4 +97,14 @@ export function createPureProxy(fn: o.Expression, argCount: number, pureProxyPro
   }
   view.createMethod.addStmt(
       o.THIS_EXPR.prop(pureProxyProp.name).set(o.importExpr(pureProxyId).callFn([fn])).toStmt());
+}
+
+export function convertValueToOutputAst(value: any): o.Expression {
+  if (value instanceof CompileIdentifierMetadata) {
+    return o.importExpr(value);
+  } else if (value instanceof o.Expression) {
+    return value;
+  } else {
+    return o.literal(value);
+  }
 }

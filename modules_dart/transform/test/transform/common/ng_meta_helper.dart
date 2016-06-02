@@ -55,12 +55,28 @@ CompileDirectiveMetadata createDirectiveMetadataForTest(
       template: template);
 }
 
+CompileInjectorModuleMetadata createInjectorModuleMetadataForTest(
+    {String name: 'TestMetadata',
+    moduleUrl: 'asset:angular2/test/test.dart',
+    providers: const []}) {
+  return new CompileInjectorModuleMetadata(
+      name: name, moduleUrl: moduleUrl,
+      providers: providers);
+}
+
+
 CompileDirectiveMetadata createFoo([String moduleBase = 'asset:a']) =>
     createComponentMetadataForTest(
         name: 'FooComponent',
         moduleUrl: '$moduleBase/export_cycle_files/foo.dart',
         selector: 'foo',
         template: 'Foo');
+
+CompileInjectorModuleMetadata createFooInjectorModule([String moduleBase = 'asset:a']) =>
+    createInjectorModuleMetadataForTest(
+        name: 'FooInjectorModule',
+        moduleUrl: '$moduleBase/export_cycle_files/foo.dart',
+        providers: []);
 
 CompileDirectiveMetadata createBar([String moduleBase = 'asset:a']) =>
     createComponentMetadataForTest(

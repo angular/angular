@@ -1,9 +1,10 @@
 import {Injectable} from 'angular2/src/core/di';
-import {Type, isBlank, stringify} from 'angular2/src/facade/lang';
-import {BaseException} from 'angular2/src/facade/exceptions';
+import {Type, isBlank, isString, stringify} from 'angular2/src/facade/lang';
+import {BaseException, unimplemented} from 'angular2/src/facade/exceptions';
 import {PromiseWrapper} from 'angular2/src/facade/async';
 import {reflector} from 'angular2/src/core/reflection/reflection';
 import {ComponentFactory} from './component_factory';
+import {InjectorFactory} from './injector_factory';
 
 /**
  * Low-level service for loading {@link ComponentFactory}s, which
@@ -11,6 +12,8 @@ import {ComponentFactory} from './component_factory';
  */
 export abstract class ComponentResolver {
   abstract resolveComponent(componentType: Type): Promise<ComponentFactory>;
+  abstract createInjectorFactory(config: Type, extraProviders?: any[]): InjectorFactory<any>;
+  abstract loadInjectorFactory(configTypeModule: string): Promise<InjectorFactory<any>>;
   abstract clearCache();
 }
 
@@ -29,5 +32,14 @@ export class ReflectorComponentResolver extends ComponentResolver {
     }
     return PromiseWrapper.resolve(componentFactory);
   }
+
+  createInjectorFactory(config: Type, extraProviders?: any[]): InjectorFactory<any> {
+    return unimplemented();
+  }
+
+  loadInjectorFactory(configTypeModule: string): Promise<InjectorFactory<any>> {
+    return unimplemented();
+  }
+
   clearCache() {}
 }

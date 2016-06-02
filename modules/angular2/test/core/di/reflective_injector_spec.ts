@@ -13,7 +13,9 @@ import {
   SkipSelfMetadata,
   Optional,
   Inject,
-  Provider
+  Provider,
+  InjectorModule,
+  Provides
 } from 'angular2/core';
 import {
   ReflectiveInjector_,
@@ -85,6 +87,31 @@ class NoAnnotations {
 }
 
 function factoryFn(a) {}
+
+@Injectable()
+class SomeService { }
+
+@InjectorModule({
+  providers: [Car]
+})
+class SomeModuleWithProvider {
+  constructor() {}
+}
+
+@InjectorModule()
+class SomeModuleWithDeps {
+  constructor(public someService: SomeService) {}
+}
+
+@InjectorModule()
+class SomeModuleWithProp {
+  @Provides(Engine)
+  a: string = 'aChildValue';
+
+  @Provides('multiProp', {multi: true})
+  multiProp = 'aMultiValue';
+}
+
 
 export function main() {
   var dynamicProviders = [
@@ -602,6 +629,44 @@ export function main() {
         expect((<ReflectiveInjector_>ReflectiveInjector.resolveAndCreate([Engine, BrokenEngine]))
                    .displayName)
             .toEqual('ReflectiveInjector(providers: [ "Engine" ,  "BrokenEngine" ])');
+      });
+    });
+
+    describe('configs', () => {
+      it('should use the providers of configs (types)', () => {
+        var injector = createInjector([SomeModuleWithProvider, Engine]);
+        expect(injector.get(SomeModuleWithProvider)).toBeAnInstanceOf(SomeModuleWithProvider);
+        expect(injector.get(Car)).toBeAnInstanceOf(Car);
+      });
+
+      it('should use the providers of configs (providers)', () => {
+        var injector = createInjector([provide(SomeModuleWithProvider, {useClass: SomeModuleWithProvider}), Engine]);
+        expect(injector.get(SomeModuleWithProvider)).toBeAnInstanceOf(SomeModuleWithProvider);
+        expect(injector.get(Car)).toBeAnInstanceOf(Car);
+      });
+
+      it('should inject deps into configs', () => {
+        var injector = createInjector([SomeModuleWithDeps, SomeService]);
+        expect(injector.get(SomeModuleWithDeps).someService).toBeAnInstanceOf(SomeService);
+      });
+    });
+
+    describe('provider properties', () => {
+      it('should support provider properties', () => {
+        var inj = createInjector([SomeModuleWithProp]);
+        expect(inj.get(Engine)).toBe('aChildValue');
+      });
+
+      it('should support multi providers', () => {
+        var inj = createInjector([SomeModuleWithProp, new Provider('multiProp', { useValue: 'bMultiValue', multi: true })]);
+        expect(inj.get('multiProp')).toEqual(['aMultiValue', 'bMultiValue']);
+      });
+
+      it('should throw if the module is missing when the value is read', () => {
+        var inj = createInjector(
+            [new Provider(Engine, {useProperty: 'a', useExisting: SomeModuleWithProp})]);
+        expect(() => inj.get(Engine))
+            .toThrowError(`No provider for ${stringify(SomeModuleWithProp)}! (Engine -> SomeModuleWithProp)`);
       });
     });
   });

@@ -31,7 +31,7 @@ void allTests() {
 
   TestAssetReader reader = null;
   final moduleBase = 'asset:a';
-  var fooNgMeta, fooAssetId, fooMetaAssetId, fooComponentMeta;
+  var fooNgMeta, fooAssetId, fooMetaAssetId, fooComponentMeta, fooInjectorModuleMeta;
   var barNgMeta, barAssetId, barMetaAssetId, barComponentMeta;
   var bazNgMeta, bazAssetId, bazMetaAssetId, bazComponentMeta;
 
@@ -50,8 +50,10 @@ void allTests() {
 
     // Establish some test NgMeta objects with one Component each.
     fooComponentMeta = createFoo(moduleBase);
+    fooInjectorModuleMeta = createFooInjectorModule(moduleBase);
     fooNgMeta = new NgMeta(ngDeps: new NgDepsModel());
     fooNgMeta.identifiers[fooComponentMeta.type.name] = fooComponentMeta;
+    fooNgMeta.identifiers[fooInjectorModuleMeta.type.name] = fooInjectorModuleMeta;
 
     barComponentMeta = createBar(moduleBase);
     barNgMeta = new NgMeta(ngDeps: new NgDepsModel());
@@ -642,6 +644,152 @@ void allTests() {
         ..addAsset(barAssetId, "Invalid");
 
       await _testLink(reader, fooAssetId, fooMetaAssetId);
+    });
+  });
+
+  group('InjectorModule', () {
+    test('should resolve providers (types).', () async {
+      barNgMeta.identifiers['Service'] =
+        new CompileTypeMetadata(name: 'Service', moduleUrl: 'moduleUrl');
+
+      fooInjectorModuleMeta.providers = [
+        new CompileIdentifierMetadata(name: 'Service')
+      ];
+
+      fooNgMeta.ngDeps.imports.add(new ImportModel()..uri = 'bar.dart');
+
+      updateReader();
+
+      final extracted = await _testLink(reader, fooAssetId, fooMetaAssetId);
+      final inj = extracted.identifiers["FooInjectorModule"];
+
+      expect(inj.providers.length, equals(1));
+
+      expect(inj.providers[0].token.identifier.name, equals("Service"));
+      expect(inj.providers[0].token.identifier.moduleUrl, equals("moduleUrl"));
+      expect(inj.providers[0].useClass.identifier.name, equals("Service"));
+      expect(inj.providers[0].useClass.identifier.moduleUrl, equals("moduleUrl"));
+    });
+
+    test('should resolve providers (provider literals).', () async {
+      barNgMeta.identifiers['Service'] =
+      new CompileTypeMetadata(name: 'Service', moduleUrl: 'moduleUrl');
+
+      fooInjectorModuleMeta.providers = [
+        new CompileProviderMetadata(
+            token: new CompileTokenMetadata(identifier: new CompileIdentifierMetadata(name: "Service")),
+            useProperty: 'someProp')
+      ];
+
+      fooNgMeta.ngDeps.imports
+          .add(new ImportModel()..uri = 'package:a/bar.dart');
+
+      updateReader();
+
+      final extracted = await _testLink(reader, fooAssetId, fooMetaAssetId);
+      final inj = extracted.identifiers["FooInjectorModule"];
+
+      expect(inj.providers.length, equals(1));
+
+      expect(inj.providers[0].token.identifier.name, equals("Service"));
+      expect(inj.providers[0].token.identifier.moduleUrl, equals("moduleUrl"));
+    });
+
+    test('should resolve providers from child InjectorModules (types).', () async {
+      barNgMeta.identifiers['Service'] =
+        new CompileTypeMetadata(name: 'Service', moduleUrl: 'moduleUrl');
+      barNgMeta.identifiers['NestedModule'] =
+        createInjectorModuleMetadataForTest(
+            name: 'NestedModule',
+            moduleUrl: 'moduleUrl',
+            providers: [
+              new CompileIdentifierMetadata(name: 'Service')
+            ]);
+
+      fooInjectorModuleMeta.providers = [
+        new CompileIdentifierMetadata(name: 'NestedModule')
+      ];
+
+      fooNgMeta.ngDeps.imports.add(new ImportModel()..uri = 'bar.dart');
+
+      updateReader();
+
+      final extracted = await _testLink(reader, fooAssetId, fooMetaAssetId);
+      final inj = extracted.identifiers["FooInjectorModule"];
+
+      expect(inj.providers.length, equals(2));
+
+      expect(inj.providers[0].token.identifier.name, equals("NestedModule"));
+      expect(inj.providers[0].token.identifier.moduleUrl, equals("moduleUrl"));
+      expect(inj.providers[0].useClass.identifier.name, equals("NestedModule"));
+      expect(inj.providers[0].useClass.identifier.moduleUrl, equals("moduleUrl"));
+
+      expect(inj.providers[1].token.identifier.name, equals("Service"));
+      expect(inj.providers[1].token.identifier.moduleUrl, equals("moduleUrl"));
+      expect(inj.providers[1].useClass.identifier.name, equals("Service"));
+      expect(inj.providers[1].useClass.identifier.moduleUrl, equals("moduleUrl"));
+    });
+
+    test('should resolve providers from child InjectorModules (provider literals).', () async {
+      barNgMeta.identifiers['Service'] =
+        new CompileTypeMetadata(name: 'Service', moduleUrl: 'moduleUrl');
+      barNgMeta.identifiers['NestedModule'] =
+        createInjectorModuleMetadataForTest(
+            name: 'NestedModule',
+            moduleUrl: 'moduleUrl',
+            providers: [
+              new CompileIdentifierMetadata(name: 'Service')
+            ]);
+
+      fooInjectorModuleMeta.providers = [
+        new CompileProviderMetadata(
+            token: new CompileTokenMetadata(identifier: new CompileIdentifierMetadata(name: "NestedModule")),
+            useClass: new CompileTypeMetadata(name: "NestedModule"))
+      ];
+
+      fooNgMeta.ngDeps.imports.add(new ImportModel()..uri = 'bar.dart');
+
+      updateReader();
+
+      final extracted = await _testLink(reader, fooAssetId, fooMetaAssetId);
+      final inj = extracted.identifiers["FooInjectorModule"];
+
+      expect(inj.providers.length, equals(2));
+
+      expect(inj.providers[0].token.identifier.name, equals("NestedModule"));
+      expect(inj.providers[0].token.identifier.moduleUrl, equals("moduleUrl"));
+      expect(inj.providers[0].useClass.identifier.name, equals("NestedModule"));
+      expect(inj.providers[0].useClass.identifier.moduleUrl, equals("moduleUrl"));
+
+      expect(inj.providers[1].token.identifier.name, equals("Service"));
+      expect(inj.providers[1].token.identifier.moduleUrl, equals("moduleUrl"));
+      expect(inj.providers[1].useClass.identifier.name, equals("Service"));
+      expect(inj.providers[1].useClass.identifier.moduleUrl, equals("moduleUrl"));
+    });
+
+    test('should resolve constructor deps', () async {
+      barNgMeta.identifiers['Service'] =
+      new CompileTypeMetadata(name: 'Service', moduleUrl: 'moduleUrl');
+
+      fooInjectorModuleMeta.type.diDeps = [
+        new CompileDiDependencyMetadata(
+            token: new CompileTokenMetadata(identifier:
+                new CompileIdentifierMetadata(name: 'Service')))
+      ];
+
+      fooNgMeta.ngDeps.imports
+          .add(new ImportModel()..uri = 'package:a/bar.dart');
+
+      updateReader();
+
+      final extracted = await _testLink(reader, fooAssetId, fooMetaAssetId);
+      final inj = extracted.identifiers["FooInjectorModule"];
+
+      expect(inj.diDeps.length, equals(1));
+
+      expect(inj.diDeps[0].token.identifier.name, equals("Service"));
+      expect(inj.diDeps[0].token.identifier.moduleUrl, equals("moduleUrl"));
+
     });
   });
 

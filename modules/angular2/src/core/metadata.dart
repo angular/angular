@@ -217,3 +217,18 @@ class HostListener extends HostListenerMetadata {
   const HostListener(String eventName, [List<String> args])
       : super(eventName, args);
 }
+
+/**
+ * See: [InjectorModuleMetadata] for docs.
+ */
+class InjectorModule extends InjectorModuleMetadata {
+  const InjectorModule({List providers: const []}) : super(providers: providers);
+}
+
+/**
+ * See: [ProviderPropertyMetadata] for docs
+ */
+class Provides extends ProviderPropertyMetadata {
+  const Provides(dynamic token, {bool multi: false})
+      : super(token, multi: multi);
+}
