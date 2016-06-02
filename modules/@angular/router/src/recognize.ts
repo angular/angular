@@ -9,7 +9,7 @@ import { Observable } from 'rxjs/Observable';
 
 export function recognize(rootComponentType: Type, config: RouterConfig, url: UrlTree): Observable<RouterStateSnapshot> {
   try {
-    const match = new MatchResult(rootComponentType, config, [url.root], {}, url._root.children, [], PRIMARY_OUTLET, null);
+    const match = new MatchResult(rootComponentType, config, [url.root], {}, url._root.children, [], PRIMARY_OUTLET, null, url.root);
     const roots = constructActivatedRoute(match);
     const res = new RouterStateSnapshot(roots[0], url.queryParameters, url.fragment);
     return new Observable<RouterStateSnapshot>(obs => {
@@ -23,18 +23,21 @@ export function recognize(rootComponentType: Type, config: RouterConfig, url: Ur
 
 function constructActivatedRoute(match: MatchResult): TreeNode<ActivatedRouteSnapshot>[] {
   const activatedRoute = createActivatedRouteSnapshot(match);
-  if (match.leftOverUrl.length > 0) {
-    const children = recognizeMany(match.children, match.leftOverUrl);
-    checkOutletNameUniqueness(children);
-    children.sort((a, b) => {
-      if (a.value.outlet === PRIMARY_OUTLET) return -1;
-      if (b.value.outlet === PRIMARY_OUTLET) return 1;
-      return a.value.outlet.localeCompare(b.value.outlet)
-    });
-    return [new TreeNode<ActivatedRouteSnapshot>(activatedRoute, children)];
-  } else {
-    return [new TreeNode<ActivatedRouteSnapshot>(activatedRoute, [])];
-  }
+  const children = match.leftOverUrl.length > 0 ?
+    recognizeMany(match.children, match.leftOverUrl) : recognizeLeftOvers(match.children, match.lastUrlSegment);
+  checkOutletNameUniqueness(children);
+  children.sort((a, b) => {
+    if (a.value.outlet === PRIMARY_OUTLET) return -1;
+    if (b.value.outlet === PRIMARY_OUTLET) return 1;
+    return a.value.outlet.localeCompare(b.value.outlet)
+  });
+  return [new TreeNode<ActivatedRouteSnapshot>(activatedRoute, children)];
+}
+
+function recognizeLeftOvers(config: Route[], lastUrlSegment: UrlSegment): TreeNode<ActivatedRouteSnapshot>[] {
+  if (!config) return [];
+  const mIndex = matchIndex(config, [], lastUrlSegment);
+  return mIndex ? constructActivatedRoute(mIndex) : [];
 }
 
 function recognizeMany(config: Route[], urls: TreeNode<UrlSegment>[]): TreeNode<ActivatedRouteSnapshot>[] {
@@ -42,7 +45,7 @@ function recognizeMany(config: Route[], urls: TreeNode<UrlSegment>[]): TreeNode<
 }
 
 function createActivatedRouteSnapshot(match: MatchResult): ActivatedRouteSnapshot {
-  return new ActivatedRouteSnapshot(match.consumedUrlSegments, match.parameters, match.outlet, match.component, match.route);
+  return new ActivatedRouteSnapshot(match.consumedUrlSegments, match.parameters, match.outlet, match.component, match.route, match.lastUrlSegment);
 }
 
 function recognizeOne(config: Route[], url: TreeNode<UrlSegment>): TreeNode<ActivatedRouteSnapshot>[] {
@@ -72,7 +75,7 @@ function match(config: Route[], url: TreeNode<UrlSegment>): MatchResult {
   const m = matchNonIndex(config, url);
   if (m) return m;
 
-  const mIndex = matchIndex(config, url);
+  const mIndex = matchIndex(config, [url], url.value);
   if (mIndex) return mIndex;
 
   const availableRoutes = config.map(r => {
@@ -91,12 +94,12 @@ function matchNonIndex(config: Route[], url: TreeNode<UrlSegment>): MatchResult 
   return null;
 }
 
-function matchIndex(config: Route[], url: TreeNode<UrlSegment>): MatchResult | null {
+function matchIndex(config: Route[], leftOverUrls: TreeNode<UrlSegment>[], lastUrlSegment: UrlSegment): MatchResult | null {
   for (let r of config) {
     if (r.index) {
       const outlet = r.outlet ? r.outlet : PRIMARY_OUTLET;
       const children = r.children ? r.children : [];
-      return new MatchResult(r.component, children, [], {}, [url], [], outlet, r);
+      return new MatchResult(r.component, children, [], lastUrlSegment.parameters, leftOverUrls, [], outlet, r, lastUrlSegment);
     }
   }
   return null;
@@ -115,7 +118,7 @@ function matchWithParts(route: Route, url: TreeNode<UrlSegment>): MatchResult | 
       u = first(u.children);
     }
     const last = consumedUrl[consumedUrl.length - 1];
-    return new MatchResult(route.component, [], consumedUrl, last.parameters, [], [], PRIMARY_OUTLET, route);
+    return new MatchResult(route.component, [], consumedUrl, last.parameters, [], [], PRIMARY_OUTLET, route, last);
   }
 
   const parts = path.split("/");
@@ -160,7 +163,7 @@ function matchWithParts(route: Route, url: TreeNode<UrlSegment>): MatchResult | 
   const outlet = route.outlet ? route.outlet : PRIMARY_OUTLET;
 
   return new MatchResult(route.component, children, consumedUrlSegments, parameters, lastSegment.children,
-    secondarySubtrees, outlet, route);
+    secondarySubtrees, outlet, route, lastSegment.value);
 }
 
 class MatchResult {
@@ -171,6 +174,7 @@ class MatchResult {
               public leftOverUrl: TreeNode<UrlSegment>[],
               public secondary: TreeNode<UrlSegment>[],
               public outlet: string,
-              public route: Route
+              public route: Route,
+              public lastUrlSegment: UrlSegment
   ) {}
 }

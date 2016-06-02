@@ -38,11 +38,12 @@ export function createEmptyState(rootComponent: Type): RouterState {
 }
 
 function createEmptyStateSnapshot(rootComponent: Type): RouterStateSnapshot {
-  const emptyUrl = [new UrlSegment("", {}, PRIMARY_OUTLET)];
+  const rootUrlSegment = new UrlSegment("", {}, PRIMARY_OUTLET);
+  const emptyUrl = [rootUrlSegment];
   const emptyParams = {};
   const emptyQueryParams = {};
   const fragment = "";
-  const activated = new ActivatedRouteSnapshot(emptyUrl, emptyParams, PRIMARY_OUTLET, rootComponent, null);
+  const activated = new ActivatedRouteSnapshot(emptyUrl, emptyParams, PRIMARY_OUTLET, rootComponent, null, rootUrlSegment);
   return new RouterStateSnapshot(new TreeNode<ActivatedRouteSnapshot>(activated, []), emptyQueryParams, fragment);
 }
 
@@ -91,12 +92,17 @@ export class ActivatedRouteSnapshot {
   /** @internal **/
   _routeConfig: Route;
 
+  /** @internal **/
+  _lastUrlSegment: UrlSegment;
+
   constructor(public urlSegments: UrlSegment[],
               public params: Params,
               public outlet: string,
               public component: Type | string, 
-              routeConfig: Route) {
+              routeConfig: Route,
+              lastUrlSegment: UrlSegment) {
     this._routeConfig = routeConfig;
+    this._lastUrlSegment = lastUrlSegment;
   }
 }
 

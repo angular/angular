@@ -1,6 +1,7 @@
 import {Component, Injector} from '@angular/core';
 import {
   describe,
+  ddescribe,
   it,
   iit,
   xit,
@@ -197,6 +198,26 @@ describe("Integration", () => {
 
       expect(team.recordedParams).toEqual([{id: '22'}]);
       expect(user.recordedParams).toEqual([{name: 'victor'}, {name: 'fedor'}]);
+    })));
+
+  it('should work when navigating to /',
+    fakeAsync(inject([Router, TestComponentBuilder], (router, tcb:TestComponentBuilder) => {
+      router.resetConfig([
+        { index: true, component: SimpleCmp },
+        { path: '/user/:name', component: UserCmp }
+      ]);
+
+      const fixture = tcb.createFakeAsync(RootCmp);
+
+      router.navigateByUrl('/user/victor');
+      advance(fixture);
+
+      expect(fixture.debugElement.nativeElement).toHaveText('user victor');
+
+      router.navigateByUrl('/');
+      advance(fixture);
+
+      expect(fixture.debugElement.nativeElement).toHaveText('simple');
     })));
 
   describe("router links", () => {
