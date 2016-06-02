@@ -21,12 +21,10 @@ import {Observable, EventEmitter} from '../../src/facade/async';
  * ```typescript
  * @Component({...})
  * class Container {
- *   constructor(@Query(Item) items: QueryList<Item>) {
- *     items.changes.subscribe(_ => console.log(items.length));
- *   }
+ *   @ViewChildren(Item) items:QueryList<Item>;
  * }
  * ```
- * @deprecated
+ * @stable
  */
 export class QueryList<T> {
   private _dirty = true;
