@@ -1,4 +1,4 @@
-import { RouterStateCandidate, ActivatedRouteCandidate } from './router_state';
+import { RouterStateSnapshot, ActivatedRouteSnapshot } from './router_state';
 import { TreeNode } from './utils/tree';
 import { ComponentResolver } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
@@ -7,11 +7,11 @@ import {forkJoin} from 'rxjs/observable/forkJoin';
 import {fromPromise} from 'rxjs/observable/fromPromise';
 import 'rxjs/add/operator/toPromise';
 
-export function resolve(resolver: ComponentResolver, state: RouterStateCandidate): Observable<RouterStateCandidate> {
+export function resolve(resolver: ComponentResolver, state: RouterStateSnapshot): Observable<RouterStateSnapshot> {
   return resolveNode(resolver, state._root).map(_ => state);
 }
 
-function resolveNode(resolver: ComponentResolver, node: TreeNode<ActivatedRouteCandidate>): Observable<any> {
+function resolveNode(resolver: ComponentResolver, node: TreeNode<ActivatedRouteSnapshot>): Observable<any> {
   if (node.children.length === 0) {
     return fromPromise(resolver.resolveComponent(<any>node.value.component).then(factory => {
       node.value._resolvedComponentFactory = factory;
