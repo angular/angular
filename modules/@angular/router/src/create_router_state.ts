@@ -12,7 +12,7 @@ export function createRouterState(curr: RouterStateSnapshot, prevState: RouterSt
 function createNode(curr:TreeNode<ActivatedRouteSnapshot>, prevState?:TreeNode<ActivatedRoute>):TreeNode<ActivatedRoute> {
   if (prevState && equalRouteSnapshots(prevState.value.snapshot, curr.value)) {
     const value = prevState.value;
-    value.snapshot = curr.value;
+    value._futureSnapshot = curr.value;
     
     const children = createOrReuseChildren(curr, prevState);
     return new TreeNode<ActivatedRoute>(value, children);
