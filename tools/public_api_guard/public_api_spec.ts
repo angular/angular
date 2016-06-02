@@ -134,7 +134,7 @@ const CORE = [
   'DebugElement.constructor(nativeNode:any, parent:any, _debugInfo:RenderDebugInfo)',
   'DebugElement.insertChildrenAfter(child:DebugNode, newChildren:DebugNode[]):any',
   'DebugElement.name:string',
-  'DebugElement.properties:{[key:string]:string}',
+  'DebugElement.properties:{[key:string]:any}',
   'DebugElement.query(predicate:Predicate<DebugElement>):DebugElement',
   'DebugElement.queryAll(predicate:Predicate<DebugElement>):DebugElement[]',
   'DebugElement.queryAllNodes(predicate:Predicate<DebugNode>):DebugNode[]',
