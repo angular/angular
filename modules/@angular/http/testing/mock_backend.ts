@@ -76,12 +76,12 @@ export class MockConnection implements Connection {
     // }
   }
 
-  // TODO(jeffbcross): consider using Response type
+
   /**
-   * Emits the provided error object as an error to the {@link Response} {@link EventEmitter}
+   * Emits the provided error or repsonse object as an error to the {@link Response} {@link EventEmitter}
    * returned
    * from {@link Http}.
-   * 
+   *
    * ### Example
    *
    * ```
@@ -90,9 +90,15 @@ export class MockConnection implements Connection {
    * http.request('data.json').subscribe(res => res, err => console.log(err)));
    * connection.mockError(new Error('error'));
    * ```
-   * 
+   *
+   * ```
+   * var connection;
+   * backend.connections.subscribe(c => connection = c);
+   * http.request('data.json').error(res => console.error(res.json())));
+   * connection.mockError(new Response(new ResponseOptions({ status: 500, body: {errorMessage:'some mock error'} }))); //logs '{errorMessage:'some mock error'}'
+   * ``
    */
-  mockError(err?: Error) {
+  mockError(err?: Error | Response) {
     // Matches XHR semantics
     this.readyState = ReadyState.Done;
     this.response.error(err);

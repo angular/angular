@@ -74,6 +74,13 @@ export function main() {
          connection.mockError(new Error('nope'));
        }));
 
+   it('should allow responding after subscription with a Repsonse',
+      inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+        let connection: MockConnection = backend.createConnection(sampleRequest1);
+        connection.response.subscribe(null, () => { async.done(); });
+        connection.mockError(sampleResponse1);
+      }));
+
     it('should not throw when there are no unresolved requests',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          let connection: MockConnection = backend.createConnection(sampleRequest1);
