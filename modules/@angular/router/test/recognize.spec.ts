@@ -112,11 +112,31 @@ describe('recognize', () => {
   });
   
   describe("index", () => {
-    it("should support index routes", () => {
+    it("should support root index routes", () => {
       recognize(RootComponent, [
         {index: true, component: ComponentA}
       ], tree("")).forEach(s => {
+        checkActivatedRoute(s.firstChild(s.root), "", {}, ComponentA);
+      });
+    });
+
+    it("should support nested root index routes", () => {
+      recognize(RootComponent, [
+        {index: true, component: ComponentA, children: [{index: true, component: ComponentB}]}
+      ], tree("")).forEach(s => {
+        checkActivatedRoute(s.firstChild(s.root), "", {}, ComponentA);
+        checkActivatedRoute(s.firstChild(<any>s.firstChild(s.root)), "", {}, ComponentB);
+      });
+    });
+
+    it("should support index routes", () => {
+      recognize(RootComponent, [
+        {path: 'a', component: ComponentA, children: [
+          {index: true, component: ComponentB}
+        ]}
+      ], tree("a")).forEach(s => {
         checkActivatedRoute(s.firstChild(s.root), "a", {}, ComponentA);
+        checkActivatedRoute(s.firstChild(<any>s.firstChild(s.root)), "", {}, ComponentB);
       });
     });
 
@@ -135,6 +155,15 @@ describe('recognize', () => {
         checkActivatedRoute(s.firstChild(<any>s.firstChild(s.root)), "", {}, ComponentB);
         checkActivatedRoute(
           s.firstChild(<any>s.firstChild(<any>s.firstChild(s.root))), "c/10", {id: '10'}, ComponentC);
+      });
+    });
+
+    it("should pass parameters to every nested index route (case with non-index route)", () => {
+      recognize(RootComponent, [
+        {path: 'a', component: ComponentA, children: [{index: true, component: ComponentB}]}
+      ], tree("/a;a=1")).forEach(s => {
+        checkActivatedRoute(s.firstChild(s.root), "a", {a: '1'}, ComponentA);
+        checkActivatedRoute(s.firstChild(<any>s.firstChild(s.root)), "", {a: '1'}, ComponentB);
       });
     });
   });
@@ -198,7 +227,7 @@ describe('recognize', () => {
 
 function checkActivatedRoute(actual: ActivatedRouteSnapshot | null, url: string, params: Params, cmp: Function, outlet: string = PRIMARY_OUTLET):void {
   if (actual === null) {
-    expect(actual).toBeDefined();
+    expect(actual).not.toBeNull();
   } else {
     expect(actual.urlSegments.map(s => s.path).join("/")).toEqual(url);
     expect(actual.params).toEqual(params);
