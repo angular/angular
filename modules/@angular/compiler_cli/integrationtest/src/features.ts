@@ -25,5 +25,4 @@ export class CompWithProviders {
   `,
   directives: [NgIf]
 })
-export class CompWithReferences {
-}
+export class CompWithReferences {}

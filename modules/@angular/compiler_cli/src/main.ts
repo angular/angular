@@ -18,7 +18,7 @@ if (require.main === module) {
   tsc.main(args.p || args.project || '.', args.basePath, codegen)
       .then(exitCode => process.exit(exitCode))
       .catch(e => {
-        console.error(e.stack);
+        console.error(e.stack, e);
         console.error("Compilation failed");
         process.exit(1);
       });
