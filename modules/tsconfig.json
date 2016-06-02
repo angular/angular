@@ -31,6 +31,6 @@
     "rollup-test",
     "upgrade-ts2dart.d.ts",
     "zone-ts2dart.d.ts",
-    "@angular/compiler_cli/integrationtest"
+    "@angular/compiler-cli/integrationtest"
   ]
 }

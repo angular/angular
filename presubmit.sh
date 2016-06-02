@@ -8,8 +8,8 @@ gulp check-format
 export NODE_PATH=$NODE_PATH:$(pwd)/dist/all
 ./build.sh;
 $(npm bin)/tsc -p tools
-$(npm bin)/tsc -p tools/compiler_cli/src
-# $(npm bin)/tsc -p tools/compiler_cli/test
+$(npm bin)/tsc -p tools/compiler-cli/src
+# $(npm bin)/tsc -p tools/compiler-cli/test
 node dist/tools/tsc-watch/ node
 
 ## rebuild since codegen has overwritten some files.

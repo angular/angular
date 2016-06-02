@@ -20,7 +20,7 @@
         "experimentalDecorators": true,
         "rootDir": ".",
         "sourceRoot": ".",
-        "outDir": "../../../dist/packages-dist/compiler_cli",
+        "outDir": "../../../dist/packages-dist/compiler-cli",
         "declaration": true
     },
     "exclude": ["integrationtest"],

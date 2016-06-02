@@ -71,7 +71,7 @@ if (platform == 'node') {
       processOutputEmitterCodeGen,
       [
         'node', 'dist/tools/cjs-jasmine', '--', '{@angular,benchpress}/**/*_spec.js',
-        '@angular/compiler_cli/test/**/*_spec.js'
+        '@angular/compiler-cli/test/**/*_spec.js'
       ]
     ]
   });

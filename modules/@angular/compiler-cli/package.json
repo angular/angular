@@ -34,5 +34,5 @@
   "bugs": {
     "url": "https://github.com/angular/angular/issues"
   },
-  "homepage": "https://github.com/angular/angular/tree/master/tools/compiler_cli"
+  "homepage": "https://github.com/angular/angular/tree/master/tools/compiler-cli"
 }

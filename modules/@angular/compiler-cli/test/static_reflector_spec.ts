@@ -13,7 +13,7 @@ import {
   StaticReflector,
   StaticReflectorHost,
   StaticSymbol
-} from '@angular/compiler_cli/src/static_reflector';
+} from '@angular/compiler-cli/src/static_reflector';
 
 describe('StaticReflector', () => {
   let noContext = new StaticSymbol('', '');
