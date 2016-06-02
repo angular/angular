@@ -241,7 +241,7 @@ md-checkbox {
   width: $md-checkbox-size;
 
   [dir="rtl"] & {
-    margin:{
+    margin: {
       left: $md-checkbox-item-spacing;
       right: auto;
     }
@@ -265,9 +265,7 @@ md-checkbox {
 .md-checkbox-background {
   @extend %md-checkbox-outer-box;
 
-  align-items: center;
-  background-color: $md-checkbox-background-color;
-  opacity: 0;
+  align-items: center;    
   display: inline-flex;
   justify-content: center;
   transition: background-color $md-checkbox-transition-duration
@@ -333,15 +331,15 @@ md-checkbox {
   .md-checkbox-mixedmark {
     transform: scaleX(1) rotate(-45deg);
   }
-
+  
   .md-checkbox-background {
-    opacity: 1;
+    background-color: $md-checkbox-background-color;
   }
 }
 
 .md-checkbox-indeterminate {
   .md-checkbox-background {
-    opacity: 1;
+    background-color: $md-checkbox-background-color;
   }
 
   .md-checkbox-checkmark {
@@ -356,6 +354,13 @@ md-checkbox {
   .md-checkbox-mixedmark {
     opacity: 1;
     transform: scaleX(1) rotate(0deg);
+  }
+}
+
+
+.md-checkbox-unchecked {
+  .md-checkbox-background {
+    background-color: transparent; 
   }
 }
 
