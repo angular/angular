@@ -18,7 +18,7 @@ import {TestComponentBuilder, ComponentFixture} from '@angular/compiler/testing'
 import { ComponentResolver } from '@angular/core';
 import { SpyLocation } from '@angular/common/testing';
 import { UrlSerializer, DefaultUrlSerializer, RouterOutletMap, Router, ActivatedRoute, ROUTER_DIRECTIVES, Params,
- RouterStateSnapshot, ActivatedRouteSnapshot, CanActivate, CanDeactivate } from '../src/index';
+ RouterStateSnapshot, ActivatedRouteSnapshot, CanActivate, CanDeactivate, Event, NavigationStart, NavigationEnd, NavigationCancel, NavigationError } from '../src/index';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/map';
 
@@ -228,6 +228,9 @@ describe("Integration", () => {
         { path: '/user/:name', component: UserCmp }
       ]);
 
+      const recordedEvents = [];
+      router.events.forEach(e => recordedEvents.push(e));
+
       const fixture = tcb.createFakeAsync(RootCmp);
       router.navigateByUrl('/user/init');
       advance(fixture);
@@ -244,6 +247,17 @@ describe("Integration", () => {
 
       expect(fixture.debugElement.nativeElement).toHaveText('user fedor');
       expect(user.recordedParams).toEqual([{name: 'init'}, {name: 'fedor'}]);
+
+      expectEvents(router, recordedEvents.slice(1), [
+        [NavigationStart, '/user/init'],
+        [NavigationEnd, '/user/init'],
+
+        [NavigationStart, '/user/victor'],
+        [NavigationStart, '/user/fedor'],
+
+        [NavigationCancel, '/user/victor'],
+        [NavigationEnd, '/user/fedor']
+      ]);
     })));
 
   it("should handle failed navigations gracefully",
@@ -251,6 +265,9 @@ describe("Integration", () => {
       router.resetConfig([
         { path: '/user/:name', component: UserCmp }
       ]);
+
+      const recordedEvents = [];
+      router.events.forEach(e => recordedEvents.push(e));
 
       const fixture = tcb.createFakeAsync(RootCmp);
       advance(fixture);
@@ -264,6 +281,13 @@ describe("Integration", () => {
       advance(fixture);
 
       expect(fixture.debugElement.nativeElement).toHaveText('user fedor');
+      expectEvents(router, recordedEvents.slice(1), [
+        [NavigationStart, '/invalid'],
+        [NavigationError, '/invalid'],
+
+        [NavigationStart, '/user/fedor'],
+        [NavigationEnd, '/user/fedor']
+      ]);
     })));
 
   describe("router links", () => {
@@ -481,6 +505,13 @@ describe("Integration", () => {
     });
   });
 });
+
+function expectEvents(router: Router, events:Event[], pairs: any[]) {
+  for (let i = 0; i < events.length; ++i) {
+    expect((<any>events[i].constructor).name).toBe(pairs[i][0].name);
+    expect(router.serializeUrl((<any>events[i]).url)).toBe(pairs[i][1]);
+  }
+}
 
 @Component({
   selector: 'link-cmp',
