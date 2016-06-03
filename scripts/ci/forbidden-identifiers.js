@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 'use strict';
 /*
  * This script analyzes the current commits of the CI.
@@ -27,7 +29,8 @@ const blocked_statements = [
   '\\bfit\\(',
   '\\bxdescribe\\(',
   '\\bxit\\(',
-  '\\bdebugger;'
+  '\\bdebugger;',
+  'from \\\'rxjs/Rx\\\'',
 ];
 
 const blockedRegex = new RegExp(blocked_statements.join('|'), 'g');
@@ -62,10 +65,10 @@ function getCommitRange() {
  */
 function findChangedFiles() {
   return getCommitRange()
-    .then(function(range) {
+    .then(range => {
       return exec(`git diff --name-status ${range} ./src ./e2e`);
     })
-    .then(function(rawDiff) {
+    .then(rawDiff => {
       // Ignore deleted files.
       return rawDiff.split('\n')
           .filter(function(line) {
@@ -85,13 +88,13 @@ function findChangedFiles() {
 
 // Find all files, check for errors, and output every errors found.
 findChangedFiles()
-  .then(function(fileList) {
+  .then(fileList => {
     // Only match .js or .ts, and remove .d.ts files.
     return fileList.filter(function(name) {
       return name.match(/\.[jt]s$/) && !name.match(/\.d\.ts$/);
     });
   })
-  .then(function(fileList) {
+  .then(fileList => {
     // Read every file and return a Promise that will contain an array of
     // Object of the form { fileName, content }.
     return Promise.all(fileList.map(function(fileName) {
@@ -101,10 +104,10 @@ findChangedFiles()
       };
     }));
   })
-  .then(function(diffList) {
+  .then(diffList => {
     // Reduce the diffList to an array of errors. The array will be empty if no errors
     // were found.
-    return diffList.reduce(function(errors, diffEntry) {
+    return diffList.reduce((errors, diffEntry) => {
       let fileName = diffEntry.fileName;
       let content = diffEntry.content.split('\n');
       let ln = 0;
@@ -126,17 +129,17 @@ findChangedFiles()
       return errors;
     }, []);
   })
-  .then(function(errors) {
+  .then(errors => {
     if (errors.length > 0) {
       console.error('Error: You are using a statement in your commit, which is not allowed.');
-      errors.forEach(function(entry) {
+      errors.forEach(entry => {
         console.error(`   ${entry.fileName}@${entry.lineNumber}, Statement: ${entry.statement}.\n`);
       });
 
       process.exit(1);
     }
   })
-  .catch(function(err) {
+  .catch(err => {
     // An error occured in this script. Output the error and the stack.
     console.error('An error occured during execution:');
     console.error(err);
