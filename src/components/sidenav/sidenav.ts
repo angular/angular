@@ -102,7 +102,7 @@ export class MdSidenav {
     // Shortcut it if we're already opened.
     if (isOpen === this.opened) {
       if (!this._transition) {
-        return Promise.resolve();
+        return Promise.resolve(null);
       } else {
         return isOpen ? this._openPromise : this._closePromise;
       }
