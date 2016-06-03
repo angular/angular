@@ -156,15 +156,6 @@ export function main() {
                  renderer.setElementStyle(workerEl, 'width', null);
                  expect(getDOM().getStyle(el, 'width')).toEqual('');
 
-                 renderer.setElementStyles(workerEl, {'height': '999px', 'opacity': '0.5'})
-                     expect(getDOM().getStyle(el, 'height'))
-                         .toEqual('999px');
-                 expect(getDOM().getStyle(el, 'opacity')).toEqual('0.5');
-                 renderer.setElementStyles(workerEl, {'height': '999px', 'opacity': null});
-                     expect(getDOM().getStyle(el, 'height'))
-                         .toEqual('999px');
-                 expect(getDOM().getStyle(el, 'opacity')).toEqual('');
-
                  renderer.setElementAttribute(workerEl, 'someattr', 'someValue');
                  expect(getDOM().getAttribute(el, 'someattr')).toEqual('someValue');
                };

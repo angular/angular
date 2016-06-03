@@ -49,6 +49,7 @@ import {
   balanceAnimationKeyframes as impBalanceAnimationKeyframes,
   clearStyles as impClearStyles,
   collectAndResolveStyles as impCollectAndResolveStyles,
+  renderStyles as impRenderStyles,
   SecurityContext
 } from '../core_private';
 
@@ -259,6 +260,11 @@ export class Identifiers {
     name: 'clearStyles',
     moduleUrl: ANIMATION_STYLE_UTIL_ASSET_URL,
     runtime: impClearStyles
+  });
+  static renderStyles = new CompileIdentifierMetadata({
+    name: 'renderStyles',
+    moduleUrl: ANIMATION_STYLE_UTIL_ASSET_URL,
+    runtime: impRenderStyles
   });
   static collectAndResolveStyles = new CompileIdentifierMetadata({
     name: 'collectAndResolveStyles',
