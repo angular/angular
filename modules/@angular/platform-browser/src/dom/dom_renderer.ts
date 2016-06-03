@@ -228,11 +228,6 @@ export class DomRenderer implements Renderer {
     }
   }
 
-  setElementStyles(renderElement: any, styles: {[key: string]: string}) {
-    StringMapWrapper.forEach(styles,
-                             (value, prop) => this.setElementStyle(renderElement, prop, value));
-  }
-
   setElementStyle(renderElement: any, styleName: string, styleValue: string): void {
     if (isPresent(styleValue)) {
       getDOM().setStyle(renderElement, styleName, stringify(styleValue));

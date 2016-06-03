@@ -84,3 +84,4 @@ export var balanceAnimationKeyframes: typeof t.balanceAnimationKeyframes = r.bal
 export var flattenStyles: typeof t.flattenStyles = r.flattenStyles;
 export var clearStyles: typeof t.clearStyles = r.clearStyles;
 export var collectAndResolveStyles: typeof r.collectAndResolveStyles = r.collectAndResolveStyles;
+export var renderStyles: typeof t.renderStyles = r.renderStyles;

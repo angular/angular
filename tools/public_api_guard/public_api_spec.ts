@@ -457,7 +457,6 @@ const CORE = [
   'Renderer.setElementClass(renderElement:any, className:string, isAdd:boolean):any',
   'Renderer.setElementProperty(renderElement:any, propertyName:string, propertyValue:any):void',
   'Renderer.setElementStyle(renderElement:any, styleName:string, styleValue:string):any',
-  'Renderer.setElementStyles(renderElement:any, styles:{[key:string]:string}):any',
   'Renderer.setText(renderNode:any, text:string):any',
   'ResolvedReflectiveBinding',
   'ResolvedReflectiveFactory',

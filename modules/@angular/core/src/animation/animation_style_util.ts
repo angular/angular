@@ -101,6 +101,12 @@ export function collectAndResolveStyles(collection: {[key: string]: string|numbe
   });
 }
 
+export function renderStyles(element: any, renderer: any, styles: {[key: string]: string|number}): void {
+  StringMapWrapper.forEach(styles, (value, prop) => {
+    renderer.setElementStyle(element, prop, value);
+  });
+}
+
 export function flattenStyles(styles: {[key: string]: string|number}[]) {
   var finalStyles = {};
   styles.forEach(entry => {

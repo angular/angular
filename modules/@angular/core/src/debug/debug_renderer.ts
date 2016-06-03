@@ -134,17 +134,6 @@ export class DebugDomRenderer implements Renderer {
     this._delegate.setElementClass(renderElement, className, isAdd);
   }
 
-  setElementStyles(renderElement: any, styles: {[key: string]: string}) {
-    var debugEl = getDebugNode(renderElement);
-    if (isPresent(debugEl) && debugEl instanceof DebugElement) {
-      var elStyles = debugEl.styles;
-      StringMapWrapper.forEach(styles, (value, prop) => {
-        elStyles[prop] = value;
-      });
-    }
-    this._delegate.setElementStyles(renderElement, styles);
-  }
-
   setElementStyle(renderElement: any, styleName: string, styleValue: string) {
     var debugEl = getDebugNode(renderElement);
     if (isPresent(debugEl) && debugEl instanceof DebugElement) {
