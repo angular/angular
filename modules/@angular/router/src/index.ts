@@ -1,4 +1,4 @@
-export { Router } from './router';
+export { Router, Event, NavigationStart, NavigationEnd, NavigationCancel, NavigationError } from './router';
 export { UrlSerializer, DefaultUrlSerializer } from './url_serializer';
 export { RouterState, ActivatedRoute, RouterStateSnapshot, ActivatedRouteSnapshot } from './router_state';
 export { UrlTree, UrlSegment} from './url_tree';
