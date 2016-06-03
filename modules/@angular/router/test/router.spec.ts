@@ -222,6 +222,50 @@ describe("Integration", () => {
       expect(fixture.debugElement.nativeElement).toHaveText('simple');
     })));
 
+  it("should cancel in-flight navigations",
+    fakeAsync(inject([Router, TestComponentBuilder], (router, tcb:TestComponentBuilder) => {
+      router.resetConfig([
+        { path: '/user/:name', component: UserCmp }
+      ]);
+
+      const fixture = tcb.createFakeAsync(RootCmp);
+      router.navigateByUrl('/user/init');
+      advance(fixture);
+
+      const user = fixture.debugElement.children[1].componentInstance;
+
+      let r1, r2;
+      router.navigateByUrl('/user/victor').then(_ => r1 = _);
+      router.navigateByUrl('/user/fedor').then(_ => r2 = _);
+      advance(fixture);
+
+      expect(r1).toEqual(false); // returns false because it was canceled
+      expect(r2).toEqual(true); // returns true because it was successful
+
+      expect(fixture.debugElement.nativeElement).toHaveText('user fedor');
+      expect(user.recordedParams).toEqual([{name: 'init'}, {name: 'fedor'}]);
+    })));
+
+  it("should handle failed navigations gracefully",
+    fakeAsync(inject([Router, TestComponentBuilder], (router, tcb:TestComponentBuilder) => {
+      router.resetConfig([
+        { path: '/user/:name', component: UserCmp }
+      ]);
+
+      const fixture = tcb.createFakeAsync(RootCmp);
+      advance(fixture);
+
+      let e;
+      router.navigateByUrl('/invalid').catch(_ => e = _);
+      advance(fixture);
+      expect(e.message).toContain("Cannot match any routes");
+
+      router.navigateByUrl('/user/fedor');
+      advance(fixture);
+
+      expect(fixture.debugElement.nativeElement).toHaveText('user fedor');
+    })));
+
   describe("router links", () => {
     it("should support string router links",
       fakeAsync(inject([Router, TestComponentBuilder], (router, tcb) => {
