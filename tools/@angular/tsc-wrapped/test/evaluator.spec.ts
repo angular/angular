@@ -7,6 +7,7 @@ import {Symbols} from '../src/symbols';
 import {Directory, Host, expectNoDiagnostics, findVar} from './typescript.mocks';
 
 describe('Evaluator', () => {
+  let documentRegistry = ts.createDocumentRegistry();
   let host: ts.LanguageServiceHost;
   let service: ts.LanguageService;
   let program: ts.Program;
@@ -17,9 +18,9 @@ describe('Evaluator', () => {
   beforeEach(() => {
     host = new Host(FILES, [
       'expressions.ts', 'consts.ts', 'const_expr.ts', 'forwardRef.ts', 'classes.ts',
-      'newExpression.ts'
+      'newExpression.ts', 'errors.ts'
     ]);
-    service = ts.createLanguageService(host);
+    service = ts.createLanguageService(host, documentRegistry);
     program = service.getProgram();
     typeChecker = program.getTypeChecker();
     symbols = new Symbols(null);
@@ -30,7 +31,10 @@ describe('Evaluator', () => {
     expectNoDiagnostics(service.getCompilerOptionsDiagnostics());
     for (const sourceFile of program.getSourceFiles()) {
       expectNoDiagnostics(service.getSyntacticDiagnostics(sourceFile.fileName));
-      expectNoDiagnostics(service.getSemanticDiagnostics(sourceFile.fileName));
+      if (sourceFile.fileName != 'errors.ts') {
+        // Skip errors.ts because we it has intentional semantic errors that we are testing for.
+        expectNoDiagnostics(service.getSemanticDiagnostics(sourceFile.fileName));
+      }
     }
   });
 
@@ -141,6 +145,46 @@ describe('Evaluator', () => {
       arguments: ['name', 12]
     });
   });
+
+  it('should return errors for unsupported expressions', () => {
+    let errors = program.getSourceFile('errors.ts');
+    let aDecl = findVar(errors, 'a');
+    expect(evaluator.evaluateNode(aDecl.type)).toEqual({
+      __symbolic: 'error',
+      message: 'Qualified type names not supported',
+      line: 5,
+      character: 10
+    });
+    let fDecl = findVar(errors, 'f');
+    expect(evaluator.evaluateNode(fDecl.initializer)).toEqual({
+      __symbolic: 'error',
+      message:
+          'Functions cannot be evaluated statically; consider replacing with a reference to an exported function',
+      line: 6,
+      character: 11
+    });
+    let eDecl = findVar(errors, 'e');
+    expect(evaluator.evaluateNode(eDecl.type)).toEqual({
+      __symbolic: 'error',
+      message: 'Could not resolve type NotFound',
+      line: 7,
+      character: 10
+    });
+    let sDecl = findVar(errors, 's');
+    expect(evaluator.evaluateNode(sDecl.initializer)).toEqual({
+      __symbolic: 'error',
+      message: 'Name expected a string or an identifier but received "1"',
+      line: 8,
+      character: 13
+    });
+    let tDecl = findVar(errors, 't');
+    expect(evaluator.evaluateNode(tDecl.initializer)).toEqual({
+      __symbolic: 'error',
+      message: 'Expression form not supported statically',
+      line: 9,
+      character: 11
+    });
+  });
 });
 
 const FILES: Directory = {
@@ -193,7 +237,7 @@ const FILES: Directory = {
     export var bShiftLeft = 1 << 2;              // 0x04
     export var bShiftRight = -1 >> 2;            // -1
     export var bShiftRightU = -1 >>> 2;          // 0x3fffffff
-    
+
     export var recursiveA = recursiveB;
     export var recursiveB = recursiveA;
   `,
@@ -224,5 +268,16 @@ const FILES: Directory = {
     function forwardRef(value: any) { return value; }
     export const someValue = new Value("name", 12);
     export const complex = CONST_EXPR(new Value("name", forwardRef(() => 12)));
-  `
+  `,
+  'errors.ts': `
+    declare namespace Foo {
+      type A = string;
+    }
+
+    let a: Foo.A = 'some value';
+    let f = () => 1;
+    let e: NotFound;
+    let s = { 1: 1, 2: 2 };
+    let t = typeof 12;
+  `,
 };

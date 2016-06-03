@@ -54,6 +54,28 @@ export interface ImportMetadata {
   from: string;                              // from 'place'
 }
 
+
+function getSourceFileOfNode(node: ts.Node): ts.SourceFile {
+  while (node && node.kind != ts.SyntaxKind.SourceFile) {
+    node = node.parent
+  }
+  return <ts.SourceFile>node;
+}
+
+/* @internal */
+export function errorSymbol(
+    message: string, node?: ts.Node, context?: {[name: string]: string},
+    sourceFile?: ts.SourceFile): MetadataError {
+  if (node) {
+    sourceFile = sourceFile || getSourceFileOfNode(node);
+    if (sourceFile) {
+      let {line, character} = ts.getLineAndCharacterOfPosition(sourceFile, node.pos);
+      return {__symbolic: 'error', message, line, character, context};
+    };
+  }
+  return {__symbolic: 'error', message, context};
+}
+
 /**
  * Produce a symbolic representation of an expression folding values into their final value when
  * possible.
@@ -69,10 +91,7 @@ export class Evaluator {
     if (isMetadataError(result) || typeof result === 'string') {
       return result;
     } else {
-      return {
-        __symbolic: 'error',
-        message: `Name expected a string or an identifier but received "${node.getText()}""`
-      };
+      return errorSymbol('Name expected', node, {received: node.getText()});
     }
   }
 
@@ -185,7 +204,8 @@ export class Evaluator {
               const assignment = <ts.PropertyAssignment>child;
               const propertyName = this.nameOf(assignment.name);
               if (isMetadataError(propertyName)) {
-                return propertyName;
+                error = propertyName;
+                return true;
               }
               const propertyValue = this.evaluateNode(assignment.initializer);
               if (isMetadataError(propertyValue)) {
@@ -306,13 +326,13 @@ export class Evaluator {
         const typeReferenceNode = <ts.TypeReferenceNode>node;
         const typeNameNode = typeReferenceNode.typeName;
         if (typeNameNode.kind != ts.SyntaxKind.Identifier) {
-          return { __symbolic: 'error', message: 'Qualified type names not supported' }
+          return errorSymbol('Qualified type names not supported', node);
         }
         const typeNameIdentifier = <ts.Identifier>typeReferenceNode.typeName;
         const typeName = typeNameIdentifier.text;
         const typeReference = this.symbols.resolve(typeName);
         if (!typeReference) {
-          return {__symbolic: 'error', message: `Could not resolve type ${typeName}`};
+          return errorSymbol('Could not resolve type', node, {typeName});
         }
         if (typeReferenceNode.typeArguments && typeReferenceNode.typeArguments.length) {
           const args = typeReferenceNode.typeArguments.map(element => this.evaluateNode(element));
@@ -452,7 +472,10 @@ export class Evaluator {
           };
         }
         break;
+      case ts.SyntaxKind.FunctionExpression:
+      case ts.SyntaxKind.ArrowFunction:
+        return errorSymbol('Function call not supported', node);
     }
-    return {__symbolic: 'error', message: 'Expression is too complex to resolve statically'};
+    return errorSymbol('Expression form not supported', node);
   }
 }

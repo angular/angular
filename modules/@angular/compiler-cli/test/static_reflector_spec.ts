@@ -109,6 +109,11 @@ describe('StaticReflector', () => {
     expect(parameters).toEqual([]);
   });
 
+  it('should provide context for errors reported by the collector', () => {
+    let SomeClass = host.findDeclaration('src/error-reporting', 'SomeClass');
+    expect(() => reflector.annotations(SomeClass)).toThrow(new Error('Error encountered resolving symbol values statically. A reasonable error message (position 12:33 in the original .ts file), resolving symbol ErrorSym in /tmp/src/error-references.d.ts, resolving symbol Link2 in /tmp/src/error-references.d.ts, resolving symbol Link1 in /tmp/src/error-references.d.ts, resolving symbol SomeClass in /tmp/src/error-reporting.d.ts, resolving symbol SomeClass in /tmp/src/error-reporting.d.ts'));
+  });
+
   it('should simplify primitive into itself', () => {
     expect(simplify(noContext, 1)).toBe(1);
     expect(simplify(noContext, true)).toBe(true);
@@ -537,6 +542,58 @@ class MockReflectorHost implements StaticReflectorHost {
       },
       '/src/extern.d.ts': {"__symbolic": "module", "version": 1, metadata: {s: "s"}},
       '/tmp/src/version-error.d.ts': {"__symbolic": "module", "version": 100, metadata: {e: "s"}},
+      '/tmp/src/error-reporting.d.ts': {
+        __symbolic: "module",
+        version: 1,
+        metadata: {
+          SomeClass: {
+            __symbolic: "class",
+            decorators: [
+              {
+                __symbolic: "call",
+                expression: {
+                  __symbolic: "reference",
+                  name: "Component",
+                  module: "angular2/src/core/metadata"
+                },
+                arguments: [
+                  {
+                    directives: [
+                      {
+                        __symbolic: "reference",
+                        module: "src/error-references",
+                        name: "Link1",
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+          }
+        }
+      },
+      '/tmp/src/error-references.d.ts': {
+        __symbolic: "module",
+        version: 1,
+        metadata: {
+          Link1: {
+            __symbolic: "reference",
+            module: "src/error-references",
+            name: "Link2"
+          },
+          Link2: {
+            __symbolic: "reference",
+            module: "src/error-references",
+            name: "ErrorSym"
+          },
+          ErrorSym: {
+            __symbolic: "error",
+            message: "A reasonable error message",
+            line: 12,
+            character: 33
+          }
+        }
+      }
     };
     return data[moduleId];
   }
