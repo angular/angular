@@ -343,6 +343,12 @@ export function main() {
           expect(humanizeErrors(errors)).toEqual([['p', 'Unexpected closing tag "p"', '0:5']]);
         });
 
+        it('should report subsequent open tags without proper close tag', () => {
+          let errors = parser.parse('<div</div>', 'TestComp').errors;
+          expect(errors.length).toEqual(1);
+          expect(humanizeErrors(errors)).toEqual([['div', 'Unexpected closing tag "div"', '0:4']]);
+        });
+
         it('should report closing tag for void elements', () => {
           let errors = parser.parse('<input></input>', 'TestComp').errors;
           expect(errors.length).toEqual(1);
