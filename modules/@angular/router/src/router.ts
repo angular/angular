@@ -15,9 +15,12 @@ import { createUrlTree } from './create_url_tree';
 import { forEach, and, shallowEqual } from './utils/collection';
 import { Observable } from 'rxjs/Observable';
 import { Subscription } from 'rxjs/Subscription';
+import { Subject } from 'rxjs/Subject';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/scan';
 import 'rxjs/add/operator/mergeMap';
+import 'rxjs/add/operator/concat';
+import 'rxjs/add/operator/concatMap';
 import {of} from 'rxjs/observable/of';
 import {forkJoin} from 'rxjs/observable/forkJoin';
 
@@ -31,6 +34,7 @@ export class Router {
   private currentRouterState: RouterState;
   private config: RouterConfig;
   private locationSubscription: Subscription;
+  private navigationId: number = 0;
 
   /**
    * @internal
@@ -65,9 +69,9 @@ export class Router {
    * router.navigateByUrl("/team/33/user/11");
    * ```
    */
-  navigateByUrl(url: string): Observable<void> {
+  navigateByUrl(url: string): Promise<boolean> {
     const urlTree = this.urlSerializer.parse(url);
-    return this.runNavigate(urlTree, false);
+    return this.scheduleNavigation(urlTree, false);
   }
 
   /**
@@ -140,8 +144,8 @@ export class Router {
    * router.navigate(['team', 33, 'team', '11], {relativeTo: route});
    * ```
    */
-  navigate(commands: any[], extras: NavigationExtras = {}): Observable<void> {
-    return this.runNavigate(this.createUrlTree(commands, extras));
+  navigate(commands: any[], extras: NavigationExtras = {}): Promise<boolean> {
+    return this.scheduleNavigation(this.createUrlTree(commands, extras), false);
   }
 
   /**
@@ -154,39 +158,50 @@ export class Router {
    */
   parseUrl(url: string): UrlTree { return this.urlSerializer.parse(url); }
 
+  private scheduleNavigation(url: UrlTree, pop: boolean):Promise<boolean> {
+    const id = ++ this.navigationId;
+    return Promise.resolve().then((_) => this.runNavigate(url, false, id));
+  }
+
   private setUpLocationChangeListener(): void {
     this.locationSubscription = <any>this.location.subscribe((change) => {
-      this.runNavigate(this.urlSerializer.parse(change['url']), change['pop'])
+      return this.scheduleNavigation(this.urlSerializer.parse(change['url']), change['pop']);
     });
   }
 
-  private runNavigate(url:UrlTree, pop?:boolean):Observable<any> {
-    let state;
-    const r = recognize(this.rootComponentType, this.config, url).mergeMap((newRouterStateSnapshot) => {
-      return resolve(this.resolver, newRouterStateSnapshot);
+  private runNavigate(url: UrlTree, pop: boolean, id: number):Promise<boolean> {
+    if (id !== this.navigationId) {
+      return Promise.resolve(false);
+    }
 
-    }).map((routerStateSnapshot) => {
-      return createRouterState(routerStateSnapshot, this.currentRouterState);
+    return new Promise((resolvePromise, rejectPromise) => {
+      let state;
+      recognize(this.rootComponentType, this.config, url).mergeMap((newRouterStateSnapshot) => {
+        return resolve(this.resolver, newRouterStateSnapshot);
 
-    }).map((newState:RouterState) => {
-      state = newState;
+      }).map((routerStateSnapshot) => {
+        return createRouterState(routerStateSnapshot, this.currentRouterState);
 
-    }).mergeMap(_ => {
-      return new GuardChecks(state.snapshot, this.currentRouterState.snapshot, this.injector).check(this.outletMap);
+      }).map((newState:RouterState) => {
+        state = newState;
+
+      }).mergeMap(_ => {
+        return new GuardChecks(state.snapshot, this.currentRouterState.snapshot, this.injector).check(this.outletMap);
+
+      }).forEach((shouldActivate) => {
+        if (!shouldActivate || id !== this.navigationId) {
+          return;
+        }
+
+        new ActivateRoutes(state, this.currentRouterState).activate(this.outletMap);
+
+        this.currentUrlTree = url;
+        this.currentRouterState = state;
+        if (!pop) {
+          this.location.go(this.urlSerializer.serialize(url));
+        }
+      }).then(() => resolvePromise(true), e => rejectPromise(e));
     });
-
-    r.subscribe((shouldActivate) => {
-      if (!shouldActivate) return;
-      new ActivateRoutes(state, this.currentRouterState).activate(this.outletMap);
-
-      this.currentUrlTree = url;
-      this.currentRouterState = state;
-
-      if (!pop) {
-        this.location.go(this.urlSerializer.serialize(url));
-      }
-    });
-    return r;
   }
 }
 
