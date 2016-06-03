@@ -18,11 +18,15 @@ import {
   NG_VALUE_ACCESSOR,
   ControlValueAccessor
 } from '@angular/common';
-import {MdRadioDispatcher} from './radio_dispatcher';
+import {
+  MdUniqueSelectionDispatcher
+} from '@angular2-material/core/coordination/unique-selection-dispatcher';
 
 
 // Re-exports.
-export {MdRadioDispatcher} from './radio_dispatcher';
+export {
+  MdUniqueSelectionDispatcher
+} from '@angular2-material/core/coordination/unique-selection-dispatcher';
 
 
 
@@ -273,7 +277,8 @@ export class MdRadioButton implements OnInit {
   @Output()
   change: EventEmitter<MdRadioChange> = new EventEmitter<MdRadioChange>();
 
-  constructor(@Optional() radioGroup: MdRadioGroup, public radioDispatcher: MdRadioDispatcher) {
+  constructor(@Optional() radioGroup: MdRadioGroup,
+              public radioDispatcher: MdUniqueSelectionDispatcher) {
     // Assertions. Ideally these should be stripped out by the compiler.
     // TODO(jelbourn): Assert that there's no name binding AND a parent radio group.
 

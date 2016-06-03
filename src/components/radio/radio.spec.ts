@@ -1,28 +1,30 @@
 import {
-    it,
-    describe,
-    beforeEach,
-    beforeEachProviders,
-    inject,
-    async,
-    fakeAsync,
-    tick
+  it,
+  describe,
+  beforeEach,
+  beforeEachProviders,
+  inject,
+  async,
+  fakeAsync,
+  tick
 } from '@angular/core/testing';
 import {FORM_DIRECTIVES, NgControl} from '@angular/common';
 import {TestComponentBuilder, ComponentFixture} from '@angular/compiler/testing';
 import {Component, DebugElement, provide} from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {MD_RADIO_DIRECTIVES, MdRadioGroup, MdRadioButton, MdRadioChange} from './radio';
-import {MdRadioDispatcher} from './radio_dispatcher';
+import {
+  MdUniqueSelectionDispatcher
+} from '@angular2-material/core/coordination/unique-selection-dispatcher';
 
 
 describe('MdRadio', () => {
   let builder: TestComponentBuilder;
-  let dispatcher: MdRadioDispatcher;
+  let dispatcher: MdUniqueSelectionDispatcher;
 
   beforeEachProviders(() => [
-    provide(MdRadioDispatcher, {useFactory: () => {
-      dispatcher = new MdRadioDispatcher();
+    provide(MdUniqueSelectionDispatcher, {useFactory: () => {
+      dispatcher = new MdUniqueSelectionDispatcher();
       return dispatcher;
     }})
   ]);
