@@ -81,7 +81,7 @@ export abstract class DomSanitizationService implements SanitizationService {
 
   /**
    * Bypass security and trust the given value to be a safe style URL, i.e. a value that can be used
-   * in hyperlinks or `<iframe src>`.
+   * in hyperlinks or `<img src>`.
    *
    * WARNING: calling this method with untrusted user data will cause severe security bugs!
    */
@@ -89,11 +89,11 @@ export abstract class DomSanitizationService implements SanitizationService {
 
   /**
    * Bypass security and trust the given value to be a safe resource URL, i.e. a location that may
-   * be used to load executable code from, like `<script src>`.
+   * be used to load executable code from, like `<script src>`, or `<iframe src>`.
    *
    * WARNING: calling this method with untrusted user data will cause severe security bugs!
    */
-  abstract bypassSecurityTrustResourceUrl(value: string): any /** TODO #9100 */;
+  abstract bypassSecurityTrustResourceUrl(value: string): SafeResourceUrl;
 }
 
 
@@ -133,7 +133,7 @@ export class DomSanitizationServiceImpl extends DomSanitizationService {
 
   private checkNotSafeValue(value: any, expectedType: string) {
     if (value instanceof SafeValueImpl) {
-      throw new Error('Required a safe ' + expectedType + ', got a ' + value.getTypeName());
+      throw new Error(`Required a safe ${expectedType}, got a ${value.getTypeName()}`);
     }
   }
 
